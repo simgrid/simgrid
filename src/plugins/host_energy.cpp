@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/plugins/energy.h"
-#include "simgrid/plugins/load.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/include/surf/surf.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
@@ -108,6 +107,9 @@ before you can get accurate energy predictions.
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf, "Logging specific to the SURF energy plugin");
 
+// Forwards declaration needed to make this function a friend (because friends have external linkage by default)
+static void on_simulation_end();
+
 namespace simgrid {
 namespace plugin {
 
@@ -121,6 +123,7 @@ public:
 };
 
 class HostEnergy {
+  friend void ::on_simulation_end(); // For access to host_was_used_
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> EXTENSION_ID;
 
@@ -146,6 +149,10 @@ private:
   int pstate_           = 0;
   const int pstate_off_ = -1;
 
+  /* Only used to split total energy into unused/used hosts.
+   * If you want to get this info for something else, rather use the host_load plugin
+   */
+  bool host_was_used_  = false;
 public:
   double watts_off_    = 0.0; /*< Consumption when the machine is turned off (shutdown) */
   double total_energy_ = 0.0; /*< Total energy consumed by the host */
@@ -243,6 +250,8 @@ double HostEnergy::get_current_watts_value()
 
   if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not more
     cpu_load = 1;
+  if (cpu_load > 0)
+    host_was_used_ = true;
 
   /* The problem with this model is that the load is always 0 or 1, never something less.
    * Another possibility could be to model the total energy as
@@ -440,10 +449,9 @@ static void on_simulation_end()
   for (size_t i = 0; i < hosts.size(); i++) {
     if (dynamic_cast<simgrid::s4u::VirtualMachine*>(hosts[i]) == nullptr) { // Ignore virtual machines
 
-      bool host_was_used = (sg_host_get_computed_flops(hosts[i]) != 0);
       double energy      = hosts[i]->extension<HostEnergy>()->get_consumed_energy();
       total_energy += energy;
-      if (host_was_used)
+      if (hosts[i]->extension<HostEnergy>()->host_was_used_)
         used_hosts_energy += energy;
     }
   }
@@ -461,8 +469,6 @@ void sg_host_energy_plugin_init()
 {
   if (HostEnergy::EXTENSION_ID.valid())
     return;
-
-  sg_host_load_plugin_init();
 
   HostEnergy::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostEnergy>();
 
