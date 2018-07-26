@@ -108,13 +108,11 @@ static int worker(int argc, char* argv[])
     try {
       simgrid::s4u::this_actor::execute(comp_size);
     } catch (xbt_ex& e) {
-      switch (e.category) {
-        case host_error:
-          XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-          return -1;
-        default:
-          xbt_die("Unexpected behavior");
-      }
+      if (e.category == host_error) {
+        XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
+        return -1;
+      } else
+        xbt_die("Unexpected behavior");
     }
   }
   XBT_INFO("I'm done. See you!");

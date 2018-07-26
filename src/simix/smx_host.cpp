@@ -76,7 +76,7 @@ simgrid::kernel::activity::ExecImplPtr SIMIX_execution_start(std::string name, s
   simgrid::kernel::activity::ExecImplPtr exec = simgrid::kernel::activity::ExecImplPtr(
       new simgrid::kernel::activity::ExecImpl(name, surf_action, /*timeout_detector*/ nullptr, host));
 
-  exec->set_category(name);
+  exec->set_category(category);
   XBT_DEBUG("Create execute synchro %p: %s", exec.get(), exec->name_.c_str());
   simgrid::kernel::activity::ExecImpl::on_creation(exec);
 
