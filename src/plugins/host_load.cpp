@@ -5,6 +5,7 @@
 
 #include "simgrid/plugins/load.h"
 #include "src/include/surf/surf.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include <simgrid/s4u.hpp>
 
@@ -20,6 +21,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_plugin_load, surf, "Logging specific to the
 
 namespace simgrid {
 namespace plugin {
+
+static const double activity_uninitialized_remaining_cost = -1;
 
 class HostLoad {
 public:
@@ -45,10 +48,13 @@ public:
   double get_idle_time() { update(); return idle_time_; } /** Return idle time since last reset */
   double get_total_idle_time() { update(); return total_idle_time_; } /** Return idle time over the whole simulation */
   void update();
+  void add_activity(simgrid::kernel::activity::ExecImplPtr activity);
   void reset();
 
 private:
   simgrid::s4u::Host* host_ = nullptr;
+  /* Stores all currently ongoing activities (computations) on this machine */
+  std::map<simgrid::kernel::activity::ExecImplPtr, /* cost still remaining*/double> current_activities;
   double last_updated_      = 0;
   double last_reset_        = 0;
   /**
@@ -68,6 +74,11 @@ private:
 };
 
 simgrid::xbt::Extension<simgrid::s4u::Host, HostLoad> HostLoad::EXTENSION_ID;
+
+void HostLoad::add_activity(simgrid::kernel::activity::ExecImplPtr activity)
+{
+  current_activities.insert({activity, activity_uninitialized_remaining_cost});
+}
 
 void HostLoad::update()
 {
