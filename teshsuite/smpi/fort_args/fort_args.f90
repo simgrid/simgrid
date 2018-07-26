@@ -8,11 +8,6 @@ program getarg_1
   ! This should return the invoking command.  The actual value depends 
   ! on the OS, but a blank string is wrong no matter what.
   ! ??? What about deep embedded systems?
-
-  I2 = 0
-  CALL GETARG(I2,ARGS2)
-  if (args2.ne.args) STOP 1
-
   if (args.eq.'') STOP 2
   I = 1
   CALL GETARG(I,ARGS)
