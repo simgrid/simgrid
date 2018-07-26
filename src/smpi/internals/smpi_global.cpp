@@ -437,7 +437,7 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
   for_rtl_init_ (&argc, argv);
 #elif SMPI_FLANG
   __io_set_argc(argc);
-  __io_set_argv(argvptr);
+  __io_set_argv(argv);
 #elif SMPI_GFORTRAN
   _gfortran_set_args(argc, argv);
 #endif 
