@@ -40,10 +40,10 @@ public:
   explicit HostLoad(simgrid::s4u::Host&& ptr) = delete;
 
   double get_current_load();
-  double get_average_load() { return (theor_max_flops_ == 0) ? 0 : computed_flops_ / theor_max_flops_; };
-  double get_computed_flops() { return computed_flops_; }
-  double get_idle_time() { return idle_time_; } /** Return idle time since last reset */
-  double get_total_idle_time() { return total_idle_time_; } /** Return idle time over the whole simulation */
+  double get_average_load() { update(); return (theor_max_flops_ == 0) ? 0 : computed_flops_ / theor_max_flops_; };
+  double get_computed_flops() { update(); return computed_flops_; }
+  double get_idle_time() { update(); return idle_time_; } /** Return idle time since last reset */
+  double get_total_idle_time() { update(); return total_idle_time_; } /** Return idle time over the whole simulation */
   void update();
   void reset();
 
