@@ -94,6 +94,20 @@ if(enable_smpi)
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/simgrid)
   install(TARGETS smpimain # install that binary without breaking the rpath on Mac
     RUNTIME DESTINATION lib/simgrid)
+
+  if(SMPI_FORTRAN)
+    if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
+      SET(SIMGRID_DEP "${SIMGRID_DEP} -lgfortran")
+    elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+      SET(SIMGRID_DEP "${SIMGRID_DEP} -lifcore")
+    elseif(CMAKE_Fortran_COMPILER_ID MATCHES "PGI|Flang")
+      SET(SIMGRID_DEP "${SIMGRID_DEP} -lflang")
+      if("${CMAKE_SYSTEM}" MATCHES "FreeBSD")
+        set(SIMGRID_DEP "${SIMGRID_DEP} -lexecinfo")
+      endif()
+    endif()
+  endif()
+
 endif()
 
 if(enable_smpi AND APPLE)

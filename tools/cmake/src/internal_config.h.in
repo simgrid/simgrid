@@ -73,8 +73,11 @@
 /* SMPI variables */
 /* SMPI enabled */
 #cmakedefine01 HAVE_SMPI
-/* Fortran language is available for SMPI */
+/* Fortran language is available for SMPI, and which one */
 #cmakedefine01 SMPI_FORTRAN
+#cmakedefine01 SMPI_GFORTRAN
+#cmakedefine01 SMPI_FLANG
+#cmakedefine01 SMPI_IFORT
 /* We have mmap and objdump to handle privatization */
 #cmakedefine01 HAVE_PRIVATIZATION
 /* We have PAPI to fine-grain trace execution time */

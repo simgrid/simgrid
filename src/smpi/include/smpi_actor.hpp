@@ -17,8 +17,6 @@ namespace smpi {
 class ActorExt {
 private:
   double simulated_ = 0 /* Used to time with simulated_start/elapsed */;
-  int* argc_        = nullptr;
-  char*** argv_     = nullptr;
   simgrid::s4u::MailboxPtr mailbox_;
   simgrid::s4u::MailboxPtr mailbox_small_;
   xbt_mutex_t mailboxes_mutex_;

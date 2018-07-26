@@ -42,6 +42,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp> /* trim_right / trim_left */
 
+#if SMPI_IFORT
+  extern "C" void for_rtl_init_ (int *, char **);
+#elif SMPI_FLANG
+  extern "C" void __io_set_argc(int);
+  extern "C" void __io_set_argv(char **);
+#elif SMPI_GFORTRAN
+  extern "C" void _gfortran_set_args(int, char **);
+#endif
+
 #ifndef RTLD_DEEPBIND
 /* RTLD_DEEPBIND is a bad idea of GNU ld that obviously does not exist on other platforms
  * See https://www.akkadia.org/drepper/dsohowto.pdf
@@ -423,9 +432,15 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
     argv[i] = args[i].empty() ? noarg : &args[i].front();
   argv[argc] = nullptr;
   char ** argvptr=argv.get();
-
   simgrid::smpi::ActorExt::init(&argc, &argvptr);
-
+#if SMPI_IFORT
+  for_rtl_init_ (&argc, argvptr);
+#elif SMPI_FLANG
+  __io_set_argc(argc);
+  __io_set_argv(argvptr);
+#elif SMPI_GFORTRAN
+  _gfortran_set_args(argc, argvptr);
+#endif 
   int res = entry_point(argc, argvptr);
   if (res != 0){
     XBT_WARN("SMPI process did not return 0. Return value : %d", res);
