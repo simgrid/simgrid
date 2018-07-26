@@ -72,8 +72,8 @@ void HostLoad::update()
 {
   double now = surf_get_clock();
 
-  /* Current flop per second computed by the cpu; current_flops = k * pstate_speed_in_flops, k @in {0, 1, ..., cores}
-   * number of active cores */
+  /* Current flop per second computed by the cpu; current_flops = k * pstate_speed_in_flops, k @in {0, 1, ..., cores-1}
+   * designates number of active cores; will be 0 if CPU is currently idle */
   current_flops_ = host_->pimpl_cpu->get_constraint()->get_usage();
 
   /* flops == pstate_speed * cores_being_currently_used */
