@@ -52,7 +52,8 @@ private:
   double last_updated_      = 0;
   double last_reset_        = 0;
   /**
-   * current_speed each core is running at right now
+   * current_speed each core is running at; we need to store this as the speed
+   * will already have changed once we get notified
    */
   double current_speed_     = 0;
   /**
@@ -82,6 +83,7 @@ void HostLoad::update()
   if (current_flops_ == 0) {
     idle_time_ += (now - last_updated_);
     total_idle_time_ += (now - last_updated_);
+    XBT_DEBUG("[%s]: Currently idle -> Added %f seconds to idle time (totaling %fs)", host_->get_cname(), (now - last_updated_), idle_time_);
   }
 
   theor_max_flops_ += current_speed_ * host_->get_core_count() * (now - last_updated_);
