@@ -5,6 +5,7 @@
 
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u/Engine.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
 #include "src/include/surf/surf.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
@@ -478,6 +479,21 @@ void sg_host_energy_plugin_init()
   simgrid::s4u::Host::on_destruction.connect(&on_host_destruction);
   simgrid::s4u::on_simulation_end.connect(&on_simulation_end);
   simgrid::surf::CpuAction::on_state_change.connect(&on_action_state_change);
+  // We may only have one actor on a node. If that actor executes something like
+  //   compute -> recv -> compute
+  // the recv operation will not trigger a "CpuAction::on_state_change". This means
+  // that the next trigger would be the 2nd compute, hence ignoring the idle time
+  // during the recv call. By updating at the beginning of a compute, we can
+  // fix that. (If the cpu is not idle, this is not required.)
+  simgrid::kernel::activity::ExecImpl::on_creation.connect([](simgrid::kernel::activity::ExecImplPtr activity){
+    if (activity->host_ != nullptr) { // We only run on one host
+      simgrid::s4u::Host* host = activity->host_;
+      if (dynamic_cast<simgrid::s4u::VirtualMachine*>(activity->host_))
+        host = dynamic_cast<simgrid::s4u::VirtualMachine*>(activity->host_)->get_pm();
+
+      host->extension<HostEnergy>()->update();
+    }
+  });
 }
 
 /** @ingroup plugin_energy
