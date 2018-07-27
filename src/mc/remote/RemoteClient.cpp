@@ -86,6 +86,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libevent",
     "libexecinfo",
     "libflang",
+    "libflangrti",
     "libgcc_s",
     "libgfortran",
     "libimf",
