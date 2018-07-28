@@ -96,6 +96,7 @@ static const std::vector<std::string> filtered_libraries = {
     "liblua5.3",
     "liblzma",
     "libm",
+    "libomp",
     "libpapi",
     "libpfm",
     "libpthread",
