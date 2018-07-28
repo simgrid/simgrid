@@ -85,9 +85,12 @@ void HostLoad::update()
   double now = surf_get_clock();
 
   // This loop updates the flops that the host executed for the ongoing computations
-  for (auto& pair : current_activities) {
-    auto& activity                         = pair.first;  // Just an alias
-    auto& remaining_cost_after_last_update = pair.second; // Just an alias
+  auto iter = begin(current_activities);
+  while (iter != end(current_activities)) {
+    auto& activity                         = iter->first;  // Just an alias
+    auto& remaining_cost_after_last_update = iter->second; // Just an alias
+    auto current_iter                      = iter;
+    ++iter;
 
     if (activity->surf_action_->get_finish_time() != now && activity->state_ == e_smx_state_t::SIMIX_RUNNING) {
       if (remaining_cost_after_last_update == activity_uninitialized_remaining_cost) {
@@ -99,7 +102,7 @@ void HostLoad::update()
     }
     else if (activity->state_ == e_smx_state_t::SIMIX_DONE) {
       computed_flops_ += remaining_cost_after_last_update;
-      current_activities.erase(activity);
+      current_activities.erase(current_iter);
     }
   }
 
