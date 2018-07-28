@@ -22,7 +22,7 @@ Activity* Exec::start()
 
 Activity* Exec::cancel()
 {
-  simcall_execution_cancel(pimpl_);
+  simgrid::simix::simcall([this] { dynamic_cast<kernel::activity::ExecImpl*>(pimpl_.get())->cancel(); });
   state_ = State::CANCELED;
   return this;
 }
