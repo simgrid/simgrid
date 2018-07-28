@@ -69,7 +69,7 @@ public:
   size_t get_dst_data_size();
 
   bool test();
-  Activity* cancel();
+  Activity* cancel() override;
 
   /** Retrieve the mailbox on which this comm acts */
   MailboxPtr get_mailbox();

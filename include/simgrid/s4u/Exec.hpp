@@ -26,6 +26,7 @@ public:
   Activity* start() override;
   Activity* wait() override;
   Activity* wait(double timeout) override;
+  Activity* cancel() override;
   bool test();
 
   ExecPtr set_priority(double priority);

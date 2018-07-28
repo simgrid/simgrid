@@ -20,6 +20,13 @@ Activity* Exec::start()
   return this;
 }
 
+Activity* Exec::cancel()
+{
+  simcall_execution_cancel(pimpl_);
+  state_ = State::CANCELED;
+  return this;
+}
+
 Activity* Exec::wait()
 {
   simcall_execution_wait(pimpl_);
