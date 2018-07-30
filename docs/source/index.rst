@@ -7,7 +7,7 @@ Welcome to SimGrid's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-	What is SimGrid <getting_started.rst>
+	What is SimGrid <main_concepts.rst>
 	Installing SimGrid <installation.rst>
 	Create your own project <install_yours.rst>
 
