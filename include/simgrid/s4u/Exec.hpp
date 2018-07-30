@@ -26,6 +26,7 @@ public:
   Activity* start() override;
   Activity* wait() override;
   Activity* wait(double timeout) override;
+  Activity* cancel() override;
   bool test();
 
   ExecPtr set_priority(double priority);
@@ -57,11 +58,12 @@ public:
   }
 
 private:
-  Host* host_          = nullptr;
-  double flops_amount_ = 0.0;
-  double priority_     = 1.0;
-  double bound_        = 0.0;
-  std::string name_    = "";
+  Host* host_                   = nullptr;
+  double flops_amount_          = 0.0;
+  double priority_              = 1.0;
+  double bound_                 = 0.0;
+  std::string name_             = "";
+  std::string tracing_category_ = "";
   std::atomic_int_fast32_t refcount_{0};
 }; // class
 }

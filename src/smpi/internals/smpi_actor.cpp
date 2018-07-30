@@ -75,8 +75,6 @@ void ActorExt::set_data(int* argc, char*** argv)
     (*argv)[(*argc) - 2] = nullptr;
   }
   (*argc) -= 2;
-  argc_ = argc;
-  argv_ = argv;
   // set the process attached to the mailbox
   mailbox_small_->set_receiver(actor_);
   XBT_DEBUG("<%ld> SMPI process has been initialized: %p", actor_->get_pid(), actor_.get());

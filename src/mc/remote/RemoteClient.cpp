@@ -64,11 +64,8 @@ static const std::vector<std::string> filtered_libraries = {
     "libthr",      /* thread library */
     "libutil",
 #endif
-    "libasan", /* gcc sanitizers */
     "libargp", /* workarounds for glibc-less systems */
-    "libtsan",
-    "libubsan",
-    "libbz2",
+    "libasan", /* gcc sanitizers */
     "libboost_chrono",
     "libboost_context",
     "libboost_context-mt",
@@ -76,6 +73,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libboost_thread",
     "libboost_timer",
     "libboost_unit_test_framework",
+    "libbz2",
     "libc",
     "libc++",
     "libcdt",
@@ -86,7 +84,11 @@ static const std::vector<std::string> filtered_libraries = {
     "libdw",
     "libelf",
     "libevent",
+    "libexecinfo",
+    "libflang",
+    "libflangrti",
     "libgcc_s",
+    "libgfortran",
     "libimf",
     "libintlc",
     "libirng",
@@ -94,16 +96,20 @@ static const std::vector<std::string> filtered_libraries = {
     "liblua5.3",
     "liblzma",
     "libm",
+    "libomp",
     "libpapi",
     "libpfm",
     "libpthread",
+    "libquadmath",
     "librt",
     "libstdc++",
     "libsvml",
+    "libtsan",  /* gcc sanitizers */
+    "libubsan", /* gcc sanitizers */
     "libunwind",
-    "libunwind-x86_64",
-    "libunwind-x86",
     "libunwind-ptrace",
+    "libunwind-x86",
+    "libunwind-x86_64",
     "libz"};
 
 static bool is_simgrid_lib(const std::string& libname)

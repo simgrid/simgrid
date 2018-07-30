@@ -57,7 +57,7 @@ public:
    *  Raises: timeout exception.*/
   virtual Activity* wait(double timeout) = 0;
   /** Cancel that activity */
-  //virtual void cancel();
+  virtual Activity* cancel() = 0;
   /** Retrieve the current state of the activity */
   Activity::State get_state() { return state_; }
 

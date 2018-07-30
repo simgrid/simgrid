@@ -184,9 +184,8 @@ Activity* Comm::detach()
 
 Activity* Comm::cancel()
 {
-  simgrid::kernel::activity::CommImplPtr commPimpl =
-      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(pimpl_);
-  commPimpl->cancel();
+  simgrid::simix::simcall([this] { dynamic_cast<kernel::activity::CommImpl*>(pimpl_.get())->cancel(); });
+  state_ = State::CANCELED;
   return this;
 }
 

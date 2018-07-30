@@ -5,6 +5,7 @@
 
 #include "simgrid/plugins/load.h"
 #include "src/include/surf/surf.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include <simgrid/s4u.hpp>
 
@@ -21,6 +22,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_plugin_load, surf, "Logging specific to the
 namespace simgrid {
 namespace plugin {
 
+static const double activity_uninitialized_remaining_cost = -1;
+
 class HostLoad {
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Host, HostLoad> EXTENSION_ID;
@@ -32,7 +35,6 @@ public:
       , current_speed_(host_->get_speed())
       , current_flops_(host_->pimpl_cpu->get_constraint()->get_usage())
       , theor_max_flops_(0)
-      , was_prev_idle_(current_flops_ == 0)
   {
   }
   ~HostLoad() = default;
@@ -41,19 +43,23 @@ public:
   explicit HostLoad(simgrid::s4u::Host&& ptr) = delete;
 
   double get_current_load();
-  double get_average_load() { return (theor_max_flops_ == 0) ? 0 : computed_flops_ / theor_max_flops_; };
-  double get_computed_flops() { return computed_flops_; }
-  double get_idle_time() { return idle_time_; } /** Return idle time since last reset */
-  double get_total_idle_time() { return total_idle_time_; } /** Return idle time over the whole simulation */
+  double get_average_load() { update(); return (theor_max_flops_ == 0) ? 0 : computed_flops_ / theor_max_flops_; };
+  double get_computed_flops() { update(); return computed_flops_; }
+  double get_idle_time() { update(); return idle_time_; } /** Return idle time since last reset */
+  double get_total_idle_time() { update(); return total_idle_time_; } /** Return idle time over the whole simulation */
   void update();
+  void add_activity(simgrid::kernel::activity::ExecImplPtr activity);
   void reset();
 
 private:
   simgrid::s4u::Host* host_ = nullptr;
+  /* Stores all currently ongoing activities (computations) on this machine */
+  std::map<simgrid::kernel::activity::ExecImplPtr, /* cost still remaining*/double> current_activities;
   double last_updated_      = 0;
   double last_reset_        = 0;
   /**
-   * current_speed each core is running at right now
+   * current_speed each core is running at; we need to store this as the speed
+   * will already have changed once we get notified
    */
   double current_speed_     = 0;
   /**
@@ -65,31 +71,54 @@ private:
   double idle_time_         = 0;
   double total_idle_time_   = 0; /* This gets never reset */
   double theor_max_flops_   = 0;
-  bool was_prev_idle_       = true; /* A host is idle at the beginning */
 };
 
 simgrid::xbt::Extension<simgrid::s4u::Host, HostLoad> HostLoad::EXTENSION_ID;
+
+void HostLoad::add_activity(simgrid::kernel::activity::ExecImplPtr activity)
+{
+  current_activities.insert({activity, activity_uninitialized_remaining_cost});
+}
 
 void HostLoad::update()
 {
   double now = surf_get_clock();
 
-  /* Current flop per second computed by the cpu; current_flops = k * pstate_speed_in_flops, k @in {0, 1, ..., cores}
-   * number of active cores */
+  // This loop updates the flops that the host executed for the ongoing computations
+  auto iter = begin(current_activities);
+  while (iter != end(current_activities)) {
+    auto& activity                         = iter->first;  // Just an alias
+    auto& remaining_cost_after_last_update = iter->second; // Just an alias
+    auto current_iter                      = iter;
+    ++iter;
+
+    if (activity->surf_action_->get_finish_time() != now && activity->state_ == e_smx_state_t::SIMIX_RUNNING) {
+      if (remaining_cost_after_last_update == activity_uninitialized_remaining_cost) {
+        remaining_cost_after_last_update = activity->surf_action_->get_cost();
+      }
+      double computed_flops_since_last_update = remaining_cost_after_last_update - /*remaining now*/activity->get_remaining();
+      computed_flops_                        += computed_flops_since_last_update;
+      remaining_cost_after_last_update        = activity->get_remaining();
+    }
+    else if (activity->state_ == e_smx_state_t::SIMIX_DONE) {
+      computed_flops_ += remaining_cost_after_last_update;
+      current_activities.erase(current_iter);
+    }
+  }
+
+  /* Current flop per second computed by the cpu; current_flops = k * pstate_speed_in_flops, k @in {0, 1, ..., cores-1}
+   * designates number of active cores; will be 0 if CPU is currently idle */
   current_flops_ = host_->pimpl_cpu->get_constraint()->get_usage();
 
-  /* flops == pstate_speed * cores_being_currently_used */
-  computed_flops_ += (now - last_updated_) * current_flops_;
-
-  if (was_prev_idle_) {
+  if (current_flops_ == 0) {
     idle_time_ += (now - last_updated_);
     total_idle_time_ += (now - last_updated_);
+    XBT_DEBUG("[%s]: Currently idle -> Added %f seconds to idle time (totaling %fs)", host_->get_cname(), (now - last_updated_), idle_time_);
   }
 
   theor_max_flops_ += current_speed_ * host_->get_core_count() * (now - last_updated_);
   current_speed_ = host_->get_speed();
   last_updated_  = now;
-  was_prev_idle_ = (current_flops_ == 0);
 }
 
 /**
@@ -119,7 +148,6 @@ void HostLoad::reset()
   theor_max_flops_ = 0;
   current_flops_   = host_->pimpl_cpu->get_constraint()->get_usage();
   current_speed_   = host_->get_speed();
-  was_prev_idle_   = (current_flops_ == 0);
 }
 } // namespace plugin
 } // namespace simgrid
@@ -181,7 +209,33 @@ void sg_host_load_plugin_init()
     host.extension_set(new HostLoad(&host));
   });
 
-  simgrid::surf::CpuAction::on_state_change.connect(&on_action_state_change);
+  simgrid::kernel::activity::ExecImpl::on_creation.connect([](simgrid::kernel::activity::ExecImplPtr activity){
+    if (activity->host_ != nullptr) { // We only run on one host
+      simgrid::s4u::Host* host = activity->host_;
+      if (dynamic_cast<simgrid::s4u::VirtualMachine*>(activity->host_))
+        host = dynamic_cast<simgrid::s4u::VirtualMachine*>(activity->host_)->get_pm();
+
+      host->extension<HostLoad>()->add_activity(activity);
+      host->extension<HostLoad>()->update(); // If the system was idle until now, we need to update *before*
+                                             // this computation starts running so we can keep track of the
+                                             // idle time. (Communication operations don't trigger this hook!)
+    }
+    else { // This runs on multiple hosts
+      XBT_DEBUG("HostLoad plugin currently does not support executions on several hosts");
+    }
+  });
+  simgrid::kernel::activity::ExecImpl::on_completion.connect([](simgrid::kernel::activity::ExecImplPtr activity){
+    if (activity->host_ != nullptr) { // We only run on one host
+      simgrid::s4u::Host* host = activity->host_;
+      if (dynamic_cast<simgrid::s4u::VirtualMachine*>(activity->host_))
+        host = dynamic_cast<simgrid::s4u::VirtualMachine*>(activity->host_)->get_pm();
+
+      host->extension<HostLoad>()->update();
+    }
+    else { // This runs on multiple hosts
+      XBT_DEBUG("HostLoad plugin currently does not support executions on several hosts");
+    }
+  });
   simgrid::s4u::Host::on_state_change.connect(&on_host_change);
   simgrid::s4u::Host::on_speed_change.connect(&on_host_change);
 }

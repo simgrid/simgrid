@@ -1202,7 +1202,7 @@ void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
   elf_end(elf);
   close(fd);
   xbt_die("Debugging information not found for %s\n"
-          "Try recompiling with -g\nn",
+          "Try recompiling with -g\n",
           info->file_name.c_str());
 }
 

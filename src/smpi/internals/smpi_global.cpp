@@ -42,6 +42,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp> /* trim_right / trim_left */
 
+#if SMPI_IFORT
+  extern "C" void for_rtl_init_ (int *, char **);
+  extern "C" void for_rtl_finish_ ();
+#elif SMPI_FLANG
+  extern "C" void __io_set_argc(int);
+  extern "C" void __io_set_argv(char **);
+#elif SMPI_GFORTRAN
+  extern "C" void _gfortran_set_args(int, char **);
+#endif
+
 #ifndef RTLD_DEEPBIND
 /* RTLD_DEEPBIND is a bad idea of GNU ld that obviously does not exist on other platforms
  * See https://www.akkadia.org/drepper/dsohowto.pdf
@@ -416,17 +426,37 @@ typedef void (*smpi_fortran_entry_point_type)();
 
 static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<std::string> args)
 {
-  char noarg[]   = {'\0'};
-  int argc = args.size();
-  std::unique_ptr<char*[]> argv(new char*[argc + 1]);
+  int argc_saved = args.size();
+  int argc=argc_saved;
+  char** argv = new char*[argc + 1];
   for (int i = 0; i != argc; ++i)
-    argv[i] = args[i].empty() ? noarg : &args[i].front();
+    argv[i] = xbt_strdup(args[i].c_str());
   argv[argc] = nullptr;
-  char ** argvptr=argv.get();
+  char* name = argv[0];
+  char* instance = argv[1];
+  simgrid::smpi::ActorExt::init(&argc, &argv);
+#if SMPI_IFORT
+  for_rtl_init_ (&argc, argv);
+#elif SMPI_FLANG
+  __io_set_argc(argc);
+  __io_set_argv(argv);
+#elif SMPI_GFORTRAN
+  _gfortran_set_args(argc, argv);
+#endif 
+  int res = entry_point(argc, argv);
 
-  simgrid::smpi::ActorExt::init(&argc, &argvptr);
+#if SMPI_IFORT
+  for_rtl_finish_ ();
+#else
+  for (int i = 0; i != argc; ++i)
+    xbt_free(argv[i]);
+  if (argc_saved > 3) {
+    xbt_free(instance);
+    xbt_free(name);
+  }
+  delete[] argv;
+#endif
 
-  int res = entry_point(argc, argvptr);
   if (res != 0){
     XBT_WARN("SMPI process did not return 0. Return value : %d", res);
     if (smpi_exit_status == 0)
