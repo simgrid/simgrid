@@ -48,16 +48,11 @@ extensions = [
 breathe_projects = { 'simgrid': '../doc/xml' }
 breathe_default_project = "simgrid"
  
-# highlight_language = 'c++'
-# todo_include_todos = False
-
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+# templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
-# You can specify multiple suffix as a list of string:
-#
-# source_suffix = ['.rst', '.md']
+# You can specify multiple suffix as a list of string: ['.rst', '.md']
 source_suffix = '.rst'
 
 # The master toctree document.
@@ -95,7 +90,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# html_static_path = ['_static']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -107,6 +102,11 @@ html_static_path = ['_static']
 #
 # html_sidebars = {'**': ['localtoc.html', 'relations.html', 'searchbox.html']}
 
+# -- Options for HTMLHelp output ---------------------------------------------
+
+# Output file base name for HTML help builder.
+htmlhelp_basename = 'SimGrid-doc'
+
 # -- Options for GitLab integration ------------------------------------------
 
 html_context = {
@@ -117,62 +117,3 @@ html_context = {
     "gitlab_version": "master", # Version
     "conf_py_path": "/docs/source/", # Path in the checkout to the docs root
 }
-
-# -- Options for HTMLHelp output ---------------------------------------------
-
-# Output file base name for HTML help builder.
-htmlhelp_basename = 'SimGrid-doc'
-
-
-# -- Options for LaTeX output ------------------------------------------------
-
-latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    #
-    # 'papersize': 'letterpaper',
-
-    # The font size ('10pt', '11pt' or '12pt').
-    #
-    # 'pointsize': '10pt',
-
-    # Additional stuff for the LaTeX preamble.
-    #
-    # 'preamble': '',
-
-    # Latex figure (float) alignment
-    #
-    # 'figure_align': 'htbp',
-}
-
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title,
-#  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-    (master_doc, 'SimGrid.tex', u'SimGrid Documentation',
-     u'The SimGrid Team', 'manual'),
-]
-
-
-# -- Options for manual page output ------------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'simgrid', u'SimGrid Documentation',
-     [author], 1)
-]
-
-
-# -- Options for Texinfo output ----------------------------------------------
-
-# Grouping the document tree into Texinfo files. List of tuples
-# (source start file, target name, title, author,
-#  dir menu entry, description, category)
-texinfo_documents = [
-    (master_doc, 'SimGrid', u'SimGrid Documentation',
-     author, 'SimGrid', 'One line description of project.',
-     'Miscellaneous'),
-]
-
-
-# -- Extension configuration -------------------------------------------------
