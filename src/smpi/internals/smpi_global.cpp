@@ -426,11 +426,14 @@ typedef void (*smpi_fortran_entry_point_type)();
 
 static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<std::string> args)
 {
-  int argc = args.size();
+  int argc_saved = args.size();
+  int argc=argc_saved;
   char** argv = new char*[argc + 1];
   for (int i = 0; i != argc; ++i)
     argv[i] = xbt_strdup(args[i].c_str());
   argv[argc] = nullptr;
+  char* name = argv[0];
+  char* instance = argv[1];
   simgrid::smpi::ActorExt::init(&argc, &argv);
 #if SMPI_IFORT
   for_rtl_init_ (&argc, argv);
@@ -447,6 +450,10 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
 #else
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
+  if (argc_saved > 3) {
+    xbt_free(instance);
+    xbt_free(name);
+  }
   delete[] argv;
 #endif
 
