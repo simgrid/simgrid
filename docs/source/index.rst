@@ -9,7 +9,7 @@ Welcome to SimGrid's documentation!
 
 	What is SimGrid <main_concepts.rst>
 	Installing SimGrid <installation.rst>
-	Create your own project <install_yours.rst>
+	Start your Own Project <install_yours.rst>
 
 
 Indices and tables

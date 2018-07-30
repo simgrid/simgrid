@@ -1371,7 +1371,7 @@ MAN_LINKS              = NO
 # generate an XML file that captures the structure of
 # the code including all documentation.
 
-GENERATE_XML           = NO
+GENERATE_XML           = YES
 
 #---------------------------------------------------------------------------
 # configuration options for the AutoGen Definitions output

@@ -40,13 +40,14 @@ release = u'3.21'
 # ones.
 extensions = [
 #    'sphinx.ext.coverage',
-#    'sphinx.ext.mathjax',
+    'sphinx.ext.mathjax',
 #    'sphinx.ext.ifconfig',
     'breathe',
 ]
 
 breathe_projects = { 'simgrid': '../doc/xml' }
-
+breathe_default_project = "simgrid"
+ 
 # highlight_language = 'c++'
 # todo_include_todos = False
 
@@ -84,7 +85,6 @@ pygments_style = 'sphinx'
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
-# alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
