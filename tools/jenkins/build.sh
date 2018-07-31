@@ -75,7 +75,7 @@ elif [ -f /etc/redhat-release ]; then
     os=""
     ver=$(cat /etc/redhat-release)
 elif [ -f /usr/bin/sw_vers ]; then
-    os=$(sw_vers -producls /e   tName)
+    os=$(sw_vers -productName)
     ver=$(sw_vers -productVersion)
 elif [ -f /bin/freebsd-version ]; then
     os=$(uname -s)
