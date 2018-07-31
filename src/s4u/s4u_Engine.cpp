@@ -139,7 +139,7 @@ void Engine::host_unregister(std::string name)
 simgrid::s4u::Host* Engine::host_by_name(std::string name)
 {
   if (pimpl->hosts_.find(name) == pimpl->hosts_.end())
-    throw std::invalid_argument(std::string("Host not found: ") + name);
+    throw std::invalid_argument(std::string("Host not found: '") + name + std::string("'"));
   return pimpl->hosts_.at(name);
 }
 
