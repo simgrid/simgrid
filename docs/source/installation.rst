@@ -1,5 +1,7 @@
 .. Copyright 2005-2018 
 
+.. _install:
+
 Installing SimGrid
 ==================
 

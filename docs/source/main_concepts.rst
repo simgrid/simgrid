@@ -218,43 +218,43 @@ SimGrid Success Stories
 
 SimGrid was cited in over 1,500 scientific papers (according to Google
 Scholar). Among them
-<a href="http://simgrid.gforge.inria.fr/Usages.php">over 200
-publications</a> (written by about 300 individuals) use SimGrid as a
-scientific instrument to conduct their experimental evaluation. These
+`over 200 publications <http://simgrid.gforge.inria.fr/Usages.php>`_
+(written by about 300 individuals) use SimGrid as a scientific
+instrument to conduct their experimental evaluation. These 
 numbers do not count the articles contributing to SimGrid.
 This instrument was used in many research communities, such as 
-<a href="https://hal.inria.fr/inria-00580599/">High-Performance Computing</a>,
-<a href="http://dx.doi.org/10.1109/CLOUD.2015.125">Cloud Computing</a>,
-<a href="http://dl.acm.org/citation.cfm?id=2310096.2310195">Workflow Scheduling</a>,
-<a href="https://hal.inria.fr/hal-01199200/">Big Data</a> and
-<a href="http://dx.doi.org/10.1109/WSCAD-SSC.2012.18">MapReduce</a>,
-<a href="http://ieeexplore.ieee.org/document/7515695/">Data Grid</a>,
-<a href="http://www.sciencedirect.com/science/article/pii/S1569190X17301028">Volunteer Computing</a>,
-<a href="https://hal.archives-ouvertes.fr/hal-01152469/">Peer-to-Peer Computing</a>,
-<a href="http://dx.doi.org/10.1109/TPDS.2016.2613043">Network Architecture</a>,
-<a href="http://ieeexplore.ieee.org/document/7946412/">Fog Computing</a>, or
-<a href="https://hal.archives-ouvertes.fr/hal-01333471">Batch Scheduling</a>
-<a href="http://simgrid.gforge.inria.fr/Usages.php"><b>(more info)</b></a>.
+`High-Performance Computing <https://hal.inria.fr/inria-00580599/>`_,
+`Cloud Computing <http://dx.doi.org/10.1109/CLOUD.2015.125>`_,
+`Workflow Scheduling <http://dl.acm.org/citation.cfm?id=2310096.2310195>`_,
+`Big Data <https://hal.inria.fr/hal-01199200/>`_ and
+`MapReduce <http://dx.doi.org/10.1109/WSCAD-SSC.2012.18>`_,
+`Data Grid <http://ieeexplore.ieee.org/document/7515695/>`_,
+`Volunteer Computing <http://www.sciencedirect.com/science/article/pii/S1569190X17301028>`_,
+`Peer-to-Peer Computing <https://hal.archives-ouvertes.fr/hal-01152469/>`_,
+`Network Architecture <http://dx.doi.org/10.1109/TPDS.2016.2613043>`_,
+`Fog Computing <http://ieeexplore.ieee.org/document/7946412/>`_, or
+`Batch Scheduling <https://hal.archives-ouvertes.fr/hal-01333471>`_
+`(more info) <http://simgrid.gforge.inria.fr/Usages.php>`_.
 
 If your platform description is accurate enough (see
-<a href="http://hal.inria.fr/hal-00907887">here</a> or
-<a href="https://hal.inria.fr/hal-01523608">there</a>),
+`here <http://hal.inria.fr/hal-00907887>`_ or
+`there <https://hal.inria.fr/hal-01523608>`_),
 SimGrid can provide high-quality performance predictions. For example,
 we determined the speedup achieved by the Tibidabo Arm-based
 cluster before its construction
-(<a href="http://hal.inria.fr/hal-00919507">paper</a>). In this case, 
+(`paper <http://hal.inria.fr/hal-00919507>`_). In this case, 
 some differences between the prediction and the real timings were due to
 misconfiguration or other problems with the real platforms. To some extent,
 SimGrid could even be used to debug the real platform :)
 
 SimGrid is also used to debug, improve and tune several large
 applications.
-<a href="http://bigdft.org">BigDFT</a> (a massively parallel code
+`BigDFT <http://bigdft.org>`_ (a massively parallel code
 computing the electronic structure of chemical elements developped by
-the CEA), <a href="http://starpu.gforge.inria.fr/">StarPU</a> (a
+the CEA), `StarPU <http://starpu.gforge.inria.fr/>`_ (a
 Unified Runtime System for Heterogeneous Multicore Architectures
 developped by Inria Bordeaux) and
-<a href="https://tomp2p.net/dev/simgrid/">TomP2P</a> (a high performance
+`TomP2P <https://tomp2p.net/dev/simgrid/>`_ (a high performance
 key-value pair storage library developped at University of Zurich).
 Some of these applications enjoy large user communities themselves.
 
@@ -262,6 +262,6 @@ Where to proceed next?
 ----------------------
 
 Now that you know about the basic concepts of SimGrid, you can give it
-a try. If it's not done yet, first @ref install "install it". Then,
+a try. If it's not done yet, first :ref:`install it <install>`. Then,
 proceed to the section on @ref application "describing the application" that
 you want to study.
