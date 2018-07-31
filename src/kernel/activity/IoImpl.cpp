@@ -7,6 +7,23 @@
 #include "simgrid/kernel/resource/Action.hpp"
 #include "src/simix/smx_io_private.hpp"
 
+simgrid::kernel::activity::IoImpl::IoImpl(std::string name, resource::Action* surf_action, s4u::Storage* storage)
+    : ActivityImpl(name), storage_(storage), surf_action_(surf_action)
+{
+  this->state_ = SIMIX_RUNNING;
+
+  surf_action_->set_data(this);
+
+  XBT_DEBUG("Create exec %p", this);
+}
+
+void simgrid::kernel::activity::IoImpl::cancel()
+{
+  XBT_VERB("This exec %p is canceled", this);
+  if (surf_action_ != nullptr)
+    surf_action_->cancel();
+}
+
 void simgrid::kernel::activity::IoImpl::suspend()
 {
   if (surf_action_ != nullptr)
@@ -17,6 +34,11 @@ void simgrid::kernel::activity::IoImpl::resume()
 {
   if (surf_action_ != nullptr)
     surf_action_->resume();
+}
+
+double simgrid::kernel::activity::IoImpl::get_remaining()
+{
+  return surf_action_ ? surf_action_->get_remains() : 0;
 }
 
 void simgrid::kernel::activity::IoImpl::post()

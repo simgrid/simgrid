@@ -5,6 +5,7 @@
 
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/Io.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/storage.h"
 #include "src/surf/StorageImpl.hpp"
@@ -53,6 +54,14 @@ const char* Storage::get_property(std::string key)
 void Storage::set_property(std::string key, std::string value)
 {
   simgrid::simix::simcall([this, key, value] { this->pimpl_->set_property(key, value); });
+}
+
+IoPtr Storage::io_init(sg_size_t size)
+{
+  IoPtr res  = IoPtr(new Io());
+  res->size_ = size;
+  res->set_remaining(size);
+  return res;
 }
 
 sg_size_t Storage::read(sg_size_t size)

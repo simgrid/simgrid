@@ -1,0 +1,89 @@
+/* Copyright (c) 2018. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include "simgrid/s4u/Io.hpp"
+#include "simgrid/s4u/Storage.hpp"
+#include "src/kernel/activity/IoImpl.hpp"
+#include "xbt/log.h"
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_io, s4u_activity, "S4U asynchronous IOs");
+
+namespace simgrid {
+namespace s4u {
+
+Activity* Io::start()
+{
+  pimpl_ = simcall_io_start(size_, storage_);
+  state_ = State::STARTED;
+  return this;
+}
+
+Activity* Io::cancel()
+{
+  simgrid::simix::simcall([this] { dynamic_cast<kernel::activity::IoImpl*>(pimpl_.get())->cancel(); });
+  state_ = State::CANCELED;
+  return this;
+}
+
+// Activity* Exec::wait()
+//{
+//  simcall_execution_wait(pimpl_);
+//  state_ = State::FINISHED;
+//  return this;
+//}
+//
+// Activity* Exec::wait(double timeout)
+//{
+//  THROW_UNIMPLEMENTED;
+//  return this;
+//}
+//
+///** @brief Returns whether the state of the exec is finished */
+// bool Exec::test()
+//{
+//  xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::FINISHED);
+//
+//  if (state_ == State::FINISHED)
+//    return true;
+//
+//  if (state_ == State::INITED)
+//    this->start();
+//
+//  if (simcall_execution_test(pimpl_)) {
+//    state_ = State::FINISHED;
+//    return true;
+//  }
+//
+//  return false;
+//}
+
+/** @brief Returns the amount of flops that remain to be done */
+double Io::get_remaining()
+{
+  return simgrid::simix::simcall(
+      [this]() { return boost::static_pointer_cast<simgrid::kernel::activity::IoImpl>(pimpl_)->get_remaining(); });
+}
+
+// double Io::get_remaining_ratio()
+//{
+//  return simgrid::simix::simcall([this]() {
+//    return boost::static_pointer_cast<simgrid::kernel::activity::IoImpl>(pimpl_)->get_remaining_ratio();
+//  });
+//}
+
+void intrusive_ptr_release(simgrid::s4u::Io* e)
+{
+  if (e->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+    std::atomic_thread_fence(std::memory_order_acquire);
+    delete e;
+  }
+}
+
+void intrusive_ptr_add_ref(simgrid::s4u::Io* e)
+{
+  e->refcount_.fetch_add(1, std::memory_order_relaxed);
+}
+} // namespace s4u
+} // namespace simgrid

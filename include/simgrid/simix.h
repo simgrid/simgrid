@@ -286,6 +286,7 @@ XBT_PUBLIC void simcall_sem_acquire(smx_sem_t sem);
 XBT_PUBLIC int simcall_sem_acquire_timeout(smx_sem_t sem, double max_duration);
 
 /*****************************   Storage   **********************************/
+XBT_PUBLIC smx_activity_t simcall_io_start(sg_size_t size, sg_storage_t storage);
 XBT_PUBLIC sg_size_t simcall_storage_read(surf_storage_t st, sg_size_t size);
 XBT_PUBLIC sg_size_t simcall_storage_write(surf_storage_t fd, sg_size_t size);
 /************************** MC simcalls   **********************************/

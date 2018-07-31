@@ -10,7 +10,7 @@
 
 #include "popping_private.hpp"
 #include "simgrid/simix.h"
-
+XBT_PRIVATE simgrid::kernel::activity::IoImplPtr SIMIX_io_start(std::string name, sg_size_t size, sg_storage_t storage);
 XBT_PRIVATE smx_activity_t SIMIX_storage_read(surf_storage_t fd, sg_size_t size);
 XBT_PRIVATE smx_activity_t SIMIX_storage_write(surf_storage_t fd, sg_size_t size);
 

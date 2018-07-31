@@ -15,10 +15,12 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
+#include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
+#include "src/simix/smx_io_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
@@ -464,6 +466,14 @@ int simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   return simcall_BODY_sem_acquire_timeout(sem, timeout);
+}
+
+smx_activity_t simcall_io_start(std::string name, sg_size_t size, simgrid::s4u::Storage* storage)
+{
+  /* checking for infinite values */
+  xbt_assert(std::isfinite(size), "size is not finite!");
+
+  return simgrid::simix::simcall([name, size, storage] { return SIMIX_io_start(name, size, storage); });
 }
 
 sg_size_t simcall_storage_read(surf_storage_t st, sg_size_t size)

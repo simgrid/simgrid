@@ -429,6 +429,7 @@ set(S4U_SRC
   src/s4u/s4u_Engine.cpp
   src/s4u/s4u_Exec.cpp
   src/s4u/s4u_Host.cpp
+  src/s4u/s4u_Io.cpp
   src/s4u/s4u_Link.cpp
   src/s4u/s4u_Mailbox.cpp
   src/s4u/s4u_Mutex.cpp
@@ -695,6 +696,7 @@ set(headers_to_install
   include/simgrid/s4u/Engine.hpp
   include/simgrid/s4u/Exec.hpp
   include/simgrid/s4u/Host.hpp
+  include/simgrid/s4u/Io.hpp
   include/simgrid/s4u/Link.hpp
   include/simgrid/s4u/Mailbox.hpp
   include/simgrid/s4u/Mutex.hpp
