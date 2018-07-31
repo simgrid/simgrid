@@ -1,0 +1,22 @@
+image: debian:testing-slim
+
+.build: &build
+  script:
+  - apt-get update
+  - apt-get install -y python3-sphinx doxygen python3-breathe python3-sphinx-rtd-theme
+  - cd docs
+  - sphinx-build -M html source/ build/
+  - mv build/html ../public
+  artifacts:
+    paths:
+    - public
+
+pages:
+  <<: *build
+  only:
+  - master
+
+test:
+  <<: *build
+  except:
+  - master
