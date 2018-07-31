@@ -9,6 +9,18 @@ Instead, you should create your own working directory somewhere on
 your disk (say `/home/joe/MyFirstScheduler/`), and write your code in
 there. 
 
+Cloning a Template Project for S4U
+----------------------------------
+
+If you plan to use the modern S4U interface of SimGrid, the easiest is
+to clone the `Template Project
+<https://framagit.org/simgrid/simgrid-template-s4u>`_ directly. It
+contains the necessary configuration to use cmake and S4U together.
+
+Once you forked the project on FramaGit, do not forget to remove the
+fork relationship, as you won't need it unless you plan to contribute
+to the template itself.
+
 Building your project with CMake
 --------------------------------
 
@@ -17,7 +29,8 @@ your project. It builds two simulators from a given set of source files.
 
 .. code-block:: cmake
 
-   project(MyFirstScheduler)
+   cmake_minimum_required(VERSION 2.8.8)
+   project(MyFirstSimulator)
    
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
    
@@ -34,7 +47,8 @@ your project. It builds two simulators from a given set of source files.
    target_link_libraries(other_xp ${SimGrid_LIBRARY})
 
 
-For that, you need <a href="https://github.com/simgrid/simgrid/blob/master/FindSimGrid.cmake">FindSimGrid.cmake</a>,
+For that, you need `FindSimGrid.cmake
+<https://framagit.org/simgrid/simgrid/raw/master/FindSimGrid.cmake>`_,
 that is located at the root of the SimGrid tree. You can either copy
 this file into the `cmake/Modules` directory of your project, or use
 the version installed on the disk. Both solutions present advantages
