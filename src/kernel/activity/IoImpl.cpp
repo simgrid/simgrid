@@ -7,6 +7,8 @@
 #include "simgrid/kernel/resource/Action.hpp"
 #include "src/simix/smx_io_private.hpp"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_io);
+
 simgrid::kernel::activity::IoImpl::IoImpl(std::string name, resource::Action* surf_action, s4u::Storage* storage)
     : ActivityImpl(name), storage_(storage), surf_action_(surf_action)
 {
@@ -15,6 +17,13 @@ simgrid::kernel::activity::IoImpl::IoImpl(std::string name, resource::Action* su
   surf_action_->set_data(this);
 
   XBT_DEBUG("Create exec %p", this);
+}
+
+simgrid::kernel::activity::IoImpl::~IoImpl()
+{
+  if (surf_action_)
+    surf_action_->unref();
+  XBT_DEBUG("Destroy exec %p", this);
 }
 
 void simgrid::kernel::activity::IoImpl::cancel()
@@ -70,3 +79,8 @@ void simgrid::kernel::activity::IoImpl::post()
 
   SIMIX_io_finish(this);
 }
+/*************
+ * Callbacks *
+ *************/
+simgrid::xbt::signal<void(simgrid::kernel::activity::IoImplPtr)> simgrid::kernel::activity::IoImpl::on_creation;
+simgrid::xbt::signal<void(simgrid::kernel::activity::IoImplPtr)> simgrid::kernel::activity::IoImpl::on_completion;

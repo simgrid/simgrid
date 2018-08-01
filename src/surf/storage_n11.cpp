@@ -99,6 +99,11 @@ StorageN11::StorageN11(StorageModel* model, std::string name, kernel::lmm::Syste
   simgrid::s4u::Storage::on_creation(this->piface_);
 }
 
+StorageAction* StorageN11::io_start(sg_size_t size, e_surf_action_storage_type_t type)
+{
+  return new StorageN11Action(get_model(), size, is_off(), this, type);
+}
+
 StorageAction* StorageN11::read(sg_size_t size)
 {
   return new StorageN11Action(get_model(), size, is_off(), this, READ);

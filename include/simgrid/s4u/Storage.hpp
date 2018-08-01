@@ -34,7 +34,6 @@ public:
 
 protected:
   virtual ~Storage() = default;
-
 public:
   /** @brief Callback signal fired when a new Storage is created */
   static simgrid::xbt::signal<void(s4u::Storage&)> on_creation;

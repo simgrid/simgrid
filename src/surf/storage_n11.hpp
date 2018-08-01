@@ -43,6 +43,7 @@ public:
   StorageN11(StorageModel* model, std::string name, kernel::lmm::System* maxminSystem, double bread, double bwrite,
              std::string type_id, std::string content_name, sg_size_t size, std::string attach);
   virtual ~StorageN11() = default;
+  StorageAction* io_start(sg_size_t size, e_surf_action_storage_type_t type);
   StorageAction* read(sg_size_t size);
   StorageAction* write(sg_size_t size);
 };

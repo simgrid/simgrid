@@ -15,7 +15,7 @@ namespace s4u {
 
 Activity* Io::start()
 {
-  pimpl_ = simcall_io_start(size_, storage_);
+  pimpl_ = simcall_io_start("", size_, storage_);
   state_ = State::STARTED;
   return this;
 }
@@ -27,18 +27,18 @@ Activity* Io::cancel()
   return this;
 }
 
-// Activity* Exec::wait()
-//{
-//  simcall_execution_wait(pimpl_);
-//  state_ = State::FINISHED;
-//  return this;
-//}
-//
-// Activity* Exec::wait(double timeout)
-//{
-//  THROW_UNIMPLEMENTED;
-//  return this;
-//}
+Activity* Io::wait()
+{
+  //  simcall_execution_wait(pimpl_);
+  state_ = State::FINISHED;
+  return this;
+}
+
+Activity* Io::wait(double timeout)
+{
+  THROW_UNIMPLEMENTED;
+  return this;
+}
 //
 ///** @brief Returns whether the state of the exec is finished */
 // bool Exec::test()

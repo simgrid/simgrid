@@ -16,7 +16,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)
 simgrid::kernel::activity::IoImplPtr SIMIX_io_start(std::string name, sg_size_t size, sg_storage_t storage)
 {
   /* set surf's action */
-  simgrid::kernel::resource::Action* surf_action = storage->pimpl_->io_start(size);
+  // FIXME
+  simgrid::kernel::resource::Action* surf_action =
+      storage->get_impl()->io_start(size, (simgrid::surf::e_surf_action_storage_type_t)0);
 
   simgrid::kernel::activity::IoImplPtr io =
       simgrid::kernel::activity::IoImplPtr(new simgrid::kernel::activity::IoImpl(name, surf_action, storage));
@@ -36,13 +38,14 @@ void simcall_HANDLER_storage_read(smx_simcall_t simcall, surf_storage_t st, sg_s
 
 smx_activity_t SIMIX_storage_read(surf_storage_t st, sg_size_t size)
 {
-  simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
-  synchro->surf_action_                      = st->read(size);
-
-  synchro->surf_action_->set_data(synchro);
-  XBT_DEBUG("Create io synchro %p", synchro);
-
-  return synchro;
+  //  simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
+  //  synchro->surf_action_                      = st->read(size);
+  //
+  //  synchro->surf_action_->set_data(synchro);
+  //  XBT_DEBUG("Create io synchro %p", synchro);
+  //
+  //  return synchro;
+  return nullptr;
 }
 
 void simcall_HANDLER_storage_write(smx_simcall_t simcall, surf_storage_t st, sg_size_t size)
@@ -54,12 +57,13 @@ void simcall_HANDLER_storage_write(smx_simcall_t simcall, surf_storage_t st, sg_
 
 smx_activity_t SIMIX_storage_write(surf_storage_t st, sg_size_t size)
 {
-  simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
-  synchro->surf_action_                      = st->write(size);
-  synchro->surf_action_->set_data(synchro);
-  XBT_DEBUG("Create io synchro %p", synchro);
-
-  return synchro;
+  //  simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
+  //  synchro->surf_action_                      = st->write(size);
+  //  synchro->surf_action_->set_data(synchro);
+  //  XBT_DEBUG("Create io synchro %p", synchro);
+  //
+  //  return synchro;
+  return nullptr;
 }
 
 void SIMIX_io_destroy(smx_activity_t synchro)

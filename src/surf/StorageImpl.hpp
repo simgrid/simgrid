@@ -24,6 +24,13 @@ namespace surf {
  ***********/
 
 class StorageAction;
+/** @ingroup SURF_storage_interface
+ * @brief The possible type of action for the storage component
+ */
+enum e_surf_action_storage_type_t {
+  READ = 0, /**< Read a file */
+  WRITE     /**< Write in a file */
+};
 
 /*************
  * Callbacks *
@@ -81,7 +88,7 @@ public:
   void turn_off() override;
 
   void destroy(); // Must be called instead of the destructor
-
+  virtual simgrid::kernel::resource::Action* io_start(sg_size_t size, e_surf_action_storage_type_t type) = 0;
   /**
    * @brief Read a file
    *
@@ -116,14 +123,6 @@ private:
 /**********
  * Action *
  **********/
-
-/** @ingroup SURF_storage_interface
- * @brief The possible type of action for the storage component
- */
-enum e_surf_action_storage_type_t {
-  READ = 0, /**< Read a file */
-  WRITE     /**< Write in a file */
-};
 
 /** @ingroup SURF_storage_interface
  * @brief SURF storage action interface class
