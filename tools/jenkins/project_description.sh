@@ -21,7 +21,7 @@ if [ -f consoleText ]; then
 fi
 
 #get the list of nodes on jenkins
-wget –quiet https://ci.inria.fr/simgrid/job/SimGrid/lastBuild/consoleText >/dev/null 2>&1
+wget --quiet https://ci.inria.fr/simgrid/job/SimGrid/lastBuild/consoleText >/dev/null 2>&1
 nodes=($(grep -rR "Triggering SimGrid ? Debug," ./consoleText | sed "s/Triggering SimGrid ? Debug,\(.*\)/\1/g"| sort))
 rm consoleText
 
@@ -32,7 +32,7 @@ echo "<br>Description of the nodes - Automatically updated by project_descriptio
 
 for node in "${nodes[@]}"
 do
-    wget –quiet https://ci.inria.fr/simgrid/job/SimGrid/lastBuild/build_mode=Debug,node=${node}/consoleText >/dev/null 2>&1
+    wget --quiet https://ci.inria.fr/simgrid/job/SimGrid/lastBuild/build_mode=Debug,node=${node}/consoleText >/dev/null 2>&1
     if [ ! -f consoleText ]; then
       echo "file not existing for node ${node}"
       exit 1
@@ -53,7 +53,7 @@ BUILDS=($(curl -s https://api.travis-ci.org/repos/simgrid/simgrid/builds/${BUILD
 
 for id in "${!BUILDS[@]}"
 do
-    wget –quiet https://api.travis-ci.org/v3/job/${BUILDS[$id]}/log.txt -O ./consoleText >/dev/null 2>&1 
+    wget --quiet https://api.travis-ci.org/v3/job/${BUILDS[$id]}/log.txt -O ./consoleText >/dev/null 2>&1
     sed -i -e "s/\r//g" ./consoleText
     if [ $id == 0 ]; then
       node="<a href=\"https://travis-ci.org/simgrid/simgrid\">travis-linux</a>"
@@ -73,7 +73,7 @@ done
 
 #Appveyor - get ID of the last job with the API
 BUILD_ID=$(curl -s "https://ci.appveyor.com/api/projects/mquinson/simgrid" | grep -o '\[{"jobId":"[a-zA-Z0-9]*",' | sed "s/\[{\"jobId\":\"//" | sed "s/\",//")
-wget –quiet https://ci.appveyor.com/api/buildjobs/$BUILD_ID/log -O ./consoleText >/dev/null 2>&1 
+wget --quiet https://ci.appveyor.com/api/buildjobs/$BUILD_ID/log -O ./consoleText >/dev/null 2>&1
 sed -i -e "s/\r//g" ./consoleText
 node="<a href="https://ci.appveyor.com/project/mquinson/simgrid">appveyor</a>"
 os="Windows Server 2012 - VS2015 + mingw64 5.3.0"
