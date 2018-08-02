@@ -238,21 +238,21 @@ set(SMPI_SRC
   src/smpi/mpi/smpi_status.cpp
   src/smpi/mpi/smpi_topo.cpp
   src/smpi/mpi/smpi_win.cpp
+  src/smpi/include/smpi_actor.hpp
   src/smpi/include/smpi_coll.hpp
   src/smpi/include/smpi_comm.hpp
+  src/smpi/include/smpi_datatype_derived.hpp
+  src/smpi/include/smpi_datatype.hpp
   src/smpi/include/smpi_f2c.hpp
   src/smpi/include/smpi_group.hpp
   src/smpi/include/smpi_host.hpp
-  src/smpi/include/smpi_datatype.hpp
   src/smpi/include/smpi_info.hpp
   src/smpi/include/smpi_keyvals.hpp
-  src/smpi/include/smpi_datatype_derived.hpp
   src/smpi/include/smpi_op.hpp
-  src/smpi/include/smpi_actor.hpp
   src/smpi/include/smpi_request.hpp
   src/smpi/include/smpi_status.hpp
-  src/smpi/include/smpi_win.hpp
   src/smpi/include/smpi_topo.hpp
+  src/smpi/include/smpi_win.hpp
   src/smpi/plugins/sampi_loadbalancer.cpp
   src/surf/network_smpi.cpp
   src/surf/network_ib.cpp
