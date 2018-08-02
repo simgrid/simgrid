@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/Io.hpp"
 #include "xbt/ex.hpp"
 
 #include "smx_private.hpp"
@@ -13,12 +14,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
 
-simgrid::kernel::activity::IoImplPtr SIMIX_io_start(std::string name, sg_size_t size, sg_storage_t storage)
+simgrid::kernel::activity::IoImplPtr SIMIX_io_start(std::string name, sg_size_t size, sg_storage_t storage,
+                                                    simgrid::s4u::Io::OpType type)
 {
   /* set surf's action */
-  // FIXME
-  simgrid::kernel::resource::Action* surf_action =
-      storage->get_impl()->io_start(size, (simgrid::surf::e_surf_action_storage_type_t)0);
+  simgrid::kernel::resource::Action* surf_action = storage->get_impl()->io_start(size, type);
 
   simgrid::kernel::activity::IoImplPtr io =
       simgrid::kernel::activity::IoImplPtr(new simgrid::kernel::activity::IoImpl(name, surf_action, storage));

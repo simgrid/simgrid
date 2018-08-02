@@ -6,6 +6,7 @@
 #include "simgrid/s4u/Io.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "src/kernel/activity/IoImpl.hpp"
+#include "src/simix/smx_io_private.hpp"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_io, s4u_activity, "S4U asynchronous IOs");
@@ -15,7 +16,7 @@ namespace s4u {
 
 Activity* Io::start()
 {
-  pimpl_ = simcall_io_start("", size_, storage_);
+  pimpl_ = simix::simcall([this] { return SIMIX_io_start(name_, size_, storage_, type_); });
   state_ = State::STARTED;
   return this;
 }
@@ -64,6 +65,13 @@ double Io::get_remaining()
 {
   return simgrid::simix::simcall(
       [this]() { return boost::static_pointer_cast<simgrid::kernel::activity::IoImpl>(pimpl_)->get_remaining(); });
+}
+
+IoPtr Io::set_io_type(OpType type)
+{
+  xbt_assert(state_ == State::INITED, "Cannot change the name of an exec after its start");
+  type_ = type;
+  return this;
 }
 
 // double Io::get_remaining_ratio()

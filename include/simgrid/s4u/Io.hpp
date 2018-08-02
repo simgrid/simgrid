@@ -21,6 +21,7 @@ public:
   friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Io* i);
   friend Storage; // Factory of IOs
 
+  enum class OpType { READ, WRITE };
   ~Io() = default;
 
   Activity* start() override;
@@ -29,10 +30,13 @@ public:
   Activity* cancel() override;
 
   double get_remaining() override;
+  IoPtr set_io_type(OpType type);
 
 private:
   sg_size_t size_       = 0;
   sg_storage_t storage_ = nullptr;
+  std::string name_     = "";
+  OpType type_          = OpType::READ;
   std::atomic_int_fast32_t refcount_{0};
 }; // class
 }

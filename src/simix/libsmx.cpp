@@ -468,14 +468,6 @@ int simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
   return simcall_BODY_sem_acquire_timeout(sem, timeout);
 }
 
-smx_activity_t simcall_io_start(std::string name, sg_size_t size, simgrid::s4u::Storage* storage)
-{
-  /* checking for infinite values */
-  xbt_assert(std::isfinite(size), "size is not finite!");
-
-  return simgrid::simix::simcall([name, size, storage] { return SIMIX_io_start(name, size, storage); });
-}
-
 sg_size_t simcall_storage_read(surf_storage_t st, sg_size_t size)
 {
   return simcall_BODY_storage_read(st, size);
