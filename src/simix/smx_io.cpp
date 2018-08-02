@@ -51,14 +51,6 @@ void simcall_HANDLER_io_wait(smx_simcall_t simcall, smx_activity_t synchro)
     SIMIX_io_finish(synchro);
 }
 
-void SIMIX_io_destroy(smx_activity_t synchro)
-{
-  simgrid::kernel::activity::IoImplPtr io = boost::static_pointer_cast<simgrid::kernel::activity::IoImpl>(synchro);
-  XBT_DEBUG("Destroy synchro %p", synchro.get());
-  if (io->surf_action_)
-    io->surf_action_->unref();
-}
-
 void SIMIX_io_finish(smx_activity_t synchro)
 {
   for (smx_simcall_t const& simcall : synchro->simcalls_) {

@@ -14,12 +14,10 @@ namespace kernel {
 namespace activity {
 
 class XBT_PUBLIC IoImpl : public ActivityImpl {
-  ~IoImpl() override;
-
 public:
+  ~IoImpl() override;
   explicit IoImpl(std::string name, resource::Action* surf_action, s4u::Storage* storage);
 
-public:
   void suspend() override;
   void resume() override;
   void post() override;

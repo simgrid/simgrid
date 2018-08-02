@@ -64,6 +64,8 @@ void simgrid::kernel::activity::IoImpl::post()
       THROW_IMPOSSIBLE;
       break;
   }
+  on_completion(this);
+
   SIMIX_io_finish(this);
 }
 /*************
