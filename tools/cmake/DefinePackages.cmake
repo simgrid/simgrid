@@ -254,7 +254,7 @@ set(SMPI_SRC
   src/smpi/include/smpi_topo.hpp
   src/smpi/include/smpi_win.hpp
   src/smpi/plugins/sampi_loadbalancer.cpp
-  src/smpi/plugins/sampi_pampi.cpp
+  src/smpi/plugins/ampi/ampi.cpp
   src/smpi/plugins/load_balancer/LoadBalancer.cpp
   src/surf/network_smpi.cpp
   src/surf/network_ib.cpp
