@@ -296,7 +296,7 @@ void TRACE_smpi_send_process_data_out(int rank)
 
 void TRACE_smpi_process_change_host(int rank, sg_host_t new_host)
 {
-  if (!TRACE_smpi_is_enabled()) return;
+  if (not TRACE_smpi_is_enabled()) return;
 
   /** The key is (most likely) used to match the events in the trace */
   static long long int counter = 0;
