@@ -15,7 +15,7 @@
 
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include <simgrid/smpi/loadbalancer/load_balancer.hpp>
+#include "src/smpi/plugins/load_balancer/load_balancer.hpp" // This is not yet ready to be public
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(plugin_load_balancer, smpi, "Logging specific to the SMPI load balancing plugin");
 

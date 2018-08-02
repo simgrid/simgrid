@@ -10,7 +10,7 @@
 
 #include <boost/heap/fibonacci_heap.hpp>
 #include <simgrid/plugins/load.h>
-#include <simgrid/smpi/loadbalancer/load_balancer.hpp>
+#include <src/smpi/plugins/load_balancer/load_balancer.hpp>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(plugin_load_balancer);
 
