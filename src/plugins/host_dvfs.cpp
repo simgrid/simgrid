@@ -5,7 +5,10 @@
 
 #include "simgrid/plugins/dvfs.h"
 #include "simgrid/plugins/load.h"
+#include "simgrid/s4u/Engine.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/smpi/plugins/ampi/ampi.hpp"
 #include <xbt/config.hpp>
 
 #include <boost/algorithm/string.hpp>
@@ -20,13 +23,14 @@ static simgrid::config::Flag<std::string> cfg_governor("plugin/dvfs/governor",
     "Which Governor should be used that adapts the CPU frequency?", "performance",
 
     std::map<std::string, std::string>({
+        {"adagio", "TODO: Doc"},
         {"conservative", "TODO: Doc"},
         {"ondemand", "TODO: Doc"},
         {"performance", "TODO: Doc"},
         {"powersave", "TODO: Doc"},
     }),
 
-    [](std::string val){if (val != "performance") sg_host_dvfs_plugin_init();});
+    [](std::string val) { if (val != "performance") sg_host_dvfs_plugin_init(); });
 
 /** @addtogroup SURF_plugin_load
 
@@ -168,6 +172,7 @@ public:
       XBT_DEBUG("Load: %f < threshold: %f --> changed to pstate %i", load, freq_up_threshold_, new_pstate);
     }
   }
+
 };
 
 /**
@@ -218,6 +223,101 @@ public:
   }
 };
 
+class Adagio : public Governor {
+private:
+  int best_pstate     = 0;
+  double start_time   = 0;
+  double comp_counter = 0;
+  double comp_timer   = 0;
+
+  std::vector<std::vector<double>> rates;
+
+  unsigned int task_id   = 0;
+  bool iteration_running = false; /*< Are we currently between iteration_in and iteration_out calls? */
+
+public:
+  explicit Adagio(simgrid::s4u::Host* ptr)
+      : Governor(ptr), rates(100, std::vector<double>(host_->get_pstate_count(), 0.0))
+  {
+    simgrid::smpi::plugin::ampi::on_iteration_in.connect([this](simgrid::s4u::ActorPtr actor) {
+      // Every instance of this class subscribes to this event, so one per host
+      // This means that for any actor, all 'hosts' are normally notified of these
+      // changes, even those who don't currently run the actor 'proc_id'.
+      // -> Let's check if this signal call is for us!
+      if (get_host() == actor->get_host()) {
+        iteration_running = true;
+      }
+    });
+    simgrid::smpi::plugin::ampi::on_iteration_out.connect([this](simgrid::s4u::ActorPtr actor) {
+      if (get_host() == actor->get_host()) {
+        iteration_running = false;
+        task_id           = 0;
+      }
+    });
+    simgrid::kernel::activity::ExecImpl::on_creation.connect([this](simgrid::kernel::activity::ExecImplPtr activity) {
+      if (activity->host_ == get_host())
+        pre_task();
+    });
+    simgrid::kernel::activity::ExecImpl::on_completion.connect([this](simgrid::kernel::activity::ExecImplPtr activity) {
+      // For more than one host (not yet supported), we can access the host via
+      // simcalls_.front()->issuer->iface()->get_host()
+      if (activity->host_ == get_host() && iteration_running) {
+        comp_timer += activity->surf_action_->get_finish_time() - activity->surf_action_->get_start_time();
+      }
+    });
+    simgrid::s4u::Link::on_communicate.connect(
+        [this](kernel::resource::NetworkAction* action, s4u::Host* src, s4u::Host* dst) {
+          if ((get_host() == src || get_host() == dst) && iteration_running) {
+            post_task();
+          }
+        });
+  }
+
+  virtual std::string get_name() const override { return "Adagio"; }
+
+  void pre_task()
+  {
+    sg_host_load_reset(host_);
+    comp_counter = sg_host_get_computed_flops(host_); // Should be 0 because of the reset
+    comp_timer   = 0;
+    start_time   = simgrid::s4u::Engine::get_clock();
+    if (rates.size() <= task_id)
+      rates.resize(task_id + 5, std::vector<double>(host_->get_pstate_count(), 0.0));
+    if (rates[task_id][best_pstate] == 0)
+      best_pstate = 0;
+    host_->set_pstate(best_pstate); // Load our schedule
+    XBT_DEBUG("Set pstate to %i", best_pstate);
+  }
+
+  void post_task()
+  {
+    double computed_flops = sg_host_get_computed_flops(host_) - comp_counter;
+    double target_time    = (simgrid::s4u::Engine::get_clock() - start_time);
+    target_time =
+        target_time *
+        static_cast<double>(99.0 / 100.0); // FIXME We account for t_copy arbitrarily with 1% -- this needs to be fixed
+
+    bool is_initialized         = rates[task_id][best_pstate] != 0;
+    rates[task_id][best_pstate] = computed_flops / comp_timer;
+    if (not is_initialized) {
+      for (int i = 1; i < host_->get_pstate_count(); i++) {
+        rates[task_id][i] = rates[task_id][0] * (host_->get_pstate_speed(i) / host_->get_speed());
+      }
+      is_initialized = true;
+    }
+
+    for (int pstate = host_->get_pstate_count() - 1; pstate >= 0; pstate--) {
+      if (computed_flops / rates[task_id][pstate] <= target_time) {
+        // We just found the pstate we want to use!
+        best_pstate = pstate;
+        break;
+      }
+    }
+    task_id++;
+  }
+
+  virtual void update() override {}
+};
 } // namespace dvfs
 } // namespace plugin
 } // namespace simgrid
@@ -256,6 +356,9 @@ static void on_host_added(simgrid::s4u::Host& host)
       } else if (dvfs_governor == "ondemand") {
         return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
             new simgrid::plugin::dvfs::OnDemand(daemon_proc->get_host()));
+      } else if (dvfs_governor == "adagio") {
+        return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
+            new simgrid::plugin::dvfs::Adagio(daemon_proc->get_host()));
       } else if (dvfs_governor == "performance") {
         return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
             new simgrid::plugin::dvfs::Performance(daemon_proc->get_host()));
