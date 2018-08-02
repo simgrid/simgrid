@@ -9,6 +9,8 @@
 #include <smpi/smpi.h>
 #include <src/smpi/include/smpi_comm.hpp>
 #include <src/smpi/include/smpi_actor.hpp>
+#include <src/smpi/plugins/ampi/instr_ampi.hpp>
+#include <src/smpi/plugins/ampi/ampi.hpp>
 #include <xbt/replay.hpp>
 
 #include "src/kernel/activity/ExecImpl.hpp"
@@ -109,14 +111,15 @@ void action_iteration_in(simgrid::xbt::ReplayAction& action)
 {
   CHECK_ACTION_PARAMS(action, 0, 0)
   TRACE_Iteration_in(simgrid::s4u::this_actor::get_pid(), nullptr);
+  simgrid::smpi::plugin::ampi::on_iteration_in(MPI_COMM_WORLD->group()->actor(std::stol(action[0])));
 }
 
-// FIXME Move declaration
 XBT_PRIVATE void action_iteration_out(simgrid::xbt::ReplayAction& action);
 void action_iteration_out(simgrid::xbt::ReplayAction& action)
 {
   CHECK_ACTION_PARAMS(action, 0, 0)
   TRACE_Iteration_out(simgrid::s4u::this_actor::get_pid(), nullptr);
+  simgrid::smpi::plugin::ampi::on_iteration_out(MPI_COMM_WORLD->group()->actor(std::stol(action[0])));
 }
 }
 }

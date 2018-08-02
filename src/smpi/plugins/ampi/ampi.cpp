@@ -3,6 +3,8 @@
 #include <smpi/sampi.h>
 #include <src/smpi/include/smpi_comm.hpp>
 #include <src/smpi/include/smpi_actor.hpp>
+#include <src/smpi/plugins/ampi/instr_ampi.hpp>
+#include <src/instr/instr_smpi.hpp>
 #include <xbt/replay.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(plugin_pampi, smpi, "Logging specific to the AMPI functions");
@@ -28,6 +30,17 @@ extern "C" void _sampi_free(void* ptr)
   int my_proc_id    = simgrid::s4u::this_actor::get_pid();
   memory_size[my_proc_id] -= alloc_size;
   __libc_free(ptr);
+}
+
+namespace simgrid {
+namespace smpi {
+namespace plugin {
+namespace ampi {
+  simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_iteration_in;
+  simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_iteration_out;
+}
+}
+}
 }
 
 /* FIXME The following contains several times "rank() + 1". This works for one
