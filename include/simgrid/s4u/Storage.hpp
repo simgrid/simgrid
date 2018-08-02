@@ -62,7 +62,7 @@ public:
   void set_data(void* data) { userdata_ = data; }
   void* get_data() { return userdata_; }
 
-  static IoPtr io_init(sg_size_t size);
+  IoPtr io_init(sg_size_t size);
 
   sg_size_t read(sg_size_t size);
   sg_size_t write(sg_size_t size);

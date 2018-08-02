@@ -21,7 +21,7 @@ simgrid::kernel::activity::IoImpl::IoImpl(std::string name, resource::Action* su
 
 simgrid::kernel::activity::IoImpl::~IoImpl()
 {
-  if (surf_action_)
+  if (surf_action_ != nullptr)
     surf_action_->unref();
   XBT_DEBUG("Destroy exec %p", this);
 }
@@ -52,19 +52,7 @@ double simgrid::kernel::activity::IoImpl::get_remaining()
 
 void simgrid::kernel::activity::IoImpl::post()
 {
-  for (smx_simcall_t const& simcall : simcalls_) {
-    switch (simcall->call) {
-      case SIMCALL_STORAGE_WRITE:
-        simcall_storage_write__set__result(simcall, surf_action_->get_cost());
-        break;
-      case SIMCALL_STORAGE_READ:
-        simcall_storage_read__set__result(simcall, surf_action_->get_cost());
-        break;
-      default:
-        break;
-    }
-  }
-
+  performed_ioops_ = surf_action_->get_cost();
   switch (surf_action_->get_state()) {
     case simgrid::kernel::resource::Action::State::FAILED:
       state_ = SIMIX_FAILED;
@@ -76,7 +64,6 @@ void simgrid::kernel::activity::IoImpl::post()
       THROW_IMPOSSIBLE;
       break;
   }
-
   SIMIX_io_finish(this);
 }
 /*************

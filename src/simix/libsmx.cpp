@@ -468,14 +468,9 @@ int simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
   return simcall_BODY_sem_acquire_timeout(sem, timeout);
 }
 
-sg_size_t simcall_storage_read(surf_storage_t st, sg_size_t size)
+e_smx_state_t simcall_io_wait(smx_activity_t io)
 {
-  return simcall_BODY_storage_read(st, size);
-}
-
-sg_size_t simcall_storage_write(surf_storage_t st, sg_size_t size)
-{
-  return simcall_BODY_storage_write(st, size);
+  return (e_smx_state_t)simcall_BODY_io_wait(io);
 }
 
 void simcall_run_kernel(std::function<void()> const& code)

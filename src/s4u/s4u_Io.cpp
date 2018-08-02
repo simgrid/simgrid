@@ -30,7 +30,7 @@ Activity* Io::cancel()
 
 Activity* Io::wait()
 {
-  //  simcall_execution_wait(pimpl_);
+  simcall_io_wait(pimpl_);
   state_ = State::FINISHED;
   return this;
 }
@@ -40,31 +40,18 @@ Activity* Io::wait(double timeout)
   THROW_UNIMPLEMENTED;
   return this;
 }
-//
-///** @brief Returns whether the state of the exec is finished */
-// bool Exec::test()
-//{
-//  xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::FINISHED);
-//
-//  if (state_ == State::FINISHED)
-//    return true;
-//
-//  if (state_ == State::INITED)
-//    this->start();
-//
-//  if (simcall_execution_test(pimpl_)) {
-//    state_ = State::FINISHED;
-//    return true;
-//  }
-//
-//  return false;
-//}
 
 /** @brief Returns the amount of flops that remain to be done */
 double Io::get_remaining()
 {
   return simgrid::simix::simcall(
-      [this]() { return boost::static_pointer_cast<simgrid::kernel::activity::IoImpl>(pimpl_)->get_remaining(); });
+      [this]() { return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_remaining(); });
+}
+
+sg_size_t Io::get_performed_ioops()
+{
+  return simgrid::simix::simcall(
+      [this]() { return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_performed_ioops(); });
 }
 
 IoPtr Io::set_io_type(OpType type)
@@ -74,24 +61,17 @@ IoPtr Io::set_io_type(OpType type)
   return this;
 }
 
-// double Io::get_remaining_ratio()
-//{
-//  return simgrid::simix::simcall([this]() {
-//    return boost::static_pointer_cast<simgrid::kernel::activity::IoImpl>(pimpl_)->get_remaining_ratio();
-//  });
-//}
-
-void intrusive_ptr_release(simgrid::s4u::Io* e)
+void intrusive_ptr_release(simgrid::s4u::Io* i)
 {
-  if (e->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+  if (i->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
     std::atomic_thread_fence(std::memory_order_acquire);
-    delete e;
+    delete i;
   }
 }
 
-void intrusive_ptr_add_ref(simgrid::s4u::Io* e)
+void intrusive_ptr_add_ref(simgrid::s4u::Io* i)
 {
-  e->refcount_.fetch_add(1, std::memory_order_relaxed);
+  i->refcount_.fetch_add(1, std::memory_order_relaxed);
 }
 } // namespace s4u
 } // namespace simgrid

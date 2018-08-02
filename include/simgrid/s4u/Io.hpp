@@ -30,6 +30,7 @@ public:
   Activity* cancel() override;
 
   double get_remaining() override;
+  sg_size_t get_performed_ioops();
   IoPtr set_io_type(OpType type);
 
 private:

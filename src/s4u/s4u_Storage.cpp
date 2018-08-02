@@ -60,18 +60,25 @@ IoPtr Storage::io_init(sg_size_t size)
 {
   IoPtr res  = IoPtr(new Io());
   res->size_ = size;
+  res->storage_ = this;
   res->set_remaining(size);
   return res;
 }
 
 sg_size_t Storage::read(sg_size_t size)
 {
-  return simcall_storage_read(pimpl_, size);
+  IoPtr i = io_init(size);
+  i->set_io_type(Io::OpType::READ);
+  i->start()->wait();
+  return i->get_performed_ioops();
 }
 
 sg_size_t Storage::write(sg_size_t size)
 {
-  return simcall_storage_write(pimpl_, size);
+  IoPtr i = io_init(size);
+  i->set_io_type(Io::OpType::WRITE);
+  i->start()->wait();
+  return i->get_performed_ioops();
 }
 
 // Deprecated functions
