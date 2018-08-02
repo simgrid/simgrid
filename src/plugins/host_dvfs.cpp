@@ -40,20 +40,37 @@ namespace simgrid {
 namespace plugin {
 
 namespace dvfs {
+
+/**
+ *  Add this to your host tag:
+ *    - \<prop id="plugin/dvfs/governor" value="performance" /\>
+ *
+ *  Valid values as of now are: performance, powersave, ondemand, conservative
+ *  It doesn't matter if you use uppercase or lowercase.
+ *
+ *  For the sampling rate, use this:
+ *
+ *    - \<prop id="plugin/dvfs/sampling-rate" value="2" /\>
+ *
+ *  This will run the update() method of the specified governor every 2 seconds
+ *  on that host.
+ *
+ *  These properties can also be used within the \<config\> tag to configure
+ *  these values globally. Using them within the \<host\> will overwrite this
+ *  global configuration
+ */
 class Governor {
 
-private:
+protected:
   simgrid::s4u::Host* const host_;
   double sampling_rate_;
-
-protected:
-  simgrid::s4u::Host* get_host() const { return host_; }
 
 public:
 
   explicit Governor(simgrid::s4u::Host* ptr) : host_(ptr) { init(); }
   virtual ~Governor() = default;
   virtual std::string get_name() = 0;
+  simgrid::s4u::Host* get_host() const { return host_; }
 
   void init()
   {
@@ -201,24 +218,6 @@ public:
   }
 };
 
-/**
- *  Add this to your host tag:
- *    - \<prop id="plugin/dvfs/governor" value="performance" /\>
- *
- *  Valid values as of now are: performance, powersave, ondemand, conservative
- *  It doesn't matter if you use uppercase or lowercase.
- *
- *  For the sampling rate, use this:
- *
- *    - \<prop id="plugin/dvfs/sampling-rate" value="2" /\>
- *
- *  This will run the update() method of the specified governor every 2 seconds
- *  on that host.
- *
- *  These properties can also be used within the \<config\> tag to configure
- *  these values globally. Using them within the \<host\> will overwrite this
- *  global configuration
- */
 } // namespace dvfs
 } // namespace plugin
 } // namespace simgrid
