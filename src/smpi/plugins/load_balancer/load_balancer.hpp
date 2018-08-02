@@ -8,7 +8,7 @@ namespace simgrid {
 namespace plugin {
 namespace loadbalancer {
 
-class Mapping {
+class XBT_PRIVATE Mapping {
 public:
   Mapping() = default;
   ~Mapping() = default;
@@ -52,7 +52,7 @@ public:
   }
 };
 
-class LoadBalancer
+class XBT_PRIVATE LoadBalancer
 {
   Mapping new_mapping;
   std::map</*proc id*/int, double> actor_computation;
