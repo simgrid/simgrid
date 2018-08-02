@@ -32,9 +32,6 @@ XBT_PRIVATE void TRACE_smpi_finalize(int rank);
 XBT_PRIVATE void TRACE_smpi_send_process_data_in(int rank);
 XBT_PRIVATE void TRACE_smpi_send_process_data_out(int rank);
 XBT_PRIVATE void TRACE_smpi_process_change_host(int rank, sg_host_t new_host);
-XBT_PRIVATE void TRACE_Iteration_in(int rank, simgrid::instr::TIData* extra);
-XBT_PRIVATE void TRACE_Iteration_out(int rank, simgrid::instr::TIData* extra);
-XBT_PRIVATE void TRACE_migration_call(int rank, simgrid::instr::TIData* extra);
 
 class smpi_trace_call_location_t {
 public:
