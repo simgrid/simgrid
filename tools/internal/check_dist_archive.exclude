@@ -19,11 +19,16 @@
 + \.codacy\.yml
 + \.cproject
 + \.editorconfig
++ \.gitlab-ci\.yml
 + \.project
++ \.readthedocs.yml
 + \.travis\.yml
 + sonar-project\.properties
 
 + contrib/.*
+
++ docs/requirements\.txt
++ docs/source/.*
 
 + tools/appveyor-irc-notify\.py
 + tools/git-hooks/.*
