@@ -68,7 +68,7 @@ public:
     static bool was_executed = false;
     if (not was_executed) {
       was_executed = true;
-      XBT_DEBUG("Process %u runs the load balancer", my_proc_id);
+      XBT_DEBUG("Process %li runs the load balancer", my_proc_id);
       smpi_bench_begin();
       lb.run();
       smpi_bench_end();

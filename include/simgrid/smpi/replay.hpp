@@ -171,7 +171,7 @@ public:
 template <class T> class ReplayAction {
 protected:
   const std::string name;
-  const int my_proc_id;
+  const aid_t my_proc_id;
   T args;
 
 public:
