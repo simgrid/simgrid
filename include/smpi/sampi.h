@@ -6,7 +6,7 @@
 #ifndef SAMPI_H_
 #define SAMPI_H_
 
-#include "malloc.h"
+#include <stdlib.h>
 #include <smpi/smpi.h>
 
 #define AMPI_CALL(type, name, args)                                                                                    \
