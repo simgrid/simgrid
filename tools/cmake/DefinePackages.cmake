@@ -259,6 +259,7 @@ set(SMPI_SRC
   src/smpi/plugins/ampi/instr_ampi.cpp
   src/smpi/plugins/ampi/instr_ampi.hpp
   src/smpi/plugins/load_balancer/LoadBalancer.cpp
+  src/smpi/plugins/load_balancer/load_balancer.hpp
   src/surf/network_smpi.cpp
   src/surf/network_ib.cpp
   )
