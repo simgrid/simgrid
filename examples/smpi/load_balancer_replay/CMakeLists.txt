@@ -10,4 +10,4 @@ endif()
 
 # Uncomment this to install tesh files
 #set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/load_balancer_replay.tesh           PARENT_SCOPE)
-#set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/load_balancer_replay.cpp            PARENT_SCOPE)
+set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/load_balancer_replay.cpp            PARENT_SCOPE)
