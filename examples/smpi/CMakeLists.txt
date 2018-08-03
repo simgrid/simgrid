@@ -23,7 +23,7 @@ if(enable_smpi)
   endforeach()
 endif()
 
-foreach(x replay)
+foreach(x ampi replay)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
 endforeach()
 foreach(x trace trace_simple trace_call_location energy)
@@ -39,6 +39,7 @@ set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/energy/energy.tes
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace/trace.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_simple/trace_simple.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_call_location/trace_call_location.tesh
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/ampi/ampi.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay.tesh                          PARENT_SCOPE)
 set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                                    ${CMAKE_CURRENT_SOURCE_DIR}/energy/hostfile
