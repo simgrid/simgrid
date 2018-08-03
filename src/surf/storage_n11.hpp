@@ -43,6 +43,7 @@ public:
   StorageN11(StorageModel* model, std::string name, kernel::lmm::System* maxminSystem, double bread, double bwrite,
              std::string type_id, std::string content_name, sg_size_t size, std::string attach);
   virtual ~StorageN11() = default;
+  StorageAction* io_start(sg_size_t size, s4u::Io::OpType type);
   StorageAction* read(sg_size_t size);
   StorageAction* write(sg_size_t size);
 };
@@ -54,7 +55,7 @@ public:
 class StorageN11Action : public StorageAction {
 public:
   StorageN11Action(kernel::resource::Model* model, double cost, bool failed, StorageImpl* storage,
-                   e_surf_action_storage_type_t type);
+                   s4u::Io::OpType type);
   void suspend() override;
   void cancel() override;
   void resume() override;
