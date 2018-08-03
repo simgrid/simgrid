@@ -8,7 +8,6 @@
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/simix/smx_io_private.hpp"
 #include "xbt/log.h"
-#include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_io, s4u_activity, "S4U asynchronous IOs");
 
