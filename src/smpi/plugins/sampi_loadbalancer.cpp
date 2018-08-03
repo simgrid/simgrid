@@ -54,8 +54,9 @@ public:
     simgrid::s4u::Host* cur_host = simgrid::s4u::this_actor::get_host();
     simgrid::s4u::Host* migrate_to_host;
 
-    TRACE_migration_call(my_proc_id, NULL);
+    TRACE_migration_call(my_proc_id, nullptr);
 
+    // We only migrate every "cfg_migration_frequency"-times, not at every call
     migration_call_counter[simgrid::s4u::Actor::self()]++;
     if ((migration_call_counter[simgrid::s4u::Actor::self()] % simgrid::config::get_value<int>(cfg_migration_frequency.get_name())) != 0) {
       return;
@@ -67,8 +68,8 @@ public:
     static bool was_executed = false;
     if (not was_executed) {
       was_executed = true;
+      XBT_DEBUG("Process %u runs the load balancer", my_proc_id);
       smpi_bench_begin();
-      XBT_INFO("RUNNING THE LB");
       lb.run();
       smpi_bench_end();
     }
