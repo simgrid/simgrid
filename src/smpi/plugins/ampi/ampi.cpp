@@ -1,6 +1,5 @@
 #include <simgrid/plugins/load_balancer.h>
 #include <simgrid/s4u/Actor.hpp>
-#include <smpi/sampi.h>
 #include <src/smpi/include/smpi_comm.hpp>
 #include <src/smpi/include/smpi_actor.hpp>
 #include <src/smpi/plugins/ampi/instr_ampi.hpp>
@@ -9,14 +8,13 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(plugin_pampi, smpi, "Logging specific to the AMPI functions");
 
-extern "C" void* __libc_malloc(size_t size);
-extern "C" void* __libc_free(void* ptr);
 static std::vector<size_t> memory_size(500, 0); // FIXME cheinrich This needs to be dynamic
 static std::map</*address*/ void*, size_t> alloc_table; // Keep track of all allocations
-
+extern "C" void* _sampi_malloc(size_t);
+extern "C" void _sampi_free(void* ptr);
 extern "C" void* _sampi_malloc(size_t size)
 {
-  void* result = __libc_malloc (size); // We need the space here to prevent recursive substitution
+  void* result = malloc (size); // We need the space here to prevent recursive substitution
   alloc_table.insert({result, size});
   if (not simgrid::s4u::this_actor::is_maestro()) {
     memory_size[simgrid::s4u::this_actor::get_pid()] += size;
@@ -29,9 +27,10 @@ extern "C" void _sampi_free(void* ptr)
   size_t alloc_size = alloc_table.at(ptr);
   int my_proc_id    = simgrid::s4u::this_actor::get_pid();
   memory_size[my_proc_id] -= alloc_size;
-  __libc_free(ptr);
+  free(ptr);
 }
 
+#include <smpi/sampi.h>
 namespace simgrid {
 namespace smpi {
 namespace plugin {
