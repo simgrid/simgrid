@@ -15,7 +15,7 @@ namespace simgrid {
 namespace s4u {
 
 class XBT_PUBLIC Io : public Activity {
-  Io() : Activity() {}
+  explicit Io(sg_size_t size) : Activity(), size_(size) {}
 public:
   friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Io* i);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Io* i);

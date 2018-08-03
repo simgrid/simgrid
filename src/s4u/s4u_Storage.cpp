@@ -58,10 +58,8 @@ void Storage::set_property(std::string key, std::string value)
 
 IoPtr Storage::io_init(sg_size_t size)
 {
-  IoPtr res  = IoPtr(new Io());
-  res->size_ = size;
+  IoPtr res     = IoPtr(new Io(size));
   res->storage_ = this;
-  res->set_remaining(size);
   return res;
 }
 

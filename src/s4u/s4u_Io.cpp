@@ -16,6 +16,7 @@ namespace s4u {
 
 Activity* Io::start()
 {
+  set_remaining(size_);
   pimpl_ = simix::simcall([this] { return SIMIX_io_start(name_, size_, storage_, type_); });
   state_ = State::STARTED;
   return this;
