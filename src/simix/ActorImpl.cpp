@@ -483,7 +483,7 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
       SIMIX_synchro_stop_waiting(process, &process->simcall);
 
     } else if (io != nullptr) {
-      SIMIX_io_destroy(process->waiting_synchro);
+      delete io.get();
     } else {
       xbt_die("Unknown type of activity");
     }
@@ -547,7 +547,7 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
     simgrid::kernel::activity::IoImplPtr io =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(process->waiting_synchro);
     if (io != nullptr) {
-      SIMIX_io_destroy(process->waiting_synchro);
+      delete io.get();
     }
   }
   process->waiting_synchro = nullptr;

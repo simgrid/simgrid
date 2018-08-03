@@ -15,11 +15,21 @@ namespace activity {
 
 class XBT_PUBLIC IoImpl : public ActivityImpl {
 public:
+  ~IoImpl() override;
+  explicit IoImpl(std::string name, resource::Action* surf_action, s4u::Storage* storage);
+
   void suspend() override;
   void resume() override;
   void post() override;
+  void cancel();
+  double get_remaining();
+  sg_size_t get_performed_ioops() { return performed_ioops_; }
 
+  s4u::Storage* storage_                          = nullptr;
   simgrid::kernel::resource::Action* surf_action_ = nullptr;
+  sg_size_t performed_ioops_                      = 0;
+  static simgrid::xbt::signal<void(kernel::activity::IoImplPtr)> on_creation;
+  static simgrid::xbt::signal<void(kernel::activity::IoImplPtr)> on_completion;
 };
 }
 }

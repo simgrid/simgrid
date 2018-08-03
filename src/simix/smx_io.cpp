@@ -3,57 +3,52 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "mc/mc.h"
 #include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/Io.hpp"
 #include "xbt/ex.hpp"
 
 #include "smx_private.hpp"
 #include "src/kernel/activity/IoImpl.hpp"
+#include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_io_private.hpp"
 #include "src/surf/StorageImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
 
-void simcall_HANDLER_storage_read(smx_simcall_t simcall, surf_storage_t st, sg_size_t size)
+simgrid::kernel::activity::IoImplPtr SIMIX_io_start(std::string name, sg_size_t size, sg_storage_t storage,
+                                                    simgrid::s4u::Io::OpType type)
 {
-  smx_activity_t synchro = SIMIX_storage_read(st, size);
+  /* set surf's action */
+  simgrid::kernel::resource::Action* surf_action = storage->get_impl()->io_start(size, type);
+
+  simgrid::kernel::activity::IoImplPtr io =
+      simgrid::kernel::activity::IoImplPtr(new simgrid::kernel::activity::IoImpl(name, surf_action, storage));
+
+  XBT_DEBUG("Create IO synchro %p %s", io.get(), name.c_str());
+  simgrid::kernel::activity::IoImpl::on_creation(io);
+
+  return io;
+}
+
+void simcall_HANDLER_io_wait(smx_simcall_t simcall, smx_activity_t synchro)
+{
+  XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro.get(), (int)synchro->state_);
+
+  /* Associate this simcall to the synchro */
   synchro->simcalls_.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
-}
 
-smx_activity_t SIMIX_storage_read(surf_storage_t st, sg_size_t size)
-{
-  simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
-  synchro->surf_action_                      = st->read(size);
+  /* set surf's synchro */
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    synchro->state_ = SIMIX_DONE;
+    SIMIX_io_finish(synchro);
+    return;
+  }
 
-  synchro->surf_action_->set_data(synchro);
-  XBT_DEBUG("Create io synchro %p", synchro);
-
-  return synchro;
-}
-
-void simcall_HANDLER_storage_write(smx_simcall_t simcall, surf_storage_t st, sg_size_t size)
-{
-  smx_activity_t synchro = SIMIX_storage_write(st, size);
-  synchro->simcalls_.push_back(simcall);
-  simcall->issuer->waiting_synchro = synchro;
-}
-
-smx_activity_t SIMIX_storage_write(surf_storage_t st, sg_size_t size)
-{
-  simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
-  synchro->surf_action_                      = st->write(size);
-  synchro->surf_action_->set_data(synchro);
-  XBT_DEBUG("Create io synchro %p", synchro);
-
-  return synchro;
-}
-
-void SIMIX_io_destroy(smx_activity_t synchro)
-{
-  simgrid::kernel::activity::IoImplPtr io = boost::static_pointer_cast<simgrid::kernel::activity::IoImpl>(synchro);
-  XBT_DEBUG("Destroy synchro %p", synchro.get());
-  if (io->surf_action_)
-    io->surf_action_->unref();
+  /* If the synchro is already finished then perform the error handling */
+  if (synchro->state_ != SIMIX_RUNNING)
+    SIMIX_io_finish(synchro);
 }
 
 void SIMIX_io_finish(smx_activity_t synchro)
@@ -80,7 +75,4 @@ void SIMIX_io_finish(smx_activity_t synchro)
     simcall->issuer->waiting_synchro = nullptr;
     SIMIX_simcall_answer(simcall);
   }
-
-  /* We no longer need it */
-  SIMIX_io_destroy(synchro);
 }

@@ -5,6 +5,7 @@
 
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/Io.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/storage.h"
 #include "src/surf/StorageImpl.hpp"
@@ -55,14 +56,27 @@ void Storage::set_property(std::string key, std::string value)
   simgrid::simix::simcall([this, key, value] { this->pimpl_->set_property(key, value); });
 }
 
+IoPtr Storage::io_init(sg_size_t size)
+{
+  IoPtr res     = IoPtr(new Io(size));
+  res->storage_ = this;
+  return res;
+}
+
 sg_size_t Storage::read(sg_size_t size)
 {
-  return simcall_storage_read(pimpl_, size);
+  IoPtr i = io_init(size);
+  i->set_io_type(Io::OpType::READ);
+  i->start()->wait();
+  return i->get_performed_ioops();
 }
 
 sg_size_t Storage::write(sg_size_t size)
 {
-  return simcall_storage_write(pimpl_, size);
+  IoPtr i = io_init(size);
+  i->set_io_type(Io::OpType::WRITE);
+  i->start()->wait();
+  return i->get_performed_ioops();
 }
 
 // Deprecated functions

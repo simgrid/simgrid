@@ -19,7 +19,7 @@
 #include <mpi.h>
 
 #define N_TRY 32
-#define BLKSIZE (10*1024*1024)
+#define BLKSIZE (5*1024*1024)
 
 int main(int argc, char *argv[])
 {

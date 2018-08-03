@@ -9,6 +9,7 @@
 #include <simgrid/forward.h>
 #include <xbt/Extendable.hpp>
 #include <xbt/base.h>
+#include <xbt/signal.hpp>
 
 #include <map>
 #include <string>
@@ -25,6 +26,7 @@ XBT_ATTRIB_DEPRECATED_v322("Please use Engine::get_all_storages()") XBT_PUBLIC v
 
 class XBT_PUBLIC Storage : public simgrid::xbt::Extendable<Storage> {
   friend s4u::Engine;
+  friend s4u::Io;
   friend simgrid::surf::StorageImpl;
 
 public:
@@ -32,7 +34,6 @@ public:
 
 protected:
   virtual ~Storage() = default;
-
 public:
   /** @brief Callback signal fired when a new Storage is created */
   static simgrid::xbt::signal<void(s4u::Storage&)> on_creation;
@@ -60,6 +61,8 @@ public:
 
   void set_data(void* data) { userdata_ = data; }
   void* get_data() { return userdata_; }
+
+  IoPtr io_init(sg_size_t size);
 
   sg_size_t read(sg_size_t size);
   sg_size_t write(sg_size_t size);
