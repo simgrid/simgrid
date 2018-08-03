@@ -10,8 +10,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(plugin_pampi, smpi, "Logging specific to the AMP
 
 static std::vector<size_t> memory_size(500, 0); // FIXME cheinrich This needs to be dynamic
 static std::map</*address*/ void*, size_t> alloc_table; // Keep track of all allocations
-extern "C" void* _sampi_malloc(size_t);
-extern "C" void _sampi_free(void* ptr);
+extern "C" XBT_PUBLIC void* _sampi_malloc(size_t);
+extern "C" XBT_PUBLIC void _sampi_free(void* ptr);
 extern "C" void* _sampi_malloc(size_t size)
 {
   void* result = malloc (size); // We need the space here to prevent recursive substitution
