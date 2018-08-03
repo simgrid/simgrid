@@ -677,7 +677,6 @@ set(headers_to_install
   include/simgrid/plugins/load.h
   include/simgrid/plugins/load_balancer.h
   include/simgrid/smpi/replay.hpp
-  include/simgrid/smpi/sampi.h
   include/simgrid/instr.h
   include/simgrid/mailbox.h
   include/simgrid/msg.h
