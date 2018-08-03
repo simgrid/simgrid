@@ -16,14 +16,14 @@ simgrid::kernel::activity::IoImpl::IoImpl(std::string name, resource::Action* su
 
   surf_action_->set_data(this);
 
-  XBT_DEBUG("Create exec %p", this);
+  XBT_DEBUG("Create io %p", this);
 }
 
 simgrid::kernel::activity::IoImpl::~IoImpl()
 {
   if (surf_action_ != nullptr)
     surf_action_->unref();
-  XBT_DEBUG("Destroy exec %p", this);
+  XBT_DEBUG("Destroy io %p", this);
 }
 
 void simgrid::kernel::activity::IoImpl::cancel()
