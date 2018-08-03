@@ -56,25 +56,23 @@ void Storage::set_property(std::string key, std::string value)
   simgrid::simix::simcall([this, key, value] { this->pimpl_->set_property(key, value); });
 }
 
-IoPtr Storage::io_init(sg_size_t size)
+IoPtr Storage::io_init(sg_size_t size, Io::OpType type)
 {
-  IoPtr res     = IoPtr(new Io(size));
+  IoPtr res     = IoPtr(new Io(size, type));
   res->storage_ = this;
   return res;
 }
 
 sg_size_t Storage::read(sg_size_t size)
 {
-  IoPtr i = io_init(size);
-  i->set_io_type(Io::OpType::READ);
+  IoPtr i = io_init(size, Io::OpType::READ);
   i->start()->wait();
   return i->get_performed_ioops();
 }
 
 sg_size_t Storage::write(sg_size_t size)
 {
-  IoPtr i = io_init(size);
-  i->set_io_type(Io::OpType::WRITE);
+  IoPtr i = io_init(size, Io::OpType::WRITE);
   i->start()->wait();
   return i->get_performed_ioops();
 }

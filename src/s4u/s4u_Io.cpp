@@ -8,6 +8,7 @@
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/simix/smx_io_private.hpp"
 #include "xbt/log.h"
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_io, s4u_activity, "S4U asynchronous IOs");
 
@@ -16,8 +17,10 @@ namespace s4u {
 
 Activity* Io::start()
 {
-  set_remaining(size_);
-  pimpl_ = simix::simcall([this] { return SIMIX_io_start(name_, size_, storage_, type_); });
+  Activity::set_remaining(size_);
+  pimpl_ = simix::simcall([this] {
+    return boost::static_pointer_cast<kernel::activity::IoImpl>(SIMIX_io_start(name_, size_, storage_, type_));
+  });
   state_ = State::STARTED;
   return this;
 }
@@ -53,13 +56,6 @@ sg_size_t Io::get_performed_ioops()
 {
   return simgrid::simix::simcall(
       [this]() { return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_performed_ioops(); });
-}
-
-IoPtr Io::set_io_type(OpType type)
-{
-  xbt_assert(state_ == State::INITED, "Cannot change the name of an exec after its start");
-  type_ = type;
-  return this;
 }
 
 void intrusive_ptr_release(simgrid::s4u::Io* i)

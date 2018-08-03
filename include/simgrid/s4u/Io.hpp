@@ -15,13 +15,16 @@ namespace simgrid {
 namespace s4u {
 
 class XBT_PUBLIC Io : public Activity {
-  explicit Io(sg_size_t size) : Activity(), size_(size) {}
+public:
+  enum class OpType { READ, WRITE };
+
+private:
+  explicit Io(sg_size_t size, OpType type) : Activity(), size_(size), type_(type) {}
 public:
   friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Io* i);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Io* i);
   friend Storage; // Factory of IOs
 
-  enum class OpType { READ, WRITE };
   ~Io() = default;
 
   Activity* start() override;
@@ -31,7 +34,6 @@ public:
 
   double get_remaining() override;
   sg_size_t get_performed_ioops();
-  IoPtr set_io_type(OpType type);
 
 private:
   sg_size_t size_       = 0;

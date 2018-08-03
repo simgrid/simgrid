@@ -7,6 +7,7 @@
 #define INCLUDE_SIMGRID_S4U_STORAGE_HPP_
 
 #include <simgrid/forward.h>
+#include <simgrid/s4u/Io.hpp>
 #include <xbt/Extendable.hpp>
 #include <xbt/base.h>
 #include <xbt/signal.hpp>
@@ -62,7 +63,7 @@ public:
   void set_data(void* data) { userdata_ = data; }
   void* get_data() { return userdata_; }
 
-  IoPtr io_init(sg_size_t size);
+  IoPtr io_init(sg_size_t size, s4u::Io::OpType type);
 
   sg_size_t read(sg_size_t size);
   sg_size_t write(sg_size_t size);
