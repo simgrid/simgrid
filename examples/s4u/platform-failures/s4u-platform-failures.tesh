@@ -14,20 +14,25 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-platform-failures$EXEEXT --log=xbt_cfg.thres:c
 > [  0.000000] (5:worker@Bourassa) Waiting a message on worker-4
 > [  0.010309] (1:master@Tremblay) Send a message to worker-1
 > [  1.000000] (0:maestro@) Restart processes on host Fafard
+> [  1.000000] (6:worker@Fafard) Waiting a message on worker-2
 > [  1.000000] (1:master@Tremblay) Mmh. Something went wrong with 'worker-1'. Nevermind. Let's keep going!
 > [  1.000000] (1:master@Tremblay) Send a message to worker-2
 > [  1.000000] (3:worker@Jupiter) Gloups. The cpu on which I'm running just turned off!. See you!
+> [  2.000000] (1:master@Tremblay) Mmh. Something went wrong with 'worker-2'. Nevermind. Let's keep going!
+> [  2.000000] (6:worker@Fafard) Gloups. The cpu on which I'm running just turned off!. See you!
 > [  2.000000] (0:maestro@) Restart processes on host Jupiter
+> [  2.000000] (1:master@Tremblay) Send a message to worker-3
+> [  2.000000] (7:worker@Jupiter) Waiting a message on worker-1
 > [  2.010309] (2:worker@Tremblay) Waiting a message on worker-0
-> [ 11.000000] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'worker-2'. Nevermind. Let's keep going!
-> [ 11.000000] (1:master@Tremblay) Send a message to worker-3
-> [ 12.030928] (1:master@Tremblay) Send to worker-3 completed
-> [ 12.030928] (1:master@Tremblay) Send a message to worker-4
-> [ 13.061856] (1:master@Tremblay) Send to worker-4 completed
-> [ 13.061856] (1:master@Tremblay) Send a message to worker-0
-> [ 13.072165] (1:master@Tremblay) Send to worker-0 completed
-> [ 13.072165] (1:master@Tremblay) Send a message to worker-1
-> [ 14.103093] (1:master@Tremblay) Send to worker-1 completed
+> [  3.030928] (1:master@Tremblay) Send to worker-3 completed
+> [  3.030928] (1:master@Tremblay) Send a message to worker-4
+> [  4.061856] (1:master@Tremblay) Send to worker-4 completed
+> [  4.061856] (1:master@Tremblay) Send a message to worker-0
+> [  4.072165] (1:master@Tremblay) Send to worker-0 completed
+> [  4.072165] (1:master@Tremblay) Send a message to worker-1
+> [  5.030928] (4:worker@Ginette) Waiting a message on worker-3
+> [  5.103093] (1:master@Tremblay) Send to worker-1 completed
+> [  5.103093] (1:master@Tremblay) Send a message to worker-2
 > [ 24.103093] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'worker-2'. Nevermind. Let's keep going!
 > [ 24.103093] (1:master@Tremblay) Mmh. Something went wrong with 'worker-3'. Nevermind. Let's keep going!
 > [ 24.103093] (4:worker@Ginette) Mmh. Something went wrong. Nevermind. Let's keep going!
