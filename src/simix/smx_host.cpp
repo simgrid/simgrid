@@ -45,24 +45,6 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host, simgrid::kernel::actor:
   }
 }
 
-/** @brief Restart the list of processes that have been registered to the host */
-void SIMIX_host_autorestart(sg_host_t host)
-{
-  std::map<std::string, simgrid::kernel::actor::ProcessArg*> process_list = host->pimpl_->actors_at_boot_;
-
-  for (auto const& elm : process_list) {
-    simgrid::kernel::actor::ProcessArg* arg = elm.second;
-    XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->get_cname());
-    smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
-                                                              arg->properties.get(), nullptr);
-    if (arg->kill_time >= 0)
-      simcall_process_set_kill_time(actor, arg->kill_time);
-    if (arg->auto_restart)
-      actor->auto_restart_ = arg->auto_restart;
-  }
-  process_list.clear();
-}
-
 simgrid::kernel::activity::ExecImplPtr SIMIX_execution_start(std::string name, std::string category,
                                                              double flops_amount, double priority, double bound,
                                                              sg_host_t host)

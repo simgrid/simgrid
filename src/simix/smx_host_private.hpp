@@ -11,7 +11,6 @@
 #include <boost/intrusive/list.hpp>
 
 XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host, simgrid::kernel::actor::ActorImpl* actor);
-XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
 
 XBT_PRIVATE void SIMIX_execution_finish(smx_activity_t synchro);
 
