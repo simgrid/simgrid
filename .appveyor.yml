@@ -42,8 +42,7 @@ install:
 
 build_script:
 - cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
-- mingw32-make.exe VERBOSE=1
-
+- mingw32-make.exe VERBOSE=1 java-all # Only the Java parts
 - ctest --output-on-failure -R java
 
 artifacts:
