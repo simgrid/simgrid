@@ -283,22 +283,15 @@ for completion when using the ``Tab`` key. Note that some of the
 existing targets are not really for public consumption so don't worry
 if some stuff doesn't work for you.
 
-make simgrid
-  Build only the SimGrid library and not any example
-make s4u-app-pingpong
-  Build only this example (works for any example)
-make clean
-  Clean the results of a previous compilation
-make install
-  Install the project (doc/ bin/ lib/ include/)
-make uninstall
-  Uninstall the project (doc/ bin/ lib/ include/)
-make dist
-  Build a distribution archive (tar.gz)
-make distcheck
-  Check the dist (make + make dist + tests on the distribution)
-make documentation
-  Create SimGrid documentation
+- **make simgrid**: Build only the SimGrid library and not any example
+- **make s4u-app-pingpong**: Build only this example (works for any example)
+- **make java-all**: Build all Java examples and their dependencies
+- **make clean**: Clean the results of a previous compilation
+- **make install**: Install the project (doc/ bin/ lib/ include/)
+- **make uninstall**: Uninstall the project (doc/ bin/ lib/ include/)
+- **make dist**: Build a distribution archive (tar.gz)
+- **make distcheck**: Check the dist (make + make dist + tests on the distribution)
+- **make documentation**: Create SimGrid documentation
 
 If you want to see what is really happening, try adding ``VERBOSE=1`` to
 your compilation requests:
