@@ -80,6 +80,10 @@ void Engine::register_function(std::string name, int (*code)(int, char**))
 {
   SIMIX_function_register(name, code);
 }
+void Engine::register_function(std::string name, void (*code)(std::vector<std::string>))
+{
+  SIMIX_function_register(name, code);
+}
 void Engine::register_default(int (*code)(int, char**))
 {
   SIMIX_function_register_default(code);

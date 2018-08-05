@@ -14,6 +14,7 @@
 #include <functional>
 #include <string>
 #include <unordered_map>
+#include <vector>
 #endif
 
 /* ******************************** Host ************************************ */
@@ -134,6 +135,7 @@ XBT_PUBLIC void SIMIX_process_set_function(const char* process_host, const char*
 SG_END_DECL()
 
 #ifdef __cplusplus
+XBT_PUBLIC void SIMIX_function_register(std::string name, void (*code)(std::vector<std::string>));
 XBT_PUBLIC void SIMIX_function_register(std::string name, xbt_main_func_t code);
 XBT_PUBLIC void SIMIX_launch_application(std::string file);
 #endif
