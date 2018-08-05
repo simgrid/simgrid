@@ -153,7 +153,8 @@ examples/s4u/actor-suspend/s4u-actor-suspend
 examples/s4u/actor-yield/s4u-actor-yield
 examples/s4u/app-bittorrent/s4u-bittorrent
 examples/s4u/app-chainsend/s4u-app-chainsend
-examples/s4u/app-masterworker/s4u-app-masterworker
+examples/s4u/app-masterworkers/s4u-app-masterworkers-class
+examples/s4u/app-masterworkers/s4u-app-masterworkers-fun
 examples/s4u/app-pingpong/s4u-app-pingpong
 examples/s4u/app-token-ring/s4u-app-token-ring
 examples/s4u/async-wait/s4u-async-wait
@@ -179,6 +180,7 @@ examples/s4u/io-file-remote/s4u-io-file-remote
 examples/s4u/io-file-system/s4u-io-file-system
 examples/s4u/io-storage-raw/s4u-io-storage-raw
 examples/s4u/mutex/s4u-mutex
+examples/s4u/platform-failures/s4u-platform-failures
 examples/s4u/platform-properties/s4u-platform-properties
 examples/s4u/plugin-hostload/s4u-plugin-hostload
 examples/s4u/replay-comm/s4u-replay-comm
