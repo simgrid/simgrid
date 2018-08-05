@@ -398,11 +398,12 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
 
   } else if (event == state_event_) {
     if (value > 0) {
-      if (is_off())
+      if (is_off()) {
         host_that_restart.push_back(get_host());
-      turn_on();
+        get_host()->turn_on();
+      }
     } else {
-      turn_off();
+      get_host()->turn_off();
       double date = surf_get_clock();
 
       /* put all action running on cpu to failed */

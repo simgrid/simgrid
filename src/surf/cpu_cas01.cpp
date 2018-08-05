@@ -130,16 +130,17 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
     xbt_assert(get_core_count() == 1, "FIXME: add state change code also for constraint_core[i]");
 
     if (value > 0) {
-      if (is_off())
+      if (is_off()) {
         host_that_restart.push_back(get_host());
-      turn_on();
+        get_host()->turn_on();
+      }
     } else {
       kernel::lmm::Constraint* cnst = get_constraint();
       kernel::lmm::Variable* var    = nullptr;
       const kernel::lmm::Element* elem = nullptr;
       double date              = surf_get_clock();
 
-      turn_off();
+      get_host()->turn_off();
 
       while ((var = cnst->get_variable(&elem))) {
         kernel::resource::Action* action = static_cast<kernel::resource::Action*>(var->get_id());
