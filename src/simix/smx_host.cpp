@@ -39,16 +39,19 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host, simgrid::kernel::actor:
     watched_hosts.insert(host->get_cname());
     XBT_DEBUG("Push host %s to watched_hosts because state == SURF_RESOURCE_OFF", host->get_cname());
   }
-  XBT_DEBUG("Adding Process %s to the auto-restart list of Host %s", arg->name.c_str(), arg->host->get_cname());
-  host->pimpl_->auto_restart_processes_.push_back(arg);
+  if (host->pimpl_->actors_at_boot_.find(actor->get_name()) == host->pimpl_->actors_at_boot_.end()) {
+    XBT_DEBUG("Adding Process %s to the actors_at_boot_ list of Host %s", arg->name.c_str(), arg->host->get_cname());
+    host->pimpl_->actors_at_boot_.insert({arg->name, arg});
+  }
 }
 
 /** @brief Restart the list of processes that have been registered to the host */
 void SIMIX_host_autorestart(sg_host_t host)
 {
-  std::vector<simgrid::kernel::actor::ProcessArg*> process_list = host->pimpl_->auto_restart_processes_;
+  std::map<std::string, simgrid::kernel::actor::ProcessArg*> process_list = host->pimpl_->actors_at_boot_;
 
-  for (auto const& arg : process_list) {
+  for (auto const& elm : process_list) {
+    simgrid::kernel::actor::ProcessArg* arg = elm.second;
     XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->get_cname());
     smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
                                                               arg->properties.get(), nullptr);

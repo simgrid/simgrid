@@ -114,9 +114,6 @@ HostImpl::~HostImpl()
     SIMIX_display_process_status();
     THROWF(arg_error, 0, "%s", msg.c_str());
   }
-  for (auto const& arg : auto_restart_processes_)
-    delete arg;
-  auto_restart_processes_.clear();
   for (auto const& arg : actors_at_boot_)
     delete arg.second;
   actors_at_boot_.clear();
@@ -148,6 +145,16 @@ void HostImpl::turn_off()
                 actor.host_->get_cname(), SIMIX_process_self()->get_cname());
       SIMIX_process_kill(&actor, SIMIX_process_self());
     }
+  }
+  // When a host is turned off, we want to keep only the actors that should restart for when it will boot again.
+  // Then get rid of the others.
+  auto elm = actors_at_boot_.begin();
+  while (elm != actors_at_boot_.end()) {
+    if (not elm->second->auto_restart) {
+      delete elm->second;
+      actors_at_boot_.erase(elm);
+    } else
+      ++elm;
   }
 }
 
