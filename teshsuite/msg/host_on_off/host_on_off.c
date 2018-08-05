@@ -17,6 +17,10 @@ static int slave(int argc, char *argv[])
 
   while (1) {
     res = MSG_task_receive(&(task), mailbox);
+    if (res == MSG_HOST_FAILURE) {
+      XBT_DEBUG("The host has been turned off, this was expected");
+      return 1;
+    }
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
 
     if (!strcmp(MSG_task_get_name(task), "finalize")) {
