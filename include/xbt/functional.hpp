@@ -26,29 +26,45 @@
 namespace simgrid {
 namespace xbt {
 
-template<class F>
-class MainFunction {
+template <class F> class MainFunction {
 private:
   F code_;
   std::shared_ptr<const std::vector<std::string>> args_;
+
 public:
-  MainFunction(F code, std::vector<std::string> args) :
-    code_(std::move(code)),
-    args_(std::make_shared<const std::vector<std::string>>(std::move(args)))
-  {}
+  MainFunction(F code, std::vector<std::string> args)
+      : code_(std::move(code)), args_(std::make_shared<const std::vector<std::string>>(std::move(args)))
+  {
+  }
   void operator()() const
   {
-    const int argc = args_->size();
+    const int argc                = args_->size();
     std::vector<std::string> args = *args_;
     if (not args.empty()) {
       char noarg[] = {'\0'};
       std::unique_ptr<char* []> argv(new char*[argc + 1]);
       for (int i = 0; i != argc; ++i)
-        argv[i]  = args[i].empty() ? noarg : &args[i].front();
+        argv[i] = args[i].empty() ? noarg : &args[i].front();
       argv[argc] = nullptr;
       code_(argc, argv.get());
     } else
       code_(argc, nullptr);
+  }
+};
+class MainStdFunction {
+private:
+  void (*code_)(std::vector<std::string>);
+  std::shared_ptr<const std::vector<std::string>> args_;
+
+public:
+  MainStdFunction(void (*code)(std::vector<std::string>), std::vector<std::string> args)
+      : code_(std::move(code)), args_(std::make_shared<const std::vector<std::string>>(std::move(args)))
+  {
+  }
+  void operator()() const
+  {
+    std::vector<std::string> args = *args_;
+    code_(args);
   }
 };
 
@@ -62,6 +78,10 @@ inline XBT_ATTRIB_DEPRECATED_v323("Please use wrap_main()") std::function<void()
 template <class F> inline std::function<void()> wrap_main(F code, std::vector<std::string> args)
 {
   return MainFunction<F>(std::move(code), std::move(args));
+}
+inline std::function<void()> wrap_main(void (*code)(std::vector<std::string>), std::vector<std::string> args)
+{
+  return MainStdFunction(std::move(code), std::move(args));
 }
 
 template <class F>

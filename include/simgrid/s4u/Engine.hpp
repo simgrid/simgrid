@@ -53,7 +53,8 @@ public:
 
   /** Registers the main function of an actor that will be launched from the deployment file */
   void register_function(std::string name, int (*code)(int, char**));
-  // FIXME: provide a register_function(std::string, std::vector<std::string>)
+  /** Registers the main function of an actor that will be launched from the deployment file */
+  void register_function(std::string name, void (*code)(std::vector<std::string>));
 
   /** Registers a function as the default main function of actors
    *

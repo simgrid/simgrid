@@ -70,7 +70,7 @@ XBT_PUBLIC const std::vector<smx_actor_t>& process_get_runnable();
 // What's executed as SIMIX actor code:
 typedef std::function<void()> ActorCode;
 
-// Create ActorCode based on argv:
+// Create an ActorCode based on a std::string
 typedef std::function<ActorCode(std::vector<std::string> args)> ActorCodeFactory;
 
 XBT_PUBLIC void register_function(std::string name, ActorCodeFactory factory);

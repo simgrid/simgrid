@@ -67,6 +67,10 @@ static simgrid::simix::ActorCodeFactory toActorCodeFactory(xbt_main_func_t code)
 {
   return [code](std::vector<std::string> args) { return simgrid::xbt::wrap_main(code, std::move(args)); };
 }
+static simgrid::simix::ActorCodeFactory toActorCodeFactory(void (*code)(std::vector<std::string>))
+{
+  return [code](std::vector<std::string> args) { return simgrid::xbt::wrap_main(code, std::move(args)); };
+}
 
 /**
  * @brief Registers a #xbt_main_func_t code in a global table.
@@ -78,8 +82,10 @@ static simgrid::simix::ActorCodeFactory toActorCodeFactory(xbt_main_func_t code)
  */
 void SIMIX_function_register(std::string name, xbt_main_func_t code)
 {
-  xbt_assert(simix_global,
-    "SIMIX_global_init has to be called before SIMIX_function_register.");
+  simix_global->registered_functions[name] = toActorCodeFactory(code);
+}
+void SIMIX_function_register(std::string name, void (*code)(std::vector<std::string>))
+{
   simix_global->registered_functions[name] = toActorCodeFactory(code);
 }
 
