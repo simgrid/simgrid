@@ -25,8 +25,9 @@ static int master(int argc, char* argv[])
     mailbox         = simgrid::s4u::Mailbox::by_name(std::string("worker-") + std::to_string(i % workers_count));
     double* payload = new double(comp_size);
     try {
+      XBT_INFO("Send a message to %s", mailbox->get_cname());
       mailbox->put(payload, comm_size, 10.0);
-      XBT_INFO("Send completed");
+      XBT_INFO("Send to %s completed", mailbox->get_cname());
     } catch (xbt_ex& e) {
       switch (e.category) {
         case host_error:
@@ -84,6 +85,7 @@ static int worker(int argc, char* argv[])
   double comp_size                 = -1;
   while (1) {
     try {
+      XBT_INFO("Waiting a message on %s", mailbox->get_cname());
       payload   = static_cast<double*>(mailbox->get());
       comp_size = *payload;
       delete payload;
