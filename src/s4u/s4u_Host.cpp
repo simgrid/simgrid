@@ -86,8 +86,8 @@ void Host::turn_on()
 {
   if (is_off()) {
     simgrid::simix::simcall([this] {
-      this->pimpl_->turn_on();
       this->pimpl_cpu->turn_on();
+      this->pimpl_->turn_on();
       on_state_change(*this);
     });
   }
