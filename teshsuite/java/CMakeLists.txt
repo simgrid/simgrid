@@ -18,6 +18,7 @@ foreach(example semaphoregc sleephostoff)
       COMMAND ${CMAKE_COMMAND} -E touch ${example}/java-${example}_compiled
     )
     add_custom_target(java-${example} ALL DEPENDS java-${example}_compiled)
+    add_dependencies(java-all java-${example})
     set_target_properties(java-${example}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
   endif()
   set(examples_src ${examples_src} ${sources})
