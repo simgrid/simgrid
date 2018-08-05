@@ -2,7 +2,7 @@
 # the same at the bottom of the file as well.
 foreach (example actor-create actor-daemon actor-join actor-kill
                  actor-lifetime actor-migration actor-suspend actor-yield
-                 app-chainsend app-masterworker app-pingpong app-token-ring
+                 app-chainsend app-pingpong app-token-ring
                  async-wait async-waitany async-waitall
                  cloud-capping cloud-migration cloud-simple
                  energy-exec energy-boot energy-link energy-vm
@@ -21,6 +21,17 @@ foreach (example actor-create actor-daemon actor-join actor-kill
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
 endforeach()
+
+# MASTERWORKERS EXAMPLE
+foreach(variant fun class) 
+  add_executable       (s4u-app-masterworkers-${variant}  app-masterworkers/s4u-app-masterworkers-${variant}.cpp)
+  target_link_libraries(s4u-app-masterworkers-${variant}  simgrid)
+  set_target_properties(s4u-app-masterworkers-${variant}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-masterworkers)
+
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/masterworkers-fun/s4u-masterworkers-${variant}.cpp)
+endforeach()
+set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/masterworkers-fun/s4u-masterworkers.tesh)
+
 
 # CHORD EXAMPLE
 add_executable       (s4u-dht-chord dht-chord/s4u-dht-chord.cpp dht-chord/s4u-dht-chord-node.cpp)
@@ -62,7 +73,7 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u-app-bittorrent_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/s4u-app-masterworker_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait_d.xml
@@ -84,7 +95,7 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-re
 
 foreach(example actor-create actor-daemon actor-join actor-kill
                 actor-lifetime actor-migration actor-suspend actor-yield
-                app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring 
+                app-bittorrent app-chainsend app-masterworkers app-pingpong app-token-ring 
                 async-wait async-waitall async-waitany
                 cloud-capping cloud-migration cloud-simple
                 dht-chord dht-kademlia
