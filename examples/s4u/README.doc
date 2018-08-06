@@ -286,8 +286,8 @@ than the previous examples.
     Shows how to implement a classical communication pattern, where a token is exchanged along a ring to reach every
     participant.
 
-  - <b>Master Workers:</b> @ref examples/s4u/app-masterworker/s4u-app-masterworkers-class.cpp 
-                           @ref examples/s4u/app-masterworker/s4u-app-masterworkers-fun.cpp @n
+  - <b>Master Workers:</b> @ref examples/s4u/app-masterworkers/s4u-app-masterworkers-class.cpp 
+                           @ref examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp @n
     Another good old example, where one Master process has a bunch of task to dispatch to a set of several Worker 
     processes. This example comes in two equivalent variants, one
     where the actors are specified as simple functions (which is easier to
@@ -329,7 +329,8 @@ than the previous examples.
 @example examples/s4u/async-waitany/s4u-async-waitany.cpp
 @example examples/s4u/app-bittorrent/s4u-bittorrent.cpp
 @example examples/s4u/app-chainsend/s4u-app-chainsend.cpp
-@example examples/s4u/app-masterworker/s4u-app-masterworker.cpp
+@example examples/s4u/app-masterworkers/s4u-app-masterworkers-class.cpp
+@example examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp
 @example examples/s4u/app-pingpong/s4u-app-pingpong.cpp
 @example examples/s4u/app-token-ring/s4u-app-token-ring.cpp
 @example examples/s4u/dht-chord/s4u-dht-chord.cpp

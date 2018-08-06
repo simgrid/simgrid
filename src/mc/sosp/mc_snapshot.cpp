@@ -23,8 +23,7 @@
  *
  *  @param addr     Pointer
  *  @param snapshot Snapshot
- *  @param Snapshot region in the snapshot this pointer belongs to
- *         (or nullptr if it does not belong to any snapshot region)
+ *  @param process_index rank requesting the region
  * */
 mc_mem_region_t mc_get_snapshot_region(const void* addr, const simgrid::mc::Snapshot* snapshot, int process_index)
 {
@@ -102,11 +101,11 @@ const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, cons
 /** Compare memory between snapshots (with known regions)
  *
  * @param addr1 Address in the first snapshot
- * @param snapshot2 Region of the address in the first snapshot
+ * @param region1 Region of the address in the first snapshot
  * @param addr2 Address in the second snapshot
- * @param snapshot2 Region of the address in the second snapshot
- * @return same as memcmp
- * */
+ * @param region2 Region of the address in the second snapshot
+ * @return same semantic as memcmp
+ */
 int MC_snapshot_region_memcmp(const void* addr1, mc_mem_region_t region1, const void* addr2, mc_mem_region_t region2,
                               size_t size)
 {

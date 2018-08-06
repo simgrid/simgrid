@@ -34,9 +34,10 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
  * to create the SIMIX synchro. It can raise a host_error exception if the host crashed.
  *
  * @param name Name of the execution synchro to create
+ * @param category Tracing category
  * @param flops_amount amount Computation amount (in flops)
  * @param priority computation priority
- * @param bound
+ * @param bound Maximal speed for this execution (in flops) or -1 if no limit
  * @param host host where the synchro will be executed
  * @return A new SIMIX execution synchronization
  */

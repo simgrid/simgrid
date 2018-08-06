@@ -1,5 +1,4 @@
-/* Copyright (c) 2015-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -49,7 +48,7 @@ static XBT_ALWAYS_INLINE PageStore::hash_type mc_hash_page(const void* data)
 
 // ***** snapshot_page_manager
 
-PageStore::PageStore(size_t size) : memory_(nullptr), capacity_(size), top_index_(0)
+PageStore::PageStore(std::size_t size) : memory_(nullptr), capacity_(size), top_index_(0)
 {
   // Using mmap in order to be able to expand the region by relocating it somewhere else in the virtual memory space:
   void* memory =
