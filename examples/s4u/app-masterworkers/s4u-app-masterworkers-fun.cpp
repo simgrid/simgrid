@@ -7,6 +7,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_masterworker, "Messages specific for this example");
 
+// master-begin
 static void master(std::vector<std::string> args)
 {
   xbt_assert(args.size() == 5, "The master function expects 4 arguments");
@@ -38,7 +39,9 @@ static void master(std::vector<std::string> args)
     mailbox->put(new double(-1.0), 0);
   }
 }
+// master-end
 
+// worker-begin
 static void worker(std::vector<std::string> args)
 {
   xbt_assert(args.size() == 2, "The worker expects a single argument");
@@ -60,7 +63,9 @@ static void worker(std::vector<std::string> args)
 
   XBT_INFO("Exiting now.");
 }
+// worker-end
 
+// main-begin
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
@@ -81,3 +86,4 @@ int main(int argc, char* argv[])
 
   return 0;
 }
+// main-end
