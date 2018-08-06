@@ -286,9 +286,14 @@ than the previous examples.
     Shows how to implement a classical communication pattern, where a token is exchanged along a ring to reach every
     participant.
 
-  - <b>Master Workers:</b> @ref examples/s4u/app-masterworker/s4u-app-masterworker.cpp @n
+  - <b>Master Workers:</b> @ref examples/s4u/app-masterworker/s4u-app-masterworkers-class.cpp 
+                           @ref examples/s4u/app-masterworker/s4u-app-masterworkers-fun.cpp @n
     Another good old example, where one Master process has a bunch of task to dispatch to a set of several Worker 
-    processes. 
+    processes. This example comes in two equivalent variants, one
+    where the actors are specified as simple functions (which is easier to
+    understand for newcomers) and one where the actors are specified
+    as classes (which is more powerful for the users wanting to build
+    their own projects upon the example).
     
 @subsection s4u_ex_app_data Data diffusion
 
