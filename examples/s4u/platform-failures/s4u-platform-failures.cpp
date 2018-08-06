@@ -88,6 +88,24 @@ static int worker(int argc, char* argv[])
       XBT_INFO("Waiting a message on %s", mailbox->get_cname());
       payload   = static_cast<double*>(mailbox->get());
       comp_size = *payload;
+      xbt_assert(payload != nullptr, "mailbox->get() failed");
+      if (comp_size < 0) { /* - Exit when -1.0 is received */
+        XBT_INFO("I'm done. See you!");
+        break;
+      }
+      /*  - Otherwise, process the task */
+      try {
+        XBT_INFO("Start execution...");
+        simgrid::s4u::this_actor::execute(comp_size);
+        XBT_INFO("Execution complete.");
+      } catch (xbt_ex& e) {
+        if (e.category == host_error) {
+          XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
+          return -1;
+        } else
+          xbt_die("Unexpected behavior");
+      }
+
       delete payload;
     } catch (xbt_ex& e) {
       switch (e.category) {
@@ -101,23 +119,7 @@ static int worker(int argc, char* argv[])
           xbt_die("Unexpected behavior");
       }
     }
-    xbt_assert(payload != nullptr, "mailbox->get() failed");
-    if (comp_size < 0) { /* - Exit when -1.0 is received */
-      XBT_INFO("I'm done. See you!");
-      break;
-    }
-    /*  - Otherwise, process the task */
-    try {
-      simgrid::s4u::this_actor::execute(comp_size);
-    } catch (xbt_ex& e) {
-      if (e.category == host_error) {
-        XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-        return -1;
-      } else
-        xbt_die("Unexpected behavior");
-    }
   }
-  XBT_INFO("I'm done. See you!");
   return 0;
 }
 
