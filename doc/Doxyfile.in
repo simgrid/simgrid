@@ -715,13 +715,14 @@ INPUT                  = @CMAKE_HOME_DIRECTORY@/doc/doxygen/index.doc \
                          @CMAKE_HOME_DIRECTORY@/src/simdag/ \
                          @CMAKE_HOME_DIRECTORY@/src/simgrid/ \
                          @CMAKE_HOME_DIRECTORY@/src/simix/ \
-                         @CMAKE_HOME_DIRECTORY@/src/smpi/ \
                          @CMAKE_HOME_DIRECTORY@/src/surf/ \
                          @CMAKE_HOME_DIRECTORY@/src/xbt/ \
                          @CMAKE_BINARY_DIR@/include \
                          @CMAKE_BINARY_DIR@/src \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/README.doc \
                          @CMAKE_HOME_DIRECTORY@/examples/s4u/README.doc
+
+# @CMAKE_HOME_DIRECTORY@/src/smpi/ \
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -753,7 +754,16 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                =
+EXCLUDE  = @CMAKE_HOME_DIRECTORY@/src/surf/xml/simgrid_dtd.*
+EXCLUDE += @CMAKE_HOME_DIRECTORY@/src/simdag/dax_dtd.*
+EXCLUDE += @CMAKE_HOME_DIRECTORY@/src/xbt/automaton/parserPromela.*
+EXCLUDE += @CMAKE_HOME_DIRECTORY@/include/simgrid/forward.h
+EXCLUDE += @CMAKE_HOME_DIRECTORY@/src/bindings/java/*.cpp @CMAKE_HOME_DIRECTORY@/src/bindings/java/*.h
+EXCLUDE += @CMAKE_HOME_DIRECTORY@/src/simix/popping_accessors.hpp \
+           @CMAKE_HOME_DIRECTORY@/src/simix/popping_bodies.cpp    \
+           @CMAKE_HOME_DIRECTORY@/src/simix/popping_enum.h        \
+           @CMAKE_HOME_DIRECTORY@/src/simix/popping_generated.cpp
+
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -775,7 +785,9 @@ EXCLUDE_PATTERNS       =
 # wildcard * is used, a substring. Examples: ANamespace, AClass,
 # AClass::ANamespace, ANamespace::*Test
 
-EXCLUDE_SYMBOLS        =
+EXCLUDE_SYMBOLS  = s_xbt_dict_cursor s_xbt_dictelm xbt_dynar_s 
+EXCLUDE_SYMBOLS += xbt_edge xbt_graph xbt_node
+EXCLUDE_SYMBOLS +=  e_xbt_parmap_mode_t
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or
 # directories that contain example code fragments that are included (see
@@ -1470,10 +1482,12 @@ INCLUDE_FILE_PATTERNS  =
 # instead of the = operator.
 
 PREDEFINED             = __cplusplus \
+                         DOXYGEN \
                          XBT_PUBLIC= \
                          XBT_EXPORT_NO_IMPORT= \
                          XBT_IMPORT_NO_EXPORT= \
                          XBT_PUBLIC_DATA=extern \
+			 XBT_PUBLIC= \
                          XBT_INLINE= \
 			 XBT_PRIVATE= \
 			 XBT_ATTRIB_NORETURN= \
@@ -1549,7 +1563,7 @@ PERL_PATH              = /usr/bin/perl
 # this option also works with HAVE_DOT disabled, but it is recommended to
 # install and use dot, since it yields more powerful graphs.
 
-CLASS_DIAGRAMS         = YES
+CLASS_DIAGRAMS         = NO
 
 # You can define message sequence charts within doxygen comments using the \msc
 # command. Doxygen will then run the mscgen tool (see
@@ -1668,7 +1682,7 @@ CALL_GRAPH             = NO
 # the time of a run. So in most cases it will be better to enable caller
 # graphs for selected functions only using the \callergraph command.
 
-CALLER_GRAPH           = YES
+CALLER_GRAPH           = NO
 
 # If the GRAPHICAL_HIERARCHY and HAVE_DOT tags are set to YES then doxygen
 # will generate a graphical hierarchy of all classes instead of a textual one.
@@ -1688,7 +1702,7 @@ DIRECTORY_GRAPH        = YES
 # HTML_FILE_EXTENSION to xhtml in order to make the SVG files
 # visible in IE 9+ (other browsers do not have this requirement).
 
-DOT_IMAGE_FORMAT       = png
+DOT_IMAGE_FORMAT       = svg
 
 # If DOT_IMAGE_FORMAT is set to svg, then this option can be set to YES to
 # enable generation of interactive SVG images that allow zooming and panning.
