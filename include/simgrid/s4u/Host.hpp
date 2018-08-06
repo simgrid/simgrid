@@ -95,6 +95,8 @@ public:
   const char* get_property(std::string key) const;
   void set_property(std::string key, std::string value);
   std::unordered_map<std::string, std::string>* get_properties();
+
+#ifndef DOXYGEN
   /** @deprecated See Host::get_properties() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_properties()") std::map<std::string, std::string>* getProperties()
   {
@@ -104,6 +106,7 @@ public:
       res->insert(kv);
     return res;
   }
+#endif
 
   double get_speed() const;
   double get_available_speed() const;
@@ -115,6 +118,7 @@ public:
   void set_pstate(int pstate_index);
   int get_pstate() const;
 
+#ifndef DOXYGEN
   /** @deprecated See Host::get_speed() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_speed() instead.") double getSpeed() { return get_speed(); }
   /** @deprecated See Host::get_pstate_speed() */
@@ -122,6 +126,7 @@ public:
   {
     return get_pstate_speed(pstate_index);
   }
+#endif
 
   std::vector<const char*> get_attached_storages() const;
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_attached_storages() instead.") void getAttachedStorages(
@@ -151,6 +156,7 @@ public:
   void execute(double flops, double priority);
 
   // Deprecated functions
+#ifndef DOXYGEN
   /** @deprecated See Host::get_name() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_name()") simgrid::xbt::string const& getName() const
   {
@@ -203,6 +209,7 @@ public:
   {
     return get_pstate_count();
   }
+#endif /* !DOXYGEN */
 
 private:
   simgrid::xbt::string name_ {"noname"};
