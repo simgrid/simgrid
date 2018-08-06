@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
 
 - @c surf/precision: @ref options_model_precision
 
-- @c <b>For collective operations of SMPI, please refer to Section @ref options_index_smpi_coll</b>
+- <b>For collective operations of SMPI, please refer to Section @ref options_index_smpi_coll</b>
 - @c smpi/async-small-thresh: @ref options_model_network_asyncsend
 - @c smpi/bw-factor: @ref options_model_smpi_bw_factor
 - @c smpi/coll-selector: @ref options_model_smpi_collectives
@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
 - @c smpi/test: @ref options_model_smpi_test
 - @c smpi/wtime: @ref options_model_smpi_wtime
 
-- @c <b>Tracing configuration options can be found in Section @ref tracing_tracing_options</b>.
+- <b>Tracing configuration options can be found in Section @ref tracing_tracing_options</b>.
 
 - @c storage/model: @ref options_storage_model
 - @c verbose-exit: @ref options_generic_exit
