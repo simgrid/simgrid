@@ -309,6 +309,7 @@ teshsuite/smpi/coll-gather/coll-gather
 teshsuite/smpi/coll-reduce/coll-reduce
 teshsuite/smpi/coll-reduce-scatter/coll-reduce-scatter
 teshsuite/smpi/coll-scatter/coll-scatter
+teshsuite/smpi/fort_args/fort_args
 teshsuite/smpi/isp/umpire/abort
 teshsuite/smpi/isp/umpire/abort1
 teshsuite/smpi/isp/umpire/abort2
