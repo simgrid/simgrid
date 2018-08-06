@@ -3,7 +3,13 @@ image: debian:testing-slim
 .build: &build
   script:
   - apt-get update
-  - apt-get install -y python3-sphinx doxygen python3-breathe python3-sphinx-rtd-theme
+  - apt-get install -y python3-sphinx doxygen python3-breathe python3-sphinx-rtd-theme pip3
+  - apt-get install -y cmake doxygen libboost-all-dev libboost-dev
+  - pip3 install --no-deps exhale
+  - cmake -Denable_documentation=ON .
+  - make documentation
+  - mkdir docs/doxyoutput
+  - mv doc/xml docs/doxyoutput
   - cd docs
   - sphinx-build -M html source/ build/
   - mv build/html ../public

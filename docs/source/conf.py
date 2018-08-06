@@ -43,11 +43,27 @@ extensions = [
     'sphinx.ext.mathjax',
 #    'sphinx.ext.ifconfig',
     'breathe',
+    'exhale',
 ]
 
-breathe_projects = { 'simgrid': '../doc/xml' }
+breathe_projects = { 'simgrid': '../../doc/xml' }
 breathe_default_project = "simgrid"
- 
+
+# Setup the exhale extension
+exhale_args = {
+    # These arguments are required
+    "containmentFolder":     "./api",
+    "rootFileName":          "library_root.rst",
+    "rootFileTitle":         "SimGrid Full API",
+    "doxygenStripFromPath":  "..",
+    # Suggested optional arguments
+    "createTreeView":        True,
+    # TIP: if using the sphinx-bootstrap-theme, you need
+    # "treeViewIsBootstrap": True,
+    "exhaleExecutesDoxygen": True,
+    "exhaleDoxygenStdin":    "INPUT = ../../include"
+}
+
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ['_templates']
 
