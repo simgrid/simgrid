@@ -1,3 +1,7 @@
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef HAVE_SG_PLUGIN_LB
 #define HAVE_SG_PLUGIN_LB
