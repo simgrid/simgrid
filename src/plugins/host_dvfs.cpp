@@ -61,7 +61,7 @@ namespace dvfs {
  */
 class Governor {
 
-protected:
+private:
   simgrid::s4u::Host* const host_;
   double sampling_rate_;
 
