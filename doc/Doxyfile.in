@@ -686,43 +686,9 @@ INPUT                  = @CMAKE_HOME_DIRECTORY@/doc/doxygen/index.doc \
                          @CMAKE_HOME_DIRECTORY@/doc/doxygen/module-trace.doc \
                          @CMAKE_BINARY_DIR@/doc/doxygen/logcategories.doc \
                          @CMAKE_HOME_DIRECTORY@/include/ \
-                         @CMAKE_HOME_DIRECTORY@/include/simgrid/ \
-                         @CMAKE_HOME_DIRECTORY@/include/simgrid/jedule/ \
-                         @CMAKE_HOME_DIRECTORY@/include/simgrid/kernel/ \
-                         @CMAKE_HOME_DIRECTORY@/include/simgrid/kernel/resource/ \
-                         @CMAKE_HOME_DIRECTORY@/include/simgrid/kernel/routing/ \
-                         @CMAKE_HOME_DIRECTORY@/include/simgrid/plugins/ \
-                         @CMAKE_HOME_DIRECTORY@/include/simgrid/s4u/ \
-                         @CMAKE_HOME_DIRECTORY@/include/simgrid/simix/ \
-                         @CMAKE_HOME_DIRECTORY@/include/simgrid/smpi/ \
-                         @CMAKE_HOME_DIRECTORY@/include/xbt \
-                         @CMAKE_HOME_DIRECTORY@/src/include/simgrid/ \
-                         @CMAKE_HOME_DIRECTORY@/src/include/surf \
-                         @CMAKE_HOME_DIRECTORY@/src/include/xbt \
-                         @CMAKE_HOME_DIRECTORY@/src/instr/ \
-                         @CMAKE_HOME_DIRECTORY@/src/instr/jedule/ \
-                         @CMAKE_HOME_DIRECTORY@/src/kernel/ \
-                         @CMAKE_HOME_DIRECTORY@/src/kernel/activity/ \
-                         @CMAKE_HOME_DIRECTORY@/src/kernel/context/ \
-                         @CMAKE_HOME_DIRECTORY@/src/kernel/lmm/ \
-                         @CMAKE_HOME_DIRECTORY@/src/kernel/resource/ \
-                         @CMAKE_HOME_DIRECTORY@/src/kernel/routing/ \
-                         @CMAKE_HOME_DIRECTORY@/src/msg/ \
-                         @CMAKE_HOME_DIRECTORY@/src/plugins/ \
-                         @CMAKE_HOME_DIRECTORY@/src/plugins/file_system/ \
-                         @CMAKE_HOME_DIRECTORY@/src/plugins/vm/ \
-                         @CMAKE_HOME_DIRECTORY@/src/s4u/ \
-                         @CMAKE_HOME_DIRECTORY@/src/simdag/ \
-                         @CMAKE_HOME_DIRECTORY@/src/simgrid/ \
-                         @CMAKE_HOME_DIRECTORY@/src/simix/ \
-                         @CMAKE_HOME_DIRECTORY@/src/surf/ \
-                         @CMAKE_HOME_DIRECTORY@/src/xbt/ \
-                         @CMAKE_BINARY_DIR@/include \
-                         @CMAKE_BINARY_DIR@/src \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/README.doc \
                          @CMAKE_HOME_DIRECTORY@/examples/s4u/README.doc
 
-# @CMAKE_HOME_DIRECTORY@/src/smpi/ \
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -754,16 +720,7 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE  = @CMAKE_HOME_DIRECTORY@/src/surf/xml/simgrid_dtd.*
-EXCLUDE += @CMAKE_HOME_DIRECTORY@/src/simdag/dax_dtd.*
-EXCLUDE += @CMAKE_HOME_DIRECTORY@/src/xbt/automaton/parserPromela.*
-EXCLUDE += @CMAKE_HOME_DIRECTORY@/include/simgrid/forward.h
-EXCLUDE += @CMAKE_HOME_DIRECTORY@/src/bindings/java/*.cpp @CMAKE_HOME_DIRECTORY@/src/bindings/java/*.h
-EXCLUDE += @CMAKE_HOME_DIRECTORY@/src/simix/popping_accessors.hpp \
-           @CMAKE_HOME_DIRECTORY@/src/simix/popping_bodies.cpp    \
-           @CMAKE_HOME_DIRECTORY@/src/simix/popping_enum.h        \
-           @CMAKE_HOME_DIRECTORY@/src/simix/popping_generated.cpp
-
+EXCLUDE = 
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -777,7 +734,18 @@ EXCLUDE_SYMLINKS       = YES
 # against the file with absolute path, so to exclude all test directories
 # for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       =
+EXCLUDE_PATTERNS  = */include/simgrid/forward.h
+EXCLUDE_PATTERNS += */include/smpi/*
+
+EXCLUDE_PATTERNS += @CMAKE_HOME_DIRECTORY@/src/surf/xml/simgrid_dtd.*
+EXCLUDE_PATTERNS += @CMAKE_HOME_DIRECTORY@/src/simdag/dax_dtd.*
+EXCLUDE_PATTERNS += @CMAKE_HOME_DIRECTORY@/src/xbt/automaton/parserPromela.*
+EXCLUDE_PATTERNS += @CMAKE_HOME_DIRECTORY@/src/bindings/java/*.cpp @CMAKE_HOME_DIRECTORY@/src/bindings/java/*.h
+EXCLUDE_PATTERNS += @CMAKE_HOME_DIRECTORY@/src/simix/popping_accessors.hpp \
+                    @CMAKE_HOME_DIRECTORY@/src/simix/popping_bodies.cpp    \
+                    @CMAKE_HOME_DIRECTORY@/src/simix/popping_enum.h        \
+                    @CMAKE_HOME_DIRECTORY@/src/simix/popping_generated.cpp
+
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
@@ -788,6 +756,7 @@ EXCLUDE_PATTERNS       =
 EXCLUDE_SYMBOLS  = s_xbt_dict_cursor s_xbt_dictelm xbt_dynar_s 
 EXCLUDE_SYMBOLS += xbt_edge xbt_graph xbt_node
 EXCLUDE_SYMBOLS +=  e_xbt_parmap_mode_t
+EXCLUDE_SYMBOLS += MPI_*
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or
 # directories that contain example code fragments that are included (see
@@ -1503,7 +1472,8 @@ PREDEFINED             = __cplusplus \
 # overrules the definition found in the source code.
 
 EXPAND_AS_DEFINED      = COLL_APPLY COLL_GATHERS COLL_ALLGATHERS COLL_ALLGATHERVS COLL_ALLREDUCES COLL_ALLTOALLS \
-                         COLL_ALLTOALLVS COLL_BCASTS COLL_REDUCES COLL_REDUCE_SCATTERS COLL_SCATTERS COLL_BARRIERS
+                         COLL_ALLTOALLVS COLL_BCASTS COLL_REDUCES COLL_REDUCE_SCATTERS COLL_SCATTERS COLL_BARRIERS \
+			 MPI_CALL
 
 # If the SKIP_FUNCTION_MACROS tag is set to YES (the default) then
 # doxygen's preprocessor will remove all references to function-like macros
