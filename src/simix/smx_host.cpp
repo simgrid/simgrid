@@ -24,27 +24,6 @@ const char* sg_host_self_get_name()
   return host->get_cname();
 }
 
-/**
- * @brief Add a process to the list of the processes that the host will restart when it comes back
- * This function add a process to the list of the processes that will be restarted when the host comes
- * back. It is expected that this function is called when the host is down.
- * The processes will only be restarted once, meaning that you will have to register the process
- * again to restart the process again.
- */
-void SIMIX_host_add_auto_restart_process(sg_host_t host, simgrid::kernel::actor::ActorImpl* actor)
-{
-  simgrid::kernel::actor::ProcessArg* arg = new simgrid::kernel::actor::ProcessArg(host, actor);
-
-  if (host->is_off() && watched_hosts.find(host->get_cname()) == watched_hosts.end()) {
-    watched_hosts.insert(host->get_cname());
-    XBT_DEBUG("Push host %s to watched_hosts because state == SURF_RESOURCE_OFF", host->get_cname());
-  }
-  if (host->pimpl_->actors_at_boot_.find(actor->get_name()) == host->pimpl_->actors_at_boot_.end()) {
-    XBT_DEBUG("Adding Process %s to the actors_at_boot_ list of Host %s", arg->name.c_str(), arg->host->get_cname());
-    host->pimpl_->actors_at_boot_.insert({arg->name, arg});
-  }
-}
-
 simgrid::kernel::activity::ExecImplPtr SIMIX_execution_start(std::string name, std::string category,
                                                              double flops_amount, double priority, double bound,
                                                              sg_host_t host)
