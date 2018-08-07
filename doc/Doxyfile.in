@@ -686,6 +686,7 @@ INPUT                  = @CMAKE_HOME_DIRECTORY@/doc/doxygen/index.doc \
                          @CMAKE_HOME_DIRECTORY@/doc/doxygen/module-trace.doc \
                          @CMAKE_BINARY_DIR@/doc/doxygen/logcategories.doc \
                          @CMAKE_HOME_DIRECTORY@/include/ \
+			 @CMAKE_HOME_DIRECTORY@/src/plugins/ \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/README.doc \
                          @CMAKE_HOME_DIRECTORY@/examples/s4u/README.doc
 
@@ -1458,6 +1459,7 @@ PREDEFINED             = __cplusplus \
                          XBT_PUBLIC_DATA=extern \
 			 XBT_PUBLIC= \
                          XBT_INLINE= \
+			 XBT_ALWAYS_INLINE= \
 			 XBT_PRIVATE= \
 			 XBT_ATTRIB_NORETURN= \
 			 XBT_ATTRIB_UNUSED= \

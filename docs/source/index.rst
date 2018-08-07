@@ -24,7 +24,6 @@ Welcome to SimGrid's documentation!
    :caption: API Reference:
 
 	     API <api/library_root.rst>
-	     S4U <api/s4u.rst>
 
 Indices and tables
 ==================

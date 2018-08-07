@@ -1,5 +1,5 @@
-This file follows the Doxygen syntax to be included in the
-documentation, but it should remain readable directly.
+// This file follows the Doxygen syntax to be included in the
+// documentation, but it should remain readable directly.
 
 /** 
  @defgroup msg_examples MSG examples
@@ -114,12 +114,12 @@ TODO: show the XML files instead if it's what is interesting. On a "XML example 
 
 */
 
-As a human, you can stop reading at this point. The rest is garbage:
-
-Every example must be listed in the following, but it's not possible
-to move this content upper as each @example directive seems to eat
-everything until the next */ marker (and the content is placed at the
-top of the example file). 
+// As a human, you can stop reading at this point. The rest is garbage:
+// 
+// Every example must be listed in the following, but it's not possible
+// to move this content upper as each @example directive seems to eat
+// everything until the next */ marker (and the content is placed at the
+// top of the example file). 
 
 
 /**
