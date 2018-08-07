@@ -28,9 +28,9 @@ foreach(variant fun class)
   target_link_libraries(s4u-app-masterworkers-${variant}  simgrid)
   set_target_properties(s4u-app-masterworkers-${variant}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-masterworkers)
 
-  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/masterworkers-fun/s4u-masterworkers-${variant}.cpp)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers-${variant}.cpp)
 endforeach()
-set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/masterworkers-fun/s4u-masterworkers.tesh)
+set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers.tesh)
 
 
 # CHORD EXAMPLE
