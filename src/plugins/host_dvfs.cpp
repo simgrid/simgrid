@@ -192,7 +192,9 @@ public:
        */
       // Load is now < freq_up_threshold; exclude pstate 0 (the fastest)
       // because pstate 0 can only be selected if load > freq_up_threshold_
-      int new_pstate = max_pstate - load * (max_pstate + 1);
+      int new_pstate = get_max_pstate() - load * (get_max_pstate() + 1);
+      if (new_pstate < get_min_pstate())
+        new_pstate = get_min_pstate();
       get_host()->set_pstate(new_pstate);
 
       XBT_DEBUG("Load: %f < threshold: %f --> changed to pstate %i", load, freq_up_threshold_, new_pstate);
