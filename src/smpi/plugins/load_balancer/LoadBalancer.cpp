@@ -37,7 +37,7 @@ struct XBT_PRIVATE pair_handle_load
 static std::map<const simgrid::s4u::Host*, pair_handle_load> additional_load;
 
 bool compare_hosts::operator()(const simgrid::s4u::Host* a, const simgrid::s4u::Host* b) const {
-  return /*sg_host_get_avg_load(a) +*/ additional_load[a].load > /*sg_host_get_avg_load(b) +*/ additional_load[b].load;
+  return additional_load[a].load > additional_load[b].load;
 }
 
 
