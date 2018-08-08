@@ -63,11 +63,27 @@ IoPtr Storage::io_init(sg_size_t size, Io::OpType type)
   return res;
 }
 
+IoPtr Storage::read_async(sg_size_t size)
+{
+
+  IoPtr res = io_init(size, Io::OpType::READ);
+  res->start();
+  return res;
+}
+
 sg_size_t Storage::read(sg_size_t size)
 {
   IoPtr i = io_init(size, Io::OpType::READ);
   i->start()->wait();
   return i->get_performed_ioops();
+}
+
+IoPtr Storage::write_async(sg_size_t size)
+{
+
+  IoPtr res = io_init(size, Io::OpType::WRITE);
+  res->start();
+  return res;
 }
 
 sg_size_t Storage::write(sg_size_t size)

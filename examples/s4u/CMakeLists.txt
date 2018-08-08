@@ -8,7 +8,7 @@ foreach (example actor-create actor-daemon actor-join actor-kill
                  energy-exec energy-boot energy-link energy-vm
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-monitor exec-ptask exec-remote
-                 io-file-system io-file-remote io-storage-raw
+                 io-async io-file-system io-file-remote io-storage-raw
                  mutex
                  platform-failures platform-properties plugin-hostload 
                  replay-comm replay-storage
@@ -103,7 +103,7 @@ foreach(example actor-create actor-daemon actor-join actor-kill
                 engine-filtering
                 exec-async exec-basic exec-dvfs exec-monitor exec-ptask exec-remote
                 platform-properties plugin-hostload mutex
-                io-file-system io-file-remote io-storage-raw
+                io-async io-file-system io-file-remote io-storage-raw
                 replay-comm replay-storage
                 routing-get-clusters
                 )
