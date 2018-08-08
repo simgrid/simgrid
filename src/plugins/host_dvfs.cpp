@@ -69,7 +69,7 @@ public:
 
   explicit Governor(simgrid::s4u::Host* ptr) : host_(ptr) { init(); }
   virtual ~Governor() = default;
-  virtual std::string get_name() = 0;
+  virtual std::string get_name() const = 0;
   simgrid::s4u::Host* get_host() const { return host_; }
 
   void init()
@@ -84,7 +84,7 @@ public:
   }
 
   virtual void update()         = 0;
-  double get_sampling_rate() { return sampling_rate_; }
+  double get_sampling_rate() const { return sampling_rate_; }
 };
 
 /**
@@ -100,7 +100,7 @@ public:
 class Performance : public Governor {
 public:
   explicit Performance(simgrid::s4u::Host* ptr) : Governor(ptr) {}
-  std::string get_name() override { return "Performance"; }
+  std::string get_name() const override { return "Performance"; }
 
   void update() override { get_host()->set_pstate(0); }
 };
@@ -118,7 +118,7 @@ public:
 class Powersave : public Governor {
 public:
   explicit Powersave(simgrid::s4u::Host* ptr) : Governor(ptr) {}
-  std::string get_name() override { return "Powersave"; }
+  std::string get_name() const override { return "Powersave"; }
 
   void update() override { get_host()->set_pstate(get_host()->get_pstate_count() - 1); }
 };
@@ -141,7 +141,7 @@ class OnDemand : public Governor {
 
 public:
   explicit OnDemand(simgrid::s4u::Host* ptr) : Governor(ptr) {}
-  std::string get_name() override { return "OnDemand"; }
+  std::string get_name() const override { return "OnDemand"; }
 
   void update() override
   {
@@ -188,7 +188,7 @@ class Conservative : public Governor {
 
 public:
   explicit Conservative(simgrid::s4u::Host* ptr) : Governor(ptr) {}
-  virtual std::string get_name() override { return "Conservative"; }
+  virtual std::string get_name() const override { return "Conservative"; }
 
   virtual void update() override
   {
