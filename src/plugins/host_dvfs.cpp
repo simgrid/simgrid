@@ -77,8 +77,8 @@ class Governor {
 private:
   simgrid::s4u::Host* const host_;
   double sampling_rate_;
-  int min_pstate;
-  int max_pstate;
+  int min_pstate; //< Never use a pstate less than this one
+  int max_pstate; //< Never use a pstate larger than this one
 
 public:
   explicit Governor(simgrid::s4u::Host* ptr)
@@ -91,6 +91,8 @@ public:
   virtual ~Governor() = default;
   virtual std::string get_name() const = 0;
   simgrid::s4u::Host* get_host() const { return host_; }
+  int get_min_pstate() const { return min_pstate; }
+  int get_max_pstate() const { return max_pstate; }
 
   void init()
   {
@@ -133,7 +135,7 @@ public:
   explicit Performance(simgrid::s4u::Host* ptr) : Governor(ptr) {}
   std::string get_name() const override { return "Performance"; }
 
-  void update() override { get_host()->set_pstate(min_pstate); }
+  void update() override { get_host()->set_pstate(get_min_pstate()); }
 };
 
 /**
@@ -151,7 +153,7 @@ public:
   explicit Powersave(simgrid::s4u::Host* ptr) : Governor(ptr) {}
   std::string get_name() const override { return "Powersave"; }
 
-  void update() override { get_host()->set_pstate(max_pstate); }
+  void update() override { get_host()->set_pstate(get_max_pstate()); }
 };
 
 /**
@@ -180,8 +182,8 @@ public:
     sg_host_load_reset(get_host()); // Only consider the period between two calls to this method!
 
     if (load > freq_up_threshold_) {
-      get_host()->set_pstate(min_pstate); /* Run at max. performance! */
-      XBT_INFO("Load: %f > threshold: %f --> changed to pstate %i", load, freq_up_threshold_, min_pstate);
+      get_host()->set_pstate(get_min_pstate()); /* Run at max. performance! */
+      XBT_INFO("Load: %f > threshold: %f --> changed to pstate %i", load, freq_up_threshold_, get_min_pstate());
     } else {
       /* The actual implementation uses a formula here: (See Kernel file cpufreq_ondemand.c:158)
        *
@@ -200,7 +202,6 @@ public:
       XBT_DEBUG("Load: %f < threshold: %f --> changed to pstate %i", load, freq_up_threshold_, new_pstate);
     }
   }
-
 };
 
 /**
@@ -230,7 +231,7 @@ public:
     sg_host_load_reset(get_host()); // Only consider the period between two calls to this method!
 
     if (load > freq_up_threshold_) {
-      if (pstate != min_pstate) {
+      if (pstate != get_min_pstate()) {
         get_host()->set_pstate(pstate - 1);
         XBT_INFO("Load: %f > threshold: %f -> increasing performance to pstate %d", load, freq_up_threshold_,
                  pstate - 1);
@@ -239,7 +240,7 @@ public:
                   freq_up_threshold_, pstate);
       }
     } else if (load < freq_down_threshold_) {
-      if (pstate != max_pstate) { // Are we in the slowest pstate already?
+      if (pstate != get_max_pstate()) { // Are we in the slowest pstate already?
         get_host()->set_pstate(pstate + 1);
         XBT_INFO("Load: %f < threshold: %f -> slowing down to pstate %d", load, freq_down_threshold_, pstate + 1);
       } else {
@@ -264,7 +265,7 @@ private:
 
 public:
   explicit Adagio(simgrid::s4u::Host* ptr)
-      : Governor(ptr), rates(100, std::vector<double>(host_->get_pstate_count(), 0.0))
+      : Governor(ptr), rates(100, std::vector<double>(ptr->get_pstate_count(), 0.0))
   {
     simgrid::smpi::plugin::ampi::on_iteration_in.connect([this](simgrid::s4u::ActorPtr actor) {
       // Every instance of this class subscribes to this event, so one per host
@@ -304,21 +305,21 @@ public:
 
   void pre_task()
   {
-    sg_host_load_reset(host_);
-    comp_counter = sg_host_get_computed_flops(host_); // Should be 0 because of the reset
+    sg_host_load_reset(get_host());
+    comp_counter = sg_host_get_computed_flops(get_host()); // Should be 0 because of the reset
     comp_timer   = 0;
     start_time   = simgrid::s4u::Engine::get_clock();
     if (rates.size() <= task_id)
-      rates.resize(task_id + 5, std::vector<double>(host_->get_pstate_count(), 0.0));
+      rates.resize(task_id + 5, std::vector<double>(get_host()->get_pstate_count(), 0.0));
     if (rates[task_id][best_pstate] == 0)
       best_pstate = 0;
-    host_->set_pstate(best_pstate); // Load our schedule
+    get_host()->set_pstate(best_pstate); // Load our schedule
     XBT_DEBUG("Set pstate to %i", best_pstate);
   }
 
   void post_task()
   {
-    double computed_flops = sg_host_get_computed_flops(host_) - comp_counter;
+    double computed_flops = sg_host_get_computed_flops(get_host()) - comp_counter;
     double target_time    = (simgrid::s4u::Engine::get_clock() - start_time);
     target_time =
         target_time *
@@ -327,13 +328,13 @@ public:
     bool is_initialized         = rates[task_id][best_pstate] != 0;
     rates[task_id][best_pstate] = computed_flops / comp_timer;
     if (not is_initialized) {
-      for (int i = 1; i < host_->get_pstate_count(); i++) {
-        rates[task_id][i] = rates[task_id][0] * (host_->get_pstate_speed(i) / host_->get_speed());
+      for (int i = 1; i < get_host()->get_pstate_count(); i++) {
+        rates[task_id][i] = rates[task_id][0] * (get_host()->get_pstate_speed(i) / get_host()->get_speed());
       }
       is_initialized = true;
     }
 
-    for (int pstate = host_->get_pstate_count() - 1; pstate >= 0; pstate--) {
+    for (int pstate = get_host()->get_pstate_count() - 1; pstate >= 0; pstate--) {
       if (computed_flops / rates[task_id][pstate] <= target_time) {
         // We just found the pstate we want to use!
         best_pstate = pstate;
