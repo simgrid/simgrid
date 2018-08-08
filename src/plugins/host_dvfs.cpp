@@ -81,12 +81,11 @@ private:
   int max_pstate;
 
 public:
-
-  explicit Governor(simgrid::s4u::Host* ptr) : host_(ptr), min_pstate(cfg_min_pstate),
-    max_pstate(cfg_max_pstate == max_pstate_not_limited ? host_->get_pstate_count() - 1 : cfg_max_pstate) { 
-    xbt_assert(max_pstate <= host_->get_pstate_count() - 1);
-    xbt_assert(min_pstate <= max_pstate);
-    xbt_assert(0 <= min_pstate);
+  explicit Governor(simgrid::s4u::Host* ptr)
+      : host_(ptr)
+      , min_pstate(cfg_min_pstate)
+      , max_pstate(cfg_max_pstate == max_pstate_not_limited ? host_->get_pstate_count() - 1 : cfg_max_pstate)
+  {
     init();
   }
   virtual ~Governor() = default;
@@ -101,6 +100,18 @@ public:
     } else {
       sampling_rate_ = cfg_sampling_rate;
     }
+    const char* local_min_pstate_config = host_->get_property(cfg_min_pstate.get_name());
+    if (local_min_pstate_config != nullptr) {
+      min_pstate = std::stoi(local_min_pstate_config);
+    }
+
+    const char* local_max_pstate_config = host_->get_property(cfg_max_pstate.get_name());
+    if (local_max_pstate_config != nullptr) {
+      max_pstate = std::stod(local_max_pstate_config);
+    }
+    xbt_assert(max_pstate <= host_->get_pstate_count() - 1, "Value for max_pstate too large!");
+    xbt_assert(min_pstate <= max_pstate, "min_pstate is larger than max_pstate!");
+    xbt_assert(0 <= min_pstate, "min_pstate is negative!");
   }
 
   virtual void update()         = 0;
