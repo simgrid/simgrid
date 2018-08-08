@@ -32,6 +32,15 @@ static simgrid::config::Flag<std::string> cfg_governor("plugin/dvfs/governor",
 
     [](std::string val) { if (val != "performance") sg_host_dvfs_plugin_init(); });
 
+static simgrid::config::Flag<int> cfg_min_pstate("plugin/dvfs/min-pstate", {"plugin/dvfs/min_pstate"},
+    "Which pstate is the minimum (and hence fastest) pstate for this governor?", 0,
+    [](int index) {});
+
+static const int max_pstate_not_limited = -1;
+static simgrid::config::Flag<int> cfg_max_pstate("plugin/dvfs/max-pstate", {"plugin/dvfs/max_pstate"},
+    "Which pstate is the maximum (and hence slowest) pstate for this governor?", max_pstate_not_limited,
+    [](int index) {});
+
 /** @addtogroup SURF_plugin_load
 
   This plugin makes it very simple for users to obtain the current load for each host.
@@ -68,10 +77,18 @@ class Governor {
 private:
   simgrid::s4u::Host* const host_;
   double sampling_rate_;
+  int min_pstate;
+  int max_pstate;
 
 public:
 
-  explicit Governor(simgrid::s4u::Host* ptr) : host_(ptr) { init(); }
+  explicit Governor(simgrid::s4u::Host* ptr) : host_(ptr), min_pstate(cfg_min_pstate),
+    max_pstate(cfg_max_pstate == max_pstate_not_limited ? host_->get_pstate_count() - 1 : cfg_max_pstate) { 
+    xbt_assert(max_pstate <= host_->get_pstate_count() - 1);
+    xbt_assert(min_pstate <= max_pstate);
+    xbt_assert(0 <= min_pstate);
+    init();
+  }
   virtual ~Governor() = default;
   virtual std::string get_name() const = 0;
   simgrid::s4u::Host* get_host() const { return host_; }
@@ -106,7 +123,7 @@ public:
   explicit Performance(simgrid::s4u::Host* ptr) : Governor(ptr) {}
   std::string get_name() const override { return "Performance"; }
 
-  void update() override { get_host()->set_pstate(0); }
+  void update() override { get_host()->set_pstate(min_pstate); }
 };
 
 /**
@@ -124,7 +141,7 @@ public:
   explicit Powersave(simgrid::s4u::Host* ptr) : Governor(ptr) {}
   std::string get_name() const override { return "Powersave"; }
 
-  void update() override { get_host()->set_pstate(get_host()->get_pstate_count() - 1); }
+  void update() override { get_host()->set_pstate(max_pstate); }
 };
 
 /**
@@ -153,8 +170,8 @@ public:
     sg_host_load_reset(get_host()); // Only consider the period between two calls to this method!
 
     if (load > freq_up_threshold_) {
-      get_host()->set_pstate(0); /* Run at max. performance! */
-      XBT_INFO("Load: %f > threshold: %f --> changed to pstate %i", load, freq_up_threshold_, 0);
+      get_host()->set_pstate(min_pstate); /* Run at max. performance! */
+      XBT_INFO("Load: %f > threshold: %f --> changed to pstate %i", load, freq_up_threshold_, min_pstate);
     } else {
       /* The actual implementation uses a formula here: (See Kernel file cpufreq_ondemand.c:158)
        *
@@ -163,7 +180,6 @@ public:
        * So they assume that frequency increases by 100 MHz. We will just use
        * lowest_pstate - load*pstatesCount()
        */
-      int max_pstate = get_host()->get_pstate_count() - 1;
       // Load is now < freq_up_threshold; exclude pstate 0 (the fastest)
       // because pstate 0 can only be selected if load > freq_up_threshold_
       int new_pstate = max_pstate - load * (max_pstate + 1);
@@ -202,7 +218,7 @@ public:
     sg_host_load_reset(get_host()); // Only consider the period between two calls to this method!
 
     if (load > freq_up_threshold_) {
-      if (pstate != 0) {
+      if (pstate != min_pstate) {
         get_host()->set_pstate(pstate - 1);
         XBT_INFO("Load: %f > threshold: %f -> increasing performance to pstate %d", load, freq_up_threshold_,
                  pstate - 1);
@@ -211,7 +227,6 @@ public:
                   freq_up_threshold_, pstate);
       }
     } else if (load < freq_down_threshold_) {
-      int max_pstate = get_host()->get_pstate_count() - 1;
       if (pstate != max_pstate) { // Are we in the slowest pstate already?
         get_host()->set_pstate(pstate + 1);
         XBT_INFO("Load: %f < threshold: %f -> slowing down to pstate %d", load, freq_down_threshold_, pstate + 1);
