@@ -25,8 +25,8 @@ struct XBT_PRIVATE compare_hosts {
 typedef boost::heap::fibonacci_heap<simgrid::s4u::Host*, boost::heap::compare<compare_hosts>>::handle_type heap_handle;
 
 /**
- * Structure that imitates a std::pair, but it allows us 
- * to use meaningful names instead of .first and .second 
+ * Structure that imitates a std::pair, but it allows us
+ * to use meaningful names instead of .first and .second
  */
 struct XBT_PRIVATE pair_handle_load
 {
