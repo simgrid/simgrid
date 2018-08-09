@@ -138,7 +138,9 @@ modify the examples directly but instead create your own project in
 eclipse. This will make it easier to upgrade to another version of
 SimGrid.
 
-Troubleshooting your project setup
+.. _install_yours_troubleshooting:
+
+Troubleshooting your Project Setup
 ----------------------------------
 
 Library not found
