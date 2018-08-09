@@ -39,12 +39,15 @@ release = u'3.21'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.todo',
 #    'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
 #    'sphinx.ext.ifconfig',
     'breathe',
     'exhale',
 ]
+
+todo_include_todos = True
 
 breathe_projects = { 'simgrid': '../../doc/xml' }
 breathe_default_project = "simgrid"
