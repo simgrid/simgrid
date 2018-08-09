@@ -2,8 +2,8 @@ image: debian:testing-slim
 
 .build: &build
   script:
-  - apt-get update >/dev/null
-  - apt-get install -y python3-pip cmake doxygen libboost-all-dev libboost-dev fig2dev >/dev/null
+  - apt-get update
+  - apt-get install -y python3-pip cmake doxygen libboost-all-dev libboost-dev fig2dev
   - pip3 install --requirement docs/requirements.txt 
   - cmake -Denable_documentation=ON .
   - make documentation
