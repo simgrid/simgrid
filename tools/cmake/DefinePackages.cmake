@@ -877,7 +877,6 @@ set(DOC_SOURCES
   doc/doxygen/application.doc
   doc/doxygen/community.doc
   doc/doxygen/deployment.doc
-  doc/doxygen/examples.doc
   doc/doxygen/footer.html
   doc/doxygen/getting_started.doc
   doc/doxygen/header.html
