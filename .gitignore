@@ -199,9 +199,11 @@ examples/simdag/scheduling/sd_scheduling
 examples/simdag/test/sd_test
 examples/simdag/throttling/sd_throttling
 examples/simdag/typed_tasks/sd_typed_tasks
+examples/smpi/ampi/smpi_ampi
 examples/smpi/energy/f77/sef
 examples/smpi/energy/f90/sef90
 examples/smpi/energy/smpi_energy
+examples/smpi/load_balancer_replay/load_balancer_replay
 examples/smpi/mc/smpi_bugged1
 examples/smpi/mc/smpi_bugged1_liveness
 examples/smpi/mc/smpi_bugged2
