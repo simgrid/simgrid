@@ -78,7 +78,7 @@ public:
     smpilb_bar.wait();
     was_executed = false; // Must stay behind this barrier so that all processes have passed the if clause
 
-    migrate_to_host = lb.get_mapping();
+    migrate_to_host = lb.get_mapping(simgrid::s4u::Actor::self());
     if (cur_host != migrate_to_host) { // Origin and dest are not the same -> migrate
       sg_host_t migration_hosts[2] = {cur_host, migrate_to_host};
       // Changing this to double[2] ... will cause trouble with parallel_execute, because that fct is trying to call free().

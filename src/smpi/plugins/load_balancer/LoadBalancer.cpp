@@ -136,9 +136,9 @@ void LoadBalancer::run()
   }
 }
 
-simgrid::s4u::Host* LoadBalancer::get_mapping()
+simgrid::s4u::Host* LoadBalancer::get_mapping(simgrid::s4u::ActorPtr actor)
 {
-  return new_mapping.get_host(simgrid::s4u::Actor::self());
+  return new_mapping.get_host(actor);
 }
 
 void LoadBalancer::record_actor_computation(simgrid::s4u::ActorPtr actor, double load)
