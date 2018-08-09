@@ -63,4 +63,3 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-app-masterworkers-fun$EXEEXT ${platfdir}/small
 > [  4.965689] (worker@Ginette) Exiting now.
 > [  5.133855] (maestro@) Simulation is over
 > [  5.133855] (worker@Bourassa) Exiting now.
-
