@@ -25,6 +25,7 @@ if(enable_documentation)
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/doc/html
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_BINARY_DIR}/doc/html
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/doc/xml
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/docs/source/api
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc
     )
 
