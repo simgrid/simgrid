@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
   e.register_function("carole", carole);
   e.register_function("david", david);
 
-  size_t totalHosts = sg_host_count();
+  size_t totalHosts = e.get_host_count();
 
   XBT_INFO("There are %zu hosts in the environment", totalHosts);
   std::vector<simgrid::s4u::Host*> hosts = e.get_all_hosts();
