@@ -65,6 +65,9 @@ public:
   bool iwannadie;
 
   Context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
+  Context(const Context&) = delete;
+  Context& operator=(const Context&) = delete;
+
   void operator()() { code_(); }
   bool has_code() const { return static_cast<bool>(code_); }
   smx_actor_t process() { return this->process_; }
