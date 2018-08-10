@@ -19,14 +19,14 @@ namespace plugin {
 namespace loadbalancer {
 
 struct XBT_PRIVATE compare_hosts {
-  bool operator()(const simgrid::s4u::Host* a, const simgrid::s4u::Host* b) const;
+  bool operator()(simgrid::s4u::Host* const a, simgrid::s4u::Host* const b) const;
 };
 
 typedef boost::heap::fibonacci_heap<simgrid::s4u::Host*, boost::heap::compare<compare_hosts>>::handle_type heap_handle;
 
 /**
- * Structure that imitates a std::pair, but it allows us 
- * to use meaningful names instead of .first and .second 
+ * Structure that imitates a std::pair, but it allows us
+ * to use meaningful names instead of .first and .second
  */
 struct XBT_PRIVATE pair_handle_load
 {
@@ -34,10 +34,10 @@ struct XBT_PRIVATE pair_handle_load
   double load;
 };
 
-static std::map<const simgrid::s4u::Host*, pair_handle_load> additional_load;
+static std::map<simgrid::s4u::Host* const, pair_handle_load> additional_load;
 
-bool compare_hosts::operator()(const simgrid::s4u::Host* a, const simgrid::s4u::Host* b) const {
-  return /*sg_host_get_avg_load(a) +*/ additional_load[a].load > /*sg_host_get_avg_load(b) +*/ additional_load[b].load;
+bool compare_hosts::operator()(simgrid::s4u::Host* const a, simgrid::s4u::Host* const b) const {
+  return additional_load[a].load > additional_load[b].load;
 }
 
 
@@ -136,9 +136,9 @@ void LoadBalancer::run()
   }
 }
 
-simgrid::s4u::Host* LoadBalancer::get_mapping()
+simgrid::s4u::Host* LoadBalancer::get_mapping(simgrid::s4u::ActorPtr actor)
 {
-  return new_mapping.get_host(simgrid::s4u::Actor::self());
+  return new_mapping.get_host(actor);
 }
 
 void LoadBalancer::record_actor_computation(simgrid::s4u::ActorPtr actor, double load)

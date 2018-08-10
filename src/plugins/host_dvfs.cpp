@@ -5,7 +5,10 @@
 
 #include "simgrid/plugins/dvfs.h"
 #include "simgrid/plugins/load.h"
+#include "simgrid/s4u/Engine.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/smpi/plugins/ampi/ampi.hpp"
 #include <xbt/config.hpp>
 
 #include <boost/algorithm/string.hpp>
@@ -20,13 +23,23 @@ static simgrid::config::Flag<std::string> cfg_governor("plugin/dvfs/governor",
     "Which Governor should be used that adapts the CPU frequency?", "performance",
 
     std::map<std::string, std::string>({
+        {"adagio", "TODO: Doc"},
         {"conservative", "TODO: Doc"},
         {"ondemand", "TODO: Doc"},
         {"performance", "TODO: Doc"},
         {"powersave", "TODO: Doc"},
     }),
 
-    [](std::string val){if (val != "performance") sg_host_dvfs_plugin_init();});
+    [](std::string val) { if (val != "performance") sg_host_dvfs_plugin_init(); });
+
+static simgrid::config::Flag<int> cfg_min_pstate("plugin/dvfs/min-pstate", {"plugin/dvfs/min_pstate"},
+    "Which pstate is the minimum (and hence fastest) pstate for this governor?", 0,
+    [](int index) {});
+
+static const int max_pstate_not_limited = -1;
+static simgrid::config::Flag<int> cfg_max_pstate("plugin/dvfs/max-pstate", {"plugin/dvfs/max_pstate"},
+    "Which pstate is the maximum (and hence slowest) pstate for this governor?", max_pstate_not_limited,
+    [](int index) {});
 
 /** @addtogroup SURF_plugin_load
 
@@ -61,30 +74,50 @@ namespace dvfs {
  */
 class Governor {
 
-protected:
+private:
   simgrid::s4u::Host* const host_;
   double sampling_rate_;
+  int min_pstate; //< Never use a pstate less than this one
+  int max_pstate; //< Never use a pstate larger than this one
 
 public:
-
-  explicit Governor(simgrid::s4u::Host* ptr) : host_(ptr) { init(); }
+  explicit Governor(simgrid::s4u::Host* ptr)
+      : host_(ptr)
+      , min_pstate(cfg_min_pstate)
+      , max_pstate(cfg_max_pstate == max_pstate_not_limited ? host_->get_pstate_count() - 1 : cfg_max_pstate)
+  {
+    init();
+  }
   virtual ~Governor() = default;
-  virtual std::string get_name() = 0;
+  virtual std::string get_name() const = 0;
   simgrid::s4u::Host* get_host() const { return host_; }
+  int get_min_pstate() const { return min_pstate; }
+  int get_max_pstate() const { return max_pstate; }
 
   void init()
   {
     const char* local_sampling_rate_config = host_->get_property(cfg_sampling_rate.get_name());
-    double global_sampling_rate_config     = cfg_sampling_rate;
     if (local_sampling_rate_config != nullptr) {
       sampling_rate_ = std::stod(local_sampling_rate_config);
     } else {
-      sampling_rate_ = global_sampling_rate_config;
+      sampling_rate_ = cfg_sampling_rate;
     }
+    const char* local_min_pstate_config = host_->get_property(cfg_min_pstate.get_name());
+    if (local_min_pstate_config != nullptr) {
+      min_pstate = std::stoi(local_min_pstate_config);
+    }
+
+    const char* local_max_pstate_config = host_->get_property(cfg_max_pstate.get_name());
+    if (local_max_pstate_config != nullptr) {
+      max_pstate = std::stod(local_max_pstate_config);
+    }
+    xbt_assert(max_pstate <= host_->get_pstate_count() - 1, "Value for max_pstate too large!");
+    xbt_assert(min_pstate <= max_pstate, "min_pstate is larger than max_pstate!");
+    xbt_assert(0 <= min_pstate, "min_pstate is negative!");
   }
 
   virtual void update()         = 0;
-  double get_sampling_rate() { return sampling_rate_; }
+  double get_sampling_rate() const { return sampling_rate_; }
 };
 
 /**
@@ -100,9 +133,9 @@ public:
 class Performance : public Governor {
 public:
   explicit Performance(simgrid::s4u::Host* ptr) : Governor(ptr) {}
-  std::string get_name() override { return "Performance"; }
+  std::string get_name() const override { return "Performance"; }
 
-  void update() override { get_host()->set_pstate(0); }
+  void update() override { get_host()->set_pstate(get_min_pstate()); }
 };
 
 /**
@@ -118,9 +151,9 @@ public:
 class Powersave : public Governor {
 public:
   explicit Powersave(simgrid::s4u::Host* ptr) : Governor(ptr) {}
-  std::string get_name() override { return "Powersave"; }
+  std::string get_name() const override { return "Powersave"; }
 
-  void update() override { get_host()->set_pstate(get_host()->get_pstate_count() - 1); }
+  void update() override { get_host()->set_pstate(get_max_pstate()); }
 };
 
 /**
@@ -141,7 +174,7 @@ class OnDemand : public Governor {
 
 public:
   explicit OnDemand(simgrid::s4u::Host* ptr) : Governor(ptr) {}
-  std::string get_name() override { return "OnDemand"; }
+  std::string get_name() const override { return "OnDemand"; }
 
   void update() override
   {
@@ -149,8 +182,8 @@ public:
     sg_host_load_reset(get_host()); // Only consider the period between two calls to this method!
 
     if (load > freq_up_threshold_) {
-      get_host()->set_pstate(0); /* Run at max. performance! */
-      XBT_INFO("Load: %f > threshold: %f --> changed to pstate %i", load, freq_up_threshold_, 0);
+      get_host()->set_pstate(get_min_pstate()); /* Run at max. performance! */
+      XBT_INFO("Load: %f > threshold: %f --> changed to pstate %i", load, freq_up_threshold_, get_min_pstate());
     } else {
       /* The actual implementation uses a formula here: (See Kernel file cpufreq_ondemand.c:158)
        *
@@ -159,10 +192,11 @@ public:
        * So they assume that frequency increases by 100 MHz. We will just use
        * lowest_pstate - load*pstatesCount()
        */
-      int max_pstate = get_host()->get_pstate_count() - 1;
       // Load is now < freq_up_threshold; exclude pstate 0 (the fastest)
       // because pstate 0 can only be selected if load > freq_up_threshold_
-      int new_pstate = max_pstate - load * (max_pstate + 1);
+      int new_pstate = get_max_pstate() - load * (get_max_pstate() + 1);
+      if (new_pstate < get_min_pstate())
+        new_pstate = get_min_pstate();
       get_host()->set_pstate(new_pstate);
 
       XBT_DEBUG("Load: %f < threshold: %f --> changed to pstate %i", load, freq_up_threshold_, new_pstate);
@@ -188,7 +222,7 @@ class Conservative : public Governor {
 
 public:
   explicit Conservative(simgrid::s4u::Host* ptr) : Governor(ptr) {}
-  virtual std::string get_name() override { return "Conservative"; }
+  virtual std::string get_name() const override { return "Conservative"; }
 
   virtual void update() override
   {
@@ -197,7 +231,7 @@ public:
     sg_host_load_reset(get_host()); // Only consider the period between two calls to this method!
 
     if (load > freq_up_threshold_) {
-      if (pstate != 0) {
+      if (pstate != get_min_pstate()) {
         get_host()->set_pstate(pstate - 1);
         XBT_INFO("Load: %f > threshold: %f -> increasing performance to pstate %d", load, freq_up_threshold_,
                  pstate - 1);
@@ -206,8 +240,7 @@ public:
                   freq_up_threshold_, pstate);
       }
     } else if (load < freq_down_threshold_) {
-      int max_pstate = get_host()->get_pstate_count() - 1;
-      if (pstate != max_pstate) { // Are we in the slowest pstate already?
+      if (pstate != get_max_pstate()) { // Are we in the slowest pstate already?
         get_host()->set_pstate(pstate + 1);
         XBT_INFO("Load: %f < threshold: %f -> slowing down to pstate %d", load, freq_down_threshold_, pstate + 1);
       } else {
@@ -218,6 +251,101 @@ public:
   }
 };
 
+class Adagio : public Governor {
+private:
+  int best_pstate     = 0;
+  double start_time   = 0;
+  double comp_counter = 0;
+  double comp_timer   = 0;
+
+  std::vector<std::vector<double>> rates;
+
+  unsigned int task_id   = 0;
+  bool iteration_running = false; /*< Are we currently between iteration_in and iteration_out calls? */
+
+public:
+  explicit Adagio(simgrid::s4u::Host* ptr)
+      : Governor(ptr), rates(100, std::vector<double>(ptr->get_pstate_count(), 0.0))
+  {
+    simgrid::smpi::plugin::ampi::on_iteration_in.connect([this](simgrid::s4u::ActorPtr actor) {
+      // Every instance of this class subscribes to this event, so one per host
+      // This means that for any actor, all 'hosts' are normally notified of these
+      // changes, even those who don't currently run the actor 'proc_id'.
+      // -> Let's check if this signal call is for us!
+      if (get_host() == actor->get_host()) {
+        iteration_running = true;
+      }
+    });
+    simgrid::smpi::plugin::ampi::on_iteration_out.connect([this](simgrid::s4u::ActorPtr actor) {
+      if (get_host() == actor->get_host()) {
+        iteration_running = false;
+        task_id           = 0;
+      }
+    });
+    simgrid::kernel::activity::ExecImpl::on_creation.connect([this](simgrid::kernel::activity::ExecImplPtr activity) {
+      if (activity->host_ == get_host())
+        pre_task();
+    });
+    simgrid::kernel::activity::ExecImpl::on_completion.connect([this](simgrid::kernel::activity::ExecImplPtr activity) {
+      // For more than one host (not yet supported), we can access the host via
+      // simcalls_.front()->issuer->iface()->get_host()
+      if (activity->host_ == get_host() && iteration_running) {
+        comp_timer += activity->surf_action_->get_finish_time() - activity->surf_action_->get_start_time();
+      }
+    });
+    simgrid::s4u::Link::on_communicate.connect(
+        [this](kernel::resource::NetworkAction* action, s4u::Host* src, s4u::Host* dst) {
+          if ((get_host() == src || get_host() == dst) && iteration_running) {
+            post_task();
+          }
+        });
+  }
+
+  virtual std::string get_name() const override { return "Adagio"; }
+
+  void pre_task()
+  {
+    sg_host_load_reset(get_host());
+    comp_counter = sg_host_get_computed_flops(get_host()); // Should be 0 because of the reset
+    comp_timer   = 0;
+    start_time   = simgrid::s4u::Engine::get_clock();
+    if (rates.size() <= task_id)
+      rates.resize(task_id + 5, std::vector<double>(get_host()->get_pstate_count(), 0.0));
+    if (rates[task_id][best_pstate] == 0)
+      best_pstate = 0;
+    get_host()->set_pstate(best_pstate); // Load our schedule
+    XBT_DEBUG("Set pstate to %i", best_pstate);
+  }
+
+  void post_task()
+  {
+    double computed_flops = sg_host_get_computed_flops(get_host()) - comp_counter;
+    double target_time    = (simgrid::s4u::Engine::get_clock() - start_time);
+    target_time =
+        target_time *
+        static_cast<double>(99.0 / 100.0); // FIXME We account for t_copy arbitrarily with 1% -- this needs to be fixed
+
+    bool is_initialized         = rates[task_id][best_pstate] != 0;
+    rates[task_id][best_pstate] = computed_flops / comp_timer;
+    if (not is_initialized) {
+      for (int i = 1; i < get_host()->get_pstate_count(); i++) {
+        rates[task_id][i] = rates[task_id][0] * (get_host()->get_pstate_speed(i) / get_host()->get_speed());
+      }
+      is_initialized = true;
+    }
+
+    for (int pstate = get_host()->get_pstate_count() - 1; pstate >= 0; pstate--) {
+      if (computed_flops / rates[task_id][pstate] <= target_time) {
+        // We just found the pstate we want to use!
+        best_pstate = pstate;
+        break;
+      }
+    }
+    task_id++;
+  }
+
+  virtual void update() override {}
+};
 } // namespace dvfs
 } // namespace plugin
 } // namespace simgrid
@@ -256,6 +384,9 @@ static void on_host_added(simgrid::s4u::Host& host)
       } else if (dvfs_governor == "ondemand") {
         return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
             new simgrid::plugin::dvfs::OnDemand(daemon_proc->get_host()));
+      } else if (dvfs_governor == "adagio") {
+        return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
+            new simgrid::plugin::dvfs::Adagio(daemon_proc->get_host()));
       } else if (dvfs_governor == "performance") {
         return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
             new simgrid::plugin::dvfs::Performance(daemon_proc->get_host()));

@@ -277,22 +277,6 @@ void TRACE_smpi_recv(int src, int dst, int tag)
 }
 
 /**************** Functions to trace the migration of tasks. *****************/
-void TRACE_smpi_send_process_data_in(int rank)
-{
-  if (not TRACE_smpi_is_enabled()) return;
-
-  smpi_container(rank)->get_state("MIGRATE_STATE")->add_entity_value("migration", instr_find_color("migration"));
-  smpi_container(rank)->get_state("MIGRATE_STATE")->push_event("migration");
-}
-
-void TRACE_smpi_send_process_data_out(int rank)
-{
-  if (not TRACE_smpi_is_enabled()) return; 
-
-  /* Clean the process state. */
-  smpi_container(rank)->get_state("MIGRATE_STATE")->pop_event();
-}
-
 void TRACE_smpi_process_change_host(int rank, sg_host_t new_host)
 {
   if (not TRACE_smpi_is_enabled()) return;
@@ -316,4 +300,3 @@ void TRACE_smpi_process_change_host(int rank, sg_host_t new_host)
   cont = smpi_container(rank); // This points to the newly created container
   simgrid::instr::Container::get_root()->get_link("MIGRATE_LINK")->end_event(cont, "M", key);
 }
-

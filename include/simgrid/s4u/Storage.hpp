@@ -65,7 +65,10 @@ public:
 
   IoPtr io_init(sg_size_t size, s4u::Io::OpType type);
 
+  IoPtr read_async(sg_size_t size);
   sg_size_t read(sg_size_t size);
+
+  IoPtr write_async(sg_size_t size);
   sg_size_t write(sg_size_t size);
   surf::StorageImpl* get_impl() { return pimpl_; }
 

@@ -8,7 +8,7 @@ foreach (example actor-create actor-daemon actor-join actor-kill
                  energy-exec energy-boot energy-link energy-vm
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-monitor exec-ptask exec-remote
-                 io-file-system io-file-remote io-storage-raw
+                 io-async io-file-system io-file-remote io-storage-raw
                  mutex
                  platform-failures platform-properties plugin-hostload 
                  replay-comm replay-storage
@@ -28,9 +28,9 @@ foreach(variant fun class)
   target_link_libraries(s4u-app-masterworkers-${variant}  simgrid)
   set_target_properties(s4u-app-masterworkers-${variant}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-masterworkers)
 
-  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/masterworkers-fun/s4u-masterworkers-${variant}.cpp)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers-${variant}.cpp)
 endforeach()
-set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/masterworkers-fun/s4u-masterworkers.tesh)
+set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers.tesh)
 
 
 # CHORD EXAMPLE
@@ -103,7 +103,7 @@ foreach(example actor-create actor-daemon actor-join actor-kill
                 engine-filtering
                 exec-async exec-basic exec-dvfs exec-monitor exec-ptask exec-remote
                 platform-properties plugin-hostload mutex
-                io-file-system io-file-remote io-storage-raw
+                io-async io-file-system io-file-remote io-storage-raw
                 replay-comm replay-storage
                 routing-get-clusters
                 )

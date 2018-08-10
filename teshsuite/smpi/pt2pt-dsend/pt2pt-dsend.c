@@ -11,7 +11,8 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(dsend,"the dsend test");
 
-int main(int argc, char *argv[]) {
+int main()
+{
   int rank;
   int32_t data=11;
 
