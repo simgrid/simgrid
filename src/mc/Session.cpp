@@ -86,8 +86,12 @@ pid_t do_fork(F code)
 Session::Session(pid_t pid, int socket)
 {
   std::unique_ptr<simgrid::mc::RemoteClient> process(new simgrid::mc::RemoteClient(pid, socket));
+#if HAVE_SMPI
   // TODO, automatic detection of the config from the process
   process->privatized(smpi_privatize_global_variables != SmpiPrivStrategies::NONE);
+#else
+  process->privatized(false);
+#endif
   modelChecker_ = std::unique_ptr<ModelChecker>(
     new simgrid::mc::ModelChecker(std::move(process)));
   xbt_assert(mc_model_checker == nullptr);
