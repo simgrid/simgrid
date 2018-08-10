@@ -86,10 +86,10 @@ to compute. Indeed, this application decided by convention, that the
 workers should stop when encountering such a negative compute_size.
 
 At the end of the day, the only SimGrid specific functions used in
-this example are :func:`simgrid::s4u::Mailbox::by_name` and
-:func:`simgrid::s4u::Mailbox::put`. Also, XBT_INFO() is used as a
-replacement to printf() or to cout to ensure that the messages are
-nicely logged along with the simulated time and actor name.
+this example are :cpp:func:`simgrid::s4u::Mailbox::by_name` and
+:cpp:func:`simgrid::s4u::Mailbox::put`. Also, :c:macro:`XBT_INFO` is used
+as a replacement to printf() or to cout to ensure that the messages
+are nicely logged along with the simulated time and actor name.
  
      
 .. literalinclude:: ../../examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp
@@ -283,8 +283,9 @@ example, you can get them as follows:
 
 An initial version of the source code is provided on framagit. This
 template compiles with cmake. If SimGrid is correctly installed, you
-should be able to clone the repository and recompile everything as
-follows:
+should be able to clone the `repository
+<https://framagit.org/simgrid/simgrid-template-s4u>`_ and recompile
+everything as follows:
 
 .. code-block:: shell
 
@@ -324,6 +325,105 @@ you can find it in <simgrid_root_directory>/bin/colorize.
 
    Explain how to generate a Gantt-Chart with S4U and pajeng.
 
+Exercise 1: Simplifying the deployment file
+...........................................
+
+In the provided example, the deployment file is tightly connected to
+the platform file ``small_platform.xml`` and adding more workers
+quickly becomes a pain: You need to start them (at the bottom of the
+file), add to inform the master that they are available by increasing
+the right parameter.
+
+Instead, modify the simulator ``master-workers.c`` into
+``master-workers-exo1.c`` so that the master launches a worker process
+on `all` the other machines at startup. The new deployment file should
+be as simple as:
+
+.. code-block:: xml
+
+   <?xml version='1.0'?>
+   <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+   <platform version="4.1">
+     <actor host="Tremblay" function="master">
+       <argument value="20"/>        <!-- Number of tasks -->
+       <argument value="50000000"/>  <!-- Computation size of tasks -->
+       <argument value="1000000"/>   <!-- Communication size of tasks -->
+     </actor>
+   </platform>
+
+Creating the workers from the master
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For that, the master needs to retrieve the list of hosts declared in
+the platform with :cpp:func:`simgrid::s4u::Engine::get_all_host()`.
+Then, the master should start the worker processes with
+:cpp:func:`simgrid::s4u::Actor::create`.
+
+``Actor::create(name, host, func, params...)`` is a very flexible
+function. Its third parameter is the function that the actor should
+execute. This function can take any kind of parameter, provided that
+you pass similar parameters to ``Actor::create()``. For example, you
+could have something like this:
+
+.. code-block:: cpp
+
+  void my_actor(int param1, double param2, std::string param3) {
+    ...
+  }
+  int main(int argc, char argv**) {
+     ...
+     simgrid::s4u::ActorPtr actor;
+     actor = simgrid::s4u::Actor::create("name", simgrid::s4u::Host::by_name("the_host"),
+                                         &my_actor, 42, 3.14, "thevalue");
+     ...
+  }
+
+
+Master-Workers Communication
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Previously, the workers got from their parameter the name of the
+mailbox they should use. We can still do so: the master should build
+such a parameter before using it in the ``Actor::create()`` call. The
+master could even pass directly the mailbox as a parameter to the
+workers. 
+
+Since we want later to study concurrent applications, it is advised to
+use a mailbox name that is unique over the simulation even if there is
+more than one master. 
+
+One possibility for that is to use the actor ID (aid) of each worker
+as a mailbox name. The master can retrieve the aid of the newly
+created actor with ``actor->get_pid()`` while the actor itself can
+retrieve its own aid with ``simgrid::s4u::this_actor::get_pid()``.
+The retrieved value is an ``aid_t``, which is an alias for ``long``.
+
+Instead of having one mailbox per worker, you could also reorganize
+completely your application to have only one mailbox per master. All
+the workers of a given master would pull their work from the same
+mailbox, which should be passed as parameter to the workers.  This
+reduces the amount of mailboxes, but prevents the master from taking
+any scheduling decision. It really depends on how you want to organize
+your application and what you want to study with your simulator.
+
+Wrap up
+^^^^^^^
+
+In this exercise, we reduced the amount of configuration that our
+simulator requests. This is both a good idea, and a dangerous
+trend. This simplification is an application of the good old DRY/SPOT
+programming principle (Don't Repeat Yourself / Single Point Of Truth
+-- `more on wikipedia
+<https://en.wikipedia.org/wiki/Don%27t_repeat_yourself>`_), and you
+really want your programming artefacts to follow these software
+engineering principles.
+
+But at the same time, you should be careful in separating your
+scientific contribution (the master/workers algorithm) and the
+artefacts used to test it (platform, deployment and workload). This is
+why SimGrid forces you to express your platform and deployment files
+in XML instead of using a programming interface: it forces a clear
+separation of concerns between things of very different nature.
 
 
 ..  LocalWords:  SimGrid
