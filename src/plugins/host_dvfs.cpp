@@ -6,9 +6,12 @@
 #include "simgrid/plugins/dvfs.h"
 #include "simgrid/plugins/load.h"
 #include "simgrid/s4u/Engine.hpp"
+#include "src/internal_config.h" // HAVE_SMPI
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#if HAVE_SMPI
 #include "src/smpi/plugins/ampi/ampi.hpp"
+#endif
 #include <xbt/config.hpp>
 
 #include <boost/algorithm/string.hpp>
