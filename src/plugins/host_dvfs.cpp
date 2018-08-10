@@ -331,7 +331,6 @@ public:
       for (int i = 1; i < get_host()->get_pstate_count(); i++) {
         rates[task_id][i] = rates[task_id][0] * (get_host()->get_pstate_speed(i) / get_host()->get_speed());
       }
-      is_initialized = true;
     }
 
     for (int pstate = get_host()->get_pstate_count() - 1; pstate >= 0; pstate--) {
