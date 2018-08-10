@@ -84,7 +84,7 @@ static int basic_only = 0;
   outbufs[cnt] = (void *)malloc(sizeof(_ctype) * (_count));	\
   a = (_ctype *)inbufs[cnt]; for (i=0; i<(_count); i++) a[i] = i;	\
   a = (_ctype *)outbufs[cnt]; for (i=0; i<(_count); i++) a[i] = 0;	\
-  myname = (char *)malloc(100);\
+  myname = (char *)malloc(200);\
   MPI_Type_get_name(_mpitype, _basename, &_basenamelen); \
   snprintf(myname, 100, "Contig type %s", _basename);	\
   MPI_Type_set_name(types[cnt], myname); \
@@ -105,7 +105,7 @@ static int basic_only = 0;
   outbufs[cnt] = (void *)calloc(sizeof(_ctype) * (_count) * (_stride),1); \
   a = (_ctype *)inbufs[cnt]; for (i=0; i<(_count); i++) a[i*(_stride)] = i; \
   a = (_ctype *)outbufs[cnt]; for (i=0; i<(_count); i++) a[i*(_stride)] = 0; \
-  myname = (char *)malloc(100);\
+  myname = (char *)malloc(200);\
   MPI_Type_get_name(_mpitype, _basename, &_basenamelen); \
   snprintf(myname, 100, "Vector type %s", _basename);		\
   MPI_Type_set_name(types[cnt], myname); \
@@ -130,7 +130,7 @@ static int basic_only = 0;
   outbufs[cnt] = (void *)malloc(sizeof(_ctype) * (_count)); \
   a = (_ctype *)inbufs[cnt]; for (i=0; i<(_count); i++) a[i] = i; \
   a = (_ctype *)outbufs[cnt]; for (i=0; i<(_count); i++) a[i] = 0; \
-  myname = (char *)malloc(100);\
+  myname = (char *)malloc(200);\
   MPI_Type_get_name(_mpitype, _basename, &_basenamelen); \
   snprintf(myname, 100, "Index type %s", _basename);		\
   MPI_Type_set_name(types[cnt], myname); \
@@ -159,7 +159,7 @@ static int basic_only = 0;
       a[i].a2 = i; }							\
   a = (struct name *)outbufs[cnt]; for (i=0; i<(_count); i++) { a[i].a1 = 0; \
       a[i].a2 = 0; }							\
-  myname = (char *)malloc(100);					\
+  myname = (char *)malloc(200);					\
   snprintf(myname, 100, "Struct type %s", _tname);		\
   MPI_Type_set_name(types[cnt], myname); \
   free(myname); \
@@ -180,7 +180,7 @@ static int basic_only = 0;
   outbufs[cnt] = (void *)calloc(sizeof(_ctype) * (_count) * (_stride),1);\
   a = (_ctype *)inbufs[cnt]; for (i=0; i<(_count); i++) a[i*(_stride)] = i;  \
   a = (_ctype *)outbufs[cnt]; for (i=0; i<(_count); i++) a[i*(_stride)] = 0; \
-  myname = (char *)malloc(100);					\
+  myname = (char *)malloc(200);					\
   MPI_Type_get_name(_mpitype, _basename, &_basenamelen); \
   snprintf(myname, 100, "Struct (MPI_UB) type %s", _basename);	\
   MPI_Type_set_name(types[cnt], myname); \
