@@ -84,23 +84,26 @@ public:
   void load_deployment(std::string deploy);
 
 protected:
-  friend s4u::Host;
-  friend s4u::Link;
-  friend s4u::Storage;
+#ifndef DOXYGEN
+  friend Host;
+  friend Link;
+  friend Storage;
   friend kernel::routing::NetPoint;
   friend kernel::routing::NetZoneImpl;
   friend kernel::resource::LinkImpl;
-  void host_register(std::string name, simgrid::s4u::Host* host);
+  void host_register(std::string name, Host* host);
   void host_unregister(std::string name);
-  void link_register(std::string name, simgrid::s4u::Link* link);
+  void link_register(std::string name, Link* link);
   void link_unregister(std::string name);
-  void storage_register(std::string name, simgrid::s4u::Storage* storage);
+  void storage_register(std::string name, Storage* storage);
   void storage_unregister(std::string name);
   void netpoint_register(simgrid::kernel::routing::NetPoint* card);
   void netpoint_unregister(simgrid::kernel::routing::NetPoint* card);
+#endif /*DOXYGEN*/
 
 public:
   size_t get_host_count();
+  /** @brief Returns the list of all hosts found in the platform */
   std::vector<Host*> get_all_hosts();
   std::vector<Host*> get_filtered_hosts(std::function<bool(Host*)> filter);
   simgrid::s4u::Host* host_by_name(std::string name);

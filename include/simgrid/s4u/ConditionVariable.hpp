@@ -23,8 +23,10 @@ namespace s4u {
  */
 class XBT_PUBLIC ConditionVariable {
 private:
+#ifndef DOXYGEN
   friend kernel::activity::ConditionVariableImpl;
   smx_cond_t cond_;
+#endif
   explicit ConditionVariable(smx_cond_t cond) : cond_(cond) {}
 public:
   ConditionVariable(ConditionVariable const&) = delete;

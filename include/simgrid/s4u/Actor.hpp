@@ -18,7 +18,7 @@
 namespace simgrid {
 namespace s4u {
 
-/** @ingroup s4u_api
+/**
  *
  * An actor is an independent stream of execution in your distributed application.
  *
@@ -121,10 +121,12 @@ namespace s4u {
 
 /** @brief Simulation Agent */
 class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<Actor> {
+#ifndef DOXYGEN
   friend Exec;
   friend Mailbox;
   friend simgrid::kernel::actor::ActorImpl;
   friend simgrid::kernel::activity::MailboxImpl;
+#endif
   kernel::actor::ActorImpl* pimpl_ = nullptr;
 
   /** Wrap a (possibly non-copyable) single-use task into a `std::function` */
@@ -169,12 +171,16 @@ public:
   /** Signal indicating that the given actor is about to disappear */
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_destruction;
 
-  /** Create an actor using a function
+  /** Create an actor from a std::function
    *
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
   static ActorPtr create(std::string name, s4u::Host* host, std::function<void()> code);
 
+  /** Create an actor from a std::function
+   *
+   *  If the actor is restarted, the actor has a fresh copy of the function.
+   */
   static ActorPtr create(std::string name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
                          std::vector<std::string>* args)
   {
@@ -245,6 +251,15 @@ public:
   /** Retrieves the time at which that actor will be killed (or -1 if not set) */
   double get_kill_time();
 
+  /** @brief Moves the actor to another host
+   *
+   * If the actor is currently blocked on an execution activity, the activity is also
+   * migrated to the new host. If it's blocked on another kind of activity, an error is
+   * raised as the mandated code is not written yet. Please report that bug if you need it.
+   *
+   * Asynchronous activities started by the actor are not migrated automatically, so you have
+   * to take care of this yourself (only you knows which ones should be migrated).
+   */
   void migrate(Host * new_host);
 
   /** Ask the actor to die.
@@ -262,7 +277,7 @@ public:
   /** Retrieves the actor that have the given PID (or nullptr if not existing) */
   static ActorPtr by_pid(aid_t pid);
 
-  /** @brief Wait for the actor to finish.
+  /** Wait for the actor to finish.
    *
    * This blocks the calling actor until the actor on which we call join() is terminated
    */
@@ -282,6 +297,7 @@ public:
   const char* get_property(std::string key);
   void set_property(std::string key, std::string value);
 
+#ifndef DOXYGEN
   /** @deprecated See Actor::create() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
       const char* name, s4u::Host* host, std::function<void()> code)
@@ -373,6 +389,7 @@ public:
   {
     set_property(key, value);
   }
+#endif
 };
 
 /** @ingroup s4u_api
@@ -439,6 +456,7 @@ XBT_PUBLIC bool is_suspended();
 /** @brief kill the actor. */
 XBT_PUBLIC void exit();
 
+#ifndef DOXYGEN
 /** @deprecated Please use std::function<void(int, void*)> for first parameter */
 XBT_ATTRIB_DEPRECATED_v323("Please use std::function<void(int, void*)> for first parameter.") XBT_PUBLIC
     void on_exit(int_f_pvoid_pvoid_t fun, void* data);
@@ -466,6 +484,7 @@ XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::is_suspended()") XBT_PUBLIC b
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::on_exit()") XBT_PUBLIC void onExit(int_f_pvoid_pvoid_t fun, void* data);
 /** @deprecated See this_actor::exit() */
 XBT_ATTRIB_DEPRECATED_v324("Please use this_actor::exit()") XBT_PUBLIC void kill();
+#endif
 }
 
 /** @} */

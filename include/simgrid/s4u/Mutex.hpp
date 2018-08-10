@@ -29,8 +29,10 @@ class ConditionVariable;
  *
  */
 class XBT_PUBLIC Mutex {
+#ifndef DOXYGEN
   friend ConditionVariable;
   friend simgrid::kernel::activity::MutexImpl;
+#endif
   simgrid::kernel::activity::MutexImpl* pimpl_;
   explicit Mutex(simgrid::kernel::activity::MutexImpl* mutex) : pimpl_(mutex) {}
 

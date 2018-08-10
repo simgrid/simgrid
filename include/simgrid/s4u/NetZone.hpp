@@ -25,7 +25,9 @@ namespace s4u {
  */
 class XBT_PUBLIC NetZone {
 protected:
+#ifndef DOXYGEN
   friend simgrid::kernel::routing::NetZoneImpl;
+#endif
 
   explicit NetZone(kernel::routing::NetZoneImpl* impl);
   ~NetZone();

@@ -106,7 +106,6 @@ void Engine::getHostList(std::vector<Host*>* list)
     list->push_back(kv.second);
 }
 
-/** @brief Returns the list of all hosts found in the platform */
 std::vector<Host*> Engine::get_all_hosts()
 {
   std::vector<Host*> res;

@@ -15,6 +15,11 @@
 namespace simgrid {
 namespace s4u {
 
+/** I/O Activity, representing the asynchronous disk access.
+ *
+ * They are generated from simgrid::s4u::Storage::read() and simgrid::s4u::Storage::write().
+ */
+
 class XBT_PUBLIC Io : public Activity {
 public:
   enum class OpType { READ, WRITE };

@@ -35,8 +35,10 @@ namespace s4u {
  * and actors can retrieve the host on which they run using simgrid::s4u::Host::current().
  */
 class XBT_PUBLIC Host : public simgrid::xbt::Extendable<Host> {
+#ifndef DOXYGEN
   friend simgrid::vm::VMModel;            // Use the pimpl_cpu to compute the VM sharing
   friend simgrid::vm::VirtualMachineImpl; // creates the the pimpl_cpu
+#endif
 
 public:
   explicit Host(std::string name);

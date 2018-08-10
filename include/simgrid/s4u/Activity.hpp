@@ -27,6 +27,7 @@ namespace s4u {
  * - Synchronization activities may possibly be connected to no action.
  */
 class XBT_PUBLIC Activity {
+#ifndef DOXYGEN
   friend Comm;
   friend XBT_PUBLIC void intrusive_ptr_release(Comm * c);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Comm * c);
@@ -36,6 +37,7 @@ class XBT_PUBLIC Activity {
   friend Io;
   friend XBT_PUBLIC void intrusive_ptr_release(Io* i);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Io* i);
+#endif
 
 protected:
   Activity()  = default;

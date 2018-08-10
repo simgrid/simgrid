@@ -102,8 +102,10 @@ namespace s4u {
  * @section s4u_mb_api The API
  */
 class XBT_PUBLIC Mailbox {
+#ifndef DOXYGEN
   friend Comm;
   friend simgrid::kernel::activity::MailboxImpl;
+#endif
 
   simgrid::kernel::activity::MailboxImpl* pimpl_;
 

@@ -17,18 +17,21 @@
 #include <unordered_map>
 
 namespace simgrid {
-namespace xbt {
-extern template class XBT_PUBLIC Extendable<simgrid::s4u::Storage>;
-}
 namespace s4u {
 
+#ifndef DOXYGEN
 /** @deprecated Engine::get_all_storages() */
 XBT_ATTRIB_DEPRECATED_v322("Please use Engine::get_all_storages()") XBT_PUBLIC void getStorageList(std::map<std::string, Storage*>* whereTo);
+#endif
+
+/** Storage represent the disk resources, usually associated to a given host */
 
 class XBT_PUBLIC Storage : public simgrid::xbt::Extendable<Storage> {
+#ifndef DOXYGEN
   friend s4u::Engine;
   friend s4u::Io;
   friend simgrid::surf::StorageImpl;
+#endif /* DOXYGEN */
 
 public:
   explicit Storage(std::string name, surf::StorageImpl * pimpl);

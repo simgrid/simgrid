@@ -86,15 +86,6 @@ void Actor::on_exit(std::function<void(int, void*)> fun, void* data)
   simgrid::simix::simcall([this, fun, data] { SIMIX_process_on_exit(pimpl_, fun, data); });
 }
 
-/** @brief Moves the actor to another host
- *
- * If the actor is currently blocked on an execution activity, the activity is also
- * migrated to the new host. If it's blocked on another kind of activity, an error is
- * raised as the mandated code is not written yet. Please report that bug if you need it.
- *
- * Asynchronous activities started by the actor are not migrated automatically, so you have
- * to take care of this yourself (only you knows which ones should be migrated).
- */
 void Actor::migrate(Host* new_host)
 {
   s4u::Actor::on_migration_start(this);
