@@ -432,8 +432,10 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
   for (int i = 0; i != argc; ++i)
     argv[i] = xbt_strdup(args[i].c_str());
   argv[argc] = nullptr;
+#if !SMPI_IFORT
   char* name = argv[0];
   char* instance = argv[1];
+#endif
   simgrid::smpi::ActorExt::init(&argc, &argv);
 #if SMPI_IFORT
   for_rtl_init_ (&argc, argv);
