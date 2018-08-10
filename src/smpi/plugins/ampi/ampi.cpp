@@ -30,6 +30,7 @@ extern "C" void _sampi_free(void* ptr)
   free(ptr);
 }
 
+#include "ampi.hpp"
 #include <smpi/sampi.h>
 namespace simgrid {
 namespace smpi {
