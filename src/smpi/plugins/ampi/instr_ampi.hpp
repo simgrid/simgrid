@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef INSTR_AMPI_HPP_
-#define INSTR_AMPI_HPP_
+#ifndef INSTR_INSTR_AMPI_HPP_
+#define INSTR_INSTR_AMPI_HPP_
 
 #include "smpi/smpi.h"
 #include "src/instr/instr_private.hpp"
