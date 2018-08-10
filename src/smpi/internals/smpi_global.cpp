@@ -428,14 +428,14 @@ typedef void (*smpi_fortran_entry_point_type)();
 static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<std::string> args)
 {
   // copy C strings, we need them writable
-  std::vector<char*> args4argv(args.size());
-  std::transform(begin(args), end(args), begin(args4argv), [](const std::string& s) { return xbt_strdup(s.c_str()); });
+  std::vector<char*>* args4argv = new std::vector<char*>(args.size());
+  std::transform(begin(args), end(args), begin(*args4argv), [](const std::string& s) { return xbt_strdup(s.c_str()); });
 
   // take a copy of args4argv to keep reference of the allocated strings
-  const std::vector<char*> args2str(args4argv);
-  int argc = args4argv.size();
-  args4argv.push_back(nullptr);
-  char** argv = args4argv.data();
+  const std::vector<char*> args2str(*args4argv);
+  int argc = args4argv->size();
+  args4argv->push_back(nullptr);
+  char** argv = args4argv->data();
 
   simgrid::smpi::ActorExt::init(&argc, &argv);
 #if SMPI_IFORT
@@ -450,9 +450,11 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
 
 #if SMPI_IFORT
   for_rtl_finish_ ();
-#endif
+#else
   for (char* s : args2str)
     xbt_free(s);
+  delete args4argv;
+#endif
 
   if (res != 0){
     XBT_WARN("SMPI process did not return 0. Return value : %d", res);
