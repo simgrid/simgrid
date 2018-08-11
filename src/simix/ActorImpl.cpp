@@ -450,7 +450,9 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
 
   /* destroy the blocking synchro if any */
   if (process->waiting_synchro != nullptr) {
-
+    if (process->host_->is_off()) {
+      SMX_EXCEPTION(process, host_error, 0, "Host failed");
+    }
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(process->waiting_synchro);
     simgrid::kernel::activity::CommImplPtr comm =
@@ -698,10 +700,14 @@ void SIMIX_process_yield(smx_actor_t self)
     self->finished_ = true;
     /* execute the on_exit functions */
     SIMIX_process_on_exit_runall(self);
-    /* Add the process to the list of process to restart, only if the host is down */
-    if (self->auto_restart_ && self->host_->is_off()) {
-      SIMIX_host_add_auto_restart_process(self->host_, self);
+
+    if (self->auto_restart_ && self->host_->is_off() &&
+        watched_hosts.find(self->host_->get_cname()) == watched_hosts.end()) {
+      XBT_DEBUG("Push host %s to watched_hosts because it's off and %s needs to restart", self->host_->get_cname(),
+                self->get_cname());
+      watched_hosts.insert(self->host_->get_cname());
     }
+
     XBT_DEBUG("Process %s@%s is dead", self->get_cname(), self->host_->get_cname());
     self->context_->stop();
   }

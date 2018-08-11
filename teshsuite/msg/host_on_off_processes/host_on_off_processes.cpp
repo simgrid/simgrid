@@ -27,10 +27,13 @@ static int process_daemon(int /*argc*/, char** /*argv*/)
     msg_task_t task = MSG_task_create("daemon", MSG_host_get_speed(MSG_host_self()), 0, NULL);
     MSG_process_set_data(self, task);
     XBT_INFO("  Execute daemon");
-    MSG_task_execute(task);
-    MSG_process_set_data(self, NULL);
+    msg_error_t res = MSG_task_execute(task);
     MSG_task_destroy(task);
     tasks_done++;
+    if (res == MSG_HOST_FAILURE) {
+      XBT_INFO("Host as died as expected, do nothing else");
+      return 0;
+    }
   }
   XBT_INFO("  daemon done. See you!");
   return 0;
@@ -247,7 +250,6 @@ int main(int argc, char* argv[])
 
   MSG_create_environment(argv[1]);
 
-  MSG_process_set_data_cleanup(task_cleanup_handler);
   MSG_process_create("test_launcher", test_launcher, NULL, MSG_get_host_by_name("Tremblay"));
 
   res = MSG_main();

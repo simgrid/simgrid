@@ -41,7 +41,10 @@ static int slave(int argc, char *argv[])
   msg_task_t task = NULL;
   msg_error_t error = MSG_task_receive(&(task), mailbox);
   if (error) {
-    XBT_ERROR("Error while receiving message");
+    if (error != MSG_HOST_FAILURE)
+      XBT_ERROR("Error while receiving message");
+    else
+      XBT_DEBUG("The host has been turned off, this was expected");
     return 1;
   }
 

@@ -24,42 +24,6 @@ const char* sg_host_self_get_name()
   return host->get_cname();
 }
 
-/**
- * @brief Add a process to the list of the processes that the host will restart when it comes back
- * This function add a process to the list of the processes that will be restarted when the host comes
- * back. It is expected that this function is called when the host is down.
- * The processes will only be restarted once, meaning that you will have to register the process
- * again to restart the process again.
- */
-void SIMIX_host_add_auto_restart_process(sg_host_t host, simgrid::kernel::actor::ActorImpl* actor)
-{
-  simgrid::kernel::actor::ProcessArg* arg = new simgrid::kernel::actor::ProcessArg(host, actor);
-
-  if (host->is_off() && watched_hosts.find(host->get_cname()) == watched_hosts.end()) {
-    watched_hosts.insert(host->get_cname());
-    XBT_DEBUG("Push host %s to watched_hosts because state == SURF_RESOURCE_OFF", host->get_cname());
-  }
-  XBT_DEBUG("Adding Process %s to the auto-restart list of Host %s", arg->name.c_str(), arg->host->get_cname());
-  host->pimpl_->auto_restart_processes_.push_back(arg);
-}
-
-/** @brief Restart the list of processes that have been registered to the host */
-void SIMIX_host_autorestart(sg_host_t host)
-{
-  std::vector<simgrid::kernel::actor::ProcessArg*> process_list = host->pimpl_->auto_restart_processes_;
-
-  for (auto const& arg : process_list) {
-    XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->get_cname());
-    smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
-                                                              arg->properties.get(), nullptr);
-    if (arg->kill_time >= 0)
-      simcall_process_set_kill_time(actor, arg->kill_time);
-    if (arg->auto_restart)
-      actor->auto_restart_ = arg->auto_restart;
-  }
-  process_list.clear();
-}
-
 simgrid::kernel::activity::ExecImplPtr SIMIX_execution_start(std::string name, std::string category,
                                                              double flops_amount, double priority, double bound,
                                                              sg_host_t host)

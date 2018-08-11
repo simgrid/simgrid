@@ -65,6 +65,8 @@ $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 5 --log=no_loc
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Turn Jupiter off
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO] Test 5 seems ok (number of Process: 2, it should be 2)
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Test done. See you!
+> [Jupiter:commRX:(2) 20.000000] [msg_test/INFO]   Receive message: HOST_FAILURE
+> [Jupiter:commRX:(2) 20.000000] [msg_test/INFO]   RX Done
 > [Tremblay:commTX:(3) 40.000000] [msg_test/INFO]   TX done
 > [40.000000] [msg_test/INFO] Simulation time 40
 
@@ -85,6 +87,7 @@ $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 6 --log=no_loc
 > [Jupiter:process_daemonJUPI:(3) 9.000011] [msg_test/INFO]   Execute daemon
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Turn Jupiter off
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Shutdown vm0
+> [Jupiter:process_daemonJUPI:(3) 10.000000] [msg_test/INFO] Host as died as expected, do nothing else
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Destroy vm0
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO] Test 6 is also weird: when the node Jupiter is turned off once again, the VM and its daemon are not killed. However, the issue regarding the shutdown of hosted VMs can be seen a feature not a bug ;)
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Test done. See you!

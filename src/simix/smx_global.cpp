@@ -506,7 +506,7 @@ void SIMIX_run()
     /* Autorestart all process */
     for (auto const& host : host_that_restart) {
       XBT_INFO("Restart processes on host %s", host->get_cname());
-      SIMIX_host_autorestart(host);
+      host->turn_on();
     }
     host_that_restart.clear();
 

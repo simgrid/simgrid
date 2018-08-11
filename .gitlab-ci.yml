@@ -3,12 +3,8 @@ image: debian:testing-slim
 .build: &build
   script:
   - apt-get update
-  - apt-get install -y python3-pip cmake doxygen libboost-all-dev libboost-dev fig2dev
+  - apt-get install -y python3-pip doxygen libboost-all-dev libboost-dev fig2dev
   - pip3 install --requirement docs/requirements.txt 
-  - cmake -Denable_documentation=ON .
-  - make documentation
-  - mkdir docs/doxyoutput
-  - cp -r doc/xml docs/doxyoutput
   - cd docs
   - sphinx-build -M html source/ build/
   - mv build/html ../public
