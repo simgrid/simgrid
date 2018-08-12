@@ -3,6 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef AMPI_HPP
+#define AMPI_HPP
+
 #include <simgrid/s4u.hpp>
 
 namespace simgrid {
@@ -16,3 +19,4 @@ namespace ampi {
 }
 }
 
+#endif

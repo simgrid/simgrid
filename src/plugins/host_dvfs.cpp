@@ -6,9 +6,12 @@
 #include "simgrid/plugins/dvfs.h"
 #include "simgrid/plugins/load.h"
 #include "simgrid/s4u/Engine.hpp"
+#include "src/internal_config.h" // HAVE_SMPI
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#if HAVE_SMPI
 #include "src/smpi/plugins/ampi/ampi.hpp"
+#endif
 #include <xbt/config.hpp>
 
 #include <boost/algorithm/string.hpp>
@@ -267,6 +270,7 @@ public:
   explicit Adagio(simgrid::s4u::Host* ptr)
       : Governor(ptr), rates(100, std::vector<double>(ptr->get_pstate_count(), 0.0))
   {
+#if HAVE_SMPI
     simgrid::smpi::plugin::ampi::on_iteration_in.connect([this](simgrid::s4u::ActorPtr actor) {
       // Every instance of this class subscribes to this event, so one per host
       // This means that for any actor, all 'hosts' are normally notified of these
@@ -282,6 +286,7 @@ public:
         task_id           = 0;
       }
     });
+#endif
     simgrid::kernel::activity::ExecImpl::on_creation.connect([this](simgrid::kernel::activity::ExecImplPtr activity) {
       if (activity->host_ == get_host())
         pre_task();
@@ -331,7 +336,6 @@ public:
       for (int i = 1; i < get_host()->get_pstate_count(); i++) {
         rates[task_id][i] = rates[task_id][0] * (get_host()->get_pstate_speed(i) / get_host()->get_speed());
       }
-      is_initialized = true;
     }
 
     for (int pstate = get_host()->get_pstate_count() - 1; pstate >= 0; pstate--) {
