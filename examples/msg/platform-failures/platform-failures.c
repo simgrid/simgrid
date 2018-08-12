@@ -105,7 +105,6 @@ static int worker(int argc, char *argv[])
     msg_task_t task = NULL;
     XBT_INFO("Waiting a message on %s", mailbox);
     int retcode = MSG_task_receive( &(task), mailbox);
-    double time2 = MSG_get_clock();
     if (retcode == MSG_OK) {
       if (MSG_task_get_data(task) == FINALIZE) {
         MSG_task_destroy(task);
