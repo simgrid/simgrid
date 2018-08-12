@@ -43,6 +43,18 @@ bool Mailbox::listen()
   return not this->empty() || (pimpl_->permanent_receiver_ && not pimpl_->done_comm_queue_.empty());
 }
 
+bool Mailbox::ready()
+{
+  bool comm_ready = false;
+  if (not pimpl_->comm_queue_.empty()) {
+    comm_ready = pimpl_->comm_queue_.front()->state_ == SIMIX_DONE;
+    
+  } else if (pimpl_->permanent_receiver_ && not pimpl_->done_comm_queue_.empty()) {
+    comm_ready = pimpl_->done_comm_queue_.front()->state_ == SIMIX_DONE;
+  }
+  return comm_ready;
+}
+
 smx_activity_t Mailbox::front()
 {
   return pimpl_->comm_queue_.empty() ? nullptr : pimpl_->comm_queue_.front();
