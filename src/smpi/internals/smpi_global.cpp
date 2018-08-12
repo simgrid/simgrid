@@ -431,8 +431,10 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
   std::vector<char*>* args4argv = new std::vector<char*>(args.size());
   std::transform(begin(args), end(args), begin(*args4argv), [](const std::string& s) { return xbt_strdup(s.c_str()); });
 
+#if !SMPI_IFORT
   // take a copy of args4argv to keep reference of the allocated strings
   const std::vector<char*> args2str(*args4argv);
+#endif
   int argc = args4argv->size();
   args4argv->push_back(nullptr);
   char** argv = args4argv->data();
