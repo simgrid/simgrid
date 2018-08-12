@@ -315,10 +315,13 @@ void CpuL07::apply_event(tmgr_trace_event_t triggered, double value)
     tmgr_trace_event_unref(&speed_.event);
 
   } else if (triggered == state_event_) {
-    if (value > 0)
-      turn_on();
-    else
-      turn_off();
+    if (value > 0) {
+      if (is_off()) {
+        host_that_restart.push_back(get_host());
+        get_host()->turn_on();
+      }
+    } else
+      get_host()->turn_off();
     tmgr_trace_event_unref(&state_event_);
 
   } else {

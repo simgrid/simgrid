@@ -32,7 +32,6 @@ foreach(variant fun class)
 endforeach()
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers.tesh)
 
-
 # CHORD EXAMPLE
 add_executable       (s4u-dht-chord dht-chord/s4u-dht-chord.cpp dht-chord/s4u-dht-chord-node.cpp)
 target_link_libraries(s4u-dht-chord simgrid)
@@ -102,7 +101,7 @@ foreach(example actor-create actor-daemon actor-join actor-kill
                 energy-exec energy-boot energy-link energy-vm
                 engine-filtering
                 exec-async exec-basic exec-dvfs exec-monitor exec-ptask exec-remote
-                platform-properties plugin-hostload mutex
+                platform-failures platform-properties plugin-hostload mutex
                 io-async io-file-system io-file-remote io-storage-raw
                 replay-comm replay-storage
                 routing-get-clusters

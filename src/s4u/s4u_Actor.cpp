@@ -8,7 +8,9 @@
 #include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
+#include "src/simix/smx_host_private.hpp"
 #include "src/simix/smx_private.hpp"
+#include "src/surf/HostImpl.hpp"
 
 #include <sstream>
 
@@ -73,7 +75,16 @@ void Actor::join(double timeout)
 
 void Actor::set_auto_restart(bool autorestart)
 {
-  simgrid::simix::simcall([this, autorestart]() { pimpl_->set_auto_restart(autorestart); });
+  simgrid::simix::simcall([this, autorestart]() {
+    pimpl_->set_auto_restart(autorestart);
+
+    std::map<std::string, kernel::actor::ProcessArg*> actors_map = pimpl_->host_->pimpl_->actors_at_boot_;
+    if (actors_map.find(pimpl_->name_) == actors_map.end()) {
+      simgrid::kernel::actor::ProcessArg* arg = new simgrid::kernel::actor::ProcessArg(pimpl_->host_, pimpl_);
+      XBT_DEBUG("Adding Process %s to the actors_at_boot_ list of Host %s", arg->name.c_str(), arg->host->get_cname());
+      actors_map.insert({arg->name, arg});
+    }
+  });
 }
 
 void Actor::on_exit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */

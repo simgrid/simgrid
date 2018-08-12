@@ -102,6 +102,7 @@ HostImpl::HostImpl(s4u::Host* host) : piface_(host)
   delete piface_->pimpl_;
   piface_->pimpl_ = this;
 }
+
 HostImpl::~HostImpl()
 {
   /* All processes should be gone when the host is turned off (by the end of the simulation). */
@@ -113,12 +114,9 @@ HostImpl::~HostImpl()
     SIMIX_display_process_status();
     THROWF(arg_error, 0, "%s", msg.c_str());
   }
-  for (auto const& arg : auto_restart_processes_)
-    delete arg;
-  auto_restart_processes_.clear();
-  for (auto const& arg : boot_processes_)
-    delete arg;
-  boot_processes_.clear();
+  for (auto const& arg : actors_at_boot_)
+    delete arg.second;
+  actors_at_boot_.clear();
 }
 
 /** Re-starts all the actors that are marked as restartable.
@@ -127,8 +125,9 @@ HostImpl::~HostImpl()
  */
 void HostImpl::turn_on()
 {
-  for (auto const& arg : boot_processes_) {
-    XBT_DEBUG("Booting Process %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
+  for (auto const& elm : actors_at_boot_) {
+    kernel::actor::ProcessArg* arg = elm.second;
+    XBT_DEBUG("Booting Actor %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
     smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
                                                               arg->properties.get(), nullptr);
     if (arg->kill_time >= 0)
@@ -142,10 +141,20 @@ void HostImpl::turn_off()
 {
   if (not process_list_.empty()) {
     for (auto& actor : process_list_) {
-      SIMIX_process_kill(&actor, SIMIX_process_self());
-      XBT_DEBUG("Killing %s@%s on behalf of %s which turned off that host.", actor.get_cname(),
+      XBT_DEBUG("Killing Actor %s@%s on behalf of %s which turned off that host.", actor.get_cname(),
                 actor.host_->get_cname(), SIMIX_process_self()->get_cname());
+      SIMIX_process_kill(&actor, SIMIX_process_self());
     }
+  }
+  // When a host is turned off, we want to keep only the actors that should restart for when it will boot again.
+  // Then get rid of the others.
+  auto elm = actors_at_boot_.begin();
+  while (elm != actors_at_boot_.end()) {
+    if (not elm->second->auto_restart) {
+      delete elm->second;
+      actors_at_boot_.erase(elm);
+    } else
+      ++elm;
   }
 }
 
