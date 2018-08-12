@@ -133,6 +133,9 @@ public:
   /** Check if there is a communication going on in a mailbox. */
   bool listen();
 
+  /** Check if there is a communication ready to be consumed from a mailbox. */
+  bool ready();
+
   /** Gets the first element in the queue (without dequeuing it), or nullptr if none is there */
   smx_activity_t front();
 
