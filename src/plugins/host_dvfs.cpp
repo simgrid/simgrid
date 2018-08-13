@@ -261,7 +261,7 @@ private:
   double comp_counter = 0;
   double comp_timer   = 0;
 
-  std::vector<std::vector<double>> rates;
+  std::vector<std::vector<double>> rates; // Each host + all frequencies of that host
 
   unsigned int task_id   = 0;
   bool iteration_running = false; /*< Are we currently between iteration_in and iteration_out calls? */
@@ -298,6 +298,8 @@ public:
         comp_timer += activity->surf_action_->get_finish_time() - activity->surf_action_->get_start_time();
       }
     });
+    // FIXME I think that this fires at the same time for all hosts, so when the src sends something,
+    // the dst will be notified even though it didn't even arrive at the recv yet
     simgrid::s4u::Link::on_communicate.connect(
         [this](kernel::resource::NetworkAction* action, s4u::Host* src, s4u::Host* dst) {
           if ((get_host() == src || get_host() == dst) && iteration_running) {
