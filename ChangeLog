@@ -8,6 +8,10 @@ S4U new features:
        activity.
      - read_async(sg_size_t) and write_async(sg_size_t) which are wrappers on 
        io_init() + start()
+ - When creating an actor from a function and its parameters,
+   move-only parameters are not allowed anymore, as it would prevent
+   the actor to be restartable it its parameters are consumed during
+   the first run.
 
 Tracing:
  - Rename 'power' and 'power_used' variables into 'speed' and 'speed_used'

@@ -129,16 +129,9 @@ class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<Actor> {
 #endif
   kernel::actor::ActorImpl* pimpl_ = nullptr;
 
-  /** Wrap a (possibly non-copyable) single-use task into a `std::function` */
-  template<class F, class... Args>
-  static std::function<void()> wrap_task(F f, Args... args)
-  {
-    typedef decltype(f(std::move(args)...)) R;
-    auto task = std::make_shared<simgrid::xbt::Task<R()>>(simgrid::xbt::make_task(std::move(f), std::move(args)...));
-    return [task] { (*task)(); };
-  }
-
   explicit Actor(smx_actor_t pimpl) : pimpl_(pimpl) {}
+
+  typedef std::function<void()> callback_type;
 
 public:
 
@@ -171,35 +164,30 @@ public:
   /** Signal indicating that the given actor is about to disappear */
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_destruction;
 
-  /** Create an actor from a std::function
+  /** Create an actor from a std::function<void()>
    *
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
-  static ActorPtr create(std::string name, s4u::Host* host, std::function<void()> code);
+  static ActorPtr create(std::string name, s4u::Host* host, callback_type code);
 
   /** Create an actor from a std::function
    *
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
-  static ActorPtr create(std::string name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
-                         std::vector<std::string>* args)
+  template <class F> static ActorPtr create(std::string name, s4u::Host* host, F code)
   {
-    return create(name, host, [code](std::vector<std::string>* args) { code(args); }, args);
+    return create(name, host, callback_type(std::move(code)));
   }
 
-  /** Create an actor using code
+  /** Create an actor using a callable thing and its arguments.
    *
-   *  Using this constructor, move-only type can be used. The consequence is
-   *  that we cannot copy the value and restart the actor in its initial
-   *  state. In order to use auto-restart, an explicit `function` must be passed
-   *  instead.
-   */
+   * Note that the arguments will be copied, so move-only parameters are forbidden */
   template <class F, class... Args,
             // This constructor is enabled only if the call code(args...) is valid:
             typename = typename std::result_of<F(Args...)>::type>
   static ActorPtr create(std::string name, s4u::Host* host, F code, Args... args)
   {
-    return create(name, host, wrap_task(std::move(code), std::move(args)...));
+    return create(name, host, std::bind(std::move(code), std::move(args)...));
   }
 
   // Create actor from function name:
