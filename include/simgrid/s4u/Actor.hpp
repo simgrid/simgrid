@@ -131,8 +131,6 @@ class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<Actor> {
 
   explicit Actor(smx_actor_t pimpl) : pimpl_(pimpl) {}
 
-  typedef std::function<void()> callback_type;
-
 public:
 
   // ***** No copy *****
@@ -168,7 +166,7 @@ public:
    *
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
-  static ActorPtr create(std::string name, s4u::Host* host, callback_type code);
+  static ActorPtr create(std::string name, s4u::Host* host, std::function<void()> code);
 
   /** Create an actor from a std::function
    *
@@ -176,7 +174,7 @@ public:
    */
   template <class F> static ActorPtr create(std::string name, s4u::Host* host, F code)
   {
-    return create(name, host, callback_type(std::move(code)));
+    return create(name, host, std::function<void()>(std::move(code)));
   }
 
   /** Create an actor using a callable thing and its arguments.
