@@ -91,6 +91,7 @@ static int worker(int argc, char* argv[])
       xbt_assert(payload != nullptr, "mailbox->get() failed");
       if (comp_size < 0) { /* - Exit when -1.0 is received */
         XBT_INFO("I'm done. See you!");
+        delete payload;
         break;
       }
       /*  - Otherwise, process the task */
@@ -101,16 +102,16 @@ static int worker(int argc, char* argv[])
       } catch (xbt_ex& e) {
         if (e.category == host_error) {
           XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
+          delete payload;
           return -1;
         } else
           xbt_die("Unexpected behavior");
       }
-
-      delete payload;
     } catch (xbt_ex& e) {
       switch (e.category) {
         case host_error:
           XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
+          delete payload;
           return -1;
         case network_error:
           XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
@@ -119,6 +120,7 @@ static int worker(int argc, char* argv[])
           xbt_die("Unexpected behavior");
       }
     }
+    delete payload;
   }
   return 0;
 }
