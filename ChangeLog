@@ -8,6 +8,8 @@ S4U new features:
        activity.
      - read_async(sg_size_t) and write_async(sg_size_t) which are wrappers on 
        io_init() + start()
+ - Fully reimplement auto_restart mechanism that was utterly broken 
+   (fix #22, #131 and #281 that were all very related)
  - When creating an actor from a function and its parameters,
    move-only parameters are not allowed anymore, as it would prevent
    the actor to be restartable if its parameters are consumed on run.
@@ -22,14 +24,18 @@ XBT:
  - Remove xbt_os_thread_yield()
 
 Fixed bugs:
+ - #22: Process autorestart seem to only work with CAS01 cpus 
  - #93: simgrid should not eat --help
+ - #131: Java : autostart does not work
  - #264: Add ptask L07 resource tracing
  - #271: Dynamic and manual replay of SMPI traces
  - #279: Breakpoints option uses time deltas instead of absolute time
+ - #281: Daemonized actor no longer daemonized after an auto-restart
  - #282: TIT convertor erase traces when using absolute path in the trace list file
  - #285: segfault when a s4u actor kills itself with msg process tracing activated
  - #286: Pajé traces are not exposing the number of cores
  - #287: Command-line parsing should stop when encountering '--'
+ - #288: MPI_Init(NULL, NULL)
 
 ----------------------------------------------------------------------------
 
