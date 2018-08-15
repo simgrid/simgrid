@@ -250,7 +250,7 @@ $ tail -n +3 procmig.trace
 > 5 9 7 sleep "1 1 0"
 > 5 10 7 receive "1 0 0"
 > 5 11 7 send "0 0 1"
-> 5 12 7 task_execute "0 1 1"
+> 5 12 7 execute "0 1 1"
 > 4 13 0 6 6 ACTOR_LINK
 > 4 14 0 6 6 ACTOR_TASK_LINK
 > 6 0.000000 33 6 1 "policeman-2"

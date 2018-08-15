@@ -28,6 +28,9 @@ public:
 
   ~Exec() = default;
 
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_start;
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_completion;
+
   Activity* start() override;
   Activity* wait() override;
   Activity* wait(double timeout) override;
