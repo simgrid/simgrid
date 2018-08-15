@@ -69,7 +69,7 @@ static simgrid::simix::ActorCodeFactory toActorCodeFactory(xbt_main_func_t code)
 }
 static simgrid::simix::ActorCodeFactory toActorCodeFactory(void (*code)(std::vector<std::string>))
 {
-  return [code](std::vector<std::string> args) { return simgrid::xbt::wrap_main(code, std::move(args)); };
+  return [code](std::vector<std::string> args) { return std::bind(std::move(code), std::move(args)); };
 }
 
 /**

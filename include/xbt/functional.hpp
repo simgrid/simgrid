@@ -56,10 +56,6 @@ template <class F> inline std::function<void()> wrap_main(F code, std::vector<st
 {
   return MainFunction<F>(std::move(code), std::move(args));
 }
-inline std::function<void()> wrap_main(void (*code)(std::vector<std::string>), std::vector<std::string> args)
-{
-  return std::bind(std::move(code), std::move(args));
-}
 
 template <class F> inline std::function<void()> wrap_main(F code, int argc, const char* const argv[])
 {
