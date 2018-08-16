@@ -7,7 +7,7 @@ Welcome to SimGrid's documentation!
    :maxdepth: 1
    :caption: Basic Use Cases:
 
-	Simulating Algorithms <usecase_algorithms.rst>
+	Simulating Algorithms <tuto_s4u.rst>
 	Simulating MPI Apps <usecase_mpi.rst>
    
 .. toctree::
