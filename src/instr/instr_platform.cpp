@@ -8,6 +8,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/s4u/Actor.hpp"
+#include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/Host.hpp"
@@ -387,6 +388,15 @@ void instr_define_callbacks()
       simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("execute");
     });
     simgrid::s4u::Exec::on_completion.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->pop_event();
+    });
+    simgrid::s4u::Comm::on_sender_start.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("send");
+    });
+    simgrid::s4u::Comm::on_receiver_start.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("receive");
+    });
+    simgrid::s4u::Comm::on_completion.connect([](simgrid::s4u::ActorPtr actor) {
       simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->pop_event();
     });
     simgrid::s4u::Actor::on_migration_start.connect(instr_actor_on_migration_start);

@@ -13,6 +13,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm, s4u_activity, "S4U asynchronous commun
 
 namespace simgrid {
 namespace s4u {
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Comm::on_sender_start;
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Comm::on_receiver_start;
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Comm::on_completion;
+
 Comm::~Comm()
 {
   if (state_ == State::STARTED && not detached_ && (pimpl_ == nullptr || pimpl_->state_ == SIMIX_RUNNING)) {
@@ -110,10 +114,12 @@ Activity* Comm::start()
   xbt_assert(state_ == State::INITED);
 
   if (src_buff_ != nullptr) { // Sender side
+    on_sender_start(Actor::self());
     pimpl_ = simcall_comm_isend(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
                                 clean_fun_, copy_data_function_, user_data_, detached_);
   } else if (dst_buff_ != nullptr) { // Receiver side
     xbt_assert(not detached_, "Receive cannot be detached");
+    on_receiver_start(Actor::self());
     pimpl_ = simcall_comm_irecv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_,
                                 copy_data_function_, user_data_, rate_);
 
@@ -144,9 +150,12 @@ Activity* Comm::wait(double timeout)
 
     case State::INITED: // It's not started yet. Do it in one simcall
       if (src_buff_ != nullptr) {
+        on_sender_start(Actor::self());
         simcall_comm_send(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
                           copy_data_function_, user_data_, timeout);
+
       } else { // Receiver
+        on_receiver_start(Actor::self());
         simcall_comm_recv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_, copy_data_function_,
                           user_data_, timeout, rate_);
       }
@@ -155,6 +164,7 @@ Activity* Comm::wait(double timeout)
 
     case State::STARTED:
       simcall_comm_wait(pimpl_, timeout);
+      on_completion(Actor::self());
       state_ = State::FINISHED;
       return this;
 
