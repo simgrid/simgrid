@@ -3,6 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/* This is part of the following tutorial:                                  */
+/*    https://simgrid.frama.io/simgrid/usecase_algorithms.html              */
+
 #include <simgrid/s4u.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_masterworker, "Messages specific for this s4u example");
@@ -11,27 +14,27 @@ class Master {
   long tasks_count                 = 0;
   double compute_cost              = 0;
   double communicate_cost          = 0;
-  long workers_count               = 0;
-  simgrid::s4u::MailboxPtr mailbox = nullptr;
+  std::vector<simgrid::s4u::MailboxPtr> workers;
 
 public:
   explicit Master(std::vector<std::string> args)
   {
-    xbt_assert(args.size() == 5, "The master actor expects 4 arguments from the XML deployment file");
+    xbt_assert(args.size() > 4, "The master function expects 3 arguments plus the workers' names");
 
-    workers_count    = std::stol(args[1]);
-    tasks_count      = std::stol(args[2]);
-    compute_cost     = std::stod(args[3]);
-    communicate_cost = std::stod(args[4]);
+    tasks_count      = std::stol(args[1]);
+    compute_cost     = std::stod(args[2]);
+    communicate_cost = std::stod(args[3]);
+    for (unsigned int i = 4; i < args.size(); i++)
+      workers.push_back(simgrid::s4u::Mailbox::by_name(args[i]));
 
-    XBT_INFO("Got %ld workers and %ld tasks to process", workers_count, tasks_count);
+    XBT_INFO("Got %zu workers and %ld tasks to process", workers.size(), tasks_count);
   }
 
   void operator()()
   {
     for (int i = 0; i < tasks_count; i++) { /* For each task to be executed: */
       /* - Select a worker in a round-robin way */
-      mailbox = simgrid::s4u::Mailbox::by_name(std::string("worker-") + std::to_string(i % workers_count));
+      simgrid::s4u::MailboxPtr mailbox = workers[i % workers.size()];
 
       /* - Send the computation amount to the worker */
       if (tasks_count < 10000 || (tasks_count < 100000 && i % 10000 == 0) || i % 100000 == 0)
@@ -40,25 +43,23 @@ public:
     }
 
     XBT_INFO("All tasks have been dispatched. Request all workers to stop.");
-    for (int i = 0; i < workers_count; i++) {
+    for (unsigned int i = 0; i < workers.size(); i++) {
       /* The workers stop when receiving a negative compute_cost */
-      mailbox = simgrid::s4u::Mailbox::by_name(std::string("worker-") + std::to_string(i));
+      simgrid::s4u::MailboxPtr mailbox = workers[i % workers.size()];
       mailbox->put(new double(-1.0), 0);
     }
   }
 };
 
 class Worker {
-  long id                          = -1;
   simgrid::s4u::MailboxPtr mailbox = nullptr;
 
 public:
   explicit Worker(std::vector<std::string> args)
   {
-    xbt_assert(args.size() == 2, "The worker expects a single argument from the XML deployment file: "
-                                 "its worker ID (its numerical rank)");
-    id      = std::stol(args[1]);
-    mailbox = simgrid::s4u::Mailbox::by_name(std::string("worker-") + std::to_string(id));
+    xbt_assert(args.size() == 1, "The worker expects to not get any argument");
+
+    mailbox = simgrid::s4u::Mailbox::by_name(simgrid::s4u::this_actor::get_host()->get_name());
   }
 
   void operator()()
