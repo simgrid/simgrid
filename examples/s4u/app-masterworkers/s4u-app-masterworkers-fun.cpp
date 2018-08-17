@@ -49,7 +49,7 @@ static void worker(std::vector<std::string> args)
 {
   xbt_assert(args.size() == 1, "The worker expects no argument");
 
-  auto my_host                     = simgrid::s4u::this_actor::get_host();
+  simgrid::s4u::Host* my_host      = simgrid::s4u::this_actor::get_host();
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(my_host->get_name());
 
   double compute_cost;

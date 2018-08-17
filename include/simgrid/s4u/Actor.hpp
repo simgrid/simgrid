@@ -442,16 +442,18 @@ XBT_PUBLIC bool is_suspended();
 /** @brief kill the actor. */
 XBT_PUBLIC void exit();
 
-#ifndef DOXYGEN
-/** @deprecated Please use std::function<void(int, void*)> for first parameter */
-XBT_ATTRIB_DEPRECATED_v323("Please use std::function<void(int, void*)> for first parameter.") XBT_PUBLIC
-    void on_exit(int_f_pvoid_pvoid_t fun, void* data);
 /** @brief Add a function to the list of "on_exit" functions. */
 XBT_PUBLIC void on_exit(std::function<void(int, void*)> fun, void* data);
 
 /** @brief Migrate the actor to a new host. */
 XBT_PUBLIC void migrate(Host* new_host);
 
+/** @} */
+
+#ifndef DOXYGEN
+/** @deprecated Please use std::function<void(int, void*)> for first parameter */
+XBT_ATTRIB_DEPRECATED_v323("Please use std::function<void(int, void*)> for first parameter.") XBT_PUBLIC
+    void on_exit(int_f_pvoid_pvoid_t fun, void* data);
 /** @deprecated See this_actor::get_name() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_name()") XBT_PUBLIC std::string getName();
 /** @deprecated See this_actor::get_cname() */
@@ -473,7 +475,6 @@ XBT_ATTRIB_DEPRECATED_v324("Please use this_actor::exit()") XBT_PUBLIC void kill
 #endif
 }
 
-/** @} */
 
 }} // namespace simgrid::s4u
 

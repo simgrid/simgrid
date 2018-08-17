@@ -83,7 +83,8 @@ exhale_args = {
         XBT_ATTRIB_DEPRECATED_v322(m)= \
         XBT_ATTRIB_DEPRECATED_v323(m)= \
         XBT_ATTRIB_DEPRECATED_v324(m)=
-        """
+    
+    """
 }
 
 # For cross-ref generation

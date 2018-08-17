@@ -64,21 +64,18 @@ The Actors
 ..........
 
 Let's start with the code of the worker. It is represented by the
-*master* function below. This simple function takes 4 parameters,
-given as a vector of strings:
-
-   - the number of workers managed by the master.
-   - the number of tasks to dispatch
-   - the computational size (in flops to compute) of each task 
-   - the communication size (in bytes to exchange) of each task
+*master* function below. This simple function takes at least 3
+parameters (the amount of tasks to dispatch, their computational size
+in flops to compute and their communication size in bytes to
+exchange). Every parameter after the third one must be the name of an
+host on which a worker is waiting for something to compute.
 
 Then, the tasks are sent one after the other, each on a mailbox named
-"worker-XXX" where XXX is the number of an existing worker. On the
-other side, a given worker (which code is given below) wait for
-incoming tasks on its own mailbox. Notice how this mailbox mechanism
-allow the actors to find each other without having all information:
-the master don't have to know the actors nor even where they are, it
-simply pushes the messages on mailbox which name is predetermined. 
+after the worker's hosts. On the other side, a given worker (which
+code is given below) wait for incoming tasks on its own
+mailbox.
+
+
 
 At the end, once all tasks are dispatched, the master dispatches
 another task per worker, but this time with a negative amount of flops
@@ -97,12 +94,16 @@ are nicely logged along with the simulated time and actor name.
    :start-after: master-begin
    :end-before: master-end
 
-Here comes the code of the worker actors. This function expects only one
-parameter from its vector of strings: its identifier so that it knows
-on which mailbox its incoming tasks will arrive. Its code is very
-simple: as long as it gets valid computation requests (whose
-compute_amount is positive), it compute this task and waits for the
-next one.	
+Here comes the code of the worker actors. This function expects no
+parameter from its vector of strings. Its code is very simple: it
+expects messages on the mailbox that is named after its own host. As long as it gets valid
+computation requests (whose compute_amount is positive), it compute
+this task and waits for the next one.
+
+The worker retrieves its own host with
+:cpp:func:`simgrid::s4u::this_actor::get_host`. The
+:ref:`simgrid::s4u::this_actor <namespace_simgrid__s4u__this_actor>`
+namespace contains many such helping functions.
 
 .. literalinclude:: ../../examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp
    :language: c++
@@ -113,11 +114,11 @@ Starting the Simulation
 .......................
 		
 And this is it. In only a few lines, we defined the algorithm of our
-master/workers examples. Well, this is true, but an algorithm alone is
-not enough to define a simulation.
+master/workers examples.
 
-First, SimGrid is a library, not a program. So you need to define your
-own `main()` function, as follows. This function is in charge of
+That being said, an algorithm alone is not enough to define a
+simulation: SimGrid is a library, not a program. So you need to define
+your own ``main()`` function as follows. This function is in charge of
 creating a SimGrid simulation engine (on line 3), register the actor
 functions to the engine (on lines 7 and 8), load the virtual platform
 from its description file (on line 11), map actors onto that platform
@@ -129,8 +130,8 @@ from its description file (on line 11), map actors onto that platform
    :end-before: main-end
    :linenos:
 
-After that, the missing pieces are the platform and deployment
-files.
+As you can see, this also requires a platform file and a deployment
+file.
 
 Platform File
 .............
@@ -145,9 +146,8 @@ Such files can get rather long and boring, so the example below is
 only an excerpts of the full ``examples/platforms/small_platform.xml``
 file. For example, most routing information are missing, and only the
 route between the hosts Tremblay and Fafard is given. This path
-traverses 6 links (4, 3, 2, 0, 1 and 8). The full file, along with
-other examples, can be found in the archive under
-``examples/platforms``.
+traverses 6 links (named 4, 3, 2, 0, 1 and 8). There are several
+examples of platforms in the archive under ``examples/platforms``.
 		
 .. |api_s4u_NetZone| image:: /images/extlink.png
    :align: middle
@@ -161,7 +161,7 @@ other examples, can be found in the archive under
 
 .. literalinclude:: ../../examples/platforms/small_platform.xml
    :language: xml
-   :lines: 1-10,12-20,56-63,192-
+   :lines: 1-10,12-20,56-62,192-
    :caption: (excerpts of the small_platform.xml file)
 
 Deployment File
@@ -256,7 +256,7 @@ This very simple setting raises many interesting questions:
 **SimGrid was invented to answer such questions.** Do not believe the
 fools saying that all you need to study such settings is a simple
 discrete event simulator. Do you really want to reinvent the wheel,
-debug your own tool, optimize it and validate its models against real
+debug and optimize your own tool, and validate its models against real
 settings for ages, or do you prefer to sit on the shoulders of a
 giant? With SimGrid, you can focus on your algorithm. The whole
 simulation mechanism is already working.
@@ -328,28 +328,76 @@ you can find it in <simgrid_root_directory>/bin/colorize.
 Exercise 1: Simplifying the deployment file
 ...........................................
 
-In the provided example, the deployment file is tightly connected to
-the platform file ``small_platform.xml`` and adding more workers
-quickly becomes a pain: You need to start them (at the bottom of the
-file), add to inform the master that they are available by increasing
-the right parameter.
+In the provided example, adding more workers quickly becomes a pain:
+You need to start them (at the bottom of the file), and to inform the
+master of its availability with an extra parameter. This is mandatory
+if you want to inform the master of where the workers are running. But
+actually, the master does not need to have this information.
 
-Instead, modify the simulator ``master-workers.c`` into
-``master-workers-exo1.c`` so that the master launches a worker process
-on `all` the other machines at startup. The new deployment file should
-be as simple as:
+We could leverage the mailbox mechanism flexibility, and use a sort of
+yellow page system: Instead of sending data to the worker running on
+Fafard, the master could send data to the third worker. Ie, instead of
+using the worker location (which should be filled in two locations),
+we could use their ID (which should be filled in one location
+only).
 
-.. code-block:: xml
+This could be done with the following deployment file. It's clearly
+not shorter than the previous one, but it's still simpler because the
+information is only written once. It thus follows the `DRY
+<https://en.wikipedia.org/wiki/Don't_repeat_yourself>`_ `SPOT
+<http://wiki.c2.com/?SinglePointOfTruth>`_ design principle.
 
-   <?xml version='1.0'?>
-   <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-   <platform version="4.1">
-     <actor host="Tremblay" function="master">
-       <argument value="20"/>        <!-- Number of tasks -->
-       <argument value="50000000"/>  <!-- Computation size of tasks -->
-       <argument value="1000000"/>   <!-- Communication size of tasks -->
-     </actor>
-   </platform>
+.. literalinclude:: tuto_s4u/deployment1.xml
+   :language: xml
+
+
+Copy your ``master-workers.cpp`` into ``master-workers-exo1.cpp`` and
+add a new executable into ``CMakeLists.txt``. Then modify your worker
+function so that it gets its mailbox name not from the name of its
+host, but from the string passed as ``args[1]``. The master will send
+messages to all workers based on their number, for example as follows:
+
+.. code-block:: cpp
+
+   for (int i = 0; i < tasks_count; i++) {
+     std::string worker_rank          = std::to_string(i % workers_count);
+     std::string mailbox_name         = std::string("worker-") + worker_rank;
+     simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
+
+     mailbox->put(...);
+
+     ...
+   }
+   
+
+Wrap up
+^^^^^^^
+
+The mailboxes are a very powerful mechanism in SimGrid, allowing many
+interesting application settings. They may feel surprising if you are
+used to BSD sockets or other classical systems, but you will soon
+appreciate their power. They are only used to match the
+communications, but have no impact on the communication
+timing. ``put()`` and ``get()`` are matched regardless of their
+initiators' location and then the real communication occures between
+the involved parties.
+
+Please refer to the full `API of Mailboxes
+<api/classsimgrid_1_1s4u_1_1Mailbox.html#class-documentation>`_
+|api_s4u_Mailbox|_ for more details.
+
+
+Exercise 2: Using the whole platform
+....................................
+
+It is now easier to add a new worker, but you still has to do it
+manually. It would be much easier if the master could start the
+workers on its own, one per available host in the platform. The new
+deployment file should be as simple as:
+
+.. literalinclude:: tuto_s4u/deployment2.xml
+   :language: xml
+
 
 Creating the workers from the master
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -411,9 +459,8 @@ Wrap up
 
 In this exercise, we reduced the amount of configuration that our
 simulator requests. This is both a good idea, and a dangerous
-trend. This simplification is an application of the good old DRY/SPOT
-programming principle (Don't Repeat Yourself / Single Point Of Truth
--- `more on wikipedia
+trend. This simplification is another application of the good old DRY/SPOT
+programming principle (`Don't Repeat Yourself / Single Point Of Truth
 <https://en.wikipedia.org/wiki/Don%27t_repeat_yourself>`_), and you
 really want your programming artefacts to follow these software
 engineering principles.
