@@ -27,6 +27,10 @@ public:
 
   virtual ~Comm();
 
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_sender_start;
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_receiver_start;
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_completion;
+
   /*! take a vector s4u::CommPtr and return when one of them is finished.
    * The return value is the rank of the first finished CommPtr. */
   static int wait_any(std::vector<CommPtr> * comms) { return wait_any_for(comms, -1); }

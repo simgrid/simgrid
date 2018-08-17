@@ -99,6 +99,7 @@ static int worker(int argc, char* argv[])
         XBT_INFO("Start execution...");
         simgrid::s4u::this_actor::execute(comp_size);
         XBT_INFO("Execution complete.");
+        delete payload;
       } catch (xbt_ex& e) {
         if (e.category == host_error) {
           XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
@@ -120,7 +121,6 @@ static int worker(int argc, char* argv[])
           xbt_die("Unexpected behavior");
       }
     }
-    delete payload;
   }
   return 0;
 }

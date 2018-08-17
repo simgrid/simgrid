@@ -7,6 +7,7 @@
 #define SIMGRID_S4U_ACTIVITY_HPP
 
 #include <simgrid/forward.h>
+#include <xbt/signal.hpp>
 
 namespace simgrid {
 namespace s4u {
