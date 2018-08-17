@@ -132,6 +132,8 @@ void HostImpl::turn_on()
                                                               arg->properties.get(), nullptr);
     if (arg->kill_time >= 0)
       simcall_process_set_kill_time(actor, arg->kill_time);
+    if (arg->auto_restart)
+      actor->auto_restart_ = arg->auto_restart;
     if (arg->daemon_)
       actor->daemonize();
   }
