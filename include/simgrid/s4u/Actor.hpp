@@ -258,6 +258,7 @@ public:
    */
   void kill();
 
+  /** Kill an actor from its ID */
   static void kill(aid_t pid);
 
   /** Retrieves the actor that have the given PID (or nullptr if not existing) */
