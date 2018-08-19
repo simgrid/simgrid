@@ -22,9 +22,7 @@ namespace simgrid {
 namespace s4u {
 /** @brief A Link represents the network facilities between [hosts](@ref simgrid::s4u::Host) */
 class XBT_PUBLIC Link : public simgrid::xbt::Extendable<Link> {
-#ifndef DOXYGEN
   friend simgrid::kernel::resource::LinkImpl;
-#endif
 
   // Links are created from the NetZone, and destroyed by their private implementation when the simulation ends
   explicit Link(kernel::resource::LinkImpl* pimpl) : pimpl_(pimpl) {}

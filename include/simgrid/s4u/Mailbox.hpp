@@ -116,10 +116,8 @@ namespace s4u {
  *
  */
 class XBT_PUBLIC Mailbox {
-#ifndef DOXYGEN
-  friend Comm;
+  friend simgrid::s4u::Comm;
   friend simgrid::kernel::activity::MailboxImpl;
-#endif
 
   simgrid::kernel::activity::MailboxImpl* pimpl_;
 

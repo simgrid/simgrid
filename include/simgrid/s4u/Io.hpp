@@ -29,7 +29,7 @@ private:
 public:
   friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Io* i);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Io* i);
-  friend Storage; // Factory of IOs
+  friend simgrid::s4u::Storage; // Factory of IOs
 
   ~Io() = default;
 

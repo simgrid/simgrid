@@ -121,12 +121,11 @@ namespace s4u {
 
 /** @brief Simulation Agent */
 class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<Actor> {
-#ifndef DOXYGEN
-  friend Exec;
-  friend Mailbox;
+  friend simgrid::s4u::Exec;
+  friend simgrid::s4u::Mailbox;
   friend simgrid::kernel::actor::ActorImpl;
   friend simgrid::kernel::activity::MailboxImpl;
-#endif
+
   kernel::actor::ActorImpl* pimpl_ = nullptr;
 
   explicit Actor(smx_actor_t pimpl) : pimpl_(pimpl) {}

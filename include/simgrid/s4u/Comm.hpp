@@ -23,7 +23,7 @@ class XBT_PUBLIC Comm : public Activity {
 public:
   friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Comm * c);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Comm * c);
-  friend Mailbox; // Factory of comms
+  friend simgrid::s4u::Mailbox; // Factory of comms
 
   virtual ~Comm();
 
