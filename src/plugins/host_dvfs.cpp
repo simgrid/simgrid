@@ -14,7 +14,12 @@
 #endif
 #include <xbt/config.hpp>
 
+#include "src/internal_config.h"
+
 #include <boost/algorithm/string.hpp>
+#if HAVE_SMPI
+#include "src/smpi/include/smpi_request.hpp"
+#endif
 
 SIMGRID_REGISTER_PLUGIN(host_dvfs, "Dvfs support", &sg_host_dvfs_plugin_init)
 
@@ -26,7 +31,9 @@ static simgrid::config::Flag<std::string> cfg_governor("plugin/dvfs/governor",
     "Which Governor should be used that adapts the CPU frequency?", "performance",
 
     std::map<std::string, std::string>({
+#if HAVE_SMPI
         {"adagio", "TODO: Doc"},
+#endif
         {"conservative", "TODO: Doc"},
         {"ondemand", "TODO: Doc"},
         {"performance", "TODO: Doc"},
@@ -254,6 +261,7 @@ public:
   }
 };
 
+#if HAVE_SMPI
 class Adagio : public Governor {
 private:
   int best_pstate     = 0;
@@ -270,7 +278,6 @@ public:
   explicit Adagio(simgrid::s4u::Host* ptr)
       : Governor(ptr), rates(100, std::vector<double>(ptr->get_pstate_count(), 0.0))
   {
-#if HAVE_SMPI
     simgrid::smpi::plugin::ampi::on_iteration_in.connect([this](simgrid::s4u::ActorPtr actor) {
       // Every instance of this class subscribes to this event, so one per host
       // This means that for any actor, all 'hosts' are normally notified of these
@@ -286,7 +293,6 @@ public:
         task_id           = 0;
       }
     });
-#endif
     simgrid::kernel::activity::ExecImpl::on_creation.connect([this](simgrid::kernel::activity::ExecImplPtr activity) {
       if (activity->host_ == get_host())
         pre_task();
@@ -352,6 +358,7 @@ public:
 
   virtual void update() override {}
 };
+#endif
 } // namespace dvfs
 } // namespace plugin
 } // namespace simgrid
@@ -390,10 +397,14 @@ static void on_host_added(simgrid::s4u::Host& host)
       } else if (dvfs_governor == "ondemand") {
         return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
             new simgrid::plugin::dvfs::OnDemand(daemon_proc->get_host()));
-      } else if (dvfs_governor == "adagio") {
+      }
+#if HAVE_SMPI
+      else if (dvfs_governor == "adagio") {
         return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
             new simgrid::plugin::dvfs::Adagio(daemon_proc->get_host()));
-      } else if (dvfs_governor == "performance") {
+      }
+#endif
+      else if (dvfs_governor == "performance") {
         return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
             new simgrid::plugin::dvfs::Performance(daemon_proc->get_host()));
       } else if (dvfs_governor == "powersave") {
