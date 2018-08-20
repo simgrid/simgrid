@@ -325,8 +325,8 @@ you can find it in <simgrid_root_directory>/bin/colorize.
 
    Explain how to generate a Gantt-Chart with S4U and pajeng.
 
-Exercise 1: Simplifying the deployment file
-...........................................
+Lab 1: Simpler deployments
+--------------------------
 
 In the provided example, adding more workers quickly becomes a pain:
 You need to start them (at the bottom of the file), and to inform the
@@ -371,7 +371,7 @@ messages to all workers based on their number, for example as follows:
    
 
 Wrap up
-^^^^^^^
+.......
 
 The mailboxes are a very powerful mechanism in SimGrid, allowing many
 interesting application settings. They may feel surprising if you are
@@ -387,8 +387,8 @@ Please refer to the full `API of Mailboxes
 |api_s4u_Mailbox|_ for more details.
 
 
-Exercise 2: Using the whole platform
-....................................
+Lab 2: Using the whole platform
+-------------------------
 
 It is now easier to add a new worker, but you still has to do it
 manually. It would be much easier if the master could start the
@@ -400,7 +400,7 @@ deployment file should be as simple as:
 
 
 Creating the workers from the master
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+....................................
 
 For that, the master needs to retrieve the list of hosts declared in
 the platform with :cpp:func:`simgrid::s4u::Engine::get_all_host()`.
@@ -428,7 +428,7 @@ could have something like this:
 
 
 Master-Workers Communication
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+............................
 
 Previously, the workers got from their parameter the name of the
 mailbox they should use. We can still do so: the master should build
@@ -455,7 +455,7 @@ any scheduling decision. It really depends on how you want to organize
 your application and what you want to study with your simulator.
 
 Wrap up
-^^^^^^^
+.......
 
 In this exercise, we reduced the amount of configuration that our
 simulator requests. This is both a good idea, and a dangerous
@@ -471,6 +471,84 @@ artefacts used to test it (platform, deployment and workload). This is
 why SimGrid forces you to express your platform and deployment files
 in XML instead of using a programming interface: it forces a clear
 separation of concerns between things of very different nature.
+
+Lab 3: Fixed experiment duration
+--------------------------------
+
+In the current version, the number of tasks is defined through the
+worker arguments. Hence, tasks are created at the very beginning of
+the simulation. Instead, have the master dispatching tasks for a
+predetermined amount of time.  The tasks must now be created on demand
+instead of beforehand.
+
+Of course, usual time functions like ``gettimeofday`` will give you the
+time on your real machine, which is prety useless in the
+simulation. Instead, retrieve the time in the simulated world with
+:cpp:func:`simgrid::s4u::Engine::get_clock`.
+
+You can still stop your workers with a specific task as previously,
+or you may kill them forcefully with
+:cpp:func:`simgrid::s4u::Actor::kill` (if you already have a reference
+to the actor you want to kill) or
+:cpp:func:`simgrid::s4u::Actor::kill(aid_t)` (if you only have its ID).
+
+
+Anyway, the new deployment `deployment3.xml` file should thus look
+like this:
+
+.. literalinclude:: tuto_s4u/deployment3.xml
+   :language: xml
+
+Controlling the message verbosity
+.................................
+
+Not all messages are equally informative, so you probably want to
+change most of the ``XBT_INFO`` into ``XBT_DEBUG`` so that they are hidden
+by default. You could for example show only the total number of tasks
+processed by default. You can still see the debug messages as follows:
+
+.. code-block:: shell
+
+   ./masterworker examples/platforms/small_platform.xml deployment3.xml --log=msg_test.thres:debug
+
+
+Lab 4: Understanding competing applications
+-------------------------------------------
+
+It is now time to start several applications at once, with the following ``deployment4.xml`` file.
+
+.. literalinclude:: tuto_s4u/deployment4.xml
+   :language: xml
+
+Things happen when you do so, but it remains utterly difficult to
+understand what's happening exactely. Even Gantt visualizations
+contain too much information to be useful: it is impossible to
+understand which task belong to which application. To fix this, we
+will categorize the tasks.
+
+For that, first let each master create its own category of tasks with
+@ref TRACE_category(), and then assign this category to each task using
+@ref MSG_task_set_category().
+
+The outcome can then be visualized as a Gantt-chart as follows:
+
+.. code-block:: shell
+
+   ./masterworker examples/platforms/small_platform.xml deployment4.xml --cfg=tracing:yes --cfg=tracing/msg/process:yes
+   vite simgrid.trace
+
+.. todo::
+
+   Make it work
+
+Going further
+.............
+
+vite is not enough to understand the situation, because it does not
+deal with categorization. That is why you should switch to R to
+visualize your outcomes, as explained on `this page
+<http://simgrid.gforge.inria.fr/contrib/R_visualization.php>`_.
+
 
 
 ..  LocalWords:  SimGrid
