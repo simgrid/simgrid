@@ -687,7 +687,9 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
                                     source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(source)->get_pid(),
                                     simgrid::s4u::this_actor::get_pid(), tag, comm, MPI_REQ_PERSISTENT | MPI_REQ_RECV);
   if (smpi_iprobe_sleep > 0) {
-    s4u::this_actor::exec_init(/* flops to execute */ nsleeps * smpi_iprobe_sleep * speed * maxrate)
+    /** Compute the number of flops we will sleep **/
+    s4u::this_actor::exec_init(/*nsleeps: See comment above */ nsleeps *
+                               /*(in seconds)*/ smpi_iprobe_sleep * speed * maxrate)
         ->set_name("iprobe")
         ->start()
         ->wait();
