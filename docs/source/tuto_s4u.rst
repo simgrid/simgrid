@@ -351,7 +351,7 @@ It produces a ``Rplots.pdf`` with the following content:
    :align: center
 
 
-Lab 1: Simpler deployments
+Lab 1: Simpler Deployments
 --------------------------
 
 In the provided example, adding more workers quickly becomes a pain:
@@ -413,7 +413,7 @@ Please refer to the full `API of Mailboxes
 |api_s4u_Mailbox|_ for more details.
 
 
-Lab 2: Using the whole platform
+Lab 2: Using the Whole Platform
 -------------------------------
 
 It is now easier to add a new worker, but you still has to do it
@@ -499,7 +499,7 @@ why SimGrid forces you to express your platform and deployment files
 in XML instead of using a programming interface: it forces a clear
 separation of concerns between things of very different nature.
 
-Lab 3: Fixed experiment duration
+Lab 3: Fixed Experiment Duration
 --------------------------------
 
 In the current version, the number of tasks is defined through the
@@ -541,8 +541,8 @@ default. You can still see the debug messages as follows:
    ./master-workers-lab3 small_platform.xml deployment3.xml --log=msg_test.thres:debug
 
 
-Lab 4: Understanding competing applications
--------------------------------------------
+Lab 4: Competing Applications
+-----------------------------
 
 It is now time to start several applications at once, with the following ``deployment4.xml`` file.
 
