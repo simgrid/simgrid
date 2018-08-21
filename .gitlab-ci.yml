@@ -1,4 +1,4 @@
-image: debian:testing-slim
+image: debian:testing
 
 pages:
   script:
