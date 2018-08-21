@@ -52,7 +52,7 @@ simple application is composed of two kind of actors: the **master**
 is in charge of distributing some computational tasks to a set of
 **workers** that execute them. 
 
-.. image:: /images/tuto-masterworkers-intro.svg
+.. image:: /tuto_s4u/img/intro.svg
    :align: center
 
 We first present a round-robin version of this application, where the
@@ -198,7 +198,7 @@ the simulation prints things, but the truth is that we have no idea of
 whether this is a good algorithm to dispatch tasks to the workers.
 This very simple setting raises many interesting questions:
 
-.. image:: /images/tuto-masterworkers-question.svg
+.. image:: /tuto_s4u/img/question.svg
    :align: center
 
 - Which algorithm should the master use? Or should the worker decide
@@ -266,20 +266,22 @@ applications (one in light gray and the other in dark gray) running in
 concurrence and showing resource usage over a long period of time. It
 was obtained with the Triva software.
 
-.. image:: /images/tuto-masterworkers-result.png
+.. image:: /tuto_s4u/img/result.png
    :align: center
 
 Prerequisite
 ............
 
 Before your proceed, you need to :ref:`install SimGrid <install>`, a
-C++ compiler and also ``pajeng`` to visualize the traces. The provided
-code template requires cmake to compile. On Debian and Ubuntu for
-example, you can get them as follows:
+C++ compiler and also ``pajeng`` to visualize the traces. You may want
+to install `Vite <http://vite.gforge.inria.fr/>`_ to get a first
+glance at the traces. The provided code template requires cmake to
+compile. On Debian and Ubuntu for example, you can get them as
+follows:
 
 .. code-block:: shell
 
-   sudo apt install simgrid pajeng cmake g++
+   sudo apt install simgrid pajeng cmake g++ vite
 
 An initial version of the source code is provided on framagit. This
 template compiles with cmake. If SimGrid is correctly installed, you
@@ -321,9 +323,33 @@ specify the full path to simgrid-colorizer on the above line, such as
 ``/opt/simgrid/bin/simgrid-colorizer``. If you did not install it at all,
 you can find it in <simgrid_root_directory>/bin/colorize.
 
-.. todo::
+For a classical Gantt-Chart vizualisation, you can use `Vite
+<http://vite.gforge.inria.fr/>`_ as follows:
 
-   Explain how to generate a Gantt-Chart with S4U and pajeng.
+.. code-block:: shell
+
+   ./master-workers small_platform.xml master-workers_d.xml --cfg=tracing:yes --cfg=tracing/msg/process:yes
+   vite simgrid.trace
+
+.. image:: /tuto_s4u/img/vite-screenshot.png
+   :align: center
+   
+But if you want the full power to visualize SimGrid traces, you need
+to use R. As a start, you can download this `starter script
+<https://framagit.org/simgrid/simgrid/raw/master/docs/source/tuto_s4u/draw_gantt.R>`_
+and use it as follows:
+
+.. code-block:: shell
+
+   ./master-workers small_platform.xml master-workers_d.xml --cfg=tracing:yes --cfg=tracing/msg/process:yes
+   pj_dump --ignore-incomplete-links simgrid.trace | grep STATE > gantt.csv
+   Rscript draw_gantt.R gantt.csv
+
+It produces a ``Rplots.pdf`` with the following content:
+
+.. image:: /tuto_s4u/img/Rscript-screenshot.png
+   :align: center
+
 
 Lab 1: Simpler deployments
 --------------------------
@@ -388,7 +414,7 @@ Please refer to the full `API of Mailboxes
 
 
 Lab 2: Using the whole platform
--------------------------
+-------------------------------
 
 It is now easier to add a new worker, but you still has to do it
 manually. It would be much easier if the master could start the
