@@ -377,7 +377,7 @@ information is only written once. It thus follows the `DRY
    :language: xml
 
 
-Copy your ``master-workers.cpp`` into ``master-workers-exo1.cpp`` and
+Copy your ``master-workers.cpp`` into ``master-workers-lab1.cpp`` and
 add a new executable into ``CMakeLists.txt``. Then modify your worker
 function so that it gets its mailbox name not from the name of its
 host, but from the string passed as ``args[1]``. The master will send
@@ -429,7 +429,7 @@ Creating the workers from the master
 ....................................
 
 For that, the master needs to retrieve the list of hosts declared in
-the platform with :cpp:func:`simgrid::s4u::Engine::get_all_host()`.
+the platform with :cpp:func:`simgrid::s4u::Engine::get_all_hosts`.
 Then, the master should start the worker processes with
 :cpp:func:`simgrid::s4u::Actor::create`.
 
@@ -478,7 +478,8 @@ the workers of a given master would pull their work from the same
 mailbox, which should be passed as parameter to the workers.  This
 reduces the amount of mailboxes, but prevents the master from taking
 any scheduling decision. It really depends on how you want to organize
-your application and what you want to study with your simulator.
+your application and what you want to study with your simulator. In
+this tutorial, that's probably not a good idea.
 
 Wrap up
 .......
@@ -529,13 +530,15 @@ Controlling the message verbosity
 .................................
 
 Not all messages are equally informative, so you probably want to
-change most of the ``XBT_INFO`` into ``XBT_DEBUG`` so that they are hidden
-by default. You could for example show only the total number of tasks
-processed by default. You can still see the debug messages as follows:
+change some of the ``XBT_INFO`` into ``XBT_DEBUG`` so that they are
+hidden by default. For example, you may want to use ``XBT_INFO`` once
+every 100 tasks and ``XBT_DEBUG`` when sending all the other tasks. Or
+you could show only the total number of tasks processed by
+default. You can still see the debug messages as follows:
 
 .. code-block:: shell
 
-   ./masterworker examples/platforms/small_platform.xml deployment3.xml --log=msg_test.thres:debug
+   ./master-workers-lab3 small_platform.xml deployment3.xml --log=msg_test.thres:debug
 
 
 Lab 4: Understanding competing applications
@@ -552,15 +555,29 @@ contain too much information to be useful: it is impossible to
 understand which task belong to which application. To fix this, we
 will categorize the tasks.
 
-For that, first let each master create its own category of tasks with
-@ref TRACE_category(), and then assign this category to each task using
-@ref MSG_task_set_category().
+Instead of starting the execution in one function call only with
+``simgrid::s4u::this_actor::execute(compute_cost)``, you need to
+create the execution activity, set its tracing category and then start
+it and wait for its completion, as follows:
+
+.. code-block:: cpp
+
+   simgrid::s4u::ExecPtr exec = simgrid::s4u::this_actor::exec_init(compute_cost);
+   exec->set_tracing_category(category);
+   // exec->start() is optional here as wait() starts the activity on need
+   exec->wait();
+
+You can make the same code shorter as follows:
+
+.. code-block:: cpp
+
+   simgrid::s4u::this_actor::exec_init(compute_cost)->set_tracing_category(category)->wait();
 
 The outcome can then be visualized as a Gantt-chart as follows:
 
 .. code-block:: shell
 
-   ./masterworker examples/platforms/small_platform.xml deployment4.xml --cfg=tracing:yes --cfg=tracing/msg/process:yes
+   ./master-workers-lab4 small_platform.xml deployment4.xml --cfg=tracing:yes --cfg=tracing/msg/process:yes
    vite simgrid.trace
 
 .. todo::
