@@ -65,7 +65,7 @@ exhale_args = {
     # "treeViewIsBootstrap": True,
     "exhaleExecutesDoxygen": True,
     "exhaleDoxygenStdin":    """
-    INPUT = ../../include/simgrid/s4u
+    INPUT = ../../include/simgrid/s4u ../../include/simgrid/xbt
     GENERATE_XML           = YES
     PREDEFINED             += \
         __cplusplus \
@@ -83,7 +83,7 @@ exhale_args = {
         XBT_ATTRIB_DEPRECATED_v322(m)= \
         XBT_ATTRIB_DEPRECATED_v323(m)= \
         XBT_ATTRIB_DEPRECATED_v324(m)=
-    
+
     """
 }
 
@@ -115,7 +115,6 @@ exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
-
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -154,7 +153,7 @@ htmlhelp_basename = 'SimGrid-doc'
 
 html_context = {
     "display_gitlab": True, # Integrate Gitlab
-    "gitlab_host": "framagit.org", 
+    "gitlab_host": "framagit.org",
     "gitlab_user": "simgrid",
     "gitlab_repo": "simgrid",
     "gitlab_version": "master", # Version
