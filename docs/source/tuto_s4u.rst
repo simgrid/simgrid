@@ -517,7 +517,7 @@ You can still stop your workers with a specific task as previously,
 or you may kill them forcefully with
 :cpp:func:`simgrid::s4u::Actor::kill` (if you already have a reference
 to the actor you want to kill) or
-:cpp:func:`simgrid::s4u::Actor::kill(aid_t)` (if you only have its ID).
+:cpp:func:`void simgrid::s4u::Actor::kill(aid_t)` (if you only have its ID).
 
 
 Anyway, the new deployment `deployment3.xml` file should thus look
@@ -556,8 +556,8 @@ understand which task belong to which application. To fix this, we
 will categorize the tasks.
 
 Instead of starting the execution in one function call only with
-``simgrid::s4u::this_actor::execute(compute_cost)``, you need to
-create the execution activity, set its tracing category and then start
+``this_actor::execute(cost)``, you need to
+create the execution activity, set its tracing category, and then start
 it and wait for its completion, as follows:
 
 .. code-block:: cpp
@@ -573,24 +573,77 @@ You can make the same code shorter as follows:
 
    simgrid::s4u::this_actor::exec_init(compute_cost)->set_tracing_category(category)->wait();
 
-The outcome can then be visualized as a Gantt-chart as follows:
+Visualizing the result
+.......................
 
-.. code-block:: shell
-
-   ./master-workers-lab4 small_platform.xml deployment4.xml --cfg=tracing:yes --cfg=tracing/msg/process:yes
-   vite simgrid.trace
+vite is not enough to understand the situation, because it does not
+deal with categorization. This time, you absolutely must switch to R,
+as explained on `this page
+<http://simgrid.gforge.inria.fr/contrib/R_visualization.php>`_.
 
 .. todo::
 
-   Make it work
+   Include here the minimal setting to view something in R.
+   
 
-Going further
-.............
+Lab 5: Better Scheduling
+------------------------
 
-vite is not enough to understand the situation, because it does not
-deal with categorization. That is why you should switch to R to
-visualize your outcomes, as explained on `this page
-<http://simgrid.gforge.inria.fr/contrib/R_visualization.php>`_.
+You don't need a very advanced visualization solution to notice that
+round-robin is completely suboptimal: most of the workers keep waiting
+for more work. We will move to a First-Come First-Served mechanism
+instead.
+
+For that, your workers should explicitely request for work with a
+message sent to a channel that is specific to their master. The name
+of that private channel can be the one used to categorize the
+executions, as it is already specific to each master.
+
+The master should serve in a round-robin manner the requests it
+receives, until the time is up. Changing the communication schema can
+be a bit hairy, but once it works, you will see that such as simple
+FCFS schema allows to double the amount of tasks handled over time
+here. Things may be different with another platform file.
+
+Further Improvements
+....................
+
+From this, many things can easily be added. For example, you could:
+
+- Allow workers to have several pending requests so as to overlap
+  communication and computations as much as possible. Non-blocking
+  communication will probably become handy here.
+- Add a performance measurement mechanism, enabling the master to make smart scheduling choices.
+- Test your code on other platforms, from the ``examples/platforms``
+  directory in your archive.
+  
+  What is the largest number of tasks requiring 50e6 flops and 1e5
+  bytes that you manage to distribute and process in one hour on
+  ``g5k.xml`` ?
+- Optimize not only for the amount of tasks handled, but also for the
+  total energy dissipated. 
+- And so on. If you come up with a really nice extension, please share
+  it with us so that we can extend this tutorial. 
+
+After this Tutorial
+-------------------
+
+This tutorial is now terminated. You could keep reading the [online documentation][fn:4] or
+[tutorials][fn:7], or you could head up to the example section to read some code.
+
+.. todo::
+
+   TODO: Points to improve for the next time
+
+   - Propose equivalent exercises and skeleton in java.
+   - Propose a virtualbox image with everything (simgrid, pajeng, ...) already set
+     up.
+   - Ease the installation on mac OS X (binary installer) and
+     windows.
+   - Explain that programming in C or java and having a working
+     development environment is a prerequisite.
+
+
 
 
 

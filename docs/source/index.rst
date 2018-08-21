@@ -5,11 +5,11 @@ Welcome to SimGrid's documentation!
 
 .. toctree::
    :maxdepth: 1
-   :caption: Basic Use Cases:
+   :caption: Tutorials:
 
 	Simulating Algorithms <tuto_s4u.rst>
-	Simulating MPI Apps <usecase_mpi.rst>
-   
+	Simulating MPI Apps <tuto_mpi.rst>
+
 .. toctree::
    :maxdepth: 1
    :caption: Getting Started:
