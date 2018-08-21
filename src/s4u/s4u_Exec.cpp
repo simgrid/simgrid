@@ -32,6 +32,8 @@ Activity* Exec::cancel()
 
 Activity* Exec::wait()
 {
+  if (state_ == State::INITED)
+    start();
   simcall_execution_wait(pimpl_);
   state_ = State::FINISHED;
   on_completion(Actor::self());
