@@ -43,6 +43,13 @@ communicating processes.
    :width: 12
 .. _api_s4u_Mailbox: api/classsimgrid_1_1s4u_1_1Mailbox.html#class-documentation
 
+**In the remainder of this tutorial**, you will discover a simple yet
+fully functioning example of SimGrid simulation: the Master/Workers
+application. We will detail each part of the code and necessary
+configuration to make it working.  After this tour, several exercises
+are proposed to let you discover some of the SimGrid features, hands
+on the keyboard. 
+
 
 Discover the Master/Workers
 ---------------------------
