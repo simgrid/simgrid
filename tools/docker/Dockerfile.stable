@@ -1,0 +1,18 @@
+# Base image 
+FROM debian:testing
+
+ARG DLURL
+
+# - Install SimGrid's dependencies
+# - Compile and install SimGrid itself
+RUN echo "DOWNLOAD_URL: ${DLURL}" && \
+    apt update && apt install -y wget && \
+    wget https://framagit.org/${DLURL} && tar xf SimGrid-* && \
+    cd SimGrid-* && \
+    apt install -y gcc g++ default-jdk gfortran libboost-dev libboost-all-dev cmake valgrind libboost-coroutine1.62.0 && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
+    make -j4 install && make clean && \
+    apt remove -y  gcc g++ default-jdk gfortran libboost-dev libboost-all-dev cmake wget && \
+    apt autoremove -y && apt autoclean && apt clean
+
+    
