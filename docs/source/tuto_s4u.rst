@@ -277,15 +277,53 @@ was obtained with the Triva software.
 .. image:: /tuto_s4u/img/result.png
    :align: center
 
-Prerequisite
+Using Docker
 ............
 
-Before your proceed, you need to :ref:`install SimGrid <install>`, a
-C++ compiler and also ``pajeng`` to visualize the traces. You may want
-to install `Vite <http://vite.gforge.inria.fr/>`_ to get a first
-glance at the traces. The provided code template requires cmake to
-compile. On Debian and Ubuntu for example, you can get them as
-follows:
+The easiest way to take the tutorial is to use the dedicated Docker
+image. Once you `installed Docker itself
+<https://docs.docker.com/install/>`_, simply do the following:
+
+.. code-block:: shell
+
+   docker pull simgrid/tuto-s4u
+   docker run -it --rm --name simgrid --volume ~/simgrid-tutorial:/src/tutorial simgrid/tuto-s4u bash
+
+This will start a new container with all you need to take this
+tutorial, and create a ``simgrid-tutorial`` directory in your home on
+your host machine that will be visible as ``/src/tutorial`` within the
+container.  You can then edit the files you want with your favorite
+editor in ``~/simgrid-tutorial``, and compile them within the
+container to enjoy the provided dependencies.
+
+.. warning::
+
+   Any change to the container out of ``/src/tutorial`` will be lost
+   when you log out of the container, so don't edit the other files!
+
+All needed dependencies are already installed in this container
+(SimGrid, a C++ compiler, cmake, pajeng and R). Vite being only
+optional in this tutorial, it is not installed to reduce the image
+size.
+
+The code template is available under ``/src/simgrid-template-s4u`` in
+the image. You should copy it to your working directory when you first
+log in:
+
+.. code-block:: shell
+
+   cp -r /src/simgrid-template-s4u/* /src/tutorial
+   cd /src/tutorial
+
+Using your Computer Natively
+............................
+
+To take the tutorial on your machine, you first need to :ref:`install
+SimGrid <install>`, a C++ compiler and also ``pajeng`` to visualize
+the traces. You may want to install `Vite
+<http://vite.gforge.inria.fr/>`_ to get a first glance at the
+traces. The provided code template requires cmake to compile. On
+Debian and Ubuntu for example, you can get them as follows:
 
 .. code-block:: shell
 
