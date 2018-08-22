@@ -5,9 +5,9 @@ FROM debian:testing
 # - Compile and install SimGrid itself
 RUN apt update && \
     apt install -y g++ gcc git valgrind default-jdk gfortran libboost-dev libboost-all-dev libboost-coroutine1.62.0 cmake && \
-    git clone --depth=1 https://framagit.org/simgrid/simgrid.git && \
-    cd simgrid && \
-    cmake -DCMAKE_INSTALL_PREFIX=/usr -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
+    mkdir /src/ && cd /src && git clone --depth=1 https://framagit.org/simgrid/simgrid.git simgrid.git && \
+    cd simgrid.git && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr/ -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
     make -j4 install && make clean && \
     apt remove -y default-jdk gfortran libboost-dev libboost-all-dev cmake && \
     apt autoremove -y && apt autoclean && apt clean

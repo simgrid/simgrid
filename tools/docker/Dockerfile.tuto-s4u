@@ -3,6 +3,7 @@ FROM simgrid/unstable
 
 # - Clone simgrid-template-s4u, as it is needed by the tutorial
 RUN apt install -y pajeng r-base r-cran-ggplot2 r-cran-dplyr cmake g++ && \
+    cd /src && \
     git clone --depth=1 https://framagit.org/simgrid/simgrid-template-s4u.git
 
     
