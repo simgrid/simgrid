@@ -48,7 +48,8 @@ fully functioning example of SimGrid simulation: the Master/Workers
 application. We will detail each part of the code and necessary
 configuration to make it working.  After this tour, several exercises
 are proposed to let you discover some of the SimGrid features, hands
-on the keyboard. 
+on the keyboard. This practical session will be given in C++, that you
+are supposed to know beforehand.
 
 
 Discover the Master/Workers
@@ -331,7 +332,9 @@ specify the full path to simgrid-colorizer on the above line, such as
 you can find it in <simgrid_root_directory>/bin/colorize.
 
 For a classical Gantt-Chart vizualisation, you can use `Vite
-<http://vite.gforge.inria.fr/>`_ as follows:
+<http://vite.gforge.inria.fr/>`_ if you have it installed, as
+follows. But do not spend too much time installing Vite, because there
+is a better way to visualize SimGrid traces (see below).
 
 .. code-block:: shell
 
@@ -341,7 +344,7 @@ For a classical Gantt-Chart vizualisation, you can use `Vite
 .. image:: /tuto_s4u/img/vite-screenshot.png
    :align: center
    
-But if you want the full power to visualize SimGrid traces, you need
+If you want the full power to visualize SimGrid traces, you need
 to use R. As a start, you can download this `starter script
 <https://framagit.org/simgrid/simgrid/raw/master/docs/source/tuto_s4u/draw_gantt.R>`_
 and use it as follows:
@@ -643,15 +646,7 @@ This tutorial is now terminated. You could keep reading the [online documentatio
    TODO: Points to improve for the next time
 
    - Propose equivalent exercises and skeleton in java.
-   - Propose a virtualbox image with everything (simgrid, pajeng, ...) already set
-     up.
-   - Ease the installation on mac OS X (binary installer) and
-     windows.
-   - Explain that programming in C or java and having a working
-     development environment is a prerequisite.
-
-
-
-
+   - Propose a virtualbox image with everything (simgrid, pajeng, ...) already set up.
+   - Ease the installation on mac OS X (binary installer) and windows.
 
 ..  LocalWords:  SimGrid
