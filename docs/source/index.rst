@@ -11,12 +11,18 @@ Welcome to SimGrid's documentation!
 	Simulating MPI Apps <tuto_mpi.rst>
 
 .. toctree::
-   :maxdepth: 1
-   :caption: Getting Started:
+   :maxdepth: 2
+   :caption: User Manual:
 
-	What is SimGrid <main_concepts.rst>
-	Installing SimGrid <installation.rst>
-	Start your Own Project <install_yours.rst>
+      Introduction <introduction.rst>
+      Describing your Application <application.rst>
+      Describing the Virtual Platform <platform.rst>
+      Describing the Experimental Scenario <scenario.rst>
+      The SimGrid Models <models.rst>
+      Simulation Outcomes <outcomes.rst>
+      Use Cases and Howto <howto.rst>
+      The SimGrid Community <community.rst>
+      Frequently Asked Questions <faq.rst>
 
 .. toctree::
    :maxdepth: 2

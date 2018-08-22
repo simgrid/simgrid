@@ -16,12 +16,12 @@ take place on **Resources** (CPUs, links, disks). SimGrid predicts the
 time taken by each activity and orchestrates accordingly the actors
 waiting for the completion of these activities.
 
-.. |api_s4u_Actor| image:: /images/extlink.png
+.. |api_s4u_Actor| image:: /img/extlink.png
    :align: middle
    :width: 12
 .. _api_s4u_Actor: api/classsimgrid_1_1s4u_1_1Actor.html#class-documentation
 
-.. |api_s4u_Activity| image:: /images/extlink.png
+.. |api_s4u_Activity| image:: /img/extlink.png
    :align: middle
    :width: 12
 .. _api_s4u_Activity: api/classsimgrid_1_1s4u_1_1Activity.html#class-documentation
@@ -33,12 +33,12 @@ directly sent to actors, but posted onto **Mailboxes**
 |api_s4u_Mailbox|_ that serve as rendez-vous points between
 communicating processes. 
 
-.. |api_s4u_Host| image:: /images/extlink.png
+.. |api_s4u_Host| image:: /img/extlink.png
    :align: middle
    :width: 12
 .. _api_s4u_Host: api/classsimgrid_1_1s4u_1_1Host.html#class-documentation
 
-.. |api_s4u_Mailbox| image:: /images/extlink.png
+.. |api_s4u_Mailbox| image:: /img/extlink.png
    :align: middle
    :width: 12
 .. _api_s4u_Mailbox: api/classsimgrid_1_1s4u_1_1Mailbox.html#class-documentation
@@ -157,12 +157,12 @@ route between the hosts Tremblay and Fafard is given. This path
 traverses 6 links (named 4, 3, 2, 0, 1 and 8). There are several
 examples of platforms in the archive under ``examples/platforms``.
 		
-.. |api_s4u_NetZone| image:: /images/extlink.png
+.. |api_s4u_NetZone| image:: /img/extlink.png
    :align: middle
    :width: 12
 .. _api_s4u_NetZone: api/classsimgrid_1_1s4u_1_1NetZone.html#class-documentation
 
-.. |api_s4u_Link| image:: /images/extlink.png
+.. |api_s4u_Link| image:: /img/extlink.png
    :align: middle
    :width: 12
 .. _api_s4u_Link: api/classsimgrid_1_1s4u_1_1Link.html#class-documentation

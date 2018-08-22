@@ -115,7 +115,7 @@ Eclipse. You have to run cmake and import it as a Makefile project.
 Next you have to activate C++11 in your build settings, add -std=c++11
 in the CDT GCC Built-in compiler settings.
 
-.. image:: images/eclipseScreenShot.png
+.. image:: img/eclipseScreenShot.png
 
 
 Building the Java examples in Eclipse
