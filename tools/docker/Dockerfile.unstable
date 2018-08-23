@@ -4,11 +4,11 @@ FROM debian:testing
 # - Install SimGrid's dependencies
 # - Compile and install SimGrid itself
 RUN apt update && \
-    apt install -y g++ gcc git valgrind default-jdk gfortran libboost-dev libboost-all-dev libboost-coroutine1.62.0 cmake && \
+    apt install -y g++ gcc git valgrind default-jdk gfortran libboost-dev libboost-all-dev cmake libboost-coroutine1.62.0 && \
     mkdir /src/ && cd /src && git clone --depth=1 https://framagit.org/simgrid/simgrid.git simgrid.git && \
     cd simgrid.git && \
     cmake -DCMAKE_INSTALL_PREFIX=/usr/ -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
     make -j4 install && \
     git reset --hard master && git clean -dfx && \
-    apt remove -y default-jdk gfortran libboost-dev libboost-all-dev cmake gdb valgrind && \
+    apt remove -y  g++ gcc git valgrind default-jdk gfortran libboost-dev libboost-all-dev cmake gdb && \
     apt autoremove -y && apt autoclean && apt clean
