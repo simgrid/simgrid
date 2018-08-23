@@ -6,7 +6,7 @@ pages:
   - apt install -y libboost-all-dev libboost-dev python3-pip doxygen fig2dev
   - pip3 install --requirement docs/requirements.txt 
   - cd docs
-  - sphinx-build -M html source/ build/
+  - ./Build.sh
   - mv build/html ../public
   artifacts:
     paths:
