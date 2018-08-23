@@ -24,7 +24,11 @@ namespace s4u {
 XBT_ATTRIB_DEPRECATED_v322("Please use Engine::get_all_storages()") XBT_PUBLIC void getStorageList(std::map<std::string, Storage*>* whereTo);
 #endif
 
-/** Storage represent the disk resources, usually associated to a given host */
+/** Storage represent the disk resources, usually associated to a given host
+ *
+ * By default, SimGrid does not keep track of the actual data being written but
+ * only computes the time taken by the corresponding data movement.
+ */
 
 class XBT_PUBLIC Storage : public simgrid::xbt::Extendable<Storage> {
   friend simgrid::s4u::Engine;
