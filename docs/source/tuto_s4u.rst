@@ -4,44 +4,59 @@ Simulating Algorithms
 =====================
 
 SimGrid was conceived as a tool to study distributed algorithms. Its
-modern S4U interface makes it easy to assess Cloud, P2P, HPC, IoT and
-similar settings.
+modern :ref:`S4U interface <S4U_doc>` makes it easy to assess Cloud,
+P2P, HPC, IoT and similar settings.
 
-A typical SimGrid simulation is composed of several **Actors**
-|api_s4u_Actor|_ , that execute user-provided functions. The actors
-have to explicitly use the S4U interface to express their computation,
-communication, disk usage and other **Activities** |api_s4u_Activity|_
-, so that they get reflected within the simulator. These activities
-take place on **Resources** (CPUs, links, disks). SimGrid predicts the
-time taken by each activity and orchestrates accordingly the actors
-waiting for the completion of these activities.
+A typical SimGrid simulation is composed of several |Actors|_, that
+execute user-provided functions. The actors have to explicitly use the
+S4U interface to express their computation, communication, disk usage
+and other |Activities|_, so that they get reflected within the
+simulator. These activities take place on **Resources** (|Hosts|_,
+|Links|_, |Storages|_). SimGrid predicts the time taken by each
+activity and orchestrates accordingly the actors waiting for the
+completion of these activities.
 
-.. |api_s4u_Actor| image:: /img/extlink.png
-   :align: middle
-   :width: 12
-.. _api_s4u_Actor: api/classsimgrid_1_1s4u_1_1Actor.html#class-documentation
+Each actor executes a user-provided function on a simulated |Host|_
+with which it can interact. Communications are not directly sent to
+actors, but posted onto a |Mailbox|_ that serve as rendez-vous point
+between communicating processes.
 
-.. |api_s4u_Activity| image:: /img/extlink.png
-   :align: middle
-   :width: 12
-.. _api_s4u_Activity: api/classsimgrid_1_1s4u_1_1Activity.html#class-documentation
+.. |Actors| replace:: **Actors**
+.. _Actors: api/classsimgrid_1_1s4u_1_1Actor.html
 
+.. |Activities| replace:: **Activities**
+.. _Activities: api/classsimgrid_1_1s4u_1_1Activity.html
 
-Each actor executes a user-provided function on a simulated **Host**
-|api_s4u_Host|_ with which it can interact. Communications are not
-directly sent to actors, but posted onto **Mailboxes**
-|api_s4u_Mailbox|_ that serve as rendez-vous points between
-communicating processes. 
+.. |Hosts| replace:: **Hosts**
+.. _Hosts: api/classsimgrid_1_1s4u_1_1Host.html
 
-.. |api_s4u_Host| image:: /img/extlink.png
-   :align: middle
-   :width: 12
-.. _api_s4u_Host: api/classsimgrid_1_1s4u_1_1Host.html#class-documentation
+.. |Links| replace:: **Links**
+.. _Links: api/classsimgrid_1_1s4u_1_1Link.html
 
-.. |api_s4u_Mailbox| image:: /img/extlink.png
-   :align: middle
-   :width: 12
-.. _api_s4u_Mailbox: api/classsimgrid_1_1s4u_1_1Mailbox.html#class-documentation
+.. |Storages| replace:: **Storages**
+.. _Storages: api/classsimgrid_1_1s4u_1_1Storage.html
+
+.. |VirtualMachines| replace:: **VirtualMachines**
+.. _VirtualMachines: api/classsimgrid_1_1s4u_1_1VirtualMachine.html
+
+.. |Host| replace:: **Host**
+.. _Host: api/classsimgrid_1_1s4u_1_1Host.html
+
+.. |Link| replace:: **Link**
+.. _Link: api/classsimgrid_1_1s4u_1_1Link.html
+
+.. |Mailbox| replace:: **Mailbox**
+.. _Mailbox: api/classsimgrid_1_1s4u_1_1Mailbox.html
+
+.. |Barrier| replace:: **Barrier**
+.. _Barrier: api/classsimgrid_1_1s4u_1_1Barrier.html
+
+.. |ConditionVariable| replace:: **ConditionVariable**
+.. _ConditionVariable: api/classsimgrid_1_1s4u_1_1ConditionVariable.html
+
+.. |Mutex| replace:: **Mutex**
+.. _Mutex: api/classsimgrid_1_1s4u_1_1Mutex.html
+
 
 **In the remainder of this tutorial**, you will discover a simple yet
 fully functioning example of SimGrid simulation: the Master/Workers
@@ -146,9 +161,8 @@ Platform File
 
 Platform files define the virtual platform on which the provided
 application will take place. In contains one or several **Network
-Zone** |api_s4u_NetZone|_ that contain both **Host-** |api_s4u_Host|_
-and **Link-** |api_s4u_Link|_ Resources, as well as routing
-information.
+Zone** |api_s4u_NetZone|_ that contain both |Host|_ and |Link|_
+Resources, as well as routing information.
 
 Such files can get rather long and boring, so the example below is
 only an excerpts of the full ``examples/platforms/small_platform.xml``
@@ -457,8 +471,8 @@ initiators' location and then the real communication occures between
 the involved parties.
 
 Please refer to the full `API of Mailboxes
-<api/classsimgrid_1_1s4u_1_1Mailbox.html#class-documentation>`_
-|api_s4u_Mailbox|_ for more details.
+<api/classsimgrid_1_1s4u_1_1Mailbox.html#class-documentation>`_ for
+more details.
 
 
 Lab 2: Using the Whole Platform

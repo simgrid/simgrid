@@ -12,10 +12,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
+import os, subprocess
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
 
 # -- Project information -----------------------------------------------------
 
@@ -53,6 +52,7 @@ breathe_projects = { 'simgrid': '../build/doxy/xml' }
 breathe_default_project = "simgrid"
 
 # Setup the exhale extension
+
 exhale_args = {
     # These arguments are required
     "containmentFolder":     "./api",
@@ -66,7 +66,10 @@ exhale_args = {
     "exhaleExecutesDoxygen": True,
     "exhaleDoxygenStdin":    """
     INPUT = ../../include/simgrid/s4u ../../include/simgrid/forward.h ../../include/simgrid/xbt
+    FULL_PATH_NAMES = NO # Don't leak the path on which it was built
     GENERATE_XML           = YES
+    XML_PROGRAMLISTING     = NO # No program listings, please
+
     PREDEFINED             += \
         __cplusplus \
         DOXYGEN \
@@ -86,6 +89,7 @@ exhale_args = {
 
     """
 }
+
 
 # For cross-ref generation
 primary_domain = 'cpp'
@@ -159,3 +163,4 @@ html_context = {
     "gitlab_version": "master", # Version
     "conf_py_path": "/docs/source/", # Path in the checkout to the docs root
 }
+
