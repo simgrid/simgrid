@@ -40,8 +40,6 @@ class XBT_PUBLIC Mutex {
   friend XBT_PUBLIC void intrusive_ptr_release(Mutex* mutex);
 
 public:
-  using Ptr = boost::intrusive_ptr<Mutex>;
-
   // No copy:
   /** You cannot create a new mutex by copying an existing one. Use MutexPtr instead */
   Mutex(Mutex const&) = delete;
@@ -49,7 +47,7 @@ public:
   Mutex& operator=(Mutex const&) = delete;
 
   /** Constructs a new mutex */
-  static Ptr create();
+  static MutexPtr create();
 
   void lock();
   void unlock();
@@ -57,10 +55,8 @@ public:
 
   // deprecated
   /** @deprecated Mutex::create() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mutex::create()") static Ptr createMutex() { return create(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mutex::create()") static MutexPtr createMutex() { return create(); }
 };
-
-using MutexPtr = Mutex::Ptr;
 
 }} // namespace simgrid::s4u
 

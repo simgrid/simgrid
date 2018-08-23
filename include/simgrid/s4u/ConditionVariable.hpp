@@ -33,12 +33,14 @@ public:
 
   friend XBT_PUBLIC void intrusive_ptr_add_ref(ConditionVariable * cond);
   friend XBT_PUBLIC void intrusive_ptr_release(ConditionVariable * cond);
-  using Ptr = boost::intrusive_ptr<ConditionVariable>;
 
-  static Ptr create();
+  static ConditionVariablePtr create();
 
   /** @deprecated See Comm::get_mailbox() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") Ptr createConditionVariable() { return create(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") ConditionVariablePtr createConditionVariable()
+  {
+    return create();
+  }
 
   //  Wait functions without time:
 
@@ -99,7 +101,6 @@ public:
   void notify_all();
 };
 
-using ConditionVariablePtr = ConditionVariable::Ptr;
 }
 } // namespace simgrid::s4u
 

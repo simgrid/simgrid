@@ -16,33 +16,57 @@ namespace simgrid {
 
 namespace s4u {
 class Activity;
+
 class Actor;
-using ActorPtr = boost::intrusive_ptr<Actor>;
+/** Smart pointer to a simgrid::s4u::Actor */
+typedef boost::intrusive_ptr<Actor> ActorPtr;
 XBT_PUBLIC void intrusive_ptr_release(Actor* actor);
 XBT_PUBLIC void intrusive_ptr_add_ref(Actor* actor);
+
 class Barrier;
+
 class Comm;
-using CommPtr = boost::intrusive_ptr<Comm>;
+/** Smart pointer to a simgrid::s4u::Comm */
+typedef boost::intrusive_ptr<Comm> CommPtr;
 XBT_PUBLIC void intrusive_ptr_release(Comm* c);
 XBT_PUBLIC void intrusive_ptr_add_ref(Comm* c);
+
+class ConditionVariable;
+/** Smart pointer to a simgrid::s4u::ConditionVariable */
+typedef boost::intrusive_ptr<ConditionVariable> ConditionVariablePtr;
+XBT_PUBLIC void intrusive_ptr_release(ConditionVariable* c);
+XBT_PUBLIC void intrusive_ptr_add_ref(ConditionVariable* c);
+
 class Engine;
+
 class Exec;
-using ExecPtr = boost::intrusive_ptr<Exec>;
+/** Smart pointer to a simgrid::s4u::Exec */
+typedef boost::intrusive_ptr<Exec> ExecPtr;
 XBT_PUBLIC void intrusive_ptr_release(Exec* e);
 XBT_PUBLIC void intrusive_ptr_add_ref(Exec* e);
+
 class Host;
+
 class Io;
-using IoPtr = boost::intrusive_ptr<Io>;
+/** Smart pointer to a simgrid::s4u::Io */
+typedef boost::intrusive_ptr<Io> IoPtr;
 XBT_PUBLIC void intrusive_ptr_release(Io* i);
 XBT_PUBLIC void intrusive_ptr_add_ref(Io* i);
+
 class Link;
+
 class Mailbox;
-using MailboxPtr = boost::intrusive_ptr<Mailbox>;
+/** Smart pointer to a simgrid::s4u::Mailbox */
+typedef boost::intrusive_ptr<Mailbox> MailboxPtr;
 XBT_PUBLIC void intrusive_ptr_release(Mailbox* m);
 XBT_PUBLIC void intrusive_ptr_add_ref(Mailbox* m);
+
 class Mutex;
 XBT_PUBLIC void intrusive_ptr_release(Mutex* m);
 XBT_PUBLIC void intrusive_ptr_add_ref(Mutex* m);
+/** Smart pointer to a simgrid::s4u::Mutex */
+typedef boost::intrusive_ptr<Mutex> MutexPtr;
+
 class NetZone;
 class VirtualMachine;
 class File;

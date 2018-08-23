@@ -65,7 +65,7 @@ exhale_args = {
     # "treeViewIsBootstrap": True,
     "exhaleExecutesDoxygen": True,
     "exhaleDoxygenStdin":    """
-    INPUT = ../../include/simgrid/s4u ../../include/simgrid/xbt
+    INPUT = ../../include/simgrid/s4u ../../include/simgrid/forward.h ../../include/simgrid/xbt
     GENERATE_XML           = YES
     PREDEFINED             += \
         __cplusplus \
