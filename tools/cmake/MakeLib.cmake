@@ -134,7 +134,7 @@ if(CMAKE_COMPILER_IS_GNUCC AND GCCLIBATOMIC_LIBRARY)
     set(SIMGRID_DEP   "${SIMGRID_DEP}   -Wl,--as-needed -latomic -Wl,--no-as-needed")
 endif()
 
-if(enable_model-checking AND CMAKE_COMPILER_IS_GNUCC AND (NOT LINKER_VERSION VERSION_LESS "2.30"))
+if(enable_model-checking AND (NOT LINKER_VERSION VERSION_LESS "2.30"))
     set(SIMGRID_DEP   "${SIMGRID_DEP}   -Wl,-znoseparate-code")
 endif()
 
