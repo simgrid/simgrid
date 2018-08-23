@@ -14,7 +14,7 @@ RUN echo "DOWNLOAD_URL: ${DLURL}" && \
     apt install -y gcc g++ default-jdk gfortran libboost-dev libboost-all-dev cmake valgrind libboost-coroutine1.62.0 && \
     cmake -DCMAKE_INSTALL_PREFIX=/usr/ -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
     make -j4 install && make clean && \
-    apt remove -y  gcc g++ default-jdk gfortran libboost-dev libboost-all-dev cmake wget && \
+    apt remove -y  gcc g++ default-jdk gfortran libboost-dev libboost-all-dev cmake wget gdb valgrind && \
     apt autoremove -y && apt autoclean && apt clean
 
     

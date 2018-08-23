@@ -8,8 +8,7 @@ RUN apt update && \
     mkdir /src/ && cd /src && git clone --depth=1 https://framagit.org/simgrid/simgrid.git simgrid.git && \
     cd simgrid.git && \
     cmake -DCMAKE_INSTALL_PREFIX=/usr/ -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
-    make -j4 install && make clean && \
-    apt remove -y default-jdk gfortran libboost-dev libboost-all-dev cmake && \
+    make -j4 install && \
+    git reset --hard master && git clean -dfx && \
+    apt remove -y default-jdk gfortran libboost-dev libboost-all-dev cmake gdb valgrind && \
     apt autoremove -y && apt autoclean && apt clean
-
-    
