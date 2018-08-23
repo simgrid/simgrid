@@ -81,29 +81,29 @@ namespace kernel {
 class EngineImpl;
 namespace actor {
 class ActorImpl;
-using ActorImplPtr = boost::intrusive_ptr<ActorImpl>;
+typedef boost::intrusive_ptr<ActorImpl> ActorImplPtr;
 } // namespace actor
 
 namespace activity {
   class ActivityImpl;
-  using ActivityImplPtr = boost::intrusive_ptr<ActivityImpl>;
+  typedef boost::intrusive_ptr<ActivityImpl> ActivityImplPtr;
   XBT_PUBLIC void intrusive_ptr_add_ref(ActivityImpl* activity);
   XBT_PUBLIC void intrusive_ptr_release(ActivityImpl* activity);
 
   class ConditionVariableImpl;
 
   class CommImpl;
-  using CommImplPtr = boost::intrusive_ptr<CommImpl>;
+  typedef boost::intrusive_ptr<CommImpl> CommImplPtr;
   class ExecImpl;
-  using ExecImplPtr = boost::intrusive_ptr<ExecImpl>;
+  typedef boost::intrusive_ptr<ExecImpl> ExecImplPtr;
   class IoImpl;
-  using IoImplPtr = boost::intrusive_ptr<IoImpl>;
+  typedef boost::intrusive_ptr<IoImpl> IoImplPtr;
   class MutexImpl;
-  using MutexImplPtr = boost::intrusive_ptr<MutexImpl>;
+  typedef boost::intrusive_ptr<MutexImpl> MutexImplPtr;
   class RawImpl;
-  using RawImplPtr = boost::intrusive_ptr<RawImpl>;
+  typedef boost::intrusive_ptr<RawImpl> RawImplPtr;
   class SleepImpl;
-  using SleepImplPtr = boost::intrusive_ptr<SleepImpl>;
+  typedef boost::intrusive_ptr<SleepImpl> SleepImplPtr;
 
   class MailboxImpl;
 }
