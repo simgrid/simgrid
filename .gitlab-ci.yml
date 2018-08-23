@@ -1,9 +1,7 @@
-image: debian:testing
+image: simgrid/build-deps
 
 pages:
   script:
-  - apt update
-  - apt install -y libboost-all-dev libboost-dev python3-pip doxygen fig2dev
   - pip3 install --requirement docs/requirements.txt 
   - cd docs
   - ./Build.sh
@@ -14,9 +12,7 @@ pages:
   only:
   - master
 
-tests:
+ctest:
   script:
-  - apt update
-  - apt install -y libboost-all-dev libboost-dev cmake chrpath default-jdk valgrind gfortran build-essential
   - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON .
   - make VERBOSE=1 && ctest --output-on-failure

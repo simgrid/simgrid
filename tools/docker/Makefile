@@ -1,5 +1,11 @@
 default:
-	@echo "Try make stable, make unstable, make tuto-s4u or make push."
+	@echo "Existing Targets:"
+	@echo "   make build-deps -> build an image with all possible SimGrid dependencies"
+	@echo "   make stable     -> build the latest stable version of SimGrid (with SMPI w/o MC)"
+	@echo "   make unstable   -> build the git version of SimGrid (with SMPI, w/o MC)"
+	@echo "   make tuto-s4u   -> build all what you need to take the S4U tutorial"
+	@echo "   make push       -> push all images to the cloud"
+	@echo "All our images are based on debian:testing"
 	@echo "Also possible: DOCKER_EXTRA=--no-cache make unstable"
 
 stable:
@@ -20,6 +26,13 @@ unstable:
 		 $(DOCKER_EXTRA) \
                  . | tee > unstable.log
 
+build-deps:
+	docker build -f Dockerfile.build-deps \
+	         -t simgrid/build-deps:latest \
+                 -t simgrid/build-deps:$$(date --iso-8601) \
+		 $(DOCKER_EXTRA) \
+                 . | tee > build-deps.log
+
 tuto-s4u: 
 	docker build -f Dockerfile.tuto-s4u \
 	         -t simgrid/tuto-s4u:latest \
@@ -28,6 +41,7 @@ tuto-s4u:
                  . | tee > tuto.log
 
 push:
+	docker push simgrid/build-deps
 	docker push simgrid/stable
 	docker push simgrid/unstable
 	docker push simgrid/tuto-s4u
