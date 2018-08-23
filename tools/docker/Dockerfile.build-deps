@@ -12,5 +12,7 @@ RUN apt update && \
        python3-pip \
        doxygen fig2dev \
        chrpath \
-       libdw-dev libevent-dev libunwind8-dev
+       libdw-dev libevent-dev libunwind8-dev \
+       && \
+    pip3 install breathe exhale sphinx>=1.8.0b1 sphinx_rtd_theme
 		   
