@@ -55,8 +55,7 @@ class ThrowPoint {
 /** A base class for exceptions with context
  *
  *  This is a base class for exceptions which store additional contextual
- *  infomations about them: backtrace, throw point, simulated process name
- *  and PID, etc.
+ *  information: backtrace, throw point, simulated process name, PID, etc.
  *
  *  You are not expected to inherit from it. Instead of you use should
  *  @ref XBT_THROW an exception which will throw a subclass of your original
@@ -102,43 +101,6 @@ private:
   int pid_;              /**< PID of the process who thrown this */
   ThrowPoint throwpoint_;
 };
-
-/** Internal class used to mixin an exception E with WithContextException */
-template<class E>
-class WithContext : public E, public WithContextException
-{
-public:
-  static_assert(not std::is_base_of<WithContextException, E>::value, "Trying to appli WithContext twice");
-
-  explicit WithContext(E exception) : E(std::move(exception)) {}
-  WithContext(E exception, ThrowPoint throwpoint, Backtrace backtrace) :
-    E(std::move(exception)),
-    WithContextException(throwpoint, std::move(backtrace)) {}
-  WithContext(E exception, Backtrace backtrace) :
-    E(std::move(exception)),
-    WithContextException(std::move(backtrace)) {}
-  WithContext(E exception, WithContextException context) :
-    E(std::move(exception)),
-    WithContextException(std::move(context)) {}
-  ~WithContext() override = default;
-};
-
-/** Throw a C++ exception with some context
- *
- *  @param e Exception to throw
- *  @ingroup XBT_ex
- */
-#define XBT_THROW(e) \
-  throw WithContext<E>(std::move(exception), throwpoint, simgrid::xbt::backtrace())
-
-/** Throw a C++ exception with a context and a nexted exception/cause
- *
- *  @param e Exception to throw
- *  @ingroup XBT_ex
- */
-#define XBT_THROW_NESTED(e) \
-  std::throw_with_nested(WithContext<E>(std::move(exception), throwpoint, simgrid::xbt::backtrace()))
-
 }
 }
 
