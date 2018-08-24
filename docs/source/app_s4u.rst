@@ -1,5 +1,6 @@
 .. _S4U_doc:
 
+=================
 The S4U Interface
 =================
 
@@ -20,6 +21,7 @@ with the full power of C++. This is the prefered interface to describe
 abstract algorithms in the domains of Cloud, P2P, HPC, IoT and similar
 settings.
 
+-------------
 Main Concepts
 -------------
 
@@ -129,3 +131,52 @@ functions to simplify the code of actors.
 
 .. |Mutex| replace:: **Mutex**
 .. _Mutex: api/classsimgrid_1_1s4u_1_1Mutex.html
+
+-----------------------
+Asynchronous Activities
+-----------------------
+
+Activities represent the actions that consumes a resource, such as
+:ref:`s4u::Comm <exhale_class_classsimgrid_1_1s4u_1_1Comm>` that
+consumes the *transmiting power* of :ref:`s4u::Link
+<exhale_class_classsimgrid_1_1s4u_1_1Link>` resources. Every activity
+can be either **blocking** or **asynchronous**. For example,
+:cpp:func:`s4u::Mailbox::put() <simgrid::s4u::Mailbox::put>` and
+:cpp:func:`s4u::Mailbox::get() <simgrid::s4u::Mailbox::get>` create
+blocking communications: the actor is blocked until the completion of
+that communication. Asynchronous communications do not block the actor
+during their execution. The following example shows how to have
+several concurrent communications ongoing.  First, you have to declare
+a vector in which we will store the ongoing communications. It is also
+useful to have a vector of mailboxes.
+
+.. literalinclude:: ../../examples/s4u/async-waitall/s4u-async-waitall.cpp
+   :language: c++
+   :start-after: init-begin
+   :end-before: init-end
+   :dedent: 4
+
+You then start all communications that should occur concurrently with
+:cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>`.  
+Finally, the actor waits for the completion of all of them at once
+with 
+:cpp:func:`s4u::Comm::wait_all() <simgrid::s4u::Comm::wait_all>`.  
+     
+.. literalinclude:: ../../examples/s4u/async-waitall/s4u-async-waitall.cpp
+   :language: c++
+   :start-after: send-begin
+   :end-before: send-end
+   :dedent: 4
+
+Every kind of activities can be asynchronous:
+
+  - :ref:`s4u::CommPtr <exhale_class_classsimgrid_1_1s4u_1_1Comm>` are created with 
+    :cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>` and
+    :cpp:func:`s4u::Mailbox::get_async() <simgrid::s4u::Mailbox::get_async>`.
+  - :ref:`s4u::IoPtr <exhale_class_classsimgrid_1_1s4u_1_1Io>` are created with 
+    :cpp:func:`s4u::Storage::read_async() <simgrid::s4u::Storage::read_async>` and
+    :cpp:func:`s4u::Storage::write_async() <simgrid::s4u::Storage::write_async>`.    
+  - :ref:`s4u::ExecPtr <exhale_class_classsimgrid_1_1s4u_1_1Exec>` are created with
+    :cpp:func:`s4u::Host::exec_async() <simgrid::s4u::Host::exec_async>`.
+  - In the future, it will become possible to have asynchronous IPC
+    such as asynchronous mutex lock requests.
