@@ -3,7 +3,7 @@
 foreach (example actor-create actor-daemon actor-join actor-kill
                  actor-lifetime actor-migration actor-suspend actor-yield
                  app-chainsend app-pingpong app-token-ring
-                 async-wait async-waitany async-waitall
+                 async-wait async-waitany async-waitall async-waituntil
                  cloud-capping cloud-migration cloud-simple
                  energy-exec energy-boot energy-link energy-vm
                  engine-filtering
@@ -73,9 +73,10 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u-app-bittorrent_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-waituntil/s4u-async-waituntil_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/s4u-dht-kademlia_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/energy-boot/platform_boot.xml
@@ -96,7 +97,7 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-re
 foreach(example actor-create actor-daemon actor-join actor-kill
                 actor-lifetime actor-migration actor-suspend actor-yield
                 app-bittorrent app-chainsend app-masterworkers app-pingpong app-token-ring 
-                async-wait async-waitall async-waitany
+                async-wait async-waitall async-waitany async-waituntil
                 cloud-capping cloud-migration cloud-simple
                 dht-chord dht-kademlia
                 energy-exec energy-boot energy-link energy-vm
