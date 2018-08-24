@@ -13,8 +13,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 static int master(int argc, char *argv[])
 {
-  int i;
-
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
   double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");
   double task_comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");
@@ -22,7 +20,7 @@ static int master(int argc, char *argv[])
 
   XBT_INFO("Got %ld workers and %ld tasks to process", workers_count, number_of_tasks);
 
-  for (i = 0; i < number_of_tasks; i++) {
+  for (int i = 0; i < number_of_tasks; i++) {
     char mailbox[256];
     snprintf(mailbox, 255, "worker-%ld", i % workers_count);
     XBT_INFO("Send a message to %s", mailbox);
@@ -58,7 +56,7 @@ static int master(int argc, char *argv[])
   }
 
   XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
-  for (i = 0; i < workers_count; i++) {
+  for (int i = 0; i < workers_count; i++) {
     char mailbox[256];
     snprintf(mailbox, 255, "worker-%ld", i % workers_count);
     msg_task_t task = MSG_task_create("finalize", 0, 0, FINALIZE);
@@ -101,7 +99,6 @@ static int worker(int argc, char *argv[])
   snprintf(mailbox, 79,"worker-%ld", id);
 
   while (1) {
-    double time1 = MSG_get_clock();
     msg_task_t task = NULL;
     XBT_INFO("Waiting a message on %s", mailbox);
     int retcode = MSG_task_receive( &(task), mailbox);
@@ -110,8 +107,6 @@ static int worker(int argc, char *argv[])
         MSG_task_destroy(task);
         break;
       }
-      if (time1 < *((double *) task->data))
-        time1 = *((double *) task->data);
       XBT_INFO("Start execution...");
       retcode = MSG_task_execute(task);
       if (retcode == MSG_OK) {

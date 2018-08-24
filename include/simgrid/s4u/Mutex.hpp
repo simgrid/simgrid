@@ -12,8 +12,6 @@
 namespace simgrid {
 namespace s4u {
 
-class ConditionVariable;
-
 /** @brief A classical mutex, but blocking in the simulation world
  *  @ingroup s4u_api
  *
