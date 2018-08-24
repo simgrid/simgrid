@@ -132,23 +132,56 @@ functions to simplify the code of actors.
 .. |Mutex| replace:: **Mutex**
 .. _Mutex: api/classsimgrid_1_1s4u_1_1Mutex.html
 
------------------------
-Asynchronous Activities
------------------------
+----------
+Activities
+----------
 
 Activities represent the actions that consumes a resource, such as
 :ref:`s4u::Comm <exhale_class_classsimgrid_1_1s4u_1_1Comm>` that
 consumes the *transmiting power* of :ref:`s4u::Link
-<exhale_class_classsimgrid_1_1s4u_1_1Link>` resources. Every activity
-can be either **blocking** or **asynchronous**. For example,
-:cpp:func:`s4u::Mailbox::put() <simgrid::s4u::Mailbox::put>` and
-:cpp:func:`s4u::Mailbox::get() <simgrid::s4u::Mailbox::get>` create
-blocking communications: the actor is blocked until the completion of
-that communication. Asynchronous communications do not block the actor
-during their execution. The following example shows how to have
-several concurrent communications ongoing.  First, you have to declare
-a vector in which we will store the ongoing communications. It is also
-useful to have a vector of mailboxes.
+<exhale_class_classsimgrid_1_1s4u_1_1Link>` resources.
+
+.......................
+Asynchronous Activities
+.......................
+
+Every activity can be either **blocking** or **asynchronous**. For
+example, :cpp:func:`s4u::Mailbox::put() <simgrid::s4u::Mailbox::put>`
+and :cpp:func:`s4u::Mailbox::get() <simgrid::s4u::Mailbox::get>`
+create blocking communications: the actor is blocked until the
+completion of that communication. Asynchronous communications do not
+block the actor during their execution but progress on their own.
+
+Once your asynchronous activity is started, you can test for
+completion using :cpp:func:`s4u::Activity::test() <simgrid::s4u::Activity::test>`.
+This function returns ``true`` if the activity completed already.
+You can also use :cpp:func:`s4u::Activity::wait() <simgrid::s4u::Activity::wait>`
+to block until the completion of the activity. To wait at most for a given period,
+use  :cpp:func:`s4u::Activity::wait_for() <simgrid::s4u::Activity::wait_for>`.
+Finally, to wait at most until a specified time limit, use
+:cpp:func:`s4u::Activity::wait_for() <simgrid::s4u::Activity::wait_until>`.
+
+.. todo::
+
+   wait_for and wait_until are currently not implemented for Exec and Io activities.
+
+Every kind of activities can be asynchronous:
+
+  - :ref:`s4u::CommPtr <exhale_class_classsimgrid_1_1s4u_1_1Comm>` are created with 
+    :cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>` and
+    :cpp:func:`s4u::Mailbox::get_async() <simgrid::s4u::Mailbox::get_async>`.
+  - :ref:`s4u::IoPtr <exhale_class_classsimgrid_1_1s4u_1_1Io>` are created with 
+    :cpp:func:`s4u::Storage::read_async() <simgrid::s4u::Storage::read_async>` and
+    :cpp:func:`s4u::Storage::write_async() <simgrid::s4u::Storage::write_async>`.    
+  - :ref:`s4u::ExecPtr <exhale_class_classsimgrid_1_1s4u_1_1Exec>` are created with
+    :cpp:func:`s4u::Host::exec_async() <simgrid::s4u::Host::exec_async>`.
+  - In the future, it will become possible to have asynchronous IPC
+    such as asynchronous mutex lock requests.
+
+The following example shows how to have several concurrent
+communications ongoing.  First, you have to declare a vector in which
+we will store the ongoing communications. It is also useful to have a
+vector of mailboxes.
 
 .. literalinclude:: ../../examples/s4u/async-waitall/s4u-async-waitall.cpp
    :language: c++
@@ -168,15 +201,9 @@ with
    :end-before: send-end
    :dedent: 4
 
-Every kind of activities can be asynchronous:
 
-  - :ref:`s4u::CommPtr <exhale_class_classsimgrid_1_1s4u_1_1Comm>` are created with 
-    :cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>` and
-    :cpp:func:`s4u::Mailbox::get_async() <simgrid::s4u::Mailbox::get_async>`.
-  - :ref:`s4u::IoPtr <exhale_class_classsimgrid_1_1s4u_1_1Io>` are created with 
-    :cpp:func:`s4u::Storage::read_async() <simgrid::s4u::Storage::read_async>` and
-    :cpp:func:`s4u::Storage::write_async() <simgrid::s4u::Storage::write_async>`.    
-  - :ref:`s4u::ExecPtr <exhale_class_classsimgrid_1_1s4u_1_1Exec>` are created with
-    :cpp:func:`s4u::Host::exec_async() <simgrid::s4u::Host::exec_async>`.
-  - In the future, it will become possible to have asynchronous IPC
-    such as asynchronous mutex lock requests.
+.....................
+Activities Life cycle
+.....................
+
+Sometimes, you want to change the setting of an activity before it even starts. 
