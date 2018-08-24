@@ -132,7 +132,7 @@ Activity* Comm::start()
 /** @brief Block the calling actor until the communication is finished */
 Activity* Comm::wait()
 {
-  return this->wait(-1);
+  return this->wait_for(-1);
 }
 
 /** @brief Block the calling actor until the communication is finished, or until timeout
@@ -141,7 +141,7 @@ Activity* Comm::wait()
  *
  * @param timeout the amount of seconds to wait for the comm termination.
  *                Negative values denote infinite wait times. 0 as a timeout returns immediately. */
-Activity* Comm::wait(double timeout)
+Activity* Comm::wait_for(double timeout)
 {
   switch (state_) {
     case State::FINISHED:

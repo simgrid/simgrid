@@ -35,12 +35,16 @@ public:
 
   Activity* start() override;
   Activity* wait() override;
-  Activity* wait(double timeout) override;
+  Activity* wait_for(double timeout) override;
   Activity* cancel() override;
   bool test() override;
 
   double get_remaining() override;
   sg_size_t get_performed_ioops();
+
+#ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v324("Please use Io::wait_for()") void wait(double t) override { wait_for(t); }
+#endif
 
 private:
   sg_size_t size_       = 0;

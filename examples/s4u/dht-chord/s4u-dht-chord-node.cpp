@@ -239,7 +239,7 @@ void Node::checkPredecessor()
   simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
 
   try {
-    comm->wait(timeout);
+    comm->wait_for(timeout);
     XBT_DEBUG("Received the answer to my 'Predecessor Alive': my predecessor %d is alive", pred_id_);
     delete static_cast<ChordMessage*>(data);
   } catch (xbt_ex& e) {
@@ -284,7 +284,7 @@ int Node::remoteGetPredecessor(int ask_to)
   simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
 
   try {
-    comm->wait(timeout);
+    comm->wait_for(timeout);
     ChordMessage* answer = static_cast<ChordMessage*>(data);
     XBT_DEBUG("Received the answer to my 'Get Predecessor' request: the predecessor of node %d is %d", ask_to,
               answer->answer_id);
@@ -358,7 +358,7 @@ int Node::remoteFindSuccessor(int ask_to, int id)
   simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
 
   try {
-    comm->wait(timeout);
+    comm->wait_for(timeout);
     ChordMessage* answer = static_cast<ChordMessage*>(data);
     XBT_DEBUG("Received the answer to my 'Find Successor' request for id %d: the successor of key %d is %d",
               answer->request_id, id_, answer->answer_id);

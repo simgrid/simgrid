@@ -38,7 +38,7 @@ Activity* Io::wait()
   return this;
 }
 
-Activity* Io::wait(double timeout)
+Activity* Io::wait_for(double timeout)
 {
   THROW_UNIMPLEMENTED;
   return this;

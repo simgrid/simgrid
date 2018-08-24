@@ -40,7 +40,7 @@ Activity* Exec::wait()
   return this;
 }
 
-Activity* Exec::wait(double timeout)
+Activity* Exec::wait_for(double timeout)
 {
   THROW_UNIMPLEMENTED;
   return this;

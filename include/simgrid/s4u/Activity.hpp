@@ -61,7 +61,7 @@ public:
   virtual Activity* wait() = 0;
   /** Blocks until the activity is terminated, or until the timeout is elapsed
    *  Raises: timeout exception.*/
-  virtual Activity* wait(double timeout) = 0;
+  virtual Activity* wait_for(double timeout) = 0;
   /** Cancel that activity */
   virtual Activity* cancel() = 0;
   /** Retrieve the current state of the activity */
@@ -87,21 +87,17 @@ public:
   void* get_user_data() { return user_data_; }
 
 #ifndef DOXYGEN
-  /** @deprecated See Activity::get_state()*/
+  XBT_ATTRIB_DEPRECATED_v324("Please use Activity::wait_for()") virtual void wait(double timeout) = 0;
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_state()") Activity::State getState() { return state_; }
-  /** @deprecated See Activity::get_remaining() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_remaining()") double getRemains() { return get_remaining(); }
-  /** @deprecated See Activity::set_remaining() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::set_remaining()") Activity* setRemains(double remains)
   {
     return set_remaining(remains);
   }
-  /** @deprecated See Activity::set_user_data() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::set_user_data()") Activity* setUserData(void* data)
   {
     return set_user_data(data);
   }
-  /** @deprecated See Activity::get_user_data() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_user_data()") void* getUserData() { return user_data_; }
 #endif
 
