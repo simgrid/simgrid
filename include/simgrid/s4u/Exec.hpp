@@ -35,7 +35,7 @@ public:
   Activity* wait() override;
   Activity* wait(double timeout) override;
   Activity* cancel() override;
-  bool test();
+  bool test() override;
 
   ExecPtr set_priority(double priority);
   ExecPtr set_bound(double bound);

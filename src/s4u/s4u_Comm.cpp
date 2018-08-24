@@ -53,9 +53,8 @@ void Comm::wait_all(std::vector<CommPtr>* comms)
 {
   // TODO: this should be a simcall or something
   // TODO: we are missing a version with timeout
-  for (CommPtr comm : *comms) {
+  for (CommPtr comm : *comms)
     comm->wait();
-  }
 }
 
 Activity* Comm::set_rate(double rate)

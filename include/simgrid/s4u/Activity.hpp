@@ -43,8 +43,10 @@ protected:
   virtual ~Activity() = default;
 
 public:
+#ifndef DOXYGEN
   Activity(Activity const&) = delete;
   Activity& operator=(Activity const&) = delete;
+#endif
 
   enum class State { INITED = 0, STARTED, CANCELED, ERRORED, FINISHED };
 
@@ -64,6 +66,8 @@ public:
   virtual Activity* cancel() = 0;
   /** Retrieve the current state of the activity */
   Activity::State get_state() { return state_; }
+  /** Returns whether this activity is completed */
+  virtual bool test() = 0;
 
   /** Get the remaining amount of work that this Activity entails. When it's 0, it's done. */
   virtual double get_remaining();
@@ -82,6 +86,7 @@ public:
   /** Retrieve the user data of the Activity */
   void* get_user_data() { return user_data_; }
 
+#ifndef DOXYGEN
   /** @deprecated See Activity::get_state()*/
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_state()") Activity::State getState() { return state_; }
   /** @deprecated See Activity::get_remaining() */
@@ -98,6 +103,7 @@ public:
   }
   /** @deprecated See Activity::get_user_data() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_user_data()") void* getUserData() { return user_data_; }
+#endif
 
 private:
   simgrid::kernel::activity::ActivityImplPtr pimpl_ = nullptr;

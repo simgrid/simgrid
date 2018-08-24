@@ -44,6 +44,21 @@ Activity* Io::wait(double timeout)
   return this;
 }
 
+bool Io::test()
+{
+  xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::FINISHED);
+
+  if (state_ == State::FINISHED)
+    return true;
+
+  if (state_ == State::INITED)
+    this->start();
+
+  THROW_UNIMPLEMENTED;
+
+  return false;
+}
+
 /** @brief Returns the amount of flops that remain to be done */
 double Io::get_remaining()
 {

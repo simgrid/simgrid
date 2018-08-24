@@ -45,6 +45,7 @@ public:
   Activity* start() override;
   Activity* wait() override;
   Activity* wait(double timeout) override;
+  bool test() override;
 
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
   Activity* detach();
@@ -72,12 +73,12 @@ public:
   /** Retrieve the size of the received data */
   size_t get_dst_data_size();
 
-  bool test();
   Activity* cancel() override;
 
   /** Retrieve the mailbox on which this comm acts */
   MailboxPtr get_mailbox();
 
+#ifndef DOXYGEN
   /** @deprecated See Comm::set_rate() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_rate()") Activity* setRate(double rate) { return set_rate(rate); }
   /** @deprecated See Comm::set_src_data() */
@@ -112,6 +113,7 @@ public:
   }
   /** @deprecated See Comm::get_mailbox() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") MailboxPtr getMailbox() { return get_mailbox(); }
+#endif
 
 private:
   double rate_        = -1;

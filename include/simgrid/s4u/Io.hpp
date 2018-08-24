@@ -37,6 +37,7 @@ public:
   Activity* wait() override;
   Activity* wait(double timeout) override;
   Activity* cancel() override;
+  bool test() override;
 
   double get_remaining() override;
   sg_size_t get_performed_ioops();
