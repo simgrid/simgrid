@@ -33,7 +33,7 @@ namespace xbt {
  */
 typedef std::vector<xbt_backtrace_location_t> Backtrace;
 
-/** The location of where an exception has been throwed
+/** The location of where an exception has been thrown
  *
  *  This is a tuple (__FILE__, __LINE__, __func__) and can be created with
  *  @ref XBT_THROW_POINT.
@@ -43,10 +43,12 @@ typedef std::vector<xbt_backtrace_location_t> Backtrace;
 class ThrowPoint {
  public:
   ThrowPoint() = default;
-  explicit ThrowPoint(const char* file, int line, const char* function) : file(file), line(line), function(function) {}
-  const char* file = nullptr;
-  int line = 0;
-  const char* function = nullptr;
+  explicit ThrowPoint(const char* file, int line, const char* function) : file_(file), line_(line), function_(function)
+  {
+  }
+  const char* file_     = nullptr;
+  int line_             = 0;
+  const char* function_ = nullptr;
 };
 
 /** Create a ThrowPoint with (__FILE__, __LINE__, __func__) */
@@ -56,13 +58,6 @@ class ThrowPoint {
  *
  *  This is a base class for exceptions which store additional contextual
  *  information: backtrace, throw point, simulated process name, PID, etc.
- *
- *  You are not expected to inherit from it. Instead of you use should
- *  @ref XBT_THROW an exception which will throw a subclass of your original
- *  exception with those additional features.
- *
- *  However, you can try `dynamic_cast` an exception to this type in order to
- *  get contextual information about the exception.
  */
 class XBT_PUBLIC WithContextException {
 public:
