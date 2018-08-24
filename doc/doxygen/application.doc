@@ -1,28 +1,6 @@
 /** 
 @page application Describing your application
 
-TBD
-
-* Main concepts
-
-  - *Actor* (or process in legacy interfaces of SimGrid)
-  
-  - *Activities*: resource usage that applications do. This is what
-    takes time.
-    
-    Any given actor can do at most one foreground activity, while it
-    can also do several non-blocking activities in the background.
-    
-  - These activities take place on *Resources* (links, compute
-    machine, disks). Resources should be described (created) in the
-    Virtual Platform (link), but your application have many other ways
-    to interact with the resource.  
-
-  - The resources are arranged in a hierarchy of *Networking Zones*,
-    with which the application can also interact. The netzone knows the
-    networking path between one resource to another.
-
-Speak of mailboxes here? Where if not?
 
 * Interfaces to describe applications
 

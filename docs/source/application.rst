@@ -21,6 +21,10 @@ be either an existing MPI program (if you use the SMPI interface), or
 a program specifically written to execute within SimGrid, using one of
 the dedicated APIs.
 
+.. raw:: html
+
+   <hr/>
+
 .. _S4U_doc:
 
 The S4U Interface
@@ -57,9 +61,9 @@ synchronization mechanisms** such as |Barrier|_, |Semaphore|_,
 |Mutex|_ and |ConditionVariable|_.
 
 Each actor is located on a simulated |Host|_. Each host is located
-itself in a |NetZone|_, that route communications through the
-links. Each NetZone is included in another one, forming a tree of
-NetZones which root zone contains the whole platform.
+itself in a |NetZone|_, that knows the networking path between one
+resource to another. Each NetZone is included in another one, forming
+a tree of NetZones which root zone contains the whole platform.
 
 The :ref:`simgrid::s4u::this_actor
 <namespace_simgrid__s4u__this_actor>` namespace provides many helper
@@ -95,7 +99,7 @@ functions to simplify the code of actors.
   - :ref:`class s4u::Exec <exhale_class_classsimgrid_1_1s4u_1_1Exec>`
     Computation activity, started on Host and consuming CPU resources.
   - :ref:`class s4u::Io <exhale_class_classsimgrid_1_1s4u_1_1Io>`
-    I/O activities, started on and consumming Storages.
+    I/O activity, started on and consumming Storages.
 
 - **Synchronization Mechanisms**: Classical IPC that actors can use
 

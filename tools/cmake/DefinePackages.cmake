@@ -878,7 +878,6 @@ set(DOC_SOURCES
   doc/doxygen/community.doc
   doc/doxygen/deployment.doc
   doc/doxygen/footer.html
-  doc/doxygen/getting_started.doc
   doc/doxygen/header.html
   doc/doxygen/howtos.doc
   doc/doxygen/index.doc
@@ -891,10 +890,7 @@ set(DOC_SOURCES
   doc/doxygen/install.doc
   doc/doxygen/install_yours.doc
   doc/doxygen/java.doc
-  doc/tuto-msg/tuto-msg.doc
-  doc/tuto-msg/overview.svg
   doc/doxygen/tutorial_smpi.doc
-  doc/doxygen/models.doc
   doc/doxygen/module-msg.doc
   doc/doxygen/module-s4u.doc
   doc/doxygen/module-sd.doc
@@ -912,7 +908,6 @@ set(DOC_SOURCES
   doc/doxygen/outcomes_vizu.doc
   doc/doxygen/platform.doc
   doc/doxygen/platform_lua.doc
-  doc/doxygen/scenario.doc
   doc/doxygen/stylesheet.css
   doc/doxygen/uhood.doc
   doc/doxygen/uhood_switch.doc
@@ -924,18 +919,6 @@ set(DOC_SOURCES
   doc/manpage/smpiff.1
   doc/manpage/smpirun.1
   doc/manpage/tesh.pod
-
-  doc/tuto-msg/deployment0.xml
-  doc/tuto-msg/deployment1.xml
-  doc/tuto-msg/deployment2.xml
-  doc/tuto-msg/deployment3.xml
-  doc/tuto-msg/deployment_general.xml
-  doc/tuto-msg/Makefile
-  doc/tuto-msg/masterworker.c
-  doc/tuto-msg/masterworker-sol1.c
-  doc/tuto-msg/masterworker-sol2.c
-  doc/tuto-msg/masterworker-sol3.c
-  doc/tuto-msg/masterworker-sol4.c
 
   CITATION.bib
   )
