@@ -153,6 +153,9 @@ public:
    * The actor will not be migrated in this case. Such remote execution are easy in simulation.
    */
   void execute(double flops);
+  /** Start an asynchronous computation on that host (possibly remote) */
+  ExecPtr exec_async(double flops_amounts);
+
   /** Block the calling actor on an execution located on the called host (with explicit priority) */
   void execute(double flops, double priority);
 
