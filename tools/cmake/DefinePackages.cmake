@@ -920,6 +920,44 @@ set(DOC_SOURCES
   doc/manpage/smpirun.1
   doc/manpage/tesh.pod
 
+  docs/Build.sh
+  docs/requirements.txt
+  docs/source/conf.py
+  docs/source/Doxyfile
+
+  docs/source/img/eclipseScreenShot.png
+  docs/source/img/extlink.png
+  docs/source/img/extlink.svg
+  docs/source/img/graphical-toc.svg
+
+  docs/source/application.rst
+  docs/source/index.rst
+  docs/source/intro_concepts.rst
+  docs/source/introduction.rst
+  docs/source/intro_install.rst
+  docs/source/intro_yours.rst
+  docs/source/main_concepts.rst
+  docs/source/models.rst
+  docs/source/platform.rst
+  docs/source/scenar_config.rst
+  docs/source/scenario.rst
+
+  docs/source/tuto_s4u.rst
+  docs/source/tuto_s4u/deployment1.xml
+  docs/source/tuto_s4u/deployment2.xml
+  docs/source/tuto_s4u/deployment3.xml
+  docs/source/tuto_s4u/deployment4.xml
+  docs/source/tuto_s4u/draw_gantt.R
+  docs/source/tuto_s4u/img/intro.svg
+  docs/source/tuto_s4u/img/question.svg
+  docs/source/tuto_s4u/img/result.png
+  docs/source/tuto_s4u/img/Rscript-screenshot.png
+  docs/source/tuto_s4u/img/vite-screenshot.png
+  docs/source/tuto_s4u/master-workers-lab1.cpp
+  docs/source/tuto_s4u/master-workers-lab2.cpp
+  docs/source/tuto_s4u/master-workers-lab3.cpp
+  docs/source/tuto_s4u/master-workers-lab4.cpp
+
   CITATION.bib
   )
 
