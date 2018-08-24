@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
+#include "simgrid/exception.hpp"
 #include "smx_private.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
@@ -17,7 +18,6 @@
 #include "src/simix/smx_synchro_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
-#include "xbt/ex.hpp"
 
 #ifdef HAVE_SMPI
 #include "src/smpi/include/private.hpp"

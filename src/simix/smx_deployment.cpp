@@ -7,7 +7,7 @@
 #include "smx_private.hpp"
 #include "src/surf/xml/platf_private.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
 #include <simgrid/engine.h>
-#include <xbt/ex.hpp>
+#include <simgrid/exception.hpp>
 
 #include <string>
 #include <vector>

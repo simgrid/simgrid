@@ -7,6 +7,7 @@
 
 #include "mc/mc.h"
 #include "private.hpp"
+#include "simgrid/exception.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
@@ -17,7 +18,6 @@
 #include "src/simix/ActorImpl.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "xbt/config.hpp"
-#include <xbt/ex.hpp>
 
 #include <algorithm>
 

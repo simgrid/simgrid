@@ -20,4 +20,6 @@
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/s4u/Storage.hpp>
 
+#include <simgrid/exception.hpp>
+
 #endif /* SIMGRID_S4U_S4U_H */

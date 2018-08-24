@@ -275,7 +275,6 @@ set(XBT_SRC
   src/xbt/dict_cursor.c
   src/xbt/dict_elm.c
   src/xbt/dynar.cpp
-  src/xbt/ex.cpp
   src/xbt/exception.cpp
   src/xbt/graph.c
   src/xbt/log.c
@@ -750,7 +749,6 @@ set(headers_to_install
   include/xbt/dict.h
   include/xbt/dynar.h
   include/xbt/ex.h
-  include/xbt/ex.hpp
   include/xbt/exception.hpp
   include/xbt/Extendable.hpp
   include/xbt/file.hpp

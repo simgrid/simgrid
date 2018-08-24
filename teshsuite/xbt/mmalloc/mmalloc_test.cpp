@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,7 +13,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <xbt/ex.hpp>
+#include <simgrid/exception.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,"this test");
 

@@ -6,13 +6,13 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/dict.h"
+#include "dict_private.h"
+#include "simgrid/exception.hpp"
+#include "src/xbt_modinter.h"
 #include "xbt/ex.h"
-#include <xbt/ex.hpp>
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
-#include "src/xbt_modinter.h"
 #include "xbt/str.h"
-#include "dict_private.h"
 
 #include <cstdio>
 #include <cstring>
@@ -454,11 +454,11 @@ void xbt_dict_postexit()
 }
 
 #ifdef SIMGRID_TEST
+#include "simgrid/exception.hpp"
 #include "src/internal_config.h"
 #include "xbt.h"
 #include "xbt/ex.h"
 #include <ctime>
-#include <xbt/ex.hpp>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dict);
 

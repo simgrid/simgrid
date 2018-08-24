@@ -8,9 +8,9 @@
 #include "jmsg_vm.h"
 #include "jmsg_host.h"
 #include "jxbt_utilities.hpp"
+#include "simgrid/exception.hpp"
 #include "simgrid/plugins/live_migration.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include "xbt/ex.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 

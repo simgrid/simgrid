@@ -9,11 +9,11 @@
 #include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/context/Context.hpp"
 
+#include "simgrid/exception.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/popping_private.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "xbt/ex.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 

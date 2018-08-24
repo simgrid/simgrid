@@ -4,12 +4,12 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
+#include "simgrid/exception.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
-#include "xbt/ex.hpp"
 
 #include <boost/circular_buffer.hpp>
 #include <boost/range/algorithm.hpp>

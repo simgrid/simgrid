@@ -4,10 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
+#include "simgrid/exception.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/simix/smx_synchro_private.hpp"
-#include "xbt/ex.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ConditionVariable, simix_synchro, "Condition variables");
 

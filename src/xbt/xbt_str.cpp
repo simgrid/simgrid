@@ -1,15 +1,14 @@
-/* xbt_str.cpp - various helping functions to deal with strings               */
+/* xbt_str.cpp - various helping functions to deal with strings             */
 
-/* Copyright (c) 2007-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/ex.hpp>
+#include "simgrid/exception.hpp"
 #include "xbt/misc.h"
+#include "xbt/str.h" /* headers of these functions */
 #include "xbt/sysdep.h"
-#include "xbt/str.h"            /* headers of these functions */
 
 /** @brief Splits a string into a dynar of strings
  *
@@ -264,7 +263,7 @@ double xbt_str_parse_double(const char* str, const char* error_msg)
 }
 
 #ifdef SIMGRID_TEST
-#include <xbt/ex.hpp>
+#include "simgrid/exception.hpp"
 #include "xbt/str.h"
 
 XBT_TEST_SUITE("xbt_str", "String Handling");

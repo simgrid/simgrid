@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smpi_info.hpp"
-#include "xbt/ex.hpp"
+#include "simgrid/exception.hpp"
 #include "xbt/sysdep.h"
 
 namespace simgrid{

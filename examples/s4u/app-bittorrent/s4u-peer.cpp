@@ -5,7 +5,6 @@
 
 #include <algorithm>
 #include <climits>
-#include <xbt/ex.hpp>
 
 #include "s4u-peer.hpp"
 #include "s4u-tracker.hpp"

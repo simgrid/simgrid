@@ -29,7 +29,7 @@
 
 #include "JavaContext.hpp"
 
-#include <xbt/ex.hpp>
+#include "simgrid/exception.hpp"
 
 /* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
 #ifndef JNIEXPORT

@@ -14,8 +14,8 @@
 #include <string>
 #include <vector>
 
+#include "simgrid/exception.hpp"
 #include <xbt/cunit.h>
-#include <xbt/ex.hpp>
 #include <xbt/string.hpp>
 
 /* output stream to use everywhere */

@@ -19,6 +19,7 @@
 #include <typeinfo>
 #include <vector>
 
+#include "simgrid/exception.hpp"
 #include "simgrid/sg_config.hpp"
 #include "xbt/dynar.h"
 #include "xbt/log.h"
@@ -26,7 +27,6 @@
 #include "xbt/sysdep.h"
 #include <xbt/config.h>
 #include <xbt/config.hpp>
-#include <xbt/ex.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
@@ -719,9 +719,9 @@ int xbt_cfg_get_boolean(const char *key)
 
 #include <string>
 
+#include "simgrid/exception.hpp"
 #include "xbt.h"
 #include "xbt/ex.h"
-#include <xbt/ex.hpp>
 
 #include <xbt/config.hpp>
 

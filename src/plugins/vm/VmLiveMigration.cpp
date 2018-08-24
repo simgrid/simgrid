@@ -4,10 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/plugins/vm/VmLiveMigration.hpp"
+#include "simgrid/exception.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/plugins/vm/VmHostExt.hpp"
-#include "xbt/ex.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(vm_live_migration, "S4U virtual machines live migration");
 

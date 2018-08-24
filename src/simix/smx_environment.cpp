@@ -8,7 +8,7 @@
 #include "xbt/xbt_os_time.h"
 
 #include <simgrid/engine.h>
-#include <xbt/ex.hpp>
+#include <simgrid/exception.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix, "Logging specific to SIMIX (environment)");
 
