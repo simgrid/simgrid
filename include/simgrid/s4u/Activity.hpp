@@ -62,6 +62,10 @@ public:
   /** Blocks until the activity is terminated, or until the timeout is elapsed
    *  Raises: timeout exception.*/
   virtual Activity* wait_for(double timeout) = 0;
+  /** Blocks until the activity is terminated, or until the time limit is reached
+   * Raises: timeout exception. */
+  void wait_until(double time_limit);
+
   /** Cancel that activity */
   virtual Activity* cancel() = 0;
   /** Retrieve the current state of the activity */
