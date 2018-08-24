@@ -84,14 +84,14 @@ const char* xbt_ex_catname(xbt_errcat_t cat)
 namespace simgrid {
 namespace xbt {
 
-WithContextException::~WithContextException() = default;
+ContextedException::~ContextedException() = default;
 
 void log_exception(e_xbt_log_priority_t prio, const char* context, std::exception const& exception)
 {
   try {
     auto name = simgrid::xbt::demangle(typeid(exception).name());
 
-    auto* with_context = dynamic_cast<const simgrid::xbt::WithContextException*>(&exception);
+    auto* with_context = dynamic_cast<const simgrid::xbt::ContextedException*>(&exception);
     if (with_context != nullptr)
       XBT_LOG(prio, "%s %s by %s/%d: %s", context, name.get(), with_context->process_name().c_str(),
               with_context->pid(), exception.what());

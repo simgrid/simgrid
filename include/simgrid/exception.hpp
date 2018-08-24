@@ -58,7 +58,7 @@ class canceled_error : public simgrid::exception {
  *
  *  @ingroup XBT_ex_c
  */
-class XBT_PUBLIC xbt_ex : public simgrid::exception, public simgrid::xbt::WithContextException {
+class XBT_PUBLIC xbt_ex : public simgrid::exception, public simgrid::xbt::ContextedException {
 public:
   xbt_ex() : simgrid::exception() {}
 
@@ -68,7 +68,7 @@ public:
    * @param message    Exception message
    */
   xbt_ex(simgrid::xbt::ThrowPoint throwpoint, const char* message)
-      : simgrid::exception(message), simgrid::xbt::WithContextException(throwpoint, simgrid::xbt::backtrace())
+      : simgrid::exception(message), simgrid::xbt::ContextedException(throwpoint, simgrid::xbt::backtrace())
   {
   }
 

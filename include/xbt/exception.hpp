@@ -59,19 +59,19 @@ class ThrowPoint {
  *  This is a base class for exceptions which store additional contextual
  *  information: backtrace, throw point, simulated process name, PID, etc.
  */
-class XBT_PUBLIC WithContextException {
+class XBT_PUBLIC ContextedException {
 public:
-  WithContextException() :
+  ContextedException() :
     backtrace_(simgrid::xbt::backtrace()),
     procname_(xbt_procname()),
     pid_(xbt_getpid())
   {}
-  explicit WithContextException(Backtrace bt) : backtrace_(std::move(bt)), procname_(xbt_procname()), pid_(xbt_getpid())
+  explicit ContextedException(Backtrace bt) : backtrace_(std::move(bt)), procname_(xbt_procname()), pid_(xbt_getpid())
   {}
-  explicit WithContextException(ThrowPoint throwpoint, Backtrace bt)
+  explicit ContextedException(ThrowPoint throwpoint, Backtrace bt)
       : backtrace_(std::move(bt)), procname_(xbt_procname()), pid_(xbt_getpid()), throwpoint_(throwpoint)
   {}
-  virtual ~WithContextException();
+  virtual ~ContextedException();
   Backtrace const& backtrace() const
   {
     return backtrace_;
