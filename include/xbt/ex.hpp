@@ -1,5 +1,4 @@
-/* Copyright (c) 2005-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2005-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,6 +6,7 @@
 #ifndef SIMGRID_XBT_EX_HPP
 #define SIMGRID_XBT_EX_HPP
 
+#include <simgrid/exception.hpp>
 #include <stdexcept>
 #include <xbt/exception.hpp>
 
@@ -25,20 +25,17 @@
  *
  *  @ingroup XBT_ex_c
  */
-class XBT_PUBLIC xbt_ex : public std::runtime_error, public simgrid::xbt::WithContextException {
+class XBT_PUBLIC xbt_ex : public simgrid::exception, public simgrid::xbt::WithContextException {
 public:
-  xbt_ex() :
-    std::runtime_error("")
-  {}
+  xbt_ex() : simgrid::exception() {}
 
   /**
    *
    * @param throwpoint Throw point (use XBT_THROW_POINT)
    * @param message    Exception message
    */
-  xbt_ex(simgrid::xbt::ThrowPoint throwpoint, const char* message) :
-    std::runtime_error(message),
-    simgrid::xbt::WithContextException(throwpoint, simgrid::xbt::backtrace())
+  xbt_ex(simgrid::xbt::ThrowPoint throwpoint, const char* message)
+      : simgrid::exception(message), simgrid::xbt::WithContextException(throwpoint, simgrid::xbt::backtrace())
   {}
 
   ~xbt_ex(); // DO NOT define it here -- see ex.cpp for a rationale

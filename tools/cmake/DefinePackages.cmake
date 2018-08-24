@@ -670,6 +670,7 @@ set(headers_to_install
   include/simgrid/actor.h
   include/simgrid/barrier.h
   include/simgrid/engine.h
+  include/simgrid/exception.hpp
   include/simgrid/chrono.hpp
   include/simgrid/plugins/dvfs.h
   include/simgrid/plugins/energy.h

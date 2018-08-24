@@ -70,13 +70,13 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void _xbt_throw(char* message, xbt_errcat_t errca
  */
 #define THROWF(c, v, ...)       _xbt_throw(bprintf(__VA_ARGS__), (xbt_errcat_t) c, v, __FILE__, __LINE__, __func__)
 
-/** Throw an exception because someting impossible happened
+/** Throw an exception because something impossible happened
  *  @ingroup XBT_ex_c
  */
 #define THROW_IMPOSSIBLE \
   THROWF(unknown_error, 0, "The Impossible Did Happen (yet again)")
 
-/** Throw an exception because someting unimplemented stuff has been attempted
+/** Throw an exception because something unimplemented stuff has been attempted
  *  @ingroup XBT_ex_c
  */
 #define THROW_UNIMPLEMENTED \
