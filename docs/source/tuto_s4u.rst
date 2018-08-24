@@ -73,7 +73,7 @@ Discover the Master/Workers
 This section introduces a first example of SimGrid simulation. This
 simple application is composed of two kind of actors: the **master**
 is in charge of distributing some computational tasks to a set of
-**workers** that execute them. 
+**workers** that execute them.
 
 .. image:: /tuto_s4u/img/intro.svg
    :align: center
@@ -110,8 +110,8 @@ this example are :cpp:func:`simgrid::s4u::Mailbox::by_name` and
 :cpp:func:`simgrid::s4u::Mailbox::put`. Also, :c:macro:`XBT_INFO` is used
 as a replacement to printf() or to cout to ensure that the messages
 are nicely logged along with the simulated time and actor name.
- 
-     
+
+
 .. literalinclude:: ../../examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp
    :language: c++
    :start-after: master-begin
@@ -135,7 +135,7 @@ namespace contains many such helping functions.
 
 Starting the Simulation
 .......................
-		
+
 And this is it. In only a few lines, we defined the algorithm of our
 master/workers examples.
 
@@ -170,7 +170,7 @@ file. For example, most routing information are missing, and only the
 route between the hosts Tremblay and Fafard is given. This path
 traverses 6 links (named 4, 3, 2, 0, 1 and 8). There are several
 examples of platforms in the archive under ``examples/platforms``.
-		
+
 .. |api_s4u_NetZone| image:: /img/extlink.png
    :align: middle
    :width: 12
@@ -202,14 +202,14 @@ Execution Example
 This time, we have all parts: once the program is compiled, we can
 execute it as follows. Note how the XBT_INFO() requests turned into
 informative messages.
-	      
+
 .. literalinclude:: ../../examples/s4u/app-masterworkers/s4u-app-masterworkers.tesh
    :language: shell
    :start-after: s4u-app-masterworkers-fun
    :prepend: $$$ ./masterworkers platform.xml deploy.xml
    :append: $$$
    :dedent: 2
-	      
+
 
 Improve it Yourself
 -------------------
@@ -246,7 +246,7 @@ This very simple setting raises many interesting questions:
     round-robin algorithm performs very well. Would it still hold true
     when transfer time is not negligible? What if some tasks are
     performed faster on some specific nodes?
-	   
+
 - The network topology interconnecting the master and the workers
   may be quite complicated. How does such a topology impact the
   previous result?
@@ -372,7 +372,7 @@ Please compile and execute the provided simulator as follows:
    make master-workers
    ./master-workers small_platform.xml master-workers_d.xml
 
-For a more "fancy" output, you can use simgrid-colorizer. 
+For a more "fancy" output, you can use simgrid-colorizer.
 
 .. code-block:: shell
 
@@ -395,7 +395,7 @@ is a better way to visualize SimGrid traces (see below).
 
 .. image:: /tuto_s4u/img/vite-screenshot.png
    :align: center
-   
+
 If you want the full power to visualize SimGrid traces, you need
 to use R. As a start, you can download this `starter script
 <https://framagit.org/simgrid/simgrid/raw/master/docs/source/tuto_s4u/draw_gantt.R>`_
@@ -456,7 +456,7 @@ messages to all workers based on their number, for example as follows:
 
      ...
    }
-   
+
 
 Wrap up
 .......
@@ -522,11 +522,11 @@ Previously, the workers got from their parameter the name of the
 mailbox they should use. We can still do so: the master should build
 such a parameter before using it in the ``Actor::create()`` call. The
 master could even pass directly the mailbox as a parameter to the
-workers. 
+workers.
 
 Since we want later to study concurrent applications, it is advised to
 use a mailbox name that is unique over the simulation even if there is
-more than one master. 
+more than one master.
 
 One possibility for that is to use the actor ID (aid) of each worker
 as a mailbox name. The master can retrieve the aid of the newly
@@ -646,7 +646,7 @@ as explained on `this page
 .. todo::
 
    Include here the minimal setting to view something in R.
-   
+
 
 Lab 5: Better Scheduling
 ------------------------
@@ -678,14 +678,14 @@ From this, many things can easily be added. For example, you could:
 - Add a performance measurement mechanism, enabling the master to make smart scheduling choices.
 - Test your code on other platforms, from the ``examples/platforms``
   directory in your archive.
-  
+
   What is the largest number of tasks requiring 50e6 flops and 1e5
   bytes that you manage to distribute and process in one hour on
   ``g5k.xml`` ?
 - Optimize not only for the amount of tasks handled, but also for the
-  total energy dissipated. 
+  total energy dissipated.
 - And so on. If you come up with a really nice extension, please share
-  it with us so that we can extend this tutorial. 
+  it with us so that we can extend this tutorial.
 
 After this Tutorial
 -------------------

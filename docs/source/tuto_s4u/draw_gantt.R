@@ -2,12 +2,12 @@
 args = commandArgs(trailingOnly=TRUE)
 library(ggplot2)
 df = read.csv(args[1], header=F, strip.white=T)
-names(df) = c("Type", "Actor", "Container", "Start", "End", "Duration", "Level", "State"); 
-ggplot(df) + 
+names(df) = c("Type", "Actor", "Container", "Start", "End", "Duration", "Level", "State");
+ggplot(df)
     geom_segment(aes(x=Start, xend=End,
-                     y=Actor, yend=Actor,color=State), size=5) +
-    scale_fill_brewer(palette="Set1") +
-    theme_bw() +
+                     y=Actor, yend=Actor,color=State), size=5)
+    scale_fill_brewer(palette="Set1")
+    theme_bw()
     theme (
         plot.margin = unit(c(0,0,0,0), "cm"),
         legend.spacing = unit(1, "mm"),

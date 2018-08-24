@@ -44,7 +44,7 @@ and other |Activities|_, so that they get reflected within the
 simulator. These activities take place on resources such as |Hosts|_,
 |Links|_ and |Storages|_. SimGrid predicts the time taken by each
 activity and orchestrates accordingly the actors waiting for the
-completion of these activities. 
+completion of these activities.
 
 
 When **communicating**, data is not directly sent to other actors but
@@ -73,9 +73,9 @@ functions to simplify the code of actors.
     Simulation engine (singleton).
   - :ref:`class s4u::Mailbox <exhale_class_classsimgrid_1_1s4u_1_1Mailbox>`
     Communication rendez-vous.
-    
+
 - **Platform Elements**
-  
+
   - :ref:`class s4u::Host <exhale_class_classsimgrid_1_1s4u_1_1Host>`:
     Actor location, providing computational power.
   - :ref:`class s4u::Link <exhale_class_classsimgrid_1_1s4u_1_1Link>`
@@ -83,10 +83,10 @@ functions to simplify the code of actors.
   - :ref:`class s4u::NetZone <exhale_class_classsimgrid_1_1s4u_1_1NetZone>`:
     Sub-region of the platform, containing resources (Hosts, Link, etc).
   - :ref:`class s4u::Storage <exhale_class_classsimgrid_1_1s4u_1_1Storage>`
-    Resource on which actors can write and read data. 
+    Resource on which actors can write and read data.
   - :ref:`class s4u::VirtualMachine <exhale_class_classsimgrid_1_1s4u_1_1VirtualMachine>`:
     Execution containers that can be moved between Hosts.
-    
+
 - **Activities** (:ref:`class s4u::Activity <exhale_class_classsimgrid_1_1s4u_1_1Activity>`):
   The things that actors can do on resources
 
@@ -96,9 +96,9 @@ functions to simplify the code of actors.
     Computation activity, started on Host and consuming CPU resources.
   - :ref:`class s4u::Io <exhale_class_classsimgrid_1_1s4u_1_1Io>`
     I/O activities, started on and consumming Storages.
-  
+
 - **Synchronization Mechanisms**: Classical IPC that actors can use
-  
+
   - :ref:`class s4u::Barrier <exhale_class_classsimgrid_1_1s4u_1_1Barrier>`
   - :ref:`class s4u::ConditionVariable <exhale_class_classsimgrid_1_1s4u_1_1ConditionVariable>`
   - :ref:`class s4u::Mutex <exhale_class_classsimgrid_1_1s4u_1_1Mutex>`

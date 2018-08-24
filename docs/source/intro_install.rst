@@ -1,11 +1,11 @@
-.. Copyright 2005-2018 
+.. Copyright 2005-2018
 
 .. _install:
 
 Installing SimGrid
 ==================
 
-   
+
 SimGrid should work out of the box on Linux, Mac OSX, FreeBSD, and Windows (under windows, only the Java interfaces are
 available at the moment).
 
@@ -18,12 +18,12 @@ Binaries for Linux
 On Debian or Ubuntu, simply type:
 
 .. code-block:: shell
-   
+
    apt install simgrid
 
 If you build pre-compiled packages for other distributions, drop us an
 email.
-   
+
 Stable Java Package
 ^^^^^^^^^^^^^^^^^^^
 
@@ -36,8 +36,8 @@ Nightly built Java Package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 For non-Windows systems (Linux, Mac or FreeBSD), head to `Jenkins <https://ci.inria.fr/simgrid/job/SimGrid>`_.
-In the build history, pick the last green (or at least yellow) build that is not blinking (i.e., not currently under 
-build). In the list, pick a system that is close to yours, and click on the ball in the Debug row. The build artefact 
+In the build history, pick the last green (or at least yellow) build that is not blinking (i.e., not currently under
+build). In the list, pick a system that is close to yours, and click on the ball in the Debug row. The build artefact
 will appear on the top of the resulting page.
 
 For Windows, head to `AppVeyor <https://ci.appveyor.com/project/simgrid/simgrid>`_.
@@ -58,7 +58,7 @@ Library not found: boost-context
    machine, for example with ``apt``.
 
 .. _install_src:
-   
+
 Installing from the Source
 --------------------------
 
@@ -77,10 +77,10 @@ cmake (v2.8.8).
   configuration options (e.g., if your python installation is not standard).
 boost (at least v1.48, v1.59 recommended)
   - On Debian / Ubuntu: ``apt install libboost-dev libboost-context-dev``
-  - On Max OS X with homebrew: ``brew install boost``  
+  - On Max OS X with homebrew: ``brew install boost``
 Java (optional):
   - Debian / Ubuntu: ``apt install default-jdk libgcj18-dev`` (or
-    any version of libgcj)      
+    any version of libgcj)
   - Mac OS X or Windows: Grab a `full JDK <http://www.oracle.com/technetwork/java/javase/downloads>`_
 Lua (optional -- must be v5.3)
   - SimGrid won't work with any other version of Lua.
@@ -114,7 +114,7 @@ and recompile it as with stable archives. You may need some extra
 dependencies.
 
 .. code-block:: shell
- 
+
    git clone git@framagit.org:simgrid/simgrid.git
    cd simgrid
    cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid .
@@ -155,7 +155,7 @@ For example, you can change the compilers with environment variables
 by issuing these commands before launching cmake:
 
 .. code-block:: shell
- 
+
    export CC=gcc-5.1
    export CXX=g++-5.1
 
@@ -174,10 +174,10 @@ default choice is in uppercase).
 
 CMAKE_INSTALL_PREFIX (path)
   Where to install SimGrid (/opt/simgrid, /usr/local, or elsewhere).
-  
+
 enable_compile_optimizations (ON/off)
   Request the compiler to produce efficient code. You probably want to
-  activate this option, unless you plan modify SimGrid itself: 
+  activate this option, unless you plan modify SimGrid itself:
   efficient code takes more time to compile, and appears mangled to debuggers.
 
 enable_compile_warnings (on/OFF)
@@ -200,7 +200,7 @@ enable_java (on/OFF)
   Generates the java bindings of SimGrid.
 
 enable_jedule (on/OFF)
-  Produces execution traces from SimDag simulations, that can then be visualized with the 
+  Produces execution traces from SimDag simulations, that can then be visualized with the
   Jedule external tool.
 
 enable_lua (on/OFF)
@@ -219,7 +219,7 @@ enable_maintainer_mode (on/OFF)
 
 enable_mallocators (ON/off)
   Activates our internal memory caching mechanism. This produces faster
-  code, but it may fool the debuggers. 
+  code, but it may fool the debuggers.
 
 enable_model-checking (on/OFF)
   Activates the formal verification mode. This will **hinder
@@ -318,7 +318,7 @@ on `our Jenkins <https://ci.inria.fr/simgrid/>`_.
   ctest -j4                 # Launch all tests in parallel, at most 4 concurrent jobs
   ctest --verbose           # Display all details on what's going on
   ctest --output-on-failure # Only get verbose for the tests that fail
-  
+
   ctest -R s4u -j4 --output-on-failure # You changed S4U and want to check that you didn't break anything, huh?
                                        # That's fine, I do so all the time myself.
 
@@ -330,22 +330,22 @@ Mac OS X Specifics
 SimGrid compiles like a charm with clang (version 3.0 or higher) on Mac OS X:
 
 .. code-block:: shell
-		
+
   cmake -DCMAKE_C_COMPILER=/path/to/clang -DCMAKE_CXX_COMPILER=/path/to/clang++ .
   make
 
 
 Troubleshooting your Mac OS X build.
-  
+
 CMake Error: Parse error in cache file build_dir/CMakeCache.txt. Offending entry: /SDKs/MacOSX10.8.sdk
   This was reported with the XCode version of clang 4.1. The work
   around is to edit the ``CMakeCache.txt`` file directly, to change
   the following entry:
-		
+
   ``CMAKE_OSX_SYSROOT:PATH=/Applications/XCode.app/Contents/Developer/Platforms/MacOSX.platform/Developer``
 
   You can safely ignore the warning about "-pthread" not being used, if it appears.
-  
+
 /usr/include does not seem to exist
   This directory does not exist by default on modern Mac OSX versions,
   and you may need to create it with ``xcode-select -install``
@@ -382,7 +382,7 @@ things should be as simple as:
    make  simgrid-java_jar # Only build the jarfile
 
 After the compilation, the file ```simgrid.jar``` is produced in the
-root directory. 
+root directory.
 
 **Troubleshooting Java Builds**
 
@@ -399,7 +399,7 @@ Sometimes, the build system fails to find the JNI headers. First locate them as 
 Then, set the JAVA_INCLUDE_PATH environment variable to the right
 path, and relaunch cmake. If you have several version of jni installed
 (as above), pick the one corresponding to the report of
-``javac -version`` 
+``javac -version``
 
 .. code-block:: shell
 
@@ -429,7 +429,7 @@ version of SimGrid with something like:
 If needed, implement ``i686-linux-gnu-gfortran`` as a script:
 
 .. code-block:: shell
-		
+
   #!/usr/bin/env sh
   exec gfortran -m32 "$@"
 

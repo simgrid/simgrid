@@ -1,6 +1,6 @@
 # What to read
-INPUT                  = ../../include/simgrid/forward.h 
-INPUT                 += ../../include/simgrid/s4u 
+INPUT                  = ../../include/simgrid/forward.h
+INPUT                 += ../../include/simgrid/s4u
 INPUT                 += ../../include/simgrid/xbt
 RECURSIVE              = YES
 
@@ -22,7 +22,7 @@ ALIASES               += "endrst=\endverbatim"
 ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = YES
 EXPAND_ONLY_PREDEF     = NO
-SKIP_FUNCTION_MACROS   = NO			    
+SKIP_FUNCTION_MACROS   = NO
 
 PREDEFINED             += \
     __cplusplus \

@@ -7,7 +7,7 @@ It is not advised to modify the simgrid source code directly, as it
 will make it difficult to upgrade to the next version of SimGrid.
 Instead, you should create your own working directory somewhere on
 your disk (say `/home/joe/MyFirstScheduler/`), and write your code in
-there. 
+there.
 
 Cloning a Template Project for S4U
 ----------------------------------
@@ -31,13 +31,13 @@ your project. It builds two simulators from a given set of source files.
 
    cmake_minimum_required(VERSION 2.8.8)
    project(MyFirstSimulator)
-   
+
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-   
+
    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
    find_package(SimGrid REQUIRED)
    include_directories(${SimGrid_INCLUDE_DIR})
-   
+
    set(SIMULATOR_SOURCES main.c other.c util.c)
    add_executable(my_simulator ${SIMULATOR_SOURCES})
    target_link_libraries(my_simulator ${SimGrid_LIBRARY})
@@ -75,7 +75,7 @@ comments are not enough for you.
    # This second rule lists the dependencies of the mysimulator binary
    # How this dependencies are linked is described in an implicit rule below
    mysimulator: mysimulator.o util.o
-   
+
    # These third give the dependencies of the each source file
    mysimulator.o: mysimulator.c util.h # list every .h that you use
    util.o: util.c util.h
@@ -90,18 +90,18 @@ comments are not enough for you.
 
    # CFLAGS = -g -O0 $(WARNINGS) # Use this line to make debugging easier
    CFLAGS = -g -O2 $(WARNINGS) # Use this line to get better performance
-   
+
    # No change should be mandated past that line
    #############################################
    # The following are implicit rules, used by default to actually build
    # the targets for which you listed the dependencies above.
-   
+
    # The blanks before the $(CC) must be a Tab char, not spaces
    %: %.o
    	$(CC) -L$(SIMGRID_INSTALL_PATH)/lib/    $(CFLAGS) $^ -lsimgrid -o $@
    %.o: %.c
    	$(CC) -I$(SIMGRID_INSTALL_PATH)/include $(CFLAGS) -c -o $@ $<
-   
+
    clean:
    	rm -f *.o *~
    .PHONY: clean
@@ -166,7 +166,7 @@ Many undefined references
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: shell
-		
+
   masterworker.c:209: undefined reference to `sg_version_check'
   masterworker.c:209: undefined reference to `MSG_init_nocheck'
   (and many other undefined references)
@@ -180,7 +180,7 @@ Only a few undefined references
 
 Sometimes, the compilation only spits very few "undefined reference"
 errors. A possible cause is that the system selected an old version of
-the SimGrid library somewhere on your disk. 
+the SimGrid library somewhere on your disk.
 
 Dicover which version is used with ``ldd name-of-yoursimulator``.
 Once you've found the obsolete copy of SimGrid, just erase it, and

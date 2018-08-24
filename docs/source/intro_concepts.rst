@@ -3,7 +3,7 @@
 What is SimGrid
 ===============
 
-SimGrid is a framework to simulate distributed computer systems. 
+SimGrid is a framework to simulate distributed computer systems.
 
 It can be used to either assess abstract algorithms, or to profile and
 debug real distributed applications.  SimGrid enables studies in the
@@ -45,7 +45,7 @@ Any SimGrid study entails the following components:
 
  - The studied **Application**. This can be either a distributed
    algorithm described in our simple APIs, or a full featured real
-   parallel application using for example the MPI interface 
+   parallel application using for example the MPI interface
    :ref:`(more info) <application>`.
 
  - The **Virtual Platform**. This is a description of a given
@@ -141,7 +141,7 @@ arrives first, and then rewind to the same point to explore the
 scenario where B arrives first.
 
 This is a very powerful mode, where you can evaluate the correction of
-your application. It can verify either **safety properties** (asserts) 
+your application. It can verify either **safety properties** (asserts)
 or **liveless properties** stating for example that if a given event
 occurs, then another given event will occur in a finite amount of
 steps. This mode is not only usable with the abstract algorithms
@@ -191,7 +191,7 @@ SimGrid Limits
 --------------
 
 This framework is by no means the perfect holly grail able to solve
-every problem on earth. 
+every problem on earth.
 
 **SimGrid scope is limited to distributed systems.** Real-time
 multi-threaded systems are not in the scope. You could probably tweak
@@ -199,7 +199,7 @@ SimGrid for such studies (or the framework could possibly be extended
 in this direction), but another framework specifically targeting this
 use case would probably be more suited.
 
-**There is currently no support for wireless networks**. 
+**There is currently no support for wireless networks**.
 The framework could certainly be improved in this direction, but this
 is still to be done.
 
@@ -207,7 +207,7 @@ is still to be done.
 The SimGrid models target fast, large studies yet requesting a
 realistic results. In particular, our models abstract away parameters
 and phenomenon that are often irrelevant to the realism in our
-context. 
+context.
 
 SimGrid is simply not intended to any study that would mandate the
 abstracted phenomenon. Here are some **studies that you should not do
@@ -228,9 +228,9 @@ SimGrid was cited in over 1,500 scientific papers (according to Google
 Scholar). Among them
 `over 200 publications <https://simgrid.org/Usages.html>`_
 (written by about 300 individuals) use SimGrid as a scientific
-instrument to conduct their experimental evaluation. These 
+instrument to conduct their experimental evaluation. These
 numbers do not count the articles contributing to SimGrid.
-This instrument was used in many research communities, such as 
+This instrument was used in many research communities, such as
 `High-Performance Computing <https://hal.inria.fr/inria-00580599/>`_,
 `Cloud Computing <http://dx.doi.org/10.1109/CLOUD.2015.125>`_,
 `Workflow Scheduling <http://dl.acm.org/citation.cfm?id=2310096.2310195>`_,
@@ -250,7 +250,7 @@ If your platform description is accurate enough (see
 SimGrid can provide high-quality performance predictions. For example,
 we determined the speedup achieved by the Tibidabo Arm-based
 cluster before its construction
-(`paper <http://hal.inria.fr/hal-00919507>`_). In this case, 
+(`paper <http://hal.inria.fr/hal-00919507>`_). In this case,
 some differences between the prediction and the real timings were due to
 misconfiguration or other problems with the real platforms. To some extent,
 SimGrid could even be used to debug the real platform :)
