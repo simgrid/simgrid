@@ -24,15 +24,6 @@
 namespace simgrid {
 namespace xbt {
 
-/** A backtrace
- *
- *  This is used (among other things) in exceptions to store the associated
- *  backtrace.
- *
- *  @ingroup XBT_ex
- */
-typedef std::vector<xbt_backtrace_location_t> Backtrace;
-
 /** The location of where an exception has been thrown
  *
  *  This is a tuple (__FILE__, __LINE__, __func__) and can be created with

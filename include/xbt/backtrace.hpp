@@ -1,5 +1,7 @@
-/* Copyright (c) 2005-2018. The SimGrid Team.
- * All rights reserved. */
+/* Copyright (c) 2005-2018. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef SIMGRIX_XBT_BACKTRACE_HPP
 #define SIMGRIX_XBT_BACKTRACE_HPP
@@ -10,11 +12,19 @@
 #include <memory>
 #include <vector>
 
-#include <xbt/base.h>
 #include <xbt/backtrace.h>
 
 namespace simgrid {
 namespace xbt {
+
+/** A backtrace
+ *
+ *  This is used (among other things) in exceptions to store the associated
+ *  backtrace.
+ *
+ *  @ingroup XBT_ex
+ */
+typedef std::vector<xbt_backtrace_location_t> Backtrace;
 
 /** Try to demangle a C++ name
  *
