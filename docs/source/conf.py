@@ -48,7 +48,7 @@ extensions = [
 
 todo_include_todos = True
 
-breathe_projects = { 'simgrid': '../build/doxy/xml' }
+breathe_projects = { 'simgrid': '../build/xml' }
 breathe_default_project = "simgrid"
 
 # Setup the exhale extension
@@ -63,31 +63,8 @@ exhale_args = {
     "createTreeView":        True,
     # TIP: if using the sphinx-bootstrap-theme, you need
     # "treeViewIsBootstrap": True,
-    "exhaleExecutesDoxygen": True,
-    "exhaleDoxygenStdin":    """
-    INPUT = ../../include/simgrid/s4u ../../include/simgrid/forward.h ../../include/simgrid/xbt
-    FULL_PATH_NAMES = NO # Don't leak the path on which it was built
-    GENERATE_XML           = YES
-    XML_PROGRAMLISTING     = NO # No program listings, please
-
-    PREDEFINED             += \
-        __cplusplus \
-        DOXYGEN \
-        XBT_PUBLIC= \
-        XBT_EXPORT_NO_IMPORT= \
-        XBT_IMPORT_NO_EXPORT= \
-        XBT_PUBLIC_DATA=extern \
-        XBT_PUBLIC= \
-        XBT_INLINE= \
-        XBT_ALWAYS_INLINE= \
-        XBT_PRIVATE= \
-        XBT_ATTRIB_NORETURN= \
-        XBT_ATTRIB_UNUSED= \
-        XBT_ATTRIB_DEPRECATED_v322(m)= \
-        XBT_ATTRIB_DEPRECATED_v323(m)= \
-        XBT_ATTRIB_DEPRECATED_v324(m)=
-
-    """
+    "exhaleExecutesDoxygen": False,
+    "exhaleUseDoxyfile":     True,
 }
 
 

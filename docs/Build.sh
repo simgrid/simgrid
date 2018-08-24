@@ -2,7 +2,15 @@
 #
 # Simplistic script to rebuild our documentation with sphinx-build
 
-rm -rf build/doxy/ source/api/
+set -e
+
+if [ "x$1" != 'xdoxy' -a -e build/xml ] ; then
+  echo "(Doxygen not rerun)"
+else
+  rm -rf build/xml source/api/
+  cd source; doxygen; cd ..
+fi
+
 sphinx-build -M html source build ${SPHINXOPTS}
 cat source/img/graphical-toc.svg \
  | perl -pe 's/(xlink:href="http)/target="_top" $1/' \
