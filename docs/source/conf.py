@@ -40,7 +40,7 @@ release = u'3.21'
 extensions = [
     'sphinx.ext.todo',
 #    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
+#    'sphinx.ext.mathjax',
 #    'sphinx.ext.ifconfig',
     'breathe',
     'exhale',

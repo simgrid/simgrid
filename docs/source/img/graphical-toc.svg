@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="341.7252"
-     inkscape:cy="358.35835"
+     inkscape:zoom="3.959798"
+     inkscape:cx="131.77503"
+     inkscape:cy="253.06312"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -2305,11 +2305,34 @@
     </rdf:RDF>
   </metadata>
   <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="underlining">
+    <rect
+       transform="translate(-2.308124,-62.995622)"
+       style="display:inline;opacity:1;vector-effect:none;fill:none;fill-opacity:1;stroke:none;stroke-width:0.52899998;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="S4UBox"
+       width="50.270832"
+       height="7.9375029"
+       x="5.2916665"
+       y="81.854164"
+       inkscape:label="#rect6249" />
+  </g>
+  <g
      id="layer1"
      inkscape:groupmode="layer"
      inkscape:label="Calque 1"
      transform="translate(-2.308124,-62.995623)"
      style="display:inline">
+    <rect
+       style="opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="ApplicationBox"
+       width="50.270832"
+       height="26.458334"
+       x="5.2916665"
+       y="81.854164"
+       ry="2.6458309"
+       inkscape:label="#rect1020-7" />
     <a
        id="a6161"
        xlink:href="http://simgrid.gforge.inria.fr/contrib/smpi-calibration-doc/"
@@ -2577,18 +2600,22 @@
          x="69.055466"
          y="108.99284"
          style="font-size:4.93888903px;stroke-width:0.26458332px">▸ External Events</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="6.6014075"
-       y="87.184937"
-       id="Actors"
-       inkscape:label="#text1028-9"><tspan
-         sodipodi:role="line"
-         id="tspan1026-3"
-         x="6.6014075"
+    <a
+       xlink:href="app_s4u.html"
+       id="a6253">
+      <text
+         inkscape:label="#text1028-9"
+         id="Actors"
          y="87.184937"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px">▸ Actors:</tspan></text>
+         x="6.6014075"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px"
+           y="87.184937"
+           x="6.6014075"
+           id="tspan1026-3"
+           sodipodi:role="line">▸ Actors:</tspan></text>
+    </a>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;opacity:0.93000034;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -2622,15 +2649,6 @@
          x="6.6014075"
          y="105.61705"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px">▸ Centralized Algo</tspan></text>
-    <rect
-       style="opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="ApplicationBox"
-       width="50.270832"
-       height="26.458334"
-       x="5.2916665"
-       y="81.854164"
-       ry="2.6458309"
-       inkscape:label="#rect1020-7" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;opacity:0.93000034;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
