@@ -13,13 +13,8 @@ static void dummy()
   try {
     simgrid::s4u::this_actor::sleep_for(200);
     XBT_INFO("I stop");
-  } catch (xbt_ex& e) {
-    if (e.category == host_error) {
-      XBT_DEBUG("The host has died ... as expected. This actor silently stops");
-    } else {
-      XBT_ERROR("An unexpected exception has been raised.");
-      throw;
-    }
+  } catch (simgrid::HostFailureException& e) {
+    XBT_DEBUG("The host has died ... as expected. This actor silently stops");
   }
 }
 

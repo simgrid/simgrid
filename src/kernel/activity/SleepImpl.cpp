@@ -3,10 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/Host.hpp"
-
-#include "simgrid/kernel/resource/Action.hpp"
 #include "src/kernel/activity/SleepImpl.hpp"
+#include "simgrid/Exception.hpp"
+#include "simgrid/kernel/resource/Action.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "src/kernel/context/Context.hpp"
 
 #include "simgrid/Exception.hpp"
@@ -37,7 +37,8 @@ void simgrid::kernel::activity::SleepImpl::post()
       /* If the host running the synchro failed, notice it. This way, the asking
        * actor can be killed if it runs on that host itself */
       result = SIMIX_SRC_HOST_FAILURE;
-      SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+      simcall->issuer->exception =
+          std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
     }
 
     switch (surf_sleep->get_state()) {
