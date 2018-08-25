@@ -10,7 +10,6 @@
 #include "smpi/smpi.h"
 #include "smpi/smpi_helpers_internal.h"
 #include "src/instr/instr_smpi.hpp"
-#include "src/internal_config.h"
 #include <unordered_map>
 #include <vector>
 
@@ -425,14 +424,13 @@ XBT_PRIVATE smpi_privatization_region_t smpi_init_global_memory_segment_process(
  */
 #define TOPAGE(addr) (void*)(((unsigned long)(addr) / xbt_pagesize) * xbt_pagesize)
 
-#if HAVE_PAPI
+/** Used only if PAPI is compiled in, but integrated anyway so that this file does not depend on internal_config.h (to speed builds) */
 typedef std::vector<std::pair</* counter name */ std::string, /* counter value */ long long>> papi_counter_t;
 struct papi_process_data {
   papi_counter_t counter_data;
   int event_set;
 };
 extern std::map</* computation unit name */ std::string, papi_process_data> units2papi_setup;
-#endif
 
 extern std::unordered_map<std::string, double> location2speedup;
 
