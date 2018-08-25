@@ -12,7 +12,6 @@
  */
 
 #include <exception>
-#include <simgrid/exception.hpp>
 #include <stdexcept>
 #include <xbt/exception.hpp>
 
@@ -21,26 +20,26 @@
 namespace simgrid {
 
 /** Ancestor class of all SimGrid exception */
-class exception : public std::runtime_error {
+class Exception : public std::runtime_error {
 public:
-  exception() : std::runtime_error("") {}
-  exception(const char* message) : std::runtime_error(message) {}
+  Exception() : std::runtime_error("") {}
+  Exception(const char* message) : std::runtime_error(message) {}
 };
 
 /** Exception raised when a timeout elapsed */
-class timeout_error : public simgrid::exception {
+class timeout_error : public simgrid::Exception {
 };
 
 /** Exception raised when an host fails */
-class host_failure : public simgrid::exception {
+class host_failure : public simgrid::Exception {
 };
 
 /** Exception raised when a communication fails because of the network */
-class network_failure : public simgrid::exception {
+class network_failure : public simgrid::Exception {
 };
 
 /** Exception raised when something got canceled before completion */
-class canceled_error : public simgrid::exception {
+class canceled_error : public simgrid::Exception {
 };
 
 } // namespace simgrid
@@ -58,9 +57,9 @@ class canceled_error : public simgrid::exception {
  *
  *  @ingroup XBT_ex_c
  */
-class XBT_PUBLIC xbt_ex : public simgrid::exception, public simgrid::xbt::ContextedException {
+class XBT_PUBLIC xbt_ex : public simgrid::Exception, public simgrid::xbt::ContextedException {
 public:
-  xbt_ex() : simgrid::exception() {}
+  xbt_ex() : simgrid::Exception() {}
 
   /**
    *
@@ -68,7 +67,7 @@ public:
    * @param message    Exception message
    */
   xbt_ex(simgrid::xbt::ThrowPoint throwpoint, const char* message)
-      : simgrid::exception(message), simgrid::xbt::ContextedException(throwpoint, simgrid::xbt::backtrace())
+      : simgrid::Exception(message), simgrid::xbt::ContextedException(throwpoint, simgrid::xbt::backtrace())
   {
   }
 

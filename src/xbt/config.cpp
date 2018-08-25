@@ -19,7 +19,7 @@
 #include <typeinfo>
 #include <vector>
 
-#include "simgrid/exception.hpp"
+#include "simgrid/Exception.hpp"
 #include "simgrid/sg_config.hpp"
 #include "xbt/dynar.h"
 #include "xbt/log.h"
@@ -719,7 +719,7 @@ int xbt_cfg_get_boolean(const char *key)
 
 #include <string>
 
-#include "simgrid/exception.hpp"
+#include "simgrid/Exception.hpp"
 #include "xbt.h"
 #include "xbt/ex.h"
 

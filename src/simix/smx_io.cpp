@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
-#include "simgrid/exception.hpp"
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Io.hpp"
 

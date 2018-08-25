@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-#include "simgrid/exception.hpp"
+#include "simgrid/Exception.hpp"
 #include <xbt/cunit.h>
 #include <xbt/string.hpp>
 

@@ -13,7 +13,7 @@
 #include <memory>
 #include <mutex>
 
-#include "simgrid/exception.hpp"
+#include "simgrid/Exception.hpp"
 #include <xbt/backtrace.hpp>
 #include <xbt/config.hpp>
 #include <xbt/log.h>

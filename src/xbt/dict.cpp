@@ -7,7 +7,7 @@
 
 #include "xbt/dict.h"
 #include "dict_private.h"
-#include "simgrid/exception.hpp"
+#include "simgrid/Exception.hpp"
 #include "src/xbt_modinter.h"
 #include "xbt/ex.h"
 #include "xbt/log.h"
@@ -454,7 +454,7 @@ void xbt_dict_postexit()
 }
 
 #ifdef SIMGRID_TEST
-#include "simgrid/exception.hpp"
+#include "simgrid/Exception.hpp"
 #include "src/internal_config.h"
 #include "xbt.h"
 #include "xbt/ex.h"

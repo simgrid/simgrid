@@ -3,11 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "smx_private.hpp"
 #include "src/surf/xml/platf_private.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
 #include <simgrid/engine.h>
-#include <simgrid/exception.hpp>
 
 #include <string>
 #include <vector>

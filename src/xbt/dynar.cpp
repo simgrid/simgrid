@@ -7,7 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/dynar.h"
-#include "simgrid/exception.hpp"
+#include "simgrid/Exception.hpp"
 #include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/misc.h"

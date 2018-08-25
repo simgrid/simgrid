@@ -5,10 +5,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/exception.hpp"
+#include "simgrid/Exception.hpp"
 #include "xbt/misc.h"
 #include "xbt/str.h" /* headers of these functions */
-#include "xbt/sysdep.h"
 
 /** @brief Splits a string into a dynar of strings
  *
@@ -263,7 +262,7 @@ double xbt_str_parse_double(const char* str, const char* error_msg)
 }
 
 #ifdef SIMGRID_TEST
-#include "simgrid/exception.hpp"
+#include "simgrid/Exception.hpp"
 #include "xbt/str.h"
 
 XBT_TEST_SUITE("xbt_str", "String Handling");

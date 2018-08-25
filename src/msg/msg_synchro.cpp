@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg_private.hpp"
-#include "simgrid/exception.hpp"
+#include "simgrid/Exception.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/simix/smx_synchro_private.hpp"
 #include "xbt/synchro.h"

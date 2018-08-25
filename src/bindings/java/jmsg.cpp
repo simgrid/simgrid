@@ -9,6 +9,7 @@
 #include <clocale>
 #include <string>
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/msg.h"
 #include "simgrid/plugins/energy.h"
 #include "simgrid/plugins/file_system.h"
@@ -29,7 +30,6 @@
 
 #include "JavaContext.hpp"
 
-#include "simgrid/exception.hpp"
 
 /* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
 #ifndef JNIEXPORT

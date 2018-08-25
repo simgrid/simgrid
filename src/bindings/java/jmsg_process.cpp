@@ -5,14 +5,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/exception.hpp"
-
 #include "jmsg_process.h"
 
 #include "JavaContext.hpp"
 #include "jmsg.hpp"
 #include "jmsg_host.h"
 #include "jxbt_utilities.hpp"
+#include "simgrid/Exception.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 

@@ -7,8 +7,8 @@
 #include "src/include/surf/surf.hpp"
 #include "xbt/xbt_os_time.h"
 
+#include <simgrid/Exception.hpp>
 #include <simgrid/engine.h>
-#include <simgrid/exception.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix, "Logging specific to SIMIX (environment)");
 

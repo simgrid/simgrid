@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
-#include "simgrid/exception.hpp"
+#include "simgrid/Exception.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"

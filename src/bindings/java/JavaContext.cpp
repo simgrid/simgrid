@@ -7,7 +7,7 @@
 
 #include "JavaContext.hpp"
 #include "jxbt_utilities.hpp"
-#include "simgrid/exception.hpp"
+#include "simgrid/Exception.hpp"
 #include "src/simix/smx_private.hpp"
 
 #include <functional>

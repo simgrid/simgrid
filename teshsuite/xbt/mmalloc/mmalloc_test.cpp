@@ -3,8 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/mmalloc.h"
+#include "simgrid/Exception.hpp"
 #include "xbt.h"
+#include "xbt/mmalloc.h"
+
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
@@ -12,8 +14,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
-#include <simgrid/exception.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,"this test");
 
