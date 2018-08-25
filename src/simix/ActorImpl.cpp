@@ -229,7 +229,8 @@ void ActorImpl::resume()
 smx_activity_t ActorImpl::sleep(double duration)
 {
   if (host_->is_off())
-    THROWF(host_error, 0, "Host %s failed, you cannot sleep there.", host_->get_cname());
+    throw new simgrid::HostFailureException(XBT_THROW_POINT,
+        std::string("Host ") + std::string(host_->get_cname())+" failed, you cannot sleep there.");
 
   simgrid::kernel::activity::SleepImpl* synchro = new simgrid::kernel::activity::SleepImpl();
   synchro->host                                 = host_;

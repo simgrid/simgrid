@@ -61,7 +61,7 @@ public:
 /** Ancestor class of all SimGrid exception */
 class Exception : public std::runtime_error {
 public:
-  Exception(simgrid::xbt::ThrowPoint throwpoint, const char* message)
+  Exception(simgrid::xbt::ThrowPoint throwpoint, std::string message)
       : std::runtime_error(message), throwpoint_(throwpoint)
   {
   }
@@ -95,7 +95,7 @@ public:
    * @param throwpoint Throw point (use XBT_THROW_POINT)
    * @param message    Exception message
    */
-  xbt_ex(simgrid::xbt::ThrowPoint throwpoint, const char* message) : simgrid::Exception(throwpoint, message) {}
+  xbt_ex(simgrid::xbt::ThrowPoint throwpoint, std::string message) : simgrid::Exception(throwpoint, message) {}
 
   ~xbt_ex(); // DO NOT define it here -- see ex.cpp for a rationale
 
@@ -115,7 +115,7 @@ class TimeoutError : public xbt_ex {
 /** Exception raised when an host fails */
 class HostFailureException : public xbt_ex {
 public:
-  HostFailureException(simgrid::xbt::ThrowPoint throwpoint, const char* message) : xbt_ex(throwpoint, message)
+  HostFailureException(simgrid::xbt::ThrowPoint throwpoint, std::string message) : xbt_ex(throwpoint, message)
   {
     category = host_error;
   }
