@@ -521,7 +521,8 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
     if (simcall->issuer->host_->is_off()) {
       simcall->issuer->context_->iwannadie = 1;
-      SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+      simcall->issuer->exception =
+          std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
     } else {
       switch (comm->state_) {
 

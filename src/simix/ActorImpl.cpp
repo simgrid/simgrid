@@ -451,9 +451,8 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
 
   /* destroy the blocking synchro if any */
   if (process->waiting_synchro != nullptr) {
-    if (process->host_->is_off()) {
-      SMX_EXCEPTION(process, host_error, 0, "Host failed");
-    }
+    if (process->host_->is_off())
+      process->exception = std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(process->waiting_synchro);
     simgrid::kernel::activity::CommImplPtr comm =

@@ -129,7 +129,8 @@ void SIMIX_execution_finish(smx_activity_t synchro)
       case SIMIX_FAILED:
         XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->host_->get_cname());
         simcall->issuer->context_->iwannadie = 1;
-        SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        simcall->issuer->exception =
+            std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
         break;
 
       case SIMIX_CANCELED:
