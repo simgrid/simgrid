@@ -110,6 +110,11 @@ namespace simgrid {
 
 /** Exception raised when a timeout elapsed */
 class TimeoutError : public xbt_ex {
+public:
+  TimeoutError(simgrid::xbt::ThrowPoint throwpoint, std::string message) : xbt_ex(throwpoint, message)
+  {
+    category = timeout_error;
+  }
 };
 
 /** Exception raised when an host fails */

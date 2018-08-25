@@ -532,11 +532,13 @@ void SIMIX_comm_finish(smx_activity_t synchro)
           break;
 
         case SIMIX_SRC_TIMEOUT:
-          SMX_EXCEPTION(simcall->issuer, timeout_error, 0, "Communication timeouted because of sender");
+          simcall->issuer->exception = std::make_exception_ptr(
+              simgrid::TimeoutError(XBT_THROW_POINT, "Communication timeouted because of the sender"));
           break;
 
         case SIMIX_DST_TIMEOUT:
-          SMX_EXCEPTION(simcall->issuer, timeout_error, 0, "Communication timeouted because of receiver");
+          simcall->issuer->exception = std::make_exception_ptr(
+              simgrid::TimeoutError(XBT_THROW_POINT, "Communication timeouted because of the receiver"));
           break;
 
         case SIMIX_SRC_HOST_FAILURE:

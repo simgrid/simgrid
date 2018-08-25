@@ -140,7 +140,7 @@ void SIMIX_execution_finish(smx_activity_t synchro)
 
       case SIMIX_TIMEOUT:
         XBT_DEBUG("SIMIX_execution_finished: execution timeouted");
-        SMX_EXCEPTION(simcall->issuer, timeout_error, 0, "Timeouted");
+        simcall->issuer->exception = std::make_exception_ptr(simgrid::TimeoutError(XBT_THROW_POINT, "Timeouted"));
         break;
 
       default:
