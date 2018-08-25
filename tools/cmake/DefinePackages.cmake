@@ -749,7 +749,6 @@ set(headers_to_install
   include/xbt/dict.h
   include/xbt/dynar.h
   include/xbt/ex.h
-  include/xbt/exception.hpp
   include/xbt/Extendable.hpp
   include/xbt/file.hpp
   include/xbt/functional.hpp
@@ -930,6 +929,7 @@ set(DOC_SOURCES
   docs/source/img/graphical-toc.svg
 
   docs/source/application.rst
+  docs/source/app_s4u.rst
   docs/source/index.rst
   docs/source/intro_concepts.rst
   docs/source/introduction.rst
