@@ -73,22 +73,6 @@ private:
   xbt::ThrowPoint throwpoint_;
 };
 
-/** Exception raised when a timeout elapsed */
-class timeout_error : public simgrid::Exception {
-};
-
-/** Exception raised when an host fails */
-class host_failure : public simgrid::Exception {
-};
-
-/** Exception raised when a communication fails because of the network */
-class network_failure : public simgrid::Exception {
-};
-
-/** Exception raised when something got canceled before completion */
-class canceled_error : public simgrid::Exception {
-};
-
 } // namespace simgrid
 
 /** A legacy exception
@@ -121,5 +105,24 @@ public:
   /** Why did it went wrong */
   int value = 0;
 };
+
+namespace simgrid {
+
+/** Exception raised when a timeout elapsed */
+class TimeoutError : public xbt_ex {
+};
+
+/** Exception raised when an host fails */
+class HostFailureException : public xbt_ex {
+};
+
+/** Exception raised when a communication fails because of the network */
+class NetworkFailureException : public xbt_ex {
+};
+
+/** Exception raised when something got canceled before completion */
+class CancelException : public xbt_ex {
+};
+} // namespace simgrid
 
 #endif
