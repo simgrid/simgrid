@@ -114,6 +114,11 @@ class TimeoutError : public xbt_ex {
 
 /** Exception raised when an host fails */
 class HostFailureException : public xbt_ex {
+public:
+  HostFailureException(simgrid::xbt::ThrowPoint throwpoint, const char* message) : xbt_ex(throwpoint, message)
+  {
+    category = host_error;
+  }
 };
 
 /** Exception raised when a communication fails because of the network */
