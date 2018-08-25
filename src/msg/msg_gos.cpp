@@ -78,14 +78,12 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
     simdata->setNotUsed();
 
     XBT_DEBUG("Execution task '%s' finished in state %d", task->name, (int)comp_state);
-  }
-  catch (xbt_ex& e) {
+  } catch (simgrid::HostFailureException& e) {
+    status = MSG_HOST_FAILURE;
+  } catch (xbt_ex& e) {
     switch (e.category) {
     case cancel_error:
       status = MSG_TASK_CANCELED;
-      break;
-    case host_error:
-      status = MSG_HOST_FAILURE;
       break;
     case timeout_error:
       status = MSG_TIMEOUT;
@@ -280,10 +278,10 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
                       timeout, rate);
     XBT_DEBUG("Got task %s from %s", (*task)->name, mailbox->get_cname());
     (*task)->simdata->setNotUsed();
-  }
-  catch (xbt_ex& e) {
+  } catch (simgrid::HostFailureException& e) {
+    ret = MSG_HOST_FAILURE;
+  } catch (xbt_ex& e) {
     switch (e.category) {
-    case host_error:
     case cancel_error:
       ret = MSG_HOST_FAILURE;
       break;

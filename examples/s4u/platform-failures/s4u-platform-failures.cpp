@@ -104,17 +104,17 @@ static int worker(int argc, char* argv[])
         XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
         return -1;
       }
+    } catch (simgrid::HostFailureException& e) {
+      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
+      delete payload;
+      return -1;
     } catch (xbt_ex& e) {
       switch (e.category) {
-        case host_error:
-          XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-          delete payload;
-          return -1;
         case network_error:
           XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
           break;
         default:
-          xbt_die("Unexpected behavior");
+          xbt_die("Unexpected behavior. Category: %s", xbt_ex_catname(e.category));
       }
     }
   }
