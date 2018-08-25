@@ -30,7 +30,8 @@ xbt_ex::~xbt_ex() = default;
 
 void _xbt_throw(char* message, xbt_errcat_t errcat, int value, const char* file, int line, const char* func)
 {
-  xbt_ex e(simgrid::xbt::ThrowPoint(file, line, func), message);
+  xbt_ex e(simgrid::xbt::ThrowPoint(file, line, func, simgrid::xbt::backtrace(), xbt_procname(), xbt_getpid()),
+           message);
   xbt_free(message);
   e.category = errcat;
   e.value    = value;
@@ -84,24 +85,22 @@ const char* xbt_ex_catname(xbt_errcat_t cat)
 namespace simgrid {
 namespace xbt {
 
-ContextedException::~ContextedException() = default;
-
 void log_exception(e_xbt_log_priority_t prio, const char* context, std::exception const& exception)
 {
   try {
     auto name = simgrid::xbt::demangle(typeid(exception).name());
 
-    auto* with_context = dynamic_cast<const simgrid::xbt::ContextedException*>(&exception);
+    auto* with_context = dynamic_cast<const simgrid::Exception*>(&exception);
     if (with_context != nullptr)
-      XBT_LOG(prio, "%s %s by %s/%d: %s", context, name.get(), with_context->process_name().c_str(),
-              with_context->pid(), exception.what());
+      XBT_LOG(prio, "%s %s by %s/%d: %s", context, name.get(), with_context->throw_point().procname_.c_str(),
+              with_context->throw_point().pid_, exception.what());
     else
       XBT_LOG(prio, "%s %s: %s", context, name.get(), exception.what());
 
     // Do we have a backtrace?
     if (with_context != nullptr && not simgrid::config::get_value<bool>("exception/cutpath")) {
-      auto backtrace =
-          simgrid::xbt::resolve_backtrace(with_context->backtrace().data(), with_context->backtrace().size());
+      auto backtrace = simgrid::xbt::resolve_backtrace(with_context->throw_point().backtrace_.data(),
+                                                       with_context->throw_point().backtrace_.size());
       for (std::string const& s : backtrace)
         XBT_LOG(prio, "  -> %s", s.c_str());
     }

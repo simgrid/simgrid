@@ -28,70 +28,49 @@
 namespace simgrid {
 namespace xbt {
 
-/** The location of where an exception has been thrown
+/** Contextual information about an execution location (file:line:func and backtrace, procname, pid)
  *
- *  This is a tuple (__FILE__, __LINE__, __func__), created with @ref XBT_THROW_POINT.
+ *  Constitute the contextual information of where an exception was thrown
+ *
+ *  These tuples (__FILE__, __LINE__, __func__, backtrace, procname, pid)
+ *  are best created with @ref XBT_THROW_POINT.
  *
  *  @ingroup XBT_ex
  */
 class ThrowPoint {
 public:
   ThrowPoint() = default;
-  explicit ThrowPoint(const char* file, int line, const char* function) : file_(file), line_(line), function_(function)
+  explicit ThrowPoint(const char* file, int line, const char* function, Backtrace bt, std::string actor_name, int pid)
+      : file_(file), line_(line), function_(function), backtrace_(bt), procname_(actor_name), pid_(pid)
   {
   }
+
   const char* file_     = nullptr;
   int line_             = 0;
   const char* function_ = nullptr;
+  Backtrace backtrace_;
+  std::string procname_ = ""; /**< Name of the process who thrown this */
+  int pid_              = 0;  /**< PID of the process who thrown this */
 };
 
 /** Create a ThrowPoint with (__FILE__, __LINE__, __func__) */
-#define XBT_THROW_POINT ::simgrid::xbt::ThrowPoint(__FILE__, __LINE__, __func__)
-
-/** A base class for exceptions with context
- *
- *  This is a base class for exceptions which store additional contextual
- *  information: backtrace, throw point, simulated process name, PID, etc.
- */
-class XBT_PUBLIC ContextedException {
-public:
-  ContextedException() : backtrace_(simgrid::xbt::backtrace()), procname_(xbt_procname()), pid_(xbt_getpid()) {}
-  explicit ContextedException(Backtrace bt) : backtrace_(std::move(bt)), procname_(xbt_procname()), pid_(xbt_getpid())
-  {
-  }
-  explicit ContextedException(ThrowPoint throwpoint, Backtrace bt)
-      : backtrace_(std::move(bt)), procname_(xbt_procname()), pid_(xbt_getpid()), throwpoint_(throwpoint)
-  {
-  }
-  virtual ~ContextedException();
-  Backtrace const& backtrace() const { return backtrace_; }
-  int pid() const { return pid_; }
-  std::string const& process_name() const { return procname_; }
-  ThrowPoint& throw_point() { return throwpoint_; }
-
-  // deprecated
-  XBT_ATTRIB_DEPRECATED_v323("Please use WithContextException::process_name()") std::string const& processName() const
-  {
-    return process_name();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use WithContextException::throw_point()") ThrowPoint& throwPoint()
-  {
-    return throw_point();
-  }
-
-private:
-  Backtrace backtrace_;
-  std::string procname_; /**< Name of the process who thrown this */
-  int pid_;              /**< PID of the process who thrown this */
-  ThrowPoint throwpoint_;
-};
+#define XBT_THROW_POINT                                                                                                \
+  ::simgrid::xbt::ThrowPoint(__FILE__, __LINE__, __func__, simgrid::xbt::backtrace(), xbt_procname(), xbt_getpid())
 } // namespace xbt
 
 /** Ancestor class of all SimGrid exception */
 class Exception : public std::runtime_error {
 public:
-  Exception() : std::runtime_error("") {}
-  Exception(const char* message) : std::runtime_error(message) {}
+  Exception(simgrid::xbt::ThrowPoint throwpoint, const char* message)
+      : std::runtime_error(message), throwpoint_(throwpoint)
+  {
+  }
+
+  /** Return the information about where the exception was thrown */
+  xbt::ThrowPoint const& throw_point() const { return throwpoint_; }
+
+private:
+  xbt::ThrowPoint throwpoint_;
 };
 
 /** Exception raised when a timeout elapsed */
@@ -125,19 +104,14 @@ class canceled_error : public simgrid::Exception {
  *
  *  @ingroup XBT_ex_c
  */
-class XBT_PUBLIC xbt_ex : public simgrid::Exception, public simgrid::xbt::ContextedException {
+class XBT_PUBLIC xbt_ex : public simgrid::Exception {
 public:
-  xbt_ex() : simgrid::Exception() {}
-
   /**
    *
    * @param throwpoint Throw point (use XBT_THROW_POINT)
    * @param message    Exception message
    */
-  xbt_ex(simgrid::xbt::ThrowPoint throwpoint, const char* message)
-      : simgrid::Exception(message), simgrid::xbt::ContextedException(throwpoint, simgrid::xbt::backtrace())
-  {
-  }
+  xbt_ex(simgrid::xbt::ThrowPoint throwpoint, const char* message) : simgrid::Exception(throwpoint, message) {}
 
   ~xbt_ex(); // DO NOT define it here -- see ex.cpp for a rationale
 
