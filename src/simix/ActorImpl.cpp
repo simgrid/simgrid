@@ -241,6 +241,55 @@ smx_activity_t ActorImpl::sleep(double duration)
   return synchro;
 }
 
+void ActorImpl::throw_exception(std::exception_ptr e)
+{
+  exception = e;
+
+  if (suspended_)
+    resume();
+
+  /* cancel the blocking synchro if any */
+  if (waiting_synchro) {
+
+    simgrid::kernel::activity::ExecImplPtr exec =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(waiting_synchro);
+    if (exec != nullptr && exec->surf_action_)
+      exec->surf_action_->cancel();
+
+    simgrid::kernel::activity::CommImplPtr comm =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(waiting_synchro);
+    if (comm != nullptr) {
+      comms.remove(comm);
+      comm->cancel();
+    }
+
+    simgrid::kernel::activity::SleepImplPtr sleep =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(waiting_synchro);
+    if (sleep != nullptr) {
+      SIMIX_process_sleep_destroy(waiting_synchro);
+      if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), this) ==
+              end(simix_global->process_to_run) &&
+          this != SIMIX_process_self()) {
+        XBT_DEBUG("Inserting %s in the to_run list", get_cname());
+        simix_global->process_to_run.push_back(this);
+      }
+    }
+
+    simgrid::kernel::activity::RawImplPtr raw =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::RawImpl>(waiting_synchro);
+    if (raw != nullptr) {
+      SIMIX_synchro_stop_waiting(this, &simcall);
+    }
+
+    simgrid::kernel::activity::IoImplPtr io =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(waiting_synchro);
+    if (io != nullptr) {
+      delete io.get();
+    }
+  }
+  waiting_synchro = nullptr;
+}
+
 void create_maestro(simgrid::simix::ActorCode code)
 {
   smx_actor_t maestro = nullptr;
@@ -500,13 +549,8 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
   }
 }
 
-/** @brief Ask another process to raise the given exception
- *
- * @param process The process that should raise that exception
- * @param cat category of exception
- * @param value value associated to the exception
- * @param msg string information associated to the exception
- */
+/** @deprecated When this function gets removed, also remove the xbt_ex class, that is only there to help users to
+ * transition */
 void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const char *msg) {
   SMX_EXCEPTION(process, cat, value, msg);
 

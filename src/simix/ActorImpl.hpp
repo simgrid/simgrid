@@ -101,6 +101,8 @@ public:
   smx_activity_t sleep(double duration);
   void set_user_data(void* data) { userdata_ = data; }
   void* get_user_data() { return userdata_; }
+  /** Ask the actor to throw an exception right away */
+  void throw_exception(std::exception_ptr e);
 };
 
 class ProcessArg {
