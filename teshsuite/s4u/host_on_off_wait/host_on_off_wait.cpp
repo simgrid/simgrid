@@ -23,13 +23,8 @@ static void worker()
   XBT_INFO("Worker waiting");
   try {
     simgrid::s4u::this_actor::sleep_for(5);
-  } catch (xbt_ex& e) {
-    if (e.category == host_error) {
-      XBT_INFO("The host has died ... as expected.");
-    } else {
-      XBT_ERROR("An unexpected exception has been raised.");
-      throw;
-    }
+  } catch (simgrid::HostFailureException& e) {
+    XBT_INFO("The host has died ... as expected.");
   }
 }
 

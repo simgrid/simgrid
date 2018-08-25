@@ -58,13 +58,8 @@ static int commTX(int /*argc*/, char** /*argv*/)
   // We should wait a bit (if not the process will end before the communication, hence an exception on the other side).
   try {
     MSG_process_sleep(30);
-  } catch (xbt_ex& e) {
-    if (e.category == host_error) {
-      XBT_INFO("The host has died ... as expected.");
-    } else {
-      XBT_ERROR("An unexpected exception has been raised.");
-      throw;
-    }
+  } catch (simgrid::HostFailureException& e) {
+    XBT_INFO("The host has died ... as expected.");
   }
   XBT_INFO("  TX done");
   return 0;

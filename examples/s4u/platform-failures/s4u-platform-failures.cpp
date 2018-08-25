@@ -27,12 +27,11 @@ static int master(int argc, char* argv[])
       XBT_INFO("Send a message to %s", mailbox->get_cname());
       mailbox->put(payload, comm_size, 10.0);
       XBT_INFO("Send to %s completed", mailbox->get_cname());
+    } catch (simgrid::HostFailureException& e) {
+      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
+      return -1;
     } catch (xbt_ex& e) {
       switch (e.category) {
-        case host_error:
-          XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-          return -1;
-          break;
         case network_error:
           XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
           break;
@@ -53,12 +52,13 @@ static int master(int argc, char* argv[])
     double* payload = new double(-1.0);
     try {
       mailbox->put(payload, 0, 1.0);
+    } catch (simgrid::HostFailureException& e) {
+      delete payload;
+      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
+      return -1;
     } catch (xbt_ex& e) {
       delete payload;
       switch (e.category) {
-        case host_error:
-          XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-          break;
         case network_error:
           XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
           break;
@@ -99,13 +99,10 @@ static int worker(int argc, char* argv[])
         simgrid::s4u::this_actor::execute(comp_size);
         XBT_INFO("Execution complete.");
         delete payload;
-      } catch (xbt_ex& e) {
-        if (e.category == host_error) {
-          XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-          delete payload;
-          return -1;
-        } else
-          xbt_die("Unexpected behavior");
+      } catch (simgrid::HostFailureException& e) {
+        delete payload;
+        XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
+        return -1;
       }
     } catch (xbt_ex& e) {
       switch (e.category) {
