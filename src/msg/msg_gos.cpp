@@ -80,13 +80,12 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
     XBT_DEBUG("Execution task '%s' finished in state %d", task->name, (int)comp_state);
   } catch (simgrid::HostFailureException& e) {
     status = MSG_HOST_FAILURE;
+  } catch (simgrid::TimeoutError& e) {
+    status = MSG_TIMEOUT;
   } catch (xbt_ex& e) {
     switch (e.category) {
     case cancel_error:
       status = MSG_TASK_CANCELED;
-      break;
-    case timeout_error:
-      status = MSG_TIMEOUT;
       break;
     default:
       throw;
@@ -280,6 +279,8 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
     (*task)->simdata->setNotUsed();
   } catch (simgrid::HostFailureException& e) {
     ret = MSG_HOST_FAILURE;
+  } catch (simgrid::TimeoutError& e) {
+    ret = MSG_TIMEOUT;
   } catch (xbt_ex& e) {
     switch (e.category) {
     case cancel_error:
@@ -287,9 +288,6 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
       break;
     case network_error:
       ret = MSG_TRANSFER_FAILURE;
-      break;
-    case timeout_error:
-      ret = MSG_TIMEOUT;
       break;
     default:
       throw;
@@ -482,15 +480,14 @@ int MSG_comm_test(msg_comm_t comm)
       /* I am the receiver */
       (*comm->task_received)->simdata->setNotUsed();
     }
+  } catch (simgrid::TimeoutError& e) {
+    comm->status = MSG_TIMEOUT;
+    finished     = true;
   }
   catch (xbt_ex& e) {
     switch (e.category) {
       case network_error:
         comm->status = MSG_TRANSFER_FAILURE;
-        finished     = true;
-        break;
-      case timeout_error:
-        comm->status = MSG_TIMEOUT;
         finished     = true;
         break;
       default:
@@ -524,16 +521,15 @@ int MSG_comm_testany(xbt_dynar_t comms)
   msg_error_t status = MSG_OK;
   try {
     finished_index = simcall_comm_testany(s_comms.data(), s_comms.size());
+  } catch (simgrid::TimeoutError& e) {
+    finished_index = e.value;
+    status         = MSG_TIMEOUT;
   }
   catch (xbt_ex& e) {
     switch (e.category) {
       case network_error:
         finished_index = e.value;
         status = MSG_TRANSFER_FAILURE;
-        break;
-      case timeout_error:
-        finished_index = e.value;
-        status = MSG_TIMEOUT;
         break;
       default:
         throw;
@@ -583,14 +579,13 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
     }
 
     /* FIXME: these functions are not traceable */
+  } catch (simgrid::TimeoutError& e) {
+    comm->status = MSG_TIMEOUT;
   }
   catch (xbt_ex& e) {
     switch (e.category) {
     case network_error:
       comm->status = MSG_TRANSFER_FAILURE;
-      break;
-    case timeout_error:
-      comm->status = MSG_TIMEOUT;
       break;
     default:
       throw;
@@ -637,16 +632,15 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   msg_error_t status = MSG_OK;
   try {
     finished_index = simcall_comm_waitany(s_comms, -1);
+  } catch (simgrid::TimeoutError& e) {
+    finished_index = e.value;
+    status         = MSG_TIMEOUT;
   }
   catch(xbt_ex& e) {
     switch (e.category) {
       case network_error:
         finished_index = e.value;
         status = MSG_TRANSFER_FAILURE;
-        break;
-      case timeout_error:
-        finished_index = e.value;
-        status = MSG_TIMEOUT;
         break;
       default:
         throw;
@@ -796,6 +790,8 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
       simcall_set_category(comm, task->category);
     t_simdata->comm = boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(comm);
     simcall_comm_wait(comm, timeout);
+  } catch (simgrid::TimeoutError& e) {
+    ret = MSG_TIMEOUT;
   }
   catch (xbt_ex& e) {
     switch (e.category) {
@@ -804,9 +800,6 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
       break;
     case network_error:
       ret = MSG_TRANSFER_FAILURE;
-      break;
-    case timeout_error:
-      ret = MSG_TIMEOUT;
       break;
     default:
       throw;

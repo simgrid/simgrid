@@ -30,13 +30,13 @@ static int master(int argc, char* argv[])
     } catch (simgrid::HostFailureException& e) {
       XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
       return -1;
+    } catch (simgrid::TimeoutError& e) {
+      delete payload;
+      XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
     } catch (xbt_ex& e) {
       switch (e.category) {
         case network_error:
           XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
-          break;
-        case timeout_error:
-          XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
           break;
         default:
           xbt_die("Unexpected behavior");
@@ -56,14 +56,14 @@ static int master(int argc, char* argv[])
       delete payload;
       XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
       return -1;
+    } catch (simgrid::TimeoutError& e) {
+      delete payload;
+      XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
     } catch (xbt_ex& e) {
       delete payload;
       switch (e.category) {
         case network_error:
           XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
-          break;
-        case timeout_error:
-          XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
           break;
         default:
           xbt_die("Unexpected behavior");

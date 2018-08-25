@@ -118,11 +118,9 @@ void Node::notifyAndQuit()
   XBT_DEBUG("Sending a 'PREDECESSOR_LEAVING' to my successor %d", fingers_[0]);
   try {
     simgrid::s4u::Mailbox::by_name(std::to_string(fingers_[0]))->put(pred_msg, 10, timeout);
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Timeout expired when sending a 'PREDECESSOR_LEAVING' to my successor %d", fingers_[0]);
-      delete pred_msg;
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Timeout expired when sending a 'PREDECESSOR_LEAVING' to my successor %d", fingers_[0]);
+    delete pred_msg;
   }
 
   if (pred_id_ != -1 && pred_id_ != id_) {
@@ -134,11 +132,9 @@ void Node::notifyAndQuit()
 
     try {
       simgrid::s4u::Mailbox::by_name(std::to_string(pred_id_))->put(succ_msg, 10, timeout);
-    } catch (xbt_ex& e) {
-      if (e.category == timeout_error) {
-        XBT_DEBUG("Timeout expired when sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
-        delete succ_msg;
-      }
+    } catch (simgrid::TimeoutError& e) {
+      XBT_DEBUG("Timeout expired when sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
+      delete succ_msg;
     }
   }
 }
@@ -226,13 +222,12 @@ void Node::checkPredecessor()
   XBT_DEBUG("Sending a 'Predecessor Alive' request to my predecessor %d", pred_id_);
   try {
     mailbox->put(message, 10, timeout);
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Failed to send the 'Predecessor Alive' request to %d", pred_id_);
-      delete message;
-      return;
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Failed to send the 'Predecessor Alive' request to %d", pred_id_);
+    delete message;
+    return;
   }
+
   // receive the answer
   XBT_DEBUG("Sent 'Predecessor Alive' request to %d, waiting for the answer on my mailbox '%s'", pred_id_,
             message->answer_to->get_cname());
@@ -242,11 +237,9 @@ void Node::checkPredecessor()
     comm->wait_for(timeout);
     XBT_DEBUG("Received the answer to my 'Predecessor Alive': my predecessor %d is alive", pred_id_);
     delete static_cast<ChordMessage*>(data);
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Failed to receive the answer to my 'Predecessor Alive' request");
-      pred_id_ = -1;
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Failed to receive the answer to my 'Predecessor Alive' request");
+    pred_id_ = -1;
   }
 }
 
@@ -270,12 +263,10 @@ int Node::remoteGetPredecessor(int ask_to)
   XBT_DEBUG("Sending a 'Get Predecessor' request to %d", ask_to);
   try {
     mailbox->put(message, 10, timeout);
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Failed to send the 'Get Predecessor' request to %d", ask_to);
-      delete message;
-      return predecessor_id;
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Failed to send the 'Get Predecessor' request to %d", ask_to);
+    delete message;
+    return predecessor_id;
   }
 
   // receive the answer
@@ -290,11 +281,9 @@ int Node::remoteGetPredecessor(int ask_to)
               answer->answer_id);
     predecessor_id = answer->answer_id;
     delete answer;
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Failed to receive the answer to my 'Get Predecessor' request");
-      delete static_cast<ChordMessage*>(data);
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Failed to receive the answer to my 'Get Predecessor' request");
+    delete static_cast<ChordMessage*>(data);
   }
 
   return predecessor_id;
@@ -346,12 +335,10 @@ int Node::remoteFindSuccessor(int ask_to, int id)
   XBT_DEBUG("Sending a 'Find Successor' request to %d for id %d", ask_to, id);
   try {
     mailbox->put(message, 10, timeout);
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Failed to send the 'Find Successor' request to %d for id %d", ask_to, id_);
-      delete message;
-      return successor;
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Failed to send the 'Find Successor' request to %d for id %d", ask_to, id_);
+    delete message;
+    return successor;
   }
   // receive the answer
   XBT_DEBUG("Sent a 'Find Successor' request to %d for key %d, waiting for the answer", ask_to, id);
@@ -364,12 +351,11 @@ int Node::remoteFindSuccessor(int ask_to, int id)
               answer->request_id, id_, answer->answer_id);
     successor = answer->answer_id;
     delete answer;
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Failed to receive the answer to my 'Find Successor' request");
-      delete static_cast<ChordMessage*>(data);
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Failed to receive the answer to my 'Find Successor' request");
+    delete static_cast<ChordMessage*>(data);
   }
+
   return successor;
 }
 
