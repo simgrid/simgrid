@@ -615,9 +615,6 @@ void SIMIX_comm_finish(smx_activity_t synchro)
           xbt_die("Unexpected xbt_ex(%s). Please enhance this code", xbt_ex_catname(e.category));
         }
       }
-      catch(...) {
-        // Nothing to do
-      }
     }
 
     if (simcall->issuer->host_->is_off()) {
