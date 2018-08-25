@@ -584,26 +584,36 @@ void SIMIX_comm_finish(smx_activity_t synchro)
     }
 
     /* if there is an exception during a waitany or a testany, indicate the position of the failed communication */
-    if (simcall->issuer->exception) {
+    if (simcall->issuer->exception &&
+        (simcall->call == SIMCALL_COMM_WAITANY || simcall->call == SIMCALL_COMM_TESTANY)) {
+      // First retrieve the rank of our failing synchro
+      int rank;
+      if (simcall->call == SIMCALL_COMM_WAITANY) {
+        rank = xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro);
+      } else if (simcall->call == SIMCALL_COMM_TESTANY) {
+        rank         = -1;
+        auto* comms  = simcall_comm_testany__get__comms(simcall);
+        auto count   = simcall_comm_testany__get__count(simcall);
+        auto element = std::find(comms, comms + count, synchro);
+        if (element == comms + count)
+          rank = -1;
+        else
+          rank = element - comms;
+      }
+
       // In order to modify the exception we have to rethrow it:
       try {
         std::rethrow_exception(simcall->issuer->exception);
-      }
-      catch(xbt_ex& e) {
-        if (simcall->call == SIMCALL_COMM_WAITANY) {
-          e.value = xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro);
-        }
-        else if (simcall->call == SIMCALL_COMM_TESTANY) {
-          e.value = -1;
-          auto* comms  = simcall_comm_testany__get__comms(simcall);
-          auto count = simcall_comm_testany__get__count(simcall);
-          auto element = std::find(comms, comms + count, synchro);
-          if (element == comms + count)
-            e.value = -1;
-          else
-            e.value = element - comms;
-        }
+      } catch (simgrid::TimeoutError& e) {
+        e.value                    = rank;
         simcall->issuer->exception = std::make_exception_ptr(e);
+      } catch (xbt_ex& e) {
+        if (e.category == network_error || e.category == cancel_error) {
+          e.value                    = rank;
+          simcall->issuer->exception = std::make_exception_ptr(e);
+        } else {
+          xbt_die("Unexpected xbt_ex(%s). Please enhance this code", xbt_ex_catname(e.category));
+        }
       }
       catch(...) {
         // Nothing to do
