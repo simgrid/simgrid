@@ -25,7 +25,9 @@ static void worker()
     simgrid::s4u::this_actor::sleep_for(5);
   } catch (simgrid::HostFailureException& e) {
     XBT_INFO("The host has died ... as expected.");
+    return;
   }
+  XBT_INFO("The host did not die! That's a bug!");
 }
 
 int main(int argc, char* argv[])
