@@ -80,7 +80,8 @@ void Context::stop()
   this->process_->suspended_ = 0;
 
   this->iwannadie = false;
-  simgrid::simix::simcall([this] { SIMIX_process_cleanup(this->process_); });
+  if (not this->process_->finished_) // It seems that we sometimes try to destroy an actor twice
+    simgrid::simix::simcall([this] { SIMIX_process_cleanup(this->process_); });
   this->iwannadie = true;
 }
 
