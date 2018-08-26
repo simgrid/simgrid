@@ -11,19 +11,11 @@
  *  Defines all possible exception that could occur in a SimGrid library.
  */
 
-#include <exception>
+#include <xbt/backtrace.hpp>
+#include <xbt/ex.h>
+
 #include <stdexcept>
 #include <string>
-#include <type_traits>
-#include <vector>
-
-#include <xbt/backtrace.h>
-#include <xbt/backtrace.hpp>
-#include <xbt/base.h>
-#include <xbt/ex.h>
-#include <xbt/log.h>
-#include <xbt/misc.h>  // xbt_procname
-#include <xbt/virtu.h> // xbt_getpid
 
 namespace simgrid {
 namespace xbt {
@@ -133,6 +125,7 @@ class NetworkFailureException : public xbt_ex {
 /** Exception raised when something got canceled before completion */
 class CancelException : public xbt_ex {
 };
+
 } // namespace simgrid
 
 #endif

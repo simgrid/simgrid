@@ -70,23 +70,17 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void _xbt_throw(char* message, xbt_errcat_t errca
  */
 #define THROWF(c, v, ...)       _xbt_throw(bprintf(__VA_ARGS__), (xbt_errcat_t) c, v, __FILE__, __LINE__, __func__)
 
+XBT_ATTRIB_NORETURN void xbt_throw_impossible(const char* file, int line, const char* func);
 /** Throw an exception because something impossible happened
  *  @ingroup XBT_ex_c
  */
-#define THROW_IMPOSSIBLE \
-  THROWF(unknown_error, 0, "The Impossible Did Happen (yet again)")
+#define THROW_IMPOSSIBLE xbt_throw_impossible(__FILE__, __LINE__, __func__)
 
 /** Throw an exception because something unimplemented stuff has been attempted
  *  @ingroup XBT_ex_c
  */
-#define THROW_UNIMPLEMENTED \
-  THROWF(unknown_error, 0, "Function %s unimplemented",__func__)
-
-/** Throw an exception because some dead code was reached
- *  @ingroup XBT_ex_c
- */
-#define THROW_DEADCODE \
-  THROWF(unknown_error, 0, "Function %s was supposed to be DEADCODE, but it's not",__func__)
+XBT_ATTRIB_NORETURN void xbt_throw_unimplemented(const char* file, int line, const char* func);
+#define THROW_UNIMPLEMENTED xbt_throw_unimplemented(__FILE__, __LINE__, __func__)
 
 /** Die because something impossible happened
  *  @ingroup XBT_ex_c

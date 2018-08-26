@@ -3,21 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstdlib>
-
-#include <atomic>
-#include <exception>
-#include <string>
-#include <typeinfo>
-#include <vector>
-#include <memory>
-#include <mutex>
-
 #include "simgrid/Exception.hpp"
-#include <xbt/backtrace.hpp>
 #include <xbt/config.hpp>
-#include <xbt/log.h>
 #include <xbt/log.hpp>
+
+#include <mutex>
+#include <sstream>
 
 XBT_LOG_EXTERNAL_CATEGORY(xbt);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_exception, xbt, "Exceptions");
@@ -194,4 +185,17 @@ void installExceptionHandler()
 }
 
 } // namespace xbt
+} // namespace simgrid
+
+void xbt_throw_impossible(const char* file, int line, const char* func)
+{
+  std::stringstream ss;
+  ss << file << ":" << line << ":" << func << ": The Impossible Did Happen (yet again). Please report this bug.";
+  throw std::runtime_error(ss.str());
+}
+void xbt_throw_unimplemented(const char* file, int line, const char* func)
+{
+  std::stringstream ss;
+  ss << file << ":" << line << ":" << func << ": Feature unimplemented yet. Please report this bug.";
+  throw std::runtime_error(ss.str());
 }
