@@ -587,7 +587,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
     if (simcall->issuer->exception &&
         (simcall->call == SIMCALL_COMM_WAITANY || simcall->call == SIMCALL_COMM_TESTANY)) {
       // First retrieve the rank of our failing synchro
-      int rank;
+      int rank = -1;
       if (simcall->call == SIMCALL_COMM_WAITANY) {
         rank = xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro);
       } else if (simcall->call == SIMCALL_COMM_TESTANY) {
