@@ -14,6 +14,7 @@
 #include <xbt/backtrace.hpp>
 #include <xbt/ex.h>
 
+#include <atomic>
 #include <stdexcept>
 #include <string>
 
