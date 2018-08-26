@@ -498,10 +498,12 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
   process->suspended_          = false;
   process->exception = nullptr;
 
+  if (process->host_->is_off())
+    process->throw_exception(std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed")));
+
   /* destroy the blocking synchro if any */
   if (process->waiting_synchro != nullptr) {
-    if (process->host_->is_off())
-      process->throw_exception(std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed")));
+
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(process->waiting_synchro);
     simgrid::kernel::activity::CommImplPtr comm =
@@ -536,7 +538,9 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
     } else if (io != nullptr) {
       delete io.get();
     } else {
-      xbt_die("Unknown type of activity");
+      simgrid::kernel::activity::ActivityImplPtr activity = process->waiting_synchro;
+      xbt_die("Activity %s is of unknown type %s", activity->name_.c_str(),
+              simgrid::xbt::demangle(typeid(activity).name()).get());
     }
 
     process->waiting_synchro = nullptr;
