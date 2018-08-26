@@ -37,8 +37,8 @@ void simgrid::kernel::activity::SleepImpl::post()
       /* If the host running the synchro failed, notice it. This way, the asking
        * actor can be killed if it runs on that host itself */
       result = SIMIX_SRC_HOST_FAILURE;
-      simcall->issuer->exception =
-          std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
+      simcall->issuer->throw_exception(
+          std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed")));
     }
 
     switch (surf_sleep->get_state()) {
