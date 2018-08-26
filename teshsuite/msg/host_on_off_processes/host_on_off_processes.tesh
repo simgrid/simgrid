@@ -8,7 +8,8 @@ $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 1 --log=no_loc
 > [Jupiter:process_daemon:(2) 2.000000] [msg_test/INFO]   Execute daemon
 > [Tremblay:test_launcher:(1) 3.000000] [msg_test/INFO]   Turn off Jupiter
 > [Jupiter:process_daemon:(2) 3.000000] [msg_test/INFO]   Execute daemon
-> [Tremblay:test_launcher:(1) 13.000000] [msg_test/INFO] Test 1 seems ok, cool !(#Processes: 1, it should be 1; #tasks: 3)
+> [Jupiter:process_daemon:(2) 3.000000] [msg_test/INFO] Host as died as expected, do nothing else
+> [Tremblay:test_launcher:(1) 13.000000] [msg_test/INFO] Test 1 seems ok, cool !(#Processes: 1, it should be 1; #tasks: 4)
 > [Tremblay:test_launcher:(1) 13.000000] [msg_test/INFO]   Test done. See you!
 > [13.000000] [msg_test/INFO] Simulation time 13
 
@@ -39,6 +40,7 @@ $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 3 --log=no_loc
 > [Tremblay:test_launcher:(1) 100.000000] [msg_test/INFO]   Turn off
 > [Jupiter:process_sleep:(2) 100.000000] [msg_test/INFO]   I'm alive but I should sleep
 > [Tremblay:test_launcher:(1) 100.000000] [msg_test/INFO]   sleep for 10 seconds
+> [Jupiter:process_sleep:(2) 100.000000] [msg_test/INFO] Host as died as expected, do nothing else
 > [Tremblay:test_launcher:(1) 10100.000000] [msg_test/INFO] number of Process : 1 it should be 1 (i.e. the Test one))
 > [Tremblay:test_launcher:(1) 10100.000000] [msg_test/INFO]   Test done. See you!
 > [10100.000000] [msg_test/INFO] Simulation time 10100

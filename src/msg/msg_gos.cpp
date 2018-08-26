@@ -114,8 +114,9 @@ msg_error_t MSG_process_sleep(double nb_sec)
 
   try {
     simgrid::s4u::this_actor::sleep_for(nb_sec);
-  }
-  catch(xbt_ex& e) {
+  } catch (simgrid::HostFailureException& e) {
+    status = MSG_HOST_FAILURE;
+  } catch (xbt_ex& e) {
     if (e.category == cancel_error) {
       XBT_DEBUG("According to the JAVA API, a sleep call should only deal with HostFailureException, I'm lost.");
       // adsein: MSG_TASK_CANCELED is assigned when someone kills the process that made the sleep, this is not
