@@ -231,6 +231,7 @@ which will iterate over all implemented versions and output the best
  - ompi_tree: recursive doubling type algorithm, with tree structure
  - ompi_doublering: double ring algorithm
  - mvapich2_pair: pairwise algorithm
+ - mpich_smp: barrier intra-node, then inter-node
 
 #### MPI_Scatter
 
