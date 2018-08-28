@@ -126,8 +126,8 @@ of the targeted MPI implementations.
 You can switch the automatic selector through the
 \c smpi/coll-selector configuration item. Possible values:
 
- - <b>ompi</b>: default selection logic of OpenMPI (version 1.7)
- - <b>mpich</b>: default selection logic of MPICH (version 3.0.4)
+ - <b>ompi</b>: default selection logic of OpenMPI (version 3.1.2)
+ - <b>mpich</b>: default selection logic of MPICH (version 3.3b)
  - <b>mvapich2</b>: selection logic of MVAPICH2 (version 1.9) tuned
    on the Stampede cluster   
  - <b>impi</b>: preliminary version of an Intel MPI selector (version
