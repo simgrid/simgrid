@@ -96,7 +96,7 @@ int Coll_alltoallv_ompi::alltoallv(void *sbuf, int *scounts, int *sdisps,
                                               )
 {
     /* For starters, just keep the original algorithm. */
-    return Coll_alltoallv_ompi_basic_linear::alltoallv(sbuf, scounts, sdisps, sdtype,
+    return Coll_alltoallv_ring::alltoallv(sbuf, scounts, sdisps, sdtype,
                                                         rbuf, rcounts, rdisps,rdtype,
                                                         comm);
 }
@@ -491,10 +491,7 @@ int Coll_allgatherv_ompi::allgatherv(void *sbuf, int scount,
 
     /* Decision based on allgather decision.   */
     if (total_dsize < 50000) {
-/*        return Coll_allgatherv_intra_bruck::allgatherv(sbuf, scount, sdtype,
-                                                      rbuf, rcounts, rdispls, rdtype,
-                                                      comm, module);*/
-    return Coll_allgatherv_ring::allgatherv(sbuf, scount, sdtype,
+        return Coll_allgatherv_ompi_bruck::allgatherv(sbuf, scount, sdtype,
                                                       rbuf, rcounts, rdispls, rdtype,
                                                       comm);
 
