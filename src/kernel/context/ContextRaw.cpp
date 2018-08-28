@@ -6,6 +6,7 @@
 #include "ContextRaw.hpp"
 #include "context_private.hpp"
 #include "mc/mc.h"
+#include "simgrid/Exception.hpp"
 #include "src/simix/smx_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
@@ -261,10 +262,13 @@ void RawContext::wrapper(void* arg)
   ASAN_FINISH_SWITCH(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
   try {
     (*context)();
-    context->Context::stop();
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
+  } catch (simgrid::HostFailureException const&) {
+    XBT_DEBUG("Caught an HostFailureException");
   }
+  context->Context::stop();
+
   ASAN_ONLY(context->asan_stop_ = true);
   context->suspend();
 }

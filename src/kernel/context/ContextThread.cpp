@@ -3,16 +3,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <utility>
-#include <functional>
+#include "src/kernel/context/ContextThread.hpp"
 
+#include "simgrid/Exception.hpp"
 #include "src/internal_config.h" /* loads context system definitions */
 #include "src/simix/smx_private.hpp"
 #include "src/xbt_modinter.h" /* prototype of os thread module's init/exit in XBT */
 #include "xbt/function_types.h"
 #include "xbt/xbt_os_thread.h"
 
-#include "src/kernel/context/ContextThread.hpp"
+#include <functional>
+#include <utility>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
@@ -120,7 +121,11 @@ void *ThreadContext::wrapper(void *param)
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
     xbt_assert(not context->is_maestro(), "I'm not supposed to be maestro here.");
+  } catch (simgrid::HostFailureException const&) {
+    XBT_DEBUG("Caught an HostFailureException");
   }
+  if (not context->is_maestro()) // really?
+    context->Context::stop();
 
   // Signal to the caller (normally the maestro) that we have finished:
   context->yield();

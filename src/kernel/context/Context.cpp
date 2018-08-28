@@ -8,6 +8,8 @@
 #include "src/kernel/context/Context.hpp"
 #include "src/simix/smx_private.hpp"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
+
 /**
  * @brief creates a new context for a user level process
  * @param code a main function
@@ -80,8 +82,7 @@ void Context::stop()
   this->process_->suspended_ = 0;
 
   this->iwannadie = false;
-  if (not this->process_->finished_) // It seems that we sometimes try to destroy an actor twice
-    simgrid::simix::simcall([this] { SIMIX_process_cleanup(this->process_); });
+  simgrid::simix::simcall([this] { SIMIX_process_cleanup(this->process_); });
   this->iwannadie = true;
 }
 

@@ -1,5 +1,4 @@
-/* Copyright (c) 2009-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,8 +8,9 @@
 #ifndef SIMGRID_SIMIX_THREAD_CONTEXT_HPP
 #define SIMGRID_SIMIX_THREAD_CONTEXT_HPP
 
-#include <simgrid/simix.hpp>
-
+#include "simgrid/simix.hpp"
+#include "src/kernel/context/Context.hpp"
+#include "xbt/xbt_os_thread.h"
 
 namespace simgrid {
 namespace kernel {
