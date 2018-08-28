@@ -173,7 +173,7 @@ int Coll_alltoall_mpich::alltoall( void *sbuf, int scount,
                                                            rbuf, rcount, rdtype,
                                                            comm);
     }else if (communicator_size%2){
-        return Coll_alltoall_ring::alltoall(sbuf, scount, sdtype,
+        return Coll_alltoall_pair::alltoall(sbuf, scount, sdtype,
                                                            rbuf, rcount, rdtype,
                                                            comm);
     }
