@@ -398,6 +398,7 @@ COLL_APPLY(action, COLL_BARRIER_SIG, ompi_tree)  COLL_sep \
 COLL_APPLY(action, COLL_BARRIER_SIG, ompi_bruck)  COLL_sep \
 COLL_APPLY(action, COLL_BARRIER_SIG, ompi_recursivedoubling) COLL_sep \
 COLL_APPLY(action, COLL_BARRIER_SIG, ompi_doublering) COLL_sep \
+COLL_APPLY(action, COLL_BARRIER_SIG, mpich_smp)   COLL_sep \
 COLL_APPLY(action, COLL_BARRIER_SIG, mpich)   COLL_sep \
 COLL_APPLY(action, COLL_BARRIER_SIG, mvapich2_pair)   COLL_sep \
 COLL_APPLY(action, COLL_BARRIER_SIG, mvapich2)   COLL_sep \

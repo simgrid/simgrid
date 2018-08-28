@@ -276,9 +276,9 @@ int Coll_reduce_default::reduce(void *sendbuf, void *recvbuf, int count, MPI_Dat
 int Coll_allreduce_default::allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   int ret;
-  ret = Colls::reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
+  ret = Coll_reduce_default::reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
   if(ret==MPI_SUCCESS)
-    ret = Colls::bcast(recvbuf, count, datatype, 0, comm);
+    ret = Coll_bcast_default::bcast(recvbuf, count, datatype, 0, comm);
   return ret;
 }
 
