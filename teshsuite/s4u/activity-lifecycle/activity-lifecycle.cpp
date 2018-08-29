@@ -35,7 +35,7 @@ static void run_test(const char* test_name, std::function<void()> test)
     std::vector<simgrid::s4u::ActorPtr> all_actors = all_hosts[i]->get_all_actors();
     unsigned int expected_count = (i == 0) ? 1 : 0; // host[0] contains main_dispatcher, all other are empty
     if (all_actors.size() != expected_count) {
-      XBT_CRITICAL("Host %s contains %lu actors but %u are expected (i=%u). Existing actors: ",
+      XBT_CRITICAL("Host %s contains %zu actors but %u are expected (i=%u). Existing actors: ",
                    all_hosts[i]->get_cname(), all_actors.size(), expected_count, i);
       for (auto act : all_actors)
         XBT_CRITICAL(" - %s", act->get_cname());
