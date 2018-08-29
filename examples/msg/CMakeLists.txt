@@ -58,7 +58,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml        PARENT_SCOPE)
 
 foreach(x app-masterworker cloud-masterworker
-          dht-pastry dht-kademlia platform-failures
+          dht-pastry dht-kademlia # FIXME: platform-failures is disabled
           energy-vm
           process-create 
           synchro-semaphore)
