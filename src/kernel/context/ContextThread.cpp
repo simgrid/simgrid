@@ -121,7 +121,7 @@ void *ThreadContext::wrapper(void *param)
     xbt_assert(not context->is_maestro(), "I'm not supposed to be maestro here.");
   } catch (simgrid::Exception const& e) {
     XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
-    throw e;
+    throw;
   }
   context->Context::stop();
 
