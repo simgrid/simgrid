@@ -159,7 +159,7 @@ You can also use :cpp:func:`s4u::Activity::wait() <simgrid::s4u::Activity::wait>
 to block until the completion of the activity. To wait at most for a given period,
 use  :cpp:func:`s4u::Activity::wait_for() <simgrid::s4u::Activity::wait_for>`.
 Finally, to wait at most until a specified time limit, use
-:cpp:func:`s4u::Activity::wait_for() <simgrid::s4u::Activity::wait_until>`.
+:cpp:func:`s4u::Activity::wait_until() <simgrid::s4u::Activity::wait_until>`.
 
 .. todo::
 
