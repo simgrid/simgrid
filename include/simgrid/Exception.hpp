@@ -121,6 +121,11 @@ public:
 
 /** Exception raised when a communication fails because of the network */
 class NetworkFailureException : public xbt_ex {
+public:
+  NetworkFailureException(simgrid::xbt::ThrowPoint throwpoint, std::string message) : xbt_ex(throwpoint, message)
+  {
+    category = network_error;
+  }
 };
 
 /** Exception raised when something got canceled before completion */

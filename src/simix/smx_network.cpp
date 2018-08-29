@@ -545,14 +545,16 @@ void SIMIX_comm_finish(smx_activity_t synchro)
           if (simcall->issuer == comm->src_proc)
             simcall->issuer->context_->iwannadie = 1;
           else
-            SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
+            simcall->issuer->exception =
+                std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
           break;
 
         case SIMIX_DST_HOST_FAILURE:
           if (simcall->issuer == comm->dst_proc)
             simcall->issuer->context_->iwannadie = 1;
           else
-            SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
+            simcall->issuer->exception =
+                std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
           break;
 
         case SIMIX_LINK_FAILURE:
@@ -568,7 +570,8 @@ void SIMIX_comm_finish(smx_activity_t synchro)
           } else {
             XBT_DEBUG("I'm neither source nor dest");
           }
-          SMX_EXCEPTION(simcall->issuer, network_error, 0, "Link failure");
+          simcall->issuer->throw_exception(
+              std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Link failure")));
           break;
 
         case SIMIX_CANCELED:
@@ -607,8 +610,11 @@ void SIMIX_comm_finish(smx_activity_t synchro)
       } catch (simgrid::TimeoutError& e) {
         e.value                    = rank;
         simcall->issuer->exception = std::make_exception_ptr(e);
+      } catch (simgrid::NetworkFailureException& e) {
+        e.value                    = rank;
+        simcall->issuer->exception = std::make_exception_ptr(e);
       } catch (xbt_ex& e) {
-        if (e.category == network_error || e.category == cancel_error) {
+        if (e.category == cancel_error) {
           e.value                    = rank;
           simcall->issuer->exception = std::make_exception_ptr(e);
         } else {
