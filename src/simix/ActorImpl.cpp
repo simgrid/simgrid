@@ -101,7 +101,8 @@ void SIMIX_process_cleanup(smx_actor_t process)
     comm->cancel();
   }
 
-  XBT_DEBUG("%p should not be run anymore",process);
+  XBT_DEBUG("%s@%s(%ld) should not run anymore", process->get_cname(), process->iface()->get_host()->get_cname(),
+            process->pid_);
   simix_global->process_list.erase(process->pid_);
   if (process->host_ && process->host_process_list_hook.is_linked())
     simgrid::xbt::intrusive_erase(process->host_->pimpl_->process_list_, *process);
@@ -758,6 +759,7 @@ void SIMIX_process_yield(smx_actor_t self)
 
     XBT_DEBUG("Process %s@%s is dead", self->get_cname(), self->host_->get_cname());
     self->context_->stop();
+    xbt_die("I should be dead by now.");
   }
 
   if (self->suspended_) {
