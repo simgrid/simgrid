@@ -1,2 +1,2 @@
-! output ignore
+! output display
 $ ./activity-lifecycle testing_platform.xml
