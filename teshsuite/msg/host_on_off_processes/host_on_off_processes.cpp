@@ -39,20 +39,6 @@ static int process_daemon(int /*argc*/, char** /*argv*/)
   return 0;
 }
 
-static int process_sleep(int /*argc*/, char** /*argv*/)
-{
-  for (;;) {
-    XBT_INFO("  I'm alive but I should sleep");
-    int res = MSG_process_sleep(10);
-    if (res == MSG_HOST_FAILURE) {
-      XBT_INFO("Host as died as expected, do nothing else");
-      return 0;
-    }
-  }
-  XBT_INFO("  I'm done. See you!");
-  return 0;
-}
-
 static int commTX(int /*argc*/, char** /*argv*/)
 {
   const char* mailbox = "comm";
@@ -138,17 +124,7 @@ static int test_launcher(int /*argc*/, char** /*argv*/)
   test = 3;
   // Create a process running sucessive sleeps on a host and turn the host off during the execution of the process.
   if (xbt_dynar_search_or_negative(tests, &test) != -1) {
-    XBT_INFO("Test 3:");
-    MSG_host_on(jupiter);
-    argvF    = xbt_new(char*, 2);
-    argvF[0] = xbt_strdup("process_sleep");
-    MSG_process_create_with_arguments("process_sleep", process_sleep, NULL, jupiter, 1, argvF);
-    MSG_process_sleep(100);
-    XBT_INFO("  Turn off");
-    MSG_host_off(jupiter);
-    XBT_INFO("  sleep for 10 seconds");
-    MSG_process_sleep(10000);
-    XBT_INFO("number of Process : %d it should be 1 (i.e. the Test one))", MSG_process_get_number());
+    xbt_die("Test 3 is superseeded by activity-lifecycle");
   }
 
   test = 4;
