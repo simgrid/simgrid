@@ -2,7 +2,7 @@ foreach(x actor actor-autorestart actor-migration
         activity-lifecycle
         comm-pt2pt
         cloud-interrupt-migration
-        concurrent_rw storage_client_server host_on_off_wait listen_async pid )
+        concurrent_rw storage_client_server listen_async pid )
   add_executable       (${x}  ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -23,7 +23,7 @@ endforeach()
 set(tesh_files    ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-autorestart/actor-autorestart.tesh)
 
 
-foreach(x host_on_off_wait listen_async pid storage_client_server)
+foreach(x listen_async pid storage_client_server)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   ADD_TESH(tesh-s4u-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
 endforeach()
