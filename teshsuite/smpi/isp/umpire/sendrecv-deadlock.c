@@ -36,7 +36,7 @@ main (int argc, char **argv)
     {
       if (rank == 0)
 	{
-	  memset (buf0, 0, buf_size);
+	  memset (buf0, 0, buf_size*sizeof(int));
 
 	  MPI_Sendrecv (buf0, buf_size, MPI_INT, 1, 0,
 			buf1, buf_size, MPI_INT, 1, 0,
@@ -46,7 +46,7 @@ main (int argc, char **argv)
 	}
       else if (rank == 1)
 	{
-	  memset (buf1, 1, buf_size);
+	  memset (buf1, 1, buf_size*sizeof(int));
 
 	  MPI_Recv (buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
 
@@ -56,7 +56,7 @@ main (int argc, char **argv)
 	}
       else if (rank == 2)
 	{
-	  memset (buf1, 1, buf_size);
+	  memset (buf1, 1, buf_size*sizeof(int));
 
 	  MPI_Send (buf1, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
 
