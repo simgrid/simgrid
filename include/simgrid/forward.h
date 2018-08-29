@@ -176,7 +176,6 @@ typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 typedef simgrid::kernel::activity::ConditionVariableImpl* smx_cond_t;
 typedef simgrid::kernel::activity::MutexImpl* smx_mutex_t;
 typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
-typedef simgrid::surf::StorageImpl* surf_storage_t;
 
 #else
 
@@ -195,7 +194,6 @@ typedef struct s_smx_actor* smx_actor_t;
 typedef struct s_smx_cond_t* smx_cond_t;
 typedef struct s_smx_mutex* smx_mutex_t;
 typedef struct s_smx_mailbox* smx_mailbox_t;
-typedef struct s_surf_storage* surf_storage_t;
 
 #endif
 

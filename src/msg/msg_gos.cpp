@@ -83,13 +83,10 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
   } catch (simgrid::TimeoutError& e) {
     status = MSG_TIMEOUT;
   } catch (xbt_ex& e) {
-    switch (e.category) {
-    case cancel_error:
+    if (e.category == cancel_error)
       status = MSG_TASK_CANCELED;
-      break;
-    default:
+    else
       throw;
-    }
   }
 
   /* action ended, set comm and compute = nullptr, the actions is already destroyed in the main function */
@@ -486,13 +483,11 @@ int MSG_comm_test(msg_comm_t comm)
     finished     = true;
   }
   catch (xbt_ex& e) {
-    switch (e.category) {
-      case network_error:
-        comm->status = MSG_TRANSFER_FAILURE;
-        finished     = true;
-        break;
-      default:
-        throw;
+    if (e.category == network_error) {
+      comm->status = MSG_TRANSFER_FAILURE;
+      finished     = true;
+    } else {
+      throw;
     }
   }
 
@@ -584,13 +579,10 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
     comm->status = MSG_TIMEOUT;
   }
   catch (xbt_ex& e) {
-    switch (e.category) {
-    case network_error:
+    if (e.category == network_error)
       comm->status = MSG_TRANSFER_FAILURE;
-      break;
-    default:
+    else
       throw;
-    }
   }
 
   return comm->status;
@@ -638,13 +630,11 @@ int MSG_comm_waitany(xbt_dynar_t comms)
     status         = MSG_TIMEOUT;
   }
   catch(xbt_ex& e) {
-    switch (e.category) {
-      case network_error:
-        finished_index = e.value;
-        status = MSG_TRANSFER_FAILURE;
-        break;
-      default:
-        throw;
+    if (e.category == network_error) {
+      finished_index = e.value;
+      status         = MSG_TRANSFER_FAILURE;
+    } else {
+      throw;
     }
   }
 

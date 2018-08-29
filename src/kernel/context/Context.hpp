@@ -63,7 +63,8 @@ public:
      */
   public:
     StopRequest() = default;
-    StopRequest(std::string msg) : msg_(msg) { }
+    explicit StopRequest(std::string msg) : msg_(msg) {}
+
   private:
     std::string msg_;
   };
