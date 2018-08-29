@@ -125,8 +125,9 @@ void UContext::smx_ctx_sysv_wrapper(int i1, int i2)
     (*context)();
   } catch (simgrid::kernel::context::Context::StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
-  } catch (simgrid::HostFailureException const&) {
-    XBT_DEBUG("Caught an HostFailureException");
+  } catch (simgrid::Exception const& e) {
+    XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
+    throw e;
   }
   context->Context::stop();
   ASAN_ONLY(context->asan_stop_ = true);

@@ -58,9 +58,14 @@ public:
   class StopRequest {
     /** @brief Exception launched to kill a process, in order to properly unwind its stack and release RAII stuff
      *
-     * Nope, Sonar, this should not inherit of std::exception.
+     * Nope, Sonar, this should not inherit of std::exception nor of simgrid::Exception.
      * Otherwise, users may accidentally catch it with a try {} catch (std::exception)
      */
+  public:
+    StopRequest() = default;
+    StopRequest(std::string msg) : msg_(msg) { }
+  private:
+    std::string msg_;
   };
   bool iwannadie;
 

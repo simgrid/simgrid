@@ -499,8 +499,9 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
   process->suspended_          = false;
   process->exception = nullptr;
 
+  // Forcefully kill the actor if its host is turned off. Not an HostFailureException because you should not survive that
   if (process->host_->is_off())
-    process->throw_exception(std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed")));
+    process->throw_exception(std::make_exception_ptr(simgrid::kernel::context::Context::StopRequest("Host failed")));
 
   /* destroy the blocking synchro if any */
   if (process->waiting_synchro != nullptr) {

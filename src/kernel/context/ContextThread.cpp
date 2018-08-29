@@ -116,16 +116,14 @@ void *ThreadContext::wrapper(void *param)
 
   try {
     (*context)();
-    if (not context->is_maestro()) // really?
-      context->Context::stop();
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
     xbt_assert(not context->is_maestro(), "I'm not supposed to be maestro here.");
-  } catch (simgrid::HostFailureException const&) {
-    XBT_DEBUG("Caught an HostFailureException");
+  } catch (simgrid::Exception const& e) {
+    XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
+    throw e;
   }
-  if (not context->is_maestro()) // really?
-    context->Context::stop();
+  context->Context::stop();
 
   // Signal to the caller (normally the maestro) that we have finished:
   context->yield();

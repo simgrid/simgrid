@@ -264,8 +264,9 @@ void RawContext::wrapper(void* arg)
     (*context)();
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
-  } catch (simgrid::HostFailureException const&) {
-    XBT_DEBUG("Caught an HostFailureException");
+  } catch (simgrid::Exception const& e) {
+    XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
+    throw e;
   }
   context->Context::stop();
 
