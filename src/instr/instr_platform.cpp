@@ -372,6 +372,11 @@ void instr_define_callbacks()
 
   if (TRACE_actor_is_enabled()) {
     simgrid::s4u::Actor::on_creation.connect(instr_actor_on_creation);
+    simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::ActorPtr actor) {
+      auto container = simgrid::instr::Container::by_name_or_null(instr_pid(actor.get()));
+      if (container != nullptr)
+        container->remove_from_parent();
+    });
     simgrid::s4u::Actor::on_suspend.connect([](simgrid::s4u::ActorPtr actor) {
       simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("suspend");
     });

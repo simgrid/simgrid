@@ -129,8 +129,7 @@ Container* Container::by_name_or_null(std::string name)
 Container* Container::by_name(std::string name)
 {
   Container* ret = Container::by_name_or_null(name);
-  if (ret == nullptr)
-    THROWF(tracing_error, 1, "container with name %s not found", name.c_str());
+  xbt_assert(ret != nullptr, "container with name %s not found", name.c_str());
 
   return ret;
 }

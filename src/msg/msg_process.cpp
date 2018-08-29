@@ -32,9 +32,6 @@ std::string instr_pid(msg_process_t proc)
  */
 void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
 {
-  if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::by_name(instr_pid(smx_actor->ciface()))->remove_from_parent();
-
   // free the data if a function was provided
   void* userdata = smx_actor->get_user_data();
   if (userdata && msg_global->process_data_cleanup) {
