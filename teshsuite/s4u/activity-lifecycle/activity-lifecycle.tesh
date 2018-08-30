@@ -1,2 +1,2 @@
 ! output display
-$ ./activity-lifecycle testing_platform.xml
+$ ${bindir:=.}/activity-lifecycle ${platfdir:=.}/testing_platform.xml
