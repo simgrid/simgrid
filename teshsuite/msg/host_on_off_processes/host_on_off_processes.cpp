@@ -31,7 +31,7 @@ static int process_daemon(int /*argc*/, char** /*argv*/)
     MSG_task_destroy(task);
     tasks_done++;
     if (res == MSG_HOST_FAILURE) {
-      XBT_INFO("Host as died as expected, do nothing else");
+      XBT_INFO("Host has died as expected, do nothing else");
       return 0;
     }
   }
