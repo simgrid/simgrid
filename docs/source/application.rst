@@ -16,10 +16,47 @@ Describing your Application
    <br/>
 
 Every SimGrid simulation entails a distributed application, that
-virtually executes on the simulated platform. This application can
-be either an existing MPI program (if you use the SMPI interface), or
-a program specifically written to execute within SimGrid, using one of
-the dedicated APIs.
+virtually executes on the simulated platform. You can express this
+application using one of the following interfaces. It is even possible
+to mix several interfaces in the same simulation.
+
+ - :ref:`Describing Algorithms with the S4U interface <S4U_doc>` (in C++)
+ - Simulating existing MPI program with the SMPI toolsuite (in C, C++
+   or Fortran)
+ - In some cases, you want to replay a trace in the simulator. This
+   trace lists the events of your application or of your workload, and
+   your application is decomposed as a list of event handlers that are
+   fired according to the trace. SimGrid comes with a build-in support
+   for MPI traces (with solutions to import traces captured by several
+   MPI profilers). You can reuse this mecanism for any kind of trace
+   that you want to replay, for example to study how a P2P DHT overlay
+   reacts to a given workload.
+ - Simulating algorithms with one of the legacy interfaces: MSG and
+   SimDAG (in C or Java). SimGrid was founded in 1998, and many
+   interfaces were proposed along the way. MSG, introduced around
+   2002, is still present in SimGrid. It does not evolve anymore, but
+   given its popularity, it will not be removed until at least 2020.
+ - We are currently working on the ability to modify any existing
+   application so that it can run on top of SimGrid. This project,
+   called `Remote-SimGrid
+   <git@framagit.org:simgrid/remote-simgrid.git>`_, is highly
+   experimental at this point.
+
+As you can see, SimGrid is very modular and can be used in many
+ways. We are working to improve it along two main directions. First,
+we plan to further increase the modularity of the simulator so that
+users can invent the specific API or DSL they need for their usage. We
+call this project BYOS: Build Your Own Simulator.
+
+Executing existing applications within the simulator is another
+long-term goal. SMPI and Remote-SimGrid already allow to execute some
+applications, but our long term goal would be to allow the execution
+of any legacy application, with absolutely no modification. We call it
+SimOS, even if it will not become usable before several years of
+additional work.
+
+.. The old documentation of the obsolete MSG replay module was removed in
+..  https://github.com/simgrid/simgrid/commit/e05361c201fb95d2b7605e59001cd0a49a489739
 
 
 .. include:: app_smpi.rst
