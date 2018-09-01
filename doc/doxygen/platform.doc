@@ -128,7 +128,6 @@ Attribute         | Values                                 | Description
 id                | String (mandatory)                     | The identifier of the host. facilitates referring to this AS.
 speed             | double (mandatory)                     | Computational power of every core of this host in FLOPS (must be positive)
 core              | int (defaults to 1)                    | Number of cores (see @ref howto_multicore)
-state             | optionally "OFF"                       | If set to OFF, the host is initially turned off.
 availability_file | File name (optional) | (Relative or absolute) filename to use as input; must contain availability traces for this host. The syntax of this file is defined below.
 state_file        | File name (optional) |  File to use as a state profile (see @ref howto_churn)
 coordinates       | String (mandatory when using Vivaldi routing) | The coordinates of this host (see @ref pf_P2P_tags).
@@ -310,8 +309,7 @@ lat             | yes       | int    | Latency for the links between nodes and b
 
 @note
     Please note that as of now, it is impossible to change attributes such as,
-    amount of cores (always set to 1), the initial state of hosts/links
-    (always set to ON), the sharing policy of the links (always set to @ref pf_sharing_policy_splitduplex "SPLITDUPLEX").
+    amount of cores (always set to 1), the sharing policy of the links (always set to @ref pf_sharing_policy_splitduplex "SPLITDUPLEX").
 
 #### Example ####
 
@@ -432,7 +430,6 @@ id              | yes       | string | The identifier of the link to be used whe
 bandwidth       | yes       | int    | Maximum bandwidth for this link, given in bytes/s
 latency         | no        | double (default: 0.0) | Latency for this link.
 sharing_policy  | no        | @ref sharing_policy_shared "SHARED"@|@ref pf_sharing_policy_fatpipe "FATPIPE"@|@ref pf_sharing_policy_splitduplex "SPLITDUPLEX" (default: SHARED) | Sharing policy for the link.
-state           | no        | ON@|OFF (default: ON) | Allows you to to turn this link on or off (working / not working)
 bandwidth_file  | no        | string | Allows you to use a file as input for bandwidth.
 latency_file    | no        | string | Allows you to use a file as input for latency.
 state_file      | no        | string | Allows you to use a file as input for states.
