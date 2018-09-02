@@ -58,10 +58,10 @@ JavaContext::JavaContext(std::function<void()> code,
 {
   /* If the user provided a function for the process then use it. Otherwise is the context for maestro */
   if (has_code()) {
-    this->begin = xbt_os_sem_init(0);
-    this->end = xbt_os_sem_init(0);
+    this->begin_ = xbt_os_sem_init(0);
+    this->end_   = xbt_os_sem_init(0);
 
-    this->thread = xbt_os_thread_create(nullptr, JavaContext::wrapper, this, nullptr);
+    this->thread_ = xbt_os_thread_create(nullptr, JavaContext::wrapper, this, nullptr);
   } else {
     xbt_os_thread_set_extra_data(this);
   }
@@ -69,11 +69,11 @@ JavaContext::JavaContext(std::function<void()> code,
 
 JavaContext::~JavaContext()
 {
-  if (this->thread) {
+  if (this->thread_) {
     // We are not in maestro context
-    xbt_os_thread_join(this->thread, nullptr);
-    xbt_os_sem_destroy(this->begin);
-    xbt_os_sem_destroy(this->end);
+    xbt_os_thread_join(this->thread_, nullptr);
+    xbt_os_sem_destroy(this->begin_);
+    xbt_os_sem_destroy(this->end_);
   }
 }
 
@@ -86,9 +86,9 @@ void* JavaContext::wrapper(void *data)
   JNIEnv *env;
   XBT_ATTRIB_UNUSED jint error = __java_vm->AttachCurrentThread((void**)&env, nullptr);
   xbt_assert((error == JNI_OK), "The thread could not be attached to the JVM");
-  context->jenv = env;
+  context->jenv_ = env;
   //Wait for the first scheduling round to happen.
-  xbt_os_sem_acquire(context->begin);
+  xbt_os_sem_acquire(context->begin_);
   //Create the "Process" object if needed.
   (*context)();
   context->stop();
@@ -139,26 +139,26 @@ void JavaContext::stop()
   } else {
     Context::stop();
     /* detach the thread and kills it */
-    JNIEnv *env = this->jenv;
-    env->DeleteGlobalRef(this->jprocess);
+    JNIEnv* env = this->jenv_;
+    env->DeleteGlobalRef(this->jprocess_);
     XBT_ATTRIB_UNUSED jint error = __java_vm->DetachCurrentThread();
     xbt_assert((error == JNI_OK), "The thread couldn't be detached.");
-    xbt_os_sem_release(this->end);
+    xbt_os_sem_release(this->end_);
     xbt_os_thread_exit(nullptr);
   }
 }
 
 void JavaContext::suspend()
 {
-  xbt_os_sem_release(this->end);
-  xbt_os_sem_acquire(this->begin);
+  xbt_os_sem_release(this->end_);
+  xbt_os_sem_acquire(this->begin_);
 }
 
 // FIXME: inline those functions
 void JavaContext::resume()
 {
-  xbt_os_sem_release(this->begin);
-  xbt_os_sem_acquire(this->end);
+  xbt_os_sem_release(this->begin_);
+  xbt_os_sem_acquire(this->end_);
 }
 
 }}} // namespace simgrid::kernel::context

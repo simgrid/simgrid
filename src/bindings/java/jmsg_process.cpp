@@ -26,7 +26,7 @@ jobject jprocess_from_native(msg_process_t process)
 {
   simgrid::kernel::context::JavaContext* context =
       (simgrid::kernel::context::JavaContext*)process->get_impl()->context_;
-  return context->jprocess;
+  return context->jprocess_;
 }
 
 jobject jprocess_ref(jobject jprocess, JNIEnv* env)

@@ -50,7 +50,7 @@ JNIEnv *get_current_thread_env()
 {
   using simgrid::kernel::context::JavaContext;
   JavaContext* ctx = static_cast<JavaContext*>(xbt_os_thread_get_extra_data());
-  return ctx->jenv;
+  return ctx->jenv_;
 }
 
 void jmsg_throw_status(JNIEnv *env, msg_error_t status) {
@@ -288,13 +288,13 @@ static int java_main(int argc, char *argv[])
   //bind the process to the context
   msg_process_t process = MSG_process_self();
 
-  context->jprocess = jprocess;
+  context->jprocess_ = jprocess;
   /* sets the PID and the PPID of the process */
   env->SetIntField(jprocess, jprocess_field_Process_pid, static_cast<jint>(MSG_process_get_PID(process)));
   env->SetIntField(jprocess, jprocess_field_Process_ppid, static_cast<jint>(MSG_process_get_PPID(process)));
   jprocess_bind(jprocess, process, env);
 
-  run_jprocess(env, context->jprocess);
+  run_jprocess(env, context->jprocess_);
   return 0;
 }
 
@@ -307,9 +307,9 @@ void java_main_jprocess(jobject jprocess)
 {
   JNIEnv *env = get_current_thread_env();
   simgrid::kernel::context::JavaContext* context = static_cast<simgrid::kernel::context::JavaContext*>(SIMIX_context_self());
-  context->jprocess = jprocess;
-  jprocess_bind(context->jprocess, MSG_process_self(), env);
+  context->jprocess_                             = jprocess;
+  jprocess_bind(context->jprocess_, MSG_process_self(), env);
 
-  run_jprocess(env, context->jprocess);
+  run_jprocess(env, context->jprocess_);
 }
 }}}

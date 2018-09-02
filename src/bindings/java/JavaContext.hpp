@@ -27,14 +27,14 @@ class JavacontextFactory;
 class JavaContext : public simgrid::kernel::context::Context {
 public:
   // The java process instance bound with the msg process structure:
-  jobject jprocess = nullptr;
+  jobject jprocess_ = nullptr;
   // JNI interface pointer associated to this thread:
-  JNIEnv *jenv = nullptr;
-  xbt_os_thread_t thread = nullptr;
-  // Sempahore used to schedule/yield the process:
-  xbt_os_sem_t begin = nullptr;
+  JNIEnv* jenv_           = nullptr;
+  xbt_os_thread_t thread_ = nullptr;
+  // Sempahore used to schedule/yield to the process:
+  xbt_os_sem_t begin_ = nullptr;
   // Semaphore used to schedule/unschedule the process:
-  xbt_os_sem_t end = nullptr;
+  xbt_os_sem_t end_ = nullptr;
 
   friend class JavaContextFactory;
   JavaContext(std::function<void()> code,
