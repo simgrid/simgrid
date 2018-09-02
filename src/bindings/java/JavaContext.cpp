@@ -38,11 +38,10 @@ JavaContext* JavaContextFactory::self()
   return static_cast<JavaContext*>(xbt_os_thread_get_extra_data());
 }
 
-JavaContext* JavaContextFactory::create_context(
-  std::function<void()> code,
-  void_pfn_smxprocess_t cleanup, smx_actor_t process)
+JavaContext* JavaContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun,
+                                                smx_actor_t actor)
 {
-  return this->new_context<JavaContext>(std::move(code), cleanup, process);
+  return this->new_context<JavaContext>(std::move(code), cleanup_fun, actor);
 }
 
 void JavaContextFactory::run_all()
@@ -62,7 +61,6 @@ JavaContext::JavaContext(std::function<void()> code,
 
   /* If the user provided a function for the process then use it otherwise is the context for maestro */
   if (has_code()) {
-    this->jprocess = nullptr;
     this->begin = xbt_os_sem_init(0);
     this->end = xbt_os_sem_init(0);
 
@@ -81,7 +79,6 @@ JavaContext::JavaContext(std::function<void()> code,
       std::throw_with_nested(std::move(new_exception));
     }
   } else {
-    this->thread = nullptr;
     xbt_os_thread_set_extra_data(this);
   }
 }

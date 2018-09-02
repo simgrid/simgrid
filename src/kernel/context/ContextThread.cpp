@@ -58,9 +58,8 @@ void ThreadContextFactory::run_all()
 
 // ThreadContext
 
-ThreadContext::ThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process,
-                             bool maestro)
-    : AttachContext(std::move(code), cleanup, process), is_maestro_(maestro)
+ThreadContext::ThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t actor, bool maestro)
+    : AttachContext(std::move(code), cleanup, actor), is_maestro_(maestro)
 {
   // We do not need the semaphores when maestro is in main,
   // but creating them anyway simplifies things when maestro is externalized
