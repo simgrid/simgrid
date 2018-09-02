@@ -56,28 +56,12 @@ JavaContext::JavaContext(std::function<void()> code,
         smx_actor_t process)
   : Context(std::move(code), cleanup_func, process)
 {
-  static int thread_amount=0;
-  thread_amount++;
-
-  /* If the user provided a function for the process then use it otherwise is the context for maestro */
+  /* If the user provided a function for the process then use it. Otherwise is the context for maestro */
   if (has_code()) {
     this->begin = xbt_os_sem_init(0);
     this->end = xbt_os_sem_init(0);
 
-    try {
-       this->thread = xbt_os_thread_create(
-         nullptr, JavaContext::wrapper, this, nullptr);
-    }
-    catch (xbt_ex& ex) {
-      char* str = bprintf(
-        "Failed to create context #%d. You may want to switch to Java coroutines to increase your limits (error: %s)."
-        "See the Install section of simgrid-java documentation (in doc/install.html) for more on coroutines.",
-        thread_amount, ex.what());
-      xbt_ex new_exception(XBT_THROW_POINT, str);
-      new_exception.category = ex.category;
-      new_exception.value = ex.value;
-      std::throw_with_nested(std::move(new_exception));
-    }
+    this->thread = xbt_os_thread_create(nullptr, JavaContext::wrapper, this, nullptr);
   } else {
     xbt_os_thread_set_extra_data(this);
   }
