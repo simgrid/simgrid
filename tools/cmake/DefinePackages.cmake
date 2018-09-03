@@ -873,7 +873,6 @@ set(DOC_SOURCES
   doc/triva-time_interval.svg
 
   doc/doxygen/FAQ.doc
-  doc/doxygen/application.doc
   doc/doxygen/community.doc
   doc/doxygen/deployment.doc
   doc/doxygen/footer.html
