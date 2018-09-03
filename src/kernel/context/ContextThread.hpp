@@ -16,7 +16,7 @@ namespace simgrid {
 namespace kernel {
 namespace context {
 
-class ThreadContext : public AttachContext {
+class XBT_PUBLIC ThreadContext : public AttachContext {
 public:
   ThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process, bool maestro);
   ~ThreadContext() override;
@@ -46,7 +46,7 @@ private:
   static void* wrapper(void *param);
 };
 
-class SerialThreadContext : public ThreadContext {
+class XBT_PUBLIC SerialThreadContext : public ThreadContext {
 public:
   SerialThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process, bool maestro)
       : ThreadContext(std::move(code), cleanup_func, process, maestro)
