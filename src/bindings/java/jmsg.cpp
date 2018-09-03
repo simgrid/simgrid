@@ -132,7 +132,7 @@ JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass
   jxbt_check_res("MSG_main()", rv, MSG_OK,
                  xbt_strdup("unexpected error : MSG_main() failed .. please report this bug "));
 
-  XBT_INFO("MSG_main finished; Cleaning up the simulation...");
+  XBT_INFO("MSG_main finished; Terminating the simulation...");
   /* Cleanup java hosts */
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
   for (unsigned long index = 0; index < xbt_dynar_length(hosts) - 1; index++) {
@@ -140,13 +140,16 @@ JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass
     jobject jhost = (jobject) msg_host->extension(JAVA_HOST_LEVEL);
     if (jhost)
       jhost_unref(env, jhost);
-
   }
   xbt_dynar_free(&hosts);
 
   /* Cleanup java storages */
   for (auto const& elm : java_storage_map)
     jstorage_unref(env, elm.second);
+
+  /* FIXME: don't be of such an EXTREM BRUTALITY to stop the jvm. Sorry I don't get it working otherwise.
+   * See the comment in ActorImpl.cpp::SIMIX_process_kill() */
+  exit(0);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls, jstring jplatformFile)
@@ -250,9 +253,11 @@ static void run_jprocess(JNIEnv *env, jobject jprocess)
   jdouble startTime = env->GetDoubleField(jprocess, jprocess_field_Process_startTime);
   if (startTime > MSG_get_clock())
     MSG_process_sleep(startTime - MSG_get_clock());
+
   //Execution of the "run" method.
   jmethodID id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "run", "()V");
-  xbt_assert((id != nullptr), "Method run() not found...");
+  xbt_assert((id != nullptr), "Method Process.run() not found...");
+
   env->CallVoidMethod(jprocess, id);
 }
 

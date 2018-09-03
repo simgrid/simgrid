@@ -226,7 +226,11 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cl
  {
   double time =  ((double)jmillis) / 1000 + ((double)jnanos) / 1000000000;
   msg_error_t rv;
-  rv = MSG_process_sleep(time);
+  try {
+    rv = MSG_process_sleep(time);
+  } catch (simgrid::kernel::context::Context::StopRequest const&) {
+    rv = MSG_HOST_FAILURE;
+  }
   if (rv != MSG_OK) {
     XBT_DEBUG("Something during the MSG_process_sleep invocation was wrong, trigger a HostFailureException");
 

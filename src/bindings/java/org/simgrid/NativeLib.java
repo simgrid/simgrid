@@ -79,7 +79,7 @@ public final class NativeLib {
 			System.err.println();
 			cause.printStackTrace();
 		} else {
-			System.err.println("This jar file does not seem to fit your system, and no usable SimGrid installation found on disk.");
+			System.err.println("This jar file does not seem to fit your system, and no usable SimGrid installation found on disk for "+name+".");
 		}
 		System.exit(1);
 	}

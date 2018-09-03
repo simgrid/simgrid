@@ -23,6 +23,10 @@ XBT:
  - Remove portability wrapper to condition variables
  - Remove xbt_os_thread_yield()
 
+Java:
+ - Due to an internal bug, Msg.run() must now be your last line.
+   We hope to fix it in a future release, and we are sorry for the inconvenience.
+
 Fixed bugs:
  - #22: Process autorestart seem to only work with CAS01 cpus 
  - #93: simgrid should not eat --help

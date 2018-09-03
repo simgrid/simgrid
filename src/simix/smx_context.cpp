@@ -101,7 +101,7 @@ void SIMIX_context_mod_init()
 #endif
 
   /* select the context factory to use to create the contexts */
-  if (simgrid::kernel::context::factory_initializer) { // Give Java a chance to hijack the factory mechanism
+  if (simgrid::kernel::context::factory_initializer != nullptr) { // Give Java a chance to hijack the factory mechanism
     simix_global->context_factory = simgrid::kernel::context::factory_initializer();
     return;
   }
