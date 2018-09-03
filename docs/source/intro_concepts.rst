@@ -5,26 +5,26 @@ What is SimGrid
 
 SimGrid is a framework to simulate distributed computer systems.
 
-It can be used to either assess abstract algorithms, or to profile and
+It can be used to either assess abstract algorithms or to profile and
 debug real distributed applications.  SimGrid enables studies in the
 domains of (data-)Grids, IaaS Clouds, Clusters, High Performance
-Computing, Volunteer Computing and Peer-to-Peer systems.
+Computing, Volunteer Computing, and Peer-to-Peer systems.
 
 Technically speaking, SimGrid is a library. It is neither a graphical
 interface nor a command-line simulator running user scripts. The
 interaction with SimGrid is done by writing programs with the exposed
 functions to build your own simulator.
 
-SimGrid is a Free Software distributed under the LGPL license. You are
-thus welcome to use it as you wish, or even to modify and distribute
+SimGrid is a Free Software distributed under the LGPLv3 license. You are
+thus welcome to use it as you wish or even to modify and distribute
 your version (provided that your version is as free as ours). It also
 means that SimGrid is developed by a vivid community of users and
 developers. We hope that you will come and join us!
 
 SimGrid is the result of almost 20 years of research from several
-groups, both in France and in the USA. It benefited of many funding
-from various research instances, including the ANR, Inria, CNRS,
-University of Lorraine, University of Hawai'i at Manoa, ENS Rennes and
+groups, both in France and in the U.S.A. It benefited of many funding
+from various research bodies, including the ANR, Inria, CNRS,
+University of Lorraine, University of Hawai'i at Manoa, ENS Rennes, and
 many others. Many thanks to our generous sponsors!
 
 SimGrid is a powerful tool, but its learning curve can be rather
@@ -53,7 +53,7 @@ Any SimGrid study entails the following components:
    the platform files are written in XML althrough a Lua interface is
    under development.  SimGrid makes it easy to augment the Virtual
    Platform with a Dynamic Scenario where for example the links are
-   slowed down (because of external usage), the machines fail. You
+   slowed down (because of external usage) or the machines fail. You
    have even support to specify the applicative workload that you want
    to feed to your application
    :ref:`(more info) <platform>`.
@@ -62,7 +62,7 @@ Any SimGrid study entails the following components:
    terminology, the application is an inert set of source files and
    binaries. To make it run, you have to describe how your application
    should be deployed on the virtual platform. You need to specify
-   which process is mapped on which host, along with their parameters
+   which process is mapped on which machine, along with their parameters
    :ref:`(more info) <scenario>`.
 
  - The **Platform Models**. They describe how the virtual platform
@@ -74,20 +74,20 @@ Any SimGrid study entails the following components:
 
 These components are put together to run a **simulation**, that is an
 experiment or a probe. The result of one or many simulation provides
-an **outcome** (logs, visualization, statistical analysis) that help
+an **outcome** (logs, visualization, or statistical analysis) that help
 answering the **question** targeted by this study.
 
 Here are some questions on which SimGrid is particularly relevant:
 
  - **Compare an Application to another**. This is the classical use
    case for scientists, who use SimGrid to test how the solution that
-   they contribute compares to the existing solutions from the
+   they contribute to compares to the existing solutions from the
    literature.
 
  - **Design the best Virtual Platform for a given Application.**
    Tweaking the platform file is much easier than building a new real
-   platform for testing purpose. SimGrid also allows co-design of the
-   platform and the application by modifying both of them.
+   platform for testing purpose. SimGrid also allows for the co-design 
+   of the platform and the application by modifying both of them.
 
  - **Debug Real Applications**. With real systems, is sometimes
    difficult to reproduce the exact run leading to the bug that you
@@ -100,14 +100,14 @@ Here are some questions on which SimGrid is particularly relevant:
 Depending on the context, you may see some parts of this process as
 less important, but you should pay close attention if you want to be
 confident in the results coming out of your simulations. In
-particular, you should not trust blindly your results but always
+particular, you should not blindly trust your results but always
 strive to double-check them. Likewise, you should question the realism
 of your input configuration, and we even encourage you to doubt (and
 check) the provided performance models.
 
 To ease such questioning, you really should logically separate these
 parts in your experimental setup. It is seen as a very bad practice to
-merge the application, the platform and the deployment all together.
+merge the application, the platform, and the deployment all together.
 SimGrid is versatile and your mileage may vary, but you should start
 with your Application specified as a C++ or Java program, using one of
 the provided XML platform file, and with your deployment in a separate
@@ -124,7 +124,7 @@ the experimental scenario.
 
 In this mode, SimGrid can provide information about the time taken by
 your application, the amount of energy dissipated by the platform to
-run your application and the detailed usage of each resource.
+run your application, and the detailed usage of each resource.
 
 **Model-Checking Mode**. This can be seen as a sort of exhaustive
 testing mode, where every possible outcome of your application is
@@ -146,7 +146,7 @@ or **liveless properties** stating for example that if a given event
 occurs, then another given event will occur in a finite amount of
 steps. This mode is not only usable with the abstract algorithms
 developed on top of the SimGrid APIs, but also with real MPI
-applications (to some extend).
+applications (to some extent).
 
 The main limit of Model Checking lays in the huge amount of scenarios
 to explore. SimGrid tries to explore only non-redundant scenarios
@@ -163,8 +163,7 @@ because of a stupid bug.
 Another limit of this mode is that it does not use the performance
 models of the simulation mode. Time becomes discrete: You can say for
 example that the application took 42 steps to run, but there is no way
-to know the amount of seconds that it took or the amount of watts that
-it dissipated.
+to know how much time it took or the amount of watts that were dissipated.
 
 Finally, the model checker only explores the interleavings of
 computations and communications. Other factors such as thread
@@ -177,7 +176,7 @@ prove the correction of your application in all generality with this
 tool.
 
 **Benchmark Recording Mode**. During debug sessions, continuous
-integration testing and other similar use cases, you are often only
+integration testing, and other similar use cases, you are often only
 interested in the control flow. If your application apply filters to
 huge images split in small blocks, the filtered image is probably not
 what you are interested in. You are probably looking for a way to run
@@ -194,26 +193,26 @@ This framework is by no means the perfect holly grail able to solve
 every problem on earth.
 
 **SimGrid scope is limited to distributed systems.** Real-time
-multi-threaded systems are not in the scope. You could probably tweak
+multi-threaded systems are out of scope. You could probably tweak
 SimGrid for such studies (or the framework could possibly be extended
-in this direction), but another framework specifically targeting this
+in this direction), but another framework specifically targeting such a
 use case would probably be more suited.
 
 **There is currently no support for wireless networks**.
 The framework could certainly be improved in this direction, but this
-is still to be done.
+still has to be done.
 
 **There is no perfect model, only models adapted to your study.**
-The SimGrid models target fast, large studies yet requesting a
+The SimGrid models target fast and large studies yet requesting
 realistic results. In particular, our models abstract away parameters
-and phenomenon that are often irrelevant to the realism in our
+and phenomena that are often irrelevant to the realism in our
 context.
 
 SimGrid is simply not intended to any study that would mandate the
 abstracted phenomenon. Here are some **studies that you should not do
 with SimGrid**:
 
- - Studying the effect of L3 vs L2 cache effects on your application
+ - Studying the effect of L3 vs. L2 cache effects on your application
  - Comparing kernel schedulers and policies
  - Comparing variants of TCP
  - Exploring pathological cases where TCP breaks down, resulting in
@@ -229,7 +228,7 @@ Scholar). Among them
 `over 200 publications <https://simgrid.org/Usages.html>`_
 (written by about 300 individuals) use SimGrid as a scientific
 instrument to conduct their experimental evaluation. These
-numbers do not count the articles contributing to SimGrid.
+numbers do not include the articles contributing to SimGrid.
 This instrument was used in many research communities, such as
 `High-Performance Computing <https://hal.inria.fr/inria-00580599/>`_,
 `Cloud Computing <http://dx.doi.org/10.1109/CLOUD.2015.125>`_,
@@ -248,14 +247,14 @@ If your platform description is accurate enough (see
 `here <http://hal.inria.fr/hal-00907887>`_ or
 `there <https://hal.inria.fr/hal-01523608>`_),
 SimGrid can provide high-quality performance predictions. For example,
-we determined the speedup achieved by the Tibidabo Arm-based
+we determined the speedup achieved by the Tibidabo ARM-based
 cluster before its construction
 (`paper <http://hal.inria.fr/hal-00919507>`_). In this case,
 some differences between the prediction and the real timings were due to
-misconfiguration or other problems with the real platforms. To some extent,
+misconfiguration or other problems with the real platform. To some extent,
 SimGrid could even be used to debug the real platform :)
 
-SimGrid is also used to debug, improve and tune several large
+SimGrid is also used to debug, improve, and tune several large
 applications.
 `BigDFT <http://bigdft.org>`_ (a massively parallel code
 computing the electronic structure of chemical elements developped by
