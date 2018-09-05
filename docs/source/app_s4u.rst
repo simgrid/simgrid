@@ -17,8 +17,8 @@ The S4U Interface
    <br/>
 
 The S4U interface (SimGrid for you) mixes the full power of SimGrid
-with the full power of C++. This is the prefered interface to describe
-abstract algorithms in the domains of Cloud, P2P, HPC, IoT and similar
+with the full power of C++. This is the preferred interface to describe
+abstract algorithms in the domains of Cloud, P2P, HPC, IoT, and similar
 settings.
 
 -------------
@@ -34,12 +34,12 @@ S4U interface to express their
 and other |Activities|_, so that they get reflected within the
 simulator. These activities take place on resources such as |Hosts|_,
 |Links|_ and |Storages|_. SimGrid predicts the time taken by each
-activity and orchestrates accordingly the actors waiting for the
+activity and orchestrates the actors accordingly, waiting for the
 completion of these activities.
 
 
 When **communicating**, data is not directly sent to other actors but
-posted onto a |Mailbox|_ that serve as rendez-vous point between
+posted onto a |Mailbox|_ that serves as a rendez-vous point between
 communicating actors. This means that you don't need to know who you
 are talking to, you just put your communication `Send` request in a
 mailbox, and it will be matched with a complementary `Receive`
@@ -72,7 +72,7 @@ functions to simplify the code of actors.
   - :ref:`class s4u::Link <exhale_class_classsimgrid_1_1s4u_1_1Link>`
     Interconnecting hosts.
   - :ref:`class s4u::NetZone <exhale_class_classsimgrid_1_1s4u_1_1NetZone>`:
-    Sub-region of the platform, containing resources (Hosts, Link, etc).
+    Sub-region of the platform, containing resources (Hosts, Links, etc).
   - :ref:`class s4u::Storage <exhale_class_classsimgrid_1_1s4u_1_1Storage>`
     Resource on which actors can write and read data.
   - :ref:`class s4u::VirtualMachine <exhale_class_classsimgrid_1_1s4u_1_1VirtualMachine>`:
@@ -136,7 +136,7 @@ functions to simplify the code of actors.
 Activities
 ----------
 
-Activities represent the actions that consumes a resource, such as
+Activities represent the actions that consume a resource, such as a
 :ref:`s4u::Comm <exhale_class_classsimgrid_1_1s4u_1_1Comm>` that
 consumes the *transmiting power* of :ref:`s4u::Link
 <exhale_class_classsimgrid_1_1s4u_1_1Link>` resources.
@@ -152,11 +152,11 @@ create blocking communications: the actor is blocked until the
 completion of that communication. Asynchronous communications do not
 block the actor during their execution but progress on their own.
 
-Once your asynchronous activity is started, you can test for
+Once your asynchronous activity is started, you can test for its
 completion using :cpp:func:`s4u::Activity::test() <simgrid::s4u::Activity::test>`.
 This function returns ``true`` if the activity completed already.
 You can also use :cpp:func:`s4u::Activity::wait() <simgrid::s4u::Activity::wait>`
-to block until the completion of the activity. To wait at most for a given period,
+to block until the completion of the activity. To wait for at most a given amount of time,
 use  :cpp:func:`s4u::Activity::wait_for() <simgrid::s4u::Activity::wait_for>`.
 Finally, to wait at most until a specified time limit, use
 :cpp:func:`s4u::Activity::wait_until() <simgrid::s4u::Activity::wait_until>`.
@@ -189,7 +189,7 @@ vector of mailboxes.
    :end-before: init-end
    :dedent: 4
 
-You then start all communications that should occur concurrently with
+Then, you start all the communications that should occur concurrently with
 :cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>`.  
 Finally, the actor waits for the completion of all of them at once
 with 
