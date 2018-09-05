@@ -21,9 +21,9 @@ application using one of the following interfaces. It is even possible
 to mix several interfaces in the same simulation.
 
  - :ref:`Describing Algorithms with the S4U interface <S4U_doc>` (in C++)
- - Simulating existing MPI program with the SMPI toolsuite (in C, C++
+ - Simulating existing MPI programs with the SMPI toolsuite (in C, C++,
    or Fortran)
- - In some cases, you want to replay a trace in the simulator. This
+ - In some cases, you may want to replay an execution trace in the simulator. This
    trace lists the events of your application or of your workload, and
    your application is decomposed as a list of event handlers that are
    fired according to the trace. SimGrid comes with a build-in support
@@ -49,8 +49,8 @@ users can invent the specific API or DSL they need for their usage. We
 call this project BYOS: Build Your Own Simulator.
 
 Executing existing applications within the simulator is another
-long-term goal. SMPI and Remote-SimGrid already allow to execute some
-applications, but our long term goal would be to allow the execution
+long-term goal. SMPI and Remote-SimGrid already allow you to execute some
+applications, but our long term goal would be to allow for the execution
 of any legacy application, with absolutely no modification. We call it
 SimOS, even if it will not become usable before several years of
 additional work.
