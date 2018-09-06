@@ -41,8 +41,8 @@ completion of these activities.
 When **communicating**, data is not directly sent to other actors but
 posted onto a |Mailbox|_ that serve as rendez-vous point between
 communicating actors. This means that you don't need to know who you
-are talking to, you just put your communication `Send` request in a
-mailbox, and it will be matched with a complementary `Receive`
+are talking to, you just put your communication `Put` request in a
+mailbox, and it will be matched with a complementary `Get`
 request.  Alternatively, actors can interact through **classical
 synchronization mechanisms** such as |Barrier|_, |Semaphore|_,
 |Mutex|_ and |ConditionVariable|_.
@@ -197,8 +197,8 @@ with
      
 .. literalinclude:: ../../examples/s4u/async-waitall/s4u-async-waitall.cpp
    :language: c++
-   :start-after: send-begin
-   :end-before: send-end
+   :start-after: put-begin
+   :end-before: put-end
    :dedent: 4
 
 

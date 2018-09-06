@@ -58,7 +58,7 @@ public:
       pending_comms.push_back(comm);
     }
 
-    /* Start sending messages to let the workers know that they should stop */ // sphinx-doc: send-begin
+    /* Start sending messages to let the workers know that they should stop */ // sphinx-doc: put-begin
     for (int i = 0; i < receivers_count; i++) {
       XBT_INFO("Send 'finalize' to 'receiver-%d'", i);
       simgrid::s4u::CommPtr comm = mboxes[i]->put_async(new std::string("finalize"), 0);
@@ -68,7 +68,7 @@ public:
 
     /* Now that all message exchanges were initiated, wait for their completion in one single call */
     simgrid::s4u::Comm::wait_all(&pending_comms);
-    // sphinx-doc: send-end
+    // sphinx-doc: put-end
 
     XBT_INFO("Goodbye now!");
   }
