@@ -35,6 +35,8 @@ SharedMallocType smpi_cfg_shared_malloc = SharedMallocType::GLOBAL;
 double smpi_total_benched_time = 0;
 
 extern "C" XBT_PUBLIC void smpi_execute_flops_(double* flops);
+extern "C" XBT_PUBLIC simgrid::config::Flag<double> smpi_wtime_sleep;
+
 void smpi_execute_flops_(double *flops)
 {
   smpi_execute_flops(*flops);
@@ -232,6 +234,8 @@ int smpi_gettimeofday(struct timeval* tv, struct timezone* tz)
     tv->tv_usec = static_cast<suseconds_t>((now - tv->tv_sec) * 1e6);
 #endif
   }
+  if(smpi_wtime_sleep > 0)
+    simcall_process_sleep(smpi_wtime_sleep);
   smpi_bench_begin();
   return 0;
 }
@@ -248,6 +252,8 @@ int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp)
     tp->tv_sec = static_cast<time_t>(now);
     tp->tv_nsec = static_cast<long int>((now - tp->tv_sec) * 1e9);
   }
+  if(smpi_wtime_sleep > 0)
+    simcall_process_sleep(smpi_wtime_sleep);
   smpi_bench_begin();
   return 0;
 }

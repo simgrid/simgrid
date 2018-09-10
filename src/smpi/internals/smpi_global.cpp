@@ -95,7 +95,7 @@ MPI_Errhandler *MPI_ERRHANDLER_NULL = nullptr;
 // No instance gets manually created; check also the smpirun.in script as
 // this default name is used there as well (when the <actor> tag is generated).
 static const std::string smpi_default_instance_name("smpirun");
-static simgrid::config::Flag<double> smpi_wtime_sleep(
+XBT_PRIVATE simgrid::config::Flag<double> smpi_wtime_sleep(
   "smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0);
 static simgrid::config::Flag<double> smpi_init_sleep(
   "smpi/init", "Time to inject inside a call to MPI_Init", 0.0);
