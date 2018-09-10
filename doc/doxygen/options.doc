@@ -1248,28 +1248,33 @@ at least one huge page:
 Then, you can pass the option --cfg=smpi/shared-malloc-hugepage:/home/huge
 to smpirun to actually activate the huge page support in shared mallocs.
 
-@subsection options_model_smpi_wtime smpi/wtime: Inject constant times for calls to MPI_Wtime
+@subsection options_model_smpi_wtime smpi/wtime: Inject constant times for calls to MPI_Wtime, gettimeofday and clock_gettime
 
-@b Default value: 0
+@b Default value: 1ms
 
-By setting this option, you can control the amount of time a process sleeps
-when MPI_Wtime() is called; this is important, because SimGrid normally only
-advances the time while communication is happening and thus,
-MPI_Wtime will not add to the time, resulting in a deadlock if used as a
-break-condition.
-
-Here is an example:
+This option controls the amount of (simulated) time spent in calls to
+MPI_Wtime(), gettimeofday() and clock_gettime(). If you set this value
+to 0, the simulated clock is not advanced in these calls, which leads
+to issue if your application contains such a loop:
 
 @code{.unparsed}
     while(MPI_Wtime() < some_time_bound) {
-        ...
+        /* some tests, with no communication nor computation */
     }
 @endcode
 
-If the time is never advanced, this loop will clearly never end as MPI_Wtime()
-always returns the same value. Hence, pass a (small) value to the smpi/wtime
-option to force a call to MPI_Wtime to advance the time as well.
+When the option smpi/wtime is set to 0, the time advances only on
+communications and computations, so the previous code results in an
+infinite loop: the current [simulated] time will never reach @c
+some_time_bound.  This infinite loop is avoided when that option is
+set to a small amount, as it is by default since SimGrid v3.21.
 
+Note that if your application does not contain any loop depending on
+the current time only, then setting this option to a non-zero value
+will slow down your simulations by a tiny bit: the simulation loop has
+to be broken and reset each time your code ask for the current time.
+If the simulation speed really matters to you, you can avoid this
+extra delay by setting smpi/wtime to 0.
 
 @section options_generic Configuring other aspects of SimGrid
 

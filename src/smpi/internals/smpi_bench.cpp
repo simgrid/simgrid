@@ -28,8 +28,10 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi, "Logging specific to SMPI (benchmarking)");
 
-static simgrid::config::Flag<double> smpi_wtime_sleep("smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime",
-                                                      0.0);
+static simgrid::config::Flag<double>
+    smpi_wtime_sleep("smpi/wtime",
+                     "Minimum time to inject inside a call to MPI_Wtime(), gettimeofday() and clock_gettime()",
+                     1e-6 /* Documented to be 1ms */);
 
 double smpi_cpu_threshold = -1;
 double smpi_host_speed;
@@ -235,6 +237,8 @@ int smpi_gettimeofday(struct timeval* tv, struct timezone* tz)
     tv->tv_usec = static_cast<suseconds_t>((now - tv->tv_sec) * 1e6);
 #endif
   }
+  if (smpi_wtime_sleep > 0)
+    simcall_process_sleep(smpi_wtime_sleep);
   smpi_bench_begin();
   return 0;
 }
@@ -251,10 +255,27 @@ int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp)
     tp->tv_sec = static_cast<time_t>(now);
     tp->tv_nsec = static_cast<long int>((now - tp->tv_sec) * 1e9);
   }
+  if (smpi_wtime_sleep > 0)
+    simcall_process_sleep(smpi_wtime_sleep);
   smpi_bench_begin();
   return 0;
 }
 #endif
+
+double smpi_mpi_wtime()
+{
+  double time;
+  if (smpi_process()->initialized() && not smpi_process()->finalized() && not smpi_process()->sampling()) {
+    smpi_bench_end();
+    time = SIMIX_get_clock();
+    if (smpi_wtime_sleep > 0)
+      simcall_process_sleep(smpi_wtime_sleep);
+    smpi_bench_begin();
+  } else {
+    time = SIMIX_get_clock();
+  }
+  return time;
+}
 
 extern double sg_surf_precision;
 unsigned long long smpi_rastro_resolution ()
@@ -274,27 +295,6 @@ unsigned long long smpi_rastro_timestamp ()
   unsigned long long pre = (now - sec) * smpi_rastro_resolution();
   smpi_bench_begin();
   return static_cast<unsigned long long>(sec) * smpi_rastro_resolution() + pre;
-}
-
-double smpi_mpi_wtime()
-{
-  double time;
-  if (smpi_process()->initialized() && not smpi_process()->finalized() && not smpi_process()->sampling()) {
-    smpi_bench_end();
-    time = SIMIX_get_clock();
-    // to avoid deadlocks if used as a break condition, such as
-    //     while (MPI_Wtime(...) < time_limit) {
-    //       ....
-    //     }
-    // because the time will not normally advance when only calls to MPI_Wtime
-    // are made -> deadlock (MPI_Wtime never reaches the time limit)
-    if (smpi_wtime_sleep > 0)
-      simcall_process_sleep(smpi_wtime_sleep);
-    smpi_bench_begin();
-  } else {
-    time = SIMIX_get_clock();
-  }
-  return time;
 }
 
 /* ****************************** Functions related to the SMPI_SAMPLE_ macros ************************************/
