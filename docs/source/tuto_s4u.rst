@@ -19,7 +19,7 @@ completion of these activities.
 Each actor executes a user-provided function on a simulated |Host|_
 with which it can interact. Communications are not directly sent to
 actors, but posted onto a |Mailbox|_ that serve as rendez-vous point
-between communicating processes.
+between communicating actors.
 
 .. |Actors| replace:: **Actors**
 .. _Actors: api/classsimgrid_1_1s4u_1_1Actor.html
@@ -492,7 +492,7 @@ Creating the workers from the master
 
 For that, the master needs to retrieve the list of hosts declared in
 the platform with :cpp:func:`simgrid::s4u::Engine::get_all_hosts`.
-Then, the master should start the worker processes with
+Then, the master should start the worker actors with
 :cpp:func:`simgrid::s4u::Actor::create`.
 
 ``Actor::create(name, host, func, params...)`` is a very flexible
