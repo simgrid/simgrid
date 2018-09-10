@@ -1250,7 +1250,7 @@ to smpirun to actually activate the huge page support in shared mallocs.
 
 @subsection options_model_smpi_wtime smpi/wtime: Inject constant times for calls to MPI_Wtime, gettimeofday and clock_gettime
 
-@b Default value: 1ms
+@b Default value: 10 ns
 
 This option controls the amount of (simulated) time spent in calls to
 MPI_Wtime(), gettimeofday() and clock_gettime(). If you set this value

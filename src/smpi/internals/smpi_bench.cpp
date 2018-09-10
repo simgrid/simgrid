@@ -31,7 +31,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi, "Logging specific to SMPI (ben
 static simgrid::config::Flag<double>
     smpi_wtime_sleep("smpi/wtime",
                      "Minimum time to inject inside a call to MPI_Wtime(), gettimeofday() and clock_gettime()",
-                     1e-6 /* Documented to be 1ms */);
+                     1e-8 /* Documented to be 10 ns */);
 
 double smpi_cpu_threshold = -1;
 double smpi_host_speed;
