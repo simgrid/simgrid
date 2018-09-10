@@ -92,6 +92,7 @@ public:
       smpi_execute(xbt_os_timer_elapsed(timer));
 
       // Update the process and host mapping in SimGrid.
+      XBT_DEBUG("Migrating process %li from %s to %s", my_proc_id, cur_host->get_cname(), migrate_to_host->get_cname());
       TRACE_smpi_process_change_host(my_proc_id, migrate_to_host);
       simgrid::s4u::this_actor::migrate(migrate_to_host);
     }
