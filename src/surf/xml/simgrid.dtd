@@ -113,7 +113,7 @@ To upgrade your files, use the tool simgrid_update_xml
           (((AS|zone|include|link|backbone|cabinet|cluster|peer|trace|trace_connect)*,
             (zoneRoute|ASroute|trace|trace_connect|bypassASroute)*,
 	    (trace|trace_connect)*)
-	   |((include|storage_type|storage|host|gpu|cabinet|router|link|backbone|trace|trace_connect|host_link)*,
+	   |((include|storage_type|storage|host|cabinet|router|link|backbone|trace|trace_connect|host_link)*,
 	     (route|trace|trace_connect|bypassRoute)*)))>
 <!ATTLIST zone id CDATA #REQUIRED>
 <!ATTLIST zone routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|ClusterTorus|ClusterFatTree|ClusterDragonfly) #REQUIRED>

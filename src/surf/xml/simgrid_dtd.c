@@ -6877,8 +6877,8 @@ YY_RULE_SETUP
   if (!AX_surfxml_ASroute_src) FAIL("Required attribute `src' not set for `ASroute' element.");
   LEAVE; STag_surfxml_ASroute(); surfxml_pcdata_ix = 0; ETag_surfxml_ASroute(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
+   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_8: case S_surfxml_zone_9: SET(S_surfxml_zone_9); break;
   }
  }
@@ -6903,8 +6903,8 @@ YY_RULE_SETUP
   ETag_surfxml_ASroute();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
+   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_8: case S_surfxml_zone_9: SET(S_surfxml_zone_9); break;
   }
  }
@@ -10307,11 +10307,11 @@ YY_RULE_SETUP
    case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
    case S_surfxml_include: case S_surfxml_include_1: case S_surfxml_include_2: SET(S_surfxml_include_2); break;
    case S_surfxml_platform: case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_5: case S_surfxml_platform_6: SET(S_surfxml_platform_6); break;
-   case S_surfxml_zone_10: case S_surfxml_zone_11: case S_surfxml_zone_4: case S_surfxml_zone_7: SET(S_surfxml_zone_11); break;
-   case S_surfxml_zone: case S_surfxml_zone_13: SET(S_surfxml_zone_14); break;
-   case S_surfxml_zone_12: case S_surfxml_zone_14: case S_surfxml_zone_15: case S_surfxml_zone_16: case S_surfxml_zone_3: SET(S_surfxml_zone_16); break;
-   case S_surfxml_zone_1: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
-   case S_surfxml_zone_8: case S_surfxml_zone_9: SET(S_surfxml_zone_9); break;
+   case S_surfxml_zone_10: case S_surfxml_zone_11: case S_surfxml_zone_6: case S_surfxml_zone_7: SET(S_surfxml_zone_11); break;
+   case S_surfxml_zone_13: SET(S_surfxml_zone_14); break;
+   case S_surfxml_zone: case S_surfxml_zone_12: case S_surfxml_zone_14: case S_surfxml_zone_15: case S_surfxml_zone_16: case S_surfxml_zone_1: case S_surfxml_zone_3: SET(S_surfxml_zone_16); break;
+   case S_surfxml_zone_5: SET(S_surfxml_zone_6); break;
+   case S_surfxml_zone_4: case S_surfxml_zone_8: case S_surfxml_zone_9: SET(S_surfxml_zone_9); break;
   }
  }
 	YY_BREAK
@@ -10340,11 +10340,11 @@ YY_RULE_SETUP
    case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
    case S_surfxml_include: case S_surfxml_include_1: case S_surfxml_include_2: SET(S_surfxml_include_2); break;
    case S_surfxml_platform: case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_5: case S_surfxml_platform_6: SET(S_surfxml_platform_6); break;
-   case S_surfxml_zone_10: case S_surfxml_zone_11: case S_surfxml_zone_4: case S_surfxml_zone_7: SET(S_surfxml_zone_11); break;
-   case S_surfxml_zone: case S_surfxml_zone_13: SET(S_surfxml_zone_14); break;
-   case S_surfxml_zone_12: case S_surfxml_zone_14: case S_surfxml_zone_15: case S_surfxml_zone_16: case S_surfxml_zone_3: SET(S_surfxml_zone_16); break;
-   case S_surfxml_zone_1: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
-   case S_surfxml_zone_8: case S_surfxml_zone_9: SET(S_surfxml_zone_9); break;
+   case S_surfxml_zone_10: case S_surfxml_zone_11: case S_surfxml_zone_6: case S_surfxml_zone_7: SET(S_surfxml_zone_11); break;
+   case S_surfxml_zone_13: SET(S_surfxml_zone_14); break;
+   case S_surfxml_zone: case S_surfxml_zone_12: case S_surfxml_zone_14: case S_surfxml_zone_15: case S_surfxml_zone_16: case S_surfxml_zone_1: case S_surfxml_zone_3: SET(S_surfxml_zone_16); break;
+   case S_surfxml_zone_5: SET(S_surfxml_zone_6); break;
+   case S_surfxml_zone_4: case S_surfxml_zone_8: case S_surfxml_zone_9: SET(S_surfxml_zone_9); break;
   }
  }
 	YY_BREAK
@@ -10449,11 +10449,11 @@ YY_RULE_SETUP
    case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
    case S_surfxml_include: case S_surfxml_include_1: case S_surfxml_include_2: SET(S_surfxml_include_2); break;
    case S_surfxml_platform: case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_5: case S_surfxml_platform_6: SET(S_surfxml_platform_6); break;
-   case S_surfxml_zone_10: case S_surfxml_zone_11: case S_surfxml_zone_4: case S_surfxml_zone_7: SET(S_surfxml_zone_11); break;
-   case S_surfxml_zone: case S_surfxml_zone_13: SET(S_surfxml_zone_14); break;
-   case S_surfxml_zone_12: case S_surfxml_zone_14: case S_surfxml_zone_15: case S_surfxml_zone_16: case S_surfxml_zone_3: SET(S_surfxml_zone_16); break;
-   case S_surfxml_zone_1: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
-   case S_surfxml_zone_8: case S_surfxml_zone_9: SET(S_surfxml_zone_9); break;
+   case S_surfxml_zone_10: case S_surfxml_zone_11: case S_surfxml_zone_6: case S_surfxml_zone_7: SET(S_surfxml_zone_11); break;
+   case S_surfxml_zone_13: SET(S_surfxml_zone_14); break;
+   case S_surfxml_zone: case S_surfxml_zone_12: case S_surfxml_zone_14: case S_surfxml_zone_15: case S_surfxml_zone_16: case S_surfxml_zone_1: case S_surfxml_zone_3: SET(S_surfxml_zone_16); break;
+   case S_surfxml_zone_5: SET(S_surfxml_zone_6); break;
+   case S_surfxml_zone_4: case S_surfxml_zone_8: case S_surfxml_zone_9: SET(S_surfxml_zone_9); break;
   }
  }
 	YY_BREAK
@@ -10480,11 +10480,11 @@ YY_RULE_SETUP
    case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
    case S_surfxml_include: case S_surfxml_include_1: case S_surfxml_include_2: SET(S_surfxml_include_2); break;
    case S_surfxml_platform: case S_surfxml_platform_1: case S_surfxml_platform_3: case S_surfxml_platform_5: case S_surfxml_platform_6: SET(S_surfxml_platform_6); break;
-   case S_surfxml_zone_10: case S_surfxml_zone_11: case S_surfxml_zone_4: case S_surfxml_zone_7: SET(S_surfxml_zone_11); break;
-   case S_surfxml_zone: case S_surfxml_zone_13: SET(S_surfxml_zone_14); break;
-   case S_surfxml_zone_12: case S_surfxml_zone_14: case S_surfxml_zone_15: case S_surfxml_zone_16: case S_surfxml_zone_3: SET(S_surfxml_zone_16); break;
-   case S_surfxml_zone_1: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
-   case S_surfxml_zone_8: case S_surfxml_zone_9: SET(S_surfxml_zone_9); break;
+   case S_surfxml_zone_10: case S_surfxml_zone_11: case S_surfxml_zone_6: case S_surfxml_zone_7: SET(S_surfxml_zone_11); break;
+   case S_surfxml_zone_13: SET(S_surfxml_zone_14); break;
+   case S_surfxml_zone: case S_surfxml_zone_12: case S_surfxml_zone_14: case S_surfxml_zone_15: case S_surfxml_zone_16: case S_surfxml_zone_1: case S_surfxml_zone_3: SET(S_surfxml_zone_16); break;
+   case S_surfxml_zone_5: SET(S_surfxml_zone_6); break;
+   case S_surfxml_zone_4: case S_surfxml_zone_8: case S_surfxml_zone_9: SET(S_surfxml_zone_9); break;
   }
  }
 	YY_BREAK
@@ -10506,7 +10506,7 @@ FAIL("Premature EOF: `</trace_connect>' expected.");
   *           (((AS|zone|include|link|backbone|cabinet|cluster|peer|trace|trace_connect)*,
   *             (zoneRoute|ASroute|trace|trace_connect|bypassASroute)*,
   * 	    (trace|trace_connect)*)
-  * 	   |((include|storage_type|storage|host|gpu|cabinet|router|link|backbone|trace|trace_connect|host_link)*,
+  * 	   |((include|storage_type|storage|host|cabinet|router|link|backbone|trace|trace_connect|host_link)*,
   * 	     (route|trace|trace_connect|bypassRoute)*)))>  */
 case 586:
 /* rule 586 can match eol */
@@ -10788,8 +10788,8 @@ YY_RULE_SETUP
   if (!AX_surfxml_zoneRoute_src) FAIL("Required attribute `src' not set for `zoneRoute' element.");
   LEAVE; STag_surfxml_zoneRoute(); surfxml_pcdata_ix = 0; ETag_surfxml_zoneRoute(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
+   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_8: case S_surfxml_zone_9: SET(S_surfxml_zone_9); break;
   }
  }
@@ -10814,8 +10814,8 @@ YY_RULE_SETUP
   ETag_surfxml_zoneRoute();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
+   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
    case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_8: case S_surfxml_zone_9: SET(S_surfxml_zone_9); break;
   }
  }
