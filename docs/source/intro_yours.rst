@@ -3,16 +3,16 @@
 Start your Own Project
 ======================
 
-It is not advised to modify the simgrid source code directly, as it
+It is not advised to modify the SimGrid source code directly, as it
 will make it difficult to upgrade to the next version of SimGrid.
 Instead, you should create your own working directory somewhere on
-your disk (say `/home/joe/MyFirstScheduler/`), and write your code in
+your disk (say `/home/joe/MyFirstSimulator/`), and write your code in
 there.
 
 Cloning a Template Project for S4U
 ----------------------------------
 
-If you plan to use the modern S4U interface of SimGrid, the easiest is
+If you plan to use the modern S4U interface of SimGrid, the easiest way is
 to clone the `Template Project
 <https://framagit.org/simgrid/simgrid-template-s4u>`_ directly. It
 contains the necessary configuration to use cmake and S4U together.
@@ -52,7 +52,7 @@ For that, you need `FindSimGrid.cmake
 that is located at the root of the SimGrid tree. You can either copy
 this file into the `cmake/Modules` directory of your project, or use
 the version installed on the disk. Both solutions present advantages
-and drawback: if you copy the file, you have to keep it in sync
+and drawbacks: if you copy the file, you have to keep it in sync
 manually but your project will produce relevant error messages when
 trying to compile on a machine where SimGrid is not installed. Please
 also refer to the file header for more information.
@@ -62,8 +62,8 @@ Building your project with Makefile
 
 Here is a Makefile that will work if your project is composed of three
 C files named ``util.h``, ``util.c`` and ``mysimulator.c``. You should
-take it as a starting point, and adapt it to your code. There is a
-plenty of documentation and tutorial on Makefile if the file's
+take it as a starting point, and adapt it to your code. There are
+plenty of documentation and tutorials on Makefile if the file's
 comments are not enough for you.
 
 .. code-block:: makefile
@@ -147,13 +147,13 @@ Troubleshooting your Project Setup
 Library not found
 ^^^^^^^^^^^^^^^^^
 
-When the library cannot be found, you will get such an error message similar:
+When the library cannot be found, you will get such an error message similar to:
 
 .. code-block:: shell
 
   ./masterworker1: error while loading shared libraries: libsimgrid.so: cannot open shared object file: No such file or directory
 
-To fix this, give the path to where you installed the library into the
+To fix this, add the path to where you installed the library to the
 ``LD_LIBRARY_PATH`` variable. You can add the following line to your
 ``~/.bashrc`` so that it gets executed each time you log into your
 computer.

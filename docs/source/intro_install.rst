@@ -29,20 +29,20 @@ Stable Java Package
 
 The jar file can be retrieved from the `Release page
 <https://framagit.org/simgrid/simgrid/tags>`_. This file is
-self-contained, including the native components for Linux, Mac OSX and
+self-contained, including the native components for Linux, Mac OS X and
 Windows. Copy it to your project's classpath and you're set.
 
 Nightly built Java Package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For non-Windows systems (Linux, Mac or FreeBSD), head to `Jenkins <https://ci.inria.fr/simgrid/job/SimGrid>`_.
+For non-Windows systems (Linux, Mac OS X, or FreeBSD), head to `Jenkins <https://ci.inria.fr/simgrid/job/SimGrid>`_.
 In the build history, pick the last green (or at least yellow) build that is not blinking (i.e., not currently under
 build). In the list, pick a system that is close to yours, and click on the ball in the Debug row. The build artefact
-will appear on the top of the resulting page.
+will appear at the top of the resulting page.
 
 For Windows, head to `AppVeyor <https://ci.appveyor.com/project/simgrid/simgrid>`_.
 Click on the artefact link on the right, and grab your file. If the latest build failed, there will be no artefact. Then
-you will need to first click on "History" on the top and search for the last successful build.
+you will need to first click on "History" at the top and look for the last successful build.
 
 Binary Java Troubleshooting
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -65,7 +65,7 @@ Installing from the Source
 Getting the Dependencies
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-C++ compiler (either g++, clang or icc).
+C++ compiler (either g++, clang, or icc).
   We use the C++11 standard, and older compilers tend to fail on
   us. It seems that g++ 5.0 or higher is required nowadays (because of
   boost).  SimGrid compiles well with `clang` or `icc` too.
@@ -134,7 +134,7 @@ Generic build-time options
 """"""""""""""""""""""""""
 
 These options specify for example the path to various system elements
-(Python path, compiler to use, etc). In most case, cmake automatically
+(Python path, compiler to use, etc). In most case, CMake automatically
 discovers the right value for these ones, but you can set them
 manually on need.  Notable such variables include ``CC`` and ``CXX``,
 defining respectively the paths to the C and C++ compilers, ``CFLAGS``
@@ -146,7 +146,7 @@ The best way to discover the exact name of the option that you need to
 change is to press ``t`` in the ``ccmake`` graphical interface, as all
 options are shown (and documented) in the advanced mode.
 
-Once you know their name, there is several ways to change the value of
+Once you know their name, there are several ways to change the values of
 build-time options. You can naturally use the ccmake graphical
 interface for that, or you can use environment variables, or you can
 prefer the ``-D`` flag of ``cmake``.
@@ -169,7 +169,7 @@ Note that the ending dot is mandatory (see :ref:`install_cmake_outsrc`).
 SimGrid compilation options
 """""""""""""""""""""""""""
 
-Here is the list of all SimGrid-specific build-time options (the
+Here is the list of all SimGrid-specific compile-time options (the
 default choice is in uppercase).
 
 CMAKE_INSTALL_PREFIX (path)
@@ -187,9 +187,9 @@ enable_compile_warnings (on/OFF)
   regular user, this option is of little use.
 
 enable_debug (ON/off)
-  Disabling this option toto discards all log messages of gravity
+  Disabling this option discards all log messages of gravity
   debug or below at compile time (see @ref XBT_log). The resulting
-  code is faster than if you discarding these messages at
+  code is faster than if you discard these messages at
   runtime. However, it obviously becomes impossible to get any debug
   info from SimGrid if something goes wrong.
 
@@ -215,7 +215,7 @@ enable_lto (ON/off)
   with older gcc versions.
 
 enable_maintainer_mode (on/OFF)
-  (dev only) Regenerates the XML parsers when the dtd is modified (requires flex and flexml).
+  (dev only) Regenerates the XML parsers whenever the DTD is modified (requires flex and flexml).
 
 enable_mallocators (ON/off)
   Activates our internal memory caching mechanism. This produces faster
@@ -241,7 +241,7 @@ enable_smpi_MPICH3_testsuite (on/OFF)
 Reset the build configuration
 """""""""""""""""""""""""""""
 
-To empty the cmake cache (either when you add a new library or when
+To empty the CMake cache (either when you add a new library or when
 things go seriously wrong), simply delete your ``CMakeCache.txt``. You
 may also want to directly edit this file in some circumstances.
 
@@ -281,7 +281,7 @@ In addition, several compilation targets are provided in SimGrid. If
 your system is well configured, the full list of targets is available
 for completion when using the ``Tab`` key. Note that some of the
 existing targets are not really for public consumption so don't worry
-if some stuff doesn't work for you.
+if some do not work for you.
 
 - **make simgrid**: Build only the SimGrid library and not any example
 - **make s4u-app-pingpong**: Build only this example (works for any example)
@@ -314,7 +314,7 @@ on `our Jenkins <https://ci.inria.fr/simgrid/>`_.
 .. code-block:: shell
 
   ctest	                    # Launch all tests
-  ctest -R s4u              # Launch only the tests which name match the string "s4u"
+  ctest -R s4u              # Launch only the tests whose names match the string "s4u"
   ctest -j4                 # Launch all tests in parallel, at most 4 concurrent jobs
   ctest --verbose           # Display all details on what's going on
   ctest --output-on-failure # Only get verbose for the tests that fail
@@ -347,7 +347,7 @@ CMake Error: Parse error in cache file build_dir/CMakeCache.txt. Offending entry
   You can safely ignore the warning about "-pthread" not being used, if it appears.
 
 /usr/include does not seem to exist
-  This directory does not exist by default on modern Mac OSX versions,
+  This directory does not exist by default on modern Mac OS X versions,
   and you may need to create it with ``xcode-select -install``
 
 .. _install_cmake_windows:
@@ -397,7 +397,7 @@ Sometimes, the build system fails to find the JNI headers. First locate them as 
 
 
 Then, set the JAVA_INCLUDE_PATH environment variable to the right
-path, and relaunch cmake. If you have several version of jni installed
+path, and relaunch cmake. If you have several versions of JNI installed
 (as above), pick the one corresponding to the report of
 ``javac -version``
 
@@ -412,7 +412,7 @@ Note that the filename ```jni.h``` was removed from the path.
 Linux Multi-Arch Specifics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-On a multiarch x86_64 Linux, it should be possible to compile a 32 bit
+On a multiarch x86_64 Linux, it should be possible to compile a 32-bit
 version of SimGrid with something like:
 
 .. code-block:: shell
