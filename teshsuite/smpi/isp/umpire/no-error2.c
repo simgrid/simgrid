@@ -31,17 +31,17 @@ main (int argc, char **argv)
   src = (rank + 1) % nprocs;
   dest = (rank - 1 + nprocs) % nprocs;
 
-  memset (buf0, 0, buf_size);
+  memset (buf0, 0, buf_size*sizeof(int));
 
   MPI_Sendrecv (buf0, buf_size, MPI_INT, dest, 0,
 		buf1, buf_size, MPI_INT, src, 0, MPI_COMM_WORLD, &status);
 
-  memset (buf1, 1, buf_size);
+  memset (buf1, 1, buf_size*sizeof(int));
 
   MPI_Sendrecv (buf1, buf_size, MPI_INT, src, 0,
 		buf0, buf_size, MPI_INT, dest, 0, MPI_COMM_WORLD, &status);
 
-  memset (buf0, 0, buf_size);
+  memset (buf0, 0, buf_size*sizeof(int));
 
   MPI_Sendrecv (buf0, buf_size, MPI_INT, dest, 0,
 		buf1, buf_size, MPI_INT, src, 0, MPI_COMM_WORLD, &status);

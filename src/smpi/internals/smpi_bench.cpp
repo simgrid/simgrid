@@ -40,6 +40,7 @@ SharedMallocType smpi_cfg_shared_malloc = SharedMallocType::GLOBAL;
 double smpi_total_benched_time = 0;
 
 extern "C" XBT_PUBLIC void smpi_execute_flops_(double* flops);
+
 void smpi_execute_flops_(double *flops)
 {
   smpi_execute_flops(*flops);

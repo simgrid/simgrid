@@ -39,7 +39,7 @@ main (int argc, char **argv)
       }
     }
     else {
-      memset (buf, 1, buf_size);
+      memset (buf, 1, buf_size*sizeof(int));
 
       MPI_Send (buf, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
     }

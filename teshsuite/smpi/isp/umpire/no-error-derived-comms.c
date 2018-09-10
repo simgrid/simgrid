@@ -233,7 +233,7 @@ main (int argc, char **argv)
 	  }
 	}
 	else {
-	  memset (buf, 1, buf_size);
+	  memset (buf, 1, buf_size*sizeof(int));
 
 	  MPI_Send (buf, buf_size, MPI_INT, 0, 0, dcomms[i]);
 	}
@@ -249,7 +249,7 @@ main (int argc, char **argv)
     }
     else if ((rank % 3) == 2) {
       for (j = 0; j < intersize; j++) {
-	memset (buf, 1, buf_size);
+	memset (buf, 1, buf_size*sizeof(int));
 
 	MPI_Send (buf, buf_size, MPI_INT, j, 0, intercomm);
       }
@@ -273,7 +273,7 @@ main (int argc, char **argv)
 	  }
 	}
 	else {
-	  memset (buf, 1, buf_size);
+	  memset (buf, 1, buf_size*sizeof(int));
 
 	  MPI_Send (buf, buf_size, MPI_INT, 0, 0, dcomms[i]);
 	}
@@ -290,7 +290,7 @@ main (int argc, char **argv)
     }
     else if ((rank % 3) == 2) {
       for (j = 0; j < intersize; j++) {
-	memset (buf, 1, buf_size);
+	memset (buf, 1, buf_size*sizeof(int));
 
 	MPI_Send (buf, buf_size, MPI_INT, j, 0, intercomm);
       }

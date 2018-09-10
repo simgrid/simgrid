@@ -47,8 +47,8 @@ main (int argc, char **argv)
   printf ("(%d) is alive on %s\n", rank, processor_name);
   fflush (stdout);
 
-  memset (buf0, 1, buf_size);
-  memset (buf1, 2, buf_size);
+  memset (buf0, 1, buf_size*sizeof(int));
+  memset (buf1, 2, buf_size*sizeof(int));
 
   MPI_Barrier(MPI_COMM_WORLD);
 

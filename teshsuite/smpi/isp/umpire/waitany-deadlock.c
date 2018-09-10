@@ -54,7 +54,7 @@ main (int argc, char **argv)
     }
   else if (rank == 1)
     {
-      memset (buf0, 1, buf_size);
+      memset (buf0, 1, buf_size*sizeof(int));
 
       for (i = 3; i > 0; i--) {
 	MPI_Recv (&flipbit, 1, MPI_INT, 0, i, MPI_COMM_WORLD, &status);
