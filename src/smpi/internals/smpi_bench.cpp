@@ -28,6 +28,9 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi, "Logging specific to SMPI (benchmarking)");
 
+static simgrid::config::Flag<double> smpi_wtime_sleep("smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime",
+                                                      0.0);
+
 double smpi_cpu_threshold = -1;
 double smpi_host_speed;
 
@@ -177,7 +180,7 @@ void smpi_bench_end()
   smpi_total_benched_time += xbt_os_timer_elapsed(timer);
 }
 
-/* Private sleep function used by smpi_sleep() and smpi_usleep() */
+/* Private sleep function used by smpi_sleep(), smpi_usleep() and friends */
 static unsigned int private_sleep(double secs)
 {
   smpi_bench_end();
@@ -271,6 +274,27 @@ unsigned long long smpi_rastro_timestamp ()
   unsigned long long pre = (now - sec) * smpi_rastro_resolution();
   smpi_bench_begin();
   return static_cast<unsigned long long>(sec) * smpi_rastro_resolution() + pre;
+}
+
+double smpi_mpi_wtime()
+{
+  double time;
+  if (smpi_process()->initialized() && not smpi_process()->finalized() && not smpi_process()->sampling()) {
+    smpi_bench_end();
+    time = SIMIX_get_clock();
+    // to avoid deadlocks if used as a break condition, such as
+    //     while (MPI_Wtime(...) < time_limit) {
+    //       ....
+    //     }
+    // because the time will not normally advance when only calls to MPI_Wtime
+    // are made -> deadlock (MPI_Wtime never reaches the time limit)
+    if (smpi_wtime_sleep > 0)
+      simcall_process_sleep(smpi_wtime_sleep);
+    smpi_bench_begin();
+  } else {
+    time = SIMIX_get_clock();
+  }
+  return time;
 }
 
 /* ****************************** Functions related to the SMPI_SAMPLE_ macros ************************************/
