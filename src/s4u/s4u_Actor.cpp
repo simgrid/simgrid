@@ -76,6 +76,7 @@ void Actor::join(double timeout)
 void Actor::set_auto_restart(bool autorestart)
 {
   simgrid::simix::simcall([this, autorestart]() {
+    xbt_assert(autorestart && not pimpl_->auto_restart_); // FIXME: handle all cases
     pimpl_->set_auto_restart(autorestart);
 
     simgrid::kernel::actor::ProcessArg* arg = new simgrid::kernel::actor::ProcessArg(pimpl_->host_, pimpl_);
