@@ -66,7 +66,7 @@ public:
 
   // FIXME: make these private
   ActorList process_list_;
-  std::map<std::string, kernel::actor::ProcessArg*> actors_at_boot_;
+  std::vector<kernel::actor::ProcessArg*> actors_at_boot_;
 };
 }
 }
