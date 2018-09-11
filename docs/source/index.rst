@@ -8,7 +8,7 @@ Welcome to SimGrid's documentation!
    :caption: Tutorials:
 
 	Simulating Algorithms <tuto_s4u.rst>
-	Simulating MPI Apps <tuto_mpi.rst>
+	Simulating MPI Applications <tuto_smpi.rst>
 
 .. toctree::
    :maxdepth: 2
