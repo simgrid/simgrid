@@ -1,0 +1,15 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+  <zone id="AS0" routing="Full">
+    <host id="host0" speed="1Gf"/>
+    <host id="host1" speed="2Gf"/>
+    <host id="host2" speed="40Gf"/>
+    <link id="link0" bandwidth="125MBps" latency="100us"/>
+    <link id="link1" bandwidth="50MBps" latency="150us"/>
+    <link id="link2" bandwidth="250MBps" latency="50us"/>
+    <route src="host0" dst="host1"><link_ctn id="link0"/><link_ctn id="link1"/></route>
+    <route src="host1" dst="host2"><link_ctn id="link1"/><link_ctn id="link2"/></route>
+    <route src="host0" dst="host2"><link_ctn id="link0"/><link_ctn id="link2"/></route>
+  </zone>
+</platform>

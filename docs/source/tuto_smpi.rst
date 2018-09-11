@@ -68,5 +68,47 @@ time is reported into the simulator.
 Describing Your Platform
 ========================
 
+As a SMPI user, you are supposed to provide a description of your
+virtual platform, that is mostly a set of simulated hosts and network
+links with some performance characteristics. SimGrid provides a plenty
+of :ref:`documentation <platform>`_ and examples (in the
+`examples/platform <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms>`_
+source directory), and this section only show a series of introductory
+examples.
+
+Simple Example with 3 hosts
+---------------------------
+
+At the most basic level, you can describe your simulated platform as a
+graph of hosts and network links. For instance:
+
+.. image:: /tuto_smpi/img/3hosts.png
+   :align: center
+
+.. hidden-code-block:: xml
+    :starthidden: True
+    :label: See the XML platform description file...
+
+    <?xml version='1.0'?>
+    <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+    <platform version="4.1">
+      <zone id="AS0" routing="Full">
+        <host id="host0" speed="1Gf"/>
+        <host id="host1" speed="2Gf"/>
+        <host id="host2" speed="40Gf"/>
+        <link id="link0" bandwidth="125MBps" latency="100us"/>
+        <link id="link1" bandwidth="50MBps" latency="150us"/>
+        <link id="link2" bandwidth="250MBps" latency="50us"/>
+        <route src="host0" dst="host1"><link_ctn id="link0"/><link_ctn id="link1"/></route>
+        <route src="host1" dst="host2"><link_ctn id="link1"/><link_ctn id="link2"/></route>
+        <route src="host0" dst="host2"><link_ctn id="link0"/><link_ctn id="link2"/></route>
+      </zone>
+    </platform>
+
+In this XML, note the way in which hosts, links, and routes are
+defined. All hosts are defined with a power (i.e., compute speed in
+Gflops), and links with a latency (in us) and bandwidth (in MBytes per
+second). Other units are possible and written as expected. By default,
+routes are symmetrical.
        
 ..  LocalWords:  SimGrid
