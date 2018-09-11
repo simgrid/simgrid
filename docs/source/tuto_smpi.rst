@@ -37,7 +37,7 @@ only plan to debug your application in a reproducible setup, without
 any performance-related analysis.
 
 How does it work?
------------------
+^^^^^^^^^^^^^^^^^
 
 In SMPI, communications are simulated while computations are
 emulated. This means that while computations occur as they would in
@@ -61,7 +61,12 @@ to predict the time taken by each communications. Any computations
 occuring between two MPI calls are benchmarked, and the corresponding
 time is reported into the simulator.
 
+.. image:: /tuto_smpi/img/big-picture.png
+   :align: center
+
+
 Describing Your Platform
 ========================
 
+       
 ..  LocalWords:  SimGrid
