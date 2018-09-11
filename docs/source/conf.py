@@ -13,8 +13,10 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os, subprocess
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+
+# Search for our extensions too
+import sys
+sys.path.append(os.path.abspath('_ext'))
 
 # -- Project information -----------------------------------------------------
 
@@ -44,6 +46,7 @@ extensions = [
 #    'sphinx.ext.ifconfig',
     'breathe',
     'exhale',
+    'hidden_code_block',
 ]
 
 todo_include_todos = True
