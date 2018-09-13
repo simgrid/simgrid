@@ -1,0 +1,42 @@
+# What to read
+INPUT                  = ../../include/simgrid/forward.h
+INPUT                 += ../../include/simgrid/s4u
+INPUT                 += ../../include/simgrid/xbt
+RECURSIVE              = YES
+
+# What to produce
+OUTPUT_DIRECTORY       = ../build/
+GENERATE_XML           = YES
+GENERATE_HTML          = NO
+GENERATE_LATEX         = NO
+
+FULL_PATH_NAMES        = NO # Don't leak the path on which it was built
+XML_PROGRAMLISTING     = NO # No program listings, please
+CREATE_SUBDIRS         = NO # Mandatory for exhale
+
+# Allow for rst directives and advanced functions e.g. grid tables
+ALIASES                = "rst=\verbatim embed:rst:leading-asterisk"
+ALIASES               += "endrst=\endverbatim"
+
+# Enable preprocessing and related preprocessor necessities
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = NO
+SKIP_FUNCTION_MACROS   = NO
+
+PREDEFINED             += \
+    __cplusplus \
+    DOXYGEN \
+    XBT_PUBLIC= \
+    XBT_EXPORT_NO_IMPORT= \
+    XBT_IMPORT_NO_EXPORT= \
+    XBT_PUBLIC_DATA=extern \
+    XBT_PUBLIC= \
+    XBT_INLINE= \
+    XBT_ALWAYS_INLINE= \
+    XBT_PRIVATE= \
+    XBT_ATTRIB_NORETURN= \
+    XBT_ATTRIB_UNUSED= \
+    XBT_ATTRIB_DEPRECATED_v322(m)= \
+    XBT_ATTRIB_DEPRECATED_v323(m)= \
+    XBT_ATTRIB_DEPRECATED_v324(m)=

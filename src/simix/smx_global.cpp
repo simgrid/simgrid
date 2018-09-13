@@ -503,13 +503,6 @@ void SIMIX_run()
       SIMIX_wake_processes();
     } while (again);
 
-    /* Autorestart all process */
-    for (auto const& host : host_that_restart) {
-      XBT_INFO("Restart processes on host %s", host->get_cname());
-      host->turn_on();
-    }
-    host_that_restart.clear();
-
     /* Clean processes to destroy */
     SIMIX_process_empty_trash();
 

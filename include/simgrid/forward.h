@@ -16,33 +16,57 @@ namespace simgrid {
 
 namespace s4u {
 class Activity;
+
 class Actor;
-using ActorPtr = boost::intrusive_ptr<Actor>;
+/** Smart pointer to a simgrid::s4u::Actor */
+typedef boost::intrusive_ptr<Actor> ActorPtr;
 XBT_PUBLIC void intrusive_ptr_release(Actor* actor);
 XBT_PUBLIC void intrusive_ptr_add_ref(Actor* actor);
+
 class Barrier;
+
 class Comm;
-using CommPtr = boost::intrusive_ptr<Comm>;
+/** Smart pointer to a simgrid::s4u::Comm */
+typedef boost::intrusive_ptr<Comm> CommPtr;
 XBT_PUBLIC void intrusive_ptr_release(Comm* c);
 XBT_PUBLIC void intrusive_ptr_add_ref(Comm* c);
+
+class ConditionVariable;
+/** Smart pointer to a simgrid::s4u::ConditionVariable */
+typedef boost::intrusive_ptr<ConditionVariable> ConditionVariablePtr;
+XBT_PUBLIC void intrusive_ptr_release(ConditionVariable* c);
+XBT_PUBLIC void intrusive_ptr_add_ref(ConditionVariable* c);
+
 class Engine;
+
 class Exec;
-using ExecPtr = boost::intrusive_ptr<Exec>;
+/** Smart pointer to a simgrid::s4u::Exec */
+typedef boost::intrusive_ptr<Exec> ExecPtr;
 XBT_PUBLIC void intrusive_ptr_release(Exec* e);
 XBT_PUBLIC void intrusive_ptr_add_ref(Exec* e);
+
 class Host;
+
 class Io;
-using IoPtr = boost::intrusive_ptr<Io>;
+/** Smart pointer to a simgrid::s4u::Io */
+typedef boost::intrusive_ptr<Io> IoPtr;
 XBT_PUBLIC void intrusive_ptr_release(Io* i);
 XBT_PUBLIC void intrusive_ptr_add_ref(Io* i);
+
 class Link;
+
 class Mailbox;
-using MailboxPtr = boost::intrusive_ptr<Mailbox>;
+/** Smart pointer to a simgrid::s4u::Mailbox */
+typedef boost::intrusive_ptr<Mailbox> MailboxPtr;
 XBT_PUBLIC void intrusive_ptr_release(Mailbox* m);
 XBT_PUBLIC void intrusive_ptr_add_ref(Mailbox* m);
+
 class Mutex;
 XBT_PUBLIC void intrusive_ptr_release(Mutex* m);
 XBT_PUBLIC void intrusive_ptr_add_ref(Mutex* m);
+/** Smart pointer to a simgrid::s4u::Mutex */
+typedef boost::intrusive_ptr<Mutex> MutexPtr;
+
 class NetZone;
 class VirtualMachine;
 class File;
@@ -57,29 +81,29 @@ namespace kernel {
 class EngineImpl;
 namespace actor {
 class ActorImpl;
-using ActorImplPtr = boost::intrusive_ptr<ActorImpl>;
+typedef boost::intrusive_ptr<ActorImpl> ActorImplPtr;
 } // namespace actor
 
 namespace activity {
   class ActivityImpl;
-  using ActivityImplPtr = boost::intrusive_ptr<ActivityImpl>;
+  typedef boost::intrusive_ptr<ActivityImpl> ActivityImplPtr;
   XBT_PUBLIC void intrusive_ptr_add_ref(ActivityImpl* activity);
   XBT_PUBLIC void intrusive_ptr_release(ActivityImpl* activity);
 
   class ConditionVariableImpl;
 
   class CommImpl;
-  using CommImplPtr = boost::intrusive_ptr<CommImpl>;
+  typedef boost::intrusive_ptr<CommImpl> CommImplPtr;
   class ExecImpl;
-  using ExecImplPtr = boost::intrusive_ptr<ExecImpl>;
+  typedef boost::intrusive_ptr<ExecImpl> ExecImplPtr;
   class IoImpl;
-  using IoImplPtr = boost::intrusive_ptr<IoImpl>;
+  typedef boost::intrusive_ptr<IoImpl> IoImplPtr;
   class MutexImpl;
-  using MutexImplPtr = boost::intrusive_ptr<MutexImpl>;
+  typedef boost::intrusive_ptr<MutexImpl> MutexImplPtr;
   class RawImpl;
-  using RawImplPtr = boost::intrusive_ptr<RawImpl>;
+  typedef boost::intrusive_ptr<RawImpl> RawImplPtr;
   class SleepImpl;
-  using SleepImplPtr = boost::intrusive_ptr<SleepImpl>;
+  typedef boost::intrusive_ptr<SleepImpl> SleepImplPtr;
 
   class MailboxImpl;
 }
@@ -152,7 +176,6 @@ typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 typedef simgrid::kernel::activity::ConditionVariableImpl* smx_cond_t;
 typedef simgrid::kernel::activity::MutexImpl* smx_mutex_t;
 typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
-typedef simgrid::surf::StorageImpl* surf_storage_t;
 
 #else
 
@@ -171,7 +194,6 @@ typedef struct s_smx_actor* smx_actor_t;
 typedef struct s_smx_cond_t* smx_cond_t;
 typedef struct s_smx_mutex* smx_mutex_t;
 typedef struct s_smx_mailbox* smx_mailbox_t;
-typedef struct s_surf_storage* surf_storage_t;
 
 #endif
 

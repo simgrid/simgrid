@@ -95,8 +95,6 @@ MPI_Errhandler *MPI_ERRHANDLER_NULL = nullptr;
 // No instance gets manually created; check also the smpirun.in script as
 // this default name is used there as well (when the <actor> tag is generated).
 static const std::string smpi_default_instance_name("smpirun");
-static simgrid::config::Flag<double> smpi_wtime_sleep(
-  "smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0);
 static simgrid::config::Flag<double> smpi_init_sleep(
   "smpi/init", "Time to inject inside a call to MPI_Init", 0.0);
 
@@ -745,24 +743,3 @@ void smpi_mpi_init() {
   if(smpi_init_sleep > 0)
     simcall_process_sleep(smpi_init_sleep);
 }
-
-double smpi_mpi_wtime(){
-  double time;
-  if (smpi_process()->initialized() != 0 && smpi_process()->finalized() == 0 && smpi_process()->sampling() == 0) {
-    smpi_bench_end();
-    time = SIMIX_get_clock();
-    // to avoid deadlocks if used as a break condition, such as
-    //     while (MPI_Wtime(...) < time_limit) {
-    //       ....
-    //     }
-    // because the time will not normally advance when only calls to MPI_Wtime
-    // are made -> deadlock (MPI_Wtime never reaches the time limit)
-    if(smpi_wtime_sleep > 0)
-      simcall_process_sleep(smpi_wtime_sleep);
-    smpi_bench_begin();
-  } else {
-    time = SIMIX_get_clock();
-  }
-  return time;
-}
-

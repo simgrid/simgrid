@@ -4,13 +4,13 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
+#include "simgrid/Exception.hpp"
 #include "smx_private.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
-#include "xbt/ex.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");
 
@@ -129,7 +129,8 @@ void SIMIX_execution_finish(smx_activity_t synchro)
       case SIMIX_FAILED:
         XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->host_->get_cname());
         simcall->issuer->context_->iwannadie = 1;
-        SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        simcall->issuer->exception =
+            std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
         break;
 
       case SIMIX_CANCELED:
@@ -139,7 +140,7 @@ void SIMIX_execution_finish(smx_activity_t synchro)
 
       case SIMIX_TIMEOUT:
         XBT_DEBUG("SIMIX_execution_finished: execution timeouted");
-        SMX_EXCEPTION(simcall->issuer, timeout_error, 0, "Timeouted");
+        simcall->issuer->exception = std::make_exception_ptr(simgrid::TimeoutError(XBT_THROW_POINT, "Timeouted"));
         break;
 
       default:

@@ -29,7 +29,7 @@ namespace smpi{
 std::unordered_map<int, smpi_key_elem> Comm::keyvals_;
 int Comm::keyval_id_=0;
 
-Comm::Comm(MPI_Group group, MPI_Topology topo) : group_(group), topo_(topo)
+Comm::Comm(MPI_Group group, MPI_Topology topo, int smp) : group_(group), topo_(topo),is_smp_comm_(smp)
 {
   refcount_        = 1;
   topoType_        = MPI_INVALID_TOPO;
@@ -167,6 +167,12 @@ int Comm::is_blocked(){
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->is_blocked();
   return is_blocked_;
+}
+
+int Comm::is_smp_comm(){
+  if (this == MPI_COMM_UNINITIALIZED)
+    return smpi_process()->comm_world()->is_smp_comm();
+  return is_smp_comm_;
 }
 
 MPI_Comm Comm::split(int color, int key)
@@ -321,7 +327,7 @@ void Comm::init_smp(){
     }
   }
 
-  MPI_Comm comm_intra = new  Comm(group_intra, nullptr);
+  MPI_Comm comm_intra = new  Comm(group_intra, nullptr, 1);
   leader=min_index;
 
   int* leaders_map = new int[comm_size];
@@ -329,7 +335,7 @@ void Comm::init_smp(){
   std::fill_n(leaders_map, comm_size, 0);
   std::fill_n(leader_list, comm_size, -1);
 
-  Coll_allgather_mpich::allgather(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
+  Coll_allgather_ring::allgather(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
 
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
@@ -363,7 +369,7 @@ void Comm::init_smp(){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
       leaders_group->set_mapping(simgrid::s4u::Actor::by_pid(leader_list[i]), i);
-    leader_comm = new  Comm(leaders_group, nullptr);
+    leader_comm = new  Comm(leaders_group, nullptr,1);
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
 
@@ -373,7 +379,7 @@ void Comm::init_smp(){
       leaders_group->set_mapping(simgrid::s4u::Actor::by_pid(leader_list[i]), i);
 
     if(this->get_leaders_comm()==MPI_COMM_NULL){
-      leader_comm = new  Comm(leaders_group, nullptr);
+      leader_comm = new  Comm(leaders_group, nullptr,1);
       this->set_leaders_comm(leader_comm);
     }else{
       leader_comm=this->get_leaders_comm();
@@ -387,7 +393,7 @@ void Comm::init_smp(){
   if(comm_intra->rank()==0) {
     int is_uniform       = 1;
     int* non_uniform_map = xbt_new0(int,leader_group_size);
-    Coll_allgather_mpich::allgather(&my_local_size, 1, MPI_INT,
+    Coll_allgather_ring::allgather(&my_local_size, 1, MPI_INT,
         non_uniform_map, 1, MPI_INT, leader_comm);
     for(i=0; i < leader_group_size; i++) {
       if(non_uniform_map[0] != non_uniform_map[i]) {
@@ -402,7 +408,7 @@ void Comm::init_smp(){
     }
     is_uniform_=is_uniform;
   }
-  Coll_bcast_mpich::bcast(&(is_uniform_),1, MPI_INT, 0, comm_intra );
+  Coll_bcast_scatter_LR_allgather::bcast(&(is_uniform_),1, MPI_INT, 0, comm_intra );
 
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables

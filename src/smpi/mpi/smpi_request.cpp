@@ -7,6 +7,7 @@
 
 #include "mc/mc.h"
 #include "private.hpp"
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
@@ -17,11 +18,10 @@
 #include "src/simix/ActorImpl.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "xbt/config.hpp"
-#include <xbt/ex.hpp>
 
 #include <algorithm>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_request, smpi, "Logging specific to SMPI (reques)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_request, smpi, "Logging specific to SMPI (request)");
 
 static simgrid::config::Flag<double> smpi_iprobe_sleep(
   "smpi/iprobe", "Minimum time to inject inside a call to MPI_Iprobe", 1e-4);

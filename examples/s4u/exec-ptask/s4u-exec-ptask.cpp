@@ -20,8 +20,6 @@
 
 #include "simgrid/plugins/energy.h"
 #include <simgrid/s4u.hpp>
-#include <xbt/ex.hpp>
-#include <xbt/log.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_energyptask, "Messages specific for this s4u example");
 

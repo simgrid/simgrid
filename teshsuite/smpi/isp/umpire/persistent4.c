@@ -40,7 +40,7 @@ main (int argc, char **argv)
   }
   else {
     if (rank == 0) {
-      memset (buf0, 0, buf_size);
+      memset (buf0, 0, buf_size*sizeof(int));
 
       MPI_Send_init (buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &aReq[0]);
       MPI_Recv_init (buf1, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &aReq[1]);
@@ -50,14 +50,14 @@ main (int argc, char **argv)
 
       MPI_Waitall (2, aReq, aStatus);
 
-      memset (buf0, 1, buf_size);
+      memset (buf0, 1, buf_size*sizeof(int));
 
       MPI_Startall (2, aReq);
 
       MPI_Waitall (2, aReq, aStatus);
     }
     else if (rank == 1) {
-      memset (buf1, 1, buf_size);
+      memset (buf1, 1, buf_size*sizeof(int));
 
       MPI_Recv_init (buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &aReq[0]);
       MPI_Send_init (buf1, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &aReq[1]);
@@ -67,7 +67,7 @@ main (int argc, char **argv)
 
       MPI_Waitall (2, aReq, aStatus);
 
-      memset (buf1, 0, buf_size);
+      memset (buf1, 0, buf_size*sizeof(int));
 
       MPI_Startall (2, aReq);
 

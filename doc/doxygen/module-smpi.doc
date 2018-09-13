@@ -126,8 +126,8 @@ of the targeted MPI implementations.
 You can switch the automatic selector through the
 \c smpi/coll-selector configuration item. Possible values:
 
- - <b>ompi</b>: default selection logic of OpenMPI (version 1.7)
- - <b>mpich</b>: default selection logic of MPICH (version 3.0.4)
+ - <b>ompi</b>: default selection logic of OpenMPI (version 3.1.2)
+ - <b>mpich</b>: default selection logic of MPICH (version 3.3b)
  - <b>mvapich2</b>: selection logic of MVAPICH2 (version 1.9) tuned
    on the Stampede cluster   
  - <b>impi</b>: preliminary version of an Intel MPI selector (version
@@ -231,6 +231,7 @@ which will iterate over all implemented versions and output the best
  - ompi_tree: recursive doubling type algorithm, with tree structure
  - ompi_doublering: double ring algorithm
  - mvapich2_pair: pairwise algorithm
+ - mpich_smp: barrier intra-node, then inter-node
 
 #### MPI_Scatter
 

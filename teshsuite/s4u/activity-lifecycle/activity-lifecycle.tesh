@@ -1,0 +1,2 @@
+! output display
+$ ${bindir:=.}/activity-lifecycle ${srcdir:=.}/testing_platform.xml

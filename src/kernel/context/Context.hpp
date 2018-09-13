@@ -52,17 +52,23 @@ class XBT_PUBLIC Context {
 private:
   std::function<void()> code_;
   void_pfn_smxprocess_t cleanup_func_ = nullptr;
-  smx_actor_t process_                = nullptr;
+  smx_actor_t actor_                  = nullptr;
 
 public:
   class StopRequest {
     /** @brief Exception launched to kill a process, in order to properly unwind its stack and release RAII stuff
      *
-     * Nope, Sonar, this should not inherit of std::exception.
+     * Nope, Sonar, this should not inherit of std::exception nor of simgrid::Exception.
      * Otherwise, users may accidentally catch it with a try {} catch (std::exception)
      */
+  public:
+    StopRequest() = default;
+    explicit StopRequest(std::string msg) : msg_(msg) {}
+
+  private:
+    std::string msg_;
   };
-  bool iwannadie;
+  bool iwannadie = false;
 
   Context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
   Context(const Context&) = delete;
@@ -70,7 +76,7 @@ public:
 
   void operator()() { code_(); }
   bool has_code() const { return static_cast<bool>(code_); }
-  smx_actor_t process() { return this->process_; }
+  smx_actor_t process() { return this->actor_; }
   void set_cleanup(void_pfn_smxprocess_t cleanup) { cleanup_func_ = cleanup; }
 
   // Virtual methods
@@ -81,8 +87,8 @@ public:
 
 class XBT_PUBLIC AttachContext : public Context {
 public:
-  AttachContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
-      : Context(std::move(code), cleanup_func, process)
+  AttachContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor)
+      : Context(std::move(code), cleanup_func, actor)
   {
   }
 

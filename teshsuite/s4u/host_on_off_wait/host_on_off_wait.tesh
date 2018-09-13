@@ -1,7 +1,0 @@
-$ ./host_on_off_wait ${platfdir}/small_platform.xml
-> [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Master waiting
-> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Worker waiting
-> [Tremblay:master:(1) 1.000000] [s4u_test/INFO] Turning off the worker host
-> [Tremblay:master:(1) 1.000000] [s4u_test/INFO] Master has finished
-> [Jupiter:worker:(2) 1.000000] [s4u_test/INFO] The host has died ... as expected.
-> [1.000000] [s4u_test/INFO] Simulation time 1

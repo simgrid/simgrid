@@ -28,11 +28,14 @@ public:
 
   ~Exec() = default;
 
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_start;
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_completion;
+
   Activity* start() override;
   Activity* wait() override;
-  Activity* wait(double timeout) override;
+  Activity* wait_for(double timeout) override;
   Activity* cancel() override;
-  bool test();
+  bool test() override;
 
   ExecPtr set_priority(double priority);
   ExecPtr set_bound(double bound);
@@ -44,23 +47,21 @@ public:
   double get_remaining() override;
   double get_remaining_ratio();
 
+#ifndef DOXYGEN
   //////////////// Deprecated functions
-  /** @deprecated See Exec::set_priority() */
+  XBT_ATTRIB_DEPRECATED_v324("Please use Exec::wait_for()") void wait(double t) override { wait_for(t); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_priority()") ExecPtr setPriority(double priority)
   {
     return set_priority(priority);
   }
-  /** @deprecated See Exec::set_bound() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_bound()") ExecPtr setBound(double bound) { return set_bound(bound); }
-  /** @deprecated See Exec::set_host() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_host()") ExecPtr setHost(Host* host) { return set_host(host); }
-  /** @deprecated See Exec::get_host() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Exec::get_host()") Host* getHost() { return get_host(); }
-  /** @deprecated See Exec::get_remaining_ratio() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Exec::get_remaining_ratio()") double getRemainingRatio()
   {
     return get_remaining_ratio();
   }
+#endif
 
 private:
   Host* host_                   = nullptr;

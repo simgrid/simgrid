@@ -3,11 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "smx_private.hpp"
 #include "src/surf/xml/platf_private.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
 #include <simgrid/engine.h>
-#include <xbt/ex.hpp>
 
 #include <string>
 #include <vector>
@@ -69,7 +69,7 @@ static simgrid::simix::ActorCodeFactory toActorCodeFactory(xbt_main_func_t code)
 }
 static simgrid::simix::ActorCodeFactory toActorCodeFactory(void (*code)(std::vector<std::string>))
 {
-  return [code](std::vector<std::string> args) { return simgrid::xbt::wrap_main(code, std::move(args)); };
+  return [code](std::vector<std::string> args) { return std::bind(std::move(code), std::move(args)); };
 }
 
 /**

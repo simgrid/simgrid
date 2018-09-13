@@ -214,7 +214,8 @@ XBT_PUBLIC smx_actor_t simcall_process_create(std::string name, xbt_main_func_t 
                                               std::unordered_map<std::string, std::string>* properties);
 #endif
 
-XBT_PUBLIC void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const char* mesg);
+XBT_ATTRIB_DEPRECATED_v324("Please use ActorImpl::throw_exception") XBT_PUBLIC
+    void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const char* mesg);
 
 /* Process handling */
 XBT_PUBLIC void simcall_process_suspend(smx_actor_t process);

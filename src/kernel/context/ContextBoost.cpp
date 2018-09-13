@@ -5,6 +5,7 @@
 
 #include "ContextBoost.hpp"
 #include "context_private.hpp"
+#include "simgrid/Exception.hpp"
 #include "src/simix/smx_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
@@ -113,10 +114,13 @@ void BoostContext::wrapper(BoostContext::arg_type arg)
 #endif
   try {
     (*context)();
-    context->Context::stop();
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
+  } catch (simgrid::Exception const& e) {
+    XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
+    throw;
   }
+  context->Context::stop();
   ASAN_ONLY(context->asan_stop_ = true);
   context->suspend();
 }

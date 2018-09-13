@@ -51,7 +51,7 @@ main (int argc, char **argv)
     {
     case 0:
       for (i = 0; i < ITERATIONS; i++) {
-	memset (buf, 1, buf_size * REQS_PER_ITERATION);
+	memset (buf, 1, buf_size*sizeof(int) * REQS_PER_ITERATION);
 
 	for (j = 0; j < REQS_PER_ITERATION; j++) {
 	  MPI_Isend (&buf[j*buf_size], buf_size, MPI_INT,
@@ -65,7 +65,7 @@ main (int argc, char **argv)
 
     case 1:
       for (i = 0; i < ITERATIONS; i++) {
-	memset (buf, 2, buf_size * REQS_PER_ITERATION);
+	memset (buf, 2, buf_size*sizeof(int) * REQS_PER_ITERATION);
 
 	for (j = 0; j < REQS_PER_ITERATION; j++) {
 	  MPI_Irecv (&buf[j*buf_size], buf_size, MPI_INT,

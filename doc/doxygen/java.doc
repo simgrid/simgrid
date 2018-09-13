@@ -61,6 +61,15 @@ $ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$SIMGRID_ROOT/lib
 Add these lines to your `~/.bashrc` file or equivalent to make these
 settings permanent even after a reboot.
 
+** **pthread_create failed**
+
+You reached the amount of threads that can be run on your system. Try
+increasing the thread limits of your operating system.
+
+If you manage to get it working, you could also switch to the Java
+co-routines (see @ref bindings_java_coro_install). Unfortunately,
+nobody used them since a few years, so they may well be broken by now.
+
 ** **Other errors**
 
 When using jMSG, your program can crash for 3 main reasons:

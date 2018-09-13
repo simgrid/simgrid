@@ -12,11 +12,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_exec, s4u_activity, "S4U asynchronous execut
 
 namespace simgrid {
 namespace s4u {
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Exec::on_start;
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Exec::on_completion;
 
 Activity* Exec::start()
 {
   pimpl_ = simcall_execution_start(name_, tracing_category_, flops_amount_, 1. / priority_, bound_, host_);
   state_ = State::STARTED;
+  on_start(Actor::self());
   return this;
 }
 
@@ -29,12 +32,15 @@ Activity* Exec::cancel()
 
 Activity* Exec::wait()
 {
+  if (state_ == State::INITED)
+    start();
   simcall_execution_wait(pimpl_);
   state_ = State::FINISHED;
+  on_completion(Actor::self());
   return this;
 }
 
-Activity* Exec::wait(double timeout)
+Activity* Exec::wait_for(double timeout)
 {
   THROW_UNIMPLEMENTED;
   return this;

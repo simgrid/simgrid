@@ -24,25 +24,6 @@ $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 2 --log=no_loc
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Test done. See you!
 > [20.000000] [msg_test/INFO] Simulation time 20
 
-$ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 3 --log=no_loc
-> [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 3:
-> [Jupiter:process_sleep:(2) 0.000000] [msg_test/INFO]   I'm alive but I should sleep
-> [Jupiter:process_sleep:(2) 10.000000] [msg_test/INFO]   I'm alive but I should sleep
-> [Jupiter:process_sleep:(2) 20.000000] [msg_test/INFO]   I'm alive but I should sleep
-> [Jupiter:process_sleep:(2) 30.000000] [msg_test/INFO]   I'm alive but I should sleep
-> [Jupiter:process_sleep:(2) 40.000000] [msg_test/INFO]   I'm alive but I should sleep
-> [Jupiter:process_sleep:(2) 50.000000] [msg_test/INFO]   I'm alive but I should sleep
-> [Jupiter:process_sleep:(2) 60.000000] [msg_test/INFO]   I'm alive but I should sleep
-> [Jupiter:process_sleep:(2) 70.000000] [msg_test/INFO]   I'm alive but I should sleep
-> [Jupiter:process_sleep:(2) 80.000000] [msg_test/INFO]   I'm alive but I should sleep
-> [Jupiter:process_sleep:(2) 90.000000] [msg_test/INFO]   I'm alive but I should sleep
-> [Tremblay:test_launcher:(1) 100.000000] [msg_test/INFO]   Turn off
-> [Jupiter:process_sleep:(2) 100.000000] [msg_test/INFO]   I'm alive but I should sleep
-> [Tremblay:test_launcher:(1) 100.000000] [msg_test/INFO]   sleep for 10 seconds
-> [Tremblay:test_launcher:(1) 10100.000000] [msg_test/INFO] number of Process : 1 it should be 1 (i.e. the Test one))
-> [Tremblay:test_launcher:(1) 10100.000000] [msg_test/INFO]   Test done. See you!
-> [10100.000000] [msg_test/INFO] Simulation time 10100
-
 $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 4 --log=no_loc
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 4 (turn off src during a communication) : Create a Process/task to make a communication between Jupiter and Tremblay and turn off Jupiter during the communication
 > [Tremblay:commRX:(2) 10.000000] [msg_test/INFO]   Start RX
@@ -51,8 +32,6 @@ $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 4 --log=no_loc
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Turn Jupiter off
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO] Test 4 is ok.  (number of Process : 2, it should be 1 or 2 if RX has not been satisfied). An exception is raised when we turn off a node that has a process sleeping
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Test done. See you!
-> [Jupiter:commTX:(3) 20.000000] [msg_test/INFO] The host has died ... as expected.
-> [Jupiter:commTX:(3) 20.000000] [msg_test/INFO]   TX done
 > [Tremblay:commRX:(2) 20.000000] [msg_test/INFO]   Receive message: TRANSFER_FAILURE
 > [Tremblay:commRX:(2) 20.000000] [msg_test/INFO]   RX Done
 > [20.000000] [msg_test/INFO] Simulation time 20
@@ -87,7 +66,7 @@ $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 6 --log=no_loc
 > [Jupiter:process_daemonJUPI:(3) 9.000011] [msg_test/INFO]   Execute daemon
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Turn Jupiter off
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Shutdown vm0
-> [Jupiter:process_daemonJUPI:(3) 10.000000] [msg_test/INFO] Host as died as expected, do nothing else
+> [Jupiter:process_daemonJUPI:(3) 10.000000] [msg_test/INFO] Host has died as expected, do nothing else
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Destroy vm0
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO] Test 6 is also weird: when the node Jupiter is turned off once again, the VM and its daemon are not killed. However, the issue regarding the shutdown of hosted VMs can be seen a feature not a bug ;)
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Test done. See you!

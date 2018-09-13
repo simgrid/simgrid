@@ -31,7 +31,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
  * @brief Creates a synchro that executes some computation of an host.
  *
  * This function creates a SURF action and allocates the data necessary
- * to create the SIMIX synchro. It can raise a host_error exception if the host crashed.
+ * to create the SIMIX synchro. It can raise a HostFailureException exception if the host crashed.
  *
  * @param name Name of the execution synchro to create
  * @param category Tracing category
@@ -211,7 +211,7 @@ void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
  * @brief Creates a new sleep SIMIX synchro.
  *
  * This function creates a SURF action and allocates the data necessary
- * to create the SIMIX synchro. It can raise a host_error exception if the
+ * to create the SIMIX synchro. It can raise a HostFailureException if the
  * host crashed. The default SIMIX name of the synchro is "sleep".
  *
  *   @param duration Time duration of the sleep.

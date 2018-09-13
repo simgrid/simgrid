@@ -444,7 +444,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
   simgrid::kernel::actor::ProcessArg* arg =
       new simgrid::kernel::actor::ProcessArg(actor_name, code, nullptr, host, kill_time, properties, auto_restart);
 
-  host->pimpl_->actors_at_boot_.insert({actor_name, arg});
+  host->pimpl_->actors_at_boot_.emplace_back(arg);
 
   if (start_time > SIMIX_get_clock()) {
 

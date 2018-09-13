@@ -52,11 +52,6 @@ static inline int double_equals(double value1, double value2, double precision)
   return (fabs(value1 - value2) < precision);
 }
 
-/** @ingroup SURF_simulation
- *  @brief List of hosts that have just restarted and whose autorestart process should be restarted.
- */
-XBT_PUBLIC_DATA std::vector<sg_host_t> host_that_restart;
-
 /** @ingroup SURF_models
  *  @brief Initializes the CPU model with the model Cas01
  *

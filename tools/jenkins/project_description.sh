@@ -60,7 +60,7 @@ do
       os="Ubuntu 14.04 (<a href=\"https://docs.travis-ci.com/user/reference/trusty/\">Trusty</a>) 64 bits"
     else
       node="<a href=\"https://travis-ci.org/simgrid/simgrid\">travis-mac</a>"
-      os="Mac OSX Sierra (kernel: 16.7.0)"
+      os="Mac OSX High Sierra (kernel: 17.4.0)"
     fi
     boost=$(get_boost)
     compiler=$(get_compiler)

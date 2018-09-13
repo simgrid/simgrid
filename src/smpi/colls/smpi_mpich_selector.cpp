@@ -68,6 +68,14 @@ int Coll_allreduce_mpich::allreduce(void *sbuf, void *rbuf, int count,
     dsize = dtype->size();
     block_dsize = dsize * count;
 
+    /*MPICH uses SMP algorithms for all commutative ops now*/
+    if(!comm->is_smp_comm()){
+      if(comm->get_leaders_comm()==MPI_COMM_NULL){
+        comm->init_smp();
+      }
+      if(op->is_commutative())
+        return Coll_allreduce_mvapich2_two_level::allreduce (sbuf, rbuf,count, dtype, op, comm);
+    }
 
     /* find nearest power-of-two less than or equal to comm_size */
     int pof2 = 1;
@@ -76,14 +84,10 @@ int Coll_allreduce_mpich::allreduce(void *sbuf, void *rbuf, int count,
 
     if (block_dsize > large_message && count >= pof2 && (op==MPI_OP_NULL || op->is_commutative())) {
       //for long messages
-       return (Coll_allreduce_rab_rdb::allreduce (sbuf, rbuf,
-                                                                   count, dtype,
-                                                                   op, comm));
+       return Coll_allreduce_rab_rdb::allreduce (sbuf, rbuf, count, dtype, op, comm);
     }else {
       //for short ones and count < pof2
-      return (Coll_allreduce_rdb::allreduce (sbuf, rbuf,
-                                                                   count, dtype,
-                                                                   op, comm));
+      return Coll_allreduce_rdb::allreduce (sbuf, rbuf, count, dtype, op, comm);
     }
 }
 
@@ -169,11 +173,11 @@ int Coll_alltoall_mpich::alltoall( void *sbuf, int scount,
                                                     comm);
 
     } else if (block_dsize < medium_size) {
-        return Coll_alltoall_basic_linear::alltoall(sbuf, scount, sdtype,
+        return Coll_alltoall_mvapich2_scatter_dest::alltoall(sbuf, scount, sdtype,
                                                            rbuf, rcount, rdtype,
                                                            comm);
     }else if (communicator_size%2){
-        return Coll_alltoall_ring::alltoall(sbuf, scount, sdtype,
+        return Coll_alltoall_pair::alltoall(sbuf, scount, sdtype,
                                                            rbuf, rcount, rdtype,
                                                            comm);
     }
@@ -258,6 +262,14 @@ int Coll_bcast_mpich::bcast(void *buff, int count,
     int communicator_size;
     //int segsize = 0;
     size_t message_size, dsize;
+
+    if(!comm->is_smp_comm()){
+      if(comm->get_leaders_comm()==MPI_COMM_NULL){
+        comm->init_smp();
+      }
+      if(comm->is_uniform())
+        return Coll_bcast_SMP_binomial::bcast(buff, count, datatype, root, comm);
+    }
 
     communicator_size = comm->size();
 
@@ -348,8 +360,16 @@ int Coll_reduce_mpich::reduce( void *sendbuf, void *recvbuf,
                                             )
 {
     int communicator_size=0;
-    //int segsize = 0;
     size_t message_size, dsize;
+
+    if(!comm->is_smp_comm()){
+      if(comm->get_leaders_comm()==MPI_COMM_NULL){
+        comm->init_smp();
+      }
+      if (op->is_commutative() == 1)
+        return Coll_reduce_mvapich2_two_level::reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
+    }
+
     communicator_size = comm->size();
 
     /* need data size for decision function */
@@ -363,8 +383,7 @@ int Coll_reduce_mpich::reduce( void *sendbuf, void *recvbuf,
     if ((count < pof2) || (message_size < 2048) || (op != MPI_OP_NULL && not op->is_commutative())) {
       return Coll_reduce_binomial::reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
     }
-        return Coll_reduce_scatter_gather::reduce(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
-                                                     segsize, max_requests*/);
+        return Coll_reduce_scatter_gather::reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
 }
 
 

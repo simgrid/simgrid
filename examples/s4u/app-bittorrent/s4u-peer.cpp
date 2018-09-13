@@ -5,7 +5,6 @@
 
 #include <algorithm>
 #include <climits>
-#include <xbt/ex.hpp>
 
 #include "s4u-peer.hpp"
 #include "s4u-tracker.hpp"
@@ -92,12 +91,10 @@ bool Peer::getPeersFromTracker()
   try {
     XBT_DEBUG("Sending a peer request to the tracker.");
     tracker_mailbox->put(peer_request, TRACKER_COMM_SIZE, GET_PEERS_TIMEOUT);
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Timeout expired when requesting peers to tracker");
-      delete peer_request;
-      return false;
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Timeout expired when requesting peers to tracker");
+    delete peer_request;
+    return false;
   }
 
   try {
@@ -107,11 +104,9 @@ bool Peer::getPeersFromTracker()
       if (id != peer_id)
         connected_peers[peer_id] = new Connection(peer_id);
     delete answer;
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Timeout expired when requesting peers to tracker");
-      return false;
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Timeout expired when requesting peers to tracker");
+    return false;
   }
   return true;
 }

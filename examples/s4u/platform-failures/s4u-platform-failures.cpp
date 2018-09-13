@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u.hpp"
-#include "xbt/ex.hpp"
 #include "xbt/str.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
@@ -28,17 +27,16 @@ static int master(int argc, char* argv[])
       XBT_INFO("Send a message to %s", mailbox->get_cname());
       mailbox->put(payload, comm_size, 10.0);
       XBT_INFO("Send to %s completed", mailbox->get_cname());
+    } catch (simgrid::HostFailureException& e) {
+      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
+      return -1;
+    } catch (simgrid::TimeoutError& e) {
+      delete payload;
+      XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
     } catch (xbt_ex& e) {
       switch (e.category) {
-        case host_error:
-          XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-          return -1;
-          break;
         case network_error:
           XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
-          break;
-        case timeout_error:
-          XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
           break;
         default:
           xbt_die("Unexpected behavior");
@@ -54,17 +52,18 @@ static int master(int argc, char* argv[])
     double* payload = new double(-1.0);
     try {
       mailbox->put(payload, 0, 1.0);
+    } catch (simgrid::HostFailureException& e) {
+      delete payload;
+      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
+      return -1;
+    } catch (simgrid::TimeoutError& e) {
+      delete payload;
+      XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
     } catch (xbt_ex& e) {
       delete payload;
       switch (e.category) {
-        case host_error:
-          XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-          break;
         case network_error:
           XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
-          break;
-        case timeout_error:
-          XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
           break;
         default:
           xbt_die("Unexpected behavior");
@@ -91,6 +90,7 @@ static int worker(int argc, char* argv[])
       xbt_assert(payload != nullptr, "mailbox->get() failed");
       if (comp_size < 0) { /* - Exit when -1.0 is received */
         XBT_INFO("I'm done. See you!");
+        delete payload;
         break;
       }
       /*  - Otherwise, process the task */
@@ -98,25 +98,23 @@ static int worker(int argc, char* argv[])
         XBT_INFO("Start execution...");
         simgrid::s4u::this_actor::execute(comp_size);
         XBT_INFO("Execution complete.");
-      } catch (xbt_ex& e) {
-        if (e.category == host_error) {
-          XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-          return -1;
-        } else
-          xbt_die("Unexpected behavior");
+        delete payload;
+      } catch (simgrid::HostFailureException& e) {
+        delete payload;
+        XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
+        return -1;
       }
-
+    } catch (simgrid::HostFailureException& e) {
+      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
       delete payload;
+      return -1;
     } catch (xbt_ex& e) {
       switch (e.category) {
-        case host_error:
-          XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-          return -1;
         case network_error:
           XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
           break;
         default:
-          xbt_die("Unexpected behavior");
+          xbt_die("Unexpected behavior. Category: %s", xbt_ex_catname(e.category));
       }
     }
   }

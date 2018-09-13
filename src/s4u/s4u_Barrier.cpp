@@ -6,12 +6,11 @@
 #include <exception>
 #include <mutex>
 
-#include <xbt/ex.hpp>
-#include <xbt/log.hpp>
-
+#include "simgrid/Exception.hpp"
 #include "simgrid/barrier.h"
 #include "simgrid/s4u/Barrier.hpp"
 #include "simgrid/simix.h"
+#include "xbt/log.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_barrier, "S4U barrier");
 

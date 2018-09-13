@@ -3,16 +3,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <utility>
-#include <functional>
+#include "src/kernel/context/ContextThread.hpp"
 
+#include "simgrid/Exception.hpp"
 #include "src/internal_config.h" /* loads context system definitions */
 #include "src/simix/smx_private.hpp"
 #include "src/xbt_modinter.h" /* prototype of os thread module's init/exit in XBT */
 #include "xbt/function_types.h"
 #include "xbt/xbt_os_thread.h"
 
-#include "src/kernel/context/ContextThread.hpp"
+#include <functional>
+#include <utility>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
@@ -57,9 +58,8 @@ void ThreadContextFactory::run_all()
 
 // ThreadContext
 
-ThreadContext::ThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process,
-                             bool maestro)
-    : AttachContext(std::move(code), cleanup, process), is_maestro_(maestro)
+ThreadContext::ThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t actor, bool maestro)
+    : AttachContext(std::move(code), cleanup, actor), is_maestro_(maestro)
 {
   // We do not need the semaphores when maestro is in main,
   // but creating them anyway simplifies things when maestro is externalized
@@ -115,12 +115,15 @@ void *ThreadContext::wrapper(void *param)
 
   try {
     (*context)();
-    if (not context->is_maestro()) // really?
-      context->Context::stop();
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
-    xbt_assert(not context->is_maestro(), "I'm not supposed to be maestro here.");
+    xbt_assert(not context->is_maestro(), "Maestro shall not receive StopRequests, even when detached.");
+  } catch (simgrid::Exception const& e) {
+    XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
+    throw;
   }
+  if (not context->is_maestro()) // Just in case somebody detached maestro
+    context->Context::stop();
 
   // Signal to the caller (normally the maestro) that we have finished:
   context->yield();

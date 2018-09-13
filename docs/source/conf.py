@@ -12,10 +12,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
+import os, subprocess
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
 
 # -- Project information -----------------------------------------------------
 
@@ -41,7 +40,7 @@ release = u'3.21'
 extensions = [
     'sphinx.ext.todo',
 #    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
+#    'sphinx.ext.mathjax',
 #    'sphinx.ext.ifconfig',
     'breathe',
     'exhale',
@@ -49,10 +48,11 @@ extensions = [
 
 todo_include_todos = True
 
-breathe_projects = { 'simgrid': '../build/doxy/xml' }
+breathe_projects = { 'simgrid': '../build/xml' }
 breathe_default_project = "simgrid"
 
 # Setup the exhale extension
+
 exhale_args = {
     # These arguments are required
     "containmentFolder":     "./api",
@@ -61,30 +61,10 @@ exhale_args = {
     "doxygenStripFromPath":  "..",
     # Suggested optional arguments
     "createTreeView":        True,
-    # TIP: if using the sphinx-bootstrap-theme, you need
-    # "treeViewIsBootstrap": True,
-    "exhaleExecutesDoxygen": True,
-    "exhaleDoxygenStdin":    """
-    INPUT = ../../include/simgrid/s4u
-    GENERATE_XML           = YES
-    PREDEFINED             += \
-        __cplusplus \
-        DOXYGEN \
-        XBT_PUBLIC= \
-        XBT_EXPORT_NO_IMPORT= \
-        XBT_IMPORT_NO_EXPORT= \
-        XBT_PUBLIC_DATA=extern \
-        XBT_PUBLIC= \
-        XBT_INLINE= \
-        XBT_ALWAYS_INLINE= \
-        XBT_PRIVATE= \
-        XBT_ATTRIB_NORETURN= \
-        XBT_ATTRIB_UNUSED= \
-        XBT_ATTRIB_DEPRECATED_v322(m)= \
-        XBT_ATTRIB_DEPRECATED_v323(m)= \
-        XBT_ATTRIB_DEPRECATED_v324(m)=
-        """
+    "exhaleExecutesDoxygen": False,
+    # "exhaleUseDoxyfile":     True,
 }
+
 
 # For cross-ref generation
 primary_domain = 'cpp'
@@ -114,7 +94,6 @@ exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
-
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -153,9 +132,10 @@ htmlhelp_basename = 'SimGrid-doc'
 
 html_context = {
     "display_gitlab": True, # Integrate Gitlab
-    "gitlab_host": "framagit.org", 
+    "gitlab_host": "framagit.org",
     "gitlab_user": "simgrid",
     "gitlab_repo": "simgrid",
     "gitlab_version": "master", # Version
     "conf_py_path": "/docs/source/", # Path in the checkout to the docs root
 }
+

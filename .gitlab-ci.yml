@@ -1,23 +1,18 @@
-image: debian:testing-slim
+image: simgrid/build-deps
 
-.build: &build
+pages:
   script:
-  - apt-get update
-  - apt-get install -y python3-pip doxygen libboost-all-dev libboost-dev fig2dev
   - pip3 install --requirement docs/requirements.txt 
   - cd docs
-  - sphinx-build -M html source/ build/
+  - ./Build.sh
   - mv build/html ../public
   artifacts:
     paths:
     - public
-
-pages:
-  <<: *build
   only:
   - master
 
-test:
-  <<: *build
-  except:
-  - master
+ctest:
+  script:
+  - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON .
+  - make VERBOSE=1 && ctest --output-on-failure

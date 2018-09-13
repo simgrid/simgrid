@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/msg.h"
-#include <xbt/ex.hpp>
 
 #include <stdio.h> /* sscanf */
 
@@ -31,21 +31,11 @@ static int process_daemon(int /*argc*/, char** /*argv*/)
     MSG_task_destroy(task);
     tasks_done++;
     if (res == MSG_HOST_FAILURE) {
-      XBT_INFO("Host as died as expected, do nothing else");
+      XBT_INFO("Host has died as expected, do nothing else");
       return 0;
     }
   }
   XBT_INFO("  daemon done. See you!");
-  return 0;
-}
-
-static int process_sleep(int /*argc*/, char** /*argv*/)
-{
-  for (;;) {
-    XBT_INFO("  I'm alive but I should sleep");
-    MSG_process_sleep(10);
-  }
-  XBT_INFO("  I'm done. See you!");
   return 0;
 }
 
@@ -56,15 +46,9 @@ static int commTX(int /*argc*/, char** /*argv*/)
   msg_task_t task = MSG_task_create("COMM", 0, 100000000, NULL);
   MSG_task_dsend(task, mailbox, task_cleanup_handler);
   // We should wait a bit (if not the process will end before the communication, hence an exception on the other side).
-  try {
-    MSG_process_sleep(30);
-  } catch (xbt_ex& e) {
-    if (e.category == host_error) {
-      XBT_INFO("The host has died ... as expected.");
-    } else {
-      XBT_ERROR("An unexpected exception has been raised.");
-      throw;
-    }
+  int res = MSG_process_sleep(30);
+  if (res == MSG_HOST_FAILURE) {
+    XBT_INFO("The host has died ... as expected.");
   }
   XBT_INFO("  TX done");
   return 0;
@@ -140,17 +124,7 @@ static int test_launcher(int /*argc*/, char** /*argv*/)
   test = 3;
   // Create a process running sucessive sleeps on a host and turn the host off during the execution of the process.
   if (xbt_dynar_search_or_negative(tests, &test) != -1) {
-    XBT_INFO("Test 3:");
-    MSG_host_on(jupiter);
-    argvF    = xbt_new(char*, 2);
-    argvF[0] = xbt_strdup("process_sleep");
-    MSG_process_create_with_arguments("process_sleep", process_sleep, NULL, jupiter, 1, argvF);
-    MSG_process_sleep(100);
-    XBT_INFO("  Turn off");
-    MSG_host_off(jupiter);
-    XBT_INFO("  sleep for 10 seconds");
-    MSG_process_sleep(10000);
-    XBT_INFO("number of Process : %d it should be 1 (i.e. the Test one))", MSG_process_get_number());
+    xbt_die("Test 3 is superseeded by activity-lifecycle");
   }
 
   test = 4;

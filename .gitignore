@@ -160,6 +160,7 @@ examples/s4u/app-token-ring/s4u-app-token-ring
 examples/s4u/async-wait/s4u-async-wait
 examples/s4u/async-waitall/s4u-async-waitall
 examples/s4u/async-waitany/s4u-async-waitany
+examples/s4u/async-waituntil/s4u-async-waituntil
 examples/s4u/cloud-capping/s4u-cloud-capping
 examples/s4u/cloud-migration/s4u-cloud-migration
 examples/s4u/cloud-simple/s4u-cloud-simple
@@ -176,6 +177,7 @@ examples/s4u/exec-dvfs/s4u-exec-dvfs
 examples/s4u/exec-monitor/s4u-exec-monitor
 examples/s4u/exec-ptask/s4u-exec-ptask
 examples/s4u/exec-remote/s4u-exec-remote
+examples/s4u/io-async/s4u-io-async
 examples/s4u/io-file-remote/s4u-io-file-remote
 examples/s4u/io-file-system/s4u-io-file-system
 examples/s4u/io-storage-raw/s4u-io-storage-raw
@@ -214,6 +216,7 @@ examples/smpi/NAS/is
 examples/smpi/replay_multiple/deployment.xml
 examples/smpi/replay_multiple/replay_multiple
 examples/smpi/replay_multiple_manual_deploy/replay_multiple_manual
+examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_resources
 examples/smpi/replay/one_trace
 examples/smpi/replay/smpi_replay
 examples/smpi/smpi_msg_masterslave/masterslave_mailbox_smpi
@@ -266,10 +269,10 @@ teshsuite/msg/trace_integration/trace_integration
 teshsuite/s4u/actor/actor
 teshsuite/s4u/actor-autorestart/actor-autorestart
 teshsuite/s4u/actor-migration/actor-migration
+teshsuite/s4u/activity-lifecycle/activity-lifecycle
 teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration
 teshsuite/s4u/comm-pt2pt/comm-pt2pt
 teshsuite/s4u/concurrent_rw/concurrent_rw
-teshsuite/s4u/host_on_off_wait/host_on_off_wait
 teshsuite/s4u/listen_async/listen_async
 teshsuite/s4u/pid/pid
 teshsuite/s4u/storage_client_server/storage_client_server

@@ -7,6 +7,7 @@
 #define SIMGRID_S4U_ACTIVITY_HPP
 
 #include <simgrid/forward.h>
+#include <xbt/signal.hpp>
 
 namespace simgrid {
 namespace s4u {
@@ -27,25 +28,25 @@ namespace s4u {
  * - Synchronization activities may possibly be connected to no action.
  */
 class XBT_PUBLIC Activity {
-#ifndef DOXYGEN
-  friend Comm;
+  friend simgrid::s4u::Comm;
   friend XBT_PUBLIC void intrusive_ptr_release(Comm * c);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Comm * c);
-  friend Exec;
+  friend simgrid::s4u::Exec;
   friend XBT_PUBLIC void intrusive_ptr_release(Exec * e);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Exec * e);
-  friend Io;
+  friend simgrid::s4u::Io;
   friend XBT_PUBLIC void intrusive_ptr_release(Io* i);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Io* i);
-#endif
 
 protected:
   Activity()  = default;
   virtual ~Activity() = default;
 
 public:
+#ifndef DOXYGEN
   Activity(Activity const&) = delete;
   Activity& operator=(Activity const&) = delete;
+#endif
 
   enum class State { INITED = 0, STARTED, CANCELED, ERRORED, FINISHED };
 
@@ -60,11 +61,17 @@ public:
   virtual Activity* wait() = 0;
   /** Blocks until the activity is terminated, or until the timeout is elapsed
    *  Raises: timeout exception.*/
-  virtual Activity* wait(double timeout) = 0;
+  virtual Activity* wait_for(double timeout) = 0;
+  /** Blocks until the activity is terminated, or until the time limit is reached
+   * Raises: timeout exception. */
+  void wait_until(double time_limit);
+
   /** Cancel that activity */
   virtual Activity* cancel() = 0;
   /** Retrieve the current state of the activity */
   Activity::State get_state() { return state_; }
+  /** Returns whether this activity is completed */
+  virtual bool test() = 0;
 
   /** Get the remaining amount of work that this Activity entails. When it's 0, it's done. */
   virtual double get_remaining();
@@ -83,22 +90,20 @@ public:
   /** Retrieve the user data of the Activity */
   void* get_user_data() { return user_data_; }
 
-  /** @deprecated See Activity::get_state()*/
+#ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v324("Please use Activity::wait_for()") virtual void wait(double timeout) = 0;
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_state()") Activity::State getState() { return state_; }
-  /** @deprecated See Activity::get_remaining() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_remaining()") double getRemains() { return get_remaining(); }
-  /** @deprecated See Activity::set_remaining() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::set_remaining()") Activity* setRemains(double remains)
   {
     return set_remaining(remains);
   }
-  /** @deprecated See Activity::set_user_data() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::set_user_data()") Activity* setUserData(void* data)
   {
     return set_user_data(data);
   }
-  /** @deprecated See Activity::get_user_data() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_user_data()") void* getUserData() { return user_data_; }
+#endif
 
 private:
   simgrid::kernel::activity::ActivityImplPtr pimpl_ = nullptr;

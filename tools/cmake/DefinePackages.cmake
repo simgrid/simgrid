@@ -173,6 +173,7 @@ set(SMPI_SRC
   src/smpi/colls/alltoallv/alltoallv-ring.cpp
   src/smpi/colls/barrier/barrier-ompi.cpp
   src/smpi/colls/barrier/barrier-mvapich2-pair.cpp
+  src/smpi/colls/barrier/barrier-mpich-smp.cpp
   src/smpi/colls/bcast/bcast-NTSB.cpp
   src/smpi/colls/bcast/bcast-NTSL-Isend.cpp
   src/smpi/colls/bcast/bcast-NTSL.cpp
@@ -275,7 +276,6 @@ set(XBT_SRC
   src/xbt/dict_cursor.c
   src/xbt/dict_elm.c
   src/xbt/dynar.cpp
-  src/xbt/ex.cpp
   src/xbt/exception.cpp
   src/xbt/graph.c
   src/xbt/log.c
@@ -670,6 +670,7 @@ set(headers_to_install
   include/simgrid/actor.h
   include/simgrid/barrier.h
   include/simgrid/engine.h
+  include/simgrid/Exception.hpp
   include/simgrid/chrono.hpp
   include/simgrid/plugins/dvfs.h
   include/simgrid/plugins/energy.h
@@ -749,8 +750,6 @@ set(headers_to_install
   include/xbt/dict.h
   include/xbt/dynar.h
   include/xbt/ex.h
-  include/xbt/ex.hpp
-  include/xbt/exception.hpp
   include/xbt/Extendable.hpp
   include/xbt/file.hpp
   include/xbt/functional.hpp
@@ -874,11 +873,9 @@ set(DOC_SOURCES
   doc/triva-time_interval.svg
 
   doc/doxygen/FAQ.doc
-  doc/doxygen/application.doc
   doc/doxygen/community.doc
   doc/doxygen/deployment.doc
   doc/doxygen/footer.html
-  doc/doxygen/getting_started.doc
   doc/doxygen/header.html
   doc/doxygen/howtos.doc
   doc/doxygen/index.doc
@@ -891,10 +888,7 @@ set(DOC_SOURCES
   doc/doxygen/install.doc
   doc/doxygen/install_yours.doc
   doc/doxygen/java.doc
-  doc/tuto-msg/tuto-msg.doc
-  doc/tuto-msg/overview.svg
   doc/doxygen/tutorial_smpi.doc
-  doc/doxygen/models.doc
   doc/doxygen/module-msg.doc
   doc/doxygen/module-s4u.doc
   doc/doxygen/module-sd.doc
@@ -912,7 +906,6 @@ set(DOC_SOURCES
   doc/doxygen/outcomes_vizu.doc
   doc/doxygen/platform.doc
   doc/doxygen/platform_lua.doc
-  doc/doxygen/scenario.doc
   doc/doxygen/stylesheet.css
   doc/doxygen/uhood.doc
   doc/doxygen/uhood_switch.doc
@@ -925,17 +918,44 @@ set(DOC_SOURCES
   doc/manpage/smpirun.1
   doc/manpage/tesh.pod
 
-  doc/tuto-msg/deployment0.xml
-  doc/tuto-msg/deployment1.xml
-  doc/tuto-msg/deployment2.xml
-  doc/tuto-msg/deployment3.xml
-  doc/tuto-msg/deployment_general.xml
-  doc/tuto-msg/Makefile
-  doc/tuto-msg/masterworker.c
-  doc/tuto-msg/masterworker-sol1.c
-  doc/tuto-msg/masterworker-sol2.c
-  doc/tuto-msg/masterworker-sol3.c
-  doc/tuto-msg/masterworker-sol4.c
+  docs/Build.sh
+  docs/requirements.txt
+  docs/source/conf.py
+  docs/source/Doxyfile
+
+  docs/source/img/eclipseScreenShot.png
+  docs/source/img/extlink.png
+  docs/source/img/extlink.svg
+  docs/source/img/graphical-toc.svg
+
+  docs/source/application.rst
+  docs/source/app_s4u.rst
+  docs/source/index.rst
+  docs/source/intro_concepts.rst
+  docs/source/introduction.rst
+  docs/source/intro_install.rst
+  docs/source/intro_yours.rst
+  docs/source/main_concepts.rst
+  docs/source/models.rst
+  docs/source/platform.rst
+  docs/source/scenar_config.rst
+  docs/source/scenario.rst
+
+  docs/source/tuto_s4u.rst
+  docs/source/tuto_s4u/deployment1.xml
+  docs/source/tuto_s4u/deployment2.xml
+  docs/source/tuto_s4u/deployment3.xml
+  docs/source/tuto_s4u/deployment4.xml
+  docs/source/tuto_s4u/draw_gantt.R
+  docs/source/tuto_s4u/img/intro.svg
+  docs/source/tuto_s4u/img/question.svg
+  docs/source/tuto_s4u/img/result.png
+  docs/source/tuto_s4u/img/Rscript-screenshot.png
+  docs/source/tuto_s4u/img/vite-screenshot.png
+  docs/source/tuto_s4u/master-workers-lab1.cpp
+  docs/source/tuto_s4u/master-workers-lab2.cpp
+  docs/source/tuto_s4u/master-workers-lab3.cpp
+  docs/source/tuto_s4u/master-workers-lab4.cpp
 
   CITATION.bib
   )

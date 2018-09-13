@@ -8,7 +8,6 @@
 #include "simgrid/s4u.hpp"
 #include <string>
 #include <xbt/RngStream.h>
-#include <xbt/ex.hpp>
 #include <xbt/str.h>
 
 #define MAX_SIMULATION_TIME 1000

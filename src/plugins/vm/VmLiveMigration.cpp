@@ -4,10 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/plugins/vm/VmLiveMigration.hpp"
+#include "simgrid/Exception.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/plugins/vm/VmHostExt.hpp"
-#include "xbt/ex.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(vm_live_migration, "S4U virtual machines live migration");
 
@@ -104,9 +104,9 @@ sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_r
   s4u::Activity* comm = nullptr;
   try {
     if (mig_speed > 0)
-      comm = mbox->put_init(msg, size)->set_rate(mig_speed)->wait(timeout);
+      comm = mbox->put_init(msg, size)->set_rate(mig_speed)->wait_for(timeout);
     else
-      comm = mbox->put_async(msg, size)->wait();
+      comm = mbox->put_async(msg, size)->wait_for(timeout);
   } catch (xbt_ex& e) {
     if (comm) {
       sg_size_t remaining = static_cast<sg_size_t>(comm->get_remaining());

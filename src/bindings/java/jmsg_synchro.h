@@ -8,6 +8,7 @@
 #ifndef MSG_JSYNCHRO_H
 #define MSG_JSYNCHRO_H
 
+#include "xbt/base.h"
 #include <jni.h>
 
 SG_BEGIN_DECL()

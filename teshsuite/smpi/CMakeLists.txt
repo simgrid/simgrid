@@ -93,7 +93,7 @@ if(enable_smpi)
     ADD_TESH(tesh-smpi-coll-alltoallv-${ALLTOALLV} --cfg smpi/alltoallv:${ALLTOALLV} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-alltoallv --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-alltoallv coll-alltoallv.tesh)
   endforeach()
 
-  foreach (BARRIER ompi mpich ompi_basic_linear ompi_tree ompi_bruck ompi_recursivedoubling ompi_doublering mvapich2_pair mvapich2 impi)
+  foreach (BARRIER ompi mpich mpich_smp ompi_basic_linear ompi_tree ompi_bruck ompi_recursivedoubling ompi_doublering mvapich2_pair mvapich2 impi)
       ADD_TESH(tesh-smpi-coll-barrier-${BARRIER} --cfg smpi/barrier:${BARRIER} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-barrier --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-barrier coll-barrier.tesh)
   endforeach()
 

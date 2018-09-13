@@ -114,7 +114,7 @@ void Mailbox::put(void* payload, uint64_t simulated_size_in_bytes, double timeou
   c->set_remaining(simulated_size_in_bytes);
   c->set_src_data(payload);
   // c->start() is optional.
-  c->wait(timeout);
+  c->wait_for(timeout);
 }
 
 s4u::CommPtr Mailbox::get_init()
@@ -145,7 +145,7 @@ void* Mailbox::get(double timeout)
   void* res = nullptr;
   CommPtr c = get_init();
   c->set_dst_data(&res, sizeof(res));
-  c->wait(timeout);
+  c->wait_for(timeout);
   return res;
 }
 } // namespace s4u

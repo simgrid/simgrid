@@ -101,6 +101,8 @@ public:
   smx_activity_t sleep(double duration);
   void set_user_data(void* data) { userdata_ = data; }
   void* get_user_data() { return userdata_; }
+  /** Ask the actor to throw an exception right away */
+  void throw_exception(std::exception_ptr e);
 };
 
 class ProcessArg {
@@ -112,6 +114,7 @@ public:
   double kill_time                                                         = 0.0;
   std::shared_ptr<std::unordered_map<std::string, std::string>> properties = nullptr;
   bool auto_restart                                                        = false;
+  bool daemon_                                                             = false;
   ProcessArg()                                                             = default;
 
   explicit ProcessArg(std::string name, std::function<void()> code, void* data, s4u::Host* host, double kill_time,
@@ -133,6 +136,7 @@ public:
       , host(host)
       , kill_time(SIMIX_timer_get_date(actor->kill_timer))
       , auto_restart(actor->auto_restart_)
+      , daemon_(actor->is_daemon())
   {
     properties.reset(actor->get_properties(), [](decltype(actor->get_properties())) {});
   }

@@ -27,10 +27,8 @@
 
 + contrib/.*
 
-+ docs/requirements\.txt
-+ docs/source/.*
-
 + tools/appveyor-irc-notify\.py
++ tools/docker/.*
 + tools/git-hooks/.*
 + tools/internal/.*
 + tools/jenkins/.*

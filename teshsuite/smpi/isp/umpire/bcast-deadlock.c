@@ -24,13 +24,13 @@ main (int argc, char **argv)
   fflush (stdout);
 
   if (rank == 0) {
-    memset (buf0, 0, buf_size);
+    memset (buf0, 0, buf_size*sizeof(int));
     MPI_Bcast (buf0, buf_size, MPI_INT, 1, MPI_COMM_WORLD);	
     MPI_Bcast (buf0, buf_size, MPI_INT, 0, MPI_COMM_WORLD);	
   }
   else {
     if (rank == 1)
-      memset (buf1, 1, buf_size);
+      memset (buf1, 1, buf_size*sizeof(int));
 
     MPI_Bcast (buf0, buf_size, MPI_INT, 0, MPI_COMM_WORLD);	
     MPI_Bcast (buf0, buf_size, MPI_INT, 1, MPI_COMM_WORLD);	

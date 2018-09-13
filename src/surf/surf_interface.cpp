@@ -31,7 +31,6 @@ std::vector<simgrid::kernel::resource::Model*> all_existing_models; /* to destro
 
 simgrid::trace_mgr::future_evt_set future_evt_set;
 std::vector<std::string> surf_path;
-std::vector<simgrid::s4u::Host*> host_that_restart;
 /**  set of hosts for which one want to be notified if they ever restart. */
 std::set<std::string> watched_hosts;
 extern std::map<std::string, simgrid::surf::StorageType*> storage_types;

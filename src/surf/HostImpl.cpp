@@ -115,7 +115,7 @@ HostImpl::~HostImpl()
     THROWF(arg_error, 0, "%s", msg.c_str());
   }
   for (auto const& arg : actors_at_boot_)
-    delete arg.second;
+    delete arg;
   actors_at_boot_.clear();
 }
 
@@ -125,8 +125,7 @@ HostImpl::~HostImpl()
  */
 void HostImpl::turn_on()
 {
-  for (auto const& elm : actors_at_boot_) {
-    kernel::actor::ProcessArg* arg = elm.second;
+  for (auto const& arg : actors_at_boot_) {
     XBT_DEBUG("Booting Actor %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
     smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
                                                               arg->properties.get(), nullptr);
@@ -134,8 +133,11 @@ void HostImpl::turn_on()
       simcall_process_set_kill_time(actor, arg->kill_time);
     if (arg->auto_restart)
       actor->auto_restart_ = arg->auto_restart;
+    if (arg->daemon_)
+      actor->daemonize();
   }
 }
+
 /** Kill all actors hosted here */
 void HostImpl::turn_off()
 {
@@ -148,14 +150,13 @@ void HostImpl::turn_off()
   }
   // When a host is turned off, we want to keep only the actors that should restart for when it will boot again.
   // Then get rid of the others.
-  auto elm = actors_at_boot_.begin();
-  while (elm != actors_at_boot_.end()) {
-    if (not elm->second->auto_restart) {
-      delete elm->second;
-      actors_at_boot_.erase(elm);
-    } else
-      ++elm;
-  }
+  auto elm = remove_if(begin(actors_at_boot_), end(actors_at_boot_), [](kernel::actor::ProcessArg* arg) {
+    if (arg->auto_restart)
+      return false;
+    delete arg;
+    return true;
+  });
+  actors_at_boot_.erase(elm, end(actors_at_boot_));
 }
 
 std::vector<s4u::ActorPtr> HostImpl::get_all_actors()

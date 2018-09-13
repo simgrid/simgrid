@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u.hpp"
-#include <xbt/ex.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
@@ -14,13 +13,8 @@ static void dummy()
   try {
     simgrid::s4u::this_actor::sleep_for(200);
     XBT_INFO("I stop");
-  } catch (xbt_ex& e) {
-    if (e.category == host_error) {
-      XBT_DEBUG("The host has died ... as expected. This actor silently stops");
-    } else {
-      XBT_ERROR("An unexpected exception has been raised.");
-      throw;
-    }
+  } catch (simgrid::HostFailureException& e) {
+    XBT_DEBUG("The host has died ... as expected. This actor silently stops");
   }
 }
 

@@ -14,7 +14,6 @@
 #include "src/instr/instr_paje_events.hpp"
 #include "src/instr/instr_paje_types.hpp"
 #include "src/instr/instr_paje_values.hpp"
-#include "src/internal_config.h"
 #include "xbt/graph.h"
 
 #include <fstream>

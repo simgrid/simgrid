@@ -8,7 +8,9 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/s4u/Actor.hpp"
+#include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/surf/cpu_interface.hpp"
@@ -298,7 +300,7 @@ static void instr_actor_on_creation(simgrid::s4u::ActorPtr actor)
   state->add_entity_value("sleep", "1 1 0");
   state->add_entity_value("receive", "1 0 0");
   state->add_entity_value("send", "0 0 1");
-  state->add_entity_value("task_execute", "0 1 1");
+  state->add_entity_value("execute", "0 1 1");
   root->type_->by_name_or_create("ACTOR_LINK", actor_type, actor_type);
   root->type_->by_name_or_create("ACTOR_TASK_LINK", actor_type, actor_type);
 
@@ -345,7 +347,7 @@ static void instr_vm_on_creation(simgrid::s4u::Host& host)
   state->add_entity_value("sleep", "1 1 0");
   state->add_entity_value("receive", "1 0 0");
   state->add_entity_value("send", "0 0 1");
-  state->add_entity_value("task_execute", "0 1 1");
+  state->add_entity_value("execute", "0 1 1");
   root->type_->by_name_or_create("VM_LINK", vm, vm);
   root->type_->by_name_or_create("VM_ACTOR_LINK", vm, vm);
 }
@@ -370,6 +372,11 @@ void instr_define_callbacks()
 
   if (TRACE_actor_is_enabled()) {
     simgrid::s4u::Actor::on_creation.connect(instr_actor_on_creation);
+    simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::ActorPtr actor) {
+      auto container = simgrid::instr::Container::by_name_or_null(instr_pid(actor.get()));
+      if (container != nullptr)
+        container->remove_from_parent();
+    });
     simgrid::s4u::Actor::on_suspend.connect([](simgrid::s4u::ActorPtr actor) {
       simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("suspend");
     });
@@ -380,6 +387,21 @@ void instr_define_callbacks()
       simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("sleep");
     });
     simgrid::s4u::Actor::on_wake_up.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->pop_event();
+    });
+    simgrid::s4u::Exec::on_start.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("execute");
+    });
+    simgrid::s4u::Exec::on_completion.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->pop_event();
+    });
+    simgrid::s4u::Comm::on_sender_start.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("send");
+    });
+    simgrid::s4u::Comm::on_receiver_start.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("receive");
+    });
+    simgrid::s4u::Comm::on_completion.connect([](simgrid::s4u::ActorPtr actor) {
       simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->pop_event();
     });
     simgrid::s4u::Actor::on_migration_start.connect(instr_actor_on_migration_start);

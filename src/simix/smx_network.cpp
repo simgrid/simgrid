@@ -4,12 +4,12 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
+#include "simgrid/Exception.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
-#include "xbt/ex.hpp"
 
 #include <boost/circular_buffer.hpp>
 #include <boost/range/algorithm.hpp>
@@ -521,7 +521,8 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
     if (simcall->issuer->host_->is_off()) {
       simcall->issuer->context_->iwannadie = 1;
-      SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+      simcall->issuer->exception =
+          std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
     } else {
       switch (comm->state_) {
 
@@ -531,25 +532,29 @@ void SIMIX_comm_finish(smx_activity_t synchro)
           break;
 
         case SIMIX_SRC_TIMEOUT:
-          SMX_EXCEPTION(simcall->issuer, timeout_error, 0, "Communication timeouted because of sender");
+          simcall->issuer->exception = std::make_exception_ptr(
+              simgrid::TimeoutError(XBT_THROW_POINT, "Communication timeouted because of the sender"));
           break;
 
         case SIMIX_DST_TIMEOUT:
-          SMX_EXCEPTION(simcall->issuer, timeout_error, 0, "Communication timeouted because of receiver");
+          simcall->issuer->exception = std::make_exception_ptr(
+              simgrid::TimeoutError(XBT_THROW_POINT, "Communication timeouted because of the receiver"));
           break;
 
         case SIMIX_SRC_HOST_FAILURE:
           if (simcall->issuer == comm->src_proc)
             simcall->issuer->context_->iwannadie = 1;
           else
-            SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
+            simcall->issuer->exception =
+                std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
           break;
 
         case SIMIX_DST_HOST_FAILURE:
           if (simcall->issuer == comm->dst_proc)
             simcall->issuer->context_->iwannadie = 1;
           else
-            SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
+            simcall->issuer->exception =
+                std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
           break;
 
         case SIMIX_LINK_FAILURE:
@@ -565,7 +570,8 @@ void SIMIX_comm_finish(smx_activity_t synchro)
           } else {
             XBT_DEBUG("I'm neither source nor dest");
           }
-          SMX_EXCEPTION(simcall->issuer, network_error, 0, "Link failure");
+          simcall->issuer->throw_exception(
+              std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Link failure")));
           break;
 
         case SIMIX_CANCELED:
@@ -581,29 +587,39 @@ void SIMIX_comm_finish(smx_activity_t synchro)
     }
 
     /* if there is an exception during a waitany or a testany, indicate the position of the failed communication */
-    if (simcall->issuer->exception) {
+    if (simcall->issuer->exception &&
+        (simcall->call == SIMCALL_COMM_WAITANY || simcall->call == SIMCALL_COMM_TESTANY)) {
+      // First retrieve the rank of our failing synchro
+      int rank = -1;
+      if (simcall->call == SIMCALL_COMM_WAITANY) {
+        rank = xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro);
+      } else if (simcall->call == SIMCALL_COMM_TESTANY) {
+        rank         = -1;
+        auto* comms  = simcall_comm_testany__get__comms(simcall);
+        auto count   = simcall_comm_testany__get__count(simcall);
+        auto element = std::find(comms, comms + count, synchro);
+        if (element == comms + count)
+          rank = -1;
+        else
+          rank = element - comms;
+      }
+
       // In order to modify the exception we have to rethrow it:
       try {
         std::rethrow_exception(simcall->issuer->exception);
-      }
-      catch(xbt_ex& e) {
-        if (simcall->call == SIMCALL_COMM_WAITANY) {
-          e.value = xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro);
-        }
-        else if (simcall->call == SIMCALL_COMM_TESTANY) {
-          e.value = -1;
-          auto* comms  = simcall_comm_testany__get__comms(simcall);
-          auto count = simcall_comm_testany__get__count(simcall);
-          auto element = std::find(comms, comms + count, synchro);
-          if (element == comms + count)
-            e.value = -1;
-          else
-            e.value = element - comms;
-        }
+      } catch (simgrid::TimeoutError& e) {
+        e.value                    = rank;
         simcall->issuer->exception = std::make_exception_ptr(e);
-      }
-      catch(...) {
-        // Nothing to do
+      } catch (simgrid::NetworkFailureException& e) {
+        e.value                    = rank;
+        simcall->issuer->exception = std::make_exception_ptr(e);
+      } catch (xbt_ex& e) {
+        if (e.category == cancel_error) {
+          e.value                    = rank;
+          simcall->issuer->exception = std::make_exception_ptr(e);
+        } else {
+          xbt_die("Unexpected xbt_ex(%s). Please enhance this code", xbt_ex_catname(e.category));
+        }
       }
     }
 

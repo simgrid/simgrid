@@ -28,6 +28,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi, "Logging specific to SMPI (benchmarking)");
 
+static simgrid::config::Flag<double>
+    smpi_wtime_sleep("smpi/wtime",
+                     "Minimum time to inject inside a call to MPI_Wtime(), gettimeofday() and clock_gettime()",
+                     1e-8 /* Documented to be 10 ns */);
+
 double smpi_cpu_threshold = -1;
 double smpi_host_speed;
 
@@ -35,6 +40,7 @@ SharedMallocType smpi_cfg_shared_malloc = SharedMallocType::GLOBAL;
 double smpi_total_benched_time = 0;
 
 extern "C" XBT_PUBLIC void smpi_execute_flops_(double* flops);
+
 void smpi_execute_flops_(double *flops)
 {
   smpi_execute_flops(*flops);
@@ -177,7 +183,7 @@ void smpi_bench_end()
   smpi_total_benched_time += xbt_os_timer_elapsed(timer);
 }
 
-/* Private sleep function used by smpi_sleep() and smpi_usleep() */
+/* Private sleep function used by smpi_sleep(), smpi_usleep() and friends */
 static unsigned int private_sleep(double secs)
 {
   smpi_bench_end();
@@ -232,6 +238,8 @@ int smpi_gettimeofday(struct timeval* tv, struct timezone* tz)
     tv->tv_usec = static_cast<suseconds_t>((now - tv->tv_sec) * 1e6);
 #endif
   }
+  if (smpi_wtime_sleep > 0)
+    simcall_process_sleep(smpi_wtime_sleep);
   smpi_bench_begin();
   return 0;
 }
@@ -248,10 +256,27 @@ int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp)
     tp->tv_sec = static_cast<time_t>(now);
     tp->tv_nsec = static_cast<long int>((now - tp->tv_sec) * 1e9);
   }
+  if (smpi_wtime_sleep > 0)
+    simcall_process_sleep(smpi_wtime_sleep);
   smpi_bench_begin();
   return 0;
 }
 #endif
+
+double smpi_mpi_wtime()
+{
+  double time;
+  if (smpi_process()->initialized() && not smpi_process()->finalized() && not smpi_process()->sampling()) {
+    smpi_bench_end();
+    time = SIMIX_get_clock();
+    if (smpi_wtime_sleep > 0)
+      simcall_process_sleep(smpi_wtime_sleep);
+    smpi_bench_begin();
+  } else {
+    time = SIMIX_get_clock();
+  }
+  return time;
+}
 
 extern double sg_surf_precision;
 unsigned long long smpi_rastro_resolution ()

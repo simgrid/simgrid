@@ -1,5 +1,4 @@
-/* Copyright (c) 2009-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,14 +8,15 @@
 #ifndef SIMGRID_SIMIX_THREAD_CONTEXT_HPP
 #define SIMGRID_SIMIX_THREAD_CONTEXT_HPP
 
-#include <simgrid/simix.hpp>
-
+#include "simgrid/simix.hpp"
+#include "src/kernel/context/Context.hpp"
+#include "xbt/xbt_os_thread.h"
 
 namespace simgrid {
 namespace kernel {
 namespace context {
 
-class ThreadContext : public AttachContext {
+class XBT_PUBLIC ThreadContext : public AttachContext {
 public:
   ThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process, bool maestro);
   ~ThreadContext() override;
@@ -40,13 +40,13 @@ private:
 
   void start();                // match a call to release()
   void yield();                // match a call to yield()
-  virtual void start_hook() { /* empty placeholder, called after start() */}
-  virtual void yield_hook() { /* empty placeholder, called before yield() */}
+  virtual void start_hook() { /* empty placeholder, called after start(). Used in parallel mode and Java */}
+  virtual void yield_hook() { /* empty placeholder, called before yield(). Used in parallel mode */}
 
   static void* wrapper(void *param);
 };
 
-class SerialThreadContext : public ThreadContext {
+class XBT_PUBLIC SerialThreadContext : public ThreadContext {
 public:
   SerialThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process, bool maestro)
       : ThreadContext(std::move(code), cleanup_func, process, maestro)

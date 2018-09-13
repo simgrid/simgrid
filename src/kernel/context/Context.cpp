@@ -8,6 +8,8 @@
 #include "src/kernel/context/Context.hpp"
 #include "src/simix/smx_private.hpp"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
+
 /**
  * @brief creates a new context for a user level process
  * @param code a main function
@@ -58,9 +60,8 @@ Context* ContextFactory::create_maestro(std::function<void()> code, smx_actor_t 
     "Try using --cfg=contexts/factory:thread instead.\n");
 }
 
-Context::Context(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
-  : code_(std::move(code)), process_(process), iwannadie(false)
+Context::Context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor)
+    : code_(std::move(code)), actor_(actor)
 {
   /* If the user provided a function for the process then use it.
      Otherwise, it is the context for maestro and we should set it as the
@@ -76,11 +77,11 @@ Context::~Context() = default;
 void Context::stop()
 {
   if (this->cleanup_func_)
-    this->cleanup_func_(this->process_);
-  this->process_->suspended_ = 0;
+    this->cleanup_func_(this->actor_);
+  this->actor_->suspended_ = 0;
 
   this->iwannadie = false;
-  simgrid::simix::simcall([this] { SIMIX_process_cleanup(this->process_); });
+  simgrid::simix::simcall([this] { SIMIX_process_cleanup(this->actor_); });
   this->iwannadie = true;
 }
 

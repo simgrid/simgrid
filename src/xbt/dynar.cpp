@@ -6,12 +6,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/dynar.h"
+#include "simgrid/Exception.hpp"
+#include "xbt/ex.h"
+#include "xbt/log.h"
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
-#include "xbt/log.h"
-#include "xbt/ex.h"
-#include <xbt/ex.hpp>
-#include "xbt/dynar.h"
 #include <sys/types.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dyn, xbt, "Dynamic arrays");

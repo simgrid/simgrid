@@ -121,22 +121,12 @@ namespace s4u {
 
 /** @brief Simulation Agent */
 class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<Actor> {
-#ifndef DOXYGEN
-  friend Exec;
-  friend Mailbox;
+  friend simgrid::s4u::Exec;
+  friend simgrid::s4u::Mailbox;
   friend simgrid::kernel::actor::ActorImpl;
   friend simgrid::kernel::activity::MailboxImpl;
-#endif
-  kernel::actor::ActorImpl* pimpl_ = nullptr;
 
-  /** Wrap a (possibly non-copyable) single-use task into a `std::function` */
-  template<class F, class... Args>
-  static std::function<void()> wrap_task(F f, Args... args)
-  {
-    typedef decltype(f(std::move(args)...)) R;
-    auto task = std::make_shared<simgrid::xbt::Task<R()>>(simgrid::xbt::make_task(std::move(f), std::move(args)...));
-    return [task] { (*task)(); };
-  }
+  kernel::actor::ActorImpl* pimpl_ = nullptr;
 
   explicit Actor(smx_actor_t pimpl) : pimpl_(pimpl) {}
 
@@ -171,7 +161,7 @@ public:
   /** Signal indicating that the given actor is about to disappear */
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_destruction;
 
-  /** Create an actor from a std::function
+  /** Create an actor from a std::function<void()>
    *
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
@@ -181,25 +171,20 @@ public:
    *
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
-  static ActorPtr create(std::string name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
-                         std::vector<std::string>* args)
+  template <class F> static ActorPtr create(std::string name, s4u::Host* host, F code)
   {
-    return create(name, host, [code](std::vector<std::string>* args) { code(args); }, args);
+    return create(name, host, std::function<void()>(std::move(code)));
   }
 
-  /** Create an actor using code
+  /** Create an actor using a callable thing and its arguments.
    *
-   *  Using this constructor, move-only type can be used. The consequence is
-   *  that we cannot copy the value and restart the actor in its initial
-   *  state. In order to use auto-restart, an explicit `function` must be passed
-   *  instead.
-   */
+   * Note that the arguments will be copied, so move-only parameters are forbidden */
   template <class F, class... Args,
             // This constructor is enabled only if the call code(args...) is valid:
             typename = typename std::result_of<F(Args...)>::type>
   static ActorPtr create(std::string name, s4u::Host* host, F code, Args... args)
   {
-    return create(name, host, wrap_task(std::move(code), std::move(args)...));
+    return create(name, host, std::bind(std::move(code), std::move(args)...));
   }
 
   // Create actor from function name:
@@ -272,6 +257,7 @@ public:
    */
   void kill();
 
+  /** Kill an actor from its ID */
   static void kill(aid_t pid);
 
   /** Retrieves the actor that have the given PID (or nullptr if not existing) */
@@ -456,16 +442,18 @@ XBT_PUBLIC bool is_suspended();
 /** @brief kill the actor. */
 XBT_PUBLIC void exit();
 
-#ifndef DOXYGEN
-/** @deprecated Please use std::function<void(int, void*)> for first parameter */
-XBT_ATTRIB_DEPRECATED_v323("Please use std::function<void(int, void*)> for first parameter.") XBT_PUBLIC
-    void on_exit(int_f_pvoid_pvoid_t fun, void* data);
 /** @brief Add a function to the list of "on_exit" functions. */
 XBT_PUBLIC void on_exit(std::function<void(int, void*)> fun, void* data);
 
 /** @brief Migrate the actor to a new host. */
 XBT_PUBLIC void migrate(Host* new_host);
 
+/** @} */
+
+#ifndef DOXYGEN
+/** @deprecated Please use std::function<void(int, void*)> for first parameter */
+XBT_ATTRIB_DEPRECATED_v323("Please use std::function<void(int, void*)> for first parameter.") XBT_PUBLIC
+    void on_exit(int_f_pvoid_pvoid_t fun, void* data);
 /** @deprecated See this_actor::get_name() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_name()") XBT_PUBLIC std::string getName();
 /** @deprecated See this_actor::get_cname() */
@@ -487,7 +475,6 @@ XBT_ATTRIB_DEPRECATED_v324("Please use this_actor::exit()") XBT_PUBLIC void kill
 #endif
 }
 
-/** @} */
 
 }} // namespace simgrid::s4u
 

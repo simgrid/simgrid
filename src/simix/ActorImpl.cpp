@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
+#include "simgrid/Exception.hpp"
 #include "smx_private.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
@@ -17,7 +18,6 @@
 #include "src/simix/smx_synchro_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
-#include "xbt/ex.hpp"
 
 #ifdef HAVE_SMPI
 #include "src/smpi/include/private.hpp"
@@ -101,7 +101,8 @@ void SIMIX_process_cleanup(smx_actor_t process)
     comm->cancel();
   }
 
-  XBT_DEBUG("%p should not be run anymore",process);
+  XBT_DEBUG("%s@%s(%ld) should not run anymore", process->get_cname(), process->iface()->get_host()->get_cname(),
+            process->pid_);
   simix_global->process_list.erase(process->pid_);
   if (process->host_ && process->host_process_list_hook.is_linked())
     simgrid::xbt::intrusive_erase(process->host_->pimpl_->process_list_, *process);
@@ -229,7 +230,8 @@ void ActorImpl::resume()
 smx_activity_t ActorImpl::sleep(double duration)
 {
   if (host_->is_off())
-    THROWF(host_error, 0, "Host %s failed, you cannot sleep there.", host_->get_cname());
+    throw_exception(std::make_exception_ptr(simgrid::HostFailureException(
+        XBT_THROW_POINT, std::string("Host ") + std::string(host_->get_cname()) + " failed, you cannot sleep there.")));
 
   simgrid::kernel::activity::SleepImpl* synchro = new simgrid::kernel::activity::SleepImpl();
   synchro->host                                 = host_;
@@ -238,6 +240,55 @@ smx_activity_t ActorImpl::sleep(double duration)
   XBT_DEBUG("Create sleep synchronization %p", synchro);
 
   return synchro;
+}
+
+void ActorImpl::throw_exception(std::exception_ptr e)
+{
+  exception = e;
+
+  if (suspended_)
+    resume();
+
+  /* cancel the blocking synchro if any */
+  if (waiting_synchro) {
+
+    simgrid::kernel::activity::ExecImplPtr exec =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(waiting_synchro);
+    if (exec != nullptr && exec->surf_action_)
+      exec->surf_action_->cancel();
+
+    simgrid::kernel::activity::CommImplPtr comm =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(waiting_synchro);
+    if (comm != nullptr) {
+      comms.remove(comm);
+      comm->cancel();
+    }
+
+    simgrid::kernel::activity::SleepImplPtr sleep =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(waiting_synchro);
+    if (sleep != nullptr) {
+      SIMIX_process_sleep_destroy(waiting_synchro);
+      if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), this) ==
+              end(simix_global->process_to_run) &&
+          this != SIMIX_process_self()) {
+        XBT_DEBUG("Inserting %s in the to_run list", get_cname());
+        simix_global->process_to_run.push_back(this);
+      }
+    }
+
+    simgrid::kernel::activity::RawImplPtr raw =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::RawImpl>(waiting_synchro);
+    if (raw != nullptr) {
+      SIMIX_synchro_stop_waiting(this, &simcall);
+    }
+
+    simgrid::kernel::activity::IoImplPtr io =
+        boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(waiting_synchro);
+    if (io != nullptr) {
+      delete io.get();
+    }
+  }
+  waiting_synchro = nullptr;
 }
 
 void create_maestro(simgrid::simix::ActorCode code)
@@ -448,11 +499,35 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
   process->suspended_          = false;
   process->exception = nullptr;
 
+  // Forcefully kill the actor if its host is turned off. Not an HostFailureException because you should not survive that
+  if (process->host_->is_off()) {
+    /* HORRIBLE HACK: Don't throw an StopRequest exception in Java, because it breaks sometimes.
+     *
+     * It seems to break for the actors started from the Java world, with new Process()
+     * while it works for the ones started from the C world, with the deployment file.
+     * When it happens, the simulation stops brutally with a message "untrapped exception StopRequest".
+     *
+     * From what I understand, it works for the native actors because they have a nice try/catch block around their main
+     * but I fail to have something like that for pure Java actors. That's probably a story of C->Java vs Java->C
+     * calling conventions. The right solution may be to have try/catch(StopRequest) blocks around each native call in
+     * JNI. ie, protect every Java->C++ call from C++ exceptions. But this sounds long and painful to do before we
+     * switch to an automatic generator such as SWIG. For now, we don't throw here that exception that we sometimes fail
+     * to catch.
+     *
+     * One of the unfortunate outcome is that the threads started from the deployment file are not stopped anymore.
+     * Or maybe this is the actors stopping gracefully as opposed to the killed ones? Or maybe this is absolutely all
+     * actors of the Java simulation? I'm not sure. Anyway. Because of them, the simulation hangs at the end, waiting
+     * for them to stop but they won't. The current answer to that is very brutal:
+     * we do a "exit(0)" to kill the JVM from the C code after the call to MSG_run(). Definitely unpleasant.
+     */
+
+    if (simgrid::kernel::context::factory_initializer == nullptr) // Only Java sets a factory_initializer, for now
+      process->throw_exception(std::make_exception_ptr(simgrid::kernel::context::Context::StopRequest("Host failed")));
+  }
+
   /* destroy the blocking synchro if any */
   if (process->waiting_synchro != nullptr) {
-    if (process->host_->is_off()) {
-      SMX_EXCEPTION(process, host_error, 0, "Host failed");
-    }
+
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(process->waiting_synchro);
     simgrid::kernel::activity::CommImplPtr comm =
@@ -487,7 +562,9 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
     } else if (io != nullptr) {
       delete io.get();
     } else {
-      xbt_die("Unknown type of activity");
+      simgrid::kernel::activity::ActivityImplPtr activity = process->waiting_synchro;
+      xbt_die("Activity %s is of unknown type %s", activity->name_.c_str(),
+              simgrid::xbt::demangle(typeid(activity).name()).get());
     }
 
     process->waiting_synchro = nullptr;
@@ -500,13 +577,8 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
   }
 }
 
-/** @brief Ask another process to raise the given exception
- *
- * @param process The process that should raise that exception
- * @param cat category of exception
- * @param value value associated to the exception
- * @param msg string information associated to the exception
- */
+/** @deprecated When this function gets removed, also remove the xbt_ex class, that is only there to help users to
+ * transition */
 void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const char *msg) {
   SMX_EXCEPTION(process, cat, value, msg);
 
@@ -710,6 +782,8 @@ void SIMIX_process_yield(smx_actor_t self)
 
     XBT_DEBUG("Process %s@%s is dead", self->get_cname(), self->host_->get_cname());
     self->context_->stop();
+    xbt_backtrace_display_current();
+    xbt_die("I should be dead by now.");
   }
 
   if (self->suspended_) {

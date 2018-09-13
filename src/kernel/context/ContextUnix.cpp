@@ -5,12 +5,14 @@
 
 /* \file UContext.cpp Context switching with ucontexts from System V        */
 
-#include "ContextUnix.hpp"
 #include "context_private.hpp"
 
 #include "mc/mc.h"
+#include "simgrid/Exception.hpp"
 #include "src/mc/mc_ignore.hpp"
 #include "src/simix/ActorImpl.hpp"
+
+#include "ContextUnix.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
@@ -121,10 +123,13 @@ void UContext::smx_ctx_sysv_wrapper(int i1, int i2)
   ASAN_FINISH_SWITCH(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
   try {
     (*context)();
-    context->Context::stop();
   } catch (simgrid::kernel::context::Context::StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
+  } catch (simgrid::Exception const& e) {
+    XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
+    throw;
   }
+  context->Context::stop();
   ASAN_ONLY(context->asan_stop_ = true);
   context->suspend();
 }

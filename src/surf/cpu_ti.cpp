@@ -399,7 +399,7 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
   } else if (event == state_event_) {
     if (value > 0) {
       if (is_off()) {
-        host_that_restart.push_back(get_host());
+        XBT_VERB("Restart processes on host %s", get_host()->get_cname());
         get_host()->turn_on();
       }
     } else {

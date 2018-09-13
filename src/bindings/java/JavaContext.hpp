@@ -12,6 +12,7 @@
 #include <jni.h>
 
 #include "simgrid/simix.h"
+#include "src/kernel/context/ContextThread.hpp"
 #include "src/simix/smx_private.hpp"
 #include "xbt/xbt_os_thread.h"
 
@@ -24,28 +25,20 @@ namespace context {
 class JavaContext;
 class JavacontextFactory;
 
-class JavaContext : public simgrid::kernel::context::Context {
+class JavaContext : public simgrid::kernel::context::SerialThreadContext {
 public:
   // The java process instance bound with the msg process structure:
-  jobject jprocess = nullptr;
+  jobject jprocess_ = nullptr;
   // JNI interface pointer associated to this thread:
-  JNIEnv *jenv = nullptr;
-  xbt_os_thread_t thread = nullptr;
-  // Sempahore used to schedule/yield the process:
-  xbt_os_sem_t begin = nullptr;
-  // Semaphore used to schedule/unschedule the process:
-  xbt_os_sem_t end = nullptr;
+  JNIEnv* jenv_           = nullptr;
 
   friend class JavaContextFactory;
   JavaContext(std::function<void()> code,
           void_pfn_smxprocess_t cleanup_func,
           smx_actor_t process);
-  ~JavaContext() override;
+
+  void start_hook() override;
   void stop() override;
-  void suspend() override;
-  void resume();
-private:
-  static void* wrapper(void *data);
 };
 
 class JavaContextFactory : public simgrid::kernel::context::ContextFactory {

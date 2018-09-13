@@ -3,6 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/* ************************************************************************* */
+/* Take this tutorial online: https://simgrid.frama.io/simgrid/tuto_s4u.html */
+/* ************************************************************************* */
+
 #include <simgrid/s4u.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_masterworker, "Messages specific for this example");
@@ -10,20 +14,20 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_masterworker, "Messages specific for this e
 // master-begin
 static void master(std::vector<std::string> args)
 {
-  xbt_assert(args.size() == 5, "The master function expects 4 arguments");
+  xbt_assert(args.size() > 4, "The master function expects at least 3 arguments");
 
-  long workers_count        = std::stol(args[1]);
-  long tasks_count          = std::stol(args[2]);
-  double compute_cost       = std::stod(args[3]);
-  double communication_cost = std::stod(args[4]);
+  long tasks_count          = std::stol(args[1]);
+  double compute_cost       = std::stod(args[2]);
+  double communication_cost = std::stod(args[3]);
+  std::vector<simgrid::s4u::MailboxPtr> workers;
+  for (unsigned int i = 4; i < args.size(); i++)
+    workers.push_back(simgrid::s4u::Mailbox::by_name(args[i]));
 
-  XBT_INFO("Got %ld workers and %ld tasks to process", workers_count, tasks_count);
+  XBT_INFO("Got %zu workers and %ld tasks to process", workers.size(), tasks_count);
 
   for (int i = 0; i < tasks_count; i++) { /* For each task to be executed: */
     /* - Select a worker in a round-robin way */
-    std::string worker_rank          = std::to_string(i % workers_count);
-    std::string mailbox_name         = std::string("worker-") + worker_rank;
-    simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
+    simgrid::s4u::MailboxPtr mailbox = workers[i % workers.size()];
 
     /* - Send the computation cost to that worker */
     XBT_INFO("Sending task %d of %ld to mailbox '%s'", i, tasks_count, mailbox->get_cname());
@@ -31,10 +35,9 @@ static void master(std::vector<std::string> args)
   }
 
   XBT_INFO("All tasks have been dispatched. Request all workers to stop.");
-  for (int i = 0; i < workers_count; i++) {
+  for (unsigned int i = 0; i < workers.size(); i++) {
     /* The workers stop when receiving a negative compute_cost */
-    std::string mailbox_name         = std::string("worker-") + std::to_string(i);
-    simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
+    simgrid::s4u::MailboxPtr mailbox = workers[i % workers.size()];
 
     mailbox->put(new double(-1.0), 0);
   }
@@ -44,11 +47,10 @@ static void master(std::vector<std::string> args)
 // worker-begin
 static void worker(std::vector<std::string> args)
 {
-  xbt_assert(args.size() == 2, "The worker expects a single argument");
-  long id                          = std::stol(args[1]);
+  xbt_assert(args.size() == 1, "The worker expects no argument");
 
-  const std::string mailbox_name   = std::string("worker-") + std::to_string(id);
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
+  simgrid::s4u::Host* my_host      = simgrid::s4u::this_actor::get_host();
+  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(my_host->get_name());
 
   double compute_cost;
   do {

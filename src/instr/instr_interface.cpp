@@ -137,8 +137,7 @@ void TRACE_declare_mark(const char *mark_type)
   if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return;
 
-  if (not mark_type)
-    THROWF (tracing_error, 1, "mark_type is nullptr");
+  xbt_assert(mark_type, "mark_type is nullptr");
 
   //check if mark_type is already declared
   if (declared_marks.find(mark_type) != declared_marks.end()) {
@@ -171,10 +170,8 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
   if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return;
 
-  if (not mark_type)
-    THROWF (tracing_error, 1, "mark_type is nullptr");
-  if (not mark_value)
-    THROWF (tracing_error, 1, "mark_value is nullptr");
+  xbt_assert(mark_type, "mark_type is nullptr");
+  xbt_assert(mark_value, "mark_value is nullptr");
 
   simgrid::instr::EventType* type =
       static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->type_->by_name(mark_type));
@@ -226,10 +223,8 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return;
 
-  if (not mark_type)
-    THROWF (tracing_error, 1, "mark_type is nullptr");
-  if (not mark_value)
-    THROWF (tracing_error, 1, "mark_value is nullptr");
+  xbt_assert(mark_type, "mark_type is nullptr");
+  xbt_assert(mark_value, "mark_value is nullptr");
 
   //check if mark_type is already declared
   simgrid::instr::EventType* type =

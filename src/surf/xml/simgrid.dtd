@@ -79,7 +79,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ELEMENT platform ((config|random)*,(include|cluster|cabinet|peer|AS|zone|trace|trace_connect)*,(process|actor)*)>
 <!ATTLIST platform version CDATA "0.0">
 
-<!-- tag include is deprecated. Not documented, and soon removed -->
+<!-- tag include is deprecated. Not documented, and removed in v3.22 -->
 <!ELEMENT include (include|cluster|cabinet|peer|AS|zone|trace|trace_connect)*>
 <!ATTLIST include file CDATA #REQUIRED>
 
@@ -107,7 +107,14 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|ClusterTorus|ClusterFatTree|ClusterDragonfly) #REQUIRED>
 
-<!ELEMENT zone ((prop*), ((AS|zone|ASroute|zoneRoute|include|storage_type|storage|link|backbone|cabinet|router|host|cluster|peer|host_link)*,(route|ASroute|zoneRoute|trace|trace_connect|bypassRoute|bypassASroute|bypassZoneRoute)*))>
+<!-- A zone is either an internal node that contains other zones, 
+     or a  leaf containing hosts and other leaf-like elements -->
+<!ELEMENT zone ((prop*),
+          (((AS|zone|include|link|backbone|cabinet|cluster|peer|trace|trace_connect)*,
+            (zoneRoute|ASroute|trace|trace_connect|bypassASroute)*,
+	    (trace|trace_connect)*)
+	   |((include|storage_type|storage|host|cabinet|router|link|backbone|trace|trace_connect|host_link)*,
+	     (route|trace|trace_connect|bypassRoute)*)))>
 <!ATTLIST zone id CDATA #REQUIRED>
 <!ATTLIST zone routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|ClusterTorus|ClusterFatTree|ClusterDragonfly) #REQUIRED>
 

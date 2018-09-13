@@ -14,22 +14,22 @@
 #include <memory>
 #include <sstream>
 
-#define CHECK_ACTION_PARAMS(action, mandatory, optional)                                                             \
-{                                                                                                                    \
-  if (action.size() < static_cast<unsigned long>(mandatory + 2)) {                                                   \
-    std::stringstream ss;                                                                                            \
-    for (const auto& elem : action) {                                                                                \
-      ss << elem << " ";                                                                                             \
-    }                                                                                                                \
-    THROWF(arg_error, 0, "%s replay failed.\n"                                                                       \
-                         "%zu items were given on the line. First two should be process_id and action.  "            \
-                         "This action needs after them %lu mandatory arguments, and accepts %lu optional ones. \n"   \
-                         "The full line that was given is:\n   %s\n"                                                 \
-                         "Please contact the Simgrid team if support is needed",                                     \
-           __func__, action.size(), static_cast<unsigned long>(mandatory), static_cast<unsigned long>(optional),     \
-           ss.str().c_str());                                                                                        \
-  }                                                                                                                  \
-}
+#define CHECK_ACTION_PARAMS(action, mandatory, optional)                                                               \
+  {                                                                                                                    \
+    if (action.size() < static_cast<unsigned long>(mandatory + 2)) {                                                   \
+      std::stringstream ss;                                                                                            \
+      ss << __func__ << " replay failed.\n"                                                                            \
+         << action.size() << " items were given on the line. First two should be process_id and action.  "             \
+         << "This action needs after them " << mandatory << " mandatory arguments, and accepts " << optional           \
+         << " optional ones. \n"                                                                                       \
+         << "The full line that was given is:\n   ";                                                                   \
+      for (const auto& elem : action) {                                                                                \
+        ss << elem << " ";                                                                                             \
+      }                                                                                                                \
+      ss << "\nPlease contact the Simgrid team if support is needed";                                                  \
+      throw std::invalid_argument(ss.str());                                                                           \
+    }                                                                                                                  \
+  }
 
 XBT_PRIVATE void* smpi_get_tmp_sendbuffer(int size);
 XBT_PRIVATE void* smpi_get_tmp_recvbuffer(int size);
