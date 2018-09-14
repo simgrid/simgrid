@@ -66,18 +66,18 @@ time is reported into the simulator.
 
 
 Describing Your Platform
-========================
+------------------------
 
 As a SMPI user, you are supposed to provide a description of your
 virtual platform, that is mostly a set of simulated hosts and network
 links with some performance characteristics. SimGrid provides a plenty
 of :ref:`documentation <platform>`_ and examples (in the
-`examples/platform <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms>`_
-source directory), and this section only show a series of introductory
+`examples/platforms <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms>`_
+source directory), and this section only shows a small set of introductory
 examples.
 
 Simple Example with 3 hosts
----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 At the most basic level, you can describe your simulated platform as a
 graph of hosts and network links. For instance:
