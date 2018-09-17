@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static void usage(const char* binaryName, const char* defaultSend, const char* defaultRecv)
 {
-  std::fprintf(stderr, "Usage: %s examples/platforms/cluster.xml <send_spec> <recv_spec>\n"
+  std::fprintf(stderr, "Usage: %s examples/platforms/cluster_backbone.xml <send_spec> <recv_spec>\n"
                        "where spec is a list of letters giving the kind of tests you want to see.\n"
                        "Existing sender spec:\n"
                        " r regular send\n"
@@ -37,7 +37,7 @@ static void usage(const char* binaryName, const char* defaultSend, const char* d
                        " j irecv on permanent mailbox (after a little delay)\n"
                        " J irecv on permanent mailbox (after a little delay)\n"
                        "\n"
-                       "Example 1: %s examples/platforms/cluster.xml rRiIdD rrrrrr # testing all send functions\n"
+                       "Example 1: %s examples/platforms/cluster_backbone.xml rRiIdD rrrrrr # testing all send functions\n"
                        "Default specs: %s %s (all possible pairs)\n",
                binaryName, binaryName, defaultSend, defaultRecv);
   exit(1);

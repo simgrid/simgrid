@@ -12,7 +12,7 @@
 
 /* Run :
   /usr/bin/time -f "clock:%e user:%U sys:%S swapped:%W exitval:%x max:%Mk" "$@" \
-    ../../../smpi_script/bin/smpirun -hostfile hostfile_bugged1_liveness -platform ../../platforms/cluster.xml \
+    ../../../smpi_script/bin/smpirun -hostfile hostfile_bugged1_liveness -platform ../../platforms/cluster_backbone.xml \
     --cfg=contexts/factory:ucontext --cfg=model-check/reduction:none \
     --cfg=model-check/property:promela_bugged1_liveness --cfg=smpi/send-is-detached-thresh:0 \
     --cfg=contexts/stack-size:128 --cfg=model-check/visited:100000 --cfg=model-check/max-depth:100000 ./bugged1_liveness

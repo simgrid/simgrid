@@ -2,7 +2,7 @@
 
 ! output sort 19
 
-$ java -classpath ${classpath:=.} dht/kademlia/Main ${srcdir:=.}/../platforms/cluster.xml ${srcdir:=.}/dht/kademlia/kademlia.xml
+$ java -classpath ${classpath:=.} dht/kademlia/Main ${srcdir:=.}/../platforms/cluster_backbone.xml ${srcdir:=.}/dht/kademlia/kademlia.xml
 > [0.000000] [java/INFO] Using regular java threads.
 > [900.000000] [java/INFO] MSG_main finished; Terminating the simulation...
 > [node-0.acme.org:dht.kademlia.Node:(1) 0.000000] [java/INFO] Hi, I'm going to create the network with the id 0!

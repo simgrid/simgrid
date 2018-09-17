@@ -81,7 +81,7 @@ Simple Example with 3 hosts
 At the most basic level, you can describe your simulated platform as a
 graph of hosts and network links. For instance:
 
-.. image:: /tuto_smpi/img/3hosts.png
+.. image:: /tuto_smpi/3hosts.png
    :align: center
 
 .. literalinclude:: /tuto_smpi/3hosts.xml

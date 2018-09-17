@@ -922,6 +922,7 @@ set(DOC_SOURCES
   docs/requirements.txt
   docs/source/conf.py
   docs/source/Doxyfile
+  docs/source/_ext/hidden_code_block.py
 
   docs/source/img/eclipseScreenShot.png
   docs/source/img/extlink.png
@@ -1134,13 +1135,15 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/bypassASroute.xml
   examples/platforms/bypassRoute.xml
   examples/platforms/cloud.xml
-  examples/platforms/cluster.xml
+  examples/platforms/cluster_backbone.xml
   examples/platforms/cluster_multi.xml
   examples/platforms/cluster_and_one_host.xml
   examples/platforms/cluster_prototype.lua
   examples/platforms/cluster_crossbar.xml
-  examples/platforms/cluster_torus.xml
   examples/platforms/cluster_fat_tree.xml
+  examples/platforms/cluster_fat_tree.svg
+  examples/platforms/cluster_torus.xml
+  examples/platforms/cluster_torus.svg
   examples/platforms/cluster_dragonfly.xml
   examples/platforms/crosstraffic.xml
   examples/platforms/optorsim/gridpp_grid_2004.conf
