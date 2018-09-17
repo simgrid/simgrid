@@ -61,9 +61,8 @@ to predict the time taken by each communications. Any computations
 occuring between two MPI calls are benchmarked, and the corresponding
 time is reported into the simulator.
 
-.. image:: /tuto_smpi/img/big-picture.png
-   :align: center
-
+.. image:: /tuto_smpi/img/big-picture.svg
+   :align: center	   
 
 Describing Your Platform
 ------------------------
@@ -85,30 +84,30 @@ graph of hosts and network links. For instance:
 .. image:: /tuto_smpi/img/3hosts.png
    :align: center
 
-.. hidden-code-block:: xml
-    :starthidden: True
-    :label: See the XML platform description file...
+.. literalinclude:: /tuto_smpi/3hosts.xml
+   :language: xml
 
-    <?xml version='1.0'?>
-    <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-    <platform version="4.1">
-      <zone id="AS0" routing="Full">
-        <host id="host0" speed="1Gf"/>
-        <host id="host1" speed="2Gf"/>
-        <host id="host2" speed="40Gf"/>
-        <link id="link0" bandwidth="125MBps" latency="100us"/>
-        <link id="link1" bandwidth="50MBps" latency="150us"/>
-        <link id="link2" bandwidth="250MBps" latency="50us"/>
-        <route src="host0" dst="host1"><link_ctn id="link0"/><link_ctn id="link1"/></route>
-        <route src="host1" dst="host2"><link_ctn id="link1"/><link_ctn id="link2"/></route>
-        <route src="host0" dst="host2"><link_ctn id="link0"/><link_ctn id="link2"/></route>
-      </zone>
-    </platform>
+Note the way in which hosts, links, and routes are defined in
+this XML. All hosts are defined with a speed (in Gflops), and links
+with a latency (in us) and bandwidth (in MBytes per second). Other
+units are possible and written as expected. Routes specify the list of
+links encountered from one route to another. Routes are symmetrical by
+default.
 
-In this XML, note the way in which hosts, links, and routes are
-defined. All hosts are defined with a power (i.e., compute speed in
-Gflops), and links with a latency (in us) and bandwidth (in MBytes per
-second). Other units are possible and written as expected. By default,
-routes are symmetrical.
+Cluster with a Crossbar
+^^^^^^^^^^^^^^^^^^^^^^^
+
+A very common parallel computing platform is a homogeneous cluster in
+which hosts are interconnected via a crossbar switch with as many
+ports as hosts, so that any disjoint pairs of hosts can communicate
+concurrently at full speed. For instance:
+
+Cluster with a Shared Backbone
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Another popular model for a parallel platform is that of a set of
+homogeneous hosts connected to a shared communication medium, a
+backbone, with some finite bandwidth capacity and on which
+communicating host pairs can experience contention. For instance:
        
 ..  LocalWords:  SimGrid
