@@ -1135,10 +1135,10 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/bypassRoute.xml
   examples/platforms/cloud.xml
   examples/platforms/cluster.xml
-  examples/platforms/cluster_backbone.xml
+  examples/platforms/cluster_multi.xml
   examples/platforms/cluster_and_one_host.xml
   examples/platforms/cluster_prototype.lua
-  examples/platforms/cluster_no_backbone.xml
+  examples/platforms/cluster_crossbar.xml
   examples/platforms/cluster_torus.xml
   examples/platforms/cluster_fat_tree.xml
   examples/platforms/cluster_dragonfly.xml

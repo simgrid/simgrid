@@ -3,7 +3,7 @@
 <platform version="4.1">
   <!--           _________
                 |          |
-                |  router  |
+                | crossbar |
                 |__________|
                     / | \
                    /  |  \
@@ -11,8 +11,11 @@
                  /    |    \
                 /     |     \
             host0   host1   host2
+	    
+    All hosts can communicate at full speed with no interference on
+    the crossbar. Only the links of each hosts are limiting.	    
   -->
-  <zone id="AS0" routing="Full">
-    <cluster id="my_cluster_1" prefix="" suffix="" radical="0-262144" speed="1Gf" bw="125MBps" lat="50us"/>
+  <zone id="world" routing="Full">
+    <cluster id="cluster-crossbar" prefix="host-" suffix="simgrid.org" radical="0-262144" speed="1Gf" bw="125MBps" lat="50us"/>
   </zone>
 </platform>
