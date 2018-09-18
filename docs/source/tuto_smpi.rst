@@ -458,4 +458,15 @@ is computationally hungry.
 
 .. todo:: smpi_replay should be installed by SimGrid, and smpirun interface could be simplified here.
 
+Lab 3: Execution Sampling on EP
+-------------------------------
+
+The second method to speed up simulations is to sample the computation parts in the code.
+This means that the person doing the simulation needs to know the application and identify
+parts that are compute intensive and take time, while being regular enough not to ruin
+simulation accuracy. Furthermore there should not be any MPI calls inside such parts of the
+code.
+
+Use the EP benchmark, class B, 16 processes.
+
 ..  LocalWords:  SimGrid
