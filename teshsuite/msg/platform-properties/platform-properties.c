@@ -63,7 +63,7 @@ static int carole(int argc, char* argv[])
 static int david(int argc, char* argv[])
 {                       /* Dump what we have on a remote host */
   MSG_process_sleep(2); // Wait for alice and carole to be done with its experiment
-  test_host("node-0.acme.org");
+  test_host("node-0.simgrid.org");
   return 0;
 }
 

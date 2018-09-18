@@ -9,7 +9,7 @@
 
   <zone id="world" routing="Full">
     <cluster id="bob_cluster"
-	     prefix="node-" radical="0-15" suffix=".acme.org"
+	     prefix="node-" radical="0-15" suffix=".simgrid.org"
 	     speed="1Gf" bw="125MBps" lat="50us" 
              topology="FAT_TREE" topo_parameters="2;4,4;1,2;1,2"
 	     loopback_bw="100MBps" loopback_lat="0" />

@@ -9,28 +9,28 @@ $ ../../../smpi_script/bin/smpirun -wrapper ${bindir:=.}/../../../bin/simgrid-mc
 > [0.000000] [mc_comm_determinism/INFO] ****************************************************
 > [0.000000] [mc_comm_determinism/INFO] ** Initial communications pattern (per process): **
 > [0.000000] [mc_comm_determinism/INFO] Communications from the process 1:
-> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.acme.org <- (2) node-2.acme.org] iRecv 
-> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.acme.org -> (2) node-2.acme.org] iSend 
-> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.acme.org <- (3) node-3.acme.org] iRecv 
-> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.acme.org -> (3) node-3.acme.org] iSend 
+> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.simgrid.org <- (2) node-2.simgrid.org] iRecv 
+> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.simgrid.org -> (2) node-2.simgrid.org] iSend 
+> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.simgrid.org <- (3) node-3.simgrid.org] iRecv 
+> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.simgrid.org -> (3) node-3.simgrid.org] iSend 
 > [0.000000] [mc_comm_determinism/INFO] Communications from the process 2:
-> [0.000000] [mc_comm_determinism/INFO] [(2) node-2.acme.org -> (1) node-1.acme.org] iSend 
-> [0.000000] [mc_comm_determinism/INFO] [(2) node-2.acme.org <- (1) node-1.acme.org] iRecv 
+> [0.000000] [mc_comm_determinism/INFO] [(2) node-2.simgrid.org -> (1) node-1.simgrid.org] iSend 
+> [0.000000] [mc_comm_determinism/INFO] [(2) node-2.simgrid.org <- (1) node-1.simgrid.org] iRecv 
 > [0.000000] [mc_comm_determinism/INFO] Communications from the process 3:
-> [0.000000] [mc_comm_determinism/INFO] [(3) node-3.acme.org -> (1) node-1.acme.org] iSend 
-> [0.000000] [mc_comm_determinism/INFO] [(3) node-3.acme.org <- (1) node-1.acme.org] iRecv 
+> [0.000000] [mc_comm_determinism/INFO] [(3) node-3.simgrid.org -> (1) node-1.simgrid.org] iSend 
+> [0.000000] [mc_comm_determinism/INFO] [(3) node-3.simgrid.org <- (1) node-1.simgrid.org] iRecv 
 > [0.000000] [mc_comm_determinism/INFO] ** Communications pattern counter-example (per process): **
 > [0.000000] [mc_comm_determinism/INFO] Communications from the process 1:
-> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.acme.org <- (3) node-3.acme.org] iRecv 
-> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.acme.org -> (3) node-3.acme.org] iSend 
-> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.acme.org <- (2) node-2.acme.org] iRecv 
-> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.acme.org -> (2) node-2.acme.org] iSend 
+> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.simgrid.org <- (3) node-3.simgrid.org] iRecv 
+> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.simgrid.org -> (3) node-3.simgrid.org] iSend 
+> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.simgrid.org <- (2) node-2.simgrid.org] iRecv 
+> [0.000000] [mc_comm_determinism/INFO] [(1) node-1.simgrid.org -> (2) node-2.simgrid.org] iSend 
 > [0.000000] [mc_comm_determinism/INFO] Communications from the process 2:
-> [0.000000] [mc_comm_determinism/INFO] [(2) node-2.acme.org -> (1) node-1.acme.org] iSend 
-> [0.000000] [mc_comm_determinism/INFO] [(2) node-2.acme.org <- (1) node-1.acme.org] iRecv 
+> [0.000000] [mc_comm_determinism/INFO] [(2) node-2.simgrid.org -> (1) node-1.simgrid.org] iSend 
+> [0.000000] [mc_comm_determinism/INFO] [(2) node-2.simgrid.org <- (1) node-1.simgrid.org] iRecv 
 > [0.000000] [mc_comm_determinism/INFO] Communications from the process 3:
-> [0.000000] [mc_comm_determinism/INFO] [(3) node-3.acme.org -> (1) node-1.acme.org] iSend 
-> [0.000000] [mc_comm_determinism/INFO] [(3) node-3.acme.org <- (1) node-1.acme.org] iRecv 
+> [0.000000] [mc_comm_determinism/INFO] [(3) node-3.simgrid.org -> (1) node-1.simgrid.org] iSend 
+> [0.000000] [mc_comm_determinism/INFO] [(3) node-3.simgrid.org <- (1) node-1.simgrid.org] iRecv 
 > [0.000000] [mc_global/INFO] Expanded states = 16037
 > [0.000000] [mc_global/INFO] Visited states = 80801
 > [0.000000] [mc_global/INFO] Executed transitions = 76048

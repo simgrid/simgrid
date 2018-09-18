@@ -30,7 +30,7 @@ all_ids = [42]
 sys.stdout.write("<?xml version='1.0'?>\n"
                  "<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n"
                  "<platform version=\"4\">\n"
-                 "  <process host=\"node-0.acme.org\" function=\"tracker\">\n"
+                 "  <process host=\"node-0.simgrid.org\" function=\"tracker\">\n"
                  "    <argument value=\"%d\"/>\n  </process>\n" % end_date)
 
 for i in range(1, nb_nodes):
@@ -40,7 +40,7 @@ for i in range(1, nb_nodes):
         my_id = random.randint(0, max_id)
         ok = not my_id in all_ids
     start_date = i * 10
-    line = "  <process host=\"node-%d.acme.org\" function=\"peer\">\n" % i
+    line = "  <process host=\"node-%d.simgrid.org\" function=\"peer\">\n" % i
     line += "    <argument value=\"%d\"/>\n    <argument value=\"%d\"/>\n" % (
         my_id, end_date)
     if random.randint(0, 100) < seed_percentage:

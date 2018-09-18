@@ -68,7 +68,7 @@ static void david(std::vector<std::string> /*args*/)
 {
   /* Dump what we have on a remote host */
   simgrid::s4u::this_actor::sleep_for(2); // Wait for alice and carole to be done with its experiment
-  test_host("node-0.acme.org");
+  test_host("node-0.simgrid.org");
 }
 
 static void bob(std::vector<std::string> /*args*/)

@@ -1,12 +1,12 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4.1">
-  <actor host="node-2.acme.org" function="master">
+  <actor host="node-2.simgrid.org" function="master">
     <argument value="100"/>
-    <argument value="node-6.acme.org"/>
+    <argument value="node-6.simgrid.org"/>
     <argument value="1"/>
   </actor>
-  <actor host="node-6.acme.org" function="worker">
+  <actor host="node-6.simgrid.org" function="worker">
     <argument value="1"/>
   </actor>
 </platform>
