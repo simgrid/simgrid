@@ -15,8 +15,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(plugin_pampi, smpi, "Logging specific to the AMP
 
 static std::vector<size_t> memory_size(500, 0); // FIXME cheinrich This needs to be dynamic
 static std::map</*address*/ void*, size_t> alloc_table; // Keep track of all allocations
-extern "C" XBT_PUBLIC void* _sampi_malloc(size_t);
+extern "C" XBT_PUBLIC void* _sampi_malloc(size_t); // FIXME Use declarations from sampi.h instead
 extern "C" XBT_PUBLIC void _sampi_free(void* ptr);
+extern "C" XBT_PUBLIC void* _sampi_calloc(size_t num_elm, size_t elem_size);
+extern "C" XBT_PUBLIC void* _sampi_realloc(void* ptr, size_t size);
 extern "C" void* _sampi_malloc(size_t size)
 {
   void* result = malloc (size); // We need the space here to prevent recursive substitution
@@ -33,6 +35,27 @@ extern "C" void _sampi_free(void* ptr)
   int my_proc_id    = simgrid::s4u::this_actor::get_pid();
   memory_size[my_proc_id] -= alloc_size;
   free(ptr);
+}
+
+extern "C" void* _sampi_calloc(size_t num_elm, size_t elem_size)
+{
+  void* result = calloc (num_elm, elem_size); // We need the space here to prevent recursive substitution
+  alloc_table.insert({result, num_elm * elem_size});
+  if (not simgrid::s4u::this_actor::is_maestro()) {
+    memory_size[simgrid::s4u::this_actor::get_pid()] += num_elm * elem_size;
+  }
+  return result;
+}
+extern "C" void* _sampi_realloc(void* ptr, size_t size)
+{
+  void* result = realloc (ptr, size); // We need the space here to prevent recursive substitution
+  int old_size = alloc_table.at(ptr);
+  alloc_table.erase(ptr);
+  alloc_table.insert({result, size});
+  if (not simgrid::s4u::this_actor::is_maestro()) {
+    memory_size[simgrid::s4u::this_actor::get_pid()] += size - old_size;
+  }
+  return result;
 }
 
 #include "ampi.hpp"
