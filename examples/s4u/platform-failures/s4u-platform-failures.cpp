@@ -86,8 +86,8 @@ static int worker(int argc, char* argv[])
     try {
       XBT_INFO("Waiting a message on %s", mailbox->get_cname());
       payload   = static_cast<double*>(mailbox->get());
-      comp_size = *payload;
       xbt_assert(payload != nullptr, "mailbox->get() failed");
+      comp_size = *payload;
       if (comp_size < 0) { /* - Exit when -1.0 is received */
         XBT_INFO("I'm done. See you!");
         delete payload;
