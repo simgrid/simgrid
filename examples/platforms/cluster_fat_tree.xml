@@ -7,8 +7,11 @@
   This defines a two levels fat-tree, with 4 leaf switches connected to 4 nodes each and 2 core switches connected to 
   each leaf switch by two cables -->
 
-  <zone id="AS0" routing="Full">
-    <cluster id="bob_cluster" prefix="node-" suffix=".acme.org" radical="0-15" speed="1Gf" bw="125MBps" lat="50us" 
-             topology="FAT_TREE" topo_parameters="2;4,4;1,2;1,2" loopback_bw="100MBps" loopback_lat="0"/>
+  <zone id="world" routing="Full">
+    <cluster id="bob_cluster"
+	     prefix="node-" radical="0-15" suffix=".acme.org"
+	     speed="1Gf" bw="125MBps" lat="50us" 
+             topology="FAT_TREE" topo_parameters="2;4,4;1,2;1,2"
+	     loopback_bw="100MBps" loopback_lat="0" />
   </zone>
 </platform>

@@ -37,7 +37,7 @@ only plan to debug your application in a reproducible setup, without
 any performance-related analysis.
 
 How does it work?
-^^^^^^^^^^^^^^^^^
+.................
 
 In SMPI, communications are simulated while computations are
 emulated. This means that while computations occur as they would in
@@ -70,13 +70,16 @@ Describing Your Platform
 As a SMPI user, you are supposed to provide a description of your
 virtual platform, that is mostly a set of simulated hosts and network
 links with some performance characteristics. SimGrid provides a plenty
-of :ref:`documentation <platform>`_ and examples (in the
+of :ref:`documentation <platform>` and examples (in the
 `examples/platforms <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms>`_
 source directory), and this section only shows a small set of introductory
 examples.
 
+Feel free to skip this section if you want to jump right away to usage
+examples.
+
 Simple Example with 3 hosts
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...........................
 
 At the most basic level, you can describe your simulated platform as a
 graph of hosts and network links. For instance:
@@ -95,19 +98,213 @@ links encountered from one route to another. Routes are symmetrical by
 default.
 
 Cluster with a Crossbar
-^^^^^^^^^^^^^^^^^^^^^^^
+.......................
 
 A very common parallel computing platform is a homogeneous cluster in
 which hosts are interconnected via a crossbar switch with as many
 ports as hosts, so that any disjoint pairs of hosts can communicate
 concurrently at full speed. For instance:
 
+.. literalinclude:: ../../examples/platforms/cluster_crossbar.xml
+   :language: xml
+   :lines: 1-3,18-
+
+One specifies a name prefix and suffix for each host, and then give an
+integer range. In the example the cluster contains 262145 hosts (!),
+named ``host-0.simgrid.org`` to ``host-262144.simgrid.org``. All hosts
+have the same power (1 Gflop/sec) and are connected to the switch via
+links with same bandwidth (125 MBytes/sec) and latency (50
+microseconds).
+
+.. todo::
+
+   Add the picture.
+
 Cluster with a Shared Backbone
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..............................
 
 Another popular model for a parallel platform is that of a set of
 homogeneous hosts connected to a shared communication medium, a
 backbone, with some finite bandwidth capacity and on which
 communicating host pairs can experience contention. For instance:
-       
+
+
+.. literalinclude:: ../../examples/platforms/cluster_backbone.xml
+   :language: xml
+   :lines: 1-3,18-
+
+The only differences with the crossbar cluster above are the ``bb_bw``
+and ``bb_lat`` attributes that specify the backbone characteristics
+(here, a 500 microseconds latency and a 2.25 GByte/sec
+bandwidth). This link is used for every communication within the
+cluster. The route from ``node-0.acme.org`` to ``node-1.acme.org``
+counts 3 links: the private link of ``node-0.acme.org``, the backbone
+and the private link of ``node-1.acme.org``.
+	   
+.. todo::
+
+   Add the picture.
+
+Torus Cluster
+.............
+
+Many HPC facilities use torus clusters to reduce sharing and
+performance loss on concurrent internal communications. Modeling this
+in SimGrid is very easy. Simply add a ``topology="TORUS"`` attribute
+to your cluster. Configure it with the ``topo_parameters="X,Y,Z"``
+attribute, where ``X``, ``Y`` and ``Z`` are the dimension of your
+torus.
+
+.. image:: ../../examples/platforms/cluster_torus.svg
+   :align: center
+
+.. literalinclude:: ../../examples/platforms/cluster_torus.xml
+   :language: xml
+
+Note that in this example, we used ``loopback_bw`` and
+``loopback_lat`` to specify the characteristics of the loopback link
+of each node (i.e., the link allowing each node to communicate with
+itself). We could have done so in previous example too. When no
+loopback is given, the communication from a node to itself is handled
+as if it were two distinct nodes: it goes twice through the private
+link and through the backbone (if any).
+
+Fat-Tree Cluster
+................
+
+This topology was introduced to reduce the amount of links in the
+cluster (and thus reduce its price) while maintaining a high bisection
+bandwidth and a relatively low diameter. To model this in SimGrid,
+pass a ``topology="FAT_TREE"`` attribute to your cluster. The
+``topo_parameters=#levels;#downlinks;#uplinks;link count`` follows the
+semantic introduced in the `Figure 1B of this article
+<http://webee.eedev.technion.ac.il/wp-content/uploads/2014/08/publication_574.pdf>`_.
+
+Here is the meaning of this example: ``2 ; 4,4 ; 1,2 ; 1,2``
+
+- That's a two-level cluster (thus the initial ``2``).
+- Routers are connected to 4 elements below them, regardless of its
+  level. Thus the ``4,4`` component that is used as
+  ``#downlinks``. This means that the hosts are grouped by 4 on a
+  given router, and that there is 4 level-1 routers (in the middle of
+  the figure).
+- Hosts are connected to only 1 router above them, while these routers
+  are connected to 2 routers above them (thus the ``1,2`` used as
+  ``#uplink``).
+- Hosts have only one link to their router while every path between a
+  level-1 routers and level-2 routers use 2 parallel links. Thus the
+  ``1,2`` that is used as ``link count``.
+
+.. image:: ../../examples/platforms/cluster_fat_tree.svg
+   :align: center
+
+.. literalinclude:: ../../examples/platforms/cluster_fat_tree.xml
+   :language: xml
+   :lines: 1-3,10-
+
+
+Dragonfly Cluster
+.................
+
+This topology was introduced to further reduce the amount of links
+while maintaining a high bandwidth for local communications. To model
+this in SimGrid, pass a ``topology="DRAGONFLY"`` attribute to your
+cluster.
+
+.. literalinclude:: ../../examples/platforms/cluster_dragonfly.xml
+   :language: xml
+
+.. todo::
+
+   Add the image, and the documuentation of the topo_parameters.
+
+Final Word
+..........
+
+We only glanced over the abilities offered by SimGrid to describe the
+platform topology. Other networking zones model non-HPC platforms
+(such as wide area networks, ISP network comprising set-top boxes, or
+even your own routing schema). You can interconnect several networking
+zones in your platform to form a tree of zones, that is both a time-
+and memory-efficient representation of distributed platforms. Please
+head to the dedicated :ref:`documentation <platform>` for more
+information.
+
+Hands-on!
+---------
+
+It is time to start using SMPI yourself. For that, you first need to
+install it somehow, and then you will need a MPI application to play with.
+
+Using Docker
+............
+
+The easiest way to take the tutorial is to use the dedicated Docker
+image. Once you `installed Docker itself
+<https://docs.docker.com/install/>`_, simply do the following:
+
+.. code-block:: shell
+
+   docker pull simgrid/tuto-smpi
+   docker run -it --rm --name simgrid --volume ~/smpi-tutorial:/src/tutorial simgrid/tuto-smpi bash
+
+This will start a new container with all you need to take this
+tutorial, and create a ``smpi-tutorial`` directory in your home on
+your host machine that will be visible as ``/src/tutorial`` within the
+container.  You can then edit the files you want with your favorite
+editor in ``~/smpi-tutorial``, and compile them within the
+container to enjoy the provided dependencies.
+
+.. warning::
+
+   Any change to the container out of ``/src/tutorial`` will be lost
+   when you log out of the container, so don't edit the other files!
+
+All needed dependencies are already installed in this container
+(SimGrid, a C/C++ compiler, a Fortran compiler, make, pajeng and
+R). Vite being only optional in this tutorial, it is not installed to
+reduce the image size.
+
+The code template is available under ``/src/simgrid-template-smpi`` in
+the image. You should copy it to your working directory when you first
+log in:
+
+.. code-block:: shell
+
+   cp -r /src/simgrid-template-smpi/* /src/tutorial
+   cd /src/tutorial
+
+Using your Computer Natively
+............................
+
+To take the tutorial on your machine, you first need to :ref:`install
+SimGrid <install>`, the C/C++/Fortran compilers and also ``pajeng`` to
+visualize the traces. You may want to install `Vite
+<http://vite.gforge.inria.fr/>`_ to get a first glance at the
+traces. The provided code template requires make to compile. On
+Debian and Ubuntu for example, you can get them as follows:
+
+.. code-block:: shell
+
+   sudo apt install simgrid pajeng make gcc g++ gfortran vite
+
+An initial version of the source code is provided on framagit. This
+template compiles with cmake. If SimGrid is correctly installed, you
+should be able to clone the `repository
+<https://framagit.org/simgrid/simgrid-template-smpi>`_ and recompile
+everything as follows:
+
+.. code-block:: shell
+
+   git clone git@framagit.org:simgrid/simgrid-template-smpi.git
+   cd simgrid-template-smpi/
+   cmake .
+   make
+
+If you struggle with the compilation, then you should double check
+your :ref:`SimGrid installation <install>`.  On need, please refer to
+the :ref:`Troubleshooting your Project Setup
+<install_yours_troubleshooting>` section.
+
+
 ..  LocalWords:  SimGrid

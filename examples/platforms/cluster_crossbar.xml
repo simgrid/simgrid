@@ -10,12 +10,14 @@
                l0 / l1|   \l2
                  /    |    \
                 /     |     \
-            host0   host1   host2
+           host-0   host-1   host-2 ...
 	    
     All hosts can communicate at full speed with no interference on
     the crossbar. Only the links of each hosts are limiting.	    
   -->
   <zone id="world" routing="Full">
-    <cluster id="cluster-crossbar" prefix="host-" suffix="simgrid.org" radical="0-262144" speed="1Gf" bw="125MBps" lat="50us"/>
+    <cluster id="cluster-crossbar" 
+             prefix="host-" radical="0-262144" suffix="simgrid.org"
+	     speed="1Gf" bw="125MBps" lat="50us"/>
   </zone>
 </platform>
