@@ -333,11 +333,11 @@ nodes from the ``cluster_crossbar.xml`` platform as follows:
 
 .. code-block:: shell
 
-   $ smpirun -np 16 -platform cluster_crossbar.xml -hostfile cluster_hostfile.txt ./roundtrip
+   $ smpirun -np 16 -platform cluster_crossbar.xml -hostfile cluster_hostfile ./roundtrip
 
 - The ``-np 16`` option, just like in regular MPI, specifies the
   number of MPI processes to use. 
-- The ``-hostfile cluster_hostfile.txt`` option, just like in regular
+- The ``-hostfile cluster_hostfile`` option, just like in regular
   MPI, specifies the host file. If you omit this option, ``smpirun``
   will deploy the application on the first machines of your platform.
 - The ``-platform cluster_crossbar.xml`` option, **which doesn't exist
@@ -346,9 +346,12 @@ nodes from the ``cluster_crossbar.xml`` platform as follows:
 - At the end of the line, one finds the executable name and
   command-line arguments (if any -- roundtrip does not expect any arguments).
 
-
-
-We will use following simple MPI program, roundtrip.c, in which the processes pass around a message and print the elpased time:
-
+Feel free to tweak the content of the XML platform file and the
+prorgam to see the effect on the simulated execution time. Note that
+the simulation accounts for realistic network protocol effects and MPI
+implementation effects. As a result, you may see "unexpected behavior"
+like in the real world (e.g., sending a message 1 byte larger may lead
+to significant higher execution time).
+ 
  
 ..  LocalWords:  SimGrid
