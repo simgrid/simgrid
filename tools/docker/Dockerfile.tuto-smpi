@@ -1,0 +1,8 @@
+# Base image 
+FROM simgrid/unstable
+
+# - Clone simgrid-template-smpi, as it is needed by the tutorial
+RUN apt update && apt install -y pajeng r-base r-cran-ggplot2 r-cran-dplyr build-essential g++ gfortran git && \
+    cd /source && \
+    git clone --depth=1 https://framagit.org/simgrid/simgrid-template-smpi.git simgrid-template-smpi.git && \
+    apt autoremove -y && apt clean && apt autoclean

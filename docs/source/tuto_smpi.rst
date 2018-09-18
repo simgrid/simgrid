@@ -246,33 +246,35 @@ image. Once you `installed Docker itself
 .. code-block:: shell
 
    docker pull simgrid/tuto-smpi
-   docker run -it --rm --name simgrid --volume ~/smpi-tutorial:/src/tutorial simgrid/tuto-smpi bash
+   docker run -it --rm --name simgrid --volume ~/smpi-tutorial:/source/tutorial simgrid/tuto-smpi bash
 
 This will start a new container with all you need to take this
 tutorial, and create a ``smpi-tutorial`` directory in your home on
-your host machine that will be visible as ``/src/tutorial`` within the
+your host machine that will be visible as ``/source/tutorial`` within the
 container.  You can then edit the files you want with your favorite
 editor in ``~/smpi-tutorial``, and compile them within the
 container to enjoy the provided dependencies.
 
 .. warning::
 
-   Any change to the container out of ``/src/tutorial`` will be lost
+   Any change to the container out of ``/source/tutorial`` will be lost
    when you log out of the container, so don't edit the other files!
 
 All needed dependencies are already installed in this container
-(SimGrid, a C/C++ compiler, a Fortran compiler, make, pajeng and
-R). Vite being only optional in this tutorial, it is not installed to
-reduce the image size.
+(SimGrid, the C/C++/Fortran compilers, make, pajeng and R). Vite being
+only optional in this tutorial, it is not installed to reduce the
+image size. 
 
-The code template is available under ``/src/simgrid-template-smpi`` in
-the image. You should copy it to your working directory when you first
-log in:
+The container also include the example platform files from the
+previous section as well as the source code of the NAS Parallel
+Benchmarks. These files are available under
+``/source/simgrid-template-smpi`` in the image. You should copy it to
+your working directory when you first log in:
 
 .. code-block:: shell
 
-   cp -r /src/simgrid-template-smpi/* /src/tutorial
-   cd /src/tutorial
+   cp -r /source/simgrid-template-smpi/* /source/tutorial
+   cd /source/tutorial
 
 Using your Computer Natively
 ............................

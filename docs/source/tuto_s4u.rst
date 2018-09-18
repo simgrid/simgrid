@@ -301,18 +301,18 @@ image. Once you `installed Docker itself
 .. code-block:: shell
 
    docker pull simgrid/tuto-s4u
-   docker run -it --rm --name simgrid --volume ~/simgrid-tutorial:/src/tutorial simgrid/tuto-s4u bash
+   docker run -it --rm --name simgrid --volume ~/simgrid-tutorial:/source/tutorial simgrid/tuto-s4u bash
 
 This will start a new container with all you need to take this
 tutorial, and create a ``simgrid-tutorial`` directory in your home on
-your host machine that will be visible as ``/src/tutorial`` within the
+your host machine that will be visible as ``/source/tutorial`` within the
 container.  You can then edit the files you want with your favorite
 editor in ``~/simgrid-tutorial``, and compile them within the
 container to enjoy the provided dependencies.
 
 .. warning::
 
-   Any change to the container out of ``/src/tutorial`` will be lost
+   Any change to the container out of ``/source/tutorial`` will be lost
    when you log out of the container, so don't edit the other files!
 
 All needed dependencies are already installed in this container
@@ -320,14 +320,14 @@ All needed dependencies are already installed in this container
 optional in this tutorial, it is not installed to reduce the image
 size.
 
-The code template is available under ``/src/simgrid-template-s4u`` in
+The code template is available under ``/source/simgrid-template-s4u`` in
 the image. You should copy it to your working directory when you first
 log in:
 
 .. code-block:: shell
 
-   cp -r /src/simgrid-template-s4u/* /src/tutorial
-   cd /src/tutorial
+   cp -r /source/simgrid-template-s4u/* /source/tutorial
+   cd /source/tutorial
 
 Using your Computer Natively
 ............................
