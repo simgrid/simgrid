@@ -366,7 +366,6 @@ Discovering the Provided Code
 
 Please compile and execute the provided simulator as follows:
 
-
 .. code-block:: shell
 
    make master-workers

@@ -110,8 +110,8 @@ concurrently at full speed. For instance:
    :lines: 1-3,18-
 
 One specifies a name prefix and suffix for each host, and then give an
-integer range. In the example the cluster contains 262145 hosts (!),
-named ``host-0.simgrid.org`` to ``host-262144.simgrid.org``. All hosts
+integer range. In the example the cluster contains 65535 hosts (!),
+named ``node-0.simgrid.org`` to ``node-65534.simgrid.org``. All hosts
 have the same power (1 Gflop/sec) and are connected to the switch via
 links with same bandwidth (125 MBytes/sec) and latency (50
 microseconds).
@@ -137,9 +137,9 @@ The only differences with the crossbar cluster above are the ``bb_bw``
 and ``bb_lat`` attributes that specify the backbone characteristics
 (here, a 500 microseconds latency and a 2.25 GByte/sec
 bandwidth). This link is used for every communication within the
-cluster. The route from ``node-0.acme.org`` to ``node-1.acme.org``
-counts 3 links: the private link of ``node-0.acme.org``, the backbone
-and the private link of ``node-1.acme.org``.
+cluster. The route from ``node-0.simgrid.org`` to ``node-1.simgrid.org``
+counts 3 links: the private link of ``node-0.simgrid.org``, the backbone
+and the private link of ``node-1.simgrid.org``.
 	   
 .. todo::
 
@@ -290,23 +290,65 @@ Debian and Ubuntu for example, you can get them as follows:
 
    sudo apt install simgrid pajeng make gcc g++ gfortran vite
 
-An initial version of the source code is provided on framagit. This
-template compiles with cmake. If SimGrid is correctly installed, you
-should be able to clone the `repository
-<https://framagit.org/simgrid/simgrid-template-smpi>`_ and recompile
-everything as follows:
+To take this tutorial, you will also need the platform files from the
+previous section as well as the source code of the NAS Parallel
+Benchmarks. Just  clone `this repository
+<https://framagit.org/simgrid/simgrid-template-smpi>`_  to get them all:
 
 .. code-block:: shell
 
    git clone git@framagit.org:simgrid/simgrid-template-smpi.git
    cd simgrid-template-smpi/
-   cmake .
-   make
 
 If you struggle with the compilation, then you should double check
 your :ref:`SimGrid installation <install>`.  On need, please refer to
 the :ref:`Troubleshooting your Project Setup
 <install_yours_troubleshooting>` section.
 
+Lab 0: Hello World
+------------------
 
+It is time to simulate your first MPI program. Use the simplistic
+example `roundtrip.c
+<https://framagit.org/simgrid/simgrid-template-smpi/raw/master/roundtrip.c?inline=false>`_
+that comes with the template.
+
+.. literalinclude:: /tuto_smpi/roundtrip.c
+   :language: c
+
+Compiling and Executing
+.......................
+	      
+Compiling the program is straightforward (double check your
+:ref:`SimGrid installation <install>` if you get an error message):
+
+
+.. code-block:: shell
+		
+  $ smpicc -O3 roundtrip.c -o roundtrip
+
+
+Once compiled, you can simulate the execution of this program on 16
+nodes from the ``cluster_crossbar.xml`` platform as follows:
+
+.. code-block:: shell
+
+   $ smpirun -np 16 -platform cluster_crossbar.xml -hostfile cluster_hostfile.txt ./roundtrip
+
+- The ``-np 16`` option, just like in regular MPI, specifies the
+  number of MPI processes to use. 
+- The ``-hostfile cluster_hostfile.txt`` option, just like in regular
+  MPI, specifies the host file. If you omit this option, ``smpirun``
+  will deploy the application on the first machines of your platform.
+- The ``-platform cluster_crossbar.xml`` option, **which doesn't exist
+  in regular MPI**, specifies the platform configuration to be
+  simulated. 
+- At the end of the line, one finds the executable name and
+  command-line arguments (if any -- roundtrip does not expect any arguments).
+
+
+
+We will use following simple MPI program, roundtrip.c, in which the processes pass around a message and print the elpased time:
+
+ 
 ..  LocalWords:  SimGrid
