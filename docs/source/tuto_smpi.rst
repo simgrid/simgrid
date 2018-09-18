@@ -414,5 +414,48 @@ documentation <http://simgrid.gforge.inria.fr/contrib/R_visualization.html>`_.
 Lab 2: Tracing and Replay of LU
 -------------------------------
 
+Now compile and execute the LU benchmark, class A, with 32 nodes.
+
+.. code-block:: shell
+
+   $ make lu NPROCS=32 CLASS=A
+
+This takes several minutes to to simulate, because all code from all
+processes has to be really executed, and everything is serialized.
+
+SMPI provides several methods to speed things up. One of them is to
+capture a time independent trace of the running application, and
+replay it on a different platform with the same amount of nodes. The
+replay is much faster than live simulation, as the computations are
+skipped (the application must be network-dependent for this to work).
+
+You can even generate the trace during as live simulation, as follows:
+
+.. code-block:: shell
+
+   $ smpirun -trace-ti --cfg=tracing/filename:LU.A.32 -np 32 -platform ../cluster_backbone.xml bin/lu.A.32 
+
+The produced trace is composed of a file ``LU.A.32`` and a folder
+``LU.A.32_files``. To replay this with SMPI, you need to first compile
+the provided ``smpi_replay.cpp`` file, that comes from
+`simgrid/examples/smpi/replay
+<https://framagit.org/simgrid/simgrid/tree/master/examples/smpi/replay>`_.
+
+.. code-block:: shell
+
+   $ smpicxx ../replay.cpp -O3 -o ../smpi_replay
+
+Afterward, you can replay your trace in SMPI as follows:
+
+   $ smpirun -np 32 -platform ../cluster_torus.xml -ext smpi_replay ../smpi_replay LU.A.32
+
+All the outputs are gone, as the application is not really simulated
+here. Its trace is simply replayed. But if you visualize the live
+simulation and the replay, you will see that the behavior is
+unchanged. The simulation does not run much faster on this very
+example, but this becomes very interesting when your application
+is computationally hungry.
+
+.. todo:: smpi_replay should be installed by SimGrid, and smpirun interface could be simplified here.
 
 ..  LocalWords:  SimGrid
