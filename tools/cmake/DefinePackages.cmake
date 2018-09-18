@@ -958,6 +958,11 @@ set(DOC_SOURCES
   docs/source/tuto_s4u/master-workers-lab3.cpp
   docs/source/tuto_s4u/master-workers-lab4.cpp
 
+  docs/source/tuto_smpi/3hosts.png
+  docs/source/tuto_smpi/3hosts.xml
+  docs/source/tuto_smpi/img/big-picture.svg
+  docs/source/tuto_smpi.rst
+
   CITATION.bib
   )
 
