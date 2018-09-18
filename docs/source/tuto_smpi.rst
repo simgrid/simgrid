@@ -352,6 +352,67 @@ the simulation accounts for realistic network protocol effects and MPI
 implementation effects. As a result, you may see "unexpected behavior"
 like in the real world (e.g., sending a message 1 byte larger may lead
 to significant higher execution time).
- 
- 
+
+Lab 1: Visualizing LU
+---------------------
+
+We will now simulate a larger application: the LU benchmark of the NAS
+suite. The version provided in the code template was modified to
+compile with SMPI instead of the regular MPI. Compare the difference
+between the original ``config/make.def.template`` and the
+``config/make.def`` that was adapted to SMPI. We use ``smpiff`` and
+``smpicc`` as compilers, and don't pass any additional library.
+
+Now compile and execute the LU benchmark, class A (i.e., for small
+data size) with 4 nodes.
+
+.. code-block:: shell
+
+   $ make lu NPROCS=4 CLASS=A
+   (compilation logs)
+   $ smpirun -np 4 -platform ../cluster_backbone.xml bin/lu.A.4
+   (execution logs)
+
+To get a better understanding of what is going on, activate the
+vizualization tracing, and convert the produced trace for later
+use:
+
+.. code-block:: shell
+
+   smpirun -np 4 -platform ../cluster_backbone.xml -trace --cfg=tracing/filename:lu.A.4.trace bin/lu.A.4
+   pj_dump --ignore-incomplete-links lu.A.4.trace | grep State > lu.A.4.state.csv
+
+You can then produce a Gantt Chart with the following R chunk. You can
+either copy/paste it in a R session, or `turn it into a Rscript executable
+<https://swcarpentry.github.io/r-novice-inflammation/05-cmdline/>`_ to
+run it again and again.
+
+.. code-block:: R
+
+   library(ggplot2)
+
+   # Read the data
+   df_state = read.csv("lu.A.4.state.csv", header=F, strip.white=T)
+   names(df_state) = c("Type", "Rank", "Container", "Start", "End", "Duration", "Level", "State");
+   df_state = df_state[!(names(df_state) %in% c("Type","Container","Level"))]
+   df_state$Rank = as.numeric(gsub("rank-","",df_state$Rank))
+
+   # Draw the Gantt Chart
+   gc = ggplot(data=df_state) + geom_rect(aes(xmin=Start, xmax=End, ymin=Rank, ymax=Rank+1,fill=State))
+
+   # Produce the output
+   plot(gc)
+   dev.off()
+
+This produces a file called ``Rplots.pdf`` with the following
+content. You can find more examples of visualization in the `SimGrid
+documentation <http://simgrid.gforge.inria.fr/contrib/R_visualization.html>`_.
+
+.. image:: /tuto_smpi/img/lu.A.4.png
+   :align: center
+
+Lab 2: Tracing and Replay of LU
+-------------------------------
+
+
 ..  LocalWords:  SimGrid
