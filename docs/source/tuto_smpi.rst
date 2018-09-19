@@ -347,11 +347,13 @@ nodes from the ``cluster_crossbar.xml`` platform as follows:
   command-line arguments (if any -- roundtrip does not expect any arguments).
 
 Feel free to tweak the content of the XML platform file and the
-prorgam to see the effect on the simulated execution time. Note that
-the simulation accounts for realistic network protocol effects and MPI
-implementation effects. As a result, you may see "unexpected behavior"
-like in the real world (e.g., sending a message 1 byte larger may lead
-to significant higher execution time).
+program to see the effect on the simulated execution time. It may be
+easier to compare the executions with the extra option
+``--cfg=smpi/display_timing:yes``.  Note that the simulation accounts
+for realistic network protocol effects and MPI implementation
+effects. As a result, you may see "unexpected behavior" like in the
+real world (e.g., sending a message 1 byte larger may lead to
+significant higher execution time).
 
 Lab 1: Visualizing LU
 ---------------------
@@ -363,14 +365,16 @@ between the original ``config/make.def.template`` and the
 ``config/make.def`` that was adapted to SMPI. We use ``smpiff`` and
 ``smpicc`` as compilers, and don't pass any additional library.
 
-Now compile and execute the LU benchmark, class A (i.e., for small
-data size) with 4 nodes.
+Now compile and execute the LU benchmark, class S (i.e., for `small
+data size
+<https://www.nas.nasa.gov/publications/npb_problem_sizes.html>`_) with
+4 nodes.
 
 .. code-block:: shell
 
-   $ make lu NPROCS=4 CLASS=A
+   $ make lu NPROCS=4 CLASS=S
    (compilation logs)
-   $ smpirun -np 4 -platform ../cluster_backbone.xml bin/lu.A.4
+   $ smpirun -np 4 -platform ../cluster_backbone.xml bin/lu.S.4
    (execution logs)
 
 To get a better understanding of what is going on, activate the
@@ -379,8 +383,8 @@ use:
 
 .. code-block:: shell
 
-   smpirun -np 4 -platform ../cluster_backbone.xml -trace --cfg=tracing/filename:lu.A.4.trace bin/lu.A.4
-   pj_dump --ignore-incomplete-links lu.A.4.trace | grep State > lu.A.4.state.csv
+   smpirun -np 4 -platform ../cluster_backbone.xml -trace --cfg=tracing/filename:lu.S.4.trace bin/lu.S.4
+   pj_dump --ignore-incomplete-links lu.S.4.trace | grep State > lu.S.4.state.csv
 
 You can then produce a Gantt Chart with the following R chunk. You can
 either copy/paste it in a R session, or `turn it into a Rscript executable
@@ -392,7 +396,7 @@ run it again and again.
    library(ggplot2)
 
    # Read the data
-   df_state = read.csv("lu.A.4.state.csv", header=F, strip.white=T)
+   df_state = read.csv("lu.S.4.state.csv", header=F, strip.white=T)
    names(df_state) = c("Type", "Rank", "Container", "Start", "End", "Duration", "Level", "State");
    df_state = df_state[!(names(df_state) %in% c("Type","Container","Level"))]
    df_state$Rank = as.numeric(gsub("rank-","",df_state$Rank))
@@ -405,10 +409,10 @@ run it again and again.
    dev.off()
 
 This produces a file called ``Rplots.pdf`` with the following
-content. You can find more examples of visualization in the `SimGrid
-documentation <http://simgrid.gforge.inria.fr/contrib/R_visualization.html>`_.
+content. You can find more visualization examples `online
+<http://simgrid.gforge.inria.fr/contrib/R_visualization.html>`_.
 
-.. image:: /tuto_smpi/img/lu.A.4.png
+.. image:: /tuto_smpi/img/lu.S.4.png
    :align: center
 
 Lab 2: Tracing and Replay of LU
@@ -461,11 +465,12 @@ is computationally hungry.
 Lab 3: Execution Sampling on EP
 -------------------------------
 
-The second method to speed up simulations is to sample the computation parts in the code.
-This means that the person doing the simulation needs to know the application and identify
-parts that are compute intensive and take time, while being regular enough not to ruin
-simulation accuracy. Furthermore there should not be any MPI calls inside such parts of the
-code.
+The second method to speed up simulations is to sample the computation
+parts in the code.  This means that the person doing the simulation
+needs to know the application and identify parts that are compute
+intensive and take time, while being regular enough not to ruin
+simulation accuracy. Furthermore there should not be any MPI calls
+inside such parts of the code.
 
 Use the EP benchmark, class B, 16 processes.
 
