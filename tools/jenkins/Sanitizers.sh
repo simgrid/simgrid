@@ -33,6 +33,7 @@ elif [ "${SANITIZER}" = "thread" ]
 then
     export TSAN_OPTIONS="memory_limit_mb=1500"
     SANITIZER_OPTIONS="-Denable_address_sanitizer=OFF -Denable_undefined_sanitizer=OFF -Denable_thread_sanitizer=ON"
+    export SMPI_PRIVATIZATION="mmap" # TSAN doesn't play well with dlopen
 elif [ "${SANITIZER}" = "undefined" ]
 then
     export UBSAN_OPTIONS="print_stacktrace=1"
