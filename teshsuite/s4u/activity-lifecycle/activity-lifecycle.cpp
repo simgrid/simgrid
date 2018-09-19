@@ -220,8 +220,13 @@ static void main_dispatcher()
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  xbt_assert(argc > 1);
-  e.load_platform(argv[1]);
+
+  const char* platf = argv[1];
+  if (argc <= 1) {
+    XBT_WARN("No platform file provided. Using './testing_platform.xml'");
+    platf = "./testing_platform.xml";
+  }
+  e.load_platform(platf);
 
   all_hosts = e.get_all_hosts();
   simgrid::s4u::Actor::create("main_dispatcher", all_hosts[0], main_dispatcher);
