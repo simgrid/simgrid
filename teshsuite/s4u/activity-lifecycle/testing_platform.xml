@@ -11,7 +11,7 @@
     <host id="host1" speed="100Mf"/>
     <host id="host2" speed="100Mf"/>
     
-    <link id="link1" bandwidth="1000" latency="0"/>
+    <link id="link1" bandwidth="1000Bps" latency="0"/>
  
     <route src="host1" dst="host2">
       <link_ctn id="link1"/>
