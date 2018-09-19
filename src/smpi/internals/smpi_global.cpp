@@ -569,7 +569,7 @@ static void smpi_init_privatization_dlopen(std::string executable)
 
       smpi_copy_file(executable, target_executable, fdin_size);
       // if smpi/privatize-libs is set, duplicate pointed lib and link each executable copy to a different one.
-      std::string target_lib;
+      std::vector<std::string> target_libs;
       for (auto const& libpath : privatize_libs_paths) {
         // if we were given a full path, strip it
         size_t index = libpath.find_last_of("/\\");
@@ -588,8 +588,9 @@ static void smpi_init_privatization_dlopen(std::string executable)
           unsigned int pad = 7;
           if (libname.length() < pad)
             pad = libname.length();
-          target_lib =
+          std::string target_lib =
               std::string(pad - std::to_string(rank).length(), '0') + std::to_string(rank) + libname.substr(pad);
+          target_libs.push_back(target_lib);
           XBT_DEBUG("copy lib %s to %s, with size %lld", libpath.c_str(), target_lib.c_str(), (long long)fdin_size2);
           smpi_copy_file(libpath, target_lib, fdin_size2);
 
@@ -606,7 +607,7 @@ static void smpi_init_privatization_dlopen(std::string executable)
       int saved_errno = errno;
       if (simgrid::config::get_value<bool>("smpi/keep-temps") == false) {
         unlink(target_executable.c_str());
-        if (not target_lib.empty())
+        for (const std::string& target_lib : target_libs)
           unlink(target_lib.c_str());
       }
       if (handle == nullptr)
