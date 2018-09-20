@@ -888,9 +888,7 @@ set(DOC_SOURCES
   doc/doxygen/install.doc
   doc/doxygen/install_yours.doc
   doc/doxygen/java.doc
-  doc/doxygen/tutorial_smpi.doc
   doc/doxygen/module-msg.doc
-  doc/doxygen/module-s4u.doc
   doc/doxygen/module-sd.doc
   doc/doxygen/module-simix.doc
   doc/doxygen/module-smpi.doc
@@ -961,6 +959,8 @@ set(DOC_SOURCES
   docs/source/tuto_smpi/3hosts.png
   docs/source/tuto_smpi/3hosts.xml
   docs/source/tuto_smpi/img/big-picture.svg
+  docs/source/tuto_smpi/img/lu.S.4.png
+  docs/source/tuto_smpi/roundtrip.c
   docs/source/tuto_smpi.rst
 
   CITATION.bib

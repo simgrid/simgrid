@@ -94,7 +94,7 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-re
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p1.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-storage/s4u-replay-storage.txt
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/README.doc                                   PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/README.rst                                   PARENT_SCOPE)
 
 foreach(example actor-create actor-daemon actor-join actor-kill
                 actor-lifetime actor-migration actor-suspend actor-yield
