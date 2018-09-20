@@ -158,6 +158,7 @@ examples/s4u/app-masterworkers/s4u-app-masterworkers-class
 examples/s4u/app-masterworkers/s4u-app-masterworkers-fun
 examples/s4u/app-pingpong/s4u-app-pingpong
 examples/s4u/app-token-ring/s4u-app-token-ring
+examples/s4u/async-ready/s4u-async-ready
 examples/s4u/async-wait/s4u-async-wait
 examples/s4u/async-waitall/s4u-async-waitall
 examples/s4u/async-waitany/s4u-async-waitany
