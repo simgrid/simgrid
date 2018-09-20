@@ -132,6 +132,10 @@ functions to simplify the code of actors.
 .. |Mutex| replace:: **Mutex**
 .. _Mutex: api/classsimgrid_1_1s4u_1_1Mutex.html
 
+.. THE EXAMPLES
+
+.. include:: ../../examples/s4u/README.rst
+
 ----------
 Activities
 ----------
@@ -207,3 +211,7 @@ Activities Life cycle
 .....................
 
 Sometimes, you want to change the setting of an activity before it even starts. 
+
+.. todo:: fill this section
+
+
