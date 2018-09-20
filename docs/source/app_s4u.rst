@@ -21,6 +21,16 @@ with the full power of C++. This is the preferred interface to describe
 abstract algorithms in the domains of Cloud, P2P, HPC, IoT, and similar
 settings.
 
+Currently (v3.21), S4U is definitely the way to go for long-term
+projects. It is feature complete, but may still evolve slightly in the
+future releases. It can already be used to do everything that can be
+done in SimGrid, but you may have to adapt your code in future
+releases. When this happens, compiling your code will produce
+deprecation warnings for 4 releases (one year) before the removal of
+the old symbols. 
+If you want an API that will never ever evolve in the future, you
+should use the deprecated MSG API instead. 
+
 -------------
 Main Concepts
 -------------
@@ -212,6 +222,32 @@ Activities Life cycle
 
 Sometimes, you want to change the setting of an activity before it even starts. 
 
-.. todo:: fill this section
+.. todo:: write this section
 
+-----------------
+Memory Management
+-----------------
 
+For sake of simplicity, we use `RAII
+<https://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization>`_
+everywhere in S4U. This is an idiom where resources are automatically
+managed through the context. Provided that you never manipulate
+objects of type Foo directly but always FooPtr references (which are
+defined as `boost::intrusive_ptr
+<http://www.boost.org/doc/libs/1_61_0/libs/smart_ptr/intrusive_ptr.html>`_
+<Foo>), you will never have to explicitely release the resource that
+you use nor to free the memory of unused objects.
+
+Here is a little example:
+
+.. code-block:: cpp
+
+   void myFunc() 
+   {
+     simgrid::s4u::MutexPtr mutex = simgrid::s4u::Mutex::create(); // Too bad we cannot use `new`
+
+     mutex->lock();   // use the mutex as a simple reference
+     //  bla bla
+     mutex->unlock(); 
+  
+   } // The mutex gets automatically freed because the only existing reference gets out of scope
