@@ -59,27 +59,31 @@ void Comm::wait_all(std::vector<CommPtr>* comms)
 
 Activity* Comm::set_rate(double rate)
 {
-  xbt_assert(state_ == State::INITED);
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
   rate_ = rate;
   return this;
 }
 
 Activity* Comm::set_src_data(void* buff)
 {
-  xbt_assert(state_ == State::INITED);
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
   xbt_assert(dst_buff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   src_buff_ = buff;
   return this;
 }
 Activity* Comm::set_src_data_size(size_t size)
 {
-  xbt_assert(state_ == State::INITED);
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
   src_buff_size_ = size;
   return this;
 }
 Activity* Comm::set_src_data(void* buff, size_t size)
 {
-  xbt_assert(state_ == State::INITED);
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
 
   xbt_assert(dst_buff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   src_buff_      = buff;
@@ -88,19 +92,21 @@ Activity* Comm::set_src_data(void* buff, size_t size)
 }
 Activity* Comm::set_dst_data(void** buff)
 {
-  xbt_assert(state_ == State::INITED);
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
   xbt_assert(src_buff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   dst_buff_ = buff;
   return this;
 }
 size_t Comm::get_dst_data_size()
 {
-  xbt_assert(state_ == State::FINISHED);
+  xbt_assert(state_ == State::FINISHED, "You cannot use %s before your communication terminated", __FUNCTION__);
   return dst_buff_size_;
 }
 Activity* Comm::set_dst_data(void** buff, size_t size)
 {
-  xbt_assert(state_ == State::INITED);
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
 
   xbt_assert(src_buff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   dst_buff_      = buff;
@@ -110,7 +116,8 @@ Activity* Comm::set_dst_data(void** buff, size_t size)
 
 Activity* Comm::start()
 {
-  xbt_assert(state_ == State::INITED);
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
 
   if (src_buff_ != nullptr) { // Sender side
     on_sender_start(Actor::self());
@@ -185,7 +192,8 @@ int Comm::test_any(std::vector<CommPtr>* comms)
 
 Activity* Comm::detach()
 {
-  xbt_assert(state_ == State::INITED, "You cannot detach communications once they are started (not implemented).");
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
   xbt_assert(src_buff_ != nullptr && src_buff_size_ != 0, "You can only detach sends, not recvs");
   detached_ = true;
   return start();
