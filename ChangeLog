@@ -40,6 +40,7 @@ Fixed bugs:
  - #286: Pajé traces are not exposing the number of cores
  - #287: Command-line parsing should stop when encountering '--'
  - #288: MPI_Init(NULL, NULL)
+ - #289: Improve documentation of Actor::on_destruction and this_actor::on_exit()
  - #296: DTD too permissive
 
 ----------------------------------------------------------------------------

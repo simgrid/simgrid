@@ -158,7 +158,10 @@ public:
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_migration_start;
   /** Signal to others that an actor is has been migrated to another host **/
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_migration_end;
-  /** Signal indicating that the given actor is about to disappear */
+  /** Signal indicating that an actor is about to disappear.
+   *  This signal is fired for any dying actor, which is mostly useful when
+   *  designing plugins and extensions. If you want to register to the
+   *  termination of a given actor, use this_actor::on_exit() instead.*/
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_destruction;
 
   /** Create an actor from a std::function<void()>
