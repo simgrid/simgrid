@@ -474,4 +474,15 @@ inside such parts of the code.
 
 Use the EP benchmark, class B, 16 processes.
 
+.. todo:: write this section, and the following ones.
+
+Further Readings
+----------------
+
+We regularly use SimGrid in our teachings on MPI. This way, our
+student can experiment with platforms that they do not have access to,
+and the associated visualisation tools helps them to understand their
+work.  The whole material is available online, in a separate project:
+the `SMPI CourseWare <https://simgrid.github.io/SMPI_CourseWare/>`_.
+
 ..  LocalWords:  SimGrid
