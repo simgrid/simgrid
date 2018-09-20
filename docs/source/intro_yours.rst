@@ -6,8 +6,8 @@ Start your Own Project
 It is not advised to modify the SimGrid source code directly, as it
 will make it difficult to upgrade to the next version of SimGrid.
 Instead, you should create your own working directory somewhere on
-your disk (say `/home/joe/MyFirstSimulator/`), and write your code in
-there.
+your disk (say ``/home/joe/MyFirstSimulator/``), and write your code
+in there.
 
 Cloning a Template Project for S4U
 ----------------------------------

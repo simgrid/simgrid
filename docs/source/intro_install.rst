@@ -6,8 +6,9 @@ Installing SimGrid
 ==================
 
 
-SimGrid should work out of the box on Linux, Mac OSX, FreeBSD, and Windows (under windows, only the Java interfaces are
-available at the moment).
+SimGrid should work out of the box on Linux, Mac OSX, FreeBSD, and
+Windows (under Windows, you need to install the Windows Subsystem
+Linux to get more than the Java bindings).
 
 Pre-compiled Packages
 ---------------------
