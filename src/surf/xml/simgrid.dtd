@@ -38,6 +38,7 @@ To upgrade your files, use the tool simgrid_update_xml
    - Kill <gpu>. Was not doing anything.
 
    - A warning is emitted for unit-less values (they are still accepted).
+     The value 0 can remain unit-less, as its unit does not matter.
 
      - speed. Default: 'f' or 'flops'. Also defined:
         'Yf',         'Zf',         'Ef',       'Pf',        'Tf',        'Gf',        'Mf',        'kf'
