@@ -59,18 +59,40 @@ public:
   /** Sets the maximal communication rate (in byte/sec). Must be done before start */
   Activity* set_rate(double rate);
 
-  /** Specify the data to send */
+  /** Specify the data to send.
+   *
+   * This is way will get actually copied over to the receiver.
+   * That's completely unrelated from the simulated size (given with @ref Activity::set_remaining()):
+   * you can send a short buffer in your simulator, that represents a very large message
+   * in the simulated world, or the opposite.
+   */
   Activity* set_src_data(void* buff);
-  /** Specify the size of the data to send */
+  /** Specify the size of the data to send. Not to be mixed with @ref Activity::set_remaining()
+   *
+   * That's the size of the data to actually copy in the simulator (ie, the data passed with Activity::set_src_data()).
+   * That's completely unrelated from the simulated size (given with @ref Activity::set_remaining()):
+   * you can send a short buffer in your simulator, that represents a very large message
+   * in the simulated world, or the opposite.
+   */
   Activity* set_src_data_size(size_t size);
-  /** Specify the data to send and its size */
+  /** Specify the data to send and its size. Don't mix the size with @ref Activity::set_remaining()
+   *
+   * This is way will get actually copied over to the receiver.
+   * That's completely unrelated from the simulated size (given with @ref Activity::set_remaining()):
+   * you can send a short buffer in your simulator, that represents a very large message
+   * in the simulated world, or the opposite.
+   */
   Activity* set_src_data(void* buff, size_t size);
 
-  /** Specify where to receive the data */
+  /** Specify where to receive the data.
+   *
+   * That's a buffer where the sent data will be copied */
   Activity* set_dst_data(void** buff);
-  /** Specify the buffer in which the data should be received */
+  /** Specify the buffer in which the data should be received
+   *
+   * That's a buffer where the sent data will be copied  */
   Activity* set_dst_data(void** buff, size_t size);
-  /** Retrieve the size of the received data */
+  /** Retrieve the size of the received data. Not to be mixed with @ref Activity::set_remaining()  */
   size_t get_dst_data_size();
 
   Activity* cancel() override;
