@@ -891,7 +891,6 @@ set(DOC_SOURCES
   doc/doxygen/module-msg.doc
   doc/doxygen/module-sd.doc
   doc/doxygen/module-simix.doc
-  doc/doxygen/module-smpi.doc
   doc/doxygen/module-surf.doc
   doc/doxygen/module-trace.doc
   doc/doxygen/module-xbt.doc
@@ -926,9 +925,12 @@ set(DOC_SOURCES
   docs/source/img/extlink.png
   docs/source/img/extlink.svg
   docs/source/img/graphical-toc.svg
+  docs/source/img/smpi_simgrid_alltoall_pair_16.png
+  docs/source/img/smpi_simgrid_alltoall_ring_16.png
 
   docs/source/application.rst
   docs/source/app_s4u.rst
+  docs/source/app_smpi.rst
   docs/source/index.rst
   docs/source/intro_concepts.rst
   docs/source/introduction.rst
@@ -995,8 +997,6 @@ set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win.bmp
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win_2011.bmp
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/smpi_simgrid_alltoall_pair_16.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/smpi_simgrid_alltoall_ring_16.png
   )
 
 set(bin_files

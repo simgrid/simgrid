@@ -21,8 +21,8 @@ application using one of the following interfaces. It is even possible
 to mix several interfaces in the same simulation.
 
  - :ref:`Describing Algorithms with the S4U interface <S4U_doc>` (in C++)
- - Simulating existing MPI programs with the SMPI toolsuite (in C, C++,
-   or Fortran)
+ - :ref:`Simulating existing MPI programs with the SMPI toolsuite <SMPI_doc>`
+   (in C, C++, or Fortran)
  - In some cases, you may want to replay an execution trace in the simulator. This
    trace lists the events of your application or of your workload, and
    your application is decomposed as a list of event handlers that are
@@ -58,12 +58,10 @@ additional work.
 .. The old documentation of the obsolete MSG replay module was removed in
 ..  https://github.com/simgrid/simgrid/commit/e05361c201fb95d2b7605e59001cd0a49a489739
 
-
-.. include:: app_smpi.rst
-
-.. include:: app_legacy.rst
-
 .. toctree::
    :hidden:
 
       The S4U Interface <app_s4u.rst>
+      The SMPI Interface <app_smpi.rst>
+
+      

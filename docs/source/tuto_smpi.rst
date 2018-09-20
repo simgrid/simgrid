@@ -479,10 +479,16 @@ Use the EP benchmark, class B, 16 processes.
 Further Readings
 ----------------
 
-We regularly use SimGrid in our teachings on MPI. This way, our
-student can experiment with platforms that they do not have access to,
-and the associated visualisation tools helps them to understand their
-work.  The whole material is available online, in a separate project:
-the `SMPI CourseWare <https://simgrid.github.io/SMPI_CourseWare/>`_.
+You may also be interested in the `SMPI reference article
+<https://hal.inria.fr/hal-01415484>`_ or these `introductory slides
+<http://simgrid.org/tutorials/simgrid-smpi-101.pdf>`_. The `SMPI
+reference documentation <SMPI_doc>`_ covers much more content than
+this short tutorial.
+
+Finally, we regularly use SimGrid in our teachings on MPI. This way,
+our student can experiment with platforms that they do not have access
+to, and the associated visualisation tools helps them to understand
+their work.  The whole material is available online, in a separate
+project: the `SMPI CourseWare <https://simgrid.github.io/SMPI_CourseWare/>`_.
 
 ..  LocalWords:  SimGrid

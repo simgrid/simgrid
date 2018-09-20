@@ -1,109 +1,106 @@
-/** 
-@defgroup SMPI_API      SMPI: Simulate real MPI applications
-@brief Programming environment for the simulation of MPI applications
+.. _SMPI_doc:
 
-@tableofcontents
+===============================
+SMPI: Simulate MPI Applications
+===============================
+
+.. raw:: html
+
+   <object id="TOC" data="graphical-toc.svg" width="100%" type="image/svg+xml"></object>
+   <script>
+   window.onload=function() { // Wait for the SVG to be loaded before changing it
+     var elem=document.querySelector("#TOC").contentDocument.getElementById("SMPIBox")
+     elem.style="opacity:0.93999999;fill:#ff0000;fill-opacity:0.1";
+   }
+   </script>
+   <br/>
+   <br/>
 
 SMPI enables the study of MPI application by emulating them on top of
 the SimGrid simulator. This is particularly interesting to study
-existing MPI applications within the comfort of the simulator. The
-SMPI reference article is available at
-https://hal.inria.fr/hal-01415484. You should also read the 
-<a href="http://simgrid.org/tutorials/simgrid-smpi-101.pdf">SMPI
-introductory slides</a>.
+existing MPI applications within the comfort of the simulator.
+
+To get started with SMPI, you should head to `the SMPI tutorial
+<usecase_smpi>`_. You may also want to read the `SMPI reference
+article <https://hal.inria.fr/hal-01415484>`_ or these `introductory
+slides <http://simgrid.org/tutorials/simgrid-smpi-101.pdf>`_.  If you
+are new to MPI, you should first take our online `SMPI CourseWare
+<https://simgrid.github.io/SMPI_CourseWare/>`_. It consists in several
+projects that progressively introduce the MPI concepts. It proposes to
+use SimGrid and SMPI to run the experiments, but the learning
+objectives are centered on MPI itself.
 
 Our goal is to enable the study of **unmodified MPI applications**.
 Some constructs and features are still missing, but we can probably
 add them on demand.  If you already used MPI before, SMPI should sound
 very familiar to you: Use smpicc instead of mpicc, and smpirun instead
-of mpirun. The main difference is that smpirun takes a virtual
-platform as extra parameter (see @ref platform).
-
-If you are new to MPI, you should first take our online [SMPI
-CourseWare](https://simgrid.github.io/SMPI_CourseWare/). It consists
-in several projects that progressively introduce the MPI concepts. It
-proposes to use SimGrid and SMPI to run the experiments, but the
-learning objectives are centered on MPI itself. 
+of mpirun. The main difference is that smpirun takes a :ref:`virtual
+platform <platform>` as an extra parameter.
 
 For **further scalability**, you may modify your code to speed up your
 studies or save memory space.  Maximal **simulation accuracy**
 requires some specific care from you.
 
- - @ref SMPI_use
-   - @ref SMPI_use_compile
-   - @ref SMPI_use_exec
-   - @ref SMPI_use_debug
-   - @ref SMPI_use_colls
-     - @ref SMPI_use_colls_algos
-     - @ref SMPI_use_colls_tracing
- - @ref SMPI_what
-   - @ref SMPI_what_coverage
-   - @ref SMPI_what_globals
- - @ref SMPI_adapting
-   - @ref SMPI_adapting_size
-   - @ref SMPI_adapting_speed
- - @ref SMPI_accuracy
- - @ref SMPI_troubleshooting
-   - @ref SMPI_trouble_configure_refuses_smpicc
-   - @ref SMPI_trouble_configure_dont_find_smpicc
-   - @ref SMPI_trouble_useconds_t
+----------
+Using SMPI
+----------
 
+...................
+Compiling your Code
+...................
 
-@section SMPI_use Using SMPI
-
-@subsection SMPI_use_compile Compiling your code
-
-If your application is in C, then simply use <tt>smpicc</tt> as a
+If your application is in C, then simply use ``smpicc`` as a
 compiler just like you use mpicc with other MPI implementations. This
 script still calls your default compiler (gcc, clang, ...) and adds
 the right compilation flags along the way. If your application is in
-C++, Fortran 77 or Fortran 90, use respectively <tt>smpicxx</tt>,
-<tt>smpiff</tt> or <tt>smpif90</tt>.
+C++, Fortran 77 or Fortran 90, use respectively ``smpicxx``,
+``smpiff`` or ``smpif90``.
 
-@subsection SMPI_use_exec Executing your code on the simulator
+....................
+Simulating your Code
+....................
 
-Use the <tt>smpirun</tt> script as follows for that:
+Use the ``smpirun`` script as follows:
 
-@verbatim
-smpirun -hostfile my_hostfile.txt -platform my_platform.xml ./program -blah
-@endverbatim
+.. code-block:: shell
 
- - <tt>my_hostfile.txt</tt> is a classical MPI hostfile (that is, this
-   file lists the machines on which the processes must be dispatched, one
-   per line)
- - <tt>my_platform.xml</tt> is a classical SimGrid platform file. Of
-   course, the hosts of the hostfile must exist in the provided
-   platform.
- - <tt>./program</tt> is the MPI program to simulate, that you
-   compiled with <tt>smpicc</tt>
- - <tt>-blah</tt> is a command-line parameter passed to this program.
+   smpirun -hostfile my_hostfile.txt -platform my_platform.xml ./program -blah
 
-<tt>smpirun</tt> accepts other parameters, such as <tt>-np</tt> if you
-don't want to use all the hosts defined in the hostfile, <tt>-map</tt>
-to display on which host each rank gets mapped of <tt>-trace</tt> to
-activate the tracing during the simulation. You can get the full list
-by running
+- ``my_hostfile.txt`` is a classical MPI hostfile (that is, this file
+  lists the machines on which the processes must be dispatched, one
+  per line)
+- ``my_platform.xml`` is a classical SimGrid platform file. Of course,
+  the hosts of the hostfile must exist in the provided platform.
+- ``./program`` is the MPI program to simulate, that you compiled with ``smpicc``
+- ``-blah`` is a command-line parameter passed to this program.
 
-@verbatim
-smpirun -help
-@endverbatim
+``smpirun`` accepts other parameters, such as ``-np`` if you don't
+want to use all the hosts defined in the hostfile, ``-map`` to display
+on which host each rank gets mapped of ``-trace`` to activate the
+tracing during the simulation. You can get the full list by running
+``smpirun -help``
 
-@subsection SMPI_use_debug Debugging your code on top of SMPI
+...............................
+Debugging your Code within SMPI
+...............................
 
 If you want to explore the automatic platform and deployment files
-that are generated by @c smpirun, add @c -keep-temps to the command
+that are generated by ``smpirun``, add ``-keep-temps`` to the command
 line.
 
 You can also run your simulation within valgrind or gdb using the
 following commands. Once in GDB, each MPI ranks will be represented as
 a regular thread, and you can explore the state of each of them as
 usual.
-@verbatim
-smpirun -wrapper valgrind ...other args...
-smpirun -wrapper "gdb --args" --cfg=contexts/factory:thread ...other args...
-@endverbatim
 
-@subsection SMPI_use_colls Simulating collective operations
+.. code-block:: shell
+
+   smpirun -wrapper valgrind ...other args...
+   smpirun -wrapper "gdb --args" --cfg=contexts/factory:thread ...other args...
+
+................................   
+Simulating Collective Operations
+................................
 
 MPI collective operations are crucial to the performance of MPI
 applications and must be carefully optimized according to many
@@ -117,44 +114,47 @@ most cases, the users can also manually tune the algorithm used for
 each collective operation.
 
 SMPI can simulate the behavior of several MPI implementations:
-OpenMPI, MPICH,
-<a href="http://star-mpi.sourceforge.net/">STAR-MPI</a>, and
+OpenMPI, MPICH, `STAR-MPI <http://star-mpi.sourceforge.net/>`_, and
 MVAPICH2. For that, it provides 115 collective algorithms and several
 selector algorithms, that were collected directly in the source code
 of the targeted MPI implementations.
 
 You can switch the automatic selector through the
-\c smpi/coll-selector configuration item. Possible values:
+``smpi/coll-selector`` configuration item. Possible values:
 
- - <b>ompi</b>: default selection logic of OpenMPI (version 3.1.2)
- - <b>mpich</b>: default selection logic of MPICH (version 3.3b)
- - <b>mvapich2</b>: selection logic of MVAPICH2 (version 1.9) tuned
+ - **ompi:** default selection logic of OpenMPI (version 3.1.2)
+ - **mpich**: default selection logic of MPICH (version 3.3b)
+ - **mvapich2**: selection logic of MVAPICH2 (version 1.9) tuned
    on the Stampede cluster   
- - <b>impi</b>: preliminary version of an Intel MPI selector (version
+ - **impi**: preliminary version of an Intel MPI selector (version
    4.1.3, also tuned for the Stampede cluster). Due the closed source
    nature of Intel MPI, some of the algorithms described in the
    documentation are not available, and are replaced by mvapich ones.   
- - <b>default</b>: legacy algorithms used in the earlier days of
+ - **default**: legacy algorithms used in the earlier days of
    SimGrid. Do not use for serious perform performance studies.
 
+.. todo:: default should not even exist.   
 
-@subsubsection SMPI_use_colls_algos Available algorithms
+....................
+Available Algorithms
+....................
 
 You can also pick the algorithm used for each collective with the
 corresponding configuration item. For example, to use the pairwise
-alltoall algorithm, one should add \c --cfg=smpi/alltoall:pair to the
-line. This will override the selector (if any) for this algorithm.
-It means that the selected algorithm will be used 
+alltoall algorithm, one should add ``--cfg=smpi/alltoall:pair`` to the
+line. This will override the selector (if any) for this algorithm.  It
+means that the selected algorithm will be used
 
-Warning: Some collective may require specific conditions to be
-executed correctly (for instance having a communicator with a power of
-two number of nodes only), which are currently not enforced by
-Simgrid. Some crashes can be expected while trying these algorithms
-with unusual sizes/parameters
+.. Warning:: Some collective may require specific conditions to be
+   executed correctly (for instance having a communicator with a power
+   of two number of nodes only), which are currently not enforced by
+   Simgrid. Some crashes can be expected while trying these algorithms
+   with unusual sizes/parameters
 
-#### MPI_Alltoall
+MPI_Alltoall
+^^^^^^^^^^^^
 
-Most of these are best described in <a href="http://www.cs.arizona.edu/~dkl/research/papers/ics06.pdf">STAR-MPI</a>
+Most of these are best described in `STAR-MPI <http://www.cs.arizona.edu/~dkl/research/papers/ics06.pdf>`_.
 
  - default: naive one, by default
  - ompi: use openmpi selector for the alltoall operations
@@ -179,11 +179,11 @@ Most of these are best described in <a href="http://www.cs.arizona.edu/~dkl/rese
  - ring_mpi_barrier: same, with MPI_Barrier used
  - ring_one_barrier: only one barrier at the beginning
  - basic_linear: posts all receives and all sends,
-starts the communications, and waits for all communication to finish
+   starts the communications, and waits for all communication to finish
  - mvapich2_scatter_dest: isend/irecv with scattered destinations, posting only a few messages at the same time
 
-#### MPI_Alltoallv
-
+MPI_Alltoallv
+^^^^^^^^^^^^^
  - default: naive one, by default
  - ompi: use openmpi selector for the alltoallv operations
  - mpich: use mpich selector for the alltoallv operations
@@ -201,22 +201,23 @@ starts the communications, and waits for all communication to finish
  - ring_one_barrier: same as alltoall
  - ompi_basic_linear: same as alltoall
 
-#### MPI_Gather
+MPI_Gather
+^^^^^^^^^^
 
  - default: naive one, by default
  - ompi: use openmpi selector for the gather operations
  - mpich: use mpich selector for the gather operations
  - mvapich2: use mvapich2 selector for the gather operations
  - impi: use intel mpi selector for the gather operations
- - automatic (experimental): use an automatic self-benchmarking algorithm 
-which will iterate over all implemented versions and output the best
+ - automatic (experimental): use an automatic self-benchmarking algorithm which will iterate over all implemented versions and output the best
  - ompi_basic_linear: basic linear algorithm from openmpi, each process sends to the root
  - ompi_binomial: binomial tree algorithm
  - ompi_linear_sync: same as basic linear, but with a synchronization at the
- beginning and message cut into two segments.
+   beginning and message cut into two segments.
  - mvapich2_two_level: SMP-aware version from MVAPICH. Gather first intra-node (defaults to mpich's gather), and then exchange with only one process/node. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster.
 
-#### MPI_Barrier
+MPI_Barrier
+^^^^^^^^^^^
 
  - default: naive one, by default
  - ompi: use openmpi selector for the barrier operations
@@ -233,7 +234,8 @@ which will iterate over all implemented versions and output the best
  - mvapich2_pair: pairwise algorithm
  - mpich_smp: barrier intra-node, then inter-node
 
-#### MPI_Scatter
+MPI_Scatter
+^^^^^^^^^^^
 
  - default: naive one, by default
  - ompi: use openmpi selector for the scatter operations
@@ -246,7 +248,8 @@ which will iterate over all implemented versions and output the best
  - mvapich2_two_level_direct: SMP aware algorithm, with an intra-node stage (default set to mpich selector), and then a basic linear inter node stage. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster. 
  - mvapich2_two_level_binomial: SMP aware algorithm, with an intra-node stage (default set to mpich selector), and then a binomial phase. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster.
 
-#### MPI_Reduce
+MPI_Reduce
+^^^^^^^^^^
 
  - default: naive one, by default
  - ompi: use openmpi selector for the reduce operations
@@ -259,24 +262,25 @@ which will iterate over all implemented versions and output the best
  - flat_tree: uses a flat tree
  - NTSL: Non-topology-specific pipelined linear-bcast function 
    0->1, 1->2 ,2->3, ....., ->last node: in a pipeline fashion, with segments
- of 8192 bytes
+   of 8192 bytes
  - scatter_gather: scatter then gather
  - ompi_chain: openmpi reduce algorithms are built on the same basis, but the
- topology is generated differently for each flavor
-chain = chain with spacing of size/2, and segment size of 64KB 
+   topology is generated differently for each flavor
+   chain = chain with spacing of size/2, and segment size of 64KB 
  - ompi_pipeline: same with pipeline (chain with spacing of 1), segment size 
-depends on the communicator size and the message size
+   depends on the communicator size and the message size
  - ompi_binary: same with binary tree, segment size of 32KB
  - ompi_in_order_binary: same with binary tree, enforcing order on the 
-operations
+   operations
  - ompi_binomial: same with binomial algo (redundant with default binomial 
-one in most cases)
+   one in most cases)
  - ompi_basic_linear: basic algorithm, each process sends to root
  - mvapich2_knomial: k-nomial algorithm. Default factor is 4 (mvapich2 selector adapts it through tuning)
  - mvapich2_two_level: SMP-aware reduce, with default set to mpich both for intra and inter communicators. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster.
- - rab: <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a>'s reduce algorithm 
+ - rab: `Rabenseifner <https://fs.hlrs.de/projects/par/mpi//myreduce.html>`_'s reduce algorithm 
 
-#### MPI_Allreduce
+MPI_Allreduce
+^^^^^^^^^^^^^
 
  - default: naive one, by default
  - ompi: use openmpi selector for the allreduce operations
@@ -288,26 +292,27 @@ one in most cases)
  - rab1: variations of the  <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a> algorithm: reduce_scatter then allgather
  - rab2: variations of the  <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a> algorithm: alltoall then allgather
  - rab_rsag: variation of the  <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a> algorithm: recursive doubling 
-reduce_scatter then recursive doubling allgather 
+   reduce_scatter then recursive doubling allgather 
  - rdb: recursive doubling
  - smp_binomial: binomial tree with smp: binomial intra 
-SMP reduce, inter reduce, inter broadcast then intra broadcast
+   SMP reduce, inter reduce, inter broadcast then intra broadcast
  - smp_binomial_pipeline: same with segment size = 4096 bytes
  - smp_rdb: intra: binomial allreduce, inter: Recursive 
-doubling allreduce, intra: binomial broadcast
+   doubling allreduce, intra: binomial broadcast
  - smp_rsag: intra: binomial allreduce, inter: reduce-scatter, 
-inter:allgather, intra: binomial broadcast
+   inter:allgather, intra: binomial broadcast
  - smp_rsag_lr: intra: binomial allreduce, inter: logical ring 
-reduce-scatter, logical ring inter:allgather, intra: binomial broadcast
+   reduce-scatter, logical ring inter:allgather, intra: binomial broadcast
  - smp_rsag_rab: intra: binomial allreduce, inter: rab
-reduce-scatter, rab inter:allgather, intra: binomial broadcast
+   reduce-scatter, rab inter:allgather, intra: binomial broadcast
  - redbcast: reduce then broadcast, using default or tuned algorithms if specified
  - ompi_ring_segmented: ring algorithm used by OpenMPI
  - mvapich2_rs: rdb for small messages, reduce-scatter then allgather else
  - mvapich2_two_level: SMP-aware algorithm, with mpich as intra algoritm, and rdb as inter (Change this behavior by using mvapich2 selector to use tuned values)
- - rab: default <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a> implementation
+ - rab: default `Rabenseifner <https://fs.hlrs.de/projects/par/mpi//myreduce.html>`_ implementation
 
-#### MPI_Reduce_scatter
+MPI_Reduce_scatter
+^^^^^^^^^^^^^^^^^^
 
  - default: naive one, by default
  - ompi: use openmpi selector for the reduce_scatter operations
@@ -322,7 +327,8 @@ reduce-scatter, rab inter:allgather, intra: binomial broadcast
  - mpich_noncomm: only works for power of 2 procs, recursive doubling for noncommutative ops
 
 
-#### MPI_Allgather
+MPI_Allgather
+^^^^^^^^^^^^^
 
  - default: naive one, by default
  - ompi: use openmpi selector for the allgather operations
@@ -333,10 +339,10 @@ reduce-scatter, rab inter:allgather, intra: binomial broadcast
  - 2dmesh: see alltoall
  - 3dmesh: see alltoall
  - bruck: Described by Bruck et.al. in <a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=642949">
-Efficient algorithms for all-to-all communications in multiport message-passing systems</a> 
+   Efficient algorithms for all-to-all communications in multiport message-passing systems</a> 
  - GB: Gather - Broadcast (uses tuned version if specified)
  - loosely_lr: Logical Ring with grouping by core (hardcoded, default 
-processes/node: 4)
+   processes/node: 4)
  - NTSLR: Non Topology Specific Logical Ring
  - NTSLR_NB: Non Topology Specific Logical Ring, Non Blocking operations
  - pair: see alltoall
@@ -344,19 +350,20 @@ processes/node: 4)
  - rhv: only power of 2 number of processes
  - ring: see alltoall
  - SMP_NTS: gather to root of each SMP, then every root of each SMP node 
-post INTER-SMP Sendrecv, then do INTRA-SMP Bcast for each receiving message, 
-using logical ring algorithm (hardcoded, default processes/SMP: 8)
+   post INTER-SMP Sendrecv, then do INTRA-SMP Bcast for each receiving message, 
+   using logical ring algorithm (hardcoded, default processes/SMP: 8)
  - smp_simple: gather to root of each SMP, then every root of each SMP node 
-post INTER-SMP Sendrecv, then do INTRA-SMP Bcast for each receiving message, 
-using simple algorithm (hardcoded, default processes/SMP: 8)
+   post INTER-SMP Sendrecv, then do INTRA-SMP Bcast for each receiving message, 
+   using simple algorithm (hardcoded, default processes/SMP: 8)
  - spreading_simple: from node i, order of communications is i -> i + 1, i ->
- i + 2, ..., i -> (i + p -1) % P
+   i + 2, ..., i -> (i + p -1) % P
  - ompi_neighborexchange: Neighbor Exchange algorithm for allgather. 
-Described by Chen et.al. in  <a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?tp=&arnumber=1592302">Performance Evaluation of Allgather Algorithms on Terascale Linux Cluster with Fast Ethernet</a>
+   Described by Chen et.al. in  `Performance Evaluation of Allgather
+   Algorithms on Terascale Linux Cluster with Fast Ethernet <http://ieeexplore.ieee.org/xpl/articleDetails.jsp?tp=&arnumber=1592302>`_
  - mvapich2_smp: SMP aware algorithm, performing intra-node gather, inter-node allgather with one process/node, and bcast intra-node
 
-
-#### MPI_Allgatherv
+MPI_Allgatherv
+^^^^^^^^^^^^^^
 
  - default: naive one, by default
  - ompi: use openmpi selector for the allgatherv operations
@@ -364,8 +371,7 @@ Described by Chen et.al. in  <a href="http://ieeexplore.ieee.org/xpl/articleDeta
  - mvapich2: use mvapich2 selector for the allgatherv operations
  - impi: use intel mpi selector for the allgatherv operations
  - automatic (experimental): use an automatic self-benchmarking algorithm 
- - GB: Gatherv - Broadcast (uses tuned version if specified, but only for 
-Bcast, gatherv is not tuned)
+ - GB: Gatherv - Broadcast (uses tuned version if specified, but only for Bcast, gatherv is not tuned)
  - pair: see alltoall
  - ring: see alltoall
  - ompi_neighborexchange: see allgather
@@ -373,7 +379,8 @@ Bcast, gatherv is not tuned)
  - mpich_rdb: recursive doubling algorithm from MPICH
  - mpich_ring: ring algorithm from MPICh - performs differently from the  one from STAR-MPI
 
-#### MPI_Bcast
+MPI_Bcast
+^^^^^^^^^
 
  - default: naive one, by default
  - ompi: use openmpi selector for the bcast operations
@@ -401,9 +408,10 @@ Bcast, gatherv is not tuned)
  - mvapich2_intra_node: Intra node default mvapich worker
  - mvapich2_knomial_intra_node:  k-nomial intra node default mvapich worker. default factor is 4.
 
-#### Automatic evaluation 
+Automatic Evaluation
+^^^^^^^^^^^^^^^^^^^^
 
-(Warning: This is still very experimental)
+.. warning:: This is still very experimental.
 
 An automatic version is available for each collective (or even as a selector). This specific 
 version will loop over all other implemented algorithm for this particular collective, and apply 
@@ -411,11 +419,16 @@ them while benchmarking the time taken for each process. It will then output the
 each process, and the global quickest. This is still unstable, and a few algorithms which need 
 specific number of nodes may crash.
 
-#### Adding an algorithm
+Adding an algorithm
+^^^^^^^^^^^^^^^^^^^
 
-To add a new algorithm, one should check in the src/smpi/colls folder how other algorithms 
-are coded. Using plain MPI code inside Simgrid can't be done, so algorithms have to be 
-changed to use smpi version of the calls instead (MPI_Send will become smpi_mpi_send). Some functions may have different signatures than their MPI counterpart, please check the other algorithms or contact us using <a href="http://lists.gforge.inria.fr/mailman/listinfo/simgrid-devel">SimGrid developers mailing list</a>.
+To add a new algorithm, one should check in the src/smpi/colls folder
+how other algorithms are coded. Using plain MPI code inside Simgrid
+can't be done, so algorithms have to be changed to use smpi version of
+the calls instead (MPI_Send will become smpi_mpi_send). Some functions
+may have different signatures than their MPI counterpart, please check
+the other algorithms or contact us using the `>SimGrid
+developers mailing list <http://lists.gforge.inria.fr/mailman/listinfo/simgrid-devel>`_.
 
 Example: adding a "pair" version of the Alltoall collective.
 
@@ -431,30 +444,40 @@ Example: adding a "pair" version of the Alltoall collective.
 
  - Please submit your patch for inclusion in SMPI, for example through a pull request on GitHub or directly per email.
 
-@subsubsection SMPI_use_colls_tracing Tracing of internal communications
+
+Tracing of Internal Communications
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 By default, the collective operations are traced as a unique operation
 because tracing all point-to-point communications composing them could
 result in overloaded, hard to interpret traces. If you want to debug
 and compare collective algorithms, you should set the
-\c tracing/smpi/internals configuration item to 1 instead of 0.
+``tracing/smpi/internals`` configuration item to 1 instead of 0.
 
 Here are examples of two alltoall collective algorithms runs on 16 nodes, 
-the first one with a ring algorithm, the second with a pairwise one:
+the first one with a ring algorithm, the second with a pairwise one.
 
-@htmlonly
-<a href="smpi_simgrid_alltoall_ring_16.png" border=0><img src="smpi_simgrid_alltoall_ring_16.png" width="30%" border=0 align="center"></a>
-<a href="smpi_simgrid_alltoall_pair_16.png" border=0><img src="smpi_simgrid_alltoall_pair_16.png" width="30%" border=0 align="center"></a>
-<br/>
-@endhtmlonly
+.. image:: /img/smpi_simgrid_alltoall_ring_16.png
+   :align: center
+	   
+Alltoall on 16 Nodes with the Ring Algorithm.
 
-@section SMPI_what What can run within SMPI?
+.. image:: /img/smpi_simgrid_alltoall_pair_16.png
+   :align: center
+	   
+Alltoall on 16 Nodes with the Pairwise Algorithm.
+
+-------------------------
+What can run within SMPI?
+-------------------------
 
 You can run unmodified MPI applications (both C/C++ and Fortran) within
 SMPI, provided that you only use MPI calls that we implemented. Global
 variables should be handled correctly on Linux systems.
 
-@subsection SMPI_what_coverage MPI coverage of SMPI
+....................
+MPI coverage of SMPI
+....................
 
 Our coverage of the interface is very decent, but still incomplete;
 Given the size of the MPI standard, we may well never manage to 
@@ -463,24 +486,27 @@ almost no support for I/O primitives, but we still pass a very large
 amount of the MPICH coverage tests.
 
 The full list of not yet implemented functions is documented in the
-file @ref include/smpi/smpi.h, between two lines containing the
-<tt>FIXME</tt> marker. If you really miss a feature, please get in
-touch with us: we can guide you though the SimGrid code to help you
-implementing it, and we'd glad to integrate your contribution to the
-main project afterward.
+file `include/smpi/smpi.h
+<https://framagit.org/simgrid/simgrid/tree/master/include/smpi/smpi.h>`_
+in your version of SimGrid, between two lines containing the ``FIXME``
+marker. If you really miss a feature, please get in touch with us: we
+can guide you though the SimGrid code to help you implementing it, and
+we'd be glad to integrate your contribution to the main project.
 
-@subsection SMPI_what_globals Privatization of global variables
+.................................
+Privatization of global variables
+.................................
 
 Concerning the globals, the problem comes from the fact that usually,
 MPI processes run as real UNIX processes while they are all folded
 into threads of a unique system process in SMPI. Global variables are
 usually private to each MPI process while they become shared between
 the processes in SMPI.  The problem and some potential solutions are
-discussed in this article: "Automatic Handling of Global Variables for
-Multi-threaded MPI Programs", available at
-http://charm.cs.illinois.edu/newPapers/11-23/paper.pdf (note that this
-article does not deal with SMPI but with a competing solution called
-AMPI that suffers of the same issue).  This point used to be
+discussed in this article: `Automatic Handling of Global Variables for
+Multi-threaded MPI Programs
+<http://charm.cs.illinois.edu/newPapers/11-23/paper.pdf>` (note that
+this article does not deal with SMPI but with a competing solution
+called AMPI that suffers of the same issue).  This point used to be
 problematic in SimGrid, but the problem should now be handled
 automatically on Linux.
 
@@ -488,22 +514,22 @@ Older versions of SimGrid came with a script that automatically
 privatized the globals through static analysis of the source code. But
 our implementation was not robust enough to be used in production, so
 it was removed at some point. Currently, SMPI comes with two
-privatization mechanisms that you can @ref options_smpi_privatization
-"select at runtime". At the time of writing (v3.18), the dlopen
-approach is considered to be very fast (it's used by default) while
-the mmap approach is considered to be rather slow but very robust.
+privatization mechanisms that you can :ref:`select at runtime
+<options_smpi_privatization>`_.  The dlopen approach is used by
+default as it is much faster and still very robust.  The mmap approach
+is an older approach that proves to be slower.
 
-With the <b>mmap approach</b>, SMPI duplicates and dynamically switch
-the \c .data and \c .bss segments of the ELF process when switching
-the MPI ranks. This allows each ranks to have its own copy of the
-global variables.  No copy actually occures as this mechanism uses \c
-mmap for efficiency. This mechanism is considered to be very robust on
-all systems supporting \c mmap (Linux and most BSDs). Its performance
+With the **mmap approach**, SMPI duplicates and dynamically switch the
+``.data`` and ``.bss`` segments of the ELF process when switching the
+MPI ranks. This allows each ranks to have its own copy of the global
+variables.  No copy actually occures as this mechanism uses ``mmap()``
+for efficiency. This mechanism is considered to be very robust on all
+systems supporting ``mmap()`` (Linux and most BSDs). Its performance
 is questionable since each context switch between MPI ranks induces
-several syscalls to change the \c mmap that redirects the \c .data and
-\c .bss segments to the copies of the new rank. The code will also be
-copied several times in memory, inducing a slight increase of memory
-occupation.
+several syscalls to change the ``mmap`` that redirects the ``.data``
+and ``.bss`` segments to the copies of the new rank. The code will
+also be copied several times in memory, inducing a slight increase of
+memory occupation.
 
 Another limitation is that SMPI only accounts for global variables
 defined in the executable. If the processes use external global
@@ -513,9 +539,9 @@ the library with these globals. This way, each MPI rank will get its
 own copy of these libraries. Of course you should never statically
 link against the SimGrid library itself.
 
-With the <b>dlopen approach</b>, SMPI loads several copies of the same
+With the **dlopen approach**, SMPI loads several copies of the same
 executable in memory as if it were a library, so that the global
-variables get naturally duplicated. It first requires the executable
+variables get naturally dupplicated. It first requires the executable
 to be compiled as a relocatable binary, which is less common for
 programs than for libraries. But most distributions are now compiled
 this way for security reason as it allows to randomize the address
@@ -525,25 +551,25 @@ the exact same file several times, be it a library or a relocatable
 executable. It makes perfectly sense in the general case, but we need
 to circumvent this rule of thumb in our case. To that extend, the
 binary is copied in a temporary file before being re-linked against.
-`dlmopen()` cannot be used as it only allows 256 contextes, and as it
+``dlmopen()`` cannot be used as it only allows 256 contextes, and as it
 would also dupplicate simgrid itself.
 
 This approach greatly speeds up the context switching, down to about
 40 CPU cycles with our raw contextes, instead of requesting several
-syscalls with the \c mmap approach. Another advantage is that it
+syscalls with the ``mmap()`` approach. Another advantage is that it
 permits to run the SMPI contexts in parallel, which is obviously not
-possible with the \c mmap approach. It was tricky to implement, but we
-are not aware of any flaws, so smpirun activates it by default.
+possible with the ``mmap()`` approach. It was tricky to implement, but
+we are not aware of any flaws, so smpirun activates it by default.
 
 In the future, it may be possible to further reduce the memory and
-disk consumption. It seems that we could <a
-href="https://lwn.net/Articles/415889/">punch holes</a> in the files
-before dl-loading them to remove the code and constants, and mmap
-these area onto a unique copy. If done correctly, this would reduce
-the disk- and memory- usage to the bare minimum, and would also reduce
-the pressure on the CPU instruction cache. See 
-<a href="https://github.com/simgrid/simgrid/issues/137">the relevant
-bug</a> on github for implementation leads.\n
+disk consumption. It seems that we could `punch holes
+<https://lwn.net/Articles/415889/>`_ in the files before dl-loading
+them to remove the code and constants, and mmap these area onto a
+unique copy. If done correctly, this would reduce the disk- and
+memory- usage to the bare minimum, and would also reduce the pressure
+on the CPU instruction cache. See the `relevant bug
+<https://github.com/simgrid/simgrid/issues/137>`_ on github for
+implementation leads.\n
 
 Also, currently, only the binary is copied and dlopen-ed for each MPI
 rank. We could probably extend this to external dependencies, but for
@@ -552,16 +578,22 @@ application. As usual, simgrid itself shall never be statically linked
 in your app. You don't want to give a copy of SimGrid to each MPI rank:
 that's ways too much for them to deal with.
 
-@section SMPI_adapting Adapting your MPI code for further scalability
+.. todo: speak of smpi/privatize-libs here
 
-As detailed in the reference article (available at
-http://hal.inria.fr/hal-01415484), you may want to adapt your code
+----------------------------------------------
+Adapting your MPI code for further scalability
+----------------------------------------------
+
+As detailed in the `reference article
+<http://hal.inria.fr/hal-01415484>`_, you may want to adapt your code
 to improve the simulation performance. But these tricks may seriously
 hinder the result quality (or even prevent the app to run) if used
 wrongly. We assume that if you want to simulate an HPC application,
 you know what you are doing. Don't prove us wrong!
 
-@subsection SMPI_adapting_size Reducing your memory footprint
+..............................
+Reducing your memory footprint
+..............................
 
 If you get short on memory (the whole app is executed on a single node when
 simulated), you should have a look at the SMPI_SHARED_MALLOC and
@@ -585,9 +617,11 @@ area between processes does not seem very wise. You cannot use the
 SMPI_SHARED_MALLOC macro in this case, sorry.
 
 This feature is demoed by the example file
-<tt>examples/smpi/NAS/dt.c</tt>
+`examples/smpi/NAS/dt.c <https://framagit.org/simgrid/simgrid/tree/master/examples/smpi/NAS/dt.c>`_
 
-@subsection SMPI_adapting_speed Toward faster simulations
+.........................
+Toward Faster Simulations
+.........................
 
 If your application is too slow, try using SMPI_SAMPLE_LOCAL,
 SMPI_SAMPLE_GLOBAL and friends to indicate which computation loops can
@@ -599,9 +633,11 @@ SMPI_SAMPLE_GLOBAL. Of course, none of this will work if the execution
 time of your loop iteration are not stable.
 
 This feature is demoed by the example file 
-<tt>examples/smpi/NAS/ep.c</tt>
+`examples/smpi/NAS/ep.c <https://framagit.org/simgrid/simgrid/tree/master/examples/smpi/NAS/ep.c>`_
 
-@section SMPI_accuracy Ensuring accurate simulations
+.............................
+Ensuring Accurate Simulations
+.............................
 
 Out of the box, SimGrid may give you fairly accurate results, but
 there is a plenty of factors that could go wrong and make your results
@@ -626,8 +662,8 @@ results that you observe between both settings (visualization can be
 precious for that). Then, try to modify your model (of the platform,
 of the collective operations) to reduce the most preeminent differences.
 
-If the discrepancies come from the computing time, try adapting the \c
-smpi/host-speed: reduce it if your simulation runs faster than in
+If the discrepancies come from the computing time, try adapting the 
+``smpi/host-speed``: reduce it if your simulation runs faster than in
 reality. If the error come from the communication, then you need to
 fiddle with your platform file.
 
@@ -637,65 +673,67 @@ modeling multicore/GPU machines with a set of separate hosts
 interconnected with very fast networks (but don't trust your model
 because it has the right names in the right place either).
 
-Finally, you may want to check [this
-article](https://hal.inria.fr/hal-00907887) on the classical pitfalls
-in modeling distributed systems.
+Finally, you may want to check `this article
+<https://hal.inria.fr/hal-00907887>`_ on the classical pitfalls in
+modeling distributed systems.
 
-@section SMPI_troubleshooting Troubleshooting with SMPI
+-------------------------
+Troubleshooting with SMPI
+-------------------------
 
-@subsection SMPI_trouble_configure_refuses_smpicc ./configure refuses to use smpicc
+.................................
+./configure refuses to use smpicc
+.................................
 
-If your <tt>./configure</tt> reports that the compiler is not
+If your ``./configure`` reports that the compiler is not
 functional or that you are cross-compiling, try to define the
-<tt>SMPI_PRETEND_CC</tt> environment variable before running the
+``SMPI_PRETEND_CC`` environment variable before running the
 configuration.
 
-@verbatim
-SMPI_PRETEND_CC=1 ./configure # here come the configure parameters
-make
-@endverbatim
+.. code-block:: shell
 
-Indeed, the programs compiled with <tt>smpicc</tt> cannot be executed
-without <tt>smpirun</tt> (they are shared libraries, and they do weird
-things on startup), while configure wants to test them directly.
-With <tt>SMPI_PRETEND_CC</tt> smpicc does not compile as shared,
-and the SMPI initialization stops and returns 0 before doing anything
-that would fail without <tt>smpirun</tt>.
+   SMPI_PRETEND_CC=1 ./configure # here come the configure parameters
+   make
 
-\warning 
+Indeed, the programs compiled with ``smpicc`` cannot be executed
+without ``smpirun`` (they are shared libraries and do weird things on
+startup), while configure wants to test them directly.  With
+``SMPI_PRETEND_CC`` smpicc does not compile as shared, and the SMPI
+initialization stops and returns 0 before doing anything that would
+fail without ``smpirun``.
+
+.. warning::
 
   Make sure that SMPI_PRETEND_CC is only set when calling ./configure,
   not during the actual execution, or any program compiled with smpicc
   will stop before starting.
 
-@subsection SMPI_trouble_configure_dont_find_smpicc ./configure does not pick smpicc as a compiler
+..............................................
+./configure does not pick smpicc as a compiler
+..............................................
 
 In addition to the previous answers, some projects also need to be
 explicitely told what compiler to use, as follows:
 
-@verbatim
-SMPI_PRETEND_CC=1 ./configure CC=smpicc # here come the other configure parameters
-make
-@endverbatim
+.. code-block:: shell
+		
+   SMPI_PRETEND_CC=1 ./configure CC=smpicc # here come the other configure parameters
+   make
 
-Maybe your configure is using another variable, such as <tt>cc</tt> or
-similar. Just check the logs.
+Maybe your configure is using another variable, such as ``cc`` (in
+lower case) or similar. Just check the logs.
 
-@subsection SMPI_trouble_useconds_t  error: unknown type name 'useconds_t'
+.....................................
+error: unknown type name 'useconds_t'
+.....................................
 
-Try to add <tt>-D_GNU_SOURCE</tt> to your compilation line to get ride
+Try to add ``-D_GNU_SOURCE`` to your compilation line to get ride
 of that error.
 
-The reason is that SMPI provides its own version of <tt>usleep(3)</tt>
+The reason is that SMPI provides its own version of ``usleep(3)``
 to override it and to block in the simulation world, not in the real
-one. It needs the <tt>useconds_t</tt> type for that, which is declared
-only if you declare <tt>_GNU_SOURCE</tt> before including
-<tt>unistd.h</tt>. If your project includes that header file before
+one. It needs the ``useconds_t`` type for that, which is declared
+only if you declare ``_GNU_SOURCE`` before including
+``unistd.h``. If your project includes that header file before
 SMPI, then you need to ensure that you pass the right configuration
 defines as advised above.
-
-
-*/
-
-
-/** @example include/smpi/smpi.h */
