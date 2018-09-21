@@ -53,12 +53,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
   extern "C" void _gfortran_set_args(int, char **);
 #endif
 
-#ifndef RTLD_DEEPBIND
 /* RTLD_DEEPBIND is a bad idea of GNU ld that obviously does not exist on other platforms
  * See https://www.akkadia.org/drepper/dsohowto.pdf
  * and https://lists.freebsd.org/pipermail/freebsd-current/2016-March/060284.html
 */
-#define RTLD_DEEPBIND 0
+#if !defined(RTLD_DEEPBIND) || HAVE_SANITIZER_ADDRESS || HAVE_SANITIZER_THREAD
+#define WANT_RTLD_DEEPBIND 0
+#else
+#define WANT_RTLD_DEEPBIND RTLD_DEEPBIND
 #endif
 
 #if HAVE_PAPI
@@ -611,7 +613,7 @@ static void smpi_init_privatization_dlopen(std::string executable)
 
       rank++;
       // Load the copy and resolve the entry point:
-      void* handle    = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | RTLD_DEEPBIND);
+      void* handle    = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | WANT_RTLD_DEEPBIND);
       int saved_errno = errno;
       if (simgrid::config::get_value<bool>("smpi/keep-temps") == false) {
         unlink(target_executable.c_str());
