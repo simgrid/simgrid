@@ -37,7 +37,7 @@
 #cmakedefine01 HAVE_NANOSLEEP
 
 /* The usable context factories */
-#define HAVE_BOOST_CONTEXTS @HAVE_BOOST_CONTEXTS@
+#cmakedefine01 HAVE_BOOST_CONTEXTS
 #cmakedefine01 HAVE_RAW_CONTEXTS
 #cmakedefine01 HAVE_THREAD_CONTEXTS
 #cmakedefine01 HAVE_UCONTEXT_CONTEXTS
