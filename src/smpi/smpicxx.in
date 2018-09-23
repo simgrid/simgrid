@@ -70,8 +70,8 @@ list_set CMDLINE "${CXX}"
 list_add_not_empty CMDLINE "${CXXFLAGS}"
 list_add_not_empty CMDLINE ${INCLUDEARGS}
 list_add_not_empty CMDLINE ${CMAKE_LINKARGS}
-list_add_not_empty CMDLINE "${CMDARGS}"
 list_add_not_empty CMDLINE "${LINKARGS}"
+list_add_not_empty CMDLINE "${CMDARGS}"
 
 eval $(list_get CMDLINE)
 "$@"

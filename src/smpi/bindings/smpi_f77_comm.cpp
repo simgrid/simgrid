@@ -71,9 +71,10 @@ void mpi_comm_create_group_ (int* comm, int* group, int i, int* comm_out, int* i
   }
 }
 
-void mpi_comm_get_attr_ (int* comm, int* comm_keyval, void *attribute_val, int *flag, int* ierr){
-
- *ierr = MPI_Comm_get_attr (simgrid::smpi::Comm::f2c(*comm), *comm_keyval, attribute_val, flag);
+void mpi_comm_get_attr_ (int* comm, int* comm_keyval, int *attribute_val, int *flag, int* ierr){
+ int* value = nullptr;
+ *ierr = MPI_Comm_get_attr (simgrid::smpi::Comm::f2c(*comm), *comm_keyval, &value, flag);
+ *attribute_val = *value;
 }
 
 void mpi_comm_set_attr_ (int* comm, int* comm_keyval, void *attribute_val, int* ierr){
