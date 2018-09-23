@@ -115,9 +115,9 @@ void mpi_get_count_(MPI_Status * status, int* datatype, int *count, int* ierr){
 }
 
 void mpi_attr_get_(int* comm, int* keyval, int* attr_value, int* flag, int* ierr ){
-  size_t value = 0;
+  int* value = nullptr;
   *ierr = MPI_Attr_get(simgrid::smpi::Comm::f2c(*comm), *keyval, &value, flag);
-  *attr_value = *(int*)value;
+  *attr_value = *value;
 }
 
 void mpi_error_string_(int* errorcode, char* string, int* resultlen, int* ierr){
@@ -226,9 +226,9 @@ void mpi_win_get_group_(int*  win, int* group, int* ierr){
 }
 
 void mpi_win_get_attr_(int* win, int* type_keyval, int* attribute_val, int* flag, int* ierr){
-  size_t value = 0;
+   int* value = nullptr;
   *ierr = MPI_Win_get_attr(simgrid::smpi::Win::f2c(*win), *type_keyval, &value, flag);
-  *attribute_val=*(int*)value;
+  *attribute_val=*value;
 }
 
 void mpi_win_set_attr_(int* win, int* type_keyval, void* att, int* ierr){
