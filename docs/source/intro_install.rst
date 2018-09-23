@@ -122,13 +122,15 @@ dependencies.
    make
    make install
 
+.. _install_src_config:
+   
 Build Configuration
 ^^^^^^^^^^^^^^^^^^^
 
 This section is about **compile-time options**, that are very
-different from @ref options "run-time options". Compile-time options
-fall into two categories. *SimGrid-specific options* define which part
-of the framework to compile while *Generic options* are provided by
+different from :ref:`run-time options <options>`. Compile-time options
+fall into two categories. **SimGrid-specific options** define which part
+of the framework to compile while **Generic options** are provided by
 cmake itself.
 
 Generic build-time options

@@ -41,9 +41,6 @@ release = u'3.21'
 # ones.
 extensions = [
     'sphinx.ext.todo',
-#    'sphinx.ext.coverage',
-#    'sphinx.ext.mathjax',
-#    'sphinx.ext.ifconfig',
     'breathe',
     'exhale',
     'hidden_code_block',

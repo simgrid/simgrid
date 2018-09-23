@@ -894,7 +894,6 @@ set(DOC_SOURCES
   doc/doxygen/module-xbt.doc
   doc/doxygen/module-index.doc
   doc/doxygen/ns3.doc
-  doc/doxygen/options.doc
   doc/doxygen/outcomes.doc
   doc/doxygen/outcomes_logs.doc
   doc/doxygen/outcomes_MC.doc

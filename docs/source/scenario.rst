@@ -12,7 +12,10 @@ Describing the Experimental Scenario
    - Reproducible random number generation
    - Command line options, in particular on the model switching
 
-.. include:: scenar_config.rst
+.. toctree::
+   :hidden:
+
+      Configuring SimGrid <scenar_config.rst>
 
 
 	     
