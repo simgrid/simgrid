@@ -21,6 +21,15 @@ Barrier::Barrier(unsigned int expected_processes) : mutex_(Mutex::create()), con
 {
 }
 
+/** @brief Create a new barrier
+ *
+ * See @ref s4u_raii.
+ */
+BarrierPtr Barrier::create(unsigned int expected_processes)
+{
+    return BarrierPtr(new Barrier(expected_processes));
+}
+
 /**
  * Wait functions
  */
@@ -39,6 +48,21 @@ int Barrier::wait()
   cond_->wait(mutex_);
   mutex_->unlock();
   return 0;
+}
+
+void intrusive_ptr_add_ref(Barrier* barrier)
+{
+  xbt_assert(barrier);
+  barrier->refcount_.fetch_add(1, std::memory_order_relaxed);
+}
+
+void intrusive_ptr_release(Barrier* barrier)
+{
+  xbt_assert(barrier);
+  if (barrier->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+    std::atomic_thread_fence(std::memory_order_acquire);
+    delete barrier;
+  }
 }
 } // namespace s4u
 } // namespace simgrid
