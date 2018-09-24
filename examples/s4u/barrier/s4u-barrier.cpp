@@ -3,13 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <memory>
 #include "simgrid/s4u.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
 /// Wait on the barrier then leave
-static void worker(std::shared_ptr<simgrid::s4u::Barrier> barrier)
+static void worker(simgrid::s4u::BarrierPtr barrier)
 {
     XBT_INFO("Waiting on the barrier");
     barrier->wait();
@@ -20,7 +19,7 @@ static void worker(std::shared_ptr<simgrid::s4u::Barrier> barrier)
 /// Spawn process_count-1 workers and do a barrier with them
 static void master(int process_count)
 {
-    std::shared_ptr<simgrid::s4u::Barrier> barrier(new simgrid::s4u::Barrier(process_count));
+    simgrid::s4u::BarrierPtr barrier = simgrid::s4u::Barrier::create(process_count);
 
     XBT_INFO("Spawning %d workers", process_count-1);
     for (int i = 0; i < process_count-1; i++)
