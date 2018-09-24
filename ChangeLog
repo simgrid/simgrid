@@ -29,8 +29,15 @@ Java:
 
 Fixed bugs:
  - #22: Process autorestart seem to only work with CAS01 cpus 
+ - #56: Feature request: dynamic SMPI replay
  - #93: simgrid should not eat --help
+ - #111: How to change the loopback link characteristics?
+ - #116: Platform cluster radical
+ - #117: Platform cluster/host order
+ - #129: Replay_multiple on steroid
  - #131: Java : autostart does not work
+ - #143: Setting a breakpoint at a given time
+ - #235: Network energy models should be integrated
  - #264: Add ptask L07 resource tracing
  - #271: Dynamic and manual replay of SMPI traces
  - #279: Breakpoints option uses time deltas instead of absolute time
@@ -41,7 +48,11 @@ Fixed bugs:
  - #287: Command-line parsing should stop when encountering '--'
  - #288: MPI_Init(NULL, NULL)
  - #289: Improve documentation of Actor::on_destruction and this_actor::on_exit()
+ - #290: Method to check if a mailbox has a message ready to be consumed
+ - #294: Alltoall collective implementation of mpich
+ - #295: Starting a Host as OFF is not supported
  - #296: DTD too permissive
+ - #299: Add a s4u barrier example
 
 ----------------------------------------------------------------------------
 
