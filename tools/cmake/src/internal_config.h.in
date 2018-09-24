@@ -25,8 +25,8 @@
 #cmakedefine01 HAVE_VALGRIND_H
 
 /* Address Sanitizer */
-#cmakedefine01 HAVE_SANITIZE_ADDRESS
-#cmakedefine01 HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT
+#cmakedefine01 HAVE_SANITIZER_ADDRESS
+#cmakedefine01 HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
 
 /* Time portability */
 /* Function gettimeofday */

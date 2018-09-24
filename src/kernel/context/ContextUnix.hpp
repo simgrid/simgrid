@@ -41,7 +41,7 @@ private:
   void* stack_ = nullptr; /* the thread stack */
   ucontext_t uc_;         /* the ucontext that executes the code */
 
-#if HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT
+#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
   const void* asan_stack_ = nullptr;
   size_t asan_stack_size_ = 0;
   UContext* asan_ctx_     = nullptr;

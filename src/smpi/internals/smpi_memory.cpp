@@ -88,7 +88,7 @@ static void smpi_get_executable_global_size()
 }
 #endif
 
-#if HAVE_SANITIZE_ADDRESS
+#if HAVE_SANITIZER_ADDRESS
 #include <sanitizer/asan_interface.h>
 static void* asan_safe_memcpy(void* dest, void* src, size_t n)
 {

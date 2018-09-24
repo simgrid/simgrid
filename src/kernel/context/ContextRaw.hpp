@@ -40,7 +40,7 @@ private:
   /** pointer to top the stack stack */
   void* stack_top_ = nullptr;
 
-#if HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT
+#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
   const void* asan_stack_ = nullptr;
   size_t asan_stack_size_ = 0;
   RawContext* asan_ctx_   = nullptr;
