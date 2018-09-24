@@ -118,7 +118,7 @@ Existing Configuration Items
 - **model-check/visited:** :ref:`cfg=model-check/visited`
 
 - **network/bandwidth-factor:** :ref:`cfg=network/bandwidth-factor`
-- **network/crosstraffic:** :ref:`cfg=opt_network/crosstraffic`
+- **network/crosstraffic:** :ref:`cfg=network/crosstraffic`
 - **network/latency-factor:** :ref:`cfg=network/latency-factor`
 - **network/maxmin-selective-update:** :ref:`Network Optimization Level <options_model_optim>`
 - **network/model:** :ref:`options_model_select`
@@ -381,7 +381,7 @@ thesis
 	  options network/bandwidth-factor, network/latency-factor,
 	  network/weight-S.
 
-.. _opt_network/crosstraffic:
+.. _cfg=network/crosstraffic:
 
 Simulating Cross-Traffic
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -661,13 +661,13 @@ really meaningful: you should expect the contribution of the memory
 consumption of the snapshots to be @f$ @mbox{number of processes}
 @times @mbox{stack size} @times @mbox{number of states} @f$.
 
-The @b model-check/sparse-checkpoint can be used to reduce the memory
+The ``model-check/sparse-checkpoint`` can be used to reduce the memory
 consumption by trying to share memory between the different snapshots.
 
 When compiled against the model checker, the stacks are not
 protected with guards: if the stack size is too small for your
 application, the stack will silently overflow on other parts of the
-memory (see @ref options_virt_guard_size).
+memory (see :ref:`contexts/guard-size <cfg=contexts/guard-size>`).
 
 .. _cfg=model-checker/hash:
 
@@ -811,17 +811,17 @@ stack which are actually used and you might not need to use this in
 most cases. However, this setting is very important when using the
 model checker (see :ref:`options_mc_perf`).
 
-.. _cfg=contexts:guard-size:
+.. _cfg=contexts/guard-size:
 
 Disabling Stack Guard Pages
 ...........................
 
-**Option** ``contexts:guard-size`` **Default** 1 page in most case (0 pages on Windows or with MC)
+**Option** ``contexts/guard-size`` **Default** 1 page in most case (0 pages on Windows or with MC)
 
 A stack guard page is usually used which prevents the stack of a given
 actor from overflowing on another stack. But the performance impact
 may become prohibitive when the amount of actors increases.  The
-option ``contexts:guard-size`` is the number of stack guard pages
+option ``contexts/guard-size`` is the number of stack guard pages
 used.  By setting it to 0, no guard pages will be used: in this case,
 you should avoid using small stacks (with :ref:`contexts/stack-size
 <cfg=contexts/stack-size>`) as the stack will silently overflow on
