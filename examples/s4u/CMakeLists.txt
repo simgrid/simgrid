@@ -4,6 +4,7 @@ foreach (example actor-create actor-daemon actor-join actor-kill
                  actor-lifetime actor-migration actor-suspend actor-yield
                  app-chainsend app-pingpong app-token-ring
                  async-ready async-wait async-waitany async-waitall async-waituntil
+                 barrier
                  cloud-capping cloud-migration cloud-simple
                  energy-exec energy-boot energy-link energy-vm
                  engine-filtering
@@ -100,6 +101,7 @@ foreach(example actor-create actor-daemon actor-join actor-kill
                 actor-lifetime actor-migration actor-suspend actor-yield
                 app-bittorrent app-chainsend app-masterworkers app-pingpong app-token-ring 
                 async-ready async-wait async-waitall async-waitany async-waituntil
+                barrier
                 cloud-capping cloud-migration cloud-simple
                 dht-chord dht-kademlia
                 energy-exec energy-boot energy-link energy-vm
