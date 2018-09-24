@@ -17,7 +17,7 @@ CMAKE_LINKARGS="-L@libdir@"
 @SMPITOOLS_SH@
 
 list_set CXXFLAGS "-std=gnu++11"
-list_set LINKARGS "-std=gnu++11"
+list_set LINKARGS
 if [ "@WIN32@" != "1" ]; then
     # list_add CXXFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
     list_add CXXFLAGS "-fpic"
@@ -70,8 +70,8 @@ list_set CMDLINE "${CXX}"
 list_add_not_empty CMDLINE "${CXXFLAGS}"
 list_add_not_empty CMDLINE ${INCLUDEARGS}
 list_add_not_empty CMDLINE ${CMAKE_LINKARGS}
-list_add_not_empty CMDLINE "${LINKARGS}"
 list_add_not_empty CMDLINE "${CMDARGS}"
+list_add_not_empty CMDLINE "${LINKARGS}"
 
 eval $(list_get CMDLINE)
 "$@"
