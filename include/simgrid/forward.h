@@ -24,6 +24,10 @@ XBT_PUBLIC void intrusive_ptr_release(Actor* actor);
 XBT_PUBLIC void intrusive_ptr_add_ref(Actor* actor);
 
 class Barrier;
+/** Smart pointer to a simgrid::s4u::Barrier */
+typedef boost::intrusive_ptr<Barrier> BarrierPtr;
+XBT_PUBLIC void intrusive_ptr_release(Barrier* m);
+XBT_PUBLIC void intrusive_ptr_add_ref(Barrier* m);
 
 class Comm;
 /** Smart pointer to a simgrid::s4u::Comm */
