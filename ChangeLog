@@ -1,6 +1,24 @@
 SimGrid (3.21) NOT RELEASED (Release Target: September 23. 2018, 1:54 UTC)
 
+The Restarting Documentation (TRD) Release.
+
+Documentation:
+ - Convert the user manual to Sphinx for improved usability.
+   Unstable version now hosted on https://simgrid.frama.io/simgrid
+   Many glitches remain; stay tuned.
+ - Restrict the Doxygen reference API to the installed header files.
+   (documenting all internals this way is overkill + doxygen scales badly)
+ - New tutorial on S4U (highly inspired from the old MSG one, but with
+   a git repository to fork as a starting point, and a docker image)
+ - Started but not finished a SMPI tutorial inspired from the JLPC'14 one.
+ - The Developper manual is still to be converted (not compiled until then)
+
 S4U new features:
+ - Fully reimplement auto_restart mechanism that was utterly broken
+   (fix #22, #131 and #281 that were all very related)
+ - When creating an actor from a function and its parameters,
+   move-only parameters are not allowed anymore, as it would prevent
+   the actor to be restartable if its parameters are consumed on run.
  - s4u::Io: IOs go asynchronous as activities. This comes with new methods in the
    s4u::Storage class: 
      - io_init(sg_size_t, s4u::Io::OpType) to create a READ or WRITE asynchronous
@@ -8,11 +26,6 @@ S4U new features:
        activity.
      - read_async(sg_size_t) and write_async(sg_size_t) which are wrappers on 
        io_init() + start()
- - Fully reimplement auto_restart mechanism that was utterly broken 
-   (fix #22, #131 and #281 that were all very related)
- - When creating an actor from a function and its parameters,
-   move-only parameters are not allowed anymore, as it would prevent
-   the actor to be restartable if its parameters are consumed on run.
 
 Tracing:
  - Rename 'power' and 'power_used' variables into 'speed' and 'speed_used'

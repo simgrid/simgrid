@@ -5,6 +5,12 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \/ |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|_|
                (not released)
 
+The Restarting Documentation (TRD) release.
+
+ * Overhaul the documentation, and move to Sphinx + RTD.
+ * Allow dynamic replay of MPI apps, controlled by S4U actors
+ * Rewrite the support for auto-restarted actors (was utterly broken)
+ * (+ the classical bug fixes and doc improvement)
 
                     _               _____  ____   ___
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / _ \
