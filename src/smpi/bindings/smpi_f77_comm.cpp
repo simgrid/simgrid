@@ -78,9 +78,10 @@ void mpi_comm_get_attr_ (int* comm, int* comm_keyval, int *attribute_val, int *f
    *attribute_val = *value;
 }
 
-void mpi_comm_set_attr_ (int* comm, int* comm_keyval, void *attribute_val, int* ierr){
-
- *ierr = MPI_Comm_set_attr ( simgrid::smpi::Comm::f2c(*comm), *comm_keyval, attribute_val);
+void mpi_comm_set_attr_ (int* comm, int* comm_keyval, int *attribute_val, int* ierr){
+ int* val = (int*)xbt_malloc(sizeof(int));
+ *val=*attribute_val;
+ *ierr = MPI_Comm_set_attr ( simgrid::smpi::Comm::f2c(*comm), *comm_keyval, val);
 }
 
 void mpi_comm_delete_attr_ (int* comm, int* comm_keyval, int* ierr){
