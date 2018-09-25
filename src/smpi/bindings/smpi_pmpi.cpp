@@ -223,8 +223,8 @@ int PMPI_Error_string(int errorcode, char* string, int* resultlen){
 }
 
 int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
-  smpi_copy_fn _copy_fn={copy_fn,nullptr,nullptr};
-  smpi_delete_fn _delete_fn={delete_fn,nullptr,nullptr};
+  smpi_copy_fn _copy_fn={copy_fn,nullptr,nullptr,nullptr,nullptr,nullptr};
+  smpi_delete_fn _delete_fn={delete_fn,nullptr,nullptr,nullptr,nullptr,nullptr};
   return simgrid::smpi::Keyval::keyval_create<simgrid::smpi::Comm>(_copy_fn, _delete_fn, keyval, extra_state);
 }
 
