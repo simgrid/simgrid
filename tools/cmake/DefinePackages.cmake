@@ -933,7 +933,6 @@ set(DOC_SOURCES
   docs/source/introduction.rst
   docs/source/intro_install.rst
   docs/source/intro_yours.rst
-  docs/source/main_concepts.rst
   docs/source/models.rst
   docs/source/platform.rst
   docs/source/scenar_config.rst
