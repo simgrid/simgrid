@@ -725,7 +725,7 @@ typedef void MPI_Win_errhandler_function(MPI_Win *, int *, ...);
 typedef int MPI_Grequest_query_function(void *extra_state, MPI_Status *status);
 typedef int MPI_Grequest_free_function(void *extra_state);
 typedef int MPI_Grequest_cancel_function(void *extra_state, int complete);
-#define MPI_DUP_FN MPI_Comm_dup
+#define MPI_DUP_FN 1
 
 #define MPI_WIN_DUP_FN ((MPI_Win_copy_attr_function*)MPI_DUP_FN)
 #define MPI_TYPE_DUP_FN ((MPI_Type_copy_attr_function*)MPI_DUP_FN)

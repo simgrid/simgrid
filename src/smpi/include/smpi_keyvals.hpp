@@ -132,7 +132,6 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
   if(elem==nullptr)
     return MPI_ERR_ARG;
   elem->refcount++;
-  void * value = nullptr;
   int flag=0;
   auto p = attributes()->insert({keyval, attr_value});
   if (!p.second) {
