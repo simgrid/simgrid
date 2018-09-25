@@ -59,7 +59,8 @@ void mpi_type_get_name_ (int*  datatype, char * name, int* len, int* ierr){
 void mpi_type_get_attr_ (int* type, int* type_keyval, int *attribute_val, int* flag, int* ierr){
  int* value = nullptr;
  *ierr = MPI_Type_get_attr ( simgrid::smpi::Datatype::f2c(*type), *type_keyval, &value, flag);
- *attribute_val = *value;
+ if (*flag == 1)
+   *attribute_val = *value;
 }
 
 void mpi_type_set_attr_ (int* type, int* type_keyval, void *attribute_val, int* ierr){
