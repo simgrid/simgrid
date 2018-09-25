@@ -74,12 +74,14 @@ void mpi_comm_create_group_ (int* comm, int* group, int i, int* comm_out, int* i
 void mpi_comm_get_attr_ (int* comm, int* comm_keyval, int *attribute_val, int *flag, int* ierr){
  int* value = nullptr;
  *ierr = MPI_Comm_get_attr (simgrid::smpi::Comm::f2c(*comm), *comm_keyval, &value, flag);
- *attribute_val = *value;
+ if (*flag == 1)
+   *attribute_val = *value;
 }
 
-void mpi_comm_set_attr_ (int* comm, int* comm_keyval, void *attribute_val, int* ierr){
-
- *ierr = MPI_Comm_set_attr ( simgrid::smpi::Comm::f2c(*comm), *comm_keyval, attribute_val);
+void mpi_comm_set_attr_ (int* comm, int* comm_keyval, int *attribute_val, int* ierr){
+ int* val = (int*)xbt_malloc(sizeof(int));
+ *val=*attribute_val;
+ *ierr = MPI_Comm_set_attr ( simgrid::smpi::Comm::f2c(*comm), *comm_keyval, val);
 }
 
 void mpi_comm_delete_attr_ (int* comm, int* comm_keyval, int* ierr){
@@ -88,9 +90,9 @@ void mpi_comm_delete_attr_ (int* comm, int* comm_keyval, int* ierr){
 }
 
 void mpi_comm_create_keyval_ (void* copy_fn, void* delete_fn, int* keyval, void* extra_state, int* ierr){
-
- *ierr = MPI_Comm_create_keyval(reinterpret_cast<MPI_Comm_copy_attr_function*>(copy_fn),  reinterpret_cast<MPI_Comm_delete_attr_function*>(delete_fn),
-         keyval,  extra_state) ;
+  smpi_copy_fn _copy_fn={nullptr,nullptr,nullptr,(*(int*)copy_fn) == 0 ? nullptr : reinterpret_cast<MPI_Comm_copy_attr_function_fort*>(copy_fn),nullptr,nullptr};
+  smpi_delete_fn _delete_fn={nullptr,nullptr,nullptr,(*(int*)delete_fn) == 0 ? nullptr : reinterpret_cast<MPI_Comm_delete_attr_function_fort*>(delete_fn),nullptr,nullptr};
+  *ierr = simgrid::smpi::Keyval::keyval_create<simgrid::smpi::Comm>(_copy_fn, _delete_fn, keyval, extra_state);
 }
 
 void mpi_comm_free_keyval_ (int* keyval, int* ierr) {

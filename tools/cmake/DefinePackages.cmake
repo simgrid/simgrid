@@ -1050,7 +1050,7 @@ set(CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/coll/CMakeLists.txt
   teshsuite/smpi/mpich3-test/comm/CMakeLists.txt
   teshsuite/smpi/mpich3-test/datatype/CMakeLists.txt
-#  teshsuite/smpi/mpich3-test/f77/attr/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/attr/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/coll/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/info/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/comm/CMakeLists.txt

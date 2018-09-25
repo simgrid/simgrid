@@ -829,8 +829,8 @@ int PMPI_Win_delete_attr (MPI_Win win, int type_keyval)
 int PMPI_Win_create_keyval(MPI_Win_copy_attr_function* copy_fn, MPI_Win_delete_attr_function* delete_fn, int* keyval,
                             void* extra_state)
 {
-  smpi_copy_fn _copy_fn={nullptr, nullptr, copy_fn};
-  smpi_delete_fn _delete_fn={nullptr, nullptr, delete_fn};
+  smpi_copy_fn _copy_fn={nullptr, nullptr,copy_fn,nullptr, nullptr,nullptr};
+  smpi_delete_fn _delete_fn={nullptr, nullptr,delete_fn,nullptr, nullptr,nullptr};
   return simgrid::smpi::Keyval::keyval_create<simgrid::smpi::Win>(_copy_fn, _delete_fn, keyval, extra_state);
 }
 

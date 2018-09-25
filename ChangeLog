@@ -36,6 +36,17 @@ XBT:
  - Remove portability wrapper to condition variables
  - Remove xbt_os_thread_yield()
 
+SMPI:
+ - MPICH collective selector now mimics MPICH 3.3b
+ - OpenMPI collective selector now mimics OpenMPI 3.1.2 (default "tuned" setting)
+ - MPI_Init(NULL,NULL) is now allowed
+ - smpi/wtime option now injects time in gettimeofday or clock_gettime calls
+ - Command-line arguments should now be handled properly in Fortran simulations
+ - MPI Attributes and related callbacks should work in Fortran
+ - Apps using C + Fortran should now work
+ - MPI_* calls now check for non MPI_SUCCESS return values and emit warnings
+ - Support MPI_Error_String
+
 Java:
  - Due to an internal bug, Msg.run() must now be your last line.
    We hope to fix it in a future release, and we are sorry for the inconvenience.
