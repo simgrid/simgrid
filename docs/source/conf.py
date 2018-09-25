@@ -18,6 +18,14 @@ import os, subprocess
 import sys
 sys.path.append(os.path.abspath('_ext'))
 
+# -- Run doxygen on readthedocs.org ------------------------------------------
+import subprocess, os
+
+read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
+
+if read_the_docs_build:
+    subprocess.call('cd source; doxygen', shell=True)
+
 # -- Project information -----------------------------------------------------
 
 project = u'SimGrid'
@@ -106,7 +114,12 @@ html_theme = 'sphinx_rtd_theme'
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {
+    'navigation_depth' : 4,
+    'sticky_navigation': True,
+    'display_version': True,
+    'includehidden': True,
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
