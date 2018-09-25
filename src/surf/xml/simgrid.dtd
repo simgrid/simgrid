@@ -104,7 +104,14 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
-<!ELEMENT AS ((prop*), ((AS|zone|ASroute|zoneRoute|include|storage_type|storage|link|backbone|cabinet|router|host|cluster|peer|host_link)*,(route|ASroute|zoneRoute|trace|trace_connect|bypassRoute|bypassASroute|bypassZoneRoute)*))>
+<!-- A zone is either an internal node that contains other zones, 
+     or a  leaf containing hosts and other leaf-like elements -->
+<!ELEMENT AS ((prop*),
+          (((AS|zone|include|link|backbone|cabinet|cluster|peer|trace|trace_connect)*,
+	    (zoneRoute|ASroute|trace|trace_connect|bypassASroute|bypassZoneRoute)*,
+	    (trace|trace_connect)*)
+	   |((include|storage_type|storage|host|cabinet|router|link|backbone|trace|trace_connect|host_link)*,
+	     (route|trace|trace_connect|bypassRoute)*)))>
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|ClusterTorus|ClusterFatTree|ClusterDragonfly) #REQUIRED>
 
@@ -112,7 +119,7 @@ To upgrade your files, use the tool simgrid_update_xml
      or a  leaf containing hosts and other leaf-like elements -->
 <!ELEMENT zone ((prop*),
           (((AS|zone|include|link|backbone|cabinet|cluster|peer|trace|trace_connect)*,
-            (zoneRoute|ASroute|trace|trace_connect|bypassASroute)*,
+            (zoneRoute|ASroute|trace|trace_connect|bypassASroute|bypassZoneRoute)*,
 	    (trace|trace_connect)*)
 	   |((include|storage_type|storage|host|cabinet|router|link|backbone|trace|trace_connect|host_link)*,
 	     (route|trace|trace_connect|bypassRoute)*)))>

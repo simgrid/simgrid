@@ -57,11 +57,3 @@ additional work.
 
 .. The old documentation of the obsolete MSG replay module was removed in
 ..  https://github.com/simgrid/simgrid/commit/e05361c201fb95d2b7605e59001cd0a49a489739
-
-.. toctree::
-   :hidden:
-
-      The S4U Interface <app_s4u.rst>
-      The SMPI Interface <app_smpi.rst>
-
-      

@@ -1,6 +1,24 @@
 SimGrid (3.21) NOT RELEASED (Release Target: September 23. 2018, 1:54 UTC)
 
+The Restarting Documentation (TRD) Release.
+
+Documentation:
+ - Convert the user manual to Sphinx for improved usability.
+   Unstable version now hosted on https://simgrid.frama.io/simgrid
+   Many glitches remain; stay tuned.
+ - Restrict the Doxygen reference API to the installed header files.
+   (documenting all internals this way is overkill + doxygen scales badly)
+ - New tutorial on S4U (highly inspired from the old MSG one, but with
+   a git repository to fork as a starting point, and a docker image)
+ - Started but not finished a SMPI tutorial inspired from the JLPC'14 one.
+ - The Developper manual is still to be converted (not compiled until then)
+
 S4U new features:
+ - Fully reimplement auto_restart mechanism that was utterly broken
+   (fix #22, #131 and #281 that were all very related)
+ - When creating an actor from a function and its parameters,
+   move-only parameters are not allowed anymore, as it would prevent
+   the actor to be restartable if its parameters are consumed on run.
  - s4u::Io: IOs go asynchronous as activities. This comes with new methods in the
    s4u::Storage class: 
      - io_init(sg_size_t, s4u::Io::OpType) to create a READ or WRITE asynchronous
@@ -8,11 +26,6 @@ S4U new features:
        activity.
      - read_async(sg_size_t) and write_async(sg_size_t) which are wrappers on 
        io_init() + start()
- - Fully reimplement auto_restart mechanism that was utterly broken 
-   (fix #22, #131 and #281 that were all very related)
- - When creating an actor from a function and its parameters,
-   move-only parameters are not allowed anymore, as it would prevent
-   the actor to be restartable if its parameters are consumed on run.
 
 Tracing:
  - Rename 'power' and 'power_used' variables into 'speed' and 'speed_used'
@@ -29,8 +42,15 @@ Java:
 
 Fixed bugs:
  - #22: Process autorestart seem to only work with CAS01 cpus 
+ - #56: Feature request: dynamic SMPI replay
  - #93: simgrid should not eat --help
+ - #111: How to change the loopback link characteristics?
+ - #116: Platform cluster radical
+ - #117: Platform cluster/host order
+ - #129: Replay_multiple on steroid
  - #131: Java : autostart does not work
+ - #143: Setting a breakpoint at a given time
+ - #235: Network energy models should be integrated
  - #264: Add ptask L07 resource tracing
  - #271: Dynamic and manual replay of SMPI traces
  - #279: Breakpoints option uses time deltas instead of absolute time
@@ -41,7 +61,11 @@ Fixed bugs:
  - #287: Command-line parsing should stop when encountering '--'
  - #288: MPI_Init(NULL, NULL)
  - #289: Improve documentation of Actor::on_destruction and this_actor::on_exit()
+ - #290: Method to check if a mailbox has a message ready to be consumed
+ - #294: Alltoall collective implementation of mpich
+ - #295: Starting a Host as OFF is not supported
  - #296: DTD too permissive
+ - #299: Add a s4u barrier example
 
 ----------------------------------------------------------------------------
 
