@@ -211,6 +211,10 @@ Classical synchronization objects
    Shows how to use simgrid::s4u::Mutex synchronization objects.
    |br| `examples/s4u/mutex/s4u-mutex.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/mutex/s4u-mutex.cpp>`_
 
+ - **Barrier:**
+   Shows how to use simgrid::s4u::Barrier synchronization objects.
+   |br| `examples/s4u/barrier/s4u-barrier.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/barrier/s4u-barrier.cpp>`_
+
 .............................
 Interacting with the platform
 .............................
