@@ -33,10 +33,10 @@ public:
 
   ~Io() = default;
 
-  Activity* start() override;
-  Activity* wait() override;
-  Activity* wait_for(double timeout) override;
-  Activity* cancel() override;
+  Io* start() override;
+  Io* wait() override;
+  Io* wait_for(double timeout) override;
+  Io* cancel() override;
   bool test() override;
 
   double get_remaining() override;

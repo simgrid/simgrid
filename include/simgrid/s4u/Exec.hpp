@@ -31,10 +31,10 @@ public:
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_start;
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_completion;
 
-  Activity* start() override;
-  Activity* wait() override;
-  Activity* wait_for(double timeout) override;
-  Activity* cancel() override;
+  Exec* start() override;
+  Exec* wait() override;
+  Exec* wait_for(double timeout) override;
+  Exec* cancel() override;
   bool test() override;
 
   ExecPtr set_priority(double priority);

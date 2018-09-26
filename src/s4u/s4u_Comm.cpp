@@ -57,7 +57,7 @@ void Comm::wait_all(std::vector<CommPtr>* comms)
     comm->wait();
 }
 
-Activity* Comm::set_rate(double rate)
+Comm* Comm::set_rate(double rate)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);
@@ -65,7 +65,7 @@ Activity* Comm::set_rate(double rate)
   return this;
 }
 
-Activity* Comm::set_src_data(void* buff)
+Comm* Comm::set_src_data(void* buff)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);
@@ -73,14 +73,14 @@ Activity* Comm::set_src_data(void* buff)
   src_buff_ = buff;
   return this;
 }
-Activity* Comm::set_src_data_size(size_t size)
+Comm* Comm::set_src_data_size(size_t size)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);
   src_buff_size_ = size;
   return this;
 }
-Activity* Comm::set_src_data(void* buff, size_t size)
+Comm* Comm::set_src_data(void* buff, size_t size)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);
@@ -90,7 +90,7 @@ Activity* Comm::set_src_data(void* buff, size_t size)
   src_buff_size_ = size;
   return this;
 }
-Activity* Comm::set_dst_data(void** buff)
+Comm* Comm::set_dst_data(void** buff)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);
@@ -103,7 +103,7 @@ size_t Comm::get_dst_data_size()
   xbt_assert(state_ == State::FINISHED, "You cannot use %s before your communication terminated", __FUNCTION__);
   return dst_buff_size_;
 }
-Activity* Comm::set_dst_data(void** buff, size_t size)
+Comm* Comm::set_dst_data(void** buff, size_t size)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);
@@ -114,7 +114,7 @@ Activity* Comm::set_dst_data(void** buff, size_t size)
   return this;
 }
 
-Activity* Comm::start()
+Comm* Comm::start()
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);
@@ -137,7 +137,7 @@ Activity* Comm::start()
 }
 
 /** @brief Block the calling actor until the communication is finished */
-Activity* Comm::wait()
+Comm* Comm::wait()
 {
   return this->wait_for(-1);
 }
@@ -148,7 +148,7 @@ Activity* Comm::wait()
  *
  * @param timeout the amount of seconds to wait for the comm termination.
  *                Negative values denote infinite wait times. 0 as a timeout returns immediately. */
-Activity* Comm::wait_for(double timeout)
+Comm* Comm::wait_for(double timeout)
 {
   switch (state_) {
     case State::FINISHED:
@@ -190,7 +190,7 @@ int Comm::test_any(std::vector<CommPtr>* comms)
   return res;
 }
 
-Activity* Comm::detach()
+Comm* Comm::detach()
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);
@@ -199,7 +199,7 @@ Activity* Comm::detach()
   return start();
 }
 
-Activity* Comm::cancel()
+Comm* Comm::cancel()
 {
   simgrid::simix::simcall([this] { dynamic_cast<kernel::activity::CommImpl*>(pimpl_.get())->cancel(); });
   state_ = State::CANCELED;

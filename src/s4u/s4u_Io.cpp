@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_io, s4u_activity, "S4U asynchronous IOs");
 namespace simgrid {
 namespace s4u {
 
-Activity* Io::start()
+Io* Io::start()
 {
   Activity::set_remaining(size_);
   pimpl_ = simix::simcall([this] {
@@ -24,21 +24,21 @@ Activity* Io::start()
   return this;
 }
 
-Activity* Io::cancel()
+Io* Io::cancel()
 {
   simgrid::simix::simcall([this] { dynamic_cast<kernel::activity::IoImpl*>(pimpl_.get())->cancel(); });
   state_ = State::CANCELED;
   return this;
 }
 
-Activity* Io::wait()
+Io* Io::wait()
 {
   simcall_io_wait(pimpl_);
   state_ = State::FINISHED;
   return this;
 }
 
-Activity* Io::wait_for(double timeout)
+Io* Io::wait_for(double timeout)
 {
   THROW_UNIMPLEMENTED;
   return this;
