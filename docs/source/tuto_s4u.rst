@@ -143,7 +143,7 @@ That being said, an algorithm alone is not enough to define a
 simulation: SimGrid is a library, not a program. So you need to define
 your own ``main()`` function as follows. This function is in charge of
 creating a SimGrid simulation engine (on line 3), register the actor
-functions to the engine (on lines 7 and 8), load the virtual platform
+functions to the engine (on lines 7 and 8), load the simulated platform
 from its description file (on line 11), map actors onto that platform
 (on line 12) and run the simulation until its completion on line 15.
 
@@ -159,7 +159,7 @@ file.
 Platform File
 .............
 
-Platform files define the virtual platform on which the provided
+Platform files define the simulated platform on which the provided
 application will take place. In contains one or several **Network
 Zone** |api_s4u_NetZone|_ that contain both |Host|_ and |Link|_
 Resources, as well as routing information.

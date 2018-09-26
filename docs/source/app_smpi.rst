@@ -34,7 +34,7 @@ Our goal is to enable the study of **unmodified MPI applications**.
 Some constructs and features are still missing, but we can probably
 add them on demand.  If you already used MPI before, SMPI should sound
 very familiar to you: Use smpicc instead of mpicc, and smpirun instead
-of mpirun. The main difference is that smpirun takes a :ref:`virtual
+of mpirun. The main difference is that smpirun takes a :ref:`simulated
 platform <platform>` as an extra parameter.
 
 For **further scalability**, you may modify your code to speed up your

@@ -48,10 +48,10 @@ Any SimGrid study entails the following components:
    parallel application using for example the MPI interface
    :ref:`(more info) <application>`.
 
- - The **Virtual Platform**. This is a description of a given
+ - The **Simulated Platform**. This is a description of a given
    distributed system (machines, links, disks, clusters, etc). Most of
    the platform files are written in XML althrough a Lua interface is
-   under development.  SimGrid makes it easy to augment the Virtual
+   under development.  SimGrid makes it easy to augment the Simulated
    Platform with a Dynamic Scenario where for example the links are
    slowed down (because of external usage) or the machines fail. You
    have even support to specify the applicative workload that you want
@@ -61,13 +61,13 @@ Any SimGrid study entails the following components:
  - The application's **Deployment Description**. In SimGrid
    terminology, the application is an inert set of source files and
    binaries. To make it run, you have to describe how your application
-   should be deployed on the virtual platform. You need to specify
+   should be deployed on the simulated platform. You need to specify
    which process is mapped on which machine, along with their parameters
    :ref:`(more info) <scenario>`.
 
- - The **Platform Models**. They describe how the virtual platform
+ - The **Platform Models**. They describe how the simulated platform
    reacts to the actions of the application. For example, they compute
-   the time taken by a given communication on the virtual platform.
+   the time taken by a given communication on the simulated platform.
    These models are already included in SimGrid, and you only need to
    pick one and maybe tweak its configuration to get your results
    :ref:`(more info) <models>`.
@@ -84,7 +84,7 @@ Here are some questions on which SimGrid is particularly relevant:
    they contribute to compares to the existing solutions from the
    literature.
 
- - **Design the best Virtual Platform for a given Application.**
+ - **Design the best [Simulated] Platform for a given Application.**
    Tweaking the platform file is much easier than building a new real
    platform for testing purpose. SimGrid also allows for the co-design 
    of the platform and the application by modifying both of them.
@@ -119,7 +119,7 @@ SimGrid Execution Modes
 Depending on the intended study, SimGrid can be run in several execution modes.
 
 **Simulation Mode**. This is the most common execution mode, where you want
-to study how your application behaves on the virtual platform under
+to study how your application behaves on the simulated platform under
 the experimental scenario.
 
 In this mode, SimGrid can provide information about the time taken by
@@ -183,7 +183,7 @@ what you are interested in. You are probably looking for a way to run
 each computation kernel only once, save on disk the time it takes and
 some other metadata. This code block can then be skipped in simulation
 and replaced by a synthetic block using the cached information. The
-virtual platform will take this block into account without requesting
+simulated platform will take this block into account without requesting
 the real hosting machine to benchmark it.
 
 SimGrid Limits

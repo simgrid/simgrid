@@ -12,5 +12,5 @@
    <br/>
    <br/>
 
-Describing your Virtual Platform
-================================
+Describing your Simulated Platform
+==================================

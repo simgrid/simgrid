@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.49497475"
-     inkscape:cx="-267.7826"
-     inkscape:cy="12.793361"
+     inkscape:zoom="1.979899"
+     inkscape:cx="196.07267"
+     inkscape:cy="183.99119"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -2400,8 +2400,8 @@
        sodipodi:nodetypes="cccccccc" />
     <a
        xlink:href="platform.html"
-       transform="translate(-0.37797619,-16.630952)"
-       id="a6154">
+       id="a6154"
+       transform="translate(-0.37797619,-16.630952)">
       <text
          id="text1024"
          y="87.523804"
@@ -2413,7 +2413,7 @@
            y="87.523804"
            x="90.802567"
            id="tspan1022"
-           sodipodi:role="line">Virtual </tspan><tspan
+           sodipodi:role="line">Simulated </tspan><tspan
            style="font-size:7.76111126px;text-align:center;text-anchor:middle;stroke-width:0.26458332px"
            y="94.795403"
            x="89.567154"
@@ -6252,8 +6252,8 @@
       </a>
       <a
          xlink:href="scenario.html#configuring-simgrid"
-         transform="translate(-0.52916667)"
-         id="a6149">
+         id="a6149"
+         transform="translate(-0.52916667)">
         <text
            xml:space="preserve"
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.29166698px;line-height:6.61458349px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"

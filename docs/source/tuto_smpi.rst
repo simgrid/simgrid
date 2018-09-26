@@ -54,7 +54,7 @@ To start using SMPI, you just need to compile your application with
 ``mpiff``, or with ``smpicxx`` instead of ``mpicxx``. Then, the only
 difference between the classical ``mpirun`` and the new ``smpirun`` is
 that it requires a new parameter ``-platform`` with a file describing
-the virtual platform on which your application shall run.
+the simulated platform on which your application shall run.
 
 Internally, all ranks of your application are executed as threads of a
 single unix process. That's not a problem if your application has
@@ -73,7 +73,7 @@ Describing Your Platform
 ------------------------
 
 As a SMPI user, you are supposed to provide a description of your
-virtual platform, that is mostly a set of simulated hosts and network
+simulated platform, that is mostly a set of simulated hosts and network
 links with some performance characteristics. SimGrid provides a plenty
 of :ref:`documentation <platform>` and examples (in the
 `examples/platforms <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms>`_

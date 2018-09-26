@@ -24,7 +24,7 @@ Welcome to SimGrid's documentation!
       Describing your Application <application.rst>
          The S4U Interface <app_s4u.rst>
          The SMPI Interface <app_smpi.rst>
-      Describing the Virtual Platform <platform.rst>
+      Describing the Simulated Platform <platform.rst>
       Describing the Experimental Scenario <scenario.rst>
          Configuring SimGrid <scenar_config.rst>
       The SimGrid Models <models.rst>
