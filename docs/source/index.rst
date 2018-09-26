@@ -39,9 +39,3 @@ Welcome to SimGrid's documentation!
    :caption: API Reference:
 
 	     API <api/library_root.rst>
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`search`
