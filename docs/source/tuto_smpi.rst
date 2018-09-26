@@ -3,6 +3,11 @@
 Simulating MPI Applications
 ===========================
 
+.. warning:: This document is still in early stage. You can try to
+   take this tutorial, but should not be surprised if things fall short.
+   It will be completed for the next release, v3.22, released by the end
+   of 2018.
+
 Discover SMPI
 -------------
 
