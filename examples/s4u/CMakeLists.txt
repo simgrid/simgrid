@@ -4,16 +4,15 @@ foreach (example actor-create actor-daemon actor-join actor-kill
                  actor-lifetime actor-migration actor-suspend actor-yield
                  app-chainsend app-pingpong app-token-ring
                  async-ready async-wait async-waitany async-waitall async-waituntil
-                 barrier
                  cloud-capping cloud-migration cloud-simple
                  energy-exec energy-boot energy-link energy-vm
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-monitor exec-ptask exec-remote
                  io-async io-file-system io-file-remote io-storage-raw
-                 mutex
                  platform-failures platform-properties plugin-hostload 
                  replay-comm replay-storage
                  routing-get-clusters
+                 synchro-barrier synchro-mutex
                  trace-platform)
   add_executable       (s4u-${example}  ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example}  simgrid)
@@ -101,16 +100,16 @@ foreach(example actor-create actor-daemon actor-join actor-kill
                 actor-lifetime actor-migration actor-suspend actor-yield
                 app-bittorrent app-chainsend app-masterworkers app-pingpong app-token-ring 
                 async-ready async-wait async-waitall async-waitany async-waituntil
-                barrier
                 cloud-capping cloud-migration cloud-simple
                 dht-chord dht-kademlia
                 energy-exec energy-boot energy-link energy-vm
                 engine-filtering
                 exec-async exec-basic exec-dvfs exec-monitor exec-ptask exec-remote
-                platform-properties plugin-hostload mutex # FIXME: platform-failures is disabled
+                platform-properties plugin-hostload # FIXME: platform-failures is disabled
                 io-async io-file-system io-file-remote io-storage-raw
                 replay-comm replay-storage
                 routing-get-clusters
+                synchro-barrier synchro-mutex
                 )
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" 
                                     --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
