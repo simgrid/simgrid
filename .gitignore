@@ -183,13 +183,14 @@ examples/s4u/io-async/s4u-io-async
 examples/s4u/io-file-remote/s4u-io-file-remote
 examples/s4u/io-file-system/s4u-io-file-system
 examples/s4u/io-storage-raw/s4u-io-storage-raw
-examples/s4u/mutex/s4u-mutex
 examples/s4u/platform-failures/s4u-platform-failures
 examples/s4u/platform-properties/s4u-platform-properties
 examples/s4u/plugin-hostload/s4u-plugin-hostload
 examples/s4u/replay-comm/s4u-replay-comm
 examples/s4u/replay-storage/s4u-replay-storage
 examples/s4u/routing-get-clusters/s4u-routing-get-clusters
+examples/s4u/synchro-barrier/s4u-synchro-barrier
+examples/s4u/synchro-mutex/s4u-synchro-mutex
 examples/s4u/trace-platform/s4u-trace-platform
 examples/simdag/availability/sd_availability
 examples/simdag/dag-dotload/sd_dag-dotload
