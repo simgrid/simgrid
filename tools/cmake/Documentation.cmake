@@ -132,9 +132,9 @@ add_custom_target(manpages ALL
 install(FILES
   ${MANPAGE_DIR}/simgrid_update_xml.1
   ${MANPAGE_DIR}/tesh.1
-  ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpicc.1
-  ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpicxx.1
-  ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpif90.1
-  ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpiff.1
-  ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpirun.1
+  ${CMAKE_HOME_DIRECTORY}/docs/manpages/smpicc.1
+  ${CMAKE_HOME_DIRECTORY}/docs/manpages/smpicxx.1
+  ${CMAKE_HOME_DIRECTORY}/docs/manpages/smpif90.1
+  ${CMAKE_HOME_DIRECTORY}/docs/manpages/smpiff.1
+  ${CMAKE_HOME_DIRECTORY}/docs/manpages/smpirun.1
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/man/man1)

@@ -857,20 +857,6 @@ endif()
 set(DOC_SOURCES
   doc/Doxyfile.in
   doc/Layout.xml
-  doc/graphical-toc.svg
-  doc/sg_thread_model.fig
-  doc/simix.fig
-  doc/surf_nutshell.fig
-  doc/surf++.png
-  doc/surf++.pdf
-  doc/surf++.graphml
-  doc/surf++.uml
-  doc/triva-graph_configuration.png
-  doc/triva-graph_configuration.svg
-  doc/triva-graph_visualization.png
-  doc/triva-graph_visualization.svg
-  doc/triva-time_interval.png
-  doc/triva-time_interval.svg
 
   doc/doxygen/FAQ.doc
   doc/doxygen/community.doc
@@ -905,12 +891,12 @@ set(DOC_SOURCES
   doc/doxygen/uhood_switch.doc
   doc/doxygen/uhood_arch.doc
 
-  doc/manpage/smpicc.1
-  doc/manpage/smpicxx.1
-  doc/manpage/smpif90.1
-  doc/manpage/smpiff.1
-  doc/manpage/smpirun.1
-  doc/manpage/tesh.pod
+  docs/manpages/smpicc.1
+  docs/manpages/smpicxx.1
+  docs/manpages/smpif90.1
+  docs/manpages/smpiff.1
+  docs/manpages/smpirun.1
+  docs/manpages/tesh.pod
 
   docs/Build.sh
   docs/requirements.txt
@@ -991,8 +977,6 @@ set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.gif
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win.bmp
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win_2011.bmp
   )
 
 set(bin_files
