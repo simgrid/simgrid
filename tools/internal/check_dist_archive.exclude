@@ -36,4 +36,3 @@
 + src/simix/simix_network\.tla
 + src/smpi/BUGS
 
-+ teshsuite/smpi/mpich3-test/f77/attr/.*
