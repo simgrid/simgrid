@@ -126,7 +126,7 @@ endif()
 add_custom_target(manpages ALL
   COMMAND ${CMAKE_COMMAND} -E make_directory ${MANPAGE_DIR}
   COMMAND pod2man ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl > ${MANPAGE_DIR}/simgrid_update_xml.1
-  COMMAND pod2man ${CMAKE_HOME_DIRECTORY}/doc/manpage/tesh.pod > ${MANPAGE_DIR}/tesh.1
+  COMMAND pod2man ${CMAKE_HOME_DIRECTORY}/docs/manpages/tesh.pod > ${MANPAGE_DIR}/tesh.1
   COMMENT "Generating manpages"
   )
 install(FILES
