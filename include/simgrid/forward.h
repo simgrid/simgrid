@@ -74,6 +74,13 @@ typedef boost::intrusive_ptr<Mutex> MutexPtr;
 class NetZone;
 class VirtualMachine;
 class File;
+
+class Semaphore;
+/** Smart pointer to a simgrid::s4u::Semaphore */
+typedef boost::intrusive_ptr<Semaphore> SemaphorePtr;
+XBT_PUBLIC void intrusive_ptr_release(Semaphore* m);
+XBT_PUBLIC void intrusive_ptr_add_ref(Semaphore* m);
+
 class Storage;
 } // namespace s4u
 

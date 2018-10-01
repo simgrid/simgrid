@@ -18,6 +18,7 @@
 #include <simgrid/s4u/Mailbox.hpp>
 #include <simgrid/s4u/Mutex.hpp>
 #include <simgrid/s4u/NetZone.hpp>
+#include <simgrid/s4u/Semaphore.hpp>
 #include <simgrid/s4u/Storage.hpp>
 
 #include <simgrid/Exception.hpp>
