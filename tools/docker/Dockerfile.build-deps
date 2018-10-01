@@ -14,5 +14,5 @@ RUN apt update && \
        chrpath \
        libdw-dev libevent-dev libunwind8-dev \
        && \
-    pip3 install breathe exhale sphinx>=1.8.0b1 sphinx_rtd_theme
+    pip3 install breathe javasphinx sphinx>=1.8.0b1 sphinx_rtd_theme
 		   
