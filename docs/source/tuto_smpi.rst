@@ -214,14 +214,28 @@ Dragonfly Cluster
 This topology was introduced to further reduce the amount of links
 while maintaining a high bandwidth for local communications. To model
 this in SimGrid, pass a ``topology="DRAGONFLY"`` attribute to your
-cluster.
+cluster. It's based on the implementation of the topology used on 
+Cray XC systems, described in paper
+``Cray Cascade: A scalable HPC system based on a Dragonfly network`` :
+
+System description follows the format ``topo_parameters=#groups;#chassis;#routers;#nodes``
+
+For example, ``3,4 ; 3,2 ; 3,1 ; 2``:
+
+- ``3,4``: There are 3 groups with 4 links between each (blue level).
+  Links to nth group are attached to the nth router of the group 
+  on our implementation.
+- ``3,2``: In each group, there are 3 chassis with 2 links between each nth router
+  of each group (black level)
+- ``3,1``: In each chassis, 3 routers are connected together with a single link
+  (green level)
+- ``2``: Each router has two nodes attached (single link) 
+
+.. image:: ../../examples/platforms/cluster_dragonfly.svg
+   :align: center
 
 .. literalinclude:: ../../examples/platforms/cluster_dragonfly.xml
    :language: xml
-
-.. todo::
-
-   Add the image, and the documuentation of the topo_parameters.
 
 Final Word
 ..........
