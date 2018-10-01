@@ -4,7 +4,7 @@ pages:
   script:
   - pip3 install --requirement docs/requirements.txt 
   - cd docs
-  - ./Build.sh
+  - LC_ALL=C.UTF-8 ./Build.sh
   - mv build/html ../public
   artifacts:
     paths:
