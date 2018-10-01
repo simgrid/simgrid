@@ -1,0 +1,109 @@
+#!/usr/bin/env tesh
+
+$ $SG_TEST_EXENV ${bindir:=.}/s4u-synchro-semaphore 1
+> [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Spawning 1 workers
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Count is 0
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Count is now 1. Process count is 1.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Releasing the semaphore 0 times.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Bye!
+
+$ $SG_TEST_EXENV ${bindir:=.}/s4u-synchro-semaphore 2
+> [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Spawning 2 workers
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Count is 0
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Count is now 1. Process count is 2.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Acquiring semaphore.
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Count is 1
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Count is now 2. Process count is 2.
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Releasing the semaphore 1 times.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Bye!
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Bye!
+
+$ $SG_TEST_EXENV ${bindir:=.}/s4u-synchro-semaphore 3
+> [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Spawning 3 workers
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Count is 0
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Count is now 1. Process count is 3.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Acquiring semaphore.
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Count is 1
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Count is now 2. Process count is 3.
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Acquiring semaphore.
+> [Jupiter:worker:(4) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(4) 0.000000] [s4u_test/INFO] Count is 2
+> [Jupiter:worker:(4) 0.000000] [s4u_test/INFO] Count is now 3. Process count is 3.
+> [Jupiter:worker:(4) 0.000000] [s4u_test/INFO] Releasing the semaphore 2 times.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Bye!
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Bye!
+> [Jupiter:worker:(4) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(4) 0.000000] [s4u_test/INFO] Bye!
+
+$ $SG_TEST_EXENV ${bindir:=.}/s4u-synchro-semaphore 10
+> [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Spawning 10 workers
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Count is 0
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Count is now 1. Process count is 10.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Acquiring semaphore.
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Count is 1
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Count is now 2. Process count is 10.
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Acquiring semaphore.
+> [Jupiter:worker:(4) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(4) 0.000000] [s4u_test/INFO] Count is 2
+> [Jupiter:worker:(4) 0.000000] [s4u_test/INFO] Count is now 3. Process count is 10.
+> [Jupiter:worker:(4) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(4) 0.000000] [s4u_test/INFO] Acquiring semaphore.
+> [Jupiter:worker:(5) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(5) 0.000000] [s4u_test/INFO] Count is 3
+> [Jupiter:worker:(5) 0.000000] [s4u_test/INFO] Count is now 4. Process count is 10.
+> [Jupiter:worker:(5) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(5) 0.000000] [s4u_test/INFO] Acquiring semaphore.
+> [Jupiter:worker:(6) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(6) 0.000000] [s4u_test/INFO] Count is 4
+> [Jupiter:worker:(6) 0.000000] [s4u_test/INFO] Count is now 5. Process count is 10.
+> [Jupiter:worker:(6) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(6) 0.000000] [s4u_test/INFO] Acquiring semaphore.
+> [Jupiter:worker:(7) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(7) 0.000000] [s4u_test/INFO] Count is 5
+> [Jupiter:worker:(7) 0.000000] [s4u_test/INFO] Count is now 6. Process count is 10.
+> [Jupiter:worker:(7) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(7) 0.000000] [s4u_test/INFO] Acquiring semaphore.
+> [Jupiter:worker:(8) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(8) 0.000000] [s4u_test/INFO] Count is 6
+> [Jupiter:worker:(8) 0.000000] [s4u_test/INFO] Count is now 7. Process count is 10.
+> [Jupiter:worker:(8) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(8) 0.000000] [s4u_test/INFO] Acquiring semaphore.
+> [Jupiter:worker:(9) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(9) 0.000000] [s4u_test/INFO] Count is 7
+> [Jupiter:worker:(9) 0.000000] [s4u_test/INFO] Count is now 8. Process count is 10.
+> [Jupiter:worker:(9) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(9) 0.000000] [s4u_test/INFO] Acquiring semaphore.
+> [Jupiter:worker:(10) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(10) 0.000000] [s4u_test/INFO] Count is 8
+> [Jupiter:worker:(10) 0.000000] [s4u_test/INFO] Count is now 9. Process count is 10.
+> [Jupiter:worker:(10) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(10) 0.000000] [s4u_test/INFO] Acquiring semaphore.
+> [Jupiter:worker:(11) 0.000000] [s4u_test/INFO] Got mutex. Incrementing count.
+> [Jupiter:worker:(11) 0.000000] [s4u_test/INFO] Count is 9
+> [Jupiter:worker:(11) 0.000000] [s4u_test/INFO] Count is now 10. Process count is 10.
+> [Jupiter:worker:(11) 0.000000] [s4u_test/INFO] Releasing the semaphore 9 times.
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Bye!
+> [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Bye!
+> [Jupiter:worker:(4) 0.000000] [s4u_test/INFO] Bye!
+> [Jupiter:worker:(5) 0.000000] [s4u_test/INFO] Bye!
+> [Jupiter:worker:(6) 0.000000] [s4u_test/INFO] Bye!
+> [Jupiter:worker:(7) 0.000000] [s4u_test/INFO] Bye!
+> [Jupiter:worker:(8) 0.000000] [s4u_test/INFO] Bye!
+> [Jupiter:worker:(9) 0.000000] [s4u_test/INFO] Bye!
+> [Jupiter:worker:(10) 0.000000] [s4u_test/INFO] Bye!
+> [Jupiter:worker:(11) 0.000000] [s4u_test/INFO] Releasing mutex.
+> [Jupiter:worker:(11) 0.000000] [s4u_test/INFO] Bye!
