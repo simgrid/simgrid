@@ -12,6 +12,10 @@ Documentation:
    a git repository to fork as a starting point, and a docker image)
  - Started but not finished a SMPI tutorial inspired from the JLPC'14 one.
  - The Developper manual is still to be converted (not compiled until then)
+ - Some parts are still missing in this conversion (such as the
+   platform and deployment sections) while others were blindly converted
+   and would need more love (such as the configuration flags). 
+   Things will certainly further improve in the future releases.
 
 S4U new features:
  - Fully reimplement auto_restart mechanism that was utterly broken

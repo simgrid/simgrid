@@ -7,7 +7,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \/ |
 
 The Restarting Documentation (TRD) release.
 
- * Overhaul the documentation, and move to Sphinx + RTD.
+ * Start to overhaul the documentation, and move to Sphinx + RTD.
  * Allow dynamic replay of MPI apps, controlled by S4U actors
  * Rewrite the support for auto-restarted actors (was utterly broken)
  * (+ the classical bug fixes and doc improvement)
