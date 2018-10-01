@@ -16,17 +16,26 @@ if [ "x$1" != 'xjava' -a -e source/java ] ; then
 else
   rm -rf source/java
   javasphinx-apidoc --force -o source/java/ ../src/bindings/java/org/simgrid/msg
-  rm source/java/packages.rst # source/java/org/simgrid/msg/package-index.rst
+  mv source/java/packages.rst api_generated/source_java_packages.rst
+  mv source/java/org/simgrid/msg/package-index.rst api_generated/source_java_org_simgrid_msg_package-index.rst
+  for f in source/java/org/simgrid/msg/* ; do
+    # Add the package name to the page titles
+    (echo -n "class org.simgrid.msg."; cat $f )>tmp
+    mv tmp $f
+    sed -i 's/==/========================/' $f # That's the right length knowing that I add 'class org.simgrid.msg.'
+  done
 #  sed -i 's/^.. java:type:: public class /.. java:type:: public class org.simgrid.msg/' source/java/org/simgrid/msg/*
   echo "javasphinx relaunched"
 fi
 
 sphinx-build -M html source build ${SPHINXOPTS}
+
+set +x
+
 cat source/img/graphical-toc.svg \
  | perl -pe 's/(xlink:href="http)/target="_top" $1/' \
  | perl -pe 's/(xlink:href=".*?.html)/target="_top" $1/' \
  > build/html/graphical-toc.svg
-
 
 echo "List of missing references:"
 for f in `(grep '<name>' build/xml/msg_8h.xml; \
