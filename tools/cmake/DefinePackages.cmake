@@ -872,7 +872,6 @@ set(DOC_SOURCES
   doc/doxygen/inside_extending.doc
   doc/doxygen/inside_release.doc
   doc/doxygen/module-sd.doc
-  doc/doxygen/module-simix.doc
   doc/doxygen/module-surf.doc
   doc/doxygen/module-trace.doc
   doc/doxygen/module-xbt.doc

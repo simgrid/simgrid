@@ -100,15 +100,6 @@ in other languages). Until then, please head to @ref platform.
 
 */
 
-/** @defgroup SIMIX_API      SIMIX
-    @brief POSIX-like interface for building simulation
-
-    This is a developer-level interface that should be useful only if you
-    plan to design a new interface for SimGrid.
-*/
-
-
-
 /**
 @defgroup SURF_API SURF
 @brief Internal kernel of all the simulators used in SimGrid, and associated models.
