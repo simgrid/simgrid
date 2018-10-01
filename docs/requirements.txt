@@ -1,5 +1,5 @@
 breathe
-exhale
+javasphinx
 sphinx>=1.8.0
 sphinx_rtd_theme
 

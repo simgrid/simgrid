@@ -52,7 +52,7 @@ extensions = [
     'breathe',
 #    'exhale',
     'hidden_code_block',
-#    'snooze', # must come after exhale
+    'javasphinx',
 ]
 
 todo_include_todos = True

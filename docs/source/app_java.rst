@@ -1,8 +1,7 @@
 .. _Java_doc:
 
-=================
 The Java Bindings
-=================
+#################
 
 .. raw:: html
 
@@ -19,22 +18,22 @@ The Java Bindings
    
 This section describes jMSG, the Java API to Simgrid. This API mimicks 
 :ref:`MSG <MSG_doc>`, which is a simple yet somehow realistic interface.
-<b>The full [javadoc](javadoc/index.html) is available.</b>
+<b>The full reference documentation is provided at the end of this page.</b>
 
 Most of the documentation of the :ref:`MSG API <MSG_doc>` in C applies
 directly to the Java bindings (any divergence is seen as a bug that we
 should fix). MSG structures are mapped to Java objects as expected,
 and the MSG functions are methods in these objects.
 
-How to install the Java bindings
---------------------------------
+Installing the Java bindings
+****************************
 
 The easiest is to use a :ref:`precompiled jarfile <install_java_precompiled>`,
 but some people may prefer to :ref:`compile it from the sources <install_src>`.
 
 
-How to use the Java bindings
-----------------------------
+Using the Java bindings
+***********************
 
 In most cases, you can use the SimGrid bindings as if it was a Java
 library:
@@ -58,7 +57,7 @@ should declare these actors, plus a Main class in charge of deploying
 your actors on the platform. Please refer to the examples for details.
 
 Troubleshooting
----------------
+***************
 
 Actually, these bindings are not only implemented in Java. They do use
 the C implementation of SimGrid. This should be transparent as this
@@ -66,7 +65,7 @@ library is directly included in the ``simgrid.jar`` file but things can
 still go wrong is several ways.
 
 Error: library simgrid not found
-................................
+================================
 
 This means that the JVM fails to load the native library. If you use a
 precompiled jarfile, please report this bug.
@@ -77,13 +76,13 @@ path to the native library into the ``LD_LIBRARY_PATH`` variable (or in
 the ``DYLD_LIBRARY_PATH`` on Mac OSX).
 
 pthread_create failed
-.....................
+=====================
 
 You reached the amount of threads that can be run on your system. Try
 increasing the thread limits of your operating system.
 
 Other errors
-............
+============
 
 When using jMSG, your program can crash for 3 main reasons:
 
@@ -106,3 +105,36 @@ When using jMSG, your program can crash for 3 main reasons:
     the error should be uglier. In that case, you may submit a bug directly to
     SimGrid.
 
+API Reference
+*************
+
+Package org.simgrid.msg
+=======================
+
+.. java:package:: org.simgrid.msg
+
+.. toctree::
+   :maxdepth: 1
+
+   Class org.simgrid.msg.As <java/org/simgrid/msg/As>
+   Class org.simgrid.msg.Comm <java/org/simgrid/msg/Comm>
+   Class org.simgrid.msg.File <java/org/simgrid/msg/File>
+   Class org.simgrid.msg.Host <java/org/simgrid/msg/Host>
+   Class org.simgrid.msg.HostFailureException <java/org/simgrid/msg/HostFailureException>
+   Class org.simgrid.msg.HostNotFoundException <java/org/simgrid/msg/HostNotFoundException>
+   Class org.simgrid.msg.JniException <java/org/simgrid/msg/JniException>
+   Class org.simgrid.msg.Msg <java/org/simgrid/msg/Msg>
+   Class org.simgrid.msg.MsgException <java/org/simgrid/msg/MsgException>
+   Class org.simgrid.msg.Mutex <java/org/simgrid/msg/Mutex>
+   Class org.simgrid.msg.Process <java/org/simgrid/msg/Process>
+   Class org.simgrid.msg.ProcessKilledError <java/org/simgrid/msg/ProcessKilledError>
+   Class org.simgrid.msg.ProcessNotFoundException <java/org/simgrid/msg/ProcessNotFoundException>
+   Class org.simgrid.msg.RngStream <java/org/simgrid/msg/RngStream>
+   Class org.simgrid.msg.Semaphore <java/org/simgrid/msg/Semaphore>
+   Class org.simgrid.msg.Storage <java/org/simgrid/msg/Storage>
+   Class org.simgrid.msg.StorageNotFoundException <java/org/simgrid/msg/StorageNotFoundException>
+   Class org.simgrid.msg.Task <java/org/simgrid/msg/Task>
+   Class org.simgrid.msg.TaskCancelledException <java/org/simgrid/msg/TaskCancelledException>
+   Class org.simgrid.msg.TimeoutException <java/org/simgrid/msg/TimeoutException>
+   Class org.simgrid.msg.TransferFailureException <java/org/simgrid/msg/TransferFailureException>
+   Class org.simgrid.msg.VM <java/org/simgrid/msg/VM>

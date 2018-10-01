@@ -1,7 +1,6 @@
 # What to read
 INPUT                  = ../../include/simgrid/forward.h
 INPUT                 += ../../include/simgrid/s4u
-INPUT                 += ../../include/simgrid/xbt
 INPUT                 += ../../include/simgrid/msg.h
 INPUT                 += ../../src/msg/
 RECURSIVE              = YES

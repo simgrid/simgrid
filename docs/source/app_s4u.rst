@@ -58,9 +58,8 @@ itself in a |NetZone|_, that knows the networking path between one
 resource to another. Each NetZone is included in another one, forming
 a tree of NetZones which root zone contains the whole platform.
 
-The :ref:`simgrid::s4u::this_actor
-<namespace_simgrid__s4u__this_actor>` namespace provides many helper
-functions to simplify the code of actors.
+The :ref:`simgrid::s4u::this_actor <API_s4u_this_actor>` namespace
+provides many helper functions to simplify the code of actors.
 
 - **Global Classes**
 

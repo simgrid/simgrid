@@ -38,3 +38,13 @@ Welcome to SimGrid's documentation!
       The SimGrid Community <community.rst>
       Frequently Asked Questions <faq.rst>
 
+
+
+.. Cheat Sheet on the sublevels
+..
+..   # with overline, for parts
+..   * with overline, for chapters
+..   =, for sections
+..   -, for subsections
+..   ^, for subsubsections
+..   ", for paragraphs
