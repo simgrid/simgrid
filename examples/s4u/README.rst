@@ -214,6 +214,10 @@ Classical synchronization objects
    Shows how to use simgrid::s4u::Barrier synchronization objects.
    |br| `examples/s4u/synchro-barrier/s4u-synchro-barrier.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/synchro-barrier/s4u-synchro-barrier.cpp>`_
 
+ - **Semaphore:**
+   Shows how to use simgrid::s4u::Semaphore synchronization objects.
+   |br| `examples/s4u/synchro-semaphore/s4u-synchro-semaphore.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/synchro-semaphore/s4u-synchro-semaphore.cpp>`_
+
 =============================
 Interacting with the Platform
 =============================

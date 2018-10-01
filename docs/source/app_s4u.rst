@@ -33,28 +33,28 @@ should use the deprecated MSG API instead.
 Main Concepts
 *************
 
-A typical SimGrid simulation is composed of several |Actors|_, that
+A typical SimGrid simulation is composed of several |API_s4u_Actors|_, that
 execute user-provided functions. The actors have to explicitly use the
 S4U interface to express their :ref:`computation <API_s4u_Exec>`,
 :ref:`communication <API_s4u_Comm>`, :ref:`disk usage <API_s4u_Io>`,
-and other |Activities|_, so that they get reflected within the
-simulator. These activities take place on resources such as |Hosts|_,
-|Links|_ and |Storages|_. SimGrid predicts the time taken by each
+and other |API_s4u_Activities|_, so that they get reflected within the
+simulator. These activities take place on resources such as |API_s4u_Hosts|_,
+|API_s4u_Links|_ and |API_s4u_Storages|_. SimGrid predicts the time taken by each
 activity and orchestrates the actors accordingly, waiting for the
 completion of these activities.
 
 
 When **communicating**, data is not directly sent to other actors but
-posted onto a |Mailbox|_ that serves as a rendez-vous point between
+posted onto a |API_s4u_Mailbox|_ that serves as a rendez-vous point between
 communicating actors. This means that you don't need to know who you
 are talking to, you just put your communication `Put` request in a
 mailbox, and it will be matched with a complementary `Get`
 request.  Alternatively, actors can interact through **classical
-synchronization mechanisms** such as |Barrier|_, |Semaphore|_,
-|Mutex|_ and |ConditionVariable|_.
+synchronization mechanisms** such as |API_s4u_Barrier|_, |API_s4u_Semaphore|_,
+|API_s4u_Mutex|_ and |API_s4u_ConditionVariable|_.
 
-Each actor is located on a simulated |Host|_. Each host is located
-itself in a |NetZone|_, that knows the networking path between one
+Each actor is located on a simulated |API_s4u_Host|_. Each host is located
+itself in a |API_s4u_NetZone|_, that knows the networking path between one
 resource to another. Each NetZone is included in another one, forming
 a tree of NetZones which root zone contains the whole platform.
 
@@ -101,41 +101,37 @@ provides many helper functions to simplify the code of actors.
   - :ref:`class s4u::Semaphore <API_s4u_Semaphore>`
 
 
-.. |Actors| replace:: **Actors**
-.. _Actors: api/classsimgrid_1_1s4u_1_1Actor.html
+.. |API_s4u_Actors| replace:: **Actors**
+.. _API_s4u_Actors: #s4u-actor
 
-.. |Activities| replace:: **Activities**
-.. _Activities: api/classsimgrid_1_1s4u_1_1Activity.html
+.. |API_s4u_Activities| replace:: **Activities**
+.. _API_s4u_Activities: #s4u-activity
 
-.. |Hosts| replace:: **Hosts**
-.. _Hosts: api/classsimgrid_1_1s4u_1_1Host.html
+.. |API_s4u_Hosts| replace:: **Hosts**
+.. _API_s4u_Hosts: #s4u-host
 
-.. |Links| replace:: **Links**
-.. _Links: api/classsimgrid_1_1s4u_1_1Link.html
+.. |API_s4u_Links| replace:: **Links**
+.. _API_s4u_Links: #s4u-link
 
-.. |Storages| replace:: **Storages**
-.. _Storages: api/classsimgrid_1_1s4u_1_1Storage.html
+.. |API_s4u_Storages| replace:: **Storages**
+.. _API_s4u_Storages: #s4u-storage
 
-.. |VirtualMachines| replace:: **VirtualMachines**
-.. _VirtualMachines: api/classsimgrid_1_1s4u_1_1VirtualMachine.html
+.. |API_s4u_VirtualMachines| replace:: **VirtualMachines**
+.. _API_s4u_VirtualMachines: #s4u-virtualmachine
 
-.. |Host| replace:: **Host**
-.. _Host: api/classsimgrid_1_1s4u_1_1Host.html
+.. |API_s4u_Host| replace:: **Host**
 
-.. |Mailbox| replace:: **Mailbox**
-.. _Mailbox: api/classsimgrid_1_1s4u_1_1Mailbox.html
+.. |API_s4u_Mailbox| replace:: **Mailbox**
 
-.. |NetZone| replace:: **NetZone**
-.. _NetZone: api/classsimgrid_1_1s4u_1_1NetZone.html
+.. |API_s4u_NetZone| replace:: **NetZone**
 
-.. |Barrier| replace:: **Barrier**
-.. _Barrier: api/classsimgrid_1_1s4u_1_1Barrier.html
+.. |API_s4u_Barrier| replace:: **Barrier**
 
-.. |ConditionVariable| replace:: **ConditionVariable**
-.. _ConditionVariable: api/classsimgrid_1_1s4u_1_1ConditionVariable.html
+.. |API_s4u_Semaphore| replace:: **Semaphore**
 
-.. |Mutex| replace:: **Mutex**
-.. _Mutex: api/classsimgrid_1_1s4u_1_1Mutex.html
+.. |API_s4u_ConditionVariable| replace:: **ConditionVariable**
+
+.. |API_s4u_Mutex| replace:: **Mutex**
 
 .. THE EXAMPLES
 

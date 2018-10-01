@@ -20,6 +20,7 @@ Documentation:
 S4U new features:
  - Fully reimplement auto_restart mechanism that was utterly broken
    (fix #22, #131 and #281 that were all very related)
+ - Implement semaphores (fix #303 and #291)
  - When creating an actor from a function and its parameters,
    move-only parameters are not allowed anymore, as it would prevent
    the actor to be restartable if its parameters are consumed on run.
@@ -77,6 +78,7 @@ Fixed bugs:
  - #288: MPI_Init(NULL, NULL)
  - #289: Improve documentation of Actor::on_destruction and this_actor::on_exit()
  - #290: Method to check if a mailbox has a message ready to be consumed
+ - #291: [s4u] semaphores do not seem available yet
  - #294: Alltoall collective implementation of mpich
  - #295: Starting a Host as OFF is not supported
  - #296: DTD too permissive

@@ -18,7 +18,7 @@ The Java Bindings
    
 This section describes jMSG, the Java API to Simgrid. This API mimicks 
 :ref:`MSG <MSG_doc>`, which is a simple yet somehow realistic interface.
-<b>The full reference documentation is provided at the end of this page.</b>
+The full reference documentation is provided at the end of this page.
 
 Most of the documentation of the :ref:`MSG API <MSG_doc>` in C applies
 directly to the Java bindings (any divergence is seen as a bug that we

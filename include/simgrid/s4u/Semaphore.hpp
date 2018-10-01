@@ -21,8 +21,8 @@ namespace s4u {
  * Instead, you should use the present class, that offers a very similar interface.
  *
  * As for any S4U object, Semaphores are using the @ref s4u_raii "RAII idiom" for memory management.
- * Use createSemaphore() to get a ::SemaphorePtr to a newly created semaphore
- * and only manipulate ::SemaphorePtr.
+ * Use #create() to get a simgrid::s4u::SemaphorePtr to a newly created semaphore
+ * and only manipulate simgrid::s4u::SemaphorePtr.
  *
  */
 class XBT_PUBLIC Semaphore {

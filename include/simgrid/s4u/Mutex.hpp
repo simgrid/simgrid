@@ -23,7 +23,7 @@ namespace s4u {
  * <a href="http://en.cppreference.com/w/cpp/thread/mutex>std::mutex</a>.
  *
  * As for any S4U object, Mutexes are using the @ref s4u_raii "RAII idiom" for memory management.
- * Use createMutex() to get a ::MutexPtr to a newly created mutex and only manipulate ::MutexPtr.
+ * Use create() to get a simgrid::s4u::MutexPtr to a newly created mutex and only manipulate simgrid::s4u::MutexPtr.
  *
  */
 class XBT_PUBLIC Mutex {
