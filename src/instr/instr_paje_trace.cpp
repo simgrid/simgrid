@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "tracing event system")
 
 extern std::ofstream tracing_file;
 
-std::vector<simgrid::instr::PajeEvent*> buffer;
+static std::vector<simgrid::instr::PajeEvent*> buffer;
 
 void dump_comment(std::string comment)
 {
