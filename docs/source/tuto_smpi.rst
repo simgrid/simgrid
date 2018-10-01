@@ -216,10 +216,9 @@ while maintaining a high bandwidth for local communications. To model
 this in SimGrid, pass a ``topology="DRAGONFLY"`` attribute to your
 cluster. It's based on the implementation of the topology used on 
 Cray XC systems, described in paper
-``Cray Cascade: A scalable HPC system based on a Dragonfly network`` :
+`Cray Cascade: A scalable HPC system based on a Dragonfly network <https://dl.acm.org/citation.cfm?id=2389136>`_.
 
 System description follows the format ``topo_parameters=#groups;#chassis;#routers;#nodes``
-
 For example, ``3,4 ; 3,2 ; 3,1 ; 2``:
 
 - ``3,4``: There are 3 groups with 4 links between each (blue level).
