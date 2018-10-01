@@ -16,8 +16,8 @@ if [ "x$1" != 'xjava' -a -e source/java ] ; then
 else
   rm -rf source/java
   javasphinx-apidoc --force -o source/java/ ../src/bindings/java/org/simgrid/msg
-  mv source/java/packages.rst api_generated/source_java_packages.rst
-  mv source/java/org/simgrid/msg/package-index.rst api_generated/source_java_org_simgrid_msg_package-index.rst
+  rm -f source/java/packages.rst # api_generated/source_java_packages.rst
+  rm -f source/java/org/simgrid/msg/package-index.rst # api_generated/source_java_org_simgrid_msg_package-index.rst
   for f in source/java/org/simgrid/msg/* ; do
     # Add the package name to the page titles
     (echo -n "class org.simgrid.msg."; cat $f )>tmp
