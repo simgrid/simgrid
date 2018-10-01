@@ -440,6 +440,7 @@ set(S4U_SRC
   src/s4u/s4u_Mailbox.cpp
   src/s4u/s4u_Mutex.cpp
   src/s4u/s4u_Netzone.cpp
+  src/s4u/s4u_Semaphore.cpp
   src/s4u/s4u_Storage.cpp
 )
 
@@ -707,6 +708,7 @@ set(headers_to_install
   include/simgrid/s4u/Mailbox.hpp
   include/simgrid/s4u/Mutex.hpp
   include/simgrid/s4u/NetZone.hpp
+  include/simgrid/s4u/Semaphore.hpp
   include/simgrid/s4u/Storage.hpp
   include/simgrid/s4u/VirtualMachine.hpp
   include/simgrid/s4u.hpp
