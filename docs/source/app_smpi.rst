@@ -98,6 +98,8 @@ usual.
    smpirun -wrapper valgrind ...other args...
    smpirun -wrapper "gdb --args" --cfg=contexts/factory:thread ...other args...
 
+.. _SMPI_use_colls:
+
 ................................   
 Simulating Collective Operations
 ................................
@@ -492,6 +494,8 @@ in your version of SimGrid, between two lines containing the ``FIXME``
 marker. If you really miss a feature, please get in touch with us: we
 can guide you though the SimGrid code to help you implementing it, and
 we'd be glad to integrate your contribution to the main project.
+
+.. _SMPI_what_globals:
 
 .................................
 Privatization of global variables

@@ -55,15 +55,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
     atexit(MSG_exit);
 }
 
-/** @ingroup msg_simulation
- * @brief set a configuration variable
- *
- * Do --help on any simgrid binary to see the list of currently existing configuration variables, and see Section @ref
- * options.
- *
- * Example:
- * MSG_config("host/model","ptask_L07");
- */
 void MSG_config(const char *key, const char *value){
   xbt_assert(msg_global,"ERROR: Please call MSG_init() before using MSG_config()");
   simgrid::config::set_as_string(key, value);

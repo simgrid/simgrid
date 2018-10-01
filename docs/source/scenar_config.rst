@@ -136,7 +136,7 @@ Existing Configuration Items
 
 - **surf/precision:** :ref:`cfg=surf/precision`
 
-- **For collective operations of SMPI,** please refer to Section :ref:`options_index_smpi_coll`
+- **For collective operations of SMPI,** please refer to Section :ref:`cfg=smpi/coll-selector`
 - **smpi/async-small-thresh:** :ref:`cfg=smpi/async-small-thresh`
 - **smpi/bw-factor:** :ref:`cfg=smpi/bw-factor`
 - **smpi/coll-selector:** :ref:`cfg=smpi/coll-selector`
@@ -170,13 +170,6 @@ Existing Configuration Items
 - **verbose-exit:** :ref:`cfg=verbose-exit`
 
 - **vm/model:** :ref:`options_model_select`
-
-.. _options_index_smpi_coll:
-
-Index of SMPI collective algorithms options
-
-.. TODO:: All available collective algorithms will be made available
-          via the ``smpirun --help-coll`` command.
 
 .. _options_model:
 
@@ -1237,6 +1230,9 @@ default SMPI uses naive version of collective operations).
 Each collective operation can be manually selected with a
 ``smpi/collective_name:algo_name``. Available algorithms are listed in
 :ref:`SMPI_use_colls`.
+
+.. TODO:: All available collective algorithms will be made available
+          via the ``smpirun --help-coll`` command.
 
 .. _cfg=smpi/iprobe:
 

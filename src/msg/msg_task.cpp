@@ -7,14 +7,6 @@
 #include "src/simix/smx_private.hpp"
 #include <algorithm>
 
-/** @addtogroup m_task_management
- *
- *  Since most scheduling algorithms rely on a concept of task  that can be either <em>computed</em> locally or
- *  <em>transferred</em> on another processor, it seems to be the right level of abstraction for our purposes.
- *  A <em>task</em> may then be defined by a <em>computing amount</em>, a <em>message size</em> and
- *  some <em>private data</em>.
- */
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)");
 
 void s_simdata_task_t::reportMultipleUse() const
@@ -32,8 +24,7 @@ void s_simdata_task_t::reportMultipleUse() const
 }
 
 /********************************* Task **************************************/
-/** @ingroup m_task_management
- * @brief Creates a new #msg_task_t.
+/** @brief Creates a new #msg_task_t.
  *
  * A constructor for #msg_task_t taking four arguments and returning the corresponding object.
  * @param name a name for the object. It is for user-level information and can be nullptr.
@@ -65,8 +56,7 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
   return task;
 }
 
-/** @ingroup m_task_management
- * @brief Creates a new #msg_task_t (a parallel one....).
+/** @brief Creates a new #msg_task_t (a parallel one....).
  *
  * A constructor for #msg_task_t taking six arguments and returning the corresponding object.
  * @param name a name for the object. It is for user-level information and can be nullptr.
@@ -105,8 +95,7 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
   return task;
 }
 
-/** @ingroup m_task_management
- * @brief Return the user data of a #msg_task_t.
+/** @brief Return the user data of a #msg_task_t.
  *
  * This function checks whether @a task is a valid pointer and return the user data associated to @a task if possible.
  */
@@ -125,8 +114,7 @@ void MSG_task_set_data(msg_task_t task, void *data)
   task->data = data;
 }
 
-/** @ingroup m_task_management
- * @brief Sets a function to be called when a task has just been copied.
+/** @brief Sets a function to be called when a task has just been copied.
  * @param callback a callback function
  */
 void MSG_task_set_copy_callback(void (*callback) (msg_task_t task, msg_process_t sender, msg_process_t receiver)) {
@@ -140,8 +128,7 @@ void MSG_task_set_copy_callback(void (*callback) (msg_task_t task, msg_process_t
   }
 }
 
-/** @ingroup m_task_management
- * @brief Return the sender of a #msg_task_t.
+/** @brief Return the sender of a #msg_task_t.
  *
  * This functions returns the #msg_process_t which sent this task
  */
@@ -150,8 +137,7 @@ msg_process_t MSG_task_get_sender(msg_task_t task)
   return task->simdata->sender;
 }
 
-/** @ingroup m_task_management
- * @brief Return the source of a #msg_task_t.
+/** @brief Return the source of a #msg_task_t.
  *
  * This functions returns the #msg_host_t from which this task was sent
  */
@@ -160,8 +146,7 @@ msg_host_t MSG_task_get_source(msg_task_t task)
   return task->simdata->source;
 }
 
-/** @ingroup m_task_management
- * @brief Return the name of a #msg_task_t.
+/** @brief Return the name of a #msg_task_t.
  *
  * This functions returns the name of a #msg_task_t as specified on creation
  */
@@ -170,8 +155,7 @@ const char *MSG_task_get_name(msg_task_t task)
   return task->name;
 }
 
-/** @ingroup m_task_management
- * @brief Sets the name of a #msg_task_t.
+/** @brief Sets the name of a #msg_task_t.
  *
  * This functions allows to associate a name to a task
  */
@@ -180,8 +164,7 @@ void MSG_task_set_name(msg_task_t task, const char *name)
   task->name = xbt_strdup(name);
 }
 
-/** @ingroup m_task_management
- * @brief Destroy a #msg_task_t.
+/** @brief Destroy a #msg_task_t.
  *
  * Destructor for #msg_task_t. Note that you should free user data, if any, @b before calling this function.
  *
@@ -208,8 +191,7 @@ msg_error_t MSG_task_destroy(msg_task_t task)
   return MSG_OK;
 }
 
-/** @ingroup m_task_usage
- * @brief Cancel a #msg_task_t.
+/** @brief Cancel a #msg_task_t.
  * @param task the task to cancel. If it was executed or transfered, it stops the process that were working on it.
  */
 msg_error_t MSG_task_cancel(msg_task_t task)
@@ -226,8 +208,7 @@ msg_error_t MSG_task_cancel(msg_task_t task)
   return MSG_OK;
 }
 
-/** @ingroup m_task_management
- * @brief Returns a value in ]0,1[ that represent the task remaining work
+/** @brief Returns a value in ]0,1[ that represent the task remaining work
  *    to do: starts at 1 and goes to 0. Returns 0 if not started or finished.
  *
  * It works for either parallel or sequential tasks.
@@ -244,8 +225,7 @@ double MSG_task_get_remaining_work_ratio(msg_task_t task) {
   }
 }
 
-/** @ingroup m_task_management
- * @brief Returns the amount of flops that remain to be computed
+/** @brief Returns the amount of flops that remain to be computed
  *
  * The returned value is initially the cost that you defined for the task, then it decreases until it reaches 0
  *
@@ -263,8 +243,7 @@ double MSG_task_get_flops_amount(msg_task_t task) {
   }
 }
 
-/** @ingroup m_task_management
- * @brief set the computation amount needed to process a task #msg_task_t.
+/** @brief set the computation amount needed to process a task #msg_task_t.
  *
  * @warning If the computation is ongoing (already started and not finished),
  * it is not modified by this call. Moreover, after its completion, the ongoing execution with set the flops_amount to
@@ -275,8 +254,7 @@ void MSG_task_set_flops_amount(msg_task_t task, double flops_amount)
   task->simdata->flops_amount = flops_amount;
 }
 
-/** @ingroup m_task_management
- * @brief set the amount data attached with a task #msg_task_t.
+/** @brief set the amount data attached with a task #msg_task_t.
  *
  * @warning If the transfer is ongoing (already started and not finished), it is not modified by this call.
  */
@@ -285,8 +263,7 @@ void MSG_task_set_bytes_amount(msg_task_t task, double data_size)
   task->simdata->bytes_amount = data_size;
 }
 
-/** @ingroup m_task_management
- * @brief Returns the total amount received by a task #msg_task_t.
+/** @brief Returns the total amount received by a task #msg_task_t.
  *        If the communication does not exist it will return 0.
  *        So, if the communication has FINISHED or FAILED it returns zero.
  */
@@ -296,8 +273,7 @@ double MSG_task_get_remaining_communication(msg_task_t task)
   return task->simdata->comm->remains();
 }
 
-/** @ingroup m_task_management
- * @brief Returns the size of the data attached to a task #msg_task_t.
+/** @brief Returns the size of the data attached to a task #msg_task_t.
  */
 double MSG_task_get_bytes_amount(msg_task_t task)
 {
@@ -305,8 +281,7 @@ double MSG_task_get_bytes_amount(msg_task_t task)
   return task->simdata->bytes_amount;
 }
 
-/** @ingroup m_task_management
- * @brief Changes the priority of a computation task. This priority doesn't affect the transfer rate. A priority of 2
+/** @brief Changes the priority of a computation task. This priority doesn't affect the transfer rate. A priority of 2
  *        will make a task receive two times more cpu power than the other ones.
  */
 void MSG_task_set_priority(msg_task_t task, double priority)
@@ -316,8 +291,7 @@ void MSG_task_set_priority(msg_task_t task, double priority)
     simcall_execution_set_priority(task->simdata->compute, task->simdata->priority);
 }
 
-/** @ingroup m_task_management
- * @brief Changes the maximum CPU utilization of a computation task.
+/** @brief Changes the maximum CPU utilization of a computation task.
  *        Unit is flops/s.
  *
  * For VMs, there is a pitfall. Please see MSG_vm_set_bound().

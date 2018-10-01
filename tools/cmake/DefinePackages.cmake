@@ -871,8 +871,6 @@ set(DOC_SOURCES
   doc/doxygen/inside_doxygen.doc
   doc/doxygen/inside_extending.doc
   doc/doxygen/inside_release.doc
-  doc/doxygen/java.doc
-  doc/doxygen/module-msg.doc
   doc/doxygen/module-sd.doc
   doc/doxygen/module-simix.doc
   doc/doxygen/module-surf.doc
@@ -911,7 +909,10 @@ set(DOC_SOURCES
   docs/source/img/smpi_simgrid_alltoall_pair_16.png
   docs/source/img/smpi_simgrid_alltoall_ring_16.png
 
+  docs/ignored_symbols
   docs/source/application.rst
+  docs/source/app_java.rst
+  docs/source/app_msg.rst
   docs/source/app_s4u.rst
   docs/source/app_smpi.rst
   docs/source/index.rst

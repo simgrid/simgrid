@@ -13,7 +13,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg, "Logging specific to MSG (gos)");
 
-/** @ingroup msg_task_usage
+/**
  * @brief Executes a task and waits for its termination.
  *
  * This function is used for describing the behavior of a process. It takes only one parameter.
@@ -25,7 +25,7 @@ msg_error_t MSG_task_execute(msg_task_t task)
   return MSG_parallel_task_execute(task);
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Executes a parallel task and waits for its termination.
  *
  * @param task a #msg_task_t to execute on the location on which the process is running.
@@ -98,7 +98,7 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
   return status;
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Sleep for the specified number of seconds
  *
  * Makes the current process sleep until @a time seconds have elapsed.
@@ -130,7 +130,7 @@ msg_error_t MSG_process_sleep(double nb_sec)
   return status;
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Receives a task from a mailbox.
  *
  * This is a blocking function, the execution flow will be blocked until the task is received. See #MSG_task_irecv
@@ -148,7 +148,7 @@ msg_error_t MSG_task_receive(msg_task_t * task, const char *alias)
   return MSG_task_receive_with_timeout(task, alias, -1);
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Receives a task from a mailbox at a given rate.
  *
  * @param task a memory location for storing a #msg_task_t.
@@ -169,7 +169,7 @@ msg_error_t MSG_task_receive_bounded(msg_task_t * task, const char *alias, doubl
   return MSG_task_receive_with_timeout_bounded(task, alias, -1, rate);
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Receives a task from a mailbox with a given timeout.
  *
  * This is a blocking function with a timeout, the execution flow will be blocked until the task is received or the
@@ -189,7 +189,7 @@ msg_error_t MSG_task_receive_with_timeout(msg_task_t * task, const char *alias, 
   return MSG_task_receive_ext(task, alias, timeout, nullptr);
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Receives a task from a mailbox with a given timeout and at a given rate.
  *
  * @param task a memory location for storing a #msg_task_t.
@@ -211,7 +211,7 @@ msg_error_t MSG_task_receive_with_timeout_bounded(msg_task_t * task, const char 
   return MSG_task_receive_ext_bounded(task, alias, timeout, nullptr, rate);
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Receives a task from a mailbox from a specific host with a given timeout.
  *
  * This is a blocking function with a timeout, the execution flow will be blocked until the task is received or the
@@ -233,7 +233,7 @@ msg_error_t MSG_task_receive_ext(msg_task_t * task, const char *alias, double ti
   return MSG_task_receive_ext_bounded(task, alias, timeout, host, -1.0);
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Receives a task from a mailbox from a specific host with a given timeout  and at a given rate.
  *
  * @param task a memory location for storing a #msg_task_t.
@@ -333,7 +333,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* al
   return comm;
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Sends a task on a mailbox.
  *
  * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test() to end the communication.
@@ -347,7 +347,7 @@ msg_comm_t MSG_task_isend(msg_task_t task, const char *alias)
   return MSG_task_isend_internal(task, alias, nullptr, 0);
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Sends a task on a mailbox with a maximum rate
  *
  * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test() to end the communication. The maxrate
@@ -364,7 +364,7 @@ msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double max
   return MSG_task_isend_internal(task, alias, nullptr, 0);
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Sends a task on a mailbox.
  *
  * This is a non blocking detached send function.
@@ -385,7 +385,7 @@ void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
   xbt_assert(comm == nullptr);
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Sends a task on a mailbox with a maximal rate.
  *
  * This is a non blocking detached send function.
@@ -414,7 +414,7 @@ void MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t c
   MSG_task_dsend(task, alias, cleanup);
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Starts listening for receiving a task from an asynchronous communication.
  *
  * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test() to end the communication.
@@ -428,7 +428,7 @@ msg_comm_t MSG_task_irecv(msg_task_t *task, const char *name)
   return MSG_task_irecv_bounded(task, name, -1.0);
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Starts listening for receiving a task from an asynchronous communication at a given rate.
  *
  * The rate parameter can be used to receive a task with a limited
@@ -460,7 +460,7 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
   return comm;
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Checks whether a communication is done, and if yes, finalizes it.
  * @param comm the communication to test
  * @return 'true' if the communication is finished
@@ -494,7 +494,7 @@ int MSG_comm_test(msg_comm_t comm)
   return finished;
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief This function checks if a communication is finished.
  * @param comms a vector of communications
  * @return the position of the finished communication if any
@@ -546,17 +546,13 @@ int MSG_comm_testany(xbt_dynar_t comms)
   return finished_index;
 }
 
-/** @ingroup msg_task_usage
- * @brief Destroys a communication.
- * @param comm the communication to destroy.
- */
+/** @brief Destroys the provided communication. */
 void MSG_comm_destroy(msg_comm_t comm)
 {
   delete comm;
 }
 
-/** @ingroup msg_task_usage
- * @brief Wait for the completion of a communication.
+/** @brief Wait for the completion of a communication.
  *
  * It takes two parameters.
  * @param comm the communication to wait.
@@ -588,8 +584,7 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
   return comm->status;
 }
 
-/** @ingroup msg_task_usage
- * @brief This function is called by a sender and permit to wait for each communication
+/** @brief This function is called by a sender and permit to wait for each communication
  *
  * @param comm a vector of communication
  * @param nb_elem is the size of the comm vector
@@ -601,8 +596,7 @@ void MSG_comm_waitall(msg_comm_t * comm, int nb_elem, double timeout)
     MSG_comm_wait(comm[i], timeout);
 }
 
-/** @ingroup msg_task_usage
- * @brief This function waits for the first communication finished in a list.
+/** @brief This function waits for the first communication finished in a list.
  * @param comms a vector of communications
  * @return the position of the first finished communication
  * (but it may have failed, use MSG_comm_get_status() to know its status)
@@ -654,7 +648,6 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 }
 
 /**
- * @ingroup msg_task_usage
  * @brief Returns the error (if any) that occurred during a finished communication.
  * @param comm a finished communication
  * @return the status of the communication, or #MSG_OK if no error occurred
@@ -665,8 +658,7 @@ msg_error_t MSG_comm_get_status(msg_comm_t comm) {
   return comm->status;
 }
 
-/** @ingroup msg_task_usage
- * @brief Get a task (#msg_task_t) from a communication
+/** @brief Get a task (#msg_task_t) from a communication
  *
  * @param comm the communication where to get the task
  * @return the task from the communication
@@ -698,7 +690,7 @@ void MSG_comm_copy_data_from_SIMIX(smx_activity_t synchro, void* buff, size_t bu
   }
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Sends a task to a mailbox
  *
  * This is a blocking function, the execution flow will be blocked until the task is sent (and received on the other
@@ -717,7 +709,7 @@ msg_error_t MSG_task_send(msg_task_t task, const char *alias)
   return MSG_task_send_with_timeout(task, alias, -1);
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Sends a task to a mailbox with a maximum rate
  *
  * This is a blocking function, the execution flow will be blocked until the task is sent. The maxrate parameter allows
@@ -741,7 +733,7 @@ msg_error_t MSG_task_send_bounded(msg_task_t task, const char *alias, double max
   return MSG_task_send(task, alias);
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Sends a task to a mailbox with a timeout
  *
  * This is a blocking function, the execution flow will be blocked until the task is sent or the timeout is achieved.
@@ -804,7 +796,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   return ret;
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Sends a task to a mailbox with a timeout and with a maximum rate
  *
  * This is a blocking function, the execution flow will be blocked until the task is sent or the timeout is achieved.
@@ -828,7 +820,7 @@ msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alia
   return MSG_task_send_with_timeout(task, alias, timeout);
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Look if there is a communication on a mailbox and return the PID of the sender process.
  *
  * @param alias the name of the mailbox to be considered
@@ -848,7 +840,7 @@ int MSG_task_listen_from(const char *alias)
   return MSG_process_get_PID(static_cast<msg_task_t>(comm->src_buff)->simdata->sender);
 }
 
-/** @ingroup msg_task_usage
+/**
  * @brief Sets the tracing category of a task.
  *
  * This function should be called after the creation of a MSG task, to define the category of that task. The
@@ -868,8 +860,7 @@ void MSG_task_set_category (msg_task_t task, const char *category)
   TRACE_msg_set_task_category (task, category);
 }
 
-/** @ingroup msg_task_usage
- *
+/**
  * @brief Gets the current tracing category of a task.
  *
  * @param task the task to be considered

@@ -50,8 +50,9 @@ release = u'3.21'
 extensions = [
     'sphinx.ext.todo',
     'breathe',
-    'exhale',
+#    'exhale',
     'hidden_code_block',
+#    'snooze', # must come after exhale
 ]
 
 todo_include_todos = True

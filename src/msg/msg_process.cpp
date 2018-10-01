@@ -50,20 +50,17 @@ smx_actor_t MSG_process_create_from_SIMIX(std::string name, simgrid::simix::Acto
   return p == nullptr ? nullptr : p->get_impl();
 }
 
-/** @ingroup m_process_management
- * @brief Creates and runs a new #msg_process_t.
+/** @brief Creates and runs a new #msg_process_t.
  *
  * Does exactly the same as #MSG_process_create_with_arguments but without providing standard arguments
  * (@a argc, @a argv, @a start_time, @a kill_time).
- * @sa MSG_process_create_with_arguments
  */
 msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *data, msg_host_t host)
 {
   return MSG_process_create_with_environment(name == nullptr ? "" : name, code, data, host, 0, nullptr, nullptr);
 }
 
-/** @ingroup m_process_management
- * @brief Creates and runs a new #msg_process_t.
+/** @brief Creates and runs a new #msg_process_t.
 
  * A constructor for #msg_process_t taking four arguments and returning the corresponding object. The structure (and
  * the corresponding thread) is created, and put in the list of ready process.
@@ -78,8 +75,6 @@ msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *d
  * @param host the location where the new process is executed.
  * @param argc first argument passed to @a code
  * @param argv second argument passed to @a code
- * @see msg_process_t
- * @return The new corresponding object.
  */
 
 msg_process_t MSG_process_create_with_arguments(const char *name, xbt_main_func_t code, void *data, msg_host_t host,

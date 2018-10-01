@@ -21,9 +21,14 @@ Welcome to SimGrid's documentation!
    :caption: User Manual:
 
       Introduction <introduction.rst>
+         Main Concepts <intro_concepts.rst>
+         Installing SimGrid <intro_install.rst>
+         Start your Own Project <intro_yours.rst>
       Describing your Application <application.rst>
          The S4U Interface <app_s4u.rst>
          The SMPI Interface <app_smpi.rst>
+         The MSG Interface <app_msg.rst>
+         The Java Bindings <app_java.rst>
       Describing the Simulated Platform <platform.rst>
       Describing the Experimental Scenario <scenario.rst>
          Configuring SimGrid <scenar_config.rst>
@@ -33,9 +38,3 @@ Welcome to SimGrid's documentation!
       The SimGrid Community <community.rst>
       Frequently Asked Questions <faq.rst>
 
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-   :caption: API Reference:
-
-	     API <api/library_root.rst>

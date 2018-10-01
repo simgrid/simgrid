@@ -1,8 +1,7 @@
 .. _S4U_doc:
 
-=================
 The S4U Interface
-=================
+#################
 
 .. raw:: html
 
@@ -31,16 +30,13 @@ the old symbols.
 If you want an API that will never ever evolve in the future, you
 should use the deprecated MSG API instead. 
 
--------------
 Main Concepts
--------------
+*************
 
 A typical SimGrid simulation is composed of several |Actors|_, that
 execute user-provided functions. The actors have to explicitly use the
-S4U interface to express their
-:ref:`computation <exhale_class_classsimgrid_1_1s4u_1_1Exec>`,
-:ref:`communication <exhale_class_classsimgrid_1_1s4u_1_1Comm>`,
-:ref:`disk usage <exhale_class_classsimgrid_1_1s4u_1_1Io>`,
+S4U interface to express their :ref:`computation <API_s4u_Exec>`,
+:ref:`communication <API_s4u_Comm>`, :ref:`disk usage <API_s4u_Io>`,
 and other |Activities|_, so that they get reflected within the
 simulator. These activities take place on resources such as |Hosts|_,
 |Links|_ and |Storages|_. SimGrid predicts the time taken by each
@@ -68,42 +64,42 @@ functions to simplify the code of actors.
 
 - **Global Classes**
 
-  - :ref:`class s4u::Actor <exhale_class_classsimgrid_1_1s4u_1_1Actor>`:
+  - :ref:`class s4u::Actor <API_s4u_Actor>`:
     Active entities executing your application.
-  - :ref:`class s4u::Engine <exhale_class_classsimgrid_1_1s4u_1_1Engine>`
+  - :ref:`class s4u::Engine <API_s4u_Engine>`
     Simulation engine (singleton).
-  - :ref:`class s4u::Mailbox <exhale_class_classsimgrid_1_1s4u_1_1Mailbox>`
+  - :ref:`class s4u::Mailbox <API_s4u_Mailbox>`
     Communication rendez-vous.
 
 - **Platform Elements**
 
-  - :ref:`class s4u::Host <exhale_class_classsimgrid_1_1s4u_1_1Host>`:
+  - :ref:`class s4u::Host <API_s4u_Host>`:
     Actor location, providing computational power.
-  - :ref:`class s4u::Link <exhale_class_classsimgrid_1_1s4u_1_1Link>`
+  - :ref:`class s4u::Link <API_s4u_Link>`
     Interconnecting hosts.
-  - :ref:`class s4u::NetZone <exhale_class_classsimgrid_1_1s4u_1_1NetZone>`:
+  - :ref:`class s4u::NetZone <API_s4u_NetZone>`:
     Sub-region of the platform, containing resources (Hosts, Links, etc).
-  - :ref:`class s4u::Storage <exhale_class_classsimgrid_1_1s4u_1_1Storage>`
+  - :ref:`class s4u::Storage <API_s4u_Storage>`
     Resource on which actors can write and read data.
-  - :ref:`class s4u::VirtualMachine <exhale_class_classsimgrid_1_1s4u_1_1VirtualMachine>`:
+  - :ref:`class s4u::VirtualMachine <API_s4u_VirtualMachine>`:
     Execution containers that can be moved between Hosts.
 
-- **Activities** (:ref:`class s4u::Activity <exhale_class_classsimgrid_1_1s4u_1_1Activity>`):
+- **Activities** (:ref:`class s4u::Activity <API_s4u_Activity>`):
   The things that actors can do on resources
 
-  - :ref:`class s4u::Comm <exhale_class_classsimgrid_1_1s4u_1_1Comm>`
+  - :ref:`class s4u::Comm <API_s4u_Comm>`
     Communication activity, started on Mailboxes and consuming links.
-  - :ref:`class s4u::Exec <exhale_class_classsimgrid_1_1s4u_1_1Exec>`
+  - :ref:`class s4u::Exec <API_s4u_Exec>`
     Computation activity, started on Host and consuming CPU resources.
-  - :ref:`class s4u::Io <exhale_class_classsimgrid_1_1s4u_1_1Io>`
+  - :ref:`class s4u::Io <API_s4u_Io>`
     I/O activity, started on and consumming Storages.
 
 - **Synchronization Mechanisms**: Classical IPC that actors can use
 
-  - :ref:`class s4u::Barrier <exhale_class_classsimgrid_1_1s4u_1_1Barrier>`
-  - :ref:`class s4u::ConditionVariable <exhale_class_classsimgrid_1_1s4u_1_1ConditionVariable>`
-  - :ref:`class s4u::Mutex <exhale_class_classsimgrid_1_1s4u_1_1Mutex>`
-  - :ref:`class s4u::Semaphore <exhale_class_classsimgrid_1_1s4u_1_1Semaphore>`
+  - :ref:`class s4u::Barrier <API_s4u_Barrier>`
+  - :ref:`class s4u::ConditionVariable <API_s4u_ConditionVariable>`
+  - :ref:`class s4u::Mutex <API_s4u_Mutex>`
+  - :ref:`class s4u::Semaphore <API_s4u_Semaphore>`
 
 
 .. |Actors| replace:: **Actors**
@@ -146,18 +142,16 @@ functions to simplify the code of actors.
 
 .. include:: ../../examples/s4u/README.rst
 
-----------
 Activities
-----------
+**********
 
 Activities represent the actions that consume a resource, such as a
-:ref:`s4u::Comm <exhale_class_classsimgrid_1_1s4u_1_1Comm>` that
-consumes the *transmiting power* of :ref:`s4u::Link
-<exhale_class_classsimgrid_1_1s4u_1_1Link>` resources.
+:ref:`s4u::Comm <API_s4u_Comm>` that consumes the *transmiting power* of
+:ref:`s4u::Link <API_s4u_Link>` resources.
 
-.......................
+=======================
 Asynchronous Activities
-.......................
+=======================
 
 Every activity can be either **blocking** or **asynchronous**. For
 example, :cpp:func:`s4u::Mailbox::put() <simgrid::s4u::Mailbox::put>`
@@ -181,13 +175,13 @@ Finally, to wait at most until a specified time limit, use
 
 Every kind of activities can be asynchronous:
 
-  - :ref:`s4u::CommPtr <exhale_class_classsimgrid_1_1s4u_1_1Comm>` are created with 
+  - :ref:`s4u::CommPtr <API_s4u_Comm>` are created with 
     :cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>` and
     :cpp:func:`s4u::Mailbox::get_async() <simgrid::s4u::Mailbox::get_async>`.
-  - :ref:`s4u::IoPtr <exhale_class_classsimgrid_1_1s4u_1_1Io>` are created with 
+  - :ref:`s4u::IoPtr <API_s4u_Io>` are created with 
     :cpp:func:`s4u::Storage::read_async() <simgrid::s4u::Storage::read_async>` and
     :cpp:func:`s4u::Storage::write_async() <simgrid::s4u::Storage::write_async>`.    
-  - :ref:`s4u::ExecPtr <exhale_class_classsimgrid_1_1s4u_1_1Exec>` are created with
+  - :ref:`s4u::ExecPtr <API_s4u_Exec>` are created with
     :cpp:func:`s4u::Host::exec_async() <simgrid::s4u::Host::exec_async>`.
   - In the future, it will become possible to have asynchronous IPC
     such as asynchronous mutex lock requests.
@@ -216,17 +210,16 @@ with
    :dedent: 4
 
 
-.....................
+=====================
 Activities Life cycle
-.....................
+=====================
 
 Sometimes, you want to change the setting of an activity before it even starts. 
 
 .. todo:: write this section
 
------------------
 Memory Management
------------------
+*****************
 
 For sake of simplicity, we use `RAII
 <https://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization>`_
@@ -251,3 +244,209 @@ Here is a little example:
      mutex->unlock(); 
   
    } // The mutex gets automatically freed because the only existing reference gets out of scope
+
+API Reference
+*************
+
+.. _API_s4u_Activity:
+
+=============
+s4u::Activity
+=============
+
+.. doxygenclass:: simgrid::s4u::Activity
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Actor:
+
+==========
+s4u::Actor
+==========
+
+.. doxygentypedef:: ActorPtr
+
+.. doxygenclass:: simgrid::s4u::Actor
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Barrier:
+
+============
+s4u::Barrier
+============
+
+.. doxygentypedef:: BarrierPtr
+
+.. doxygenclass:: simgrid::s4u::Barrier
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Comm:
+
+=========
+s4u::Comm
+=========
+
+.. doxygentypedef:: CommPtr
+
+.. doxygenclass:: simgrid::s4u::Comm
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_ConditionVariable:
+
+======================
+s4u::ConditionVariable
+======================
+
+.. doxygentypedef:: ConditionVariablePtr
+
+.. doxygenclass:: simgrid::s4u::ConditionVariable
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Engine:
+
+===========
+s4u::Engine
+===========
+
+.. doxygenclass:: simgrid::s4u::Engine
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Exec:
+
+=========
+s4u::Exec
+=========
+
+.. doxygentypedef:: ExecPtr
+
+.. doxygenclass:: simgrid::s4u::Exec
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Host:
+
+=========
+s4u::Host
+=========
+
+.. doxygenclass:: simgrid::s4u::Host
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Io:
+
+=======
+s4u::Io
+=======
+
+.. doxygentypedef:: IoPtr
+
+.. doxygenclass:: simgrid::s4u::Io
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Link:
+
+=========
+s4u::Link
+=========
+
+.. doxygenclass:: simgrid::s4u::Link
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Mailbox:
+
+============
+s4u::Mailbox
+============
+
+.. doxygentypedef:: MailboxPtr
+
+.. doxygenclass:: simgrid::s4u::Mailbox
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Mutex:
+
+==========
+s4u::Mutex
+==========
+
+.. doxygentypedef:: MutexPtr
+
+.. doxygenclass:: simgrid::s4u::Mutex
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_NetZone:
+
+============
+s4u::NetZone
+============
+
+.. doxygenclass:: simgrid::s4u::NetZone
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Semaphore:
+
+==============
+s4u::Semaphore
+==============
+
+.. doxygentypedef:: SemaphorePtr
+
+.. doxygenclass:: simgrid::s4u::Semaphore
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Storage:
+
+============
+s4u::Storage
+============
+
+.. doxygenclass:: simgrid::s4u::Storage
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_VirtualMachine:
+
+===================
+s4u::VirtualMachine
+===================
+
+.. doxygenclass:: simgrid::s4u::VirtualMachine
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_this_actor:
+
+=========================
+namespace s4u::this_actor
+=========================
+
+
+.. doxygennamespace:: simgrid::s4u::this_actor

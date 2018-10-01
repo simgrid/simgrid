@@ -9,9 +9,8 @@
 .. documentation, but it should remain readable directly.
 
 
-------------
 S4U Examples
-------------
+************
 
 SimGrid comes with an extensive set of examples, documented on this
 page. Most of them only demonstrate one single feature, with some
@@ -28,13 +27,13 @@ A good way to bootstrap your own project is to copy and combine some
 of the provided examples to constitute the skeleton of what you plan
 to simulate.
 
-...........................
+===========================
 Actors: the Active Entities
-...........................
+===========================
 
 
 Starting and Stoping Actors
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------
 
   - **Creating actors:**
     Most actors are started from the deployment XML file, but there is other methods.
@@ -59,7 +58,7 @@ Starting and Stoping Actors
     |br| `examples/s4u/actor-daemon/s4u-actor-daemon.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-daemon/s4u-actor-daemon.cpp>`_
     
 Inter-Actors Interactions
-^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 
   - **Suspend and Resume actors:**    
     Actors can be suspended and resumed during their executions thanks
@@ -84,7 +83,7 @@ Inter-Actors Interactions
     |br| `examples/s4u/actor-yield/s4u-actor-yield.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-yield/s4u-actor-yield.cpp>`_
 
 Traces Replay as a Workload
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------
 
 This section details how to run trace-driven simulations. It is very
 handy when you want to test an algorithm or protocol that only react
@@ -112,12 +111,12 @@ also the tesh files in the example directories for details.
     primitives (open, read, close).
     |br| `examples/s4u/replay-storage/s4u-replay-storage.cpp  <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/replay-storage/s4u-replay-storage.cpp>`_
 
-..........................
+==========================
 Activities: what Actors do
-..........................
+==========================
 
 Communications on the Network
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------
 
  - **Basic asynchronous communications:**
    Illustrates how to have non-blocking communications, that are
@@ -142,7 +141,7 @@ Communications on the Network
 .. todo:: add the `ready` example here
    
 Executions on the CPU
-^^^^^^^^^^^^^^^^^^^^^
+---------------------
 
   - **Basic execution:**
     The computations done in your program are not reported to the
@@ -178,7 +177,7 @@ Executions on the CPU
     |br| `examples/s4u/exec-ptask/s4u-exec-ptask.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-ptask/s4u-exec-ptask.cpp>`_
 
 I/O on Disks and Files
-^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 SimGrid provides two levels of abstraction to interact with the
 simulated storages. At the simplest level, you simply create read and
@@ -205,7 +204,7 @@ result in short reads and short write, as in reality.
     |br| `examples/s4u/io-file-remote/s4u-io-file-remote.cpp  <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/io-file-remote/s4u-io-file-remote.cpp>`_
 
 Classical synchronization objects
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------
 
  - **Mutex:**
    Shows how to use simgrid::s4u::Mutex synchronization objects.
@@ -215,9 +214,9 @@ Classical synchronization objects
    Shows how to use simgrid::s4u::Barrier synchronization objects.
    |br| `examples/s4u/synchro-barrier/s4u-synchro-barrier.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/synchro-barrier/s4u-synchro-barrier.cpp>`_
 
-.............................
-Interacting with the platform
-.............................
+=============================
+Interacting with the Platform
+=============================
 
  - **Retrieving the list of hosts matching a given criteria:**
    Shows how to filter the actors that match a given criteria.
@@ -239,9 +238,9 @@ Interacting with the platform
    |br| `examples/s4u/platform-properties/s4u-platform-properties_d.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/platform-properties/s4u-platform-properties_d.xml>`_
    |br| `examples/platforms/prop.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/prop.xml>`_
 
-.................
+=================
 Energy Simulation
-.................
+=================
 
   - **Describing the energy profiles in the platform:**
     This platform file contains the energy profile of each links and
@@ -266,9 +265,9 @@ Energy Simulation
     |br| `examples/s4u/energy-boot/platform_boot.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/energy-boot/platform_boot.xml>`_
     |br| `examples/s4u/energy-boot/s4u-energy-boot.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/energy-boot/s4u-energy-boot.cpp>`_
 
-.......................
+=======================
 Tracing and Visualizing
-.......................
+=======================
 
 Tracing can be activated by various configuration options which
 are illustrated in these example. See also the 
@@ -283,9 +282,9 @@ options to see the task executions:
     ``--cfg=tracing:yes --cfg=tracing/categorized:yes``
     |br| `examples/s4u/trace-platform/s4u-trace-platform.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/trace-platform/s4u-trace-platform.cpp>`_
 
-........................
+========================
 Larger SimGrid Examplars
-........................
+========================
 
 This section contains application examples that are somewhat larger
 than the previous examples.
@@ -312,7 +311,7 @@ than the previous examples.
     |br| `examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp>`_
     
 Data diffusion
-^^^^^^^^^^^^^^
+--------------
 
   - **Bit Torrent:** 
     Classical protocol for Peer-to-Peer data diffusion.
@@ -323,7 +322,7 @@ Data diffusion
     |br| `examples/s4u/app-chainsend/s4u-app-chainsend.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/app-chainsend/s4u-app-chainsend.cpp>`_
 
 Distributed Hash Tables (DHT)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------
 
   - **Chord Protocol** 
     One of the most famous DHT protocol.

@@ -25,6 +25,8 @@ On Debian or Ubuntu, simply type:
 If you build pre-compiled packages for other distributions, drop us an
 email.
 
+.. _install_java_precompiled:
+
 Stable Java Package
 ^^^^^^^^^^^^^^^^^^^
 
