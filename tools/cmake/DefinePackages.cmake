@@ -1130,6 +1130,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/cluster_torus.xml
   examples/platforms/cluster_torus.svg
   examples/platforms/cluster_dragonfly.xml
+  examples/platforms/cluster_dragonfly.svg
   examples/platforms/crosstraffic.xml
   examples/platforms/optorsim/gridpp_grid_2004.conf
   examples/platforms/optorsim/lcg_sept2004_grid.conf
