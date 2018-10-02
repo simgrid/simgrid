@@ -31,7 +31,7 @@ static simgrid::kernel::Future<void> kernel_wait_until(double date)
   return future;
 }
 
-static int master(int argc, char* argv[])
+static int master(int /*argc*/, char** /*argv*/)
 {
   // Test the simple immediate execution:
   XBT_INFO("Start");
