@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
  *   interfaces, but it's not possible ATM).
  */
 
-static int runner(int argc, char* argv[])
+static int runner(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   /* Retrieve the list of all hosts as an array of hosts */
   int host_count    = MSG_get_host_number();

@@ -47,27 +47,27 @@ static void test_host(const char* hostname)
   xbt_dict_free(&props);
 }
 
-static int alice(int argc, char* argv[])
+static int alice(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 { /* Dump what we have on the current host */
   test_host("host1");
   return 0;
 }
 
-static int carole(int argc, char* argv[])
+static int carole(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {                       /* Dump what we have on a remote host */
   MSG_process_sleep(1); // Wait for alice to be done with its experiment
   test_host("host1");
   return 0;
 }
 
-static int david(int argc, char* argv[])
+static int david(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {                       /* Dump what we have on a remote host */
   MSG_process_sleep(2); // Wait for alice and carole to be done with its experiment
   test_host("node-0.simgrid.org");
   return 0;
 }
 
-static int bob(int argc, char* argv[])
+static int bob(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   /* this host also tests the properties of the AS*/
   msg_as_t root = MSG_zone_get_root();

@@ -21,7 +21,8 @@ xbt_ex::~xbt_ex() = default;
 
 void _xbt_throw(char* message, xbt_errcat_t errcat, int value, const char* file, int line, const char* func)
 {
-  xbt_ex e(simgrid::xbt::ThrowPoint(XBT_THROW_POINT), message);
+  xbt_ex e(simgrid::xbt::ThrowPoint(file, line, func, simgrid::xbt::backtrace(), xbt_procname(), xbt_getpid()),
+           message);
   xbt_free(message);
   e.category = errcat;
   e.value    = value;

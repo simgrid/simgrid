@@ -18,7 +18,8 @@ namespace simgrid {
 namespace plugin {
 namespace loadbalancer {
 
-struct XBT_PRIVATE compare_hosts {
+class XBT_PRIVATE compare_hosts {
+public:
   bool operator()(simgrid::s4u::Host* const a, simgrid::s4u::Host* const b) const;
 };
 
@@ -82,11 +83,14 @@ void LoadBalancer::run()
   for (auto& host : available_hosts) {
     std::vector<simgrid::s4u::ActorPtr> actors = host->get_all_actors();
     heap_handle update_handle                  = usable_hosts.push(host); // Required to update elements in the heap
-    additional_load[host]                      = {update_handle, 0}; // Save the handle for later
+    additional_load[host]                      = {update_handle, 0};      // Save the handle for later
+    const double total_flops_computed          = sg_host_get_computed_flops(host);
     for (auto& actor : actors) {
-      additional_load[host].load += actor_computation[actor->get_pid()];
+      additional_load[host].load += actor_computation[actor->get_pid()] / total_flops_computed; // Normalize load - this allows comparison
+                                                                                                // even between hosts with different frequencies
       XBT_DEBUG("Actor %li -> %f", actor->get_pid(), actor_computation[actor->get_pid()]);
     }
+    usable_hosts.increase(update_handle);
     XBT_DEBUG("Host %s initialized to %f", host->get_cname(), additional_load[host].load);
   }
 

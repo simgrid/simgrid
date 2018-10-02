@@ -134,6 +134,7 @@ public:
   double get_current_watts_value();
   double get_current_watts_value(double cpu_load);
   double get_consumed_energy();
+  double get_idle_consumption();
   double get_watt_min_at(int pstate);
   double get_watt_max_at(int pstate);
   void update();
@@ -211,6 +212,14 @@ HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host_(ptr), last_updated_(surf
 }
 
 HostEnergy::~HostEnergy() = default;
+
+double HostEnergy::get_idle_consumption()
+{
+  xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
+             host_->get_cname());
+
+  return power_range_watts_list_[0].idle_;
+}
 
 double HostEnergy::get_watt_min_at(int pstate)
 {
@@ -351,13 +360,13 @@ void HostEnergy::init_watts_range_list()
         // In this case, 1core == AllCores
         current_power_values.push_back(current_power_values.at(1));
       } else { // size == 3
-        current_power_values[2] = current_power_values.at(1);
+        current_power_values[1] = current_power_values.at(2);
+        current_power_values[2] = current_power_values.at(2);
         static bool displayed_warning = false;
         if (not displayed_warning) { // Otherwise we get in the worst case no_pstate*no_hosts warnings
           XBT_WARN("Host %s is a single-core machine and part of the power profile is '%s'"
                    ", which is in the 'Idle:OneCore:AllCores' format."
-                   " Since this is a single-core machine, AllCores and OneCore are identical."
-                   " Here, only the value for 'OneCore' is used.", host_->get_cname(), current_power_values_str.c_str());
+                   " Here, only the value for 'AllCores' is used.", host_->get_cname(), current_power_values_str.c_str());
           displayed_warning = true;
         }
       }
@@ -524,6 +533,16 @@ double sg_host_get_consumed_energy(sg_host_t host)
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
              "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
   return host->extension<HostEnergy>()->get_consumed_energy();
+}
+
+/** @ingroup plugin_energy
+ *  @brief Get the amount of watt dissipated when the host is idling
+ */
+double sg_host_get_idle_consumption(sg_host_t host)
+{
+  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
+             "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
+  return host->extension<HostEnergy>()->get_idle_consumption();
 }
 
 /** @ingroup plugin_energy

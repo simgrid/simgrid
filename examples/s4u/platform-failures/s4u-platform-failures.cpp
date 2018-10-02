@@ -34,13 +34,9 @@ static int master(int argc, char* argv[])
       delete payload;
       XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
     } catch (xbt_ex& e) {
-      switch (e.category) {
-        case network_error:
-          XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
-          break;
-        default:
-          xbt_die("Unexpected behavior");
-      }
+      if (e.category != network_error)
+        xbt_die("Unexpected behavior");
+      XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
       delete payload;
     }
   }
@@ -61,13 +57,9 @@ static int master(int argc, char* argv[])
       XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
     } catch (xbt_ex& e) {
       delete payload;
-      switch (e.category) {
-        case network_error:
-          XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
-          break;
-        default:
-          xbt_die("Unexpected behavior");
-      }
+      if (e.category != network_error)
+        xbt_die("Unexpected behavior");
+      XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
     }
   }
 
@@ -94,28 +86,18 @@ static int worker(int argc, char* argv[])
         break;
       }
       /*  - Otherwise, process the task */
-      try {
-        XBT_INFO("Start execution...");
-        simgrid::s4u::this_actor::execute(comp_size);
-        XBT_INFO("Execution complete.");
-        delete payload;
-      } catch (simgrid::HostFailureException& e) {
-        delete payload;
-        XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-        return -1;
-      }
+      XBT_INFO("Start execution...");
+      simgrid::s4u::this_actor::execute(comp_size);
+      XBT_INFO("Execution complete.");
+      delete payload;
     } catch (simgrid::HostFailureException& e) {
       XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
       delete payload;
       return -1;
     } catch (xbt_ex& e) {
-      switch (e.category) {
-        case network_error:
-          XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
-          break;
-        default:
-          xbt_die("Unexpected behavior. Category: %s", xbt_ex_catname(e.category));
-      }
+      if (e.category != network_error)
+        xbt_die("Unexpected behavior. Category: %s", xbt_ex_catname(e.category));
+      XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
     }
   }
   return 0;
