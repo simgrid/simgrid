@@ -522,14 +522,10 @@ int MSG_comm_testany(xbt_dynar_t comms)
     status         = MSG_TIMEOUT;
   }
   catch (xbt_ex& e) {
-    switch (e.category) {
-      case network_error:
-        finished_index = e.value;
-        status = MSG_TRANSFER_FAILURE;
-        break;
-      default:
-        throw;
-    }
+    if (e.category != network_error)
+      throw;
+    finished_index = e.value;
+    status         = MSG_TRANSFER_FAILURE;
   }
 
   if (finished_index != -1) {
