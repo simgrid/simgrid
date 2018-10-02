@@ -5,6 +5,12 @@
 #
 # Copyright (c) 2017-2018 The SimGrid Team. Licence: LGPL of WDFPL, as you want.
 
+if [ ! -e Makefile ] ; then
+  echo "Please configure SimGrid before building it:"
+  echo "   ccmake ."
+  exit 1
+fi
+
 (
   (nice make -j4 || make) && nice ctest -j4 --output-on-failure ; date
 ) 2>&1 | tee BuildSimGrid.sh.log
