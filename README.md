@@ -1,3 +1,4 @@
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Travis Status](https://travis-ci.org/simgrid/simgrid.svg?branch=master)](https://travis-ci.org/simgrid/simgrid)
 [![AppVeyor Status](https://ci.appveyor.com/api/projects/status/gvcssh340fwtoc35?svg=true)](https://ci.appveyor.com/project/mquinson/simgrid)
 [![SonarCloud Status](https://sonarcloud.io/api/project_badges/measure?project=simgrid&metric=alert_status)](https://sonarcloud.io/dashboard/?id=simgrid)

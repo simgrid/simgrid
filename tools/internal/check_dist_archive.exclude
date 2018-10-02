@@ -11,7 +11,7 @@
 
 + BuildSimGrid\.sh
 + COPYRIGHT\.template
-+ README\.(coding|git)
++ README\.coding
 + \.appveyor\.yml
 + \.circleci/.*
 + \.clang-format
