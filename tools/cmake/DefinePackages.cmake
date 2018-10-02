@@ -997,10 +997,8 @@ set(txt_files
   COPYING
   README.md
   ChangeLog
-  INSTALL
   LICENSE-LGPL-2.1
   NEWS
-  TODO
   )
 
 # The list of cmake build directories is constructed from the following list.
