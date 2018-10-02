@@ -14,8 +14,6 @@
 #endif
 #include <xbt/config.hpp>
 
-#include "src/internal_config.h"
-
 #include <boost/algorithm/string.hpp>
 #if HAVE_SMPI
 #include "src/smpi/include/smpi_request.hpp"
