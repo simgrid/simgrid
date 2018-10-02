@@ -86,16 +86,10 @@ static int worker(int argc, char* argv[])
         break;
       }
       /*  - Otherwise, process the task */
-      try {
-        XBT_INFO("Start execution...");
-        simgrid::s4u::this_actor::execute(comp_size);
-        XBT_INFO("Execution complete.");
-        delete payload;
-      } catch (simgrid::HostFailureException& e) {
-        delete payload;
-        XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-        return -1;
-      }
+      XBT_INFO("Start execution...");
+      simgrid::s4u::this_actor::execute(comp_size);
+      XBT_INFO("Execution complete.");
+      delete payload;
     } catch (simgrid::HostFailureException& e) {
       XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
       delete payload;
