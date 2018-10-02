@@ -72,7 +72,6 @@ public:
    */
   simgrid::s4u::Host* get_mapping(simgrid::s4u::ActorPtr);
   void record_actor_computation(simgrid::s4u::ActorPtr actor, double load);
-private:
 };
 
 }

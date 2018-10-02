@@ -18,7 +18,8 @@ namespace simgrid {
 namespace plugin {
 namespace loadbalancer {
 
-struct XBT_PRIVATE compare_hosts {
+class XBT_PRIVATE compare_hosts {
+public:
   bool operator()(simgrid::s4u::Host* const a, simgrid::s4u::Host* const b) const;
 };
 
