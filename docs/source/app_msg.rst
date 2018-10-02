@@ -23,6 +23,9 @@ systems. It can be used to build rather realistic simulations, but
 remains simple to use: most unpleasant technical elements can be
 abstracted away rather easily.
 
+This page describes the C version of this API while the :ref:`Java
+bindings of MSG <Java_doc>` are described in another section.
+
 .. warning::
 
    MSG used to be the main API of SimGrid 3, but we are currently in
