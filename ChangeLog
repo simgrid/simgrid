@@ -1,4 +1,4 @@
-SimGrid (3.21) NOT RELEASED (Release Target: September 23. 2018, 1:54 UTC)
+SimGrid (3.21) October 3. 2018
 
 The Restarting Documentation (TRD) Release.
 
@@ -24,8 +24,7 @@ S4U new features:
  - When creating an actor from a function and its parameters,
    move-only parameters are not allowed anymore, as it would prevent
    the actor to be restartable if its parameters are consumed on run.
- - s4u::Io: IOs go asynchronous as activities. This comes with new methods in the
-   s4u::Storage class: 
+ - s4u::Io: IOs go asynchronous as activities. New methods in s4u::Storage:
      - io_init(sg_size_t, s4u::Io::OpType) to create a READ or WRITE asynchronous
        IO operations that can be started, waited for, or canceled as a regular
        activity.
