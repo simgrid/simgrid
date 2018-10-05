@@ -11,8 +11,10 @@ Please apply the following checklist before releasing.
   - The external patches (Debian, etc) are integrated.
     The COPYING file is aligned with Debian's copyright file, and the
     dates of SimGrid chunks are accurate.
-  - The version number is correctly marked in CMakeLists.txt (in macros
-    SIMGRID_VERSION_*), and also in sonar-project.properties
+  - The version number is correctly marked in 
+    - CMakeLists.txt (in macros SIMGRID_VERSION_*)
+    - sonar-project.properties
+    - docs/source/conf.py
   - The "make distcheck" target works (testing that every files needed
     to build and install are included in the archive)
 - Tests
@@ -101,7 +103,8 @@ the settings icon of the release you want to change.
 - Push the archive files (tar.gz and jar) on gforge
 - Post a news on gforge (before updating the website)
 - Update the link scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/latest
-  (and create the directory of the next version)
+  - Create the directory of the released version and upload the doc artefact in it
+  - Remove the older releases so that people don't find them in google
 - Rebuild and resynchronize the website so that the file gets visible
   from our download page.@n
   - Edit org/org-templates/level-0.org to change the release version, the tgz link and the jar link.
@@ -111,30 +114,31 @@ the settings icon of the release you want to change.
   - make -C org all sync
   - git commit -a && git push
 - Announce the release
- - Document the tag on https://github.com/simgrid/simgrid/releases
+ - Document the tag on https://github.com/simgrid/simgrid/releases and
+   on https://framagit.org/simgrid/simgrid/tags
  - Mail the simgrid-user mailing list
     - the NEWS chunk in the mail;
     - Hall of Fame in the mail@n
-      git shortlog -sne v3.18..
-    - the ChangeLog chunk as attachment
- - Also mail some other lists (G5K users), with only the NEWS chunk
-   and the link to the download section
+      git shortlog -se v3.21..
+    - Link to the ChangeLog on framagit (the version of that tag)
+ - Also mail some other lists (G5K users)
 - Release the debian package
-  - make -f debian/rules get-orig-source
-  - gbp import ../simgrid_XXX+dfsg.orig.tar.xz
+  - rm -f ../simgrid_3.*+dfsg.orig.tar.xz
+  - uscan # download the new version
+  - gbp import-orig ../simgrid_3.*+dfsg.orig.tar.xz
   - dch -i "New upstream release" # + copy the NEWS into debian/changelog
   - git mv debian/libsimgrid3.XX.install debian/libsimgrid3.XY.install
-  - edit debian/control
-    - s/simgrid3.XX/simgrid3.XY/ 
-    - libsimgrid3.XY conflicts with libsimgrid3.XX because of smpimain
+  - edit debian/control: s/simgrid3.XX/simgrid3.XY/ 
 - Update the simgrid/package.py for spack: https://gitlab.inria.fr/solverstack/spack-repo
 - Create the template for the next release in ChangeLog and NEWS files
   Release Target date: https://en.wikipedia.org/wiki/Equinox
-- Change the release number to 3.X.90 in CMakeLists.txt and sonar-project.properties
+- Change the release number to 3.X.90 in CMakeLists.txt and sonar-project.properties docs/source/conf.py
 - Deal with deprecations:
   - Introduce the XBT_ATTRIB_DEPRECATED_v??? macro for the next release.
   - Kill the one for the current release and remove all code that were
     mandated by the deprecated functions (both in source and headers).
   - Do the possible cleanups now that these features are gone.
+- Update the Docker images (after pushing to the git)
+  - cd tools/docker && make stable tuto-s4u push
 
 */
