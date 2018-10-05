@@ -97,14 +97,6 @@ size_t Engine::get_host_count()
 {
   return pimpl->hosts_.size();
 }
-/** @brief Fills the passed list with all hosts found in the platform
- *  @deprecated Please prefer Engine::getAllHosts()
- */
-void Engine::getHostList(std::vector<Host*>* list)
-{
-  for (auto const& kv : pimpl->hosts_)
-    list->push_back(kv.second);
-}
 
 std::vector<Host*> Engine::get_all_hosts()
 {

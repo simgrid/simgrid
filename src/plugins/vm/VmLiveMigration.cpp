@@ -300,13 +300,6 @@ void sg_vm_live_migration_plugin_init()
   simgrid::s4u::VirtualMachine::on_shutdown.connect(&onVirtualMachineShutdown);
 }
 
-/* Deprecated. Please use MSG_vm_create_migratable() instead */
-msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char* name, int coreAmount, int ramsize, int mig_netspeed,
-                       int dp_intensity)
-{
-  return sg_vm_create_migratable(ind_pm, name, coreAmount, ramsize, mig_netspeed, dp_intensity);
-}
-
 simgrid::s4u::VirtualMachine* sg_vm_create_migratable(simgrid::s4u::Host* pm, const char* name, int coreAmount,
                                                       int ramsize, int mig_netspeed, int dp_intensity)
 {

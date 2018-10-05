@@ -19,11 +19,6 @@
 namespace simgrid {
 namespace s4u {
 
-#ifndef DOXYGEN
-/** @deprecated Engine::get_all_storages() */
-XBT_ATTRIB_DEPRECATED_v322("Please use Engine::get_all_storages()") XBT_PUBLIC void getStorageList(std::map<std::string, Storage*>* whereTo);
-#endif
-
 /** Storage represent the disk resources, usually associated to a given host
  *
  * By default, SimGrid does not keep track of the actual data being written but

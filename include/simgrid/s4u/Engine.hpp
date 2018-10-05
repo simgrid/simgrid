@@ -221,16 +221,12 @@ public:
   /** @deprecated See Engine::get_host_count() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_host_count()") size_t getHostCount() { return get_host_count(); }
   /** @deprecated See Engine::get_all_hosts() */
-  XBT_ATTRIB_DEPRECATED_v322("Please use Engine::get_all_hosts()") void getHostList(std::vector<Host*>* whereTo);
-  /** @deprecated See Engine::get_all_hosts() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_all_hosts()") std::vector<Host*> getAllHosts()
   {
     return get_all_hosts();
   }
   /** @deprecated See Engine::get_link_count() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_link_count()") size_t getLinkCount() { return get_link_count(); }
-  /** @deprecated See Engine::get_all_links() */
-  XBT_ATTRIB_DEPRECATED_v322("Please use Engine::get_all_links()") void getLinkList(std::vector<Link*>* list);
   /** @deprecated See Engine::get_link_list() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_link_list()") std::vector<Link*> getAllLinks()
   {

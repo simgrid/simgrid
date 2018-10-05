@@ -93,13 +93,6 @@ sg_size_t Storage::write(sg_size_t size)
   return i->get_performed_ioops();
 }
 
-// Deprecated functions
-void getStorageList(std::map<std::string, Storage*>* whereTo)
-{
-  for (auto const& s : simgrid::s4u::Engine::get_instance()->get_all_storages())
-    whereTo->insert({s->get_name(), s});
-}
-
 } /* namespace s4u */
 } /* namespace simgrid */
 
