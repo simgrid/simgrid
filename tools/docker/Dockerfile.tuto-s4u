@@ -1,5 +1,5 @@
 # Base image 
-FROM simgrid/unstable
+FROM simgrid/stable
 
 # - Clone simgrid-template-s4u, as it is needed by the tutorial
 RUN apt update && apt install -y pajeng r-base r-cran-ggplot2 r-cran-dplyr cmake g++ git libboost-all-dev&& \
