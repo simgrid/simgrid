@@ -5,6 +5,7 @@
 
 #include <cerrno>
 #include <cstdlib>
+#include <cstring>
 
 #include <sys/ptrace.h>
 #include <sys/socket.h>
@@ -76,7 +77,7 @@ Client* Client::initialize()
 #error "no ptrace equivalent coded for this platform"
 #endif
   if (errno != 0 || raise(SIGSTOP) != 0)
-    xbt_die("Could not wait for the model-checker");
+    xbt_die("Could not wait for the model-checker (errno = %d: %s)", errno, strerror(errno));
 
   instance_->handleMessages();
   return instance_.get();
