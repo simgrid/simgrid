@@ -123,6 +123,9 @@ provides many helper functions to simplify the code of actors.
 
 .. |API_s4u_Mailbox| replace:: **Mailbox**
 
+.. |API_s4u_Mailboxes| replace:: **Mailboxes**
+.. _API_s4u_Mailboxes: #s4u-mailbox
+
 .. |API_s4u_NetZone| replace:: **NetZone**
 
 .. |API_s4u_Barrier| replace:: **Barrier**
@@ -212,6 +215,119 @@ Activities Life cycle
 Sometimes, you want to change the setting of an activity before it even starts. 
 
 .. todo:: write this section
+
+.. _s4u_mailbox:
+	  
+Mailboxes
+*********
+
+Please also refer to the :ref:`API reference for s4u::Mailbox
+<API_s4u_Mailbox>`.
+
+===================
+What are Mailboxes?
+===================
+
+|API_s4u_Mailboxes|_ are rendez-vous points for network communications,
+similar to URLs on which you could post and retrieve data. Actually,
+the mailboxes are not involved in the communication once it starts,
+but only to find the contact with which you want to communicate.
+
+They are similar to many common things: The phone number, which allows
+the caller to find the receiver. The twitter hashtag, which help
+senders and receivers to find each others. In TCP, the pair 
+``{host name, host port}`` to which you can connect to find your peer.
+In HTTP, URLs through which the clients can connect to the servers. 
+In ZeroMQ, the queues are used to match senders and receivers.
+
+One big difference with most of these systems is that no actor is the
+exclusive owner of a mailbox, neither in sending nor in receiving.
+Many actors can send into and/or receive from the same mailbox.  TCP
+socket ports for example are shared on the sender side but exclusive
+on the receiver side (only one process can receive from a given socket
+at a given point of time).
+
+A big difference with TCP sockets or MPI communications is that
+communications do not start right away after a
+:cpp:func:`Mailbox::put() <simgrid::s4u::Mailbox::put()>`, but wait
+for the corresponding :cpp:func:`Mailbox::get() <simgrid::s4u::Mailbox::get()>`.
+You can change this by :ref:`declaring a receiving actor <s4u_receiving_actor>`.
+
+A big difference with twitter hashtags is that SimGrid does not
+offer easy support to broadcast a given message to many
+receivers. So that would be like a twitter tag where each message
+is consumed by the first receiver.
+
+A big difference with the ZeroMQ queues is that you cannot filter
+on the data you want to get from the mailbox. To model such settings
+in SimGrid, you'd have one mailbox per potential topic, and subscribe
+to each topic individually with a 
+:cpp:func:`get_async() <simgrid::s4u::Mailbox::get_async()>` on each mailbox.
+Then, use :cpp:func:`Comm::wait_any() <simgrid::s4u::Comm::wait_any()>` 
+to get the first message on any of the mailbox you are subscribed onto.
+
+The mailboxes are not located on the network, and you can access
+them without any latency. The network delay are only related to the
+location of the sender and receiver once the match between them is
+done on the mailbox. This is just like the phone number that you
+can use locally, and the geographical distance only comes into play
+once you start the communication by dialing this number.
+
+=====================
+How to use Mailboxes?
+=====================
+
+You can retrieve any existing mailbox from its name (which is a
+unique string, just like a twitter tag). This results in a
+versatile mechanism that can be used to build many different
+situations.
+
+To model classical socket communications, use "hostname:port" as
+mailbox names, and make sure that only one actor reads into a given
+mailbox. This does not make it easy to build a perfectly realistic
+model of the TCP sockets, but in most cases, this system is too
+cumbersome for your simulations anyway. You probably want something
+simpler, that turns our to be easy to build with the mailboxes.
+
+Many SimGrid examples use a sort of yellow page system where the
+mailbox names are the name of the service (such as "worker",
+"master" or "reducer"). That way, you don't have to know where your
+peer is located to contact it. You don't even need its name. Its
+function is enough for that. This also gives you some sort of load
+balancing for free if more than one actor pulls from the mailbox:
+the first actor that can deal with the request will handle it.
+
+=========================================
+How put() and get() Requests are Matched?
+=========================================
+
+The matching algorithm simple: first come, first serve. When a new
+send arrives, it matches the oldest enqueued receive. If no receive is
+currently enqueued, then the incoming send is enqueued. As you can
+see, the mailbox cannot contain both send and receive requests: all
+enqueued requests must be of the same sort.
+
+.. _s4u_receiving_actor:
+
+===========================
+Declaring a Receiving Actor
+===========================
+
+The last twist is that by default in the simulator, the data starts
+to be exchanged only when both the sender and the receiver are
+declared (it waits until both :cpp:func:`put() <simgrid::s4u::Mailbox::put()>`
+and :cpp:func:`get() <simgrid::s4u::Mailbox::get()>` are posted). 
+In TCP, since you establish connexions beforehand, the data starts to
+flow as soon as the sender posts it, even if the receiver did not post
+its :cpp:func:`recv() <simgrid::s4u::Mailbox::recv()>` yet. 
+
+To model this in SimGrid, you can declare a specific receiver to a
+given mailbox (with the function 
+:cpp:func:`set_receiver() <simgrid::s4u::Mailbox::set_receiver()>`). 
+That way, any :cpp:func:`put() <simgrid::s4u::Mailbox::put()>`
+posted to that mailbox will start as soon as possible, and the data
+will already be there on the receiver host when the receiver actor
+posts its :cpp:func:`get() <simgrid::s4u::Mailbox::get()>`
 
 Memory Management
 *****************
@@ -370,6 +486,8 @@ s4u::Link
 ============
 s4u::Mailbox
 ============
+
+Please also refer to the :ref:`full doc on s4u::Mailbox <s4u_mailbox>`.
 
 .. doxygentypedef:: MailboxPtr
 
