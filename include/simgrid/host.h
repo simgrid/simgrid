@@ -93,6 +93,11 @@ XBT_PUBLIC double sg_host_get_available_speed(sg_host_t host);
 
 XBT_PUBLIC int sg_host_core_count(sg_host_t host);
 
+/** \ingroup m_host_management
+ * \brief Returns the current computation load (in flops per second).
+ */
+XBT_PUBLIC double sg_host_load(sg_host_t host);
+
 /** \ingroup m_process_management
  * \brief Return the location on which a process is running.
  * \return the sg_host_t corresponding to the location on which \a process is running.

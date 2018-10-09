@@ -13,6 +13,7 @@
 #include "simgrid/plugins/energy.h"
 #include "simgrid/plugins/file_system.h"
 #include "simgrid/plugins/live_migration.h"
+#include "simgrid/plugins/load.h"
 #include "simgrid/simix.h"
 
 #include "simgrid/s4u/Host.hpp"
@@ -236,6 +237,10 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_energyInit() {
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_fileSystemInit()
 {
   sg_storage_file_system_init();
+}
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_loadInit() {
+    sg_host_load_plugin_init();
 }
 
 /** Run a Java org.simgrid.msg.Process

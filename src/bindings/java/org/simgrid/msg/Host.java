@@ -143,7 +143,13 @@ public class Host {
 	 * the value will be updated in kernel mode before returning the control to the requesting actor.
 	 */
 	public native double getConsumedEnergy();
-	
+
+	public native double getCurrentLoad();
+
+	public native double getComputedFlops();
+
+	public native double getAvgLoad();
+
 	/** Returns the current pstate */
 	public native int getPstate();
 	/** Changes the current pstate */
@@ -153,7 +159,9 @@ public class Host {
 	public native double getCurrentPowerPeak();
 	/** Returns the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_energy. */
 	public native double getPowerPeakAt(int pstate);
-	
+
+	/** Returns the current computation load (in flops per second) */
+	public native double getLoad();
 
 	/** Class initializer, to initialize various JNI stuff */
 	private static native void nativeInit();

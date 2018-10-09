@@ -68,6 +68,10 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getPstate(JNIEnv* env, jobject 
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getPstatesCount(JNIEnv* env, jobject jhost);
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCurrentPowerPeak(JNIEnv* env, jobject jhost);
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getPowerPeakAt(JNIEnv* env, jobject jhost, jint pstate);
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getLoad(JNIEnv* env, jobject jhost);
 
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCurrentLoad(JNIEnv *env, jobject jhost);
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getAvgLoad(JNIEnv *env, jobject jhost);
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getComputedFlops (JNIEnv *env, jobject jhost);
 SG_END_DECL()
 #endif

@@ -1,0 +1,19 @@
+#!/usr/bin/env tesh
+
+$ java -classpath ${classpath:=.} hostload/Main ${srcdir:=.}/../platforms/small_platform.xml
+> [0.000000] [java/INFO] Using regular java threads.
+> [Boivin::(1) 0.000000] [java/INFO] Computed Flops 0.0
+> [Boivin::(1) 0.000000] [java/INFO] Current Load 0.0
+> [Boivin::(1) 0.000000] [java/INFO] GetLoad 0.0
+> [Boivin::(1) 0.000000] [java/INFO] AvgLoad 0.0
+> [Boivin::(1) 1.019420] [java/INFO] Computed Flops 1.0E8
+> [Boivin::(1) 1.019420] [java/INFO] Current Load 1.0
+> [Boivin::(1) 1.019420] [java/INFO] GetLoad 0.0
+> [Boivin::(1) 1.019420] [java/INFO] AvgLoad 1.0
+> [Boivin::(1) 1.019420] [java/INFO] Task1 simulation time: 1.0194199500484225
+> [Boivin::(1) 2.038840] [java/INFO] Task2 simulation time: 1.0194199500484225
+> [Boivin::(1) 2.038840] [java/INFO] Computed Flops 2.0E8
+> [Boivin::(1) 2.038840] [java/INFO] Current Load 1.0
+> [Boivin::(1) 2.038840] [java/INFO] GetLoad 0.0
+> [Boivin::(1) 2.038840] [java/INFO] AvgLoad 1.0
+> [2.038840] [java/INFO] MSG_main finished; Cleaning up the simulation...

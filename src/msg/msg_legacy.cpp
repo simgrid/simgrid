@@ -297,6 +297,11 @@ sg_host_t MSG_host_self()
 {
   return sg_host_self();
 }
+
+double MSG_host_get_load(sg_host_t host)
+{
+  return sg_host_load(host);
+}
 /* ************************** Virtual Machines *************************** */
 sg_vm_t MSG_vm_create_core(sg_host_t pm, const char* name)
 {
