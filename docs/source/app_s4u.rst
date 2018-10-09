@@ -359,6 +359,13 @@ Here is a little example:
 API Reference
 *************
 
+.. _API_s4u_this_actor:
+
+=========================
+namespace s4u::this_actor
+=========================
+
+.. doxygennamespace:: simgrid::s4u::this_actor
 .. _API_s4u_Activity:
 
 =============
@@ -555,11 +562,3 @@ s4u::VirtualMachine
    :protected-members:
    :undoc-members:
 
-.. _API_s4u_this_actor:
-
-=========================
-namespace s4u::this_actor
-=========================
-
-
-.. doxygennamespace:: simgrid::s4u::this_actor
