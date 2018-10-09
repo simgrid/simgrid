@@ -415,6 +415,9 @@ XBT_PUBLIC void execute(double flop, double priority);
  * \rst
  * .. _API_s4u_parallel_execute:
  *
+ * **Example of use:** `examples/s4u/exec-ptask/s4u-exec-ptask.cpp
+ * <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-ptask/s4u-exec-ptask.cpp>`_
+ *
  * Parallel executions convenient abstractions of parallel computational kernels that span over several machines,
  * such as a PDGEM and the other ScaLAPACK routines. If you are interested in the effects of such parallel kernel
  * on the platform (e.g. to schedule them wisely), there is no need to model them in all details of their internal
@@ -451,6 +454,7 @@ XBT_PUBLIC void execute(double flop, double priority);
  * somewhere between flop/sec and byte/sec. It is **strongly advised** to only use the LV08 host model when using
  * parallel executions. Note that you can mix regular executions and communications with parallel executions,
  * provided that the platform model is LV08.
+ *
  *
  * \endrst
  */
