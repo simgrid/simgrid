@@ -119,10 +119,6 @@ XBT_PUBLIC sg_host_t MSG_host_self();
 /* ******************************** VMs ************************************* */
 typedef sg_vm_t msg_vm_t;
 
-XBT_ATTRIB_DEPRECATED_v322("Use sg_vm_create_migratable() from the live migration plugin: "
-                           "v3.22 will drop MSG_vm_create() completely.") XBT_PUBLIC sg_vm_t
-    MSG_vm_create(sg_host_t ind_pm, const char* name, int coreAmount, int ramsize, int mig_netspeed, int dp_intensity);
-
 XBT_PUBLIC msg_vm_t MSG_vm_create_core(msg_host_t pm, const char* name);
 XBT_PUBLIC msg_vm_t MSG_vm_create_multicore(msg_host_t pm, const char* name, int coreAmount);
 
