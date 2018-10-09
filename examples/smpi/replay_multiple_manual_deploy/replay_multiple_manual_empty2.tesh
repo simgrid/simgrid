@@ -1,0 +1,253 @@
+p Workload with two empty jobs (not at the same time, not on the same resources)
+
+< Two jobs not at the same time nor on the same resources
+< job0 empty.txt 2 0 0,1
+< job1 empty.txt 2 1000 2,3
+$ mkfile ${srcdir:=.}/workload_empty2
+
+! timeout 120
+! output sort 19
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2 --log=smpi.:info --cfg=smpi/host-speed:100 "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 0 0
+> [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100'
+> [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
+> [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=1000, alloc='2,3'
+> [   0.000000] (workload_executor@Bourassa) Launching the job executor of job 0 (app 'job0')
+> [   0.000000] (job_job0@Bourassa) Executing job 0 (smpi_app 'job0')
+> [   0.000000] (workload_executor@Bourassa) Sleeping 1000 seconds (waiting for job 1000, app 'job1')
+> [   0.000000] (0_0@Bourassa) Replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (0_1@Fafard) Replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (0_0@Bourassa) Simulation time 0.000000
+> [   0.000000] (0_1@Fafard) Simulation time 0.000000
+> [   0.000000] (0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (job_job0@Bourassa) Finished job 0 (smpi_app 'job0')
+> [1000.000000] (workload_executor@Bourassa) Launching the job executor of job 1 (app 'job1')
+> [1000.000000] (job_job1@Ginette) Executing job 1 (smpi_app 'job1')
+> [1000.000000] (1_0@Ginette) Replaying rank 0 of job 1 (smpi_app 'job1')
+> [1000.000000] (1_1@Jupiter) Replaying rank 1 of job 1 (smpi_app 'job1')
+> [1000.000000] (1_0@Ginette) Simulation time 0.000000
+> [1000.000000] (1_1@Jupiter) Simulation time 0.000000
+> [1000.000000] (1_1@Jupiter) Finished replaying rank 1 of job 1 (smpi_app 'job1')
+> [1000.000000] (1_0@Ginette) Finished replaying rank 0 of job 1 (smpi_app 'job1')
+> [1000.000000] (job_job1@Ginette) Finished job 1 (smpi_app 'job1')
+> [1000.000000] (maestro@) Simulation finished! Final time: 1000
+
+p Workload with two empty jobs (not at the same time, not on the same resources, with noise)
+! timeout 120
+! output sort 19
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2 --log=smpi.:info --cfg=smpi/host-speed:100 "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 7 13
+> [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100'
+> [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
+> [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=1000, alloc='2,3'
+> [   0.000000] (workload_executor@Bourassa) Launching the job executor of job 0 (app 'job0')
+> [   0.000000] (job_job0@Bourassa) Executing job 0 (smpi_app 'job0')
+> [   0.000000] (workload_executor@Bourassa) Sleeping 1000 seconds (waiting for job 1000, app 'job1')
+> [   0.000000] (0_0@Bourassa) Replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (0_1@Fafard) Replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (0_0@Bourassa) Simulation time 0.000000
+> [   0.000000] (0_1@Fafard) Simulation time 0.000000
+> [   0.000000] (0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (job_job0@Bourassa) Finished job 0 (smpi_app 'job0')
+> [1000.000000] (workload_executor@Bourassa) Launching the job executor of job 1 (app 'job1')
+> [1000.000000] (job_job1@Ginette) Executing job 1 (smpi_app 'job1')
+> [1000.000000] (1_0@Ginette) Replaying rank 0 of job 1 (smpi_app 'job1')
+> [1000.000000] (1_1@Jupiter) Replaying rank 1 of job 1 (smpi_app 'job1')
+> [1000.000000] (1_0@Ginette) Simulation time 0.000000
+> [1000.000000] (1_1@Jupiter) Simulation time 0.000000
+> [1000.000000] (1_1@Jupiter) Finished replaying rank 1 of job 1 (smpi_app 'job1')
+> [1000.000000] (1_0@Ginette) Finished replaying rank 0 of job 1 (smpi_app 'job1')
+> [1000.000000] (job_job1@Ginette) Finished job 1 (smpi_app 'job1')
+> [1013.000000] (maestro@) Simulation finished! Final time: 1013
+
+$ rm -f ${srcdir:=.}/workload_empty2 
+
+p Workload with two empty jobs (not at the same time, but on the same resources)
+
+< Two jobs not at the same time but using the same resources
+< job0 empty.txt 2 0 0,1
+< job1 empty.txt 2 1000 0,1
+$ mkfile ${srcdir:=.}/workload_empty2_same_resources
+
+! timeout 120
+! output sort 19
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_resources --log=smpi.:info --cfg=smpi/host-speed:100 "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 0 0
+> [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100'
+> [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
+> [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=1000, alloc='0,1'
+> [   0.000000] (workload_executor@Bourassa) Launching the job executor of job 0 (app 'job0')
+> [   0.000000] (job_job0@Bourassa) Executing job 0 (smpi_app 'job0')
+> [   0.000000] (workload_executor@Bourassa) Sleeping 1000 seconds (waiting for job 1000, app 'job1')
+> [   0.000000] (0_0@Bourassa) Replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (0_1@Fafard) Replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (0_0@Bourassa) Simulation time 0.000000
+> [   0.000000] (0_1@Fafard) Simulation time 0.000000
+> [   0.000000] (0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (job_job0@Bourassa) Finished job 0 (smpi_app 'job0')
+> [1000.000000] (workload_executor@Bourassa) Launching the job executor of job 1 (app 'job1')
+> [1000.000000] (job_job1@Bourassa) Executing job 1 (smpi_app 'job1')
+> [1000.000000] (1_0@Bourassa) Replaying rank 0 of job 1 (smpi_app 'job1')
+> [1000.000000] (1_1@Fafard) Replaying rank 1 of job 1 (smpi_app 'job1')
+> [1000.000000] (1_0@Bourassa) Simulation time 0.000000
+> [1000.000000] (1_1@Fafard) Simulation time 0.000000
+> [1000.000000] (1_1@Fafard) Finished replaying rank 1 of job 1 (smpi_app 'job1')
+> [1000.000000] (1_0@Bourassa) Finished replaying rank 0 of job 1 (smpi_app 'job1')
+> [1000.000000] (job_job1@Bourassa) Finished job 1 (smpi_app 'job1')
+> [1000.000000] (maestro@) Simulation finished! Final time: 1000
+
+p Workload with two empty jobs (not at the same time, but on the same resources, with noise)
+! timeout 120
+! output sort 19
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_resources --log=smpi.:info --cfg=smpi/host-speed:100 "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 7 13
+> [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100'
+> [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
+> [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=1000, alloc='0,1'
+> [   0.000000] (workload_executor@Bourassa) Launching the job executor of job 0 (app 'job0')
+> [   0.000000] (job_job0@Bourassa) Executing job 0 (smpi_app 'job0')
+> [   0.000000] (workload_executor@Bourassa) Sleeping 1000 seconds (waiting for job 1000, app 'job1')
+> [   0.000000] (0_0@Bourassa) Replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (0_1@Fafard) Replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (0_0@Bourassa) Simulation time 0.000000
+> [   0.000000] (0_1@Fafard) Simulation time 0.000000
+> [   0.000000] (0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (job_job0@Bourassa) Finished job 0 (smpi_app 'job0')
+> [1000.000000] (workload_executor@Bourassa) Launching the job executor of job 1 (app 'job1')
+> [1000.000000] (job_job1@Bourassa) Executing job 1 (smpi_app 'job1')
+> [1000.000000] (1_0@Bourassa) Replaying rank 0 of job 1 (smpi_app 'job1')
+> [1000.000000] (1_1@Fafard) Replaying rank 1 of job 1 (smpi_app 'job1')
+> [1000.000000] (1_0@Bourassa) Simulation time 0.000000
+> [1000.000000] (1_1@Fafard) Simulation time 0.000000
+> [1000.000000] (1_1@Fafard) Finished replaying rank 1 of job 1 (smpi_app 'job1')
+> [1000.000000] (1_0@Bourassa) Finished replaying rank 0 of job 1 (smpi_app 'job1')
+> [1000.000000] (job_job1@Bourassa) Finished job 1 (smpi_app 'job1')
+> [1013.000000] (maestro@) Simulation finished! Final time: 1013
+
+$ rm -f ${srcdir:=.}/workload_empty2_same_resources
+
+p Workload with two empty jobs (at the same time but not on the same resources)
+
+< Two jobs not at the same time but on different resources
+< job0 empty.txt 2 0 0,1
+< job1 empty.txt 2 0 2,3
+$ mkfile ${srcdir:=.}/workload_empty2_same_time
+
+! timeout 120
+! output sort 19
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_time --log=smpi.:info --cfg=smpi/host-speed:100 "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 0 0
+> [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100'
+> [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
+> [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=0, alloc='2,3'
+> [   0.000000] (workload_executor@Bourassa) Launching the job executor of job 0 (app 'job0')
+> [   0.000000] (job_job0@Bourassa) Executing job 0 (smpi_app 'job0')
+> [   0.000000] (workload_executor@Bourassa) Launching the job executor of job 1 (app 'job1')
+> [   0.000000] (0_0@Bourassa) Replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (job_job1@Ginette) Executing job 1 (smpi_app 'job1')
+> [   0.000000] (0_1@Fafard) Replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (1_0@Ginette) Replaying rank 0 of job 1 (smpi_app 'job1')
+> [   0.000000] (1_1@Jupiter) Replaying rank 1 of job 1 (smpi_app 'job1')
+> [   0.000000] (0_0@Bourassa) Simulation time 0.000000
+> [   0.000000] (0_1@Fafard) Simulation time 0.000000
+> [   0.000000] (1_0@Ginette) Simulation time 0.000000
+> [   0.000000] (1_1@Jupiter) Simulation time 0.000000
+> [   0.000000] (0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (1_1@Jupiter) Finished replaying rank 1 of job 1 (smpi_app 'job1')
+> [   0.000000] (0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (1_0@Ginette) Finished replaying rank 0 of job 1 (smpi_app 'job1')
+> [   0.000000] (job_job0@Bourassa) Finished job 0 (smpi_app 'job0')
+> [   0.000000] (job_job1@Ginette) Finished job 1 (smpi_app 'job1')
+> [   0.000000] (maestro@) Simulation finished! Final time: 0
+
+p Workload with two empty jobs (at the same time but not on the same resources, with noise)
+! timeout 120
+! output sort 19
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_time --log=smpi.:info --cfg=smpi/host-speed:100 "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 7 13
+> [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100'
+> [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
+> [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=0, alloc='2,3'
+> [   0.000000] (workload_executor@Bourassa) Launching the job executor of job 0 (app 'job0')
+> [   0.000000] (job_job0@Bourassa) Executing job 0 (smpi_app 'job0')
+> [   0.000000] (workload_executor@Bourassa) Launching the job executor of job 1 (app 'job1')
+> [   0.000000] (0_0@Bourassa) Replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (job_job1@Ginette) Executing job 1 (smpi_app 'job1')
+> [   0.000000] (0_1@Fafard) Replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (1_0@Ginette) Replaying rank 0 of job 1 (smpi_app 'job1')
+> [   0.000000] (1_1@Jupiter) Replaying rank 1 of job 1 (smpi_app 'job1')
+> [   0.000000] (0_0@Bourassa) Simulation time 0.000000
+> [   0.000000] (0_1@Fafard) Simulation time 0.000000
+> [   0.000000] (1_0@Ginette) Simulation time 0.000000
+> [   0.000000] (1_1@Jupiter) Simulation time 0.000000
+> [   0.000000] (0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (1_1@Jupiter) Finished replaying rank 1 of job 1 (smpi_app 'job1')
+> [   0.000000] (0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (1_0@Ginette) Finished replaying rank 0 of job 1 (smpi_app 'job1')
+> [   0.000000] (job_job0@Bourassa) Finished job 0 (smpi_app 'job0')
+> [   0.000000] (job_job1@Ginette) Finished job 1 (smpi_app 'job1')
+> [  13.000000] (maestro@) Simulation finished! Final time: 13
+
+$ rm -f ${srcdir:=.}/workload_empty2_same_time
+
+
+p Workload with two empty jobs (at the same time and on the same resources)
+
+< Two jobs at the same time and on same resources
+< job0 empty.txt 2 0 0,1
+< job1 empty.txt 2 0 0,1
+$ mkfile ${srcdir:=.}/workload_empty2_same_time_and_resources
+
+! timeout 120
+! output sort 19
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_time_and_resources --log=smpi.:info --cfg=smpi/host-speed:100 "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 0 0
+> [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100'
+> [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
+> [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=0, alloc='0,1'
+> [   0.000000] (workload_executor@Bourassa) Launching the job executor of job 0 (app 'job0')
+> [   0.000000] (job_job0@Bourassa) Executing job 0 (smpi_app 'job0')
+> [   0.000000] (workload_executor@Bourassa) Launching the job executor of job 1 (app 'job1')
+> [   0.000000] (0_0@Bourassa) Replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (job_job1@Bourassa) Executing job 1 (smpi_app 'job1')
+> [   0.000000] (0_1@Fafard) Replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (1_0@Bourassa) Replaying rank 0 of job 1 (smpi_app 'job1')
+> [   0.000000] (1_1@Fafard) Replaying rank 1 of job 1 (smpi_app 'job1')
+> [   0.000000] (1_0@Bourassa) Simulation time 0.000000
+> [   0.000000] (0_0@Bourassa) Simulation time 0.000000
+> [   0.000000] (1_1@Fafard) Simulation time 0.000000
+> [   0.000000] (0_1@Fafard) Simulation time 0.000000
+> [   0.000000] (1_1@Fafard) Finished replaying rank 1 of job 1 (smpi_app 'job1')
+> [   0.000000] (0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (1_0@Bourassa) Finished replaying rank 0 of job 1 (smpi_app 'job1')
+> [   0.000000] (0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (job_job1@Bourassa) Finished job 1 (smpi_app 'job1')
+> [   0.000000] (job_job0@Bourassa) Finished job 0 (smpi_app 'job0')
+> [   0.000000] (maestro@) Simulation finished! Final time: 0
+
+p Workload with two empty jobs (at the same time and on the same resources, with noise)
+
+! timeout 120
+! output sort 19
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_time_and_resources --log=smpi.:info --cfg=smpi/host-speed:100 "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 7 13
+> [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100'
+> [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
+> [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=0, alloc='0,1'
+> [   0.000000] (workload_executor@Bourassa) Launching the job executor of job 0 (app 'job0')
+> [   0.000000] (job_job0@Bourassa) Executing job 0 (smpi_app 'job0')
+> [   0.000000] (workload_executor@Bourassa) Launching the job executor of job 1 (app 'job1')
+> [   0.000000] (0_0@Bourassa) Replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (job_job1@Bourassa) Executing job 1 (smpi_app 'job1')
+> [   0.000000] (0_1@Fafard) Replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (1_0@Bourassa) Replaying rank 0 of job 1 (smpi_app 'job1')
+> [   0.000000] (1_1@Fafard) Replaying rank 1 of job 1 (smpi_app 'job1')
+> [   0.000000] (1_0@Bourassa) Simulation time 0.000000
+> [   0.000000] (0_0@Bourassa) Simulation time 0.000000
+> [   0.000000] (1_1@Fafard) Simulation time 0.000000
+> [   0.000000] (0_1@Fafard) Simulation time 0.000000
+> [   0.000000] (1_1@Fafard) Finished replaying rank 1 of job 1 (smpi_app 'job1')
+> [   0.000000] (0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (1_0@Bourassa) Finished replaying rank 0 of job 1 (smpi_app 'job1')
+> [   0.000000] (0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (job_job1@Bourassa) Finished job 1 (smpi_app 'job1')
+> [   0.000000] (job_job0@Bourassa) Finished job 0 (smpi_app 'job0')
+> [  13.000000] (maestro@) Simulation finished! Final time: 13
+
+$ rm -f ${srcdir:=.}/workload_empty2_same_time_and_resources

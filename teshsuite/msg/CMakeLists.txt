@@ -2,7 +2,7 @@
 foreach(x app-pingpong app-token-ring
           async-wait async-waitall async-waitany
           cloud-capping cloud-migration cloud-sharing cloud-two-tasks cloud-simple
-          get_sender host_on_off host_on_off_recv host_on_off_processes	  
+          get_sender host_on_off host_on_off_recv
           process-daemon process-kill process-join process-lifetime process-migration process-suspend process-yield
           energy-consumption energy-ptask energy-pstate platform-properties
           io-file io-raw-storage io-file-remote
@@ -18,7 +18,7 @@ foreach(x app-pingpong app-token-ring
 endforeach()
 
 # CPP examples
-foreach(x task_destroy_cancel task_listen_from task_progress)
+foreach(x task_destroy_cancel task_listen_from task_progress host_on_off_processes)
   add_executable       (${x}  ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -102,4 +102,8 @@ foreach(x cloud-sharing)
   ADD_TESH(tesh-msg-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x}/${x}.tesh)
 endforeach()
 
-ADD_TESH_FACTORIES(tesh-app-bittorrent-parallel         "raw" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/msg/app-bittorrent --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/app-bittorrent app-bittorrent.tesh)
+if(HAVE_SANITIZER_THREAD)
+  ADD_TESH_FACTORIES(tesh-app-bittorrent-parallel       "thread" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/msg/app-bittorrent --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/app-bittorrent app-bittorrent.tesh)
+else()
+  ADD_TESH_FACTORIES(tesh-app-bittorrent-parallel       "raw" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/msg/app-bittorrent --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/app-bittorrent app-bittorrent.tesh)
+endif()

@@ -1,13 +1,12 @@
 /* selector with default/naive Simgrid algorithms. These should not be trusted for performance evaluations */
 
-/* Copyright (c) 2009-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "colls_private.hpp"
-#include "smpi_process.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 
 namespace simgrid{
 namespace smpi{
@@ -277,9 +276,9 @@ int Coll_reduce_default::reduce(void *sendbuf, void *recvbuf, int count, MPI_Dat
 int Coll_allreduce_default::allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   int ret;
-  ret = Colls::reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
+  ret = Coll_reduce_default::reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
   if(ret==MPI_SUCCESS)
-    ret = Colls::bcast(recvbuf, count, datatype, 0, comm);
+    ret = Coll_bcast_default::bcast(recvbuf, count, datatype, 0, comm);
   return ret;
 }
 

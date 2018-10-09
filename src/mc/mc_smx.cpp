@@ -117,7 +117,7 @@ smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall const* req)
 const char* MC_smx_actor_get_host_name(smx_actor_t actor)
 {
   if (mc_model_checker == nullptr)
-    return actor->host->get_cname();
+    return actor->host_->get_cname();
 
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
@@ -141,7 +141,7 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
 
   // Read the simgrid::xbt::string in the MCed process:
   simgrid::mc::ActorInformation* info     = actor_info_cast(actor);
-  auto remote_string_address              = remote((simgrid::xbt::string_data*)((char*)actor->host + offset));
+  auto remote_string_address              = remote((simgrid::xbt::string_data*)((char*)actor->host_ + offset));
   simgrid::xbt::string_data remote_string = process->read(remote_string_address);
   char hostname[remote_string.len];
   process->read_bytes(hostname, remote_string.len + 1, remote(remote_string.data));
@@ -153,11 +153,11 @@ const char* MC_smx_actor_get_name(smx_actor_t actor)
 {
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
   if (mc_model_checker == nullptr)
-    return actor->name.c_str();
+    return actor->get_cname();
 
   simgrid::mc::ActorInformation* info = actor_info_cast(actor);
   if (info->name.empty()) {
-    simgrid::xbt::string_data string_data = simgrid::xbt::string::to_string_data(actor->name);
+    simgrid::xbt::string_data string_data = simgrid::xbt::string::to_string_data(actor->name_);
     info->name = process->read_string(remote(string_data.data), string_data.len);
   }
   return info->name.c_str();

@@ -71,6 +71,13 @@ public:
   virtual double next_occuring_event_lazy(double now);
   virtual double next_occuring_event_full(double now);
 
+private:
+  Action* extract_action(Action::StateSet* list);
+
+public:
+  Action* extract_done_action();
+  Action* extract_failed_action();
+
   /**
    * @brief Update action to the current time
    *
@@ -104,9 +111,9 @@ private:
 } // namespace kernel
 } // namespace simgrid
 
-/** \ingroup SURF_models
- *  \brief List of initialized models
+/** @ingroup SURF_models
+ *  @brief List of initialized models
  */
-XBT_PUBLIC_DATA std::vector<simgrid::kernel::resource::Model*>* all_existing_models;
+XBT_PUBLIC_DATA std::vector<simgrid::kernel::resource::Model*> all_existing_models;
 
 #endif

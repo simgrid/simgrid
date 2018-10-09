@@ -10,7 +10,6 @@ set(EXTRA_DIST
   src/include/xbt/mmalloc.h
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
-  src/mc/PageStore.hpp
   src/msg/msg_private.hpp
   src/simdag/dax.dtd
   src/simdag/dax_dtd.c
@@ -44,6 +43,8 @@ set(EXTRA_DIST
   src/surf/network_ib.hpp
   src/surf/ns3/ns3_simulator.hpp
   src/surf/trace_mgr_test.cpp
+  src/mc/sosp/mc_snapshot_test.cpp
+  src/mc/sosp/PageStore_test.cpp
   src/surf/xml/simgrid.dtd
   src/surf/xml/simgrid_dtd.h
   src/surf/xml/simgrid_dtd.c
@@ -172,6 +173,7 @@ set(SMPI_SRC
   src/smpi/colls/alltoallv/alltoallv-ring.cpp
   src/smpi/colls/barrier/barrier-ompi.cpp
   src/smpi/colls/barrier/barrier-mvapich2-pair.cpp
+  src/smpi/colls/barrier/barrier-mpich-smp.cpp
   src/smpi/colls/bcast/bcast-NTSB.cpp
   src/smpi/colls/bcast/bcast-NTSL-Isend.cpp
   src/smpi/colls/bcast/bcast-NTSL.cpp
@@ -223,7 +225,7 @@ set(SMPI_SRC
   src/smpi/internals/smpi_global.cpp
   src/smpi/internals/smpi_host.cpp
   src/smpi/internals/smpi_replay.cpp
-  src/smpi/internals/smpi_process.cpp
+  src/smpi/internals/smpi_actor.cpp
   src/smpi/internals/smpi_utils.cpp
   src/smpi/mpi/smpi_comm.cpp
   src/smpi/mpi/smpi_datatype.cpp
@@ -237,22 +239,28 @@ set(SMPI_SRC
   src/smpi/mpi/smpi_status.cpp
   src/smpi/mpi/smpi_topo.cpp
   src/smpi/mpi/smpi_win.cpp
+  src/smpi/include/smpi_actor.hpp
   src/smpi/include/smpi_coll.hpp
   src/smpi/include/smpi_comm.hpp
+  src/smpi/include/smpi_datatype_derived.hpp
+  src/smpi/include/smpi_datatype.hpp
   src/smpi/include/smpi_f2c.hpp
   src/smpi/include/smpi_group.hpp
   src/smpi/include/smpi_host.hpp
-  src/smpi/include/smpi_datatype.hpp
   src/smpi/include/smpi_info.hpp
   src/smpi/include/smpi_keyvals.hpp
-  src/smpi/include/smpi_datatype_derived.hpp
   src/smpi/include/smpi_op.hpp
-  src/smpi/include/smpi_process.hpp
   src/smpi/include/smpi_request.hpp
   src/smpi/include/smpi_status.hpp
-  src/smpi/include/smpi_win.hpp
   src/smpi/include/smpi_topo.hpp
+  src/smpi/include/smpi_win.hpp
   src/smpi/plugins/sampi_loadbalancer.cpp
+  src/smpi/plugins/ampi/ampi.cpp
+  src/smpi/plugins/ampi/ampi.hpp
+  src/smpi/plugins/ampi/instr_ampi.cpp
+  src/smpi/plugins/ampi/instr_ampi.hpp
+  src/smpi/plugins/load_balancer/LoadBalancer.cpp
+  src/smpi/plugins/load_balancer/load_balancer.hpp
   src/surf/network_smpi.cpp
   src/surf/network_ib.cpp
   )
@@ -268,7 +276,6 @@ set(XBT_SRC
   src/xbt/dict_cursor.c
   src/xbt/dict_elm.c
   src/xbt/dynar.cpp
-  src/xbt/ex.cpp
   src/xbt/exception.cpp
   src/xbt/graph.c
   src/xbt/log.c
@@ -422,15 +429,18 @@ endif()
 set(S4U_SRC
   src/s4u/s4u_Actor.cpp
   src/s4u/s4u_Activity.cpp
+  src/s4u/s4u_Barrier.cpp
   src/s4u/s4u_ConditionVariable.cpp
   src/s4u/s4u_Comm.cpp
   src/s4u/s4u_Engine.cpp
   src/s4u/s4u_Exec.cpp
   src/s4u/s4u_Host.cpp
+  src/s4u/s4u_Io.cpp
   src/s4u/s4u_Link.cpp
   src/s4u/s4u_Mailbox.cpp
   src/s4u/s4u_Mutex.cpp
   src/s4u/s4u_Netzone.cpp
+  src/s4u/s4u_Semaphore.cpp
   src/s4u/s4u_Storage.cpp
 )
 
@@ -594,6 +604,17 @@ set(MC_SRC
   src/mc/remote/mc_protocol.h
   src/mc/remote/mc_protocol.cpp
 
+  src/mc/sosp/PageStore.hpp
+  src/mc/sosp/PageStore.cpp
+  src/mc/sosp/ChunkedData.hpp
+  src/mc/sosp/ChunkedData.cpp
+  src/mc/sosp/RegionSnapshot.cpp
+  src/mc/sosp/RegionSnapshot.hpp
+  src/mc/sosp/mc_checkpoint.cpp
+  src/mc/sosp/mc_snapshot.hpp
+  src/mc/sosp/mc_snapshot.cpp
+  src/mc/sosp/mc_page_snapshot.cpp
+  
   src/mc/AddressSpace.hpp
   src/mc/Frame.hpp
   src/mc/Frame.cpp
@@ -601,12 +622,6 @@ set(MC_SRC
   src/mc/ModelChecker.cpp
   src/mc/ObjectInformation.hpp
   src/mc/ObjectInformation.cpp
-  src/mc/PageStore.hpp
-  src/mc/PageStore.cpp
-  src/mc/ChunkedData.hpp
-  src/mc/ChunkedData.cpp
-  src/mc/RegionSnapshot.cpp
-  src/mc/RegionSnapshot.hpp
   src/mc/Type.hpp
   src/mc/Variable.hpp
   src/mc/mc_forward.hpp
@@ -615,10 +630,6 @@ set(MC_SRC
   src/mc/mc_unw.hpp
   src/mc/mc_unw.cpp
   src/mc/mc_unw_vmread.cpp
-  src/mc/mc_checkpoint.cpp
-  src/mc/mc_snapshot.hpp
-  src/mc/mc_snapshot.cpp
-  src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_pattern.cpp
   src/mc/mc_comm_pattern.hpp
   src/mc/compare.cpp
@@ -656,10 +667,11 @@ set(MC_SRC
 set(MC_SIMGRID_MC_SRC  src/mc/checker/simgrid_mc.cpp)
 
 set(headers_to_install
-
   include/simgrid_config.h
   include/simgrid/actor.h
+  include/simgrid/barrier.h
   include/simgrid/engine.h
+  include/simgrid/Exception.hpp
   include/simgrid/chrono.hpp
   include/simgrid/plugins/dvfs.h
   include/simgrid/plugins/energy.h
@@ -685,15 +697,18 @@ set(headers_to_install
   include/simgrid/zone.h
   include/simgrid/s4u/Activity.hpp
   include/simgrid/s4u/Actor.hpp
+  include/simgrid/s4u/Barrier.hpp
   include/simgrid/s4u/Comm.hpp
   include/simgrid/s4u/ConditionVariable.hpp
   include/simgrid/s4u/Engine.hpp
   include/simgrid/s4u/Exec.hpp
   include/simgrid/s4u/Host.hpp
+  include/simgrid/s4u/Io.hpp
   include/simgrid/s4u/Link.hpp
   include/simgrid/s4u/Mailbox.hpp
   include/simgrid/s4u/Mutex.hpp
   include/simgrid/s4u/NetZone.hpp
+  include/simgrid/s4u/Semaphore.hpp
   include/simgrid/s4u/Storage.hpp
   include/simgrid/s4u/VirtualMachine.hpp
   include/simgrid/s4u.hpp
@@ -716,6 +731,7 @@ set(headers_to_install
   include/simgrid/kernel/routing/VivaldiZone.hpp
 
   include/smpi/mpi.h
+  include/smpi/sampi.h
   include/smpi/smpi.h
   include/smpi/smpi_main.h
   include/smpi/smpi_helpers.h
@@ -736,8 +752,6 @@ set(headers_to_install
   include/xbt/dict.h
   include/xbt/dynar.h
   include/xbt/ex.h
-  include/xbt/ex.hpp
-  include/xbt/exception.hpp
   include/xbt/Extendable.hpp
   include/xbt/file.hpp
   include/xbt/functional.hpp
@@ -795,17 +809,17 @@ endif()
 
 ### Simgrid Lib sources
 set(simgrid_sources
-  ${PLUGINS_SRC}
-  ${BINDINGS_SRC}
-  ${MC_SRC_BASE}
-  ${MSG_SRC}
   ${S4U_SRC}
-  ${SIMDAG_SRC}
   ${SIMGRID_SRC}
+  ${MC_SRC_BASE}
   ${SIMIX_SRC}
   ${SURF_SRC}
   ${TRACING_SRC}
   ${XBT_SRC}
+  ${PLUGINS_SRC}
+  ${BINDINGS_SRC}
+  ${MSG_SRC}
+  ${SIMDAG_SRC}
   )
 
 if(${SIMGRID_HAVE_JEDULE})
@@ -845,28 +859,11 @@ endif()
 set(DOC_SOURCES
   doc/Doxyfile.in
   doc/Layout.xml
-  doc/graphical-toc.svg
-  doc/sg_thread_model.fig
-  doc/simix.fig
-  doc/surf_nutshell.fig
-  doc/surf++.png
-  doc/surf++.pdf
-  doc/surf++.graphml
-  doc/surf++.uml
-  doc/triva-graph_configuration.png
-  doc/triva-graph_configuration.svg
-  doc/triva-graph_visualization.png
-  doc/triva-graph_visualization.svg
-  doc/triva-time_interval.png
-  doc/triva-time_interval.svg
 
   doc/doxygen/FAQ.doc
-  doc/doxygen/application.doc
   doc/doxygen/community.doc
   doc/doxygen/deployment.doc
-  doc/doxygen/examples.doc
   doc/doxygen/footer.html
-  doc/doxygen/getting_started.doc
   doc/doxygen/header.html
   doc/doxygen/howtos.doc
   doc/doxygen/index.doc
@@ -876,54 +873,81 @@ set(DOC_SOURCES
   doc/doxygen/inside_doxygen.doc
   doc/doxygen/inside_extending.doc
   doc/doxygen/inside_release.doc
-  doc/doxygen/install.doc
-  doc/doxygen/install_yours.doc
-  doc/doxygen/java.doc
-  doc/tuto-msg/tuto-msg.doc
-  doc/tuto-msg/overview.svg
-  doc/doxygen/tutorial_smpi.doc
-  doc/doxygen/models.doc
-  doc/doxygen/module-msg.doc
-  doc/doxygen/module-s4u.doc
   doc/doxygen/module-sd.doc
-  doc/doxygen/module-simix.doc
-  doc/doxygen/module-smpi.doc
   doc/doxygen/module-surf.doc
   doc/doxygen/module-trace.doc
   doc/doxygen/module-xbt.doc
   doc/doxygen/module-index.doc
   doc/doxygen/ns3.doc
-  doc/doxygen/options.doc
   doc/doxygen/outcomes.doc
   doc/doxygen/outcomes_logs.doc
   doc/doxygen/outcomes_MC.doc
   doc/doxygen/outcomes_vizu.doc
   doc/doxygen/platform.doc
   doc/doxygen/platform_lua.doc
-  doc/doxygen/scenario.doc
   doc/doxygen/stylesheet.css
   doc/doxygen/uhood.doc
   doc/doxygen/uhood_switch.doc
   doc/doxygen/uhood_arch.doc
 
-  doc/manpage/smpicc.1
-  doc/manpage/smpicxx.1
-  doc/manpage/smpif90.1
-  doc/manpage/smpiff.1
-  doc/manpage/smpirun.1
-  doc/manpage/tesh.pod
+  docs/manpages/smpicc.1
+  docs/manpages/smpicxx.1
+  docs/manpages/smpif90.1
+  docs/manpages/smpiff.1
+  docs/manpages/smpirun.1
+  docs/manpages/tesh.pod
 
-  doc/tuto-msg/deployment0.xml
-  doc/tuto-msg/deployment1.xml
-  doc/tuto-msg/deployment2.xml
-  doc/tuto-msg/deployment3.xml
-  doc/tuto-msg/deployment_general.xml
-  doc/tuto-msg/Makefile
-  doc/tuto-msg/masterworker.c
-  doc/tuto-msg/masterworker-sol1.c
-  doc/tuto-msg/masterworker-sol2.c
-  doc/tuto-msg/masterworker-sol3.c
-  doc/tuto-msg/masterworker-sol4.c
+  docs/Build.sh
+  docs/requirements.txt
+  docs/source/conf.py
+  docs/source/Doxyfile
+  docs/source/_ext/hidden_code_block.py
+
+  docs/source/img/eclipseScreenShot.png
+  docs/source/img/extlink.png
+  docs/source/img/extlink.svg
+  docs/source/img/graphical-toc.svg
+  docs/source/img/smpi_simgrid_alltoall_pair_16.png
+  docs/source/img/smpi_simgrid_alltoall_ring_16.png
+
+  docs/ignored_symbols
+  docs/source/application.rst
+  docs/source/app_java.rst
+  docs/source/app_msg.rst
+  docs/source/app_s4u.rst
+  docs/source/app_smpi.rst
+  docs/source/index.rst
+  docs/source/intro_concepts.rst
+  docs/source/introduction.rst
+  docs/source/intro_install.rst
+  docs/source/intro_yours.rst
+  docs/source/models.rst
+  docs/source/platform.rst
+  docs/source/scenar_config.rst
+  docs/source/scenario.rst
+
+  docs/source/tuto_s4u.rst
+  docs/source/tuto_s4u/deployment1.xml
+  docs/source/tuto_s4u/deployment2.xml
+  docs/source/tuto_s4u/deployment3.xml
+  docs/source/tuto_s4u/deployment4.xml
+  docs/source/tuto_s4u/draw_gantt.R
+  docs/source/tuto_s4u/img/intro.svg
+  docs/source/tuto_s4u/img/question.svg
+  docs/source/tuto_s4u/img/result.png
+  docs/source/tuto_s4u/img/Rscript-screenshot.png
+  docs/source/tuto_s4u/img/vite-screenshot.png
+  docs/source/tuto_s4u/master-workers-lab1.cpp
+  docs/source/tuto_s4u/master-workers-lab2.cpp
+  docs/source/tuto_s4u/master-workers-lab3.cpp
+  docs/source/tuto_s4u/master-workers-lab4.cpp
+
+  docs/source/tuto_smpi/3hosts.png
+  docs/source/tuto_smpi/3hosts.xml
+  docs/source/tuto_smpi/img/big-picture.svg
+  docs/source/tuto_smpi/img/lu.S.4.png
+  docs/source/tuto_smpi/roundtrip.c
+  docs/source/tuto_smpi.rst
 
   CITATION.bib
   )
@@ -941,7 +965,6 @@ set(DOC_TOOLS
 
 # these files get copied automatically to the html documentation
 set(DOC_IMG
-  ${CMAKE_HOME_DIRECTORY}/doc/sc3-description.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/AS_hierarchy.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/eclipseScreenShot.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
@@ -956,10 +979,6 @@ set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.gif
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win.bmp
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win_2011.bmp
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/smpi_simgrid_alltoall_pair_16.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/smpi_simgrid_alltoall_ring_16.png
   )
 
 set(bin_files
@@ -978,10 +997,8 @@ set(txt_files
   COPYING
   README.md
   ChangeLog
-  INSTALL
   LICENSE-LGPL-2.1
   NEWS
-  TODO
   )
 
 # The list of cmake build directories is constructed from the following list.
@@ -996,6 +1013,8 @@ set(CMAKEFILES_TXT
     examples/smpi/NAS/CMakeLists.txt
     examples/smpi/smpi_msg_masterslave/CMakeLists.txt
     examples/smpi/replay_multiple/CMakeLists.txt
+    examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
+    examples/smpi/load_balancer_replay/CMakeLists.txt
     examples/smpi/energy/f77/CMakeLists.txt
     examples/smpi/energy/f90/CMakeLists.txt
 
@@ -1015,7 +1034,7 @@ set(CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/coll/CMakeLists.txt
   teshsuite/smpi/mpich3-test/comm/CMakeLists.txt
   teshsuite/smpi/mpich3-test/datatype/CMakeLists.txt
-#  teshsuite/smpi/mpich3-test/f77/attr/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/attr/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/coll/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/info/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/comm/CMakeLists.txt
@@ -1085,7 +1104,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/test_prog/prog_snprintf.c
   tools/cmake/test_prog/prog_stackgrowth.c
   tools/cmake/test_prog/prog_stacksetup.c
-  tools/cmake/test_prog/prog_thread_storage.c
   tools/cmake/test_prog/prog_vsnprintf.c
   tools/cmake/cross-mingw.cmake
   tools/smpi/generate_smpi_defines.pl
@@ -1102,14 +1120,17 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/bypassASroute.xml
   examples/platforms/bypassRoute.xml
   examples/platforms/cloud.xml
-  examples/platforms/cluster.xml
   examples/platforms/cluster_backbone.xml
+  examples/platforms/cluster_multi.xml
   examples/platforms/cluster_and_one_host.xml
   examples/platforms/cluster_prototype.lua
-  examples/platforms/cluster_no_backbone.xml
-  examples/platforms/cluster_torus.xml
+  examples/platforms/cluster_crossbar.xml
   examples/platforms/cluster_fat_tree.xml
+  examples/platforms/cluster_fat_tree.svg
+  examples/platforms/cluster_torus.xml
+  examples/platforms/cluster_torus.svg
   examples/platforms/cluster_dragonfly.xml
+  examples/platforms/cluster_dragonfly.svg
   examples/platforms/crosstraffic.xml
   examples/platforms/optorsim/gridpp_grid_2004.conf
   examples/platforms/optorsim/lcg_sept2004_grid.conf

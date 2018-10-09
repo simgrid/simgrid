@@ -1,17 +1,17 @@
-/*! \page platform Describing the virtual platform
+/*! @page platform Describing the virtual platform
 
 @tableofcontents
 
-\htmlonly
+@htmlonly
 <div align="center">
-\endhtmlonly
-\htmlinclude graphical-toc.svg
-\htmlonly
+@endhtmlonly
+@htmlinclude graphical-toc.svg
+@htmlonly
 </div>
 <script>
 document.getElementById("VirtualPlatform").style="opacity:0.93999999;fill:#ff0000;fill-opacity:0.1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1";
 </script>
-\endhtmlonly
+@endhtmlonly
 
 As @ref starting_components "explained in the introduction," any
 SimGrid study must entail the description of the platform on which you
@@ -44,7 +44,7 @@ As usual, SimGrid is a versatile framework, and you should find the
 way of describing your platform that best fits your experimental
 practice. 
 
-\section pf_overview Describing the platform with XML
+@section pf_overview Describing the platform with XML
 
 Your platform description should follow the specification presented in
 the [simgrid.dtd](http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd)
@@ -57,12 +57,12 @@ enclosed within a @c platform tag, that have a @c version attribute.
 The current version is <b>4.1</b>. The @c simgrid_update_xml program can
 upgrade most of the past platform files to the recent formalism.
 
-\section pf_first_example First Platform Example 
+@section pf_first_example First Platform Example 
 
 Here is a very simple platform file, containing 3 resources (two hosts
 and one link), and explicitly giving the route between the hosts.
 
-\code{.xml}
+@code{.xml}
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4.1">
@@ -77,7 +77,7 @@ and one link), and explicitly giving the route between the hosts.
     </route>
   </zone>
 </platform>
-\endcode
+@endcode
 
 As we said, the englobing @ref pf_overview "&lt;platform&gt;" tag is
 used to specify the dtd version used for this file.
@@ -115,11 +115,11 @@ models the core of a national network interconnecting a small flat
 cluster (AS4) and a larger hierarchical cluster (AS5), a subset of a
 LAN (AS6), and a set of peers scattered around the world (AS7).
 
-\section pf_res Resource description
+@section pf_res Resource description
 
-\subsection pf_res_computing Computing Resources
+@subsection pf_res_computing Computing Resources
 
-\subsubsection pf_tag_host &lt;host&gt;
+@subsubsection pf_tag_host &lt;host&gt;
 
 An host is the computing resource on which an actor can execute.
 
@@ -128,7 +128,6 @@ Attribute         | Values                                 | Description
 id                | String (mandatory)                     | The identifier of the host. facilitates referring to this AS.
 speed             | double (mandatory)                     | Computational power of every core of this host in FLOPS (must be positive)
 core              | int (defaults to 1)                    | Number of cores (see @ref howto_multicore)
-state             | optionally "OFF"                       | If set to OFF, the host is initially turned off.
 availability_file | File name (optional) | (Relative or absolute) filename to use as input; must contain availability traces for this host. The syntax of this file is defined below.
 state_file        | File name (optional) |  File to use as a state profile (see @ref howto_churn)
 coordinates       | String (mandatory when using Vivaldi routing) | The coordinates of this host (see @ref pf_P2P_tags).
@@ -141,28 +140,28 @@ pstate     | Double (Defaults to 0) | FIXME: Not yet documented.
 
 #### Examples ####
 
-\code{.xml}
+@code{.xml}
 <host id="host1" speed="1000000000"/>
 <host id="host2" speed="1000000000">
    <prop id="color" value="blue"/>
    <prop id="rendershape" value="square"/>
 </host>
-\endcode
+@endcode
 
-\anchor pf_host_dynamism
+@anchor pf_host_dynamism
 ### Expressing dynamism ###
 
 SimGrid provides mechanisms to change a hosts' availability over
-time, using the ``availability_file`` attribute to the ``\<host\>`` tag
+time, using the ``availability_file`` attribute to the ``@<host@>`` tag
 and a separate text file whose syntax is exemplified below.
 
 #### Adding a trace file ####
 
-\verbatim
+@verbatim
 <platform version="4">
   <host id="bob" speed="500Gf" availability_file="bob.trace" />
 </platform>
-\endverbatim
+@endverbatim
 
 #### Example of "bob.trace" file ####
 
@@ -176,17 +175,17 @@ PERIODICITY 1.0
 Let us begin to explain this example by looking at line 2. (Line 1 will become clear soon).
 The first column describes points in time, in this case, time 0. The second column
 describes the relative amount of power this host is able to deliver (relative
-to the maximum performance specified in the ``\<host\>`` tag). (Clearly, the
+to the maximum performance specified in the ``@<host@>`` tag). (Clearly, the
 second column needs to contain values that are not smaller than 0 and not larger than 1).
 In this example, our host will deliver 500 Mflop/s at time 0, as 500 Mflop/s is the
 maximum performance of this host. At time 11.0, it will
 deliver half of its maximum performance, i.e., 250 Mflop/s until time 20.0 when it will
-will start delivering 80\% of its power. In this example, this amounts to 400 Mflop/s.
+will start delivering 80@% of its power. In this example, this amounts to 400 Mflop/s.
 
 Since the periodicity in line 1 was set to be 1.0, i.e., 1 timestep, this host will
 continue to provide 500 Mflop/s from time 21. From time 32 it will provide 250 MFlop/s and so on.
 
-\subsubsection pf_tag_cluster &lt;cluster&gt;
+@subsubsection pf_tag_cluster &lt;cluster&gt;
 
 ``<cluster />`` represents a machine-cluster. It is most commonly used
 when one wants to define many hosts and a network quickly. Technically,
@@ -194,7 +193,7 @@ when one wants to define many hosts and a network quickly. Technically,
 view, a cluster is a network zone where some optimized routing is defined</b>.
 The default inner organization of the cluster is as follow:
 
-\verbatim
+@verbatim
                  __________
                 |          |
                 |  router  |
@@ -204,7 +203,7 @@ The default inner organization of the cluster is as follow:
       |   |   |   ........   |     |   |
       |                                |
     c-0.me                             c-99.me
-\endverbatim
+@endverbatim
 
 Here, a set of <b>host</b>s is defined. Each of them has a <b>link</b>
 to a central backbone (backbone is a link itself, as a link can
@@ -215,18 +214,18 @@ SimGrid treats a cluster as a network zone containing all hosts: the router is t
 gateway for the cluster.
 
 There is an alternative organization, which is as follows:
-\verbatim
+@verbatim
                  __________
                 |          |
                 |  router  |
                 |__________|
-                    / | \
-                   /  |  \
-               l0 / l1|   \l2
-                 /    |    \
-                /     |     \
+                    / | @
+                   /  |  @
+               l0 / l1|   @l2
+                 /    |    @
+                /     |     @
             host0   host1   host2
-\endverbatim
+@endverbatim
 
 The principle is the same, except that there is no backbone. This representation
 can be obtained easily: just do not set the bb_* attributes.
@@ -238,19 +237,19 @@ id              | yes       | string | The identifier of the cluster. Facilitate
 prefix          | yes       | string | Each node of the cluster has to have a name. This name will be prefixed with this prefix.
 suffix          | yes       | string | Each node of the cluster will be suffixed with this suffix
 radical         | yes       | string | Regexp used to generate cluster nodes name. Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before. The produced number is concatenated between prefix and suffix to form machine names.
-speed           | yes       | int    | Same as the ``speed`` attribute of the ``\<host\>`` tag.
-core            | no        | int (default: 1) | Same as the ``core`` attribute of the ``\<host\>`` tag.
-bw              | yes       | int    | Bandwidth for the links between nodes and backbone (if any). See the \ref pf_tag_link "link section" for syntax/details.
+speed           | yes       | int    | Same as the ``speed`` attribute of the ``@<host@>`` tag.
+core            | no        | int (default: 1) | Same as the ``core`` attribute of the ``@<host@>`` tag.
+bw              | yes       | int    | Bandwidth for the links between nodes and backbone (if any). See the @ref pf_tag_link "link section" for syntax/details.
 lat             | yes       | int    | Latency for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
 sharing_policy  | no        | string | Sharing policy for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
 bb_bw           | no        | int    | Bandwidth for backbone (if any). See <b>link</b> section for syntax/details. If bb_bw and bb_lat (see below) attributes are omitted, no backbone is created (alternative cluster architecture <b>described before</b>).
 bb_lat          | no        | int    | Latency for backbone (if any). See <b>link</b> section for syntax/details. If bb_lat and bb_bw (see above) attributes are omitted, no backbone is created (alternative cluster architecture <b>described before</b>).
 bb_sharing_policy | no      | string | Sharing policy for the backbone (if any). See <b>link</b> section for syntax/details.
 limiter_link      | no        | int    | Bandwidth for limiter link (if any). This adds a specific link for each node, to set the maximum bandwidth reached when communicating in both directions at the same time. In theory this value should be 2*bw for splitduplex links, but in reality this might be less. This value will depend heavily on the communication model, and on the cluster's hardware, so no default value can be set, this has to be measured. More details can be obtained in <a href="https://hal.inria.fr/hal-00919507/"> "Toward Better Simulation of MPI Applications on Ethernet/TCP Networks"</a>
-loopback_bw       | no      | int    | Bandwidth for loopback (if any). See <b>link</b> section for syntax/details. If loopback_bw and loopback_lat (see below) attributes are omitted, no loopback link is created and all intra-node communication will use the main network link of the node. Loopback link is a \ref pf_sharing_policy_fatpipe "\b FATPIPE".
+loopback_bw       | no      | int    | Bandwidth for loopback (if any). See <b>link</b> section for syntax/details. If loopback_bw and loopback_lat (see below) attributes are omitted, no loopback link is created and all intra-node communication will use the main network link of the node. Loopback link is a @ref pf_sharing_policy_fatpipe "@b FATPIPE".
 loopback_lat      | no      | int    | Latency for loopback (if any). See <b>link</b> section for syntax/details. See loopback_bw for more info.
-topology          | no      | FLAT\|TORUS\|FAT_TREE\|DRAGONFLY (default: FLAT) | Network topology to use. SimGrid currently supports FLAT (with or without backbone, as described before), <a href="http://en.wikipedia.org/wiki/Torus_interconnect">TORUS </a>, FAT_TREE, and DRAGONFLY attributes for this tag.
-topo_parameters   | no      | string | Specific parameters to pass for the topology defined in the topology tag. For torus networks, comma-separated list of the number of nodes in each dimension of the torus. Please refer to the specific documentation for \ref simgrid::kernel::routing::FatTreeZone "FatTree NetZone", \ref simgrid::kernel::routing::DragonflyZone "Dragonfly NetZone".
+topology          | no      | FLAT@|TORUS@|FAT_TREE@|DRAGONFLY (default: FLAT) | Network topology to use. SimGrid currently supports FLAT (with or without backbone, as described before), <a href="http://en.wikipedia.org/wiki/Torus_interconnect">TORUS </a>, FAT_TREE, and DRAGONFLY attributes for this tag.
+topo_parameters   | no      | string | Specific parameters to pass for the topology defined in the topology tag. For torus networks, comma-separated list of the number of nodes in each dimension of the torus. Please refer to the specific documentation for @ref simgrid::kernel::routing::FatTreeZone "FatTree NetZone", @ref simgrid::kernel::routing::DragonflyZone "Dragonfly NetZone".
 
 
 the router name is defined as the resulting String in the following
@@ -265,32 +264,32 @@ router_name = prefix + clusterId + "_router" + suffix;
 
 Consider the following two (and independent) uses of the ``cluster`` tag:
 
-\verbatim
+@verbatim
 <cluster id="my_cluster_1" prefix="" suffix="" radical="0-262144"
          speed="1e9" bw="125e6" lat="5E-5"/>
 
 <cluster id="my_cluster_2" prefix="c-" suffix=".me" radical="0-99"
          speed="1e9" bw="125e6" lat="5E-5"
          bb_bw="2.25e9" bb_lat="5E-4"/>
-\endverbatim
+@endverbatim
 
 The second example creates one router and 100 machines with the following names:
-\verbatim
+@verbatim
 c-my_cluster_2_router.me
 c-0.me
 c-1.me
 c-2.me
 ...
 c-99.me
-\endverbatim
+@endverbatim
 
-\subsubsection pf_cabinet &lt;cabinet&gt;
+@subsubsection pf_cabinet &lt;cabinet&gt;
 
-\note
+@note
     This tag is only available when the routing mode of the network zone
     is set to ``Cluster``.
 
-The ``&lt;cabinet /&gt;`` tag is, like the \ref pf_tag_cluster "&lt;cluster&gt;" tag,
+The ``&lt;cabinet /&gt;`` tag is, like the @ref pf_tag_cluster "&lt;cluster&gt;" tag,
 a meta-tag. This means that it is simply a shortcut for creating a set of (homogenous) hosts and links quickly;
 unsurprisingly, this tag was introduced to setup cabinets in data centers quickly. Unlike
 &lt;cluster&gt;, however, the &lt;cabinet&gt; assumes that you create the backbone
@@ -304,21 +303,20 @@ id              | yes       | string | The identifier of the cabinet. Facilitate
 prefix          | yes       | string | Each node of the cabinet has to have a name. This name will be prefixed with this prefix.
 suffix          | yes       | string | Each node of the cabinet will be suffixed with this suffix
 radical         | yes       | string | Regexp used to generate cabinet nodes name. Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before. The produced number is concatenated between prefix and suffix to form machine names.
-speed           | yes       | int    | Same as the ``speed`` attribute of the \ref pf_tag_host "&lt;host&gt;" tag.
-bw              | yes       | int    | Bandwidth for the links between nodes and backbone (if any). See the \ref pf_tag_link "link section" for syntax/details.
-lat             | yes       | int    | Latency for the links between nodes and backbone (if any). See the \ref pf_tag_link "link section" for syntax/details.
+speed           | yes       | int    | Same as the ``speed`` attribute of the @ref pf_tag_host "&lt;host&gt;" tag.
+bw              | yes       | int    | Bandwidth for the links between nodes and backbone (if any). See the @ref pf_tag_link "link section" for syntax/details.
+lat             | yes       | int    | Latency for the links between nodes and backbone (if any). See the @ref pf_tag_link "link section" for syntax/details.
 
-\note
+@note
     Please note that as of now, it is impossible to change attributes such as,
-    amount of cores (always set to 1), the initial state of hosts/links
-    (always set to ON), the sharing policy of the links (always set to \ref pf_sharing_policy_splitduplex "SPLITDUPLEX").
+    amount of cores (always set to 1), the sharing policy of the links (always set to @ref pf_sharing_policy_splitduplex "SPLITDUPLEX").
 
 #### Example ####
 
 The following example was taken from ``examples/platforms/meta_cluster.xml`` and
 shows how to use the cabinet tag.
 
-\verbatim
+@verbatim
   <zone  id="my_cluster1"  routing="Cluster">
     <cabinet id="cabinet1" prefix="host-" suffix=".cluster1"
       speed="1Gf" bw="125MBps" lat="100us" radical="1-10"/>
@@ -329,10 +327,10 @@ shows how to use the cabinet tag.
 
     <backbone id="backbone1" bandwidth="2.25GBps" latency="500us"/>
   </zone>
-\endverbatim
+@endverbatim
 
-\note
-   Please note that you must specify the \ref pf_backbone "&lt;backbone&gt;"
+@note
+   Please note that you must specify the @ref pf_backbone "&lt;backbone&gt;"
    tag by yourself; this is not done automatically and there are no checks
    that ensure this backbone was defined.
 
@@ -340,16 +338,16 @@ The hosts generated in the above example are named host-1.cluster, host-2.cluste
 etc.
 
 
-\subsubsection pf_peer &lt;peer&gt; (Vivaldi netzones only)
+@subsubsection pf_peer &lt;peer&gt; (Vivaldi netzones only)
 
 This tag represents a peer, as in Peer-to-Peer (P2P) networks. This
 can only be used in Vivaldi NetZones. It creates the following
 resources to the NetZone:
 
-\li A host
-\li Two links: One for download and one for upload. This is
+@li A host
+@li Two links: One for download and one for upload. This is
     convenient to use and simulate stuff under the last mile model (e.g., ADSL peers).
-\li It connects the two links to the host
+@li It connects the two links to the host
 
 #### Attributes ####
 
@@ -360,7 +358,7 @@ speed           | yes       | int    | See the description of the ``host`` tag f
 bw_in           | yes       | int    | Bandwidth of the private downstream link
 bw_out          | yes       | int    | Bandwidth of the private upstream link
 coordinates     | no        | string | Coordinates of the gateway for this peer. Example value: 12.8 14.4 6.4
-sharing_policy  | no        | SHARED\|SPLITDUPLEX (default: SPLITDUPLEX) | Sharing policy for links. See <b>link</b> description for details.
+sharing_policy  | no        | SHARED@|SPLITDUPLEX (default: SPLITDUPLEX) | Sharing policy for links. See <b>link</b> description for details.
 availability_file| no       | string | Availability file for the peer. Same as host availability file. See <b>host</b> description for details.
 state_file      | no        | string | State file for the peer. Same as host state file. See <b>host</b> description for details.
 
@@ -374,14 +372,14 @@ See the documentation of simgrid::kernel::routing::VivaldiZone for
 details on how the latency is computed from the coordinate, and on the
 the up and down bandwidth are used.
 
-\subsection pf_ne Network equipments
+@subsection pf_ne Network equipments
 
 There are two tags at all times available to represent network entities and
 several other tags that are available only in certain contexts.
 1. ``<link>``: Represents a entity that has a limited bandwidth, a
     latency, and that can be shared according to TCP way to share this
     bandwidth.
-\remark
+@remark
   The concept of links in SimGrid may not be intuitive, as links are not
   limited to connecting (exactly) two entities; in fact, you can have more than
   two equipments connected to it. (In graph theoretical terms: A link in
@@ -396,11 +394,11 @@ several other tags that are available only in certain contexts.
 3. ``<backbone/>``: This tag is only available when the containing network zone is
                     used as a cluster (i.e., mode="Cluster")
 
-\remark
+@remark
     If you want to represent an entity like a switch, you must use ``<link>`` (see section). Routers are used
-    to run some routing algorithm and determine routes (see Section \ref pf_routing for details).
+    to run some routing algorithm and determine routes (see Section @ref pf_routing for details).
 
-\subsubsection pf_router &lt;router/&gt;
+@subsubsection pf_router &lt;router/&gt;
 
 As said before, <b>router</b> is used only to give some information
 for routing algorithms. So, it does not have any attributes except:
@@ -410,15 +408,15 @@ for routing algorithms. So, it does not have any attributes except:
 Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | string | The identifier of the router to be used when referring to it.
-coordinates     | no        | string | Must be provided when choosing the Vivaldi, coordinate-based routing model for the network zone the router belongs to. More details can be found in the Section \ref pf_P2P_tags.
+coordinates     | no        | string | Must be provided when choosing the Vivaldi, coordinate-based routing model for the network zone the router belongs to. More details can be found in the Section @ref pf_P2P_tags.
 
 #### Example ####
 
-\verbatim
+@verbatim
  <router id="gw_dc1_horizdist"/>
-\endverbatim
+@endverbatim
 
-\subsubsection pf_tag_link &lt;link&gt;
+@subsubsection pf_tag_link &lt;link&gt;
 
 Network links can represent one-hop network connections. They are
 characterized by their id and their bandwidth; links can (but may not) be subject
@@ -429,10 +427,9 @@ to latency.
 Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | string | The identifier of the link to be used when referring to it.
-bandwidth       | yes       | int    | Maximum bandwidth for this link, given in bytes/s
+bandwidth       | yes       | string | Maximum bandwidth for this link, along with its unit.
 latency         | no        | double (default: 0.0) | Latency for this link.
-sharing_policy  | no        | \ref sharing_policy_shared "SHARED"\|\ref pf_sharing_policy_fatpipe "FATPIPE"\|\ref pf_sharing_policy_splitduplex "SPLITDUPLEX" (default: SHARED) | Sharing policy for the link.
-state           | no        | ON\|OFF (default: ON) | Allows you to to turn this link on or off (working / not working)
+sharing_policy  | no        | @ref sharing_policy_shared "SHARED"@|@ref pf_sharing_policy_fatpipe "FATPIPE"@|@ref pf_sharing_policy_splitduplex "SPLITDUPLEX" (default: SHARED) | Sharing policy for the link.
 bandwidth_file  | no        | string | Allows you to use a file as input for bandwidth.
 latency_file    | no        | string | Allows you to use a file as input for latency.
 state_file      | no        | string | Allows you to use a file as input for states.
@@ -444,11 +441,11 @@ When using the latency attribute, you can specify the latency by using the scien
 notation or by using common abbreviations. For instance, the following three tags
 are equivalent:
 
-\verbatim
+@verbatim
  <link id="LINK1" bandwidth="125000000" latency="5E-6"/>
  <link id="LINK1" bandwidth="125000000" latency="5us"/>
  <link id="LINK1" bandwidth="125000000" latency="0.000005"/>
-\endverbatim
+@endverbatim
 
 Here, the second tag uses "us", meaning "microseconds". Other shortcuts are:
 
@@ -466,13 +463,13 @@ Picosecond  | ps | 0.000000000001 = 10^(-12)
 
 #### Sharing policy ####
 
-\anchor sharing_policy_shared
-By default a network link is \b SHARED, i.e., if two or more data flows go
+@anchor sharing_policy_shared
+By default a network link is @b SHARED, i.e., if two or more data flows go
 through a link, the bandwidth is shared fairly among all data flows. This
 is similar to the sharing policy TCP uses.
 
-\anchor pf_sharing_policy_fatpipe
-On the other hand, if a link is defined as a \b FATPIPE,
+@anchor pf_sharing_policy_fatpipe
+On the other hand, if a link is defined as a @b FATPIPE,
 each flow going through this link will be provided with the complete bandwidth,
 i.e., no sharing occurs and the bandwidth is only limiting each flow individually.
 Please note that this is really on a per-flow basis, not only on a per-host basis!
@@ -482,13 +479,13 @@ is ``number_of_flows*bandwidth``, with at most ``bandwidth`` being available per
 Using the FATPIPE mode allows to model backbones that won't affect performance
 (except latency).
 
-\anchor pf_sharing_policy_splitduplex
-The last mode available is \b SPLITDUPLEX. This means that SimGrid will
+@anchor pf_sharing_policy_splitduplex
+The last mode available is @b SPLITDUPLEX. This means that SimGrid will
 automatically generate two links (one carrying the suffix _UP and the other the
 suffix _DOWN) for each ``<link>`` tag. This models situations when the direction
 of traffic is important.
 
-\remark
+@remark
   Transfers from one side to the other will interact similarly as
   TCP when ACK returning packets circulate on the other direction. More
   discussion about it is available in the description of link_ctn description.
@@ -497,31 +494,31 @@ In other words: The SHARED policy defines a physical limit for the bandwidth.
 The FATPIPE mode defines a limit for each application,
 with no upper total limit.
 
-\remark
+@remark
   Tip: By using the FATPIPE mode, you can model big backbones that
   won't affect performance (except latency).
 
 #### Example ####
 
-\verbatim
+@verbatim
  <link id="SWITCH" bandwidth="125000000" latency="5E-5" sharing_policy="FATPIPE" />
-\endverbatim
+@endverbatim
 
 #### Expressing dynamism and failures ####
 
 Similar to hosts, it is possible to declare links whose state, bandwidth
-or latency changes over time (see Section \ref pf_host_dynamism for details).
+or latency changes over time (see Section @ref pf_host_dynamism for details).
 
 In the case of network links, the ``bandwidth`` and ``latency`` attributes are
 replaced by the ``bandwidth_file`` and ``latency_file`` attributes.
 The following XML snippet demonstrates how to use this feature in the platform
 file. The structure of the files "link1.bw" and "link1.lat" is shown below.
 
-\verbatim
+@verbatim
 <link id="LINK1" state_file="link1.fail" bandwidth="80000000" latency=".0001" bandwidth_file="link1.bw" latency_file="link1.lat" />
-\endverbatim
+@endverbatim
 
-\note
+@note
   Even if the syntax is the same, the semantic of bandwidth and latency
   trace files differs from that of host availability files. For bandwidth and
   latency, the corresponding files do not
@@ -570,12 +567,12 @@ kicks in. It then loops back, starting at 100µs (the initial value) for one sec
 #### The ``<prop/>`` tag ####
 
 Similar to the ``<host>`` tag, a link may also contain the ``<prop/>`` tag; see the host
-documentation (Section \ref pf_tag_host) for an example.
+documentation (Section @ref pf_tag_host) for an example.
 
 
-\subsubsection pf_backbone <backbone/>
+@subsubsection pf_backbone <backbone/>
 
-\note
+@note
   This tag is <b>only available</b> when the containing network zone uses the "Cluster" routing mode!
 
 Using this tag, you can designate an already existing link to be a backbone.
@@ -584,9 +581,9 @@ Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | string | Name of the link that is supposed to act as a backbone.
 
-\subsection pf_storage Storage
+@subsection pf_storage Storage
 
-\note
+@note
   This is a prototype version that should evolve quickly, hence this
   is just some doc valuable only at the time of writing.
   This section describes the storage management under SimGrid ; nowadays
@@ -595,14 +592,14 @@ id              | yes       | string | Name of the link that is supposed to act 
   @ref msg_file ; access functions are organized as a POSIX-like
   interface.
 
-\subsubsection pf_sto_conc Storage - Main Concepts
+@subsubsection pf_sto_conc Storage - Main Concepts
 
 The storage facilities implemented in SimGrid help to model (and account for) 
 storage devices, such as tapes, hard-drives, CD or DVD devices etc. 
 A typical situation is depicted in the figure below:
 
-\image html ./webcruft/storage_sample_scenario.png
-\image latex ./webcruft/storage_sample_scenario.png "storage_sample_scenario" width=\textwidth
+@image html ./webcruft/storage_sample_scenario.png
+@image latex ./webcruft/storage_sample_scenario.png "storage_sample_scenario" width=@textwidth
 
 In this figure, two hosts called Bob and Alice are interconnected via a network
 and each host is physically attached to a disk; it is not only possible for each host to
@@ -615,24 +612,24 @@ that include storage facilities:
 
 Entity name     | Description
 --------------- | -----------
-\ref pf_storage_entity_storage_type "storage_type"    | Defines a template for a particular kind of storage (such as a hard-drive) and specifies important features of the storage, such as capacity, performance (read/write), contents, ... Different models of hard-drives use different storage_types (because the difference between an SSD and an HDD does matter), as they differ in some specifications (e.g., different sizes or read/write performance).
-\ref pf_tag_storage "storage"        | Defines an actual instance of a storage type (disk, RAM, ...); uses a ``storage_type`` template (see line above) so that you don't need to re-specify the same details over and over again.
-\ref pf_tag_mount "mount"          | Must be wrapped by a \ref pf_tag_host tag; declares which storage(s) this host has mounted and where (i.e., the mountpoint).
+@ref pf_storage_entity_storage_type "storage_type"    | Defines a template for a particular kind of storage (such as a hard-drive) and specifies important features of the storage, such as capacity, performance (read/write), contents, ... Different models of hard-drives use different storage_types (because the difference between an SSD and an HDD does matter), as they differ in some specifications (e.g., different sizes or read/write performance).
+@ref pf_tag_storage "storage"        | Defines an actual instance of a storage type (disk, RAM, ...); uses a ``storage_type`` template (see line above) so that you don't need to re-specify the same details over and over again.
+@ref pf_tag_mount "mount"          | Must be wrapped by a @ref pf_tag_host tag; declares which storage(s) this host has mounted and where (i.e., the mountpoint).
 
 
-\anchor pf_storage_content_file
+@anchor pf_storage_content_file
 ### %Storage Content File ###
 
 In order to assess exactly how much time is spent reading from the storage,
 SimGrid needs to know what is stored on the storage device (identified by distinct (file-)name, like in a file system)
 and what size this content has.
 
-\note
+@note
     The content file is never changed by the simulation; it is parsed once
     per simulation and kept in memory afterwards. When the content of the
     storage changes, only the internal SimGrid data structures change.
 
-\anchor pf_storage_content_file_structure
+@anchor pf_storage_content_file_structure
 #### Structure of a %Storage Content File ####
 
 Here is an excerpt from two storage content file; if you want to see the whole file, check
@@ -642,7 +639,7 @@ SimGrid source code.
 SimGrid essentially supports two different formats: UNIX-style filepaths should
 follow the well known format:
 
-\verbatim
+@verbatim
 /lib/libsimgrid.so.3.6.2  12710497
 /bin/smpicc  918
 /bin/smpirun  7292
@@ -652,50 +649,50 @@ follow the well known format:
 /bin/simgrid-colorizer  2993
 /bin/smpiff  820
 /bin/tesh  356434
-\endverbatim
+@endverbatim
 
 Windows filepaths, unsurprisingly, use the windows style:
 
-\verbatim
-\Windows\avastSS.scr 41664
-\Windows\bfsvc.exe 75264
-\Windows\bootstat.dat 67584
-\Windows\CoreSingleLanguage.xml 31497
-\Windows\csup.txt 12
-\Windows\dchcfg64.exe 335464
-\Windows\dcmdev64.exe 93288
-\endverbatim
+@verbatim
+@Windows@avastSS.scr 41664
+@Windows@bfsvc.exe 75264
+@Windows@bootstat.dat 67584
+@Windows@CoreSingleLanguage.xml 31497
+@Windows@csup.txt 12
+@Windows@dchcfg64.exe 335464
+@Windows@dcmdev64.exe 93288
+@endverbatim
 
-\note
+@note
     The different file formats come at a cost; in version 3.12 (and most likely
     in later versions, too), copying files from windows-style storages to unix-style
     storages (and vice versa) is not supported.
 
-\anchor pf_storage_content_file_create
+@anchor pf_storage_content_file_create
 #### Generate a %Storage Content File ####
 
 If you want to generate a storage content file based on your own filesystem (or at least a filesystem you have access to),
 try running this command (works only on unix systems):
 
-\verbatim
-find . -type f -exec ls -1s --block=1 {} \; 2>/dev/null | awk '{ print $2 " " $1}' > ./content.txt
-\endverbatim
+@verbatim
+find . -type f -exec ls -1s --block=1 {} @; 2>/dev/null | awk '{ print $2 " " $1}' > ./content.txt
+@endverbatim
 
-\subsubsection pf_storage_entities The Storage Entities
+@subsubsection pf_storage_entities The Storage Entities
 
 These are the entities that you can use in your platform files to include
-storage in your model. See also the list of our \ref pf_storage_example_files "example files";
+storage in your model. See also the list of our @ref pf_storage_example_files "example files";
 these might also help you to get started.
 
-\anchor pf_storage_entity_storage_type
-#### \<storage_type\> ####
+@anchor pf_storage_entity_storage_type
+#### @<storage_type@> ####
 
 Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | string | Identifier of this storage_type; used when referring to it
 model           | no        | string | In the future, this will allow to change the performance model to use
 size            | yes       | string | Specifies the amount of available storage space; you can specify storage like "500GiB" or "500GB" if you want. (TODO add a link to all the available abbreviations)
-content         | yes       | string | Path to a \ref pf_storage_content_file "Storage Content File" on your system. This file must exist.
+content         | yes       | string | Path to a @ref pf_storage_content_file "Storage Content File" on your system. This file must exist.
 
 This tag must contain some predefined model properties, specified via the &lt;model_prop&gt; tag. Here is a list,
 see below for an example:
@@ -705,41 +702,41 @@ Property id     | Mandatory | Values | Description
 Bwrite          | yes       | string | Bandwidth for write access; in B/s (but you can also specify e.g. "30MBps")
 Bread           | yes       | string | Bandwidth for read access; in B/s (but you can also specify e.g. "30MBps")
 
-\note
+@note
      A storage_type can also contain the <b>&lt;prop&gt;</b> tag. The &lt;prop&gt; tag allows you
      to associate additional information to this &lt;storage_type&gt; and follows the
      attribute/value schema; see the example below. You may want to use it to give information to
      the tool you use for rendering your simulation, for example.
 
 Here is a complete example for the ``storage_type`` tag:
-\verbatim
+@verbatim
 <storage_type id="single_HDD" size="4000">
   <model_prop id="Bwrite" value="30MBps" />
   <model_prop id="Bread" value="100MBps" />
   <prop id="Brand" value="Western Digital" />
 </storage_type>
-\endverbatim
+@endverbatim
 
 @subsubsection pf_tag_storage &lt;storage&gt; 
 
 Attributes     | Mandatory | Values | Description
 -------------- | --------- | ------ | -----------
 id             | yes       | string | Identifier of this ``storage``; used when referring to it
-typeId         | yes       | string | Here you need to refer to an already existing \ref pf_storage_entity_storage_type "\<storage_type\>"; the storage entity defined by this tag will then inherit the properties defined there.
-attach         | yes       | string | Name of a host (see Section \ref pf_tag_host) to which this storage is <i>physically</i> attached to (e.g., a hard drive in a computer)
-content        | no        | string | When specified, overwrites the content attribute of \ref pf_storage_entity_storage_type "\<storage_type\>"
+typeId         | yes       | string | Here you need to refer to an already existing @ref pf_storage_entity_storage_type "@<storage_type@>"; the storage entity defined by this tag will then inherit the properties defined there.
+attach         | yes       | string | Name of a host (see Section @ref pf_tag_host) to which this storage is <i>physically</i> attached to (e.g., a hard drive in a computer)
+content        | no        | string | When specified, overwrites the content attribute of @ref pf_storage_entity_storage_type "@<storage_type@>"
 
 Here are two examples:
 
-\verbatim
+@verbatim
      <storage id="Disk1" typeId="single_HDD" attach="bob" />
 
      <storage id="Disk2" typeId="single_SSD"
               content="content/win_storage_content.txt" />
-\endverbatim
+@endverbatim
 
 The first example is straightforward: A disk is defined and called "Disk1"; it is
-of type "single_HDD" (shown as an example of \ref pf_storage_entity_storage_type "\<storage_type\>" above) and attached
+of type "single_HDD" (shown as an example of @ref pf_storage_entity_storage_type "@<storage_type@>" above) and attached
 to a host called "bob" (the definition of this host is omitted here).
 
 The second storage is called "Disk2", is still of the same type as Disk1 but
@@ -747,19 +744,19 @@ now specifies a new content file (so the contents will be different from Disk1)
 and the filesystem uses the windows style; finally, it is attached to a second host,
 called alice (which is again not defined here).
 
-\subsubsection pf_tag_mount &lt;mount&gt;
+@subsubsection pf_tag_mount &lt;mount&gt;
 
 | Attribute   | Mandatory   | Values   | Description                                                                                               |
 | ----------- | ----------- | -------- | -------------                                                                                             |
-| id          | yes         | string   | Refers to a \ref pf_tag_storage "&lt;storage&gt;" entity that will be mounted on that computer |
+| id          | yes         | string   | Refers to a @ref pf_tag_storage "&lt;storage&gt;" entity that will be mounted on that computer |
 | name        | yes         | string   | Path/location to/of the logical reference (mount point) of this disk
 
-This tag must be enclosed by a \ref pf_tag_host tag. It then specifies where the mountpoint of a given storage device (defined by the ``id`` attribute)
+This tag must be enclosed by a @ref pf_tag_host tag. It then specifies where the mountpoint of a given storage device (defined by the ``id`` attribute)
 is; this location is specified by the ``name`` attribute.
 
 Here is a simple example, taken from the file ``examples/platform/storage.xml``:
 
-\verbatim
+@verbatim
     <storage_type id="single_SSD" size="500GiB">
        <model_prop id="Bwrite" value="60MBps" />
        <model_prop id="Bread" value="200MBps" />
@@ -780,11 +777,11 @@ Here is a simple example, taken from the file ``examples/platform/storage.xml``:
       <mount storageId="Disk2" name="c:"/>
       <mount storageId="Disk4" name="/home"/>
     </host>
-\endverbatim
+@endverbatim
 
 This example is quite interesting, as the same device, called "Disk2", is mounted by
 two hosts at the same time! Note, however, that the host called ``alice`` is actually
-attached to this storage, as can be seen in the \ref pf_tag_storage "&lt;storage&gt;"
+attached to this storage, as can be seen in the @ref pf_tag_storage "&lt;storage&gt;"
 tag. This means that ``denise`` must access this storage through the network, but SimGrid automatically takes
 care of that for you.
 
@@ -792,7 +789,7 @@ Furthermore, this example shows that ``denise`` has mounted two storages with di
 filesystem types (unix and windows). In general, a host can mount as many storage devices as
 required.
 
-\note
+@note
     Again, the difference between ``attach`` and ``mount`` is simply that
     an attached storage is always physically inside (or connected to) that machine;
     for instance, a USB stick is attached to one and only one machine (where it's plugged-in)
@@ -800,9 +797,9 @@ required.
 
 ###### Example files #####
 
-\verbinclude example_filelist_xmltag_mount
+@verbinclude example_filelist_xmltag_mount
 
-\subsubsection pf_storage_example_files Example files
+@subsubsection pf_storage_example_files Example files
 
 Several examples were already discussed above; if you're interested in full examples,
 check the the following platforms:
@@ -813,7 +810,7 @@ check the the following platforms:
 If you're looking for some examplary C code, you may find the source code
 available in the directory ``examples/msg/io/`` useful.
 
-\subsubsection pf_storage_examples_modelling Modelling different situations
+@subsubsection pf_storage_examples_modelling Modelling different situations
 
 The storage functionality of SimGrid is type-agnostic, that is, the implementation
 does not presume any type of storage, such as HDDs/SSDs, RAM,
@@ -827,33 +824,33 @@ common scenario would be the access of remote RAM.
 How can this be achieved in SimGrid? Let's assume we have a setup where three hosts
 (HostA, HostB, HostC) need to access remote RAM:
 
-\verbatim
+@verbatim
       Host A
     /
 RAM -- Host B
-    \
+    @
       Host C
-\endverbatim
+@endverbatim
 
 An easy way to model this scenario is to setup and define the RAM via the
-\ref pf_tag_storage "storage" and \ref pf_storage_entity_storage_type "storage type"
+@ref pf_tag_storage "storage" and @ref pf_storage_entity_storage_type "storage type"
 entities and attach it to a remote dummy host; then, every host can have their own links
 to this host (modelling for instance certain scenarios, such as PCIe ...)
 
-\verbatim
+@verbatim
               Host A
             /
 RAM - Dummy -- Host B
-            \
+            @
               Host C
-\endverbatim
+@endverbatim
 
 Now, if read from this storage, the host that mounts this storage
 communicates to the dummy host which reads from RAM and
 sends the information back.
 
 
-\section pf_routing Routing
+@section pf_routing Routing
 
 To achieve high performance, the routing tables used within SimGrid are
 static. This means that routing between two nodes is calculated once
@@ -871,7 +868,7 @@ are all calculating shortest paths. They do require some time to converge, but
 eventually, when the routing tables have stabilized, your packets will follow
 the shortest paths.
 
-\subsection  pf_tag_zone &lt;zone&gt;
+@subsection  pf_tag_zone &lt;zone&gt;
 
 Before SimGrid v3.16, networking zones used to be called Autonomous
 Systems, but this was misleading as zones may include other zones in a
@@ -881,39 +878,39 @@ zones, please report this as a bug.
 Attribute   | Value                                             | Description
 ----------- | ------------------------------------------------- | ----------------------------------------------
 id          | String (mandatory)                                | The identifier of this zone (must be unique)
-routing     | One of the existing routing algorithm (mandatory) | See Section \ref pf_rm for details.
+routing     | One of the existing routing algorithm (mandatory) | See Section @ref pf_rm for details.
 
 <b>Example:</b>
-\code
+@code
 <zone id="zone0" routing="Full">
    <host id="host1" speed="1000000000"/>
    <host id="host2" speed="1000000000"/>
    <link id="link1" bandwidth="125000000" latency="0.000100"/>
    <route src="host1" dst="host2"><link_ctn id="link1"/></route>
 </zone>
-\endcode
+@endcode
 
 In this example, zone0 contains two hosts (host1 and host2). The route
 between the hosts goes through link1.
 
-\subsection pf_rm Routing models
+@subsection pf_rm Routing models
 
 For each network zone, you must define explicitly which routing model will
 be used. There are 3 different categories for routing models:
 
-1. \ref pf_routing_model_shortest_path "Shortest-path" based models: SimGrid calculates shortest
+1. @ref pf_routing_model_shortest_path "Shortest-path" based models: SimGrid calculates shortest
    paths and manages them. Behaves more or less like most real life
    routing mechanisms.
-2. \ref pf_routing_model_manual "Manually-entered" route models: you have to define all routes
+2. @ref pf_routing_model_manual "Manually-entered" route models: you have to define all routes
    manually in the platform description file; this can become
    tedious very quickly, as it is very verbose.
    Consistent with some manually managed real life routing.
-3. \ref pf_routing_model_simple "Simple/fast models": those models offer fast, low memory routing
+3. @ref pf_routing_model_simple "Simple/fast models": those models offer fast, low memory routing
    algorithms. You should consider to use this type of model if 
    you can make some assumptions about your network zone.
    Routing in this case is more or less ignored.
 
-\subsubsection pf_raf The router affair
+@subsubsection pf_raf The router affair
 
 Using routers becomes mandatory when using shortest-path based
 models or when using the bindings to the ns-3 packet-level
@@ -940,26 +937,26 @@ To express this topological information, a <b>route</b> has to be
 defined in order to declare which link is connected to a router. 
 
 
-\subsubsection pf_routing_model_shortest_path Shortest-path based models
+@subsubsection pf_routing_model_shortest_path Shortest-path based models
 
 The following table shows all the models that compute routes using
 shortest-paths algorithms are currently available in SimGrid. More detail on how
-to choose the best routing model is given in the Section called \"\ref pf_routing_howto_choose_wisely\".
+to choose the best routing model is given in the Section called @"@ref pf_routing_howto_choose_wisely@".
 
 | Name                                                | Description                                                                |
 | --------------------------------------------------- | -------------------------------------------------------------------------- |
-| \ref pf_routing_model_floyd "Floyd"                 | Floyd routing data. Pre-calculates all routes once                         |
-| \ref pf_routing_model_dijkstra "Dijkstra"           | Dijkstra routing data. Calculates routes only when needed                  |
-| \ref pf_routing_model_dijkstracache "DijkstraCache" | Dijkstra routing data. Handles some cache for already calculated routes.   |
+| @ref pf_routing_model_floyd "Floyd"                 | Floyd routing data. Pre-calculates all routes once                         |
+| @ref pf_routing_model_dijkstra "Dijkstra"           | Dijkstra routing data. Calculates routes only when needed                  |
+| @ref pf_routing_model_dijkstracache "DijkstraCache" | Dijkstra routing data. Handles some cache for already calculated routes.   |
 
 All those shortest-path models are instanciated in the same way and are
 completely interchangeable. Here are some examples:
 
-\anchor pf_routing_model_floyd
+@anchor pf_routing_model_floyd
 ### Floyd ###
 
 Floyd example:
-\verbatim
+@verbatim
 <zone  id="zone0"  routing="Floyd">
 
   <cluster id="my_cluster_1" prefix="c-" suffix=""
@@ -979,7 +976,7 @@ Floyd example:
   </zoneroute>
 
 </zone>
-\endverbatim
+@endverbatim
 
 zoneroute given at the end gives a topological information: link1 is
 between router1 and host1.
@@ -989,9 +986,9 @@ between router1 and host1.
 This is an automatically generated list of example files that use the Floyd
 routing model (the path is given relative to SimGrid's source directory)
 
-\verbinclude example_filelist_routing_floyd
+@verbinclude example_filelist_routing_floyd
 
-\anchor pf_routing_model_dijkstra
+@anchor pf_routing_model_dijkstra
 ### Dijkstra ###
 
 #### Example platform files ####
@@ -999,10 +996,10 @@ routing model (the path is given relative to SimGrid's source directory)
 This is an automatically generated list of example files that use the Dijkstra
 routing model (the path is given relative to SimGrid's source directory)
 
-\verbinclude example_filelist_routing_dijkstra
+@verbinclude example_filelist_routing_dijkstra
 
 Dijkstra example:
-\verbatim
+@verbatim
  <zone id="zone_2" routing="Dijkstra">
      <host id="zone_2_host1" speed="1000000000"/>
      <host id="zone_2_host2" speed="1000000000"/>
@@ -1019,18 +1016,18 @@ Dijkstra example:
      <route src="central_router" dst="zone_2_host3"><link_ctn id="zone_2_link3"/></route>
      <route src="central_router" dst="zone_2_gateway"><link_ctn id="zone_2_link4"/></route>
   </zone>
-\endverbatim
+@endverbatim
 
-\anchor pf_routing_model_dijkstracache
+@anchor pf_routing_model_dijkstracache
 ### DijkstraCache ###
 
 DijkstraCache example:
-\verbatim
+@verbatim
 <zone id="zone_2" routing="DijkstraCache">
      <host id="zone_2_host1" speed="1000000000"/>
      ...
 (platform unchanged compared to upper example)
-\endverbatim
+@endverbatim
 
 #### Example platform files ####
 
@@ -1040,85 +1037,85 @@ routing model (the path is given relative to SimGrid's source directory):
 Editor's note: At the time of writing, no platform file used this routing model - so
 if there are no example files listed here, this is likely to be correct.
 
-\verbinclude example_filelist_routing_dijkstra_cache
+@verbinclude example_filelist_routing_dijkstra_cache
 
-\subsubsection pf_routing_model_manual Manually-entered route models
+@subsubsection pf_routing_model_manual Manually-entered route models
 
 | Name                               | Description                                                                    |
 | ---------------------------------- | ------------------------------------------------------------------------------ |
-| \ref pf_routing_model_full "Full"  | You have to enter all necessary routers manually; that is, every single route. This may consume a lot of memory when the XML is parsed and might be tedious to write; i.e., this is only recommended (if at all) for small platforms. |
+| @ref pf_routing_model_full "Full"  | You have to enter all necessary routers manually; that is, every single route. This may consume a lot of memory when the XML is parsed and might be tedious to write; i.e., this is only recommended (if at all) for small platforms. |
 
-\anchor pf_routing_model_full
+@anchor pf_routing_model_full
 ### Full ###
 
 Full example:
-\verbatim
+@verbatim
 <zone  id="zone0"  routing="Full">
    <host id="host1" speed="1000000000"/>
    <host id="host2" speed="1000000000"/>
    <link id="link1" bandwidth="125000000" latency="0.000100"/>
    <route src="host1" dst="host2"><link_ctn id="link1"/></route>
  </zone>
-\endverbatim
+@endverbatim
 
 #### Example platform files ####
 
 This is an automatically generated list of example files that use the Full
 routing model (the path is given relative to SimGrid's source directory):
 
-\verbinclude example_filelist_routing_full
+@verbinclude example_filelist_routing_full
 
-\subsubsection pf_routing_model_simple Simple/fast models
+@subsubsection pf_routing_model_simple Simple/fast models
 
 | Name                                     | Description                                                                                                                         |
 | ---------------------------------------- | ------------------------------------------------------------------------------                                                      |
-| \ref pf_routing_model_cluster "Cluster"  | This is specific to the \ref pf_tag_cluster "&lt;cluster/&gt;" tag and should not be used by the user, as several assumptions are made. |
-| \ref pf_routing_model_none    "None"     | No routing at all. Unless you know what you're doing, avoid using this mode in combination with a non-constant network model.       |
-| \ref pf_routing_model_vivaldi "Vivaldi"  | Perfect when you want to use coordinates. Also see the corresponding \ref pf_P2P_tags "P2P section" below.                          |
+| @ref pf_routing_model_cluster "Cluster"  | This is specific to the @ref pf_tag_cluster "&lt;cluster/&gt;" tag and should not be used by the user, as several assumptions are made. |
+| @ref pf_routing_model_none    "None"     | No routing at all. Unless you know what you're doing, avoid using this mode in combination with a non-constant network model.       |
+| @ref pf_routing_model_vivaldi "Vivaldi"  | Perfect when you want to use coordinates. Also see the corresponding @ref pf_P2P_tags "P2P section" below.                          |
 
-\anchor pf_routing_model_cluster
+@anchor pf_routing_model_cluster
 ### Cluster ###
 
-\note
- In this mode, the \ref pf_cabinet "&lt;cabinet/&gt;" tag is available.
+@note
+ In this mode, the @ref pf_cabinet "&lt;cabinet/&gt;" tag is available.
 
 #### Example platform files ####
 
 This is an automatically generated list of example files that use the Cluster
 routing model (the path is given relative to SimGrid's source directory):
 
-\verbinclude example_filelist_routing_cluster
+@verbinclude example_filelist_routing_cluster
 
-\anchor pf_routing_model_none
+@anchor pf_routing_model_none
 
 ### None ###
 
 This model does exactly what it's name advertises: Nothing. There is no routing
 available within this model and if you try to communicate within the zone that
 uses this model, SimGrid will fail unless you have explicitly activated the
-\ref options_model_select_network_constant "Constant Network Model" (this model charges
+@ref options_model_select_network_constant "Constant Network Model" (this model charges
 the same for every single communication). It should
-be noted, however, that you can still attach an \ref pf_tag_zoneroute "ZoneRoute",
+be noted, however, that you can still attach an @ref pf_tag_zoneroute "ZoneRoute",
 as is demonstrated in the example below:
 
-\verbinclude platforms/cluster_and_one_host.xml
+@verbinclude platforms/cluster_and_one_host.xml
 
 #### Example platform files ####
 
 This is an automatically generated list of example files that use the None
 routing model (the path is given relative to SimGrid's source directory):
 
-\verbinclude example_filelist_routing_none
+@verbinclude example_filelist_routing_none
 
 
-\anchor pf_routing_model_vivaldi
+@anchor pf_routing_model_vivaldi
 ### Vivaldi ###
 
 For more information on how to use the [Vivaldi Coordinates](https://en.wikipedia.org/wiki/Vivaldi_coordinates),
-see also Section \ref pf_P2P_tags "P2P tags".
+see also Section @ref pf_P2P_tags "P2P tags".
 
 Note that it is possible to combine the Vivaldi routing model with other routing models;
-an example can be found in the file \c examples/platforms/cloud.xml. This
+an example can be found in the file @c examples/platforms/cloud.xml. This
 examples models a NetZone using Vivaldi that contains other NetZones that use different
 routing models.
 
@@ -1127,76 +1124,76 @@ routing models.
 This is an automatically generated list of example files that use the None
 routing model (the path is given relative to SimGrid's source directory):
 
-\verbinclude example_filelist_routing_vivaldi
+@verbinclude example_filelist_routing_vivaldi
 
 
-\subsection ps_dec Defining routes
+@subsection ps_dec Defining routes
 
 There are currently four different ways to define routes: 
 
 | Name                                              | Description                                                                         |
 | ------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| \ref pf_tag_route "route"                 | Used to define route between host/router                                            |
-| \ref pf_tag_zoneroute "zoneRoute"             | Used to define route between different zones                                           |
-| \ref pf_tag_bypassroute "bypassRoute"     | Used to supersede normal routes as calculated by the network model between host/router; e.g., can be used to use a route that is not the shortest path for any of the shortest-path routing models. |
-| \ref pf_tag_bypassasroute "bypassZoneRoute"  | Used in the same way as bypassRoute, but for zones                                     |
+| @ref pf_tag_route "route"                 | Used to define route between host/router                                            |
+| @ref pf_tag_zoneroute "zoneRoute"             | Used to define route between different zones                                           |
+| @ref pf_tag_bypassroute "bypassRoute"     | Used to supersede normal routes as calculated by the network model between host/router; e.g., can be used to use a route that is not the shortest path for any of the shortest-path routing models. |
+| @ref pf_tag_bypassasroute "bypassZoneRoute"  | Used in the same way as bypassRoute, but for zones                                     |
 
 Basically all those tags will contain an (ordered) list of references
 to link that compose the route you want to define.
 
 Consider the example below:
 
-\verbatim
+@verbatim
 <route src="Alice" dst="Bob">
 	<link_ctn id="link1"/>
 	<link_ctn id="link2"/>
 	<link_ctn id="link3"/>
 </route>
-\endverbatim
+@endverbatim
 
 The route here from host Alice to Bob will be first link1, then link2,
-and finally link3. What about the reverse route? \ref pf_tag_route "Route" and
-\ref pf_tag_zoneroute "zoneroute" have an optional attribute \c symmetrical, that can
-be either \c YES or \c NO. \c YES means that the reverse route is the same
-route in the inverse order, and is set to \c YES by default. Note that
+and finally link3. What about the reverse route? @ref pf_tag_route "Route" and
+@ref pf_tag_zoneroute "zoneroute" have an optional attribute @c symmetrical, that can
+be either @c YES or @c NO. @c YES means that the reverse route is the same
+route in the inverse order, and is set to @c YES by default. Note that
 this is not the case for bypass*Route, as it is more probable that you
 want to bypass only one default route.
 
-For an \ref pf_tag_zoneroute "zoneroute", things are just slightly more complicated, as you have
+For an @ref pf_tag_zoneroute "zoneroute", things are just slightly more complicated, as you have
 to give the id of the gateway which is inside the zone you want to access ... 
 So it looks like this:
 
-\verbatim
+@verbatim
 <zoneroute src="zone1" dst="zone2"
   gw_src="router1" gw_dst="router2">
   <link_ctn id="link1"/>
 </zoneroute>
-\endverbatim
+@endverbatim
 
 gw == gateway, so when any message are trying to go from zone1 to zone2,
 it means that it must pass through router1 to get out of the zone, then
 pass through link1, and get into zone2 by being received by router2.
 router1 must belong to zone1 and router2 must belong to zone2.
 
-\subsubsection pf_tag_linkctn &lt;link_ctn&gt;
+@subsubsection pf_tag_linkctn &lt;link_ctn&gt;
 
 This entity has only one purpose: Refer to an already existing
-\ref pf_tag_link "&lt;link/&gt;" when defining a route, i.e., it
-can only occur as a child of \ref pf_tag_route "&lt;route/&gt;"
+@ref pf_tag_link "&lt;link/&gt;" when defining a route, i.e., it
+can only occur as a child of @ref pf_tag_route "&lt;route/&gt;"
 
 | Attribute name  | Mandatory | Values | Description                                                   |
 | --------------- | --------- | ------ | -----------                                                   |
 | id              | yes       | String | The identifier of the link that should be added to the route. |
-| direction       | maybe     | UP\|DOWN | If the link referenced by \c id has been declared as \ref pf_sharing_policy_splitduplex "SPLITDUPLEX", this indicates which direction the route traverses through this link: UP or DOWN. If you don't use SPLITDUPLEX, do not use this attribute or SimGrid will not find the right link.
+| direction       | maybe     | UP@|DOWN | If the link referenced by @c id has been declared as @ref pf_sharing_policy_splitduplex "SPLITDUPLEX", this indicates which direction the route traverses through this link: UP or DOWN. If you don't use SPLITDUPLEX, do not use this attribute or SimGrid will not find the right link.
 
 #### Example Files ####
 
-This is an automatically generated list of example files that use the \c &lt;link_ctn/&gt;
+This is an automatically generated list of example files that use the @c &lt;link_ctn/&gt;
 entity (the path is given relative to SimGrid's source directory):
 
-\verbinclude example_filelist_xmltag_linkctn
+@verbinclude example_filelist_xmltag_linkctn
 
-\subsubsection pf_tag_zoneroute &lt;zoneRoute&gt;
+@subsubsection pf_tag_zoneroute &lt;zoneRoute&gt;
 
 The purpose of this entity is to define a route between two
 NetZones. Recall that all zones form a tree, so to connect two
@@ -1205,26 +1202,26 @@ and destination zones, along with the gateway in each zone (ie, the
 point to reach within that zone to reach the netzone), and the list of
 links in the ancestor zone to go from one zone to another.
 
-So, to go from an host \c src_host that is within zone \c src, to an
-host \c dst_host that is within \c dst, you need to:
+So, to go from an host @c src_host that is within zone @c src, to an
+host @c dst_host that is within @c dst, you need to:
 
- - move within zone \c src, from \c src_host to the specified \c gw_src;
+ - move within zone @c src, from @c src_host to the specified @c gw_src;
  - traverse all links specified by the zoneRoute (they are supposed to be within the common ancestor);
- - move within zone \c dst, from \c gw_dst to \c dst_host.
+ - move within zone @c dst, from @c gw_dst to @c dst_host.
 
 #### Attributes ####
 
 | Attribute name  | Mandatory | Values | Description                                                                                                                                |
 | --------------- | --------- | ------ | -----------                                                                                                                                |
 | src             | yes       | String | The identifier of the source zone                                                                                                            |
-| dst             | yes       | String | See the \c src attribute                                                                                                                   |
-| gw_src          | yes       | String | The gateway that will be used within the src zone; this can be any \ref pf_tag_host "Host" or \ref pf_router "Router" defined within the src zone. |
-| gw_dst          | yes       | String | Same as \c gw_src, but with the dst zone instead.                                                                                            |
-| symmetrical     | no        | YES\|NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly.               | 
+| dst             | yes       | String | See the @c src attribute                                                                                                                   |
+| gw_src          | yes       | String | The gateway that will be used within the src zone; this can be any @ref pf_tag_host "Host" or @ref pf_router "Router" defined within the src zone. |
+| gw_dst          | yes       | String | Same as @c gw_src, but with the dst zone instead.                                                                                            |
+| symmetrical     | no        | YES@|NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly.               | 
 
 #### Example ####
 
-\verbatim
+@verbatim
 <zone  id="zone0"  routing="Full">
   <cluster id="my_cluster_1" prefix="c-" suffix=".me"
   		radical="0-149" speed="1000000000" bw="125000000" lat="5E-5"
@@ -1247,16 +1244,16 @@ host \c dst_host that is within \c dst, you need to:
  		<link_ctn id="backbone"/>
      </zoneroute>
 </zone>
-\endverbatim
+@endverbatim
 
-\subsubsection pf_tag_route &lt;route&gt; 
+@subsubsection pf_tag_route &lt;route&gt; 
 
 The principle is the same as for 
-\ref pf_tag_zoneroute "ZoneRoute": The route contains a list of links that
-provide a path from \c src to \c dst. Here, \c src and \c dst can both be either a 
-\ref pf_tag_host "host" or \ref pf_router "router".  This is mostly useful for the 
-\ref pf_routing_model_full "Full routing model" as well as for the 
-\ref pf_routing_model_shortest_path "shortest-paths" based models (as they require 
+@ref pf_tag_zoneroute "ZoneRoute": The route contains a list of links that
+provide a path from @c src to @c dst. Here, @c src and @c dst can both be either a 
+@ref pf_tag_host "host" or @ref pf_router "router".  This is mostly useful for the 
+@ref pf_routing_model_full "Full routing model" as well as for the 
+@ref pf_routing_model_shortest_path "shortest-paths" based models (as they require 
 topological information).
 
 
@@ -1264,31 +1261,31 @@ topological information).
 | --------------- | --------- | ---------------------- | -----------                                                                                        |
 | src             | yes       | String                 | The value given to the source's "id" attribute                                                     |
 | dst             | yes       | String                 | The value given to the destination's "id" attribute.                                               |
-| symmetrical     | no        | YES\| NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly. |
+| symmetrical     | no        | YES@| NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly. |
 
 
 #### Examples ####
 
-A route in the \ref pf_routing_model_full "Full routing model" could look like this:
-\verbatim
+A route in the @ref pf_routing_model_full "Full routing model" could look like this:
+@verbatim
  <route src="Tremblay" dst="Bourassa">
      <link_ctn id="4"/><link_ctn id="3"/><link_ctn id="2"/><link_ctn id="0"/><link_ctn id="1"/><link_ctn id="6"/><link_ctn id="7"/>
  </route>
-\endverbatim
+@endverbatim
 
-A route in the \ref pf_routing_model_shortest_path "Shortest-Path routing model" could look like this:
-\verbatim
+A route in the @ref pf_routing_model_shortest_path "Shortest-Path routing model" could look like this:
+@verbatim
 <route src="Tremblay" dst="Bourassa">
   <link_ctn id="3"/>
 </route>
-\endverbatim
-\note 
+@endverbatim
+@note 
     You must only have one link in your routes when you're using them to provide
     topological information, as the routes here are simply the edges of the
     (network-)graph and the employed algorithms need to know which edge connects
     which pair of entities.
 
-\subsubsection pf_tag_bypassasroute bypasszoneroute
+@subsubsection pf_tag_bypassasroute bypasszoneroute
 
 As said before, once you choose
 a model, it (most likely; the constant network model, for example, doesn't) calculates routes for you. But maybe you want to
@@ -1308,24 +1305,24 @@ list of links that are in the path between src and dst.
 | dst             | yes       | String                  | The value given to the destination zone's "id" attribute.                                                      |
 | gw_src          | yes       | String                  | The value given to the source gateway's "id" attribute; this can be any host or router within the src zone     |
 | gw_dst          | yes       | String                  | The value given to the destination gateway's "id" attribute; this can be any host or router within the dst zone|
-| symmetrical     | no        | YES\| NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly. |
+| symmetrical     | no        | YES@| NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly. |
 
 #### Example ####
 
-\verbatim
+@verbatim
 <bypasszoneRoute src="my_cluster_1" dst="my_cluster_2"
   gw_src="my_cluster_1_router"
   gw_dst="my_cluster_2_router">
     <link_ctn id="link_tmp"/>
 </bypasszoneroute>
-\endverbatim
+@endverbatim
 
-This example shows that link \c link_tmp (definition not displayed here) directly
-connects the router \c my_cluster_1_router in the source cluster to the router
-\c my_cluster_2_router in the destination router. Additionally, as the \c symmetrical
+This example shows that link @c link_tmp (definition not displayed here) directly
+connects the router @c my_cluster_1_router in the source cluster to the router
+@c my_cluster_2_router in the destination router. Additionally, as the @c symmetrical
 attribute was not given, this route is presumed to be symmetrical.
 
-\subsubsection pf_tag_bypassroute bypassRoute
+@subsubsection pf_tag_bypassroute bypassRoute
 
 As said before, once you choose
 a model, it (most likely; the constant network model, for example, doesn't) calculates routes for you. But maybe you want to
@@ -1342,28 +1339,28 @@ links that are in the path between src and dst.
 | --------------- | --------- | ----------------------  | -----------                                                                                                  |
 | src             | yes       | String                  | The value given to the source zone's "id" attribute                                                            |
 | dst             | yes       | String                  | The value given to the destination zone's "id" attribute.                                                      |
-| symmetrical     | no        | YES \| NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly. |
+| symmetrical     | no        | YES @| NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly. |
 
 #### Examples ####
 
-\verbatim
+@verbatim
 <bypassRoute src="host_1" dst="host_2">
    <link_ctn id="link_tmp"/>
 </bypassRoute>
-\endverbatim
+@endverbatim
 
-This example shows that link \c link_tmp (definition not displayed here) directly
-connects host \c host_1 to host \c host_2. Additionally, as the \c symmetrical
+This example shows that link @c link_tmp (definition not displayed here) directly
+connects host @c host_1 to host @c host_2. Additionally, as the @c symmetrical
 attribute was not given, this route is presumed to be symmetrical.
 
-\subsection pb_baroex Basic Routing Example
+@subsection pb_baroex Basic Routing Example
 
 Let's say you have an zone named zone_Big that contains two other zone, zone_1
 and zone_2. If you want to make a host (h1) from zone_1 with another one
 (h2) from zone_2 then you'll have to proceed as follows:
-\li First, you have to ensure that a route is defined from h1 to the
+@li First, you have to ensure that a route is defined from h1 to the
     zone_1's exit gateway and from h2 to zone_2's exit gateway.
-\li Then, you'll have to define a route between zone_1 to zone_2. As those
+@li Then, you'll have to define a route between zone_1 to zone_2. As those
     zone are both resources belonging to zone_Big, then it has to be done
     at zone_big level. To define such a route, you have to give the
     source zone (zone_1), the destination zone (zone_2), and their respective
@@ -1374,8 +1371,8 @@ and zone_2. If you want to make a host (h1) from zone_1 with another one
     this route will be computed automatically.
 
 As said before, there are mainly 2 tags for routing:
-\li <b>zoneroute</b>: to define routes between two  <b>zone</b>
-\li <b>route</b>: to define routes between two <b>host/router</b>
+@li <b>zoneroute</b>: to define routes between two  <b>zone</b>
+@li <b>route</b>: to define routes between two <b>host/router</b>
 
 As we are dealing with routes between zone, it means that those we'll
 have some definition at zone_Big level. Let consider zone_1 contains 1
@@ -1389,7 +1386,7 @@ we're using some shortest path algorithms to route into zone_2, we'll
 then have to define some <b>route</b> to gives some topological
 information to SimGrid. Here is a file doing it all:
 
-\verbatim
+@verbatim
 <zone  id="zone_Big"  routing="Dijkstra">
   <zone id="zone_1" routing="Full">
      <host id="zone_1_host1" speed="1000000000"/>
@@ -1423,17 +1420,17 @@ information to SimGrid. Here is a file doing it all:
  		<link_ctn id="backbone"/>
      </zoneroute>
 </zone>
-\endverbatim
+@endverbatim
 
-\section pf_other Other tags
+@section pf_other Other tags
 
-The following tags can be used inside a \<platform\> tag even if they are not
+The following tags can be used inside a @<platform@> tag even if they are not
 directly describing the platform:
 
   - @ref pf_tag_config passes configuration options, e.g. to change the network model;
   - @ref pf_tag_prop gives user-defined properties to various elements
 
-\subsection pf_tag_config &lt;config&gt;
+@subsection pf_tag_config &lt;config&gt;
 
 Adding configuration flags into the platform file is particularly
 useful when the described platform is best used with specific
@@ -1449,7 +1446,7 @@ Any such configuration must be given at the very top of the platform file.
 
 * **Example**
 
-\verbatim
+@verbatim
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="4">
@@ -1462,9 +1459,9 @@ Any such configuration must be given at the very top of the platform file.
 
 <zone  id="zone0"  routing="Full">
 ...
-\endverbatim
+@endverbatim
 
-\subsection pf_tag_prop &lt;prop&gt;
+@subsection pf_tag_prop &lt;prop&gt;
 
 Defines a user-defined property, identified with a name and having a
 value. You can specify such properties to most kind of resources:
@@ -1482,12 +1479,12 @@ or similar functions.
 
 #### Example ####
 
-\code{.xml}
+@code{.xml}
 <prop id="Operating System" value="Linux" />
-\endcode
+@endcode
 
 
-\subsection pf_trace trace and trace_connect
+@subsection pf_trace trace and trace_connect
 
 Both tags are an alternate way to pass files containing information on
 availability, state etc. to an entity. (See also @ref howto_churn).
@@ -1499,49 +1496,49 @@ you say that the file trace must be used by the entity.
 
 #### Example #### 
 
-\verbatim
+@verbatim
 <zone  id="zone0"  routing="Full">
   <host id="bob" speed="1000000000"/>
 </zone>
 <trace id="myTrace" file="bob.trace" periodicity="1.0"/>
 <trace_connect trace="myTrace" element="bob" kind="POWER"/>
-\endverbatim
+@endverbatim
 
-\note 
-    The order here is important.  \c trace_connect must come 
-    after the elements \c trace and \c host, as both the host
-    and the trace definition must be known when \c trace_connect
-    is parsed; the order of \c trace and \c host is arbitrary.
+@note 
+    The order here is important.  @c trace_connect must come 
+    after the elements @c trace and @c host, as both the host
+    and the trace definition must be known when @c trace_connect
+    is parsed; the order of @c trace and @c host is arbitrary.
 
 
-#### \c trace attributes ####
+#### @c trace attributes ####
 
 
 | Attribute name  | Mandatory | Values                 | Description                                                                                       |
 | --------------- | --------- | ---------------------- | -----------                                                                                       |
-| id              | yes       | String                 | Identifier of this trace; this is the name you pass on to \c trace_connect.                       |
+| id              | yes       | String                 | Identifier of this trace; this is the name you pass on to @c trace_connect.                       |
 | file            | no        | String                 | Filename of the file that contains the information - the path must follow the style of your OS. You can omit this, but then you must specifiy the values inside of &lt;trace&gt; and &lt;/trace&gt; - see the example below. |
-| trace_periodicity | yes | String | This is the same as for \ref pf_tag_host "hosts" (see there for details) |
+| trace_periodicity | yes | String | This is the same as for @ref pf_tag_host "hosts" (see there for details) |
 
 Here is an example  of trace when no file name is provided:
 
-\verbatim
+@verbatim
  <trace id="myTrace" periodicity="1.0">
     0.0 1.0
     11.0 0.5
     20.0 0.8
  </trace>
-\endverbatim
+@endverbatim
 
-#### \c trace_connect attributes ####
+#### @c trace_connect attributes ####
 
 | Attribute name  | Mandatory | Values                 | Description                                                                                       |
 | --------------- | --------- | ---------------------- | -----------                                                                                       |
-| kind            | no        | HOST_AVAIL\|POWER\|<br/>LINK_AVAIL\|BANDWIDTH\|LATENCY (Default: HOST_AVAIL)   | Describes the kind of trace.                   |
-| trace           | yes       | String                 | Identifier of the referenced trace (specified of the trace's \c id attribute)                     |
-| element         | yes       | String                 | The identifier of the referenced entity as given by its \c id attribute                           |
+| kind            | no        | HOST_AVAIL@|POWER@|<br/>LINK_AVAIL@|BANDWIDTH@|LATENCY (Default: HOST_AVAIL)   | Describes the kind of trace.                   |
+| trace           | yes       | String                 | Identifier of the referenced trace (specified of the trace's @c id attribute)                     |
+| element         | yes       | String                 | The identifier of the referenced entity as given by its @c id attribute                           |
 
-\section pf_hints Hints, tips and frequently requested features
+@section pf_hints Hints, tips and frequently requested features
 
 Now you should know at least the syntax and be able to create a
 platform by your own. However, after having ourselves wrote some platforms, there
@@ -1565,7 +1562,7 @@ for @ref pf_trace "trace_connect":
 ./two_hosts.xml:17:  <trace_connect trace="Tremblay_power" element="Tremblay" kind="SPEED"/>
 @endverbatim
 
-\subsection pf_hint_generating How to generate different platform files?
+@subsection pf_hint_generating How to generate different platform files?
 
 This is actually a good idea to search for a better platform file,
 that better fit the need of your study. To be honest, the provided
@@ -1595,7 +1592,7 @@ This project is dormant since over 10 years (and you will have to
 update the generated platforms with <tt>bin/simgrid_update_xml</tt> to
 use them), but that's the best we have for this right now....
 
-\subsection pf_zone_h Zone Hierarchy
+@subsection pf_zone_h Zone Hierarchy
 The network zone design allows SimGrid to go fast, because computing route is
 done only for the set of resources defined in the current zone. If you're using
 only a big zone containing all resource with no zone into it and you're
@@ -1608,12 +1605,12 @@ describe a real life platform is to follow the zone described in
 reality, since this kind of trade-off works well for real life
 platforms.
 
-\subsection pf_exit_zone Exit Zone: why and how
+@subsection pf_exit_zone Exit Zone: why and how
 Users that have looked at some of our platforms may have notice a
 non-intuitive schema ... Something like that:
 
 
-\verbatim
+@verbatim
 <zone id="zone_4"  routing="Full">
 <zone id="exitzone_4"  routing="Full">
 	<router id="router_4"/>
@@ -1646,7 +1643,7 @@ non-intuitive schema ... Something like that:
 		<link_ctn id="bb_4"/>
 </zoneroute>
 </zone>
-\endverbatim
+@endverbatim
 
 In the zone_4, you have an exitzone_4 defined, containing only one router,
 and routes defined to that zone from all other zone (as cluster is only a
@@ -1657,14 +1654,14 @@ issues) to have routes from an zone to a single host/router, you have to
 enclose your gateway, when you have zone included in your zone, within an
 zone to define routes to it.
 
-\subsection pf_P2P_tags P2P or how to use coordinates
+@subsection pf_P2P_tags P2P or how to use coordinates
 SimGrid allows you to use some coordinated-based system, like vivaldi,
 to describe a platform. The main concept is that you have some peers
 that are located somewhere: this is the function of the
-<b>coordinates</b> of the \<peer\> or \<host\> tag. There's nothing
+<b>coordinates</b> of the @<peer@> or @<host@> tag. There's nothing
 complicated in using it, here is an example:
 
-\verbatim
+@verbatim
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="4">
@@ -1676,7 +1673,7 @@ complicated in using it, here is an example:
 	<host id="100429957" coordinates="17.5 6.7 18.8" speed="8.3Gf" />
  </zone>
 </platform>
-\endverbatim
+@endverbatim
 
 Coordinates are then used to calculate latency (in microseconds)
 between two hosts by calculating the distance between the two hosts
@@ -1690,7 +1687,7 @@ approximations of the latency matrices (see the paper describing
 Vivaldi).
 
 Note that the previous example defines a routing directly between hosts but it could be also used to define a routing between zone.
-That is for example what is commonly done when using peers (see Section \ref pf_peer).
+That is for example what is commonly done when using peers (see Section @ref pf_peer).
 @verbatim
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
@@ -1709,7 +1706,7 @@ This is currently a convention and we may offer to change this convention in the
 You may have noted that conveniently, a peer named FOO defines an zone named FOO and a router named router_FOO, which is why it works seamlessly with the <b>peer</b> tag.
 
 
-\subsection pf_routing_howto_choose_wisely Choosing wisely the routing model to use
+@subsection pf_routing_howto_choose_wisely Choosing wisely the routing model to use
 
 
 Choosing wisely the routing model to use can significantly fasten your
@@ -1717,27 +1714,39 @@ simulation/save your time when writing the platform/save tremendous
 disk space. Here is the list of available model and their
 characteristics (lookup: time to resolve a route):
 
-\li <b>Full</b>: Full routing data (fast, large memory requirements,
+@li <b>Full</b>: Full routing data (fast, large memory requirements,
     fully expressive)
-\li <b>Floyd</b>: Floyd routing data (slow initialization, fast
+@li <b>Floyd</b>: Floyd routing data (slow initialization, fast
     lookup, lesser memory requirements, shortest path routing only).
     Calculates all routes at once at the beginning.
-\li <b>Dijkstra</b>: Dijkstra routing data (fast initialization, slow
+@li <b>Dijkstra</b>: Dijkstra routing data (fast initialization, slow
     lookup, small memory requirements, shortest path routing only).
     Calculates a route when necessary.
-\li <b>DijkstraCache</b>: Dijkstra routing data (fast initialization,
+@li <b>DijkstraCache</b>: Dijkstra routing data (fast initialization,
     fast lookup, small memory requirements, shortest path routing
     only). Same as Dijkstra, except it handles a cache for latest used
     routes.
-\li <b>None</b>: No routing (usable with Constant network only).
+@li <b>None</b>: No routing (usable with Constant network only).
     Defines that there is no routes, so if you try to determine a
     route without constant network within this zone, SimGrid will raise
     an exception.
-\li <b>Vivaldi</b>: Vivaldi routing, so when you want to use coordinates
-\li <b>Cluster</b>: Cluster routing, specific to cluster tag, should
+@li <b>Vivaldi</b>: Vivaldi routing, so when you want to use coordinates
+@li <b>Cluster</b>: Cluster routing, specific to cluster tag, should
     not be used.
 
-\subsection pf_switch I want to describe a switch but there is no switch tag!
+@subsection pf_loopback I want to specify the characteristics of the loopback link!
+
+Each routing model automatically adds a loopback link for each declared host, i.e.,
+a network route from the host to itself, if no such route is declared in the XML
+file. This default link has a bandwidth of 498 Mb/s, a latency of 15 microseconds, 
+and is <b>not</b> shared among network flows. 
+
+If you want to specify the characteristics of the loopback link for a given host, you
+just have to specify a route from this host to itself with the desired characteristics 
+in the XML file. This will prevent the routing model to add and use the default 
+loopback link.
+
+@subsection pf_switch I want to describe a switch but there is no switch tag!
 
 Actually we did not include switch tag. But when you're trying to
 simulate a switch, assuming 
@@ -1752,7 +1761,7 @@ can be connected to this "switch", which is then included in routes just
 as a normal link.
 
 
-\subsection pf_multicabinets I want to describe multi-cabinets clusters!
+@subsection pf_multicabinets I want to describe multi-cabinets clusters!
 
 You have several possibilities, as usual when modeling things. If your
 cabinets are homogeneous and the intercabinet network negligible for
@@ -1772,13 +1781,13 @@ the &lt;cluster&gt; internals is certainly to create one separate
 &lt;cluster&gt; per cabinet and interconnect them together. This is
 what we did in the G5K example platform for the Graphen cluster.
 
-\subsection pf_platform_multipath I want to express multipath routing in platform files!
+@subsection pf_platform_multipath I want to express multipath routing in platform files!
 
 It is unfortunately impossible to express the fact that there is more
 than one routing path between two given hosts. Let's consider the
 following platform file:
 
-\verbatim
+@verbatim
 <route src="A" dst="B">
    <link_ctn id="1"/>
 </route>
@@ -1788,7 +1797,7 @@ following platform file:
 <route src="A" dst="C">
   <link_ctn id="3"/>
 </route>
-\endverbatim
+@endverbatim
 
 Although it is perfectly valid, it does not mean that data traveling
 from A to C can either go directly (using link 3) or through B (using
@@ -1803,12 +1812,12 @@ the provided ones.
 You are also free to declare platform where the routing is not
 symmetrical. For example, add the following to the previous file:
 
-\verbatim
+@verbatim
 <route src="C" dst="A">
   <link_ctn id="2"/>
   <link_ctn id="1"/>
 </route>
-\endverbatim
+@endverbatim
 
 This makes sure that data from C to A go through B where data from A
 to C go directly. Don't worry about realism of such settings since

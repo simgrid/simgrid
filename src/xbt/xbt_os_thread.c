@@ -246,35 +246,6 @@ xbt_os_thread_t xbt_os_thread_self(void )
   return pthread_getspecific(xbt_self_thread_key);
 }
 
-void xbt_os_thread_key_create(xbt_os_thread_key_t* key)
-{
-  int errcode = pthread_key_create(key, NULL);
-  xbt_assert(errcode==0 , "pthread_key_create failed");
-}
-
-void xbt_os_thread_key_destroy(xbt_os_thread_key_t key)
-{
-  int errcode = pthread_key_delete(key);
-  xbt_assert(errcode == 0, "pthread_key_delete failed");
-}
-
-void xbt_os_thread_set_specific(xbt_os_thread_key_t key, void* value)
-{
-  int errcode = pthread_setspecific(key, value);
-  xbt_assert(errcode==0, "pthread_setspecific failed");
-}
-
-void* xbt_os_thread_get_specific(xbt_os_thread_key_t key)
-{
-  return pthread_getspecific(key);
-}
-
-#include <sched.h>
-void xbt_os_thread_yield(void)
-{
-  sched_yield();
-}
-
 /****** mutex related functions ******/
 typedef struct xbt_os_mutex_ {
   pthread_mutex_t m;
@@ -316,47 +287,6 @@ void xbt_os_mutex_destroy(xbt_os_mutex_t mutex)
   int errcode = pthread_mutex_destroy(&(mutex->m));
   xbt_assert(errcode == 0, "pthread_mutex_destroy(%p) failed: %s", mutex, strerror(errcode));
   free(mutex);
-}
-
-/***** condition related functions *****/
-typedef struct xbt_os_cond_ {
-  pthread_cond_t c;
-} s_xbt_os_cond_t;
-
-xbt_os_cond_t xbt_os_cond_init(void)
-{
-  xbt_os_cond_t res = xbt_new(s_xbt_os_cond_t, 1);
-  int errcode = pthread_cond_init(&(res->c), NULL);
-  xbt_assert(errcode==0, "pthread_cond_init() failed: %s", strerror(errcode));
-  return res;
-}
-
-void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex)
-{
-  int errcode = pthread_cond_wait(&(cond->c), &(mutex->m));
-  xbt_assert(errcode==0, "pthread_cond_wait(%p,%p) failed: %s", cond, mutex, strerror(errcode));
-}
-
-void xbt_os_cond_signal(xbt_os_cond_t cond)
-{
-  int errcode = pthread_cond_signal(&(cond->c));
-  xbt_assert(errcode==0, "pthread_cond_signal(%p) failed: %s", cond, strerror(errcode));
-}
-
-void xbt_os_cond_broadcast(xbt_os_cond_t cond)
-{
-  int errcode = pthread_cond_broadcast(&(cond->c));
-  xbt_assert(errcode==0, "pthread_cond_broadcast(%p) failed: %s", cond, strerror(errcode));
-}
-
-void xbt_os_cond_destroy(xbt_os_cond_t cond)
-{
-  if (!cond)
-    return;
-
-  int errcode = pthread_cond_destroy(&(cond->c));
-  xbt_assert(errcode==0, "pthread_cond_destroy(%p) failed: %s", cond, strerror(errcode));
-  free(cond);
 }
 
 typedef struct xbt_os_sem_ {
@@ -434,31 +364,6 @@ void xbt_os_sem_destroy(xbt_os_sem_t sem)
   xbt_free(sem->name);
 #endif
   xbt_free(sem);
-}
-
-/** @brief Returns the amount of cores on the current host */
-int xbt_os_get_numcores(void) {
-#ifdef WIN32
-    SYSTEM_INFO sysinfo;
-    GetSystemInfo(&sysinfo);
-    return sysinfo.dwNumberOfProcessors;
-#elif defined(__APPLE__) && defined(__MACH__)
-    int nm[2];
-    size_t len = 4;
-    uint32_t count;
-
-    nm[0] = CTL_HW; nm[1] = HW_AVAILCPU;
-    sysctl(nm, 2, &count, &len, NULL, 0);
-
-    if(count < 1) {
-        nm[1] = HW_NCPU;
-        sysctl(nm, 2, &count, &len, NULL, 0);
-        if(count < 1) { count = 1; }
-    }
-    return count;
-#else
-    return sysconf(_SC_NPROCESSORS_ONLN);
-#endif
 }
 
 void xbt_os_thread_set_extra_data(void *data)

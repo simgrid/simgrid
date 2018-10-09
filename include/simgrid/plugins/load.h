@@ -15,6 +15,7 @@ XBT_PUBLIC void sg_host_load_plugin_init();
 XBT_PUBLIC double sg_host_get_current_load(sg_host_t host);
 XBT_PUBLIC double sg_host_get_avg_load(sg_host_t host);
 XBT_PUBLIC double sg_host_get_idle_time(sg_host_t host);
+XBT_PUBLIC double sg_host_get_total_idle_time(sg_host_t host);
 XBT_PUBLIC double sg_host_get_computed_flops(sg_host_t host);
 XBT_PUBLIC void sg_host_load_reset(sg_host_t host);
 

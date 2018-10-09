@@ -3,17 +3,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "getopt.h"
 #include "private.hpp"
 #include "simgrid/host.h"
 #include "simgrid/modelchecker.h"
+#include "simgrid/s4u/Exec.hpp"
 #include "smpi_comm.hpp"
-#include "smpi_process.hpp"
 #include "src/internal_config.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "xbt/config.hpp"
-#include "getopt.h"
 
+#include "src/smpi/include/smpi_actor.hpp"
 #include <unordered_map>
 
 #ifndef WIN32
@@ -27,6 +28,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi, "Logging specific to SMPI (benchmarking)");
 
+static simgrid::config::Flag<double>
+    smpi_wtime_sleep("smpi/wtime",
+                     "Minimum time to inject inside a call to MPI_Wtime(), gettimeofday() and clock_gettime()",
+                     1e-8 /* Documented to be 10 ns */);
+
 double smpi_cpu_threshold = -1;
 double smpi_host_speed;
 
@@ -34,6 +40,7 @@ SharedMallocType smpi_cfg_shared_malloc = SharedMallocType::GLOBAL;
 double smpi_total_benched_time = 0;
 
 extern "C" XBT_PUBLIC void smpi_execute_flops_(double* flops);
+
 void smpi_execute_flops_(double *flops)
 {
   smpi_execute_flops(*flops);
@@ -48,9 +55,11 @@ void smpi_execute_(double *duration)
 void smpi_execute_flops(double flops) {
   xbt_assert(flops >= 0, "You're trying to execute a negative amount of flops (%f)!", flops);
   XBT_DEBUG("Handle real computation time: %f flops", flops);
-  smx_activity_t action = simcall_execution_start("computation", flops, 1, 0, smpi_process()->get_actor()->get_host());
-  simcall_set_category (action, TRACE_internal_smpi_get_category());
-  simcall_execution_wait(action);
+  simgrid::s4u::this_actor::exec_init(flops)
+      ->set_name("computation")
+      ->set_tracing_category(TRACE_internal_smpi_get_category())
+      ->start()
+      ->wait();
   smpi_switch_data_segment(simgrid::s4u::Actor::self());
 }
 
@@ -119,7 +128,7 @@ void smpi_bench_end()
    * An MPI function has been called and now is the right time to update
    * our PAPI counters for this process.
    */
-  if (simgrid::config::get_value<std::string>("smpi/papi-events")[0] != '\0') {
+  if (not simgrid::config::get_value<std::string>("smpi/papi-events").empty()) {
     papi_counter_t& counter_data        = smpi_process()->papi_counters();
     int event_set                       = smpi_process()->papi_event_set();
     std::vector<long long> event_values = std::vector<long long>(counter_data.size());
@@ -159,14 +168,14 @@ void smpi_bench_end()
   }
 
 #if HAVE_PAPI
-  if (simgrid::config::get_value<std::string>("smpi/papi-events")[0] != '\0' && TRACE_smpi_is_enabled()) {
+  if (not simgrid::config::get_value<std::string>("smpi/papi-events").empty() && TRACE_smpi_is_enabled()) {
     container_t container =
-        new simgrid::instr::Container(std::string("rank-") + std::to_string(simgrid::s4u::this_actor::get_pid()));
+        simgrid::instr::Container::by_name(std::string("rank-") + std::to_string(simgrid::s4u::this_actor::get_pid()));
     papi_counter_t& counter_data = smpi_process()->papi_counters();
 
     for (auto const& pair : counter_data) {
-      new simgrid::instr::SetVariableEvent(
-          surf_get_clock(), container, PJ_type_get(/* countername */ pair.first.c_str(), container->type), pair.second);
+      simgrid::instr::VariableType* variable = static_cast<simgrid::instr::VariableType*>(container->type_->by_name(pair.first));
+      variable->set_event(SIMIX_get_clock(), pair.second);
     }
   }
 #endif
@@ -174,7 +183,7 @@ void smpi_bench_end()
   smpi_total_benched_time += xbt_os_timer_elapsed(timer);
 }
 
-/* Private sleep function used by smpi_sleep() and smpi_usleep() */
+/* Private sleep function used by smpi_sleep(), smpi_usleep() and friends */
 static unsigned int private_sleep(double secs)
 {
   smpi_bench_end();
@@ -229,6 +238,8 @@ int smpi_gettimeofday(struct timeval* tv, struct timezone* tz)
     tv->tv_usec = static_cast<suseconds_t>((now - tv->tv_sec) * 1e6);
 #endif
   }
+  if (smpi_wtime_sleep > 0)
+    simcall_process_sleep(smpi_wtime_sleep);
   smpi_bench_begin();
   return 0;
 }
@@ -245,10 +256,27 @@ int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp)
     tp->tv_sec = static_cast<time_t>(now);
     tp->tv_nsec = static_cast<long int>((now - tp->tv_sec) * 1e9);
   }
+  if (smpi_wtime_sleep > 0)
+    simcall_process_sleep(smpi_wtime_sleep);
   smpi_bench_begin();
   return 0;
 }
 #endif
+
+double smpi_mpi_wtime()
+{
+  double time;
+  if (smpi_process()->initialized() && not smpi_process()->finalized() && not smpi_process()->sampling()) {
+    smpi_bench_end();
+    time = SIMIX_get_clock();
+    if (smpi_wtime_sleep > 0)
+      simcall_process_sleep(smpi_wtime_sleep);
+    smpi_bench_begin();
+  } else {
+    time = SIMIX_get_clock();
+  }
+  return time;
+}
 
 extern double sg_surf_precision;
 unsigned long long smpi_rastro_resolution ()

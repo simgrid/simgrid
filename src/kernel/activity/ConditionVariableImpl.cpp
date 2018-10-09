@@ -4,10 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
+#include "simgrid/Exception.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/simix/smx_synchro_private.hpp"
-#include "xbt/ex.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ConditionVariable, simix_synchro, "Condition variables");
 
@@ -28,7 +28,7 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
     mutex->unlock(issuer);
   }
 
-  synchro = SIMIX_synchro_wait(issuer->host, timeout);
+  synchro = SIMIX_synchro_wait(issuer->host_, timeout);
   synchro->simcalls_.push_front(simcall);
   issuer->waiting_synchro = synchro;
   cond->sleeping.push_back(*simcall->issuer);
@@ -36,7 +36,7 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
 }
 
 /**
- * \brief Handle a condition waiting simcall without timeouts
+ * @brief Handle a condition waiting simcall without timeouts
  */
 void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex)
 {
@@ -48,7 +48,7 @@ void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex
 }
 
 /**
- * \brief Handle a condition waiting simcall with timeouts
+ * @brief Handle a condition waiting simcall with timeouts
  */
 void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex, double timeout)
 {
@@ -67,7 +67,7 @@ ConditionVariableImpl::ConditionVariableImpl() : cond_(this) {}
 ConditionVariableImpl::~ConditionVariableImpl() = default;
 
 /**
- * \brief Signalizes a condition.
+ * @brief Signalizes a condition.
  *
  * Signalizes a condition and wakes up a sleeping process.
  * If there are no process sleeping, no action is done.
@@ -100,7 +100,7 @@ void ConditionVariableImpl::signal()
 }
 
 /**
- * \brief Broadcasts a condition.
+ * @brief Broadcasts a condition.
  *
  * Signal ALL processes waiting on a condition.
  * If there are no process waiting, no action is done.

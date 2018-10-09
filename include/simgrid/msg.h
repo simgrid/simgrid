@@ -1,3 +1,4 @@
+
 /* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,6 +8,7 @@
 #define SIMGRID_MSG_H
 
 #include <simgrid/actor.h>
+#include <simgrid/barrier.h>
 #include <simgrid/engine.h>
 #include <simgrid/forward.h>
 #include <simgrid/host.h>
@@ -38,10 +40,13 @@ typedef simgrid::msg::Comm sg_msg_Comm;
 typedef struct msg_Comm sg_msg_Comm;
 #endif
 
-SG_BEGIN_DECL()
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* *************************** Network Zones ******************************** */
 #define msg_as_t msg_netzone_t /* portability macro */
+
 typedef sg_netzone_t msg_netzone_t;
 
 XBT_PUBLIC msg_netzone_t MSG_zone_get_root();
@@ -53,16 +58,33 @@ XBT_PUBLIC void MSG_zone_set_property_value(msg_netzone_t zone, const char* name
 XBT_PUBLIC void MSG_zone_get_hosts(msg_netzone_t zone, xbt_dynar_t whereto);
 
 /* ******************************** Hosts ************************************ */
+/** @brief Host datatype.
+ *
+ * A <em>location</em> (or <em>host</em>) is any possible place where a process may run. Thus it is represented as a
+ * <em>physical resource with computing capabilities</em>, some <em>mailboxes</em> to enable running process to
+ * communicate with remote ones, and some <em>private data</em> that can be only accessed by local process.
+ */
 typedef sg_host_t msg_host_t;
 
-XBT_PUBLIC size_t MSG_get_host_number();
+/** @brief Finds a msg_host_t using its name. */
 XBT_PUBLIC sg_host_t MSG_get_host_by_name(const char* name);
+/** @brief Finds a msg_host_t using its name. */
 XBT_PUBLIC sg_host_t MSG_host_by_name(const char* name);
 
+/** @brief Returns the amount of host found in the platform */
+XBT_PUBLIC size_t MSG_get_host_number();
+/** @brief Returns a dynar with all existing hosts
+ *
+ * The host order in the returned array is generally different from the host creation/declaration order in the XML
+ * platform (we use a hash table internally).
+ */
 XBT_PUBLIC xbt_dynar_t MSG_hosts_as_dynar();
 
+/** @brief Returns the name of this host */
 XBT_PUBLIC const char* MSG_host_get_name(sg_host_t host);
+/** @brief Returns the user data of this host */
 XBT_PUBLIC void* MSG_host_get_data(sg_host_t host);
+/** @brief Sets the user data of this host */
 XBT_PUBLIC void MSG_host_set_data(sg_host_t host, void* data);
 XBT_PUBLIC xbt_dict_t MSG_host_get_mounted_storage_list(sg_host_t host);
 XBT_PUBLIC xbt_dynar_t MSG_host_get_attached_storage_lists(sg_host_t host);
@@ -72,7 +94,17 @@ XBT_PUBLIC int MSG_host_get_core_number(sg_host_t host);
 XBT_PUBLIC int MSG_host_get_nb_pstates(sg_host_t host);
 XBT_PUBLIC int MSG_host_get_pstate(sg_host_t host);
 XBT_PUBLIC void MSG_host_set_pstate(sg_host_t host, int pstate);
+/** @brief Start the host if it is off
+ *
+ * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref SURF_plugin_energy
+ * for more info on DVFS.
+ */
 XBT_PUBLIC void MSG_host_on(sg_host_t h);
+/** @brief Stop the host if it is on
+ *
+ * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref SURF_plugin_energy
+ * for more info on DVFS.
+ */
 XBT_PUBLIC void MSG_host_off(sg_host_t h);
 XBT_PUBLIC int MSG_host_is_on(sg_host_t h);
 XBT_PUBLIC int MSG_host_is_off(sg_host_t h);
@@ -81,15 +113,12 @@ XBT_PUBLIC const char* MSG_host_get_property_value(sg_host_t host, const char* n
 XBT_PUBLIC void MSG_host_set_property_value(sg_host_t host, const char* name, const char* value);
 XBT_PUBLIC void MSG_host_get_process_list(sg_host_t host, xbt_dynar_t whereto);
 
+/** @brief Return the location on which the current process is executed */
 XBT_PUBLIC sg_host_t MSG_host_self();
 XBT_PUBLIC double MSG_host_get_load(sg_host_t host);
 
 /* ******************************** VMs ************************************* */
 typedef sg_vm_t msg_vm_t;
-
-XBT_ATTRIB_DEPRECATED_v322("Use sg_vm_create_migratable() from the live migration plugin: "
-                           "v3.22 will drop MSG_vm_create() completely.") XBT_PUBLIC sg_vm_t
-    MSG_vm_create(sg_host_t ind_pm, const char* name, int coreAmount, int ramsize, int mig_netspeed, int dp_intensity);
 
 XBT_PUBLIC msg_vm_t MSG_vm_create_core(msg_host_t pm, const char* name);
 XBT_PUBLIC msg_vm_t MSG_vm_create_multicore(msg_host_t pm, const char* name, int coreAmount);
@@ -130,6 +159,12 @@ typedef sg_actor_t msg_process_t;
 
 XBT_PUBLIC int MSG_process_get_PID(msg_process_t process);
 XBT_PUBLIC int MSG_process_get_PPID(msg_process_t process);
+/** @brief Return a #msg_process_t from its PID.
+ *
+ * Note that the PID are uniq in the whole simulation, not only on a given host.
+ *
+ * @returns NULL if no host is found
+ */
 XBT_PUBLIC sg_actor_t MSG_process_from_PID(int pid);
 XBT_PUBLIC const char* MSG_process_get_name(msg_process_t process);
 XBT_PUBLIC sg_host_t MSG_process_get_host(msg_process_t process);
@@ -142,21 +177,38 @@ XBT_PUBLIC void MSG_process_suspend(msg_process_t process);
 XBT_PUBLIC void MSG_process_resume(msg_process_t process);
 XBT_PUBLIC int MSG_process_is_suspended(msg_process_t process);
 XBT_PUBLIC void MSG_process_restart(msg_process_t process);
+/** @brief Sets the "auto-restart" flag of the process.
+ *
+ * If the flag is set, the process will be automatically restarted when its host comes back up.
+ */
 XBT_PUBLIC void MSG_process_auto_restart_set(msg_process_t process, int auto_restart);
+/** @brief Indicates that this process should not prevent the simulation from ending
+ *
+ * SimGrid simulations run until all non-daemon processes are stopped.
+ */
 XBT_PUBLIC void MSG_process_daemonize(msg_process_t process);
+/** @brief Imediately changes the host on which this process runs */
 XBT_PUBLIC void MSG_process_migrate(msg_process_t process, msg_host_t host);
+/** @brief Wait for the completion of a #msg_process_t.
+ *
+ * @param process the process to wait for
+ * @param timeout wait until the process is over, or the timeout occurs
+ */
 XBT_PUBLIC void MSG_process_join(msg_process_t process, double timeout);
+/** @brief Kills a process */
 XBT_PUBLIC void MSG_process_kill(msg_process_t process);
+/** @brief Kill all running process */
 XBT_PUBLIC void MSG_process_killall();
+/** @breif Specifies the time at which the process should be automatically killed */
 XBT_PUBLIC void MSG_process_set_kill_time(msg_process_t process, double kill_time);
+/** @brief Yield the current actor; let the other actors execute first */
 XBT_PUBLIC void MSG_process_yield();
 
-
-/**
- * \brief @brief Communication action.
- * \ingroup msg_task_usage
+/** @brief Object representing an ongoing communication between processes.
  *
- * Object representing an ongoing communication between processes. Such beast is usually obtained by using #MSG_task_isend, #MSG_task_irecv or friends.
+ * \rst
+ * Such beast is usually obtained by using :cpp:func:`MSG_task_isend`, :cpp:func:`MSG_task_irecv` or friends.
+ * \endrst
  */
 typedef sg_msg_Comm* msg_comm_t;
 
@@ -173,18 +225,16 @@ typedef struct msg_task {
 } s_msg_task_t;
 
 /** @brief Task datatype.
-    @ingroup m_task_management
-
-    A <em>task</em> may then be defined by a <em>computing
-    amount</em>, a <em>message size</em> and some <em>private
-    data</em>.
+ *
+ *  Since most scheduling algorithms rely on a concept of task  that can be either <em>computed</em> locally or
+ *  <em>transferred</em> on another processor, it seems to be the right level of abstraction for our purposes.
+ *  A <em>task</em> may then be defined by a <em>computing amount</em>, a <em>message size</em> and
+ *  some <em>private data</em>.
  */
 
 typedef struct msg_task* msg_task_t;
 
-/** \brief Default value for an uninitialized #msg_task_t.
-    \ingroup m_task_management
-*/
+/** @brief Default value for an uninitialized #msg_task_t. */
 #define MSG_TASK_UNINITIALIZED NULL
 
 /** @brief Return code of most MSG functions
@@ -205,10 +255,18 @@ typedef enum {
 /** @} */
 
 /************************** Global ******************************************/
+/** @brief set a configuration variable
+ *
+ * Do --help on any simgrid binary to see the list of currently existing configuration variables, and see Section @ref
+ * options.
+ *
+ * Example:
+ * MSG_config("host/model","ptask_L07");
+ */
 XBT_PUBLIC void MSG_config(const char* key, const char* value);
-/** \ingroup msg_simulation
- *  \brief Initialize the MSG internal data.
- *  \hideinitializer
+/** @ingroup msg_simulation
+ *  @brief Initialize the MSG internal data.
+ *  @hideinitializer
  *
  *  It also check that the link-time and compile-time versions of SimGrid do
  *  match, so you should use this version instead of the #MSG_init_nocheck
@@ -216,21 +274,42 @@ XBT_PUBLIC void MSG_config(const char* key, const char* value);
  *
  *  We allow to link against compiled versions that differ in the patch level.
  */
-#define MSG_init(argc,argv)  do {                                                          \
-  sg_version_check(SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);\
-    MSG_init_nocheck(argc,argv);                                                        \
+#define MSG_init(argc, argv)                                                                                           \
+  do {                                                                                                                 \
+    sg_version_check(SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH);                             \
+    MSG_init_nocheck(argc, argv);                                                                                      \
   } while (0)
 
 XBT_PUBLIC void MSG_init_nocheck(int* argc, char** argv);
+/** @brief Launch the MSG simulation */
 XBT_PUBLIC msg_error_t MSG_main();
+/** @brief Registers the main function of a process in a global table.
+ *
+ * This table is then used by #MSG_launch_application.
+ * @param name the reference name of the function.
+ * @param code the function (must have the same prototype than the main function of any C program: int ..(int argc, char
+ * *argv[]))
+ */
 XBT_PUBLIC void MSG_function_register(const char* name, xbt_main_func_t code);
+/** @brief Registers a code function as being the default value.
+ *
+ * This function will get used by MSG_launch_application() when there is no registered function of the requested name
+ * in.
+ *
+ * @param code the function (must have the same prototype than the main function of any C program: int ..(int argc, char
+ * *argv[]))
+ */
 XBT_PUBLIC void MSG_function_register_default(xbt_main_func_t code);
+/** @brief Creates a new platform, including hosts, links and the routing_table */
 XBT_PUBLIC void MSG_create_environment(const char* file);
+/** @brief Creates the application described in the provided file */
 XBT_PUBLIC void MSG_launch_application(const char* file);
-/*Bypass the parser */
+/** @brief register functions bypassing the parser */
 XBT_PUBLIC void MSG_set_function(const char* host_id, const char* function_name, xbt_dynar_t arguments);
 
+/** @brief A clock (in second). */
 XBT_PUBLIC double MSG_get_clock();
+/** @brief Returns the amount of messages sent since the simulation start */
 XBT_PUBLIC unsigned long int MSG_get_sent_msg();
 
 /************************** Process handling *********************************/
@@ -321,6 +400,12 @@ XBT_PUBLIC int MSG_comm_waitany(xbt_dynar_t comms);
 XBT_PUBLIC msg_task_t MSG_comm_get_task(msg_comm_t comm);
 XBT_PUBLIC msg_error_t MSG_comm_get_status(msg_comm_t comm);
 
+/** @brief Check if there is a communication going on in a mailbox.
+ *
+ * @param alias the name of the mailbox to be considered
+ *
+ * @return Returns 1 if there is a communication, 0 otherwise
+ */
 XBT_PUBLIC int MSG_task_listen(const char* alias);
 XBT_PUBLIC msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char* alias, double timeout);
 XBT_PUBLIC msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char* alias, double timeout,
@@ -333,11 +418,12 @@ XBT_PUBLIC const char* MSG_task_get_category(msg_task_t task);
 
 /************************** Mailbox handling ************************************/
 
-/* @brief MSG_mailbox_set_async - set a mailbox as eager
- * Sets the mailbox to a permanent receiver mode. Messages sent to this mailbox will then be sent just after the send
- * is issued, without waiting for the corresponding receive.
+/* @brief set a mailbox in eager mode.
+ * All messages sent to this mailbox will be transferred to the receiver without waiting for the receive call.
+ * The receive call will still be necessary to use the received data.
+ * If there is a need to receive some messages asynchronously, and some not, two different mailboxes should be used.
+ *
  * This call should be done before issuing any receive, and on the receiver's side only
- * @param alias    The alias of the mailbox to modify.
  */
 XBT_PUBLIC void MSG_mailbox_set_async(const char* alias);
 
@@ -355,15 +441,13 @@ XBT_PUBLIC int MSG_sem_get_capacity(msg_sem_t sem);
 XBT_PUBLIC void MSG_sem_destroy(msg_sem_t sem);
 XBT_PUBLIC int MSG_sem_would_block(msg_sem_t sem);
 
-/** @brief Opaque type representing a barrier identifier
- *  @ingroup msg_synchro
- *  @hideinitializer
- */
-
-#define MSG_BARRIER_SERIAL_PROCESS -1
-typedef struct s_msg_bar_t* msg_bar_t;
+/** @brief Opaque type representing a barrier identifier */
+typedef sg_bar_t msg_bar_t;
+/** @brief Initializes a barier, with count elements */
 XBT_PUBLIC msg_bar_t MSG_barrier_init(unsigned int count);
+/** @brief Destroys barrier */
 XBT_PUBLIC void MSG_barrier_destroy(msg_bar_t bar);
+/** @brief Performs a barrier already initialized */
 XBT_PUBLIC int MSG_barrier_wait(msg_bar_t bar);
 
 /* ****************************************************************************************** */
@@ -372,10 +456,12 @@ XBT_PUBLIC smx_context_t
 XBT_ATTRIB_DEPRECATED_v323("MSG_process_get_smx_ctx is deprecated. Please contact us if you need it.")
 MSG_process_get_smx_ctx(msg_process_t process);
 
-SG_END_DECL()
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef __cplusplus
-XBT_PUBLIC msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<void()> code, void* data,
+XBT_PUBLIC msg_process_t MSG_process_create_from_stdfunc(std::string name, std::function<void()> code, void* data,
                                                          msg_host_t host,
                                                          std::unordered_map<std::string, std::string>* properties);
 #endif

@@ -58,7 +58,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml        PARENT_SCOPE)
 
 foreach(x app-masterworker cloud-masterworker
-          dht-pastry dht-kademlia platform-failures
+          dht-pastry dht-kademlia # FIXME: platform-failures is disabled
           energy-vm
           process-create 
           synchro-semaphore)
@@ -77,11 +77,19 @@ foreach (x trace-categories trace-route-user-variables trace-link-user-variables
 		    ${CMAKE_HOME_DIRECTORY}/examples/msg/${x}/${x}.tesh)
 endforeach()
 
-ADD_TESH_FACTORIES(msg-dht-kademlia-parallel "thread;ucontext;raw;boost" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} 
-                                             --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/dht-kademlia 
-					     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia
-					     --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-					     ${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia/dht-kademlia.tesh)
+if(HAVE_SANITIZER_THREAD)
+  ADD_TESH_FACTORIES(msg-dht-kademlia-parallel "thread" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
+                                               --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/dht-kademlia
+                                               --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia
+                                               --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                               ${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia/dht-kademlia.tesh)
+else()
+  ADD_TESH_FACTORIES(msg-dht-kademlia-parallel "thread;ucontext;raw;boost" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
+                                               --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/dht-kademlia
+                                               --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia
+                                               --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                               ${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia/dht-kademlia.tesh)
+endif()
 
 if(NOT WIN32)
   ADD_TESH_FACTORIES(msg-maestro-set   "thread" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/maestro-set/maestro-set.tesh)

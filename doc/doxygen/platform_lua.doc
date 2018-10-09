@@ -19,7 +19,7 @@ mail so that we keep it working once S4U is out, to give you the time
 to switch at your pace.
 
 
-\section pf_lua_why Why lua ?
+@section pf_lua_why Why lua ?
 
 Lua is a fast and portable scripting language. Its main goal is to
 make the internal mechanics of C/C++ programs easily recombinable from

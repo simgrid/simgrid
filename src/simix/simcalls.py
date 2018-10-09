@@ -340,7 +340,7 @@ if __name__ == '__main__':
         '  XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));\n')
     fd.write('  SIMCALL_SET_MC_VALUE(simcall, value);\n')
     fd.write(
-        '  if (simcall->issuer->context->iwannadie)\n')
+        '  if (simcall->issuer->context_->iwannadie)\n')
     fd.write('    return;\n')
     fd.write('  switch (simcall->call) {\n')
 
@@ -349,10 +349,8 @@ if __name__ == '__main__':
     fd.write('    case NUM_SIMCALLS:\n')
     fd.write('      break;\n')
     fd.write('    case SIMCALL_NONE:\n')
-    fd.write('      THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",\n')
-    fd.write('          simcall->issuer->name.c_str(),\n')
-    fd.write('          sg_host_get_name(simcall->issuer->host)\n')
-    fd.write('          );\n')
+    fd.write('      THROWF(arg_error, 0, "Asked to do the noop syscall on %s@%s", simcall->issuer->get_cname(),\n')
+    fd.write('             sg_host_get_name(simcall->issuer->host_));\n')
     fd.write('      break;\n')
     fd.write('    default:\n')
     fd.write('      THROW_IMPOSSIBLE;\n')
@@ -380,8 +378,8 @@ inline static R simcall(e_smx_simcall_t call, T const&... t)
   smx_actor_t self = SIMIX_process_self();
   simgrid::simix::marshal(&self->simcall, call, t...);
   if (self != simix_global->maestro_process) {
-    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
-              SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->get_cname(), SIMIX_simcall_name(self->simcall.call),
+              (int)self->simcall.call);
     SIMIX_process_yield(self);
   } else {
     SIMIX_simcall_handle(&self->simcall, 0);

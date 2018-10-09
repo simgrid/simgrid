@@ -6,31 +6,26 @@
 #include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 
-#include "../kernel/activity/IoImpl.hpp"
 #include "simgrid/sg_config.hpp"
-#include "smx_private.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
+#include "src/kernel/activity/IoImpl.hpp"
+#include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_host_private.hpp"
-#include "src/smpi/include/smpi_process.hpp"
+#include "src/simix/smx_private.hpp"
 #include "src/surf/StorageImpl.hpp"
 #include "src/surf/xml/platf.hpp"
 
 #if SIMGRID_HAVE_MC
-#include "src/mc/mc_private.hpp"
 #include "src/mc/remote/Client.hpp"
-#include "src/mc/remote/mc_protocol.h"
-#endif
-
-#if HAVE_SMPI
-#include "src/smpi/include/private.hpp"
 #endif
 
 #include <boost/heap/fibonacci_heap.hpp>
-#include <csignal>
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX (kernel)");
@@ -163,7 +158,7 @@ simgrid::config::Flag<double> breakpoint{"simix/breakpoint",
 }
 }
 
-static std::function<void()> maestro_code;
+static simgrid::simix::ActorCode maestro_code;
 void SIMIX_set_maestro(void (*code)(void*), void* data)
 {
 #ifdef _WIN32
@@ -173,8 +168,8 @@ void SIMIX_set_maestro(void (*code)(void*), void* data)
 }
 
 /**
- * \ingroup SIMIX_API
- * \brief Initialize SIMIX internal data.
+ * @ingroup SIMIX_API
+ * @brief Initialize SIMIX internal data.
  */
 void SIMIX_global_init(int *argc, char **argv)
 {
@@ -190,7 +185,6 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global->create_process_function = &SIMIX_process_create;
     simix_global->kill_process_function = &kill_process;
     simix_global->cleanup_process_function = &SIMIX_process_cleanup;
-    simix_global->mutex = xbt_os_mutex_init();
 
     surf_init(argc, argv);      /* Initialize SURF structures */
     SIMIX_context_mod_init();
@@ -208,10 +202,6 @@ void SIMIX_global_init(int *argc, char **argv)
     /* register a function to be called by SURF after the environment creation */
     sg_platf_init();
     simgrid::s4u::on_platform_created.connect(SIMIX_post_create_environment);
-    simgrid::s4u::Host::on_creation.connect([](simgrid::s4u::Host& host) {
-      if (host.extension<simgrid::simix::Host>() == nullptr) // another callback to the same signal may have created it
-        host.extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
-    });
 
     simgrid::s4u::Storage::on_creation.connect([](simgrid::s4u::Storage& storage) {
       sg_storage_t s = simgrid::s4u::Storage::by_name(storage.get_cname());
@@ -228,8 +218,8 @@ void SIMIX_global_init(int *argc, char **argv)
 
 int smx_cleaned = 0;
 /**
- * \ingroup SIMIX_API
- * \brief Clean the SIMIX simulation
+ * @ingroup SIMIX_API
+ * @brief Clean the SIMIX simulation
  *
  * This functions remove the memory used by SIMIX
  */
@@ -276,16 +266,14 @@ void SIMIX_clean()
   simix_global->process_to_destroy.clear();
   simix_global->process_list.clear();
 
-  xbt_os_mutex_destroy(simix_global->mutex);
-  simix_global->mutex = nullptr;
 #if SIMGRID_HAVE_MC
   xbt_dynar_free(&simix_global->actors_vector);
   xbt_dynar_free(&simix_global->dead_actors_vector);
 #endif
 
   /* Let's free maestro now */
-  delete simix_global->maestro_process->context;
-  simix_global->maestro_process->context = nullptr;
+  delete simix_global->maestro_process->context_;
+  simix_global->maestro_process->context_ = nullptr;
   delete simix_global->maestro_process;
   simix_global->maestro_process = nullptr;
 
@@ -297,12 +285,11 @@ void SIMIX_clean()
   simix_global = nullptr;
 }
 
-
 /**
- * \ingroup SIMIX_API
- * \brief A clock (in second).
+ * @ingroup SIMIX_API
+ * @brief A clock (in second).
  *
- * \return Return the clock.
+ * @return Return the clock.
  */
 double SIMIX_get_clock()
 {
@@ -316,16 +303,16 @@ double SIMIX_get_clock()
 /** Wake up all processes waiting for a Surf action to finish */
 static void SIMIX_wake_processes()
 {
-  for (auto const& model : *all_existing_models) {
+  for (auto const& model : all_existing_models) {
     simgrid::kernel::resource::Action* action;
 
     XBT_DEBUG("Handling the processes whose action failed (if any)");
-    while ((action = surf_model_extract_failed_action_set(model))) {
+    while ((action = model->extract_failed_action())) {
       XBT_DEBUG("   Handling Action %p",action);
       SIMIX_simcall_exit(static_cast<simgrid::kernel::activity::ActivityImpl*>(action->get_data()));
     }
     XBT_DEBUG("Handling the processes whose action terminated normally (if any)");
-    while ((action = surf_model_extract_done_action_set(model))) {
+    while ((action = model->extract_done_action())) {
       XBT_DEBUG("   Handling Action %p",action);
       if (action->get_data() == nullptr)
         XBT_DEBUG("probably vcpu's action %p, skip", action);
@@ -382,8 +369,8 @@ static bool SIMIX_execute_tasks()
 }
 
 /**
- * \ingroup SIMIX_API
- * \brief Run the main simulation loop.
+ * @ingroup SIMIX_API
+ * @brief Run the main simulation loop.
  */
 void SIMIX_run()
 {
@@ -397,7 +384,7 @@ void SIMIX_run()
   do {
     XBT_DEBUG("New Schedule Round; size(queue)=%zu", simix_global->process_to_run.size());
 
-    if (simgrid::simix::breakpoint >= 0.0 && time >= simgrid::simix::breakpoint) {
+    if (simgrid::simix::breakpoint >= 0.0 && surf_get_clock() >= simgrid::simix::breakpoint) {
       XBT_DEBUG("Breakpoint reached (%g)", simgrid::simix::breakpoint.get());
       simgrid::simix::breakpoint = -1.0;
 #ifdef SIGTRAP
@@ -516,13 +503,6 @@ void SIMIX_run()
       SIMIX_wake_processes();
     } while (again);
 
-    /* Autorestart all process */
-    for (auto const& host : host_that_restart) {
-      XBT_INFO("Restart processes on host %s", host->get_cname());
-      SIMIX_host_autorestart(host);
-    }
-    host_that_restart.clear();
-
     /* Clean processes to destroy */
     SIMIX_process_empty_trash();
 
@@ -547,12 +527,12 @@ void SIMIX_run()
 }
 
 /**
- *   \brief Set the date to execute a function
+ *   @brief Set the date to execute a function
  *
  * Set the date to execute the function on the surf.
- *   \param date Date to execute function
- *   \param callback Function to be executed
- *   \param arg Parameters of the function
+ *   @param date Date to execute function
+ *   @param callback Function to be executed
+ *   @param arg Parameters of the function
  *
  */
 smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void *arg)
@@ -581,12 +561,12 @@ double SIMIX_timer_get_date(smx_timer_t timer) {
 }
 
 /**
- * \brief Registers a function to create a process.
+ * @brief Registers a function to create a process.
  *
  * This function registers a function to be called
  * when a new process is created. The function has
  * to call SIMIX_process_create().
- * \param function create process function
+ * @param function create process function
  */
 void SIMIX_function_register_process_create(smx_creation_func_t function)
 {
@@ -594,12 +574,12 @@ void SIMIX_function_register_process_create(smx_creation_func_t function)
 }
 
 /**
- * \brief Registers a function to kill a process.
+ * @brief Registers a function to kill a process.
  *
  * This function registers a function to be called when a process is killed. The function has to call the
  * SIMIX_process_kill().
  *
- * \param function Kill process function
+ * @param function Kill process function
  */
 void SIMIX_function_register_process_kill(void_pfn_smxprocess_t function)
 {
@@ -607,11 +587,11 @@ void SIMIX_function_register_process_kill(void_pfn_smxprocess_t function)
 }
 
 /**
- * \brief Registers a function to cleanup a process.
+ * @brief Registers a function to cleanup a process.
  *
  * This function registers a user function to be called when a process ends properly.
  *
- * \param function cleanup process function
+ * @param function cleanup process function
  */
 void SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t function)
 {
@@ -648,12 +628,12 @@ void SIMIX_display_process_status()
       if (boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(process->waiting_synchro) != nullptr)
         synchro_description = "I/O";
 
-      XBT_INFO("Process %ld (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->pid,
-               process->get_cname(), process->host->get_cname(), synchro_description, process->waiting_synchro.get(),
+      XBT_INFO("Process %ld (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->pid_,
+               process->get_cname(), process->host_->get_cname(), synchro_description, process->waiting_synchro.get(),
                process->waiting_synchro->name_.c_str(), (int)process->waiting_synchro->state_);
     }
     else {
-      XBT_INFO("Process %ld (%s@%s)", process->pid, process->get_cname(), process->host->get_cname());
+      XBT_INFO("Process %ld (%s@%s)", process->pid_, process->get_cname(), process->host_->get_cname());
     }
   }
 }

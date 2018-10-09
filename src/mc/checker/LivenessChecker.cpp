@@ -202,7 +202,7 @@ void LivenessChecker::replay()
 }
 
 /**
- * \brief Checks whether a given pair has already been visited by the algorithm.
+ * @brief Checks whether a given pair has already been visited by the algorithm.
  */
 int LivenessChecker::insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair, simgrid::mc::Pair* pair)
 {

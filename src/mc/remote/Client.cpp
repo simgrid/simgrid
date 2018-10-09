@@ -5,6 +5,7 @@
 
 #include <cerrno>
 #include <cstdlib>
+#include <cstring>
 
 #include <sys/ptrace.h>
 #include <sys/socket.h>
@@ -76,7 +77,7 @@ Client* Client::initialize()
 #error "no ptrace equivalent coded for this platform"
 #endif
   if (errno != 0 || raise(SIGSTOP) != 0)
-    xbt_die("Could not wait for the model-checker");
+    xbt_die("Could not wait for the model-checker (errno = %d: %s)", errno, strerror(errno));
 
   instance_->handleMessages();
   return instance_.get();
@@ -259,7 +260,7 @@ void Client::declareStack(void* stack, size_t size, smx_actor_t process, ucontex
   region.block   = ((char*)stack - (char*)heap->heapbase) / BLOCKSIZE + 1;
 #if HAVE_SMPI
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP && process)
-    region.process_index = process->pid - 1;
+    region.process_index = process->pid_ - 1;
   else
 #endif
     region.process_index = -1;

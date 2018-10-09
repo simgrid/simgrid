@@ -27,33 +27,13 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 
 /** @brief Simcalls' names (generated from src/simix/simcalls.in) */
 const char* simcall_names[] = {
-    "SIMCALL_NONE",
-    "SIMCALL_PROCESS_SUSPEND",
-    "SIMCALL_PROCESS_JOIN",
-    "SIMCALL_PROCESS_SLEEP",
-    "SIMCALL_EXECUTION_WAIT",
-    "SIMCALL_EXECUTION_TEST",
-    "SIMCALL_COMM_IPROBE",
-    "SIMCALL_COMM_SEND",
-    "SIMCALL_COMM_ISEND",
-    "SIMCALL_COMM_RECV",
-    "SIMCALL_COMM_IRECV",
-    "SIMCALL_COMM_WAITANY",
-    "SIMCALL_COMM_WAIT",
-    "SIMCALL_COMM_TEST",
-    "SIMCALL_COMM_TESTANY",
-    "SIMCALL_MUTEX_LOCK",
-    "SIMCALL_MUTEX_TRYLOCK",
-    "SIMCALL_MUTEX_UNLOCK",
-    "SIMCALL_COND_WAIT",
-    "SIMCALL_COND_WAIT_TIMEOUT",
-    "SIMCALL_SEM_ACQUIRE",
-    "SIMCALL_SEM_ACQUIRE_TIMEOUT",
-    "SIMCALL_STORAGE_READ",
-    "SIMCALL_STORAGE_WRITE",
-    "SIMCALL_MC_RANDOM",
-    "SIMCALL_RUN_KERNEL",
-    "SIMCALL_RUN_BLOCKING",
+    "SIMCALL_NONE",           "SIMCALL_PROCESS_SUSPEND",     "SIMCALL_PROCESS_JOIN", "SIMCALL_PROCESS_SLEEP",
+    "SIMCALL_EXECUTION_WAIT", "SIMCALL_EXECUTION_TEST",      "SIMCALL_COMM_IPROBE",  "SIMCALL_COMM_SEND",
+    "SIMCALL_COMM_ISEND",     "SIMCALL_COMM_RECV",           "SIMCALL_COMM_IRECV",   "SIMCALL_COMM_WAITANY",
+    "SIMCALL_COMM_WAIT",      "SIMCALL_COMM_TEST",           "SIMCALL_COMM_TESTANY", "SIMCALL_MUTEX_LOCK",
+    "SIMCALL_MUTEX_TRYLOCK",  "SIMCALL_MUTEX_UNLOCK",        "SIMCALL_COND_WAIT",    "SIMCALL_COND_WAIT_TIMEOUT",
+    "SIMCALL_SEM_ACQUIRE",    "SIMCALL_SEM_ACQUIRE_TIMEOUT", "SIMCALL_IO_WAIT",      "SIMCALL_MC_RANDOM",
+    "SIMCALL_RUN_KERNEL",     "SIMCALL_RUN_BLOCKING",
 };
 
 /** @private
@@ -64,7 +44,7 @@ const char* simcall_names[] = {
 void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {
   XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));
   SIMCALL_SET_MC_VALUE(simcall, value);
-  if (simcall->issuer->context->iwannadie)
+  if (simcall->issuer->context_->iwannadie)
     return;
   switch (simcall->call) {
 case SIMCALL_PROCESS_SUSPEND:
@@ -158,14 +138,10 @@ case SIMCALL_SEM_ACQUIRE_TIMEOUT:
   simcall_HANDLER_sem_acquire_timeout(simcall, simgrid::simix::unmarshal<smx_sem_t>(simcall->args[0]), simgrid::simix::unmarshal<double>(simcall->args[1]));
   break;
 
-case SIMCALL_STORAGE_READ:
-  simcall_HANDLER_storage_read(simcall, simgrid::simix::unmarshal<surf_storage_t>(simcall->args[0]),
-                               simgrid::simix::unmarshal<sg_size_t>(simcall->args[1]));
-  break;
-
-case SIMCALL_STORAGE_WRITE:
-  simcall_HANDLER_storage_write(simcall, simgrid::simix::unmarshal<surf_storage_t>(simcall->args[0]),
-                                simgrid::simix::unmarshal<sg_size_t>(simcall->args[1]));
+case SIMCALL_IO_WAIT:
+  simcall_HANDLER_io_wait(
+      simcall,
+      simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0]));
   break;
 
 case SIMCALL_MC_RANDOM:
@@ -184,10 +160,8 @@ case SIMCALL_RUN_BLOCKING:
     case NUM_SIMCALLS:
       break;
     case SIMCALL_NONE:
-      THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",
-          simcall->issuer->name.c_str(),
-          sg_host_get_name(simcall->issuer->host)
-          );
+      THROWF(arg_error, 0, "Asked to do the noop syscall on %s@%s", simcall->issuer->get_cname(),
+             sg_host_get_name(simcall->issuer->host_));
       break;
     default:
       THROW_IMPOSSIBLE;

@@ -131,10 +131,10 @@ if(WIN32)
     DEPENDS simgrid simgrid-java ${JAVALIBS}
 
     # There is no way to disable the dependency of mingw-64 on that lib, unfortunately nor to script cmake -E properly
-    # So let's be brutal and copy it in any case (even on non-windows builds) from the location where chocolatey installs it.
+    # So let's be brutal and copy it in any case (even on non-windows builds) from the location where appveyor provides it.
     # The copy is only expected to work on the appveyor builder, but that's all we need right now
     # since our users are directed to download that file as nightly build.
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different C:/tools/mingw64/bin/libwinpthread-1.dll  ${JAVA_NATIVE_PATH}/libwinpthread-1.dll || true
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different C:/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/libwinpthread-1.dll  ${JAVA_NATIVE_PATH}/libwinpthread-1.dll || true
   )
 endif()
 

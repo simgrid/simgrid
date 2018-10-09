@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #define BOOST_TEST_MODULE Trace Manager tests
-bool init_unit_test(); // boost forget to give this prototype on NetBSD, which does not fit our paranoid flags
+bool init_unit_test(); // boost sometimes forget to give this prototype (NetBSD and other), which does not fit our paranoid flags
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_NO_MAIN
 #include <boost/test/unit_test.hpp>

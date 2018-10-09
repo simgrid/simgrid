@@ -59,7 +59,10 @@ static std::vector<double>* netpoint_get_coords(NetPoint* np)
   return &coords->coords;
 }
 
-VivaldiZone::VivaldiZone(NetZoneImpl* father, std::string name) : ClusterZone(father, name) {}
+VivaldiZone::VivaldiZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel)
+    : ClusterZone(father, name, netmodel)
+{
+}
 
 void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out, std::string coord)
 {
@@ -70,8 +73,8 @@ void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out,
 
   std::string link_up      = "link_" + netpoint->get_name() + "_UP";
   std::string link_down    = "link_" + netpoint->get_name() + "_DOWN";
-  resource::LinkImpl* linkUp   = surf_network_model->createLink(link_up, bw_out, 0, s4u::Link::SharingPolicy::SHARED);
-  resource::LinkImpl* linkDown = surf_network_model->createLink(link_down, bw_in, 0, s4u::Link::SharingPolicy::SHARED);
+  resource::LinkImpl* linkUp   = network_model_->create_link(link_up, bw_out, 0, s4u::Link::SharingPolicy::SHARED);
+  resource::LinkImpl* linkDown = network_model_->create_link(link_down, bw_in, 0, s4u::Link::SharingPolicy::SHARED);
   private_links_.insert({netpoint->id(), {linkUp, linkDown}});
 }
 

@@ -36,14 +36,14 @@ main (int argc, char **argv)
     MPI_Comm_dup (MPI_COMM_WORLD, &comm);
 
     if (rank == 0) {
-      memset (buf0, 0, buf_size);
+      memset (buf0, 0, buf_size*sizeof(int));
 
       MPI_Recv (buf1, buf_size, MPI_INT, 1, 0, comm, &status);
 
       MPI_Send (buf0, buf_size, MPI_INT, 1, 0, comm);
     }
     else if (rank == 1) {
-      memset (buf1, 1, buf_size);
+      memset (buf1, 1, buf_size*sizeof(int));
 
       MPI_Recv (buf0, buf_size, MPI_INT, 0, 0, comm, &status);
 

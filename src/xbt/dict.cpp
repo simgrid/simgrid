@@ -1,30 +1,29 @@
 /* dict - a generic dictionary, variation over hash table                   */
 
-/* Copyright (c) 2004-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstdio>
-#include <cstring>
-
 #include "xbt/dict.h"
+#include "dict_private.h"
+#include "simgrid/Exception.hpp"
+#include "src/xbt_modinter.h"
 #include "xbt/ex.h"
-#include <xbt/ex.hpp>
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
-#include "src/xbt_modinter.h"
 #include "xbt/str.h"
-#include "dict_private.h"
+
+#include <cstdio>
+#include <cstring>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt, "Dictionaries provide the same functionalities as hash tables");
 
 /**
- * \brief Constructor
- * \param free_ctn function to call with (\a data as argument) when \a data is removed from the dictionary
- * \return pointer to the destination
- * \see xbt_dict_free()
+ * @brief Constructor
+ * @param free_ctn function to call with (@a data as argument) when @a data is removed from the dictionary
+ * @return pointer to the destination
+ * @see xbt_dict_free()
  *
  * Creates and initialize a new dictionary with a default hashtable size.
  * The dictionary is homogeneous: each element share the same free function.
@@ -47,8 +46,8 @@ xbt_dict_t xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn)
 }
 
 /**
- * \brief Destructor
- * \param dict the dictionary to be freed
+ * @brief Destructor
+ * @param dict the dictionary to be freed
  *
  * Frees a dictionary with all the data
  */
@@ -123,15 +122,15 @@ static void xbt_dict_rehash(xbt_dict_t dict)
 }
 
 /**
- * \brief Add data to the dict (arbitrary key)
- * \param dict the container
- * \param key the key to set the new data
- * \param key_len the size of the \a key
- * \param data the data to add in the dict
- * \param free_ctn unused parameter (kept for compatibility)
+ * @brief Add data to the dict (arbitrary key)
+ * @param dict the container
+ * @param key the key to set the new data
+ * @param key_len the size of the @a key
+ * @param data the data to add in the dict
+ * @param free_ctn unused parameter (kept for compatibility)
  *
- * Set the \a data in the structure under the \a key, which can be any kind of data, as long as its length is provided
- * in \a key_len.
+ * Set the @a data in the structure under the @a key, which can be any kind of data, as long as its length is provided
+ * in @a key_len.
  */
 void xbt_dict_set_ext(xbt_dict_t dict, const char* key, int key_len, void* data,
                       XBT_ATTRIB_UNUSED void_f_pvoid_t free_ctn)
@@ -171,14 +170,14 @@ void xbt_dict_set_ext(xbt_dict_t dict, const char* key, int key_len, void* data,
 }
 
 /**
- * \brief Add data to the dict (null-terminated key)
+ * @brief Add data to the dict (null-terminated key)
  *
- * \param dict the dict
- * \param key the key to set the new data
- * \param data the data to add in the dict
- * \param free_ctn unused parameter (kept for compatibility)
+ * @param dict the dict
+ * @param key the key to set the new data
+ * @param data the data to add in the dict
+ * @param free_ctn unused parameter (kept for compatibility)
  *
- * set the \a data in the structure under the \a key, which is anull terminated string.
+ * set the @a data in the structure under the @a key, which is anull terminated string.
  */
 void xbt_dict_set(xbt_dict_t dict, const char *key, void *data, void_f_pvoid_t free_ctn)
 {
@@ -186,14 +185,14 @@ void xbt_dict_set(xbt_dict_t dict, const char *key, void *data, void_f_pvoid_t f
 }
 
 /**
- * \brief Retrieve data from the dict (arbitrary key)
+ * @brief Retrieve data from the dict (arbitrary key)
  *
- * \param dict the dealer of data
- * \param key the key to find data
- * \param key_len the size of the \a key
- * \return the data that we are looking for
+ * @param dict the dealer of data
+ * @param key the key to find data
+ * @param key_len the size of the @a key
+ * @return the data that we are looking for
  *
- * Search the given \a key. Throws not_found_error when not found.
+ * Search the given @a key. Throws not_found_error when not found.
  */
 void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
 {
@@ -246,20 +245,14 @@ char *xbt_dict_get_key(xbt_dict_t dict, const void *data)
   return nullptr;
 }
 
-/** @brief retrieve the key associated to that xbt_dictelm_t. */
-char *xbt_dict_get_elm_key(xbt_dictelm_t elm)
-{
-  return elm->key;
-}
-
 /**
- * \brief Retrieve data from the dict (null-terminated key)
+ * @brief Retrieve data from the dict (null-terminated key)
  *
- * \param dict the dealer of data
- * \param key the key to find data
- * \return the data that we are looking for
+ * @param dict the dealer of data
+ * @param key the key to find data
+ * @return the data that we are looking for
  *
- * Search the given \a key. Throws not_found_error when not found.
+ * Search the given @a key. Throws not_found_error when not found.
  * Check xbt_dict_get_or_null() for a version returning nullptr without exception when not found.
  */
 void *xbt_dict_get(xbt_dict_t dict, const char *key)
@@ -268,13 +261,13 @@ void *xbt_dict_get(xbt_dict_t dict, const char *key)
 }
 
 /**
- * \brief Retrieve element from the dict (null-terminated key)
+ * @brief Retrieve element from the dict (null-terminated key)
  *
- * \param dict the dealer of data
- * \param key the key to find data
- * \return the s_xbt_dictelm_t that we are looking for
+ * @param dict the dealer of data
+ * @param key the key to find data
+ * @return the s_xbt_dictelm_t that we are looking for
  *
- * Search the given \a key. Throws not_found_error when not found.
+ * Search the given @a key. Throws not_found_error when not found.
  * Check xbt_dict_get_or_null() for a version returning nullptr without exception when not found.
  */
 xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
@@ -288,7 +281,7 @@ xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
 }
 
 /**
- * \brief like xbt_dict_get(), but returning nullptr when not found
+ * @brief like xbt_dict_get(), but returning nullptr when not found
  */
 void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
 {
@@ -301,7 +294,7 @@ void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
 }
 
 /**
- * \brief like xbt_dict_get_elm(), but returning nullptr when not found
+ * @brief like xbt_dict_get_elm(), but returning nullptr when not found
  */
 xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key)
 {
@@ -314,13 +307,13 @@ xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key)
 }
 
 /**
- * \brief Remove data from the dict (arbitrary key)
+ * @brief Remove data from the dict (arbitrary key)
  *
- * \param dict the trash can
- * \param key the key of the data to be removed
- * \param key_len the size of the \a key
+ * @param dict the trash can
+ * @param key the key of the data to be removed
+ * @param key_len the size of the @a key
  *
- * Remove the entry associated with the given \a key (throws not_found)
+ * Remove the entry associated with the given @a key (throws not_found)
  */
 void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
 {
@@ -352,12 +345,12 @@ void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
 }
 
 /**
- * \brief Remove data from the dict (null-terminated key)
+ * @brief Remove data from the dict (null-terminated key)
  *
- * \param dict the dict
- * \param key the key of the data to be removed
+ * @param dict the dict
+ * @param key the key of the data to be removed
  *
- * Remove the entry associated with the given \a key
+ * Remove the entry associated with the given @a key
  */
 void xbt_dict_remove(xbt_dict_t dict, const char *key)
 {
@@ -386,22 +379,16 @@ void xbt_dict_reset(xbt_dict_t dict)
 }
 
 /**
- * \brief Return the number of elements in the dict.
- * \param dict a dictionary
+ * @brief Return the number of elements in the dict.
+ * @param dict a dictionary
  */
 int xbt_dict_length(xbt_dict_t dict)
 {
   return dict->count;
 }
 
-/** @brief function to be used in xbt_dict_dump as long as the stored values are strings */
-void xbt_dict_dump_output_string(void *s)
-{
-  fputs((char*) s, stdout);
-}
-
 /**
- * \brief test if the dict is empty or not
+ * @brief test if the dict is empty or not
  */
 int xbt_dict_is_empty(xbt_dict_t dict)
 {
@@ -409,13 +396,13 @@ int xbt_dict_is_empty(xbt_dict_t dict)
 }
 
 /**
- * \brief Outputs the content of the structure (debugging purpose)
+ * @brief Outputs the content of the structure (debugging purpose)
  *
- * \param dict the exibitionist
- * \param output a function to dump each data in the tree (check @ref xbt_dict_dump_output_string)
+ * @param dict the exibitionist
+ * @param output a function to dump each data in the tree
  *
- * Outputs the content of the structure. (for debugging purpose). \a output is a function to output the data. If nullptr,
- * data won't be displayed.
+ * Outputs the content of the structure. (for debugging purpose).
+ * @a output is a function to output the data. If nullptr, data won't be displayed.
  */
 void xbt_dict_dump(xbt_dict_t dict, void_f_pvoid_t output)
 {
@@ -442,63 +429,6 @@ void xbt_dict_dump(xbt_dict_t dict, void_f_pvoid_t output)
   }
 }
 
-xbt_dynar_t all_sizes = nullptr;
-/** @brief shows some debugging info about the bucklet repartition */
-void xbt_dict_dump_sizes(xbt_dict_t dict)
-{
-  unsigned int count;
-  unsigned int size;
-
-  printf("Dict %p: %d bucklets, %d used cells (of %d) ", dict, dict->count, dict->fill, dict->table_size);
-
-  if (not dict) {
-    printf("\n");
-    return;
-  }
-  xbt_dynar_t sizes = xbt_dynar_new(sizeof(int), nullptr);
-
-  for (int i = 0; i < dict->table_size; i++) {
-    xbt_dictelm_t element = dict->table[i];
-    size = 0;
-    if (element) {
-      while (element != nullptr) {
-        size++;
-        element = element->next;
-      }
-    }
-    if (xbt_dynar_length(sizes) <= size) {
-      int prevsize = 1;
-      xbt_dynar_set(sizes, size, &prevsize);
-    } else {
-      int prevsize;
-      xbt_dynar_get_cpy(sizes, size, &prevsize);
-      prevsize++;
-      xbt_dynar_set(sizes, size, &prevsize);
-    }
-  }
-  if (not all_sizes)
-    all_sizes = xbt_dynar_new(sizeof(int), nullptr);
-
-  xbt_dynar_foreach(sizes, count, size) {
-    /* Copy values of this one into all_sizes */
-    int prevcount;
-    if (xbt_dynar_length(all_sizes) <= count) {
-      prevcount = size;
-      xbt_dynar_set(all_sizes, count, &prevcount);
-    } else {
-      xbt_dynar_get_cpy(all_sizes, count, &prevcount);
-      prevcount += size;
-      xbt_dynar_set(all_sizes, count, &prevcount);
-    }
-
-    /* Report current sizes */
-    if (count != 0 && size != 0)
-      printf("%uelm x %u cells; ", count, size);
-  }
-  printf("\n");
-  xbt_dynar_free(&sizes);
-}
-
 /**
  * Create the dict mallocators.
  * This is an internal XBT function called during the lib initialization.
@@ -521,32 +451,14 @@ void xbt_dict_postexit()
     xbt_mallocator_free(dict_elm_mallocator);
     dict_elm_mallocator = nullptr;
   }
-  if (all_sizes) {
-    unsigned int count;
-    int size;
-    double avg = 0;
-    int total_count = 0;
-    printf("Overall stats:");
-    xbt_dynar_foreach(all_sizes, count, size) {
-      if (count != 0 && size != 0) {
-        printf("%uelm x %d cells; ", count, size);
-        avg += count * size;
-        total_count += size;
-      }
-    }
-    if (total_count > 0)
-      printf("; %f elm per cell\n", avg / (double)total_count);
-    else
-      printf("; 0 elm per cell\n");
-  }
 }
 
 #ifdef SIMGRID_TEST
+#include "simgrid/Exception.hpp"
 #include "src/internal_config.h"
 #include "xbt.h"
 #include "xbt/ex.h"
 #include <ctime>
-#include <xbt/ex.hpp>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dict);
 

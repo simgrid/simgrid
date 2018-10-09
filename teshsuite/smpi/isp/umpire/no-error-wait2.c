@@ -36,7 +36,7 @@ main (int argc, char **argv)
     }
   else if (rank == 0)
     {
-      memset (buf0, 0, buf_size);
+      memset (buf0, 0, buf_size*sizeof(int));
 
       MPI_Irecv (buf1, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &req);
 
@@ -48,7 +48,7 @@ main (int argc, char **argv)
     }
   else if (rank == 1)
     {
-      memset (buf1, 1, buf_size);
+      memset (buf1, 1, buf_size*sizeof(int));
 
       MPI_Irecv (buf0, buf_size, MPI_INT, 0, 0, MPI_COMM_WORLD, &req);
 

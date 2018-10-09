@@ -23,7 +23,8 @@ simgrid::xbt::signal<void(Link&)> Link::on_destruction;
 simgrid::xbt::signal<void(Link&)> Link::on_state_change;
 simgrid::xbt::signal<void(Link&)> Link::on_bandwidth_change;
 simgrid::xbt::signal<void(kernel::resource::NetworkAction*, Host* src, Host* dst)> Link::on_communicate;
-simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> Link::on_communication_state_change;
+simgrid::xbt::signal<void(kernel::resource::NetworkAction*, kernel::resource::Action::State)>
+    Link::on_communication_state_change;
 
 Link* Link::by_name(std::string name)
 {
@@ -42,10 +43,6 @@ const std::string& Link::get_name() const
 const char* Link::get_cname() const
 {
   return this->pimpl_->get_cname();
-}
-const char* Link::name()
-{
-  return get_cname();
 }
 bool Link::is_used()
 {
@@ -103,7 +100,7 @@ void Link::set_latency_trace(tmgr_trace_t trace)
   simgrid::simix::simcall([this, trace]() { this->pimpl_->set_latency_trace(trace); });
 }
 
-const char* Link::get_property(const char* key)
+const char* Link::get_property(std::string key)
 {
   return this->pimpl_->get_property(key);
 }

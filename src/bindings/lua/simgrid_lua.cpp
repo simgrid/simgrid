@@ -22,9 +22,9 @@ extern "C" int luaopen_simgrid(lua_State* L);
 /* ********************************************************************************* */
 
 /**
- * \brief Prints a log string with debug level.
- * \param L a Lua state
- * \return number of values returned to Lua
+ * @brief Prints a log string with debug level.
+ * @param L a Lua state
+ * @return number of values returned to Lua
  *
  * - Argument 1 (string): the text to print
  */
@@ -36,9 +36,9 @@ static int debug(lua_State* L) {
 }
 
 /**
- * \brief Prints a log string with info level.
- * \param L a Lua state
- * \return number of values returned to Lua
+ * @brief Prints a log string with info level.
+ * @param L a Lua state
+ * @return number of values returned to Lua
  *
  * - Argument 1 (string): the text to print
  */
@@ -110,8 +110,8 @@ static const luaL_Reg simgrid_functions[] = {
 /* ********************************************************************************* */
 
 /**
- * \brief Makes the core functions available to the Lua world.
- * \param L a Lua world
+ * @brief Makes the core functions available to the Lua world.
+ * @param L a Lua world
  */
 static void sglua_register_core_functions(lua_State *L)
 {
@@ -122,12 +122,12 @@ static void sglua_register_core_functions(lua_State *L)
 }
 
 /**
- * \brief Opens the simgrid Lua module.
+ * @brief Opens the simgrid Lua module.
  *
  * This function is called automatically by the Lua interpreter when some
  * Lua code requires the "simgrid" module.
  *
- * \param L the Lua state
+ * @param L the Lua state
  */
 int luaopen_simgrid(lua_State *L)
 {

@@ -23,8 +23,9 @@ namespace s4u {
  */
 class XBT_PUBLIC ConditionVariable {
 private:
-  friend kernel::activity::ConditionVariableImpl;
+  friend simgrid::kernel::activity::ConditionVariableImpl;
   smx_cond_t cond_;
+
   explicit ConditionVariable(smx_cond_t cond) : cond_(cond) {}
 public:
   ConditionVariable(ConditionVariable const&) = delete;
@@ -32,11 +33,14 @@ public:
 
   friend XBT_PUBLIC void intrusive_ptr_add_ref(ConditionVariable * cond);
   friend XBT_PUBLIC void intrusive_ptr_release(ConditionVariable * cond);
-  using Ptr = boost::intrusive_ptr<ConditionVariable>;
 
-  static Ptr create();
+  static ConditionVariablePtr create();
 
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") Ptr createConditionVariable() { return create(); }
+  /** @deprecated See Comm::get_mailbox() */
+  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") ConditionVariablePtr createConditionVariable()
+  {
+    return create();
+  }
 
   //  Wait functions without time:
 
@@ -97,7 +101,6 @@ public:
   void notify_all();
 };
 
-using ConditionVariablePtr = ConditionVariable::Ptr;
 }
 } // namespace simgrid::s4u
 

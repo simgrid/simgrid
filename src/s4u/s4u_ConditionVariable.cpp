@@ -3,15 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <exception>
-#include <mutex>
-
-#include <xbt/ex.hpp>
-#include <xbt/log.hpp>
-
 #include "simgrid/s4u/ConditionVariable.hpp"
 #include "simgrid/simix.h"
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
+#include "xbt/log.hpp"
+
+#include <exception>
+#include <mutex>
 
 namespace simgrid {
 namespace s4u {

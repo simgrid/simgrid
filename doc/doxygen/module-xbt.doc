@@ -2,21 +2,21 @@
 
    The XBT functionalities fall into several categories:
     - Portability support
-      - \ref XBT_syscall
-      - \ref XBT_str
+      - @ref XBT_syscall
+      - @ref XBT_str
     - Grounding features
-      - \ref XBT_ex
-      - \ref XBT_ex_c
-      - \ref XBT_log
-      - \ref XBT_error
-      - \ref XBT_config
-      - \ref XBT_mallocator
-      - \ref XBT_cunit
+      - @ref XBT_ex
+      - @ref XBT_ex_c
+      - @ref XBT_log
+      - @ref XBT_error
+      - @ref XBT_config
+      - @ref XBT_mallocator
+      - @ref XBT_cunit
     - Data structures
-      - \ref XBT_dynar
-      - \ref XBT_dict
-    - \ref XBT_misc
-      - \ref XBT_graph
+      - @ref XBT_dynar
+      - @ref XBT_dict
+    - @ref XBT_misc
+      - @ref XBT_graph
 
   @{ */
    /** @defgroup XBT_grounding   Grounding features */
@@ -86,13 +86,13 @@
  * * PORTABILITY-INTERNALS * * (not included in documentation)
  * ************************* */
 
- /** \addtogroup XBT_context Portable context implementation
-  *  \brief Contexts are a higher level system than <tt>setjump/longjmp</tt>
+ /** @addtogroup XBT_context Portable context implementation
+  *  @brief Contexts are a higher level system than <tt>setjump/longjmp</tt>
   *  for non-preemptible threads.
   *
   *  You shouldn't use it directly since it is merely intended to ease the
   *  implementation of the several programmation environment of the
-  *  SimGrid toolkit (namely, \ref MSG_API and \ref SMPI_API).
+  *  SimGrid toolkit (namely, @ref MSG_API and @ref SMPI_API).
   *
   *  You should use those environments instead.
   */

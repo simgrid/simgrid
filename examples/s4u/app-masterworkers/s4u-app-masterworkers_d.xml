@@ -1,0 +1,22 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+  <!-- The master actor (with some arguments) -->
+  <actor host="Tremblay" function="master">
+    <argument value="20"/>        <!-- Number of tasks -->
+    <argument value="50000000"/>  <!-- Computation size of tasks -->
+    <argument value="1000000"/>   <!-- Communication size of tasks -->
+    <!-- name of hosts on which the workers are running -->
+    <argument value="Tremblay"/>
+    <argument value="Jupiter" />
+    <argument value="Fafard" />
+    <argument value="Ginette" />
+    <argument value="Bourassa" />
+  </actor>
+  <!-- The worker processes (with no argument) -->
+  <actor host="Tremblay" function="worker" />
+  <actor host="Jupiter" function="worker" />
+  <actor host="Fafard" function="worker" />
+  <actor host="Ginette" function="worker" />
+  <actor host="Bourassa" function="worker" />
+</platform>

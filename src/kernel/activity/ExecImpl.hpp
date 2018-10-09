@@ -17,7 +17,7 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl {
   ~ExecImpl() override;
 
 public:
-  explicit ExecImpl(const char* name, resource::Action* surf_action, resource::Action* timeout_detector,
+  explicit ExecImpl(std::string name, resource::Action* surf_action, resource::Action* timeout_detector,
                     s4u::Host* host);
   void suspend() override;
   void resume() override;
@@ -27,6 +27,7 @@ public:
   double get_remaining_ratio();
   void set_bound(double bound);
   void set_priority(double priority);
+  void set_category(std::string category);
   virtual ActivityImpl* migrate(s4u::Host* to);
 
   /* The host where the execution takes place. nullptr means this is a parallel exec (and only surf knows the hosts) */
@@ -36,10 +37,9 @@ private:
   resource::Action* timeout_detector_ = nullptr;
 
 public:
-  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> onCreation;
-  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> onCompletion;
-  static simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr, simgrid::s4u::Host*)> onMigration;
-
+  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> on_creation;
+  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> on_completion;
+  static simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr, simgrid::s4u::Host*)> on_migration;
 };
 }
 }

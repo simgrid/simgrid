@@ -34,11 +34,9 @@ double sg_weight_S_parameter = 0.0;     /* default value; can be set by model or
 /*  } */
 void surf_network_model_init_LegrandVelho()
 {
-  if (surf_network_model)
-    return;
+  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model();
-  all_existing_models->push_back(surf_network_model);
 
   simgrid::config::set_default<double>("network/latency-factor", 13.01);
   simgrid::config::set_default<double>("network/bandwidth-factor", 0.97);
@@ -58,15 +56,13 @@ void surf_network_model_init_LegrandVelho()
 /* } */
 void surf_network_model_init_CM02()
 {
-  if (surf_network_model)
-    return;
+  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
   simgrid::config::set_default<double>("network/latency-factor", 1.0);
   simgrid::config::set_default<double>("network/bandwidth-factor", 1.0);
   simgrid::config::set_default<double>("network/weight-S", 0.0);
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model();
-  all_existing_models->push_back(surf_network_model);
 }
 
 /***************************************************************************/
@@ -81,10 +77,9 @@ void surf_network_model_init_CM02()
 /*  }                                                                      */
 void surf_network_model_init_Reno()
 {
-  if (surf_network_model)
-    return;
+  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
-  using namespace simgrid::kernel;
+  namespace lmm = simgrid::kernel::lmm;
   lmm::Lagrange::set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
 
   simgrid::config::set_default<double>("network/latency-factor", 13.01);
@@ -92,16 +87,14 @@ void surf_network_model_init_Reno()
   simgrid::config::set_default<double>("network/weight-S", 20537);
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
-  all_existing_models->push_back(surf_network_model);
 }
 
 
 void surf_network_model_init_Reno2()
 {
-  if (surf_network_model)
-    return;
+  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
-  using namespace simgrid::kernel;
+  namespace lmm = simgrid::kernel::lmm;
   lmm::Lagrange::set_default_protocol_function(lmm::func_reno2_f, lmm::func_reno2_fp, lmm::func_reno2_fpi);
 
   simgrid::config::set_default<double>("network/latency-factor", 13.01);
@@ -109,15 +102,13 @@ void surf_network_model_init_Reno2()
   simgrid::config::set_default<double>("network/weight-S", 20537);
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
-  all_existing_models->push_back(surf_network_model);
 }
 
 void surf_network_model_init_Vegas()
 {
-  if (surf_network_model)
-    return;
+  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
-  using namespace simgrid::kernel;
+  namespace lmm = simgrid::kernel::lmm;
   lmm::Lagrange::set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
 
   simgrid::config::set_default<double>("network/latency-factor", 13.01);
@@ -125,7 +116,6 @@ void surf_network_model_init_Vegas()
   simgrid::config::set_default<double>("network/weight-S", 20537);
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
-  all_existing_models->push_back(surf_network_model);
 }
 
 namespace simgrid {
@@ -136,6 +126,8 @@ NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(b
     : NetworkModel(simgrid::config::get_value<std::string>("network/optim") == "Full" ? Model::UpdateAlgo::FULL
                                                                                       : Model::UpdateAlgo::LAZY)
 {
+  all_existing_models.push_back(this);
+
   std::string optim = simgrid::config::get_value<std::string>("network/optim");
   bool select       = simgrid::config::get_value<bool>("network/maxmin-selective-update");
 
@@ -146,11 +138,11 @@ NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(b
   }
 
   set_maxmin_system(make_new_lmm_system(select));
-  loopback_ = NetworkCm02Model::createLink("__loopback__", 498000000, 0.000015, s4u::Link::SharingPolicy::FATPIPE);
+  loopback_ = NetworkCm02Model::create_link("__loopback__", 498000000, 0.000015, s4u::Link::SharingPolicy::FATPIPE);
 }
 
-LinkImpl* NetworkCm02Model::createLink(const std::string& name, double bandwidth, double latency,
-                                       s4u::Link::SharingPolicy policy)
+LinkImpl* NetworkCm02Model::create_link(const std::string& name, double bandwidth, double latency,
+                                        s4u::Link::SharingPolicy policy)
 {
   return new NetworkCm02Link(this, name, bandwidth, latency, policy, get_maxmin_system());
 }
@@ -253,14 +245,14 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
         });
   }
 
-  double bandwidth_bound = route.empty() ? -1.0 : bandwidthFactor(size) * route.front()->get_bandwidth();
+  double bandwidth_bound = route.empty() ? -1.0 : get_bandwidth_factor(size) * route.front()->get_bandwidth();
 
   for (auto const& link : route)
-    bandwidth_bound = std::min(bandwidth_bound, bandwidthFactor(size) * link->get_bandwidth());
+    bandwidth_bound = std::min(bandwidth_bound, get_bandwidth_factor(size) * link->get_bandwidth());
 
   action->lat_current_ = action->latency_;
-  action->latency_ *= latencyFactor(size);
-  action->rate_ = bandwidthConstraint(action->rate_, bandwidth_bound, size);
+  action->latency_ *= get_latency_factor(size);
+  action->rate_ = get_bandwidth_constraint(action->rate_, bandwidth_bound, size);
 
   int constraints_per_variable = route.size();
   constraints_per_variable += back_route.size();

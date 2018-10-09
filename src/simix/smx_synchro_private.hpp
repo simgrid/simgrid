@@ -6,9 +6,7 @@
 #ifndef SIMIX_SYNCHRO_PRIVATE_H
 #define SIMIX_SYNCHRO_PRIVATE_H
 
-#include "simgrid/s4u/ConditionVariable.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include <boost/intrusive/list.hpp>
 
 smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout);
 

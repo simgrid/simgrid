@@ -51,12 +51,6 @@ private:
 
 namespace simgrid {
 namespace msg {
-class ActorExt {
-public:
-  explicit ActorExt(void* d) : data(d) {}
-  msg_error_t errno_ = MSG_OK;  /* the last value returned by a MSG_function */
-  void* data         = nullptr; /* user data */
-};
 
 class Comm {
 public:
@@ -85,7 +79,7 @@ XBT_PUBLIC_DATA MSG_Global_t msg_global;
 
 /*************************************************************/
 XBT_PRIVATE void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_proc);
-XBT_PRIVATE smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::function<void()> code, void* data,
+XBT_PRIVATE smx_actor_t MSG_process_create_from_SIMIX(std::string name, simgrid::simix::ActorCode code, void* data,
                                                       sg_host_t host,
                                                       std::unordered_map<std::string, std::string>* properties,
                                                       smx_actor_t parent_process);

@@ -4,10 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/include/surf/surf.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
-
-#include <xbt/asserts.h> // xbt_log_no_loc
+#include "xbt/asserts.h" // xbt_log_no_loc
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
 
@@ -15,10 +15,8 @@ simgrid::vm::VMModel* surf_vm_model = nullptr;
 
 void surf_vm_model_init_HL13()
 {
-  if (surf_cpu_model_vm) {
+  if (surf_cpu_model_vm != nullptr)
     surf_vm_model = new simgrid::vm::VMModel();
-    all_existing_models->push_back(surf_vm_model);
-  }
 }
 
 namespace simgrid {
@@ -56,6 +54,7 @@ static void hostStateChange(s4u::Host& host)
 
 VMModel::VMModel()
 {
+  all_existing_models.push_back(this);
   s4u::Host::on_state_change.connect(hostStateChange);
 }
 
@@ -143,17 +142,16 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
 {
   if (get_state() != s4u::VirtualMachine::state::RUNNING)
     THROWF(vm_error, 0, "Cannot suspend VM %s: it is not running.", piface_->get_cname());
-  if (issuer->host == piface_)
+  if (issuer->host_ == piface_)
     THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->get_cname(),
            piface_->get_cname());
 
-  auto& process_list = piface_->extension<simgrid::simix::Host>()->process_list;
-  XBT_DEBUG("suspend VM(%s), where %zu processes exist", piface_->get_cname(), process_list.size());
+  XBT_DEBUG("suspend VM(%s), where %zu processes exist", piface_->get_cname(), process_list_.size());
 
   action_->suspend();
 
-  for (auto& smx_process : process_list) {
-    XBT_DEBUG("suspend %s", smx_process.name.c_str());
+  for (auto& smx_process : process_list_) {
+    XBT_DEBUG("suspend %s", smx_process.get_cname());
     smx_process.suspend(issuer);
   }
 
@@ -167,12 +165,11 @@ void VirtualMachineImpl::resume()
   if (get_state() != s4u::VirtualMachine::state::SUSPENDED)
     THROWF(vm_error, 0, "Cannot resume VM %s: it was not suspended", piface_->get_cname());
 
-  auto& process_list = piface_->extension<simgrid::simix::Host>()->process_list;
-  XBT_DEBUG("Resume VM %s, containing %zu processes.", piface_->get_cname(), process_list.size());
+  XBT_DEBUG("Resume VM %s, containing %zu processes.", piface_->get_cname(), process_list_.size());
 
   action_->resume();
 
-  for (auto& smx_process : process_list) {
+  for (auto& smx_process : process_list_) {
     XBT_DEBUG("resume %s", smx_process.get_cname());
     smx_process.resume();
   }
@@ -208,12 +205,11 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
     XBT_VERB("Shutting down the VM %s even if it's not running but %s", piface_->get_cname(), stateName);
   }
 
-  auto& process_list = piface_->extension<simgrid::simix::Host>()->process_list;
-  XBT_DEBUG("shutdown VM %s, that contains %zu processes", piface_->get_cname(), process_list.size());
+  XBT_DEBUG("shutdown VM %s, that contains %zu processes", piface_->get_cname(), process_list_.size());
 
-  for (auto& smx_process : process_list) {
+  for (auto& smx_process : process_list_) {
     XBT_DEBUG("kill %s@%s on behalf of %s which shutdown that VM.", smx_process.get_cname(),
-              smx_process.host->get_cname(), issuer->get_cname());
+              smx_process.host_->get_cname(), issuer->get_cname());
     SIMIX_process_kill(&smx_process, issuer);
   }
 
@@ -228,9 +224,9 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
  */
 void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
 {
-  const char* vm_name     = piface_->get_cname();
-  const char* pm_name_src = physical_host_->get_cname();
-  const char* pm_name_dst = destination->get_cname();
+  std::string vm_name     = piface_->get_name();
+  std::string pm_name_src = physical_host_->get_name();
+  std::string pm_name_dst = destination->get_name();
 
   /* update net_elm with that of the destination physical host */
   piface_->pimpl_netpoint = destination->pimpl_netpoint;
@@ -248,7 +244,7 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
   /* keep the bound value of the cpu action of the VM. */
   double old_bound = action_->get_bound();
   if (old_bound > 0) {
-    XBT_DEBUG("migrate VM(%s): set bound (%f) at %s", vm_name, old_bound, pm_name_dst);
+    XBT_DEBUG("migrate VM(%s): set bound (%f) at %s", vm_name.c_str(), old_bound, pm_name_dst.c_str());
     new_cpu_action->set_bound(old_bound);
   }
 
@@ -257,7 +253,7 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
 
   action_ = new_cpu_action;
 
-  XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name, pm_name_src, pm_name_dst);
+  XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name.c_str(), pm_name_src.c_str(), pm_name_dst.c_str());
 }
 
 void VirtualMachineImpl::set_bound(double bound)

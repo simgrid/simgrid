@@ -8,8 +8,7 @@
 #include "src/surf/trace_mgr.hpp"
 #include "surf/surf.hpp"
 
-#ifndef SURF_MODEL_CPUTI_H_
-#define SURF_MODEL_CPUTI_H_
+#define EPSILON 0.000000001
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf_cpu, "Logging specific to the SURF CPU TRACE INTEGRATION module");
 
@@ -51,30 +50,29 @@ CpuTiTmgr::~CpuTiTmgr()
 }
 
 /**
-* \brief Integrate trace
-*
-* Wrapper around surf_cpu_integrate_trace_simple() to get
-* the cyclic effect.
-*
-* \param a      Begin of interval
-* \param b      End of interval
-* \return the integrate value. -1 if an error occurs.
-*/
+ * @brief Integrate trace
+ *
+ * Wrapper around surf_cpu_integrate_trace_simple() to get
+ * the cyclic effect.
+ *
+ * @param a      Begin of interval
+ * @param b      End of interval
+ * @return the integrate value. -1 if an error occurs.
+ */
 double CpuTiTmgr::integrate(double a, double b)
 {
-  int a_index;
-
   if ((a < 0.0) || (a > b)) {
     xbt_die("Error, invalid integration interval [%.2f,%.2f]. "
         "You probably have a task executing with negative computation amount. Check your code.", a, b);
   }
-  if (fabs(a -b) < EPSILON)
+  if (fabs(a - b) < EPSILON)
     return 0.0;
 
-  if (type_ == TRACE_FIXED) {
-    return ((b - a) * value_);
+  if (type_ == Type::FIXED) {
+    return (b - a) * value_;
   }
 
+  int a_index;
   if (fabs(ceil(a / last_time_) - a / last_time_) < EPSILON)
     a_index = 1 + static_cast<int>(ceil(a / last_time_));
   else
@@ -96,19 +94,19 @@ double CpuTiTmgr::integrate(double a, double b)
 }
 
 /**
- * \brief Auxiliary function to compute the integral between a and b.
+ * @brief Auxiliary function to compute the integral between a and b.
  *     It simply computes the integrals at point a and b and returns the difference between them.
- * \param a  Initial point
- * \param b  Final point
-*/
+ * @param a  Initial point
+ * @param b  Final point
+ */
 double CpuTiTrace::integrate_simple(double a, double b)
 {
   return integrate_simple_point(b) - integrate_simple_point(a);
 }
 
 /**
- * \brief Auxiliary function to compute the integral at point a.
- * \param a        point
+ * @brief Auxiliary function to compute the integral at point a.
+ * @param a        point
  */
 double CpuTiTrace::integrate_simple_point(double a)
 {
@@ -129,14 +127,14 @@ double CpuTiTrace::integrate_simple_point(double a)
 }
 
 /**
-* \brief Computes the time needed to execute "amount" on cpu.
-*
-* Here, amount can span multiple trace periods
-*
-* \param a        Initial time
-* \param amount  Amount to be executed
-* \return  End time
-*/
+ * @brief Computes the time needed to execute "amount" on cpu.
+ *
+ * Here, amount can span multiple trace periods
+ *
+ * @param a        Initial time
+ * @param amount  Amount to be executed
+ * @return  End time
+ */
 double CpuTiTmgr::solve(double a, double amount)
 {
   /* Fix very small negative numbers */
@@ -159,7 +157,7 @@ double CpuTiTmgr::solve(double a, double amount)
     return a;
 
   /* Is the trace fixed ? */
-  if (type_ == TRACE_FIXED) {
+  if (type_ == Type::FIXED) {
     return (a + (amount / value_));
   }
 
@@ -187,12 +185,12 @@ double CpuTiTmgr::solve(double a, double amount)
 }
 
 /**
- * \brief Auxiliary function to solve integral.
+ * @brief Auxiliary function to solve integral.
  *  It returns the date when the requested amount of flops is available
- * \param a        Initial point
- * \param amount  Amount of flops
- * \return The date when amount is available.
-*/
+ * @param a        Initial point
+ * @param amount  Amount of flops
+ * @return The date when amount is available.
+ */
 double CpuTiTrace::solve_simple(double a, double amount)
 {
   double integral_a = integrate_simple_point(a);
@@ -205,12 +203,12 @@ double CpuTiTrace::solve_simple(double a, double amount)
 }
 
 /**
-* \brief Auxiliary function to update the CPU speed scale.
-*
-*  This function uses the trace structure to return the speed scale at the determined time a.
-* \param a        Time
-* \return CPU speed scale
-*/
+ * @brief Auxiliary function to update the CPU speed scale.
+ *
+ *  This function uses the trace structure to return the speed scale at the determined time a.
+ * @param a        Time
+ * @return CPU speed scale
+ */
 double CpuTiTmgr::get_power_scale(double a)
 {
   double reduced_a          = a - floor(a / last_time_) * last_time_;
@@ -220,11 +218,11 @@ double CpuTiTmgr::get_power_scale(double a)
 }
 
 /**
- * \brief Creates a new integration trace from a tmgr_trace_t
+ * @brief Creates a new integration trace from a tmgr_trace_t
  *
- * \param  speed_trace    CPU availability trace
- * \param  value          Percentage of CPU speed available (useful to fixed tracing)
- * \return  Integration trace structure
+ * @param  speed_trace    CPU availability trace
+ * @param  value          Percentage of CPU speed available (useful to fixed tracing)
+ * @return  Integration trace structure
  */
 CpuTiTmgr::CpuTiTmgr(tmgr_trace_t speed_trace, double value) : speed_trace_(speed_trace)
 {
@@ -233,7 +231,7 @@ CpuTiTmgr::CpuTiTmgr(tmgr_trace_t speed_trace, double value) : speed_trace_(spee
 
   /* no availability file, fixed trace */
   if (not speed_trace) {
-    type_ = TRACE_FIXED;
+    type_  = Type::FIXED;
     value_ = value;
     XBT_DEBUG("No availability trace. Constant value = %f", value);
     return;
@@ -241,12 +239,12 @@ CpuTiTmgr::CpuTiTmgr(tmgr_trace_t speed_trace, double value) : speed_trace_(spee
 
   /* only one point available, fixed trace */
   if (speed_trace->event_list.size() == 1) {
-    type_  = TRACE_FIXED;
+    type_  = Type::FIXED;
     value_ = speed_trace->event_list.front().value_;
     return;
   }
 
-  type_ = TRACE_DYNAMIC;
+  type_ = Type::DYNAMIC;
 
   /* count the total time of trace file */
   for (auto const& val : speed_trace->event_list)
@@ -260,14 +258,14 @@ CpuTiTmgr::CpuTiTmgr(tmgr_trace_t speed_trace, double value) : speed_trace_(spee
 }
 
 /**
- * \brief Binary search in array.
+ * @brief Binary search in array.
  *  It returns the first point of the interval in which "a" is.
- * \param array    Array
- * \param a        Value to search
- * \param low     Low bound to search in array
- * \param high    Upper bound to search in array
- * \return Index of point
-*/
+ * @param array    Array
+ * @param a        Value to search
+ * @param low     Low bound to search in array
+ * @param high    Upper bound to search in array
+ * @return Index of point
+ */
 int CpuTiTrace::binary_search(double* array, double a, int low, int high)
 {
   xbt_assert(low < high, "Wrong parameters: low (%d) should be smaller than high (%d)", low, high);
@@ -292,21 +290,22 @@ int CpuTiTrace::binary_search(double* array, double a, int low, int high)
 /*********
  * Model *
  *********/
-
-void surf_cpu_model_init_ti()
-{
-  xbt_assert(not surf_cpu_model_pm, "CPU model already initialized. This should not happen.");
-  xbt_assert(not surf_cpu_model_vm, "CPU model already initialized. This should not happen.");
-
-  surf_cpu_model_pm = new simgrid::surf::CpuTiModel();
-  all_existing_models->push_back(surf_cpu_model_pm);
-
-  surf_cpu_model_vm = new simgrid::surf::CpuTiModel();
-  all_existing_models->push_back(surf_cpu_model_vm);
-}
-
 namespace simgrid {
 namespace surf {
+
+void CpuTiModel::create_pm_vm_models()
+{
+  xbt_assert(surf_cpu_model_pm == nullptr, "CPU model already initialized. This should not happen.");
+  xbt_assert(surf_cpu_model_vm == nullptr, "CPU model already initialized. This should not happen.");
+
+  surf_cpu_model_pm = new simgrid::surf::CpuTiModel();
+  surf_cpu_model_vm = new simgrid::surf::CpuTiModel();
+}
+
+CpuTiModel::CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL)
+{
+  all_existing_models.push_back(this);
+}
 
 CpuTiModel::~CpuTiModel()
 {
@@ -377,38 +376,34 @@ void CpuTi::set_speed_trace(tmgr_trace_t trace)
   if (trace && trace->event_list.size() > 1) {
     trace_mgr::DatedValue val = trace->event_list.back();
     if (val.date_ < 1e-12)
-      speed_.event = future_evt_set->add_trace(new simgrid::trace_mgr::trace(), this);
+      speed_.event = future_evt_set.add_trace(new simgrid::trace_mgr::trace(), this);
   }
 }
 
 void CpuTi::apply_event(tmgr_trace_event_t event, double value)
 {
   if (event == speed_.event) {
-    XBT_DEBUG("Finish trace date: value %f", value);
+    XBT_DEBUG("Speed changed in trace! New fixed value: %f", value);
+
     /* update remaining of actions and put in modified cpu list */
     update_remaining_amount(surf_get_clock());
 
     set_modified(true);
 
-    tmgr_trace_t speedTrace   = speed_integrated_trace_->speed_trace_;
-    trace_mgr::DatedValue val = speedTrace->event_list.back();
     delete speed_integrated_trace_;
-    speed_.scale = val.value_;
+    speed_integrated_trace_ = new CpuTiTmgr(value);
 
-    CpuTiTmgr* trace = new CpuTiTmgr(TRACE_FIXED, val.value_);
-    XBT_DEBUG("value %f", val.value_);
-
-    speed_integrated_trace_ = trace;
-
+    speed_.scale = value;
     tmgr_trace_event_unref(&speed_.event);
 
   } else if (event == state_event_) {
     if (value > 0) {
-      if (is_off())
-        host_that_restart.push_back(get_host());
-      turn_on();
+      if (is_off()) {
+        XBT_VERB("Restart processes on host %s", get_host()->get_cname());
+        get_host()->turn_on();
+      }
     } else {
-      turn_off();
+      get_host()->turn_off();
       double date = surf_get_clock();
 
       /* put all action running on cpu to failed */
@@ -503,8 +498,7 @@ double CpuTi::get_speed_ratio()
 /** @brief Update the remaining amount of actions */
 void CpuTi::update_remaining_amount(double now)
 {
-
-  /* already updated */
+  /* already up to date */
   if (last_update_ >= now)
     return;
 
@@ -673,5 +667,3 @@ double CpuTiAction::get_remains()
 
 }
 }
-
-#endif /* SURF_MODEL_CPUTI_H_ */

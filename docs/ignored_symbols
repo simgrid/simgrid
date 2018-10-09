@@ -1,0 +1,17 @@
+# Used by Build.sh
+MIN
+MAX
+SG_BEGIN_DECL
+msg_as_t
+MSG_OK
+MSG_HOST_FAILURE
+MSG_TASK_CANCELED
+MSG_TIMEOUT
+MSG_TRANSFER_FAILURE
+sg_msg_Comm
+simdata_task_t
+s_msg_task_t
+MSG_init_nocheck
+intrusive_ptr_release
+intrusive_ptr_add_ref
+get_filtered_netzones_recursive

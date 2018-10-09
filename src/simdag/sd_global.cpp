@@ -56,8 +56,8 @@ std::set<SD_task_t>* simulate(double how_long){
       total_time += elapsed_time;
 
     /* let's see which tasks are done */
-    for (auto const& model : *all_existing_models) {
-      simgrid::kernel::resource::Action* action = surf_model_extract_done_action_set(model);
+    for (auto const& model : all_existing_models) {
+      simgrid::kernel::resource::Action* action = model->extract_done_action();
       while (action != nullptr && action->get_data() != nullptr) {
         SD_task_t task = static_cast<SD_task_t>(action->get_data());
         XBT_VERB("Task '%s' done", SD_task_get_name(task));
@@ -103,17 +103,17 @@ std::set<SD_task_t>* simulate(double how_long){
             SD_task_run(output);
         }
         task->outputs->clear();
-        action = surf_model_extract_done_action_set(model);
+        action = model->extract_done_action();
       }
 
       /* let's see which tasks have just failed */
-      action = surf_model_extract_failed_action_set(model);
+      action = model->extract_failed_action();
       while (action != nullptr) {
         SD_task_t task = static_cast<SD_task_t>(action->get_data());
         XBT_VERB("Task '%s' failed", SD_task_get_name(task));
         SD_task_set_state(task, SD_FAILED);
         sd_global->return_set->insert(task);
-        action = surf_model_extract_failed_action_set(model);
+        action = model->extract_failed_action();
       }
     }
   }
@@ -134,9 +134,9 @@ std::set<SD_task_t>* simulate(double how_long){
 }
 
 /**
- * \brief helper for pretty printing of task state
- * \param state the state of a task
- * \return the equivalent as a readable string
+ * @brief helper for pretty printing of task state
+ * @param state the state of a task
+ * @return the equivalent as a readable string
  */
 const char *__get_state_name(e_SD_task_state_t state){
   static std::string state_names[7] =
@@ -145,13 +145,13 @@ const char *__get_state_name(e_SD_task_state_t state){
 }
 
 /**
- * \brief Initializes SD internal data
+ * @brief Initializes SD internal data
  *
  * This function must be called before any other SD function. Then you should call SD_create_environment().
  *
- * \param argc argument number
- * \param argv argument list
- * \see SD_create_environment(), SD_exit()
+ * @param argc argument number
+ * @param argv argument list
+ * @see SD_create_environment(), SD_exit()
  */
 void SD_init_nocheck(int *argc, char **argv)
 {
@@ -169,7 +169,7 @@ void SD_init_nocheck(int *argc, char **argv)
   }
 }
 
-/** \brief set a configuration variable
+/** @brief set a configuration variable
  *
  * Do --help on any simgrid binary to see the list of currently existing configuration variables, and
  * see Section @ref options.
@@ -182,21 +182,21 @@ void SD_config(const char *key, const char *value){
 }
 
 /**
- * \brief Creates the environment
+ * @brief Creates the environment
  *
- * The environment (i.e. the \ref SD_host_api "hosts" and the \ref SD_link_api "links") is created with
+ * The environment (i.e. the @ref SD_host_api "hosts" and the @ref SD_link_api "links") is created with
  * the data stored in the given XML platform file.
  *
- * \param platform_file name of an XML file describing the environment to create
- * \see SD_host_api, SD_link_api
+ * @param platform_file name of an XML file describing the environment to create
+ * @see SD_host_api, SD_link_api
  *
  * The XML file follows this DTD:
  *
- *     \include simgrid.dtd
+ *     @include simgrid.dtd
  *
  * Here is a small example of such a platform:
  *
- *     \include small_platform.xml
+ *     @include small_platform.xml
  */
 void SD_create_environment(const char *platform_file)
 {
@@ -211,18 +211,18 @@ void SD_create_environment(const char *platform_file)
 }
 
 /**
- * \brief Launches the simulation.
+ * @brief Launches the simulation.
  *
- * The function will execute the \ref SD_RUNNABLE runnable tasks.
- * If \a how_long is positive, then the simulation will be stopped either when time reaches \a how_long or when a watch
+ * The function will execute the @ref SD_RUNNABLE runnable tasks.
+ * If @a how_long is positive, then the simulation will be stopped either when time reaches @a how_long or when a watch
  * point is reached.
- * A non-positive value for \a how_long means no time limit, in which case the simulation will be stopped either when a
+ * A non-positive value for @a how_long means no time limit, in which case the simulation will be stopped either when a
  * watch point is reached or when no more task can be executed.
  * Then you can call SD_simulate() again.
  *
- * \param how_long maximum duration of the simulation (a negative value means no time limit)
- * \return a dynar of \ref SD_task_t whose state has changed.
- * \see SD_task_schedule(), SD_task_watch()
+ * @param how_long maximum duration of the simulation (a negative value means no time limit)
+ * @return a dynar of @ref SD_task_t whose state has changed.
+ * @see SD_task_schedule(), SD_task_watch()
  */
 void SD_simulate(double how_long)
 {
@@ -242,9 +242,9 @@ double SD_get_clock() {
 }
 
 /**
- * \brief Destroys all SD internal data
+ * @brief Destroys all SD internal data
  * This function should be called when the simulation is over. Don't forget to destroy too.
- * \see SD_init(), SD_task_destroy()
+ * @see SD_init(), SD_task_destroy()
  */
 void SD_exit()
 {

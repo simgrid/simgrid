@@ -5,7 +5,7 @@
 #   apt-get libns3-dev ns3
 #
 #
-#sudo: required
+sudo: required
 dist: trusty
 language: cpp
 compiler:
@@ -13,13 +13,17 @@ compiler:
 #  - clang 
 addons:
   apt:
+    update: true
+    allow_unauthenticated: yes
+    sources:
+    - sourceline: ppa:samuel-bachmann/boost # Get boost 1.60 for Trusty
     packages:
     - cmake
     - valgrind
     - default-jdk
     - gfortran
-    - libboost-dev
-    - libboost-all-dev
+    - libboost1.60-dev
+    - libboost1.60-all-dev
     - libdw-dev
     - libevent-dev
     - libunwind8-dev
@@ -55,6 +59,8 @@ notifications:
     on_success: change
     on_failure: always
   irc:
+    on_success: change
+    on_failure: always
     channels:
       - "irc.debian.org#simgrid"
   template:

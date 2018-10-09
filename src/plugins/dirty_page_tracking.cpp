@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/plugins/live_migration.h"
+#include "src/kernel/activity/ExecImpl.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 
 namespace simgrid {
@@ -93,8 +94,7 @@ static void on_exec_completion(simgrid::kernel::activity::ExecImplPtr exec)
   /* If we are in the middle of dirty page tracking, we record how much computation has been done until now, and keep
    * the information for the lookup_() function that will called soon. */
   if (vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->is_tracking()) {
-    double delta = vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->get_stored_remains(exec) -
-                   exec->get_remaining();
+    double delta = vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->get_stored_remains(exec);
     vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->update_dirty_page_count(delta);
   }
   vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->untrack(exec);
@@ -106,8 +106,8 @@ void sg_vm_dirty_page_tracking_init()
     simgrid::vm::DirtyPageTrackingExt::EXTENSION_ID =
         simgrid::vm::VirtualMachineImpl::extension_create<simgrid::vm::DirtyPageTrackingExt>();
     simgrid::vm::VirtualMachineImpl::on_creation.connect(&on_virtual_machine_creation);
-    simgrid::kernel::activity::ExecImpl::onCreation.connect(&on_exec_creation);
-    simgrid::kernel::activity::ExecImpl::onCompletion.connect(&on_exec_completion);
+    simgrid::kernel::activity::ExecImpl::on_creation.connect(&on_exec_creation);
+    simgrid::kernel::activity::ExecImpl::on_completion.connect(&on_exec_completion);
   }
 }
 

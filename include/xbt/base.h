@@ -71,10 +71,12 @@
 #define XBT_ATTRIB_DEPRECATED(mesg) __attribute__((deprecated(mesg)))
 #endif
 
-#define XBT_ATTRIB_DEPRECATED_v321(mesg) XBT_ATTRIB_DEPRECATED(mesg) /* Will be dropped in v3.21 */
-#define XBT_ATTRIB_DEPRECATED_v322(mesg) XBT_ATTRIB_DEPRECATED(mesg) /* Will be dropped in v3.22 */
 #define XBT_ATTRIB_DEPRECATED_v323(mesg)                                                                               \
   XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped in v3.23)") /* Will be dropped in v3.23 */
+#define XBT_ATTRIB_DEPRECATED_v324(mesg)                                                                               \
+  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped in v3.24)") /* Will be dropped in v3.24 */
+#define XBT_ATTRIB_DEPRECATED_v325(mesg)                                                                               \
+  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped in v3.25)") /* Will be dropped in v3.25 */
 
 #if !defined(__APPLE__)
 #  define XBT_ATTRIB_CONSTRUCTOR(prio) __attribute__((__constructor__(prio)))
@@ -84,16 +86,12 @@
 #  define XBT_ATTRIB_DESTRUCTOR(prio) __attribute__((__destructor__))
 #endif
 
-#if defined(__GNUC__)
-#  define XBT_ALWAYS_INLINE inline __attribute__ ((always_inline))
-#else
-#  define XBT_ALWAYS_INLINE inline
-#endif
-
-#if defined(__GNUC__)
-#  define XBT_THREAD_LOCAL __thread
-#else
-#  define XBT_THREAD_LOCAL No thread local on this architecture
+#ifndef XBT_ALWAYS_INLINE /* defined also in libsosp */
+#  if defined(__GNUC__)
+#    define XBT_ALWAYS_INLINE inline __attribute__ ((always_inline))
+#  else
+#    define XBT_ALWAYS_INLINE inline
+#  endif
 #endif
 
 /*

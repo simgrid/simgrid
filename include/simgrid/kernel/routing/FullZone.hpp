@@ -20,7 +20,7 @@ namespace routing {
  */
 class XBT_PRIVATE FullZone : public RoutedZone {
 public:
-  explicit FullZone(NetZoneImpl* father, std::string name);
+  explicit FullZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel);
   void seal() override;
   ~FullZone() override;
 

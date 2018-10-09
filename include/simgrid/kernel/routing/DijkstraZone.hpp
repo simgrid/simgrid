@@ -8,19 +8,10 @@
 
 #include <simgrid/kernel/routing/RoutedZone.hpp>
 
-struct s_graph_node_data_t {
-  int id;
-  int graph_id; /* used for caching internal graph id's */
-};
-typedef s_graph_node_data_t* graph_node_data_t;
 
 namespace simgrid {
 namespace kernel {
 namespace routing {
-
-/***********
- * Classes *
- ***********/
 
 /** @ingroup ROUTING_API
  *  @brief NetZone with an explicit routing computed on need with Dijsktra
@@ -33,15 +24,15 @@ namespace routing {
  */
 class XBT_PRIVATE DijkstraZone : public RoutedZone {
 public:
-  DijkstraZone(NetZoneImpl* father, std::string name, bool cached);
+  DijkstraZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel, bool cached);
   void seal() override;
 
   ~DijkstraZone() override;
 
 private:
-  xbt_node_t route_graph_new_node(int id, int graph_id);
+  xbt_node_t route_graph_new_node(int id);
   xbt_node_t node_map_search(int id);
-  void new_route(int src_id, int dst_id, RouteCreationArgs* e_route);
+  void new_edge(int src_id, int dst_id, RouteCreationArgs* e_route);
 
 public:
   /* For each vertex (node) already in the graph,

@@ -16,6 +16,7 @@
 #include "simgrid/kernel/routing/VivaldiZone.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/include/simgrid/sg_config.hpp"
+#include "src/include/surf/surf.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
 #include "src/simix/smx_private.hpp"
@@ -122,7 +123,7 @@ void sg_platf_new_link(simgrid::kernel::routing::LinkCreationArgs* link)
   }
   for (auto const& link_name : names) {
     simgrid::kernel::resource::LinkImpl* l =
-        surf_network_model->createLink(link_name, link->bandwidth, link->latency, link->policy);
+        surf_network_model->create_link(link_name, link->bandwidth, link->latency, link->policy);
 
     if (link->properties) {
       for (auto const& elm : *link->properties)
@@ -430,20 +431,20 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
     xbt_die("%s", msg.c_str());
   }
   simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(actor->function);
-  xbt_assert(factory, "Function '%s' unknown", actor->function);
+  xbt_assert(factory, "Error while creating an actor from the XML file: Function '%s' not registered", actor->function);
 
   double start_time = actor->start_time;
   double kill_time  = actor->kill_time;
   bool auto_restart = actor->on_failure != simgrid::kernel::routing::ActorOnFailure::DIE;
 
   std::string actor_name     = actor->args[0];
-  std::function<void()> code = factory(std::move(actor->args));
+  simgrid::simix::ActorCode code = factory(std::move(actor->args));
   std::shared_ptr<std::unordered_map<std::string, std::string>> properties(actor->properties);
 
   simgrid::kernel::actor::ProcessArg* arg =
       new simgrid::kernel::actor::ProcessArg(actor_name, code, nullptr, host, kill_time, properties, auto_restart);
 
-  host->extension<simgrid::simix::Host>()->boot_processes.push_back(arg);
+  host->pimpl_->actors_at_boot_.emplace_back(arg);
 
   if (start_time > SIMIX_get_clock()) {
 
@@ -456,7 +457,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
       if (arg->kill_time >= 0)
         simcall_process_set_kill_time(actor, arg->kill_time);
       if (auto_restart)
-        SIMIX_process_auto_restart_set(actor, auto_restart);
+        actor->set_auto_restart(auto_restart);
       delete arg;
     });
   } else {                      // start_time <= SIMIX_get_clock()
@@ -470,7 +471,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
       if (arg->kill_time >= 0)
         simcall_process_set_kill_time(actor, arg->kill_time);
       if (auto_restart)
-        SIMIX_process_auto_restart_set(actor, auto_restart);
+        actor->set_auto_restart(auto_restart);
     }
   }
 }
@@ -533,7 +534,7 @@ static void surf_config_models_setup()
 }
 
 /**
- * \brief Add a Zone to the platform
+ * @brief Add a Zone to the platform
  *
  * Add a new autonomous system to the platform. Any elements (such as host, router or sub-Zone) added after this call
  * and before the corresponding call to sg_platf_new_Zone_seal() will be added to this Zone.
@@ -548,11 +549,11 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(simgrid::kernel::
     simgrid::s4u::on_platform_creation();
 
     /* Initialize the surf models. That must be done after we got all config, and before we need the models.
-     * That is, after the last <config> tag, if any, and before the first of cluster|peer|AS|trace|trace_connect
+     * That is, after the last <config> tag, if any, and before the first of cluster|peer|zone|trace|trace_connect
      *
      * I'm not sure for <trace> and <trace_connect>, there may be a bug here
      * (FIXME: check it out by creating a file beginning with one of these tags)
-     * but cluster and peer create ASes internally, so putting the code in there is ok.
+     * but cluster and peer come down to zone creations, so putting this verification here is correct.
      */
     surf_parse_models_setup_already_called = 1;
     surf_config_models_setup();
@@ -563,36 +564,38 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(simgrid::kernel::
 
   /* search the routing model */
   simgrid::kernel::routing::NetZoneImpl* new_zone = nullptr;
+  simgrid::kernel::resource::NetworkModel* netmodel =
+      current_routing == nullptr ? surf_network_model : current_routing->network_model_;
   switch (zone->routing) {
     case A_surfxml_AS_routing_Cluster:
-      new_zone = new simgrid::kernel::routing::ClusterZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::ClusterZone(current_routing, zone->id, netmodel);
       break;
     case A_surfxml_AS_routing_ClusterDragonfly:
-      new_zone = new simgrid::kernel::routing::DragonflyZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::DragonflyZone(current_routing, zone->id, netmodel);
       break;
     case A_surfxml_AS_routing_ClusterTorus:
-      new_zone = new simgrid::kernel::routing::TorusZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::TorusZone(current_routing, zone->id, netmodel);
       break;
     case A_surfxml_AS_routing_ClusterFatTree:
-      new_zone = new simgrid::kernel::routing::FatTreeZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::FatTreeZone(current_routing, zone->id, netmodel);
       break;
     case A_surfxml_AS_routing_Dijkstra:
-      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, false);
+      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, netmodel, false);
       break;
     case A_surfxml_AS_routing_DijkstraCache:
-      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, true);
+      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, netmodel, true);
       break;
     case A_surfxml_AS_routing_Floyd:
-      new_zone = new simgrid::kernel::routing::FloydZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::FloydZone(current_routing, zone->id, netmodel);
       break;
     case A_surfxml_AS_routing_Full:
-      new_zone = new simgrid::kernel::routing::FullZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::FullZone(current_routing, zone->id, netmodel);
       break;
     case A_surfxml_AS_routing_None:
-      new_zone = new simgrid::kernel::routing::EmptyZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::EmptyZone(current_routing, zone->id, netmodel);
       break;
     case A_surfxml_AS_routing_Vivaldi:
-      new_zone = new simgrid::kernel::routing::VivaldiZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::VivaldiZone(current_routing, zone->id, netmodel);
       break;
     default:
       xbt_die("Not a valid model!");
@@ -617,7 +620,7 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(simgrid::kernel::
 }
 
 /**
- * \brief Specify that the description of the current AS is finished
+ * @brief Specify that the description of the current AS is finished
  *
  * Once you've declared all the content of your AS, you have to seal
  * it with this call. Your AS is not usable until you call this function.

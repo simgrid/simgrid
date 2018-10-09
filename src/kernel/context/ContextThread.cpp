@@ -3,16 +3,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <utility>
-#include <functional>
+#include "src/kernel/context/ContextThread.hpp"
 
+#include "simgrid/Exception.hpp"
 #include "src/internal_config.h" /* loads context system definitions */
 #include "src/simix/smx_private.hpp"
 #include "src/xbt_modinter.h" /* prototype of os thread module's init/exit in XBT */
 #include "xbt/function_types.h"
 #include "xbt/xbt_os_thread.h"
 
-#include "src/kernel/context/ContextThread.hpp"
+#include <functional>
+#include <utility>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
@@ -57,9 +58,8 @@ void ThreadContextFactory::run_all()
 
 // ThreadContext
 
-ThreadContext::ThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process,
-                             bool maestro)
-    : AttachContext(std::move(code), cleanup, process), is_maestro_(maestro)
+ThreadContext::ThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t actor, bool maestro)
+    : AttachContext(std::move(code), cleanup, actor), is_maestro_(maestro)
 {
   // We do not need the semaphores when maestro is in main,
   // but creating them anyway simplifies things when maestro is externalized
@@ -115,12 +115,15 @@ void *ThreadContext::wrapper(void *param)
 
   try {
     (*context)();
-    if (not context->isMaestro()) // really?
-      context->Context::stop();
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
-    xbt_assert(not context->isMaestro(), "I'm not supposed to be maestro here.");
+    xbt_assert(not context->is_maestro(), "Maestro shall not receive StopRequests, even when detached.");
+  } catch (simgrid::Exception const& e) {
+    XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
+    throw;
   }
+  if (not context->is_maestro()) // Just in case somebody detached maestro
+    context->Context::stop();
 
   // Signal to the caller (normally the maestro) that we have finished:
   context->yield();
@@ -169,18 +172,18 @@ void ThreadContext::suspend()
 void ThreadContext::attach_start()
 {
   // We're breaking the layers here by depending on the upper layer:
-  ThreadContext* maestro = (ThreadContext*) simix_global->maestro_process->context;
+  ThreadContext* maestro = (ThreadContext*)simix_global->maestro_process->context_;
   xbt_os_sem_release(maestro->begin_);
-  xbt_assert(not this->isMaestro());
+  xbt_assert(not this->is_maestro());
   this->start();
 }
 
 void ThreadContext::attach_stop()
 {
-  xbt_assert(not this->isMaestro());
+  xbt_assert(not this->is_maestro());
   this->yield();
 
-  ThreadContext* maestro = (ThreadContext*) simix_global->maestro_process->context;
+  ThreadContext* maestro = (ThreadContext*)simix_global->maestro_process->context_;
   xbt_os_sem_acquire(maestro->end_);
 
   xbt_os_thread_set_extra_data(nullptr);
@@ -192,7 +195,7 @@ void SerialThreadContext::run_all()
 {
   for (smx_actor_t const& process : simix_global->process_to_run) {
     XBT_DEBUG("Handling %p", process);
-    ThreadContext* context = static_cast<ThreadContext*>(process->context);
+    ThreadContext* context = static_cast<ThreadContext*>(process->context_);
     context->release();
     context->wait();
   }
@@ -216,20 +219,20 @@ void ParallelThreadContext::finalize()
 void ParallelThreadContext::run_all()
 {
   for (smx_actor_t const& process : simix_global->process_to_run)
-    static_cast<ThreadContext*>(process->context)->release();
+    static_cast<ThreadContext*>(process->context_)->release();
   for (smx_actor_t const& process : simix_global->process_to_run)
-    static_cast<ThreadContext*>(process->context)->wait();
+    static_cast<ThreadContext*>(process->context_)->wait();
 }
 
 void ParallelThreadContext::start_hook()
 {
-  if (not isMaestro()) /* parallel run */
+  if (not is_maestro()) /* parallel run */
     xbt_os_sem_acquire(thread_sem_);
 }
 
 void ParallelThreadContext::yield_hook()
 {
-  if (not isMaestro()) /* parallel run */
+  if (not is_maestro()) /* parallel run */
     xbt_os_sem_release(thread_sem_);
 }
 

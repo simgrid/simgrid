@@ -4,13 +4,16 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/plugins/energy.h"
-#include "simgrid/plugins/load.h"
 #include "simgrid/s4u/Engine.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
+#include "src/include/surf/surf.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+
+SIMGRID_REGISTER_PLUGIN(host_energy, "Cpu energy consumption.", &sg_host_energy_plugin_init)
 
 /** @addtogroup plugin_energy
 
@@ -26,26 +29,26 @@ abnormality when all the cores are idle. The full details are in
 
 As a result, our energy model takes 4 parameters:
 
-  - \b Idle: instantaneous consumption (in Watt) when your host is up and running, but without anything to do.
-  - \b OneCore: instantaneous consumption (in Watt) when only one core is active, at 100%.
-  - \b AllCores: instantaneous consumption (in Watt) when all cores of the host are at 100%.
-  - \b Off: instantaneous consumption (in Watt) when the host is turned off.
+  - @b Idle: instantaneous consumption (in Watt) when your host is up and running, but without anything to do.
+  - @b OneCore: instantaneous consumption (in Watt) when only one core is active, at 100%.
+  - @b AllCores: instantaneous consumption (in Watt) when all cores of the host are at 100%.
+  - @b Off: instantaneous consumption (in Watt) when the host is turned off.
 
 Here is an example of XML declaration:
 
-\code{.xml}
+@code{.xml}
 <host id="HostA" power="100.0Mf" cores="4">
     <prop id="watt_per_state" value="100.0:120.0:200.0" />
     <prop id="watt_off" value="10" />
 </host>
-\endcode
+@endcode
 
-This example gives the following parameters: \b Off is 10 Watts; \b Idle is 100 Watts; \b OneCore is 120 Watts and \b
+This example gives the following parameters: @b Off is 10 Watts; @b Idle is 100 Watts; @b OneCore is 120 Watts and @b
 AllCores is 200 Watts.
 This is enough to compute the consumption as a function of the amount of loaded cores:
 
 <table>
-<tr><th>\#Cores loaded</th><th>Consumption</th><th>Explanation</th></tr>
+<tr><th>@#Cores loaded</th><th>Consumption</th><th>Explanation</th></tr>
 <tr><td>0</td><td> 100 Watts</td><td>Idle value</td></tr>
 <tr><td>1</td><td> 120 Watts</td><td>OneCore value</td></tr>
 <tr><td>2</td><td> 147 Watts</td><td>linear extrapolation between OneCore and AllCores</td></tr>
@@ -61,27 +64,27 @@ the time, and our model holds.
 
 ### What if the host has only one core?
 
-In this case, the parameters \b OneCore and \b AllCores are obviously the same.
+In this case, the parameters @b OneCore and @b AllCores are obviously the same.
 Actually, SimGrid expect an energetic profile formatted as 'Idle:Running' for mono-cores hosts.
-If you insist on passing 3 parameters in this case, then you must have the same value for \b OneCore and \b AllCores.
+If you insist on passing 3 parameters in this case, then you must have the same value for @b OneCore and @b AllCores.
 
-\code{.xml}
+@code{.xml}
 <host id="HostC" power="100.0Mf" cores="1">
     <prop id="watt_per_state" value="95.0:200.0" /> <!-- we may have used '95:200:200' instead -->
     <prop id="watt_off" value="10" />
 </host>
-\endcode
+@endcode
 
 ### How does DVFS interact with the host energy model?
 
 If your host has several DVFS levels (several pstates), then you should give the energetic profile of each pstate level:
 
-\code{.xml}
+@code{.xml}
 <host id="HostC" power="100.0Mf,50.0Mf,20.0Mf" cores="4">
     <prop id="watt_per_state" value="95.0:120.0:200.0, 93.0:115.0:170.0, 90.0:110.0:150.0" />
     <prop id="watt_off" value="10" />
 </host>
-\endcode
+@endcode
 
 This encodes the following values
 <table>
@@ -105,6 +108,9 @@ before you can get accurate energy predictions.
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf, "Logging specific to the SURF energy plugin");
 
+// Forwards declaration needed to make this function a friend (because friends have external linkage by default)
+static void on_simulation_end();
+
 namespace simgrid {
 namespace plugin {
 
@@ -118,6 +124,7 @@ public:
 };
 
 class HostEnergy {
+  friend void ::on_simulation_end(); // For access to host_was_used_
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> EXTENSION_ID;
 
@@ -127,6 +134,7 @@ public:
   double get_current_watts_value();
   double get_current_watts_value(double cpu_load);
   double get_consumed_energy();
+  double get_idle_consumption();
   double get_watt_min_at(int pstate);
   double get_watt_max_at(int pstate);
   void update();
@@ -143,6 +151,10 @@ private:
   int pstate_           = 0;
   const int pstate_off_ = -1;
 
+  /* Only used to split total energy into unused/used hosts.
+   * If you want to get this info for something else, rather use the host_load plugin
+   */
+  bool host_was_used_  = false;
 public:
   double watts_off_    = 0.0; /*< Consumption when the machine is turned off (shutdown) */
   double total_energy_ = 0.0; /*< Total energy consumed by the host */
@@ -156,7 +168,12 @@ void HostEnergy::update()
 {
   double start_time  = this->last_updated_;
   double finish_time = surf_get_clock();
-
+  //
+  // We may have start == finish if the past consumption was updated since the simcall was started
+  // for example if 2 actors requested to update the same host's consumption in a given scheduling round.
+  //
+  // Even in this case, we need to save the pstate for the next call (after this if),
+  // which may have changed since that recent update.
   if (start_time < finish_time) {
     double previous_energy = this->total_energy_;
 
@@ -169,9 +186,8 @@ void HostEnergy::update()
     this->total_energy_ = previous_energy + energy_this_step;
     this->last_updated_ = finish_time;
 
-    XBT_DEBUG("[update_energy of %s] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> "
-              "%.2f J",
-              host_->get_cname(), start_time, finish_time, host_->pimpl_cpu->get_speed(1.0), previous_energy,
+    XBT_DEBUG("[update_energy of %s] period=[%.8f-%.8f]; current speed=%.2E flop/s (pstate %i); total consumption before: consumption change: %.8f J -> added now: %.8f J",
+              host_->get_cname(), start_time, finish_time, host_->pimpl_cpu->get_pstate_peak_speed(this->pstate_), this->pstate_, previous_energy,
               energy_this_step);
   }
 
@@ -196,6 +212,14 @@ HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host_(ptr), last_updated_(surf
 }
 
 HostEnergy::~HostEnergy() = default;
+
+double HostEnergy::get_idle_consumption()
+{
+  xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
+             host_->get_cname());
+
+  return power_range_watts_list_[0].idle_;
+}
 
 double HostEnergy::get_watt_min_at(int pstate)
 {
@@ -223,11 +247,6 @@ double HostEnergy::get_current_watts_value()
   double current_speed = host_->get_speed();
 
   double cpu_load;
-  // We may have start == finish if the past consumption was updated since the simcall was started
-  // for example if 2 actors requested to update the same host's consumption in a given scheduling round.
-  //
-  // Even in this case, we need to save the pstate for the next call (after this big if),
-  // which may have changed since that recent update.
 
   if (current_speed <= 0)
     // Some users declare a pstate of speed 0 flops (e.g., to model boot time).
@@ -241,6 +260,8 @@ double HostEnergy::get_current_watts_value()
 
   if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not more
     cpu_load = 1;
+  if (cpu_load > 0)
+    host_was_used_ = true;
 
   /* The problem with this model is that the load is always 0 or 1, never something less.
    * Another possibility could be to model the total energy as
@@ -275,8 +296,8 @@ double HostEnergy::get_current_watts_value(double cpu_load)
   double power_slope   = 0;
 
   if (cpu_load > 0) { /* Something is going on, the machine is not idle */
-    double min_power = range.min_;
-    double max_power = range.max_;
+    min_power = range.min_;
+    max_power = range.max_;
 
     /**
      * The min_power states how much we consume when only one single
@@ -301,7 +322,7 @@ double HostEnergy::get_current_watts_value(double cpu_load)
     current_power = range.idle_;
   }
 
-  XBT_DEBUG("[get_current_watts] min_power=%f, max_power=%f, slope=%f", min_power, max_power, power_slope);
+  XBT_DEBUG("[get_current_watts] pstate=%i, min_power=%f, max_power=%f, slope=%f", this->pstate_, min_power, max_power, power_slope);
   XBT_DEBUG("[get_current_watts] Current power (watts) = %f, load = %f", current_power, cpu_load);
 
   return current_power;
@@ -339,12 +360,15 @@ void HostEnergy::init_watts_range_list()
         // In this case, 1core == AllCores
         current_power_values.push_back(current_power_values.at(1));
       } else { // size == 3
-        xbt_assert((current_power_values.at(1)) == (current_power_values.at(2)),
-                   "Power properties incorrectly defined for host %s.\n"
-                   "The energy profile of mono-cores should be formatted as 'Idle:FullSpeed' only.\n"
-                   "If you go for a 'Idle:OneCore:AllCores' power profile on mono-cores, then OneCore and AllCores "
-                   "must be equal.",
-                   host_->get_cname());
+        current_power_values[1] = current_power_values.at(2);
+        current_power_values[2] = current_power_values.at(2);
+        static bool displayed_warning = false;
+        if (not displayed_warning) { // Otherwise we get in the worst case no_pstate*no_hosts warnings
+          XBT_WARN("Host %s is a single-core machine and part of the power profile is '%s'"
+                   ", which is in the 'Idle:OneCore:AllCores' format."
+                   " Here, only the value for 'AllCores' is used.", host_->get_cname(), current_power_values_str.c_str());
+          displayed_warning = true;
+        }
       }
     } else {
       xbt_assert(current_power_values.size() == 3,
@@ -384,7 +408,8 @@ static void on_creation(simgrid::s4u::Host& host)
   host.extension_set(new HostEnergy(&host));
 }
 
-static void on_action_state_change(simgrid::surf::CpuAction* action, simgrid::kernel::resource::Action::State previous)
+static void on_action_state_change(simgrid::surf::CpuAction* action,
+                                   simgrid::kernel::resource::Action::State /*previous*/)
 {
   for (simgrid::surf::Cpu* const& cpu : action->cpus()) {
     simgrid::s4u::Host* host = cpu->get_host();
@@ -434,10 +459,9 @@ static void on_simulation_end()
   for (size_t i = 0; i < hosts.size(); i++) {
     if (dynamic_cast<simgrid::s4u::VirtualMachine*>(hosts[i]) == nullptr) { // Ignore virtual machines
 
-      bool host_was_used = (sg_host_get_computed_flops(hosts[i]) != 0);
       double energy      = hosts[i]->extension<HostEnergy>()->get_consumed_energy();
       total_energy += energy;
-      if (host_was_used)
+      if (hosts[i]->extension<HostEnergy>()->host_was_used_)
         used_hosts_energy += energy;
     }
   }
@@ -447,16 +471,14 @@ static void on_simulation_end()
 
 /* **************************** Public interface *************************** */
 
-/** \ingroup plugin_energy
- * \brief Enable host energy plugin
- * \details Enable energy plugin to get joules consumption of each cpu. Call this function before #MSG_init().
+/** @ingroup plugin_energy
+ * @brief Enable host energy plugin
+ * @details Enable energy plugin to get joules consumption of each cpu. Call this function before #MSG_init().
  */
 void sg_host_energy_plugin_init()
 {
   if (HostEnergy::EXTENSION_ID.valid())
     return;
-
-  sg_host_load_plugin_init();
 
   HostEnergy::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostEnergy>();
 
@@ -466,6 +488,21 @@ void sg_host_energy_plugin_init()
   simgrid::s4u::Host::on_destruction.connect(&on_host_destruction);
   simgrid::s4u::on_simulation_end.connect(&on_simulation_end);
   simgrid::surf::CpuAction::on_state_change.connect(&on_action_state_change);
+  // We may only have one actor on a node. If that actor executes something like
+  //   compute -> recv -> compute
+  // the recv operation will not trigger a "CpuAction::on_state_change". This means
+  // that the next trigger would be the 2nd compute, hence ignoring the idle time
+  // during the recv call. By updating at the beginning of a compute, we can
+  // fix that. (If the cpu is not idle, this is not required.)
+  simgrid::kernel::activity::ExecImpl::on_creation.connect([](simgrid::kernel::activity::ExecImplPtr activity){
+    if (activity->host_ != nullptr) { // We only run on one host
+      simgrid::s4u::Host* host = activity->host_;
+      if (dynamic_cast<simgrid::s4u::VirtualMachine*>(activity->host_))
+        host = dynamic_cast<simgrid::s4u::VirtualMachine*>(activity->host_)->get_pm();
+
+      host->extension<HostEnergy>()->update();
+    }
+  });
 }
 
 /** @ingroup plugin_energy
@@ -496,6 +533,16 @@ double sg_host_get_consumed_energy(sg_host_t host)
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
              "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
   return host->extension<HostEnergy>()->get_consumed_energy();
+}
+
+/** @ingroup plugin_energy
+ *  @brief Get the amount of watt dissipated when the host is idling
+ */
+double sg_host_get_idle_consumption(sg_host_t host)
+{
+  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
+             "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
+  return host->extension<HostEnergy>()->get_idle_consumption();
 }
 
 /** @ingroup plugin_energy

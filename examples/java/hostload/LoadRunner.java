@@ -12,36 +12,37 @@ import org.simgrid.msg.Process;
 public class LoadRunner extends Process {
 
     public LoadRunner(Host host, String s) {
-    super(host, s);
+        super(host, s);
+    }
+
+    public void display(){
+        Msg.info("Speed="+getHost().getSpeed()+" flop/s");
+        Msg.info("Computed Flops "+ 		getHost().getComputedFlops());
+        Msg.info("AvgLoad "+ 		getHost().getAvgLoad());
+    }
+    @Override
+    public void main(String[] strings) throws MsgException {
+        Host host = getHost();
+        display();
+        Msg.info("Sleep for 10 seconds");
+        waitFor(10);
+        display();
+
+        // Run a task
+        Task task1 = new Task("t1", 200E6, 0);
+        task1.execute();
+        display();
+        double taskTime = Msg.getClock();
+        Msg.info("Task1 simulation time: "+ taskTime);
+
+        // Run a second task
+        new Task("t1", 200E6, 0).execute();
+
+        taskTime = Msg.getClock() - taskTime;
+        Msg.info("Task2 simulation time: "+ taskTime);
+        display();
+
+    }
+
+
 }
-
-public void display(){
-    Msg.info("Computed Flops "+ 		getHost().getComputedFlops());
-    Msg.info("Current Load "+ 		getHost().getCurrentLoad());
-    Msg.info("GetLoad "+ 		getHost().getLoad());
-    Msg.info("AvgLoad "+ 		getHost().getAvgLoad());
-}
-@Override
-public void main(String[] strings) throws MsgException {
-    double workload = 100E6;
-    Host host = getHost();
-    display();
-    // Run a task
-    Task task1 = new Task("t1", workload, 0);
-    task1.execute();
-    display();
-    double taskTime = Msg.getClock();
-    Msg.info("Task1 simulation time: "+ taskTime);
-
-    // Run a second task
-    new Task("t1", workload, 0).execute();
-
-    taskTime = Msg.getClock() - taskTime;
-    Msg.info("Task2 simulation time: "+ taskTime);
-    display();
-
-}
-
-
-}
-

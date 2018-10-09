@@ -4,20 +4,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smpi_comm.hpp"
-#include "private.hpp"
-#include "simgrid/s4u/Host.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_datatype.hpp"
-#include "smpi_process.hpp"
 #include "smpi_request.hpp"
-#include "smpi_status.hpp"
 #include "smpi_win.hpp"
-#include "src/simix/smx_host_private.hpp"
-#include "src/simix/smx_private.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
+#include "src/surf/HostImpl.hpp"
 
-#include <algorithm>
 #include <climits>
-#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm)");
 
@@ -35,7 +29,7 @@ namespace smpi{
 std::unordered_map<int, smpi_key_elem> Comm::keyvals_;
 int Comm::keyval_id_=0;
 
-Comm::Comm(MPI_Group group, MPI_Topology topo) : group_(group), topo_(topo)
+Comm::Comm(MPI_Group group, MPI_Topology topo, int smp) : group_(group), topo_(topo),is_smp_comm_(smp)
 {
   refcount_        = 1;
   topoType_        = MPI_INVALID_TOPO;
@@ -67,18 +61,29 @@ int Comm::dup(MPI_Comm* newcomm){
   int ret      = MPI_SUCCESS;
 
   if (not attributes()->empty()) {
-    int flag;
-    void* value_out;
+    int flag=0;
+    void* value_out=nullptr;
     for (auto const& it : *attributes()) {
       smpi_key_elem elem = keyvals_.at(it.first);
-      if (elem != nullptr && elem->copy_fn.comm_copy_fn != MPI_NULL_COPY_FN) {
-        ret = elem->copy_fn.comm_copy_fn(this, it.first, nullptr, it.second, &value_out, &flag);
+      if (elem != nullptr){
+        if( elem->copy_fn.comm_copy_fn != MPI_NULL_COPY_FN && 
+            elem->copy_fn.comm_copy_fn != MPI_COMM_DUP_FN)
+          ret = elem->copy_fn.comm_copy_fn(this, it.first, elem->extra_state, it.second, &value_out, &flag);
+        else if ( elem->copy_fn.comm_copy_fn_fort != MPI_NULL_COPY_FN &&
+                  *(int*)*elem->copy_fn.comm_copy_fn_fort != 1){
+          value_out=(int*)xbt_malloc(sizeof(int));
+          elem->copy_fn.comm_copy_fn_fort(this, it.first, elem->extra_state, it.second, value_out, &flag,&ret);
+        }
         if (ret != MPI_SUCCESS) {
           Comm::destroy(*newcomm);
           *newcomm = MPI_COMM_NULL;
           return ret;
         }
-        if (flag){
+        if (elem->copy_fn.comm_copy_fn == MPI_COMM_DUP_FN || 
+           ((elem->copy_fn.comm_copy_fn_fort != MPI_NULL_COPY_FN) && *(int*)*elem->copy_fn.comm_copy_fn_fort == 1)){
+          elem->refcount++;
+          (*newcomm)->attributes()->insert({it.first, it.second});
+        }else if (flag){
           elem->refcount++;
           (*newcomm)->attributes()->insert({it.first, value_out});
         }
@@ -173,6 +178,12 @@ int Comm::is_blocked(){
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->is_blocked();
   return is_blocked_;
+}
+
+int Comm::is_smp_comm(){
+  if (this == MPI_COMM_UNINITIALIZED)
+    return smpi_process()->comm_world()->is_smp_comm();
+  return is_smp_comm_;
 }
 
 MPI_Comm Comm::split(int color, int key)
@@ -306,11 +317,11 @@ void Comm::init_smp(){
   }
   //identify neighbours in comm
   //get the indices of all processes sharing the same simix host
-  auto& process_list      = sg_host_self()->extension<simgrid::simix::Host>()->process_list;
+  auto& process_list      = sg_host_self()->pimpl_->process_list_;
   int intra_comm_size     = 0;
   int min_index           = INT_MAX; // the minimum index will be the leader
   for (auto& actor : process_list) {
-    int index = actor.pid;
+    int index = actor.pid_;
     if (this->group()->rank(actor.iface()) != MPI_UNDEFINED) { // Is this process in the current group?
       intra_comm_size++;
       if (index < min_index)
@@ -327,7 +338,7 @@ void Comm::init_smp(){
     }
   }
 
-  MPI_Comm comm_intra = new  Comm(group_intra, nullptr);
+  MPI_Comm comm_intra = new  Comm(group_intra, nullptr, 1);
   leader=min_index;
 
   int* leaders_map = new int[comm_size];
@@ -335,7 +346,7 @@ void Comm::init_smp(){
   std::fill_n(leaders_map, comm_size, 0);
   std::fill_n(leader_list, comm_size, -1);
 
-  Coll_allgather_mpich::allgather(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
+  Coll_allgather_ring::allgather(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
 
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
@@ -369,7 +380,7 @@ void Comm::init_smp(){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
       leaders_group->set_mapping(simgrid::s4u::Actor::by_pid(leader_list[i]), i);
-    leader_comm = new  Comm(leaders_group, nullptr);
+    leader_comm = new  Comm(leaders_group, nullptr,1);
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
 
@@ -379,7 +390,7 @@ void Comm::init_smp(){
       leaders_group->set_mapping(simgrid::s4u::Actor::by_pid(leader_list[i]), i);
 
     if(this->get_leaders_comm()==MPI_COMM_NULL){
-      leader_comm = new  Comm(leaders_group, nullptr);
+      leader_comm = new  Comm(leaders_group, nullptr,1);
       this->set_leaders_comm(leader_comm);
     }else{
       leader_comm=this->get_leaders_comm();
@@ -393,7 +404,7 @@ void Comm::init_smp(){
   if(comm_intra->rank()==0) {
     int is_uniform       = 1;
     int* non_uniform_map = xbt_new0(int,leader_group_size);
-    Coll_allgather_mpich::allgather(&my_local_size, 1, MPI_INT,
+    Coll_allgather_ring::allgather(&my_local_size, 1, MPI_INT,
         non_uniform_map, 1, MPI_INT, leader_comm);
     for(i=0; i < leader_group_size; i++) {
       if(non_uniform_map[0] != non_uniform_map[i]) {
@@ -408,7 +419,7 @@ void Comm::init_smp(){
     }
     is_uniform_=is_uniform;
   }
-  Coll_bcast_mpich::bcast(&(is_uniform_),1, MPI_INT, 0, comm_intra );
+  Coll_bcast_scatter_LR_allgather::bcast(&(is_uniform_),1, MPI_INT, 0, comm_intra );
 
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables

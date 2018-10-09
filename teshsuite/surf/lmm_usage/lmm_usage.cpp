@@ -16,7 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
-using namespace simgrid::kernel;
+namespace lmm = simgrid::kernel::lmm;
 
 #define PRINT_VAR(var) XBT_DEBUG(#var " = %g", (var)->get_value())
 #define SHOW_EXPR(expr) XBT_DEBUG(#expr " = %g",expr)
@@ -48,11 +48,11 @@ static double dichotomy(double func(double), double min, double max, double min_
   double min_func = func(min);
   double max_func = func(max);
 
-  if ((min_func > 0 && max_func > 0))
+  if (min_func > 0 && max_func > 0)
     return min - 1.0;
-  if ((min_func < 0 && max_func < 0))
+  if (min_func < 0 && max_func < 0)
     return max + 1.0;
-  if ((min_func > 0 && max_func < 0))
+  if (min_func > 0 && max_func < 0)
     abort();
 
   SHOW_EXPR(min_error);

@@ -16,52 +16,52 @@
 SG_BEGIN_DECL()
 
 /** @addtogroup XBT_dynar
-  * @brief DynArr are dynamically sized vector which may contain any type of variables.
-  *
-  * These are the SimGrid version of the dynamically size arrays, which all C programmer recode one day or another.
-  *
-  * For performance concerns, the content of DynArr must be homogeneous (in contrary to dictionnaries -- see the
-  * \ref XBT_dict section). You thus have to provide the function which will be used to free the content at
-  * structure creation (of type void_f_pvoid_t).
-  *
-  * @deprecated If you are using C++, you might want to use `std::vector` instead.
-  *
-  * \section XBT_dynar_exscal Example with scalar
-  * \dontinclude dynar.cpp
-  *
-  * \skip Vars_decl
-  * \skip dyn
-  * \until iptr
-  * \skip Populate_ints
-  * \skip dyn
-  * \until end_of_traversal
-  * \skip shifting
-  * \skip val
-  * \until xbt_dynar_free
-  *
-  * \section XBT_dynar_exptr Example with pointed data
-  *
-  * \skip test_dynar_string
-  * \skip dynar_t
-  * \until s2
-  * \skip Populate_str
-  * \skip dyn
-  * \until }
-  * \skip macro
-  * \until dynar_free
-  * \skip end_of_doxygen
-  * \until }
-  *
-  * Note that if you use dynars to store pointed data, the xbt_dynar_search(), xbt_dynar_search_or_negative() and
-  * xbt_dynar_member() won't be for you. Instead of comparing your pointed elements, they compare the pointer to them.
-  * See the documentation of xbt_dynar_search() for more info.
-  */
+ * @brief DynArr are dynamically sized vector which may contain any type of variables.
+ *
+ * These are the SimGrid version of the dynamically size arrays, which all C programmer recode one day or another.
+ *
+ * For performance concerns, the content of DynArr must be homogeneous (in contrary to dictionnaries -- see the
+ * @ref XBT_dict section). You thus have to provide the function which will be used to free the content at
+ * structure creation (of type void_f_pvoid_t).
+ *
+ * @deprecated If you are using C++, you might want to use `std::vector` instead.
+ *
+ * @section XBT_dynar_exscal Example with scalar
+ * @dontinclude dynar.cpp
+ *
+ * @skip Vars_decl
+ * @skip dyn
+ * @until iptr
+ * @skip Populate_ints
+ * @skip dyn
+ * @until end_of_traversal
+ * @skip shifting
+ * @skip val
+ * @until xbt_dynar_free
+ *
+ * @section XBT_dynar_exptr Example with pointed data
+ *
+ * @skip test_dynar_string
+ * @skip dynar_t
+ * @until s2
+ * @skip Populate_str
+ * @skip dyn
+ * @until }
+ * @skip macro
+ * @until dynar_free
+ * @skip end_of_doxygen
+ * @until }
+ *
+ * Note that if you use dynars to store pointed data, the xbt_dynar_search(), xbt_dynar_search_or_negative() and
+ * xbt_dynar_member() won't be for you. Instead of comparing your pointed elements, they compare the pointer to them.
+ * See the documentation of xbt_dynar_search() for more info.
+ */
 /** @defgroup XBT_dynar_cons Dynar constructor and destructor
  *  @ingroup XBT_dynar
  *
  *  @{
  */
-   /** \brief Dynar data type (opaque type) */
+/** @brief Dynar data type (opaque type) */
 typedef struct xbt_dynar_s *xbt_dynar_t;
 
 XBT_PUBLIC xbt_dynar_t xbt_dynar_new(const unsigned long elm_size, void_f_pvoid_t const free_f);
@@ -190,12 +190,12 @@ XBT_PUBLIC void* xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
 XBT_PUBLIC void xbt_dynar_cursor_rm(xbt_dynar_t dynar, unsigned int* const cursor);
 
 /*
- * \warning DO NOT USE THIS STRUCTURE DIRECTLY! Instead, use the public interface:
+ * @warning DO NOT USE THIS STRUCTURE DIRECTLY! Instead, use the public interface:
  *          This was made public to allow:
  *           - the inlining of the foreach elements
  *           - sending such beasts over the network
  *
- * \see xbt_dynar_length()
+ * @see xbt_dynar_length()
  */
 typedef struct xbt_dynar_s {
   unsigned long size;
@@ -229,14 +229,14 @@ static inline int _xbt_dynar_cursor_get(const xbt_dynar_t dynar, unsigned int id
  *  @hideinitializer
  *
  * Here is an example of usage:
- * \code
+ * @code
 xbt_dynar_t dyn;
 unsigned int cpt;
 string *str;
 xbt_dynar_foreach (dyn,cpt,str) {
   printf("Seen %s\n",str);
 }
-\endcode
+@endcode
  *
  * Note that underneath, that's a simple for loop with no real black  magic involved. It's perfectly safe to interrupt
  * a foreach with a break or a return statement.

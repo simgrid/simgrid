@@ -5,6 +5,7 @@
 
 #include "cpu_cas01.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/surf/cpu_ti.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
@@ -34,11 +35,11 @@ static simgrid::config::Flag<std::string>
  *********/
 void surf_cpu_model_init_Cas01()
 {
-  xbt_assert(not surf_cpu_model_pm);
-  xbt_assert(not surf_cpu_model_vm);
+  xbt_assert(surf_cpu_model_pm == nullptr, "CPU model already initialized. This should not happen.");
+  xbt_assert(surf_cpu_model_vm == nullptr, "CPU model already initialized. This should not happen.");
 
   if (cpu_optim_opt == "TI") {
-    surf_cpu_model_init_ti();
+    simgrid::surf::CpuTiModel::create_pm_vm_models();
     return;
   }
 
@@ -49,10 +50,7 @@ void surf_cpu_model_init_Cas01()
     algo = simgrid::kernel::resource::Model::UpdateAlgo::FULL;
 
   surf_cpu_model_pm = new simgrid::surf::CpuCas01Model(algo);
-  all_existing_models->push_back(surf_cpu_model_pm);
-
   surf_cpu_model_vm = new simgrid::surf::CpuCas01Model(algo);
-  all_existing_models->push_back(surf_cpu_model_vm);
 }
 
 namespace simgrid {
@@ -60,6 +58,8 @@ namespace surf {
 
 CpuCas01Model::CpuCas01Model(kernel::resource::Model::UpdateAlgo algo) : simgrid::surf::CpuModel(algo)
 {
+  all_existing_models.push_back(this);
+
   bool select = simgrid::config::get_value<bool>("cpu/maxmin-selective-update");
 
   if (algo == Model::UpdateAlgo::LAZY) {
@@ -130,16 +130,17 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
     xbt_assert(get_core_count() == 1, "FIXME: add state change code also for constraint_core[i]");
 
     if (value > 0) {
-      if (is_off())
-        host_that_restart.push_back(get_host());
-      turn_on();
+      if (is_off()) {
+        XBT_VERB("Restart processes on host %s", get_host()->get_cname());
+        get_host()->turn_on();
+      }
     } else {
       kernel::lmm::Constraint* cnst = get_constraint();
       kernel::lmm::Variable* var    = nullptr;
       const kernel::lmm::Element* elem = nullptr;
       double date              = surf_get_clock();
 
-      turn_off();
+      get_host()->turn_off();
 
       while ((var = cnst->get_variable(&elem))) {
         kernel::resource::Action* action = static_cast<kernel::resource::Action*>(var->get_id());
@@ -170,7 +171,7 @@ CpuAction* CpuCas01::execution_start(double size, int requested_cores)
   return new CpuCas01Action(get_model(), size, is_off(), speed_.scale * speed_.peak, get_constraint(), requested_cores);
 }
 
-CpuAction *CpuCas01::sleep(double duration)
+CpuAction* CpuCas01::sleep(double duration)
 {
   if (duration > 0)
     duration = std::max(duration, sg_surf_precision);

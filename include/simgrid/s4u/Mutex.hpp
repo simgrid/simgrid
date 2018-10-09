@@ -12,8 +12,6 @@
 namespace simgrid {
 namespace s4u {
 
-class ConditionVariable;
-
 /** @brief A classical mutex, but blocking in the simulation world
  *  @ingroup s4u_api
  *
@@ -25,12 +23,13 @@ class ConditionVariable;
  * <a href="http://en.cppreference.com/w/cpp/thread/mutex>std::mutex</a>.
  *
  * As for any S4U object, Mutexes are using the @ref s4u_raii "RAII idiom" for memory management.
- * Use createMutex() to get a ::MutexPtr to a newly created mutex and only manipulate ::MutexPtr.
+ * Use create() to get a simgrid::s4u::MutexPtr to a newly created mutex and only manipulate simgrid::s4u::MutexPtr.
  *
  */
 class XBT_PUBLIC Mutex {
-  friend ConditionVariable;
+  friend simgrid::s4u::ConditionVariable;
   friend simgrid::kernel::activity::MutexImpl;
+
   simgrid::kernel::activity::MutexImpl* pimpl_;
   explicit Mutex(simgrid::kernel::activity::MutexImpl* mutex) : pimpl_(mutex) {}
 
@@ -39,8 +38,6 @@ class XBT_PUBLIC Mutex {
   friend XBT_PUBLIC void intrusive_ptr_release(Mutex* mutex);
 
 public:
-  using Ptr = boost::intrusive_ptr<Mutex>;
-
   // No copy:
   /** You cannot create a new mutex by copying an existing one. Use MutexPtr instead */
   Mutex(Mutex const&) = delete;
@@ -48,17 +45,16 @@ public:
   Mutex& operator=(Mutex const&) = delete;
 
   /** Constructs a new mutex */
-  static Ptr create();
+  static MutexPtr create();
 
   void lock();
   void unlock();
   bool try_lock();
 
   // deprecated
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mutex::create()") static Ptr createMutex() { return create(); }
+  /** @deprecated Mutex::create() */
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mutex::create()") static MutexPtr createMutex() { return create(); }
 };
-
-using MutexPtr = Mutex::Ptr;
 
 }} // namespace simgrid::s4u
 

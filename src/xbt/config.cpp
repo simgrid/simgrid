@@ -19,6 +19,7 @@
 #include <typeinfo>
 #include <vector>
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/sg_config.hpp"
 #include "xbt/dynar.h"
 #include "xbt/log.h"
@@ -26,7 +27,6 @@
 #include "xbt/sysdep.h"
 #include <xbt/config.h>
 #include <xbt/config.hpp>
-#include <xbt/ex.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
@@ -143,9 +143,8 @@ public:
   /* Callback */
   xbt_cfg_cb_t old_callback = nullptr;
 
-  ConfigurationElement(const char* key, const char* desc) : key(key ? key : ""), desc(desc ? desc : "") {}
-  ConfigurationElement(const char* key, const char* desc, xbt_cfg_cb_t cb)
-    : key(key ? key : ""), desc(desc ? desc : ""), old_callback(cb) {}
+  ConfigurationElement(std::string key, std::string desc) : key(key), desc(desc) {}
+  ConfigurationElement(std::string key, std::string desc, xbt_cfg_cb_t cb) : key(key), desc(desc), old_callback(cb) {}
 
   virtual ~ConfigurationElement() = default;
 
@@ -182,13 +181,13 @@ private:
   std::function<void(T&)> callback;
 
 public:
-  TypedConfigurationElement(const char* key, const char* desc, T value = T())
-    : ConfigurationElement(key, desc), content(std::move(value))
+  TypedConfigurationElement(std::string key, std::string desc, T value = T())
+      : ConfigurationElement(key, desc), content(std::move(value))
   {}
-  TypedConfigurationElement(const char* key, const char* desc, T value, xbt_cfg_cb_t cb)
+  TypedConfigurationElement(std::string key, std::string desc, T value, xbt_cfg_cb_t cb)
       : ConfigurationElement(key, desc, cb), content(std::move(value))
   {}
-  TypedConfigurationElement(const char* key, const char* desc, T value, std::function<void(T&)> callback)
+  TypedConfigurationElement(std::string key, std::string desc, T value, std::function<void(T&)> callback)
       : ConfigurationElement(key, desc), content(std::move(value)), callback(std::move(callback))
   {}
   ~TypedConfigurationElement() = default;
@@ -263,15 +262,16 @@ public:
   Config(Config const&) = delete;
   Config& operator=(Config const&) = delete;
 
-  ConfigurationElement& operator[](const char* name);
-  void alias(const char* realname, const char* aliasname);
+  ConfigurationElement& operator[](std::string name);
+  void alias(std::string realname, std::string aliasname);
 
   template <class T, class... A>
-  simgrid::config::TypedConfigurationElement<T>* register_option(const char* name, A&&... a)
+  simgrid::config::TypedConfigurationElement<T>* register_option(std::string name, A&&... a)
   {
-    xbt_assert(options.find(name) == options.end(), "Refusing to register the config element '%s' twice.", name);
+    xbt_assert(options.find(name) == options.end(), "Refusing to register the config element '%s' twice.",
+               name.c_str());
     TypedConfigurationElement<T>* variable = new TypedConfigurationElement<T>(name, std::forward<A>(a)...);
-    XBT_DEBUG("Register cfg elm %s (%s) of type %s @%p in set %p)", name, variable->get_description().c_str(),
+    XBT_DEBUG("Register cfg elm %s (%s) of type %s @%p in set %p)", name.c_str(), variable->get_description().c_str(),
               variable->get_type_name(), variable, this);
     options.insert({name, variable});
     variable->update();
@@ -284,7 +284,7 @@ public:
   void help();
 
 protected:
-  ConfigurationElement* get_dict_element(const char* name);
+  ConfigurationElement* get_dict_element(std::string name);
 };
 
 Config::Config()
@@ -298,7 +298,7 @@ Config::~Config()
     delete elm.second;
 }
 
-inline ConfigurationElement* Config::get_dict_element(const char* name)
+inline ConfigurationElement* Config::get_dict_element(std::string name)
 {
   auto opt = options.find(name);
   if (opt != options.end()) {
@@ -308,24 +308,24 @@ inline ConfigurationElement* Config::get_dict_element(const char* name)
     if (als != aliases.end()) {
       ConfigurationElement* res = als->second;
       if (warn_for_aliases)
-        XBT_INFO("Option %s has been renamed to %s. Consider switching.", name, res->get_key().c_str());
+        XBT_INFO("Option %s has been renamed to %s. Consider switching.", name.c_str(), res->get_key().c_str());
       return res;
     } else {
-      THROWF(not_found_error, 0, "Bad config key: %s", name);
+      THROWF(not_found_error, 0, "Bad config key: %s", name.c_str());
     }
   }
 }
 
-inline ConfigurationElement& Config::operator[](const char* name)
+inline ConfigurationElement& Config::operator[](std::string name)
 {
   return *(get_dict_element(name));
 }
 
-void Config::alias(const char* realname, const char* aliasname)
+void Config::alias(std::string realname, std::string aliasname)
 {
-  xbt_assert(aliases.find(aliasname) == aliases.end(), "Alias '%s' already.", aliasname);
+  xbt_assert(aliases.find(aliasname) == aliases.end(), "Alias '%s' already.", aliasname.c_str());
   ConfigurationElement* element = this->get_dict_element(realname);
-  xbt_assert(element, "Cannot define an alias to the non-existing option '%s'.", realname);
+  xbt_assert(element, "Cannot define an alias to the non-existing option '%s'.", realname.c_str());
   this->aliases.insert({aliasname, element});
 }
 
@@ -435,15 +435,15 @@ void set_parse(std::string options)
 
 // ***** get_value *****
 
-template <class T> XBT_PUBLIC T const& get_value(const char* name)
+template <class T> XBT_PUBLIC T const& get_value(std::string name)
 {
   return (*simgrid_config)[name].get_value<T>();
 }
 
-template XBT_PUBLIC int const& get_value<int>(const char* name);
-template XBT_PUBLIC double const& get_value<double>(const char* name);
-template XBT_PUBLIC bool const& get_value<bool>(const char* name);
-template XBT_PUBLIC std::string const& get_value<std::string>(const char* name);
+template XBT_PUBLIC int const& get_value<int>(std::string name);
+template XBT_PUBLIC double const& get_value<double>(std::string name);
+template XBT_PUBLIC bool const& get_value<bool>(std::string name);
+template XBT_PUBLIC std::string const& get_value<std::string>(std::string name);
 
 // ***** alias *****
 
@@ -456,20 +456,20 @@ void alias(const char* realname, std::initializer_list<const char*> aliases)
 // ***** declare_flag *****
 
 template <class T>
-XBT_PUBLIC void declare_flag(const char* name, const char* description, T value, std::function<void(const T&)> callback)
+XBT_PUBLIC void declare_flag(std::string name, std::string description, T value, std::function<void(const T&)> callback)
 {
   if (simgrid_config == nullptr)
     simgrid_config = new simgrid::config::Config();
   simgrid_config->register_option<T>(name, description, std::move(value), std::move(callback));
 }
 
-template XBT_PUBLIC void declare_flag(const char* name, const char* description, int value,
+template XBT_PUBLIC void declare_flag(std::string name, std::string description, int value,
                                       std::function<void(int const&)> callback);
-template XBT_PUBLIC void declare_flag(const char* name, const char* description, double value,
+template XBT_PUBLIC void declare_flag(std::string name, std::string description, double value,
                                       std::function<void(double const&)> callback);
-template XBT_PUBLIC void declare_flag(const char* name, const char* description, bool value,
+template XBT_PUBLIC void declare_flag(std::string name, std::string description, bool value,
                                       std::function<void(bool const&)> callback);
-template XBT_PUBLIC void declare_flag(const char* name, const char* description, std::string value,
+template XBT_PUBLIC void declare_flag(std::string name, std::string description, std::string value,
                                       std::function<void(std::string const&)> callback);
 
 void finalize()
@@ -719,9 +719,9 @@ int xbt_cfg_get_boolean(const char *key)
 
 #include <string>
 
+#include "simgrid/Exception.hpp"
 #include "xbt.h"
 #include "xbt/ex.h"
-#include <xbt/ex.hpp>
 
 #include <xbt/config.hpp>
 

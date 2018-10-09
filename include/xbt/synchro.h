@@ -38,8 +38,8 @@ XBT_PUBLIC void xbt_mutex_acquire(xbt_mutex_t mutex);
 /** @brief Tries to block onto the given mutex variable
  * Tries to lock a mutex, return 1 if the mutex is unlocked, else 0.
  * This function does not block and wait for the mutex to be unlocked.
- * \param mutex The mutex
- * \return 1 - mutex free, 0 - mutex used
+ * @param mutex The mutex
+ * @return 1 - mutex free, 0 - mutex used
  */
 XBT_PUBLIC int xbt_mutex_try_acquire(xbt_mutex_t mutex);
 

@@ -16,7 +16,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 namespace simgrid {
 namespace kernel {
 namespace routing {
-FullZone::FullZone(NetZoneImpl* father, std::string name) : RoutedZone(father, name) {}
+FullZone::FullZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel)
+    : RoutedZone(father, name, netmodel)
+{
+}
 
 void FullZone::seal()
 {
@@ -27,13 +30,13 @@ void FullZone::seal()
     routing_table_ = new RouteCreationArgs*[table_size * table_size]();
 
   /* Add the loopback if needed */
-  if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
+  if (network_model_->loopback_ && hierarchy_ == RoutingMode::base) {
     for (unsigned int i = 0; i < table_size; i++) {
-      RouteCreationArgs* e_route = TO_ROUTE_FULL(i, i);
-      if (not e_route) {
-        e_route = new RouteCreationArgs();
-        e_route->link_list.push_back(surf_network_model->loopback_);
-        TO_ROUTE_FULL(i, i) = e_route;
+      RouteCreationArgs* route = TO_ROUTE_FULL(i, i);
+      if (not route) {
+        route = new RouteCreationArgs();
+        route->link_list.push_back(network_model_->loopback_);
+        TO_ROUTE_FULL(i, i) = route;
       }
     }
   }

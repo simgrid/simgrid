@@ -5,14 +5,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/ex.hpp>
-
 #include "jmsg_process.h"
 
 #include "JavaContext.hpp"
 #include "jmsg.hpp"
 #include "jmsg_host.h"
 #include "jxbt_utilities.hpp"
+#include "simgrid/Exception.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
@@ -25,8 +24,9 @@ jfieldID jprocess_field_Process_ppid;
 
 jobject jprocess_from_native(msg_process_t process)
 {
-  simgrid::kernel::context::JavaContext* context = (simgrid::kernel::context::JavaContext*)process->get_impl()->context;
-  return context->jprocess;
+  simgrid::kernel::context::JavaContext* context =
+      (simgrid::kernel::context::JavaContext*)process->get_impl()->context_;
+  return context->jprocess_;
 }
 
 jobject jprocess_ref(jobject jprocess, JNIEnv* env)
@@ -226,7 +226,11 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cl
  {
   double time =  ((double)jmillis) / 1000 + ((double)jnanos) / 1000000000;
   msg_error_t rv;
-  rv = MSG_process_sleep(time);
+  try {
+    rv = MSG_process_sleep(time);
+  } catch (simgrid::kernel::context::Context::StopRequest const&) {
+    rv = MSG_HOST_FAILURE;
+  }
   if (rv != MSG_OK) {
     XBT_DEBUG("Something during the MSG_process_sleep invocation was wrong, trigger a HostFailureException");
 

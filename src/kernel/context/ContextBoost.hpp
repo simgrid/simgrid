@@ -55,7 +55,7 @@ private:
   boost::context::detail::fcontext_t fc_;
   typedef boost::context::detail::transfer_t arg_type;
 #endif
-#if HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT
+#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
   const void* asan_stack_ = nullptr;
   size_t asan_stack_size_ = 0;
   BoostContext* asan_ctx_ = nullptr;
@@ -98,7 +98,7 @@ private:
   static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
   static std::vector<ParallelBoostContext*> workers_context_;
   static std::atomic<uintptr_t> threads_working_;
-  static xbt_os_thread_key_t worker_id_key_;
+  static thread_local uintptr_t worker_id_;
 };
 #endif
 

@@ -7,8 +7,8 @@
 
 #include "JavaContext.hpp"
 #include "jxbt_utilities.hpp"
+#include "simgrid/Exception.hpp"
 #include "src/simix/smx_private.hpp"
-#include "xbt/ex.hpp"
 
 #include <functional>
 #include <utility>
@@ -29,6 +29,7 @@ ContextFactory* java_factory()
 
 JavaContextFactory::JavaContextFactory(): ContextFactory("JavaContextFactory")
 {
+  xbt_binary_name = xbt_strdup("java"); // Used by the backtrace displayer
 }
 
 JavaContextFactory::~JavaContextFactory()=default;
@@ -38,80 +39,32 @@ JavaContext* JavaContextFactory::self()
   return static_cast<JavaContext*>(xbt_os_thread_get_extra_data());
 }
 
-JavaContext* JavaContextFactory::create_context(
-  std::function<void()> code,
-  void_pfn_smxprocess_t cleanup, smx_actor_t process)
+JavaContext* JavaContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun,
+                                                smx_actor_t actor)
 {
-  return this->new_context<JavaContext>(std::move(code), cleanup, process);
+  return this->new_context<JavaContext>(std::move(code), cleanup_fun, actor);
 }
 
 void JavaContextFactory::run_all()
 {
-  for (smx_actor_t const& process : simgrid::simix::process_get_runnable()) {
-    static_cast<JavaContext*>(process->context)->resume();
-  }
+  SerialThreadContext::run_all();
 }
 
-JavaContext::JavaContext(std::function<void()> code,
-        void_pfn_smxprocess_t cleanup_func,
-        smx_actor_t process)
-  : Context(std::move(code), cleanup_func, process)
+JavaContext::JavaContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
+    : SerialThreadContext(std::move(code), cleanup_func, process, false /* not maestro */)
 {
-  static int thread_amount=0;
-  thread_amount++;
-
-  /* If the user provided a function for the process then use it otherwise is the context for maestro */
-  if (has_code()) {
-    this->jprocess = nullptr;
-    this->begin = xbt_os_sem_init(0);
-    this->end = xbt_os_sem_init(0);
-
-    try {
-       this->thread = xbt_os_thread_create(
-         nullptr, JavaContext::wrapper, this, nullptr);
-    }
-    catch (xbt_ex& ex) {
-      char* str = bprintf(
-        "Failed to create context #%d. You may want to switch to Java coroutines to increase your limits (error: %s)."
-        "See the Install section of simgrid-java documentation (in doc/install.html) for more on coroutines.",
-        thread_amount, ex.what());
-      xbt_ex new_exception(XBT_THROW_POINT, str);
-      new_exception.category = ex.category;
-      new_exception.value = ex.value;
-      std::throw_with_nested(std::move(new_exception));
-    }
-  } else {
-    this->thread = nullptr;
-    xbt_os_thread_set_extra_data(this);
-  }
+  /* ThreadContext already does all we need */
 }
 
-JavaContext::~JavaContext()
+void JavaContext::start_hook()
 {
-  if (this->thread) {
-    // We are not in maestro context
-    xbt_os_thread_join(this->thread, nullptr);
-    xbt_os_sem_destroy(this->begin);
-    xbt_os_sem_destroy(this->end);
-  }
-}
+  xbt_os_thread_set_extra_data(this); // We need to attach it also for maestro, in contrary to our ancestor
 
-void* JavaContext::wrapper(void *data)
-{
-  JavaContext* context = static_cast<JavaContext*>(data);
-  xbt_os_thread_set_extra_data(context);
   //Attach the thread to the JVM
-
   JNIEnv *env;
   XBT_ATTRIB_UNUSED jint error = __java_vm->AttachCurrentThread((void**)&env, nullptr);
   xbt_assert((error == JNI_OK), "The thread could not be attached to the JVM");
-  context->jenv = env;
-  //Wait for the first scheduling round to happen.
-  xbt_os_sem_acquire(context->begin);
-  //Create the "Process" object if needed.
-  (*context)();
-  context->stop();
-  return nullptr;
+  this->jenv_ = env;
 }
 
 void JavaContext::stop()
@@ -119,7 +72,7 @@ void JavaContext::stop()
   /* I was asked to die (either with kill() or because of a failed element) */
   if (this->iwannadie) {
     this->iwannadie = 0;
-    JNIEnv *env = get_current_thread_env();
+    JNIEnv* env     = this->jenv_;
     XBT_DEBUG("Gonna launch Killed Error");
     // When the process wants to stop before its regular end, we should cut its call stack quickly.
     // The easiest way to do so is to raise an exception that will be catched in its top calling level.
@@ -152,32 +105,16 @@ void JavaContext::stop()
     // In other words, we need to do in C++ what we do in Java for sake of uniformity.
     //
     // Plus, C++ RAII would work in that case, too.
-
     XBT_DEBUG("Trigger a cancel error at the C level");
     THROWF(cancel_error, 0, "process cancelled");
   } else {
-    Context::stop();
-    /* detach the thread and kills it */
-    JNIEnv *env = this->jenv;
-    env->DeleteGlobalRef(this->jprocess);
+    ThreadContext::stop();
+    JNIEnv* env = this->jenv_;
+    env->DeleteGlobalRef(this->jprocess_);
     XBT_ATTRIB_UNUSED jint error = __java_vm->DetachCurrentThread();
     xbt_assert((error == JNI_OK), "The thread couldn't be detached.");
-    xbt_os_sem_release(this->end);
     xbt_os_thread_exit(nullptr);
   }
-}
-
-void JavaContext::suspend()
-{
-  xbt_os_sem_release(this->end);
-  xbt_os_sem_acquire(this->begin);
-}
-
-// FIXME: inline those functions
-void JavaContext::resume()
-{
-  xbt_os_sem_release(this->begin);
-  xbt_os_sem_acquire(this->end);
 }
 
 }}} // namespace simgrid::kernel::context

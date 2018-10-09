@@ -1,0 +1,8 @@
+$ ./actor-autorestart ${platfdir}/small_platform.xml
+> [Tremblay:Autostart:(1) 0.000000] [s4u_test/INFO] starting a dummy process on Fafard 
+> [Fafard:Dummy:(2) 0.000000] [s4u_test/INFO] I start
+> [Tremblay:Autostart:(1) 50.000000] [s4u_test/INFO] powering off Fafard
+> [Tremblay:Autostart:(1) 60.000000] [s4u_test/INFO] powering on Fafard
+> [Fafard:Dummy:(3) 60.000000] [s4u_test/INFO] I start
+> [Fafard:Dummy:(3) 260.000000] [s4u_test/INFO] I stop
+> [260.000000] [s4u_test/INFO] Simulation time 260

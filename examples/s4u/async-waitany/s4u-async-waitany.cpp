@@ -39,32 +39,33 @@ public:
   }
   void operator()()
   {
+    /* Vector in which we store all ongoing communications */
     std::vector<simgrid::s4u::CommPtr> pending_comms;
+
+    /* Make a vector of the mailboxes to use */
+    std::vector<simgrid::s4u::MailboxPtr> mboxes;
+    for (int i = 0; i < receivers_count; i++)
+      mboxes.push_back(simgrid::s4u::Mailbox::by_name(std::string("receiver-") + std::to_string(i)));
 
     /* Start dispatching all messages to receivers, in a round robin fashion */
     for (int i = 0; i < messages_count; i++) {
+      std::string msg_content = std::string("Message ") + std::to_string(i);
+      // Copy the data we send: 'msg_content' is not a stable storage location.
+      // It will be destroyed when this actor leaves the loop, ie before the receiver gets it
+      std::string* payload = new std::string(msg_content);
 
-      std::string mboxName          = std::string("receiver-") + std::to_string(i % receivers_count);
-      simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(mboxName);
-      std::string msgName           = std::string("Message ") + std::to_string(i);
-      std::string* payload          = new std::string(msgName); // copy the data we send:
-                                                                // 'msgName' is not a stable storage location
-      XBT_INFO("Send '%s' to '%s'", msgName.c_str(), mboxName.c_str());
-      /* Create a communication representing the ongoing communication */
-      simgrid::s4u::CommPtr comm = mbox->put_async(payload, msg_size);
-      /* Add this comm to the vector of all known comms */
+      XBT_INFO("Send '%s' to '%s'", msg_content.c_str(), mboxes[i % receivers_count]->get_cname());
+
+      /* Create a communication representing the ongoing communication, and store it in pending_comms */
+      simgrid::s4u::CommPtr comm = mboxes[i % receivers_count]->put_async(payload, msg_size);
       pending_comms.push_back(comm);
     }
 
     /* Start sending messages to let the workers know that they should stop */
     for (int i = 0; i < receivers_count; i++) {
-      std::string mboxName          = std::string("receiver-") + std::to_string(i % receivers_count);
-      simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(mboxName);
-      std::string* payload          = new std::string("finalize"); // Make a copy of the data we will send
-
-      simgrid::s4u::CommPtr comm = mbox->put_async(payload, 0);
+      XBT_INFO("Send 'finalize' to 'receiver-%d'", i);
+      simgrid::s4u::CommPtr comm = mboxes[i]->put_async(new std::string("finalize"), 0);
       pending_comms.push_back(comm);
-      XBT_INFO("Send 'finalize' to 'receiver-%ld'", i % receivers_count);
     }
     XBT_INFO("Done dispatching all messages");
 

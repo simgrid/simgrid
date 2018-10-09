@@ -5,11 +5,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/ex.hpp>
-
-#include "jmsg.hpp"
 #include "jmsg_synchro.h"
+#include "jmsg.hpp"
 #include "jxbt_utilities.hpp"
+#include "simgrid/Exception.hpp"
 #include "xbt/synchro.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);

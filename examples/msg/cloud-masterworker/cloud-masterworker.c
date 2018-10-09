@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
   MSG_vm_live_migration_plugin_init();
 
-  xbt_assert(argc >1,"Usage: %s example/platforms/cluster.xml\n", argv[0]);
+  xbt_assert(argc >1,"Usage: %s example/platforms/cluster_backbone.xml\n", argv[0]);
 
   /* Load the platform file */
   MSG_create_environment(argv[1]);

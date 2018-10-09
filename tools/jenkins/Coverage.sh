@@ -47,6 +47,8 @@ NUMPROC="$(nproc)" || NUMPROC=1
 
 
 cd $BUILDFOLDER
+rm -rf java_cov*
+rm -rf xml_coverage.xml
 
 ctest -D ExperimentalStart || true
 
@@ -54,6 +56,7 @@ cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=ON \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
       -Denable_jedule=ON -Denable_mallocators=ON \
       -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_model-checking=ON \
+      -Denable_smpi_papi=ON \
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=ON -Denable_coverage=ON $WORKSPACE
 
 make -j$NUMPROC
@@ -78,8 +81,23 @@ if [ -f Testing/TAG ] ; then
     i=$((i + 1))
   done
 
+   cd $WORKSPACE
    #convert all gcov reports to xml cobertura reports
-   gcovr -r .. --xml-pretty -e teshsuite.* -u -o $WORKSPACE/xml_coverage.xml
-   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/$( head -n 1 < Testing/TAG )/Test.xml > CTestResults_memcheck.xml
-   mv CTestResults_memcheck.xml $WORKSPACE
+   gcovr -r . --xml-pretty -e teshsuite -u -o $WORKSPACE/xml_coverage.xml
+   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl build/Testing/$( head -n 1 < build/Testing/TAG )/Test.xml > CTestResults_memcheck.xml
+
+   #generate sloccount report
+   sloccount --duplicates --wide --details $WORKSPACE | grep -v -e '.git' -e 'mpich3-test' -e 'sloccount.sc' -e 'isp/umpire' -e 'build/' -e 'xml_coverage.xml' -e 'CTestResults_memcheck.xml' -e 'DynamicAnalysis.xml' > $WORKSPACE/sloccount.sc
+
+   #upload files to codacy. CODACY_PROJECT_TOKEN must be setup !
+   if ! [ -z $CODACY_PROJECT_TOKEN ]
+   then 
+     for report in $WORKSPACE/java_cov*
+     do
+       java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar report -l Java -r $report --partial
+     done
+     java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar final
+     java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar report -l C -f -r $WORKSPACE/xml_coverage.xml
+     java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar report -l CPP -f -r $WORKSPACE/xml_coverage.xml
+   fi
 fi

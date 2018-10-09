@@ -37,7 +37,7 @@
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/mc_snapshot.hpp"
+#include "src/mc/sosp/mc_snapshot.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, xbt, "Logging specific to mc_compare in mc");
 

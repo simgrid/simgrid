@@ -36,11 +36,15 @@ void check_disk_attachment()
 void surf_storage_model_init_default()
 {
   surf_storage_model = new simgrid::surf::StorageN11Model();
-  all_existing_models->push_back(surf_storage_model);
 }
 
 namespace simgrid {
 namespace surf {
+
+StorageN11Model::StorageN11Model()
+{
+  all_existing_models.push_back(this);
+}
 
 StorageImpl* StorageN11Model::createStorage(std::string id, std::string type_id, std::string content_name,
                                             std::string attach)
@@ -95,14 +99,19 @@ StorageN11::StorageN11(StorageModel* model, std::string name, kernel::lmm::Syste
   simgrid::s4u::Storage::on_creation(this->piface_);
 }
 
+StorageAction* StorageN11::io_start(sg_size_t size, s4u::Io::OpType type)
+{
+  return new StorageN11Action(get_model(), size, is_off(), this, type);
+}
+
 StorageAction* StorageN11::read(sg_size_t size)
 {
-  return new StorageN11Action(get_model(), size, is_off(), this, READ);
+  return new StorageN11Action(get_model(), size, is_off(), this, s4u::Io::OpType::READ);
 }
 
 StorageAction* StorageN11::write(sg_size_t size)
 {
-  return new StorageN11Action(get_model(), size, is_off(), this, WRITE);
+  return new StorageN11Action(get_model(), size, is_off(), this, s4u::Io::OpType::WRITE);
 }
 
 /**********
@@ -110,7 +119,7 @@ StorageAction* StorageN11::write(sg_size_t size)
  **********/
 
 StorageN11Action::StorageN11Action(kernel::resource::Model* model, double cost, bool failed, StorageImpl* storage,
-                                   e_surf_action_storage_type_t type)
+                                   s4u::Io::OpType type)
     : StorageAction(model, cost, failed, model->get_maxmin_system()->variable_new(this, 1.0, -1.0, 3), storage, type)
 {
   XBT_IN("(%s,%g", storage->get_cname(), cost);
@@ -118,14 +127,14 @@ StorageN11Action::StorageN11Action(kernel::resource::Model* model, double cost, 
   // Must be less than the max bandwidth for all actions
   model->get_maxmin_system()->expand(storage->get_constraint(), get_variable(), 1.0);
   switch(type) {
-  case READ:
-    model->get_maxmin_system()->expand(storage->constraintRead_, get_variable(), 1.0);
-    break;
-  case WRITE:
-    model->get_maxmin_system()->expand(storage->constraintWrite_, get_variable(), 1.0);
-    break;
-  default:
-    THROW_UNIMPLEMENTED;
+    case s4u::Io::OpType::READ:
+      model->get_maxmin_system()->expand(storage->constraintRead_, get_variable(), 1.0);
+      break;
+    case s4u::Io::OpType::WRITE:
+      model->get_maxmin_system()->expand(storage->constraintWrite_, get_variable(), 1.0);
+      break;
+    default:
+      THROW_UNIMPLEMENTED;
   }
   XBT_OUT();
 }

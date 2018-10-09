@@ -20,8 +20,8 @@ static void MSG_exit();
 /********************************* MSG **************************************/
 
 /**
- * \ingroup msg_simulation
- * \brief Initialize MSG with less verifications
+ * @ingroup msg_simulation
+ * @brief Initialize MSG with less verifications
  * You should use the MSG_init() function instead. Failing to do so may turn into PEBKAC some day. You've been warned.
  */
 void MSG_init_nocheck(int *argc, char **argv) {
@@ -55,14 +55,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
     atexit(MSG_exit);
 }
 
-/** \ingroup msg_simulation
- * \brief set a configuration variable
- *
- * Do --help on any simgrid binary to see the list of currently existing configuration variables, and see Section @ref options.
- *
- * Example:
- * MSG_config("host/model","ptask_L07");
- */
 void MSG_config(const char *key, const char *value){
   xbt_assert(msg_global,"ERROR: Please call MSG_init() before using MSG_config()");
   simgrid::config::set_as_string(key, value);
@@ -78,7 +70,7 @@ unsigned long int MSG_get_sent_msg()
   return msg_global->sent_msg;
 }
 
-/** \brief register functions bypassing the parser */
+/** @brief register functions bypassing the parser */
 void MSG_set_function(const char* host_id, const char* function_name, xbt_dynar_t arguments)
 {
   SIMIX_process_set_function(host_id, function_name, arguments, -1, -1);

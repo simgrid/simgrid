@@ -3,9 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/ex.hpp"
-
 #include "msg_private.hpp"
+#include "simgrid/Exception.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/simix/smx_synchro_private.hpp"
 #include "xbt/synchro.h"
@@ -54,45 +53,4 @@ int MSG_sem_would_block(msg_sem_t sem) {
   return simgrid::simix::simcall([sem] { return SIMIX_sem_would_block(sem); });
 }
 
-/*-**** barrier related functions ****-*/
-struct s_msg_bar_t {
-  xbt_mutex_t mutex;
-  xbt_cond_t cond;
-  unsigned int arrived_processes;
-  unsigned int expected_processes;
-};
-
-/** @brief Initializes a barrier, with count elements */
-msg_bar_t MSG_barrier_init(unsigned int count) {
-  msg_bar_t bar           = new s_msg_bar_t;
-  bar->expected_processes = count;
-  bar->arrived_processes  = 0;
-  bar->mutex              = xbt_mutex_init();
-  bar->cond               = xbt_cond_init();
-  return bar;
-}
-
-/** @brief Initializes a barrier, with count elements */
-void MSG_barrier_destroy(msg_bar_t bar) {
-  xbt_mutex_destroy(bar->mutex);
-  xbt_cond_destroy(bar->cond);
-  delete bar;
-}
-
-/** @brief Performs a barrier already initialized */
-int MSG_barrier_wait(msg_bar_t bar) {
-  xbt_mutex_acquire(bar->mutex);
-  bar->arrived_processes++;
-  XBT_DEBUG("waiting %p %u/%u", bar, bar->arrived_processes, bar->expected_processes);
-  if (bar->arrived_processes == bar->expected_processes) {
-    xbt_cond_broadcast(bar->cond);
-    xbt_mutex_release(bar->mutex);
-    bar->arrived_processes = 0;
-    return MSG_BARRIER_SERIAL_PROCESS;
-  }
-
-  xbt_cond_wait(bar->cond, bar->mutex);
-  xbt_mutex_release(bar->mutex);
-  return 0;
-}
 /**@}*/

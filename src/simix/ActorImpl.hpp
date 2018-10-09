@@ -23,51 +23,30 @@ namespace simgrid {
 namespace kernel {
 namespace actor {
 
-class ProcessArg {
-public:
-  std::string name;
-  std::function<void()> code;
-  void* data            = nullptr;
-  s4u::Host* host       = nullptr;
-  double kill_time      = 0.0;
-  std::shared_ptr<std::unordered_map<std::string, std::string>> properties;
-  bool auto_restart     = false;
-  ProcessArg()          = default;
-  explicit ProcessArg(std::string name, std::function<void()> code, void* data, s4u::Host* host, double kill_time,
-                      std::shared_ptr<std::unordered_map<std::string, std::string>> properties, bool auto_restart)
-      : name(name)
-      , code(std::move(code))
-      , data(data)
-      , host(host)
-      , kill_time(kill_time)
-      , properties(properties)
-      , auto_restart(auto_restart)
-  {
-  }
-};
-
 class ActorImpl : public simgrid::surf::PropertyHolder {
 public:
   ActorImpl() : piface_(this) {}
   ~ActorImpl();
 
+  void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }
+
   boost::intrusive::list_member_hook<> host_process_list_hook; /* simgrid::simix::Host::process_list */
   boost::intrusive::list_member_hook<> smx_destroy_list_hook;  /* simix_global->process_to_destroy */
   boost::intrusive::list_member_hook<> smx_synchro_hook;       /* {mutex,cond,sem}->sleeping */
 
-  aid_t pid  = 0;
-  aid_t ppid = -1;
-  simgrid::xbt::string name;
-  const simgrid::xbt::string& get_name() const { return name; }
-  const char* get_cname() const { return name.c_str(); }
-  s4u::Host* host       = nullptr; /* the host on which the process is running */
-  smx_context_t context = nullptr; /* the context (uctx/raw/thread) that executes the user function */
+  aid_t pid_  = 0;
+  aid_t ppid_ = -1;
+  simgrid::xbt::string name_;
+  const simgrid::xbt::string& get_name() const { return name_; }
+  const char* get_cname() const { return name_.c_str(); }
+  s4u::Host* host_       = nullptr; /* the host on which the process is running */
+  smx_context_t context_ = nullptr; /* the context (uctx/raw/thread) that executes the user function */
 
   std::exception_ptr exception;
-  bool finished     = false;
-  bool blocked      = false;
-  bool suspended    = false;
-  bool auto_restart = false;
+  bool finished_    = false;
+  bool blocked_     = false;
+  bool suspended_   = false;
+  bool auto_restart_ = false;
 
   smx_activity_t waiting_synchro = nullptr; /* the current blocking synchro if any */
   std::list<smx_activity_t> comms;          /* the current non-blocking communication synchros */
@@ -78,7 +57,7 @@ public:
   smx_timer_t kill_timer = nullptr;
 
 private:
-  void* userdata = nullptr; /* kept for compatibility, it should be replaced with moddata */
+  void* userdata_ = nullptr; /* kept for compatibility, it should be replaced with moddata */
   /* Refcounting */
   std::atomic_int_fast32_t refcount_{0};
 
@@ -111,17 +90,56 @@ public:
 
   /* Daemon actors are automatically killed when the last non-daemon leaves */
 private:
-  bool daemon = false;
+  bool daemon_ = false;
 public:
   void daemonize();
-  bool isDaemon() { return daemon; } /** Whether this actor has been daemonized */
-  bool isSuspended() { return suspended; }
+  bool is_daemon() { return daemon_; } /** Whether this actor has been daemonized */
+  bool is_suspended() { return suspended_; }
   simgrid::s4u::Actor* restart();
   smx_activity_t suspend(ActorImpl* issuer);
   void resume();
   smx_activity_t sleep(double duration);
-  void setUserData(void* data) { userdata = data; }
-  void* getUserData() { return userdata; }
+  void set_user_data(void* data) { userdata_ = data; }
+  void* get_user_data() { return userdata_; }
+  /** Ask the actor to throw an exception right away */
+  void throw_exception(std::exception_ptr e);
+};
+
+class ProcessArg {
+public:
+  std::string name;
+  std::function<void()> code;
+  void* data                                                               = nullptr;
+  s4u::Host* host                                                          = nullptr;
+  double kill_time                                                         = 0.0;
+  std::shared_ptr<std::unordered_map<std::string, std::string>> properties = nullptr;
+  bool auto_restart                                                        = false;
+  bool daemon_                                                             = false;
+  ProcessArg()                                                             = default;
+
+  explicit ProcessArg(std::string name, std::function<void()> code, void* data, s4u::Host* host, double kill_time,
+                      std::shared_ptr<std::unordered_map<std::string, std::string>> properties, bool auto_restart)
+      : name(name)
+      , code(std::move(code))
+      , data(data)
+      , host(host)
+      , kill_time(kill_time)
+      , properties(properties)
+      , auto_restart(auto_restart)
+  {
+  }
+
+  explicit ProcessArg(s4u::Host* host, ActorImpl* actor)
+      : name(actor->get_name())
+      , code(std::move(actor->code))
+      , data(actor->get_user_data())
+      , host(host)
+      , kill_time(SIMIX_timer_get_date(actor->kill_timer))
+      , auto_restart(actor->auto_restart_)
+      , daemon_(actor->is_daemon())
+  {
+    properties.reset(actor->get_properties(), [](decltype(actor->get_properties())) {});
+  }
 };
 
 /* Used to keep the list of actors blocked on a synchro  */
@@ -136,7 +154,7 @@ XBT_PUBLIC void create_maestro(std::function<void()> code);
 
 typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 
-XBT_PRIVATE smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
+XBT_PRIVATE smx_actor_t SIMIX_process_create(std::string name, std::function<void()> code, void* data, sg_host_t host,
                                              std::unordered_map<std::string, std::string>* properties,
                                              smx_actor_t parent_process);
 
@@ -147,8 +165,6 @@ XBT_PRIVATE void SIMIX_process_cleanup(smx_actor_t arg);
 XBT_PRIVATE void SIMIX_process_empty_trash();
 XBT_PRIVATE void SIMIX_process_yield(smx_actor_t self);
 XBT_PRIVATE void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest);
-
-XBT_PRIVATE void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart);
 
 extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
 

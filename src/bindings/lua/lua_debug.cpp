@@ -169,13 +169,13 @@ void sglua_stack_dump(lua_State* L, const char* msg)
 }
 
 /**
- * \brief Like luaL_checkudata, with additional debug logs.
+ * @brief Like luaL_checkudata, with additional debug logs.
  *
  * This function is for debugging purposes only.
  *
- * \param L a lua state
- * \param ud index of the userdata to check in the stack
- * \param tname key of the metatable of this userdata in the registry
+ * @param L a lua state
+ * @param ud index of the userdata to check in the stack
+ * @param tname key of the metatable of this userdata in the registry
  */
 void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname)
 {

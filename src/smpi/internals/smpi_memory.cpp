@@ -24,7 +24,7 @@
 #include "src/xbt/memory_map.hpp"
 
 #include "private.hpp"
-#include "smpi_process.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SMPI");
 
@@ -88,7 +88,7 @@ static void smpi_get_executable_global_size()
 }
 #endif
 
-#if HAVE_SANITIZE_ADDRESS
+#if HAVE_SANITIZER_ADDRESS
 #include <sanitizer/asan_interface.h>
 static void* asan_safe_memcpy(void* dest, void* src, size_t n)
 {
@@ -133,7 +133,7 @@ void smpi_really_switch_data_segment(simgrid::s4u::ActorPtr actor)
 #if HAVE_PRIVATIZATION
   // FIXME, cross-process support (mmap across process when necessary)
   XBT_DEBUG("Switching data frame to the one of process %ld", actor->get_pid());
-  simgrid::smpi::Process* process = smpi_process_remote(actor);
+  simgrid::smpi::ActorExt* process = smpi_process_remote(actor);
   int current                     = process->privatized_region()->file_descriptor;
   void* tmp = mmap(TOPAGE(smpi_data_exe_start), smpi_data_exe_size, PROT_RW, MAP_FIXED | MAP_SHARED, current, 0);
   if (tmp != TOPAGE(smpi_data_exe_start))

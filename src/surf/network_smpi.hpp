@@ -17,9 +17,9 @@ public:
   NetworkSmpiModel();
   ~NetworkSmpiModel();
 
-  double latencyFactor(double size);
-  double bandwidthFactor(double size);
-  double bandwidthConstraint(double rate, double bound, double size);
+  double get_latency_factor(double size);
+  double get_bandwidth_factor(double size);
+  double get_bandwidth_constraint(double rate, double bound, double size);
 };
 } // namespace resource
 } // namespace kernel

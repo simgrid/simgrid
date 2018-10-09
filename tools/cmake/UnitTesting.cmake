@@ -12,13 +12,6 @@ set(FILES_CONTAINING_UNITTESTS
   src/xbt/config.cpp
 )
 
-if(SIMGRID_HAVE_MC)
-  set(FILES_CONTAINING_UNITTESTS ${FILES_CONTAINING_UNITTESTS}
-      src/mc/PageStore.cpp
-      src/mc/mc_snapshot.cpp
-  )
-endif()
-
 ####  Nothing to change below this line to add a new tested file
 ################################################################
 

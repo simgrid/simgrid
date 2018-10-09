@@ -84,7 +84,7 @@ inline void xbt_dict_cursor_first(const xbt_dict_t dict, xbt_dict_cursor_t * cur
   }
 }
 
-/** \brief Move to the next element. */
+/** @brief Move to the next element. */
 inline void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
 {
   xbt_dictelm_t current;
@@ -163,16 +163,4 @@ inline void *xbt_dict_cursor_get_data(xbt_dict_cursor_t cursor)
   __cursor_not_null(cursor);
 
   return cursor->current->content;
-}
-
-/**
- * @brief Set current data
- * @param cursor the cursor
- * @param data the new data
- * @param free_ctn unused parameter (kept for compatibility)
- */
-inline void xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor, void* data, XBT_ATTRIB_UNUSED void_f_pvoid_t free_ctn)
-{
-  __cursor_not_null(cursor);
-  xbt_dictelm_set_data(cursor->dict, cursor->current, data);
 }

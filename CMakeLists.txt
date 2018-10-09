@@ -87,12 +87,15 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
     if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
       set(SMPI_Fortran_FLAGS "\"-fpic\" \"-ff2c\" \"-fno-second-underscore\"")
       set(SMPI_Fortran_LIBS "\"-lgfortran\"")
+      set(SMPI_GFORTRAN 1)
     elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
       set(SMPI_Fortran_FLAGS "\"-fPIC\" \"-nofor-main\"")
       set(SMPI_Fortran_LIBS "\"-lifcore\"")
+      set(SMPI_IFORT 1)
     elseif(CMAKE_Fortran_COMPILER_ID MATCHES "PGI|Flang") # flang
       set(SMPI_Fortran_FLAGS "\"-fPIC\"")
       set(SMPI_Fortran_LIBS "")
+      set(SMPI_FLANG 1)
     endif()
 
     set(SMPI_FORTRAN 1)
@@ -105,9 +108,9 @@ endif()
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "20")
-set(SIMGRID_VERSION_PATCH "0")
-# set(SIMGRID_VERSION_EXTRA "-DEVEL") # Extra words to add to version string (e.g. -rc1)
+set(SIMGRID_VERSION_MINOR "21")
+set(SIMGRID_VERSION_PATCH "90")
+set(SIMGRID_VERSION_EXTRA "-DEVEL") # Extra words to add to version string (e.g. -rc1)
 
 set(SIMGRID_VERSION_DATE  "2018") # Year for copyright information
 
@@ -257,11 +260,11 @@ if(enable_smpi_papi)
 endif()
 
 # Not finding this is perfectly OK
-find_package(Boost COMPONENTS unit_test_framework)
+find_package(Boost 1.59 COMPONENTS unit_test_framework)
 if (Boost_UNIT_TEST_FRAMEWORK_FOUND)
   message(STATUS "Enabling the Boost-based unit tests.")
 else()
-  message(STATUS "Disabling the Boost-based unit tests -- please install libboost-test-dev.")
+  message(STATUS "Disabling the Boost-based unit tests -- please install libboost-test-dev (>= v1.59).")
 endif()
 
 
@@ -331,18 +334,6 @@ if(MINGW)
   set(HAVE_VASPRINTF 1)
 endif()
 
-#Check if __thread is defined
-execute_process(
-  COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_thread_storage.c -o testprog"
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-  RESULT_VARIABLE HAVE_thread_storage_run)
-file(REMOVE testprog)
-if(HAVE_thread_storage_run)
-  set(HAVE_THREAD_LOCAL_STORAGE 1)
-else()
-  set(HAVE_THREAD_LOCAL_STORAGE 0)
-endif()
-
 CHECK_INCLUDE_FILE("sys/sendfile.h" HAVE_SENDFILE_H)
 CHECK_FUNCTION_EXISTS(sendfile HAVE_SENDFILE)
 if(HAVE_SENDFILE_H AND HAVE_SENDFILE)
@@ -356,7 +347,7 @@ if(enable_model-checking AND NOT "${CMAKE_SYSTEM}" MATCHES "Linux|FreeBSD")
   set(enable_model-checking FALSE)
 endif()
 
-if(HAVE_MMAP AND HAVE_THREAD_LOCAL_STORAGE)
+if(HAVE_MMAP)
   SET(HAVE_MMALLOC 1)
 else()
   SET(HAVE_MMALLOC 0)
@@ -636,7 +627,7 @@ if(NS3_LIBRARY_PATH)
   set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:${NS3_LIBRARY_PATH}")
 endif()
 set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"")
-set(SMPIMAIN smpimain)
+set(SMPIMAIN ${libdir}/simgrid/smpimain)
 
 configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/mpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/mpif.h @ONLY)
 #configure mpif.f90 to build mpi.mod
@@ -664,7 +655,7 @@ if(NS3_LIBRARY_PATH)
   set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:${NS3_LIBRARY_PATH}")
 endif()
 set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"")
-set(SMPIMAIN ${CMAKE_BINARY_DIR}/bin/smpimain)
+set(SMPIMAIN ${CMAKE_BINARY_DIR}/lib/simgrid/smpimain)
 
 foreach(script cc cxx ff f90 run)
   configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpi${script}.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpi${script} @ONLY)
@@ -750,6 +741,22 @@ if(NOT "${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple/ti_traces_32_1/ti_trace30.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple/ti_traces_32_1/ti_trace30.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple/ti_traces_32_1/ti_trace31.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple/ti_traces_32_1/ti_trace31.txt COPYONLY)
 
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/compute_only.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/compute_only.txt COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/compute_only/actions0.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/compute_only/actions0.txt COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/compute_only/actions1.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/compute_only/actions1.txt COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/empty.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/empty.txt COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/empty/actions0.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/empty/actions0.txt COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/empty/actions1.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/empty/actions1.txt COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/mixed.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/mixed.txt COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/mixed/actions0.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/mixed/actions0.txt COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/mixed/actions1.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/mixed/actions1.txt COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_compute ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_compute COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_compute_consecutive ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_compute_consecutive COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_compute_consecutive2 ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_compute_consecutive2 COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_compute_simple ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_compute_simple COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time_and_resources ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time_and_resources COPYONLY)
+
   set(generated_files_to_clean
     ${generated_files_to_clean}
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions0.txt
@@ -800,6 +807,31 @@ if(NOT "${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
     ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple/ti_traces_32_1/ti_trace29.txt
     ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple/ti_traces_32_1/ti_trace30.txt
     ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple/ti_traces_32_1/ti_trace31.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/compute_only.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/compute_only/actions0.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/compute_only/actions1.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/empty.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/empty/actions0.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/empty/actions1.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/mixed.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/mixed/actions0.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/mixed/actions1.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/replay_multiple_manual.tesh
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_compute
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_compute_consecutive
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_compute_consecutive2
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_compute_simple
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_empty1
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_empty2
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_empty2_same_resources
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_empty2_same_time
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_empty2_same_time_and_resources
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed1
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_resources
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time_and_resources
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_nojob
     )
 endif()
 

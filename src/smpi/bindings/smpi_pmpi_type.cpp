@@ -325,8 +325,8 @@ int PMPI_Type_delete_attr (MPI_Datatype type, int type_keyval)
 int PMPI_Type_create_keyval(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval,
                             void* extra_state)
 {
-  smpi_copy_fn _copy_fn={nullptr,copy_fn,nullptr};
-  smpi_delete_fn _delete_fn={nullptr,delete_fn,nullptr};
+  smpi_copy_fn _copy_fn={nullptr,copy_fn,nullptr,nullptr,nullptr,nullptr};
+  smpi_delete_fn _delete_fn={nullptr,delete_fn,nullptr,nullptr,nullptr,nullptr};
   return simgrid::smpi::Keyval::keyval_create<simgrid::smpi::Datatype>(_copy_fn, _delete_fn, keyval, extra_state);
 }
 

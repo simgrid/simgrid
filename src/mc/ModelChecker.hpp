@@ -16,9 +16,9 @@
 
 #include <sys/types.h>
 
-#include "src/mc/PageStore.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/remote/mc_protocol.h"
+#include "src/mc/sosp/PageStore.hpp"
 
 namespace simgrid {
 namespace mc {

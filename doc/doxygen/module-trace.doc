@@ -1,10 +1,10 @@
 /**
-\addtogroup TRACE_API
+@addtogroup TRACE_API
 
-\section TRACE_doc TRACE documentation
-- \ref TRACE_category
-- \ref TRACE_mark
-- \ref TRACE_user_variables
+@section TRACE_doc TRACE documentation
+- @ref TRACE_category
+- @ref TRACE_mark
+- @ref TRACE_user_variables
 
 @{
  

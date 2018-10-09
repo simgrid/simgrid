@@ -2,33 +2,45 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-#include "xbt/log.h"
 
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
+#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_exec, s4u_activity, "S4U asynchronous executions");
 
 namespace simgrid {
 namespace s4u {
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Exec::on_start;
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Exec::on_completion;
 
-Activity* Exec::start()
+Exec* Exec::start()
 {
-  pimpl_ = simcall_execution_start(nullptr, flops_amount_, 1. / priority_, 0., host_);
-  boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->set_bound(bound_);
+  pimpl_ = simcall_execution_start(name_, tracing_category_, flops_amount_, 1. / priority_, bound_, host_);
   state_ = State::STARTED;
+  on_start(Actor::self());
   return this;
 }
 
-Activity* Exec::wait()
+Exec* Exec::cancel()
 {
+  simgrid::simix::simcall([this] { dynamic_cast<kernel::activity::ExecImpl*>(pimpl_.get())->cancel(); });
+  state_ = State::CANCELED;
+  return this;
+}
+
+Exec* Exec::wait()
+{
+  if (state_ == State::INITED)
+    start();
   simcall_execution_wait(pimpl_);
   state_ = State::FINISHED;
+  on_completion(Actor::self());
   return this;
 }
 
-Activity* Exec::wait(double timeout)
+Exec* Exec::wait_for(double timeout)
 {
   THROW_UNIMPLEMENTED;
   return this;
@@ -87,6 +99,20 @@ ExecPtr Exec::set_host(Host* host)
   if (state_ == State::STARTED)
     boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->migrate(host);
   host_ = host;
+  return this;
+}
+
+ExecPtr Exec::set_name(std::string name)
+{
+  xbt_assert(state_ == State::INITED, "Cannot change the name of an exec after its start");
+  name_ = name;
+  return this;
+}
+
+ExecPtr Exec::set_tracing_category(std::string category)
+{
+  xbt_assert(state_ == State::INITED, "Cannot change the tracing category of an exec after its start");
+  tracing_category_ = category;
   return this;
 }
 

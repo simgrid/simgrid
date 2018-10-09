@@ -22,7 +22,8 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-FloydZone::FloydZone(NetZoneImpl* father, std::string name) : RoutedZone(father, name)
+FloydZone::FloydZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel)
+    : RoutedZone(father, name, netmodel)
 {
   predecessor_table_ = nullptr;
   cost_table_        = nullptr;
@@ -175,13 +176,13 @@ void FloydZone::seal()
   }
 
   /* Add the loopback if needed */
-  if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
+  if (network_model_->loopback_ && hierarchy_ == RoutingMode::base) {
     for (unsigned int i = 0; i < table_size; i++) {
-      RouteCreationArgs* e_route = TO_FLOYD_LINK(i, i);
-      if (not e_route) {
-        e_route = new RouteCreationArgs();
-        e_route->link_list.push_back(surf_network_model->loopback_);
-        TO_FLOYD_LINK(i, i) = e_route;
+      RouteCreationArgs* route = TO_FLOYD_LINK(i, i);
+      if (not route) {
+        route = new RouteCreationArgs();
+        route->link_list.push_back(network_model_->loopback_);
+        TO_FLOYD_LINK(i, i) = route;
         TO_FLOYD_PRED(i, i) = i;
         TO_FLOYD_COST(i, i) = 1;
       }

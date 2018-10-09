@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,7 +7,7 @@
 #include <exception>
 
 #include "colls_private.hpp"
-#include "smpi_process.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 
 //attempt to do a quick autotuning version of the collective,
 #define TRACE_AUTO_COLL(cat)                                                                                           \
@@ -29,10 +28,10 @@
     int min_coll = -1, global_coll = -1;                                                                               \
     int i;                                                                                                             \
     double buf_in, buf_out, max_min = DBL_MAX;                                                                         \
-    for (i = 0; Colls::mpi_coll_##cat##_description[i].name; i++) {                                                    \
-      if (not strcmp(Colls::mpi_coll_##cat##_description[i].name, "automatic"))                                        \
+    for (i = 0; not Colls::mpi_coll_##cat##_description[i].name.empty(); i++) {                                        \
+      if (Colls::mpi_coll_##cat##_description[i].name == "automatic")                                                  \
         continue;                                                                                                      \
-      if (not strcmp(Colls::mpi_coll_##cat##_description[i].name, "default"))                                          \
+      if (Colls::mpi_coll_##cat##_description[i].name == "default")                                                    \
         continue;                                                                                                      \
       Coll_barrier_default::barrier(comm);                                                                             \
       TRACE_AUTO_COLL(cat)                                                                                             \
@@ -58,11 +57,11 @@
     }                                                                                                                  \
     if (comm->rank() == 0) {                                                                                           \
       XBT_WARN("For rank 0, the quickest was %s : %f , but global was %s : %f at max",                                 \
-               Colls::mpi_coll_##cat##_description[min_coll].name, time_min,                                           \
-               Colls::mpi_coll_##cat##_description[global_coll].name, max_min);                                        \
+               Colls::mpi_coll_##cat##_description[min_coll].name.c_str(), time_min,                                           \
+               Colls::mpi_coll_##cat##_description[global_coll].name.c_str(), max_min);                                        \
     } else                                                                                                             \
       XBT_WARN("The quickest %s was %s on rank %d and took %f", #cat,                                                  \
-               Colls::mpi_coll_##cat##_description[min_coll].name, comm->rank(), time_min);                            \
+               Colls::mpi_coll_##cat##_description[min_coll].name.c_str(), comm->rank(), time_min);                            \
     return (min_coll != -1) ? MPI_SUCCESS : MPI_ERR_INTERN;                                                            \
   }
 

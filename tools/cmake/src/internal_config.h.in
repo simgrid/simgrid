@@ -25,8 +25,9 @@
 #cmakedefine01 HAVE_VALGRIND_H
 
 /* Address Sanitizer */
-#cmakedefine01 HAVE_SANITIZE_ADDRESS
-#cmakedefine01 HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT
+#cmakedefine01 HAVE_SANITIZER_THREAD
+#cmakedefine01 HAVE_SANITIZER_ADDRESS
+#cmakedefine01 HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
 
 /* Time portability */
 /* Function gettimeofday */
@@ -37,7 +38,7 @@
 #cmakedefine01 HAVE_NANOSLEEP
 
 /* The usable context factories */
-#define HAVE_BOOST_CONTEXTS @HAVE_BOOST_CONTEXTS@
+#cmakedefine01 HAVE_BOOST_CONTEXTS
 #cmakedefine01 HAVE_RAW_CONTEXTS
 #cmakedefine01 HAVE_THREAD_CONTEXTS
 #cmakedefine01 HAVE_UCONTEXT_CONTEXTS
@@ -47,8 +48,6 @@
 #cmakedefine01 HAVE_PTHREAD
 /* Does not seems defined on Mac nor Windows */
 #cmakedefine01 HAVE_PTHREAD_SETAFFINITY
-/* If __thread is available */
-#cmakedefine01 HAVE_THREAD_LOCAL_STORAGE
 
 /* Variables for the raw contexts (to select the right assembly code) */
 #cmakedefine01 SIMGRID_PROCESSOR_i686
@@ -75,8 +74,11 @@
 /* SMPI variables */
 /* SMPI enabled */
 #cmakedefine01 HAVE_SMPI
-/* Fortran language is available for SMPI */
+/* Fortran language is available for SMPI, and which one */
 #cmakedefine01 SMPI_FORTRAN
+#cmakedefine01 SMPI_GFORTRAN
+#cmakedefine01 SMPI_FLANG
+#cmakedefine01 SMPI_IFORT
 /* We have mmap and objdump to handle privatization */
 #cmakedefine01 HAVE_PRIVATIZATION
 /* We have PAPI to fine-grain trace execution time */

@@ -6,12 +6,8 @@
 #ifndef SG_POPPING_PRIVATE_HPP
 #define SG_POPPING_PRIVATE_HPP
 
-#include <simgrid/simix.h>
-#include <xbt/base.h>
-
-#include <src/kernel/activity/ActivityImpl.hpp>
-#include <src/kernel/activity/CommImpl.hpp>
-#include <src/kernel/activity/ExecImpl.hpp>
+#include "simgrid/forward.h"
+#include "src/kernel/activity/ActivityImpl.hpp"
 
 #include <boost/intrusive_ptr.hpp>
 
@@ -43,7 +39,7 @@ union u_smx_scalar {
 };
 
 /**
- * \brief Represents a simcall to the kernel.
+ * @brief Represents a simcall to the kernel.
  */
 struct s_smx_simcall {
   e_smx_simcall_t call;

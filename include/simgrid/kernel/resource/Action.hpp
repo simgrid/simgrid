@@ -12,6 +12,7 @@
 
 #include <boost/heap/pairing_heap.hpp>
 #include <boost/optional.hpp>
+#include <string>
 
 static constexpr int NO_MAX_DURATION = -1.0;
 
@@ -104,13 +105,13 @@ public:
   /**
    * @brief Mark that the action is now finished
    *
-   * @param state the new [state](\ref simgrid::kernel::resource::Action::State) of the current Action
+   * @param state the new [state](@ref simgrid::kernel::resource::Action::State) of the current Action
    */
   void finish(Action::State state);
 
-  /** @brief Get the [state](\ref simgrid::kernel::resource::Action::State) of the current Action */
+  /** @brief Get the [state](@ref simgrid::kernel::resource::Action::State) of the current Action */
   Action::State get_state() const; /**< get the state*/
-  /** @brief Set the [state](\ref simgrid::kernel::resource::Action::State) of the current Action */
+  /** @brief Set the [state](@ref simgrid::kernel::resource::Action::State) of the current Action */
   virtual void set_state(Action::State state);
 
   /** @brief Get the bound of the current Action */
@@ -178,9 +179,9 @@ public:
   virtual void set_max_duration(double duration);
 
   /** @brief Get the tracing category associated to the current action */
-  char* get_category() const { return category_; }
+  std::string get_category() const { return category_; }
   /** @brief Set the tracing category of the current Action */
-  void set_category(const char* category);
+  void set_category(std::string category) { category_ = category; }
 
   /** @brief Get the priority of the current Action */
   double get_priority() const { return sharing_priority_; };
@@ -203,7 +204,7 @@ private:
   double remains_;           /**< How much of that cost remains to be done in the currently running task */
   double start_time_;        /**< start time  */
   double finish_time_ = -1;  /**< finish time (may fluctuate until the task is completed) */
-  char* category_     = nullptr; /**< tracing category for categorized resource utilization monitoring */
+  std::string category_;     /**< tracing category for categorized resource utilization monitoring */
 
   double cost_;
   simgrid::kernel::resource::Model* model_;

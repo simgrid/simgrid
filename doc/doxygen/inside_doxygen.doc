@@ -1,7 +1,7 @@
 /*! 
 @page inside_doxygen Documenting SimGrid
 
-\tableofcontents
+@tableofcontents
 
 We use doxygen for our documentation. It's annoying but that's the
 best we've found so far. Stop bitching about the doc or the tools, and
@@ -14,13 +14,13 @@ the organization (and reach half the quality) of the TikZ one. But
 anyway. As they say: Documentation is like sex; when it's not good
 it's still better than nothing and when it's good it's very very good.
 
-\section inside_doxygen_module Adding a new module to the reference guide
+@section inside_doxygen_module Adding a new module to the reference guide
 
 If you add a new file to the project, you want to document it. It's
 more urgent if it's user-visible, but it should be done in any case if
 possible.
 
-\subsection inside_doxygen_module_create Declaring the module to doxygen
+@subsection inside_doxygen_module_create Declaring the module to doxygen
 
 First declare your sub-module in the corresponding
 (project)/doc/doxygen/module-(enclosing module).doc Two edits are
@@ -48,7 +48,7 @@ Warning, the location of this block decides where it appears in the
 documentation. In particular, the order of the defgroups is not
 inocuitous at all.
 
-\subsection inside_doxygen_module_populate Adding symbols to your module
+@subsection inside_doxygen_module_populate Adding symbols to your module
 
 Once your group is created and referenced from the group containing
 it, you must populate it. For that, edit the corresponding header file
@@ -79,7 +79,7 @@ symbols that are there only for the compiler, but that the users
 should not see. In this case, do not put the symbols you want to hide
 between the @ { and @ } markers.
 
-\subsection inside_doxygen_module_document Documenting the symbols of your module
+@subsection inside_doxygen_module_document Documenting the symbols of your module
 
 Finally, you naturally need to actually write the documentation of
 each public symbol belonging to your module. Macros must naturally be
@@ -97,7 +97,7 @@ give any information you feel useful to the user. In particular, add
 links to any other location of the documentation that could provide
 interesting additional information.
 
-\section inside_doxygen_page Adding a new page to the user guide
+@section inside_doxygen_page Adding a new page to the user guide
 
 Note that doxygen provides two hierarchies that cannot be intermixed.
 Groups are used to build a reference guide while pages are used for
@@ -105,7 +105,7 @@ any other kind of page in the documentation. A module cannot contain
 any page, while a page cannot contain any module. That's the doxygen
 style.
 
-\subsection inside_doxygen_page_write Writing a new documentation page
+@subsection inside_doxygen_page_write Writing a new documentation page
 
 The first thing to do to add a new page is to actually write a file
 containing the information you want to add. It should be located in
@@ -144,7 +144,7 @@ people building a reference specify a replacement text as in:
 @ref shortname "text to use instead of the title"
 @endverbatim
 
-\subsection inside_doxygen_page_doxy Registering a documentation page to doxygen
+@subsection inside_doxygen_page_doxy Registering a documentation page to doxygen
 
 Edit (project)/doc/Doxyfile.in and add your page to the INPUT
 variable. Don't edit the Doxyfile directly, as it is generated
@@ -164,7 +164,7 @@ That is why every page in our documentation seem to contain a table of
 contents of sub pages even if it dupplicates what's on the left.
 That's the doxygen style (but I can live with it).
 
-\subsection inside_doxygen_page_cmake Registering a documentation page to cmake
+@subsection inside_doxygen_page_cmake Registering a documentation page to cmake
 
 Ahhh, cmake and doxygen. The perfect combo to bitch about life for a
 whole day...
@@ -175,7 +175,7 @@ newly added page to the DOC_SOURCES. And bitch about these damn tools.
 Don't forget to commit your page, so that you can get some git fun to
 complete your day.
 
-\section inside_doxygen_image Adding an image to the documentation
+@section inside_doxygen_image Adding an image to the documentation
 
 If you need to run a command (like fig2dev) to generate your image,
 edit tools/cmake/GenerateDoc.cmake and add your command to the
@@ -189,7 +189,7 @@ register it to cmake by adding it to the DOC_IMG list of file
 tools/cmake/DefinePackage.cmake so that it lands in the archive
 distribution. It will also be copied automatically to the documentation.
 
-\section inside_doxygen_website Working on the website
+@section inside_doxygen_website Working on the website
 
 Our website is generated/exported via [orgmode](http://www.orgmode.org), a tool that we use to facilitate our reproducible research.
 
@@ -201,7 +201,7 @@ but it might be outdated. Contact us if you really want to help.)
 git clone git://scm.gforge.inria.fr/simgrid/website.git
 @endverbatim
 
-\section inside_doxygen_regen Regenerating the documentation
+@section inside_doxygen_regen Regenerating the documentation
 
 Once you've changed the doc, you want to run doxygen to regenerate the
 html output (and maybe the pdf too). Here is how to do this:

@@ -7,7 +7,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(storage, "Messages specific for this simulation");
 
-static int host(int argc, char* argv[])
+static int host(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   const char* host_name = MSG_host_get_name(MSG_host_self());
 

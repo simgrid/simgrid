@@ -24,8 +24,8 @@ class XBT_PUBLIC VirtualMachine : public s4u::Host {
   virtual ~VirtualMachine();
 
 public:
-  explicit VirtualMachine(const char* name, s4u::Host* physical_host, int core_amount);
-  explicit VirtualMachine(const char* name, s4u::Host* physical_host, int core_amount, size_t ramsize);
+  explicit VirtualMachine(std::string name, s4u::Host* physical_host, int core_amount);
+  explicit VirtualMachine(std::string name, s4u::Host* physical_host, int core_amount, size_t ramsize);
 
   // No copy/move
   VirtualMachine(VirtualMachine const&) = delete;
@@ -57,23 +57,32 @@ public:
   static simgrid::xbt::signal<void(VirtualMachine&)> on_shutdown;
   static simgrid::xbt::signal<void(VirtualMachine&)> on_suspend;
   static simgrid::xbt::signal<void(VirtualMachine&)> on_resume;
+  static simgrid::xbt::signal<void(VirtualMachine&)> on_migration_start;
+  static simgrid::xbt::signal<void(VirtualMachine&)> on_migration_end;
 
   // Deprecated methods
+  /** @deprecated See VirtualMachine::get_state() */
   XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_state()") VirtualMachine::state getState()
   {
     return get_state();
   }
+  /** @deprecated See VirtualMachine::get_impl() */
   XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_impl()") simgrid::vm::VirtualMachineImpl* getImpl()
   {
     return pimpl_vm_;
   }
+  /** @deprecated See VirtualMachine::get_pm() */
   XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_pm()") simgrid::s4u::Host* getPm() { return get_pm(); }
+  /** @deprecated See VirtualMachine::set_pm() */
   XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::set_pm()") void setPm(simgrid::s4u::Host* pm) { set_pm(pm); }
+  /** @deprecated See VirtualMachine::get_ramsize() */
   XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_ramsize()") size_t getRamsize() { return get_ramsize(); }
+  /** @deprecated See VirtualMachine::set_ramsize() */
   XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::set_ramsize()") void setRamsize(size_t ramsize)
   {
     set_ramsize(ramsize);
   }
+  /** @deprecated See VirtualMachine::set_bound() */
   XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::set_bound()") void setBound(double bound) { set_bound(bound); }
 };
 }

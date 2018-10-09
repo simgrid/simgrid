@@ -5,6 +5,7 @@
 
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/vm.h"
+#include "src/include/surf/surf.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/plugins/vm/VmHostExt.hpp"
 #include "src/simix/smx_host_private.hpp"
@@ -20,16 +21,21 @@ simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_started;
 simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_shutdown;
 simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_suspend;
 simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_resume;
+simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_migration_start;
+simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_migration_end;
 
-VirtualMachine::VirtualMachine(const char* name, s4u::Host* physical_host, int core_amount)
+VirtualMachine::VirtualMachine(std::string name, s4u::Host* physical_host, int core_amount)
     : VirtualMachine(name, physical_host, core_amount, 1024)
 {
 }
 
-VirtualMachine::VirtualMachine(const char* name, s4u::Host* physical_host, int core_amount, size_t ramsize)
+VirtualMachine::VirtualMachine(std::string name, s4u::Host* physical_host, int core_amount, size_t ramsize)
     : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, physical_host, core_amount, ramsize))
 {
-  XBT_DEBUG("Create VM %s", name);
+  // xbt_assert(s4u::Host::by_name(name) == nullptr,
+  //           "Cannot create a VM named %s: this name is already used by an host or a VM", name.c_str());
+
+  XBT_DEBUG("Create VM %s", name.c_str());
 
   /* Currently, a VM uses the network resource of its physical host */
   pimpl_netpoint = physical_host->pimpl_netpoint;
@@ -42,9 +48,6 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* physical_host, int c
   surf_cpu_model_vm->create_cpu(this, &speeds, physical_host->get_core_count());
   if (physical_host->get_pstate() != 0)
     set_pstate(physical_host->get_pstate());
-
-  /* Make a process container */
-  extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
 }
 
 VirtualMachine::~VirtualMachine()
@@ -52,14 +55,6 @@ VirtualMachine::~VirtualMachine()
   on_destruction(*this);
 
   XBT_DEBUG("destroy %s", get_cname());
-
-  /* FIXME: this is really strange that everything fails if the next line is removed.
-   * This is as if we shared these data with the PM, which definitely should not be the case...
-   *
-   * We need to test that suspending a VM does not suspends the processes running on its PM, for example.
-   * Or we need to simplify this code enough to make it actually readable (but this sounds harder than testing)
-   */
-  extension_set<simgrid::simix::Host>(nullptr);
 
   /* Don't free these things twice: they are the ones of my physical host */
   pimpl_netpoint = nullptr;
@@ -202,9 +197,6 @@ sg_vm_t sg_vm_create_core(sg_host_t pm, const char* name)
  */
 sg_vm_t sg_vm_create_multicore(sg_host_t pm, const char* name, int coreAmount)
 {
-  xbt_assert(sg_host_by_name(name) == nullptr,
-             "Cannot create a VM named %s: this name is already used by an host or a VM", name);
-
   return new simgrid::s4u::VirtualMachine(name, pm, coreAmount);
 }
 

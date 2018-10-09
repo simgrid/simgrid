@@ -18,13 +18,12 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
 void surf_host_model_init_ptask_L07()
 {
   XBT_CINFO(xbt_cfg,"Switching to the L07 model to handle parallel tasks.");
-  xbt_assert(not surf_cpu_model_pm, "CPU model type already defined");
-  xbt_assert(not surf_network_model, "network model type already defined");
+  xbt_assert(not surf_cpu_model_pm, "Cannot switch to ptasks: CPU model already defined");
+  xbt_assert(not surf_network_model, "Cannot switch to ptasks: network model already defined");
 
   surf_host_model = new simgrid::surf::HostL07Model();
-  all_existing_models->push_back(surf_host_model);
+  all_existing_models.push_back(surf_host_model);
 }
-
 
 namespace simgrid {
 namespace surf {
@@ -57,7 +56,7 @@ NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys)
     : NetworkModel(Model::UpdateAlgo::FULL), hostModel_(hmodel)
 {
   set_maxmin_system(sys);
-  loopback_ = NetworkL07Model::createLink("__loopback__", 498000000, 0.000015, s4u::Link::SharingPolicy::FATPIPE);
+  loopback_ = NetworkL07Model::create_link("__loopback__", 498000000, 0.000015, s4u::Link::SharingPolicy::FATPIPE);
 }
 
 NetworkL07Model::~NetworkL07Model()
@@ -146,6 +145,7 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
   int nb_link = 0;
   int nb_used_host = 0; /* Only the hosts with something to compute (>0 flops) are counted) */
   double latency = 0.0;
+  this->set_last_update();
 
   this->hostList_->reserve(host_nb);
   for (int i = 0; i < host_nb; i++) {
@@ -228,8 +228,8 @@ Cpu* CpuL07Model::create_cpu(simgrid::s4u::Host* host, std::vector<double>* spee
   return new CpuL07(this, host, speed_per_pstate, core);
 }
 
-kernel::resource::LinkImpl* NetworkL07Model::createLink(const std::string& name, double bandwidth, double latency,
-                                                        s4u::Link::SharingPolicy policy)
+kernel::resource::LinkImpl* NetworkL07Model::create_link(const std::string& name, double bandwidth, double latency,
+                                                         s4u::Link::SharingPolicy policy)
 {
   return new LinkL07(this, name, bandwidth, latency, policy);
 }
@@ -315,10 +315,13 @@ void CpuL07::apply_event(tmgr_trace_event_t triggered, double value)
     tmgr_trace_event_unref(&speed_.event);
 
   } else if (triggered == state_event_) {
-    if (value > 0)
-      turn_on();
-    else
-      turn_off();
+    if (value > 0) {
+      if (is_off()) {
+        XBT_VERB("Restart processes on host %s", get_host()->get_cname());
+        get_host()->turn_on();
+      }
+    } else
+      get_host()->turn_off();
     tmgr_trace_event_unref(&state_event_);
 
   } else {

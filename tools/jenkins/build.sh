@@ -2,7 +2,7 @@
 
 # This script is used by various build projects on Jenkins
 
-# See https://ci.inria.fr/simgrid/job/SimGrid-Multi/configure
+# See https://ci.inria.fr/simgrid/job/SimGrid/configure
 # See https://ci.inria.fr/simgrid/job/Simgrid-Windows/configure
 
 set -e
@@ -13,7 +13,7 @@ export LC_ALL=C
 echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -rf /tmp/simgrid-java*
 rm -rf /tmp/jvm-*
-find /builds/workspace/SimGrid-Multi/ -name "hs_err_pid*.log" | xargs rm -f
+find /builds/workspace/SimGrid/ -name "hs_err_pid*.log" | xargs rm -f
 ls /tmp
 df -h
 echo "XXXX Let's go"
@@ -48,6 +48,62 @@ onoff() {
 #test -e /bin/gzip || die 1 "I need gzip to compile. Please fix your slave."
 #test -e /usr/include/libunwind.h || die 1 "I need libunwind to compile. Please fix your slave."
 #test -e /usr/include/valgrind/valgrind.h || die 1 "I need valgrind to compile. Please fix your slave."
+
+if type lsb_release >/dev/null 2>&1; then
+  if [ -f /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe ]; then
+    #To identify the windows underneath the winbuntu
+    PATH="/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:$PATH"
+    major=$(powershell.exe -command "[environment]::OSVersion.Version.Major" | sed 's/\r//g')
+    build=$(powershell.exe -command "[environment]::OSVersion.Version.Build"| sed 's/\r//g')
+    os=Windows
+    ver="$major v$build - WSL $(lsb_release -sd)"
+  else
+    # linuxbase.org
+    os=$(lsb_release -si)
+    ver="$(lsb_release -sr) ($(lsb_release -sc))"
+  fi
+elif [ -f /etc/lsb-release ]; then
+    # For some versions of Debian/Ubuntu without lsb_release command
+    . /etc/lsb-release
+    os=$DISTRIB_ID
+    ver=$DISTRIB_RELEASE
+elif [ -f /etc/debian_version ]; then
+    # Older Debian/Ubuntu/etc.
+    os=Debian
+    ver=$(cat /etc/debian_version)
+elif [ -f /etc/redhat-release ]; then
+    os=""
+    ver=$(cat /etc/redhat-release)
+elif [ -f /usr/bin/sw_vers ]; then
+    os=$(sw_vers -productName)
+    ver=$(sw_vers -productVersion)
+elif [ -f /bin/freebsd-version ]; then
+    os=$(uname -s)
+    ver=$(freebsd-version -u)
+elif [ -f /etc/os-release ]; then
+    # freedesktop.org and systemd, put last as usually missing useful info
+    . /etc/os-release
+    os=$NAME
+    ver=$VERSION_ID
+else
+    # Fall back to uname, e.g. "Linux <version>", also works for BSD, etc.
+    echo "fallback as OS name not found"
+    os=$(uname -s)
+    ver=$(uname -r)
+fi
+case $(uname -m) in
+x86_64)
+    bits="64 bits"
+    ;;
+i*86)
+    bits="32 bits"
+    ;;
+*)
+    bits=""
+    ;;
+esac
+echo "OS Version : $os $ver $bits"
+
 
 build_mode="$1"
 echo "Build mode $build_mode on $(uname -np)" >&2

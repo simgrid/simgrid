@@ -27,37 +27,22 @@ std::string instr_pid(msg_process_t proc)
 
 /******************************** Process ************************************/
 /**
- * \brief Cleans the MSG data of an actor
- * \param smx_actor a SIMIX actor
+ * @brief Cleans the MSG data of an actor
+ * @param smx_actor a SIMIX actor
  */
 void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
 {
-  simgrid::msg::ActorExt* msg_actor;
-
-  // get the MSG process from the SIMIX process
-  if (smx_actor == SIMIX_process_self()) {
-    /* avoid a SIMIX request if this function is called by the process itself */
-    msg_actor = (simgrid::msg::ActorExt*)SIMIX_process_self_get_data();
-    SIMIX_process_self_set_data(nullptr);
-  } else {
-    msg_actor = (simgrid::msg::ActorExt*)smx_actor->getUserData();
-    simcall_process_set_data(smx_actor, nullptr);
-  }
-
-  if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::by_name(instr_pid(smx_actor->ciface()))->remove_from_parent();
-
   // free the data if a function was provided
-  if (msg_actor && msg_actor->data && msg_global->process_data_cleanup) {
-    msg_global->process_data_cleanup(msg_actor->data);
+  void* userdata = smx_actor->get_user_data();
+  if (userdata && msg_global->process_data_cleanup) {
+    msg_global->process_data_cleanup(userdata);
   }
 
-  delete msg_actor;
   SIMIX_process_cleanup(smx_actor);
 }
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
-smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::function<void()> code, void* data, sg_host_t host,
+smx_actor_t MSG_process_create_from_SIMIX(std::string name, simgrid::simix::ActorCode code, void* data, sg_host_t host,
                                           std::unordered_map<std::string, std::string>* properties,
                                           smx_actor_t /*parent_process*/)
 {
@@ -65,36 +50,31 @@ smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::function<void()
   return p == nullptr ? nullptr : p->get_impl();
 }
 
-/** \ingroup m_process_management
- * \brief Creates and runs a new #msg_process_t.
+/** @brief Creates and runs a new #msg_process_t.
  *
  * Does exactly the same as #MSG_process_create_with_arguments but without providing standard arguments
- * (\a argc, \a argv, \a start_time, \a kill_time).
- * \sa MSG_process_create_with_arguments
+ * (@a argc, @a argv, @a start_time, @a kill_time).
  */
 msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *data, msg_host_t host)
 {
-  return MSG_process_create_with_environment(name, code, data, host, 0, nullptr, nullptr);
+  return MSG_process_create_with_environment(name == nullptr ? "" : name, code, data, host, 0, nullptr, nullptr);
 }
 
-/** \ingroup m_process_management
- * \brief Creates and runs a new #msg_process_t.
+/** @brief Creates and runs a new #msg_process_t.
 
  * A constructor for #msg_process_t taking four arguments and returning the corresponding object. The structure (and
  * the corresponding thread) is created, and put in the list of ready process.
- * \param name a name for the object. It is for user-level information and can be nullptr.
- * \param code is a function describing the behavior of the process. It should then only use functions described
- * in \ref m_process_management (to create a new #msg_process_t for example),
-   in \ref m_host_management (only the read-only functions i.e. whose name contains the word get),
-   in \ref m_task_management (to create or destroy some #msg_task_t for example) and
-   in \ref msg_task_usage (to handle file transfers and task processing).
- * \param data a pointer to any data one may want to attach to the new object.  It is for user-level information and
- *        can be nullptr. It can be retrieved with the function \ref MSG_process_get_data.
- * \param host the location where the new process is executed.
- * \param argc first argument passed to \a code
- * \param argv second argument passed to \a code
- * \see msg_process_t
- * \return The new corresponding object.
+ * @param name a name for the object. It is for user-level information and can be nullptr.
+ * @param code is a function describing the behavior of the process. It should then only use functions described
+ * in @ref m_process_management (to create a new #msg_process_t for example),
+   in @ref m_host_management (only the read-only functions i.e. whose name contains the word get),
+   in @ref m_task_management (to create or destroy some #msg_task_t for example) and
+   in @ref msg_task_usage (to handle file transfers and task processing).
+ * @param data a pointer to any data one may want to attach to the new object.  It is for user-level information and
+ *        can be nullptr. It can be retrieved with the function @ref MSG_process_get_data.
+ * @param host the location where the new process is executed.
+ * @param argc first argument passed to @a code
+ * @param argv second argument passed to @a code
  */
 
 msg_process_t MSG_process_create_with_arguments(const char *name, xbt_main_func_t code, void *data, msg_host_t host,
@@ -103,31 +83,31 @@ msg_process_t MSG_process_create_with_arguments(const char *name, xbt_main_func_
   return MSG_process_create_with_environment(name, code, data, host, argc, argv, nullptr);
 }
 
-/** \ingroup m_process_management
- * \brief Creates and runs a new #msg_process_t.
+/** @ingroup m_process_management
+ * @brief Creates and runs a new #msg_process_t.
 
  * A constructor for #msg_process_t taking four arguments and returning the corresponding object. The structure (and
  * the corresponding thread) is created, and put in the list of ready process.
- * \param name a name for the object. It is for user-level information and can be nullptr.
- * \param code is a function describing the behavior of the process. It should then only use functions described
- * in \ref m_process_management (to create a new #msg_process_t for example),
-   in \ref m_host_management (only the read-only functions i.e. whose name contains the word get),
-   in \ref m_task_management (to create or destroy some #msg_task_t for example) and
-   in \ref msg_task_usage (to handle file transfers and task processing).
- * \param data a pointer to any data one may want to attach to the new object.  It is for user-level information and
- *        can be nullptr. It can be retrieved with the function \ref MSG_process_get_data.
- * \param host the location where the new process is executed.
- * \param argc first argument passed to \a code
- * \param argv second argument passed to \a code. WARNING, these strings are freed by the SimGrid kernel when the
+ * @param name a name for the object. It is for user-level information and can be nullptr.
+ * @param code is a function describing the behavior of the process. It should then only use functions described
+ * in @ref m_process_management (to create a new #msg_process_t for example),
+   in @ref m_host_management (only the read-only functions i.e. whose name contains the word get),
+   in @ref m_task_management (to create or destroy some #msg_task_t for example) and
+   in @ref msg_task_usage (to handle file transfers and task processing).
+ * @param data a pointer to any data one may want to attach to the new object.  It is for user-level information and
+ *        can be nullptr. It can be retrieved with the function @ref MSG_process_get_data.
+ * @param host the location where the new process is executed.
+ * @param argc first argument passed to @a code
+ * @param argv second argument passed to @a code. WARNING, these strings are freed by the SimGrid kernel when the
  *             process exits, so they cannot be static nor shared between several processes.
- * \param properties list a properties defined for this process
- * \see msg_process_t
- * \return The new corresponding object.
+ * @param properties list a properties defined for this process
+ * @see msg_process_t
+ * @return The new corresponding object.
  */
 msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_func_t code, void *data, msg_host_t host,
                                                   int argc, char **argv, xbt_dict_t properties)
 {
-  std::function<void()> function;
+  simgrid::simix::ActorCode function;
   if (code)
     function = simgrid::xbt::wrap_main(code, argc, static_cast<const char* const*>(argv));
 
@@ -146,18 +126,16 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
   return res;
 }
 
-msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<void()> code, void* data, msg_host_t host,
-                                              std::unordered_map<std::string, std::string>* properties)
+msg_process_t MSG_process_create_from_stdfunc(std::string name, simgrid::simix::ActorCode code, void* data,
+                                              msg_host_t host, std::unordered_map<std::string, std::string>* properties)
 {
   xbt_assert(code != nullptr && host != nullptr, "Invalid parameters: host and code params must not be nullptr");
-  simgrid::msg::ActorExt* msgExt = new simgrid::msg::ActorExt(data);
 
-  smx_actor_t process = simcall_process_create(name, std::move(code), msgExt, host, properties);
+  smx_actor_t process = simcall_process_create(name, std::move(code), data, host, properties);
 
-  if (not process) { /* Undo everything */
-    delete msgExt;
+  if (process == nullptr)
     return nullptr;
-  }
+
   MSG_process_yield();
   return process->ciface();
 }
@@ -181,8 +159,7 @@ msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, 
   xbt_dict_free(&properties);
 
   /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
-  smx_actor_t process =
-      SIMIX_process_attach(name, new simgrid::msg::ActorExt(data), host->get_cname(), &props, nullptr);
+  smx_actor_t process = SIMIX_process_attach(name, data, host->get_cname(), &props, nullptr);
   if (not process)
     xbt_die("Could not attach");
   MSG_process_yield();
@@ -200,40 +177,36 @@ void MSG_process_detach()
   SIMIX_process_detach();
 }
 
-/** \ingroup m_process_management
- * \brief Returns the user data of a process.
+/** @ingroup m_process_management
+ * @brief Returns the user data of a process.
  *
- * This function checks whether \a process is a valid pointer and returns the user data associated to this process.
+ * This function checks whether @a process is a valid pointer and returns the user data associated to this process.
  */
 void* MSG_process_get_data(msg_process_t process)
 {
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
   /* get from SIMIX the MSG process data, and then the user data */
-  simgrid::msg::ActorExt* msgExt = (simgrid::msg::ActorExt*)process->get_impl()->getUserData();
-  if (msgExt)
-    return msgExt->data;
-  else
-    return nullptr;
+  return process->get_impl()->get_user_data();
 }
 
-/** \ingroup m_process_management
- * \brief Sets the user data of a process.
+/** @ingroup m_process_management
+ * @brief Sets the user data of a process.
  *
- * This function checks whether \a process is a valid pointer and sets the user data associated to this process.
+ * This function checks whether @a process is a valid pointer and sets the user data associated to this process.
  */
 msg_error_t MSG_process_set_data(msg_process_t process, void *data)
 {
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
-  static_cast<simgrid::msg::ActorExt*>(process->get_impl()->getUserData())->data = data;
+  process->get_impl()->set_user_data(data);
 
   return MSG_OK;
 }
 
-/** \ingroup m_process_management
- * \brief Sets a cleanup function to be called to free the userdata of a process when a process is destroyed.
- * \param data_cleanup a cleanup function for the userdata of a process, or nullptr to call no function
+/** @ingroup m_process_management
+ * @brief Sets a cleanup function to be called to free the userdata of a process when a process is destroyed.
+ * @param data_cleanup a cleanup function for the userdata of a process, or nullptr to call no function
  */
 XBT_PUBLIC void MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup)
 {
@@ -256,19 +229,19 @@ int MSG_process_get_number()
   return SIMIX_process_count();
 }
 
-/** \ingroup m_process_management
- * \brief Return the PID of the current process.
+/** @ingroup m_process_management
+ * @brief Return the PID of the current process.
  *
  * This function returns the PID of the currently running #msg_process_t.
  */
 int MSG_process_self_PID()
 {
   smx_actor_t self = SIMIX_process_self();
-  return self == nullptr ? 0 : self->pid;
+  return self == nullptr ? 0 : self->pid_;
 }
 
-/** \ingroup m_process_management
- * \brief Return the PPID of the current process.
+/** @ingroup m_process_management
+ * @brief Return the PPID of the current process.
  *
  * This function returns the PID of the parent of the currently running #msg_process_t.
  */
@@ -277,16 +250,16 @@ int MSG_process_self_PPID()
   return MSG_process_get_PPID(MSG_process_self());
 }
 
-/** \ingroup m_process_management
- * \brief Return the name of the current process.
+/** @ingroup m_process_management
+ * @brief Return the name of the current process.
  */
 const char* MSG_process_self_name()
 {
   return SIMIX_process_self_get_name();
 }
 
-/** \ingroup m_process_management
- * \brief Return the current process.
+/** @ingroup m_process_management
+ * @brief Return the current process.
  *
  * This function returns the currently running #msg_process_t.
  */
@@ -296,11 +269,11 @@ msg_process_t MSG_process_self()
 }
 
 smx_context_t MSG_process_get_smx_ctx(msg_process_t process) { // deprecated -- smx_context_t should die afterward
-  return process->get_impl()->context;
+  return process->get_impl()->context_;
 }
 /**
- * \ingroup m_process_management
- * \brief Add a function to the list of "on_exit" functions for the current process.
+ * @ingroup m_process_management
+ * @brief Add a function to the list of "on_exit" functions for the current process.
  * The on_exit functions are the functions executed when your process is killed.
  * You should use them to free the data used by your process.
  */

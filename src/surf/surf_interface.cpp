@@ -27,24 +27,29 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (ke
  * Utils *
  *********/
 
-std::vector<simgrid::kernel::resource::Model*>* all_existing_models = nullptr; /* to destroy models correctly */
+std::vector<simgrid::kernel::resource::Model*> all_existing_models; /* to destroy models correctly */
 
-simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
+simgrid::trace_mgr::future_evt_set future_evt_set;
 std::vector<std::string> surf_path;
-std::vector<simgrid::s4u::Host*> host_that_restart;
 /**  set of hosts for which one want to be notified if they ever restart. */
 std::set<std::string> watched_hosts;
 extern std::map<std::string, simgrid::surf::StorageType*> storage_types;
 
-#include <simgrid/plugins/energy.h> // FIXME: this plug-in should not be linked to the core
-#include <simgrid/plugins/load.h>   // FIXME: this plug-in should not be linked to the core
+s_surf_model_description_t* surf_plugin_description = nullptr;
+XBT_PUBLIC void simgrid_add_plugin_description(const char* name, const char* description, void_f_void_t init_fun)
+{
+  static int plugin_amount = 0;
 
-s_surf_model_description_t surf_plugin_description[] = {
-    {"host_energy", "Cpu energy consumption.", &sg_host_energy_plugin_init},
-    {"link_energy", "Link energy consumption.", &sg_link_energy_plugin_init},
-    {"host_load", "Cpu load.", &sg_host_load_plugin_init},
-    {nullptr, nullptr, nullptr} /* this array must be nullptr terminated */
-};
+  /* no need to check for plugin name conflict: the compiler already ensures that the generated
+   * simgrid_##id##_plugin_register() is unique */
+
+  plugin_amount++;
+  surf_plugin_description = static_cast<s_surf_model_description_t*>(
+      xbt_realloc(surf_plugin_description, sizeof(s_surf_model_description_t) * (plugin_amount + 2)));
+
+  surf_plugin_description[plugin_amount - 1] = {name, description, init_fun};
+  surf_plugin_description[plugin_amount]     = {nullptr, nullptr, nullptr}; // this array must be null terminated
+}
 
 /* Don't forget to update the option description in smx_config when you change this */
 s_surf_model_description_t surf_network_model_description[] = {
@@ -120,11 +125,29 @@ double surf_get_clock()
   return NOW;
 }
 
+/* returns whether #file_path is a absolute file path. Surprising, isn't it ? */
+static bool is_absolute_file_path(std::string file_path)
+{
+#ifdef _WIN32
+  WIN32_FIND_DATA wfd = {0};
+  HANDLE hFile        = FindFirstFile(file_path.c_str(), &wfd);
+
+  if (INVALID_HANDLE_VALUE == hFile)
+    return false;
+
+  FindClose(hFile);
+  return true;
+#else
+  return (file_path.c_str()[0] == '/');
+#endif
+}
+
 std::ifstream* surf_ifsopen(std::string name)
 {
-  std::ifstream* fs = new std::ifstream();
   xbt_assert(not name.empty());
-  if (__surf_is_absolute_file_path(name.c_str())) { /* don't mess with absolute file names */
+
+  std::ifstream* fs = new std::ifstream();
+  if (is_absolute_file_path(name)) { /* don't mess with absolute file names */
     fs->open(name.c_str(), std::ifstream::in);
   }
 
@@ -142,14 +165,12 @@ std::ifstream* surf_ifsopen(std::string name)
   return fs;
 }
 
-FILE *surf_fopen(const char *name, const char *mode)
+FILE* surf_fopen(std::string name, const char* mode)
 {
   FILE *file = nullptr;
 
-  xbt_assert(name);
-
-  if (__surf_is_absolute_file_path(name))       /* don't mess with absolute file names */
-    return fopen(name, mode);
+  if (is_absolute_file_path(name)) /* don't mess with absolute file names */
+    return fopen(name.c_str(), mode);
 
   /* search relative files in the path */
   for (auto const& path_elm : surf_path) {
@@ -160,26 +181,6 @@ FILE *surf_fopen(const char *name, const char *mode)
       return file;
   }
   return nullptr;
-}
-
-/* The __surf_is_absolute_file_path() returns 1 if
- * file_path is a absolute file path, in the other
- * case the function returns 0.
- */
-int __surf_is_absolute_file_path(const char *file_path)
-{
-#ifdef _WIN32
-  WIN32_FIND_DATA wfd = { 0 };
-  HANDLE hFile = FindFirstFile(file_path, &wfd);
-
-  if (INVALID_HANDLE_VALUE == hFile)
-    return 0;
-
-  FindClose(hFile);
-  return 1;
-#else
-  return (file_path[0] == '/');
-#endif
 }
 
 /** Displays the long description of all registered models, and quit */
@@ -292,10 +293,6 @@ void surf_init(int *argc, char **argv)
   USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
   xbt_init(argc, argv);
-  if (not all_existing_models)
-    all_existing_models = new std::vector<simgrid::kernel::resource::Model*>();
-  if (not future_evt_set)
-    future_evt_set = new simgrid::trace_mgr::future_evt_set();
 
   sg_config_init(argc, argv);
 
@@ -313,12 +310,10 @@ void surf_exit()
     delete stype;
   }
 
-  for (auto const& model : *all_existing_models)
+  for (auto const& model : all_existing_models)
     delete model;
-  delete all_existing_models;
 
-  delete future_evt_set;
-  future_evt_set = nullptr;
+  xbt_free(surf_plugin_description);
 
   tmgr_finalize();
   sg_platf_exit();

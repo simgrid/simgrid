@@ -6,11 +6,10 @@
 #ifndef SMPI_PRIVATE_HPP
 #define SMPI_PRIVATE_HPP
 
-#include "simgrid/msg.h" // msg_bar_t
+#include "simgrid/s4u/Barrier.hpp"
 #include "smpi/smpi.h"
 #include "smpi/smpi_helpers_internal.h"
 #include "src/instr/instr_smpi.hpp"
-#include "src/internal_config.h"
 #include <unordered_map>
 #include <vector>
 
@@ -26,7 +25,7 @@
 #define MPI_REQ_RMA 0x200
 #define MPI_REQ_ACCUMULATE 0x400
 
-enum class SmpiProcessState { UNINITIALIZED, INITIALIZED, FINALIZED };
+enum class SmpiProcessState { UNINITIALIZED, INITIALIZING, INITIALIZED, FINALIZED };
 
 #define COLL_TAG_REDUCE -112
 #define COLL_TAG_SCATTER -223
@@ -59,14 +58,14 @@ typedef SMPI_Graph_topology* MPIR_Graph_Topology;
 
 typedef SMPI_Dist_Graph_topology* MPIR_Dist_Graph_Topology;
 
-XBT_PRIVATE SMPI_Process* smpi_process();
-XBT_PRIVATE SMPI_Process* smpi_process_remote(simgrid::s4u::ActorPtr actor);
+XBT_PRIVATE simgrid::smpi::ActorExt* smpi_process();
+XBT_PRIVATE simgrid::smpi::ActorExt* smpi_process_remote(simgrid::s4u::ActorPtr actor);
 XBT_PRIVATE int smpi_process_count();
 
 XBT_PRIVATE void smpi_deployment_register_process(const std::string instance_id, int rank,
                                                   simgrid::s4u::ActorPtr actor);
 XBT_PRIVATE MPI_Comm* smpi_deployment_comm_world(const std::string instance_id);
-XBT_PRIVATE msg_bar_t smpi_deployment_finalization_barrier(const std::string instance_id);
+XBT_PRIVATE simgrid::s4u::Barrier* smpi_deployment_finalization_barrier(const std::string instance_id);
 XBT_PRIVATE void smpi_deployment_cleanup_instances();
 
 XBT_PRIVATE void smpi_comm_copy_buffer_callback(smx_activity_t comm, void* buff, size_t buff_size);
@@ -167,7 +166,7 @@ void mpi_test_(int* request, int* flag, MPI_Status* status, int* ierr);
 void mpi_testall_(int* count, int* requests, int* flag, MPI_Status* statuses, int* ierr);
 void mpi_get_count_(MPI_Status* status, int* datatype, int* count, int* ierr);
 void mpi_type_extent_(int* datatype, MPI_Aint* extent, int* ierr);
-void mpi_attr_get_(int* comm, int* keyval, void* attr_value, int* flag, int* ierr);
+void mpi_attr_get_(int* comm, int* keyval, int* attr_value, int* flag, int* ierr);
 void mpi_type_commit_(int* datatype, int* ierr);
 void mpi_type_vector_(int* count, int* blocklen, int* stride, int* old_type, int* newtype, int* ierr);
 void mpi_type_hvector_(int* count, int* blocklen, MPI_Aint* stride, int* old_type, int* newtype, int* ierr);
@@ -191,8 +190,8 @@ void mpi_win_detach_(int* win, int* base, int* ierr);
 void mpi_win_set_info_(int* win, int* info, int* ierr);
 void mpi_win_get_info_(int* win, int* info, int* ierr);
 void mpi_win_get_group_(int* win, int* group, int* ierr);
-void mpi_win_get_attr_(int* win, int* type_keyval, void* attribute_val, int* flag, int* ierr);
-void mpi_win_set_attr_(int* win, int* type_keyval, void* att, int* ierr);
+void mpi_win_get_attr_(int* win, int* type_keyval, int* attribute_val, int* flag, int* ierr);
+void mpi_win_set_attr_(int* win, int* type_keyval, int* att, int* ierr);
 void mpi_win_delete_attr_(int* win, int* comm_keyval, int* ierr);
 void mpi_win_create_keyval_(void* copy_fn, void* delete_fn, int* keyval, void* extra_state, int* ierr);
 void mpi_win_free_keyval_(int* keyval, int* ierr);
@@ -243,8 +242,8 @@ void mpi_get_address_(void* location, MPI_Aint* address, int* ierr);
 void mpi_type_dup_(int* datatype, int* newdatatype, int* ierr);
 void mpi_type_set_name_(int* datatype, char* name, int* ierr, int size);
 void mpi_type_get_name_(int* datatype, char* name, int* len, int* ierr);
-void mpi_type_get_attr_(int* type, int* type_keyval, void* attribute_val, int* flag, int* ierr);
-void mpi_type_set_attr_(int* type, int* type_keyval, void* attribute_val, int* ierr);
+void mpi_type_get_attr_(int* type, int* type_keyval, int* attribute_val, int* flag, int* ierr);
+void mpi_type_set_attr_(int* type, int* type_keyval, int* attribute_val, int* ierr);
 void mpi_type_delete_attr_(int* type, int* type_keyval, int* ierr);
 void mpi_type_create_keyval_(void* copy_fn, void* delete_fn, int* keyval, void* extra_state, int* ierr);
 void mpi_type_free_keyval_(int* keyval, int* ierr);
@@ -265,8 +264,8 @@ void mpi_group_difference_(int* group1, int* group2, int* newgroup, int* ierr);
 void mpi_group_excl_(int* group, int* n, int* ranks, int* newgroup, int* ierr);
 void mpi_group_range_incl_(int* group, int* n, int ranges[][3], int* newgroup, int* ierr);
 void mpi_group_range_excl_(int* group, int* n, int ranges[][3], int* newgroup, int* ierr);
-void mpi_comm_get_attr_(int* comm, int* comm_keyval, void* attribute_val, int* flag, int* ierr);
-void mpi_comm_set_attr_(int* comm, int* comm_keyval, void* attribute_val, int* ierr);
+void mpi_comm_get_attr_(int* comm, int* comm_keyval, int* attribute_val, int* flag, int* ierr);
+void mpi_comm_set_attr_(int* comm, int* comm_keyval, int* attribute_val, int* ierr);
 void mpi_comm_delete_attr_(int* comm, int* comm_keyval, int* ierr);
 void mpi_comm_create_keyval_(void* copy_fn, void* delete_fn, int* keyval, void* extra_state, int* ierr);
 void mpi_comm_free_keyval_(int* keyval, int* ierr);
@@ -338,7 +337,7 @@ void mpi_comm_remote_size_(int* comm, int* size, int* ierr);
 void mpi_issend_(void* buf, int* count, int* datatype, int* dest, int* tag, int* comm, int* request, int* ierr);
 void mpi_probe_(int* source, int* tag, int* comm, MPI_Status* status, int* ierr);
 void mpi_attr_delete_(int* comm, int* keyval, int* ierr);
-void mpi_attr_put_(int* comm, int* keyval, void* attr_value, int* ierr);
+void mpi_attr_put_(int* comm, int* keyval, int* attr_value, int* ierr);
 void mpi_rsend_init_(void* buf, int* count, int* datatype, int* dest, int* tag, int* comm, int* request, int* ierr);
 void mpi_keyval_create_(void* copy_fn, void* delete_fn, int* keyval, void* extra_state, int* ierr);
 void mpi_keyval_free_(int* keyval, int* ierr);
@@ -404,7 +403,7 @@ void mpi_file_open_(int* comm, char* filename, int* amode, int* info, int* fh, i
 void mpi_file_set_view_(int* fh, long long int* offset, int* etype, int* filetype, char* datarep, int* info, int* ierr);
 void mpi_file_read_(int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
 void mpi_file_write_(int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
-
+void smpi_init_fortran_types();
 } // extern "C"
 
 struct s_smpi_privatization_region_t {
@@ -425,9 +424,13 @@ XBT_PRIVATE smpi_privatization_region_t smpi_init_global_memory_segment_process(
  */
 #define TOPAGE(addr) (void*)(((unsigned long)(addr) / xbt_pagesize) * xbt_pagesize)
 
-#if HAVE_PAPI
+/** Used only if PAPI is compiled in, but integrated anyway so that this file does not depend on internal_config.h (to speed builds) */
 typedef std::vector<std::pair</* counter name */ std::string, /* counter value */ long long>> papi_counter_t;
-#endif
+struct papi_process_data {
+  papi_counter_t counter_data;
+  int event_set;
+};
+extern std::map</* computation unit name */ std::string, papi_process_data> units2papi_setup;
 
 extern std::unordered_map<std::string, double> location2speedup;
 

@@ -40,7 +40,7 @@ private:
   /** pointer to top the stack stack */
   void* stack_top_ = nullptr;
 
-#if HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT
+#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
   const void* asan_stack_ = nullptr;
   size_t asan_stack_size_ = 0;
   RawContext* asan_ctx_   = nullptr;
@@ -83,7 +83,7 @@ private:
   static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
   static std::vector<ParallelRawContext*> workers_context_;
   static std::atomic<uintptr_t> threads_working_;
-  static xbt_os_thread_key_t worker_id_key_;
+  static uintptr_t thread_local worker_id_;
 };
 #endif
 

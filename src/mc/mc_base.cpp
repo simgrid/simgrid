@@ -3,16 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <simgrid/config.h>
-
-#include "mc/mc.h"
 #include "src/mc/mc_base.h"
+#include "mc/mc.h"
+#include "simgrid/config.h"
+#include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/activity/MutexImpl.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
-
-#include "src/kernel/activity/MutexImpl.hpp"
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/ModelChecker.hpp"
@@ -73,7 +72,7 @@ bool actor_is_enabled(smx_actor_t actor)
 #if SIMGRID_HAVE_MC
   // If in the MCer, ask the client app since it has all the data
   if (mc_model_checker != nullptr) {
-    return mc_model_checker->process().actor_is_enabled(actor->pid);
+    return mc_model_checker->process().actor_is_enabled(actor->pid_);
   }
 #endif
 
@@ -116,7 +115,7 @@ bool actor_is_enabled(smx_actor_t actor)
 
       if (mutex->owner == nullptr)
         return true;
-      return mutex->owner->pid == req->issuer->pid;
+      return mutex->owner->pid_ == req->issuer->pid_;
     }
 
     case SIMCALL_SEM_ACQUIRE: {

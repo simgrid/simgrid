@@ -1,0 +1,7 @@
+1 init
+1 recv 0 0 1e9
+1 send 0 0 1e9
+1 compute 1e10
+1 recv 0 0 1e9
+1 send 0 0 1e9
+1 finalize

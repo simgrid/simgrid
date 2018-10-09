@@ -30,6 +30,21 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
   type name args                                                                                                       \
   {                                                                                                                    \
     XBT_VERB("SMPI - Entering %s", __func__);                                                                          \
+    type ret = P##name args2;					                                                       \
+    if(ret!=MPI_SUCCESS) {                                                                                             \
+      char error_string[MPI_MAX_ERROR_STRING];                                                                         \
+      int error_size;                                                                                                  \
+      PMPI_Error_string(ret, error_string, &error_size);                                                               \
+      XBT_WARN("%s - returned %.*s instead of MPI_SUCCESS", __func__, error_size,error_string);                       \
+    }                                                                                                                  \
+    XBT_VERB("SMPI - Leaving %s", __func__);                                                                           \
+    return ret;                                                                                                        \
+  }
+
+#define WRAPPED_PMPI_CALL_NORETURN(type, name, args, args2)                                                            \
+  type name args                                                                                                       \
+  {                                                                                                                    \
+    XBT_VERB("SMPI - Entering %s", __func__);                                                                          \
     type ret = P##name args2;                                                                                          \
     XBT_VERB("SMPI - Leaving %s", __func__);                                                                           \
     return ret;                                                                                                        \
@@ -54,8 +69,8 @@ return P##name args2 ; \
 
 /* MPI User level calls */
 
-WRAPPED_PMPI_CALL(double, MPI_Wtick,(void),())
-WRAPPED_PMPI_CALL(double, MPI_Wtime,(void),())
+WRAPPED_PMPI_CALL_NORETURN(double, MPI_Wtick,(void),())
+WRAPPED_PMPI_CALL_NORETURN(double, MPI_Wtime,(void),())
 WRAPPED_PMPI_CALL(int,MPI_Abort,(MPI_Comm comm, int errorcode),(comm, errorcode))
 WRAPPED_PMPI_CALL(int,MPI_Accumulate,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win),( origin_addr,origin_count, origin_datatype,target_rank,target_disp, target_count,target_datatype,op, win))
 WRAPPED_PMPI_CALL(int,MPI_Address,(void *location, MPI_Aint * address),(location, address))
@@ -98,6 +113,7 @@ WRAPPED_PMPI_CALL(int,MPI_Compare_and_swap,(void *origin_addr, void *compare_add
         void *result_addr, MPI_Datatype datatype, int target_rank, MPI_Aint target_disp, MPI_Win win), (origin_addr, compare_addr, result_addr, datatype, target_rank, target_disp, win))
 WRAPPED_PMPI_CALL(int,MPI_Dims_create,(int nnodes, int ndims, int* dims) ,(nnodes, ndims, dims))
 WRAPPED_PMPI_CALL(int,MPI_Error_class,(int errorcode, int* errorclass) ,(errorcode, errorclass))
+WRAPPED_PMPI_CALL_NORETURN(int,MPI_Error_string,(int errorcode, char* string, int* resultlen) ,(errorcode, string, resultlen))
 WRAPPED_PMPI_CALL(int,MPI_Exscan,(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm),(sendbuf, recvbuf, count, datatype, op, comm))
 WRAPPED_PMPI_CALL(int,MPI_Finalized,(int * flag),(flag))
 WRAPPED_PMPI_CALL(int,MPI_Finalize,(void),())
@@ -245,20 +261,20 @@ WRAPPED_PMPI_CALL(int,MPI_Win_create_keyval,(MPI_Win_copy_attr_function* copy_fn
                               MPI_Win_delete_attr_function* delete_fn, int* keyval, void* extra_state), (copy_fn, delete_fn, keyval, extra_state))
 WRAPPED_PMPI_CALL(int,MPI_Win_free_keyval,(int* keyval), (keyval))
 WRAPPED_PMPI_CALL(int,MPI_Win_shared_query,(MPI_Win win, int rank, MPI_Aint* size, int* disp_unit, void* baseptr),(win, rank, size, disp_unit, baseptr))
-WRAPPED_PMPI_CALL(MPI_Comm, MPI_Comm_f2c,(MPI_Fint comm),(comm))
-WRAPPED_PMPI_CALL(MPI_Datatype, MPI_Type_f2c,(MPI_Fint datatype),(datatype))
-WRAPPED_PMPI_CALL(MPI_Fint, MPI_Comm_c2f,(MPI_Comm comm),(comm))
-WRAPPED_PMPI_CALL(MPI_Fint, MPI_Group_c2f,(MPI_Group group),(group))
-WRAPPED_PMPI_CALL(MPI_Fint, MPI_Info_c2f,(MPI_Info info),(info))
-WRAPPED_PMPI_CALL(MPI_Fint, MPI_Op_c2f,(MPI_Op op),(op))
-WRAPPED_PMPI_CALL(MPI_Fint, MPI_Request_c2f,(MPI_Request request) ,(request))
-WRAPPED_PMPI_CALL(MPI_Fint, MPI_Type_c2f,(MPI_Datatype datatype),( datatype))
-WRAPPED_PMPI_CALL(MPI_Fint, MPI_Win_c2f,(MPI_Win win),(win))
-WRAPPED_PMPI_CALL(MPI_Group, MPI_Group_f2c,(MPI_Fint group),( group))
-WRAPPED_PMPI_CALL(MPI_Info, MPI_Info_f2c,(MPI_Fint info),(info))
-WRAPPED_PMPI_CALL(MPI_Op, MPI_Op_f2c,(MPI_Fint op),(op))
-WRAPPED_PMPI_CALL(MPI_Request, MPI_Request_f2c,(MPI_Fint request),(request))
-WRAPPED_PMPI_CALL(MPI_Win, MPI_Win_f2c,(MPI_Fint win),(win))
+WRAPPED_PMPI_CALL_NORETURN(MPI_Comm, MPI_Comm_f2c,(MPI_Fint comm),(comm))
+WRAPPED_PMPI_CALL_NORETURN(MPI_Datatype, MPI_Type_f2c,(MPI_Fint datatype),(datatype))
+WRAPPED_PMPI_CALL_NORETURN(MPI_Fint, MPI_Comm_c2f,(MPI_Comm comm),(comm))
+WRAPPED_PMPI_CALL_NORETURN(MPI_Fint, MPI_Group_c2f,(MPI_Group group),(group))
+WRAPPED_PMPI_CALL_NORETURN(MPI_Fint, MPI_Info_c2f,(MPI_Info info),(info))
+WRAPPED_PMPI_CALL_NORETURN(MPI_Fint, MPI_Op_c2f,(MPI_Op op),(op))
+WRAPPED_PMPI_CALL_NORETURN(MPI_Fint, MPI_Request_c2f,(MPI_Request request) ,(request))
+WRAPPED_PMPI_CALL_NORETURN(MPI_Fint, MPI_Type_c2f,(MPI_Datatype datatype),( datatype))
+WRAPPED_PMPI_CALL_NORETURN(MPI_Fint, MPI_Win_c2f,(MPI_Win win),(win))
+WRAPPED_PMPI_CALL_NORETURN(MPI_Group, MPI_Group_f2c,(MPI_Fint group),( group))
+WRAPPED_PMPI_CALL_NORETURN(MPI_Info, MPI_Info_f2c,(MPI_Fint info),(info))
+WRAPPED_PMPI_CALL_NORETURN(MPI_Op, MPI_Op_f2c,(MPI_Fint op),(op))
+WRAPPED_PMPI_CALL_NORETURN(MPI_Request, MPI_Request_f2c,(MPI_Fint request),(request))
+WRAPPED_PMPI_CALL_NORETURN(MPI_Win, MPI_Win_f2c,(MPI_Fint win),(win))
 WRAPPED_PMPI_CALL(int,MPI_Cancel,(MPI_Request* request) ,(request))
 WRAPPED_PMPI_CALL(int, MPI_Test_cancelled,(MPI_Status* status, int* flag) ,(status, flag))
 /*
@@ -299,10 +315,9 @@ UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Errhandler_create,(MPI_Handler_fu
 UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Errhandler_free,(MPI_Errhandler* errhandler) ,(errhandler))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Errhandler_get,(MPI_Comm comm, MPI_Errhandler* errhandler) ,(comm, errhandler))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Errhandler_set,(MPI_Comm comm, MPI_Errhandler errhandler) ,(comm, errhandler))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Error_string,(int errorcode, char* string, int* resultlen) ,(errorcode, string, resultlen))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Register_datarep, (char *datarep, MPI_Datarep_conversion_function *read_conversion_fn, MPI_Datarep_conversion_function *write_conversion_fn, MPI_Datarep_extent_function *dtype_file_extent_fn, void *extra_state) ,(datarep, read_conversion_fn, write_conversion_fn, dtype_file_extent_fn, extra_state))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_Fint, MPI_File_c2f,(MPI_File file), (file))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_File, MPI_File_f2c,(MPI_Fint file), (file))
+//UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_File, MPI_File_f2c,(MPI_Fint file), (file))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_call_errhandler,(MPI_File fh, int errorcode), (fh, errorcode))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_create_errhandler,(MPI_File_errhandler_function *function, MPI_Errhandler *errhandler),(function, errhandler))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int, MPI_File_set_errhandler,( MPI_File file, MPI_Errhandler errhandler), (file, errhandler))
@@ -396,5 +411,5 @@ UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Unpublish_name,( char *service_name, MPI
 UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Win_set_errhandler,(MPI_Win win, MPI_Errhandler errhandler) ,(win, errhandler))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Win_test,(MPI_Win win, int *flag),(win, flag))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Win_sync,(MPI_Win win),(win))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(MPI_Errhandler, MPI_Errhandler_f2c,(MPI_Fint errhandler),(errhandler))
+//UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(MPI_Errhandler, MPI_Errhandler_f2c,(MPI_Fint errhandler),(errhandler))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(MPI_Fint, MPI_Errhandler_c2f,(MPI_Errhandler errhandler),(errhandler))

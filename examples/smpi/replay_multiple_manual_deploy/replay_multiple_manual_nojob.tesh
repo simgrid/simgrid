@@ -1,0 +1,16 @@
+p Workload without any job
+
+< This workload does not compute any job.
+$ mkfile ${srcdir:=.}/workload_nojob
+
+! timeout 120
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_nojob --log=smpi.:info --cfg=smpi/host-speed:100 "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 0 0
+> [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100'
+> [   0.000000] (maestro@) Simulation finished! Final time: 0
+
+! timeout 120
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_nojob --log=smpi.:info --cfg=smpi/host-speed:100 "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 7 13
+> [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100'
+> [   7.000000] (maestro@) Simulation finished! Final time: 7
+
+$ rm -f ${srcdir:=.}/workload_nojob

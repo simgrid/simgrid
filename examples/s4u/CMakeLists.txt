@@ -2,17 +2,17 @@
 # the same at the bottom of the file as well.
 foreach (example actor-create actor-daemon actor-join actor-kill
                  actor-lifetime actor-migration actor-suspend actor-yield
-                 app-chainsend app-masterworker app-pingpong app-token-ring
-                 async-wait async-waitany async-waitall
+                 app-chainsend app-pingpong app-token-ring
+                 async-ready async-wait async-waitany async-waitall async-waituntil
                  cloud-capping cloud-migration cloud-simple
                  energy-exec energy-boot energy-link energy-vm
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-monitor exec-ptask exec-remote
-                 io-file-system io-file-remote io-storage-raw
-                 mutex
-                 platform-properties plugin-hostload 
+                 io-async io-file-system io-file-remote io-storage-raw
+                 platform-failures platform-properties plugin-hostload 
                  replay-comm replay-storage
                  routing-get-clusters
+                 synchro-barrier synchro-mutex synchro-semaphore
                  trace-platform)
   add_executable       (s4u-${example}  ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example}  simgrid)
@@ -21,6 +21,16 @@ foreach (example actor-create actor-daemon actor-join actor-kill
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
 endforeach()
+
+# MASTERWORKERS EXAMPLE
+foreach(variant fun class) 
+  add_executable       (s4u-app-masterworkers-${variant}  app-masterworkers/s4u-app-masterworkers-${variant}.cpp)
+  target_link_libraries(s4u-app-masterworkers-${variant}  simgrid)
+  set_target_properties(s4u-app-masterworkers-${variant}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-masterworkers)
+
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers-${variant}.cpp)
+endforeach()
+set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers.tesh)
 
 # CHORD EXAMPLE
 add_executable       (s4u-dht-chord dht-chord/s4u-dht-chord.cpp dht-chord/s4u-dht-chord-node.cpp)
@@ -62,15 +72,19 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u-app-bittorrent_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/s4u-app-masterworker_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-ready/s4u-async-ready_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-waituntil/s4u-async-waituntil_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/s4u-dht-kademlia_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/energy-boot/platform_boot.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/io-file-remote/s4u-io-file-remote_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/platform-properties/s4u-platform-properties_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/platform-failures/s4u-masterworker-failures_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-storage/s4u-replay-storage_d.xml
@@ -80,21 +94,22 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-re
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p1.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-storage/s4u-replay-storage.txt
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/README.doc                                   PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/README.rst                                   PARENT_SCOPE)
 
 foreach(example actor-create actor-daemon actor-join actor-kill
                 actor-lifetime actor-migration actor-suspend actor-yield
-                app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring 
-                async-wait async-waitall async-waitany
+                app-bittorrent app-chainsend app-masterworkers app-pingpong app-token-ring 
+                async-ready async-wait async-waitall async-waitany async-waituntil
                 cloud-capping cloud-migration cloud-simple
                 dht-chord dht-kademlia
                 energy-exec energy-boot energy-link energy-vm
                 engine-filtering
                 exec-async exec-basic exec-dvfs exec-monitor exec-ptask exec-remote
-                platform-properties plugin-hostload mutex
-                io-file-system io-file-remote io-storage-raw
+                platform-properties plugin-hostload # FIXME: platform-failures is disabled
+                io-async io-file-system io-file-remote io-storage-raw
                 replay-comm replay-storage
                 routing-get-clusters
+                synchro-barrier synchro-mutex synchro-semaphore
                 )
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" 
                                     --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 

@@ -1,15 +1,13 @@
-/* Copyright (c) 2007-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smpi_info.hpp"
-#include "xbt/ex.hpp"
-#include "xbt/sysdep.h"
+#include "simgrid/Exception.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid {
+namespace smpi {
 
 Info::Info(Info* info) : map_(info->map_)
 {

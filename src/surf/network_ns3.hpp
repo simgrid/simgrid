@@ -18,8 +18,8 @@ class NetworkNS3Model : public NetworkModel {
 public:
   NetworkNS3Model();
   ~NetworkNS3Model();
-  LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
-                       s4u::Link::SharingPolicy policy) override;
+  LinkImpl* create_link(const std::string& name, double bandwidth, double latency,
+                        s4u::Link::SharingPolicy policy) override;
   kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
   double next_occuring_event(double now) override;
   bool next_occuring_event_is_idempotent() override { return false; }
@@ -54,7 +54,7 @@ public:
   void update_remains_lazy(double now) override;
 
   // private:
-  double lastSent_ = 0;
+  double last_sent_ = 0;
   s4u::Host* src_;
   s4u::Host* dst_;
 };

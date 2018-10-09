@@ -5,23 +5,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cerrno>
-#include <cstring>
-
-#include <utility>
-#include <string>
-
-#include <xbt/config.hpp>
-#include <xbt/log.h>
-#include <xbt/range.hpp>
-#include <xbt/sysdep.h>
-
 #include "simgrid/modelchecker.h"
-#include "simgrid/sg_config.hpp"
-#include "smx_private.hpp"
 #include "src/internal_config.h"
-#include "xbt/log.h"
-#include "xbt/xbt_os_thread.h"
+#include "src/simix/smx_private.hpp"
+#include "xbt/config.hpp"
+
+#include <thread>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -80,11 +69,7 @@ unsigned smx_context_stack_size;
 int smx_context_stack_size_was_set = 0;
 unsigned smx_context_guard_size;
 int smx_context_guard_size_was_set = 0;
-#if HAVE_THREAD_LOCAL_STORAGE
-static XBT_THREAD_LOCAL smx_context_t smx_current_context_parallel;
-#else
-static xbt_os_thread_key_t smx_current_context_key = 0;
-#endif
+static thread_local smx_context_t smx_current_context_parallel;
 static smx_context_t smx_current_context_serial;
 static int smx_parallel_contexts = 1;
 static int smx_parallel_threshold = 2;
@@ -99,12 +84,6 @@ void SIMIX_context_mod_init()
 
   smx_context_stack_size_was_set = not simgrid::config::is_default("contexts/stack-size");
   smx_context_guard_size_was_set = not simgrid::config::is_default("contexts/guard-size");
-
-#if HAVE_THREAD_CONTEXTS && not HAVE_THREAD_LOCAL_STORAGE
-  /* the __thread storage class is not available on this platform:
-   * use getspecific/setspecific instead to store the current context in each thread */
-  xbt_os_thread_key_create(&smx_current_context_key);
-#endif
 
 #if HAVE_SMPI && (defined(__APPLE__) || defined(__NetBSD__))
   std::string priv = simgrid::config::get_value<std::string>("smpi/privatization");
@@ -122,7 +101,7 @@ void SIMIX_context_mod_init()
 #endif
 
   /* select the context factory to use to create the contexts */
-  if (simgrid::kernel::context::factory_initializer) { // Give Java a chance to hijack the factory mechanism
+  if (simgrid::kernel::context::factory_initializer != nullptr) { // Give Java a chance to hijack the factory mechanism
     simix_global->context_factory = simgrid::kernel::context::factory_initializer();
     return;
   }
@@ -251,26 +230,26 @@ int SIMIX_context_is_parallel() {
 
 /**
  * @brief Returns the number of parallel threads used for the user contexts.
- * \return the number of threads (1 means no parallelism)
+ * @return the number of threads (1 means no parallelism)
  */
 int SIMIX_context_get_nthreads() {
   return smx_parallel_contexts;
 }
 
 /**
- * \brief Sets the number of parallel threads to use
+ * @brief Sets the number of parallel threads to use
  * for the user contexts.
  *
  * This function should be called before initializing SIMIX.
  * A value of 1 means no parallelism (1 thread only).
  * If the value is greater than 1, the thread support must be enabled.
  *
- * \param nb_threads the number of threads to use
+ * @param nb_threads the number of threads to use
  */
 void SIMIX_context_set_nthreads(int nb_threads) {
   if (nb_threads<=0) {
-     nb_threads = xbt_os_get_numcores();
-     XBT_INFO("Auto-setting contexts/nthreads to %d",nb_threads);
+    nb_threads = std::thread::hardware_concurrency();
+    XBT_INFO("Auto-setting contexts/nthreads to %d", nb_threads);
   }
 #if !HAVE_THREAD_CONTEXTS
   xbt_assert(nb_threads == 1, "Parallel runs are impossible when the pthreads are missing.");
@@ -279,12 +258,12 @@ void SIMIX_context_set_nthreads(int nb_threads) {
 }
 
 /**
- * \brief Returns the threshold above which user processes are run in parallel.
+ * @brief Returns the threshold above which user processes are run in parallel.
  *
  * If the number of threads is set to 1, there is no parallelism and this
  * threshold has no effect.
  *
- * \return when the number of user processes ready to run is above
+ * @return when the number of user processes ready to run is above
  * this threshold, they are run in parallel
  */
 int SIMIX_context_get_parallel_threshold() {
@@ -292,12 +271,12 @@ int SIMIX_context_get_parallel_threshold() {
 }
 
 /**
- * \brief Sets the threshold above which user processes are run in parallel.
+ * @brief Sets the threshold above which user processes are run in parallel.
  *
  * If the number of threads is set to 1, there is no parallelism and this
  * threshold has no effect.
  *
- * \param threshold when the number of user processes ready to run is above
+ * @param threshold when the number of user processes ready to run is above
  * this threshold, they are run in parallel
  */
 void SIMIX_context_set_parallel_threshold(int threshold) {
@@ -305,35 +284,31 @@ void SIMIX_context_set_parallel_threshold(int threshold) {
 }
 
 /**
- * \brief Returns the synchronization mode used when processes are run in
+ * @brief Returns the synchronization mode used when processes are run in
  * parallel.
- * \return how threads are synchronized if processes are run in parallel
+ * @return how threads are synchronized if processes are run in parallel
  */
 e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode() {
   return smx_parallel_synchronization_mode;
 }
 
 /**
- * \brief Sets the synchronization mode to use when processes are run in
+ * @brief Sets the synchronization mode to use when processes are run in
  * parallel.
- * \param mode how to synchronize threads if processes are run in parallel
+ * @param mode how to synchronize threads if processes are run in parallel
  */
 void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) {
   smx_parallel_synchronization_mode = mode;
 }
 
 /**
- * \brief Returns the current context of this thread.
- * \return the current context of this thread
+ * @brief Returns the current context of this thread.
+ * @return the current context of this thread
  */
 smx_context_t SIMIX_context_get_current()
 {
   if (SIMIX_context_is_parallel()) {
-#if HAVE_THREAD_LOCAL_STORAGE
     return smx_current_context_parallel;
-#else
-    return xbt_os_thread_get_specific(smx_current_context_key);
-#endif
   }
   else {
     return smx_current_context_serial;
@@ -341,17 +316,13 @@ smx_context_t SIMIX_context_get_current()
 }
 
 /**
- * \brief Sets the current context of this thread.
- * \param context the context to set
+ * @brief Sets the current context of this thread.
+ * @param context the context to set
  */
 void SIMIX_context_set_current(smx_context_t context)
 {
   if (SIMIX_context_is_parallel()) {
-#if HAVE_THREAD_LOCAL_STORAGE
     smx_current_context_parallel = context;
-#else
-    xbt_os_thread_set_specific(smx_current_context_key, context);
-#endif
   }
   else {
     smx_current_context_serial = context;

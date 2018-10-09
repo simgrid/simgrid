@@ -523,8 +523,8 @@ int console_host_set_property(lua_State *L) {
 }
 
 /**
- * \brief Registers the platform functions into the table simgrid.platf.
- * \param L a lua state
+ * @brief Registers the platform functions into the table simgrid.platf.
+ * @param L a lua state
  */
 void sglua_register_platf_functions(lua_State* L)
 {

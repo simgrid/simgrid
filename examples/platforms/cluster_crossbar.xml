@@ -1,0 +1,23 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+  <!--           _________
+                |          |
+                | crossbar |
+                |__________|
+                    / | \
+                   /  |  \
+               l0 / l1|   \l2
+                 /    |    \
+                /     |     \
+           node-0   node-1   node-2 ...
+	    
+    All hosts can communicate at full speed with no interference on
+    the crossbar. Only the links of each hosts are limiting.	    
+  -->
+  <zone id="world" routing="Full">
+    <cluster id="cluster-crossbar" 
+             prefix="node-" radical="0-65536" suffix=".simgrid.org"
+	     speed="1Gf" bw="125MBps" lat="50us"/>
+  </zone>
+</platform>

@@ -11,6 +11,24 @@ SET(TESH_COMMAND "${PYTHON_EXECUTABLE}" ${CMAKE_BINARY_DIR}/bin/tesh)
 
 IF(enable_memcheck)
   INCLUDE(FindValgrind)
+
+  if (NOT VALGRIND_EXE MATCHES "NOTFOUND")
+    execute_process(COMMAND ${VALGRIND_EXE} --version  OUTPUT_VARIABLE "VALGRIND_VERSION")
+    message(STATUS "Valgrind version: ${VALGRIND_VERSION}")
+
+    set(TESH_WRAPPER ${CMAKE_HOME_DIRECTORY}/tools/cmake/scripts/my_valgrind.pl)
+    set(TESH_WRAPPER ${TESH_WRAPPER}\ --trace-children=yes\ --trace-children-skip=/usr/bin/*,/bin/*\ --leak-check=full\ --show-reachable=yes\ --track-origins=no\ --read-var-info=no\ --num-callers=20\ --suppressions=${CMAKE_HOME_DIRECTORY}/tools/simgrid.supp\ )
+    if(enable_memcheck_xml)
+      SET(TESH_WRAPPER ${TESH_WRAPPER}\ --xml=yes\ --xml-file=memcheck_test_%p.memcheck\ --child-silent-after-fork=yes\ )
+    endif()
+
+#    message(STATUS "tesh wrapper: ${TESH_WRAPPER}")
+
+    mark_as_advanced(TESH_WRAPPER)
+  else()
+    set(enable_memcheck false)
+    message(STATUS "Error: Command valgrind not found --> enable_memcheck autoset to false.")
+  endif()
 ENDIF()
 
 #some tests may take forever on non futexes systems, using busy_wait with n cores < n workers
@@ -73,9 +91,9 @@ IF(SIMGRID_HAVE_MC)
 ENDIF()
 
 IF(enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN AND HAVE_THREAD_CONTEXTS)
-  ADD_TEST(test-smpi-mpich3-thread-f77     ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/f77/ ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f77/ -tests=testlist -privatization=${HAVE_PRIVATIZATION} -execarg=--cfg=contexts/stack-size:8000 -execarg=--cfg=contexts/factory:thread -execarg=--cfg=smpi/privatization:${HAVE_PRIVATIZATION})
+  ADD_TEST(test-smpi-mpich3-thread-f77     ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/f77/ ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests "-wrapper=${TESH_WRAPPER}" -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f77/ -tests=testlist -privatization=${HAVE_PRIVATIZATION} -execarg=--cfg=contexts/stack-size:8000 -execarg=--cfg=contexts/factory:thread -execarg=--cfg=smpi/privatization:${HAVE_PRIVATIZATION})
   SET_TESTS_PROPERTIES(test-smpi-mpich3-thread-f77 PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
-  ADD_TEST(test-smpi-mpich3-thread-f90     ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/f90/ ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f90/ -tests=testlist -privatization=${HAVE_PRIVATIZATION} -execarg=--cfg=smpi/privatization:${HAVE_PRIVATIZATION} -execarg=--cfg=contexts/factory:thread)
+  ADD_TEST(test-smpi-mpich3-thread-f90     ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/f90/ ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests "-wrapper=${TESH_WRAPPER}" -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f90/ -tests=testlist -privatization=${HAVE_PRIVATIZATION} -execarg=--cfg=smpi/privatization:${HAVE_PRIVATIZATION} -execarg=--cfg=contexts/factory:thread)
   SET_TESTS_PROPERTIES(test-smpi-mpich3-thread-f90 PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
 ENDIF()
 
@@ -90,41 +108,38 @@ ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/testall)
 
 # New tests should use the Boost Unit Test Framework
 if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
-  add_executable       (unit_tmgr src/surf/trace_mgr_test.cpp)
   add_library(boost_unit_test_framework SHARED IMPORTED)
   set_target_properties(boost_unit_test_framework PROPERTIES IMPORTED_LOCATION ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-  target_link_libraries(unit_tmgr simgrid boost_unit_test_framework)
-  ADD_TEST(unit_tmgr ${CMAKE_BINARY_DIR}/unit_tmgr --build_info=yes)
+  
+  add_executable       (unit-tmgr src/surf/trace_mgr_test.cpp)
+  target_link_libraries(unit-tmgr simgrid boost_unit_test_framework)
+  ADD_TEST(unit-tmgr ${CMAKE_BINARY_DIR}/unit-tmgr --build_info=yes)
   set_property(
-    TARGET unit_tmgr
+    TARGET unit-tmgr
     APPEND PROPERTY
            INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
 	   )
-
+  if (SIMGRID_HAVE_MC)
+    # snapshot
+    add_executable       (unit-mc-snapshot src/mc/sosp/mc_snapshot_test.cpp)
+    target_link_libraries(unit-mc-snapshot simgrid boost_unit_test_framework)
+    ADD_TEST(unit-mc-snapshot ${CMAKE_BINARY_DIR}/unit-mc-snapshot --build_info=yes)
+    set_property(
+      TARGET unit-mc-snapshot
+      APPEND PROPERTY
+             INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
+	     )
+    # pagestore
+    add_executable       (unit-mc-pagestore src/mc/sosp/PageStore_test.cpp)
+    target_link_libraries(unit-mc-pagestore simgrid boost_unit_test_framework)
+    ADD_TEST(unit-mc-pagestore ${CMAKE_BINARY_DIR}/unit-mc-pagestore --build_info=yes)
+    set_property(
+      TARGET unit-mc-pagestore
+      APPEND PROPERTY
+             INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
+	     )
+  endif()
 
 else()
   set(EXTRA_DIST       ${EXTRA_DIST}       src/surf/trace_mgr_test.cpp)
-endif()
-
-# Also test the tutorial, unless under Sanitizer or memcheck
-if((NOT enable_memcheck) AND (NOT enable_address_sanitizer) AND (NOT enable_undefined_sanitizer) AND (NOT enable_thread_sanitizer))
-  FILE(COPY doc/tuto-msg DESTINATION doc FILES_MATCHING PATTERN "Makefile" PATTERN "*.c")
-  set(tuto-src-path "${CMAKE_SOURCE_DIR}/doc/tuto-msg")
-  set(tuto-bin-path "${CMAKE_BINARY_DIR}/doc/tuto-msg")
-  set(tuto-platform-file "${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml")
-  set(tuto-make "make -C ${tuto-bin-path} CC=${CMAKE_C_COMPILER} EXTRA_CFLAGS=\"-I${CMAKE_SOURCE_DIR}/include -I${CMAKE_BINARY_DIR}/include -L${CMAKE_BINARY_DIR}/lib -Wl,-rpath ${CMAKE_BINARY_DIR}/lib\"")
-  ADD_TEST(tuto-msg-clean sh -xc "${tuto-make} clean")
-  ADD_TEST(tuto-msg-0 sh -xc "${tuto-make} masterworker      && ${tuto-bin-path}/masterworker      ${tuto-platform-file} ${tuto-src-path}/deployment0.xml")
-  ADD_TEST(tuto-msg-1 sh -xc "${tuto-make} masterworker-sol1 && ${tuto-bin-path}/masterworker-sol1 ${tuto-platform-file} ${tuto-src-path}/deployment1.xml")
-  ADD_TEST(tuto-msg-2 sh -xc "${tuto-make} masterworker-sol2 && ${tuto-bin-path}/masterworker-sol2 ${tuto-platform-file} ${tuto-src-path}/deployment2.xml")
-  ADD_TEST(tuto-msg-3 sh -xc "${tuto-make} masterworker-sol3 && ${tuto-bin-path}/masterworker-sol3 ${tuto-platform-file} ${tuto-src-path}/deployment3.xml")
-  ADD_TEST(tuto-msg-4 sh -xc "${tuto-make} masterworker-sol4 && ${tuto-bin-path}/masterworker-sol4 ${tuto-platform-file} ${tuto-src-path}/deployment3.xml")
-
-  SET_TESTS_PROPERTIES(tuto-msg-clean PROPERTIES FIXTURES_SETUP tuto-msg-clean)
-  SET_TESTS_PROPERTIES(tuto-msg-0 tuto-msg-1 tuto-msg-2 tuto-msg-3 tuto-msg-4 PROPERTIES FIXTURES_REQUIRED tuto-msg-clean)
-
-  FOREACH(TUTOTEST tuto-msg-0 tuto-msg-1 tuto-msg-2 tuto-msg-3 tuto-msg-4)
-  SET_TESTS_PROPERTIES(${TUTOTEST}
-                       PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
-  ENDFOREACH()
 endif()

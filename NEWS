@@ -1,3 +1,24 @@
+                    _               _____  ____  ____
+__   _____ _ __ ___(_) ___  _ __   |___ / |___ \|___ \
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | __) |
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/ / __/
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|_____|
+               (not released)
+
+                    _               _____  ____  _
+__   _____ _ __ ___(_) ___  _ __   |___ / |___ \/ |
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | |
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/| |
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|_|
+               October 3. 2018
+
+The Restarting Documentation (TRD) release.
+
+ * Start to overhaul the documentation, and move to Sphinx + RTD.
+ * Allow dynamic replay of MPI apps, controlled by S4U actors
+ * Rewrite the support for auto-restarted actors (was utterly broken)
+ * (+ the classical bug fixes and doc improvement)
+
                     _               _____  ____   ___
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | | | |

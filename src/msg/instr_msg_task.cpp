@@ -49,9 +49,7 @@ void TRACE_msg_task_execute_start(msg_task_t task)
   XBT_DEBUG("EXEC,in %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::by_name(instr_pid(MSG_process_self()))
-        ->get_state("ACTOR_STATE")
-        ->push_event("task_execute");
+    simgrid::instr::Container::by_name(instr_pid(MSG_process_self()))->get_state("ACTOR_STATE")->push_event("execute");
 }
 
 void TRACE_msg_task_execute_end(msg_task_t task)

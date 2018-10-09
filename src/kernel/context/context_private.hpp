@@ -8,7 +8,7 @@
 
 #include "src/internal_config.h"
 
-#if HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT
+#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
 #include <sanitizer/asan_interface.h>
 #define ASAN_ONLY(expr) expr
 #define ASAN_START_SWITCH(fake_stack_save, bottom, size) __sanitizer_start_switch_fiber(fake_stack_save, bottom, size)

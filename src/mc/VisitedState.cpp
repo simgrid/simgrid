@@ -62,8 +62,7 @@ void VisitedStates::prune()
   }
 }
 
-/** \brief Checks whether a given state has already been visited by the algorithm.
- */
+/** @brief Checks whether a given state has already been visited by the algorithm. */
 std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(
   unsigned long state_number, simgrid::mc::State* graph_state, bool compare_snpashots)
 {

@@ -4,11 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/modelchecker.h"
 #include "private.hpp"
+#include "simgrid/modelchecker.h"
 #include "smpi_datatype_derived.hpp"
 #include "smpi_op.hpp"
-#include "smpi_process.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
+
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (datatype)");
@@ -74,8 +75,9 @@ CREATE_MPI_DATATYPE(MPI_2LONG, 37, long_long);
 
 CREATE_MPI_DATATYPE(MPI_REAL, 38, float);
 CREATE_MPI_DATATYPE(MPI_REAL4, 39, float);
-CREATE_MPI_DATATYPE(MPI_REAL8, 40, float);
-CREATE_MPI_DATATYPE(MPI_REAL16, 41, double);
+CREATE_MPI_DATATYPE(MPI_REAL8, 40, double);
+CREATE_MPI_DATATYPE(MPI_REAL16, 41, long double);
+CREATE_MPI_DATATYPE_NULL(MPI_DATATYPE_NULL, -1);
 CREATE_MPI_DATATYPE_NULL(MPI_COMPLEX8, 42);
 CREATE_MPI_DATATYPE_NULL(MPI_COMPLEX16, 43);
 CREATE_MPI_DATATYPE_NULL(MPI_COMPLEX32, 44);
@@ -126,21 +128,31 @@ Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype-
   *ret = MPI_SUCCESS;
   if(datatype->name_)
     name_ = xbt_strdup(datatype->name_);
-
+    
   if (not datatype->attributes()->empty()) {
-    int flag;
+    int flag=0;
     void* value_out;
-    for(auto it = datatype->attributes()->begin(); it != datatype->attributes()->end(); it++){
-      smpi_key_elem elem = keyvals_.at((*it).first);
-
-      if (elem != nullptr && elem->copy_fn.type_copy_fn != MPI_NULL_COPY_FN) {
-        *ret = elem->copy_fn.type_copy_fn(datatype, (*it).first, nullptr, (*it).second, &value_out, &flag);
+    for (auto const& it : *(datatype->attributes())) {
+      smpi_key_elem elem = keyvals_.at(it.first);
+      if (elem != nullptr){
+        if( elem->copy_fn.type_copy_fn != MPI_NULL_COPY_FN && 
+            elem->copy_fn.type_copy_fn != MPI_TYPE_DUP_FN)
+          *ret = elem->copy_fn.type_copy_fn(datatype, it.first, elem->extra_state, it.second, &value_out, &flag);
+        else if ( elem->copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN &&
+                  (*(int*)*elem->copy_fn.type_copy_fn_fort) != 1){
+          value_out=(int*)xbt_malloc(sizeof(int));
+          elem->copy_fn.type_copy_fn_fort(datatype, it.first, elem->extra_state, it.second, value_out, &flag,ret);
+        }
         if (*ret != MPI_SUCCESS) {
           break;
         }
-        if (flag){
+        if(elem->copy_fn.type_copy_fn == MPI_TYPE_DUP_FN || 
+          ((elem->copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN) && (*(int*)*elem->copy_fn.type_copy_fn_fort == 1))){
           elem->refcount++;
-          attributes()->insert({(*it).first, value_out});
+          attributes()->insert({it.first, it.second});
+        } else if (flag){
+          elem->refcount++;
+          attributes()->insert({it.first, value_out});
         }
       }
     }
@@ -205,9 +217,6 @@ bool Datatype::is_basic()
 
 const char* Datatype::encode(MPI_Datatype dt)
 {
-  if (dt == MPI_DATATYPE_NULL)
-    return "-1";
-
   return dt->id.c_str();
 }
 

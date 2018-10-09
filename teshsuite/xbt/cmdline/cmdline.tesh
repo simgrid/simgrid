@@ -1,0 +1,5 @@
+
+p Test that -- correctly stops the command line parsing
+
+$ ${bindir:=.}/cmdline -- --help
+> [0.000000] [test/INFO] argv[1]=--help

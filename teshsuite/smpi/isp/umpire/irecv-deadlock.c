@@ -36,7 +36,7 @@ main (int argc, char **argv)
     {
       int dest = (rank == nprocs - 1) ? (0) : (rank + 1);
       int src = (rank == 0) ? (nprocs - 1) : (rank - 1);
-      memset (buf0, rank, buf_size);
+      memset (buf0, rank, buf_size*sizeof(int));
       MPI_Irecv (buf0, buf_size, MPI_INT, src, 0, MPI_COMM_WORLD, &req);
       MPI_Wait(&req,&status);
       MPI_Send (buf0, buf_size, MPI_INT, dest, 0, MPI_COMM_WORLD);

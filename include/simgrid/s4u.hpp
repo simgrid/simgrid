@@ -8,6 +8,7 @@
 
 #include <simgrid/s4u/Activity.hpp>
 #include <simgrid/s4u/Actor.hpp>
+#include <simgrid/s4u/Barrier.hpp>
 #include <simgrid/s4u/Comm.hpp>
 #include <simgrid/s4u/ConditionVariable.hpp>
 #include <simgrid/s4u/Engine.hpp>
@@ -17,6 +18,9 @@
 #include <simgrid/s4u/Mailbox.hpp>
 #include <simgrid/s4u/Mutex.hpp>
 #include <simgrid/s4u/NetZone.hpp>
+#include <simgrid/s4u/Semaphore.hpp>
 #include <simgrid/s4u/Storage.hpp>
+
+#include <simgrid/Exception.hpp>
 
 #endif /* SIMGRID_S4U_S4U_H */

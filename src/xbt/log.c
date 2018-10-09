@@ -1,7 +1,6 @@
 /* log - a generic logging facility in the spirit of log4j                  */
 
-/* Copyright (c) 2004-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -34,7 +33,7 @@
 int xbt_log_no_loc = 0; /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
 static xbt_os_mutex_t log_cat_init_mutex = NULL;
 
-/** \addtogroup XBT_log
+/** @addtogroup XBT_log
  *
  *  For more information, please refer to @ref outcomes_logs Section.
  */
@@ -110,17 +109,21 @@ void xbt_log_init(int *argc, char **argv)
 {
   unsigned help_requested = 0;  /* 1: logs; 2: categories */
   int j                   = 1;
+  int parse_args          = 1; // Stop parsing the parameters once we found '--'
 
   /* Set logs and init log submodule */
   for (int i = 1; i < *argc; i++) {
-    if (!strncmp(argv[i], "--log=", strlen("--log="))) {
+    if (!strcmp("--", argv[i])) {
+      parse_args = 0;
+      argv[j++]  = argv[i]; // Keep the '--' for sg_config
+    } else if (parse_args && !strncmp(argv[i], "--log=", strlen("--log="))) {
       char* opt = strchr(argv[i], '=');
       opt++;
       xbt_log_control_set(opt);
       XBT_DEBUG("Did apply '%s' as log setting", opt);
-    } else if (!strcmp(argv[i], "--help-logs")) {
+    } else if (parse_args && !strcmp(argv[i], "--help-logs")) {
       help_requested |= 1U;
-    } else if (!strcmp(argv[i], "--help-log-categories")) {
+    } else if (parse_args && !strcmp(argv[i], "--help-log-categories")) {
       help_requested |= 2U;
     } else {
       argv[j++] = argv[i];
@@ -534,14 +537,14 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat, char *n
 }
 
 /**
- * \ingroup XBT_log
- * \param control_string What to parse
+ * @ingroup XBT_log
+ * @param control_string What to parse
  *
  * Typically passed a command-line argument. The string has the syntax:
  *
  *      ( [category] "." [keyword] ":" value (" ")... )...
  *
- * where [category] is one the category names (see \ref XBT_log_cats for a complete list of the ones defined in the
+ * where [category] is one the category names (see @ref XBT_log_cats for a complete list of the ones defined in the
  * SimGrid library) and keyword is one of the following:
  *
  *    - thres: category's threshold priority. Possible values:
@@ -549,8 +552,8 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat, char *n
  *    - add or additivity: whether the logging actions must be passed to the parent category.
  *      Possible values: 0, 1, no, yes, on, off.
  *      Default value: yes.
- *    - fmt: the format to use. See \ref log_use_conf_fmt for more information.
- *    - app or appender: the appender to use. See \ref log_use_conf_app for more information.
+ *    - fmt: the format to use. See @ref log_use_conf_fmt for more information.
+ *    - app or appender: the appender to use. See @ref log_use_conf_app for more information.
  */
 void xbt_log_control_set(const char *control_string)
 {

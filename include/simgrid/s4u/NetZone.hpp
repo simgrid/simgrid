@@ -30,8 +30,6 @@ protected:
   explicit NetZone(kernel::routing::NetZoneImpl* impl);
   ~NetZone();
 
-  kernel::routing::NetZoneImpl* pimpl_;
-
 public:
   /** @brief Retrieves the name of that netzone as a C++ string */
   const std::string& get_name() const;
@@ -46,6 +44,7 @@ public:
   kernel::routing::NetZoneImpl* get_impl() { return pimpl_; }
 
 private:
+  kernel::routing::NetZoneImpl* pimpl_;
   std::unordered_map<std::string, std::string> properties_;
 
 public:
@@ -55,8 +54,8 @@ public:
   std::vector<NetZone*> get_children();
 
   /** Retrieve the property value (or nullptr if not set) */
-  const char* get_property(const char* key);
-  void set_property(const char* key, const char* value);
+  const char* get_property(std::string key);
+  void set_property(std::string key, std::string value);
 
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
   int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
@@ -75,42 +74,55 @@ public:
   static simgrid::xbt::signal<void(NetZone&)> on_creation;
   static simgrid::xbt::signal<void(NetZone&)> on_seal;
 
-public: // Deprecation wrappers
+  // Deprecation wrappers
+  /** @deprecated NetZone::get_father() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_father()") NetZone* getFather() { return get_father(); }
+  /** @deprecated NetZone::get_name() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_name()") const std::string& getName() const { return get_name(); }
+  /** @deprecated NetZone::get_cname() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_cname()") const char* getCname() const { return get_cname(); }
+  /** @deprecated NetZone::add_route() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::add_route()") void addRoute(
       kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
       kernel::routing::NetPoint* gw_dst, std::vector<simgrid::kernel::resource::LinkImpl*>& link_list, bool symmetrical)
   {
     add_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
   }
+  /** @deprecated NetZone::add_bypass_route() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::add_bypass_route()") void addBypassRoute(
       kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
       kernel::routing::NetPoint* gw_dst, std::vector<simgrid::kernel::resource::LinkImpl*>& link_list, bool symmetrical)
   {
     add_bypass_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
   }
+  /** @deprecated NetZone::get_properties() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_properties()") std::unordered_map<std::string, std::string>* getProperties()
   {
     return get_properties();
   }
+  /** @deprecated NetZone::get_property() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_property()") const char* getProperty(const char* key)
   {
     return get_property(key);
   }
+  /** @deprecated NetZone::set_property() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::set_property()") void setProperty(const char* key, const char* value)
   {
     set_property(key, value);
   }
+  /** @deprecated NetZone::add_component() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::add_component()") int addComponent(kernel::routing::NetPoint* elm)
   {
     return add_component(elm);
   }
+  /** @deprecated NetZone::get_vertices() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_vertices()") std::vector<kernel::routing::NetPoint*> getVertices();
+  /** @deprecated NetZone::get_host_count() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_host_count()") int getHostCount() { return get_host_count(); }
+  /** @deprecated NetZone::get_all_hosts() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_all_hosts()") void getHosts(
       std::vector<s4u::Host*>* whereto); // retrieve my content as a vector of hosts
+  /** @deprecated NetZone::get_children() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_children()") std::vector<NetZone*>* getChildren()
   {
     std::vector<NetZone*>* res = new std::vector<NetZone*>();

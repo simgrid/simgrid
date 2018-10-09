@@ -55,7 +55,7 @@ static int worker(int argc, char *argv[])
 
   snprintf(mailbox,79, "worker-%ld", id);
 
-  while (1) {  /* The worker wait in an infinite loop for tasks sent by the \ref master */
+  while (1) { /* The worker wait in an infinite loop for tasks sent by the @ref master */
     msg_task_t task = NULL;
     int res = MSG_task_receive(&task, mailbox);
     xbt_assert(res == MSG_OK, "MSG_task_get failed");

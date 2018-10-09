@@ -20,6 +20,8 @@
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
 
+#include <string>
+
 XBT_LOG_NEW_CATEGORY(s4u, "Log channels of the S4U (Simgrid for you) interface");
 
 namespace simgrid {
@@ -69,12 +71,16 @@ double Engine::get_clock()
   return SIMIX_get_clock();
 }
 
-void Engine::load_platform(const char* platf)
+void Engine::load_platform(std::string platf)
 {
   SIMIX_create_environment(platf);
 }
 
-void Engine::register_function(const char* name, int (*code)(int, char**))
+void Engine::register_function(std::string name, int (*code)(int, char**))
+{
+  SIMIX_function_register(name, code);
+}
+void Engine::register_function(std::string name, void (*code)(std::vector<std::string>))
 {
   SIMIX_function_register(name, code);
 }
@@ -82,7 +88,7 @@ void Engine::register_default(int (*code)(int, char**))
 {
   SIMIX_function_register_default(code);
 }
-void Engine::load_deployment(const char* deploy)
+void Engine::load_deployment(std::string deploy)
 {
   SIMIX_launch_application(deploy);
 }
@@ -91,16 +97,7 @@ size_t Engine::get_host_count()
 {
   return pimpl->hosts_.size();
 }
-/** @brief Fills the passed list with all hosts found in the platform
- *  @deprecated Please prefer Engine::getAllHosts()
- */
-void Engine::getHostList(std::vector<Host*>* list)
-{
-  for (auto const& kv : pimpl->hosts_)
-    list->push_back(kv.second);
-}
 
-/** @brief Returns the list of all hosts found in the platform */
 std::vector<Host*> Engine::get_all_hosts()
 {
   std::vector<Host*> res;
@@ -130,22 +127,37 @@ void Engine::host_unregister(std::string name)
   pimpl->hosts_.erase(name);
 }
 
+/** @brief Find an host from its name.
+ *
+ *  @throw std::invalid_argument if the searched host does not exist.
+ */
 simgrid::s4u::Host* Engine::host_by_name(std::string name)
 {
-  return pimpl->hosts_.at(name); // Will raise a std::out_of_range if the host does not exist
+  if (pimpl->hosts_.find(name) == pimpl->hosts_.end())
+    throw std::invalid_argument(std::string("Host not found: '") + name + std::string("'"));
+  return pimpl->hosts_.at(name);
 }
 
+/** @brief Find an host from its name (or nullptr if that host does not exist) */
 simgrid::s4u::Host* Engine::host_by_name_or_null(std::string name)
 {
   auto host = pimpl->hosts_.find(name);
   return host == pimpl->hosts_.end() ? nullptr : host->second;
 }
 
+/** @brief Find a link from its name.
+ *
+ *  @throw std::invalid_argument if the searched link does not exist.
+ */
 simgrid::s4u::Link* Engine::link_by_name(std::string name)
 {
-  return pimpl->links_.at(name); // Will raise a std::out_of_range if the host does not exist
+  if (pimpl->links_.find(name) == pimpl->links_.end())
+    throw std::invalid_argument(std::string("Link not found: ") + name);
+
+  return pimpl->links_.at(name);
 }
 
+/** @brief Find an link from its name (or nullptr if that link does not exist) */
 simgrid::s4u::Link* Engine::link_by_name_or_null(std::string name)
 {
   auto link = pimpl->links_.find(name);
@@ -177,11 +189,19 @@ std::vector<Storage*> Engine::get_all_storages()
   return res;
 }
 
+/** @brief Find a storage from its name.
+ *
+ *  @throw std::invalid_argument if the searched storage does not exist.
+ */
 simgrid::s4u::Storage* Engine::storage_by_name(std::string name)
 {
-  return pimpl->storages_.at(name); // Will raise a std::out_of_range if the host does not exist
+  if (pimpl->storages_.find(name) == pimpl->storages_.end())
+    throw std::invalid_argument(std::string("Storage not found: ") + name);
+
+  return pimpl->storages_.at(name);
 }
 
+/** @brief Find a storage from its name (or nullptr if that storage does not exist) */
 simgrid::s4u::Storage* Engine::storage_by_name_or_null(std::string name)
 {
   auto storage = pimpl->storages_.find(name);
@@ -272,9 +292,9 @@ void Engine::set_netzone_root(s4u::NetZone* netzone)
   pimpl->netzone_root_ = netzone->get_impl();
 }
 
-static s4u::NetZone* netzone_by_name_recursive(s4u::NetZone* current, const char* name)
+static s4u::NetZone* netzone_by_name_recursive(s4u::NetZone* current, std::string name)
 {
-  if (not strcmp(current->get_cname(), name))
+  if (current->get_name() == name)
     return current;
 
   for (auto const& elem : current->get_children()) {
@@ -287,7 +307,7 @@ static s4u::NetZone* netzone_by_name_recursive(s4u::NetZone* current, const char
 }
 
 /** @brief Retrieve the NetZone of the given name (or nullptr if not found) */
-NetZone* Engine::netzone_by_name_or_null(const char* name)
+NetZone* Engine::netzone_by_name_or_null(std::string name)
 {
   return netzone_by_name_recursive(get_netzone_root(), name);
 }
@@ -341,28 +361,32 @@ void Engine::set_config(std::string str)
 } // namespace simgrid
 
 /* **************************** Public C interface *************************** */
-void sg_engine_load_platform(const char* file)
+void simgrid_init(int* argc, char** argv)
+{
+  simgrid::s4u::Engine e(argc, argv);
+}
+void simgrid_load_platform(const char* file)
 {
   simgrid::s4u::Engine::get_instance()->load_platform(file);
 }
 
-void sg_engine_load_deployment(const char* file)
+void simgrid_load_deployment(const char* file)
 {
   simgrid::s4u::Engine::get_instance()->load_deployment(file);
 }
-void sg_engine_run()
+void simgrid_run()
 {
   simgrid::s4u::Engine::get_instance()->run();
 }
-void sg_engine_register_function(const char* name, int (*code)(int, char**))
+void simgrid_register_function(const char* name, int (*code)(int, char**))
 {
   simgrid::s4u::Engine::get_instance()->register_function(name, code);
 }
-void sg_engine_register_default(int (*code)(int, char**))
+void simgrid_register_default(int (*code)(int, char**))
 {
   simgrid::s4u::Engine::get_instance()->register_default(code);
 }
-double sg_engine_get_clock()
+double simgrid_get_clock()
 {
   return simgrid::s4u::Engine::get_clock();
 }

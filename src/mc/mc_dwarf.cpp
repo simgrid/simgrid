@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -33,15 +32,15 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 
-/** \brief The default DW_TAG_lower_bound for a given DW_AT_language.
+/** @brief The default DW_TAG_lower_bound for a given DW_AT_language.
  *
  *  The default for a given language is defined in the DWARF spec.
  *
- *  \param language constant as defined by the DWARf spec
+ *  @param language constant as defined by the DWARf spec
  */
 static uint64_t MC_dwarf_default_lower_bound(int lang);
 
-/** \brief Computes the the element_count of a DW_TAG_enumeration_type DIE
+/** @brief Computes the the element_count of a DW_TAG_enumeration_type DIE
  *
  * This is the number of elements in a given array dimension.
  *
@@ -49,60 +48,60 @@ static uint64_t MC_dwarf_default_lower_bound(int lang);
  * needed because the default lower bound (when there is no DW_AT_lower_bound)
  * depends of the language of the compilation unit (DW_AT_language).
  *
- * \param die  DIE for the DW_TAG_enumeration_type or DW_TAG_subrange_type
- * \param unit DIE of the DW_TAG_compile_unit
+ * @param die  DIE for the DW_TAG_enumeration_type or DW_TAG_subrange_type
+ * @param unit DIE of the DW_TAG_compile_unit
  */
 static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die* die, Dwarf_Die* unit);
 
-/** \brief Computes the number of elements of a given DW_TAG_array_type.
+/** @brief Computes the number of elements of a given DW_TAG_array_type.
  *
- * \param die DIE for the DW_TAG_array_type
+ * @param die DIE for the DW_TAG_array_type
  */
 static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit);
 
-/** \brief Process a DIE
+/** @brief Process a DIE
  *
- *  \param info the resulting object fot the library/binary file (output)
- *  \param die  the current DIE
- *  \param unit the DIE of the compile unit of the current DIE
- *  \param frame containing frame if any
+ *  @param info the resulting object fot the library/binary file (output)
+ *  @param die  the current DIE
+ *  @param unit the DIE of the compile unit of the current DIE
+ *  @param frame containing frame if any
  */
 static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
                                 Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                 const char *ns);
 
-/** \brief Process a type DIE
+/** @brief Process a type DIE
  */
 static void MC_dwarf_handle_type_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
                                      Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                      const char *ns);
 
-/** \brief Calls MC_dwarf_handle_die on all children of the given die
+/** @brief Calls MC_dwarf_handle_die on all children of the given die
  *
- *  \param info the resulting object fot the library/binary file (output)
- *  \param die  the current DIE
- *  \param unit the DIE of the compile unit of the current DIE
- *  \param frame containing frame if any
+ *  @param info the resulting object fot the library/binary file (output)
+ *  @param die  the current DIE
+ *  @param unit the DIE of the compile unit of the current DIE
+ *  @param frame containing frame if any
  */
 static void MC_dwarf_handle_children(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
                                      Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                      const char *ns);
 
-/** \brief Handle a variable (DW_TAG_variable or other)
+/** @brief Handle a variable (DW_TAG_variable or other)
  *
- *  \param info the resulting object fot the library/binary file (output)
- *  \param die  the current DIE
- *  \param unit the DIE of the compile unit of the current DIE
- *  \param frame containing frame if any
+ *  @param info the resulting object fot the library/binary file (output)
+ *  @param die  the current DIE
+ *  @param unit the DIE of the compile unit of the current DIE
+ *  @param frame containing frame if any
  */
 static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
                                          Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                          const char *ns);
 
-/** \brief Get the DW_TAG_type of the DIE
+/** @brief Get the DW_TAG_type of the DIE
  *
- *  \param die DIE
- *  \return DW_TAG_type attribute as a new string (nullptr if none)
+ *  @param die DIE
+ *  @return DW_TAG_type attribute as a new string (nullptr if none)
  */
 static std::uint64_t MC_dwarf_at_type(Dwarf_Die * die);
 
@@ -186,12 +185,12 @@ TagClass classify_tag(int tag)
   }
 }
 
-/** \brief Find the DWARF data class for a given DWARF data form
+/** @brief Find the DWARF data class for a given DWARF data form
  *
  *  This mapping is defined in the DWARF spec.
  *
- *  \param form The form (values taken from the DWARF spec)
- *  \return An internal representation for the corresponding class
+ *  @param form The form (values taken from the DWARF spec)
+ *  @return An internal representation for the corresponding class
  * */
 static
 FormClass classify_form(int form)
@@ -233,10 +232,10 @@ FormClass classify_form(int form)
   }
 }
 
-/** \brief Get the name of the tag of a given DIE
+/** @brief Get the name of the tag of a given DIE
  *
- *  \param die DIE
- *  \return name of the tag of this DIE
+ *  @param die DIE
+ *  @return name of the tag of this DIE
  */
 inline XBT_PRIVATE
 const char *tagname(Dwarf_Die * die)
@@ -249,11 +248,11 @@ const char *tagname(Dwarf_Die * die)
 
 // ***** Attributes
 
-/** \brief Get an attribute of a given DIE as a string
+/** @brief Get an attribute of a given DIE as a string
  *
- *  \param die       the DIE
- *  \param attribute attribute
- *  \return value of the given attribute of the given DIE
+ *  @param die       the DIE
+ *  @param attribute attribute
+ *  @return value of the given attribute of the given DIE
  */
 static const char *MC_dwarf_attr_integrate_string(Dwarf_Die * die,
                                                   int attribute)
@@ -290,10 +289,10 @@ static Dwarf_Off MC_dwarf_attr_integrate_dieoffset(Dwarf_Die * die,
   return dwarf_dieoffset(&subtype_die);
 }
 
-/** \brief Find the type/subtype (DW_AT_type) for a DIE
+/** @brief Find the type/subtype (DW_AT_type) for a DIE
  *
- *  \param die the DIE
- *  \return DW_AT_type reference as a global offset in hexadecimal (or nullptr)
+ *  @param die the DIE
+ *  @return DW_AT_type reference as a global offset in hexadecimal (or nullptr)
  */
 static
 std::uint64_t MC_dwarf_at_type(Dwarf_Die * die)
@@ -378,11 +377,11 @@ static uint64_t MC_dwarf_default_lower_bound(int lang)
   }
 }
 
-/** \brief Finds the number of elements in a DW_TAG_subrange_type or DW_TAG_enumeration_type DIE
+/** @brief Finds the number of elements in a DW_TAG_subrange_type or DW_TAG_enumeration_type DIE
  *
- *  \param die  the DIE
- *  \param unit DIE of the compilation unit
- *  \return     number of elements in the range
+ *  @param die  the DIE
+ *  @param unit DIE of the compilation unit
+ *  @return     number of elements in the range
  * */
 static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die * die,
                                                 Dwarf_Die * unit)
@@ -411,14 +410,14 @@ static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die * die,
   return upper_bound - lower_bound + 1;
 }
 
-/** \brief Finds the number of elements in a array type (DW_TAG_array_type)
+/** @brief Finds the number of elements in a array type (DW_TAG_array_type)
  *
  *  The compilation unit might be needed because the default lower
  *  bound depends on the language of the compilation unit.
  *
- *  \param die the DIE of the DW_TAG_array_type
- *  \param unit the DIE of the compilation unit
- *  \return number of elements in this array type
+ *  @param die the DIE of the DW_TAG_array_type
+ *  @param unit the DIE of the compilation unit
+ *  @return number of elements in this array type
  * */
 static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit)
 {
@@ -459,12 +458,12 @@ static bool MC_compare_variable(
 
 // ***** simgrid::mc::Type*
 
-/** \brief Initialize the location of a member of a type
+/** @brief Initialize the location of a member of a type
  * (DW_AT_data_member_location of a DW_TAG_member).
  *
- *  \param  type   a type (struct, class)
- *  \param  member the member of the type
- *  \param  child  DIE of the member (DW_TAG_member)
+ *  @param  type   a type (struct, class)
+ *  @param  member the member of the type
+ *  @param  child  DIE of the member (DW_TAG_member)
  */
 static void MC_dwarf_fill_member_location(
   simgrid::mc::Type* type, simgrid::mc::Member* member, Dwarf_Die * child)
@@ -521,15 +520,15 @@ static void MC_dwarf_fill_member_location(
 
 }
 
-/** \brief Populate the list of members of a type
+/** @brief Populate the list of members of a type
  *
- *  \param info ELF object containing the type DIE
- *  \param die  DIE of the type
- *  \param unit DIE of the compilation unit containing the type DIE
- *  \param type the type
+ *  @param info ELF object containing the type DIE
+ *  @param die  DIE of the type
+ *  @param unit DIE of the compilation unit containing the type DIE
+ *  @param type the type
  */
-static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
-                                 Dwarf_Die * unit, simgrid::mc::Type* type)
+static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* /*info*/, Dwarf_Die* die, Dwarf_Die* /*unit*/,
+                                 simgrid::mc::Type* type)
 {
   int res;
   Dwarf_Die child;
@@ -597,12 +596,12 @@ static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* info, Dwarf_Die
   }
 }
 
-/** \brief Create a MC type object from a DIE
+/** @brief Create a MC type object from a DIE
  *
- *  \param info current object info object
- *  \param die DIE (for a given type)
- *  \param unit compilation unit of the current DIE
- *  \return MC representation of the type
+ *  @param info current object info object
+ *  @param die DIE (for a given type)
+ *  @param unit compilation unit of the current DIE
+ *  @return MC representation of the type
  */
 static simgrid::mc::Type MC_dwarf_die_to_type(
   simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
@@ -698,10 +697,9 @@ static void MC_dwarf_handle_type_die(simgrid::mc::ObjectInformation* info, Dwarf
 
 static int mc_anonymous_variable_index = 0;
 
-static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
-  simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
-  Dwarf_Die * unit, simgrid::mc::Frame* frame,
-  const char *ns)
+static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(simgrid::mc::ObjectInformation* info, Dwarf_Die* die,
+                                                                 Dwarf_Die* /*unit*/, simgrid::mc::Frame* frame,
+                                                                 const char* ns)
 {
   // Skip declarations:
   if (MC_dwarf_attr_flag(die, DW_AT_declaration, false))
@@ -1122,7 +1120,7 @@ std::string find_by_build_id(std::vector<char> id)
   return std::string();
 }
 
-/** \brief Populate the debugging informations of the given ELF object
+/** @brief Populate the debugging informations of the given ELF object
  *
  *  Read the DWARf information of the EFFL object and populate the
  *  lists of types, variables, functions.
@@ -1204,8 +1202,8 @@ void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
   elf_end(elf);
   close(fd);
   xbt_die("Debugging information not found for %s\n"
-    "Try recompiling with -g\n",
-    info->file_name.c_str());
+          "Try recompiling with -g\n",
+          info->file_name.c_str());
 }
 
 // ***** Functions index
@@ -1308,7 +1306,7 @@ static void MC_post_process_types(simgrid::mc::ObjectInformation* info)
 namespace simgrid {
 namespace mc {
 
-/** \brief Finds informations about a given shared object/executable */
+/** @brief Finds informations about a given shared object/executable */
 std::shared_ptr<simgrid::mc::ObjectInformation> createObjectInformation(
   std::vector<simgrid::xbt::VmMap> const& maps, const char *name)
 {

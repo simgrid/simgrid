@@ -1,23 +1,23 @@
-/*! \page pls_ns3 ns-3 as a SimGrid model
+/*! @page pls_ns3 ns-3 as a SimGrid model
 
-\tableofcontents
+@tableofcontents
 
 You can use the well-known 
 <a href="http://www.nsnam.org/"><b>ns-3</b></a> packet-level network
 simulator as a SimGrid model, for example to investigate the validity
 of your simulation. Just install ns-3 and recompile SimGrid accordingly.
 
-\section pls_ns3_install Installing ns-3
+@section pls_ns3_install Installing ns-3
 
 The easiest is to install it with the package manager. Under Debian/Ubuntu, simply type as root:
 
-\verbatim
+@verbatim
 apt-get install libns3-dev ns3
-\endverbatim
+@endverbatim
 
 You can also install it from scratch with the following commands:
 
-\verbatim
+@verbatim
 # Download the source
 wget http://www.nsnam.org/release/ns-allinone-3.26.tar.bz2
 tar -xf ns-allinone-3.26.tar.bz2
@@ -26,35 +26,35 @@ cd ns-allinone-3.26/ns-3.26/
 ./waf configure --prefix="/opt/ns3" # or give another path if you prefer
 ./waf
 ./waf install
-\endverbatim
+@endverbatim
 
 For more information, please refer to the ns-3 documentation
 <a href="http://www.nsnam.org/">(official website)</a>.
 
-\section pls_ns3_config Enabling SimGrid's support for ns-3
+@section pls_ns3_config Enabling SimGrid's support for ns-3
 
 Normally, you just have to enable ns-3 in ccmake or cmake as
 follows. If you installed ns-3 in a regular path, just drop the
 NS3_HINT configuration item.
 
-\verbatim
+@verbatim
 cmake . -Denable_ns3=ON -DNS3_HINT=/opt/ns3 # or change the path if needed
-\endverbatim
+@endverbatim
 
 By the end of the configuration, cmake reports whether ns-3 was found,
 and this information is also available in <tt>include/simgrid/config.h</tt>
-If your local copy defines the variable \c SIMGRID_HAVE_NS3 to 1, then ns-3
+If your local copy defines the variable @c SIMGRID_HAVE_NS3 to 1, then ns-3
 was correctly detected. If it's defined to 0, then something went
 wrong. Explore <tt>CMakeFiles/CMakeOutput.log</tt> and
 <tt>CMakeFiles/CMakeError.log</tt> to diagnose the problem.
 
 Afterward, you can test your installation as follows:
 
-\verbatim
+@verbatim
 $ ctest -R ns3
-\endverbatim
+@endverbatim
 
-\section pls_ns3_use Using ns-3 from SimGrid
+@section pls_ns3_use Using ns-3 from SimGrid
 
 The SimGrid-ns3 binding only contains features that are common to both
 systems: ns-3 wireless models are not available, while SimGrid routes
@@ -109,9 +109,9 @@ ns-3 will find the path from point to point.
 Once your platform is OK, just change the "network/model"
 configuration option to "NS3" as follows. The rest remains unchanged.
 
-\verbatim
+@verbatim
 ./network-ns3 ../../platforms/small_platform_one_link_routes.xml 3hosts_2links_d.xml --cfg=network/model:NS3
-\endverbatim
+@endverbatim
 
 Many other files from the examples/platform directory are usable with
 the ns-3 model, such as @ref examples/platforms/dogbone.xml. Check the file
@@ -148,7 +148,7 @@ existing one.
 
 @subsection pls_ns3_config_trouble I fail to compile ns-3 within SimGrid
 
-If you have a ns-3 version that is not known to SimGrid yet, edit \c
+If you have a ns-3 version that is not known to SimGrid yet, edit @c
 tools/cmake/Modules/FindNS3.cmake in your SimGrid tree, according to
 the comments on top of this file.
 

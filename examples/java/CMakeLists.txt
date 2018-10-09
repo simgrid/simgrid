@@ -25,9 +25,15 @@ set(process-suspend_files       Main  DreamMaster  LazyGuy)
 set(task-priority_files         Main  Test)
 set(hostload_files              Main  LoadRunner)
 
+if(enable_java)
+  add_custom_target(java-all
+    COMMENT "Building all Java examples..."
+  )
+endif()
+
 foreach (example app-bittorrent app-centralizedmutex app-masterworker app-pingpong app-tokenring async-yield async-waitall async-dsend
-         cloud-migration cloud-masterworker dht-chord dht-kademlia energy-consumption energy-pstate energy-vm io-file io-storage
-         process-kill process-migration process-startkilltime process-suspend task-priority trace-pingpong hostload)
+         cloud-migration cloud-masterworker dht-chord dht-kademlia energy-consumption energy-pstate energy-vm hostload io-file io-storage
+         process-kill process-migration process-startkilltime process-suspend task-priority trace-pingpong)
   string (REPLACE "-" "/" example_dir ${example})
   set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/${example_dir})
   foreach (filename ${${example}_files} )
@@ -45,6 +51,7 @@ foreach (example app-bittorrent app-centralizedmutex app-masterworker app-pingpo
       COMMAND ${CMAKE_COMMAND} -E touch ${example_dir}/java-${example}_compiled
     )
     add_custom_target(java-${example} ALL DEPENDS ${example_dir}/java-${example}_compiled)
+    add_dependencies(java-all java-${example})
   endif()
   set(examples_src  ${examples_src}  ${${example}_sources})
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example_dir}/${example}.tesh)
@@ -65,8 +72,8 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/bi
 
 if(enable_java)
   foreach (example app-bittorrent app-centralizedmutex app-masterworker app-pingpong app-tokenring async-yield async-waitall async-dsend
-           cloud-migration cloud-masterworker dht-chord dht-kademlia energy-consumption energy-pstate energy-vm io-file io-storage
-           process-kill process-migration process-startkilltime process-suspend task-priority trace-pingpong hostload)
+           cloud-migration cloud-masterworker dht-chord dht-kademlia energy-consumption energy-pstate energy-vm hostload io-file io-storage
+           process-kill process-migration process-startkilltime process-suspend task-priority trace-pingpong)
     string (REPLACE "-" "/" example_dir ${example})
     ADD_TESH(java-${example}  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java/${example_dir} ${CMAKE_HOME_DIRECTORY}/examples/java/${example_dir}/${example}.tesh)
   endforeach()

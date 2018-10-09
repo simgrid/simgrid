@@ -3,10 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "smpi_op.hpp"
 #include "private.hpp"
 #include "smpi_datatype.hpp"
-#include "smpi_op.hpp"
-#include "smpi_process.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_op, smpi, "Logging specific to SMPI (op)");
 
@@ -77,8 +77,8 @@ APPLY_OP_LOOP(MPI_DOUBLE, double,op)\
 APPLY_OP_LOOP(MPI_LONG_DOUBLE, long double,op)\
 APPLY_OP_LOOP(MPI_REAL, float,op)\
 APPLY_OP_LOOP(MPI_REAL4, float,op)\
-APPLY_OP_LOOP(MPI_REAL8, float,op)\
-APPLY_OP_LOOP(MPI_REAL16, double,op)
+APPLY_OP_LOOP(MPI_REAL8, double,op)\
+APPLY_OP_LOOP(MPI_REAL16, long double,op)
 
 #define APPLY_COMPLEX_OP_LOOP(op)\
 APPLY_OP_LOOP(MPI_C_FLOAT_COMPLEX, float _Complex,op)\

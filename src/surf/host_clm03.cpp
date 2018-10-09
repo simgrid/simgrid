@@ -3,19 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "host_clm03.hpp"
+#include "src/surf/host_clm03.hpp"
 #include "simgrid/sg_config.hpp"
 #include "surf/surf.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
-
-/*************
- * CallBacks *
- *************/
-
-/*********
- * Model *
- *********/
 
 void surf_host_model_init_current_default()
 {
@@ -23,22 +15,21 @@ void surf_host_model_init_current_default()
   simgrid::config::set_default<bool>("network/crosstraffic", true);
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
-
-  all_existing_models->push_back(surf_host_model);
 }
 
 void surf_host_model_init_compound()
 {
   xbt_assert(surf_cpu_model_pm, "No CPU model defined yet!");
   xbt_assert(surf_network_model, "No network model defined yet!");
-
   surf_host_model = new simgrid::surf::HostCLM03Model();
-  all_existing_models->push_back(surf_host_model);
 }
 
 namespace simgrid {
 namespace surf {
-
+HostCLM03Model::HostCLM03Model()
+{
+  all_existing_models.push_back(this);
+}
 double HostCLM03Model::next_occuring_event(double now)
 {
   ignore_empty_vm_in_pm_LMM();
@@ -53,19 +44,17 @@ double HostCLM03Model::next_occuring_event(double now)
       typeid(surf_network_model).name(), min_by_net,
       typeid(surf_storage_model).name(), min_by_sto);
 
-  double res = std::max({min_by_cpu, min_by_net, min_by_sto});
-  if (min_by_cpu >= 0.0 && min_by_cpu < res)
-    res = min_by_cpu;
-  if (min_by_net >= 0.0 && min_by_net < res)
+  double res = min_by_cpu;
+  if (res < 0 || (min_by_net >= 0.0 && min_by_net < res))
     res = min_by_net;
-  if (min_by_sto >= 0.0 && min_by_sto < res)
+  if (res < 0 || (min_by_sto >= 0.0 && min_by_sto < res))
     res = min_by_sto;
   return res;
 }
 
 void HostCLM03Model::update_actions_state(double /*now*/, double /*delta*/)
 {
-  /* I won't do what you tell me */
+  /* I've no action to update */
 }
 
 }

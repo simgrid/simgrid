@@ -4,8 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Engine.hpp"
-#include "src/simix/smx_host_private.hpp"
+#include "simgrid/s4u/Exec.hpp"
 #include "src/surf/HostImpl.hpp"
 
 #include <string>
@@ -28,9 +29,9 @@ simgrid::xbt::signal<void(Host&)> Host::on_destruction;
 simgrid::xbt::signal<void(Host&)> Host::on_state_change;
 simgrid::xbt::signal<void(Host&)> Host::on_speed_change;
 
-Host::Host(const char* name) : name_(name)
+Host::Host(std::string name) : name_(name)
 {
-  xbt_assert(Host::by_name_or_null(name) == nullptr, "Refusing to create a second host named '%s'.", name);
+  xbt_assert(Host::by_name_or_null(name) == nullptr, "Refusing to create a second host named '%s'.", name.c_str());
   Engine::get_instance()->host_register(std::string(name_), this);
   new simgrid::surf::HostImpl(this);
 }
@@ -68,14 +69,6 @@ Host* Host::by_name(std::string name)
 {
   return Engine::get_instance()->host_by_name(name);
 }
-Host* Host::by_name(const char* name)
-{
-  return Engine::get_instance()->host_by_name(std::string(name));
-}
-Host* Host::by_name_or_null(const char* name)
-{
-  return Engine::get_instance()->host_by_name_or_null(std::string(name));
-}
 Host* Host::by_name_or_null(std::string name)
 {
   return Engine::get_instance()->host_by_name_or_null(name);
@@ -86,15 +79,15 @@ Host* Host::current()
   smx_actor_t smx_proc = SIMIX_process_self();
   if (smx_proc == nullptr)
     xbt_die("Cannot call Host::current() from the maestro context");
-  return smx_proc->host;
+  return smx_proc->host_;
 }
 
 void Host::turn_on()
 {
   if (is_off()) {
     simgrid::simix::simcall([this] {
-      this->extension<simgrid::simix::Host>()->turnOn();
       this->pimpl_cpu->turn_on();
+      this->pimpl_->turn_on();
       on_state_change(*this);
     });
   }
@@ -104,29 +97,16 @@ void Host::turn_on()
 void Host::turn_off()
 {
   if (is_on()) {
-    smx_actor_t self = SIMIX_process_self();
-    simgrid::simix::simcall([this, self] {
-      simgrid::simix::Host* host = this->extension<simgrid::simix::Host>();
-
-      xbt_assert((host != nullptr), "Invalid parameters");
-
+    simgrid::simix::simcall([this] {
       this->pimpl_cpu->turn_off();
-
-      /* Clean Simulator data */
-      if (not host->process_list.empty()) {
-        for (auto& process : host->process_list) {
-          SIMIX_process_kill(&process, self);
-          XBT_DEBUG("Killing %s@%s on behalf of %s which turned off that host.", process.get_cname(),
-                    process.host->get_cname(), self->get_cname());
-        }
-      }
+      this->pimpl_->turn_off();
 
       on_state_change(*this);
     });
   }
 }
 
-bool Host::is_on()
+bool Host::is_on() const
 {
   return this->pimpl_cpu->is_on();
 }
@@ -137,48 +117,45 @@ int Host::get_pstate_count() const
 }
 
 /**
- * \brief Return a copy of the list of actors that are executing on this host.
+ * @brief Return a copy of the list of actors that are executing on this host.
  *
  * Daemons and regular actors are all mixed in this list.
  */
 std::vector<ActorPtr> Host::get_all_actors()
 {
-  std::vector<ActorPtr> res;
-  for (auto& actor : this->extension<simgrid::simix::Host>()->process_list)
-    res.push_back(actor.ciface());
-  return res;
+  return pimpl_->get_all_actors();
 }
 
 /** @brief Returns how many actors (daemonized or not) have been launched on this host */
 int Host::get_actor_count()
 {
-  return this->extension<simgrid::simix::Host>()->process_list.size();
+  return pimpl_->get_actor_count();
 }
 
 /** @deprecated */
 void Host::getProcesses(std::vector<ActorPtr>* list)
 {
-  for (auto& actor : this->extension<simgrid::simix::Host>()->process_list) {
-    list->push_back(actor.iface());
-  }
+  auto actors = get_all_actors();
+  for (auto& actor : actors)
+    list->push_back(actor);
 }
 
 /** @deprecated */
 void Host::actorList(std::vector<ActorPtr>* whereto)
 {
-  for (auto& actor : this->extension<simgrid::simix::Host>()->process_list) {
-    whereto->push_back(actor.ciface());
-  }
+  auto actors = get_all_actors();
+  for (auto& actor : actors)
+    whereto->push_back(actor);
 }
 
 /**
- * \brief Find a route toward another host
+ * @brief Find a route toward another host
  *
- * \param dest [IN] where to
- * \param links [OUT] where to store the list of links (must exist, cannot be nullptr).
- * \param latency [OUT] where to store the latency experienced on the path (or nullptr if not interested)
+ * @param dest [IN] where to
+ * @param links [OUT] where to store the list of links (must exist, cannot be nullptr).
+ * @param latency [OUT] where to store the latency experienced on the path (or nullptr if not interested)
  *                It is the caller responsibility to initialize latency to 0 (we add to provided route)
- * \pre links!=nullptr
+ * @pre links!=nullptr
  *
  * walk through the routing components tree and find a route between hosts
  * by calling each "get_route" function in each routing component.
@@ -210,7 +187,7 @@ std::unordered_map<std::string, std::string>* Host::get_properties()
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char* Host::get_property(const char* key)
+const char* Host::get_property(std::string key) const
 {
   return this->pimpl_->get_property(key);
 }
@@ -221,7 +198,7 @@ void Host::set_property(std::string key, std::string value)
 }
 
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
-double Host::get_pstate_speed(int pstate_index)
+double Host::get_pstate_speed(int pstate_index) const
 {
   return simgrid::simix::simcall([this, pstate_index] { return this->pimpl_cpu->get_pstate_peak_speed(pstate_index); });
 }
@@ -231,7 +208,8 @@ double Host::get_pstate_speed(int pstate_index)
  *  The amount of flops per second available for computing depends on several things:
  *    - The current pstate determines the maximal peak computing speed (use @ref get_pstate_speed() to retrieve the
  *      computing speed you would get at another pstate)
- *    - If you declared an external load, then this reduces the available computing speed (see @ref set_speed_trace())
+ *    - If you declared an external load, then this reduces the available computing speed
+ *      (see @ref simgrid::surf::Cpu::set_speed_trace())
  *
  *  The remaining speed is then shared between the executions located on this host.
  *  You can retrieve the amount of tasks currently running on this host with @ref get_load().
@@ -240,28 +218,28 @@ double Host::get_pstate_speed(int pstate_index)
  *
  *  Finally, executions of priority 2 get twice the amount of flops than executions of priority 1.
  */
-double Host::get_speed()
+double Host::get_speed() const
 {
   return this->pimpl_cpu->get_speed(1.0);
 }
 /** @brief Returns the current computation load (in flops per second)
  * The external load (coming from an availability trace) is not taken in account.
  */
-double Host::get_load()
+double Host::get_load() const
 {
   return this->pimpl_cpu->get_load();
 }
 /** @brief Get the available speed ratio, between 0 and 1.
  *
- * This accounts for external load (see @ref set_speed_trace()).
+ * This accounts for external load (see @ref simgrid::surf::Cpu::set_speed_trace()).
  */
-double Host::get_available_speed()
+double Host::get_available_speed() const
 {
   return this->pimpl_cpu->get_speed_ratio();
 }
 
 /** @brief Returns the number of core of the processor. */
-int Host::get_core_count()
+int Host::get_core_count() const
 {
   return this->pimpl_cpu->get_core_count();
 }
@@ -272,17 +250,17 @@ void Host::set_pstate(int pstate_index)
   simgrid::simix::simcall([this, pstate_index] { this->pimpl_cpu->set_pstate(pstate_index); });
 }
 /** @brief Retrieve the pstate at which the host is currently running */
-int Host::get_pstate()
+int Host::get_pstate() const
 {
   return this->pimpl_cpu->get_pstate();
 }
 
 /**
- * \ingroup simix_storage_management
- * \brief Returns the list of storages attached to an host.
- * \return a vector containing all storages attached to the host
+ * @ingroup simix_storage_management
+ * @brief Returns the list of storages attached to an host.
+ * @return a vector containing all storages attached to the host
  */
-std::vector<const char*> Host::get_attached_storages()
+std::vector<const char*> Host::get_attached_storages() const
 {
   return simgrid::simix::simcall([this] { return this->pimpl_->get_attached_storages(); });
 }
@@ -306,14 +284,18 @@ std::unordered_map<std::string, Storage*> const& Host::get_mounted_storages()
   return *mounts_;
 }
 
+ExecPtr Host::exec_async(double flops)
+{
+  return this_actor::exec_init(flops)->set_host(this);
+}
+
 void Host::execute(double flops)
 {
   execute(flops, 1.0 /* priority */);
 }
 void Host::execute(double flops, double priority)
 {
-  smx_activity_t s = simcall_execution_start(nullptr, flops, 1 / priority /*priority*/, 0. /*bound*/, this);
-  simcall_execution_wait(s);
+  this_actor::exec_init(flops)->set_host(this)->set_priority(1 / priority)->start()->wait();
 }
 
 } // namespace s4u
@@ -328,11 +310,11 @@ size_t sg_host_count()
  *
  * Uses sg_host_count() to know the array size.
  *
- * \return an array of \ref sg_host_t containing all the hosts in the platform.
- * \remark The host order in this array is generally different from the
+ * @return an array of @ref sg_host_t containing all the hosts in the platform.
+ * @remark The host order in this array is generally different from the
  * creation/declaration order in the XML platform (we use a hash table
  * internally).
- * \see sg_host_count()
+ * @see sg_host_count()
  */
 sg_host_t* sg_host_list()
 {
@@ -432,22 +414,22 @@ double sg_host_speed(sg_host_t host)
   return host->get_speed();
 }
 
-/** \brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_energy.
+/** @brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_energy.
  *
- * \param  host host to test
- * \param pstate_index pstate to test
- * \return Returns the processor speed associated with pstate_index
+ * @param  host host to test
+ * @param pstate_index pstate to test
+ * @return Returns the processor speed associated with pstate_index
  */
 double sg_host_get_pstate_speed(sg_host_t host, int pstate_index)
 {
   return host->get_pstate_speed(pstate_index);
 }
 
-/** \ingroup m_host_management
- * \brief Return the number of cores.
+/** @ingroup m_host_management
+ * @brief Return the number of cores.
  *
- * \param host a host
- * \return the number of cores
+ * @param host a host
+ * @return the number of cores
  */
 int sg_host_core_count(sg_host_t host)
 {
@@ -485,9 +467,9 @@ void sg_host_set_pstate(sg_host_t host, int pstate)
   host->set_pstate(pstate);
 }
 
-/** \ingroup m_host_management
+/** @ingroup m_host_management
  *
- * \brief Start the host if it is off
+ * @brief Start the host if it is off
  *
  * See also #sg_host_is_on() and #sg_host_is_off() to test the current state of the host and @ref plugin_energy
  * for more info on DVFS.
@@ -497,9 +479,9 @@ void sg_host_turn_on(sg_host_t host)
   host->turn_on();
 }
 
-/** \ingroup m_host_management
+/** @ingroup m_host_management
  *
- * \brief Stop the host if it is on
+ * @brief Stop the host if it is on
  *
  * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref plugin_energy
  * for more info on DVFS.
@@ -547,13 +529,13 @@ xbt_dict_t sg_host_get_properties(sg_host_t host)
   return as_dict;
 }
 
-/** \ingroup m_host_management
- * \brief Returns the value of a given host property
+/** @ingroup m_host_management
+ * @brief Returns the value of a given host property
  *
- * \param host a host
- * \param name a property name
- * \return value of a property (or nullptr if property not set)
-*/
+ * @param host a host
+ * @param name a property name
+ * @return value of a property (or nullptr if property not set)
+ */
 const char* sg_host_get_property_value(sg_host_t host, const char* name)
 {
   return host->get_property(name);
@@ -565,11 +547,11 @@ void sg_host_set_property_value(sg_host_t host, const char* name, const char* va
 }
 
 /**
- * \brief Find a route between two hosts
+ * @brief Find a route between two hosts
  *
- * \param from where from
- * \param to where to
- * \param links [OUT] where to store the list of links (must exist, cannot be nullptr).
+ * @param from where from
+ * @param to where to
+ * @param links [OUT] where to store the list of links (must exist, cannot be nullptr).
  */
 void sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links)
 {
@@ -579,10 +561,10 @@ void sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links)
     xbt_dynar_push(links, &link);
 }
 /**
- * \brief Find the latency of the route between two hosts
+ * @brief Find the latency of the route between two hosts
  *
- * \param from where from
- * \param to where to
+ * @param from where from
+ * @param to where to
  */
 double sg_host_route_latency(sg_host_t from, sg_host_t to)
 {
@@ -592,10 +574,10 @@ double sg_host_route_latency(sg_host_t from, sg_host_t to)
   return res;
 }
 /**
- * \brief Find the bandwitdh of the route between two hosts
+ * @brief Find the bandwitdh of the route between two hosts
  *
- * \param from where from
- * \param to where to
+ * @param from where from
+ * @param to where to
  */
 double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
 {
@@ -627,23 +609,22 @@ void sg_host_dump(sg_host_t host)
   }
 }
 
-/** \brief Return the list of actors attached to an host.
+/** @brief Return the list of actors attached to an host.
  *
- * \param host a host
- * \param whereto a dynar in which we should push actors living on that host
+ * @param host a host
+ * @param whereto a dynar in which we should push actors living on that host
  */
 void sg_host_get_actor_list(sg_host_t host, xbt_dynar_t whereto)
 {
-  for (auto& actor : host->extension<simgrid::simix::Host>()->process_list) {
-    s4u_Actor* p = actor.ciface();
-    xbt_dynar_push(whereto, &p);
-  }
+  auto actors = host->get_all_actors();
+  for (auto& actor : actors)
+    xbt_dynar_push(whereto, &actor);
 }
 
 sg_host_t sg_host_self()
 {
   smx_actor_t process = SIMIX_process_self();
-  return (process == nullptr) ? nullptr : process->host;
+  return (process == nullptr) ? nullptr : process->host_;
 }
 
 double sg_host_load(sg_host_t host)

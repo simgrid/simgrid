@@ -4,6 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/simix/smx_private.hpp"
+
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf, "Logging specific to the SURF host module");
@@ -101,6 +103,73 @@ HostImpl::HostImpl(s4u::Host* host) : piface_(host)
   piface_->pimpl_ = this;
 }
 
+HostImpl::~HostImpl()
+{
+  /* All processes should be gone when the host is turned off (by the end of the simulation). */
+  if (not process_list_.empty()) {
+    std::string msg = std::string("Shutting down host, but it's not empty:");
+    for (auto const& process : process_list_)
+      msg += "\n\t" + std::string(process.get_name());
+
+    SIMIX_display_process_status();
+    THROWF(arg_error, 0, "%s", msg.c_str());
+  }
+  for (auto const& arg : actors_at_boot_)
+    delete arg;
+  actors_at_boot_.clear();
+}
+
+/** Re-starts all the actors that are marked as restartable.
+ *
+ * Weird things will happen if you turn on an host that is already on. S4U is fool-proof, not this.
+ */
+void HostImpl::turn_on()
+{
+  for (auto const& arg : actors_at_boot_) {
+    XBT_DEBUG("Booting Actor %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
+    smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
+                                                              arg->properties.get(), nullptr);
+    if (arg->kill_time >= 0)
+      simcall_process_set_kill_time(actor, arg->kill_time);
+    if (arg->auto_restart)
+      actor->auto_restart_ = arg->auto_restart;
+    if (arg->daemon_)
+      actor->daemonize();
+  }
+}
+
+/** Kill all actors hosted here */
+void HostImpl::turn_off()
+{
+  if (not process_list_.empty()) {
+    for (auto& actor : process_list_) {
+      XBT_DEBUG("Killing Actor %s@%s on behalf of %s which turned off that host.", actor.get_cname(),
+                actor.host_->get_cname(), SIMIX_process_self()->get_cname());
+      SIMIX_process_kill(&actor, SIMIX_process_self());
+    }
+  }
+  // When a host is turned off, we want to keep only the actors that should restart for when it will boot again.
+  // Then get rid of the others.
+  auto elm = remove_if(begin(actors_at_boot_), end(actors_at_boot_), [](kernel::actor::ProcessArg* arg) {
+    if (arg->auto_restart)
+      return false;
+    delete arg;
+    return true;
+  });
+  actors_at_boot_.erase(elm, end(actors_at_boot_));
+}
+
+std::vector<s4u::ActorPtr> HostImpl::get_all_actors()
+{
+  std::vector<s4u::ActorPtr> res;
+  for (auto& actor : process_list_)
+    res.push_back(actor.ciface());
+  return res;
+}
+int HostImpl::get_actor_count()
+{
+  return process_list_.size();
+}
 std::vector<const char*> HostImpl::get_attached_storages()
 {
   std::vector<const char*> storages;

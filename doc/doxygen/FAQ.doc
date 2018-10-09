@@ -1,10 +1,10 @@
-/*! \page FAQ MSG Frequently Asked Questions
+/*! @page FAQ MSG Frequently Asked Questions
 
 @tableofcontents
 
 This document is the FAQ of the MSG interface. Some entries are a bit aging and it should be refreshed at some point.
 
-\section faq_simgrid I'm new to SimGrid. I have some questions. Where should I start?
+@section faq_simgrid I'm new to SimGrid. I have some questions. Where should I start?
 
 You are at the right place... To understand what you can do or
 cannot do with SimGrid, you should read the
@@ -14,12 +14,12 @@ material on the
 <a href="http://people.irisa.fr/Martin.Quinson/blog/SimGrid/">blog of
 Martin Quinson</a>. 
 
-Another great source of inspiration can be found in the \ref s4u_examples.
+Another great source of inspiration can be found in the @ref s4u_examples.
 
 If you are stuck at any point and if this FAQ cannot help you, please drop us a
 mail to the user mailing list: <simgrid-user@lists.gforge.inria.fr>.
 
-\subsection faq_interfaces What is the difference between MSG and SimDag? Do they serve the same purpose?
+@subsection faq_interfaces What is the difference between MSG and SimDag? Do they serve the same purpose?
 
 It depend on how you define "purpose", I guess ;)
 
@@ -37,20 +37,20 @@ With MSG, your application is seen as a set of communicating
 processes, exchanging data by the way of messages and performing
 computation on their own.
 
-\subsection faq_visualization Visualizing and analyzing the results
+@subsection faq_visualization Visualizing and analyzing the results
 
 It is sometime convenient to "see" how the agents are behaving. If you
 like colors, you can use <tt>tools/MSG_visualization/colorize.pl </tt>
 as a filter to your MSG outputs. It works directly with INFO. Beware,
 INFO() prints on stderr. Do not forget to redirect if you want to
 filter (e.g. with bash):
-\verbatim
+@verbatim
 ./msg_test small_platform.xml small_deployment.xml 2>&1 | ../../tools/MSG_visualization/colorize.pl
-\endverbatim
+@endverbatim
 
-We also have a more graphical output. Have a look at section \ref options_tracing.
+We also have a more graphical output. Have a look at section @ref options_tracing.
 
-\subsection faq_C Argh! Do I really have to code in C?
+@subsection faq_C Argh! Do I really have to code in C?
 
 We provide Java bindings of the MSG interface, which is the main
 SimGrid user API.
@@ -63,9 +63,9 @@ compiler won't work and it wouldn't help if you could).
 For now, we do not feel a real demand for any other language. But if
 you think there is one, please speak up!
 
-\section faq_howto Feature related questions
+@section faq_howto Feature related questions
 
-\subsection faq_MIA "Could you please add (your favorite feature here) to SimGrid?"
+@subsection faq_MIA "Could you please add (your favorite feature here) to SimGrid?"
 
 Here is the deal. The whole SimGrid project (MSG, SURF, ...) is
 meant to be kept as simple and generic as possible. We cannot add
@@ -86,9 +86,9 @@ You'll find in this section a few "Missing In Action" features. Many
 people have asked about it and we have given hints on how to simply do
 it with MSG. Feel free to contribute...
 
-\subsection faq_MIA_MSG MSG features
+@subsection faq_MIA_MSG MSG features
 
-\subsubsection faq_MIA_examples I want some more complex MSG examples!
+@subsubsection faq_MIA_examples I want some more complex MSG examples!
 
 Many people have come to ask me a more complex example and each time,
 they have realized afterward that the basics were in the previous three
@@ -111,7 +111,7 @@ tried to document the examples so that they are understandable. Tell
 us if something is not clear and once again feel free to participate!
 :)
 
-\subsubsection faq_MIA_taskdup Missing in action: MSG Task duplication/replication
+@subsubsection faq_MIA_taskdup Missing in action: MSG Task duplication/replication
 
 There is no task duplication in MSG. When you create a task, you can
 process it or send it somewhere else. As soon as a process has sent
@@ -136,7 +136,7 @@ and MSG_task_get_data().
 You could use a dictionary (#xbt_dict_t) of dynars (#xbt_dynar_t). If
 you still don't see how to do it, please come back to us...
 
-\subsubsection faq_MIA_thread_synchronization How to synchronize my user processes?
+@subsubsection faq_MIA_thread_synchronization How to synchronize my user processes?
 
 It depends on why you want to synchronize them.  If you just want to
 have a shared state between your processes, then you probably don't
@@ -173,7 +173,7 @@ mailboxes. Typically, if you need one process to notify another one,
 you could use a condition variable or a semphore, but sending a
 message to a specific mailbox does the trick in most cases.
 
-\subsubsection faq_MIA_host_load Where is the get_host_load function hidden in MSG?
+@subsubsection faq_MIA_host_load Where is the get_host_load function hidden in MSG?
 
 There is no such thing because its semantic wouldn't be really
 clear. Of course, it is something about the amount of host throughput,
@@ -202,7 +202,7 @@ would have to do out of the simulator, and thus gives you information that
 you could also get in real settings to not hinder the realism of your
 simulation.
 
-\code
+@code
 double get_host_load() {
    m_task_t task = MSG_task_create("test", 0.001, 0, NULL);
    double date = MSG_get_clock();
@@ -212,13 +212,13 @@ double get_host_load() {
    MSG_task_destroy(task);
    return (0.001/date);
 }
-\endcode
+@endcode
 
 Of course, it may not match your personal definition of "host load". In this
 case, please detail what you mean on the mailing list, and we will extend
 this FAQ section to fit your taste if possible.
 
-\subsubsection faq_MIA_communication_time How can I get the *real* communication time?
+@subsubsection faq_MIA_communication_time How can I get the *real* communication time?
 
 Communications are synchronous and thus if you simply get the time
 before and after a communication, you'll only get the transmission
@@ -227,7 +227,7 @@ account the time spent waiting for the other party to be
 ready). However, getting the *real* communication time is not really
 hard either. The following solution is a good starting point.
 
-\code
+@code
 int sender()
 {
   m_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size,
@@ -252,11 +252,11 @@ int receiver()
   MSG_task_destroy(task);
   return 0;
 }
-\endcode
+@endcode
 
-\subsection faq_MIA_SimDag SimDag related questions
+@subsection faq_MIA_SimDag SimDag related questions
 
-\subsubsection faq_SG_comm Implementing communication delays between tasks.
+@subsubsection faq_SG_comm Implementing communication delays between tasks.
 
 A classic question of SimDag newcomers is about how to express a
 communication delay between tasks. The thing is that in SimDag, both
@@ -265,10 +265,10 @@ model a data dependency between two DAG tasks t1 and t2, you have to
 create 3 SD_tasks: t1, t2 and c and add dependencies in the following
 way:
 
-\code
+@code
 SD_task_dependency_add(t1, c);
 SD_task_dependency_add(c, t2);
-\endcode
+@endcode
 
 This way task t2 cannot start before the termination of communication c
 which in turn cannot start before t1 ends.
@@ -281,7 +281,7 @@ comprising the workstations on which t1 and t2 are scheduled (w1 and w2
 for example) and build a communication matrix that should look like
 [0;amount ; 0; 0].
 
-\subsubsection faq_SG_DAG How to implement a distributed dynamic scheduler of DAGs.
+@subsubsection faq_SG_DAG How to implement a distributed dynamic scheduler of DAGs.
 
 Distributed is somehow "contagious". If you start making distributed
 decisions, there is no way to handle DAGs directly anymore (unless I
@@ -290,7 +290,7 @@ communicating process to make the whole scheduling process
 distributed. Here is an example of how you could do that. Assume T1
 has to be done before T2.
 
-\code
+@code
  int your_agent(int argc, char *argv[] {
    ...
    T1 = MSG_task_create(...);
@@ -307,15 +307,15 @@ has to be done before T2.
      }
    }
  }
-\endcode
+@endcode
 
 If you decide that the distributed part is not that much important and that
 DAG is really the level of abstraction you want to work with, then you should
-give a try to \ref SD_API.
+give a try to @ref SD_API.
 
-\subsection faq_MIA_generic Generic features
+@subsection faq_MIA_generic Generic features
 
-\subsubsection faq_MIA_batch_scheduler Is there a native support for batch schedulers in SimGrid?
+@subsubsection faq_MIA_batch_scheduler Is there a native support for batch schedulers in SimGrid?
 
 No, there is no native support for batch schedulers and none is
 planned because this is a very specific need (and doing it in a
@@ -324,7 +324,7 @@ their own batch schedulers. Vincent Garonne wrote one during his PhD
 and put his code in the contrib directory of our SVN so that other can
 keep working on it. You may find inspiring ideas in it.
 
-\subsubsection faq_MIA_checkpointing I need a checkpointing thing
+@subsubsection faq_MIA_checkpointing I need a checkpointing thing
 
 Actually, it depends on whether you want to checkpoint the simulation, or to
 simulate checkpoints.
@@ -332,7 +332,7 @@ simulate checkpoints.
 The first one could help if your simulation is a long standing process you
 want to keep running even on hardware issues. It could also help to
 <i>rewind</i> the simulation by jumping sometimes on an old checkpoint to
-cancel recent calculations.\n
+cancel recent calculations.@n
 Unfortunately, such thing will probably never exist in SG. One would have to
 duplicate all data structures because doing a rewind at the simulator level
 is very very hard (not talking about the malloc free operations that might
@@ -346,7 +346,7 @@ If you want to simulate checkpoints instead, it means that you want the
 state of an executing task (in particular, the progress made towards
 completion) to be saved somewhere.  So if a host (and the task executing on
 it) fails (cf. #MSG_HOST_FAILURE), then the task can be restarted
-from the last checkpoint.\n
+from the last checkpoint.@n
 
 Actually, such a thing does not exist in SimGrid either, but it's just
 because we don't think it is fundamental and it may be done in the user code
@@ -355,9 +355,9 @@ periodically get the remaining amount of things to do (using
 MSG_task_get_remaining_computation()), or fragment the task in smaller
 subtasks.
 
-\subsection faq_platform Platform building and Dynamic resources
+@subsection faq_platform Platform building and Dynamic resources
 
-\subsubsection faq_platform_example Where can I find SimGrid platform files?
+@subsubsection faq_platform_example Where can I find SimGrid platform files?
 
 There are several little examples in the archive, in the examples/msg
 directory. From time to time, we are asked for other files, but we
@@ -368,7 +368,7 @@ You should refer to the Platform Description Archive
 have available, as well as the Simulacrum simulator, meant to generate
 SimGrid platforms using all classical generation algorithms.
 
-\subsubsection faq_platform_alnem How can I automatically map an existing platform?
+@subsubsection faq_platform_alnem How can I automatically map an existing platform?
 
 We are working on a project called ALNeM (Application-Level Network
 Mapper) which goal is to automatically discover the topology of an
@@ -378,7 +378,7 @@ their own lab network (and contribute them to the catalog project).
 This tool is not ready yet, but it move quite fast forward. Just stay
 tuned.
 
-\subsubsection faq_platform_synthetic Generating synthetic but realistic platforms
+@subsubsection faq_platform_synthetic Generating synthetic but realistic platforms
 
 The third possibility to get a platform file (after manual or
 automatic mapping of real platforms) is to generate synthetic
@@ -402,7 +402,7 @@ note that although sound, this model were never scientifically
 assessed. Please keep this fact in mind when using it.
 
 
-\subsubsection faq_platform_random Using random variable for the resource power or availability
+@subsubsection faq_platform_random Using random variable for the resource power or availability
 
 The best way to model the resouce power using a random variable is to
 use an availability trace that is directed by a probability
@@ -441,9 +441,9 @@ myconnect.element = "mylink";
 sg_platf_trace_connect(myconnect);
 @endcode
 
-\section faq_troubleshooting Troubleshooting
+@section faq_troubleshooting Troubleshooting
 
-\subsection faq_trouble_changelog The feature X stopped to work after my last update 
+@subsection faq_trouble_changelog The feature X stopped to work after my last update 
 
 I guess that you want to read the ChangeLog file, that always contains
 all the information that could be important to the users during the
@@ -458,13 +458,13 @@ should update to the new way of doing things, but if you can't afford
 it, that's ok. Just stick to the last version that were working for
 you, and have a pleasant day.
 
-\subsection faq_trouble_lib_compil SimGrid compilation and installation problems
+@subsection faq_trouble_lib_compil SimGrid compilation and installation problems
 
-\subsubsection faq_trouble_lib_config cmake fails!
+@subsubsection faq_trouble_lib_config cmake fails!
 
 We know only one reason for the configure to fail:
 
- - <b>You are using a broken build environment</b>\n
+ - <b>You are using a broken build environment</b>@n
    Try updating your cmake version. If symptom is that the configury
    magic complains about gcc not being able to build executables, you
    are probably missing the libc6-dev package. Damn Ubuntu. 
@@ -472,7 +472,7 @@ We know only one reason for the configure to fail:
 If you experience other kind of issue, please get in touch with us. We are
 always interested in improving our portability to new systems.
 
-\subsubsection faq_trouble_distcheck Dude! "ctest" fails on my machine!
+@subsubsection faq_trouble_distcheck Dude! "ctest" fails on my machine!
 
 Don't assume we never run this target, because we do. Check
 http://cdash.inria.fr/CDash/index.php?project=Simgrid (click on
@@ -482,19 +482,19 @@ https://buildd.debian.org/status/logs.php?pkg=simgrid if you don't believe us.
 
 If it's failing on your machine in a way not experienced by the
 autobuilders above, please drop us a mail on the mailing list so that
-we can check it out. Make sure to read \ref faq_bugrepport before you
+we can check it out. Make sure to read @ref faq_bugrepport before you
 do so.
 
-\subsection faq_trouble_compil User code compilation problems
+@subsection faq_trouble_compil User code compilation problems
 
-\subsubsection faq_trouble_err_logcat "gcc: _simgrid_this_log_category_does_not_exist__??? undeclared (first use in this function)"
+@subsubsection faq_trouble_err_logcat "gcc: _simgrid_this_log_category_does_not_exist__??? undeclared (first use in this function)"
 
 This is because you are using the log mechanism, but you didn't created
-any default category in this file. You should refer to \ref XBT_log
+any default category in this file. You should refer to @ref XBT_log
 for all the details, but you simply forgot to call one of
 XBT_LOG_NEW_DEFAULT_CATEGORY() or XBT_LOG_NEW_DEFAULT_SUBCATEGORY().
 
-\subsubsection faq_trouble_pthreadstatic "gcc: undefined reference to pthread_key_create"
+@subsubsection faq_trouble_pthreadstatic "gcc: undefined reference to pthread_key_create"
 
 This indicates that one of the library SimGrid depends on (libpthread
 here) was missing on the linking command line. Dependencies of
@@ -506,9 +506,9 @@ of SimGrid), you must absolutely
 specify <tt>-lpthread</tt> on the linker command line. As usual, this should
 come after <tt>-lsimgrid</tt> on this command line.
 
-\subsection faq_trouble_errors Runtime error messages
+@subsection faq_trouble_errors Runtime error messages
 
-\subsubsection faq_trouble_errors_big_fat_warning I'm told that my XML files are too old.
+@subsubsection faq_trouble_errors_big_fat_warning I'm told that my XML files are too old.
 
 The format of the XML platform description files is sometimes
 improved. For example, we decided to change the units used in SimGrid
@@ -525,7 +525,7 @@ of the root tag. Currently, it should read:
 If your files are too old, you can use the simgrid_update_xml.pl
 script which can be found in the tools directory of the archive.
 
-\subsection faq_trouble_debug Debugging SMPI applications
+@subsection faq_trouble_debug Debugging SMPI applications
 
 In order to debug SMPI programs, you can use the following options:
 
@@ -538,16 +538,16 @@ In order to debug SMPI programs, you can use the following options:
 
 Both options are needed in order to run the SMPI process under GDB.
 
-\subsection faq_trouble_valgrind Valgrind-related and other debugger issues
+@subsection faq_trouble_valgrind Valgrind-related and other debugger issues
 
 If you don't, you really should use valgrind to debug your code, it's
 almost magic.
 
-\subsubsection faq_trouble_vg_libc Valgrind spits tons of errors about backtraces!
+@subsubsection faq_trouble_vg_libc Valgrind spits tons of errors about backtraces!
 
 It may happen that valgrind, the memory debugger beloved by any decent C
 programmer, spits tons of warnings like the following :
-\verbatim ==8414== Conditional jump or move depends on uninitialised value(s)
+@verbatim ==8414== Conditional jump or move depends on uninitialised value(s)
 ==8414==    at 0x400882D: (within /lib/ld-2.3.6.so)
 ==8414==    by 0x414EDE9: (within /lib/tls/i686/cmov/libc-2.3.6.so)
 ==8414==    by 0x400B105: (within /lib/ld-2.3.6.so)
@@ -560,7 +560,7 @@ programmer, spits tons of warnings like the following :
 ==8414==    by 0x80764C1: xbt_dictelm_get (dict_elm.c:732)
 ==8414==    by 0x8079010: xbt_cfg_register (config.c:208)
 ==8414==    by 0x806821B: MSG_config (msg_config.c:42)
-\endverbatim
+@endverbatim
 
 This problem is somewhere in the libc when using the backtraces and there is
 very few things we can do ourselves to fix it. Instead, here is how to tell
@@ -569,7 +569,7 @@ create this file on need). Make sure to change the obj line according to
 your personnal mileage (change 2.3.6 to the actual version you are using,
 which you can retrieve with a simple "ls /lib/ld*.so").
 
-\verbatim {
+@verbatim {
    name: Backtrace madness
    Memcheck:Cond
    obj:/lib/ld-2.3.6.so
@@ -578,7 +578,7 @@ which you can retrieve with a simple "ls /lib/ld*.so").
    fun:do_dlopen
    fun:dlerror_run
    fun:__libc_dlopen_mode
-}\endverbatim
+}@endverbatim
 
 Then, you have to specify valgrind to use this suppression file by passing
 the <tt>--suppressions=$HOME/.valgrind.supp</tt> option on the command line.
@@ -587,9 +587,9 @@ automatically. Actually, it passes a bit more options to valgrind, and this
 happen to be my personnal settings. Check the valgrind documentation for
 more information.
 
-\verbatim export VALGRIND_OPTS="--leak-check=yes --leak-resolution=high --num-callers=40 --tool=memcheck --suppressions=$HOME/.valgrind.supp" \endverbatim
+@verbatim export VALGRIND_OPTS="--leak-check=yes --leak-resolution=high --num-callers=40 --tool=memcheck --suppressions=$HOME/.valgrind.supp" @endverbatim
 
-\subsubsection faq_trouble_backtraces Truncated backtraces
+@subsubsection faq_trouble_backtraces Truncated backtraces
 
 When debugging SimGrid, it's easier to pass the
 --disable-compiler-optimization flag to the configure if valgrind or
@@ -598,12 +598,12 @@ should remove these flag when everything works before going in
 production (before launching your 1252135 experiments), or everything
 will run only one half of the true SimGrid potential.
 
-\subsection faq_deadlock There is a deadlock in my code!!!
+@subsection faq_deadlock There is a deadlock in my code!!!
 
 Unfortunately, we cannot debug every code written in SimGrid.  We
 furthermore believe that the framework provides ways enough
 information to debug such information yourself. If the textual output
-is not enough, Make sure to check the \ref faq_visualization FAQ entry to see
+is not enough, Make sure to check the @ref faq_visualization FAQ entry to see
 how to get a graphical one.
 
 Now, if you come up with a really simple example that deadlocks and
@@ -612,7 +612,7 @@ list. Just be aware that you'll be severely punished if the mistake is
 on your side... We have plenty of FAQ entries to redact and new
 features to implement for the impenitents! ;)
 
-\subsection faq_surf_network_latency I get weird timings when I play with the latencies.
+@subsection faq_surf_network_latency I get weird timings when I play with the latencies.
 
 OK, first of all, remember that units should be Bytes, Flops and
 Seconds. If you don't use such units, some SimGrid constants (e.g. the
@@ -622,10 +622,10 @@ right unit and you'll end up with weird results.
 Here is what happens with a single transfer of size L on a link
 (bw,lat) when nothing else happens.
 
-\verbatim
+@verbatim
 0-----lat--------------------------------------------------t
 |-----|**** real_bw =min(bw,SG_TCP_CTE_GAMMA/(2*lat)) *****|
-\endverbatim
+@endverbatim
 
 In more complex situations, this min is the solution of a complex
 max-min linear system.  Have a look
@@ -653,7 +653,7 @@ that may make your result be unexpected. For example, two flows
 competing on a saturated link receive an amount of bandwidth inversely
 proportional to their round trip time.
 
-\subsection faq_bugrepport So I've found a bug in SimGrid. How to report it?
+@subsection faq_bugrepport So I've found a bug in SimGrid. How to report it?
 
 We do our best to make sure to hammer away any bugs of SimGrid, but this is
 still an academic project so please be patient if/when you find bugs in it.
@@ -671,7 +671,5 @@ You may find the following article interesting to see how to repport
 informative bug repports:
 http://www.chiark.greenend.org.uk/~sgtatham/bugs.html (it is not SimGrid
 specific at all, but it's full of good advices).
-
-\author Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 */

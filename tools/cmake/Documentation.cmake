@@ -24,6 +24,8 @@ if(enable_documentation)
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_BINARY_DIR}/doc/example_lists
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/doc/html
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_BINARY_DIR}/doc/html
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/doc/xml
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/docs/source/api
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc
     )
 
@@ -80,7 +82,7 @@ if(enable_documentation)
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc
     )
 
-### Fill in the "make gforge-gforge" target ###
+### Fill in the "make gforge-sync" target ###
 
 set(RSYNC_CMD rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --times --omit-dir-times --perms --chmod=a+rX,ug+w,o-w,Dg+s)
 
@@ -89,8 +91,8 @@ add_custom_target(gforge-sync
 
   COMMAND ${RSYNC_CMD} doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/ || true
 
-  COMMAND ${RSYNC_CMD} doc/html/simgrid_modules2.png doc/html/simgrid_modules.png doc/webcruft/simgrid_logo_2011.png
-  doc/webcruft/simgrid_logo_2011_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
+  COMMAND ${RSYNC_CMD} doc/html/simgrid_modules2.png doc/html/simgrid_modules.png /${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
+  /${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
 
   COMMAND ${RSYNC_CMD} ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/
   COMMAND ${RSYNC_CMD} ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/simgrid.dtd
@@ -124,15 +126,15 @@ endif()
 add_custom_target(manpages ALL
   COMMAND ${CMAKE_COMMAND} -E make_directory ${MANPAGE_DIR}
   COMMAND pod2man ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl > ${MANPAGE_DIR}/simgrid_update_xml.1
-  COMMAND pod2man ${CMAKE_HOME_DIRECTORY}/doc/manpage/tesh.pod > ${MANPAGE_DIR}/tesh.1
+  COMMAND pod2man ${CMAKE_HOME_DIRECTORY}/docs/manpages/tesh.pod > ${MANPAGE_DIR}/tesh.1
   COMMENT "Generating manpages"
   )
 install(FILES
   ${MANPAGE_DIR}/simgrid_update_xml.1
   ${MANPAGE_DIR}/tesh.1
-  ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpicc.1
-  ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpicxx.1
-  ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpif90.1
-  ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpiff.1
-  ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpirun.1
+  ${CMAKE_HOME_DIRECTORY}/docs/manpages/smpicc.1
+  ${CMAKE_HOME_DIRECTORY}/docs/manpages/smpicxx.1
+  ${CMAKE_HOME_DIRECTORY}/docs/manpages/smpif90.1
+  ${CMAKE_HOME_DIRECTORY}/docs/manpages/smpiff.1
+  ${CMAKE_HOME_DIRECTORY}/docs/manpages/smpirun.1
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/man/man1)

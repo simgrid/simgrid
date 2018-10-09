@@ -42,8 +42,6 @@ Action::~Action()
   get_model()->get_action_heap().remove(this);
   if (modified_set_hook_.is_linked())
     simgrid::xbt::intrusive_erase(*get_model()->get_modified_set(), *this);
-
-  xbt_free(category_);
 }
 
 void Action::finish(Action::State state)
@@ -109,11 +107,6 @@ void Action::set_bound(double bound)
   if (get_model()->get_update_algorithm() == Model::UpdateAlgo::LAZY && get_last_update() != surf_get_clock())
     get_model()->get_action_heap().remove(this);
   XBT_OUT();
-}
-
-void Action::set_category(const char* category)
-{
-  category_ = xbt_strdup(category);
 }
 
 void Action::ref()
@@ -196,7 +189,7 @@ bool Action::is_suspended()
 double Action::get_remains()
 {
   XBT_IN("(%p)", this);
-  /* update remains before return it */
+  /* update remains before returning it */
   if (get_model()->get_update_algorithm() == Model::UpdateAlgo::LAZY) /* update remains before return it */
     update_remains_lazy(surf_get_clock());
   XBT_OUT();

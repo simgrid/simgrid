@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -16,9 +15,11 @@
 #include <string>
 #include <vector>
 
+#include "src/smpi/include/smpi_actor.hpp"
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 
-static std::unordered_map<std::string, std::deque<std::string>*> keys;
+static std::unordered_map<std::string, std::deque<std::string>> keys;
 
 static std::map<std::string, std::string> smpi_colors = {{"recv", "1 0 0"},
   {"irecv", "1 0.52 0.52"},
@@ -55,7 +56,6 @@ static std::map<std::string, std::string> smpi_colors = {{"recv", "1 0 0"},
   {"put", "0.3 1 0"},
   {"get", "0 1 0.3"},
   {"accumulate", "1 0.3 0"},
-  {"migration", "0.2 0.5 0.2"},
   {"rput", "0.3 1 0"},
   {"rget", "0 1 0.3"},
   {"raccumulate", "1 0.3 0"},
@@ -101,18 +101,6 @@ XBT_PRIVATE container_t smpi_container(int rank)
 
 static std::string TRACE_smpi_put_key(int src, int dst, int tag, int send)
 {
-  // get the deque for src#dst
-  std::string aux =
-      std::to_string(src) + "#" + std::to_string(dst) + "#" + std::to_string(tag) + "#" + std::to_string(send);
-  auto it = keys.find(aux);
-  std::deque<std::string>* d;
-
-  if (it == keys.end()) {
-    d         = new std::deque<std::string>;
-    keys[aux] = d;
-  } else
-    d = it->second;
-
   //generate the key
   static unsigned long long counter = 0;
   counter++;
@@ -120,7 +108,9 @@ static std::string TRACE_smpi_put_key(int src, int dst, int tag, int send)
       std::to_string(src) + "_" + std::to_string(dst) + "_" + std::to_string(tag) + "_" + std::to_string(counter);
 
   //push it
-  d->push_back(key);
+  std::string aux =
+      std::to_string(src) + "#" + std::to_string(dst) + "#" + std::to_string(tag) + "#" + std::to_string(send);
+  keys[aux].push_back(key);
 
   return key;
 }
@@ -135,39 +125,35 @@ static std::string TRACE_smpi_get_key(int src, int dst, int tag, int send)
     // first posted
     key = TRACE_smpi_put_key(src, dst, tag, send);
   } else {
-    key = it->second->front();
-    it->second->pop_front();
+    key = it->second.front();
+    it->second.pop_front();
+    if (it->second.empty())
+      keys.erase(it);
   }
   return key;
 }
 
 static std::unordered_map<smx_actor_t, std::string> process_category;
 
-void TRACE_internal_smpi_set_category (const char *category)
+void TRACE_internal_smpi_set_category(std::string category)
 {
   if (not TRACE_smpi_is_enabled())
     return;
 
   //declare category
-  TRACE_category (category);
+  TRACE_category(category.c_str());
 
-  if (category != nullptr)
+  if (not category.empty())
     process_category[SIMIX_process_self()] = category;
 }
 
-const char *TRACE_internal_smpi_get_category ()
+std::string TRACE_internal_smpi_get_category()
 {
   if (not TRACE_smpi_is_enabled())
-    return nullptr;
+    return "";
 
   auto it = process_category.find(SIMIX_process_self());
-  return (it == process_category.end()) ? nullptr : it->second.c_str();
-}
-
-void TRACE_smpi_release()
-{
-  for (auto const& elm : keys)
-    delete elm.second;
+  return (it == process_category.end()) ? "" : it->second.c_str();
 }
 
 void TRACE_smpi_setup_container(int rank, sg_host_t host)
@@ -187,7 +173,7 @@ void TRACE_smpi_init(int rank)
 
   TRACE_smpi_setup_container(rank, sg_host_self());
 #if HAVE_PAPI
-  container_t container   = simgrid::instr::Container::by_name(str);
+  container_t container   = smpi_container(rank);
   papi_counter_t counters = smpi_process()->papi_counters();
 
   for (auto const& it : counters) {
@@ -195,9 +181,7 @@ void TRACE_smpi_init(int rank)
      * Check whether this variable already exists or not. Otherwise, it will be created
      * multiple times but only the last one would be used...
      */
-    if (s_type::getOrNull(it.first.c_str(), container->type_) == nullptr) {
-      Type::variableNew(it.first.c_str(), "", container->type_);
-    }
+    container->type_->by_name_or_create(it.first, "");
   }
 #endif
 }
@@ -293,25 +277,9 @@ void TRACE_smpi_recv(int src, int dst, int tag)
 }
 
 /**************** Functions to trace the migration of tasks. *****************/
-void TRACE_smpi_send_process_data_in(int rank)
-{
-  if (not TRACE_smpi_is_enabled()) return;
-
-  smpi_container(rank)->get_state("MIGRATE_STATE")->add_entity_value("migration", instr_find_color("migration"));
-  smpi_container(rank)->get_state("MIGRATE_STATE")->push_event("migration");
-}
-
-void TRACE_smpi_send_process_data_out(int rank)
-{
-  if (not TRACE_smpi_is_enabled()) return; 
-
-  /* Clean the process state. */
-  smpi_container(rank)->get_state("MIGRATE_STATE")->pop_event();
-}
-
 void TRACE_smpi_process_change_host(int rank, sg_host_t new_host)
 {
-  if (!TRACE_smpi_is_enabled()) return;
+  if (not TRACE_smpi_is_enabled()) return;
 
   /** The key is (most likely) used to match the events in the trace */
   static long long int counter = 0;

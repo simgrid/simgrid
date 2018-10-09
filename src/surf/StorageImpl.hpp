@@ -6,6 +6,7 @@
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/kernel/resource/Model.hpp"
 #include "simgrid/kernel/resource/Resource.hpp"
+#include "simgrid/s4u/Io.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include "src/surf/trace_mgr.hpp"
@@ -24,7 +25,9 @@ namespace surf {
  ***********/
 
 class StorageAction;
-
+/** @ingroup SURF_storage_interface
+ * @brief The possible type of action for the storage component
+ */
 /*************
  * Callbacks *
  *************/
@@ -81,7 +84,7 @@ public:
   void turn_off() override;
 
   void destroy(); // Must be called instead of the destructor
-
+  virtual simgrid::kernel::resource::Action* io_start(sg_size_t size, s4u::Io::OpType type) = 0;
   /**
    * @brief Read a file
    *
@@ -118,14 +121,6 @@ private:
  **********/
 
 /** @ingroup SURF_storage_interface
- * @brief The possible type of action for the storage component
- */
-enum e_surf_action_storage_type_t {
-  READ = 0, /**< Read a file */
-  WRITE     /**< Write in a file */
-};
-
-/** @ingroup SURF_storage_interface
  * @brief SURF storage action interface class
  */
 class StorageAction : public kernel::resource::Action {
@@ -142,8 +137,7 @@ public:
    * @param storage The Storage associated to this StorageAction
    * @param type [description]
    */
-  StorageAction(kernel::resource::Model* model, double cost, bool failed, StorageImpl* storage,
-                e_surf_action_storage_type_t type)
+  StorageAction(kernel::resource::Model* model, double cost, bool failed, StorageImpl* storage, s4u::Io::OpType type)
       : Action(model, cost, failed), type_(type), storage_(storage){};
 
   /**
@@ -157,12 +151,12 @@ public:
  * @param type [description]
  */
   StorageAction(kernel::resource::Model* model, double cost, bool failed, kernel::lmm::Variable* var,
-                StorageImpl* storage, e_surf_action_storage_type_t type)
+                StorageImpl* storage, s4u::Io::OpType type)
       : Action(model, cost, failed, var), type_(type), storage_(storage){};
 
   void set_state(simgrid::kernel::resource::Action::State state) override;
 
-  e_surf_action_storage_type_t type_;
+  s4u::Io::OpType type_;
   StorageImpl* storage_;
 };
 

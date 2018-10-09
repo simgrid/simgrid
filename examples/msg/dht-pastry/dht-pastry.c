@@ -78,9 +78,9 @@ static int closest_in_namespace_set(node_t node, int dest);
 static int routing_next(node_t node, int dest);
 
 /**
- * \brief Gets the mailbox name of a host given its chord id.
- * \param node_id id of a node
- * \param mailbox pointer to where the mailbox name should be written
+ * @brief Gets the mailbox name of a host given its chord id.
+ * @param node_id id of a node
+ * @param mailbox pointer to where the mailbox name should be written
  * (there must be enough space)
  */
 static void get_mailbox(int node_id, char* mailbox)
@@ -449,7 +449,7 @@ static int join(node_t node){
 }
 
 /**
- * \brief Node Function
+ * @brief Node Function
  * Arguments:
  * - my id
  * - the id of a guy I know in the system (except for the first node)
@@ -546,7 +546,7 @@ static int node(int argc, char *argv[])
   return 1;
 }
 
-/** \brief Main function. */
+/** @brief Main function. */
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);

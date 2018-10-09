@@ -20,7 +20,7 @@ public:
 
   explicit NetPointNs3();
   int node_num;
-  ns3::Ptr<ns3::Node> ns3Node_;
+  ns3::Ptr<ns3::Node> ns3_node_;
 };
 
 XBT_PUBLIC void ns3_initialize(std::string TcpProtocol);
@@ -33,17 +33,17 @@ public:
   SgFlow(uint32_t total_bytes, simgrid::kernel::resource::NetworkNS3Action* action);
 
   // private:
-  std::uint32_t bufferedBytes_ = 0;
-  std::uint32_t sentBytes_     = 0;
+  std::uint32_t buffered_bytes_ = 0;
+  std::uint32_t sent_bytes_     = 0;
   std::uint32_t remaining_;
-  std::uint32_t totalBytes_;
+  std::uint32_t total_bytes_;
   bool finished_ = false;
   simgrid::kernel::resource::NetworkNS3Action* action_;
 };
 
-void StartFlow(ns3::Ptr<ns3::Socket> sock, const char* to, uint16_t port_number);
+void start_flow(ns3::Ptr<ns3::Socket> sock, const char* to, uint16_t port_number);
 
-static inline std::string transformSocketPtr(ns3::Ptr<ns3::Socket> local_socket)
+static inline std::string transform_socket_ptr(ns3::Ptr<ns3::Socket> local_socket)
 {
   std::stringstream sstream;
   sstream << local_socket;

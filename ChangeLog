@@ -1,3 +1,93 @@
+SimGrid (3.22) NOT RELEASED (Release Target: December 21. 2018, 22:23 UTC)
+
+SimGrid (3.21) October 3. 2018
+
+The Restarting Documentation (TRD) Release.
+
+Documentation:
+ - Convert the user manual to Sphinx for improved usability.
+   Unstable version now hosted on https://simgrid.frama.io/simgrid
+   Many glitches remain; stay tuned.
+ - Restrict the Doxygen reference API to the installed header files.
+   (documenting all internals this way is overkill + doxygen scales badly)
+ - New tutorial on S4U (highly inspired from the old MSG one, but with
+   a git repository to fork as a starting point, and a docker image)
+ - Started but not finished a SMPI tutorial inspired from the JLPC'14 one.
+ - The Developper manual is still to be converted (not compiled until then)
+ - Some parts are still missing in this conversion (such as the
+   platform and deployment sections) while others were blindly converted
+   and would need more love (such as the configuration flags). 
+   Things will certainly further improve in the future releases.
+
+S4U new features:
+ - Fully reimplement auto_restart mechanism that was utterly broken
+   (fix #22, #131 and #281 that were all very related)
+ - Implement semaphores (fix #303 and #291)
+ - When creating an actor from a function and its parameters,
+   move-only parameters are not allowed anymore, as it would prevent
+   the actor to be restartable if its parameters are consumed on run.
+ - s4u::Io: IOs go asynchronous as activities. New methods in s4u::Storage:
+     - io_init(sg_size_t, s4u::Io::OpType) to create a READ or WRITE asynchronous
+       IO operations that can be started, waited for, or canceled as a regular
+       activity.
+     - read_async(sg_size_t) and write_async(sg_size_t) which are wrappers on 
+       io_init() + start()
+
+Tracing:
+ - Rename 'power' and 'power_used' variables into 'speed' and 'speed_used'
+ - New host variable: 'core_count'
+
+XBT:
+ - Remove xbt_os_thread_specific features
+ - Remove portability wrapper to condition variables
+ - Remove xbt_os_thread_yield()
+
+SMPI:
+ - MPICH collective selector now mimics MPICH 3.3b
+ - OpenMPI collective selector now mimics OpenMPI 3.1.2 (default "tuned" setting)
+ - MPI_Init(NULL,NULL) is now allowed
+ - smpi/wtime option now injects time in gettimeofday or clock_gettime calls
+ - Command-line arguments should now be handled properly in Fortran simulations
+ - MPI Attributes and related callbacks should work in Fortran
+ - Apps using C + Fortran should now work
+ - MPI_* calls now check for non MPI_SUCCESS return values and emit warnings
+ - Support MPI_Error_String
+
+Java:
+ - Due to an internal bug, Msg.run() must now be your last line.
+   We hope to fix it in a future release, and we are sorry for the inconvenience.
+ - Expose host load plugin (i.e. loadInit, getCurrentLoad, getComputedFlops,getAvgLoad)
+
+Fixed bugs:
+ - #22: Process autorestart seem to only work with CAS01 cpus 
+ - #56: Feature request: dynamic SMPI replay
+ - #93: simgrid should not eat --help
+ - #111: How to change the loopback link characteristics?
+ - #116: Platform cluster radical
+ - #117: Platform cluster/host order
+ - #129: Replay_multiple on steroid
+ - #131: Java : autostart does not work
+ - #143: Setting a breakpoint at a given time
+ - #235: Network energy models should be integrated
+ - #264: Add ptask L07 resource tracing
+ - #271: Dynamic and manual replay of SMPI traces
+ - #279: Breakpoints option uses time deltas instead of absolute time
+ - #281: Daemonized actor no longer daemonized after an auto-restart
+ - #282: TIT convertor erase traces when using absolute path in the trace list file
+ - #285: segfault when a s4u actor kills itself with msg process tracing activated
+ - #286: Pajé traces are not exposing the number of cores
+ - #287: Command-line parsing should stop when encountering '--'
+ - #288: MPI_Init(NULL, NULL)
+ - #289: Improve documentation of Actor::on_destruction and this_actor::on_exit()
+ - #290: Method to check if a mailbox has a message ready to be consumed
+ - #291: [s4u] semaphores do not seem available yet
+ - #294: Alltoall collective implementation of mpich
+ - #295: Starting a Host as OFF is not supported
+ - #296: DTD too permissive
+ - #299: Add a s4u barrier example
+
+----------------------------------------------------------------------------
+
 SimGrid (3.20) Released June 24. 2018
 
 The proxy snake_case() release.
@@ -78,7 +168,7 @@ Fixed bugs:
  - #258: daemonized actors hang after all non-daemonized actors have completed
  - #267: Linker error on unit_tmgr
  - #269: SMPI: tracing of MPI_Wait/all/any broken
- - SMPI: Fix various crashes with combined use of MPI_PROC_NULL and MPI_IGNORE_STATUS 
+ - SMPI: Fix various crashes with combined use of MPI_PROC_NULL and MPI_IGNORE_STATUS
 
 ----------------------------------------------------------------------------
 

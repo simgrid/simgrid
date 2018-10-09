@@ -6,10 +6,13 @@
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/surf/network_interface.hpp"
+#include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+
+SIMGRID_REGISTER_PLUGIN(link_energy, "Link energy consumption.", &sg_link_energy_plugin_init)
 
 /** @addtogroup SURF_plugin_energy
 
@@ -19,12 +22,12 @@
  The energy consumption of a link depends directly on its current traffic load. Specify that consumption in your
  platform file as follows:
 
- \verbatim
+ @verbatim
  <link id="SWITCH1" bandwidth="125Mbps" latency="5us" sharing_policy="SHARED" >
  <prop id="watt_range" value="100.0:200.0" />
  <prop id="watt_off" value="10" />
  </link>
- \endverbatim
+ @endverbatim
 
  The first property means that when your link is switched on, but without anything to do, it will dissipate 100 Watts.
  If it's fully loaded, it will dissipate 200 Watts. If its load is at 50%, then it will dissipate 150 Watts.
@@ -100,14 +103,18 @@ void LinkEnergy::init_watts_range_list()
 
     /* min_power corresponds to the idle power (link load = 0) */
     /* max_power is the power consumed at 100% link load       */
-    char* idleMsg = bprintf("Invalid idle power value for link%s", this->link_->get_cname());
-    char* busyMsg = bprintf("Invalid busy power value for %s", this->link_->get_cname());
+    try {
+      idle_ = std::stod(current_power_values.front());
+    } catch (std::invalid_argument& ia) {
+      throw std::invalid_argument(std::string("Invalid idle power value for link ") + this->link_->get_cname());
+    }
 
-    idle_ = xbt_str_parse_double((current_power_values.at(0)).c_str(), idleMsg);
-    busy_ = xbt_str_parse_double((current_power_values.at(1)).c_str(), busyMsg);
+    try {
+      busy_ = std::stod(current_power_values.back());
+    } catch (std::invalid_argument& ia) {
+      throw std::invalid_argument(std::string("Invalid busy power value for link ") + this->link_->get_cname());
+    }
 
-    xbt_free(idleMsg);
-    xbt_free(busyMsg);
     update();
   }
 }
@@ -171,9 +178,9 @@ int sg_link_energy_is_inited()
 {
   return LinkEnergy::EXTENSION_ID.valid();
 }
-/** \ingroup SURF_plugin_energy
- * \brief Enable energy plugin
- * \details Enable energy plugin to get joules consumption of each cpu. You should call this function before
+/** @ingroup SURF_plugin_energy
+ * @brief Enable energy plugin
+ * @details Enable energy plugin to get joules consumption of each cpu. You should call this function before
  * #MSG_init().
  */
 void sg_link_energy_plugin_init()
@@ -195,12 +202,13 @@ void sg_link_energy_plugin_init()
                link.extension<LinkEnergy>()->get_consumed_energy());
   });
 
-  simgrid::s4u::Link::on_communication_state_change.connect([](simgrid::kernel::resource::NetworkAction* action) {
-    for (simgrid::kernel::resource::LinkImpl* link : action->links()) {
-      if (link != nullptr)
-        link->piface_.extension<LinkEnergy>()->update();
-    }
-  });
+  simgrid::s4u::Link::on_communication_state_change.connect(
+      [](simgrid::kernel::resource::NetworkAction* action, simgrid::kernel::resource::Action::State /* previous */) {
+        for (simgrid::kernel::resource::LinkImpl* link : action->links()) {
+          if (link != nullptr)
+            link->piface_.extension<LinkEnergy>()->update();
+        }
+      });
 
   simgrid::s4u::Link::on_communicate.connect(&on_communicate);
   simgrid::s4u::on_simulation_end.connect(&on_simulation_end);

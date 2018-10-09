@@ -23,9 +23,13 @@ class XBT_PUBLIC Comm : public Activity {
 public:
   friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Comm * c);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Comm * c);
-  friend Mailbox; // Factory of comms
+  friend simgrid::s4u::Mailbox; // Factory of comms
 
   virtual ~Comm();
+
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_sender_start;
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_receiver_start;
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_completion;
 
   /*! take a vector s4u::CommPtr and return when one of them is finished.
    * The return value is the rank of the first finished CommPtr. */
@@ -38,42 +42,66 @@ public:
   /*! take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done). */
   static int test_any(std::vector<CommPtr> * comms);
 
-  Activity* start() override;
-  Activity* wait() override;
-  Activity* wait(double timeout) override;
+  Comm* start() override;
+  Comm* wait() override;
+  Comm* wait_for(double timeout) override;
+  bool test() override;
 
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
-  Activity* detach();
+  Comm* detach();
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
-  Activity* detach(void (*clean_function)(void*))
+  Comm* detach(void (*clean_function)(void*))
   {
     clean_fun_ = clean_function;
     return detach();
   }
 
   /** Sets the maximal communication rate (in byte/sec). Must be done before start */
-  Activity* set_rate(double rate);
+  Comm* set_rate(double rate);
 
-  /** Specify the data to send */
-  Activity* set_src_data(void* buff);
-  /** Specify the size of the data to send */
-  Activity* set_src_data_size(size_t size);
-  /** Specify the data to send and its size */
-  Activity* set_src_data(void* buff, size_t size);
+  /** Specify the data to send.
+   *
+   * This is way will get actually copied over to the receiver.
+   * That's completely unrelated from the simulated size (given with @ref Activity::set_remaining()):
+   * you can send a short buffer in your simulator, that represents a very large message
+   * in the simulated world, or the opposite.
+   */
+  Comm* set_src_data(void* buff);
+  /** Specify the size of the data to send. Not to be mixed with @ref Activity::set_remaining()
+   *
+   * That's the size of the data to actually copy in the simulator (ie, the data passed with Activity::set_src_data()).
+   * That's completely unrelated from the simulated size (given with @ref Activity::set_remaining()):
+   * you can send a short buffer in your simulator, that represents a very large message
+   * in the simulated world, or the opposite.
+   */
+  Comm* set_src_data_size(size_t size);
+  /** Specify the data to send and its size. Don't mix the size with @ref Activity::set_remaining()
+   *
+   * This is way will get actually copied over to the receiver.
+   * That's completely unrelated from the simulated size (given with @ref Activity::set_remaining()):
+   * you can send a short buffer in your simulator, that represents a very large message
+   * in the simulated world, or the opposite.
+   */
+  Comm* set_src_data(void* buff, size_t size);
 
-  /** Specify where to receive the data */
-  Activity* set_dst_data(void** buff);
-  /** Specify the buffer in which the data should be received */
-  Activity* set_dst_data(void** buff, size_t size);
-  /** Retrieve the size of the received data */
+  /** Specify where to receive the data.
+   *
+   * That's a buffer where the sent data will be copied */
+  Comm* set_dst_data(void** buff);
+  /** Specify the buffer in which the data should be received
+   *
+   * That's a buffer where the sent data will be copied  */
+  Comm* set_dst_data(void** buff, size_t size);
+  /** Retrieve the size of the received data. Not to be mixed with @ref Activity::set_remaining()  */
   size_t get_dst_data_size();
 
-  bool test();
-  Activity* cancel();
+  Comm* cancel() override;
 
   /** Retrieve the mailbox on which this comm acts */
   MailboxPtr get_mailbox();
 
+#ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v324("Please use Comm::wait_for()") void wait(double t) override { wait_for(t); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_rate()") Activity* setRate(double rate) { return set_rate(rate); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_src_data()") Activity* setSrcData(void* buff)
   {
@@ -100,6 +128,7 @@ public:
     return get_dst_data_size();
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") MailboxPtr getMailbox() { return get_mailbox(); }
+#endif
 
 private:
   double rate_        = -1;

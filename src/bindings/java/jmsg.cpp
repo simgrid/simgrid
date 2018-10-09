@@ -9,6 +9,7 @@
 #include <clocale>
 #include <string>
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/msg.h"
 #include "simgrid/plugins/energy.h"
 #include "simgrid/plugins/file_system.h"
@@ -30,7 +31,6 @@
 
 #include "JavaContext.hpp"
 
-#include <xbt/ex.hpp>
 
 /* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
 #ifndef JNIEXPORT
@@ -51,7 +51,7 @@ JNIEnv *get_current_thread_env()
 {
   using simgrid::kernel::context::JavaContext;
   JavaContext* ctx = static_cast<JavaContext*>(xbt_os_thread_get_extra_data());
-  return ctx->jenv;
+  return ctx->jenv_;
 }
 
 void jmsg_throw_status(JNIEnv *env, msg_error_t status) {
@@ -133,7 +133,7 @@ JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass
   jxbt_check_res("MSG_main()", rv, MSG_OK,
                  xbt_strdup("unexpected error : MSG_main() failed .. please report this bug "));
 
-  XBT_INFO("MSG_main finished; Cleaning up the simulation...");
+  XBT_INFO("MSG_main finished; Terminating the simulation...");
   /* Cleanup java hosts */
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
   for (unsigned long index = 0; index < xbt_dynar_length(hosts) - 1; index++) {
@@ -141,13 +141,16 @@ JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass
     jobject jhost = (jobject) msg_host->extension(JAVA_HOST_LEVEL);
     if (jhost)
       jhost_unref(env, jhost);
-
   }
   xbt_dynar_free(&hosts);
 
   /* Cleanup java storages */
   for (auto const& elm : java_storage_map)
     jstorage_unref(env, elm.second);
+
+  /* FIXME: don't be of such an EXTREM BRUTALITY to stop the jvm. Sorry I don't get it working otherwise.
+   * See the comment in ActorImpl.cpp::SIMIX_process_kill() */
+  exit(0);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls, jstring jplatformFile)
@@ -242,7 +245,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_fileSystemInit()
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_loadInit() {
     sg_host_load_plugin_init();
 }
-
 /** Run a Java org.simgrid.msg.Process
  *
  *  If needed, this waits for the process starting time.
@@ -255,9 +257,11 @@ static void run_jprocess(JNIEnv *env, jobject jprocess)
   jdouble startTime = env->GetDoubleField(jprocess, jprocess_field_Process_startTime);
   if (startTime > MSG_get_clock())
     MSG_process_sleep(startTime - MSG_get_clock());
+
   //Execution of the "run" method.
   jmethodID id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "run", "()V");
-  xbt_assert((id != nullptr), "Method run() not found...");
+  xbt_assert((id != nullptr), "Method Process.run() not found...");
+
   env->CallVoidMethod(jprocess, id);
 }
 
@@ -293,13 +297,13 @@ static int java_main(int argc, char *argv[])
   //bind the process to the context
   msg_process_t process = MSG_process_self();
 
-  context->jprocess = jprocess;
+  context->jprocess_ = jprocess;
   /* sets the PID and the PPID of the process */
   env->SetIntField(jprocess, jprocess_field_Process_pid, static_cast<jint>(MSG_process_get_PID(process)));
   env->SetIntField(jprocess, jprocess_field_Process_ppid, static_cast<jint>(MSG_process_get_PPID(process)));
   jprocess_bind(jprocess, process, env);
 
-  run_jprocess(env, context->jprocess);
+  run_jprocess(env, context->jprocess_);
   return 0;
 }
 
@@ -312,9 +316,9 @@ void java_main_jprocess(jobject jprocess)
 {
   JNIEnv *env = get_current_thread_env();
   simgrid::kernel::context::JavaContext* context = static_cast<simgrid::kernel::context::JavaContext*>(SIMIX_context_self());
-  context->jprocess = jprocess;
-  jprocess_bind(context->jprocess, MSG_process_self(), env);
+  context->jprocess_                             = jprocess;
+  jprocess_bind(context->jprocess_, MSG_process_self(), env);
 
-  run_jprocess(env, context->jprocess);
+  run_jprocess(env, context->jprocess_);
 }
 }}}

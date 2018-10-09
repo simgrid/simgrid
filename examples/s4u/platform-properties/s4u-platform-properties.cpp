@@ -51,30 +51,27 @@ static void test_host(std::string hostname)
   thehost->set_property(exist, "180");
 }
 
-static int alice(int argc, char* argv[])
+static void alice(std::vector<std::string> /*args*/)
 {
   /* Dump what we have on the current host */
   test_host("host1");
-  return 0;
 }
 
-static int carole(int argc, char* argv[])
+static void carole(std::vector<std::string> /*args*/)
 {
   /* Dump what we have on a remote host */
   simgrid::s4u::this_actor::sleep_for(1); // Wait for alice to be done with its experiment
   test_host("host1");
-  return 0;
 }
 
-static int david(int argc, char* argv[])
+static void david(std::vector<std::string> /*args*/)
 {
   /* Dump what we have on a remote host */
   simgrid::s4u::this_actor::sleep_for(2); // Wait for alice and carole to be done with its experiment
-  test_host("node-0.acme.org");
-  return 0;
+  test_host("node-0.simgrid.org");
 }
 
-static int bob(int argc, char* argv[])
+static void bob(std::vector<std::string> /*args*/)
 {
   /* this host also tests the properties of the AS*/
   simgrid::s4u::NetZone* root = simgrid::s4u::Engine::get_instance()->get_netzone_root();
@@ -96,7 +93,6 @@ static int bob(int argc, char* argv[])
 
   value = simgrid::s4u::Actor::self()->get_property(noexist);
   xbt_assert(not value, "The property is defined (it should not)");
-  return 0;
 }
 
 int main(int argc, char* argv[])
@@ -109,7 +105,7 @@ int main(int argc, char* argv[])
   e.register_function("carole", carole);
   e.register_function("david", david);
 
-  size_t totalHosts = sg_host_count();
+  size_t totalHosts = e.get_host_count();
 
   XBT_INFO("There are %zu hosts in the environment", totalHosts);
   std::vector<simgrid::s4u::Host*> hosts = e.get_all_hosts();

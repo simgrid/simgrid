@@ -19,9 +19,8 @@ namespace dwarf {
  * @param snapshot Snapshot (or nullptr)
  * @return Process address of the given member of the 'object' struct/class
  */
-void *resolve_member(
-    const void *base, simgrid::mc::Type* type, simgrid::mc::Member* member,
-    simgrid::mc::AddressSpace* address_space, int process_index)
+void* resolve_member(const void* base, simgrid::mc::Type* /*type*/, simgrid::mc::Member* member,
+                     simgrid::mc::AddressSpace* address_space, int process_index)
 {
   ExpressionContext state;
   state.frame_base = nullptr;

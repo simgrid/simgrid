@@ -68,8 +68,8 @@ static int dvfs(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
-  sg_host_energy_plugin_init();
   MSG_init(&argc, argv);
+  MSG_config("plugin", "host_energy");
 
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 

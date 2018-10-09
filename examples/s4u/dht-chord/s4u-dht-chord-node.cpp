@@ -17,10 +17,10 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(s4u_chord);
  * 24 belongs to [21, 29]
  * 24 does not belong to [29, 21]
  *
- * \param id id to check
- * \param start lower bound
- * \param end upper bound
- * \return a non-zero value if id in in [start, end]
+ * @param id id to check
+ * @param start lower bound
+ * @param end upper bound
+ * @return a non-zero value if id in in [start, end]
  */
 static int is_in_interval(int id, int start, int end)
 {
@@ -80,8 +80,8 @@ Node::~Node()
 }
 /* Makes the current node join the ring, knowing the id of a node already in the ring
  *
- * \param known_id id of a node already in the ring
- * \return true if the join operation succeeded
+ * @param known_id id of a node already in the ring
+ * @return true if the join operation succeeded
  *  */
 
 void Node::join(int known_id)
@@ -118,11 +118,9 @@ void Node::notifyAndQuit()
   XBT_DEBUG("Sending a 'PREDECESSOR_LEAVING' to my successor %d", fingers_[0]);
   try {
     simgrid::s4u::Mailbox::by_name(std::to_string(fingers_[0]))->put(pred_msg, 10, timeout);
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Timeout expired when sending a 'PREDECESSOR_LEAVING' to my successor %d", fingers_[0]);
-      delete pred_msg;
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Timeout expired when sending a 'PREDECESSOR_LEAVING' to my successor %d", fingers_[0]);
+    delete pred_msg;
   }
 
   if (pred_id_ != -1 && pred_id_ != id_) {
@@ -134,11 +132,9 @@ void Node::notifyAndQuit()
 
     try {
       simgrid::s4u::Mailbox::by_name(std::to_string(pred_id_))->put(succ_msg, 10, timeout);
-    } catch (xbt_ex& e) {
-      if (e.category == timeout_error) {
-        XBT_DEBUG("Timeout expired when sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
-        delete succ_msg;
-      }
+    } catch (simgrid::TimeoutError& e) {
+      XBT_DEBUG("Timeout expired when sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
+      delete succ_msg;
     }
   }
 }
@@ -157,9 +153,9 @@ void Node::randomLookup()
 
 /* Sets a finger of the current node.
  *
- * \param node the current node
- * \param finger_index index of the finger to set (0 to nb_bits - 1)
- * \param id the id to set for this finger
+ * @param node the current node
+ * @param finger_index index of the finger to set (0 to nb_bits - 1)
+ * @param id the id to set for this finger
  */
 void Node::setFinger(int finger_index, int id)
 {
@@ -170,7 +166,7 @@ void Node::setFinger(int finger_index, int id)
 }
 
 /* Sets the predecessor of the current node.
- * \param id the id to predecessor, or -1 to unset the predecessor
+ * @param id the id to predecessor, or -1 to unset the predecessor
  */
 void Node::setPredecessor(int predecessor_id)
 {
@@ -226,34 +222,31 @@ void Node::checkPredecessor()
   XBT_DEBUG("Sending a 'Predecessor Alive' request to my predecessor %d", pred_id_);
   try {
     mailbox->put(message, 10, timeout);
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Failed to send the 'Predecessor Alive' request to %d", pred_id_);
-      delete message;
-      return;
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Failed to send the 'Predecessor Alive' request to %d", pred_id_);
+    delete message;
+    return;
   }
+
   // receive the answer
   XBT_DEBUG("Sent 'Predecessor Alive' request to %d, waiting for the answer on my mailbox '%s'", pred_id_,
             message->answer_to->get_cname());
   simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
 
   try {
-    comm->wait(timeout);
+    comm->wait_for(timeout);
     XBT_DEBUG("Received the answer to my 'Predecessor Alive': my predecessor %d is alive", pred_id_);
     delete static_cast<ChordMessage*>(data);
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Failed to receive the answer to my 'Predecessor Alive' request");
-      pred_id_ = -1;
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Failed to receive the answer to my 'Predecessor Alive' request");
+    pred_id_ = -1;
   }
 }
 
 /* Asks its predecessor to a remote node
  *
- * \param ask_to the node to ask to
- * \return the id of its predecessor node, or -1 if the request failed (or if the node does not know its predecessor)
+ * @param ask_to the node to ask to
+ * @return the id of its predecessor node, or -1 if the request failed (or if the node does not know its predecessor)
  */
 int Node::remoteGetPredecessor(int ask_to)
 {
@@ -270,12 +263,10 @@ int Node::remoteGetPredecessor(int ask_to)
   XBT_DEBUG("Sending a 'Get Predecessor' request to %d", ask_to);
   try {
     mailbox->put(message, 10, timeout);
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Failed to send the 'Get Predecessor' request to %d", ask_to);
-      delete message;
-      return predecessor_id;
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Failed to send the 'Get Predecessor' request to %d", ask_to);
+    delete message;
+    return predecessor_id;
   }
 
   // receive the answer
@@ -284,17 +275,15 @@ int Node::remoteGetPredecessor(int ask_to)
   simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
 
   try {
-    comm->wait(timeout);
+    comm->wait_for(timeout);
     ChordMessage* answer = static_cast<ChordMessage*>(data);
     XBT_DEBUG("Received the answer to my 'Get Predecessor' request: the predecessor of node %d is %d", ask_to,
               answer->answer_id);
     predecessor_id = answer->answer_id;
     delete answer;
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Failed to receive the answer to my 'Get Predecessor' request");
-      delete static_cast<ChordMessage*>(data);
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Failed to receive the answer to my 'Get Predecessor' request");
+    delete static_cast<ChordMessage*>(data);
   }
 
   return predecessor_id;
@@ -302,8 +291,8 @@ int Node::remoteGetPredecessor(int ask_to)
 
 /* Returns the closest preceding finger of an id with respect to the finger table of the current node.
  *
- * \param id the id to find
- * \return the closest preceding finger of that id
+ * @param id the id to find
+ * @return the closest preceding finger of that id
  */
 int Node::closestPrecedingFinger(int id)
 {
@@ -317,8 +306,8 @@ int Node::closestPrecedingFinger(int id)
 
 /* Makes the current node find the successor node of an id.
  *
- * \param id the id to find
- * \return the id of the successor node, or -1 if the request failed
+ * @param id the id to find
+ * @return the id of the successor node, or -1 if the request failed
  */
 int Node::findSuccessor(int id)
 {
@@ -346,30 +335,27 @@ int Node::remoteFindSuccessor(int ask_to, int id)
   XBT_DEBUG("Sending a 'Find Successor' request to %d for id %d", ask_to, id);
   try {
     mailbox->put(message, 10, timeout);
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Failed to send the 'Find Successor' request to %d for id %d", ask_to, id_);
-      delete message;
-      return successor;
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Failed to send the 'Find Successor' request to %d for id %d", ask_to, id_);
+    delete message;
+    return successor;
   }
   // receive the answer
   XBT_DEBUG("Sent a 'Find Successor' request to %d for key %d, waiting for the answer", ask_to, id);
   simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
 
   try {
-    comm->wait(timeout);
+    comm->wait_for(timeout);
     ChordMessage* answer = static_cast<ChordMessage*>(data);
     XBT_DEBUG("Received the answer to my 'Find Successor' request for id %d: the successor of key %d is %d",
               answer->request_id, id_, answer->answer_id);
     successor = answer->answer_id;
     delete answer;
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      XBT_DEBUG("Failed to receive the answer to my 'Find Successor' request");
-      delete static_cast<ChordMessage*>(data);
-    }
+  } catch (simgrid::TimeoutError& e) {
+    XBT_DEBUG("Failed to receive the answer to my 'Find Successor' request");
+    delete static_cast<ChordMessage*>(data);
   }
+
   return successor;
 }
 
@@ -419,7 +405,7 @@ void Node::stabilize()
 
 /* This function is called when a node receives a message.
  *
- * \param message the message to handle (don't touch it afterward: it will be destroyed, reused or forwarded)
+ * @param message the message to handle (don't touch it afterward: it will be destroyed, reused or forwarded)
  */
 void Node::handleMessage(ChordMessage* message)
 {

@@ -8,8 +8,11 @@
 
 #include "simgrid/s4u/Actor.hpp"
 #include "src/kernel/context/Context.hpp"
+#include "src/simix/ActorImpl.hpp"
 #include <xbt/xbt_os_thread.h>
 
+#include <boost/intrusive/list.hpp>
+#include <mutex>
 #include <unordered_map>
 #include <vector>
 
@@ -54,7 +57,7 @@ public:
   void_pfn_smxprocess_t kill_process_function = nullptr;
   /** Callback used when killing a SMX_process */
   void_pfn_smxprocess_t cleanup_process_function = nullptr;
-  xbt_os_mutex_t mutex                           = nullptr;
+  std::mutex mutex;
 
   std::vector<simgrid::xbt::Task<void()>> tasks;
   std::vector<simgrid::xbt::Task<void()>> tasksTemp;

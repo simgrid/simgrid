@@ -161,7 +161,7 @@ JAVADOC_AUTOBRIEF      = YES
 # interpret the first line (until the first dot) of a Qt-style
 # comment as the brief description. If set to NO, the comments
 # will behave just like regular Qt-style comments (thus requiring
-# an explicit \brief command for a brief description.)
+# an explicit @brief command for a brief description.)
 
 QT_AUTOBRIEF           = NO
 
@@ -686,28 +686,10 @@ INPUT                  = @CMAKE_HOME_DIRECTORY@/doc/doxygen/index.doc \
                          @CMAKE_HOME_DIRECTORY@/doc/doxygen/module-trace.doc \
                          @CMAKE_BINARY_DIR@/doc/doxygen/logcategories.doc \
                          @CMAKE_HOME_DIRECTORY@/include/ \
-                         @CMAKE_HOME_DIRECTORY@/include/xbt \
-                         @CMAKE_HOME_DIRECTORY@/include/simgrid \
-                         @CMAKE_HOME_DIRECTORY@/include/simgrid/s4u \
-                         @CMAKE_HOME_DIRECTORY@/src/include/surf \
-                         @CMAKE_HOME_DIRECTORY@/src/include/xbt \
-                         @CMAKE_HOME_DIRECTORY@/src/msg/ \
-                         @CMAKE_HOME_DIRECTORY@/src/kernel/ \
-                         @CMAKE_HOME_DIRECTORY@/src/kernel/activity/ \
-                         @CMAKE_HOME_DIRECTORY@/src/kernel/context/ \
-                         @CMAKE_HOME_DIRECTORY@/src/kernel/routing/ \
-                         @CMAKE_HOME_DIRECTORY@/src/instr/ \
-                         @CMAKE_HOME_DIRECTORY@/src/surf/ \
-                         @CMAKE_HOME_DIRECTORY@/src/surf/plugins/ \
-                         @CMAKE_HOME_DIRECTORY@/src/s4u/ \
-                         @CMAKE_HOME_DIRECTORY@/src/smpi/ \
-                         @CMAKE_HOME_DIRECTORY@/src/simdag \
-                         @CMAKE_HOME_DIRECTORY@/src/simix \
-                         @CMAKE_HOME_DIRECTORY@/src/xbt/ \
-                         @CMAKE_BINARY_DIR@/include \
-                         @CMAKE_BINARY_DIR@/src \
+			 @CMAKE_HOME_DIRECTORY@/src/plugins/ \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/README.doc \
                          @CMAKE_HOME_DIRECTORY@/examples/s4u/README.doc
+
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -739,7 +721,7 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                =
+EXCLUDE = 
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -753,7 +735,18 @@ EXCLUDE_SYMLINKS       = YES
 # against the file with absolute path, so to exclude all test directories
 # for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       =
+EXCLUDE_PATTERNS  = */include/simgrid/forward.h
+EXCLUDE_PATTERNS += */include/smpi/*
+
+EXCLUDE_PATTERNS += @CMAKE_HOME_DIRECTORY@/src/surf/xml/simgrid_dtd.*
+EXCLUDE_PATTERNS += @CMAKE_HOME_DIRECTORY@/src/simdag/dax_dtd.*
+EXCLUDE_PATTERNS += @CMAKE_HOME_DIRECTORY@/src/xbt/automaton/parserPromela.*
+EXCLUDE_PATTERNS += @CMAKE_HOME_DIRECTORY@/src/bindings/java/*.cpp @CMAKE_HOME_DIRECTORY@/src/bindings/java/*.h
+EXCLUDE_PATTERNS += @CMAKE_HOME_DIRECTORY@/src/simix/popping_accessors.hpp \
+                    @CMAKE_HOME_DIRECTORY@/src/simix/popping_bodies.cpp    \
+                    @CMAKE_HOME_DIRECTORY@/src/simix/popping_enum.h        \
+                    @CMAKE_HOME_DIRECTORY@/src/simix/popping_generated.cpp
+
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
@@ -761,7 +754,10 @@ EXCLUDE_PATTERNS       =
 # wildcard * is used, a substring. Examples: ANamespace, AClass,
 # AClass::ANamespace, ANamespace::*Test
 
-EXCLUDE_SYMBOLS        =
+EXCLUDE_SYMBOLS  = s_xbt_dict_cursor s_xbt_dictelm xbt_dynar_s 
+EXCLUDE_SYMBOLS += xbt_edge xbt_graph xbt_node
+EXCLUDE_SYMBOLS +=  e_xbt_parmap_mode_t
+EXCLUDE_SYMBOLS += MPI_*
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or
 # directories that contain example code fragments that are included (see
@@ -1357,7 +1353,7 @@ MAN_LINKS              = NO
 # generate an XML file that captures the structure of
 # the code including all documentation.
 
-GENERATE_XML           = NO
+GENERATE_XML           = YES
 
 #---------------------------------------------------------------------------
 # configuration options for the AutoGen Definitions output
@@ -1455,15 +1451,21 @@ INCLUDE_FILE_PATTERNS  =
 # undefined via #undef or recursively expanded use the := operator
 # instead of the = operator.
 
-PREDEFINED             = XBT_PUBLIC= \
+PREDEFINED             = __cplusplus \
+                         DOXYGEN \
+                         XBT_PUBLIC= \
                          XBT_EXPORT_NO_IMPORT= \
                          XBT_IMPORT_NO_EXPORT= \
                          XBT_PUBLIC_DATA=extern \
+			 XBT_PUBLIC= \
                          XBT_INLINE= \
+			 XBT_ALWAYS_INLINE= \
 			 XBT_PRIVATE= \
-                         XBT_ATTRIB_DEPRECATED_v321(m)= \
-                         XBT_ATTRIB_DEPRECATED_v322(m)= \
-                         XBT_ATTRIB_DEPRECATED_v323(m)=
+			 XBT_ATTRIB_NORETURN= \
+			 XBT_ATTRIB_UNUSED= \
+                         XBT_ATTRIB_DEPRECATED_v323(m)= \
+                         XBT_ATTRIB_DEPRECATED_v324(m)= \
+                         XBT_ATTRIB_DEPRECATED_v325(m)=
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then
 # this tag can be used to specify a list of macro names that should be expanded.
@@ -1472,7 +1474,8 @@ PREDEFINED             = XBT_PUBLIC= \
 # overrules the definition found in the source code.
 
 EXPAND_AS_DEFINED      = COLL_APPLY COLL_GATHERS COLL_ALLGATHERS COLL_ALLGATHERVS COLL_ALLREDUCES COLL_ALLTOALLS \
-                         COLL_ALLTOALLVS COLL_BCASTS COLL_REDUCES COLL_REDUCE_SCATTERS COLL_SCATTERS COLL_BARRIERS
+                         COLL_ALLTOALLVS COLL_BCASTS COLL_REDUCES COLL_REDUCE_SCATTERS COLL_SCATTERS COLL_BARRIERS \
+			 MPI_CALL
 
 # If the SKIP_FUNCTION_MACROS tag is set to YES (the default) then
 # doxygen's preprocessor will remove all references to function-like macros
@@ -1532,7 +1535,7 @@ PERL_PATH              = /usr/bin/perl
 # this option also works with HAVE_DOT disabled, but it is recommended to
 # install and use dot, since it yields more powerful graphs.
 
-CLASS_DIAGRAMS         = YES
+CLASS_DIAGRAMS         = NO
 
 # You can define message sequence charts within doxygen comments using the \msc
 # command. Doxygen will then run the mscgen tool (see
@@ -1651,7 +1654,7 @@ CALL_GRAPH             = NO
 # the time of a run. So in most cases it will be better to enable caller
 # graphs for selected functions only using the \callergraph command.
 
-CALLER_GRAPH           = YES
+CALLER_GRAPH           = NO
 
 # If the GRAPHICAL_HIERARCHY and HAVE_DOT tags are set to YES then doxygen
 # will generate a graphical hierarchy of all classes instead of a textual one.
@@ -1671,7 +1674,7 @@ DIRECTORY_GRAPH        = YES
 # HTML_FILE_EXTENSION to xhtml in order to make the SVG files
 # visible in IE 9+ (other browsers do not have this requirement).
 
-DOT_IMAGE_FORMAT       = png
+DOT_IMAGE_FORMAT       = svg
 
 # If DOT_IMAGE_FORMAT is set to svg, then this option can be set to YES to
 # enable generation of interactive SVG images that allow zooming and panning.

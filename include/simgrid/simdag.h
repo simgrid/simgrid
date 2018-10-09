@@ -30,7 +30,7 @@ typedef sg_link_t SD_link_t;
 
     A task is some <em>computing amount</em> that can be executed in parallel on several hosts.
     A task may depend on other tasks, which means that the task cannot start until the other tasks are done.
-    Each task has a <em>\ref e_SD_task_state_t "state"</em> indicating whether the task is scheduled, running, done, ...
+    Each task has a <em>@ref e_SD_task_state_t "state"</em> indicating whether the task is scheduled, running, done, ...
 
     */
 typedef struct s_SD_task_t* SD_task_t;
@@ -66,7 +66,7 @@ typedef enum {
  *
  *  A task is some <em>working amount</em> that can be executed in parallel on several hosts.
  *  A task may depend on other tasks, which means that the task cannot start until the other tasks are done.
- *  Each task has a <em>\ref e_SD_task_state_t "state"</em> indicating whether the task is scheduled, running, done, ...
+ *  Each task has a <em>@ref e_SD_task_state_t "state"</em> indicating whether the task is scheduled, running, done, ...
  *
  *  @see SD_task_t, @see SD_task_dependency_api
  *  @{

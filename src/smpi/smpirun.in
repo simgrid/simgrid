@@ -270,7 +270,9 @@ if [ -z "${HOSTFILE}" ] ; then
     HOSTFILETMP=1
     HOSTFILE="$(mktemp smpitmp-hostfXXXXXX)"
     perl -ne 'print "$1\n" if /.*<host.*?id="(.*?)".*?\/>.*/' ${PLATFORM} > ${HOSTFILE}
-    perl -ne 'if (/.*<cluster.*?prefix="(.*?)".*?radical="(.*?)".*?suffix="(.*?)".*/) {
+    # put all <cluster tag on its own line.
+    cat ${PLATFORM} | tr '\n' ' ' | sed 's/<cluster/\n<cluster/' | \
+      perl -ne 'if (m/.*<cluster.*?prefix="(.*?)".*?radical="(.*?)".*?suffix="(.*?)".*/s) {
                 my ($pre,$rad,$post)=($1,$2,$3);
 	        for my $elm (split(",",$rad)) {
 	          if ($elm=~/^([^-]*?)-([^-]*)$/) {
@@ -282,7 +284,7 @@ if [ -z "${HOSTFILE}" ] ; then
 	          }
 	        }
 	      } elsif (/<cluster/) {
-            die ("Unparsable cluster tag. smpirun uses a primitive regular expression to parse cluster tags. Either provide a hostfile yourself or give the attributes prefix, radical and suffix IN THAT ORDER and ON THE SAME LINE as the opening tag (<cluster)");
+            die ("Unparsable cluster tag. smpirun uses a primitive regular expression to parse cluster tags. Either provide a hostfile yourself or give the attributes prefix, radical and suffix IN THAT ORDER.");
 	      }' ${PLATFORM} >> ${HOSTFILE}
 fi
 UNROLLEDHOSTFILETMP=0

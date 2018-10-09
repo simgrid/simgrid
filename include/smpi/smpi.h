@@ -47,80 +47,88 @@ SG_BEGIN_DECL()
 #define MPI_IN_PLACE (void *)-222
 
 // errorcodes
-#define MPI_SUCCESS                    0
-#define MPI_ERR_COMM                   1
-#define MPI_ERR_ARG                    2
-#define MPI_ERR_TYPE                   3
-#define MPI_ERR_REQUEST                4
-#define MPI_ERR_INTERN                 5
-#define MPI_ERR_COUNT                  6
-#define MPI_ERR_RANK                   7
-#define MPI_ERR_TAG                    8
-#define MPI_ERR_TRUNCATE               9
-#define MPI_ERR_GROUP                 10
-#define MPI_ERR_OP                    11
-#define MPI_ERR_OTHER                 12
-#define MPI_ERR_IN_STATUS             13
-#define MPI_ERR_PENDING               14
-#define MPI_ERR_BUFFER                15
-#define MPI_ERR_NAME                  16
-#define MPI_ERR_DIMS                  17
-#define MPI_ERR_TOPOLOGY              18
-#define MPI_ERR_NO_MEM                19
-#define MPI_ERR_WIN                   20
-#define MPI_ERR_INFO_VALUE            21
-#define MPI_ERR_INFO_KEY              22
-#define MPI_ERR_INFO_NOKEY            23
-#define MPI_ERR_ROOT                  24
-#define MPI_ERR_UNKNOWN               25
-#define MPI_ERR_KEYVAL                26
-#define MPI_ERR_BASE                  27
-#define MPI_ERR_SPAWN                 28
-#define MPI_ERR_PORT                  29
-#define MPI_ERR_SERVICE               30
-#define MPI_ERR_SIZE                  31
-#define MPI_ERR_DISP                  32
-#define MPI_ERR_INFO                  33
-#define MPI_ERR_LOCKTYPE              34
-#define MPI_ERR_ASSERT                35
-#define MPI_RMA_CONFLICT              36
-#define MPI_RMA_SYNC                  37
-#define MPI_ERR_FILE                  38
-#define MPI_ERR_NOT_SAME              39
-#define MPI_ERR_AMODE                 40
-#define MPI_ERR_UNSUPPORTED_DATAREP   41
-#define MPI_ERR_UNSUPPORTED_OPERATION 42
-#define MPI_ERR_NO_SUCH_FILE          43
-#define MPI_ERR_FILE_EXISTS           44
-#define MPI_ERR_BAD_FILE              45
-#define MPI_ERR_ACCESS                46
-#define MPI_ERR_NO_SPACE              47
-#define MPI_ERR_QUOTA                 48
-#define MPI_ERR_READ_ONLY             49
-#define MPI_ERR_FILE_IN_USE           50
-#define MPI_ERR_DUP_DATAREP           51
-#define MPI_ERR_CONVERSION            52
-#define MPI_ERR_IO                    53
-#define MPI_ERR_RMA_ATTACH            54
-#define MPI_ERR_RMA_CONFLICT          55
-#define MPI_ERR_RMA_RANGE             56
-#define MPI_ERR_RMA_SHARED            57
-#define MPI_ERR_RMA_SYNC              58
-#define MPI_ERR_RMA_FLAVOR            59
-#define MPI_T_ERR_CANNOT_INIT         60
-#define MPI_T_ERR_NOT_INITIALIZED     61
-#define MPI_T_ERR_MEMORY              62
-#define MPI_T_ERR_INVALID_INDEX       63
-#define MPI_T_ERR_INVALID_ITEM        64
-#define MPI_T_ERR_INVALID_SESSION     65
-#define MPI_T_ERR_INVALID_HANDLE      66
-#define MPI_T_ERR_OUT_OF_HANDLES      67
-#define MPI_T_ERR_OUT_OF_SESSIONS     68
-#define MPI_T_ERR_CVAR_SET_NOT_NOW    69
-#define MPI_T_ERR_CVAR_SET_NEVER      70
-#define MPI_T_ERR_PVAR_NO_WRITE       71
-#define MPI_T_ERR_PVAR_NO_STARTSTOP   72
-#define MPI_T_ERR_PVAR_NO_ATOMIC      73
+#define FOREACH_ERROR(ERROR)                    \
+          ERROR(MPI_SUCCESS)                    \
+          ERROR(MPI_ERR_COMM)                   \
+          ERROR(MPI_ERR_ARG)                    \
+          ERROR(MPI_ERR_TYPE)                   \
+          ERROR(MPI_ERR_REQUEST)                \
+          ERROR(MPI_ERR_INTERN)                 \
+          ERROR(MPI_ERR_COUNT)                  \
+          ERROR(MPI_ERR_RANK)                   \
+          ERROR(MPI_ERR_TAG)                    \
+          ERROR(MPI_ERR_TRUNCATE)               \
+          ERROR(MPI_ERR_GROUP)                  \
+          ERROR(MPI_ERR_OP)                     \
+          ERROR(MPI_ERR_OTHER)                  \
+          ERROR(MPI_ERR_IN_STATUS)              \
+          ERROR(MPI_ERR_PENDING)                \
+          ERROR(MPI_ERR_BUFFER)                 \
+          ERROR(MPI_ERR_NAME)                   \
+          ERROR(MPI_ERR_DIMS)                   \
+          ERROR(MPI_ERR_TOPOLOGY)               \
+          ERROR(MPI_ERR_NO_MEM)                 \
+          ERROR(MPI_ERR_WIN)                    \
+          ERROR(MPI_ERR_INFO_VALUE)             \
+          ERROR(MPI_ERR_INFO_KEY)               \
+          ERROR(MPI_ERR_INFO_NOKEY)             \
+          ERROR(MPI_ERR_ROOT)                   \
+          ERROR(MPI_ERR_UNKNOWN)                \
+          ERROR(MPI_ERR_KEYVAL)                 \
+          ERROR(MPI_ERR_BASE)                   \
+          ERROR(MPI_ERR_SPAWN)                  \
+          ERROR(MPI_ERR_PORT)                   \
+          ERROR(MPI_ERR_SERVICE)                \
+          ERROR(MPI_ERR_SIZE)                   \
+          ERROR(MPI_ERR_DISP)                   \
+          ERROR(MPI_ERR_INFO)                   \
+          ERROR(MPI_ERR_LOCKTYPE)               \
+          ERROR(MPI_ERR_ASSERT)                 \
+          ERROR(MPI_RMA_CONFLICT)               \
+          ERROR(MPI_RMA_SYNC)                   \
+          ERROR(MPI_ERR_FILE)                   \
+          ERROR(MPI_ERR_NOT_SAME)               \
+          ERROR(MPI_ERR_AMODE)                  \
+          ERROR(MPI_ERR_UNSUPPORTED_DATAREP)    \
+          ERROR(MPI_ERR_UNSUPPORTED_OPERATION)  \
+          ERROR(MPI_ERR_NO_SUCH_FILE)           \
+          ERROR(MPI_ERR_FILE_EXISTS)            \
+          ERROR(MPI_ERR_BAD_FILE)               \
+          ERROR(MPI_ERR_ACCESS)                 \
+          ERROR(MPI_ERR_NO_SPACE)               \
+          ERROR(MPI_ERR_QUOTA)                  \
+          ERROR(MPI_ERR_READ_ONLY)              \
+          ERROR(MPI_ERR_FILE_IN_USE)            \
+          ERROR(MPI_ERR_DUP_DATAREP)            \
+          ERROR(MPI_ERR_CONVERSION)             \
+          ERROR(MPI_ERR_IO)                     \
+          ERROR(MPI_ERR_RMA_ATTACH)             \
+          ERROR(MPI_ERR_RMA_CONFLICT)           \
+          ERROR(MPI_ERR_RMA_RANGE)              \
+          ERROR(MPI_ERR_RMA_SHARED)             \
+          ERROR(MPI_ERR_RMA_SYNC)               \
+          ERROR(MPI_ERR_RMA_FLAVOR)             \
+          ERROR(MPI_T_ERR_CANNOT_INIT)          \
+          ERROR(MPI_T_ERR_NOT_INITIALIZED)      \
+          ERROR(MPI_T_ERR_MEMORY)               \
+          ERROR(MPI_T_ERR_INVALID_INDEX)        \
+          ERROR(MPI_T_ERR_INVALID_ITEM)         \
+          ERROR(MPI_T_ERR_INVALID_SESSION)      \
+          ERROR(MPI_T_ERR_INVALID_HANDLE)       \
+          ERROR(MPI_T_ERR_OUT_OF_HANDLES)       \
+          ERROR(MPI_T_ERR_OUT_OF_SESSIONS)      \
+          ERROR(MPI_T_ERR_CVAR_SET_NOT_NOW)     \
+          ERROR(MPI_T_ERR_CVAR_SET_NEVER)       \
+          ERROR(MPI_T_ERR_PVAR_NO_WRITE)        \
+          ERROR(MPI_T_ERR_PVAR_NO_STARTSTOP)    \
+          ERROR(MPI_T_ERR_PVAR_NO_ATOMIC)
+
+#define GENERATE_ENUM(ENUM) ENUM,
+#define GENERATE_STRING(STRING) #STRING,
+
+enum ERROR_ENUM {
+    FOREACH_ERROR(GENERATE_ENUM)
+};
 
 #define MPI_ERRCODES_IGNORE (int *)0
 #define MPI_IDENT     0
@@ -224,7 +232,7 @@ typedef SMPI_Info* MPI_Info;
 #define MPI_STATUS_IGNORE ((MPI_Status*)NULL)
 #define MPI_STATUSES_IGNORE ((MPI_Status*)NULL)
 
-#define MPI_DATATYPE_NULL ((const MPI_Datatype)NULL)
+XBT_PUBLIC_DATA const MPI_Datatype MPI_DATATYPE_NULL;
 XBT_PUBLIC_DATA const MPI_Datatype MPI_CHAR;
 XBT_PUBLIC_DATA const MPI_Datatype MPI_SHORT;
 XBT_PUBLIC_DATA const MPI_Datatype MPI_INT;
@@ -364,14 +372,25 @@ typedef enum SMPI_Topo_type {
 typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void* extra_state, void* attribute_val_in,
                               void* attribute_val_out, int* flag);
 typedef int MPI_Delete_function(MPI_Comm comm, int keyval, void* attribute_val, void* extra_state);
+typedef void MPI_Copy_function_fort(MPI_Comm oldcomm, int keyval, void* extra_state, void* attribute_val_in,
+                              void* attribute_val_out, int* flag, int* ierr);
+typedef void MPI_Delete_function_fort(MPI_Comm comm, int keyval, void* attribute_val, void* extra_state, int* ierr);
 #define MPI_Comm_copy_attr_function MPI_Copy_function
 #define MPI_Comm_delete_attr_function MPI_Delete_function
+#define MPI_Comm_copy_attr_function_fort MPI_Copy_function_fort
+#define MPI_Comm_delete_attr_function_fort MPI_Delete_function_fort
 typedef int MPI_Type_copy_attr_function(MPI_Datatype type, int keyval, void* extra_state, void* attribute_val_in,
                               void* attribute_val_out, int* flag);
 typedef int MPI_Type_delete_attr_function(MPI_Datatype type, int keyval, void* attribute_val, void* extra_state);
 typedef int MPI_Win_copy_attr_function(MPI_Win win, int keyval, void* extra_state, void* attribute_val_in,
                               void* attribute_val_out, int* flag);
 typedef int MPI_Win_delete_attr_function(MPI_Win win, int keyval, void* attribute_val, void* extra_state);
+typedef void MPI_Type_copy_attr_function_fort(MPI_Datatype type, int keyval, void* extra_state, void* attribute_val_in,
+                              void* attribute_val_out, int* flag, int* ierr);
+typedef void MPI_Type_delete_attr_function_fort(MPI_Datatype type, int keyval, void* attribute_val, void* extra_state, int* ierr);
+typedef void MPI_Win_copy_attr_function_fort(MPI_Win win, int keyval, void* extra_state, void* attribute_val_in,
+                              void* attribute_val_out, int* flag, int* ierr);
+typedef void MPI_Win_delete_attr_function_fort(MPI_Win win, int keyval, void* attribute_val, void* extra_state, int* ierr);
 #define MPI_COMM_NULL_COPY_FN ((MPI_Comm_copy_attr_function*)0)
 #define MPI_COMM_NULL_DELETE_FN ((MPI_Comm_delete_attr_function*)0)
 #define MPI_TYPE_NULL_COPY_FN ((MPI_Type_copy_attr_function*)0)
@@ -706,7 +725,7 @@ typedef void MPI_Win_errhandler_function(MPI_Win *, int *, ...);
 typedef int MPI_Grequest_query_function(void *extra_state, MPI_Status *status);
 typedef int MPI_Grequest_free_function(void *extra_state);
 typedef int MPI_Grequest_cancel_function(void *extra_state, int complete);
-#define MPI_DUP_FN MPI_Comm_dup
+#define MPI_DUP_FN 1
 
 #define MPI_WIN_DUP_FN ((MPI_Win_copy_attr_function*)MPI_DUP_FN)
 #define MPI_TYPE_DUP_FN ((MPI_Type_copy_attr_function*)MPI_DUP_FN)
@@ -919,13 +938,14 @@ XBT_PUBLIC void smpi_execute_flops(double flops);
 XBT_PUBLIC void smpi_execute(double duration);
 XBT_PUBLIC void smpi_execute_benched(double duration);
 
-XBT_PUBLIC double smpi_get_host_power_peak_at(int pstate_index);
-XBT_PUBLIC double smpi_get_host_current_power_peak();
-XBT_PUBLIC int smpi_get_host_nb_pstates();
-XBT_PUBLIC void smpi_set_host_pstate(int pstate_index);
-XBT_PUBLIC int smpi_get_host_pstate();
+// PLEASE NOTE: If you remove these functions, the entire smpi_dvfs.cpp file can be removed as well!!
+XBT_ATTRIB_DEPRECATED_v324("Please use sg_host_get_pstate_speed(sg_host_self(), pstate_index) instead") XBT_PUBLIC double smpi_get_host_power_peak_at(int pstate_index);
+XBT_ATTRIB_DEPRECATED_v324("Please use sg_host_speed(sg_host_self()) instead") XBT_PUBLIC double smpi_get_host_current_power_peak();
+XBT_ATTRIB_DEPRECATED_v324("Please use sg_host_get_nb_pstates(sg_host_self()) instead") XBT_PUBLIC int smpi_get_host_nb_pstates();
+XBT_ATTRIB_DEPRECATED_v324("Please use sg_host_set_pstate(sg_host_self(), pstate_index) instead") XBT_PUBLIC void smpi_set_host_pstate(int pstate_index);
+XBT_ATTRIB_DEPRECATED_v324("Please use sg_host_get_pstate(sg_host_self()) instead") XBT_PUBLIC int smpi_get_host_pstate();
 
-XBT_PUBLIC double smpi_get_host_consumed_energy();
+XBT_ATTRIB_DEPRECATED_v324("Please use sg_host_get_consumed_energy(sg_host_self()) instead") XBT_PUBLIC double smpi_get_host_consumed_energy();
 
 
 XBT_PUBLIC unsigned long long smpi_rastro_resolution();
@@ -979,8 +999,6 @@ XBT_PUBLIC void* smpi_shared_set_call(const char* func, const char* input, void*
 /* Fortran specific stuff */
 
 XBT_PUBLIC int smpi_main(const char* program, int argc, char* argv[]);
-XBT_ATTRIB_DEPRECATED_v322("Use s4u::this_actor::getPid(): v3.22 will turn this warning into an error.") XBT_PUBLIC
-    int smpi_process_index();
 XBT_PUBLIC void smpi_process_init(int* argc, char*** argv);
 
 /* Trace replay specific stuff */

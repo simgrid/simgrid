@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,7 +21,6 @@
 #include "simgrid/sg_config.hpp"
 
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/PageStore.hpp"
 #include "src/mc/Transition.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -30,6 +28,7 @@
 #include "src/mc/mc_record.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
 #include "src/mc/remote/mc_protocol.h"
+#include "src/mc/sosp/PageStore.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 

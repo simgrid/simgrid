@@ -160,10 +160,10 @@ const std::unordered_map<int, const char*> attrname_map = {
 namespace simgrid {
 namespace dwarf  {
 
-/** \brief Get the name of an attribute (DW_AT_*) from its code
+/** @brief Get the name of an attribute (DW_AT_*) from its code
  *
- *  \param attr attribute code (see the DWARF specification)
- *  \return name of the attribute
+ *  @param attr attribute code (see the DWARF specification)
+ *  @return name of the attribute
  */
 XBT_PRIVATE
 const char *attrname(int attr)

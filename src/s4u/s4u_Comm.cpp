@@ -13,6 +13,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm, s4u_activity, "S4U asynchronous commun
 
 namespace simgrid {
 namespace s4u {
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Comm::on_sender_start;
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Comm::on_receiver_start;
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Comm::on_completion;
+
 Comm::~Comm()
 {
   if (state_ == State::STARTED && not detached_ && (pimpl_ == nullptr || pimpl_->state_ == SIMIX_RUNNING)) {
@@ -49,55 +53,60 @@ void Comm::wait_all(std::vector<CommPtr>* comms)
 {
   // TODO: this should be a simcall or something
   // TODO: we are missing a version with timeout
-  for (CommPtr comm : *comms) {
+  for (CommPtr comm : *comms)
     comm->wait();
-  }
 }
 
-Activity* Comm::set_rate(double rate)
+Comm* Comm::set_rate(double rate)
 {
-  xbt_assert(state_ == State::INITED);
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
   rate_ = rate;
   return this;
 }
 
-Activity* Comm::set_src_data(void* buff)
+Comm* Comm::set_src_data(void* buff)
 {
-  xbt_assert(state_ == State::INITED);
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
   xbt_assert(dst_buff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   src_buff_ = buff;
   return this;
 }
-Activity* Comm::set_src_data_size(size_t size)
+Comm* Comm::set_src_data_size(size_t size)
 {
-  xbt_assert(state_ == State::INITED);
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
   src_buff_size_ = size;
   return this;
 }
-Activity* Comm::set_src_data(void* buff, size_t size)
+Comm* Comm::set_src_data(void* buff, size_t size)
 {
-  xbt_assert(state_ == State::INITED);
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
 
   xbt_assert(dst_buff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   src_buff_      = buff;
   src_buff_size_ = size;
   return this;
 }
-Activity* Comm::set_dst_data(void** buff)
+Comm* Comm::set_dst_data(void** buff)
 {
-  xbt_assert(state_ == State::INITED);
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
   xbt_assert(src_buff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   dst_buff_ = buff;
   return this;
 }
 size_t Comm::get_dst_data_size()
 {
-  xbt_assert(state_ == State::FINISHED);
+  xbt_assert(state_ == State::FINISHED, "You cannot use %s before your communication terminated", __FUNCTION__);
   return dst_buff_size_;
 }
-Activity* Comm::set_dst_data(void** buff, size_t size)
+Comm* Comm::set_dst_data(void** buff, size_t size)
 {
-  xbt_assert(state_ == State::INITED);
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
 
   xbt_assert(src_buff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   dst_buff_      = buff;
@@ -105,15 +114,18 @@ Activity* Comm::set_dst_data(void** buff, size_t size)
   return this;
 }
 
-Activity* Comm::start()
+Comm* Comm::start()
 {
-  xbt_assert(state_ == State::INITED);
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
 
   if (src_buff_ != nullptr) { // Sender side
+    on_sender_start(Actor::self());
     pimpl_ = simcall_comm_isend(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
                                 clean_fun_, copy_data_function_, user_data_, detached_);
   } else if (dst_buff_ != nullptr) { // Receiver side
     xbt_assert(not detached_, "Receive cannot be detached");
+    on_receiver_start(Actor::self());
     pimpl_ = simcall_comm_irecv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_,
                                 copy_data_function_, user_data_, rate_);
 
@@ -125,9 +137,9 @@ Activity* Comm::start()
 }
 
 /** @brief Block the calling actor until the communication is finished */
-Activity* Comm::wait()
+Comm* Comm::wait()
 {
-  return this->wait(-1);
+  return this->wait_for(-1);
 }
 
 /** @brief Block the calling actor until the communication is finished, or until timeout
@@ -136,7 +148,7 @@ Activity* Comm::wait()
  *
  * @param timeout the amount of seconds to wait for the comm termination.
  *                Negative values denote infinite wait times. 0 as a timeout returns immediately. */
-Activity* Comm::wait(double timeout)
+Comm* Comm::wait_for(double timeout)
 {
   switch (state_) {
     case State::FINISHED:
@@ -144,9 +156,12 @@ Activity* Comm::wait(double timeout)
 
     case State::INITED: // It's not started yet. Do it in one simcall
       if (src_buff_ != nullptr) {
+        on_sender_start(Actor::self());
         simcall_comm_send(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
                           copy_data_function_, user_data_, timeout);
+
       } else { // Receiver
+        on_receiver_start(Actor::self());
         simcall_comm_recv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_, copy_data_function_,
                           user_data_, timeout, rate_);
       }
@@ -155,6 +170,7 @@ Activity* Comm::wait(double timeout)
 
     case State::STARTED:
       simcall_comm_wait(pimpl_, timeout);
+      on_completion(Actor::self());
       state_ = State::FINISHED;
       return this;
 
@@ -174,19 +190,19 @@ int Comm::test_any(std::vector<CommPtr>* comms)
   return res;
 }
 
-Activity* Comm::detach()
+Comm* Comm::detach()
 {
-  xbt_assert(state_ == State::INITED, "You cannot detach communications once they are started (not implemented).");
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
   xbt_assert(src_buff_ != nullptr && src_buff_size_ != 0, "You can only detach sends, not recvs");
   detached_ = true;
   return start();
 }
 
-Activity* Comm::cancel()
+Comm* Comm::cancel()
 {
-  simgrid::kernel::activity::CommImplPtr commPimpl =
-      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(pimpl_);
-  commPimpl->cancel();
+  simgrid::simix::simcall([this] { dynamic_cast<kernel::activity::CommImpl*>(pimpl_.get())->cancel(); });
+  state_ = State::CANCELED;
   return this;
 }
 

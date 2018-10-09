@@ -14,7 +14,6 @@
 #include "src/instr/instr_paje_events.hpp"
 #include "src/instr/instr_paje_types.hpp"
 #include "src/instr/instr_paje_values.hpp"
-#include "src/internal_config.h"
 #include "xbt/graph.h"
 
 #include <fstream>
@@ -219,6 +218,22 @@ public:
 
   std::string display_size() override { return ""; }
 };
+
+class AmpiMigrateTIData : public TIData {
+  size_t memory_consumption;
+public:
+  explicit AmpiMigrateTIData(size_t memory_conso) : TIData("migrate"), memory_consumption(memory_conso) { };
+
+  std::string print() override
+  {
+    std::stringstream stream;
+    stream << getName() << " " << memory_consumption;
+
+    return stream.str();
+  }
+
+  std::string display_size() override { return ""; }
+};
 }
 }
 
@@ -258,7 +273,7 @@ XBT_PUBLIC bool TRACE_smpi_is_sleeping();
 XBT_PUBLIC bool TRACE_smpi_view_internals();
 
 XBT_PRIVATE void TRACE_surf_resource_set_utilization(const char* type, const char* name, const char* resource,
-                                                     const char* category, double value, double now, double delta);
+                                                     std::string category, double value, double now, double delta);
 
 /* instr_paje.c */
 extern XBT_PRIVATE std::set<std::string> trivaNodeTypes;
@@ -278,5 +293,9 @@ XBT_PRIVATE void dump_comment_file(std::string filename);
 XBT_PRIVATE void dump_comment(std::string comment);
 
 XBT_PRIVATE std::string TRACE_get_filename();
+
+/* instr_platform */
+xbt_graph_t instr_routing_platform_graph();
+void instr_routing_platform_graph_export_graphviz(xbt_graph_t g, const char* filename);
 
 #endif

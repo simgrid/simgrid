@@ -34,7 +34,6 @@ void surf_network_model_init_SMPI()
   if (surf_network_model)
     return;
   surf_network_model = new simgrid::kernel::resource::NetworkSmpiModel();
-  all_existing_models->push_back(surf_network_model);
 
   simgrid::config::set_default<double>("network/weight-S", 8775);
 }
@@ -45,11 +44,12 @@ namespace resource {
 
 NetworkSmpiModel::NetworkSmpiModel() : NetworkCm02Model()
 {
+  /* Do not add this into all_existing_models: our ancestor already does so */
 }
 
 NetworkSmpiModel::~NetworkSmpiModel() = default;
 
-double NetworkSmpiModel::bandwidthFactor(double size)
+double NetworkSmpiModel::get_bandwidth_factor(double size)
 {
   if (smpi_bw_factor.empty())
     smpi_bw_factor = parse_factor(simgrid::config::get_value<std::string>("smpi/bw-factor"));
@@ -67,7 +67,7 @@ double NetworkSmpiModel::bandwidthFactor(double size)
   return current;
 }
 
-double NetworkSmpiModel::latencyFactor(double size)
+double NetworkSmpiModel::get_latency_factor(double size)
 {
   if (smpi_lat_factor.empty())
     smpi_lat_factor = parse_factor(simgrid::config::get_value<std::string>("smpi/lat-factor"));
@@ -85,9 +85,9 @@ double NetworkSmpiModel::latencyFactor(double size)
   return current;
 }
 
-double NetworkSmpiModel::bandwidthConstraint(double rate, double bound, double size)
+double NetworkSmpiModel::get_bandwidth_constraint(double rate, double bound, double size)
 {
-  return rate < 0 ? bound : std::min(bound, rate * bandwidthFactor(size));
+  return rate < 0 ? bound : std::min(bound, rate * get_bandwidth_factor(size));
 }
 
 /************

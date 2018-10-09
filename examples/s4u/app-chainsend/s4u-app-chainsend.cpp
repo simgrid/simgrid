@@ -144,7 +144,7 @@ public:
   Broadcaster(int hostcount, unsigned int piece_count) : piece_count(piece_count)
   {
     for (int i = 1; i <= hostcount; i++) {
-      std::string name = std::string("node-") + std::to_string(i) + ".acme.org";
+      std::string name = std::string("node-") + std::to_string(i) + ".simgrid.org";
       XBT_DEBUG("%s", name.c_str());
       mailboxes.push_back(simgrid::s4u::Mailbox::by_name(name));
     }
@@ -189,16 +189,16 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("broadcaster", simgrid::s4u::Host::by_name("node-0.acme.org"), broadcaster, 8, 256);
+  simgrid::s4u::Actor::create("broadcaster", simgrid::s4u::Host::by_name("node-0.simgrid.org"), broadcaster, 8, 256);
 
-  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-1.acme.org"), peer);
-  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-2.acme.org"), peer);
-  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-3.acme.org"), peer);
-  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-4.acme.org"), peer);
-  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-5.acme.org"), peer);
-  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-6.acme.org"), peer);
-  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-7.acme.org"), peer);
-  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-8.acme.org"), peer);
+  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-1.simgrid.org"), peer);
+  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-2.simgrid.org"), peer);
+  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-3.simgrid.org"), peer);
+  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-4.simgrid.org"), peer);
+  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-5.simgrid.org"), peer);
+  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-6.simgrid.org"), peer);
+  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-7.simgrid.org"), peer);
+  simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-8.simgrid.org"), peer);
 
   e.run();
   XBT_INFO("Total simulation time: %e", simgrid::s4u::Engine::get_clock());

@@ -94,10 +94,10 @@ const std::unordered_map<int, const char*> tagname_map = {
 namespace simgrid {
 namespace dwarf {
 
-/** \brief Get the name of a dwarf tag (DW_TAG_*) from its code
+/** @brief Get the name of a dwarf tag (DW_TAG_*) from its code
  *
- *  \param tag tag code (see the DWARF specification)
- *  \return name of the tag
+ *  @param tag tag code (see the DWARF specification)
+ *  @return name of the tag
  */
 XBT_PRIVATE
 const char *tagname(int tag)

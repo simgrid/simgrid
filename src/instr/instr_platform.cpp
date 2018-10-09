@@ -8,7 +8,9 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/s4u/Actor.hpp"
+#include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/surf/cpu_interface.hpp"
@@ -208,13 +210,17 @@ static void instr_host_on_creation(simgrid::s4u::Host& host)
   container_t root      = simgrid::instr::Container::get_root();
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
-    simgrid::instr::VariableType* power = container->type_->by_name_or_create("power", "");
-    power->set_calling_container(container);
-    power->set_event(0, host.get_speed());
+    simgrid::instr::VariableType* speed = container->type_->by_name_or_create("speed", "");
+    speed->set_calling_container(container);
+    speed->set_event(0, host.get_speed());
+
+    simgrid::instr::VariableType* cores = container->type_->by_name_or_create("core_count", "");
+    cores->set_calling_container(container);
+    cores->set_event(0, host.get_core_count());
   }
 
   if (TRACE_uncategorized())
-    container->type_->by_name_or_create("power_used", "0.5 0.5 0.5");
+    container->type_->by_name_or_create("speed_used", "0.5 0.5 0.5");
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()) {
     simgrid::instr::ContainerType* mpi = container->type_->by_name_or_create<simgrid::instr::ContainerType>("MPI");
@@ -228,31 +234,34 @@ static void instr_host_on_creation(simgrid::s4u::Host& host)
 static void instr_host_on_speed_change(simgrid::s4u::Host& host)
 {
   simgrid::instr::Container::by_name(host.get_cname())
-      ->get_variable("power")
+      ->get_variable("speed")
       ->set_event(surf_get_clock(), host.get_core_count() * host.get_available_speed());
 }
 
-static void instr_cpu_action_on_state_change(simgrid::surf::CpuAction* action,
-                                             simgrid::kernel::resource::Action::State /* previous */)
-{
-  simgrid::surf::Cpu* cpu = static_cast<simgrid::surf::Cpu*>(action->get_variable()->get_constraint(0)->get_id());
-  TRACE_surf_resource_set_utilization("HOST", "power_used", cpu->get_cname(), action->get_category(),
-                                      action->get_variable()->get_value(), action->get_last_update(),
-                                      SIMIX_get_clock() - action->get_last_update());
-}
-
-static void instr_link_on_communication_state_change(simgrid::kernel::resource::NetworkAction* action)
+static void instr_action_on_state_change(simgrid::kernel::resource::Action* action,
+                                         simgrid::kernel::resource::Action::State /* previous */)
 {
   int n = action->get_variable()->get_number_of_constraint();
 
   for (int i = 0; i < n; i++) {
-    simgrid::kernel::lmm::Constraint* constraint = action->get_variable()->get_constraint(i);
-    simgrid::kernel::resource::LinkImpl* link = static_cast<simgrid::kernel::resource::LinkImpl*>(constraint->get_id());
     double value = action->get_variable()->get_value() * action->get_variable()->get_constraint_weight(i);
-    TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(), value,
-                                        action->get_last_update(), SIMIX_get_clock() - action->get_last_update());
+    /* Beware of composite actions: ptasks put links and cpus together. Extra pb: we cannot dynamic_cast from void* */
+    simgrid::kernel::resource::Resource* resource =
+        static_cast<simgrid::kernel::resource::Resource*>(action->get_variable()->get_constraint(i)->get_id());
+    simgrid::surf::Cpu* cpu = dynamic_cast<simgrid::surf::Cpu*>(resource);
+
+    if (cpu != nullptr)
+      TRACE_surf_resource_set_utilization("HOST", "speed_used", cpu->get_cname(), action->get_category(), value,
+                                          action->get_last_update(), SIMIX_get_clock() - action->get_last_update());
+
+    simgrid::kernel::resource::LinkImpl* link = dynamic_cast<simgrid::kernel::resource::LinkImpl*>(resource);
+
+    if (link != nullptr)
+      TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(), value,
+                                          action->get_last_update(), SIMIX_get_clock() - action->get_last_update());
   }
 }
+
 static void instr_link_on_bandwidth_change(simgrid::s4u::Link& link)
 {
   simgrid::instr::Container::by_name(link.get_cname())
@@ -291,15 +300,16 @@ static void instr_actor_on_creation(simgrid::s4u::ActorPtr actor)
   state->add_entity_value("sleep", "1 1 0");
   state->add_entity_value("receive", "1 0 0");
   state->add_entity_value("send", "0 0 1");
-  state->add_entity_value("task_execute", "0 1 1");
+  state->add_entity_value("execute", "0 1 1");
   root->type_->by_name_or_create("ACTOR_LINK", actor_type, actor_type);
   root->type_->by_name_or_create("ACTOR_TASK_LINK", actor_type, actor_type);
 
+  std::string container_name = instr_pid(actor.get());
   actor->on_exit(
-      [](int status, void* actor) {
+      [container_name](int status, void* actor) {
         if (status == SMX_EXIT_FAILURE)
           // kill means that this actor no longer exists, let's destroy it
-          simgrid::instr::Container::by_name(instr_pid(static_cast<simgrid::s4u::Actor*>(actor)))->remove_from_parent();
+          simgrid::instr::Container::by_name(container_name)->remove_from_parent();
       },
       actor->get_impl());
 }
@@ -337,7 +347,7 @@ static void instr_vm_on_creation(simgrid::s4u::Host& host)
   state->add_entity_value("sleep", "1 1 0");
   state->add_entity_value("receive", "1 0 0");
   state->add_entity_value("send", "0 0 1");
-  state->add_entity_value("task_execute", "0 1 1");
+  state->add_entity_value("execute", "0 1 1");
   root->type_->by_name_or_create("VM_LINK", vm, vm);
   root->type_->by_name_or_create("VM_ACTOR_LINK", vm, vm);
 }
@@ -357,11 +367,16 @@ void instr_define_callbacks()
   }
   simgrid::s4u::NetZone::on_creation.connect(instr_netzone_on_creation);
 
-  simgrid::surf::CpuAction::on_state_change.connect(instr_cpu_action_on_state_change);
-  simgrid::s4u::Link::on_communication_state_change.connect(instr_link_on_communication_state_change);
+  simgrid::surf::CpuAction::on_state_change.connect(instr_action_on_state_change);
+  simgrid::s4u::Link::on_communication_state_change.connect(instr_action_on_state_change);
 
   if (TRACE_actor_is_enabled()) {
     simgrid::s4u::Actor::on_creation.connect(instr_actor_on_creation);
+    simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::ActorPtr actor) {
+      auto container = simgrid::instr::Container::by_name_or_null(instr_pid(actor.get()));
+      if (container != nullptr)
+        container->remove_from_parent();
+    });
     simgrid::s4u::Actor::on_suspend.connect([](simgrid::s4u::ActorPtr actor) {
       simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("suspend");
     });
@@ -372,6 +387,21 @@ void instr_define_callbacks()
       simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("sleep");
     });
     simgrid::s4u::Actor::on_wake_up.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->pop_event();
+    });
+    simgrid::s4u::Exec::on_start.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("execute");
+    });
+    simgrid::s4u::Exec::on_completion.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->pop_event();
+    });
+    simgrid::s4u::Comm::on_sender_start.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("send");
+    });
+    simgrid::s4u::Comm::on_receiver_start.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("receive");
+    });
+    simgrid::s4u::Comm::on_completion.connect([](simgrid::s4u::ActorPtr actor) {
       simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->pop_event();
     });
     simgrid::s4u::Actor::on_migration_start.connect(instr_actor_on_migration_start);

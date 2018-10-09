@@ -168,10 +168,9 @@ foreach $_ (@ARGV) {
     elsif (/--?privatization=(.*)/) { 
 print STDERR "privatization called\n";
 $enabled_privatization = $1; }
-    elsif (/VALGRIND_COMMAND=(.*)/) { 
-        $valgrind = $1; }
-    elsif (/VALGRIND_OPTIONS=(.*)/) {
-         $wrapparg = "-wrapper \"$valgrind $1\""; }
+    elsif (/--?wrapper=(.*)/) {
+         $wrapparg = "-wrapper \"$1\"" if $1 ne "";
+    }
     elsif (/--?xmlfile=(.*)/) {
 	$xmlfile   = $1;
 	if (! ($xmlfile =~ /^\//)) {

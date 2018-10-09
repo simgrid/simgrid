@@ -25,7 +25,7 @@ public class Contact implements Comparable<Object> {
 
   @Override
   public boolean equals(Object x) {
-    return (x == null) ? false : x.equals(id) ;
+    return x != null && x.equals(id);
   }
 
   @Override

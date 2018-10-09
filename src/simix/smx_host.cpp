@@ -4,62 +4,15 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
+#include "simgrid/Exception.hpp"
 #include "smx_private.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
-#include "src/surf/surf_interface.hpp"
-#include "xbt/ex.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");
-
-namespace simgrid {
-  namespace simix {
-    simgrid::xbt::Extension<simgrid::s4u::Host, Host> Host::EXTENSION_ID;
-
-    Host::Host()
-    {
-      if (not Host::EXTENSION_ID.valid())
-        Host::EXTENSION_ID = s4u::Host::extension_create<simix::Host>();
-    }
-
-    Host::~Host()
-    {
-      /* All processes should be gone when the host is turned off (by the end of the simulation). */
-      if (not process_list.empty()) {
-        std::string msg     = std::string("Shutting down host, but it's not empty:");
-        for (auto const& process : process_list)
-          msg += "\n\t" + std::string(process.get_name());
-
-        SIMIX_display_process_status();
-        THROWF(arg_error, 0, "%s", msg.c_str());
-      }
-      for (auto const& arg : auto_restart_processes)
-        delete arg;
-      auto_restart_processes.clear();
-      for (auto const& arg : boot_processes)
-        delete arg;
-      boot_processes.clear();
-    }
-
-    /** Re-starts all the actors that are marked as restartable.
-     *
-     * Weird things will happen if you turn on an host that is already on. S4U is fool-proof, not this.
-     */
-    void Host::turnOn()
-    {
-      for (auto const& arg : boot_processes) {
-        XBT_DEBUG("Booting Process %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
-        smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
-                                                                  arg->properties.get(), nullptr);
-        if (arg->kill_time >= 0)
-          simcall_process_set_kill_time(actor, arg->kill_time);
-        if (arg->auto_restart)
-          actor->auto_restart = arg->auto_restart;
-      }
-    }
-
-}} // namespaces
 
 /* needs to be public and without simcall for exceptions and logging events */
 const char* sg_host_self_get_name()
@@ -71,49 +24,9 @@ const char* sg_host_self_get_name()
   return host->get_cname();
 }
 
-/**
- * \brief Add a process to the list of the processes that the host will restart when it comes back
- * This function add a process to the list of the processes that will be restarted when the host comes
- * back. It is expected that this function is called when the host is down.
- * The processes will only be restarted once, meaning that you will have to register the process
- * again to restart the process again.
- */
-void SIMIX_host_add_auto_restart_process(sg_host_t host, const char* name, std::function<void()> code, void* data,
-                                         double kill_time, std::unordered_map<std::string, std::string>* properties,
-                                         int auto_restart)
-{
-  simgrid::kernel::actor::ProcessArg* arg =
-      new simgrid::kernel::actor::ProcessArg(name, code, data, host, kill_time, nullptr, auto_restart);
-  arg->properties.reset(properties, [](decltype(properties)) {});
-
-  if (host->is_off() && watched_hosts.find(host->get_cname()) == watched_hosts.end()) {
-    watched_hosts.insert(host->get_cname());
-    XBT_DEBUG("Push host %s to watched_hosts because state == SURF_RESOURCE_OFF", host->get_cname());
-  }
-  XBT_DEBUG("Adding Process %s to the auto-restart list of Host %s", arg->name.c_str(), arg->host->get_cname());
-  host->extension<simgrid::simix::Host>()->auto_restart_processes.push_back(arg);
-}
-
-/** @brief Restart the list of processes that have been registered to the host */
-void SIMIX_host_autorestart(sg_host_t host)
-{
-  std::vector<simgrid::kernel::actor::ProcessArg*> process_list =
-      host->extension<simgrid::simix::Host>()->auto_restart_processes;
-
-  for (auto const& arg : process_list) {
-    XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->get_cname());
-    smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
-                                                              arg->properties.get(), nullptr);
-    if (arg->kill_time >= 0)
-      simcall_process_set_kill_time(actor, arg->kill_time);
-    if (arg->auto_restart)
-      actor->auto_restart = arg->auto_restart;
-  }
-  process_list.clear();
-}
-
-boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
-SIMIX_execution_start(const char* name, double flops_amount, double priority, double bound, sg_host_t host)
+simgrid::kernel::activity::ExecImplPtr SIMIX_execution_start(std::string name, std::string category,
+                                                             double flops_amount, double priority, double bound,
+                                                             sg_host_t host)
 {
   /* set surf's action */
   simgrid::kernel::resource::Action* surf_action = nullptr;
@@ -121,21 +34,22 @@ SIMIX_execution_start(const char* name, double flops_amount, double priority, do
     surf_action = host->pimpl_cpu->execution_start(flops_amount);
     surf_action->set_priority(priority);
     if (bound > 0)
-      static_cast<simgrid::surf::CpuAction*>(surf_action)->set_bound(bound);
+      surf_action->set_bound(bound);
   }
 
   simgrid::kernel::activity::ExecImplPtr exec = simgrid::kernel::activity::ExecImplPtr(
       new simgrid::kernel::activity::ExecImpl(name, surf_action, /*timeout_detector*/ nullptr, host));
 
+  exec->set_category(category);
   XBT_DEBUG("Create execute synchro %p: %s", exec.get(), exec->name_.c_str());
-  simgrid::kernel::activity::ExecImpl::onCreation(exec);
+  simgrid::kernel::activity::ExecImpl::on_creation(exec);
 
   return exec;
 }
 
-boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
-SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
-                               double* bytes_amount, double rate, double timeout)
+simgrid::kernel::activity::ExecImplPtr SIMIX_execution_parallel_start(std::string name, int host_nb,
+                                                                      sg_host_t* host_list, double* flops_amount,
+                                                                      double* bytes_amount, double rate, double timeout)
 {
 
   /* Check that we are not mixing VMs and PMs in the parallel task */
@@ -213,9 +127,10 @@ void SIMIX_execution_finish(smx_activity_t synchro)
         break;
 
       case SIMIX_FAILED:
-        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->host->get_cname());
-        simcall->issuer->context->iwannadie = 1;
-        SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->host_->get_cname());
+        simcall->issuer->context_->iwannadie = 1;
+        simcall->issuer->exception =
+            std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
         break;
 
       case SIMIX_CANCELED:
@@ -225,15 +140,15 @@ void SIMIX_execution_finish(smx_activity_t synchro)
 
       case SIMIX_TIMEOUT:
         XBT_DEBUG("SIMIX_execution_finished: execution timeouted");
-        SMX_EXCEPTION(simcall->issuer, timeout_error, 0, "Timeouted");
+        simcall->issuer->exception = std::make_exception_ptr(simgrid::TimeoutError(XBT_THROW_POINT, "Timeouted"));
         break;
 
       default:
         xbt_die("Internal error in SIMIX_execution_finish: unexpected synchro state %d", (int)exec->state_);
     }
     /* Fail the process if the host is down */
-    if (simcall->issuer->host->is_off())
-      simcall->issuer->context->iwannadie = 1;
+    if (simcall->issuer->host_->is_off())
+      simcall->issuer->context_->iwannadie = 1;
 
     simcall->issuer->waiting_synchro = nullptr;
     simcall_execution_wait__set__result(simcall, exec->state_);
@@ -241,7 +156,7 @@ void SIMIX_execution_finish(smx_activity_t synchro)
   }
 }
 
-void SIMIX_set_category(smx_activity_t synchro, const char *category)
+void SIMIX_set_category(smx_activity_t synchro, std::string category)
 {
   if (synchro->state_ != SIMIX_RUNNING)
     return;

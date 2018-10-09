@@ -3,13 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smx_private.hpp"
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/context/Context.hpp"
 #include "src/simix/smx_synchro_private.hpp"
 #include "src/surf/cpu_interface.hpp"
-#include <xbt/ex.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix, "SIMIX Synchronization (mutex, semaphores and conditions)");
 
@@ -68,7 +67,7 @@ void SIMIX_synchro_finish(smx_activity_t synchro)
 
   if (synchro->state_ != SIMIX_SRC_TIMEOUT) {
     if (synchro->state_ == SIMIX_FAILED)
-      simcall->issuer->context->iwannadie = 1;
+      simcall->issuer->context_->iwannadie = 1;
     else
       THROW_IMPOSSIBLE;
   }
@@ -146,7 +145,7 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_actor_t issuer,
 
   XBT_DEBUG("Wait semaphore %p (timeout:%f)", sem, timeout);
   if (sem->value <= 0) {
-    synchro = SIMIX_synchro_wait(issuer->host, timeout);
+    synchro = SIMIX_synchro_wait(issuer->host_, timeout);
     synchro->simcalls_.push_front(simcall);
     issuer->waiting_synchro = synchro;
     sem->sleeping.push_back(*issuer);
@@ -158,7 +157,7 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_actor_t issuer,
 }
 
 /**
- * \brief Handles a sem acquire simcall without timeout.
+ * @brief Handles a sem acquire simcall without timeout.
  */
 void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem)
 {
@@ -168,7 +167,7 @@ void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem)
 }
 
 /**
- * \brief Handles a sem acquire simcall with timeout.
+ * @brief Handles a sem acquire simcall with timeout.
  */
 void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout)
 {

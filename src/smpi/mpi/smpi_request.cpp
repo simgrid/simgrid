@@ -5,22 +5,23 @@
 
 #include "smpi_request.hpp"
 
-#include "smpi_host.hpp"
 #include "mc/mc.h"
 #include "private.hpp"
+#include "simgrid/Exception.hpp"
+#include "simgrid/s4u/Exec.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
+#include "smpi_host.hpp"
 #include "smpi_op.hpp"
-#include "smpi_process.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/ActorImpl.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 #include "xbt/config.hpp"
-#include <xbt/ex.hpp>
 
 #include <algorithm>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_request, smpi, "Logging specific to SMPI (reques)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_request, smpi, "Logging specific to SMPI (request)");
 
 static simgrid::config::Flag<double> smpi_iprobe_sleep(
   "smpi/iprobe", "Minimum time to inject inside a call to MPI_Iprobe", 1e-4);
@@ -370,7 +371,7 @@ void Request::start()
   if ((flags_ & MPI_REQ_RECV) != 0) {
     this->print_request("New recv");
 
-    simgrid::smpi::Process* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
+    simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
 
     int async_small_thresh = simgrid::config::get_value<int>("smpi/async-small-thresh");
 
@@ -421,7 +422,7 @@ void Request::start()
     if (async_small_thresh != 0 || (flags_ & MPI_REQ_RMA) != 0)
       xbt_mutex_release(mut);
   } else { /* the RECV flag was not set, so this is a send */
-    simgrid::smpi::Process* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
+    simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
     int rank = src_;
     if (TRACE_smpi_view_internals()) {
       TRACE_smpi_send(rank, rank, dst_, tag_, size_);
@@ -680,16 +681,18 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   // nsleeps is a multiplier to the sleeptime, to increase speed of execution, each failed iprobe will increase it
   // This can speed up the execution of certain applications by an order of magnitude, such as HPL
   static int nsleeps = 1;
-  double speed        = simgrid::s4u::Actor::self()->get_host()->get_speed();
+  double speed        = s4u::this_actor::get_host()->get_speed();
   double maxrate      = simgrid::config::get_value<double>("smpi/iprobe-cpu-usage");
   MPI_Request request = new Request(nullptr, 0, MPI_CHAR,
                                     source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(source)->get_pid(),
                                     simgrid::s4u::this_actor::get_pid(), tag, comm, MPI_REQ_PERSISTENT | MPI_REQ_RECV);
   if (smpi_iprobe_sleep > 0) {
-    smx_activity_t iprobe_sleep = simcall_execution_start(
-        "iprobe", /* flops to executek*/ nsleeps * smpi_iprobe_sleep * speed * maxrate, /* priority */ 1.0,
-        /* performance bound */ maxrate * speed, smpi_process()->get_actor()->get_host());
-    simcall_execution_wait(iprobe_sleep);
+    /** Compute the number of flops we will sleep **/
+    s4u::this_actor::exec_init(/*nsleeps: See comment above */ nsleeps *
+                               /*(in seconds)*/ smpi_iprobe_sleep * speed * maxrate)
+        ->set_name("iprobe")
+        ->start()
+        ->wait();
   }
   // behave like a receive, but don't do it
   smx_mailbox_t mailbox;
@@ -737,6 +740,9 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   if (req->cancelled_==1){
     if (status!=MPI_STATUS_IGNORE)
       status->cancelled=1;
+    if(req->detached_sender_ != nullptr)
+      unref(&(req->detached_sender_));
+    unref(request);
     return;
   }
 

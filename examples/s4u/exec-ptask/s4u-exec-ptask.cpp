@@ -20,8 +20,6 @@
 
 #include "simgrid/plugins/energy.h"
 #include <simgrid/s4u.hpp>
-#include <xbt/ex.hpp>
-#include <xbt/log.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_energyptask, "Messages specific for this s4u example");
 
@@ -69,6 +67,12 @@ static void runner()
   computation_amounts = new double[hosts_count]();
   for (int i               = 0; i < hosts_count; i++)
     computation_amounts[i] = 1e9; // 1 Gflop
+  simgrid::s4u::this_actor::parallel_execute(hosts_count, hosts.data(), computation_amounts, nullptr /* no comm */);
+
+  XBT_INFO("Then, build a parallel task involving only heterogeneous computations and no communication");
+  computation_amounts = new double[hosts_count]();
+  for (int i               = 0; i < hosts_count; i++)
+    computation_amounts[i] = 5 * (i + 1) * 1e8; // 500Mflop, 1Gflop, 1.5Gflop
   simgrid::s4u::this_actor::parallel_execute(hosts_count, hosts.data(), computation_amounts, nullptr /* no comm */);
 
   XBT_INFO("Then, build a parallel task with no computation nor communication (synchro only)");

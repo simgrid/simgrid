@@ -87,7 +87,8 @@ int main(int argc, char* argv[])
   simgrid::s4u::Engine e(&argc, argv);
 
   /* Check the arguments */
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n\tExample: %s cluster.xml dht-kademlia_d.xml\n",
+  xbt_assert(argc > 2,
+             "Usage: %s platform_file deployment_file\n\tExample: %s cluster_backbone.xml dht-kademlia_d.xml\n",
              argv[0], argv[0]);
 
   e.load_platform(argv[1]);

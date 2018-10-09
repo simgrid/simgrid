@@ -5,6 +5,13 @@
 #ifndef SIMGRID_PLUGINS_LOAD_BALANCER_H_
 #define SIMGRID_PLUGINS_LOAD_BALANCER_H_
 
-void sg_load_balancer_plugin_init();
+#include <simgrid/forward.h>
+#include <xbt/base.h>
+
+SG_BEGIN_DECL()
+
+XBT_PUBLIC void sg_load_balancer_plugin_init();
+
+SG_END_DECL()
 
 #endif

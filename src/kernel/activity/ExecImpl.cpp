@@ -15,20 +15,15 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
-simgrid::kernel::activity::ExecImpl::ExecImpl(const char* name, resource::Action* surf_action,
+simgrid::kernel::activity::ExecImpl::ExecImpl(std::string name, resource::Action* surf_action,
                                               resource::Action* timeout_detector, s4u::Host* host)
-    : host_(host)
+    : ActivityImpl(name), host_(host), surf_action_(surf_action), timeout_detector_(timeout_detector)
 {
-  if (name)
-    this->name_ = name;
   this->state_ = SIMIX_RUNNING;
 
-  surf_action_ = surf_action;
   surf_action_->set_data(this);
-  if (timeout_detector != nullptr) {
+  if (timeout_detector != nullptr)
     timeout_detector->set_data(this);
-    timeout_detector_ = timeout_detector;
-  }
 
   XBT_DEBUG("Create exec %p", this);
 }
@@ -75,9 +70,9 @@ double simgrid::kernel::activity::ExecImpl::get_remaining_ratio()
 {
   if (host_ ==
       nullptr) // parallel task: their remain is already between 0 and 1 (see comment in ExecImpl::get_remaining())
-    return surf_action_->get_remains();
+    return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains();
   else // Actually compute the ratio for sequential tasks
-    return surf_action_->get_remains() / surf_action_->get_cost();
+    return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains() / surf_action_->get_cost();
 }
 
 void simgrid::kernel::activity::ExecImpl::set_bound(double bound)
@@ -89,6 +84,12 @@ void simgrid::kernel::activity::ExecImpl::set_priority(double priority)
 {
   if (surf_action_)
     surf_action_->set_priority(priority);
+}
+
+void simgrid::kernel::activity::ExecImpl::set_category(std::string category)
+{
+  if (surf_action_)
+    surf_action_->set_category(category);
 }
 
 void simgrid::kernel::activity::ExecImpl::post()
@@ -107,6 +108,8 @@ void simgrid::kernel::activity::ExecImpl::post()
     state_ = SIMIX_DONE;
   }
 
+  on_completion(this);
+
   if (surf_action_) {
     surf_action_->unref();
     surf_action_ = nullptr;
@@ -116,7 +119,6 @@ void simgrid::kernel::activity::ExecImpl::post()
     timeout_detector_ = nullptr;
   }
 
-  onCompletion(this);
   /* If there are simcalls associated with the synchro, then answer them */
   if (not simcalls_.empty())
     SIMIX_execution_finish(this);
@@ -142,13 +144,14 @@ simgrid::kernel::activity::ExecImpl::migrate(simgrid::s4u::Host* to)
     this->surf_action_ = new_action;
   }
 
-  onMigration(this, to);
+  on_migration(this, to);
   return this;
 }
 
 /*************
  * Callbacks *
  *************/
-simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::onCreation;
-simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::onCompletion;
-simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr, simgrid::s4u::Host*)> simgrid::kernel::activity::ExecImpl::onMigration;
+simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::on_creation;
+simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::on_completion;
+simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr, simgrid::s4u::Host*)>
+    simgrid::kernel::activity::ExecImpl::on_migration;

@@ -69,12 +69,12 @@ XBT_PUBLIC void set_parse(std::string options);
 
 // Get config
 
-template <class T> XBT_PUBLIC T const& get_value(const char* name);
+template <class T> XBT_PUBLIC T const& get_value(std::string name);
 
-extern template XBT_PUBLIC int const& get_value<int>(const char* name);
-extern template XBT_PUBLIC double const& get_value<double>(const char* name);
-extern template XBT_PUBLIC bool const& get_value<bool>(const char* name);
-extern template XBT_PUBLIC std::string const& get_value<std::string>(const char* name);
+extern template XBT_PUBLIC int const& get_value<int>(std::string name);
+extern template XBT_PUBLIC double const& get_value<double>(std::string name);
+extern template XBT_PUBLIC bool const& get_value<bool>(std::string name);
+extern template XBT_PUBLIC std::string const& get_value<std::string>(std::string name);
 
 // Register:
 
@@ -86,16 +86,16 @@ extern template XBT_PUBLIC std::string const& get_value<std::string>(const char*
  *  @param callback    called with the option value
  */
 template <class T>
-XBT_PUBLIC void declare_flag(const char* name, const char* description, T value,
+XBT_PUBLIC void declare_flag(std::string name, std::string description, T value,
                              std::function<void(const T&)> callback = std::function<void(const T&)>());
 
-extern template XBT_PUBLIC void declare_flag(const char* name, const char* description, int value,
+extern template XBT_PUBLIC void declare_flag(std::string name, std::string description, int value,
                                              std::function<void(int const&)> callback);
-extern template XBT_PUBLIC void declare_flag(const char* name, const char* description, double value,
+extern template XBT_PUBLIC void declare_flag(std::string name, std::string description, double value,
                                              std::function<void(double const&)> callback);
-extern template XBT_PUBLIC void declare_flag(const char* name, const char* description, bool value,
+extern template XBT_PUBLIC void declare_flag(std::string name, std::string description, bool value,
                                              std::function<void(bool const&)> callback);
-extern template XBT_PUBLIC void declare_flag(const char* name, const char* description, std::string value,
+extern template XBT_PUBLIC void declare_flag(std::string name, std::string description, std::string value,
                                              std::function<void(std::string const&)> callback);
 
 // ***** alias *****
@@ -175,6 +175,15 @@ bind_flag(T& value, const char* name, const char* description, std::map<T, std::
                  value = std::move(val);
                }));
 }
+template <class T, class F>
+typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>::type
+bind_flag(T& value, const char* name, std::initializer_list<const char*> aliases, const char* description,
+          std::map<T, std::string> valid_values, F callback)
+{
+  bind_flag(value, name, description, std::move(valid_values), std::move(callback));
+  alias(name, std::move(aliases));
+}
+
 /** Bind a variable to configuration flag
  *
  *  <pre><code>
@@ -205,6 +214,8 @@ bind_flag(T& value, const char* name, const char* description, F callback)
 template<class T>
 class Flag {
   T value_;
+  std::string name_;
+
 public:
 
   /** Constructor
@@ -213,13 +224,14 @@ public:
    *  @param desc  Flag description
    *  @param value Flag initial/default value
    */
-  Flag(const char* name, const char* desc, T value) : value_(value)
+  Flag(const char* name, const char* desc, T value) : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, desc);
   }
 
   /** Constructor taking also an array of aliases for name */
-  Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value) : value_(value)
+  Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value)
+      : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, std::move(aliases), desc);
   }
@@ -227,15 +239,14 @@ public:
   /* A constructor accepting a callback that will be passed the parameter.
    * It can either return a boolean (informing whether the parameter is valid), or returning void.
    */
-  template<class F>
-  Flag(const char* name, const char* desc, T value, F callback) : value_(value)
+  template <class F> Flag(const char* name, const char* desc, T value, F callback) : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, desc, std::move(callback));
   }
 
   template <class F>
   Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value, F callback)
-      : value_(value)
+      : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, std::move(aliases), desc, std::move(callback));
   }
@@ -244,9 +255,19 @@ public:
    * and producing an informative error message when an invalid value is passed, or when help is passed as a value.
    */
   template <class F>
-  Flag(const char* name, const char* desc, T value, std::map<T, std::string> valid_values, F callback) : value_(value)
+  Flag(const char* name, const char* desc, T value, std::map<T, std::string> valid_values, F callback)
+      : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, desc, std::move(valid_values), std::move(callback));
+  }
+
+  /* A constructor with everything */
+  template <class F>
+  Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value,
+       std::map<T, std::string> valid_values, F callback)
+      : value_(value), name_(name)
+  {
+    simgrid::config::bind_flag(value_, name, std::move(aliases), desc, std::move(valid_values), std::move(callback));
   }
 
   // No copy:
@@ -257,6 +278,7 @@ public:
   T& get() { return value_; }
   T const& get() const { return value_; }
 
+  std::string get_name() const { return name_; }
   // Implicit conversion to the underlying type:
   operator T&() { return value_; }
   operator T const&() const{ return value_; }

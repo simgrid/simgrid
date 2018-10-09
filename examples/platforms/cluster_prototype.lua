@@ -52,7 +52,7 @@
   end
 
   simgrid.engine.open();
-  cluster_factory = my_cluster{prefix="node-", suffix=".acme.org", radical=seq(0,262144), host_factory = function(hostno)
+  cluster_factory = my_cluster{prefix="node-", suffix=".simgrid.org", radical=seq(0,262144), host_factory = function(hostno)
       if hostno % 2 == 0 then return "blabla" end
       if hostno % 2 == 1 then return "blublub" end
     end,
@@ -62,6 +62,6 @@
     lat="50us",
     sharing_sharing_policy="SPLITDUPLEX"
   }()
-  --my_cluster{prefix="node2-", suffix=".acme.org", radical=seq(0,44) }
+  --my_cluster{prefix="node2-", suffix=".simgrid.org", radical=seq(0,44) }
 
   simgrid.engine.close();

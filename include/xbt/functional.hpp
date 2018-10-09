@@ -26,25 +26,25 @@
 namespace simgrid {
 namespace xbt {
 
-template<class F>
-class MainFunction {
+template <class F> class MainFunction {
 private:
   F code_;
   std::shared_ptr<const std::vector<std::string>> args_;
+
 public:
-  MainFunction(F code, std::vector<std::string> args) :
-    code_(std::move(code)),
-    args_(std::make_shared<const std::vector<std::string>>(std::move(args)))
-  {}
+  MainFunction(F code, std::vector<std::string> args)
+      : code_(std::move(code)), args_(std::make_shared<const std::vector<std::string>>(std::move(args)))
+  {
+  }
   void operator()() const
   {
-    const int argc = args_->size();
+    const int argc                = args_->size();
     std::vector<std::string> args = *args_;
     if (not args.empty()) {
       char noarg[] = {'\0'};
       std::unique_ptr<char* []> argv(new char*[argc + 1]);
       for (int i = 0; i != argc; ++i)
-        argv[i]  = args[i].empty() ? noarg : &args[i].front();
+        argv[i] = args[i].empty() ? noarg : &args[i].front();
       argv[argc] = nullptr;
       code_(argc, argv.get());
     } else
@@ -52,25 +52,11 @@ public:
   }
 };
 
-template <class F>
-inline XBT_ATTRIB_DEPRECATED_v323("Please use wrap_main()") std::function<void()> wrapMain(
-    F code, std::vector<std::string> args)
-{
-  return MainFunction<F>(std::move(code), std::move(args));
-}
-
 template <class F> inline std::function<void()> wrap_main(F code, std::vector<std::string> args)
 {
   return MainFunction<F>(std::move(code), std::move(args));
 }
 
-template <class F>
-inline XBT_ATTRIB_DEPRECATED_v323("Please use wrap_main()") std::function<void()> wrapMain(F code, int argc,
-                                                                                           const char* const argv[])
-{
-  std::vector<std::string> args(argv, argv + argc);
-  return MainFunction<F>(std::move(code), std::move(args));
-}
 template <class F> inline std::function<void()> wrap_main(F code, int argc, const char* const argv[])
 {
   std::vector<std::string> args(argv, argv + argc);
@@ -300,6 +286,13 @@ public:
   }
 };
 
+template <class F, class... Args> auto make_task(F code, Args... args) -> Task<decltype(code(std::move(args)...))()>
+{
+  TaskImpl<F, Args...> task(std::move(code), std::make_tuple(std::move(args)...));
+  return Task<decltype(code(std::move(args)...))()>(std::move(task));
+}
+
+// Deprecated
 template <class F, class... Args>
 XBT_ATTRIB_DEPRECATED_v323("Please use make_task()") auto makeTask(F code, Args... args)
     -> Task<decltype(code(std::move(args)...))()>
@@ -308,12 +301,21 @@ XBT_ATTRIB_DEPRECATED_v323("Please use make_task()") auto makeTask(F code, Args.
   return Task<decltype(code(std::move(args)...))()>(std::move(task));
 }
 
-template <class F, class... Args> auto make_task(F code, Args... args) -> Task<decltype(code(std::move(args)...))()>
+template <class F>
+inline XBT_ATTRIB_DEPRECATED_v323("Please use wrap_main()") std::function<void()> wrapMain(
+    F code, std::vector<std::string> args)
 {
-  TaskImpl<F, Args...> task(std::move(code), std::make_tuple(std::move(args)...));
-  return Task<decltype(code(std::move(args)...))()>(std::move(task));
-}
-}
+  return MainFunction<F>(std::move(code), std::move(args));
 }
 
+template <class F>
+inline XBT_ATTRIB_DEPRECATED_v323("Please use wrap_main()") std::function<void()> wrapMain(F code, int argc,
+                                                                                           const char* const argv[])
+{
+  std::vector<std::string> args(argv, argv + argc);
+  return MainFunction<F>(std::move(code), std::move(args));
+}
+
+} // namespace xbt
+} // namespace simgrid
 #endif

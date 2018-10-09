@@ -5,12 +5,14 @@
 
 /* \file UContext.cpp Context switching with ucontexts from System V        */
 
-#include "ContextUnix.hpp"
 #include "context_private.hpp"
 
 #include "mc/mc.h"
+#include "simgrid/Exception.hpp"
 #include "src/mc/mc_ignore.hpp"
 #include "src/simix/ActorImpl.hpp"
+
+#include "ContextUnix.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
@@ -121,10 +123,13 @@ void UContext::smx_ctx_sysv_wrapper(int i1, int i2)
   ASAN_FINISH_SWITCH(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
   try {
     (*context)();
-    context->Context::stop();
   } catch (simgrid::kernel::context::Context::StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
+  } catch (simgrid::Exception const& e) {
+    XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
+    throw;
   }
+  context->Context::stop();
   ASAN_ONLY(context->asan_stop_ = true);
   context->suspend();
 }
@@ -170,7 +175,7 @@ void SerialUContext::suspend()
   if (i < simix_global->process_to_run.size()) {
     /* execute the next process */
     XBT_DEBUG("Run next process");
-    next_context = static_cast<SerialUContext*>(simix_global->process_to_run[i]->context);
+    next_context = static_cast<SerialUContext*>(simix_global->process_to_run[i]->context_);
   } else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
@@ -192,7 +197,7 @@ void SerialUContext::run_all()
     return;
   smx_actor_t first_process = simix_global->process_to_run.front();
   process_index_            = 1;
-  static_cast<SerialUContext*>(first_process->context)->resume();
+  static_cast<SerialUContext*>(first_process->context_)->resume();
 }
 
 // ParallelUContext
@@ -201,7 +206,7 @@ void SerialUContext::run_all()
 
 simgrid::xbt::Parmap<smx_actor_t>* ParallelUContext::parmap_;
 std::atomic<uintptr_t> ParallelUContext::threads_working_;         /* number of threads that have started their work */
-xbt_os_thread_key_t ParallelUContext::worker_id_key_;              /* thread-specific storage for the thread id */
+thread_local uintptr_t ParallelUContext::worker_id_;               /* thread-specific storage for the thread id */
 std::vector<ParallelUContext*> ParallelUContext::workers_context_; /* space to save the worker's context
                                                                     * in each thread */
 
@@ -210,7 +215,6 @@ void ParallelUContext::initialize()
   parmap_ = nullptr;
   workers_context_.clear();
   workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
-  xbt_os_thread_key_create(&worker_id_key_);
 }
 
 void ParallelUContext::finalize()
@@ -218,7 +222,6 @@ void ParallelUContext::finalize()
   delete parmap_;
   parmap_ = nullptr;
   workers_context_.clear();
-  xbt_os_thread_key_destroy(worker_id_key_);
 }
 
 void ParallelUContext::run_all()
@@ -233,7 +236,7 @@ void ParallelUContext::run_all()
     parmap_ = new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
   parmap_->apply(
       [](smx_actor_t process) {
-        ParallelUContext* context = static_cast<ParallelUContext*>(process->context);
+        ParallelUContext* context = static_cast<ParallelUContext*>(process->context_);
         context->resume();
       },
       simix_global->process_to_run);
@@ -255,14 +258,13 @@ void ParallelUContext::suspend()
   if (next_work) {
     // There is a next soul to embody (ie, a next process to resume)
     XBT_DEBUG("Run next process");
-    next_context = static_cast<ParallelUContext*>(next_work.get()->context);
+    next_context = static_cast<ParallelUContext*>(next_work.get()->context_);
   } else {
     // All processes were run, go to the barrier
     XBT_DEBUG("No more processes to run");
-    // Get back the identity of my body that was stored when starting the scheduling round
-    uintptr_t worker_id = reinterpret_cast<uintptr_t>(xbt_os_thread_get_specific(worker_id_key_));
+    // worker_id_ is the identity of my body, stored in thread_local when starting the scheduling round
     // Deduce the initial soul of that body
-    next_context = workers_context_[worker_id];
+    next_context = workers_context_[worker_id_];
     // When given that soul, the body will wait for the next scheduling round
   }
 
@@ -274,14 +276,12 @@ void ParallelUContext::suspend()
 /** Run one particular simulated process on the current thread. */
 void ParallelUContext::resume()
 {
-  // What is my containing body?
-  uintptr_t worker_id = threads_working_.fetch_add(1, std::memory_order_relaxed);
-  // Store the number of my containing body in os-thread-specific area :
-  xbt_os_thread_set_specific(worker_id_key_, reinterpret_cast<void*>(worker_id));
+  // What is my containing body? Store its number in os-thread-specific area :
+  worker_id_ = threads_working_.fetch_add(1, std::memory_order_relaxed);
   // Get my current soul:
   ParallelUContext* worker_context = static_cast<ParallelUContext*>(SIMIX_context_self());
   // Write down that this soul is hosted in that body (for now)
-  workers_context_[worker_id] = worker_context;
+  workers_context_[worker_id_] = worker_context;
   // Write in simix that I switched my soul
   SIMIX_context_set_current(this);
   // Actually do that using the relevant library call:

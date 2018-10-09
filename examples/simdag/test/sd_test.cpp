@@ -5,11 +5,9 @@
 
 #include "simgrid/s4u.hpp"
 #include "simgrid/simdag.h"
-#include "xbt/ex.h"
-#include "xbt/log.h"
+
 #include <cmath>
 #include <set>
-#include <xbt/ex.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test, "Logging specific to this SimDag example");
 

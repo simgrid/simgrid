@@ -380,8 +380,6 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getLoad(JNIEnv* env, jobject
   return MSG_host_get_load(host);
 }
 
-
-
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCurrentLoad (JNIEnv *env, jobject jhost)
 {
   msg_host_t host = jhost_get_native(env, jhost);
@@ -394,7 +392,6 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCurrentLoad (JNIEnv *env,
   return MSG_host_get_current_load(host);
 }
 
-
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getComputedFlops (JNIEnv *env, jobject jhost)
 {
   msg_host_t host = jhost_get_native(env, jhost);
@@ -406,8 +403,6 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getComputedFlops (JNIEnv *en
 
   return MSG_host_get_computed_flops(host);
 }
-
-
 
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getAvgLoad (JNIEnv *env, jobject jhost)
 {

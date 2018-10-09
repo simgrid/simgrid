@@ -1,22 +1,22 @@
 /**
 @page inside_extending Extending SimGrid
 
-\tableofcontents
+@tableofcontents
 
-\section simgrid_dev_guide_model How to add a new model?
+@section simgrid_dev_guide_model How to add a new model?
 The figure below shows the architecture of the SURF layer. This layer is composed
 of different kinds of models representing the different systems we want to
 model (i.e., cpu, network, storage, workstation, virtual machine).
 
 A model in SimGrid is composed of three classes: Model, Resource and Action
-(\ref SURF_interface "surf_interface.hpp").
+(@ref SURF_interface "surf_interface.hpp").
 
-\image html surf++.png
-\image latex surf++.pdf "surf++" width=\textwidth
+@image html surf++.png
+@image latex surf++.pdf "surf++" width=\textwidth
 
 Actually there are five kind of models: CpuModel, NetworkModel, WorkstationModel,
 WorkstationVMModel and StorageModel. For each kind of model, there is an
-interface (e.g.: \ref SURF_cpu_interface "cpu_interface.hpp") and some implementations (e.g.: cpu_cas01.hpp,
+interface (e.g.: @ref SURF_cpu_interface "cpu_interface.hpp") and some implementations (e.g.: cpu_cas01.hpp,
 cpu_ti.hpp).
 
 The CPU model Cas01, for instance, is initialized by the function
@@ -27,7 +27,7 @@ that is defined as follows:
 
 s_surf_model_description_t surf_network_model_description[] = {
 
-\subsection simgrid_dev_guide_model_implem How to implement a new model?
+@subsection simgrid_dev_guide_model_implem How to implement a new model?
 
 If you want to create a new implementation of a kind of model you must extend
 the classes of the corresponding interfaces.
@@ -64,18 +64,18 @@ s_surf_model_description_t surf_cpu_model_description[] = {
 };
 ~~~~
 
-\subsection simgrid_dev_guide_model_kind How to add a new kind of model?
+@subsection simgrid_dev_guide_model_kind How to add a new kind of model?
 
 If you want to create a new kind of model, you must create a new interface
 where you extend the classes Model, Resource and Action, and then create an
 implementation of this interface.
 
 
-\section simgrid_dev_guide_surf_callbacks How to use surf callbacks?
+@section simgrid_dev_guide_surf_callbacks How to use surf callbacks?
 
 Adding features to surf could also be handle by using surf callbacks (instead
 of adding new implementation model). The list of available callbacks is
-accessible there \ref SURF_callbacks. An example of using surf callbacks is the
+accessible there @ref SURF_callbacks. An example of using surf callbacks is the
 energy plugin. If you want to add a plugin you need to define callback function
 and to connect them to callbacks handler in an initialization function.
 
@@ -116,10 +116,10 @@ s_surf_model_description_t surf_plugin_description[] = {
 };
 ~~~~
 
-\section simgrid_dev_guide_simcall How to add a new simcall?
+@section simgrid_dev_guide_simcall How to add a new simcall?
 
 First of all you might want to avoid defining a new simcall if possible:
-\ref simgrid_dev_guide_generic_simcall.
+@ref simgrid_dev_guide_generic_simcall.
 
 A simcall is used to go from user mode to kernel mode. There is some
 sort of popping dance involved, as we want to isolate the user
@@ -173,7 +173,7 @@ generates the following files:
 The simcall.in file list all the simcalls in sections. A line starting by "##"
 define a new section which will be replace by a "ifdef" in the generated code.
 
-\section simgrid_dev_guide_generic_simcall How to avoid adding a new simcall?
+@section simgrid_dev_guide_generic_simcall How to avoid adding a new simcall?
 
 We now have some generic simcalls which can be used to interface with the
 Maestro without creating new simcalls. You might want to use them instead of
@@ -251,7 +251,7 @@ catch (std::runtime_error& e) {
 
 <b>Note:</b> `kernel_sync(f)` could be implemented as `kernel_async(f).get()`.
 
-\section simgrid_dev_guide_tag What is How to add a new tag for xml files?
+@section simgrid_dev_guide_tag What is How to add a new tag for xml files?
 
 You should not do something like that. Please work instead to make XML
 avoidable, ie to make the C++ interface nice and usable.

@@ -4,10 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/plugins/vm/VmLiveMigration.hpp"
+#include "simgrid/Exception.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/plugins/vm/VmHostExt.hpp"
-#include "xbt/ex.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(vm_live_migration, "S4U virtual machines live migration");
 
@@ -104,9 +104,9 @@ sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_r
   s4u::Activity* comm = nullptr;
   try {
     if (mig_speed > 0)
-      comm = mbox->put_init(msg, size)->set_rate(mig_speed)->wait(timeout);
+      comm = mbox->put_init(msg, size)->set_rate(mig_speed)->wait_for(timeout);
     else
-      comm = mbox->put_async(msg, size)->wait();
+      comm = mbox->put_async(msg, size)->wait_for(timeout);
   } catch (xbt_ex& e) {
     if (comm) {
       sg_size_t remaining = static_cast<sg_size_t>(comm->get_remaining());
@@ -300,13 +300,6 @@ void sg_vm_live_migration_plugin_init()
   simgrid::s4u::VirtualMachine::on_shutdown.connect(&onVirtualMachineShutdown);
 }
 
-/* Deprecated. Please use MSG_vm_create_migratable() instead */
-msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char* name, int coreAmount, int ramsize, int mig_netspeed,
-                       int dp_intensity)
-{
-  return sg_vm_create_migratable(ind_pm, name, coreAmount, ramsize, mig_netspeed, dp_intensity);
-}
-
 simgrid::s4u::VirtualMachine* sg_vm_create_migratable(simgrid::s4u::Host* pm, const char* name, int coreAmount,
                                                       int ramsize, int mig_netspeed, int dp_intensity)
 {
@@ -344,6 +337,7 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->get_cname());
 
   vm->get_impl()->is_migrating_ = true;
+  simgrid::s4u::VirtualMachine::on_migration_start(*vm);
 
   std::string rx_name =
       std::string("__pr_mig_rx:") + vm->get_cname() + "(" + src_pm->get_cname() + "-" + dst_pm->get_cname() + ")";
@@ -366,4 +360,5 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   rx->join();
 
   vm->get_impl()->is_migrating_ = false;
+  simgrid::s4u::VirtualMachine::on_migration_end(*vm);
 }

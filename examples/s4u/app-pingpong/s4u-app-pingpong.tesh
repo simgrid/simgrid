@@ -3,8 +3,8 @@
 p Testing with default compound
 
 $ $SG_TEST_EXENV ${bindir:=.}/s4u-app-pingpong$EXEEXT ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (1:pinger@Tremblay) Ping -> Jupiter
-> [  0.000000] (2:ponger@Jupiter) Pong -> Tremblay
+> [  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
+> [  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1
 > [  0.019014] (2:ponger@Jupiter) Task received : small communication (latency bound)
 > [  0.019014] (2:ponger@Jupiter)  Ping time (latency bound) 0.019014
 > [  0.019014] (2:ponger@Jupiter) task_bw->data = 0.019
@@ -16,8 +16,8 @@ p Testing with default compound Full network optimization
 
 $ $SG_TEST_EXENV ${bindir:=.}/s4u-app-pingpong$EXEEXT ${platfdir}/small_platform.xml "--cfg=network/optim:Full" "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/optim' to 'Full'
-> [  0.000000] (1:pinger@Tremblay) Ping -> Jupiter
-> [  0.000000] (2:ponger@Jupiter) Pong -> Tremblay
+> [  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
+> [  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1
 > [  0.019014] (2:ponger@Jupiter) Task received : small communication (latency bound)
 > [  0.019014] (2:ponger@Jupiter)  Ping time (latency bound) 0.019014
 > [  0.019014] (2:ponger@Jupiter) task_bw->data = 0.019
@@ -30,8 +30,8 @@ p Testing the deprecated CM02 network model
 $ $SG_TEST_EXENV ${bindir:=.}/s4u-app-pingpong$EXEEXT ${platfdir}/small_platform.xml --cfg=cpu/model:Cas01 --cfg=network/model:CM02 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
-> [  0.000000] (1:pinger@Tremblay) Ping -> Jupiter
-> [  0.000000] (2:ponger@Jupiter) Pong -> Tremblay
+> [  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
+> [  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1
 > [  0.001462] (2:ponger@Jupiter) Task received : small communication (latency bound)
 > [  0.001462] (2:ponger@Jupiter)  Ping time (latency bound) 0.001462
 > [  0.001462] (2:ponger@Jupiter) task_bw->data = 0.001
@@ -45,8 +45,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-app-pingpong$EXEEXT ${platfdir}/small_platform
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Reno'
-> [  0.000000] (1:pinger@Tremblay) Ping -> Jupiter
-> [  0.000000] (2:ponger@Jupiter) Pong -> Tremblay
+> [  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
+> [  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1
 > [  0.019014] (2:ponger@Jupiter) Task received : small communication (latency bound)
 > [  0.019014] (2:ponger@Jupiter)  Ping time (latency bound) 0.019014
 > [  0.019014] (2:ponger@Jupiter) task_bw->data = 0.019
@@ -60,8 +60,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-app-pingpong$EXEEXT ${platfdir}/small_platform
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Reno2'
-> [  0.000000] (1:pinger@Tremblay) Ping -> Jupiter
-> [  0.000000] (2:ponger@Jupiter) Pong -> Tremblay
+> [  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
+> [  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1
 > [  0.019014] (2:ponger@Jupiter) Task received : small communication (latency bound)
 > [  0.019014] (2:ponger@Jupiter)  Ping time (latency bound) 0.019014
 > [  0.019014] (2:ponger@Jupiter) task_bw->data = 0.019
@@ -75,8 +75,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-app-pingpong$EXEEXT ${platfdir}/small_platform
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Vegas'
-> [  0.000000] (1:pinger@Tremblay) Ping -> Jupiter
-> [  0.000000] (2:ponger@Jupiter) Pong -> Tremblay
+> [  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
+> [  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1
 > [  0.019014] (2:ponger@Jupiter) Task received : small communication (latency bound)
 > [  0.019014] (2:ponger@Jupiter)  Ping time (latency bound) 0.019014
 > [  0.019014] (2:ponger@Jupiter) task_bw->data = 0.019
@@ -90,8 +90,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-app-pingpong$EXEEXT ${platfdir}/small_platform
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Constant'
-> [  0.000000] (1:pinger@Tremblay) Ping -> Jupiter
-> [  0.000000] (2:ponger@Jupiter) Pong -> Tremblay
+> [  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
+> [  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1
 > [ 13.010000] (2:ponger@Jupiter) Task received : small communication (latency bound)
 > [ 13.010000] (2:ponger@Jupiter)  Ping time (latency bound) 13.010000
 > [ 13.010000] (2:ponger@Jupiter) task_bw->data = 13.010

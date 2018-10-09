@@ -24,31 +24,31 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-/** @brief Command-line option 'network/TCP-gamma' -- see \ref options_model_network_gamma */
+/** @brief Command-line option 'network/TCP-gamma' -- see @ref options_model_network_gamma */
 simgrid::config::Flag<double> NetworkModel::cfg_tcp_gamma(
     "network/TCP-gamma", {"network/TCP_gamma"},
     "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; "
     "Use the last given value, which is the max window size)",
     4194304.0);
 
-/** @brief Command-line option 'network/crosstraffic' -- see \ref options_model_network_crosstraffic */
+/** @brief Command-line option 'network/crosstraffic' -- see @ref options_model_network_crosstraffic */
 simgrid::config::Flag<bool> NetworkModel::cfg_crosstraffic(
     "network/crosstraffic",
     "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)", "yes");
 
 NetworkModel::~NetworkModel() = default;
 
-double NetworkModel::latencyFactor(double /*size*/)
+double NetworkModel::get_latency_factor(double /*size*/)
 {
   return sg_latency_factor;
 }
 
-double NetworkModel::bandwidthFactor(double /*size*/)
+double NetworkModel::get_bandwidth_factor(double /*size*/)
 {
   return sg_bandwidth_factor;
 }
 
-double NetworkModel::bandwidthConstraint(double rate, double /*bound*/, double /*size*/)
+double NetworkModel::get_bandwidth_constraint(double rate, double /*bound*/, double /*size*/)
 {
   return rate;
 }
@@ -89,7 +89,7 @@ LinkImpl::LinkImpl(NetworkModel* model, const std::string& name, lmm::Constraint
 /** @brief use destroy() instead of this destructor */
 LinkImpl::~LinkImpl()
 {
-  xbt_assert(currentlyDestroying_, "Don't delete Links directly. Call destroy() instead.");
+  xbt_assert(currently_destroying_, "Don't delete Links directly. Call destroy() instead.");
 }
 /** @brief Fire the required callbacks and destroy the object
  *
@@ -97,8 +97,8 @@ LinkImpl::~LinkImpl()
  */
 void LinkImpl::destroy()
 {
-  if (not currentlyDestroying_) {
-    currentlyDestroying_ = true;
+  if (not currently_destroying_) {
+    currently_destroying_ = true;
     s4u::Link::on_destruction(this->piface_);
     delete this;
   }
@@ -148,13 +148,13 @@ void LinkImpl::on_bandwidth_change()
 void LinkImpl::set_bandwidth_trace(tmgr_trace_t trace)
 {
   xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", get_cname());
-  bandwidth_.event = future_evt_set->add_trace(trace, this);
+  bandwidth_.event = future_evt_set.add_trace(trace, this);
 }
 
 void LinkImpl::set_latency_trace(tmgr_trace_t trace)
 {
   xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", get_cname());
-  latency_.event = future_evt_set->add_trace(trace, this);
+  latency_.event = future_evt_set.add_trace(trace, this);
 }
 
 /**********
@@ -166,7 +166,7 @@ void NetworkAction::set_state(Action::State state)
   Action::State previous = get_state();
   Action::set_state(state);
   if (previous != state) // Trigger only if the state changed
-    s4u::Link::on_communication_state_change(this);
+    s4u::Link::on_communication_state_change(this, previous);
 }
 
 /** @brief returns a list of all Links that this action is using */

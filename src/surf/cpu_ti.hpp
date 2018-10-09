@@ -3,15 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <boost/intrusive/list.hpp>
-
-#include <xbt/base.h>
+#ifndef SURF_MODEL_CPUTI_H_
+#define SURF_MODEL_CPUTI_H_
 
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/trace_mgr.hpp"
 
-/* Epsilon */
-#define EPSILON 0.000000001
+#include <boost/intrusive/list.hpp>
 
 namespace simgrid {
 namespace surf {
@@ -42,15 +40,14 @@ public:
   int binary_search(double* array, double a, int low, int high);
 };
 
-enum trace_type {
-
-  TRACE_FIXED,                /*< Trace fixed, no availability file */
-  TRACE_DYNAMIC               /*< Dynamic, have an availability file */
-};
-
 class CpuTiTmgr {
+  enum class Type {
+    FIXED,  /*< Trace fixed, no availability file */
+    DYNAMIC /*< Dynamic, have an availability file */
+  };
+
 public:
-  CpuTiTmgr(trace_type type, double value) : type_(type), value_(value){};
+  explicit CpuTiTmgr(double value) : type_(Type::FIXED), value_(value){};
   CpuTiTmgr(tmgr_trace_t speed_trace, double value);
   CpuTiTmgr(const CpuTiTmgr&) = delete;
   CpuTiTmgr& operator=(const CpuTiTmgr&) = delete;
@@ -60,7 +57,8 @@ public:
   double solve(double a, double amount);
   double get_power_scale(double a);
 
-  trace_type type_;
+private:
+  Type type_;
   double value_;                 /*< Percentage of cpu speed available. Value fixed between 0 and 1 */
 
   /* Dynamic */
@@ -139,7 +137,9 @@ typedef boost::intrusive::list<CpuTi, CpuTiListOptions> CpuTiList;
  *********/
 class CpuTiModel : public CpuModel {
 public:
-  CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL){};
+  static void create_pm_vm_models(); // Make both models be TI models
+
+  CpuTiModel();
   ~CpuTiModel() override;
   Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core) override;
   double next_occuring_event(double now) override;
@@ -150,3 +150,5 @@ public:
 
 }
 }
+
+#endif /* SURF_MODEL_CPUTI_H_ */

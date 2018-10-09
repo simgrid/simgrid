@@ -7,10 +7,10 @@
 #ifndef SMPI_WIN_HPP_INCLUDED
 #define SMPI_WIN_HPP_INCLUDED
 
+#include "simgrid/s4u/Barrier.hpp"
 #include "smpi_f2c.hpp"
 #include "smpi_keyvals.hpp"
 #include "xbt/synchro.h"
-#include <simgrid/msg.h>
 
 #include <vector>
 #include <list>
@@ -28,7 +28,7 @@ class Win : public F2C, public Keyval {
   MPI_Comm comm_;
   std::vector<MPI_Request> *requests_;
   xbt_mutex_t mut_;
-  msg_bar_t bar_;
+  simgrid::s4u::Barrier* bar_;
   MPI_Win* connected_wins_;
   char* name_;
   int opened_;

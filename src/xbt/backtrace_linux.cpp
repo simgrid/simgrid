@@ -191,9 +191,7 @@ std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, 
 
   XBT_VERB("Fire a first command: '%s'", cmd.c_str());
   FILE* pipe = popen(cmd.c_str(), "r");
-  if (not pipe) {
-    xbt_die("Cannot fork addr2line to display the backtrace");
-  }
+  xbt_assert(pipe, "Cannot fork addr2line to display the backtrace");
 
   /* To read the output of addr2line */
   char line_func[1024];
@@ -290,7 +288,7 @@ std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, 
 
         /* Here we go, fire an addr2line up */
         std::string subcmd = std::string(ADDR2LINE) + " -f -e " + p + " " + addrs[i];
-        XBT_VERB("Fire a new command: '%s'", subcmd.c_str());
+        XBT_VERB("Fire another command: '%s'", subcmd.c_str());
         FILE* subpipe = popen(subcmd.c_str(), "r");
         if (not subpipe) {
           xbt_die("Cannot fork addr2line to display the backtrace");

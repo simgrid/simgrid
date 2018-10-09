@@ -54,7 +54,7 @@ main (int argc, char **argv)
     }
   else if (rank == 1)
     {
-      memset (buf0, 0, buf_size);
+      memset (buf0, 0, buf_size*sizeof(int));
 
     //  sleep (30);
 
@@ -66,7 +66,7 @@ main (int argc, char **argv)
     }
   else if (rank == 2)
     {
-      memset (buf1, 1, buf_size);
+      memset (buf1, 1, buf_size*sizeof(int));
 
      // sleep (60);
 

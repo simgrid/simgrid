@@ -144,12 +144,12 @@ public class Host {
 	 */
 	public native double getConsumedEnergy();
 
+	/** Returns the current load of the host */
 	public native double getCurrentLoad();
-
+	/** Returns the number of flops computed of the host */
 	public native double getComputedFlops();
-
+	/** Returns the average load of the host */
 	public native double getAvgLoad();
-
 	/** Returns the current pstate */
 	public native int getPstate();
 	/** Changes the current pstate */

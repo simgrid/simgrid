@@ -18,7 +18,7 @@
 namespace simgrid {
 namespace s4u {
 
-/** @ingroup s4u_api
+/**
  *
  * An actor is an independent stream of execution in your distributed application.
  *
@@ -121,20 +121,12 @@ namespace s4u {
 
 /** @brief Simulation Agent */
 class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<Actor> {
-  friend Exec;
-  friend Mailbox;
+  friend simgrid::s4u::Exec;
+  friend simgrid::s4u::Mailbox;
   friend simgrid::kernel::actor::ActorImpl;
   friend simgrid::kernel::activity::MailboxImpl;
-  kernel::actor::ActorImpl* pimpl_ = nullptr;
 
-  /** Wrap a (possibly non-copyable) single-use task into a `std::function` */
-  template<class F, class... Args>
-  static std::function<void()> wrap_task(F f, Args... args)
-  {
-    typedef decltype(f(std::move(args)...)) R;
-    auto task = std::make_shared<simgrid::xbt::Task<R()>>(simgrid::xbt::make_task(std::move(f), std::move(args)...));
-    return [task] { (*task)(); };
-  }
+  kernel::actor::ActorImpl* pimpl_ = nullptr;
 
   explicit Actor(smx_actor_t pimpl) : pimpl_(pimpl) {}
 
@@ -166,38 +158,40 @@ public:
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_migration_start;
   /** Signal to others that an actor is has been migrated to another host **/
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_migration_end;
-  /** Signal indicating that the given actor is about to disappear */
+  /** Signal indicating that an actor is about to disappear.
+   *  This signal is fired for any dying actor, which is mostly useful when
+   *  designing plugins and extensions. If you want to register to the
+   *  termination of a given actor, use this_actor::on_exit() instead.*/
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_destruction;
 
-  /** Create an actor using a function
+  /** Create an actor from a std::function<void()>
    *
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
-  static ActorPtr create(const char* name, s4u::Host* host, std::function<void()> code);
+  static ActorPtr create(std::string name, s4u::Host* host, std::function<void()> code);
 
-  static ActorPtr create(const char* name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
-                         std::vector<std::string>* args)
+  /** Create an actor from a std::function
+   *
+   *  If the actor is restarted, the actor has a fresh copy of the function.
+   */
+  template <class F> static ActorPtr create(std::string name, s4u::Host* host, F code)
   {
-    return create(name, host, [code](std::vector<std::string>* args) { code(args); }, args);
+    return create(name, host, std::function<void()>(std::move(code)));
   }
 
-  /** Create an actor using code
+  /** Create an actor using a callable thing and its arguments.
    *
-   *  Using this constructor, move-only type can be used. The consequence is
-   *  that we cannot copy the value and restart the actor in its initial
-   *  state. In order to use auto-restart, an explicit `function` must be passed
-   *  instead.
-   */
+   * Note that the arguments will be copied, so move-only parameters are forbidden */
   template <class F, class... Args,
             // This constructor is enabled only if the call code(args...) is valid:
             typename = typename std::result_of<F(Args...)>::type>
-  static ActorPtr create(const char* name, s4u::Host* host, F code, Args... args)
+  static ActorPtr create(std::string name, s4u::Host* host, F code, Args... args)
   {
-    return create(name, host, wrap_task(std::move(code), std::move(args)...));
+    return create(name, host, std::bind(std::move(code), std::move(args)...));
   }
 
   // Create actor from function name:
-  static ActorPtr create(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args);
+  static ActorPtr create(std::string name, s4u::Host* host, std::string function, std::vector<std::string> args);
 
   // ***** Methods *****
   /** This actor will be automatically terminated when the last non-daemon actor finishes **/
@@ -230,7 +224,7 @@ public:
   void yield();
 
   /** Returns true if the actor is suspended. */
-  int is_suspended();
+  bool is_suspended();
 
   /** If set to true, the actor will automatically restart when its host reboots */
   void set_auto_restart(bool autorestart);
@@ -245,6 +239,15 @@ public:
   /** Retrieves the time at which that actor will be killed (or -1 if not set) */
   double get_kill_time();
 
+  /** @brief Moves the actor to another host
+   *
+   * If the actor is currently blocked on an execution activity, the activity is also
+   * migrated to the new host. If it's blocked on another kind of activity, an error is
+   * raised as the mandated code is not written yet. Please report that bug if you need it.
+   *
+   * Asynchronous activities started by the actor are not migrated automatically, so you have
+   * to take care of this yourself (only you knows which ones should be migrated).
+   */
   void migrate(Host * new_host);
 
   /** Ask the actor to die.
@@ -257,12 +260,13 @@ public:
    */
   void kill();
 
+  /** Kill an actor from its ID */
   static void kill(aid_t pid);
 
   /** Retrieves the actor that have the given PID (or nullptr if not existing) */
   static ActorPtr by_pid(aid_t pid);
 
-  /** @brief Wait for the actor to finish.
+  /** Wait for the actor to finish.
    *
    * This blocks the calling actor until the actor on which we call join() is terminated
    */
@@ -279,65 +283,88 @@ public:
   /** Retrieve the property value (or nullptr if not set) */
   std::unordered_map<std::string, std::string>*
   get_properties(); // FIXME: do not export the map, but only the keys or something
-  const char* get_property(const char* key);
-  void set_property(const char* key, const char* value);
+  const char* get_property(std::string key);
+  void set_property(std::string key, std::string value);
 
+#ifndef DOXYGEN
+  /** @deprecated See Actor::create() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
       const char* name, s4u::Host* host, std::function<void()> code)
   {
     return create(name, host, code);
   }
+  /** @deprecated See Actor::create() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
       const char* name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
       std::vector<std::string>* args)
   {
     return create(name, host, code, args);
   }
+  /** @deprecated See Actor::create() */
   template <class F, class... Args, typename = typename std::result_of<F(Args...)>::type>
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
       const char* name, s4u::Host* host, F code, Args... args)
   {
     return create(name, host, code, std::move(args)...);
   }
+  /** @deprecated See Actor::create() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
       const char* name, s4u::Host* host, const char* function, std::vector<std::string> args)
   {
     return create(name, host, function, args);
   }
+  /** @deprecated See Actor::is_daemon() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::is_daemon()") bool isDaemon() const;
+  /** @deprecated See Actor::get_name() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_name()") const simgrid::xbt::string& getName() const
   {
     return get_name();
   }
+  /** @deprecated See Actor::get_cname() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_cname()") const char* getCname() const { return get_cname(); }
+  /** @deprecated See Actor::get_host() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_host()") Host* getHost() { return get_host(); }
+  /** @deprecated See Actor::get_pid() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_pid()") aid_t getPid() { return get_pid(); }
+  /** @deprecated See Actor::get_ppid() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_ppid()") aid_t getPpid() { return get_ppid(); }
+  /** @deprecated See Actor::is_suspended() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::is_suspended()") int isSuspended() { return is_suspended(); }
+  /** @deprecated See Actor::set_auto_restart() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::set_auto_restart()") void setAutoRestart(bool a)
   {
     set_auto_restart(a);
   }
+  /** @deprecated Please use a std::function<void(int, void*)> for first parameter */
   XBT_ATTRIB_DEPRECATED_v323("Please use a std::function<void(int, void*)> for first parameter.") void on_exit(
       int_f_pvoid_pvoid_t fun, void* data);
+  /** @deprecated See Actor::on_exit() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::on_exit()") void onExit(int_f_pvoid_pvoid_t fun, void* data)
   {
     on_exit([fun](int a, void* b) { fun((void*)(intptr_t)a, b); }, data);
   }
+  /** @deprecated See Actor::set_kill_time() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::set_kill_time()") void setKillTime(double time) { set_kill_time(time); }
+  /** @deprecated See Actor::get_kill_time() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_kill_time()") double getKillTime() { return get_kill_time(); }
+  /** @deprecated See Actor::by_pid() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::by_pid()") static ActorPtr byPid(aid_t pid) { return by_pid(pid); }
+  /** @deprecated See Actor::kill_all() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::kill_all()") static void killAll() { kill_all(); }
+  /** @deprecated See Actor::kill_all() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::kill_all() with no parameter") static void killAll(
       int XBT_ATTRIB_UNUSED resetPid)
   {
     kill_all();
   }
+  /** @deprecated See Actor::get_impl() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_impl()") kernel::actor::ActorImpl* getImpl() { return get_impl(); }
+  /** @deprecated See Actor::get_property() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_property()") const char* getProperty(const char* key)
   {
     return get_property(key);
   }
+  /** @deprecated See Actor::get_properties() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_properties()") std::map<std::string, std::string>* getProperties()
   {
     std::map<std::string, std::string>* res             = new std::map<std::string, std::string>();
@@ -346,10 +373,12 @@ public:
       res->insert(kv);
     return res;
   }
+  /** @deprecated See Actor::get_properties() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_properties()") void setProperty(const char* key, const char* value)
   {
     set_property(key, value);
   }
+#endif
 };
 
 /** @ingroup s4u_api
@@ -414,27 +443,41 @@ XBT_PUBLIC void resume();
 XBT_PUBLIC bool is_suspended();
 
 /** @brief kill the actor. */
-XBT_PUBLIC void kill();
+XBT_PUBLIC void exit();
 
 /** @brief Add a function to the list of "on_exit" functions. */
-XBT_ATTRIB_DEPRECATED_v323("Please use std::function<void(int, void*)> for first parameter.") XBT_PUBLIC
-    void on_exit(int_f_pvoid_pvoid_t fun, void* data);
 XBT_PUBLIC void on_exit(std::function<void(int, void*)> fun, void* data);
 
 /** @brief Migrate the actor to a new host. */
 XBT_PUBLIC void migrate(Host* new_host);
 
+/** @} */
+
+#ifndef DOXYGEN
+/** @deprecated Please use std::function<void(int, void*)> for first parameter */
+XBT_ATTRIB_DEPRECATED_v323("Please use std::function<void(int, void*)> for first parameter.") XBT_PUBLIC
+    void on_exit(int_f_pvoid_pvoid_t fun, void* data);
+/** @deprecated See this_actor::get_name() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_name()") XBT_PUBLIC std::string getName();
+/** @deprecated See this_actor::get_cname() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_cname()") XBT_PUBLIC const char* getCname();
+/** @deprecated See this_actor::is_maestro() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::is_maestro()") XBT_PUBLIC bool isMaestro();
+/** @deprecated See this_actor::get_pid() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_pid()") XBT_PUBLIC aid_t getPid();
+/** @deprecated See this_actor::get_ppid() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_ppid()") XBT_PUBLIC aid_t getPpid();
+/** @deprecated See this_actor::get_host() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_host()") XBT_PUBLIC Host* getHost();
+/** @deprecated See this_actor::is_suspended() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::is_suspended()") XBT_PUBLIC bool isSuspended();
+/** @deprecated See this_actor::on_exit() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::on_exit()") XBT_PUBLIC void onExit(int_f_pvoid_pvoid_t fun, void* data);
+/** @deprecated See this_actor::exit() */
+XBT_ATTRIB_DEPRECATED_v324("Please use this_actor::exit()") XBT_PUBLIC void kill();
+#endif
 }
 
-/** @} */
 
 }} // namespace simgrid::s4u
 

@@ -14,17 +14,24 @@ struct smpi_delete_fn {
   MPI_Comm_delete_attr_function          *comm_delete_fn;
   MPI_Type_delete_attr_function          *type_delete_fn;
   MPI_Win_delete_attr_function           *win_delete_fn;
+  MPI_Comm_delete_attr_function_fort     *comm_delete_fn_fort;
+  MPI_Type_delete_attr_function_fort     *type_delete_fn_fort;
+  MPI_Win_delete_attr_function_fort      *win_delete_fn_fort;
 };
 
 struct smpi_copy_fn {
   MPI_Comm_copy_attr_function          *comm_copy_fn;
   MPI_Type_copy_attr_function          *type_copy_fn;
   MPI_Win_copy_attr_function           *win_copy_fn;
+  MPI_Comm_copy_attr_function_fort     *comm_copy_fn_fort;
+  MPI_Type_copy_attr_function_fort     *type_copy_fn_fort;
+  MPI_Win_copy_attr_function_fort      *win_copy_fn_fort;
 };
 
 struct s_smpi_key_elem_t {
   smpi_copy_fn copy_fn;
   smpi_delete_fn delete_fn;
+  void* extra_state;
   int refcount;
 };
 
@@ -57,6 +64,7 @@ template <typename T> int Keyval::keyval_create(smpi_copy_fn copy_fn, smpi_delet
 
   value->copy_fn=copy_fn;
   value->delete_fn=delete_fn;
+  value->extra_state=extra_state;
   value->refcount=1;
 
   *keyval = T::keyval_id_;
@@ -124,15 +132,15 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
   if(elem==nullptr)
     return MPI_ERR_ARG;
   elem->refcount++;
-  void * value = nullptr;
   int flag=0;
-  this->attr_get<T>(keyval, &value, &flag);
-  if(flag!=0){
-    int ret = call_deleter<T>((T*)this, elem, keyval,value,&flag);
+  auto p = attributes()->insert({keyval, attr_value});
+  if (!p.second) {
+    int ret = call_deleter<T>((T*)this, elem, keyval,p.first->second,&flag);
+    // overwrite previous value
+    p.first->second = attr_value;
     if(ret!=MPI_SUCCESS)
-        return ret;
+      return ret;
   }
-  attributes()->insert({keyval, attr_value});
   return MPI_SUCCESS;
 }
 

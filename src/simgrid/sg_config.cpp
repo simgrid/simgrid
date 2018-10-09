@@ -18,6 +18,21 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf, "About the configuration of SimGrid");
 
+static simgrid::config::Flag<bool> cfg_continue_after_help
+  {"help-nostop", "Do not stop the execution when --help is found", false};
+
+/** @brief Allow other libraries to react to the --help flag, too
+ *
+ * When finding --help on the command line, simgrid usually stops right after displaying its help message.
+ * If you are writing a library using simgrid, you may want to display your own help message before everything stops.
+ * If so, just call this function before having simgrid parsing the command line, and you will be given the control
+ * even if the user is asking for help.
+ */
+void sg_config_continue_after_help()
+{
+  cfg_continue_after_help = true;
+}
+
 /* 0: beginning of time (config cannot be changed yet)
  * 1: initialized: cfg_set created (config can now be changed)
  * 2: configured: command line parsed and config part of platform file was
@@ -38,21 +53,25 @@ bool _sg_cfg_exit_asap = false;
 /* Parse the command line, looking for options */
 static void sg_config_cmd_line(int *argc, char **argv)
 {
-  int shall_exit = 0;
+  bool shall_exit = false;
   int i;
   int j;
+  bool parse_args = true; // Stop parsing the parameters once we found '--'
 
   for (j = i = 1; i < *argc; i++) {
-    if (not strncmp(argv[i], "--cfg=", strlen("--cfg="))) {
+    if (not strcmp("--", argv[i])) {
+      parse_args = false;
+      // Remove that '--' from the arguments
+    } else if (parse_args && not strncmp(argv[i], "--cfg=", strlen("--cfg="))) {
       char *opt = strchr(argv[i], '=');
       opt++;
 
       simgrid::config::set_parse(opt);
       XBT_DEBUG("Did apply '%s' as config setting", opt);
-    } else if (not strcmp(argv[i], "--version")) {
+    } else if (parse_args && not strcmp(argv[i], "--version")) {
       printf("%s\n", SIMGRID_VERSION_STRING);
-      shall_exit = 1;
-    } else if (not strcmp(argv[i], "--cfg-help") || not strcmp(argv[i], "--help")) {
+      shall_exit = true;
+    } else if (parse_args && (not strcmp(argv[i], "--cfg-help") || not strcmp(argv[i], "--help"))) {
       printf("Description of the configuration accepted by this simulator:\n");
       simgrid::config::help();
       printf(
@@ -69,13 +88,14 @@ static void sg_config_cmd_line(int *argc, char **argv)
           "   --version to get SimGrid version information.\n"
           "\n"
         );
-      shall_exit = 1;
-    } else if (not strcmp(argv[i], "--help-aliases")) {
+      shall_exit = not cfg_continue_after_help;
+      argv[j++]  = argv[i]; // Preserve the --help in argv just in case someone else wants to see it
+    } else if (parse_args && not strcmp(argv[i], "--help-aliases")) {
       printf("Here is a list of all deprecated option names, with their replacement.\n");
       simgrid::config::show_aliases();
       printf("Please consider using the recent names\n");
-      shall_exit = 1;
-    } else if (not strcmp(argv[i], "--help-models")) {
+      shall_exit = true;
+    } else if (parse_args && not strcmp(argv[i], "--help-models")) {
       model_help("host", surf_host_model_description);
       printf("\n");
       model_help("CPU", surf_cpu_model_description);
@@ -87,10 +107,10 @@ static void sg_config_cmd_line(int *argc, char **argv)
                surf_optimization_mode_description[k].name,
                surf_optimization_mode_description[k].description);
       printf("Both network and CPU models have 'Lazy' as default optimization level\n\n");
-      shall_exit = 1;
-    } else if (not strcmp(argv[i], "--help-tracing")) {
+      shall_exit = true;
+    } else if (parse_args && not strcmp(argv[i], "--help-tracing")) {
       TRACE_help();
-      shall_exit = 1;
+      shall_exit = true;
     } else {
       argv[j++] = argv[i];
     }

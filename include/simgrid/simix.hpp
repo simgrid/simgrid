@@ -70,11 +70,10 @@ XBT_PUBLIC const std::vector<smx_actor_t>& process_get_runnable();
 // What's executed as SIMIX actor code:
 typedef std::function<void()> ActorCode;
 
-// Create ActorCode based on argv:
+// Create an ActorCode based on a std::string
 typedef std::function<ActorCode(std::vector<std::string> args)> ActorCodeFactory;
 
-XBT_PUBLIC void register_function(const char* name, ActorCodeFactory factory);
-
+XBT_PUBLIC void register_function(std::string name, ActorCodeFactory factory);
 }
 }
 
@@ -90,7 +89,7 @@ XBT_PUBLIC void register_function(const char* name, ActorCodeFactory factory);
  * std::map<std::string, std::string>* props: properties
  */
 typedef smx_actor_t (*smx_creation_func_t)(
-    /* name */ const char*, std::function<void()> code,
+    /* name */ std::string, simgrid::simix::ActorCode code,
     /* userdata */ void*,
     /* hostname */ sg_host_t,
     /* props */ std::unordered_map<std::string, std::string>*,
@@ -98,8 +97,8 @@ typedef smx_actor_t (*smx_creation_func_t)(
 
 XBT_PUBLIC void SIMIX_function_register_process_create(smx_creation_func_t function);
 
-XBT_PUBLIC smx_actor_t simcall_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
-                                              std::unordered_map<std::string, std::string>* properties);
+XBT_PUBLIC smx_actor_t simcall_process_create(std::string name, simgrid::simix::ActorCode code, void* data,
+                                              sg_host_t host, std::unordered_map<std::string, std::string>* properties);
 
 XBT_PUBLIC smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback);
 

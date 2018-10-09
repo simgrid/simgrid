@@ -27,10 +27,10 @@ static inline void *xbt_swag_getFirst(const_xbt_swag_t swag)
 }
 
 /*
- * \brief Offset computation
- * \arg var a variable of type <tt>struct</tt> something
- * \arg field a field of <tt>struct</tt> something
- * \return the offset of \a field in <tt>struct</tt> something.
+ * @brief Offset computation
+ * @arg var a variable of type <tt>struct</tt> something
+ * @arg field a field of <tt>struct</tt> something
+ * @return the offset of @a field in <tt>struct</tt> something.
  * @hideinitializer
  *
  * It is very similar to offsetof except that is done at runtime and that you have to declare a variable. Why defining
@@ -40,9 +40,9 @@ static inline void *xbt_swag_getFirst(const_xbt_swag_t swag)
 /* @} */
 
 /* Creates a new swag.
- * \param swag the swag to initialize
- * \param offset where the hookup is located in the structure
- * \see xbt_swag_offset
+ * @param swag the swag to initialize
+ * @param offset where the hookup is located in the structure
+ * @see xbt_swag_offset
  *
  * Usage : xbt_swag_init(swag,&obj.setA-&obj);
  */
@@ -55,11 +55,11 @@ static inline void xbt_swag_init(xbt_swag_t swag, size_t offset)
 }
 
 /*
- * \param obj the objet to insert in the swag
- * \param swag a swag
+ * @param obj the objet to insert in the swag
+ * @param swag a swag
  *
- * insert (at the tail... you probably had a very good reason to do that, I hope you know what you're doing) \a obj in
- * \a swag
+ * insert (at the tail... you probably had a very good reason to do that, I hope you know what you're doing) @a obj in
+ * @a swag
  */
 static inline void xbt_swag_insert(void *obj, xbt_swag_t swag)
 {
@@ -80,11 +80,11 @@ static inline void xbt_swag_insert(void *obj, xbt_swag_t swag)
 }
 
 /*
- * \param obj the objet to remove from the swag
- * \param swag a swag
- * \return \a obj if it was in the \a swag and NULL otherwise
+ * @param obj the objet to remove from the swag
+ * @param swag a swag
+ * @return @a obj if it was in the @a swag and NULL otherwise
  *
- * removes \a obj from \a swag
+ * removes @a obj from @a swag
  */
 static inline void *xbt_swag_remove(void *obj, xbt_swag_t swag)
 {
@@ -119,8 +119,8 @@ static inline void *xbt_swag_remove(void *obj, xbt_swag_t swag)
 }
 
 /*
- * \param swag a swag
- * \return the number of objects in \a swag
+ * @param swag a swag
+ * @return the number of objects in @a swag
  */
 static inline int xbt_swag_size(const_xbt_swag_t swag)
 {

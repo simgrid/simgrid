@@ -47,8 +47,8 @@ public:
    * @param latency The initial latency of the Link in seconds
    * @param policy The sharing policy of the Link
    */
-  virtual LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
-                               s4u::Link::SharingPolicy policy) = 0;
+  virtual LinkImpl* create_link(const std::string& name, double bandwidth, double latency,
+                                s4u::Link::SharingPolicy policy) = 0;
 
   /**
    * @brief Create a communication between two hosts.
@@ -74,7 +74,7 @@ public:
    * @param size The size of the message.
    * @return The latency factor.
    */
-  virtual double latencyFactor(double size);
+  virtual double get_latency_factor(double size);
 
   /**
    * @brief Get the right multiplicative factor for the bandwidth.
@@ -86,7 +86,7 @@ public:
    * @param size The size of the message.
    * @return The bandwidth factor.
    */
-  virtual double bandwidthFactor(double size);
+  virtual double get_bandwidth_factor(double size);
 
   /**
    * @brief Get definitive bandwidth.
@@ -97,7 +97,7 @@ public:
    * @param size The size of the message.
    * @return The new bandwidth.
    */
-  virtual double bandwidthConstraint(double rate, double bound, double size);
+  virtual double get_bandwidth_constraint(double rate, double bound, double size);
   double next_occuring_event_full(double now) override;
 
   LinkImpl* loopback_ = nullptr;
@@ -108,7 +108,7 @@ public:
  ************/
 /** @ingroup SURF_network_interface
  * @brief SURF network link interface class
- * @details A Link represents the link between two [hosts](\ref simgrid::surf::HostImpl)
+ * @details A Link represents the link between two [hosts](@ref simgrid::surf::HostImpl)
  */
 class LinkImpl : public Resource, public simgrid::surf::PropertyHolder {
 protected:
@@ -118,7 +118,7 @@ protected:
 public:
   void destroy(); // Must be called instead of the destructor
 private:
-  bool currentlyDestroying_ = false;
+  bool currently_destroying_ = false;
 
 public:
   /** @brief Public interface */
@@ -169,7 +169,7 @@ private:
  **********/
 /** @ingroup SURF_network_interface
  * @brief SURF network action interface class
- * @details A NetworkAction represents a communication between two [hosts](\ref simgrid::surf::HostImpl)
+ * @details A NetworkAction represents a communication between two [hosts](@ref simgrid::surf::HostImpl)
  */
 class NetworkAction : public Action {
 public:
@@ -202,8 +202,8 @@ public:
 }
 }
 } // namespace simgrid
-/** \ingroup SURF_models
- *  \brief The network model
+/** @ingroup SURF_models
+ *  @brief The network model
  */
 XBT_PUBLIC_DATA simgrid::kernel::resource::NetworkModel* surf_network_model;
 

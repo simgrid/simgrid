@@ -6,6 +6,7 @@
 #ifndef S4U_LINK_HPP_
 #define S4U_LINK_HPP_
 
+#include <simgrid/kernel/resource/Action.hpp>
 #include <simgrid/link.h>
 #include <string>
 #include <unordered_map>
@@ -19,7 +20,7 @@
 
 namespace simgrid {
 namespace s4u {
-/** @brief A Link represents the network facilities between [hosts](\ref simgrid::s4u::Host) */
+/** @brief A Link represents the network facilities between [hosts](@ref simgrid::s4u::Host) */
 class XBT_PUBLIC Link : public simgrid::xbt::Extendable<Link> {
   friend simgrid::kernel::resource::LinkImpl;
 
@@ -71,7 +72,7 @@ public:
   void set_latency_trace(tmgr_trace_t trace);   /*< setup the trace file with latency events (peak latency changes due to
                                                   external load). Trace must contain absolute values */
 
-  const char* get_property(const char* key);
+  const char* get_property(std::string key);
   void set_property(std::string key, std::string value);
 
   /* The signals */
@@ -91,30 +92,47 @@ public:
   static simgrid::xbt::signal<void(kernel::resource::NetworkAction*, s4u::Host* src, s4u::Host* dst)> on_communicate;
 
   /** @brief Callback signal fired when a communication changes it state (ready/done/cancel) */
-  static simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> on_communication_state_change;
+  static simgrid::xbt::signal<void(kernel::resource::NetworkAction*, kernel::resource::Action::State)>
+      on_communication_state_change;
 
   // Deprecated methods
-  XBT_ATTRIB_DEPRECATED_v321("Use get_cname(): v3.21 will turn this warning into an error.") const char* name();
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::by_name()") static Link* byName(const char* name) { return by_name(name); }
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_name()") const std::string& getName() const { return get_name(); }
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_cname()") const char* getCname() const { return get_cname(); }
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_sharing_policy()") SharingPolicy sharingPolicy() {return get_sharing_policy();}
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_usage()") double getUsage() {return get_usage();}
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::is_used()") bool isUsed() {return is_used();}
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_bandwidth()") double bandwidth() {return get_bandwidth();}
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_latency()") double latency() {return get_latency();}
 
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::turn_on()") void turnOn() {turn_on();}
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::turn_off()") void turnOff() {turn_off();}
 
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_property()") const char* getProperty(const char* key) {return get_property(key);}
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::set_property()") void setProperty(std::string key, std::string value) {set_property(key, value);}
 
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_data()") void* getData() {return get_data();}
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::set_data()") void setData(void* d) {set_data(d);}
 
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_state_trace()") void setStateTrace(tmgr_trace_t trace) {set_state_trace(trace);}
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_bandwidth_trace()") void setBandwidthTrace(tmgr_trace_t trace) {set_bandwidth_trace(trace);}
+  /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_latency_trace()") void setLatencyTrace(tmgr_trace_t trace) {set_latency_trace(trace);}
 };
 }

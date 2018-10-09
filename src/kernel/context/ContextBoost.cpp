@@ -5,6 +5,7 @@
 
 #include "ContextBoost.hpp"
 #include "context_private.hpp"
+#include "simgrid/Exception.hpp"
 #include "src/simix/smx_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
@@ -113,10 +114,13 @@ void BoostContext::wrapper(BoostContext::arg_type arg)
 #endif
   try {
     (*context)();
-    context->Context::stop();
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
+  } catch (simgrid::Exception const& e) {
+    XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
+    throw;
   }
+  context->Context::stop();
   ASAN_ONLY(context->asan_stop_ = true);
   context->suspend();
 }
@@ -159,7 +163,7 @@ void SerialBoostContext::suspend()
   if (i < simix_global->process_to_run.size()) {
     /* execute the next process */
     XBT_DEBUG("Run next process");
-    next_context = static_cast<SerialBoostContext*>(simix_global->process_to_run[i]->context);
+    next_context = static_cast<SerialBoostContext*>(simix_global->process_to_run[i]->context_);
   } else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
@@ -182,7 +186,7 @@ void SerialBoostContext::run_all()
   smx_actor_t first_process = simix_global->process_to_run.front();
   process_index_            = 1;
   /* execute the first process */
-  static_cast<SerialBoostContext*>(first_process->context)->resume();
+  static_cast<SerialBoostContext*>(first_process->context_)->resume();
 }
 
 // ParallelBoostContext
@@ -191,7 +195,7 @@ void SerialBoostContext::run_all()
 
 simgrid::xbt::Parmap<smx_actor_t>* ParallelBoostContext::parmap_;
 std::atomic<uintptr_t> ParallelBoostContext::threads_working_;
-xbt_os_thread_key_t ParallelBoostContext::worker_id_key_;
+thread_local uintptr_t ParallelBoostContext::worker_id_;
 std::vector<ParallelBoostContext*> ParallelBoostContext::workers_context_;
 
 void ParallelBoostContext::initialize()
@@ -199,7 +203,6 @@ void ParallelBoostContext::initialize()
   parmap_ = nullptr;
   workers_context_.clear();
   workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
-  xbt_os_thread_key_create(&worker_id_key_);
 }
 
 void ParallelBoostContext::finalize()
@@ -207,7 +210,6 @@ void ParallelBoostContext::finalize()
   delete parmap_;
   parmap_ = nullptr;
   workers_context_.clear();
-  xbt_os_thread_key_destroy(worker_id_key_);
 }
 
 void ParallelBoostContext::run_all()
@@ -217,7 +219,7 @@ void ParallelBoostContext::run_all()
     parmap_ = new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
   parmap_->apply(
       [](smx_actor_t process) {
-        ParallelBoostContext* context = static_cast<ParallelBoostContext*>(process->context);
+        ParallelBoostContext* context = static_cast<ParallelBoostContext*>(process->context_);
         context->resume();
       },
       simix_global->process_to_run);
@@ -229,11 +231,10 @@ void ParallelBoostContext::suspend()
   ParallelBoostContext* next_context;
   if (next_work) {
     XBT_DEBUG("Run next process");
-    next_context = static_cast<ParallelBoostContext*>(next_work.get()->context);
+    next_context = static_cast<ParallelBoostContext*>(next_work.get()->context_);
   } else {
     XBT_DEBUG("No more processes to run");
-    uintptr_t worker_id = reinterpret_cast<uintptr_t>(xbt_os_thread_get_specific(worker_id_key_));
-    next_context        = workers_context_[worker_id];
+    next_context = workers_context_[worker_id_];
   }
 
   SIMIX_context_set_current(next_context);
@@ -242,11 +243,10 @@ void ParallelBoostContext::suspend()
 
 void ParallelBoostContext::resume()
 {
-  uintptr_t worker_id = threads_working_.fetch_add(1, std::memory_order_relaxed);
-  xbt_os_thread_set_specific(worker_id_key_, reinterpret_cast<void*>(worker_id));
+  worker_id_ = threads_working_.fetch_add(1, std::memory_order_relaxed);
 
   ParallelBoostContext* worker_context = static_cast<ParallelBoostContext*>(SIMIX_context_self());
-  workers_context_[worker_id]          = worker_context;
+  workers_context_[worker_id_]         = worker_context;
 
   SIMIX_context_set_current(this);
   BoostContext::swap(worker_context, this);

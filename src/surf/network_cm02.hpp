@@ -32,8 +32,8 @@ class NetworkCm02Model : public NetworkModel {
 public:
   explicit NetworkCm02Model(lmm::System* (*make_new_sys)(bool) = &lmm::make_new_maxmin_system);
   virtual ~NetworkCm02Model() = default;
-  LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
-                       s4u::Link::SharingPolicy policy) override;
+  LinkImpl* create_link(const std::string& name, double bandwidth, double latency,
+                        s4u::Link::SharingPolicy policy) override;
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
@@ -58,7 +58,6 @@ public:
  **********/
 class NetworkCm02Action : public NetworkAction {
   friend Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
-  friend NetworkSmpiModel;
 
 public:
   NetworkCm02Action(Model* model, double cost, bool failed) : NetworkAction(model, cost, failed){};

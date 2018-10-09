@@ -309,6 +309,8 @@
 #define MPI_WIN_CREATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_create
 #define mpi_win_allocate smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_allocate
 #define MPI_WIN_ALLOCATE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_allocate
+#define mpi_win_allocate_shared smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_allocate_shared
+#define MPI_WIN_ALLOCATE_SHARED smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_allocate_shared
 #define mpi_win_create_dynamic smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_create_dynamic
 #define MPI_WIN_CREATE_DYNAMIC smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_create_dynamic
 #define mpi_win_attach smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_attach
@@ -361,6 +363,10 @@
 #define MPI_WIN_FLUSH_ALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_flush_all
 #define mpi_win_flush_local_all smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_flush_local_all
 #define MPI_WIN_FLUSH_LOCAL_ALL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_flush_local_all
+#define mpi_win_shared_query smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_shared_query
+#define MPI_WIN_SHARED_QUERY smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_shared_query
+#define mpi_win_sync smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_sync
+#define MPI_WIN_SYNC smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_sync
 #define mpi_win_f2c smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_f2c
 #define MPI_WIN_F2C smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_f2c
 #define mpi_win_c2f smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_c2f

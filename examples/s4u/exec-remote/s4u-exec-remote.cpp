@@ -13,7 +13,7 @@ static void wizard()
   simgrid::s4u::Host* ginette = simgrid::s4u::Host::by_name("Ginette");
   simgrid::s4u::Host* boivin  = simgrid::s4u::Host::by_name("Boivin");
 
-  XBT_INFO("I'm a wizard! I can run a task on the Fafard host from the Ginette one! Look!");
+  XBT_INFO("I'm a wizard! I can run a task on the Ginette host from the Fafard one! Look!");
   simgrid::s4u::ExecPtr exec = simgrid::s4u::this_actor::exec_init(48.492e6);
   exec->set_host(ginette);
   exec->start();

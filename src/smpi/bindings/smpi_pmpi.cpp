@@ -8,9 +8,9 @@
 #include "simgrid/s4u/Host.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype_derived.hpp"
-#include "smpi_process.hpp"
 #include "smpi_status.hpp"
 #include "src/simix/ActorImpl.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_pmpi, smpi, "Logging specific to SMPI (pmpi)");
 
@@ -19,7 +19,8 @@ void TRACE_smpi_set_category(const char *category)
 {
   //need to end bench otherwise categories for execution tasks are wrong
   smpi_bench_end();
-  TRACE_internal_smpi_set_category (category);
+  if (category != nullptr)
+    TRACE_internal_smpi_set_category(category);
   //begin bench after changing process's category
   smpi_bench_begin();
 }
@@ -30,12 +31,11 @@ int PMPI_Init(int *argc, char ***argv)
 {
   xbt_assert(simgrid::s4u::Engine::is_initialized(),
              "Your MPI program was not properly initialized. The easiest is to use smpirun to start it.");
-  // PMPI_Init is called only once per SMPI process
-  int already_init;
-  MPI_Initialized(&already_init);
-  if(already_init == 0){
-    simgrid::smpi::Process::init(argc, argv);
-    smpi_process()->mark_as_initialized();
+  // Init is called only once per SMPI process
+  if (not smpi_process()->initializing()){
+    simgrid::smpi::ActorExt::init(argc, argv);
+  }
+  if (not smpi_process()->initialized()){
     int rank = simgrid::s4u::this_actor::get_pid();
     TRACE_smpi_init(rank);
     TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("init"));
@@ -43,6 +43,7 @@ int PMPI_Init(int *argc, char ***argv)
     TRACE_smpi_computing_init(rank);
     TRACE_smpi_sleeping_init(rank);
     smpi_bench_begin();
+    smpi_process()->mark_as_initialized();
   }
 
   smpi_mpi_init();
@@ -208,9 +209,22 @@ int PMPI_Error_class(int errorcode, int* errorclass) {
   return MPI_SUCCESS;
 }
 
+int PMPI_Error_string(int errorcode, char* string, int* resultlen){
+  if (errorcode<0 || string ==nullptr){
+    return MPI_ERR_ARG;
+  } else {
+    static const char *smpi_error_string[] = {
+      FOREACH_ERROR(GENERATE_STRING)
+    };
+    *resultlen = strlen(smpi_error_string[errorcode]);
+    strncpy(string, smpi_error_string[errorcode], *resultlen);
+    return MPI_SUCCESS;  
+  }
+}
+
 int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
-  smpi_copy_fn _copy_fn={copy_fn,nullptr,nullptr};
-  smpi_delete_fn _delete_fn={delete_fn,nullptr,nullptr};
+  smpi_copy_fn _copy_fn={copy_fn,nullptr,nullptr,nullptr,nullptr,nullptr};
+  smpi_delete_fn _delete_fn={delete_fn,nullptr,nullptr,nullptr,nullptr,nullptr};
   return simgrid::smpi::Keyval::keyval_create<simgrid::smpi::Comm>(_copy_fn, _delete_fn, keyval, extra_state);
 }
 

@@ -34,7 +34,7 @@ if(enable_model-checking)
   set_property(TARGET simgrid-mc
                APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
   install(TARGETS simgrid-mc # install that binary without breaking the rpath on Mac
-    RUNTIME DESTINATION bin/)      
+    RUNTIME DESTINATION bin/)
 endif()
 
 
@@ -91,9 +91,23 @@ if(enable_smpi)
   add_executable(smpimain src/smpi/smpi_main.c)
   target_link_libraries(smpimain simgrid)
   set_target_properties(smpimain
-    PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/simgrid)
   install(TARGETS smpimain # install that binary without breaking the rpath on Mac
-    RUNTIME DESTINATION bin/)      
+    RUNTIME DESTINATION lib/simgrid)
+
+  if(SMPI_FORTRAN)
+    if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
+      SET(SIMGRID_DEP "${SIMGRID_DEP} -lgfortran")
+    elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+      SET(SIMGRID_DEP "${SIMGRID_DEP} -lifcore")
+    elseif(CMAKE_Fortran_COMPILER_ID MATCHES "PGI|Flang")
+      SET(SIMGRID_DEP "${SIMGRID_DEP} -lflang")
+      if("${CMAKE_SYSTEM}" MATCHES "FreeBSD")
+        set(SIMGRID_DEP "${SIMGRID_DEP} -lexecinfo")
+      endif()
+    endif()
+  endif()
+
 endif()
 
 if(enable_smpi AND APPLE)
@@ -118,6 +132,10 @@ FIND_LIBRARY(GCCLIBATOMIC_LIBRARY NAMES atomic atomic.so.1 libatomic.so.1
 # Fix a FTBFS on armel, mips, mipsel and friends (Debian's #872881)
 if(CMAKE_COMPILER_IS_GNUCC AND GCCLIBATOMIC_LIBRARY)
     set(SIMGRID_DEP   "${SIMGRID_DEP}   -Wl,--as-needed -latomic -Wl,--no-as-needed")
+endif()
+
+if(enable_model-checking AND (NOT LINKER_VERSION VERSION_LESS "2.30"))
+    set(SIMGRID_DEP   "${SIMGRID_DEP}   -Wl,-znoseparate-code")
 endif()
 
 target_link_libraries(simgrid 	${SIMGRID_DEP})

@@ -26,9 +26,9 @@ $ ${bindir:=.}/network-ns3/network-ns3 ${platfdir}/small_platform_one_link_route
 
 p One cluster
 
-$ ${bindir:=.}/network-ns3/network-ns3 ${platfdir}/cluster.xml ${srcdir}/network-ns3/one_cluster_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+$ ${bindir:=.}/network-ns3/network-ns3 ${platfdir}/cluster_backbone.xml ${srcdir}/network-ns3/one_cluster_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
-> [node-6.acme.org:worker(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from node-2.acme.org to node-6.acme.org
+> [node-6.simgrid.org:worker(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from node-2.simgrid.org to node-6.simgrid.org
 
 p Dogbone
 

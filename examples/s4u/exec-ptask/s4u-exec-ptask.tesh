@@ -1,16 +1,30 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-exec-ptask$EXEEXT ${platfdir}/energy_platform.xml --energy --cfg=host/model:ptask_L07 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-exec-ptask$EXEEXT ${platfdir}/energy_platform.xml --energy --cfg=host/model:ptask_L07 --cfg=tracing:yes --cfg=tracing/uncategorized:yes --log=instr_resource.t:debug --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'ptask_L07'
+> [  0.000000] (0:maestro@) Configuration change: Set 'tracing' to 'yes'
+> [  0.000000] (0:maestro@) Configuration change: Set 'tracing/uncategorized' to 'yes'
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > [  0.000000] (1:test@MyHost1) First, build a classical parallel task, with 1 Gflop to execute on each node, and 10MB to exchange between each pair
+> [300.000000] (0:maestro@) UNCAT HOST [0.000000 - 300.000000] MyHost1 speed_used 3333333.333333
+> [300.000000] (0:maestro@) UNCAT HOST [0.000000 - 300.000000] MyHost2 speed_used 3333333.333333
+> [300.000000] (0:maestro@) UNCAT HOST [0.000000 - 300.000000] MyHost3 speed_used 3333333.333333
+> [300.000000] (0:maestro@) UNCAT LINK [0.000000 - 300.000000] bus bandwidth_used 100000.000000
 > [300.000000] (1:test@MyHost1) We can do the same with a timeout of one second enabled.
 > [301.000000] (1:test@MyHost1) Then, build a parallel task involving only computations and no communication (1 Gflop per node)
-> [311.000000] (1:test@MyHost1) Then, build a parallel task with no computation nor communication (synchro only)
-> [311.000000] (1:test@MyHost1) Finally, trick the ptask to do a 'remote execution', on host MyHost2
-> [321.000000] (1:test@MyHost1) Goodbye now!
-> [321.000000] (0:maestro@) Total energy consumption: 157960.888889 Joules (used hosts: 157960.888889 Joules; unused/idle hosts: 0.000000)
-> [321.000000] (0:maestro@) Simulation done.
-> [321.000000] (0:maestro@) Energy consumption of host MyHost1: 30560.888889 Joules
-> [321.000000] (0:maestro@) Energy consumption of host MyHost2: 64200.000000 Joules
-> [321.000000] (0:maestro@) Energy consumption of host MyHost3: 63200.000000 Joules
+> [311.000000] (0:maestro@) UNCAT HOST [301.000000 - 311.000000] MyHost1 speed_used 100000000.000000
+> [311.000000] (0:maestro@) UNCAT HOST [301.000000 - 311.000000] MyHost2 speed_used 100000000.000000
+> [311.000000] (0:maestro@) UNCAT HOST [301.000000 - 311.000000] MyHost3 speed_used 100000000.000000
+> [311.000000] (1:test@MyHost1) Then, build a parallel task involving only heterogeneous computations and no communication
+> [326.000000] (0:maestro@) UNCAT HOST [311.000000 - 326.000000] MyHost1 speed_used 33333333.333333
+> [326.000000] (0:maestro@) UNCAT HOST [311.000000 - 326.000000] MyHost2 speed_used 66666666.666667
+> [326.000000] (0:maestro@) UNCAT HOST [311.000000 - 326.000000] MyHost3 speed_used 100000000.000000
+> [326.000000] (1:test@MyHost1) Then, build a parallel task with no computation nor communication (synchro only)
+> [326.000000] (1:test@MyHost1) Finally, trick the ptask to do a 'remote execution', on host MyHost2
+> [336.000000] (0:maestro@) UNCAT HOST [326.000000 - 336.000000] MyHost2 speed_used 100000000.000000
+> [336.000000] (1:test@MyHost1) Goodbye now!
+> [336.000000] (0:maestro@) Total energy consumption: 165494.222222 Joules (used hosts: 165494.222222 Joules; unused/idle hosts: 0.000000)
+> [336.000000] (0:maestro@) Simulation done.
+> [336.000000] (0:maestro@) Energy consumption of host MyHost1: 32094.222222 Joules
+> [336.000000] (0:maestro@) Energy consumption of host MyHost2: 67200.000000 Joules
+> [336.000000] (0:maestro@) Energy consumption of host MyHost3: 66200.000000 Joules

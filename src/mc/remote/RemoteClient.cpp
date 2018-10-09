@@ -35,8 +35,8 @@
 #include <xbt/mmalloc.h>
 
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/mc_snapshot.hpp"
 #include "src/mc/mc_unw.hpp"
+#include "src/mc/sosp/mc_snapshot.hpp"
 
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/ObjectInformation.hpp"
@@ -64,16 +64,16 @@ static const std::vector<std::string> filtered_libraries = {
     "libthr",      /* thread library */
     "libutil",
 #endif
-    "libasan", /* gcc sanitizers */
     "libargp", /* workarounds for glibc-less systems */
-    "libtsan",
-    "libubsan",
-    "libbz2",
+    "libasan", /* gcc sanitizers */
     "libboost_chrono",
     "libboost_context",
     "libboost_context-mt",
     "libboost_system",
     "libboost_thread",
+    "libboost_timer",
+    "libboost_unit_test_framework",
+    "libbz2",
     "libc",
     "libc++",
     "libcdt",
@@ -84,7 +84,11 @@ static const std::vector<std::string> filtered_libraries = {
     "libdw",
     "libelf",
     "libevent",
+    "libexecinfo",
+    "libflang",
+    "libflangrti",
     "libgcc_s",
+    "libgfortran",
     "libimf",
     "libintlc",
     "libirng",
@@ -92,14 +96,20 @@ static const std::vector<std::string> filtered_libraries = {
     "liblua5.3",
     "liblzma",
     "libm",
+    "libomp",
+    "libpapi",
+    "libpfm",
     "libpthread",
+    "libquadmath",
     "librt",
     "libstdc++",
     "libsvml",
+    "libtsan",  /* gcc sanitizers */
+    "libubsan", /* gcc sanitizers */
     "libunwind",
-    "libunwind-x86_64",
-    "libunwind-x86",
     "libunwind-ptrace",
+    "libunwind-x86",
+    "libunwind-x86_64",
     "libz"};
 
 static bool is_simgrid_lib(const std::string& libname)
@@ -445,10 +455,10 @@ std::string RemoteClient::read_string(RemotePtr<char> address) const
 const void* RemoteClient::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, int process_index,
                                      ReadOptions options) const
 {
+#if HAVE_SMPI
   if (process_index != simgrid::mc::ProcessIndexDisabled) {
     std::shared_ptr<simgrid::mc::ObjectInformation> const& info = this->find_object_info_rw(address);
-// Segment overlap is not handled.
-#if HAVE_SMPI
+    // Segment overlap is not handled.
     if (info.get() && this->privatized(*info)) {
       if (process_index < 0)
         xbt_die("Missing process index");
@@ -467,8 +477,8 @@ const void* RemoteClient::read_bytes(void* buffer, std::size_t size, RemotePtr<v
       size_t offset = address.address() - (std::uint64_t)info->start_rw;
       address       = remote((char*)privatization_region.address + offset);
     }
-#endif
   }
+#endif
   if (pread_whole(this->memory_file, buffer, size, (size_t)address.address()) < 0)
     xbt_die("Read at %p from process %lli failed", (void*)address.address(), (long long)this->pid_);
   return buffer;

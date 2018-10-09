@@ -9,9 +9,11 @@
 #include <list>
 #include <memory>
 
-#include "src/mc/Transition.hpp"
 #include "src/mc/mc_record.hpp"
-#include "src/mc/mc_snapshot.hpp"
+#include "src/mc/sosp/mc_snapshot.hpp"
+
+#include "src/kernel/activity/CommImpl.hpp"
+#include "src/mc/Transition.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -128,7 +130,7 @@ public:
   explicit State(unsigned long state_number);
 
   std::size_t interleaveSize() const;
-  void addInterleavingSet(smx_actor_t actor) { this->actorStates[actor->pid].consider(); }
+  void addInterleavingSet(smx_actor_t actor) { this->actorStates[actor->pid_].consider(); }
   Transition getTransition() const;
 };
 }

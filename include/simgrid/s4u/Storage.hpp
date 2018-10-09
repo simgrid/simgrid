@@ -7,23 +7,27 @@
 #define INCLUDE_SIMGRID_S4U_STORAGE_HPP_
 
 #include <simgrid/forward.h>
+#include <simgrid/s4u/Io.hpp>
 #include <xbt/Extendable.hpp>
 #include <xbt/base.h>
+#include <xbt/signal.hpp>
 
 #include <map>
 #include <string>
 #include <unordered_map>
 
 namespace simgrid {
-namespace xbt {
-extern template class XBT_PUBLIC Extendable<simgrid::s4u::Storage>;
-}
 namespace s4u {
 
-XBT_ATTRIB_DEPRECATED_v322("Please use Engine::get_all_storages()") XBT_PUBLIC void getStorageList(std::map<std::string, Storage*>* whereTo);
+/** Storage represent the disk resources, usually associated to a given host
+ *
+ * By default, SimGrid does not keep track of the actual data being written but
+ * only computes the time taken by the corresponding data movement.
+ */
 
 class XBT_PUBLIC Storage : public simgrid::xbt::Extendable<Storage> {
-  friend s4u::Engine;
+  friend simgrid::s4u::Engine;
+  friend simgrid::s4u::Io;
   friend simgrid::surf::StorageImpl;
 
 public:
@@ -31,7 +35,6 @@ public:
 
 protected:
   virtual ~Storage() = default;
-
 public:
   /** @brief Callback signal fired when a new Storage is created */
   static simgrid::xbt::signal<void(s4u::Storage&)> on_creation;
@@ -60,19 +63,30 @@ public:
   void set_data(void* data) { userdata_ = data; }
   void* get_data() { return userdata_; }
 
+  IoPtr io_init(sg_size_t size, s4u::Io::OpType type);
+
+  IoPtr read_async(sg_size_t size);
   sg_size_t read(sg_size_t size);
+
+  IoPtr write_async(sg_size_t size);
   sg_size_t write(sg_size_t size);
   surf::StorageImpl* get_impl() { return pimpl_; }
 
   // Deprecated functions
+  /** @deprecated Storage::by_name() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::by_name()") Storage* byName(std::string name)
   {
     return by_name(name);
   }
+  /** @deprecated Storage::get_name() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_name()") std::string const& getName() const { return get_name(); }
+  /** @deprecated Storage::get_cname() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_cname()") const char* getCname() const { return get_cname(); }
+  /** @deprecated Storage::get_type() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_type()") const char* getType() { return get_type(); }
+  /** @deprecated Storage::get_host() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_host()") Host* getHost() { return get_host(); }
+  /** @deprecated Storage::get_properties() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_properties()") std::map<std::string, std::string>* getProperties()
   {
     std::map<std::string, std::string>* res             = new std::map<std::string, std::string>();
@@ -81,15 +95,19 @@ public:
       res->insert(kv);
     return res;
   }
+  /** @deprecated Storage::get_property() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_property()") const char* getProperty(const char* key)
   {
     return get_property(key);
   }
+  /** @deprecated Storage::set_property() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::set_property()") void setProperty(std::string key, std::string value)
   {
     set_property(key, value);
   }
+  /** @deprecated Storage::set_data() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::set_data()") void setUserdata(void* data) { set_data(data); }
+  /** @deprecated Storage::get_data() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_data()") void* getUserdata() { return get_data(); }
 
 private:

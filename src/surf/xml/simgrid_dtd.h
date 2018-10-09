@@ -123,7 +123,7 @@ typedef int AT_surfxml_ASroute_gw___src;
 #define AU_surfxml_ASroute_gw___src NULL
 typedef int AT_surfxml_ASroute_src;
 #define AU_surfxml_ASroute_src NULL
-typedef enum { AU_surfxml_ASroute_symmetrical, A_surfxml_ASroute_symmetrical_YES,A_surfxml_ASroute_symmetrical_NO } AT_surfxml_ASroute_symmetrical;
+typedef enum { AU_surfxml_ASroute_symmetrical, A_surfxml_ASroute_symmetrical_YES,A_surfxml_ASroute_symmetrical_NO,A_surfxml_ASroute_symmetrical_yes,A_surfxml_ASroute_symmetrical_no } AT_surfxml_ASroute_symmetrical;
 typedef int AT_surfxml_actor_function;
 #define AU_surfxml_actor_function NULL
 typedef int AT_surfxml_actor_host;
@@ -306,7 +306,7 @@ typedef int AT_surfxml_route_dst;
 #define AU_surfxml_route_dst NULL
 typedef int AT_surfxml_route_src;
 #define AU_surfxml_route_src NULL
-typedef enum { AU_surfxml_route_symmetrical, A_surfxml_route_symmetrical_YES,A_surfxml_route_symmetrical_NO } AT_surfxml_route_symmetrical;
+typedef enum { AU_surfxml_route_symmetrical, A_surfxml_route_symmetrical_YES,A_surfxml_route_symmetrical_NO,A_surfxml_route_symmetrical_yes,A_surfxml_route_symmetrical_no } AT_surfxml_route_symmetrical;
 typedef int AT_surfxml_router_coordinates;
 #define AU_surfxml_router_coordinates NULL
 typedef int AT_surfxml_router_id;
@@ -349,7 +349,7 @@ typedef int AT_surfxml_zoneRoute_gw___src;
 #define AU_surfxml_zoneRoute_gw___src NULL
 typedef int AT_surfxml_zoneRoute_src;
 #define AU_surfxml_zoneRoute_src NULL
-typedef enum { AU_surfxml_zoneRoute_symmetrical, A_surfxml_zoneRoute_symmetrical_YES,A_surfxml_zoneRoute_symmetrical_NO } AT_surfxml_zoneRoute_symmetrical;
+typedef enum { AU_surfxml_zoneRoute_symmetrical, A_surfxml_zoneRoute_symmetrical_YES,A_surfxml_zoneRoute_symmetrical_NO,A_surfxml_zoneRoute_symmetrical_yes,A_surfxml_zoneRoute_symmetrical_no } AT_surfxml_zoneRoute_symmetrical;
 
 /* FleXML-provided data. */
 XBT_PUBLIC_DATA int surfxml_pcdata_ix;

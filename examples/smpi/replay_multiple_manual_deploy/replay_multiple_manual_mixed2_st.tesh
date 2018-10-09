@@ -1,0 +1,23 @@
+p Workload with two mixed jobs (at the same time but not on the same resources)
+! timeout 120
+! output sort 19
+$ ./replay_multiple_manual ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/workload_mixed2_same_time --log=smpi.:info --cfg=smpi/host-speed:100 "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 0 0
+> [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100'
+> [   0.000000] (maestro@) Job read: app='job0', file='mixed.txt', size=2, start=0, alloc='0,1'
+> [   0.000000] (maestro@) Job read: app='job1', file='mixed.txt', size=2, start=0, alloc='2,3'
+> [   0.000000] (workload_executor@Bourassa) Launching the job executor of job 0 (app 'job0')
+> [   0.000000] (job_job0@Bourassa) Executing job 0 (smpi_app 'job0')
+> [   0.000000] (workload_executor@Bourassa) Launching the job executor of job 1 (app 'job1')
+> [   0.000000] (0_0@Bourassa) Replaying rank 0 of job 0 (smpi_app 'job0')
+> [   0.000000] (job_job1@Ginette) Executing job 1 (smpi_app 'job1')
+> [   0.000000] (0_1@Fafard) Replaying rank 1 of job 0 (smpi_app 'job0')
+> [   0.000000] (1_0@Ginette) Replaying rank 0 of job 1 (smpi_app 'job1')
+> [   0.000000] (1_1@Jupiter) Replaying rank 1 of job 1 (smpi_app 'job1')
+> [ 737.001374] (0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'job0')
+> [ 737.001374] (0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'job0')
+> [ 737.001374] (job_job0@Bourassa) Finished job 0 (smpi_app 'job0')
+> [ 806.923160] (1_0@Ginette) Simulation time 806.923160
+> [ 806.923160] (1_0@Ginette) Finished replaying rank 0 of job 1 (smpi_app 'job1')
+> [ 806.923160] (1_1@Jupiter) Finished replaying rank 1 of job 1 (smpi_app 'job1')
+> [ 806.923160] (job_job1@Ginette) Finished job 1 (smpi_app 'job1')
+> [ 806.923160] (maestro@) Simulation finished! Final time: 806.923

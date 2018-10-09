@@ -7,7 +7,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
-static int executor(std::vector<std::string> /*args*/)
+static void executor()
 {
   /* this_actor::execute() tells SimGrid to pause the calling actor
    * until its host has computed the amount of flops passed as a parameter */
@@ -15,10 +15,9 @@ static int executor(std::vector<std::string> /*args*/)
   XBT_INFO("Done.");
 
   /* This simple example does not do anything beyond that */
-  return 0;
 }
 
-static int privileged(std::vector<std::string> /*args*/)
+static void privileged()
 {
   /* This version of this_actor::execute() specifies that this execution
    * gets a larger share of the resource.
@@ -34,19 +33,17 @@ static int privileged(std::vector<std::string> /*args*/)
    * because the uneven sharing only last until the privileged actor ends.
    * After this point, the unprivileged one gets 100% of the CPU and finishes
    * quite quickly. */
-  return 0;
 }
 
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  std::vector<std::string> args;
   xbt_assert(argc > 1, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("executor", simgrid::s4u::Host::by_name("Tremblay"), executor, args);
-  simgrid::s4u::Actor::create("privileged", simgrid::s4u::Host::by_name("Tremblay"), privileged, args);
+  simgrid::s4u::Actor::create("executor", simgrid::s4u::Host::by_name("Tremblay"), executor);
+  simgrid::s4u::Actor::create("privileged", simgrid::s4u::Host::by_name("Tremblay"), privileged);
 
   e.run();
 

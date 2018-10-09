@@ -28,15 +28,15 @@ public:
 } // namespace kernel
 } // namespace simgrid
 typedef simgrid::kernel::resource::TraceEvent* tmgr_trace_event_t;
-extern XBT_PRIVATE simgrid::trace_mgr::future_evt_set* future_evt_set;
+extern XBT_PRIVATE simgrid::trace_mgr::future_evt_set future_evt_set;
 
 /**
- * \brief Free a trace event structure
+ * @brief Free a trace event structure
  *
  * This function frees a trace_event if it can be freed, ie, if it has the free_me flag set to 1.
  * This flag indicates whether the structure is still used somewhere or not.
  * When the structure is freed, the argument is set to nullptr
-*/
+ */
 XBT_PUBLIC void tmgr_trace_event_unref(tmgr_trace_event_t* trace_event);
 
 XBT_PUBLIC void tmgr_finalize();
