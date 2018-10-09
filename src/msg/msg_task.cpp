@@ -59,6 +59,12 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
 /** @brief Creates a new #msg_task_t (a parallel one....).
  *
  * A constructor for #msg_task_t taking six arguments and returning the corresponding object.
+ *
+ * \rst
+ * See :cpp:func:`void simgrid::s4u::this_actor::parallel_execute(int, s4u::Host*, double*, double*)` for
+ * the exact semantic of the parameters.
+ * \endrst
+ *
  * @param name a name for the object. It is for user-level information and can be nullptr.
  * @param host_nb the number of hosts implied in the parallel task.
  * @param host_list an array of @p host_nb msg_host_t.
@@ -67,9 +73,7 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
  * @param bytes_amount an array of @p host_nb* @p host_nb doubles.
  * @param data a pointer to any data may want to attach to the new object.
  *             It is for user-level information and can be nullptr.
- *             It can be retrieved with the function @ref MSG_task_get_data.
- * @see msg_task_t
- * @return The new corresponding object.
+ *             It can be retrieved with the function @ref MSG_task_get_data().
  */
 msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_host_t * host_list,
                                     double *flops_amount, double *bytes_amount, void *data)

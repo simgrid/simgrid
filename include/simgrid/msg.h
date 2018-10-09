@@ -241,8 +241,6 @@ typedef struct msg_task* msg_task_t;
 #define MSG_TASK_UNINITIALIZED NULL
 
 /** @brief Return code of most MSG functions
-    @ingroup msg_simulation
-    @{ */
 /* Keep these code as binary values: java bindings manipulate | of these values */
 typedef enum {
   MSG_OK = 0,                 /**< @brief Everything is right. Keep on going this way ! */
@@ -255,7 +253,6 @@ typedef enum {
       return now !*/
   MSG_TASK_CANCELED = 8      /**< @brief Canceled task. This task has been canceled by somebody!*/
 } msg_error_t;
-/** @} */
 
 /************************** Global ******************************************/
 /** @brief set a configuration variable

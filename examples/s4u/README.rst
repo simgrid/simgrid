@@ -140,6 +140,8 @@ Communications on the Network
 
 .. todo:: add the `ready` example here
    
+.. _s4u_ex_execution:
+
 Executions on the CPU
 ---------------------
 
@@ -171,9 +173,10 @@ Executions on the CPU
     |br| `examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp>`_
     |br| `examples/platforms/energy_platform.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/energy_platform.xml>`_
 
-  - **Parallel tasks:**
+  - **Parallel executions:**
     These objects are convenient abstractions of parallel
-    computational kernels that span over several machines. 
+    computational kernels that span over several machines, such as a
+    PDGEM and the other ScaLAPACK routines.
     |br| `examples/s4u/exec-ptask/s4u-exec-ptask.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-ptask/s4u-exec-ptask.cpp>`_
 
 I/O on Disks and Files

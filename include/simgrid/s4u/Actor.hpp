@@ -410,8 +410,56 @@ XBT_PUBLIC void execute(double flop);
  *  An execution of priority 2 computes twice as fast as an execution at priority 1. */
 XBT_PUBLIC void execute(double flop, double priority);
 
-XBT_PUBLIC void parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount);
-XBT_PUBLIC void parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount,
+/** Block the actor until the built parallel execution terminates
+ *
+ * \rst
+ * .. _API_s4u_parallel_execute:
+ *
+ * Parallel executions convenient abstractions of parallel computational kernels that span over several machines,
+ * such as a PDGEM and the other ScaLAPACK routines. If you are interested in the effects of such parallel kernel
+ * on the platform (e.g. to schedule them wisely), there is no need to model them in all details of their internal
+ * execution and communications. It is much more convenient to model them as a single execution activity that spans
+ * over several hosts. This is exactly what s4u's Parallel Executions are.
+ *
+ * To build such an object, you need to provide a list of hosts that are involved in the parallel kernel (the
+ * actor's own host may or may not be in this list) and specify the amount of computations that should be done by
+ * each host, using a vector of flops amount. Then, you should specify the amount of data exchanged between each
+ * hosts during the parallel kernel. For that, a matrix of values is expected.
+ *
+ * For example, if your list of hosts is ``[host0, host1]``, passing a vector ``[1000, 2000]`` as a `flops_amount`
+ * vector means that `host0` should compute 1000 flops while `host1` will compute 2000 flops. A matrix of
+ * communications' sizes of ``[0, 1, 2, 3]`` specifies the following data exchanges:
+ *
+ *   +-----------+-------+------+
+ *   |from \\ to | host0 | host1|
+ *   +===========+=======+======+
+ *   |host0      |   0   |  1   |
+ *   +-----------+-------+------+
+ *   |host1      |   2   |  3   |
+ *   +-----------+-------+------+
+ *
+ * - From host0 to host0: 0 bytes are exchanged
+ * - From host0 to host1: 1 byte is exchanged
+ * - From host1 to host0: 2 bytes are exchanged
+ * - From host1 to host1: 3 bytes are exchanged
+ *
+ * In a parallel execution, all parts (all executions on each hosts, all communications) progress exactly at the
+ * same pace, so they all terminate at the exact same pace. If one part is slow because of a slow resource or
+ * because of contention, this slows down the parallel execution as a whole.
+ *
+ * These objects are somewhat surprising from a modeling point of view. For example, the unit of their speed is
+ * somewhere between flop/sec and byte/sec. It is **strongly advised** to only use the LV08 host model when using
+ * parallel executions. Note that you can mix regular executions and communications with parallel executions,
+ * provided that the platform model is LV08.
+ *
+ * \endrst
+ */
+
+XBT_PUBLIC void parallel_execute(int host_nb, s4u::Host* host_list, double* flops_amount, double* bytes_amount);
+/** \rst
+ * Block the actor until the built :ref:`parallel execution <API_s4u_parallel_execute>` completes, or until the timeout.
+ * \endrst*/
+XBT_PUBLIC void parallel_execute(int host_nb, s4u::Host* host_list, double* flops_amount, double* bytes_amount,
                                  double timeout);
 
 XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
