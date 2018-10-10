@@ -20,7 +20,7 @@ with the full power of C++. This is the preferred interface to describe
 abstract algorithms in the domains of Cloud, P2P, HPC, IoT, and similar
 settings.
 
-Currently (v3.21), S4U is definitely the way to go for long-term
+Since v3.20 (June 2018), S4U is definitely the way to go for long-term
 projects. It is feature complete, but may still evolve slightly in the
 future releases. It can already be used to do everything that can be
 done in SimGrid, but you may have to adapt your code in future
