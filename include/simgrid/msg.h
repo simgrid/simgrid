@@ -154,6 +154,14 @@ XBT_PUBLIC sg_size_t MSG_storage_read(msg_storage_t storage, sg_size_t size);
 XBT_PUBLIC sg_size_t MSG_storage_write(msg_storage_t storage, sg_size_t size);
 
 /* ******************************** Actor/process *************************** */
+/** Processes are independent agents that can do stuff on their own.
+ *  They are in charge of executing your code interacting with the simulated world.
+ *  A process may be defined as a <em>code</em> with some <em>private data</em>.
+ *  Processes must be located on <em>hosts</em> (#msg_host_t), and they exchange data by sending tasks (#msg_task_t)
+ *  that are similar to envelops containing data.
+ *
+ *  @hideinitializer
+ */
 typedef sg_actor_t msg_process_t;
 
 XBT_PUBLIC int MSG_process_get_PID(msg_process_t process);
@@ -260,8 +268,7 @@ typedef enum {
  * MSG_config("host/model","ptask_L07");
  */
 XBT_PUBLIC void MSG_config(const char* key, const char* value);
-/** @ingroup msg_simulation
- *  @brief Initialize the MSG internal data.
+/** @brief Initialize the MSG internal data.
  *  @hideinitializer
  *
  *  It also check that the link-time and compile-time versions of SimGrid do
@@ -424,7 +431,6 @@ XBT_PUBLIC const char* MSG_task_get_category(msg_task_t task);
 XBT_PUBLIC void MSG_mailbox_set_async(const char* alias);
 
 /** @brief Opaque type representing a semaphore
- *  @ingroup msg_synchro
  *  @hideinitializer
  */
 typedef struct s_smx_sem_t* msg_sem_t; // Yeah that's a rename of the smx_sem_t which doesnt require smx_sem_t to be
