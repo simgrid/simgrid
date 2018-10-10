@@ -410,6 +410,10 @@ XBT_PUBLIC void execute(double flop);
  *  An execution of priority 2 computes twice as fast as an execution at priority 1. */
 XBT_PUBLIC void execute(double flop, double priority);
 
+/**
+ * @example examples/s4u/exec-ptask/s4u-exec-ptask.cpp
+ */
+
 /** Block the actor until the built parallel execution terminates
  *
  * \rst

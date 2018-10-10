@@ -5,6 +5,8 @@ INPUT                 += ../../include/simgrid/msg.h
 INPUT                 += ../../src/msg/
 RECURSIVE              = YES
 
+EXAMPLE_PATH           = ../../examples
+
 # What to produce
 OUTPUT_DIRECTORY       = ../build/
 GENERATE_XML           = YES
