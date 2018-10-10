@@ -463,11 +463,12 @@ XBT_PUBLIC void execute(double flop, double priority);
  * \endrst
  */
 
-XBT_PUBLIC void parallel_execute(int host_nb, s4u::Host* host_list, double* flops_amount, double* bytes_amount);
+XBT_PUBLIC void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount);
 /** \rst
  * Block the actor until the built :ref:`parallel execution <API_s4u_parallel_execute>` completes, or until the timeout.
- * \endrst*/
-XBT_PUBLIC void parallel_execute(int host_nb, s4u::Host* host_list, double* flops_amount, double* bytes_amount,
+ * \endrst
+ */
+XBT_PUBLIC void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount,
                                  double timeout);
 
 XBT_PUBLIC ExecPtr exec_init(double flops_amounts);

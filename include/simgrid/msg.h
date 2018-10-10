@@ -236,7 +236,7 @@ typedef struct msg_task* msg_task_t;
 /** @brief Default value for an uninitialized #msg_task_t. */
 #define MSG_TASK_UNINITIALIZED NULL
 
-/** @brief Return code of most MSG functions
+/** @brief Return code of most MSG functions */
 /* Keep these code as binary values: java bindings manipulate | of these values */
 typedef enum {
   MSG_OK = 0,                 /**< @brief Everything is right. Keep on going this way ! */
