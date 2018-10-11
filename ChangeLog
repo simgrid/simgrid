@@ -1,5 +1,8 @@
 SimGrid (3.22) NOT RELEASED (Release Target: December 21. 2018, 22:23 UTC)
 
+Java:
+ - Expose host load plugin: loadInit, getCurrentLoad, getComputedFlops, getAvgLoad
+
 Fixed bugs:
  - #261: Document the parameters of parallel execution's constructor
 
@@ -61,7 +64,6 @@ SMPI:
 Java:
  - Due to an internal bug, Msg.run() must now be your last line.
    We hope to fix it in a future release, and we are sorry for the inconvenience.
- - Expose host load plugin (i.e. loadInit, getCurrentLoad, getComputedFlops,getAvgLoad)
 
 Fixed bugs:
  - #22: Process autorestart seem to only work with CAS01 cpus 
