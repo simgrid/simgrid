@@ -1,4 +1,4 @@
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![Travis Status](https://img.shields.io/travis/simgrid/simgrid/master.svg?logo=travis)](https://travis-ci.org/simgrid/simgrid)
 [![AppVeyor Status](https://ci.appveyor.com/api/projects/status/gvcssh340fwtoc35?svg=true)](https://ci.appveyor.com/project/mquinson/simgrid)
 [![SonarCloud Status](https://sonarcloud.io/api/project_badges/measure?project=simgrid&metric=alert_status)](https://sonarcloud.io/dashboard/?id=simgrid)
