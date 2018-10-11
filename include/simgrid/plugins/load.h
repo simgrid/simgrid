@@ -20,6 +20,10 @@ XBT_PUBLIC double sg_host_get_computed_flops(sg_host_t host);
 XBT_PUBLIC void sg_host_load_reset(sg_host_t host);
 
 #define MSG_host_load_plugin_init() sg_host_load_plugin_init()
+/** @brief Returns the current load of that host, as a ratio = achieved_flops / (core_current_speed * core_amount)
+ *
+ *  See simgrid::plugin::HostLoad::get_current_load() for the full documentation.
+ */
 #define MSG_host_get_current_load(host) sg_host_get_current_load(host)
 #define MSG_host_get_computed_flops(host) sg_host_get_computed_flops(host)
 #define MSG_host_get_avg_load(host) sg_host_get_avg_load(host)

@@ -43,10 +43,17 @@ public:
   explicit HostLoad(simgrid::s4u::Host&& ptr) = delete;
 
   double get_current_load();
+  /** Get the the average load since last reset(), as a ratio
+   *
+   * That's the ratio (amount of flops that were actually computed) / (amount of flops that could have been computed at full speed)
+   */
   double get_average_load() { update(); return (theor_max_flops_ == 0) ? 0 : computed_flops_ / theor_max_flops_; };
+  /** Amount of flops computed since last reset() */
   double get_computed_flops() { update(); return computed_flops_; }
-  double get_idle_time() { update(); return idle_time_; } /** Return idle time since last reset */
-  double get_total_idle_time() { update(); return total_idle_time_; } /** Return idle time over the whole simulation */
+  /** Return idle time since last reset() */
+  double get_idle_time() { update(); return idle_time_; }
+  /** Return idle time over the whole simulation */
+  double get_total_idle_time() { update(); return total_idle_time_; }
   void update();
   void add_activity(simgrid::kernel::activity::ExecImplPtr activity);
   void reset();
@@ -121,18 +128,22 @@ void HostLoad::update()
   last_updated_  = now;
 }
 
-/**
- * WARNING: This function does not guarantee that you have the real load at any time imagine all actions on your CPU
- * terminate at time t. Your load is then 0. Then you query the load (still 0) and then another action starts (still at
- * time t!). This means that the load was never really 0 (because the time didn't advance) but it will still be reported
- * as 0.
+/** @brief Get the current load as a ratio = achieved_flops / (core_current_speed * core_amount)
  *
- * So, use at your own risk.
+ * You may also want to check simgrid::s4u::Host::get_load() that simply returns
+ * the achieved flop rate (in flops per seconds), ie the load that a new action arriving on
+ * that host would suffer.
+ *
+ * Please note that this function only returns an instantaneous load that may be deceiving
+ * in some scenarios. For example, imagine that an activity terminates at time t, and that
+ * another activity is created on the same host at the exact same timestamp. The load was
+ * never 0 on the simulated machine since the time did not advance between the two events.
+ * But still, if you call this function between the two events (in the simulator course), it
+ * returns 0 although there is no time (in the simulated time) where this value is valid.
  */
 double HostLoad::get_current_load()
 {
   // We don't need to call update() here because it is called every time an action terminates or starts
-  // FIXME: Can this happen at the same time? stop -> call to getCurrentLoad, load = 0 -> next action starts?
   return current_flops_ / static_cast<double>(host_->get_speed() * host_->get_core_count());
 }
 
@@ -182,8 +193,7 @@ static void on_action_state_change(simgrid::surf::CpuAction* action, simgrid::ke
 
 /* **************************** Public interface *************************** */
 
-/** @ingroup plugin_load
- * @brief Initializes the HostLoad plugin
+/** @brief Initializes the HostLoad plugin
  * @details The HostLoad plugin provides an API to get the current load of each host.
  */
 void sg_host_load_plugin_init()
@@ -240,9 +250,9 @@ void sg_host_load_plugin_init()
   simgrid::s4u::Host::on_speed_change.connect(&on_host_change);
 }
 
-/** @brief Returns the current load of the host passed as argument
+/** @brief Returns the current load of that host, as a ratio = achieved_flops / (core_current_speed * core_amount)
  *
- *  See also @ref plugin_load
+ *  See simgrid::plugin::HostLoad::get_current_load() for the full documentation.
  */
 double sg_host_get_current_load(sg_host_t host)
 {

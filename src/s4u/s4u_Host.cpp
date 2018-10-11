@@ -223,7 +223,9 @@ double Host::get_speed() const
   return this->pimpl_cpu->get_speed(1.0);
 }
 /** @brief Returns the current computation load (in flops per second)
+ *
  * The external load (coming from an availability trace) is not taken in account.
+ * You may also be interested in the load plugin.
  */
 double Host::get_load() const
 {
