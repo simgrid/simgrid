@@ -626,3 +626,8 @@ sg_host_t sg_host_self()
   smx_actor_t process = SIMIX_process_self();
   return (process == nullptr) ? nullptr : process->host_;
 }
+
+double sg_host_load(sg_host_t host)
+{
+  return host->get_load();
+}

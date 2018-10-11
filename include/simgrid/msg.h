@@ -115,6 +115,7 @@ XBT_PUBLIC void MSG_host_get_process_list(sg_host_t host, xbt_dynar_t whereto);
 
 /** @brief Return the location on which the current process is executed */
 XBT_PUBLIC sg_host_t MSG_host_self();
+XBT_PUBLIC double MSG_host_get_load(sg_host_t host);
 
 /* ******************************** VMs ************************************* */
 typedef sg_vm_t msg_vm_t;
