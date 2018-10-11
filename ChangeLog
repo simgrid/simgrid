@@ -61,6 +61,7 @@ SMPI:
 Java:
  - Due to an internal bug, Msg.run() must now be your last line.
    We hope to fix it in a future release, and we are sorry for the inconvenience.
+ - Expose host load plugin (i.e. loadInit, getCurrentLoad, getComputedFlops,getAvgLoad)
 
 Fixed bugs:
  - #22: Process autorestart seem to only work with CAS01 cpus 

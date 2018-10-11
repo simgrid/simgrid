@@ -40,7 +40,15 @@ public final class Msg {
 	
 	/** Tell the kernel that you want to use the energy plugin */
 	public static final native void energyInit();
+
+    /** Tell the kernel that you want to use the filesystem plugin. */
 	public static final native void fileSystemInit();
+
+    /** Initializes the HostLoad plugin.
+     *
+	 * The HostLoad plugin provides an API to get the current load of each host.
+     */
+	public static final native void loadInit();
 
 	/** Run the MSG simulation.
 	 *

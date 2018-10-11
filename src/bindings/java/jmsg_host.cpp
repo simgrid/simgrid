@@ -6,6 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/plugins/energy.h"
+#include "simgrid/plugins/load.h"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 
@@ -371,4 +372,46 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getPowerPeakAt(JNIEnv* env, 
 {
   msg_host_t host = jhost_get_native(env, jhost);
   return MSG_host_get_power_peak_at(host, pstate);
+}
+
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getLoad(JNIEnv* env, jobject jhost)
+{
+  msg_host_t host = jhost_get_native(env, jhost);
+  return MSG_host_get_load(host);
+}
+
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCurrentLoad (JNIEnv *env, jobject jhost)
+{
+  msg_host_t host = jhost_get_native(env, jhost);
+
+  if (not host) {
+    jxbt_throw_notbound(env, "host", jhost);
+    return 0;
+  }
+
+  return MSG_host_get_current_load(host);
+}
+
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getComputedFlops (JNIEnv *env, jobject jhost)
+{
+  msg_host_t host = jhost_get_native(env, jhost);
+
+  if (not host) {
+    jxbt_throw_notbound(env, "host", jhost);
+    return 0;
+  }
+
+  return MSG_host_get_computed_flops(host);
+}
+
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getAvgLoad (JNIEnv *env, jobject jhost)
+{
+  msg_host_t host = jhost_get_native(env, jhost);
+
+  if (not host) {
+    jxbt_throw_notbound(env, "host", jhost);
+    return 0;
+  }
+
+  return MSG_host_get_avg_load(host);
 }
