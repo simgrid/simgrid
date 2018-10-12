@@ -455,10 +455,9 @@ XBT_PUBLIC void execute(double flop, double priority);
  * because of contention, this slows down the parallel execution as a whole.
  *
  * These objects are somewhat surprising from a modeling point of view. For example, the unit of their speed is
- * somewhere between flop/sec and byte/sec. It is **strongly advised** to only use the LV08 host model when using
- * parallel executions. Note that you can mix regular executions and communications with parallel executions,
- * provided that the platform model is LV08.
- *
+ * somewhere between flop/sec and byte/sec. Arbitrary parallel executions will simply not work with the usual platform
+ * models, and you must :ref:`use the ptask_L07 host model <options_model_select>` for that. Note that you can mix
+ * regular executions and communications with parallel executions, provided that the host model is ptask_L07.
  *
  * \endrst
  */
