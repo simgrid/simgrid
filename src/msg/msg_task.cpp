@@ -24,9 +24,10 @@ void s_simdata_task_t::reportMultipleUse() const
 }
 
 /********************************* Task **************************************/
-/** @brief Creates a new #msg_task_t.
+/** @brief Creates a new task
  *
- * A constructor for #msg_task_t taking four arguments and returning the corresponding object.
+ * A constructor for msg_task_t taking four arguments.
+ *
  * @param name a name for the object. It is for user-level information and can be nullptr.
  * @param flop_amount a value of the processing amount (in flop) needed to process this new task.
  * If 0, then it cannot be executed with MSG_task_execute(). This value has to be >=0.
@@ -34,7 +35,6 @@ void s_simdata_task_t::reportMultipleUse() const
  * be transfered with MSG_task_send() and MSG_task_recv(). This value has to be >=0.
  * @param data a pointer to any data may want to attach to the new object.  It is for user-level information and can
  * be nullptr. It can be retrieved with the function @ref MSG_task_get_data.
- * @see msg_task_t
  * @return The new corresponding object.
  */
 msg_task_t MSG_task_create(const char *name, double flop_amount, double message_size, void *data)
@@ -56,9 +56,9 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
   return task;
 }
 
-/** @brief Creates a new #msg_task_t (a parallel one....).
+/** @brief Creates a new parallel task
  *
- * A constructor for #msg_task_t taking six arguments and returning the corresponding object.
+ * A constructor for #msg_task_t taking six arguments.
  *
  * \rst
  * See :cpp:func:`void simgrid::s4u::this_actor::parallel_execute(int, s4u::Host**, double*, double*)` for
@@ -99,20 +99,13 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
   return task;
 }
 
-/** @brief Return the user data of a #msg_task_t.
- *
- * This function checks whether @a task is a valid pointer and return the user data associated to @a task if possible.
- */
+/** @brief Return the user data of the given task */
 void *MSG_task_get_data(msg_task_t task)
 {
   return (task->data);
 }
 
-/** @ingroup m_task_management
- * @brief Sets the user data of a #msg_task_t.
- *
- * This function allows to associate a new pointer to the user data associated of @a task.
- */
+/** @brief Sets the user data of a given task */
 void MSG_task_set_data(msg_task_t task, void *data)
 {
   task->data = data;
@@ -132,45 +125,33 @@ void MSG_task_set_copy_callback(void (*callback) (msg_task_t task, msg_process_t
   }
 }
 
-/** @brief Return the sender of a #msg_task_t.
- *
- * This functions returns the #msg_process_t which sent this task
- */
+/** @brief Returns the sender of the given task */
 msg_process_t MSG_task_get_sender(msg_task_t task)
 {
   return task->simdata->sender;
 }
 
-/** @brief Return the source of a #msg_task_t.
- *
- * This functions returns the #msg_host_t from which this task was sent
- */
+/** @brief Returns the source (the sender's host) of the given task */
 msg_host_t MSG_task_get_source(msg_task_t task)
 {
   return task->simdata->source;
 }
 
-/** @brief Return the name of a #msg_task_t.
- *
- * This functions returns the name of a #msg_task_t as specified on creation
- */
+/** @brief Returns the name of the given task. */
 const char *MSG_task_get_name(msg_task_t task)
 {
   return task->name;
 }
 
-/** @brief Sets the name of a #msg_task_t.
- *
- * This functions allows to associate a name to a task
- */
+/** @brief Sets the name of the given task. */
 void MSG_task_set_name(msg_task_t task, const char *name)
 {
   task->name = xbt_strdup(name);
 }
 
-/** @brief Destroy a #msg_task_t.
+/** @brief Destroys the given task.
  *
- * Destructor for #msg_task_t. Note that you should free user data, if any, @b before calling this function.
+ * You should free user data, if any, @b before calling this destructor.
  *
  * Only the process that owns the task can destroy it.
  * The owner changes after a successful send.
@@ -195,8 +176,9 @@ msg_error_t MSG_task_destroy(msg_task_t task)
   return MSG_OK;
 }
 
-/** @brief Cancel a #msg_task_t.
- * @param task the task to cancel. If it was executed or transfered, it stops the process that were working on it.
+/** @brief Cancel the given task
+ *
+ * If it was currently executed or transfered, the working process is stopped.
  */
 msg_error_t MSG_task_cancel(msg_task_t task)
 {
@@ -247,7 +229,7 @@ double MSG_task_get_flops_amount(msg_task_t task) {
   }
 }
 
-/** @brief set the computation amount needed to process a task #msg_task_t.
+/** @brief set the computation amount needed to process the given task.
  *
  * @warning If the computation is ongoing (already started and not finished),
  * it is not modified by this call. Moreover, after its completion, the ongoing execution with set the flops_amount to
@@ -258,7 +240,7 @@ void MSG_task_set_flops_amount(msg_task_t task, double flops_amount)
   task->simdata->flops_amount = flops_amount;
 }
 
-/** @brief set the amount data attached with a task #msg_task_t.
+/** @brief set the amount data attached with the given task.
  *
  * @warning If the transfer is ongoing (already started and not finished), it is not modified by this call.
  */
@@ -267,9 +249,10 @@ void MSG_task_set_bytes_amount(msg_task_t task, double data_size)
   task->simdata->bytes_amount = data_size;
 }
 
-/** @brief Returns the total amount received by a task #msg_task_t.
- *        If the communication does not exist it will return 0.
- *        So, if the communication has FINISHED or FAILED it returns zero.
+/** @brief Returns the total amount received by the given task
+ *
+ *  If the communication does not exist it will return 0.
+ *  So, if the communication has FINISHED or FAILED it returns zero.
  */
 double MSG_task_get_remaining_communication(msg_task_t task)
 {
@@ -277,16 +260,17 @@ double MSG_task_get_remaining_communication(msg_task_t task)
   return task->simdata->comm->remains();
 }
 
-/** @brief Returns the size of the data attached to a task #msg_task_t.
- */
+/** @brief Returns the size of the data attached to the given task. */
 double MSG_task_get_bytes_amount(msg_task_t task)
 {
   xbt_assert((task != nullptr) && (task->simdata != nullptr), "Invalid parameter");
   return task->simdata->bytes_amount;
 }
 
-/** @brief Changes the priority of a computation task. This priority doesn't affect the transfer rate. A priority of 2
- *        will make a task receive two times more cpu power than the other ones.
+/** @brief Changes the priority of a computation task.
+ *
+ * This priority doesn't affect the transfer rate. A priority of 2
+ * will make a task receive two times more cpu power than regular tasks.
  */
 void MSG_task_set_priority(msg_task_t task, double priority)
 {
@@ -295,8 +279,7 @@ void MSG_task_set_priority(msg_task_t task, double priority)
     simcall_execution_set_priority(task->simdata->compute, task->simdata->priority);
 }
 
-/** @brief Changes the maximum CPU utilization of a computation task.
- *        Unit is flops/s.
+/** @brief Changes the maximum CPU utilization of a computation task (in flops/s).
  *
  * For VMs, there is a pitfall. Please see MSG_vm_set_bound().
  */
