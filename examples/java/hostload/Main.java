@@ -7,7 +7,6 @@ package hostload;
 
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.MsgException;
 
 public class Main {
   private Main() {
