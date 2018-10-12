@@ -22,7 +22,6 @@ public class LoadRunner extends Process {
     }
     @Override
     public void main(String[] strings) throws MsgException {
-        Host host = getHost();
         display();
         Msg.info("Sleep for 10 seconds");
         waitFor(10);

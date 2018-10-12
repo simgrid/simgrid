@@ -13,13 +13,12 @@ import org.simgrid.msg.HostFailureException;
 public class XVM extends VM {
   private int dpIntensity;
   private int ramsize;
-  private int currentLoad;
+  private int currentLoad = 0;
 
   private Daemon daemon;
 
   public XVM(Host host, String name, int ramsize, int migNetBW, int dpIntensity){
     super(host, name, ramsize, (int)(migNetBW*0.9), dpIntensity);
-    this.currentLoad = 0;
     this.dpIntensity = dpIntensity ;
     this.ramsize= ramsize;
     this.daemon = new Daemon(this);
@@ -44,11 +43,6 @@ public class XVM extends VM {
 
   public Daemon getDaemon(){
     return this.daemon;
-  }
-
-  public double getLoad(){
-    Msg.info("Remaining comp:" + this.daemon.getRemaining());
-    return this.currentLoad;
   }
 
   @Override
