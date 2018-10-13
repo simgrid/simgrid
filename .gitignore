@@ -194,7 +194,6 @@ examples/s4u/synchro-barrier/s4u-synchro-barrier
 examples/s4u/synchro-mutex/s4u-synchro-mutex
 examples/s4u/synchro-semaphore/s4u-synchro-semaphore
 examples/s4u/trace-platform/s4u-trace-platform
-examples/simdag/availability/sd_availability
 examples/simdag/dag-dotload/sd_dag-dotload
 examples/simdag/daxload/sd_daxload
 examples/simdag/fail/sd_fail
