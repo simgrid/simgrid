@@ -98,8 +98,8 @@ namespace s4u {
  *
  * @code{.xml}
  * <?xml version='1.0'?>
- * <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
- * <platform version="4">
+ * <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+ * <platform version="4.1">
  *
  *   <!-- Start an actor called 'master' on the host called 'Tremblay' -->
  *   <actor host="Tremblay" function="master">

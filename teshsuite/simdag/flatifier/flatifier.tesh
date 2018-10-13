@@ -2,7 +2,7 @@
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
 > <AS id="AS0" routing="Full">
 >   <host id="bob0.hamburger.edu" speed="1000000000"/>
@@ -137,7 +137,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/one_cluster.xml "--log=root.fmt:[%1
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/one_cluster_multicore.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
 > <AS id="AS0" routing="Full">
 >   <host id="bob0.hamburger.edu" speed="1000000000" core="6"/>
@@ -271,7 +271,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/one_cluster_multicore.xml "--log=ro
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/host_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
 > <AS id="AS0" routing="Full">
 >   <host id="alice" speed="1000000000"/>
@@ -305,7 +305,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/host_attributes.xml "--log=root.fmt
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/link_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
 > <AS id="AS0" routing="Full">
 >   <host id="bob" speed="500000000"/>
@@ -323,7 +323,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/link_attributes.xml "--log=root.fmt
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
 > <AS id="AS0" routing="Full">
 >   <host id="alice" speed="500000000"/>
@@ -366,7 +366,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/three_hosts_non_symmetric_route.xml
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
 > <AS id="AS0" routing="Full">
 >   <host id="alice0.crepe.fr" speed="1000000000"/>
@@ -501,7 +501,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_clusters.xml "--log=root.fmt:[%
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
 > <AS id="AS0" routing="Full">
 >   <host id="alice" speed="500000000"/>
@@ -528,7 +528,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_hosts_multi_hop.xml "--log=root
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
 > <AS id="AS0" routing="Full">
 >   <host id="alice" speed="500000000"/>
@@ -553,7 +553,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_hosts_one_link.xml "--log=root.
 $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/bypassASroute.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
 > <AS id="AS0" routing="Full">
 >   <host id="1" speed="1000000000"/>
@@ -687,7 +687,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/bypassASroute.xm
 $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/cluster_torus.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
 > <AS id="AS0" routing="Full">
 >   <host id="node-0.simgrid.org" speed="1000000000"/>

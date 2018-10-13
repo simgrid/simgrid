@@ -323,7 +323,7 @@ if [ -z "${PLATFORM}" ]; then
 
     cat > ${PLATFORMTMP} <<PLATFORMHEAD
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
 <zone id="AS0" routing="Full">
 PLATFORMHEAD
@@ -365,7 +365,7 @@ APPLICATIONTMP="$(mktemp smpitmp-appXXXXXX)"
 
 cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
 APPLICATIONHEAD
 

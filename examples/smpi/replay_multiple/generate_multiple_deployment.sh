@@ -110,7 +110,7 @@ APPLICATIONTMP=$(echo ${PROC_ARGS}|cut -d' ' -f2 -s)
 
 cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
 APPLICATIONHEAD
 

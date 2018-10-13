@@ -28,7 +28,7 @@ max_id = 2 ** nb_bits - 1
 all_ids = [42]
 
 sys.stdout.write("<?xml version='1.0'?>\n"
-                 "<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n"
+                 "<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n"
                  "<platform version=\"4\">\n"
                  "  <process host=\"node-0.simgrid.org\" function=\"tracker\">\n"
                  "    <argument value=\"%d\"/>\n  </process>\n" % end_date)

@@ -186,7 +186,7 @@ static void dump_platform()
   int version = 4;
 
   std::printf("<?xml version='1.0'?>\n");
-  std::printf("<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n");
+  std::printf("<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n");
   std::printf("<platform version=\"%d\">\n", version);
   std::printf("<AS id=\"AS0\" routing=\"Full\">\n");
 

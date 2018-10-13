@@ -177,7 +177,7 @@ if(enable_maintainer_mode AND NOT WIN32)
 
       #${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd
       COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/surf/xml
-      COMMAND ${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd -S src/surf/xml/simgrid_dtd.l -L src/surf/xml/simgrid.dtd
+      COMMAND ${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=https://simgrid.org/simgrid.dtd -S src/surf/xml/simgrid_dtd.l -L src/surf/xml/simgrid.dtd
       COMMAND ${SED_EXE} -i ${string14} src/surf/xml/simgrid_dtd.l
       COMMAND ${SED_EXE} -i "'s/FAIL(\"Bad declaration %s.\",yytext)/FAIL(\"Bad declaration %s.\\\\nIf your are using a XML v3 file (check the version attribute in <platform>), please update it with tools\\/simgrid_update_xml.pl\",yytext)/'" src/surf/xml/simgrid_dtd.l
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/surf/xml/simgrid_dtd.l"
@@ -190,7 +190,7 @@ if(enable_maintainer_mode AND NOT WIN32)
 
       #${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.h: ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/include/surf/simgrid.h
-      COMMAND ${FLEXML_EXE} --root-tags platform -P surfxml --sysid=http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd -H src/surf/xml/simgrid_dtd.h -L src/surf/xml/simgrid.dtd
+      COMMAND ${FLEXML_EXE} --root-tags platform -P surfxml --sysid=https://simgrid.org/simgrid.dtd -H src/surf/xml/simgrid_dtd.h -L src/surf/xml/simgrid.dtd
       COMMAND ${SED_EXE} -i ${string1} src/surf/xml/simgrid_dtd.h
       COMMAND ${SED_EXE} -i ${string2} src/surf/xml/simgrid_dtd.h
       COMMAND ${SED_EXE} -i ${string14} src/surf/xml/simgrid_dtd.h

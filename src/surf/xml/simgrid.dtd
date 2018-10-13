@@ -32,8 +32,7 @@ To upgrade your files, use the tool simgrid_update_xml
    - In <cluster>, cannot set the availability nor state traces.
      This was too complex and unused.
 
-   - The DOCTYPE points to the right URL (this file):
-     http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
+   - The DOCTYPE points to the right URL (this file).
 
    - Kill <gpu>. Was not doing anything.
 

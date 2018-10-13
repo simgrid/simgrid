@@ -371,7 +371,7 @@ void STag_surfxml_platform() {
              "Changes introduced in SimGrid 3.13:\n"
              "  - 'power' attribute of hosts (and others) got renamed to 'speed'.\n"
              "  - In <trace_connect>, attribute kind=\"POWER\" is now kind=\"SPEED\".\n"
-             "  - DOCTYPE now point to the rignt URL: http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\n"
+             "  - DOCTYPE now point to the rignt URL.\n"
              "  - speed, bandwidth and latency attributes now MUST have an explicit unit (f, Bps, s by default)"
              "\n\n"
              "Use simgrid_update_xml to update your file automatically. "

@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 print "<?xml version='1.0'?>\n";
-print "<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n";
+print "<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n";
 print "<platform version=\"4\">\n\n";
 
 print "<!-- This file was generated with the following command:\n          generate_peer_platform.pl $ARGV[0]\n-->\n\n";

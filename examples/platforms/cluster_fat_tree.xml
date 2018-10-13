@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
   <!-- This is an example for a fat tree cluster. 
   This is taken from figure 1/ b/ of the paper "D-Mod-K Routing Providing on-Blocking Traffic for Shift Permutations on 

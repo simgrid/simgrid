@@ -103,7 +103,7 @@ In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
 
 =item
 
-The DOCTYPE points to the right URL: http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
+The DOCTYPE points to the right URL.
 
 =item
 
@@ -173,7 +173,7 @@ my $filename = $ARGV[0] or die "Usage: simgrid_update_xml.pl file_to_convert.xml
 open INPUT, "$filename" or die "Cannot open input file $filename: $!\n";
 
 my $output_string = "<?xml version='1.0'?>\n".
-    "<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n".
+    "<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n".
     "<platform version=\"$toversion\">\n";
 
 my($AS_opened)=0;

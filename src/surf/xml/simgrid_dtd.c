@@ -9287,8 +9287,7 @@ FAIL("Premature EOF: `</peer>' expected.");
   *      It was redundent with state and availability traces, and with peak values.
   *    - In <cluster>, cannot set the availability nor state traces.
   *      This was too complex and unused.
-  *    - The DOCTYPE points to the right URL (this file):
-  *      http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
+  *    - The DOCTYPE points to the right URL.
   *    - Kill <gpu>. Was not doing anything.
   *    - A warning is emitted for unit-less values (they are still accepted).
   *      The value 0 can remain unit-less, as its unit does not matter.
