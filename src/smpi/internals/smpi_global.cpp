@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <cfloat> /* DBL_MAX */
+#include <cstdint> /* intmax_t */
 #include <dlfcn.h>
 #include <fcntl.h>
 #include <fstream>
@@ -489,11 +490,11 @@ static void smpi_copy_file(std::string src, std::string target, off_t fdin_size)
   int fdout = open(target.c_str(), O_CREAT | O_RDWR, S_IRWXU);
   xbt_assert(fdout >= 0, "Cannot write into %s", target.c_str());
 
-  XBT_DEBUG("Copy %ld bytes into %s", static_cast<long>(fdin_size), target.c_str());
+  XBT_DEBUG("Copy %jd bytes into %s", static_cast<intmax_t>(fdin_size), target.c_str());
 #if HAVE_SENDFILE
   ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
-  xbt_assert(sent_size == fdin_size, "Error while copying %s: only %zd bytes copied instead of %ld (errno: %d -- %s)",
-             target.c_str(), sent_size, fdin_size, errno, strerror(errno));
+  xbt_assert(sent_size == fdin_size, "Error while copying %s: only %zd bytes copied instead of %jd (errno: %d -- %s)",
+             target.c_str(), sent_size, static_cast<intmax_t>(fdin_size), errno, strerror(errno));
 #else
   const int bufsize = 1024 * 1024 * 4;
   char buf[bufsize];
