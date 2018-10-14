@@ -909,6 +909,7 @@ set(DOC_SOURCES
   docs/source/img/graphical-toc.svg
   docs/source/img/smpi_simgrid_alltoall_pair_16.png
   docs/source/img/smpi_simgrid_alltoall_ring_16.png
+  docs/source/img/zone_hierarchy.png
 
   docs/ignored_symbols
   docs/source/application.rst
@@ -965,7 +966,6 @@ set(DOC_TOOLS
 
 # these files get copied automatically to the html documentation
 set(DOC_IMG
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/AS_hierarchy.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/eclipseScreenShot.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg

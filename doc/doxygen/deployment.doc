@@ -63,7 +63,7 @@ are named @c ***_d_xml.
 
 @verbatim
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4">
   <!-- Alice, which runs on the machine named 'host1', does not take any parameter -->
   <actor host="host1" function="alice" />
