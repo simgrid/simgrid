@@ -320,13 +320,13 @@ All needed dependencies are already installed in this container
 optional in this tutorial, it is not installed to reduce the image
 size.
 
-The code template is available under ``/source/simgrid-template-s4u`` in
-the image. You should copy it to your working directory when you first
-log in:
+The code template is available under ``/source/simgrid-template-s4u.git`` 
+in the image. You should copy it to your working directory and
+recompile it when you first log in: 
 
 .. code-block:: shell
 
-   cp -r /source/simgrid-template-s4u/* /source/tutorial
+   cp -r /source/simgrid-template-s4u.git/* /source/tutorial
    cd /source/tutorial
    cmake .
    make
