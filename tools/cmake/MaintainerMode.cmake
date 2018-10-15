@@ -178,8 +178,8 @@ if(enable_maintainer_mode AND NOT WIN32)
       #${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd
       COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/surf/xml
       COMMAND ${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=https://simgrid.org/simgrid.dtd -S src/surf/xml/simgrid_dtd.l -L src/surf/xml/simgrid.dtd
-      COMMAND ${SED_EXE} -i ${string14} src/surf/xml/simgrid_dtd.l
-      COMMAND ${SED_EXE} -i "'s/FAIL(\"Bad declaration %s.\",yytext)/FAIL(\"Bad declaration %s.\\\\nIf your are using a XML v3 file (check the version attribute in <platform>), please update it with tools\\/simgrid_update_xml.pl\",yytext)/'" src/surf/xml/simgrid_dtd.l
+      COMMAND ${PERL_EXE} ${CMAKE_HOME_DIRECTORY}/tools/cmake/scripts/fixup_simgrid_dtd_l.pl < src/surf/xml/simgrid_dtd.l > src/surf/xml/simgrid_dtd.l.tmp
+      COMMAND mv src/surf/xml/simgrid_dtd.l.tmp src/surf/xml/simgrid_dtd.l
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/surf/xml/simgrid_dtd.l"
 
       #${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/simdag/dax.dtd
@@ -208,10 +208,6 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.c
       COMMAND ${FLEX_EXE} -o src/surf/xml/simgrid_dtd.c -Psurf_parse_ --noline src/surf/xml/simgrid_dtd.l
       COMMAND ${SED_EXE} -i ${string9} src/surf/xml/simgrid_dtd.c
-      COMMAND ${SED_EXE} -i 's/int yyl\;/unsigned int yyl\;/' src/surf/xml/simgrid_dtd.c
-      COMMAND ${SED_EXE} -i 's/int surf_parse_leng\;/unsigned int surf_parse_leng\;/' src/surf/xml/simgrid_dtd.c
-      COMMAND ${SED_EXE} -i 's/n = 0\; n < max_size/n = 0\; n < (size_t) max_size/' src/surf/xml/simgrid_dtd.c
-      COMMAND ${SED_EXE} -i "s/register //" src/surf/xml/simgrid_dtd.c
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated surf/xml/simgrid_dtd.c"
 
       #simdag/dax_dtd.c: simdag/dax_dtd.l
@@ -219,8 +215,6 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/simdag
       COMMAND ${FLEX_EXE} -o src/simdag/dax_dtd.c -Pdax_ --noline src/simdag/dax_dtd.l
       COMMAND ${SED_EXE} -i ${string9}                        src/simdag/dax_dtd.c
-      COMMAND ${SED_EXE} -i 's/int yyl\;/unsigned int yyl\;/' src/simdag/dax_dtd.c
-      COMMAND ${SED_EXE} -i 's/int dax_leng\;/unsigned int dax_leng\;/' src/simdag/dax_dtd.c
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/simdag/dax_dtd.c"
 
       WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}

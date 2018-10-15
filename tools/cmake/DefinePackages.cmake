@@ -1090,6 +1090,7 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindRngStream.cmake
   tools/cmake/Modules/FindValgrind.cmake
   tools/cmake/Option.cmake
+  tools/cmake/scripts/fixup_simgrid_dtd_l.pl
   tools/cmake/scripts/my_valgrind.pl
   tools/cmake/scripts/update_tesh.pl
   tools/cmake/UnitTesting.cmake
