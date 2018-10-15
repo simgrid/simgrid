@@ -117,7 +117,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!-- A zone is either an internal node that contains other zones, 
      or a  leaf containing hosts and other leaf-like elements -->
 <!ELEMENT zone ((prop*),
-          (((AS|zone|include|link|backbone|cabinet|cluster|peer|trace|trace_connect)*,
+          (((AS|zone|include|link|backbone|cluster|peer|trace|trace_connect)*,
             (zoneRoute|ASroute|trace|trace_connect|bypassASroute|bypassZoneRoute)*,
 	    (trace|trace_connect)*)
 	   |((include|storage_type|storage|host|cabinet|router|link|backbone|trace|trace_connect|host_link)*,
