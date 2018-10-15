@@ -20,8 +20,13 @@ if [ -f consoleText ]; then
   rm consoleText
 fi
 
+
+if [ -z $BUILD_URL ]; then
+  BUILD_URL="https://ci.inria.fr/simgrid/job/SimGrid/lastBuild"
+fi
+
 #get the list of nodes on jenkins
-wget --quiet https://ci.inria.fr/simgrid/job/SimGrid/lastBuild/consoleText >/dev/null 2>&1
+wget --quiet ${BUILD_URL}/consoleText >/dev/null 2>&1
 nodes=($(grep -rR "Triggering SimGrid ? Debug," ./consoleText | sed "s/Triggering SimGrid ? Debug,\(.*\)/\1/g"| sort))
 rm consoleText
 
@@ -32,7 +37,7 @@ echo "<br>Description of the nodes - Automatically updated by project_descriptio
 
 for node in "${nodes[@]}"
 do
-    wget --quiet https://ci.inria.fr/simgrid/job/SimGrid/lastBuild/build_mode=Debug,node=${node}/consoleText >/dev/null 2>&1
+    wget --quiet ${BUILD_URL}/build_mode=Debug,node=${node}/consoleText >/dev/null 2>&1
     if [ ! -f consoleText ]; then
       echo "file not existing for node ${node}"
       exit 1
