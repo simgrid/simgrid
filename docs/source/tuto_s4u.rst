@@ -328,6 +328,8 @@ log in:
 
    cp -r /source/simgrid-template-s4u/* /source/tutorial
    cd /source/tutorial
+   cmake .
+   make
 
 Using your Computer Natively
 ............................
