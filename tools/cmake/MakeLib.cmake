@@ -77,7 +77,7 @@ if(HAVE_POSIX_GETTIME)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lrt")
 endif()
 
-if("${CMAKE_SYSTEM}" MATCHES "FreeBSD")
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
   set(SIMGRID_DEP "${SIMGRID_DEP} -lprocstat")
 endif()
 
