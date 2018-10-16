@@ -125,7 +125,7 @@ this task and waits for the next one.
 
 The worker retrieves its own host with
 :cpp:func:`simgrid::s4u::this_actor::get_host`. The
-:ref:`simgrid::s4u::this_actor <namespace_simgrid__s4u__this_actor>`
+:ref:`simgrid::s4u::this_actor <API_s4u_this_actor>`
 namespace contains many such helping functions.
 
 .. literalinclude:: ../../examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp

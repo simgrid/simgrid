@@ -52,6 +52,8 @@ Unsupported claims, (6) Toy duck approach, and (7) The tunnel view. As
 you can see, this article is a must read. It's a pitty that it's not
 freely available, though.
 
+.. _howto_churn:
+
 Modeling Churn in P2P
 *********************
 
@@ -83,6 +85,7 @@ the form "date value". Example:
 If your trace does not contain a LOOPAFTER line, then your profile is
 only executed once and not repetitively.
 
+.. _howto_multicore:
 
 Modeling Multicore Machines
 ***************************
