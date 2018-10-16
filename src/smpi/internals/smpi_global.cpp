@@ -492,31 +492,35 @@ static void smpi_copy_file(std::string src, std::string target, off_t fdin_size)
   xbt_assert(fdout >= 0, "Cannot write into %s", target.c_str());
 
   XBT_DEBUG("Copy %" PRIdMAX " bytes into %s", static_cast<intmax_t>(fdin_size), target.c_str());
+  bool slow_copy = true;
 #if HAVE_SENDFILE
   ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
-  xbt_assert(sent_size == fdin_size,
-             "Error while copying %s: only %zd bytes copied instead of %" PRIdMAX " (errno: %d -- %s)", target.c_str(),
-             sent_size, static_cast<intmax_t>(fdin_size), errno, strerror(errno));
-#else
-  const int bufsize = 1024 * 1024 * 4;
-  char buf[bufsize];
-  while (int got = read(fdin, buf, bufsize)) {
-    if (got == -1) {
-      xbt_assert(errno == EINTR, "Cannot read from %s", src.c_str());
-    } else {
-      char* p  = buf;
-      int todo = got;
-      while (int done = write(fdout, p, todo)) {
-        if (done == -1) {
-          xbt_assert(errno == EINTR, "Cannot write into %s", target.c_str());
-        } else {
-          p += done;
-          todo -= done;
+  if (sent_size == fdin_size)
+    slow_copy = false;
+  else if (sent_size != -1 || errno != ENOSYS)
+    xbt_die("Error while copying %s: only %zd bytes copied instead of %" PRIdMAX " (errno: %d -- %s)", target.c_str(),
+            sent_size, static_cast<intmax_t>(fdin_size), errno, strerror(errno));
+#endif
+  if (slow_copy) {
+    const int bufsize = 1024 * 1024 * 4;
+    char buf[bufsize];
+    while (int got = read(fdin, buf, bufsize)) {
+      if (got == -1) {
+        xbt_assert(errno == EINTR, "Cannot read from %s", src.c_str());
+      } else {
+        char* p  = buf;
+        int todo = got;
+        while (int done = write(fdout, p, todo)) {
+          if (done == -1) {
+            xbt_assert(errno == EINTR, "Cannot write into %s", target.c_str());
+          } else {
+            p += done;
+            todo -= done;
+          }
         }
       }
     }
   }
-#endif
   close(fdin);
   close(fdout);
 }
