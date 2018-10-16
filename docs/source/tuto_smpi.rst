@@ -29,9 +29,9 @@ use SimGrid for their integration and performance testing.
 
 MPI 2.2 is already partially covered: over 160 primitives are
 supported. Some parts of the standard are still missing: MPI-IO, MPI3
-collectives, spawning ranks, and some others. If one of the functions
-you use is still missing, please drop us an email. We may find the
-time to implement it for you.
+collectives, spawning ranks, inter-communicators, and some others. If
+one of the functions you use is still missing, please drop us an
+email. We may find the time to implement it for you.
 
 Multi-threading support is very limited in SMPI. Only funneled
 applications are supported: at most one thread per rank can issue any
