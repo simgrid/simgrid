@@ -41,11 +41,5 @@ scripting language <platform_lua>` instead.  In the future, it should
 be possible to describe the platform in python or directly in C++, but
 this is not possible yet.
 
-As usual, SimGrid is a versatile framework, and you should find the
-way of describing your platform that best fits your experimental
-practice. 
-
-
-
 
 ..  LocalWords:  SimGrid

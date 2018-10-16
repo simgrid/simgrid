@@ -865,7 +865,6 @@ set(DOC_SOURCES
   doc/doxygen/deployment.doc
   doc/doxygen/footer.html
   doc/doxygen/header.html
-  doc/doxygen/howtos.doc
   doc/doxygen/index.doc
   doc/doxygen/inside.doc
   doc/doxygen/inside_tests.doc
@@ -924,6 +923,9 @@ set(DOC_SOURCES
   docs/source/intro_yours.rst
   docs/source/models.rst
   docs/source/platform.rst
+  docs/source/platform_examples.rst
+  docs/source/platform_howtos.rst
+  docs/source/platform_reference.rst
   docs/source/scenar_config.rst
   docs/source/scenario.rst
 
