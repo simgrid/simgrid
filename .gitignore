@@ -15,7 +15,8 @@
 .cproject # Eclipse cruft
 CMakeLists.txt.user
 \#*
-.attach_pid* 
+.attach_pid*
+.cproject
 smpitmp-*
 
 ### cmake
