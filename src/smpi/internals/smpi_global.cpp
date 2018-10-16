@@ -31,7 +31,7 @@
 #   define MAC_OS_X_VERSION_10_12 101200
 # endif
 # define HAVE_WORKING_MMAP (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12)
-#elif defined(__FreeBSD__)
+#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
 # define HAVE_WORKING_MMAP 0
 #else
 # define HAVE_WORKING_MMAP 1
