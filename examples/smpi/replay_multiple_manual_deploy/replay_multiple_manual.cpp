@@ -44,8 +44,8 @@ struct Job {
 };
 
 // ugly globals to avoid creating structures for giving args to processes
-std::vector<simgrid::s4u::Host*> hosts;
-int noise_between_jobs;
+static std::vector<simgrid::s4u::Host*> hosts;
+static int noise_between_jobs;
 
 static bool job_comparator(const Job* j1, const Job* j2)
 {
@@ -54,13 +54,7 @@ static bool job_comparator(const Job* j1, const Job* j2)
   return j1->starting_time < j2->starting_time;
 }
 
-struct s_smpi_replay_process_args {
-  Job* job;
-  simgrid::s4u::BarrierPtr barrier;
-  int rank;
-};
-
-void smpi_replay_process(Job* job, simgrid::s4u::BarrierPtr barrier, int rank)
+static void smpi_replay_process(Job* job, simgrid::s4u::BarrierPtr barrier, int rank)
 {
   // Prepare data for smpi_replay_run
   int argc    = 5;
