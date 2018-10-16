@@ -27,7 +27,6 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include <simgrid/msg.h>
 #include <simgrid/s4u.hpp>
 #include <smpi/smpi.h>
 #include <xbt/file.hpp>
@@ -61,21 +60,23 @@ struct s_smpi_replay_process_args {
   int rank;
 };
 
-static int smpi_replay_process(int argc, char* argv[])
+void smpi_replay_process(Job* job, simgrid::s4u::BarrierPtr barrier, int rank)
 {
-  s_smpi_replay_process_args* args = static_cast<s_smpi_replay_process_args*>(MSG_process_get_data(MSG_process_self()));
+  // Prepare data for smpi_replay_run
+  int argc    = 5;
+  char** argv = xbt_new(char*, argc);
+  argv[0]     = xbt_strdup("1");                                 // log only?
+  argv[1]     = xbt_strdup(job->smpi_app_name.c_str());          // application instance
+  argv[2]     = bprintf("%d", rank);                             // rank
+  argv[3]     = xbt_strdup(job->traces_filenames[rank].c_str()); // smpi trace file for this rank
+  argv[4]     = xbt_strdup("0");                                 // ?
 
-  XBT_INFO("Replaying rank %d of job %d (smpi_app '%s')", args->rank, args->job->unique_job_number,
-           args->job->smpi_app_name.c_str());
-
+  XBT_INFO("Replaying rank %d of job %d (smpi_app '%s')", rank, job->unique_job_number, job->smpi_app_name.c_str());
   smpi_replay_run(&argc, &argv);
-  XBT_INFO("Finished replaying rank %d of job %d (smpi_app '%s')", args->rank, args->job->unique_job_number,
-           args->job->smpi_app_name.c_str());
+  XBT_INFO("Finished replaying rank %d of job %d (smpi_app '%s')", rank, job->unique_job_number,
+           job->smpi_app_name.c_str());
 
-  args->barrier->wait();
-
-  delete args;
-  return 0;
+  barrier->wait();
 }
 
 // Sleeps for a given amount of time
@@ -106,20 +107,8 @@ static int job_executor_process(Job* job)
   simgrid::s4u::BarrierPtr barrier = simgrid::s4u::Barrier::create(job->app_size + 1);
 
   for (int i = 0; i < job->app_size; ++i) {
-    char** argv = xbt_new(char*, 5);
-    argv[0]     = xbt_strdup("1");                              // log only?
-    argv[1]     = xbt_strdup(job->smpi_app_name.c_str());       // application instance
-    argv[2]     = bprintf("%d", i);                             // rank
-    argv[3]     = xbt_strdup(job->traces_filenames[i].c_str()); // smpi trace file for this rank
-    argv[4]     = xbt_strdup("0");   // ?
-
-    s_smpi_replay_process_args* args = new s_smpi_replay_process_args;
-    args->job                        = job;
-    args->barrier                    = barrier;
-    args->rank                       = i;
-
     char* str_pname = bprintf("%d_%d", job->unique_job_number, i);
-    MSG_process_create_with_arguments(str_pname, smpi_replay_process, (void*)args, hosts[job->allocation[i]], 5, argv);
+    simgrid::s4u::Actor::create(str_pname, hosts[job->allocation[i]], smpi_replay_process, job, barrier, i);
     xbt_free(str_pname);
   }
 
@@ -240,7 +229,6 @@ int main(int argc, char* argv[])
              argv[0], argv[0]);
 
   //  Simulation setting
-  MSG_init(&argc, argv);
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
   hosts = e.get_all_hosts();
@@ -251,7 +239,7 @@ int main(int argc, char* argv[])
 
   // Let's register them
   for (const Job* job : jobs)
-    SMPI_app_instance_register(job->smpi_app_name.c_str(), smpi_replay_process, job->app_size);
+    SMPI_app_instance_register(job->smpi_app_name.c_str(), nullptr, job->app_size);
 
   SMPI_init();
 
