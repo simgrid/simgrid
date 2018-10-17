@@ -18,6 +18,38 @@ the `simgrid.dtd <https://simgrid.org/simgrid.dtd>`_
 DTD file. The same DTD is used for both the platform and deployment
 files. 
 
+.. _pf_tag_config:
+
+------------------------------------------------------------------
+<config>
+------------------------------------------------------------------
+
+Adding configuration flags into the platform file is particularly
+useful when the described platform is best used with specific
+flags. For example, you could finely tune SMPI in your platform file
+directly.  Almost all :ref:`command-line configuration items <options_list>`
+can be configured this way.
+
+**Parent tags:** :ref:`pf_tag_platform` (must appear before any other tags) |br|
+**Children tags:** :ref:`pf_tag_prop` |br|
+**Attributes:** none
+
+.. code-block:: xml
+
+   <?xml version='1.0'?>
+   <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+   <platform version="4.1">
+   <config>
+	<prop id="maxmin/precision" value="0.000010" />
+	<prop id="cpu/optim" value="TI" />
+	<prop id="network/model" value="SMPI" />
+	<prop id="smpi/bw-factor" value="65472:0.940694;15424:0.697866;9376:0.58729" />
+   </config>
+
+   <!-- The rest of your platform -->
+   </platform>
+
+
 .. _pf_tag_host:
 
 ------------------------------------------------------------------
@@ -159,7 +191,7 @@ Network links can represent one-hop network connections. See :cpp:class:`simgrid
 
       4.0 40000000
       8.0 60000000
-      PERIODICITY 12.0
+      LOOPAFTER 12.0
 
    - At time t=4, the bandwidth is of 40 MBps.
    - At time t=8, it raises to 60MBps.

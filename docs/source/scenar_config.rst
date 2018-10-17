@@ -72,6 +72,8 @@ with :cpp:func:`simgrid::s4u::Engine::set_config` or :cpp:func:`MSG_config`.
      // Rest of your code
    }
 
+.. _options_list:
+   
 Existing Configuration Items
 ----------------------------
 
