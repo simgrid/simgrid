@@ -95,6 +95,7 @@ public:
   static simgrid::xbt::signal<void(kernel::resource::NetworkAction*, kernel::resource::Action::State)>
       on_communication_state_change;
 
+#ifndef DOXYGEN
   // Deprecated methods
   /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::by_name()") static Link* byName(const char* name) { return by_name(name); }
@@ -134,6 +135,7 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_bandwidth_trace()") void setBandwidthTrace(tmgr_trace_t trace) {set_bandwidth_trace(trace);}
   /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_latency_trace()") void setLatencyTrace(tmgr_trace_t trace) {set_latency_trace(trace);}
+#endif
 };
 }
 }

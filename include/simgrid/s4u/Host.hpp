@@ -220,12 +220,14 @@ private:
   std::unordered_map<std::string, Storage*>* mounts_ = nullptr; // caching
 
 public:
+#ifndef DOXYGEN
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
   surf::Cpu* pimpl_cpu = nullptr;
   // TODO, this could be a unique_ptr
   surf::HostImpl* pimpl_ = nullptr;
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
   kernel::routing::NetPoint* pimpl_netpoint = nullptr;
+#endif
 };
 }
 } // namespace simgrid::s4u
