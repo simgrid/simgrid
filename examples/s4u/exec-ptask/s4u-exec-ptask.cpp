@@ -31,31 +31,29 @@ static void runner()
 
   XBT_INFO("First, build a classical parallel task, with 1 Gflop to execute on each node, "
            "and 10MB to exchange between each pair");
-  double* computation_amounts   = new double[hosts_count]();
-  double* communication_amounts = new double[hosts_count * hosts_count]();
 
-  for (int i               = 0; i < hosts_count; i++)
-    computation_amounts[i] = 1e9; // 1 Gflop
+  std::vector<double> computation_amounts;
+  std::vector<double> communication_amounts;
 
+  /* ------[ test 1 ]----------------- */
+  computation_amounts.assign(hosts.size(), 1e9 /*1Gflop*/);
+  communication_amounts.assign(hosts.size() * hosts.size(), 0);
   for (int i = 0; i < hosts_count; i++)
     for (int j = i + 1; j < hosts_count; j++)
       communication_amounts[i * hosts_count + j] = 1e7; // 10 MB
 
-  simgrid::s4u::this_actor::parallel_execute(hosts_count, hosts.data(), computation_amounts, communication_amounts);
+  simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
 
+  /* ------[ test 2 ]----------------- */
   XBT_INFO("We can do the same with a timeout of one second enabled.");
-  computation_amounts   = new double[hosts_count]();
-  communication_amounts = new double[hosts_count * hosts_count]();
-
-  for (int i               = 0; i < hosts_count; i++)
-    computation_amounts[i] = 1e9; // 1 Gflop
-
+  computation_amounts.assign(hosts.size(), 1e9 /*1Gflop*/);
+  communication_amounts.assign(hosts.size() * hosts.size(), 0);
   for (int i = 0; i < hosts_count; i++)
     for (int j = i + 1; j < hosts_count; j++)
       communication_amounts[i * hosts_count + j] = 1e7; // 10 MB
 
   try {
-    simgrid::s4u::this_actor::parallel_execute(hosts_count, hosts.data(), computation_amounts, communication_amounts,
+    simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts,
                                                1.0 /* timeout (in seconds)*/);
     XBT_WARN("Woops, this did not timeout as expected... Please report that bug.");
   } catch (xbt_ex& e) {
@@ -63,28 +61,34 @@ static void runner()
     XBT_DEBUG("Caught expected exception: %s", e.what());
   }
 
+  /* ------[ test 3 ]----------------- */
   XBT_INFO("Then, build a parallel task involving only computations and no communication (1 Gflop per node)");
-  computation_amounts = new double[hosts_count]();
-  for (int i               = 0; i < hosts_count; i++)
-    computation_amounts[i] = 1e9; // 1 Gflop
-  simgrid::s4u::this_actor::parallel_execute(hosts_count, hosts.data(), computation_amounts, nullptr /* no comm */);
+  computation_amounts.assign(hosts.size(), 1e9 /*1Gflop*/);
+  communication_amounts.clear(); /* no comm */
+  simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
 
+  /* ------[ test 4 ]----------------- */
   XBT_INFO("Then, build a parallel task involving only heterogeneous computations and no communication");
-  computation_amounts = new double[hosts_count]();
-  for (int i               = 0; i < hosts_count; i++)
+  computation_amounts.resize(hosts.size());
+  for (int i = 0; i < hosts_count; i++)
     computation_amounts[i] = 5 * (i + 1) * 1e8; // 500Mflop, 1Gflop, 1.5Gflop
-  simgrid::s4u::this_actor::parallel_execute(hosts_count, hosts.data(), computation_amounts, nullptr /* no comm */);
+  communication_amounts.clear();                /* no comm */
+  simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
 
+  /* ------[ test 5 ]----------------- */
   XBT_INFO("Then, build a parallel task with no computation nor communication (synchro only)");
-  computation_amounts   = new double[hosts_count]();
-  communication_amounts = new double[hosts_count * hosts_count]();
-  simgrid::s4u::this_actor::parallel_execute(hosts_count, hosts.data(), computation_amounts, communication_amounts);
+  computation_amounts.clear();
+  communication_amounts.clear();
+  simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
 
+  /* ------[ test 6 ]----------------- */
   XBT_INFO("Finally, trick the ptask to do a 'remote execution', on host %s", hosts[1]->get_cname());
-  computation_amounts = new double[1]{1e9};
+  std::vector<simgrid::s4u::Host*> remote;
+  remote.push_back(hosts[1]);
+  computation_amounts.assign(1, 1e9);
+  communication_amounts.clear();
 
-  simgrid::s4u::Host* remote[] = {hosts[1]};
-  simgrid::s4u::this_actor::parallel_execute(1, remote, computation_amounts, nullptr);
+  simgrid::s4u::this_actor::parallel_execute(remote, computation_amounts, communication_amounts);
 
   XBT_INFO("Goodbye now!");
 }

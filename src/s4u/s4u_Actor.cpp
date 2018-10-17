@@ -293,11 +293,38 @@ void execute(double flops, double priority)
   exec_init(flops)->set_priority(priority)->start()->wait();
 }
 
+void parallel_execute(std::vector<s4u::Host*> hosts, std::vector<double> flops_amounts,
+                      std::vector<double> bytes_amounts)
+{
+  parallel_execute(hosts, flops_amounts, bytes_amounts, -1);
+}
+void parallel_execute(std::vector<s4u::Host*> hosts, std::vector<double> flops_amounts,
+                      std::vector<double> bytes_amounts, double timeout)
+{
+  xbt_assert(hosts.size() > 0, "Your parallel executions must span over at least one host.");
+  xbt_assert(hosts.size() == flops_amounts.size() || flops_amounts.empty(),
+             "Host count (%zu) does not match flops_amount count (%zu).", hosts.size(), flops_amounts.size());
+  xbt_assert(hosts.size() * hosts.size() == bytes_amounts.size() || bytes_amounts.empty(),
+             "bytes_amounts must be a matrix of size host_count * host_count (%zu*%zu), but it's of size %zu.",
+             hosts.size(), hosts.size(), flops_amounts.size());
+
+  /* The vectors live as parameter of parallel_execute. No copy is created for simcall_execution_parallel_start(),
+   * but that's OK because simcall_execution_wait() is called from here too.
+   */
+  smx_activity_t s = simcall_execution_parallel_start("", hosts.size(), hosts.data(),
+                                                      (flops_amounts.empty() ? nullptr : flops_amounts.data()),
+                                                      (bytes_amounts.empty() ? nullptr : bytes_amounts.data()),
+                                                      /* rate */ -1, timeout);
+  simcall_execution_wait(s);
+}
+
 void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount, double timeout)
 {
   smx_activity_t s =
       simcall_execution_parallel_start("", host_nb, host_list, flops_amount, bytes_amount, /* rate */ -1, timeout);
   simcall_execution_wait(s);
+  delete[] flops_amount;
+  delete[] bytes_amount;
 }
 
 void parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount)

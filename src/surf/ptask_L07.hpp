@@ -106,6 +106,7 @@ class L07Action : public CpuAction {
   friend Action *CpuL07::sleep(double duration);
   friend Action* HostL07Model::execute_parallel(int host_nb, sg_host_t* host_list, double* flops_amount,
                                                 double* bytes_amount, double rate);
+  friend Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
 
 public:
   L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* host_list, double* flops_amount,
@@ -114,11 +115,15 @@ public:
 
   void updateBound();
 
-  std::vector<s4u::Host*>* hostList_ = new std::vector<s4u::Host*>();
-  double *computationAmount_;
-  double *communicationAmount_;
+  std::vector<s4u::Host*> hostList_;
+  double* computationAmount_;   /* pointer to the data that lives in s4u action -- do not free unless if free_arrays */
+  double* communicationAmount_; /* pointer to the data that lives in s4u action -- do not free unless if free_arrays */
   double latency_;
   double rate_;
+
+private:
+  bool free_arrays_ = false; // By default, computationAmount_ and friends are freed by caller. But not for sequential
+                             // exec and regular comms
 };
 
 }

@@ -433,6 +433,9 @@ XBT_PUBLIC void execute(double flop, double priority);
  * each host, using a vector of flops amount. Then, you should specify the amount of data exchanged between each
  * hosts during the parallel kernel. For that, a matrix of values is expected.
  *
+ * It is OK to build a parallel execution without any computation and/or without any communication.
+ * Just pass an empty vector to the corresponding parameter.
+ *
  * For example, if your list of hosts is ``[host0, host1]``, passing a vector ``[1000, 2000]`` as a `flops_amount`
  * vector means that `host0` should compute 1000 flops while `host1` will compute 2000 flops. A matrix of
  * communications' sizes of ``[0, 1, 2, 3]`` specifies the following data exchanges:
@@ -461,14 +464,21 @@ XBT_PUBLIC void execute(double flop, double priority);
  *
  * \endrst
  */
+XBT_PUBLIC void parallel_execute(std::vector<s4u::Host*> hosts, std::vector<double> flops_amounts,
+                                 std::vector<double> bytes_amounts);
 
-XBT_PUBLIC void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount);
 /** \rst
  * Block the actor until the built :ref:`parallel execution <API_s4u_parallel_execute>` completes, or until the timeout.
  * \endrst
  */
+XBT_PUBLIC void parallel_execute(std::vector<s4u::Host*> hosts, std::vector<double> flops_amounts,
+                                 std::vector<double> bytes_amounts, double timeout);
+
+#ifndef DOXYGEN
+XBT_PUBLIC void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount);
 XBT_PUBLIC void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount,
                                  double timeout);
+#endif
 
 XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
 XBT_PUBLIC ExecPtr exec_async(double flops_amounts);

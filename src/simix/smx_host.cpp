@@ -63,9 +63,7 @@ simgrid::kernel::activity::ExecImplPtr SIMIX_execution_parallel_start(std::strin
   simgrid::kernel::resource::Action* surf_action      = nullptr;
   simgrid::kernel::resource::Action* timeout_detector = nullptr;
   if (not MC_is_active() && not MC_record_replay_is_active()) {
-    sg_host_t* host_list_cpy = new sg_host_t[host_nb];
-    std::copy_n(host_list, host_nb, host_list_cpy);
-    surf_action = surf_host_model->execute_parallel(host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
+    surf_action = surf_host_model->execute_parallel(host_nb, host_list, flops_amount, bytes_amount, rate);
     if (timeout > 0) {
       timeout_detector = host_list[0]->pimpl_cpu->sleep(timeout);
     }

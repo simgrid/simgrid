@@ -73,7 +73,8 @@ smx_activity_t simcall_execution_parallel_start(std::string name, int host_nb, s
 {
   /* checking for infinite values */
   for (int i = 0 ; i < host_nb ; ++i) {
-    xbt_assert(std::isfinite(flops_amount[i]), "flops_amount[%d] is not finite!", i);
+    if (flops_amount != nullptr)
+      xbt_assert(std::isfinite(flops_amount[i]), "flops_amount[%d] is not finite!", i);
     if (bytes_amount != nullptr) {
       for (int j = 0 ; j < host_nb ; ++j) {
         xbt_assert(std::isfinite(bytes_amount[i + host_nb * j]),

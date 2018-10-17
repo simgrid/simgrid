@@ -57,7 +57,7 @@ kernel::resource::Action* HostModel::execute_parallel(int host_nb, s4u::Host** h
                                                       double* bytes_amount, double rate)
 {
   kernel::resource::Action* action = nullptr;
-  if ((host_nb == 1) && (has_cost(bytes_amount, 0) <= 0)) {
+  if ((host_nb == 1) && (has_cost(bytes_amount, 0) <= 0) && (has_cost(flops_amount, 0) > 0)) {
     action = host_list[0]->pimpl_cpu->execution_start(flops_amount[0]);
   } else if ((host_nb == 1) && (has_cost(flops_amount, 0) <= 0)) {
     action = surf_network_model->communicate(host_list[0], host_list[0], bytes_amount[0], rate);
@@ -87,9 +87,6 @@ kernel::resource::Action* HostModel::execute_parallel(int host_nb, s4u::Host** h
         " - Self-comms with one host only\n"
         " - Communications with two hosts and no computation");
   }
-  delete[] host_list;
-  delete[] flops_amount;
-  delete[] bytes_amount;
   return action;
 }
 

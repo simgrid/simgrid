@@ -147,12 +147,14 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
   double latency = 0.0;
   this->set_last_update();
 
-  this->hostList_->reserve(host_nb);
-  for (int i = 0; i < host_nb; i++) {
-    this->hostList_->push_back(host_list[i]);
-    if (flops_amount[i] > 0)
-      nb_used_host++;
-  }
+  this->hostList_.reserve(host_nb);
+  for (int i = 0; i < host_nb; i++)
+    this->hostList_.push_back(host_list[i]);
+
+  if (flops_amount != nullptr)
+    for (int i = 0; i < host_nb; i++)
+      if (flops_amount[i] > 0)
+        nb_used_host++;
 
   /* Compute the number of affected resources... */
   if(bytes_amount != nullptr) {
@@ -165,7 +167,7 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
           double lat=0.0;
 
           std::vector<kernel::resource::LinkImpl*> route;
-          hostList_->at(i)->route_to(hostList_->at(j), route, &lat);
+          hostList_.at(i)->route_to(hostList_.at(j), route, &lat);
           latency = std::max(latency, lat);
 
           for (auto const& link : route)
@@ -185,15 +187,16 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
   if (latency_ > 0)
     model->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
 
-  for (int i = 0; i < host_nb; i++)
-    model->get_maxmin_system()->expand(host_list[i]->pimpl_cpu->get_constraint(), get_variable(), flops_amount[i]);
+  if (flops_amount != nullptr)
+    for (int i = 0; i < host_nb; i++)
+      model->get_maxmin_system()->expand(host_list[i]->pimpl_cpu->get_constraint(), get_variable(), flops_amount[i]);
 
-  if(bytes_amount != nullptr) {
+  if (bytes_amount != nullptr) {
     for (int i = 0; i < host_nb; i++) {
       for (int j = 0; j < host_nb; j++) {
         if (bytes_amount[i * host_nb + j] > 0.0) {
           std::vector<kernel::resource::LinkImpl*> route;
-          hostList_->at(i)->route_to(hostList_->at(j), route, nullptr);
+          hostList_.at(i)->route_to(hostList_.at(j), route, nullptr);
 
           for (auto const& link : route)
             model->get_maxmin_system()->expand_add(link->get_constraint(), this->get_variable(),
@@ -207,7 +210,6 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
     this->set_cost(1.0);
     this->set_remains(0.0);
   }
-  delete[] host_list;
 }
 
 kernel::resource::Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
@@ -220,7 +222,9 @@ kernel::resource::Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host
   host_list[1]    = dst;
   bytes_amount[1] = size;
 
-  return hostModel_->execute_parallel(2, host_list, flops_amount, bytes_amount, rate);
+  kernel::resource::Action* res = hostModel_->execute_parallel(2, host_list, flops_amount, bytes_amount, rate);
+  static_cast<L07Action*>(res)->free_arrays_ = true;
+  return res;
 }
 
 Cpu* CpuL07Model::create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core)
@@ -261,13 +265,15 @@ LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwid
 
 kernel::resource::Action* CpuL07::execution_start(double size)
 {
-  sg_host_t* host_list = new sg_host_t[1]();
-  double* flops_amount = new double[1]();
+  sg_host_t host_list[1] = {get_host()};
 
-  host_list[0]    = get_host();
+  double* flops_amount = new double[1]();
   flops_amount[0] = size;
 
-  return static_cast<CpuL07Model*>(get_model())->hostModel_->execute_parallel(1, host_list, flops_amount, nullptr, -1);
+  kernel::resource::Action* res =
+      static_cast<CpuL07Model*>(get_model())->hostModel_->execute_parallel(1, host_list, flops_amount, nullptr, -1);
+  static_cast<L07Action*>(res)->free_arrays_ = true;
+  return res;
 }
 
 kernel::resource::Action* CpuL07::sleep(double duration)
@@ -378,17 +384,19 @@ LinkL07::~LinkL07() = default;
  * Action *
  **********/
 
-L07Action::~L07Action(){
-  delete hostList_;
-  delete[] communicationAmount_;
-  delete[] computationAmount_;
+L07Action::~L07Action()
+{
+  if (free_arrays_) {
+    delete[] computationAmount_;
+    delete[] communicationAmount_;
+  }
 }
 
 void L07Action::updateBound()
 {
   double lat_current = 0.0;
 
-  int hostNb = hostList_->size();
+  int hostNb = hostList_.size();
 
   if (communicationAmount_ != nullptr) {
     for (int i = 0; i < hostNb; i++) {
@@ -397,7 +405,7 @@ void L07Action::updateBound()
         if (communicationAmount_[i * hostNb + j] > 0) {
           double lat = 0.0;
           std::vector<kernel::resource::LinkImpl*> route;
-          hostList_->at(i)->route_to(hostList_->at(j), route, &lat);
+          hostList_.at(i)->route_to(hostList_.at(j), route, &lat);
 
           lat_current = std::max(lat_current, lat * communicationAmount_[i * hostNb + j]);
         }
