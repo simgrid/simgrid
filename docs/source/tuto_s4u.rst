@@ -696,10 +696,8 @@ This tutorial is now terminated. You could keep reading the [online documentatio
 
 .. todo::
 
-   TODO: Points to improve for the next time
+   Things to improve in the future:
 
-   - Propose equivalent exercises and skeleton in java.
-   - Propose a virtualbox image with everything (simgrid, pajeng, ...) already set up.
-   - Ease the installation on mac OS X (binary installer) and windows.
+   - Propose equivalent exercises and skeleton in java (and Python once we have a python binding).
 
 ..  LocalWords:  SimGrid
