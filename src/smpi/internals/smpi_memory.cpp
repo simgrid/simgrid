@@ -243,32 +243,43 @@ void smpi_destroy_global_memory_segments(){
 #endif
 }
 
-static int sendbuffer_size = 0;
-static char* sendbuffer    = nullptr;
-static int recvbuffer_size = 0;
-static char* recvbuffer    = nullptr;
 
-//allocate a single buffer for all sends, growing it if needed
-void* smpi_get_tmp_sendbuffer(int size)
+//allocate a single buffer for all sends, and an other of all reads, for each actor.
+//buffer size is growing if needed
+
+typedef std::tuple</*buffer adress*/ char*, /*buffer size*/ int> buffer_tuple;
+static std::map<aid_t, buffer_tuple> sendbuffer_map;
+static std::map<aid_t, buffer_tuple> recvbuffer_map;
+static void* smpi_get_tmp_buffer(int size, std::map<aid_t, buffer_tuple> buffer_map)
 {
+  // Because this kind of process maintain is own list of buffers and call
+  // `smpi_free_tmp_buffer(void* buf)` to free them
   if (not smpi_process()->replaying())
     return xbt_malloc(size);
-  if (sendbuffer_size<size){
-    sendbuffer=static_cast<char*>(xbt_realloc(sendbuffer,size));
-    sendbuffer_size=size;
+
+  // check if the process is registered
+  aid_t id = simgrid::s4u::this_actor::get_pid();
+  if (not (buffer_map.find(id) == buffer_map.end()))
+  {
+    // This tuple represents a buffer and his size
+    buffer_tuple buffer_tuple(nullptr, 0);
+    buffer_map[id] = buffer_tuple;
   }
-  return sendbuffer;
+  if (std::get<1>(buffer_map[id]) < size){
+      std::get<0>(buffer_map[id]) = static_cast<char*>(xbt_realloc(std::get<0>(buffer_map[id]), size));
+      std::get<1>(buffer_map[id]) = size;
+  }
+  return std::get<0>(buffer_map[id]);
 }
 
-//allocate a single buffer for all recv
-void* smpi_get_tmp_recvbuffer(int size){
-  if (not smpi_process()->replaying())
-    return xbt_malloc(size);
-  if (recvbuffer_size<size){
-    recvbuffer=static_cast<char*>(xbt_realloc(recvbuffer,size));
-    recvbuffer_size=size;
-  }
-  return recvbuffer;
+void* smpi_get_tmp_sendbuffer(int size)
+{
+    return smpi_get_tmp_buffer(size, sendbuffer_map);
+}
+
+void* smpi_get_tmp_recvbuffer(int size)
+{
+    return smpi_get_tmp_buffer(size, recvbuffer_map);
 }
 
 void smpi_free_tmp_buffer(void* buf){
@@ -277,6 +288,7 @@ void smpi_free_tmp_buffer(void* buf){
 }
 
 void smpi_free_replay_tmp_buffers(){
-  xbt_free(sendbuffer);
-  xbt_free(recvbuffer);
+  aid_t id = simgrid::s4u::this_actor::get_pid();
+  xbt_free(std::get<0>(recvbuffer_map[id]));
+  xbt_free(std::get<0>(sendbuffer_map[id]));
 }
