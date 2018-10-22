@@ -15,31 +15,39 @@
 Describing your Simulated Platform
 ##################################
 
-The goal of SimGrid is to run an application on a simulated platform.
-For that, you have to describe **each element of your platform**, such
-as computing hosts, clusters, each disks, links, etc. You must also
-define the **routing on your platform**, ie which path is taken
-between two hosts. Finally, you may also describe an **experimental
-scenario**, with qualitative changes (e.g., bandwidth changes
-representing an external load) and qualitative changes (representing
-how some elements fail and restart over time).
+In SimGrid, platforms are usually described in XML. This formalism has
+some drawbacks, but using a specific format ensures that the platform
+is not mixed with the tested application. This separation of concern
+:ref:`is a must <howto_science>` for your Modeling and Simulation (M&S)
+work. When XML is too limiting, you may describe your platforms using
+the :ref:`lua bindings <platform_lua>` (it is not yet possible to do so in
+python or directly in C++).
 
-You should really separate your application from the platform
-description, as it will ease your experimental campain afterward.
-Mixing them is seen as a really bad experimental practice. The easiest
-to enforce this split is to put the platform description in a XML
-file. Many example platforms are provided in the archive, and this
-page gives all needed details to write such files, as well as some
-hints and tricks about describing your platform.
+Since we know that writing platform description files is not trivial,
+we included :ref:`many examples <platform_examples>` in the archive. This
+documentation also contains some :ref:`hints and howtos <howto>`, as well
+as the full :ref:`XML reference guide <platform_reference>`.
 
-On the other side, XML is sometimes not expressive enough, in
-particular for large platforms exhibiting repetitive patterns that are
-not simply expressed in XML.  In practice, many users end up
-generating their XML platform files from some sort of scripts. It is
-probably preferable to rewrite your XML :ref:`platform using the lua
-scripting language <platform_lua>` instead.  In the future, it should
-be possible to describe the platform in python or directly in C++, but
-this is not possible yet.
 
+Any simulated platform must contain **basic elements**, such as hosts,
+links, storages, etc.  SimGrid gives you a great liberty when defining
+**routing of your platform**, ie the path taken between each pair of
+hosts.  Finally, you may also describe an **experimental scenario**,
+with qualitative changes (e.g., bandwidth changes representing an
+external load) and qualitative changes (representing how some elements
+fail and restart over time).
+
+Defining Basic Elements
+***********************
+
+There is not much to say about the definition of basic elements. Just
+use the appropriate tags: :ref:`pf_tag_host`, :ref:`pf_tag_link` and
+:ref:`pf_tag_storage`.
+
+Defining a Routing
+******************
+
+Performance Profiles and Churn
+******************************
 
 ..  LocalWords:  SimGrid

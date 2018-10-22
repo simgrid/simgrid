@@ -12,6 +12,8 @@
    <br/>
    <br/>
 
+.. _howto:
+   
 Modeling Hints
 ##############
 
@@ -23,6 +25,8 @@ This page collects several hints and tricks on modeling situations.
 Even if you are looking for a very advanced, specific use case, these
 examples may help you to design the solution you need.
 
+.. _howto_science:
+
 Doing Science with SimGrid
 **************************
 
@@ -31,7 +35,7 @@ research. This tool was indeed invented to that extend, and we strive
 to streamline this kind of usage. But SimGrid is no magical tool, and
 it is of your responsability that the tool actually provides sensible
 results. Fortunately, there is a vast literature on how to avoid
-Modeling & Simulations pitfalls. We review here two particular works.
+Modeling & Simulations pitfalls. We review here some specific works.
 
 In `An Integrated Approach to Evaluating Simulation Credibility
 <http://www.dtic.mil/dtic/tr/fulltext/u2/a405051.pdf>`_, the authors
@@ -40,8 +44,10 @@ in the simulation tools they use. First of all, you must know what you
 actually expect to discover whether the tool actually covers your
 needs. Then, as they say, "a fool with a tool is still a fool", so you
 need to think about your methodology before you submit your articles.
-You really should read this article, that contains many other
-interesting advices.
+`Towards a Credibility Assessment of Models and Simulations
+<https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20080015742.pdf>`_
+gives a formal methodology to assess the credibility of your
+simulation results.
 
 `Seven Pitfalls in Modeling and Simulation Research
 <https://dl.acm.org/citation.cfm?id=2430188>`_ is even more

@@ -10,6 +10,8 @@
    <br/>
    <br/>
 
+.. _platform_examples:
+   
 Platform Examples
 =================
 

@@ -10,6 +10,8 @@
    <br/>
    <br/>
 
+.. _platform_reference:
+   
 DTD Reference
 *************
 
@@ -280,7 +282,13 @@ the plugins.
 
 From your code, you can interact with these properties using the
 following functions:
+
+- Actor: :cpp:func:`simgrid::s4u::Actor::get_property` or :cpp:func:`MSG_process_get_property_value`
+- Cluster: this is a zone, see below.
 - Host: :cpp:func:`simgrid::s4u::Host::get_property` or :cpp:func:`MSG_host_get_property_value`
+- Link: :cpp:func:`simgrid::s4u::Link::get_property`
+- Storage: :cpp:func:`simgrid::s4u::Storage::get_property` or :cpp:func:`MSG_storage_get_property_value`
+- Zone: :cpp:func:`simgrid::s4u::Zone::get_property` of :cpp:func:`MSG_zone_get_property_value`
 
 **Parent tags:** :ref:`pf_tag_actor`, :ref:`pf_tag_config`, :ref:`pf_tag_cluster`, :ref:`pf_tag_host`,
 :ref:`pf_tag_link`, :ref:`pf_tag_storage`, :ref:`pf_tag_zone` |br|
