@@ -1,4 +1,3 @@
-
 /* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -102,7 +101,7 @@ XBT_PUBLIC void MSG_host_set_pstate(sg_host_t host, int pstate);
 XBT_PUBLIC void MSG_host_on(sg_host_t h);
 /** @brief Stop the host if it is on
  *
- * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref SURF_plugin_energy
+ * See also MSG_host_is_on() and MSG_host_is_off() to test the current state of the host and @ref SURF_plugin_energy
  * for more info on DVFS.
  */
 XBT_PUBLIC void MSG_host_off(sg_host_t h);
@@ -167,11 +166,9 @@ typedef sg_actor_t msg_process_t;
 
 XBT_PUBLIC int MSG_process_get_PID(msg_process_t process);
 XBT_PUBLIC int MSG_process_get_PPID(msg_process_t process);
-/** @brief Return a #msg_process_t from its PID.
+/** @brief Return a process from its PID (or NULL if not found).
  *
- * Note that the PID are uniq in the whole simulation, not only on a given host.
- *
- * @returns NULL if no host is found
+ * Note that the PID are unique in the whole simulation, not only on a given host.
  */
 XBT_PUBLIC sg_actor_t MSG_process_from_PID(int pid);
 XBT_PUBLIC const char* MSG_process_get_name(msg_process_t process);
@@ -197,7 +194,7 @@ XBT_PUBLIC void MSG_process_auto_restart_set(msg_process_t process, int auto_res
 XBT_PUBLIC void MSG_process_daemonize(msg_process_t process);
 /** @brief Imediately changes the host on which this process runs */
 XBT_PUBLIC void MSG_process_migrate(msg_process_t process, msg_host_t host);
-/** @brief Wait for the completion of a #msg_process_t.
+/** @brief Wait for the completion of a process.
  *
  * @param process the process to wait for
  * @param timeout wait until the process is over, or the timeout occurs
@@ -207,7 +204,7 @@ XBT_PUBLIC void MSG_process_join(msg_process_t process, double timeout);
 XBT_PUBLIC void MSG_process_kill(msg_process_t process);
 /** @brief Kill all running process */
 XBT_PUBLIC void MSG_process_killall();
-/** @breif Specifies the time at which the process should be automatically killed */
+/** @brief Specifies the time at which the process should be automatically killed */
 XBT_PUBLIC void MSG_process_set_kill_time(msg_process_t process, double kill_time);
 /** @brief Yield the current actor; let the other actors execute first */
 XBT_PUBLIC void MSG_process_yield();
