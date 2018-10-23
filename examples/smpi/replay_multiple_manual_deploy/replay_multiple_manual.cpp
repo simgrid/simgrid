@@ -65,9 +65,6 @@ static void smpi_replay_process(Job* job, simgrid::s4u::BarrierPtr barrier, int 
   argv[3]     = xbt_strdup(job->traces_filenames[rank].c_str()); // smpi trace file for this rank
   argv[4]     = xbt_strdup("0");                                 // ?
 
-  // Ugly double storage used for memory deallocation, as SMPI changes argc/argv without cleaning memory.
-  char* to_free[2] = {argv[0], argv[1]}; // <-- This ugly array should disappear.
-
   XBT_INFO("Replaying rank %d of job %d (smpi_app '%s')", rank, job->unique_job_number, job->smpi_app_name.c_str());
   smpi_replay_run(&argc, &argv);
   XBT_INFO("Finished replaying rank %d of job %d (smpi_app '%s')", rank, job->unique_job_number,
@@ -75,9 +72,7 @@ static void smpi_replay_process(Job* job, simgrid::s4u::BarrierPtr barrier, int 
 
   barrier->wait();
 
-  // Memory clean-up
-  for (int i = 0; i < 2; ++i) // <-- This ugly loop should disappear.
-    xbt_free(to_free[i]);
+  // Memory clean-up — leaks can come from argc/argv modifications from smpi_replay_run
   for (int i = 0; i < argc; ++i)
     xbt_free(argv[i]);
   xbt_free(argv);
