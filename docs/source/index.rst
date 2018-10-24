@@ -13,8 +13,8 @@ Welcome to SimGrid's documentation!
    :maxdepth: 1
    :caption: Tutorials:
 
-	Simulating Algorithms <tuto_s4u.rst>
-	Simulating MPI Applications <tuto_smpi.rst>
+	Simulating Algorithms <Tutorial_Algorithms.rst>
+	Simulating MPI Applications <Tutorial_MPI_Applications.rst>
 
 .. toctree::
    :maxdepth: 2
@@ -22,8 +22,8 @@ Welcome to SimGrid's documentation!
 
       Introduction <introduction.rst>
          Main Concepts <intro_concepts.rst>
-         Installing SimGrid <intro_install.rst>
-         Start your Own Project <intro_yours.rst>
+         Installing SimGrid <Installing_SimGrid.rst>
+         Start your Own Project <Start_Your_Own_Project.rst>
       Describing your Application <application.rst>
          The S4U Interface <app_s4u.rst>
          The SMPI Interface <app_smpi.rst>
@@ -34,7 +34,7 @@ Welcome to SimGrid's documentation!
          Modeling Hints <platform_howtos.rst>
          DTD Reference <platform_reference.rst>
       Describing the Experimental Scenario <scenario.rst>
-         Configuring SimGrid <scenar_config.rst>
+         Configuring SimGrid <Configuring_SimGrid.rst>
       The SimGrid Models <models.rst>
       Simulation Outcomes <outcomes.rst>
       Use Cases and Howto <howto.rst>
