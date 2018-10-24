@@ -919,17 +919,17 @@ set(DOC_SOURCES
   docs/source/index.rst
   docs/source/intro_concepts.rst
   docs/source/introduction.rst
-  docs/source/intro_install.rst
-  docs/source/intro_yours.rst
+  docs/source/Installing_SimGrid.rst
+  docs/source/Start_Your_Own_Project.rst
   docs/source/models.rst
   docs/source/platform.rst
   docs/source/platform_examples.rst
   docs/source/platform_howtos.rst
   docs/source/platform_reference.rst
-  docs/source/scenar_config.rst
+  docs/source/Configuring_SimGrid.rst
   docs/source/scenario.rst
 
-  docs/source/tuto_s4u.rst
+  docs/source/Tutorial_Algorithms.rst
   docs/source/tuto_s4u/deployment1.xml
   docs/source/tuto_s4u/deployment2.xml
   docs/source/tuto_s4u/deployment3.xml
@@ -945,12 +945,12 @@ set(DOC_SOURCES
   docs/source/tuto_s4u/master-workers-lab3.cpp
   docs/source/tuto_s4u/master-workers-lab4.cpp
 
+  docs/source/Tutorial_MPI_Applications.rst
   docs/source/tuto_smpi/3hosts.png
   docs/source/tuto_smpi/3hosts.xml
   docs/source/tuto_smpi/img/big-picture.svg
   docs/source/tuto_smpi/img/lu.S.4.png
   docs/source/tuto_smpi/roundtrip.c
-  docs/source/tuto_smpi.rst
 
   CITATION.bib
   )
