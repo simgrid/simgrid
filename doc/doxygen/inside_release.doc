@@ -105,6 +105,10 @@ the settings icon of the release you want to change.
 - Update the link scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/latest
   - Create the directory of the released version and upload the doc artefact in it
   - Remove the older releases so that people don't find them in google
+- Document the tag on https://github.com/simgrid/simgrid/releases and
+  on https://framagit.org/simgrid/simgrid/tags
+  - Upload the files SimGrid-3.XX.tar.gz, simgrid-3_XX.jar and
+    SimGrid-doc-3_XX.zip files to the changelog.
 - Rebuild and resynchronize the website so that the file gets visible
   from our download page.@n
   - Edit org/org-templates/level-0.org to change the release version, the tgz link and the jar link.
@@ -112,10 +116,12 @@ the settings icon of the release you want to change.
   - emacs org/site/download.org and C-c C-c the first source block to refresh the download.
   - emacs org/site/documentation.org and edit the version links.
   - make -C org all sync
+  - jed .gitlab-ci.yml
+    - Change the link to the SimGrid-doc-3_XX.zip file
+    - Change the version number
+    - Change the link to latest
   - git commit -a && git push
 - Announce the release
- - Document the tag on https://github.com/simgrid/simgrid/releases and
-   on https://framagit.org/simgrid/simgrid/tags
  - Mail the simgrid-user mailing list
     - the NEWS chunk in the mail;
     - Hall of Fame in the mail@n
