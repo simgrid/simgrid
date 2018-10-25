@@ -106,7 +106,7 @@ static int job_executor_process(Job* job)
   simgrid::s4u::BarrierPtr barrier = simgrid::s4u::Barrier::create(job->app_size + 1);
 
   for (int i = 0; i < job->app_size; ++i) {
-    char* str_pname = bprintf("%d_%d", job->unique_job_number, i);
+    char* str_pname = bprintf("rank_%d_%d", job->unique_job_number, i);
     simgrid::s4u::Actor::create(str_pname, hosts[job->allocation[i]], smpi_replay_process, job, barrier, i);
     xbt_free(str_pname);
   }
@@ -139,9 +139,10 @@ static int workload_executor_process(std::vector<Job*>* workload)
     }
 
     // Let's finally run the job executor
-    std::string job_process_name = "job_" + job->smpi_app_name;
+    char* str_pname = bprintf("job_%04d", job->unique_job_number);
     XBT_INFO("Launching the job executor of job %d (app '%s')", job->unique_job_number, job->smpi_app_name.c_str());
-    simgrid::s4u::Actor::create(job_process_name.c_str(), hosts[job->allocation[0]], job_executor_process, job);
+    simgrid::s4u::Actor::create(str_pname, hosts[job->allocation[0]], job_executor_process, job);
+    free(str_pname);
   }
 
   return 0;
@@ -255,7 +256,7 @@ int main(int argc, char* argv[])
   }
 
   // Let's execute the workload
-  simgrid::s4u::Actor::create("workload_executor", hosts[0], workload_executor_process, &jobs);
+  simgrid::s4u::Actor::create("workload", hosts[0], workload_executor_process, &jobs);
 
   e.run();
   XBT_INFO("Simulation finished! Final time: %g", e.get_clock());
