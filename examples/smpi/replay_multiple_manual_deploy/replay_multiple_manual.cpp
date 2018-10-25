@@ -143,7 +143,7 @@ static int workload_executor_process(std::vector<Job*>* workload)
     char* str_pname = bprintf("job_%04d", job->unique_job_number);
     XBT_INFO("Launching the job executor of job %d (app '%s')", job->unique_job_number, job->smpi_app_name.c_str());
     simgrid::s4u::Actor::create(str_pname, hosts[job->allocation[0]], job_executor_process, job);
-    free(str_pname);
+    xbt_free(str_pname);
   }
 
   return 0;
