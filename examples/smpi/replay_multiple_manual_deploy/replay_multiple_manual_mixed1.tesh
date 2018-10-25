@@ -16,8 +16,8 @@ $ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml  ${srcdir
 > [ 737.001374] (rank_0_0@Bourassa) Simulation time 737.001374
 > [ 737.001374] (rank_0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'alone')
 > [ 737.001374] (rank_0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'alone')
-> [ 737.001374] (job_0000@Bourassa) Finished job 0 (smpi_app 'alone')
-> [ 737.001374] (maestro@) Simulation finished! Final time: 737.001
+> [ 738.001374] (job_0000@Bourassa) Finished job 0 (smpi_app 'alone')
+> [ 738.001374] (maestro@) Simulation finished! Final time: 738.001
 
 p Workload with one mixed job (with noise)
 ! timeout 120
@@ -32,7 +32,7 @@ $ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml  ${srcdir
 > [ 737.001374] (rank_0_0@Bourassa) Simulation time 737.001374
 > [ 737.001374] (rank_0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'alone')
 > [ 737.001374] (rank_0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'alone')
-> [ 737.001374] (job_0000@Bourassa) Finished job 0 (smpi_app 'alone')
-> [ 737.001374] (maestro@) Simulation finished! Final time: 737.001
+> [ 738.001374] (job_0000@Bourassa) Finished job 0 (smpi_app 'alone')
+> [ 738.001374] (maestro@) Simulation finished! Final time: 738.001
 
 $ rm -f ${srcdir:=.}/workload_mixed1

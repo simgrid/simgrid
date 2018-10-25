@@ -113,6 +113,7 @@ static int job_executor_process(Job* job)
 
   barrier->wait();
 
+  simgrid::s4u::this_actor::sleep_for(1);
   XBT_INFO("Finished job %d (smpi_app '%s')", job->unique_job_number, job->smpi_app_name.c_str());
 
   return 0;
