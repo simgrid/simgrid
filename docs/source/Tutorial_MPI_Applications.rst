@@ -315,7 +315,7 @@ Benchmarks. Just  clone `this repository
 
 .. code-block:: shell
 
-   git clone git@framagit.org:simgrid/simgrid-template-smpi.git
+   git clone https://framagit.org/simgrid/simgrid-template-smpi.git
    cd simgrid-template-smpi/
 
 If you struggle with the compilation, then you should double check
