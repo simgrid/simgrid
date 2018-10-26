@@ -353,10 +353,12 @@ everything as follows:
 
 .. code-block:: shell
 
+   # (exporting SimGrid_PATH is only needed if SimGrid is installed in a non-standard path)
+   export SimGrid_PATH=/where/to/simgrid
+   
    git clone git@framagit.org:simgrid/simgrid-template-s4u.git
    cd simgrid-template-s4u/
-   SimGrid_PATH=/where/to/simgrid cmake . 
-   # (SimGrid_PATH is only needed if SimGrid is installed in a non-standard path)
+   cmake . 
    make
 
 If you struggle with the compilation, then you should double check
