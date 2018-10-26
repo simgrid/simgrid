@@ -355,7 +355,8 @@ everything as follows:
 
    git clone git@framagit.org:simgrid/simgrid-template-s4u.git
    cd simgrid-template-s4u/
-   cmake .
+   SimGrid_PATH=/where/to/simgrid cmake . 
+   # (SimGrid_PATH is only needed if SimGrid is installed in a non-standard path)
    make
 
 If you struggle with the compilation, then you should double check
