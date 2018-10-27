@@ -36,9 +36,9 @@ static bool startWith(std::string str, const char* prefix)
   return strncmp(str.c_str(), prefix, strlen(prefix)) == 0;
 }
 
-void xbt_backtrace_display(xbt_backtrace_location_t* loc, std::size_t count)
+void xbt_backtrace_display(const simgrid::xbt::Backtrace& bt)
 {
-  std::vector<std::string> backtrace = simgrid::xbt::resolve_backtrace(loc, count);
+  std::vector<std::string> backtrace = simgrid::xbt::resolve_backtrace(bt);
   if (backtrace.empty()) {
     fprintf(stderr, "(backtrace not set -- maybe unavailable on this architecture?)\n");
     return;
@@ -58,11 +58,18 @@ void xbt_backtrace_display(xbt_backtrace_location_t* loc, std::size_t count)
 /** @brief show the backtrace of the current point (lovely while debugging) */
 void xbt_backtrace_display_current()
 {
-  const std::size_t size = 10;
-  xbt_backtrace_location_t bt[size];
-  size_t used = xbt_backtrace_current(bt, size);
-  xbt_backtrace_display(bt, used);
+  simgrid::xbt::Backtrace bt = simgrid::xbt::backtrace();
+  xbt_backtrace_display(bt);
 }
+
+#if HAVE_BACKTRACE
+// For some reason, if I try to use it directly, GCC thinks I try to use xbt::backtrace.
+// I suspect that this symbol is not presented as a regular function in execinfo.h
+static int gnu_backtrace(simgrid::xbt::Backtrace& bt)
+{
+  return backtrace(bt.data(), bt.size());
+}
+#endif
 
 namespace simgrid {
 namespace xbt {
@@ -85,29 +92,23 @@ std::unique_ptr<char, void(*)(void*)> demangle(const char* name)
 
 Backtrace backtrace()
 {
-  const std::size_t size = 10;
-  xbt_backtrace_location_t loc[size];
-  size_t used = xbt_backtrace_current(loc, size);
-  return Backtrace(loc, loc + used);
-}
-
-}
-}
-
-size_t xbt_backtrace_current(xbt_backtrace_location_t* loc, std::size_t count)
-{
-  std::size_t used = 0;
+  simgrid::xbt::Backtrace res;
 #if HAVE_BACKTRACE
-  used = backtrace(loc, count);
+  res.resize(15);
+  int used = gnu_backtrace(res);
   if (used == 0) {
     std::fprintf(stderr, "The backtrace() function failed, which probably means that the memory is exhausted\n.");
     std::fprintf(stderr, "Bailing out now since there is nothing I can do without a decent amount of memory\n.");
     std::fprintf(stderr, "Please go fix the memleaks\n");
     std::exit(1);
   }
+  res.shrink_to_fit();
 #endif
-  return used;
+  return res;
 }
+
+} // namespace xbt
+} // namespace simgrid
 
 namespace simgrid {
 namespace xbt {
@@ -145,37 +146,33 @@ static std::string get_binary_path()
   return "";
 }
 
-std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, std::size_t count)
+std::vector<std::string> resolve_backtrace(const Backtrace& bt)
 {
   std::vector<std::string> result;
 
 #if HAVE_BACKTRACE && HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
   // FIXME: This code could be greatly improved/simplified with
   //   http://cairo.sourcearchive.com/documentation/1.9.4/backtrace-symbols_8c-source.html
-  if (count == 0)
+  if (bt.size() == 0)
     return result;
 
   if (xbt_binary_name == nullptr)
     XBT_WARN("XBT not initialized, the backtrace will not be resolved.");
 
-  // Drop the first one:
-  loc++;
-  count--;
-
-  char** backtrace_syms   = backtrace_symbols(loc, count);
+  char** backtrace_syms   = backtrace_symbols(bt.data(), bt.size());
   std::string binary_name = get_binary_path();
 
   if (binary_name.empty()) {
-    for (std::size_t i = 0; i < count; i++)
-      result.push_back(simgrid::xbt::string_printf("%p", loc[i]));
+    for (std::size_t i = 1; i < bt.size(); i++) // the first one is not interesting
+      result.push_back(simgrid::xbt::string_printf("%p", bt[i]));
     return result;
   }
 
   // Create the system command for add2line:
   std::ostringstream stream;
   stream << ADDR2LINE << " -f -e " << binary_name << ' ';
-  std::vector<std::string> addrs(count);
-  for (std::size_t i = 0; i < count; i++) {
+  std::vector<std::string> addrs(bt.size());
+  for (std::size_t i = 1; i < bt.size(); i++) { // the first one is not interesting
     /* retrieve this address */
     XBT_DEBUG("Retrieving address number %zu from '%s'", i, backtrace_syms[i]);
     char buff[256];
@@ -202,7 +199,7 @@ std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, 
   /* To read the output of addr2line */
   char line_func[1024];
   char line_pos[1024];
-  for (std::size_t i = 0; i < count; i++) {
+  for (std::size_t i = 1; i < bt.size(); i++) { // The first one is not interesting
     XBT_DEBUG("Looking for symbol %zu, addr = '%s'", i, addrs[i].c_str());
     if (fgets(line_func, 1024, pipe)) {
       line_func[strlen(line_func) - 1] = '\0';
@@ -220,7 +217,7 @@ std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, 
     if (strcmp("??", line_func) != 0) {
       auto name = simgrid::xbt::demangle(line_func);
       XBT_DEBUG("Found static symbol %s at %s", name.get(), line_pos);
-      result.push_back(simgrid::xbt::string_printf("%s at %s, %p", name.get(), line_pos, loc[i]));
+      result.push_back(simgrid::xbt::string_printf("%s at %s, %p", name.get(), line_pos, bt[i]));
     } else {
       /* Damn. The symbol is in a dynamic library. Let's get wild */
 
@@ -316,7 +313,7 @@ std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, 
       if (strcmp("??", line_func)) {
         auto name = simgrid::xbt::demangle(line_func);
         XBT_DEBUG("Found dynamic symbol %s at %s", name.get(), line_pos);
-        result.push_back(simgrid::xbt::string_printf("%s at %s, %p", name.get(), line_pos, loc[i]));
+        result.push_back(simgrid::xbt::string_printf("%s at %s, %p", name.get(), line_pos, bt[i]));
       } else {
         /* damn, nothing to do here. Let's print the raw address */
         XBT_DEBUG("Dynamic symbol not found. Raw address = %s", backtrace_syms[i]);

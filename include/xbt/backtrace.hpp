@@ -18,8 +18,6 @@ SG_BEGIN_DECL()
 XBT_PUBLIC void xbt_backtrace_display_current();
 SG_END_DECL()
 
-typedef void* xbt_backtrace_location_t;
-
 namespace simgrid {
 namespace xbt {
 
@@ -30,7 +28,7 @@ namespace xbt {
  *
  *  @ingroup XBT_ex
  */
-typedef std::vector<xbt_backtrace_location_t> Backtrace;
+typedef std::vector<void*> Backtrace;
 
 /** Try to demangle a C++ name
  *
@@ -38,21 +36,18 @@ typedef std::vector<xbt_backtrace_location_t> Backtrace;
  */
 XBT_PUBLIC std::unique_ptr<char, void (*)(void*)> demangle(const char* name);
 
-/** Get the current backtrace */
+/** @brief Captures a backtrace for further use  */
 XBT_PUBLIC Backtrace backtrace();
 
 /* Translate the backtrace in a human friendly form
  *
  *  Try resolve symbols and source code location.
  */
-XBT_PUBLIC std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, std::size_t count);
+XBT_PUBLIC std::vector<std::string> resolve_backtrace(const Backtrace& bt);
 }
 }
-
-/** @brief Captures a backtrace for further use */
-XBT_PUBLIC size_t xbt_backtrace_current(xbt_backtrace_location_t* loc, size_t count);
 
 /** @brief Display a previously captured backtrace */
-XBT_PUBLIC void xbt_backtrace_display(xbt_backtrace_location_t* loc, size_t count);
+XBT_PUBLIC void xbt_backtrace_display(const simgrid::xbt::Backtrace& bt);
 
 #endif

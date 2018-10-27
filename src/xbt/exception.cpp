@@ -90,8 +90,7 @@ void log_exception(e_xbt_log_priority_t prio, const char* context, std::exceptio
 
     // Do we have a backtrace?
     if (with_context != nullptr && not simgrid::config::get_value<bool>("exception/cutpath")) {
-      auto backtrace = simgrid::xbt::resolve_backtrace(with_context->throw_point().backtrace_.data(),
-                                                       with_context->throw_point().backtrace_.size());
+      auto backtrace = simgrid::xbt::resolve_backtrace(with_context->throw_point().backtrace_);
       for (std::string const& s : backtrace)
         XBT_LOG(prio, "  -> %s", s.c_str());
     }
@@ -116,13 +115,13 @@ void log_exception(e_xbt_log_priority_t prio, const char* context, std::exceptio
   }
 }
 
-static void showBacktrace(std::vector<xbt_backtrace_location_t>& bt)
+static void show_backtrace(const simgrid::xbt::Backtrace& bt)
 {
   if (simgrid::config::get_value<bool>("exception/cutpath")) {
     XBT_LOG(xbt_log_priority_critical, "Display of current backtrace disabled by --cfg=exception/cutpath.");
     return;
   }
-  std::vector<std::string> res = resolve_backtrace(&bt[0], bt.size());
+  std::vector<std::string> res = resolve_backtrace(bt);
   XBT_LOG(xbt_log_priority_critical, "Current backtrace:");
   for (std::string const& s : res)
     XBT_LOG(xbt_log_priority_critical, "  -> %s", s.c_str());
@@ -142,7 +141,7 @@ static void handler()
 
   // Get the current backtrace and exception
   auto e = std::current_exception();
-  auto bt = backtrace();
+  simgrid::xbt::Backtrace bt = simgrid::xbt::backtrace();
   try {
     std::rethrow_exception(e);
   }
@@ -150,7 +149,7 @@ static void handler()
   // We manage C++ exception ourselves
   catch (std::exception& e) {
     log_exception(xbt_log_priority_critical, "Uncaught exception", e);
-    showBacktrace(bt);
+    show_backtrace(bt);
     std::abort();
   }
 
@@ -161,7 +160,7 @@ static void handler()
       previous_terminate_handler();
     else {
       XBT_ERROR("Unknown uncaught exception");
-      showBacktrace(bt);
+      show_backtrace(bt);
       std::abort();
     }
   }
