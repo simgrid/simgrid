@@ -128,10 +128,11 @@ static std::string get_binary_path()
   char* path = getenv("PATH");
   if (path == nullptr)
     return "";
+
   XBT_DEBUG("Looking in the PATH: %s\n", path);
   std::vector<std::string> path_list;
-  // TODO, on Windows, this is ";"
-  boost::split(path_list, path, boost::is_any_of(":"));
+  boost::split(path_list, path, boost::is_any_of(":;"));
+
   for (std::string const& path_item : path_list) {
     std::string binary_name = simgrid::xbt::string_printf("%s/%s", path_item.c_str(), xbt_binary_name);
     bool found              = (stat(binary_name.c_str(), &stat_buf) == 0);
@@ -341,7 +342,7 @@ std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, 
       break;
   }
   pclose(pipe);
-  free(backtrace_syms);
+  xbt_free(backtrace_syms);
 #endif /* ADDR2LINE usable to resolve the backtrace */
   return result;
 }
