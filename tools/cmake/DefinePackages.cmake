@@ -63,8 +63,6 @@ set(EXTRA_DIST
   src/xbt/automaton/parserPromela.tab.cacc
   src/xbt/automaton/parserPromela.tab.hacc
   src/xbt/automaton/parserPromela.yacc
-  src/xbt/backtrace_dummy.cpp
-  src/xbt/backtrace_linux.cpp
   src/xbt/dict_private.h
   src/xbt/log_private.h
   src/xbt/mallocator_private.h
