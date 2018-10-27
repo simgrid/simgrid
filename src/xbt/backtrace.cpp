@@ -38,10 +38,9 @@ static bool startWith(std::string str, const char* prefix)
 
 void xbt_backtrace_display(xbt_backtrace_location_t* loc, std::size_t count)
 {
-#ifdef HAVE_BACKTRACE
   std::vector<std::string> backtrace = simgrid::xbt::resolve_backtrace(loc, count);
   if (backtrace.empty()) {
-    fprintf(stderr, "(backtrace not set)\n");
+    fprintf(stderr, "(backtrace not set -- maybe unavailable on this architecture?)\n");
     return;
   }
   fprintf(stderr, "Backtrace (displayed in process %s):\n", SIMIX_process_self_get_name());
@@ -54,9 +53,6 @@ void xbt_backtrace_display(xbt_backtrace_location_t* loc, std::size_t count)
         startWith(s, "simgrid::xbt::MainFunction") /* main used with thread factory */)
       break;
   }
-#else
-  XBT_ERROR("Cannot display backtrace when compiled without libunwind.");
-#endif
 }
 
 /** @brief show the backtrace of the current point (lovely while debugging) */
@@ -357,6 +353,11 @@ size_t xbt_backtrace_current(xbt_backtrace_location_t* loc, size_t count)
 
 namespace simgrid {
 namespace xbt {
+std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, std::size_t count)
+{
+  std::vector<std::string> result;
+  return result;
+}
 
 std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, std::size_t count)
 {
