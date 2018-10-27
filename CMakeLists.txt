@@ -32,33 +32,12 @@ if (CMAKE_COMPILER_IS_GNUCC)
   endif()
 endif()
 
-## We need a decent support of the c++11 standard
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=gnu++11" COMPILER_SUPPORTS_CXX11)
-if(COMPILER_SUPPORTS_CXX11)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
-else() 
-  message(FATAL_ERROR 
-          "The compiler ${CMAKE_CXX_COMPILER} (v${CMAKE_CXX_COMPILER_VERSION}) has no C++11 support. "
-          "Please install a decent C++ compiler (remove CMakeCache.txt once it's installed).")
-endif()
+## We need a decent support of the C++11 and C11 standards
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-### And we need C11 standard, too
-include(CheckCCompilerFlag)
-CHECK_C_COMPILER_FLAG("-std=gnu11" COMPILER_SUPPORTS_C11)
-if(COMPILER_SUPPORTS_C11)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11")
-else()
-  message(FATAL_ERROR 
-          "The compiler ${CMAKE_C_COMPILER} (v${CMAKE_C_COMPILER_VERSION}) has no C11 support. "
-          "Please use a decent C compiler "
-          "(note that c++11 support of ${CMAKE_CXX_COMPILER} seems ok).")
-endif()
-if(APPLE AND (CMAKE_C_COMPILER_VERSION VERSION_LESS "4.6"))
-  ### gcc 4.[1-5] cannot compile ucontext on OSX
-  message(STATUS "Ucontext can't be used with this version of gcc (must be greater than 4.5)")
-  set(HAVE_UCONTEXT_H 0)
-endif()
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 
 ### Check threading support
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
