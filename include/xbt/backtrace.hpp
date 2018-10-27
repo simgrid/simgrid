@@ -20,18 +20,6 @@ SG_END_DECL()
 
 typedef void* xbt_backtrace_location_t;
 
-/** @brief reimplementation of glibc backtrace based directly on gcc library, without implicit malloc  */
-XBT_PUBLIC int xbt_backtrace_no_malloc(void** bt, int size);
-
-/** @brief Captures a backtrace for further use */
-XBT_PUBLIC size_t xbt_backtrace_current(xbt_backtrace_location_t* loc, size_t count);
-
-/** @brief Display a previously captured backtrace */
-XBT_PUBLIC void xbt_backtrace_display(xbt_backtrace_location_t* loc, size_t count);
-
-/** @brief Get current backtrace with libunwind */
-XBT_PUBLIC int xbt_libunwind_backtrace(void** bt, int size);
-
 namespace simgrid {
 namespace xbt {
 
@@ -60,5 +48,11 @@ XBT_PUBLIC Backtrace backtrace();
 XBT_PUBLIC std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, std::size_t count);
 }
 }
+
+/** @brief Captures a backtrace for further use */
+XBT_PUBLIC size_t xbt_backtrace_current(xbt_backtrace_location_t* loc, size_t count);
+
+/** @brief Display a previously captured backtrace */
+XBT_PUBLIC void xbt_backtrace_display(xbt_backtrace_location_t* loc, size_t count);
 
 #endif

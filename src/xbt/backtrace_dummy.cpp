@@ -16,10 +16,6 @@ size_t xbt_backtrace_current(xbt_backtrace_location_t* loc, size_t count)
   return 0;
 }
 
-int xbt_backtrace_no_malloc(void **array, int size) {
-  return 0;
-}
-
 namespace simgrid {
 namespace xbt {
 
