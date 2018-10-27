@@ -782,6 +782,7 @@ void smpi_replay_main(int* argc, char*** argv)
   if(active_processes==0){
     /* Last process alive speaking: end the simulated timer */
     XBT_INFO("Simulation time %f", smpi_process()->simulated_elapsed());
+    smpi_free_replay_tmp_buffers();
   }
 
   TRACE_smpi_comm_in(simgrid::s4u::this_actor::get_pid(), "smpi_replay_run_finalize",
