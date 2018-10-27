@@ -17,7 +17,6 @@
 + \.clang-format
 + \.classpath
 + \.codacy\.yml
-+ \.cproject
 + \.editorconfig
 + \.gitlab-ci\.yml
 + \.project
@@ -34,5 +33,3 @@
 + tools/jenkins/.*
 
 + src/simix/simix_network\.tla
-+ src/smpi/BUGS
-
