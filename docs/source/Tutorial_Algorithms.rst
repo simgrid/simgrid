@@ -356,7 +356,7 @@ everything as follows:
    # (exporting SimGrid_PATH is only needed if SimGrid is installed in a non-standard path)
    export SimGrid_PATH=/where/to/simgrid
    
-   git clone git@framagit.org:simgrid/simgrid-template-s4u.git
+   git clone https://framagit.org/simgrid/simgrid.git
    cd simgrid-template-s4u/
    cmake . 
    make

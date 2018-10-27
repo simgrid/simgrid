@@ -118,7 +118,7 @@ dependencies.
 
 .. code-block:: shell
 
-   git clone git@framagit.org:simgrid/simgrid.git
+   git clone https://framagit.org/simgrid/simgrid.git
    cd simgrid
    cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid .
    make
