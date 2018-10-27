@@ -136,11 +136,6 @@ static std::string get_binary_path()
   return "";
 }
 
-std::vector<std::string> resolveBacktrace(xbt_backtrace_location_t const* loc, std::size_t count) // deprecated
-{
-  return resolve_backtrace(loc, count);
-}
-
 //FIXME: This code could be greatly improved/simplifyied with
 //   http://cairo.sourcearchive.com/documentation/1.9.4/backtrace-symbols_8c-source.html
 std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, std::size_t count)

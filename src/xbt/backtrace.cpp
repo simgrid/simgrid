@@ -80,12 +80,12 @@ std::unique_ptr<char, void(*)(void*)> demangle(const char* name)
   return std::unique_ptr<char, void(*)(void*)>(xbt_strdup(name), std::free);
 }
 
-std::vector<xbt_backtrace_location_t> backtrace()
+Backtrace backtrace()
 {
   const std::size_t size = 10;
   xbt_backtrace_location_t loc[size];
   size_t used = xbt_backtrace_current(loc, size);
-  return std::vector<xbt_backtrace_location_t>(loc, loc + used);
+  return Backtrace(loc, loc + used);
 }
 
 }

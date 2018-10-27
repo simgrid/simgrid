@@ -15,6 +15,8 @@
 SG_BEGIN_DECL()
 XBT_PUBLIC_DATA int xbt_log_no_loc; /* Do not show the backtrace on failed backtrace when doing our tests */
 
+XBT_PUBLIC void xbt_backtrace_display_current();
+
 /**
  * @addtogroup XBT_error
  * @brief Those are the SimGrid version of the good ol' assert macro.

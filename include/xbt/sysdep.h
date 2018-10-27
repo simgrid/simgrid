@@ -70,8 +70,6 @@ static XBT_ALWAYS_INLINE char *xbt_strdup(const char *s) {
   return res;
 }
 
-XBT_PUBLIC void xbt_backtrace_display_current();
-
 /** @brief Like malloc, but xbt_die() on error
     @hideinitializer */
 static XBT_ALWAYS_INLINE void *xbt_malloc(size_t n) {

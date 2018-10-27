@@ -33,14 +33,13 @@ typedef std::vector<xbt_backtrace_location_t> Backtrace;
 XBT_PUBLIC std::unique_ptr<char, void (*)(void*)> demangle(const char* name);
 
 /** Get the current backtrace */
-XBT_PUBLIC std::vector<xbt_backtrace_location_t> backtrace();
+XBT_PUBLIC Backtrace backtrace();
 
 /* Translate the backtrace in a human friendly form
  *
  *  Try resolve symbols and source code location.
  */
 XBT_PUBLIC std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, std::size_t count);
-XBT_ATTRIB_DEPRECATED_v323("Please use xbt::resolve_backtrace()") XBT_PUBLIC std::vector<std::string> resolveBacktrace(xbt_backtrace_location_t const* loc, std::size_t count);
 }
 }
 
