@@ -80,14 +80,13 @@ public:
 
     migrate_to_host = lb.get_mapping(simgrid::s4u::Actor::self());
     if (cur_host != migrate_to_host) { // Origin and dest are not the same -> migrate
-      sg_host_t migration_hosts[2] = {cur_host, migrate_to_host};
-      // Changing this to double[2] ... will cause trouble with parallel_execute, because that fct is trying to call free().
-      double* comp_amount  = new double[2]{0, 0};
-      double* comm_amount  = new double[4]{0, /*must not be 0*/std::max(args.memory_consumption, 1.0), 0, 0};
+      std::vector<simgrid::s4u::Host*> migration_hosts = {cur_host, migrate_to_host};
+      std::vector<double> comp_amount                  = {0, 0};
+      std::vector<double> comm_amount = {0, /*must not be 0*/ std::max(args.memory_consumption, 1.0), 0, 0};
 
       xbt_os_timer_t timer = smpi_process()->timer();
       xbt_os_threadtimer_start(timer);
-      simgrid::s4u::this_actor::parallel_execute(2, migration_hosts, comp_amount, comm_amount, -1.0);
+      simgrid::s4u::this_actor::parallel_execute(migration_hosts, comp_amount, comm_amount, -1.0);
       xbt_os_threadtimer_stop(timer);
       smpi_execute(xbt_os_timer_elapsed(timer));
 

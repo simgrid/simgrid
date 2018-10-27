@@ -318,6 +318,7 @@ void parallel_execute(std::vector<s4u::Host*> hosts, std::vector<double> flops_a
   simcall_execution_wait(s);
 }
 
+// deprecated
 void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount, double timeout)
 {
   smx_activity_t s =
@@ -327,9 +328,14 @@ void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, 
   delete[] bytes_amount;
 }
 
+// deprecated
 void parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount)
 {
-  parallel_execute(host_nb, host_list, flops_amount, bytes_amount, /* timeout */ -1);
+  smx_activity_t s = simcall_execution_parallel_start("", host_nb, host_list, flops_amount, bytes_amount,
+                                                      /* rate */ -1, /*timeout*/ -1);
+  simcall_execution_wait(s);
+  delete[] flops_amount;
+  delete[] bytes_amount;
 }
 
 ExecPtr exec_init(double flops_amount)

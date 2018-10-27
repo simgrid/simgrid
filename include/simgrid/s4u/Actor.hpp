@@ -475,9 +475,11 @@ XBT_PUBLIC void parallel_execute(std::vector<s4u::Host*> hosts, std::vector<doub
                                  std::vector<double> bytes_amounts, double timeout);
 
 #ifndef DOXYGEN
-XBT_PUBLIC void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount);
-XBT_PUBLIC void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount,
-                                 double timeout);
+XBT_ATTRIB_DEPRECATED_v325("Please use std::vectors as parameters") XBT_PUBLIC
+    void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount);
+XBT_ATTRIB_DEPRECATED_v325("Please use std::vectors as parameters") XBT_PUBLIC
+    void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount,
+                          double timeout);
 #endif
 
 XBT_PUBLIC ExecPtr exec_init(double flops_amounts);

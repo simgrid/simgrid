@@ -105,11 +105,11 @@ sg_size_t File::read(sg_size_t size)
   if (strcmp(host->get_cname(), Host::current()->get_cname())) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), read_size);
-    Host* m_host_list[]  = {Host::current(), host};
-    double* flops_amount = new double[2]{0, 0};
-    double* bytes_amount = new double[4]{0, 0, static_cast<double>(read_size), 0};
+    std::vector<Host*> m_host_list   = {Host::current(), host};
+    std::vector<double> flops_amount = {0., 0.};
+    std::vector<double> bytes_amount = {0., 0., static_cast<double>(read_size), 0.};
 
-    this_actor::parallel_execute(2, m_host_list, flops_amount, bytes_amount);
+    this_actor::parallel_execute(m_host_list, flops_amount, bytes_amount);
   }
 
   return read_size;
@@ -131,11 +131,11 @@ sg_size_t File::write(sg_size_t size)
   if (strcmp(host->get_cname(), Host::current()->get_cname())) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), size);
-    Host* m_host_list[]  = {Host::current(), host};
-    double* flops_amount = new double[2]{0, 0};
-    double* bytes_amount = new double[4]{0, static_cast<double>(size), 0, 0};
+    std::vector<Host*> m_host_list   = {Host::current(), host};
+    std::vector<double> flops_amount = {0, 0};
+    std::vector<double> bytes_amount = {0, static_cast<double>(size), 0, 0};
 
-    this_actor::parallel_execute(2, m_host_list, flops_amount, bytes_amount);
+    this_actor::parallel_execute(m_host_list, flops_amount, bytes_amount);
   }
 
   XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu'", get_path(), local_storage_->get_cname(), size, size_);
@@ -264,11 +264,11 @@ int File::remote_copy(sg_host_t host, const char* fullpath)
 
   XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->get_cname(),
             storage_dest->get_host()->get_cname());
-  Host* m_host_list[]     = {src_host, dst_host};
-  double* flops_amount    = new double[2]{0, 0};
-  double* bytes_amount    = new double[4]{0, static_cast<double>(read_size), 0, 0};
+  std::vector<Host*> m_host_list   = {src_host, dst_host};
+  std::vector<double> flops_amount = {0, 0};
+  std::vector<double> bytes_amount = {0, static_cast<double>(read_size), 0, 0};
 
-  this_actor::parallel_execute(2, m_host_list, flops_amount, bytes_amount);
+  this_actor::parallel_execute(m_host_list, flops_amount, bytes_amount);
 
   /* Create file on remote host, write it and close it */
   File* fd = new File(fullpath, dst_host, nullptr);
