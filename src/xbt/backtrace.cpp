@@ -19,7 +19,7 @@
 #ifdef __GXX_ABI_VERSION
 #include <cxxabi.h>
 #endif
-#ifdef HAVE_EXECINFO_H
+#if HAVE_EXECINFO_H
 #include <execinfo.h>
 #endif
 
@@ -353,11 +353,6 @@ size_t xbt_backtrace_current(xbt_backtrace_location_t* loc, size_t count)
 
 namespace simgrid {
 namespace xbt {
-std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, std::size_t count)
-{
-  std::vector<std::string> result;
-  return result;
-}
 
 std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, std::size_t count)
 {
