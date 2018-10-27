@@ -94,16 +94,18 @@ Backtrace backtrace()
 }
 }
 
-#if HAVE_BACKTRACE && HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
 size_t xbt_backtrace_current(xbt_backtrace_location_t* loc, std::size_t count)
 {
-  std::size_t used = backtrace(loc, count);
+  std::size_t used = 0;
+#if HAVE_BACKTRACE
+  used = backtrace(loc, count);
   if (used == 0) {
     std::fprintf(stderr, "The backtrace() function failed, which probably means that the memory is exhausted\n.");
     std::fprintf(stderr, "Bailing out now since there is nothing I can do without a decent amount of memory\n.");
     std::fprintf(stderr, "Please go fix the memleaks\n");
     std::exit(1);
   }
+#endif
   return used;
 }
 
@@ -142,12 +144,13 @@ static std::string get_binary_path()
   return "";
 }
 
-// FIXME: This code could be greatly improved/simplifyied with
-//   http://cairo.sourcearchive.com/documentation/1.9.4/backtrace-symbols_8c-source.html
 std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, std::size_t count)
 {
   std::vector<std::string> result;
 
+#if HAVE_BACKTRACE && HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
+  // FIXME: This code could be greatly improved/simplified with
+  //   http://cairo.sourcearchive.com/documentation/1.9.4/backtrace-symbols_8c-source.html
   if (count == 0)
     return result;
 
@@ -339,26 +342,9 @@ std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, 
   }
   pclose(pipe);
   free(backtrace_syms);
+#endif /* ADDR2LINE usable to resolve the backtrace */
   return result;
 }
 
 } // namespace xbt
 } // namespace simgrid
-#else /* We must use dummy backtraces because of missing dependencies */
-/* create a backtrace in the given exception */
-size_t xbt_backtrace_current(xbt_backtrace_location_t* loc, size_t count)
-{
-  return 0;
-}
-
-namespace simgrid {
-namespace xbt {
-
-std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, std::size_t count)
-{
-  return std::vector<std::string>();
-}
-
-} // namespace xbt
-} // namespace simgrid
-#endif
