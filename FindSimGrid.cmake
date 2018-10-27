@@ -19,10 +19,10 @@
 # DEVELOPERS OF PROGRAMS USING SIMGRID
 # ------------------------------------
 #
-#  1. Include this file in your own CMakeLists.txt
+#  1. Include this file in your own CMakeLists.txt (before defining any target)
 #     Either by copying it in your tree, or (recommended) by using the
 #     version automatically installed by SimGrid.
-#    
+#
 #  2. Afterward, if you have CMake >= 2.8.12, this will define a
 #     target called 'SimGrid::Simgrid'. Use it as:
 #       target_link_libraries(your-simulator SimGrid::SimGrid)
@@ -44,6 +44,9 @@
 #    #else
 #      (code to use with SimGrid v3.19+)
 #    #endif
+#
+#  Since SimGrid header files require C++11, so we set CMAKE_CXX_STANDARD to 11.
+#    Change this variable in your own file if you need a later standard.
 
 # 
 # IMPROVING THIS FILE
@@ -54,6 +57,9 @@
 #    https://github.com/boostcon/cppnow_presentations_2017/blob/master/05-19-2017_friday/effective_cmake__daniel_pfeifer__cppnow_05-19-2017.pdf
 
 cmake_minimum_required(VERSION 2.8)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_path(SimGrid_INCLUDE_DIR
   NAMES simgrid/config.h
