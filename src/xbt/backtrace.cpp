@@ -15,7 +15,6 @@
 #endif
 
 #include "simgrid/simix.h" /* SIMIX_process_self_get_name() */
-#include <xbt/backtrace.h>
 #include <xbt/backtrace.hpp>
 #include <xbt/log.h>
 #include <xbt/sysdep.h>

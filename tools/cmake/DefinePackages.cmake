@@ -743,7 +743,6 @@ set(headers_to_install
   include/xbt/asserts.h
   include/xbt/automaton.h
   include/xbt/automaton.hpp
-  include/xbt/backtrace.h
   include/xbt/backtrace.hpp
   include/xbt/base.h
   include/xbt/config.h
