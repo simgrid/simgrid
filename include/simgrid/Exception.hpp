@@ -34,7 +34,7 @@ class ThrowPoint {
 public:
   ThrowPoint() = default;
   explicit ThrowPoint(const char* file, int line, const char* function, Backtrace bt, std::string actor_name, int pid)
-      : file_(file), line_(line), function_(function), backtrace_(bt), procname_(actor_name), pid_(pid)
+      : file_(file), line_(line), function_(function), backtrace_(std::move(bt)), procname_(actor_name), pid_(pid)
   {
   }
 
@@ -48,7 +48,8 @@ public:
 
 /** Create a ThrowPoint with (__FILE__, __LINE__, __func__) */
 #define XBT_THROW_POINT                                                                                                \
-  ::simgrid::xbt::ThrowPoint(__FILE__, __LINE__, __func__, simgrid::xbt::backtrace(), xbt_procname(), xbt_getpid())
+  ::simgrid::xbt::ThrowPoint(__FILE__, __LINE__, __func__, std::move(simgrid::xbt::Backtrace()), xbt_procname(),       \
+                             xbt_getpid())
 } // namespace xbt
 
 /** Ancestor class of all SimGrid exception */

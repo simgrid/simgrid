@@ -21,6 +21,13 @@ SG_END_DECL()
 namespace simgrid {
 namespace xbt {
 
+/** Try to demangle a C++ name
+ *
+ *  Return the origin string if this fails.
+ */
+XBT_PUBLIC std::unique_ptr<char, void (*)(void*)> demangle(const char* name);
+
+class BacktraceImpl;
 /** A backtrace
  *
  *  This is used (among other things) in exceptions to store the associated
@@ -28,16 +35,13 @@ namespace xbt {
  *
  *  @ingroup XBT_ex
  */
-typedef std::vector<void*> Backtrace;
-
-/** Try to demangle a C++ name
- *
- *  Return the origin string if this fails.
- */
-XBT_PUBLIC std::unique_ptr<char, void (*)(void*)> demangle(const char* name);
-
-/** @brief Captures a backtrace for further use  */
-XBT_PUBLIC Backtrace backtrace();
+class Backtrace {
+public:
+  BacktraceImpl* impl_;
+  Backtrace();
+  Backtrace(const Backtrace& bt);
+  ~Backtrace();
+};
 
 /* Translate the backtrace in a human friendly form
  *
