@@ -1095,16 +1095,11 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/UnitTesting.cmake
   tools/cmake/src/internal_config.h.in
   tools/cmake/test_prog/prog_asan.cpp
-  tools/cmake/test_prog/prog_gnu_dynlinker.c
   tools/cmake/test_prog/prog_makecontext.c
-  tools/cmake/test_prog/prog_mutex_timedlock.c
   tools/cmake/test_prog/prog_sem_init.c
   tools/cmake/test_prog/prog_sem_open.c
-  tools/cmake/test_prog/prog_sem_timedwait.c
-  tools/cmake/test_prog/prog_snprintf.c
   tools/cmake/test_prog/prog_stackgrowth.c
   tools/cmake/test_prog/prog_stacksetup.c
-  tools/cmake/test_prog/prog_vsnprintf.c
   tools/cmake/cross-mingw.cmake
   tools/smpi/generate_smpi_defines.pl
   tools/stack-cleaner/as
