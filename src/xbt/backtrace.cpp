@@ -5,6 +5,12 @@
 
 #include "src/internal_config.h"
 
+#include "simgrid/simix.h" /* SIMIX_process_self_get_name() */
+#include <xbt/backtrace.hpp>
+#include <xbt/log.h>
+#include <xbt/string.hpp>
+#include <xbt/sysdep.h>
+
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
@@ -23,11 +29,10 @@
 #include <execinfo.h>
 #endif
 
-#include "simgrid/simix.h" /* SIMIX_process_self_get_name() */
-#include <xbt/backtrace.hpp>
-#include <xbt/log.h>
-#include <xbt/string.hpp>
-#include <xbt/sysdep.h>
+#if HAVE_BOOST_STACKTRACE
+#define BOOST_STACKTRACE_USE_BACKTRACE
+#include <boost/stacktrace.hpp>
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_backtrace, xbt, "Backtrace");
 
@@ -91,14 +96,19 @@ public:
     refcount_--;
     return refcount_ == 0;
   }
-#if HAVE_BACKTRACE
+#if HAVE_BOOST_STACKTRACE
+  boost::stacktrace::stacktrace st;
+#elif HAVE_BACKTRACE
   std::vector<void*> frames;
 #endif
 };
 
 Backtrace::Backtrace()
 {
-#if HAVE_BACKTRACE
+#if HAVE_BOOST_STACKTRACE
+  impl_     = new BacktraceImpl();
+  impl_->st = boost::stacktrace::stacktrace();
+#elif HAVE_BACKTRACE
   impl_ = new BacktraceImpl();
   impl_->frames.resize(15);
   int used = backtrace(impl_->frames.data(), impl_->frames.size());
@@ -119,10 +129,8 @@ Backtrace::Backtrace(const Backtrace& bt)
 
 Backtrace::~Backtrace()
 {
-  if (impl_->unref()) {
-#if HAVE_BACKTRACE
+  if (impl_ != nullptr && impl_->unref()) {
     delete impl_;
-#endif
   }
 }
 } // namespace xbt
@@ -168,7 +176,11 @@ std::vector<std::string> resolve_backtrace(const Backtrace& bt)
 {
   std::vector<std::string> result;
 
-#if HAVE_BACKTRACE && HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
+#if HAVE_BOOST_STACKTRACE
+  std::stringstream ss;
+  ss << bt.impl_->st;
+  result.push_back(ss.str());
+#elif HAVE_BACKTRACE && HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
   // FIXME: This code could be greatly improved/simplified with
   //   http://cairo.sourcearchive.com/documentation/1.9.4/backtrace-symbols_8c-source.html
   if (bt.impl_->frames.size() == 0)
