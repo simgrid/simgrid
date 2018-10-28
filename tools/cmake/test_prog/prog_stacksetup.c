@@ -26,7 +26,8 @@ void handler(void)
 {
   char garbage[1024];
   auto int dummy;
-  for (int i = 0; i < 1024; i++)
+  int i;
+  for (i = 0; i < 1024; i++)
     garbage[i] = 'X';
   handler_addr = (char *) &dummy;
   swapcontext(&uc_handler, &uc_main);
@@ -39,7 +40,8 @@ int main(int argc, char *argv[])
   char *skbuf = (char *) malloc(sksize * 2 + 2 * sizeof(union alltypes));
   if (skbuf == NULL)
     exit(1);
-  for (int i = 0; i < sksize * 2 + 2 * sizeof(union alltypes); i++)
+  int i;
+  for (i = 0; i < sksize * 2 + 2 * sizeof(union alltypes); i++)
     skbuf[i] = 'A';
   char *skaddr = skbuf + sizeof(union alltypes);
 
