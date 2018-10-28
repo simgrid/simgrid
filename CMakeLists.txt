@@ -242,15 +242,7 @@ if(enable_smpi_papi)
   endif()
 endif()
 
-# Not finding this is perfectly OK
-find_package(Boost 1.59 COMPONENTS unit_test_framework)
-if (Boost_UNIT_TEST_FRAMEWORK_FOUND)
-  message(STATUS "Enabling the Boost-based unit tests.")
-else()
-  message(STATUS "Disabling the Boost-based unit tests -- please install libboost-test-dev (>= v1.59).")
-endif()
-
-
+# But we do need the core of Boost
 find_package(Boost 1.48)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
@@ -262,16 +254,38 @@ else()
   endif()
 endif()
 
-find_package(Boost COMPONENTS context)
-set(Boost_FOUND 1) # This component is optional
+# cmake up to 3.12.3 (at least) does not know about stacktrace components. Inform it.
+# Usable components: https://www.boost.org/doc/libs/1_65_1/doc/html/stacktrace/configuration_and_build.html
+set(_Boost_STACKTRACE_HEADERS           "boost/stacktrace.hpp")
+set(_Boost_STACKTRACE_BACKTRACE_HEADERS "boost/stacktrace.hpp")
+
+find_package(Boost 1.59 COMPONENTS context stacktrace_backtrace unit_test_framework)
+set(Boost_FOUND 1) # These components are optionals
+message(STATUS "Mandatory components found. SimGrid is compilable.")
+message(STATUS "Looking for optional Boost components:")
+
+if (Boost_STACKTRACE_BACKTRACE_FOUND)
+  message (STATUS "  stacktrace: found. Activating human-readable stack traces.")
+  set(HAVE_BOOST_STACKTRACE 1)
+else()
+  message (STATUS "  stacktrace: MISSING. Install libboost-stacktrace-dev to display the stacktraces.")
+  set(HAVE_BOOST_STACKTRACE 0)
+endif()
+
 if(Boost_CONTEXT_FOUND)
-  message(STATUS "Found Boost.Context")
+  message (STATUS "  context: found. Activating Boost contexts.")
   set(HAVE_BOOST_CONTEXTS 1)
 else()
-  message ("   boost        : found.")
-  message ("   boost-context: missing. Install libboost-context-dev for this optional feature.")
+  message (STATUS "  context: MISSING. Install libboost-context-dev for this optional feature.")
   set(HAVE_BOOST_CONTEXTS 0)
 endif()
+
+if (Boost_UNIT_TEST_FRAMEWORK_FOUND)
+  message(STATUS  "  unit_test_framework: found. Activating the Boost-based unit tests.")
+else()
+  message(STATUS  "  unit_test_framework: MISSING. Install libboost-test-dev (>= v1.59) to activate the Unit Tests.")
+endif()
+
 
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
