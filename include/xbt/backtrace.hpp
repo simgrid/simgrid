@@ -37,7 +37,7 @@ class BacktraceImpl;
  */
 class Backtrace {
 public:
-  BacktraceImpl* impl_;
+  BacktraceImpl* impl_ = nullptr;
   Backtrace();
   Backtrace(const Backtrace& bt);
   ~Backtrace();

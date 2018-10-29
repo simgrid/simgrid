@@ -33,11 +33,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_backtrace, xbt, "Backtrace");
 
-static bool startWith(std::string str, const char* prefix)
-{
-  return strncmp(str.c_str(), prefix, strlen(prefix)) == 0;
-}
-
 void xbt_backtrace_display(const simgrid::xbt::Backtrace& bt)
 {
   std::string backtrace = simgrid::xbt::resolve_backtrace(bt);
@@ -100,7 +95,8 @@ Backtrace::Backtrace()
 Backtrace::Backtrace(const Backtrace& bt)
 {
   impl_ = bt.impl_;
-  impl_->ref();
+  if (impl_)
+    impl_->ref();
 }
 
 Backtrace::~Backtrace()
