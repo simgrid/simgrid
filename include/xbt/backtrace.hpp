@@ -43,11 +43,11 @@ public:
   ~Backtrace();
 };
 
-/* Translate the backtrace in a human friendly form
+/* Translate the backtrace in an human friendly form
  *
- *  Try resolve symbols and source code location.
+ *  Try resolve symbols and source code locations.
  */
-XBT_PUBLIC std::vector<std::string> resolve_backtrace(const Backtrace& bt);
+XBT_PUBLIC std::string resolve_backtrace(const Backtrace& bt);
 }
 }
 

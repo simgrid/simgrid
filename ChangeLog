@@ -3,6 +3,11 @@ SimGrid (3.22) NOT RELEASED (Release Target: December 21. 2018, 22:23 UTC)
 Java:
  - Expose host load plugin: loadInit, getCurrentLoad, getComputedFlops, getAvgLoad
 
+Core:
+ - Replace our own code to display a backtrace (that was forking addr2line)
+   with the Boost.Stacktrace library.
+   You won't see your backtraces without this optional dependency.
+
 Fixed bugs:
  - #261: Document the parameters of parallel execution's constructor
 

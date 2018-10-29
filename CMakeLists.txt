@@ -306,20 +306,17 @@ endif()
 
 CHECK_INCLUDE_FILE("valgrind/valgrind.h" HAVE_VALGRIND_H)
 CHECK_INCLUDE_FILE("unistd.h" HAVE_UNISTD_H)
-CHECK_INCLUDE_FILE("execinfo.h" HAVE_EXECINFO_H)
 CHECK_INCLUDE_FILE("signal.h" HAVE_SIGNAL_H)
 CHECK_INCLUDE_FILE("sys/param.h" HAVE_SYS_PARAM_H)
 CHECK_INCLUDE_FILE("sys/sysctl.h" HAVE_SYS_SYSCTL_H)
 CHECK_INCLUDE_FILE("ucontext.h" HAVE_UCONTEXT_H)
 CHECK_INCLUDE_FILE("linux/futex.h" HAVE_FUTEX_H)
 
-CHECK_FUNCTION_EXISTS(backtrace HAVE_BACKTRACE)
 CHECK_FUNCTION_EXISTS(dlfunc HAVE_DLFUNC)
 CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
 CHECK_FUNCTION_EXISTS(nanosleep HAVE_NANOSLEEP)
 CHECK_FUNCTION_EXISTS(getdtablesize HAVE_GETDTABLESIZE)
 CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
-CHECK_FUNCTION_EXISTS(popen HAVE_POPEN)
 CHECK_FUNCTION_EXISTS(process_vm_readv HAVE_PROCESS_VM_READV)
 CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
 CHECK_FUNCTION_EXISTS(mremap HAVE_MREMAP)
@@ -546,12 +543,6 @@ endif()
 # If the test ran well, remove the test binary
 file(REMOVE test_stackgrowth)
 #--------------------------------------------------------------------------------------------------
-
-### check for addr2line
-find_path(ADDR2LINE NAMES addr2line	PATHS NO_DEFAULT_PATHS)
-if(ADDR2LINE)
-  set(ADDR2LINE "${ADDR2LINE}/addr2line")
-endif()
 
 ###############
 ## GIT version check

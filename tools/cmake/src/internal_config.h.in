@@ -11,8 +11,6 @@
 #include "simgrid/config.h"       /* what was compiled in? */
 
 /* Non-standard header files */
-/* <execinfo.h> */
-#cmakedefine01 HAVE_EXECINFO_H
 /* <linux/futex.h> */
 #cmakedefine01 HAVE_FUTEX_H
 /* <signal.h> */
@@ -87,8 +85,6 @@
 #cmakedefine01 HAVE_SENDFILE
 
 /* Other function checks */
-/* Function backtrace */
-#cmakedefine01 HAVE_BACKTRACE
 /* Function dlfunc */
 #cmakedefine01 HAVE_DLFUNC
 /* Function mmap */
@@ -97,16 +93,12 @@
 #cmakedefine01 HAVE_MREMAP
 /* Function sem_init (part of XPG6 standard only) */
 #cmakedefine01 HAVE_SEM_INIT
-/* Function popen */
-#cmakedefine01 HAVE_POPEN
 /* Function sysconf */
 #cmakedefine01 HAVE_SYSCONF
 /* Function vasprintf */
 #cmakedefine01 HAVE_VASPRINTF
 
 /* Other checks */
-/* Path to the addr2line tool */
-#cmakedefine   ADDR2LINE "@ADDR2LINE@"
 /* The graphviz library */
 #cmakedefine01 HAVE_GRAPHVIZ
 /* The lib unwind library (for MC and backtrace display) */
