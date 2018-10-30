@@ -1,7 +1,7 @@
 # C examples
 foreach(x app-pingpong app-token-ring
           async-wait async-waitall async-waitany
-          cloud-capping cloud-migration cloud-sharing cloud-two-tasks cloud-simple
+          cloud-capping cloud-migration cloud-two-tasks cloud-simple
           get_sender host_on_off host_on_off_recv
           process-daemon process-kill process-join process-lifetime process-migration process-suspend process-yield
           energy-consumption energy-ptask energy-pstate platform-properties
@@ -98,9 +98,6 @@ foreach(x
 				   ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x}/${x}.tesh)
 endforeach()
 
-foreach(x cloud-sharing)
-  ADD_TESH(tesh-msg-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x}/${x}.tesh)
-endforeach()
 
 if(HAVE_SANITIZER_THREAD)
   ADD_TESH_FACTORIES(tesh-app-bittorrent-parallel       "thread" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/msg/app-bittorrent --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/app-bittorrent app-bittorrent.tesh)

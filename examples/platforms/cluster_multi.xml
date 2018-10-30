@@ -20,22 +20,21 @@
        node-1.1core.org --[l1]-- router -- (outer world)
                 ...             /
        node-7.1core.org --[l9]--
-
  
        So the route from node-0 to node-1 is {l0.UP, l1.DOWN}
     -->
-  <cluster id="simple" prefix="node-" radical="0-7" suffix=".1core.org" speed="1Gf" bw="125MBps" lat="50us" />
+  <cluster id="simple" prefix="node-" radical="0-7" suffix=".1core.org" speed="1Gf" bw="125MBps" lat="50us">
+    <prop id="watt_per_state" value="0.0:1.0" />
+    <prop id="watt_off" value="0.0" />
+  </cluster>
 
 
   <!-- This second cluster has a backbone link, connecting all private links:
-
        node-0.2cores.org --[l0]-------+
                                      |
        node-1.2cores.org --[l1]--[backbone]-- router -- (outer world)
                 ...                  |
        node-7.2cores.org --[l7]-------+
-
-
     The route from node-0 to node-1 is: l0.UP ; backbone ; l1.DOWN
     
     The route from node-0 to the outer world begins with: l0.UP ; backbone
@@ -43,7 +42,10 @@
   <cluster id="backboned" prefix="node-" radical="0-7" suffix=".2cores.org"
               speed="1Gf"       core="2" 
 	      bw="125MBps"      lat="50us"
-           bb_bw="2.25GBps"  bb_lat="500us"/>
+           bb_bw="2.25GBps"  bb_lat="500us">
+    <prop id="watt_per_state" value="0.0:1.0:2.0" />
+    <prop id="watt_off" value="0.0" />
+  </cluster>
 	   
 
   <!-- This cluster has a backbone link, but no links are splitduplex.
@@ -55,8 +57,10 @@
     -->
   <cluster id="halfduplex" prefix="node-" radical="0-7" suffix=".4cores.org" speed="1Gf" core="4"
               bw="125MBps"      lat="50us"     sharing_policy="SHARED"
-	   bb_bw="2.25GBps"  bb_lat="500us" bb_sharing_policy="SHARED" />
-
+	   bb_bw="2.25GBps"  bb_lat="500us" bb_sharing_policy="SHARED">
+    <prop id="watt_per_state" value="0.0:1.0:4.0" />
+    <prop id="watt_off" value="0.0" />
+  </cluster>
 
   <!-- And now, we create the routes between the clusters, ie inter-zone routes -->
   

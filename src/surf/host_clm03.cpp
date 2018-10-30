@@ -32,8 +32,6 @@ HostCLM03Model::HostCLM03Model()
 }
 double HostCLM03Model::next_occuring_event(double now)
 {
-  ignore_empty_vm_in_pm_LMM();
-
   double min_by_cpu = surf_cpu_model_pm->next_occuring_event(now);
   double min_by_net =
       surf_network_model->next_occuring_event_is_idempotent() ? surf_network_model->next_occuring_event(now) : -1;

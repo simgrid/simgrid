@@ -7,6 +7,7 @@
 #include "src/include/surf/surf.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
 #include "xbt/asserts.h" // xbt_log_no_loc
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
@@ -52,10 +53,34 @@ static void hostStateChange(s4u::Host& host)
   }
 }
 
+static void addActiveTask(kernel::activity::ExecImplPtr exec)
+{
+  s4u::VirtualMachine *vm = dynamic_cast<s4u::VirtualMachine*>(exec->host_);
+  if (vm != nullptr) {
+    VirtualMachineImpl *vm_impl = vm->get_impl();
+    vm_impl->active_tasks_ = vm_impl->active_tasks_ + 1;
+    vm_impl->update_action_weight(); 
+  }
+}
+
+static void removeActiveTask(kernel::activity::ExecImplPtr exec)
+{
+  s4u::VirtualMachine *vm = dynamic_cast<s4u::VirtualMachine*>(exec->host_);
+  if (vm != nullptr) {
+    VirtualMachineImpl *vm_impl = vm->get_impl();
+    vm_impl->active_tasks_ = vm_impl->active_tasks_ - 1;
+    vm_impl->update_action_weight();
+  }
+}
+
 VMModel::VMModel()
 {
   all_existing_models.push_back(this);
   s4u::Host::on_state_change.connect(hostStateChange);
+  kernel::activity::ExecImpl::on_creation.connect(addActiveTask);
+  kernel::activity::ExecImpl::on_completion.connect(removeActiveTask);
+  kernel::activity::ExecImpl::on_resumed.connect(addActiveTask);
+  kernel::activity::ExecImpl::on_suspended.connect(removeActiveTask);  
 }
 
 double VMModel::next_occuring_event(double now)
@@ -98,10 +123,7 @@ double VMModel::next_occuring_event(double now)
     vcpu_system->update_constraint_bound(cpu->get_constraint(), virt_overhead * solved_value);
   }
 
-  /* 2. Calculate resource share at the virtual machine layer. */
-  ignore_empty_vm_in_pm_LMM();
-
-  /* 3. Ready. Get the next occurring event */
+  /* 2. Ready. Get the next occurring event */
   return surf_cpu_model_vm->next_occuring_event(now);
 }
 
@@ -111,7 +133,7 @@ double VMModel::next_occuring_event(double now)
 
 VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, simgrid::s4u::Host* host_PM,
                                        int core_amount, size_t ramsize)
-    : HostImpl(piface), physical_host_(host_PM), core_amount_(core_amount), ramsize_(ramsize)
+    : HostImpl(piface), physical_host_(host_PM), core_amount_(core_amount), ramsize_(ramsize), user_bound_(std::numeric_limits<double>::max())
 {
   /* Register this VM to the list of all VMs */
   allVms_.push_back(piface);
@@ -119,6 +141,9 @@ VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, sim
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
   action_ = host_PM->pimpl_cpu->execution_start(0, core_amount);
+
+  // It's empty for now, so it should not request resources in the PM
+  update_action_weight();
 
   XBT_VERB("Create VM(%s)@PM(%s)", piface->get_cname(), physical_host_->get_cname());
   on_creation(this);
@@ -258,7 +283,22 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
 
 void VirtualMachineImpl::set_bound(double bound)
 {
-  action_->set_bound(bound);
+  user_bound_ = bound;
+  update_action_weight();
+}
+
+void VirtualMachineImpl::update_action_weight(){
+  /* The impact of the VM over its PM is the min between its vCPU amount and the amount of tasks it contains */
+  int impact = std::min(active_tasks_, get_core_amount());
+
+  XBT_DEBUG("set the weight of the dummy CPU action of VM%p on PM to %d (#tasks: %d)", this, impact, active_tasks_);
+
+  if (impact > 0)
+    action_->set_priority(1. / impact);
+  else
+    action_->set_priority(0.);
+
+  action_->set_bound(std::min(impact * physical_host_->get_speed(), user_bound_));
 }
 
 }
