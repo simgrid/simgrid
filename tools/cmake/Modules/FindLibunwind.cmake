@@ -14,7 +14,7 @@
 
 # SimGrid needs unwind-ptrace on Linux and FreeBSD
 if("${CMAKE_SYSTEM}" MATCHES "Linux|FreeBSD")
-  set(LIBUNWIND_COMPONENTS ${LIBUNWIND_COMPONENTS} unwind-ptrace)
+  set(LIBUNWIND_COMPONENTS ${LIBUNWIND_COMPONENTS} unwind-ptrace unwind-generic)
 endif()
 
 #
@@ -28,16 +28,6 @@ endif()
 
 # Of course also need the core lib
 set(LIBUNWIND_COMPONENTS ${LIBUNWIND_COMPONENTS} "unwind")
-
-# For some reason, some archs have an arch-specific while other do not.
-if (CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
-    SET(LIBUNWIND_COMPONENTS ${LIBUNWIND_COMPONENTS} unwind-arm)
-elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "amd64")
-    SET(LIBUNWIND_COMPONENTS ${LIBUNWIND_COMPONENTS} unwind-x86_64)
-elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^i.86$")
-    SET(LIBUNWIND_COMPONENTS ${LIBUNWIND_COMPONENTS} unwind-x86)
-endif()
-
 
 message(STATUS "Looking for libunwind:")
 # Let's assume we have it, and invalidate if parts are missing
