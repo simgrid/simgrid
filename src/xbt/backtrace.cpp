@@ -33,22 +33,10 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_backtrace, xbt, "Backtrace");
 
-void xbt_backtrace_display(const simgrid::xbt::Backtrace& bt)
-{
-  std::string backtrace = simgrid::xbt::resolve_backtrace(bt);
-  if (backtrace.empty()) {
-    fprintf(stderr, "(backtrace not set -- did you install Boost.Stacktrace?)\n");
-    return;
-  }
-  fprintf(stderr, "Backtrace (displayed in actor %s):\n", SIMIX_process_self_get_name());
-  std::fprintf(stderr, "%s\n", backtrace.c_str());
-}
-
 /** @brief show the backtrace of the current point (lovely while debugging) */
 void xbt_backtrace_display_current()
 {
-  simgrid::xbt::Backtrace bt = simgrid::xbt::Backtrace();
-  xbt_backtrace_display(bt);
+  simgrid::xbt::Backtrace().display();
 }
 
 namespace simgrid {
@@ -105,22 +93,28 @@ Backtrace::~Backtrace()
     delete impl_;
   }
 }
-} // namespace xbt
-} // namespace simgrid
 
-namespace simgrid {
-namespace xbt {
-
-std::string resolve_backtrace(const Backtrace& bt)
+std::string const Backtrace::resolve() const
 {
   std::string result("");
 
 #if HAVE_BOOST_STACKTRACE
   std::stringstream ss;
-  ss << bt.impl_->st;
+  ss << impl_->st;
   result.append(ss.str());
 #endif
   return result;
+}
+
+void Backtrace::display() const
+{
+  std::string backtrace = resolve();
+  if (backtrace.empty()) {
+    fprintf(stderr, "(backtrace not set -- did you install Boost.Stacktrace?)\n");
+    return;
+  }
+  fprintf(stderr, "Backtrace (displayed in actor %s):\n", SIMIX_process_self_get_name());
+  std::fprintf(stderr, "%s\n", backtrace.c_str());
 }
 
 } // namespace xbt

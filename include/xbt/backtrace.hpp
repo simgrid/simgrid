@@ -41,17 +41,12 @@ public:
   Backtrace();
   Backtrace(const Backtrace& bt);
   ~Backtrace();
+  /** @brief Translate the backtrace in a human friendly form, unmangled with source code locations. */
+  std::string const resolve() const;
+  /** @brief Display the resolved backtrace on stderr */
+  void display() const;
 };
 
-/* Translate the backtrace in an human friendly form
- *
- *  Try resolve symbols and source code locations.
- */
-XBT_PUBLIC std::string resolve_backtrace(const Backtrace& bt);
 }
 }
-
-/** @brief Display a previously captured backtrace */
-XBT_PUBLIC void xbt_backtrace_display(const simgrid::xbt::Backtrace& bt);
-
 #endif

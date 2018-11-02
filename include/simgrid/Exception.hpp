@@ -63,6 +63,8 @@ public:
   /** Return the information about where the exception was thrown */
   xbt::ThrowPoint const& throw_point() const { return throwpoint_; }
 
+  std::string const resolve_backtrace() const { return throwpoint_.backtrace_.resolve(); }
+
 private:
   xbt::ThrowPoint throwpoint_;
 };
