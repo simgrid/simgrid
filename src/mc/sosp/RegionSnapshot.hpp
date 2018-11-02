@@ -142,8 +142,8 @@ public:
   {
   }
   ~RegionSnapshot()                     = default;
-  RegionSnapshot(RegionSnapshot const&) = default;
-  RegionSnapshot& operator=(RegionSnapshot const&) = default;
+  RegionSnapshot(RegionSnapshot const&) = delete;
+  RegionSnapshot& operator=(RegionSnapshot const&) = delete;
   RegionSnapshot(RegionSnapshot&& that)
       : region_type_(that.region_type_)
       , storage_type_(that.storage_type_)
