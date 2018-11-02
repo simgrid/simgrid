@@ -13,7 +13,7 @@ fi
 
 target=all
 
-install_path=`grep ^CMAKE_INSTALL_PREFIX:PATH= CMakeCache.txt|sed 's/^[^=]*=//'`
+install_path=$(sed -n 's/^CMAKE_INSTALL_PREFIX:PATH=//p' CMakeCache.txt)
 if [ -e ${install_path} -a -d ${install_path} -a -x ${install_path} ] ; then
   target=install
 fi
