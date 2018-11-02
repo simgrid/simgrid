@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRIX_XBT_BACKTRACE_HPP
-#define SIMGRIX_XBT_BACKTRACE_HPP
+#ifndef SIMGRID_XBT_BACKTRACE_HPP
+#define SIMGRID_XBT_BACKTRACE_HPP
 
 #include <xbt/base.h>
 
