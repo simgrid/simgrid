@@ -100,6 +100,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libomp",
     "libpapi",
     "libpfm",
+    "libpgmath",
     "libpthread",
     "libquadmath",
     "librt",
