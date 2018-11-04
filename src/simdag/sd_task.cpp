@@ -794,26 +794,14 @@ void SD_task_run(SD_task_t task)
 
   XBT_VERB("Executing task '%s'", task->name);
 
-  /* Copy the elements of the task into the action */
-  int host_nb = task->allocation->size();
-  sg_host_t* hosts = new sg_host_t[host_nb];
-  std::copy_n(task->allocation->begin(), host_nb, hosts);
-
-  double* flops_amount = new double[host_nb]();
-  double* bytes_amount = new double[host_nb * host_nb]();
-
-  if(task->flops_amount)
-    std::copy_n(task->flops_amount, host_nb, flops_amount);
-  if(task->bytes_amount)
-    std::copy_n(task->bytes_amount, host_nb * host_nb, bytes_amount);
-
-  task->surf_action = surf_host_model->execute_parallel(host_nb, hosts, flops_amount, bytes_amount, task->rate);
+  /* Beware! The scheduling data are now used by the surf action directly! no copy was done */
+  task->surf_action = surf_host_model->execute_parallel(task->allocation->size(), task->allocation->data(),
+                                                        task->flops_amount, task->bytes_amount, task->rate);
 
   task->surf_action->set_data(task);
 
   XBT_DEBUG("surf_action = %p", task->surf_action);
 
-  __SD_task_destroy_scheduling_data(task);      /* now the scheduling data are not useful anymore */
   SD_task_set_state(task, SD_RUNNING);
   sd_global->return_set->insert(task);
 }

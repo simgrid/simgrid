@@ -187,9 +187,11 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
   if (latency_ > 0)
     model->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
 
-  if (flops_amount != nullptr)
-    for (int i = 0; i < host_nb; i++)
-      model->get_maxmin_system()->expand(host_list[i]->pimpl_cpu->get_constraint(), get_variable(), flops_amount[i]);
+  /* Expend it for the CPUs even if there is nothing to compute, to make sure that it gets expended even if there is no
+   * communication either */
+  for (int i = 0; i < host_nb; i++)
+    model->get_maxmin_system()->expand(host_list[i]->pimpl_cpu->get_constraint(), get_variable(),
+                                       (flops_amount == nullptr ? 0.0 : flops_amount[i]));
 
   if (bytes_amount != nullptr) {
     for (int i = 0; i < host_nb; i++) {
