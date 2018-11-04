@@ -51,7 +51,7 @@ struct s_SD_task_t {
 
   bool marked = false; /* used to check if the task DAG has some cycle*/
 
-  /* dependencies */
+  /* dependencies -- cannot be embedded in the struct since it's not handled as a real C++ class */
   std::set<SD_task_t> *inputs;
   std::set<SD_task_t> *outputs;
   std::set<SD_task_t> *predecessors;
