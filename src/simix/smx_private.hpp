@@ -53,10 +53,6 @@ public:
   // This might be used when no corresponding function name is registered:
   simgrid::simix::ActorCodeFactory default_function;
 
-  smx_creation_func_t create_process_function = nullptr;
-  void_pfn_smxprocess_t kill_process_function = nullptr;
-  /** Callback used when killing a SMX_process */
-  void_pfn_smxprocess_t cleanup_process_function = nullptr;
   std::mutex mutex;
 
   std::vector<simgrid::xbt::Task<void()>> tasks;

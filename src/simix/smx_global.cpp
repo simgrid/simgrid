@@ -182,9 +182,6 @@ void SIMIX_global_init(int *argc, char **argv)
   if (not simix_global) {
     simix_global = std::unique_ptr<simgrid::simix::Global>(new simgrid::simix::Global());
     simix_global->maestro_process = nullptr;
-    simix_global->create_process_function = &SIMIX_process_create;
-    simix_global->kill_process_function = &kill_process;
-    simix_global->cleanup_process_function = &SIMIX_process_cleanup;
 
     surf_init(argc, argv);      /* Initialize SURF structures */
     SIMIX_context_mod_init();
@@ -559,45 +556,6 @@ void SIMIX_timer_remove(smx_timer_t timer) {
 double SIMIX_timer_get_date(smx_timer_t timer) {
   return timer ? timer->getDate() : 0;
 }
-
-/**
- * @brief Registers a function to create a process.
- *
- * This function registers a function to be called
- * when a new process is created. The function has
- * to call SIMIX_process_create().
- * @param function create process function
- */
-void SIMIX_function_register_process_create(smx_creation_func_t function)
-{
-  simix_global->create_process_function = function;
-}
-
-/**
- * @brief Registers a function to kill a process.
- *
- * This function registers a function to be called when a process is killed. The function has to call the
- * SIMIX_process_kill().
- *
- * @param function Kill process function
- */
-void SIMIX_function_register_process_kill(void_pfn_smxprocess_t function)
-{
-  simix_global->kill_process_function = function;
-}
-
-/**
- * @brief Registers a function to cleanup a process.
- *
- * This function registers a user function to be called when a process ends properly.
- *
- * @param function cleanup process function
- */
-void SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t function)
-{
-  simix_global->cleanup_process_function = function;
-}
-
 
 void SIMIX_display_process_status()
 {

@@ -178,8 +178,8 @@ simgrid::s4u::Actor* ActorImpl::restart()
   SIMIX_process_kill(this, (this == simix_global->maestro_process) ? this : SIMIX_process_self());
 
   // start the new process
-  ActorImpl* actor = simix_global->create_process_function(arg.name.c_str(), std::move(arg.code), arg.data, arg.host,
-                                                           arg.properties.get(), nullptr);
+  ActorImpl* actor =
+      SIMIX_process_create(arg.name.c_str(), std::move(arg.code), arg.data, arg.host, arg.properties.get(), nullptr);
   simcall_process_set_kill_time(actor, arg.kill_time);
   actor->set_auto_restart(arg.auto_restart);
 
@@ -359,7 +359,7 @@ smx_actor_t SIMIX_process_create(std::string name, simgrid::simix::ActorCode cod
   process->code         = code;
 
   XBT_VERB("Create context %s", process->get_cname());
-  process->context_ = SIMIX_context_new(std::move(code), simix_global->cleanup_process_function, process);
+  process->context_ = SIMIX_context_new(std::move(code), &SIMIX_process_cleanup, process);
 
   /* Add properties */
   if (properties != nullptr)
@@ -416,7 +416,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   XBT_VERB("Create context %s", process->get_cname());
   if (not simix_global)
     xbt_die("simix is not initialized, please call MSG_init first");
-  process->context_ = simix_global->context_factory->attach(simix_global->cleanup_process_function, process);
+  process->context_ = simix_global->context_factory->attach(&SIMIX_process_cleanup, process);
 
   /* Add properties */
   if (properties != nullptr)
@@ -452,7 +452,7 @@ void SIMIX_process_detach()
     xbt_die("Not a suitable context");
 
   auto process = context->process();
-  simix_global->cleanup_process_function(process);
+  SIMIX_process_cleanup(process);
   context->attach_stop();
 }
 

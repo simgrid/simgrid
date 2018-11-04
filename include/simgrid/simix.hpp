@@ -95,8 +95,6 @@ typedef smx_actor_t (*smx_creation_func_t)(
     /* props */ std::unordered_map<std::string, std::string>*,
     /* parent_process */ smx_actor_t);
 
-XBT_PUBLIC void SIMIX_function_register_process_create(smx_creation_func_t function);
-
 XBT_PUBLIC smx_actor_t simcall_process_create(std::string name, simgrid::simix::ActorCode code, void* data,
                                               sg_host_t host, std::unordered_map<std::string, std::string>* properties);
 

@@ -124,8 +124,8 @@ void HostImpl::turn_on()
 {
   for (auto const& arg : actors_at_boot_) {
     XBT_DEBUG("Booting Actor %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
-    smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
-                                                              arg->properties.get(), nullptr);
+    smx_actor_t actor =
+        SIMIX_process_create(arg->name.c_str(), arg->code, nullptr, arg->host, arg->properties.get(), nullptr);
     if (arg->kill_time >= 0)
       simcall_process_set_kill_time(actor, arg->kill_time);
     if (arg->auto_restart)

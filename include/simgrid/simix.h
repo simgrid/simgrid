@@ -93,9 +93,6 @@ XBT_PUBLIC void SIMIX_global_init(int* argc, char** argv);
  * is assumed to be the maestro. */
 XBT_PUBLIC void SIMIX_set_maestro(void (*code)(void*), void* data);
 
-XBT_PUBLIC void SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t function);
-XBT_PUBLIC void SIMIX_function_register_process_kill(void_pfn_smxprocess_t function);
-
 /* Simulation execution */
 XBT_PUBLIC void SIMIX_run();
 XBT_PUBLIC double SIMIX_get_clock();
