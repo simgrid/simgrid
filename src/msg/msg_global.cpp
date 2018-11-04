@@ -3,12 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
-
-#include "mc/mc.h"
 #include "src/instr/instr_private.hpp"
 #include "src/msg/msg_private.hpp"
+#include "src/simix/smx_private.hpp"
 #include <xbt/config.hpp>
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
@@ -42,8 +42,13 @@ void MSG_init_nocheck(int *argc, char **argv) {
     msg_global->task_copy_callback = nullptr;
     msg_global->process_data_cleanup = nullptr;
 
-    SIMIX_function_register_process_create(MSG_process_create_from_SIMIX);
-    SIMIX_function_register_process_cleanup(MSG_process_cleanup_from_SIMIX);
+    simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::ActorPtr actor) {
+      // free the data if a function was provided
+      void* userdata = actor->get_impl()->get_user_data();
+      if (userdata && msg_global->process_data_cleanup) {
+        msg_global->process_data_cleanup(userdata);
+      }
+    });
   }
 
   if(MC_is_active()){

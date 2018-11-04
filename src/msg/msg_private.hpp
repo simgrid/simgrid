@@ -78,11 +78,6 @@ typedef s_MSG_Global_t* MSG_Global_t;
 XBT_PUBLIC_DATA MSG_Global_t msg_global;
 
 /*************************************************************/
-XBT_PRIVATE void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_proc);
-XBT_PRIVATE smx_actor_t MSG_process_create_from_SIMIX(std::string name, simgrid::simix::ActorCode code, void* data,
-                                                      sg_host_t host,
-                                                      std::unordered_map<std::string, std::string>* properties,
-                                                      smx_actor_t parent_process);
 XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(smx_activity_t comm, void* buff, size_t buff_size);
 
 /********** Tracing **********/

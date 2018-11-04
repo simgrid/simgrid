@@ -17,29 +17,6 @@ std::string instr_pid(msg_process_t proc)
 }
 
 /******************************** Process ************************************/
-/**
- * @brief Cleans the MSG data of an actor
- * @param smx_actor a SIMIX actor
- */
-void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
-{
-  // free the data if a function was provided
-  void* userdata = smx_actor->get_user_data();
-  if (userdata && msg_global->process_data_cleanup) {
-    msg_global->process_data_cleanup(userdata);
-  }
-
-  SIMIX_process_cleanup(smx_actor);
-}
-
-/* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
-smx_actor_t MSG_process_create_from_SIMIX(std::string name, simgrid::simix::ActorCode code, void* data, sg_host_t host,
-                                          std::unordered_map<std::string, std::string>* properties,
-                                          smx_actor_t /*parent_process*/)
-{
-  msg_process_t p = MSG_process_create_from_stdfunc(name, std::move(code), data, host, properties);
-  return p == nullptr ? nullptr : p->get_impl();
-}
 
 /** @brief Creates and runs a new #msg_process_t.
  *
