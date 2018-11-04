@@ -7,6 +7,7 @@
 #include "simgrid/Exception.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "src/simix/smx_network_private.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"

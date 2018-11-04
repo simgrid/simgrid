@@ -60,10 +60,6 @@ typedef enum {
 /** @} */
 
 /******************************* Networking ***********************************/
-
-/* Process creation/destruction callbacks */
-typedef void (*void_pfn_smxprocess_t) (smx_actor_t);
-
 extern unsigned smx_context_stack_size;
 extern int smx_context_stack_size_was_set;
 extern unsigned smx_context_guard_size;

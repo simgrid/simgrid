@@ -77,24 +77,6 @@ XBT_PUBLIC void register_function(std::string name, ActorCodeFactory factory);
 }
 }
 
-/*
- * Type of function that creates a process.
- * The function must accept the following parameters:
- * void* process: the process created will be stored there
- * const char *name: a name for the object. It is for user-level information and can be NULL
- * xbt_main_func_t code: is a function describing the behavior of the process
- * void *data: data a pointer to any data one may want to attach to the new object.
- * sg_host_t host: the location where the new process is executed
- * int argc, char **argv: parameters passed to code
- * std::map<std::string, std::string>* props: properties
- */
-typedef smx_actor_t (*smx_creation_func_t)(
-    /* name */ std::string, simgrid::simix::ActorCode code,
-    /* userdata */ void*,
-    /* hostname */ sg_host_t,
-    /* props */ std::unordered_map<std::string, std::string>*,
-    /* parent_process */ smx_actor_t);
-
 XBT_PUBLIC smx_actor_t simcall_process_create(std::string name, simgrid::simix::ActorCode code, void* data,
                                               sg_host_t host, std::unordered_map<std::string, std::string>* properties);
 

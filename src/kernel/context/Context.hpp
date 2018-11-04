@@ -6,10 +6,14 @@
 #ifndef SIMGRID_KERNEL_CONTEXT_CONTEXT_HPP
 #define SIMGRID_KERNEL_CONTEXT_CONTEXT_HPP
 
+#include "simgrid/forward.h"
 #include "src/internal_config.h"
-#include "src/simix/smx_network_private.hpp"
+#include "src/kernel/activity/ActivityImpl.hpp"
 
 #include <csignal>
+
+/* Process creation/destruction callbacks */
+typedef void (*void_pfn_smxprocess_t)(smx_actor_t);
 
 namespace simgrid {
 namespace kernel {
