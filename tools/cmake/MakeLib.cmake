@@ -1,6 +1,6 @@
 ### Make Libs
 
-# On Mac OSX, specify that rpath is useful to look for the dependencies
+# On macOS, specify that rpath is useful to look for the dependencies
 # See https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/RPATH-handling and Java.cmake
 set(CMAKE_MACOSX_RPATH TRUE)
 if(APPLE)

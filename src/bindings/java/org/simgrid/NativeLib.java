@@ -100,7 +100,7 @@ public final class NativeLib {
 		   { name,
 		     "lib"+name+".so",               /* linux */
 		     name+".dll", "lib"+name+".dll", /* windows (pure and mingw) */
-		     "lib"+name+".dylib"             /* mac osx */}) {
+		     "lib"+name+".dylib"             /* macOS */}) {
 						
 			File fileOut = new File(tempDir.toFile().getAbsolutePath() + File.separator + filename);
 			boolean done = false;

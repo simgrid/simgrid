@@ -73,7 +73,7 @@ precompiled jarfile, please report this bug.
 If you built it yourself, you can try to use an installed version of
 the library instead of the one included in the jar. For that, add the
 path to the native library into the ``LD_LIBRARY_PATH`` variable (or in
-the ``DYLD_LIBRARY_PATH`` on Mac OSX).
+the ``DYLD_LIBRARY_PATH`` on macOS).
 
 pthread_create failed
 =====================

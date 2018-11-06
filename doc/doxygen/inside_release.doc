@@ -19,7 +19,7 @@ Please apply the following checklist before releasing.
     to build and install are included in the archive)
 - Tests
   - All tests pass on a reasonable amount of platforms (typically,
-    everything on ci + travis/Mac + AppVeyor)
+    everything on ci + travis/macOS + AppVeyor)
   - You also tested to build and install the content of the source
     archive on a reasonable amount of platforms (typically, 2 or 3).
 - ChangeLog file
@@ -55,7 +55,7 @@ cmake . && make dist
 Get the jarfiles for several OSes on the CI slaves. Use Save under to
 give a separate name to each of them.
 
-- Mac OSX, FreeBSD: on Jenkins
+- macOS, FreeBSD: on Jenkins
 - Windows: on AppVeyor
 - Linux: it is safer to rebuild them in a chroot (to avoid
   boost-context and all other optional dependencies):

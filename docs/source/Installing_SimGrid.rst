@@ -6,7 +6,7 @@ Installing SimGrid
 ==================
 
 
-SimGrid should work out of the box on Linux, Mac OSX, FreeBSD, and
+SimGrid should work out of the box on Linux, macOS, FreeBSD, and
 Windows (under Windows, you need to install the Windows Subsystem
 Linux to get more than the Java bindings).
 
@@ -32,13 +32,13 @@ Stable Java Package
 
 The jar file can be retrieved from the `Release page
 <https://framagit.org/simgrid/simgrid/tags>`_. This file is
-self-contained, including the native components for Linux, Mac OS X and
+self-contained, including the native components for Linux, macOS and
 Windows. Copy it to your project's classpath and you're set.
 
 Nightly built Java Package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For non-Windows systems (Linux, Mac OS X, or FreeBSD), head to `Jenkins <https://ci.inria.fr/simgrid/job/SimGrid>`_.
+For non-Windows systems (Linux, macOS, or FreeBSD), head to `Jenkins <https://ci.inria.fr/simgrid/job/SimGrid>`_.
 In the build history, pick the last green (or at least yellow) build that is not blinking (i.e., not currently under
 build). In the list, pick a system that is close to yours, and click on the ball in the Debug row. The build artefact
 will appear at the top of the resulting page.
@@ -80,11 +80,11 @@ cmake (v2.8.8).
   configuration options (e.g., if your python installation is not standard).
 boost (at least v1.48, v1.59 recommended)
   - On Debian / Ubuntu: ``apt install libboost-dev libboost-context-dev``
-  - On Max OS X with homebrew: ``brew install boost``
+  - On macOS with homebrew: ``brew install boost``
 Java (optional):
   - Debian / Ubuntu: ``apt install default-jdk libgcj18-dev`` (or
     any version of libgcj)
-  - Mac OS X or Windows: Grab a `full JDK <http://www.oracle.com/technetwork/java/javase/downloads>`_
+  - macOS or Windows: Grab a `full JDK <http://www.oracle.com/technetwork/java/javase/downloads>`_
 Lua (optional -- must be v5.3)
   - SimGrid won't work with any other version of Lua.
   - Debian / Ubuntu: ``apt install liblua5.3-dev lua5.3``
@@ -329,10 +329,10 @@ on `our Jenkins <https://ci.inria.fr/simgrid/>`_.
 
 .. _install_cmake_mac:
 
-Mac OS X Specifics
-^^^^^^^^^^^^^^^^^^
+macOS Specifics
+^^^^^^^^^^^^^^^
 
-SimGrid compiles like a charm with clang (version 3.0 or higher) on Mac OS X:
+SimGrid compiles like a charm with clang (version 3.0 or higher) on macOS:
 
 .. code-block:: shell
 
@@ -340,7 +340,7 @@ SimGrid compiles like a charm with clang (version 3.0 or higher) on Mac OS X:
   make
 
 
-Troubleshooting your Mac OS X build.
+Troubleshooting your macOS build.
 
 CMake Error: Parse error in cache file build_dir/CMakeCache.txt. Offending entry: /SDKs/MacOSX10.8.sdk
   This was reported with the XCode version of clang 4.1. The work
@@ -352,7 +352,7 @@ CMake Error: Parse error in cache file build_dir/CMakeCache.txt. Offending entry
   You can safely ignore the warning about "-pthread" not being used, if it appears.
 
 /usr/include does not seem to exist
-  This directory does not exist by default on modern Mac OS X versions,
+  This directory does not exist by default on modern macOS versions,
   and you may need to create it with ``xcode-select -install``
 
 .. _install_cmake_windows:

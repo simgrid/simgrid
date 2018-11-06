@@ -153,7 +153,7 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
   if (res.second) {
     // The new element was inserted.
     // Generate a shared memory name from the address of the shared_data:
-    char shmname[32]; // cannot be longer than PSHMNAMLEN = 31 on Mac OS X (shm_open raises ENAMETOOLONG otherwise)
+    char shmname[32]; // cannot be longer than PSHMNAMLEN = 31 on macOS (shm_open raises ENAMETOOLONG otherwise)
     snprintf(shmname, 31, "/shmalloc%p", &*data);
     int fd = shm_open(shmname, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     if (fd < 0) {

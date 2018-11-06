@@ -305,7 +305,7 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
 {
   xbt_os_sem_t res = xbt_new(s_xbt_os_sem_t, 1);
 
-  /* On some systems (MAC OS X), only the stub of sem_init is to be found.
+  /* On some systems (macOS), only the stub of sem_init is to be found.
    * Any attempt to use it leads to ENOSYS (function not implemented).
    * If such a prehistoric system is detected, do the job with sem_open instead
    */
