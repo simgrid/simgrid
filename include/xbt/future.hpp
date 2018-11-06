@@ -134,7 +134,7 @@ public:
         T value = std::move(value_);
         value_.~T();
         status_ = ResultStatus::invalid;
-        return std::move(value);
+        return value;
       }
       case ResultStatus::exception: {
         std::exception_ptr exception = std::move(exception_);

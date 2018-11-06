@@ -359,7 +359,7 @@ public:
           simgrid::xbt::fulfill_promise(promise, [&] { return continuation(std::move(future)); });
         },
         std::move(promise), state, std::move(continuation)));
-    return std::move(future);
+    return future;
   }
 
   template <class F>
