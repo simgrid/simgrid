@@ -64,6 +64,11 @@ if(enable_java)
       RENAME simgrid.jar)
 endif()
 
+# pkg-config files
+configure_file("${CMAKE_HOME_DIRECTORY}/tools/pkg-config/simgrid.pc.in"
+  "${PROJECT_BINARY_DIR}/simgrid.pc" @ONLY)
+install(FILES "${PROJECT_BINARY_DIR}/simgrid.pc" DESTINATION lib/pkgconfig/)
+
 # include files
 foreach(file ${headers_to_install}  ${generated_headers_to_install})
   get_filename_component(location ${file} PATH)

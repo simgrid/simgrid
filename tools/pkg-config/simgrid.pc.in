@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: SimGrid
+Description: Framework for the simulation of distributed applications (Clouds, HPC, Grids, IoT and others)
+Version: @libsimgrid_version@
+
+Libs: -L${libdir} -lsimgrid
+Cflags: -I${includedir}
