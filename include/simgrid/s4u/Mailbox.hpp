@@ -54,7 +54,7 @@ public:
   /** Declare that the specified actor is a permanent receiver on that mailbox
    *
    * It means that the communications sent to this mailbox will start flowing to
-   * its host even before he does a recv(). This models the real behavior of TCP
+   * its host even before it does a get(). This models the real behavior of TCP
    * and MPI communications, amongst other. It will improve the accuracy of
    * predictions, in particular if your application exhibits swarms of small messages.
    *
@@ -62,6 +62,12 @@ public:
    * was declared, any other actors can still get() data from the mailbox. The timings
    * will then probably be off tracks, so you should strive on your side to not get data
    * from someone else's mailbox.
+   *
+   * Note that being permanent receivers of a mailbox prevents actors to be garbage-collected.
+   * If your simulation creates many short-lived actors that marked as permanent receiver, you
+   * should call mailbox->set_receiver(nullptr) by the end of the actors so that their memory gets
+   * properly reclaimed. This call should be at the end of the actor's function, not in a on_exit
+   * callback.
    */
   void set_receiver(ActorPtr actor);
 
