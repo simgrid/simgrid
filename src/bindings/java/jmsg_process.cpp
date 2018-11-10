@@ -77,9 +77,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject 
                                       /*data*/ nullptr, jhost_get_native(env, jhost), /* properties*/ nullptr);
   env->ReleaseStringUTFChars(jname, name);
 
-  /* bind the java process instance to the native process */
-  jprocess_bind(jprocess, process, env);
-
   /* Retrieve the kill time from the process */
   jdouble jkill = env->GetDoubleField(jprocess, jprocess_field_Process_killTime);
   MSG_process_set_kill_time(process, (double)jkill);
