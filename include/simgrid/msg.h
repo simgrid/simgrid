@@ -460,10 +460,4 @@ MSG_process_get_smx_ctx(msg_process_t process);
 }
 #endif
 
-#ifdef __cplusplus
-XBT_PUBLIC msg_process_t MSG_process_create_from_stdfunc(std::string name, std::function<void()> code, void* data,
-                                                         msg_host_t host,
-                                                         std::unordered_map<std::string, std::string>* properties);
-#endif
-
 #endif

@@ -67,6 +67,8 @@ msg_process_t MSG_process_create_with_arguments(const char *name, xbt_main_func_
 msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_func_t code, void *data, msg_host_t host,
                                                   int argc, char **argv, xbt_dict_t properties)
 {
+  xbt_assert(host != nullptr, "Invalid parameters: host param must not be nullptr");
+
   simgrid::simix::ActorCode function;
   if (code)
     function = simgrid::xbt::wrap_main(code, argc, static_cast<const char* const*>(argv));
@@ -79,19 +81,10 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
     props[key] = value;
   xbt_dict_free(&properties);
 
-  msg_process_t res = MSG_process_create_from_stdfunc(name, std::move(function), data, host, &props);
+  smx_actor_t process = simcall_process_create(name, std::move(function), data, host, &props);
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
   xbt_free(argv);
-  return res;
-}
-
-msg_process_t MSG_process_create_from_stdfunc(std::string name, simgrid::simix::ActorCode code, void* data,
-                                              msg_host_t host, std::unordered_map<std::string, std::string>* properties)
-{
-  xbt_assert(code != nullptr && host != nullptr, "Invalid parameters: host and code params must not be nullptr");
-
-  smx_actor_t process = simcall_process_create(name, std::move(code), data, host, properties);
 
   if (process == nullptr)
     return nullptr;

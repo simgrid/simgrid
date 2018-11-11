@@ -8,6 +8,11 @@ Core:
    with the Boost.Stacktrace library.
    You won't see your backtraces without this optional dependency.
 
+MSG:
+ - Drop MSG_process_create_from_stdfunc() from the API.
+   This C++ function was a pimple in the C API, made necessary at some
+   point by the Java bindings. This is fixed now.
+
 Fixed bugs:
  - #261: Document the parameters of parallel execution's constructor
 
