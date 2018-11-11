@@ -25,7 +25,7 @@ namespace actor {
 
 class ActorImpl : public simgrid::surf::PropertyHolder {
 public:
-  ActorImpl() : piface_(this) {}
+  ActorImpl(simgrid::xbt::string name, simgrid::s4u::Host* host);
   ~ActorImpl();
 
   void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }

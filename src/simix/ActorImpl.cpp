@@ -140,6 +140,12 @@ namespace simgrid {
 namespace kernel {
 namespace actor {
 
+ActorImpl::ActorImpl(simgrid::xbt::string name, simgrid::s4u::Host* host) : name_(name), host_(host), piface_(this)
+{
+  pid_ = simix_process_maxpid++;
+  simcall.issuer = this;
+}
+
 ActorImpl::~ActorImpl()
 {
   delete this->context_;
@@ -179,7 +185,7 @@ simgrid::s4u::Actor* ActorImpl::restart()
 
   // start the new process
   ActorImpl* actor =
-      SIMIX_process_create(arg.name.c_str(), std::move(arg.code), arg.data, arg.host, arg.properties.get(), nullptr);
+      SIMIX_process_create(arg.name, std::move(arg.code), arg.data, arg.host, arg.properties.get(), nullptr);
   simcall_process_set_kill_time(actor, arg.kill_time);
   actor->set_auto_restart(arg.auto_restart);
 
@@ -293,12 +299,8 @@ void ActorImpl::throw_exception(std::exception_ptr e)
 
 void create_maestro(simgrid::simix::ActorCode code)
 {
-  smx_actor_t maestro = nullptr;
   /* Create maestro process and initialize it */
-  maestro           = new simgrid::kernel::actor::ActorImpl();
-  maestro->pid_     = simix_process_maxpid++;
-  maestro->name_    = "";
-  maestro->set_user_data(nullptr);
+  smx_actor_t maestro = new simgrid::kernel::actor::ActorImpl(simgrid::xbt::string(""), /*host*/ nullptr);
 
   if (not code) {
     maestro->context_ = SIMIX_context_new(simgrid::simix::ActorCode(), nullptr, maestro);
@@ -335,28 +337,22 @@ smx_actor_t SIMIX_process_create(std::string name, simgrid::simix::ActorCode cod
                                  std::unordered_map<std::string, std::string>* properties, smx_actor_t parent_process)
 {
 
-  XBT_DEBUG("Start process %s on host '%s'", name.c_str(), host->get_cname());
+  XBT_DEBUG("Start actor %s@'%s'", name.c_str(), host->get_cname());
 
   if (host->is_off()) {
     XBT_WARN("Cannot launch process '%s' on failed host '%s'", name.c_str(), host->get_cname());
     return nullptr;
   }
 
-  smx_actor_t process = new simgrid::kernel::actor::ActorImpl();
+  smx_actor_t process = new simgrid::kernel::actor::ActorImpl(simgrid::xbt::string(name), host);
 
   xbt_assert(code && host != nullptr, "Invalid parameters");
   /* Process data */
-  process->pid_           = simix_process_maxpid++;
-  process->name_          = simgrid::xbt::string(name);
-  process->host_          = host;
   process->set_user_data(data);
-  process->simcall.issuer = process;
+  process->code = code;
 
-  if (parent_process != nullptr) {
+  if (parent_process != nullptr)
     process->ppid_ = parent_process->pid_;
-  }
-
-  process->code         = code;
 
   XBT_VERB("Create context %s", process->get_cname());
   process->context_ = SIMIX_context_new(std::move(code), &SIMIX_process_cleanup, process);
@@ -398,24 +394,16 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
     return nullptr;
   }
 
-  smx_actor_t process = new simgrid::kernel::actor::ActorImpl();
+  smx_actor_t process = new simgrid::kernel::actor::ActorImpl(simgrid::xbt::string(name), host);
   /* Process data */
-  process->pid_  = simix_process_maxpid++;
-  process->name_ = std::string(name);
-  process->host_ = host;
   process->set_user_data(data);
-  process->simcall.issuer = process;
-
-  if (parent_process != nullptr) {
-    process->ppid_ = parent_process->pid_;
-  }
-
-  /* Process data for auto-restart */
   process->code = nullptr;
 
+  if (parent_process != nullptr)
+    process->ppid_ = parent_process->pid_;
+
   XBT_VERB("Create context %s", process->get_cname());
-  if (not simix_global)
-    xbt_die("simix is not initialized, please call MSG_init first");
+  xbt_assert(simix_global != nullptr, "simix is not initialized, please call MSG_init first");
   process->context_ = simix_global->context_factory->attach(&SIMIX_process_cleanup, process);
 
   /* Add properties */
@@ -433,13 +421,11 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   intrusive_ptr_add_ref(process);
 
   auto* context = dynamic_cast<simgrid::kernel::context::AttachContext*>(process->context_);
-  if (not context)
-    xbt_die("Not a suitable context");
-
+  xbt_assert(nullptr != context, "Not a suitable context");
   context->attach_start();
 
-  /* The onCreation() signal must be delayed until there, where the pid and everything is set */
-  simgrid::s4u::ActorPtr tmp = process->iface(); // Passing this directly to onCreation will lead to crashes
+  /* The on_creation() signal must be delayed until there, where the pid and everything is set */
+  simgrid::s4u::ActorPtr tmp = process->iface(); // Passing this directly to on_creation will lead to crashes
   simgrid::s4u::Actor::on_creation(tmp);
 
   return process;
