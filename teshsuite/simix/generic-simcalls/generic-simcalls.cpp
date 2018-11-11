@@ -31,7 +31,7 @@ static simgrid::kernel::Future<void> kernel_wait_until(double date)
   return future;
 }
 
-static int master(int /*argc*/, char** /*argv*/)
+static void master()
 {
   // Test the simple immediate execution:
   XBT_INFO("Start");
@@ -94,8 +94,6 @@ static int master(int /*argc*/, char** /*argv*/)
   XBT_INFO("The future is %s", future.is_ready() ? "ready" : "not ready");
   res = future.get();
   XBT_INFO("kernel_async with value returned with %i", res);
-
-  return 0;
 }
 }
 
@@ -103,9 +101,8 @@ int main(int argc, char* argv[])
 {
   SIMIX_global_init(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform.xml\n", argv[0]);
-  simgrid_register_function("master", example::master);
   simgrid_load_platform(argv[1]);
-  simcall_process_create("master", example::master, NULL, sg_host_by_name("Tremblay"), 0, NULL, NULL);
+  simcall_process_create("master", example::master, NULL, sg_host_by_name("Tremblay"), NULL);
   SIMIX_run();
   return 0;
 }

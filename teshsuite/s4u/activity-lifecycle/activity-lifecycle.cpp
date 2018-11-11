@@ -204,7 +204,7 @@ static void test_comm_killsend()
 /* We need an extra actor here, so that it can sleep until the end of each test */
 static void main_dispatcher()
 {
-  run_test("sleep", test_sleep);
+  run_test("sleep", static_cast<std::function<void()>>(test_sleep));
   run_test("sleep killed at start", test_sleep_kill_begin);
   run_test("sleep killed in middle", test_sleep_kill_middle);
   /* We cannot kill right at the end of the action because killer actors are always rescheduled to the end of the round

@@ -857,17 +857,6 @@ void SIMIX_process_on_exit(smx_actor_t process, std::function<void(int, void*)> 
  * @param argv second argument passed to @a code
  * @param properties the properties of the process
  */
-smx_actor_t simcall_process_create(std::string name, xbt_main_func_t code, void* data, sg_host_t host, int argc,
-                                   char** argv, std::unordered_map<std::string, std::string>* properties)
-{
-  auto wrapped_code = simgrid::xbt::wrap_main(code, argc, argv);
-  for (int i = 0; i != argc; ++i)
-    xbt_free(argv[i]);
-  xbt_free(argv);
-  smx_actor_t res = simcall_process_create(name, std::move(wrapped_code), data, host, properties);
-  return res;
-}
-
 smx_actor_t simcall_process_create(std::string name, simgrid::simix::ActorCode code, void* data, sg_host_t host,
                                    std::unordered_map<std::string, std::string>* properties)
 {
