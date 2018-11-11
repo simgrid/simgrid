@@ -12,6 +12,7 @@
 #include "jmsg_host.h"
 #include "jxbt_utilities.hpp"
 #include "simgrid/Exception.hpp"
+#include "src/simix/ActorImpl.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
@@ -72,18 +73,20 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject 
   /* Actually build the MSG process */
   jstring jname         = (jstring)env->GetObjectField(jprocess, jprocess_field_Process_name);
   const char* name      = env->GetStringUTFChars(jname, 0);
-  msg_process_t process =
-      MSG_process_create_from_stdfunc(name, [jprocess]() { simgrid::kernel::context::java_main_jprocess(jprocess); },
-                                      /*data*/ nullptr, jhost_get_native(env, jhost), /* properties*/ nullptr);
+  smx_actor_t actor =
+      simcall_process_create(name, [jprocess]() { simgrid::kernel::context::java_main_jprocess(jprocess); },
+                             /*data*/ nullptr, jhost_get_native(env, jhost), /* properties*/ nullptr);
+  MSG_process_yield();
+
   env->ReleaseStringUTFChars(jname, name);
 
   /* Retrieve the kill time from the process */
   jdouble jkill = env->GetDoubleField(jprocess, jprocess_field_Process_killTime);
-  MSG_process_set_kill_time(process, (double)jkill);
+  actor->ciface()->set_kill_time((double)jkill);
 
   /* sets the PID and the PPID of the process */
-  env->SetIntField(jprocess, jprocess_field_Process_pid,(jint) MSG_process_get_PID(process));
-  env->SetIntField(jprocess, jprocess_field_Process_ppid, (jint) MSG_process_get_PPID(process));
+  env->SetIntField(jprocess, jprocess_field_Process_pid, (jint)actor->ciface()->get_pid());
+  env->SetIntField(jprocess, jprocess_field_Process_ppid, (jint)actor->ciface()->get_ppid());
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_daemonize(JNIEnv* env, jobject jprocess)
