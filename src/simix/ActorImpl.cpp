@@ -853,8 +853,6 @@ void SIMIX_process_on_exit(smx_actor_t process, std::function<void(int, void*)> 
  * be nullptr.
  * It can be retrieved with the method ActorImpl::getUserData().
  * @param host where the new agent is executed.
- * @param argc first argument passed to @a code
- * @param argv second argument passed to @a code
  * @param properties the properties of the process
  */
 smx_actor_t simcall_process_create(std::string name, simgrid::simix::ActorCode code, void* data, sg_host_t host,

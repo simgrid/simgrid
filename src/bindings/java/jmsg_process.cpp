@@ -73,16 +73,15 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject 
   /* Actually build the MSG process */
   jstring jname         = (jstring)env->GetObjectField(jprocess, jprocess_field_Process_name);
   const char* name      = env->GetStringUTFChars(jname, 0);
+  simgrid::simix::ActorCode function = [jprocess]() { simgrid::kernel::context::java_main_jprocess(jprocess); };
   smx_actor_t actor =
-      simcall_process_create(name, [jprocess]() { simgrid::kernel::context::java_main_jprocess(jprocess); },
-                             /*data*/ nullptr, jhost_get_native(env, jhost), /* properties*/ nullptr);
+      simcall_process_create(name, function, /*data*/ nullptr, jhost_get_native(env, jhost), /* properties*/ nullptr);
   MSG_process_yield();
 
   env->ReleaseStringUTFChars(jname, name);
 
   /* Retrieve the kill time from the process */
-  jdouble jkill = env->GetDoubleField(jprocess, jprocess_field_Process_killTime);
-  actor->ciface()->set_kill_time((double)jkill);
+  actor->ciface()->set_kill_time((double)env->GetDoubleField(jprocess, jprocess_field_Process_killTime));
 
   /* sets the PID and the PPID of the process */
   env->SetIntField(jprocess, jprocess_field_Process_pid, (jint)actor->ciface()->get_pid());
