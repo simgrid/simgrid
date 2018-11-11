@@ -28,13 +28,9 @@ public:
   virtual ~ContextFactory();
   virtual Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) = 0;
 
-  // Optional methods for attaching main() as a context:
-
-  /** Creates a context from the current context of execution
-   *
-   *  This will not work on all implementation of `ContextFactory`.
-   */
+  /** Turn the current thread into a simulation context */
   virtual Context* attach(void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
+  /** Turn the current thread into maestro (the old maestro becomes a regular actor) */
   virtual Context* create_maestro(std::function<void()> code, smx_actor_t process);
 
   virtual void run_all() = 0;
