@@ -129,7 +129,11 @@ MPI_Comm smpi_process_comm_self(){
 }
 
 void smpi_process_init(int *argc, char ***argv){
-  simgrid::smpi::ActorExt::init(argc, argv);
+  xbt_assert(*argc > 2, "Expected argc>2, got %d", *argc);
+  const char* instance_id = (*argv)[1];
+  int rank                = xbt_str_parse_int((*argv)[2], "Cannot parse rank");
+
+  simgrid::smpi::ActorExt::init(instance_id, rank);
 }
 
 void * smpi_process_get_user_data(){
@@ -423,7 +427,8 @@ typedef std::function<int(int argc, char *argv[])> smpi_entry_point_type;
 typedef int (* smpi_c_entry_point_type)(int argc, char **argv);
 typedef void (*smpi_fortran_entry_point_type)();
 
-static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<std::string> args)
+static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<std::string> args,
+                                const char* instance_id)
 {
   // copy C strings, we need them writable
   std::vector<char*>* args4argv = new std::vector<char*>(args.size());
@@ -437,7 +442,8 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
   args4argv->push_back(nullptr);
   char** argv = args4argv->data();
 
-  simgrid::smpi::ActorExt::init(&argc, &argv);
+  int rank = xbt_str_parse_int(argv[2], "cannot parse rank in argv[2]");
+  simgrid::smpi::ActorExt::init(instance_id, rank);
 #if SMPI_IFORT
   for_rtl_init_ (&argc, argv);
 #elif SMPI_FLANG
@@ -539,7 +545,7 @@ static int visit_libs(struct dl_phdr_info* info, size_t, void* data)
 }
 #endif
 
-static void smpi_init_privatization_dlopen(std::string executable)
+static void smpi_init_privatization_dlopen(std::string executable, const char* instance_id)
 {
   // Prepare the copy of the binary (get its size)
   struct stat fdin_stat;
@@ -573,9 +579,8 @@ static void smpi_init_privatization_dlopen(std::string executable)
     }
   }
 
-  simix_global->default_function = [executable, fdin_size](std::vector<std::string> args) {
-    return std::function<void()>([executable, fdin_size, args] {
-
+  simix_global->default_function = [executable, fdin_size, instance_id](std::vector<std::string> args) {
+    return std::function<void()>([executable, fdin_size, args, instance_id] {
       // Copy the dynamic library:
       std::string target_executable =
           executable + "_" + std::to_string(getpid()) + "_" + std::to_string(rank) + ".so";
@@ -628,12 +633,12 @@ static void smpi_init_privatization_dlopen(std::string executable)
       smpi_entry_point_type entry_point = smpi_resolve_function(handle);
       if (not entry_point)
         xbt_die("Could not resolve entry point");
-      smpi_run_entry_point(entry_point, args);
+      smpi_run_entry_point(entry_point, args, instance_id);
     });
   };
 }
 
-static void smpi_init_privatization_no_dlopen(std::string executable)
+static void smpi_init_privatization_no_dlopen(std::string executable, const char* instance_id)
 {
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
     smpi_prepare_global_memory_segment();
@@ -648,8 +653,9 @@ static void smpi_init_privatization_no_dlopen(std::string executable)
     smpi_backup_global_memory_segment();
 
   // Execute the same entry point for each simulated process:
-  simix_global->default_function = [entry_point](std::vector<std::string> args) {
-    return std::function<void()>([entry_point, args] { smpi_run_entry_point(entry_point, args); });
+  simix_global->default_function = [entry_point, instance_id](std::vector<std::string> args) {
+    return std::function<void()>(
+        [entry_point, args, instance_id] { smpi_run_entry_point(entry_point, args, instance_id); });
   };
 }
 
@@ -679,14 +685,15 @@ int smpi_main(const char* executable, int argc, char* argv[])
   SIMIX_comm_set_copy_data_callback(smpi_comm_copy_buffer_callback);
 
   smpi_init_options();
+  const char* instance_id = smpi_default_instance_name.c_str();
   if (smpi_privatize_global_variables == SmpiPrivStrategies::DLOPEN)
-    smpi_init_privatization_dlopen(executable);
+    smpi_init_privatization_dlopen(executable, instance_id);
   else
-    smpi_init_privatization_no_dlopen(executable);
+    smpi_init_privatization_no_dlopen(executable, instance_id);
 
   SMPI_init();
   simgrid::s4u::Engine::get_instance()->load_deployment(argv[2]);
-  SMPI_app_instance_register(smpi_default_instance_name.c_str(), nullptr,
+  SMPI_app_instance_register(instance_id, nullptr,
                              process_data.size()); // This call has a side effect on process_count...
   MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);
   smpi_universe_size = process_count;
