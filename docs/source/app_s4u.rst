@@ -329,6 +329,13 @@ posted to that mailbox will start as soon as possible, and the data
 will already be there on the receiver host when the receiver actor
 posts its :cpp:func:`get() <simgrid::s4u::Mailbox::get()>`
 
+Note that being permanent receivers of a mailbox prevents actors to be
+garbage-collected. If your simulation creates many short-lived actors
+that marked as permanent receiver, you should call
+``mailbox->set_receiver(nullptr)`` by the end of the actors so that their
+memory gets properly reclaimed. This call should be at the end of the
+actor's function, not in a on_exit callback.
+
 Memory Management
 *****************
 
