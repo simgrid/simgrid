@@ -61,20 +61,14 @@ ActorExt::~ActorExt()
   xbt_mutex_destroy(mailboxes_mutex_);
 }
 
-void ActorExt::set_data(int* argc, char*** argv)
+void ActorExt::set_data(const char* instance_id)
 {
-  instance_id_                   = std::string((*argv)[1]);
+  instance_id_                   = std::string(instance_id);
   comm_world_                    = smpi_deployment_comm_world(instance_id_);
   simgrid::s4u::Barrier* barrier = smpi_deployment_finalization_barrier(instance_id_);
   if (barrier != nullptr) // don't overwrite the current one if the instance has none
     finalization_barrier_ = barrier;
 
-  if (*argc > 3) {
-    memmove(&(*argv)[0], &(*argv)[2], sizeof(char*) * (*argc - 2));
-    (*argv)[(*argc) - 1] = nullptr;
-    (*argv)[(*argc) - 2] = nullptr;
-  }
-  (*argc) -= 2;
   // set the process attached to the mailbox
   mailbox_small_->set_receiver(actor_);
   XBT_DEBUG("<%ld> SMPI process has been initialized: %p", actor_->get_pid(), actor_.get());
@@ -233,14 +227,14 @@ int ActorExt::sampling()
   return sampling_;
 }
 
-void ActorExt::init(int* argc, char*** argv)
+void ActorExt::init(const char* instance_id, int rank)
 {
-
   if (smpi_process_count() == 0) {
     xbt_die("SimGrid was not initialized properly before entering MPI_Init. Aborting, please check compilation process "
             "and use smpirun\n");
   }
-  if (argc != nullptr && argv != nullptr) {
+
+  if (true) { // wut?
     simgrid::s4u::ActorPtr proc = simgrid::s4u::Actor::self();
     proc->get_impl()->context_->set_cleanup(&SIMIX_process_cleanup);
     // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
@@ -251,14 +245,7 @@ void ActorExt::init(int* argc, char*** argv)
       return;
       
     process->state_ = SmpiProcessState::INITIALIZING;
-    
-    char* instance_id = (*argv)[1];
-    try {
-      int rank = std::stoi(std::string((*argv)[2]));
-      smpi_deployment_register_process(instance_id, rank, proc);
-    } catch (std::invalid_argument& ia) {
-      throw std::invalid_argument(std::string("Invalid rank: ") + (*argv)[2]);
-    }
+    smpi_deployment_register_process(instance_id, rank, proc);
 
     if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
       /* Now using the segment index of this process  */
@@ -267,8 +254,8 @@ void ActorExt::init(int* argc, char*** argv)
       SMPI_switch_data_segment(proc);
     }
 
-    process->set_data(argc, argv);
-  } 
+    process->set_data(instance_id);
+  }
 }
 
 int ActorExt::get_optind()
