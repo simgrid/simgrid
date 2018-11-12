@@ -14,10 +14,11 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sampi_load_balancer_test, "Messages specific for th
 
 int main(int argc, char* argv[])
 {
+  /* Commenting this test, for now...
   sg_host_load_plugin_init();
   smpi_replay_init(&argc, &argv);
   sg_load_balancer_plugin_init(); // Must be called after smpi_replay_init as this will overwrite some replay actions
 
-  smpi_replay_main(&argc, &argv);
+  smpi_replay_main(&argc, &argv);*/
   return 0;
 }
