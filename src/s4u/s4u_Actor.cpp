@@ -47,7 +47,7 @@ ActorPtr Actor::create(std::string name, s4u::Host* host, std::function<void()> 
 ActorPtr Actor::create(std::string name, s4u::Host* host, std::string function, std::vector<std::string> args)
 {
   simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
-  return create(name, host, std::move(factory(std::move(args))));
+  return create(name, host, factory(std::move(args)));
 }
 
 void intrusive_ptr_add_ref(Actor* actor)
