@@ -39,12 +39,12 @@ Context* ContextFactory::self()
   return SIMIX_context_get_current();
 }
 
-void ContextFactory::declare_context(void* context, std::size_t size)
+void Context::declare_context(std::size_t size)
 {
 #if SIMGRID_HAVE_MC
   /* Store the address of the stack in heap to compare it apart of heap comparison */
   if(MC_is_active())
-    MC_ignore_heap(context, size);
+    MC_ignore_heap(this, size);
 #endif
 }
 

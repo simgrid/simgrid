@@ -36,23 +36,24 @@ public:
   virtual void run_all() = 0;
   virtual Context* self();
   std::string const& name() const { return name_; }
-private:
-  void declare_context(void* T, std::size_t size);
 
 protected:
   template <class T, class... Args> T* new_context(Args&&... args)
   {
     T* context = new T(std::forward<Args>(args)...);
-    this->declare_context(context, sizeof(T));
+    context->declare_context(sizeof(T));
     return context;
   }
 };
 
 class XBT_PUBLIC Context {
+  friend ContextFactory;
+
 private:
   std::function<void()> code_;
   void_pfn_smxprocess_t cleanup_func_ = nullptr;
   smx_actor_t actor_                  = nullptr;
+  void declare_context(std::size_t size);
 
 public:
   class StopRequest {
