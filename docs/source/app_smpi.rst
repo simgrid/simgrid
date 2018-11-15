@@ -41,9 +41,22 @@ For **further scalability**, you may modify your code to speed up your
 studies or save memory space.  Maximal **simulation accuracy**
 requires some specific care from you.
 
-----------
-Using SMPI
-----------
+.. _SMPI_online:
+
+-----------------
+Using SMPI online
+-----------------
+
+In this mode, your application is actually executed. Every computation
+occurs for real while every communication is simulated. In addition,
+the executions are automatically benchmarked so that their timings can
+be applied within the simulator. 
+
+SMPI can also go offline by replaying a trace. :ref:`Trace replay
+<SMPI_offline>` is usually ways faster than online simulation (because
+the computation are skipped), but it can only applied to applications
+with constant execution and communication patterns (for the exact same
+reason).
 
 ...................
 Compiling your Code
@@ -741,3 +754,47 @@ only if you declare ``_GNU_SOURCE`` before including
 ``unistd.h``. If your project includes that header file before
 SMPI, then you need to ensure that you pass the right configuration
 defines as advised above.
+
+
+
+.. _SMPI_offline:
+
+-----------------------------
+Trace Replay and Offline SMPI
+-----------------------------
+
+Although SMPI is often used for :ref:`online simulation
+<SMPI_online>`, where the application is executed for real, you can
+also go for offline simulation through trace replay. 
+
+SimGrid uses time-independent traces, in which each actor is given a
+script of the actions to do sequentially. These trace files can
+actually be captured with the online version of SMPI, as follows:
+
+.. code-block:: shell
+
+   $ smpirun -trace-ti --cfg=tracing/filename:LU.A.32 -np 32 -platform ../cluster_backbone.xml bin/lu.A.32 
+
+The produced trace is composed of a file ``LU.A.32`` and a folder
+``LU.A.32_files``. The file names don't match with the MPI ranks, but
+that's expected.
+
+To replay this with SMPI, you need to first compile the provided
+``smpi_replay.cpp`` file, that comes from
+`simgrid/examples/smpi/replay
+<https://framagit.org/simgrid/simgrid/tree/master/examples/smpi/replay>`_.
+
+.. code-block:: shell
+
+   $ smpicxx ../replay.cpp -O3 -o ../smpi_replay
+
+Afterward, you can replay your trace in SMPI as follows:
+
+   $ smpirun -np 32 -platform ../cluster_torus.xml -ext smpi_replay ../smpi_replay LU.A.32
+
+All the outputs are gone, as the application is not really simulated
+here. Its trace is simply replayed. But if you visualize the live
+simulation and the replay, you will see that the behavior is
+unchanged. The simulation does not run much faster on this very
+example, but this becomes very interesting when your application
+is computationally hungry.

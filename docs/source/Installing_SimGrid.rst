@@ -135,6 +135,19 @@ fall into two categories. **SimGrid-specific options** define which part
 of the framework to compile while **Generic options** are provided by
 cmake itself.
 
+.. warning::
+
+   Our build system often gets mixed up if you change something on
+   your machine after the build configuration.  For example, if
+   SimGrid fails to detect your fortran compiler, it is not enough to
+   install a fortran compiler. You also need to clean every Cmake
+   files, such as ``CMakeCache.txt``. Since Cmake also generates some
+   files in the tree, you may need to wipe out your complete tree and
+   start with a fresh one when you install new dependencies.
+   
+   Another (better) solution is to :ref:`build out of the source tree
+   <install_cmake_outsrc>`.
+
 Generic build-time options
 """"""""""""""""""""""""""
 

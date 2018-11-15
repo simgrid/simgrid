@@ -56,7 +56,10 @@ synchronization mechanisms** such as |API_s4u_Barrier|_, |API_s4u_Semaphore|_,
 Each actor is located on a simulated |API_s4u_Host|_. Each host is located
 itself in a |API_s4u_NetZone|_, that knows the networking path between one
 resource to another. Each NetZone is included in another one, forming
-a tree of NetZones which root zone contains the whole platform.
+a tree of NetZones which root zone contains the whole platform. The
+actors can also be located on a |API_s4U_VirtualMachine|_ that may
+restrict the activities it contains to a limited amount of cores.
+Virtual machines can also be migrated between hosts.
 
 The :ref:`simgrid::s4u::this_actor <API_s4u_this_actor>` namespace
 provides many helper functions to simplify the code of actors.
@@ -116,8 +119,7 @@ provides many helper functions to simplify the code of actors.
 .. |API_s4u_Storages| replace:: **Storages**
 .. _API_s4u_Storages: #s4u-storage
 
-.. |API_s4u_VirtualMachines| replace:: **VirtualMachines**
-.. _API_s4u_VirtualMachines: #s4u-virtualmachine
+.. |API_s4u_VirtualMachine| replace:: **VirtualMachines**
 
 .. |API_s4u_Host| replace:: **Host**
 
