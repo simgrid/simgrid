@@ -245,5 +245,5 @@ Action* ActionHeap::pop()
 }
 
 } // namespace surf
-} // namespace simgrid
+} // namespace kernel
 } // namespace simgrid

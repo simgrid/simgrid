@@ -174,5 +174,5 @@ void Model::update_actions_state_full(double /*now*/, double /*delta*/)
 }
 
 } // namespace surf
-} // namespace simgrid
+} // namespace kernel
 } // namespace simgrid
