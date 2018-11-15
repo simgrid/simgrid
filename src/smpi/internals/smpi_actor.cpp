@@ -227,35 +227,36 @@ int ActorExt::sampling()
   return sampling_;
 }
 
-void ActorExt::init(const char* instance_id, int rank)
+void ActorExt::init()
 {
   if (smpi_process_count() == 0) {
     xbt_die("SimGrid was not initialized properly before entering MPI_Init. Aborting, please check compilation process "
             "and use smpirun\n");
   }
 
-  if (true) { // wut?
-    simgrid::s4u::ActorPtr proc = simgrid::s4u::Actor::self();
-    proc->get_impl()->context_->set_cleanup(&SIMIX_process_cleanup);
-    // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
-    // this up here so that I can set the privatized region before the switch.
-    ActorExt* process = smpi_process_remote(proc);
-    //if we are in MPI_Init and argc handling has already been done.
-    if (process->initialized())
-      return;
-      
-    process->state_ = SmpiProcessState::INITIALIZING;
-    smpi_deployment_register_process(instance_id, rank, proc);
+  simgrid::s4u::ActorPtr proc = simgrid::s4u::Actor::self();
+  proc->get_impl()->context_->set_cleanup(&SIMIX_process_cleanup);
+  // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
+  // this up here so that I can set the privatized region before the switch.
+  ActorExt* process = smpi_process_remote(proc);
+  //if we are in MPI_Init and argc handling has already been done.
+  if (process->initialized())
+    return;
 
-    if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
-      /* Now using the segment index of this process  */
-      process->set_privatized_region(smpi_init_global_memory_segment_process());
-      /* Done at the process's creation */
-      SMPI_switch_data_segment(proc);
-    }
-
-    process->set_data(instance_id);
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
+    /* Now using the segment index of this process  */
+    process->set_privatized_region(smpi_init_global_memory_segment_process());
+    /* Done at the process's creation */
+    SMPI_switch_data_segment(proc);
   }
+
+  const char* instance_id = simgrid::s4u::Actor::self()->get_property("instance_id");
+  const int rank = xbt_str_parse_int(simgrid::s4u::Actor::self()->get_property("rank"), "Cannot parse rank");
+
+  process->state_ = SmpiProcessState::INITIALIZING;
+  smpi_deployment_register_process(instance_id, rank, proc);
+
+  process->set_data(instance_id);
 }
 
 int ActorExt::get_optind()

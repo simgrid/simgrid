@@ -28,26 +28,26 @@ static void overriding_send(simgrid::xbt::ReplayAction& args)
 
 int main(int argc, char* argv[])
 {
-  const char* instance_id    = argv[1];
+  /* Parse main arguments */
+  const char* instance_id    = "replay";
   int rank                   = -1;
-  const char* trace_filename = argv[3];
+  const char* trace_filename = argv[1];
   double start_delay_flops   = 0;
 
   try {
-    rank = std::stoi(std::string(argv[2]));
+    rank = std::stoi(std::string(argv[0]));
   } catch (std::invalid_argument&) {
-    throw std::invalid_argument(std::string("Invalid rank: ") + argv[2]);
+    throw std::invalid_argument(std::string("Invalid rank: ") + argv[0]);
   }
 
-  if (argc > 4) {
+  if (argc > 2) {
     try {
-      start_delay_flops = std::stod(std::string(argv[4]));
+      start_delay_flops = std::stod(std::string(argv[2]));
     } catch (std::invalid_argument&) {
-      throw std::invalid_argument(std::string(argv[4]) + " is not a double");
+      throw std::invalid_argument(std::string(argv[2]) + " is not a double");
     }
   }
 
-  // XBT_INFO("\tinstance_id='%s' rank=%d trace_filename='%s'", instance_id, rank, trace_filename);
   /* Setup things and register default actions */
   smpi_replay_init(instance_id, rank, start_delay_flops);
 

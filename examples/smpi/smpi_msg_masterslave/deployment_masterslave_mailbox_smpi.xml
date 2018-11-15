@@ -13,27 +13,27 @@
     <argument value="0"/>
   </actor>
   <actor host="Ginette" function="master_mpi">
-    <argument value="master_mpi"/>
-    <argument value="0"/>
+    <prop id="instance_id" value="master_mpi"/>
+    <prop id="rank" value="0"/>
   </actor>
   <actor host="Bourassa" function="master_mpi">
-    <argument value="master_mpi"/>
-    <argument value="1"/>
+    <prop id="instance_id" value="master_mpi"/>
+    <prop id="rank" value="1"/>
   </actor>
   <actor host="Ginette" function="alltoall_mpi">
-    <argument value="alltoall_mpi"/>
-    <argument value="0"/>
+    <prop id="instance_id" value="alltoall_mpi"/>
+    <prop id="rank" value="0"/>
   </actor>
   <actor host="Bourassa" function="alltoall_mpi">
-    <argument value="alltoall_mpi"/>
-    <argument value="1"/>
+    <prop id="instance_id" value="alltoall_mpi"/>
+    <prop id="rank" value="1"/>
   </actor>
   <actor host="Jupiter" function="alltoall_mpi">
-    <argument value="alltoall_mpi"/>
-    <argument value="2"/>
+    <prop id="instance_id" value="alltoall_mpi"/>
+    <prop id="rank" value="2"/>
   </actor>
   <actor host="Fafard" function="alltoall_mpi">
-    <argument value="alltoall_mpi"/>
-    <argument value="3"/>
+    <prop id="instance_id" value="alltoall_mpi"/>
+    <prop id="rank" value="3"/>
   </actor>
 </platform>

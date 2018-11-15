@@ -705,7 +705,9 @@ static std::unordered_map<aid_t, simgrid::smpi::replay::RequestStorage> storage;
 void smpi_replay_init(const char* instance_id, int rank, double start_delay_flops)
 {
   if (not smpi_process()->initializing()){
-    simgrid::smpi::ActorExt::init(instance_id, rank);
+    simgrid::s4u::Actor::self()->set_property("instance_id", instance_id);
+    simgrid::s4u::Actor::self()->set_property("rank", std::to_string(rank));
+    simgrid::smpi::ActorExt::init();
   }
   smpi_process()->mark_as_initialized();
   smpi_process()->set_replaying(true);

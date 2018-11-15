@@ -68,7 +68,7 @@ public:
   void set_comm_intra(MPI_Comm comm);
   void set_sampling(int s);
   int sampling();
-  static void init(const char* instance_id, int rank);
+  static void init();
   simgrid::s4u::ActorPtr get_actor();
   int get_optind();
   void set_optind(int optind);

@@ -32,29 +32,9 @@ int PMPI_Init(int *argc, char ***argv)
   xbt_assert(simgrid::s4u::Engine::is_initialized(),
              "Your MPI program was not properly initialized. The easiest is to use smpirun to start it.");
 
-  const char* default_instance_id = "smpirun";
-  const char* instance_id         = default_instance_id;
-  int rank                        = simgrid::s4u::this_actor::get_pid() + 1;
-
-  // Yes, user can call MPI_INIT(NULL, NULL)...
-  if ((argc != nullptr) && (argv != nullptr)) {
-    if (*argc > 1)
-      instance_id = (*argv)[1];
-    if (*argc > 2)
-      rank = xbt_str_parse_int((*argv)[2], "Cannot parse rank");
-
-    // Remove SMPI positional arguments from argc/argv, so users do not see them.
-    if (*argc > 3) {
-      memmove(&(*argv)[0], &(*argv)[2], sizeof(char*) * (*argc - 2));
-      (*argv)[(*argc) - 1] = nullptr;
-      (*argv)[(*argc) - 2] = nullptr;
-    }
-    (*argc) -= 2;
-  }
-
   // Init is called only once per SMPI process
   if (not smpi_process()->initializing()){
-    simgrid::smpi::ActorExt::init(instance_id, rank);
+    simgrid::smpi::ActorExt::init();
   }
   if (not smpi_process()->initialized()){
     int rank_traced = simgrid::s4u::this_actor::get_pid();
