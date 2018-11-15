@@ -19,7 +19,7 @@
 #include <assert.h>
 #include "mpitest.h"
 
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
