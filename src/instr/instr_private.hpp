@@ -131,9 +131,7 @@ public:
   std::string print() override
   {
     std::stringstream stream;
-    stream << getName() << " ";
-    if (endpoint >= 0)
-      stream << endpoint << " ";
+    stream << getName() << " " << endpoint << " ";
     stream << tag << " " << send_size << " " << send_type;
     return stream.str();
   }
