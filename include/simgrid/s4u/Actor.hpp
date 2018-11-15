@@ -374,7 +374,7 @@ public:
     return res;
   }
   /** @deprecated See Actor::get_properties() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_properties()") void setProperty(const char* key, const char* value)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::set_property()") void setProperty(const char* key, const char* value)
   {
     set_property(key, value);
   }
