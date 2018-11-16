@@ -3,9 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/replay.hpp"
+#include "simgrid/s4u.hpp"
 #include "smpi/smpi.h"
 #include "xbt/asserts.h"
+#include "xbt/replay.hpp"
+#include "xbt/str.h"
 
 #include <string>
 
@@ -28,24 +30,13 @@ static void overriding_send(simgrid::xbt::ReplayAction& args)
 
 int main(int argc, char* argv[])
 {
-  /* Parse main arguments */
-  const char* instance_id    = "replay";
-  int rank                   = -1;
+  const char* instance_id = simgrid::s4u::Actor::self()->get_property("instance_id");
+  const int rank = xbt_str_parse_int(simgrid::s4u::Actor::self()->get_property("rank"), "Cannot parse rank");
   const char* trace_filename = argv[1];
   double start_delay_flops   = 0;
 
-  try {
-    rank = std::stoi(std::string(argv[0]));
-  } catch (std::invalid_argument&) {
-    throw std::invalid_argument(std::string("Invalid rank: ") + argv[0]);
-  }
-
   if (argc > 2) {
-    try {
-      start_delay_flops = std::stod(std::string(argv[2]));
-    } catch (std::invalid_argument&) {
-      throw std::invalid_argument(std::string(argv[2]) + " is not a double");
-    }
+    start_delay_flops = xbt_str_parse_double(argv[2], "Cannot parse start_delay_flops");
   }
 
   /* Setup things and register default actions */

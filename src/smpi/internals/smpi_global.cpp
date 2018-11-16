@@ -432,6 +432,10 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, const std::st
   std::vector<char*>* args4argv = new std::vector<char*>(args.size());
   std::transform(begin(args), end(args), begin(*args4argv), [](const std::string& s) { return xbt_strdup(s.c_str()); });
 
+  // set argv[0] to executable_path
+  xbt_free((*args4argv)[0]);
+  (*args4argv)[0] = xbt_strdup(executable_path.c_str());
+
 #if !SMPI_IFORT
   // take a copy of args4argv to keep reference of the allocated strings
   const std::vector<char*> args2str(*args4argv);
