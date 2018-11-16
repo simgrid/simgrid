@@ -40,16 +40,8 @@ class Replayer {
 public:
   explicit Replayer(std::vector<std::string> args)
   {
-    int argc;
-    char* argv[2];
-    argv[0] = &args.at(0)[0];
-    if (args.size() == 1) {
-      argc = 1;
-    } else {
-      argc    = 2;
-      argv[1] = &args.at(1)[0];
-    }
-    simgrid::xbt::replay_runner(argc, argv);
+    const char* actor_name = args[0].c_str();
+    simgrid::xbt::replay_runner(actor_name, nullptr);
   }
 
   void operator()()
@@ -112,7 +104,6 @@ int main(int argc, char* argv[])
              argv[0], argv[0], argv[0]);
 
   e.load_platform(argv[1]);
-  e.register_default(&simgrid::xbt::replay_runner);
   e.register_actor<Replayer>("p0");
   e.load_deployment(argv[2]);
 
