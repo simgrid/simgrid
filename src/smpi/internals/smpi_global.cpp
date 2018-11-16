@@ -129,7 +129,7 @@ MPI_Comm smpi_process_comm_self(){
 }
 
 void smpi_process_init(int *argc, char ***argv){
-  simgrid::smpi::ActorExt::init(argc, argv);
+  simgrid::smpi::ActorExt::init();
 }
 
 void * smpi_process_get_user_data(){
@@ -423,11 +423,16 @@ typedef std::function<int(int argc, char *argv[])> smpi_entry_point_type;
 typedef int (* smpi_c_entry_point_type)(int argc, char **argv);
 typedef void (*smpi_fortran_entry_point_type)();
 
-static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<std::string> args)
+static int smpi_run_entry_point(smpi_entry_point_type entry_point, const std::string& executable_path,
+                                std::vector<std::string> args)
 {
   // copy C strings, we need them writable
   std::vector<char*>* args4argv = new std::vector<char*>(args.size());
   std::transform(begin(args), end(args), begin(*args4argv), [](const std::string& s) { return xbt_strdup(s.c_str()); });
+
+  // set argv[0] to executable_path
+  xbt_free((*args4argv)[0]);
+  (*args4argv)[0] = xbt_strdup(executable_path.c_str());
 
 #if !SMPI_IFORT
   // take a copy of args4argv to keep reference of the allocated strings
@@ -437,7 +442,7 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
   args4argv->push_back(nullptr);
   char** argv = args4argv->data();
 
-  simgrid::smpi::ActorExt::init(&argc, &argv);
+  simgrid::smpi::ActorExt::init();
 #if SMPI_IFORT
   for_rtl_init_ (&argc, argv);
 #elif SMPI_FLANG
@@ -539,7 +544,7 @@ static int visit_libs(struct dl_phdr_info* info, size_t, void* data)
 }
 #endif
 
-static void smpi_init_privatization_dlopen(std::string executable)
+static void smpi_init_privatization_dlopen(const std::string& executable)
 {
   // Prepare the copy of the binary (get its size)
   struct stat fdin_stat;
@@ -575,7 +580,6 @@ static void smpi_init_privatization_dlopen(std::string executable)
 
   simix_global->default_function = [executable, fdin_size](std::vector<std::string> args) {
     return std::function<void()>([executable, fdin_size, args] {
-
       // Copy the dynamic library:
       std::string target_executable =
           executable + "_" + std::to_string(getpid()) + "_" + std::to_string(rank) + ".so";
@@ -628,12 +632,12 @@ static void smpi_init_privatization_dlopen(std::string executable)
       smpi_entry_point_type entry_point = smpi_resolve_function(handle);
       if (not entry_point)
         xbt_die("Could not resolve entry point");
-      smpi_run_entry_point(entry_point, args);
+      smpi_run_entry_point(entry_point, executable, args);
     });
   };
 }
 
-static void smpi_init_privatization_no_dlopen(std::string executable)
+static void smpi_init_privatization_no_dlopen(const std::string& executable)
 {
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
     smpi_prepare_global_memory_segment();
@@ -648,8 +652,9 @@ static void smpi_init_privatization_no_dlopen(std::string executable)
     smpi_backup_global_memory_segment();
 
   // Execute the same entry point for each simulated process:
-  simix_global->default_function = [entry_point](std::vector<std::string> args) {
-    return std::function<void()>([entry_point, args] { smpi_run_entry_point(entry_point, args); });
+  simix_global->default_function = [entry_point, executable](std::vector<std::string> args) {
+    return std::function<void()>(
+        [entry_point, executable, args] { smpi_run_entry_point(entry_point, executable, args); });
   };
 }
 

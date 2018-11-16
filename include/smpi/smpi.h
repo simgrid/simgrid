@@ -1002,9 +1002,10 @@ XBT_PUBLIC int smpi_main(const char* program, int argc, char* argv[]);
 XBT_PUBLIC void smpi_process_init(int* argc, char*** argv);
 
 /* Trace replay specific stuff */
-XBT_PUBLIC void smpi_replay_init(int* argc, char*** argv); // Only initialization
-XBT_PUBLIC void smpi_replay_main(int* argc, char*** argv); // Launch the replay once init is done
-XBT_PUBLIC void smpi_replay_run(int* argc, char*** argv);  // Both init and start
+XBT_PUBLIC void smpi_replay_init(const char* instance_id, int rank, double start_delay_flops); // Only initialization
+XBT_PUBLIC void smpi_replay_main(int rank, const char* trace_filename); // Launch the replay once init is done
+XBT_PUBLIC void smpi_replay_run(const char* instance_id, int rank, double start_delay_flops,
+                                const char* trace_filename); // Both init and start
 
 XBT_PUBLIC void SMPI_app_instance_register(const char* name, xbt_main_func_t code, int num_processes);
 XBT_PUBLIC void SMPI_init();
