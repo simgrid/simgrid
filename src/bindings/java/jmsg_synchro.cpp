@@ -64,7 +64,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Semaphore_acquire(JNIEnv * env, jobj
   msg_sem_t sem;
 
   sem             = (msg_sem_t)(uintptr_t)env->GetLongField(obj, jsynchro_field_Semaphore_bind);
-  msg_error_t res = MSG_sem_acquire_timeout(sem, (double) timeout);
+  msg_error_t res = MSG_sem_acquire_timeout(sem, (double)timeout) == 0 ? MSG_OK : MSG_TIMEOUT;
   if (res != MSG_OK) {
     jmsg_throw_status(env, res);
   }
