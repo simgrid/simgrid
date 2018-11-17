@@ -453,7 +453,6 @@ set(MSG_SRC
   src/msg/msg_gos.cpp
   src/msg/msg_legacy.cpp
   src/msg/msg_process.cpp
-  src/msg/msg_synchro.cpp
   src/msg/msg_task.cpp
   )
 
@@ -690,6 +689,7 @@ set(headers_to_install
   include/simgrid/kernel/future.hpp
   include/simgrid/host.h
   include/simgrid/link.h
+  include/simgrid/semaphore.h
   include/simgrid/storage.h
   include/simgrid/vm.h
   include/simgrid/zone.h

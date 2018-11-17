@@ -29,13 +29,13 @@ class XBT_PUBLIC Semaphore {
   smx_sem_t sem_;
   std::atomic_int_fast32_t refcount_{0};
 
-  explicit Semaphore(unsigned int initial_capacity);
-  ~Semaphore();
-
   friend void intrusive_ptr_add_ref(Semaphore* sem);
   friend void intrusive_ptr_release(Semaphore* sem);
 
 public:
+  explicit Semaphore(unsigned int initial_capacity);
+  ~Semaphore();
+
   // No copy:
   /** You cannot create a new semaphore by copying an existing one. Use SemaphorePtr instead */
   Semaphore(Semaphore const&) = delete;
@@ -46,7 +46,10 @@ public:
   static SemaphorePtr create(unsigned int initial_capacity);
 
   void acquire();
+  int acquire_timeout(double timeout);
   void release();
+  int get_capacity();
+  int would_block();
 };
 
 }} // namespace simgrid::s4u
