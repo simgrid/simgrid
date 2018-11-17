@@ -389,7 +389,7 @@ void MSG_sem_acquire(sg_sem_t sem)
 }
 int MSG_sem_acquire_timeout(sg_sem_t sem, double timeout)
 {
-  sg_sem_acquire_timeout(sem, timeout);
+  return sg_sem_acquire_timeout(sem, timeout);
 }
 void MSG_sem_release(sg_sem_t sem)
 {
