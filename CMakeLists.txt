@@ -617,6 +617,7 @@ if(NS3_LIBRARY_PATH)
 endif()
 set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"")
 set(SMPIMAIN ${libdir}/simgrid/smpimain)
+set(SMPIREPLAYMAIN ${libdir}/simgrid/smpireplaymain)
 
 configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/mpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/mpif.h @ONLY)
 #configure mpif.f90 to build mpi.mod
@@ -645,6 +646,7 @@ if(NS3_LIBRARY_PATH)
 endif()
 set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"")
 set(SMPIMAIN ${CMAKE_BINARY_DIR}/lib/simgrid/smpimain)
+set(SMPIREPLAYMAIN ${CMAKE_BINARY_DIR}/lib/simgrid/smpireplaymain)
 
 foreach(script cc cxx ff f90 run)
   configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpi${script}.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpi${script} @ONLY)

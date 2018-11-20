@@ -33,6 +33,7 @@ set(EXTRA_DIST
   src/smpi/include/private.hpp
   src/smpi/include/smpi_utils.hpp
   src/smpi/smpi_main.c
+  src/smpi/smpi_replay_main.cpp
   src/surf/cpu_cas01.hpp
   src/surf/cpu_interface.hpp
   src/surf/cpu_ti.hpp
