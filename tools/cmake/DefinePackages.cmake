@@ -32,6 +32,7 @@ set(EXTRA_DIST
   src/smpi/colls/smpi_mvapich2_selector_stampede.hpp
   src/smpi/include/private.hpp
   src/smpi/include/smpi_utils.hpp
+  src/smpi/smpi_main.c
   src/surf/cpu_cas01.hpp
   src/surf/cpu_interface.hpp
   src/surf/cpu_ti.hpp
@@ -90,7 +91,6 @@ set(EXTRA_DIST
   )
 
 set(SMPI_SRC
-  src/smpi/smpi_main.c
   src/smpi/bindings/smpi_mpi.cpp
   src/smpi/bindings/smpi_pmpi.cpp
   src/smpi/bindings/smpi_pmpi_coll.cpp
