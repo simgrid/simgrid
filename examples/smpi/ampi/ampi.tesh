@@ -30,5 +30,5 @@ $ bash -c "cat ${bindir:=.}/smpi_trace.trace_files/*"
 > 2 migrate 400
 > 2 finalize
 
-$ rm -rf ${bindir:=.}/smpi_trace.trace 
+$ rm -rf ${bindir:=.}/smpi_trace.trace
 $ rm -rf ${bindir:=.}/smpi_trace.trace_files

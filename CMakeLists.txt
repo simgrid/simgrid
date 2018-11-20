@@ -426,7 +426,7 @@ if(CMAKE_USE_PTHREADS_INIT)
             RUN_OUTPUT_VARIABLE semopen_runmsg)
     
     if(semopen_compilable)
-      if(NOT semopen_retval) # error if not 0
+      if(NOT semopen_retval) # error if not 0
         message(STATUS "sem_open is compilable and executable")
 	set(HAVE_SEM_OPEN 1)
       else()
@@ -458,7 +458,7 @@ if(CMAKE_USE_PTHREADS_INIT)
             RUN_OUTPUT_VARIABLE seminit_runmsg)
     
     if(seminit_compilable)
-      if(NOT seminit_retval) # error if not 0
+      if(NOT seminit_retval) # error if not 0
         message(STATUS "sem_init is compilable and executable")
 	set(HAVE_SEM_INIT 1)
       else()
