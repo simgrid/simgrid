@@ -53,7 +53,6 @@ static void test_energy_consumption(std::string name, int nb_cores)
       new_energy += sg_host_get_consumed_energy(pm);
   }
 
-  double energy_gap = new_energy - energy;
   double expected_consumption = 0.1 * nb_cores;
   double actual_consumption = new_energy - energy;
 
