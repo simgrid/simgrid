@@ -7,6 +7,7 @@
 #include "simgrid/s4u.hpp"
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u/VirtualMachine.hpp"
+#include <cmath>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this msg example");
 
