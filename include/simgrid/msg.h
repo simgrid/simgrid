@@ -14,6 +14,7 @@
 #include <simgrid/instr.h>
 #include <simgrid/mailbox.h>
 #include <simgrid/plugins/live_migration.h>
+#include <simgrid/semaphore.h>
 #include <simgrid/storage.h>
 #include <simgrid/vm.h>
 #include <simgrid/zone.h>
@@ -428,14 +429,11 @@ XBT_PUBLIC const char* MSG_task_get_category(msg_task_t task);
  */
 XBT_PUBLIC void MSG_mailbox_set_async(const char* alias);
 
-/** @brief Opaque type representing a semaphore
- *  @hideinitializer
- */
-typedef struct s_smx_sem_t* msg_sem_t; // Yeah that's a rename of the smx_sem_t which doesnt require smx_sem_t to be
-                                       // declared here
+/** @brief Opaque type representing a semaphore */
+typedef sg_sem_t msg_sem_t;
 XBT_PUBLIC msg_sem_t MSG_sem_init(int initial_value);
 XBT_PUBLIC void MSG_sem_acquire(msg_sem_t sem);
-XBT_PUBLIC msg_error_t MSG_sem_acquire_timeout(msg_sem_t sem, double timeout);
+XBT_PUBLIC int MSG_sem_acquire_timeout(msg_sem_t sem, double timeout);
 XBT_PUBLIC void MSG_sem_release(msg_sem_t sem);
 XBT_PUBLIC int MSG_sem_get_capacity(msg_sem_t sem);
 XBT_PUBLIC void MSG_sem_destroy(msg_sem_t sem);

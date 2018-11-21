@@ -19,10 +19,6 @@
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 
-#ifdef HAVE_SMPI
-#include "src/smpi/include/private.hpp"
-#endif
-
 #include <boost/range/algorithm.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix, "Logging specific to SIMIX (process)");

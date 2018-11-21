@@ -378,3 +378,32 @@ int MSG_barrier_wait(sg_bar_t bar)
 {
   return sg_barrier_wait(bar);
 }
+
+sg_sem_t MSG_sem_init(int initial_value)
+{
+  return sg_sem_init(initial_value);
+}
+void MSG_sem_acquire(sg_sem_t sem)
+{
+  sg_sem_acquire(sem);
+}
+int MSG_sem_acquire_timeout(sg_sem_t sem, double timeout)
+{
+  return sg_sem_acquire_timeout(sem, timeout);
+}
+void MSG_sem_release(sg_sem_t sem)
+{
+  sg_sem_release(sem);
+}
+int MSG_sem_get_capacity(sg_sem_t sem)
+{
+  return sg_sem_get_capacity(sem);
+}
+void MSG_sem_destroy(sg_sem_t sem)
+{
+  sg_sem_destroy(sem);
+}
+int MSG_sem_would_block(sg_sem_t sem)
+{
+  return sg_sem_would_block(sem);
+}

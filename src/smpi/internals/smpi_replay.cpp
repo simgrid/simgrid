@@ -447,8 +447,6 @@ void SendAction::kernel(simgrid::xbt::ReplayAction& action)
 
 void RecvAction::kernel(simgrid::xbt::ReplayAction& action)
 {
-  int src_traced = MPI_COMM_WORLD->group()->actor(args.partner)->get_pid();
-
   TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::Pt2PtTIData(name, args.partner, args.size,
         args.tag, Datatype::encode(args.datatype1)));
 
@@ -469,6 +467,7 @@ void RecvAction::kernel(simgrid::xbt::ReplayAction& action)
   TRACE_smpi_comm_out(my_proc_id);
   // TODO: Check why this was only activated in the "recv" case and not in the "irecv" case
   if (name == "recv" && not TRACE_smpi_view_internals()) {
+    int src_traced = MPI_COMM_WORLD->group()->actor(status.MPI_SOURCE)->get_pid();
     TRACE_smpi_recv(src_traced, my_proc_id, args.tag);
   }
 }
