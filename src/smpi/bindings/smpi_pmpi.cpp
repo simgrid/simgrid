@@ -31,17 +31,18 @@ int PMPI_Init(int *argc, char ***argv)
 {
   xbt_assert(simgrid::s4u::Engine::is_initialized(),
              "Your MPI program was not properly initialized. The easiest is to use smpirun to start it.");
+
   // Init is called only once per SMPI process
   if (not smpi_process()->initializing()){
-    simgrid::smpi::ActorExt::init(argc, argv);
+    simgrid::smpi::ActorExt::init();
   }
   if (not smpi_process()->initialized()){
-    int rank = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_init(rank);
-    TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("init"));
-    TRACE_smpi_comm_out(rank);
-    TRACE_smpi_computing_init(rank);
-    TRACE_smpi_sleeping_init(rank);
+    int rank_traced = simgrid::s4u::this_actor::get_pid();
+    TRACE_smpi_init(rank_traced);
+    TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::NoOpTIData("init"));
+    TRACE_smpi_comm_out(rank_traced);
+    TRACE_smpi_computing_init(rank_traced);
+    TRACE_smpi_sleeping_init(rank_traced);
     smpi_bench_begin();
     smpi_process()->mark_as_initialized();
   }
@@ -54,13 +55,13 @@ int PMPI_Init(int *argc, char ***argv)
 int PMPI_Finalize()
 {
   smpi_bench_end();
-  int rank = simgrid::s4u::this_actor::get_pid();
-  TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("finalize"));
+  int rank_traced = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::NoOpTIData("finalize"));
 
   smpi_process()->finalize();
 
-  TRACE_smpi_comm_out(rank);
-  TRACE_smpi_finalize(rank);
+  TRACE_smpi_comm_out(rank_traced);
+  TRACE_smpi_finalize(rank_traced);
   return MPI_SUCCESS;
 }
 

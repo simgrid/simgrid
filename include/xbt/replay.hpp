@@ -21,7 +21,7 @@ namespace xbt {
 typedef std::vector<std::string> ReplayAction;
 
 XBT_PUBLIC_DATA std::ifstream* action_fs;
-XBT_PUBLIC int replay_runner(int argc, char* argv[]);
+XBT_PUBLIC int replay_runner(const char* actor_name, const char* trace_filename);
 }
 }
 
