@@ -232,6 +232,7 @@ typedef unsigned long long sg_size_t;
  */
 typedef long long sg_offset_t;
 
+/** Actor's ID, just like the classical processes' have PID in UNIX */
 typedef long aid_t;
 
 #endif /* SIMGRID_TYPES_H */

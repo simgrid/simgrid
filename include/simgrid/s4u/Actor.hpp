@@ -206,13 +206,9 @@ public:
   const char* get_cname() const;
   /** Retrieves the host on which that actor is running */
   s4u::Host* get_host();
-  /** Retrieves the PID of that actor
-   *
-   * aid_t is an alias for long */
+  /** Retrieves the actor ID of that actor */
   aid_t get_pid() const;
-  /** Retrieves the PPID of that actor
-   *
-   * aid_t is an alias for long */
+  /** Retrieves the actor ID of that actor's creator */
   aid_t get_ppid() const;
 
   /** Suspend an actor by suspending the task on which it was waiting for the completion. */
@@ -485,7 +481,7 @@ XBT_ATTRIB_DEPRECATED_v325("Please use std::vectors as parameters") XBT_PUBLIC
 XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
 XBT_PUBLIC ExecPtr exec_async(double flops_amounts);
 
-/** @brief Returns the actor ID of the current actor). */
+/** @brief Returns the actor ID of the current actor. */
 XBT_PUBLIC aid_t get_pid();
 
 /** @brief Returns the ancestor's actor ID of the current actor. */

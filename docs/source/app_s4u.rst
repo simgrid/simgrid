@@ -394,6 +394,8 @@ s4u::Actor
 
 .. doxygentypedef:: ActorPtr
 
+.. doxygentypedef:: aid_t
+
 .. doxygenclass:: simgrid::s4u::Actor
    :members:
    :protected-members:
