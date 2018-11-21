@@ -660,7 +660,6 @@ INPUT                  = @CMAKE_HOME_DIRECTORY@/doc/doxygen/index.doc \
                          @CMAKE_HOME_DIRECTORY@/doc/doxygen/outcomes_logs.doc \
                          @CMAKE_HOME_DIRECTORY@/doc/doxygen/outcomes_vizu.doc \
                          @CMAKE_HOME_DIRECTORY@/doc/doxygen/outcomes_MC.doc \
-                         @CMAKE_HOME_DIRECTORY@/doc/tuto-msg/tuto-msg.doc \
                          @CMAKE_HOME_DIRECTORY@/doc/doxygen/tutorial_smpi.doc \
                          @CMAKE_HOME_DIRECTORY@/doc/doxygen/examples.doc \
                          @CMAKE_HOME_DIRECTORY@/doc/doxygen/howtos.doc \
@@ -770,8 +769,7 @@ EXAMPLE_PATH           = ./ \
                          @CMAKE_HOME_DIRECTORY@/src/xbt/ \
                          @CMAKE_HOME_DIRECTORY@/include \
                          @CMAKE_HOME_DIRECTORY@/examples \
-                         @CMAKE_BINARY_DIR@/doc/example_lists \
-                         @CMAKE_HOME_DIRECTORY@/doc/tuto-msg
+                         @CMAKE_BINARY_DIR@/doc/example_lists
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
