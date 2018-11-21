@@ -64,10 +64,14 @@ public:
   kernel::resource::Action* action_ = nullptr;
   static std::deque<s4u::VirtualMachine*> allVms_;
   bool is_migrating_ = false;
+  int active_tasks_ = 0;
+
+  void update_action_weight();
 
 private:
   s4u::Host* physical_host_;
   int core_amount_;
+  double user_bound_;
   size_t ramsize_            = 0;
   s4u::VirtualMachine::state vm_state_ = s4u::VirtualMachine::state::CREATED;
 };
@@ -82,7 +86,6 @@ private:
 class XBT_PRIVATE VMModel : public surf::HostModel {
 public:
   VMModel();
-  void ignore_empty_vm_in_pm_LMM() override{};
 
   double next_occuring_event(double now) override;
   void update_actions_state(double /*now*/, double /*delta*/) override{};

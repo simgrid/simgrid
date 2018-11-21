@@ -23,27 +23,6 @@ namespace surf {
  * Model *
  *********/
 
-/* Each VM has a dummy CPU action on the PM layer. This CPU action works as the constraint (capacity) of the VM in the
- * PM layer. If the VM does not have any active task, the dummy CPU action must be deactivated, so that the VM does not
- * get any CPU share in the PM layer. */
-void HostModel::ignore_empty_vm_in_pm_LMM()
-{
-  /* iterate for all virtual machines */
-  for (s4u::VirtualMachine* const& ws_vm : vm::VirtualMachineImpl::allVms_) {
-    Cpu* cpu = ws_vm->pimpl_cpu;
-    int active_tasks = cpu->get_constraint()->get_variable_amount();
-
-    /* The impact of the VM over its PM is the min between its vCPU amount and the amount of tasks it contains */
-    int impact = std::min(active_tasks, ws_vm->get_impl()->get_core_amount());
-
-    XBT_DEBUG("set the weight of the dummy CPU action of VM%p on PM to %d (#tasks: %d)", ws_vm, impact, active_tasks);
-    if (impact > 0)
-      ws_vm->get_impl()->action_->set_priority(1. / impact);
-    else
-      ws_vm->get_impl()->action_->set_priority(0.);
-  }
-}
-
 /* Helper function for executeParallelTask */
 static inline double has_cost(double* array, int pos)
 {

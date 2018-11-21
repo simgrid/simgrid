@@ -11,10 +11,11 @@ set -ex
 
 # Install required software
 installSonarQubeScanner() {
-  export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-2.8
+  local SONAR_SCANNER_VERSION=3.2.0.1227
+  export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION
   rm -rf $SONAR_SCANNER_HOME
   mkdir -p $SONAR_SCANNER_HOME
-  curl -sSLo $HOME/.sonar/sonar-scanner.zip http://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/2.8/sonar-scanner-cli-2.8.zip
+  curl -sSLo $HOME/.sonar/sonar-scanner.zip http://repo1.maven.org/maven2/org/sonarsource/scanner/cli/sonar-scanner-cli/$SONAR_SCANNER_VERSION/sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip
   unzip $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
   rm $HOME/.sonar/sonar-scanner.zip
   export PATH=$SONAR_SCANNER_HOME/bin:$PATH

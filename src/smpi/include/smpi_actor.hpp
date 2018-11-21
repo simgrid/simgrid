@@ -41,7 +41,7 @@ private:
 public:
   explicit ActorExt(simgrid::s4u::ActorPtr actor, simgrid::s4u::Barrier* barrier);
   ~ActorExt();
-  void set_data(int* argc, char*** argv);
+  void set_data(const char* instance_id);
   void finalize();
   int finalized();
   int initializing();
@@ -68,7 +68,7 @@ public:
   void set_comm_intra(MPI_Comm comm);
   void set_sampling(int s);
   int sampling();
-  static void init(int* argc, char*** argv);
+  static void init();
   simgrid::s4u::ActorPtr get_actor();
   int get_optind();
   void set_optind(int optind);

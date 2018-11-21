@@ -56,26 +56,12 @@ static bool job_comparator(const Job* j1, const Job* j2)
 
 static void smpi_replay_process(Job* job, simgrid::s4u::BarrierPtr barrier, int rank)
 {
-  // Prepare data for smpi_replay_run
-  int argc    = 5;
-  char** argv = xbt_new(char*, argc);
-  argv[0]     = xbt_strdup("1");                                 // log only?
-  argv[1]     = xbt_strdup(job->smpi_app_name.c_str());          // application instance
-  argv[2]     = bprintf("%d", rank);                             // rank
-  argv[3]     = xbt_strdup(job->traces_filenames[rank].c_str()); // smpi trace file for this rank
-  argv[4]     = xbt_strdup("0");                                 // ?
-
   XBT_INFO("Replaying rank %d of job %d (smpi_app '%s')", rank, job->unique_job_number, job->smpi_app_name.c_str());
-  smpi_replay_run(&argc, &argv);
+  smpi_replay_run(job->smpi_app_name.c_str(), rank, 0, job->traces_filenames[rank].c_str());
   XBT_INFO("Finished replaying rank %d of job %d (smpi_app '%s')", rank, job->unique_job_number,
            job->smpi_app_name.c_str());
 
   barrier->wait();
-
-  // Memory clean-up — leaks can come from argc/argv modifications from smpi_replay_run
-  for (int i = 0; i < argc; ++i)
-    xbt_free(argv[i]);
-  xbt_free(argv);
 }
 
 // Sleeps for a given amount of time

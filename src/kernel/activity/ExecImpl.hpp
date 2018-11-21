@@ -39,6 +39,8 @@ private:
 public:
   static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> on_creation;
   static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> on_completion;
+  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> on_suspended;
+  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> on_resumed;
   static simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr, simgrid::s4u::Host*)> on_migration;
 };
 }

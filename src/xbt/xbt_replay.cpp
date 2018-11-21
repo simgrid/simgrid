@@ -55,7 +55,7 @@ bool ReplayReader::get(ReplayAction* action)
   return not fs->eof();
 }
 
-static ReplayAction* get_action(char* name)
+static ReplayAction* get_action(const char* name)
 {
   ReplayAction* action;
 
@@ -117,32 +117,31 @@ static void handle_action(ReplayAction& action)
  * @ingroup XBT_replay
  * @brief function used internally to actually run the replay
  */
-int replay_runner(int argc, char* argv[])
+int replay_runner(const char* actor_name, const char* trace_filename)
 {
-  if (simgrid::xbt::action_fs) { // A unique trace file
+  std::string actor_name_string(actor_name);
+  if (simgrid::xbt::action_fs) { // <A unique trace file
     while (true) {
-      simgrid::xbt::ReplayAction* evt = simgrid::xbt::get_action(argv[0]);
+      simgrid::xbt::ReplayAction* evt = simgrid::xbt::get_action(actor_name);
       if (!evt)
         break;
       simgrid::xbt::handle_action(*evt);
       delete evt;
     }
-    if (action_queues.find(std::string(argv[0])) != action_queues.end()) {
-      std::queue<ReplayAction*>* myqueue = action_queues.at(std::string(argv[0]));
+    if (action_queues.find(actor_name_string) != action_queues.end()) {
+      std::queue<ReplayAction*>* myqueue = action_queues.at(actor_name_string);
       delete myqueue;
-      action_queues.erase(std::string(argv[0]));
+      action_queues.erase(actor_name_string);
     }
   } else { // Should have got my trace file in argument
+    xbt_assert(trace_filename != nullptr);
     simgrid::xbt::ReplayAction evt;
-    xbt_assert(argc >= 2, "No '%s' agent function provided, no simulation-wide trace file provided, "
-                          "and no process-wide trace file provided in deployment file. Aborting.",
-               argv[0]);
-    simgrid::xbt::ReplayReader reader(argv[1]);
+    simgrid::xbt::ReplayReader reader(trace_filename);
     while (reader.get(&evt)) {
-      if (evt.front().compare(argv[0]) == 0) {
+      if (evt.front().compare(actor_name) == 0) {
         simgrid::xbt::handle_action(evt);
       } else {
-        XBT_WARN("Ignore trace element not for me");
+        XBT_WARN("Ignore trace element not for me (target='%s', I am '%s')", evt.front().c_str(), actor_name);
       }
       evt.clear();
     }

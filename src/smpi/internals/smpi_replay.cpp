@@ -701,10 +701,12 @@ void AllToAllVAction::kernel(simgrid::xbt::ReplayAction& action)
 
 static std::unordered_map<aid_t, simgrid::smpi::replay::RequestStorage> storage;
 /** @brief Only initialize the replay, don't do it for real */
-void smpi_replay_init(int* argc, char*** argv)
+void smpi_replay_init(const char* instance_id, int rank, double start_delay_flops)
 {
   if (not smpi_process()->initializing()){
-    simgrid::smpi::ActorExt::init(argc, argv);
+    simgrid::s4u::Actor::self()->set_property("instance_id", instance_id);
+    simgrid::s4u::Actor::self()->set_property("rank", std::to_string(rank));
+    simgrid::smpi::ActorExt::init();
   }
   smpi_process()->mark_as_initialized();
   smpi_process()->set_replaying(true);
@@ -743,10 +745,9 @@ void smpi_replay_init(int* argc, char*** argv)
   xbt_replay_action_register("compute", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ComputeAction().execute(action); });
 
   //if we have a delayed start, sleep here.
-  if(*argc>2){
-    double value = xbt_str_parse_double((*argv)[2], "%s is not a double");
-    XBT_VERB("Delayed start for instance - Sleeping for %f flops ",value );
-    smpi_execute_flops(value);
+  if (start_delay_flops > 0) {
+    XBT_VERB("Delayed start for instance - Sleeping for %f flops ", start_delay_flops);
+    smpi_execute_flops(start_delay_flops);
   } else {
     // Wait for the other actors to initialize also
     simgrid::s4u::this_actor::yield();
@@ -754,12 +755,13 @@ void smpi_replay_init(int* argc, char*** argv)
 }
 
 /** @brief actually run the replay after initialization */
-void smpi_replay_main(int* argc, char*** argv)
+void smpi_replay_main(int rank, const char* trace_filename)
 {
   static int active_processes = 0;
   active_processes++;
   storage[simgrid::s4u::this_actor::get_pid()] = simgrid::smpi::replay::RequestStorage();
-  simgrid::xbt::replay_runner(*argc, *argv);
+  std::string rank_string                      = std::to_string(rank);
+  simgrid::xbt::replay_runner(rank_string.c_str(), trace_filename);
 
   /* and now, finalize everything */
   /* One active process will stop. Decrease the counter*/
@@ -794,8 +796,8 @@ void smpi_replay_main(int* argc, char*** argv)
 }
 
 /** @brief chain a replay initialization and a replay start */
-void smpi_replay_run(int* argc, char*** argv)
+void smpi_replay_run(const char* instance_id, int rank, double start_delay_flops, const char* trace_filename)
 {
-  smpi_replay_init(argc, argv);
-  smpi_replay_main(argc, argv);
+  smpi_replay_init(instance_id, rank, start_delay_flops);
+  smpi_replay_main(rank, trace_filename);
 }
