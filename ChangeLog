@@ -15,7 +15,9 @@ MSG:
 
 Fixed bugs:
  - #261: Document the parameters of parallel execution's constructor
-
+ - #314: SMPI args internal cleanup
+ - #316: Fix a bug related to the CPU utilization of multi-core VM
+ 
 ----------------------------------------------------------------------------
 
 SimGrid (3.21) October 3. 2018
