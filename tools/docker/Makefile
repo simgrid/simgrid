@@ -5,9 +5,12 @@ default:
 	@echo "   make unstable   -> build the git version of SimGrid (with SMPI, w/o MC)"
 	@echo "   make tuto-s4u   -> build all what you need to take the S4U tutorial"
 	@echo "   make tuto-smpi  -> build all what you need to take the SMPI tutorial"
+	@echo "   make all        -> build all but stable (ie, build-deps unstable tuto-s4u tuto-smpi)"
 	@echo "   make push       -> push all images to the cloud"
 	@echo "All our images are based on debian:testing"
 	@echo "Also possible: DOCKER_EXTRA=--no-cache make unstable"
+
+all: build-deps unstable tuto-s4u tuto-smpi
 
 stable:
 	export last_tag=`wget https://framagit.org/simgrid/simgrid/tags 2>/dev/null -O - | grep /simgrid/simgrid/tags/v | head -n1  | sed 's/[^>]*>//' | sed 's/<.*//'`; \
