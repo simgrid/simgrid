@@ -5,7 +5,7 @@
 p Test if the load balancing code gets traced correctly
 ! timeout 60
 
-$ ../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:${bindir:=.}/smpi_trace.trace --cfg=tracing/smpi/format/ti-one-file:yes -no-privatize -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./ampi/smpi_ampi ${srcdir:=.}/replay/actions_bcast.txt --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/wtime:0
+$ ../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:${bindir:=.}/smpi_trace.trace --cfg=tracing/smpi/format/ti-one-file:yes -no-privatize -replay ${srcdir:=.}/replay/actions_bcast.txt --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./ampi/smpi_ampi --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/wtime:0
 
 $ bash -c "cat ${bindir:=.}/smpi_trace.trace_files/*"
 > 0 init
@@ -30,5 +30,5 @@ $ bash -c "cat ${bindir:=.}/smpi_trace.trace_files/*"
 > 2 migrate 400
 > 2 finalize
 
-$ rm -rf ${bindir:=.}/smpi_trace.trace 
+$ rm -rf ${bindir:=.}/smpi_trace.trace
 $ rm -rf ${bindir:=.}/smpi_trace.trace_files

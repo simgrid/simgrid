@@ -40,6 +40,7 @@ set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/energy/energy.tes
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_simple/trace_simple.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_call_location/trace_call_location.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/ampi/ampi.tesh
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay-override-replayer.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay.tesh                          PARENT_SCOPE)
 set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                                    ${CMAKE_CURRENT_SOURCE_DIR}/energy/hostfile
@@ -74,6 +75,7 @@ if(enable_smpi)
   ADD_TESH(smpi-tracing-simple --setenv bindir=${CMAKE_BINARY_DIR}/examples/smpi/trace_simple --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/trace_simple --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/trace_simple ${CMAKE_HOME_DIRECTORY}/examples/smpi/trace_simple/trace_simple.tesh)
   ADD_TESH(smpi-tracing-call-location --setenv bindir=${CMAKE_BINARY_DIR}/examples/smpi/trace_call_location --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/trace_call_location ${CMAKE_HOME_DIRECTORY}/examples/smpi/trace_call_location/trace_call_location.tesh)
   ADD_TESH(smpi-replay         --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/replay.tesh)
+  ADD_TESH(smpi-replay-override-replayer --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/replay-override-replayer.tesh)
   ADD_TESH_FACTORIES(smpi-energy "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/smpi/energy --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/energy --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/bin --cd ${CMAKE_BINARY_DIR}/examples/smpi/energy ${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/energy.tesh)
 
   ADD_TESH(smpi-ampi --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/ampi/ampi.tesh)
