@@ -125,6 +125,13 @@ case "$build_mode" in
   ;;
 esac
 
+if [ "$2" = "" ]; then
+  branch_name="unknown"
+else
+  branch_name="$2"
+fi
+echo "Branch built is $branch_name"
+
 NUMBER_OF_PROCESSORS="$(nproc)" || NUMBER_OF_PROCESSORS=1
 GENERATOR="Unix Makefiles"
 
@@ -210,7 +217,7 @@ if [ -f Testing/TAG ] ; then
    mv CTestResults.xml $WORKSPACE
 fi
 
-if test -n "$INSTALL" && [ ${BRANCH_NAME} = "master" ] ; then
+if test -n "$INSTALL" && [ ${branch_name} = "master" ] ; then
   echo "XX"
   echo "XX Test done. Install everything since it's a regular build, not on a Windows."
   echo "XX"
