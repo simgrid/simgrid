@@ -91,7 +91,7 @@ void StateEvent::print()
       stream_ << " " << value->get_id();
 
     if (TRACE_display_sizes())
-      stream_ << " " << ((extra_ != nullptr) ? extra_->display_size() : 0);
+      stream_ << " " << ((extra_ != nullptr) ? extra_->display_size() : "0");
 
 #if HAVE_SMPI
     if (simgrid::config::get_value<bool>("smpi/trace-call-location")) {
