@@ -210,7 +210,7 @@ if [ -f Testing/TAG ] ; then
    mv CTestResults.xml $WORKSPACE
 fi
 
-if test -n "$INSTALL" && [ ${BRANCH_NAME} == "master" ] ; then
+if test -n "$INSTALL" && [ ${BRANCH_NAME} = "master" ] ; then
   echo "XX"
   echo "XX Test done. Install everything since it's a regular build, not on a Windows."
   echo "XX"
