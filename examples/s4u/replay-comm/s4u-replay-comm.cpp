@@ -30,8 +30,8 @@ class Replayer {
 public:
   explicit Replayer(std::vector<std::string> args)
   {
-    const char* actor_name     = args[0].c_str();
-    const char* trace_filename = args[1].c_str();
+    const char* actor_name     = args.at(0).c_str();
+    const char* trace_filename = args.size() > 1 ? args[1].c_str() : nullptr;
     simgrid::xbt::replay_runner(actor_name, trace_filename);
   }
 
