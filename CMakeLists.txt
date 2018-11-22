@@ -426,7 +426,7 @@ if(CMAKE_USE_PTHREADS_INIT)
             RUN_OUTPUT_VARIABLE semopen_runmsg)
     
     if(semopen_compilable)
-      if(NOT semopen_retval) # error if not 0
+      if(NOT semopen_retval) # error if not 0
         message(STATUS "sem_open is compilable and executable")
 	set(HAVE_SEM_OPEN 1)
       else()
@@ -458,7 +458,7 @@ if(CMAKE_USE_PTHREADS_INIT)
             RUN_OUTPUT_VARIABLE seminit_runmsg)
     
     if(seminit_compilable)
-      if(NOT seminit_retval) # error if not 0
+      if(NOT seminit_retval) # error if not 0
         message(STATUS "sem_init is compilable and executable")
 	set(HAVE_SEM_INIT 1)
       else()
@@ -617,6 +617,7 @@ if(NS3_LIBRARY_PATH)
 endif()
 set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"")
 set(SMPIMAIN ${libdir}/simgrid/smpimain)
+set(SMPIREPLAYMAIN ${libdir}/simgrid/smpireplaymain)
 
 configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/mpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/mpif.h @ONLY)
 #configure mpif.f90 to build mpi.mod
@@ -645,6 +646,7 @@ if(NS3_LIBRARY_PATH)
 endif()
 set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"")
 set(SMPIMAIN ${CMAKE_BINARY_DIR}/lib/simgrid/smpimain)
+set(SMPIREPLAYMAIN ${CMAKE_BINARY_DIR}/lib/simgrid/smpireplaymain)
 
 foreach(script cc cxx ff f90 run)
   configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpi${script}.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpi${script} @ONLY)

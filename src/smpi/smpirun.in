@@ -31,6 +31,7 @@ SIMOPTS="--cfg=surf/precision:1e-9 --cfg=network/model:SMPI"
 usage () {
     cat <<EOF
 Usage: $0 [OPTIONS] -platform <xmldesc> -hostfile <hostfile> program [program-options]
+       $0 [OPTIONS] -platform <xmldesc> -hostfile <hostfile> -replay <tracefile> [program] [program-options]
 Options:
   -keep-temps                # don't remove the generated files after execution
   -wrapper <command>         # use command to run the program (e.g. "valgrind" or "gdb --args")
@@ -45,7 +46,7 @@ Options:
   -trace-grouped             # group MPI processes by location
   -trace-resource            # trace resource utilization
   -trace-file <tracefile>    # name of the tracefile (simgrid_smpi.trace)
-  -ext <value>               # additional parameter (reserved)
+  -replay <tracefile>        # replays a trace instead of actually executing an application
 
   -version                   # Displays the SimGrid version (human readable)
   -git-version               # Displays the git hash of SimGrid
@@ -63,7 +64,6 @@ then
     exit
 fi
 
-EXTOPT=""
 WRAPPER=""
 HOSTFILE=""
 HOSTFILETMP=0
@@ -153,8 +153,8 @@ while true; do
             fi
 	    shift 2
             ;;
-        "-ext")
-            EXTOPT="$2"
+        "-replay")
+            APP_TRACES="$2"
             shift 2
             ;;
 	"-no-privatize")
@@ -232,16 +232,25 @@ while true; do
     esac
 done
 
-# check if we still have at least one parameter beyond options
-if [ $# -eq 0 ]
-then
-    echo "Error: no program to execute!"
-    usage
-    exit
-fi
+if [ -n "${APP_TRACES}" ] ; then
+    if [ $# -eq 0 ] ; then
+        EXEC="@SMPIREPLAYMAIN@"
+    else
+        EXEC="$1"
+        shift
+    fi
+else
+    # check if we still have at least one parameter beyond options
+    if [ $# -eq 0 ]
+    then
+        echo "Error: no program to execute!"
+        usage
+        exit
+    fi
 
-EXEC="$1"
-shift
+    EXEC="$1"
+    shift
+fi
 
 # steel --cfg and --logs options
 while [ $# -gt 0 ]; do
@@ -374,9 +383,8 @@ if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
     hostnames=$(cat ${HOSTFILE} | tr '\n\r' '  ')
 fi
 
-if [ "${EXTOPT}" = "smpi_replay" ]; then
-    APP_TRACES=$PROC_ARGS
-    if [ -n "${APP_TRACES}" ] && [ -f "${APP_TRACES}" ]; then
+if [ -n "${APP_TRACES}" ]; then
+    if [ -f "${APP_TRACES}" ]; then
         hosttraces=$(cat ${APP_TRACES} | tr '\n\r' '  ' )
         NUMTRACES=$(cat ${APP_TRACES} | wc -l)
         REPLAY=1
@@ -427,6 +435,7 @@ do
     <prop id=\"instance_id\" value=\"smpirun\"/>
     <prop id=\"rank\" value=\"$i\"/>" >> ${APPLICATIONTMP}
     if [ ${REPLAY} = 1 ]; then
+        echo "    <prop id=\"smpi_replay\" value=\"true\"/>" >> ${APPLICATIONTMP}
         if  [ ${NUMTRACES} -gt 1 ]; then
             echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f$j)\"/>" >> ${APPLICATIONTMP}
         else

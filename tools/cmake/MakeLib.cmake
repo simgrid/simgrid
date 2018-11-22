@@ -5,8 +5,8 @@
 set(CMAKE_MACOSX_RPATH TRUE)
 if(APPLE)
   SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE) # When installed, use system path
-  set(CMAKE_SKIP_BUILD_RPATH FALSE)         # When executing from build tree, take the lib from the build path if exists
-  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) # When executing from build tree, take the lib from the system path if exists
+  set(CMAKE_SKIP_BUILD_RPATH FALSE)         # When executing from build tree, take the lib from the build path if exists
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) # When executing from build tree, take the lib from the system path if exists
 
   # add the current location of libsimgrid-java.dynlib as a location for libsimgrid.dynlib
   # (useful when unpacking the native libraries from the jarfile)
@@ -88,11 +88,20 @@ if(enable_smpi)
   if(NOT ${DL_LIBRARY} STREQUAL "")
     set(SIMGRID_DEP "${SIMGRID_DEP} ${DL_LIBRARY}") # for privatization
   endif()
+
   add_executable(smpimain src/smpi/smpi_main.c)
   target_link_libraries(smpimain simgrid)
   set_target_properties(smpimain
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/simgrid)
   install(TARGETS smpimain # install that binary without breaking the rpath on Mac
+    RUNTIME DESTINATION lib/simgrid)
+
+  add_executable(smpireplaymain src/smpi/smpi_replay_main.cpp)
+  target_compile_options(smpireplaymain PRIVATE -fpic)
+  target_link_libraries(smpireplaymain simgrid -shared)
+  set_target_properties(smpireplaymain
+    PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/simgrid)
+  install(TARGETS smpireplaymain # install that binary without breaking the rpath on Mac
     RUNTIME DESTINATION lib/simgrid)
 
   if(SMPI_FORTRAN)
