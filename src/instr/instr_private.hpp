@@ -214,7 +214,7 @@ public:
     return stream.str();
   }
 
-  std::string display_size() override { return ""; }
+  std::string display_size() override { return "NA"; }
 };
 
 class AmpiMigrateTIData : public TIData {
@@ -230,7 +230,7 @@ public:
     return stream.str();
   }
 
-  std::string display_size() override { return ""; }
+  std::string display_size() override { return "NA"; }
 };
 }
 }
