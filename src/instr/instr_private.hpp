@@ -105,7 +105,7 @@ class NoOpTIData : public TIData {
 public:
   explicit NoOpTIData(std::string name) : TIData(name){};
   std::string print() override { return getName(); }
-  std::string display_size() override { return ""; }
+  std::string display_size() override { return "NA"; }
 };
 
 class CpuTIData : public TIData {
