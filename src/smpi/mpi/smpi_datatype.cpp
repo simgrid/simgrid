@@ -8,6 +8,7 @@
 #include "simgrid/modelchecker.h"
 #include "smpi_datatype_derived.hpp"
 #include "smpi_op.hpp"
+#include "src/instr/instr_private.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
 #include <string>
@@ -227,8 +228,9 @@ MPI_Datatype Datatype::decode(std::string datatype_id)
 
 bool Datatype::is_replayable()
 {
-  return ((this==MPI_BYTE)||(this==MPI_DOUBLE)||(this==MPI_INT)||
-          (this==MPI_CHAR)||(this==MPI_SHORT)||(this==MPI_LONG)||(this==MPI_FLOAT));
+  return (simgrid::instr::trace_format == simgrid::instr::TraceFormat::Ti) &&
+         ((this == MPI_BYTE) || (this == MPI_DOUBLE) || (this == MPI_INT) || (this == MPI_CHAR) ||
+          (this == MPI_SHORT) || (this == MPI_LONG) || (this == MPI_FLOAT));
 }
 
 size_t Datatype::size(){
