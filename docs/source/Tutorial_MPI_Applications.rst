@@ -67,7 +67,7 @@ occuring between two MPI calls are benchmarked, and the corresponding
 time is reported into the simulator.
 
 .. image:: /tuto_smpi/img/big-picture.svg
-   :align: center	   
+   :align: center
 
 Describing Your Platform
 ------------------------
@@ -145,7 +145,7 @@ bandwidth). This link is used for every communication within the
 cluster. The route from ``node-0.simgrid.org`` to ``node-1.simgrid.org``
 counts 3 links: the private link of ``node-0.simgrid.org``, the backbone
 and the private link of ``node-1.simgrid.org``.
-	   
+
 .. todo::
 
    Add the picture.
@@ -214,7 +214,7 @@ Dragonfly Cluster
 This topology was introduced to further reduce the amount of links
 while maintaining a high bandwidth for local communications. To model
 this in SimGrid, pass a ``topology="DRAGONFLY"`` attribute to your
-cluster. It's based on the implementation of the topology used on 
+cluster. It's based on the implementation of the topology used on
 Cray XC systems, described in paper
 `Cray Cascade: A scalable HPC system based on a Dragonfly network <https://dl.acm.org/citation.cfm?id=2389136>`_.
 
@@ -222,13 +222,13 @@ System description follows the format ``topo_parameters=#groups;#chassis;#router
 For example, ``3,4 ; 3,2 ; 3,1 ; 2``:
 
 - ``3,4``: There are 3 groups with 4 links between each (blue level).
-  Links to nth group are attached to the nth router of the group 
+  Links to nth group are attached to the nth router of the group
   on our implementation.
 - ``3,2``: In each group, there are 3 chassis with 2 links between each nth router
   of each group (black level)
 - ``3,1``: In each chassis, 3 routers are connected together with a single link
   (green level)
-- ``2``: Each router has two nodes attached (single link) 
+- ``2``: Each router has two nodes attached (single link)
 
 .. image:: ../../examples/platforms/cluster_dragonfly.svg
    :align: center
@@ -281,7 +281,7 @@ container to enjoy the provided dependencies.
 All needed dependencies are already installed in this container
 (SimGrid, the C/C++/Fortran compilers, make, pajeng and R). Vite being
 only optional in this tutorial, it is not installed to reduce the
-image size. 
+image size.
 
 The container also include the example platform files from the
 previous section as well as the source code of the NAS Parallel
@@ -336,13 +336,13 @@ that comes with the template.
 
 Compiling and Executing
 .......................
-	      
+
 Compiling the program is straightforward (double check your
 :ref:`SimGrid installation <install>` if you get an error message):
 
 
 .. code-block:: shell
-		
+
   $ smpicc -O3 roundtrip.c -o roundtrip
 
 
@@ -354,13 +354,13 @@ nodes from the ``cluster_crossbar.xml`` platform as follows:
    $ smpirun -np 16 -platform cluster_crossbar.xml -hostfile cluster_hostfile ./roundtrip
 
 - The ``-np 16`` option, just like in regular MPI, specifies the
-  number of MPI processes to use. 
+  number of MPI processes to use.
 - The ``-hostfile cluster_hostfile`` option, just like in regular
   MPI, specifies the host file. If you omit this option, ``smpirun``
   will deploy the application on the first machines of your platform.
 - The ``-platform cluster_crossbar.xml`` option, **which doesn't exist
   in regular MPI**, specifies the platform configuration to be
-  simulated. 
+  simulated.
 - At the end of the line, one finds the executable name and
   command-line arguments (if any -- roundtrip does not expect any arguments).
 
