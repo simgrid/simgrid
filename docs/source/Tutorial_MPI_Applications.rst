@@ -458,12 +458,12 @@ You can even generate the trace during the live simulation as follows:
    $ smpirun -trace-ti --cfg=tracing/filename:LU.A.32 -np 32 -platform ../cluster_backbone.xml bin/lu.A.32
 
 The produced trace is composed of a file ``LU.A.32`` and a folder
-``LU.A.32_files``. You can replay this trace with SMPI thanks to ``smpirun``
-with the following command:
+``LU.A.32_files``. You can replay this trace with SMPI thanks to ``smpirun``.
+For example, the following command replays the trace on a different platform:
 
 .. code-block:: shell
 
-   $ smpirun -np 32 -platform ../cluster_torus.xml -replay LU.A.32
+   $ smpirun -np 32 -platform ../cluster_crossbar.xml -hostfile ../cluster_hostfile -replay LU.A.32
 
 All the outputs are gone, as the application is not really simulated
 here. Its trace is simply replayed. But if you visualize the live
@@ -476,8 +476,6 @@ is computationally hungry.
 
     The commands should be separated and executed by some CI to make sure
     the documentation is up-to-date.
-
-    An hostfile should be given to smpirun.
 
 Lab 3: Execution Sampling on EP
 -------------------------------
