@@ -152,7 +152,13 @@ void Container::log_creation()
 
   if (trace_format == simgrid::instr::TraceFormat::Paje) {
     stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_CreateContainer << " ";
-    stream << timestamp << " " << id_ << " " << type_->get_id() << " " << father_->id_ << " \"" << name_ << "\"";
+    stream << timestamp << " " << id_ << " " << type_->get_id() << " " << father_->id_ << " \"";
+    if (name_.find("rank-") != 0)
+      stream << name_ << "\"";
+    else
+      /* Subtract -1 because this is the process id and we transform it to the rank id */
+      stream << "rank-" << stoi(name_.substr(5)) - 1 << "\"";
+
     XBT_DEBUG("Dump %s", stream.str().c_str());
     tracing_file << stream.str() << std::endl;
   } else if (trace_format == simgrid::instr::TraceFormat::Ti) {
