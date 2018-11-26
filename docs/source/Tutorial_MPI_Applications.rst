@@ -451,25 +451,19 @@ replay it on a different platform with the same amount of nodes. The
 replay is much faster than live simulation, as the computations are
 skipped (the application must be network-dependent for this to work).
 
-You can even generate the trace during as live simulation, as follows:
+You can even generate the trace during the live simulation as follows:
 
 .. code-block:: shell
 
-   $ smpirun -trace-ti --cfg=tracing/filename:LU.A.32 -np 32 -platform ../cluster_backbone.xml bin/lu.A.32 
+   $ smpirun -trace-ti --cfg=tracing/filename:LU.A.32 -np 32 -platform ../cluster_backbone.xml bin/lu.A.32
 
 The produced trace is composed of a file ``LU.A.32`` and a folder
-``LU.A.32_files``. To replay this with SMPI, you need to first compile
-the provided ``smpi_replay.cpp`` file, that comes from
-`simgrid/examples/smpi/replay
-<https://framagit.org/simgrid/simgrid/tree/master/examples/smpi/replay>`_.
+``LU.A.32_files``. You can replay this trace with SMPI thanks to ``smpirun``
+with the following command:
 
 .. code-block:: shell
 
-   $ smpicxx ../replay.cpp -O3 -o ../smpi_replay
-
-Afterward, you can replay your trace in SMPI as follows:
-
-   $ smpirun -np 32 -platform ../cluster_torus.xml -ext smpi_replay ../smpi_replay LU.A.32
+   $ smpirun -np 32 -platform ../cluster_torus.xml -replay LU.A.32
 
 All the outputs are gone, as the application is not really simulated
 here. Its trace is simply replayed. But if you visualize the live
@@ -478,7 +472,12 @@ unchanged. The simulation does not run much faster on this very
 example, but this becomes very interesting when your application
 is computationally hungry.
 
-.. todo:: smpi_replay should be installed by SimGrid, and smpirun interface could be simplified here.
+.. todo::
+
+    The commands should be separated and executed by some CI to make sure
+    the documentation is up-to-date.
+
+    An hostfile should be given to smpirun.
 
 Lab 3: Execution Sampling on EP
 -------------------------------
