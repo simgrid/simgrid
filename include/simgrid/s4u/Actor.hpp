@@ -227,6 +227,10 @@ public:
 
   /** Add a function to the list of "on_exit" functions for the current actor. The on_exit functions are the functions
    * executed when your actor is killed. You should use them to free the data used by your actor.
+   *
+   * Please note that functions registered in this signal cannot do any simcall themselves. It means that they cannot
+   * send or receive messages, acquire or release mutexes, nor even modify an host property or something. Not only are
+   * blocking functions forbidden in this setting, but also modifications to the global state.
    */
   void on_exit(std::function<void(int, void*)> fun, void* data);
 
