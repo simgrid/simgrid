@@ -6,6 +6,8 @@ if(enable_smpi)
 
   # Define a list of a tesh files
   list(APPEND tesh_filename_list replay_multiple_manual_nojob)
+  list(APPEND tesh_filename_list replay_multiple_manual_coll1)
+  list(APPEND tesh_filename_list replay_multiple_manual_coll2_st_sr_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_empty1)
   list(APPEND tesh_filename_list replay_multiple_manual_empty2)
   list(APPEND tesh_filename_list replay_multiple_manual_mixed1)
@@ -30,6 +32,9 @@ endif()
 set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/compute_only.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/compute_only/actions0.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/compute_only/actions1.txt
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/coll.txt
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/coll/actions0.txt
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/coll/actions1.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/empty.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/empty/actions0.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/empty/actions1.txt
@@ -43,6 +48,8 @@ set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/compute_only.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_mixed2_same_time
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_mixed2_same_time_and_resources PARENT_SCOPE)
 set(tesh_files  ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_nojob.tesh
+                                ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_coll1.tesh
+                                ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_coll2_st_sr_noise.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty1.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed1.tesh

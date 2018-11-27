@@ -1,0 +1,7 @@
+0 init
+0 compute 1e9
+0 bcast 1 0 1
+0 alltoall 134217728 134217728 26 26
+0 barrier
+0 reduce 16 0 0 26
+0 finalize

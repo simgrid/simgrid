@@ -1,0 +1,6 @@
+1 init
+1 bcast 1 0 1
+1 alltoall 134217728 134217728 26 26
+1 barrier
+1 reduce 16 0 0 26
+1 finalize
