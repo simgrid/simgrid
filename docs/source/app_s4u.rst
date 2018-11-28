@@ -300,7 +300,7 @@ balancing for free if more than one actor pulls from the mailbox:
 the first actor that can deal with the request will handle it.
 
 =========================================
-How put() and get() Requests are Matched?
+How are put() and get() requests matched?
 =========================================
 
 The matching algorithm simple: first come, first serve. When a new
@@ -317,7 +317,7 @@ Declaring a Receiving Actor
 
 The last twist is that by default in the simulator, the data starts
 to be exchanged only when both the sender and the receiver are
-declared (it waits until both :cpp:func:`put() <simgrid::s4u::Mailbox::put()>`
+announced (it waits until both :cpp:func:`put() <simgrid::s4u::Mailbox::put()>`
 and :cpp:func:`get() <simgrid::s4u::Mailbox::get()>` are posted). 
 In TCP, since you establish connexions beforehand, the data starts to
 flow as soon as the sender posts it, even if the receiver did not post
