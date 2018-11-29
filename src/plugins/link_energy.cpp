@@ -72,6 +72,9 @@ simgrid::xbt::Extension<simgrid::s4u::Link, LinkEnergy> LinkEnergy::EXTENSION_ID
 
 void LinkEnergy::update()
 {
+  if (!inited_)
+    init_watts_range_list();
+
   double power = get_power();
   double now   = surf_get_clock();
   total_energy_ += power * (now - last_updated_);
@@ -80,7 +83,6 @@ void LinkEnergy::update()
 
 void LinkEnergy::init_watts_range_list()
 {
-
   if (inited_)
     return;
   inited_ = true;
@@ -114,8 +116,6 @@ void LinkEnergy::init_watts_range_list()
     } catch (std::invalid_argument& ia) {
       throw std::invalid_argument(std::string("Invalid busy power value for link ") + this->link_->get_cname());
     }
-
-    update();
   }
 }
 
