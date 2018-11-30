@@ -254,7 +254,7 @@ else()
   endif()
 endif()
 
-# cmake up to 3.12.3 (at least) does not know about stacktrace components. Inform it.
+# cmake before 3.13.1 does not know about stacktrace components. Fix it.
 # Usable components: https://www.boost.org/doc/libs/1_65_1/doc/html/stacktrace/configuration_and_build.html
 set(_Boost_STACKTRACE_HEADERS           "boost/stacktrace.hpp")
 set(_Boost_STACKTRACE_BACKTRACE_HEADERS "boost/stacktrace.hpp")
