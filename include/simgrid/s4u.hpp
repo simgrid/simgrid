@@ -20,6 +20,7 @@
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/s4u/Semaphore.hpp>
 #include <simgrid/s4u/Storage.hpp>
+#include <simgrid/s4u/VirtualMachine.hpp>
 
 #include <simgrid/Exception.hpp>
 
