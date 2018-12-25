@@ -159,6 +159,7 @@ private:
   static s4u::Engine* instance_;
 
   //////////////// Deprecated functions
+#ifndef DOXYGEN
 public:
   /** @deprecated See Engine::load_platform() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::load_platform()") void loadPlatform(std::string platf)
@@ -278,6 +279,7 @@ public:
   }
   /** @deprecated See Engine::set_config() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::set_config()") void setConfig(std::string str) { set_config(str); }
+#endif
 };
 
 /** Callback fired when the platform is created (ie, the xml file parsed),
@@ -297,6 +299,7 @@ extern XBT_PUBLIC xbt::signal<void(double)> on_time_advance;
 /** Callback fired when the time cannot advance because of inter-actors deadlock */
 extern XBT_PUBLIC xbt::signal<void(void)> on_deadlock;
 
+#ifndef DOXYGEN /* Internal use only, no need to expose it */
 template <class T> XBT_PRIVATE void get_filtered_netzones_recursive(s4u::NetZone* current, std::vector<T*>* whereto)
 {
   static_assert(std::is_base_of<kernel::routing::NetZoneImpl, T>::value,
@@ -307,6 +310,7 @@ template <class T> XBT_PRIVATE void get_filtered_netzones_recursive(s4u::NetZone
       whereto->push_back(dynamic_cast<T*>(elem->get_impl()));
   }
 }
+#endif
 }
 } // namespace simgrid::s4u
 

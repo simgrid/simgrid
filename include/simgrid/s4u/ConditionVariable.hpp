@@ -36,11 +36,13 @@ public:
 
   static ConditionVariablePtr create();
 
+#ifndef DOXYGEN
   /** @deprecated See Comm::get_mailbox() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") ConditionVariablePtr createConditionVariable()
   {
     return create();
   }
+#endif
 
   //  Wait functions without time:
 

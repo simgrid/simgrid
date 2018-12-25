@@ -51,9 +51,11 @@ public:
   void unlock();
   bool try_lock();
 
+#ifndef DOXYGEN
   // deprecated
   /** @deprecated Mutex::create() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Mutex::create()") static MutexPtr createMutex() { return create(); }
+#endif
 };
 
 }} // namespace simgrid::s4u

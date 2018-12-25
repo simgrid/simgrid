@@ -127,22 +127,24 @@ public:
   {
     return get_pstate_speed(pstate_index);
   }
-#endif
 
   std::vector<const char*> get_attached_storages() const;
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_attached_storages() instead.") void getAttachedStorages(
       std::vector<const char*>* storages);
+#endif
 
   /** Get an associative list [mount point]->[Storage] of all local mount points.
    *
    *  This is defined in the platform file, and cannot be modified programatically (yet).
    */
   std::unordered_map<std::string, Storage*> const& get_mounted_storages();
+#ifndef DOXYGEN
   /** @deprecated See Host::get_mounted_storages() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_mounted_storages() instead.") std::unordered_map<std::string, Storage*> const& getMountedStorages()
   {
     return get_mounted_storages();
   }
+#endif
 
   void route_to(Host* dest, std::vector<Link*>& links, double* latency);
   void route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency);

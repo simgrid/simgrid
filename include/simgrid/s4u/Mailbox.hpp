@@ -27,6 +27,7 @@ class XBT_PUBLIC Mailbox {
   friend void intrusive_ptr_add_ref(Mailbox*) {}
   /** private function to manage the mailboxes' lifetime (see @ref s4u_raii) */
   friend void intrusive_ptr_release(Mailbox*) {}
+
 public:
   /** private function, do not use. FIXME: make me protected */
   kernel::activity::MailboxImpl* get_impl() { return pimpl_; }
@@ -97,6 +98,7 @@ public:
   void* get(double timeout);
 
   // Deprecated functions
+#ifndef DOXYGEN
   /** @deprecated Mailbox::set_receiver() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::set_receiver()") void setReceiver(ActorPtr actor)
   {
@@ -126,6 +128,7 @@ public:
   {
     return by_name(name);
   }
+#endif
 };
 
 }} // namespace simgrid::s4u

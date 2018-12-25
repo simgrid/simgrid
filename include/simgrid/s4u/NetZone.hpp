@@ -74,6 +74,7 @@ public:
   static simgrid::xbt::signal<void(NetZone&)> on_creation;
   static simgrid::xbt::signal<void(NetZone&)> on_seal;
 
+#ifndef DOXYGEN
   // Deprecation wrappers
   /** @deprecated NetZone::get_father() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_father()") NetZone* getFather() { return get_father(); }
@@ -130,6 +131,7 @@ public:
       res->push_back(child);
     return res;
   }
+#endif
 };
 }
 }; // Namespace simgrid::s4u

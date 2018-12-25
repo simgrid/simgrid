@@ -60,6 +60,7 @@ public:
   static simgrid::xbt::signal<void(VirtualMachine&)> on_migration_start;
   static simgrid::xbt::signal<void(VirtualMachine&)> on_migration_end;
 
+#ifndef DOXYGEN
   // Deprecated methods
   /** @deprecated See VirtualMachine::get_state() */
   XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_state()") VirtualMachine::state getState()
@@ -84,6 +85,7 @@ public:
   }
   /** @deprecated See VirtualMachine::set_bound() */
   XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::set_bound()") void setBound(double bound) { set_bound(bound); }
+#endif
 };
 }
 } // namespace simgrid::s4u

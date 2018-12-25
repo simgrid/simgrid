@@ -73,6 +73,7 @@ public:
   surf::StorageImpl* get_impl() { return pimpl_; }
 
   // Deprecated functions
+#ifndef DOXYGEN
   /** @deprecated Storage::by_name() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::by_name()") Storage* byName(std::string name)
   {
@@ -109,6 +110,7 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::set_data()") void setUserdata(void* data) { set_data(data); }
   /** @deprecated Storage::get_data() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_data()") void* getUserdata() { return get_data(); }
+#endif
 
 private:
   Host* attached_to_              = nullptr;
