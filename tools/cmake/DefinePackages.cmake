@@ -2,6 +2,7 @@
 
 set(EXTRA_DIST
   src/bindings/java/MANIFEST.in
+  src/bindings/python/simgrid_python.cpp
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/sg_config.hpp
