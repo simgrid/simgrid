@@ -4,7 +4,7 @@ FROM debian:testing
 # - Install SimGrid's dependencies
 RUN apt update && \
     apt install -y \
-       g++ gcc gfortran default-jdk \
+       g++ gcc gfortran default-jdk pybind11-dev \
        git \
        valgrind \
        libboost-dev libboost-all-dev \
