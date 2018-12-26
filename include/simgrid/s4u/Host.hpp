@@ -65,11 +65,11 @@ public:
   Host(Host const&) = delete;
   Host& operator=(Host const&) = delete;
 
-  /** Retrieves an host from its name, or return nullptr */
+  /** Retrieve an host from its name, or return nullptr */
   static Host* by_name_or_null(std::string name);
-  /** Retrieves an host from its name, or die */
+  /** Retrieve an host from its name, or die */
   static s4u::Host* by_name(std::string name);
-  /** Retrieves the host on which the current actor is running */
+  /** Retrieve the host on which the current actor is running */
   static s4u::Host* current();
 
   /** Retrieves the name of that host as a C++ string */

@@ -502,7 +502,7 @@ XBT_PUBLIC Host* get_host();
 /** @brief Suspend the actor. */
 XBT_PUBLIC void suspend();
 
-/** @brief yield the actor. */
+/** @brief Yield the actor. */
 XBT_PUBLIC void yield();
 
 /** @brief Resume the actor. */
