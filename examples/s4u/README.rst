@@ -16,8 +16,8 @@ SimGrid comes with an extensive set of examples, documented on this
 page. Most of them only demonstrate one single feature, with some
 larger examplars listed below. 
 
-Each of these examples can be found in a subdirectory under
-examples/s4u in the archive. It contains the source code (also listed
+The C++ examples can be found under examples/s4u while python examples
+are in examples/python. Each such directory contains the source code (also listed
 from this page), and the so-called tesh file containing how to call
 the binary obtained by compiling this example and also the expected
 output. Tesh files are used to turn each of our examples into an
@@ -151,7 +151,8 @@ Executions on the CPU
     the actor until a given amount of flops gets computed on its simulated
     host. Some executions can be given an higher priority so that they
     get more resources.
-    |br| `examples/s4u/exec-basic/s4u-exec-basic.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-basic/s4u-exec-basic.cpp>`_
+    |br| |cpp| `examples/s4u/exec-basic/s4u-exec-basic.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-basic/s4u-exec-basic.cpp>`_
+    |br|  |py| `examples/python/exec-basic/exec-basic.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/exec-basic/exec-basic.py>`_
 
   - **Asynchronous execution:**
     You can start asynchronous executions, just like you would fire
@@ -340,3 +341,11 @@ Distributed Hash Tables (DHT)
 .. |br| raw:: html
 
    <br />
+
+.. |cpp| image:: /img/lang_cpp.png
+   :align: middle
+   :width: 12
+
+.. |py| image:: /img/lang_python.png
+   :align: middle
+   :width: 12

@@ -905,6 +905,8 @@ set(DOC_SOURCES
   docs/source/img/extlink.png
   docs/source/img/extlink.svg
   docs/source/img/graphical-toc.svg
+  source/img/lang_cpp.png
+  source/img/lang_python.png
   docs/source/img/smpi_simgrid_alltoall_pair_16.png
   docs/source/img/smpi_simgrid_alltoall_ring_16.png
   docs/source/img/zone_hierarchy.png
@@ -1008,6 +1010,7 @@ set(CMAKEFILES_TXT
   examples/java/CMakeLists.txt
   examples/msg/CMakeLists.txt
     examples/msg/mc/CMakeLists.txt
+  examples/python/CMakeLists.txt
   examples/s4u/CMakeLists.txt
   examples/simdag/CMakeLists.txt
   examples/smpi/CMakeLists.txt

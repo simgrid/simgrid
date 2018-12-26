@@ -23,7 +23,7 @@ using simgrid::s4u::ActorPtr;
 using simgrid::s4u::Engine;
 using simgrid::s4u::Host;
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_python, "S4U python");
+XBT_LOG_NEW_DEFAULT_CATEGORY(python, "python");
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, boost::intrusive_ptr<T>);
 
@@ -52,6 +52,8 @@ PYBIND11_MODULE(simgrid, m)
   /* this_actor namespace */
   m.def("execute", py::overload_cast<double>(&simgrid::s4u::this_actor::execute),
         "Block the actor, computing the given amount of flops");
+  m.def("execute", py::overload_cast<double, double>(&simgrid::s4u::this_actor::execute),
+        "Block the actor, computing the given amount of flops at the given priority");
   m.def("yield_", &simgrid::s4u::this_actor::yield, "Yield the actor");
 
   /* Class Engine */
