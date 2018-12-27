@@ -301,21 +301,6 @@ XBT_ATTRIB_DEPRECATED_v323("Please use make_task()") auto makeTask(F code, Args.
   return Task<decltype(code(std::move(args)...))()>(std::move(task));
 }
 
-template <class F>
-inline XBT_ATTRIB_DEPRECATED_v323("Please use wrap_main()") std::function<void()> wrapMain(
-    F code, std::vector<std::string> args)
-{
-  return MainFunction<F>(std::move(code), std::move(args));
-}
-
-template <class F>
-inline XBT_ATTRIB_DEPRECATED_v323("Please use wrap_main()") std::function<void()> wrapMain(F code, int argc,
-                                                                                           const char* const argv[])
-{
-  std::vector<std::string> args(argv, argv + argc);
-  return MainFunction<F>(std::move(code), std::move(args));
-}
-
 } // namespace xbt
 } // namespace simgrid
 #endif

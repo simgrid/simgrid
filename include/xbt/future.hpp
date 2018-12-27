@@ -259,11 +259,6 @@ template <class P, class F> inline void set_promise(P& promise, F&& future)
 {
   fulfill_promise(promise, [&] { return std::forward<F>(future).get(); });
 }
-template <class P, class F>
-inline XBT_ATTRIB_DEPRECATED_v323("Please use xbt::set_promise()") void setPromise(P& promise, F&& future)
-{
-  fulfill_promise(promise, [&] { return std::forward<F>(future).get(); });
-}
 
 }
 }
