@@ -849,7 +849,7 @@ endif()
 
 # Python binding, generated with pybind11
 set(PYBIND11_CPP_STANDARD -std=c++11)
-find_package(pybind11)
+find_package(pybind11 2.2.0)
 if(NOT PYTHONLIBS_FOUND)
   set(pybind11_FOUND OFF)
 endif()
