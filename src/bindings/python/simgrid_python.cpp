@@ -79,8 +79,8 @@ PYBIND11_MODULE(simgrid, m)
       }, "Registers the main function of an actor that will be launched from the deployment file");
 
   // Currently, Host lead to segfault:
-  py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>>(m, "Host")
-      .def("by_name", &Host::by_name, "Retrieve an host from its name, or die");
+  py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>>(m, "Host").def(
+      "by_name", &Host::by_name, "Retrieve a host from its name, or die");
 
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor", "An actor is an independent stream of execution in your distributed application");
 

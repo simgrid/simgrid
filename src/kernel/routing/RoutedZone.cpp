@@ -188,9 +188,9 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
     xbt_assert(dst->is_netzone(), "When defining a NetzoneRoute, dst must be a netzone but '%s' is not", dstName);
 
     xbt_assert(gw_src->is_host() || gw_src->is_router(),
-               "When defining a NetzoneRoute, gw_src must be an host or a router but '%s' is not.", srcName);
+               "When defining a NetzoneRoute, gw_src must be a host or a router but '%s' is not.", srcName);
     xbt_assert(gw_dst->is_host() || gw_dst->is_router(),
-               "When defining a NetzoneRoute, gw_dst must be an host or a router but '%s' is not.", dstName);
+               "When defining a NetzoneRoute, gw_dst must be a host or a router but '%s' is not.", dstName);
 
     xbt_assert(gw_src != gw_dst, "Cannot define an NetzoneRoute from '%s' to itself", gw_src->get_cname());
 

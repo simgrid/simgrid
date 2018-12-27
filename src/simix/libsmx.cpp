@@ -28,7 +28,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 /**
  * @ingroup simix_process_management
- * @brief Creates a synchro that executes some computation of an host.
+ * @brief Creates a synchro that executes some computation of a host.
  *
  * This function creates a SURF action and allocates the data necessary
  * to create the SIMIX synchro. It can raise a HostFailureException exception if the host crashed.

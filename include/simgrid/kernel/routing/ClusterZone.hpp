@@ -52,7 +52,7 @@ namespace routing {
  * host0 host1 host2
  * \endverbatim
 
- *  So, a communication from an host A to an host B goes through the following links (if they exist):
+ *  So, a communication from a host A to a host B goes through the following links (if they exist):
  *   <tt>limiter(A)_UP, private(A)_UP, backbone, private(B)_DOWN, limiter(B)_DOWN.</tt>
  *  link_UP and link_DOWN usually share the exact same characteristics, but their
  *  performance are not shared, to model the fact that TCP links are full-duplex.
@@ -60,7 +60,7 @@ namespace routing {
  *  A cluster is connected to the outer world through a router that is connected
  *  directly to the cluster's backbone (no private link).
  *
- *  A communication from an host A to the outer world goes through the following links:
+ *  A communication from a host A to the outer world goes through the following links:
  *   <tt>limiter(A)_UP, private(A)_UP, backbone</tt>
  *  (because the private router is directly connected to the cluster core).
  */

@@ -49,7 +49,7 @@ Host::~Host()
 
 /** @brief Fire the required callbacks and destroy the object
  *
- * Don't delete directly an Host, call h->destroy() instead.
+ * Don't delete directly a host, call h->destroy() instead.
  *
  * This is cumbersome but this is the simplest solution to ensure that the
  * onDestruction() callback receives a valid object (because of the destructor
@@ -259,7 +259,7 @@ int Host::get_pstate() const
 
 /**
  * @ingroup simix_storage_management
- * @brief Returns the list of storages attached to an host.
+ * @brief Returns the list of storages attached to a host.
  * @return a vector containing all storages attached to the host
  */
 std::vector<const char*> Host::get_attached_storages() const
@@ -518,7 +518,7 @@ int sg_host_is_off(sg_host_t host)
   return host->is_off();
 }
 
-/** @brief Get the properties of an host */
+/** @brief Get the properties of a host */
 xbt_dict_t sg_host_get_properties(sg_host_t host)
 {
   xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
@@ -611,7 +611,7 @@ void sg_host_dump(sg_host_t host)
   }
 }
 
-/** @brief Return the list of actors attached to an host.
+/** @brief Return the list of actors attached to a host.
  *
  * @param host a host
  * @param whereto a dynar in which we should push actors living on that host

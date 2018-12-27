@@ -29,7 +29,7 @@ namespace routing {
  *
  *  The resulting value is assumed to be in milliseconds.
  *
- *  So, to go from an host A to an host B, the following links would be used:
+ *  So, to go from a host A to a host B, the following links would be used:
  *  <tt>private(A)_UP, private(B)_DOWN</tt>, with the additional latency computed above.
  *  The bandwidth of the UP and DOWN links is not symmetric (in contrary to usual SimGrid
  *  links), but naturally correspond to the values provided when the peer was created.

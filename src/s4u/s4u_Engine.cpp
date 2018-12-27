@@ -127,7 +127,7 @@ void Engine::host_unregister(std::string name)
   pimpl->hosts_.erase(name);
 }
 
-/** @brief Find an host from its name.
+/** @brief Find a host from its name.
  *
  *  @throw std::invalid_argument if the searched host does not exist.
  */
@@ -138,7 +138,7 @@ simgrid::s4u::Host* Engine::host_by_name(std::string name)
   return pimpl->hosts_.at(name);
 }
 
-/** @brief Find an host from its name (or nullptr if that host does not exist) */
+/** @brief Find a host from its name (or nullptr if that host does not exist) */
 simgrid::s4u::Host* Engine::host_by_name_or_null(std::string name)
 {
   auto host = pimpl->hosts_.find(name);

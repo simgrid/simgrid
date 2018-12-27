@@ -57,7 +57,7 @@ protected:
 public:
   s4u::NetZone* get_iface() { return &piface_; }
 
-  /** @brief Make an host within that NetZone */
+  /** @brief Make a host within that NetZone */
   simgrid::s4u::Host* create_host(const char* name, std::vector<double>* speed_per_pstate, int core_count,
                                   std::map<std::string, std::string>* props);
   /** @brief Creates a new route in this NetZone */

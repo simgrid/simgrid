@@ -229,7 +229,7 @@ public:
    * executed when your actor is killed. You should use them to free the data used by your actor.
    *
    * Please note that functions registered in this signal cannot do any simcall themselves. It means that they cannot
-   * send or receive messages, acquire or release mutexes, nor even modify an host property or something. Not only are
+   * send or receive messages, acquire or release mutexes, nor even modify a host property or something. Not only are
    * blocking functions forbidden in this setting, but also modifications to the global state.
    */
   void on_exit(std::function<void(int, void*)> fun, void* data);

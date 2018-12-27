@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(lua_host, "Lua Host module");
 /*                                simgrid.host API                                   */
 /* ********************************************************************************* */
 
-/** @brief Ensures that the pointed stack value is an host userdatum and returns it.
+/** @brief Ensures that the pointed stack value is a host userdatum and returns it.
  *
  * @param L a Lua state
  * @param index an index in the Lua stack

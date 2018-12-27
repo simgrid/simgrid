@@ -52,7 +52,7 @@ private:
 public:
   /*** Called on each newly created host */
   static simgrid::xbt::signal<void(Host&)> on_creation;
-  /*** Called just before destructing an host */
+  /*** Called just before destructing a host */
   static simgrid::xbt::signal<void(Host&)> on_destruction;
   /*** Called when the machine is turned on or off (called AFTER the change) */
   static simgrid::xbt::signal<void(Host&)> on_state_change;
@@ -65,9 +65,9 @@ public:
   Host(Host const&) = delete;
   Host& operator=(Host const&) = delete;
 
-  /** Retrieve an host from its name, or return nullptr */
+  /** Retrieve a host from its name, or return nullptr */
   static Host* by_name_or_null(std::string name);
-  /** Retrieve an host from its name, or die */
+  /** Retrieve a host from its name, or die */
   static s4u::Host* by_name(std::string name);
   /** Retrieve the host on which the current actor is running */
   static s4u::Host* current();

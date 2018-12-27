@@ -97,7 +97,7 @@ HostImpl::~HostImpl()
 
 /** Re-starts all the actors that are marked as restartable.
  *
- * Weird things will happen if you turn on an host that is already on. S4U is fool-proof, not this.
+ * Weird things will happen if you turn on a host that is already on. S4U is fool-proof, not this.
  */
 void HostImpl::turn_on()
 {

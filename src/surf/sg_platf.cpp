@@ -63,7 +63,7 @@ void sg_platf_exit() {
   surf_parse_lex_destroy();
 }
 
-/** @brief Add an host to the current AS */
+/** @brief Add a host to the current AS */
 void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
 {
   std::map<std::string, std::string> props;
@@ -633,13 +633,13 @@ void sg_platf_new_Zone_seal()
   current_routing = static_cast<simgrid::kernel::routing::NetZoneImpl*>(current_routing->get_father());
 }
 
-/** @brief Add a link connecting an host to the rest of its AS (which must be cluster or vivaldi) */
+/** @brief Add a link connecting a host to the rest of its AS (which must be cluster or vivaldi) */
 void sg_platf_new_hostlink(simgrid::kernel::routing::HostLinkCreationArgs* hostlink)
 {
   simgrid::kernel::routing::NetPoint* netpoint = sg_host_by_name(hostlink->id.c_str())->pimpl_netpoint;
   xbt_assert(netpoint, "Host '%s' not found!", hostlink->id.c_str());
   xbt_assert(dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing),
-             "Only hosts from Cluster and Vivaldi ASes can get an host_link.");
+             "Only hosts from Cluster and Vivaldi ASes can get a host_link.");
 
   simgrid::s4u::Link* linkUp   = simgrid::s4u::Link::by_name_or_null(hostlink->link_up);
   simgrid::s4u::Link* linkDown = simgrid::s4u::Link::by_name_or_null(hostlink->link_down);

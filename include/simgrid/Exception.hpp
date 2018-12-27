@@ -115,7 +115,7 @@ public:
   }
 };
 
-/** Exception raised when an host fails */
+/** Exception raised when a host fails */
 class HostFailureException : public xbt_ex {
 public:
   HostFailureException(simgrid::xbt::ThrowPoint throwpoint, std::string message) : xbt_ex(throwpoint, message)

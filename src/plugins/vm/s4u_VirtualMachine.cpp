@@ -33,7 +33,7 @@ VirtualMachine::VirtualMachine(std::string name, s4u::Host* physical_host, int c
     : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, physical_host, core_amount, ramsize))
 {
   // xbt_assert(s4u::Host::by_name(name) == nullptr,
-  //           "Cannot create a VM named %s: this name is already used by an host or a VM", name.c_str());
+  //           "Cannot create a VM named %s: this name is already used by a host or a VM", name.c_str());
 
   XBT_DEBUG("Create VM %s", name.c_str());
 
