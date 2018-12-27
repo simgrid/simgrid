@@ -850,6 +850,9 @@ endif()
 # Python binding, generated with pybind11
 set(PYBIND11_CPP_STANDARD -std=c++11)
 find_package(pybind11)
+if(NOT PYTHONLIBS_FOUND)
+  set(pybind11_FOUND OFF)
+endif()
 option(enable_python "Whether the Python bindings are activated." ${pybind11_FOUND}) # ON by default if dependencies are met
 
 if(enable_python)
