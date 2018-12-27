@@ -8,9 +8,7 @@
 #ifndef XBT_MISC_H
 #define XBT_MISC_H
 
-#include <simgrid/config.h>
 #include <xbt/base.h>
-#include <xbt/dynar.h>
 
 #include <stdarg.h>
 
@@ -24,9 +22,6 @@ XBT_PUBLIC_DATA int xbt_pagebits;
 
 /** Helps ensuring that header version (SIMGRID_VERSION_MAJOR and friends) and dynamic library version do match. */
 XBT_PUBLIC void sg_version_check(int lib_version_major, int lib_version_minor, int lib_version_patch);
-
-/** Contains all the parameters we got from the command line */
-XBT_PUBLIC_DATA xbt_dynar_t sg_cmdline;
 
 /* snprintf related functions */
 /** @addtogroup XBT_str

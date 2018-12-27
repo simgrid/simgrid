@@ -7,7 +7,8 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "src/instr/instr_private.hpp"
 #include "surf/surf.hpp"
-#include "xbt/virtu.h" /* sg_cmdline */
+#include "xbt/virtu.h" /* xbt_cmdline */
+
 #include <fstream>
 #include <string>
 #include <vector>

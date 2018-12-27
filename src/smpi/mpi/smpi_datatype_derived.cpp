@@ -8,6 +8,8 @@
 #include "smpi_op.hpp"
 #include <xbt/log.h>
 
+#include <cstring>
+
 namespace simgrid{
 namespace smpi{
 

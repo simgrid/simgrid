@@ -6,11 +6,13 @@
 #ifndef SMPI_H
 #define SMPI_H
 
-#include <unistd.h>
-#include <sys/time.h>
 #include <simgrid/forward.h>
 #include <smpi/forward.hpp>
+#include <xbt/function_types.h>
+
 #include <stddef.h>
+#include <sys/time.h>
+#include <unistd.h>
 #include <xbt/misc.h>
 
 #ifdef _WIN32
