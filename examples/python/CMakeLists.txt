@@ -3,7 +3,7 @@ foreach(example exec-basic)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.py)
 
   if(enable_python)
-    ADD_TESH(python-${example} --setenv srcdir=${example}
+    ADD_TESH(python-${example} --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
                                --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
 			       --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib
 			       --setenv PYTHONPATH=${CMAKE_BINARY_DIR}/lib
