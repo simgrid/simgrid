@@ -16,6 +16,24 @@ get_cmake(){
     grep -m 1 "Cmake version" ./consoleText| sed "s/.*-- Cmake version \([a-zA-Z0-9\.]*\)/\1/g"
 }
 
+get_ns3(){
+  found=$(grep -c "NS-3 found" ./consoleText)
+  if [ $found != 0 ]; then
+    echo "✔"
+  else
+    echo ""
+  fi
+}
+
+get_python(){
+  found=$(grep -c "Compile Python bindings .....: ON" ./consoleText)
+  if [ $found != 0 ]; then
+    echo "✔"
+  else
+    echo ""
+  fi
+}
+
 if [ -f consoleText ]; then
   rm consoleText
 fi
@@ -33,7 +51,7 @@ rm consoleText
 
 echo "<br>Description of the nodes - Automatically updated by project_description.sh script - Don't edit here<br><br>
 <table id="configuration-matrix"> 
-<tr class="matrix-row">  <td class="matrix-header">Name of the Builder</td><td class="matrix-header">OS version</td><td class="matrix-header">Compiler name and version</td><td class="matrix-header">Boost version</td><td class="matrix-header">Java version</td><td class="matrix-header">Cmake version</td></tr>"
+<tr class="matrix-row">  <td class="matrix-header">Name of the Builder</td><td class="matrix-header">OS</td><td class="matrix-header">Compiler</td><td class="matrix-header">Boost  </td><td class="matrix-header">Java   </td><td class="matrix-header">Cmake  </td><td class="matrix-header">NS3   </td><td class="matrix-header">Python</td></tr>"
 
 for node in "${nodes[@]}"
 do
@@ -46,8 +64,10 @@ do
     compiler=$(get_compiler)
     java=$(get_java)
     cmake=$(get_cmake)
+    ns3=$(get_ns3)
+    py=$(get_python)
     os=$(grep -m 1 "OS Version" ./consoleText| sed "s/OS Version : \(.*\)/\1/g")
-    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td></tr>"
+    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:left\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:left\">$py</td></tr>"
     rm consoleText
 done
 
@@ -71,8 +91,10 @@ do
     compiler=$(get_compiler)
     java=$(get_java)
     cmake=$(get_cmake)
-    
-    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td></tr>"
+    ns3=$(get_ns3)
+    py=$(get_python)
+    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:left\"
+    >$ns3</td><td class=\"matrix-cell\" style=\"text-align:left\">$py</td></tr>"
     rm consoleText
 done
 
@@ -86,8 +108,10 @@ boost=$(get_boost)
 compiler=$(get_compiler)
 java=$(get_java)
 cmake=$(get_cmake)
-
-echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td></tr>"
+ns3=$(get_ns3)
+py=$(get_python)
+echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:left\"
+>$ns3</td><td class=\"matrix-cell\" style=\"text-align:left\">$py</td></tr>"
 rm consoleText
 
 echo "</table>"
