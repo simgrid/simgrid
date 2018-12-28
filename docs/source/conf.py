@@ -37,7 +37,7 @@ author = u'The SimGrid Team'
 # The short X.Y version
 version = u'alpha 3.22'
 # The full version, including alpha/beta/rc tags
-release = u'3.21'
+release = u'alpha 3.22'
 
 
 # -- General configuration ---------------------------------------------------
@@ -53,6 +53,10 @@ extensions = [
     'sphinx.ext.todo',
     'breathe',
 #    'exhale',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.intersphinx',
+#    'sphinx.ext.napoleon',
+    'sphinx.ext.autosummary',
     'hidden_code_block',
     'javasphinx',
 ]

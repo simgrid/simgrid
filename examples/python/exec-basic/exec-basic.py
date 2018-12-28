@@ -29,11 +29,13 @@ def privileged():
     # After this point, the unprivileged one gets 100% of the CPU and finishes
     # quite quickly.
 
-i = sys.argv.index("--")
+i = 0
+if "--" in sys.argv:
+    i = sys.argv.index("--")
 e = sg.Engine(sys.argv[0:i])
 e.load_platform(sys.argv[i+1])
 
-sg.create_actor("executor", sg.Host.by_name("Tremblay"), executor)
-sg.create_actor("privileged", sg.Host.by_name("Tremblay"), privileged)
+sg.Actor.create("executor", sg.Host.by_name("Tremblay"), executor)
+sg.Actor.create("privileged", sg.Host.by_name("Tremblay"), privileged)
 
 e.run()

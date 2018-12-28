@@ -365,8 +365,8 @@ Here is a little example:
   
    } // The mutex gets automatically freed because the only existing reference gets out of scope
 
-API Reference
-*************
+API C++ Reference
+*****************
 
 .. _API_s4u_this_actor:
 
@@ -573,3 +573,38 @@ s4u::VirtualMachine
    :protected-members:
    :undoc-members:
 
+
+Python API Reference
+********************
+
+The Python API is generated with pybind11. It closely mimicks the C++
+API, to which you should refer for more information.
+
+=========
+Functions
+=========
+
+.. automodule:: simgrid
+   :members:
+   :exclude-members: Actor, Host, Engine
+
+===========
+Class Actor
+===========
+
+.. autoclass:: simgrid.Actor
+   :members:
+
+============
+Class Engine
+============
+
+.. autoclass:: simgrid.Engine
+   :members:
+
+==========
+Class Host
+==========
+
+.. autoclass:: simgrid.Host
+   :members:

@@ -403,10 +403,10 @@ template <class Duration> inline void sleep_until(const SimulationTimePoint<Dura
   this_actor::sleep_until(timeout_native.time_since_epoch().count());
 }
 
-/** Block the actor, computing the given amount of flops */
+/** Block the current actor, computing the given amount of flops */
 XBT_PUBLIC void execute(double flop);
 
-/** Block the actor, computing the given amount of flops at the given priority.
+/** Block the current actor, computing the given amount of flops at the given priority.
  *  An execution of priority 2 computes twice as fast as an execution at priority 1. */
 XBT_PUBLIC void execute(double flop, double priority);
 

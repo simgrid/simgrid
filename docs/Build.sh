@@ -28,7 +28,7 @@ else
   echo "javasphinx relaunched"
 fi
 
-sphinx-build -M html source build ${SPHINXOPTS}
+PYTHONPATH=../lib sphinx-build -M html source build ${SPHINXOPTS}
 
 set +x
 
