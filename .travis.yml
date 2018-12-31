@@ -27,7 +27,7 @@ addons:
     - libdw-dev
     - libevent-dev
     - libunwind8-dev
-    - pybind11-dev
+#    - pybind11-dev # not available on Trusty
   homebrew:
     packages:
     - python
