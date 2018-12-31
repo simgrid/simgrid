@@ -1,5 +1,4 @@
-/* Copyright (c) 2017-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2017-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,7 +14,11 @@ namespace xbt {
 
 class Path {
 public:
+  /** Build a path from the current working directory (CWD) */
+  explicit Path();
+  /** Build a path from the provided parameter */
   explicit Path(const char* path): path_(path) {}
+  /** Build a path from the provided parameter */
   explicit Path(std::string path): path_(std::move(path)) {}
 
   /** @brief Returns the full path name */
