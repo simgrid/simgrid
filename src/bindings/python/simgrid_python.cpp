@@ -80,7 +80,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("load_deployment", &Engine::load_deployment,
           "Load a deployment file and launch the actors that it contains, see :cpp:func:`simgrid::s4u::Engine::load_deployment()`")
       .def("run", &Engine::run, "Run the simulation")
-      .def("register_function", [](Engine*, std::string name, py::object obj) {
+      .def("register_actor", [](Engine*, std::string name, py::object obj) {
         simgrid::simix::register_function(name,
             [obj](std::vector<std::string> args) -> simgrid::simix::ActorCode {
           return [obj, args]() {
