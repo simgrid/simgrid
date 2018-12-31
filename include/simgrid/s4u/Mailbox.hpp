@@ -75,16 +75,16 @@ public:
   /** Return the actor declared as permanent receiver, or nullptr if none **/
   ActorPtr get_receiver();
 
-  /** Creates (but don't start) a data emission to that mailbox */
+  /** Creates (but don't start) a data transmission to that mailbox */
   CommPtr put_init();
-  /** Creates (but don't start) a data emission to that mailbox */
+  /** Creates (but don't start) a data transmission to that mailbox */
   CommPtr put_init(void* data, uint64_t simulated_size_in_bytes);
-  /** Creates and start a data emission to that mailbox */
+  /** Creates and start a data transmission to that mailbox */
   CommPtr put_async(void* data, uint64_t simulated_size_in_bytes);
 
-  /** Blocking data emission */
+  /** Blocking data transmission */
   void put(void* payload, uint64_t simulated_size_in_bytes);
-  /** Blocking data emission with timeout */
+  /** Blocking data transmission with timeout */
   void put(void* payload, uint64_t simulated_size_in_bytes, double timeout);
 
   /** Creates (but don't start) a data reception onto that mailbox */
