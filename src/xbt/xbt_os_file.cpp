@@ -6,6 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/internal_config.h"
+#include "xbt/asserts.h"
 #include "xbt/file.hpp" /* this module */
 
 #ifdef _WIN32
@@ -17,13 +18,15 @@
 #endif
 
 #include <cstring>
+#include <errno.h>
 #include <libgen.h> /* POSIX dirname */
 
 simgrid::xbt::Path::Path()
 {
 #if HAVE_UNISTD_H
   char buffer[2048];
-  getcwd(buffer, 2048);
+  char* ret = getcwd(buffer, 2048);
+  xbt_assert(ret == buffer, "Error during getcwd: %s", strerror(errno));
   path_ = std::string(buffer);
 #else
   path_ = std::string(".");
