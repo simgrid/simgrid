@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2018. The SimGrid Team. All rights reserved.         
+# Copyright (c) 2017-2018. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -13,7 +13,7 @@ import simgrid, sys
 #
 # It can also be used to benchmark our context-switching mechanism.
 
-# Main function of the Yielder process 
+# Main function of the Yielder process
 class Yielder:
     number_of_yields = 0
     def __init__(self, *args):
@@ -25,10 +25,10 @@ class Yielder:
 
 if __name__ == '__main__':
     e = simgrid.Engine(sys.argv)
-    
-    e.load_platform(sys.argv[1])             # Load the platform description 
+
+    e.load_platform(sys.argv[1])             # Load the platform description
     e.register_actor("yielder", Yielder)  # Register the class representing the actors
 
     e.load_deployment(sys.argv[2])
 
-    e.run() # - Run the simulation 
+    e.run() # - Run the simulation

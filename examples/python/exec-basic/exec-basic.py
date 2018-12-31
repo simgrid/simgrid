@@ -7,7 +7,7 @@ import sys
 import simgrid as sg
 
 def executor():
-    # execute() tells SimGrid to pause the calling actor until 
+    # execute() tells SimGrid to pause the calling actor until
     # its host has computed the amount of flops passed as a parameter
     sg.execute(98095)
     sg.info("Done.")
@@ -20,7 +20,7 @@ def privileged():
     # Since the priority is 2, it computes twice as fast as a regular one.
     #
     # So instead of a half/half sharing between the two executions,
-    # we get a 1/3 vs 2/3 sharing. 
+    # we get a 1/3 vs 2/3 sharing.
     sg.execute(98095, 2);
     sg.info("Done.");
 

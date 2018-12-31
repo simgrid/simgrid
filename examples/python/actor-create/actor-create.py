@@ -37,7 +37,7 @@ def forwarder(*args):
   if len(args) < 2: raise AssertionError("Actor forwarder requires 2 parameters, but got only {:d}".format(len(args)))
   mb_in  = simgrid.Mailbox.by_name(args[0])
   mb_out = simgrid.Mailbox.by_name(args[1])
-  
+
   msg = mb_in.get()
   simgrid.info("Forward '{:s}'.".format(msg))
   mb_out.put(msg, len(msg))
@@ -91,10 +91,10 @@ if __name__ == '__main__':
   # For that, you first need to register your function or your actor as follows.
   e.register_actor("sender", Sender)
   e.register_actor("forwarder", forwarder)
-  # Once actors and functions are registered, just load the deployment file 
+  # Once actors and functions are registered, just load the deployment file
   e.load_deployment("actor-create_d.xml")
 
   # Once every actors are started in the engine, the simulation can start
   e.run();
 
-  # Once the simulation is done, the program is ended 
+  # Once the simulation is done, the program is ended
