@@ -586,7 +586,7 @@ Functions
 
 .. automodule:: simgrid
    :members:
-   :exclude-members: Actor, Host, Engine
+   :exclude-members: Actor, Host, Engine, Mailbox
 
 ===========
 Class Actor
@@ -607,4 +607,11 @@ Class Host
 ==========
 
 .. autoclass:: simgrid.Host
+   :members:
+
+=============
+Class Mailbox
+=============
+
+.. autoclass:: simgrid.Mailbox
    :members:

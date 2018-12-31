@@ -1,3 +1,8 @@
+/* Copyright (c) 2018. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -14,6 +19,7 @@
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u/Mailbox.hpp>
 
 #include <boost/intrusive_ptr.hpp>
 
@@ -22,6 +28,7 @@ using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 using simgrid::s4u::Engine;
 using simgrid::s4u::Host;
+using simgrid::s4u::Mailbox;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(python, "python");
 
@@ -78,24 +85,52 @@ PYBIND11_MODULE(simgrid, m)
             [f](std::vector<std::string> args) -> simgrid::simix::ActorCode {
           return [args, f]() { f(args); };
         });
-      }, "Registers the main function of an actor that will be launched from the deployment file, , see :cpp:func:`simgrid::s4u::Engine::register_function()`");
+      }, "Registers the main function of an actor, see :cpp:func:`simgrid::s4u::Engine::register_function()`")
+      ;
 
   /* Class Host */
   py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>>(m, "Host", "Simulation Engine, see :ref:`class s4u::Host <API_s4u_Host>`").def(
       "by_name", &Host::by_name, "Retrieve a host from its name, or die");
 
-  /* Class Actor */
-  // Select the right template instantiation
-  simgrid::s4u::ActorPtr (*create_actor)(std::string, Host*, std::function<void()>) = &Actor::create;
+  /* Class Mailbox */
+  py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(m, "Mailbox", "Mailbox, see :ref:`class s4u::Mailbox <API_s4u_Mailbox>`")
+      .def("by_name", &Mailbox::by_name, "Retrieve a Mailbox from its name, see :cpp:func:`simgrid::s4u::Mailbox::by_name()`")
+      .def("get_name", &Mailbox::get_name, "Retrieves the name of that host, see :cpp:func:`simgrid::s4u::Mailbox::get_name()`")
+      .def("put", [](Mailbox self, py::object data, int size) {
+        data.inc_ref();
+        self.put(data.ptr(), size);
+      }, "Blocking data transmission, see :cpp:func:`void simgrid::s4u::Mailbox::put(void*, uint64_t)`")
+      .def("get", [](Mailbox self) -> py::object {
+         py::object data = pybind11::reinterpret_steal<py::object>(pybind11::handle(static_cast<PyObject*>(self.get())));
+         data.dec_ref();
+         return data;
+      }, "Blocking data reception, see :cpp:func:`void* simgrid::s4u::Mailbox::get()`");
 
+  /* Class Actor */
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor", ""
       "An actor is an independent stream of execution in your distributed application, see :ref:`class s4u::Actor <API_s4u_Actor>`")
-    .def("create", create_actor, "Create an actor from a function, see :cpp:func:`simgrid::s4u::Actor::create()`")
-    .def("create", [](std::string name, Host* host) -> std::function<ActorPtr(std::function<void()>)> {
-      return [name, host](std::function<void()> f) -> ActorPtr {
-        return simgrid::s4u::Actor::create(name, host, std::move(f));
-      };
-    }, "Create an actor from a functor");
+
+    .def("create", [](py::args args, py::kwargs kwargs) {
+        xbt_assert(args.size()>2, "Creating an actor takes at least 3 parameters: name, host, and main function.");
+        return simgrid::s4u::Actor::create(args[0].cast<std::string>(), args[1].cast<Host*>(), [args]() {
+          py::tuple funargs(args.size()-3);
+          for (size_t i=3; i<args.size(); i++)
+            funargs[i-3] = args[i];
+
+          PyObject *result = PyObject_CallObject(args[2].ptr(), funargs.ptr());
+          if (!result)
+              throw pybind11::error_already_set();
+        });
+    }, "Create an actor from a function or an object, see :cpp:func:`simgrid::s4u::Actor::create()`")
+    /*
+    .def("create", [](std::string name, Host* host, py::object obj) -> ActorPtr {
+        xbt_assert(pybind11::hasattr(obj, "__call__"), "Your object does not implement the __call__() method");
+
+        return simgrid::s4u::Actor::create(name, host, [obj](){
+          obj.attr("__call__")();
+        });
+    }, "Create an actor from a python object")
+    */;
 
 
 }
