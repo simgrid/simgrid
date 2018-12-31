@@ -7,6 +7,7 @@ foreach(example actor-create actor-yield exec-basic)
                                --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
 			       --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib
 			       --setenv PYTHONPATH=${CMAKE_BINARY_DIR}/lib
+			       --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
                                ${CMAKE_HOME_DIRECTORY}/examples/python/${example}/${example}.tesh)
   endif()
 endforeach()

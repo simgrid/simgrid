@@ -67,7 +67,7 @@ if __name__ == '__main__':
   e = simgrid.Engine(sys.argv)
 
   # Then you should load a platform file, describing your simulated platform
-  e.load_platform("../platforms/small_platform.xml");
+  e.load_platform("../../platforms/small_platform.xml");
 
   # And now you have to ask SimGrid to actually start your actors.
   #
@@ -92,7 +92,7 @@ if __name__ == '__main__':
   e.register_actor("sender", Sender)
   e.register_actor("forwarder", forwarder)
   # Once actors and functions are registered, just load the deployment file 
-  e.load_deployment("actor-create/actor-create_d.xml")
+  e.load_deployment("actor-create_d.xml")
 
   # Once every actors are started in the engine, the simulation can start
   e.run();
