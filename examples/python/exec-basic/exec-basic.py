@@ -4,13 +4,13 @@
 # under the terms of the license (GNU LGPL) which comes with this package.
 
 import sys
-import simgrid as sg
+from simgrid import *
 
 def executor():
     # execute() tells SimGrid to pause the calling actor until
     # its host has computed the amount of flops passed as a parameter
-    sg.execute(98095)
-    sg.info("Done.")
+    this_actor.execute(98095)
+    this_actor.info("Done.")
     # This simple example does not do anything beyond that
 
 def privileged():
@@ -21,8 +21,8 @@ def privileged():
     #
     # So instead of a half/half sharing between the two executions,
     # we get a 1/3 vs 2/3 sharing.
-    sg.execute(98095, 2);
-    sg.info("Done.");
+    this_actor.execute(98095, 2);
+    this_actor.info("Done.");
 
     # Note that the timings printed when executing this example are a bit misleading,
     # because the uneven sharing only last until the privileged actor ends.
@@ -32,10 +32,10 @@ def privileged():
 i = 0
 if "--" in sys.argv:
     i = sys.argv.index("--")
-e = sg.Engine(sys.argv[0:i])
+e = Engine(sys.argv[0:i])
 e.load_platform(sys.argv[i+1])
 
-sg.Actor.create("executor", sg.Host.by_name("Tremblay"), executor)
-sg.Actor.create("privileged", sg.Host.by_name("Tremblay"), privileged)
+Actor.create("executor", Host.by_name("Tremblay"), executor)
+Actor.create("privileged", Host.by_name("Tremblay"), privileged)
 
 e.run()

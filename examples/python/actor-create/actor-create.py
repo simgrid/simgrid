@@ -16,30 +16,31 @@
 # application and the settings to test it. This is a better scientific methodology. Actually, starting an actor with
 # Actor.create() is mostly useful to start an actor from another actor.
 
-import simgrid, sys
+import sys
+from simgrid import *
 
 # Our first class of actors is simply implemented with a function, that takes a single string as parameter.
 #
 # Later, this actor class is instantiated within the simulation.
 def receiver(mailbox_name):
-  mailbox = simgrid.Mailbox.by_name(mailbox_name)
+  mailbox = Mailbox.by_name(mailbox_name)
 
-  simgrid.info("Hello s4u, I'm ready to get any message you'd want on {:s}".format(mailbox.get_name()))
+  this_actor.info("Hello s4u, I'm ready to get any message you'd want on {:s}".format(mailbox.get_name()))
 
   msg1 = mailbox.get()
   msg2 = mailbox.get()
   msg3 = mailbox.get()
-  simgrid.info("I received '{:s}', '{:s}' and '{:s}'".format(msg1, msg2, msg3))
-  simgrid.info("I'm done. See you.")
+  this_actor.info("I received '{:s}', '{:s}' and '{:s}'".format(msg1, msg2, msg3))
+  this_actor.info("I'm done. See you.")
 
 # Our second class of actors is also a function
 def forwarder(*args):
   if len(args) < 2: raise AssertionError("Actor forwarder requires 2 parameters, but got only {:d}".format(len(args)))
-  mb_in  = simgrid.Mailbox.by_name(args[0])
-  mb_out = simgrid.Mailbox.by_name(args[1])
+  mb_in  = Mailbox.by_name(args[0])
+  mb_out = Mailbox.by_name(args[1])
 
   msg = mb_in.get()
-  simgrid.info("Forward '{:s}'.".format(msg))
+  this_actor.info("Forward '{:s}'.".format(msg))
   mb_out.put(msg, len(msg))
 
 # Declares a third class of actors which sends a message to the mailbox 'mb42'.
@@ -55,16 +56,16 @@ class Sender:
       if len(args) > 2: raise AssertionError("Actor sender requires 2 parameters, but got only {:d}".format(len(args)))
 
   def __call__(self):
-      simgrid.info("Hello s4u, I have something to send")
-      mailbox = simgrid.Mailbox.by_name(self.mbox)
+      this_actor.info("Hello s4u, I have something to send")
+      mailbox = Mailbox.by_name(self.mbox)
 
       mailbox.put(self.msg, len(self.msg))
-      simgrid.info("I'm done. See you.")
+      this_actor.info("I'm done. See you.")
 
 # Here comes the main function of your program
 if __name__ == '__main__':
   # When your program starts, you have to first start a new simulation engine, as follows
-  e = simgrid.Engine(sys.argv)
+  e = Engine(sys.argv)
 
   # Then you should load a platform file, describing your simulated platform
   e.load_platform("../../platforms/small_platform.xml");
@@ -74,15 +75,15 @@ if __name__ == '__main__':
   # The easiest way to do so is to implement the behavior of your actor in a single function,
   # as we do here for the receiver actors. This function can take any kind of parameters, as
   # long as the last parameters of Actor::create() match what your function expects.
-  simgrid.Actor.create("receiver", simgrid.Host.by_name("Fafard"), receiver, "mb42")
+  Actor.create("receiver", Host.by_name("Fafard"), receiver, "mb42")
 
   # If your actor is getting more complex, you probably want to implement it as a class instead,
   # as we do here for the sender actors. The main behavior goes into operator()() of the class.
   #
   # You can then directly start your actor, as follows:
-  simgrid.Actor.create("sender1", simgrid.Host.by_name("Tremblay"), Sender())
+  Actor.create("sender1", Host.by_name("Tremblay"), Sender())
   # If you want to pass parameters to your class, that's very easy: just use your constructors
-  simgrid.Actor.create("sender2", simgrid.Host.by_name("Jupiter"), Sender("GloubiBoulga"));
+  Actor.create("sender2", Host.by_name("Jupiter"), Sender("GloubiBoulga"));
 
   # But starting actors directly is considered as a bad experimental habit, since it ties the code
   # you want to test with the experimental scenario. Starting your actors from an external deployment

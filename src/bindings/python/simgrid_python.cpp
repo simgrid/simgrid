@@ -54,14 +54,17 @@ PYBIND11_MODULE(simgrid, m)
 
   m.attr("simgrid_version") = simgrid_version;
 
-  m.def("info", [](char* s) { XBT_INFO("%s", s); }, "Display a logging message of default priority.");
-
   /* this_actor namespace */
-  m.def("execute", py::overload_cast<double>(&simgrid::s4u::this_actor::execute),
-        "Block the current actor, computing the given amount of flops, see :cpp:func:`void simgrid::s4u::this_actor::execute(double)`");
-  m.def("execute", py::overload_cast<double, double>(&simgrid::s4u::this_actor::execute),
-        "Block the current actor, computing the given amount of flops at the given priority, see :cpp:func:`void simgrid::s4u::this_actor::execute(double, double)`");
-  m.def("yield_", &simgrid::s4u::this_actor::yield, "Yield the actor, see :cpp:func:`void simgrid::s4u::this_actor::yield()`");
+  py::module m2 = m.def_submodule("this_actor", "Bindings of the s4u::this_actor namespace.");
+  m2.def("info", [](char* s) { XBT_INFO("%s", s); }, "Display a logging message of default priority.");
+  m2.def("execute", py::overload_cast<double>(&simgrid::s4u::this_actor::execute),
+         "Block the current actor, computing the given amount of flops, see :cpp:func:`void "
+         "simgrid::s4u::this_actor::execute(double)`");
+  m2.def("execute", py::overload_cast<double, double>(&simgrid::s4u::this_actor::execute),
+         "Block the current actor, computing the given amount of flops at the given priority, see :cpp:func:`void "
+         "simgrid::s4u::this_actor::execute(double, double)`");
+  m2.def("yield_", &simgrid::s4u::this_actor::yield,
+         "Yield the actor, see :cpp:func:`void simgrid::s4u::this_actor::yield()`");
 
   /* Class Engine */
   py::class_<Engine>(m, "Engine", "Simulation Engine, see :ref:`class s4u::Engine <API_s4u_Engine>`")
@@ -122,30 +125,24 @@ PYBIND11_MODULE(simgrid, m)
       }, "Blocking data reception, see :cpp:func:`void* simgrid::s4u::Mailbox::get()`");
 
   /* Class Actor */
-  py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor", ""
-      "An actor is an independent stream of execution in your distributed application, see :ref:`class s4u::Actor <API_s4u_Actor>`")
+  py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor",
+                                            ""
+                                            "An actor is an independent stream of execution in your distributed "
+                                            "application, see :ref:`class s4u::Actor <API_s4u_Actor>`")
 
-    .def("create", [](py::args args, py::kwargs kwargs) {
-        xbt_assert(args.size()>2, "Creating an actor takes at least 3 parameters: name, host, and main function.");
-        return simgrid::s4u::Actor::create(args[0].cast<std::string>(), args[1].cast<Host*>(), [args]() {
-          py::tuple funargs(args.size()-3);
-          for (size_t i=3; i<args.size(); i++)
-            funargs[i-3] = args[i];
+      .def("create",
+           [](py::args args, py::kwargs kwargs) {
+             xbt_assert(args.size() > 2,
+                        "Creating an actor takes at least 3 parameters: name, host, and main function.");
+             return simgrid::s4u::Actor::create(args[0].cast<std::string>(), args[1].cast<Host*>(), [args]() {
+               py::tuple funargs(args.size() - 3);
+               for (size_t i = 3; i < args.size(); i++)
+                 funargs[i - 3] = args[i];
 
-          PyObject *result = PyObject_CallObject(args[2].ptr(), funargs.ptr());
-          if (!result)
-              throw pybind11::error_already_set();
-        });
-    }, "Create an actor from a function or an object, see :cpp:func:`simgrid::s4u::Actor::create()`")
-    /*
-    .def("create", [](std::string name, Host* host, py::object obj) -> ActorPtr {
-        xbt_assert(pybind11::hasattr(obj, "__call__"), "Your object does not implement the __call__() method");
-
-        return simgrid::s4u::Actor::create(name, host, [obj](){
-          obj.attr("__call__")();
-        });
-    }, "Create an actor from a python object")
-    */;
-
-
+               PyObject* result = PyObject_CallObject(args[2].ptr(), funargs.ptr());
+               if (!result)
+                 throw pybind11::error_already_set();
+             });
+           },
+           "Create an actor from a function or an object, see :cpp:func:`simgrid::s4u::Actor::create()`");
 }
