@@ -33,7 +33,7 @@ installBuildWrapper
 
 # Run ctest before sonar to gather coverage some information
 set +e
-ctest --output-on-failure
+ctest -j2 --output-on-failure
 outcome=$?
 set -e
 
