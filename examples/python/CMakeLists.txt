@@ -1,4 +1,4 @@
-foreach(example exec-basic)
+foreach(example actor-create actor-yield exec-basic)
   set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.py)
 
