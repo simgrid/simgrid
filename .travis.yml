@@ -5,8 +5,7 @@
 #   apt-get libns3-dev ns3
 #
 #
-sudo: required
-dist: trusty
+dist: xenial
 language: cpp
 compiler:
    - gcc
@@ -15,8 +14,8 @@ addons:
   apt:
     update: true
     allow_unauthenticated: yes
-    sources:
-    - sourceline: ppa:samuel-bachmann/boost # Get boost 1.60 for Trusty
+#    sources:
+#    - sourceline: ppa:samuel-bachmann/boost # Get boost 1.60 for Trusty
     packages:
     - cmake
     - valgrind
@@ -27,7 +26,7 @@ addons:
     - libdw-dev
     - libevent-dev
     - libunwind8-dev
-#    - pybind11-dev # not available on Trusty
+    - pybind11-dev # not available on Trusty
   homebrew:
     packages:
     - python
