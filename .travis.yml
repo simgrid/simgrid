@@ -14,19 +14,17 @@ addons:
   apt:
     update: true
     allow_unauthenticated: yes
-#    sources:
-#    - sourceline: ppa:samuel-bachmann/boost # Get boost 1.60 for Trusty
     packages:
     - cmake
     - valgrind
     - default-jdk
     - gfortran
-    - libboost1.60-dev
-    - libboost1.60-all-dev
+    - libboost-dev
+    - libboost-all-dev
     - libdw-dev
     - libevent-dev
     - libunwind8-dev
-    - pybind11-dev # not available on Trusty
+    - pybind11-dev
   homebrew:
     packages:
     - python
