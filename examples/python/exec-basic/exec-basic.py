@@ -14,14 +14,12 @@ def executor():
     # This simple example does not do anything beyond that
 
 def privileged():
-    #  This version of execute() with two parameters specifies that this execution
-    # gets a larger share of the resource.
-    #
-    # Since the priority is 2, it computes twice as fast as a regular one.
+    # You can also specify the priority of your execution as follows.
+    # An execution of priority 2 computes twice as fast as a regular one.
     #
     # So instead of a half/half sharing between the two executions,
     # we get a 1/3 vs 2/3 sharing.
-    this_actor.execute(98095, 2);
+    this_actor.execute(98095, priority = 2);
     this_actor.info("Done.");
 
     # Note that the timings printed when executing this example are a bit misleading,

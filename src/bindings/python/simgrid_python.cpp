@@ -57,12 +57,10 @@ PYBIND11_MODULE(simgrid, m)
   /* this_actor namespace */
   py::module m2 = m.def_submodule("this_actor", "Bindings of the s4u::this_actor namespace.");
   m2.def("info", [](char* s) { XBT_INFO("%s", s); }, "Display a logging message of default priority.");
-  m2.def("execute", py::overload_cast<double>(&simgrid::s4u::this_actor::execute),
-         "Block the current actor, computing the given amount of flops, see :cpp:func:`void "
-         "simgrid::s4u::this_actor::execute(double)`");
   m2.def("execute", py::overload_cast<double, double>(&simgrid::s4u::this_actor::execute),
          "Block the current actor, computing the given amount of flops at the given priority, see :cpp:func:`void "
-         "simgrid::s4u::this_actor::execute(double, double)`");
+         "simgrid::s4u::this_actor::execute(double, double)`",
+         py::arg("flops"), py::arg("priority") = 1);
   m2.def("yield_", &simgrid::s4u::this_actor::yield,
          "Yield the actor, see :cpp:func:`void simgrid::s4u::this_actor::yield()`");
 
