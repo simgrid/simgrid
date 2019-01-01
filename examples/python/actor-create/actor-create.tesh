@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ python3 ${srcdir:=.}/actor-create.py --cfg=path:actor-create
+$ python3 ${srcdir:=.}/actor-create.py
 > [Tremblay:sender1:(2) 0.000000] [python/INFO] Hello s4u, I have something to send
 > [Jupiter:sender2:(3) 0.000000] [python/INFO] Hello s4u, I have something to send
 > [Fafard:sender:(4) 0.000000] [python/INFO] Hello s4u, I have something to send
@@ -11,6 +11,3 @@ $ python3 ${srcdir:=.}/actor-create.py --cfg=path:actor-create
 > [Jupiter:sender2:(3) 0.070434] [python/INFO] I'm done. See you.
 > [Fafard:receiver:(1) 0.086825] [python/INFO] I received 'GaBuZoMeu', 'GloubiBoulga' and 'PopPop!'
 > [Fafard:receiver:(1) 0.086825] [python/INFO] I'm done. See you.
-
-# The --cfg=path:actor-create should not be mandatory here.
-# It is mostly intended to work around what seems to be a bug in our CI system.
