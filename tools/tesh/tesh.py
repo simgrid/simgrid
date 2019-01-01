@@ -188,7 +188,7 @@ class TeshState(Singleton):
             t.acquire()
             t.release()
 
-#Command line object
+# Command line object
 class Cmd(object):
     def __init__(self):
         self.input_pipe = []
@@ -199,7 +199,8 @@ class Cmd(object):
         self.linenumber = -1
 
         self.background = False
-        self.cwd = None
+        # Python threads loose the cwd
+        self.cwd = os.getcwd()
 
         self.ignore_output = False
         self.expect_return = 0
@@ -259,8 +260,6 @@ class Cmd(object):
     def run_if_possible(self):
         if self.can_run():
             if self.background:
-                #Python threads loose the cwd
-                self.cwd = os.getcwd()
                 lock = _thread.allocate_lock()
                 lock.acquire()
                 TeshState().add_thread(lock)
@@ -273,10 +272,8 @@ class Cmd(object):
 
 
     def _run(self, lock=None):
-        #Python threads loose the cwd
-        if self.cwd is not None:
-            os.chdir(self.cwd)
-            self.cwd = None
+        # Python threads loose the cwd
+        os.chdir(self.cwd)
 
         #retrocompatibility: support ${aaa:=.} variable format
         def replace_perl_variables(m):
