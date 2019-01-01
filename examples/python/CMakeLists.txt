@@ -12,5 +12,6 @@ foreach(example actor-create actor-yield exec-basic)
   endif()
 endforeach()
 
-set(tesh_files    ${tesh_files}    PARENT_SCOPE)
+set(tesh_files    examples/python/actor-create/actor-create_d.xml
+                  ${tesh_files}    PARENT_SCOPE)
 set(examples_src  ${examples_src}  PARENT_SCOPE)
