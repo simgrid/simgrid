@@ -24,7 +24,7 @@ addons:
     - libdw-dev
     - libevent-dev
     - libunwind8-dev
-    - pybind11-dev
+#    - pybind11-dev # Not available in Xenial
   homebrew:
     packages:
     - python
