@@ -580,13 +580,12 @@ Python API Reference
 The Python API is generated with pybind11. It closely mimicks the C++
 API, to which you should refer for more information.
 
-=========
-Functions
-=========
+==========
+this_actor
+==========
 
-.. automodule:: simgrid
+.. automodule:: simgrid.this_actor
    :members:
-   :exclude-members: Actor, Host, Engine, Mailbox
 
 ===========
 Class Actor
