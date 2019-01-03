@@ -38,7 +38,8 @@ Starting and Stoping Actors
   - **Creating actors:**
     Most actors are started from the deployment XML file, but there is other methods.
     This example show them all.
-    |br| `examples/s4u/actor-create/s4u-actor-create.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-create/s4u-actor-create.cpp>`_
+    |br| |cpp| `examples/s4u/actor-create/s4u-actor-create.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-create/s4u-actor-create.cpp>`_
+    |br|  |py| `examples/python/actor-create/actor-create.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-create/actor-create.py>`_
     
   - **Kill actors:**
     Actors can forcefully stop other actors with the 
@@ -76,11 +77,14 @@ Inter-Actors Interactions
     actor until the end of the receiving actor.
     |br| `examples/s4u/actor-join/s4u-actor-join.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-join/s4u-actor-join.cpp>`_
 
-  - **Yielding to other actor**.
-    The :cpp:func:`simgrid::s4u::this_actor::yield()` function interrupts the
-    execution of the current actor, leaving a chance to the other actors
-    that are ready to run at this timestamp.
-    |br| `examples/s4u/actor-yield/s4u-actor-yield.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-yield/s4u-actor-yield.cpp>`_
+  - **Yielding to other actors**.
+    The ```yield()``` function interrupts the execution of the current
+    actor, leaving a chance to the other actors that are ready to run
+    at this timestamp. 
+    |br| |cpp| `examples/s4u/actor-yield/s4u-actor-yield.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-yield/s4u-actor-yield.cpp>`_
+    :cpp:func:`simgrid::s4u::this_actor::yield()`
+    |br|  |py| `examples/python/actor-yield/actor-yield.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-yield/actor-yield.py>`_
+    :py:func:`simgrid.this_actor.yield_()`
 
 Traces Replay as a Workload
 ---------------------------
