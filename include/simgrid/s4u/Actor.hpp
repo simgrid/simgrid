@@ -387,8 +387,9 @@ namespace this_actor {
 
 XBT_PUBLIC bool is_maestro();
 
-/** Block the actor sleeping for that amount of seconds (may throws hostFailure) */
+/** Block the actor sleeping for that amount of seconds (may throw hostFailure) */
 XBT_PUBLIC void sleep_for(double duration);
+/** Block the actor sleeping until the specified timestamp (may throw hostFailure) */
 XBT_PUBLIC void sleep_until(double timeout);
 
 template <class Rep, class Period> inline void sleep_for(std::chrono::duration<Rep, Period> duration)
@@ -499,13 +500,13 @@ XBT_PUBLIC const char* get_cname();
 /** @brief Returns the name of the host on which the actor is running. */
 XBT_PUBLIC Host* get_host();
 
-/** @brief Suspend the actor. */
+/** @brief Suspend the actor, that is blocked until resume()ed by another actor. */
 XBT_PUBLIC void suspend();
 
 /** @brief Yield the actor. */
 XBT_PUBLIC void yield();
 
-/** @brief Resume the actor. */
+/** @brief Resume the actor, that was suspend()ed previously. */
 XBT_PUBLIC void resume();
 
 XBT_PUBLIC bool is_suspended();

@@ -3,25 +3,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-
-#include <simgrid/config.h>
-#include <xbt/log.h>
-#include <xbt/string.hpp>
 
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
 #include <simgrid/s4u/Mailbox.hpp>
-
-#include <boost/intrusive_ptr.hpp>
 
 namespace py = pybind11;
 using simgrid::s4u::Actor;
@@ -55,12 +47,23 @@ PYBIND11_MODULE(simgrid, m)
   m.attr("simgrid_version") = simgrid_version;
 
   /* this_actor namespace */
+  void (*sleep_for_fun)(double) = &simgrid::s4u::this_actor::sleep_for; // pick the right overload
+  void (*sleep_until_fun)(double) = &simgrid::s4u::this_actor::sleep_until;
+
   py::module m2 = m.def_submodule("this_actor", "Bindings of the s4u::this_actor namespace.");
   m2.def("info", [](char* s) { XBT_INFO("%s", s); }, "Display a logging message of default priority.");
   m2.def("execute", py::overload_cast<double, double>(&simgrid::s4u::this_actor::execute),
          "Block the current actor, computing the given amount of flops at the given priority, see :cpp:func:`void "
          "simgrid::s4u::this_actor::execute(double, double)`",
          py::arg("flops"), py::arg("priority") = 1);
+  m2.def("get_host", &simgrid::s4u::this_actor::get_host, "Retrives host on which the current actor is located");
+  m2.def("migrate", &simgrid::s4u::this_actor::migrate, "Moves the current actor to another host, see :cpp:func:`void simgrid::s4u::this_actor::migrate()`",
+      py::arg("dest"));
+  m2.def("sleep_for", sleep_for_fun,
+      "Block the actor sleeping for that amount of seconds, see :cpp:func:`void simgrid::s4u::this_actor::sleep_for`", py::arg("duration"));
+  m2.def("sleep_until", sleep_until_fun,
+      "Block the actor sleeping until the specified timestamp, see :cpp:func:`void simgrid::s4u::this_actor::sleep_until`", py::arg("duration"));
+  m2.def("suspend", &simgrid::s4u::this_actor::suspend, "Suspend the current actor, that is blocked until resume()ed by another actor. see :cpp:func:`void simgrid::s4u::this_actor::suspend`");
   m2.def("yield_", &simgrid::s4u::this_actor::yield,
          "Yield the actor, see :cpp:func:`void simgrid::s4u::this_actor::yield()`");
 
@@ -105,20 +108,18 @@ PYBIND11_MODULE(simgrid, m)
       ;
 
   /* Class Host */
-  auto get_name = [](const Host* self) {
-    return self->get_name();
-  };
   py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>>(m, "Host", "Simulation Engine, see :ref:`class s4u::Host <API_s4u_Host>`")
       .def("by_name", &Host::by_name, "Retrieve a host from its name, or die")
-      .def("get_name", &Host::get_name, "Retrieve the name of this host")
-      .def_property_readonly("name", get_name, "Retrieve the name of this host")
+      .def_property_readonly("name", [](Host* self) -> const std::string {
+           return static_cast<std::string>(self->get_name());
+        }, "Retrieve the name of this host")
       .def_property_readonly("speed", &Host::get_speed,
           "Get the peak computing speed in flops/s at the current pstate, taking the external load into account, see :cpp:func:`simgrid::s4u::Host::get_speed()`");
 
   /* Class Mailbox */
   py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(m, "Mailbox", "Mailbox, see :ref:`class s4u::Mailbox <API_s4u_Mailbox>`")
       .def("by_name", &Mailbox::by_name, "Retrieve a Mailbox from its name, see :cpp:func:`simgrid::s4u::Mailbox::by_name()`")
-      .def("get_name", &Mailbox::get_name, "Retrieves the name of that host, see :cpp:func:`simgrid::s4u::Mailbox::get_name()`")
+      .def_property_readonly("name", &Mailbox::get_name, "Retrieves the name of that mailbox, see :cpp:func:`simgrid::s4u::Mailbox::get_name()`")
       .def("put", [](Mailbox self, py::object data, int size) {
         data.inc_ref();
         self.put(data.ptr(), size);
@@ -149,5 +150,11 @@ PYBIND11_MODULE(simgrid, m)
                  throw pybind11::error_already_set();
              });
            },
-           "Create an actor from a function or an object, see :cpp:func:`simgrid::s4u::Actor::create()`");
+           "Create an actor from a function or an object, see :cpp:func:`simgrid::s4u::Actor::create()`")
+      .def_property("host", &Actor::get_host, &Actor::migrate, "The host on which this actor is located")
+      .def("migrate", &Actor::migrate, "Moves that actor to another host, see :cpp:func:`void simgrid::s4u::Actor::migrate()`",
+               py::arg("dest"))
+      .def("suspend", &Actor::suspend, "Suspend that actor, that is blocked until resume()ed by another actor. See :cpp:func:`void simgrid::s4u::Actor::suspend()`")
+      .def("resume", &Actor::resume, "Resume that actor, that was previously suspend()ed. See :cpp:func:`void simgrid::s4u::Actor::suspend()`");
+
 }

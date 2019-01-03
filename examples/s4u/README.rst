@@ -68,9 +68,11 @@ Inter-Actors Interactions
     |br| `examples/s4u/actor-suspend/s4u-actor-suspend.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-suspend/s4u-actor-suspend.cpp>`_
 
   - **Migrating Actors:**
-    Actors can move or be moved from a host to another with
-    :cpp:func:`simgrid::s4u::this_actor::migrate()`.
-    |br| `examples/s4u/actor-migration/s4u-actor-migration.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-migration/s4u-actor-migration.cpp>`_
+    Actors can move or be moved from a host to another very easily.
+    |br| |cpp| `examples/s4u/actor-migration/s4u-actor-migration.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-migration/s4u-actor-migration.cpp>`_
+    :cpp:func:`simgrid::s4u::this_actor::migrate()` |cpp|
+    |br|  |py| `examples/python/actor-migration/actor-migration.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-migration/actor-migration.py>`_
+    :py:func:`simgrid.this_actor.migrate()` |py|
 
   - **Waiting for the termination of an actor:** (joining on it)
     :cpp:func:`simgrid::s4u::Actor::join()` allows to block the current
@@ -82,9 +84,9 @@ Inter-Actors Interactions
     actor, leaving a chance to the other actors that are ready to run
     at this timestamp. 
     |br| |cpp| `examples/s4u/actor-yield/s4u-actor-yield.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-yield/s4u-actor-yield.cpp>`_
-    :cpp:func:`simgrid::s4u::this_actor::yield()`
+    :cpp:func:`simgrid::s4u::this_actor::yield()` |cpp|
     |br|  |py| `examples/python/actor-yield/actor-yield.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-yield/actor-yield.py>`_
-    :py:func:`simgrid.this_actor.yield_()`
+    :py:func:`simgrid.this_actor.yield_()` |py|
 
 Traces Replay as a Workload
 ---------------------------

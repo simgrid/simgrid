@@ -25,7 +25,7 @@ from simgrid import *
 def receiver(mailbox_name):
   mailbox = Mailbox.by_name(mailbox_name)
 
-  this_actor.info("Hello s4u, I'm ready to get any message you'd want on {:s}".format(mailbox.get_name()))
+  this_actor.info("Hello s4u, I'm ready to get any message you'd want on {:s}".format(mailbox.name))
 
   msg1 = mailbox.get()
   msg2 = mailbox.get()
