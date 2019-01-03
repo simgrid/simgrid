@@ -268,9 +268,16 @@ public:
 
   /** Wait for the actor to finish.
    *
-   * This blocks the calling actor until the actor on which we call join() is terminated
+   * Blocks the calling actor until the joined actor is terminated. If actor alice executes bob.join(), then alice is
+   * blocked until bob terminates.
    */
   void join();
+
+  /** Wait for the actor to finish, or for the timeout to elapse.
+   *
+   * Blocks the calling actor until the joined actor is terminated. If actor alice executes bob.join(), then alice is
+   * blocked until bob terminates.
+   */
   void join(double timeout);
   Actor* restart();
 

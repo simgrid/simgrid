@@ -75,9 +75,11 @@ Inter-Actors Interactions
     :py:func:`simgrid.this_actor.migrate()` |py|
 
   - **Waiting for the termination of an actor:** (joining on it)
-    :cpp:func:`simgrid::s4u::Actor::join()` allows to block the current
-    actor until the end of the receiving actor.
-    |br| `examples/s4u/actor-join/s4u-actor-join.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-join/s4u-actor-join.cpp>`_
+    You can block the current actor until the end of another actor.
+    |br| |cpp| `examples/s4u/actor-join/s4u-actor-join.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-join/s4u-actor-join.cpp>`_
+    :cpp:func:`simgrid::s4u::Actor::join()` |cpp|
+    |br| |py| `examples/python/actor-join/actor-join.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-join/actor-join.py>`_
+    :cpp:func:`simgrid.Actor.join()` |py|
 
   - **Yielding to other actors**.
     The ```yield()``` function interrupts the execution of the current

@@ -79,6 +79,7 @@ PYBIND11_MODULE(simgrid, m)
         // Currently this can be dangling, we should wrap this somehow.
         return new simgrid::s4u::Engine(&argc, argv.get());
       }))
+      .def("get_clock", &Engine::get_clock, "Retrieve the simulation time")
       .def("load_platform", &Engine::load_platform,
           "Load a platform file describing the environment, see :cpp:func:`simgrid::s4u::Engine::load_platform()`")
       .def("load_deployment", &Engine::load_deployment,
@@ -109,7 +110,8 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Host */
   py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>>(m, "Host", "Simulation Engine, see :ref:`class s4u::Host <API_s4u_Host>`")
-      .def("by_name", &Host::by_name, "Retrieve a host from its name, or die")
+      .def("by_name", &Host::by_name, "Retrieves a host from its name, or die")
+      .def("current", &Host::current, "Retrieves the host on which the running actor is located, see :cpp:func:`simgrid::s4u::Host::current()`")
       .def_property_readonly("name", [](Host* self) -> const std::string {
            return static_cast<std::string>(self->get_name());
         }, "Retrieve the name of this host")
@@ -152,8 +154,10 @@ PYBIND11_MODULE(simgrid, m)
            },
            "Create an actor from a function or an object, see :cpp:func:`simgrid::s4u::Actor::create()`")
       .def_property("host", &Actor::get_host, &Actor::migrate, "The host on which this actor is located")
+      .def("join", py::overload_cast<double>(&Actor::join), "Wait for the actor to finish, see :cpp:func:`void simgrid::s4u::Actor::join(double)`",
+          py::arg("timeout"))
       .def("migrate", &Actor::migrate, "Moves that actor to another host, see :cpp:func:`void simgrid::s4u::Actor::migrate()`",
-               py::arg("dest"))
+          py::arg("dest"))
       .def("suspend", &Actor::suspend, "Suspend that actor, that is blocked until resume()ed by another actor. See :cpp:func:`void simgrid::s4u::Actor::suspend()`")
       .def("resume", &Actor::resume, "Resume that actor, that was previously suspend()ed. See :cpp:func:`void simgrid::s4u::Actor::suspend()`");
 

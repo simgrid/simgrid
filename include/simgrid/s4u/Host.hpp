@@ -69,7 +69,7 @@ public:
   static Host* by_name_or_null(std::string name);
   /** Retrieve a host from its name, or die */
   static s4u::Host* by_name(std::string name);
-  /** Retrieve the host on which the current actor is running */
+  /** Retrieves the host on which the running actor is located */
   static s4u::Host* current();
 
   /** Retrieves the name of that host as a C++ string */
