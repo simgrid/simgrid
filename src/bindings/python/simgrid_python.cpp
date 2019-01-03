@@ -79,6 +79,7 @@ PYBIND11_MODULE(simgrid, m)
         // Currently this can be dangling, we should wrap this somehow.
         return new simgrid::s4u::Engine(&argc, argv.get());
       }))
+      .def("get_all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
       .def("get_clock", &Engine::get_clock, "Retrieve the simulation time")
       .def("load_platform", &Engine::load_platform,
           "Load a platform file describing the environment, see :cpp:func:`simgrid::s4u::Engine::load_platform()`")
