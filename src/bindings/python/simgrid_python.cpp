@@ -105,8 +105,15 @@ PYBIND11_MODULE(simgrid, m)
       ;
 
   /* Class Host */
-  py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>>(m, "Host", "Simulation Engine, see :ref:`class s4u::Host <API_s4u_Host>`").def(
-      "by_name", &Host::by_name, "Retrieve a host from its name, or die");
+  auto get_name = [](const Host* self) {
+    return self->get_name();
+  };
+  py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>>(m, "Host", "Simulation Engine, see :ref:`class s4u::Host <API_s4u_Host>`")
+      .def("by_name", &Host::by_name, "Retrieve a host from its name, or die")
+      .def("get_name", &Host::get_name, "Retrieve the name of this host")
+      .def_property_readonly("name", get_name, "Retrieve the name of this host")
+      .def_property_readonly("speed", &Host::get_speed,
+          "Get the peak computing speed in flops/s at the current pstate, taking the external load into account, see :cpp:func:`simgrid::s4u::Host::get_speed()`");
 
   /* Class Mailbox */
   py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(m, "Mailbox", "Mailbox, see :ref:`class s4u::Mailbox <API_s4u_Mailbox>`")
