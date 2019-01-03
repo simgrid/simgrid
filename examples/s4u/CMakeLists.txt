@@ -1,7 +1,7 @@
 # THIS IS ONLY FOR THE FILES. To add your test (tesh) as well, make sure you add
 # the same at the bottom of the file as well.
 foreach (example actor-create actor-daemon actor-join actor-kill
-                 actor-lifetime actor-migration actor-suspend actor-yield
+                 actor-lifetime actor-migrate actor-suspend actor-yield
                  app-chainsend app-pingpong app-token-ring
                  async-ready async-wait async-waitany async-waitall async-waituntil
                  cloud-capping cloud-migration cloud-simple
@@ -97,7 +97,7 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-re
                                   ${CMAKE_CURRENT_SOURCE_DIR}/README.rst                                   PARENT_SCOPE)
 
 foreach(example actor-create actor-daemon actor-join actor-kill
-                actor-lifetime actor-migration actor-suspend actor-yield
+                actor-lifetime actor-migrate actor-suspend actor-yield
                 app-bittorrent app-chainsend app-masterworkers app-pingpong app-token-ring 
                 async-ready async-wait async-waitall async-waitany async-waituntil
                 cloud-capping cloud-migration cloud-simple

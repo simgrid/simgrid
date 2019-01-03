@@ -69,9 +69,9 @@ Inter-Actors Interactions
 
   - **Migrating Actors:**
     Actors can move or be moved from a host to another very easily.
-    |br| |cpp| `examples/s4u/actor-migration/s4u-actor-migration.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-migration/s4u-actor-migration.cpp>`_
+    |br| |cpp| `examples/s4u/actor-migrate/s4u-actor-migrate.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-migrate/s4u-actor-migrate.cpp>`_
     :cpp:func:`simgrid::s4u::this_actor::migrate()` |cpp|
-    |br|  |py| `examples/python/actor-migration/actor-migration.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-migration/actor-migration.py>`_
+    |br|  |py| `examples/python/actor-migrate/actor-migrate.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-migrate/actor-migrate.py>`_
     :py:func:`simgrid.this_actor.migrate()` |py|
 
   - **Waiting for the termination of an actor:** (joining on it)
@@ -79,7 +79,7 @@ Inter-Actors Interactions
     |br| |cpp| `examples/s4u/actor-join/s4u-actor-join.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-join/s4u-actor-join.cpp>`_
     :cpp:func:`simgrid::s4u::Actor::join()` |cpp|
     |br| |py| `examples/python/actor-join/actor-join.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-join/actor-join.py>`_
-    :cpp:func:`simgrid.Actor.join()` |py|
+    :py:func:`simgrid.Actor.join()` |py|
 
   - **Yielding to other actors**.
     The ```yield()``` function interrupts the execution of the current
