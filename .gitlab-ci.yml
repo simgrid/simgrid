@@ -14,6 +14,6 @@ pages:
 
 ctest:
   script:
-  - apt install curl
+  - apt install curl unzip
   - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON .
   - ./tools/internal/travis-sonarqube.sh make VERBOSE=1 && ctest --output-on-failure
