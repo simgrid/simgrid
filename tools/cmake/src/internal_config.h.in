@@ -89,8 +89,6 @@
 #cmakedefine01 HAVE_MMAP
 /* Function mremap */
 #cmakedefine01 HAVE_MREMAP
-/* Function sem_init (part of XPG6 standard only) */
-#cmakedefine01 HAVE_SEM_INIT
 /* Function sysconf */
 #cmakedefine01 HAVE_SYSCONF
 /* Function vasprintf */

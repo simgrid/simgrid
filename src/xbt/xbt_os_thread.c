@@ -43,12 +43,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt, "Synchronization mechanism (OS-level)");
 
-/* use named semaphore when sem_init() does not work */
-#if !HAVE_SEM_INIT
-static int next_sem_ID = 0;
-static xbt_os_mutex_t next_sem_ID_lock;
-#endif
-
 typedef struct xbt_os_thread_ {
   pthread_t t;
   char *name;
@@ -97,10 +91,6 @@ void xbt_os_thread_mod_preinit(void)
   pthread_attr_init(&thread_attr);
 
   thread_mod_inited = 1;
-
-#if !HAVE_SEM_INIT
-  next_sem_ID_lock = xbt_os_mutex_init();
-#endif
 }
 
 void xbt_os_thread_mod_postexit(void)
@@ -115,9 +105,6 @@ void xbt_os_thread_mod_postexit(void)
   free(main_thread);
   main_thread = NULL;
   thread_mod_inited = 0;
-#if !HAVE_SEM_INIT
-  xbt_os_mutex_destroy(next_sem_ID_lock);
-#endif
 }
 
 /** Calls pthread_atfork() if present, and raise an exception otherwise.
@@ -286,83 +273,6 @@ void xbt_os_mutex_destroy(xbt_os_mutex_t mutex)
   int errcode = pthread_mutex_destroy(&(mutex->m));
   xbt_assert(errcode == 0, "pthread_mutex_destroy(%p) failed: %s", mutex, strerror(errcode));
   free(mutex);
-}
-
-typedef struct xbt_os_sem_ {
-#if !HAVE_SEM_INIT
-  char *name;
-#endif
-  sem_t s;
-  sem_t *ps;
-} s_xbt_os_sem_t;
-
-#ifndef SEM_FAILED
-#define SEM_FAILED (-1)
-#endif
-
-xbt_os_sem_t xbt_os_sem_init(unsigned int value)
-{
-  xbt_os_sem_t res = xbt_new(s_xbt_os_sem_t, 1);
-
-  /* On some systems (macOS), only the stub of sem_init is to be found.
-   * Any attempt to use it leads to ENOSYS (function not implemented).
-   * If such a prehistoric system is detected, do the job with sem_open instead
-   */
-#if HAVE_SEM_INIT
-  if (sem_init(&(res->s), 0, value) != 0)
-    THROWF(system_error, errno, "sem_init() failed: %s", strerror(errno));
-  res->ps = &(res->s);
-
-#else                           /* damn, no sem_init(). Reimplement it */
-
-  xbt_os_mutex_acquire(next_sem_ID_lock);
-  res->name = bprintf("/sg-%d", ++next_sem_ID);
-  xbt_os_mutex_release(next_sem_ID_lock);
-
-  sem_unlink(res->name);
-  res->ps = sem_open(res->name, O_CREAT, 0644, value);
-  if ((res->ps == (sem_t *) SEM_FAILED) && (errno == ENAMETOOLONG)) {
-    /* Old darwins only allow 13 chars. Did you create *that* amount of semaphores? */
-    res->name[13] = '\0';
-    sem_unlink(res->name);
-    res->ps = sem_open(res->name, O_CREAT, 0644, value);
-  }
-  if (res->ps == (sem_t *) SEM_FAILED)
-    THROWF(system_error, errno, "sem_open() failed: %s", strerror(errno));
-
-  /* Remove the name from the semaphore namespace: we never join on it */
-  if (sem_unlink(res->name) < 0)
-    THROWF(system_error, errno, "sem_unlink() failed: %s",
-           strerror(errno));
-
-#endif
-
-  return res;
-}
-
-void xbt_os_sem_acquire(xbt_os_sem_t sem)
-{
-  if (sem_wait(sem->ps) < 0)
-    THROWF(system_error, errno, "sem_wait() failed: %s", strerror(errno));
-}
-
-void xbt_os_sem_release(xbt_os_sem_t sem)
-{
-  if (sem_post(sem->ps) < 0)
-    THROWF(system_error, errno, "sem_post() failed: %s", strerror(errno));
-}
-
-void xbt_os_sem_destroy(xbt_os_sem_t sem)
-{
-#if HAVE_SEM_INIT
-  if (sem_destroy(sem->ps) < 0)
-    THROWF(system_error, errno, "sem_destroy() failed: %s", strerror(errno));
-#else
-  if (sem_close(sem->ps) < 0)
-    THROWF(system_error, errno, "sem_close() failed: %s", strerror(errno));
-  xbt_free(sem->name);
-#endif
-  xbt_free(sem);
 }
 
 void xbt_os_thread_set_extra_data(void *data)

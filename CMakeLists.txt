@@ -406,79 +406,8 @@ endif()
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT THREADS
 
-set(HAVE_THREAD_CONTEXTS 0)
-if(CMAKE_USE_PTHREADS_INIT)
-  ### Test that we have a way to create semaphores
-
-  set(HAVE_SEM_OPEN 0)
-  CHECK_LIBRARY_EXISTS(pthread sem_open "" HAVE_SEM_OPEN_LIB)
-  if(HAVE_SEM_OPEN_LIB)
-    try_run(semopen_retval semopen_compilable
-            ${CMAKE_BINARY_DIR}
-            ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_sem_open.c
-	    LINK_LIBRARIES pthread
-	    COMPILE_OUTPUT_VARIABLE semopen_compilmsg
-            RUN_OUTPUT_VARIABLE semopen_runmsg)
-    
-    if(semopen_compilable)
-      if(NOT semopen_retval) # error if not 0
-        message(STATUS "sem_open is compilable and executable")
-	set(HAVE_SEM_OPEN 1)
-      else()
-        message(STATUS "Warning: sem_open seems compilable but not executable")
-        message(STATUS "Compilation output: ${semopen_compilmsg}")
-        message(STATUS "Execution output: ${semopen_runmsg}")
-        message(STATUS "Exit value: ${semopen_retval}")
-      endif()
-    else()
-      message(STATUS "Warning: sem_open not compilable")
-      message(STATUS "Compilation output: ${semopen_compilmsg}")
-    endif()
-    unset(semopen_compilable)
-    unset(semopen_retval)
-    unset(semopen_runmsg)
-    unset(semopen_compilmsg)
-  endif()
-
-  set(HAVE_SEM_INIT 0)  
-  if(NOT APPLE) # OS X El Capitan deprecates this function
-    CHECK_LIBRARY_EXISTS(pthread sem_init "" HAVE_SEM_INIT_LIB)
-  endif()
-  if(HAVE_SEM_INIT_LIB)
-    try_run(seminit_retval seminit_compilable
-            ${CMAKE_BINARY_DIR}
-            ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_sem_init.c
-	    LINK_LIBRARIES pthread
-	    COMPILE_OUTPUT_VARIABLE seminit_compilmsg
-            RUN_OUTPUT_VARIABLE seminit_runmsg)
-    
-    if(seminit_compilable)
-      if(NOT seminit_retval) # error if not 0
-        message(STATUS "sem_init is compilable and executable")
-	set(HAVE_SEM_INIT 1)
-      else()
-        message(STATUS "Warning: sem_init seems compilable but not executable")
-        message(STATUS "Compilation output: ${seminit_compilmsg}")
-        message(STATUS "Execution output: ${seminit_runmsg}")
-        message(STATUS "Exit value: ${seminit_retval}")
-      endif()
-    else()
-      message(STATUS "Warning: sem_init not compilable")
-      message(STATUS "Compilation output: ${seminit_compilmsg}")
-    endif()
-    unset(seminit_compilable)
-    unset(seminit_retval)
-    unset(seminit_runmsg)
-    unset(seminit_compilmsg)
-  endif()
-
-  if(NOT HAVE_SEM_OPEN AND NOT HAVE_SEM_INIT)
-    message(FATAL_ERROR "Semaphores are not usable (failed to use both sem_open and sem_init), but they are mandatory to threads (you may need to mount /dev).")
-  endif()
-
-  set(HAVE_THREAD_CONTEXTS 1)
-  message(STATUS "Support for thread context factory ok.")
-endif()
+set(HAVE_THREAD_CONTEXTS 1)
+message(STATUS "Support for thread context factory ok.")
 
 set(HAVE_UCONTEXT_CONTEXTS 0)
 if(NOT HAVE_UCONTEXT_H)

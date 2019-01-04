@@ -1101,8 +1101,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/src/internal_config.h.in
   tools/cmake/test_prog/prog_asan.cpp
   tools/cmake/test_prog/prog_makecontext.c
-  tools/cmake/test_prog/prog_sem_init.c
-  tools/cmake/test_prog/prog_sem_open.c
   tools/cmake/test_prog/prog_stackgrowth.c
   tools/cmake/test_prog/prog_stacksetup.c
   tools/cmake/cross-mingw.cmake
