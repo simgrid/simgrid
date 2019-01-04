@@ -563,7 +563,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
       void* libhandle = dlopen(libname.c_str(), RTLD_LAZY);
       // get library name from path
       char fullpath[512] = {'\0'};
-      strcpy(fullpath, libname.c_str());
+      strncpy(fullpath, libname.c_str(), 511);
 #if not defined(__APPLE__)
       int ret = dl_iterate_phdr(visit_libs, fullpath);
       if (ret == 0)
