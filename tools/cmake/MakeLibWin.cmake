@@ -16,9 +16,6 @@ else()
 
   set(SIMGRID_DEP "-lm")
 
-  if (HAVE_PTHREAD)
-    set(SIMGRID_DEP "${SIMGRID_DEP} -lpthread")
-  endif()
   if (HAVE_BOOST_CONTEXTS)
     set(SIMGRID_DEP "${SIMGRID_DEP} ${Boost_CONTEXT_LIBRARY}")
   endif()

@@ -40,9 +40,7 @@ static std::pair<const char*, simgrid::kernel::context::ContextFactoryInitialize
 #if HAVE_BOOST_CONTEXTS
   { "boost", &simgrid::kernel::context::boost_factory },
 #endif
-#if HAVE_THREAD_CONTEXTS
   { "thread", &simgrid::kernel::context::thread_factory },
-#endif
 };
 
 static_assert(sizeof(context_factories) != 0, "No context factories are enabled for this build");
@@ -251,9 +249,6 @@ void SIMIX_context_set_nthreads(int nb_threads) {
     nb_threads = std::thread::hardware_concurrency();
     XBT_INFO("Auto-setting contexts/nthreads to %d", nb_threads);
   }
-#if !HAVE_THREAD_CONTEXTS
-  xbt_assert(nb_threads == 1, "Parallel runs are impossible when the pthreads are missing.");
-#endif
   smx_parallel_contexts = nb_threads;
 }
 

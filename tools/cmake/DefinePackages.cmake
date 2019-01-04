@@ -292,6 +292,7 @@ set(XBT_SRC
   src/xbt/xbt_main.cpp
   src/xbt/xbt_os_file.cpp
   src/xbt/xbt_os_synchro.cpp
+  src/xbt/xbt_os_thread.c
   src/xbt/xbt_os_time.c
   src/xbt/xbt_replay.cpp
   src/xbt/xbt_str.cpp
@@ -382,6 +383,8 @@ set(SIMIX_SRC
   src/kernel/context/Context.hpp
   src/kernel/context/ContextRaw.cpp
   src/kernel/context/ContextRaw.hpp
+  src/kernel/context/ContextThread.cpp
+  src/kernel/context/ContextThread.hpp
   src/simix/smx_deployment.cpp
   src/simix/smx_environment.cpp
   src/simix/smx_global.cpp
@@ -783,22 +786,6 @@ set(source_of_generated_headers
   include/smpi/mpif.h.in)
 
 ### depend of some variables setted upper
-# -->HAVE_THREAD_CONTEXTS HAVE_UCONTEXT_CONTEXTS
-if(${HAVE_THREAD_CONTEXTS}) #pthread
-  set(SURF_SRC   ${SURF_SRC}   src/kernel/context/ContextThread.cpp
-                               src/kernel/context/ContextThread.hpp )
-else() # NOT pthread
-  set(EXTRA_DIST ${EXTRA_DIST} src/kernel/context/ContextThread.cpp
-                               src/kernel/context/ContextThread.hpp )
-endif()
-
-if(${HAVE_THREAD_CONTEXTS}) #pthread
-  set(SURF_SRC    ${SURF_SRC}   src/xbt/xbt_os_thread.c)
-else() # NOT pthread
-  set(EXTRA_DIST  ${EXTRA_DIST} src/xbt/xbt_os_thread.c
-    )
-endif()
-
 if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
   set(SURF_SRC    ${SURF_SRC}   src/kernel/context/ContextUnix.hpp
                                 src/kernel/context/ContextUnix.cpp)
@@ -838,16 +825,6 @@ endif()
 
 if(SIMGRID_HAVE_NS3)
   set(simgrid_sources  ${simgrid_sources}  ${NS3_SRC})
-endif()
-
-# WINDOWS
-if(WIN32)
-  set(simgrid_sources
-    ${simgrid_sources}
-    src/kernel/context/ContextThread.cpp
-    src/kernel/context/ContextThread.hpp
-    src/xbt/xbt_os_thread.c
-    )
 endif()
 
 if(SIMGRID_HAVE_LUA)

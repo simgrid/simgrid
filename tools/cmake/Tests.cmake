@@ -57,7 +57,7 @@ MACRO(ADD_TESH_FACTORIES NAME FACTORIES)
     LIST(REMOVE_AT ARGR 0)
   ENDFOREACH()
   FOREACH(FACTORY ${FACTORIES})
-    if ((${FACTORY} STREQUAL "thread" AND HAVE_THREAD_CONTEXTS) OR
+    if ((${FACTORY} STREQUAL "thread" ) OR # Always available, thanks to C++11 threads
         (${FACTORY} STREQUAL "boost" AND HAVE_BOOST_CONTEXTS) OR
         (${FACTORY} STREQUAL "raw" AND HAVE_RAW_CONTEXTS) OR
         (${FACTORY} STREQUAL "ucontext" AND HAVE_UCONTEXT_CONTEXTS))
@@ -90,7 +90,7 @@ IF(SIMGRID_HAVE_MC)
   ENDIF()
 ENDIF()
 
-IF(enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN AND HAVE_THREAD_CONTEXTS)
+IF(enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   ADD_TEST(test-smpi-mpich3-thread-f77     ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/f77/ ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests "-wrapper=${TESH_WRAPPER}" -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f77/ -tests=testlist -privatization=${HAVE_PRIVATIZATION} -execarg=--cfg=contexts/stack-size:8000 -execarg=--cfg=contexts/factory:thread -execarg=--cfg=smpi/privatization:${HAVE_PRIVATIZATION})
   SET_TESTS_PROPERTIES(test-smpi-mpich3-thread-f77 PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
   ADD_TEST(test-smpi-mpich3-thread-f90     ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/f90/ ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests "-wrapper=${TESH_WRAPPER}" -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f90/ -tests=testlist -privatization=${HAVE_PRIVATIZATION} -execarg=--cfg=smpi/privatization:${HAVE_PRIVATIZATION} -execarg=--cfg=contexts/factory:thread)

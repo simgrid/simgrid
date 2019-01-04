@@ -190,41 +190,30 @@ RawContextFactory::RawContextFactory() : ContextFactory("RawContextFactory"), pa
 {
   RawContext::set_maestro(nullptr);
   if (parallel_) {
-#if HAVE_THREAD_CONTEXTS
     // TODO: choose dynamically when SIMIX_context_get_parallel_threshold() > 1
     ParallelRawContext::initialize();
-#else
-    xbt_die("You asked for a parallel execution, but you don't have any threads.");
-#endif
   }
 }
 
 RawContextFactory::~RawContextFactory()
 {
-#if HAVE_THREAD_CONTEXTS
   if (parallel_)
     ParallelRawContext::finalize();
-#endif
 }
 
 Context* RawContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
                                            smx_actor_t process)
 {
-#if HAVE_THREAD_CONTEXTS
   if (parallel_)
     return this->new_context<ParallelRawContext>(std::move(code), cleanup_func, process);
-#endif
-
   return this->new_context<SerialRawContext>(std::move(code), cleanup_func, process);
 }
 
 void RawContextFactory::run_all()
 {
-#if HAVE_THREAD_CONTEXTS
   if (parallel_)
     ParallelRawContext::run_all();
   else
-#endif
     SerialRawContext::run_all();
 }
 
@@ -329,8 +318,6 @@ void SerialRawContext::run_all()
 
 // ParallelRawContext
 
-#if HAVE_THREAD_CONTEXTS
-
 simgrid::xbt::Parmap<smx_actor_t>* ParallelRawContext::parmap_;
 std::atomic<uintptr_t> ParallelRawContext::threads_working_; /* number of threads that have started their work */
 uintptr_t thread_local ParallelRawContext::worker_id_;       /* thread-specific storage for the thread id */
@@ -393,8 +380,6 @@ void ParallelRawContext::resume()
   SIMIX_context_set_current(this);
   RawContext::swap(worker_context, this);
 }
-
-#endif
 
 ContextFactory* raw_factory()
 {

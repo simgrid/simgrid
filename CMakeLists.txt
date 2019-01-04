@@ -404,10 +404,7 @@ else()
 endif()
 
 #--------------------------------------------------------------------------------------------------
-### Initialize of CONTEXT THREADS
-
-set(HAVE_THREAD_CONTEXTS 1)
-message(STATUS "Support for thread context factory ok.")
+### Check what context backends are available
 
 set(HAVE_UCONTEXT_CONTEXTS 0)
 if(NOT HAVE_UCONTEXT_H)

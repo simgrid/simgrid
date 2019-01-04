@@ -65,7 +65,6 @@ private:
   static unsigned long process_index_;
 };
 
-#if HAVE_THREAD_CONTEXTS
 class ParallelRawContext : public RawContext {
 public:
   ParallelRawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
@@ -85,7 +84,6 @@ private:
   static std::atomic<uintptr_t> threads_working_;
   static uintptr_t thread_local worker_id_;
 };
-#endif
 
 class RawContextFactory : public ContextFactory {
 public:

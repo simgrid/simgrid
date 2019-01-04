@@ -20,41 +20,29 @@ BoostContextFactory::BoostContextFactory()
     : ContextFactory("BoostContextFactory"), parallel_(SIMIX_context_is_parallel())
 {
   BoostContext::set_maestro(nullptr);
-  if (parallel_) {
-#if HAVE_THREAD_CONTEXTS
+  if (parallel_)
     ParallelBoostContext::initialize();
-#else
-    xbt_die("No thread support for parallel context execution");
-#endif
-  }
 }
 
 BoostContextFactory::~BoostContextFactory()
 {
-#if HAVE_THREAD_CONTEXTS
   if (parallel_)
     ParallelBoostContext::finalize();
-#endif
 }
 
 smx_context_t BoostContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
                                                   smx_actor_t process)
 {
-#if HAVE_THREAD_CONTEXTS
   if (parallel_)
     return this->new_context<ParallelBoostContext>(std::move(code), cleanup_func, process);
-#endif
-
   return this->new_context<SerialBoostContext>(std::move(code), cleanup_func, process);
 }
 
 void BoostContextFactory::run_all()
 {
-#if HAVE_THREAD_CONTEXTS
   if (parallel_)
     ParallelBoostContext::run_all();
   else
-#endif
     SerialBoostContext::run_all();
 }
 
@@ -191,8 +179,6 @@ void SerialBoostContext::run_all()
 
 // ParallelBoostContext
 
-#if HAVE_THREAD_CONTEXTS
-
 simgrid::xbt::Parmap<smx_actor_t>* ParallelBoostContext::parmap_;
 std::atomic<uintptr_t> ParallelBoostContext::threads_working_;
 thread_local uintptr_t ParallelBoostContext::worker_id_;
@@ -252,7 +238,6 @@ void ParallelBoostContext::resume()
   BoostContext::swap(worker_context, this);
 }
 
-#endif
 
 XBT_PRIVATE ContextFactory* boost_factory()
 {

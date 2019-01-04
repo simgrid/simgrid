@@ -80,7 +80,6 @@ private:
   static unsigned long process_index_;
 };
 
-#if HAVE_THREAD_CONTEXTS
 class ParallelBoostContext : public BoostContext {
 public:
   ParallelBoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
@@ -100,7 +99,6 @@ private:
   static std::atomic<uintptr_t> threads_working_;
   static thread_local uintptr_t worker_id_;
 };
-#endif
 
 class BoostContextFactory : public ContextFactory {
 public:

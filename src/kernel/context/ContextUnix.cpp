@@ -33,30 +33,21 @@ namespace context {
 UContextFactory::UContextFactory() : ContextFactory("UContextFactory"), parallel_(SIMIX_context_is_parallel())
 {
   UContext::set_maestro(nullptr);
-  if (parallel_) {
-#if HAVE_THREAD_CONTEXTS
+  if (parallel_)
     ParallelUContext::initialize();
-#else
-    xbt_die("No thread support for parallel context execution");
-#endif
-  }
 }
 
 UContextFactory::~UContextFactory()
 {
-#if HAVE_THREAD_CONTEXTS
   if (parallel_)
     ParallelUContext::finalize();
-#endif
 }
 
 Context* UContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process)
 {
-#if HAVE_THREAD_CONTEXTS
   if (parallel_)
     return new_context<ParallelUContext>(std::move(code), cleanup, process);
   else
-#endif
     return new_context<SerialUContext>(std::move(code), cleanup, process);
 }
 
@@ -66,11 +57,9 @@ Context* UContextFactory::create_context(std::function<void()> code, void_pfn_sm
  */
 void UContextFactory::run_all()
 {
-#if HAVE_THREAD_CONTEXTS
   if (parallel_)
     ParallelUContext::run_all();
   else
-#endif
     SerialUContext::run_all();
 }
 
@@ -202,8 +191,6 @@ void SerialUContext::run_all()
 
 // ParallelUContext
 
-#if HAVE_THREAD_CONTEXTS
-
 simgrid::xbt::Parmap<smx_actor_t>* ParallelUContext::parmap_;
 std::atomic<uintptr_t> ParallelUContext::threads_working_;         /* number of threads that have started their work */
 thread_local uintptr_t ParallelUContext::worker_id_;               /* thread-specific storage for the thread id */
@@ -294,8 +281,6 @@ void ParallelUContext::resume()
   // below).  When nobody is to be executed in this scheduling round, the last simulated process will take back the
   // initial soul of the current working thread
 }
-
-#endif
 
 XBT_PRIVATE ContextFactory* sysv_factory()
 {
