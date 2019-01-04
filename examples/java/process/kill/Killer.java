@@ -1,5 +1,4 @@
-/* Copyright (c) 2006-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,8 +8,6 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
 import org.simgrid.msg.HostNotFoundException;
-
-import process.kill.Victim;
 
 public class Killer extends Process {
   public Killer(String hostname, String name) throws HostNotFoundException {

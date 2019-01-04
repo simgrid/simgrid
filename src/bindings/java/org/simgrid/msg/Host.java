@@ -7,8 +7,6 @@
 
 package org.simgrid.msg;
 
-import org.simgrid.msg.Storage;
-
 /**
  * A host object represents a location (any possible place) where a process may run.
  * Thus it is represented as a physical resource with computing capabilities, some

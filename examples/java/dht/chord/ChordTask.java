@@ -5,7 +5,6 @@
 
 package dht.chord;
 
-import dht.chord.Common;
 import org.simgrid.msg.Task;
 
 public class ChordTask extends Task {
