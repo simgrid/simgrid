@@ -344,7 +344,7 @@ void sg_config_init(int *argc, char **argv)
   /* synchronization mode for parallel user contexts */
 #if HAVE_FUTEX_H
   std::string default_synchro_mode = "futex";
-#else //No futex on mac and posix is unimplememted yet
+#else // No futex on mac and posix is unimplemented yet
   std::string default_synchro_mode = "busy_wait";
 #endif
   simgrid::config::declare_flag<std::string>("contexts/synchro", "Synchronization mode to use when running contexts in "

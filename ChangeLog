@@ -15,6 +15,10 @@ MSG:
 
 XBT:
  - Drop sg_cmdline. Please use xbt_cmdline instead.
+ - Drop the C xbt_os_sem_t; Use the C++ xbt::OsSemaphore.
+   OsSemaphore is implemented in a portable way with C++11 threads.
+   This should introduce a major scalability improvement to the thread
+   backend, from which Mac users and Java users will benefit for free.
 
 Fixed bugs:
  - #261: Document the parameters of parallel execution's constructor

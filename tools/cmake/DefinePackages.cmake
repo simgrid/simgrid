@@ -282,6 +282,7 @@ set(XBT_SRC
   src/xbt/mallocator.c
   src/xbt/memory_map.cpp
   src/xbt/memory_map.hpp
+  src/xbt/OsSemaphore.hpp
   src/xbt/parmap.cpp
   src/xbt/snprintf.c
   src/xbt/string.cpp

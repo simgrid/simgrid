@@ -61,11 +61,6 @@ void ThreadContextFactory::run_all()
 ThreadContext::ThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t actor, bool maestro)
     : AttachContext(std::move(code), cleanup, actor), is_maestro_(maestro)
 {
-  // We do not need the semaphores when maestro is in main,
-  // but creating them anyway simplifies things when maestro is externalized
-  this->begin_ = xbt_os_sem_init(0);
-  this->end_ = xbt_os_sem_init(0);
-
   /* If the user provided a function for the process then use it */
   if (has_code()) {
     if (smx_context_stack_size_was_set)
@@ -78,7 +73,7 @@ ThreadContext::ThreadContext(std::function<void()> code, void_pfn_smxprocess_t c
     * name, but now the name is stored at SIMIX level, so we pass a null  */
     this->thread_ = xbt_os_thread_create(nullptr, ThreadContext::wrapper, this, this);
     /* wait the starting of the newly created process */
-    xbt_os_sem_acquire(this->end_);
+    this->end_.acquire();
   }
 
   /* Otherwise, we attach to the current thread */
@@ -91,10 +86,6 @@ ThreadContext::~ThreadContext()
 {
   if (this->thread_) /* If there is a thread (maestro don't have any), wait for its termination */
     xbt_os_thread_join(this->thread_, nullptr);
-
-  /* destroy the synchronization objects */
-  xbt_os_sem_destroy(this->begin_);
-  xbt_os_sem_destroy(this->end_);
 }
 
 void *ThreadContext::wrapper(void *param)
@@ -110,7 +101,7 @@ void *ThreadContext::wrapper(void *param)
   sigaltstack(&stack, nullptr);
 #endif
   // Tell the caller (normally the maestro) we are starting, and wait for its green light
-  xbt_os_sem_release(context->end_);
+  context->end_.release();
   context->start();
 
   try {
@@ -137,24 +128,24 @@ void *ThreadContext::wrapper(void *param)
 
 void ThreadContext::release()
 {
-  xbt_os_sem_release(this->begin_);
+  this->begin_.release();
 }
 
 void ThreadContext::wait()
 {
-  xbt_os_sem_acquire(this->end_);
+  this->end_.acquire();
 }
 
 void ThreadContext::start()
 {
-  xbt_os_sem_acquire(this->begin_);
+  this->begin_.acquire();
   this->start_hook();
 }
 
 void ThreadContext::yield()
 {
   this->yield_hook();
-  xbt_os_sem_release(this->end_);
+  this->end_.release();
 }
 
 void ThreadContext::stop()
@@ -173,7 +164,7 @@ void ThreadContext::attach_start()
 {
   // We're breaking the layers here by depending on the upper layer:
   ThreadContext* maestro = (ThreadContext*)simix_global->maestro_process->context_;
-  xbt_os_sem_release(maestro->begin_);
+  maestro->begin_.release();
   xbt_assert(not this->is_maestro());
   this->start();
 }
@@ -184,7 +175,7 @@ void ThreadContext::attach_stop()
   this->yield();
 
   ThreadContext* maestro = (ThreadContext*)simix_global->maestro_process->context_;
-  xbt_os_sem_acquire(maestro->end_);
+  maestro->end_.acquire();
 
   xbt_os_thread_set_extra_data(nullptr);
 }
@@ -203,16 +194,16 @@ void SerialThreadContext::run_all()
 
 // ParallelThreadContext
 
-xbt_os_sem_t ParallelThreadContext::thread_sem_ = nullptr;
+xbt::OsSemaphore* ParallelThreadContext::thread_sem_ = nullptr;
 
 void ParallelThreadContext::initialize()
 {
-  thread_sem_ = xbt_os_sem_init(SIMIX_context_get_nthreads());
+  thread_sem_ = new xbt::OsSemaphore(SIMIX_context_get_nthreads());
 }
 
 void ParallelThreadContext::finalize()
 {
-  xbt_os_sem_destroy(thread_sem_);
+  delete thread_sem_;
   thread_sem_ = nullptr;
 }
 
@@ -227,13 +218,13 @@ void ParallelThreadContext::run_all()
 void ParallelThreadContext::start_hook()
 {
   if (not is_maestro()) /* parallel run */
-    xbt_os_sem_acquire(thread_sem_);
+    thread_sem_->acquire();
 }
 
 void ParallelThreadContext::yield_hook()
 {
   if (not is_maestro()) /* parallel run */
-    xbt_os_sem_release(thread_sem_);
+    thread_sem_->release();
 }
 
 XBT_PRIVATE ContextFactory* thread_factory()

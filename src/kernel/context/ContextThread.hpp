@@ -10,6 +10,7 @@
 
 #include "simgrid/simix.hpp"
 #include "src/kernel/context/Context.hpp"
+#include "src/xbt/OsSemaphore.hpp"
 #include "xbt/xbt_os_thread.h"
 
 namespace simgrid {
@@ -32,10 +33,10 @@ public:
 private:
   /** A portable thread */
   xbt_os_thread_t thread_ = nullptr;
-  /** Semaphore used to schedule/yield the process */
-  xbt_os_sem_t begin_ = nullptr;
-  /** Semaphore used to schedule/unschedule */
-  xbt_os_sem_t end_ = nullptr;
+  /** Semaphore used to schedule/yield the process (not needed when the maestro is in main, but harmless then) */
+  xbt::OsSemaphore begin_{0};
+  /** Semaphore used to schedule/unschedule (not needed when the maestro is in main, but harmless then) */
+  xbt::OsSemaphore end_{0};
   bool is_maestro_;
 
   void start();                // match a call to release()
@@ -69,7 +70,7 @@ public:
   static void run_all();
 
 private:
-  static xbt_os_sem_t thread_sem_;
+  static xbt::OsSemaphore* thread_sem_;
 
   void start_hook() override;
   void yield_hook() override;
