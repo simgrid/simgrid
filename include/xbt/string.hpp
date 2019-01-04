@@ -136,7 +136,7 @@ public:
   bool empty() const    { return len != 0; }
   void shrink_to_fit() { /* Being there, but doing nothing */}
 
-  // Alement access
+  // Element access
   char* data()              { return string_data::data; }
   const char* data()  const { return string_data::data; }
   char* c_str()             { return string_data::data; }
