@@ -121,11 +121,6 @@ endif()
 execute_process(COMMAND ${CMAKE_LINKER} -version OUTPUT_VARIABLE LINKER_VERSION ERROR_VARIABLE LINKER_VERSION)
 string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
-### Set the library providing dlopen
-if("${CMAKE_SYSTEM_NAME}" MATCHES "kFreeBSD|Linux")
-  find_library(DL_LIBRARY dl)
-endif()
-
 ### Find programs and paths
 FIND_PROGRAM(GCOV_PATH gcov)
 include(FindPerl)
@@ -865,6 +860,8 @@ if(enable_python)
     message(FATAL_ERROR "Please install pybind11-dev to build the Python bindings (or disable that option).")
   endif()
 endif()
+mark_as_advanced(PYBIND11_PYTHON_VERSION)
+mark_as_advanced(pybind11_DIR)
 
 ### Make tests
 if(enable_memcheck_xml)

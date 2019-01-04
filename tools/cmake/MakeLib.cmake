@@ -40,6 +40,12 @@ endif()
 
 # Compute the dependencies of SimGrid
 #####################################
+# search for dlopen
+if("${CMAKE_SYSTEM_NAME}" MATCHES "kFreeBSD|Linux")
+  find_library(DL_LIBRARY dl)
+endif()
+mark_as_advanced(DL_LIBRARY)
+
 if (HAVE_BOOST_CONTEXTS)
   set(SIMGRID_DEP "${SIMGRID_DEP} ${Boost_CONTEXT_LIBRARY}")
 endif()
@@ -145,6 +151,7 @@ FIND_LIBRARY(GCCLIBATOMIC_LIBRARY NAMES atomic atomic.so.1 libatomic.so.1
 if(CMAKE_COMPILER_IS_GNUCC AND GCCLIBATOMIC_LIBRARY)
     set(SIMGRID_DEP   "${SIMGRID_DEP}   -Wl,--as-needed -latomic -Wl,--no-as-needed")
 endif()
+mark_as_advanced(GCCLIBATOMIC_LIBRARY)
 
 if(enable_model-checking AND (NOT LINKER_VERSION VERSION_LESS "2.30"))
     set(SIMGRID_DEP   "${SIMGRID_DEP}   -Wl,-znoseparate-code")
