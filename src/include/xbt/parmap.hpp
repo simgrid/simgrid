@@ -165,19 +165,15 @@ template <typename T> Parmap<T>::Parmap(unsigned num_workers, e_xbt_parmap_mode_
 
   /* Create the pool of worker threads */
   this->workers[0] = nullptr;
-#if HAVE_PTHREAD_SETAFFINITY
-  int core_bind = 0;
-#endif
+  unsigned int core_bind = 0;
   for (unsigned i = 1; i < num_workers; i++) {
     ThreadData* data = new ThreadData(*this, i);
     this->workers[i] = xbt_os_thread_create(nullptr, worker_main, data, nullptr);
-#if HAVE_PTHREAD_SETAFFINITY
     xbt_os_thread_bind(this->workers[i], core_bind);
-    if (core_bind != xbt_os_get_numcores() - 1)
+    if (core_bind != std::thread::hardware_concurrency() - 1)
       core_bind++;
     else
       core_bind = 0;
-#endif
   }
 }
 
