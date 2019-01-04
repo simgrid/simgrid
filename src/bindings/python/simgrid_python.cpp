@@ -114,15 +114,17 @@ PYBIND11_MODULE(simgrid, m)
       .def("by_name", &Host::by_name, "Retrieves a host from its name, or die")
       .def("current", &Host::current, "Retrieves the host on which the running actor is located, see :cpp:func:`simgrid::s4u::Host::current()`")
       .def_property_readonly("name", [](Host* self) -> const std::string {
-           return static_cast<std::string>(self->get_name());
-        }, "Retrieve the name of this host")
+          return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
+        }, "The name of this host")
       .def_property_readonly("speed", &Host::get_speed,
-          "Get the peak computing speed in flops/s at the current pstate, taking the external load into account, see :cpp:func:`simgrid::s4u::Host::get_speed()`");
+          "The peak computing speed in flops/s at the current pstate, taking the external load into account, see :cpp:func:`simgrid::s4u::Host::get_speed()`");
 
   /* Class Mailbox */
   py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(m, "Mailbox", "Mailbox, see :ref:`class s4u::Mailbox <API_s4u_Mailbox>`")
       .def("by_name", &Mailbox::by_name, "Retrieve a Mailbox from its name, see :cpp:func:`simgrid::s4u::Mailbox::by_name()`")
-      .def_property_readonly("name", &Mailbox::get_name, "Retrieves the name of that mailbox, see :cpp:func:`simgrid::s4u::Mailbox::get_name()`")
+      .def_property_readonly("name", [](Mailbox* self) -> const std::string {
+         return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
+      }, "The name of that mailbox, see :cpp:func:`simgrid::s4u::Mailbox::get_name()`")
       .def("put", [](Mailbox self, py::object data, int size) {
         data.inc_ref();
         self.put(data.ptr(), size);
@@ -135,7 +137,6 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Actor */
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor",
-                                            ""
                                             "An actor is an independent stream of execution in your distributed "
                                             "application, see :ref:`class s4u::Actor <API_s4u_Actor>`")
 
@@ -155,10 +156,12 @@ PYBIND11_MODULE(simgrid, m)
            },
            "Create an actor from a function or an object, see :cpp:func:`simgrid::s4u::Actor::create()`")
       .def_property("host", &Actor::get_host, &Actor::migrate, "The host on which this actor is located")
+      .def("daemonize", &Actor::daemonize, "This actor will be automatically terminated when the last non-daemon actor finishes, see :cpp:func:`void simgrid::s4u::Actor::daemonize()`")
       .def("join", py::overload_cast<double>(&Actor::join), "Wait for the actor to finish, see :cpp:func:`void simgrid::s4u::Actor::join(double)`",
           py::arg("timeout"))
       .def("migrate", &Actor::migrate, "Moves that actor to another host, see :cpp:func:`void simgrid::s4u::Actor::migrate()`",
           py::arg("dest"))
+      .def("self", &Actor::self, "Retrieves the current actor, see :cpp:func:`void simgrid::s4u::Actor::self()`")
       .def("suspend", &Actor::suspend, "Suspend that actor, that is blocked until resume()ed by another actor. See :cpp:func:`void simgrid::s4u::Actor::suspend()`")
       .def("resume", &Actor::resume, "Resume that actor, that was previously suspend()ed. See :cpp:func:`void simgrid::s4u::Actor::suspend()`");
 
