@@ -188,7 +188,7 @@ namespace context {
 
 RawContextFactory::RawContextFactory() : ContextFactory("RawContextFactory"), parallel_(SIMIX_context_is_parallel())
 {
-  RawContext::setMaestro(nullptr);
+  RawContext::set_maestro(nullptr);
   if (parallel_) {
 #if HAVE_THREAD_CONTEXTS
     // TODO: choose dynamically when SIMIX_context_get_parallel_threshold() > 1
@@ -306,7 +306,7 @@ void SerialRawContext::suspend()
   } else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
-    next_context = static_cast<SerialRawContext*>(RawContext::getMaestro());
+    next_context = static_cast<SerialRawContext*>(RawContext::get_maestro());
   }
   SIMIX_context_set_current(next_context);
   RawContext::swap(this, next_context);
@@ -315,7 +315,7 @@ void SerialRawContext::suspend()
 void SerialRawContext::resume()
 {
   SIMIX_context_set_current(this);
-  RawContext::swap(RawContext::getMaestro(), this);
+  RawContext::swap(RawContext::get_maestro(), this);
 }
 
 void SerialRawContext::run_all()

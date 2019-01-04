@@ -31,8 +31,8 @@ public:
   virtual void resume() = 0;
 
   static void swap(RawContext* from, RawContext* to);
-  static RawContext* getMaestro() { return maestro_context_; }
-  static void setMaestro(RawContext* maestro) { maestro_context_ = maestro; }
+  static RawContext* get_maestro() { return maestro_context_; }
+  static void set_maestro(RawContext* maestro) { maestro_context_ = maestro; }
 
 private:
   static RawContext* maestro_context_;

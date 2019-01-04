@@ -38,8 +38,8 @@ public:
   virtual void resume() = 0;
 
   static void swap(BoostContext* from, BoostContext* to);
-  static BoostContext* getMaestro() { return maestro_context_; }
-  static void setMaestro(BoostContext* maestro) { maestro_context_ = maestro; }
+  static BoostContext* get_maestro() { return maestro_context_; }
+  static void set_maestro(BoostContext* maestro) { maestro_context_ = maestro; }
 
 private:
   static BoostContext* maestro_context_;

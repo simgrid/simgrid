@@ -32,7 +32,7 @@ namespace context {
 
 UContextFactory::UContextFactory() : ContextFactory("UContextFactory"), parallel_(SIMIX_context_is_parallel())
 {
-  UContext::setMaestro(nullptr);
+  UContext::set_maestro(nullptr);
   if (parallel_) {
 #if HAVE_THREAD_CONTEXTS
     ParallelUContext::initialize();
@@ -179,7 +179,7 @@ void SerialUContext::suspend()
   } else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
-    next_context = static_cast<SerialUContext*>(UContext::getMaestro());
+    next_context = static_cast<SerialUContext*>(UContext::get_maestro());
   }
   SIMIX_context_set_current(next_context);
   UContext::swap(this, next_context);
@@ -188,7 +188,7 @@ void SerialUContext::suspend()
 void SerialUContext::resume()
 {
   SIMIX_context_set_current(this);
-  UContext::swap(UContext::getMaestro(), this);
+  UContext::swap(UContext::get_maestro(), this);
 }
 
 void SerialUContext::run_all()

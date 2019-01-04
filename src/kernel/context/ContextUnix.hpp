@@ -33,8 +33,8 @@ public:
   virtual void resume() = 0;
 
   static void swap(UContext* from, UContext* to);
-  static UContext* getMaestro() { return maestro_context_; }
-  static void setMaestro(UContext* maestro) { maestro_context_ = maestro; }
+  static UContext* get_maestro() { return maestro_context_; }
+  static void set_maestro(UContext* maestro) { maestro_context_ = maestro; }
 
 private:
   static UContext* maestro_context_;
