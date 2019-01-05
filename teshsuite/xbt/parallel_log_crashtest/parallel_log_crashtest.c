@@ -39,14 +39,10 @@ static int crasher()
   id = xbt_new0(int, crasher_amount);
   xbt_os_thread_t* crashers = xbt_new(xbt_os_thread_t, crasher_amount);
 
-  for (int i = 0; i < crasher_amount; i++)
-    id[i] = i;
-
   /* spawn threads */
   for (int i = 0; i < crasher_amount; i++) {
-    char name[16];
-    snprintf(name, sizeof name, "thread %d", i);
-    crashers[i] = xbt_os_thread_create(name, &crasher_thread, &id[i]);
+    id[i]       = i;
+    crashers[i] = xbt_os_thread_create(&crasher_thread, &id[i]);
   }
 
   /* wait for them */

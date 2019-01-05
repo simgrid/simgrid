@@ -22,6 +22,7 @@ XBT:
  - Drop several unused xbt_os_thread_t functions:
    - xbt_os_thread_get_extra_data()
    - xbt_os_thread_set_extra_data()
+   - xbt_os_thread_self()
    - xbt_os_thread_self_name()
 
 Fixed bugs:

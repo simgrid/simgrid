@@ -45,18 +45,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt, "Synchronization mechanism (OS
 
 typedef struct xbt_os_thread_ {
   pthread_t t;
-  char *name;
   void *param;
   pvoid_f_pvoid_t start_routine;
 } s_xbt_os_thread_t;
 static xbt_os_thread_t main_thread = NULL;
 
 /* thread-specific data containing the xbt_os_thread_t structure */
-static pthread_key_t xbt_self_thread_key;
 static int thread_mod_inited = 0;
 
 /* defaults attribute for pthreads */
-//FIXME: find where to put this
 static pthread_attr_t thread_attr;
 
 /* frees the xbt_os_thread_t corresponding to the current thread */
@@ -64,7 +61,6 @@ static void xbt_os_thread_free_thread_data(xbt_os_thread_t thread)
 {
   if (thread == main_thread)    /* just killed main thread */
     main_thread = NULL;
-  free(thread->name);
   free(thread);
 }
 
@@ -73,18 +69,9 @@ void xbt_os_thread_mod_preinit(void)
   if (thread_mod_inited)
     return;
 
-  int errcode = pthread_key_create(&xbt_self_thread_key, NULL);
-  xbt_assert(errcode == 0, "pthread_key_create failed for xbt_self_thread_key");
-
   main_thread = xbt_new(s_xbt_os_thread_t, 1);
-  main_thread->name = NULL;
-  main_thread->name = xbt_strdup("main");
   main_thread->param = NULL;
   main_thread->start_routine = NULL;
-
-  if ((errcode = pthread_setspecific(xbt_self_thread_key, main_thread)))
-    THROWF(system_error, errcode,
-           "Impossible to set the SimGrid identity descriptor to the main thread (pthread_setspecific failed)");
 
   pthread_attr_init(&thread_attr);
 
@@ -93,13 +80,6 @@ void xbt_os_thread_mod_preinit(void)
 
 void xbt_os_thread_mod_postexit(void)
 {
-  /* FIXME: don't try to free our key on shutdown.
-     Valgrind detects no leak if we don't, and whine if we try to */
-  //   int errcode;
-
-  //   if ((errcode=pthread_key_delete(xbt_self_thread_key)))
-  //     THROWF(system_error,errcode,"pthread_key_delete failed for xbt_self_thread_key");
-  free(main_thread->name);
   free(main_thread);
   main_thread = NULL;
   thread_mod_inited = 0;
@@ -122,16 +102,12 @@ static void *wrapper_start_routine(void *s)
 {
   xbt_os_thread_t t = s;
 
-  int errcode = pthread_setspecific(xbt_self_thread_key, t);
-  xbt_assert(errcode == 0, "pthread_setspecific failed for xbt_self_thread_key");
-
   return t->start_routine(t->param);
 }
 
-xbt_os_thread_t xbt_os_thread_create(const char* name, pvoid_f_pvoid_t start_routine, void* param)
+xbt_os_thread_t xbt_os_thread_create(pvoid_f_pvoid_t start_routine, void* param)
 {
   xbt_os_thread_t res_thread = xbt_new(s_xbt_os_thread_t, 1);
-  res_thread->name = xbt_strdup(name);
   res_thread->start_routine = start_routine;
   res_thread->param = param;
 
@@ -213,14 +189,6 @@ void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
 void xbt_os_thread_exit(int *retval)
 {
   pthread_exit(retval);
-}
-
-xbt_os_thread_t xbt_os_thread_self(void )
-{
-  if (!thread_mod_inited)
-    return NULL;
-
-  return pthread_getspecific(xbt_self_thread_key);
 }
 
 /****** mutex related functions ******/

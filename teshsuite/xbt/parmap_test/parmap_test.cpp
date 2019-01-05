@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <cstdlib>
 #include <numeric> // std::iota
+#include <sstream>
+#include <thread>
 #include <vector>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(parmap_test, "Test for parmap");
@@ -50,9 +52,11 @@ static int test_parmap_basic(e_xbt_parmap_mode_t mode)
   return ret;
 }
 
-static void fun_get_id(uintptr_t* arg)
+static void fun_get_id(std::string* arg)
 {
-  *arg = (uintptr_t)xbt_os_thread_self();
+  std::stringstream ss;
+  ss << std::this_thread::get_id();
+  *arg = ss.str();
   xbt_os_sleep(0.05);
 }
 
@@ -63,9 +67,9 @@ static int test_parmap_extended(e_xbt_parmap_mode_t mode)
   for (unsigned num_workers = 1; num_workers <= 16; num_workers *= 2) {
     const unsigned len = 2 * num_workers;
 
-    simgrid::xbt::Parmap<uintptr_t*> parmap(num_workers, mode);
-    std::vector<uintptr_t> a(len);
-    std::vector<uintptr_t*> data(len);
+    simgrid::xbt::Parmap<std::string*> parmap(num_workers, mode);
+    std::vector<std::string> a(len);
+    std::vector<std::string*> data(len);
     std::iota(begin(data), end(data), &a[0]);
 
     parmap.apply(fun_get_id, data);
