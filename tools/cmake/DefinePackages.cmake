@@ -383,6 +383,8 @@ set(SIMIX_SRC
   src/kernel/context/Context.hpp
   src/kernel/context/ContextRaw.cpp
   src/kernel/context/ContextRaw.hpp
+  src/kernel/context/ContextSwapped.cpp
+  src/kernel/context/ContextSwapped.hpp
   src/kernel/context/ContextThread.cpp
   src/kernel/context/ContextThread.hpp
   src/simix/smx_deployment.cpp

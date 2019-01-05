@@ -11,6 +11,7 @@
 #include "simgrid/Exception.hpp"
 #include "src/mc/mc_ignore.hpp"
 #include "src/simix/ActorImpl.hpp"
+#include "src/simix/smx_private.hpp"
 
 #include "ContextUnix.hpp"
 
@@ -48,7 +49,7 @@ Context* UContextFactory::create_context(std::function<void()> code, void_pfn_sm
   if (parallel_)
     return new_context<ParallelUContext>(std::move(code), cleanup, process);
   else
-    return new_context<SerialUContext>(std::move(code), cleanup, process);
+    return new_context<UContext>(std::move(code), cleanup, process);
 }
 
 /* This function is called by maestro at the beginning of a scheduling round to get all working threads executing some
@@ -60,15 +61,13 @@ void UContextFactory::run_all()
   if (parallel_)
     ParallelUContext::run_all();
   else
-    SerialUContext::run_all();
+    SwappedContext::run_all();
 }
 
 // UContext
 
-UContext* UContext::maestro_context_ = nullptr;
-
 UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
-    : Context(std::move(code), cleanup_func, process)
+    : SwappedContext(std::move(code), cleanup_func, process)
 {
   /* if the user provided a function for the process then use it, otherwise it is the context for maestro */
   if (has_code()) {
@@ -84,8 +83,8 @@ UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun
 #endif
     UContext::make_ctx(&this->uc_, UContext::smx_ctx_sysv_wrapper, this);
   } else {
-    if (process != nullptr && maestro_context_ == nullptr)
-      maestro_context_ = this;
+    if (process != nullptr && get_maestro() == nullptr)
+      set_maestro(this);
   }
 
 #if SIMGRID_HAVE_MC
@@ -135,12 +134,13 @@ void UContext::make_ctx(ucontext_t* ucp, void (*func)(int, int), UContext* arg)
   makecontext(ucp, (void (*)())func, 2, ctx_addr[0], ctx_addr[1]);
 }
 
-inline void UContext::swap(UContext* from, UContext* to)
+void UContext::swap_into(SwappedContext* to_)
 {
+  UContext* to = static_cast<UContext*>(to_);
   ASAN_ONLY(void* fake_stack = nullptr);
   ASAN_ONLY(to->asan_ctx_ = from);
   ASAN_START_SWITCH(from->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
-  swapcontext(&from->uc_, &to->uc_);
+  swapcontext(&this->uc_, &to->uc_);
   ASAN_FINISH_SWITCH(fake_stack, &from->asan_ctx_->asan_stack_, &from->asan_ctx_->asan_stack_size_);
 }
 
@@ -148,45 +148,6 @@ void UContext::stop()
 {
   Context::stop();
   throw StopRequest();
-}
-
-// SerialUContext
-
-unsigned long SerialUContext::process_index_; /* index of the next process to run in the list of runnable processes */
-
-void SerialUContext::suspend()
-{
-  /* determine the next context */
-  SerialUContext* next_context;
-  unsigned long int i = process_index_;
-  process_index_++;
-
-  if (i < simix_global->process_to_run.size()) {
-    /* execute the next process */
-    XBT_DEBUG("Run next process");
-    next_context = static_cast<SerialUContext*>(simix_global->process_to_run[i]->context_);
-  } else {
-    /* all processes were run, return to maestro */
-    XBT_DEBUG("No more process to run");
-    next_context = static_cast<SerialUContext*>(UContext::get_maestro());
-  }
-  Context::set_current(next_context);
-  UContext::swap(this, next_context);
-}
-
-void SerialUContext::resume()
-{
-  Context::set_current(this);
-  UContext::swap(UContext::get_maestro(), this);
-}
-
-void SerialUContext::run_all()
-{
-  if (simix_global->process_to_run.empty())
-    return;
-  smx_actor_t first_process = simix_global->process_to_run.front();
-  process_index_            = 1;
-  static_cast<SerialUContext*>(first_process->context_)->resume();
 }
 
 // ParallelUContext
@@ -257,7 +218,7 @@ void ParallelUContext::suspend()
 
   Context::set_current(next_context);
   // Get the next soul to run, either simulated or initial minion's one:
-  UContext::swap(this, next_context);
+  this->swap_into(next_context);
 }
 
 /** Run one particular simulated process on the current thread. */
@@ -272,7 +233,7 @@ void ParallelUContext::resume()
   // Write in simix that I switched my soul
   Context::set_current(this);
   // Actually do that using the relevant library call:
-  UContext::swap(worker_context, this);
+  worker_context->swap_into(this);
   // No body runs that soul anymore at this point.  Instead the current body took the soul of simulated process The
   // simulated process wakes back after the call to "SIMIX_context_suspend(self->context);" within
   // smx_process.c::SIMIX_process_yield()

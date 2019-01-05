@@ -303,8 +303,9 @@ void SerialRawContext::suspend()
 
 void SerialRawContext::resume()
 {
+  RawContext* old = static_cast<RawContext*>(self());
   Context::set_current(this);
-  RawContext::swap(RawContext::get_maestro(), this);
+  RawContext::swap(old, this);
 }
 
 void SerialRawContext::run_all()

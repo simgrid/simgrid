@@ -17,27 +17,22 @@
 #include <xbt/parmap.hpp>
 #include <xbt/xbt_os_thread.h>
 
-#include "Context.hpp"
 #include "src/internal_config.h"
-#include "src/simix/smx_private.hpp"
+#include "src/kernel/context/ContextSwapped.hpp"
 
 namespace simgrid {
 namespace kernel {
 namespace context {
 
-class UContext : public Context {
+class UContext : public SwappedContext {
 public:
   UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
   ~UContext() override;
   void stop() override;
-  virtual void resume() = 0;
 
-  static void swap(UContext* from, UContext* to);
-  static UContext* get_maestro() { return maestro_context_; }
-  static void set_maestro(UContext* maestro) { maestro_context_ = maestro; }
+  void swap_into(SwappedContext* to) override;
 
 private:
-  static UContext* maestro_context_;
   void* stack_ = nullptr; /* the thread stack */
   ucontext_t uc_;         /* the ucontext that executes the code */
 
@@ -50,21 +45,6 @@ private:
 
   static void smx_ctx_sysv_wrapper(int, int);
   static void make_ctx(ucontext_t* ucp, void (*func)(int, int), UContext* arg);
-};
-
-class SerialUContext : public UContext {
-public:
-  SerialUContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
-      : UContext(std::move(code), cleanup_func, process)
-  {
-  }
-  void suspend() override;
-  void resume() override;
-
-  static void run_all();
-
-private:
-  static unsigned long process_index_;
 };
 
 class ParallelUContext : public UContext {

@@ -163,8 +163,9 @@ void SerialBoostContext::suspend()
 
 void SerialBoostContext::resume()
 {
+  BoostContext* old = static_cast<BoostContext*>(self());
   Context::set_current(this);
-  BoostContext::swap(BoostContext::get_maestro(), this);
+  BoostContext::swap(old, this);
 }
 
 void SerialBoostContext::run_all()
