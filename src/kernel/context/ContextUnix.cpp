@@ -71,7 +71,6 @@ UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun
 {
   /* if the user provided a function for the process then use it, otherwise it is the context for maestro */
   if (has_code()) {
-    this->stack_ = SIMIX_context_stack_new();
     getcontext(&this->uc_);
     this->uc_.uc_link = nullptr;
     this->uc_.uc_stack.ss_sp   = sg_makecontext_stack_addr(this->stack_);
@@ -94,10 +93,7 @@ UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun
 #endif
 }
 
-UContext::~UContext()
-{
-  SIMIX_context_stack_delete(this->stack_);
-}
+UContext::~UContext() = default;
 
 // The name of this function is currently hardcoded in the code (as string).
 // Do not change it without fixing those references as well.

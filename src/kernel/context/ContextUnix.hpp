@@ -33,7 +33,6 @@ public:
   void swap_into(SwappedContext* to) override;
 
 private:
-  void* stack_ = nullptr; /* the thread stack */
   ucontext_t uc_;         /* the ucontext that executes the code */
 
 #if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT

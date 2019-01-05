@@ -22,29 +22,24 @@
 #include <xbt/parmap.hpp>
 #include <xbt/xbt_os_thread.h>
 
-#include "Context.hpp"
 #include "src/internal_config.h"
+#include "src/kernel/context/Context.hpp"
+#include "src/kernel/context/ContextSwapped.hpp"
 
 namespace simgrid {
 namespace kernel {
 namespace context {
 
 /** @brief Userspace context switching implementation based on Boost.Context */
-class BoostContext : public Context {
+class BoostContext : public SwappedContext {
 public:
   BoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
   ~BoostContext() override;
   void stop() override;
-  virtual void resume() = 0;
 
-  static void swap(BoostContext* from, BoostContext* to);
-  static BoostContext* get_maestro() { return maestro_context_; }
-  static void set_maestro(BoostContext* maestro) { maestro_context_ = maestro; }
+  void swap_into(SwappedContext* to) override;
 
 private:
-  static BoostContext* maestro_context_;
-  void* stack_ = nullptr;
-
 #if BOOST_VERSION < 105600
   boost::context::fcontext_t* fc_ = nullptr;
   typedef intptr_t arg_type;
@@ -63,21 +58,6 @@ private:
 #endif
 
   static void wrapper(arg_type arg);
-};
-
-class SerialBoostContext : public BoostContext {
-public:
-  SerialBoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
-      : BoostContext(std::move(code), cleanup_func, process)
-  {
-  }
-  void suspend() override;
-  void resume() override;
-
-  static void run_all();
-
-private:
-  static unsigned long process_index_;
 };
 
 class ParallelBoostContext : public BoostContext {

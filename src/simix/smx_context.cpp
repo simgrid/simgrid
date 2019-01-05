@@ -5,28 +5,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/modelchecker.h"
-#include "src/internal_config.h"
 #include "src/simix/smx_private.hpp"
 #include "xbt/config.hpp"
 
 #include <thread>
-
-#ifdef _WIN32
-#include <windows.h>
-#include <malloc.h>
-#else
-#include <sys/mman.h>
-#endif
-
-#ifdef __MINGW32__
-#define _aligned_malloc __mingw_aligned_malloc
-#define _aligned_free  __mingw_aligned_free
-#endif /*MINGW*/
-
-#if HAVE_VALGRIND_H
-# include <valgrind/valgrind.h>
-#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix, "Context switching mechanism");
 
@@ -137,86 +119,6 @@ void SIMIX_context_mod_exit()
 {
   delete simix_global->context_factory;
   simix_global->context_factory = nullptr;
-}
-
-void *SIMIX_context_stack_new()
-{
-  void *stack;
-
-  if (smx_context_guard_size > 0 && not MC_is_active()) {
-
-#if !defined(PTH_STACKGROWTH) || (PTH_STACKGROWTH != -1)
-    xbt_die("Stack overflow protection is known to be broken on your system: you stacks grow upwards (or detection is "
-            "broken). "
-            "Please disable stack guards with --cfg=contexts:guard-size:0");
-    /* Current code for stack overflow protection assumes that stacks are growing downward (PTH_STACKGROWTH == -1).
-     * Protected pages need to be put after the stack when PTH_STACKGROWTH == 1. */
-#endif
-
-    size_t size = smx_context_stack_size + smx_context_guard_size;
-#if SIMGRID_HAVE_MC
-    /* Cannot use posix_memalign when SIMGRID_HAVE_MC. Align stack by hand, and save the
-     * pointer returned by xbt_malloc0. */
-    char *alloc = (char*)xbt_malloc0(size + xbt_pagesize);
-    stack = alloc - ((uintptr_t)alloc & (xbt_pagesize - 1)) + xbt_pagesize;
-    *((void **)stack - 1) = alloc;
-#elif !defined(_WIN32)
-    if (posix_memalign(&stack, xbt_pagesize, size) != 0)
-      xbt_die("Failed to allocate stack.");
-#else
-    stack = _aligned_malloc(size, xbt_pagesize);
-#endif
-
-#ifndef _WIN32
-    if (mprotect(stack, smx_context_guard_size, PROT_NONE) == -1) {
-      xbt_die(
-          "Failed to protect stack: %s.\n"
-          "If you are running a lot of actors, you may be exceeding the amount of mappings allowed per process.\n"
-          "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
-          "Please see http://simgrid.gforge.inria.fr/simgrid/latest/doc/html/options.html#options_virt for more info.",
-          strerror(errno));
-      /* This is fatal. We are going to fail at some point when we try reusing this. */
-    }
-#endif
-    stack = (char *)stack + smx_context_guard_size;
-  } else {
-    stack = xbt_malloc0(smx_context_stack_size);
-  }
-
-#if HAVE_VALGRIND_H
-  unsigned int valgrind_stack_id = VALGRIND_STACK_REGISTER(stack, (char *)stack + smx_context_stack_size);
-  memcpy((char *)stack + smx_context_usable_stack_size, &valgrind_stack_id, sizeof valgrind_stack_id);
-#endif
-
-  return stack;
-}
-
-void SIMIX_context_stack_delete(void *stack)
-{
-  if (not stack)
-    return;
-
-#if HAVE_VALGRIND_H
-  unsigned int valgrind_stack_id;
-  memcpy(&valgrind_stack_id, (char *)stack + smx_context_usable_stack_size, sizeof valgrind_stack_id);
-  VALGRIND_STACK_DEREGISTER(valgrind_stack_id);
-#endif
-
-#ifndef _WIN32
-  if (smx_context_guard_size > 0 && not MC_is_active()) {
-    stack = (char *)stack - smx_context_guard_size;
-    if (mprotect(stack, smx_context_guard_size, PROT_READ | PROT_WRITE) == -1) {
-      XBT_WARN("Failed to remove page protection: %s", strerror(errno));
-      /* try to pursue anyway */
-    }
-#if SIMGRID_HAVE_MC
-    /* Retrieve the saved pointer.  See SIMIX_context_stack_new above. */
-    stack = *((void **)stack - 1);
-#endif
-  }
-#endif /* not windows */
-
-  xbt_free(stack);
 }
 
 /** @brief Returns whether some parallel threads are used for the user contexts. */

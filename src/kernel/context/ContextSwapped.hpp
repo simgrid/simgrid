@@ -6,7 +6,7 @@
 #ifndef SIMGRID_SIMIX_SWAPPED_CONTEXT_HPP
 #define SIMGRID_SIMIX_SWAPPED_CONTEXT_HPP
 
-#include "Context.hpp"
+#include "src/kernel/context/Context.hpp"
 
 namespace simgrid {
 namespace kernel {
@@ -14,10 +14,9 @@ namespace context {
 
 class SwappedContext : public Context {
 public:
-  SwappedContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
-      : Context(std::move(code), cleanup_func, process)
-  {
-  }
+  SwappedContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
+  virtual ~SwappedContext();
+
   virtual void suspend();
   virtual void resume();
 
@@ -27,6 +26,9 @@ public:
 
   static SwappedContext* get_maestro() { return maestro_context_; }
   static void set_maestro(SwappedContext* maestro) { maestro_context_ = maestro; }
+
+protected:
+  void* stack_ = nullptr; /* the thread stack */
 
 private:
   static unsigned long process_index_;

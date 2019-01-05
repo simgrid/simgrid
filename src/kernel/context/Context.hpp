@@ -146,9 +146,6 @@ XBT_PUBLIC_DATA char sigsegv_stack[SIGSTKSZ];
 /** @brief Executes all the processes to run (in parallel if possible). */
 XBT_PRIVATE void SIMIX_context_runall();
 
-XBT_PRIVATE void *SIMIX_context_stack_new();
-XBT_PRIVATE void SIMIX_context_stack_delete(void *stack);
-
 XBT_PUBLIC int SIMIX_process_get_maxpid();
 
 XBT_PRIVATE void SIMIX_post_create_environment();

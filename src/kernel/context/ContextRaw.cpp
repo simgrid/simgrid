@@ -206,7 +206,7 @@ Context* RawContextFactory::create_context(std::function<void()> code, void_pfn_
 {
   if (parallel_)
     return this->new_context<ParallelRawContext>(std::move(code), cleanup_func, process);
-  return this->new_context<SerialRawContext>(std::move(code), cleanup_func, process);
+  return this->new_context<RawContext>(std::move(code), cleanup_func, process);
 }
 
 void RawContextFactory::run_all()
@@ -214,18 +214,15 @@ void RawContextFactory::run_all()
   if (parallel_)
     ParallelRawContext::run_all();
   else
-    SerialRawContext::run_all();
+    SwappedContext::run_all();
 }
 
 // RawContext
 
-RawContext* RawContext::maestro_context_ = nullptr;
-
 RawContext::RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process)
-    : Context(std::move(code), cleanup, process)
+    : SwappedContext(std::move(code), cleanup, process)
 {
    if (has_code()) {
-     this->stack_ = SIMIX_context_stack_new();
 #if PTH_STACKGROWTH == -1
      ASAN_ONLY(this->asan_stack_ = static_cast<char*>(this->stack_) + smx_context_usable_stack_size);
 #else
@@ -233,17 +230,16 @@ RawContext::RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup
 #endif
      this->stack_top_ = raw_makecontext(this->stack_, smx_context_usable_stack_size, RawContext::wrapper, this);
    } else {
-     if (process != nullptr && maestro_context_ == nullptr)
-       maestro_context_ = this;
-     if (MC_is_active())
-       MC_ignore_heap(&maestro_context_->stack_top_, sizeof(maestro_context_->stack_top_));
+     if (process != nullptr && get_maestro() == nullptr)
+       set_maestro(this);
+     if (MC_is_active()) {
+       XBT_ATTRIB_UNUSED RawContext* maestro = static_cast<RawContext*>(get_maestro());
+       MC_ignore_heap(&maestro->stack_top_, sizeof(maestro->stack_top_));
+     }
    }
 }
 
-RawContext::~RawContext()
-{
-  SIMIX_context_stack_delete(this->stack_);
-}
+RawContext::~RawContext() = default;
 
 void RawContext::wrapper(void* arg)
 {
@@ -263,12 +259,13 @@ void RawContext::wrapper(void* arg)
   context->suspend();
 }
 
-inline void RawContext::swap(RawContext* from, RawContext* to)
+void RawContext::swap_into(SwappedContext* to_)
 {
+  RawContext* to = static_cast<RawContext*>(to_);
   ASAN_ONLY(void* fake_stack = nullptr);
   ASAN_ONLY(to->asan_ctx_ = from);
   ASAN_START_SWITCH(from->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
-  raw_swapcontext(&from->stack_top_, to->stack_top_);
+  raw_swapcontext(&this->stack_top_, to->stack_top_);
   ASAN_FINISH_SWITCH(fake_stack, &from->asan_ctx_->asan_stack_, &from->asan_ctx_->asan_stack_size_);
 }
 
@@ -276,45 +273,6 @@ void RawContext::stop()
 {
   Context::stop();
   throw StopRequest();
-}
-
-// SerialRawContext
-
-unsigned long SerialRawContext::process_index_; /* index of the next process to run in the list of runnable processes */
-
-void SerialRawContext::suspend()
-{
-  /* determine the next context */
-  SerialRawContext* next_context;
-  unsigned long int i = process_index_;
-  process_index_++;
-  if (i < simix_global->process_to_run.size()) {
-    /* execute the next process */
-    XBT_DEBUG("Run next process");
-    next_context = static_cast<SerialRawContext*>(simix_global->process_to_run[i]->context_);
-  } else {
-    /* all processes were run, return to maestro */
-    XBT_DEBUG("No more process to run");
-    next_context = static_cast<SerialRawContext*>(RawContext::get_maestro());
-  }
-  Context::set_current(next_context);
-  RawContext::swap(this, next_context);
-}
-
-void SerialRawContext::resume()
-{
-  RawContext* old = static_cast<RawContext*>(self());
-  Context::set_current(this);
-  RawContext::swap(old, this);
-}
-
-void SerialRawContext::run_all()
-{
-  if (simix_global->process_to_run.empty())
-    return;
-  smx_actor_t first_process = simix_global->process_to_run.front();
-  process_index_            = 1;
-  static_cast<SerialRawContext*>(first_process->context_)->resume();
 }
 
 // ParallelRawContext
@@ -369,7 +327,7 @@ void ParallelRawContext::suspend()
   }
 
   Context::set_current(next_context);
-  RawContext::swap(this, next_context);
+  this->swap_into(next_context);
 }
 
 void ParallelRawContext::resume()
@@ -379,7 +337,7 @@ void ParallelRawContext::resume()
   workers_context_[worker_id_]       = worker_context;
   XBT_DEBUG("Saving worker stack %zu", worker_id_);
   Context::set_current(this);
-  RawContext::swap(worker_context, this);
+  worker_context->swap_into(this);
 }
 
 ContextFactory* raw_factory()

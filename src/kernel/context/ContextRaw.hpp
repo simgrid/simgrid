@@ -14,6 +14,8 @@
 #include <xbt/parmap.hpp>
 #include <xbt/xbt_os_thread.h>
 
+#include "src/kernel/context/ContextSwapped.hpp"
+
 namespace simgrid {
 namespace kernel {
 namespace context {
@@ -23,20 +25,15 @@ namespace context {
   * The main difference to the System V context is that Raw Contexts are much faster because they don't
   * preserve the signal mask when switching. This saves a system call (at least on Linux) on each context switch.
   */
-class RawContext : public Context {
+class RawContext : public SwappedContext {
 public:
   RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
   ~RawContext() override;
   void stop() override;
-  virtual void resume() = 0;
 
-  static void swap(RawContext* from, RawContext* to);
-  static RawContext* get_maestro() { return maestro_context_; }
-  static void set_maestro(RawContext* maestro) { maestro_context_ = maestro; }
+  void swap_into(SwappedContext* to) override;
 
 private:
-  static RawContext* maestro_context_;
-  void* stack_ = nullptr;
   /** pointer to top the stack stack */
   void* stack_top_ = nullptr;
 
@@ -48,21 +45,6 @@ private:
 #endif
 
   static void wrapper(void* arg);
-};
-
-class SerialRawContext : public RawContext {
-public:
-  SerialRawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
-      : RawContext(std::move(code), cleanup_func, process)
-  {
-  }
-  void suspend() override;
-  void resume() override;
-
-  static void run_all();
-
-private:
-  static unsigned long process_index_;
 };
 
 class ParallelRawContext : public RawContext {
