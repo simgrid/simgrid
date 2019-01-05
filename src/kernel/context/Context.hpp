@@ -34,6 +34,7 @@ public:
   virtual Context* create_maestro(std::function<void()> code, smx_actor_t process);
 
   virtual void run_all() = 0;
+  /** @brief Returns the current context of this thread. */
   virtual Context* self();
   std::string const& name() const { return name_; }
 
@@ -146,7 +147,6 @@ XBT_PRIVATE void *SIMIX_context_stack_new();
 XBT_PRIVATE void SIMIX_context_stack_delete(void *stack);
 
 XBT_PUBLIC void SIMIX_context_set_current(smx_context_t context);
-XBT_PRIVATE smx_context_t SIMIX_context_get_current();
 
 XBT_PUBLIC int SIMIX_process_get_maxpid();
 

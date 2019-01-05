@@ -29,6 +29,7 @@ smx_context_t SIMIX_context_new(
 namespace simgrid {
 namespace kernel {
 namespace context {
+static thread_local smx_context_t smx_current_context;
 
 ContextFactoryInitializer factory_initializer = nullptr;
 
@@ -36,7 +37,7 @@ ContextFactory::~ContextFactory() = default;
 
 Context* ContextFactory::self()
 {
-  return SIMIX_context_get_current();
+  return smx_current_context;
 }
 
 void Context::declare_context(std::size_t size)
@@ -104,3 +105,11 @@ smx_context_t SIMIX_context_self()
     return nullptr;
 }
 
+/**
+ * @brief Sets the current context of this thread.
+ * @param context the context to set
+ */
+void SIMIX_context_set_current(smx_context_t context)
+{
+  simgrid::kernel::context::smx_current_context = context;
+}

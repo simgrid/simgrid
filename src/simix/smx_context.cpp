@@ -67,7 +67,6 @@ unsigned smx_context_stack_size;
 int smx_context_stack_size_was_set = 0;
 unsigned smx_context_guard_size;
 int smx_context_guard_size_was_set = 0;
-static thread_local smx_context_t smx_current_context;
 static int smx_parallel_contexts = 1;
 static int smx_parallel_threshold = 2;
 static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_DEFAULT;
@@ -293,22 +292,4 @@ e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode() {
  */
 void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) {
   smx_parallel_synchronization_mode = mode;
-}
-
-/**
- * @brief Returns the current context of this thread.
- * @return the current context of this thread
- */
-smx_context_t SIMIX_context_get_current()
-{
-  return smx_current_context;
-}
-
-/**
- * @brief Sets the current context of this thread.
- * @param context the context to set
- */
-void SIMIX_context_set_current(smx_context_t context)
-{
-  smx_current_context = context;
 }
