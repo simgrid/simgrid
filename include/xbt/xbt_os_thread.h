@@ -26,14 +26,11 @@ SG_BEGIN_DECL()
 
 /** @brief Thread data type (opaque structure) */
 typedef struct xbt_os_thread_ *xbt_os_thread_t;
-XBT_PUBLIC xbt_os_thread_t xbt_os_thread_create(const char* name, pvoid_f_pvoid_t start_routine, void* param,
-                                                void* data);
+XBT_PUBLIC xbt_os_thread_t xbt_os_thread_create(const char* name, pvoid_f_pvoid_t start_routine, void* param);
 XBT_PUBLIC void xbt_os_thread_exit(int* retcode);
 
 XBT_PUBLIC xbt_os_thread_t xbt_os_thread_self(void);
 XBT_PUBLIC const char* xbt_os_thread_self_name(void);
-XBT_PUBLIC void xbt_os_thread_set_extra_data(void* data);
-XBT_PUBLIC void* xbt_os_thread_get_extra_data(void);
 /* xbt_os_thread_join frees the joined thread (ie the XBT wrapper around it, the OS frees the rest) */
 XBT_PUBLIC void xbt_os_thread_join(xbt_os_thread_t thread, void** thread_return);
 XBT_PUBLIC void xbt_os_thread_setstacksize(int stack_size);

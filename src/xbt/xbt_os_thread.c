@@ -48,7 +48,6 @@ typedef struct xbt_os_thread_ {
   char *name;
   void *param;
   pvoid_f_pvoid_t start_routine;
-  void *extra_data;
 } s_xbt_os_thread_t;
 static xbt_os_thread_t main_thread = NULL;
 
@@ -82,7 +81,6 @@ void xbt_os_thread_mod_preinit(void)
   main_thread->name = xbt_strdup("main");
   main_thread->param = NULL;
   main_thread->start_routine = NULL;
-  main_thread->extra_data = NULL;
 
   if ((errcode = pthread_setspecific(xbt_self_thread_key, main_thread)))
     THROWF(system_error, errcode,
@@ -130,13 +128,12 @@ static void *wrapper_start_routine(void *s)
   return t->start_routine(t->param);
 }
 
-xbt_os_thread_t xbt_os_thread_create(const char *name,  pvoid_f_pvoid_t start_routine, void *param, void *extra_data)
+xbt_os_thread_t xbt_os_thread_create(const char* name, pvoid_f_pvoid_t start_routine, void* param)
 {
   xbt_os_thread_t res_thread = xbt_new(s_xbt_os_thread_t, 1);
   res_thread->name = xbt_strdup(name);
   res_thread->start_routine = start_routine;
   res_thread->param = param;
-  res_thread->extra_data = extra_data;
 
   int errcode = pthread_create(&(res_thread->t), &thread_attr, wrapper_start_routine, res_thread);
   xbt_assert(errcode == 0, "pthread_create failed: %s", strerror(errcode));
@@ -273,15 +270,4 @@ void xbt_os_mutex_destroy(xbt_os_mutex_t mutex)
   int errcode = pthread_mutex_destroy(&(mutex->m));
   xbt_assert(errcode == 0, "pthread_mutex_destroy(%p) failed: %s", mutex, strerror(errcode));
   free(mutex);
-}
-
-void xbt_os_thread_set_extra_data(void *data)
-{
-  xbt_os_thread_self()->extra_data = data;
-}
-
-void *xbt_os_thread_get_extra_data(void)
-{
-  xbt_os_thread_t thread = xbt_os_thread_self();
-  return thread ? thread->extra_data : NULL;
 }

@@ -71,7 +71,7 @@ ThreadContext::ThreadContext(std::function<void()> code, void_pfn_smxprocess_t c
     /* create and start the process */
     /* NOTE: The first argument to xbt_os_thread_create used to be the process *
     * name, but now the name is stored at SIMIX level, so we pass a null  */
-    this->thread_ = xbt_os_thread_create(nullptr, ThreadContext::wrapper, this, this);
+    this->thread_ = xbt_os_thread_create(nullptr, ThreadContext::wrapper, this);
     /* wait the starting of the newly created process */
     this->end_.acquire();
   }

@@ -46,7 +46,7 @@ static int crasher()
   for (int i = 0; i < crasher_amount; i++) {
     char name[16];
     snprintf(name, sizeof name, "thread %d", i);
-    crashers[i] = xbt_os_thread_create(name, &crasher_thread, &id[i], NULL );
+    crashers[i] = xbt_os_thread_create(name, &crasher_thread, &id[i]);
   }
 
   /* wait for them */
