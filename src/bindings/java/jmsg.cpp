@@ -50,7 +50,7 @@ JavaVM *__java_vm = nullptr;
 JNIEnv *get_current_thread_env()
 {
   using simgrid::kernel::context::JavaContext;
-  JavaContext* ctx = static_cast<JavaContext*>(SIMIX_context_self());
+  JavaContext* ctx = static_cast<JavaContext*>(simgrid::kernel::context::Context::self());
   return ctx->jenv_;
 }
 
@@ -269,7 +269,8 @@ static void run_jprocess(JNIEnv *env, jobject jprocess)
 static int java_main(int argc, char *argv[])
 {
   JNIEnv *env = get_current_thread_env();
-  simgrid::kernel::context::JavaContext* context = static_cast<simgrid::kernel::context::JavaContext*>(SIMIX_context_self());
+  simgrid::kernel::context::JavaContext* context =
+      static_cast<simgrid::kernel::context::JavaContext*>(simgrid::kernel::context::Context::self());
 
   //Change the "." in class name for "/".
   std::string arg0 = argv[0];
@@ -315,7 +316,8 @@ namespace context {
 void java_main_jprocess(jobject jprocess)
 {
   JNIEnv *env = get_current_thread_env();
-  simgrid::kernel::context::JavaContext* context = static_cast<simgrid::kernel::context::JavaContext*>(SIMIX_context_self());
+  simgrid::kernel::context::JavaContext* context =
+      static_cast<simgrid::kernel::context::JavaContext*>(simgrid::kernel::context::Context::self());
   context->jprocess_                             = jprocess;
   jprocess_bind(context->jprocess_, MSG_process_self(), env);
 

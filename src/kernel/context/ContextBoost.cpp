@@ -231,7 +231,7 @@ void ParallelBoostContext::resume()
 {
   worker_id_ = threads_working_.fetch_add(1, std::memory_order_relaxed);
 
-  ParallelBoostContext* worker_context = static_cast<ParallelBoostContext*>(SIMIX_context_self());
+  ParallelBoostContext* worker_context = static_cast<ParallelBoostContext*>(self());
   workers_context_[worker_id_]         = worker_context;
 
   Context::set_current(this);

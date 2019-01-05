@@ -374,7 +374,7 @@ void ParallelRawContext::suspend()
 void ParallelRawContext::resume()
 {
   worker_id_                         = threads_working_.fetch_add(1, std::memory_order_relaxed);
-  ParallelRawContext* worker_context = static_cast<ParallelRawContext*>(SIMIX_context_self());
+  ParallelRawContext* worker_context = static_cast<ParallelRawContext*>(self());
   workers_context_[worker_id_]       = worker_context;
   XBT_DEBUG("Saving worker stack %zu", worker_id_);
   Context::set_current(this);

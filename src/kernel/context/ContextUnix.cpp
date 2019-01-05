@@ -266,7 +266,7 @@ void ParallelUContext::resume()
   // What is my containing body? Store its number in os-thread-specific area :
   worker_id_ = threads_working_.fetch_add(1, std::memory_order_relaxed);
   // Get my current soul:
-  ParallelUContext* worker_context = static_cast<ParallelUContext*>(SIMIX_context_self());
+  ParallelUContext* worker_context = static_cast<ParallelUContext*>(self());
   // Write down that this soul is hosted in that body (for now)
   workers_context_[worker_id_] = worker_context;
   // Write in simix that I switched my soul

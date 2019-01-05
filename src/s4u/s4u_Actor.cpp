@@ -31,7 +31,7 @@ simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_destruction;
 // ***** Actor creation *****
 ActorPtr Actor::self()
 {
-  smx_context_t self_context = SIMIX_context_self();
+  smx_context_t self_context = simgrid::kernel::context::Context::self();
   if (self_context == nullptr)
     return simgrid::s4u::ActorPtr();
 

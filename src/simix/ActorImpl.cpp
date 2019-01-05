@@ -34,7 +34,7 @@ unsigned long simix_process_maxpid = 0;
  */
 smx_actor_t SIMIX_process_self()
 {
-  smx_context_t self_context = SIMIX_context_self();
+  smx_context_t self_context = simgrid::kernel::context::Context::self();
 
   return (self_context != nullptr) ? self_context->process() : nullptr;
 }
@@ -429,7 +429,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
 
 void SIMIX_process_detach()
 {
-  auto* context = dynamic_cast<simgrid::kernel::context::AttachContext*>(SIMIX_context_self());
+  auto* context = dynamic_cast<simgrid::kernel::context::AttachContext*>(simgrid::kernel::context::Context::self());
   if (context == nullptr)
     xbt_die("Not a suitable context");
 

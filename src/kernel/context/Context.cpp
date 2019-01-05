@@ -34,7 +34,7 @@ ContextFactoryInitializer factory_initializer = nullptr;
 
 ContextFactory::~ContextFactory() = default;
 
-static thread_local smx_context_t smx_current_context;
+static thread_local smx_context_t smx_current_context = nullptr;
 Context* Context::self()
 {
   return smx_current_context;
@@ -77,7 +77,11 @@ Context::Context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
     set_current(this);
 }
 
-Context::~Context() = default;
+Context::~Context()
+{
+  if (self() == this)
+    set_current(nullptr);
+}
 
 void Context::stop()
 {
@@ -98,13 +102,4 @@ AttachContext::~AttachContext() = default;
 void SIMIX_context_runall()
 {
   simix_global->context_factory->run_all();
-}
-
-/** @brief returns the current running context */
-smx_context_t SIMIX_context_self()
-{
-  if (simix_global && simix_global->context_factory)
-    return simgrid::kernel::context::Context::self();
-  else
-    return nullptr;
 }
