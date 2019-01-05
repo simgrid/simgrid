@@ -30,7 +30,6 @@ XBT_PUBLIC xbt_os_thread_t xbt_os_thread_create(const char* name, pvoid_f_pvoid_
 XBT_PUBLIC void xbt_os_thread_exit(int* retcode);
 
 XBT_PUBLIC xbt_os_thread_t xbt_os_thread_self(void);
-XBT_PUBLIC const char* xbt_os_thread_self_name(void);
 /* xbt_os_thread_join frees the joined thread (ie the XBT wrapper around it, the OS frees the rest) */
 XBT_PUBLIC void xbt_os_thread_join(xbt_os_thread_t thread, void** thread_return);
 XBT_PUBLIC void xbt_os_thread_setstacksize(int stack_size);

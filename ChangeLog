@@ -19,6 +19,10 @@ XBT:
    OsSemaphore is implemented in a portable way with C++11 threads.
    This should allow much more threads to be created at the same time,
    allowing Mac and Java users to simulate many more actors.
+ - Drop several unused xbt_os_thread_t functions:
+   - xbt_os_thread_get_extra_data()
+   - xbt_os_thread_set_extra_data()
+   - xbt_os_thread_self_name()
 
 Fixed bugs:
  - #261: Document the parameters of parallel execution's constructor

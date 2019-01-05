@@ -202,12 +202,6 @@ void xbt_os_thread_setguardsize(int guard_size)
 #endif
 }
 
-const char *xbt_os_thread_self_name(void)
-{
-  xbt_os_thread_t me = xbt_os_thread_self();
-  return me ? (const char *)me->name : "main";
-}
-
 void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
 {
   int errcode = pthread_join(thread->t, thread_return);

@@ -9,7 +9,6 @@
 #include "simgrid/s4u/Actor.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include <xbt/xbt_os_thread.h>
 
 #include <boost/intrusive/list.hpp>
 #include <mutex>
