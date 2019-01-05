@@ -1,5 +1,4 @@
-/* Copyright (c) 2016-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2016-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -33,7 +32,7 @@ XBT_PUBLIC void unblock(smx_actor_t process);
  * returns a `simgrid::kernel::Future<T>`. The kernel blocks the actor
  * until the Future is ready and:
  *
- *  - either returns the value wrapped in the future to the actor;
+ *  - either returns the value wrapped in the future to the actor
  *
  *  - or raises the exception stored in the future in the actor.
  *

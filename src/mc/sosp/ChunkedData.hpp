@@ -56,11 +56,13 @@ public:
   }
   ChunkedData& operator=(ChunkedData const& that)
   {
-    this->clear();
-    store_   = that.store_;
-    pagenos_ = that.pagenos_;
-    for (std::size_t const& pageno : pagenos_)
-      store_->ref_page(pageno);
+    if (this != &that) {
+      this->clear();
+      store_   = that.store_;
+      pagenos_ = that.pagenos_;
+      for (std::size_t const& pageno : pagenos_)
+        store_->ref_page(pageno);
+    }
     return *this;
   }
   ChunkedData& operator=(ChunkedData&& that)

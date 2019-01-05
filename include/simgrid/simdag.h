@@ -115,7 +115,7 @@ XBT_PUBLIC void SD_task_schedulel(SD_task_t task, int count, ...);
  *
  *  For example, create a pure computation task (i.e., with no communication) like this:
  *
- *  SD_task_schedule(task, my_host_count, my_host_list, my_flops_amount, SD_SCHED_NO_COST, my_rate);
+ *  SD_task_schedule(task, my_host_count, my_host_list, my_flops_amount, SD_SCHED_NO_COST, my_rate)
  */
 #define SD_SCHED_NO_COST NULL
 

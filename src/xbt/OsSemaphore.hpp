@@ -10,12 +10,12 @@ namespace simgrid {
 namespace xbt {
 class XBT_PUBLIC OsSemaphore {
 public:
-  inline OsSemaphore(unsigned int uiCount) : capa_(uiCount) {}
+  explicit inline OsSemaphore(unsigned int capa) : capa_(capa) {}
 
   inline void acquire()
   {
     std::unique_lock<std::mutex> lock(mutex_);
-    condition_.wait(lock, [&]() -> bool { return capa_ > 0; });
+    condition_.wait(lock, [this]() { return capa_ > 0; });
     --capa_;
   }
 

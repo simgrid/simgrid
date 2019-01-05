@@ -121,7 +121,8 @@ public:
   }
   string& operator=(string const& s)
   {
-    assign(s.c_str(), s.size());
+    if (this != &s)
+      assign(s.c_str(), s.size());
     return *this;
   }
   string& operator=(std::string const& s)
