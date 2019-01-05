@@ -141,33 +141,7 @@ SwappedContext::~SwappedContext()
   xbt_free(stack_);
 }
 
-void SwappedContext::suspend()
-{
-  /* determine the next context */
-  SwappedContext* next_context;
-  unsigned long int i = process_index_;
-  process_index_++;
-
-  if (i < simix_global->process_to_run.size()) {
-    /* execute the next process */
-    XBT_DEBUG("Run next process");
-    next_context = static_cast<SwappedContext*>(simix_global->process_to_run[i]->context_);
-  } else {
-    /* all processes were run, return to maestro */
-    XBT_DEBUG("No more process to run");
-    next_context = static_cast<SwappedContext*>(get_maestro());
-  }
-  Context::set_current(next_context);
-  this->swap_into(next_context);
-}
-
-void SwappedContext::resume()
-{
-  SwappedContext* old = static_cast<SwappedContext*>(self());
-  Context::set_current(this);
-  old->swap_into(this);
-}
-
+/** Maestro wants to run all read_to_run actors */
 void SwappedContext::run_all()
 {
   if (simix_global->process_to_run.empty())
@@ -177,6 +151,37 @@ void SwappedContext::run_all()
   /* execute the first process */
   static_cast<SwappedContext*>(first_process->context_)->resume();
 }
+
+/** Maestro wants to yield back to a given actor */
+void SwappedContext::resume()
+{
+  // Maestro is always the calling thread of this function (ie, self() == maestro)
+  SwappedContext* old = static_cast<SwappedContext*>(self());
+  Context::set_current(this);
+  old->swap_into(this);
+}
+
+/** The actor wants to yield back to maestro */
+void SwappedContext::suspend()
+{
+  /* determine the next context */
+  SwappedContext* next_context;
+  unsigned long int i = process_index_;
+  process_index_++;
+
+  if (i < simix_global->process_to_run.size()) {
+    /* Actually swap into the next actor directly without transiting to maestro */
+    XBT_DEBUG("Run next process");
+    next_context = static_cast<SwappedContext*>(simix_global->process_to_run[i]->context_);
+  } else {
+    /* all processes were run, actually return to maestro */
+    XBT_DEBUG("No more process to run");
+    next_context = static_cast<SwappedContext*>(get_maestro());
+  }
+  Context::set_current(next_context);
+  this->swap_into(next_context);
+}
+
 } // namespace context
 } // namespace kernel
 } // namespace simgrid

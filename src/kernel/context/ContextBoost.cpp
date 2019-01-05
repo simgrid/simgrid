@@ -21,13 +21,13 @@ BoostContextFactory::BoostContextFactory()
 {
   BoostContext::set_maestro(nullptr);
   if (parallel_)
-    ParallelBoostContext::initialize();
+    SwappedContext::initialize();
 }
 
 BoostContextFactory::~BoostContextFactory()
 {
   if (parallel_)
-    ParallelBoostContext::finalize();
+    SwappedContext::finalize();
 }
 
 smx_context_t BoostContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
@@ -169,8 +169,8 @@ void ParallelBoostContext::resume()
 {
   worker_id_ = threads_working_.fetch_add(1, std::memory_order_relaxed);
 
-  ParallelBoostContext* worker_context = static_cast<ParallelBoostContext*>(self());
-  workers_context_[worker_id_]         = worker_context;
+  SwappedContext* worker_context = static_cast<SwappedContext*>(self());
+  workers_context_[worker_id_]   = worker_context;
 
   Context::set_current(this);
   worker_context->swap_into(this);

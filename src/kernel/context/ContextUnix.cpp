@@ -35,13 +35,13 @@ UContextFactory::UContextFactory() : ContextFactory("UContextFactory"), parallel
 {
   UContext::set_maestro(nullptr);
   if (parallel_)
-    ParallelUContext::initialize();
+    SwappedContext::initialize();
 }
 
 UContextFactory::~UContextFactory()
 {
   if (parallel_)
-    ParallelUContext::finalize();
+    SwappedContext::finalize();
 }
 
 Context* UContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process)
@@ -151,13 +151,17 @@ void UContext::stop()
 void ParallelUContext::run_all()
 {
   threads_working_ = 0;
-  // Parmap_apply ensures that every working thread get an index in the process_to_run array (through an atomic
-  // fetch_and_add), and runs the ParallelUContext::resume function on that index
 
-  // We lazily create the parmap because the parmap creates context with simix_global->context_factory (which might not
-  // be initialized when bootstrapping):
+  // We lazily create the parmap so that all options are actually processed when doing so.
   if (parmap_ == nullptr)
     parmap_ = new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
+
+  // Usually, Parmap::apply() executes the provided function on all elements of the array.
+  // Here, the executed function does not return the control to the parmap before all the array is processed:
+  //   - suspend() should switch back to the worker_context (either maestro or one of its minions) to return
+  //     the control to the parmap. Instead, it uses parmap_->next() to steal another work, and does it directly.
+  //     It only yields back to worker_context when the work array is exhausted.
+  //   - So, resume() is only launched from the parmap for the first job of each minion.
   parmap_->apply(
       [](smx_actor_t process) {
         ParallelUContext* context = static_cast<ParallelUContext*>(process->context_);
@@ -166,57 +170,56 @@ void ParallelUContext::run_all()
       simix_global->process_to_run);
 }
 
+/** Run one particular simulated process on the current thread.
+ *
+ * Only applied to the N first elements of the parmap array, where N is the amount of worker threads in the parmap.
+ * See ParallelUContext::run_all for details.
+ */
+void ParallelUContext::resume()
+{
+  // Save the thread number (my body) in an os-thread-specific area
+  worker_id_ = threads_working_.fetch_add(1, std::memory_order_relaxed);
+  // Save my current soul (either maestro, or one of the minions) in a permanent area
+  SwappedContext* worker_context = static_cast<SwappedContext*>(self());
+  workers_context_[worker_id_]   = worker_context;
+  // Switch my soul and the actor's one
+  Context::set_current(this);
+  worker_context->swap_into(this);
+  // No body runs that soul anymore at this point, but it is stored in a safe place.
+  // When the executed actor will do a blocking action, SIMIX_process_yield() will call suspend(), below.
+}
+
 /** Yield
  *
- * This function is called when a simulated process wants to yield back to the maestro in a blocking simcall. This
- * naturally occurs within SIMIX_context_suspend(self->context), called from SIMIX_process_yield() Actually, it does not
- * really yield back to maestro, but into the next process that must be executed. If no one is to be executed, then it
- * yields to the initial soul that was in this working thread (that was saved in resume_parallel).
+ * This function is called when a simulated process wants to yield back to the maestro in a blocking simcall,
+ * ie in SIMIX_process_yield().
+ *
+ * Actually, it does not really yield back to maestro, but directly into the next executable actor.
+ *
+ * This makes the parmap::apply awkward (see ParallelUContext::run_all()) because it only apply regularly
+ * on the few first elements of the array, but it saves a lot of context switches back to maestro,
+ * and directly forth to the next executable actor.
  */
 void ParallelUContext::suspend()
 {
-  /* determine the next context */
-  // Get the next soul to embody now:
+  // Get some more work to directly swap into the next executable actor instead of yielding back to the parmap
   boost::optional<smx_actor_t> next_work = parmap_->next();
   SwappedContext* next_context;
   if (next_work) {
-    // There is a next soul to embody (ie, a next process to resume)
+    // There is a next soul to embody (ie, another executable actor)
     XBT_DEBUG("Run next process");
     next_context = static_cast<ParallelUContext*>(next_work.get()->context_);
   } else {
-    // All processes were run, go to the barrier
+    // All actors were run, go back to the parmap context
     XBT_DEBUG("No more processes to run");
     // worker_id_ is the identity of my body, stored in thread_local when starting the scheduling round
-    // Deduce the initial soul of that body
     next_context = workers_context_[worker_id_];
     // When given that soul, the body will wait for the next scheduling round
   }
 
+  // Get the next soul to run, either from another actor or the initial minion's one
   Context::set_current(next_context);
-  // Get the next soul to run, either simulated or initial minion's one:
   this->swap_into(next_context);
-}
-
-/** Run one particular simulated process on the current thread. */
-void ParallelUContext::resume()
-{
-  // What is my containing body? Store its number in os-thread-specific area :
-  worker_id_ = threads_working_.fetch_add(1, std::memory_order_relaxed);
-  // Get my current soul:
-  ParallelUContext* worker_context = static_cast<ParallelUContext*>(self());
-  // Write down that this soul is hosted in that body (for now)
-  workers_context_[worker_id_] = worker_context;
-  // Write in simix that I switched my soul
-  Context::set_current(this);
-  // Actually do that using the relevant library call:
-  worker_context->swap_into(this);
-  // No body runs that soul anymore at this point.  Instead the current body took the soul of simulated process The
-  // simulated process wakes back after the call to "SIMIX_context_suspend(self->context);" within
-  // smx_process.c::SIMIX_process_yield()
-
-  // From now on, the simulated processes will change their soul with the next soul to execute (in suspend_parallel,
-  // below).  When nobody is to be executed in this scheduling round, the last simulated process will take back the
-  // initial soul of the current working thread
 }
 
 XBT_PRIVATE ContextFactory* sysv_factory()

@@ -191,14 +191,14 @@ RawContextFactory::RawContextFactory() : ContextFactory("RawContextFactory"), pa
   RawContext::set_maestro(nullptr);
   if (parallel_) {
     // TODO: choose dynamically when SIMIX_context_get_parallel_threshold() > 1
-    ParallelRawContext::initialize();
+    SwappedContext::initialize();
   }
 }
 
 RawContextFactory::~RawContextFactory()
 {
   if (parallel_)
-    ParallelRawContext::finalize();
+    SwappedContext::finalize();
 }
 
 Context* RawContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
@@ -312,9 +312,9 @@ void ParallelRawContext::suspend()
 
 void ParallelRawContext::resume()
 {
-  worker_id_                         = threads_working_.fetch_add(1, std::memory_order_relaxed);
-  ParallelRawContext* worker_context = static_cast<ParallelRawContext*>(self());
-  workers_context_[worker_id_]       = worker_context;
+  worker_id_                     = threads_working_.fetch_add(1, std::memory_order_relaxed);
+  SwappedContext* worker_context = static_cast<SwappedContext*>(self());
+  workers_context_[worker_id_]   = worker_context;
   XBT_DEBUG("Saving worker stack %zu", worker_id_);
   Context::set_current(this);
   worker_context->swap_into(this);

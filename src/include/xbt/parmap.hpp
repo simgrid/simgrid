@@ -272,9 +272,7 @@ template <typename T> typename Parmap<T>::Synchro* Parmap<T>::new_synchro(e_xbt_
   return res;
 }
 
-/**
- * @brief Main function of a worker thread.
- */
+/** @brief Main function of a worker thread */
 template <typename T> void* Parmap<T>::worker_main(void* arg)
 {
   ThreadData* data      = static_cast<ThreadData*>(arg);
@@ -287,7 +285,7 @@ template <typename T> void* Parmap<T>::worker_main(void* arg)
 
   /* Worker's main loop */
   while (1) {
-    round++;
+    round++; // New scheduling round
     parmap.synchro->worker_wait(round);
     if (parmap.status == PARMAP_DESTROY)
       break;
