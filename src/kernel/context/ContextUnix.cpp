@@ -148,26 +148,6 @@ void UContext::stop()
 
 // ParallelUContext
 
-simgrid::xbt::Parmap<smx_actor_t>* ParallelUContext::parmap_;
-std::atomic<uintptr_t> ParallelUContext::threads_working_;         /* number of threads that have started their work */
-thread_local uintptr_t ParallelUContext::worker_id_;               /* thread-specific storage for the thread id */
-std::vector<ParallelUContext*> ParallelUContext::workers_context_; /* space to save the worker's context
-                                                                    * in each thread */
-
-void ParallelUContext::initialize()
-{
-  parmap_ = nullptr;
-  workers_context_.clear();
-  workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
-}
-
-void ParallelUContext::finalize()
-{
-  delete parmap_;
-  parmap_ = nullptr;
-  workers_context_.clear();
-}
-
 void ParallelUContext::run_all()
 {
   threads_working_ = 0;
@@ -198,7 +178,7 @@ void ParallelUContext::suspend()
   /* determine the next context */
   // Get the next soul to embody now:
   boost::optional<smx_actor_t> next_work = parmap_->next();
-  ParallelUContext* next_context;
+  SwappedContext* next_context;
   if (next_work) {
     // There is a next soul to embody (ie, a next process to resume)
     XBT_DEBUG("Run next process");

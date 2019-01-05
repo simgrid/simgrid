@@ -277,26 +277,6 @@ void RawContext::stop()
 
 // ParallelRawContext
 
-simgrid::xbt::Parmap<smx_actor_t>* ParallelRawContext::parmap_;
-std::atomic<uintptr_t> ParallelRawContext::threads_working_; /* number of threads that have started their work */
-uintptr_t thread_local ParallelRawContext::worker_id_;       /* thread-specific storage for the thread id */
-std::vector<ParallelRawContext*> ParallelRawContext::workers_context_; /* space to save the worker context
-                                                                          in each thread */
-
-void ParallelRawContext::initialize()
-{
-  parmap_ = nullptr;
-  workers_context_.clear();
-  workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
-}
-
-void ParallelRawContext::finalize()
-{
-  delete parmap_;
-  parmap_ = nullptr;
-  workers_context_.clear();
-}
-
 void ParallelRawContext::run_all()
 {
   threads_working_ = 0;
@@ -314,7 +294,7 @@ void ParallelRawContext::suspend()
 {
   /* determine the next context */
   boost::optional<smx_actor_t> next_work = parmap_->next();
-  ParallelRawContext* next_context;
+  SwappedContext* next_context;
   if (next_work) {
     /* there is a next process to resume */
     XBT_DEBUG("Run next process");

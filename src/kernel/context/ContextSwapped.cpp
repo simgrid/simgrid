@@ -8,6 +8,7 @@
 #include "src/kernel/context/context_private.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_private.hpp"
+#include "xbt/parmap.hpp"
 
 #include "src/kernel/context/ContextSwapped.hpp"
 
@@ -33,7 +34,28 @@ namespace simgrid {
 namespace kernel {
 namespace context {
 
+/* Sequential execution */
 unsigned long SwappedContext::process_index_;
+
+/* Parallel execution */
+simgrid::xbt::Parmap<smx_actor_t>* SwappedContext::parmap_;
+std::atomic<uintptr_t> SwappedContext::threads_working_;       /* number of threads that have started their work */
+thread_local uintptr_t SwappedContext::worker_id_;             /* thread-specific storage for the thread id */
+std::vector<SwappedContext*> SwappedContext::workers_context_; /* space to save the worker's context in each thread */
+
+void SwappedContext::initialize()
+{
+  parmap_ = nullptr;
+  workers_context_.clear();
+  workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
+}
+
+void SwappedContext::finalize()
+{
+  delete parmap_;
+  parmap_ = nullptr;
+  workers_context_.clear();
+}
 
 SwappedContext* SwappedContext::maestro_context_ = nullptr;
 

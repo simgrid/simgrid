@@ -69,15 +69,7 @@ public:
   void suspend() override;
   void resume() override;
 
-  static void initialize();
-  static void finalize();
   static void run_all();
-
-private:
-  static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
-  static std::vector<ParallelBoostContext*> workers_context_;
-  static std::atomic<uintptr_t> threads_working_;
-  static thread_local uintptr_t worker_id_;
 };
 
 class BoostContextFactory : public ContextFactory {

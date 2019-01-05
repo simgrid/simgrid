@@ -136,25 +136,6 @@ void BoostContext::stop()
 
 // ParallelBoostContext
 
-simgrid::xbt::Parmap<smx_actor_t>* ParallelBoostContext::parmap_;
-std::atomic<uintptr_t> ParallelBoostContext::threads_working_;
-thread_local uintptr_t ParallelBoostContext::worker_id_;
-std::vector<ParallelBoostContext*> ParallelBoostContext::workers_context_;
-
-void ParallelBoostContext::initialize()
-{
-  parmap_ = nullptr;
-  workers_context_.clear();
-  workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
-}
-
-void ParallelBoostContext::finalize()
-{
-  delete parmap_;
-  parmap_ = nullptr;
-  workers_context_.clear();
-}
-
 void ParallelBoostContext::run_all()
 {
   threads_working_ = 0;
@@ -171,7 +152,7 @@ void ParallelBoostContext::run_all()
 void ParallelBoostContext::suspend()
 {
   boost::optional<smx_actor_t> next_work = parmap_->next();
-  ParallelBoostContext* next_context;
+  SwappedContext* next_context;
   if (next_work) {
     XBT_DEBUG("Run next process");
     next_context = static_cast<ParallelBoostContext*>(next_work.get()->context_);

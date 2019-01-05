@@ -56,15 +56,7 @@ public:
   void suspend() override;
   void resume() override;
 
-  static void initialize();
-  static void finalize();
   static void run_all();
-
-private:
-  static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
-  static std::vector<ParallelRawContext*> workers_context_;
-  static std::atomic<uintptr_t> threads_working_;
-  static uintptr_t thread_local worker_id_;
 };
 
 class RawContextFactory : public ContextFactory {
