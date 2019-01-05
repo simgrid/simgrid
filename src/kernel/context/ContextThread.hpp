@@ -87,7 +87,6 @@ public:
     return create_context(std::move(code), cleanup_func, process, maestro);
   }
   void run_all() override;
-  ThreadContext* self() override { return static_cast<ThreadContext*>(xbt_os_thread_get_extra_data()); }
 
   // Optional methods:
   ThreadContext* attach(void_pfn_smxprocess_t cleanup_func, smx_actor_t process) override

@@ -45,7 +45,6 @@ class JavaContextFactory : public simgrid::kernel::context::ContextFactory {
 public:
   JavaContextFactory();
   ~JavaContextFactory() override;
-  JavaContext* self() override;
   JavaContext* create_context(std::function<void()> code,
     void_pfn_smxprocess_t, smx_actor_t process) override;
   void run_all() override;

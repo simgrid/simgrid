@@ -50,7 +50,7 @@ JavaVM *__java_vm = nullptr;
 JNIEnv *get_current_thread_env()
 {
   using simgrid::kernel::context::JavaContext;
-  JavaContext* ctx = static_cast<JavaContext*>(xbt_os_thread_get_extra_data());
+  JavaContext* ctx = static_cast<JavaContext*>(SIMIX_context_self());
   return ctx->jenv_;
 }
 

@@ -35,7 +35,7 @@ public:
 
   virtual void run_all() = 0;
   /** @brief Returns the current context of this thread. */
-  virtual Context* self();
+  Context* self();
   std::string const& name() const { return name_; }
 
 protected:

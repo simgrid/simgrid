@@ -34,11 +34,6 @@ JavaContextFactory::JavaContextFactory(): ContextFactory("JavaContextFactory")
 
 JavaContextFactory::~JavaContextFactory()=default;
 
-JavaContext* JavaContextFactory::self()
-{
-  return static_cast<JavaContext*>(xbt_os_thread_get_extra_data());
-}
-
 JavaContext* JavaContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun,
                                                 smx_actor_t actor)
 {
@@ -58,7 +53,7 @@ JavaContext::JavaContext(std::function<void()> code, void_pfn_smxprocess_t clean
 
 void JavaContext::start_hook()
 {
-  xbt_os_thread_set_extra_data(this); // We need to attach it also for maestro, in contrary to our ancestor
+  SIMIX_context_set_current(this); // We need to attach it also for maestro, in contrary to our ancestor
 
   //Attach the thread to the JVM
   JNIEnv *env;
