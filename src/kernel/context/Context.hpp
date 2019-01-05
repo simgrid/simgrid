@@ -34,8 +34,6 @@ public:
   virtual Context* create_maestro(std::function<void()> code, smx_actor_t process);
 
   virtual void run_all() = 0;
-  /** @brief Returns the current context of this thread. */
-  Context* self();
   std::string const& name() const { return name_; }
 
 protected:
@@ -57,6 +55,28 @@ private:
   void declare_context(std::size_t size);
 
 public:
+  bool iwannadie = false;
+
+  Context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
+  Context(const Context&) = delete;
+  Context& operator=(const Context&) = delete;
+  virtual ~Context();
+
+  void operator()() { code_(); }
+  bool has_code() const { return static_cast<bool>(code_); }
+  smx_actor_t process() { return this->actor_; }
+  void set_cleanup(void_pfn_smxprocess_t cleanup) { cleanup_func_ = cleanup; }
+
+  // Scheduling methods
+  virtual void stop();
+  virtual void suspend() = 0;
+
+  // Retrieving the self() context
+  /** @brief Retrives the current context of this thread */
+  static Context* self();
+  /** @brief Sets the current context of this thread */
+  static void set_current(Context* self);
+
   class StopRequest {
     /** @brief Exception launched to kill a process, in order to properly unwind its stack and release RAII stuff
      *
@@ -70,21 +90,6 @@ public:
   private:
     std::string msg_;
   };
-  bool iwannadie = false;
-
-  Context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
-  Context(const Context&) = delete;
-  Context& operator=(const Context&) = delete;
-
-  void operator()() { code_(); }
-  bool has_code() const { return static_cast<bool>(code_); }
-  smx_actor_t process() { return this->actor_; }
-  void set_cleanup(void_pfn_smxprocess_t cleanup) { cleanup_func_ = cleanup; }
-
-  // Virtual methods
-  virtual ~Context();
-  virtual void stop();
-  virtual void suspend() = 0;
 };
 
 class XBT_PUBLIC AttachContext : public Context {
@@ -145,8 +150,6 @@ XBT_PUBLIC smx_context_t SIMIX_context_self(); // public because it's used in si
 
 XBT_PRIVATE void *SIMIX_context_stack_new();
 XBT_PRIVATE void SIMIX_context_stack_delete(void *stack);
-
-XBT_PUBLIC void SIMIX_context_set_current(smx_context_t context);
 
 XBT_PUBLIC int SIMIX_process_get_maxpid();
 

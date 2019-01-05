@@ -76,7 +76,7 @@ ThreadContext::ThreadContext(std::function<void()> code, void_pfn_smxprocess_t c
 
   /* Otherwise, we attach to the current thread */
   else {
-    SIMIX_context_set_current(this);
+    Context::set_current(this);
   }
 }
 
@@ -89,7 +89,7 @@ ThreadContext::~ThreadContext()
 void *ThreadContext::wrapper(void *param)
 {
   ThreadContext* context = static_cast<ThreadContext*>(param);
-  SIMIX_context_set_current(context);
+  Context::set_current(context);
 
 #ifndef WIN32
   /* Install alternate signal stack, for SIGSEGV handler. */
@@ -176,7 +176,7 @@ void ThreadContext::attach_stop()
   ThreadContext* maestro = (ThreadContext*)simix_global->maestro_process->context_;
   maestro->end_.acquire();
 
-  SIMIX_context_set_current(nullptr);
+  Context::set_current(nullptr);
 }
 
 // SerialThreadContext

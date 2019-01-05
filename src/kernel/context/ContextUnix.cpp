@@ -170,13 +170,13 @@ void SerialUContext::suspend()
     XBT_DEBUG("No more process to run");
     next_context = static_cast<SerialUContext*>(UContext::get_maestro());
   }
-  SIMIX_context_set_current(next_context);
+  Context::set_current(next_context);
   UContext::swap(this, next_context);
 }
 
 void SerialUContext::resume()
 {
-  SIMIX_context_set_current(this);
+  Context::set_current(this);
   UContext::swap(UContext::get_maestro(), this);
 }
 
@@ -255,7 +255,7 @@ void ParallelUContext::suspend()
     // When given that soul, the body will wait for the next scheduling round
   }
 
-  SIMIX_context_set_current(next_context);
+  Context::set_current(next_context);
   // Get the next soul to run, either simulated or initial minion's one:
   UContext::swap(this, next_context);
 }
@@ -270,7 +270,7 @@ void ParallelUContext::resume()
   // Write down that this soul is hosted in that body (for now)
   workers_context_[worker_id_] = worker_context;
   // Write in simix that I switched my soul
-  SIMIX_context_set_current(this);
+  Context::set_current(this);
   // Actually do that using the relevant library call:
   UContext::swap(worker_context, this);
   // No body runs that soul anymore at this point.  Instead the current body took the soul of simulated process The

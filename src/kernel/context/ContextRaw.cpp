@@ -297,13 +297,13 @@ void SerialRawContext::suspend()
     XBT_DEBUG("No more process to run");
     next_context = static_cast<SerialRawContext*>(RawContext::get_maestro());
   }
-  SIMIX_context_set_current(next_context);
+  Context::set_current(next_context);
   RawContext::swap(this, next_context);
 }
 
 void SerialRawContext::resume()
 {
-  SIMIX_context_set_current(this);
+  Context::set_current(this);
   RawContext::swap(RawContext::get_maestro(), this);
 }
 
@@ -367,7 +367,7 @@ void ParallelRawContext::suspend()
     XBT_DEBUG("Restoring worker stack %zu (working threads = %zu)", worker_id_, threads_working_.load());
   }
 
-  SIMIX_context_set_current(next_context);
+  Context::set_current(next_context);
   RawContext::swap(this, next_context);
 }
 
@@ -377,7 +377,7 @@ void ParallelRawContext::resume()
   ParallelRawContext* worker_context = static_cast<ParallelRawContext*>(SIMIX_context_self());
   workers_context_[worker_id_]       = worker_context;
   XBT_DEBUG("Saving worker stack %zu", worker_id_);
-  SIMIX_context_set_current(this);
+  Context::set_current(this);
   RawContext::swap(worker_context, this);
 }
 

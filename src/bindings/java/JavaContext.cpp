@@ -53,7 +53,7 @@ JavaContext::JavaContext(std::function<void()> code, void_pfn_smxprocess_t clean
 
 void JavaContext::start_hook()
 {
-  SIMIX_context_set_current(this); // We need to attach it also for maestro, in contrary to our ancestor
+  Context::set_current(this); // We need to attach it also for maestro, in contrary to our ancestor
 
   //Attach the thread to the JVM
   JNIEnv *env;

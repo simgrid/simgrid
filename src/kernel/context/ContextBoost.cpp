@@ -157,13 +157,13 @@ void SerialBoostContext::suspend()
     XBT_DEBUG("No more process to run");
     next_context = static_cast<SerialBoostContext*>(BoostContext::get_maestro());
   }
-  SIMIX_context_set_current(next_context);
+  Context::set_current(next_context);
   BoostContext::swap(this, next_context);
 }
 
 void SerialBoostContext::resume()
 {
-  SIMIX_context_set_current(this);
+  Context::set_current(this);
   BoostContext::swap(BoostContext::get_maestro(), this);
 }
 
@@ -223,7 +223,7 @@ void ParallelBoostContext::suspend()
     next_context = workers_context_[worker_id_];
   }
 
-  SIMIX_context_set_current(next_context);
+  Context::set_current(next_context);
   BoostContext::swap(this, next_context);
 }
 
@@ -234,7 +234,7 @@ void ParallelBoostContext::resume()
   ParallelBoostContext* worker_context = static_cast<ParallelBoostContext*>(SIMIX_context_self());
   workers_context_[worker_id_]         = worker_context;
 
-  SIMIX_context_set_current(this);
+  Context::set_current(this);
   BoostContext::swap(worker_context, this);
 }
 
