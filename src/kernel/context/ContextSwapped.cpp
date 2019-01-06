@@ -51,42 +51,6 @@ SwappedContextFactory::~SwappedContextFactory()
 {
   SwappedContext::finalize();
 }
-/** Maestro wants to run all ready actors */
-void SwappedContextFactory::run_all()
-{
-  /* This function is called by maestro at the beginning of a scheduling round to get all working threads executing some
-   * stuff It is much easier to understand what happens if you see the working threads as bodies that swap their soul
-   * for the ones of the simulated processes that must run.
-   */
-  if (parallel_) {
-    SwappedContext::threads_working_ = 0;
-
-    // We lazily create the parmap so that all options are actually processed when doing so.
-    if (SwappedContext::parmap_ == nullptr)
-      SwappedContext::parmap_ =
-          new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
-
-    // Usually, Parmap::apply() executes the provided function on all elements of the array.
-    // Here, the executed function does not return the control to the parmap before all the array is processed:
-    //   - suspend() should switch back to the worker_context (either maestro or one of its minions) to return
-    //     the control to the parmap. Instead, it uses parmap_->next() to steal another work, and does it directly.
-    //     It only yields back to worker_context when the work array is exhausted.
-    //   - So, resume() is only launched from the parmap for the first job of each minion.
-    SwappedContext::parmap_->apply(
-        [](smx_actor_t process) {
-          SwappedContext* context = static_cast<SwappedContext*>(process->context_);
-          context->resume();
-        },
-        simix_global->process_to_run);
-  } else { // sequential execution
-    if (simix_global->process_to_run.empty())
-      return;
-    smx_actor_t first_actor = simix_global->process_to_run.front();
-    process_index_          = 1;
-    /* execute the first actor; it will chain to the others when using suspend() */
-    static_cast<SwappedContext*>(first_actor->context_)->resume();
-  }
-}
 
 void SwappedContext::initialize(bool parallel)
 {
@@ -189,11 +153,68 @@ SwappedContext::~SwappedContext()
   xbt_free(stack_);
 }
 
-/** Maestro wants to yield back to a given actor */
+void SwappedContext::stop()
+{
+  Context::stop();
+  throw StopRequest();
+}
+
+/** Maestro wants to run all ready actors */
+void SwappedContextFactory::run_all()
+{
+  /* This function is called by maestro at the beginning of a scheduling round to get all working threads executing some
+   * stuff It is much easier to understand what happens if you see the working threads as bodies that swap their soul
+   * for the ones of the simulated processes that must run.
+   */
+  if (parallel_) {
+    SwappedContext::threads_working_ = 0;
+
+    // We lazily create the parmap so that all options are actually processed when doing so.
+    if (SwappedContext::parmap_ == nullptr)
+      SwappedContext::parmap_ =
+          new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
+
+    // Usually, Parmap::apply() executes the provided function on all elements of the array.
+    // Here, the executed function does not return the control to the parmap before all the array is processed:
+    //   - suspend() should switch back to the worker_context (either maestro or one of its minions) to return
+    //     the control to the parmap. Instead, it uses parmap_->next() to steal another work, and does it directly.
+    //     It only yields back to worker_context when the work array is exhausted.
+    //   - So, resume() is only launched from the parmap for the first job of each minion.
+    SwappedContext::parmap_->apply(
+        [](smx_actor_t process) {
+          SwappedContext* context = static_cast<SwappedContext*>(process->context_);
+          context->resume();
+        },
+        simix_global->process_to_run);
+  } else { // sequential execution
+    if (simix_global->process_to_run.empty())
+      return;
+    smx_actor_t first_actor = simix_global->process_to_run.front();
+    process_index_          = 1;
+    /* execute the first actor; it will chain to the others when using suspend() */
+    static_cast<SwappedContext*>(first_actor->context_)->resume();
+  }
+}
+
+/** Maestro wants to yield back to a given actor, so awake it on the current thread
+ *
+ * In parallel, it is only applied to the N first elements of the parmap array,
+ * where N is the amount of worker threads in the parmap.
+ * See SwappedContextFactory::run_all for details.
+ */
 void SwappedContext::resume()
 {
   if (factory_->parallel_) {
-    THROW_IMPOSSIBLE;
+    // Save the thread number (my body) in an os-thread-specific area
+    worker_id_ = threads_working_.fetch_add(1, std::memory_order_relaxed);
+    // Save my current soul (either maestro, or one of the minions) in a permanent area
+    SwappedContext* worker_context = static_cast<SwappedContext*>(self());
+    workers_context_[worker_id_]   = worker_context;
+    // Switch my soul and the actor's one
+    Context::set_current(this);
+    worker_context->swap_into(this);
+    // No body runs that soul anymore at this point, but it is stored in a safe place.
+    // When the executed actor will do a blocking action, SIMIX_process_yield() will call suspend(), below.
   } else { // sequential execution
     // Maestro is always the calling thread of this function (ie, self() == maestro)
     SwappedContext* old = static_cast<SwappedContext*>(self());
@@ -202,11 +223,35 @@ void SwappedContext::resume()
   }
 }
 
-/** The actor wants to yield back to maestro */
+/** The actor wants to yield back to maestro, because it is blocked in a simcall (ie in SIMIX_process_yield())
+ *
+ * Actually, it does not really yield back to maestro, but directly into the next executable actor.
+ *
+ * This makes the parmap::apply awkward (see ParallelUContext::run_all()) because it only apply regularly
+ * on the few first elements of the array, but it saves a lot of context switches back to maestro,
+ * and directly forth to the next executable actor.
+ */
 void SwappedContext::suspend()
 {
   if (factory_->parallel_) {
-    THROW_IMPOSSIBLE;
+    // Get some more work to directly swap into the next executable actor instead of yielding back to the parmap
+    boost::optional<smx_actor_t> next_work = parmap_->next();
+    SwappedContext* next_context;
+    if (next_work) {
+      // There is a next soul to embody (ie, another executable actor)
+      XBT_DEBUG("Run next process");
+      next_context = static_cast<SwappedContext*>(next_work.get()->context_);
+    } else {
+      // All actors were run, go back to the parmap context
+      XBT_DEBUG("No more processes to run");
+      // worker_id_ is the identity of my body, stored in thread_local when starting the scheduling round
+      next_context = workers_context_[worker_id_];
+      // When given that soul, the body will wait for the next scheduling round
+    }
+
+    // Get the next soul to run, either from another actor or the initial minion's one
+    Context::set_current(next_context);
+    this->swap_into(next_context);
   } else { // sequential execution
     /* determine the next context */
     SwappedContext* next_context;
@@ -225,12 +270,6 @@ void SwappedContext::suspend()
     Context::set_current(next_context);
     this->swap_into(next_context);
   }
-}
-
-void SwappedContext::stop()
-{
-  Context::stop();
-  throw StopRequest();
 }
 
 } // namespace context

@@ -32,10 +32,7 @@ namespace context {
 // UContextFactory
 Context* UContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process)
 {
-  if (parallel_)
-    return new_context<ParallelUContext>(std::move(code), cleanup, process, this);
-  else
-    return new_context<UContext>(std::move(code), cleanup, process, this);
+  return new_context<UContext>(std::move(code), cleanup, process, this);
 }
 
 
@@ -116,59 +113,6 @@ void UContext::swap_into(SwappedContext* to_)
   ASAN_FINISH_SWITCH(fake_stack, &from->asan_ctx_->asan_stack_, &from->asan_ctx_->asan_stack_size_);
 }
 
-// ParallelUContext
-
-/** Run one particular simulated process on the current thread.
- *
- * Only applied to the N first elements of the parmap array, where N is the amount of worker threads in the parmap.
- * See ParallelUContext::run_all for details.
- */
-void ParallelUContext::resume()
-{
-  // Save the thread number (my body) in an os-thread-specific area
-  worker_id_ = threads_working_.fetch_add(1, std::memory_order_relaxed);
-  // Save my current soul (either maestro, or one of the minions) in a permanent area
-  SwappedContext* worker_context = static_cast<SwappedContext*>(self());
-  workers_context_[worker_id_]   = worker_context;
-  // Switch my soul and the actor's one
-  Context::set_current(this);
-  worker_context->swap_into(this);
-  // No body runs that soul anymore at this point, but it is stored in a safe place.
-  // When the executed actor will do a blocking action, SIMIX_process_yield() will call suspend(), below.
-}
-
-/** Yield
- *
- * This function is called when a simulated process wants to yield back to the maestro in a blocking simcall,
- * ie in SIMIX_process_yield().
- *
- * Actually, it does not really yield back to maestro, but directly into the next executable actor.
- *
- * This makes the parmap::apply awkward (see ParallelUContext::run_all()) because it only apply regularly
- * on the few first elements of the array, but it saves a lot of context switches back to maestro,
- * and directly forth to the next executable actor.
- */
-void ParallelUContext::suspend()
-{
-  // Get some more work to directly swap into the next executable actor instead of yielding back to the parmap
-  boost::optional<smx_actor_t> next_work = parmap_->next();
-  SwappedContext* next_context;
-  if (next_work) {
-    // There is a next soul to embody (ie, another executable actor)
-    XBT_DEBUG("Run next process");
-    next_context = static_cast<ParallelUContext*>(next_work.get()->context_);
-  } else {
-    // All actors were run, go back to the parmap context
-    XBT_DEBUG("No more processes to run");
-    // worker_id_ is the identity of my body, stored in thread_local when starting the scheduling round
-    next_context = workers_context_[worker_id_];
-    // When given that soul, the body will wait for the next scheduling round
-  }
-
-  // Get the next soul to run, either from another actor or the initial minion's one
-  Context::set_current(next_context);
-  this->swap_into(next_context);
-}
 
 XBT_PRIVATE ContextFactory* sysv_factory()
 {

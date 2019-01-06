@@ -46,17 +46,6 @@ private:
   static void make_ctx(ucontext_t* ucp, void (*func)(int, int), UContext* arg);
 };
 
-class ParallelUContext : public UContext {
-public:
-  ParallelUContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
-                   SwappedContextFactory* factory)
-      : UContext(std::move(code), cleanup_func, process, factory)
-  {
-  }
-  void suspend() override;
-  void resume() override;
-};
-
 class UContextFactory : public SwappedContextFactory {
 public:
   UContextFactory() : SwappedContextFactory("UContextFactory") {}
