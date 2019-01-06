@@ -40,12 +40,9 @@ thread_local uintptr_t SwappedContext::worker_id_;             /* thread-specifi
 SwappedContextFactory::SwappedContextFactory(std::string name)
     : ContextFactory(name), parallel_(SIMIX_context_is_parallel())
 {
-  SwappedContext::set_maestro(nullptr);
   parmap_ = nullptr; // will be created lazily with the right parameters if needed (ie, in parallel)
-  if (parallel_) {
-    workers_context_.clear();
-    workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
-  }
+  workers_context_.clear();
+  workers_context_.resize(parallel_ ? SIMIX_context_get_nthreads() : 1, nullptr);
 }
 SwappedContextFactory::~SwappedContextFactory()
 {
@@ -53,8 +50,6 @@ SwappedContextFactory::~SwappedContextFactory()
   parmap_ = nullptr;
   workers_context_.clear();
 }
-
-SwappedContext* SwappedContext::maestro_context_ = nullptr;
 
 SwappedContext::SwappedContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
                                SwappedContextFactory* factory)
@@ -174,6 +169,8 @@ void SwappedContextFactory::run_all()
   } else { // sequential execution
     if (simix_global->process_to_run.empty())
       return;
+
+    /* maestro is already saved in the first slot of workers_context_ */
     smx_actor_t first_actor = simix_global->process_to_run.front();
     process_index_          = 1;
     /* execute the first actor; it will chain to the others when using suspend() */
@@ -201,7 +198,6 @@ void SwappedContext::resume()
     // No body runs that soul anymore at this point, but it is stored in a safe place.
     // When the executed actor will do a blocking action, SIMIX_process_yield() will call suspend(), below.
   } else { // sequential execution
-    // Maestro is always the calling thread of this function (ie, self() == maestro)
     SwappedContext* old = static_cast<SwappedContext*>(self());
     Context::set_current(this);
     old->swap_into(this);
@@ -228,7 +224,7 @@ void SwappedContext::suspend()
       next_context = static_cast<SwappedContext*>(next_work.get()->context_);
     } else {
       // All actors were run, go back to the parmap context
-      XBT_DEBUG("No more processes to run");
+      XBT_DEBUG("No more actors to run");
       // worker_id_ is the identity of my body, stored in thread_local when starting the scheduling round
       next_context = factory_->workers_context_[worker_id_];
       // When given that soul, the body will wait for the next scheduling round
@@ -237,6 +233,7 @@ void SwappedContext::suspend()
     // Get the next soul to run, either from another actor or the initial minion's one
     Context::set_current(next_context);
     this->swap_into(next_context);
+
   } else { // sequential execution
     /* determine the next context */
     SwappedContext* next_context;
@@ -245,12 +242,12 @@ void SwappedContext::suspend()
 
     if (i < simix_global->process_to_run.size()) {
       /* Actually swap into the next actor directly without transiting to maestro */
-      XBT_DEBUG("Run next process");
+      XBT_DEBUG("Run next actor");
       next_context = static_cast<SwappedContext*>(simix_global->process_to_run[i]->context_);
     } else {
       /* all processes were run, actually return to maestro */
-      XBT_DEBUG("No more process to run");
-      next_context = static_cast<SwappedContext*>(get_maestro());
+      XBT_DEBUG("No more actors to run");
+      next_context = factory_->workers_context_[0];
     }
     Context::set_current(next_context);
     this->swap_into(next_context);

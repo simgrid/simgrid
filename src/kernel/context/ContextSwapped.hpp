@@ -45,8 +45,7 @@ public:
 
   virtual void swap_into(SwappedContext* to) = 0; // Defined in Raw, Boost and UContext subclasses
 
-  static SwappedContext* get_maestro() { return maestro_context_; }
-  static void set_maestro(SwappedContext* maestro) { maestro_context_ = maestro; }
+  void set_maestro(SwappedContext* ctx) { factory_->workers_context_[0] = ctx; }
 
   // FIXME: Killme
   static thread_local uintptr_t worker_id_;
@@ -55,7 +54,6 @@ protected:
   void* stack_ = nullptr; /* the thread stack */
 
 private:
-  static SwappedContext* maestro_context_;
   SwappedContextFactory* factory_; // for sequential and parallel run_all()
 };
 

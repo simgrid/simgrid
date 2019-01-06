@@ -43,12 +43,12 @@ BoostContext::BoostContext(std::function<void()> code, void_pfn_smxprocess_t cle
 #else
     this->fc_ = boost::context::detail::make_fcontext(stack, smx_context_usable_stack_size, BoostContext::wrapper);
 #endif
+
   } else {
+    set_maestro(this); // save maestro for run_all()
 #if BOOST_VERSION < 105600
     this->fc_ = new boost::context::fcontext_t();
 #endif
-    if (get_maestro() == nullptr)
-      set_maestro(this);
   }
 }
 

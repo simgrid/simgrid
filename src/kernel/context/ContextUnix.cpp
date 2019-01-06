@@ -55,8 +55,7 @@ UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun
 #endif
     UContext::make_ctx(&this->uc_, UContext::smx_ctx_sysv_wrapper, this);
   } else {
-    if (process != nullptr && get_maestro() == nullptr)
-      set_maestro(this);
+    set_maestro(this); // save maestro for run_all()
   }
 
 #if SIMGRID_HAVE_MC
