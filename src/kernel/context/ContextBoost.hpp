@@ -36,7 +36,6 @@ public:
   BoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
                SwappedContextFactory* factory);
   ~BoostContext() override;
-  void stop() override;
 
   void swap_into(SwappedContext* to) override;
 
@@ -74,8 +73,8 @@ public:
 
 class BoostContextFactory : public SwappedContextFactory {
 public:
-  BoostContextFactory();
-  ~BoostContextFactory() override;
+  BoostContextFactory() : SwappedContextFactory("BoostContextFactory") {}
+
   Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
 };
 }}} // namespace

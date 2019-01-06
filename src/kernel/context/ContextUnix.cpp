@@ -30,10 +30,6 @@ namespace kernel {
 namespace context {
 
 // UContextFactory
-
-UContextFactory::UContextFactory() : SwappedContextFactory("UContextFactory") {}
-UContextFactory::~UContextFactory() = default;
-
 Context* UContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process)
 {
   if (parallel_)
@@ -120,17 +116,7 @@ void UContext::swap_into(SwappedContext* to_)
   ASAN_FINISH_SWITCH(fake_stack, &from->asan_ctx_->asan_stack_, &from->asan_ctx_->asan_stack_size_);
 }
 
-void UContext::stop()
-{
-  Context::stop();
-  throw StopRequest();
-}
-
 // ParallelUContext
-
-void ParallelUContext::run_all()
-{
-}
 
 /** Run one particular simulated process on the current thread.
  *

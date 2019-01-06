@@ -15,11 +15,6 @@ namespace kernel {
 namespace context {
 
 // BoostContextFactory
-
-BoostContextFactory::BoostContextFactory() : SwappedContextFactory("BoostContextFactory") {}
-
-BoostContextFactory::~BoostContextFactory() = default;
-
 smx_context_t BoostContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
                                                   smx_actor_t process)
 {
@@ -109,12 +104,6 @@ void BoostContext::swap_into(SwappedContext* to_)
   ASAN_FINISH_SWITCH(fake_stack, &from->asan_ctx_->asan_stack_, &from->asan_ctx_->asan_stack_size_);
   static_cast<BoostContext**>(arg.data)[0]->fc_ = arg.fctx;
 #endif
-}
-
-void BoostContext::stop()
-{
-  Context::stop();
-  throw StopRequest();
 }
 
 // ParallelBoostContext

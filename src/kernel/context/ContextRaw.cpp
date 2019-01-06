@@ -186,10 +186,6 @@ namespace context {
 
 // RawContextFactory
 
-RawContextFactory::RawContextFactory() : SwappedContextFactory("RawContextFactory") {}
-
-RawContextFactory::~RawContextFactory() = default;
-
 Context* RawContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
                                            smx_actor_t process)
 {
@@ -251,26 +247,7 @@ void RawContext::swap_into(SwappedContext* to_)
   ASAN_FINISH_SWITCH(fake_stack, &from->asan_ctx_->asan_stack_, &from->asan_ctx_->asan_stack_size_);
 }
 
-void RawContext::stop()
-{
-  Context::stop();
-  throw StopRequest();
-}
-
 // ParallelRawContext
-
-void ParallelRawContext::run_all()
-{
-  threads_working_ = 0;
-  if (parmap_ == nullptr)
-    parmap_ = new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
-  parmap_->apply(
-      [](smx_actor_t process) {
-        ParallelRawContext* context = static_cast<ParallelRawContext*>(process->context_);
-        context->resume();
-      },
-      simix_global->process_to_run);
-}
 
 void ParallelRawContext::suspend()
 {

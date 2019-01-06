@@ -30,7 +30,6 @@ public:
   RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
              SwappedContextFactory* factory);
   ~RawContext() override;
-  void stop() override;
 
   void swap_into(SwappedContext* to) override;
 
@@ -57,14 +56,12 @@ public:
   }
   void suspend() override;
   void resume() override;
-
-  static void run_all();
 };
 
 class RawContextFactory : public SwappedContextFactory {
 public:
-  RawContextFactory();
-  ~RawContextFactory() override;
+  RawContextFactory() : SwappedContextFactory("RawContextFactory") {}
+
   Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
 };
 }}} // namespace

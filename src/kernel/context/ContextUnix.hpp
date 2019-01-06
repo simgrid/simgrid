@@ -29,7 +29,6 @@ public:
   UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
            SwappedContextFactory* factory);
   ~UContext() override;
-  void stop() override;
 
   void swap_into(SwappedContext* to) override;
 
@@ -56,14 +55,11 @@ public:
   }
   void suspend() override;
   void resume() override;
-
-  static void run_all();
 };
 
 class UContextFactory : public SwappedContextFactory {
 public:
-  UContextFactory();
-  ~UContextFactory() override;
+  UContextFactory() : SwappedContextFactory("UContextFactory") {}
 
   Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
 };

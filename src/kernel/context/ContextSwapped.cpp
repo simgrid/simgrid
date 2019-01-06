@@ -227,6 +227,12 @@ void SwappedContext::suspend()
   }
 }
 
+void SwappedContext::stop()
+{
+  Context::stop();
+  throw StopRequest();
+}
+
 } // namespace context
 } // namespace kernel
 } // namespace simgrid

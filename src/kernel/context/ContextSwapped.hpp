@@ -38,8 +38,9 @@ public:
   static void initialize(bool parallel); // Initialize the module, using the options
   static void finalize();   // Finalize the module
 
-  virtual void suspend();
+  void suspend() override;
   virtual void resume();
+  void stop() override;
 
   virtual void swap_into(SwappedContext* to) = 0; // Defined in subclasses
 
