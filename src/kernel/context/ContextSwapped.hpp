@@ -13,27 +13,37 @@
 namespace simgrid {
 namespace kernel {
 namespace context {
+class SwappedContext;
+
+class SwappedContextFactory : public ContextFactory {
+  friend SwappedContext; // Reads whether we are in parallel mode
+public:
+  SwappedContextFactory(std::string name);
+  ~SwappedContextFactory() override;
+  void run_all() override;
+
+protected: // FIXME temporary internal exposure
+  bool parallel_;
+};
 
 class SwappedContext : public Context {
 public:
-  SwappedContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
+  SwappedContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
+                 SwappedContextFactory* factory);
   virtual ~SwappedContext();
 
-  static void initialize(); // Initialize the module, using the options
+  static void initialize(bool parallel); // Initialize the module, using the options
   static void finalize();   // Finalize the module
 
   virtual void suspend();
   virtual void resume();
-
-  static void run_all();
 
   virtual void swap_into(SwappedContext* to) = 0; // Defined in subclasses
 
   static SwappedContext* get_maestro() { return maestro_context_; }
   static void set_maestro(SwappedContext* maestro) { maestro_context_ = maestro; }
 
-protected:
-  void* stack_ = nullptr; /* the thread stack */
+  static unsigned long process_index_; // FIXME killme
 
   /* For the parallel execution */
   static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
@@ -41,9 +51,13 @@ protected:
   static std::atomic<uintptr_t> threads_working_;
   static thread_local uintptr_t worker_id_;
 
+protected:
+  void* stack_ = nullptr; /* the thread stack */
+
 private:
-  static unsigned long process_index_;
   static SwappedContext* maestro_context_;
+  /* For sequential and parallel run_all() */
+  SwappedContextFactory* factory_;
 };
 
 } // namespace context

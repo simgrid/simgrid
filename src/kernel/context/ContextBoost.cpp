@@ -16,40 +16,23 @@ namespace context {
 
 // BoostContextFactory
 
-BoostContextFactory::BoostContextFactory()
-    : ContextFactory("BoostContextFactory"), parallel_(SIMIX_context_is_parallel())
-{
-  BoostContext::set_maestro(nullptr);
-  if (parallel_)
-    SwappedContext::initialize();
-}
+BoostContextFactory::BoostContextFactory() : SwappedContextFactory("BoostContextFactory") {}
 
-BoostContextFactory::~BoostContextFactory()
-{
-  if (parallel_)
-    SwappedContext::finalize();
-}
+BoostContextFactory::~BoostContextFactory() = default;
 
 smx_context_t BoostContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
                                                   smx_actor_t process)
 {
   if (parallel_)
-    return this->new_context<ParallelBoostContext>(std::move(code), cleanup_func, process);
-  return this->new_context<BoostContext>(std::move(code), cleanup_func, process);
-}
-
-void BoostContextFactory::run_all()
-{
-  if (parallel_)
-    ParallelBoostContext::run_all();
-  else
-    SwappedContext::run_all();
+    return this->new_context<ParallelBoostContext>(std::move(code), cleanup_func, process, this);
+  return this->new_context<BoostContext>(std::move(code), cleanup_func, process, this);
 }
 
 // BoostContext
 
-BoostContext::BoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
-    : SwappedContext(std::move(code), cleanup_func, process)
+BoostContext::BoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
+                           SwappedContextFactory* factory)
+    : SwappedContext(std::move(code), cleanup_func, process, factory)
 {
 
   /* if the user provided a function for the process then use it, otherwise it is the context for maestro */
@@ -135,20 +118,6 @@ void BoostContext::stop()
 }
 
 // ParallelBoostContext
-
-void ParallelBoostContext::run_all()
-{
-  threads_working_ = 0;
-  if (parmap_ == nullptr)
-    parmap_ = new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
-  parmap_->apply(
-      [](smx_actor_t process) {
-        ParallelBoostContext* context = static_cast<ParallelBoostContext*>(process->context_);
-        context->resume();
-      },
-      simix_global->process_to_run);
-}
-
 void ParallelBoostContext::suspend()
 {
   boost::optional<smx_actor_t> next_work = parmap_->next();

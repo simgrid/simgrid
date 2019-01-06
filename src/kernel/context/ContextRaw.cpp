@@ -186,41 +186,23 @@ namespace context {
 
 // RawContextFactory
 
-RawContextFactory::RawContextFactory() : ContextFactory("RawContextFactory"), parallel_(SIMIX_context_is_parallel())
-{
-  RawContext::set_maestro(nullptr);
-  if (parallel_) {
-    // TODO: choose dynamically when SIMIX_context_get_parallel_threshold() > 1
-    SwappedContext::initialize();
-  }
-}
+RawContextFactory::RawContextFactory() : SwappedContextFactory("RawContextFactory") {}
 
-RawContextFactory::~RawContextFactory()
-{
-  if (parallel_)
-    SwappedContext::finalize();
-}
+RawContextFactory::~RawContextFactory() = default;
 
 Context* RawContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
                                            smx_actor_t process)
 {
   if (parallel_)
-    return this->new_context<ParallelRawContext>(std::move(code), cleanup_func, process);
-  return this->new_context<RawContext>(std::move(code), cleanup_func, process);
-}
-
-void RawContextFactory::run_all()
-{
-  if (parallel_)
-    ParallelRawContext::run_all();
-  else
-    SwappedContext::run_all();
+    return this->new_context<ParallelRawContext>(std::move(code), cleanup_func, process, this);
+  return this->new_context<RawContext>(std::move(code), cleanup_func, process, this);
 }
 
 // RawContext
 
-RawContext::RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process)
-    : SwappedContext(std::move(code), cleanup, process)
+RawContext::RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process,
+                       SwappedContextFactory* factory)
+    : SwappedContext(std::move(code), cleanup, process, factory)
 {
    if (has_code()) {
 #if PTH_STACKGROWTH == -1

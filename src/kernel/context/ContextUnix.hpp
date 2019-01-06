@@ -26,7 +26,8 @@ namespace context {
 
 class UContext : public SwappedContext {
 public:
-  UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
+  UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
+           SwappedContextFactory* factory);
   ~UContext() override;
   void stop() override;
 
@@ -48,8 +49,9 @@ private:
 
 class ParallelUContext : public UContext {
 public:
-  ParallelUContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
-      : UContext(std::move(code), cleanup_func, process)
+  ParallelUContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
+                   SwappedContextFactory* factory)
+      : UContext(std::move(code), cleanup_func, process, factory)
   {
   }
   void suspend() override;
@@ -58,15 +60,12 @@ public:
   static void run_all();
 };
 
-class UContextFactory : public ContextFactory {
+class UContextFactory : public SwappedContextFactory {
 public:
   UContextFactory();
   ~UContextFactory() override;
-  Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
-  void run_all() override;
 
-private:
-  bool parallel_;
+  Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
 };
 }}} // namespace
 

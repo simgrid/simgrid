@@ -11,6 +11,7 @@
 #include "xbt/parmap.hpp"
 
 #include "src/kernel/context/ContextSwapped.hpp"
+#include "src/kernel/context/ContextUnix.hpp" // FIXME: temporary reverse import
 
 #ifdef _WIN32
 #include <malloc.h>
@@ -43,11 +44,60 @@ std::atomic<uintptr_t> SwappedContext::threads_working_;       /* number of thre
 thread_local uintptr_t SwappedContext::worker_id_;             /* thread-specific storage for the thread id */
 std::vector<SwappedContext*> SwappedContext::workers_context_; /* space to save the worker's context in each thread */
 
-void SwappedContext::initialize()
+SwappedContextFactory::SwappedContextFactory(std::string name)
+    : ContextFactory(name), parallel_(SIMIX_context_is_parallel())
 {
-  parmap_ = nullptr;
-  workers_context_.clear();
-  workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
+  SwappedContext::set_maestro(nullptr);
+  SwappedContext::initialize(parallel_);
+}
+SwappedContextFactory::~SwappedContextFactory()
+{
+  SwappedContext::finalize();
+}
+/** Maestro wants to run all ready actors */
+void SwappedContextFactory::run_all()
+{
+  /* This function is called by maestro at the beginning of a scheduling round to get all working threads executing some
+   * stuff It is much easier to understand what happens if you see the working threads as bodies that swap their soul
+   * for the ones of the simulated processes that must run.
+   */
+  if (parallel_) {
+    SwappedContext::threads_working_ = 0;
+
+    // We lazily create the parmap so that all options are actually processed when doing so.
+    if (SwappedContext::parmap_ == nullptr)
+      SwappedContext::parmap_ =
+          new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
+
+    // Usually, Parmap::apply() executes the provided function on all elements of the array.
+    // Here, the executed function does not return the control to the parmap before all the array is processed:
+    //   - suspend() should switch back to the worker_context (either maestro or one of its minions) to return
+    //     the control to the parmap. Instead, it uses parmap_->next() to steal another work, and does it directly.
+    //     It only yields back to worker_context when the work array is exhausted.
+    //   - So, resume() is only launched from the parmap for the first job of each minion.
+    SwappedContext::parmap_->apply(
+        [](smx_actor_t process) {
+          SwappedContext* context = static_cast<SwappedContext*>(process->context_);
+          context->resume();
+        },
+        simix_global->process_to_run);
+  } else { // sequential execution
+    if (simix_global->process_to_run.empty())
+      return;
+    smx_actor_t first_process      = simix_global->process_to_run.front();
+    SwappedContext::process_index_ = 1;
+    /* execute the first process */
+    static_cast<SwappedContext*>(first_process->context_)->resume();
+  }
+}
+
+void SwappedContext::initialize(bool parallel)
+{
+  parmap_ = nullptr; // will be created lazily with the right parameters if needed (ie, in parallel)
+  if (parallel) {
+    workers_context_.clear();
+    workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
+  }
 }
 
 void SwappedContext::finalize()
@@ -59,8 +109,9 @@ void SwappedContext::finalize()
 
 SwappedContext* SwappedContext::maestro_context_ = nullptr;
 
-SwappedContext::SwappedContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
-    : Context(std::move(code), cleanup_func, process)
+SwappedContext::SwappedContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
+                               SwappedContextFactory* factory)
+    : Context(std::move(code), cleanup_func, process), factory_(factory)
 {
   if (has_code()) {
     if (smx_context_guard_size > 0 && not MC_is_active()) {
@@ -115,7 +166,7 @@ SwappedContext::SwappedContext(std::function<void()> code, void_pfn_smxprocess_t
 
 SwappedContext::~SwappedContext()
 {
-  if (stack_ == nullptr)
+  if (stack_ == nullptr) // maestro has no extra stack
     return;
 
 #if HAVE_VALGRIND_H
@@ -141,45 +192,42 @@ SwappedContext::~SwappedContext()
   xbt_free(stack_);
 }
 
-/** Maestro wants to run all read_to_run actors */
-void SwappedContext::run_all()
-{
-  if (simix_global->process_to_run.empty())
-    return;
-  smx_actor_t first_process = simix_global->process_to_run.front();
-  process_index_            = 1;
-  /* execute the first process */
-  static_cast<SwappedContext*>(first_process->context_)->resume();
-}
-
 /** Maestro wants to yield back to a given actor */
 void SwappedContext::resume()
 {
-  // Maestro is always the calling thread of this function (ie, self() == maestro)
-  SwappedContext* old = static_cast<SwappedContext*>(self());
-  Context::set_current(this);
-  old->swap_into(this);
+  if (factory_->parallel_) {
+    THROW_IMPOSSIBLE;
+  } else { // sequential execution
+    // Maestro is always the calling thread of this function (ie, self() == maestro)
+    SwappedContext* old = static_cast<SwappedContext*>(self());
+    Context::set_current(this);
+    old->swap_into(this);
+  }
 }
 
 /** The actor wants to yield back to maestro */
 void SwappedContext::suspend()
 {
-  /* determine the next context */
-  SwappedContext* next_context;
-  unsigned long int i = process_index_;
-  process_index_++;
+  if (factory_->parallel_) {
+    THROW_IMPOSSIBLE;
+  } else { // sequential execution
+    /* determine the next context */
+    SwappedContext* next_context;
+    unsigned long int i = process_index_;
+    process_index_++;
 
-  if (i < simix_global->process_to_run.size()) {
-    /* Actually swap into the next actor directly without transiting to maestro */
-    XBT_DEBUG("Run next process");
-    next_context = static_cast<SwappedContext*>(simix_global->process_to_run[i]->context_);
-  } else {
-    /* all processes were run, actually return to maestro */
-    XBT_DEBUG("No more process to run");
-    next_context = static_cast<SwappedContext*>(get_maestro());
+    if (i < simix_global->process_to_run.size()) {
+      /* Actually swap into the next actor directly without transiting to maestro */
+      XBT_DEBUG("Run next process");
+      next_context = static_cast<SwappedContext*>(simix_global->process_to_run[i]->context_);
+    } else {
+      /* all processes were run, actually return to maestro */
+      XBT_DEBUG("No more process to run");
+      next_context = static_cast<SwappedContext*>(get_maestro());
+    }
+    Context::set_current(next_context);
+    this->swap_into(next_context);
   }
-  Context::set_current(next_context);
-  this->swap_into(next_context);
 }
 
 } // namespace context

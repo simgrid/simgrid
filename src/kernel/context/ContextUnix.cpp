@@ -31,43 +31,23 @@ namespace context {
 
 // UContextFactory
 
-UContextFactory::UContextFactory() : ContextFactory("UContextFactory"), parallel_(SIMIX_context_is_parallel())
-{
-  UContext::set_maestro(nullptr);
-  if (parallel_)
-    SwappedContext::initialize();
-}
-
-UContextFactory::~UContextFactory()
-{
-  if (parallel_)
-    SwappedContext::finalize();
-}
+UContextFactory::UContextFactory() : SwappedContextFactory("UContextFactory") {}
+UContextFactory::~UContextFactory() = default;
 
 Context* UContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process)
 {
   if (parallel_)
-    return new_context<ParallelUContext>(std::move(code), cleanup, process);
+    return new_context<ParallelUContext>(std::move(code), cleanup, process, this);
   else
-    return new_context<UContext>(std::move(code), cleanup, process);
+    return new_context<UContext>(std::move(code), cleanup, process, this);
 }
 
-/* This function is called by maestro at the beginning of a scheduling round to get all working threads executing some
- * stuff It is much easier to understand what happens if you see the working threads as bodies that swap their soul for
- * the ones of the simulated processes that must run.
- */
-void UContextFactory::run_all()
-{
-  if (parallel_)
-    ParallelUContext::run_all();
-  else
-    SwappedContext::run_all();
-}
 
 // UContext
 
-UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
-    : SwappedContext(std::move(code), cleanup_func, process)
+UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
+                   SwappedContextFactory* factory)
+    : SwappedContext(std::move(code), cleanup_func, process, factory)
 {
   /* if the user provided a function for the process then use it, otherwise it is the context for maestro */
   if (has_code()) {
@@ -150,24 +130,6 @@ void UContext::stop()
 
 void ParallelUContext::run_all()
 {
-  threads_working_ = 0;
-
-  // We lazily create the parmap so that all options are actually processed when doing so.
-  if (parmap_ == nullptr)
-    parmap_ = new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
-
-  // Usually, Parmap::apply() executes the provided function on all elements of the array.
-  // Here, the executed function does not return the control to the parmap before all the array is processed:
-  //   - suspend() should switch back to the worker_context (either maestro or one of its minions) to return
-  //     the control to the parmap. Instead, it uses parmap_->next() to steal another work, and does it directly.
-  //     It only yields back to worker_context when the work array is exhausted.
-  //   - So, resume() is only launched from the parmap for the first job of each minion.
-  parmap_->apply(
-      [](smx_actor_t process) {
-        ParallelUContext* context = static_cast<ParallelUContext*>(process->context_);
-        context->resume();
-      },
-      simix_global->process_to_run);
 }
 
 /** Run one particular simulated process on the current thread.

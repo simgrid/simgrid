@@ -163,7 +163,7 @@ template <typename T> Parmap<T>::Parmap(unsigned num_workers, e_xbt_parmap_mode_
   this->num_workers = num_workers;
   this->synchro     = new_synchro(mode);
 
-  /* Create the pool of worker threads */
+  /* Create the pool of worker threads (the caller of apply() will be worker[0]) */
   this->workers[0] = nullptr;
   unsigned int core_bind = 0;
   for (unsigned i = 1; i < num_workers; i++) {

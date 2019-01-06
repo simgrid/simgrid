@@ -33,7 +33,8 @@ namespace context {
 /** @brief Userspace context switching implementation based on Boost.Context */
 class BoostContext : public SwappedContext {
 public:
-  BoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
+  BoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
+               SwappedContextFactory* factory);
   ~BoostContext() override;
   void stop() override;
 
@@ -62,25 +63,20 @@ private:
 
 class ParallelBoostContext : public BoostContext {
 public:
-  ParallelBoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
-      : BoostContext(std::move(code), cleanup_func, process)
+  ParallelBoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
+                       SwappedContextFactory* factory)
+      : BoostContext(std::move(code), cleanup_func, process, factory)
   {
   }
   void suspend() override;
   void resume() override;
-
-  static void run_all();
 };
 
-class BoostContextFactory : public ContextFactory {
+class BoostContextFactory : public SwappedContextFactory {
 public:
   BoostContextFactory();
   ~BoostContextFactory() override;
   Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
-  void run_all() override;
-
-private:
-  bool parallel_;
 };
 }}} // namespace
 
