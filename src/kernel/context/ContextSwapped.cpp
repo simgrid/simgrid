@@ -35,9 +35,6 @@ namespace simgrid {
 namespace kernel {
 namespace context {
 
-/* Sequential execution */
-unsigned long SwappedContext::process_index_;
-
 /* Parallel execution */
 simgrid::xbt::Parmap<smx_actor_t>* SwappedContext::parmap_;
 std::atomic<uintptr_t> SwappedContext::threads_working_;       /* number of threads that have started their work */
@@ -84,10 +81,10 @@ void SwappedContextFactory::run_all()
   } else { // sequential execution
     if (simix_global->process_to_run.empty())
       return;
-    smx_actor_t first_process      = simix_global->process_to_run.front();
-    SwappedContext::process_index_ = 1;
-    /* execute the first process */
-    static_cast<SwappedContext*>(first_process->context_)->resume();
+    smx_actor_t first_actor = simix_global->process_to_run.front();
+    process_index_          = 1;
+    /* execute the first actor; it will chain to the others when using suspend() */
+    static_cast<SwappedContext*>(first_actor->context_)->resume();
   }
 }
 
@@ -213,8 +210,8 @@ void SwappedContext::suspend()
   } else { // sequential execution
     /* determine the next context */
     SwappedContext* next_context;
-    unsigned long int i = process_index_;
-    process_index_++;
+    unsigned long int i = factory_->process_index_;
+    factory_->process_index_++;
 
     if (i < simix_global->process_to_run.size()) {
       /* Actually swap into the next actor directly without transiting to maestro */

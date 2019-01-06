@@ -22,8 +22,11 @@ public:
   ~SwappedContextFactory() override;
   void run_all() override;
 
-protected: // FIXME temporary internal exposure
+protected:
   bool parallel_;
+
+private:
+  unsigned long process_index_ = 0; // Next actor to execute during sequential run_all()
 };
 
 class SwappedContext : public Context {
@@ -43,9 +46,7 @@ public:
   static SwappedContext* get_maestro() { return maestro_context_; }
   static void set_maestro(SwappedContext* maestro) { maestro_context_ = maestro; }
 
-  static unsigned long process_index_; // FIXME killme
-
-  /* For the parallel execution */
+  /* For the parallel execution */ // FIXME killme
   static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
   static std::vector<SwappedContext*> workers_context_;
   static std::atomic<uintptr_t> threads_working_;
