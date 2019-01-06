@@ -189,8 +189,6 @@ namespace context {
 Context* RawContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
                                            smx_actor_t process)
 {
-  if (parallel_)
-    return this->new_context<ParallelRawContext>(std::move(code), cleanup_func, process, this);
   return this->new_context<RawContext>(std::move(code), cleanup_func, process, this);
 }
 
@@ -245,38 +243,6 @@ void RawContext::swap_into(SwappedContext* to_)
   ASAN_START_SWITCH(from->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
   raw_swapcontext(&this->stack_top_, to->stack_top_);
   ASAN_FINISH_SWITCH(fake_stack, &from->asan_ctx_->asan_stack_, &from->asan_ctx_->asan_stack_size_);
-}
-
-// ParallelRawContext
-
-void ParallelRawContext::suspend()
-{
-  /* determine the next context */
-  boost::optional<smx_actor_t> next_work = parmap_->next();
-  SwappedContext* next_context;
-  if (next_work) {
-    /* there is a next process to resume */
-    XBT_DEBUG("Run next process");
-    next_context = static_cast<ParallelRawContext*>(next_work.get()->context_);
-  } else {
-    /* all processes were run, go to the barrier */
-    XBT_DEBUG("No more processes to run");
-    next_context = workers_context_[worker_id_];
-    XBT_DEBUG("Restoring worker stack %zu (working threads = %zu)", worker_id_, threads_working_.load());
-  }
-
-  Context::set_current(next_context);
-  this->swap_into(next_context);
-}
-
-void ParallelRawContext::resume()
-{
-  worker_id_                     = threads_working_.fetch_add(1, std::memory_order_relaxed);
-  SwappedContext* worker_context = static_cast<SwappedContext*>(self());
-  workers_context_[worker_id_]   = worker_context;
-  XBT_DEBUG("Saving worker stack %zu", worker_id_);
-  Context::set_current(this);
-  worker_context->swap_into(this);
 }
 
 ContextFactory* raw_factory()

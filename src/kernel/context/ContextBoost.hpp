@@ -60,17 +60,6 @@ private:
   static void wrapper(arg_type arg);
 };
 
-class ParallelBoostContext : public BoostContext {
-public:
-  ParallelBoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
-                       SwappedContextFactory* factory)
-      : BoostContext(std::move(code), cleanup_func, process, factory)
-  {
-  }
-  void suspend() override;
-  void resume() override;
-};
-
 class BoostContextFactory : public SwappedContextFactory {
 public:
   BoostContextFactory() : SwappedContextFactory("BoostContextFactory") {}

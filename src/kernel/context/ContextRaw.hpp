@@ -47,17 +47,6 @@ private:
   static void wrapper(void* arg);
 };
 
-class ParallelRawContext : public RawContext {
-public:
-  ParallelRawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
-                     SwappedContextFactory* factory)
-      : RawContext(std::move(code), cleanup_func, process, factory)
-  {
-  }
-  void suspend() override;
-  void resume() override;
-};
-
 class RawContextFactory : public SwappedContextFactory {
 public:
   RawContextFactory() : SwappedContextFactory("RawContextFactory") {}

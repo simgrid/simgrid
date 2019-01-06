@@ -11,7 +11,6 @@
 #include "xbt/parmap.hpp"
 
 #include "src/kernel/context/ContextSwapped.hpp"
-#include "src/kernel/context/ContextUnix.hpp" // FIXME: temporary reverse import
 
 #ifdef _WIN32
 #include <malloc.h>

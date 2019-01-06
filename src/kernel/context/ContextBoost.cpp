@@ -18,8 +18,6 @@ namespace context {
 smx_context_t BoostContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
                                                   smx_actor_t process)
 {
-  if (parallel_)
-    return this->new_context<ParallelBoostContext>(std::move(code), cleanup_func, process, this);
   return this->new_context<BoostContext>(std::move(code), cleanup_func, process, this);
 }
 
@@ -105,35 +103,6 @@ void BoostContext::swap_into(SwappedContext* to_)
   static_cast<BoostContext**>(arg.data)[0]->fc_ = arg.fctx;
 #endif
 }
-
-// ParallelBoostContext
-void ParallelBoostContext::suspend()
-{
-  boost::optional<smx_actor_t> next_work = parmap_->next();
-  SwappedContext* next_context;
-  if (next_work) {
-    XBT_DEBUG("Run next process");
-    next_context = static_cast<ParallelBoostContext*>(next_work.get()->context_);
-  } else {
-    XBT_DEBUG("No more processes to run");
-    next_context = workers_context_[worker_id_];
-  }
-
-  Context::set_current(next_context);
-  this->swap_into(next_context);
-}
-
-void ParallelBoostContext::resume()
-{
-  worker_id_ = threads_working_.fetch_add(1, std::memory_order_relaxed);
-
-  SwappedContext* worker_context = static_cast<SwappedContext*>(self());
-  workers_context_[worker_id_]   = worker_context;
-
-  Context::set_current(this);
-  worker_context->swap_into(this);
-}
-
 
 XBT_PRIVATE ContextFactory* boost_factory()
 {
