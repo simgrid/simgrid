@@ -22,11 +22,15 @@ public:
   ~SwappedContextFactory() override;
   void run_all() override;
 
-protected:
+private:
   bool parallel_;
 
-private:
   unsigned long process_index_ = 0; // Next actor to execute during sequential run_all()
+
+  /* For the parallel execution */
+  simgrid::xbt::Parmap<smx_actor_t>* parmap_;
+  std::vector<SwappedContext*> workers_context_; /* space to save the worker's context in each thread */
+  std::atomic<uintptr_t> threads_working_;       /* number of threads that have started their work */
 };
 
 class SwappedContext : public Context {
@@ -35,22 +39,16 @@ public:
                  SwappedContextFactory* factory);
   virtual ~SwappedContext();
 
-  static void initialize(bool parallel); // Initialize the module, using the options
-  static void finalize();   // Finalize the module
-
   void suspend() override;
   virtual void resume();
   void stop() override;
 
-  virtual void swap_into(SwappedContext* to) = 0; // Defined in subclasses
+  virtual void swap_into(SwappedContext* to) = 0; // Defined in Raw, Boost and UContext subclasses
 
   static SwappedContext* get_maestro() { return maestro_context_; }
   static void set_maestro(SwappedContext* maestro) { maestro_context_ = maestro; }
 
-  /* For the parallel execution */ // FIXME killme
-  static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
-  static std::vector<SwappedContext*> workers_context_;
-  static std::atomic<uintptr_t> threads_working_;
+  // FIXME: Killme
   static thread_local uintptr_t worker_id_;
 
 protected:
@@ -58,8 +56,7 @@ protected:
 
 private:
   static SwappedContext* maestro_context_;
-  /* For sequential and parallel run_all() */
-  SwappedContextFactory* factory_;
+  SwappedContextFactory* factory_; // for sequential and parallel run_all()
 };
 
 } // namespace context

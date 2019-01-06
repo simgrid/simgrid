@@ -58,8 +58,6 @@ BoostContext::~BoostContext()
   if (not this->stack_)
     delete this->fc_;
 #endif
-  if (this == get_maestro())
-    set_maestro(nullptr);
 }
 
 void BoostContext::wrapper(BoostContext::arg_type arg)

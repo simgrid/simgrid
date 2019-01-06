@@ -29,7 +29,6 @@ class RawContext : public SwappedContext {
 public:
   RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
              SwappedContextFactory* factory);
-  ~RawContext() override;
 
   void swap_into(SwappedContext* to) override;
 

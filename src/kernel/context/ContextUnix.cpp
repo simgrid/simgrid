@@ -66,8 +66,6 @@ UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun
 #endif
 }
 
-UContext::~UContext() = default;
-
 // The name of this function is currently hardcoded in the code (as string).
 // Do not change it without fixing those references as well.
 void UContext::smx_ctx_sysv_wrapper(int i1, int i2)

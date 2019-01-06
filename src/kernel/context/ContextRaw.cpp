@@ -215,8 +215,6 @@ RawContext::RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup
    }
 }
 
-RawContext::~RawContext() = default;
-
 void RawContext::wrapper(void* arg)
 {
   RawContext* context = static_cast<RawContext*>(arg);

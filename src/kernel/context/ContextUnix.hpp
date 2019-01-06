@@ -28,7 +28,6 @@ class UContext : public SwappedContext {
 public:
   UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
            SwappedContextFactory* factory);
-  ~UContext() override;
 
   void swap_into(SwappedContext* to) override;
 

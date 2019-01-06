@@ -34,33 +34,20 @@ namespace simgrid {
 namespace kernel {
 namespace context {
 
-/* Parallel execution */
-simgrid::xbt::Parmap<smx_actor_t>* SwappedContext::parmap_;
-std::atomic<uintptr_t> SwappedContext::threads_working_;       /* number of threads that have started their work */
+/* rank of the execution thread */
 thread_local uintptr_t SwappedContext::worker_id_;             /* thread-specific storage for the thread id */
-std::vector<SwappedContext*> SwappedContext::workers_context_; /* space to save the worker's context in each thread */
 
 SwappedContextFactory::SwappedContextFactory(std::string name)
     : ContextFactory(name), parallel_(SIMIX_context_is_parallel())
 {
   SwappedContext::set_maestro(nullptr);
-  SwappedContext::initialize(parallel_);
-}
-SwappedContextFactory::~SwappedContextFactory()
-{
-  SwappedContext::finalize();
-}
-
-void SwappedContext::initialize(bool parallel)
-{
   parmap_ = nullptr; // will be created lazily with the right parameters if needed (ie, in parallel)
-  if (parallel) {
+  if (parallel_) {
     workers_context_.clear();
     workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
   }
 }
-
-void SwappedContext::finalize()
+SwappedContextFactory::~SwappedContextFactory()
 {
   delete parmap_;
   parmap_ = nullptr;
@@ -166,12 +153,11 @@ void SwappedContextFactory::run_all()
    * for the ones of the simulated processes that must run.
    */
   if (parallel_) {
-    SwappedContext::threads_working_ = 0;
+    threads_working_ = 0;
 
     // We lazily create the parmap so that all options are actually processed when doing so.
-    if (SwappedContext::parmap_ == nullptr)
-      SwappedContext::parmap_ =
-          new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
+    if (parmap_ == nullptr)
+      parmap_ = new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
 
     // Usually, Parmap::apply() executes the provided function on all elements of the array.
     // Here, the executed function does not return the control to the parmap before all the array is processed:
@@ -179,7 +165,7 @@ void SwappedContextFactory::run_all()
     //     the control to the parmap. Instead, it uses parmap_->next() to steal another work, and does it directly.
     //     It only yields back to worker_context when the work array is exhausted.
     //   - So, resume() is only launched from the parmap for the first job of each minion.
-    SwappedContext::parmap_->apply(
+    parmap_->apply(
         [](smx_actor_t process) {
           SwappedContext* context = static_cast<SwappedContext*>(process->context_);
           context->resume();
@@ -205,10 +191,10 @@ void SwappedContext::resume()
 {
   if (factory_->parallel_) {
     // Save the thread number (my body) in an os-thread-specific area
-    worker_id_ = threads_working_.fetch_add(1, std::memory_order_relaxed);
+    worker_id_ = factory_->threads_working_.fetch_add(1, std::memory_order_relaxed);
     // Save my current soul (either maestro, or one of the minions) in a permanent area
     SwappedContext* worker_context = static_cast<SwappedContext*>(self());
-    workers_context_[worker_id_]   = worker_context;
+    factory_->workers_context_[worker_id_] = worker_context;
     // Switch my soul and the actor's one
     Context::set_current(this);
     worker_context->swap_into(this);
@@ -234,7 +220,7 @@ void SwappedContext::suspend()
 {
   if (factory_->parallel_) {
     // Get some more work to directly swap into the next executable actor instead of yielding back to the parmap
-    boost::optional<smx_actor_t> next_work = parmap_->next();
+    boost::optional<smx_actor_t> next_work = factory_->parmap_->next();
     SwappedContext* next_context;
     if (next_work) {
       // There is a next soul to embody (ie, another executable actor)
@@ -244,7 +230,7 @@ void SwappedContext::suspend()
       // All actors were run, go back to the parmap context
       XBT_DEBUG("No more processes to run");
       // worker_id_ is the identity of my body, stored in thread_local when starting the scheduling round
-      next_context = workers_context_[worker_id_];
+      next_context = factory_->workers_context_[worker_id_];
       // When given that soul, the body will wait for the next scheduling round
     }
 
