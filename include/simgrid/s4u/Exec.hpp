@@ -14,9 +14,10 @@
 namespace simgrid {
 namespace s4u {
 
-/** Computation #Activity, representing the asynchronous disk access.
+/** Computation Activity, representing the asynchronous executions.
  *
- * They are generated from simgrid::s4u::this_actor::exec_init() or simgrid::s4u::Host::execute().
+ * They are generated from simgrid::s4u::this_actor::exec_init() or simgrid::s4u::Host::execute(),
+ * and can be used to model pools of threads or similar mechanisms.
  */
 
 class XBT_PUBLIC Exec : public Activity {
