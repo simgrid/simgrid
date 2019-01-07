@@ -134,9 +134,16 @@ SwappedContext::~SwappedContext()
   xbt_free(stack_);
 }
 
+void SwappedContext::set_maestro(SwappedContext* ctx)
+{
+  if (factory_->threads_working_ == 0) // Don't save the soul of minions, only the one of maestro
+    factory_->workers_context_[0] = ctx;
+}
+
 void SwappedContext::stop()
 {
   Context::stop();
+  /* We must cut the actor execution using an exception to properly free the C++ RAII variables */
   throw StopRequest();
 }
 

@@ -45,7 +45,7 @@ public:
 
   virtual void swap_into(SwappedContext* to) = 0; // Defined in Raw, Boost and UContext subclasses
 
-  void set_maestro(SwappedContext* ctx) { factory_->workers_context_[0] = ctx; }
+  void set_maestro(SwappedContext* ctx);
 
   // FIXME: Killme
   static thread_local uintptr_t worker_id_;
