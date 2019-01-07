@@ -234,10 +234,10 @@ void RawContext::swap_into(SwappedContext* to_)
 {
   RawContext* to = static_cast<RawContext*>(to_);
   ASAN_ONLY(void* fake_stack = nullptr);
-  ASAN_ONLY(to->asan_ctx_ = from);
-  ASAN_START_SWITCH(from->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
+  ASAN_ONLY(to->asan_ctx_ = this);
+  ASAN_START_SWITCH(this->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
   raw_swapcontext(&this->stack_top_, to->stack_top_);
-  ASAN_FINISH_SWITCH(fake_stack, &from->asan_ctx_->asan_stack_, &from->asan_ctx_->asan_stack_size_);
+  ASAN_FINISH_SWITCH(fake_stack, &this->asan_ctx_->asan_stack_, &this->asan_ctx_->asan_stack_size_);
 }
 
 ContextFactory* raw_factory()

@@ -104,10 +104,10 @@ void UContext::swap_into(SwappedContext* to_)
 {
   UContext* to = static_cast<UContext*>(to_);
   ASAN_ONLY(void* fake_stack = nullptr);
-  ASAN_ONLY(to->asan_ctx_ = from);
-  ASAN_START_SWITCH(from->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
+  ASAN_ONLY(to->asan_ctx_ = this);
+  ASAN_START_SWITCH(this->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
   swapcontext(&this->uc_, &to->uc_);
-  ASAN_FINISH_SWITCH(fake_stack, &from->asan_ctx_->asan_stack_, &from->asan_ctx_->asan_stack_size_);
+  ASAN_FINISH_SWITCH(fake_stack, &this->asan_ctx_->asan_stack_, &this->asan_ctx_->asan_stack_size_);
 }
 
 
