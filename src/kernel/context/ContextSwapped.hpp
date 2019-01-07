@@ -30,7 +30,7 @@ private:
   /* For the parallel execution */
   simgrid::xbt::Parmap<smx_actor_t>* parmap_;
   std::vector<SwappedContext*> workers_context_; /* space to save the worker's context in each thread */
-  std::atomic<uintptr_t> threads_working_;       /* number of threads that have started their work */
+  std::atomic<uintptr_t> threads_working_{0};    /* number of threads that have started their work */
 };
 
 class SwappedContext : public Context {
