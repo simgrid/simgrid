@@ -20,7 +20,7 @@ class Yielder:
     def __init__(self, *args):
         self.number_of_yields = int(args[0])
     def __call__(self):
-        for i in range(self.number_of_yields):
+        for _ in range(self.number_of_yields):
             this_actor.yield_()
         this_actor.info("I yielded {:d} times. Goodbye now!".format(self.number_of_yields))
 
