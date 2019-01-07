@@ -505,7 +505,7 @@ int xbt_automaton_parser__flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *xbt_automaton_parser_text;
 #line 1 "parserPromela.lex"
-/* Copyright (c) 2012-2018. The SimGrid Team.
+/* Copyright (c) 2012-2019. The SimGrid Team.
  * All rights reserved.                                                     */
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */

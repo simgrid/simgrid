@@ -5,7 +5,7 @@ eval 'exec perl -S $0 ${1+"$@"}'
 # This script updates the simgrid XML file passed as argument (modification in place)
 # It is built to do the conversion incrementally.
 
-# Copyright (c) 2006-2018. The SimGrid Team.
+# Copyright (c) 2006-2019. The SimGrid Team.
 # All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -156,7 +156,7 @@ Rename the FULLDUPLEX sharing into SPLITDUPLEX.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.
+Copyright (c) 2006-2019. The SimGrid Team. All rights reserved.
 
 This program is free software; you may redistribute it and/or modify it
 under the terms of GNU LGPL (v2.1) license.
