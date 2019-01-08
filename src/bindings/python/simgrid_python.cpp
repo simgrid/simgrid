@@ -3,14 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <pybind11/pybind11.h> // Must be first
+#include <pybind11/stl.h>
+
 #include "src/kernel/context/Context.hpp"
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
 #include <simgrid/s4u/Mailbox.hpp>
-
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include <memory>
 #include <string>
@@ -86,7 +86,7 @@ PYBIND11_MODULE(simgrid, m)
         return new simgrid::s4u::Engine(&argc, argv.get());
       }))
       .def("get_all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
-      .def("get_clock", &Engine::get_clock, "Retrieve the simulation time")
+      .def("get_clock", &Engine::get_clock, "Retrieve the simulation time (in seconds)")
       .def("load_platform", &Engine::load_platform,
            "Load a platform file describing the environment, see :cpp:func:`simgrid::s4u::Engine::load_platform()`")
       .def("load_deployment", &Engine::load_deployment,
