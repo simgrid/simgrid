@@ -95,6 +95,7 @@ if [ -f Testing/TAG ] ; then
    then 
      for report in $WORKSPACE/java_cov*
      do
+       if [ ! -e "$report" ]; then continue; fi
        java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar report -l Java -r $report --partial
      done
      java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar final
