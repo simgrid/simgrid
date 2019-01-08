@@ -3,17 +3,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <memory>
-#include <string>
-#include <vector>
-
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-
+#include "src/kernel/context/Context.hpp"
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
 #include <simgrid/s4u/Mailbox.hpp>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace py = pybind11;
 using simgrid::s4u::Actor;
@@ -136,33 +137,41 @@ PYBIND11_MODULE(simgrid, m)
       }, "Blocking data reception, see :cpp:func:`void* simgrid::s4u::Mailbox::get()`");
 
   /* Class Actor */
+  py::object pyStopRequestEx = py::register_exception<simgrid::kernel::context::Context::StopRequest>(m, "ActorKilled");
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor",
                                             "An actor is an independent stream of execution in your distributed "
                                             "application, see :ref:`class s4u::Actor <API_s4u_Actor>`")
 
       .def("create",
-           [](py::args args, py::kwargs kwargs) {
-             xbt_assert(args.size() > 2,
-                        "Creating an actor takes at least 3 parameters: name, host, and main function.");
-             return simgrid::s4u::Actor::create(args[0].cast<std::string>(), args[1].cast<Host*>(), [args]() {
-               py::tuple funargs(args.size() - 3);
-               for (size_t i = 3; i < args.size(); i++)
-                 funargs[i - 3] = args[i];
+           [pyStopRequestEx](py::str name, py::object host, py::object fun, py::args args) {
 
-               PyObject* result = PyObject_CallObject(args[2].ptr(), funargs.ptr());
-               if (!result)
-                 throw pybind11::error_already_set();
+             return simgrid::s4u::Actor::create(name, host.cast<Host*>(), [fun, args, pyStopRequestEx]() {
+
+               try {
+                 fun(*args);
+               } catch (py::error_already_set& ex) {
+                 if (ex.matches(pyStopRequestEx)) {
+                   /* The actor was killed.
+                    * Stop here that StopRequest exception which was meant to free the RAII stuff on the stack */
+                 } else {
+                   throw;
+                 }
+               }
              });
            },
            "Create an actor from a function or an object, see :cpp:func:`simgrid::s4u::Actor::create()`")
       .def_property("host", &Actor::get_host, &Actor::migrate, "The host on which this actor is located")
-      .def("daemonize", &Actor::daemonize, "This actor will be automatically terminated when the last non-daemon actor finishes, see :cpp:func:`void simgrid::s4u::Actor::daemonize()`")
-      .def("join", py::overload_cast<double>(&Actor::join), "Wait for the actor to finish, see :cpp:func:`void simgrid::s4u::Actor::join(double)`",
-          py::arg("timeout"))
-      .def("migrate", &Actor::migrate, "Moves that actor to another host, see :cpp:func:`void simgrid::s4u::Actor::migrate()`",
-          py::arg("dest"))
+      .def("daemonize", &Actor::daemonize,
+           "This actor will be automatically terminated when the last non-daemon actor finishes, see :cpp:func:`void "
+           "simgrid::s4u::Actor::daemonize()`")
+      .def("join", py::overload_cast<double>(&Actor::join),
+           "Wait for the actor to finish, see :cpp:func:`void simgrid::s4u::Actor::join(double)`", py::arg("timeout"))
+      .def("migrate", &Actor::migrate,
+           "Moves that actor to another host, see :cpp:func:`void simgrid::s4u::Actor::migrate()`", py::arg("dest"))
       .def("self", &Actor::self, "Retrieves the current actor, see :cpp:func:`void simgrid::s4u::Actor::self()`")
-      .def("suspend", &Actor::suspend, "Suspend that actor, that is blocked until resume()ed by another actor. See :cpp:func:`void simgrid::s4u::Actor::suspend()`")
-      .def("resume", &Actor::resume, "Resume that actor, that was previously suspend()ed. See :cpp:func:`void simgrid::s4u::Actor::suspend()`");
-
+      .def("suspend", &Actor::suspend,
+           "Suspend that actor, that is blocked until resume()ed by another actor. See :cpp:func:`void "
+           "simgrid::s4u::Actor::suspend()`")
+      .def("resume", &Actor::resume,
+           "Resume that actor, that was previously suspend()ed. See :cpp:func:`void simgrid::s4u::Actor::suspend()`");
 }

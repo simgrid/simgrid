@@ -504,7 +504,7 @@ void SIMIX_process_kill(smx_actor_t actor, smx_actor_t issuer)
      */
 
     if (simgrid::kernel::context::factory_initializer == nullptr) // Only Java sets a factory_initializer, for now
-      actor->throw_exception(std::make_exception_ptr(simgrid::kernel::context::Context::StopRequest("Host failed")));
+      actor->throw_exception(std::make_exception_ptr(simgrid::kernel::context::Context::StopRequest("host failed")));
   }
 
   /* destroy the blocking synchro if any */
