@@ -37,7 +37,7 @@ static void killer()
   simgrid::s4u::this_actor::sleep_for(2);
 
   XBT_INFO("Kill the victim A"); /* - and then kill it */
-  simgrid::s4u::Actor::kill(victimA->get_pid()); // Kill by PID is legit
+  simgrid::s4u::Actor::by_pid(victimA->get_pid())->kill(); // You can retrieve an actor from its PID (and then kill it)
 
   simgrid::s4u::this_actor::sleep_for(1);
 

@@ -365,7 +365,7 @@ Here is a little example:
   
    } // The mutex gets automatically freed because the only existing reference gets out of scope
 
-API C++ Reference
+C++ API Reference
 *****************
 
 .. _API_s4u_this_actor:

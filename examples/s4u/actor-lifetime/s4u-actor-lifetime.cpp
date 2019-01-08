@@ -22,11 +22,13 @@ public:
           XBT_INFO("Exiting now (done sleeping or got killed).");
         },
         nullptr);
-
+  }
+  void operator()()
+  {
     XBT_INFO("Hello! I go to sleep.");
     simgrid::s4u::this_actor::sleep_for(10);
+    XBT_INFO("Done sleeping.");
   }
-  void operator()() { XBT_INFO("Done sleeping."); }
 };
 
 int main(int argc, char* argv[])

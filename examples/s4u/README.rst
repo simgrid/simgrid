@@ -38,15 +38,22 @@ Starting and Stoping Actors
   - **Creating actors:**
     Most actors are started from the deployment XML file, but there is other methods.
     This example show them all.
+    `examples/python/actor-create/actor-create_d.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-create/actor-create_d.xml>`_
     
     - |cpp| `examples/s4u/actor-create/s4u-actor-create.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-create/s4u-actor-create.cpp>`_
     - |py|  `examples/python/actor-create/actor-create.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-create/actor-create.py>`_
     
   - **Kill actors:**
-    Actors can forcefully stop other actors with the 
-    :cpp:func:`void simgrid::s4u::Actor::kill(void)` or the 
-    :cpp:func:`void simgrid::s4u::Actor::kill(aid_t)` methods.
-    |br| `examples/s4u/actor-kill/s4u-actor-kill.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-kill/s4u-actor-kill.cpp>`_
+    Actors can forcefully stop other actors.
+    
+    - |cpp| `examples/s4u/actor-kill/s4u-actor-kill.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-kill/s4u-actor-kill.cpp>`_
+      :cpp:func:`void simgrid::s4u::Actor::kill(void)`,
+      :cpp:func:`void simgrid::s4u::Actor::kill_all()`,
+      :cpp:func:`simgrid::s4u::this_actor::exit`.
+    - |py| `examples/python/actor-kill/actor-kill.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-kill/actor-kill.py>`_
+      :py:func:`simgrid.Actor.kill`,
+      :py:func:`simgrid.Actor.kill_all`, 
+      :py:func:`simgrid.this_actor.exit`.
 
   - **Controling the actor life cycle from the XML:**
     You can specify a start time and a kill time in the deployment

@@ -35,7 +35,7 @@ def killer():
     this_actor.sleep_for(2)
 
     this_actor.info("Kill the victim A")   # - and then kill it
-    this_actor.kill(victimA.pid)  # Kill by PID is legit
+    Actor.by_pid(victimA.pid).kill()       # You can retrieve an actor from its PID (and then kill it)
 
     this_actor.sleep_for(1)
 
@@ -52,7 +52,7 @@ def killer():
     this_actor.sleep_for(1)
 
     this_actor.info("Killing everybody but myself")
-    this_actor.kill_all()
+    Actor.kill_all()
 
     this_actor.info("OK, goodbye now. I commit a suicide.")
     this_actor.exit()

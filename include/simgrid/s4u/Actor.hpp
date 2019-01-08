@@ -258,9 +258,6 @@ public:
    */
   void kill();
 
-  /** Kill an actor from its ID */
-  static void kill(aid_t pid);
-
   /** Retrieves the actor that have the given PID (or nullptr if not existing) */
   static ActorPtr by_pid(aid_t pid);
 
@@ -279,7 +276,7 @@ public:
   void join(double timeout);
   Actor* restart();
 
-  /** Ask kindly to all actors to die. Only the issuer will survive. */
+  /** Kill all actors (but the issuer). Being killed is not something that actors can delay or avoid. */
   static void kill_all();
 
   /** Returns the internal implementation of this actor */
@@ -292,6 +289,8 @@ public:
   void set_property(std::string key, std::string value);
 
 #ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v325("Please use Actor::by_pid(pid).kill() instead") static void kill(aid_t pid);
+
   /** @deprecated See Actor::create() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
       const char* name, s4u::Host* host, std::function<void()> code)

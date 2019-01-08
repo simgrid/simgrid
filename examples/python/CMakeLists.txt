@@ -1,4 +1,4 @@
-foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate actor-suspend actor-yield
+foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate actor-suspend actor-yield # actor-lifetime
                 exec-basic)
   set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.py)
@@ -14,5 +14,6 @@ foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate ac
 endforeach()
 
 set(tesh_files    examples/python/actor-create/actor-create_d.xml
+                  examples/python/actor-lifetime/actor-lifetime_d.xml
                   ${tesh_files}    PARENT_SCOPE)
 set(examples_src  ${examples_src}  PARENT_SCOPE)

@@ -175,7 +175,7 @@ double Actor::get_kill_time()
   return SIMIX_timer_get_date(pimpl_->kill_timer);
 }
 
-void Actor::kill(aid_t pid)
+void Actor::kill(aid_t pid) // deprecated
 {
   smx_actor_t killer  = SIMIX_process_self();
   smx_actor_t process = SIMIX_process_from_PID(pid);
