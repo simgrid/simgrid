@@ -4,7 +4,7 @@ pages:
   script:
   - pip3 install --requirement docs/requirements.txt
   - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=OFF -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_smpi=OFF .
-  - make -j4 simgrid_python
+  - make -j4 python-bindings
   - cd docs
   - LC_ALL=C.UTF-8 ./Build.sh
   - mv build/html ../public
