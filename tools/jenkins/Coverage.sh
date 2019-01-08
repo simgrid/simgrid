@@ -96,10 +96,10 @@ if [ -f Testing/TAG ] ; then
      for report in $WORKSPACE/java_cov*
      do
        if [ ! -e "$report" ]; then continue; fi
-       java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar report -l Java -r $report --partial
+       java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar report -l Java -r $report --partial
      done
-     java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar final
-     java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar report -l C -f -r $WORKSPACE/xml_coverage.xml
-     java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar report -l CPP -f -r $WORKSPACE/xml_coverage.xml
+     java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar final
+     java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar report -l C -f -r $WORKSPACE/xml_coverage.xml
+     java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar report -l CPP -f -r $WORKSPACE/xml_coverage.xml
    fi
 fi
