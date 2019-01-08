@@ -56,7 +56,8 @@ Starting and Stoping Actors
   - **Daemonize actors:**
     Some actors may be intended to simulate daemons that run in background. This example show how to transform a regular
     actor into a daemon that will be automatically killed once the simulation is over.
-    |br| `examples/s4u/actor-daemon/s4u-actor-daemon.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-daemon/s4u-actor-daemon.cpp>`_
+    |br| |cpp| `examples/s4u/actor-daemon/s4u-actor-daemon.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-daemon/s4u-actor-daemon.cpp>`_
+    |br|  |py| `examples/python/actor-daemon/actor-daemon.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-daemon/actor-daemon.py>`_
     
 Inter-Actors Interactions
 -------------------------
