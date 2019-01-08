@@ -33,9 +33,9 @@ BoostContext::BoostContext(std::function<void()> code, void_pfn_smxprocess_t cle
     /* We need to pass the bottom of the stack to make_fcontext,
        depending on the stack direction it may be the lower or higher address: */
 #if PTH_STACKGROWTH == -1
-    void* stack = static_cast<char*>(this->stack_) + smx_context_usable_stack_size;
+    void* stack = static_cast<char*>(get_stack()) + smx_context_usable_stack_size;
 #else
-    void* stack = this->stack_;
+    void* stack = get_stack();
 #endif
     ASAN_ONLY(this->asan_stack_ = stack);
 #if BOOST_VERSION < 106100

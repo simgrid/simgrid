@@ -200,11 +200,11 @@ RawContext::RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup
 {
    if (has_code()) {
 #if PTH_STACKGROWTH == -1
-     ASAN_ONLY(this->asan_stack_ = static_cast<char*>(this->stack_) + smx_context_usable_stack_size);
+     ASAN_ONLY(this->asan_stack_ = static_cast<char*>(get_stack()) + smx_context_usable_stack_size);
 #else
-     ASAN_ONLY(this->asan_stack_ = this->stack_);
+     ASAN_ONLY(this->asan_stack_ = get_stack());
 #endif
-     this->stack_top_ = raw_makecontext(this->stack_, smx_context_usable_stack_size, RawContext::wrapper, this);
+     this->stack_top_ = raw_makecontext(get_stack(), smx_context_usable_stack_size, RawContext::wrapper, this);
    } else {
      set_maestro(this); // save maestro for run_all()
      if (MC_is_active())

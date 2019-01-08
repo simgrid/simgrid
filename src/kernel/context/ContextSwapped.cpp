@@ -140,6 +140,11 @@ void SwappedContext::set_maestro(SwappedContext* ctx)
     factory_->workers_context_[0] = ctx;
 }
 
+void* SwappedContext::get_stack()
+{
+  return stack_;
+}
+
 void SwappedContext::stop()
 {
   Context::stop();

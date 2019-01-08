@@ -46,7 +46,7 @@ UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun
   if (has_code()) {
     getcontext(&this->uc_);
     this->uc_.uc_link = nullptr;
-    this->uc_.uc_stack.ss_sp   = sg_makecontext_stack_addr(this->stack_);
+    this->uc_.uc_stack.ss_sp   = sg_makecontext_stack_addr(get_stack());
     this->uc_.uc_stack.ss_size = sg_makecontext_stack_size(smx_context_usable_stack_size);
 #if PTH_STACKGROWTH == -1
     ASAN_ONLY(this->asan_stack_ = static_cast<char*>(this->stack_) + smx_context_usable_stack_size);
