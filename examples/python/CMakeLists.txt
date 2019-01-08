@@ -15,5 +15,7 @@ endforeach()
 
 set(tesh_files    examples/python/actor-create/actor-create_d.xml
                   examples/python/actor-lifetime/actor-lifetime_d.xml
+		  examples/python/actor-lifetime/actor-lifetime.py     # example broken so far
+		  examples/python/actor-lifetime/actor-lifetime.tesh
                   ${tesh_files}    PARENT_SCOPE)
 set(examples_src  ${examples_src}  PARENT_SCOPE)
