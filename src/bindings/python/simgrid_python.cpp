@@ -71,7 +71,7 @@ PYBIND11_MODULE(simgrid, m)
   m2.def("suspend", &simgrid::s4u::this_actor::suspend, "Suspend the current actor, that is blocked until resume()ed by another actor. see :cpp:func:`void simgrid::s4u::this_actor::suspend`");
   m2.def("yield_", &simgrid::s4u::this_actor::yield,
          "Yield the actor, see :cpp:func:`void simgrid::s4u::this_actor::yield()`");
-  m2.def("exit", &simgrid::s4u::this_actor::exit);
+  m2.def("exit", &simgrid::s4u::this_actor::exit, "kill the current actor");
 
   /* Class Engine */
   py::class_<Engine>(m, "Engine", "Simulation Engine, see :ref:`class s4u::Engine <API_s4u_Engine>`")
