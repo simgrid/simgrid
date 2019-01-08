@@ -72,6 +72,13 @@ PYBIND11_MODULE(simgrid, m)
   m2.def("yield_", &simgrid::s4u::this_actor::yield,
          "Yield the actor, see :cpp:func:`void simgrid::s4u::this_actor::yield()`");
   m2.def("exit", &simgrid::s4u::this_actor::exit, "kill the current actor");
+  m2.def("kill", [](py::int_ pid) { Actor::kill(pid); }, "Kill an actor by pid");
+  m2.def("kill_all", &Actor::kill_all, "Kill all actors but the caller.");
+
+  m2.def(
+      "on_exit",
+      [](py::function fun) { simgrid::s4u::this_actor::on_exit([fun](int ignored, void* data) { fun(); }, nullptr); },
+      "");
 
   /* Class Engine */
   py::class_<Engine>(m, "Engine", "Simulation Engine, see :ref:`class s4u::Engine <API_s4u_Engine>`")
@@ -172,11 +179,15 @@ PYBIND11_MODULE(simgrid, m)
            },
            "Create an actor from a function or an object, see :cpp:func:`simgrid::s4u::Actor::create()`")
       .def_property("host", &Actor::get_host, &Actor::migrate, "The host on which this actor is located")
+      .def_property_readonly("pid", &Actor::get_pid, "The PID (unique identifier) of this actor.")
       .def("daemonize", &Actor::daemonize,
            "This actor will be automatically terminated when the last non-daemon actor finishes, see :cpp:func:`void "
            "simgrid::s4u::Actor::daemonize()`")
       .def("join", py::overload_cast<double>(&Actor::join),
            "Wait for the actor to finish, see :cpp:func:`void simgrid::s4u::Actor::join(double)`", py::arg("timeout"))
+      .def("kill", [](py::int_ pid) { Actor::kill(pid); }, "Kill an actor by pid")
+      .def("kill", [](ActorPtr act) { act->kill(); }, "Kill that actor")
+      .def("kill_all", &Actor::kill_all, "Kill all actors but the caller.")
       .def("migrate", &Actor::migrate,
            "Moves that actor to another host, see :cpp:func:`void simgrid::s4u::Actor::migrate()`", py::arg("dest"))
       .def("self", &Actor::self, "Retrieves the current actor, see :cpp:func:`void simgrid::s4u::Actor::self()`")
