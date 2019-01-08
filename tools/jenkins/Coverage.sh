@@ -69,7 +69,7 @@ ctest -D ExperimentalCoverage || true
 unset JAVA_TOOL_OPTIONS
 if [ -f Testing/TAG ] ; then
 
-  files=$( find . -name "jacoco.exec" )
+  files=$( find . -size +1c -name "jacoco.exec" )
   i=0
   for file in $files
   do
