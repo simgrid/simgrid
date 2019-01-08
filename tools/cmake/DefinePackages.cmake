@@ -785,6 +785,7 @@ set(headers_to_install
   )
 set(source_of_generated_headers
   include/simgrid/config.h.in
+  src/internal_config.h.in
   include/smpi/mpif.h.in)
 
 ### depend of some variables setted upper
@@ -1077,7 +1078,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/scripts/my_valgrind.pl
   tools/cmake/scripts/update_tesh.pl
   tools/cmake/UnitTesting.cmake
-  tools/cmake/src/internal_config.h.in
   tools/cmake/test_prog/prog_asan.cpp
   tools/cmake/test_prog/prog_makecontext.c
   tools/cmake/test_prog/prog_stackgrowth.c
