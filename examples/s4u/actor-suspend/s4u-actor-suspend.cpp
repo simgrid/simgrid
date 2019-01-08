@@ -36,7 +36,10 @@ static void dream_master()
   XBT_INFO("Let's wait a little bit...");
   simgrid::s4u::this_actor::sleep_for(10); /* - Wait for 10 seconds */
   XBT_INFO("Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!");
-  lazy->resume(); /* - Then wake up the lazy_guy */
+  if (lazy->is_suspended())
+    lazy->resume(); /* - Then wake up the lazy_guy */
+  else
+    XBT_ERROR("I was thinking that the lazy guy would be suspended now");
 
   simgrid::s4u::this_actor::sleep_for(5); /* Repeat two times: */
   XBT_INFO("Suspend the lazy guy while he's sleeping...");
