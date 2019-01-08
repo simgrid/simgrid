@@ -39,7 +39,7 @@ public:
   /** @brief Run the simulation */
   void run();
 
-  /** @brief Retrieve the simulation time */
+  /** @brief Retrieve the simulation time (in seconds) */
   static double get_clock();
   /** @brief Retrieve the engine singleton */
   static s4u::Engine* get_instance();
