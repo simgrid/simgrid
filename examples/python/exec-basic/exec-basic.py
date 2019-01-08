@@ -6,6 +6,7 @@
 import sys
 from simgrid import *
 
+
 def executor():
     # execute() tells SimGrid to pause the calling actor until
     # its host has computed the amount of flops passed as a parameter
@@ -13,19 +14,21 @@ def executor():
     this_actor.info("Done.")
     # This simple example does not do anything beyond that
 
+
 def privileged():
     # You can also specify the priority of your execution as follows.
     # An execution of priority 2 computes twice as fast as a regular one.
     #
     # So instead of a half/half sharing between the two executions,
     # we get a 1/3 vs 2/3 sharing.
-    this_actor.execute(98095, priority = 2);
-    this_actor.info("Done.");
+    this_actor.execute(98095, priority=2)
+    this_actor.info("Done.")
 
     # Note that the timings printed when executing this example are a bit misleading,
     # because the uneven sharing only last until the privileged actor ends.
     # After this point, the unprivileged one gets 100% of the CPU and finishes
     # quite quickly.
+
 
 i = 0
 if "--" in sys.argv:

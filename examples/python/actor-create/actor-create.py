@@ -19,83 +19,100 @@
 import sys
 from simgrid import *
 
-# Our first class of actors is simply implemented with a function, that takes a single string as parameter.
-#
-# Later, this actor class is instantiated within the simulation.
+
 def receiver(mailbox_name):
-  mailbox = Mailbox.by_name(mailbox_name)
+    """
+    Our first class of actors is simply implemented with a function, that takes a single string as parameter.
+    Later, this actor class is instantiated within the simulation.
+    """
+    mailbox = Mailbox.by_name(mailbox_name)
 
-  this_actor.info("Hello s4u, I'm ready to get any message you'd want on {:s}".format(mailbox.name))
+    this_actor.info(
+        "Hello s4u, I'm ready to get any message you'd want on {:s}".format(mailbox.name))
 
-  msg1 = mailbox.get()
-  msg2 = mailbox.get()
-  msg3 = mailbox.get()
-  this_actor.info("I received '{:s}', '{:s}' and '{:s}'".format(msg1, msg2, msg3))
-  this_actor.info("I'm done. See you.")
+    msg1 = mailbox.get()
+    msg2 = mailbox.get()
+    msg3 = mailbox.get()
+    this_actor.info(
+        "I received '{:s}', '{:s}' and '{:s}'".format(msg1, msg2, msg3))
+    this_actor.info("I'm done. See you.")
 
-# Our second class of actors is also a function
+
 def forwarder(*args):
-  if len(args) < 2: raise AssertionError("Actor forwarder requires 2 parameters, but got only {:d}".format(len(args)))
-  mb_in  = Mailbox.by_name(args[0])
-  mb_out = Mailbox.by_name(args[1])
+    """Our second class of actors is also a function"""
+    if len(args) < 2:
+        raise AssertionError(
+            "Actor forwarder requires 2 parameters, but got only {:d}".format(len(args)))
+    mb_in = Mailbox.by_name(args[0])
+    mb_out = Mailbox.by_name(args[1])
 
-  msg = mb_in.get()
-  this_actor.info("Forward '{:s}'.".format(msg))
-  mb_out.put(msg, len(msg))
+    msg = mb_in.get()
+    this_actor.info("Forward '{:s}'.".format(msg))
+    mb_out.put(msg, len(msg))
 
-# Declares a third class of actors which sends a message to the mailbox 'mb42'.
-# The sent message is what was passed as parameter on creation (or 'GaBuZoMeu' by default)
-#
-# Later, this actor class is instantiated twice in the simulation.
+
 class Sender:
-  mbox  = "mb42"
-  msg = "GaBuZoMeu";
-  def __init__(self, *args):
-      if len(args) > 0: self.msg  = args[0];
-      if len(args) > 1: self.mbox = args[1];
-      if len(args) > 2: raise AssertionError("Actor sender requires 2 parameters, but got only {:d}".format(len(args)))
+    """
+    Declares a third class of actors which sends a message to the mailbox 'mb42'.
+    The sent message is what was passed as parameter on creation (or 'GaBuZoMeu' by default)
 
-  def __call__(self):
-      this_actor.info("Hello s4u, I have something to send")
-      mailbox = Mailbox.by_name(self.mbox)
+    Later, this actor class is instantiated twice in the simulation.
+    """
+    mbox = "mb42"
+    msg = "GaBuZoMeu"
 
-      mailbox.put(self.msg, len(self.msg))
-      this_actor.info("I'm done. See you.")
+    def __init__(self, *args):
+        if len(args) > 0:
+            self.msg = args[0]
+        if len(args) > 1:
+            self.mbox = args[1]
+        if len(args) > 2:
+            raise AssertionError(
+                "Actor sender requires 2 parameters, but got only {:d}".format(len(args)))
 
-# Here comes the main function of your program
+    def __call__(self):
+        this_actor.info("Hello s4u, I have something to send")
+        mailbox = Mailbox.by_name(self.mbox)
+
+        mailbox.put(self.msg, len(self.msg))
+        this_actor.info("I'm done. See you.")
+
+
 if __name__ == '__main__':
-  # When your program starts, you have to first start a new simulation engine, as follows
-  e = Engine(sys.argv)
+    """Here comes the main function of your program"""
 
-  # Then you should load a platform file, describing your simulated platform
-  e.load_platform("../../platforms/small_platform.xml");
+    # When your program starts, you have to first start a new simulation engine, as follows
+    e = Engine(sys.argv)
 
-  # And now you have to ask SimGrid to actually start your actors.
-  #
-  # The easiest way to do so is to implement the behavior of your actor in a single function,
-  # as we do here for the receiver actors. This function can take any kind of parameters, as
-  # long as the last parameters of Actor::create() match what your function expects.
-  Actor.create("receiver", Host.by_name("Fafard"), receiver, "mb42")
+    # Then you should load a platform file, describing your simulated platform
+    e.load_platform("../../platforms/small_platform.xml")
 
-  # If your actor is getting more complex, you probably want to implement it as a class instead,
-  # as we do here for the sender actors. The main behavior goes into operator()() of the class.
-  #
-  # You can then directly start your actor, as follows:
-  Actor.create("sender1", Host.by_name("Tremblay"), Sender())
-  # If you want to pass parameters to your class, that's very easy: just use your constructors
-  Actor.create("sender2", Host.by_name("Jupiter"), Sender("GloubiBoulga"));
+    # And now you have to ask SimGrid to actually start your actors.
+    #
+    # The easiest way to do so is to implement the behavior of your actor in a single function,
+    # as we do here for the receiver actors. This function can take any kind of parameters, as
+    # long as the last parameters of Actor::create() match what your function expects.
+    Actor.create("receiver", Host.by_name("Fafard"), receiver, "mb42")
 
-  # But starting actors directly is considered as a bad experimental habit, since it ties the code
-  # you want to test with the experimental scenario. Starting your actors from an external deployment
-  # file in XML ensures that you can test your code in several scenarios without changing the code itself.
-  #
-  # For that, you first need to register your function or your actor as follows.
-  e.register_actor("sender", Sender)
-  e.register_actor("forwarder", forwarder)
-  # Once actors and functions are registered, just load the deployment file
-  e.load_deployment("actor-create_d.xml")
+    # If your actor is getting more complex, you probably want to implement it as a class instead,
+    # as we do here for the sender actors. The main behavior goes into operator()() of the class.
+    #
+    # You can then directly start your actor, as follows:
+    Actor.create("sender1", Host.by_name("Tremblay"), Sender())
+    # If you want to pass parameters to your class, that's very easy: just use your constructors
+    Actor.create("sender2", Host.by_name("Jupiter"), Sender("GloubiBoulga"))
 
-  # Once every actors are started in the engine, the simulation can start
-  e.run();
+    # But starting actors directly is considered as a bad experimental habit, since it ties the code
+    # you want to test with the experimental scenario. Starting your actors from an external deployment
+    # file in XML ensures that you can test your code in several scenarios without changing the code itself.
+    #
+    # For that, you first need to register your function or your actor as follows.
+    e.register_actor("sender", Sender)
+    e.register_actor("forwarder", forwarder)
+    # Once actors and functions are registered, just load the deployment file
+    e.load_deployment("actor-create_d.xml")
 
-  # Once the simulation is done, the program is ended
+    # Once every actors are started in the engine, the simulation can start
+    e.run()
+
+    # Once the simulation is done, the program is ended

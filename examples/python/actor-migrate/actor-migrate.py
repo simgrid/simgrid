@@ -18,43 +18,51 @@
 from simgrid import *
 import sys
 
+
 def worker(first_host, second_host):
     flop_amount = first_host.speed * 5 + second_host.speed * 5
 
-    this_actor.info("Let's move to {:s} to execute {:.2f} Mflops (5sec on {:s} and 5sec on {:s})".format(first_host.name, flop_amount / 1e6, first_host.name, second_host.name))
+    this_actor.info("Let's move to {:s} to execute {:.2f} Mflops (5sec on {:s} and 5sec on {:s})".format(
+        first_host.name, flop_amount / 1e6, first_host.name, second_host.name))
 
     this_actor.migrate(first_host)
     this_actor.execute(flop_amount)
 
-    this_actor.info("I wake up on {:s}. Let's suspend a bit".format(this_actor.get_host().name))
+    this_actor.info("I wake up on {:s}. Let's suspend a bit".format(
+        this_actor.get_host().name))
 
     this_actor.suspend()
 
     this_actor.info("I wake up on {:s}".format(this_actor.get_host().name))
     this_actor.info("Done")
 
+
 def monitor():
-  boivin    = Host.by_name("Boivin")
-  jacquelin = Host.by_name("Jacquelin")
-  fafard    = Host.by_name("Fafard")
+    boivin = Host.by_name("Boivin")
+    jacquelin = Host.by_name("Jacquelin")
+    fafard = Host.by_name("Fafard")
 
-  actor = Actor.create("worker", fafard, worker, boivin, jacquelin)
+    actor = Actor.create("worker", fafard, worker, boivin, jacquelin)
 
-  this_actor.sleep_for(5)
+    this_actor.sleep_for(5)
 
-  this_actor.info("After 5 seconds, move the process to {:s}".format(jacquelin.name))
-  actor.migrate(jacquelin)
+    this_actor.info(
+        "After 5 seconds, move the process to {:s}".format(jacquelin.name))
+    actor.migrate(jacquelin)
 
-  this_actor.sleep_until(15)
-  this_actor.info("At t=15, move the process to {:s} and resume it.".format(fafard.name))
-  actor.migrate(fafard)
-  actor.resume()
+    this_actor.sleep_until(15)
+    this_actor.info(
+        "At t=15, move the process to {:s} and resume it.".format(fafard.name))
+    actor.migrate(fafard)
+    actor.resume()
+
 
 if __name__ == '__main__':
     e = Engine(sys.argv)
-    if len(sys.argv) < 2: raise AssertionError("Usage: actor-migration.py platform_file [other parameters]")
+    if len(sys.argv) < 2:
+        raise AssertionError(
+            "Usage: actor-migration.py platform_file [other parameters]")
     e.load_platform(sys.argv[1])
 
     Actor.create("monitor", Host.by_name("Boivin"), monitor)
     e.run()
-
