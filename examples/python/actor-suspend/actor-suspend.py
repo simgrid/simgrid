@@ -32,7 +32,10 @@ def dream_master():
     this_actor.info("Let's wait a little bit...")
     this_actor.sleep_for(10) # Wait for 10 seconds
     this_actor.info("Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!")
-    lazy.resume() # Then wake up the lazy_guy 
+    if lazy.is_suspended():
+        lazy.resume() # Then wake up the lazy_guy
+    else:
+        this_actor.error("I was thinking that the lazy guy would be suspended now") 
 
     this_actor.sleep_for(5) # Repeat two times:
     this_actor.info("Suspend the lazy guy while he's sleeping...")
