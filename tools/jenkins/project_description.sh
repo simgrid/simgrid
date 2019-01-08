@@ -82,7 +82,7 @@ do
     sed -i -e "s/\r//g" ./consoleText
     if [ $id == 0 ]; then
       node="<a href=\"https://travis-ci.org/simgrid/simgrid\">travis-linux</a>"
-      os="Ubuntu 14.04 (<a href=\"https://docs.travis-ci.com/user/reference/trusty/\">Trusty</a>) 64 bits"
+      os="Ubuntu 16.04 (<a href=\"https://docs.travis-ci.com/user/reference/xenial/\">Xenial</a>) 64 bits"
     else
       node="<a href=\"https://travis-ci.org/simgrid/simgrid\">travis-mac</a>"
       os="Mac OSX High Sierra (kernel: 17.4.0)"
