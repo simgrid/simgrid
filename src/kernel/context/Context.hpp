@@ -86,7 +86,7 @@ public:
   public:
     StopRequest() = default;
     explicit StopRequest(std::string msg) : msg_(std::string("Actor killed (") + msg + std::string(").")) {}
-    virtual const char* what() const noexcept { return msg_.c_str(); }
+    const char* what() const noexcept { return msg_.c_str(); }
 
   private:
     std::string msg_ = std::string("Actor killed.");
