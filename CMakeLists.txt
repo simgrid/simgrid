@@ -778,11 +778,11 @@ option(enable_python "Whether the Python bindings are activated." ${pybind11_FOU
 
 if(enable_python)
   if(pybind11_FOUND)
-    pybind11_add_module(simgrid_python src/bindings/python/simgrid_python.cpp)
+    pybind11_add_module(python-bindings src/bindings/python/simgrid_python.cpp)
     set_source_files_properties(src/bindings/python/simgrid_python.cpp PROPERTIES COMPILE_FLAGS -std=c++14)
-    target_link_libraries(simgrid_python PUBLIC simgrid)
-    set_target_properties(simgrid_python PROPERTIES LIBRARY_OUTPUT_NAME simgrid)
-    set_property(TARGET simgrid_python
+    target_link_libraries(python-bindings PUBLIC simgrid)
+    set_target_properties(python-bindings PROPERTIES LIBRARY_OUTPUT_NAME simgrid)
+    set_property(TARGET python-bindings
                  APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
   else()
     message(FATAL_ERROR "Please install pybind11-dev to build the Python bindings (or disable that option).")
