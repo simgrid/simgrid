@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2018. The SimGrid Team. All rights reserved.
+# Copyright (c) 2017-2019. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -20,7 +20,7 @@ class Yielder:
     def __init__(self, *args):
         self.number_of_yields = int(args[0])
     def __call__(self):
-        for i in range(self.number_of_yields):
+        for _ in range(self.number_of_yields):
             this_actor.yield_()
         this_actor.info("I yielded {:d} times. Goodbye now!".format(self.number_of_yields))
 

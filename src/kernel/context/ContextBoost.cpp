@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2019. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -93,11 +93,11 @@ void BoostContext::swap_into(SwappedContext* to_)
 #else
   BoostContext* ctx[2] = {this, to};
   ASAN_ONLY(void* fake_stack = nullptr);
-  ASAN_ONLY(to->asan_ctx_ = from);
-  ASAN_START_SWITCH(from->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
+  ASAN_ONLY(to->asan_ctx_ = this);
+  ASAN_START_SWITCH(this->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
   boost::context::detail::transfer_t arg = boost::context::detail::jump_fcontext(to->fc_, ctx);
-  ASAN_ONLY(xbt_assert(from->asan_ctx_ == static_cast<BoostContext**>(arg.data)[0]));
-  ASAN_FINISH_SWITCH(fake_stack, &from->asan_ctx_->asan_stack_, &from->asan_ctx_->asan_stack_size_);
+  ASAN_ONLY(xbt_assert(this->asan_ctx_ == static_cast<BoostContext**>(arg.data)[0]));
+  ASAN_FINISH_SWITCH(fake_stack, &this->asan_ctx_->asan_stack_, &this->asan_ctx_->asan_stack_size_);
   static_cast<BoostContext**>(arg.data)[0]->fc_ = arg.fctx;
 #endif
 }

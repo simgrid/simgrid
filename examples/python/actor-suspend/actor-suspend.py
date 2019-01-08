@@ -1,18 +1,18 @@
-# Copyright (c) 2017-2018. The SimGrid Team. All rights reserved.          
+# Copyright (c) 2017-2019. The SimGrid Team. All rights reserved.
 #
 # This program is free software you can redistribute it and/or modify it
-# under the terms of the license (GNU LGPL) which comes with this package. 
+# under the terms of the license (GNU LGPL) which comes with this package.
 
 from simgrid import *
 import sys
 
-# The Lazy guy only wants to sleep, but can be awaken by the dream_master process. 
+# The Lazy guy only wants to sleep, but can be awaken by the dream_master process.
 def lazy_guy():
     this_actor.info("Nobody's watching me ? Let's go to sleep.")
-    this_actor.suspend() # - Start by suspending itself 
+    this_actor.suspend() # - Start by suspending itself
     this_actor.info("Uuuh ? Did somebody call me ?")
 
-    this_actor.info("Going to sleep...") # - Then repetitively go to sleep, but get awaken 
+    this_actor.info("Going to sleep...") # - Then repetitively go to sleep, but get awaken
     this_actor.sleep_for(10)
     this_actor.info("Mmm... waking up.")
 
@@ -27,7 +27,7 @@ def lazy_guy():
 
 # The Dream master
 def dream_master():
-    this_actor.info("Let's create a lazy guy.")  # Create a lazy_guy process 
+    this_actor.info("Let's create a lazy guy.")  # Create a lazy_guy process
     lazy = Actor.create("Lazy", this_actor.get_host(), lazy_guy)
     this_actor.info("Let's wait a little bit...")
     this_actor.sleep_for(10) # Wait for 10 seconds
@@ -39,11 +39,11 @@ def dream_master():
 
     this_actor.sleep_for(5) # Repeat two times:
     this_actor.info("Suspend the lazy guy while he's sleeping...")
-    lazy.suspend() # Suspend the lazy_guy while he's asleep 
+    lazy.suspend() # Suspend the lazy_guy while he's asleep
     this_actor.info("Let him finish his siesta.")
-    this_actor.sleep_for(10) # Wait for 10 seconds 
+    this_actor.sleep_for(10) # Wait for 10 seconds
     this_actor.info("Wake up, lazy guy!")
-    lazy.resume() # Then wake up the lazy_guy again 
+    lazy.resume() # Then wake up the lazy_guy again
 
     this_actor.sleep_for(5)
     this_actor.info("Suspend again the lazy guy while he's sleeping...")
@@ -66,8 +66,8 @@ if __name__ == '__main__':
     e = Engine(sys.argv)
     if len(sys.argv) < 2: raise AssertionError("Usage: actor-suspend.py platform_file [other parameters]")
 
-    e.load_platform(sys.argv[1]) # Load the platform description 
+    e.load_platform(sys.argv[1]) # Load the platform description
     list = e.get_all_hosts()
     Actor.create("dream_master", list[0], dream_master)
 
-    e.run() # Run the simulation 
+    e.run() # Run the simulation

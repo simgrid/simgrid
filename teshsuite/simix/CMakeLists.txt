@@ -34,7 +34,7 @@ endif()
 
 foreach (factory raw thread boost ucontext)
   string (TOUPPER have_${factory}_contexts VARNAME)
-  if (${VARNAME})
+  if (${factory} STREQUAL "thread" OR ${VARNAME})
     if (release AND (WIN32 OR CMAKE_SYSTEM_NAME MATCHES "Darwin"))
       SET_TESTS_PROPERTIES(stack-overflow-${factory} PROPERTIES WILL_FAIL true)
     endif()

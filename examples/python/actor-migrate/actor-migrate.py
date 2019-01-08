@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2018. The SimGrid Team. All rights reserved.         
+# Copyright (c) 2017-2019. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -53,7 +53,7 @@ def monitor():
 if __name__ == '__main__':
     e = Engine(sys.argv)
     if len(sys.argv) < 2: raise AssertionError("Usage: actor-migration.py platform_file [other parameters]")
-    e.load_platform(sys.argv[1])   
+    e.load_platform(sys.argv[1])
 
     Actor.create("monitor", Host.by_name("Boivin"), monitor)
     e.run()
