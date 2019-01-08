@@ -179,9 +179,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("migrate", &Actor::migrate,
            "Moves that actor to another host, see :cpp:func:`void simgrid::s4u::Actor::migrate()`", py::arg("dest"))
       .def("self", &Actor::self, "Retrieves the current actor, see :cpp:func:`void simgrid::s4u::Actor::self()`")
-      .def("suspend", &Actor::suspend,
-           "Suspend that actor, that is blocked until resume()ed by another actor. See :cpp:func:`void "
-           "simgrid::s4u::Actor::suspend()`")
-      .def("resume", &Actor::resume,
-           "Resume that actor, that was previously suspend()ed. See :cpp:func:`void simgrid::s4u::Actor::suspend()`");
+      .def("is_suspended", &Actor::is_suspended, "Returns True if that actor is currently suspended.")
+      .def("suspend", &Actor::suspend, "Suspend that actor, that is blocked until resume()ed by another actor.")
+      .def("resume", &Actor::resume, "Resume that actor, that was previously suspend()ed.");
 }

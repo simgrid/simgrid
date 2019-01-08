@@ -211,13 +211,11 @@ public:
   /** Retrieves the actor ID of that actor's creator */
   aid_t get_ppid() const;
 
-  /** Suspend an actor by suspending the task on which it was waiting for the completion. */
+  /** Suspend an actor, that is blocked until resume()ed by another actor */
   void suspend();
 
-  /** Resume a suspended actor by resuming the task on which it was waiting for the completion. */
+  /** Resume an actor that was previously suspend()ed */
   void resume();
-
-  void yield();
 
   /** Returns true if the actor is suspended. */
   bool is_suspended();
@@ -394,9 +392,9 @@ namespace this_actor {
 
 XBT_PUBLIC bool is_maestro();
 
-/** Block the actor sleeping for that amount of seconds (may throw hostFailure) */
+/** Block the current actor sleeping for that amount of seconds (may throw hostFailure) */
 XBT_PUBLIC void sleep_for(double duration);
-/** Block the actor sleeping until the specified timestamp (may throw hostFailure) */
+/** Block the current actor sleeping until the specified timestamp (may throw hostFailure) */
 XBT_PUBLIC void sleep_until(double timeout);
 
 template <class Rep, class Period> inline void sleep_for(std::chrono::duration<Rep, Period> duration)
@@ -422,7 +420,7 @@ XBT_PUBLIC void execute(double flop, double priority);
  * @example examples/s4u/exec-ptask/s4u-exec-ptask.cpp
  */
 
-/** Block the actor until the built parallel execution terminates
+/** Block the current actor until the built parallel execution terminates
  *
  * \rst
  * .. _API_s4u_parallel_execute:
@@ -476,8 +474,8 @@ XBT_PUBLIC void parallel_execute(std::vector<s4u::Host*> hosts, std::vector<doub
                                  std::vector<double> bytes_amounts);
 
 /** \rst
- * Block the actor until the built :ref:`parallel execution <API_s4u_parallel_execute>` completes, or until the timeout.
- * \endrst
+ * Block the current actor until the built :ref:`parallel execution <API_s4u_parallel_execute>` completes, or until the
+ * timeout. \endrst
  */
 XBT_PUBLIC void parallel_execute(std::vector<s4u::Host*> hosts, std::vector<double> flops_amounts,
                                  std::vector<double> bytes_amounts, double timeout);
@@ -504,27 +502,25 @@ XBT_PUBLIC std::string get_name();
 /** @brief Returns the name of the current actor as a C string. */
 XBT_PUBLIC const char* get_cname();
 
-/** @brief Returns the name of the host on which the actor is running. */
+/** @brief Returns the name of the host on which the curret actor is running. */
 XBT_PUBLIC Host* get_host();
 
-/** @brief Suspend the actor, that is blocked until resume()ed by another actor. */
+/** @brief Suspend the current actor, that is blocked until resume()ed by another actor. */
 XBT_PUBLIC void suspend();
 
-/** @brief Yield the actor. */
+/** @brief Yield the current actor. */
 XBT_PUBLIC void yield();
 
-/** @brief Resume the actor, that was suspend()ed previously. */
+/** @brief Resume the current actor, that was suspend()ed previously. */
 XBT_PUBLIC void resume();
 
-XBT_PUBLIC bool is_suspended();
-
-/** @brief kill the actor. */
+/** @brief kill the current actor. */
 XBT_PUBLIC void exit();
 
-/** @brief Add a function to the list of "on_exit" functions. */
+/** @brief Add a function to the list of "on_exit" functions of the current actor. */
 XBT_PUBLIC void on_exit(std::function<void(int, void*)> fun, void* data);
 
-/** @brief Migrate the actor to a new host. */
+/** @brief Migrate the current actor to a new host. */
 XBT_PUBLIC void migrate(Host* new_host);
 
 /** @} */
@@ -545,8 +541,6 @@ XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_pid()") XBT_PUBLIC aid_t 
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_ppid()") XBT_PUBLIC aid_t getPpid();
 /** @deprecated See this_actor::get_host() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_host()") XBT_PUBLIC Host* getHost();
-/** @deprecated See this_actor::is_suspended() */
-XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::is_suspended()") XBT_PUBLIC bool isSuspended();
 /** @deprecated See this_actor::on_exit() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::on_exit()") XBT_PUBLIC void onExit(int_f_pvoid_pvoid_t fun, void* data);
 /** @deprecated See this_actor::exit() */

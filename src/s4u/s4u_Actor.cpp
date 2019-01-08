@@ -392,12 +392,6 @@ void resume()
   simgrid::s4u::Actor::on_resume(process->iface());
 }
 
-bool is_suspended()
-{
-  smx_actor_t process = SIMIX_process_self();
-  return simgrid::simix::simcall([process] { return process->suspended_; });
-}
-
 void exit()
 {
   smx_actor_t process = SIMIX_process_self();
@@ -441,10 +435,6 @@ aid_t getPpid() /* deprecated */
 Host* getHost() /* deprecated */
 {
   return get_host();
-}
-bool isSuspended() /* deprecated */
-{
-  return is_suspended();
 }
 void on_exit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */
 {

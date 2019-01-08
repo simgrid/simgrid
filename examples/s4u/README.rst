@@ -38,8 +38,9 @@ Starting and Stoping Actors
   - **Creating actors:**
     Most actors are started from the deployment XML file, but there is other methods.
     This example show them all.
-    |br| |cpp| `examples/s4u/actor-create/s4u-actor-create.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-create/s4u-actor-create.cpp>`_
-    |br|  |py| `examples/python/actor-create/actor-create.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-create/actor-create.py>`_
+    
+    - |cpp| `examples/s4u/actor-create/s4u-actor-create.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-create/s4u-actor-create.cpp>`_
+    - |py|  `examples/python/actor-create/actor-create.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-create/actor-create.py>`_
     
   - **Kill actors:**
     Actors can forcefully stop other actors with the 
@@ -56,40 +57,48 @@ Starting and Stoping Actors
   - **Daemonize actors:**
     Some actors may be intended to simulate daemons that run in background. This example show how to transform a regular
     actor into a daemon that will be automatically killed once the simulation is over.
-    |br| |cpp| `examples/s4u/actor-daemon/s4u-actor-daemon.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-daemon/s4u-actor-daemon.cpp>`_
-    |br|  |py| `examples/python/actor-daemon/actor-daemon.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-daemon/actor-daemon.py>`_
+    
+    - |cpp| `examples/s4u/actor-daemon/s4u-actor-daemon.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-daemon/s4u-actor-daemon.cpp>`_
+    - |py|  `examples/python/actor-daemon/actor-daemon.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-daemon/actor-daemon.py>`_
     
 Inter-Actors Interactions
 -------------------------
 
   - **Suspend and Resume actors:**    
-    Actors can be suspended and resumed during their executions thanks
-    to :cpp:func:`simgrid::s4u::Actor::suspend()` and
-    :cpp:func:`simgrid::s4u::Actor::resume()`.
-    |br| `examples/s4u/actor-suspend/s4u-actor-suspend.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-suspend/s4u-actor-suspend.cpp>`_
+    Actors can be suspended and resumed during their executions.
+    
+    - |cpp| `examples/s4u/actor-suspend/s4u-actor-suspend.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-suspend/s4u-actor-suspend.cpp>`_
+      :cpp:func:`simgrid::s4u::this_actor::suspend()`,
+      :cpp:func:`simgrid::s4u::Actor::suspend()`, :cpp:func:`simgrid::s4u::Actor::resume()`, :cpp:func:`simgrid::s4u::Actor::is_suspended()`.
+    - |py|  `examples/python/actor-suspend/actor-suspend.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-suspend/actor-suspend.py>`_
+      :py:func:`simgrid.this_actor.suspend()`,
+      :py:func:`simgrid.Actor.suspend()`, :py:func:`simgrid.Actor.resume()`, :py:func:`simgrid.Actor.is_suspended()`.
 
   - **Migrating Actors:**
     Actors can move or be moved from a host to another very easily.
-    |br| |cpp| `examples/s4u/actor-migrate/s4u-actor-migrate.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-migrate/s4u-actor-migrate.cpp>`_
-    :cpp:func:`simgrid::s4u::this_actor::migrate()` |cpp|
-    |br|  |py| `examples/python/actor-migrate/actor-migrate.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-migrate/actor-migrate.py>`_
-    :py:func:`simgrid.this_actor.migrate()` |py|
+    
+    - |cpp| `examples/s4u/actor-migrate/s4u-actor-migrate.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-migrate/s4u-actor-migrate.cpp>`_
+      :cpp:func:`simgrid::s4u::this_actor::migrate()`
+    - |py|  `examples/python/actor-migrate/actor-migrate.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-migrate/actor-migrate.py>`_
+      :py:func:`simgrid.this_actor.migrate()`
 
   - **Waiting for the termination of an actor:** (joining on it)
     You can block the current actor until the end of another actor.
-    |br| |cpp| `examples/s4u/actor-join/s4u-actor-join.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-join/s4u-actor-join.cpp>`_
-    :cpp:func:`simgrid::s4u::Actor::join()` |cpp|
-    |br| |py| `examples/python/actor-join/actor-join.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-join/actor-join.py>`_
-    :py:func:`simgrid.Actor.join()` |py|
+    
+    - |cpp| `examples/s4u/actor-join/s4u-actor-join.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-join/s4u-actor-join.cpp>`_
+      :cpp:func:`simgrid::s4u::Actor::join()`
+    - |py|  `examples/python/actor-join/actor-join.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-join/actor-join.py>`_
+      :py:func:`simgrid.Actor.join()`
 
   - **Yielding to other actors**.
     The ```yield()``` function interrupts the execution of the current
     actor, leaving a chance to the other actors that are ready to run
-    at this timestamp. 
-    |br| |cpp| `examples/s4u/actor-yield/s4u-actor-yield.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-yield/s4u-actor-yield.cpp>`_
-    :cpp:func:`simgrid::s4u::this_actor::yield()` |cpp|
-    |br|  |py| `examples/python/actor-yield/actor-yield.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-yield/actor-yield.py>`_
-    :py:func:`simgrid.this_actor.yield_()` |py|
+    at this timestamp.
+    
+    - |cpp| `examples/s4u/actor-yield/s4u-actor-yield.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-yield/s4u-actor-yield.cpp>`_
+      :cpp:func:`simgrid::s4u::this_actor::yield()`
+    - |py|  `examples/python/actor-yield/actor-yield.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-yield/actor-yield.py>`_
+      :py:func:`simgrid.this_actor.yield_()`
 
 Traces Replay as a Workload
 ---------------------------
@@ -160,8 +169,9 @@ Executions on the CPU
     the actor until a given amount of flops gets computed on its simulated
     host. Some executions can be given an higher priority so that they
     get more resources.
-    |br| |cpp| `examples/s4u/exec-basic/s4u-exec-basic.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-basic/s4u-exec-basic.cpp>`_
-    |br|  |py| `examples/python/exec-basic/exec-basic.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/exec-basic/exec-basic.py>`_
+    
+    - |cpp| `examples/s4u/exec-basic/s4u-exec-basic.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-basic/s4u-exec-basic.cpp>`_
+    - |py|  `examples/python/exec-basic/exec-basic.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/exec-basic/exec-basic.py>`_
 
   - **Asynchronous execution:**
     You can start asynchronous executions, just like you would fire

@@ -13,7 +13,8 @@ static void worker()
   XBT_INFO("Worker started (PID:%ld, PPID:%ld)", simgrid::s4u::this_actor::get_pid(),
            simgrid::s4u::this_actor::get_ppid());
   while (1) {
-    XBT_INFO("Plop i am %ssuspended", simgrid::s4u::this_actor::is_suspended() ? "" : "not ");
+    simgrid::s4u::this_actor::yield();
+    XBT_INFO("Plop i am not suspended");
     simgrid::s4u::this_actor::sleep_for(1);
   }
   XBT_INFO("I'm done. See you!");
