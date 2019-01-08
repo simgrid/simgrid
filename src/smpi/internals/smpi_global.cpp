@@ -37,7 +37,7 @@
 # define HAVE_WORKING_MMAP 1
 #endif
 
-#if HAVE_SENDFILE
+#if SG_HAVE_SENDFILE
 #include <sys/sendfile.h>
 #endif
 
@@ -498,7 +498,7 @@ static void smpi_copy_file(std::string src, std::string target, off_t fdin_size)
 
   XBT_DEBUG("Copy %" PRIdMAX " bytes into %s", static_cast<intmax_t>(fdin_size), target.c_str());
   bool slow_copy = true;
-#if HAVE_SENDFILE
+#if SG_HAVE_SENDFILE
   ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
   if (sent_size == fdin_size)
     slow_copy = false;
