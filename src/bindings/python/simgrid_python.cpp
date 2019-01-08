@@ -47,6 +47,9 @@ PYBIND11_MODULE(simgrid, m)
 
   m.attr("simgrid_version") = simgrid_version;
 
+  // Internal exception used to kill actors and sweep the RAII chimney (free objects living on the stack)
+  py::object pyStopRequestEx = py::register_exception<simgrid::kernel::context::Context::StopRequest>(m, "ActorKilled");
+
   /* this_actor namespace */
   void (*sleep_for_fun)(double) = &simgrid::s4u::this_actor::sleep_for; // pick the right overload
   void (*sleep_until_fun)(double) = &simgrid::s4u::this_actor::sleep_until;
@@ -67,6 +70,7 @@ PYBIND11_MODULE(simgrid, m)
   m2.def("suspend", &simgrid::s4u::this_actor::suspend, "Suspend the current actor, that is blocked until resume()ed by another actor. see :cpp:func:`void simgrid::s4u::this_actor::suspend`");
   m2.def("yield_", &simgrid::s4u::this_actor::yield,
          "Yield the actor, see :cpp:func:`void simgrid::s4u::this_actor::yield()`");
+  m2.def("exit", &simgrid::s4u::this_actor::exit);
 
   /* Class Engine */
   py::class_<Engine>(m, "Engine", "Simulation Engine, see :ref:`class s4u::Engine <API_s4u_Engine>`")
@@ -89,20 +93,29 @@ PYBIND11_MODULE(simgrid, m)
            ":cpp:func:`simgrid::s4u::Engine::load_deployment()`")
       .def("run", &Engine::run, "Run the simulation")
       .def("register_actor",
-           [](Engine*, std::string name, py::object fun_or_class) {
+           [pyStopRequestEx](Engine*, std::string name, py::object fun_or_class) {
              simgrid::simix::register_function(
-                 name, [fun_or_class](std::vector<std::string> args) -> simgrid::simix::ActorCode {
-                   return [fun_or_class, args]() {
-                     /* Convert the std::vector into a py::tuple */
-                     py::tuple params(args.size() - 1);
-                     for (size_t i = 1; i < args.size(); i++)
-                       params[i - 1] = py::cast(args[i]);
+                 name, [pyStopRequestEx, fun_or_class](std::vector<std::string> args) -> simgrid::simix::ActorCode {
+                   return [pyStopRequestEx, fun_or_class, args]() {
+                     try {
+                       /* Convert the std::vector into a py::tuple */
+                       py::tuple params(args.size() - 1);
+                       for (size_t i = 1; i < args.size(); i++)
+                         params[i - 1] = py::cast(args[i]);
 
-                     py::object res = fun_or_class(*params);
+                       py::object res = fun_or_class(*params);
 
-                     /* If I was passed a class, I just built an instance, so I need to call it now */
-                     if (py::isinstance<py::function>(res))
-                       res();
+                       /* If I was passed a class, I just built an instance, so I need to call it now */
+                       if (py::isinstance<py::function>(res))
+                         res();
+                     } catch (py::error_already_set& ex) {
+                       if (ex.matches(pyStopRequestEx)) {
+                         XBT_VERB("Actor killed");
+                         /* Stop here that StopRequest exception which was meant to free the RAII stuff on the stack */
+                       } else {
+                         throw;
+                       }
+                     }
                    };
                  });
            },
@@ -135,7 +148,6 @@ PYBIND11_MODULE(simgrid, m)
       }, "Blocking data reception, see :cpp:func:`void* simgrid::s4u::Mailbox::get()`");
 
   /* Class Actor */
-  py::object pyStopRequestEx = py::register_exception<simgrid::kernel::context::Context::StopRequest>(m, "ActorKilled");
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor",
                                             "An actor is an independent stream of execution in your distributed "
                                             "application, see :ref:`class s4u::Actor <API_s4u_Actor>`")
@@ -149,8 +161,8 @@ PYBIND11_MODULE(simgrid, m)
                  fun(*args);
                } catch (py::error_already_set& ex) {
                  if (ex.matches(pyStopRequestEx)) {
-                   /* The actor was killed.
-                    * Stop here that StopRequest exception which was meant to free the RAII stuff on the stack */
+                   XBT_VERB("Actor killed");
+                   /* Stop here that StopRequest exception which was meant to free the RAII stuff on the stack */
                  } else {
                    throw;
                  }
