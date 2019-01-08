@@ -83,32 +83,30 @@ PYBIND11_MODULE(simgrid, m)
       .def("get_all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
       .def("get_clock", &Engine::get_clock, "Retrieve the simulation time")
       .def("load_platform", &Engine::load_platform,
-          "Load a platform file describing the environment, see :cpp:func:`simgrid::s4u::Engine::load_platform()`")
+           "Load a platform file describing the environment, see :cpp:func:`simgrid::s4u::Engine::load_platform()`")
       .def("load_deployment", &Engine::load_deployment,
-          "Load a deployment file and launch the actors that it contains, see :cpp:func:`simgrid::s4u::Engine::load_deployment()`")
+           "Load a deployment file and launch the actors that it contains, see "
+           ":cpp:func:`simgrid::s4u::Engine::load_deployment()`")
       .def("run", &Engine::run, "Run the simulation")
-      .def("register_actor", [](Engine*, std::string name, py::object obj) {
-        simgrid::simix::register_function(name,
-            [obj](std::vector<std::string> args) -> simgrid::simix::ActorCode {
-          return [obj, args]() {
-            /* Convert the std::vector into a py::tuple */
-            py::tuple params(args.size()-1);
-            for (size_t i=1; i<args.size(); i++)
-              params[i-1] = py::cast(args[i]);
+      .def("register_actor",
+           [](Engine*, std::string name, py::object fun_or_class) {
+             simgrid::simix::register_function(
+                 name, [fun_or_class](std::vector<std::string> args) -> simgrid::simix::ActorCode {
+                   return [fun_or_class, args]() {
+                     /* Convert the std::vector into a py::tuple */
+                     py::tuple params(args.size() - 1);
+                     for (size_t i = 1; i < args.size(); i++)
+                       params[i - 1] = py::cast(args[i]);
 
-            PyObject *result = PyObject_CallObject(obj.ptr(), params.ptr());
-            if (!result)
-                throw pybind11::error_already_set();
+                     py::object res = fun_or_class(*params);
 
-            /* If I was passed a class, I just built an instance, so I need to call it now */
-            if (PyCallable_Check(result)) {
-              py::object obj2 = pybind11::reinterpret_steal<py::object>(pybind11::handle(static_cast<PyObject*>(result)));
-              obj2();
-            }
-          };
-        });
-      }, "Registers the main function of an actor, see :cpp:func:`simgrid::s4u::Engine::register_function()`")
-      ;
+                     /* If I was passed a class, I just built an instance, so I need to call it now */
+                     if (py::isinstance<py::function>(res))
+                       res();
+                   };
+                 });
+           },
+           "Registers the main function of an actor, see :cpp:func:`simgrid::s4u::Engine::register_function()`");
 
   /* Class Host */
   py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>>(m, "Host", "Simulation Engine, see :ref:`class s4u::Host <API_s4u_Host>`")
