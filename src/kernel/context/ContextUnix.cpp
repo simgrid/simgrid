@@ -60,7 +60,7 @@ UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun
 
 #if SIMGRID_HAVE_MC
   if (MC_is_active() && has_code()) {
-    MC_register_stack_area(this->stack_, process, &(this->uc_), smx_context_usable_stack_size);
+    MC_register_stack_area(get_stack(), process, &(this->uc_), smx_context_usable_stack_size);
   }
 #endif
 }
