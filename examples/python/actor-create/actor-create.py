@@ -58,17 +58,10 @@ class Sender:
 
     Later, this actor class is instantiated twice in the simulation.
     """
-    mbox = "mb42"
-    msg = "GaBuZoMeu"
 
-    def __init__(self, *args):
-        if len(args) > 0:
-            self.msg = args[0]
-        if len(args) > 1:
-            self.mbox = args[1]
-        if len(args) > 2:
-            raise AssertionError(
-                "Actor sender requires 2 parameters, but got only {:d}".format(len(args)))
+    def __init__(self, msg = "GaBuZoMeu", mbox = "mb42"):
+        self.msg = msg
+        self.mbox = mbox
 
     def __call__(self):
         this_actor.info("Hello s4u, I have something to send")
