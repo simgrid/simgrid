@@ -46,16 +46,13 @@ std::unique_ptr<char, void(*)(void*)> demangle(const char* name)
 {
 #ifdef __GXX_ABI_VERSION
   int status;
-  auto res = std::unique_ptr<char, void(*)(void*)>(
-    abi::__cxa_demangle(name, nullptr, nullptr, &status),
-    std::free
-  );
+  auto res = std::unique_ptr<char, void (*)(void*)>(abi::__cxa_demangle(name, nullptr, nullptr, &status), &std::free);
   if (res != nullptr)
     return res;
   // We did not manage to resolve this. Probably because this is not a mangled symbol:
 #endif
   // Return the symbol:
-  return std::unique_ptr<char, void(*)(void*)>(xbt_strdup(name), std::free);
+  return std::unique_ptr<char, void (*)(void*)>(xbt_strdup(name), &std::free);
 }
 
 class BacktraceImpl {

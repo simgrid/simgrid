@@ -80,7 +80,7 @@ sub process_one($) {
 	    die "$progname: Parse error: This line seem to be a test suite declaration, but failed to parse it\n$_\n";
 	}
 
-        if (m/XBT_TEST_UNIT\(\w*"([^"]*)"\w*,([^,]*),(.*?)\)/) { #"{
+        if (m/XBT_TEST_UNIT\(\w*"([^"]*)"\w*, *([^,]*), *(.*?)\)/) { #"{
 	    die "$progname: multiply defined unit in file $infile: $1\n" if (defined($tests{$1}));
 
 	    my @t=($1,$2,$3);
@@ -268,7 +268,7 @@ EOF
        $newmain .= "      suite = xbt_test_suite_by_name(\"$suite_name\",$suite_title);\n";
        map {
 	   my ($name,$func,$title) = @{$_};
-	   $newmain .=  "      xbt_test_suite_push(suite, \"$name\", $func, $title);\n";
+	   $newmain .=  "      xbt_test_suite_push(suite, \"$name\", &$func, $title);\n";
        } @tests;
 
        $newmain .= "    /* SGU: END FILE */\n\n";
