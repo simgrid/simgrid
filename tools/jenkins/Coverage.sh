@@ -66,7 +66,7 @@ cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=ON \
 JACOCO_PATH="/usr/local/share/jacoco"
 export JAVA_TOOL_OPTIONS="-javaagent:${JACOCO_PATH}/lib/jacocoagent.jar"
 
-export PYTHON_TOOL_OPTIONS="/usr/bin/python3-coverage run --branch"
+export PYTHON_TOOL_OPTIONS="/usr/bin/python3-coverage run --parallel-mode --branch"
 
 ctest --no-compress-output -D ExperimentalTest -j$NUMPROC || true
 ctest -D ExperimentalCoverage || true
@@ -88,20 +88,13 @@ if [ -f Testing/TAG ] ; then
     i=$((i + 1))
   done
 
-  cd $WORKSPACE
+  #convert python coverage reports in xml ones
+  cd $BUILDFOLDER
+  find .. -size +1c -name ".coverage*" -exec mv {} . \;
+  /usr/bin/python3-coverage combine
+  /usr/bin/python3-coverage xml -i -o ./python_coverage.xml
 
-  files=$( find . -size +1c -name ".coverage" )
-  i=0
-  for file in $files
-  do
-    sourcepath=$( dirname $file )
-    #convert python coverage reports in xml ones
-    cd $sourcepath
-    /usr/bin/python3-coverage xml -i -o $BUILDFOLDER/python_coverage_${i}.xml
-    cd $WORKSPACE
-    i=$((i + 1))
-  done
-
+   cd $WORKSPACE
    #convert all gcov reports to xml cobertura reports
    gcovr -r . --xml-pretty -e teshsuite -u -o $BUILDFOLDER/xml_coverage.xml
    xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl build/Testing/$( head -n 1 < build/Testing/TAG )/Test.xml > CTestResults_memcheck.xml
