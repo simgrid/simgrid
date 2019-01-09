@@ -48,6 +48,8 @@ NUMPROC="$(nproc)" || NUMPROC=1
 
 cd $BUILDFOLDER
 rm -rf java_cov*
+rm -rf jacoco_cov*
+rm -rf python_cov*
 rm -rf xml_coverage.xml
 
 ctest -D ExperimentalStart || true
@@ -64,6 +66,8 @@ cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=ON \
 JACOCO_PATH="/usr/local/share/jacoco"
 export JAVA_TOOL_OPTIONS="-javaagent:${JACOCO_PATH}/lib/jacocoagent.jar"
 
+export PYTHON_TOOL_OPTIONS="/usr/bin/python3-coverage run --branch"
+
 ctest --no-compress-output -D ExperimentalTest -j$NUMPROC || true
 ctest -D ExperimentalCoverage || true
 
@@ -78,13 +82,28 @@ if [ -f Testing/TAG ] ; then
     #convert jacoco reports in xml ones
     ant -f $WORKSPACE/tools/jenkins/jacoco.xml -Dexamplesrcdir=$WORKSPACE -Dbuilddir=$BUILDFOLDER/${sourcepath} -Djarfile=$BUILDFOLDER/simgrid.jar -Djacocodir=${JACOCO_PATH}/lib
     #convert jacoco xml reports in cobertura xml reports
-    cover2cover.py $BUILDFOLDER/${sourcepath}/report.xml .. ../src/bindings/java src/bindings/java > $WORKSPACE/java_coverage_${i}.xml
+    cover2cover.py $BUILDFOLDER/${sourcepath}/report.xml .. ../src/bindings/java src/bindings/java > $BUILDFOLDER/java_coverage_${i}.xml
+    #save jacoco xml report as sonar only allows it 
+    mv $BUILDFOLDER/${sourcepath}/report.xml $BUILDFOLDER/jacoco_coverage_${i}.xml
     i=$((i + 1))
   done
 
-   cd $WORKSPACE
+  cd $WORKSPACE
+
+  files=$( find . -size +1c -name ".coverage" )
+  i=0
+  for file in $files
+  do
+    sourcepath=$( dirname $file )
+    #convert python coverage reports in xml ones
+    cd $sourcepath
+    /usr/bin/python3-coverage xml -i -o $BUILDFOLDER/python_coverage_${i}.xml
+    cd $WORKSPACE
+    i=$((i + 1))
+  done
+
    #convert all gcov reports to xml cobertura reports
-   gcovr -r . --xml-pretty -e teshsuite -u -o $WORKSPACE/xml_coverage.xml
+   gcovr -r . --xml-pretty -e teshsuite -u -o $BUILDFOLDER/xml_coverage.xml
    xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl build/Testing/$( head -n 1 < build/Testing/TAG )/Test.xml > CTestResults_memcheck.xml
 
    #generate sloccount report
@@ -93,13 +112,19 @@ if [ -f Testing/TAG ] ; then
    #upload files to codacy. CODACY_PROJECT_TOKEN must be setup !
    if ! [ -z $CODACY_PROJECT_TOKEN ]
    then 
-     for report in $WORKSPACE/java_cov*
+     for report in $BUILDFOLDER/java_cov*
      do
        if [ ! -e "$report" ]; then continue; fi
        java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar report -l Java -r $report --partial
      done
      java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar final
-     java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar report -l C -f -r $WORKSPACE/xml_coverage.xml
-     java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar report -l CPP -f -r $WORKSPACE/xml_coverage.xml
+     for report in $BUILDFOLDER/python_cov*
+     do
+       if [ ! -e "$report" ]; then continue; fi
+       java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar report -l Python -r $report --partial
+     done
+     java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar final
+     java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar report -l C -f -r $BUILDFOLDER/xml_coverage.xml
+     java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar report -l CPP -f -r $BUILDFOLDER/xml_coverage.xml
    fi
 fi
