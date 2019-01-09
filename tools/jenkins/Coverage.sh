@@ -111,12 +111,8 @@ if [ -f Testing/TAG ] ; then
        java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar report -l Java -r $report --partial
      done
      java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar final
-     for report in $BUILDFOLDER/python_cov*
-     do
-       if [ ! -e "$report" ]; then continue; fi
-       java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar report -l Python -r $report --partial
-     done
-     java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar final
+
+     java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar report -l Python -r $BUILDFOLDER/python_coverage.xml
      java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar report -l C -f -r $BUILDFOLDER/xml_coverage.xml
      java -jar /home/ci/codacy-coverage-reporter-*-assembly.jar report -l CPP -f -r $BUILDFOLDER/xml_coverage.xml
    fi
