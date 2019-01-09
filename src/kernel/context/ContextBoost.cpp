@@ -55,7 +55,7 @@ BoostContext::BoostContext(std::function<void()> code, void_pfn_smxprocess_t cle
 BoostContext::~BoostContext()
 {
 #if BOOST_VERSION < 105600
-  if (not this->stack_)
+  if (not get_stack())
     delete this->fc_;
 #endif
 }

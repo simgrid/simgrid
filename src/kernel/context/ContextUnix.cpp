@@ -49,9 +49,9 @@ UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun
     this->uc_.uc_stack.ss_sp   = sg_makecontext_stack_addr(get_stack());
     this->uc_.uc_stack.ss_size = sg_makecontext_stack_size(smx_context_usable_stack_size);
 #if PTH_STACKGROWTH == -1
-    ASAN_ONLY(this->asan_stack_ = static_cast<char*>(this->stack_) + smx_context_usable_stack_size);
+    ASAN_ONLY(this->asan_stack_ = static_cast<char*>(get_stack()) + smx_context_usable_stack_size);
 #else
-    ASAN_ONLY(this->asan_stack_ = this->stack_);
+    ASAN_ONLY(this->asan_stack_ = get_stack());
 #endif
     UContext::make_ctx(&this->uc_, UContext::smx_ctx_sysv_wrapper, this);
   } else {
