@@ -60,14 +60,16 @@ static simgrid::s4u::Link::SharingPolicy link_policy_get_by_name(const char* pol
   }
 }
 
-int console_open(lua_State *L) {
+int console_open(lua_State*)
+{
   sg_platf_init();
   simgrid::s4u::on_platform_creation();
 
   return 0;
 }
 
-int console_close(lua_State *L) {
+int console_close(lua_State*)
+{
   simgrid::s4u::on_platform_created();
   sg_platf_exit();
   return 0;
@@ -390,16 +392,16 @@ int console_add_ASroute(lua_State *L) {
 
   lua_pushstring(L, "gw_src");
   lua_gettable(L, -2);
-  const char *name = lua_tostring(L, -1);
-  ASroute.gw_src   = sg_netpoint_by_name_or_null(name);
-  lua_ensure(ASroute.gw_src, "Attribute 'gw_src=%s' of AS route does not name a valid node", name);
+  const char* pname = lua_tostring(L, -1);
+  ASroute.gw_src    = sg_netpoint_by_name_or_null(pname);
+  lua_ensure(ASroute.gw_src, "Attribute 'gw_src=%s' of AS route does not name a valid node", pname);
   lua_pop(L, 1);
 
   lua_pushstring(L, "gw_dst");
   lua_gettable(L, -2);
-  name = lua_tostring(L, -1);
-  ASroute.gw_dst = sg_netpoint_by_name_or_null(name);
-  lua_ensure(ASroute.gw_dst, "Attribute 'gw_dst=%s' of AS route does not name a valid node", name);
+  pname          = lua_tostring(L, -1);
+  ASroute.gw_dst = sg_netpoint_by_name_or_null(pname);
+  lua_ensure(ASroute.gw_dst, "Attribute 'gw_dst=%s' of AS route does not name a valid node", pname);
   lua_pop(L, 1);
 
   lua_pushstring(L,"links");
@@ -489,7 +491,9 @@ int console_AS_open(lua_State *L) {
 
  return 1;
 }
-int console_AS_seal(lua_State *L) {
+
+int console_AS_seal(lua_State*)
+{
   XBT_DEBUG("Sealing AS");
   sg_platf_new_Zone_seal();
   return 0;

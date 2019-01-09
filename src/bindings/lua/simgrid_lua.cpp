@@ -9,11 +9,9 @@
 #include "lua_private.hpp"
 #include "lua_utils.hpp"
 #include "src/surf/xml/platf.hpp"
-
+#include <lauxlib.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(lua, "Lua Bindings");
-
-#include <lauxlib.h>
 
 extern "C" int luaopen_simgrid(lua_State* L);
 

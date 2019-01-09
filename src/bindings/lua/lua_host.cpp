@@ -143,8 +143,8 @@ static int l_host_get_property_value(lua_State * L)
  */
 static int l_host_destroy(lua_State *L)
 {
-  //sg_host_t ht = sglua_check_host(L, 1);
-  //FIXME: not working..__MSG_host_priv_free(MSG_host_priv(ht));
+  sg_host_t ht = sglua_check_host(L, 1);
+  ht->destroy();
   return 0;
 }
 

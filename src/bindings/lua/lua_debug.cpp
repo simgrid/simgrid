@@ -70,6 +70,10 @@ const char* sglua_tostring(lua_State* L, int index) {
     case LUA_TTHREAD:
       snprintf(buff, 7, "thread");
       break;
+
+    default:
+      snprintf(buff, 64, "unknown(%d)", lua_type(L, index));
+      break;
   }
   return buff;
 }
@@ -212,7 +216,7 @@ void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname)
  * @param size     number of bytes of data
  * @param userdata the memory buffer to write
  */
-int sglua_memory_writer(lua_State* L, const void* source, size_t size, void* userdata)
+int sglua_memory_writer(lua_State* /*L*/, const void* source, size_t size, void* userdata)
 {
   sglua_buffer_t buffer = static_cast<sglua_buffer_t>(userdata);
   while (buffer->capacity < buffer->size + size) {
