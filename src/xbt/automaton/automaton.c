@@ -309,27 +309,29 @@ int xbt_automaton_exp_label_compare(xbt_automaton_exp_label_t l1, xbt_automaton_
   if(l1->type != l2->type)
     return 1;
 
+  int res;
   switch(l1->type){
   case 0 : // OR
   case 1 : // AND
     if(xbt_automaton_exp_label_compare(l1->u.or_and.left_exp, l2->u.or_and.left_exp))
-      return 1;
+      res = 1;
     else
-      return xbt_automaton_exp_label_compare(l1->u.or_and.right_exp, l2->u.or_and.right_exp);
+      res = xbt_automaton_exp_label_compare(l1->u.or_and.right_exp, l2->u.or_and.right_exp);
     break;
   case 2 : // NOT
-    return xbt_automaton_exp_label_compare(l1->u.exp_not, l2->u.exp_not);
+    res = xbt_automaton_exp_label_compare(l1->u.exp_not, l2->u.exp_not);
     break;
   case 3 : // predicat
-    return (strcmp(l1->u.predicat, l2->u.predicat));
+    res = strcmp(l1->u.predicat, l2->u.predicat);
     break;
   case 4 : // 1
-    return 0;
+    res = 0;
     break;
   default :
-    return -1;
+    res = -1;
     break;
   }
+  return res;
 }
 
 int xbt_automaton_propositional_symbols_compare_value(xbt_dynar_t s1, xbt_dynar_t s2){
