@@ -28,7 +28,7 @@ public:
   std::vector<std::string> getTextualTrace() override;
 private:
   void prepare();
-  void main();
+  void real_run();
   void logState() override;
   void deterministic_comm_pattern(int process, simgrid::mc::PatternCommunication* comm, int backtracking);
   void restoreState();
