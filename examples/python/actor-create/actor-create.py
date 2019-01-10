@@ -72,7 +72,7 @@ class Sender:
 
 
 if __name__ == '__main__':
-    """Here comes the main function of your program"""
+    # Here comes the main function of your program
 
     # When your program starts, you have to first start a new simulation engine, as follows
     e = Engine(sys.argv)
