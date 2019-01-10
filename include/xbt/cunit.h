@@ -11,7 +11,7 @@
 #define XBT_CUNIT_H_
 
 #include <xbt/ex.h>
-#include <xbt/sysdep.h> /* XBT_GNU_PRINTF */
+#include <xbt/sysdep.h> /* XBT_ATTRIB_PRINTF */
 
 SG_BEGIN_DECL()
 
