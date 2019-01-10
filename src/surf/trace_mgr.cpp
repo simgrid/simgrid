@@ -9,7 +9,6 @@
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/trace_mgr.hpp"
 #include "surf_private.hpp"
-#include "xbt/RngStream.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
