@@ -29,12 +29,6 @@ void _xbt_throw(char* message, xbt_errcat_t errcat, int value, const char* file,
   throw e;
 }
 
-/** @brief shows an exception content and the associated stack if available */
-void xbt_ex_display(xbt_ex_t* e)
-{
-  simgrid::xbt::log_exception(xbt_log_priority_critical, "UNCAUGHT EXCEPTION", *e);
-}
-
 /** @brief returns a short name for the given exception category */
 const char* xbt_ex_catname(xbt_errcat_t cat)
 {

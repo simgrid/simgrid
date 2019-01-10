@@ -24,6 +24,7 @@ XBT:
    - xbt_os_thread_set_extra_data()
    - xbt_os_thread_self()
    - xbt_os_thread_self_name()
+ - Drop xbt_ex_display(), use simgrid::xbt::log_exception() instead.
 
 Fixed bugs:
  - #261: Document the parameters of parallel execution's constructor

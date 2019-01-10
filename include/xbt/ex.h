@@ -87,9 +87,6 @@ XBT_ATTRIB_NORETURN void xbt_throw_unimplemented(const char* file, int line, con
  */
 #define DIE_IMPOSSIBLE xbt_die("The Impossible Did Happen (yet again)")
 
-/** Display an exception */
-XBT_PUBLIC void xbt_ex_display(xbt_ex_t* e);
-
 SG_END_DECL()
 
 /** @} */
