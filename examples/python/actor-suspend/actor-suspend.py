@@ -75,7 +75,7 @@ if __name__ == '__main__':
             "Usage: actor-suspend.py platform_file [other parameters]")
 
     e.load_platform(sys.argv[1])  # Load the platform description
-    list = e.get_all_hosts()
-    Actor.create("dream_master", list[0], dream_master)
+    hosts = e.get_all_hosts()
+    Actor.create("dream_master", hosts[0], dream_master)
 
     e.run()  # Run the simulation
