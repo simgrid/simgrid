@@ -231,21 +231,19 @@
    ignore python cruft 1
    Memcheck:Cond
    ...
-   obj:/usr/bin/python3
+   obj:/usr/bin/python*
 }
 
 {
    ignore python cruft 2
    Memcheck:Addr4
    ...
-   obj:/usr/bin/python3
+   obj:/usr/bin/python*
 }
 
 {
    ignore python cruft 3
    Memcheck:Value8
    ...
-   obj:/usr/bin/python3
+   obj:/usr/bin/python*
 }
-
-
