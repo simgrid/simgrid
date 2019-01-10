@@ -17,7 +17,7 @@ addons:
     packages:
     - cmake
     - valgrind
-    - default-jdk
+#    - default-jdk
     - gfortran
     - libboost-dev
     - libboost-all-dev
