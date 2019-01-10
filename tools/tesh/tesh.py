@@ -326,7 +326,7 @@ class Cmd(object):
         except PermissionError:
             print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': The binary is not executable.")
             print("["+FileReader().filename+":"+str(self.linenumber)+"] Current dir: "+os.getcwd())
-            tesh_exit(3)            
+            tesh_exit(3)
         except NotADirectoryError:
             print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': The path to binary does not exist.")
             print("["+FileReader().filename+":"+str(self.linenumber)+"] Current dir: "+os.getcwd())
