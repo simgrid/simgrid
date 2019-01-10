@@ -579,7 +579,7 @@ void _xbt_test_fail(const char *file, int line, const char *fmt, ...)
   test.failed_ = true;
 }
 
-void xbt_test_exception(xbt_ex_t e)
+void xbt_test_exception(xbt_ex e)
 {
   _xbt_test_fail(e.throw_point().file_, e.throw_point().line_, "Exception %s raised: %s", xbt_ex_catname(e.category),
                  e.what());

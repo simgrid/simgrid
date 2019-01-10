@@ -10,7 +10,9 @@
 #ifndef XBT_CUNIT_H_
 #define XBT_CUNIT_H_
 
-#include <xbt/ex.h>
+#ifdef __cplusplus
+#include <simgrid/Exception.hpp>
+#endif
 #include <xbt/sysdep.h> /* XBT_ATTRIB_PRINTF */
 
 SG_BEGIN_DECL()
@@ -123,8 +125,10 @@ XBT_PUBLIC void _xbt_test_log(const char* file, int line, const char* fmt, ...) 
  *  @hideinitializer  */
 #define xbt_test_log(...)       _xbt_test_log(__FILE__, __LINE__, __VA_ARGS__)
 
+#ifdef __cplusplus
 /** @brief Declare that the lastly started test failed because of the provided exception */
-XBT_PUBLIC void xbt_test_exception(xbt_ex_t e);
+XBT_PUBLIC void xbt_test_exception(xbt_ex e);
+#endif
 
 /** @brief Declare that the lastly started test was expected to fail (and actually failed) */
 XBT_PUBLIC void xbt_test_expect_failure();
