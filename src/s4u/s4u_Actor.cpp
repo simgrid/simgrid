@@ -460,7 +460,7 @@ void kill() /* deprecated */
  *
  * This function checks whether @a actor is a valid pointer and return its PID (or 0 in case of problem).
  */
-int sg_actor_get_PID(sg_actor_t actor)
+aid_t sg_actor_get_PID(sg_actor_t actor)
 {
   /* Do not raise an exception here: this function is called by the logs
    * and the exceptions, so it would be called back again and again */
@@ -475,7 +475,7 @@ int sg_actor_get_PID(sg_actor_t actor)
  * This function checks whether @a actor is a valid pointer and return its parent's PID.
  * Returns -1 if the actor has not been created by any other actor.
  */
-int sg_actor_get_PPID(sg_actor_t actor)
+aid_t sg_actor_get_PPID(sg_actor_t actor)
 {
   return actor->get_ppid();
 }

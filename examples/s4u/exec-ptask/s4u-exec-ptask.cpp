@@ -26,8 +26,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_energyptask, "Messages specific for this s4u ex
 static void runner()
 {
   /* Retrieve the list of all hosts as an array of hosts */
-  std::vector<simgrid::s4u::Host*> hosts = simgrid::s4u::Engine::get_instance()->get_all_hosts();
-  int hosts_count = hosts.size();
+  auto hosts         = simgrid::s4u::Engine::get_instance()->get_all_hosts();
+  size_t hosts_count = hosts.size();
 
   XBT_INFO("First, build a classical parallel task, with 1 Gflop to execute on each node, "
            "and 10MB to exchange between each pair");
@@ -38,8 +38,8 @@ static void runner()
   /* ------[ test 1 ]----------------- */
   computation_amounts.assign(hosts.size(), 1e9 /*1Gflop*/);
   communication_amounts.assign(hosts.size() * hosts.size(), 0);
-  for (int i = 0; i < hosts_count; i++)
-    for (int j = i + 1; j < hosts_count; j++)
+  for (size_t i = 0; i < hosts_count; i++)
+    for (size_t j = i + 1; j < hosts_count; j++)
       communication_amounts[i * hosts_count + j] = 1e7; // 10 MB
 
   simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
@@ -48,8 +48,8 @@ static void runner()
   XBT_INFO("We can do the same with a timeout of one second enabled.");
   computation_amounts.assign(hosts.size(), 1e9 /*1Gflop*/);
   communication_amounts.assign(hosts.size() * hosts.size(), 0);
-  for (int i = 0; i < hosts_count; i++)
-    for (int j = i + 1; j < hosts_count; j++)
+  for (size_t i = 0; i < hosts_count; i++)
+    for (size_t j = i + 1; j < hosts_count; j++)
       communication_amounts[i * hosts_count + j] = 1e7; // 10 MB
 
   try {
@@ -70,7 +70,7 @@ static void runner()
   /* ------[ test 4 ]----------------- */
   XBT_INFO("Then, build a parallel task involving only heterogeneous computations and no communication");
   computation_amounts.resize(hosts.size());
-  for (int i = 0; i < hosts_count; i++)
+  for (size_t i = 0; i < hosts_count; i++)
     computation_amounts[i] = 5 * (i + 1) * 1e8; // 500Mflop, 1Gflop, 1.5Gflop
   communication_amounts.clear();                /* no comm */
   simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
