@@ -34,7 +34,7 @@ installBuildWrapper
 # Run ctest before sonar to gather coverage some information
 # EDIT: Don't run the tests on travis because they take too much time.
 #set +e
-#ctest -j4 --output-on-failure
+#ctest -j2 --output-on-failure
 #outcome=$?
 #set -e
 outcome=0
