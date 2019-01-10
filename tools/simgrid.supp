@@ -225,3 +225,24 @@
    fun:MarsagliaXORV
    ...
 }
+
+#ignore python cruft
+{
+   Memcheck:Cond
+   ...
+   obj:/usr/bin/python3
+}
+
+{
+   Memcheck:Addr4
+   ...
+   obj:/usr/bin/python3
+}
+
+{
+   Memcheck:Value8
+   ...
+   obj:/usr/bin/python3
+}
+
+
