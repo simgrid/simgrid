@@ -3,7 +3,7 @@
 ! output sort 19
 ! timeout 15
 
-$ java -classpath ${classpath:=.} app/bittorrent/Main ${srcdir:=.}/../platforms/cluster_backbone.xml ${srcdir:=.}/app/bittorrent/bittorrent.xml
+$ ${javacmd:=java} -classpath ${classpath:=.} app/bittorrent/Main ${srcdir:=.}/../platforms/cluster_backbone.xml ${srcdir:=.}/app/bittorrent/bittorrent.xml
 > [0.000000] [java/INFO] Using regular java threads.
 > [5000.046836] [java/INFO] MSG_main finished; Terminating the simulation...
 > [node-0.simgrid.org:app.bittorrent.Tracker:(1) 0.000000] [java/INFO] Tracker launched.

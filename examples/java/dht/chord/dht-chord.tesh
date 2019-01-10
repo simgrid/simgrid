@@ -2,7 +2,7 @@
 
 ! output sort 19
 
-$ java -classpath ${classpath:=.} dht/chord/Main ${srcdir:=.}/../platforms/cluster_backbone.xml ${srcdir:=.}/dht/chord/chord.xml
+$ ${javacmd:=java} -classpath ${classpath:=.} dht/chord/Main ${srcdir:=.}/../platforms/cluster_backbone.xml ${srcdir:=.}/dht/chord/chord.xml
 > [0.000000] [java/INFO] Using regular java threads.
 > [1046.732943] [java/INFO] MSG_main finished; Terminating the simulation...
 > [node-1.simgrid.org:dht.chord.Node:(2) 0.000000] [java/INFO] Joining the ring with id 366680 knowing node 42

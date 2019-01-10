@@ -2,7 +2,7 @@
 
 ! output sort 19
 
-$ java -classpath ${classpath:=.} trace/pingpong/Main ${srcdir:=.}/../platforms/small_platform.xml --cfg=tracing:yes  --cfg=tracing/filename:simulation.trace --cfg=tracing/platform:yes
+$ ${javacmd:=java} -classpath ${classpath:=.} trace/pingpong/Main ${srcdir:=.}/../platforms/small_platform.xml --cfg=tracing:yes  --cfg=tracing/filename:simulation.trace --cfg=tracing/platform:yes
 > [0.000000] [java/INFO] Using regular java threads.
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'simulation.trace'

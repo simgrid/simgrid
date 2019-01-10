@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ java -classpath ${classpath:=.} hostload/Main ${srcdir:=.}/../platforms/small_platform.xml
+$ ${javacmd:=java} -classpath ${classpath:=.} hostload/Main ${srcdir:=.}/../platforms/small_platform.xml
 > [0.000000] [java/INFO] Using regular java threads.
 > [Boivin::(1) 0.000000] [java/INFO] Speed=9.8095E7 flop/s
 > [Boivin::(1) 0.000000] [java/INFO] Computed Flops 0.0
