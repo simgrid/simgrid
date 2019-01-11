@@ -50,8 +50,6 @@ void Container::add_resources(std::vector<sg_host_t> hosts)
   this->children.clear();
   this->last_id_ = 0;
 
-  //FIXME do we need to sort?: xbt_dynar_sort_strings(host_names);
-
   for (auto const& host : hosts) {
     const char *host_name = sg_host_get_name(host);
     this->name2id.insert({host_name, this->last_id_});
