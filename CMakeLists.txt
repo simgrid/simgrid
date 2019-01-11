@@ -513,8 +513,10 @@ endif()
 
 # Avoid triggering a (full) rebuild by touching the files if they did not really change
 configure_file("${CMAKE_HOME_DIRECTORY}/src/internal_config.h.in"    "${CMAKE_BINARY_DIR}/src/internal_config.h.generated"    @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/src/simgrid/version.h.in"    "${CMAKE_BINARY_DIR}/src/simgrid/version.h.generated" @ONLY IMMEDIATE)
 configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid/config.h.in" "${CMAKE_BINARY_DIR}/include/simgrid/config.h.generated" @ONLY IMMEDIATE)
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/internal_config.h.generated ${CMAKE_BINARY_DIR}/src/internal_config.h)
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/simgrid/version.h.generated ${CMAKE_BINARY_DIR}/src/simgrid/version.h)
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/include/simgrid/config.h.generated ${CMAKE_BINARY_DIR}/include/simgrid/config.h)
 file(REMOVE ${CMAKE_BINARY_DIR}/src/internal_config.h.generated)
 file(REMOVE ${CMAKE_BINARY_DIR}/include/simgrid/config.h.generated)
