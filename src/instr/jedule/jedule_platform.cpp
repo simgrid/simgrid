@@ -176,8 +176,8 @@ static void add_subsets_to(std::vector<jed_subset_t> *subset_list, std::vector<c
 
   for (auto const& host_name : hostgroup) {
     xbt_assert( host_name != nullptr );
-    jed_container_t parent = host2_simgrid_parent_container.at(host_name);
-    unsigned int id = parent->name2id.at(host_name);
+    jed_container_t parent_cont = host2_simgrid_parent_container.at(host_name);
+    unsigned int id             = parent_cont->name2id.at(host_name);
     id_list.push_back(id);
   }
   unsigned int nb_ids = id_list.size();
