@@ -768,7 +768,6 @@ if(enable_java)
 endif()
 
 # Python binding, generated with pybind11
-set(PYBIND11_CPP_STANDARD -std=c++11)
 find_package(pybind11 2.2.0)
 if(NOT PYTHONLIBS_FOUND)
   set(pybind11_FOUND OFF)
@@ -783,7 +782,7 @@ endif()
 if(enable_python)
   if(pybind11_FOUND)
     pybind11_add_module(python-bindings src/bindings/python/simgrid_python.cpp)
-    set_source_files_properties(src/bindings/python/simgrid_python.cpp PROPERTIES COMPILE_FLAGS -std=c++14)
+    target_compile_features(python-bindings PRIVATE cxx_std_14)
     target_link_libraries(python-bindings PUBLIC simgrid)
     set_target_properties(python-bindings PROPERTIES LIBRARY_OUTPUT_NAME simgrid)
     set_property(TARGET python-bindings
