@@ -102,12 +102,10 @@ void smpi_bench_begin()
   if (not simgrid::config::get_value<std::string>("smpi/papi-events").empty()) {
     int event_set = smpi_process()->papi_event_set();
     // PAPI_start sets everything to 0! See man(3) PAPI_start
-    if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized()) {
-      if (PAPI_start(event_set) != PAPI_OK) {
-        // TODO This needs some proper handling.
-        XBT_CRITICAL("Could not start PAPI counters.\n");
-        xbt_die("Error.");
-      }
+    if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized() && PAPI_start(event_set) != PAPI_OK) {
+      // TODO This needs some proper handling.
+      XBT_CRITICAL("Could not start PAPI counters.\n");
+      xbt_die("Error.");
     }
   }
 #endif
