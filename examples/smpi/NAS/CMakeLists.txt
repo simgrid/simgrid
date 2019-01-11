@@ -6,12 +6,13 @@ if(enable_smpi)
   endif()
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
-  add_executable       (is is.c nas_common.c)
+  add_executable       (is EXCLUDE_FROM_ALL is.c nas_common.c)
   target_link_libraries(is simgrid)
-  add_executable       (ep ep.c nas_common.c)
+  add_executable       (ep EXCLUDE_FROM_ALL ep.c nas_common.c)
   target_link_libraries(ep simgrid)
-  add_executable       (dt dt.c nas_common.c DGraph.c)
+  add_executable       (dt EXCLUDE_FROM_ALL dt.c nas_common.c DGraph.c)
   target_link_libraries(dt simgrid)
+  add_dependencies(tests is ep dt)
 endif()
 
 set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/nas_common.h

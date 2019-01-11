@@ -3,9 +3,10 @@ foreach(x actor actor-autorestart actor-migration
         comm-pt2pt
         cloud-interrupt-migration cloud-sharing
         concurrent_rw storage_client_server listen_async pid )
-  add_executable       (${x}  ${x}/${x}.cpp)
+  add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+  add_dependencies(tests ${x})
 
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
 endforeach()

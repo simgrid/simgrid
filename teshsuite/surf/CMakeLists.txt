@@ -1,17 +1,19 @@
 foreach(x lmm_usage surf_usage surf_usage2)
-  add_executable       (${x}  ${x}/${x}.cpp)
+  add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
   set_property(TARGET ${x} APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
+  add_dependencies(tests ${x})
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
 endforeach()
 
-add_executable       (maxmin_bench maxmin_bench/maxmin_bench.cpp)
+add_executable       (maxmin_bench EXCLUDE_FROM_ALL maxmin_bench/maxmin_bench.cpp)
 target_link_libraries(maxmin_bench simgrid)
 set_target_properties(maxmin_bench PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/maxmin_bench)
 set_property(TARGET maxmin_bench APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
+add_dependencies(tests maxmin_bench)
 
 foreach(x small medium large)
   set(tesh_files     ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/maxmin_bench/maxmin_bench_${x}.tesh)

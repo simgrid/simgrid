@@ -9,9 +9,10 @@ foreach(x app-pingpong app-token-ring
           task-priority
           plugin-hostload
           trace_integration)
-  add_executable       (${x}  ${x}/${x}.c)
-  target_link_libraries(${x}  simgrid)
-  set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+  add_executable       (${x} EXCLUDE_FROM_ALL ${x}/${x}.c)
+  target_link_libraries(${x} simgrid)
+  set_target_properties(${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+  add_dependencies(tests ${x})
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
@@ -19,24 +20,27 @@ endforeach()
 
 # CPP examples
 foreach(x task_destroy_cancel task_listen_from task_progress host_on_off_processes)
-  add_executable       (${x}  ${x}/${x}.cpp)
+  add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+  add_dependencies(tests ${x})
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
 endforeach()
 
-add_executable       (bittorrent app-bittorrent/bittorrent.c app-bittorrent/bittorrent-messages.c app-bittorrent/bittorrent-peer.c app-bittorrent/tracker.c app-bittorrent/connection.c)
+add_executable       (bittorrent EXCLUDE_FROM_ALL app-bittorrent/bittorrent.c app-bittorrent/bittorrent-messages.c app-bittorrent/bittorrent-peer.c app-bittorrent/tracker.c app-bittorrent/connection.c)
 target_link_libraries(bittorrent simgrid)
 set_target_properties(bittorrent PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-bittorrent)
+add_dependencies(tests bittorrent)
 foreach (file bittorrent connection bittorrent-messages bittorrent-peer tracker)
   set(teshsuite_src  ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.h)
 endforeach()
 
-add_executable       (chainsend app-chainsend/chainsend.c app-chainsend/iterator.c app-chainsend/common.c app-chainsend/messages.c app-chainsend/broadcaster.c app-chainsend/peer.c)
+add_executable       (chainsend EXCLUDE_FROM_ALL app-chainsend/chainsend.c app-chainsend/iterator.c app-chainsend/common.c app-chainsend/messages.c app-chainsend/broadcaster.c app-chainsend/peer.c)
 target_link_libraries(chainsend simgrid)
 set_target_properties(chainsend PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-chainsend)
+add_dependencies(tests chainsend)
 foreach (file common iterator messages broadcaster peer)
   set(teshsuite_src  ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/${file}.h)
 endforeach()

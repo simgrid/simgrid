@@ -52,7 +52,7 @@ script:
    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cmake -Denable_model-checking=ON  -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON . || (echo XXX CMakeOutput.log; cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeOutput.log; echo XXX CMakeError.log;cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeError.log; exit 1) ; fi
    # run make and ctest in the sonar wrapper on master/linux; run it directly in PR or OSX
    # - if [[ -e Makefile ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "${TRAVIS_PULL_REQUEST}" == "false" ]]; then ./tools/internal/travis-sonarqube.sh make -j2 VERBOSE=1; else make -j2 VERBOSE=1 && ctest -j2 --output-on-failure ; fi
-   - make -j2 VERBOSE=1 && ctest -j2 --output-on-failure
+   - make -j2 VERBOSE=1 all tests && ctest -j2 --output-on-failure
 notifications:
   recipients:
     - martin.quinson@ens-rennes.fr

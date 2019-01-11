@@ -1,27 +1,30 @@
 foreach(x availability basic0 basic1 basic3 basic4 basic5 basic6 basic-link-test basic-parsing-test
           comm-mxn-all2all comm-mxn-independent comm-mxn-scatter comm-p2p-latency-1
           comm-p2p-latency-2 comm-p2p-latency-3 comm-p2p-latency-bound comp-only-par comp-only-seq incomplete)
-  add_executable       (${x}  ${x}/${x}.c)
+  add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+  add_dependencies(tests ${x})
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
 endforeach()
 
 foreach(x evaluate-parse-time evaluate-get-route-time)
-  add_executable       (${x} ${x}/${x}.c)
+  add_executable       (${x} EXCLUDE_FROM_ALL ${x}/${x}.c)
   target_link_libraries(${x} simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+  add_dependencies(tests ${x})
 
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
 endforeach()
 
 foreach(x flatifier is-router)
-  add_executable       (${x}  ${x}/${x}.cpp)
+  add_executable       (${x} EXCLUDE_FROM_ALL ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
   set_property(TARGET ${x} APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
+  add_dependencies(tests ${x})
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)

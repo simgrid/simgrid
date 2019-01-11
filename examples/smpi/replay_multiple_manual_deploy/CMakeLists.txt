@@ -1,8 +1,9 @@
 if(enable_smpi)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-  add_executable       (replay_multiple_manual replay_multiple_manual.cpp)
+  add_executable       (replay_multiple_manual EXCLUDE_FROM_ALL replay_multiple_manual.cpp)
   target_link_libraries(replay_multiple_manual simgrid)
+  add_dependencies(tests replay_multiple_manual)
 
   # Define a list of a tesh files
   list(APPEND tesh_filename_list replay_multiple_manual_nojob)

@@ -204,7 +204,7 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
 #  -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
 set +x
 
-make -j$NUMBER_OF_PROCESSORS VERBOSE=1
+make -j$NUMBER_OF_PROCESSORS VERBOSE=1 tests
 
 echo "XX"
 echo "XX Run the tests"

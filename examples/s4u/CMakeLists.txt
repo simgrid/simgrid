@@ -15,7 +15,8 @@ foreach (example actor-create actor-daemon actor-join actor-kill
                  replay-comm replay-storage
                  routing-get-clusters
                  synchro-barrier synchro-mutex synchro-semaphore)
-  add_executable       (s4u-${example} ${example}/s4u-${example}.cpp)
+  add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
+  add_dependencies     (tests s4u-${example})
   target_link_libraries(s4u-${example} simgrid)
   set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
 
@@ -36,28 +37,30 @@ set_tesh_properties(s4u-platform-failures "thread;ucontext;raw;boost" WILL_FAIL 
 
 # MASTERWORKERS EXAMPLE
 foreach(variant fun class) 
-  add_executable       (s4u-app-masterworkers-${variant}  app-masterworkers/s4u-app-masterworkers-${variant}.cpp)
-  target_link_libraries(s4u-app-masterworkers-${variant}  simgrid)
-  set_target_properties(s4u-app-masterworkers-${variant}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-masterworkers)
+  add_executable       (s4u-app-masterworkers-${variant} EXCLUDE_FROM_ALL app-masterworkers/s4u-app-masterworkers-${variant}.cpp)
+  target_link_libraries(s4u-app-masterworkers-${variant} simgrid)
+  set_target_properties(s4u-app-masterworkers-${variant} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-masterworkers)
+  add_dependencies(tests s4u-app-masterworkers-${variant})
 
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers-${variant}.cpp)
 endforeach()
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers.tesh)
 
 # CHORD EXAMPLE
-add_executable       (s4u-dht-chord dht-chord/s4u-dht-chord.cpp dht-chord/s4u-dht-chord-node.cpp)
+add_executable       (s4u-dht-chord EXCLUDE_FROM_ALL dht-chord/s4u-dht-chord.cpp dht-chord/s4u-dht-chord-node.cpp)
 target_link_libraries(s4u-dht-chord simgrid)
 set_target_properties(s4u-dht-chord PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dht-chord)
-foreach (file s4u-dht-chord s4u-dht-chord-node)
-  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/${file}.cpp)
+add_dependencies(tests s4u-dht-chord)
+foreach (file s4u-dht-chord.cpp s4u-dht-chord-node.cpp s4u-dht-chord.hpp)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/${file})
 endforeach()
-set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord.hpp)
 
 # KADEMLIA EXAMPLE
-add_executable       (s4u-dht-kademlia dht-kademlia/s4u-dht-kademlia.cpp dht-kademlia/node.cpp 
+add_executable       (s4u-dht-kademlia EXCLUDE_FROM_ALL dht-kademlia/s4u-dht-kademlia.cpp dht-kademlia/node.cpp 
                       dht-kademlia/routing_table.cpp dht-kademlia/answer.cpp)
 target_link_libraries(s4u-dht-kademlia simgrid)
 set_target_properties(s4u-dht-kademlia PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dht-kademlia)
+add_dependencies(tests s4u-dht-kademlia)
 foreach (file answer routing_table node s4u-dht-kademlia)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.cpp 
                                      ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.hpp)
@@ -65,10 +68,11 @@ endforeach()
 set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/message.hpp)
 
 # BITTORRENT EXAMPLE
-add_executable       (s4u-bittorrent app-bittorrent/s4u-bittorrent.cpp app-bittorrent/s4u-peer.cpp
+add_executable       (s4u-bittorrent EXCLUDE_FROM_ALL app-bittorrent/s4u-bittorrent.cpp app-bittorrent/s4u-peer.cpp
                       app-bittorrent/s4u-tracker.cpp)
 target_link_libraries(s4u-bittorrent simgrid)
 set_target_properties(s4u-bittorrent PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-bittorrent)
+add_dependencies(tests s4u-bittorrent)
 foreach (file s4u-bittorrent s4u-peer s4u-tracker)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.cpp
                                      ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.hpp)
@@ -88,9 +92,10 @@ endforeach()
 ##################################
 
 foreach (example trace-platform)
-  add_executable       (s4u-${example} ${example}/s4u-${example}.cpp)
+  add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example} simgrid)
   set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
+  add_dependencies(tests s4u-${example})
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
