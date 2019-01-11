@@ -1,5 +1,7 @@
-# THIS IS ONLY FOR THE FILES. To add your test (tesh) as well, make sure you add
-# the same at the bottom of the file as well.
+
+# Regular examples: with only one source and tested with all factories
+######################################################################
+
 foreach (example actor-create actor-daemon actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield
                  app-chainsend app-pingpong app-token-ring
@@ -12,15 +14,25 @@ foreach (example actor-create actor-daemon actor-join actor-kill
                  platform-failures platform-properties plugin-hostload 
                  replay-comm replay-storage
                  routing-get-clusters
-                 synchro-barrier synchro-mutex synchro-semaphore
-                 trace-platform)
-  add_executable       (s4u-${example}  ${example}/s4u-${example}.cpp)
-  target_link_libraries(s4u-${example}  simgrid)
-  set_target_properties(s4u-${example}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
+                 synchro-barrier synchro-mutex synchro-semaphore)
+  add_executable       (s4u-${example} ${example}/s4u-${example}.cpp)
+  target_link_libraries(s4u-${example} simgrid)
+  set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
+  
+  ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost"
+                                    --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
+				    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+				    --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
+				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
 endforeach()
+
+set_tesh_properties(s4u-platform-failures "thread;ucontext;raw;boost" WILL_FAIL TRUE) # FIXME
+
+# Multi-files examples
+######################
 
 # MASTERWORKERS EXAMPLE
 foreach(variant fun class) 
@@ -62,6 +74,41 @@ foreach (file s4u-bittorrent s4u-peer s4u-tracker)
                                      ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.hpp)
 endforeach()
 
+foreach(example app-bittorrent app-masterworkers 
+                dht-chord dht-kademlia
+                )
+  ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" 
+                                    --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
+				    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+				    --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
+				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
+endforeach()
+
+# Examples not accepting factories
+##################################
+
+foreach (example trace-platform)
+  add_executable       (s4u-${example} ${example}/s4u-${example}.cpp)
+  target_link_libraries(s4u-${example} simgrid)
+  set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
+
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
+  
+  ADD_TESH(s4u-${example} --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+                          --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+                          ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
+endforeach()
+
+if (NOT enable_memcheck AND NOT WIN32)
+  ADD_TESH(simix-breakpoint --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/app-pingpong
+                            --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                            ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh)
+endif()
+
+# Add all extra files to the archive
+####################################
+
 set(examples_src  ${examples_src}                                                                          PARENT_SCOPE)
 set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u-app-bittorrent.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh
@@ -96,36 +143,3 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-re
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-storage/s4u-replay-storage.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/README.rst                                   PARENT_SCOPE)
 
-foreach(example actor-create actor-daemon actor-join actor-kill
-                actor-lifetime actor-migrate actor-suspend actor-yield
-                app-bittorrent app-chainsend app-masterworkers app-pingpong app-token-ring 
-                async-ready async-wait async-waitall async-waitany async-waituntil
-                cloud-capping cloud-migration cloud-simple
-                dht-chord dht-kademlia
-                energy-exec energy-boot energy-link energy-vm
-                engine-filtering
-                exec-async exec-basic exec-dvfs exec-monitor exec-ptask exec-remote
-                platform-properties plugin-hostload # FIXME: platform-failures is disabled
-                io-async io-file-system io-file-remote io-storage-raw
-                replay-comm replay-storage
-                routing-get-clusters
-                synchro-barrier synchro-mutex synchro-semaphore
-                )
-  ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" 
-                                    --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
-				    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-				    --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
-				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
-endforeach()
-
-foreach (example trace-platform)
-  ADD_TESH(s4u-${example} --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
-                          --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-                          ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
-endforeach()
-
-if (NOT enable_memcheck AND NOT WIN32)
-  ADD_TESH(simix-breakpoint --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/app-pingpong
-                            --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                            ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh)
-endif()
