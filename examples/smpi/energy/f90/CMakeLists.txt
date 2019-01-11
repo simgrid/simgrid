@@ -1,7 +1,7 @@
 if(enable_smpi AND SMPI_FORTRAN)
   set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpif90")
   add_executable       (sef90 EXCLUDE_FROM_ALL sef90.f90)
-  target_link_libraries(sef90 simgrid)
+  target_link_libraries(sef90 simgrid mpi)
   add_dependencies(tests sef90)
   ADD_TESH_FACTORIES(smpi-energy-f90 "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/energy --cd ${CMAKE_BINARY_DIR}/examples/smpi/energy ${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/f90/energy.tesh)
 endif()
