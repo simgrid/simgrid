@@ -81,7 +81,8 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
       set(SMPI_FLANG 1)
     endif()
 
-    set(SMPI_FORTRAN 1)
+    set(SMPI_FORTRAN 1 CACHE BOOL "Whether SMPI Fortran code can be compiled")
+    mark_as_advanced(SMPI_FORTRAN)
   endif(CMAKE_Fortran_COMPILER)
 
 endif()
