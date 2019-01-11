@@ -56,7 +56,7 @@ cmake -Denable_documentation=OFF -Denable_lua=OFF  \
       -Denable_memcheck_xml=ON $WORKSPACE
 
 
-make -j$NUMPROC
+make -j$NUMPROC tests
 ctest --no-compress-output -D ExperimentalTest -j$NUMPROC || true
 
 cd $WORKSPACE/build

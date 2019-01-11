@@ -89,7 +89,7 @@ cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=${buildjava} \
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=OFF \
       -Denable_ns3=$(onoff test "$buildmc" != "ON") -Denable_coverage=OFF $WORKSPACE
 
-make -j$NUMPROC
+make -j$NUMPROC tests
 make clean
 
 

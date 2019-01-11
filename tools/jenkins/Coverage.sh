@@ -62,7 +62,7 @@ cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=ON \
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=ON -Denable_coverage=ON $WORKSPACE
 
 #build with sonarqube scanner wrapper
-/home/ci/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-outputs make -j$NUMPROC
+/home/ci/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-outputs make -j$NUMPROC tests
 JACOCO_PATH="/usr/local/share/jacoco"
 export JAVA_TOOL_OPTIONS="-javaagent:${JACOCO_PATH}/lib/jacocoagent.jar"
 

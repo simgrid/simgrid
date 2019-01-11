@@ -80,7 +80,7 @@ cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=OFF \
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=ON -Denable_coverage=OFF\
       -Denable_fortran=OFF -Denable_python=OFF ${SANITIZER_OPTIONS} $WORKSPACE
 
-make -j$NUMPROC
+make -j$NUMPROC tests
 ctest --no-compress-output -D ExperimentalTest || true
 
 if [ -f Testing/TAG ] ; then

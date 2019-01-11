@@ -11,7 +11,7 @@ if [ ! -e Makefile ] ; then
   exit 1
 fi
 
-target=all
+target=tests
 
 install_path=$(sed -n 's/^CMAKE_INSTALL_PREFIX:PATH=//p' CMakeCache.txt)
 if [ -e ${install_path} -a -d ${install_path} -a -x ${install_path} ] ; then
