@@ -323,17 +323,15 @@ void smpi_global_init()
 
         int event_code   = PAPI_NULL;
         char* event_name = const_cast<char*>((*events_it).c_str());
-        if (PAPI_event_name_to_code(event_name, &event_code) == PAPI_OK) {
-          if (PAPI_add_event(event_set, event_code) != PAPI_OK) {
-            XBT_ERROR("Could not add PAPI event '%s'. Skipping.", event_name);
-            continue;
-          } else {
-            XBT_DEBUG("Successfully added PAPI event '%s' to the event set.", event_name);
-          }
-        } else {
+        if (PAPI_event_name_to_code(event_name, &event_code) != PAPI_OK) {
           XBT_CRITICAL("Could not find PAPI event '%s'. Skipping.", event_name);
           continue;
         }
+        if (PAPI_add_event(event_set, event_code) != PAPI_OK) {
+          XBT_ERROR("Could not add PAPI event '%s'. Skipping.", event_name);
+          continue;
+        }
+        XBT_DEBUG("Successfully added PAPI event '%s' to the event set.", event_name);
 
         counters2values.push_back(
             // We cannot just pass *events_it, as this is of type const basic_string
