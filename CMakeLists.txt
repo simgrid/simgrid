@@ -285,8 +285,6 @@ endif()
 
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
-
-set(HAVE_PTHREAD_SETAFFINITY 0)
 CHECK_LIBRARY_EXISTS(pthread pthread_setaffinity_np  "" HAVE_PTHREAD_SETAFFINITY)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
