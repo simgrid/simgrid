@@ -7,6 +7,7 @@ Core:
  - Replace our own code to display a backtrace (that was forking addr2line)
    with the Boost.Stacktrace library.
    You won't see your backtraces without this optional dependency.
+ - Bump cmake dependency to 3.5 (provided by Ubuntu 16.04).
 
 MSG:
  - Drop MSG_process_create_from_stdfunc() from the API.

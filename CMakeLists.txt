@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 3.5)
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules)
 
@@ -768,20 +768,32 @@ if(enable_java)
   include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Java.cmake)
 endif()
 
-# Python binding, generated with pybind11
-find_package(pybind11 2.2.0)
-if(NOT PYTHONLIBS_FOUND)
+# Python binding (with pybind11)
+################
+
+# Our usage of pybind11::overload_cast mandates C++14
+get_property(known_features GLOBAL PROPERTY CMAKE_CXX_KNOWN_FEATURES)
+if ("cxx_std_14" IN_LIST known_features)
+  find_package(pybind11 2.2.0)
+  if(NOT PYTHONLIBS_FOUND)
+    set(pybind11_FOUND OFF)
+  endif()
+else()
+  message(STATUS "No support for C++14 detected, don't even search for pybind11.")
   set(pybind11_FOUND OFF)
 endif()
+unset(known_features)
+
 option(enable_python "Whether the Python bindings are activated." ${pybind11_FOUND}) # ON by default if dependencies are met
 
 if("${CMAKE_SYSTEM}" MATCHES "FreeBSD" AND enable_model-checking AND enable_python)
-  message(WARNING "FreeBSD + Model-Checking + Python = too much for now. Disabling python")
+  message(WARNING "FreeBSD + Model-Checking + Python = too much for now. Disabling python.")
   set(enable_python FALSE)
 endif()
 
 if(enable_python)
   if(pybind11_FOUND)
+    message(STATUS "Found pybind11, with C++14.")
     pybind11_add_module(python-bindings src/bindings/python/simgrid_python.cpp)
     target_compile_features(python-bindings PRIVATE cxx_std_14)
     target_link_libraries(python-bindings PUBLIC simgrid)
