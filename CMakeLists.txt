@@ -756,6 +756,8 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/DefinePackages.cmake)
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MaintainerMode.cmake)
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/UnitTesting.cmake)
 
+add_custom_target(tests COMMENT "Recompiling the tests")
+
 ### Make Libs
 if(NOT WIN32)
   include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeLib.cmake)

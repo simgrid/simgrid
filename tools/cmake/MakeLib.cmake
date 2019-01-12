@@ -101,6 +101,7 @@ if(enable_smpi)
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/simgrid)
   install(TARGETS smpimain # install that binary without breaking the rpath on Mac
     RUNTIME DESTINATION lib/simgrid)
+  add_dependencies(tests smpimain)
 
   add_executable(smpireplaymain src/smpi/smpi_replay_main.cpp)
   target_compile_options(smpireplaymain PRIVATE -fpic)
@@ -109,6 +110,7 @@ if(enable_smpi)
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/simgrid)
   install(TARGETS smpireplaymain # install that binary without breaking the rpath on Mac
     RUNTIME DESTINATION lib/simgrid)
+  add_dependencies(tests smpireplaymain)
 
   if(SMPI_FORTRAN)
     if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")

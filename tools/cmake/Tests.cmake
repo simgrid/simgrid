@@ -1,5 +1,3 @@
-add_custom_target(tests COMMENT "Recompiling the tests")
-
 IF(enable_smpi AND NOT WIN32)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicxx)
