@@ -36,7 +36,8 @@ ADD_CUSTOM_COMMAND(
   COMMAND           ${CMAKE_HOME_DIRECTORY}/tools/sg_unit_extractor.pl --root=src/ --outdir=${CMAKE_CURRENT_BINARY_DIR}/src/ ${FILES_CONTAINING_UNITTESTS}
 )
 
-add_executable       (testall ${EXTRACTED_TEST_SOURCE_FILES})
+add_executable       (testall EXCLUDE_FROM_ALL ${EXTRACTED_TEST_SOURCE_FILES})
+add_dependencies(tests testall)
 target_link_libraries(testall simgrid)
 set_property(
     TARGET testall

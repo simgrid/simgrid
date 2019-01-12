@@ -752,11 +752,11 @@ SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 ### Define source packages for Libs
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/DefinePackages.cmake)
 
+add_custom_target(tests COMMENT "Recompiling the tests")
+
 ### Build some Maintainer files
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MaintainerMode.cmake)
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/UnitTesting.cmake)
-
-add_custom_target(tests COMMENT "Recompiling the tests")
 
 ### Make Libs
 if(NOT WIN32)
@@ -799,6 +799,7 @@ if(enable_python)
     target_compile_features(python-bindings PRIVATE cxx_std_14)
     target_link_libraries(python-bindings PUBLIC simgrid)
     set_target_properties(python-bindings PROPERTIES LIBRARY_OUTPUT_NAME simgrid)
+    add_dependencies(tests python-bindings)
     set_property(TARGET python-bindings
                  APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
   else()

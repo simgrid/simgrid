@@ -130,30 +130,21 @@ if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
   add_executable       (unit-tmgr src/surf/trace_mgr_test.cpp)
   target_link_libraries(unit-tmgr simgrid boost_unit_test_framework)
   ADD_TEST(unit-tmgr ${CMAKE_BINARY_DIR}/unit-tmgr --build_info=yes)
-  set_property(
-    TARGET unit-tmgr
-    APPEND PROPERTY
-           INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
-	   )
+  set_property(TARGET unit-tmgr APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
+  add_dependencies(tests unit-tmgr)
   if (SIMGRID_HAVE_MC)
     # snapshot
     add_executable       (unit-mc-snapshot src/mc/sosp/mc_snapshot_test.cpp)
     target_link_libraries(unit-mc-snapshot simgrid boost_unit_test_framework)
     ADD_TEST(unit-mc-snapshot ${CMAKE_BINARY_DIR}/unit-mc-snapshot --build_info=yes)
-    set_property(
-      TARGET unit-mc-snapshot
-      APPEND PROPERTY
-             INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
-	     )
+    set_property(TARGET unit-mc-snapshot APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
+    add_dependencies(tests unit-mc-snapshot)
     # pagestore
     add_executable       (unit-mc-pagestore src/mc/sosp/PageStore_test.cpp)
     target_link_libraries(unit-mc-pagestore simgrid boost_unit_test_framework)
     ADD_TEST(unit-mc-pagestore ${CMAKE_BINARY_DIR}/unit-mc-pagestore --build_info=yes)
-    set_property(
-      TARGET unit-mc-pagestore
-      APPEND PROPERTY
-             INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
-	     )
+    set_property(TARGET unit-mc-pagestore APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
+    add_dependencies(tests unit-mc-pagestore)
   endif()
 
 else()
