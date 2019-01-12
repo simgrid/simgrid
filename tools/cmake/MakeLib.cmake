@@ -35,6 +35,7 @@ if(enable_model-checking)
                APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
   install(TARGETS simgrid-mc # install that binary without breaking the rpath on Mac
     RUNTIME DESTINATION bin/)
+  add_dependencies(tests simgrid-mc)
 endif()
 
 

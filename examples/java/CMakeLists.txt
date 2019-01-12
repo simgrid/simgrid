@@ -26,9 +26,8 @@ set(task-priority_files         Main  Test)
 set(hostload_files              Main  LoadRunner)
 
 if(enable_java)
-  add_custom_target(java-all
-    COMMENT "Building all Java examples..."
-  )
+  add_custom_target(java-all COMMENT "Building all Java examples...")
+  add_dependencies(tests java-all)
 endif()
 
 foreach (example app-bittorrent app-centralizedmutex app-masterworker app-pingpong app-tokenring async-yield async-waitall async-dsend
