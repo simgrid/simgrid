@@ -7,7 +7,7 @@ from simgrid import *
 import sys
 
 
-def victimA_fun():
+def victrim_a_fun():
     this_actor.on_exit(lambda: this_actor.info("I have been killed!"))
     this_actor.info("Hello!")
     this_actor.info("Suspending myself")
@@ -19,35 +19,35 @@ def victimA_fun():
     this_actor.info("Bye!")
 
 
-def victimB_fun():
+def victrim_b_fun():
     this_actor.info("Terminate before being killed")
 
 
 def killer():
     this_actor.info("Hello!")  # - First start a victim process
-    victimA = Actor.create("victim A", Host.by_name("Fafard"), victimA_fun)
-    victimB = Actor.create("victim B", Host.by_name("Jupiter"), victimB_fun)
+    victrim_a = Actor.create("victim A", Host.by_name("Fafard"), victrim_a_fun)
+    victrim_b = Actor.create("victim B", Host.by_name("Jupiter"), victrim_b_fun)
     this_actor.sleep_for(10)  # - Wait for 10 seconds
 
     # - Resume it from its suspended state
     this_actor.info("Resume the victim A")
-    victimA.resume()
+    victrim_a.resume()
     this_actor.sleep_for(2)
 
     this_actor.info("Kill the victim A")   # - and then kill it
-    Actor.by_pid(victimA.pid).kill()       # You can retrieve an actor from its PID (and then kill it)
+    Actor.by_pid(victrim_a.pid).kill()       # You can retrieve an actor from its PID (and then kill it)
 
     this_actor.sleep_for(1)
 
     # that's a no-op, there is no zombies in SimGrid
-    this_actor.info("Kill victimB, even if it's already dead")
-    victimB.kill()
+    this_actor.info("Kill victrim_b, even if it's already dead")
+    victrim_b.kill()
 
     this_actor.sleep_for(1)
 
     this_actor.info("Start a new actor, and kill it right away")
-    victimC = Actor.create("victim C", Host.by_name("Jupiter"), victimA_fun)
-    victimC.kill()
+    victrim_c = Actor.create("victim C", Host.by_name("Jupiter"), victrim_a_fun)
+    victrim_c.kill()
 
     this_actor.sleep_for(1)
 

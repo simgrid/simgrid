@@ -32,7 +32,9 @@ namespace {
 
 static std::string get_simgrid_version()
 {
-  int major, minor, patch;
+  int major;
+  int minor;
+  int patch;
   sg_version_get(&major, &minor, &patch);
   return simgrid::xbt::string_printf("%i.%i.%i", major, minor, patch);
 }
@@ -77,7 +79,7 @@ PYBIND11_MODULE(simgrid, m)
          [](py::object fun) {
            ActorPtr act = Actor::self();
            simgrid::s4u::this_actor::on_exit(
-               [act, fun](int ignored, void* data) {
+               [act, fun](int /*ignored*/, void* /*data*/) {
                  try {
                    fun();
                  } catch (py::error_already_set& e) {
