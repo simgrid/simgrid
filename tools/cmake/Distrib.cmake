@@ -323,9 +323,6 @@ add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Run tests"
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ctest --output-on-failure -j 4
 
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX Install with documentation"
-  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} install
-
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Remove temp directories"
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
   )
