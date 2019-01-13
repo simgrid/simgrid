@@ -13,7 +13,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
           comm_info ctxalloc ctxsplit dup dup_with_info) 
     # not compiled files
     # comm_idup comm_idup_mul comm_idup_overlap commname dupic ic1 ic2 iccreate icgroup icm icsplit probe-intercomm 
-    add_executable(${file} ${file}.c)
+    add_executable(${file} EXCLUDE_FROM_ALL ${file}.c)
+    add_dependencies(tests ${file})
     target_link_libraries(${file} simgrid mtest_c)
   endforeach()
 endif()

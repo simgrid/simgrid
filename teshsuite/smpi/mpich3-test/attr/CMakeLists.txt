@@ -11,7 +11,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 
   foreach(file attr2type attrdeleteget attrend2 attrend attrerr attrerrcomm attrerrtype attrorder attrordercomm attrordertype attrt
           baseattr2 baseattrcomm fkeyval fkeyvalcomm fkeyvaltype keyval_double_free) #attric 
-    add_executable(${file} ${file}.c)
+    add_executable(${file} EXCLUDE_FROM_ALL ${file}.c)
+    add_dependencies(tests ${file})
     target_link_libraries(${file} simgrid mtest_c)
   endforeach()
 endif()

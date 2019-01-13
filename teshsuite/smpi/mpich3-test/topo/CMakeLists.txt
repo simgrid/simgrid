@@ -12,7 +12,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   foreach(file cartcreates cartshift1 cartsuball cartzero)
     # not compiled files
     # cartmap1 dgraph_unwgt dims1 dims2 dims3 dims4 distgraph1 graphcr2 graphcr graphmap1 neighb_coll topodup topotest
-    add_executable(${file} ${file}.c)
+    add_executable(${file} EXCLUDE_FROM_ALL ${file}.c)
+    add_dependencies(tests ${file})
     target_link_libraries(${file} simgrid mtest_c)
   endforeach()
 endif()

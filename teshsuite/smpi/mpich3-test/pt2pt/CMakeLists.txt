@@ -13,7 +13,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
           dtype_send probe-unexp sendall sendflood sendrecv1 sendrecv2 sendrecv3 waitany-null waittestnull many_isend manylmt recv_any scancel scancel2 rcancel)
     # not compiled files: big_count_status bsend1 bsend2 bsend3 bsend4 bsend5 bsendalign bsendfrag bsendpending mprobe
     # cancelrecv greq1 icsend large_message pscancel  rqfreeb rqstatus  sendself scancel_unmatch
-    add_executable(${file} ${file}.c)
+    add_executable(${file} EXCLUDE_FROM_ALL ${file}.c)
+    add_dependencies(tests ${file})
     target_link_libraries(${file} simgrid mtest_c)
   endforeach()
 

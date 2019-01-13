@@ -8,9 +8,10 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-#  add_executable(allocmemf allocmemf.f)
-#  add_executable(c2f2cf c2f2cf.f c2f2c.c)
-#  add_executable(ctypesinf ctypesinf.f ctypesfromc.c)
+#  add_executable(allocmemf EXCLUDE_FROM_ALL allocmemf.f)
+#  add_executable(c2f2cf    EXCLUDE_FROM_ALL c2f2cf.f c2f2c.c)
+#  add_executable(ctypesinf EXCLUDE_FROM_ALL ctypesinf.f ctypesfromc.c)
+# add_dependencies(tests allocmemf c2f2cf ctypesinf)
 
 #  target_link_libraries(allocmemf simgrid mtest_f77)
 #  target_link_libraries(c2f2cf simgrid mtest_f77)

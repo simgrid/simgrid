@@ -8,25 +8,14 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-  add_executable(attrmpi1f attrmpi1f.f)
-  add_executable(baseattr2f baseattr2f.f)
-  add_executable(baseattrf baseattrf.f)
-  add_executable(commattr2f commattr2f.f)
-  add_executable(commattr3f commattr3f.f)
-  add_executable(commattrf commattrf.f )
-  add_executable(typeattr2f typeattr2f.f )
-  add_executable(typeattr3f typeattr3f.f )
-  add_executable(typeattrf typeattrf.f )
-
-  target_link_libraries(attrmpi1f simgrid mtest_f77)
-  target_link_libraries(baseattr2f simgrid mtest_f77)
-  target_link_libraries(baseattrf simgrid mtest_f77)
-  target_link_libraries(commattr2f simgrid mtest_f77)
-  target_link_libraries(commattr3f simgrid mtest_f77)
-  target_link_libraries(commattrf simgrid mtest_f77)
-  target_link_libraries(typeattr2f simgrid mtest_f77)
-  target_link_libraries(typeattr3f simgrid mtest_f77)
-  target_link_libraries(typeattrf simgrid mtest_f77)
+  foreach(test attrmpi1f 
+               baseattrf baseattr2f
+               commattrf commattr2f commattr3f
+	       typeattrf typeattr2f typeattr3f)
+    add_executable(${test} EXCLUDE_FROM_ALL ${test}.f)
+    add_dependencies(tests ${test})
+    target_link_libraries(${test} simgrid mtest_f77)
+  endforeach()
 endif()
 
 set(examples_src

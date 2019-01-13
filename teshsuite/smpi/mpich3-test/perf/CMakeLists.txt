@@ -11,7 +11,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 
   foreach(file commcreatep non_zero_root sendrecvl timer transp-datatype twovec dtpack indexperf  nestvec2 nestvec)
     #not compiled files manyrma
-    add_executable(${file} ${file}.c)
+    add_executable(${file} EXCLUDE_FROM_ALL ${file}.c)
+    add_dependencies(tests ${file})
     target_link_libraries(${file} simgrid mtest_c)
   endforeach()
 endif()

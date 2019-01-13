@@ -20,12 +20,14 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
     # pairtype-size-extent segtest simple-pack-external simple-pack-external2 sizedtypes slice-pack slice-pack-external struct-empty-el
     # struct-no-real-type structpack2 subarray subarray-pack tmatchsize triangular-pack unusual-noncontigs
     # zero-blklen-vector
-    add_executable(${file} ${file}.c)
+    add_executable(${file} EXCLUDE_FROM_ALL ${file}.c)
+    add_dependencies(tests ${file})
     target_link_libraries(${file} simgrid mtest_c)
   endforeach()
 
-  add_executable(sendrecvt2 ${CMAKE_CURRENT_SOURCE_DIR}/../util/dtypes.c sendrecvt2.c)
-  add_executable(sendrecvt4 ${CMAKE_CURRENT_SOURCE_DIR}/../util/dtypes.c sendrecvt4.c)
+  add_executable(sendrecvt2 EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/../util/dtypes.c sendrecvt2.c)
+  add_executable(sendrecvt4 EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/../util/dtypes.c sendrecvt4.c)
+  add_dependencies(tests sendrecvt2 sendrecvt4)
   target_link_libraries(sendrecvt2 simgrid mtest_c)
   target_link_libraries(sendrecvt4 simgrid mtest_c)
   set_target_properties(hindexed_block PROPERTIES COMPILE_FLAGS "-DTEST_HINDEXED_BLOCK" LINK_FLAGS "-DTEST_HINDEXED_BLOCK")

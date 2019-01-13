@@ -8,10 +8,11 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-  add_executable(infotest2f90 infotest2f90.f90 ../util/mtestf90.f90)
-  add_executable(infotestf90 infotestf90.f90 ../util/mtestf90.f90)
-  target_link_libraries(infotest2f90  simgrid mtest_f90)
-  target_link_libraries(infotestf90  simgrid mtest_f90)
+  foreach(test infotest2f90 infotestf90)
+    add_executable(${test} EXCLUDE_FROM_ALL ${test}.f90)
+    add_dependencies(tests ${test})
+    target_link_libraries(${test} simgrid mtest_f90)
+  endforeach()
 endif()
 
 set(examples_src

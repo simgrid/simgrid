@@ -29,12 +29,14 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
     # win_shared_zerobyte aint derived-acc-flush_local large-acc-flush_local
     #  win_shared_create win_shared_put_flush_get win_shared_rma_flush_load
     # wrma_flush_get
-    add_executable(${file} ${file}.c)
+    add_executable(${file} EXCLUDE_FROM_ALL ${file}.c)
+    add_dependencies(tests ${file})
     target_link_libraries(${file} simgrid mtest_c)
     set_target_properties(${file} PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
   endforeach()
 
-    add_executable(transpose3_shm transpose3.c)
+    add_executable(transpose3_shm EXCLUDE_FROM_ALL transpose3.c)
+    add_dependencies(tests transpose3_shm)	
     target_link_libraries(transpose3_shm simgrid mtest_c)
     set_target_properties(transpose3_shm PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS} -DUSE_WIN_ALLOCATE")
 endif()

@@ -11,29 +11,14 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/typeaints.h.in typeaints.h @ONLY)
 
-#  add_executable(allctypesf allctypesf.f)
-  add_executable(gaddressf gaddressf.f)
-#  add_executable(hindex1f hindex1f.f)
-#  add_executable(hindexed_blockf hindexed_blockf.f)
-#  add_executable(packef packef.f)
-#  add_executable(typecntsf typecntsf.f)
-#  add_executable(typem2f typem2f.f)
-#  add_executable(typename3f typename3f.f)
-#  add_executable(typenamef typenamef.f)
-#  add_executable(typesnamef typesnamef.f)
-  add_executable(typesubf typesubf.f)
-
-#  target_link_libraries(allctypesf simgrid mtest_f77)
-  target_link_libraries(gaddressf simgrid mtest_f77)
-#  target_link_libraries(hindex1f simgrid mtest_f77)
-#  target_link_libraries(hindexed_blockf simgrid mtest_f77)
-#  target_link_libraries(packef simgrid mtest_f77)
-#  target_link_libraries(typecntsf simgrid mtest_f77)
-#  target_link_libraries(typem2f simgrid mtest_f77)
-#  target_link_libraries(typename3f simgrid mtest_f77)
-#  target_link_libraries(typenamef simgrid mtest_f77)
-#  target_link_libraries(typesnamef simgrid mtest_f77)
-  target_link_libraries(typesubf simgrid mtest_f77)
+  foreach(test gaddressf
+             # allctypesf hindex1f hindexed_blockf packef typecntsf
+             # typem2f typename3f typenamef typesnamef
+	       typesubf)
+    add_executable(${test} EXCLUDE_FROM_ALL ${test}.f)
+    add_dependencies(tests ${test})
+    target_link_libraries(${test} simgrid mtest_f77)	
+  endforeach()
 endif()
 
 set(examples_src

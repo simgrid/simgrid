@@ -8,31 +8,21 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-  add_executable(winaccf winaccf.f)
-#  add_executable(winerrf winerrf.f)
-  add_executable(winfencef winfencef.f)
-  add_executable(wingroupf wingroupf.f)
-#  add_executable(baseattrwinf baseattrwinf.f)
-#  add_executable(winattr2f winattr2f.f)
-#  add_executable(winattrf winattrf.f)
-  add_executable(c2f2cwinf c2f2cwinf.f c2f2cwin.c)
-  add_executable(wingetf wingetf.f)
-  add_executable(winnamef winnamef.f)
-  add_executable(winscale1f winscale1f.f)
-#  add_executable(winscale2f winscale2f.f)
-
-target_link_libraries(winaccf simgrid mtest_f77)
-#target_link_libraries(winerrf simgrid mtest_f77)
-target_link_libraries(winfencef simgrid mtest_f77)
-target_link_libraries(wingroupf simgrid mtest_f77)
-#target_link_libraries(baseattrwinf simgrid mtest_f77)
-target_link_libraries(c2f2cwinf simgrid mtest_f77)
-#target_link_libraries(winattr2f simgrid mtest_f77)
-#target_link_libraries(winattrf simgrid mtest_f77)
-target_link_libraries(wingetf simgrid mtest_f77)
-target_link_libraries(winnamef simgrid mtest_f77)
-target_link_libraries(winscale1f simgrid mtest_f77)
-#target_link_libraries(winscale2f simgrid mtest_f77)
+  foreach(test winaccf
+             # winerrf
+	       winfencef wingroupf
+	     # baseattrwinf winattr2f winattrf
+               wingetf winnamef winscale1f
+	     # winscale2f
+	       )
+    add_executable(${test} EXCLUDE_FROM_ALL ${test}.f)
+    add_dependencies(tests ${test})
+    target_link_libraries(${test} simgrid mtest_f77)
+  endforeach()
+  
+  add_executable(c2f2cwinf EXCLUDE_FROM_ALL c2f2cwinf.f c2f2cwin.c)
+  add_dependencies(tests c2f2cwinf)
+  target_link_libraries(c2f2cwinf simgrid mtest_f77)
 endif()
 
 set(examples_src

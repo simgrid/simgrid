@@ -8,12 +8,13 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-  add_executable(cartcrf cartcrf.f)
-#  add_executable(dgraph_unwgtf dgraph_unwgtf.f)
-#  add_executable(dgraph_wgtf dgraph_unwgtf.f)
-  target_link_libraries(cartcrf simgrid mtest_f77)
-#  target_link_libraries(dgraph_wgtf simgrid mtest_f77)
-#  target_link_libraries(dgraph_unwgtf simgrid mtest_f77)
+  foreach(test cartcrf
+             # dgraph_unwgtf dgraph_wgtf
+	       )
+    add_executable(${test} EXCLUDE_FROM_ALL ${test}.f)
+    add_dependencies(tests ${test})
+    target_link_libraries(${test} simgrid mtest_f77)
+  endforeach()
 endif()
 
 set(examples_src

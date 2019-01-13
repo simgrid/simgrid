@@ -7,32 +7,22 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   endif()
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
+ 
+  foreach(test winaccf90
+             # winerrf90
+	       winfencef90 wingroupf90
+	     # baseattrwinf90 winattr2f90 winattrf90
+	       wingetf90 winnamef90 winscale1f90
+	     # winscale2f90
+	       )
+    add_executable(${test} EXCLUDE_FROM_ALL ${test}.f90)
+    add_dependencies(tests ${test})
+    target_link_libraries(${test} simgrid mtest_f90)	
+  endforeach()
 
-  add_executable(winaccf90 winaccf90.f90)
-#  add_executable(winerrf90 winerrf90.f90)
-  add_executable(winfencef90 winfencef90.f90)
-  add_executable(wingroupf90 wingroupf90.f90)
-#  add_executable(baseattrwinf90 baseattrwinf90.f90)
-#  add_executable(winattr2f90 winattr2f90.f90)
-#  add_executable(winattrf90 winattrf90.f90)
-  add_executable(c2f2cwinf90 c2f2cwinf90.f90 c2f902cwin.c)
-  add_executable(wingetf90 wingetf90.f90)
-  add_executable(winnamef90 winnamef90.f90)
-  add_executable(winscale1f90 winscale1f90.f90)
-#  add_executable(winscale2f90 winscale2f90.f90)
-
-target_link_libraries(winaccf90 simgrid mtest_f90)
-#target_link_libraries(winerrf90 simgrid mtest_f90)
-target_link_libraries(winfencef90 simgrid mtest_f90)
-target_link_libraries(wingroupf90 simgrid mtest_f90)
-#target_link_libraries(baseattrwinf90 simgrid mtest_f90)
-target_link_libraries(c2f2cwinf90 simgrid mtest_f90)
-#target_link_libraries(winattr2f90 simgrid mtest_f90)
-#target_link_libraries(winattrf90 simgrid mtest_f90)
-target_link_libraries(wingetf90 simgrid mtest_f90)
-target_link_libraries(winnamef90 simgrid mtest_f90)
-target_link_libraries(winscale1f90 simgrid mtest_f90)
-#target_link_libraries(winscale2f90 simgrid mtest_f90)
+  add_executable(c2f2cwinf90 EXCLUDE_FROM_ALL c2f2cwinf90.f90 c2f902cwin.c)
+  add_dependencies(tests c2f2cwinf90)
+  target_link_libraries(c2f2cwinf90 simgrid mtest_f90)
 endif()
 
 set(examples_src

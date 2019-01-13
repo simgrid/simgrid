@@ -8,7 +8,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-  add_executable(baseenvf90 baseenvf90.f90)
+  add_executable(baseenvf90 EXCLUDE_FROM_ALL baseenvf90.f90)
+  add_dependencies(tests baseenvf90)
   target_link_libraries(baseenvf90 simgrid mtest_f90)
 endif()
 

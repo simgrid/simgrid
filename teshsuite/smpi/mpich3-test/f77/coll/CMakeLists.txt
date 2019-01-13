@@ -8,35 +8,16 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-#  add_executable(allredint8f allredint8f.f)
-#  add_executable(allredopttf allredopttf.f)
-  add_executable(alltoallvf alltoallvf.f)
-#  add_executable(alltoallwf alltoallwf.f)
-  add_executable(exscanf exscanf.f)
-  add_executable(inplacef inplacef.f)
- # add_executable(nonblockingf nonblockingf.f)
- # add_executable(nonblocking_inpf nonblocking_inpf.f)
-  add_executable(red_scat_blockf red_scat_blockf.f)
-  add_executable(redscatf redscatf.f)
-  add_executable(reducelocalf reducelocalf.f)
-  add_executable(split_typef split_typef.f)
-  add_executable(uallreducef uallreducef.f)
-  add_executable(vw_inplacef vw_inplacef.f)
-
-#  target_link_libraries(allredint8f simgrid mtest_f77)
-#  target_link_libraries(allredopttf simgrid mtest_f77)
-  target_link_libraries(alltoallvf simgrid mtest_f77)
-#  target_link_libraries(alltoallwf simgrid mtest_f77)
-  target_link_libraries(exscanf simgrid mtest_f77)
-  target_link_libraries(inplacef simgrid mtest_f77)
- # target_link_libraries(nonblockingf simgrid mtest_f77)
- # target_link_libraries(nonblocking_inpf simgrid mtest_f77)
-  target_link_libraries(red_scat_blockf simgrid mtest_f77)
-  target_link_libraries(redscatf simgrid mtest_f77)
-  target_link_libraries(reducelocalf simgrid mtest_f77)
-  target_link_libraries(split_typef simgrid mtest_f77)
-  target_link_libraries(uallreducef simgrid mtest_f77)
-  target_link_libraries(vw_inplacef simgrid mtest_f77)
+  foreach(test alltoallvf
+             # allredint8f allredopttf alltoallwf
+	       exscanf inplacef
+	     # nonblockingf nonblocking_inpf
+	       redscatf red_scat_blockf reducelocalf
+	       split_typef uallreducef vw_inplacef)
+    add_executable(${test} EXCLUDE_FROM_ALL ${test}.f)
+    add_dependencies(tests ${test})
+    target_link_libraries(${test} simgrid mtest_f77)
+  endforeach()
 endif()
 
 set(examples_src
