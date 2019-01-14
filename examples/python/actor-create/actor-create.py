@@ -63,6 +63,8 @@ class Sender:
         self.msg = msg
         self.mbox = mbox
 
+    # Actors that are created as object will execute their __call__ method.
+    # So, the following constitutes the main function of the Sender actor.
     def __call__(self):
         this_actor.info("Hello s4u, I have something to send")
         mailbox = Mailbox.by_name(self.mbox)
