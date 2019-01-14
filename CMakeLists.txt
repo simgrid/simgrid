@@ -15,7 +15,7 @@ endif()
 
 ## 
 ## Check the C/C++ standard that we need
-##   See also tools/cmake/GCCFlags.cmake that sets our paranoid warning flags
+##   See also tools/cmake/Flags.cmake that sets our paranoid warning flags
 INCLUDE(CheckCCompilerFlag)
 CHECK_C_COMPILER_FLAG(-fstack-cleaner HAVE_C_STACK_CLEANER)
 
@@ -505,7 +505,7 @@ endif()
 
 ### Setup gcc & clang flags
 if (NOT MSVC)
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/GCCFlags.cmake)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Flags.cmake)
 endif()
 
 ### Generate the required headers and scripts
