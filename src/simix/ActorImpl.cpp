@@ -23,7 +23,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix, "Logging specific to SIMIX (process)");
 
-unsigned long simix_process_maxpid = 0;
+static unsigned long simix_process_maxpid = 0;
 
 /**
  * @brief Returns the current agent.
@@ -472,8 +472,8 @@ void SIMIX_process_kill(smx_actor_t actor, smx_actor_t issuer)
     return;
   }
 
-  XBT_DEBUG("Actor '%s'@%s is killing actor '%s'@%s", issuer->get_cname(),
-            (issuer->host_ == nullptr ? "(null)" : issuer->host_->get_cname()), actor->get_cname(),
+  XBT_DEBUG("Actor '%s'@%s is killing actor '%s'@%s", issuer == nullptr ? "(null)" : issuer->get_cname(),
+            (issuer == nullptr || issuer->host_ == nullptr ? "(null)" : issuer->host_->get_cname()), actor->get_cname(),
             actor->host_->get_cname());
 
   actor->context_->iwannadie = true;
