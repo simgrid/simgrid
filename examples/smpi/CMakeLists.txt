@@ -41,7 +41,7 @@ set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/energy/energy.tes
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace/trace.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_simple/trace_simple.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_call_location/trace_call_location.tesh
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/ampi/ampi.tesh
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/ampi_test/ampi_test.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay-override-replayer.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay.tesh                          PARENT_SCOPE)
 set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
