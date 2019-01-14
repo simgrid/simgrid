@@ -357,7 +357,7 @@ public:
    * @brief Get the number of constraint associated to a variable
    * @return The number of constraint associated to the variable
    */
-  int get_number_of_constraint() const { return cnsts.size(); }
+  size_t get_number_of_constraint() const { return cnsts.size(); }
 
   /**
    * @brief Get the data associated to a variable
@@ -445,7 +445,7 @@ public:
    * @param bound The maximum value of the variable (-1.0 if no maximum value)
    * @param number_of_constraints The maximum number of constraint to associate to the variable
    */
-  Variable* variable_new(resource::Action* id, double weight_value, double bound, int number_of_constraints);
+  Variable* variable_new(resource::Action* id, double weight_value, double bound, size_t number_of_constraints);
 
   /**
    * @brief Free a variable
@@ -599,7 +599,6 @@ private:
       modified_constraint_set;
   xbt_mallocator_t variable_mallocator_ =
       xbt_mallocator_new(65536, System::variable_mallocator_new_f, System::variable_mallocator_free_f, nullptr);
-  ;
 };
 
 class XBT_PUBLIC FairBottleneck : public System {

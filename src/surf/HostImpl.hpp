@@ -29,7 +29,7 @@ class XBT_PRIVATE HostModel : public kernel::resource::Model {
 public:
   HostModel() : Model(Model::UpdateAlgo::FULL) {}
 
-  virtual kernel::resource::Action* execute_parallel(int host_nb, sg_host_t* host_list, double* flops_amount,
+  virtual kernel::resource::Action* execute_parallel(size_t host_nb, sg_host_t* host_list, double* flops_amount,
                                                      double* bytes_amount, double rate);
 };
 
@@ -55,7 +55,7 @@ public:
   void turn_on();
   void turn_off();
   std::vector<s4u::ActorPtr> get_all_actors();
-  int get_actor_count();
+  size_t get_actor_count();
 
   typedef boost::intrusive::list<
       kernel::actor::ActorImpl,

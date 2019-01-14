@@ -36,11 +36,11 @@ class XBT_PRIVATE L07Action;
 class HostL07Model : public HostModel {
 public:
   HostL07Model();
-  ~HostL07Model();
+  ~HostL07Model() override;
 
   double next_occuring_event(double now) override;
   void update_actions_state(double now, double delta) override;
-  kernel::resource::Action* execute_parallel(int host_nb, sg_host_t* host_list, double* flops_amount,
+  kernel::resource::Action* execute_parallel(size_t host_nb, sg_host_t* host_list, double* flops_amount,
                                              double* bytes_amount, double rate) override;
 };
 
@@ -104,12 +104,12 @@ public:
 class L07Action : public CpuAction {
   friend Action *CpuL07::execution_start(double size);
   friend Action *CpuL07::sleep(double duration);
-  friend Action* HostL07Model::execute_parallel(int host_nb, sg_host_t* host_list, double* flops_amount,
+  friend Action* HostL07Model::execute_parallel(size_t host_nb, sg_host_t* host_list, double* flops_amount,
                                                 double* bytes_amount, double rate);
   friend Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
 
 public:
-  L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* host_list, double* flops_amount,
+  L07Action(kernel::resource::Model* model, size_t host_nb, sg_host_t* host_list, double* flops_amount,
             double* bytes_amount, double rate);
   ~L07Action();
 

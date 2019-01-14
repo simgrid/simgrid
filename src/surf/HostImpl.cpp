@@ -24,7 +24,7 @@ namespace surf {
  *********/
 
 /* Helper function for executeParallelTask */
-static inline double has_cost(double* array, int pos)
+static inline double has_cost(double* array, size_t pos)
 {
   if (array)
     return array[pos];
@@ -32,7 +32,7 @@ static inline double has_cost(double* array, int pos)
     return -1.0;
 }
 
-kernel::resource::Action* HostModel::execute_parallel(int host_nb, s4u::Host** host_list, double* flops_amount,
+kernel::resource::Action* HostModel::execute_parallel(size_t host_nb, s4u::Host** host_list, double* flops_amount,
                                                       double* bytes_amount, double rate)
 {
   kernel::resource::Action* action = nullptr;
@@ -44,7 +44,7 @@ kernel::resource::Action* HostModel::execute_parallel(int host_nb, s4u::Host** h
     int nb = 0;
     double value = 0.0;
 
-    for (int i = 0; i < host_nb * host_nb; i++) {
+    for (size_t i = 0; i < host_nb * host_nb; i++) {
       if (has_cost(bytes_amount, i) > 0.0) {
         nb++;
         value = has_cost(bytes_amount, i);
@@ -142,7 +142,7 @@ std::vector<s4u::ActorPtr> HostImpl::get_all_actors()
     res.push_back(actor.ciface());
   return res;
 }
-int HostImpl::get_actor_count()
+size_t HostImpl::get_actor_count()
 {
   return process_list_.size();
 }

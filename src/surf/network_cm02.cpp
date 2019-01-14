@@ -218,7 +218,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   XBT_IN("(%s,%s,%g,%g)", src->get_cname(), dst->get_cname(), size, rate);
 
   src->route_to(dst, route, &latency);
-  xbt_assert(not route.empty() || latency,
+  xbt_assert(not route.empty() || latency > 0,
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
              src->get_cname(), dst->get_cname());
 
@@ -254,7 +254,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   action->latency_ *= get_latency_factor(size);
   action->rate_ = get_bandwidth_constraint(action->rate_, bandwidth_bound, size);
 
-  int constraints_per_variable = route.size();
+  size_t constraints_per_variable = route.size();
   constraints_per_variable += back_route.size();
 
   if (action->latency_ > 0) {

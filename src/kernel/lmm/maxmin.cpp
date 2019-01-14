@@ -202,13 +202,13 @@ void System::variable_mallocator_free_f(void* var)
   delete static_cast<Variable*>(var);
 }
 
-Variable* System::variable_new(resource::Action* id, double sharing_weight, double bound, int number_of_constraints)
+Variable* System::variable_new(resource::Action* id, double sharing_weight, double bound, size_t number_of_constraints)
 {
-  XBT_IN("(sys=%p, id=%p, weight=%f, bound=%f, num_cons =%d)", this, id, sharing_weight, bound, number_of_constraints);
+  XBT_IN("(sys=%p, id=%p, weight=%f, bound=%f, num_cons =%zu)", this, id, sharing_weight, bound, number_of_constraints);
 
   Variable* var = static_cast<Variable*>(xbt_mallocator_get(variable_mallocator_));
   var->initialize(id, sharing_weight, bound, number_of_constraints, visited_counter_ - 1);
-  if (sharing_weight)
+  if (sharing_weight > 0)
     variable_set.push_front(*var);
   else
     variable_set.push_back(*var);
