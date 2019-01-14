@@ -337,6 +337,7 @@ if(enable_memcheck)
 else()
   add_custom_target(check COMMAND make test)
 endif()
+add_dependencies(check tests)
 
 #######################################
 ### Fill in the "make xxx-clean" target ###
