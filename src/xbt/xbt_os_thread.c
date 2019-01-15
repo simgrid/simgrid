@@ -48,37 +48,6 @@ typedef struct xbt_os_thread_ {
   void *param;
   pvoid_f_pvoid_t start_routine;
 } s_xbt_os_thread_t;
-static xbt_os_thread_t main_thread = NULL;
-
-/* thread-specific data containing the xbt_os_thread_t structure */
-static int thread_mod_inited = 0;
-
-/* frees the xbt_os_thread_t corresponding to the current thread */
-static void xbt_os_thread_free_thread_data(xbt_os_thread_t thread)
-{
-  if (thread == main_thread)    /* just killed main thread */
-    main_thread = NULL;
-  free(thread);
-}
-
-void xbt_os_thread_mod_preinit(void)
-{
-  if (thread_mod_inited)
-    return;
-
-  main_thread = xbt_new(s_xbt_os_thread_t, 1);
-  main_thread->param = NULL;
-  main_thread->start_routine = NULL;
-
-  thread_mod_inited = 1;
-}
-
-void xbt_os_thread_mod_postexit(void)
-{
-  free(main_thread);
-  main_thread = NULL;
-  thread_mod_inited = 0;
-}
 
 /** Calls pthread_atfork() if present, and raise an exception otherwise.
  *
@@ -91,50 +60,6 @@ void xbt_os_thread_mod_postexit(void)
 int xbt_os_thread_atfork(void (*prepare)(void), void (*parent)(void), void (*child)(void))
 {
   return pthread_atfork(prepare, parent, child);
-}
-
-static void *wrapper_start_routine(void *s)
-{
-  xbt_os_thread_t t = s;
-
-  return t->start_routine(t->param);
-}
-
-xbt_os_thread_t xbt_os_thread_create(pvoid_f_pvoid_t start_routine, void* param)
-{
-  xbt_os_thread_t res_thread = xbt_new(s_xbt_os_thread_t, 1);
-  res_thread->start_routine = start_routine;
-  res_thread->param = param;
-
-  int errcode = pthread_create(&(res_thread->t), NULL, wrapper_start_routine, res_thread);
-  xbt_assert(errcode == 0, "pthread_create failed: %s", strerror(errcode));
-
-  return res_thread;
-}
-
-/** Bind the thread to the given core, if possible.
- *
- * If pthread_setaffinity_np is not usable on that (non-gnu) platform, this function does nothing.
- */
-int xbt_os_thread_bind(XBT_ATTRIB_UNUSED xbt_os_thread_t thread, XBT_ATTRIB_UNUSED int cpu)
-{
-  int errcode = 0;
-#if HAVE_PTHREAD_SETAFFINITY
-  pthread_t pthread = thread->t;
-  cpu_set_t cpuset;
-  CPU_ZERO(&cpuset);
-  CPU_SET(cpu, &cpuset);
-  errcode = pthread_setaffinity_np(pthread, sizeof(cpu_set_t), &cpuset);
-#endif
-  return errcode;
-}
-
-void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
-{
-  int errcode = pthread_join(thread->t, thread_return);
-
-  xbt_assert(errcode==0, "pthread_join failed: %s", strerror(errcode));
-  xbt_os_thread_free_thread_data(thread);
 }
 
 /****** mutex related functions ******/

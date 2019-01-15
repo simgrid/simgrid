@@ -92,7 +92,6 @@ static void xbt_preinit()
   _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
   xbt_log_preinit();
-  xbt_os_thread_mod_preinit();
   xbt_dict_preinit();
 
   srand(seed);
@@ -108,7 +107,6 @@ static void xbt_postexit()
     return;
   xbt_initialized--;
   xbt_dict_postexit();
-  xbt_os_thread_mod_postexit();
   xbt_dynar_free(&xbt_cmdline);
   xbt_log_postexit();
 #if SIMGRID_HAVE_MC

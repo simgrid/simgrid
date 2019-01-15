@@ -24,13 +24,6 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-/** @brief Thread data type (opaque structure) */
-typedef struct xbt_os_thread_ *xbt_os_thread_t;
-XBT_PUBLIC xbt_os_thread_t xbt_os_thread_create(pvoid_f_pvoid_t start_routine, void* param);
-
-/* xbt_os_thread_join frees the joined thread (ie the XBT wrapper around it, the OS frees the rest) */
-XBT_PUBLIC void xbt_os_thread_join(xbt_os_thread_t thread, void** thread_return);
-XBT_PUBLIC int xbt_os_thread_bind(xbt_os_thread_t thread, int core);
 XBT_PUBLIC int xbt_os_thread_atfork(void (*prepare)(void), void (*parent)(void), void (*child)(void));
 
 /** @brief Thread mutex data type (opaque structure) */
@@ -39,13 +32,6 @@ XBT_PUBLIC xbt_os_mutex_t xbt_os_mutex_init(void);
 XBT_PUBLIC void xbt_os_mutex_acquire(xbt_os_mutex_t mutex);
 XBT_PUBLIC void xbt_os_mutex_release(xbt_os_mutex_t mutex);
 XBT_PUBLIC void xbt_os_mutex_destroy(xbt_os_mutex_t mutex);
-
-/** @brief Semaphore data type (opaque structure) */
-typedef struct xbt_os_sem_ *xbt_os_sem_t;
-XBT_PUBLIC xbt_os_sem_t xbt_os_sem_init(unsigned int value);
-XBT_PUBLIC void xbt_os_sem_acquire(xbt_os_sem_t sem);
-XBT_PUBLIC void xbt_os_sem_release(xbt_os_sem_t sem);
-XBT_PUBLIC void xbt_os_sem_destroy(xbt_os_sem_t sem);
 
 /** @} */
 
