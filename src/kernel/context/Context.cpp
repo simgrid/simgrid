@@ -66,14 +66,11 @@ Context* ContextFactory::create_maestro(std::function<void()> code, smx_actor_t 
 }
 
 Context::Context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor)
-    : code_(std::move(code)), actor_(actor)
+    : code_(std::move(code)), cleanup_func_(cleanup_func), actor_(actor)
 {
-  /* If the user provided a function for the process then use it.
-     Otherwise, it is the context for maestro and we should set it as the
-     current context */
-  if (has_code())
-    this->cleanup_func_ = cleanup_func;
-  else
+  /* If no function was provided, this is the context for maestro
+   * and we should set it as the current context */
+  if (not has_code())
     set_current(this);
 }
 

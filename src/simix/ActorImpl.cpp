@@ -369,9 +369,8 @@ smx_actor_t SIMIX_process_create(std::string name, simgrid::simix::ActorCode cod
   simix_global->process_to_run.push_back(process);
   intrusive_ptr_add_ref(process);
 
-  /* The onCreation() signal must be delayed until there, where the pid and everything is set */
-  simgrid::s4u::ActorPtr tmp = process->iface(); // Passing this directly to onCreation will lead to crashes
-  simgrid::s4u::Actor::on_creation(tmp);
+  /* The on_creation() signal must be delayed until there, where the pid and everything is set */
+  simgrid::s4u::Actor::on_creation(process->iface());
 
   return process;
 }
