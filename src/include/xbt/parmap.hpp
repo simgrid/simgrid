@@ -137,7 +137,7 @@ private:
 
   Flag status;              /**< is the parmap active or being destroyed? */
   unsigned work_round;      /**< index of the current round */
-  xbt_os_thread_t* workers; /**< worker thread handlers */
+  std::vector<std::thread*> workers; /**< worker thread handlers */
   unsigned num_workers;     /**< total number of worker threads including the controller */
   Synchro* synchro;         /**< synchronization object */
 
@@ -159,21 +159,29 @@ template <typename T> Parmap<T>::Parmap(unsigned num_workers, e_xbt_parmap_mode_
   /* Initialize the thread pool data structure */
   this->status      = PARMAP_WORK;
   this->work_round  = 0;
-  this->workers     = new xbt_os_thread_t[num_workers];
+  this->workers.reserve(num_workers);
   this->num_workers = num_workers;
   this->synchro     = new_synchro(mode);
 
   /* Create the pool of worker threads (the caller of apply() will be worker[0]) */
   this->workers[0] = nullptr;
-  unsigned int core_bind = 0;
+  XBT_ATTRIB_UNUSED unsigned int core_bind = 0;
+
   for (unsigned i = 1; i < num_workers; i++) {
-    ThreadData* data = new ThreadData(*this, i);
-    this->workers[i] = xbt_os_thread_create(worker_main, data);
-    xbt_os_thread_bind(this->workers[i], core_bind);
+    this->workers[i] = new std::thread(worker_main, new ThreadData(*this, i));
+
+    /* Bind the worker to a core if possible */
+#if HAVE_PTHREAD_SETAFFINITY
+    pthread_t pthread = this->workers[i]->native_handle();
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(core_bind, &cpuset);
+    pthread_setaffinity_np(pthread, sizeof(cpu_set_t), &cpuset);
     if (core_bind != std::thread::hardware_concurrency() - 1)
       core_bind++;
     else
       core_bind = 0;
+#endif
   }
 }
 
@@ -186,9 +194,9 @@ template <typename T> Parmap<T>::~Parmap()
   synchro->master_signal();
 
   for (unsigned i = 1; i < num_workers; i++)
-    xbt_os_thread_join(workers[i], nullptr);
+    workers[i]->join();
 
-  delete[] workers;
+  workers.clear();
   delete synchro;
 }
 
