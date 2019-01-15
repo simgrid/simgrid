@@ -115,7 +115,7 @@ configuration option to "NS3" as follows. The rest remains unchanged.
 
 Many other files from the examples/platform directory are usable with
 the ns-3 model, such as @ref examples/platforms/dogbone.xml. Check the file
-examples/msg/network-ns3/network-ns3.tesh to see which ones are used
+examples/deprecated/msg/network-ns3/network-ns3.tesh to see which ones are used
 in our regression tests. You may also be interested in the
 @ref msg_ex_ns3 "ns-3/SimGrid examples".
 

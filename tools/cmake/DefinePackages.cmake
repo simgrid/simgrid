@@ -88,8 +88,8 @@ set(EXTRA_DIST
   examples/smpi/mc/only_send_deterministic.tesh
   examples/smpi/mc/non_deterministic.tesh
 
-  examples/java/.classpath
-  examples/java/.project
+  examples/deprecated/java/.classpath
+  examples/deprecated/java/.project
   )
 
 set(SMPI_SRC
@@ -989,12 +989,7 @@ set(txt_files
 # The list of cmake build directories is constructed from the following list.
 # Add your CMakeLists file here to see your subdir built.
 set(CMAKEFILES_TXT
-  examples/java/CMakeLists.txt
-  examples/msg/CMakeLists.txt
-    examples/msg/mc/CMakeLists.txt
-  examples/python/CMakeLists.txt
   examples/s4u/CMakeLists.txt
-  examples/simdag/CMakeLists.txt
   examples/smpi/CMakeLists.txt
     examples/smpi/NAS/CMakeLists.txt
     examples/smpi/smpi_msg_masterslave/CMakeLists.txt
@@ -1002,6 +997,11 @@ set(CMAKEFILES_TXT
     examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
     examples/smpi/energy/f77/CMakeLists.txt
     examples/smpi/energy/f90/CMakeLists.txt
+  examples/python/CMakeLists.txt
+  examples/deprecated/java/CMakeLists.txt
+  examples/deprecated/msg/CMakeLists.txt
+    examples/deprecated/msg/mc/CMakeLists.txt
+  examples/deprecated/simdag/CMakeLists.txt
 
   teshsuite/java/CMakeLists.txt
   teshsuite/mc/CMakeLists.txt

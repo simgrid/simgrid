@@ -67,55 +67,55 @@ foreach(x app-masterworker cloud-masterworker
           process-create 
           synchro-semaphore)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" 
-                              --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x}
-			      --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/${x} 
+                              --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/${x}
+			      --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/${x} 
 			      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-			      ${CMAKE_HOME_DIRECTORY}/examples/msg/${x}/${x}.tesh)
+			      ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/${x}/${x}.tesh)
 endforeach()
 
 foreach (x trace-categories trace-route-user-variables trace-link-user-variables trace-masterworker trace-process-migration trace-host-user-variables)
-  ADD_TESH(msg-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x}
-	            --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/${x} 
+  ADD_TESH(msg-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/${x}
+	            --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/${x} 
 		    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-                    --cd ${CMAKE_BINARY_DIR}/examples/msg/${x}
-		    ${CMAKE_HOME_DIRECTORY}/examples/msg/${x}/${x}.tesh)
+                    --cd ${CMAKE_BINARY_DIR}/examples/deprecated/msg/${x}
+		    ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/${x}/${x}.tesh)
 endforeach()
 
 if(HAVE_SANITIZER_THREAD)
   ADD_TESH_FACTORIES(msg-dht-kademlia-parallel "thread" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
-                                               --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/dht-kademlia
-                                               --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia
+                                               --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/dht-kademlia
+                                               --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/dht-kademlia
                                                --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                               ${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia/dht-kademlia.tesh)
+                                               ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/dht-kademlia/dht-kademlia.tesh)
 else()
   ADD_TESH_FACTORIES(msg-dht-kademlia-parallel "thread;ucontext;raw;boost" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
-                                               --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/dht-kademlia
-                                               --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia
+                                               --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/dht-kademlia
+                                               --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/dht-kademlia
                                                --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                               ${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia/dht-kademlia.tesh)
+                                               ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/dht-kademlia/dht-kademlia.tesh)
 endif()
 
 if(NOT WIN32)
-  ADD_TESH_FACTORIES(msg-maestro-set   "thread" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/maestro-set/maestro-set.tesh)
+  ADD_TESH_FACTORIES(msg-maestro-set   "thread" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg --cd ${CMAKE_BINARY_DIR}/examples/deprecated/msg ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/maestro-set/maestro-set.tesh)
 else()
   message("Test maestro-set disabled on windows: this feature is not working")
 endif()
 
 ADD_TESH_FACTORIES(app-masterworker-multicore   "thread;ucontext;raw;boost" 
-                                                --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/app-masterworker 
-                                                --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/app-masterworker
+                                                --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/app-masterworker 
+                                                --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/app-masterworker
 						--setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-						${CMAKE_HOME_DIRECTORY}/examples/msg/app-masterworker/app-masterworker-multicore.tesh)
+						${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/app-masterworker/app-masterworker-multicore.tesh)
 ADD_TESH_FACTORIES(app-masterworker-vivaldi     "thread;ucontext;raw;boost" 
-                                                --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/app-masterworker 
-                                                --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/app-masterworker
+                                                --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/app-masterworker 
+                                                --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/app-masterworker
 						--setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-						${CMAKE_HOME_DIRECTORY}/examples/msg/app-masterworker/app-masterworker-vivaldi.tesh)
+						${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/app-masterworker/app-masterworker-vivaldi.tesh)
 
 if(SIMGRID_HAVE_NS3)
   ADD_TESH_FACTORIES(msg-network-ns3 "thread;ucontext;raw;boost"
-                                      --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg
-                                      --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg
+                                      --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg
+                                      --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg
                                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                      ${CMAKE_HOME_DIRECTORY}/examples/msg/network-ns3/network-ns3.tesh)
+                                      ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/network-ns3/network-ns3.tesh)
 endif()

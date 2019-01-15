@@ -45,11 +45,11 @@ set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dag-dotload/dag_wi
                                   ${CMAKE_CURRENT_SOURCE_DIR}/scheduling/expected_output.jed               PARENT_SCOPE)
 
 foreach(x daxload fail typed_tasks properties throttling scheduling test)
-  ADD_TESH(simdag-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/${x}/sd_${x}.tesh)
+  ADD_TESH(simdag-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/simdag --cd ${CMAKE_BINARY_DIR}/examples/deprecated/simdag ${CMAKE_HOME_DIRECTORY}/examples/deprecated/simdag/${x}/sd_${x}.tesh)
 endforeach()
 
 if(HAVE_GRAPHVIZ)
   foreach(x dag-dotload ptg-dotload schedule-dotload)
-    ADD_TESH(simdag-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/${x}/sd_${x}.tesh)
+    ADD_TESH(simdag-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/simdag --cd ${CMAKE_BINARY_DIR}/examples/deprecated/simdag ${CMAKE_HOME_DIRECTORY}/examples/deprecated/simdag/${x}/sd_${x}.tesh)
   endforeach()
 endif()

@@ -47,7 +47,7 @@ For example:
 
 .. code-block:: shell
 
-   $ cd examples/java
+   $ cd examples/deprecated/java
    $ java -classpath ../../simgrid.jar:. .:../../simgrid.jar app.pingpong.Main ../platforms/platform.xml 
 
 Any SimGrid simulation (java or not) is usually constituted of several

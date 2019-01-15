@@ -359,7 +359,7 @@ subtasks.
 
 @subsubsection faq_platform_example Where can I find SimGrid platform files?
 
-There are several little examples in the archive, in the examples/msg
+There are several little examples in the archive, in the examples/platforms
 directory. From time to time, we are asked for other files, but we
 don't have much at hand right now.
 

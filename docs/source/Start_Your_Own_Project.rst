@@ -126,7 +126,7 @@ If you want to build our Java examples in Eclipse, get the whole
 source code and open the archive on your disk. In Eclipse, select
 the menu "File / Import", and then in the wizard "General / Existing
 Project into Workspace". On the Next page, select the directory
-"examples/java" that you can find in the SimGrid source tree as a root
+"examples/deprecated/java" that you can find in the SimGrid source tree as a root
 directory and finish the creation.
 
 The file ``simgrid.jar`` must be in the root directory of the SimGrid

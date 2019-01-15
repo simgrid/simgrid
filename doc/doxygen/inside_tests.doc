@@ -227,7 +227,7 @@ ADD_TEST(my-test-name ${CMAKE_BINARY_DIR}/bin/tesh
          --setenv bindir=${CMAKE_BINARY_DIR}/examples/my-test/
          --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/my-test/
          --cd ${CMAKE_HOME_DIRECTORY}/examples/my-test/
-         ${CMAKE_HOME_DIRECTORY}/examples/msg/io/io.tesh
+         ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/io/io.tesh
 )
 @endverbatim             
 

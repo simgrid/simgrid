@@ -1,4 +1,4 @@
-$ ${bindir:=.}/examples/msg/app-masterworker/app-masterworker ${srcdir:=.}/examples/platforms/small_platform.lua ${srcdir:=.}/examples/msg/app-masterworker/app-masterworker_d.xml
+$ ${bindir:=.}/examples/deprecated/msg/app-masterworker/app-masterworker ${srcdir:=.}/examples/platforms/small_platform.lua ${srcdir:=.}/examples/deprecated/msg/app-masterworker/app-masterworker_d.xml
 > [Tremblay:master:(1) 0.000000] [msg_app_masterworker/INFO] Got 5 workers and 20 tasks to process
 > [Tremblay:master:(1) 0.000000] [msg_app_masterworker/INFO] Sending "Task_0" (of 20) to mailbox "worker-0"
 > [Tremblay:master:(1) 0.002265] [msg_app_masterworker/INFO] Sending "Task_1" (of 20) to mailbox "worker-1"
