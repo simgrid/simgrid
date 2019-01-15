@@ -319,8 +319,8 @@ void sg_config_init(int *argc, char **argv)
   extern bool _sg_do_verbose_exit;
   simgrid::config::bind_flag(_sg_do_verbose_exit, "verbose-exit", "Activate the \"do nothing\" mode in Ctrl-C");
 
-  simgrid::config::declare_flag<int>("contexts/stack-size", "Stack size of contexts in KiB", 8 * 1024,
-                                     [](int value) { smx_context_stack_size = value * 1024; });
+  simgrid::config::declare_flag<int>("contexts/stack-size", "Stack size of contexts in KiB (not with threads)",
+                                     8 * 1024, [](int value) { smx_context_stack_size = value * 1024; });
   simgrid::config::alias("contexts/stack-size", {"contexts/stack_size"});
 
   /* guard size for contexts stacks in memory pages */

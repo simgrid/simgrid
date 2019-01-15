@@ -108,7 +108,6 @@ void JavaContext::stop()
     env->DeleteGlobalRef(this->jprocess_);
     XBT_ATTRIB_UNUSED jint error = __java_vm->DetachCurrentThread();
     xbt_assert((error == JNI_OK), "The thread couldn't be detached.");
-    xbt_os_thread_exit(nullptr);
   }
 }
 

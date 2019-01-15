@@ -63,13 +63,8 @@ ThreadContext::ThreadContext(std::function<void()> code, void_pfn_smxprocess_t c
 {
   /* If the user provided a function for the process then use it */
   if (has_code()) {
-    if (smx_context_stack_size_was_set)
-      xbt_os_thread_setstacksize(smx_context_stack_size);
-    if (smx_context_guard_size_was_set)
-      xbt_os_thread_setguardsize(smx_context_guard_size);
-
     /* create and start the process */
-    this->thread_ = xbt_os_thread_create(ThreadContext::wrapper, this);
+    this->thread_ = new std::thread(ThreadContext::wrapper, this);
     /* wait the starting of the newly created process */
     this->end_.acquire();
   }
@@ -83,7 +78,7 @@ ThreadContext::ThreadContext(std::function<void()> code, void_pfn_smxprocess_t c
 ThreadContext::~ThreadContext()
 {
   if (this->thread_) /* If there is a thread (maestro don't have any), wait for its termination */
-    xbt_os_thread_join(this->thread_, nullptr);
+    thread_->join();
 }
 
 void *ThreadContext::wrapper(void *param)

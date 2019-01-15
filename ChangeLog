@@ -22,11 +22,17 @@ XBT:
    OsSemaphore is implemented in a portable way with C++11 threads.
    This should allow much more threads to be created at the same time,
    allowing Mac and Java users to simulate many more actors.
+ - Implement the 'thread' factory with std::thread instead of xbt ones.
+   It is not possible to set the stack size with threads anymore, but
+   -fsplit-stack is the way to go nowadays when using threads.
  - Drop several unused xbt_os_thread_t functions:
+   - xbt_os_thread_exit()
    - xbt_os_thread_get_extra_data()
    - xbt_os_thread_set_extra_data()
    - xbt_os_thread_self()
    - xbt_os_thread_self_name()
+   - xbt_os_thread_setstacksize()
+   - xbt_os_thread_setguardsize()
  - Drop xbt_ex_display(), use simgrid::xbt::log_exception() instead.
 
 Fixed bugs:

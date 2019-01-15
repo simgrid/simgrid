@@ -61,9 +61,7 @@ typedef enum {
 
 /******************************* Networking ***********************************/
 extern unsigned smx_context_stack_size;
-extern int smx_context_stack_size_was_set;
 extern unsigned smx_context_guard_size;
-extern int smx_context_guard_size_was_set;
 
 SG_BEGIN_DECL()
 

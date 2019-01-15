@@ -798,8 +798,10 @@ stacks), leading to segfaults with corrupted stack traces.
 If you want to push the scalability limits of your code, you might
 want to reduce the ``contexts/stack-size`` item. Its default value is
 8192 (in KiB), while our Chord simulation works with stacks as small
-as 16 KiB, for example. For the thread factory, the default value is
-the one of the system but you can still change it with this parameter.
+as 16 KiB, for example. This *setting is ignored* when using the
+thread factory. Instead, you should compile SimGrid and your
+application with ``-fsplit-stack``. Note that this compilation flag is
+not compatible with the model-checker right now.
 
 The operating system should only allocate memory for the pages of the
 stack which are actually used and you might not need to use this in
@@ -813,14 +815,15 @@ Disabling Stack Guard Pages
 
 **Option** ``contexts/guard-size`` **Default** 1 page in most case (0 pages on Windows or with MC)
 
-A stack guard page is usually used which prevents the stack of a given
-actor from overflowing on another stack. But the performance impact
-may become prohibitive when the amount of actors increases.  The
-option ``contexts/guard-size`` is the number of stack guard pages
-used.  By setting it to 0, no guard pages will be used: in this case,
-you should avoid using small stacks (with :ref:`contexts/stack-size
-<cfg=contexts/stack-size>`) as the stack will silently overflow on
-other parts of the memory.
+Unless you use the threads context factory (see
+:ref:`cfg=contexts/factory`), a stack guard page is usually used
+which prevents the stack of a given actor from overflowing on another
+stack. But the performance impact may become prohibitive when the
+amount of actors increases.  The option ``contexts/guard-size`` is the
+number of stack guard pages used.  By setting it to 0, no guard pages
+will be used: in this case, you should avoid using small stacks (with
+:ref:`contexts/stack-size <cfg=contexts/stack-size>`) as the stack
+will silently overflow on other parts of the memory.
 
 When no stack guard page is created, stacks may then silently overflow
 on other parts of the memory if their size is too small for the

@@ -46,9 +46,7 @@ static simgrid::config::Flag<std::string> context_factory_name(
   context_factories[0].first);
 
 unsigned smx_context_stack_size;
-int smx_context_stack_size_was_set = 0;
 unsigned smx_context_guard_size;
-int smx_context_guard_size_was_set = 0;
 static int smx_parallel_contexts = 1;
 static int smx_parallel_threshold = 2;
 static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_DEFAULT;
@@ -59,9 +57,6 @@ static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_DEFAUL
 void SIMIX_context_mod_init()
 {
   xbt_assert(simix_global->context_factory == nullptr);
-
-  smx_context_stack_size_was_set = not simgrid::config::is_default("contexts/stack-size");
-  smx_context_guard_size_was_set = not simgrid::config::is_default("contexts/guard-size");
 
 #if HAVE_SMPI && (defined(__APPLE__) || defined(__NetBSD__))
   std::string priv = simgrid::config::get_value<std::string>("smpi/privatization");

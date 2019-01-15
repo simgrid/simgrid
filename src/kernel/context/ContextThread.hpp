@@ -13,6 +13,8 @@
 #include "src/xbt/OsSemaphore.hpp"
 #include "xbt/xbt_os_thread.h"
 
+#include <thread>
+
 namespace simgrid {
 namespace kernel {
 namespace context {
@@ -32,7 +34,7 @@ public:
 
 private:
   /** A portable thread */
-  xbt_os_thread_t thread_ = nullptr;
+  std::thread* thread_ = nullptr;
   /** Semaphore used to schedule/yield the process (not needed when the maestro is in main, but harmless then) */
   xbt::OsSemaphore begin_{0};
   /** Semaphore used to schedule/unschedule (not needed when the maestro is in main, but harmless then) */

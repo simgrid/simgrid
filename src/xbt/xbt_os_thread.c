@@ -53,9 +53,6 @@ static xbt_os_thread_t main_thread = NULL;
 /* thread-specific data containing the xbt_os_thread_t structure */
 static int thread_mod_inited = 0;
 
-/* defaults attribute for pthreads */
-static pthread_attr_t thread_attr;
-
 /* frees the xbt_os_thread_t corresponding to the current thread */
 static void xbt_os_thread_free_thread_data(xbt_os_thread_t thread)
 {
@@ -72,8 +69,6 @@ void xbt_os_thread_mod_preinit(void)
   main_thread = xbt_new(s_xbt_os_thread_t, 1);
   main_thread->param = NULL;
   main_thread->start_routine = NULL;
-
-  pthread_attr_init(&thread_attr);
 
   thread_mod_inited = 1;
 }
@@ -111,7 +106,7 @@ xbt_os_thread_t xbt_os_thread_create(pvoid_f_pvoid_t start_routine, void* param)
   res_thread->start_routine = start_routine;
   res_thread->param = param;
 
-  int errcode = pthread_create(&(res_thread->t), &thread_attr, wrapper_start_routine, res_thread);
+  int errcode = pthread_create(&(res_thread->t), NULL, wrapper_start_routine, res_thread);
   xbt_assert(errcode == 0, "pthread_create failed: %s", strerror(errcode));
 
   return res_thread;
@@ -134,61 +129,12 @@ int xbt_os_thread_bind(XBT_ATTRIB_UNUSED xbt_os_thread_t thread, XBT_ATTRIB_UNUS
   return errcode;
 }
 
-void xbt_os_thread_setstacksize(int stack_size)
-{
-  size_t alignment[] = {
-    xbt_pagesize,
-#ifdef PTHREAD_STACK_MIN
-    PTHREAD_STACK_MIN,
-#endif
-    0
-  };
-
-  xbt_assert(stack_size >= 0, "stack size %d is negative, maybe it exceeds MAX_INT?", stack_size);
-
-  size_t sz = stack_size;
-  int res = pthread_attr_setstacksize(&thread_attr, sz);
-
-  for (int i = 0; res == EINVAL && alignment[i] > 0; i++) {
-    /* Invalid size, try again with next multiple of alignment[i]. */
-    size_t rem = sz % alignment[i];
-    if (rem != 0 || sz == 0) {
-      size_t sz2 = sz - rem + alignment[i];
-      XBT_DEBUG("pthread_attr_setstacksize failed for %zu, try again with %zu", sz, sz2);
-      sz = sz2;
-      res = pthread_attr_setstacksize(&thread_attr, sz);
-    }
-  }
-
-  if (res == EINVAL)
-    XBT_WARN("invalid stack size (maybe too big): %zu", sz);
-  else if (res != 0)
-    XBT_WARN("unknown error %d in pthread stacksize setting: %zu", res, sz);
-}
-
-void xbt_os_thread_setguardsize(int guard_size)
-{
-#ifdef WIN32
-  THROW_UNIMPLEMENTED; //pthread_attr_setguardsize is not implemented in pthread.h on windows
-#else
-  size_t sz = guard_size;
-  int res = pthread_attr_setguardsize(&thread_attr, sz);
-  if (res)
-    XBT_WARN("pthread_attr_setguardsize failed (%d) for size: %zu", res, sz);
-#endif
-}
-
 void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
 {
   int errcode = pthread_join(thread->t, thread_return);
 
   xbt_assert(errcode==0, "pthread_join failed: %s", strerror(errcode));
   xbt_os_thread_free_thread_data(thread);
-}
-
-void xbt_os_thread_exit(int *retval)
-{
-  pthread_exit(retval);
 }
 
 /****** mutex related functions ******/
