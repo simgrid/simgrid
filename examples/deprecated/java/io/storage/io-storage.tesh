@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${javacmd:=java} -classpath ${classpath:=.} io/storage/Main ${srcdir:=.}/../platforms/storage/storage.xml
+$ ${javacmd:=java} -classpath ${classpath:=.} io/storage/Main ${srcdir:=.}/../../platforms/storage/storage.xml
 > [0.000000] [java/INFO] Using regular java threads.
 > [denise:0:(1) 0.000000] [java/INFO] ------------------------------------
 > [denise:0:(1) 0.000000] [java/INFO] Disk name: Disk2

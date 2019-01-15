@@ -1,5 +1,5 @@
 #!/usr/bin/env tesh
-$ ${javacmd:=java} -classpath ${classpath:=.} process/startkilltime/Main ${srcdir:=.}/../platforms/cluster_backbone.xml ${srcdir:=.}/process/startkilltime/startkilltime.xml
+$ ${javacmd:=java} -classpath ${classpath:=.} process/startkilltime/Main ${srcdir:=.}/../../platforms/cluster_backbone.xml ${srcdir:=.}/process/startkilltime/startkilltime.xml
 > [0.000000] [java/INFO] Using regular java threads.
 > [node-0.simgrid.org:process.startkilltime.Sleeper:(1) 0.000000] [java/INFO] Hello! I go to sleep.
 > [node-1.simgrid.org:process.startkilltime.Sleeper:(2) 1.000000] [java/INFO] Hello! I go to sleep.

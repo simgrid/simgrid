@@ -945,8 +945,8 @@ unit-mc-snapshot
 unit-tmgr
 #########################################
 ## files touched to track the dependencies of java examples
-examples/java/*/*/*_compiled
-examples/java/*/*_compiled
+examples/deprecated/java/*/*/*_compiled
+examples/deprecated/java/*/*_compiled
 /CMakeCache.txt
 simgrid.jar_finalized
 simgrid_full.jar

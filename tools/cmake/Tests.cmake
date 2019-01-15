@@ -84,10 +84,10 @@ ENDMACRO()
 
 IF(enable_java)
   IF(WIN32)
-    SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/deprecated/java/\;${CMAKE_BINARY_DIR}/teshsuite/deprecated/java/\;${SIMGRID_JAR}")
+    SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/deprecated/java/\;${CMAKE_BINARY_DIR}/teshsuite/java/\;${SIMGRID_JAR}")
     STRING(REPLACE "\;" "§" TESH_CLASSPATH "${TESH_CLASSPATH}")
   ELSE()
-    SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/deprecated/java/:${CMAKE_BINARY_DIR}/teshsuite/deprecated/java/:${SIMGRID_JAR}")
+    SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/deprecated/java/:${CMAKE_BINARY_DIR}/teshsuite/java/:${SIMGRID_JAR}")
   ENDIF()
 ENDIF()
 

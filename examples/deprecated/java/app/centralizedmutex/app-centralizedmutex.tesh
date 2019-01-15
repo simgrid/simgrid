@@ -2,7 +2,7 @@
 
 ! output sort 19
 
-$ ${javacmd:=java} -classpath ${classpath:=.} app/centralizedmutex/Main ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/app/centralizedmutex/centralizedmutex.xml
+$ ${javacmd:=java} -classpath ${classpath:=.} app/centralizedmutex/Main ${srcdir:=.}/../../platforms/small_platform.xml ${srcdir:=.}/app/centralizedmutex/centralizedmutex.xml
 > [0.000000] [java/INFO] Using regular java threads.
 > [Jupiter:app.centralizedmutex.Node:(2) 0.000000] [java/INFO] Send a request to the coordinator
 > [Fafard:app.centralizedmutex.Node:(3) 0.000000] [java/INFO] Send a request to the coordinator

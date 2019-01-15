@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${javacmd:=java} -classpath ${classpath:=.} io/file/Main ${srcdir:=.}/../platforms/storage/storage.xml
+$ ${javacmd:=java} -classpath ${classpath:=.} io/file/Main ${srcdir:=.}/../../platforms/storage/storage.xml
 > [0.000000] [java/INFO] Using regular java threads.
 > [0.000000] [java/INFO] Number of hosts:4
 > [alice:0:(1) 0.000000] [java/INFO] Open file c:\Windows\setupact.log
