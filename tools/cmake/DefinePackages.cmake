@@ -292,7 +292,6 @@ set(XBT_SRC
   src/xbt/xbt_main.cpp
   src/xbt/xbt_os_file.cpp
   src/xbt/xbt_os_synchro.cpp
-  src/xbt/xbt_os_thread.c
   src/xbt/xbt_os_time.c
   src/xbt/xbt_replay.cpp
   src/xbt/xbt_str.cpp
@@ -780,7 +779,6 @@ set(headers_to_install
   include/xbt/system_error.hpp
   include/xbt/utility.hpp
   include/xbt/virtu.h
-  include/xbt/xbt_os_thread.h
   include/xbt/xbt_os_time.h
   )
 set(source_of_generated_headers

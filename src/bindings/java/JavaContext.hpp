@@ -14,7 +14,6 @@
 #include "simgrid/simix.h"
 #include "src/kernel/context/ContextThread.hpp"
 #include "src/simix/smx_private.hpp"
-#include "xbt/xbt_os_thread.h"
 
 #include "jmsg.hpp"
 

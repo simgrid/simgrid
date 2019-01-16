@@ -157,7 +157,7 @@ if(enable_model-checking AND enable_compile_optimizations)
       src/xbt/dict.cpp src/xbt/dict_elm.c src/xbt/dict_cursor.c
       src/xbt/dynar.cpp
       src/xbt/xbt_str.cpp src/xbt/snprintf.c
-      src/xbt/xbt_os_time.c src/xbt/xbt_os_thread.c
+      src/xbt/xbt_os_time.c
       src/xbt/backtrace_linux.cpp
       ${MC_SRC_BASE} ${MC_SRC})
       set (mcCFLAGS "-O3  -funroll-loops -fno-strict-aliasing")

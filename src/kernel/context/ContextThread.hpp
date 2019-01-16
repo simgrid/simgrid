@@ -11,7 +11,6 @@
 #include "simgrid/simix.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/xbt/OsSemaphore.hpp"
-#include "xbt/xbt_os_thread.h"
 
 #include <thread>
 
