@@ -24,8 +24,6 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-XBT_PUBLIC int xbt_os_thread_atfork(void (*prepare)(void), void (*parent)(void), void (*child)(void));
-
 /** @brief Thread mutex data type (opaque structure) */
 typedef struct xbt_os_mutex_ *xbt_os_mutex_t;
 XBT_PUBLIC xbt_os_mutex_t xbt_os_mutex_init(void);

@@ -43,25 +43,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt, "Synchronization mechanism (OS-level)");
 
-typedef struct xbt_os_thread_ {
-  pthread_t t;
-  void *param;
-  pvoid_f_pvoid_t start_routine;
-} s_xbt_os_thread_t;
-
-/** Calls pthread_atfork() if present, and raise an exception otherwise.
- *
- * The only known user of this wrapper is mmalloc_preinit(), but it is absolutely mandatory there:
- * when used with tesh, mmalloc *must* be mutex protected and resistant to forks.
- * This functionality is the only way to get it working (by ensuring that the mutex is consistently released on forks)
- */
-
-/* this function is critical to tesh+mmalloc, don't mess with it */
-int xbt_os_thread_atfork(void (*prepare)(void), void (*parent)(void), void (*child)(void))
-{
-  return pthread_atfork(prepare, parent, child);
-}
-
 /****** mutex related functions ******/
 typedef struct xbt_os_mutex_ {
   pthread_mutex_t m;
