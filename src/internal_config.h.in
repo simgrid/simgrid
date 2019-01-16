@@ -41,8 +41,10 @@
 #cmakedefine01 HAVE_UCONTEXT_CONTEXTS
 
 /* Variables for the thread contexts (and parallel mode of raw contexts) */
-/* Does not seems defined on Mac nor Windows */
+/* pthread_setaffinity_np() is Linux and FreeBSD but not on Mac nor Windows */
 #cmakedefine01 HAVE_PTHREAD_SETAFFINITY
+/* pthread_setaffinity_np() defined in pthread_np.h on FreeBSD but not Linux */
+#cmakedefine01 HAVE_PTHREAD_NP_H
 
 /* Variables for the raw contexts (to select the right assembly code) */
 #cmakedefine01 SIMGRID_PROCESSOR_i686

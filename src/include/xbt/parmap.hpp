@@ -22,6 +22,10 @@
 #include <sys/syscall.h>
 #endif
 
+#if HAVE_PTHREAD_NP_H
+#include <pthread_np.h>
+#endif
+
 XBT_LOG_EXTERNAL_CATEGORY(xbt_parmap);
 
 namespace simgrid {
