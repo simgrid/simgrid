@@ -11,8 +11,6 @@
 #include <xbt/base.h>
 #include <xbt/function_types.h>
 
-#include <pthread.h>
-
 SG_BEGIN_DECL()
 
 /** @addtogroup XBT_thread
@@ -23,8 +21,6 @@ SG_BEGIN_DECL()
  *
  *  @{
  */
-
-XBT_PUBLIC int xbt_os_thread_atfork(void (*prepare)(void), void (*parent)(void), void (*child)(void));
 
 /** @brief Thread mutex data type (opaque structure) */
 typedef struct xbt_os_mutex_ *xbt_os_mutex_t;
