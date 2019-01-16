@@ -40,7 +40,7 @@ def killer():
     this_actor.sleep_for(1)
 
     # that's a no-op, there is no zombies in SimGrid
-    this_actor.info("Kill victim_b, even if it's already dead")
+    this_actor.info("Kill victim B, even if it's already dead")
     victim_b.kill()
 
     this_actor.sleep_for(1)
