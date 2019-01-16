@@ -5,10 +5,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdarg.h>
 #include <ctype.h>
-#include <stdio.h>              /* snprintf */
-#include <stdlib.h>             /* snprintf */
+#include <mutex>
+#include <stdarg.h>
+#include <stdio.h>  /* snprintf */
+#include <stdlib.h> /* snprintf */
 
 #include "src/internal_config.h"
 
@@ -21,7 +22,6 @@
 #include "xbt/misc.h"
 #include "xbt/str.h"
 #include "xbt/sysdep.h"
-#include "xbt/xbt_os_thread.h"
 
 #ifndef MIN
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -31,7 +31,7 @@
 #endif
 
 int xbt_log_no_loc = 0; /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
-static xbt_os_mutex_t log_cat_init_mutex = NULL;
+static std::recursive_mutex* log_cat_init_mutex = nullptr;
 
 /** @addtogroup XBT_log
  *
@@ -95,7 +95,7 @@ void xbt_log_preinit(void)
   xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
   _XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
   _XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
-  log_cat_init_mutex = xbt_os_mutex_init();
+  log_cat_init_mutex                   = new std::recursive_mutex();
 }
 
 static void xbt_log_help(void);
@@ -165,7 +165,7 @@ static void log_cat_exit(xbt_log_category_t cat)
 void xbt_log_postexit(void)
 {
   XBT_VERB("Exiting log");
-  xbt_os_mutex_destroy(log_cat_init_mutex);
+  delete log_cat_init_mutex;
   xbt_dynar_free(&xbt_log_settings);
   log_cat_exit(&_XBT_LOGV(XBT_LOG_ROOT_CAT));
 }
@@ -281,11 +281,11 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
 {
   DISABLE_XBT_LOG_CAT_INIT();
   if (log_cat_init_mutex != NULL)
-    xbt_os_mutex_acquire(log_cat_init_mutex);
+    log_cat_init_mutex->lock();
 
   if (category->initialized) {
     if (log_cat_init_mutex != NULL)
-      xbt_os_mutex_release(log_cat_init_mutex);
+      log_cat_init_mutex->unlock();
     return priority >= category->threshold;
   }
 
@@ -355,7 +355,7 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
 
   category->initialized = 1;
   if (log_cat_init_mutex != NULL)
-    xbt_os_mutex_release(log_cat_init_mutex);
+    log_cat_init_mutex->unlock();
   return priority >= category->threshold;
 }
 
