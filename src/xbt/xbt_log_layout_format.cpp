@@ -7,7 +7,7 @@
 
 #include "simgrid/host.h"
 #include "simgrid/msg.h" /* MSG_get_clock */
-#include "src/xbt/log_private.h"
+#include "src/xbt/log_private.hpp"
 #include "xbt/sysdep.h"
 #include <stdio.h>
 
@@ -80,7 +80,7 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
   int precision = -1;
   int length = -1;
 
-  for (char* q = l->data ; *q != '\0' ; q++) {
+  for (char* q = static_cast<char*>(l->data) ; *q != '\0' ; q++) {
     if (*q == '%') {
       q++;
       do {

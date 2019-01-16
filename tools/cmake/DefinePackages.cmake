@@ -67,7 +67,7 @@ set(EXTRA_DIST
   src/xbt/automaton/parserPromela.tab.hacc
   src/xbt/automaton/parserPromela.yacc
   src/xbt/dict_private.h
-  src/xbt/log_private.h
+  src/xbt/log_private.hpp
   src/xbt/mallocator_private.h
 
   src/xbt/mmalloc/mfree.c
@@ -278,7 +278,7 @@ set(XBT_SRC
   src/xbt/dynar.cpp
   src/xbt/exception.cpp
   src/xbt/graph.c
-  src/xbt/log.c
+  src/xbt/log.cpp
   src/xbt/mallocator.c
   src/xbt/memory_map.cpp
   src/xbt/memory_map.hpp
@@ -286,13 +286,12 @@ set(XBT_SRC
   src/xbt/parmap.cpp
   src/xbt/snprintf.c
   src/xbt/string.cpp
-  src/xbt/xbt_log_appender_file.c
-  src/xbt/xbt_log_layout_format.c
-  src/xbt/xbt_log_layout_simple.c
+  src/xbt/xbt_log_appender_file.cpp
+  src/xbt/xbt_log_layout_format.cpp
+  src/xbt/xbt_log_layout_simple.cpp
   src/xbt/xbt_main.cpp
   src/xbt/xbt_os_file.cpp
   src/xbt/xbt_os_synchro.cpp
-  src/xbt/xbt_os_thread.c
   src/xbt/xbt_os_time.c
   src/xbt/xbt_replay.cpp
   src/xbt/xbt_str.cpp
@@ -780,7 +779,6 @@ set(headers_to_install
   include/xbt/system_error.hpp
   include/xbt/utility.hpp
   include/xbt/virtu.h
-  include/xbt/xbt_os_thread.h
   include/xbt/xbt_os_time.h
   )
 set(source_of_generated_headers

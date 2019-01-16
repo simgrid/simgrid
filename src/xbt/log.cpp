@@ -5,23 +5,23 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdarg.h>
 #include <ctype.h>
-#include <stdio.h>              /* snprintf */
-#include <stdlib.h>             /* snprintf */
+#include <mutex>
+#include <stdarg.h>
+#include <stdio.h>  /* snprintf */
+#include <stdlib.h> /* snprintf */
 
 #include "src/internal_config.h"
 
 #include "src/xbt_modinter.h"
 
-#include "src/xbt/log_private.h"
+#include "src/xbt/log_private.hpp"
 #include "xbt/asserts.h"
 #include "xbt/dynar.h"
 #include "xbt/ex.h"
 #include "xbt/misc.h"
 #include "xbt/str.h"
 #include "xbt/sysdep.h"
-#include "xbt/xbt_os_thread.h"
 
 #ifndef MIN
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -31,7 +31,7 @@
 #endif
 
 int xbt_log_no_loc = 0; /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
-static xbt_os_mutex_t log_cat_init_mutex = NULL;
+static std::recursive_mutex* log_cat_init_mutex = nullptr;
 
 /** @addtogroup XBT_log
  *
@@ -95,7 +95,7 @@ void xbt_log_preinit(void)
   xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
   _XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
   _XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
-  log_cat_init_mutex = xbt_os_mutex_init();
+  log_cat_init_mutex                   = new std::recursive_mutex();
 }
 
 static void xbt_log_help(void);
@@ -165,7 +165,7 @@ static void log_cat_exit(xbt_log_category_t cat)
 void xbt_log_postexit(void)
 {
   XBT_VERB("Exiting log");
-  xbt_os_mutex_destroy(log_cat_init_mutex);
+  delete log_cat_init_mutex;
   xbt_dynar_free(&xbt_log_settings);
   log_cat_exit(&_XBT_LOGV(XBT_LOG_ROOT_CAT));
 }
@@ -181,8 +181,8 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
   xbt_log_category_t cat = ev->cat;
 
   xbt_assert(ev->priority >= 0, "Negative logging priority naturally forbidden");
-  xbt_assert(ev->priority < sizeof(xbt_log_priority_names), "Priority %d is greater than the biggest allowed value",
-             ev->priority);
+  xbt_assert(static_cast<size_t>(ev->priority) < sizeof(xbt_log_priority_names)/sizeof(xbt_log_priority_names[0]),
+             "Priority %d is greater than the biggest allowed value", ev->priority);
 
   while (1) {
     xbt_log_appender_t appender = cat->appender;
@@ -204,7 +204,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
 
         /* The static buffer was too small, use a dynamically expanded one */
         ev->buffer_size = XBT_LOG_DYNAMIC_BUFFER_SIZE;
-        ev->buffer      = xbt_malloc(ev->buffer_size);
+        ev->buffer      = static_cast<char*>(xbt_malloc(ev->buffer_size));
         while (1) {
           va_start(ev->ap, fmt);
           done = cat->layout->do_layout(cat->layout, ev, fmt);
@@ -212,7 +212,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
           if (done)
             break; /* Got it */
           ev->buffer_size *= 2;
-          ev->buffer = xbt_realloc(ev->buffer, ev->buffer_size);
+          ev->buffer = static_cast<char*>(xbt_realloc(ev->buffer, ev->buffer_size));
         }
         appender->do_append(appender, ev->buffer);
         xbt_free(ev->buffer);
@@ -281,11 +281,11 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
 {
   DISABLE_XBT_LOG_CAT_INIT();
   if (log_cat_init_mutex != NULL)
-    xbt_os_mutex_acquire(log_cat_init_mutex);
+    log_cat_init_mutex->lock();
 
   if (category->initialized) {
     if (log_cat_init_mutex != NULL)
-      xbt_os_mutex_release(log_cat_init_mutex);
+      log_cat_init_mutex->unlock();
     return priority >= category->threshold;
   }
 
@@ -355,7 +355,7 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
 
   category->initialized = 1;
   if (log_cat_init_mutex != NULL)
-    xbt_os_mutex_release(log_cat_init_mutex);
+    log_cat_init_mutex->unlock();
   return priority >= category->threshold;
 }
 

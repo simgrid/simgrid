@@ -18,7 +18,6 @@
 
 #include "swag.h"
 #include "src/internal_config.h"
-#include "xbt/xbt_os_thread.h"
 #include "xbt/mmalloc.h"
 #include "xbt/ex.h"
 #include "xbt/dynar.h"

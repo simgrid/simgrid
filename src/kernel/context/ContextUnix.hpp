@@ -15,7 +15,6 @@
 
 #include <simgrid/simix.hpp>
 #include <xbt/parmap.hpp>
-#include <xbt/xbt_os_thread.h>
 
 #include "src/internal_config.h"
 #include "src/kernel/context/ContextSwapped.hpp"

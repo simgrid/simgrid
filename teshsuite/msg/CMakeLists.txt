@@ -93,6 +93,7 @@ foreach(x
     energy-consumption energy-ptask
     io-file io-raw-storage io-file-remote
     platform-properties
+    task-priority
     plugin-hostload
     trace_integration)
   ADD_TESH_FACTORIES(tesh-msg-${x} "raw" 

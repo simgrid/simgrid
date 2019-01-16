@@ -152,12 +152,12 @@ if(enable_model-checking AND enable_compile_optimizations)
   foreach(s
       src/kernel/lmm/fair_bottleneck.cpp src/kernel/lmm/lagrange.cpp src/kernel/lmm/maxmin.cpp
       src/xbt/mmalloc/mm.c
-      src/xbt/log.c src/xbt/xbt_log_appender_file.c
-      src/xbt/xbt_log_layout_format.c src/xbt/xbt_log_layout_simple.c
+      src/xbt/log.cpp src/xbt/xbt_log_appender_file.cpp
+      src/xbt/xbt_log_layout_format.cpp src/xbt/xbt_log_layout_simple.cpp
       src/xbt/dict.cpp src/xbt/dict_elm.c src/xbt/dict_cursor.c
       src/xbt/dynar.cpp
       src/xbt/xbt_str.cpp src/xbt/snprintf.c
-      src/xbt/xbt_os_time.c src/xbt/xbt_os_thread.c
+      src/xbt/xbt_os_time.c
       src/xbt/backtrace_linux.cpp
       ${MC_SRC_BASE} ${MC_SRC})
       set (mcCFLAGS "-O3  -funroll-loops -fno-strict-aliasing")

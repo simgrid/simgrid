@@ -7,7 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/internal_config.h"
-#include "src/xbt/log_private.h"
+#include "src/xbt/log_private.hpp"
 #include "xbt/sysdep.h"
 #include <errno.h>
 #include <stdio.h>
@@ -19,7 +19,7 @@ static void append_file(xbt_log_appender_t this_, char *str) {
 
 static void free_(xbt_log_appender_t this_) {
   if (this_->data != stderr)
-    fclose(this_->data);
+    fclose(static_cast<FILE*>(this_->data));
 }
 
 xbt_log_appender_t xbt_log_appender_file_new(char *arg) {
@@ -94,7 +94,7 @@ static void append2_file(xbt_log_appender_t this_, char *str) {
 
 static void free_append2_(xbt_log_appender_t this_)
 {
-  xbt_log_append2_file_t data = this_->data;
+  xbt_log_append2_file_t data = static_cast<xbt_log_append2_file_t>(this_->data);
   if (data->file)
     fclose(data->file);
   xbt_free(data->filename);
@@ -114,7 +114,7 @@ xbt_log_appender_t xbt_log_appender2_file_new(char *arg,int roll) {
   xbt_assert(arg);
   char* buf=xbt_strdup(arg);
   char* sep=strchr(buf,':');
-  xbt_assert(sep>0);
+  xbt_assert(sep != NULL);
   data->filename=xbt_strdup(sep+1);
   *sep='\0';
   char *endptr;
