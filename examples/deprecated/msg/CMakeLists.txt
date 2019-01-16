@@ -81,19 +81,11 @@ foreach (x trace-categories trace-route-user-variables trace-link-user-variables
 		    ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/${x}/${x}.tesh)
 endforeach()
 
-if(HAVE_SANITIZER_THREAD)
-  ADD_TESH_FACTORIES(msg-dht-kademlia-parallel "thread" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
-                                               --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/dht-kademlia
-                                               --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/dht-kademlia
-                                               --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                               ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/dht-kademlia/dht-kademlia.tesh)
-else()
-  ADD_TESH_FACTORIES(msg-dht-kademlia-parallel "thread;ucontext;raw;boost" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
-                                               --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/dht-kademlia
-                                               --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/dht-kademlia
-                                               --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                               ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/dht-kademlia/dht-kademlia.tesh)
-endif()
+ADD_TESH_FACTORIES(msg-dht-kademlia-parallel "thread;ucontext;raw;boost" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} 
+                                             --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/dht-kademlia 
+					     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia
+					     --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+					     ${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia/dht-kademlia.tesh)
 
 if(NOT WIN32)
   ADD_TESH_FACTORIES(msg-maestro-set   "thread" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg --cd ${CMAKE_BINARY_DIR}/examples/deprecated/msg ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/maestro-set/maestro-set.tesh)
