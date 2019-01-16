@@ -114,7 +114,7 @@ xbt_log_appender_t xbt_log_appender2_file_new(char *arg,int roll) {
   xbt_assert(arg);
   char* buf=xbt_strdup(arg);
   char* sep=strchr(buf,':');
-  xbt_assert(sep>0);
+  xbt_assert(sep != NULL);
   data->filename=xbt_strdup(sep+1);
   *sep='\0';
   char *endptr;

@@ -181,8 +181,8 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
   xbt_log_category_t cat = ev->cat;
 
   xbt_assert(ev->priority >= 0, "Negative logging priority naturally forbidden");
-  xbt_assert(ev->priority < sizeof(xbt_log_priority_names), "Priority %d is greater than the biggest allowed value",
-             ev->priority);
+  xbt_assert(ev->priority < sizeof(xbt_log_priority_names) / sizeof(xbt_log_priority_names[0]),
+             "Priority %d is greater than the biggest allowed value", ev->priority);
 
   while (1) {
     xbt_log_appender_t appender = cat->appender;
