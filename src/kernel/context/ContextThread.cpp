@@ -79,6 +79,7 @@ ThreadContext::~ThreadContext()
 {
   if (this->thread_) /* If there is a thread (maestro don't have any), wait for its termination */
     thread_->join();
+  delete thread_;
 }
 
 void *ThreadContext::wrapper(void *param)
