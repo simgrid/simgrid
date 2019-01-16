@@ -176,11 +176,17 @@ template <typename T> Parmap<T>::Parmap(unsigned num_workers, e_xbt_parmap_mode_
 
     /* Bind the worker to a core if possible */
 #if HAVE_PTHREAD_SETAFFINITY
-    pthread_t pthread = this->workers[i]->native_handle();
+#if HAVE_PTHREAD_NP_H /* FreeBSD ? */
+    cpuset_t cpuset;
+    size_t size = sizeof(cpuset_t);
+#else /* Linux ? */
     cpu_set_t cpuset;
+    size_t size = sizeof(cpu_set_t);
+#endif
+    pthread_t pthread = this->workers[i]->native_handle();
     CPU_ZERO(&cpuset);
     CPU_SET(core_bind, &cpuset);
-    pthread_setaffinity_np(pthread, sizeof(cpu_set_t), &cpuset);
+    pthread_setaffinity_np(pthread, size, &cpuset);
     if (core_bind != std::thread::hardware_concurrency() - 1)
       core_bind++;
     else
