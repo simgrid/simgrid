@@ -47,6 +47,7 @@ _*.c
 include/simgrid/config.h
 include/smpi/smpif.h
 src/internal_config.h
+src/simgrid/version.h
 testprog
 ### Cmake files
 CPackConfig.cmake
@@ -959,3 +960,6 @@ include/smpi/mpi.mod
 src/smpi/mpif.f90
 src/smpi/mpif.f90.generated
 a.out
+simgrid.config
+simgrid.creator
+simgrid.includes

@@ -521,6 +521,7 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/include/simgrid/config.h.generated ${CMAKE_BINARY_DIR}/include/simgrid/config.h)
 file(REMOVE ${CMAKE_BINARY_DIR}/src/internal_config.h.generated)
 file(REMOVE ${CMAKE_BINARY_DIR}/include/simgrid/config.h.generated)
+file(REMOVE ${CMAKE_BINARY_DIR}/src/simgrid/version.h.generated)
 
 # We need two versions of the SMPI scripts because they contain the path to the library
 # so, it depends of whether SimGrid is installed, or run from the sources (during the build)
