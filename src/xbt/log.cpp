@@ -14,7 +14,7 @@
 
 #include "src/xbt_modinter.h"
 
-#include "src/xbt/log_private.h"
+#include "src/xbt/log_private.hpp"
 #include "xbt/asserts.h"
 #include "xbt/dynar.h"
 #include "xbt/ex.h"
@@ -181,7 +181,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
   xbt_log_category_t cat = ev->cat;
 
   xbt_assert(ev->priority >= 0, "Negative logging priority naturally forbidden");
-  xbt_assert(ev->priority < sizeof(xbt_log_priority_names) / sizeof(xbt_log_priority_names[0]),
+  xbt_assert(static_cast<size_t>(ev->priority) < sizeof(xbt_log_priority_names)/sizeof(xbt_log_priority_names[0]),
              "Priority %d is greater than the biggest allowed value", ev->priority);
 
   while (1) {
@@ -204,7 +204,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
 
         /* The static buffer was too small, use a dynamically expanded one */
         ev->buffer_size = XBT_LOG_DYNAMIC_BUFFER_SIZE;
-        ev->buffer      = xbt_malloc(ev->buffer_size);
+        ev->buffer      = static_cast<char*>(xbt_malloc(ev->buffer_size));
         while (1) {
           va_start(ev->ap, fmt);
           done = cat->layout->do_layout(cat->layout, ev, fmt);
@@ -212,7 +212,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
           if (done)
             break; /* Got it */
           ev->buffer_size *= 2;
-          ev->buffer = xbt_realloc(ev->buffer, ev->buffer_size);
+          ev->buffer = static_cast<char*>(xbt_realloc(ev->buffer, ev->buffer_size));
         }
         appender->do_append(appender, ev->buffer);
         xbt_free(ev->buffer);

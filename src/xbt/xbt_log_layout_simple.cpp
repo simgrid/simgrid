@@ -6,7 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/sysdep.h"
-#include "src/xbt/log_private.h"
+#include "src/xbt/log_private.hpp"
 
 #include "simgrid/host.h" /* sg_host_self_get_name */
 #include "simgrid/msg.h"  /* MSG_get_clock */
