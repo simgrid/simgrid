@@ -197,7 +197,6 @@ examples/s4u/trace-platform/s4u-trace-platform
 examples/deprecated/simdag/dag-dotload/sd_dag-dotload
 examples/deprecated/simdag/daxload/sd_daxload
 examples/deprecated/simdag/fail/sd_fail
-examples/deprecated/simdag/goal/goal_test
 examples/deprecated/simdag/properties/sd_properties
 examples/deprecated/simdag/ptg-dotload/sd_ptg-dotload
 examples/deprecated/simdag/schedule-dotload/sd_schedule-dotload

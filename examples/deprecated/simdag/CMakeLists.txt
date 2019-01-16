@@ -27,13 +27,8 @@ foreach(x dag-dotload ptg-dotload schedule-dotload)
   set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${x}/sd_${x}.tesh)
 endforeach()
 
-add_executable       (goal_test EXCLUDE_FROM_ALL goal/goal_test.c)
-target_link_libraries(goal_test simgrid)
-set_target_properties(goal_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/goal)
-add_dependencies(tests goal_test)
-
 set(tesh_files   ${tesh_files}                                                                             PARENT_SCOPE)
-set(examples_src ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/goal/goal_test.c                             PARENT_SCOPE)
+set(examples_src ${examples_src}                                                                           PARENT_SCOPE)
 set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/scheduling/Montage_25.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/daxload/simple_dax_with_cycle.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/daxload/smalldax.xml                         PARENT_SCOPE)
