@@ -38,12 +38,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt, "Synchronization mechanism (OS-level)");
 
-typedef struct xbt_os_thread_ {
-  pthread_t t;
-  void *param;
-  pvoid_f_pvoid_t start_routine;
-} s_xbt_os_thread_t;
-
 /****** mutex related functions ******/
 typedef struct xbt_os_mutex_ {
   pthread_mutex_t m;
