@@ -15,11 +15,6 @@
 
 #include <pthread.h>
 
-#if defined(__FreeBSD__)
-#include "pthread_np.h"
-#define cpu_set_t cpuset_t
-#endif
-
 #include <limits.h>
 #include <semaphore.h>
 #include <errno.h>
