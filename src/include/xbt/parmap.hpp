@@ -202,9 +202,10 @@ template <typename T> Parmap<T>::~Parmap()
   status = PARMAP_DESTROY;
   synchro->master_signal();
 
-  for (unsigned i = 1; i < num_workers; i++)
+  for (unsigned i = 1; i < num_workers; i++) {
     workers[i]->join();
-
+    delete workers[i];
+  }
   delete synchro;
 }
 
