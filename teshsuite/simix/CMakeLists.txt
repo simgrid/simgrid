@@ -27,7 +27,7 @@ ELSE()
 ENDIF()
 
 if (NOT enable_memcheck AND NOT enable_address_sanitizer)
-  ADD_TESH_FACTORIES(stack-overflow   "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/stack-overflow --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/stack-overflow stack-overflow.tesh)
+  ADD_TESH_FACTORIES(stack-overflow   "ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/stack-overflow --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/stack-overflow stack-overflow.tesh)
 endif()
 if (NOT enable_memcheck)
   ADD_TESH_FACTORIES(generic-simcalls "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/generic-simcalls --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/generic-simcalls generic-simcalls.tesh)
