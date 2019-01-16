@@ -9,9 +9,9 @@
 #include "src/internal_config.h"
 #include "src/xbt/log_private.hpp"
 #include "xbt/sysdep.h"
-#include <errno.h>
-#include <stdio.h>
-#include <string.h>
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
 
 static void append_file(xbt_log_appender_t this_, char *str) {
   fputs(str, (FILE *) this_->data);
@@ -29,7 +29,7 @@ xbt_log_appender_t xbt_log_appender_file_new(char *arg) {
   res->free_             = &free_;
   if (arg) {
     res->data = (void *) fopen(arg, "w");
-    if (res->data == NULL)
+    if (res->data == nullptr)
       xbt_die("Cannot open file: %s: %s", arg, strerror(errno));
   } else {
     res->data = (void *) stderr;
@@ -45,15 +45,15 @@ struct xbt_log_append2_file_s {
 };
 typedef struct xbt_log_append2_file_s* xbt_log_append2_file_t;
 
-#define APPEND2_END_TOKEN             "\n[End of log]\n"
-#define APPEND2_END_TOKEN_CLEAR "\n                   "
+static constexpr const char* APPEND2_END_TOKEN       = "\n[End of log]\n";
+static constexpr const char* APPEND2_END_TOKEN_CLEAR = "\n                   ";
 
 static void open_append2_file(xbt_log_append2_file_t data){
   if(data->count<0) {
     //Roll
     if (!data->file) {
       data->file= fopen(data->filename, "w");
-      if (data->file == NULL)
+      if (data->file == nullptr)
         xbt_die("Cannot open file: %s: %s", data->filename, strerror(errno));
     } else {
       fputs(APPEND2_END_TOKEN_CLEAR,data->file);
@@ -73,7 +73,7 @@ static void open_append2_file(xbt_log_append2_file_t data){
     snprintf(newname,511,"%s%i%s",pre,data->count,post);
     data->count++;
     data->file= fopen(newname, "w");
-    if (data->file == NULL)
+    if (data->file == nullptr)
       xbt_die("Cannot open file: %s: %s", newname, strerror(errno));
     xbt_free(pre);
   }
@@ -114,7 +114,7 @@ xbt_log_appender_t xbt_log_appender2_file_new(char *arg,int roll) {
   xbt_assert(arg);
   char* buf=xbt_strdup(arg);
   char* sep=strchr(buf,':');
-  xbt_assert(sep != NULL);
+  xbt_assert(sep != nullptr);
   data->filename=xbt_strdup(sep+1);
   *sep='\0';
   char *endptr;

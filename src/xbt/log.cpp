@@ -5,11 +5,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <ctype.h>
+#include <algorithm>
+#include <cctype>
+#include <cstdarg>
+#include <cstdio> /* snprintf */
+#include <cstdlib>
 #include <mutex>
-#include <stdarg.h>
-#include <stdio.h>  /* snprintf */
-#include <stdlib.h> /* snprintf */
 
 #include "src/internal_config.h"
 
@@ -23,13 +24,6 @@
 #include "xbt/str.h"
 #include "xbt/sysdep.h"
 
-#ifndef MIN
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-#endif
-#ifndef MAX
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-#endif
-
 int xbt_log_no_loc = 0; /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
 static std::recursive_mutex* log_cat_init_mutex = nullptr;
 
@@ -38,8 +32,8 @@ static std::recursive_mutex* log_cat_init_mutex = nullptr;
  *  For more information, please refer to @ref outcomes_logs Section.
  */
 
-xbt_log_appender_t xbt_log_default_appender = NULL;     /* set in log_init */
-xbt_log_layout_t xbt_log_default_layout = NULL; /* set in log_init */
+xbt_log_appender_t xbt_log_default_appender = nullptr; /* set in log_init */
+xbt_log_layout_t xbt_log_default_layout     = nullptr; /* set in log_init */
 
 typedef struct {
   char *catname;
@@ -51,7 +45,7 @@ typedef struct {
 
 typedef s_xbt_log_setting_t* xbt_log_setting_t;
 
-static xbt_dynar_t xbt_log_settings = NULL;
+static xbt_dynar_t xbt_log_settings = nullptr;
 
 static void _free_setting(void *s)
 {
@@ -77,12 +71,17 @@ const char *xbt_log_priority_names[8] = {
 };
 
 s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
-  NULL /*parent */ , NULL /* firstChild */ , NULL /* nextSibling */ ,
-      "root", "The common ancestor for all categories",
-      0 /*initialized */, xbt_log_priority_uninitialized /* threshold */ ,
-      0 /* isThreshInherited */ ,
-      NULL /* appender */ , NULL /* layout */ ,
-      0                         /* additivity */
+    nullptr /*parent */,
+    nullptr /* firstChild */,
+    nullptr /* nextSibling */,
+    "root",
+    "The common ancestor for all categories",
+    0 /*initialized */,
+    xbt_log_priority_uninitialized /* threshold */,
+    0 /* isThreshInherited */,
+    nullptr /* appender */,
+    nullptr /* layout */,
+    0 /* additivity */
 };
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log, xbt, "Loggings from the logging mechanism itself");
@@ -91,8 +90,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log, xbt, "Loggings from the logging mechanism i
    which were already created (damnit. Too slow little beetle) */
 void xbt_log_preinit(void)
 {
-  xbt_log_default_appender = xbt_log_appender_file_new(NULL);
-  xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
+  xbt_log_default_appender             = xbt_log_appender_file_new(nullptr);
+  xbt_log_default_layout               = xbt_log_layout_simple_new(nullptr);
   _XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
   _XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
   log_cat_init_mutex                   = new std::recursive_mutex();
@@ -130,7 +129,7 @@ void xbt_log_init(int *argc, char **argv)
     }
   }
   if (j < *argc) {
-    argv[j] = NULL;
+    argv[j] = nullptr;
     *argc = j;
   }
 
@@ -158,7 +157,7 @@ static void log_cat_exit(xbt_log_category_t cat)
     free(cat->layout);
   }
 
-  for (child = cat->firstChild; child != NULL; child = child->nextSibling)
+  for (child = cat->firstChild; child != nullptr; child = child->nextSibling)
     log_cat_exit(child);
 }
 
@@ -171,10 +170,10 @@ void xbt_log_postexit(void)
 }
 
 /* Size of the static string in which we build the log string */
-#define XBT_LOG_STATIC_BUFFER_SIZE 2048
+static constexpr size_t XBT_LOG_STATIC_BUFFER_SIZE = 2048;
 /* Minimum size of the dynamic string in which we build the log string
    (should be greater than XBT_LOG_STATIC_BUFFER_SIZE) */
-#define XBT_LOG_DYNAMIC_BUFFER_SIZE 4096
+static constexpr size_t XBT_LOG_DYNAMIC_BUFFER_SIZE = 4096;
 
 void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
 {
@@ -187,7 +186,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
   while (1) {
     xbt_log_appender_t appender = cat->appender;
 
-    if (appender != NULL) {
+    if (appender != nullptr) {
       xbt_assert(cat->layout, "No valid layout for the appender of category %s", cat->name);
 
       /* First, try with a static buffer */
@@ -234,8 +233,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
  * To circumvent the problem, we define the macro DISABLE_XBT_LOG_CAT_INIT() to hide the real _xbt_log_cat_init(). The
  * macro has to be called at the beginning of the affected functions.
  */
-static int fake_xbt_log_cat_init(xbt_log_category_t XBT_ATTRIB_UNUSED category,
-                                 e_xbt_log_priority_t XBT_ATTRIB_UNUSED priority)
+static int fake_xbt_log_cat_init(xbt_log_category_t, e_xbt_log_priority_t)
 {
   return 0;
 }
@@ -267,7 +265,7 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category, xbt_log_setting_
   if (setting->appender) {
     xbt_log_appender_set(category, setting->appender);
     if (!category->layout)
-      xbt_log_layout_set(category, xbt_log_layout_simple_new(NULL));
+      xbt_log_layout_set(category, xbt_log_layout_simple_new(nullptr));
     category->additivity = 0;
     XBT_DEBUG("Set %p as appender of category '%s'", setting->appender, category->name);
   }
@@ -280,17 +278,17 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category, xbt_log_setting_
 int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority)
 {
   DISABLE_XBT_LOG_CAT_INIT();
-  if (log_cat_init_mutex != NULL)
+  if (log_cat_init_mutex != nullptr)
     log_cat_init_mutex->lock();
 
   if (category->initialized) {
-    if (log_cat_init_mutex != NULL)
+    if (log_cat_init_mutex != nullptr)
       log_cat_init_mutex->unlock();
     return priority >= category->threshold;
   }
 
   unsigned int cursor;
-  xbt_log_setting_t setting = NULL;
+  xbt_log_setting_t setting = nullptr;
 
   XBT_DEBUG("Initializing category '%s' (firstChild=%s, nextSibling=%s)", category->name,
          (category->firstChild ? category->firstChild->name : "none"),
@@ -311,7 +309,7 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
 
     if (XBT_LOG_ISENABLED(log, xbt_log_priority_debug)) {
       char *buf;
-      char *res = NULL;
+      char* res              = nullptr;
       xbt_log_category_t cpp = category->parent->firstChild;
       while (cpp) {
         if (res) {
@@ -354,7 +352,7 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
   }
 
   category->initialized = 1;
-  if (log_cat_init_mutex != NULL)
+  if (log_cat_init_mutex != nullptr)
     log_cat_init_mutex->unlock();
   return priority >= category->threshold;
 }
@@ -368,7 +366,7 @@ void xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent)
   if (cat->initialized) {
     xbt_log_category_t *cpp = &cat->parent->firstChild;
 
-    while (*cpp != cat && *cpp != NULL) {
+    while (*cpp != cat && *cpp != nullptr) {
       cpp = &(*cpp)->nextSibling;
     }
 
@@ -393,7 +391,7 @@ static void _set_inherited_thresholds(xbt_log_category_t cat)
 {
   xbt_log_category_t child = cat->firstChild;
 
-  for (; child != NULL; child = child->nextSibling) {
+  for (; child != nullptr; child = child->nextSibling) {
     if (child->isThreshInherited) {
       if (cat != &_XBT_LOGV(log))
         XBT_VERB("Set category threshold of %s to %s (=%d)",
@@ -417,11 +415,11 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
   const char *orig_control_string = control_string;
   xbt_log_setting_t set = xbt_new(s_xbt_log_setting_t, 1);
 
-  set->catname = NULL;
+  set->catname    = nullptr;
   set->thresh = xbt_log_priority_uninitialized;
-  set->fmt = NULL;
+  set->fmt        = nullptr;
   set->additivity = -1;
-  set->appender = NULL;
+  set->appender   = nullptr;
 
   if (!*control_string)
     return set;
@@ -503,7 +501,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
     set->fmt = xbt_strdup(eq + 1);
   } else {
     char buff[512];
-    snprintf(buff, MIN(512, eq - dot), "%s", dot + 1);
+    snprintf(buff, std::min<int>(512, eq - dot), "%s", dot + 1);
     xbt_die("Unknown setting of the log category: '%s'", buff);
   }
   set->catname = (char *) xbt_malloc(dot - name + 1);
@@ -526,14 +524,14 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat, char *n
   if (!strcmp(cat->name, name))
     return cat;
 
-  for (child = cat->firstChild; child != NULL; child = child->nextSibling) {
+  for (child = cat->firstChild; child != nullptr; child = child->nextSibling) {
     XBT_DEBUG("Dig into %s", child->name);
     res = _xbt_log_cat_searchsub(child, name);
     if (res)
       return res;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 /**
@@ -574,7 +572,7 @@ void xbt_log_control_set(const char *control_string)
     return;
   }
   /* some initialization if this is the first time that this get called */
-  if (xbt_log_settings == NULL)
+  if (xbt_log_settings == nullptr)
     xbt_log_settings = xbt_dynar_new(sizeof(xbt_log_setting_t), _free_setting);
 
   /* split the string, and remove empty entries */
@@ -618,7 +616,7 @@ void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay)
   DISABLE_XBT_LOG_CAT_INIT();
   if (!cat->appender) {
     XBT_VERB ("No appender to category %s. Setting the file appender as default", cat->name);
-    xbt_log_appender_set(cat, xbt_log_appender_file_new(NULL));
+    xbt_log_appender_set(cat, xbt_log_appender_file_new(nullptr));
   }
   if (cat->layout) {
     if (cat->layout->free_) {
@@ -715,8 +713,8 @@ static void xbt_log_help_categories_rec(xbt_log_category_t category, const char 
     child_prefix = xbt_strdup(prefix);
   }
 
-  xbt_dynar_t dynar = xbt_dynar_new(sizeof(xbt_log_category_t), NULL);
-  for (cat = category ; cat != NULL; cat = cat->nextSibling)
+  xbt_dynar_t dynar = xbt_dynar_new(sizeof(xbt_log_category_t), nullptr);
+  for (cat = category; cat != nullptr; cat = cat->nextSibling)
     xbt_dynar_push_as(dynar, xbt_log_category_t, cat);
 
   xbt_dynar_sort(dynar, xbt_log_cat_cmp);

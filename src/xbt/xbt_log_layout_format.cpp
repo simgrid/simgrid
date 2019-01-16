@@ -9,26 +9,20 @@
 #include "simgrid/msg.h" /* MSG_get_clock */
 #include "src/xbt/log_private.hpp"
 #include "xbt/sysdep.h"
-#include <stdio.h>
-
-#ifndef MIN
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-#endif
-#ifndef MAX
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-#endif
+#include <algorithm>
+#include <cstdio>
 
 extern const char *xbt_log_priority_names[8];
 
-#define ERRMSG                                                          \
-  "Unknown %%%c sequence in layout format (%s).\n"                      \
-  "Known sequences:\n"                                                  \
-  "  what:        %%m: user message  %%c: log category  %%p: log priority\n" \
-  "  where:\n"                                                          \
-  "    source:    %%F: file          %%L: line          %%M: function  %%l: location (%%F:%%L)\n" \
-  "    runtime:   %%h: hostname      %%t: thread        %%P: process   %%i: PID\n" \
-  "  when:        %%d: date          %%r: app. age\n"                   \
-  "  other:       %%%%: %%             %%n: new line      %%e: plain space\n"
+static constexpr const char* ERRMSG =
+    "Unknown %%%c sequence in layout format (%s).\n"
+    "Known sequences:\n"
+    "  what:        %%m: user message  %%c: log category  %%p: log priority\n"
+    "  where:\n"
+    "    source:    %%F: file          %%L: line          %%M: function  %%l: location (%%F:%%L)\n"
+    "    runtime:   %%h: hostname      %%t: thread        %%P: process   %%i: PID\n"
+    "  when:        %%d: date          %%r: app. age\n"
+    "  other:       %%%%: %%             %%n: new line      %%e: plain space\n";
 
 #define check_overflow(len)                                             \
   if ((rem_size -= (len)) > 0) {                                        \
@@ -73,7 +67,7 @@ extern const char *xbt_log_priority_names[8];
 #define show_int(data)    show_it(data, "d")
 #define show_double(data) show_it(data, "f")
 
-static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, const char *msg_fmt)
+static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, const char* msg_fmt)
 {
   char *p = ev->buffer;
   int rem_size = ev->buffer_size;
@@ -139,7 +133,7 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
             int sz;
             set_sz_from_precision();
             int len = snprintf(p, sz, "%s:%d", ev->fileName, ev->lineNum);
-            check_overflow(MIN(sz, len));
+            check_overflow(std::min(sz, len));
             break;
           }
           case 'L': /* line number; LOG4J compliant */
@@ -161,7 +155,7 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
             va_copy(ap, ev->ap);
             int len = vsnprintf(p, sz, msg_fmt, ap);
             va_end(ap);
-            check_overflow(MIN(sz, len));
+            check_overflow(std::min(sz, len));
             break;
           }
           default:

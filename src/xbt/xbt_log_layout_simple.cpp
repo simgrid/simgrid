@@ -10,7 +10,7 @@
 
 #include "simgrid/host.h" /* sg_host_self_get_name */
 #include "simgrid/msg.h"  /* MSG_get_clock */
-#include <stdio.h>
+#include <cstdio>
 
 extern const char *xbt_log_priority_names[8];
 extern int xbt_log_no_loc;
@@ -21,7 +21,7 @@ extern int xbt_log_no_loc;
   } else                                                                \
     return 0
 
-static int xbt_log_layout_simple_doit(XBT_ATTRIB_UNUSED xbt_log_layout_t l, xbt_log_event_t ev, const char* fmt)
+static int xbt_log_layout_simple_doit(xbt_log_layout_t, xbt_log_event_t ev, const char* fmt)
 {
   char *p = ev->buffer;
   int rem_size = ev->buffer_size;
@@ -68,7 +68,7 @@ static int xbt_log_layout_simple_doit(XBT_ATTRIB_UNUSED xbt_log_layout_t l, xbt_
   return 1;
 }
 
-xbt_log_layout_t xbt_log_layout_simple_new(XBT_ATTRIB_UNUSED char* arg)
+xbt_log_layout_t xbt_log_layout_simple_new(char*)
 {
   xbt_log_layout_t res = xbt_new0(s_xbt_log_layout_t, 1);
   res->do_layout       = &xbt_log_layout_simple_doit;
