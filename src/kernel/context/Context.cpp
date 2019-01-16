@@ -21,7 +21,6 @@ smx_context_t SIMIX_context_new(
   void_pfn_smxprocess_t cleanup_func,
   smx_actor_t simix_process)
 {
-  xbt_assert(simix_global, "simix is not initialized, please call MSG_init first");
   return simix_global->context_factory->create_context(
     std::move(code), cleanup_func, simix_process);
 }

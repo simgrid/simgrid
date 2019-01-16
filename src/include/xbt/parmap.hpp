@@ -163,7 +163,7 @@ template <typename T> Parmap<T>::Parmap(unsigned num_workers, e_xbt_parmap_mode_
   /* Initialize the thread pool data structure */
   this->status      = PARMAP_WORK;
   this->work_round  = 0;
-  this->workers.reserve(num_workers);
+  this->workers.resize(num_workers);
   this->num_workers = num_workers;
   this->synchro     = new_synchro(mode);
 
@@ -206,7 +206,6 @@ template <typename T> Parmap<T>::~Parmap()
   for (unsigned i = 1; i < num_workers; i++)
     workers[i]->join();
 
-  workers.clear();
   delete synchro;
 }
 
