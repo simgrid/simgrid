@@ -51,9 +51,9 @@ static void _free_setting(void *s)
 {
   xbt_log_setting_t set = *(xbt_log_setting_t *) s;
   if (set) {
-    free(set->catname);
-    free(set->fmt);
-    free(set);
+    xbt_free(set->catname);
+    xbt_free(set->fmt);
+    xbt_free(set);
   }
 }
 
@@ -149,12 +149,12 @@ static void log_cat_exit(xbt_log_category_t cat)
   if (cat->appender) {
     if (cat->appender->free_)
       cat->appender->free_(cat->appender);
-    free(cat->appender);
+    xbt_free(cat->appender);
   }
   if (cat->layout) {
     if (cat->layout->free_)
       cat->layout->free_(cat->layout);
-    free(cat->layout);
+    xbt_free(cat->layout);
   }
 
   for (child = cat->firstChild; child != nullptr; child = child->nextSibling)
@@ -314,7 +314,7 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
       while (cpp) {
         if (res) {
           buf = bprintf("%s %s", res, cpp->name);
-          free(res);
+          xbt_free(res);
           res = buf;
         } else {
           res = xbt_strdup(cpp->name);
@@ -325,7 +325,7 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
       XBT_DEBUG("Children of %s: %s; nextSibling: %s", category->parent->name, res,
              (category->parent->nextSibling ? category->parent->nextSibling->name : "none"));
 
-      free(res);
+      xbt_free(res);
     }
   }
 
@@ -466,7 +466,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
       THROWF(arg_error, 0,
              "Unknown priority name: %s (must be one of: trace,debug,verbose,info,warning,error,critical)", eq + 1);
     }
-    free(neweq);
+    xbt_free(neweq);
   } else if (!strncmp(dot + 1, "add", (size_t) (eq - dot - 1)) ||
              !strncmp(dot + 1, "additivity", (size_t) (eq - dot - 1))) {
     char *neweq = xbt_strdup(eq + 1);
@@ -482,7 +482,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
     } else {
       set->additivity = 0;
     }
-    free(neweq);
+    xbt_free(neweq);
   } else if (!strncmp(dot + 1, "app", (size_t) (eq - dot - 1)) ||
              !strncmp(dot + 1, "appender", (size_t) (eq - dot - 1))) {
     char *neweq = xbt_strdup(eq + 1);
@@ -496,7 +496,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
     } else {
       THROWF(arg_error, 0, "Unknown appender log type: '%s'", neweq);
     }
-    free(neweq);
+    xbt_free(neweq);
   } else if (!strncmp(dot + 1, "fmt", (size_t) (eq - dot - 1))) {
     set->fmt = xbt_strdup(eq + 1);
   } else {
@@ -606,7 +606,7 @@ void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app)
   if (cat->appender) {
     if (cat->appender->free_)
       cat->appender->free_(cat->appender);
-    free(cat->appender);
+    xbt_free(cat->appender);
   }
   cat->appender = app;
 }
@@ -622,7 +622,7 @@ void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay)
     if (cat->layout->free_) {
       cat->layout->free_(cat->layout);
     }
-    free(cat->layout);
+    xbt_free(cat->layout);
   }
   cat->layout = lay;
   xbt_log_additivity_set(cat, 0);

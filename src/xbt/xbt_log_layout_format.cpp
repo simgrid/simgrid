@@ -176,7 +176,7 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
 
 static void xbt_log_layout_format_free(xbt_log_layout_t lay)
 {
-  free(lay->data);
+  xbt_free(lay->data);
 }
 
 xbt_log_layout_t xbt_log_layout_format_new(char *arg)
