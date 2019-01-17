@@ -324,6 +324,10 @@ void *mmalloc_preinit(void)
     unsigned long mask = ~((unsigned long)xbt_pagesize - 1);
     void *addr = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
     __mmalloc_default_mdp = xbt_mheap_new_options(-1, addr, XBT_MHEAP_OPTION_MEMSET);
+
+    // atfork mandated at least on FreeBSD, or simgrid-mc will fail to fork the verified app
+    int res = pthread_atfork(mmalloc_fork_prepare, mmalloc_fork_parent, mmalloc_fork_child);
+    xbt_assert(res == 0, "pthread_atfork() failed: return value %d", res);
   }
   xbt_assert(__mmalloc_default_mdp != NULL);
 
