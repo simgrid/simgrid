@@ -51,17 +51,8 @@ XBT_PUBLIC void xbt_mheap_destroy_no_free(xbt_mheap_t md);
 
 XBT_PUBLIC void* xbt_mheap_destroy(xbt_mheap_t md);
 
-/* return the heap used when NULL is passed as first argument to any mm* function */
-XBT_PUBLIC xbt_mheap_t mmalloc_get_default_md(void);
-
-/* To change the heap used when using the legacy version malloc/free/realloc and such */
-xbt_mheap_t mmalloc_set_current_heap(xbt_mheap_t new_heap);
+/* To get the heap used when using the legacy version malloc/free/realloc and such */
 xbt_mheap_t mmalloc_get_current_heap(void);
-
-size_t mmalloc_get_bytes_used(xbt_mheap_t);
-ssize_t mmalloc_get_busy_size(xbt_mheap_t, void* ptr);
-
-void* malloc_no_memset(size_t n);
 
 #endif
 SG_END_DECL()

@@ -43,13 +43,6 @@ xbt_mheap_t mmalloc_get_current_heap(void)
   return __mmalloc_current_heap;
 }
 
-xbt_mheap_t mmalloc_set_current_heap(xbt_mheap_t new_heap)
-{
-  xbt_mheap_t heap = __mmalloc_current_heap;
-  __mmalloc_current_heap = new_heap;
-  return heap;
-}
-
 /* Override the malloc-like functions if MC is activated at compile time */
 #if SIMGRID_HAVE_MC
 
@@ -154,28 +147,6 @@ XBT_ATTRIB_CONSTRUCTOR(101) static void mm_legacy_constructor()
  */
 
 #define GET_HEAP() __mmalloc_current_heap
-
-void* malloc_no_memset(size_t n)
-{
-  if (!mm_initialized) {
-    if (mm_initializing)
-      return mm_fake_malloc(n);
-    mm_legacy_constructor();
-  }
-
-  if (!__malloc_use_mmalloc) {
-    return mm_real_malloc(n);
-  }
-
-  xbt_mheap_t mdp = GET_HEAP();
-  if (!mdp)
-    return NULL;
-
-  LOCK(mdp);
-  void *ret = mmalloc_no_memset(mdp, n);
-  UNLOCK(mdp);
-  return ret;
-}
 
 void *malloc(size_t n)
 {

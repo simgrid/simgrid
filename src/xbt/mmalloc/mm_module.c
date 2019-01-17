@@ -272,12 +272,6 @@ void *xbt_mheap_destroy(xbt_mheap_t mdp)
  * Try to increase this first if you experience strange errors under valgrind. */
 #define HEAP_OFFSET   (128UL<<20)
 
-xbt_mheap_t mmalloc_get_default_md(void)
-{
-  xbt_assert(__mmalloc_default_mdp);
-  return __mmalloc_default_mdp;
-}
-
 static void mmalloc_fork_prepare(void)
 {
   xbt_mheap_t mdp = NULL;
@@ -359,23 +353,4 @@ size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_info* heapin
     }
   }
   return bytes;
-}
-
-size_t mmalloc_get_bytes_used(const xbt_mheap_t heap){
-  const struct mdesc* heap_data = (const struct mdesc *) heap;
-  return mmalloc_get_bytes_used_remote(heap_data->heaplimit, heap_data->heapinfo);
-}
-
-ssize_t mmalloc_get_busy_size(xbt_mheap_t heap, void *ptr){
-
-  ssize_t block = ((char*)ptr - (char*)(heap->heapbase)) / BLOCKSIZE + 1;
-  if(heap->heapinfo[block].type < 0)
-    return -1;
-  else if(heap->heapinfo[block].type == MMALLOC_TYPE_UNFRAGMENTED)
-    return heap->heapinfo[block].busy_block.busy_size;
-  else{
-    ssize_t frag = ((uintptr_t) (ADDR2UINT (ptr) % (BLOCKSIZE))) >> heap->heapinfo[block].type;
-    return heap->heapinfo[block].busy_frag.frag_size[frag];
-  }
-
 }

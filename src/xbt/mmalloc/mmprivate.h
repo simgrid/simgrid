@@ -25,13 +25,6 @@
 #include <pthread.h>
 #include <stdint.h>
 
-#ifndef MIN
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-#endif
-#ifndef MAX
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-#endif
-
 #ifdef HAVE_LIMITS_H
 #  include <limits.h>
 #else
@@ -65,7 +58,6 @@
  * need to enlist the free fragments.
  */
 
-//#define SMALLEST_POSSIBLE_MALLOC (sizeof(struct list))
 #define SMALLEST_POSSIBLE_MALLOC (16*sizeof(struct list))
 #define MAX_FRAGMENT_PER_BLOCK (BLOCKSIZE / SMALLEST_POSSIBLE_MALLOC)
 
@@ -160,14 +152,11 @@ typedef struct {
     struct {
       size_t nfree;               /* Free fragments in a fragmented block.  */
       ssize_t frag_size[MAX_FRAGMENT_PER_BLOCK];
-      //void *bt[MAX_FRAGMENT_PER_BLOCK][XBT_BACKTRACE_SIZE]; /* Where it was malloced (or realloced lastly) */
       int ignore[MAX_FRAGMENT_PER_BLOCK];
     } busy_frag;
     struct {
       size_t size; /* Size (in blocks) of a large cluster.  */
       size_t busy_size; /* Actually used space, in bytes */
-      //void *bt[XBT_BACKTRACE_SIZE]; /* Where it was malloced (or realloced lastly) */
-      //int bt_size;
       int ignore;
     } busy_block;
     /* Heap information for a free block (that may be the first of a free cluster).  */

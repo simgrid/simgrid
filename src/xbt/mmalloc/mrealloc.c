@@ -14,6 +14,10 @@
 
 #include "mmprivate.h"
 
+#ifndef MIN
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
 /* Resize the given region to the new size, returning a pointer to the (possibly moved) region. This is optimized for
  * speed; some benchmarks seem to indicate that greater compactness is achieved by unconditionally allocating and
  * copying to a new region.  This module has incestuous knowledge of the internals of both mfree and mmalloc. */
