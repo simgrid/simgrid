@@ -18,6 +18,7 @@ MSG:
 
 XBT:
  - Drop sg_cmdline. Please use xbt_cmdline instead.
+ - Drop the C xbt_os_mutex_t; Use the C++11 std::mutex.
  - Drop the C xbt_os_sem_t; Use the C++ xbt::OsSemaphore.
    OsSemaphore is implemented in a portable way with C++11 threads.
    This should allow much more threads to be created at the same time,
@@ -32,7 +33,7 @@ Fixed bugs:
  - #261: Document the parameters of parallel execution's constructor
  - #314: SMPI args internal cleanup
  - #316: Fix a bug related to the CPU utilization of multi-core VM
- 
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.21) October 3. 2018
@@ -51,7 +52,7 @@ Documentation:
  - The Developper manual is still to be converted (not compiled until then)
  - Some parts are still missing in this conversion (such as the
    platform and deployment sections) while others were blindly converted
-   and would need more love (such as the configuration flags). 
+   and would need more love (such as the configuration flags).
    Things will certainly further improve in the future releases.
 
 S4U new features:
@@ -65,7 +66,7 @@ S4U new features:
      - io_init(sg_size_t, s4u::Io::OpType) to create a READ or WRITE asynchronous
        IO operations that can be started, waited for, or canceled as a regular
        activity.
-     - read_async(sg_size_t) and write_async(sg_size_t) which are wrappers on 
+     - read_async(sg_size_t) and write_async(sg_size_t) which are wrappers on
        io_init() + start()
 
 Tracing:
@@ -93,7 +94,7 @@ Java:
    We hope to fix it in a future release, and we are sorry for the inconvenience.
 
 Fixed bugs:
- - #22: Process autorestart seem to only work with CAS01 cpus 
+ - #22: Process autorestart seem to only work with CAS01 cpus
  - #56: Feature request: dynamic SMPI replay
  - #93: simgrid should not eat --help
  - #111: How to change the loopback link characteristics?
