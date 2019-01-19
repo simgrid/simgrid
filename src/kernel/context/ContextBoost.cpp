@@ -45,7 +45,6 @@ BoostContext::BoostContext(std::function<void()> code, void_pfn_smxprocess_t cle
 #endif
 
   } else {
-    set_maestro(this); // save maestro for run_all()
 #if BOOST_VERSION < 105600
     this->fc_ = new boost::context::fcontext_t();
 #endif

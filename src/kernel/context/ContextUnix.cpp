@@ -54,8 +54,6 @@ UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun
     ASAN_ONLY(this->asan_stack_ = get_stack());
 #endif
     UContext::make_ctx(&this->uc_, UContext::smx_ctx_sysv_wrapper, this);
-  } else {
-    set_maestro(this); // save maestro for run_all()
   }
 
 #if SIMGRID_HAVE_MC

@@ -55,6 +55,10 @@ SwappedContext::SwappedContext(std::function<void()> code, void_pfn_smxprocess_t
                                SwappedContextFactory* factory)
     : Context(std::move(code), cleanup_func, process), factory_(factory)
 {
+  // Save maestro (=context created first) in preparation for run_all
+  if (factory_->workers_context_[0] == nullptr)
+    factory_->workers_context_[0] = this;
+
   if (has_code()) {
     if (smx_context_guard_size > 0 && not MC_is_active()) {
 
@@ -132,12 +136,6 @@ SwappedContext::~SwappedContext()
 #endif /* not windows */
 
   xbt_free(stack_);
-}
-
-void SwappedContext::set_maestro(SwappedContext* ctx)
-{
-  if (factory_->threads_working_ == 0) // Don't save the soul of minions, only the one of maestro
-    factory_->workers_context_[0] = ctx;
 }
 
 void* SwappedContext::get_stack()

@@ -45,7 +45,6 @@ public:
 
   virtual void swap_into(SwappedContext* to) = 0; // Defined in Raw, Boost and UContext subclasses
 
-  void set_maestro(SwappedContext* ctx);
   void* get_stack();
 
   // FIXME: Killme

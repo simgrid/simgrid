@@ -206,7 +206,6 @@ RawContext::RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup
 #endif
      this->stack_top_ = raw_makecontext(get_stack(), smx_context_usable_stack_size, RawContext::wrapper, this);
    } else {
-     set_maestro(this); // save maestro for run_all()
      if (MC_is_active())
        MC_ignore_heap(&stack_top_, sizeof(stack_top_));
    }
