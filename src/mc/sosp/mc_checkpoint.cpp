@@ -343,7 +343,7 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(simgrid::mc::UnwindCo
     result.push_back(std::move(stack_frame));
 
     /* Stop before context switch with maestro */
-    if (frame != nullptr && frame->name == "smx_ctx_sysv_wrapper")
+    if (frame != nullptr && frame->name == "smx_ctx_wrapper")
       break;
 
     int ret = unw_step(&c);

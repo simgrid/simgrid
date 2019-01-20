@@ -17,55 +17,18 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
-/** Many integers are needed to store a pointer
- *
- * Support up to two ints. */
+/** Up to two integers may be needed to store a pointer on the system we target */
 constexpr int CTX_ADDR_LEN = 2;
 
 static_assert(sizeof(simgrid::kernel::context::UContext*) <= CTX_ADDR_LEN * sizeof(int),
-              "Ucontexts are not supported on this arch yet");
+              "Ucontexts are not supported on this arch yet. Please increase CTX_ADDR_LEN.");
 
 namespace simgrid {
 namespace kernel {
 namespace context {
-
-// UContextFactory
-Context* UContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t actor)
-{
-  return new_context<UContext>(std::move(code), cleanup, actor, this);
-}
-
-
-// UContext
-
-UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor,
-                   SwappedContextFactory* factory)
-    : SwappedContext(std::move(code), cleanup_func, actor, factory)
-{
-  /* if the user provided a function for the process then use it, otherwise it is the context for maestro */
-  if (has_code()) {
-    getcontext(&this->uc_);
-    this->uc_.uc_link = nullptr;
-    this->uc_.uc_stack.ss_sp   = sg_makecontext_stack_addr(get_stack());
-    this->uc_.uc_stack.ss_size = sg_makecontext_stack_size(smx_context_usable_stack_size);
-#if PTH_STACKGROWTH == -1
-    ASAN_ONLY(this->asan_stack_ = static_cast<char*>(get_stack()) + smx_context_usable_stack_size);
-#else
-    ASAN_ONLY(this->asan_stack_ = get_stack());
-#endif
-    UContext::make_ctx(&this->uc_, UContext::smx_ctx_sysv_wrapper, this);
-  }
-
-#if SIMGRID_HAVE_MC
-  if (MC_is_active() && has_code()) {
-    MC_register_stack_area(get_stack(), actor, &(this->uc_), smx_context_usable_stack_size);
-  }
-#endif
-}
-
-// The name of this function is currently hardcoded in the code (as string).
+// The name of this function is currently hardcoded in MC (as string).
 // Do not change it without fixing those references as well.
-void UContext::smx_ctx_sysv_wrapper(int i1, int i2)
+static void smx_ctx_wrapper(int i1, int i2)
 {
   // Rebuild the Context* pointer from the integers:
   int ctx_addr[CTX_ADDR_LEN] = {i1, i2};
@@ -86,16 +49,44 @@ void UContext::smx_ctx_sysv_wrapper(int i1, int i2)
   context->suspend();
 }
 
-/** A better makecontext
- *
- * Makecontext expects integer arguments, we the context variable is decomposed into a serie of integers and each
- * integer is passed as argument to makecontext.
- */
-void UContext::make_ctx(ucontext_t* ucp, void (*func)(int, int), UContext* arg)
+// UContextFactory
+Context* UContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t actor)
 {
-  int ctx_addr[CTX_ADDR_LEN]{};
-  memcpy(ctx_addr, &arg, sizeof arg);
-  makecontext(ucp, (void (*)())func, 2, ctx_addr[0], ctx_addr[1]);
+  return new_context<UContext>(std::move(code), cleanup, actor, this);
+}
+
+
+// UContext
+
+UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor,
+                   SwappedContextFactory* factory)
+    : SwappedContext(std::move(code), cleanup_func, actor, factory)
+{
+  /* if the user provided a function for the actor then use it. If not, nothing to do for maestro. */
+  if (has_code()) {
+    getcontext(&this->uc_);
+    this->uc_.uc_link = nullptr;
+    this->uc_.uc_stack.ss_sp   = sg_makecontext_stack_addr(get_stack());
+    this->uc_.uc_stack.ss_size = sg_makecontext_stack_size(smx_context_usable_stack_size);
+#if PTH_STACKGROWTH == -1
+    ASAN_ONLY(this->asan_stack_ = static_cast<char*>(get_stack()) + smx_context_usable_stack_size);
+#else
+    ASAN_ONLY(this->asan_stack_ = get_stack());
+#endif
+    // Makecontext expects integer arguments; we want to pass a pointer.
+    // This context address is decomposed into a serie of integers, which are passed as arguments to makecontext.
+
+    int ctx_addr[CTX_ADDR_LEN]{};
+    UContext* arg = this;
+    memcpy(ctx_addr, &arg, sizeof this);
+    makecontext(&this->uc_, (void (*)())smx_ctx_wrapper, 2, ctx_addr[0], ctx_addr[1]);
+  }
+
+#if SIMGRID_HAVE_MC
+  if (MC_is_active() && has_code()) {
+    MC_register_stack_area(get_stack(), actor, &(this->uc_), smx_context_usable_stack_size);
+  }
+#endif
 }
 
 void UContext::swap_into(SwappedContext* to_)

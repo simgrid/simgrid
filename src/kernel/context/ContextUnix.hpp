@@ -39,14 +39,11 @@ private:
   UContext* asan_ctx_     = nullptr;
   bool asan_stop_         = false;
 #endif
-
-  static void smx_ctx_sysv_wrapper(int, int);
-  static void make_ctx(ucontext_t* ucp, void (*func)(int, int), UContext* arg);
 };
 
 class UContextFactory : public SwappedContextFactory {
 public:
-  Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
+  Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t actor) override;
 };
 }}} // namespace
 
