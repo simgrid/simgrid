@@ -20,4 +20,14 @@
 #define ASAN_FINISH_SWITCH(fake_stack_save, bottom_old, size_old) (void)0
 #endif
 
+/* We are using the bottom of the stack to save some information, like the
+ * valgrind_stack_id. Define smx_context_usable_stack_size to give the remaining
+ * size for the stack. Round its value to a multiple of 16 (asan wants the stacks to be aligned this way). */
+#if HAVE_VALGRIND_H
+#define smx_context_usable_stack_size                                                                                  \
+  ((smx_context_stack_size - sizeof(unsigned int)) & ~0xf) /* for valgrind_stack_id */
+#else
+#define smx_context_usable_stack_size (smx_context_stack_size & ~0xf)
+#endif
+
 #endif

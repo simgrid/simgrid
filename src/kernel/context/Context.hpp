@@ -7,7 +7,6 @@
 #define SIMGRID_KERNEL_CONTEXT_CONTEXT_HPP
 
 #include "simgrid/forward.h"
-#include "src/internal_config.h"
 #include "src/kernel/activity/ActivityImpl.hpp"
 
 #include <csignal>
@@ -128,16 +127,6 @@ XBT_PUBLIC smx_context_t SIMIX_context_new(std::function<void()> code, void_pfn_
 
 #ifndef WIN32
 XBT_PUBLIC_DATA char sigsegv_stack[SIGSTKSZ];
-#endif
-
-/* We are using the bottom of the stack to save some information, like the
- * valgrind_stack_id. Define smx_context_usable_stack_size to give the remaining
- * size for the stack. Round its value to a multiple of 16 (asan wants the stacks to be aligned this way). */
-#if HAVE_VALGRIND_H
-#define smx_context_usable_stack_size                                                                                  \
-  ((smx_context_stack_size - sizeof(unsigned int)) & ~0xf) /* for valgrind_stack_id */
-#else
-#define smx_context_usable_stack_size (smx_context_stack_size & ~0xf)
 #endif
 
 /** @brief Executes all the processes to run (in parallel if possible). */

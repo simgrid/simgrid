@@ -26,6 +26,7 @@ static_assert(sizeof(simgrid::kernel::context::UContext*) <= CTX_ADDR_LEN * size
 namespace simgrid {
 namespace kernel {
 namespace context {
+
 // The name of this function is currently hardcoded in MC (as string).
 // Do not change it without fixing those references as well.
 static void smx_ctx_wrapper(int i1, int i2)
