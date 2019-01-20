@@ -37,8 +37,7 @@ namespace context {
 /* rank of the execution thread */
 thread_local uintptr_t SwappedContext::worker_id_;             /* thread-specific storage for the thread id */
 
-SwappedContextFactory::SwappedContextFactory(std::string name)
-    : ContextFactory(name), parallel_(SIMIX_context_is_parallel())
+SwappedContextFactory::SwappedContextFactory() : ContextFactory(), parallel_(SIMIX_context_is_parallel())
 {
   parmap_ = nullptr; // will be created lazily with the right parameters if needed (ie, in parallel)
   workers_context_.clear();

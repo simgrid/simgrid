@@ -22,8 +22,7 @@ namespace context {
 
 // ThreadContextFactory
 
-ThreadContextFactory::ThreadContextFactory()
-    : ContextFactory("ThreadContextFactory"), parallel_(SIMIX_context_is_parallel())
+ThreadContextFactory::ThreadContextFactory() : ContextFactory(), parallel_(SIMIX_context_is_parallel())
 {
   if (parallel_)
     ParallelThreadContext::initialize();

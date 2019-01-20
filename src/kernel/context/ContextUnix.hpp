@@ -46,8 +46,6 @@ private:
 
 class UContextFactory : public SwappedContextFactory {
 public:
-  UContextFactory() : SwappedContextFactory("UContextFactory") {}
-
   Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
 };
 }}} // namespace

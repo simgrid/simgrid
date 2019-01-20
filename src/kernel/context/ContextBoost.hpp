@@ -61,8 +61,6 @@ private:
 
 class BoostContextFactory : public SwappedContextFactory {
 public:
-  BoostContextFactory() : SwappedContextFactory("BoostContextFactory") {}
-
   Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
 };
 }}} // namespace

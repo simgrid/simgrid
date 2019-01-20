@@ -27,7 +27,7 @@ ContextFactory* java_factory()
   return new JavaContextFactory();
 }
 
-JavaContextFactory::JavaContextFactory(): ContextFactory("JavaContextFactory")
+JavaContextFactory::JavaContextFactory() : ContextFactory()
 {
   xbt_binary_name = xbt_strdup("java"); // Used by the backtrace displayer
 }

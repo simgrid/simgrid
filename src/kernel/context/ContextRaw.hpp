@@ -47,8 +47,6 @@ private:
 
 class RawContextFactory : public SwappedContextFactory {
 public:
-  RawContextFactory() : SwappedContextFactory("RawContextFactory") {}
-
   Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
 };
 }}} // namespace

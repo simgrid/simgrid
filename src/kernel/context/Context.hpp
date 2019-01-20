@@ -20,11 +20,8 @@ namespace kernel {
 namespace context {
 
 class XBT_PUBLIC ContextFactory {
-private:
-  std::string name_;
-
 public:
-  explicit ContextFactory(std::string name) : name_(std::move(name)) {}
+  explicit ContextFactory() {}
   virtual ~ContextFactory();
   virtual Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) = 0;
 
@@ -34,7 +31,6 @@ public:
   virtual Context* create_maestro(std::function<void()> code, smx_actor_t process);
 
   virtual void run_all() = 0;
-  std::string const& name() const { return name_; }
 
 protected:
   template <class T, class... Args> T* new_context(Args&&... args)

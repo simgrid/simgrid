@@ -18,7 +18,7 @@ class SwappedContext;
 class SwappedContextFactory : public ContextFactory {
   friend SwappedContext; // Reads whether we are in parallel mode
 public:
-  explicit SwappedContextFactory(std::string name);
+  SwappedContextFactory();
   ~SwappedContextFactory() override;
   void run_all() override;
 
