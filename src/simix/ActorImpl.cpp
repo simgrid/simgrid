@@ -301,8 +301,6 @@ void create_maestro(simgrid::simix::ActorCode code)
   if (not code) {
     maestro->context_ = SIMIX_context_new(simgrid::simix::ActorCode(), nullptr, maestro);
   } else {
-    if (not simix_global)
-      xbt_die("simix is not initialized, please call MSG_init first");
     maestro->context_ = simix_global->context_factory->create_maestro(code, maestro);
   }
 

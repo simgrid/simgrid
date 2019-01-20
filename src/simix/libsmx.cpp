@@ -384,8 +384,9 @@ int simcall_comm_test(smx_activity_t comm)
  */
 smx_mutex_t simcall_mutex_init()
 {
-  if (not simix_global) {
-    fprintf(stderr,"You must run MSG_init before using MSG\n"); // We can't use xbt_die since we may get there before the initialization
+  if (simix_global == nullptr) {
+    fprintf(stderr, "You must initialize the SimGrid engine before using it\n"); // We can't use xbt_die since we may
+                                                                                 // get there before the initialization
     xbt_abort();
   }
   return simgrid::simix::simcall([] { return new simgrid::kernel::activity::MutexImpl(); });

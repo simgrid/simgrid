@@ -179,7 +179,7 @@ void SIMIX_global_init(int *argc, char **argv)
   simgrid::mc::Client::initialize();
 #endif
 
-  if (not simix_global) {
+  if (simix_global == nullptr) {
     simix_global = std::unique_ptr<simgrid::simix::Global>(new simgrid::simix::Global());
     simix_global->maestro_process = nullptr;
 
