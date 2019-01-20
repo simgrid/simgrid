@@ -35,7 +35,7 @@ ActorPtr Actor::self()
   if (self_context == nullptr)
     return simgrid::s4u::ActorPtr();
 
-  return self_context->process()->iface();
+  return self_context->get_actor()->iface();
 }
 
 ActorPtr Actor::create(std::string name, s4u::Host* host, std::function<void()> code)

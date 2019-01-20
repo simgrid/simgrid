@@ -36,7 +36,7 @@ smx_actor_t SIMIX_process_self()
 {
   smx_context_t self_context = simgrid::kernel::context::Context::self();
 
-  return (self_context != nullptr) ? self_context->process() : nullptr;
+  return (self_context != nullptr) ? self_context->get_actor() : nullptr;
 }
 
 /**
@@ -430,7 +430,7 @@ void SIMIX_process_detach()
   if (context == nullptr)
     xbt_die("Not a suitable context");
 
-  SIMIX_process_cleanup(context->process());
+  SIMIX_process_cleanup(context->get_actor());
   context->attach_stop();
 }
 

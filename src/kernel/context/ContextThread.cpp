@@ -36,12 +36,12 @@ ThreadContextFactory::~ThreadContextFactory()
 }
 
 ThreadContext* ThreadContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup,
-                                                    smx_actor_t process, bool maestro)
+                                                    smx_actor_t actor, bool maestro)
 {
   if (parallel_)
-    return this->new_context<ParallelThreadContext>(std::move(code), cleanup, process, maestro);
+    return this->new_context<ParallelThreadContext>(std::move(code), cleanup, actor, maestro);
   else
-    return this->new_context<SerialThreadContext>(std::move(code), cleanup, process, maestro);
+    return this->new_context<SerialThreadContext>(std::move(code), cleanup, actor, maestro);
 }
 
 void ThreadContextFactory::run_all()
@@ -60,11 +60,11 @@ void ThreadContextFactory::run_all()
 ThreadContext::ThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t actor, bool maestro)
     : AttachContext(std::move(code), cleanup, actor), is_maestro_(maestro)
 {
-  /* If the user provided a function for the process then use it */
+  /* If the user provided a function for the actor then use it */
   if (has_code()) {
-    /* create and start the process */
+    /* create and start the actor */
     this->thread_ = new std::thread(ThreadContext::wrapper, this);
-    /* wait the starting of the newly created process */
+    /* wait the starting of the newly created actor */
     this->end_.acquire();
   }
 
@@ -178,9 +178,9 @@ void ThreadContext::attach_stop()
 
 void SerialThreadContext::run_all()
 {
-  for (smx_actor_t const& process : simix_global->process_to_run) {
-    XBT_DEBUG("Handling %p", process);
-    ThreadContext* context = static_cast<ThreadContext*>(process->context_);
+  for (smx_actor_t const& actor : simix_global->process_to_run) {
+    XBT_DEBUG("Handling %p", actor);
+    ThreadContext* context = static_cast<ThreadContext*>(actor->context_);
     context->release();
     context->wait();
   }
@@ -203,10 +203,10 @@ void ParallelThreadContext::finalize()
 
 void ParallelThreadContext::run_all()
 {
-  for (smx_actor_t const& process : simix_global->process_to_run)
-    static_cast<ThreadContext*>(process->context_)->release();
-  for (smx_actor_t const& process : simix_global->process_to_run)
-    static_cast<ThreadContext*>(process->context_)->wait();
+  for (smx_actor_t const& actor : simix_global->process_to_run)
+    static_cast<ThreadContext*>(actor->context_)->release();
+  for (smx_actor_t const& actor : simix_global->process_to_run)
+    static_cast<ThreadContext*>(actor->context_)->wait();
 }
 
 void ParallelThreadContext::start_hook()

@@ -35,7 +35,7 @@ private:
 
 class SwappedContext : public Context {
 public:
-  SwappedContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
+  SwappedContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t get_actor,
                  SwappedContextFactory* factory);
   virtual ~SwappedContext();
 

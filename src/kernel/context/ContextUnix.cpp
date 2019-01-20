@@ -30,17 +30,17 @@ namespace kernel {
 namespace context {
 
 // UContextFactory
-Context* UContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process)
+Context* UContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t actor)
 {
-  return new_context<UContext>(std::move(code), cleanup, process, this);
+  return new_context<UContext>(std::move(code), cleanup, actor, this);
 }
 
 
 // UContext
 
-UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
+UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor,
                    SwappedContextFactory* factory)
-    : SwappedContext(std::move(code), cleanup_func, process, factory)
+    : SwappedContext(std::move(code), cleanup_func, actor, factory)
 {
   /* if the user provided a function for the process then use it, otherwise it is the context for maestro */
   if (has_code()) {
@@ -58,7 +58,7 @@ UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun
 
 #if SIMGRID_HAVE_MC
   if (MC_is_active() && has_code()) {
-    MC_register_stack_area(get_stack(), process, &(this->uc_), smx_context_usable_stack_size);
+    MC_register_stack_area(get_stack(), actor, &(this->uc_), smx_context_usable_stack_size);
   }
 #endif
 }

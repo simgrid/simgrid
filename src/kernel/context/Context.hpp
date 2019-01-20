@@ -57,14 +57,14 @@ private:
 public:
   bool iwannadie = false;
 
-  Context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
+  Context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor);
   Context(const Context&) = delete;
   Context& operator=(const Context&) = delete;
   virtual ~Context();
 
   void operator()() { code_(); }
   bool has_code() const { return static_cast<bool>(code_); }
-  smx_actor_t process() { return this->actor_; }
+  smx_actor_t get_actor() { return this->actor_; }
   void set_cleanup(void_pfn_smxprocess_t cleanup) { cleanup_func_ = cleanup; }
 
   // Scheduling methods

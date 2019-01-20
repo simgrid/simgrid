@@ -194,9 +194,9 @@ Context* RawContextFactory::create_context(std::function<void()> code, void_pfn_
 
 // RawContext
 
-RawContext::RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process,
+RawContext::RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t actor,
                        SwappedContextFactory* factory)
-    : SwappedContext(std::move(code), cleanup, process, factory)
+    : SwappedContext(std::move(code), cleanup, actor, factory)
 {
    if (has_code()) {
 #if PTH_STACKGROWTH == -1

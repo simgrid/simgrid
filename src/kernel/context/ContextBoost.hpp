@@ -32,7 +32,7 @@ namespace context {
 /** @brief Userspace context switching implementation based on Boost.Context */
 class BoostContext : public SwappedContext {
 public:
-  BoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
+  BoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor,
                SwappedContextFactory* factory);
   ~BoostContext() override;
 

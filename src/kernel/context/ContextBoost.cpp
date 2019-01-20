@@ -23,9 +23,9 @@ smx_context_t BoostContextFactory::create_context(std::function<void()> code, vo
 
 // BoostContext
 
-BoostContext::BoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
+BoostContext::BoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor,
                            SwappedContextFactory* factory)
-    : SwappedContext(std::move(code), cleanup_func, process, factory)
+    : SwappedContext(std::move(code), cleanup_func, actor, factory)
 {
 
   /* if the user provided a function for the process then use it, otherwise it is the context for maestro */
