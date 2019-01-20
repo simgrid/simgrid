@@ -67,7 +67,7 @@ void SIMIX_synchro_finish(smx_activity_t synchro)
 
   if (synchro->state_ != SIMIX_SRC_TIMEOUT) {
     if (synchro->state_ == SIMIX_FAILED)
-      simcall->issuer->context_->iwannadie = 1;
+      simcall->issuer->context_->iwannadie = true;
     else
       THROW_IMPOSSIBLE;
   }

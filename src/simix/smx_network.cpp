@@ -521,7 +521,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
     /* Check out for errors */
 
     if (simcall->issuer->host_->is_off()) {
-      simcall->issuer->context_->iwannadie = 1;
+      simcall->issuer->context_->iwannadie = true;
       simcall->issuer->exception =
           std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
     } else {
@@ -544,7 +544,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
         case SIMIX_SRC_HOST_FAILURE:
           if (simcall->issuer == comm->src_proc)
-            simcall->issuer->context_->iwannadie = 1;
+            simcall->issuer->context_->iwannadie = true;
           else
             simcall->issuer->exception =
                 std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
@@ -552,7 +552,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
         case SIMIX_DST_HOST_FAILURE:
           if (simcall->issuer == comm->dst_proc)
-            simcall->issuer->context_->iwannadie = 1;
+            simcall->issuer->context_->iwannadie = true;
           else
             simcall->issuer->exception =
                 std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
@@ -624,9 +624,8 @@ void SIMIX_comm_finish(smx_activity_t synchro)
       }
     }
 
-    if (simcall->issuer->host_->is_off()) {
-      simcall->issuer->context_->iwannadie = 1;
-    }
+    if (simcall->issuer->host_->is_off())
+      simcall->issuer->context_->iwannadie = true;
 
     simcall->issuer->waiting_synchro = nullptr;
     simcall->issuer->comms.remove(synchro);
