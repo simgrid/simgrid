@@ -47,7 +47,6 @@ public:
 
   void* get_stack();
 
-  // FIXME: Killme
   static thread_local uintptr_t worker_id_;
 
 private:
