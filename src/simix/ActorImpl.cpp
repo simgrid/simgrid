@@ -312,12 +312,6 @@ void create_maestro(simgrid::simix::ActorCode code)
 }
 }
 
-/** @brief Creates and runs the maestro process */
-void SIMIX_maestro_create(void (*code)(void*), void* data)
-{
-  simgrid::kernel::actor::create_maestro(std::bind(code, data));
-}
-
 /**
  * @brief Internal function to create a process.
  *

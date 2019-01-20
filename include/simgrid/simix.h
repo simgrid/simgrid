@@ -140,9 +140,6 @@ XBT_PUBLIC void SIMIX_launch_application(std::string file);
  *  4. detach (this waits for the simulation to terminate)
  */
 
-SG_BEGIN_DECL()
-XBT_PUBLIC void SIMIX_maestro_create(void (*code)(void*), void* data);
-SG_END_DECL()
 #ifdef __cplusplus
 XBT_PUBLIC smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostname,
                                             std::unordered_map<std::string, std::string>* properties,
