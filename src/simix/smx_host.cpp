@@ -126,7 +126,7 @@ void SIMIX_execution_finish(smx_activity_t synchro)
 
       case SIMIX_FAILED:
         XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->host_->get_cname());
-        simcall->issuer->context_->iwannadie = 1;
+        simcall->issuer->context_->iwannadie = true;
         simcall->issuer->exception =
             std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
         break;
@@ -146,7 +146,7 @@ void SIMIX_execution_finish(smx_activity_t synchro)
     }
     /* Fail the process if the host is down */
     if (simcall->issuer->host_->is_off())
-      simcall->issuer->context_->iwannadie = 1;
+      simcall->issuer->context_->iwannadie = true;
 
     simcall->issuer->waiting_synchro = nullptr;
     simcall_execution_wait__set__result(simcall, exec->state_);

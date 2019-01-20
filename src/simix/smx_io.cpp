@@ -69,7 +69,7 @@ void SIMIX_io_finish(smx_activity_t synchro)
     }
 
     if (simcall->issuer->host_->is_off()) {
-      simcall->issuer->context_->iwannadie = 1;
+      simcall->issuer->context_->iwannadie = true;
     }
 
     simcall->issuer->waiting_synchro = nullptr;
