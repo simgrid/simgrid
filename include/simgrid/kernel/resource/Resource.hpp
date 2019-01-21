@@ -64,7 +64,15 @@ public:
   /** @brief Turn off the current Resource */
   virtual void turn_off();
   /** @brief setup the trace file with states events (ON or OFF). Trace must contain boolean values. */
-  virtual void set_state_trace(profile::Profile* trace);
+  virtual void set_state_profile(profile::Profile* profile);
+
+#ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v325("Please use Resource::set_state_profile()") virtual void set_state_trace(
+      profile::Profile* profile)
+  {
+    set_state_profile(profile);
+  }
+#endif
 
 private:
   std::string name_;

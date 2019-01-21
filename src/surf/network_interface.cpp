@@ -145,16 +145,16 @@ void LinkImpl::on_bandwidth_change()
   s4u::Link::on_bandwidth_change(this->piface_);
 }
 
-void LinkImpl::set_bandwidth_trace(profile::Profile* trace)
+void LinkImpl::set_bandwidth_profile(profile::Profile* profile)
 {
-  xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", get_cname());
-  bandwidth_.event = future_evt_set.add_trace(trace, this);
+  xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth profile to Link %s", get_cname());
+  bandwidth_.event = future_evt_set.add_trace(profile, this);
 }
 
-void LinkImpl::set_latency_trace(profile::Profile* trace)
+void LinkImpl::set_latency_profile(profile::Profile* profile)
 {
-  xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", get_cname());
-  latency_.event = future_evt_set.add_trace(trace, this);
+  xbt_assert(latency_.event == nullptr, "Cannot set a second latency profile to Link %s", get_cname());
+  latency_.event = future_evt_set.add_trace(profile, this);
 }
 
 /**********

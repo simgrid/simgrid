@@ -147,11 +147,12 @@ public:
 
   void on_bandwidth_change();
 
-  virtual void set_bandwidth_trace(kernel::profile::Profile* trace); /*< setup the trace file with bandwidth events
-                                                                (peak speed changes due to external load). Trace must
-                                                                contain percentages (value between 0 and 1). */
   virtual void
-  set_latency_trace(kernel::profile::Profile* trace); /*< setup the trace file with latency events (peak
+  set_bandwidth_profile(kernel::profile::Profile* profile); /*< setup the profile file with bandwidth events
+                                                   (peak speed changes due to external load). Trace must
+                                                   contain percentages (value between 0 and 1). */
+  virtual void
+  set_latency_profile(kernel::profile::Profile* profile); /*< setup the trace file with latency events (peak
                                                  latency changes due to external load).   Trace must contain
                                                  absolute values */
 

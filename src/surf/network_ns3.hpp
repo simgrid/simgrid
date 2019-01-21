@@ -37,8 +37,8 @@ public:
   void apply_event(simgrid::kernel::profile::Event* event, double value) override;
   void set_bandwidth(double value) override { THROW_UNIMPLEMENTED; }
   void set_latency(double value) override { THROW_UNIMPLEMENTED; }
-  void set_bandwidth_trace(profile::Profile* profile) override;
-  void set_latency_trace(profile::Profile* profile) override;
+  void set_bandwidth_profile(profile::Profile* profile) override;
+  void set_latency_profile(profile::Profile* profile) override;
 };
 
 /**********

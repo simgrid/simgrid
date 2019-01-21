@@ -103,7 +103,7 @@ public:
   CpuTi(CpuTiModel* model, simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core);
   ~CpuTi() override;
 
-  void set_speed_trace(kernel::profile::Profile* profile) override;
+  void set_speed_profile(kernel::profile::Profile* profile) override;
 
   void apply_event(kernel::profile::Event* event, double value) override;
   void update_actions_finish_time(double now);

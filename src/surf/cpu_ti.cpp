@@ -367,7 +367,7 @@ CpuTi::~CpuTi()
   set_modified(false);
   delete speed_integrated_trace_;
 }
-void CpuTi::set_speed_trace(kernel::profile::Profile* profile)
+void CpuTi::set_speed_profile(kernel::profile::Profile* profile)
 {
   delete speed_integrated_trace_;
   speed_integrated_trace_ = new CpuTiTmgr(profile, speed_.scale);

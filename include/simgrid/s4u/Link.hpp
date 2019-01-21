@@ -65,15 +65,32 @@ public:
   void* get_data(); /** Should be used only from the C interface. Prefer extensions in C++ */
   void set_data(void* d);
 
-  void set_state_trace(
-      kernel::profile::Profile* trace); /*< setup the trace file with states events (ON or OFF). Trace must contain
-                             boolean values. */
-  void set_bandwidth_trace(
-      kernel::profile::Profile* trace); /*< setup the trace file with bandwidth events (peak speed changes due to
-                             external load). Trace must contain percentages (value between 0 and 1). */
-  void set_latency_trace(
-      kernel::profile::Profile* trace); /*< setup the trace file with latency events (peak latency changes due to
-                             external load). Trace must contain absolute values */
+#ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v325("Please use Link::set_state_profile()") void set_state_trace(
+      kernel::profile::Profile* profile)
+  {
+    set_state_profile(profile);
+  }
+  XBT_ATTRIB_DEPRECATED_v325("Please use Link::set_bandwidth_profile()") void set_bandwidth_trace(
+      kernel::profile::Profile* profile)
+  {
+    set_bandwidth_profile(profile);
+  }
+  XBT_ATTRIB_DEPRECATED_v325("Please use Link::set_latency_profile()") void set_latency_trace(
+      kernel::profile::Profile* profile)
+  {
+    set_latency_profile(profile);
+  }
+#endif
+
+  /** Setup the profile file with states events (ON or OFF). The profile must contain boolean values. */
+  void set_state_profile(kernel::profile::Profile* profile);
+  /** Setup the profile file with bandwidth events (peak speed changes due to external load).
+   * The profile must contain percentages (value between 0 and 1). */
+  void set_bandwidth_profile(kernel::profile::Profile* profile);
+  /** Setup the profile file with latency events (peak latency changes due to external load).
+   * The profile must contain absolute values */
+  void set_latency_profile(kernel::profile::Profile* profile);
 
   const char* get_property(std::string key);
   void set_property(std::string key, std::string value);
@@ -133,22 +150,22 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::set_data()") void setData(void* d) {set_data(d);}
 
   /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_state_trace()") void setStateTrace(
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_state_profile()") void setStateTrace(
       simgrid::kernel::profile::Profile* trace)
   {
-    set_state_trace(trace);
+    set_state_profile(trace);
   }
   /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_bandwidth_trace()") void setBandwidthTrace(
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_bandwidth_profile()") void setBandwidthTrace(
       simgrid::kernel::profile::Profile* trace)
   {
-    set_bandwidth_trace(trace);
+    set_bandwidth_profile(trace);
   }
   /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_latency_trace()") void setLatencyTrace(
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_latency_profile()") void setLatencyTrace(
       simgrid::kernel::profile::Profile* trace)
   {
-    set_latency_trace(trace);
+    set_latency_profile(trace);
   }
 #endif
 };

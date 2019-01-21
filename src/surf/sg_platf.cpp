@@ -81,9 +81,9 @@ void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
 
   /* Change from the defaults */
   if (args->state_trace)
-    host->pimpl_cpu->set_state_trace(args->state_trace);
+    host->pimpl_cpu->set_state_profile(args->state_trace);
   if (args->speed_trace)
-    host->pimpl_cpu->set_speed_trace(args->speed_trace);
+    host->pimpl_cpu->set_speed_profile(args->speed_trace);
   if (args->pstate != 0)
     host->pimpl_cpu->set_pstate(args->pstate);
   if (args->coord && strcmp(args->coord, ""))
@@ -131,11 +131,11 @@ void sg_platf_new_link(simgrid::kernel::routing::LinkCreationArgs* link)
     }
 
     if (link->latency_trace)
-      l->set_latency_trace(link->latency_trace);
+      l->set_latency_profile(link->latency_trace);
     if (link->bandwidth_trace)
-      l->set_bandwidth_trace(link->bandwidth_trace);
+      l->set_bandwidth_profile(link->bandwidth_trace);
     if (link->state_trace)
-      l->set_state_trace(link->state_trace);
+      l->set_state_profile(link->state_trace);
   }
   delete link->properties;
 }
@@ -489,9 +489,9 @@ void sg_platf_new_peer(simgrid::kernel::routing::PeerCreationArgs* peer)
 
   /* Change from the defaults */
   if (peer->state_trace)
-    host->pimpl_cpu->set_state_trace(peer->state_trace);
+    host->pimpl_cpu->set_state_profile(peer->state_trace);
   if (peer->speed_trace)
-    host->pimpl_cpu->set_speed_trace(peer->speed_trace);
+    host->pimpl_cpu->set_speed_profile(peer->speed_trace);
 }
 
 /* Pick the right models for CPU, net and host, and call their model_init_preparse */

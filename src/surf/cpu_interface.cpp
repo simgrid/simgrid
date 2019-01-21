@@ -134,11 +134,11 @@ int Cpu::get_core_count()
   return core_count_;
 }
 
-void Cpu::set_speed_trace(kernel::profile::Profile* trace)
+void Cpu::set_speed_profile(kernel::profile::Profile* profile)
 {
   xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", host_->get_cname());
 
-  speed_.event = future_evt_set.add_trace(trace, this);
+  speed_.event = future_evt_set.add_trace(profile, this);
 }
 
 

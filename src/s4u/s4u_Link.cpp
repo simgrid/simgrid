@@ -87,17 +87,17 @@ void Link::set_data(void* d)
   simgrid::simix::simcall([this, d]() { this->pimpl_->set_data(d); });
 }
 
-void Link::set_state_trace(kernel::profile::Profile* trace)
+void Link::set_state_profile(kernel::profile::Profile* profile)
 {
-  simgrid::simix::simcall([this, trace]() { this->pimpl_->set_state_trace(trace); });
+  simgrid::simix::simcall([this, profile]() { this->pimpl_->set_state_profile(profile); });
 }
-void Link::set_bandwidth_trace(kernel::profile::Profile* trace)
+void Link::set_bandwidth_profile(kernel::profile::Profile* profile)
 {
-  simgrid::simix::simcall([this, trace]() { this->pimpl_->set_bandwidth_trace(trace); });
+  simgrid::simix::simcall([this, profile]() { this->pimpl_->set_bandwidth_profile(profile); });
 }
-void Link::set_latency_trace(kernel::profile::Profile* trace)
+void Link::set_latency_profile(kernel::profile::Profile* trace)
 {
-  simgrid::simix::simcall([this, trace]() { this->pimpl_->set_latency_trace(trace); });
+  simgrid::simix::simcall([this, trace]() { this->pimpl_->set_latency_profile(trace); });
 }
 
 const char* Link::get_property(std::string key)

@@ -281,13 +281,13 @@ void LinkNS3::apply_event(profile::Event* event, double value)
 {
   THROW_UNIMPLEMENTED;
 }
-void LinkNS3::set_bandwidth_trace(profile::Profile* profile)
+void LinkNS3::set_bandwidth_profile(profile::Profile* profile)
 {
-  xbt_die("The NS3 network model doesn't support bandwidth traces");
+  xbt_die("The NS3 network model doesn't support bandwidth profiles");
 }
-void LinkNS3::set_latency_trace(profile::Profile* profile)
+void LinkNS3::set_latency_profile(profile::Profile* profile)
 {
-  xbt_die("The NS3 network model doesn't support latency traces");
+  xbt_die("The NS3 network model doesn't support latency profiles");
 }
 
 /**********

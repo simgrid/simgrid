@@ -63,11 +63,11 @@ bool Resource::operator==(const Resource& other) const
   return name_ == other.name_;
 }
 
-void Resource::set_state_trace(profile::Profile* trace)
+void Resource::set_state_profile(profile::Profile* profile)
 {
-  xbt_assert(state_event_ == nullptr, "Cannot set a second state trace to %s", get_cname());
+  xbt_assert(state_event_ == nullptr, "Cannot set a second state profile to %s", get_cname());
 
-  state_event_ = future_evt_set.add_trace(trace, this);
+  state_event_ = future_evt_set.add_trace(profile, this);
 }
 
 kernel::lmm::Constraint* Resource::get_constraint() const
