@@ -52,7 +52,7 @@ SwappedContext::SwappedContext(std::function<void()> code, void_pfn_smxprocess_t
     : Context(std::move(code), cleanup_func, process), factory_(factory)
 {
   // Save maestro (=context created first) in preparation for run_all
-  if (factory_->workers_context_[0] == nullptr)
+  if (not factory->parallel_ && factory_->workers_context_[0] == nullptr)
     factory_->workers_context_[0] = this;
 
   if (has_code()) {
