@@ -65,12 +65,15 @@ public:
   void* get_data(); /** Should be used only from the C interface. Prefer extensions in C++ */
   void set_data(void* d);
 
-  void set_state_trace(tmgr_trace_t trace);     /*< setup the trace file with states events (ON or OFF). Trace must contain
-                                                  boolean values. */
-  void set_bandwidth_trace(tmgr_trace_t trace); /*< setup the trace file with bandwidth events (peak speed changes due to
-                                                  external load). Trace must contain percentages (value between 0 and 1). */
-  void set_latency_trace(tmgr_trace_t trace);   /*< setup the trace file with latency events (peak latency changes due to
-                                                  external load). Trace must contain absolute values */
+  void set_state_trace(
+      kernel::profile::Profile* trace); /*< setup the trace file with states events (ON or OFF). Trace must contain
+                             boolean values. */
+  void set_bandwidth_trace(
+      kernel::profile::Profile* trace); /*< setup the trace file with bandwidth events (peak speed changes due to
+                             external load). Trace must contain percentages (value between 0 and 1). */
+  void set_latency_trace(
+      kernel::profile::Profile* trace); /*< setup the trace file with latency events (peak latency changes due to
+                             external load). Trace must contain absolute values */
 
   const char* get_property(std::string key);
   void set_property(std::string key, std::string value);
@@ -130,11 +133,23 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::set_data()") void setData(void* d) {set_data(d);}
 
   /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_state_trace()") void setStateTrace(tmgr_trace_t trace) {set_state_trace(trace);}
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_state_trace()") void setStateTrace(
+      simgrid::kernel::profile::Profile* trace)
+  {
+    set_state_trace(trace);
+  }
   /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_bandwidth_trace()") void setBandwidthTrace(tmgr_trace_t trace) {set_bandwidth_trace(trace);}
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_bandwidth_trace()") void setBandwidthTrace(
+      simgrid::kernel::profile::Profile* trace)
+  {
+    set_bandwidth_trace(trace);
+  }
   /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_latency_trace()") void setLatencyTrace(tmgr_trace_t trace) {set_latency_trace(trace);}
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_latency_trace()") void setLatencyTrace(
+      simgrid::kernel::profile::Profile* trace)
+  {
+    set_latency_trace(trace);
+  }
 #endif
 };
 }

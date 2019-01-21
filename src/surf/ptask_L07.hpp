@@ -71,12 +71,12 @@ public:
 
 class CpuL07 : public Cpu {
 public:
-  CpuL07(CpuL07Model* model, simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core);
+  CpuL07(CpuL07Model* model, s4u::Host* host, std::vector<double>* speed_per_pstate, int core);
   ~CpuL07() override;
   bool is_used() override;
-  void apply_event(tmgr_trace_event_t event, double value) override;
+  void apply_event(kernel::profile::Event* event, double value) override;
   kernel::resource::Action* execution_start(double size) override;
-  simgrid::kernel::resource::Action* execution_start(double size, int requested_cores) override
+  kernel::resource::Action* execution_start(double size, int requested_cores) override
   {
     THROW_UNIMPLEMENTED;
     return nullptr;
@@ -93,7 +93,7 @@ public:
           s4u::Link::SharingPolicy policy);
   ~LinkL07() override;
   bool is_used() override;
-  void apply_event(tmgr_trace_event_t event, double value) override;
+  void apply_event(kernel::profile::Event* event, double value) override;
   void set_bandwidth(double value) override;
   void set_latency(double value) override;
 };

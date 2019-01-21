@@ -115,7 +115,7 @@ void CpuCas01::on_speed_change()
   Cpu::on_speed_change();
 }
 
-void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
+void CpuCas01::apply_event(kernel::profile::Event* event, double value)
 {
   if (event == speed_.event) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */

@@ -19,7 +19,6 @@ bool init_unit_test(); // boost sometimes forget to give this prototype (NetBSD 
 #include <cmath>
 
 namespace utf  = boost::unit_test;
-namespace tmgr = simgrid::trace_mgr;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(unit, "Unit tests of the Trace Manager");
 
@@ -27,7 +26,7 @@ double thedate;
 class MockedResource : public simgrid::kernel::resource::Resource {
 public:
   explicit MockedResource() : simgrid::kernel::resource::Resource(nullptr, "fake", nullptr) {}
-  void apply_event(tmgr_trace_event_t event, double value) override
+  void apply_event(simgrid::kernel::profile::Event* event, double value) override
   {
     XBT_VERB("t=%.1f: Change value to %lg (idx: %u)", thedate, value, event->idx);
     tmgr_trace_event_unref(&event);
@@ -35,30 +34,30 @@ public:
   bool is_used() override { return true; }
 };
 
-static void trace2vector(const char* str, std::vector<tmgr::DatedValue>* whereto)
+static void trace2vector(const char* str, std::vector<simgrid::kernel::profile::DatedValue>* whereto)
 {
-  simgrid::trace_mgr::trace* trace = tmgr_trace_new_from_string("TheName", str, 0);
+  simgrid::kernel::profile::Profile* trace = tmgr_trace_new_from_string("TheName", str, 0);
   XBT_VERB("---------------------------------------------------------");
   XBT_VERB("data>>\n%s<<data\n", str);
   for (auto const& evt : trace->event_list)
     XBT_VERB("event: d:%lg v:%lg", evt.date_, evt.value_);
 
   MockedResource daResource;
-  simgrid::trace_mgr::future_evt_set fes;
-  tmgr_trace_event_t insertedIt = fes.add_trace(trace, &daResource);
+  simgrid::kernel::profile::FutureEvtSet fes;
+  simgrid::kernel::profile::Event* insertedIt = fes.add_trace(trace, &daResource);
 
   while (fes.next_date() <= 20.0 && fes.next_date() >= 0) {
     thedate = fes.next_date();
     double value;
     simgrid::kernel::resource::Resource* res;
-    tmgr_trace_event_t it = fes.pop_leq(thedate, &value, &res);
+    simgrid::kernel::profile::Event* it = fes.pop_leq(thedate, &value, &res);
     if (it == nullptr)
       continue;
 
     BOOST_CHECK_EQUAL(it, insertedIt); // Check that we find what we've put
     if (value >= 0) {
       res->apply_event(it, value);
-      whereto->push_back(tmgr::DatedValue(thedate, value));
+      whereto->push_back(simgrid::kernel::profile::DatedValue(thedate, value));
     } else {
       XBT_DEBUG("%.1f: ignore an event (idx: %u)\n", thedate, it->idx);
     }
@@ -75,76 +74,76 @@ BOOST_AUTO_TEST_CASE(no_evt_noloop) {
 }*/
 BOOST_AUTO_TEST_CASE(one_evt_noloop)
 {
-  std::vector<tmgr::DatedValue> got;
+  std::vector<simgrid::kernel::profile::DatedValue> got;
   trace2vector("9.0 3.0\n", &got);
 
-  std::vector<tmgr::DatedValue> want;
-  want.push_back(tmgr::DatedValue(9, 3));
+  std::vector<simgrid::kernel::profile::DatedValue> want;
+  want.push_back(simgrid::kernel::profile::DatedValue(9, 3));
   BOOST_CHECK_EQUAL_COLLECTIONS(want.begin(), want.end(), got.begin(), got.end());
 }
 BOOST_AUTO_TEST_CASE(two_evt_noloop)
 {
-  std::vector<tmgr::DatedValue> got;
+  std::vector<simgrid::kernel::profile::DatedValue> got;
   trace2vector("3.0 1.0\n"
                "9.0 3.0\n",
                &got);
 
-  std::vector<tmgr::DatedValue> want;
-  want.push_back(tmgr::DatedValue(3, 1));
-  want.push_back(tmgr::DatedValue(9, 3));
+  std::vector<simgrid::kernel::profile::DatedValue> want;
+  want.push_back(simgrid::kernel::profile::DatedValue(3, 1));
+  want.push_back(simgrid::kernel::profile::DatedValue(9, 3));
 
   BOOST_CHECK_EQUAL_COLLECTIONS(want.begin(), want.end(), got.begin(), got.end());
 }
 BOOST_AUTO_TEST_CASE(three_evt_noloop)
 {
-  std::vector<tmgr::DatedValue> got;
+  std::vector<simgrid::kernel::profile::DatedValue> got;
   trace2vector("3.0 1.0\n"
                "5.0 2.0\n"
                "9.0 3.0\n",
                &got);
 
-  std::vector<tmgr::DatedValue> want;
-  want.push_back(tmgr::DatedValue(3, 1));
-  want.push_back(tmgr::DatedValue(5, 2));
-  want.push_back(tmgr::DatedValue(9, 3));
+  std::vector<simgrid::kernel::profile::DatedValue> want;
+  want.push_back(simgrid::kernel::profile::DatedValue(3, 1));
+  want.push_back(simgrid::kernel::profile::DatedValue(5, 2));
+  want.push_back(simgrid::kernel::profile::DatedValue(9, 3));
 
   BOOST_CHECK_EQUAL_COLLECTIONS(want.begin(), want.end(), got.begin(), got.end());
 }
 
 BOOST_AUTO_TEST_CASE(two_evt_loop)
 {
-  std::vector<tmgr::DatedValue> got;
+  std::vector<simgrid::kernel::profile::DatedValue> got;
   trace2vector("1.0 1.0\n"
                "3.0 3.0\n"
                "LOOPAFTER 2\n",
                &got);
 
-  std::vector<tmgr::DatedValue> want;
-  want.push_back(tmgr::DatedValue(1, 1));
-  want.push_back(tmgr::DatedValue(3, 3));
-  want.push_back(tmgr::DatedValue(6, 1));
-  want.push_back(tmgr::DatedValue(8, 3));
-  want.push_back(tmgr::DatedValue(11, 1));
-  want.push_back(tmgr::DatedValue(13, 3));
-  want.push_back(tmgr::DatedValue(16, 1));
-  want.push_back(tmgr::DatedValue(18, 3));
+  std::vector<simgrid::kernel::profile::DatedValue> want;
+  want.push_back(simgrid::kernel::profile::DatedValue(1, 1));
+  want.push_back(simgrid::kernel::profile::DatedValue(3, 3));
+  want.push_back(simgrid::kernel::profile::DatedValue(6, 1));
+  want.push_back(simgrid::kernel::profile::DatedValue(8, 3));
+  want.push_back(simgrid::kernel::profile::DatedValue(11, 1));
+  want.push_back(simgrid::kernel::profile::DatedValue(13, 3));
+  want.push_back(simgrid::kernel::profile::DatedValue(16, 1));
+  want.push_back(simgrid::kernel::profile::DatedValue(18, 3));
 
   BOOST_CHECK_EQUAL_COLLECTIONS(want.begin(), want.end(), got.begin(), got.end());
 }
 BOOST_AUTO_TEST_CASE(two_evt_start0_loop)
 {
-  std::vector<tmgr::DatedValue> got;
+  std::vector<simgrid::kernel::profile::DatedValue> got;
   trace2vector("0.0 1\n"
                "5.0 2\n"
                "LOOPAFTER 5\n",
                &got);
 
-  std::vector<tmgr::DatedValue> want;
-  want.push_back(tmgr::DatedValue(0, 1));
-  want.push_back(tmgr::DatedValue(5, 2));
-  want.push_back(tmgr::DatedValue(10, 1));
-  want.push_back(tmgr::DatedValue(15, 2));
-  want.push_back(tmgr::DatedValue(20, 1));
+  std::vector<simgrid::kernel::profile::DatedValue> want;
+  want.push_back(simgrid::kernel::profile::DatedValue(0, 1));
+  want.push_back(simgrid::kernel::profile::DatedValue(5, 2));
+  want.push_back(simgrid::kernel::profile::DatedValue(10, 1));
+  want.push_back(simgrid::kernel::profile::DatedValue(15, 2));
+  want.push_back(simgrid::kernel::profile::DatedValue(20, 1));
 
   BOOST_CHECK_EQUAL_COLLECTIONS(want.begin(), want.end(), got.begin(), got.end());
 }

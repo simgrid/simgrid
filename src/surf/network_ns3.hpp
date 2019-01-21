@@ -34,11 +34,11 @@ public:
   explicit LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwidth, double latency);
   ~LinkNS3();
 
-  void apply_event(tmgr_trace_event_t event, double value) override;
+  void apply_event(simgrid::kernel::profile::Event* event, double value) override;
   void set_bandwidth(double value) override { THROW_UNIMPLEMENTED; }
   void set_latency(double value) override { THROW_UNIMPLEMENTED; }
-  void set_bandwidth_trace(tmgr_trace_t trace) override;
-  void set_latency_trace(tmgr_trace_t trace) override;
+  void set_bandwidth_trace(profile::Profile* profile) override;
+  void set_latency_trace(profile::Profile* profile) override;
 };
 
 /**********

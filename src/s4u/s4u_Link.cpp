@@ -87,15 +87,15 @@ void Link::set_data(void* d)
   simgrid::simix::simcall([this, d]() { this->pimpl_->set_data(d); });
 }
 
-void Link::set_state_trace(tmgr_trace_t trace)
+void Link::set_state_trace(kernel::profile::Profile* trace)
 {
   simgrid::simix::simcall([this, trace]() { this->pimpl_->set_state_trace(trace); });
 }
-void Link::set_bandwidth_trace(tmgr_trace_t trace)
+void Link::set_bandwidth_trace(kernel::profile::Profile* trace)
 {
   simgrid::simix::simcall([this, trace]() { this->pimpl_->set_bandwidth_trace(trace); });
 }
-void Link::set_latency_trace(tmgr_trace_t trace)
+void Link::set_latency_trace(kernel::profile::Profile* trace)
 {
   simgrid::simix::simcall([this, trace]() { this->pimpl_->set_latency_trace(trace); });
 }

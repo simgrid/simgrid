@@ -19,15 +19,15 @@ namespace surf {
  * Trace *
  *********/
 
-CpuTiTrace::CpuTiTrace(tmgr_trace_t speedTrace)
+CpuTiProfile::CpuTiProfile(kernel::profile::Profile* profile)
 {
   double integral = 0;
   double time = 0;
   int i = 0;
-  nb_points_      = speedTrace->event_list.size() + 1;
+  nb_points_      = profile->event_list.size() + 1;
   time_points_    = new double[nb_points_];
   integral_       = new double[nb_points_];
-  for (auto const& val : speedTrace->event_list) {
+  for (auto const& val : profile->event_list) {
     time_points_[i] = time;
     integral_[i] = integral;
     integral += val.date_ * val.value_;
@@ -38,7 +38,7 @@ CpuTiTrace::CpuTiTrace(tmgr_trace_t speedTrace)
   integral_[i] = integral;
 }
 
-CpuTiTrace::~CpuTiTrace()
+CpuTiProfile::~CpuTiProfile()
 {
   delete[] time_points_;
   delete [] integral_;
@@ -46,7 +46,7 @@ CpuTiTrace::~CpuTiTrace()
 
 CpuTiTmgr::~CpuTiTmgr()
 {
-  delete trace_;
+  delete profile_;
 }
 
 /**
@@ -81,12 +81,12 @@ double CpuTiTmgr::integrate(double a, double b)
   int b_index = static_cast<int>(floor(b / last_time_));
 
   if (a_index > b_index) {      /* Same chunk */
-    return trace_->integrate_simple(a - (a_index - 1) * last_time_, b - (b_index)*last_time_);
+    return profile_->integrate_simple(a - (a_index - 1) * last_time_, b - (b_index)*last_time_);
   }
 
-  double first_chunk  = trace_->integrate_simple(a - (a_index - 1) * last_time_, last_time_);
+  double first_chunk  = profile_->integrate_simple(a - (a_index - 1) * last_time_, last_time_);
   double middle_chunk = (b_index - a_index) * total_;
-  double last_chunk   = trace_->integrate_simple(0.0, b - (b_index)*last_time_);
+  double last_chunk   = profile_->integrate_simple(0.0, b - (b_index)*last_time_);
 
   XBT_DEBUG("first_chunk=%.2f  middle_chunk=%.2f  last_chunk=%.2f\n", first_chunk, middle_chunk, last_chunk);
 
@@ -99,7 +99,7 @@ double CpuTiTmgr::integrate(double a, double b)
  * @param a  Initial point
  * @param b  Final point
  */
-double CpuTiTrace::integrate_simple(double a, double b)
+double CpuTiProfile::integrate_simple(double a, double b)
 {
   return integrate_simple_point(b) - integrate_simple_point(a);
 }
@@ -108,7 +108,7 @@ double CpuTiTrace::integrate_simple(double a, double b)
  * @brief Auxiliary function to compute the integral at point a.
  * @param a        point
  */
-double CpuTiTrace::integrate_simple_point(double a)
+double CpuTiProfile::integrate_simple_point(double a)
 {
   double integral = 0;
   double a_aux = a;
@@ -175,9 +175,9 @@ double CpuTiTmgr::solve(double a, double amount)
   double amount_till_end = integrate(reduced_a, last_time_);
 
   if (amount_till_end > reduced_amount) {
-    reduced_b = trace_->solve_simple(reduced_a, reduced_amount);
+    reduced_b = profile_->solve_simple(reduced_a, reduced_amount);
   } else {
-    reduced_b = last_time_ + trace_->solve_simple(0.0, reduced_amount - amount_till_end);
+    reduced_b = last_time_ + profile_->solve_simple(0.0, reduced_amount - amount_till_end);
   }
 
   /* Re-map to the original b and amount */
@@ -191,7 +191,7 @@ double CpuTiTmgr::solve(double a, double amount)
  * @param amount  Amount of flops
  * @return The date when amount is available.
  */
-double CpuTiTrace::solve_simple(double a, double amount)
+double CpuTiProfile::solve_simple(double a, double amount)
 {
   double integral_a = integrate_simple_point(a);
   int ind           = binary_search(integral_, integral_a + amount, 0, nb_points_ - 1);
@@ -212,8 +212,8 @@ double CpuTiTrace::solve_simple(double a, double amount)
 double CpuTiTmgr::get_power_scale(double a)
 {
   double reduced_a          = a - floor(a / last_time_) * last_time_;
-  int point                 = trace_->binary_search(trace_->time_points_, reduced_a, 0, trace_->nb_points_ - 1);
-  trace_mgr::DatedValue val = speed_trace_->event_list.at(point);
+  int point                 = profile_->binary_search(profile_->time_points_, reduced_a, 0, profile_->nb_points_ - 1);
+  kernel::profile::DatedValue val = speed_profile_->event_list.at(point);
   return val.value_;
 }
 
@@ -224,13 +224,13 @@ double CpuTiTmgr::get_power_scale(double a)
  * @param  value          Percentage of CPU speed available (useful to fixed tracing)
  * @return  Integration trace structure
  */
-CpuTiTmgr::CpuTiTmgr(tmgr_trace_t speed_trace, double value) : speed_trace_(speed_trace)
+CpuTiTmgr::CpuTiTmgr(kernel::profile::Profile* speed_profile, double value) : speed_profile_(speed_profile)
 {
   double total_time = 0.0;
-  trace_ = 0;
+  profile_          = 0;
 
   /* no availability file, fixed trace */
-  if (not speed_trace) {
+  if (not speed_profile) {
     type_  = Type::FIXED;
     value_ = value;
     XBT_DEBUG("No availability trace. Constant value = %f", value);
@@ -238,21 +238,21 @@ CpuTiTmgr::CpuTiTmgr(tmgr_trace_t speed_trace, double value) : speed_trace_(spee
   }
 
   /* only one point available, fixed trace */
-  if (speed_trace->event_list.size() == 1) {
+  if (speed_profile->event_list.size() == 1) {
     type_  = Type::FIXED;
-    value_ = speed_trace->event_list.front().value_;
+    value_ = speed_profile->event_list.front().value_;
     return;
   }
 
   type_ = Type::DYNAMIC;
 
   /* count the total time of trace file */
-  for (auto const& val : speed_trace->event_list)
+  for (auto const& val : speed_profile->event_list)
     total_time += val.date_;
 
-  trace_     = new CpuTiTrace(speed_trace);
+  profile_   = new CpuTiProfile(speed_profile);
   last_time_ = total_time;
-  total_     = trace_->integrate_simple(0, total_time);
+  total_     = profile_->integrate_simple(0, total_time);
 
   XBT_DEBUG("Total integral %f, last_time %f ", total_, last_time_);
 }
@@ -266,7 +266,7 @@ CpuTiTmgr::CpuTiTmgr(tmgr_trace_t speed_trace, double value) : speed_trace_(spee
  * @param high    Upper bound to search in array
  * @return Index of point
  */
-int CpuTiTrace::binary_search(double* array, double a, int low, int high)
+int CpuTiProfile::binary_search(double* array, double a, int low, int high)
 {
   xbt_assert(low < high, "Wrong parameters: low (%d) should be smaller than high (%d)", low, high);
 
@@ -367,20 +367,20 @@ CpuTi::~CpuTi()
   set_modified(false);
   delete speed_integrated_trace_;
 }
-void CpuTi::set_speed_trace(tmgr_trace_t trace)
+void CpuTi::set_speed_trace(kernel::profile::Profile* profile)
 {
   delete speed_integrated_trace_;
-  speed_integrated_trace_ = new CpuTiTmgr(trace, speed_.scale);
+  speed_integrated_trace_ = new CpuTiTmgr(profile, speed_.scale);
 
   /* add a fake trace event if periodicity == 0 */
-  if (trace && trace->event_list.size() > 1) {
-    trace_mgr::DatedValue val = trace->event_list.back();
+  if (profile && profile->event_list.size() > 1) {
+    kernel::profile::DatedValue val = profile->event_list.back();
     if (val.date_ < 1e-12)
-      speed_.event = future_evt_set.add_trace(new simgrid::trace_mgr::trace(), this);
+      speed_.event = future_evt_set.add_trace(new simgrid::kernel::profile::Profile(), this);
   }
 }
 
-void CpuTi::apply_event(tmgr_trace_event_t event, double value)
+void CpuTi::apply_event(kernel::profile::Event* event, double value)
 {
   if (event == speed_.event) {
     XBT_DEBUG("Speed changed in trace! New fixed value: %f", value);

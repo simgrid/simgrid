@@ -134,7 +134,6 @@ class Action;
 class Model;
 class Resource;
 class NetworkModel;
-class TraceEvent;
 class LinkImpl;
 class NetworkAction;
 }
@@ -145,6 +144,11 @@ class NetPoint;
 class NetZoneImpl;
 class RouteCreationArgs;
 }
+namespace profile {
+class Event;
+class FutureEvtSet;
+class Profile;
+} // namespace profile
 } // namespace kernel
 namespace simix {
   class Host;
@@ -160,10 +164,6 @@ namespace surf {
 }
 namespace mc {
 class CommunicationDeterminismChecker;
-}
-namespace trace_mgr {
-  class trace;
-  class future_evt_set;
 }
 namespace vm {
 class VMModel;
@@ -181,7 +181,6 @@ typedef simgrid::s4u::Storage s4u_Storage;
 typedef simgrid::s4u::NetZone s4u_NetZone;
 typedef simgrid::s4u::VirtualMachine s4u_VM;
 typedef boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> smx_activity_t;
-typedef simgrid::trace_mgr::trace* tmgr_trace_t;
 
 typedef simgrid::kernel::context::Context* smx_context_t;
 typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;

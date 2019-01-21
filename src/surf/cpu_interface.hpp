@@ -148,7 +148,7 @@ public:
   /*< @brief Setup the trace file with availability events (peak speed changes due to external load).
    * Trace must contain relative values (ratio between 0 and 1)
    */
-  virtual void set_speed_trace(tmgr_trace_t trace);
+  virtual void set_speed_trace(kernel::profile::Profile* trace);
 
 protected:
   Metric speed_                  = {1.0, 0, nullptr};

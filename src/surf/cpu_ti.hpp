@@ -23,12 +23,12 @@ class XBT_PRIVATE CpuTi;
 /*********
  * Trace *
  *********/
-class CpuTiTrace {
+class CpuTiProfile {
 public:
-  explicit CpuTiTrace(tmgr_trace_t speedTrace);
-  CpuTiTrace(const CpuTiTrace&) = delete;
-  CpuTiTrace& operator=(const CpuTiTrace&) = delete;
-  ~CpuTiTrace();
+  explicit CpuTiProfile(kernel::profile::Profile* profile);
+  CpuTiProfile(const CpuTiProfile&) = delete;
+  CpuTiProfile& operator=(const CpuTiProfile&) = delete;
+  ~CpuTiProfile();
 
   double integrate_simple(double a, double b);
   double integrate_simple_point(double a);
@@ -48,7 +48,7 @@ class CpuTiTmgr {
 
 public:
   explicit CpuTiTmgr(double value) : type_(Type::FIXED), value_(value){};
-  CpuTiTmgr(tmgr_trace_t speed_trace, double value);
+  CpuTiTmgr(kernel::profile::Profile* speed_profile, double value);
   CpuTiTmgr(const CpuTiTmgr&) = delete;
   CpuTiTmgr& operator=(const CpuTiTmgr&) = delete;
   ~CpuTiTmgr();
@@ -65,8 +65,8 @@ private:
   double last_time_ = 0.0;             /*< Integral interval last point (discrete time) */
   double total_    = 0.0;             /*< Integral total between 0 and last_pointn */
 
-  CpuTiTrace *trace_ = nullptr;
-  tmgr_trace_t speed_trace_ = nullptr;
+  CpuTiProfile* profile_                   = nullptr;
+  kernel::profile::Profile* speed_profile_ = nullptr;
 };
 
 /**********
@@ -103,15 +103,15 @@ public:
   CpuTi(CpuTiModel* model, simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core);
   ~CpuTi() override;
 
-  void set_speed_trace(tmgr_trace_t trace) override;
+  void set_speed_trace(kernel::profile::Profile* profile) override;
 
-  void apply_event(tmgr_trace_event_t event, double value) override;
+  void apply_event(kernel::profile::Event* event, double value) override;
   void update_actions_finish_time(double now);
   void update_remaining_amount(double now);
 
   bool is_used() override;
   CpuAction *execution_start(double size) override;
-  simgrid::kernel::resource::Action* execution_start(double size, int requested_cores) override
+  kernel::resource::Action* execution_start(double size, int requested_cores) override
   {
     THROW_UNIMPLEMENTED;
     return nullptr;

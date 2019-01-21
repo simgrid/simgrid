@@ -27,7 +27,7 @@ extern XBT_PRIVATE double sg_latency_factor;
 extern XBT_PRIVATE double sg_bandwidth_factor;
 extern XBT_PRIVATE double sg_weight_S_parameter;
 extern XBT_PRIVATE std::vector<std::string> surf_path;
-extern XBT_PRIVATE std::unordered_map<std::string, tmgr_trace_t> traces_set_list;
+extern XBT_PRIVATE std::unordered_map<std::string, simgrid::kernel::profile::Profile*> traces_set_list;
 extern XBT_PRIVATE std::set<std::string> watched_hosts;
 
 static inline void double_update(double* variable, double value, double precision)

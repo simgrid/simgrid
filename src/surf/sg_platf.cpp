@@ -656,15 +656,15 @@ void sg_platf_new_hostlink(simgrid::kernel::routing::HostLinkCreationArgs* hostl
   as_cluster->private_links_.insert({netpoint->id(), {linkUp->get_impl(), linkDown->get_impl()}});
 }
 
-void sg_platf_new_trace(simgrid::kernel::routing::TraceCreationArgs* trace)
+void sg_platf_new_trace(simgrid::kernel::routing::ProfileCreationArgs* profile)
 {
-  tmgr_trace_t tmgr_trace;
-  if (not trace->file.empty()) {
-    tmgr_trace = tmgr_trace_new_from_file(trace->file);
+  simgrid::kernel::profile::Profile* mgr_profile;
+  if (not profile->file.empty()) {
+    mgr_profile = tmgr_trace_new_from_file(profile->file);
   } else {
-    xbt_assert(not trace->pc_data.empty(), "Trace '%s' must have either a content, or point to a file on disk.",
-               trace->id.c_str());
-    tmgr_trace = tmgr_trace_new_from_string(trace->id, trace->pc_data, trace->periodicity);
+    xbt_assert(not profile->pc_data.empty(), "Trace '%s' must have either a content, or point to a file on disk.",
+               profile->id.c_str());
+    mgr_profile = tmgr_trace_new_from_string(profile->id, profile->pc_data, profile->periodicity);
   }
-  traces_set_list.insert({trace->id, tmgr_trace});
+  traces_set_list.insert({profile->id, mgr_profile});
 }

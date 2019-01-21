@@ -314,7 +314,7 @@ bool LinkL07::is_used()
   return get_model()->get_maxmin_system()->constraint_used(get_constraint());
 }
 
-void CpuL07::apply_event(tmgr_trace_event_t triggered, double value)
+void CpuL07::apply_event(kernel::profile::Event* triggered, double value)
 {
   XBT_DEBUG("Updating cpu %s (%p) with value %g", get_cname(), this, value);
   if (triggered == speed_.event) {
@@ -337,7 +337,7 @@ void CpuL07::apply_event(tmgr_trace_event_t triggered, double value)
   }
 }
 
-void LinkL07::apply_event(tmgr_trace_event_t triggered, double value)
+void LinkL07::apply_event(kernel::profile::Event* triggered, double value)
 {
   XBT_DEBUG("Updating link %s (%p) with value=%f", get_cname(), this, value);
   if (triggered == bandwidth_.event) {

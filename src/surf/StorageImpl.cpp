@@ -74,7 +74,7 @@ bool StorageImpl::is_used()
   return false;
 }
 
-void StorageImpl::apply_event(tmgr_trace_event_t /*event*/, double /*value*/)
+void StorageImpl::apply_event(kernel::profile::Event* /*event*/, double /*value*/)
 {
   THROW_UNIMPLEMENTED;
 }

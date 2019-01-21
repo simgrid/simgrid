@@ -19,16 +19,15 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
-namespace tmgr = simgrid::trace_mgr;
-
-static std::unordered_map<std::string, tmgr::trace*> trace_list;
+static std::unordered_map<std::string, simgrid::kernel::profile::Profile*> trace_list;
 
 static inline bool doubleEq(double d1, double d2)
 {
   return fabs(d1 - d2) < 0.0001;
 }
 namespace simgrid {
-namespace trace_mgr {
+namespace kernel {
+namespace profile {
 
 bool DatedValue::operator==(DatedValue e2)
 {
@@ -40,36 +39,37 @@ std::ostream& operator<<(std::ostream& out, const DatedValue& e)
   return out;
 }
 
-trace::trace()
+Profile::Profile()
 {
   /* Add the first fake event storing the time at which the trace begins */
-  tmgr::DatedValue val(0, -1);
+  DatedValue val(0, -1);
   event_list.push_back(val);
 }
-trace::~trace()                  = default;
-future_evt_set::future_evt_set() = default;
-future_evt_set::~future_evt_set()
+Profile::~Profile()          = default;
+FutureEvtSet::FutureEvtSet() = default;
+FutureEvtSet::~FutureEvtSet()
 {
   while (not heap_.empty()) {
     delete heap_.top().second;
     heap_.pop();
   }
 }
-}
-}
+} // namespace profile
+} // namespace kernel
+} // namespace simgrid
 
-tmgr_trace_t tmgr_trace_new_from_string(std::string name, std::string input, double periodicity)
+simgrid::kernel::profile::Profile* tmgr_trace_new_from_string(std::string name, std::string input, double periodicity)
 {
   int linecount = 0;
-  tmgr_trace_t trace           = new simgrid::trace_mgr::trace();
-  tmgr::DatedValue* last_event = &(trace->event_list.back());
+  simgrid::kernel::profile::Profile* trace         = new simgrid::kernel::profile::Profile();
+  simgrid::kernel::profile::DatedValue* last_event = &(trace->event_list.back());
 
   xbt_assert(trace_list.find(name) == trace_list.end(), "Refusing to define trace %s twice", name.c_str());
 
   std::vector<std::string> list;
   boost::split(list, input, boost::is_any_of("\n\r"));
   for (auto val : list) {
-    tmgr::DatedValue event;
+    simgrid::kernel::profile::DatedValue event;
     linecount++;
     boost::trim(val);
     if (val[0] == '#' || val[0] == '\0' || val[0] == '%') // pass comments
@@ -103,7 +103,7 @@ tmgr_trace_t tmgr_trace_new_from_string(std::string name, std::string input, dou
   return trace;
 }
 
-tmgr_trace_t tmgr_trace_new_from_file(std::string filename)
+simgrid::kernel::profile::Profile* tmgr_trace_new_from_file(std::string filename)
 {
   xbt_assert(not filename.empty(), "Cannot parse a trace from an empty filename");
   xbt_assert(trace_list.find(filename) == trace_list.end(), "Refusing to define trace %s twice", filename.c_str());
@@ -117,20 +117,20 @@ tmgr_trace_t tmgr_trace_new_from_file(std::string filename)
 
   return tmgr_trace_new_from_string(filename, buffer.str(), -1);
 }
+namespace simgrid {
+namespace kernel {
+namespace profile {
 
 /** @brief Registers a new trace into the future event set, and get an iterator over the integrated trace  */
-tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t trace,
-                                                                 kernel::resource::Resource* resource)
+Event* FutureEvtSet::add_trace(Profile* profile, resource::Resource* resource)
 {
-  tmgr_trace_event_t trace_iterator = nullptr;
-
-  trace_iterator           = new simgrid::kernel::resource::TraceEvent();
-  trace_iterator->trace    = trace;
+  Event* trace_iterator    = new Event();
+  trace_iterator->profile  = profile;
   trace_iterator->idx      = 0;
   trace_iterator->resource = resource;
   trace_iterator->free_me  = false;
 
-  xbt_assert((trace_iterator->idx < trace->event_list.size()), "Your trace should have at least one event!");
+  xbt_assert((trace_iterator->idx < profile->event_list.size()), "Your trace should have at least one event!");
 
   heap_.emplace(0.0 /* start time */, trace_iterator);
 
@@ -138,14 +138,13 @@ tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t tr
 }
 
 /** @brief returns the date of the next occurring event (pure function) */
-double simgrid::trace_mgr::future_evt_set::next_date() const
+double FutureEvtSet::next_date() const
 {
   return heap_.empty() ? -1.0 : heap_.top().first;
 }
 
 /** @brief Retrieves the next occurring event, or nullptr if none happens before date */
-tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::pop_leq(double date, double* value,
-                                                               kernel::resource::Resource** resource)
+Event* FutureEvtSet::pop_leq(double date, double* value, resource::Resource** resource)
 {
   double event_date = next_date();
   if (event_date > date)
@@ -153,13 +152,13 @@ tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::pop_leq(double date, doub
 
   if (heap_.empty())
     return nullptr;
-  tmgr_trace_event_t trace_iterator = heap_.top().second;
+  Event* trace_iterator = heap_.top().second;
   heap_.pop();
 
-  tmgr_trace_t trace = trace_iterator->trace;
+  Profile* trace = trace_iterator->profile;
   *resource = trace_iterator->resource;
 
-  tmgr::DatedValue dateVal = trace->event_list.at(trace_iterator->idx);
+  DatedValue dateVal = trace->event_list.at(trace_iterator->idx);
 
   *value = dateVal.value_;
 
@@ -175,7 +174,9 @@ tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::pop_leq(double date, doub
 
   return trace_iterator;
 }
-
+} // namespace profile
+} // namespace kernel
+} // namespace simgrid
 void tmgr_finalize()
 {
   for (auto const& kv : trace_list)
@@ -183,7 +184,7 @@ void tmgr_finalize()
   trace_list.clear();
 }
 
-void tmgr_trace_event_unref(tmgr_trace_event_t* trace_event)
+void tmgr_trace_event_unref(simgrid::kernel::profile::Event** trace_event)
 {
   if ((*trace_event)->free_me) {
     delete *trace_event;

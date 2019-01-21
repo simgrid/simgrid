@@ -63,7 +63,7 @@ bool Resource::operator==(const Resource& other) const
   return name_ == other.name_;
 }
 
-void Resource::set_state_trace(tmgr_trace_t trace)
+void Resource::set_state_trace(profile::Profile* trace)
 {
   xbt_assert(state_event_ == nullptr, "Cannot set a second state trace to %s", get_cname());
 

@@ -777,7 +777,7 @@ void ETag_surfxml_bypassZoneRoute()
 }
 
 void ETag_surfxml_trace(){
-  simgrid::kernel::routing::TraceCreationArgs trace;
+  simgrid::kernel::routing::ProfileCreationArgs trace;
 
   trace.id = A_surfxml_trace_id;
   trace.file = A_surfxml_trace_file;

@@ -30,7 +30,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (ke
 
 std::vector<simgrid::kernel::resource::Model*> all_existing_models; /* to destroy models correctly */
 
-simgrid::trace_mgr::future_evt_set future_evt_set;
+simgrid::kernel::profile::FutureEvtSet future_evt_set;
 std::vector<std::string> surf_path;
 /**  set of hosts for which one want to be notified if they ever restart. */
 std::set<std::string> watched_hosts;

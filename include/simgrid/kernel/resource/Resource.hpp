@@ -45,7 +45,7 @@ public:
   bool operator==(const Resource& other) const;
 
   /** @brief Apply an event of external load event to that resource */
-  virtual void apply_event(TraceEvent* event, double value) = 0;
+  virtual void apply_event(profile::Event* event, double value) = 0;
 
   /** @brief Check if the current Resource is used (if it currently serves an action) */
   virtual bool is_used() = 0;
@@ -64,7 +64,7 @@ public:
   /** @brief Turn off the current Resource */
   virtual void turn_off();
   /** @brief setup the trace file with states events (ON or OFF). Trace must contain boolean values. */
-  virtual void set_state_trace(tmgr_trace_t trace);
+  virtual void set_state_trace(profile::Profile* trace);
 
 private:
   std::string name_;
@@ -79,13 +79,13 @@ private:
   kernel::lmm::Constraint* const constraint_ = nullptr;
 
 public:
-  TraceEvent* state_event_ = nullptr;
+  profile::Event* state_event_ = nullptr;
 
 protected:
   struct Metric {
     double peak;       /**< The peak of the metric, ie its max value */
     double scale;      /**< Current availability of the metric according to the traces, in [0,1] */
-    TraceEvent* event; /**< The associated trace event associated to the metric */
+    profile::Event* event; /**< The associated trace event associated to the metric */
   };
 };
 } // namespace resource

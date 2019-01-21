@@ -37,8 +37,8 @@ struct HostCreationArgs {
   std::vector<double> speed_per_pstate;
   int pstate               = 0;
   int core_amount          = 0;
-  tmgr_trace_t speed_trace = nullptr;
-  tmgr_trace_t state_trace = nullptr;
+  profile::Profile* speed_trace                            = nullptr;
+  profile::Profile* state_trace                            = nullptr;
   const char* coord        = nullptr;
   std::unordered_map<std::string, std::string>* properties = nullptr;
 };
@@ -54,10 +54,10 @@ class LinkCreationArgs {
 public:
   std::string id;
   double bandwidth                    = 0;
-  tmgr_trace_t bandwidth_trace        = nullptr;
+  profile::Profile* bandwidth_trace                        = nullptr;
   double latency                      = 0;
-  tmgr_trace_t latency_trace          = nullptr;
-  tmgr_trace_t state_trace            = nullptr;
+  profile::Profile* latency_trace                          = nullptr;
+  profile::Profile* state_trace                            = nullptr;
   simgrid::s4u::Link::SharingPolicy policy       = simgrid::s4u::Link::SharingPolicy::FATPIPE;
   std::unordered_map<std::string, std::string>* properties = nullptr;
 };
@@ -69,8 +69,8 @@ public:
   double bw_in;
   double bw_out;
   std::string coord;
-  tmgr_trace_t speed_trace;
-  tmgr_trace_t state_trace;
+  profile::Profile* speed_trace;
+  profile::Profile* state_trace;
 };
 
 class RouteCreationArgs {
@@ -144,7 +144,7 @@ public:
   std::string name;
 };
 
-class TraceCreationArgs {
+class ProfileCreationArgs {
 public:
   std::string id;
   std::string file;
@@ -201,7 +201,7 @@ XBT_PUBLIC simgrid::kernel::routing::NetPoint*                      // Add a rou
 XBT_PUBLIC void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route);             // Add a route
 XBT_PUBLIC void sg_platf_new_bypassRoute(simgrid::kernel::routing::RouteCreationArgs* bypassroute); // Add a bypassRoute
 
-XBT_PUBLIC void sg_platf_new_trace(simgrid::kernel::routing::TraceCreationArgs* trace);
+XBT_PUBLIC void sg_platf_new_trace(simgrid::kernel::routing::ProfileCreationArgs* trace);
 
 XBT_PUBLIC void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage); // Add a storage to the current Zone
 XBT_PUBLIC void sg_platf_new_storage_type(simgrid::kernel::routing::StorageTypeCreationArgs* storage_type);

@@ -277,15 +277,15 @@ LinkNS3::LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwid
 
 LinkNS3::~LinkNS3() = default;
 
-void LinkNS3::apply_event(tmgr_trace_event_t event, double value)
+void LinkNS3::apply_event(profile::Event* event, double value)
 {
   THROW_UNIMPLEMENTED;
 }
-void LinkNS3::set_bandwidth_trace(tmgr_trace_t trace)
+void LinkNS3::set_bandwidth_trace(profile::Profile* profile)
 {
   xbt_die("The NS3 network model doesn't support bandwidth traces");
 }
-void LinkNS3::set_latency_trace(tmgr_trace_t trace)
+void LinkNS3::set_latency_trace(profile::Profile* profile)
 {
   xbt_die("The NS3 network model doesn't support latency traces");
 }

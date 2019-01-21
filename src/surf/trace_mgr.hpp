@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_TMGR_H
-#define SURF_TMGR_H
+#ifndef SURF_PMGR_H
+#define SURF_PMGR_H
 
 #include "simgrid/forward.h"
 #include "xbt/sysdep.h"
@@ -15,20 +15,20 @@
 /* Iterator within a trace */
 namespace simgrid {
 namespace kernel {
-namespace resource {
-class TraceEvent {
+namespace profile {
+/** @brief Links a profile to a resource */
+class Event {
 public:
-  tmgr_trace_t trace;
+  Profile* profile;
   unsigned int idx;
-  Resource* resource;
+  resource::Resource* resource;
   bool free_me;
 };
 
 } // namespace resource
 } // namespace kernel
 } // namespace simgrid
-typedef simgrid::kernel::resource::TraceEvent* tmgr_trace_event_t;
-extern XBT_PRIVATE simgrid::trace_mgr::future_evt_set future_evt_set;
+extern XBT_PRIVATE simgrid::kernel::profile::FutureEvtSet future_evt_set;
 
 /**
  * @brief Free a trace event structure
@@ -37,25 +37,28 @@ extern XBT_PRIVATE simgrid::trace_mgr::future_evt_set future_evt_set;
  * This flag indicates whether the structure is still used somewhere or not.
  * When the structure is freed, the argument is set to nullptr
  */
-XBT_PUBLIC void tmgr_trace_event_unref(tmgr_trace_event_t* trace_event);
+XBT_PUBLIC void tmgr_trace_event_unref(simgrid::kernel::profile::Event** trace_event);
 
 XBT_PUBLIC void tmgr_finalize();
 
-XBT_PUBLIC tmgr_trace_t tmgr_trace_new_from_file(std::string filename);
-XBT_PUBLIC tmgr_trace_t tmgr_trace_new_from_string(std::string id, std::string input, double periodicity);
+XBT_PUBLIC simgrid::kernel::profile::Profile* tmgr_trace_new_from_file(std::string filename);
+XBT_PUBLIC simgrid::kernel::profile::Profile* tmgr_trace_new_from_string(std::string id, std::string input,
+                                                                         double periodicity);
 
 namespace simgrid {
+namespace kernel {
+namespace profile {
+
 /** @brief Modeling of the availability profile (due to an external load) or the churn
  *
  * There is 4 main concepts in this module:
- * - #simgrid::trace_mgr::DatedValue: a pair <timestamp, value> (both are of type double)
- * - #simgrid::trace_mgr::trace: a list of dated values
- * - #simgrid::trace_mgr::trace_event: links a given trace to a given SimGrid resource.
+ * - #simgrid::kernel::profile::DatedValue: a pair <timestamp, value> (both are of type double)
+ * - #simgrid::kernel::profile::Profile: a list of dated values
+ * - #simgrid::kernel::profile::Event: links a given trace to a given SimGrid resource.
  *   A Cpu for example has 2 kinds of events: state (ie, is it ON/OFF) and speed,
  *   while a link has 3 iterators: state, bandwidth and latency.
- * - #simgrid::trace_mgr::future_evt_set: makes it easy to find the next occuring event of all traces
+ * - #simgrid::kernel::profile::FutureEvtSet: makes it easy to find the next occuring event of all profiles
  */
-namespace trace_mgr {
 class XBT_PUBLIC DatedValue {
 public:
   double date_          = 0;
@@ -67,39 +70,38 @@ public:
 };
 std::ostream& operator<<(std::ostream& out, const DatedValue& e);
 
-/** @brief A trace_iterator links a trace to a resource */
-class XBT_PUBLIC trace_event {
-};
-
-/** @brief A trace is a set of timed values, encoding the value that a variable takes at what time *
+/** @brief A profile is a set of timed values, encoding the value that a variable takes at what time
  *
- * It is useful to model dynamic platforms, where an external load that makes the resource availability change over time.
- * To model that, you have to set several traces per resource: one for the on/off state and one for each numerical value (computational speed, bandwidth and latency).
+ * It is useful to model dynamic platforms, where an external load that makes the resource availability change over
+ * time. To model that, you have to set several profiles per resource: one for the on/off state and one for each
+ * numerical value (computational speed, bandwidth and/or latency).
  */
-class XBT_PUBLIC trace {
+class XBT_PUBLIC Profile {
 public:
   /**  Creates an empty trace */
-  explicit trace();
-  virtual ~trace();
-//private:
+  explicit Profile();
+  virtual ~Profile();
+  // private:
   std::vector<DatedValue> event_list;
 };
 
 /** @brief Future Event Set (collection of iterators over the traces)
  * That's useful to quickly know which is the next occurring event in a set of traces. */
-class XBT_PUBLIC future_evt_set {
+class XBT_PUBLIC FutureEvtSet {
 public:
-  future_evt_set();
-  virtual ~future_evt_set();
+  FutureEvtSet();
+  virtual ~FutureEvtSet();
   double next_date() const;
-  tmgr_trace_event_t pop_leq(double date, double* value, simgrid::kernel::resource::Resource** resource);
-  tmgr_trace_event_t add_trace(tmgr_trace_t trace, simgrid::kernel::resource::Resource * resource);
+  Event* pop_leq(double date, double* value, resource::Resource** resource);
+  Event* add_trace(Profile* trace, resource::Resource* resource);
 
 private:
-  typedef std::pair<double, tmgr_trace_event_t> Qelt;
+  typedef std::pair<double, Event*> Qelt;
   std::priority_queue<Qelt, std::vector<Qelt>, std::greater<Qelt>> heap_;
 };
 
-}} // namespace simgrid::trace_mgr
+} // namespace profile
+} // namespace kernel
+} // namespace simgrid
 
-#endif /* SURF_TMGR_H */
+#endif /* SURF_PMGR_H */
