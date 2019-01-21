@@ -741,22 +741,10 @@ void SIMIX_process_yield(smx_actor_t self)
   XBT_DEBUG("Control returned to me: '%s'", self->get_cname());
 
   if (self->context_->iwannadie) {
-    XBT_DEBUG("I wanna die!");
-    self->finished_ = true;
-    /* execute the on_exit functions */
-    SIMIX_process_on_exit_runall(self);
-
-    if (self->auto_restart_ && self->host_->is_off() &&
-        watched_hosts.find(self->host_->get_cname()) == watched_hosts.end()) {
-      XBT_DEBUG("Push host %s to watched_hosts because it's off and %s needs to restart", self->host_->get_cname(),
-                self->get_cname());
-      watched_hosts.insert(self->host_->get_cname());
-    }
 
     XBT_DEBUG("Process %s@%s is dead", self->get_cname(), self->host_->get_cname());
     self->context_->stop();
-    xbt_backtrace_display_current();
-    xbt_die("I should be dead by now.");
+    THROW_IMPOSSIBLE;
   }
 
   if (self->suspended_) {

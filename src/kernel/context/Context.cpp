@@ -5,8 +5,10 @@
 
 #include "mc/mc.h"
 
+#include "simgrid/s4u/Host.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/simix/smx_private.hpp"
+#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
@@ -81,10 +83,18 @@ Context::~Context()
 
 void Context::stop()
 {
+  actor_->finished_ = true;
+
+  if (actor_->auto_restart_ && actor_->host_->is_off()) {
+    XBT_DEBUG("Insert host %s to watched_hosts because it's off and %s needs to restart", actor_->host_->get_cname(),
+              actor_->get_cname());
+    watched_hosts.insert(actor_->host_->get_cname());
+  }
+
   if (this->cleanup_func_)
     this->cleanup_func_(this->actor_);
 
-  this->iwannadie = false;
+  this->iwannadie = false; // don't let the yield call ourself -- Context::stop()
   simgrid::simix::simcall([this] { SIMIX_process_cleanup(this->actor_); });
   this->iwannadie = true;
 }
