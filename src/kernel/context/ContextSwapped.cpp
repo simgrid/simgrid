@@ -98,6 +98,11 @@ SwappedContext::SwappedContext(std::function<void()> code, void_pfn_smxprocess_t
       this->stack_ = xbt_malloc0(smx_context_stack_size);
     }
 
+#if PTH_STACKGROWTH == -1
+    ASAN_ONLY(this->asan_stack_ = static_cast<char*>(this->stack_) + smx_context_usable_stack_size);
+#else
+    ASAN_ONLY(this->asan_stack_ = this->stack_);
+#endif
 #if HAVE_VALGRIND_H
     unsigned int valgrind_stack_id =
         VALGRIND_STACK_REGISTER(this->stack_, (char*)this->stack_ + smx_context_stack_size);

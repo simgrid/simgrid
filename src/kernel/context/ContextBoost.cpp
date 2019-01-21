@@ -37,7 +37,6 @@ BoostContext::BoostContext(std::function<void()> code, void_pfn_smxprocess_t cle
 #else
     void* stack = get_stack();
 #endif
-    ASAN_ONLY(this->asan_stack_ = stack);
 #if BOOST_VERSION < 106100
     this->fc_ = boost::context::make_fcontext(stack, smx_context_usable_stack_size, BoostContext::wrapper);
 #else

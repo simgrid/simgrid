@@ -49,6 +49,13 @@ public:
 
   static thread_local uintptr_t worker_id_;
 
+#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
+  const void* asan_stack_   = nullptr;
+  size_t asan_stack_size_   = 0;
+  SwappedContext* asan_ctx_ = nullptr;
+  bool asan_stop_           = false;
+#endif
+
 private:
   void* stack_ = nullptr;                /* the thread stack */
   SwappedContextFactory* const factory_; // for sequential and parallel run_all()

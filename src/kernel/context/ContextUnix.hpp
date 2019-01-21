@@ -32,13 +32,6 @@ public:
 
 private:
   ucontext_t uc_;         /* the ucontext that executes the code */
-
-#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
-  const void* asan_stack_ = nullptr;
-  size_t asan_stack_size_ = 0;
-  UContext* asan_ctx_     = nullptr;
-  bool asan_stop_         = false;
-#endif
 };
 
 class UContextFactory : public SwappedContextFactory {
