@@ -82,8 +82,12 @@ public:
 
   /** Turns that host on if it was previously off
    *
-   * All actors on that host which were marked autorestart will be restarted automatically.
-   * This call does nothing if the host is already on.
+   * This call does nothing if the host is already on. If it was off, all actors which were
+   * marked 'autorestart' on that host will be restarted automatically (note that this may differ
+   * from the actors that were initially running on the host).
+   *
+   * All other Host's properties are left unchanged; in particular, the pstate is left
+   * unchanged and not reset to its initial value.
    */
   void turn_on();
   /** Turns that host off. All actors are forcefully stopped. */
