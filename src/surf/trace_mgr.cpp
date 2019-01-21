@@ -124,20 +124,20 @@ namespace profile {
 /** @brief Registers a new trace into the future event set, and get an iterator over the integrated trace  */
 Event* FutureEvtSet::add_trace(Profile* profile, resource::Resource* resource)
 {
-  Event* trace_iterator    = new Event();
-  trace_iterator->profile  = profile;
-  trace_iterator->idx      = 0;
-  trace_iterator->resource = resource;
-  trace_iterator->free_me  = false;
+  Event* event    = new Event();
+  event->profile  = profile;
+  event->idx      = 0;
+  event->resource = resource;
+  event->free_me  = false;
 
-  xbt_assert((trace_iterator->idx < profile->event_list.size()), "Your trace should have at least one event!");
+  xbt_assert((event->idx < profile->event_list.size()), "Your profile should have at least one event!");
 
-  heap_.emplace(0.0 /* start time */, trace_iterator);
+  heap_.emplace(0.0 /* start time */, event);
 
-  return trace_iterator;
+  return event;
 }
 
-/** @brief returns the date of the next occurring event (pure function) */
+/** @brief returns the date of the next occurring event */
 double FutureEvtSet::next_date() const
 {
   return heap_.empty() ? -1.0 : heap_.top().first;
@@ -152,27 +152,27 @@ Event* FutureEvtSet::pop_leq(double date, double* value, resource::Resource** re
 
   if (heap_.empty())
     return nullptr;
-  Event* trace_iterator = heap_.top().second;
+  Event* event = heap_.top().second;
   heap_.pop();
 
-  Profile* trace = trace_iterator->profile;
-  *resource = trace_iterator->resource;
+  Profile* profile = event->profile;
+  *resource        = event->resource;
 
-  DatedValue dateVal = trace->event_list.at(trace_iterator->idx);
+  DatedValue dateVal = profile->event_list.at(event->idx);
 
   *value = dateVal.value_;
 
-  if (trace_iterator->idx < trace->event_list.size() - 1) {
-    heap_.emplace(event_date + dateVal.date_, trace_iterator);
-    trace_iterator->idx++;
+  if (event->idx < profile->event_list.size() - 1) {
+    heap_.emplace(event_date + dateVal.date_, event);
+    event->idx++;
   } else if (dateVal.date_ > 0) { /* Last element. Shall we loop? */
-    heap_.emplace(event_date + dateVal.date_, trace_iterator);
-    trace_iterator->idx = 1; /* idx=0 is a placeholder to store when events really start */
-  } else {                   /* If we don't loop, we don't need this trace_event anymore */
-    trace_iterator->free_me = true;
+    heap_.emplace(event_date + dateVal.date_, event);
+    event->idx = 1; /* idx=0 is a placeholder to store when events really start */
+  } else {          /* If we don't loop, we don't need this event anymore */
+    event->free_me = true;
   }
 
-  return trace_iterator;
+  return event;
 }
 } // namespace profile
 } // namespace kernel
@@ -184,10 +184,10 @@ void tmgr_finalize()
   trace_list.clear();
 }
 
-void tmgr_trace_event_unref(simgrid::kernel::profile::Event** trace_event)
+void tmgr_trace_event_unref(simgrid::kernel::profile::Event** event)
 {
-  if ((*trace_event)->free_me) {
-    delete *trace_event;
-    *trace_event = nullptr;
+  if ((*event)->free_me) {
+    delete *event;
+    *event = nullptr;
   }
 }

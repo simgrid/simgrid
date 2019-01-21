@@ -93,7 +93,7 @@ public:
   virtual ~FutureEvtSet();
   double next_date() const;
   Event* pop_leq(double date, double* value, resource::Resource** resource);
-  Event* add_trace(Profile* trace, resource::Resource* resource);
+  Event* add_trace(Profile* profile, resource::Resource* resource);
 
 private:
   typedef std::pair<double, Event*> Qelt;

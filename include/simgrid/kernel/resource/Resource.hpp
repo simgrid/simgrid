@@ -52,7 +52,7 @@ public:
 
   /** @brief returns the current load due to activities (in flops per second, byte per second or similar)
    *
-   * The load due to external usages modeled by trace files is ignored.*/
+   * The load due to external usages modeled by profile files is ignored.*/
   virtual double get_load();
 
   /** @brief Check if the current Resource is active */
@@ -63,15 +63,12 @@ public:
   virtual void turn_on();
   /** @brief Turn off the current Resource */
   virtual void turn_off();
-  /** @brief setup the trace file with states events (ON or OFF). Trace must contain boolean values. */
+  /** @brief setup the profile file with states events (ON or OFF). The profile must contain boolean values. */
   virtual void set_state_profile(profile::Profile* profile);
 
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v325("Please use Resource::set_state_profile()") virtual void set_state_trace(
-      profile::Profile* profile)
-  {
-    set_state_profile(profile);
-  }
+      profile::Profile* profile) { set_state_profile(profile); }
 #endif
 
 private:
@@ -92,8 +89,8 @@ public:
 protected:
   struct Metric {
     double peak;       /**< The peak of the metric, ie its max value */
-    double scale;      /**< Current availability of the metric according to the traces, in [0,1] */
-    profile::Event* event; /**< The associated trace event associated to the metric */
+    double scale;      /**< Current availability of the metric according to the profiles, in [0,1] */
+    profile::Event* event; /**< The associated profile event associated to the metric */
   };
 };
 } // namespace resource

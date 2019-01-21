@@ -151,22 +151,13 @@ public:
 
   /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_state_profile()") void setStateTrace(
-      simgrid::kernel::profile::Profile* trace)
-  {
-    set_state_profile(trace);
-  }
+      simgrid::kernel::profile::Profile* profile) {set_state_profile(profile); }
   /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_bandwidth_profile()") void setBandwidthTrace(
-      simgrid::kernel::profile::Profile* trace)
-  {
-    set_bandwidth_profile(trace);
-  }
+      simgrid::kernel::profile::Profile* profile) { set_bandwidth_profile(profile); }
   /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_latency_profile()") void setLatencyTrace(
-      simgrid::kernel::profile::Profile* trace)
-  {
-    set_latency_profile(trace);
-  }
+      simgrid::kernel::profile::Profile* profile) { set_latency_profile(profile); }
 #endif
 };
 }
