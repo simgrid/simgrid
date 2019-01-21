@@ -83,7 +83,6 @@ void Context::stop()
 {
   if (this->cleanup_func_)
     this->cleanup_func_(this->actor_);
-  this->actor_->suspended_ = false;
 
   this->iwannadie = false;
   simgrid::simix::simcall([this] { SIMIX_process_cleanup(this->actor_); });
