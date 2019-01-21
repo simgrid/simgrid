@@ -112,17 +112,7 @@ void ModelChecker::start()
 
 static const std::pair<const char*, const char*> ignored_local_variables[] = {
   std::pair<const char*, const char*>{  "e", "*" },
-  std::pair<const char*, const char*>{ "__ex_cleanup", "*" },
-  std::pair<const char*, const char*>{ "__ex_mctx_en", "*" },
-  std::pair<const char*, const char*>{ "__ex_mctx_me", "*" },
-  std::pair<const char*, const char*>{ "__xbt_ex_ctx_ptr", "*" },
   std::pair<const char*, const char*>{ "_log_ev", "*" },
-  std::pair<const char*, const char*>{ "_throw_ctx", "*" },
-  std::pair<const char*, const char*>{ "ctx", "*" },
-
-  std::pair<const char*, const char*>{ "self", "simcall_BODY_mc_snapshot" },
-  std::pair<const char*, const char*>{ "next_context", "smx_ctx_sysv_suspend_serial" },
-  std::pair<const char*, const char*>{ "i", "smx_ctx_sysv_suspend_serial" },
 
   /* Ignore local variable about time used for tracing */
   std::pair<const char*, const char*>{ "start_time", "*" },
