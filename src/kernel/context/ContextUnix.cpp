@@ -86,13 +86,13 @@ UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun
     UContext* arg = this;
     memcpy(ctx_addr, &arg, sizeof this);
     makecontext(&this->uc_, (void (*)())smx_ctx_wrapper, 2, ctx_addr[0], ctx_addr[1]);
-  }
 
 #if SIMGRID_HAVE_MC
-  if (MC_is_active() && has_code()) {
-    MC_register_stack_area(get_stack(), actor, &(this->uc_), smx_context_usable_stack_size);
-  }
+    if (MC_is_active()) {
+      MC_register_stack_area(get_stack(), actor, &(this->uc_), smx_context_usable_stack_size);
+    }
 #endif
+  }
 }
 
 void UContext::swap_into(SwappedContext* to_)

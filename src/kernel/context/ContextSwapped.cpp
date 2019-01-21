@@ -40,14 +40,11 @@ thread_local uintptr_t SwappedContext::worker_id_;             /* thread-specifi
 SwappedContextFactory::SwappedContextFactory() : ContextFactory(), parallel_(SIMIX_context_is_parallel())
 {
   parmap_ = nullptr; // will be created lazily with the right parameters if needed (ie, in parallel)
-  workers_context_.clear();
   workers_context_.resize(parallel_ ? SIMIX_context_get_nthreads() : 1, nullptr);
 }
 SwappedContextFactory::~SwappedContextFactory()
 {
   delete parmap_;
-  parmap_ = nullptr;
-  workers_context_.clear();
 }
 
 SwappedContext::SwappedContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
