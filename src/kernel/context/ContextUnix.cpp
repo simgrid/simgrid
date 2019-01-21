@@ -23,9 +23,10 @@ constexpr int CTX_ADDR_LEN = 2;
 static_assert(sizeof(simgrid::kernel::context::UContext*) <= CTX_ADDR_LEN * sizeof(int),
               "Ucontexts are not supported on this arch yet. Please increase CTX_ADDR_LEN.");
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+/* Make sure that this symbol is easy to recognize by name, even on exotic platforms */
+extern "C" {
+static void smx_ctx_wrapper(int i1, int i2);
+}
 
 // The name of this function is currently hardcoded in MC (as string).
 // Do not change it without fixing those references as well.
@@ -49,6 +50,10 @@ static void smx_ctx_wrapper(int i1, int i2)
   ASAN_ONLY(context->asan_stop_ = true);
   context->suspend();
 }
+
+namespace simgrid {
+namespace kernel {
+namespace context {
 
 // UContextFactory
 Context* UContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t actor)
