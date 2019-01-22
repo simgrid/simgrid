@@ -3,8 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifdef _WIN32
+#warning Try to work around https://bugs.python.org/issue11566
+#include <cmath>
+#define hypot _hypot // Must come before pybind11 when compiling with MinGW32-64 (https://bugs.python.org/issue11566)
+#endif
+
 #include <pybind11/functional.h>
-#include <pybind11/pybind11.h> // Must be first
+#include <pybind11/pybind11.h> // Must come before our own stuff
 #include <pybind11/stl.h>
 
 #include "src/kernel/context/Context.hpp"
