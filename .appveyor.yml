@@ -45,7 +45,7 @@ install:
 build_script:
 - cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
 - mingw32-make.exe VERBOSE=1 java-all python-bindings # Only the Java and Python parts
-- ctest --output-on-failure -R java python
+- ctest --output-on-failure -R 'java|python'
 
 artifacts:
 - path: simgrid.jar
