@@ -100,6 +100,8 @@ void *ThreadContext::wrapper(void *param)
 
   try {
     (*context)();
+    if (not context->is_maestro()) // Just in case somebody detached maestro
+      context->Context::stop();
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
     xbt_assert(not context->is_maestro(), "Maestro shall not receive StopRequests, even when detached.");
@@ -107,9 +109,6 @@ void *ThreadContext::wrapper(void *param)
     XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
     throw;
   }
-  if (not context->is_maestro()) // Just in case somebody detached maestro
-    context->Context::stop();
-
   // Signal to the caller (normally the maestro) that we have finished:
   context->yield();
 

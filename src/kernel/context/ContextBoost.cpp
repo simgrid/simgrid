@@ -70,13 +70,13 @@ void BoostContext::wrapper(BoostContext::arg_type arg)
 #endif
   try {
     (*context)();
+    context->Context::stop();
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
   } catch (simgrid::Exception const& e) {
     XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
     throw;
   }
-  context->Context::stop();
   ASAN_ONLY(context->asan_stop_ = true);
   context->suspend();
 }
