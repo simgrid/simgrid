@@ -800,7 +800,9 @@ if(enable_python)
     pybind11_add_module(python-bindings src/bindings/python/simgrid_python.cpp)
     target_compile_features(python-bindings PRIVATE cxx_std_14)
     target_link_libraries(python-bindings PUBLIC simgrid)
-    set_target_properties(python-bindings PROPERTIES LIBRARY_OUTPUT_NAME simgrid)
+    set_target_properties(python-bindings PROPERTIES
+                          LIBRARY_OUTPUT_NAME simgrid
+                          CXX_VISIBILITY_PRESET "default")
     add_dependencies(tests python-bindings)
     set_property(TARGET python-bindings
                  APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
