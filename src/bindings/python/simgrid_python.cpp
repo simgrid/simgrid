@@ -64,7 +64,7 @@ PYBIND11_MODULE(simgrid, m)
          "Block the current actor, computing the given amount of flops at the given priority, see :cpp:func:`void "
          "simgrid::s4u::this_actor::execute(double, double)`",
          py::arg("flops"), py::arg("priority") = 1);
-  m2.def("get_host", &simgrid::s4u::this_actor::get_host, "Retrives host on which the current actor is located");
+  m2.def("get_host", &simgrid::s4u::this_actor::get_host, "Retrieves host on which the current actor is located");
   m2.def("migrate", &simgrid::s4u::this_actor::migrate, "Moves the current actor to another host, see :cpp:func:`void simgrid::s4u::this_actor::migrate()`",
       py::arg("dest"));
   m2.def("sleep_for", sleep_for_fun,
