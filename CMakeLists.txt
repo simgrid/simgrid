@@ -773,6 +773,9 @@ endif()
 
 # Python binding (with pybind11)
 ################
+if(EXISTS pybind11) # Try to use a local copy of pybind11, if any
+  add_subdirectory(pybind11)
+endif()
 
 # Our usage of pybind11::overload_cast mandates C++14
 get_property(known_features GLOBAL PROPERTY CMAKE_CXX_KNOWN_FEATURES)
