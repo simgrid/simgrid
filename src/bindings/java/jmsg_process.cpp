@@ -225,11 +225,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cl
  {
   double time =  ((double)jmillis) / 1000 + ((double)jnanos) / 1000000000;
   msg_error_t rv;
-  try {
-    rv = MSG_process_sleep(time);
-  } catch (simgrid::kernel::context::Context::StopRequest const&) {
-    rv = MSG_HOST_FAILURE;
-  }
+  simgrid::kernel::context::try_n_catch_stoprequest([&rv, &time]() { rv = MSG_process_sleep(time); },
+                                                    [&rv]() { rv = MSG_HOST_FAILURE; });
   if (rv != MSG_OK) {
     XBT_DEBUG("Something during the MSG_process_sleep invocation was wrong, trigger a HostFailureException");
 
@@ -240,11 +237,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cl
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess, jdouble jseconds)
 {
   msg_error_t rv;
-  try {
-    rv = MSG_process_sleep((double)jseconds);
-  } catch (simgrid::kernel::context::Context::StopRequest& e) {
-    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
-  }
+  simgrid::kernel::context::try_n_catch_stoprequest(
+      [&rv, &jseconds]() { rv = MSG_process_sleep((double)jseconds); },
+      [&env]() { jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed"); });
 
   if (env->ExceptionOccurred())
     return;
@@ -262,12 +257,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_kill(JNIEnv * env, jobject j
     jxbt_throw_notbound(env, "process", jprocess);
     return;
   }
-  try {
-    MSG_process_kill(process);
-  } catch (simgrid::kernel::context::Context::StopRequest& e) {
-    // XBT_INFO("Convert a StopRequest into a ProcessKilledError");
-    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
-  }
+  simgrid::kernel::context::try_n_catch_stoprequest(
+      [&process]() { MSG_process_kill(process); },
+      [&env]() { jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed"); });
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_migrate(JNIEnv * env, jobject jprocess, jobject jhost)

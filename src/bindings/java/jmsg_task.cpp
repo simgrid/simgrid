@@ -127,11 +127,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_execute(JNIEnv * env, jobject j
     return;
   }
   msg_error_t rv;
-  try {
-    rv = MSG_task_execute(task);
-  } catch (simgrid::kernel::context::Context::StopRequest& e) {
-    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
-  }
+  simgrid::kernel::context::try_n_catch_stoprequest(
+      [&rv, &task]() { rv = MSG_task_execute(task); },
+      [&env] { jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed"); });
 
   if (env->ExceptionOccurred())
     return;
@@ -288,11 +286,11 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv* env, jclass 
 
   const char *alias = env->GetStringUTFChars(jalias, 0);
   msg_error_t rv;
-  try {
-    rv = MSG_task_receive_ext(&task, alias, (double)jtimeout, /*host*/ nullptr);
-  } catch (simgrid::kernel::context::Context::StopRequest& e) {
-    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
-  }
+  simgrid::kernel::context::try_n_catch_stoprequest(
+      [&rv, &task, &alias, &jtimeout]() {
+        rv = MSG_task_receive_ext(&task, alias, (double)jtimeout, /*host*/ nullptr);
+      },
+      [&env]() { jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed"); });
   env->ReleaseStringUTFChars(jalias, alias);
   if (env->ExceptionOccurred())
     return nullptr;
