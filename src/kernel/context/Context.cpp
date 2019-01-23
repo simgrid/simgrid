@@ -106,7 +106,7 @@ void throw_stoprequest()
   throw Context::StopRequest();
 }
 
-bool try_n_catch_stoprequest(std::function<void(void)> try_block, std::function<void(void)> catch_block)
+bool try_n_catch_stoprequest(std::function<void(void)> try_block)
 {
   bool res;
   try {
@@ -114,7 +114,6 @@ bool try_n_catch_stoprequest(std::function<void(void)> try_block, std::function<
     res = true;
   } catch (Context::StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
-    catch_block();
     res = false;
   }
   return res;

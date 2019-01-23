@@ -108,7 +108,7 @@ public:
 };
 
 XBT_PUBLIC void throw_stoprequest();
-XBT_PUBLIC bool try_n_catch_stoprequest(std::function<void(void)> try_block, std::function<void(void)> catch_block);
+XBT_PUBLIC bool try_n_catch_stoprequest(std::function<void(void)> try_block);
 
 /* This allows Java to hijack the context factory (Java induces factories of factory :) */
 typedef ContextFactory* (*ContextFactoryInitializer)();
