@@ -5,8 +5,7 @@
 
 #ifdef _WIN32
 #warning Try to work around https://bugs.python.org/issue11566
-#include <cmath>
-#define hypot _hypot // Must come before pybind11 when compiling with MinGW32-64 (https://bugs.python.org/issue11566)
+#define _hypot hypot
 #endif
 
 #include <pybind11/functional.h>
