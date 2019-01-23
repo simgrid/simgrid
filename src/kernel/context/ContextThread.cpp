@@ -103,7 +103,7 @@ void *ThreadContext::wrapper(void *param)
     if (not context->is_maestro()) // Just in case somebody detached maestro
       context->Context::stop();
   } catch (StopRequest const&) {
-    XBT_DEBUG("Caught a StopRequest");
+    XBT_DEBUG("Caught a StopRequest in Thread::wrapper");
     xbt_assert(not context->is_maestro(), "Maestro shall not receive StopRequests, even when detached.");
   } catch (simgrid::Exception const& e) {
     XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
@@ -116,6 +116,8 @@ void *ThreadContext::wrapper(void *param)
   stack.ss_flags = SS_DISABLE;
   sigaltstack(&stack, nullptr);
 #endif
+  XBT_DEBUG("Terminating");
+  Context::set_current(nullptr);
   return nullptr;
 }
 

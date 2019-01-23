@@ -32,6 +32,7 @@ set_property(TARGET simgrid-java
              APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
 
 target_link_libraries(simgrid-java simgrid)
+add_dependencies(tests simgrid-java)
 
 get_target_property(COMMON_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
 if (COMMON_INCLUDES)

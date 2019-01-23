@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/Exception.hpp"
+#include "src/kernel/context/Context.hpp"
 #include <xbt/config.hpp>
 #include <xbt/log.hpp>
 
@@ -145,6 +146,12 @@ static void handler()
     std::abort();
   }
 
+  catch (simgrid::kernel::context::Context::StopRequest& e) {
+    XBT_ERROR("Received a StopRequest at the top-level exception handler. Maybe a Java->C++ call that is not protected "
+              "in a try/catch?");
+    show_backtrace(bt);
+  }
+
   // We don't know how to manage other exceptions
   catch (...) {
     // If there was another handler let's delegate to it
@@ -156,7 +163,6 @@ static void handler()
       std::abort();
     }
   }
-
 }
 
 void install_exception_handler()

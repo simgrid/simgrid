@@ -6,6 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/context/Context.hpp"
 
 #include "jmsg.hpp"
 #include "jmsg_host.h"
@@ -126,7 +127,12 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_execute(JNIEnv * env, jobject j
     return;
   }
   msg_error_t rv;
-  rv = MSG_task_execute(task);
+  try {
+    rv = MSG_task_execute(task);
+  } catch (simgrid::kernel::context::Context::StopRequest& e) {
+    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
+  }
+
   if (env->ExceptionOccurred())
     return;
   if (rv != MSG_OK) {
@@ -281,12 +287,17 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv* env, jclass 
   msg_task_t task = nullptr;
 
   const char *alias = env->GetStringUTFChars(jalias, 0);
-  msg_error_t rv    = MSG_task_receive_ext(&task, alias, (double)jtimeout, /*host*/ nullptr);
+  msg_error_t rv;
+  try {
+    rv = MSG_task_receive_ext(&task, alias, (double)jtimeout, /*host*/ nullptr);
+  } catch (simgrid::kernel::context::Context::StopRequest& e) {
+    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
+  }
   env->ReleaseStringUTFChars(jalias, alias);
   if (env->ExceptionOccurred())
     return nullptr;
   if (rv != MSG_OK) {
-    jmsg_throw_status(env,rv);
+    jmsg_throw_status(env, rv);
     return nullptr;
   }
   jobject jtask_global = (jobject) MSG_task_get_data(task);

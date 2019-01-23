@@ -240,7 +240,12 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cl
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess, jdouble jseconds)
 {
   msg_error_t rv;
-  rv = MSG_process_sleep((double)jseconds);
+  try {
+    rv = MSG_process_sleep((double)jseconds);
+  } catch (simgrid::kernel::context::Context::StopRequest& e) {
+    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
+  }
+
   if (env->ExceptionOccurred())
     return;
   if (rv != MSG_OK) {
@@ -259,10 +264,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_kill(JNIEnv * env, jobject j
   }
   try {
     MSG_process_kill(process);
-  } catch (xbt_ex& ex) {
-    XBT_VERB("Process %s just committed a suicide", MSG_process_get_name(process));
-    xbt_assert(process == MSG_process_self(),
-               "Killing a process should not raise an exception if it's not a suicide. Please report that bug.");
+  } catch (simgrid::kernel::context::Context::StopRequest& e) {
+    // XBT_INFO("Convert a StopRequest into a ProcessKilledError");
+    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
   }
 }
 

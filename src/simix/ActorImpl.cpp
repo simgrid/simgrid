@@ -473,30 +473,8 @@ void SIMIX_process_kill(smx_actor_t actor, smx_actor_t issuer)
   actor->exception           = nullptr;
 
   // Forcefully kill the actor if its host is turned off. Not an HostFailureException because you should not survive that
-  if (actor->host_->is_off()) {
-    /* HORRIBLE HACK: Don't throw an StopRequest exception in Java, because it breaks sometimes.
-     *
-     * It seems to break for the actors started from the Java world, with new Process()
-     * while it works for the ones started from the C world, with the deployment file.
-     * When it happens, the simulation stops brutally with a message "untrapped exception StopRequest".
-     *
-     * From what I understand, it works for the native actors because they have a nice try/catch block around their main
-     * but I fail to have something like that for pure Java actors. That's probably a story of C->Java vs Java->C
-     * calling conventions. The right solution may be to have try/catch(StopRequest) blocks around each native call in
-     * JNI. ie, protect every Java->C++ call from C++ exceptions. But this sounds long and painful to do before we
-     * switch to an automatic generator such as SWIG. For now, we don't throw here that exception that we sometimes fail
-     * to catch.
-     *
-     * One of the unfortunate outcome is that the threads started from the deployment file are not stopped anymore.
-     * Or maybe this is the actors stopping gracefully as opposed to the killed ones? Or maybe this is absolutely all
-     * actors of the Java simulation? I'm not sure. Anyway. Because of them, the simulation hangs at the end, waiting
-     * for them to stop but they won't. The current answer to that is very brutal:
-     * we do a "exit(0)" to kill the JVM from the C code after the call to MSG_run(). Definitely unpleasant.
-     */
-
-    if (simgrid::kernel::context::factory_initializer == nullptr) // Only Java sets a factory_initializer, for now
-      actor->throw_exception(std::make_exception_ptr(simgrid::kernel::context::Context::StopRequest("host failed")));
-  }
+  if (actor->host_->is_off())
+    actor->throw_exception(std::make_exception_ptr(simgrid::kernel::context::Context::StopRequest("host failed")));
 
   /* destroy the blocking synchro if any */
   if (actor->waiting_synchro != nullptr) {
@@ -743,6 +721,7 @@ void SIMIX_process_yield(smx_actor_t self)
   if (self->context_->iwannadie) {
 
     XBT_DEBUG("Process %s@%s is dead", self->get_cname(), self->host_->get_cname());
+    // throw simgrid::kernel::context::Context::StopRequest(); Does not seem to properly kill the actor
     self->context_->stop();
     THROW_IMPOSSIBLE;
   }

@@ -5,8 +5,12 @@
 
 package org.simgrid.msg;
 
-import java.util.Arrays;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A process may be defined as a code, with some private data, executing
@@ -301,6 +305,8 @@ public abstract class Process implements Runnable {
 		}
 		catch(ProcessKilledError pk) {
 			/* The process was killed before its end. With a kill() or something. */
+			//Msg.info("Forwarding a PKE");
+			throw pk;
 		}	
 	}
 
@@ -331,4 +337,44 @@ public abstract class Process implements Runnable {
 	 */
 	public static native int getCount();
 
+        public static void debugAllThreads() {
+            final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+        	long[] deads = threadMXBean.findDeadlockedThreads();
+        	if (deads != null)
+        		for (long dead : deads) 
+        			System.err.println("Thread deadlocked: "+dead);
+
+        	// Search remaining threads that are not main nor daemon
+            List<Long> ids = new ArrayList<>();
+            for (Thread t : Thread.getAllStackTraces().keySet()) {
+                if (! t.isDaemon() && !t.getName().equals("main"))
+                    ids.add(t.getId());
+            }
+            if (ids.size() > 0) {
+            	long[] id_array = new long[ids.size()];
+            	for (int i=0; i<ids.size(); i++) 
+            		id_array[i] = ids.get(i);
+
+                final ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(id_array, true, true);
+                final StringBuilder dump = new StringBuilder();
+                for (ThreadInfo threadInfo : threadInfos) {
+                    dump.append('"');
+                    dump.append(threadInfo.getThreadName());
+                    dump.append("\" ");
+                    final Thread.State state = threadInfo.getThreadState();
+                    dump.append("\n   java.lang.Thread.State: ");
+                    dump.append(state);
+                    final StackTraceElement[] stackTraceElements = threadInfo.getStackTrace();
+                    for (final StackTraceElement stackTraceElement : stackTraceElements) {
+                        dump.append("\n        at ");
+                        dump.append(stackTraceElement);
+                    }
+                    dump.append("\n   In native? "+threadInfo.isInNative()+"\n");
+                    dump.append("   Suspended? "+threadInfo.isSuspended()+"\n");
+                    dump.append("   Waiting for: "+threadInfo.getLockInfo()+"\n");                   
+                    dump.append("\n\n");
+                }
+                System.err.println(dump);
+            }
+        }
 }
