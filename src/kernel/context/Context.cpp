@@ -101,6 +101,24 @@ void Context::stop()
 
 AttachContext::~AttachContext() = default;
 
+void throw_stoprequest()
+{
+  throw Context::StopRequest();
+}
+
+bool try_n_catch_stoprequest(std::function<void(void)> try_block, std::function<void(void)> catch_block)
+{
+  bool res;
+  try {
+    try_block();
+    res = true;
+  } catch (Context::StopRequest const&) {
+    XBT_DEBUG("Caught a StopRequest");
+    catch_block();
+    res = false;
+  }
+  return res;
+}
 }}}
 
 /** @brief Executes all the processes to run (in parallel if possible). */

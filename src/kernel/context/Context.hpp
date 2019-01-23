@@ -10,6 +10,7 @@
 #include "src/kernel/activity/ActivityImpl.hpp"
 
 #include <csignal>
+#include <functional>
 
 /* Process creation/destruction callbacks */
 typedef void (*void_pfn_smxprocess_t)(smx_actor_t);
@@ -105,6 +106,9 @@ public:
   /** Called by the context when it has finished its job */
   virtual void attach_stop() = 0;
 };
+
+XBT_PUBLIC void throw_stoprequest();
+XBT_PUBLIC bool try_n_catch_stoprequest(std::function<void(void)> try_block, std::function<void(void)> catch_block);
 
 /* This allows Java to hijack the context factory (Java induces factories of factory :) */
 typedef ContextFactory* (*ContextFactoryInitializer)();
