@@ -84,7 +84,7 @@ if [ -f Testing/TAG ] ; then
     #convert jacoco xml reports in cobertura xml reports
     cover2cover.py $BUILDFOLDER/${sourcepath}/report.xml .. ../src/bindings/java src/bindings/java > $BUILDFOLDER/java_coverage_${i}.xml
     #save jacoco xml report as sonar only allows it 
-    mv $BUILDFOLDER/${sourcepath}/report.xml $BUILDFOLDER/jacoco_coverage_${i}.xml
+    mv $BUILDFOLDER/${sourcepath}/report.xml $BUILDFOLDER/jacoco_cov_${i}.xml
     i=$((i + 1))
   done
 
