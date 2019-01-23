@@ -478,7 +478,6 @@ static void msg_task_cancel_on_failed_dsend(void*t) {
   /* Destroy the global ref so that the JVM can free the stuff */
   env->DeleteGlobalRef(jtask_global);
   MSG_task_set_data(task, nullptr);
-  MSG_task_destroy(task);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_dsend(JNIEnv * env, jobject jtask, jstring jalias)
