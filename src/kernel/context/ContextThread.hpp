@@ -44,6 +44,7 @@ private:
   void yield();                // match a call to yield()
   virtual void start_hook() { /* empty placeholder, called after start(). Used in parallel mode and Java */}
   virtual void yield_hook() { /* empty placeholder, called before yield(). Used in parallel mode */}
+  virtual void stop_hook() { /* empty placeholder, called at stop(). Used in Java */}
 
   static void* wrapper(void *param);
 };

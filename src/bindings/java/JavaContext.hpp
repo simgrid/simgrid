@@ -37,7 +37,7 @@ public:
           smx_actor_t process);
 
   void start_hook() override;
-  void stop() override;
+  void stop_hook() override;
 };
 
 class JavaContextFactory : public simgrid::kernel::context::ContextFactory {

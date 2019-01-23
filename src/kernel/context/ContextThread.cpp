@@ -100,8 +100,10 @@ void *ThreadContext::wrapper(void *param)
 
   try {
     (*context)();
-    if (not context->is_maestro()) // Just in case somebody detached maestro
+    if (not context->is_maestro()) { // Just in case somebody detached maestro
       context->Context::stop();
+      context->stop_hook();
+    }
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest in Thread::wrapper");
     xbt_assert(not context->is_maestro(), "Maestro shall not receive StopRequests, even when detached.");
@@ -146,6 +148,7 @@ void ThreadContext::yield()
 void ThreadContext::stop()
 {
   Context::stop();
+  stop_hook();
   throw StopRequest();
 }
 

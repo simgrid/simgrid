@@ -62,7 +62,7 @@ void JavaContext::start_hook()
   this->jenv_ = env;
 }
 
-void JavaContext::stop()
+void JavaContext::stop_hook()
 {
     JNIEnv* env = this->jenv_;
     env->DeleteGlobalRef(this->jprocess_);
@@ -78,7 +78,6 @@ void JavaContext::stop()
       // XBT_ERROR("Cannot detach the current thread");
       // simgrid::xbt::Backtrace().display();
     }
-    ThreadContext::stop();
 }
 
 }}} // namespace simgrid::kernel::context
