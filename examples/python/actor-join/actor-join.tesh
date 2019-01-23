@@ -1,4 +1,4 @@
-$ python3 ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/actor-join.py ${platfdir}/small_platform.xml
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/actor-join.py ${platfdir}/small_platform.xml
 > [Tremblay:master:(1) 0.000000] [python/INFO] Start sleeper
 > [Tremblay:sleeper from master:(2) 0.000000] [python/INFO] Sleeper started
 > [Tremblay:master:(1) 0.000000] [python/INFO] Join the sleeper (timeout 2)
