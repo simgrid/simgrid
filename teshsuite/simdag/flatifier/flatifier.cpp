@@ -35,14 +35,9 @@ static bool parse_cmdline(int* timings, char** platformFile, int argc, char** ar
 
 static void create_environment(xbt_os_timer_t parse_time, const char *platformFile)
 {
-  try {
-    xbt_os_cputimer_start(parse_time);
-    SD_create_environment(platformFile);
-    xbt_os_cputimer_stop(parse_time);
-  }
-  catch (std::exception& e) {
-    xbt_die("Error while loading %s: %s", platformFile, e.what());
-  }
+  xbt_os_cputimer_start(parse_time);
+  SD_create_environment(platformFile);
+  xbt_os_cputimer_stop(parse_time);
 }
 
 static void dump_hosts()
