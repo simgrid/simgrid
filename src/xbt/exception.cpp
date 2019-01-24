@@ -146,7 +146,7 @@ static void handler()
     std::abort();
   }
 
-  catch (simgrid::kernel::context::Context::StopRequest& e) {
+  catch (simgrid::kernel::context::StopRequest& e) {
     XBT_ERROR("Received a StopRequest at the top-level exception handler. Maybe a Java->C++ call that is not protected "
               "in a try/catch?");
     show_backtrace(bt);

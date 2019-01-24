@@ -56,7 +56,7 @@ PYBIND11_MODULE(simgrid, m)
   m.attr("simgrid_version") = simgrid_version;
 
   // Internal exception used to kill actors and sweep the RAII chimney (free objects living on the stack)
-  py::object pyStopRequestEx = py::register_exception<simgrid::kernel::context::Context::StopRequest>(m, "ActorKilled");
+  py::object pyStopRequestEx = py::register_exception<simgrid::kernel::context::StopRequest>(m, "ActorKilled");
 
   /* this_actor namespace */
   void (*sleep_for_fun)(double) = &simgrid::s4u::this_actor::sleep_for; // pick the right overload

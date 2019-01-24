@@ -474,7 +474,7 @@ void SIMIX_process_kill(smx_actor_t actor, smx_actor_t issuer)
 
   // Forcefully kill the actor if its host is turned off. Not an HostFailureException because you should not survive that
   if (actor->host_->is_off())
-    actor->throw_exception(std::make_exception_ptr(simgrid::kernel::context::Context::StopRequest("host failed")));
+    actor->throw_exception(std::make_exception_ptr(simgrid::kernel::context::StopRequest("host failed")));
 
   /* destroy the blocking synchro if any */
   if (actor->waiting_synchro != nullptr) {
@@ -721,7 +721,7 @@ void SIMIX_process_yield(smx_actor_t self)
   if (self->context_->iwannadie) {
 
     XBT_DEBUG("Process %s@%s is dead", self->get_cname(), self->host_->get_cname());
-    // throw simgrid::kernel::context::Context::StopRequest(); Does not seem to properly kill the actor
+    // throw simgrid::kernel::context::StopRequest(); Does not seem to properly kill the actor
     self->context_->stop();
     THROW_IMPOSSIBLE;
   }

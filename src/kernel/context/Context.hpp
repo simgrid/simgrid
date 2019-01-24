@@ -72,21 +72,6 @@ public:
   static Context* self();
   /** @brief Sets the current context of this thread */
   static void set_current(Context* self);
-
-  class StopRequest {
-    /** @brief Exception launched to kill a process, in order to properly unwind its stack and release RAII stuff
-     *
-     * Nope, Sonar, this should not inherit of std::exception nor of simgrid::Exception.
-     * Otherwise, users may accidentally catch it with a try {} catch (std::exception)
-     */
-  public:
-    StopRequest() = default;
-    explicit StopRequest(std::string msg) : msg_(std::string("Actor killed (") + msg + std::string(").")) {}
-    const char* what() const noexcept { return msg_.c_str(); }
-
-  private:
-    std::string msg_ = std::string("Actor killed.");
-  };
 };
 
 class XBT_PUBLIC AttachContext : public Context {
@@ -107,6 +92,21 @@ public:
   virtual void attach_stop() = 0;
 };
 
+class XBT_PUBLIC StopRequest {
+  /** @brief Exception launched to kill a process, in order to properly unwind its stack and release RAII stuff
+   *
+   * Nope, Sonar, this should not inherit of std::exception nor of simgrid::Exception.
+   * Otherwise, users may accidentally catch it with a try {} catch (std::exception)
+   */
+public:
+  StopRequest() = default;
+  explicit StopRequest(std::string msg) : msg_(std::string("Actor killed (") + msg + std::string(").")) {}
+  ~StopRequest();
+  const char* what() const noexcept { return msg_.c_str(); }
+
+private:
+  std::string msg_ = std::string("Actor killed.");
+};
 XBT_PUBLIC void throw_stoprequest();
 XBT_PUBLIC bool try_n_catch_stoprequest(std::function<void(void)> try_block);
 

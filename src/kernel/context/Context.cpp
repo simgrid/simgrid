@@ -101,9 +101,11 @@ void Context::stop()
 
 AttachContext::~AttachContext() = default;
 
+StopRequest::~StopRequest() = default;
+
 void throw_stoprequest()
 {
-  throw Context::StopRequest();
+  throw StopRequest();
 }
 
 bool try_n_catch_stoprequest(std::function<void(void)> try_block)
@@ -112,7 +114,7 @@ bool try_n_catch_stoprequest(std::function<void(void)> try_block)
   try {
     try_block();
     res = true;
-  } catch (Context::StopRequest const&) {
+  } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
     res = false;
   }
