@@ -476,6 +476,10 @@ static void msg_task_cancel_on_failed_dsend(void*t) {
   /* Destroy the global ref so that the JVM can free the stuff */
   env->DeleteGlobalRef(jtask_global);
   MSG_task_set_data(task, nullptr);
+  /* Don't free the C data here, to avoid a race condition with the GC also sometimes doing so.
+   * A rare memleak is seen as preferable to a rare "free(): invalid pointer" failure that
+   * proves really hard to debug.
+   */
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_dsend(JNIEnv * env, jobject jtask, jstring jalias)
