@@ -104,11 +104,12 @@ public:
   ~StopRequest();
   const char* what() const noexcept { return msg_.c_str(); }
 
+  static void do_throw();
+  static bool try_n_catch(std::function<void(void)> try_block);
+
 private:
   std::string msg_ = std::string("Actor killed.");
 };
-XBT_PUBLIC void throw_stoprequest();
-XBT_PUBLIC bool try_n_catch_stoprequest(std::function<void(void)> try_block);
 
 /* This allows Java to hijack the context factory (Java induces factories of factory :) */
 typedef ContextFactory* (*ContextFactoryInitializer)();

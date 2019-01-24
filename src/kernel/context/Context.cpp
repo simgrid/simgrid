@@ -103,12 +103,12 @@ AttachContext::~AttachContext() = default;
 
 StopRequest::~StopRequest() = default;
 
-void throw_stoprequest()
+void StopRequest::do_throw()
 {
   throw StopRequest();
 }
 
-bool try_n_catch_stoprequest(std::function<void(void)> try_block)
+bool StopRequest::try_n_catch(std::function<void(void)> try_block)
 {
   bool res;
   try {
