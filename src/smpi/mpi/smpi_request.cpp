@@ -134,7 +134,7 @@ void Request::unref(MPI_Request* request)
   }
 }
 
-int Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl* ignored)
+int Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
 {
   MPI_Request ref = static_cast<MPI_Request>(a);
   MPI_Request req = static_cast<MPI_Request>(b);
@@ -160,7 +160,7 @@ int Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl* i
   }else return 0;
 }
 
-int Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl* ignored)
+int Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl*)
 {
   MPI_Request ref = static_cast<MPI_Request>(a);
   MPI_Request req = static_cast<MPI_Request>(b);

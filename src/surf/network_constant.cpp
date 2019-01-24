@@ -26,8 +26,7 @@ NetworkConstantModel::NetworkConstantModel() : NetworkModel(Model::UpdateAlgo::F
   all_existing_models.push_back(this);
 }
 
-LinkImpl* NetworkConstantModel::create_link(const std::string& name, double bw, double lat,
-                                            s4u::Link::SharingPolicy policy)
+LinkImpl* NetworkConstantModel::create_link(const std::string& name, double, double, s4u::Link::SharingPolicy)
 {
 
   xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
@@ -70,7 +69,7 @@ void NetworkConstantModel::update_actions_state(double /*now*/, double delta)
   }
 }
 
-kernel::resource::Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
+kernel::resource::Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double)
 {
   NetworkConstantAction* action = new NetworkConstantAction(this, size, sg_latency_factor);
 

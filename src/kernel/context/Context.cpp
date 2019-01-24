@@ -54,13 +54,13 @@ void Context::declare_context(std::size_t size)
 #endif
 }
 
-Context* ContextFactory::attach(void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
+Context* ContextFactory::attach(void_pfn_smxprocess_t, smx_actor_t)
 {
   xbt_die("Cannot attach with this ContextFactory.\n"
     "Try using --cfg=contexts/factory:thread instead.\n");
 }
 
-Context* ContextFactory::create_maestro(std::function<void()> code, smx_actor_t process)
+Context* ContextFactory::create_maestro(std::function<void()>, smx_actor_t)
 {
   xbt_die("Cannot create_maestro with this ContextFactory.\n"
     "Try using --cfg=contexts/factory:thread instead.\n");

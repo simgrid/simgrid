@@ -38,7 +38,7 @@ Io* Io::wait()
   return this;
 }
 
-Io* Io::wait_for(double timeout)
+Io* Io::wait_for(double)
 {
   THROW_UNIMPLEMENTED;
   return this;

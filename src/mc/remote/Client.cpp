@@ -83,7 +83,7 @@ Client* Client::initialize()
   return instance_.get();
 }
 
-void Client::handleDeadlockCheck(s_mc_message_t* msg)
+void Client::handleDeadlockCheck(s_mc_message_t*)
 {
   bool deadlock = false;
   if (not simix_global->process_list.empty()) {
@@ -99,7 +99,7 @@ void Client::handleDeadlockCheck(s_mc_message_t* msg)
   s_mc_message_int_t answer{MC_MESSAGE_DEADLOCK_CHECK_REPLY, deadlock};
   xbt_assert(channel_.send(answer) == 0, "Could not send response");
 }
-void Client::handleContinue(s_mc_message_t* msg)
+void Client::handleContinue(s_mc_message_t*)
 {
   /* Nothing to do */
 }
@@ -187,7 +187,7 @@ void Client::mainLoop()
   }
 }
 
-void Client::reportAssertionFailure(const char* description)
+void Client::reportAssertionFailure()
 {
   if (channel_.send(MC_MESSAGE_ASSERTION_FAILED))
     xbt_die("Could not send assertion to model-checker");

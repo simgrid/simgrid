@@ -455,7 +455,7 @@ std::string RemoteClient::read_string(RemotePtr<char> address) const
 }
 
 const void* RemoteClient::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, int process_index,
-                                     ReadOptions options) const
+                                     ReadOptions /*options*/) const
 {
 #if HAVE_SMPI
   if (process_index != simgrid::mc::ProcessIndexDisabled) {

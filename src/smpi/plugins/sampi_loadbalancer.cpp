@@ -32,7 +32,7 @@ static simgrid::plugin::loadbalancer::LoadBalancer lb;
 class MigrateParser : public simgrid::smpi::replay::ActionArgParser {
 public:
   double memory_consumption;
-  void parse(simgrid::xbt::ReplayAction& action, std::string name)
+  void parse(simgrid::xbt::ReplayAction& action, std::string)
   {
     // The only parameter is the amount of memory used by the current process.
     CHECK_ACTION_PARAMS(action, 1, 0);
@@ -47,7 +47,7 @@ public:
 class MigrateAction : public simgrid::smpi::replay::ReplayAction<simgrid::smpi::plugin::MigrateParser> {
 public:
   explicit MigrateAction() : ReplayAction("Migrate") {}
-  void kernel(simgrid::xbt::ReplayAction& action)
+  void kernel(simgrid::xbt::ReplayAction&)
   {
     static std::map<simgrid::s4u::ActorPtr, int> migration_call_counter;
     static simgrid::s4u::Barrier smpilb_bar(smpi_process_count());

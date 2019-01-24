@@ -76,7 +76,7 @@ public:
   bool is_used() override;
   void apply_event(kernel::profile::Event* event, double value) override;
   kernel::resource::Action* execution_start(double size) override;
-  kernel::resource::Action* execution_start(double size, int requested_cores) override
+  kernel::resource::Action* execution_start(double, int) override
   {
     THROW_UNIMPLEMENTED;
     return nullptr;

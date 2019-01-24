@@ -306,7 +306,7 @@ static void instr_actor_on_creation(simgrid::s4u::ActorPtr actor)
 
   std::string container_name = instr_pid(actor.get());
   actor->on_exit(
-      [container_name](int status, void* actor) {
+      [container_name](int status, void*) {
         if (status == SMX_EXIT_FAILURE)
           // kill means that this actor no longer exists, let's destroy it
           simgrid::instr::Container::by_name(container_name)->remove_from_parent();

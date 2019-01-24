@@ -111,7 +111,7 @@ public:
 
   bool is_used() override;
   CpuAction *execution_start(double size) override;
-  kernel::resource::Action* execution_start(double size, int requested_cores) override
+  kernel::resource::Action* execution_start(double, int) override
   {
     THROW_UNIMPLEMENTED;
     return nullptr;

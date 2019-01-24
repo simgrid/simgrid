@@ -40,7 +40,7 @@ Exec* Exec::wait()
   return this;
 }
 
-Exec* Exec::wait_for(double timeout)
+Exec* Exec::wait_for(double)
 {
   THROW_UNIMPLEMENTED;
   return this;

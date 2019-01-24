@@ -25,7 +25,7 @@ static simgrid::config::Flag<std::string>
                       {"Full", "Full update of remaining and variables. Slow but may be useful when debugging."},
                   }),
 
-                  [](std::string const& val) {
+                  [](std::string const&) {
                     xbt_assert(_sg_cfg_init_status < 2,
                                "Cannot change the optimization algorithm after the initialization");
                   });

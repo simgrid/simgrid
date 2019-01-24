@@ -190,7 +190,7 @@ static void replace_func(void *a, void *b, int *length, MPI_Datatype * datatype)
   memcpy(b, a, *length * (*datatype)->size());
 }
 
-static void no_func(void *a, void *b, int *length, MPI_Datatype * datatype)
+static void no_func(void*, void*, int*, MPI_Datatype*)
 {
   /* obviously a no-op */
 }
