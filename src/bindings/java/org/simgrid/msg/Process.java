@@ -303,11 +303,7 @@ public abstract class Process implements Runnable {
 			Msg.info("Unexpected behavior. Stopping now");
 			System.exit(1);
 		}
-		catch(ProcessKilledError pk) {
-			/* The process was killed before its end. With a kill() or something. */
-			//Msg.info("Forwarding a PKE");
-			throw pk;
-		}	
+		/* Let the ProcessKilledError (that we'd get if the process is forcefully killed) flow back to the caller */
 	}
 
 	/**
@@ -350,12 +346,12 @@ public abstract class Process implements Runnable {
                 if (! t.isDaemon() && !t.getName().equals("main"))
                     ids.add(t.getId());
             }
-            if (ids.size() > 0) {
-            	long[] id_array = new long[ids.size()];
+            if (! ids.isEmpty()) {
+            	long[] idArray = new long[ids.size()];
             	for (int i=0; i<ids.size(); i++) 
-            		id_array[i] = ids.get(i);
+            		idArray[i] = ids.get(i);
 
-                final ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(id_array, true, true);
+                final ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(idArray, true, true);
                 final StringBuilder dump = new StringBuilder();
                 for (ThreadInfo threadInfo : threadInfos) {
                     dump.append('"');

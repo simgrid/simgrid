@@ -75,8 +75,7 @@ void JavaContext::stop_hook()
        * until run_jprocess(), IIUC.
        */
       jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
-      // XBT_ERROR("Cannot detach the current thread");
-      // simgrid::xbt::Backtrace().display();
+      XBT_DEBUG("Cannot detach the current thread");
     }
 }
 
