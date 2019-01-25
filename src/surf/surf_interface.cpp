@@ -219,7 +219,7 @@ void sg_version_check(int lib_version_major, int lib_version_minor, int lib_vers
     abort();
   }
   if (lib_version_patch != SIMGRID_VERSION_PATCH) {
-    if (SIMGRID_VERSION_PATCH >= 90 || lib_version_patch >= 90) {
+    if (SIMGRID_VERSION_PATCH > 89 || lib_version_patch > 89) {
       fprintf(
           stderr,
           "FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, "
