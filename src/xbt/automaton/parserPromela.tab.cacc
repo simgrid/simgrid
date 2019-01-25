@@ -1275,31 +1275,31 @@ yyreduce:
 
   case 9:
 #line 69 "parserPromela.yacc" /* yacc.c:1646  */
-    { (yyval.label) = new_label(0, (yyvsp[-2].label), (yyvsp[0].label)); }
+    { (yyval.label) = xbt_automaton_exp_label_new_or((yyvsp[-2].label), (yyvsp[0].label)); }
 #line 1280 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 10:
 #line 70 "parserPromela.yacc" /* yacc.c:1646  */
-    { (yyval.label) = new_label(1, (yyvsp[-2].label), (yyvsp[0].label)); }
+    { (yyval.label) = xbt_automaton_exp_label_new_and((yyvsp[-2].label), (yyvsp[0].label)); }
 #line 1286 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 11:
 #line 71 "parserPromela.yacc" /* yacc.c:1646  */
-    { (yyval.label) = new_label(2, (yyvsp[0].label)); }
+    { (yyval.label) = xbt_automaton_exp_label_new_not((yyvsp[0].label)); }
 #line 1292 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 12:
 #line 72 "parserPromela.yacc" /* yacc.c:1646  */
-    { (yyval.label) = new_label(4); }
+    { (yyval.label) = xbt_automaton_exp_label_new_one(); }
 #line 1298 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 13:
 #line 73 "parserPromela.yacc" /* yacc.c:1646  */
-    { (yyval.label) = new_label(3, (yyvsp[0].string)); }
+    { (yyval.label) = xbt_automaton_exp_label_new_predicat((yyvsp[0].string)); }
 #line 1304 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 

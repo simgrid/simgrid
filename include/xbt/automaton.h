@@ -61,7 +61,13 @@ XBT_PUBLIC xbt_automaton_state_t xbt_automaton_state_new(xbt_automaton_t a, int 
 XBT_PUBLIC xbt_automaton_transition_t xbt_automaton_transition_new(xbt_automaton_t a, xbt_automaton_state_t src,
                                                                    xbt_automaton_state_t dst,
                                                                    xbt_automaton_exp_label_t label);
-XBT_PUBLIC xbt_automaton_exp_label_t xbt_automaton_exp_label_new(int type, ...);
+XBT_PUBLIC xbt_automaton_exp_label_t xbt_automaton_exp_label_new_or(xbt_automaton_exp_label_t left,
+                                                                    xbt_automaton_exp_label_t right);
+XBT_PUBLIC xbt_automaton_exp_label_t xbt_automaton_exp_label_new_and(xbt_automaton_exp_label_t left,
+                                                                     xbt_automaton_exp_label_t right);
+XBT_PUBLIC xbt_automaton_exp_label_t xbt_automaton_exp_label_new_not(xbt_automaton_exp_label_t exp_not);
+XBT_PUBLIC xbt_automaton_exp_label_t xbt_automaton_exp_label_new_predicat(char* p);
+XBT_PUBLIC xbt_automaton_exp_label_t xbt_automaton_exp_label_new_one(void);
 XBT_PUBLIC xbt_dynar_t xbt_automaton_get_states(xbt_automaton_t a);
 XBT_PUBLIC xbt_dynar_t xbt_automaton_get_transitions(xbt_automaton_t a);
 XBT_PUBLIC xbt_automaton_transition_t xbt_automaton_get_transition(xbt_automaton_t a, xbt_automaton_state_t src,

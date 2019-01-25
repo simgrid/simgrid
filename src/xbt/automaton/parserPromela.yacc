@@ -66,11 +66,11 @@ option :
        ;
 
 exp : LEFT_PAR exp RIGHT_PAR { $$ = $2; }
-    | exp OR exp { $$ = new_label(0, $1, $3); }
-    | exp AND exp { $$ = new_label(1, $1, $3); }
-    | NOT exp { $$ = new_label(2, $2); }
-    | CASE_TRUE { $$ = new_label(4); }
-    | ID { $$ = new_label(3, $1); }
+    | exp OR exp { $$ = xbt_automaton_exp_label_new_or($1, $3); }
+    | exp AND exp { $$ = xbt_automaton_exp_label_new_and($1, $3); }
+    | NOT exp { $$ = xbt_automaton_exp_label_new_not($2); }
+    | CASE_TRUE { $$ = xbt_automaton_exp_label_new_one(); }
+    | ID { $$ = xbt_automaton_exp_label_new_predicat($1); }
     ;
 
 %%

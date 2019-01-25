@@ -56,45 +56,46 @@ xbt_automaton_transition_t xbt_automaton_transition_new(xbt_automaton_t a, xbt_a
   return transition;
 }
 
-xbt_automaton_exp_label_t xbt_automaton_exp_label_new(int type, ...){
+xbt_automaton_exp_label_t xbt_automaton_exp_label_new_or(xbt_automaton_exp_label_t left,
+                                                         xbt_automaton_exp_label_t right)
+{
   xbt_automaton_exp_label_t label = xbt_new0(struct xbt_automaton_exp_label, 1);
-  label->type = type;
-  xbt_automaton_exp_label_t left;
-  xbt_automaton_exp_label_t right;
-  xbt_automaton_exp_label_t exp_not;
-  char *p;
-  va_list ap;
-  va_start(ap, type);
-  switch(type){
-  case 0 :
-    left = va_arg(ap, xbt_automaton_exp_label_t);
-    right = va_arg(ap, xbt_automaton_exp_label_t);
-    label->u.or_and.left_exp = left;
-    label->u.or_and.right_exp = right;
-    break;
-  case 1 :
-    left = va_arg(ap, xbt_automaton_exp_label_t);
-    right = va_arg(ap, xbt_automaton_exp_label_t);
-    label->u.or_and.left_exp = left;
-    label->u.or_and.right_exp = right;
-    break;
-  case 2 :
-    exp_not = va_arg(ap, xbt_automaton_exp_label_t);
-    label->u.exp_not = exp_not;
-    break;
-  case 3 :
-    p = va_arg(ap, char*);
-    label->u.predicat = xbt_strdup(p);
-    break;
-  case 4:
-    break;
-  default:
-    XBT_DEBUG("Invalid type: %d", type);
-    xbt_free(label);
-    label = NULL;
-    break;
-  }
-  va_end(ap);
+  label->type                     = AUT_OR;
+  label->u.or_and.left_exp        = left;
+  label->u.or_and.right_exp       = right;
+  return label;
+}
+
+xbt_automaton_exp_label_t xbt_automaton_exp_label_new_and(xbt_automaton_exp_label_t left,
+                                                          xbt_automaton_exp_label_t right)
+{
+  xbt_automaton_exp_label_t label = xbt_new0(struct xbt_automaton_exp_label, 1);
+  label->type                     = AUT_AND;
+  label->u.or_and.left_exp        = left;
+  label->u.or_and.right_exp       = right;
+  return label;
+}
+
+xbt_automaton_exp_label_t xbt_automaton_exp_label_new_not(xbt_automaton_exp_label_t exp_not)
+{
+  xbt_automaton_exp_label_t label = xbt_new0(struct xbt_automaton_exp_label, 1);
+  label->type                     = AUT_NOT;
+  label->u.exp_not                = exp_not;
+  return label;
+}
+
+xbt_automaton_exp_label_t xbt_automaton_exp_label_new_predicat(char* p)
+{
+  xbt_automaton_exp_label_t label = xbt_new0(struct xbt_automaton_exp_label, 1);
+  label->type                     = AUT_PREDICAT;
+  label->u.predicat               = xbt_strdup(p);
+  return label;
+}
+
+xbt_automaton_exp_label_t xbt_automaton_exp_label_new_one(void)
+{
+  xbt_automaton_exp_label_t label = xbt_new0(struct xbt_automaton_exp_label, 1);
+  label->type                     = AUT_ONE;
   return label;
 }
 
