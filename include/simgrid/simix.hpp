@@ -61,7 +61,7 @@ template <class F> typename std::result_of<F()>::type simcall(F&& code)
   // conveniently handles the success/failure value for us.
   typedef typename std::result_of<F()>::type R;
   simgrid::xbt::Result<R> result;
-  simcall_run_kernel([&] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); });
+  simcall_run_kernel([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); });
   return result.get();
 }
 
@@ -91,7 +91,7 @@ smx_timer_t SIMIX_timer_set(double date, F callback)
 template<class R, class T> inline
 smx_timer_t SIMIX_timer_set(double date, R(*callback)(T*), T* arg)
 {
-  return SIMIX_timer_set(date, [=](){ callback(arg); });
+  return SIMIX_timer_set(date, [callback, arg]() { callback(arg); });
 }
 
 #endif
