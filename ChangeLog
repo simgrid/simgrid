@@ -1,6 +1,7 @@
 SimGrid (3.22) NOT RELEASED (Release Target: December 21. 2018, 22:23 UTC)
 
 Java:
+ - Process termination which was broken at version 3.21 has been repaired.
  - Expose host load plugin: loadInit, getCurrentLoad, getComputedFlops, getAvgLoad
  - Hide the examples into examples/deprecated. New users should use Python.
 

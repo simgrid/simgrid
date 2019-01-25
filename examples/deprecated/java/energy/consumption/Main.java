@@ -29,5 +29,6 @@ public class Main {
     new EnergyConsumer("MyHost1","energyConsumer").start();
     /* Execute the simulation */
     Msg.run();
+    Msg.info("Total simulation time: " + Msg.getClock());
   }
 }

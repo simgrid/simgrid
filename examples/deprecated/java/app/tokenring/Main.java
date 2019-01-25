@@ -29,5 +29,7 @@ class Main {
 		}
 		Msg.info("Number of hosts '"+hosts.length+"'");
 		Msg.run();
+
+		Msg.info("Simulation time " + Msg.getClock());
 	}
 }
