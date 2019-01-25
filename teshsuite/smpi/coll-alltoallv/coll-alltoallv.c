@@ -44,12 +44,11 @@
    <2> rbuf: (#9):   [3][4][103][104][203][204][-1][-1][-1]
 */
 
-static void print_buffer_int(void *buf, int len, const char *msg, int rank)
+static void print_buffer_int(const int* buf, int len, const char* msg, int rank)
 {
   printf("[%d] %s (#%d): ", rank, msg, len);
   for (int tmp = 0; tmp < len; tmp++) {
-    int* v = buf;
-    printf("[%d]", v[tmp]);
+    printf("[%d]", buf[tmp]);
   }
   printf("\n");
 }
@@ -73,6 +72,7 @@ int main(int argc, char **argv)
   }
   MPI_Comm_rank(comm, &rank);
   int size2 = size * size;
+  xbt_assert(size2 > 0);
   int* sbuf = (int*)xbt_malloc(size2 * sizeof(int));
   int* rbuf = (int*)xbt_malloc(size2 * sizeof(int));
 
