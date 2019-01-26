@@ -457,17 +457,17 @@ void RecvAction::kernel(simgrid::xbt::ReplayAction&)
     args.size = status.count;
   }
 
-  bool is_recv = false;
   if (name == "recv") {
     Request::recv(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD, &status);
-    is_recv = true;
   } else if (name == "irecv") {
     MPI_Request request = Request::irecv(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD);
     req_storage.add(request);
+  } else {
+    THROW_IMPOSSIBLE;
   }
 
   TRACE_smpi_comm_out(my_proc_id);
-  if (is_recv && not TRACE_smpi_view_internals()) {
+  if (name == "recv" && not TRACE_smpi_view_internals()) {
     int src_traced = MPI_COMM_WORLD->group()->actor(status.MPI_SOURCE)->get_pid();
     TRACE_smpi_recv(src_traced, my_proc_id, args.tag);
   }
