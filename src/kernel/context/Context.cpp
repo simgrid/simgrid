@@ -95,7 +95,7 @@ void Context::stop()
   actor_->finished_ = true;
   SIMIX_process_on_exit_runall(actor_);
 
-  /* cancel non-blocking communications */
+  /* cancel non-blocking activities */
   while (not actor_->comms.empty()) {
     smx_activity_t synchro = actor_->comms.front();
     actor_->comms.pop_front();

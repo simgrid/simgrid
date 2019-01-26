@@ -20,7 +20,7 @@ namespace s4u {
  *
  */
 class XBT_PUBLIC VirtualMachine : public s4u::Host {
-  simgrid::vm::VirtualMachineImpl* pimpl_vm_ = nullptr;
+  simgrid::vm::VirtualMachineImpl* const pimpl_vm_ = nullptr;
   virtual ~VirtualMachine();
 
 public:

@@ -19,7 +19,7 @@ class XBT_PUBLIC Mailbox {
   friend simgrid::s4u::Comm;
   friend simgrid::kernel::activity::MailboxImpl;
 
-  simgrid::kernel::activity::MailboxImpl* pimpl_;
+  simgrid::kernel::activity::MailboxImpl* const pimpl_;
 
   explicit Mailbox(kernel::activity::MailboxImpl * mbox) : pimpl_(mbox) {}
 

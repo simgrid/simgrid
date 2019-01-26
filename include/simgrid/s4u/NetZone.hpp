@@ -44,7 +44,7 @@ public:
   kernel::routing::NetZoneImpl* get_impl() { return pimpl_; }
 
 private:
-  kernel::routing::NetZoneImpl* pimpl_;
+  kernel::routing::NetZoneImpl* const pimpl_;
   std::unordered_map<std::string, std::string> properties_;
 
 public:

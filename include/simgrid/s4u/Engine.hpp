@@ -155,7 +155,7 @@ public:
   void set_config(std::string str);
 
 private:
-  simgrid::kernel::EngineImpl* pimpl;
+  simgrid::kernel::EngineImpl* const pimpl;
   static s4u::Engine* instance_;
 
   //////////////// Deprecated functions

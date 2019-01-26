@@ -24,9 +24,10 @@ namespace s4u {
 class XBT_PUBLIC ConditionVariable {
 private:
   friend simgrid::kernel::activity::ConditionVariableImpl;
-  smx_cond_t cond_;
+  simgrid::kernel::activity::ConditionVariableImpl* const cond_;
 
-  explicit ConditionVariable(smx_cond_t cond) : cond_(cond) {}
+  explicit ConditionVariable(simgrid::kernel::activity::ConditionVariableImpl* cond) : cond_(cond) {}
+
 public:
   ConditionVariable(ConditionVariable const&) = delete;
   ConditionVariable& operator=(ConditionVariable const&) = delete;
@@ -38,7 +39,8 @@ public:
 
 #ifndef DOXYGEN
   /** @deprecated See Comm::get_mailbox() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") ConditionVariablePtr createConditionVariable()
+  XBT_ATTRIB_DEPRECATED_v323("Please use ConditionVariableImpl::create()") ConditionVariablePtr
+      createConditionVariable()
   {
     return create();
   }

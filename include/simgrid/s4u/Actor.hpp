@@ -126,7 +126,7 @@ class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<Actor> {
   friend simgrid::kernel::actor::ActorImpl;
   friend simgrid::kernel::activity::MailboxImpl;
 
-  kernel::actor::ActorImpl* pimpl_ = nullptr;
+  kernel::actor::ActorImpl* const pimpl_ = nullptr;
 
   explicit Actor(smx_actor_t pimpl) : pimpl_(pimpl) {}
 

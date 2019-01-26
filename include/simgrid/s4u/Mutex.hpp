@@ -30,7 +30,7 @@ class XBT_PUBLIC Mutex {
   friend simgrid::s4u::ConditionVariable;
   friend simgrid::kernel::activity::MutexImpl;
 
-  simgrid::kernel::activity::MutexImpl* pimpl_;
+  simgrid::kernel::activity::MutexImpl* const pimpl_;
   explicit Mutex(simgrid::kernel::activity::MutexImpl* mutex) : pimpl_(mutex) {}
 
   /* refcounting */

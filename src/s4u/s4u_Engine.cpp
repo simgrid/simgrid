@@ -34,14 +34,13 @@ xbt::signal<void(void)> on_deadlock;
 
 Engine* Engine::instance_ = nullptr; /* That singleton is awful, but I don't see no other solution right now. */
 
-Engine::Engine(int* argc, char** argv)
+Engine::Engine(int* argc, char** argv) : pimpl(new kernel::EngineImpl())
 {
   xbt_assert(s4u::Engine::instance_ == nullptr,
              "It is currently forbidden to create more than one instance of s4u::Engine");
   TRACE_global_init();
   SIMIX_global_init(argc, argv);
 
-  pimpl                  = new kernel::EngineImpl();
   s4u::Engine::instance_ = this;
 }
 
