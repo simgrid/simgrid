@@ -91,10 +91,13 @@ void Context::stop()
     watched_hosts.insert(actor_->host_->get_cname());
   }
 
+  actor_->finished_ = true;
+  SIMIX_process_on_exit_runall(actor_);
+
   if (this->cleanup_func_)
     this->cleanup_func_(this->actor_);
 
-  this->iwannadie = false; // don't let the yield call ourself -- Context::stop()
+  this->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), because that's me
   simgrid::simix::simcall([this] { SIMIX_process_cleanup(this->actor_); });
   this->iwannadie = true;
 }

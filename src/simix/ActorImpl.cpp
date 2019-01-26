@@ -56,9 +56,6 @@ void SIMIX_process_cleanup(smx_actor_t process)
   XBT_DEBUG("Cleanup process %s (%p), waiting synchro %p", process->get_cname(), process,
             process->waiting_synchro.get());
 
-  process->finished_ = true;
-  SIMIX_process_on_exit_runall(process);
-
   /* Unregister from the kill timer if any */
   if (process->kill_timer != nullptr) {
     SIMIX_timer_remove(process->kill_timer);
