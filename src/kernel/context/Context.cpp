@@ -96,34 +96,9 @@ void Context::stop()
   SIMIX_process_on_exit_runall(actor_);
 
   /* cancel non-blocking activities */
-  while (not actor_->comms.empty()) {
-    smx_activity_t synchro = actor_->comms.front();
-    actor_->comms.pop_front();
-    simgrid::kernel::activity::CommImplPtr comm =
-        boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
-
-    /* make sure no one will finish the comm after this process is destroyed,
-     * because src_proc or dst_proc would be an invalid pointer */
-
-    if (comm->src_proc == actor_) {
-      XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d, src = %p, dst = %p", comm.get(),
-                comm->detached, (int)comm->state_, comm->src_proc.get(), comm->dst_proc.get());
-      comm->src_proc = nullptr;
-
-    } else if (comm->dst_proc == actor_) {
-      XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p", comm.get(), (int)comm->state_,
-                comm->src_proc.get(), comm->dst_proc.get());
-      comm->dst_proc = nullptr;
-
-      if (comm->detached && comm->src_proc != nullptr) {
-        /* the comm will be freed right now, remove it from the sender */
-        comm->src_proc->comms.remove(comm);
-      }
-    } else {
-      xbt_die("Communication synchro %p is in my list but I'm not the sender nor the receiver", synchro.get());
-    }
-    comm->cancel();
-  }
+  for (auto activity : actor_->comms)
+    boost::static_pointer_cast<activity::CommImpl>(activity)->cancel();
+  actor_->comms.clear();
 
   XBT_DEBUG("%s@%s(%ld) should not run anymore", actor_->get_cname(), actor_->iface()->get_host()->get_cname(),
             actor_->pid_);
