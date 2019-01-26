@@ -95,7 +95,6 @@ void Context::stop()
   actor_->finished_ = true;
 
   // Execute the termination callbacks
-  simgrid::s4u::Actor::on_destruction(actor_->iface());
   smx_process_exit_status_t exit_status = (actor_->context_->iwannadie) ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
   while (not actor_->on_exit.empty()) {
     s_smx_process_exit_fun_t exit_fun = actor_->on_exit.back();
@@ -115,7 +114,10 @@ void Context::stop()
     this->cleanup_func_(this->actor_);
 
   this->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), because that's me
-  simgrid::simix::simcall([this] { SIMIX_process_cleanup(this->actor_); });
+  simgrid::simix::simcall([this] {
+    simgrid::s4u::Actor::on_destruction(actor_->iface());
+    SIMIX_process_cleanup(actor_);
+  });
   this->iwannadie = true;
 }
 

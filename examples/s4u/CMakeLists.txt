@@ -30,7 +30,6 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
 				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
 endforeach()
 
-set_tesh_properties(s4u-actor-exiting "thread;ucontext;raw;boost" WILL_FAIL TRUE) # FIXME
 set_tesh_properties(s4u-platform-failures "thread;ucontext;raw;boost" WILL_FAIL TRUE) # FIXME
 
 # Multi-files examples
