@@ -457,7 +457,9 @@ void RecvAction::kernel(simgrid::xbt::ReplayAction&)
     args.size = status.count;
   }
 
+  bool is_recv = false; // Help analyzers understanding that status is not used unintialized
   if (name == "recv") {
+    is_recv = true;
     Request::recv(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD, &status);
   } else if (name == "irecv") {
     MPI_Request request = Request::irecv(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD);
@@ -467,7 +469,7 @@ void RecvAction::kernel(simgrid::xbt::ReplayAction&)
   }
 
   TRACE_smpi_comm_out(my_proc_id);
-  if (name == "recv" && not TRACE_smpi_view_internals()) {
+  if (is_recv && not TRACE_smpi_view_internals()) {
     int src_traced = MPI_COMM_WORLD->group()->actor(status.MPI_SOURCE)->get_pid();
     TRACE_smpi_recv(src_traced, my_proc_id, args.tag);
   }
