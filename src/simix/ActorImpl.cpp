@@ -64,38 +64,6 @@ void SIMIX_process_cleanup(smx_actor_t process)
 
   simix_global->mutex.lock();
 
-  /* cancel non-blocking communications */
-  while (not process->comms.empty()) {
-    smx_activity_t synchro = process->comms.front();
-    process->comms.pop_front();
-    simgrid::kernel::activity::CommImplPtr comm =
-        boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
-
-    /* make sure no one will finish the comm after this process is destroyed,
-     * because src_proc or dst_proc would be an invalid pointer */
-
-    if (comm->src_proc == process) {
-      XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d, src = %p, dst = %p", comm.get(),
-                comm->detached, (int)comm->state_, comm->src_proc, comm->dst_proc);
-      comm->src_proc = nullptr;
-
-    } else if (comm->dst_proc == process) {
-      XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p", comm.get(), (int)comm->state_,
-                comm->src_proc, comm->dst_proc);
-      comm->dst_proc = nullptr;
-
-      if (comm->detached && comm->src_proc != nullptr) {
-        /* the comm will be freed right now, remove it from the sender */
-        comm->src_proc->comms.remove(comm);
-      }
-    } else {
-      xbt_die("Communication synchro %p is in my list but I'm not the sender nor the receiver", synchro.get());
-    }
-    comm->cancel();
-  }
-
-  XBT_DEBUG("%s@%s(%ld) should not run anymore", process->get_cname(), process->iface()->get_host()->get_cname(),
-            process->pid_);
   simix_global->process_list.erase(process->pid_);
   if (process->host_ && process->host_process_list_hook.is_linked())
     simgrid::xbt::intrusive_erase(process->host_->pimpl_->process_list_, *process);
