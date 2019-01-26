@@ -722,17 +722,6 @@ smx_actor_t SIMIX_process_from_PID(aid_t PID)
   return actor == simix_global->process_list.end() ? nullptr : actor->second;
 }
 
-void SIMIX_process_on_exit_runall(smx_actor_t actor)
-{
-  simgrid::s4u::Actor::on_destruction(actor->iface());
-  smx_process_exit_status_t exit_status = (actor->context_->iwannadie) ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
-  while (not actor->on_exit.empty()) {
-    s_smx_process_exit_fun_t exit_fun = actor->on_exit.back();
-    actor->on_exit.pop_back();
-    (exit_fun.fun)(exit_status, exit_fun.arg);
-  }
-}
-
 void SIMIX_process_on_exit(smx_actor_t actor, int_f_pvoid_pvoid_t fun, void* data)
 {
   SIMIX_process_on_exit(actor, [fun](int a, void* b) { fun((void*)(intptr_t)a, b); }, data);

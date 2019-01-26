@@ -93,7 +93,15 @@ void Context::stop()
   }
 
   actor_->finished_ = true;
-  SIMIX_process_on_exit_runall(actor_);
+
+  // Execute the termination callbacks
+  simgrid::s4u::Actor::on_destruction(actor_->iface());
+  smx_process_exit_status_t exit_status = (actor_->context_->iwannadie) ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
+  while (not actor_->on_exit.empty()) {
+    s_smx_process_exit_fun_t exit_fun = actor_->on_exit.back();
+    actor_->on_exit.pop_back();
+    (exit_fun.fun)(exit_status, exit_fun.arg);
+  }
 
   /* cancel non-blocking activities */
   for (auto activity : actor_->comms)

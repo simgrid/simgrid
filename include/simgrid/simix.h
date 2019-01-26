@@ -157,7 +157,6 @@ XBT_PUBLIC const char* SIMIX_process_self_get_name();
 XBT_PUBLIC void SIMIX_process_self_set_data(void* data);
 XBT_PUBLIC void* SIMIX_process_self_get_data();
 XBT_PUBLIC int SIMIX_process_has_pending_comms(smx_actor_t process);
-XBT_PUBLIC void SIMIX_process_on_exit_runall(smx_actor_t process);
 XBT_PUBLIC void SIMIX_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void* data);
 SG_END_DECL()
 
