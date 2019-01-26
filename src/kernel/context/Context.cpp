@@ -107,12 +107,12 @@ void Context::stop()
 
     if (comm->src_proc == actor_) {
       XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d, src = %p, dst = %p", comm.get(),
-                comm->detached, (int)comm->state_, comm->src_proc, comm->dst_proc);
+                comm->detached, (int)comm->state_, comm->src_proc.get(), comm->dst_proc.get());
       comm->src_proc = nullptr;
 
     } else if (comm->dst_proc == actor_) {
       XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p", comm.get(), (int)comm->state_,
-                comm->src_proc, comm->dst_proc);
+                comm->src_proc.get(), comm->dst_proc.get());
       comm->dst_proc = nullptr;
 
       if (comm->detached && comm->src_proc != nullptr) {

@@ -97,7 +97,6 @@ void SIMIX_process_empty_trash()
 }
 
 namespace simgrid {
-
 namespace kernel {
 namespace actor {
 

@@ -100,8 +100,8 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
   mc_model_checker->process().read(temp_comm, comm_addr);
   simgrid::kernel::activity::CommImpl* comm = temp_comm.getBuffer();
 
-  smx_actor_t src_proc   = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->src_proc));
-  smx_actor_t dst_proc   = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_proc));
+  smx_actor_t src_proc   = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->src_proc.get()));
+  smx_actor_t dst_proc   = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_proc.get()));
   comm_pattern->src_proc = src_proc->pid_;
   comm_pattern->dst_proc = dst_proc->pid_;
   comm_pattern->src_host = MC_smx_actor_get_host_name(src_proc);
@@ -193,7 +193,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
     char* remote_name = mc_model_checker->process().read<char*>(
         RemotePtr<char*>((uint64_t)(synchro->mbox ? &synchro->mbox->name_ : &synchro->mbox_cpy->name_)));
     pattern->rdv      = mc_model_checker->process().read_string(RemotePtr<char>(remote_name));
-    pattern->src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(synchro->src_proc))->pid_;
+    pattern->src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(synchro->src_proc.get()))->pid_;
     pattern->src_host = MC_smx_actor_get_host_name(issuer);
 
 #if HAVE_SMPI
@@ -243,7 +243,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
         &remote_name, remote(comm->mbox ? &simgrid::xbt::string::to_string_data(comm->mbox->name_).data
                                         : &simgrid::xbt::string::to_string_data(comm->mbox_cpy->name_).data));
     pattern->rdv      = mc_model_checker->process().read_string(RemotePtr<char>(remote_name));
-    pattern->dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_proc))->pid_;
+    pattern->dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_proc.get()))->pid_;
     pattern->dst_host = MC_smx_actor_get_host_name(issuer);
   } else
     xbt_die("Unexpected call_type %i", (int) call_type);

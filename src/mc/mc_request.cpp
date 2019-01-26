@@ -271,8 +271,8 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       } else
         act = remote_act;
 
-      smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->src_proc));
-      smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->dst_proc));
+      smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->src_proc.get()));
+      smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->dst_proc.get()));
       args =
           bprintf("comm=%s [(%ld)%s (%s)-> (%ld)%s (%s)]", p, src_proc ? src_proc->pid_ : 0,
                   src_proc ? MC_smx_actor_get_host_name(src_proc) : "", src_proc ? MC_smx_actor_get_name(src_proc) : "",
@@ -304,8 +304,8 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       type = "Test TRUE";
       p = pointer_to_string(remote_act);
 
-      smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->src_proc));
-      smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->dst_proc));
+      smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->src_proc.get()));
+      smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->dst_proc.get()));
       args = bprintf("comm=%s [(%ld)%s (%s) -> (%ld)%s (%s)]", p, src_proc->pid_, MC_smx_actor_get_name(src_proc),
                      MC_smx_actor_get_host_name(src_proc), dst_proc->pid_, MC_smx_actor_get_name(dst_proc),
                      MC_smx_actor_get_host_name(dst_proc));
@@ -477,8 +477,8 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
                                        remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
       simgrid::kernel::activity::CommImpl* comm = temp_comm.getBuffer();
 
-      smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->src_proc));
-      smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_proc));
+      smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->src_proc.get()));
+      smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_proc.get()));
       if (issuer->host_)
         label = simgrid::xbt::string_printf("[(%ld)%s] Wait [(%ld)->(%ld)]", issuer->pid_,
                                             MC_smx_actor_get_host_name(issuer), src_proc ? src_proc->pid_ : 0,

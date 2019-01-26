@@ -7,6 +7,7 @@
 #define SIMGRID_KERNEL_ACTIVITY_COMM_HPP
 
 #include "src/kernel/activity/ActivityImpl.hpp"
+#include "src/simix/ActorImpl.hpp"
 #include "surf/surf.hpp"
 
 enum e_smx_comm_type_t { SIMIX_COMM_SEND, SIMIX_COMM_RECEIVE, SIMIX_COMM_READY, SIMIX_COMM_DONE };
@@ -45,11 +46,11 @@ expectations of the other side, too. See  */
   void (*copy_data_fun)(smx_activity_t, void*, size_t) = nullptr;
 
   /* Surf action data */
-  simgrid::kernel::resource::Action* surfAction_ = nullptr; /* The Surf communication action encapsulated */
-  simgrid::kernel::resource::Action* src_timeout = nullptr; /* Surf's actions to instrument the timeouts */
-  simgrid::kernel::resource::Action* dst_timeout = nullptr; /* Surf's actions to instrument the timeouts */
-  smx_actor_t src_proc      = nullptr;
-  smx_actor_t dst_proc      = nullptr;
+  resource::Action* surfAction_ = nullptr; /* The Surf communication action encapsulated */
+  resource::Action* src_timeout = nullptr; /* Surf's actions to instrument the timeouts */
+  resource::Action* dst_timeout = nullptr; /* Surf's actions to instrument the timeouts */
+  actor::ActorImplPtr src_proc  = nullptr;
+  actor::ActorImplPtr dst_proc  = nullptr;
   double rate               = 0.0;
   double task_size          = 0.0;
 

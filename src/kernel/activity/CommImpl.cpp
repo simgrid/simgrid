@@ -110,8 +110,8 @@ void simgrid::kernel::activity::CommImpl::post()
   } else
     state_ = SIMIX_DONE;
 
-  XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d", this, (int)state_, src_proc,
-            dst_proc, detached);
+  XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d", this, (int)state_,
+            src_proc.get(), dst_proc.get(), detached);
 
   /* destroy the surf actions associated with the Simix communication */
   cleanupSurf();
