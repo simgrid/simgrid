@@ -184,8 +184,8 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
     src_private_blocks.clear();
     src_private_blocks.push_back(std::make_pair(0, buff_size));
   }
-  if((dst_shared=smpi_is_shared((char*)comm->dst_buff, dst_private_blocks, &dst_offset))) {
-    XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff);
+  if ((dst_shared = smpi_is_shared((char*)comm->dst_buff_, dst_private_blocks, &dst_offset))) {
+    XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff_);
     dst_private_blocks = shift_and_frame_private_blocks(dst_private_blocks, dst_offset, buff_size);
   }
   else {
@@ -201,18 +201,19 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
       (static_cast<char*>(buff) >= smpi_data_exe_start) &&
       (static_cast<char*>(buff) < smpi_data_exe_start + smpi_data_exe_size)) {
     XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
-    smpi_switch_data_segment(comm->src_proc->iface());
+    smpi_switch_data_segment(comm->src_actor_->iface());
     tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
     memcpy_private(tmpbuff, buff, private_blocks);
   }
 
-  if ((smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) && ((char*)comm->dst_buff >= smpi_data_exe_start) &&
-      ((char*)comm->dst_buff < smpi_data_exe_start + smpi_data_exe_size)) {
+  if ((smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) &&
+      ((char*)comm->dst_buff_ >= smpi_data_exe_start) &&
+      ((char*)comm->dst_buff_ < smpi_data_exe_start + smpi_data_exe_size)) {
     XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
-    smpi_switch_data_segment(comm->dst_proc->iface());
+    smpi_switch_data_segment(comm->dst_actor_->iface());
   }
-  XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);
-  memcpy_private(comm->dst_buff, tmpbuff, private_blocks);
+  XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff, comm->dst_buff_);
+  memcpy_private(comm->dst_buff_, tmpbuff, private_blocks);
 
   if (comm->detached) {
     // if this is a detached send, the source buffer was duplicated by SMPI
@@ -220,7 +221,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
     xbt_free(buff);
     //It seems that the request is used after the call there this should be free somewhere else but where???
     //xbt_free(comm->comm.src_data);// inside SMPI the request is kept inside the user data and should be free
-    comm->src_buff = nullptr;
+    comm->src_buff_ = nullptr;
   }
   if (tmpbuff != buff)
     xbt_free(tmpbuff);

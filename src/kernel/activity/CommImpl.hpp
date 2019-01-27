@@ -46,23 +46,23 @@ expectations of the other side, too. See  */
   void (*copy_data_fun)(smx_activity_t, void*, size_t) = nullptr;
 
   /* Surf action data */
-  resource::Action* surfAction_ = nullptr; /* The Surf communication action encapsulated */
-  resource::Action* src_timeout = nullptr; /* Surf's actions to instrument the timeouts */
-  resource::Action* dst_timeout = nullptr; /* Surf's actions to instrument the timeouts */
-  actor::ActorImplPtr src_proc  = nullptr;
-  actor::ActorImplPtr dst_proc  = nullptr;
-  double rate               = 0.0;
-  double task_size          = 0.0;
+  resource::Action* surf_action_ = nullptr; /* The Surf communication action encapsulated */
+  resource::Action* src_timeout_ = nullptr; /* Surf's actions to instrument the timeouts */
+  resource::Action* dst_timeout_ = nullptr; /* Surf's actions to instrument the timeouts */
+  actor::ActorImplPtr src_actor_ = nullptr;
+  actor::ActorImplPtr dst_actor_ = nullptr;
+  double rate_                   = 0.0;
+  double task_size_              = 0.0;
 
   /* Data to be transfered */
-  void* src_buff        = nullptr;
-  void* dst_buff        = nullptr;
-  size_t src_buff_size  = 0;
-  size_t* dst_buff_size = nullptr;
+  void* src_buff_        = nullptr;
+  void* dst_buff_        = nullptr;
+  size_t src_buff_size_  = 0;
+  size_t* dst_buff_size_ = nullptr;
   bool copied           = false; /* whether the data were already copied */
 
-  void* src_data = nullptr; /* User data associated to communication */
-  void* dst_data = nullptr;
+  void* src_data_ = nullptr; /* User data associated to the communication */
+  void* dst_data_ = nullptr;
 };
 }
 }

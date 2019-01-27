@@ -682,7 +682,7 @@ void MSG_comm_copy_data_from_SIMIX(smx_activity_t synchro, void* buff, size_t bu
   // notify the user callback if any
   if (msg_global->task_copy_callback) {
     msg_task_t task = static_cast<msg_task_t>(buff);
-    msg_global->task_copy_callback(task, comm->src_proc->ciface(), comm->dst_proc->ciface());
+    msg_global->task_copy_callback(task, comm->src_actor_->ciface(), comm->dst_actor_->ciface());
   }
 }
 
@@ -833,7 +833,7 @@ int MSG_task_listen_from(const char *alias)
   if (not comm)
     return -1;
 
-  return MSG_process_get_PID(static_cast<msg_task_t>(comm->src_buff)->simdata->sender);
+  return MSG_process_get_PID(static_cast<msg_task_t>(comm->src_buff_)->simdata->sender);
 }
 
 /**

@@ -71,22 +71,16 @@ bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
         && simcall_comm_wait__get__timeout(r2) <= 0)
       return false;
 
-    if ((r1->issuer != synchro2->src_proc)
-        && (r1->issuer != synchro2->dst_proc)
-        && simcall_comm_wait__get__timeout(r2) <= 0)
+    if ((r1->issuer != synchro2->src_actor_.get()) && (r1->issuer != synchro2->dst_actor_.get()) &&
+        simcall_comm_wait__get__timeout(r2) <= 0)
       return false;
 
-    if ((r1->call == SIMCALL_COMM_ISEND)
-        && (synchro2->type == SIMIX_COMM_SEND)
-        && (synchro2->src_buff !=
-            simcall_comm_isend__get__src_buff(r1))
-        && simcall_comm_wait__get__timeout(r2) <= 0)
+    if ((r1->call == SIMCALL_COMM_ISEND) && (synchro2->type == SIMIX_COMM_SEND) &&
+        (synchro2->src_buff_ != simcall_comm_isend__get__src_buff(r1)) && simcall_comm_wait__get__timeout(r2) <= 0)
       return false;
 
-    if ((r1->call == SIMCALL_COMM_IRECV)
-        && (synchro2->type == SIMIX_COMM_RECEIVE)
-        && (synchro2->dst_buff != simcall_comm_irecv__get__dst_buff(r1))
-        && simcall_comm_wait__get__timeout(r2) <= 0)
+    if ((r1->call == SIMCALL_COMM_IRECV) && (synchro2->type == SIMIX_COMM_RECEIVE) &&
+        (synchro2->dst_buff_ != simcall_comm_irecv__get__dst_buff(r1)) && simcall_comm_wait__get__timeout(r2) <= 0)
       return false;
   }
 
@@ -99,30 +93,22 @@ bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
      return false;
 #endif
 
-  if (r1->call == SIMCALL_COMM_WAIT
-      && (r2->call == SIMCALL_COMM_WAIT || r2->call == SIMCALL_COMM_TEST)
-      && (synchro1->src_proc == nullptr || synchro1->dst_proc == nullptr))
+  if (r1->call == SIMCALL_COMM_WAIT && (r2->call == SIMCALL_COMM_WAIT || r2->call == SIMCALL_COMM_TEST) &&
+      (synchro1->src_actor_.get() == nullptr || synchro1->dst_actor_.get() == nullptr))
     return false;
 
   if (r1->call == SIMCALL_COMM_TEST &&
-      (simcall_comm_test__get__comm(r1) == nullptr
-       || synchro1->src_buff == nullptr
-       || synchro1->dst_buff == nullptr))
+      (simcall_comm_test__get__comm(r1) == nullptr || synchro1->src_buff_ == nullptr || synchro1->dst_buff_ == nullptr))
     return false;
 
-  if (r1->call == SIMCALL_COMM_TEST && r2->call == SIMCALL_COMM_WAIT
-      && synchro1->src_buff == synchro2->src_buff
-      && synchro1->dst_buff == synchro2->dst_buff)
+  if (r1->call == SIMCALL_COMM_TEST && r2->call == SIMCALL_COMM_WAIT && synchro1->src_buff_ == synchro2->src_buff_ &&
+      synchro1->dst_buff_ == synchro2->dst_buff_)
     return false;
 
-  if (r1->call == SIMCALL_COMM_WAIT && r2->call == SIMCALL_COMM_TEST
-      && synchro1->src_buff != nullptr
-      && synchro1->dst_buff != nullptr
-      && synchro2->src_buff != nullptr
-      && synchro2->dst_buff != nullptr
-      && synchro1->dst_buff != synchro2->src_buff
-      && synchro1->dst_buff != synchro2->dst_buff
-      && synchro2->dst_buff != synchro1->src_buff)
+  if (r1->call == SIMCALL_COMM_WAIT && r2->call == SIMCALL_COMM_TEST && synchro1->src_buff_ != nullptr &&
+      synchro1->dst_buff_ != nullptr && synchro2->src_buff_ != nullptr && synchro2->dst_buff_ != nullptr &&
+      synchro1->dst_buff_ != synchro2->src_buff_ && synchro1->dst_buff_ != synchro2->dst_buff_ &&
+      synchro2->dst_buff_ != synchro1->src_buff_)
     return false;
 
   return true;
@@ -157,12 +143,11 @@ bool request_depend(smx_simcall_t r1, smx_simcall_t r2)
     return simcall_comm_irecv__get__mbox(r1)
       == simcall_comm_irecv__get__mbox(r2);
   case SIMCALL_COMM_WAIT:
-    if (synchro1->src_buff == synchro2->src_buff
-        && synchro1->dst_buff == synchro2->dst_buff)
+    if (synchro1->src_buff_ == synchro2->src_buff_ && synchro1->dst_buff_ == synchro2->dst_buff_)
       return false;
-    if (synchro1->src_buff != nullptr && synchro1->dst_buff != nullptr && synchro2->src_buff != nullptr &&
-        synchro2->dst_buff != nullptr && synchro1->dst_buff != synchro2->src_buff &&
-        synchro1->dst_buff != synchro2->dst_buff && synchro2->dst_buff != synchro1->src_buff)
+    if (synchro1->src_buff_ != nullptr && synchro1->dst_buff_ != nullptr && synchro2->src_buff_ != nullptr &&
+        synchro2->dst_buff_ != nullptr && synchro1->dst_buff_ != synchro2->src_buff_ &&
+        synchro1->dst_buff_ != synchro2->dst_buff_ && synchro2->dst_buff_ != synchro1->src_buff_)
       return false;
     return true;
   default:
@@ -271,8 +256,8 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       } else
         act = remote_act;
 
-      smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->src_proc.get()));
-      smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->dst_proc.get()));
+      smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->src_actor_.get()));
+      smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->dst_actor_.get()));
       args =
           bprintf("comm=%s [(%ld)%s (%s)-> (%ld)%s (%s)]", p, src_proc ? src_proc->pid_ : 0,
                   src_proc ? MC_smx_actor_get_host_name(src_proc) : "", src_proc ? MC_smx_actor_get_name(src_proc) : "",
@@ -296,7 +281,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       act = remote_act;
 
     char* p;
-    if (act->src_proc == nullptr || act->dst_proc == nullptr) {
+    if (act->src_actor_.get() == nullptr || act->dst_actor_.get() == nullptr) {
       type = "Test FALSE";
       p = pointer_to_string(remote_act);
       args = bprintf("comm=%s", p);
@@ -304,8 +289,8 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       type = "Test TRUE";
       p = pointer_to_string(remote_act);
 
-      smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->src_proc.get()));
-      smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->dst_proc.get()));
+      smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->src_actor_.get()));
+      smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->dst_actor_.get()));
       args = bprintf("comm=%s [(%ld)%s (%s) -> (%ld)%s (%s)]", p, src_proc->pid_, MC_smx_actor_get_name(src_proc),
                      MC_smx_actor_get_host_name(src_proc), dst_proc->pid_, MC_smx_actor_get_name(dst_proc),
                      MC_smx_actor_get_host_name(dst_proc));
@@ -418,7 +403,7 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
   mc_model_checker->process().read(temp_comm, remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
   simgrid::kernel::activity::CommImpl* comm = temp_comm.getBuffer();
-  return comm->src_proc && comm->dst_proc;
+  return comm->src_actor_.get() && comm->dst_actor_.get();
 }
 
 
@@ -477,8 +462,8 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
                                        remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
       simgrid::kernel::activity::CommImpl* comm = temp_comm.getBuffer();
 
-      smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->src_proc.get()));
-      smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_proc.get()));
+      smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->src_actor_.get()));
+      smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_actor_.get()));
       if (issuer->host_)
         label = simgrid::xbt::string_printf("[(%ld)%s] Wait [(%ld)->(%ld)]", issuer->pid_,
                                             MC_smx_actor_get_host_name(issuer), src_proc ? src_proc->pid_ : 0,
@@ -494,7 +479,7 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
     simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
     mc_model_checker->process().read(temp_comm, remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
     simgrid::kernel::activity::CommImpl* comm = temp_comm.getBuffer();
-    if (comm->src_proc == nullptr || comm->dst_proc == nullptr) {
+    if (comm->src_actor_.get() == nullptr || comm->dst_actor_.get() == nullptr) {
       if (issuer->host_)
         label = simgrid::xbt::string_printf("[(%ld)%s] Test FALSE", issuer->pid_, MC_smx_actor_get_host_name(issuer));
       else

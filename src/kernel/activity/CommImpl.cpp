@@ -16,8 +16,8 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_network);
 simgrid::kernel::activity::CommImpl::CommImpl(e_smx_comm_type_t _type) : type(_type)
 {
   state_   = SIMIX_WAITING;
-  src_data = nullptr;
-  dst_data = nullptr;
+  src_data_ = nullptr;
+  dst_data_ = nullptr;
   XBT_DEBUG("Create comm activity %p", this);
 }
 
@@ -31,8 +31,8 @@ simgrid::kernel::activity::CommImpl::~CommImpl()
     /* the communication has failed and was detached:
      * we have to free the buffer */
     if (clean_fun)
-      clean_fun(src_buff);
-    src_buff = nullptr;
+      clean_fun(src_buff_);
+    src_buff_ = nullptr;
   }
 
   if (mbox)
@@ -42,16 +42,16 @@ simgrid::kernel::activity::CommImpl::~CommImpl()
 void simgrid::kernel::activity::CommImpl::suspend()
 {
   /* FIXME: shall we suspend also the timeout synchro? */
-  if (surfAction_)
-    surfAction_->suspend();
-  /* in the other case, the action will be suspended on creation, in SIMIX_comm_start() */
+  if (surf_action_)
+    surf_action_->suspend();
+  /* if not created yet, the action will be suspended on creation, in SIMIX_comm_start() */
 }
 
 void simgrid::kernel::activity::CommImpl::resume()
 {
   /*FIXME: check what happen with the timeouts */
-  if (surfAction_)
-    surfAction_->resume();
+  if (surf_action_)
+    surf_action_->resume();
   /* in the other case, the synchro were not really suspended yet, see SIMIX_comm_suspend() and SIMIX_comm_start() */
 }
 
@@ -65,53 +65,53 @@ void simgrid::kernel::activity::CommImpl::cancel()
   } else if (not MC_is_active() /* when running the MC there are no surf actions */
              && not MC_record_replay_is_active() && (state_ == SIMIX_READY || state_ == SIMIX_RUNNING)) {
 
-    surfAction_->cancel();
+    surf_action_->cancel();
   }
 }
 
 /**  @brief get the amount remaining from the communication */
 double simgrid::kernel::activity::CommImpl::remains()
 {
-  return surfAction_->get_remains();
+  return surf_action_->get_remains();
 }
 
 /** @brief This is part of the cleanup process, probably an internal command */
 void simgrid::kernel::activity::CommImpl::cleanupSurf()
 {
-  if (surfAction_) {
-    surfAction_->unref();
-    surfAction_ = nullptr;
+  if (surf_action_) {
+    surf_action_->unref();
+    surf_action_ = nullptr;
   }
 
-  if (src_timeout) {
-    src_timeout->unref();
-    src_timeout = nullptr;
+  if (src_timeout_) {
+    src_timeout_->unref();
+    src_timeout_ = nullptr;
   }
 
-  if (dst_timeout) {
-    dst_timeout->unref();
-    dst_timeout = nullptr;
+  if (dst_timeout_) {
+    dst_timeout_->unref();
+    dst_timeout_ = nullptr;
   }
 }
 
 void simgrid::kernel::activity::CommImpl::post()
 {
   /* Update synchro state */
-  if (src_timeout && src_timeout->get_state() == simgrid::kernel::resource::Action::State::FINISHED)
+  if (src_timeout_ && src_timeout_->get_state() == simgrid::kernel::resource::Action::State::FINISHED)
     state_ = SIMIX_SRC_TIMEOUT;
-  else if (dst_timeout && dst_timeout->get_state() == simgrid::kernel::resource::Action::State::FINISHED)
+  else if (dst_timeout_ && dst_timeout_->get_state() == simgrid::kernel::resource::Action::State::FINISHED)
     state_ = SIMIX_DST_TIMEOUT;
-  else if (src_timeout && src_timeout->get_state() == simgrid::kernel::resource::Action::State::FAILED)
+  else if (src_timeout_ && src_timeout_->get_state() == simgrid::kernel::resource::Action::State::FAILED)
     state_ = SIMIX_SRC_HOST_FAILURE;
-  else if (dst_timeout && dst_timeout->get_state() == simgrid::kernel::resource::Action::State::FAILED)
+  else if (dst_timeout_ && dst_timeout_->get_state() == simgrid::kernel::resource::Action::State::FAILED)
     state_ = SIMIX_DST_HOST_FAILURE;
-  else if (surfAction_ && surfAction_->get_state() == simgrid::kernel::resource::Action::State::FAILED) {
+  else if (surf_action_ && surf_action_->get_state() == simgrid::kernel::resource::Action::State::FAILED) {
     state_ = SIMIX_LINK_FAILURE;
   } else
     state_ = SIMIX_DONE;
 
   XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d", this, (int)state_,
-            src_proc.get(), dst_proc.get(), detached);
+            src_actor_.get(), dst_actor_.get(), detached);
 
   /* destroy the surf actions associated with the Simix communication */
   cleanupSurf();

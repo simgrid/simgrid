@@ -88,23 +88,23 @@ bool actor_is_enabled(smx_actor_t actor)
       simgrid::kernel::activity::CommImpl* act =
           static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(req));
 
-      if (act->src_timeout || act->dst_timeout) {
+      if (act->src_timeout_ || act->dst_timeout_) {
         /* If it has a timeout it will be always be enabled (regardless of who declared the timeout),
          * because even if the communication is not ready, it can timeout and won't block. */
         if (_sg_mc_timeout == 1)
           return true;
       }
       /* On the other hand if it hasn't a timeout, check if the comm is ready.*/
-      else if (act->detached && act->src_proc == nullptr && act->type == SIMIX_COMM_READY)
-        return (act->dst_proc != nullptr);
-      return (act->src_proc && act->dst_proc);
+      else if (act->detached && act->src_actor_ == nullptr && act->type == SIMIX_COMM_READY)
+        return (act->dst_actor_ != nullptr);
+      return (act->src_actor_ && act->dst_actor_);
     }
 
     case SIMCALL_COMM_WAITANY: {
       xbt_dynar_t comms = simcall_comm_waitany__get__comms(req);
       for (unsigned int index = 0; index < comms->used; ++index) {
         simgrid::kernel::activity::CommImpl* act = xbt_dynar_get_as(comms, index, simgrid::kernel::activity::CommImpl*);
-        if (act->src_proc && act->dst_proc)
+        if (act->src_actor_ && act->dst_actor_)
           return true;
       }
       return false;

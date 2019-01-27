@@ -169,6 +169,6 @@ void SIMIX_set_category(smx_activity_t synchro, std::string category)
   simgrid::kernel::activity::CommImplPtr comm =
       boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
   if (comm != nullptr) {
-    comm->surfAction_->set_category(category);
+    comm->surf_action_->set_category(category);
   }
 }
