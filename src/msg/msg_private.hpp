@@ -18,8 +18,9 @@ struct s_simdata_task_t {
   ~s_simdata_task_t()
   {
     /* parallel tasks only */
-    delete[] this->host_list;
-    /* flops_parallel_amount and bytes_parallel_amount are automatically deleted in ~L07Action */
+    delete[] host_list;
+    delete[] flops_parallel_amount;
+    delete[] bytes_parallel_amount;
   }
   void setUsed();
   void setNotUsed() { this->isused = false; }
