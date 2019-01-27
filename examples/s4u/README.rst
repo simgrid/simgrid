@@ -42,7 +42,16 @@ Starting and Stoping Actors
     
     - |cpp| `examples/s4u/actor-create/s4u-actor-create.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-create/s4u-actor-create.cpp>`_
     - |py|  `examples/python/actor-create/actor-create.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-create/actor-create.py>`_
-    
+
+  - **React to the end of actors:**
+    You can attach a callback to the end of actors. There is two ways
+    of doing so, depending of whether you want your callback to be
+    executed when a specific actor ends (with ```this_actor::on_exit()```)
+    or whether it should be executed when any actor ends (with
+    ```Actor::on_destruction()```)
+
+    - |cpp| `examples/s4u/actor-exiting/s4u-actor-exiting.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-exiting/s4u-actor-exiting.cpp>`_
+
   - **Kill actors:**
     Actors can forcefully stop other actors.
     
