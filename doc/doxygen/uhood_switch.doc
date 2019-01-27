@@ -815,30 +815,14 @@ single-object without shared-state and synchronisation:
 @code{cpp}
 template<class T>
 class Result {
-  enum class ResultStatus {
-    invalid,
-    value,
-    exception,
-  };
 public:
-  Result();
-  ~Result();
-  Result(Result const& that);
-  Result& operator=(Result const& that);
-  Result(Result&& that);
-  Result& operator=(Result&& that);
   bool is_valid() const;
-  void reset();
   void set_exception(std::exception_ptr e);
   void set_value(T&& value);
   void set_value(T const& value);
   T get();
 private:
-  ResultStatus status_ = ResultStatus::invalid;
-  union {
-    T value_;
-    std::exception_ptr exception_;
-  };
+  boost::variant<boost::blank, T, std::exception_ptr> value_;
 };
 @endcode~
 

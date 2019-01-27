@@ -9,6 +9,7 @@
 
 #include <cstddef>
 
+#include <boost/variant.hpp>
 #include <exception>
 #include <functional>
 #include <stdexcept>
@@ -28,99 +29,22 @@ namespace xbt {
  **/
 template<class T>
 class Result {
-  enum class ResultStatus {
-    invalid,
-    value,
-    exception,
-  };
 public:
-  Result() { /* Nothing to do */}
-  ~Result() { this->reset(); }
-
-  // Copy (if T is copyable) and move:
-  Result(Result const& that)
-  {
-    (*this) = that;
-  }
-  Result& operator=(Result const& that)
-  {
-    this->reset();
-    switch (that.status_) {
-      case ResultStatus::invalid:
-        break;
-      case ResultStatus::value:
-        new (&value_) T(that.value);
-        break;
-      case ResultStatus::exception:
-        new (&exception_) T(that.exception);
-        break;
-      default:
-        THROW_IMPOSSIBLE;
-    }
-    return *this;
-  }
-  Result(Result&& that)
-  {
-    *this = std::move(that);
-  }
-  Result& operator=(Result&& that)
-  {
-    this->reset();
-    switch (that.status_) {
-      case ResultStatus::invalid:
-        break;
-      case ResultStatus::value:
-        new (&value_) T(std::move(that.value));
-        that.value.~T();
-        break;
-      case ResultStatus::exception:
-        new (&exception_) T(std::move(that.exception));
-        that.exception.~exception_ptr();
-        break;
-      default:
-        THROW_IMPOSSIBLE;
-    }
-    that.status_ = ResultStatus::invalid;
-    return *this;
-  }
-
   bool is_valid() const
   {
-    return status_ != ResultStatus::invalid;
-  }
-  void reset()
-  {
-    switch (status_) {
-      case ResultStatus::invalid:
-        break;
-      case ResultStatus::value:
-        value_.~T();
-        break;
-      case ResultStatus::exception:
-        exception_.~exception_ptr();
-        break;
-      default:
-        THROW_IMPOSSIBLE;
-    }
-    status_ = ResultStatus::invalid;
+    return value_.which() > 0;
   }
   void set_exception(std::exception_ptr e)
   {
-    this->reset();
-    new (&exception_) std::exception_ptr(std::move(e));
-    status_ = ResultStatus::exception;
+    value_ = std::move(e);
   }
   void set_value(T&& value)
   {
-    this->reset();
-    new (&value_) T(std::move(value));
-    status_ = ResultStatus::value;
+    value_ = std::move(value);
   }
   void set_value(T const& value)
   {
-    this->reset();
-    new (&value_) T(value);
-    status_ = ResultStatus::value;
+    value_ = value;
   }
 
   /** Extract the value from the future
@@ -129,17 +53,15 @@ public:
    **/
   T get()
   {
-    switch (status_) {
-      case ResultStatus::value: {
-        T value = std::move(value_);
-        value_.~T();
-        status_ = ResultStatus::invalid;
+    switch (value_.which()) {
+      case 1: {
+        T value = std::move(boost::get<T>(value_));
+        value_  = boost::blank();
         return value;
       }
-      case ResultStatus::exception: {
-        std::exception_ptr exception = std::move(exception_);
-        exception_.~exception_ptr();
-        status_ = ResultStatus::invalid;
+      case 2: {
+        std::exception_ptr exception = std::move(boost::get<std::exception_ptr>(value_));
+        value_                       = boost::blank();
         std::rethrow_exception(std::move(exception));
         break;
       }
@@ -148,11 +70,7 @@ public:
     }
   }
 private:
-  ResultStatus status_ = ResultStatus::invalid;
-  union {
-    T value_;
-    std::exception_ptr exception_;
-  };
+  boost::variant<boost::blank, T, std::exception_ptr> value_;
 };
 
 template<>
