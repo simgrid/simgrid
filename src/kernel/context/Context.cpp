@@ -116,6 +116,13 @@ void Context::stop()
   this->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), because that's me
   simgrid::simix::simcall([this] {
     simgrid::s4u::Actor::on_destruction(actor_->iface());
+
+    /* Unregister from the kill timer if any */
+    if (actor_->kill_timer != nullptr) {
+      SIMIX_timer_remove(actor_->kill_timer);
+      actor_->kill_timer = nullptr;
+    }
+
     SIMIX_process_cleanup(actor_);
   });
   this->iwannadie = true;
