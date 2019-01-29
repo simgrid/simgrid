@@ -334,43 +334,9 @@ public abstract class Process implements Runnable {
 	public static native int getCount();
 
         public static void debugAllThreads() {
-            final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-        	long[] deads = threadMXBean.findDeadlockedThreads();
-        	if (deads != null)
-        		for (long dead : deads) 
-        			System.err.println("Thread deadlocked: "+dead);
-
-        	// Search remaining threads that are not main nor daemon
-            List<Long> ids = new ArrayList<>();
-            for (Thread t : Thread.getAllStackTraces().keySet()) {
+	    // Search remaining threads that are not main nor daemon
+            for (Thread t : Thread.getAllStackTraces().keySet())
                 if (! t.isDaemon() && !t.getName().equals("main"))
-                    ids.add(t.getId());
-            }
-            if (! ids.isEmpty()) {
-            	long[] idArray = new long[ids.size()];
-            	for (int i=0; i<ids.size(); i++) 
-            		idArray[i] = ids.get(i);
-
-                final ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(idArray, true, true);
-                final StringBuilder dump = new StringBuilder();
-                for (ThreadInfo threadInfo : threadInfos) {
-                    dump.append('"');
-                    dump.append(threadInfo.getThreadName());
-                    dump.append("\" ");
-                    final Thread.State state = threadInfo.getThreadState();
-                    dump.append("\n   java.lang.Thread.State: ");
-                    dump.append(state);
-                    final StackTraceElement[] stackTraceElements = threadInfo.getStackTrace();
-                    for (final StackTraceElement stackTraceElement : stackTraceElements) {
-                        dump.append("\n        at ");
-                        dump.append(stackTraceElement);
-                    }
-                    dump.append("\n   In native? "+threadInfo.isInNative()+"\n");
-                    dump.append("   Suspended? "+threadInfo.isSuspended()+"\n");
-                    dump.append("   Waiting for: "+threadInfo.getLockInfo()+"\n");                   
-                    dump.append("\n\n");
-                }
-                System.err.println(dump);
-            }
+                    System.err.println("Thread "+t.getName()+" is still running! Please report that bug");
         }
 }
