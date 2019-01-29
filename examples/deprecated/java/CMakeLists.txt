@@ -7,7 +7,7 @@ set(async-waitall_files         Main  Receiver Sender)
 set(async-yield_files           Main  Yielder)
 set(async-dsend_files           Main  Receiver Sender)
 set(cloud-masterworker_files    Main  Master Worker)
-set(cloud-migration_files       Main  Daemon Test TestHostOnOff XVM)
+set(cloud-migration_files       Main  Daemon Test XVM)
 set(dht-chord_files             Main  ChordTask  Common FindSuccessorAnswerTask  FindSuccessorTask
                                       GetPredecessorAnswerTask GetPredecessorTask Node  NotifyTask)
 set(dht-kademlia_files          Main  Answer  Bucket  Common Contact FindNodeAnswerTask  FindNodeTask

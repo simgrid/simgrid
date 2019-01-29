@@ -4,3 +4,5 @@ There are two tests:
 
 To switch between the first and the second tests, you should instrument Main.java (sorry for that :( ) 
 Adsein - Thu Oct  9 18:25:39 CEST 2014
+
+UPDATE: the second test was never used (dit it ever work?), and was removed 4 years later
