@@ -1,4 +1,4 @@
-foreach(x cmdline log_large log_usage mallocator)
+foreach(x cmdline log_large log_usage)
   add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -32,7 +32,7 @@ set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/log_usage/log_us
                                     ${CMAKE_CURRENT_SOURCE_DIR}/mmalloc/mmalloc_32.tesh          PARENT_SCOPE)
 set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/mmalloc/mmalloc_test.cpp           PARENT_SCOPE)
 
-foreach(x cmdline log_large parallel_log_crashtest parmap_test) #mallocator parmap_bench
+foreach(x cmdline log_large parallel_log_crashtest parmap_test) #parmap_bench
   ADD_TESH(tesh-xbt-${x} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/${x} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/${x} ${x}.tesh)
 endforeach()
 
