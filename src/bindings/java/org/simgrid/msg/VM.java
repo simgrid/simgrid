@@ -125,7 +125,7 @@ public class VM extends Host {
 			this.nativeMigration(destination);
 		} catch (Exception e){
 		  Msg.info("Migration of VM "+this.getName()+" to "+destination.getName()+" is impossible ("+e.getMessage()+")");
-		  throw new HostFailureException();
+		  throw new HostFailureException(e.getMessage());
 		}
 		// If the migration correcly returned, then we should change the currentHost value.
 		this.currentHost = destination;

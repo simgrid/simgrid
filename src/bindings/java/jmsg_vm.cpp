@@ -10,6 +10,7 @@
 #include "jxbt_utilities.hpp"
 #include "simgrid/Exception.hpp"
 #include "simgrid/plugins/live_migration.h"
+#include "src/kernel/context/Context.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
@@ -150,12 +151,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeMigration(JNIEnv* env, jobj
 {
   msg_vm_t vm = jvm_get_native(env,jvm);
   msg_host_t host = jhost_get_native(env, jhost);
-  try {
-    MSG_vm_migrate(vm,host);
-  }
-  catch(xbt_ex& e){
-     XBT_VERB("CATCH EXCEPTION MIGRATION %s",e.what());
-     jxbt_throw_host_failure(env, (char*)"during migration");
+  if (not simgrid::kernel::context::StopRequest::try_n_catch([&vm, &host]() { MSG_vm_migrate(vm, host); })) {
+    XBT_VERB("Caught exception during migration");
+    jxbt_throw_host_failure(env, "during migration");
   }
 }
 
