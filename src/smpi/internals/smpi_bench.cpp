@@ -391,9 +391,12 @@ int smpi_sample_2(int global, const char *file, int line)
   } else {
     // Enough data, no more bench (either we got enough data from previous visits to this benched nest, or we just
     //ran one bench and need to bail out now that our job is done). Just sleep instead
-    XBT_DEBUG("No benchmark (either no need, or just ran one): count >= iter (%d >= %d) or stderr<thres (%f<=%f)."
+    if (not data.need_more_benchs())
+      XBT_DEBUG("No benchmark (either no need, or just ran one): count >= iter (%d >= %d) or stderr<thres (%f<=%f)."
               " apply the %fs delay instead",
               data.count, data.iters, data.relstderr, data.threshold, data.mean);
+    else
+      XBT_DEBUG("Skipping - Benchmark already performed");
     smpi_execute(data.mean);
     smpi_process()->set_sampling(0);
     res = 0; // prepare to capture future, unrelated computations
