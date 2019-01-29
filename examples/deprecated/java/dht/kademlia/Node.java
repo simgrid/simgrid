@@ -231,38 +231,6 @@ public class Node extends Process {
   }
 
   /**
-   * @brief Sends a "PING" request to a node
-   * @param destination Ping destination id.
-   */
-  public void ping(int destination) {
-    boolean destinationFound = false;
-    double timeout = Msg.getClock() + Common.PING_TIMEOUT;
-    PingTask pingTask = new PingTask(this.id);
-    /* Sending the ping task */
-    pingTask.dsend(Integer.toString(destination));
-    do {
-      try {
-        Task task = Task.receive(Integer.toString(this.id),Common.PING_TIMEOUT);
-        if (task instanceof PingAnswerTask) {
-          PingAnswerTask answerTask = (PingAnswerTask)task;
-          if (answerTask.getSenderId() == destination) {
-            this.table.update(destination);
-            destinationFound = true;
-          } else {
-            handleTask(task);
-          }
-        } else {
-          handleTask(task);
-        }
-        waitFor(1);
-      }
-      catch (Exception ex) {
-        Msg.debug("Caught exception: " + ex);
-      }
-    } while (Msg.getClock() < timeout && !destinationFound);
-  }
-
-  /**
    * @brief Sends a "FIND_NODE" request (task) to a node we know.
    * @param id Id of the node we are querying
    * @param destination id of the node we are trying to find.
@@ -300,9 +268,6 @@ public class Node extends Process {
       if (task instanceof FindNodeTask) {
         handleFindNode((FindNodeTask)task);
       }
-      else if (task instanceof PingTask) {
-        handlePing((PingTask)task);
-      }
     }
   }
 
@@ -310,12 +275,6 @@ public class Node extends Process {
     Msg.debug("Received a FIND_NODE from " + task.getSenderId());
     Answer answer = table.findClosest(task.getDestination());
     FindNodeAnswerTask taskToSend = new FindNodeAnswerTask(this.id,task.getDestination(),answer);
-    taskToSend.dsend(Integer.toString(task.getSenderId()));
-  }
-
-  public void handlePing(PingTask task) {
-    Msg.debug("Received a PING from " + task.getSenderId());
-    PingAnswerTask taskToSend = new PingAnswerTask(this.id);
     taskToSend.dsend(Integer.toString(task.getSenderId()));
   }
 }

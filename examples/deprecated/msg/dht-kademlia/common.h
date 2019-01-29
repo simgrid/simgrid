@@ -10,7 +10,6 @@
 
 #define RECEIVE_TIMEOUT 1
 
-#define ping_timeout 55
 #define find_node_timeout 10
 #define find_node_global_timeout 50
 

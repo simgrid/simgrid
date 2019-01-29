@@ -11,7 +11,7 @@ set(cloud-migration_files       Main  Daemon Test XVM)
 set(dht-chord_files             Main  ChordTask  Common FindSuccessorAnswerTask  FindSuccessorTask
                                       GetPredecessorAnswerTask GetPredecessorTask Node  NotifyTask)
 set(dht-kademlia_files          Main  Answer  Bucket  Common Contact FindNodeAnswerTask  FindNodeTask
-                                      KademliaTask  Node  PingAnswerTask PingTask  RoutingTable)
+                                      KademliaTask  Node  RoutingTable)
 set(trace-pingpong_files        Main  PingPongTask Receiver Sender)
 set(energy-consumption_files    Main  EnergyConsumer)
 set(energy-pstate_files         Main  PstateRunner)

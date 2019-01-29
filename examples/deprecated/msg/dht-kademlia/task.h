@@ -16,8 +16,6 @@ typedef enum {
   TASK_FIND_NODE_ANSWER,
   TASK_FIND_VALUE,
   TASK_FIND_VALUE_ANSWER,
-  TASK_PING,
-  TASK_PING_ANSWER,
   TASK_LEAVING
 } e_task_type_t;
 
@@ -37,8 +35,6 @@ typedef s_task_data_t *task_data_t;
 msg_task_t task_new_find_node(unsigned int sender_id, unsigned int destination_id, char *mailbox, const char *hostname);
 msg_task_t task_new_find_node_answer(unsigned int sender_id, unsigned int destination_id, answer_t answer,
                                      char *mailbox, const char *hostname);
-msg_task_t task_new_ping(unsigned int sender_id, char *mailbox, const char *hostname);
-msg_task_t task_new_ping_answer(unsigned int sender_id, char *mailbox, const char *hostname);
 void task_free(msg_task_t task);
 void task_free_v(void *task);
 #endif                          /* _MSG_KADEMLIA_EXAMPLES_TASK */

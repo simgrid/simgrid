@@ -268,59 +268,6 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
   return destination_found;
 }
 
-/** @brief Pings a node in the system to see if it is online.
-  * @param node Our node data
-  * @param id_to_ping the id of a node we want to see if it is online.
-  * @return if the ping succeded or not.
-  */
-unsigned int ping(node_t node, unsigned int id_to_ping)
-{
-  char mailbox[MAILBOX_NAME_SIZE];
-  snprintf(mailbox, MAILBOX_NAME_SIZE, "%u", id_to_ping);
-
-  double timeout = MSG_get_clock() + ping_timeout;
-
-  msg_task_t ping_task = task_new_ping(node->id, node->mailbox, MSG_host_get_name(MSG_host_self()));
-  msg_task_t task_received = NULL;
-
-  XBT_VERB("PING %08x", id_to_ping);
-
-  //Check that we aren't trying to ping ourselves
-  if (id_to_ping == node->id) {
-    return 1;
-  }
-
-  /* Sending the ping task */
-  MSG_task_dsend(ping_task, mailbox, task_free_v);
-  do {
-    task_received = NULL;
-    msg_error_t status =
-        MSG_task_receive_with_timeout(&task_received, node->mailbox, ping_timeout);
-    if (status == MSG_OK) {
-      xbt_assert((task_received != NULL), "Invalid task received");
-      //Checking if it's what we are waiting for or not.
-      task_data_t data = MSG_task_get_data(task_received);
-      xbt_assert((data != NULL), "didn't receive any data...");
-      if (data->type == TASK_PING_ANSWER && id_to_ping == data->sender_id) {
-        XBT_VERB("Ping to %s succeeded", mailbox);
-        node_routing_table_update(node, data->sender_id);
-        task_free(task_received);
-        return 1; // Destination found, ping succeeded!
-      } else {
-        //If it's not our answer, we answer the query anyway.
-        handle_task(node, task_received);
-      }
-    }
-  } while (MSG_get_clock() < timeout);
-
-  if (MSG_get_clock() >= timeout) {
-    XBT_DEBUG("Ping to %s has timeout.", mailbox);
-    return 0;
-  }
-  XBT_DEBUG("It seems that %s is offline...", mailbox);
-  return -1;
-}
-
 /** @brief Does a pseudo-random lookup for someone in the system
   * @param node caller node data
   */
@@ -385,9 +332,6 @@ void handle_task(node_t node, msg_task_t task)
   case TASK_FIND_NODE_ANSWER:
     XBT_DEBUG("Received a wrong answer for a FIND_NODE");
     break;
-  case TASK_PING:
-    handle_ping(node, data);
-    break;
   default:
     break;
   }
@@ -405,16 +349,6 @@ void handle_find_node(node_t node, task_data_t data)
   msg_task_t task = task_new_find_node_answer(node->id, data->destination_id, answer, node->mailbox,
                                               MSG_host_get_name(MSG_host_self()));
   //Sending the task
-  MSG_task_dsend(task, data->answer_to, task_free_v);
-}
-
-/** @brief handles the answer to a ping */
-void handle_ping(node_t node, task_data_t data)
-{
-  XBT_VERB("Received a PING request from %s (%s)", data->answer_to, data->issuer_host_name);
-  //Building the answer to the request
-  msg_task_t task = task_new_ping_answer(node->id, data->answer_to, MSG_host_get_name(MSG_host_self()));
-
   MSG_task_dsend(task, data->answer_to, task_free_v);
 }
 

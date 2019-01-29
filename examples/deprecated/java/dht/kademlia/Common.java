@@ -24,8 +24,6 @@ public class Common {
   public static final int FIND_NODE_TIMEOUT = 10;
   /* Global timeout for a FIND_NODE request */
   public static final int FIND_NODE_GLOBAL_TIMEOUT = 50;
-  /* Timeout for a "PING" request */
-  public static final int PING_TIMEOUT = 35;
 
   public static final int MAX_STEPS = 10;
   public static final int JOIN_BUCKETS_QUERIES = 1;

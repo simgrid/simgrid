@@ -53,48 +53,6 @@ msg_task_t task_new_find_node_answer(unsigned int sender_id, unsigned int destin
   return task;
 }
 
-/** @brief Creates a new "ping" task
-  * @param sender_id : sender node identifier
-  * @param mailbox : mailbox where we should respond
-  * @param hostname : hostname of the sender, for debugging purposes
-  */
-msg_task_t task_new_ping(unsigned int sender_id, char *mailbox, const char *hostname)
-{
-  task_data_t data = xbt_new(s_task_data_t, 1);
-
-  data->type = TASK_PING;
-  data->sender_id = sender_id;
-  data->destination_id = 0;
-  data->answer = NULL;
-  data->answer_to = mailbox;
-  data->issuer_host_name = hostname;
-
-  msg_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, data);
-
-  return task;
-}
-
-/** @brief Creates a new "ping answer" task
-  * @param sender_id : sender node identifier
-  * @param mailbox : mailbox of the sender
-  * @param hostname : hostname of the sender, for debugging purposes
-  */
-msg_task_t task_new_ping_answer(unsigned int sender_id, char *mailbox, const char *hostname)
-{
-  task_data_t data = xbt_new(s_task_data_t, 1);
-
-  data->type = TASK_PING_ANSWER;
-  data->sender_id = sender_id;
-  data->destination_id = 0;
-  data->answer = NULL;
-  data->answer_to = mailbox;
-  data->issuer_host_name = hostname;
-
-  msg_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, data);
-
-  return task;
-}
-
 /** @brief Destroys a task and its data
   * @param task the task that'll be destroyed
   */
