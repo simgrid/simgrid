@@ -189,6 +189,13 @@ else
   MAY_DISABLE_SOURCE_CHANGE="-DCMAKE_DISABLE_SOURCE_CHANGES=ON"
 fi
 
+if [ "$os" = "NixOS" -a "$(gcc -dumpversion)" = "7.4.0" -a "$(ld -v | cut -d\  -f5)" = "2.30" ]; then
+    echo "Temporary disable LTO, believed to be broken on this system."
+    MAY_DISABLE_LTO=-Denable_lto=OFF
+else
+    MAY_DISABLE_LTO=
+fi
+
 cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
@@ -199,7 +206,7 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
   -Denable_compile_warnings=$(onoff test "$GENERATOR" != "MSYS Makefiles") -Denable_smpi=ON \
   -Denable_ns3=$(onoff test "$have_NS3" = "yes" -a "$build_mode" = "Debug") \
-  -Denable_jedule=OFF -Denable_java=ON -Denable_lua=OFF ${MAY_DISABLE_SOURCE_CHANGE} \
+  -Denable_jedule=OFF -Denable_java=ON -Denable_lua=OFF ${MAY_DISABLE_SOURCE_CHANGE} ${MAY_DISABLE_LTO} \
   $SRCFOLDER
 #  -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
 set +x
