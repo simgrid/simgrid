@@ -64,7 +64,8 @@ static void fun_big_comp(unsigned* arg)
 
 static void bench_parmap(int nthreads, double timeout, e_xbt_parmap_mode_t mode, bool full_bench)
 {
-  XBT_INFO("** mode = %s", parmap_mode_name(mode).c_str());
+  std::string mode_name = parmap_mode_name(mode);
+  XBT_INFO("** mode = %s", mode_name.c_str());
 
   if (mode == XBT_PARMAP_FUTEX && not HAVE_FUTEX_H) {
     XBT_INFO("   not available");
