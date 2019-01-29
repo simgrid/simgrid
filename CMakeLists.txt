@@ -504,11 +504,6 @@ else()
   set(GIT_VERSION "none, release version")
 endif()
 
-### Setup gcc & clang flags
-if (NOT MSVC)
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Flags.cmake)
-endif()
-
 ### Generate the required headers and scripts
 #############################################
 
@@ -753,6 +748,11 @@ SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 
 ### Define source packages for Libs
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/DefinePackages.cmake)
+
+### Setup gcc & clang flags (include *after* DefinePackage.cmake)
+if (NOT MSVC)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Flags.cmake)
+endif()
 
 add_custom_target(tests COMMENT "Recompiling the tests")
 
