@@ -150,15 +150,8 @@ if(enable_model-checking AND enable_compile_optimizations)
   set(optCFLAGS "-O0 ")
   # But you can still optimize this:
   foreach(s
-      src/kernel/lmm/fair_bottleneck.cpp src/kernel/lmm/lagrange.cpp src/kernel/lmm/maxmin.cpp
-      src/xbt/mmalloc/mm.c
-      src/xbt/log.cpp src/xbt/xbt_log_appender_file.cpp
-      src/xbt/xbt_log_layout_format.cpp src/xbt/xbt_log_layout_simple.cpp
-      src/xbt/dict.cpp src/xbt/dict_elm.c src/xbt/dict_cursor.c
-      src/xbt/dynar.cpp
-      src/xbt/xbt_str.cpp src/xbt/snprintf.c
-      src/xbt/xbt_os_time.c
-      src/xbt/backtrace_linux.cpp
+      src/simix/popping.cpp src/simix/popping_generated.cpp src/simix/smx_global.cpp
+      ${SURF_SRC} ${TRACING_SRC} ${XBT_SRC}
       ${MC_SRC_BASE} ${MC_SRC})
       set (mcCFLAGS "-O3  -funroll-loops -fno-strict-aliasing")
        if(CMAKE_COMPILER_IS_GNUCC)
