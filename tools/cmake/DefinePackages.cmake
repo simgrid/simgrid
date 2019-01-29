@@ -789,7 +789,7 @@ set(source_of_generated_headers
 
 ### depend of some variables setted upper
 if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
-  set(SURF_SRC    ${SURF_SRC}   src/kernel/context/ContextUnix.hpp
+  set(SIMIX_SRC    ${SIMIX_SRC} src/kernel/context/ContextUnix.hpp
                                 src/kernel/context/ContextUnix.cpp)
 else() # NOT ucontext
   set(EXTRA_DIST  ${EXTRA_DIST} src/kernel/context/ContextUnix.hpp
