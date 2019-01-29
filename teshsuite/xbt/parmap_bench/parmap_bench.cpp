@@ -16,7 +16,6 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(parmap_bench, "Bench for parmap");
 
 #define MODES_DEFAULT 0x7
-#define TIMEOUT 10.0
 #define ARRAY_SIZE 10007
 #define FIBO_MAX 25
 
@@ -63,7 +62,7 @@ static void fun_big_comp(unsigned* arg)
   *arg = fibonacci(*arg % FIBO_MAX);
 }
 
-static void bench_parmap(int nthreads, e_xbt_parmap_mode_t mode, bool full_bench)
+static void bench_parmap(int nthreads, double timeout, e_xbt_parmap_mode_t mode, bool full_bench)
 {
   XBT_INFO("** mode = %s", parmap_mode_name(mode).c_str());
 
@@ -89,34 +88,36 @@ static void bench_parmap(int nthreads, e_xbt_parmap_mode_t mode, bool full_bench
     parmap->apply(fun_to_apply, data);
     elapsed_time = xbt_os_time() - start_time;
     i++;
-  } while (elapsed_time < TIMEOUT);
+  } while (elapsed_time < timeout);
   delete parmap;
 
   XBT_INFO("   ran %d times in %g seconds (%g/s)", i, elapsed_time, i / elapsed_time);
 }
 
-static void bench_all_modes(int nthreads, unsigned modes, bool full_bench)
+static void bench_all_modes(int nthreads, double timeout, unsigned modes, bool full_bench)
 {
   std::vector<e_xbt_parmap_mode_t> all_modes = {XBT_PARMAP_POSIX, XBT_PARMAP_FUTEX, XBT_PARMAP_BUSY_WAIT,
                                                 XBT_PARMAP_DEFAULT};
 
   for (unsigned i = 0; i < all_modes.size(); i++) {
     if (1U << i & modes)
-      bench_parmap(nthreads, all_modes[i], full_bench);
+      bench_parmap(nthreads, timeout, all_modes[i], full_bench);
   }
 }
 
 int main(int argc, char* argv[])
 {
   int nthreads;
+  double timeout;
   unsigned modes = MODES_DEFAULT;
 
   xbt_log_control_set("parmap_bench.fmt:[%c/%p]%e%m%n");
   MSG_init(&argc, argv);
 
-  if (argc != 2 && argc != 3) {
-    XBT_INFO("Usage: %s nthreads [modes]", argv[0]);
+  if (argc != 3 && argc != 4) {
+    XBT_INFO("Usage: %s nthreads timeout [modes]", argv[0]);
     XBT_INFO("    nthreads - number of working threads");
+    XBT_INFO("    timeout  - max duration for each test");
     XBT_INFO("    modes    - bitmask of modes to test");
     return EXIT_FAILURE;
   }
@@ -125,7 +126,8 @@ int main(int argc, char* argv[])
     XBT_ERROR("Invalid thread count: %d", nthreads);
     return EXIT_FAILURE;
   }
-  if (argc == 3)
+  timeout = atof(argv[2]);
+  if (argc == 4)
     modes = strtol(argv[2], NULL, 0);
 
   XBT_INFO("Parmap benchmark with %d workers (modes = %#x)...", nthreads, modes);
@@ -135,21 +137,21 @@ int main(int argc, char* argv[])
   fun_to_apply = &fun_small_comp;
 
   XBT_INFO("Benchmark for parmap create+apply+destroy (small comp):");
-  bench_all_modes(nthreads, modes, true);
+  bench_all_modes(nthreads, timeout, modes, true);
   XBT_INFO("%s", "");
 
   XBT_INFO("Benchmark for parmap apply only (small comp):");
-  bench_all_modes(nthreads, modes, false);
+  bench_all_modes(nthreads, timeout, modes, false);
   XBT_INFO("%s", "");
 
   fun_to_apply = &fun_big_comp;
 
   XBT_INFO("Benchmark for parmap create+apply+destroy (big comp):");
-  bench_all_modes(nthreads, modes, true);
+  bench_all_modes(nthreads, timeout, modes, true);
   XBT_INFO("%s", "");
 
   XBT_INFO("Benchmark for parmap apply only (big comp):");
-  bench_all_modes(nthreads, modes, false);
+  bench_all_modes(nthreads, timeout, modes, false);
   XBT_INFO("%s", "");
 
   return EXIT_SUCCESS;
