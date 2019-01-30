@@ -9,6 +9,7 @@ set(EXTRA_DIST
   src/include/surf/surf.hpp
   src/include/xbt/parmap.hpp
   src/include/xbt/mmalloc.h
+  src/include/catch.hpp
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
   src/msg/msg_private.hpp
