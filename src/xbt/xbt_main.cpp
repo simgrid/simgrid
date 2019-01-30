@@ -146,12 +146,15 @@ void xbt_free_ref(void *d)
   xbt_free(*(void**)d);
 }
 
+#ifdef COVERAGE
+extern "C" void __gcov_flush(); // used in xbt_abort()
+#endif
+
 /** @brief Kill the program in silence */
 void xbt_abort()
 {
 #ifdef COVERAGE
   /* Call __gcov_flush on abort when compiling with coverage options. */
-  extern void __gcov_flush();
   __gcov_flush();
 #endif
 #ifdef _WIN32
