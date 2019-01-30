@@ -176,21 +176,6 @@ static void on_host_change(simgrid::s4u::Host& host)
   host.extension<HostLoad>()->update();
 }
 
-/* This callback is called when an action (computation, idle, ...) terminates */
-static void on_action_state_change(simgrid::surf::CpuAction* action, simgrid::kernel::resource::Action::State /*previous*/)
-{
-  for (simgrid::surf::Cpu* const& cpu : action->cpus()) {
-    simgrid::s4u::Host* host = cpu->get_host();
-
-    if (dynamic_cast<simgrid::s4u::VirtualMachine*>(host)) // Ignore virtual machines
-      return;
-
-    if (host != nullptr) {
-      host->extension<HostLoad>()->update();
-    }
-  }
-}
-
 /* **************************** Public interface *************************** */
 
 /** @brief Initializes the HostLoad plugin

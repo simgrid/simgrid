@@ -144,12 +144,6 @@ double SIMIX_timer_next()
   return simix_timers.empty() ? -1.0 : simix_timers.top().first;
 }
 
-static void kill_process(smx_actor_t process)
-{
-  SIMIX_process_kill(process, nullptr);
-}
-
-
 namespace simgrid {
 namespace simix {
 
