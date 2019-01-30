@@ -7,6 +7,7 @@ set(EXTRA_DIST
   src/include/mc/mc.h
   src/include/simgrid/sg_config.hpp
   src/include/surf/surf.hpp
+  src/include/xbt/coverage.h
   src/include/xbt/parmap.hpp
   src/include/xbt/mmalloc.h
   src/include/catch.hpp

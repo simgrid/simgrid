@@ -12,6 +12,7 @@
 #include "src/internal_config.h"
 #include "src/xbt_modinter.h" /* prototype of other module's init/exit in XBT */
 #include "xbt/config.hpp"
+#include "xbt/coverage.h"
 #include "xbt/dynar.h"
 #include "xbt/log.h"
 #include "xbt/log.hpp"
@@ -146,17 +147,11 @@ void xbt_free_ref(void *d)
   xbt_free(*(void**)d);
 }
 
-#ifdef COVERAGE
-extern "C" void __gcov_flush(); // used in xbt_abort()
-#endif
-
 /** @brief Kill the program in silence */
 void xbt_abort()
 {
-#ifdef COVERAGE
   /* Call __gcov_flush on abort when compiling with coverage options. */
-  __gcov_flush();
-#endif
+  coverage_checkpoint();
 #ifdef _WIN32
   /* We said *in silence*. We don't want to see the error message printed by Microsoft's implementation of abort(). */
   raise(SIGABRT);
