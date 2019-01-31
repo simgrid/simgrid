@@ -11,7 +11,6 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include <xbt/coverage.h>
 #include <xbt/log.h>
 #include <xbt/mmalloc.h>
 #include <xbt/sysdep.h>
@@ -185,7 +184,6 @@ void Client::mainLoop()
     simgrid::mc::wait_for_requests();
     xbt_assert(channel_.send(MC_MESSAGE_WAITING) == 0, "Could not send WAITING message to model-checker");
     this->handleMessages();
-    coverage_checkpoint();
   }
 }
 
