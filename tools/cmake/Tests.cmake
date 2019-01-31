@@ -122,31 +122,18 @@ ENDIF()
 
 ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/testall)
 
-# New tests should use the Boost Unit Test Framework
-if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
-  add_library(boost_unit_test_framework SHARED IMPORTED)
-  set_target_properties(boost_unit_test_framework PROPERTIES IMPORTED_LOCATION ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-  
-  add_executable       (unit-tmgr src/surf/trace_mgr_test.cpp)
-  target_link_libraries(unit-tmgr simgrid)
-  ADD_TEST(unit-tmgr ${CMAKE_BINARY_DIR}/unit-tmgr)
-  set_property(TARGET unit-tmgr APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
-  add_dependencies(tests unit-tmgr)
-  if (SIMGRID_HAVE_MC)
-    # snapshot
-    add_executable       (unit-mc-snapshot src/mc/sosp/mc_snapshot_test.cpp)
-    target_link_libraries(unit-mc-snapshot simgrid boost_unit_test_framework)
-    ADD_TEST(unit-mc-snapshot ${CMAKE_BINARY_DIR}/unit-mc-snapshot --build_info=yes)
-    set_property(TARGET unit-mc-snapshot APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
-    add_dependencies(tests unit-mc-snapshot)
-    # pagestore
-    add_executable       (unit-mc-pagestore src/mc/sosp/PageStore_test.cpp)
-    target_link_libraries(unit-mc-pagestore simgrid boost_unit_test_framework)
-    ADD_TEST(unit-mc-pagestore ${CMAKE_BINARY_DIR}/unit-mc-pagestore --build_info=yes)
-    set_property(TARGET unit-mc-pagestore APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
-    add_dependencies(tests unit-mc-pagestore)
-  endif()
-
+# New tests should use the Catch Framework
+set(UNIT_TESTS  src/surf/trace_mgr_test.cpp)
+if (SIMGRID_HAVE_MC)
+  set(UNIT_TESTS ${UNIT_TESTS} src/mc/sosp/mc_snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
 else()
-  set(EXTRA_DIST       ${EXTRA_DIST}       src/surf/trace_mgr_test.cpp)
-endif()
+  set(EXTRA_DIST ${EXTRA_DIST} src/mc/sosp/mc_snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
+endif()  
+
+add_executable       (unit-tests ${UNIT_TESTS})
+target_link_libraries(unit-tests simgrid)
+ADD_TEST(unit-tests ${CMAKE_BINARY_DIR}/unit-tests)
+set_property(TARGET unit-tests APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
+add_dependencies(tests unit-tests)
+
+unset(UNIT_TESTS)

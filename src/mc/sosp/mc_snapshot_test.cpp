@@ -3,10 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#define BOOST_TEST_MODULE snapshots
-#define BOOST_TEST_DYN_LINK
-bool init_unit_test(); // boost sometimes forget to give this prototype (NetBSD and other), which does not fit our paranoid flags
-#include <boost/test/unit_test.hpp>
+#include "src/include/catch.hpp"
 
 #include <cstdlib>
 #include <cstring>
@@ -20,7 +17,7 @@ bool init_unit_test(); // boost sometimes forget to give this prototype (NetBSD 
 
 /**************** Class BOOST_tests *************************/
 using simgrid::mc::RegionSnapshot;
-class BOOST_tests {
+class snap_test_helper {
 public:
   static void init_memory(void* mem, size_t size);
   static void Init(bool sparse_ckpt);
@@ -49,10 +46,10 @@ public:
 };
 
 // static member variables init.
-bool BOOST_tests::sparse_checkpoint                             = 0;
-std::unique_ptr<simgrid::mc::RemoteClient> BOOST_tests::process = nullptr;
+bool snap_test_helper::sparse_checkpoint                             = 0;
+std::unique_ptr<simgrid::mc::RemoteClient> snap_test_helper::process = nullptr;
 
-void BOOST_tests::init_memory(void* mem, size_t size)
+void snap_test_helper::init_memory(void* mem, size_t size)
 {
   char* dest = (char*)mem;
   for (size_t i = 0; i < size; ++i) {
@@ -60,23 +57,24 @@ void BOOST_tests::init_memory(void* mem, size_t size)
   }
 }
 
-void BOOST_tests::Init(bool sparse_ckpt)
+void snap_test_helper::Init(bool sparse_ckpt)
 {
   _sg_mc_sparse_checkpoint = sparse_ckpt;
-  BOOST_CHECK_EQUAL(xbt_pagesize, getpagesize());
-  BOOST_CHECK_EQUAL(1 << xbt_pagebits, xbt_pagesize);
+  REQUIRE(xbt_pagesize == getpagesize());
+  REQUIRE(1 << xbt_pagebits == xbt_pagesize);
 
   process = std::unique_ptr<simgrid::mc::RemoteClient>(new simgrid::mc::RemoteClient(getpid(), -1));
   process->init();
   mc_model_checker = new ::simgrid::mc::ModelChecker(std::move(process));
 }
 
-BOOST_tests::prologue_return BOOST_tests::prologue(int n)
+snap_test_helper::prologue_return snap_test_helper::prologue(int n)
 {
   // Store region page(s):
   size_t byte_size = n * xbt_pagesize;
   void* source     = mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-  BOOST_CHECK_MESSAGE(source != MAP_FAILED, "Could not allocate source memory");
+  INFO("Could not allocate source memory")
+  REQUIRE(source != MAP_FAILED);
 
   // Init memory and take snapshots:
   init_memory(source, byte_size);
@@ -89,7 +87,8 @@ BOOST_tests::prologue_return BOOST_tests::prologue(int n)
       simgrid::mc::sparse_region(simgrid::mc::RegionType::Unknown, source, source, byte_size);
 
   void* destination = mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-  BOOST_CHECK_MESSAGE(source != MAP_FAILED, "Could not allocate destination memory");
+  INFO("Could not allocate destination memory");
+  REQUIRE(source != MAP_FAILED);
 
   return {.size    = byte_size,
           .src     = source,
@@ -98,20 +97,21 @@ BOOST_tests::prologue_return BOOST_tests::prologue(int n)
           .region  = std::move(region)};
 }
 
-void BOOST_tests::read_whole_region()
+void snap_test_helper::read_whole_region()
 {
   for (int n = 1; n != 256; ++n) {
 
     prologue_return ret = prologue(n);
     const void* read    = MC_region_read(&(ret.region), ret.dstn, ret.src, ret.size);
-    BOOST_CHECK_MESSAGE(not memcmp(ret.src, read, ret.size), "Mismatch in MC_region_read()");
+    INFO("Mismatch in MC_region_read()");
+    REQUIRE(not memcmp(ret.src, read, ret.size));
 
     munmap(ret.dstn, ret.size);
     munmap(ret.src, ret.size);
   }
 }
 
-void BOOST_tests::read_region_parts()
+void snap_test_helper::read_region_parts()
 {
   for (int n = 1; n != 256; ++n) {
 
@@ -121,28 +121,29 @@ void BOOST_tests::read_region_parts()
       size_t offset    = rand() % ret.size;
       size_t size      = rand() % (ret.size - offset);
       const void* read = MC_region_read(&(ret.region), ret.dstn, (const char*)ret.src + offset, size);
-      BOOST_CHECK_MESSAGE(not memcmp((char*)ret.src + offset, read, size), "Mismatch in MC_region_read()");
+      INFO("Mismatch in MC_region_read()");
+      REQUIRE(not memcmp((char*)ret.src + offset, read, size));
     }
     munmap(ret.dstn, ret.size);
     munmap(ret.src, ret.size);
   }
 }
 
-void BOOST_tests::compare_whole_region()
+void snap_test_helper::compare_whole_region()
 {
   for (int n = 1; n != 256; ++n) {
 
     prologue_return ret = prologue(n);
 
-    BOOST_CHECK_MESSAGE(MC_snapshot_region_memcmp(ret.src, &(ret.region0), ret.src, &(ret.region), ret.size),
-                        "Unexpected match in MC_snapshot_region_memcmp() with previous snapshot");
+    INFO("Unexpected match in MC_snapshot_region_memcmp() with previous snapshot");
+    REQUIRE(MC_snapshot_region_memcmp(ret.src, &(ret.region0), ret.src, &(ret.region), ret.size));
 
     munmap(ret.dstn, ret.size);
     munmap(ret.src, ret.size);
   }
 }
 
-void BOOST_tests::compare_region_parts()
+void snap_test_helper::compare_region_parts()
 {
   for (int n = 1; n != 256; ++n) {
 
@@ -151,105 +152,75 @@ void BOOST_tests::compare_region_parts()
     for (int j = 0; j != 100; ++j) {
       size_t offset = rand() % ret.size;
       size_t size   = rand() % (ret.size - offset);
-      BOOST_CHECK_MESSAGE(not MC_snapshot_region_memcmp((char*)ret.src + offset, &(ret.region), (char*)ret.src + offset,
-                                                        &(ret.region), size),
-                          "Mismatch in MC_snapshot_region_memcmp()");
+
+      INFO("Mismatch in MC_snapshot_region_memcmp()");
+      REQUIRE(not MC_snapshot_region_memcmp((char*)ret.src + offset, &(ret.region), (char*)ret.src + offset,
+                                            &(ret.region), size));
     }
     munmap(ret.dstn, ret.size);
     munmap(ret.src, ret.size);
   }
 }
 
-void BOOST_tests::read_pointer()
+void snap_test_helper::read_pointer()
 {
 
   prologue_return ret = prologue(1);
   memcpy(ret.src, &mc_model_checker, sizeof(void*));
   simgrid::mc::RegionSnapshot region2 =
       simgrid::mc::sparse_region(simgrid::mc::RegionType::Unknown, ret.src, ret.src, ret.size);
-  BOOST_CHECK_MESSAGE(MC_region_read_pointer(&region2, ret.src) == mc_model_checker,
-                      "Mismtach in MC_region_read_pointer()");
+  INFO("Mismtach in MC_region_read_pointer()");
+  REQUIRE(MC_region_read_pointer(&region2, ret.src) == mc_model_checker);
 
   munmap(ret.dstn, ret.size);
   munmap(ret.src, ret.size);
 }
 
 /*************** End: class BOOST_tests *****************************/
-
-namespace utf = boost::unit_test; // for test case dependence
-
-BOOST_AUTO_TEST_SUITE(flat_snapshot)
-BOOST_AUTO_TEST_CASE(Init)
+TEST_CASE("MC::Snapshot: A copy/snapshot of a given memory region", "MC::Snapshot")
 {
-  BOOST_tests::Init(0);
-}
 
-BOOST_AUTO_TEST_CASE(read_whole_region, *utf::depends_on("flat_snapshot/Init"))
-{
-  BOOST_tests::read_whole_region();
-}
+  SECTION("Flat snapshot (no pages)")
+  {
+    snap_test_helper::Init(0);
 
-BOOST_AUTO_TEST_CASE(read_region_parts, *utf::depends_on("flat_snapshot/read_whole_region"))
-{
-  BOOST_tests::read_region_parts();
-}
+    INFO("Read whole region");
+    snap_test_helper::read_whole_region();
 
-BOOST_AUTO_TEST_CASE(compare_whole_region, *utf::depends_on("flat_snapshot/read_region_parts"))
-{
-  BOOST_tests::compare_whole_region();
-}
+    INFO("Read region parts");
+    snap_test_helper::read_region_parts();
 
-BOOST_AUTO_TEST_CASE(compare_region_parts, *utf::depends_on("flat_snapshot/compare_whole_region"))
-{
-  BOOST_tests::compare_region_parts();
-}
+    INFO("Compare whole region");
+    snap_test_helper::compare_whole_region();
 
-BOOST_AUTO_TEST_CASE(read_pointer, *utf::depends_on("flat_snapshot/compare_region_parts"))
-{
-  BOOST_tests::read_pointer();
-}
+    INFO("Compare region parts");
+    snap_test_helper::compare_region_parts();
 
-// not really a test, just for cleanup the resources
-BOOST_AUTO_TEST_CASE(cleanup, *utf::depends_on("flat_snapshot/read_pointer"))
-{
-  BOOST_tests::cleanup();
-}
-BOOST_AUTO_TEST_SUITE_END()
+    INFO("Read pointer");
+    snap_test_helper::read_pointer();
 
-BOOST_AUTO_TEST_SUITE(page_snapshots)
-BOOST_AUTO_TEST_CASE(Init)
-{
-  BOOST_tests::Init(1);
-}
+    snap_test_helper::cleanup();
+  }
 
-BOOST_AUTO_TEST_CASE(read_whole_region, *utf::depends_on("page_snapshots/Init"))
-{
-  BOOST_tests::read_whole_region();
-}
+  SECTION("Sparse snapshot (using pages)")
+  {
+    snap_test_helper::Init(1);
 
-BOOST_AUTO_TEST_CASE(read_region_parts, *utf::depends_on("page_snapshots/read_whole_region"))
-{
-  BOOST_tests::read_region_parts();
-}
+    INFO("Read whole region");
+    snap_test_helper::read_whole_region();
 
-BOOST_AUTO_TEST_CASE(compare_whole_region, *utf::depends_on("page_snapshots/read_region_parts"))
-{
-  BOOST_tests::compare_whole_region();
-}
+    INFO("Read region parts");
+    snap_test_helper::read_region_parts();
 
-BOOST_AUTO_TEST_CASE(compare_region_parts, *utf::depends_on("page_snapshots/compare_whole_region"))
-{
-  BOOST_tests::compare_region_parts();
-}
+    INFO("Compare whole region");
+    snap_test_helper::compare_whole_region();
 
-BOOST_AUTO_TEST_CASE(read_pointer, *utf::depends_on("page_snapshots/compare_region_parts"))
-{
-  BOOST_tests::read_pointer();
-}
+    INFO("Compare region parts");
+    snap_test_helper::compare_region_parts();
 
-// not really a test, just for cleanup the resources
-BOOST_AUTO_TEST_CASE(cleanup, *utf::depends_on("page_snapshots/read_pointer"))
-{
-  BOOST_tests::cleanup();
+    INFO("Read pointer");
+    snap_test_helper::read_pointer();
+
+    snap_test_helper::cleanup();
+  }
 }
-BOOST_AUTO_TEST_SUITE_END()
