@@ -58,9 +58,9 @@ make testall                    # Rebuild the test runner on need
 @section inside_tests_add_units Adding unit tests
 
 @warning this section is outdated. New unit tests should be written
-using the unit_test_framework component of Boost. There is no such
-example so far in our codebase, but that's definitely the way to go
-for the future. STOP USING XBT.
+using the Catch2 library, that is included in the source tree. Please
+check for examples, listed at the end of tools/cmake/Tests.cmake.
+STOP USING XBT.
 
 If you want to test a specific function or set of functions, you need
 a unit test. Edit the file tools/cmake/UnitTesting.cmake to

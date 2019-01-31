@@ -73,7 +73,6 @@ static const std::vector<std::string> filtered_libraries = {
     "libboost_system",
     "libboost_thread",
     "libboost_timer",
-    "libboost_unit_test_framework",
     "libbz2",
     "libc",
     "libc++",

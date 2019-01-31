@@ -254,7 +254,7 @@ endif()
 set(_Boost_STACKTRACE_HEADERS           "boost/stacktrace.hpp")
 set(_Boost_STACKTRACE_BACKTRACE_HEADERS "boost/stacktrace.hpp")
 
-find_package(Boost 1.59 COMPONENTS context stacktrace_backtrace unit_test_framework)
+find_package(Boost 1.59 COMPONENTS context stacktrace_backtrace)
 set(Boost_FOUND 1) # These components are optionals
 message(STATUS "Mandatory components found. SimGrid is compilable.")
 message(STATUS "Looking for optional Boost components:")
@@ -274,12 +274,6 @@ if(Boost_CONTEXT_FOUND)
 else()
   message (STATUS "  context: MISSING. Install libboost-context-dev for this optional feature.")
   set(HAVE_BOOST_CONTEXTS 0)
-endif()
-
-if (Boost_UNIT_TEST_FRAMEWORK_FOUND)
-  message(STATUS  "  unit_test_framework: found. Activating the Boost-based unit tests.")
-else()
-  message(STATUS  "  unit_test_framework: MISSING. Install libboost-test-dev (>= v1.59) to activate the Unit Tests.")
 endif()
 
 

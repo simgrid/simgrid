@@ -940,9 +940,7 @@ teshsuite/xbt/parallel_log_crashtest/parallel_log_crashtest
 teshsuite/xbt/parmap_bench/parmap_bench
 teshsuite/xbt/parmap_test/parmap_test
 testall
-unit-mc-pagestore
-unit-mc-snapshot
-unit-tmgr
+unit-tests
 #########################################
 ## files touched to track the dependencies of java examples
 examples/deprecated/java/*/*/*_compiled
