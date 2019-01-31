@@ -5,15 +5,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/Exception.hpp"
 #include "xbt/dynar.h"
-#include "xbt/ex.h"
-#include "xbt/log.h"
-#include "xbt/misc.h"
 #include "xbt/sysdep.h"
-#include <sys/types.h>
 
-#include "src/include/catch.hpp"
+#include "catch.hpp"
 
 #define NB_ELEM 5000
 
