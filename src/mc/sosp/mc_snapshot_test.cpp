@@ -99,7 +99,7 @@ snap_test_helper::prologue_return snap_test_helper::prologue(int n)
 
 void snap_test_helper::read_whole_region()
 {
-  for (int n = 1; n != 256; ++n) {
+  for (int n = 1; n != 32; ++n) {
 
     prologue_return ret = prologue(n);
     const void* read    = MC_region_read(&(ret.region), ret.dstn, ret.src, ret.size);
@@ -113,7 +113,7 @@ void snap_test_helper::read_whole_region()
 
 void snap_test_helper::read_region_parts()
 {
-  for (int n = 1; n != 256; ++n) {
+  for (int n = 1; n != 32; ++n) {
 
     prologue_return ret = prologue(n);
 
@@ -131,7 +131,7 @@ void snap_test_helper::read_region_parts()
 
 void snap_test_helper::compare_whole_region()
 {
-  for (int n = 1; n != 256; ++n) {
+  for (int n = 1; n != 32; ++n) {
 
     prologue_return ret = prologue(n);
 
@@ -145,7 +145,7 @@ void snap_test_helper::compare_whole_region()
 
 void snap_test_helper::compare_region_parts()
 {
-  for (int n = 1; n != 256; ++n) {
+  for (int n = 1; n != 32; ++n) {
 
     prologue_return ret = prologue(n);
 
@@ -179,48 +179,30 @@ void snap_test_helper::read_pointer()
 /*************** End: class BOOST_tests *****************************/
 TEST_CASE("MC::Snapshot: A copy/snapshot of a given memory region", "MC::Snapshot")
 {
+  auto sparse = GENERATE(false, true);
 
-  SECTION("Flat snapshot (no pages)")
-  {
-    snap_test_helper::Init(0);
-
-    INFO("Read whole region");
-    snap_test_helper::read_whole_region();
-
-    INFO("Read region parts");
-    snap_test_helper::read_region_parts();
-
-    INFO("Compare whole region");
-    snap_test_helper::compare_whole_region();
-
-    INFO("Compare region parts");
-    snap_test_helper::compare_region_parts();
-
-    INFO("Read pointer");
-    snap_test_helper::read_pointer();
-
-    snap_test_helper::cleanup();
+  if (sparse) {
+    INFO("Sparse snapshot (using pages)");
+  } else {
+    INFO("Flat snapshot (no pages)");
   }
 
-  SECTION("Sparse snapshot (using pages)")
-  {
-    snap_test_helper::Init(1);
+  snap_test_helper::Init(sparse);
 
-    INFO("Read whole region");
-    snap_test_helper::read_whole_region();
+  INFO("Read whole region");
+  snap_test_helper::read_whole_region();
 
-    INFO("Read region parts");
-    snap_test_helper::read_region_parts();
+  INFO("Read region parts");
+  snap_test_helper::read_region_parts();
 
-    INFO("Compare whole region");
-    snap_test_helper::compare_whole_region();
+  INFO("Compare whole region");
+  snap_test_helper::compare_whole_region();
 
-    INFO("Compare region parts");
-    snap_test_helper::compare_region_parts();
+  INFO("Compare region parts");
+  snap_test_helper::compare_region_parts();
 
-    INFO("Read pointer");
-    snap_test_helper::read_pointer();
+  INFO("Read pointer");
+  snap_test_helper::read_pointer();
 
-    snap_test_helper::cleanup();
-  }
+  snap_test_helper::cleanup();
 }
