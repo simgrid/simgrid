@@ -176,7 +176,8 @@ void snap_test_helper::read_pointer()
   munmap(ret.src, ret.size);
 }
 
-/*************** End: class BOOST_tests *****************************/
+/*************** End: class snap_test_helper *****************************/
+
 TEST_CASE("MC::Snapshot: A copy/snapshot of a given memory region", "MC::Snapshot")
 {
   auto sparse = GENERATE(false, true);

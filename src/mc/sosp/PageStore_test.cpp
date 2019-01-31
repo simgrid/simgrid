@@ -16,10 +16,6 @@
 
 #include "src/mc/sosp/PageStore.hpp"
 
-#define BOOST_CHECK_MESSAGE(a, b)                                                                                      \
-  INFO(b);                                                                                                             \
-  REQUIRE(a);
-
 using simgrid::mc::PageStore;
 
 /***********************************/
@@ -55,7 +51,7 @@ void helper_tests::Init()
   pagesize = (size_t)getpagesize();
   store    = std::unique_ptr<PageStore>(new simgrid::mc::PageStore(50));
   data     = mmap(nullptr, getpagesize(), PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-  BOOST_CHECK_MESSAGE(store->size() == 0, "Bad size");
+  REQUIRE(store->size() == 0);
 }
 
 void helper_tests::store_page_once()
@@ -64,14 +60,14 @@ void helper_tests::store_page_once()
   pageno[0] = store->store_page(data);
   REQUIRE(store->get_ref(pageno[0]) == 1);
   const void* copy = store->get_page(pageno[0]);
-  BOOST_CHECK_MESSAGE(::memcmp(data, copy, pagesize) == 0, "Page data should be the same");
+  REQUIRE(::memcmp(data, copy, pagesize) == 0); // The page data should be the same
   REQUIRE(store->size() == 1);
 }
 
 void helper_tests::store_same_page()
 {
   pageno[1] = store->store_page(data);
-  BOOST_CHECK_MESSAGE(pageno[0] == pageno[1], "Page should be the same");
+  REQUIRE(pageno[0] == pageno[1]); // Page should be the same
   REQUIRE(store->get_ref(pageno[0]) == 2);
   REQUIRE(store->size() == 1);
 }
@@ -80,15 +76,16 @@ void helper_tests::store_new_page()
 {
   new_content(data, pagesize);
   pageno[2] = store->store_page(data);
-  BOOST_CHECK_MESSAGE(pageno[0] != pageno[2], "New page should be different");
+  REQUIRE(pageno[0] != pageno[2]); // The new page should be different
   REQUIRE(store->size() == 2);
 }
 
 void helper_tests::unref_pages()
 {
   store->unref_page(pageno[0]);
-  BOOST_CHECK_MESSAGE(store->get_ref(pageno[0]) == 1, "Bad refcount");
+  REQUIRE(store->get_ref(pageno[0]) == 1);
   REQUIRE(store->size() == 2);
+
   store->unref_page(pageno[1]);
   REQUIRE(store->size() == 1);
 }
@@ -97,7 +94,7 @@ void helper_tests::reallocate_page()
 {
   new_content(data, pagesize);
   pageno[3] = store->store_page(data);
-  BOOST_CHECK_MESSAGE(pageno[0] == pageno[3], "Page was not reused");
+  REQUIRE(pageno[0] == pageno[3]); // The old page should be reused
   REQUIRE(store->get_ref(pageno[3]) == 1);
   REQUIRE(store->size() == 2);
 }
