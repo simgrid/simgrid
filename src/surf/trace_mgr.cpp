@@ -29,7 +29,7 @@ namespace simgrid {
 namespace kernel {
 namespace profile {
 
-bool DatedValue::operator==(DatedValue e2)
+bool DatedValue::operator==(DatedValue const& e2) const
 {
   return (doubleEq(date_, e2.date_)) && (doubleEq(value_, e2.value_));
 }
