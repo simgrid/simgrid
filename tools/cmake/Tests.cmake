@@ -124,6 +124,7 @@ ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/testall)
 
 # New tests should use the Catch Framework
 set(UNIT_TESTS  src/surf/trace_mgr_test.cpp
+                src/xbt/dict_test.cpp
                 src/xbt/dynar_test.cpp)
 if (SIMGRID_HAVE_MC)
   set(UNIT_TESTS ${UNIT_TESTS} src/mc/sosp/mc_snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)

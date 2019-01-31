@@ -6,7 +6,6 @@
 
 set(FILES_CONTAINING_UNITTESTS
   src/xbt/cunit.cpp
-  src/xbt/dict.cpp
   src/xbt/xbt_str.cpp
   src/xbt/config.cpp
 )
