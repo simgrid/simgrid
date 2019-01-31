@@ -79,7 +79,11 @@ TEST_CASE("xbt::dynar: generic C vector", "dynar")
       xbt_dynar_shift(d, &i);
       REQUIRE(i == cpt); // The retrieved value is not the same than the injected one
     }
+    REQUIRE(xbt_dynar_is_empty(d));
 
+    for (int cpt = 0; cpt < NB_ELEM; cpt++) {
+      xbt_dynar_push_as(d, int, -1);
+    }
     int* pi;
     xbt_dynar_foreach_ptr(d, cursor, pi) { *pi = 0; }
     xbt_dynar_foreach (d, cursor, i) {
