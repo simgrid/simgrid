@@ -53,15 +53,15 @@ make unit-tests                 # Rebuild the test runner on need
 
 @section inside_tests_add_units Adding unit tests
 
-@warning this section is outdated. New unit tests should be written
-using the Catch2 library, that is included in the source tree. Please
-check for examples, listed at the end of tools/cmake/Tests.cmake.
+Our unit tests are written using the Catch2 library, that is included
+in the source tree. Please check for examples, listed at the end of
+tools/cmake/Tests.cmake.
 
-Last note: please try to keep your tests fast. We run them very very
-very often, and you should strive to make it as fast as possible, to
-not upset the other developers. Do not hesitate to stress test your
-code with such unit tests, but make sure that it runs reasonably fast,
-or nobody will run "ctest" before commiting code.
+It is important to keep your tests fast. We run them very very often,
+and you should strive to make them as fast as possible, to not bother
+the other developers. Do not hesitate to stress test your code, but
+make sure that it runs reasonably fast, or nobody will run "ctest"
+before commiting code.
 
 @section inside_tests_add_integration Adding integration tests
 
