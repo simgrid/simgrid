@@ -5,7 +5,7 @@ engines:
    exclude_paths:
      - teshsuite/**
 exclude_paths:
-  - src/*_unit.c*
+  - src/include/catch.hpp
   - teshsuite/smpi/mpich3-test/**
   - teshsuite/smpi/isp/**
   - **/*_dtd.c
