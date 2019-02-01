@@ -9,9 +9,6 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-ActivityImpl::ActivityImpl()  = default;
-ActivityImpl::~ActivityImpl() = default;
-
 // boost::intrusive_ptr<Activity> support:
 void intrusive_ptr_add_ref(simgrid::kernel::activity::ActivityImpl* activity)
 {
