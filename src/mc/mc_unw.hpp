@@ -30,7 +30,6 @@
 
 #include <cstdio>
 #include <libunwind.h>
-#include <sys/types.h>
 
 namespace simgrid {
 namespace unw {

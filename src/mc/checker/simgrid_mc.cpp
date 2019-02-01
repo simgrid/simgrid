@@ -4,29 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <exception>
-
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-
-#include <utility>
-
-#include <unistd.h>
-
-#include <xbt/log.h>
-
 #include "simgrid/sg_config.hpp"
-#include "src/xbt_modinter.h"
-
-#include "src/mc/Session.hpp"
 #include "src/mc/checker/Checker.hpp"
-#include "src/mc/mc_base.h"
-#include "src/mc/mc_comm_pattern.hpp"
 #include "src/mc/mc_exit.hpp"
-#include "src/mc/mc_private.hpp"
-#include "src/mc/mc_safety.hpp"
-#include "src/mc/remote/mc_protocol.h"
+
+#include <cstring>
+#include <memory>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
 

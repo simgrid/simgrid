@@ -4,20 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cerrno>
-#include <cstddef> // std::size_t
-#include <cstdio>  // perror
-#include <cstring>
-
-#include <sys/socket.h>
-#include <sys/types.h>
-
-#include <xbt/log.h>
-
-#include "src/mc/remote/Client.hpp"
 #include "src/mc/remote/mc_protocol.h"
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_protocol, mc, "Generic MC protocol logic");
 
 const char* MC_message_type_name(e_mc_message_type type)
 {
