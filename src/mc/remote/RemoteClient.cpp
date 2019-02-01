@@ -3,14 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#define _FILE_OFFSET_BITS 64 /* needed for pread_whole to work as expected on 32bits */
+
 #include "src/mc/remote/RemoteClient.hpp"
 
 #include "xbt/file.hpp"
 #include "xbt/log.h"
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/sosp/mc_snapshot.hpp"
-
-#define _FILE_OFFSET_BITS 64 /* needed for pread_whole to work as expected on 32bits */
 
 #include <fcntl.h>
 #include <libunwind-ptrace.h>
