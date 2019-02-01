@@ -19,8 +19,8 @@ public:
   void resume() override;
   void post() override;
 
-  sg_host_t host           = nullptr; /* The host that is sleeping */
-  simgrid::kernel::resource::Action* surf_sleep = nullptr; /* The Surf sleeping action encapsulated */
+  sg_host_t host                 = nullptr;
+  resource::Action* surf_action_ = nullptr;
 };
 }
 }

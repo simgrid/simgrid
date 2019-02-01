@@ -21,7 +21,7 @@ public:
   void resume() override;
   void post() override;
 
-  simgrid::kernel::resource::Action* sleep = nullptr;
+  resource::Action* surf_action_ = nullptr;
   };
 
 }}} // namespace simgrid::kernel::activity

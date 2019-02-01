@@ -195,8 +195,8 @@ smx_activity_t ActorImpl::sleep(double duration)
 
   simgrid::kernel::activity::SleepImpl* synchro = new simgrid::kernel::activity::SleepImpl();
   synchro->host                                 = host_;
-  synchro->surf_sleep                           = host_->pimpl_cpu->sleep(duration);
-  synchro->surf_sleep->set_data(synchro);
+  synchro->surf_action_                         = host_->pimpl_cpu->sleep(duration);
+  synchro->surf_action_->set_data(synchro);
   XBT_DEBUG("Create sleep synchronization %p", synchro);
 
   return synchro;
@@ -462,8 +462,8 @@ void SIMIX_process_kill(smx_actor_t actor, smx_actor_t issuer)
       if (i != actor->waiting_synchro->simcalls_.end())
         actor->waiting_synchro->simcalls_.remove(&actor->simcall);
     } else if (sleep != nullptr) {
-      if (sleep->surf_sleep)
-        sleep->surf_sleep->cancel();
+      if (sleep->surf_action_)
+        sleep->surf_action_->cancel();
       sleep->post();
     } else if (raw != nullptr) {
       SIMIX_synchro_stop_waiting(actor, &actor->simcall);
@@ -626,8 +626,8 @@ smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, doubl
   SIMIX_process_on_exit(process,
                         [](int, void* arg) {
                           auto sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(arg);
-                          if (sleep->surf_sleep)
-                            sleep->surf_sleep->finish(simgrid::kernel::resource::Action::State::FINISHED);
+                          if (sleep->surf_action_)
+                            sleep->surf_action_->finish(simgrid::kernel::resource::Action::State::FINISHED);
                           intrusive_ptr_release(sleep);
                         },
                         res.get());
@@ -653,9 +653,9 @@ void SIMIX_process_sleep_destroy(smx_activity_t synchro)
   simgrid::kernel::activity::SleepImplPtr sleep =
       boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(synchro);
 
-  if (sleep->surf_sleep) {
-    sleep->surf_sleep->unref();
-    sleep->surf_sleep = nullptr;
+  if (sleep->surf_action_) {
+    sleep->surf_action_->unref();
+    sleep->surf_action_ = nullptr;
   }
 }
 

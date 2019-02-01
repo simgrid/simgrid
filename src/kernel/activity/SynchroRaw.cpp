@@ -12,7 +12,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_synchro);
 
 simgrid::kernel::activity::RawImpl::~RawImpl()
 {
-  sleep->unref();
+  surf_action_->unref();
 }
 void simgrid::kernel::activity::RawImpl::suspend()
 {
@@ -27,9 +27,9 @@ void simgrid::kernel::activity::RawImpl::resume()
 void simgrid::kernel::activity::RawImpl::post()
 {
   XBT_IN("(%p)",this);
-  if (sleep->get_state() == simgrid::kernel::resource::Action::State::FAILED)
+  if (surf_action_->get_state() == simgrid::kernel::resource::Action::State::FAILED)
     state_ = SIMIX_FAILED;
-  else if (sleep->get_state() == simgrid::kernel::resource::Action::State::FINISHED)
+  else if (surf_action_->get_state() == simgrid::kernel::resource::Action::State::FINISHED)
     state_ = SIMIX_SRC_TIMEOUT;
 
   SIMIX_synchro_finish(this);

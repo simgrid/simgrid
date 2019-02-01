@@ -19,12 +19,12 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
 void simgrid::kernel::activity::SleepImpl::suspend()
 {
-  surf_sleep->suspend();
+  surf_action_->suspend();
 }
 
 void simgrid::kernel::activity::SleepImpl::resume()
 {
-  surf_sleep->resume();
+  surf_action_->resume();
 }
 
 void simgrid::kernel::activity::SleepImpl::post()
@@ -41,7 +41,7 @@ void simgrid::kernel::activity::SleepImpl::post()
           std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed")));
     }
 
-    switch (surf_sleep->get_state()) {
+    switch (surf_action_->get_state()) {
       case simgrid::kernel::resource::Action::State::FAILED:
         simcall->issuer->context_->iwannadie = true;
         result                               = SIMIX_FAILED;
