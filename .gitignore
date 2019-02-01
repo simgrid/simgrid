@@ -939,7 +939,6 @@ teshsuite/xbt/mmalloc/mmalloc_test
 teshsuite/xbt/parallel_log_crashtest/parallel_log_crashtest
 teshsuite/xbt/parmap_bench/parmap_bench
 teshsuite/xbt/parmap_test/parmap_test
-testall
 unit-tests
 #########################################
 ## files touched to track the dependencies of java examples
