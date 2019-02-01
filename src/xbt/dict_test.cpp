@@ -86,11 +86,7 @@ static void traverse(xbt_dict_t head)
   int i = 0;
 
   xbt_dict_foreach (head, cursor, key, data) {
-    if (not key || not data || strcmp(key, data)) {
-      INFO("Seen #" << ++i << ": " << STR(key) << "->" << STR(data));
-    } else {
-      INFO("Seen #" << ++i << ": " << STR(key));
-    }
+    INFO("Seen #" << ++i << ": " << STR(key) << "->" << STR(data));
     REQUIRE((key && data && strcmp(key, data) == 0)); //  key != value
   }
 }
@@ -282,23 +278,18 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     search_ext(head, "null", nullptr);
 
     INFO("Check whether I see it while traversing...");
-    {
-      xbt_dict_cursor_t cursor = nullptr;
-      char* key;
-      int found = 0;
-      char* data;
+    xbt_dict_cursor_t cursor = nullptr;
+    char* key;
+    bool found = false;
+    char* data;
 
-      xbt_dict_foreach (head, cursor, key, data) {
-        if (not key || not data || strcmp(key, data)) {
-          INFO("Seen: " << STR(key) << "->" << STR(data));
-        } else {
-          INFO("Seen: " << STR(key));
-        }
-        if (key && strcmp(key, "null") == 0)
-          found = 1;
-      }
-      REQUIRE(found); // the key 'null', associated to nullptr is not found
+    xbt_dict_foreach (head, cursor, key, data) {
+      INFO("Seen: " << STR(key) << "->" << STR(data));
+      if (key && strcmp(key, "null") == 0)
+        found = true;
     }
+    REQUIRE(found); // the key 'null', associated to nullptr is not found
+
     xbt_dict_free(&head);
   }
 
