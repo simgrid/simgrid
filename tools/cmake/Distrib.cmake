@@ -344,15 +344,6 @@ add_dependencies(check tests)
 #######################################
 
 add_custom_target(maintainer-clean
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/config_unit.c
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/cunit_unit.c
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/dict_unit.c
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/dynar_unit.c
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/ex_unit.c
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/set_unit.c
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/simgrid_units_main.c
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_str_unit.c
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_synchro_unit.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/mpif.f90
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}")
 

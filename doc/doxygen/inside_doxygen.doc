@@ -32,17 +32,17 @@ needed in this file:
     your sub-module there. For that, simply add something like the
     following. The dash (-) will help building item lists. The ref
     command requests for a link to your module, that is identified
-    with the word after that (here, I used xbt_cunit as a sub-module
+    with the word after that (here, I used XBT_str as a sub-module
     identifier.
 @verbatim
- - @ref XBT_cunit
+ - @ref XBT_str
 @endverbatim
 
 @li Create your module below in the file as follows. the first world
 after the defgroup keyword must be the sub-module identifier you used
 above.
 @verbatim
-     /** @defgroup XBT_cunit Unit testing support */
+     /** @defgroup XBT_str String related functions */
 @endverbatim
 Warning, the location of this block decides where it appears in the
 documentation. In particular, the order of the defgroups is not
@@ -54,7 +54,7 @@ Once your group is created and referenced from the group containing
 it, you must populate it. For that, edit the corresponding header file
 to add something like this near the top.
 @verbatim
-/** @addtogroup XBT_cunit
+/** @addtogroup XBT_str
   * @brief <write here a one-line description of your module>
   *
   * <Write here an introduction to your module>

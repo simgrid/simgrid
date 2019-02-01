@@ -270,7 +270,6 @@ set(XBT_SRC
   src/xbt/automaton/automatonparse_promela.c
   src/xbt/backtrace.cpp
   src/xbt/config.cpp
-  src/xbt/cunit.cpp
   src/xbt/dict.cpp
   src/xbt/dict_cursor.c
   src/xbt/dict_elm.c
@@ -751,7 +750,6 @@ set(headers_to_install
   include/xbt/base.h
   include/xbt/config.h
   include/xbt/config.hpp
-  include/xbt/cunit.h
   include/xbt/dict.h
   include/xbt/dynar.h
   include/xbt/ex.h
@@ -1075,7 +1073,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/scripts/fixup_simgrid_dtd_l.pl
   tools/cmake/scripts/my_valgrind.pl
   tools/cmake/scripts/update_tesh.pl
-  tools/cmake/UnitTesting.cmake
   tools/cmake/test_prog/prog_asan.cpp
   tools/cmake/test_prog/prog_makecontext.c
   tools/cmake/test_prog/prog_stackgrowth.c

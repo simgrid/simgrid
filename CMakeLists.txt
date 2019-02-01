@@ -752,7 +752,6 @@ add_custom_target(tests COMMENT "Recompiling the tests")
 
 ### Build some Maintainer files
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MaintainerMode.cmake)
-include(${CMAKE_HOME_DIRECTORY}/tools/cmake/UnitTesting.cmake)
 
 ### Make Libs
 if(NOT WIN32)

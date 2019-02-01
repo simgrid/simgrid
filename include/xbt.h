@@ -26,7 +26,6 @@
 #ifdef __cplusplus
 #include <xbt/config.hpp>
 #endif
-#include <xbt/cunit.h>
 
 #include <xbt/xbt_os_time.h>
 
