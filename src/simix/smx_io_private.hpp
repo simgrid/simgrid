@@ -9,9 +9,6 @@
 #include <xbt/base.h>
 #include "simgrid/s4u/Io.hpp"
 
-XBT_PRIVATE simgrid::kernel::activity::IoImplPtr SIMIX_io_start(std::string name, sg_size_t size, sg_storage_t storage,
-                                                                simgrid::s4u::Io::OpType type);
-
 XBT_PRIVATE void SIMIX_io_finish(smx_activity_t synchro);
 
 #endif

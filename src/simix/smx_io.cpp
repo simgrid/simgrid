@@ -16,21 +16,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
 
-simgrid::kernel::activity::IoImplPtr SIMIX_io_start(std::string name, sg_size_t size, sg_storage_t storage,
-                                                    simgrid::s4u::Io::OpType type)
-{
-  /* set surf's action */
-  simgrid::kernel::resource::Action* surf_action = storage->get_impl()->io_start(size, type);
-
-  simgrid::kernel::activity::IoImplPtr io =
-      simgrid::kernel::activity::IoImplPtr(new simgrid::kernel::activity::IoImpl(name, surf_action, storage));
-
-  XBT_DEBUG("Create IO synchro %p %s", io.get(), name.c_str());
-  simgrid::kernel::activity::IoImpl::on_creation(io);
-
-  return io;
-}
-
 void simcall_HANDLER_io_wait(smx_simcall_t simcall, smx_activity_t synchro)
 {
   XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro.get(), (int)synchro->state_);

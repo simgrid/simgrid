@@ -8,6 +8,7 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "surf/surf.hpp"
+#include <simgrid/s4u/Io.hpp>
 
 namespace simgrid {
 namespace kernel {
@@ -16,8 +17,9 @@ namespace activity {
 class XBT_PUBLIC IoImpl : public ActivityImpl {
 public:
   ~IoImpl() override;
-  explicit IoImpl(std::string name, resource::Action* surf_action, s4u::Storage* storage);
+  explicit IoImpl(std::string name, simgrid::surf::StorageImpl* storage);
 
+  void start(sg_size_t size, simgrid::s4u::Io::OpType type);
   void suspend() override;
   void resume() override;
   void post() override;
@@ -25,10 +27,10 @@ public:
   double get_remaining();
   sg_size_t get_performed_ioops() { return performed_ioops_; }
 
-  s4u::Storage* storage_                          = nullptr;
+  simgrid::surf::StorageImpl* storage_            = nullptr;
   simgrid::kernel::resource::Action* surf_action_ = nullptr;
   sg_size_t performed_ioops_                      = 0;
-  static simgrid::xbt::signal<void(kernel::activity::IoImplPtr)> on_creation;
+  static simgrid::xbt::signal<void(kernel::activity::IoImplPtr)> on_start;
   static simgrid::xbt::signal<void(kernel::activity::IoImplPtr)> on_completion;
 };
 }

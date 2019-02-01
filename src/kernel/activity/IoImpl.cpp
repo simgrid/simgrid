@@ -6,17 +6,16 @@
 #include "src/kernel/activity/IoImpl.hpp"
 #include "simgrid/kernel/resource/Action.hpp"
 #include "src/simix/smx_io_private.hpp"
+#include "src/surf/StorageImpl.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_io);
 
-simgrid::kernel::activity::IoImpl::IoImpl(std::string name, resource::Action* surf_action, s4u::Storage* storage)
-    : ActivityImpl(name), storage_(storage), surf_action_(surf_action)
+simgrid::kernel::activity::IoImpl::IoImpl(std::string name, simgrid::surf::StorageImpl* storage)
+    : ActivityImpl(name), storage_(storage)
 {
   this->state_ = SIMIX_RUNNING;
 
-  surf_action_->set_data(this);
-
-  XBT_DEBUG("Create io %p", this);
+  XBT_DEBUG("Create io impl %p", this);
 }
 
 simgrid::kernel::activity::IoImpl::~IoImpl()
@@ -24,6 +23,15 @@ simgrid::kernel::activity::IoImpl::~IoImpl()
   if (surf_action_ != nullptr)
     surf_action_->unref();
   XBT_DEBUG("Destroy io %p", this);
+}
+
+void simgrid::kernel::activity::IoImpl::start(sg_size_t size, simgrid::s4u::Io::OpType type)
+{
+  surf_action_ = storage_->io_start(size, type);
+  surf_action_->set_data(this);
+
+  XBT_DEBUG("Create IO synchro %p %s", this, name_.c_str());
+  simgrid::kernel::activity::IoImpl::on_start(this);
 }
 
 void simgrid::kernel::activity::IoImpl::cancel()
@@ -71,5 +79,5 @@ void simgrid::kernel::activity::IoImpl::post()
 /*************
  * Callbacks *
  *************/
-simgrid::xbt::signal<void(simgrid::kernel::activity::IoImplPtr)> simgrid::kernel::activity::IoImpl::on_creation;
+simgrid::xbt::signal<void(simgrid::kernel::activity::IoImplPtr)> simgrid::kernel::activity::IoImpl::on_start;
 simgrid::xbt::signal<void(simgrid::kernel::activity::IoImplPtr)> simgrid::kernel::activity::IoImpl::on_completion;

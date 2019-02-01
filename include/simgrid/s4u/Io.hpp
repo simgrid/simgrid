@@ -22,15 +22,15 @@ namespace s4u {
 
 class XBT_PUBLIC Io : public Activity {
 public:
-  enum class OpType { READ, WRITE };
-
-private:
-  explicit Io(sg_size_t size, OpType type) : Activity(), size_(size), type_(type) {}
-public:
   friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Io* i);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Io* i);
   friend simgrid::s4u::Storage; // Factory of IOs
+  enum class OpType { READ, WRITE };
 
+private:
+  explicit Io(sg_storage_t storage, sg_size_t size, OpType type);
+
+public:
   ~Io() = default;
 
   Io* start() override;
@@ -47,10 +47,10 @@ public:
 #endif
 
 private:
-  sg_size_t size_       = 0;
   sg_storage_t storage_ = nullptr;
-  std::string name_     = "";
+  sg_size_t size_       = 0;
   OpType type_          = OpType::READ;
+  std::string name_     = "";
   std::atomic_int_fast32_t refcount_{0};
 }; // class
 }

@@ -14,12 +14,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_io, s4u_activity, "S4U asynchronous IOs");
 namespace simgrid {
 namespace s4u {
 
-Io* Io::start()
+Io::Io(sg_storage_t storage, sg_size_t size, OpType type) : Activity(), storage_(storage), size_(size), type_(type)
 {
   Activity::set_remaining(size_);
-  pimpl_ = simix::simcall([this] {
-    return boost::static_pointer_cast<kernel::activity::IoImpl>(SIMIX_io_start(name_, size_, storage_, type_));
-  });
+  pimpl_ = simix::simcall(
+      [this] { return kernel::activity::IoImplPtr(new kernel::activity::IoImpl(name_, storage_->get_impl())); });
+}
+
+Io* Io::start()
+{
+  simix::simcall([this] { dynamic_cast<kernel::activity::IoImpl*>(pimpl_.get())->start(size_, type_); });
   state_ = State::STARTED;
   return this;
 }
