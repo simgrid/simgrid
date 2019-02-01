@@ -124,6 +124,7 @@ ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/testall)
 
 # New tests should use the Catch Framework
 set(UNIT_TESTS  src/surf/trace_mgr_test.cpp
+                src/xbt/config_test.cpp
                 src/xbt/dict_test.cpp
                 src/xbt/dynar_test.cpp
                 src/xbt/xbt_str_test.cpp)

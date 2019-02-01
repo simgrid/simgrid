@@ -6,7 +6,6 @@
 
 set(FILES_CONTAINING_UNITTESTS
   src/xbt/cunit.cpp
-  src/xbt/config.cpp
 )
 
 ####  Nothing to change below this line to add a new tested file
