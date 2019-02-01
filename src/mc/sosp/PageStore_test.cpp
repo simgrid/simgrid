@@ -36,7 +36,7 @@ public:
   static void unref_pages();
   static void reallocate_page();
 
-  static void new_content(void* data, std::size_t size);
+  static void new_content(void* buf, std::size_t size);
 };
 
 // static member datat initialization
@@ -99,10 +99,10 @@ void helper_tests::reallocate_page()
   REQUIRE(store->size() == 2);
 }
 
-void helper_tests::new_content(void* data, std::size_t size)
+void helper_tests::new_content(void* buf, std::size_t size)
 {
   value++;
-  ::memset(data, value, size);
+  ::memset(buf, value, size);
 }
 
 TEST_CASE("MC page store, used during checkpoint", "MC::PageStore")
