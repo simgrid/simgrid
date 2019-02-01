@@ -23,10 +23,12 @@ class XBT_PUBLIC ActivityImpl {
 public:
   ActivityImpl() = default;
   explicit ActivityImpl(std::string name) : name_(name) {}
+  explicit ActivityImpl(std::string name, resource::Action* surf_action) : name_(name), surf_action_(surf_action) {}
   virtual ~ActivityImpl() = default;
   e_smx_state_t state_ = SIMIX_WAITING; /* State of the activity */
   std::string name_;                    /* Activity name if any */
   std::list<smx_simcall_t> simcalls_;   /* List of simcalls waiting for this activity */
+  resource::Action* surf_action_ = nullptr;
 
   virtual void suspend() = 0;
   virtual void resume()  = 0;

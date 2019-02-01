@@ -20,7 +20,6 @@ public:
   void post() override;
 
   sg_host_t host                 = nullptr;
-  resource::Action* surf_action_ = nullptr;
 };
 }
 }

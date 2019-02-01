@@ -32,7 +32,6 @@ public:
 
   /* The host where the execution takes place. nullptr means this is a parallel exec (and only surf knows the hosts) */
   s4u::Host* host_ = nullptr;
-  resource::Action* surf_action_; /* The Surf execution action encapsulated */
 private:
   resource::Action* timeout_detector_ = nullptr;
 
