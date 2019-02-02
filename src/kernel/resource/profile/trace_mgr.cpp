@@ -45,19 +45,7 @@ Profile::Profile()
   event_list.push_back(val);
 }
 Profile::~Profile()          = default;
-FutureEvtSet::FutureEvtSet() = default;
-FutureEvtSet::~FutureEvtSet()
-{
-  while (not heap_.empty()) {
-    delete heap_.top().second;
-    heap_.pop();
-  }
-}
-} // namespace profile
-} // namespace kernel
-} // namespace simgrid
-
-simgrid::kernel::profile::Profile* tmgr_trace_new_from_string(std::string name, std::string input, double periodicity)
+Profile* Profile::from_string(std::string name, std::string input, double periodicity)
 {
   int linecount                                    = 0;
   simgrid::kernel::profile::Profile* trace         = new simgrid::kernel::profile::Profile();
@@ -101,24 +89,28 @@ simgrid::kernel::profile::Profile* tmgr_trace_new_from_string(std::string name, 
 
   return trace;
 }
-
-simgrid::kernel::profile::Profile* tmgr_trace_new_from_file(std::string filename)
+Profile* Profile::from_file(std::string path)
 {
-  xbt_assert(not filename.empty(), "Cannot parse a trace from an empty filename");
-  xbt_assert(trace_list.find(filename) == trace_list.end(), "Refusing to define trace %s twice", filename.c_str());
+  xbt_assert(not path.empty(), "Cannot parse a trace from an empty filename");
+  xbt_assert(trace_list.find(path) == trace_list.end(), "Refusing to define trace %s twice", path.c_str());
 
-  std::ifstream* f = surf_ifsopen(filename);
-  xbt_assert(not f->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(), (boost::join(surf_path, ":")).c_str());
+  std::ifstream* f = surf_ifsopen(path);
+  xbt_assert(not f->fail(), "Cannot open file '%s' (path=%s)", path.c_str(), (boost::join(surf_path, ":")).c_str());
 
   std::stringstream buffer;
   buffer << f->rdbuf();
   delete f;
 
-  return tmgr_trace_new_from_string(filename, buffer.str(), -1);
+  return Profile::from_string(path, buffer.str(), -1);
 }
-namespace simgrid {
-namespace kernel {
-namespace profile {
+FutureEvtSet::FutureEvtSet() = default;
+FutureEvtSet::~FutureEvtSet()
+{
+  while (not heap_.empty()) {
+    delete heap_.top().second;
+    heap_.pop();
+  }
+}
 
 /** @brief Registers a new trace into the future event set, and get an iterator over the integrated trace  */
 Event* FutureEvtSet::add_trace(Profile* profile, resource::Resource* resource)

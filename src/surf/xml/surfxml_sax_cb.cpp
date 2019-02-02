@@ -429,8 +429,12 @@ void ETag_surfxml_host()    {
 
   XBT_DEBUG("pstate: %s", A_surfxml_host_pstate);
   host.core_amount = surf_parse_get_int(A_surfxml_host_core);
-  host.speed_trace = A_surfxml_host_availability___file[0] ? tmgr_trace_new_from_file(A_surfxml_host_availability___file) : nullptr;
-  host.state_trace = A_surfxml_host_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_host_state___file) : nullptr;
+  host.speed_trace = A_surfxml_host_availability___file[0]
+                         ? simgrid::kernel::profile::Profile::from_file(A_surfxml_host_availability___file)
+                         : nullptr;
+  host.state_trace = A_surfxml_host_state___file[0]
+                         ? simgrid::kernel::profile::Profile::from_file(A_surfxml_host_state___file)
+                         : nullptr;
   host.pstate      = surf_parse_get_int(A_surfxml_host_pstate);
   host.coord       = A_surfxml_host_coordinates;
 
@@ -554,8 +558,12 @@ void STag_surfxml_peer(){
   peer.bw_in       = surf_parse_get_bandwidth(A_surfxml_peer_bw___in, "bw_in of peer", peer.id.c_str());
   peer.bw_out      = surf_parse_get_bandwidth(A_surfxml_peer_bw___out, "bw_out of peer", peer.id.c_str());
   peer.coord       = A_surfxml_peer_coordinates;
-  peer.speed_trace = A_surfxml_peer_availability___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_availability___file) : nullptr;
-  peer.state_trace = A_surfxml_peer_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_state___file) : nullptr;
+  peer.speed_trace = A_surfxml_peer_availability___file[0]
+                         ? simgrid::kernel::profile::Profile::from_file(A_surfxml_peer_availability___file)
+                         : nullptr;
+  peer.state_trace = A_surfxml_peer_state___file[0]
+                         ? simgrid::kernel::profile::Profile::from_file(A_surfxml_peer_state___file)
+                         : nullptr;
 
   if (A_surfxml_peer_lat[0] != '\0')
     XBT_WARN("The latency parameter in <peer> is now deprecated. Use the z coordinate instead of '%s'.",
@@ -577,10 +585,16 @@ void ETag_surfxml_link(){
 
   link.id                  = std::string(A_surfxml_link_id);
   link.bandwidth           = surf_parse_get_bandwidth(A_surfxml_link_bandwidth, "bandwidth of link", link.id.c_str());
-  link.bandwidth_trace     = A_surfxml_link_bandwidth___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file) : nullptr;
+  link.bandwidth_trace     = A_surfxml_link_bandwidth___file[0]
+                             ? simgrid::kernel::profile::Profile::from_file(A_surfxml_link_bandwidth___file)
+                             : nullptr;
   link.latency             = surf_parse_get_time(A_surfxml_link_latency, "latency of link", link.id.c_str());
-  link.latency_trace       = A_surfxml_link_latency___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_latency___file) : nullptr;
-  link.state_trace         = A_surfxml_link_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_state___file):nullptr;
+  link.latency_trace       = A_surfxml_link_latency___file[0]
+                           ? simgrid::kernel::profile::Profile::from_file(A_surfxml_link_latency___file)
+                           : nullptr;
+  link.state_trace = A_surfxml_link_state___file[0]
+                         ? simgrid::kernel::profile::Profile::from_file(A_surfxml_link_state___file)
+                         : nullptr;
 
   switch (A_surfxml_link_sharing___policy) {
   case A_surfxml_link_sharing___policy_SHARED:

@@ -33,7 +33,7 @@ static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char
 {
   std::vector<simgrid::kernel::profile::DatedValue> res;
 
-  simgrid::kernel::profile::Profile* trace = tmgr_trace_new_from_string("TheName", str, 0);
+  simgrid::kernel::profile::Profile* trace = simgrid::kernel::profile::Profile::from_string("TheName", str, 0);
   XBT_VERB("---------------------------------------------------------");
   XBT_VERB("data>>\n%s<<data\n", str);
   for (auto const& evt : trace->event_list)

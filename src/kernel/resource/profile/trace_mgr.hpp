@@ -41,10 +41,6 @@ XBT_PUBLIC void tmgr_trace_event_unref(simgrid::kernel::profile::Event** trace_e
 
 XBT_PUBLIC void tmgr_finalize();
 
-XBT_PUBLIC simgrid::kernel::profile::Profile* tmgr_trace_new_from_file(std::string filename);
-XBT_PUBLIC simgrid::kernel::profile::Profile* tmgr_trace_new_from_string(std::string id, std::string input,
-                                                                         double periodicity);
-
 namespace simgrid {
 namespace kernel {
 namespace profile {
@@ -81,6 +77,9 @@ public:
   /**  Creates an empty trace */
   explicit Profile();
   virtual ~Profile();
+
+  static Profile* from_file(std::string path);
+  static Profile* from_string(std::string name, std::string input, double periodicity);
   // private:
   std::vector<DatedValue> event_list;
 };
