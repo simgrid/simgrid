@@ -313,6 +313,8 @@ set(SURF_SRC
   src/kernel/resource/Action.cpp
   src/kernel/resource/Model.cpp
   src/kernel/resource/Resource.cpp
+  src/kernel/resource/profile/trace_mgr.hpp
+  src/kernel/resource/profile/trace_mgr.cpp
 
   src/kernel/routing/ClusterZone.cpp
   src/kernel/routing/DijkstraZone.cpp
@@ -346,8 +348,6 @@ set(SURF_SRC
   src/surf/xml/platf_private.hpp
   src/surf/xml/surfxml_sax_cb.cpp
   src/surf/xml/surfxml_parseplatf.cpp
-  src/surf/trace_mgr.hpp
-  src/surf/trace_mgr.cpp
   src/surf/host_clm03.cpp
   src/surf/HostImpl.cpp
   src/surf/ptask_L07.cpp

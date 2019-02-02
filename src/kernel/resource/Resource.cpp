@@ -5,8 +5,8 @@
 
 #include "simgrid/kernel/resource/Resource.hpp"
 #include "src/kernel/lmm/maxmin.hpp" // Constraint
+#include "src/kernel/resource/profile/trace_mgr.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "src/surf/trace_mgr.hpp"
 
 namespace simgrid {
 namespace kernel {

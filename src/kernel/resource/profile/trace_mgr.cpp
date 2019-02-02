@@ -3,12 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/sysdep.h"
 
+#include "src/kernel/resource/profile/trace_mgr.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "src/surf/trace_mgr.hpp"
-#include "surf_private.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -60,7 +59,7 @@ FutureEvtSet::~FutureEvtSet()
 
 simgrid::kernel::profile::Profile* tmgr_trace_new_from_string(std::string name, std::string input, double periodicity)
 {
-  int linecount = 0;
+  int linecount                                    = 0;
   simgrid::kernel::profile::Profile* trace         = new simgrid::kernel::profile::Profile();
   simgrid::kernel::profile::DatedValue* last_event = &(trace->event_list.back());
 

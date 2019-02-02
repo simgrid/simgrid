@@ -25,7 +25,7 @@ public:
   bool free_me;
 };
 
-} // namespace resource
+} // namespace profile
 } // namespace kernel
 } // namespace simgrid
 extern XBT_PRIVATE simgrid::kernel::profile::FutureEvtSet future_evt_set;

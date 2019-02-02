@@ -8,8 +8,8 @@
 #include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/s4u/Io.hpp"
 #include "simgrid/s4u/Storage.hpp"
+#include "src/kernel/resource/profile/trace_mgr.hpp"
 #include "src/surf/PropertyHolder.hpp"
-#include "src/surf/trace_mgr.hpp"
 #include "surf_interface.hpp"
 
 #include <map>

@@ -4,8 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_ti.hpp"
+#include "src/kernel/resource/profile/trace_mgr.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "src/surf/trace_mgr.hpp"
 #include "surf/surf.hpp"
 
 #define EPSILON 0.000000001

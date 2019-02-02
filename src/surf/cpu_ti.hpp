@@ -6,8 +6,8 @@
 #ifndef SURF_MODEL_CPUTI_H_
 #define SURF_MODEL_CPUTI_H_
 
+#include "src/kernel/resource/profile/trace_mgr.hpp"
 #include "src/surf/cpu_interface.hpp"
-#include "src/surf/trace_mgr.hpp"
 
 #include <boost/intrusive/list.hpp>
 
