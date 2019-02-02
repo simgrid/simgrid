@@ -5,24 +5,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <algorithm>
-#include <cctype>
-#include <cstdarg>
-#include <cstdio> /* snprintf */
-#include <cstdlib>
-#include <mutex>
-
-#include "src/internal_config.h"
-
 #include "src/xbt_modinter.h"
-
 #include "src/xbt/log_private.hpp"
 #include "xbt/asserts.h"
 #include "xbt/dynar.h"
-#include "xbt/ex.h"
-#include "xbt/misc.h"
 #include "xbt/str.h"
-#include "xbt/sysdep.h"
+
+#include <mutex>
 
 int xbt_log_no_loc = 0; /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
 static std::recursive_mutex* log_cat_init_mutex = nullptr;
@@ -278,14 +267,11 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category, xbt_log_setting_
 int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority)
 {
   DISABLE_XBT_LOG_CAT_INIT();
+  if (category->initialized)
+    return priority >= category->threshold;
+
   if (log_cat_init_mutex != nullptr)
     log_cat_init_mutex->lock();
-
-  if (category->initialized) {
-    if (log_cat_init_mutex != nullptr)
-      log_cat_init_mutex->unlock();
-    return priority >= category->threshold;
-  }
 
   unsigned int cursor;
   xbt_log_setting_t setting = nullptr;
@@ -308,24 +294,15 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
     xbt_log_parent_set(category, category->parent);
 
     if (XBT_LOG_ISENABLED(log, xbt_log_priority_debug)) {
-      char *buf;
-      char* res              = nullptr;
+      std::string res;
       xbt_log_category_t cpp = category->parent->firstChild;
       while (cpp) {
-        if (res) {
-          buf = bprintf("%s %s", res, cpp->name);
-          xbt_free(res);
-          res = buf;
-        } else {
-          res = xbt_strdup(cpp->name);
-        }
+        res += std::string(" ") + cpp->name;
         cpp = cpp->nextSibling;
       }
 
-      XBT_DEBUG("Children of %s: %s; nextSibling: %s", category->parent->name, res,
-             (category->parent->nextSibling ? category->parent->nextSibling->name : "none"));
-
-      xbt_free(res);
+      XBT_DEBUG("Children of %s:%s; nextSibling: %s", category->parent->name, res.c_str(),
+                (category->parent->nextSibling ? category->parent->nextSibling->name : "none"));
     }
   }
 
