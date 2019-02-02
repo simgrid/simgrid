@@ -16,21 +16,17 @@
 #include <sstream>
 #include <unordered_map>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(profile, resource, "Surf profile management");
 
 static std::unordered_map<std::string, simgrid::kernel::profile::Profile*> trace_list;
 
-static inline bool doubleEq(double d1, double d2)
-{
-  return fabs(d1 - d2) < 0.0001;
-}
 namespace simgrid {
 namespace kernel {
 namespace profile {
 
 bool DatedValue::operator==(DatedValue const& e2) const
 {
-  return (doubleEq(date_, e2.date_)) && (doubleEq(value_, e2.value_));
+  return (fabs(date_ - e2.date_) < 0.0001) && (fabs(value_ - e2.value_) < 0.0001);
 }
 std::ostream& operator<<(std::ostream& out, const DatedValue& e)
 {
@@ -48,8 +44,8 @@ Profile::~Profile()          = default;
 Profile* Profile::from_string(std::string name, std::string input, double periodicity)
 {
   int linecount                                    = 0;
-  simgrid::kernel::profile::Profile* trace         = new simgrid::kernel::profile::Profile();
-  simgrid::kernel::profile::DatedValue* last_event = &(trace->event_list.back());
+  simgrid::kernel::profile::Profile* profile       = new simgrid::kernel::profile::Profile();
+  simgrid::kernel::profile::DatedValue* last_event = &(profile->event_list.back());
 
   xbt_assert(trace_list.find(name) == trace_list.end(), "Refusing to define trace %s twice", name.c_str());
 
@@ -74,20 +70,20 @@ Profile* Profile::from_string(std::string name, std::string input, double period
                last_event->date_, event.date_, input.c_str());
     last_event->date_ = event.date_ - last_event->date_;
 
-    trace->event_list.push_back(event);
-    last_event = &(trace->event_list.back());
+    profile->event_list.push_back(event);
+    last_event = &(profile->event_list.back());
   }
   if (last_event) {
     if (periodicity > 0) {
-      last_event->date_ = periodicity + trace->event_list.at(0).date_;
+      last_event->date_ = periodicity + profile->event_list.at(0).date_;
     } else {
       last_event->date_ = -1;
     }
   }
 
-  trace_list.insert({name, trace});
+  trace_list.insert({name, profile});
 
-  return trace;
+  return profile;
 }
 Profile* Profile::from_file(std::string path)
 {
