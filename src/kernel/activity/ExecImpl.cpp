@@ -15,15 +15,15 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
-simgrid::kernel::activity::ExecImpl::ExecImpl(std::string name, resource::Action* surf_action,
+simgrid::kernel::activity::ExecImpl::ExecImpl(std::string name, std::string tracing_category,
                                               resource::Action* timeout_detector, s4u::Host* host)
-    : ActivityImpl(name, surf_action), host_(host), timeout_detector_(timeout_detector)
+    : ActivityImpl(name), host_(host), timeout_detector_(timeout_detector)
 {
   this->state_ = SIMIX_RUNNING;
+  this->set_category(tracing_category);
 
-  surf_action_->set_data(this);
   if (timeout_detector != nullptr)
-    timeout_detector->set_data(this);
+    timeout_detector_->set_data(this);
 
   XBT_DEBUG("Create exec %p", this);
 }
@@ -35,6 +35,20 @@ simgrid::kernel::activity::ExecImpl::~ExecImpl()
   if (timeout_detector_)
     timeout_detector_->unref();
   XBT_DEBUG("Destroy exec %p", this);
+}
+
+void simgrid::kernel::activity::ExecImpl::start(double flops_amount, double priority, double bound)
+{
+  if (not MC_is_active() && not MC_record_replay_is_active()) {
+    surf_action_ = host_->pimpl_cpu->execution_start(flops_amount);
+    surf_action_->set_data(this);
+    surf_action_->set_priority(priority);
+    if (bound > 0)
+      surf_action_->set_bound(bound);
+  }
+
+  XBT_DEBUG("Create execute synchro %p: %s", this, name_.c_str());
+  simgrid::kernel::activity::ExecImpl::on_creation(this);
 }
 
 void simgrid::kernel::activity::ExecImpl::suspend()

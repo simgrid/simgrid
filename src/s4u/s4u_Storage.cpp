@@ -58,8 +58,7 @@ void Storage::set_property(std::string key, std::string value)
 
 IoPtr Storage::io_init(sg_size_t size, Io::OpType type)
 {
-  IoPtr res = IoPtr(new Io(this, size, type));
-  return res;
+  return IoPtr(new Io(this, size, type));
 }
 
 IoPtr Storage::read_async(sg_size_t size)

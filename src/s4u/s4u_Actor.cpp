@@ -338,11 +338,7 @@ void parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, d
 
 ExecPtr exec_init(double flops_amount)
 {
-  ExecPtr res        = ExecPtr(new Exec());
-  res->host_         = get_host();
-  res->flops_amount_ = flops_amount;
-  res->set_remaining(flops_amount);
-  return res;
+  return ExecPtr(new Exec(get_host(), flops_amount));
 }
 
 ExecPtr exec_async(double flops)

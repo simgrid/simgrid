@@ -21,7 +21,8 @@ namespace s4u {
  */
 
 class XBT_PUBLIC Exec : public Activity {
-  Exec() : Activity() {}
+  explicit Exec(sg_host_t host, double flops_amount);
+
 public:
   friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Exec * e);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Exec * e);

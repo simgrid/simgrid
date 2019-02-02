@@ -295,6 +295,7 @@ void Host::execute(double flops)
 {
   execute(flops, 1.0 /* priority */);
 }
+
 void Host::execute(double flops, double priority)
 {
   this_actor::exec_init(flops)->set_host(this)->set_priority(1 / priority)->start()->wait();

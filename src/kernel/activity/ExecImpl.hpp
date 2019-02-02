@@ -17,8 +17,9 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl {
   ~ExecImpl() override;
 
 public:
-  explicit ExecImpl(std::string name, resource::Action* surf_action, resource::Action* timeout_detector,
+  explicit ExecImpl(std::string name, std::string tracing_category, resource::Action* timeout_detector,
                     s4u::Host* host);
+  void start(double flops_amount, double priority, double bound);
   void suspend() override;
   void resume() override;
   void cancel();

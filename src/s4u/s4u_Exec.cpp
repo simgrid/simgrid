@@ -15,9 +15,20 @@ namespace s4u {
 simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Exec::on_start;
 simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Exec::on_completion;
 
+Exec::Exec(sg_host_t host, double flops_amount) : Activity(), host_(host), flops_amount_(flops_amount)
+{
+  Activity::set_remaining(flops_amount_);
+  pimpl_ = simix::simcall([this] {
+    return kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl(name_, tracing_category_,
+                                                                        /*timeout_detector*/ nullptr, host_));
+  });
+}
+
 Exec* Exec::start()
 {
-  pimpl_ = simcall_execution_start(name_, tracing_category_, flops_amount_, 1. / priority_, bound_, host_);
+  simix::simcall([this] {
+    dynamic_cast<kernel::activity::ExecImpl*>(pimpl_.get())->start(flops_amount_, 1. / priority_, bound_);
+  });
   state_ = State::STARTED;
   on_start(Actor::self());
   return this;
@@ -99,6 +110,7 @@ ExecPtr Exec::set_host(Host* host)
   if (state_ == State::STARTED)
     boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->migrate(host);
   host_ = host;
+  boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->host_ = host;
   return this;
 }
 
