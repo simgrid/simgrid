@@ -1,5 +1,4 @@
-/* Copyright (c) 2006-2019. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2019. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -49,11 +48,8 @@ public class Peer extends Process {
     if (args.length != 3 && args.length != 2) {
       Msg.info("Wrong number of arguments");
     }
-    if (args.length == 3) {
-      init(Integer.parseInt(args[0]),true);
-    } else {
-      init(Integer.parseInt(args[0]),false);
-    }
+    init(Integer.parseInt(args[0]), (args.length == 3));
+     
     //Retrieve the deadline
     deadline = Double.parseDouble(args[1]);
     if (deadline < 0) {
