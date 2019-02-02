@@ -4,15 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cerrno>
-#include <unistd.h>
-
-#include <sys/socket.h>
-#include <sys/types.h>
-
+#include "src/mc/remote/Channel.hpp"
 #include <xbt/log.h>
 
-#include "src/mc/remote/Channel.hpp"
+#include <cerrno>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Channel, mc, "MC interprocess communication");
 

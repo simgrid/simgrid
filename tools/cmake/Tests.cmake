@@ -120,8 +120,6 @@ IF(SIMGRID_HAVE_LUA)
   SET_TESTS_PROPERTIES(lua-platform-masterslave    PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/lib/lib?.${LIB_EXE}")
 ENDIF()
 
-ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/testall)
-
 # New tests should use the Catch Framework
 set(UNIT_TESTS  src/surf/trace_mgr_test.cpp
                 src/xbt/config_test.cpp

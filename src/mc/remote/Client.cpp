@@ -3,27 +3,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/mc/remote/Client.hpp"
+#include "src/internal_config.h"
+#include <simgrid/modelchecker.h>
+
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
-
 #include <sys/ptrace.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-
-#include <xbt/log.h>
-#include <xbt/mmalloc.h>
-#include <xbt/sysdep.h>
-
-#include <simgrid/modelchecker.h>
-
-#include "src/internal_config.h"
-
-#include "src/mc/mc_request.hpp"
-#include "src/mc/remote/Client.hpp"
-#include "src/mc/remote/mc_protocol.h"
-
-#include "src/smpi/include/private.hpp"
 
 // We won't need those once the separation MCer/MCed is complete:
 #include "src/mc/mc_smx.hpp"

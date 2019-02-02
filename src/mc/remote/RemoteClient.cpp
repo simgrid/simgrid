@@ -5,43 +5,16 @@
 
 #define _FILE_OFFSET_BITS 64 /* needed for pread_whole to work as expected on 32bits */
 
-#include <algorithm>
-#include <cassert>
-#include <cerrno>
-#include <cstddef>
-#include <cstdint>
-#include <string>
-#include <vector>
+#include "src/mc/remote/RemoteClient.hpp"
 
-#include <sys/ptrace.h>
-
-#include <cstdio>
-
-#include <fcntl.h>
-#include <sys/mman.h> // PROT_*
-#include <sys/types.h>
-#include <unistd.h>
-
-#include <pthread.h>
-
-#include <libgen.h>
-
-#include <libunwind-ptrace.h>
-#include <libunwind.h>
-
-#include "xbt/base.h"
 #include "xbt/file.hpp"
 #include "xbt/log.h"
-#include <xbt/mmalloc.h>
-
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/mc_unw.hpp"
 #include "src/mc/sosp/mc_snapshot.hpp"
 
-#include "src/mc/AddressSpace.hpp"
-#include "src/mc/ObjectInformation.hpp"
-#include "src/mc/Variable.hpp"
-#include "src/mc/remote/RemoteClient.hpp"
+#include <fcntl.h>
+#include <libunwind-ptrace.h>
+#include <sys/mman.h> // PROT_*
 
 using simgrid::mc::remote;
 
