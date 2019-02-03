@@ -196,7 +196,6 @@ XBT_ATTRIB_DEPRECATED_v324("Please use ActorImpl::throw_exception") XBT_PUBLIC
 XBT_PUBLIC void simcall_process_suspend(smx_actor_t process);
 
 /* Getters and Setters */
-XBT_PUBLIC void simcall_process_set_data(smx_actor_t process, void* data);
 XBT_PUBLIC void simcall_process_set_kill_time(smx_actor_t process, double kill_time);
 XBT_PUBLIC void simcall_process_join(smx_actor_t process, double timeout);
 /* Sleep control */
@@ -233,7 +232,6 @@ XBT_PUBLIC smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
                                               int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                                               void* data);
 #endif
-XBT_PUBLIC void simcall_comm_cancel(smx_activity_t comm);
 
 /* FIXME: waitany is going to be a vararg function, and should take a timeout */
 XBT_PUBLIC unsigned int simcall_comm_waitany(xbt_dynar_t comms, double timeout);

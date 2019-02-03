@@ -189,7 +189,7 @@ msg_error_t MSG_task_cancel(msg_task_t task)
   if (simdata->compute) {
     simgrid::simix::simcall([simdata] { simdata->compute->cancel(); });
   } else if (simdata->comm) {
-    simcall_comm_cancel(simdata->comm);
+    simgrid::simix::simcall([simdata] { simdata->comm->cancel(); });
   }
   simdata->setNotUsed();
   return MSG_OK;

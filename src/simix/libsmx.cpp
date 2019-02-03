@@ -95,19 +95,6 @@ void simcall_process_suspend(smx_actor_t process)
 
 /**
  * @ingroup simix_process_management
- * @brief Set the user data of a #smx_actor_t.
- *
- * This functions sets the user data associated to @a process.
- * @param process SIMIX process
- * @param data User data
- */
-void simcall_process_set_data(smx_actor_t process, void *data)
-{
-  simgrid::simix::simcall([process, data] { process->set_user_data(data); });
-}
-
-/**
- * @ingroup simix_process_management
  * @brief Set the kill time of a process.
  */
 void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
@@ -233,18 +220,6 @@ smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
   xbt_assert(mbox, "No rendez-vous point defined for iprobe");
 
   return simcall_BODY_comm_iprobe(mbox, type, match_fun, data);
-}
-
-/**
- * @ingroup simix_comm_management
- */
-void simcall_comm_cancel(smx_activity_t synchro)
-{
-  simgrid::simix::simcall([synchro] {
-    simgrid::kernel::activity::CommImplPtr comm =
-        boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
-    comm->cancel();
-  });
 }
 
 /**
