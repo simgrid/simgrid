@@ -14,15 +14,17 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.h"
-#include "src/simix/smx_private.hpp" // For access to simix_global->process_list
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/simix/smx_private.hpp" // For access to simix_global->process_list
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
+#include <simgrid/Exception.hpp>
 
 #include <string>
 
 XBT_LOG_NEW_CATEGORY(s4u, "Log channels of the S4U (Simgrid for you) interface");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_engine, s4u, "Logging specific to S4U (engine)");
 
 namespace simgrid {
 namespace s4u {
@@ -70,9 +72,34 @@ double Engine::get_clock()
   return SIMIX_get_clock();
 }
 
+/**
+ * @brief A platform loader.
+ *
+ * Creates a new platform, including hosts, links, and the routing_table.
+ * @param platf a filename of the XML description of a platform. This file follows this DTD :
+ *
+ *     @include src/surf/xml/simgrid.dtd
+ *
+ * Here is a small example of such a platform
+ *
+ *     @include examples/platforms/small_platform.xml
+ */
 void Engine::load_platform(std::string platf)
 {
-  SIMIX_create_environment(platf);
+  double start = 0;
+  double end   = 0;
+  if (XBT_LOG_ISENABLED(s4u_engine, xbt_log_priority_debug))
+    start = xbt_os_time();
+  try {
+    parse_platform_file(platf);
+  } catch (xbt_ex& e) {
+    xbt_die("Error while loading %s: %s", platf.c_str(), e.what());
+  }
+
+  if (XBT_LOG_ISENABLED(s4u_engine, xbt_log_priority_debug)) {
+    end = xbt_os_time();
+    XBT_DEBUG("PARSE TIME: %g", (end - start));
+  }
 }
 
 void Engine::register_function(std::string name, int (*code)(int, char**))

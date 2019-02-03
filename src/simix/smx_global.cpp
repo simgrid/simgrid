@@ -192,7 +192,7 @@ void SIMIX_global_init(int *argc, char **argv)
 #endif
     /* register a function to be called by SURF after the environment creation */
     sg_platf_init();
-    simgrid::s4u::on_platform_created.connect(SIMIX_post_create_environment);
+    simgrid::s4u::on_platform_created.connect(surf_presolve);
 
     simgrid::s4u::Storage::on_creation.connect([](simgrid::s4u::Storage& storage) {
       sg_storage_t s = simgrid::s4u::Storage::by_name(storage.get_cname());

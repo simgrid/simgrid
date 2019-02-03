@@ -108,10 +108,6 @@ XBT_ATTRIB_DEPRECATED_v324("Please use simgrid_load_platform()") XBT_PUBLIC
     void SIMIX_create_environment(const char* file);
 SG_END_DECL()
 
-#ifdef __cplusplus
-XBT_PUBLIC void SIMIX_create_environment(std::string file);
-#endif
-
 /******************************** Deployment **********************************/
 SG_BEGIN_DECL()
 XBT_ATTRIB_DEPRECATED_v324("Please use simgrid_register_function()") XBT_PUBLIC
