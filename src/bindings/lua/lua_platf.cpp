@@ -189,7 +189,7 @@ int console_add_host(lua_State *L) {
   lua_gettable(L, -2);
   const char *filename = lua_tostring(L, -1);
   if (filename)
-    host.speed_trace = tmgr_trace_new_from_file(filename);
+    host.speed_trace = simgrid::kernel::profile::Profile::from_file(filename);
   lua_pop(L, 1);
 
   //get trace state
@@ -197,7 +197,7 @@ int console_add_host(lua_State *L) {
   lua_gettable(L, -2);
   filename = lua_tostring(L, -1);
     if (filename)
-      host.state_trace = tmgr_trace_new_from_file(filename);
+      host.state_trace = simgrid::kernel::profile::Profile::from_file(filename);
   lua_pop(L, 1);
 
   sg_platf_new_host(&host);
@@ -249,7 +249,7 @@ int  console_add_link(lua_State *L) {
   lua_gettable(L, -2);
   const char *filename = lua_tostring(L, -1);
   if (filename)
-    link.bandwidth_trace = tmgr_trace_new_from_file(filename);
+    link.bandwidth_trace = simgrid::kernel::profile::Profile::from_file(filename);
   lua_pop(L, 1);
 
   //get latency_trace value
@@ -257,7 +257,7 @@ int  console_add_link(lua_State *L) {
   lua_gettable(L, -2);
   filename = lua_tostring(L, -1);
   if (filename)
-    link.latency_trace = tmgr_trace_new_from_file(filename);
+    link.latency_trace = simgrid::kernel::profile::Profile::from_file(filename);
   lua_pop(L, 1);
 
   //get state_trace value
@@ -265,7 +265,7 @@ int  console_add_link(lua_State *L) {
   lua_gettable(L, -2);
   filename = lua_tostring(L, -1);
   if (filename)
-    link.state_trace = tmgr_trace_new_from_file(filename);
+    link.state_trace = simgrid::kernel::profile::Profile::from_file(filename);
   lua_pop(L, 1);
 
   //get policy value
