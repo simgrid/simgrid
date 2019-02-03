@@ -13,6 +13,7 @@
 #include "simgrid/forward.h"
 
 #include <atomic>
+#include <simgrid/kernel/resource/Action.hpp>
 #include <simgrid/simix.hpp>
 
 namespace simgrid {
@@ -32,6 +33,8 @@ public:
   virtual void suspend() = 0;
   virtual void resume()  = 0;
   virtual void post()    = 0; // What to do when a simcall terminates
+
+  void set_category(std::string category);
 
   // boost::intrusive_ptr<ActivityImpl> support:
   friend XBT_PUBLIC void intrusive_ptr_add_ref(ActivityImpl* activity);
