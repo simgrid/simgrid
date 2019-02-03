@@ -29,7 +29,7 @@ public:
   ~ActorImpl();
 
   void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }
-
+  void set_kill_time(double kill_time);
   boost::intrusive::list_member_hook<> host_process_list_hook; /* simgrid::simix::Host::process_list */
   boost::intrusive::list_member_hook<> smx_destroy_list_hook;  /* simix_global->process_to_destroy */
   boost::intrusive::list_member_hook<> smx_synchro_hook;       /* {mutex,cond,sem}->sleeping */

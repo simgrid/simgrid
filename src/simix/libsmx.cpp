@@ -95,22 +95,6 @@ void simcall_process_suspend(smx_actor_t process)
 
 /**
  * @ingroup simix_process_management
- * @brief Set the kill time of a process.
- */
-void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
-{
-
-  if (kill_time <= SIMIX_get_clock())
-    return;
-  XBT_DEBUG("Set kill time %f for process %s@%s", kill_time, process->get_cname(), process->host_->get_cname());
-  process->kill_timer = SIMIX_timer_set(kill_time, [process] {
-    SIMIX_process_kill(process, nullptr);
-    process->kill_timer=nullptr;
-  });
-}
-
-/**
- * @ingroup simix_process_management
  * @brief Creates a new sleep SIMIX synchro.
  *
  * This function creates a SURF action and allocates the data necessary

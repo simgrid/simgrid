@@ -455,7 +455,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
       smx_actor_t actor = SIMIX_process_create(arg->name.c_str(), std::move(arg->code), arg->data, arg->host,
                                                arg->properties.get(), nullptr);
       if (arg->kill_time >= 0)
-        simcall_process_set_kill_time(actor, arg->kill_time);
+        actor->set_kill_time(arg->kill_time);
       if (auto_restart)
         actor->set_auto_restart(auto_restart);
       delete arg;
@@ -469,7 +469,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
     /* The actor creation will fail if the host is currently dead, but that's fine */
     if (actor != nullptr) {
       if (arg->kill_time >= 0)
-        simcall_process_set_kill_time(actor, arg->kill_time);
+        actor->set_kill_time(arg->kill_time);
       if (auto_restart)
         actor->set_auto_restart(auto_restart);
     }

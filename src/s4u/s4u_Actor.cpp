@@ -164,9 +164,9 @@ bool Actor::is_suspended()
   return simgrid::simix::simcall([this] { return pimpl_->suspended_; });
 }
 
-void Actor::set_kill_time(double time)
+void Actor::set_kill_time(double kill_time)
 {
-  simcall_process_set_kill_time(pimpl_, time);
+  simgrid::simix::simcall([this, kill_time] { pimpl_->set_kill_time(kill_time); });
 }
 
 /** @brief Get the kill time of an actor(or 0 if unset). */

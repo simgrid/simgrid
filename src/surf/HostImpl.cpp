@@ -106,7 +106,7 @@ void HostImpl::turn_on()
     smx_actor_t actor =
         SIMIX_process_create(arg->name.c_str(), arg->code, nullptr, arg->host, arg->properties.get(), nullptr);
     if (arg->kill_time >= 0)
-      simcall_process_set_kill_time(actor, arg->kill_time);
+      actor->set_kill_time(arg->kill_time);
     if (arg->auto_restart)
       actor->auto_restart_ = arg->auto_restart;
     if (arg->daemon_)

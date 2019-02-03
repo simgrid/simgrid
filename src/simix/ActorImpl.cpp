@@ -105,6 +105,17 @@ ActorImpl::~ActorImpl()
   delete this->context_;
 }
 
+void ActorImpl::set_kill_time(double kill_time)
+{
+  if (kill_time <= SIMIX_get_clock())
+    return;
+  XBT_DEBUG("Set kill time %f for process %s@%s", kill_time, get_cname(), host_->get_cname());
+  kill_timer = SIMIX_timer_set(kill_time, [this] {
+    SIMIX_process_kill(this, nullptr);
+    kill_timer = nullptr;
+  });
+}
+
 static void dying_daemon(int /*exit_status*/, void* data)
 {
   std::vector<ActorImpl*>* vect = &simix_global->daemons;
@@ -140,7 +151,7 @@ simgrid::s4u::Actor* ActorImpl::restart()
   // start the new process
   ActorImpl* actor =
       SIMIX_process_create(arg.name, std::move(arg.code), arg.data, arg.host, arg.properties.get(), nullptr);
-  simcall_process_set_kill_time(actor, arg.kill_time);
+  actor->set_kill_time(arg.kill_time);
   actor->set_auto_restart(arg.auto_restart);
 
   return actor->ciface();

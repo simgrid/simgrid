@@ -190,10 +190,8 @@ XBT_ATTRIB_DEPRECATED_v324("Please use ActorImpl::throw_exception") XBT_PUBLIC
 
 /* Process handling */
 XBT_PUBLIC void simcall_process_suspend(smx_actor_t process);
-
-/* Getters and Setters */
-XBT_PUBLIC void simcall_process_set_kill_time(smx_actor_t process, double kill_time);
 XBT_PUBLIC void simcall_process_join(smx_actor_t process, double timeout);
+
 /* Sleep control */
 XBT_PUBLIC e_smx_state_t simcall_process_sleep(double duration);
 SG_END_DECL()
