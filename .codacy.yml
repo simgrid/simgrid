@@ -3,17 +3,16 @@ engines:
  coverage:
    enabled: true
    exclude_paths:
-     - teshsuite/**
+     - 'teshsuite/**'
 exclude_paths:
-  - src/include/catch.hpp
-  - teshsuite/smpi/mpich3-test/**
-  - teshsuite/smpi/isp/**
-  - **/*_dtd.c
-  - **/*_dtd.h
-  - **/*yy.c
-  - src/xbt/automaton/parserPromela.tab.*
-  - src/smpi/colls/**/*
-  - examples/smpi/NAS/*
-  - src/xbt/RngStream.c
-  - include/xbt/RngStream.h
-  
+  - 'src/include/catch.hpp'
+  - 'teshsuite/smpi/mpich3-test/**'
+  - 'teshsuite/smpi/isp/**'
+  - '**/*_dtd.c'
+  - '**/*_dtd.h'
+  - '**/*yy.c'
+  - 'src/xbt/automaton/parserPromela.tab.*'
+  - 'src/smpi/colls/**/*'
+  - 'examples/smpi/NAS/*'
+  - 'src/xbt/RngStream.c'
+  - 'include/xbt/RngStream.h'
