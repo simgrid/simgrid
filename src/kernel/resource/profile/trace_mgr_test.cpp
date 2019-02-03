@@ -32,7 +32,6 @@ public:
 static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char* str)
 {
   std::vector<simgrid::kernel::profile::DatedValue> res;
-
   simgrid::kernel::profile::Profile* trace = simgrid::kernel::profile::Profile::from_string("TheName", str, 0);
   XBT_VERB("---------------------------------------------------------");
   XBT_VERB("data>>\n%s<<data\n", str);
@@ -41,7 +40,7 @@ static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char
 
   MockedResource daResource;
   simgrid::kernel::profile::FutureEvtSet fes;
-  simgrid::kernel::profile::Event* insertedIt = fes.add_trace(trace, &daResource);
+  simgrid::kernel::profile::Event* insertedIt = trace->schedule(&fes, &daResource);
 
   while (fes.next_date() <= 20.0 && fes.next_date() >= 0) {
     thedate = fes.next_date();
@@ -63,9 +62,6 @@ static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char
   return res;
 }
 
-/* Fails in a way that is difficult to test: xbt_assert should become throw
-BOOST_AUTO_TEST_CASE(no_evt_noloop) {
-}*/
 TEST_CASE("kernel::profile: Resource profiles, defining the external load", "kernel::profile")
 {
 

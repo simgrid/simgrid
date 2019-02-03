@@ -77,11 +77,16 @@ public:
   /**  Creates an empty trace */
   explicit Profile();
   virtual ~Profile();
+  Event* schedule(FutureEvtSet* fes, resource::Resource* resource);
+  DatedValue next(Event* event);
 
   static Profile* from_file(std::string path);
   static Profile* from_string(std::string name, std::string input, double periodicity);
   // private:
   std::vector<DatedValue> event_list;
+
+private:
+  FutureEvtSet* fes_ = nullptr;
 };
 
 /** @brief Future Event Set (collection of iterators over the traces)
@@ -92,7 +97,7 @@ public:
   virtual ~FutureEvtSet();
   double next_date() const;
   Event* pop_leq(double date, double* value, resource::Resource** resource);
-  Event* add_trace(Profile* profile, resource::Resource* resource);
+  void add_event(double date, Event* evt);
 
 private:
   typedef std::pair<double, Event*> Qelt;

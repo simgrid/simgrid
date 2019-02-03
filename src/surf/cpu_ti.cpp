@@ -375,8 +375,10 @@ void CpuTi::set_speed_profile(kernel::profile::Profile* profile)
   /* add a fake trace event if periodicity == 0 */
   if (profile && profile->event_list.size() > 1) {
     kernel::profile::DatedValue val = profile->event_list.back();
-    if (val.date_ < 1e-12)
-      speed_.event = future_evt_set.add_trace(new simgrid::kernel::profile::Profile(), this);
+    if (val.date_ < 1e-12) {
+      simgrid::kernel::profile::Profile* prof = new simgrid::kernel::profile::Profile();
+      speed_.event                            = prof->schedule(&future_evt_set, this);
+    }
   }
 }
 

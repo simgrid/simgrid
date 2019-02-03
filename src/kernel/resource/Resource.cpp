@@ -67,7 +67,7 @@ void Resource::set_state_profile(profile::Profile* profile)
 {
   xbt_assert(state_event_ == nullptr, "Cannot set a second state profile to %s", get_cname());
 
-  state_event_ = future_evt_set.add_trace(profile, this);
+  state_event_ = profile->schedule(&future_evt_set, this);
 }
 
 kernel::lmm::Constraint* Resource::get_constraint() const
