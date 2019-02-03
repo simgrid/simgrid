@@ -275,21 +275,6 @@ void simcall_comm_wait(smx_activity_t comm, double timeout)
 }
 
 /**
- * @brief Set the category of an synchro.
- *
- * This functions changes the category only. It calls a surf function.
- * @param synchro The execution synchro
- * @param category The tracing category
- */
-void simcall_set_category(smx_activity_t synchro, std::string category)
-{
-  if (category.empty()) {
-    return;
-  }
-  simgrid::simix::simcall([synchro, category] { SIMIX_set_category(synchro, category); });
-}
-
-/**
  * @ingroup simix_comm_management
  *
  */

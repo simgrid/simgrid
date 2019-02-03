@@ -157,22 +157,3 @@ void SIMIX_execution_finish(smx_activity_t synchro)
     SIMIX_simcall_answer(simcall);
   }
 }
-
-void SIMIX_set_category(smx_activity_t synchro, std::string category)
-{
-  if (synchro->state_ != SIMIX_RUNNING)
-    return;
-
-  simgrid::kernel::activity::ExecImplPtr exec =
-      boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
-  if (exec != nullptr) {
-    exec->surf_action_->set_category(category);
-    return;
-  }
-
-  simgrid::kernel::activity::CommImplPtr comm =
-      boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
-  if (comm != nullptr) {
-    comm->surf_action_->set_category(category);
-  }
-}

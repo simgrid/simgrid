@@ -67,7 +67,7 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
               simdata->bytes_parallel_amount, -1.0, timeout));
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute.get());
       if (task->category != nullptr)
-        simcall_set_category(simdata->compute, task->category);
+        simgrid::simix::simcall([task] { task->simdata->compute->set_category(task->category); });
     } else {
       sg_host_t host   = MSG_process_get_host(MSG_process_self());
       simdata->compute = simgrid::simix::simcall([task, host] {
@@ -335,8 +335,9 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* al
     comm = new simgrid::msg::Comm(task, nullptr, act);
   }
 
-  if (TRACE_is_enabled())
-    simcall_set_category(act, task->category);
+  if (TRACE_is_enabled() && task->category != nullptr)
+    simgrid::simix::simcall([act, task] { act->set_category(task->category); });
+
   TRACE_msg_task_put_end();
 
   return comm;
@@ -775,7 +776,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
     comm = simcall_comm_isend(SIMIX_process_self(), mailbox->get_impl(), t_simdata->bytes_amount, t_simdata->rate, task,
                               sizeof(void*), nullptr, nullptr, nullptr, nullptr, 0);
     if (TRACE_is_enabled() && task->category != nullptr)
-      simcall_set_category(comm, task->category);
+      simgrid::simix::simcall([comm, task] { comm->set_category(task->category); });
     t_simdata->comm = boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(comm);
     simcall_comm_wait(comm, timeout);
   } catch (simgrid::TimeoutError& e) {

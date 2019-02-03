@@ -512,8 +512,11 @@ void Request::start()
     XBT_DEBUG("send simcall posted");
 
     /* FIXME: detached sends are not traceable (action_ == nullptr) */
-    if (action_ != nullptr)
-      simcall_set_category(action_, TRACE_internal_smpi_get_category());
+    if (action_ != nullptr) {
+      std::string category = TRACE_internal_smpi_get_category();
+      simgrid::simix::simcall([this, category] { this->action_->set_category(category); });
+    }
+
     if (async_small_thresh != 0 || ((flags_ & MPI_REQ_RMA) != 0))
       xbt_mutex_release(mut);
   }
