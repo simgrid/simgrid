@@ -12,6 +12,7 @@
 #include "xbt/str.h"
 
 #include <mutex>
+#include <string>
 
 int xbt_log_no_loc = 0; /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
 static std::recursive_mutex* log_cat_init_mutex = nullptr;
