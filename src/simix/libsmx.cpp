@@ -28,33 +28,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 /**
  * @ingroup simix_process_management
- * @brief Creates a synchro that executes some computation of a host.
- *
- * This function creates a SURF action and allocates the data necessary
- * to create the SIMIX synchro. It can raise a HostFailureException exception if the host crashed.
- *
- * @param name Name of the execution synchro to create
- * @param category Tracing category
- * @param flops_amount amount Computation amount (in flops)
- * @param priority computation priority
- * @param bound Maximal speed for this execution (in flops) or -1 if no limit
- * @param host host where the synchro will be executed
- * @return A new SIMIX execution synchronization
- */
-smx_activity_t simcall_execution_start(std::string name, std::string category, double flops_amount, double priority,
-                                       double bound, simgrid::s4u::Host* host)
-{
-  /* checking for infinite values */
-  xbt_assert(std::isfinite(flops_amount), "flops_amount is not finite!");
-  xbt_assert(std::isfinite(priority), "priority is not finite!");
-
-  return simgrid::simix::simcall([name, category, flops_amount, priority, bound, host] {
-    return SIMIX_execution_start(name, category, flops_amount, priority, bound, host);
-  });
-}
-
-/**
- * @ingroup simix_process_management
  * @brief Creates a synchro that may involve parallel computation on
  * several hosts and communication between them.
  *
@@ -87,59 +60,6 @@ smx_activity_t simcall_execution_parallel_start(std::string name, int host_nb, s
 
   return simgrid::simix::simcall([name, host_nb, host_list, flops_amount, bytes_amount, rate, timeout] {
     return SIMIX_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, rate, timeout);
-  });
-}
-
-/**
- * @ingroup simix_process_management
- * @brief Cancels an execution synchro.
- *
- * This functions stops the execution. It calls a surf function.
- * @param execution The execution synchro to cancel
- */
-void simcall_execution_cancel(smx_activity_t execution)
-{
-  simgrid::kernel::activity::ExecImplPtr exec =
-      boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
-  if (exec->surf_action_ == nullptr) // FIXME: One test fails if I remove this, but I don't get why...
-    return;
-  simgrid::simix::simcall([exec] { exec->cancel(); });
-}
-
-/**
- * @ingroup simix_process_management
- * @brief Changes the priority of an execution synchro.
- *
- * This functions changes the priority only. It calls a surf function.
- * @param execution The execution synchro
- * @param priority The new priority
- */
-void simcall_execution_set_priority(smx_activity_t execution, double priority)
-{
-  /* checking for infinite values */
-  xbt_assert(std::isfinite(priority), "priority is not finite!");
-  simgrid::simix::simcall([execution, priority] {
-
-    simgrid::kernel::activity::ExecImplPtr exec =
-        boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
-    exec->set_priority(priority);
-  });
-}
-
-/**
- * @ingroup simix_process_management
- * @brief Changes the capping (the maximum CPU utilization) of an execution synchro.
- *
- * This functions changes the capping only. It calls a surf function.
- * @param execution The execution synchro
- * @param bound The new bound
- */
-void simcall_execution_set_bound(smx_activity_t execution, double bound)
-{
-  simgrid::simix::simcall([execution, bound] {
-    simgrid::kernel::activity::ExecImplPtr exec =
-        boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
-    exec->set_bound(bound);
   });
 }
 

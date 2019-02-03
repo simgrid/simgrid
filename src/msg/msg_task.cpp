@@ -6,6 +6,7 @@
 #include "msg_private.hpp"
 #include "src/simix/smx_private.hpp"
 #include <algorithm>
+#include <cmath>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)");
 
@@ -186,7 +187,7 @@ msg_error_t MSG_task_cancel(msg_task_t task)
 
   simdata_task_t simdata = task->simdata;
   if (simdata->compute) {
-    simcall_execution_cancel(simdata->compute);
+    simgrid::simix::simcall([simdata] { simdata->compute->cancel(); });
   } else if (simdata->comm) {
     simcall_comm_cancel(simdata->comm);
   }
@@ -275,8 +276,9 @@ double MSG_task_get_bytes_amount(msg_task_t task)
 void MSG_task_set_priority(msg_task_t task, double priority)
 {
   task->simdata->priority = 1 / priority;
+  xbt_assert(std::isfinite(task->simdata->priority), "priority is not finite!");
   if (task->simdata->compute)
-    simcall_execution_set_priority(task->simdata->compute, task->simdata->priority);
+    simgrid::simix::simcall([task] { task->simdata->compute->set_priority(task->simdata->priority); });
 }
 
 /** @brief Changes the maximum CPU utilization of a computation task (in flops/s).
@@ -290,5 +292,5 @@ void MSG_task_set_bound(msg_task_t task, double bound)
 
   task->simdata->bound = bound;
   if (task->simdata->compute)
-    simcall_execution_set_bound(task->simdata->compute, task->simdata->bound);
+    simgrid::simix::simcall([task, bound] { task->simdata->compute->set_bound(bound); });
 }

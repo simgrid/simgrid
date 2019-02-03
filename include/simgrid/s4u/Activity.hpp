@@ -90,6 +90,8 @@ public:
   /** Retrieve the user data of the Activity */
   void* get_user_data() { return user_data_; }
 
+  simgrid::kernel::activity::ActivityImplPtr get_impl() { return pimpl_; }
+
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v324("Please use Activity::wait_for()") virtual void wait(double timeout) = 0;
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_state()") Activity::State getState() { return state_; }

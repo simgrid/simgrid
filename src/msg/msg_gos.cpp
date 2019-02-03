@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/Exception.hpp"
+#include <cmath>
 
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/instr/instr_private.hpp"
@@ -68,9 +69,17 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
       if (task->category != nullptr)
         simcall_set_category(simdata->compute, task->category);
     } else {
-      simdata->compute = boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(
-          simcall_execution_start(task->name ?: "", task->category ?: "", simdata->flops_amount, simdata->priority,
-                                  simdata->bound, MSG_process_get_host(MSG_process_self())));
+      sg_host_t host   = MSG_process_get_host(MSG_process_self());
+      simdata->compute = simgrid::simix::simcall([task, host] {
+        return simgrid::kernel::activity::ExecImplPtr(
+            new simgrid::kernel::activity::ExecImpl(task->name ?: "", task->category ?: "",
+                                                    /*timeout_detector*/ nullptr, host));
+      });
+      /* checking for infinite values */
+      xbt_assert(std::isfinite(simdata->flops_amount), "flops_amount is not finite!");
+      xbt_assert(std::isfinite(simdata->priority), "priority is not finite!");
+
+      simdata->compute->start(simdata->flops_amount, simdata->priority, simdata->bound);
     }
 
     comp_state = simcall_execution_wait(simdata->compute);
