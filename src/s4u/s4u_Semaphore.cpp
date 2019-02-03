@@ -15,22 +15,25 @@ namespace s4u {
 
 Semaphore::Semaphore(unsigned int initial_capacity)
 {
-    sem_ = simgrid::simix::simcall([initial_capacity] { return SIMIX_sem_init(initial_capacity); });
+  sem_ = simgrid::simix::simcall([initial_capacity] { return SIMIX_sem_init(initial_capacity); });
 }
 
 Semaphore::~Semaphore()
 {
-    SIMIX_sem_destroy(sem_);
+  if (sem_ != nullptr) {
+    xbt_assert(sem_->sleeping.empty(), "Cannot destroy semaphore since someone is still using it");
+    delete sem_;
+  }
 }
 
 SemaphorePtr Semaphore::create(unsigned int initial_capacity)
 {
-    return SemaphorePtr(new Semaphore(initial_capacity));
+  return SemaphorePtr(new Semaphore(initial_capacity));
 }
 
 void Semaphore::acquire()
 {
-    simcall_sem_acquire(sem_);
+  simcall_sem_acquire(sem_);
 }
 
 int Semaphore::acquire_timeout(double timeout)
@@ -40,7 +43,7 @@ int Semaphore::acquire_timeout(double timeout)
 
 void Semaphore::release()
 {
-    simgrid::simix::simcall([this] { SIMIX_sem_release(sem_); });
+  simgrid::simix::simcall([this] { SIMIX_sem_release(sem_); });
 }
 
 int Semaphore::get_capacity()

@@ -89,18 +89,6 @@ smx_sem_t SIMIX_sem_init(unsigned int value)
   return sem;
 }
 
-/** @brief Destroys a semaphore */
-void SIMIX_sem_destroy(smx_sem_t sem)
-{
-  XBT_IN("(%p)",sem);
-  XBT_DEBUG("Destroy semaphore %p", sem);
-  if (sem != nullptr) {
-    xbt_assert(sem->sleeping.empty(), "Cannot destroy semaphore since someone is still using it");
-    delete sem;
-  }
-  XBT_OUT();
-}
-
 /** @brief release the semaphore
  *
  * Unlock a process waiting on the semaphore.
