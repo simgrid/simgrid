@@ -41,6 +41,44 @@ Profile::Profile()
   event_list.push_back(val);
 }
 Profile::~Profile()          = default;
+
+/** @brief Register this profile for that resource onto that FES,
+ * and get an iterator over the integrated trace  */
+Event* Profile::schedule(FutureEvtSet* fes, resource::Resource* resource)
+{
+  Event* event    = new Event();
+  event->profile  = this;
+  event->idx      = 0;
+  event->resource = resource;
+  event->free_me  = false;
+
+  xbt_assert((event->idx < event_list.size()), "Your profile should have at least one event!");
+
+  fes_ = fes;
+  fes_->add_event(0.0 /* start time */, event);
+
+  return event;
+}
+
+/** @brief Gets the next event from a profile */
+DatedValue Profile::next(Event* event)
+{
+  double event_date  = fes_->next_date();
+  DatedValue dateVal = event_list.at(event->idx);
+
+  if (event->idx < event_list.size() - 1) {
+    fes_->add_event(event_date + dateVal.date_, event);
+    event->idx++;
+  } else if (dateVal.date_ > 0) { /* Last element. Shall we loop? */
+    fes_->add_event(event_date + dateVal.date_, event);
+    event->idx = 1; /* idx=0 is a placeholder to store when events really start */
+  } else {          /* If we don't loop, we don't need this event anymore */
+    event->free_me = true;
+  }
+
+  return dateVal;
+}
+
 Profile* Profile::from_string(std::string name, std::string input, double periodicity)
 {
   int linecount                                    = 0;
@@ -108,23 +146,13 @@ FutureEvtSet::~FutureEvtSet()
   }
 }
 
-/** @brief Registers a new trace into the future event set, and get an iterator over the integrated trace  */
-Event* FutureEvtSet::add_trace(Profile* profile, resource::Resource* resource)
+/** @brief Schedules an event to a future date */
+void FutureEvtSet::add_event(double date, Event* evt)
 {
-  Event* event    = new Event();
-  event->profile  = profile;
-  event->idx      = 0;
-  event->resource = resource;
-  event->free_me  = false;
-
-  xbt_assert((event->idx < profile->event_list.size()), "Your profile should have at least one event!");
-
-  heap_.emplace(0.0 /* start time */, event);
-
-  return event;
+  heap_.emplace(date, evt);
 }
 
-/** @brief returns the date of the next occurring event */
+/** @brief returns the date of the next occurring event (or -1 if empty) */
 double FutureEvtSet::next_date() const
 {
   return heap_.empty() ? -1.0 : heap_.top().first;
@@ -134,30 +162,17 @@ double FutureEvtSet::next_date() const
 Event* FutureEvtSet::pop_leq(double date, double* value, resource::Resource** resource)
 {
   double event_date = next_date();
-  if (event_date > date)
+  if (event_date > date || heap_.empty())
     return nullptr;
 
-  if (heap_.empty())
-    return nullptr;
   Event* event = heap_.top().second;
-  heap_.pop();
-
   Profile* profile = event->profile;
-  *resource        = event->resource;
+  DatedValue dateVal = profile->next(event);
 
-  DatedValue dateVal = profile->event_list.at(event->idx);
-
+  *resource = event->resource;
   *value = dateVal.value_;
 
-  if (event->idx < profile->event_list.size() - 1) {
-    heap_.emplace(event_date + dateVal.date_, event);
-    event->idx++;
-  } else if (dateVal.date_ > 0) { /* Last element. Shall we loop? */
-    heap_.emplace(event_date + dateVal.date_, event);
-    event->idx = 1; /* idx=0 is a placeholder to store when events really start */
-  } else {          /* If we don't loop, we don't need this event anymore */
-    event->free_me = true;
-  }
+  heap_.pop();
 
   return event;
 }
