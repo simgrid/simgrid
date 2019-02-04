@@ -201,11 +201,9 @@ int Coll_gather_mvapich2::gather(void *sendbuf,
   int range_threshold = 0;
   int range_intra_threshold = 0;
   long nbytes = 0;
-  int comm_size = 0;
   int recvtype_size, sendtype_size;
-  int rank = -1;
-  comm_size = comm->size();
-  rank = comm->rank();
+  int comm_size = comm->size();
+  int rank      = comm->rank();
 
   if (rank == root) {
       recvtype_size=recvtype->size();

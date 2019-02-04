@@ -74,9 +74,8 @@ int Coll_reduce_scatter_default::reduce_scatter(void *sendbuf, void *recvbuf, in
     count += recvcounts[i];
   }
   void *tmpbuf = static_cast<void*>(smpi_get_tmp_sendbuffer(count*datatype->get_extent()));
-  int ret = MPI_SUCCESS;
 
-  ret = Coll_reduce_default::reduce(sendbuf, tmpbuf, count, datatype, op, 0, comm);
+  int ret = Coll_reduce_default::reduce(sendbuf, tmpbuf, count, datatype, op, 0, comm);
   if(ret==MPI_SUCCESS)
     ret = Colls::scatterv(tmpbuf, recvcounts, displs, datatype, recvbuf, recvcounts[rank], datatype, 0, comm);
   xbt_free(displs);

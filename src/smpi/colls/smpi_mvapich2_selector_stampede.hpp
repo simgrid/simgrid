@@ -369,10 +369,9 @@ static void init_mv2_allgather_tables_stampede()
 
   if (simgrid::smpi::Colls::smpi_coll_cleanup_callback == NULL)
     simgrid::smpi::Colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
-  mv2_allgather_tuning_table** table_ptrs            = NULL;
   mv2_allgather_num_ppn_conf                         = 3;
   mv2_allgather_thresholds_table                     = new mv2_allgather_tuning_table*[mv2_allgather_num_ppn_conf];
-  table_ptrs                                         = new mv2_allgather_tuning_table*[mv2_allgather_num_ppn_conf];
+  mv2_allgather_tuning_table** table_ptrs            = new mv2_allgather_tuning_table*[mv2_allgather_num_ppn_conf];
   mv2_size_allgather_tuning_table                    = new int[mv2_allgather_num_ppn_conf];
   mv2_allgather_table_ppn_conf                       = new int[mv2_allgather_num_ppn_conf];
   mv2_allgather_table_ppn_conf[0]    = 1;
@@ -1516,10 +1515,9 @@ static void init_mv2_scatter_tables_stampede()
     simgrid::smpi::Colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
 
   int agg_table_sum = 0;
-  mv2_scatter_tuning_table** table_ptrs = NULL;
   mv2_scatter_num_ppn_conf              = 3;
   mv2_scatter_thresholds_table          = new mv2_scatter_tuning_table*[mv2_scatter_num_ppn_conf];
-  table_ptrs                            = new mv2_scatter_tuning_table*[mv2_scatter_num_ppn_conf];
+  mv2_scatter_tuning_table** table_ptrs = new mv2_scatter_tuning_table*[mv2_scatter_num_ppn_conf];
   mv2_size_scatter_tuning_table         = new int[mv2_scatter_num_ppn_conf];
   mv2_scatter_table_ppn_conf            = new int[mv2_scatter_num_ppn_conf];
   mv2_scatter_table_ppn_conf[0]    = 1;
