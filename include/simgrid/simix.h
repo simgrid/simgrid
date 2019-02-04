@@ -267,11 +267,12 @@ XBT_ATTRIB_DEPRECATED_v325("Please use Exec::set_priority()") XBT_PUBLIC
     void simcall_execution_set_priority(smx_activity_t execution, double priority);
 XBT_ATTRIB_DEPRECATED_v325("Please use Exec::set_bound()") XBT_PUBLIC
     void simcall_execution_set_bound(smx_activity_t execution, double bound);
+SG_END_DECL()
+
 #ifdef __cplusplus
 XBT_ATTRIB_DEPRECATED_v325("Please use Exec::start()") XBT_PUBLIC smx_activity_t
     simcall_execution_start(std::string name, std::string category, double flops_amount, double priority, double bound,
                             sg_host_t host);
 #endif
-SG_END_DECL()
 
 #endif
