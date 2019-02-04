@@ -106,6 +106,7 @@ public:
   void* get_user_data() { return userdata_; }
   /** Ask the actor to throw an exception right away */
   void throw_exception(std::exception_ptr e);
+  void change_host(sg_host_t dest);
 };
 
 class ProcessArg {
@@ -163,7 +164,6 @@ XBT_PRIVATE void SIMIX_process_killall(smx_actor_t issuer);
 XBT_PRIVATE void SIMIX_process_cleanup(smx_actor_t arg);
 XBT_PRIVATE void SIMIX_process_empty_trash();
 XBT_PRIVATE void SIMIX_process_yield(smx_actor_t self);
-XBT_PRIVATE void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest);
 
 extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
 

@@ -262,6 +262,13 @@ void ActorImpl::throw_exception(std::exception_ptr e)
   waiting_synchro = nullptr;
 }
 
+void ActorImpl::change_host(sg_host_t dest)
+{
+  simgrid::xbt::intrusive_erase(host_->pimpl_->process_list_, *this);
+  host_ = dest;
+  dest->pimpl_->process_list_.push_back(*this);
+}
+
 ActorImplPtr ActorImpl::create(std::string name, simgrid::simix::ActorCode code, void* data, simgrid::s4u::Host* host,
                                std::unordered_map<std::string, std::string>* properties, smx_actor_t parent_actor)
 {
@@ -550,13 +557,6 @@ void SIMIX_process_killall(smx_actor_t issuer)
       SIMIX_process_kill(kv.second, issuer);
 }
 
-void SIMIX_process_change_host(smx_actor_t actor, sg_host_t dest)
-{
-  xbt_assert((actor != nullptr), "Invalid parameters");
-  simgrid::xbt::intrusive_erase(actor->host_->pimpl_->process_list_, *actor);
-  actor->host_ = dest;
-  dest->pimpl_->process_list_.push_back(*actor);
-}
 
 void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t actor)
 {
