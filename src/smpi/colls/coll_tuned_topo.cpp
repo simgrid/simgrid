@@ -451,6 +451,7 @@ ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int 
         childs++;
         if (childs == MAXTREEFANOUT) {
           XBT_DEBUG("coll:tuned:topo:build_bmtree max fanout incorrect %d needed %d", MAXTREEFANOUT, childs);
+          delete bmtree;
           return NULL;
         }
       }
