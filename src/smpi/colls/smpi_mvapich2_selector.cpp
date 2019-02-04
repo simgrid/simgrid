@@ -201,16 +201,15 @@ int Coll_gather_mvapich2::gather(void *sendbuf,
   int range_threshold = 0;
   int range_intra_threshold = 0;
   long nbytes = 0;
-  int recvtype_size, sendtype_size;
   int comm_size = comm->size();
   int rank      = comm->rank();
 
   if (rank == root) {
-      recvtype_size=recvtype->size();
-      nbytes = recvcnt * recvtype_size;
+    int recvtype_size = recvtype->size();
+    nbytes            = recvcnt * recvtype_size;
   } else {
-      sendtype_size=sendtype->size();
-      nbytes = sendcnt * sendtype_size;
+    int sendtype_size = sendtype->size();
+    nbytes            = sendcnt * sendtype_size;
   }
 
   /* Search for the corresponding system size inside the tuning table */
@@ -896,12 +895,12 @@ int Coll_scatter_mvapich2::scatter(void *sendbuf,
     if (comm->is_uniform()) {
 
         shmem_comm = comm->get_intra_comm();
-        int local_size = shmem_comm->size();
-        int i          = 0;
         if (mv2_scatter_table_ppn_conf[0] == -1) {
             // Indicating user defined tuning
             conf_index = 0;
         }else{
+          int local_size = shmem_comm->size();
+          int i          = 0;
             do {
                 if (local_size == mv2_scatter_table_ppn_conf[i]) {
                     conf_index = i;
