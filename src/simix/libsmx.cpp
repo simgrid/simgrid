@@ -364,6 +364,39 @@ void unblock(smx_actor_t process)
   xbt_assert(SIMIX_is_maestro());
   SIMIX_simcall_answer(&process->simcall);
 }
+} // namespace simix
+} // namespace simgrid
 
+/* ****************************DEPRECATED CALLS******************************* */
+void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
+{
+  simgrid::simix::simcall([process, kill_time] { process->set_kill_time(kill_time); });
 }
+void simcall_comm_cancel(smx_activity_t comm)
+{
+  simgrid::simix::simcall([comm] { boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(comm)->cancel(); });
+}
+void simcall_execution_cancel(smx_activity_t exec)
+{
+  simgrid::simix::simcall([exec] { boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->cancel(); });
+}
+void simcall_execution_set_priority(smx_activity_t exec, double priority)
+{
+  simgrid::simix::simcall([exec, priority] {
+    boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->set_priority(priority);
+  });
+}
+
+void simcall_execution_set_bound(smx_activity_t exec, double bound)
+{
+  simgrid::simix::simcall(
+      [exec, bound] { boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->set_bound(bound); });
+}
+
+smx_activity_t simcall_execution_start(std::string name, std::string category, double flops_amount, double priority,
+                                       double bound, sg_host_t host)
+{
+  return simgrid::simix::simcall([name, category, flops_amount, priority, bound, host] {
+    return SIMIX_execution_start(name, category, flops_amount, priority, bound, host);
+  });
 }
