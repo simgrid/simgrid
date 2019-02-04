@@ -380,6 +380,7 @@ ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
         if( remote >= size ) remote -= size;
         if (childs==MAXTREEFANOUT) {
             XBT_DEBUG("coll:tuned:topo:build_bmtree max fanout incorrect %d needed %d", MAXTREEFANOUT, childs);
+            delete bmtree;
             return NULL;
         }
         bmtree->tree_next[childs] = remote;
@@ -427,6 +428,7 @@ ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int 
     bmtree = new ompi_coll_tree_t;
     if (not bmtree) {
       XBT_DEBUG("coll:tuned:topo:build_bmtree PANIC out of memory");
+      delete bmtree;
       return NULL;
     }
 

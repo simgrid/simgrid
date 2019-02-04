@@ -452,8 +452,8 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
 
     XBT_DEBUG("Process %s@%s will be started at time %f", arg->name.c_str(), arg->host->get_cname(), start_time);
     SIMIX_timer_set(start_time, [arg, auto_restart]() {
-      smx_actor_t actor = SIMIX_process_create(arg->name.c_str(), std::move(arg->code), arg->data, arg->host,
-                                               arg->properties.get(), nullptr);
+      simgrid::kernel::actor::ActorImplPtr actor = simgrid::kernel::actor::ActorImpl::create(
+          arg->name.c_str(), std::move(arg->code), arg->data, arg->host, arg->properties.get(), nullptr);
       if (arg->kill_time >= 0)
         actor->set_kill_time(arg->kill_time);
       if (auto_restart)
@@ -463,8 +463,8 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
   } else {                      // start_time <= SIMIX_get_clock()
     XBT_DEBUG("Starting Process %s(%s) right now", arg->name.c_str(), host->get_cname());
 
-    smx_actor_t actor =
-        SIMIX_process_create(arg->name.c_str(), std::move(code), nullptr, host, arg->properties.get(), nullptr);
+    simgrid::kernel::actor::ActorImplPtr actor = simgrid::kernel::actor::ActorImpl::create(
+        arg->name.c_str(), std::move(code), nullptr, host, arg->properties.get(), nullptr);
 
     /* The actor creation will fail if the host is currently dead, but that's fine */
     if (actor != nullptr) {

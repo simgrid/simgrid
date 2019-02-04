@@ -103,8 +103,8 @@ void HostImpl::turn_on()
 {
   for (auto const& arg : actors_at_boot_) {
     XBT_DEBUG("Booting Actor %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
-    smx_actor_t actor =
-        SIMIX_process_create(arg->name.c_str(), arg->code, nullptr, arg->host, arg->properties.get(), nullptr);
+    simgrid::kernel::actor::ActorImplPtr actor = simgrid::kernel::actor::ActorImpl::create(
+        arg->name.c_str(), arg->code, nullptr, arg->host, arg->properties.get(), nullptr);
     if (arg->kill_time >= 0)
       actor->set_kill_time(arg->kill_time);
     if (arg->auto_restart)

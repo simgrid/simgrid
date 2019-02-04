@@ -92,6 +92,9 @@ public:
 private:
   bool daemon_ = false;
 public:
+  static ActorImplPtr create(std::string name, simix::ActorCode code, void* data, s4u::Host* host,
+                             std::unordered_map<std::string, std::string>* properties, smx_actor_t parent_actor);
+
   void daemonize();
   bool is_daemon() { return daemon_; } /** Whether this actor has been daemonized */
   bool is_suspended() { return suspended_; }
@@ -153,10 +156,6 @@ XBT_PUBLIC void create_maestro(std::function<void()> code);
 } // namespace simgrid
 
 typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
-
-XBT_PRIVATE smx_actor_t SIMIX_process_create(std::string name, std::function<void()> code, void* data, sg_host_t host,
-                                             std::unordered_map<std::string, std::string>* properties,
-                                             smx_actor_t parent_process);
 
 XBT_PRIVATE void SIMIX_process_runall();
 XBT_PRIVATE void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer);
