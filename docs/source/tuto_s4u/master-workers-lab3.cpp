@@ -21,10 +21,9 @@ static void worker()
   const std::string mailbox_name   = std::string("worker-") + std::to_string(simgrid::s4u::this_actor::get_pid());
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
-  double compute_cost;
   while (true) { // Master forcefully kills the workers by the end of the simulation
     double* msg  = static_cast<double*>(mailbox->get());
-    compute_cost = *msg;
+    double compute_cost = *msg;
     delete msg;
 
     simgrid::s4u::this_actor::execute(compute_cost);

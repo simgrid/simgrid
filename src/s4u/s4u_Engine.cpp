@@ -86,20 +86,15 @@ double Engine::get_clock()
  */
 void Engine::load_platform(std::string platf)
 {
-  double start = 0;
-  double end   = 0;
-  if (XBT_LOG_ISENABLED(s4u_engine, xbt_log_priority_debug))
-    start = xbt_os_time();
+  double start = xbt_os_time();
   try {
     parse_platform_file(platf);
   } catch (xbt_ex& e) {
     xbt_die("Error while loading %s: %s", platf.c_str(), e.what());
   }
 
-  if (XBT_LOG_ISENABLED(s4u_engine, xbt_log_priority_debug)) {
-    end = xbt_os_time();
-    XBT_DEBUG("PARSE TIME: %g", (end - start));
-  }
+  double end = xbt_os_time();
+  XBT_DEBUG("PARSE TIME: %g", (end - start));
 }
 
 void Engine::register_function(std::string name, int (*code)(int, char**))

@@ -26,14 +26,16 @@
  */
 static int pown( int fanout, int num )
 {
-    int j, p = 1;
+    int p = 1;
     if( num < 0 ) return 0;
     if (1==num) return fanout;
     if (2==fanout) {
         return p<<num;
     }
     else {
-        for( j = 0; j < num; j++ ) { p*= fanout; }
+      for (int j = 0; j < num; j++) {
+        p *= fanout;
+      }
     }
     return p;
 }
@@ -76,12 +78,11 @@ ompi_coll_tuned_topo_build_tree( int fanout,
                                  int root )
 {
     int rank, size;
-    int schild, sparent;
+    int sparent;
     int level; /* location of my rank in the tree structure of size */
     int delta; /* number of nodes on my level */
     int slimit; /* total number of nodes on levels above me */
     int shiftedrank;
-    int i;
     ompi_coll_tree_t* tree;
 
     XBT_DEBUG("coll:tuned:topo_build_tree Building fo %d rt %d", fanout, root);
@@ -123,8 +124,8 @@ ompi_coll_tuned_topo_build_tree( int fanout,
     tree->tree_root     = root;
     tree->tree_prev     = -1;
     tree->tree_nextsize = 0;
-    for( i = 0; i < fanout; i++ ) {
-        tree->tree_next[i] = -1;
+    for (int i = 0; i < fanout; i++) {
+      tree->tree_next[i] = -1;
     }
 
     /* return if we have less than 2 processes */
@@ -148,8 +149,8 @@ ompi_coll_tuned_topo_build_tree( int fanout,
     delta = pown( fanout, level );
 
     /* find my children */
-    for( i = 0; i < fanout; i++ ) {
-        schild = shiftedrank + delta * (i+1);
+    for (int i = 0; i < fanout; i++) {
+        int schild = shiftedrank + delta * (i+1);
         if( schild < size ) {
             tree->tree_next[i] = (schild+root)%size;
             tree->tree_nextsize = tree->tree_nextsize + 1;
@@ -191,8 +192,8 @@ ompi_coll_tree_t*
 ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
 {
     int rank, size;
-    int myrank, rightsize, delta;
-    int parent, lchild, rchild;
+    int myrank, delta;
+    int parent;
     ompi_coll_tree_t* tree;
 
     /*
@@ -233,11 +234,11 @@ ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
 
     while ( 1 ) {
         /* Compute the size of the right subtree */
-        rightsize = size >> 1;
+        int rightsize = size >> 1;
 
         /* Determine the left and right child of this parent  */
-        lchild = -1;
-        rchild = -1;
+        int lchild = -1;
+        int rchild = -1;
         if (size - 1 > 0) {
             lchild = parent - 1;
             if (lchild > 0) {
@@ -410,7 +411,6 @@ ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int 
     int rank, vrank;
     int size;
     int mask = 1;
-    int remote;
     ompi_coll_tree_t *bmtree;
     int i;
 
@@ -442,7 +442,7 @@ ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int 
     }
 
     while (mask < size) {
-      remote = vrank ^ mask;
+      int remote = vrank ^ mask;
       if (remote < vrank) {
         bmtree->tree_prev = (remote + root) % size;
         break;
@@ -471,7 +471,7 @@ ompi_coll_tuned_topo_build_chain( int fanout,
     int rank, size;
     int srank; /* shifted rank */
     int i,maxchainlen;
-    int mark,head,len;
+    int mark;
     ompi_coll_tree_t *chain;
 
     XBT_DEBUG("coll:tuned:topo:build_chain fo %d rt %d", fanout, root);
@@ -561,6 +561,8 @@ ompi_coll_tuned_topo_build_chain( int fanout,
      */
     if( srank != 0 ) {
         int column;
+        int head;
+        int len;
         if( srank-1 < (mark * maxchainlen) ) {
             column = (srank-1)/maxchainlen;
             head = 1+column*maxchainlen;
@@ -596,7 +598,7 @@ ompi_coll_tuned_topo_build_chain( int fanout,
     if( rank == root ) {
         chain->tree_prev = -1;
         chain->tree_next[0] = (root+1)%size;
-        for( i = 1; i < fanout; i++ ) {
+        for (int i = 1; i < fanout; i++) {
             chain->tree_next[i] = chain->tree_next[i-1] + maxchainlen;
             if( i > mark ) {
                 chain->tree_next[i]--;
@@ -616,15 +618,13 @@ ompi_coll_tuned_topo_build_chain( int fanout,
 
 int ompi_coll_tuned_topo_dump_tree (ompi_coll_tree_t* tree, int rank)
 {
-    int i;
-
     XBT_DEBUG("coll:tuned:topo:topo_dump_tree %1d tree root %d"
                  " fanout %d BM %1d nextsize %d prev %d",
                  rank, tree->tree_root, tree->tree_bmtree, tree->tree_fanout,
                  tree->tree_nextsize, tree->tree_prev);
     if( tree->tree_nextsize ) {
-        for( i = 0; i < tree->tree_nextsize; i++ )
-            XBT_DEBUG("[%1d] %d", i, tree->tree_next[i]);
+      for (int i = 0; i < tree->tree_nextsize; i++)
+        XBT_DEBUG("[%1d] %d", i, tree->tree_next[i]);
     }
     return (0);
 }

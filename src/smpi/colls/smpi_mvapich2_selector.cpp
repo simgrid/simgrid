@@ -96,7 +96,6 @@ int Coll_allgather_mvapich2::allgather(void *sendbuf, int sendcount, MPI_Datatyp
   int conf_index = 0;
   int range_threshold = 0;
   int is_two_level = 0;
-  int local_size = -1;
   MPI_Comm shmem_comm;
   //MPI_Comm *shmem_commptr=NULL;
   /* Get the size of the communicator */
@@ -111,11 +110,10 @@ int Coll_allgather_mvapich2::allgather(void *sendbuf, int sendcount, MPI_Datatyp
     comm->init_smp();
   }
 
-  int i;
   if (comm->is_uniform()){
     shmem_comm = comm->get_intra_comm();
-    local_size = shmem_comm->size();
-    i = 0;
+    int local_size = shmem_comm->size();
+    int i          = 0;
     if (mv2_allgather_table_ppn_conf[0] == -1) {
       // Indicating user defined tuning
       conf_index = 0;
@@ -351,8 +349,6 @@ int Coll_allreduce_mvapich2::allreduce(void *sendbuf,
 
   MPI_Aint sendtype_size = 0;
   long nbytes = 0;
-  int range = 0, range_threshold = 0, range_threshold_intra = 0;
-  int is_two_level = 0;
   int is_commutative = 0;
   MPI_Aint true_lb, true_extent;
 
@@ -364,6 +360,9 @@ int Coll_allreduce_mvapich2::allreduce(void *sendbuf,
   //is_commutative = op->is_commutative();
 
   {
+    int range = 0, range_threshold = 0, range_threshold_intra = 0;
+    int is_two_level = 0;
+
     /* Search for the corresponding system size inside the tuning table */
     while ((range < (mv2_size_allreduce_tuning_table - 1)) &&
         (comm_size > mv2_allreduce_thresholds_table[range].numproc)) {
@@ -792,8 +791,6 @@ int Coll_reduce_scatter_mvapich2::reduce_scatter(void *sendbuf, void *recvbuf, i
   int mpi_errno = MPI_SUCCESS;
   int i = 0, comm_size = comm->size(), total_count = 0, type_size =
       0, nbytes = 0;
-  int range = 0;
-  int range_threshold = 0;
   int is_commutative = 0;
   int* disps          = new int[comm_size];
 
@@ -810,6 +807,8 @@ int Coll_reduce_scatter_mvapich2::reduce_scatter(void *sendbuf, void *recvbuf, i
   nbytes = total_count * type_size;
 
   if (is_commutative) {
+    int range           = 0;
+    int range_threshold = 0;
 
       /* Search for the corresponding system size inside the tuning table */
       while ((range < (mv2_size_red_scat_tuning_table - 1)) &&
@@ -872,11 +871,8 @@ int Coll_scatter_mvapich2::scatter(void *sendbuf,
   int mpi_errno = MPI_SUCCESS;
   //   int mpi_errno_ret = MPI_SUCCESS;
   int rank, nbytes, comm_size;
-  int recvtype_size, sendtype_size;
   int partial_sub_ok = 0;
   int conf_index = 0;
-    int local_size = -1;
-    int i;
      MPI_Comm shmem_comm;
   //    MPID_Comm *shmem_commptr=NULL;
   if(mv2_scatter_thresholds_table==NULL)
@@ -891,19 +887,19 @@ int Coll_scatter_mvapich2::scatter(void *sendbuf,
   rank = comm->rank();
 
   if (rank == root) {
-      sendtype_size=sendtype->size();
-      nbytes = sendcnt * sendtype_size;
+    int sendtype_size = sendtype->size();
+    nbytes            = sendcnt * sendtype_size;
   } else {
-      recvtype_size=recvtype->size();
-      nbytes = recvcnt * recvtype_size;
+    int recvtype_size = recvtype->size();
+    nbytes            = recvcnt * recvtype_size;
   }
 
     // check if safe to use partial subscription mode
     if (comm->is_uniform()) {
 
         shmem_comm = comm->get_intra_comm();
-        local_size = shmem_comm->size();
-        i = 0;
+        int local_size = shmem_comm->size();
+        int i          = 0;
         if (mv2_scatter_table_ppn_conf[0] == -1) {
             // Indicating user defined tuning
             conf_index = 0;

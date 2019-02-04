@@ -25,7 +25,7 @@ int Coll_barrier_default::barrier(MPI_Comm comm)
 int Coll_gather_default::gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                      void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
-  int system_tag = COLL_TAG_GATHER;
+  const int system_tag = COLL_TAG_GATHER;
   MPI_Aint lb = 0;
   MPI_Aint recvext = 0;
 
@@ -88,7 +88,7 @@ int Coll_reduce_scatter_default::reduce_scatter(void *sendbuf, void *recvbuf, in
 int Coll_allgather_default::allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                         void *recvbuf,int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
-  int system_tag = COLL_TAG_ALLGATHER;
+  const int system_tag = COLL_TAG_ALLGATHER;
   MPI_Aint lb = 0;
   MPI_Aint recvext = 0;
   MPI_Request *requests;
@@ -125,7 +125,7 @@ int Coll_allgather_default::allgather(void *sendbuf, int sendcount, MPI_Datatype
 int Coll_allgatherv_default::allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
                          int *recvcounts, int *displs, MPI_Datatype recvtype, MPI_Comm comm)
 {
-  int system_tag = COLL_TAG_ALLGATHERV;
+  const int system_tag = COLL_TAG_ALLGATHERV;
   MPI_Aint lb = 0;
   MPI_Aint recvext = 0;
 
@@ -161,7 +161,7 @@ int Coll_allgatherv_default::allgatherv(void *sendbuf, int sendcount, MPI_Dataty
 int Coll_scatter_default::scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                       void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
-  int system_tag = COLL_TAG_SCATTER;
+  const int system_tag = COLL_TAG_SCATTER;
   MPI_Aint lb = 0;
   MPI_Aint sendext = 0;
   MPI_Request *requests;
@@ -204,7 +204,7 @@ int Coll_scatter_default::scatter(void *sendbuf, int sendcount, MPI_Datatype sen
 int Coll_reduce_default::reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
                      MPI_Comm comm)
 {
-  int system_tag = COLL_TAG_REDUCE;
+  const int system_tag = COLL_TAG_REDUCE;
   MPI_Aint lb = 0;
   MPI_Aint dataext = 0;
 
@@ -292,9 +292,7 @@ int Coll_alltoall_default::alltoall( void *sbuf, int scount, MPI_Datatype sdtype
 int Coll_alltoallv_default::alltoallv(void *sendbuf, int *sendcounts, int *senddisps, MPI_Datatype sendtype,
                               void *recvbuf, int *recvcounts, int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm)
 {
-  int system_tag = 889;
-  int i;
-  int count;
+  const int system_tag = 889;
   MPI_Aint lb = 0;
   MPI_Aint sendext = 0;
   MPI_Aint recvext = 0;
@@ -312,9 +310,9 @@ int Coll_alltoallv_default::alltoallv(void *sendbuf, int *sendcounts, int *sendd
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
     requests = xbt_new(MPI_Request, 2 * (size - 1));
-    count = 0;
+    int count = 0;
     /* Create all receives that will be posted first */
-    for (i = 0; i < size; ++i) {
+    for (int i = 0; i < size; ++i) {
       if (i != rank && recvcounts[i] != 0) {
         requests[count] = Request::irecv_init(static_cast<char *>(recvbuf) + recvdisps[i] * recvext,
                                           recvcounts[i], recvtype, i, system_tag, comm);
@@ -324,7 +322,7 @@ int Coll_alltoallv_default::alltoallv(void *sendbuf, int *sendcounts, int *sendd
       }
     }
     /* Now create all sends  */
-    for (i = 0; i < size; ++i) {
+    for (int i = 0; i < size; ++i) {
       if (i != rank && sendcounts[i] != 0) {
       requests[count] = Request::isend_init(static_cast<char *>(sendbuf) + senddisps[i] * sendext,
                                         sendcounts[i], sendtype, i, system_tag, comm);
@@ -337,7 +335,7 @@ int Coll_alltoallv_default::alltoallv(void *sendbuf, int *sendcounts, int *sendd
     Request::startall(count, requests);
     XBT_DEBUG("<%d> wait for %d requests", rank, count);
     Request::waitall(count, requests, MPI_STATUS_IGNORE);
-    for(i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++) {
       if(requests[i]!=MPI_REQUEST_NULL)
         Request::unref(&requests[i]);
     }
