@@ -762,3 +762,8 @@ smx_actor_t simcall_process_create(std::string name, simgrid::simix::ActorCode c
     return SIMIX_process_create(name, std::move(code), data, host, properties, self);
   });
 }
+
+void simcall_process_set_data(smx_actor_t process, void* data)
+{
+  simgrid::simix::simcall([process, data] { process->set_user_data(data); });
+}

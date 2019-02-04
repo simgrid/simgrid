@@ -188,6 +188,7 @@ SG_BEGIN_DECL()
 XBT_ATTRIB_DEPRECATED_v324("Please use ActorImpl::throw_exception") XBT_PUBLIC
     void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const char* mesg);
 
+void simcall_process_set_data(smx_actor_t process, void* data);
 /* Process handling */
 XBT_PUBLIC void simcall_process_suspend(smx_actor_t process);
 XBT_PUBLIC void simcall_process_join(smx_actor_t process, double timeout);
@@ -254,6 +255,23 @@ XBT_PUBLIC e_smx_state_t simcall_io_wait(smx_activity_t io);
 /************************** MC simcalls   **********************************/
 XBT_PUBLIC int simcall_mc_random(int min, int max);
 
+/***************************** DEPRECATED CALLS ****************************/
+XBT_ATTRIB_DEPRECATED_v325("Please use sg_actor_set_kill_time()") XBT_PUBLIC
+    void simcall_process_set_kill_time(smx_actor_t process, double kill_time);
+
+XBT_ATTRIB_DEPRECATED_v325("Please use Comm::cancel()") XBT_PUBLIC void simcall_comm_cancel(smx_activity_t comm);
+
+XBT_ATTRIB_DEPRECATED_v325("Please use Exec::cancel()") XBT_PUBLIC
+    void simcall_execution_cancel(smx_activity_t execution);
+XBT_ATTRIB_DEPRECATED_v325("Please use Exec::set_priority()") XBT_PUBLIC
+    void simcall_execution_set_priority(smx_activity_t execution, double priority);
+XBT_ATTRIB_DEPRECATED_v325("Please use Exec::set_bound()") XBT_PUBLIC
+    void simcall_execution_set_bound(smx_activity_t execution, double bound);
+#ifdef __cplusplus
+XBT_ATTRIB_DEPRECATED_v325("Please use Exec::start()") XBT_PUBLIC smx_activity_t
+    simcall_execution_start(std::string name, std::string category, double flops_amount, double priority, double bound,
+                            sg_host_t host);
+#endif
 SG_END_DECL()
 
 #endif
