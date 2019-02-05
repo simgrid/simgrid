@@ -496,16 +496,15 @@ static void smpi_copy_file(std::string src, std::string target, off_t fdin_size)
   xbt_assert(fdout >= 0, "Cannot write into %s", target.c_str());
 
   XBT_DEBUG("Copy %" PRIdMAX " bytes into %s", static_cast<intmax_t>(fdin_size), target.c_str());
-  bool slow_copy = true;
 #if SG_HAVE_SENDFILE
   ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
-  if (sent_size == fdin_size)
-    slow_copy = false;
-  else if (sent_size != -1 || errno != ENOSYS)
-    xbt_die("Error while copying %s: only %zd bytes copied instead of %" PRIdMAX " (errno: %d -- %s)", target.c_str(),
-            sent_size, static_cast<intmax_t>(fdin_size), errno, strerror(errno));
+  xbt_assert(sent_size == fdin_size || (sent_size == -1 && errno == ENOSYS),
+             "Error while copying %s: only %zd bytes copied instead of %" PRIdMAX " (errno: %d -- %s)", target.c_str(),
+             sent_size, static_cast<intmax_t>(fdin_size), errno, strerror(errno));
+#else
+  ssize_t sent_size = -1;
 #endif
-  if (slow_copy) {
+  if (sent_size != fdin_size) { // sendfile is not available
     const int bufsize = 1024 * 1024 * 4;
     char buf[bufsize];
     while (int got = read(fdin, buf, bufsize)) {
