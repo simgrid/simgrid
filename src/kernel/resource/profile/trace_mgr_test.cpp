@@ -3,8 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this in one cpp file
-#include "src/include/catch.hpp"
+#include "catch.hpp"
 
 #include "simgrid/kernel/resource/Resource.hpp"
 #include "src/kernel/resource/profile/trace_mgr.hpp"
