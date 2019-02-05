@@ -59,7 +59,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
  * See https://www.akkadia.org/drepper/dsohowto.pdf
  * and https://lists.freebsd.org/pipermail/freebsd-current/2016-March/060284.html
 */
-#if !defined(RTLD_DEEPBIND) || HAVE_SANITIZER_ADDRESS || HAVE_SANITIZER_THREAD
+#if !RTLD_DEEPBIND || HAVE_SANITIZER_ADDRESS || HAVE_SANITIZER_THREAD
 #define WANT_RTLD_DEEPBIND 0
 #else
 #define WANT_RTLD_DEEPBIND RTLD_DEEPBIND
