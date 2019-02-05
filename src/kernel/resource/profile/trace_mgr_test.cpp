@@ -51,11 +51,11 @@ static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char
 
     REQUIRE(it == insertedIt); // Check that we find what we've put
     if (value >= 0) {
-      resource->apply_event(it, value);
       res.push_back(simgrid::kernel::profile::DatedValue(thedate, value));
     } else {
       XBT_DEBUG("%.1f: ignore an event (idx: %u)\n", thedate, it->idx);
     }
+    resource->apply_event(it, value);
   }
   tmgr_finalize();
   return res;
