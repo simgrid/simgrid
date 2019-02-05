@@ -548,7 +548,6 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
   struct stat fdin_stat;
   stat(executable.c_str(), &fdin_stat);
   off_t fdin_size         = fdin_stat.st_size;
-  static std::size_t rank = 0;
 
   std::string libnames = simgrid::config::get_value<std::string>("smpi/privatize-libs");
   if (not libnames.empty()) {
@@ -578,6 +577,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
 
   simix_global->default_function = [executable, fdin_size](std::vector<std::string> args) {
     return std::function<void()>([executable, fdin_size, args] {
+      static std::size_t rank = 0;
       // Copy the dynamic library:
       std::string target_executable =
           executable + "_" + std::to_string(getpid()) + "_" + std::to_string(rank) + ".so";
