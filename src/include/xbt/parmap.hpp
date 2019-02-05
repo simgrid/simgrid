@@ -120,8 +120,8 @@ private:
     void worker_wait(unsigned);
 
   private:
-    static void futex_wait(unsigned* uaddr, unsigned val);
-    static void futex_wake(unsigned* uaddr, unsigned val);
+    static void futex_wait(std::atomic_uint* uaddr, unsigned val);
+    static void futex_wake(std::atomic_uint* uaddr, unsigned val);
   };
 #endif
 
@@ -139,15 +139,15 @@ private:
   void work();
 
   Flag status;              /**< is the parmap active or being destroyed? */
-  unsigned work_round;      /**< index of the current round */
+  std::atomic_uint work_round;       /**< index of the current round */
   std::vector<std::thread*> workers; /**< worker thread handlers */
   unsigned num_workers;     /**< total number of worker threads including the controller */
   Synchro* synchro;         /**< synchronization object */
 
-  unsigned thread_counter    = 0;       /**< number of workers that have done the work */
+  std::atomic_uint thread_counter{0};   /**< number of workers that have done the work */
   void (*fun)(const T)       = nullptr; /**< function to run in parallel on each element of data */
   const std::vector<T>* data = nullptr; /**< parameters to pass to fun in parallel */
-  std::atomic<unsigned> index;          /**< index of the next element of data to pick */
+  std::atomic_uint index;               /**< index of the next element of data to pick */
 };
 
 /**
@@ -364,13 +364,13 @@ template <typename T> void Parmap<T>::PosixSynchro::worker_wait(unsigned round)
 }
 
 #if HAVE_FUTEX_H
-template <typename T> inline void Parmap<T>::FutexSynchro::futex_wait(unsigned* uaddr, unsigned val)
+template <typename T> inline void Parmap<T>::FutexSynchro::futex_wait(std::atomic_uint* uaddr, unsigned val)
 {
   XBT_CVERB(xbt_parmap, "Waiting on futex %p", uaddr);
   syscall(SYS_futex, uaddr, FUTEX_WAIT_PRIVATE, val, nullptr, nullptr, 0);
 }
 
-template <typename T> inline void Parmap<T>::FutexSynchro::futex_wake(unsigned* uaddr, unsigned val)
+template <typename T> inline void Parmap<T>::FutexSynchro::futex_wake(std::atomic_uint* uaddr, unsigned val)
 {
   XBT_CVERB(xbt_parmap, "Waking futex %p", uaddr);
   syscall(SYS_futex, uaddr, FUTEX_WAKE_PRIVATE, val, nullptr, nullptr, 0);
@@ -378,25 +378,25 @@ template <typename T> inline void Parmap<T>::FutexSynchro::futex_wake(unsigned* 
 
 template <typename T> void Parmap<T>::FutexSynchro::master_signal()
 {
-  __atomic_store_n(&this->parmap.thread_counter, 1, __ATOMIC_SEQ_CST);
-  __atomic_add_fetch(&this->parmap.work_round, 1, __ATOMIC_SEQ_CST);
+  this->parmap.thread_counter.store(1);
+  this->parmap.work_round.fetch_add(1);
   /* wake all workers */
   futex_wake(&this->parmap.work_round, std::numeric_limits<int>::max());
 }
 
 template <typename T> void Parmap<T>::FutexSynchro::master_wait()
 {
-  unsigned count = __atomic_load_n(&this->parmap.thread_counter, __ATOMIC_SEQ_CST);
+  unsigned count = this->parmap.thread_counter.load();
   while (count < this->parmap.num_workers) {
     /* wait for all workers to be ready */
     futex_wait(&this->parmap.thread_counter, count);
-    count = __atomic_load_n(&this->parmap.thread_counter, __ATOMIC_SEQ_CST);
+    count = this->parmap.thread_counter.load();
   }
 }
 
 template <typename T> void Parmap<T>::FutexSynchro::worker_signal()
 {
-  unsigned count = __atomic_add_fetch(&this->parmap.thread_counter, 1, __ATOMIC_SEQ_CST);
+  unsigned count = this->parmap.thread_counter.fetch_add(1) + 1;
   if (count == this->parmap.num_workers) {
     /* all workers have finished, wake the controller */
     futex_wake(&this->parmap.thread_counter, std::numeric_limits<int>::max());
@@ -405,37 +405,37 @@ template <typename T> void Parmap<T>::FutexSynchro::worker_signal()
 
 template <typename T> void Parmap<T>::FutexSynchro::worker_wait(unsigned round)
 {
-  unsigned work_round = __atomic_load_n(&this->parmap.work_round, __ATOMIC_SEQ_CST);
+  unsigned work_round = this->parmap.work_round.load();
   /* wait for more work */
   while (work_round != round) {
     futex_wait(&this->parmap.work_round, work_round);
-    work_round = __atomic_load_n(&this->parmap.work_round, __ATOMIC_SEQ_CST);
+    work_round = this->parmap.work_round.load();
   }
 }
 #endif
 
 template <typename T> void Parmap<T>::BusyWaitSynchro::master_signal()
 {
-  __atomic_store_n(&this->parmap.thread_counter, 1, __ATOMIC_SEQ_CST);
-  __atomic_add_fetch(&this->parmap.work_round, 1, __ATOMIC_SEQ_CST);
+  this->parmap.thread_counter.store(1);
+  this->parmap.work_round.fetch_add(1);
 }
 
 template <typename T> void Parmap<T>::BusyWaitSynchro::master_wait()
 {
-  while (__atomic_load_n(&this->parmap.thread_counter, __ATOMIC_SEQ_CST) < this->parmap.num_workers) {
+  while (this->parmap.thread_counter.load() < this->parmap.num_workers) {
     std::this_thread::yield();
   }
 }
 
 template <typename T> void Parmap<T>::BusyWaitSynchro::worker_signal()
 {
-  __atomic_add_fetch(&this->parmap.thread_counter, 1, __ATOMIC_SEQ_CST);
+  this->parmap.thread_counter.fetch_add(1);
 }
 
 template <typename T> void Parmap<T>::BusyWaitSynchro::worker_wait(unsigned round)
 {
   /* wait for more work */
-  while (__atomic_load_n(&this->parmap.work_round, __ATOMIC_SEQ_CST) != round) {
+  while (this->parmap.work_round.load() != round) {
     std::this_thread::yield();
   }
 }

@@ -59,7 +59,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
  * See https://www.akkadia.org/drepper/dsohowto.pdf
  * and https://lists.freebsd.org/pipermail/freebsd-current/2016-March/060284.html
 */
-#if !defined(RTLD_DEEPBIND) || HAVE_SANITIZER_ADDRESS || HAVE_SANITIZER_THREAD
+#if !RTLD_DEEPBIND || HAVE_SANITIZER_ADDRESS || HAVE_SANITIZER_THREAD
 #define WANT_RTLD_DEEPBIND 0
 #else
 #define WANT_RTLD_DEEPBIND RTLD_DEEPBIND
@@ -496,16 +496,15 @@ static void smpi_copy_file(std::string src, std::string target, off_t fdin_size)
   xbt_assert(fdout >= 0, "Cannot write into %s", target.c_str());
 
   XBT_DEBUG("Copy %" PRIdMAX " bytes into %s", static_cast<intmax_t>(fdin_size), target.c_str());
-  bool slow_copy = true;
 #if SG_HAVE_SENDFILE
   ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
-  if (sent_size == fdin_size)
-    slow_copy = false;
-  else if (sent_size != -1 || errno != ENOSYS)
-    xbt_die("Error while copying %s: only %zd bytes copied instead of %" PRIdMAX " (errno: %d -- %s)", target.c_str(),
-            sent_size, static_cast<intmax_t>(fdin_size), errno, strerror(errno));
+  xbt_assert(sent_size == fdin_size || (sent_size == -1 && errno == ENOSYS),
+             "Error while copying %s: only %zd bytes copied instead of %" PRIdMAX " (errno: %d -- %s)", target.c_str(),
+             sent_size, static_cast<intmax_t>(fdin_size), errno, strerror(errno));
+#else
+  ssize_t sent_size = -1;
 #endif
-  if (slow_copy) {
+  if (sent_size != fdin_size) { // sendfile is not available
     const int bufsize = 1024 * 1024 * 4;
     char buf[bufsize];
     while (int got = read(fdin, buf, bufsize)) {
@@ -549,7 +548,6 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
   struct stat fdin_stat;
   stat(executable.c_str(), &fdin_stat);
   off_t fdin_size         = fdin_stat.st_size;
-  static std::size_t rank = 0;
 
   std::string libnames = simgrid::config::get_value<std::string>("smpi/privatize-libs");
   if (not libnames.empty()) {
@@ -579,6 +577,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
 
   simix_global->default_function = [executable, fdin_size](std::vector<std::string> args) {
     return std::function<void()>([executable, fdin_size, args] {
+      static std::size_t rank = 0;
       // Copy the dynamic library:
       std::string target_executable =
           executable + "_" + std::to_string(getpid()) + "_" + std::to_string(rank) + ".so";

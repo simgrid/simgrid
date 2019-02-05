@@ -3,8 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this in one cpp file
-#include "src/include/catch.hpp"
+#include "catch.hpp"
 
 #include "simgrid/kernel/resource/Resource.hpp"
 #include "src/kernel/resource/profile/trace_mgr.hpp"
@@ -52,11 +51,11 @@ static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char
 
     REQUIRE(it == insertedIt); // Check that we find what we've put
     if (value >= 0) {
-      resource->apply_event(it, value);
       res.push_back(simgrid::kernel::profile::DatedValue(thedate, value));
     } else {
       XBT_DEBUG("%.1f: ignore an event (idx: %u)\n", thedate, it->idx);
     }
+    resource->apply_event(it, value);
   }
   tmgr_finalize();
   return res;

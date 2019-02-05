@@ -121,7 +121,8 @@ IF(SIMGRID_HAVE_LUA)
 ENDIF()
 
 # New tests should use the Catch Framework
-set(UNIT_TESTS  src/kernel/resource/profile/trace_mgr_test.cpp
+set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
+                src/kernel/resource/profile/trace_mgr_test.cpp
                 src/xbt/config_test.cpp
                 src/xbt/dict_test.cpp
                 src/xbt/dynar_test.cpp

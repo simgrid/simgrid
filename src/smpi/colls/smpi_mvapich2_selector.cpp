@@ -354,7 +354,7 @@ int Coll_allreduce_mvapich2::allreduce(void *sendbuf,
 
   datatype->extent(&true_lb, &true_extent);
   //MPI_Op *op_ptr;
-  //is_commutative = op->is_commutative();
+  is_commutative = op->is_commutative();
 
   {
     int range = 0, range_threshold = 0, range_threshold_intra = 0;
@@ -480,7 +480,8 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
     int range = 0;
     int range_threshold = 0;
     int range_threshold_intra = 0;
-    int is_homogeneous, is_contig;
+    int is_homogeneous;
+//, is_contig;
     MPI_Aint type_size;
     //, position;
     void *tmp_buf = NULL;
@@ -497,7 +498,7 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
     comm_size = comm->size();
     //rank = comm->rank();
 
-    is_contig=1;
+    //is_contig=1;
 /*    if (HANDLE_GET_KIND(datatype) == HANDLE_KIND_BUILTIN)*/
 /*        is_contig = 1;*/
 /*    else {*/
@@ -593,7 +594,8 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
         mv2_bcast_thresholds_table[range].is_two_level_bcast[range_threshold];
 #endif
      if (two_level_bcast == 1) {
-       if (not is_contig || not is_homogeneous) {
+       if (not is_homogeneous) {
+       //if (not is_contig || not is_homogeneous) {
          tmp_buf = (void*)smpi_get_tmp_sendbuffer(nbytes);
 
          /*            position = 0;*/
@@ -607,7 +609,8 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
 #ifdef CHANNEL_MRAIL_GEN2
         if ((mv2_enable_zcpy_bcast == 1) &&
               (&MPIR_Pipelined_Bcast_Zcpy_MV2 == MV2_Bcast_function)) {
-          if (not is_contig || not is_homogeneous) {
+          if (not is_homogeneous) {
+          //if (not is_contig || not is_homogeneous) {
             mpi_errno = MPIR_Pipelined_Bcast_Zcpy_MV2(tmp_buf, nbytes, MPI_BYTE, root, comm);
             } else {
                 mpi_errno = MPIR_Pipelined_Bcast_Zcpy_MV2(buffer, count, datatype,
@@ -617,7 +620,8 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
 #endif /* defined(CHANNEL_MRAIL_GEN2) */
         {
             shmem_comm = comm->get_intra_comm();
-            if (not is_contig || not is_homogeneous) {
+            if (not is_homogeneous) {
+            //if (not is_contig || not is_homogeneous) {
               MPIR_Bcast_tune_inter_node_helper_MV2(tmp_buf, nbytes, MPI_BYTE, root, comm);
             } else {
               MPIR_Bcast_tune_inter_node_helper_MV2(buffer, count, datatype, root, comm);
@@ -628,7 +632,8 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
 
                     root = INTRA_NODE_ROOT;
 
-                    if (not is_contig || not is_homogeneous) {
+                    //if (not is_contig || not is_homogeneous) {
+                    if (not is_homogeneous) {
                       mpi_errno = MV2_Bcast_intra_node_function(tmp_buf, nbytes, MPI_BYTE, root, shmem_comm);
                 } else {
                     mpi_errno = MV2_Bcast_intra_node_function(buffer, count,

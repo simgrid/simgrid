@@ -692,8 +692,14 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   if (smpi_iprobe_sleep > 0) {
     /** Compute the number of flops we will sleep **/
     s4u::this_actor::exec_init(/*nsleeps: See comment above */ nsleeps *
-                               /*(in seconds)*/ smpi_iprobe_sleep * speed * maxrate)
+                               /*(seconds * flop/s -> total flops)*/ smpi_iprobe_sleep * speed * maxrate)
         ->set_name("iprobe")
+        /* Not the entire CPU can be used when iprobing: This is important for
+         * the energy consumption caused by polling with iprobes. 
+         * Note also that the number of flops that was
+         * computed above contains a maxrate factor and is hence reduced (maxrate < 1)
+         */
+        ->set_bound(maxrate*speed)
         ->start()
         ->wait();
   }

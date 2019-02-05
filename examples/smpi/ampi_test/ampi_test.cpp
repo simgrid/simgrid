@@ -29,11 +29,13 @@ int main(int argc, char* argv[])
   AMPI_Iteration_in(MPI_COMM_WORLD);
   simgrid::s4u::this_actor::sleep_for(rank);
   AMPI_Iteration_out(MPI_COMM_WORLD);
-  if (rank == 0)
+  if (rank == 0) {
     free(pointer);
+    pointer = nullptr;
+  }
   AMPI_Migrate(MPI_COMM_WORLD);
   if (rank != 0)
-  free(pointer);
+    free(pointer);
 
   MPI_Finalize();
   return 0;

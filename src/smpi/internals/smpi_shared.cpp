@@ -139,6 +139,8 @@ static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
   snprintf(loc, PTR_STRLEN, "%p", mem);
   meta.size = size;
   meta.data = data;
+  meta.allocated_ptr   = mem;
+  meta.allocated_size  = size;
   allocs_metadata[mem] = meta;
   XBT_DEBUG("MMAP %zu to %p", size, mem);
   return mem;
