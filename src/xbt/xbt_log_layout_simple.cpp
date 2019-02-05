@@ -15,11 +15,13 @@
 extern const char *xbt_log_priority_names[8];
 extern int xbt_log_no_loc;
 
-#define check_overflow(len)                                             \
-  if ((rem_size -= (len)) > 0) {                                        \
-    p += (len);                                                         \
-  } else                                                                \
-    return 0
+#define check_overflow(len)                                                                                            \
+  do {                                                                                                                 \
+    rem_size -= (len);                                                                                                 \
+    if (rem_size <= 0)                                                                                                 \
+      return 0;                                                                                                        \
+    p += (len);                                                                                                        \
+  } while (0)
 
 static int xbt_log_layout_simple_doit(xbt_log_layout_t, xbt_log_event_t ev, const char* fmt)
 {
