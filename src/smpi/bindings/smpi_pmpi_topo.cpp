@@ -21,8 +21,11 @@ int PMPI_Cart_create(MPI_Comm comm_old, int ndims, int* dims, int* periodic, int
     return MPI_ERR_ARG;
   } else{
     simgrid::smpi::Topo_Cart* topo = new simgrid::smpi::Topo_Cart(comm_old, ndims, dims, periodic, reorder, comm_cart);
-    if(*comm_cart==MPI_COMM_NULL)
+    if (*comm_cart == MPI_COMM_NULL) {
       delete topo;
+    } else {
+      xbt_assert((*comm_cart)->topo() == topo);
+    }
     return MPI_SUCCESS;
   }
 }

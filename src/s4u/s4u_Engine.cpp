@@ -55,10 +55,11 @@ Engine::~Engine()
 /** @brief Retrieve the engine singleton */
 Engine* Engine::get_instance()
 {
-  if (s4u::Engine::instance_ == nullptr)
-    return new Engine(0, nullptr);
-  else
-    return s4u::Engine::instance_;
+  if (s4u::Engine::instance_ == nullptr) {
+    auto e = new Engine(0, nullptr);
+    xbt_assert(s4u::Engine::instance_ == e);
+  }
+  return s4u::Engine::instance_;
 }
 
 void Engine::shutdown()

@@ -160,6 +160,7 @@ static void instr_netzone_on_creation(simgrid::s4u::NetZone& netzone)
   std::string id = netzone.get_name();
   if (simgrid::instr::Container::get_root() == nullptr) {
     simgrid::instr::NetZoneContainer* root = new simgrid::instr::NetZoneContainer(id, 0, nullptr);
+    xbt_assert(simgrid::instr::Container::get_root() == root);
 
     if (TRACE_smpi_is_enabled()) {
       simgrid::instr::ContainerType* mpi = root->type_->by_name_or_create<simgrid::instr::ContainerType>("MPI");
