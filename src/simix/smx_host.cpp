@@ -39,10 +39,10 @@ simgrid::kernel::activity::ExecImplPtr SIMIX_execution_start(std::string name, s
 
   simgrid::kernel::activity::ExecImplPtr exec = simgrid::kernel::activity::ExecImplPtr(
       new simgrid::kernel::activity::ExecImpl(name, category, /*timeout_detector*/ nullptr, host));
-
-  exec->surf_action_ = surf_action;
-  exec->surf_action_->set_data(exec.get());
-
+  if (surf_action != nullptr) {
+    exec->surf_action_ = surf_action;
+    exec->surf_action_->set_data(exec.get());
+  }
   XBT_DEBUG("Create execute synchro %p: %s", exec.get(), exec->name_.c_str());
   simgrid::kernel::activity::ExecImpl::on_creation(exec);
 
@@ -73,9 +73,10 @@ simgrid::kernel::activity::ExecImplPtr SIMIX_execution_parallel_start(std::strin
 
   simgrid::kernel::activity::ExecImplPtr exec = simgrid::kernel::activity::ExecImplPtr(
       new simgrid::kernel::activity::ExecImpl(name, "", timeout_detector, nullptr));
-  exec->surf_action_ = surf_action;
-  exec->surf_action_->set_data(exec.get());
-
+  if (surf_action != nullptr) {
+    exec->surf_action_ = surf_action;
+    exec->surf_action_->set_data(exec.get());
+  }
   XBT_DEBUG("Create parallel execute synchro %p", exec.get());
 
   return exec;
