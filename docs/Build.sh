@@ -32,10 +32,8 @@ PYTHONPATH=../lib sphinx-build -M html source build ${SPHINXOPTS}
 
 set +x
 
-< source/img/graphical-toc.svg \
-   perl -pe 's/(xlink:href="http)/target="_top" $1/' \
- | perl -pe 's/(xlink:href=".*?.html)/target="_top" $1/' \
- > build/html/graphical-toc.svg
+perl -pe 's/(xlink:href="(?:http|.*\.html))/target="_top" $1/' \
+     source/img/graphical-toc.svg > build/html/graphical-toc.svg
 
 echo "List of missing references:"
 for f in $( (grep '<name>' build/xml/msg_8h.xml; \
