@@ -29,7 +29,7 @@ print "  this information with data on the cluster configurations, please\n";
 print "  drop us a mail so that we can add this information. -->\n\n";
 
 print "<?xml version='1.0'?>\n";
-print "<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid.dtd\">\n";
+print "<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n";
 print "<platform version=\"3\">\n";
 print "<AS id=\"AS0\" routing=\"Floyd\">\n";
 

@@ -47,7 +47,7 @@ practice.
 @section pf_overview Describing the platform with XML
 
 Your platform description should follow the specification presented in
-the [simgrid.dtd](http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd)
+the [simgrid.dtd](https://simgrid.org/simgrid.dtd)
 DTD file. The same DTD is used for both the platform and deployment
 files.
 
@@ -64,7 +64,7 @@ and one link), and explicitly giving the route between the hosts.
 
 @code{.xml}
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
   <zone id="first zone" routing="Full">
     <!-- the resources -->
@@ -1448,7 +1448,7 @@ Any such configuration must be given at the very top of the platform file.
 
 @verbatim
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4">
 <config>
 	<prop id="maxmin/precision" value="0.000010" />
@@ -1663,7 +1663,7 @@ complicated in using it, here is an example:
 
 @verbatim
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4">
 
  <zone  id="zone0"  routing="Vivaldi">
@@ -1690,7 +1690,7 @@ Note that the previous example defines a routing directly between hosts but it c
 That is for example what is commonly done when using peers (see Section @ref pf_peer).
 @verbatim
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4">
 
  <zone  id="zone0"  routing="Vivaldi">
