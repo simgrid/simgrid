@@ -428,7 +428,7 @@ run it again and again.
 
 This produces a file called ``Rplots.pdf`` with the following
 content. You can find more visualization examples `online
-<http://simgrid.gforge.inria.fr/contrib/R_visualization.html>`_.
+<https://simgrid.org/contrib/R_visualization.html>`_.
 
 .. image:: /tuto_smpi/img/lu.S.4.png
    :align: center

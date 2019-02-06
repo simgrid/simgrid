@@ -54,9 +54,9 @@ always the first question we get. The more you use the framework,
 the better for us. 
 
 Make sure that your scientific publications using SimGrid actually
-cite the [right paper](http://simgrid.gforge.inria.fr/Publications.html).
+cite the [right paper](https://simgrid.org/Publications.html).
 Also make sure that these citations are correctly listed on 
-<a href="http://simgrid.gforge.inria.fr/Usages.html">our list</a>.
+<a href="https://simgrid.org/Usages.html">our list</a>.
 
 You can also <b>help us constituting an active and welcoming user
 community</b>. Subscribe to the mailing lists, and answer the
@@ -65,7 +65,7 @@ the relevant part of the documentation on need, and help them becoming
 part of our community too. 
 
 Another easy way to help the project is to add a link to the <a
-href="http://simgrid.gforge.inria.fr">SimGrid homepage</a> on your
+href="https://simgrid.org/">SimGrid homepage</a> on your
 site to <b>improve SimGrid's ranking in search engines</b>.
 
 Finally, if you organize a scientific event where you expect many
@@ -127,7 +127,7 @@ a difficult work, which outcome is very precious to us.
 
 Or maybe you developed an independent tool on top of SimGrid. We'd
 love helping you gaining visibility by listing it in our 
-<a href="http://simgrid.gforge.inria.fr/contrib.html">Contrib
+<a href="https://simgrid.org/contrib.html">Contrib
 section</a>. 
 
 @subsection contributing_todo Possible Enhancements

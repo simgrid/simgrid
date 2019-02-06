@@ -433,7 +433,7 @@ several options to analyze this trace file:
   causality of your distributed simulation.
 
 - You can also check our online <a
-  href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial
+  href="https://simgrid.org/tutorials.html"> tutorial
   section</a> that contains a dedicated tutorial with several
   suggestions on how to use the tracing infrastructure. Look for the
   SimGrid User::Visualization 101 tutorial.

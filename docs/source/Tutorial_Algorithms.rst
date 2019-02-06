@@ -645,7 +645,7 @@ Visualizing the result
 vite is not enough to understand the situation, because it does not
 deal with categorization. This time, you absolutely must switch to R,
 as explained on `this page
-<http://simgrid.gforge.inria.fr/contrib/R_visualization.php>`_.
+<https://simgrid.org/contrib/R_visualization.html>`_.
 
 .. todo::
 

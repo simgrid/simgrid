@@ -745,7 +745,7 @@ process requires a blocking action (such as sending a message), it is
 interrupted, and only gets released when the simulated clock reaches
 the point where the blocking operation is done. This is explained
 graphically in the `relevant tutorial, available online
-<http://simgrid.gforge.inria.fr/tutorials/simgrid-simix-101.pdf>`_.
+<https://simgrid.org/tutorials/simgrid-simix-101.pdf>`_.
 
 In SimGrid, the containers in which user processes are virtualized are
 called contexts. Several context factory are provided, and you can

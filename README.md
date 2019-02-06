@@ -15,7 +15,7 @@ systems. It can be used to evaluate heuristics, prototype applications
 or even assess legacy MPI applications.
 
 More documentation is included in this archive (doc/html/index.html)
-or [online](http://simgrid.gforge.inria.fr/)
+or [online](https://simgrid.org/)
 
 In any case, you may want to subscribe to the [user mailing list](http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user). 
 There, you can find answers to your questions, or simply discuss with
