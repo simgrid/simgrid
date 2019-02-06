@@ -30,8 +30,8 @@ public:
   std::list<smx_simcall_t> simcalls_;   /* List of simcalls waiting for this activity */
   resource::Action* surf_action_ = nullptr;
 
-  virtual void suspend() = 0;
-  virtual void resume()  = 0;
+  virtual void suspend();
+  virtual void resume();
   virtual void post()    = 0; // What to do when a simcall terminates
 
   void set_category(std::string category);
@@ -42,6 +42,10 @@ public:
 
 private:
   std::atomic_int_fast32_t refcount_{0};
+
+public:
+  static simgrid::xbt::signal<void(ActivityImplPtr)> on_suspended;
+  static simgrid::xbt::signal<void(ActivityImplPtr)> on_resumed;
 };
 }}} // namespace simgrid::kernel::activity
 

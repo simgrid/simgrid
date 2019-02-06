@@ -20,8 +20,6 @@ public:
   explicit IoImpl(std::string name, surf::StorageImpl* storage);
 
   void start(sg_size_t size, simgrid::s4u::Io::OpType type);
-  void suspend() override;
-  void resume() override;
   void post() override;
   void cancel();
   double get_remaining();

@@ -15,8 +15,6 @@ namespace activity {
 
 class XBT_PUBLIC SleepImpl : public ActivityImpl {
 public:
-  void suspend() override;
-  void resume() override;
   void post() override;
 
   sg_host_t host                 = nullptr;

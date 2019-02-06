@@ -41,18 +41,6 @@ void simgrid::kernel::activity::IoImpl::cancel()
     surf_action_->cancel();
 }
 
-void simgrid::kernel::activity::IoImpl::suspend()
-{
-  if (surf_action_ != nullptr)
-    surf_action_->suspend();
-}
-
-void simgrid::kernel::activity::IoImpl::resume()
-{
-  if (surf_action_ != nullptr)
-    surf_action_->resume();
-}
-
 double simgrid::kernel::activity::IoImpl::get_remaining()
 {
   return surf_action_ ? surf_action_->get_remains() : 0;

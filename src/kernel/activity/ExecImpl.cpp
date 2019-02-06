@@ -51,21 +51,7 @@ void simgrid::kernel::activity::ExecImpl::start(double flops_amount, double prio
   simgrid::kernel::activity::ExecImpl::on_creation(this);
 }
 
-void simgrid::kernel::activity::ExecImpl::suspend()
-{
-  XBT_VERB("This exec is suspended (remain: %f)", surf_action_->get_remains());
-  if (surf_action_ != nullptr)
-    surf_action_->suspend();
-  on_suspended(this);
-}
 
-void simgrid::kernel::activity::ExecImpl::resume()
-{
-  XBT_VERB("This exec is resumed (remain: %f)", surf_action_->get_remains());
-  if (surf_action_ != nullptr)
-    surf_action_->resume();
-  on_resumed(this);
-}
 void simgrid::kernel::activity::ExecImpl::cancel()
 {
   XBT_VERB("This exec %p is canceled", this);
@@ -162,7 +148,5 @@ simgrid::kernel::activity::ExecImpl::migrate(simgrid::s4u::Host* to)
  *************/
 simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::on_creation;
 simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::on_completion;
-simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::on_resumed;
-simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::on_suspended;
 simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr, simgrid::s4u::Host*)>
     simgrid::kernel::activity::ExecImpl::on_migration;

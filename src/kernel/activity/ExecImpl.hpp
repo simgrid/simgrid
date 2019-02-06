@@ -20,8 +20,6 @@ public:
   explicit ExecImpl(std::string name, std::string tracing_category, resource::Action* timeout_detector,
                     s4u::Host* host);
   void start(double flops_amount, double priority, double bound);
-  void suspend() override;
-  void resume() override;
   void cancel();
   void post() override;
   double get_remaining();
@@ -37,11 +35,9 @@ private:
   resource::Action* timeout_detector_ = nullptr;
 
 public:
-  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> on_creation;
-  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> on_completion;
-  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> on_suspended;
-  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> on_resumed;
-  static simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr, simgrid::s4u::Host*)> on_migration;
+  static simgrid::xbt::signal<void(ExecImplPtr)> on_creation;
+  static simgrid::xbt::signal<void(ExecImplPtr)> on_completion;
+  static simgrid::xbt::signal<void(ExecImplPtr, simgrid::s4u::Host*)> on_migration;
 };
 }
 }

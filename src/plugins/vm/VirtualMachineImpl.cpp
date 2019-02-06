@@ -53,9 +53,10 @@ static void hostStateChange(s4u::Host& host)
   }
 }
 
-static void addActiveTask(kernel::activity::ExecImplPtr exec)
+static void addActiveTask(kernel::activity::ActivityImplPtr exec)
 {
-  s4u::VirtualMachine *vm = dynamic_cast<s4u::VirtualMachine*>(exec->host_);
+  s4u::VirtualMachine* vm =
+      dynamic_cast<s4u::VirtualMachine*>(boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->host_);
   if (vm != nullptr) {
     VirtualMachineImpl *vm_impl = vm->get_impl();
     vm_impl->active_tasks_ = vm_impl->active_tasks_ + 1;
@@ -63,9 +64,10 @@ static void addActiveTask(kernel::activity::ExecImplPtr exec)
   }
 }
 
-static void removeActiveTask(kernel::activity::ExecImplPtr exec)
+static void removeActiveTask(kernel::activity::ActivityImplPtr exec)
 {
-  s4u::VirtualMachine *vm = dynamic_cast<s4u::VirtualMachine*>(exec->host_);
+  s4u::VirtualMachine* vm =
+      dynamic_cast<s4u::VirtualMachine*>(boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->host_);
   if (vm != nullptr) {
     VirtualMachineImpl *vm_impl = vm->get_impl();
     vm_impl->active_tasks_ = vm_impl->active_tasks_ - 1;
@@ -79,8 +81,8 @@ VMModel::VMModel()
   s4u::Host::on_state_change.connect(hostStateChange);
   kernel::activity::ExecImpl::on_creation.connect(addActiveTask);
   kernel::activity::ExecImpl::on_completion.connect(removeActiveTask);
-  kernel::activity::ExecImpl::on_resumed.connect(addActiveTask);
-  kernel::activity::ExecImpl::on_suspended.connect(removeActiveTask);  
+  kernel::activity::ActivityImpl::on_resumed.connect(addActiveTask);
+  kernel::activity::ActivityImpl::on_suspended.connect(removeActiveTask);
 }
 
 double VMModel::next_occuring_event(double now)

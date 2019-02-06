@@ -17,16 +17,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
-void simgrid::kernel::activity::SleepImpl::suspend()
-{
-  surf_action_->suspend();
-}
-
-void simgrid::kernel::activity::SleepImpl::resume()
-{
-  surf_action_->resume();
-}
-
 void simgrid::kernel::activity::SleepImpl::post()
 {
   while (not simcalls_.empty()) {

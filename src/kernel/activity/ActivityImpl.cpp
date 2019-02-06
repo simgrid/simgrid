@@ -5,11 +5,31 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
+
 namespace simgrid {
 namespace kernel {
 namespace activity {
 
-void simgrid::kernel::activity::ActivityImpl::set_category(std::string category)
+void ActivityImpl::suspend()
+{
+  if (surf_action_ == nullptr)
+    return;
+  XBT_VERB("This activity is suspended (remain: %f)", surf_action_->get_remains());
+  surf_action_->suspend();
+  on_suspended(this);
+}
+
+void ActivityImpl::resume()
+{
+  if (surf_action_ == nullptr)
+    return;
+  XBT_VERB("This activity is resumed (remain: %f)", surf_action_->get_remains());
+  surf_action_->resume();
+  on_resumed(this);
+}
+
+void ActivityImpl::set_category(std::string category)
 {
   if (surf_action_)
     surf_action_->set_category(category);
@@ -28,6 +48,8 @@ void intrusive_ptr_release(simgrid::kernel::activity::ActivityImpl* activity)
     delete activity;
   }
 }
+xbt::signal<void(ActivityImplPtr)> ActivityImpl::on_resumed;
+xbt::signal<void(ActivityImplPtr)> ActivityImpl::on_suspended;
 }
 }
 } // namespace simgrid::kernel::activity::
