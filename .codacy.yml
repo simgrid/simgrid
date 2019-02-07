@@ -5,10 +5,12 @@ engines:
    exclude_paths:
      - 'teshsuite/**'
 exclude_paths:
+  - 'doc/**.css'
   - '**/*_dtd.c'
   - '**/*_dtd.h'
   - '**/*yy.c'
   - 'docs/**.py'
+  - 'tools/**.py'
   - 'examples/smpi/NAS/*'
   - 'include/xbt/RngStream.h'
   - 'src/include/catch.hpp'
