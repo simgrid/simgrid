@@ -39,7 +39,7 @@ ExecImpl::~ExecImpl()
   XBT_DEBUG("Destroy exec %p", this);
 }
 
-void ExecImpl::start(double flops_amount, double priority, double bound)
+ExecImpl* ExecImpl::start(double flops_amount, double priority, double bound)
 {
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     surf_action_ = host_->pimpl_cpu->execution_start(flops_amount);
@@ -51,6 +51,7 @@ void ExecImpl::start(double flops_amount, double priority, double bound)
 
   XBT_DEBUG("Create execute synchro %p: %s", this, name_.c_str());
   ExecImpl::on_creation(this);
+  return this;
 }
 
 void ExecImpl::cancel()

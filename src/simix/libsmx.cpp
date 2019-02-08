@@ -397,9 +397,8 @@ smx_activity_t simcall_execution_start(std::string name, std::string category, d
                                        double bound, sg_host_t host)
 {
   return simgrid::simix::simcall([name, category, flops_amount, priority, bound, host] {
-    simgrid::kernel::activity::ExecImplPtr exec =
-        simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(name, category, nullptr, host));
-    exec->start(flops_amount, priority, bound);
-    return exec;
+    return simgrid::kernel::activity::ExecImplPtr(
+               new simgrid::kernel::activity::ExecImpl(name, category, nullptr, host))
+        ->start(flops_amount, priority, bound);
   });
 }

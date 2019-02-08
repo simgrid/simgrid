@@ -176,9 +176,7 @@ smx_activity_t ActorImpl::suspend(ActorImpl* issuer)
 
     return nullptr;
   } else {
-    activity::ExecImplPtr exec = activity::ExecImplPtr(new activity::ExecImpl("suspend", "", nullptr, this->host_));
-    exec->start(0.0, 1.0, 0.0);
-    return exec;
+    return activity::ExecImplPtr(new activity::ExecImpl("suspend", "", nullptr, this->host_))->start(0.0, 1.0, 0.0);
   }
 }
 
