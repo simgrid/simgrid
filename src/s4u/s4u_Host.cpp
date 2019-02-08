@@ -219,13 +219,13 @@ double Host::get_pstate_speed(int pstate_index) const
   return simgrid::simix::simcall([this, pstate_index] { return this->pimpl_cpu->get_pstate_peak_speed(pstate_index); });
 }
 
-/** @brief Get the peak computing speed in flops/s at the current pstate, taking the external load into account.
+/** @brief Get the peak computing speed in flops/s at the current pstate, NOT taking the external load into account.
  *
  *  The amount of flops per second available for computing depends on several things:
  *    - The current pstate determines the maximal peak computing speed (use @ref get_pstate_speed() to retrieve the
  *      computing speed you would get at another pstate)
- *    - If you declared an external load, then this reduces the available computing speed
- *      (see @ref simgrid::surf::Cpu::set_speed_trace())
+ *    - If you declared an external load (with @ref simgrid::surf::Cpu::set_speed_profile()), you must multiply the
+ * result of get_speed() by get_available_speed() to retrieve what a new computation would get.
  *
  *  The remaining speed is then shared between the executions located on this host.
  *  You can retrieve the amount of tasks currently running on this host with @ref get_load().
@@ -249,7 +249,7 @@ double Host::get_load() const
 }
 /** @brief Get the available speed ratio, between 0 and 1.
  *
- * This accounts for external load (see @ref simgrid::surf::Cpu::set_speed_trace()).
+ * This accounts for external load (see @ref simgrid::surf::Cpu::set_speed_profile()).
  */
 double Host::get_available_speed() const
 {
