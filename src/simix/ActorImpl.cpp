@@ -182,7 +182,7 @@ smx_activity_t ActorImpl::suspend(ActorImpl* issuer)
 
 void ActorImpl::resume()
 {
-  XBT_IN("process = %p", this);
+  XBT_IN("actor = %p", this);
 
   if (context_->iwannadie) {
     XBT_VERB("Ignoring request to suspend an actor that is currently dying.");
@@ -222,8 +222,8 @@ void ActorImpl::throw_exception(std::exception_ptr e)
 
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(waiting_synchro);
-    if (exec != nullptr && exec->surf_action_)
-      exec->surf_action_->cancel();
+    if (exec != nullptr)
+      exec->cancel();
 
     simgrid::kernel::activity::CommImplPtr comm =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(waiting_synchro);
@@ -253,7 +253,7 @@ void ActorImpl::throw_exception(std::exception_ptr e)
     simgrid::kernel::activity::IoImplPtr io =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(waiting_synchro);
     if (io != nullptr) {
-      delete io.get();
+      io->cancel();
     }
   }
   waiting_synchro = nullptr;
@@ -506,8 +506,8 @@ void SIMIX_process_throw(smx_actor_t actor, xbt_errcat_t cat, int value, const c
 
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(actor->waiting_synchro);
-    if (exec != nullptr && exec->surf_action_)
-      exec->surf_action_->cancel();
+    if (exec != nullptr)
+      exec->cancel();
 
     simgrid::kernel::activity::CommImplPtr comm =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(actor->waiting_synchro);
@@ -537,7 +537,7 @@ void SIMIX_process_throw(smx_actor_t actor, xbt_errcat_t cat, int value, const c
     simgrid::kernel::activity::IoImplPtr io =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(actor->waiting_synchro);
     if (io != nullptr) {
-      delete io.get();
+      io->cancel();
     }
   }
   actor->waiting_synchro = nullptr;
