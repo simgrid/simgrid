@@ -5,6 +5,8 @@
 
 #include "mc/mc.h"
 #include "simgrid/Exception.hpp"
+#include "simgrid/s4u/Actor.hpp"
+#include "simgrid/s4u/Exec.hpp"
 #include "smx_private.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
@@ -174,7 +176,9 @@ smx_activity_t ActorImpl::suspend(ActorImpl* issuer)
 
     return nullptr;
   } else {
-    return SIMIX_execution_start("suspend", "", 0.0, 1.0, 0.0, this->host_);
+    activity::ExecImplPtr exec = activity::ExecImplPtr(new activity::ExecImpl("suspend", "", nullptr, this->host_));
+    exec->start(0.0, 1.0, 0.0);
+    return exec;
   }
 }
 

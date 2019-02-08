@@ -24,31 +24,6 @@ const char* sg_host_self_get_name()
   return host->get_cname();
 }
 
-simgrid::kernel::activity::ExecImplPtr SIMIX_execution_start(std::string name, std::string category,
-                                                             double flops_amount, double priority, double bound,
-                                                             sg_host_t host)
-{
-  /* set surf's action */
-  simgrid::kernel::resource::Action* surf_action = nullptr;
-  if (not MC_is_active() && not MC_record_replay_is_active()) {
-    surf_action = host->pimpl_cpu->execution_start(flops_amount);
-    surf_action->set_priority(priority);
-    if (bound > 0)
-      surf_action->set_bound(bound);
-  }
-
-  simgrid::kernel::activity::ExecImplPtr exec = simgrid::kernel::activity::ExecImplPtr(
-      new simgrid::kernel::activity::ExecImpl(name, category, /*timeout_detector*/ nullptr, host));
-  if (surf_action != nullptr) {
-    exec->surf_action_ = surf_action;
-    exec->surf_action_->set_data(exec.get());
-  }
-  XBT_DEBUG("Create execute synchro %p: %s", exec.get(), exec->name_.c_str());
-  simgrid::kernel::activity::ExecImpl::on_creation(exec);
-
-  return exec;
-}
-
 simgrid::kernel::activity::ExecImplPtr SIMIX_execution_parallel_start(std::string name, int host_nb,
                                                                       sg_host_t* host_list, double* flops_amount,
                                                                       double* bytes_amount, double rate, double timeout)

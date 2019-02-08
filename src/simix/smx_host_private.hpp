@@ -12,9 +12,6 @@
 
 XBT_PRIVATE void SIMIX_execution_finish(smx_activity_t synchro);
 
-XBT_PRIVATE simgrid::kernel::activity::ExecImplPtr SIMIX_execution_start(std::string name, std::string category,
-                                                                         double flops_amount, double priority,
-                                                                         double bound, sg_host_t host);
 XBT_PRIVATE simgrid::kernel::activity::ExecImplPtr
 SIMIX_execution_parallel_start(std::string name, int host_nb, sg_host_t* host_list, double* flops_amount,
                                double* bytes_amount, double rate, double timeout);
