@@ -1115,7 +1115,8 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/trace/ginette_state.trace
   examples/platforms/trace/jupiter_speed.trace
   examples/platforms/trace/jupiter_state.trace
-  examples/platforms/trace/link1_avail.trace
+  examples/platforms/trace/link1_bandwidth.trace
+  examples/platforms/trace/link1_latency.trace
   examples/platforms/trace/link3_state.trace
   examples/platforms/trace/link4_state.trace
   examples/platforms/trace/linkBandwidth7.bw
@@ -1147,6 +1148,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/small_platform_constant.xml
   examples/platforms/small_platform_fatpipe.xml
   examples/platforms/small_platform_one_link_routes.xml
+  examples/platforms/small_platform_profile.xml
   examples/platforms/small_platform_with_failures.xml
   examples/platforms/small_platform_with_routers.xml
   examples/platforms/syscoord/generate_peer_platform.pl
