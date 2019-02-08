@@ -3,6 +3,19 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/* This example shows how to work with the state profile of an host or a link,
+ * specifying when the resource must be turned on or off.
+ *
+ * To set such a profile, the first way is to use a file in the XML, while the second is to use the programmatic
+ * interface. Once this profile is in place, the resource will automatically be turned on and off.
+ *
+ * The actors running on an host that is turned off will receive a simgrid::HostFailureException. Since we specified
+ * on_failure="RESTART" for each actors in the XML file, they will be automatically restarted when the host starts
+ * again.
+ *
+ * Communications using failed links will .. fail.
+ */
+
 #include "simgrid/s4u.hpp"
 #include "xbt/str.h"
 
@@ -36,7 +49,7 @@ static int master(int argc, char* argv[])
     } catch (xbt_ex& e) {
       if (e.category != network_error)
         xbt_die("Unexpected behavior");
-      XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
+      XBT_INFO("Mmh. The communication with '%s' failed. Nevermind. Let's keep going!", mailbox->get_cname());
       delete payload;
     }
   }
