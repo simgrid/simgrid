@@ -2,7 +2,7 @@
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
   <zone  id="AS0"  routing="Full">
-    <host id="Faulty Host" speed="1Gf" state_file="trace/faulty_host.trace"/>
+    <host id="Faulty Host" speed="1Gf" state_file="profiles/faulty_host.profile"/>
     <host id="Safe Host" speed="500Mf"/>
   </zone>
 </platform>

@@ -11,7 +11,8 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-monitor exec-ptask exec-remote
                  io-async io-file-system io-file-remote io-storage-raw
-                 platform-failures platform-properties plugin-hostload 
+                 platform-failures platform-profile platform-properties
+                 plugin-hostload
                  replay-comm replay-storage
                  routing-get-clusters
                  synchro-barrier synchro-mutex synchro-semaphore)

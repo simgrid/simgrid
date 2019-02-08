@@ -2,8 +2,8 @@
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
   <zone  id="AS0"  routing="Full">
-    <host id="Cpu A" speed="10f" availability_file="trace/trace_A.txt" state_file="trace/trace_A_failure.txt"/>
-    <host id="Cpu B" speed="10f" availability_file="trace/trace_B.txt"/>
+    <host id="Cpu A" speed="10f" availability_file="profiles/trace_A.txt" state_file="profiles/trace_A_failure.txt"/>
+    <host id="Cpu B" speed="10f" availability_file="profiles/trace_B.txt"/>
     <link id="LinkA" bandwidth="10MBps" latency="200ms"/>
     <route src="Cpu A" dst="Cpu B">
       <link_ctn id="LinkA"/>

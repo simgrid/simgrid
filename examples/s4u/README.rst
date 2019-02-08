@@ -281,6 +281,19 @@ Interacting with the Platform
    |br| `examples/s4u/platform-properties/s4u-platform-properties_d.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/platform-properties/s4u-platform-properties_d.xml>`_
    |br| `examples/platforms/prop.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/prop.xml>`_
 
+ - **Specifying state profiles:** shows how to specify when the
+   resources must be turned off and on again, and how to react to such
+   failures in your code.
+   
+   |br| `examples/platforms/small_platform_with_failure.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/small_platform_with_failure.xml>`_
+   |br| The state profiles in `examples/platforms/profiles <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/profiles>`_
+
+ - **Specifying speed profiles:** shows how to specify an external
+   load to resources, variating their peak speed over time.
+   
+   |br| `examples/platforms/small_platform_profile.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/small_platform_profile.xml>`_
+   |br| The speed, bandwidth and latency profiles in `examples/platforms/profiles  <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/profiles>`_
+
 =================
 Energy Simulation
 =================

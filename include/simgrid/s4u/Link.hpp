@@ -60,7 +60,9 @@ public:
   bool is_used();
 
   void turn_on();
+  bool is_on();
   void turn_off();
+  bool is_off();
 
   void* get_data(); /** Should be used only from the C interface. Prefer extensions in C++ */
   void set_data(void* d);
@@ -83,9 +85,9 @@ public:
   }
 #endif
 
-  /** Setup the profile file with states events (ON or OFF). The profile must contain boolean values. */
+  /** Setup the profile with states events (ON or OFF). The profile must contain boolean values. */
   void set_state_profile(kernel::profile::Profile* profile);
-  /** Setup the profile file with bandwidth events (peak speed changes due to external load).
+  /** Setup the profile with bandwidth events (peak speed changes due to external load).
    * The profile must contain percentages (value between 0 and 1). */
   void set_bandwidth_profile(kernel::profile::Profile* profile);
   /** Setup the profile file with latency events (peak latency changes due to external load).
