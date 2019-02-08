@@ -106,7 +106,7 @@ void Actor::migrate(Host* new_host)
       xbt_assert(exec.get() != nullptr, "We can only migrate blocked actors when they are blocked on executions.");
       exec->migrate(new_host);
     }
-    this->pimpl_->change_host(new_host);
+    this->pimpl_->set_host(new_host);
   });
 
   s4u::Actor::on_migration_end(this);

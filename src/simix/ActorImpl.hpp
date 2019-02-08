@@ -106,7 +106,7 @@ public:
   void* get_user_data() { return userdata_; }
   /** Ask the actor to throw an exception right away */
   void throw_exception(std::exception_ptr e);
-  void change_host(sg_host_t dest);
+  void set_host(sg_host_t dest);
 };
 
 class ProcessArg {

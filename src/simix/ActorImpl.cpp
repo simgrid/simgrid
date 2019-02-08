@@ -262,7 +262,7 @@ void ActorImpl::throw_exception(std::exception_ptr e)
   waiting_synchro = nullptr;
 }
 
-void ActorImpl::change_host(sg_host_t dest)
+void ActorImpl::set_host(sg_host_t dest)
 {
   simgrid::xbt::intrusive_erase(host_->pimpl_->process_list_, *this);
   host_ = dest;
