@@ -286,13 +286,13 @@ Interacting with the Platform
    failures in your code.
    
    |br| `examples/platforms/small_platform_with_failure.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/small_platform_with_failure.xml>`_
-   |br| The state profiles in `examples/platforms/trace <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/trace>`_
+   |br| The state profiles in `examples/platforms/profiles <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/profiles>`_
 
  - **Specifying speed profiles:** shows how to specify an external
    load to resources, variating their peak speed over time.
    
    |br| `examples/platforms/small_platform_profile.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/small_platform_profile.xml>`_
-   |br| The speed, bandwidth and latency profiles in `examples/platforms/trace <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/trace>`_
+   |br| The speed, bandwidth and latency profiles in `examples/platforms/profiles  <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/profiles>`_
 
 =================
 Energy Simulation

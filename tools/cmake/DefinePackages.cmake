@@ -1109,20 +1109,20 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/optorsim/transform_optorsim_platform.pl
   examples/platforms/config.xml
   examples/platforms/config_tracing.xml
-  examples/platforms/trace/bourassa_state.trace
-  examples/platforms/trace/fafard_state.trace
-  examples/platforms/trace/faulty_host.trace
-  examples/platforms/trace/ginette_state.trace
-  examples/platforms/trace/jupiter_speed.trace
-  examples/platforms/trace/jupiter_state.trace
-  examples/platforms/trace/link1_bandwidth.trace
-  examples/platforms/trace/link1_latency.trace
-  examples/platforms/trace/link3_state.trace
-  examples/platforms/trace/link4_state.trace
-  examples/platforms/trace/linkBandwidth7.bw
-  examples/platforms/trace/trace_A_failure.txt
-  examples/platforms/trace/trace_A.txt
-  examples/platforms/trace/trace_B.txt
+  examples/platforms/profiles/bourassa_state.profile
+  examples/platforms/profiles/fafard_state.profile
+  examples/platforms/profiles/faulty_host.profile
+  examples/platforms/profiles/ginette_state.profile
+  examples/platforms/profiles/jupiter_speed.profile
+  examples/platforms/profiles/jupiter_state.profile
+  examples/platforms/profiles/link1_bandwidth.profile
+  examples/platforms/profiles/link1_latency.profile
+  examples/platforms/profiles/link3_state.profile
+  examples/platforms/profiles/link4_state.profile
+  examples/platforms/profiles/linkBandwidth7.bw
+  examples/platforms/profiles/trace_A_failure.txt
+  examples/platforms/profiles/trace_A.txt
+  examples/platforms/profiles/trace_B.txt
   examples/platforms/data_center.xml
   examples/platforms/dogbone.xml
   examples/platforms/energy_platform.xml
@@ -1146,10 +1146,10 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/small_platform.xml
   examples/platforms/small_platform.lua
   examples/platforms/small_platform_constant.xml
+  examples/platforms/small_platform_failures.xml
   examples/platforms/small_platform_fatpipe.xml
   examples/platforms/small_platform_one_link_routes.xml
   examples/platforms/small_platform_profile.xml
-  examples/platforms/small_platform_with_failures.xml
   examples/platforms/small_platform_with_routers.xml
   examples/platforms/syscoord/generate_peer_platform.pl
   examples/platforms/syscoord/median_harvard.syscoord

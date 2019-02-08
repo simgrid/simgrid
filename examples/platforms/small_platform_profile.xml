@@ -3,12 +3,12 @@
 <platform version="4.1">
   <zone  id="AS0"  routing="Full">
     <host id="Tremblay" speed="25Mf"/>
-    <host id="Jupiter"  speed="25Mf" availability_file="trace/jupiter_speed.trace" />
+    <host id="Jupiter"  speed="25Mf" availability_file="profiles/jupiter_speed.profile" />
     <host id="Fafard"   speed="25Mf"/>
     <host id="Ginette"  speed="25Mf"/>
     <host id="Bourassa" speed="25Mf"/>
 
-    <link id="1" bandwidth="1MBps" latency="10ms" bandwidth_file="trace/link1_bandwidth.trace" latency_file="trace/link1_latency.trace" />
+    <link id="1" bandwidth="1MBps" latency="10ms" bandwidth_file="profiles/link1_bandwidth.profile" latency_file="profiles/link1_latency.profile" />
     <link id="2" bandwidth="1MBps" latency="10ms"/>
     <link id="3" bandwidth="1MBps" latency="10ms"/>
     <link id="4" bandwidth="1MBps" latency="10ms"/>

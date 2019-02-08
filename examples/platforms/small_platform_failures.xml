@@ -3,15 +3,15 @@
 <platform version="4.1">
   <zone  id="AS0"  routing="Full">
     <host id="Tremblay" speed="25Mf"/>
-    <host id="Jupiter"  speed="25Mf" state_file="trace/jupiter_state.trace"/>
-    <host id="Fafard"   speed="25Mf" state_file="trace/fafard_state.trace" />
-    <host id="Ginette"  speed="25Mf" state_file="trace/ginette_state.trace"/>
-    <host id="Bourassa" speed="25Mf" state_file="trace/bourassa_state.trace"/>
+    <host id="Jupiter"  speed="25Mf" state_file="profiles/jupiter_state.profile"/>
+    <host id="Fafard"   speed="25Mf" state_file="profiles/fafard_state.profile" />
+    <host id="Ginette"  speed="25Mf" state_file="profiles/ginette_state.profile"/>
+    <host id="Bourassa" speed="25Mf" state_file="profiles/bourassa_state.profile"/>
 
     <link id="1" bandwidth="1MBps" latency="0"/>
     <link id="2" bandwidth="1MBps" latency="0"/>
-    <link id="3" bandwidth="1MBps" latency="0" state_file="trace/link3_state.trace" />
-    <link id="4" bandwidth="1MBps" latency="0" state_file="trace/link4_state.trace" />
+    <link id="3" bandwidth="1MBps" latency="0" state_file="profiles/link3_state.profile" />
+    <link id="4" bandwidth="1MBps" latency="0" state_file="profiles/link4_state.profile" />
     <link id="5" bandwidth="1MBps" latency="0"/>
     <link id="6" bandwidth="1MBps" latency="0"/>
     <link id="7" bandwidth="1MBps" latency="0"/>
