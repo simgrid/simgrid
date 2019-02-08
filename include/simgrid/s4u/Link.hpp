@@ -60,7 +60,9 @@ public:
   bool is_used();
 
   void turn_on();
+  bool is_on();
   void turn_off();
+  bool is_off();
 
   void* get_data(); /** Should be used only from the C interface. Prefer extensions in C++ */
   void set_data(void* d);
