@@ -60,8 +60,8 @@ freely available, though.
 
 .. _howto_churn:
 
-Modeling Churn in P2P
-*********************
+Modeling Churn (e.g. in P2P)
+****************************
 
 One of the biggest challenges in P2P settings is to cope with the
 churn, meaning that resources keep appearing and disappearing. In
@@ -70,12 +70,10 @@ eg :cpp:func:`simgrid::s4u::Host::turn_on`. To reduce the burden when
 the churn is high, you can also attach a **state profile** to the host
 directly.
 
-This is not possible from S4U yet (TODO), and you should use the
-``state_file`` attribute of :ref:`pf_tag_host`, :ref:`pf_tag_cluster`
-or :ref:`pf_tag_link`.
-
-Every lines (but the last) of such files describe timed events with
-the form "date value". Example:
+This can be done through the XML file, using the ``state_file``
+attribute of :ref:`pf_tag_host`, :ref:`pf_tag_cluster` or
+:ref:`pf_tag_link`. Every lines (but the last) of such files describe
+timed events with the form "date value". Example:
 
 .. code-block:: python
 		
@@ -90,6 +88,12 @@ the form "date value". Example:
 
 If your trace does not contain a LOOPAFTER line, then your profile is
 only executed once and not repetitively.
+
+Another possibility is to use the
+:cpp:func:`simgrid::s4u::Host::set_state_profile()` or 
+:cpp:func:`simgrid::s4u::Link::set_state_profile()` functions. These
+functions take a profile, that can be an fixed profile exhaustively
+listing the events, or something else if you wish.
 
 .. _howto_multicore:
 

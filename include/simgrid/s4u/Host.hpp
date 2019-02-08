@@ -101,6 +101,9 @@ public:
   void set_property(std::string key, std::string value);
   std::unordered_map<std::string, std::string>* get_properties();
 
+  void set_state_profile(kernel::profile::Profile* p);
+  void set_speed_profile(kernel::profile::Profile* p);
+
 #ifndef DOXYGEN
   /** @deprecated See Host::get_properties() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_properties()") std::map<std::string, std::string>* getProperties()

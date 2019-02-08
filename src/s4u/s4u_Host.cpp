@@ -196,6 +196,22 @@ void Host::set_property(std::string key, std::string value)
 {
   simgrid::simix::simcall([this, key, value] { this->pimpl_->set_property(key, value); });
 }
+/** Specify a profile turning the host on and off according to a exhaustive list or a stochastic law.
+ * The profile must contain boolean values. */
+void Host::set_state_profile(kernel::profile::Profile* p)
+{
+  return simgrid::simix::simcall([this, p] { pimpl_cpu->set_state_profile(p); });
+}
+/** Specify a profile modeling the external load according to a exhaustive list or a stochastic law.
+ *
+ * Each event of the profile represent a peak speed change that is due to external load. The values are given as a rate
+ * of the initial value. This means that the actual value is obtained by multiplying the initial value (the peek speed
+ * at this pstate level) by the rate coming from the profile.
+ */
+void Host::set_speed_profile(kernel::profile::Profile* p)
+{
+  return simgrid::simix::simcall([this, p] { pimpl_cpu->set_speed_profile(p); });
+}
 
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
 double Host::get_pstate_speed(int pstate_index) const
