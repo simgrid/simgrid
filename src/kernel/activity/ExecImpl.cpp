@@ -14,9 +14,11 @@
 #include "simgrid/s4u/Host.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
+namespace simgrid {
+namespace kernel {
+namespace activity {
 
-simgrid::kernel::activity::ExecImpl::ExecImpl(std::string name, std::string tracing_category,
-                                              resource::Action* timeout_detector, s4u::Host* host)
+ExecImpl::ExecImpl(std::string name, std::string tracing_category, resource::Action* timeout_detector, s4u::Host* host)
     : ActivityImpl(name), host_(host), timeout_detector_(timeout_detector)
 {
   this->state_ = SIMIX_RUNNING;
@@ -28,7 +30,7 @@ simgrid::kernel::activity::ExecImpl::ExecImpl(std::string name, std::string trac
   XBT_DEBUG("Create exec %p", this);
 }
 
-simgrid::kernel::activity::ExecImpl::~ExecImpl()
+ExecImpl::~ExecImpl()
 {
   if (surf_action_)
     surf_action_->unref();
@@ -37,7 +39,7 @@ simgrid::kernel::activity::ExecImpl::~ExecImpl()
   XBT_DEBUG("Destroy exec %p", this);
 }
 
-void simgrid::kernel::activity::ExecImpl::start(double flops_amount, double priority, double bound)
+void ExecImpl::start(double flops_amount, double priority, double bound)
 {
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     surf_action_ = host_->pimpl_cpu->execution_start(flops_amount);
@@ -48,18 +50,17 @@ void simgrid::kernel::activity::ExecImpl::start(double flops_amount, double prio
   }
 
   XBT_DEBUG("Create execute synchro %p: %s", this, name_.c_str());
-  simgrid::kernel::activity::ExecImpl::on_creation(this);
+  ExecImpl::on_creation(this);
 }
 
-
-void simgrid::kernel::activity::ExecImpl::cancel()
+void ExecImpl::cancel()
 {
   XBT_VERB("This exec %p is canceled", this);
   if (surf_action_ != nullptr)
     surf_action_->cancel();
 }
 
-double simgrid::kernel::activity::ExecImpl::get_remaining()
+double ExecImpl::get_remaining()
 {
   xbt_assert(host_ != nullptr, "Calling remains() on a parallel execution is not allowed. "
                                "We would need to return a vector instead of a scalar. "
@@ -67,7 +68,7 @@ double simgrid::kernel::activity::ExecImpl::get_remaining()
   return surf_action_ ? surf_action_->get_remains() : 0;
 }
 
-double simgrid::kernel::activity::ExecImpl::get_remaining_ratio()
+double ExecImpl::get_remaining_ratio()
 {
   if (host_ ==
       nullptr) // parallel task: their remain is already between 0 and 1 (see comment in ExecImpl::get_remaining())
@@ -76,28 +77,27 @@ double simgrid::kernel::activity::ExecImpl::get_remaining_ratio()
     return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains() / surf_action_->get_cost();
 }
 
-void simgrid::kernel::activity::ExecImpl::set_bound(double bound)
+void ExecImpl::set_bound(double bound)
 {
   if (surf_action_)
     surf_action_->set_bound(bound);
 }
-void simgrid::kernel::activity::ExecImpl::set_priority(double priority)
+void ExecImpl::set_priority(double priority)
 {
   if (surf_action_)
     surf_action_->set_priority(priority);
 }
 
-void simgrid::kernel::activity::ExecImpl::post()
+void ExecImpl::post()
 {
   if (host_ && host_->is_off()) { /* FIXME: handle resource failure for parallel tasks too */
     /* If the host running the synchro failed, notice it. This way, the asking
      * process can be killed if it runs on that host itself */
     state_ = SIMIX_FAILED;
-  } else if (surf_action_ && surf_action_->get_state() == simgrid::kernel::resource::Action::State::FAILED) {
+  } else if (surf_action_ && surf_action_->get_state() == resource::Action::State::FAILED) {
     /* If the host running the synchro didn't fail, then the synchro was canceled */
     state_ = SIMIX_CANCELED;
-  } else if (timeout_detector_ &&
-             timeout_detector_->get_state() == simgrid::kernel::resource::Action::State::FINISHED) {
+  } else if (timeout_detector_ && timeout_detector_->get_state() == resource::Action::State::FINISHED) {
     state_ = SIMIX_TIMEOUT;
   } else {
     state_ = SIMIX_DONE;
@@ -119,13 +119,11 @@ void simgrid::kernel::activity::ExecImpl::post()
     SIMIX_execution_finish(this);
 }
 
-simgrid::kernel::activity::ActivityImpl*
-simgrid::kernel::activity::ExecImpl::migrate(simgrid::s4u::Host* to)
+ActivityImpl* ExecImpl::migrate(simgrid::s4u::Host* to)
 {
-
   if (not MC_is_active() && not MC_record_replay_is_active()) {
-    simgrid::kernel::resource::Action* old_action = this->surf_action_;
-    simgrid::kernel::resource::Action* new_action = to->pimpl_cpu->execution_start(old_action->get_cost());
+    resource::Action* old_action = this->surf_action_;
+    resource::Action* new_action = to->pimpl_cpu->execution_start(old_action->get_cost());
     new_action->set_remains(old_action->get_remains());
     new_action->set_data(this);
     new_action->set_priority(old_action->get_priority());
@@ -146,7 +144,10 @@ simgrid::kernel::activity::ExecImpl::migrate(simgrid::s4u::Host* to)
 /*************
  * Callbacks *
  *************/
-simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::on_creation;
-simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::on_completion;
-simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr, simgrid::s4u::Host*)>
-    simgrid::kernel::activity::ExecImpl::on_migration;
+xbt::signal<void(ExecImplPtr)> ExecImpl::on_creation;
+xbt::signal<void(ExecImplPtr)> ExecImpl::on_completion;
+xbt::signal<void(ExecImplPtr, s4u::Host*)> ExecImpl::on_migration;
+
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid
