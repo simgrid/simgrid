@@ -68,8 +68,7 @@ IoPtr Storage::read_async(sg_size_t size)
 
 sg_size_t Storage::read(sg_size_t size)
 {
-  IoPtr i = IoPtr(io_init(size, Io::OpType::READ))->start()->wait();
-  return i->get_performed_ioops();
+  return IoPtr(io_init(size, Io::OpType::READ))->start()->wait()->get_performed_ioops();
 }
 
 IoPtr Storage::write_async(sg_size_t size)
@@ -80,8 +79,7 @@ IoPtr Storage::write_async(sg_size_t size)
 
 sg_size_t Storage::write(sg_size_t size)
 {
-  IoPtr i = IoPtr(io_init(size, Io::OpType::WRITE))->start()->wait();
-  return i->get_performed_ioops();
+  return IoPtr(io_init(size, Io::OpType::WRITE))->start()->wait()->get_performed_ioops();
 }
 
 } /* namespace s4u */
