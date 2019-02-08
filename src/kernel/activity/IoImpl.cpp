@@ -9,44 +9,48 @@
 #include "src/surf/StorageImpl.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_io);
+namespace simgrid {
+namespace kernel {
+namespace activity {
 
-simgrid::kernel::activity::IoImpl::IoImpl(std::string name, simgrid::surf::StorageImpl* storage)
-    : ActivityImpl(name), storage_(storage)
+IoImpl::IoImpl(std::string name, surf::StorageImpl* storage) : ActivityImpl(name), storage_(storage)
 {
   this->state_ = SIMIX_RUNNING;
 
   XBT_DEBUG("Create io impl %p", this);
 }
 
-simgrid::kernel::activity::IoImpl::~IoImpl()
+IoImpl::~IoImpl()
 {
   if (surf_action_ != nullptr)
     surf_action_->unref();
   XBT_DEBUG("Destroy io %p", this);
 }
 
-void simgrid::kernel::activity::IoImpl::start(sg_size_t size, simgrid::s4u::Io::OpType type)
+IoImpl* IoImpl::start(sg_size_t size, simgrid::s4u::Io::OpType type)
 {
   surf_action_ = storage_->io_start(size, type);
   surf_action_->set_data(this);
 
   XBT_DEBUG("Create IO synchro %p %s", this, name_.c_str());
   simgrid::kernel::activity::IoImpl::on_start(this);
+
+  return this;
 }
 
-void simgrid::kernel::activity::IoImpl::cancel()
+void IoImpl::cancel()
 {
   XBT_VERB("This exec %p is canceled", this);
   if (surf_action_ != nullptr)
     surf_action_->cancel();
 }
 
-double simgrid::kernel::activity::IoImpl::get_remaining()
+double IoImpl::get_remaining()
 {
   return surf_action_ ? surf_action_->get_remains() : 0;
 }
 
-void simgrid::kernel::activity::IoImpl::post()
+void IoImpl::post()
 {
   performed_ioops_ = surf_action_->get_cost();
   switch (surf_action_->get_state()) {
@@ -67,5 +71,9 @@ void simgrid::kernel::activity::IoImpl::post()
 /*************
  * Callbacks *
  *************/
-simgrid::xbt::signal<void(simgrid::kernel::activity::IoImplPtr)> simgrid::kernel::activity::IoImpl::on_start;
-simgrid::xbt::signal<void(simgrid::kernel::activity::IoImplPtr)> simgrid::kernel::activity::IoImpl::on_completion;
+xbt::signal<void(IoImplPtr)> IoImpl::on_start;
+xbt::signal<void(IoImplPtr)> IoImpl::on_completion;
+
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid
