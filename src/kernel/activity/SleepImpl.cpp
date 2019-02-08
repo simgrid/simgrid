@@ -13,17 +13,36 @@
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/popping_private.hpp"
 #include "src/simix/smx_private.hpp"
+#include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
+namespace simgrid {
+namespace kernel {
+namespace activity {
 
-void simgrid::kernel::activity::SleepImpl::post()
+SleepImpl::~SleepImpl()
+{
+  if (surf_action_)
+    surf_action_->unref();
+  XBT_DEBUG("Destroy activity %p", this);
+}
+
+SleepImpl* SleepImpl::start(double duration)
+{
+  surf_action_ = host_->pimpl_cpu->sleep(duration);
+  surf_action_->set_data(this);
+  XBT_DEBUG("Create sleep synchronization %p", this);
+  return this;
+}
+
+void SleepImpl::post()
 {
   while (not simcalls_.empty()) {
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
     e_smx_state_t result;
-    if (host && host->is_off()) {
+    if (host_ && host_->is_off()) {
       /* If the host running the synchro failed, notice it. This way, the asking
        * actor can be killed if it runs on that host itself */
       result = SIMIX_SRC_HOST_FAILURE;
@@ -32,12 +51,12 @@ void simgrid::kernel::activity::SleepImpl::post()
     }
 
     switch (surf_action_->get_state()) {
-      case simgrid::kernel::resource::Action::State::FAILED:
+      case resource::Action::State::FAILED:
         simcall->issuer->context_->iwannadie = true;
         result                               = SIMIX_FAILED;
         break;
 
-      case simgrid::kernel::resource::Action::State::FINISHED:
+      case resource::Action::State::FINISHED:
         result = SIMIX_DONE;
         break;
 
@@ -61,3 +80,7 @@ void simgrid::kernel::activity::SleepImpl::post()
 
   SIMIX_process_sleep_destroy(this);
 }
+
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid

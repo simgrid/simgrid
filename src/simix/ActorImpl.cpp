@@ -206,13 +206,8 @@ smx_activity_t ActorImpl::sleep(double duration)
     throw_exception(std::make_exception_ptr(simgrid::HostFailureException(
         XBT_THROW_POINT, std::string("Host ") + std::string(host_->get_cname()) + " failed, you cannot sleep there.")));
 
-  simgrid::kernel::activity::SleepImpl* synchro = new simgrid::kernel::activity::SleepImpl();
-  synchro->host                                 = host_;
-  synchro->surf_action_                         = host_->pimpl_cpu->sleep(duration);
-  synchro->surf_action_->set_data(synchro);
-  XBT_DEBUG("Create sleep synchronization %p", synchro);
-
-  return synchro;
+  return simgrid::kernel::activity::SleepImplPtr(new simgrid::kernel::activity::SleepImpl("sleep", host_))
+      ->start(duration);
 }
 
 void ActorImpl::throw_exception(std::exception_ptr e)

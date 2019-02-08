@@ -14,10 +14,14 @@ namespace kernel {
 namespace activity {
 
 class XBT_PUBLIC SleepImpl : public ActivityImpl {
-public:
-  void post() override;
+  ~SleepImpl() override;
 
-  sg_host_t host                 = nullptr;
+public:
+  explicit SleepImpl(std::string name, s4u::Host* host) : ActivityImpl(name), host_(host) {}
+  void post() override;
+  SleepImpl* start(double duration);
+
+  sg_host_t host_ = nullptr;
 };
 }
 }
