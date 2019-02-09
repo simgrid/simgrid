@@ -1119,7 +1119,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/profiles/link1_latency.profile
   examples/platforms/profiles/link3_state.profile
   examples/platforms/profiles/link4_state.profile
-  examples/platforms/profiles/linkBandwidth7.bw
   examples/platforms/profiles/trace_A_failure.txt
   examples/platforms/profiles/trace_A.txt
   examples/platforms/profiles/trace_B.txt

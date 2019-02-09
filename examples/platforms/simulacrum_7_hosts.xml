@@ -20,7 +20,7 @@
     <link id="l155" bandwidth="125MBps" latency="100us"/>
     <link id="l156" bandwidth="125MBps" latency="100us"/>
     <link id="l157" bandwidth="125MBps" latency="100us"/>
-    <link id="l159" bandwidth="125MBps" latency="100us" bandwidth_file="profiles/linkBandwidth7.bw"/>
+    <link id="l159" bandwidth="125MBps" latency="100us"/>
     <link id="l160" bandwidth="125MBps" latency="100us"/>
     <link id="l161" bandwidth="125MBps" latency="100us"/>
     <link id="l162" bandwidth="125MBps" latency="100us"/>
