@@ -1158,7 +1158,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/three_multicore_hosts.xml
   examples/platforms/two_hosts.xml
   examples/platforms/two_hosts_platform_shared.xml
-  examples/platforms/two_hosts_platform_with_availability.xml
+  examples/platforms/two_hosts_profiles.xml
   examples/platforms/two_hosts_platform_with_availability_included.xml
   examples/platforms/two_peers.xml
   examples/platforms/vivaldi.xml
