@@ -475,7 +475,7 @@ void SIMIX_process_kill(smx_actor_t actor, smx_actor_t issuer)
       SIMIX_synchro_stop_waiting(actor, &actor->simcall);
 
     } else if (io != nullptr) {
-      delete io.get();
+      io->cancel();
     } else {
       simgrid::kernel::activity::ActivityImplPtr activity = actor->waiting_synchro;
       xbt_die("Activity %s is of unknown type %s", activity->name_.c_str(),
