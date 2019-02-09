@@ -11,18 +11,14 @@ To upgrade your files, use the tool simgrid_update_xml
     - <as>, <asroute>, <bypassZoneRoute> and <process>, deprecated in DTD4.1
   - FULLDUPLEX sharing will be removed, deprecated in DTD4.2 (v3.19)
 
-* New in DTD version 4.2b (in SimGrid 3.22): backward compatible change
- (version is still announced to be 4.2 to not bother users)
-   - In <host> and <peer> availability_file is now speed_file
-
-* New in DTD version 4.2 (in SimGrid 3.19): backward compatible change (v4 files are valid v4.2 files)
-   - SPLITDUPLEX is the new spelling of the deprecated FULLDUPLEX
-
 * New in DTD version 4.1 (in SimGrid 3.16): backward compatible change (v4 files are valid v4.1 files)
    - <zone> can be used as a synonym for the now deprecated <as>
    - <zoneRoute> can be used as a synonym for the now deprecated <asroute>
    - <bypassZoneRoute> an be used as a synonym for the now deprecated <bypassAsRoute>
    - <actor> can be used as a synonym for the now deprecated <process>
+  Other backward-compatible changes for which we did not bump the DTD version.
+  - SPLITDUPLEX is the new spelling of the deprecated FULLDUPLEX (SimGrid v3.19)
+  - In <host> and <peer> availability_file is now speed_file (SimGrid v3.22)
 
 * New in DTD version 4 (in SimGrid 3.13):
    - Rename (power->speed) the attributes describing the amount of flop

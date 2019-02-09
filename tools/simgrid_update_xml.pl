@@ -123,7 +123,7 @@ Units are now mandatory in attributes. USE THE SCRIPT sg_xml_unit_converter.py T
 
 =back
 
-=item B<Version 4.1:> Introduced in SimGrid 3.16 (this is the current version)
+=item B<Version 4.1:> Introduced in SimGrid 3.16 (this is the current version).
 
 =over 4
 
@@ -145,6 +145,10 @@ Rename a few tags, but in a backward-compatible manner: the old names are still 
 =item
 
 Rename the FULLDUPLEX sharing into SPLITDUPLEX.
+
+=item
+
+In <host> and <peer>, rename the 'availability_file' atribute into 'speed_file'.
 
 =back
 
@@ -257,6 +261,7 @@ while (defined($line = <INPUT>)) {
 	$line =~ s/\bprocess\b/actor/g;
     }
     $line =~ s/\bFULLDUPLEX\b/SPLITDUPLEX/g;
+    $line =~ s/\bavailability_file\b/speed_file/g;
 	
     $output_string .= "$line\n";
 }
