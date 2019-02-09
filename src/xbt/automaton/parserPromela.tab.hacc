@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.4.  */
+/* A Bison parser, made by GNU Bison 3.2.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,6 +29,9 @@
 
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
+
+/* Undocumented macros, especially those whose name start with YY_,
+   are private implementation details.  Do not rely on them.  */
 
 #ifndef YY_XBT_AUTOMATON_PARSER_PARSERPROMELA_TAB_HACC_INCLUDED
 # define YY_XBT_AUTOMATON_PARSER_PARSERPROMELA_TAB_HACC_INCLUDED
@@ -73,14 +76,14 @@ extern int xbt_automaton_parser_debug;
 
 union YYSTYPE
 {
-#line 20 "parserPromela.yacc" /* yacc.c:1909  */
+#line 20 "parserPromela.yacc" /* yacc.c:1906  */
 
   double real;
   int integer;
   char* string;
   xbt_automaton_exp_label_t label;
 
-#line 84 "parserPromela.tab.hacc" /* yacc.c:1909  */
+#line 87 "parserPromela.tab.hacc" /* yacc.c:1906  */
 };
 
 typedef union YYSTYPE YYSTYPE;
