@@ -429,9 +429,14 @@ void ETag_surfxml_host()    {
 
   XBT_DEBUG("pstate: %s", A_surfxml_host_pstate);
   host.core_amount = surf_parse_get_int(A_surfxml_host_core);
-  host.speed_trace = A_surfxml_host_availability___file[0]
-                         ? simgrid::kernel::profile::Profile::from_file(A_surfxml_host_availability___file)
-                         : nullptr;
+
+  host.speed_trace = nullptr;
+  if (A_surfxml_host_availability___file[0] != '\0') {
+    XBT_WARN("The availability_file attribute in <host> is now deprecated. Please, use 'speed_file' instead.");
+    host.speed_trace = simgrid::kernel::profile::Profile::from_file(A_surfxml_host_availability___file);
+  }
+  if (A_surfxml_host_speed___file[0] != '\0')
+    host.speed_trace = simgrid::kernel::profile::Profile::from_file(A_surfxml_host_speed___file);
   host.state_trace = A_surfxml_host_state___file[0]
                          ? simgrid::kernel::profile::Profile::from_file(A_surfxml_host_state___file)
                          : nullptr;
@@ -558,15 +563,19 @@ void STag_surfxml_peer(){
   peer.bw_in       = surf_parse_get_bandwidth(A_surfxml_peer_bw___in, "bw_in of peer", peer.id.c_str());
   peer.bw_out      = surf_parse_get_bandwidth(A_surfxml_peer_bw___out, "bw_out of peer", peer.id.c_str());
   peer.coord       = A_surfxml_peer_coordinates;
-  peer.speed_trace = A_surfxml_peer_availability___file[0]
-                         ? simgrid::kernel::profile::Profile::from_file(A_surfxml_peer_availability___file)
-                         : nullptr;
+  peer.speed_trace = nullptr;
+  if (A_surfxml_peer_availability___file[0] != '\0') {
+    XBT_WARN("The availability_file attribute in <peer> is now deprecated. Please, use 'speed_file' instead.");
+    peer.speed_trace = simgrid::kernel::profile::Profile::from_file(A_surfxml_peer_availability___file);
+  }
+  if (A_surfxml_peer_speed___file[0] != '\0')
+    peer.speed_trace = simgrid::kernel::profile::Profile::from_file(A_surfxml_peer_speed___file);
   peer.state_trace = A_surfxml_peer_state___file[0]
                          ? simgrid::kernel::profile::Profile::from_file(A_surfxml_peer_state___file)
                          : nullptr;
 
   if (A_surfxml_peer_lat[0] != '\0')
-    XBT_WARN("The latency parameter in <peer> is now deprecated. Use the z coordinate instead of '%s'.",
+    XBT_WARN("The latency attribute in <peer> is now deprecated. Use the z coordinate instead of '%s'.",
              A_surfxml_peer_lat);
 
   sg_platf_new_peer(&peer);

@@ -222,6 +222,8 @@ typedef int AT_surfxml_host_pstate;
 #define AU_surfxml_host_pstate NULL
 typedef int AT_surfxml_host_speed;
 #define AU_surfxml_host_speed NULL
+typedef int AT_surfxml_host_speed___file;
+#define AU_surfxml_host_speed___file NULL
 typedef int AT_surfxml_host_state___file;
 #define AU_surfxml_host_state___file NULL
 typedef int AT_surfxml_host___link_down;
@@ -270,6 +272,8 @@ typedef int AT_surfxml_peer_lat;
 #define AU_surfxml_peer_lat NULL
 typedef int AT_surfxml_peer_speed;
 #define AU_surfxml_peer_speed NULL
+typedef int AT_surfxml_peer_speed___file;
+#define AU_surfxml_peer_speed___file NULL
 typedef int AT_surfxml_peer_state___file;
 #define AU_surfxml_peer_state___file NULL
 typedef int AT_surfxml_platform_version;
@@ -529,6 +533,9 @@ XBT_PUBLIC_DATA short int surfxml_host_pstate_isset;
 XBT_PUBLIC_DATA AT_surfxml_host_speed AX_surfxml_host_speed;
 #define A_surfxml_host_speed (surfxml_bufferstack + AX_surfxml_host_speed)
 XBT_PUBLIC_DATA short int surfxml_host_speed_isset;
+XBT_PUBLIC_DATA AT_surfxml_host_speed___file AX_surfxml_host_speed___file;
+#define A_surfxml_host_speed___file (surfxml_bufferstack + AX_surfxml_host_speed___file)
+XBT_PUBLIC_DATA short int surfxml_host_speed___file_isset;
 XBT_PUBLIC_DATA AT_surfxml_host_state___file AX_surfxml_host_state___file;
 #define A_surfxml_host_state___file (surfxml_bufferstack + AX_surfxml_host_state___file)
 XBT_PUBLIC_DATA short int surfxml_host_state___file_isset;
@@ -604,6 +611,9 @@ XBT_PUBLIC_DATA short int surfxml_peer_lat_isset;
 XBT_PUBLIC_DATA AT_surfxml_peer_speed AX_surfxml_peer_speed;
 #define A_surfxml_peer_speed (surfxml_bufferstack + AX_surfxml_peer_speed)
 XBT_PUBLIC_DATA short int surfxml_peer_speed_isset;
+XBT_PUBLIC_DATA AT_surfxml_peer_speed___file AX_surfxml_peer_speed___file;
+#define A_surfxml_peer_speed___file (surfxml_bufferstack + AX_surfxml_peer_speed___file)
+XBT_PUBLIC_DATA short int surfxml_peer_speed___file_isset;
 XBT_PUBLIC_DATA AT_surfxml_peer_state___file AX_surfxml_peer_state___file;
 #define A_surfxml_peer_state___file (surfxml_bufferstack + AX_surfxml_peer_state___file)
 XBT_PUBLIC_DATA short int surfxml_peer_state___file_isset;

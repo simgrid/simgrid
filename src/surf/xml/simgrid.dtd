@@ -11,6 +11,10 @@ To upgrade your files, use the tool simgrid_update_xml
     - <as>, <asroute>, <bypassZoneRoute> and <process>, deprecated in DTD4.1
   - FULLDUPLEX sharing will be removed, deprecated in DTD4.2 (v3.19)
 
+* New in DTD version 4.2b (in SimGrid 3.22): backward compatible change
+ (version is still announced to be 4.2 to not bother users)
+   - In <host> and <peer> availability_file is now speed_file
+
 * New in DTD version 4.2 (in SimGrid 3.19): backward compatible change (v4 files are valid v4.2 files)
    - SPLITDUPLEX is the new spelling of the deprecated FULLDUPLEX
 
@@ -27,9 +31,9 @@ To upgrade your files, use the tool simgrid_update_xml
    - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
 
    - In <host> and <link>, attributes availability and state are gone.
-     It was redundent with state and availability traces, and with peak values.
+     It was redundent with state and availability profiles, and with peak values.
 
-   - In <cluster>, cannot set the availability nor state traces.
+   - In <cluster>, cannot set the availability nor state profiles.
      This was too complex and unused.
 
    - The DOCTYPE points to the right URL (this file).
@@ -139,7 +143,8 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST host id CDATA #REQUIRED>
 <!ATTLIST host speed CDATA #REQUIRED>
 <!ATTLIST host core  CDATA "1">
-<!ATTLIST host availability_file CDATA "">
+<!ATTLIST host speed_file CDATA "">
+<!ATTLIST host availability_file CDATA ""> <!-- deprecated -->
 <!ATTLIST host state_file CDATA "">
 <!ATTLIST host coordinates  CDATA "">
 <!ATTLIST host pstate CDATA "0.0">
@@ -191,7 +196,8 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST peer bw_out CDATA #REQUIRED>
 <!ATTLIST peer lat CDATA "0">
 <!ATTLIST peer coordinates CDATA "">
-<!ATTLIST peer availability_file CDATA "">
+<!ATTLIST peer speed_file CDATA ""> 
+<!ATTLIST peer availability_file CDATA ""> <!-- deprecated -->
 <!ATTLIST peer state_file CDATA "">
 
 <!ELEMENT router EMPTY>

@@ -31,6 +31,10 @@ XBT:
  - Drop xbt_ex_display(), use simgrid::xbt::log_exception() instead.
  - Drop cunit, use Catch2 instead.
 
+XML
+ - In <host> and <peer>, availability_file is now speed_file.
+   XML file version remains 4.2 since old files are still compatible.
+
 Fixed bugs:
  - #261: Document the parameters of parallel execution's constructor
  - #300: [s4u] BarrierPtr is missing

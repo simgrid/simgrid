@@ -10,7 +10,7 @@
       <prop id="disk" value="80E9"/>
       <prop id="OS" value="Linux 2.6.22-14"/>
     </host>
-    <host id="erin" speed="500Mf" availability_file="erin.avail"/> <!--uses someone else's trace -->
+    <host id="erin" speed="500Mf" speed_file="erin.avail"/> <!--uses someone else's trace -->
   </zone>
 
   <trace id="myTrace" periodicity="1.0">
