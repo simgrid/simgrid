@@ -78,11 +78,11 @@ void Link::turn_off()
   simgrid::simix::simcall([this]() { this->pimpl_->turn_off(); });
 }
 
-bool Link::is_on()
+bool Link::is_on() const
 {
   return this->pimpl_->is_on();
 }
-bool Link::is_off()
+bool Link::is_off() const
 {
   return this->pimpl_->is_off();
 }
