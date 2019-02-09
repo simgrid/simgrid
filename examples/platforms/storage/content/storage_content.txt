@@ -112,7 +112,7 @@
 /doc/simgrid/examples/msg/ns3/3hosts_2links_d.xml 352
 /doc/simgrid/examples/msg/ns3/One_cluster.xml  658
 /doc/simgrid/examples/msg/migration/migration.c 2922
-/doc/simgrid/examples/msg/small_platform_with_failures.xml  4746
+/doc/simgrid/examples/msg/small_platform_failures.xml  4746
 /doc/simgrid/examples/msg/icomms/small_platform.xml 972
 /doc/simgrid/examples/msg/icomms/deployment_peer.xml 678
 /doc/simgrid/examples/msg/icomms/deployment_peer05.xml  891
