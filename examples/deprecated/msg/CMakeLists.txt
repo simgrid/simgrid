@@ -62,7 +62,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml        PARENT_SCOPE)
 
 foreach(x app-masterworker cloud-masterworker
-          dht-pastry dht-kademlia # FIXME: platform-failures is disabled
+          dht-pastry dht-kademlia platform-failures
           energy-vm
           process-create 
           synchro-semaphore)
@@ -72,6 +72,8 @@ foreach(x app-masterworker cloud-masterworker
 			      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
 			      ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/${x}/${x}.tesh)
 endforeach()
+
+set_tesh_properties(msg-platform-failures "raw;boost" WILL_FAIL TRUE) # FIXME
 
 foreach (x trace-categories trace-route-user-variables trace-link-user-variables trace-masterworker trace-process-migration trace-host-user-variables)
   ADD_TESH(msg-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/${x}
