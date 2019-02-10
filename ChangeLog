@@ -709,7 +709,7 @@ SimGrid (3.14) Released December 24. 2016
  * VM I/O related things:
    - Ignored parameter of vm_create: core_nb, disk_path and disk_size.
    - Unimplemented save/restore methods
- * MSG_as_router_get_property_value() was redundent with
+ * MSG_as_router_get_property_value() was redundant with
    MSG_environment_as_get_property_value().
    - Removed MSG_as_router_*propert*() functions
    - Added MSG_environment_as_set_property_value() for consistency
@@ -803,7 +803,7 @@ SimGrid (3.13) stable; urgency=low
      flops that a <host>, <peer>, <cluster> or <cabinet> can deliver per second.
    - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
    - In <host> and <link>, attributes availability and state are gone.
-     It was redundent with state and availability traces, and with peak values.
+     It was redundant with state and availability traces, and with peak values.
    - In <cluster>, attributes availability_file and state_file are gone.
      It was too complex and unused.
    - Kill <gpu>. Was not doing anything.

@@ -9363,7 +9363,7 @@ FAIL("Premature EOF: `</peer>' expected.");
   *      that a <host>, <peer>, <cluster> or <cabinet> can deliver per second.
   *    - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
   *    - In <host> and <link>, attributes availability and state are gone.
-  *      It was redundent with state and availability traces, and with peak values.
+  *      It was redundant with state and availability traces, and with peak values.
   *    - In <cluster>, cannot set the availability nor state profiles.
   *      This was too complex and unused.
   *    - The DOCTYPE points to the right URL (this file).
