@@ -11,6 +11,9 @@
 #include <src/instr/instr_smpi.hpp>
 #include <xbt/replay.hpp>
 
+#include "ampi.hpp"
+#include <smpi/sampi.h>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(plugin_pampi, smpi, "Logging specific to the AMPI functions");
 
 static std::vector<size_t> memory_size(500, 0); // FIXME cheinrich This needs to be dynamic
@@ -58,8 +61,6 @@ extern "C" void* _sampi_realloc(void* ptr, size_t size)
   return result;
 }
 
-#include "ampi.hpp"
-#include <smpi/sampi.h>
 namespace simgrid {
 namespace smpi {
 namespace plugin {

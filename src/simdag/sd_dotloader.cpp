@@ -12,10 +12,10 @@
 #include <cstring>
 #include <unordered_map>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
-
 #if HAVE_GRAPHVIZ
 #include <graphviz/cgraph.h>
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
 
 xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool schedule);
 

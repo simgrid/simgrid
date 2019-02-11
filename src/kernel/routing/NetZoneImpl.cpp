@@ -126,7 +126,7 @@ void NetZoneImpl::add_route(kernel::routing::NetPoint* /*src*/, kernel::routing:
 }
 
 void NetZoneImpl::add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                                   std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
+                                   std::vector<resource::LinkImpl*>& link_list, bool /* symmetrical */)
 {
   /* Argument validity checks */
   if (gw_dst) {
