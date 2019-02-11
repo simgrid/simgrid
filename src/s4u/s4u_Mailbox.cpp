@@ -24,7 +24,7 @@ const char* Mailbox::get_cname() const
   return pimpl_->get_cname();
 }
 
-MailboxPtr Mailbox::by_name(std::string name)
+MailboxPtr Mailbox::by_name(const std::string& name)
 {
   kernel::activity::MailboxImpl* mbox = kernel::activity::MailboxImpl::by_name_or_null(name);
   if (mbox == nullptr) {

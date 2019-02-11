@@ -11,7 +11,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_utils, smpi, "Logging specific to SMPI (utils)");
 
-std::vector<s_smpi_factor_t> parse_factor(std::string smpi_coef_string)
+std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string)
 {
   std::vector<s_smpi_factor_t> smpi_factor;
 

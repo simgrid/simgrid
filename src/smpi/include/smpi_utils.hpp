@@ -16,6 +16,6 @@ struct s_smpi_factor_t {
   std::vector<double> values;
 };
 
-XBT_PUBLIC std::vector<s_smpi_factor_t> parse_factor(std::string smpi_coef_string);
+XBT_PUBLIC std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string);
 
 #endif

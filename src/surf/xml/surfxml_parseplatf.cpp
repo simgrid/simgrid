@@ -60,7 +60,7 @@ void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* 
 }
 
 /* This function acts as a main in the parsing area. */
-void parse_platform_file(std::string file)
+void parse_platform_file(const std::string& file)
 {
   const char* cfile = file.c_str();
   int len           = strlen(cfile);

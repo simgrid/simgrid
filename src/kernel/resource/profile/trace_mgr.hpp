@@ -80,8 +80,8 @@ public:
   Event* schedule(FutureEvtSet* fes, resource::Resource* resource);
   DatedValue next(Event* event);
 
-  static Profile* from_file(std::string path);
-  static Profile* from_string(std::string name, std::string input, double periodicity);
+  static Profile* from_file(const std::string& path);
+  static Profile* from_string(const std::string& name, const std::string& input, double periodicity);
   // private:
   std::vector<DatedValue> event_list;
 

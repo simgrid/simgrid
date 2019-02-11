@@ -11,8 +11,8 @@
 
 /* Generic functions common to all models */
 
-XBT_PRIVATE FILE* surf_fopen(std::string name, const char* mode);
-XBT_PRIVATE std::ifstream* surf_ifsopen(std::string name);
+XBT_PRIVATE FILE* surf_fopen(const std::string& name, const char* mode);
+XBT_PRIVATE std::ifstream* surf_ifsopen(const std::string& name);
 
 XBT_PRIVATE void check_disk_attachment();
 

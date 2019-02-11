@@ -28,8 +28,8 @@ public:
   std::map<std::string, Container*> children_;
   kernel::routing::NetPoint* netpoint_ = nullptr;
 
-  static Container* by_name_or_null(std::string name);
-  static Container* by_name(std::string name);
+  static Container* by_name_or_null(const std::string& name);
+  static Container* by_name(const std::string& name);
   std::string get_name() { return name_; }
   const char* get_cname() { return name_.c_str(); }
   long long int get_id() { return id_; }
@@ -37,9 +37,9 @@ public:
   void log_creation();
   void log_destruction();
 
-  StateType* get_state(std::string name);
-  LinkType* get_link(std::string name);
-  VariableType* get_variable(std::string name);
+  StateType* get_state(const std::string& name);
+  LinkType* get_link(const std::string& name);
+  VariableType* get_variable(const std::string& name);
   void create_child(std::string name, std::string type_name);
   static Container* get_root();
 };

@@ -13,7 +13,7 @@ PropertyHolder::~PropertyHolder() {
 }
 
 /** @brief Return the property associated to the provided key (or nullptr if not existing) */
-const char* PropertyHolder::get_property(std::string key)
+const char* PropertyHolder::get_property(const std::string& key)
 {
   if (properties_ == nullptr)
     return nullptr;
@@ -22,7 +22,7 @@ const char* PropertyHolder::get_property(std::string key)
 }
 
 /** @brief Change the value of a given key in the property set */
-void PropertyHolder::set_property(std::string key, std::string value)
+void PropertyHolder::set_property(const std::string& key, std::string value)
 {
   if (not properties_)
     properties_ = new std::unordered_map<std::string, std::string>;

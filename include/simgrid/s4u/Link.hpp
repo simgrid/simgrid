@@ -36,8 +36,8 @@ public:
   kernel::resource::LinkImpl* get_impl() { return pimpl_; }
 
   /** @brief Retrieve a link from its name */
-  static Link* by_name(std::string name);
-  static Link* by_name_or_null(std::string name);
+  static Link* by_name(const std::string& name);
+  static Link* by_name_or_null(const std::string& name);
 
   /** @brief Retrieves the name of that link as a C++ string */
   const std::string& get_name() const;
@@ -93,8 +93,8 @@ public:
    * The profile must contain absolute values */
   void set_latency_profile(kernel::profile::Profile* profile);
 
-  const char* get_property(std::string key);
-  void set_property(std::string key, std::string value);
+  const char* get_property(const std::string& key);
+  void set_property(const std::string& key, std::string value);
 
   /* The signals */
   /** @brief Callback signal fired when a new Link is created */

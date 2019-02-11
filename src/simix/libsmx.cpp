@@ -395,8 +395,8 @@ void simcall_execution_set_bound(smx_activity_t exec, double bound)
       [exec, bound] { boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->set_bound(bound); });
 }
 
-smx_activity_t simcall_execution_start(std::string name, std::string category, double flops_amount, double priority,
-                                       double bound, sg_host_t host)
+smx_activity_t simcall_execution_start(const std::string& name, const std::string& category, double flops_amount,
+                                       double priority, double bound, sg_host_t host)
 {
   return simgrid::simix::simcall([name, category, flops_amount, priority, bound, host] {
     return simgrid::kernel::activity::ExecImplPtr(

@@ -112,7 +112,7 @@ public:
   sg_size_t tell();                       /** Retrieves the current file position */
 
   /** Rename a file. WARNING: It is forbidden to move the file to another mount point */
-  void move(std::string fullpath);
+  void move(const std::string& fullpath);
   int remote_copy(sg_host_t host, const char* fullpath);
   int remote_move(sg_host_t host, const char* fullpath);
 
@@ -136,7 +136,7 @@ public:
   static simgrid::xbt::Extension<Storage, FileSystemStorageExt> EXTENSION_ID;
   explicit FileSystemStorageExt(Storage* ptr);
   ~FileSystemStorageExt();
-  std::map<std::string, sg_size_t>* parse_content(std::string filename);
+  std::map<std::string, sg_size_t>* parse_content(const std::string& filename);
   std::map<std::string, sg_size_t>* get_content() { return content_; }
   sg_size_t get_size() { return size_; }
   sg_size_t get_used_size() { return used_size_; }

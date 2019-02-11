@@ -45,7 +45,7 @@ static void run_test_process(std::string name, simgrid::s4u::Host *location, int
   simgrid::s4u::Actor::create(std::move(name), location, computation_fun, arg);
 }
 
-static void test_energy_consumption(std::string name, int nb_cores)
+static void test_energy_consumption(const std::string& name, int nb_cores)
 {
   double new_energy = 0;
   
@@ -67,7 +67,7 @@ static void test_energy_consumption(std::string name, int nb_cores)
   }
 }
 
-static void run_test(std::string chooser)
+static void run_test(const std::string& chooser)
 {
   simgrid::s4u::Host *pm0 = simgrid::s4u::Host::by_name("node-0.1core.org");
   simgrid::s4u::Host *pm1 = simgrid::s4u::Host::by_name("node-1.1core.org");

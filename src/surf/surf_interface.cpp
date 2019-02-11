@@ -127,7 +127,7 @@ double surf_get_clock()
 }
 
 /* returns whether #file_path is a absolute file path. Surprising, isn't it ? */
-static bool is_absolute_file_path(std::string file_path)
+static bool is_absolute_file_path(const std::string& file_path)
 {
 #ifdef _WIN32
   WIN32_FIND_DATA wfd = {0};
@@ -143,7 +143,7 @@ static bool is_absolute_file_path(std::string file_path)
 #endif
 }
 
-std::ifstream* surf_ifsopen(std::string name)
+std::ifstream* surf_ifsopen(const std::string& name)
 {
   xbt_assert(not name.empty());
 
@@ -166,7 +166,7 @@ std::ifstream* surf_ifsopen(std::string name)
   return fs;
 }
 
-FILE* surf_fopen(std::string name, const char* mode)
+FILE* surf_fopen(const std::string& name, const char* mode)
 {
   FILE *file = nullptr;
 
@@ -192,7 +192,7 @@ void model_help(const char *category, s_surf_model_description_t * table)
     printf("  %s: %s\n", table[i].name, table[i].description);
 }
 
-int find_model_description(s_surf_model_description_t* table, std::string name)
+int find_model_description(s_surf_model_description_t* table, const std::string& name)
 {
   for (int i = 0; table[i].name; i++)
     if (name == table[i].name)

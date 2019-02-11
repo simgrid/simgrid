@@ -49,12 +49,12 @@ public:
    * The environment is either a XML file following the simgrid.dtd formalism, or a lua file.
    * Some examples can be found in the directory examples/platforms.
    */
-  void load_platform(std::string platf);
+  void load_platform(const std::string& platf);
 
   /** Registers the main function of an actor that will be launched from the deployment file */
-  void register_function(std::string name, int (*code)(int, char**));
+  void register_function(const std::string& name, int (*code)(int, char**));
   /** Registers the main function of an actor that will be launched from the deployment file */
-  void register_function(std::string name, void (*code)(std::vector<std::string>));
+  void register_function(const std::string& name, void (*code)(std::vector<std::string>));
 
   /** Registers a function as the default main function of actors
    *
@@ -63,7 +63,7 @@ public:
    */
   void register_default(int (*code)(int, char**));
 
-  template <class F> void register_actor(std::string name)
+  template <class F> void register_actor(const std::string& name)
   {
     simgrid::simix::register_function(name, [](std::vector<std::string> args) {
       return simgrid::simix::ActorCode([args] {
@@ -73,7 +73,7 @@ public:
     });
   }
 
-  template <class F> void register_actor(std::string name, F code)
+  template <class F> void register_actor(const std::string& name, F code)
   {
     simgrid::simix::register_function(name, [code](std::vector<std::string> args) {
       return simgrid::simix::ActorCode([code, args] { code(std::move(args)); });
@@ -81,7 +81,7 @@ public:
   }
 
   /** @brief Load a deployment file and launch the actors that it contains */
-  void load_deployment(std::string deploy);
+  void load_deployment(const std::string& deploy);
 
 protected:
 #ifndef DOXYGEN
@@ -91,12 +91,12 @@ protected:
   friend kernel::routing::NetPoint;
   friend kernel::routing::NetZoneImpl;
   friend kernel::resource::LinkImpl;
-  void host_register(std::string name, Host* host);
-  void host_unregister(std::string name);
-  void link_register(std::string name, Link* link);
-  void link_unregister(std::string name);
-  void storage_register(std::string name, Storage* storage);
-  void storage_unregister(std::string name);
+  void host_register(const std::string& name, Host* host);
+  void host_unregister(const std::string& name);
+  void link_register(const std::string& name, Link* link);
+  void link_unregister(const std::string& name);
+  void storage_register(const std::string& name, Storage* storage);
+  void storage_unregister(const std::string& name);
   void netpoint_register(simgrid::kernel::routing::NetPoint* card);
   void netpoint_unregister(simgrid::kernel::routing::NetPoint* card);
 #endif /*DOXYGEN*/
@@ -106,14 +106,14 @@ public:
   /** @brief Returns the list of all hosts found in the platform */
   std::vector<Host*> get_all_hosts();
   std::vector<Host*> get_filtered_hosts(std::function<bool(Host*)> filter);
-  simgrid::s4u::Host* host_by_name(std::string name);
-  simgrid::s4u::Host* host_by_name_or_null(std::string name);
+  simgrid::s4u::Host* host_by_name(const std::string& name);
+  simgrid::s4u::Host* host_by_name_or_null(const std::string& name);
 
   size_t get_link_count();
   std::vector<Link*> get_all_links();
   std::vector<Link*> get_filtered_links(std::function<bool(Link*)> filter);
-  simgrid::s4u::Link* link_by_name(std::string name);
-  simgrid::s4u::Link* link_by_name_or_null(std::string name);
+  simgrid::s4u::Link* link_by_name(const std::string& name);
+  simgrid::s4u::Link* link_by_name_or_null(const std::string& name);
 
   size_t get_actor_count();
   std::vector<ActorPtr> get_all_actors();
@@ -121,16 +121,16 @@ public:
 
   size_t get_storage_count();
   std::vector<Storage*> get_all_storages();
-  simgrid::s4u::Storage* storage_by_name(std::string name);
-  simgrid::s4u::Storage* storage_by_name_or_null(std::string name);
+  simgrid::s4u::Storage* storage_by_name(const std::string& name);
+  simgrid::s4u::Storage* storage_by_name_or_null(const std::string& name);
 
   std::vector<simgrid::kernel::routing::NetPoint*> get_all_netpoints();
-  simgrid::kernel::routing::NetPoint* netpoint_by_name_or_null(std::string name);
+  simgrid::kernel::routing::NetPoint* netpoint_by_name_or_null(const std::string& name);
 
   simgrid::s4u::NetZone* get_netzone_root();
   void set_netzone_root(s4u::NetZone* netzone);
 
-  simgrid::s4u::NetZone* netzone_by_name_or_null(std::string name);
+  simgrid::s4u::NetZone* netzone_by_name_or_null(const std::string& name);
 
   /** @brief Retrieves all netzones of the type indicated by the template argument */
   template <class T> std::vector<T*> get_filtered_netzones()

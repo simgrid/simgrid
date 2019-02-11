@@ -45,7 +45,7 @@ ActorPtr Actor::create(std::string name, s4u::Host* host, std::function<void()> 
   return actor->iface();
 }
 
-ActorPtr Actor::create(std::string name, s4u::Host* host, std::string function, std::vector<std::string> args)
+ActorPtr Actor::create(std::string name, s4u::Host* host, const std::string& function, std::vector<std::string> args)
 {
   simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
   return create(std::move(name), host, factory(std::move(args)));
@@ -228,12 +228,12 @@ std::unordered_map<std::string, std::string>* Actor::get_properties()
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char* Actor::get_property(std::string key)
+const char* Actor::get_property(const std::string& key)
 {
   return simgrid::simix::simcall([this, key] { return pimpl_->get_property(key); });
 }
 
-void Actor::set_property(std::string key, std::string value)
+void Actor::set_property(const std::string& key, std::string value)
 {
   simgrid::simix::simcall([this, key, value] { pimpl_->set_property(key, std::move(value)); });
 }

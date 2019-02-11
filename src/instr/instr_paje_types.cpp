@@ -42,7 +42,7 @@ ValueType::~ValueType()
     delete elm.second;
 }
 
-ContainerType::ContainerType(std::string name, Type* father) : Type(name, name, "", father)
+ContainerType::ContainerType(const std::string& name, Type* father) : Type(name, name, "", father)
 {
   XBT_DEBUG("ContainerType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
   log_definition(PAJE_DefineContainerType);
@@ -65,17 +65,17 @@ StateType::~StateType()
   events_.clear();
 }
 
-void StateType::set_event(std::string value_name)
+void StateType::set_event(const std::string& value_name)
 {
   events_.push_back(new StateEvent(issuer_, this, PAJE_SetState, get_entity_value(value_name), nullptr));
 }
 
-void StateType::push_event(std::string value_name, TIData* extra)
+void StateType::push_event(const std::string& value_name, TIData* extra)
 {
   events_.push_back(new StateEvent(issuer_, this, PAJE_PushState, get_entity_value(value_name), extra));
 }
 
-void StateType::push_event(std::string value_name)
+void StateType::push_event(const std::string& value_name)
 {
   events_.push_back(new StateEvent(issuer_, this, PAJE_PushState, get_entity_value(value_name), nullptr));
 }
@@ -90,7 +90,7 @@ void StateType::pop_event(TIData* extra)
   events_.push_back(new StateEvent(issuer_, this, PAJE_PopState, nullptr, extra));
 }
 
-VariableType::VariableType(std::string name, std::string color, Type* father)
+VariableType::VariableType(const std::string& name, std::string color, Type* father)
     : Type(name, name, std::move(color), father)
 {
   XBT_DEBUG("VariableType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
@@ -179,7 +179,7 @@ void Type::log_definition(simgrid::instr::Type* source, simgrid::instr::Type* de
   tracing_file << stream_.str() << std::endl;
 }
 
-Type* Type::by_name(std::string name)
+Type* Type::by_name(const std::string& name)
 {
   Type* ret = nullptr;
   for (auto elm : children_) {
@@ -196,12 +196,12 @@ Type* Type::by_name(std::string name)
   return ret;
 }
 
-void ValueType::add_entity_value(std::string name)
+void ValueType::add_entity_value(const std::string& name)
 {
   add_entity_value(name, "");
 }
 
-void ValueType::add_entity_value(std::string name, std::string color)
+void ValueType::add_entity_value(const std::string& name, std::string color)
 {
   if (name.empty())
     THROWF(tracing_error, 0, "can't get a value with no name");
@@ -215,7 +215,7 @@ void ValueType::add_entity_value(std::string name, std::string color)
   }
 }
 
-EntityValue* ValueType::get_entity_value(std::string name)
+EntityValue* ValueType::get_entity_value(const std::string& name)
 {
   auto ret = values_.find(name);
   if (ret == values_.end()) {
@@ -224,7 +224,7 @@ EntityValue* ValueType::get_entity_value(std::string name)
   return ret->second;
 }
 
-VariableType* Type::by_name_or_create(std::string name, std::string color)
+VariableType* Type::by_name_or_create(const std::string& name, std::string color)
 {
   auto cont = children_.find(name);
   std::string mycolor = color.empty() ? "1 1 1" : std::move(color);
@@ -232,7 +232,7 @@ VariableType* Type::by_name_or_create(std::string name, std::string color)
                                  : static_cast<VariableType*>(cont->second);
 }
 
-LinkType* Type::by_name_or_create(std::string name, Type* source, Type* dest)
+LinkType* Type::by_name_or_create(const std::string& name, Type* source, Type* dest)
 {
   std::string alias = name + "-" + std::to_string(source->id_) + "-" + std::to_string(dest->id_);
   auto it           = children_.find(alias);

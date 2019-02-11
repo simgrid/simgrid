@@ -79,7 +79,7 @@ DatedValue Profile::next(Event* event)
   return dateVal;
 }
 
-Profile* Profile::from_string(std::string name, std::string input, double periodicity)
+Profile* Profile::from_string(const std::string& name, const std::string& input, double periodicity)
 {
   int linecount                                    = 0;
   simgrid::kernel::profile::Profile* profile       = new simgrid::kernel::profile::Profile();
@@ -123,7 +123,7 @@ Profile* Profile::from_string(std::string name, std::string input, double period
 
   return profile;
 }
-Profile* Profile::from_file(std::string path)
+Profile* Profile::from_file(const std::string& path)
 {
   xbt_assert(not path.empty(), "Cannot parse a trace from an empty filename");
   xbt_assert(trace_list.find(path) == trace_list.end(), "Refusing to define trace %s twice", path.c_str());

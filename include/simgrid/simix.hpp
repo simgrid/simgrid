@@ -74,7 +74,7 @@ typedef std::function<void()> ActorCode;
 // Create an ActorCode based on a std::string
 typedef std::function<ActorCode(std::vector<std::string> args)> ActorCodeFactory;
 
-XBT_PUBLIC void register_function(std::string name, ActorCodeFactory factory);
+XBT_PUBLIC void register_function(const std::string& name, ActorCodeFactory factory);
 }
 }
 

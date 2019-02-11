@@ -66,9 +66,9 @@ public:
   Host& operator=(Host const&) = delete;
 
   /** Retrieve a host from its name, or return nullptr */
-  static Host* by_name_or_null(std::string name);
+  static Host* by_name_or_null(const std::string& name);
   /** Retrieve a host from its name, or die */
-  static s4u::Host* by_name(std::string name);
+  static s4u::Host* by_name(const std::string& name);
   /** Retrieves the host on which the running actor is located */
   static s4u::Host* current();
 
@@ -97,8 +97,8 @@ public:
   /** Returns if that host is currently down and offline */
   XBT_ATTRIB_DEPRECATED_v325("Please use !is_on()") bool is_off() const { return not is_on(); }
 
-  const char* get_property(std::string key) const;
-  void set_property(std::string key, std::string value);
+  const char* get_property(const std::string& key) const;
+  void set_property(const std::string& key, std::string value);
   std::unordered_map<std::string, std::string>* get_properties();
 
   void set_state_profile(kernel::profile::Profile* p);

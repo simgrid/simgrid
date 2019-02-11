@@ -22,7 +22,7 @@ namespace activity {
 
 class MailboxImpl {
   friend s4u::Mailbox;
-  friend s4u::MailboxPtr s4u::Mailbox::by_name(std::string name);
+  friend s4u::MailboxPtr s4u::Mailbox::by_name(const std::string& name);
   friend mc::CommunicationDeterminismChecker;
 
   explicit MailboxImpl(std::string name)
@@ -33,8 +33,8 @@ class MailboxImpl {
 public:
   const simgrid::xbt::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
-  static MailboxImpl* by_name_or_null(std::string name);
-  static MailboxImpl* by_name_or_create(std::string name);
+  static MailboxImpl* by_name_or_null(const std::string& name);
+  static MailboxImpl* by_name_or_create(const std::string& name);
   void set_receiver(s4u::ActorPtr actor);
   void push(activity::CommImplPtr comm);
   void remove(smx_activity_t activity);

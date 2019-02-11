@@ -145,7 +145,7 @@ jfieldID jxbt_get_sfield(JNIEnv * env, const char *classname, const char *name, 
   return id;
 }
 
-void jxbt_throw_by_name(JNIEnv* env, const char* name, std::string msg)
+void jxbt_throw_by_name(JNIEnv* env, const char* name, const std::string& msg)
 {
   jclass cls = env->FindClass(name);
 
@@ -154,58 +154,58 @@ void jxbt_throw_by_name(JNIEnv* env, const char* name, std::string msg)
   env->ThrowNew(cls, msg.c_str());
 }
 
-void jxbt_throw_jni(JNIEnv* env, std::string msg)
+void jxbt_throw_jni(JNIEnv* env, const std::string& msg)
 {
   jxbt_throw_by_name(env, "org/simgrid/msg/JniException", "Internal or JNI error: " + msg);
 }
 
-void jxbt_throw_notbound(JNIEnv* env, std::string kind, void* pointer)
+void jxbt_throw_notbound(JNIEnv* env, const std::string& kind, void* pointer)
 {
   jxbt_throw_by_name(env, "org/simgrid/msg/JniException",
                      "Internal error: " + kind + " " + static_cast<const char*>(pointer) + " not bound");
 }
 
-void jxbt_throw_null(JNIEnv* env, std::string msg)
+void jxbt_throw_null(JNIEnv* env, const std::string& msg)
 {
   jxbt_throw_by_name(env, "java/lang/NullPointerException", msg);
 }
 
-void jxbt_throw_illegal(JNIEnv* env, std::string msg)
+void jxbt_throw_illegal(JNIEnv* env, const std::string& msg)
 {
   jxbt_throw_by_name(env, "java/lang/IllegalArgumentException", msg);
 }
 
-void jxbt_throw_host_not_found(JNIEnv* env, std::string invalid_name)
+void jxbt_throw_host_not_found(JNIEnv* env, const std::string& invalid_name)
 {
   jxbt_throw_by_name(env, "org/simgrid/msg/HostNotFoundException", "No such host: " + invalid_name);
 }
 
-void jxbt_throw_storage_not_found(JNIEnv* env, std::string invalid_name)
+void jxbt_throw_storage_not_found(JNIEnv* env, const std::string& invalid_name)
 {
   jxbt_throw_by_name(env, "org/simgrid/msg/StorageNotFoundException", "No such storage: " + invalid_name);
 }
 
-void jxbt_throw_process_not_found(JNIEnv* env, std::string invalid_name)
+void jxbt_throw_process_not_found(JNIEnv* env, const std::string& invalid_name)
 {
   jxbt_throw_by_name(env, "org/simgrid/msg/ProcessNotFoundException", "No such process: " + invalid_name);
 }
 
-void jxbt_throw_transfer_failure(JNIEnv* env, std::string details)
+void jxbt_throw_transfer_failure(JNIEnv* env, const std::string& details)
 {
   jxbt_throw_by_name(env, "org/simgrid/msg/TransferFailureException", details);
 }
 
-void jxbt_throw_host_failure(JNIEnv* env, std::string details)
+void jxbt_throw_host_failure(JNIEnv* env, const std::string& details)
 {
   jxbt_throw_by_name(env, "org/simgrid/msg/HostFailureException", "Host Failure " + details);
 }
 
-void jxbt_throw_time_out_failure(JNIEnv* env, std::string details)
+void jxbt_throw_time_out_failure(JNIEnv* env, const std::string& details)
 {
   jxbt_throw_by_name(env, "org/simgrid/msg/TimeoutException", details);
 }
 
-void jxbt_throw_task_cancelled(JNIEnv* env, std::string details)
+void jxbt_throw_task_cancelled(JNIEnv* env, const std::string& details)
 {
   jxbt_throw_by_name(env, "org/simgrid/msg/TaskCancelledException", details);
 }

@@ -122,9 +122,9 @@ XBT_PUBLIC void SIMIX_process_set_function(const char* process_host, const char*
 SG_END_DECL()
 
 #ifdef __cplusplus
-XBT_PUBLIC void SIMIX_function_register(std::string name, void (*code)(std::vector<std::string>));
-XBT_PUBLIC void SIMIX_function_register(std::string name, xbt_main_func_t code);
-XBT_PUBLIC void SIMIX_launch_application(std::string file);
+XBT_PUBLIC void SIMIX_function_register(const std::string& name, void (*code)(std::vector<std::string>));
+XBT_PUBLIC void SIMIX_function_register(const std::string& name, xbt_main_func_t code);
+XBT_PUBLIC void SIMIX_launch_application(const std::string& file);
 #endif
 
 /*********************************** Host *************************************/
@@ -271,8 +271,8 @@ SG_END_DECL()
 
 #ifdef __cplusplus
 XBT_ATTRIB_DEPRECATED_v325("Please use Exec::start()") XBT_PUBLIC smx_activity_t
-    simcall_execution_start(std::string name, std::string category, double flops_amount, double priority, double bound,
-                            sg_host_t host);
+    simcall_execution_start(const std::string& name, const std::string& category, double flops_amount, double priority,
+                            double bound, sg_host_t host);
 #endif
 
 #endif

@@ -266,7 +266,7 @@ public:
   void alias(std::string realname, std::string aliasname);
 
   template <class T, class... A>
-  simgrid::config::TypedConfigurationElement<T>* register_option(std::string name, A&&... a)
+  simgrid::config::TypedConfigurationElement<T>* register_option(const std::string& name, A&&... a)
   {
     xbt_assert(options.find(name) == options.end(), "Refusing to register the config element '%s' twice.",
                name.c_str());
@@ -435,15 +435,15 @@ void set_parse(std::string options)
 
 // ***** get_value *****
 
-template <class T> XBT_PUBLIC T const& get_value(std::string name)
+template <class T> XBT_PUBLIC T const& get_value(const std::string& name)
 {
   return (*simgrid_config)[name].get_value<T>();
 }
 
-template XBT_PUBLIC int const& get_value<int>(std::string name);
-template XBT_PUBLIC double const& get_value<double>(std::string name);
-template XBT_PUBLIC bool const& get_value<bool>(std::string name);
-template XBT_PUBLIC std::string const& get_value<std::string>(std::string name);
+template XBT_PUBLIC int const& get_value<int>(const std::string& name);
+template XBT_PUBLIC double const& get_value<double>(const std::string& name);
+template XBT_PUBLIC bool const& get_value<bool>(const std::string& name);
+template XBT_PUBLIC std::string const& get_value<std::string>(const std::string& name);
 
 // ***** alias *****
 
@@ -456,20 +456,21 @@ void alias(const char* realname, std::initializer_list<const char*> aliases)
 // ***** declare_flag *****
 
 template <class T>
-XBT_PUBLIC void declare_flag(std::string name, std::string description, T value, std::function<void(const T&)> callback)
+XBT_PUBLIC void declare_flag(const std::string& name, std::string description, T value,
+                             std::function<void(const T&)> callback)
 {
   if (simgrid_config == nullptr)
     simgrid_config = new simgrid::config::Config();
   simgrid_config->register_option<T>(name, std::move(description), std::move(value), std::move(callback));
 }
 
-template XBT_PUBLIC void declare_flag(std::string name, std::string description, int value,
+template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, int value,
                                       std::function<void(int const&)> callback);
-template XBT_PUBLIC void declare_flag(std::string name, std::string description, double value,
+template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, double value,
                                       std::function<void(double const&)> callback);
-template XBT_PUBLIC void declare_flag(std::string name, std::string description, bool value,
+template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, bool value,
                                       std::function<void(bool const&)> callback);
-template XBT_PUBLIC void declare_flag(std::string name, std::string description, std::string value,
+template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, std::string value,
                                       std::function<void(std::string const&)> callback);
 
 void finalize()

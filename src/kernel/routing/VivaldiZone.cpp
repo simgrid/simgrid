@@ -21,7 +21,7 @@ namespace routing {
 namespace vivaldi {
 simgrid::xbt::Extension<NetPoint, Coords> Coords::EXTENSION_ID;
 
-Coords::Coords(NetPoint* netpoint, std::string coordStr)
+Coords::Coords(NetPoint* netpoint, const std::string& coordStr)
 {
   if (not Coords::EXTENSION_ID.valid())
     Coords::EXTENSION_ID = NetPoint::extension_create<Coords>();
@@ -64,7 +64,7 @@ VivaldiZone::VivaldiZone(NetZoneImpl* father, std::string name, resource::Networ
 {
 }
 
-void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out, std::string coord)
+void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out, const std::string& coord)
 {
   xbt_assert(netpoint->get_englobing_zone() == this,
              "Cannot add a peer link to a netpoint that is not in this netzone");

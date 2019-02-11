@@ -69,12 +69,12 @@ XBT_PUBLIC void set_parse(std::string options);
 
 // Get config
 
-template <class T> XBT_PUBLIC T const& get_value(std::string name);
+template <class T> XBT_PUBLIC T const& get_value(const std::string& name);
 
-extern template XBT_PUBLIC int const& get_value<int>(std::string name);
-extern template XBT_PUBLIC double const& get_value<double>(std::string name);
-extern template XBT_PUBLIC bool const& get_value<bool>(std::string name);
-extern template XBT_PUBLIC std::string const& get_value<std::string>(std::string name);
+extern template XBT_PUBLIC int const& get_value<int>(const std::string& name);
+extern template XBT_PUBLIC double const& get_value<double>(const std::string& name);
+extern template XBT_PUBLIC bool const& get_value<bool>(const std::string& name);
+extern template XBT_PUBLIC std::string const& get_value<std::string>(const std::string& name);
 
 // Register:
 
@@ -86,16 +86,16 @@ extern template XBT_PUBLIC std::string const& get_value<std::string>(std::string
  *  @param callback    called with the option value
  */
 template <class T>
-XBT_PUBLIC void declare_flag(std::string name, std::string description, T value,
+XBT_PUBLIC void declare_flag(const std::string& name, std::string description, T value,
                              std::function<void(const T&)> callback = std::function<void(const T&)>());
 
-extern template XBT_PUBLIC void declare_flag(std::string name, std::string description, int value,
+extern template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, int value,
                                              std::function<void(int const&)> callback);
-extern template XBT_PUBLIC void declare_flag(std::string name, std::string description, double value,
+extern template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, double value,
                                              std::function<void(double const&)> callback);
-extern template XBT_PUBLIC void declare_flag(std::string name, std::string description, bool value,
+extern template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, bool value,
                                              std::function<void(bool const&)> callback);
-extern template XBT_PUBLIC void declare_flag(std::string name, std::string description, std::string value,
+extern template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, std::string value,
                                              std::function<void(std::string const&)> callback);
 
 // ***** alias *****

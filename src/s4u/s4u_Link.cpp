@@ -26,12 +26,12 @@ simgrid::xbt::signal<void(kernel::resource::NetworkAction*, Host* src, Host* dst
 simgrid::xbt::signal<void(kernel::resource::NetworkAction*, kernel::resource::Action::State)>
     Link::on_communication_state_change;
 
-Link* Link::by_name(std::string name)
+Link* Link::by_name(const std::string& name)
 {
   return Engine::get_instance()->link_by_name(name);
 }
 
-Link* Link::by_name_or_null(std::string name)
+Link* Link::by_name_or_null(const std::string& name)
 {
   return Engine::get_instance()->link_by_name_or_null(name);
 }
@@ -105,11 +105,11 @@ void Link::set_latency_profile(kernel::profile::Profile* trace)
   simgrid::simix::simcall([this, trace]() { this->pimpl_->set_latency_profile(trace); });
 }
 
-const char* Link::get_property(std::string key)
+const char* Link::get_property(const std::string& key)
 {
   return this->pimpl_->get_property(key);
 }
-void Link::set_property(std::string key, std::string value)
+void Link::set_property(const std::string& key, std::string value)
 {
   simgrid::simix::simcall([this, key, value] { this->pimpl_->set_property(key, std::move(value)); });
 }

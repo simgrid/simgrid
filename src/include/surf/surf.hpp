@@ -79,6 +79,6 @@ XBT_PUBLIC double surf_get_clock();
 XBT_PUBLIC void surf_exit();
 
 /* surf parse file related (public because called from a test suite) */
-XBT_PUBLIC void parse_platform_file(std::string file);
+XBT_PUBLIC void parse_platform_file(const std::string& file);
 
 #endif

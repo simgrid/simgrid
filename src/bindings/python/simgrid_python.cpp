@@ -116,7 +116,7 @@ PYBIND11_MODULE(simgrid, m)
            ":cpp:func:`simgrid::s4u::Engine::load_deployment()`")
       .def("run", &Engine::run, "Run the simulation")
       .def("register_actor",
-           [pyStopRequestEx](Engine*, std::string name, py::object fun_or_class) {
+           [pyStopRequestEx](Engine*, const std::string& name, py::object fun_or_class) {
              simgrid::simix::register_function(
                  name, [pyStopRequestEx, fun_or_class](std::vector<std::string> args) -> simgrid::simix::ActorCode {
                    return [pyStopRequestEx, fun_or_class, args]() {

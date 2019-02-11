@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI (coll
 
 #define COLL_SETTER(cat, ret, args, args2)                                                                             \
   int(*Colls::cat) args;                                                                                               \
-  void Colls::set_##cat(std::string name)                                                                              \
+  void Colls::set_##cat(const std::string& name)                                                                       \
   {                                                                                                                    \
     int id = find_coll_description(mpi_coll_##cat##_description, name, #cat);                                          \
     cat    = reinterpret_cast<ret(*) args>(mpi_coll_##cat##_description[id].coll);                                     \
@@ -62,7 +62,7 @@ void Colls::coll_help(const char *category, s_mpi_coll_description_t * table)
     XBT_WARN("  %s: %s\n", table[i].name.c_str(), table[i].description.c_str());
 }
 
-int Colls::find_coll_description(s_mpi_coll_description_t* table, std::string name, const char* desc)
+int Colls::find_coll_description(s_mpi_coll_description_t* table, const std::string& name, const char* desc)
 {
   for (int i = 0; not table[i].name.empty(); i++)
     if (name == table[i].name) {

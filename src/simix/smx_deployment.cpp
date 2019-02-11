@@ -36,7 +36,7 @@ void SIMIX_init_application()
  *     @include small_deployment.xml
  *
  */
-void SIMIX_launch_application(std::string file)
+void SIMIX_launch_application(const std::string& file)
 {
   XBT_ATTRIB_UNUSED int parse_status;
   xbt_assert(simix_global, "SIMIX_global_init has to be called before SIMIX_launch_application.");
@@ -80,11 +80,11 @@ static simgrid::simix::ActorCodeFactory toActorCodeFactory(void (*code)(std::vec
  * @param name the reference name of the function.
  * @param code the function
  */
-void SIMIX_function_register(std::string name, xbt_main_func_t code)
+void SIMIX_function_register(const std::string& name, xbt_main_func_t code)
 {
   simix_global->registered_functions[name] = toActorCodeFactory(code);
 }
-void SIMIX_function_register(std::string name, void (*code)(std::vector<std::string>))
+void SIMIX_function_register(const std::string& name, void (*code)(std::vector<std::string>))
 {
   simix_global->registered_functions[name] = toActorCodeFactory(code);
 }
@@ -115,7 +115,7 @@ void SIMIX_function_register_default(xbt_main_func_t code)
  * @param name the reference name of the function.
  * @return The #smx_actor_t or nullptr.
  */
-simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(std::string name)
+simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const std::string& name)
 {
   xbt_assert(simix_global,
               "SIMIX_global_init has to be called before SIMIX_get_actor_code_factory.");
@@ -161,7 +161,7 @@ void SIMIX_process_set_function(const char* process_host, const char* process_fu
 namespace simgrid {
 namespace simix {
 
-void register_function(std::string name, ActorCodeFactory factory)
+void register_function(const std::string& name, ActorCodeFactory factory)
 {
   simix_global->registered_functions[name] = std::move(factory);
 }

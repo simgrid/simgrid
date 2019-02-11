@@ -190,7 +190,7 @@ sg_size_t File::tell()
   return current_position_;
 }
 
-void File::move(std::string fullpath)
+void File::move(const std::string& fullpath)
 {
   /* Check if the new full path is on the same mount point */
   if (not strncmp(mount_point_.c_str(), fullpath.c_str(), mount_point_.length())) {
@@ -297,7 +297,7 @@ FileSystemStorageExt::~FileSystemStorageExt()
   delete content_;
 }
 
-std::map<std::string, sg_size_t>* FileSystemStorageExt::parse_content(std::string filename)
+std::map<std::string, sg_size_t>* FileSystemStorageExt::parse_content(const std::string& filename)
 {
   if (filename.empty())
     return nullptr;

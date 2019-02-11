@@ -213,7 +213,7 @@ struct surf_model_description {
 };
 typedef struct surf_model_description s_surf_model_description_t;
 
-XBT_PUBLIC int find_model_description(s_surf_model_description_t* table, std::string name);
+XBT_PUBLIC int find_model_description(s_surf_model_description_t* table, const std::string& name);
 XBT_PUBLIC void model_help(const char* category, s_surf_model_description_t* table);
 
 #define SIMGRID_REGISTER_PLUGIN(id, desc, init)                       \

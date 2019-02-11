@@ -430,7 +430,8 @@ void instr_define_callbacks()
 /*
  * user categories support
  */
-static void recursiveNewVariableType(std::string new_typename, std::string color, simgrid::instr::Type* root)
+static void recursiveNewVariableType(const std::string& new_typename, const std::string& color,
+                                     simgrid::instr::Type* root)
 {
   if (root->get_name() == "HOST" || root->get_name() == "VM")
     root->by_name_or_create(std::string("p") + new_typename, color);
@@ -443,13 +444,13 @@ static void recursiveNewVariableType(std::string new_typename, std::string color
   }
 }
 
-void instr_new_variable_type(std::string new_typename, std::string color)
+void instr_new_variable_type(const std::string& new_typename, const std::string& color)
 {
   recursiveNewVariableType(new_typename, color, simgrid::instr::Container::get_root()->type_);
 }
 
-static void recursiveNewUserVariableType(std::string father_type, std::string new_typename, std::string color,
-                                         simgrid::instr::Type* root)
+static void recursiveNewUserVariableType(const std::string& father_type, const std::string& new_typename,
+                                         const std::string& color, simgrid::instr::Type* root)
 {
   if (root->get_name() == father_type) {
     root->by_name_or_create(new_typename, color);
@@ -458,12 +459,14 @@ static void recursiveNewUserVariableType(std::string father_type, std::string ne
     recursiveNewUserVariableType(father_type, new_typename, color, elm.second);
 }
 
-void instr_new_user_variable_type(std::string father_type, std::string new_typename, std::string color)
+void instr_new_user_variable_type(const std::string& father_type, const std::string& new_typename,
+                                  const std::string& color)
 {
   recursiveNewUserVariableType(father_type, new_typename, color, simgrid::instr::Container::get_root()->type_);
 }
 
-static void recursiveNewUserStateType(std::string father_type, std::string new_typename, simgrid::instr::Type* root)
+static void recursiveNewUserStateType(const std::string& father_type, const std::string& new_typename,
+                                      simgrid::instr::Type* root)
 {
   if (root->get_name() == father_type)
     root->by_name_or_create<simgrid::instr::StateType>(new_typename);
@@ -472,12 +475,12 @@ static void recursiveNewUserStateType(std::string father_type, std::string new_t
     recursiveNewUserStateType(father_type, new_typename, elm.second);
 }
 
-void instr_new_user_state_type(std::string father_type, std::string new_typename)
+void instr_new_user_state_type(const std::string& father_type, const std::string& new_typename)
 {
   recursiveNewUserStateType(father_type, new_typename, simgrid::instr::Container::get_root()->type_);
 }
 
-static void recursiveNewValueForUserStateType(std::string type_name, const char* val, std::string color,
+static void recursiveNewValueForUserStateType(const std::string& type_name, const char* val, const std::string& color,
                                               simgrid::instr::Type* root)
 {
   if (root->get_name() == type_name)
@@ -487,7 +490,7 @@ static void recursiveNewValueForUserStateType(std::string type_name, const char*
     recursiveNewValueForUserStateType(type_name, val, color, elm.second);
 }
 
-void instr_new_value_for_user_state_type(std::string type_name, const char* value, std::string color)
+void instr_new_value_for_user_state_type(const std::string& type_name, const char* value, const std::string& color)
 {
   recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Container::get_root()->type_);
 }

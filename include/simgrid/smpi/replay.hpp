@@ -51,7 +51,7 @@ class RequestStorage; // Forward decl
 class ActionArgParser {
 public:
   virtual ~ActionArgParser() = default;
-  virtual void parse(simgrid::xbt::ReplayAction& action, std::string name) { CHECK_ACTION_PARAMS(action, 0, 0) }
+  virtual void parse(simgrid::xbt::ReplayAction& action, const std::string& name) { CHECK_ACTION_PARAMS(action, 0, 0) }
 };
 
 class WaitTestParser : public ActionArgParser {
@@ -60,7 +60,7 @@ public:
   int dst;
   int tag;
 
-  void parse(simgrid::xbt::ReplayAction& action, std::string name) override;
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
 
 class SendRecvParser : public ActionArgParser {
@@ -71,7 +71,7 @@ public:
   int tag;
   MPI_Datatype datatype1 = MPI_DEFAULT_TYPE;
 
-  void parse(simgrid::xbt::ReplayAction& action, std::string name) override;
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
 
 class ComputeParser : public ActionArgParser {
@@ -79,7 +79,7 @@ public:
   /* communication partner; if we send, this is the receiver and vice versa */
   double flops;
 
-  void parse(simgrid::xbt::ReplayAction& action, std::string name) override;
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
 
 class CollCommParser : public ActionArgParser {
@@ -96,27 +96,27 @@ public:
 
 class BcastArgParser : public CollCommParser {
 public:
-  void parse(simgrid::xbt::ReplayAction& action, std::string name) override;
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
 
 class ReduceArgParser : public CollCommParser {
 public:
-  void parse(simgrid::xbt::ReplayAction& action, std::string name) override;
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
 
 class AllReduceArgParser : public CollCommParser {
 public:
-  void parse(simgrid::xbt::ReplayAction& action, std::string name) override;
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
 
 class AllToAllArgParser : public CollCommParser {
 public:
-  void parse(simgrid::xbt::ReplayAction& action, std::string name) override;
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
 
 class GatherArgParser : public CollCommParser {
 public:
-  void parse(simgrid::xbt::ReplayAction& action, std::string name) override;
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
 
 class GatherVArgParser : public CollCommParser {
@@ -124,12 +124,12 @@ public:
   int recv_size_sum;
   std::shared_ptr<std::vector<int>> recvcounts;
   std::vector<int> disps;
-  void parse(simgrid::xbt::ReplayAction& action, std::string name) override;
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
 
 class ScatterArgParser : public CollCommParser {
 public:
-  void parse(simgrid::xbt::ReplayAction& action, std::string name) override;
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
 
 class ScatterVArgParser : public CollCommParser {
@@ -138,7 +138,7 @@ public:
   int send_size_sum;
   std::shared_ptr<std::vector<int>> sendcounts;
   std::vector<int> disps;
-  void parse(simgrid::xbt::ReplayAction& action, std::string name) override;
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
 
 class ReduceScatterArgParser : public CollCommParser {
@@ -146,7 +146,7 @@ public:
   int recv_size_sum;
   std::shared_ptr<std::vector<int>> recvcounts;
   std::vector<int> disps;
-  void parse(simgrid::xbt::ReplayAction& action, std::string name) override;
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
 
 class AllToAllVArgParser : public CollCommParser {
@@ -159,7 +159,7 @@ public:
   std::vector<int> recvdisps;
   int send_buf_size;
   int recv_buf_size;
-  void parse(simgrid::xbt::ReplayAction& action, std::string name) override;
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
 
 /**

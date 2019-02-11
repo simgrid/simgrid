@@ -26,12 +26,12 @@ Storage::Storage(std::string name, surf::StorageImpl* pimpl) : pimpl_(pimpl), na
   simgrid::s4u::Engine::get_instance()->storage_register(name_, this);
 }
 
-Storage* Storage::by_name(std::string name)
+Storage* Storage::by_name(const std::string& name)
 {
   return Engine::get_instance()->storage_by_name(name);
 }
 
-Storage* Storage::by_name_or_null(std::string name)
+Storage* Storage::by_name_or_null(const std::string& name)
 {
   return Engine::get_instance()->storage_by_name_or_null(name);
 }
@@ -46,12 +46,12 @@ std::unordered_map<std::string, std::string>* Storage::get_properties()
   return simgrid::simix::simcall([this] { return pimpl_->get_properties(); });
 }
 
-const char* Storage::get_property(std::string key)
+const char* Storage::get_property(const std::string& key)
 {
   return this->pimpl_->get_property(key);
 }
 
-void Storage::set_property(std::string key, std::string value)
+void Storage::set_property(const std::string& key, std::string value)
 {
   simgrid::simix::simcall([this, key, value] { this->pimpl_->set_property(key, value); });
 }

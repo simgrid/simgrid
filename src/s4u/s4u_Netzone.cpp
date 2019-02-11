@@ -33,11 +33,11 @@ std::unordered_map<std::string, std::string>* NetZone::get_properties()
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char* NetZone::get_property(std::string key)
+const char* NetZone::get_property(const std::string& key)
 {
   return properties_.at(key).c_str();
 }
-void NetZone::set_property(std::string key, std::string value)
+void NetZone::set_property(const std::string& key, std::string value)
 {
   simgrid::simix::simcall([this, key, value] { properties_[key] = std::move(value); });
 }

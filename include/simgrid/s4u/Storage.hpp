@@ -44,8 +44,8 @@ public:
   static simgrid::xbt::signal<void(s4u::Storage&)> on_state_change;
 
   /** Retrieve a Storage by its name. It must exist in the platform file */
-  static Storage* by_name(std::string name);
-  static Storage* by_name_or_null(std::string name);
+  static Storage* by_name(const std::string& name);
+  static Storage* by_name_or_null(const std::string& name);
 
   /** @brief Retrieves the name of that storage as a C++ string */
   std::string const& get_name() const { return name_; }
@@ -57,8 +57,8 @@ public:
   void set_host(Host* host) { attached_to_ = host; }
 
   std::unordered_map<std::string, std::string>* get_properties();
-  const char* get_property(std::string key);
-  void set_property(std::string, std::string value);
+  const char* get_property(const std::string& key);
+  void set_property(const std::string&, std::string value);
 
   void set_data(void* data) { userdata_ = data; }
   void* get_data() { return userdata_; }

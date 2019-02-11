@@ -191,7 +191,7 @@ public:
   }
 
   // Create actor from function name:
-  static ActorPtr create(std::string name, s4u::Host* host, std::string function, std::vector<std::string> args);
+  static ActorPtr create(std::string name, s4u::Host* host, const std::string& function, std::vector<std::string> args);
 
   // ***** Methods *****
   /** This actor will be automatically terminated when the last non-daemon actor finishes **/
@@ -285,8 +285,8 @@ public:
   /** Retrieve the property value (or nullptr if not set) */
   std::unordered_map<std::string, std::string>*
   get_properties(); // FIXME: do not export the map, but only the keys or something
-  const char* get_property(std::string key);
-  void set_property(std::string key, std::string value);
+  const char* get_property(const std::string& key);
+  void set_property(const std::string& key, std::string value);
 
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v325("Please use Actor::by_pid(pid).kill() instead") static void kill(aid_t pid);

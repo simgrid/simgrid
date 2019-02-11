@@ -488,7 +488,7 @@ static smpi_entry_point_type smpi_resolve_function(void* handle)
   return smpi_entry_point_type();
 }
 
-static void smpi_copy_file(std::string src, std::string target, off_t fdin_size)
+static void smpi_copy_file(const std::string& src, const std::string& target, off_t fdin_size)
 {
   int fdin = open(src.c_str(), O_RDONLY);
   xbt_assert(fdin >= 0, "Cannot read from %s. Please make sure that the file exists and is executable.", src.c_str());

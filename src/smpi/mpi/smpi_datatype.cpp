@@ -221,7 +221,7 @@ const char* Datatype::encode(MPI_Datatype dt)
   return dt->id.c_str();
 }
 
-MPI_Datatype Datatype::decode(std::string datatype_id)
+MPI_Datatype Datatype::decode(const std::string& datatype_id)
 {
   return id2type_lookup.find(datatype_id)->second;
 }

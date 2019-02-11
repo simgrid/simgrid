@@ -100,7 +100,7 @@ class XBT_PUBLIC StopRequest {
    */
 public:
   StopRequest() = default;
-  explicit StopRequest(std::string msg) : msg_(std::string("Actor killed (") + msg + std::string(").")) {}
+  explicit StopRequest(const std::string& msg) : msg_(std::string("Actor killed (") + msg + std::string(").")) {}
   ~StopRequest();
   const char* what() const noexcept { return msg_.c_str(); }
 
@@ -141,6 +141,6 @@ XBT_PUBLIC int SIMIX_process_get_maxpid();
 
 XBT_PRIVATE void SIMIX_post_create_environment();
 
-XBT_PRIVATE simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(std::string name);
+XBT_PRIVATE simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const std::string& name);
 
 #endif

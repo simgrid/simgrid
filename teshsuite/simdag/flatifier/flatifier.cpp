@@ -61,7 +61,7 @@ static void dump_hosts()
     if (not keys.empty()) {
       std::printf(">\n");
       std::sort(keys.begin(), keys.end());
-      for (std::string key : keys)
+      for (const std::string& key : keys)
         std::printf("    <prop id=\"%s\" value=\"%s\"/>\n", key.c_str(), props->at(key).c_str());
       std::printf("  </host>\n");
     } else {

@@ -65,11 +65,11 @@ void Host::destroy()
   }
 }
 
-Host* Host::by_name(std::string name)
+Host* Host::by_name(const std::string& name)
 {
   return Engine::get_instance()->host_by_name(name);
 }
-Host* Host::by_name_or_null(std::string name)
+Host* Host::by_name_or_null(const std::string& name)
 {
   return Engine::get_instance()->host_by_name_or_null(name);
 }
@@ -187,12 +187,12 @@ std::unordered_map<std::string, std::string>* Host::get_properties()
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char* Host::get_property(std::string key) const
+const char* Host::get_property(const std::string& key) const
 {
   return this->pimpl_->get_property(key);
 }
 
-void Host::set_property(std::string key, std::string value)
+void Host::set_property(const std::string& key, std::string value)
 {
   simgrid::simix::simcall([this, key, value] { this->pimpl_->set_property(key, std::move(value)); });
 }

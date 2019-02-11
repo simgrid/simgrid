@@ -76,7 +76,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   smpi_instances.insert(std::pair<std::string, Instance>(name, instance));
 }
 
-void smpi_deployment_register_process(const std::string instance_id, int rank, simgrid::s4u::ActorPtr actor)
+void smpi_deployment_register_process(const std::string& instance_id, int rank, simgrid::s4u::ActorPtr actor)
 {
   Instance& instance = smpi_instances.at(instance_id);
 
@@ -84,7 +84,7 @@ void smpi_deployment_register_process(const std::string instance_id, int rank, s
   instance.comm_world->group()->set_mapping(actor, rank);
 }
 
-MPI_Comm* smpi_deployment_comm_world(const std::string instance_id)
+MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id)
 {
   if (smpi_instances.empty()) { // no instance registered, we probably used smpirun.
     return nullptr;
@@ -93,7 +93,7 @@ MPI_Comm* smpi_deployment_comm_world(const std::string instance_id)
   return &instance.comm_world;
 }
 
-simgrid::s4u::Barrier* smpi_deployment_finalization_barrier(const std::string instance_id)
+simgrid::s4u::Barrier* smpi_deployment_finalization_barrier(const std::string& instance_id)
 {
   if (smpi_instances.empty()) { // no instance registered, we probably used smpirun.
     return nullptr;

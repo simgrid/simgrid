@@ -73,7 +73,7 @@ void log_timed_action(simgrid::xbt::ReplayAction& action, double clock)
 }
 
 /* Helper function */
-static double parse_double(std::string string)
+static double parse_double(const std::string& string)
 {
   return xbt_str_parse_double(string.c_str(), "%s is not a double");
 }
@@ -141,7 +141,7 @@ public:
     }
 };
 
-void WaitTestParser::parse(simgrid::xbt::ReplayAction& action, std::string)
+void WaitTestParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   CHECK_ACTION_PARAMS(action, 3, 0)
   src = std::stoi(action[2]);
@@ -149,7 +149,7 @@ void WaitTestParser::parse(simgrid::xbt::ReplayAction& action, std::string)
   tag = std::stoi(action[4]);
 }
 
-void SendRecvParser::parse(simgrid::xbt::ReplayAction& action, std::string)
+void SendRecvParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   CHECK_ACTION_PARAMS(action, 3, 1)
   partner = std::stoi(action[2]);
@@ -159,13 +159,13 @@ void SendRecvParser::parse(simgrid::xbt::ReplayAction& action, std::string)
     datatype1 = simgrid::smpi::Datatype::decode(action[5]);
 }
 
-void ComputeParser::parse(simgrid::xbt::ReplayAction& action, std::string)
+void ComputeParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   CHECK_ACTION_PARAMS(action, 1, 0)
   flops = parse_double(action[2]);
 }
 
-void BcastArgParser::parse(simgrid::xbt::ReplayAction& action, std::string)
+void BcastArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   CHECK_ACTION_PARAMS(action, 1, 2)
   size = parse_double(action[2]);
@@ -174,7 +174,7 @@ void BcastArgParser::parse(simgrid::xbt::ReplayAction& action, std::string)
     datatype1 = simgrid::smpi::Datatype::decode(action[4]);
 }
 
-void ReduceArgParser::parse(simgrid::xbt::ReplayAction& action, std::string)
+void ReduceArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   CHECK_ACTION_PARAMS(action, 2, 2)
   comm_size = parse_double(action[2]);
@@ -184,7 +184,7 @@ void ReduceArgParser::parse(simgrid::xbt::ReplayAction& action, std::string)
     datatype1 = simgrid::smpi::Datatype::decode(action[5]);
 }
 
-void AllReduceArgParser::parse(simgrid::xbt::ReplayAction& action, std::string)
+void AllReduceArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   CHECK_ACTION_PARAMS(action, 2, 1)
   comm_size = parse_double(action[2]);
@@ -193,7 +193,7 @@ void AllReduceArgParser::parse(simgrid::xbt::ReplayAction& action, std::string)
     datatype1 = simgrid::smpi::Datatype::decode(action[4]);
 }
 
-void AllToAllArgParser::parse(simgrid::xbt::ReplayAction& action, std::string)
+void AllToAllArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   CHECK_ACTION_PARAMS(action, 2, 1)
   comm_size = MPI_COMM_WORLD->size();
@@ -206,7 +206,7 @@ void AllToAllArgParser::parse(simgrid::xbt::ReplayAction& action, std::string)
     datatype2 = simgrid::smpi::Datatype::decode(action[5]);
 }
 
-void GatherArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
+void GatherArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string& name)
 {
   /* The structure of the gather action for the rank 0 (total 4 processes) is the following:
         0 gather 68 68 0 0 0
@@ -236,7 +236,7 @@ void GatherArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name
   }
 }
 
-void GatherVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
+void GatherVArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string& name)
 {
   /* The structure of the gatherv action for the rank 0 (total 4 processes) is the following:
        0 gather 68 68 10 10 10 0 0 0
@@ -291,7 +291,7 @@ void GatherVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string nam
   recv_size_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
 }
 
-void ScatterArgParser::parse(simgrid::xbt::ReplayAction& action, std::string)
+void ScatterArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   /* The structure of the scatter action for the rank 0 (total 4 processes) is the following:
         0 gather 68 68 0 0 0
@@ -313,7 +313,7 @@ void ScatterArgParser::parse(simgrid::xbt::ReplayAction& action, std::string)
     datatype2 = simgrid::smpi::Datatype::decode(action[6]);
 }
 
-void ScatterVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string)
+void ScatterVArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   /* The structure of the scatterv action for the rank 0 (total 4 processes) is the following:
      0 gather 68 10 10 10 68 0 0 0
@@ -341,7 +341,7 @@ void ScatterVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string)
   root          = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
 }
 
-void ReduceScatterArgParser::parse(simgrid::xbt::ReplayAction& action, std::string)
+void ReduceScatterArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   /* The structure of the reducescatter action for the rank 0 (total 4 processes) is the following:
        0 reducescatter 275427 275427 275427 204020 11346849 0
@@ -363,7 +363,7 @@ void ReduceScatterArgParser::parse(simgrid::xbt::ReplayAction& action, std::stri
   recv_size_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
 }
 
-void AllToAllVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string)
+void AllToAllVArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   /* The structure of the alltoallv action for the rank 0 (total 4 processes) is the following:
         0 alltoallv 100 1 7 10 12 100 1 70 10 5

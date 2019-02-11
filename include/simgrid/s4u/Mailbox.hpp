@@ -38,7 +38,7 @@ public:
   const char* get_cname() const;
 
   /** Retrieve the mailbox associated to the given name */
-  static MailboxPtr by_name(std::string name);
+  static MailboxPtr by_name(const std::string& name);
 
   /** Returns whether the mailbox contains queued communications */
   bool empty();

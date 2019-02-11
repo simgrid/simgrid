@@ -122,13 +122,13 @@ void Container::create_child(std::string name, std::string type_name)
   new Container(std::move(name), std::move(type_name), this);
 }
 
-Container* Container::by_name_or_null(std::string name)
+Container* Container::by_name_or_null(const std::string& name)
 {
   auto cont = allContainers.find(name);
   return cont == allContainers.end() ? nullptr : cont->second;
 }
 
-Container* Container::by_name(std::string name)
+Container* Container::by_name(const std::string& name)
 {
   Container* ret = Container::by_name_or_null(name);
   xbt_assert(ret != nullptr, "container with name %s not found", name.c_str());
@@ -213,21 +213,21 @@ void Container::log_destruction()
   }
 }
 
-StateType* Container::get_state(std::string name)
+StateType* Container::get_state(const std::string& name)
 {
   StateType* ret = dynamic_cast<StateType*>(type_->by_name(name));
   ret->set_calling_container(this);
   return ret;
 }
 
-LinkType* Container::get_link(std::string name)
+LinkType* Container::get_link(const std::string& name)
 {
   LinkType* ret = dynamic_cast<LinkType*>(type_->by_name(name));
   ret->set_calling_container(this);
   return ret;
 }
 
-VariableType* Container::get_variable(std::string name)
+VariableType* Container::get_variable(const std::string& name)
 {
   VariableType* ret = dynamic_cast<VariableType*>(type_->by_name(name));
   ret->set_calling_container(this);

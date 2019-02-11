@@ -31,7 +31,7 @@ std::vector<simgrid::kernel::resource::LinkImpl*>
 /*
  * Helping functions
  */
-void surf_parse_assert(bool cond, std::string msg)
+void surf_parse_assert(bool cond, const std::string& msg)
 {
   if (not cond) {
     int lineno = surf_parse_lineno;
@@ -42,7 +42,7 @@ void surf_parse_assert(bool cond, std::string msg)
   }
 }
 
-void surf_parse_error(std::string msg)
+void surf_parse_error(const std::string& msg)
 {
   int lineno = surf_parse_lineno;
   cleanup();
@@ -51,7 +51,7 @@ void surf_parse_error(std::string msg)
   xbt_die("Exiting now");
 }
 
-void surf_parse_assert_netpoint(std::string hostname, std::string pre, std::string post)
+void surf_parse_assert_netpoint(const std::string& hostname, const std::string& pre, const std::string& post)
 {
   if (sg_netpoint_by_name_or_null(hostname.c_str()) != nullptr) // found
     return;
@@ -82,7 +82,7 @@ void surf_parse_assert_netpoint(std::string hostname, std::string pre, std::stri
   surf_parse_error(msg);
 }
 
-double surf_parse_get_double(std::string s)
+double surf_parse_get_double(const std::string& s)
 {
   try {
     return std::stod(s);
@@ -92,7 +92,7 @@ double surf_parse_get_double(std::string s)
   }
 }
 
-int surf_parse_get_int(std::string s)
+int surf_parse_get_int(const std::string& s)
 {
   try {
     return std::stoi(s);
@@ -105,7 +105,7 @@ int surf_parse_get_int(std::string s)
 namespace {
 
 /* Turn something like "1-4,6,9-11" into the vector {1,2,3,4,6,9,10,11} */
-std::vector<int>* explodesRadical(std::string radicals)
+std::vector<int>* explodesRadical(const std::string& radicals)
 {
   std::vector<int>* exploded = new std::vector<int>();
 
@@ -176,7 +176,7 @@ unit_scale::unit_scale(std::initializer_list<std::tuple<const std::string, doubl
 
 /* Note: field `unit' for the last element of parameter `units' should be nullptr. */
 double surf_parse_get_value_with_unit(const char* string, const unit_scale& units, const char* entity_kind,
-                                      std::string name, const char* error_msg, const char* default_unit)
+                                      const std::string& name, const char* error_msg, const char* default_unit)
 {
   char* ptr;
   errno = 0;
@@ -199,7 +199,7 @@ double surf_parse_get_value_with_unit(const char* string, const unit_scale& unit
 }
 }
 
-double surf_parse_get_time(const char* string, const char* entity_kind, std::string name)
+double surf_parse_get_time(const char* string, const char* entity_kind, const std::string& name)
 {
   static const unit_scale units{std::make_pair("w", 7 * 24 * 60 * 60),
                                 std::make_pair("d", 24 * 60 * 60),
@@ -214,7 +214,7 @@ double surf_parse_get_time(const char* string, const char* entity_kind, std::str
       "Append 's' to your time to get seconds", "s");
 }
 
-double surf_parse_get_size(const char* string, const char* entity_kind, std::string name)
+double surf_parse_get_size(const char* string, const char* entity_kind, const std::string& name)
 {
   static const unit_scale units{std::make_tuple("b", 0.125, 2, true), std::make_tuple("b", 0.125, 10, true),
                                 std::make_tuple("B", 1.0, 2, true), std::make_tuple("B", 1.0, 10, true)};
@@ -222,7 +222,7 @@ double surf_parse_get_size(const char* string, const char* entity_kind, std::str
       "Append 'B' to get bytes (or 'b' for bits but 1B = 8b).", "B");
 }
 
-double surf_parse_get_bandwidth(const char* string, const char* entity_kind, std::string name)
+double surf_parse_get_bandwidth(const char* string, const char* entity_kind, const std::string& name)
 {
   static const unit_scale units{std::make_tuple("bps", 0.125, 2, true), std::make_tuple("bps", 0.125, 10, true),
                                 std::make_tuple("Bps", 1.0, 2, true), std::make_tuple("Bps", 1.0, 10, true)};
@@ -230,14 +230,14 @@ double surf_parse_get_bandwidth(const char* string, const char* entity_kind, std
       "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)", "Bps");
 }
 
-double surf_parse_get_speed(const char* string, const char* entity_kind, std::string name)
+double surf_parse_get_speed(const char* string, const char* entity_kind, const std::string& name)
 {
   static const unit_scale units{std::make_tuple("f", 1.0, 10, true), std::make_tuple("flops", 1.0, 10, false)};
   return surf_parse_get_value_with_unit(string, units, entity_kind, name,
       "Append 'f' or 'flops' to your speed to get flop per second", "f");
 }
 
-static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* entity_kind, std::string id)
+static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* entity_kind, const std::string& id)
 {
 
   std::vector<double> speed_per_pstate;
@@ -986,7 +986,7 @@ void ETag_surfxml_model___prop(){/* Nothing to do */}
 /* Open and Close parse file */
 YY_BUFFER_STATE surf_input_buffer;
 
-void surf_parse_open(std::string file)
+void surf_parse_open(const std::string& file)
 {
   surf_parsed_filename = file;
   std::string dir      = simgrid::xbt::Path(file).get_dir_name();

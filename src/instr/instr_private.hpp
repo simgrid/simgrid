@@ -273,24 +273,26 @@ XBT_PUBLIC bool TRACE_smpi_is_sleeping();
 XBT_PUBLIC bool TRACE_smpi_view_internals();
 
 XBT_PRIVATE void TRACE_surf_resource_set_utilization(const char* type, const char* name, const char* resource,
-                                                     std::string category, double value, double now, double delta);
+                                                     const std::string& category, double value, double now,
+                                                     double delta);
 
 /* instr_paje.c */
 extern XBT_PRIVATE std::set<std::string> trivaNodeTypes;
 extern XBT_PRIVATE std::set<std::string> trivaEdgeTypes;
 XBT_PRIVATE long long int instr_new_paje_id();
 XBT_PRIVATE void instr_define_callbacks();
-void instr_new_variable_type(std::string new_typename, std::string color);
-void instr_new_user_variable_type(std::string father_type, std::string new_typename, std::string color);
-void instr_new_user_state_type(std::string father_type, std::string new_typename);
-void instr_new_value_for_user_state_type(std::string new_typename, const char* value, std::string color);
+void instr_new_variable_type(const std::string& new_typename, const std::string& color);
+void instr_new_user_variable_type(const std::string& father_type, const std::string& new_typename,
+                                  const std::string& color);
+void instr_new_user_state_type(const std::string& father_type, const std::string& new_typename);
+void instr_new_value_for_user_state_type(const std::string& new_typename, const char* value, const std::string& color);
 
 XBT_PRIVATE void TRACE_global_init();
 XBT_PRIVATE void TRACE_help();
 
 XBT_PRIVATE void TRACE_paje_dump_buffer(bool force);
-XBT_PRIVATE void dump_comment_file(std::string filename);
-XBT_PRIVATE void dump_comment(std::string comment);
+XBT_PRIVATE void dump_comment_file(const std::string& filename);
+XBT_PRIVATE void dump_comment(const std::string& comment);
 
 XBT_PRIVATE std::string TRACE_get_filename();
 
