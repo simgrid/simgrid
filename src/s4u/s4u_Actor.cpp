@@ -295,13 +295,13 @@ void execute(double flops, double priority)
   exec_init(flops)->set_priority(priority)->start()->wait();
 }
 
-void parallel_execute(std::vector<s4u::Host*> hosts, std::vector<double> flops_amounts,
-                      std::vector<double> bytes_amounts)
+void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
+                      const std::vector<double>& bytes_amounts)
 {
   parallel_execute(hosts, flops_amounts, bytes_amounts, -1);
 }
-void parallel_execute(std::vector<s4u::Host*> hosts, std::vector<double> flops_amounts,
-                      std::vector<double> bytes_amounts, double timeout)
+void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
+                      const std::vector<double>& bytes_amounts, double timeout)
 {
   xbt_assert(hosts.size() > 0, "Your parallel executions must span over at least one host.");
   xbt_assert(hosts.size() == flops_amounts.size() || flops_amounts.empty(),
@@ -321,7 +321,8 @@ void parallel_execute(std::vector<s4u::Host*> hosts, std::vector<double> flops_a
 }
 
 // deprecated
-void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount, double timeout)
+void parallel_execute(int host_nb, s4u::Host* const* host_list, const double* flops_amount, const double* bytes_amount,
+                      double timeout)
 {
   smx_activity_t s =
       simcall_execution_parallel_start("", host_nb, host_list, flops_amount, bytes_amount, /* rate */ -1, timeout);
@@ -331,7 +332,7 @@ void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, 
 }
 
 // deprecated
-void parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount)
+void parallel_execute(int host_nb, s4u::Host* const* host_list, const double* flops_amount, const double* bytes_amount)
 {
   smx_activity_t s = simcall_execution_parallel_start("", host_nb, host_list, flops_amount, bytes_amount,
                                                       /* rate */ -1, /*timeout*/ -1);

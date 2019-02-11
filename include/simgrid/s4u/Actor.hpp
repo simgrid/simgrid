@@ -469,22 +469,23 @@ XBT_PUBLIC void execute(double flop, double priority);
  *
  * \endrst
  */
-XBT_PUBLIC void parallel_execute(std::vector<s4u::Host*> hosts, std::vector<double> flops_amounts,
-                                 std::vector<double> bytes_amounts);
+XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
+                                 const std::vector<double>& bytes_amounts);
 
 /** \rst
  * Block the current actor until the built :ref:`parallel execution <API_s4u_parallel_execute>` completes, or until the
  * timeout. \endrst
  */
-XBT_PUBLIC void parallel_execute(std::vector<s4u::Host*> hosts, std::vector<double> flops_amounts,
-                                 std::vector<double> bytes_amounts, double timeout);
+XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
+                                 const std::vector<double>& bytes_amounts, double timeout);
 
 #ifndef DOXYGEN
 XBT_ATTRIB_DEPRECATED_v325("Please use std::vectors as parameters") XBT_PUBLIC
-    void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount);
+    void parallel_execute(int host_nb, s4u::Host* const* host_list, const double* flops_amount,
+                          const double* bytes_amount);
 XBT_ATTRIB_DEPRECATED_v325("Please use std::vectors as parameters") XBT_PUBLIC
-    void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount,
-                          double timeout);
+    void parallel_execute(int host_nb, s4u::Host* const* host_list, const double* flops_amount,
+                          const double* bytes_amount, double timeout);
 #endif
 
 XBT_PUBLIC ExecPtr exec_init(double flops_amounts);

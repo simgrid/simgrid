@@ -41,8 +41,9 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
  * @param timeout timeout
  * @return A new SIMIX execution synchronization
  */
-smx_activity_t simcall_execution_parallel_start(std::string name, int host_nb, sg_host_t* host_list,
-                                                double* flops_amount, double* bytes_amount, double rate, double timeout)
+smx_activity_t simcall_execution_parallel_start(const std::string& name, int host_nb, const sg_host_t* host_list,
+                                                const double* flops_amount, const double* bytes_amount, double rate,
+                                                double timeout)
 {
   /* checking for infinite values */
   for (int i = 0 ; i < host_nb ; ++i) {

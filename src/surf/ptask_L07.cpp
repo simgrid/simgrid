@@ -132,14 +132,15 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
   }
 }
 
-kernel::resource::Action* HostL07Model::execute_parallel(size_t host_nb, sg_host_t* host_list, double* flops_amount,
-                                                         double* bytes_amount, double rate)
+kernel::resource::Action* HostL07Model::execute_parallel(size_t host_nb, s4u::Host* const* host_list,
+                                                         const double* flops_amount, const double* bytes_amount,
+                                                         double rate)
 {
   return new L07Action(this, host_nb, host_list, flops_amount, bytes_amount, rate);
 }
 
-L07Action::L07Action(kernel::resource::Model* model, size_t host_nb, sg_host_t* host_list, double* flops_amount,
-                     double* bytes_amount, double rate)
+L07Action::L07Action(kernel::resource::Model* model, size_t host_nb, s4u::Host* const* host_list,
+                     const double* flops_amount, const double* bytes_amount, double rate)
     : CpuAction(model, 1, 0), computationAmount_(flops_amount), communicationAmount_(bytes_amount), rate_(rate)
 {
   size_t link_nb      = 0;

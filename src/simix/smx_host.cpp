@@ -24,9 +24,9 @@ const char* sg_host_self_get_name()
   return host->get_cname();
 }
 
-simgrid::kernel::activity::ExecImplPtr SIMIX_execution_parallel_start(std::string name, int host_nb,
-                                                                      sg_host_t* host_list, double* flops_amount,
-                                                                      double* bytes_amount, double rate, double timeout)
+simgrid::kernel::activity::ExecImplPtr
+SIMIX_execution_parallel_start(std::string name, int host_nb, const sg_host_t* host_list, const double* flops_amount,
+                               const double* bytes_amount, double rate, double timeout)
 {
 
   /* Check that we are not mixing VMs and PMs in the parallel task */

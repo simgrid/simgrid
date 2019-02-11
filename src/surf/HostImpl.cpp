@@ -24,7 +24,7 @@ namespace surf {
  *********/
 
 /* Helper function for executeParallelTask */
-static inline double has_cost(double* array, size_t pos)
+static inline double has_cost(const double* array, size_t pos)
 {
   if (array)
     return array[pos];
@@ -32,8 +32,9 @@ static inline double has_cost(double* array, size_t pos)
     return -1.0;
 }
 
-kernel::resource::Action* HostModel::execute_parallel(size_t host_nb, s4u::Host** host_list, double* flops_amount,
-                                                      double* bytes_amount, double rate)
+kernel::resource::Action* HostModel::execute_parallel(size_t host_nb, s4u::Host* const* host_list,
+                                                      const double* flops_amount, const double* bytes_amount,
+                                                      double rate)
 {
   kernel::resource::Action* action = nullptr;
   if ((host_nb == 1) && (has_cost(bytes_amount, 0) <= 0) && (has_cost(flops_amount, 0) > 0)) {

@@ -29,8 +29,9 @@ class XBT_PRIVATE HostModel : public kernel::resource::Model {
 public:
   HostModel() : Model(Model::UpdateAlgo::FULL) {}
 
-  virtual kernel::resource::Action* execute_parallel(size_t host_nb, sg_host_t* host_list, double* flops_amount,
-                                                     double* bytes_amount, double rate);
+  virtual kernel::resource::Action* execute_parallel(size_t host_nb, s4u::Host* const* host_list,
+                                                     const double* flops_amount, const double* bytes_amount,
+                                                     double rate);
 };
 
 /************

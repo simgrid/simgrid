@@ -40,8 +40,8 @@ public:
 
   double next_occuring_event(double now) override;
   void update_actions_state(double now, double delta) override;
-  kernel::resource::Action* execute_parallel(size_t host_nb, sg_host_t* host_list, double* flops_amount,
-                                             double* bytes_amount, double rate) override;
+  kernel::resource::Action* execute_parallel(size_t host_nb, s4u::Host* const* host_list, const double* flops_amount,
+                                             const double* bytes_amount, double rate) override;
 };
 
 class CpuL07Model : public CpuModel {
@@ -104,20 +104,22 @@ public:
 class L07Action : public CpuAction {
   friend Action *CpuL07::execution_start(double size);
   friend Action *CpuL07::sleep(double duration);
-  friend Action* HostL07Model::execute_parallel(size_t host_nb, sg_host_t* host_list, double* flops_amount,
-                                                double* bytes_amount, double rate);
+  friend Action* HostL07Model::execute_parallel(size_t host_nb, s4u::Host* const* host_list, const double* flops_amount,
+                                                const double* bytes_amount, double rate);
   friend Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
 
 public:
-  L07Action(kernel::resource::Model* model, size_t host_nb, sg_host_t* host_list, double* flops_amount,
-            double* bytes_amount, double rate);
+  L07Action(kernel::resource::Model* model, size_t host_nb, s4u::Host* const* host_list, const double* flops_amount,
+            const double* bytes_amount, double rate);
   ~L07Action();
 
   void updateBound();
 
   std::vector<s4u::Host*> hostList_;
-  double* computationAmount_;   /* pointer to the data that lives in s4u action -- do not free unless if free_arrays */
-  double* communicationAmount_; /* pointer to the data that lives in s4u action -- do not free unless if free_arrays */
+  const double* computationAmount_;   /* pointer to the data that lives in s4u action -- do not free unless if
+                                       * free_arrays */
+  const double* communicationAmount_; /* pointer to the data that lives in s4u action -- do not free unless if
+                                       * free_arrays */
   double latency_;
   double rate_;
 
