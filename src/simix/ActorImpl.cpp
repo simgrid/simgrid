@@ -702,7 +702,9 @@ void SIMIX_process_yield(smx_actor_t self)
   }
 }
 
-/** @brief Returns the list of processes to run. */
+/** @brief Returns the list of processes to run.
+ * @deprecated
+ */
 const std::vector<smx_actor_t>& simgrid::simix::process_get_runnable()
 {
   return simix_global->process_to_run;

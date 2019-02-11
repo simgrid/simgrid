@@ -65,7 +65,8 @@ template <class F> typename std::result_of<F()>::type simcall(F&& code)
   return result.get();
 }
 
-XBT_PUBLIC const std::vector<smx_actor_t>& process_get_runnable();
+XBT_ATTRIB_DEPRECATED_v325("Please manifest if you actually need this function.")
+    XBT_PUBLIC const std::vector<smx_actor_t>& process_get_runnable();
 
 // What's executed as SIMIX actor code:
 typedef std::function<void()> ActorCode;
