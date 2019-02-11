@@ -30,7 +30,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 TorusZone::TorusZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel)
-    : ClusterZone(father, name, netmodel)
+    : ClusterZone(father, std::move(name), netmodel)
 {
 }
 

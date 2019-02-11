@@ -144,7 +144,7 @@ void TRACE_internal_smpi_set_category(std::string category)
   TRACE_category(category.c_str());
 
   if (not category.empty())
-    process_category[SIMIX_process_self()] = category;
+    process_category[SIMIX_process_self()] = std::move(category);
 }
 
 std::string TRACE_internal_smpi_get_category()

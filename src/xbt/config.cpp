@@ -460,7 +460,7 @@ XBT_PUBLIC void declare_flag(std::string name, std::string description, T value,
 {
   if (simgrid_config == nullptr)
     simgrid_config = new simgrid::config::Config();
-  simgrid_config->register_option<T>(name, description, std::move(value), std::move(callback));
+  simgrid_config->register_option<T>(name, std::move(description), std::move(value), std::move(callback));
 }
 
 template XBT_PUBLIC void declare_flag(std::string name, std::string description, int value,

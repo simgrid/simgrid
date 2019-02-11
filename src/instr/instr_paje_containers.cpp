@@ -33,10 +33,10 @@ container_t Container::get_root()
 }
 
 NetZoneContainer::NetZoneContainer(std::string name, unsigned int level, NetZoneContainer* father)
-    : Container::Container(name, "", father)
+    : Container::Container(std::move(name), "", father)
 {
-  netpoint_ = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name);
-  xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
+  netpoint_ = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name());
+  xbt_assert(netpoint_, "Element '%s' not found", get_cname());
   if (father_) {
     std::string type_name = std::string("L") + std::to_string(level);
     type_                 = father_->type_->by_name_or_create<ContainerType>(type_name);
@@ -48,12 +48,13 @@ NetZoneContainer::NetZoneContainer(std::string name, unsigned int level, NetZone
   }
 }
 
-RouterContainer::RouterContainer(std::string name, Container* father) : Container::Container(name, "ROUTER", father)
+RouterContainer::RouterContainer(std::string name, Container* father)
+    : Container::Container(std::move(name), "ROUTER", father)
 {
   xbt_assert(father, "Only the Root container has no father");
 
-  netpoint_ = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name);
-  xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
+  netpoint_ = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name());
+  xbt_assert(netpoint_, "Element '%s' not found", get_cname());
 
   trivaNodeTypes.insert(type_->get_name());
 }
@@ -69,7 +70,8 @@ HostContainer::HostContainer(simgrid::s4u::Host& host, NetZoneContainer* father)
   trivaNodeTypes.insert(type_->get_name());
 }
 
-Container::Container(std::string name, std::string type_name, Container* father) : name_(name), father_(father)
+Container::Container(std::string name, std::string type_name, Container* father)
+    : name_(std::move(name)), father_(father)
 {
   static long long int container_id = 0;
   id_                               = container_id; // id (or alias) of the container
@@ -117,7 +119,7 @@ Container::~Container()
 
 void Container::create_child(std::string name, std::string type_name)
 {
-  new Container(name, type_name, this);
+  new Container(std::move(name), std::move(type_name), this);
 }
 
 Container* Container::by_name_or_null(std::string name)

@@ -23,7 +23,7 @@ namespace kernel {
 namespace routing {
 
 FloydZone::FloydZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel)
-    : RoutedZone(father, name, netmodel)
+    : RoutedZone(father, std::move(name), netmodel)
 {
   predecessor_table_ = nullptr;
   cost_table_        = nullptr;

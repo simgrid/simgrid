@@ -47,7 +47,7 @@ SIMIX_execution_parallel_start(std::string name, int host_nb, const sg_host_t* h
   }
 
   simgrid::kernel::activity::ExecImplPtr exec = simgrid::kernel::activity::ExecImplPtr(
-      new simgrid::kernel::activity::ExecImpl(name, "", timeout_detector, nullptr));
+      new simgrid::kernel::activity::ExecImpl(std::move(name), "", timeout_detector, nullptr));
   if (surf_action != nullptr) {
     exec->surf_action_ = surf_action;
     exec->surf_action_->set_data(exec.get());

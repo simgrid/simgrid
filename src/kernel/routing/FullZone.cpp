@@ -17,7 +17,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 FullZone::FullZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel)
-    : RoutedZone(father, name, netmodel)
+    : RoutedZone(father, std::move(name), netmodel)
 {
 }
 

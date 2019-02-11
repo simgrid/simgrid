@@ -23,18 +23,18 @@ namespace s4u {
 simgrid::xbt::Extension<Storage, FileSystemStorageExt> FileSystemStorageExt::EXTENSION_ID;
 simgrid::xbt::Extension<Host, FileDescriptorHostExt> FileDescriptorHostExt::EXTENSION_ID;
 
-File::File(std::string fullpath, void* userdata) : File(fullpath, Host::current(), userdata){};
+File::File(std::string fullpath, void* userdata) : File(std::move(fullpath), Host::current(), userdata){};
 
-File::File(std::string fullpath, sg_host_t host, void* userdata) : fullpath_(fullpath), userdata_(userdata)
+File::File(std::string fullpath, sg_host_t host, void* userdata) : fullpath_(std::move(fullpath)), userdata_(userdata)
 {
   // this cannot fail because we get a xbt_die if the mountpoint does not exist
   Storage* st                  = nullptr;
   size_t longest_prefix_length = 0;
-  XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath.c_str(), host->get_cname());
+  XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath_.c_str(), host->get_cname());
 
   for (auto const& mnt : host->get_mounted_storages()) {
     XBT_DEBUG("See '%s'", mnt.first.c_str());
-    mount_point_ = fullpath.substr(0, mnt.first.length());
+    mount_point_ = fullpath_.substr(0, mnt.first.length());
 
     if (mount_point_ == mnt.first && mnt.first.length() > longest_prefix_length) {
       /* The current mount name is found in the full path and is bigger than the previous*/
@@ -42,11 +42,11 @@ File::File(std::string fullpath, sg_host_t host, void* userdata) : fullpath_(ful
       st                    = mnt.second;
     }
   }
-  if (longest_prefix_length > 0) { /* Mount point found, split fullpath into mount_name and path+filename*/
-    mount_point_ = fullpath.substr(0, longest_prefix_length);
-    path_        = fullpath.substr(longest_prefix_length, fullpath.length());
+  if (longest_prefix_length > 0) { /* Mount point found, split fullpath_ into mount_name and path+filename*/
+    mount_point_ = fullpath_.substr(0, longest_prefix_length);
+    path_        = fullpath_.substr(longest_prefix_length, fullpath_.length());
   } else
-    xbt_die("Can't find mount point for '%s' on '%s'", fullpath.c_str(), host->get_cname());
+    xbt_die("Can't find mount point for '%s' on '%s'", fullpath_.c_str(), host->get_cname());
 
   local_storage_ = st;
 

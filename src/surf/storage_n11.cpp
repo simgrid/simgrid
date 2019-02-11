@@ -56,13 +56,11 @@ StorageImpl* StorageN11Model::createStorage(std::string id, std::string type_id,
   double Bwrite = surf_parse_get_bandwidth(storage_type->model_properties->at("Bwrite").c_str(),
                                            "property Bwrite, storage", type_id.c_str());
 
-  StorageImpl* storage =
-      new StorageN11(this, id, get_maxmin_system(), Bread, Bwrite, type_id, content_name, storage_type->size, attach);
-
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id.c_str(), type_id.c_str(),
             Bread);
 
-  return storage;
+  return new StorageN11(this, std::move(id), get_maxmin_system(), Bread, Bwrite, std::move(type_id),
+                        std::move(content_name), storage_type->size, std::move(attach));
 }
 
 double StorageN11Model::next_occuring_event(double now)

@@ -176,7 +176,7 @@ public:
    */
   template <class F> static ActorPtr create(std::string name, s4u::Host* host, F code)
   {
-    return create(name, host, std::function<void()>(std::move(code)));
+    return create(std::move(name), host, std::function<void()>(std::move(code)));
   }
 
   /** Create an actor using a callable thing and its arguments.
@@ -187,7 +187,7 @@ public:
             typename = typename std::result_of<F(Args...)>::type>
   static ActorPtr create(std::string name, s4u::Host* host, F code, Args... args)
   {
-    return create(name, host, std::bind(std::move(code), std::move(args)...));
+    return create(std::move(name), host, std::bind(std::move(code), std::move(args)...));
   }
 
   // Create actor from function name:

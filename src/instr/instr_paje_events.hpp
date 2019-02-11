@@ -88,7 +88,7 @@ public:
             std::string key, int size)
       : PajeEvent(container, type, SIMIX_get_clock(), event_type)
       , endpoint_(sourceContainer)
-      , value_(value)
+      , value_(std::move(value))
       , key_(key)
       , size_(size)
   {

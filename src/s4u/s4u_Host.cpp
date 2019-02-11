@@ -29,9 +29,9 @@ simgrid::xbt::signal<void(Host&)> Host::on_destruction;
 simgrid::xbt::signal<void(Host&)> Host::on_state_change;
 simgrid::xbt::signal<void(Host&)> Host::on_speed_change;
 
-Host::Host(std::string name) : name_(name)
+Host::Host(std::string name) : name_(std::move(name))
 {
-  xbt_assert(Host::by_name_or_null(name) == nullptr, "Refusing to create a second host named '%s'.", name.c_str());
+  xbt_assert(Host::by_name_or_null(name_) == nullptr, "Refusing to create a second host named '%s'.", name_.c_str());
   Engine::get_instance()->host_register(std::string(name_), this);
   new simgrid::surf::HostImpl(this);
 }
@@ -194,7 +194,7 @@ const char* Host::get_property(std::string key) const
 
 void Host::set_property(std::string key, std::string value)
 {
-  simgrid::simix::simcall([this, key, value] { this->pimpl_->set_property(key, value); });
+  simgrid::simix::simcall([this, key, value] { this->pimpl_->set_property(key, std::move(value)); });
 }
 /** Specify a profile turning the host on and off according to a exhaustive list or a stochastic law.
  * The profile must contain boolean values. */

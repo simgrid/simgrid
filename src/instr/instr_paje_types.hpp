@@ -71,7 +71,7 @@ public:
 class ValueType : public Type {
 public:
   std::map<std::string, EntityValue*> values_;
-  ValueType(std::string name, std::string alias, Type* father) : Type(name, alias, "", father){};
+  ValueType(std::string name, std::string alias, Type* father) : Type(std::move(name), std::move(alias), "", father){};
   ValueType(std::string name, Type* father) : Type(name, name, "", father){};
   virtual ~ValueType();
   void add_entity_value(std::string name, std::string color);

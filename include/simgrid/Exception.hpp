@@ -34,7 +34,12 @@ class ThrowPoint {
 public:
   ThrowPoint() = default;
   explicit ThrowPoint(const char* file, int line, const char* function, Backtrace bt, std::string actor_name, int pid)
-      : file_(file), line_(line), function_(function), backtrace_(std::move(bt)), procname_(actor_name), pid_(pid)
+      : file_(file)
+      , line_(line)
+      , function_(function)
+      , backtrace_(std::move(bt))
+      , procname_(std::move(actor_name))
+      , pid_(pid)
   {
   }
 
@@ -56,7 +61,7 @@ public:
 class Exception : public std::runtime_error {
 public:
   Exception(simgrid::xbt::ThrowPoint throwpoint, std::string message)
-      : std::runtime_error(message), throwpoint_(throwpoint)
+      : std::runtime_error(std::move(message)), throwpoint_(std::move(throwpoint))
   {
   }
 
@@ -91,8 +96,11 @@ public:
    * @param throwpoint Throw point (use XBT_THROW_POINT)
    * @param message    Exception message
    */
-  xbt_ex(simgrid::xbt::ThrowPoint throwpoint, std::string message) : simgrid::Exception(throwpoint, message) {}
-  
+  xbt_ex(simgrid::xbt::ThrowPoint throwpoint, std::string message)
+      : simgrid::Exception(std::move(throwpoint), std::move(message))
+  {
+  }
+
   xbt_ex(const xbt_ex&) = default;
 
   ~xbt_ex(); // DO NOT define it here -- see ex.cpp for a rationale
@@ -109,7 +117,8 @@ namespace simgrid {
 /** Exception raised when a timeout elapsed */
 class TimeoutError : public xbt_ex {
 public:
-  TimeoutError(simgrid::xbt::ThrowPoint throwpoint, std::string message) : xbt_ex(throwpoint, message)
+  TimeoutError(simgrid::xbt::ThrowPoint throwpoint, std::string message)
+      : xbt_ex(std::move(throwpoint), std::move(message))
   {
     category = timeout_error;
   }
@@ -118,7 +127,8 @@ public:
 /** Exception raised when a host fails */
 class HostFailureException : public xbt_ex {
 public:
-  HostFailureException(simgrid::xbt::ThrowPoint throwpoint, std::string message) : xbt_ex(throwpoint, message)
+  HostFailureException(simgrid::xbt::ThrowPoint throwpoint, std::string message)
+      : xbt_ex(std::move(throwpoint), std::move(message))
   {
     category = host_error;
   }
@@ -127,7 +137,8 @@ public:
 /** Exception raised when a communication fails because of the network */
 class NetworkFailureException : public xbt_ex {
 public:
-  NetworkFailureException(simgrid::xbt::ThrowPoint throwpoint, std::string message) : xbt_ex(throwpoint, message)
+  NetworkFailureException(simgrid::xbt::ThrowPoint throwpoint, std::string message)
+      : xbt_ex(std::move(throwpoint), std::move(message))
   {
     category = network_error;
   }

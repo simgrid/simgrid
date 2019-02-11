@@ -26,7 +26,7 @@ class MailboxImpl {
   friend mc::CommunicationDeterminismChecker;
 
   explicit MailboxImpl(std::string name)
-      : piface_(this), name_(name), comm_queue_(MAX_MAILBOX_SIZE), done_comm_queue_(MAX_MAILBOX_SIZE)
+      : piface_(this), name_(std::move(name)), comm_queue_(MAX_MAILBOX_SIZE), done_comm_queue_(MAX_MAILBOX_SIZE)
   {
   }
 

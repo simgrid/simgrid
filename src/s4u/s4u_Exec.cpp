@@ -117,14 +117,14 @@ ExecPtr Exec::set_host(Host* host)
 ExecPtr Exec::set_name(std::string name)
 {
   xbt_assert(state_ == State::INITED, "Cannot change the name of an exec after its start");
-  name_ = name;
+  name_ = std::move(name);
   return this;
 }
 
 ExecPtr Exec::set_tracing_category(std::string category)
 {
   xbt_assert(state_ == State::INITED, "Cannot change the tracing category of an exec after its start");
-  tracing_category_ = category;
+  tracing_category_ = std::move(category);
   return this;
 }
 

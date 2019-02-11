@@ -16,7 +16,7 @@ namespace kernel {
 namespace routing {
 
 EmptyZone::EmptyZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel)
-    : NetZoneImpl(father, name, netmodel)
+    : NetZoneImpl(father, std::move(name), netmodel)
 {
 }
 

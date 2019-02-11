@@ -27,7 +27,7 @@ public:
 };
 
 DijkstraZone::DijkstraZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel, bool cached)
-    : RoutedZone(father, name, netmodel), cached_(cached)
+    : RoutedZone(father, std::move(name), netmodel), cached_(cached)
 {
 }
 

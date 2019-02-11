@@ -111,7 +111,7 @@ const char* Link::get_property(std::string key)
 }
 void Link::set_property(std::string key, std::string value)
 {
-  simgrid::simix::simcall([this, key, value] { this->pimpl_->set_property(key, value); });
+  simgrid::simix::simcall([this, key, value] { this->pimpl_->set_property(key, std::move(value)); });
 }
 } // namespace s4u
 } // namespace simgrid

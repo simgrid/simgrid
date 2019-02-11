@@ -181,7 +181,7 @@ public:
   /** @brief Get the tracing category associated to the current action */
   std::string get_category() const { return category_; }
   /** @brief Set the tracing category of the current Action */
-  void set_category(std::string category) { category_ = category; }
+  void set_category(std::string category) { category_ = std::move(category); }
 
   /** @brief Get the priority of the current Action */
   double get_priority() const { return sharing_priority_; };

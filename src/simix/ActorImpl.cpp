@@ -731,7 +731,8 @@ smx_actor_t simcall_process_create(std::string name, simgrid::simix::ActorCode c
 {
   smx_actor_t self = SIMIX_process_self();
   return simgrid::simix::simcall([name, code, data, host, properties, self] {
-    return simgrid::kernel::actor::ActorImpl::create(name, std::move(code), data, host, properties, self).get();
+    return simgrid::kernel::actor::ActorImpl::create(std::move(name), std::move(code), data, host, properties, self)
+        .get();
   });
 }
 

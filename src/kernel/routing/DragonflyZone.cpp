@@ -19,7 +19,7 @@ namespace kernel {
 namespace routing {
 
 DragonflyZone::DragonflyZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel)
-    : ClusterZone(father, name, netmodel)
+    : ClusterZone(father, std::move(name), netmodel)
 {
 }
 
@@ -160,7 +160,7 @@ void DragonflyZone::generate_routers()
   }
 }
 
-void DragonflyZone::create_link(const std::string& id, int numlinks, resource::LinkImpl** linkup,
+void DragonflyZone::create_link(std::string id, int numlinks, resource::LinkImpl** linkup,
                                 resource::LinkImpl** linkdown)
 {
   *linkup   = nullptr;
@@ -169,9 +169,9 @@ void DragonflyZone::create_link(const std::string& id, int numlinks, resource::L
   linkTemplate.bandwidth = this->bw_ * numlinks;
   linkTemplate.latency   = this->lat_;
   linkTemplate.policy    = this->sharing_policy_;
-  linkTemplate.id        = id;
+  linkTemplate.id        = std::move(id);
   sg_platf_new_link(&linkTemplate);
-  XBT_DEBUG("Generating link %s", id.c_str());
+  XBT_DEBUG("Generating link %s", linkTemplate.id.c_str());
   resource::LinkImpl* link;
   if (this->sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX) {
     *linkup   = s4u::Link::by_name(linkTemplate.id + "_UP")->get_impl();   // check link?

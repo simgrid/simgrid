@@ -60,7 +60,7 @@ namespace kernel {
 namespace routing {
 
 RoutedZone::RoutedZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel)
-    : NetZoneImpl(father, name, netmodel)
+    : NetZoneImpl(father, std::move(name), netmodel)
 {
 }
 

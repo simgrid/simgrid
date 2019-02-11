@@ -27,13 +27,13 @@ public:
 };
 
 NetZoneImpl::NetZoneImpl(NetZoneImpl* father, std::string name, resource::NetworkModel* network_model)
-    : network_model_(network_model), piface_(this), father_(father), name_(name)
+    : network_model_(network_model), piface_(this), father_(father), name_(std::move(name))
 {
-  xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name.c_str()),
-             "Refusing to create a second NetZone called '%s'.", name.c_str());
+  xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name_.c_str()),
+             "Refusing to create a second NetZone called '%s'.", name_.c_str());
 
-  netpoint_ = new NetPoint(name, NetPoint::Type::NetZone, father);
-  XBT_DEBUG("NetZone '%s' created with the id '%u'", name.c_str(), netpoint_->id());
+  netpoint_ = new NetPoint(name_, NetPoint::Type::NetZone, father);
+  XBT_DEBUG("NetZone '%s' created with the id '%u'", name_.c_str(), netpoint_->id());
 }
 
 NetZoneImpl::~NetZoneImpl()

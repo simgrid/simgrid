@@ -13,7 +13,7 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-IoImpl::IoImpl(std::string name, surf::StorageImpl* storage) : ActivityImpl(name), storage_(storage)
+IoImpl::IoImpl(std::string name, surf::StorageImpl* storage) : ActivityImpl(std::move(name)), storage_(storage)
 {
   this->state_ = SIMIX_RUNNING;
 

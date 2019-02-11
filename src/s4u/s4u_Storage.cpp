@@ -21,9 +21,9 @@ simgrid::xbt::signal<void(s4u::Storage&)> Storage::on_creation;
 simgrid::xbt::signal<void(s4u::Storage&)> Storage::on_destruction;
 simgrid::xbt::signal<void(s4u::Storage&)> Storage::on_state_change;
 
-Storage::Storage(std::string name, surf::StorageImpl* pimpl) : pimpl_(pimpl), name_(name)
+Storage::Storage(std::string name, surf::StorageImpl* pimpl) : pimpl_(pimpl), name_(std::move(name))
 {
-  simgrid::s4u::Engine::get_instance()->storage_register(name, this);
+  simgrid::s4u::Engine::get_instance()->storage_register(name_, this);
 }
 
 Storage* Storage::by_name(std::string name)

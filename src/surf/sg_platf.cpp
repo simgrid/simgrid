@@ -100,9 +100,9 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(std::string name, const 
   xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name),
              "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
 
-  simgrid::kernel::routing::NetPoint* netpoint =
-      new simgrid::kernel::routing::NetPoint(name, simgrid::kernel::routing::NetPoint::Type::Router, current_routing);
-  XBT_DEBUG("Router '%s' has the id %u", name.c_str(), netpoint->id());
+  simgrid::kernel::routing::NetPoint* netpoint = new simgrid::kernel::routing::NetPoint(
+      std::move(name), simgrid::kernel::routing::NetPoint::Type::Router, current_routing);
+  XBT_DEBUG("Router '%s' has the id %u", netpoint->get_cname(), netpoint->id());
 
   if (coords && strcmp(coords, ""))
     new simgrid::kernel::routing::vivaldi::Coords(netpoint, coords);

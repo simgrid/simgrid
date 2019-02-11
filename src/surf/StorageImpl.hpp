@@ -171,7 +171,12 @@ public:
   StorageType(std::string id, std::string model, std::string content,
               std::unordered_map<std::string, std::string>* properties,
               std::unordered_map<std::string, std::string>* model_properties, sg_size_t size)
-      : id(id), model(model), content(content), properties(properties), model_properties(model_properties), size(size)
+      : id(std::move(id))
+      , model(std::move(model))
+      , content(std::move(content))
+      , properties(properties)
+      , model_properties(model_properties)
+      , size(size)
   {
   }
 };

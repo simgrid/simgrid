@@ -23,7 +23,7 @@ namespace kernel {
 namespace routing {
 
 FatTreeZone::FatTreeZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel)
-    : ClusterZone(father, name, netmodel)
+    : ClusterZone(father, std::move(name), netmodel)
 {
   XBT_DEBUG("Creating a new fat tree.");
 }

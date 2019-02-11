@@ -26,7 +26,7 @@ void PropertyHolder::set_property(std::string key, std::string value)
 {
   if (not properties_)
     properties_ = new std::unordered_map<std::string, std::string>;
-  (*properties_)[key] = value;
+  (*properties_)[key] = std::move(value);
 }
 
 /** @brief Return the whole set of properties. Don't mess with it, dude! */

@@ -19,10 +19,10 @@ namespace kernel {
 namespace activity {
 
 ExecImpl::ExecImpl(std::string name, std::string tracing_category, resource::Action* timeout_detector, s4u::Host* host)
-    : ActivityImpl(name), host_(host), timeout_detector_(timeout_detector)
+    : ActivityImpl(std::move(name)), host_(host), timeout_detector_(timeout_detector)
 {
   this->state_ = SIMIX_RUNNING;
-  this->set_category(tracing_category);
+  this->set_category(std::move(tracing_category));
 
   if (timeout_detector != nullptr)
     timeout_detector_->set_data(this);
