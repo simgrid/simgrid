@@ -111,31 +111,31 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(std::string name, const 
   return netpoint;
 }
 
+static void sg_platf_new_link(simgrid::kernel::routing::LinkCreationArgs* link, const std::string& link_name)
+{
+  simgrid::kernel::resource::LinkImpl* l =
+      surf_network_model->create_link(link_name, link->bandwidth, link->latency, link->policy);
+
+  if (link->properties) {
+    for (auto const& elm : *link->properties)
+      l->set_property(elm.first, elm.second);
+  }
+
+  if (link->latency_trace)
+    l->set_latency_profile(link->latency_trace);
+  if (link->bandwidth_trace)
+    l->set_bandwidth_profile(link->bandwidth_trace);
+  if (link->state_trace)
+    l->set_state_profile(link->state_trace);
+}
+
 void sg_platf_new_link(simgrid::kernel::routing::LinkCreationArgs* link)
 {
-  std::vector<std::string> names;
-
   if (link->policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    names.push_back(link->id+ "_UP");
-    names.push_back(link->id+ "_DOWN");
+    sg_platf_new_link(link, link->id + "_UP");
+    sg_platf_new_link(link, link->id + "_DOWN");
   } else {
-    names.push_back(link->id);
-  }
-  for (auto const& link_name : names) {
-    simgrid::kernel::resource::LinkImpl* l =
-        surf_network_model->create_link(link_name, link->bandwidth, link->latency, link->policy);
-
-    if (link->properties) {
-      for (auto const& elm : *link->properties)
-        l->set_property(elm.first, elm.second);
-    }
-
-    if (link->latency_trace)
-      l->set_latency_profile(link->latency_trace);
-    if (link->bandwidth_trace)
-      l->set_bandwidth_profile(link->bandwidth_trace);
-    if (link->state_trace)
-      l->set_state_profile(link->state_trace);
+    sg_platf_new_link(link, link->id);
   }
   delete link->properties;
 }
