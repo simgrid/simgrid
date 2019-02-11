@@ -239,7 +239,7 @@ void ActorImpl::throw_exception(std::exception_ptr e)
       if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), this) ==
               end(simix_global->process_to_run) &&
           this != SIMIX_process_self()) {
-        XBT_DEBUG("Inserting %s in the to_run list", get_cname());
+        XBT_DEBUG("Inserting [%p] %s in the to_run list", this, get_cname());
         simix_global->process_to_run.push_back(this);
       }
     }
@@ -302,7 +302,7 @@ ActorImplPtr ActorImpl::create(std::string name, simgrid::simix::ActorCode code,
 
   /* Now insert it in the global process list and in the process to run list */
   simix_global->process_list[actor->pid_] = actor;
-  XBT_DEBUG("Inserting %s(%s) in the to_run list", actor->get_cname(), host->get_cname());
+  XBT_DEBUG("Inserting [%p] %s(%s) in the to_run list", actor, actor->get_cname(), host->get_cname());
   simix_global->process_to_run.push_back(actor);
   intrusive_ptr_add_ref(actor);
 
@@ -367,7 +367,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
 
   /* Now insert it in the global process list and in the process to run list */
   simix_global->process_list[actor->pid_] = actor;
-  XBT_DEBUG("Inserting %s(%s) in the to_run list", actor->get_cname(), host->get_cname());
+  XBT_DEBUG("Inserting [%p] %s(%s) in the to_run list", actor, actor->get_cname(), host->get_cname());
   simix_global->process_to_run.push_back(actor);
   intrusive_ptr_add_ref(actor);
 
@@ -487,7 +487,7 @@ void SIMIX_process_kill(smx_actor_t actor, smx_actor_t issuer)
   if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), actor) ==
           end(simix_global->process_to_run) &&
       actor != issuer) {
-    XBT_DEBUG("Inserting %s in the to_run list", actor->get_cname());
+    XBT_DEBUG("Inserting [%p] %s in the to_run list", actor, actor->get_cname());
     simix_global->process_to_run.push_back(actor);
   }
 }
@@ -523,7 +523,7 @@ void SIMIX_process_throw(smx_actor_t actor, xbt_errcat_t cat, int value, const c
       if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), actor) ==
               end(simix_global->process_to_run) &&
           actor != SIMIX_process_self()) {
-        XBT_DEBUG("Inserting %s in the to_run list", actor->get_cname());
+        XBT_DEBUG("Inserting [%p] %s in the to_run list", actor, actor->get_cname());
         simix_global->process_to_run.push_back(actor);
       }
     }
