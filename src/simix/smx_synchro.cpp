@@ -65,16 +65,15 @@ void SIMIX_synchro_finish(smx_activity_t synchro)
   smx_simcall_t simcall = synchro->simcalls_.front();
   synchro->simcalls_.pop_front();
 
-  if (synchro->state_ != SIMIX_SRC_TIMEOUT) {
-    if (synchro->state_ == SIMIX_FAILED)
-      simcall->issuer->context_->iwannadie = true;
-    else
-      THROW_IMPOSSIBLE;
-  }
-
   SIMIX_synchro_stop_waiting(simcall->issuer, simcall);
   simcall->issuer->waiting_synchro = nullptr;
-  SIMIX_simcall_answer(simcall);
+
+  if (synchro->state_ != SIMIX_SRC_TIMEOUT) {
+    xbt_assert(synchro->state_ == SIMIX_FAILED);
+    simcall->issuer->context_->iwannadie = true;
+  } else {
+    SIMIX_simcall_answer(simcall);
+  }
   XBT_OUT();
 }
 
