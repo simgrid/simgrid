@@ -101,17 +101,17 @@ StorageN11::StorageN11(StorageModel* model, std::string name, kernel::lmm::Syste
 
 StorageAction* StorageN11::io_start(sg_size_t size, s4u::Io::OpType type)
 {
-  return new StorageN11Action(get_model(), size, is_off(), this, type);
+  return new StorageN11Action(get_model(), size, not is_on(), this, type);
 }
 
 StorageAction* StorageN11::read(sg_size_t size)
 {
-  return new StorageN11Action(get_model(), size, is_off(), this, s4u::Io::OpType::READ);
+  return new StorageN11Action(get_model(), size, not is_on(), this, s4u::Io::OpType::READ);
 }
 
 StorageAction* StorageN11::write(sg_size_t size)
 {
-  return new StorageN11Action(get_model(), size, is_off(), this, s4u::Io::OpType::WRITE);
+  return new StorageN11Action(get_model(), size, not is_on(), this, s4u::Io::OpType::WRITE);
 }
 
 /**********

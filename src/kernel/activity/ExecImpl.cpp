@@ -91,7 +91,7 @@ void ExecImpl::set_priority(double priority)
 
 void ExecImpl::post()
 {
-  if (host_ && host_->is_off()) { /* FIXME: handle resource failure for parallel tasks too */
+  if (host_ && not host_->is_on()) { /* FIXME: handle resource failure for parallel tasks too */
     /* If the host running the synchro failed, notice it. This way, the asking
      * process can be killed if it runs on that host itself */
     state_ = SIMIX_FAILED;

@@ -42,7 +42,7 @@ void SleepImpl::post()
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
     e_smx_state_t result;
-    if (host_ && host_->is_off()) {
+    if (host_ && not host_->is_on()) {
       /* If the host running the synchro failed, notice it. This way, the asking
        * actor can be killed if it runs on that host itself */
       result = SIMIX_SRC_HOST_FAILURE;
@@ -64,7 +64,7 @@ void SleepImpl::post()
         THROW_IMPOSSIBLE;
         break;
     }
-    if (simcall->issuer->host_->is_off()) {
+    if (not simcall->issuer->host_->is_on()) {
       simcall->issuer->context_->iwannadie = true;
     }
     simcall_process_sleep__set__result(simcall, result);

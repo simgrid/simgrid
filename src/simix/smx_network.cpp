@@ -520,7 +520,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
     /* Check out for errors */
 
-    if (simcall->issuer->host_->is_off()) {
+    if (not simcall->issuer->host_->is_on()) {
       simcall->issuer->context_->iwannadie = true;
       simcall->issuer->exception =
           std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
@@ -640,10 +640,10 @@ void SIMIX_comm_finish(smx_activity_t synchro)
       }
     }
 
-    if (simcall->issuer->host_->is_off())
-      simcall->issuer->context_->iwannadie = true;
-    else
+    if (simcall->issuer->host_->is_on())
       SIMIX_simcall_answer(simcall);
+    else
+      simcall->issuer->context_->iwannadie = true;
   }
 }
 

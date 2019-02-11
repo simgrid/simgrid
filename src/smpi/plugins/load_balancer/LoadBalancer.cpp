@@ -53,9 +53,8 @@ LoadBalancer::~LoadBalancer()
 void LoadBalancer::run()
 {
   simgrid::s4u::Engine* engine                     = simgrid::s4u::Engine::get_instance();
-  std::vector<simgrid::s4u::Host*> available_hosts = engine->get_filtered_hosts([](simgrid::s4u::Host* host) {
-    return not host->is_off();
-  });
+  std::vector<simgrid::s4u::Host*> available_hosts =
+      engine->get_filtered_hosts([](simgrid::s4u::Host* host) { return host->is_on(); });
   xbt_assert(available_hosts.size() > 0, "No hosts available; are they all switched off?");
 
   // TODO: Account for daemon background load (-> use especially the availability file)

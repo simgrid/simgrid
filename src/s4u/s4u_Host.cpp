@@ -84,7 +84,7 @@ Host* Host::current()
 
 void Host::turn_on()
 {
-  if (is_off()) {
+  if (not is_on()) {
     simgrid::simix::simcall([this] {
       this->pimpl_cpu->turn_on();
       this->pimpl_->turn_on();
@@ -490,7 +490,7 @@ void sg_host_set_pstate(sg_host_t host, int pstate)
  *
  * @brief Start the host if it is off
  *
- * See also #sg_host_is_on() and #sg_host_is_off() to test the current state of the host and @ref plugin_energy
+ * See also #sg_host_is_on() to test the current state of the host and @ref plugin_energy
  * for more info on DVFS.
  */
 void sg_host_turn_on(sg_host_t host)
@@ -502,7 +502,7 @@ void sg_host_turn_on(sg_host_t host)
  *
  * @brief Stop the host if it is on
  *
- * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref plugin_energy
+ * See also #MSG_host_is_on() to test the current state of the host and @ref plugin_energy
  * for more info on DVFS.
  */
 void sg_host_turn_off(sg_host_t host)
@@ -524,15 +524,10 @@ int sg_host_is_on(sg_host_t host)
   return host->is_on();
 }
 
-/** @ingroup m_host_management
- * @brief Determine if a host is currently off.
- *
- * See also #sg_host_turn_on() and #sg_host_turn_off() to switch the host ON and OFF and @ref plugin_energy for more
- * info on DVFS.
- */
+/** @deprecated */
 int sg_host_is_off(sg_host_t host)
 {
-  return host->is_off();
+  return not host->is_on();
 }
 
 /** @brief Get the properties of a host */

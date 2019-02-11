@@ -58,7 +58,7 @@ public:
   /** @brief Check if the current Resource is active */
   virtual bool is_on() const;
   /** @brief Check if the current Resource is shut down */
-  virtual bool is_off() const;
+  XBT_ATTRIB_DEPRECATED_v325("Please use !is_on()") virtual bool is_off() const;
   /** @brief Turn on the current Resource */
   virtual void turn_on();
   /** @brief Turn off the current Resource */

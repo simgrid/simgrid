@@ -130,7 +130,7 @@ void CpuCas01::apply_event(kernel::profile::Event* event, double value)
     xbt_assert(get_core_count() == 1, "FIXME: add state change code also for constraint_core[i]");
 
     if (value > 0) {
-      if (is_off()) {
+      if (not is_on()) {
         XBT_VERB("Restart processes on host %s", get_host()->get_cname());
         get_host()->turn_on();
       }
@@ -163,12 +163,13 @@ void CpuCas01::apply_event(kernel::profile::Event* event, double value)
 /** @brief Start a new execution on this CPU lasting @param size flops and using one core */
 CpuAction* CpuCas01::execution_start(double size)
 {
-  return new CpuCas01Action(get_model(), size, is_off(), speed_.scale * speed_.peak, get_constraint());
+  return new CpuCas01Action(get_model(), size, not is_on(), speed_.scale * speed_.peak, get_constraint());
 }
 
 CpuAction* CpuCas01::execution_start(double size, int requested_cores)
 {
-  return new CpuCas01Action(get_model(), size, is_off(), speed_.scale * speed_.peak, get_constraint(), requested_cores);
+  return new CpuCas01Action(get_model(), size, not is_on(), speed_.scale * speed_.peak, get_constraint(),
+                            requested_cores);
 }
 
 CpuAction* CpuCas01::sleep(double duration)
@@ -177,7 +178,8 @@ CpuAction* CpuCas01::sleep(double duration)
     duration = std::max(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", get_cname(), duration);
-  CpuCas01Action* action = new CpuCas01Action(get_model(), 1.0, is_off(), speed_.scale * speed_.peak, get_constraint());
+  CpuCas01Action* action =
+      new CpuCas01Action(get_model(), 1.0, not is_on(), speed_.scale * speed_.peak, get_constraint());
 
   // FIXME: sleep variables should not consume 1.0 in System::expand()
   action->set_max_duration(duration);

@@ -121,7 +121,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
       while (cnst != nullptr) {
         i++;
         void* constraint_id = cnst->get_id();
-        if (static_cast<simgrid::kernel::resource::Resource*>(constraint_id)->is_off()) {
+        if (not static_cast<simgrid::kernel::resource::Resource*>(constraint_id)->is_on()) {
           XBT_DEBUG("Action (%p) Failed!!", &action);
           action.finish(kernel::resource::Action::State::FAILED);
           break;
@@ -324,7 +324,7 @@ void CpuL07::apply_event(kernel::profile::Event* triggered, double value)
 
   } else if (triggered == state_event_) {
     if (value > 0) {
-      if (is_off()) {
+      if (not is_on()) {
         XBT_VERB("Restart processes on host %s", get_host()->get_cname());
         get_host()->turn_on();
       }

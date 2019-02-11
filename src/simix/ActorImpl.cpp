@@ -115,7 +115,7 @@ void ActorImpl::exit()
   exception           = nullptr;
 
   // Forcefully kill the actor if its host is turned off. Not a HostFailureException because you should not survive that
-  if (host_->is_off())
+  if (not host_->is_on())
     this->throw_exception(std::make_exception_ptr(simgrid::kernel::context::StopRequest("host failed")));
 
   /* destroy the blocking synchro if any */
@@ -279,7 +279,7 @@ void ActorImpl::resume()
 
 smx_activity_t ActorImpl::sleep(double duration)
 {
-  if (host_->is_off())
+  if (not host_->is_on())
     throw_exception(std::make_exception_ptr(simgrid::HostFailureException(
         XBT_THROW_POINT, std::string("Host ") + std::string(host_->get_cname()) + " failed, you cannot sleep there.")));
 
@@ -349,7 +349,7 @@ ActorImplPtr ActorImpl::create(std::string name, simgrid::simix::ActorCode code,
 
   XBT_DEBUG("Start actor %s@'%s'", name.c_str(), host->get_cname());
 
-  if (host->is_off()) {
+  if (not host->is_on()) {
     XBT_WARN("Cannot launch actor '%s' on failed host '%s'", name.c_str(), host->get_cname());
     return nullptr;
   }
@@ -417,7 +417,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   sg_host_t host = sg_host_by_name(hostname);
   XBT_DEBUG("Attach process %s on host '%s'", name, hostname);
 
-  if (host->is_off()) {
+  if (not host->is_on()) {
     XBT_WARN("Cannot launch process '%s' on failed host '%s'", name, hostname);
     return nullptr;
   }

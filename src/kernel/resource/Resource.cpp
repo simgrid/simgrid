@@ -23,7 +23,7 @@ bool Resource::is_on() const
 {
   return is_on_;
 }
-bool Resource::is_off() const
+bool Resource::is_off() const // deprecated
 {
   return not is_on_;
 }

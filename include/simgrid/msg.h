@@ -110,18 +110,18 @@ XBT_PUBLIC int MSG_host_get_pstate(sg_host_t host);
 XBT_PUBLIC void MSG_host_set_pstate(sg_host_t host, int pstate);
 /** @brief Start the host if it is off
  *
- * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref SURF_plugin_energy
+ * See also #MSG_host_is_on() to test the current state of the host and @ref SURF_plugin_energy
  * for more info on DVFS.
  */
 XBT_PUBLIC void MSG_host_on(sg_host_t h);
 /** @brief Stop the host if it is on
  *
- * See also MSG_host_is_on() and MSG_host_is_off() to test the current state of the host and @ref SURF_plugin_energy
+ * See also MSG_host_is_on() to test the current state of the host and @ref SURF_plugin_energy
  * for more info on DVFS.
  */
 XBT_PUBLIC void MSG_host_off(sg_host_t h);
 XBT_PUBLIC int MSG_host_is_on(sg_host_t h);
-XBT_PUBLIC int MSG_host_is_off(sg_host_t h);
+XBT_ATTRIB_DEPRECATED_v325("Please use !MSG_host_is_on()") XBT_PUBLIC int MSG_host_is_off(sg_host_t h);
 XBT_PUBLIC xbt_dict_t MSG_host_get_properties(sg_host_t host);
 XBT_PUBLIC const char* MSG_host_get_property_value(sg_host_t host, const char* name);
 XBT_PUBLIC void MSG_host_set_property_value(sg_host_t host, const char* name, const char* value);

@@ -126,7 +126,7 @@ s4u::Link::SharingPolicy LinkImpl::get_sharing_policy()
 
 void LinkImpl::turn_on()
 {
-  if (is_off()) {
+  if (not is_on()) {
     Resource::turn_on();
     s4u::Link::on_state_change(this->piface_);
   }

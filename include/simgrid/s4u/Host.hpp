@@ -95,7 +95,7 @@ public:
   /** Returns if that host is currently up and running */
   bool is_on() const;
   /** Returns if that host is currently down and offline */
-  bool is_off() const { return not is_on(); }
+  XBT_ATTRIB_DEPRECATED_v325("Please use !is_on()") bool is_off() const { return not is_on(); }
 
   const char* get_property(std::string key) const;
   void set_property(std::string key, std::string value);
@@ -188,7 +188,7 @@ public:
   /** @deprecated See Host::is_on() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::is_on()") bool isOn() { return is_on(); }
   /** @deprecated See Host::is_off() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::is_off()") bool isOff() { return is_off(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::is_off()") bool isOff() { return not is_on(); }
   /** @deprecated See Host::get_property() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_property()") const char* getProperty(const char* key)
   {

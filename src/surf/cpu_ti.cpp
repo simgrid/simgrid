@@ -400,7 +400,7 @@ void CpuTi::apply_event(kernel::profile::Event* event, double value)
 
   } else if (event == state_event_) {
     if (value > 0) {
-      if (is_off()) {
+      if (not is_on()) {
         XBT_VERB("Restart processes on host %s", get_host()->get_cname());
         get_host()->turn_on();
       }
@@ -583,7 +583,7 @@ void CpuTi::set_modified(bool modified)
  * Action *
  **********/
 
-CpuTiAction::CpuTiAction(CpuTi* cpu, double cost) : CpuAction(cpu->get_model(), cost, cpu->is_off()), cpu_(cpu)
+CpuTiAction::CpuTiAction(CpuTi* cpu, double cost) : CpuAction(cpu->get_model(), cost, not cpu->is_on()), cpu_(cpu)
 {
   cpu_->set_modified(true);
 }

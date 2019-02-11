@@ -222,12 +222,13 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
              src->get_cname(), dst->get_cname());
 
-  bool failed = std::any_of(route.begin(), route.end(), [](const LinkImpl* link) { return link->is_off(); });
+  bool failed = std::any_of(route.begin(), route.end(), [](const LinkImpl* link) { return not link->is_on(); });
 
   if (cfg_crosstraffic) {
     dst->route_to(src, back_route, nullptr);
     if (not failed)
-      failed = std::any_of(back_route.begin(), back_route.end(), [](const LinkImpl* link) { return link->is_off(); });
+      failed =
+          std::any_of(back_route.begin(), back_route.end(), [](const LinkImpl* link) { return not link->is_on(); });
   }
 
   NetworkCm02Action *action = new NetworkCm02Action(this, size, failed);

@@ -81,7 +81,7 @@ void StorageImpl::apply_event(kernel::profile::Event* /*event*/, double /*value*
 
 void StorageImpl::turn_on()
 {
-  if (is_off()) {
+  if (not is_on()) {
     Resource::turn_on();
     s4u::Storage::on_state_change(this->piface_);
   }

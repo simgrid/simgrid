@@ -82,10 +82,6 @@ bool Link::is_on() const
 {
   return this->pimpl_->is_on();
 }
-bool Link::is_off() const
-{
-  return this->pimpl_->is_off();
-}
 
 void* Link::get_data()
 {

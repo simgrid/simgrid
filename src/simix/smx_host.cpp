@@ -129,9 +129,9 @@ void SIMIX_execution_finish(smx_activity_t synchro)
     simcall_execution_wait__set__result(simcall, exec->state_);
 
     /* Fail the process if the host is down */
-    if (simcall->issuer->host_->is_off())
-      simcall->issuer->context_->iwannadie = true;
-    else
+    if (simcall->issuer->host_->is_on())
       SIMIX_simcall_answer(simcall);
+    else
+      simcall->issuer->context_->iwannadie = true;
   }
 }
