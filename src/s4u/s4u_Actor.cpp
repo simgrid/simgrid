@@ -642,3 +642,8 @@ void sg_actor_yield()
 {
   simgrid::s4u::this_actor::yield();
 }
+
+void sg_actor_sleep_for(double duration)
+{
+  simgrid::s4u::this_actor::sleep_for(duration);
+}

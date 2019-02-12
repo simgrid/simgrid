@@ -224,14 +224,13 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Process_isSuspended(JNIEnv * env
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cls, jlong jmillis, jint jnanos)
  {
   double time =  ((double)jmillis) / 1000 + ((double)jnanos) / 1000000000;
-  msg_error_t rv;
-  if (not simgrid::kernel::context::StopRequest::try_n_catch([&rv, &time]() { rv = MSG_process_sleep(time); })) {
+  msg_error_t rv = MSG_OK;
+  if (not simgrid::kernel::context::StopRequest::try_n_catch(
+          [&time]() { simgrid::s4u::this_actor::sleep_for(time); })) {
     rv = MSG_HOST_FAILURE;
   }
   if (rv != MSG_OK) {
-    XBT_DEBUG("Something during the MSG_process_sleep invocation was wrong, trigger a HostFailureException");
-
-    jxbt_throw_host_failure(env, "");
+    jmsg_throw_status(env, rv);
   }
 }
 

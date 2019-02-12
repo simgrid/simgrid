@@ -108,38 +108,6 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
 }
 
 /**
- * @brief Sleep for the specified number of seconds
- *
- * Makes the current process sleep until @a time seconds have elapsed.
- *
- * @param nb_sec a number of second
- */
-msg_error_t MSG_process_sleep(double nb_sec)
-{
-  msg_error_t status = MSG_OK;
-
-  try {
-    simgrid::s4u::this_actor::sleep_for(nb_sec);
-  } catch (simgrid::HostFailureException& e) {
-    status = MSG_HOST_FAILURE;
-  } catch (xbt_ex& e) {
-    if (e.category == cancel_error) {
-      XBT_DEBUG("According to the JAVA API, a sleep call should only deal with HostFailureException, I'm lost.");
-      // adsein: MSG_TASK_CANCELED is assigned when someone kills the process that made the sleep, this is not
-      // correct. For instance, when the node is turned off, the error should be MSG_HOST_FAILURE, which is by the way
-      // and according to the JAVA document, the only exception that can be triggered by MSG_Process_sleep call.
-      // To avoid possible impacts in the code, I just raised a host_failure exception for the moment in the JAVA code
-      // and did not change anythings at the C level.
-      // See comment in the jmsg_process.c file, function JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cls, jlong jmillis, jint jnanos)
-      status = MSG_TASK_CANCELED;
-    } else
-      throw;
-  }
-
-  return status;
-}
-
-/**
  * @brief Receives a task from a mailbox.
  *
  * This is a blocking function, the execution flow will be blocked until the task is received. See #MSG_task_irecv

@@ -209,6 +209,8 @@ XBT_PUBLIC void MSG_process_killall();
 XBT_PUBLIC void MSG_process_set_kill_time(msg_process_t process, double kill_time);
 /** @brief Yield the current actor; let the other actors execute first */
 XBT_PUBLIC void MSG_process_yield();
+/*** @brief Sleep for the specified number of seconds */
+XBT_PUBLIC void MSG_process_sleep(double nb_sec);
 
 /** @brief Object representing an ongoing communication between processes.
  *
@@ -360,8 +362,6 @@ XBT_PUBLIC msg_error_t MSG_parallel_task_execute(msg_task_t task);
 XBT_PUBLIC msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeout);
 XBT_PUBLIC void MSG_task_set_priority(msg_task_t task, double priority);
 XBT_PUBLIC void MSG_task_set_bound(msg_task_t task, double bound);
-
-XBT_PUBLIC msg_error_t MSG_process_sleep(double nb_sec);
 
 XBT_PUBLIC void MSG_task_set_flops_amount(msg_task_t task, double flops_amount);
 XBT_PUBLIC double MSG_task_get_flops_amount(msg_task_t task);

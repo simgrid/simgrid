@@ -123,7 +123,10 @@ void MSG_process_yield()
 {
   sg_actor_yield();
 }
-
+void MSG_process_sleep(double duration)
+{
+  sg_actor_sleep_for(duration);
+}
 /* ************************** NetZones *************************** */
 sg_netzone_t MSG_zone_get_root()
 {
