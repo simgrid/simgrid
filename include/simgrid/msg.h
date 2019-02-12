@@ -44,6 +44,20 @@ typedef struct msg_Comm sg_msg_Comm;
 extern "C" {
 #endif
 
+/** @brief Return code of most MSG functions */
+/* Keep these code as binary values: java bindings manipulate | of these values */
+typedef enum {
+  MSG_OK               = 0, /**< @brief Everything is right. Keep on going this way ! */
+  MSG_TIMEOUT          = 1, /**< @brief nothing good happened before the timer you provided elapsed */
+  MSG_TRANSFER_FAILURE = 2, /**< @brief There has been a problem during you task
+    transfer. Either the network is down or the remote host has been
+    shutdown. */
+  MSG_HOST_FAILURE = 4,     /**< @brief System shutdown. The host on which you are
+    running has just been rebooted. Free your datastructures and
+    return now !*/
+  MSG_TASK_CANCELED = 8     /**< @brief Canceled task. This task has been canceled by somebody!*/
+} msg_error_t;
+
 /* *************************** Network Zones ******************************** */
 #define msg_as_t msg_netzone_t /* portability macro */
 
@@ -210,7 +224,7 @@ XBT_PUBLIC void MSG_process_set_kill_time(msg_process_t process, double kill_tim
 /** @brief Yield the current actor; let the other actors execute first */
 XBT_PUBLIC void MSG_process_yield();
 /*** @brief Sleep for the specified number of seconds */
-XBT_PUBLIC void MSG_process_sleep(double nb_sec);
+XBT_PUBLIC msg_error_t MSG_process_sleep(double nb_sec);
 
 /** @brief Object representing an ongoing communication between processes.
  *
@@ -244,20 +258,6 @@ typedef struct msg_task* msg_task_t;
 
 /** @brief Default value for an uninitialized #msg_task_t. */
 #define MSG_TASK_UNINITIALIZED NULL
-
-/** @brief Return code of most MSG functions */
-/* Keep these code as binary values: java bindings manipulate | of these values */
-typedef enum {
-  MSG_OK = 0,                 /**< @brief Everything is right. Keep on going this way ! */
-  MSG_TIMEOUT = 1,            /**< @brief nothing good happened before the timer you provided elapsed */
-  MSG_TRANSFER_FAILURE = 2,   /**< @brief There has been a problem during you task
-      transfer. Either the network is down or the remote host has been
-      shutdown. */
-  MSG_HOST_FAILURE = 4,       /**< @brief System shutdown. The host on which you are
-      running has just been rebooted. Free your datastructures and
-      return now !*/
-  MSG_TASK_CANCELED = 8      /**< @brief Canceled task. This task has been canceled by somebody!*/
-} msg_error_t;
 
 /************************** Global ******************************************/
 /** @brief set a configuration variable

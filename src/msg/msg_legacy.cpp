@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "src/msg/msg_private.hpp"
 
 #define MSG_CALL(type, oldname, args)
@@ -123,9 +124,15 @@ void MSG_process_yield()
 {
   sg_actor_yield();
 }
-void MSG_process_sleep(double duration)
+
+msg_error_t MSG_process_sleep(double duration)
 {
-  sg_actor_sleep_for(duration);
+  try {
+    sg_actor_sleep_for(duration);
+    return MSG_OK;
+  } catch (simgrid::HostFailureException& e) {
+    return MSG_HOST_FAILURE;
+  }
 }
 /* ************************** NetZones *************************** */
 sg_netzone_t MSG_zone_get_root()
