@@ -96,6 +96,7 @@ public:
                              std::unordered_map<std::string, std::string>* properties, smx_actor_t parent_actor);
   void exit();
   void kill(smx_actor_t actor);
+  void kill_all();
 
   void daemonize();
   bool is_daemon() { return daemon_; } /** Whether this actor has been daemonized */
@@ -161,7 +162,6 @@ XBT_PUBLIC void create_maestro(std::function<void()> code);
 typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 
 XBT_PRIVATE void SIMIX_process_runall();
-XBT_PRIVATE void SIMIX_process_killall(smx_actor_t issuer);
 XBT_PRIVATE void SIMIX_process_cleanup(smx_actor_t arg);
 XBT_PRIVATE void SIMIX_process_empty_trash();
 XBT_PRIVATE void SIMIX_process_yield(smx_actor_t self);

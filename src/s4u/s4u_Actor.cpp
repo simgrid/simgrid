@@ -218,7 +218,7 @@ ActorPtr Actor::by_pid(aid_t pid)
 void Actor::kill_all()
 {
   smx_actor_t self = SIMIX_process_self();
-  simgrid::simix::simcall([&self] { SIMIX_process_killall(self); });
+  simgrid::simix::simcall([self] { self->kill_all(); });
 }
 
 std::unordered_map<std::string, std::string>* Actor::get_properties()

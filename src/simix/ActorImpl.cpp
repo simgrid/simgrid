@@ -177,6 +177,13 @@ void ActorImpl::kill(smx_actor_t actor)
   }
 }
 
+void ActorImpl::kill_all()
+{
+  for (auto const& kv : simix_global->process_list)
+    if (kv.second != this)
+      this->kill(kv.second);
+}
+
 void ActorImpl::set_kill_time(double kill_time)
 {
   if (kill_time <= SIMIX_get_clock())
@@ -528,17 +535,6 @@ void SIMIX_process_throw(smx_actor_t actor, xbt_errcat_t cat, int value, const c
     }
   }
   actor->waiting_synchro = nullptr;
-}
-
-/**
- * @brief Kills all running processes.
- * @param issuer this one will not be killed
- */
-void SIMIX_process_killall(smx_actor_t issuer)
-{
-  for (auto const& kv : simix_global->process_list)
-    if (kv.second != issuer)
-      issuer->kill(kv.second);
 }
 
 void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t actor)
