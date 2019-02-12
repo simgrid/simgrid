@@ -236,9 +236,10 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cl
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess, jdouble jseconds)
 {
-  msg_error_t rv;
+  msg_error_t rv = MSG_OK;
   if (not simgrid::kernel::context::StopRequest::try_n_catch(
-          [&rv, &jseconds]() { rv = MSG_process_sleep((double)jseconds); })) {
+          [&jseconds]() { simgrid::s4u::this_actor::sleep_for((double)jseconds); })) {
+    rv = MSG_HOST_FAILURE;
     jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
   }
   if (env->ExceptionOccurred())

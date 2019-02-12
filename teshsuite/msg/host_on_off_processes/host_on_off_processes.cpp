@@ -46,8 +46,9 @@ static int commTX(int /*argc*/, char** /*argv*/)
   msg_task_t task = MSG_task_create("COMM", 0, 100000000, NULL);
   MSG_task_dsend(task, mailbox, task_cleanup_handler);
   // We should wait a bit (if not the process will end before the communication, hence an exception on the other side).
-  int res = MSG_process_sleep(30);
-  if (res == MSG_HOST_FAILURE) {
+  try {
+    MSG_process_sleep(30);
+  } catch (simgrid::HostFailureException& e) {
     XBT_INFO("The host has died ... as expected.");
   }
   XBT_INFO("  TX done");
