@@ -40,7 +40,7 @@ std::deque<s4u::VirtualMachine*> VirtualMachineImpl::allVms_;
  */
 const double virt_overhead = 1; // 0.95
 
-static void hostStateChange(s4u::Host& host)
+static void host_state_change(s4u::Host& host)
 {
   if (not host.is_on()) { // just turned off.
     std::vector<s4u::VirtualMachine*> trash;
@@ -53,7 +53,7 @@ static void hostStateChange(s4u::Host& host)
   }
 }
 
-static void addActiveTask(kernel::activity::ActivityImplPtr exec)
+static void add_active_task(kernel::activity::ActivityImplPtr exec)
 {
   s4u::VirtualMachine* vm =
       dynamic_cast<s4u::VirtualMachine*>(boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->host_);
@@ -64,7 +64,7 @@ static void addActiveTask(kernel::activity::ActivityImplPtr exec)
   }
 }
 
-static void removeActiveTask(kernel::activity::ActivityImplPtr exec)
+static void remove_active_task(kernel::activity::ActivityImplPtr exec)
 {
   s4u::VirtualMachine* vm =
       dynamic_cast<s4u::VirtualMachine*>(boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->host_);
@@ -78,11 +78,11 @@ static void removeActiveTask(kernel::activity::ActivityImplPtr exec)
 VMModel::VMModel()
 {
   all_existing_models.push_back(this);
-  s4u::Host::on_state_change.connect(hostStateChange);
-  kernel::activity::ExecImpl::on_creation.connect(addActiveTask);
-  kernel::activity::ExecImpl::on_completion.connect(removeActiveTask);
-  kernel::activity::ActivityImpl::on_resumed.connect(addActiveTask);
-  kernel::activity::ActivityImpl::on_suspended.connect(removeActiveTask);
+  s4u::Host::on_state_change.connect(host_state_change);
+  kernel::activity::ExecImpl::on_creation.connect(add_active_task);
+  kernel::activity::ExecImpl::on_completion.connect(remove_active_task);
+  kernel::activity::ActivityImpl::on_resumed.connect(add_active_task);
+  kernel::activity::ActivityImpl::on_suspended.connect(remove_active_task);
 }
 
 double VMModel::next_occuring_event(double now)
