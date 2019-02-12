@@ -94,6 +94,7 @@ private:
 public:
   static ActorImplPtr create(std::string name, simix::ActorCode code, void* data, s4u::Host* host,
                              std::unordered_map<std::string, std::string>* properties, smx_actor_t parent_actor);
+  void exit();
 
   void daemonize();
   bool is_daemon() { return daemon_; } /** Whether this actor has been daemonized */

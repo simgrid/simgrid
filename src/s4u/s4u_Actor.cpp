@@ -191,8 +191,12 @@ void Actor::kill(aid_t pid) // deprecated
 void Actor::kill()
 {
   smx_actor_t process = SIMIX_process_self();
-  simgrid::simix::simcall(
-      [this, process] { SIMIX_process_kill(pimpl_, (pimpl_ == simix_global->maestro_process) ? pimpl_ : process); });
+  simgrid::simix::simcall([this, process] {
+    if (pimpl_ == simix_global->maestro_process)
+      pimpl_->exit();
+    else
+      SIMIX_process_kill(pimpl_, process);
+  });
 }
 
 smx_actor_t Actor::get_impl()
@@ -390,8 +394,8 @@ void resume()
 
 void exit()
 {
-  smx_actor_t process = SIMIX_process_self();
-  simgrid::simix::simcall([process] { SIMIX_process_kill(process, process); });
+  smx_actor_t actor = SIMIX_process_self();
+  simgrid::simix::simcall([actor] { actor->exit(); });
 }
 
 void on_exit(std::function<void(int, void*)> fun, void* data)

@@ -122,8 +122,8 @@ int PMPI_Abort(MPI_Comm /*comm*/, int /*errorcode*/)
 {
   smpi_bench_end();
   // FIXME: should kill all processes in comm instead
-  smx_actor_t process = SIMIX_process_self();
-  simgrid::simix::simcall([process] { SIMIX_process_kill(process, process); });
+  smx_actor_t actor = SIMIX_process_self();
+  simgrid::simix::simcall([actor] { actor->exit(); });
   return MPI_SUCCESS;
 }
 
