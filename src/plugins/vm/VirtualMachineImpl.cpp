@@ -53,10 +53,15 @@ static void host_state_change(s4u::Host& host)
   }
 }
 
-static void add_active_task(kernel::activity::ActivityImplPtr exec)
+static s4u::VirtualMachine* get_vm_from_task(kernel::activity::ActivityImplPtr task)
 {
-  s4u::VirtualMachine* vm =
-      dynamic_cast<s4u::VirtualMachine*>(boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->host_);
+  kernel::activity::ExecImpl* exec = dynamic_cast<kernel::activity::ExecImpl*>(task.get());
+  return exec != nullptr ? dynamic_cast<s4u::VirtualMachine*>(exec->host_) : nullptr;
+}
+
+static void add_active_task(kernel::activity::ActivityImplPtr task)
+{
+  s4u::VirtualMachine* vm = get_vm_from_task(task);
   if (vm != nullptr) {
     VirtualMachineImpl *vm_impl = vm->get_impl();
     vm_impl->active_tasks_ = vm_impl->active_tasks_ + 1;
@@ -64,10 +69,9 @@ static void add_active_task(kernel::activity::ActivityImplPtr exec)
   }
 }
 
-static void remove_active_task(kernel::activity::ActivityImplPtr exec)
+static void remove_active_task(kernel::activity::ActivityImplPtr task)
 {
-  s4u::VirtualMachine* vm =
-      dynamic_cast<s4u::VirtualMachine*>(boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->host_);
+  s4u::VirtualMachine* vm = get_vm_from_task(task);
   if (vm != nullptr) {
     VirtualMachineImpl *vm_impl = vm->get_impl();
     vm_impl->active_tasks_ = vm_impl->active_tasks_ - 1;
