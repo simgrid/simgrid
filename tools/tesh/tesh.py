@@ -81,7 +81,7 @@ def fatal_error(msg):
 # arg must be a string with the format "variable=value"
 def setenv(arg):
     print("[Tesh/INFO] setenv "+arg)
-    t = arg.split("=")
+    t = arg.split("=", 1)
     os.environ[t[0]] = t[1]
     #os.putenv(t[0], t[1]) does not work
     #see http://stackoverflow.com/questions/17705419/python-os-environ-os-putenv-usr-bin-env
