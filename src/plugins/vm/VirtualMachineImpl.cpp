@@ -237,7 +237,7 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
   for (auto& smx_process : process_list_) {
     XBT_DEBUG("kill %s@%s on behalf of %s which shutdown that VM.", smx_process.get_cname(),
               smx_process.host_->get_cname(), issuer->get_cname());
-    SIMIX_process_kill(&smx_process, issuer);
+    issuer->kill(&smx_process);
   }
 
   set_state(s4u::VirtualMachine::state::DESTROYED);

@@ -178,9 +178,9 @@ double Actor::get_kill_time()
 void Actor::kill(aid_t pid) // deprecated
 {
   smx_actor_t killer  = SIMIX_process_self();
-  smx_actor_t process = SIMIX_process_from_PID(pid);
-  if (process != nullptr) {
-    simgrid::simix::simcall([killer, process] { SIMIX_process_kill(process, killer); });
+  smx_actor_t victim  = SIMIX_process_from_PID(pid);
+  if (victim != nullptr) {
+    simgrid::simix::simcall([killer, victim] { killer->kill(victim); });
   } else {
     std::ostringstream oss;
     oss << "kill: (" << pid << ") - No such actor" << std::endl;
@@ -195,7 +195,7 @@ void Actor::kill()
     if (pimpl_ == simix_global->maestro_process)
       pimpl_->exit();
     else
-      SIMIX_process_kill(pimpl_, process);
+      process->kill(pimpl_);
   });
 }
 

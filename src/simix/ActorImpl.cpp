@@ -156,6 +156,27 @@ void ActorImpl::exit()
   }
 }
 
+void ActorImpl::kill(smx_actor_t actor)
+{
+  if (actor->finished_) {
+    XBT_DEBUG("Ignoring request to kill process %s@%s that is already dead", actor->get_cname(),
+              actor->host_->get_cname());
+    return;
+  }
+
+  XBT_DEBUG("Actor '%s'@%s is killing actor '%s'@%s", get_cname(), host_->get_cname(), actor->get_cname(),
+            actor->host_->get_cname());
+
+  actor->exit();
+
+  if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), actor) ==
+          end(simix_global->process_to_run) &&
+      actor != this) {
+    XBT_DEBUG("Inserting %s in the to_run list", actor->get_cname());
+    simix_global->process_to_run.push_back(actor);
+  }
+}
+
 void ActorImpl::set_kill_time(double kill_time)
 {
   if (kill_time <= SIMIX_get_clock())
@@ -197,7 +218,7 @@ simgrid::s4u::Actor* ActorImpl::restart()
   simgrid::kernel::actor::ProcessArg arg = ProcessArg(host_, this);
 
   // kill the old process
-  (this == simix_global->maestro_process) ? this->exit() : SIMIX_process_kill(this, SIMIX_process_self());
+  (this == simix_global->maestro_process) ? this->exit() : SIMIX_process_self()->kill(this);
 
   // start the new process
   ActorImplPtr actor =
@@ -458,38 +479,6 @@ void SIMIX_process_runall()
   simix_global->process_to_run.clear();
 }
 
-/**
- * @brief Internal function to kill a SIMIX process.
- *
- * This function may be called when a SIMCALL_PROCESS_KILL simcall occurs,
- * or directly for SIMIX internal purposes.
- *
- * @param actor poor victim
- * @param issuer the actor which has sent the PROCESS_KILL. Important to not schedule twice the same actor.
- */
-void SIMIX_process_kill(smx_actor_t actor, smx_actor_t issuer)
-{
-
-  if (actor->finished_) {
-    XBT_DEBUG("Ignoring request to kill process %s@%s that is already dead", actor->get_cname(),
-              actor->host_->get_cname());
-    return;
-  }
-
-  XBT_DEBUG("Actor '%s'@%s is killing actor '%s'@%s", issuer == nullptr ? "(null)" : issuer->get_cname(),
-            (issuer == nullptr || issuer->host_ == nullptr ? "(null)" : issuer->host_->get_cname()), actor->get_cname(),
-            actor->host_->get_cname());
-
-  actor->exit();
-
-  if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), actor) ==
-          end(simix_global->process_to_run) &&
-      actor != issuer) {
-    XBT_DEBUG("Inserting %s in the to_run list", actor->get_cname());
-    simix_global->process_to_run.push_back(actor);
-  }
-}
-
 /** @deprecated When this function gets removed, also remove the xbt_ex class, that is only there to help users to
  * transition */
 void SIMIX_process_throw(smx_actor_t actor, xbt_errcat_t cat, int value, const char* msg)
@@ -549,9 +538,8 @@ void SIMIX_process_killall(smx_actor_t issuer)
 {
   for (auto const& kv : simix_global->process_list)
     if (kv.second != issuer)
-      SIMIX_process_kill(kv.second, issuer);
+      issuer->kill(kv.second);
 }
-
 
 void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t actor)
 {

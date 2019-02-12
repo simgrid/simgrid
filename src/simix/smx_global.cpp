@@ -470,7 +470,7 @@ void SIMIX_run()
       if (simix_global->process_list.size() == simix_global->daemons.size())
         for (auto const& dmon : simix_global->daemons) {
           XBT_DEBUG("Kill %s", dmon->get_cname());
-          SIMIX_process_kill(dmon, simix_global->maestro_process);
+          simix_global->maestro_process->kill(dmon);
         }
     }
 
