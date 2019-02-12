@@ -170,6 +170,7 @@ static int test_launcher(int /*argc*/, char** /*argv*/)
   test = 6;
   if (xbt_dynar_search_or_negative(tests, &test) != -1) {
     XBT_INFO("Test 6: Turn on Jupiter, assign a VM on Jupiter, launch a process inside the VM, and turn off the node");
+    MSG_process_set_data_cleanup(nullptr); // If set for test 6, cleanup handler gives double-free errors.
 
     // Create VM0
     msg_vm_t vm0 = MSG_vm_create_core(jupiter, "vm0");
@@ -224,6 +225,7 @@ int main(int argc, char* argv[])
 
   MSG_create_environment(argv[1]);
 
+  MSG_process_set_data_cleanup(task_cleanup_handler);
   MSG_process_create("test_launcher", test_launcher, NULL, MSG_get_host_by_name("Tremblay"));
 
   res = MSG_main();
