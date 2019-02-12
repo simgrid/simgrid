@@ -62,22 +62,22 @@ private:
   std::atomic_int_fast32_t refcount_{0};
 
 public:
-  friend void intrusive_ptr_add_ref(ActorImpl* process)
+  friend void intrusive_ptr_add_ref(ActorImpl* actor)
   {
     // std::memory_order_relaxed ought to be enough here instead of std::memory_order_seq_cst
     // But then, we have a threading issue when an actor commits a suicide:
     //  it seems that in this case, the worker thread kills the last occurrence of the actor
     //  while usually, the maestro does so. FIXME: we should change how actors suicide
-    process->refcount_.fetch_add(1, std::memory_order_seq_cst);
+    actor->refcount_.fetch_add(1, std::memory_order_seq_cst);
   }
-  friend void intrusive_ptr_release(ActorImpl* process)
+  friend void intrusive_ptr_release(ActorImpl* actor)
   {
     // inspired from http://www.boost.org/doc/libs/1_55_0/doc/html/atomic/usage_examples.html
-    if (process->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+    if (actor->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
       // Make sure that any changes done on other threads before their acquire are committed before our delete
       // http://stackoverflow.com/questions/27751025/why-is-an-acquire-barrier-needed-before-deleting-the-data-in-an-atomically-refer
       std::atomic_thread_fence(std::memory_order_acquire);
-      delete process;
+      delete actor;
     }
   }
 
