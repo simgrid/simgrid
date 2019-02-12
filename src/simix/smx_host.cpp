@@ -124,12 +124,14 @@ void SIMIX_execution_finish(smx_activity_t synchro)
       default:
         xbt_die("Internal error in SIMIX_execution_finish: unexpected synchro state %d", (int)exec->state_);
     }
-    /* Fail the process if the host is down */
-    if (simcall->issuer->host_->is_off())
-      simcall->issuer->context_->iwannadie = true;
 
     simcall->issuer->waiting_synchro = nullptr;
     simcall_execution_wait__set__result(simcall, exec->state_);
-    SIMIX_simcall_answer(simcall);
+
+    /* Fail the process if the host is down */
+    if (simcall->issuer->host_->is_off())
+      simcall->issuer->context_->iwannadie = true;
+    else
+      SIMIX_simcall_answer(simcall);
   }
 }

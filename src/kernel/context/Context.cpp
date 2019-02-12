@@ -92,8 +92,6 @@ void Context::stop()
     watched_hosts.insert(actor_->host_->get_cname());
   }
 
-  actor_->finished_ = true;
-
   // Execute the termination callbacks
   smx_process_exit_status_t exit_status = (actor_->context_->iwannadie) ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
   while (not actor_->on_exit.empty()) {

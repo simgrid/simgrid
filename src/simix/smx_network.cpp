@@ -624,9 +624,6 @@ void SIMIX_comm_finish(smx_activity_t synchro)
       }
     }
 
-    if (simcall->issuer->host_->is_off())
-      simcall->issuer->context_->iwannadie = true;
-
     simcall->issuer->waiting_synchro = nullptr;
     simcall->issuer->comms.remove(synchro);
     if(comm->detached){
@@ -643,7 +640,10 @@ void SIMIX_comm_finish(smx_activity_t synchro)
       }
     }
 
-    SIMIX_simcall_answer(simcall);
+    if (simcall->issuer->host_->is_off())
+      simcall->issuer->context_->iwannadie = true;
+    else
+      SIMIX_simcall_answer(simcall);
   }
 }
 

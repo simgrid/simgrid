@@ -73,8 +73,6 @@ foreach(x app-masterworker cloud-masterworker
 			      ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/${x}/${x}.tesh)
 endforeach()
 
-set_tesh_properties(msg-platform-failures "raw;boost" WILL_FAIL TRUE) # FIXME
-
 foreach (x trace-categories trace-route-user-variables trace-link-user-variables trace-masterworker trace-process-migration trace-host-user-variables)
   ADD_TESH(msg-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/${x}
 	            --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/${x} 

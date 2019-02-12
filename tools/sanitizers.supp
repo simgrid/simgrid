@@ -1,0 +1,4 @@
+# Address sanitizer suppressions for stuff that we cannot control
+
+# ignore libunwind cruft
+interceptor_via_lib:libunwind.so
