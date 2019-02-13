@@ -26,9 +26,11 @@ public:
   explicit ActivityImpl(std::string name) : name_(std::move(name)) {}
   virtual ~ActivityImpl() = default;
   e_smx_state_t state_ = SIMIX_WAITING; /* State of the activity */
-  std::string name_;                    /* Activity name if any */
   std::list<smx_simcall_t> simcalls_;   /* List of simcalls waiting for this activity */
   resource::Action* surf_action_ = nullptr;
+
+  const std::string& get_name() const { return name_; }
+  const char* get_cname() const { return name_.c_str(); }
 
   virtual void suspend();
   virtual void resume();
@@ -42,6 +44,7 @@ public:
 
 private:
   std::atomic_int_fast32_t refcount_{0};
+  std::string name_;                    /* Activity name if any */
 
 public:
   static simgrid::xbt::signal<void(ActivityImplPtr)> on_suspended;
