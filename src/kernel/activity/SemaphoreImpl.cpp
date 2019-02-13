@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/SemaphoreImpl.hpp"
+#include "src/simix/smx_synchro_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_semaphore, simix_synchro, "Semaphore kernel-space implementation");
 
@@ -11,6 +12,21 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
+void SemaphoreImpl::acquire(smx_actor_t issuer, double timeout)
+{
+  smx_activity_t synchro = nullptr;
+
+  XBT_DEBUG("Wait semaphore %p (timeout:%f)", this, timeout);
+  if (value_ <= 0) {
+    synchro = SIMIX_synchro_wait(issuer->host_, timeout);
+    synchro->simcalls_.push_front(&issuer->simcall);
+    issuer->waiting_synchro = synchro;
+    sleeping_.push_back(*issuer);
+  } else {
+    value_--;
+    SIMIX_simcall_answer(&issuer->simcall);
+  }
+}
 void SemaphoreImpl::release()
 {
   XBT_DEBUG("Sem release semaphore %p", this);
@@ -28,3 +44,21 @@ void SemaphoreImpl::release()
 } // namespace activity
 } // namespace kernel
 } // namespace simgrid
+
+// Simcall handlers:
+/**
+ * @brief Handles a sem acquire simcall without timeout.
+ */
+void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem)
+{
+  sem->acquire(simcall->issuer, -1);
+}
+
+/**
+ * @brief Handles a sem acquire simcall with timeout.
+ */
+void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout)
+{
+  simcall_sem_acquire_timeout__set__result(simcall, 0); // default result, will be set to 1 on timeout
+  sem->acquire(simcall->issuer, timeout);
+}
