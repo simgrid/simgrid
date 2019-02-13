@@ -29,7 +29,7 @@ static void log_action(simgrid::xbt::ReplayAction& action, double date)
   }
 }
 
-static simgrid::s4u::File* get_file_descriptor(std::string file_name)
+static simgrid::s4u::File* get_file_descriptor(const std::string& file_name)
 {
   std::string full_name = simgrid::s4u::this_actor::get_name() + ":" + file_name;
 

@@ -20,7 +20,7 @@ class Container {
   long long int id_;
   std::string name_; /* Unique name of this container */
 public:
-  Container(std::string name, std::string type_name, Container* father);
+  Container(std::string name, const std::string& type_name, Container* father);
   virtual ~Container();
 
   Type* type_; /* Type of this container */
@@ -40,7 +40,7 @@ public:
   StateType* get_state(const std::string& name);
   LinkType* get_link(const std::string& name);
   VariableType* get_variable(const std::string& name);
-  void create_child(std::string name, std::string type_name);
+  void create_child(std::string name, const std::string& type_name);
   static Container* get_root();
 };
 

@@ -70,7 +70,7 @@ HostContainer::HostContainer(simgrid::s4u::Host& host, NetZoneContainer* father)
   trivaNodeTypes.insert(type_->get_name());
 }
 
-Container::Container(std::string name, std::string type_name, Container* father)
+Container::Container(std::string name, const std::string& type_name, Container* father)
     : name_(std::move(name)), father_(father)
 {
   static long long int container_id = 0;
@@ -117,9 +117,9 @@ Container::~Container()
   allContainers.erase(name_);
 }
 
-void Container::create_child(std::string name, std::string type_name)
+void Container::create_child(std::string name, const std::string& type_name)
 {
-  new Container(std::move(name), std::move(type_name), this);
+  new Container(std::move(name), type_name, this);
 }
 
 Container* Container::by_name_or_null(const std::string& name)

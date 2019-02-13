@@ -89,7 +89,7 @@ public:
       : PajeEvent(container, type, SIMIX_get_clock(), event_type)
       , endpoint_(sourceContainer)
       , value_(std::move(value))
-      , key_(key)
+      , key_(std::move(key))
       , size_(size)
   {
   }
