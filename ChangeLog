@@ -36,6 +36,7 @@ XML
    XML file version remains 4.2 since old files are still compatible.
 
 Fixed bugs:
+ - #132: Java : a process can not shut down its own host
  - #261: Document the parameters of parallel execution's constructor
  - #300: [s4u] BarrierPtr is missing
  - #314: SMPI args internal cleanup

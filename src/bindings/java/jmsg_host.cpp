@@ -10,6 +10,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 
+#include "JavaContext.hpp"
 #include "jmsg.hpp"
 #include "jmsg_host.h"
 #include "jmsg_storage.h"
@@ -141,7 +142,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_on(JNIEnv *env, jobject jhost) 
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_off(JNIEnv *env, jobject jhost) {
   msg_host_t host = jhost_get_native(env, jhost);
-  MSG_host_off(host);
+  if (not simgrid::kernel::context::StopRequest::try_n_catch([host]() { MSG_host_off(host); }))
+    jxbt_throw_host_failure(env, "");
 }
 
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getCount(JNIEnv * env, jclass cls) {
