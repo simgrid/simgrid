@@ -23,7 +23,7 @@ Type::Type(std::string name, std::string alias, std::string color, Type* father)
 
   if (father != nullptr){
     father->children_.insert({std::move(alias), this});
-    XBT_DEBUG("new type %s, child of %s", name_.c_str(), father->get_cname());
+    XBT_DEBUG("new type %s, child of %s", get_cname(), father->get_cname());
   }
   if (trace_format == simgrid::instr::TraceFormat::Paje) {
     stream_ << std::fixed << std::setprecision(TRACE_precision());

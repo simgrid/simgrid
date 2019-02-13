@@ -582,7 +582,7 @@ void SIMIX_display_process_status()
 
       XBT_INFO("Process %ld (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->pid_,
                process->get_cname(), process->host_->get_cname(), synchro_description, process->waiting_synchro.get(),
-               process->waiting_synchro->name_.c_str(), (int)process->waiting_synchro->state_);
+               process->waiting_synchro->get_cname(), (int)process->waiting_synchro->state_);
     }
     else {
       XBT_INFO("Process %ld (%s@%s)", process->pid_, process->get_cname(), process->host_->get_cname());

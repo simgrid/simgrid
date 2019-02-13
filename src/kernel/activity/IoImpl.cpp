@@ -32,7 +32,7 @@ IoImpl* IoImpl::start(sg_size_t size, simgrid::s4u::Io::OpType type)
   surf_action_ = storage_->io_start(size, type);
   surf_action_->set_data(this);
 
-  XBT_DEBUG("Create IO synchro %p %s", this, name_.c_str());
+  XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
   simgrid::kernel::activity::IoImpl::on_start(this);
 
   return this;

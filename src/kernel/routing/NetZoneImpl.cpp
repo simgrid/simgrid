@@ -29,11 +29,11 @@ public:
 NetZoneImpl::NetZoneImpl(NetZoneImpl* father, std::string name, resource::NetworkModel* network_model)
     : network_model_(network_model), piface_(this), father_(father), name_(std::move(name))
 {
-  xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name_.c_str()),
-             "Refusing to create a second NetZone called '%s'.", name_.c_str());
+  xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name()),
+             "Refusing to create a second NetZone called '%s'.", get_cname());
 
   netpoint_ = new NetPoint(name_, NetPoint::Type::NetZone, father);
-  XBT_DEBUG("NetZone '%s' created with the id '%u'", name_.c_str(), netpoint_->id());
+  XBT_DEBUG("NetZone '%s' created with the id '%u'", get_cname(), netpoint_->id());
 }
 
 NetZoneImpl::~NetZoneImpl()
@@ -122,7 +122,7 @@ void NetZoneImpl::add_route(kernel::routing::NetPoint* /*src*/, kernel::routing:
                             kernel::routing::NetPoint* /*gw_src*/, kernel::routing::NetPoint* /*gw_dst*/,
                             std::vector<kernel::resource::LinkImpl*>& /*link_list*/, bool /*symmetrical*/)
 {
-  xbt_die("NetZone '%s' does not accept new routes (wrong class).", name_.c_str());
+  xbt_die("NetZone '%s' does not accept new routes (wrong class).", get_cname());
 }
 
 void NetZoneImpl::add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,

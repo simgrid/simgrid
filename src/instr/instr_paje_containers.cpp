@@ -78,7 +78,7 @@ Container::Container(std::string name, const std::string& type_name, Container* 
   container_id++;
 
   if (father_) {
-    XBT_DEBUG("new container %s, child of %s", name.c_str(), father->name_.c_str());
+    XBT_DEBUG("new container %s, child of %s", get_cname(), father->get_cname());
 
     if (not type_name.empty()) {
       type_ = father_->type_->by_name_or_create<ContainerType>(type_name);
@@ -89,9 +89,9 @@ Container::Container(std::string name, const std::string& type_name, Container* 
 
   //register all kinds by name
   if (not allContainers.emplace(name_, this).second)
-    THROWF(tracing_error, 1, "container %s already present in allContainers data structure", name_.c_str());
+    THROWF(tracing_error, 1, "container %s already present in allContainers data structure", get_cname());
 
-  XBT_DEBUG("Add container name '%s'", name_.c_str());
+  XBT_DEBUG("Add container name '%s'", get_cname());
 
   //register NODE types for triva configuration
   if (type_name == "LINK")
@@ -100,7 +100,7 @@ Container::Container(std::string name, const std::string& type_name, Container* 
 
 Container::~Container()
 {
-  XBT_DEBUG("destroy container %s", name_.c_str());
+  XBT_DEBUG("destroy container %s", get_cname());
   // Begin with destroying my own children
   for (auto child : children_)
     delete child.second;

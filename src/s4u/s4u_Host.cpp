@@ -31,7 +31,7 @@ simgrid::xbt::signal<void(Host&)> Host::on_speed_change;
 
 Host::Host(std::string name) : name_(std::move(name))
 {
-  xbt_assert(Host::by_name_or_null(name_) == nullptr, "Refusing to create a second host named '%s'.", name_.c_str());
+  xbt_assert(Host::by_name_or_null(name_) == nullptr, "Refusing to create a second host named '%s'.", get_cname());
   Engine::get_instance()->host_register(std::string(name_), this);
   new simgrid::surf::HostImpl(this);
 }

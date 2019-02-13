@@ -49,7 +49,7 @@ ExecImpl* ExecImpl::start(double flops_amount, double priority, double bound)
       surf_action_->set_bound(bound);
   }
 
-  XBT_DEBUG("Create execute synchro %p: %s", this, name_.c_str());
+  XBT_DEBUG("Create execute synchro %p: %s", this, get_cname());
   ExecImpl::on_creation(this);
   return this;
 }
