@@ -155,7 +155,8 @@ XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t re
                                            void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data,
                                            double timeout, double rate)
 {
-  smx_activity_t comm = SIMIX_comm_irecv(receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
+  smx_activity_t comm = simcall_HANDLER_comm_irecv(simcall, receiver, mbox, dst_buff, dst_buff_size, match_fun,
+                                                   copy_data_fun, data, rate);
   SIMCALL_SET_MC_VALUE(simcall, 0);
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
@@ -165,15 +166,6 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/,
                                                       simix_match_func_t match_fun,
                                                       void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data,
                                                       double rate)
-{
-  return SIMIX_comm_irecv(receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
-}
-
-smx_activity_t
-SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
-                 int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                 void (*copy_data_fun)(smx_activity_t, void*, size_t), // used to copy data if not default one
-                 void* data, double rate)
 {
   simgrid::kernel::activity::CommImplPtr this_synchro =
       simgrid::kernel::activity::CommImplPtr(new simgrid::kernel::activity::CommImpl(SIMIX_COMM_RECEIVE));
@@ -220,11 +212,11 @@ SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void* dst_buff, size_
       other_comm->state_ = SIMIX_READY;
       other_comm->type = SIMIX_COMM_READY;
     }
-    dst_proc->comms.push_back(other_comm);
+    receiver->comms.push_back(other_comm);
   }
 
   /* Setup communication synchro */
-  other_comm->dst_actor_     = dst_proc;
+  other_comm->dst_actor_     = receiver;
   other_comm->dst_buff_      = dst_buff;
   other_comm->dst_buff_size_ = dst_buff_size;
   other_comm->dst_data_      = data;
