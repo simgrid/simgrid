@@ -21,6 +21,8 @@ class XBT_PUBLIC CommImpl : public ActivityImpl {
 
 public:
   explicit CommImpl(e_smx_comm_type_t type);
+  void start();
+  void copy_data();
   void suspend() override;
   void resume() override;
   void post() override;

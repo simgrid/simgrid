@@ -18,8 +18,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related synchronization");
 
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
-static void SIMIX_comm_copy_data(smx_activity_t comm);
-static void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr synchro);
 
 /**
  *  @brief Checks if there is a communication activity queued in a deque matching our needs
@@ -146,7 +144,8 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
     return (detached ? nullptr : other_comm);
   }
 
-  SIMIX_comm_start(other_comm);
+  other_comm->start();
+
   return (detached ? nullptr : other_comm);
 }
 
@@ -240,8 +239,7 @@ SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void* dst_buff, size_
     other_comm->state_ = SIMIX_RUNNING;
     return other_comm;
   }
-
-  SIMIX_comm_start(other_comm);
+  other_comm->start();
   return other_comm;
 }
 
@@ -439,50 +437,6 @@ void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
 }
 
 /**
- *  @brief Starts the simulation of a communication synchro.
- *  @param comm the communication that will be started
- */
-static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
-{
-  /* If both the sender and the receiver are already there, start the communication */
-  if (comm->state_ == SIMIX_READY) {
-
-    simgrid::s4u::Host* sender   = comm->src_actor_->host_;
-    simgrid::s4u::Host* receiver = comm->dst_actor_->host_;
-
-    comm->surf_action_ = surf_network_model->communicate(sender, receiver, comm->task_size_, comm->rate_);
-    comm->surf_action_->set_data(comm.get());
-    comm->state_ = SIMIX_RUNNING;
-
-    XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p)", comm.get(), sender->get_cname(),
-              receiver->get_cname(), comm->surf_action_);
-
-    /* If a link is failed, detect it immediately */
-    if (comm->surf_action_->get_state() == simgrid::kernel::resource::Action::State::FAILED) {
-      XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure", sender->get_cname(),
-                receiver->get_cname());
-      comm->state_ = SIMIX_LINK_FAILURE;
-      comm->cleanupSurf();
-    }
-
-    /* If any of the process is suspended, create the synchro but stop its execution,
-       it will be restarted when the sender process resume */
-    if (comm->src_actor_->is_suspended() || comm->dst_actor_->is_suspended()) {
-      if (comm->src_actor_->is_suspended())
-        XBT_DEBUG("The communication is suspended on startup because src (%s@%s) was suspended since it initiated the "
-                  "communication",
-                  comm->src_actor_->get_cname(), comm->src_actor_->host_->get_cname());
-      else
-        XBT_DEBUG("The communication is suspended on startup because dst (%s@%s) was suspended since it initiated the "
-                  "communication",
-                  comm->dst_actor_->get_cname(), comm->dst_actor_->host_->get_cname());
-
-      comm->surf_action_->suspend();
-    }
-  }
-}
-
-/**
  * @brief Answers the SIMIX simcalls associated to a communication synchro.
  * @param synchro a finished communication synchro
  */
@@ -529,7 +483,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
         case SIMIX_DONE:
           XBT_DEBUG("Communication %p complete!", synchro.get());
-          SIMIX_comm_copy_data(synchro);
+          comm->copy_data();
           break;
 
         case SIMIX_SRC_TIMEOUT:
@@ -647,24 +601,6 @@ void SIMIX_comm_finish(smx_activity_t synchro)
   }
 }
 
-/******************************************************************************/
-/*                    SIMIX_comm_copy_data callbacks                       */
-/******************************************************************************/
-static void (*SIMIX_comm_copy_data_callback) (smx_activity_t, void*, size_t) = &SIMIX_comm_copy_pointer_callback;
-
-void SIMIX_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, size_t))
-{
-  SIMIX_comm_copy_data_callback = callback;
-}
-
-void SIMIX_comm_copy_pointer_callback(smx_activity_t synchro, void* buff, size_t buff_size)
-{
-  simgrid::kernel::activity::CommImplPtr comm =
-      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
-
-  xbt_assert((buff_size == sizeof(void *)), "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
-  *(void**)(comm->dst_buff_) = buff;
-}
 
 void SIMIX_comm_copy_buffer_callback(smx_activity_t synchro, void* buff, size_t buff_size)
 {
@@ -677,42 +613,4 @@ void SIMIX_comm_copy_buffer_callback(smx_activity_t synchro, void* buff, size_t 
     xbt_free(buff);
     comm->src_buff_ = nullptr;
   }
-}
-
-/**
- *  @brief Copy the communication data from the sender's buffer to the receiver's one
- *  @param synchro The communication
- */
-void SIMIX_comm_copy_data(smx_activity_t synchro)
-{
-  simgrid::kernel::activity::CommImplPtr comm =
-      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
-
-  size_t buff_size = comm->src_buff_size_;
-  /* If there is no data to copy then return */
-  if (not comm->src_buff_ || not comm->dst_buff_ || comm->copied)
-    return;
-
-  XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)", comm.get(),
-            comm->src_actor_ ? comm->src_actor_->host_->get_cname() : "a finished process", comm->src_buff_,
-            comm->dst_actor_ ? comm->dst_actor_->host_->get_cname() : "a finished process", comm->dst_buff_, buff_size);
-
-  /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
-  if (comm->dst_buff_size_)
-    buff_size = std::min(buff_size, *(comm->dst_buff_size_));
-
-  /* Update the receiver's buffer size to the copied amount */
-  if (comm->dst_buff_size_)
-    *comm->dst_buff_size_ = buff_size;
-
-  if (buff_size > 0){
-      if(comm->copy_data_fun)
-        comm->copy_data_fun(comm, comm->src_buff_, buff_size);
-      else
-        SIMIX_comm_copy_data_callback(comm, comm->src_buff_, buff_size);
-  }
-
-  /* Set the copied flag so we copy data only once */
-  /* (this function might be called from both communication ends) */
-  comm->copied = 1;
 }
