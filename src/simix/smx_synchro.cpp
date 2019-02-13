@@ -5,6 +5,7 @@
 
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
+#include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/simix/smx_synchro_private.hpp"
@@ -45,11 +46,11 @@ void SIMIX_synchro_stop_waiting(smx_actor_t process, smx_simcall_t simcall)
       break;
 
     case SIMCALL_SEM_ACQUIRE:
-      simgrid::xbt::intrusive_erase(simcall_sem_acquire__get__sem(simcall)->sleeping, *process);
+      simgrid::xbt::intrusive_erase(simcall_sem_acquire__get__sem(simcall)->sleeping_, *process);
       break;
 
     case SIMCALL_SEM_ACQUIRE_TIMEOUT:
-      simgrid::xbt::intrusive_erase(simcall_sem_acquire_timeout__get__sem(simcall)->sleeping, *process);
+      simgrid::xbt::intrusive_erase(simcall_sem_acquire_timeout__get__sem(simcall)->sleeping_, *process);
       simcall_sem_acquire_timeout__set__result(simcall, 1); // signal a timeout
       break;
 
@@ -78,51 +79,6 @@ void SIMIX_synchro_finish(smx_activity_t synchro)
 }
 
 /******************************** Semaphores **********************************/
-/** @brief Initialize a semaphore */
-smx_sem_t SIMIX_sem_init(unsigned int value)
-{
-  XBT_IN("(%u)",value);
-  smx_sem_t sem = new s_smx_sem_t;
-  sem->value = value;
-  XBT_OUT();
-  return sem;
-}
-
-/** @brief release the semaphore
- *
- * Unlock a process waiting on the semaphore.
- * If no one was blocked, the semaphore capacity is increased by 1.
- */
-void SIMIX_sem_release(smx_sem_t sem)
-{
-  XBT_IN("(%p)",sem);
-  XBT_DEBUG("Sem release semaphore %p", sem);
-  if (not sem->sleeping.empty()) {
-    auto& proc = sem->sleeping.front();
-    sem->sleeping.pop_front();
-    proc.waiting_synchro = nullptr;
-    SIMIX_simcall_answer(&proc.simcall);
-  } else {
-    sem->value++;
-  }
-  XBT_OUT();
-}
-
-/** @brief Returns true if acquiring this semaphore would block */
-int SIMIX_sem_would_block(smx_sem_t sem)
-{
-  XBT_IN("(%p)",sem);
-  XBT_OUT();
-  return (sem->value <= 0);
-}
-
-/** @brief Returns the current capacity of the semaphore */
-int SIMIX_sem_get_capacity(smx_sem_t sem)
-{
-  XBT_IN("(%p)",sem);
-  XBT_OUT();
-  return sem->value;
-}
 
 static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_actor_t issuer,
                             smx_simcall_t simcall)
@@ -131,13 +87,13 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_actor_t issuer,
   smx_activity_t synchro = nullptr;
 
   XBT_DEBUG("Wait semaphore %p (timeout:%f)", sem, timeout);
-  if (sem->value <= 0) {
+  if (sem->value_ <= 0) {
     synchro = SIMIX_synchro_wait(issuer->host_, timeout);
     synchro->simcalls_.push_front(simcall);
     issuer->waiting_synchro = synchro;
-    sem->sleeping.push_back(*issuer);
+    sem->sleeping_.push_back(*issuer);
   } else {
-    sem->value--;
+    sem->value_--;
     SIMIX_simcall_answer(simcall);
   }
   XBT_OUT();

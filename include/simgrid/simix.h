@@ -46,11 +46,6 @@ typedef enum {
 } e_smx_state_t;
 /** @} */
 
-/* ******************************** Synchro ************************************ */
-
-/** @ingroup simix_synchro_management */
-typedef struct s_smx_sem_t* smx_sem_t;
-
 /* ****************************** Process *********************************** */
 
 typedef enum {

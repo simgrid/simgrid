@@ -4,24 +4,24 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/msg/msg_private.hpp"
-#include "src/simix/smx_synchro_private.hpp"
 #include "xbt/log.h"
 
 #include "simgrid/forward.h"
 #include "simgrid/s4u/Semaphore.hpp"
+#include "src/kernel/activity/SemaphoreImpl.hpp"
 
 namespace simgrid {
 namespace s4u {
 
 Semaphore::Semaphore(unsigned int initial_capacity)
 {
-  sem_ = simgrid::simix::simcall([initial_capacity] { return SIMIX_sem_init(initial_capacity); });
+  sem_ = simgrid::simix::simcall([initial_capacity] { return new kernel::activity::SemaphoreImpl(initial_capacity); });
 }
 
 Semaphore::~Semaphore()
 {
   if (sem_ != nullptr) {
-    xbt_assert(sem_->sleeping.empty(), "Cannot destroy semaphore since someone is still using it");
+    xbt_assert(sem_->sleeping_.empty(), "Cannot destroy semaphore since someone is still using it");
     delete sem_;
   }
 }
@@ -43,17 +43,17 @@ int Semaphore::acquire_timeout(double timeout)
 
 void Semaphore::release()
 {
-  simgrid::simix::simcall([this] { SIMIX_sem_release(sem_); });
+  simgrid::simix::simcall([this] { sem_->release(); });
 }
 
 int Semaphore::get_capacity()
 {
-  return simgrid::simix::simcall([this] { return SIMIX_sem_get_capacity(sem_); });
+  return simgrid::simix::simcall([this] { return sem_->get_capacity(); });
 }
 
 int Semaphore::would_block()
 {
-  return simgrid::simix::simcall([this] { return SIMIX_sem_would_block(sem_); });
+  return simgrid::simix::simcall([this] { return sem_->would_block(); });
 }
 
 void intrusive_ptr_add_ref(Semaphore* sem)

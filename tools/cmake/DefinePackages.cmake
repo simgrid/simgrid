@@ -408,6 +408,8 @@ set(SIMIX_SRC
   src/kernel/activity/MailboxImpl.hpp
   src/kernel/activity/MutexImpl.cpp
   src/kernel/activity/MutexImpl.hpp
+  src/kernel/activity/SemaphoreImpl.cpp
+  src/kernel/activity/SemaphoreImpl.hpp
   src/kernel/activity/SleepImpl.cpp
   src/kernel/activity/SleepImpl.hpp
   src/kernel/activity/SynchroRaw.cpp

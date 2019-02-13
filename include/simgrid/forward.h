@@ -113,6 +113,8 @@ namespace activity {
   typedef boost::intrusive_ptr<MutexImpl> MutexImplPtr;
   class RawImpl;
   typedef boost::intrusive_ptr<RawImpl> RawImplPtr;
+  class SemaphoreImpl;
+  typedef boost::intrusive_ptr<SemaphoreImpl> SemaphoreImplPtr;
   class SleepImpl;
   typedef boost::intrusive_ptr<SleepImpl> SleepImplPtr;
 
@@ -185,8 +187,9 @@ typedef boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> smx_activi
 typedef simgrid::kernel::context::Context* smx_context_t;
 typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 typedef simgrid::kernel::activity::ConditionVariableImpl* smx_cond_t;
-typedef simgrid::kernel::activity::MutexImpl* smx_mutex_t;
 typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
+typedef simgrid::kernel::activity::MutexImpl* smx_mutex_t;
+typedef simgrid::kernel::activity::SemaphoreImpl* smx_sem_t;
 
 #else
 
@@ -201,11 +204,12 @@ typedef struct s4u_NetZone s4u_NetZone;
 typedef struct s4u_VM s4u_VM;
 typedef struct kernel_Activity* smx_activity_t;
 
-typedef struct s_smx_context* smx_context_t;
 typedef struct s_smx_actor* smx_actor_t;
 typedef struct s_smx_cond_t* smx_cond_t;
-typedef struct s_smx_mutex* smx_mutex_t;
+typedef struct s_smx_context* smx_context_t;
 typedef struct s_smx_mailbox* smx_mailbox_t;
+typedef struct s_smx_mutex* smx_mutex_t;
+typedef struct s_smx_sem* smx_sem_t;
 
 #endif
 
