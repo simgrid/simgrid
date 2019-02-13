@@ -27,13 +27,31 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 
 /** @brief Simcalls' names (generated from src/simix/simcalls.in) */
 const char* simcall_names[] = {
-    "SIMCALL_NONE",           "SIMCALL_PROCESS_SUSPEND",     "SIMCALL_PROCESS_JOIN", "SIMCALL_PROCESS_SLEEP",
-    "SIMCALL_EXECUTION_WAIT", "SIMCALL_EXECUTION_TEST",      "SIMCALL_COMM_IPROBE",  "SIMCALL_COMM_SEND",
-    "SIMCALL_COMM_ISEND",     "SIMCALL_COMM_RECV",           "SIMCALL_COMM_IRECV",   "SIMCALL_COMM_WAITANY",
-    "SIMCALL_COMM_WAIT",      "SIMCALL_COMM_TEST",           "SIMCALL_COMM_TESTANY", "SIMCALL_MUTEX_LOCK",
-    "SIMCALL_MUTEX_TRYLOCK",  "SIMCALL_MUTEX_UNLOCK",        "SIMCALL_COND_WAIT",    "SIMCALL_COND_WAIT_TIMEOUT",
-    "SIMCALL_SEM_ACQUIRE",    "SIMCALL_SEM_ACQUIRE_TIMEOUT", "SIMCALL_IO_WAIT",      "SIMCALL_MC_RANDOM",
-    "SIMCALL_RUN_KERNEL",     "SIMCALL_RUN_BLOCKING",
+    "SIMCALL_NONE",
+    "SIMCALL_PROCESS_SUSPEND",
+    "SIMCALL_PROCESS_JOIN",
+    "SIMCALL_PROCESS_SLEEP",
+    "SIMCALL_EXECUTION_WAIT",
+    "SIMCALL_EXECUTION_TEST",
+    "SIMCALL_COMM_SEND",
+    "SIMCALL_COMM_ISEND",
+    "SIMCALL_COMM_RECV",
+    "SIMCALL_COMM_IRECV",
+    "SIMCALL_COMM_WAITANY",
+    "SIMCALL_COMM_WAIT",
+    "SIMCALL_COMM_TEST",
+    "SIMCALL_COMM_TESTANY",
+    "SIMCALL_MUTEX_LOCK",
+    "SIMCALL_MUTEX_TRYLOCK",
+    "SIMCALL_MUTEX_UNLOCK",
+    "SIMCALL_COND_WAIT",
+    "SIMCALL_COND_WAIT_TIMEOUT",
+    "SIMCALL_SEM_ACQUIRE",
+    "SIMCALL_SEM_ACQUIRE_TIMEOUT",
+    "SIMCALL_IO_WAIT",
+    "SIMCALL_MC_RANDOM",
+    "SIMCALL_RUN_KERNEL",
+    "SIMCALL_RUN_BLOCKING",
 };
 
 /** @private
@@ -67,11 +85,6 @@ case SIMCALL_EXECUTION_TEST:
   simcall_HANDLER_execution_test(
       simcall,
       simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0]));
-  break;
-
-case SIMCALL_COMM_IPROBE:
-  simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->result, simcall_HANDLER_comm_iprobe(simcall, simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[0]), simgrid::simix::unmarshal<int>(simcall->args[1]), simgrid::simix::unmarshal<simix_match_func_t>(simcall->args[2]), simgrid::simix::unmarshal<void*>(simcall->args[3])));
-  SIMIX_simcall_answer(simcall);
   break;
 
 case SIMCALL_COMM_SEND:

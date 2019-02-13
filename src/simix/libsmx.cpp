@@ -21,6 +21,7 @@
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
 #include "src/simix/smx_io_private.hpp"
+#include "src/simix/smx_network_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
@@ -205,7 +206,8 @@ smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
 {
   xbt_assert(mbox, "No rendez-vous point defined for iprobe");
 
-  return simcall_BODY_comm_iprobe(mbox, type, match_fun, data);
+  return simgrid::simix::simcall(
+      [mbox, type, match_fun, data] { return SIMIX_comm_iprobe(mbox, type, match_fun, data); });
 }
 
 /**

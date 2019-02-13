@@ -72,13 +72,6 @@ inline static int simcall_BODY_execution_test(boost::intrusive_ptr<simgrid::kern
   return simcall<int, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(SIMCALL_EXECUTION_TEST, execution);
 }
 
-inline static boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> simcall_BODY_comm_iprobe(smx_mailbox_t mbox, int type, simix_match_func_t match_fun, void* data)
-{
-  if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_comm_iprobe(&SIMIX_process_self()->simcall, mbox, type, match_fun, data);
-  return simcall<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>, smx_mailbox_t, int, simix_match_func_t, void*>(SIMCALL_COMM_IPROBE, mbox, type, match_fun, data);
-}
-
 inline static void simcall_BODY_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
