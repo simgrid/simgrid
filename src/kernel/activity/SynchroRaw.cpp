@@ -9,29 +9,35 @@
 #include "src/surf/surf_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_synchro);
+namespace simgrid {
+namespace kernel {
+namespace activity {
 
-simgrid::kernel::activity::RawImpl::~RawImpl()
+RawImpl::~RawImpl()
 {
   surf_action_->unref();
 }
-void simgrid::kernel::activity::RawImpl::suspend()
+void RawImpl::suspend()
 {
   /* The suspension of raw synchros is delayed to when the process is rescheduled. */
 }
 
-void simgrid::kernel::activity::RawImpl::resume()
+void RawImpl::resume()
 {
   /* I cannot resume raw synchros directly. This is delayed to when the process is rescheduled at
    * the end of the synchro. */
 }
-void simgrid::kernel::activity::RawImpl::post()
+void RawImpl::post()
 {
   XBT_IN("(%p)",this);
-  if (surf_action_->get_state() == simgrid::kernel::resource::Action::State::FAILED)
+  if (surf_action_->get_state() == resource::Action::State::FAILED)
     state_ = SIMIX_FAILED;
-  else if (surf_action_->get_state() == simgrid::kernel::resource::Action::State::FINISHED)
+  else if (surf_action_->get_state() == resource::Action::State::FINISHED)
     state_ = SIMIX_SRC_TIMEOUT;
 
   SIMIX_synchro_finish(this);
   XBT_OUT();
 }
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid
