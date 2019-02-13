@@ -84,10 +84,6 @@ XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(smx_activity_t comm, void* buff, 
 /********** Tracing **********/
 /* declaration of instrumentation functions from msg_task_instr.c */
 XBT_PRIVATE void TRACE_msg_set_task_category(msg_task_t task, const char* category);
-XBT_PRIVATE void TRACE_msg_task_create(msg_task_t task);
-XBT_PRIVATE void TRACE_msg_task_execute_start(msg_task_t task);
-XBT_PRIVATE void TRACE_msg_task_execute_end(msg_task_t task);
-XBT_PRIVATE void TRACE_msg_task_destroy(msg_task_t task);
 XBT_PRIVATE void TRACE_msg_task_get_end(msg_task_t task);
 XBT_PRIVATE void TRACE_msg_task_get_start();
 XBT_PRIVATE void TRACE_msg_task_put_start(msg_task_t task);

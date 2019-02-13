@@ -7,6 +7,7 @@
 #include "src/simix/smx_private.hpp"
 #include <algorithm>
 #include <cmath>
+#include <simgrid/modelchecker.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)");
 
@@ -40,6 +41,8 @@ void s_simdata_task_t::reportMultipleUse() const
  */
 msg_task_t MSG_task_create(const char *name, double flop_amount, double message_size, void *data)
 {
+  static std::atomic_ullong counter{0};
+
   msg_task_t task        = new s_msg_task_t;
   simdata_task_t simdata = new s_simdata_task_t();
   task->simdata = simdata;
@@ -52,7 +55,11 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
   simdata->bytes_amount = message_size;
   simdata->flops_amount = flop_amount;
 
-  TRACE_msg_task_create(task);
+  task->counter  = counter++;
+  task->category = nullptr;
+
+  if (MC_is_active())
+    MC_ignore_heap(&(task->counter), sizeof(task->counter));
 
   return task;
 }
@@ -166,8 +173,8 @@ msg_error_t MSG_task_destroy(msg_task_t task)
     /* the task is being sent or executed: cancel it first */
     MSG_task_cancel(task);
   }
-  TRACE_msg_task_destroy(task);
 
+  xbt_free(task->category);
   xbt_free(task->name);
 
   /* free main structures */

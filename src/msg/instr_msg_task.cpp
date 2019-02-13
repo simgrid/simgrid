@@ -22,52 +22,11 @@ void TRACE_msg_set_task_category(msg_task_t task, const char *category)
     xbt_free (task->category);
     task->category = nullptr;
     XBT_DEBUG("MSG task %p(%s), category removed", task, task->name);
-    return;
+  } else {
+    // set task category
+    task->category = xbt_strdup(category);
+    XBT_DEBUG("MSG task %p(%s), category %s", task, task->name, task->category);
   }
-
-  //set task category
-  task->category = xbt_strdup (category);
-  XBT_DEBUG("MSG task %p(%s), category %s", task, task->name, task->category);
-}
-
-/* MSG_task_create related function*/
-void TRACE_msg_task_create(msg_task_t task)
-{
-  static std::atomic_ullong counter{0};
-  task->counter = counter++;
-  task->category = nullptr;
-
-  if(MC_is_active())
-    MC_ignore_heap(&(task->counter), sizeof(task->counter));
-
-  XBT_DEBUG("CREATE %p, %lld", task, task->counter);
-}
-
-/* MSG_task_execute related functions */
-void TRACE_msg_task_execute_start(msg_task_t task)
-{
-  XBT_DEBUG("EXEC,in %p, %lld, %s", task, task->counter, task->category);
-
-  if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::by_name(instr_pid(MSG_process_self()))->get_state("ACTOR_STATE")->push_event("execute");
-}
-
-void TRACE_msg_task_execute_end(msg_task_t task)
-{
-  XBT_DEBUG("EXEC,out %p, %lld, %s", task, task->counter, task->category);
-
-  if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::by_name(instr_pid(MSG_process_self()))->get_state("ACTOR_STATE")->pop_event();
-}
-
-/* MSG_task_destroy related functions */
-void TRACE_msg_task_destroy(msg_task_t task)
-{
-  XBT_DEBUG("DESTROY %p, %lld, %s", task, task->counter, task->category);
-
-  //free category
-  xbt_free(task->category);
-  task->category = nullptr;
 }
 
 /* MSG_task_get related functions */

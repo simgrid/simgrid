@@ -45,7 +45,6 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
   e_smx_state_t comp_state;
   msg_error_t status = MSG_OK;
 
-  TRACE_msg_task_execute_start(task);
 
   xbt_assert((not simdata->compute) && not task->simdata->isused,
              "This task is executed somewhere else. Go fix your code!");
@@ -53,9 +52,11 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
   XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
 
   if (simdata->flops_amount <= 0.0 && not simdata->host_nb) {
-    TRACE_msg_task_execute_end(task);
     return MSG_OK;
   }
+
+  if (TRACE_actor_is_enabled())
+    simgrid::instr::Container::by_name(instr_pid(MSG_process_self()))->get_state("ACTOR_STATE")->push_event("execute");
 
   try {
     simdata->setUsed();
@@ -102,7 +103,9 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
   simdata->flops_amount = 0.0;
   simdata->comm = nullptr;
   simdata->compute = nullptr;
-  TRACE_msg_task_execute_end(task);
+
+  if (TRACE_actor_is_enabled())
+    simgrid::instr::Container::by_name(instr_pid(MSG_process_self()))->get_state("ACTOR_STATE")->pop_event();
 
   return status;
 }
