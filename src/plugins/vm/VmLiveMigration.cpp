@@ -66,7 +66,7 @@ void MigrationRx::operator()()
     simgrid::instr::Container::by_name(vm_->get_name())->remove_from_parent();
 
     // create new container on the new_host location
-    new simgrid::instr::Container(vm_->get_cname(), "VM", simgrid::instr::Container::by_name(dst_pm_->get_name()));
+    new simgrid::instr::Container(vm_->get_name(), "VM", simgrid::instr::Container::by_name(dst_pm_->get_name()));
 
     // end link
     msg = simgrid::instr::Container::by_name(vm_->get_name());

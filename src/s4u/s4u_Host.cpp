@@ -366,12 +366,6 @@ sg_host_t sg_host_by_name(const char* name)
   return simgrid::s4u::Host::by_name_or_null(name);
 }
 
-static int hostcmp_voidp(const void* pa, const void* pb)
-{
-  return strcmp((*static_cast<simgrid::s4u::Host* const*>(pa))->get_cname(),
-                (*static_cast<simgrid::s4u::Host* const*>(pb))->get_cname());
-}
-
 xbt_dynar_t sg_hosts_as_dynar()
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), nullptr);
@@ -382,7 +376,11 @@ xbt_dynar_t sg_hosts_as_dynar()
     if (host && host->pimpl_netpoint && host->pimpl_netpoint->is_host())
       xbt_dynar_push(res, &host);
   }
-  xbt_dynar_sort(res, hostcmp_voidp);
+  xbt_dynar_sort(res, [](const void* pa, const void* pb) {
+    const std::string& na = (*static_cast<simgrid::s4u::Host* const*>(pa))->get_name();
+    const std::string& nb = (*static_cast<simgrid::s4u::Host* const*>(pb))->get_name();
+    return na.compare(nb);
+  });
   return res;
 }
 

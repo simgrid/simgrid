@@ -132,7 +132,7 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
   if (not netzone->get_children().empty()) {
     // bottom-up recursion
     for (auto const& nz_son : netzone->get_children()) {
-      container_t child_container = container->children_.at(nz_son->get_cname());
+      container_t child_container = container->children_.at(nz_son->get_name());
       recursiveGraphExtraction(nz_son, child_container, filter);
     }
   }
@@ -234,7 +234,7 @@ static void instr_host_on_creation(simgrid::s4u::Host& host)
 
 static void instr_host_on_speed_change(simgrid::s4u::Host& host)
 {
-  simgrid::instr::Container::by_name(host.get_cname())
+  simgrid::instr::Container::by_name(host.get_name())
       ->get_variable("speed")
       ->set_event(surf_get_clock(), host.get_core_count() * host.get_available_speed());
 }
@@ -265,7 +265,7 @@ static void instr_action_on_state_change(simgrid::kernel::resource::Action* acti
 
 static void instr_link_on_bandwidth_change(simgrid::s4u::Link& link)
 {
-  simgrid::instr::Container::by_name(link.get_cname())
+  simgrid::instr::Container::by_name(link.get_name())
       ->get_variable("bandwidth")
       ->set_event(surf_get_clock(), sg_bandwidth_factor * link.get_bandwidth());
 }
@@ -273,7 +273,7 @@ static void instr_link_on_bandwidth_change(simgrid::s4u::Link& link)
 static void instr_netpoint_on_creation(simgrid::kernel::routing::NetPoint* netpoint)
 {
   if (netpoint->is_router())
-    new simgrid::instr::RouterContainer(netpoint->get_cname(), currentContainer.back());
+    new simgrid::instr::RouterContainer(netpoint->get_name(), currentContainer.back());
 }
 
 static void instr_on_platform_created()
@@ -504,7 +504,7 @@ static void recursiveXBTGraphExtraction(xbt_graph_t graph, std::map<std::string,
   if (not netzone->get_children().empty()) {
     // bottom-up recursion
     for (auto const& netzone_child : netzone->get_children()) {
-      container_t child_container = container->children_.at(netzone_child->get_cname());
+      container_t child_container = container->children_.at(netzone_child->get_name());
       recursiveXBTGraphExtraction(graph, nodes, edges, netzone_child, child_container);
     }
   }

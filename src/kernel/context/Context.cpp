@@ -89,7 +89,7 @@ void Context::stop()
   if (actor_->auto_restart_ && not actor_->host_->is_on()) {
     XBT_DEBUG("Insert host %s to watched_hosts because it's off and %s needs to restart", actor_->host_->get_cname(),
               actor_->get_cname());
-    watched_hosts.insert(actor_->host_->get_cname());
+    watched_hosts.insert(actor_->host_->get_name());
   }
 
   // Execute the termination callbacks

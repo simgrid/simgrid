@@ -102,7 +102,7 @@ sg_size_t File::read(sg_size_t size)
   sg_size_t read_size = local_storage_->read(std::min(size, size_ - current_position_));
   current_position_ += read_size;
 
-  if (strcmp(host->get_cname(), Host::current()->get_cname())) {
+  if (host->get_name() != Host::current()->get_name()) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), read_size);
     std::vector<Host*> m_host_list   = {Host::current(), host};
@@ -128,7 +128,7 @@ sg_size_t File::write(sg_size_t size)
   /* Find the host where the file is physically located (remote or local)*/
   Host* host = local_storage_->get_host();
 
-  if (strcmp(host->get_cname(), Host::current()->get_cname())) {
+  if (host->get_name() != Host::current()->get_name()) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), size);
     std::vector<Host*> m_host_list   = {Host::current(), host};

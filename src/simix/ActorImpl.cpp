@@ -295,7 +295,7 @@ smx_activity_t ActorImpl::sleep(double duration)
 {
   if (not host_->is_on())
     throw_exception(std::make_exception_ptr(simgrid::HostFailureException(
-        XBT_THROW_POINT, std::string("Host ") + std::string(host_->get_cname()) + " failed, you cannot sleep there.")));
+        XBT_THROW_POINT, std::string("Host ") + host_->get_cname() + " failed, you cannot sleep there.")));
 
   return simgrid::kernel::activity::SleepImplPtr(new simgrid::kernel::activity::SleepImpl("sleep", host_))
       ->start(duration);

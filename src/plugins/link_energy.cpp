@@ -197,7 +197,7 @@ void sg_link_energy_plugin_init()
   simgrid::s4u::Link::on_state_change.connect([](simgrid::s4u::Link& link) { link.extension<LinkEnergy>()->update(); });
 
   simgrid::s4u::Link::on_destruction.connect([](simgrid::s4u::Link& link) {
-    if (strcmp(link.get_cname(), "__loopback__"))
+    if (link.get_name() != "__loopback__")
       XBT_INFO("Energy consumption of link '%s': %f Joules", link.get_cname(),
                link.extension<LinkEnergy>()->get_consumed_energy());
   });

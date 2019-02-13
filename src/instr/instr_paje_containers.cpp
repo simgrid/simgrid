@@ -60,7 +60,7 @@ RouterContainer::RouterContainer(std::string name, Container* father)
 }
 
 HostContainer::HostContainer(simgrid::s4u::Host& host, NetZoneContainer* father)
-    : Container::Container(host.get_cname(), "HOST", father)
+    : Container::Container(host.get_name(), "HOST", father)
 {
   xbt_assert(father, "Only the Root container has no father");
 

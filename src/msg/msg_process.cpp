@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (proc
 
 std::string instr_pid(msg_process_t proc)
 {
-  return std::string(proc->get_cname()) + "-" + std::to_string(proc->get_pid());
+  return std::string(proc->get_name()) + "-" + std::to_string(proc->get_pid());
 }
 
 /******************************** Process ************************************/

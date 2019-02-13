@@ -33,7 +33,7 @@ void jedule_sd_init()
 
   my_jedule = new simgrid::jedule::Jedule();
 
-  jed_container_t root_container = new simgrid::jedule::Container(std::string(root_comp->get_cname()));
+  jed_container_t root_container = new simgrid::jedule::Container(root_comp->get_name());
   root_container->create_hierarchy(root_comp);
   my_jedule->root_container_ = root_container;
 }
