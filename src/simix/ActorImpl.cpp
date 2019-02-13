@@ -277,6 +277,20 @@ void ActorImpl::resume()
   XBT_OUT();
 }
 
+smx_activity_t ActorImpl::join(smx_actor_t actor, double timeout)
+{
+  smx_activity_t res = this->sleep(timeout);
+  intrusive_ptr_add_ref(res.get());
+  SIMIX_process_on_exit(actor,
+                        [](int, void* arg) {
+                          auto sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(arg);
+                          if (sleep->surf_action_)
+                            sleep->surf_action_->finish(simgrid::kernel::resource::Action::State::FINISHED);
+                          intrusive_ptr_release(sleep);
+                        },
+                        res.get());
+  return res;
+}
 smx_activity_t ActorImpl::sleep(double duration)
 {
   if (not host_->is_on())
@@ -595,24 +609,9 @@ void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, do
     SIMIX_simcall_answer(simcall);
     return;
   }
-  smx_activity_t sync = SIMIX_process_join(simcall->issuer, process, timeout);
+  smx_activity_t sync = simcall->issuer->join(process, timeout);
   sync->simcalls_.push_back(simcall);
   simcall->issuer->waiting_synchro = sync;
-}
-
-smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, double timeout)
-{
-  smx_activity_t res = issuer->sleep(timeout);
-  intrusive_ptr_add_ref(res.get());
-  SIMIX_process_on_exit(process,
-                        [](int, void* arg) {
-                          auto sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(arg);
-                          if (sleep->surf_action_)
-                            sleep->surf_action_->finish(simgrid::kernel::resource::Action::State::FINISHED);
-                          intrusive_ptr_release(sleep);
-                        },
-                        res.get());
-  return res;
 }
 
 void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration)

@@ -104,6 +104,7 @@ public:
   simgrid::s4u::Actor* restart();
   smx_activity_t suspend(ActorImpl* issuer);
   void resume();
+  smx_activity_t join(smx_actor_t actor, double timeout);
   smx_activity_t sleep(double duration);
   void set_user_data(void* data) { userdata_ = data; }
   void* get_user_data() { return userdata_; }
@@ -169,6 +170,5 @@ XBT_PRIVATE void SIMIX_process_yield(smx_actor_t self);
 extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
 
 XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_activity_t synchro);
-XBT_PRIVATE smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, double timeout);
 
 #endif
