@@ -12,8 +12,11 @@
 #include "src/surf/surf_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_network);
+namespace simgrid {
+namespace kernel {
+namespace activity {
 
-simgrid::kernel::activity::CommImpl::CommImpl(e_smx_comm_type_t _type) : type(_type)
+CommImpl::CommImpl(e_smx_comm_type_t _type) : type(_type)
 {
   state_   = SIMIX_WAITING;
   src_data_ = nullptr;
@@ -21,7 +24,7 @@ simgrid::kernel::activity::CommImpl::CommImpl(e_smx_comm_type_t _type) : type(_t
   XBT_DEBUG("Create comm activity %p", this);
 }
 
-simgrid::kernel::activity::CommImpl::~CommImpl()
+CommImpl::~CommImpl()
 {
   XBT_DEBUG("Really free communication %p", this);
 
@@ -39,7 +42,7 @@ simgrid::kernel::activity::CommImpl::~CommImpl()
     mbox->remove(this);
 }
 
-void simgrid::kernel::activity::CommImpl::suspend()
+void CommImpl::suspend()
 {
   /* FIXME: shall we suspend also the timeout synchro? */
   if (surf_action_)
@@ -47,7 +50,7 @@ void simgrid::kernel::activity::CommImpl::suspend()
   /* if not created yet, the action will be suspended on creation, in SIMIX_comm_start() */
 }
 
-void simgrid::kernel::activity::CommImpl::resume()
+void CommImpl::resume()
 {
   /*FIXME: check what happen with the timeouts */
   if (surf_action_)
@@ -55,10 +58,9 @@ void simgrid::kernel::activity::CommImpl::resume()
   /* in the other case, the synchro were not really suspended yet, see SIMIX_comm_suspend() and SIMIX_comm_start() */
 }
 
-void simgrid::kernel::activity::CommImpl::cancel()
+void CommImpl::cancel()
 {
-  /* if the synchro is a waiting state means that it is still in a mbox */
-  /* so remove from it and delete it */
+  /* if the synchro is a waiting state means that it is still in a mbox so remove from it and delete it */
   if (state_ == SIMIX_WAITING) {
     mbox->remove(this);
     state_ = SIMIX_CANCELED;
@@ -70,13 +72,13 @@ void simgrid::kernel::activity::CommImpl::cancel()
 }
 
 /**  @brief get the amount remaining from the communication */
-double simgrid::kernel::activity::CommImpl::remains()
+double CommImpl::remains()
 {
   return surf_action_->get_remains();
 }
 
 /** @brief This is part of the cleanup process, probably an internal command */
-void simgrid::kernel::activity::CommImpl::cleanupSurf()
+void CommImpl::cleanupSurf()
 {
   if (surf_action_) {
     surf_action_->unref();
@@ -94,18 +96,18 @@ void simgrid::kernel::activity::CommImpl::cleanupSurf()
   }
 }
 
-void simgrid::kernel::activity::CommImpl::post()
+void CommImpl::post()
 {
   /* Update synchro state */
-  if (src_timeout_ && src_timeout_->get_state() == simgrid::kernel::resource::Action::State::FINISHED)
+  if (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FINISHED)
     state_ = SIMIX_SRC_TIMEOUT;
-  else if (dst_timeout_ && dst_timeout_->get_state() == simgrid::kernel::resource::Action::State::FINISHED)
+  else if (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FINISHED)
     state_ = SIMIX_DST_TIMEOUT;
-  else if (src_timeout_ && src_timeout_->get_state() == simgrid::kernel::resource::Action::State::FAILED)
+  else if (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FAILED)
     state_ = SIMIX_SRC_HOST_FAILURE;
-  else if (dst_timeout_ && dst_timeout_->get_state() == simgrid::kernel::resource::Action::State::FAILED)
+  else if (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FAILED)
     state_ = SIMIX_DST_HOST_FAILURE;
-  else if (surf_action_ && surf_action_->get_state() == simgrid::kernel::resource::Action::State::FAILED) {
+  else if (surf_action_ && surf_action_->get_state() == resource::Action::State::FAILED) {
     state_ = SIMIX_LINK_FAILURE;
   } else
     state_ = SIMIX_DONE;
@@ -121,3 +123,7 @@ void simgrid::kernel::activity::CommImpl::post()
     SIMIX_comm_finish(this);
   }
 }
+
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid
