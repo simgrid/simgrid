@@ -11,6 +11,5 @@
 smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout);
 
 XBT_PRIVATE void SIMIX_synchro_stop_waiting(smx_actor_t process, smx_simcall_t simcall);
-XBT_PRIVATE void SIMIX_synchro_finish(smx_activity_t synchro);
 
 #endif

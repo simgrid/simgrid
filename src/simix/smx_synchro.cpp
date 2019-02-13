@@ -59,21 +59,3 @@ void SIMIX_synchro_stop_waiting(smx_actor_t process, smx_simcall_t simcall)
   }
   XBT_OUT();
 }
-
-void SIMIX_synchro_finish(smx_activity_t synchro)
-{
-  XBT_IN("(%p)", synchro.get());
-  smx_simcall_t simcall = synchro->simcalls_.front();
-  synchro->simcalls_.pop_front();
-
-  SIMIX_synchro_stop_waiting(simcall->issuer, simcall);
-  simcall->issuer->waiting_synchro = nullptr;
-
-  if (synchro->state_ != SIMIX_SRC_TIMEOUT) {
-    xbt_assert(synchro->state_ == SIMIX_FAILED);
-    simcall->issuer->context_->iwannadie = true;
-  } else {
-    SIMIX_simcall_answer(simcall);
-  }
-  XBT_OUT();
-}
