@@ -85,11 +85,10 @@ void CommImpl::start()
                 receiver->get_cname());
       state_ = SIMIX_LINK_FAILURE;
       cleanupSurf();
-    }
 
-    /* If any of the process is suspended, create the synchro but stop its execution,
-       it will be restarted when the sender process resume */
-    if (src_actor_->is_suspended() || dst_actor_->is_suspended()) {
+    } else if (src_actor_->is_suspended() || dst_actor_->is_suspended()) {
+      /* If any of the process is suspended, create the synchro but stop its execution,
+         it will be restarted when the sender process resume */
       if (src_actor_->is_suspended())
         XBT_DEBUG("The communication is suspended on startup because src (%s@%s) was suspended since it initiated the "
                   "communication",
