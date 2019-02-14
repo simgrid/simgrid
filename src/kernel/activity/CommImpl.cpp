@@ -9,7 +9,6 @@
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/simix/smx_network_private.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 

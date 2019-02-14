@@ -27,7 +27,6 @@ set(EXTRA_DIST
   src/simix/popping_accessors.hpp
   src/simix/smx_host_private.hpp
   src/simix/smx_io_private.hpp
-  src/simix/smx_network_private.hpp
   src/simix/smx_private.hpp
   src/simix/smx_synchro_private.hpp
   src/smpi/colls/coll_tuned_topo.hpp

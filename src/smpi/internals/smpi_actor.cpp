@@ -155,16 +155,6 @@ MPI_Comm ActorExt::comm_world()
   return comm_world_ == nullptr ? MPI_COMM_NULL : *comm_world_;
 }
 
-smx_mailbox_t ActorExt::mailbox()
-{
-  return mailbox_->get_impl();
-}
-
-smx_mailbox_t ActorExt::mailbox_small()
-{
-  return mailbox_small_->get_impl();
-}
-
 xbt_mutex_t ActorExt::mailboxes_mutex()
 {
   return mailboxes_mutex_;

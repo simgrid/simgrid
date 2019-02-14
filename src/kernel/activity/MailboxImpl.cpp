@@ -33,6 +33,7 @@ MailboxImpl* MailboxImpl::by_name_or_null(const std::string& name)
   else
     return nullptr;
 }
+
 /** @brief Returns the mailbox of that name, newly created on need */
 MailboxImpl* MailboxImpl::by_name_or_create(const std::string& name)
 {
@@ -82,6 +83,81 @@ void MailboxImpl::remove(smx_activity_t activity)
       return;
     }
   xbt_die("Comm %p not found in mailbox %s", comm.get(), this->get_cname());
+}
+
+smx_activity_t MailboxImpl::iprobe(int type, int (*match_fun)(void*, void*, CommImpl*), void* data)
+{
+  XBT_DEBUG("iprobe from %p %p", this, &comm_queue_);
+
+  CommImplPtr this_comm;
+  int smx_type;
+  if (type == 1) {
+    this_comm = CommImplPtr(new CommImpl(SIMIX_COMM_SEND));
+    smx_type  = SIMIX_COMM_RECEIVE;
+  } else {
+    this_comm = CommImplPtr(new CommImpl(SIMIX_COMM_RECEIVE));
+    smx_type  = SIMIX_COMM_SEND;
+  }
+  smx_activity_t other_synchro = nullptr;
+  if (permanent_receiver_ != nullptr && not done_comm_queue_.empty()) {
+    XBT_DEBUG("first check in the permanent recv mailbox, to see if we already got something");
+    other_synchro = find_matching_comm((e_smx_comm_type_t)smx_type, match_fun, data, this_comm, /*done*/ true,
+                                       /*remove_matching*/ false);
+  }
+  if (not other_synchro) {
+    XBT_DEBUG("check if we have more luck in the normal mailbox");
+    other_synchro = find_matching_comm((e_smx_comm_type_t)smx_type, match_fun, data, this_comm, /*done*/ false,
+                                       /*remove_matching*/ false);
+  }
+
+  return other_synchro;
+}
+
+/**
+ *  @brief Checks if there is a communication activity queued in comm_queue_ matching our needs
+ *  @param type The type of communication we are looking for (comm_send, comm_recv)
+ *  @param match_fun the function to apply
+ *  @param this_user_data additional parameter to the match_fun
+ *  @param my_synchro what to compare against
+ *  @param remove_matching whether or not to clean the found object from the queue
+ *  @return The communication activity if found, nullptr otherwise
+ */
+CommImplPtr MailboxImpl::find_matching_comm(e_smx_comm_type_t type, int (*match_fun)(void*, void*, CommImpl*),
+                                            void* this_user_data, CommImplPtr my_synchro, bool done,
+                                            bool remove_matching)
+{
+  void* other_user_data = nullptr;
+  boost::circular_buffer_space_optimized<smx_activity_t>* deque;
+  if (done)
+    deque = &done_comm_queue_;
+  else
+    deque = &comm_queue_;
+
+  for (auto it = deque->begin(); it != deque->end(); it++) {
+    CommImplPtr comm = boost::dynamic_pointer_cast<CommImpl>(std::move(*it));
+
+    if (comm->type == SIMIX_COMM_SEND) {
+      other_user_data = comm->src_data_;
+    } else if (comm->type == SIMIX_COMM_RECEIVE) {
+      other_user_data = comm->dst_data_;
+    }
+    if (comm->type == type && (match_fun == nullptr || match_fun(this_user_data, other_user_data, comm.get())) &&
+        (not comm->match_fun || comm->match_fun(other_user_data, this_user_data, my_synchro.get()))) {
+      XBT_DEBUG("Found a matching communication synchro %p", comm.get());
+      if (remove_matching)
+        deque->erase(it);
+#if SIMGRID_HAVE_MC
+      comm->mbox_cpy = comm->mbox;
+#endif
+      comm->mbox = nullptr;
+      return comm;
+    }
+    XBT_DEBUG("Sorry, communication synchro %p does not match our needs:"
+              " its type is %d but we are looking for a comm of type %d (or maybe the filtering didn't match)",
+              comm.get(), (int)comm->type, (int)type);
+  }
+  XBT_DEBUG("No matching communication synchro found");
+  return nullptr;
 }
 }
 }

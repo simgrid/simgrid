@@ -6,6 +6,7 @@
 #include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
+
 #include <simgrid/mailbox.h>
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
@@ -147,6 +148,11 @@ void* Mailbox::get(double timeout)
   c->set_dst_data(&res, sizeof(res));
   c->wait_for(timeout);
   return res;
+}
+
+smx_activity_t Mailbox::iprobe(int type, int (*match_fun)(void*, void*, kernel::activity::CommImpl*), void* data)
+{
+  return simix::simcall([this, type, match_fun, data] { return pimpl_->iprobe(type, match_fun, data); });
 }
 } // namespace s4u
 } // namespace simgrid

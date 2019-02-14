@@ -52,8 +52,8 @@ public:
   smpi_trace_call_location_t* call_location();
   void set_privatized_region(smpi_privatization_region_t region);
   smpi_privatization_region_t privatized_region();
-  smx_mailbox_t mailbox();
-  smx_mailbox_t mailbox_small();
+  s4u::MailboxPtr mailbox() { return mailbox_; }
+  s4u::MailboxPtr mailbox_small() { return mailbox_small_; }
   xbt_mutex_t mailboxes_mutex();
 #if HAVE_PAPI
   int papi_event_set();
