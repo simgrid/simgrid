@@ -143,8 +143,11 @@ public:
   /* Callback */
   xbt_cfg_cb_t old_callback = nullptr;
 
-  ConfigurationElement(std::string key, std::string desc) : key(key), desc(desc) {}
-  ConfigurationElement(std::string key, std::string desc, xbt_cfg_cb_t cb) : key(key), desc(desc), old_callback(cb) {}
+  ConfigurationElement(std::string key, std::string desc) : key(std::move(key)), desc(std::move(desc)) {}
+  ConfigurationElement(std::string key, std::string desc, xbt_cfg_cb_t cb)
+      : key(std::move(key)), desc(std::move(desc)), old_callback(cb)
+  {
+  }
 
   virtual ~ConfigurationElement() = default;
 
@@ -182,13 +185,13 @@ private:
 
 public:
   TypedConfigurationElement(std::string key, std::string desc, T value = T())
-      : ConfigurationElement(key, desc), content(std::move(value))
+      : ConfigurationElement(std::move(key), std::move(desc)), content(std::move(value))
   {}
   TypedConfigurationElement(std::string key, std::string desc, T value, xbt_cfg_cb_t cb)
-      : ConfigurationElement(key, desc, cb), content(std::move(value))
+      : ConfigurationElement(std::move(key), std::move(desc), cb), content(std::move(value))
   {}
   TypedConfigurationElement(std::string key, std::string desc, T value, std::function<void(T&)> callback)
-      : ConfigurationElement(key, desc), content(std::move(value)), callback(std::move(callback))
+      : ConfigurationElement(std::move(key), std::move(desc)), content(std::move(value)), callback(std::move(callback))
   {}
   ~TypedConfigurationElement() = default;
 
@@ -262,8 +265,8 @@ public:
   Config(Config const&) = delete;
   Config& operator=(Config const&) = delete;
 
-  ConfigurationElement& operator[](std::string name);
-  void alias(std::string realname, std::string aliasname);
+  ConfigurationElement& operator[](const std::string& name);
+  void alias(const std::string& realname, const std::string& aliasname);
 
   template <class T, class... A>
   simgrid::config::TypedConfigurationElement<T>* register_option(const std::string& name, A&&... a)
@@ -284,7 +287,7 @@ public:
   void help();
 
 protected:
-  ConfigurationElement* get_dict_element(std::string name);
+  ConfigurationElement* get_dict_element(const std::string& name);
 };
 
 Config::Config()
@@ -298,7 +301,7 @@ Config::~Config()
     delete elm.second;
 }
 
-inline ConfigurationElement* Config::get_dict_element(std::string name)
+inline ConfigurationElement* Config::get_dict_element(const std::string& name)
 {
   auto opt = options.find(name);
   if (opt != options.end()) {
@@ -316,12 +319,12 @@ inline ConfigurationElement* Config::get_dict_element(std::string name)
   }
 }
 
-inline ConfigurationElement& Config::operator[](std::string name)
+inline ConfigurationElement& Config::operator[](const std::string& name)
 {
   return *(get_dict_element(name));
 }
 
-void Config::alias(std::string realname, std::string aliasname)
+void Config::alias(const std::string& realname, const std::string& aliasname)
 {
   xbt_assert(aliases.find(aliasname) == aliases.end(), "Alias '%s' already.", aliasname.c_str());
   ConfigurationElement* element = this->get_dict_element(realname);
