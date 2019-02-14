@@ -49,7 +49,9 @@ class Keyval{
 // Each subclass should have two members, as we want to separate the ones for Win, Comm, and Datatypes :
 //    static std::unordered_map<int, smpi_key_elem> keyvals_;
 //    static int keyval_id_;
-    template <typename T> static int keyval_create(smpi_copy_fn copy_fn, smpi_delete_fn delete_fn, int* keyval, void* extra_statee);
+    template <typename T>
+    static int keyval_create(const smpi_copy_fn& copy_fn, const smpi_delete_fn& delete_fn, int* keyval,
+                             void* extra_state);
     template <typename T> static int keyval_free(int* keyval);
     template <typename T> int attr_delete(int keyval);
     template <typename T> int attr_get(int keyval, void* attr_value, int* flag);
@@ -58,8 +60,9 @@ class Keyval{
     template <typename T> void cleanup_attr();
 };
 
-template <typename T> int Keyval::keyval_create(smpi_copy_fn copy_fn, smpi_delete_fn delete_fn, int* keyval, void* extra_state){
-
+template <typename T>
+int Keyval::keyval_create(const smpi_copy_fn& copy_fn, const smpi_delete_fn& delete_fn, int* keyval, void* extra_state)
+{
   smpi_key_elem value = new s_smpi_key_elem_t;
 
   value->copy_fn=copy_fn;
