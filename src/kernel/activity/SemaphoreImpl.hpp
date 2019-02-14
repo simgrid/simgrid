@@ -26,7 +26,7 @@ public:
 
   void acquire(smx_actor_t issuer, double timeout);
   void release();
-  bool would_block() { return (value_ <= 0); }
+  bool would_block() { return (value_ == 0); }
   unsigned int get_capacity() { return value_; }
 
   friend void intrusive_ptr_add_ref(SemaphoreImpl* sem)
