@@ -491,7 +491,7 @@ void Request::start()
           XBT_DEBUG("SSEND : Is there a corresponding recv already posted in the small mailbox %s?",
                     mailbox->get_cname());
           action = mailbox->iprobe(1, &match_send, static_cast<void*>(this));
-          if (action != nullptr) {
+          if (action == nullptr) {
             XBT_DEBUG("No, we are first, send to large mailbox");
             mailbox = process->mailbox();
           }

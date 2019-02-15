@@ -75,11 +75,11 @@ bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
         simcall_comm_wait__get__timeout(r2) <= 0)
       return false;
 
-    if ((r1->call == SIMCALL_COMM_ISEND) && (synchro2->type == SIMIX_COMM_SEND) &&
+    if ((r1->call == SIMCALL_COMM_ISEND) && (synchro2->type == kernel::activity::CommImpl::Type::SEND) &&
         (synchro2->src_buff_ != simcall_comm_isend__get__src_buff(r1)) && simcall_comm_wait__get__timeout(r2) <= 0)
       return false;
 
-    if ((r1->call == SIMCALL_COMM_IRECV) && (synchro2->type == SIMIX_COMM_RECEIVE) &&
+    if ((r1->call == SIMCALL_COMM_IRECV) && (synchro2->type == kernel::activity::CommImpl::Type::RECEIVE) &&
         (synchro2->dst_buff_ != simcall_comm_irecv__get__dst_buff(r1)) && simcall_comm_wait__get__timeout(r2) <= 0)
       return false;
   }

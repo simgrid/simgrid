@@ -93,10 +93,10 @@ smx_activity_t MailboxImpl::iprobe(int type, int (*match_fun)(void*, void*, Comm
   CommImpl::Type smx_type;
   if (type == 1) {
     this_comm = CommImplPtr(new CommImpl(CommImpl::Type::SEND));
-    smx_type  = CommImpl::Type::SEND;
+    smx_type  = CommImpl::Type::RECEIVE;
   } else {
     this_comm = CommImplPtr(new CommImpl(CommImpl::Type::RECEIVE));
-    smx_type  = CommImpl::Type::RECEIVE;
+    smx_type  = CommImpl::Type::SEND;
   }
   smx_activity_t other_synchro = nullptr;
   if (permanent_receiver_ != nullptr && not done_comm_queue_.empty()) {
