@@ -90,24 +90,22 @@ smx_activity_t MailboxImpl::iprobe(int type, int (*match_fun)(void*, void*, Comm
   XBT_DEBUG("iprobe from %p %p", this, &comm_queue_);
 
   CommImplPtr this_comm;
-  int smx_type;
+  CommImpl::Type smx_type;
   if (type == 1) {
-    this_comm = CommImplPtr(new CommImpl(SIMIX_COMM_SEND));
-    smx_type  = SIMIX_COMM_RECEIVE;
+    this_comm = CommImplPtr(new CommImpl(CommImpl::Type::SEND));
+    smx_type  = CommImpl::Type::SEND;
   } else {
-    this_comm = CommImplPtr(new CommImpl(SIMIX_COMM_RECEIVE));
-    smx_type  = SIMIX_COMM_SEND;
+    this_comm = CommImplPtr(new CommImpl(CommImpl::Type::RECEIVE));
+    smx_type  = CommImpl::Type::RECEIVE;
   }
   smx_activity_t other_synchro = nullptr;
   if (permanent_receiver_ != nullptr && not done_comm_queue_.empty()) {
     XBT_DEBUG("first check in the permanent recv mailbox, to see if we already got something");
-    other_synchro = find_matching_comm((e_smx_comm_type_t)smx_type, match_fun, data, this_comm, /*done*/ true,
-                                       /*remove_matching*/ false);
+    other_synchro = find_matching_comm(smx_type, match_fun, data, this_comm, /*done*/ true, /*remove_matching*/ false);
   }
   if (not other_synchro) {
     XBT_DEBUG("check if we have more luck in the normal mailbox");
-    other_synchro = find_matching_comm((e_smx_comm_type_t)smx_type, match_fun, data, this_comm, /*done*/ false,
-                                       /*remove_matching*/ false);
+    other_synchro = find_matching_comm(smx_type, match_fun, data, this_comm, /*done*/ false, /*remove_matching*/ false);
   }
 
   return other_synchro;
@@ -122,7 +120,7 @@ smx_activity_t MailboxImpl::iprobe(int type, int (*match_fun)(void*, void*, Comm
  *  @param remove_matching whether or not to clean the found object from the queue
  *  @return The communication activity if found, nullptr otherwise
  */
-CommImplPtr MailboxImpl::find_matching_comm(e_smx_comm_type_t type, int (*match_fun)(void*, void*, CommImpl*),
+CommImplPtr MailboxImpl::find_matching_comm(CommImpl::Type type, int (*match_fun)(void*, void*, CommImpl*),
                                             void* this_user_data, CommImplPtr my_synchro, bool done,
                                             bool remove_matching)
 {
@@ -136,9 +134,9 @@ CommImplPtr MailboxImpl::find_matching_comm(e_smx_comm_type_t type, int (*match_
   for (auto it = deque->begin(); it != deque->end(); it++) {
     CommImplPtr comm = boost::dynamic_pointer_cast<CommImpl>(std::move(*it));
 
-    if (comm->type == SIMIX_COMM_SEND) {
+    if (comm->type == CommImpl::Type::SEND) {
       other_user_data = comm->src_data_;
-    } else if (comm->type == SIMIX_COMM_RECEIVE) {
+    } else if (comm->type == CommImpl::Type::RECEIVE) {
       other_user_data = comm->dst_data_;
     }
     if (comm->type == type && (match_fun == nullptr || match_fun(this_user_data, other_user_data, comm.get())) &&

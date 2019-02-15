@@ -39,8 +39,8 @@ public:
   void push(activity::CommImplPtr comm);
   void remove(smx_activity_t activity);
   smx_activity_t iprobe(int type, int (*match_fun)(void*, void*, CommImpl*), void* data);
-  CommImplPtr find_matching_comm(e_smx_comm_type_t type, int (*match_fun)(void*, void*, CommImpl*),
-                                 void* this_user_data, CommImplPtr my_synchro, bool done, bool remove_matching);
+  CommImplPtr find_matching_comm(CommImpl::Type type, int (*match_fun)(void*, void*, CommImpl*), void* this_user_data,
+                                 CommImplPtr my_synchro, bool done, bool remove_matching);
 
 private:
   simgrid::s4u::Mailbox piface_;

@@ -37,7 +37,7 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-CommImpl::CommImpl(e_smx_comm_type_t _type) : type(_type)
+CommImpl::CommImpl(CommImpl::Type type) : type(type)
 {
   state_   = SIMIX_WAITING;
   src_data_ = nullptr;

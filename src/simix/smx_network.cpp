@@ -43,15 +43,16 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
   XBT_DEBUG("send from mailbox %p", mbox);
 
   /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
-  simgrid::kernel::activity::CommImplPtr this_comm =
-      simgrid::kernel::activity::CommImplPtr(new simgrid::kernel::activity::CommImpl(SIMIX_COMM_SEND));
+  simgrid::kernel::activity::CommImplPtr this_comm = simgrid::kernel::activity::CommImplPtr(
+      new simgrid::kernel::activity::CommImpl(simgrid::kernel::activity::CommImpl::Type::SEND));
 
   /* Look for communication synchro matching our needs. We also provide a description of
    * ourself so that the other side also gets a chance of choosing if it wants to match with us.
    *
    * If it is not found then push our communication into the rendez-vous point */
-  simgrid::kernel::activity::CommImplPtr other_comm = mbox->find_matching_comm(
-      SIMIX_COMM_RECEIVE, match_fun, data, this_comm, /*done*/ false, /*remove_matching*/ true);
+  simgrid::kernel::activity::CommImplPtr other_comm =
+      mbox->find_matching_comm(simgrid::kernel::activity::CommImpl::Type::RECEIVE, match_fun, data, this_comm,
+                               /*done*/ false, /*remove_matching*/ true);
 
   if (not other_comm) {
     other_comm = std::move(this_comm);
@@ -70,7 +71,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
     XBT_DEBUG("Receive already pushed");
 
     other_comm->state_ = SIMIX_READY;
-    other_comm->type = SIMIX_COMM_READY;
+    other_comm->type   = simgrid::kernel::activity::CommImpl::Type::READY;
   }
   src_proc->comms.push_back(other_comm);
 
@@ -121,8 +122,8 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/,
                                                       void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data,
                                                       double rate)
 {
-  simgrid::kernel::activity::CommImplPtr this_synchro =
-      simgrid::kernel::activity::CommImplPtr(new simgrid::kernel::activity::CommImpl(SIMIX_COMM_RECEIVE));
+  simgrid::kernel::activity::CommImplPtr this_synchro = simgrid::kernel::activity::CommImplPtr(
+      new simgrid::kernel::activity::CommImpl(simgrid::kernel::activity::CommImpl::Type::RECEIVE));
   XBT_DEBUG("recv from mbox %p. this_synchro=%p", mbox, this_synchro.get());
 
   simgrid::kernel::activity::CommImplPtr other_comm;
@@ -131,7 +132,8 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/,
 
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     //find a match in the list of already received comms
-    other_comm = mbox->find_matching_comm(SIMIX_COMM_SEND, match_fun, data, this_synchro, /*done*/ true,
+    other_comm = mbox->find_matching_comm(simgrid::kernel::activity::CommImpl::Type::SEND, match_fun, data,
+                                          this_synchro, /*done*/ true,
                                           /*remove_matching*/ true);
     //if not found, assume the receiver came first, register it to the mailbox in the classical way
     if (not other_comm) {
@@ -142,7 +144,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/,
       if (other_comm->surf_action_ && other_comm->remains() < 1e-12) {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
         other_comm->state_ = SIMIX_DONE;
-        other_comm->type = SIMIX_COMM_DONE;
+        other_comm->type   = simgrid::kernel::activity::CommImpl::Type::DONE;
         other_comm->mbox = nullptr;
       }
     }
@@ -153,7 +155,8 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/,
      * ourself so that the other side also gets a chance of choosing if it wants to match with us.
      *
      * If it is not found then push our communication into the rendez-vous point */
-    other_comm = mbox->find_matching_comm(SIMIX_COMM_SEND, match_fun, data, this_synchro, /*done*/ false,
+    other_comm = mbox->find_matching_comm(simgrid::kernel::activity::CommImpl::Type::SEND, match_fun, data,
+                                          this_synchro, /*done*/ false,
                                           /*remove_matching*/ true);
 
     if (other_comm == nullptr) {
@@ -164,7 +167,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/,
       XBT_DEBUG("Match my %p with the existing %p", this_synchro.get(), other_comm.get());
 
       other_comm->state_ = SIMIX_READY;
-      other_comm->type = SIMIX_COMM_READY;
+      other_comm->type   = simgrid::kernel::activity::CommImpl::Type::READY;
     }
     receiver->comms.push_back(other_comm);
   }

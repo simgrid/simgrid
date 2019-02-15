@@ -10,7 +10,6 @@
 #include "src/simix/ActorImpl.hpp"
 #include "surf/surf.hpp"
 
-enum e_smx_comm_type_t { SIMIX_COMM_SEND, SIMIX_COMM_RECEIVE, SIMIX_COMM_READY, SIMIX_COMM_DONE };
 
 namespace simgrid {
 namespace kernel {
@@ -20,7 +19,9 @@ class XBT_PUBLIC CommImpl : public ActivityImpl {
   ~CommImpl() override;
 
 public:
-  explicit CommImpl(e_smx_comm_type_t type);
+  enum class Type { SEND = 0, RECEIVE, READY, DONE };
+
+  explicit CommImpl(Type type);
   void start();
   void copy_data();
   void suspend() override;
@@ -30,7 +31,7 @@ public:
   double remains();
   void cleanupSurf(); // FIXME: make me protected
 
-  e_smx_comm_type_t type;       /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
+  CommImpl::Type type;          /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
   smx_mailbox_t mbox = nullptr; /* Rendez-vous where the comm is queued */
 
 #if SIMGRID_HAVE_MC
