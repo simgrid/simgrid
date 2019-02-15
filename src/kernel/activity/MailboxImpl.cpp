@@ -132,7 +132,7 @@ CommImplPtr MailboxImpl::find_matching_comm(CommImpl::Type type, int (*match_fun
     deque = &comm_queue_;
 
   for (auto it = deque->begin(); it != deque->end(); it++) {
-    CommImplPtr comm = boost::dynamic_pointer_cast<CommImpl>(std::move(*it));
+    CommImplPtr comm = boost::static_pointer_cast<CommImpl>(std::move(*it));
 
     if (comm->type == CommImpl::Type::SEND) {
       other_user_data = comm->src_data_;

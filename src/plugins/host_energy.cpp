@@ -497,8 +497,9 @@ void sg_host_energy_plugin_init()
   simgrid::kernel::activity::ExecImpl::on_creation.connect([](simgrid::kernel::activity::ExecImplPtr activity){
     if (activity->host_ != nullptr) { // We only run on one host
       simgrid::s4u::Host* host = activity->host_;
-      if (dynamic_cast<simgrid::s4u::VirtualMachine*>(activity->host_))
-        host = dynamic_cast<simgrid::s4u::VirtualMachine*>(activity->host_)->get_pm();
+      simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
+      if (vm != nullptr)
+        host = vm->get_pm();
 
       host->extension<HostEnergy>()->update();
     }

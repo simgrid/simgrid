@@ -23,14 +23,14 @@ Io::Io(sg_storage_t storage, sg_size_t size, OpType type) : Activity(), storage_
 
 Io* Io::start()
 {
-  simix::simcall([this] { dynamic_cast<kernel::activity::IoImpl*>(pimpl_.get())->start(size_, type_); });
+  simix::simcall([this] { static_cast<kernel::activity::IoImpl*>(pimpl_.get())->start(size_, type_); });
   state_ = State::STARTED;
   return this;
 }
 
 Io* Io::cancel()
 {
-  simgrid::simix::simcall([this] { dynamic_cast<kernel::activity::IoImpl*>(pimpl_.get())->cancel(); });
+  simgrid::simix::simcall([this] { static_cast<kernel::activity::IoImpl*>(pimpl_.get())->cancel(); });
   state_ = State::CANCELED;
   return this;
 }

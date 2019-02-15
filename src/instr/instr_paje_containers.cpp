@@ -215,21 +215,21 @@ void Container::log_destruction()
 
 StateType* Container::get_state(const std::string& name)
 {
-  StateType* ret = dynamic_cast<StateType*>(type_->by_name(name));
+  StateType* ret = static_cast<StateType*>(type_->by_name(name));
   ret->set_calling_container(this);
   return ret;
 }
 
 LinkType* Container::get_link(const std::string& name)
 {
-  LinkType* ret = dynamic_cast<LinkType*>(type_->by_name(name));
+  LinkType* ret = static_cast<LinkType*>(type_->by_name(name));
   ret->set_calling_container(this);
   return ret;
 }
 
 VariableType* Container::get_variable(const std::string& name)
 {
-  VariableType* ret = dynamic_cast<VariableType*>(type_->by_name(name));
+  VariableType* ret = static_cast<VariableType*>(type_->by_name(name));
   ret->set_calling_container(this);
   return ret;
 }

@@ -201,7 +201,7 @@ Comm* Comm::detach()
 
 Comm* Comm::cancel()
 {
-  simgrid::simix::simcall([this] { dynamic_cast<kernel::activity::CommImpl*>(pimpl_.get())->cancel(); });
+  simgrid::simix::simcall([this] { static_cast<kernel::activity::CommImpl*>(pimpl_.get())->cancel(); });
   state_ = State::CANCELED;
   return this;
 }

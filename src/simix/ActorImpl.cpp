@@ -631,7 +631,7 @@ void SIMIX_process_sleep_destroy(smx_activity_t synchro)
 {
   XBT_DEBUG("Destroy sleep synchro %p", synchro.get());
   simgrid::kernel::activity::SleepImplPtr sleep =
-      boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(synchro);
+      boost::static_pointer_cast<simgrid::kernel::activity::SleepImpl>(synchro);
 
   if (sleep->surf_action_) {
     sleep->surf_action_->unref();

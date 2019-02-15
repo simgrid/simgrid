@@ -157,15 +157,15 @@ public:
 
   template <class T> T const& get_value() const
   {
-    return dynamic_cast<const TypedConfigurationElement<T>&>(*this).get_value();
+    return static_cast<const TypedConfigurationElement<T>&>(*this).get_value();
   }
   template <class T> void set_value(T value)
   {
-    dynamic_cast<TypedConfigurationElement<T>&>(*this).set_value(std::move(value));
+    static_cast<TypedConfigurationElement<T>&>(*this).set_value(std::move(value));
   }
   template <class T> void set_default_value(T value)
   {
-    dynamic_cast<TypedConfigurationElement<T>&>(*this).set_default_value(std::move(value));
+    static_cast<TypedConfigurationElement<T>&>(*this).set_default_value(std::move(value));
   }
   void unset_default() { isdefault = false; }
   bool is_default() const { return isdefault; }
