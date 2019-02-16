@@ -31,7 +31,7 @@ public:
   void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }
   void set_kill_time(double kill_time);
   boost::intrusive::list_member_hook<> host_process_list_hook; /* simgrid::simix::Host::process_list */
-  boost::intrusive::list_member_hook<> smx_destroy_list_hook;  /* simix_global->process_to_destroy */
+  boost::intrusive::list_member_hook<> smx_destroy_list_hook;  /* simix_global->actors_to_destroy */
   boost::intrusive::list_member_hook<> smx_synchro_hook;       /* {mutex,cond,sem}->sleeping */
 
   aid_t pid_  = 0;
@@ -162,9 +162,7 @@ XBT_PUBLIC void create_maestro(std::function<void()> code);
 
 typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 
-XBT_PRIVATE void SIMIX_process_runall();
 XBT_PRIVATE void SIMIX_process_cleanup(smx_actor_t arg);
-XBT_PRIVATE void SIMIX_process_empty_trash();
 XBT_PRIVATE void SIMIX_process_yield(smx_actor_t self);
 
 extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);

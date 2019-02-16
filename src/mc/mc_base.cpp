@@ -39,9 +39,9 @@ void wait_for_requests()
 #if SIMGRID_HAVE_MC
   xbt_assert(mc_model_checker == nullptr, "This must be called from the client");
 #endif
-  while (not simix_global->process_to_run.empty()) {
-    SIMIX_process_runall();
-    for (smx_actor_t const& process : simix_global->process_that_ran) {
+  while (not simix_global->actors_to_run.empty()) {
+    simix_global->run_all_actors();
+    for (smx_actor_t const& process : simix_global->actors_that_ran) {
       smx_simcall_t req = &process->simcall;
       if (req->call != SIMCALL_NONE && not simgrid::mc::request_is_visible(req))
         SIMIX_simcall_handle(req, 0);

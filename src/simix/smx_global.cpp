@@ -147,6 +147,33 @@ double SIMIX_timer_next()
 namespace simgrid {
 namespace simix {
 
+void Global::empty_trash()
+{
+  while (not actors_to_destroy.empty()) {
+    smx_actor_t actor = &actors_to_destroy.front();
+    actors_to_destroy.pop_front();
+    XBT_DEBUG("Getting rid of %p", actor);
+    intrusive_ptr_release(actor);
+  }
+#if SIMGRID_HAVE_MC
+  xbt_dynar_reset(simix_global->dead_actors_vector);
+#endif
+}
+/**
+ * @brief Executes the actors in simix_global->actors_to_run.
+ *
+ * The actors in simix_global->actors_to_run are run (in parallel if  possible). On exit, simix_global->actors_to_run
+ * is empty, and simix_global->actors_that_ran contains the list of actors that just ran.
+ * The two lists are swapped so, be careful when using them before and after a call to this function.
+ */
+void Global::run_all_actors()
+{
+  SIMIX_context_runall();
+
+  simix_global->actors_to_run.swap(simix_global->actors_that_ran);
+  simix_global->actors_to_run.clear();
+}
+
 simgrid::config::Flag<double> breakpoint{"simix/breakpoint",
                                          "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
 }
@@ -221,7 +248,7 @@ void SIMIX_clean()
 
   smx_cleaned = 1;
   XBT_DEBUG("SIMIX_clean called. Simulation's over.");
-  if (not simix_global->process_to_run.empty() && SIMIX_get_clock() <= 0.0) {
+  if (not simix_global->actors_to_run.empty() && SIMIX_get_clock() <= 0.0) {
     XBT_CRITICAL("   ");
     XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
     XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
@@ -242,7 +269,7 @@ void SIMIX_clean()
   /* Kill all processes (but maestro) */
   simix_global->maestro_process->kill_all();
   SIMIX_context_runall();
-  SIMIX_process_empty_trash();
+  simix_global->empty_trash();
 
   /* Exit the SIMIX network module */
   SIMIX_mailbox_exit();
@@ -252,9 +279,9 @@ void SIMIX_clean()
     simix_timers.pop();
   }
   /* Free the remaining data structures */
-  simix_global->process_to_run.clear();
-  simix_global->process_that_ran.clear();
-  simix_global->process_to_destroy.clear();
+  simix_global->actors_to_run.clear();
+  simix_global->actors_that_ran.clear();
+  simix_global->actors_to_destroy.clear();
   simix_global->process_list.clear();
 
 #if SIMGRID_HAVE_MC
@@ -319,8 +346,7 @@ static bool SIMIX_execute_timers()
   bool result = false;
   while (not simix_timers.empty() && SIMIX_get_clock() >= simix_timers.top().first) {
     result = true;
-    // FIXME: make the timers being real callbacks
-    // (i.e. provide dispatchers that read and expand the args)
+    // FIXME: make the timers being real callbacks (i.e. provide dispatchers that read and expand the args)
     smx_timer_t timer = simix_timers.top().second;
     simix_timers.pop();
     try {
@@ -373,7 +399,7 @@ void SIMIX_run()
   double time = 0;
 
   do {
-    XBT_DEBUG("New Schedule Round; size(queue)=%zu", simix_global->process_to_run.size());
+    XBT_DEBUG("New Schedule Round; size(queue)=%zu", simix_global->actors_to_run.size());
 
     if (simgrid::simix::breakpoint >= 0.0 && surf_get_clock() >= simgrid::simix::breakpoint) {
       XBT_DEBUG("Breakpoint reached (%g)", simgrid::simix::breakpoint.get());
@@ -387,11 +413,11 @@ void SIMIX_run()
 
     SIMIX_execute_tasks();
 
-    while (not simix_global->process_to_run.empty()) {
-      XBT_DEBUG("New Sub-Schedule Round; size(queue)=%zu", simix_global->process_to_run.size());
+    while (not simix_global->actors_to_run.empty()) {
+      XBT_DEBUG("New Sub-Schedule Round; size(queue)=%zu", simix_global->actors_to_run.size());
 
       /* Run all processes that are ready to run, possibly in parallel */
-      SIMIX_process_runall();
+      simix_global->run_all_actors();
 
       /* answer sequentially and in a fixed arbitrary order all the simcalls that were issued during that sub-round */
 
@@ -399,21 +425,21 @@ void SIMIX_run()
 
       /* Here, the order is ok because:
        *
-       *   Short proof: only maestro adds stuff to the process_to_run array, so the execution order of user contexts do
+       *   Short proof: only maestro adds stuff to the actors_to_run array, so the execution order of user contexts do
        *   not impact its order.
        *
        *   Long proof: processes remain sorted through an arbitrary (implicit, complex but fixed) order in all cases.
        *
        *   - if there is no kill during the simulation, processes remain sorted according by their PID.
        *     Rationale: This can be proved inductively.
-       *        Assume that process_to_run is sorted at a beginning of one round (it is at round 0: the deployment file
+       *        Assume that actors_to_run is sorted at a beginning of one round (it is at round 0: the deployment file
        *        is parsed linearly).
        *        Let's show that it is still so at the end of this round.
        *        - if a process is added when being created, that's from maestro. It can be either at startup
        *          time (and then in PID order), or in response to a process_create simcall. Since simcalls are handled
        *          in arbitrary order (inductive hypothesis), we are fine.
        *        - If a process is added because it's getting killed, its subsequent actions shouldn't matter
-       *        - If a process gets added to process_to_run because one of their blocking action constituting the meat
+       *        - If a process gets added to actors_to_run because one of their blocking action constituting the meat
        *          of a simcall terminates, we're still good. Proof:
        *          - You are added from SIMIX_simcall_answer() only. When this function is called depends on the resource
        *            kind (network, cpu, disk, whatever), but the same arguments hold. Let's take communications as an
@@ -439,7 +465,7 @@ void SIMIX_run()
        *              and the argument is very similar to the previous one.
        *            So, in any case, the orders of calls to SIMIX_comm_finish() do not depend on the order in which user
        *            processes are executed.
-       *          So, in any cases, the orders of processes within process_to_run do not depend on the order in which
+       *          So, in any cases, the orders of processes within actors_to_run do not depend on the order in which
        *          user processes were executed previously.
        *     So, if there is no killing in the simulation, the simulation reproducibility is not jeopardized.
        *   - If there is some process killings, the order is changed by this decision that comes from user-land
@@ -449,13 +475,13 @@ void SIMIX_run()
        *
        *   So science works, bitches [http://xkcd.com/54/].
        *
-       *   We could sort the process_that_ran array completely so that we can describe the order in which simcalls are
+       *   We could sort the actors_that_ran array completely so that we can describe the order in which simcalls are
        *   handled (like "according to the PID of issuer"), but it's not mandatory (order is fixed already even if
        *   unfriendly).
        *   That would thus be a pure waste of time.
        */
 
-      for (smx_actor_t const& process : simix_global->process_that_ran) {
+      for (smx_actor_t const& process : simix_global->actors_that_ran) {
         if (process->simcall.call != SIMCALL_NONE) {
           SIMIX_simcall_handle(&process->simcall, 0);
         }
@@ -494,13 +520,13 @@ void SIMIX_run()
       SIMIX_wake_processes();
     } while (again);
 
-    /* Clean processes to destroy */
-    SIMIX_process_empty_trash();
+    /* Clean actors to destroy */
+    simix_global->empty_trash();
 
     XBT_DEBUG("### time %f, #processes %zu, #to_run %zu", time, simix_global->process_list.size(),
-              simix_global->process_to_run.size());
+              simix_global->actors_to_run.size());
 
-  } while (time > -1.0 || not simix_global->process_to_run.empty());
+  } while (time > -1.0 || not simix_global->actors_to_run.empty());
 
   if (not simix_global->process_list.empty()) {
 

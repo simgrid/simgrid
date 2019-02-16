@@ -67,29 +67,11 @@ void SIMIX_process_cleanup(smx_actor_t process)
 #if SIMGRID_HAVE_MC
     xbt_dynar_push_as(simix_global->dead_actors_vector, smx_actor_t, process);
 #endif
-    simix_global->process_to_destroy.push_back(*process);
+    simix_global->actors_to_destroy.push_back(*process);
   }
   process->context_->iwannadie = false;
 
   simix_global->mutex.unlock();
-}
-
-/**
- * Garbage collection
- *
- * Should be called some time to time to free the memory allocated for processes that have finished (or killed).
- */
-void SIMIX_process_empty_trash()
-{
-  while (not simix_global->process_to_destroy.empty()) {
-    smx_actor_t process = &simix_global->process_to_destroy.front();
-    simix_global->process_to_destroy.pop_front();
-    XBT_DEBUG("Getting rid of %p",process);
-    intrusive_ptr_release(process);
-  }
-#if SIMGRID_HAVE_MC
-  xbt_dynar_reset(simix_global->dead_actors_vector);
-#endif
 }
 
 namespace simgrid {
@@ -169,11 +151,11 @@ void ActorImpl::kill(smx_actor_t actor)
 
   actor->exit();
 
-  if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), actor) ==
-          end(simix_global->process_to_run) &&
+  if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), actor) ==
+          end(simix_global->actors_to_run) &&
       actor != this) {
     XBT_DEBUG("Inserting %s in the to_run list", actor->get_cname());
-    simix_global->process_to_run.push_back(actor);
+    simix_global->actors_to_run.push_back(actor);
   }
 }
 
@@ -327,11 +309,11 @@ void ActorImpl::throw_exception(std::exception_ptr e)
         boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(waiting_synchro);
     if (sleep != nullptr) {
       SIMIX_process_sleep_destroy(waiting_synchro);
-      if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), this) ==
-              end(simix_global->process_to_run) &&
+      if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), this) ==
+              end(simix_global->actors_to_run) &&
           this != SIMIX_process_self()) {
         XBT_DEBUG("Inserting [%p] %s in the to_run list", this, get_cname());
-        simix_global->process_to_run.push_back(this);
+        simix_global->actors_to_run.push_back(this);
       }
     }
 
@@ -394,7 +376,7 @@ ActorImplPtr ActorImpl::create(std::string name, simgrid::simix::ActorCode code,
   /* Now insert it in the global process list and in the process to run list */
   simix_global->process_list[actor->pid_] = actor;
   XBT_DEBUG("Inserting [%p] %s(%s) in the to_run list", actor, actor->get_cname(), host->get_cname());
-  simix_global->process_to_run.push_back(actor);
+  simix_global->actors_to_run.push_back(actor);
   intrusive_ptr_add_ref(actor);
 
   /* The on_creation() signal must be delayed until there, where the pid and everything is set */
@@ -459,7 +441,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   /* Now insert it in the global process list and in the process to run list */
   simix_global->process_list[actor->pid_] = actor;
   XBT_DEBUG("Inserting [%p] %s(%s) in the to_run list", actor, actor->get_cname(), host->get_cname());
-  simix_global->process_to_run.push_back(actor);
+  simix_global->actors_to_run.push_back(actor);
   intrusive_ptr_add_ref(actor);
 
   auto* context = dynamic_cast<simgrid::kernel::context::AttachContext*>(actor->context_);
@@ -483,22 +465,6 @@ void SIMIX_process_detach()
   context->attach_stop();
 }
 
-/**
- * @brief Executes the processes from simix_global->process_to_run.
- *
- * The processes of simix_global->process_to_run are run (in parallel if
- * possible).  On exit, simix_global->process_to_run is empty, and
- * simix_global->process_that_ran contains the list of processes that just ran.
- * The two lists are swapped so, be careful when using them before and after a
- * call to this function.
- */
-void SIMIX_process_runall()
-{
-  SIMIX_context_runall();
-
-  simix_global->process_to_run.swap(simix_global->process_that_ran);
-  simix_global->process_to_run.clear();
-}
 
 /** @deprecated When this function gets removed, also remove the xbt_ex class, that is only there to help users to
  * transition */
@@ -528,11 +494,11 @@ void SIMIX_process_throw(smx_actor_t actor, xbt_errcat_t cat, int value, const c
         boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(actor->waiting_synchro);
     if (sleep != nullptr) {
       SIMIX_process_sleep_destroy(actor->waiting_synchro);
-      if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), actor) ==
-              end(simix_global->process_to_run) &&
+      if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), actor) ==
+              end(simix_global->actors_to_run) &&
           actor != SIMIX_process_self()) {
         XBT_DEBUG("Inserting [%p] %s in the to_run list", actor, actor->get_cname());
-        simix_global->process_to_run.push_back(actor);
+        simix_global->actors_to_run.push_back(actor);
       }
     }
 
@@ -688,7 +654,7 @@ void SIMIX_process_yield(smx_actor_t self)
  */
 const std::vector<smx_actor_t>& simgrid::simix::process_get_runnable()
 {
-  return simix_global->process_to_run;
+  return simix_global->actors_to_run;
 }
 
 /** @brief Returns the process from PID. */

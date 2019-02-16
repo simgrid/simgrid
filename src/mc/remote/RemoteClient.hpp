@@ -223,7 +223,7 @@ public:
    */
   std::vector<ActorInformation> smx_actors_infos;
 
-  /** Copy of `simix_global->process_to_destroy`
+  /** Copy of `simix_global->actors_to_destroy`
    *
    *  See mc_smx.c.
    */

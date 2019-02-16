@@ -16,11 +16,11 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
     simcall->issuer->simcall.call = SIMCALL_NONE;
 #if 0
     /* This check should be useless and slows everyone. Reactivate if you see something weird in process scheduling. */
-    if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), simcall->issuer) !=
-        end(simix_global->process_to_run))
+    if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), simcall->issuer) !=
+        end(simix_global->actors_to_run))
       DIE_IMPOSSIBLE;
 #endif
-    simix_global->process_to_run.push_back(simcall->issuer);
+    simix_global->actors_to_run.push_back(simcall->issuer);
   }
 }
 

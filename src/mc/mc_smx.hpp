@@ -18,7 +18,7 @@
  *      (copy of `simix_global->process_list`);
  *
  *   - `model_checker->process.smx_old_process_infos`
- *      (copy of `simix_global->process_to_destroy`);
+ *      (copy of `simix_global->actors_to_destroy`);
  *
  *   - `model_checker->hostnames`.
  *

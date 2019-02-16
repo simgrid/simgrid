@@ -182,7 +182,7 @@ void ThreadContext::attach_stop()
 
 void SerialThreadContext::run_all()
 {
-  for (smx_actor_t const& actor : simix_global->process_to_run) {
+  for (smx_actor_t const& actor : simix_global->actors_to_run) {
     XBT_DEBUG("Handling %p", actor);
     ThreadContext* context = static_cast<ThreadContext*>(actor->context_);
     context->release();
@@ -207,9 +207,9 @@ void ParallelThreadContext::finalize()
 
 void ParallelThreadContext::run_all()
 {
-  for (smx_actor_t const& actor : simix_global->process_to_run)
+  for (smx_actor_t const& actor : simix_global->actors_to_run)
     static_cast<ThreadContext*>(actor->context_)->release();
-  for (smx_actor_t const& actor : simix_global->process_to_run)
+  for (smx_actor_t const& actor : simix_global->actors_to_run)
     static_cast<ThreadContext*>(actor->context_)->wait();
 }
 

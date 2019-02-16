@@ -176,13 +176,13 @@ void SwappedContextFactory::run_all()
           SwappedContext* context = static_cast<SwappedContext*>(process->context_);
           context->resume();
         },
-        simix_global->process_to_run);
+        simix_global->actors_to_run);
   } else { // sequential execution
-    if (simix_global->process_to_run.empty())
+    if (simix_global->actors_to_run.empty())
       return;
 
     /* maestro is already saved in the first slot of workers_context_ */
-    smx_actor_t first_actor = simix_global->process_to_run.front();
+    smx_actor_t first_actor = simix_global->actors_to_run.front();
     process_index_          = 1;
     /* execute the first actor; it will chain to the others when using suspend() */
     static_cast<SwappedContext*>(first_actor->context_)->resume();
@@ -251,10 +251,10 @@ void SwappedContext::suspend()
     unsigned long int i = factory_->process_index_;
     factory_->process_index_++;
 
-    if (i < simix_global->process_to_run.size()) {
+    if (i < simix_global->actors_to_run.size()) {
       /* Actually swap into the next actor directly without transiting to maestro */
       XBT_DEBUG("Run next actor");
-      next_context = static_cast<SwappedContext*>(simix_global->process_to_run[i]->context_);
+      next_context = static_cast<SwappedContext*>(simix_global->actors_to_run[i]->context_);
     } else {
       /* all processes were run, actually return to maestro */
       XBT_DEBUG("No more actors to run");

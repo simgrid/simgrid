@@ -24,16 +24,24 @@ class Global {
   friend XBT_PUBLIC bool simgrid::s4u::this_actor::is_maestro();
 
 public:
+  /**
+   * Garbage collection
+   *
+   * Should be called some time to time to free the memory allocated for actors that have finished (or killed).
+   */
+  void empty_trash();
+  void run_all_actors();
+
   smx_context_factory_t context_factory = nullptr;
-  std::vector<smx_actor_t> process_to_run;
-  std::vector<smx_actor_t> process_that_ran;
+  std::vector<smx_actor_t> actors_to_run;
+  std::vector<smx_actor_t> actors_that_ran;
   std::map<aid_t, smx_actor_t> process_list;
   boost::intrusive::list<kernel::actor::ActorImpl,
                          boost::intrusive::member_hook<kernel::actor::ActorImpl, boost::intrusive::list_member_hook<>,
                                                        &kernel::actor::ActorImpl::smx_destroy_list_hook>>
-      process_to_destroy;
+      actors_to_destroy;
 #if SIMGRID_HAVE_MC
-  /* MCer cannot read members process_list and process_to_destroy above in the remote process, so we copy the info it
+  /* MCer cannot read members process_list and actors_to_destroy above in the remote process, so we copy the info it
    * needs in a dynar.
    * FIXME: This is supposed to be a temporary hack.
    * A better solution would be to change the split between MCer and MCed, where the responsibility
