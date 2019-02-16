@@ -139,8 +139,6 @@ XBT_PRIVATE void SIMIX_context_runall();
 
 XBT_PUBLIC int SIMIX_process_get_maxpid();
 
-XBT_PRIVATE void SIMIX_post_create_environment();
-
 XBT_PRIVATE simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const std::string& name);
 
 #endif
