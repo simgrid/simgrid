@@ -207,7 +207,7 @@ void SwappedContext::resume()
     Context::set_current(this);
     worker_context->swap_into(this);
     // No body runs that soul anymore at this point, but it is stored in a safe place.
-    // When the executed actor will do a blocking action, SIMIX_process_yield() will call suspend(), below.
+    // When the executed actor will do a blocking action, ActorImpl::yield() will call suspend(), below.
   } else { // sequential execution
     SwappedContext* old = static_cast<SwappedContext*>(self());
     Context::set_current(this);
@@ -215,7 +215,7 @@ void SwappedContext::resume()
   }
 }
 
-/** The actor wants to yield back to maestro, because it is blocked in a simcall (ie in SIMIX_process_yield())
+/** The actor wants to yield back to maestro, because it is blocked in a simcall (i.e., in ActorImpl::yield())
  *
  * Actually, it does not really yield back to maestro, but directly into the next executable actor.
  *

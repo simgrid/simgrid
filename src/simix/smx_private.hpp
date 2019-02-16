@@ -80,9 +80,9 @@ XBT_PUBLIC void SIMIX_clean();
   if (1) {                                                                                                             \
     simgrid::kernel::actor::ActorImpl* _smx_throw_issuer = (issuer); /* evaluate only once */                          \
     xbt_ex e(XBT_THROW_POINT, msg);                                                                                    \
-    e.category                   = cat;                                                                                \
-    e.value                      = val;                                                                                \
-    _smx_throw_issuer->exception = std::make_exception_ptr(e);                                                         \
+    e.category                    = cat;                                                                               \
+    e.value                       = val;                                                                               \
+    _smx_throw_issuer->exception_ = std::make_exception_ptr(e);                                                        \
   } else                                                                                                               \
     ((void)0)
 

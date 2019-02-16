@@ -380,7 +380,7 @@ inline static R simcall(e_smx_simcall_t call, T const&... t)
   if (self != simix_global->maestro_process) {
     XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->get_cname(), SIMIX_simcall_name(self->simcall.call),
               (int)self->simcall.call);
-    SIMIX_process_yield(self);
+    self->yield();
   } else {
     SIMIX_simcall_handle(&self->simcall, 0);
   }

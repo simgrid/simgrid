@@ -94,7 +94,7 @@ void ActorImpl::exit()
   context_->iwannadie = true;
   blocked_            = false;
   suspended_          = false;
-  exception           = nullptr;
+  exception_          = nullptr;
 
   // Forcefully kill the actor if its host is turned off. Not a HostFailureException because you should not survive that
   if (not host_->is_on())
@@ -187,6 +187,43 @@ static void dying_daemon(int /*exit_status*/, void* data)
   /* Don't move the whole content since we don't really care about the order */
   std::swap(*it, vect->back());
   vect->pop_back();
+}
+
+void ActorImpl::yield()
+{
+  XBT_DEBUG("Yield actor '%s'", get_cname());
+
+  /* Go into sleep and return control to maestro */
+  context_->suspend();
+
+  /* Ok, maestro returned control to us */
+  XBT_DEBUG("Control returned to me: '%s'", get_cname());
+
+  if (context_->iwannadie) {
+
+    XBT_DEBUG("Actor %s@%s is dead", get_cname(), host_->get_cname());
+    // throw simgrid::kernel::context::StopRequest(); Does not seem to properly kill the actor
+    context_->stop();
+    THROW_IMPOSSIBLE;
+  }
+
+  if (suspended_) {
+    XBT_DEBUG("Hey! I'm suspended.");
+    xbt_assert(exception_ != nullptr, "Gasp! This exception may be lost by subsequent calls.");
+    suspended_ = false;
+    suspend(this);
+  }
+
+  if (exception_ != nullptr) {
+    XBT_DEBUG("Wait, maestro left me an exception");
+    std::exception_ptr exception = std::move(exception_);
+    exception_                   = nullptr;
+    std::rethrow_exception(std::move(exception));
+  }
+
+  if (SMPI_switch_data_segment && not finished_) {
+    SMPI_switch_data_segment(iface());
+  }
 }
 
 /** This process will be terminated automatically when the last non-daemon process finishes */
@@ -285,7 +322,7 @@ smx_activity_t ActorImpl::sleep(double duration)
 
 void ActorImpl::throw_exception(std::exception_ptr e)
 {
-  exception = e;
+  exception_ = e;
 
   if (suspended_)
     resume();
@@ -612,42 +649,6 @@ void SIMIX_process_sleep_destroy(smx_activity_t synchro)
  *
  * @param self the current process
  */
-void SIMIX_process_yield(smx_actor_t self)
-{
-  XBT_DEBUG("Yield actor '%s'", self->get_cname());
-
-  /* Go into sleep and return control to maestro */
-  self->context_->suspend();
-
-  /* Ok, maestro returned control to us */
-  XBT_DEBUG("Control returned to me: '%s'", self->get_cname());
-
-  if (self->context_->iwannadie) {
-
-    XBT_DEBUG("Process %s@%s is dead", self->get_cname(), self->host_->get_cname());
-    // throw simgrid::kernel::context::StopRequest(); Does not seem to properly kill the actor
-    self->context_->stop();
-    THROW_IMPOSSIBLE;
-  }
-
-  if (self->suspended_) {
-    XBT_DEBUG("Hey! I'm suspended.");
-    xbt_assert(self->exception != nullptr, "Gasp! This exception may be lost by subsequent calls.");
-    self->suspended_ = false;
-    self->suspend(self);
-  }
-
-  if (self->exception != nullptr) {
-    XBT_DEBUG("Wait, maestro left me an exception");
-    std::exception_ptr exception = std::move(self->exception);
-    self->exception = nullptr;
-    std::rethrow_exception(std::move(exception));
-  }
-
-  if (SMPI_switch_data_segment && not self->finished_) {
-    SMPI_switch_data_segment(self->iface());
-  }
-}
 
 /** @brief Returns the list of processes to run.
  * @deprecated

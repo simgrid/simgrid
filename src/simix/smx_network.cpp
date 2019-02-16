@@ -391,7 +391,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
     if (not simcall->issuer->host_->is_on()) {
       simcall->issuer->context_->iwannadie = true;
-      simcall->issuer->exception =
+      simcall->issuer->exception_ =
           std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
     } else {
       switch (comm->state_) {
@@ -402,12 +402,12 @@ void SIMIX_comm_finish(smx_activity_t synchro)
           break;
 
         case SIMIX_SRC_TIMEOUT:
-          simcall->issuer->exception = std::make_exception_ptr(
+          simcall->issuer->exception_ = std::make_exception_ptr(
               simgrid::TimeoutError(XBT_THROW_POINT, "Communication timeouted because of the sender"));
           break;
 
         case SIMIX_DST_TIMEOUT:
-          simcall->issuer->exception = std::make_exception_ptr(
+          simcall->issuer->exception_ = std::make_exception_ptr(
               simgrid::TimeoutError(XBT_THROW_POINT, "Communication timeouted because of the receiver"));
           break;
 
@@ -415,7 +415,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
           if (simcall->issuer == comm->src_actor_)
             simcall->issuer->context_->iwannadie = true;
           else
-            simcall->issuer->exception =
+            simcall->issuer->exception_ =
                 std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
           break;
 
@@ -423,7 +423,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
           if (simcall->issuer == comm->dst_actor_)
             simcall->issuer->context_->iwannadie = true;
           else
-            simcall->issuer->exception =
+            simcall->issuer->exception_ =
                 std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
           break;
 
@@ -446,10 +446,10 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
         case SIMIX_CANCELED:
           if (simcall->issuer == comm->dst_actor_)
-            simcall->issuer->exception = std::make_exception_ptr(
+            simcall->issuer->exception_ = std::make_exception_ptr(
                 simgrid::CancelException(XBT_THROW_POINT, "Communication canceled by the sender"));
           else
-            simcall->issuer->exception = std::make_exception_ptr(
+            simcall->issuer->exception_ = std::make_exception_ptr(
                 simgrid::CancelException(XBT_THROW_POINT, "Communication canceled by the receiver"));
           break;
 
@@ -459,7 +459,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
     }
 
     /* if there is an exception during a waitany or a testany, indicate the position of the failed communication */
-    if (simcall->issuer->exception &&
+    if (simcall->issuer->exception_ &&
         (simcall->call == SIMCALL_COMM_WAITANY || simcall->call == SIMCALL_COMM_TESTANY)) {
       // First retrieve the rank of our failing synchro
       int rank = -1;
@@ -478,16 +478,16 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
       // In order to modify the exception we have to rethrow it:
       try {
-        std::rethrow_exception(simcall->issuer->exception);
+        std::rethrow_exception(simcall->issuer->exception_);
       } catch (simgrid::TimeoutError& e) {
         e.value                    = rank;
-        simcall->issuer->exception = std::make_exception_ptr(e);
+        simcall->issuer->exception_ = std::make_exception_ptr(e);
       } catch (simgrid::NetworkFailureException& e) {
         e.value                    = rank;
-        simcall->issuer->exception = std::make_exception_ptr(e);
+        simcall->issuer->exception_ = std::make_exception_ptr(e);
       } catch (simgrid::CancelException& e) {
         e.value                    = rank;
-        simcall->issuer->exception = std::make_exception_ptr(e);
+        simcall->issuer->exception_ = std::make_exception_ptr(e);
       }
     }
 

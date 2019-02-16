@@ -138,7 +138,7 @@ The workflow of a simcall is the following:
  - `simcall_BODY_<name>(<args>)`
   - Initializes the simcall (store the arguments in position)
   - If maestro, executes the simcall directly (and return)
-  - If not, call `SIMIX_process_yield` to give back the control to maestro
+  - If not, call `ActorImpl::yield` to give back the control to maestro
   - ========== KERNEL MODE ==========
   - `SIMIX_simcall_handle` large switch (on simcall) doing for each:
    - `simcall_HANDLER_<name>(simcall, <args>)` (the manual code handling the simcall)

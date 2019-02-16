@@ -42,7 +42,7 @@ public:
   s4u::Host* host_       = nullptr; /* the host on which the process is running */
   smx_context_t context_ = nullptr; /* the context (uctx/raw/thread) that executes the user function */
 
-  std::exception_ptr exception;
+  std::exception_ptr exception_;
   bool finished_    = false;
   bool blocked_     = false;
   bool suspended_   = false;
@@ -98,6 +98,7 @@ public:
   void kill(smx_actor_t actor);
   void kill_all();
 
+  void yield();
   void daemonize();
   bool is_daemon() { return daemon_; } /** Whether this actor has been daemonized */
   bool is_suspended() { return suspended_; }
@@ -163,7 +164,6 @@ XBT_PUBLIC void create_maestro(std::function<void()> code);
 typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 
 XBT_PRIVATE void SIMIX_process_cleanup(smx_actor_t arg);
-XBT_PRIVATE void SIMIX_process_yield(smx_actor_t self);
 
 extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
 

@@ -107,19 +107,19 @@ void SIMIX_execution_finish(smx_activity_t synchro)
       case SIMIX_FAILED:
         XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->host_->get_cname());
         simcall->issuer->context_->iwannadie = true;
-        simcall->issuer->exception =
+        simcall->issuer->exception_ =
             std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
         break;
 
       case SIMIX_CANCELED:
         XBT_DEBUG("SIMIX_execution_finished: execution canceled");
-        simcall->issuer->exception =
+        simcall->issuer->exception_ =
             std::make_exception_ptr(simgrid::CancelException(XBT_THROW_POINT, "Execution Canceled"));
         break;
 
       case SIMIX_TIMEOUT:
         XBT_DEBUG("SIMIX_execution_finished: execution timeouted");
-        simcall->issuer->exception = std::make_exception_ptr(simgrid::TimeoutError(XBT_THROW_POINT, "Timeouted"));
+        simcall->issuer->exception_ = std::make_exception_ptr(simgrid::TimeoutError(XBT_THROW_POINT, "Timeouted"));
         break;
 
       default:
