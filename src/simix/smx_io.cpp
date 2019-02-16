@@ -47,7 +47,7 @@ void SIMIX_io_finish(smx_activity_t synchro)
         SMX_EXCEPTION(simcall->issuer, io_error, 0, "IO failed");
         break;
       case SIMIX_CANCELED:
-        SMX_EXCEPTION(simcall->issuer, cancel_error, 0, "Canceled");
+        simcall->issuer->exception = std::make_exception_ptr(simgrid::CancelException(XBT_THROW_POINT, "I/O Canceled"));
         break;
       default:
         xbt_die("Internal error in SIMIX_io_finish: unexpected synchro state %d", static_cast<int>(synchro->state_));

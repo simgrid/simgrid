@@ -446,9 +446,11 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
         case SIMIX_CANCELED:
           if (simcall->issuer == comm->dst_actor_)
-            SMX_EXCEPTION(simcall->issuer, cancel_error, 0, "Communication canceled by the sender");
+            simcall->issuer->exception = std::make_exception_ptr(
+                simgrid::CancelException(XBT_THROW_POINT, "Communication canceled by the sender"));
           else
-            SMX_EXCEPTION(simcall->issuer, cancel_error, 0, "Communication canceled by the receiver");
+            simcall->issuer->exception = std::make_exception_ptr(
+                simgrid::CancelException(XBT_THROW_POINT, "Communication canceled by the receiver"));
           break;
 
         default:
@@ -483,13 +485,9 @@ void SIMIX_comm_finish(smx_activity_t synchro)
       } catch (simgrid::NetworkFailureException& e) {
         e.value                    = rank;
         simcall->issuer->exception = std::make_exception_ptr(e);
-      } catch (xbt_ex& e) {
-        if (e.category == cancel_error) {
-          e.value                    = rank;
-          simcall->issuer->exception = std::make_exception_ptr(e);
-        } else {
-          xbt_die("Unexpected xbt_ex(%s). Please enhance this code", xbt_ex_catname(e.category));
-        }
+      } catch (simgrid::CancelException& e) {
+        e.value                    = rank;
+        simcall->issuer->exception = std::make_exception_ptr(e);
       }
     }
 

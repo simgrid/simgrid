@@ -146,6 +146,12 @@ public:
 
 /** Exception raised when something got canceled before completion */
 class CancelException : public xbt_ex {
+public:
+  CancelException(simgrid::xbt::ThrowPoint throwpoint, std::string message)
+      : xbt_ex(std::move(throwpoint), std::move(message))
+  {
+    category = cancel_error;
+  }
 };
 
 } // namespace simgrid

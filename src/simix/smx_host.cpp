@@ -113,7 +113,8 @@ void SIMIX_execution_finish(smx_activity_t synchro)
 
       case SIMIX_CANCELED:
         XBT_DEBUG("SIMIX_execution_finished: execution canceled");
-        SMX_EXCEPTION(simcall->issuer, cancel_error, 0, "Canceled");
+        simcall->issuer->exception =
+            std::make_exception_ptr(simgrid::CancelException(XBT_THROW_POINT, "Execution Canceled"));
         break;
 
       case SIMIX_TIMEOUT:

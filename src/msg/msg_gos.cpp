@@ -92,11 +92,8 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
     status = MSG_HOST_FAILURE;
   } catch (simgrid::TimeoutError& e) {
     status = MSG_TIMEOUT;
-  } catch (xbt_ex& e) {
-    if (e.category == cancel_error)
-      status = MSG_TASK_CANCELED;
-    else
-      throw;
+  } catch (simgrid::CancelException& e) {
+    status = MSG_TASK_CANCELED;
   }
 
   /* action ended, set comm and compute = nullptr, the actions is already destroyed in the main function */
@@ -259,17 +256,13 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
     ret = MSG_HOST_FAILURE;
   } catch (simgrid::TimeoutError& e) {
     ret = MSG_TIMEOUT;
+  } catch (simgrid::CancelException& e) {
+    ret = MSG_HOST_FAILURE;
   } catch (xbt_ex& e) {
-    switch (e.category) {
-    case cancel_error:
-      ret = MSG_HOST_FAILURE;
-      break;
-    case network_error:
+    if (e.category == network_error)
       ret = MSG_TRANSFER_FAILURE;
-      break;
-    default:
+    else
       throw;
-    }
   }
 
   if (ret != MSG_HOST_FAILURE && ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {
@@ -752,18 +745,13 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
     simcall_comm_wait(comm, timeout);
   } catch (simgrid::TimeoutError& e) {
     ret = MSG_TIMEOUT;
-  }
-  catch (xbt_ex& e) {
-    switch (e.category) {
-    case cancel_error:
-      ret = MSG_HOST_FAILURE;
-      break;
-    case network_error:
+  } catch (simgrid::CancelException& e) {
+    ret = MSG_HOST_FAILURE;
+  } catch (xbt_ex& e) {
+    if (e.category == network_error)
       ret = MSG_TRANSFER_FAILURE;
-      break;
-    default:
+    else
       throw;
-    }
 
     /* If the send failed, it is not used anymore */
     t_simdata->setNotUsed();
