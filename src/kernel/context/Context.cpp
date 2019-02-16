@@ -86,10 +86,10 @@ void Context::stop()
 {
   actor_->finished_ = true;
 
-  if (actor_->auto_restart_ && not actor_->host_->is_on()) {
-    XBT_DEBUG("Insert host %s to watched_hosts because it's off and %s needs to restart", actor_->host_->get_cname(),
-              actor_->get_cname());
-    watched_hosts.insert(actor_->host_->get_name());
+  if (actor_->has_to_auto_restart() && not actor_->get_host()->is_on()) {
+    XBT_DEBUG("Insert host %s to watched_hosts because it's off and %s needs to restart",
+              actor_->get_host()->get_cname(), actor_->get_cname());
+    watched_hosts.insert(actor_->get_host()->get_name());
   }
 
   // Execute the termination callbacks
@@ -106,7 +106,7 @@ void Context::stop()
   actor_->comms.clear();
 
   XBT_DEBUG("%s@%s(%ld) should not run anymore", actor_->get_cname(), actor_->iface()->get_host()->get_cname(),
-            actor_->pid_);
+            actor_->get_pid());
 
   if (this->cleanup_func_)
     this->cleanup_func_(this->actor_);

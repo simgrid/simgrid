@@ -64,12 +64,12 @@ void SleepImpl::post()
         THROW_IMPOSSIBLE;
         break;
     }
-    if (not simcall->issuer->host_->is_on()) {
+    if (not simcall->issuer->get_host()->is_on()) {
       simcall->issuer->context_->iwannadie = true;
     }
     simcall_process_sleep__set__result(simcall, result);
     simcall->issuer->waiting_synchro = nullptr;
-    if (simcall->issuer->suspended_) {
+    if (simcall->issuer->is_suspended()) {
       XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
       simcall->issuer->suspended_ = false;
       simcall_HANDLER_process_suspend(simcall, simcall->issuer);

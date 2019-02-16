@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf, "Logging specific to the SURF h
 simgrid::surf::HostModel *surf_host_model = nullptr;
 
 /*************
- * Callbacks *
+ * Callbacks *t
  *************/
 
 namespace simgrid {
@@ -109,7 +109,7 @@ void HostImpl::turn_on()
     if (arg->kill_time >= 0)
       actor->set_kill_time(arg->kill_time);
     if (arg->auto_restart)
-      actor->auto_restart_ = arg->auto_restart;
+      actor->set_auto_restart(arg->auto_restart);
     if (arg->daemon_)
       actor->daemonize();
   }
@@ -121,7 +121,7 @@ void HostImpl::turn_off()
   if (not process_list_.empty()) {
     for (auto& actor : process_list_) {
       XBT_DEBUG("Killing Actor %s@%s on behalf of %s which turned off that host.", actor.get_cname(),
-                actor.host_->get_cname(), SIMIX_process_self()->get_cname());
+                actor.get_host()->get_cname(), SIMIX_process_self()->get_cname());
       SIMIX_process_self()->kill(&actor);
     }
   }

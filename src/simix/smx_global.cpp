@@ -606,12 +606,13 @@ void SIMIX_display_process_status()
       if (boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(process->waiting_synchro) != nullptr)
         synchro_description = "I/O";
 
-      XBT_INFO("Process %ld (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->pid_,
-               process->get_cname(), process->host_->get_cname(), synchro_description, process->waiting_synchro.get(),
-               process->waiting_synchro->get_cname(), (int)process->waiting_synchro->state_);
+      XBT_INFO("Process %ld (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->get_pid(),
+               process->get_cname(), process->get_host()->get_cname(), synchro_description,
+               process->waiting_synchro.get(), process->waiting_synchro->get_cname(),
+               (int)process->waiting_synchro->state_);
     }
     else {
-      XBT_INFO("Process %ld (%s@%s)", process->pid_, process->get_cname(), process->host_->get_cname());
+      XBT_INFO("Process %ld (%s@%s)", process->get_pid(), process->get_cname(), process->get_host()->get_cname());
     }
   }
 }

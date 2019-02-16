@@ -34,7 +34,7 @@ void MutexImpl::lock(smx_actor_t issuer)
   if (this->locked) {
     /* FIXME: check if the host is active ? */
     /* Somebody using the mutex, use a synchronization to get host failures */
-    synchro = SIMIX_synchro_wait(issuer->host_, -1);
+    synchro = SIMIX_synchro_wait(issuer->get_host(), -1);
     synchro->simcalls_.push_back(&issuer->simcall);
     issuer->waiting_synchro = synchro;
     this->sleeping.push_back(*issuer);
@@ -81,7 +81,7 @@ void MutexImpl::unlock(smx_actor_t issuer)
   /* If the mutex is not owned by the issuer, that's not good */
   if (issuer != this->owner)
     THROWF(mismatch_error, 0, "Cannot release that mutex: it was locked by %s (pid:%ld), not by you.",
-           this->owner->get_cname(), this->owner->pid_);
+           this->owner->get_cname(), this->owner->get_pid());
 
   if (not this->sleeping.empty()) {
     /*process to wake up */

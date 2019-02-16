@@ -18,7 +18,7 @@ void SemaphoreImpl::acquire(smx_actor_t issuer, double timeout)
 
   XBT_DEBUG("Wait semaphore %p (timeout:%f)", this, timeout);
   if (value_ <= 0) {
-    synchro = SIMIX_synchro_wait(issuer->host_, timeout);
+    synchro = SIMIX_synchro_wait(issuer->get_host(), timeout);
     synchro->simcalls_.push_front(&issuer->simcall);
     issuer->waiting_synchro = synchro;
     sleeping_.push_back(*issuer);

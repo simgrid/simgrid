@@ -23,33 +23,49 @@ namespace simgrid {
 namespace kernel {
 namespace actor {
 
-class ActorImpl : public simgrid::surf::PropertyHolder {
+class ActorImpl : public surf::PropertyHolder {
+  s4u::Host* host_   = nullptr; /* the host on which the actor is running */
+  void* userdata_    = nullptr; /* kept for compatibility, it should be replaced with moddata */
+  aid_t pid_         = 0;
+  aid_t ppid_        = -1;
+  bool daemon_       = false; /* Daemon actors are automatically killed when the last non-daemon leaves */
+  bool auto_restart_ = false;
+
 public:
-  ActorImpl(simgrid::xbt::string name, simgrid::s4u::Host* host);
+  xbt::string name_;
+  ActorImpl(xbt::string name, s4u::Host* host);
   ~ActorImpl();
 
-  void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }
+  double get_kill_time();
   void set_kill_time(double kill_time);
   boost::intrusive::list_member_hook<> host_process_list_hook; /* simgrid::simix::Host::process_list */
   boost::intrusive::list_member_hook<> smx_destroy_list_hook;  /* simix_global->actors_to_destroy */
   boost::intrusive::list_member_hook<> smx_synchro_hook;       /* {mutex,cond,sem}->sleeping */
 
-  aid_t pid_  = 0;
-  aid_t ppid_ = -1;
-  simgrid::xbt::string name_;
-  const simgrid::xbt::string& get_name() const { return name_; }
+  const xbt::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
-  s4u::Host* host_       = nullptr; /* the host on which the process is running */
-  smx_context_t context_ = nullptr; /* the context (uctx/raw/thread) that executes the user function */
+
+  // Accessors to private fields
+  s4u::Host* get_host() { return host_; }
+  void set_host(s4u::Host* dest);
+  void* get_user_data() { return userdata_; }
+  void set_user_data(void* data) { userdata_ = data; }
+  aid_t get_pid() const { return pid_; }
+  aid_t get_ppid() const { return ppid_; }
+  void set_ppid(aid_t ppid) { ppid_ = ppid; }
+  bool is_daemon() { return daemon_; } /** Whether this actor has been daemonized */
+  bool has_to_auto_restart() { return auto_restart_; }
+  void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }
+
+  context::Context* context_ = nullptr; /* the context (uctx/raw/thread) that executes the user function */
 
   std::exception_ptr exception_;
-  bool finished_    = false;
-  bool blocked_     = false;
-  bool suspended_   = false;
-  bool auto_restart_ = false;
+  bool finished_  = false;
+  bool blocked_   = false; /* FIXME this field is never set to true. Either use it or remove it. */
+  bool suspended_ = false;
 
-  smx_activity_t waiting_synchro = nullptr; /* the current blocking synchro if any */
-  std::list<smx_activity_t> comms;          /* the current non-blocking communication synchros */
+  activity::ActivityImplPtr waiting_synchro = nullptr; /* the current blocking synchro if any */
+  std::list<activity::ActivityImplPtr> comms;          /* the current non-blocking communication synchros */
   s_smx_simcall simcall;
   std::vector<s_smx_process_exit_fun_t> on_exit; /* list of functions executed when the process dies */
 
@@ -57,7 +73,6 @@ public:
   smx_timer_t kill_timer = nullptr;
 
 private:
-  void* userdata_ = nullptr; /* kept for compatibility, it should be replaced with moddata */
   /* Refcounting */
   std::atomic_int_fast32_t refcount_{0};
 
@@ -83,35 +98,27 @@ public:
 
   /* S4U/implem interfaces */
 private:
-  simgrid::s4u::Actor piface_; // Our interface is part of ourselves
+  s4u::Actor piface_; // Our interface is part of ourselves
 public:
-  simgrid::s4u::ActorPtr iface() { return s4u::ActorPtr(&piface_); }
-  simgrid::s4u::Actor* ciface() { return &piface_; }
+  s4u::ActorPtr iface() { return s4u::ActorPtr(&piface_); }
+  s4u::Actor* ciface() { return &piface_; }
 
-  /* Daemon actors are automatically killed when the last non-daemon leaves */
-private:
-  bool daemon_ = false;
-public:
   static ActorImplPtr create(std::string name, simix::ActorCode code, void* data, s4u::Host* host,
-                             std::unordered_map<std::string, std::string>* properties, smx_actor_t parent_actor);
+                             std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor);
   void exit();
-  void kill(smx_actor_t actor);
+  void kill(ActorImpl* actor);
   void kill_all();
 
   void yield();
   void daemonize();
-  bool is_daemon() { return daemon_; } /** Whether this actor has been daemonized */
   bool is_suspended() { return suspended_; }
-  simgrid::s4u::Actor* restart();
-  smx_activity_t suspend(ActorImpl* issuer);
+  s4u::Actor* restart();
+  activity::ActivityImplPtr suspend(ActorImpl* issuer);
   void resume();
-  smx_activity_t join(smx_actor_t actor, double timeout);
-  smx_activity_t sleep(double duration);
-  void set_user_data(void* data) { userdata_ = data; }
-  void* get_user_data() { return userdata_; }
+  activity::ActivityImplPtr join(ActorImpl* actor, double timeout);
+  activity::ActivityImplPtr sleep(double duration);
   /** Ask the actor to throw an exception right away */
   void throw_exception(std::exception_ptr e);
-  void set_host(sg_host_t dest);
 };
 
 class ProcessArg {
@@ -143,8 +150,8 @@ public:
       , code(std::move(actor->code))
       , data(actor->get_user_data())
       , host(host)
-      , kill_time(SIMIX_timer_get_date(actor->kill_timer))
-      , auto_restart(actor->auto_restart_)
+      , kill_time(actor->get_kill_time())
+      , auto_restart(actor->has_to_auto_restart())
       , daemon_(actor->is_daemon())
   {
     properties.reset(actor->get_properties(), [](decltype(actor->get_properties())) {});
@@ -157,11 +164,9 @@ typedef boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImp
     SynchroList;
 
 XBT_PUBLIC void create_maestro(std::function<void()> code);
-}
+} // namespace actor
 } // namespace kernel
 } // namespace simgrid
-
-typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 
 XBT_PRIVATE void SIMIX_process_cleanup(smx_actor_t arg);
 

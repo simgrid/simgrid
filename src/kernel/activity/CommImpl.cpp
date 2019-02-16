@@ -69,8 +69,8 @@ void CommImpl::start()
   /* If both the sender and the receiver are already there, start the communication */
   if (state_ == SIMIX_READY) {
 
-    s4u::Host* sender   = src_actor_->host_;
-    s4u::Host* receiver = dst_actor_->host_;
+    s4u::Host* sender   = src_actor_->get_host();
+    s4u::Host* receiver = dst_actor_->get_host();
 
     surf_action_ = surf_network_model->communicate(sender, receiver, task_size_, rate_);
     surf_action_->set_data(this);
@@ -92,11 +92,11 @@ void CommImpl::start()
       if (src_actor_->is_suspended())
         XBT_DEBUG("The communication is suspended on startup because src (%s@%s) was suspended since it initiated the "
                   "communication",
-                  src_actor_->get_cname(), src_actor_->host_->get_cname());
+                  src_actor_->get_cname(), src_actor_->get_host()->get_cname());
       else
         XBT_DEBUG("The communication is suspended on startup because dst (%s@%s) was suspended since it initiated the "
                   "communication",
-                  dst_actor_->get_cname(), dst_actor_->host_->get_cname());
+                  dst_actor_->get_cname(), dst_actor_->get_host()->get_cname());
 
       surf_action_->suspend();
     }
@@ -112,8 +112,8 @@ void CommImpl::copy_data()
     return;
 
   XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)", this,
-            src_actor_ ? src_actor_->host_->get_cname() : "a finished process", src_buff_,
-            dst_actor_ ? dst_actor_->host_->get_cname() : "a finished process", dst_buff_, buff_size);
+            src_actor_ ? src_actor_->get_host()->get_cname() : "a finished process", src_buff_,
+            dst_actor_ ? dst_actor_->get_host()->get_cname() : "a finished process", dst_buff_, buff_size);
 
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
   if (dst_buff_size_)

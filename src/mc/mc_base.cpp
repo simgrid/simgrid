@@ -72,7 +72,7 @@ bool actor_is_enabled(smx_actor_t actor)
 #if SIMGRID_HAVE_MC
   // If in the MCer, ask the client app since it has all the data
   if (mc_model_checker != nullptr) {
-    return mc_model_checker->process().actor_is_enabled(actor->pid_);
+    return mc_model_checker->process().actor_is_enabled(actor->get_pid());
   }
 #endif
 
@@ -116,7 +116,7 @@ bool actor_is_enabled(smx_actor_t actor)
 
       if (mutex->owner == nullptr)
         return true;
-      return mutex->owner->pid_ == req->issuer->pid_;
+      return mutex->owner->get_pid() == req->issuer->get_pid();
     }
 
     case SIMCALL_SEM_ACQUIRE: {

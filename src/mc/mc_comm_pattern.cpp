@@ -95,7 +95,7 @@ void MC_handle_comm_pattern(
                                 value, sizeof(comm_addr));
       comm_addr = remote(addr);
       }
-      checker->complete_comm_pattern(pattern, comm_addr, MC_smx_simcall_get_issuer(req)->pid_, backtracking);
+      checker->complete_comm_pattern(pattern, comm_addr, MC_smx_simcall_get_issuer(req)->get_pid(), backtracking);
     }
     break;
   default:

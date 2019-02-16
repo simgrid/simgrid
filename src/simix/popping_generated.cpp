@@ -174,7 +174,7 @@ case SIMCALL_RUN_BLOCKING:
       break;
     case SIMCALL_NONE:
       THROWF(arg_error, 0, "Asked to do the noop syscall on %s@%s", simcall->issuer->get_cname(),
-             sg_host_get_name(simcall->issuer->host_));
+             sg_host_get_name(simcall->issuer->get_host()));
       break;
     default:
       THROW_IMPOSSIBLE;

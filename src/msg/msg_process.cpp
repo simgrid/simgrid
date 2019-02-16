@@ -186,7 +186,7 @@ int MSG_process_get_number()
 int MSG_process_self_PID()
 {
   smx_actor_t self = SIMIX_process_self();
-  return self == nullptr ? 0 : self->pid_;
+  return self == nullptr ? 0 : self->get_pid();
 }
 
 /** @brief Return the PPID of the current process.

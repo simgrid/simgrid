@@ -76,10 +76,10 @@ Host* Host::by_name_or_null(const std::string& name)
 
 Host* Host::current()
 {
-  smx_actor_t smx_proc = SIMIX_process_self();
-  if (smx_proc == nullptr)
+  smx_actor_t self = SIMIX_process_self();
+  if (self == nullptr)
     xbt_die("Cannot call Host::current() from the maestro context");
-  return smx_proc->host_;
+  return self->get_host();
 }
 
 void Host::turn_on()
@@ -636,7 +636,7 @@ void sg_host_get_actor_list(sg_host_t host, xbt_dynar_t whereto)
 sg_host_t sg_host_self()
 {
   smx_actor_t process = SIMIX_process_self();
-  return (process == nullptr) ? nullptr : process->host_;
+  return (process == nullptr) ? nullptr : process->get_host();
 }
 
 double sg_host_load(sg_host_t host)

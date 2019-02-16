@@ -130,7 +130,7 @@ public:
   explicit State(unsigned long state_number);
 
   std::size_t interleaveSize() const;
-  void addInterleavingSet(smx_actor_t actor) { this->actorStates[actor->pid_].consider(); }
+  void addInterleavingSet(smx_actor_t actor) { this->actorStates[actor->get_pid()].consider(); }
   Transition getTransition() const;
 };
 }

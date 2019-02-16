@@ -75,12 +75,12 @@ void Actor::join(double timeout)
 void Actor::set_auto_restart(bool autorestart)
 {
   simgrid::simix::simcall([this, autorestart]() {
-    xbt_assert(autorestart && not pimpl_->auto_restart_); // FIXME: handle all cases
+    xbt_assert(autorestart && not pimpl_->has_to_auto_restart()); // FIXME: handle all cases
     pimpl_->set_auto_restart(autorestart);
 
-    simgrid::kernel::actor::ProcessArg* arg = new simgrid::kernel::actor::ProcessArg(pimpl_->host_, pimpl_);
+    simgrid::kernel::actor::ProcessArg* arg = new simgrid::kernel::actor::ProcessArg(pimpl_->get_host(), pimpl_);
     XBT_DEBUG("Adding Process %s to the actors_at_boot_ list of Host %s", arg->name.c_str(), arg->host->get_cname());
-    pimpl_->host_->pimpl_->actors_at_boot_.emplace_back(arg);
+    pimpl_->get_host()->pimpl_->actors_at_boot_.emplace_back(arg);
   });
 }
 
@@ -115,7 +115,7 @@ void Actor::migrate(Host* new_host)
 
 s4u::Host* Actor::get_host()
 {
-  return this->pimpl_->host_;
+  return this->pimpl_->get_host();
 }
 
 void Actor::daemonize()
@@ -140,12 +140,12 @@ const char* Actor::get_cname() const
 
 aid_t Actor::get_pid() const
 {
-  return this->pimpl_->pid_;
+  return this->pimpl_->get_pid();
 }
 
 aid_t Actor::get_ppid() const
 {
-  return this->pimpl_->ppid_;
+  return this->pimpl_->get_ppid();
 }
 
 void Actor::suspend()
@@ -162,7 +162,7 @@ void Actor::resume()
 
 bool Actor::is_suspended()
 {
-  return simgrid::simix::simcall([this] { return pimpl_->suspended_; });
+  return simgrid::simix::simcall([this] { return pimpl_->is_suspended(); });
 }
 
 void Actor::set_kill_time(double kill_time)
@@ -173,7 +173,7 @@ void Actor::set_kill_time(double kill_time)
 /** @brief Get the kill time of an actor(or 0 if unset). */
 double Actor::get_kill_time()
 {
-  return SIMIX_timer_get_date(pimpl_->kill_timer);
+  return pimpl_->get_kill_time();
 }
 
 void Actor::kill(aid_t pid) // deprecated
@@ -356,12 +356,12 @@ ExecPtr exec_async(double flops)
 
 aid_t get_pid()
 {
-  return SIMIX_process_self()->pid_;
+  return SIMIX_process_self()->get_pid();
 }
 
 aid_t get_ppid()
 {
-  return SIMIX_process_self()->ppid_;
+  return SIMIX_process_self()->get_ppid();
 }
 
 std::string get_name()
@@ -376,7 +376,7 @@ const char* get_cname()
 
 Host* get_host()
 {
-  return SIMIX_process_self()->host_;
+  return SIMIX_process_self()->get_host();
 }
 
 void suspend()

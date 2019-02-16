@@ -28,7 +28,7 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
     mutex->unlock(issuer);
   }
 
-  synchro = SIMIX_synchro_wait(issuer->host_, timeout);
+  synchro = SIMIX_synchro_wait(issuer->get_host(), timeout);
   synchro->simcalls_.push_front(simcall);
   issuer->waiting_synchro = synchro;
   cond->sleeping.push_back(*simcall->issuer);

@@ -102,8 +102,8 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
 
   smx_actor_t src_proc   = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->src_actor_.get()));
   smx_actor_t dst_proc   = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_actor_.get()));
-  comm_pattern->src_proc = src_proc->pid_;
-  comm_pattern->dst_proc = dst_proc->pid_;
+  comm_pattern->src_proc = src_proc->get_pid();
+  comm_pattern->dst_proc = dst_proc->get_pid();
   comm_pattern->src_host = MC_smx_actor_get_host_name(src_proc);
   comm_pattern->dst_host = MC_smx_actor_get_host_name(dst_proc);
   if (comm_pattern->data.size() == 0 && comm->src_buff_ != nullptr) {
@@ -172,8 +172,8 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
 {
   const smx_actor_t issuer = MC_smx_simcall_get_issuer(request);
   simgrid::mc::PatternCommunicationList* initial_pattern =
-      xbt_dynar_get_as(initial_communications_pattern, issuer->pid_, simgrid::mc::PatternCommunicationList*);
-  xbt_dynar_t incomplete_pattern = xbt_dynar_get_as(incomplete_communications_pattern, issuer->pid_, xbt_dynar_t);
+      xbt_dynar_get_as(initial_communications_pattern, issuer->get_pid(), simgrid::mc::PatternCommunicationList*);
+  xbt_dynar_t incomplete_pattern = xbt_dynar_get_as(incomplete_communications_pattern, issuer->get_pid(), xbt_dynar_t);
 
   std::unique_ptr<simgrid::mc::PatternCommunication> pattern =
       std::unique_ptr<simgrid::mc::PatternCommunication>(new simgrid::mc::PatternCommunication());
@@ -193,7 +193,8 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
     char* remote_name = mc_model_checker->process().read<char*>(
         RemotePtr<char*>((uint64_t)(synchro->mbox ? &synchro->mbox->name_ : &synchro->mbox_cpy->name_)));
     pattern->rdv      = mc_model_checker->process().read_string(RemotePtr<char>(remote_name));
-    pattern->src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(synchro->src_actor_.get()))->pid_;
+    pattern->src_proc =
+        mc_model_checker->process().resolveActor(simgrid::mc::remote(synchro->src_actor_.get()))->get_pid();
     pattern->src_host = MC_smx_actor_get_host_name(issuer);
 
 #if HAVE_SMPI
@@ -243,13 +244,14 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
         &remote_name, remote(comm->mbox ? &simgrid::xbt::string::to_string_data(comm->mbox->name_).data
                                         : &simgrid::xbt::string::to_string_data(comm->mbox_cpy->name_).data));
     pattern->rdv      = mc_model_checker->process().read_string(RemotePtr<char>(remote_name));
-    pattern->dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_actor_.get()))->pid_;
+    pattern->dst_proc =
+        mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_actor_.get()))->get_pid();
     pattern->dst_host = MC_smx_actor_get_host_name(issuer);
   } else
     xbt_die("Unexpected call_type %i", (int) call_type);
 
-  XBT_DEBUG("Insert incomplete comm pattern %p for process %ld", pattern.get(), issuer->pid_);
-  xbt_dynar_t dynar = xbt_dynar_get_as(incomplete_communications_pattern, issuer->pid_, xbt_dynar_t);
+  XBT_DEBUG("Insert incomplete comm pattern %p for process %ld", pattern.get(), issuer->get_pid());
+  xbt_dynar_t dynar = xbt_dynar_get_as(incomplete_communications_pattern, issuer->get_pid(), xbt_dynar_t);
   simgrid::mc::PatternCommunication* pattern2 = pattern.release();
   xbt_dynar_push(dynar, &pattern2);
 }

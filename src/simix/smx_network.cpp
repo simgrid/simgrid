@@ -227,7 +227,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t synchro, do
   if (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING) {
     SIMIX_comm_finish(synchro);
   } else { /* we need a sleep action (even when there is no timeout) to be notified of host failures */
-    simgrid::kernel::resource::Action* sleep = simcall->issuer->host_->pimpl_cpu->sleep(timeout);
+    simgrid::kernel::resource::Action* sleep = simcall->issuer->get_host()->pimpl_cpu->sleep(timeout);
     sleep->set_data(synchro.get());
 
     simgrid::kernel::activity::CommImplPtr comm =
@@ -389,7 +389,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
     /* Check out for errors */
 
-    if (not simcall->issuer->host_->is_on()) {
+    if (not simcall->issuer->get_host()->is_on()) {
       simcall->issuer->context_->iwannadie = true;
       simcall->issuer->exception_ =
           std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
@@ -430,9 +430,9 @@ void SIMIX_comm_finish(smx_activity_t synchro)
         case SIMIX_LINK_FAILURE:
           XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) "
                     "detached:%d",
-                    synchro.get(), comm->src_actor_ ? comm->src_actor_->host_->get_cname() : nullptr,
-                    comm->dst_actor_ ? comm->dst_actor_->host_->get_cname() : nullptr, simcall->issuer->get_cname(),
-                    simcall->issuer, comm->detached);
+                    synchro.get(), comm->src_actor_ ? comm->src_actor_->get_host()->get_cname() : nullptr,
+                    comm->dst_actor_ ? comm->dst_actor_->get_host()->get_cname() : nullptr,
+                    simcall->issuer->get_cname(), simcall->issuer, comm->detached);
           if (comm->src_actor_ == simcall->issuer) {
             XBT_DEBUG("I'm source");
           } else if (comm->dst_actor_ == simcall->issuer) {
@@ -507,7 +507,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
       }
     }
 
-    if (simcall->issuer->host_->is_on())
+    if (simcall->issuer->get_host()->is_on())
       SIMIX_simcall_answer(simcall);
     else
       simcall->issuer->context_->iwannadie = true;

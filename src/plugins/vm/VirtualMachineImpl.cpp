@@ -173,7 +173,7 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
 {
   if (get_state() != s4u::VirtualMachine::state::RUNNING)
     THROWF(vm_error, 0, "Cannot suspend VM %s: it is not running.", piface_->get_cname());
-  if (issuer->host_ == piface_)
+  if (issuer->get_host() == piface_)
     THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->get_cname(),
            piface_->get_cname());
 
@@ -240,7 +240,7 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
 
   for (auto& smx_process : process_list_) {
     XBT_DEBUG("kill %s@%s on behalf of %s which shutdown that VM.", smx_process.get_cname(),
-              smx_process.host_->get_cname(), issuer->get_cname());
+              smx_process.get_host()->get_cname(), issuer->get_cname());
     issuer->kill(&smx_process);
   }
 
