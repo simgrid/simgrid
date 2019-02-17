@@ -93,8 +93,7 @@ void Context::stop()
   XBT_DEBUG("%s@%s(%ld) should not run anymore", actor_->get_cname(), actor_->iface()->get_host()->get_cname(),
             actor_->get_pid());
 
-  if (this->actor_ == simix_global->maestro_process) /* Do not cleanup maestro */
-    this->actor_->cleanup();
+  this->actor_->cleanup();
 
   this->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), because that's me
   simgrid::simix::simcall([this] {

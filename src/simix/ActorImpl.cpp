@@ -67,6 +67,9 @@ ActorImpl::~ActorImpl()
 
 void ActorImpl::cleanup()
 {
+  if (this == simix_global->maestro_process) /* Do not cleanup maestro */
+    return;
+
   XBT_DEBUG("Cleanup actor %s (%p), waiting synchro %p", get_cname(), this, waiting_synchro.get());
 
   simix_global->mutex.lock();
