@@ -12,9 +12,6 @@
 #include <csignal>
 #include <functional>
 
-/* Process creation/destruction callbacks */
-typedef void (*void_pfn_smxprocess_t)(smx_actor_t);
-
 namespace simgrid {
 namespace kernel {
 namespace context {
@@ -23,12 +20,12 @@ class XBT_PUBLIC ContextFactory {
 public:
   explicit ContextFactory() {}
   virtual ~ContextFactory();
-  virtual Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) = 0;
+  virtual Context* create_context(std::function<void()> code, smx_actor_t actor) = 0;
 
   /** Turn the current thread into a simulation context */
-  virtual Context* attach(void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
+  virtual Context* attach(smx_actor_t actor);
   /** Turn the current thread into maestro (the old maestro becomes a regular actor) */
-  virtual Context* create_maestro(std::function<void()> code, smx_actor_t process);
+  virtual Context* create_maestro(std::function<void()> code, smx_actor_t actor);
 
   virtual void run_all() = 0;
 
@@ -46,14 +43,13 @@ class XBT_PUBLIC Context {
 
 private:
   std::function<void()> code_;
-  void_pfn_smxprocess_t cleanup_func_ = nullptr;
   smx_actor_t actor_                  = nullptr;
   void declare_context(std::size_t size);
 
 public:
   bool iwannadie = false;
 
-  Context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor);
+  Context(std::function<void()> code, smx_actor_t actor);
   Context(const Context&) = delete;
   Context& operator=(const Context&) = delete;
   virtual ~Context();
@@ -61,7 +57,6 @@ public:
   void operator()() { code_(); }
   bool has_code() const { return static_cast<bool>(code_); }
   smx_actor_t get_actor() { return this->actor_; }
-  void set_cleanup(void_pfn_smxprocess_t cleanup) { cleanup_func_ = cleanup; }
 
   // Scheduling methods
   virtual void stop();
@@ -76,10 +71,7 @@ public:
 
 class XBT_PUBLIC AttachContext : public Context {
 public:
-  AttachContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor)
-      : Context(std::move(code), cleanup_func, actor)
-  {
-  }
+  AttachContext(std::function<void()> code, smx_actor_t actor) : Context(std::move(code), actor) {}
 
   ~AttachContext() override;
 
@@ -126,9 +118,6 @@ typedef simgrid::kernel::context::ContextFactory *smx_context_factory_t;
 
 XBT_PRIVATE void SIMIX_context_mod_init();
 XBT_PRIVATE void SIMIX_context_mod_exit();
-
-XBT_PUBLIC smx_context_t SIMIX_context_new(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
-                                           smx_actor_t simix_process);
 
 #ifndef WIN32
 XBT_PUBLIC_DATA char sigsegv_stack[SIGSTKSZ];

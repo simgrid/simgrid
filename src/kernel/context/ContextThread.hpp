@@ -20,7 +20,7 @@ namespace context {
 
 class XBT_PUBLIC ThreadContext : public AttachContext {
 public:
-  ThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor, bool maestro);
+  ThreadContext(std::function<void()> code, smx_actor_t actor, bool maestro);
   ~ThreadContext() override;
   void stop() override;
   void suspend() override;
@@ -51,8 +51,8 @@ private:
 
 class XBT_PUBLIC SerialThreadContext : public ThreadContext {
 public:
-  SerialThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor, bool maestro)
-      : ThreadContext(std::move(code), cleanup_func, actor, maestro)
+  SerialThreadContext(std::function<void()> code, smx_actor_t actor, bool maestro)
+      : ThreadContext(std::move(code), actor, maestro)
   {
   }
 
@@ -61,8 +61,8 @@ public:
 
 class ParallelThreadContext : public ThreadContext {
 public:
-  ParallelThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor, bool maestro)
-      : ThreadContext(std::move(code), cleanup_func, actor, maestro)
+  ParallelThreadContext(std::function<void()> code, smx_actor_t actor, bool maestro)
+      : ThreadContext(std::move(code), actor, maestro)
   {
   }
 
@@ -81,29 +81,24 @@ class ThreadContextFactory : public ContextFactory {
 public:
   ThreadContextFactory();
   ~ThreadContextFactory() override;
-  ThreadContext* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
-                                smx_actor_t actor) override
+  ThreadContext* create_context(std::function<void()> code, smx_actor_t actor) override
   {
     bool maestro = not code;
-    return create_context(std::move(code), cleanup_func, actor, maestro);
+    return create_context(std::move(code), actor, maestro);
   }
   void run_all() override;
 
   // Optional methods:
-  ThreadContext* attach(void_pfn_smxprocess_t cleanup_func, smx_actor_t actor) override
-  {
-    return create_context(std::function<void()>(), cleanup_func, actor, false);
-  }
+  ThreadContext* attach(smx_actor_t actor) override { return create_context(std::function<void()>(), actor, false); }
   ThreadContext* create_maestro(std::function<void()> code, smx_actor_t actor) override
   {
-    return create_context(std::move(code), nullptr, actor, true);
+    return create_context(std::move(code), actor, true);
   }
 
 private:
   bool parallel_;
 
-  ThreadContext* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor,
-                                bool maestro);
+  ThreadContext* create_context(std::function<void()> code, smx_actor_t actor, bool maestro);
 };
 }}} // namespace
 

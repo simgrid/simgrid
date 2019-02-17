@@ -15,17 +15,15 @@ namespace kernel {
 namespace context {
 
 // BoostContextFactory
-smx_context_t BoostContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
-                                                  smx_actor_t process)
+smx_context_t BoostContextFactory::create_context(std::function<void()> code, smx_actor_t actor)
 {
-  return this->new_context<BoostContext>(std::move(code), cleanup_func, process, this);
+  return this->new_context<BoostContext>(std::move(code), actor, this);
 }
 
 // BoostContext
 
-BoostContext::BoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor,
-                           SwappedContextFactory* factory)
-    : SwappedContext(std::move(code), cleanup_func, actor, factory)
+BoostContext::BoostContext(std::function<void()> code, smx_actor_t actor, SwappedContextFactory* factory)
+    : SwappedContext(std::move(code), actor, factory)
 {
 
   /* if the user provided a function for the process then use it, otherwise it is the context for maestro */

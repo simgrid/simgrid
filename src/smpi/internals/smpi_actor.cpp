@@ -225,7 +225,6 @@ void ActorExt::init()
   }
 
   simgrid::s4u::ActorPtr proc = simgrid::s4u::Actor::self();
-  proc->get_impl()->context_->set_cleanup(&SIMIX_process_cleanup);
   // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
   // this up here so that I can set the privatized region before the switch.
   ActorExt* process = smpi_process_remote(proc);

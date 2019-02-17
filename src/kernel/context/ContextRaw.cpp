@@ -186,17 +186,15 @@ namespace context {
 
 // RawContextFactory
 
-Context* RawContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
-                                           smx_actor_t process)
+Context* RawContextFactory::create_context(std::function<void()> code, smx_actor_t actor)
 {
-  return this->new_context<RawContext>(std::move(code), cleanup_func, process, this);
+  return this->new_context<RawContext>(std::move(code), actor, this);
 }
 
 // RawContext
 
-RawContext::RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t actor,
-                       SwappedContextFactory* factory)
-    : SwappedContext(std::move(code), cleanup, actor, factory)
+RawContext::RawContext(std::function<void()> code, smx_actor_t actor, SwappedContextFactory* factory)
+    : SwappedContext(std::move(code), actor, factory)
 {
    if (has_code()) {
      this->stack_top_ = raw_makecontext(get_stack(), smx_context_usable_stack_size, RawContext::wrapper, this);

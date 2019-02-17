@@ -34,10 +34,9 @@ JavaContextFactory::JavaContextFactory() : ContextFactory()
 
 JavaContextFactory::~JavaContextFactory()=default;
 
-JavaContext* JavaContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun,
-                                                smx_actor_t actor)
+JavaContext* JavaContextFactory::create_context(std::function<void()> code, smx_actor_t actor)
 {
-  return this->new_context<JavaContext>(std::move(code), cleanup_fun, actor);
+  return this->new_context<JavaContext>(std::move(code), actor);
 }
 
 void JavaContextFactory::run_all()
@@ -45,8 +44,8 @@ void JavaContextFactory::run_all()
   SerialThreadContext::run_all();
 }
 
-JavaContext::JavaContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
-    : SerialThreadContext(std::move(code), cleanup_func, process, false /* not maestro */)
+JavaContext::JavaContext(std::function<void()> code, smx_actor_t actor)
+    : SerialThreadContext(std::move(code), actor, false /* not maestro */)
 {
   /* ThreadContext already does all we need */
 }

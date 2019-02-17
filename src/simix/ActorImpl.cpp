@@ -50,30 +50,6 @@ int SIMIX_process_has_pending_comms(smx_actor_t process) {
   return process->comms.size() > 0;
 }
 
-/**
- * @brief Moves a process to the list of processes to destroy.
- */
-void SIMIX_process_cleanup(smx_actor_t process)
-{
-  XBT_DEBUG("Cleanup process %s (%p), waiting synchro %p", process->get_cname(), process,
-            process->waiting_synchro.get());
-
-  simix_global->mutex.lock();
-
-  simix_global->process_list.erase(process->get_pid());
-  if (process->get_host() && process->host_process_list_hook.is_linked())
-    simgrid::xbt::intrusive_erase(process->get_host()->pimpl_->process_list_, *process);
-  if (not process->smx_destroy_list_hook.is_linked()) {
-#if SIMGRID_HAVE_MC
-    xbt_dynar_push_as(simix_global->dead_actors_vector, smx_actor_t, process);
-#endif
-    simix_global->actors_to_destroy.push_back(*process);
-  }
-  process->context_->iwannadie = false;
-
-  simix_global->mutex.unlock();
-}
-
 namespace simgrid {
 namespace kernel {
 namespace actor {
@@ -87,6 +63,26 @@ ActorImpl::ActorImpl(simgrid::xbt::string name, s4u::Host* host) : host_(host), 
 ActorImpl::~ActorImpl()
 {
   delete this->context_;
+}
+
+void ActorImpl::cleanup()
+{
+  XBT_DEBUG("Cleanup actor %s (%p), waiting synchro %p", get_cname(), this, waiting_synchro.get());
+
+  simix_global->mutex.lock();
+
+  simix_global->process_list.erase(pid_);
+  if (host_ && host_process_list_hook.is_linked())
+    simgrid::xbt::intrusive_erase(host_->pimpl_->process_list_, *this);
+  if (not smx_destroy_list_hook.is_linked()) {
+#if SIMGRID_HAVE_MC
+    xbt_dynar_push_as(simix_global->dead_actors_vector, smx_actor_t, this);
+#endif
+    simix_global->actors_to_destroy.push_back(*this);
+  }
+  context_->iwannadie = false;
+
+  simix_global->mutex.unlock();
 }
 
 void ActorImpl::exit()
@@ -399,7 +395,7 @@ ActorImplPtr ActorImpl::create(std::string name, simix::ActorCode code, void* da
     actor->set_ppid(parent_actor->get_pid());
 
   XBT_VERB("Create context %s", actor->get_cname());
-  actor->context_ = SIMIX_context_new(std::move(code), &SIMIX_process_cleanup, actor);
+  actor->context_ = simix_global->context_factory->create_context(std::move(code), actor);
 
   /* Add properties */
   if (properties != nullptr)
@@ -429,7 +425,7 @@ void create_maestro(simix::ActorCode code)
   ActorImpl* maestro = new ActorImpl(xbt::string(""), /*host*/ nullptr);
 
   if (not code) {
-    maestro->context_ = SIMIX_context_new(simix::ActorCode(), nullptr, maestro);
+    maestro->context_ = simix_global->context_factory->create_context(simix::ActorCode(), maestro);
   } else {
     maestro->context_ = simix_global->context_factory->create_maestro(code, maestro);
   }
@@ -466,7 +462,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
 
   XBT_VERB("Create context %s", actor->get_cname());
   xbt_assert(simix_global != nullptr, "simix is not initialized, please call MSG_init first");
-  actor->context_ = simix_global->context_factory->attach(&SIMIX_process_cleanup, actor);
+  actor->context_ = simix_global->context_factory->attach(actor);
 
   /* Add properties */
   if (properties != nullptr)
@@ -499,7 +495,7 @@ void SIMIX_process_detach()
   if (context == nullptr)
     xbt_die("Not a suitable context");
 
-  SIMIX_process_cleanup(context->get_actor());
+  context->get_actor()->cleanup();
   context->attach_stop();
 }
 

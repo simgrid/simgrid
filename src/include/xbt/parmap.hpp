@@ -10,6 +10,7 @@
 
 #include "src/internal_config.h" // HAVE_FUTEX_H
 #include "src/kernel/context/Context.hpp"
+#include "src/simix/smx_private.hpp" /* simix_global */
 
 #include <boost/optional.hpp>
 #include <condition_variable>
@@ -295,7 +296,7 @@ template <typename T> void* Parmap<T>::worker_main(void* arg)
   ThreadData* data      = static_cast<ThreadData*>(arg);
   Parmap<T>& parmap     = data->parmap;
   unsigned round        = 0;
-  smx_context_t context = SIMIX_context_new(std::function<void()>(), nullptr, nullptr);
+  smx_context_t context = simix_global->context_factory->create_context(std::function<void()>(), nullptr);
   kernel::context::Context::set_current(context);
 
   XBT_CDEBUG(xbt_parmap, "New worker thread created");

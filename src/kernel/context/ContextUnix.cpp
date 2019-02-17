@@ -56,17 +56,16 @@ namespace kernel {
 namespace context {
 
 // UContextFactory
-Context* UContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t actor)
+Context* UContextFactory::create_context(std::function<void()> code, smx_actor_t actor)
 {
-  return new_context<UContext>(std::move(code), cleanup, actor, this);
+  return new_context<UContext>(std::move(code), actor, this);
 }
 
 
 // UContext
 
-UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor,
-                   SwappedContextFactory* factory)
-    : SwappedContext(std::move(code), cleanup_func, actor, factory)
+UContext::UContext(std::function<void()> code, smx_actor_t actor, SwappedContextFactory* factory)
+    : SwappedContext(std::move(code), actor, factory)
 {
   /* if the user provided a function for the actor then use it. If not, nothing to do for maestro. */
   if (has_code()) {

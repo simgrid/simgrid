@@ -13,20 +13,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
-/**
- * @brief creates a new context for a user level process
- * @param code a main function
- * @param cleanup_func the function to call when the context stops
- * @param simix_process
- */
-smx_context_t SIMIX_context_new(
-  std::function<void()> code,
-  void_pfn_smxprocess_t cleanup_func,
-  smx_actor_t simix_process)
-{
-  return simix_global->context_factory->create_context(
-    std::move(code), cleanup_func, simix_process);
-}
 
 namespace simgrid {
 namespace kernel {
@@ -55,7 +41,7 @@ void Context::declare_context(std::size_t size)
 #endif
 }
 
-Context* ContextFactory::attach(void_pfn_smxprocess_t, smx_actor_t)
+Context* ContextFactory::attach(smx_actor_t)
 {
   xbt_die("Cannot attach with this ContextFactory.\n"
     "Try using --cfg=contexts/factory:thread instead.\n");
@@ -67,8 +53,7 @@ Context* ContextFactory::create_maestro(std::function<void()>, smx_actor_t)
     "Try using --cfg=contexts/factory:thread instead.\n");
 }
 
-Context::Context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t actor)
-    : code_(std::move(code)), cleanup_func_(cleanup_func), actor_(actor)
+Context::Context(std::function<void()> code, smx_actor_t actor) : code_(std::move(code)), actor_(actor)
 {
   /* If no function was provided, this is the context for maestro
    * and we should set it as the current context */
@@ -108,8 +93,8 @@ void Context::stop()
   XBT_DEBUG("%s@%s(%ld) should not run anymore", actor_->get_cname(), actor_->iface()->get_host()->get_cname(),
             actor_->get_pid());
 
-  if (this->cleanup_func_)
-    this->cleanup_func_(this->actor_);
+  if (this->actor_ == simix_global->maestro_process) /* Do not cleanup maestro */
+    this->actor_->cleanup();
 
   this->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), because that's me
   simgrid::simix::simcall([this] {
@@ -121,7 +106,7 @@ void Context::stop()
       actor_->kill_timer = nullptr;
     }
 
-    SIMIX_process_cleanup(actor_);
+    actor_->cleanup();
   });
   this->iwannadie = true;
 }

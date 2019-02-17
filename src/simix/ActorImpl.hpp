@@ -105,6 +105,7 @@ public:
 
   static ActorImplPtr create(std::string name, simix::ActorCode code, void* data, s4u::Host* host,
                              std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor);
+  void cleanup();
   void exit();
   void kill(ActorImpl* actor);
   void kill_all();
@@ -167,8 +168,6 @@ XBT_PUBLIC void create_maestro(std::function<void()> code);
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid
-
-XBT_PRIVATE void SIMIX_process_cleanup(smx_actor_t arg);
 
 extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
 

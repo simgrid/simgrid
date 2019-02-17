@@ -34,13 +34,12 @@ ThreadContextFactory::~ThreadContextFactory()
     ParallelThreadContext::finalize();
 }
 
-ThreadContext* ThreadContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup,
-                                                    smx_actor_t actor, bool maestro)
+ThreadContext* ThreadContextFactory::create_context(std::function<void()> code, smx_actor_t actor, bool maestro)
 {
   if (parallel_)
-    return this->new_context<ParallelThreadContext>(std::move(code), cleanup, actor, maestro);
+    return this->new_context<ParallelThreadContext>(std::move(code), actor, maestro);
   else
-    return this->new_context<SerialThreadContext>(std::move(code), cleanup, actor, maestro);
+    return this->new_context<SerialThreadContext>(std::move(code), actor, maestro);
 }
 
 void ThreadContextFactory::run_all()
@@ -56,8 +55,8 @@ void ThreadContextFactory::run_all()
 
 // ThreadContext
 
-ThreadContext::ThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t actor, bool maestro)
-    : AttachContext(std::move(code), cleanup, actor), is_maestro_(maestro)
+ThreadContext::ThreadContext(std::function<void()> code, smx_actor_t actor, bool maestro)
+    : AttachContext(std::move(code), actor), is_maestro_(maestro)
 {
   /* If the user provided a function for the actor then use it */
   if (has_code()) {

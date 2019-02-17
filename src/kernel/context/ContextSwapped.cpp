@@ -47,9 +47,8 @@ SwappedContextFactory::~SwappedContextFactory()
   delete parmap_;
 }
 
-SwappedContext::SwappedContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process,
-                               SwappedContextFactory* factory)
-    : Context(std::move(code), cleanup_func, process), factory_(factory)
+SwappedContext::SwappedContext(std::function<void()> code, smx_actor_t actor, SwappedContextFactory* factory)
+    : Context(std::move(code), actor), factory_(factory)
 {
   // Save maestro (=context created first) in preparation for run_all
   if (not factory->parallel_ && factory_->workers_context_[0] == nullptr)
