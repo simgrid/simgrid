@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/SemaphoreImpl.hpp"
+#include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/simix/smx_synchro_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_semaphore, simix_synchro, "Semaphore kernel-space implementation");
@@ -14,11 +15,11 @@ namespace activity {
 
 void SemaphoreImpl::acquire(smx_actor_t issuer, double timeout)
 {
-  smx_activity_t synchro = nullptr;
+  RawImplPtr synchro = nullptr;
 
   XBT_DEBUG("Wait semaphore %p (timeout:%f)", this, timeout);
   if (value_ <= 0) {
-    synchro = SIMIX_synchro_wait(issuer->get_host(), timeout);
+    synchro = RawImplPtr(new RawImpl())->start(issuer->get_host(), timeout);
     synchro->simcalls_.push_front(&issuer->simcall);
     issuer->waiting_synchro = synchro;
     sleeping_.push_back(*issuer);

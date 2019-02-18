@@ -7,17 +7,28 @@
 #include "simgrid/kernel/resource/Action.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/simix/smx_synchro_private.hpp"
+#include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_interface.hpp"
+#include <simgrid/s4u/Host.hpp>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_synchro);
+
 namespace simgrid {
 namespace kernel {
 namespace activity {
+
+RawImpl* RawImpl::start(s4u::Host* host, double timeout)
+{
+  surf_action_ = host->pimpl_cpu->sleep(timeout);
+  surf_action_->set_data(this);
+  return this;
+}
 
 RawImpl::~RawImpl()
 {
   surf_action_->unref();
 }
+
 void RawImpl::suspend()
 {
   /* The suspension of raw synchros is delayed to when the process is rescheduled. */

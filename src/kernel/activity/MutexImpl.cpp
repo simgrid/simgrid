@@ -29,12 +29,12 @@ void MutexImpl::lock(smx_actor_t issuer)
 {
   XBT_IN("(%p; %p)", this, issuer);
   /* FIXME: check where to validate the arguments */
-  smx_activity_t synchro = nullptr;
+  RawImplPtr synchro = nullptr;
 
   if (this->locked) {
     /* FIXME: check if the host is active ? */
     /* Somebody using the mutex, use a synchronization to get host failures */
-    synchro = SIMIX_synchro_wait(issuer->get_host(), -1);
+    synchro = RawImplPtr(new RawImpl())->start(issuer->get_host(), -1);
     synchro->simcalls_.push_back(&issuer->simcall);
     issuer->waiting_synchro = synchro;
     this->sleeping.push_back(*issuer);

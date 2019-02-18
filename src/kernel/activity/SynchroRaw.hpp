@@ -17,6 +17,7 @@ namespace activity {
 class XBT_PUBLIC RawImpl : public ActivityImpl {
 public:
   ~RawImpl() override;
+  RawImpl* start(s4u::Host* host, double timeout);
   void suspend() override;
   void resume() override;
   void post() override;

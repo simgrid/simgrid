@@ -70,7 +70,7 @@ public:
   std::vector<s_smx_process_exit_fun_t> on_exit; /* list of functions executed when the process dies */
 
   std::function<void()> code;
-  smx_timer_t kill_timer = nullptr;
+  simix::Timer* kill_timer = nullptr;
 
 private:
   /* Refcounting */

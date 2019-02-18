@@ -6,26 +6,12 @@
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SemaphoreImpl.hpp"
-#include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/simix/smx_synchro_private.hpp"
-#include "src/surf/cpu_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix, "SIMIX Synchronization (mutex, semaphores and conditions)");
 
 /***************************** Raw synchronization *********************************/
-
-smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
-{
-  XBT_IN("(%p, %f)",smx_host,timeout);
-
-  simgrid::kernel::activity::RawImplPtr sync =
-      simgrid::kernel::activity::RawImplPtr(new simgrid::kernel::activity::RawImpl());
-  sync->surf_action_ = smx_host->pimpl_cpu->sleep(timeout);
-  sync->surf_action_->set_data(sync.get());
-  XBT_OUT();
-  return sync;
-}
 
 void SIMIX_synchro_stop_waiting(smx_actor_t process, smx_simcall_t simcall)
 {

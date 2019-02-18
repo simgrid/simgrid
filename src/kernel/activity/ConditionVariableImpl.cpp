@@ -17,7 +17,7 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
                              smx_simcall_t simcall)
 {
   XBT_IN("(%p, %p, %f, %p,%p)", cond, mutex, timeout, issuer, simcall);
-  smx_activity_t synchro = nullptr;
+  simgrid::kernel::activity::RawImplPtr synchro = nullptr;
 
   XBT_DEBUG("Wait condition %p", cond);
 
@@ -28,7 +28,8 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
     mutex->unlock(issuer);
   }
 
-  synchro = SIMIX_synchro_wait(issuer->get_host(), timeout);
+  synchro = simgrid::kernel::activity::RawImplPtr(new simgrid::kernel::activity::RawImpl())
+                ->start(issuer->get_host(), timeout);
   synchro->simcalls_.push_front(simcall);
   issuer->waiting_synchro = synchro;
   cond->sleeping.push_back(*simcall->issuer);
