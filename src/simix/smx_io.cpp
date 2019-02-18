@@ -44,7 +44,8 @@ void SIMIX_io_finish(smx_activity_t synchro)
         /* do nothing, synchro done */
         break;
       case SIMIX_FAILED:
-        SMX_EXCEPTION(simcall->issuer, io_error, 0, "IO failed");
+        simcall->issuer->exception_ =
+            std::make_exception_ptr(simgrid::StorageFailureException(XBT_THROW_POINT, "Storage failed"));
         break;
       case SIMIX_CANCELED:
         simcall->issuer->exception_ =

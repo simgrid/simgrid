@@ -144,6 +144,16 @@ public:
   }
 };
 
+/** Exception raised when a storage fails */
+class StorageFailureException : public xbt_ex {
+public:
+  StorageFailureException(simgrid::xbt::ThrowPoint throwpoint, std::string message)
+      : xbt_ex(std::move(throwpoint), std::move(message))
+  {
+    category = io_error;
+  }
+};
+
 /** Exception raised when something got canceled before completion */
 class CancelException : public xbt_ex {
 public:

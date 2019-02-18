@@ -43,6 +43,7 @@ void IoImpl::cancel()
   XBT_VERB("This exec %p is canceled", this);
   if (surf_action_ != nullptr)
     surf_action_->cancel();
+  state_ = SIMIX_CANCELED;
 }
 
 double IoImpl::get_remaining()
