@@ -21,6 +21,7 @@ public:
 
   IoImpl* start(sg_size_t size, simgrid::s4u::Io::OpType type);
   void post() override;
+  void finish();
   void cancel();
   double get_remaining();
   sg_size_t get_performed_ioops() { return performed_ioops_; }

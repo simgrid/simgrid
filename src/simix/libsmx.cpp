@@ -21,7 +21,6 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
-#include "src/simix/smx_io_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
