@@ -23,11 +23,11 @@ void SIMIX_synchro_stop_waiting(smx_actor_t process, smx_simcall_t simcall)
       break;
 
     case SIMCALL_COND_WAIT:
-      simgrid::xbt::intrusive_erase(simcall_cond_wait__get__cond(simcall)->sleeping, *process);
+      simgrid::xbt::intrusive_erase(simcall_cond_wait__get__cond(simcall)->sleeping_, *process);
       break;
 
     case SIMCALL_COND_WAIT_TIMEOUT:
-      simgrid::xbt::intrusive_erase(simcall_cond_wait_timeout__get__cond(simcall)->sleeping, *process);
+      simgrid::xbt::intrusive_erase(simcall_cond_wait_timeout__get__cond(simcall)->sleeping_, *process);
       simcall_cond_wait_timeout__set__result(simcall, 1); // signal a timeout
       break;
 

@@ -13,50 +13,23 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ConditionVariable, simix_synchro, "Condition var
 
 /********************************* Condition **********************************/
 
-static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout, smx_actor_t issuer,
-                             smx_simcall_t simcall)
-{
-  XBT_IN("(%p, %p, %f, %p,%p)", cond, mutex, timeout, issuer, simcall);
-  simgrid::kernel::activity::RawImplPtr synchro = nullptr;
-
-  XBT_DEBUG("Wait condition %p", cond);
-
-  /* If there is a mutex unlock it */
-  /* FIXME: what happens if the issuer is not the owner of the mutex? */
-  if (mutex != nullptr) {
-    cond->mutex = mutex;
-    mutex->unlock(issuer);
-  }
-
-  synchro = simgrid::kernel::activity::RawImplPtr(new simgrid::kernel::activity::RawImpl())
-                ->start(issuer->get_host(), timeout);
-  synchro->simcalls_.push_front(simcall);
-  issuer->waiting_synchro = synchro;
-  cond->sleeping.push_back(*simcall->issuer);
-  XBT_OUT();
-}
-
-/**
- * @brief Handle a condition waiting simcall without timeouts
- */
+/** @brief Handle a condition waiting simcall without timeouts */
 void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex)
 {
   XBT_IN("(%p)", simcall);
   smx_actor_t issuer = simcall->issuer;
 
-  _SIMIX_cond_wait(cond, mutex, -1, issuer, simcall);
+  cond->wait(mutex, -1, issuer, simcall);
   XBT_OUT();
 }
 
-/**
- * @brief Handle a condition waiting simcall with timeouts
- */
+/** @brief Handle a condition waiting simcall with timeouts */
 void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex, double timeout)
 {
   XBT_IN("(%p)", simcall);
   smx_actor_t issuer = simcall->issuer;
   simcall_cond_wait_timeout__set__result(simcall, 0); // default result, will be set to 1 on timeout
-  _SIMIX_cond_wait(cond, mutex, timeout, issuer, simcall);
+  cond->wait(mutex, timeout, issuer, simcall);
   XBT_OUT();
 }
 
@@ -79,9 +52,9 @@ void ConditionVariableImpl::signal()
 
   /* If there are processes waiting for the condition choose one and try
      to make it acquire the mutex */
-  if (not sleeping.empty()) {
-    auto& proc = sleeping.front();
-    sleeping.pop_front();
+  if (not sleeping_.empty()) {
+    auto& proc = sleeping_.front();
+    sleeping_.pop_front();
 
     /* Destroy waiter's synchronization */
     proc.waiting_synchro = nullptr;
@@ -111,8 +84,29 @@ void ConditionVariableImpl::broadcast()
   XBT_DEBUG("Broadcast condition %p", this);
 
   /* Signal the condition until nobody is waiting on it */
-  while (not sleeping.empty())
+  while (not sleeping_.empty())
     signal();
+}
+
+void ConditionVariableImpl::wait(smx_mutex_t mutex, double timeout, smx_actor_t issuer, smx_simcall_t simcall)
+{
+  XBT_IN("(%p, %p, %f, %p,%p)", this, mutex, timeout, issuer, simcall);
+  RawImplPtr synchro = nullptr;
+
+  XBT_DEBUG("Wait condition %p", this);
+
+  /* If there is a mutex unlock it */
+  /* FIXME: what happens if the issuer is not the owner of the mutex? */
+  if (mutex != nullptr) {
+    mutex_ = mutex;
+    mutex->unlock(issuer);
+  }
+
+  synchro = RawImplPtr(new RawImpl())->start(issuer->get_host(), timeout);
+  synchro->simcalls_.push_front(simcall);
+  issuer->waiting_synchro = synchro;
+  sleeping_.push_back(*simcall->issuer);
+  XBT_OUT();
 }
 
 // boost::intrusive_ptr<ConditionVariableImpl> support:
@@ -125,10 +119,10 @@ void intrusive_ptr_release(simgrid::kernel::activity::ConditionVariableImpl* con
 {
   if (cond->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
     std::atomic_thread_fence(std::memory_order_acquire);
-    xbt_assert(cond->sleeping.empty(), "Cannot destroy conditional since someone is still using it");
+    xbt_assert(cond->sleeping_.empty(), "Cannot destroy conditional since someone is still using it");
     delete cond;
   }
 }
 } // namespace activity
 } // namespace kernel
-}
+} // namespace simgrid
