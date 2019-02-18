@@ -154,6 +154,7 @@ class Profile;
 } // namespace kernel
 namespace simix {
   class Host;
+  class Timer;
 }
 namespace surf {
   class Cpu;
@@ -184,6 +185,7 @@ typedef simgrid::s4u::NetZone s4u_NetZone;
 typedef simgrid::s4u::VirtualMachine s4u_VM;
 typedef boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> smx_activity_t;
 
+typedef simgrid::simix::Timer* smx_timer_t;
 typedef simgrid::kernel::context::Context* smx_context_t;
 typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 typedef simgrid::kernel::activity::ConditionVariableImpl* smx_cond_t;
@@ -204,6 +206,7 @@ typedef struct s4u_NetZone s4u_NetZone;
 typedef struct s4u_VM s4u_VM;
 typedef struct kernel_Activity* smx_activity_t;
 
+typedef struct s_smx_timer* smx_timer_t;
 typedef struct s_smx_actor* smx_actor_t;
 typedef struct s_smx_cond_t* smx_cond_t;
 typedef struct s_smx_context* smx_context_t;

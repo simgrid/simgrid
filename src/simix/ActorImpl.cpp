@@ -170,7 +170,7 @@ void ActorImpl::set_kill_time(double kill_time)
   if (kill_time <= SIMIX_get_clock())
     return;
   XBT_DEBUG("Set kill time %f for actor %s@%s", kill_time, get_cname(), host_->get_cname());
-  kill_timer = SIMIX_timer_set(kill_time, [this] {
+  kill_timer = simix::Timer::set(kill_time, [this] {
     this->exit();
     kill_timer = nullptr;
   });
@@ -178,7 +178,7 @@ void ActorImpl::set_kill_time(double kill_time)
 
 double ActorImpl::get_kill_time()
 {
-  return SIMIX_timer_get_date(kill_timer);
+  return kill_timer ? kill_timer->get_date() : 0;
 }
 
 static void dying_daemon(int /*exit_status*/, void* data)

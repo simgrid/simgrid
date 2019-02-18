@@ -313,7 +313,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
   if (timeout < 0.0){
     simcall->timer = NULL;
   } else {
-    simcall->timer = SIMIX_timer_set(SIMIX_get_clock() + timeout, [simcall]() {
+    simcall->timer = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall]() {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
       simcall_comm_waitany__set__result(simcall, -1);
       SIMIX_simcall_answer(simcall);
@@ -373,7 +373,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
     if (simcall->call == SIMCALL_COMM_WAITANY) {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
       if (simcall->timer) {
-        SIMIX_timer_remove(simcall->timer);
+        simcall->timer->remove();
         simcall->timer = nullptr;
       }
       if (not MC_is_active() && not MC_record_replay_is_active())

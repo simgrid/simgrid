@@ -27,7 +27,7 @@ static simgrid::kernel::Future<void> kernel_wait_until(double date)
 {
   auto promise = std::make_shared<simgrid::kernel::Promise<void>>();
   auto future  = promise->get_future();
-  SIMIX_timer_set(date, [promise] { promise->set_value(); });
+  simgrid::simix::Timer::set(date, [promise] { promise->set_value(); });
   return future;
 }
 

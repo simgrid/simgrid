@@ -25,28 +25,11 @@
 #include "src/mc/remote/Client.hpp"
 #endif
 
-#include <boost/heap/fibonacci_heap.hpp>
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX (kernel)");
 
 std::unique_ptr<simgrid::simix::Global> simix_global;
-
-namespace {
-typedef std::pair<double, smx_timer_t> TimerQelt;
-boost::heap::fibonacci_heap<TimerQelt, boost::heap::compare<simgrid::xbt::HeapComparator<TimerQelt>>> simix_timers;
-}
-
-/** @brief Timer datatype */
-class s_smx_timer_t {
-  double date = 0.0;
-
-public:
-  decltype(simix_timers)::handle_type handle_;
-  simgrid::xbt::Task<void()> callback;
-  double getDate() { return date; }
-  s_smx_timer_t(double date, simgrid::xbt::Task<void()> callback) : date(date), callback(std::move(callback)) {}
-};
 
 void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr) = nullptr;
 
@@ -139,13 +122,29 @@ static void install_segvhandler()
 #endif /* _WIN32 */
 
 /********************************* SIMIX **************************************/
-double SIMIX_timer_next()
-{
-  return simix_timers.empty() ? -1.0 : simix_timers.top().first;
-}
-
 namespace simgrid {
 namespace simix {
+
+Timer* Timer::set(double date, void (*callback)(void*), void* arg)
+{
+  Timer* timer   = new Timer(date, simgrid::xbt::make_task([callback, arg]() { callback(arg); }));
+  timer->handle_ = simix_timers.emplace(std::make_pair(date, timer));
+  return timer;
+}
+
+Timer* Timer::set(double date, simgrid::xbt::Task<void()> callback)
+{
+  Timer* timer   = new Timer(date, std::move(callback));
+  timer->handle_ = simix_timers.emplace(std::make_pair(date, timer));
+  return timer;
+}
+
+/** @brief cancels a timer that was added earlier */
+void Timer::remove()
+{
+  simgrid::simix::simix_timers.erase(handle_);
+  delete this;
+}
 
 void Global::empty_trash()
 {
@@ -274,9 +273,9 @@ void SIMIX_clean()
   /* Exit the SIMIX network module */
   SIMIX_mailbox_exit();
 
-  while (not simix_timers.empty()) {
-    delete simix_timers.top().second;
-    simix_timers.pop();
+  while (not simgrid::simix::simix_timers.empty()) {
+    delete simgrid::simix::simix_timers.top().second;
+    simgrid::simix::simix_timers.pop();
   }
   /* Free the remaining data structures */
   simix_global->actors_to_run.clear();
@@ -344,11 +343,11 @@ static void SIMIX_wake_processes()
 static bool SIMIX_execute_timers()
 {
   bool result = false;
-  while (not simix_timers.empty() && SIMIX_get_clock() >= simix_timers.top().first) {
+  while (not simgrid::simix::simix_timers.empty() && SIMIX_get_clock() >= simgrid::simix::simix_timers.top().first) {
     result = true;
     // FIXME: make the timers being real callbacks (i.e. provide dispatchers that read and expand the args)
-    smx_timer_t timer = simix_timers.top().second;
-    simix_timers.pop();
+    smx_timer_t timer = simgrid::simix::simix_timers.top().second;
+    simgrid::simix::simix_timers.pop();
     try {
       timer->callback();
     } catch (...) {
@@ -500,7 +499,7 @@ void SIMIX_run()
         }
     }
 
-    time = SIMIX_timer_next();
+    time = simgrid::simix::Timer::next();
     if (time > -1.0 || not simix_global->process_list.empty()) {
       XBT_DEBUG("Calling surf_solve");
       time = surf_solve(time);
@@ -543,38 +542,31 @@ void SIMIX_run()
   simgrid::s4u::on_simulation_end();
 }
 
-/**
- *   @brief Set the date to execute a function
- *
- * Set the date to execute the function on the surf.
- *   @param date Date to execute function
- *   @param callback Function to be executed
- *   @param arg Parameters of the function
- *
- */
+double SIMIX_timer_next()
+{
+  return simgrid::simix::Timer::next();
+}
+
 smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void *arg)
 {
-  smx_timer_t timer = new s_smx_timer_t(date, simgrid::xbt::make_task([callback, arg]() { callback(arg); }));
-  timer->handle_    = simix_timers.emplace(std::make_pair(date, timer));
-  return timer;
+  return simgrid::simix::Timer::set(date, callback, arg);
 }
 
 smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback)
 {
-  smx_timer_t timer = new s_smx_timer_t(date, std::move(callback));
-  timer->handle_    = simix_timers.emplace(std::make_pair(date, timer));
+  smx_timer_t timer = new simgrid::simix::Timer(date, std::move(callback));
+  timer->handle_    = simgrid::simix::simix_timers.emplace(std::make_pair(date, timer));
   return timer;
 }
 
 /** @brief cancels a timer that was added earlier */
 void SIMIX_timer_remove(smx_timer_t timer) {
-  simix_timers.erase(timer->handle_);
-  delete timer;
+  timer->remove();
 }
 
 /** @brief Returns the date at which the timer will trigger (or 0 if nullptr timer) */
 double SIMIX_timer_get_date(smx_timer_t timer) {
-  return timer ? timer->getDate() : 0;
+  return timer ? timer->get_date() : 0;
 }
 
 void SIMIX_display_process_status()

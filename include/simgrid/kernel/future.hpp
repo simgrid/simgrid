@@ -440,7 +440,7 @@ template <class T> Future<T> unwrap_future(Future<Future<T>> future)
  *  auto promise = std::make_shared<simgrid::kernel::Promise<T>>();
  *  auto future = promise->get_future();
  *
- *  SIMIX_timer_set(date, [promise] {
+ *  simgrid::simix::Timer::set(date, [promise] {
  *    try {
  *      int value = compute_the_value();
  *      if (value < 0)

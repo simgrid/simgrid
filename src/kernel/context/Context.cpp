@@ -101,7 +101,7 @@ void Context::stop()
 
     /* Unregister from the kill timer if any */
     if (actor_->kill_timer != nullptr) {
-      SIMIX_timer_remove(actor_->kill_timer);
+      actor_->kill_timer->remove();
       actor_->kill_timer = nullptr;
     }
 

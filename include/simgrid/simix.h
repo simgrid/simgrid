@@ -86,9 +86,6 @@ XBT_PUBLIC void SIMIX_set_maestro(void (*code)(void*), void* data);
 XBT_PUBLIC void SIMIX_run();
 XBT_PUBLIC double SIMIX_get_clock();
 
-/* Timer functions FIXME: should these be public? */
-typedef struct s_smx_timer_t* smx_timer_t;
-
 XBT_PUBLIC smx_timer_t SIMIX_timer_set(double date, void (*function)(void*), void* arg);
 XBT_PUBLIC void SIMIX_timer_remove(smx_timer_t timer);
 XBT_PUBLIC double SIMIX_timer_next();

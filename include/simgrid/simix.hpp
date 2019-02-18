@@ -12,6 +12,7 @@
 #include <xbt/future.hpp>
 #include <xbt/signal.hpp>
 
+#include <boost/heap/fibonacci_heap.hpp>
 #include <string>
 #include <unordered_map>
 
@@ -40,7 +41,6 @@ void simcall_run_blocking(F& f)
 }
 
 namespace simgrid {
-
 namespace simix {
 
 /** Execute some code in the kernel/maestro
@@ -75,24 +75,45 @@ typedef std::function<void()> ActorCode;
 typedef std::function<ActorCode(std::vector<std::string> args)> ActorCodeFactory;
 
 XBT_PUBLIC void register_function(const std::string& name, ActorCodeFactory factory);
-}
-}
+
+typedef std::pair<double, Timer*> TimerQelt;
+static boost::heap::fibonacci_heap<TimerQelt, boost::heap::compare<xbt::HeapComparator<TimerQelt>>> simix_timers;
+
+/** @brief Timer datatype */
+class Timer {
+  double date = 0.0;
+
+public:
+  decltype(simix_timers)::handle_type handle_;
+
+  Timer(double date, simgrid::xbt::Task<void()> callback) : date(date), callback(std::move(callback)) {}
+
+  simgrid::xbt::Task<void()> callback;
+  double get_date() { return date; }
+  void remove();
+
+  template <class F> static inline Timer* set(double date, F callback)
+  {
+    return set(date, simgrid::xbt::Task<void()>(std::move(callback)));
+  }
+
+  template <class R, class T> static inline Timer* set(double date, R (*callback)(T*), T* arg)
+  {
+    return set(date, [callback, arg]() { callback(arg); });
+  }
+
+  static Timer* set(double date, void (*callback)(void*), void* arg);
+  static Timer* set(double date, simgrid::xbt::Task<void()> callback);
+  static double next() { return simix_timers.empty() ? -1.0 : simix_timers.top().first; }
+};
+
+} // namespace simix
+} // namespace simgrid
 
 XBT_PUBLIC smx_actor_t simcall_process_create(std::string name, simgrid::simix::ActorCode code, void* data,
                                               sg_host_t host, std::unordered_map<std::string, std::string>* properties);
 
 XBT_PUBLIC smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback);
 
-template<class F> inline
-smx_timer_t SIMIX_timer_set(double date, F callback)
-{
-  return SIMIX_timer_set(date, simgrid::xbt::Task<void()>(std::move(callback)));
-}
-
-template<class R, class T> inline
-smx_timer_t SIMIX_timer_set(double date, R(*callback)(T*), T* arg)
-{
-  return SIMIX_timer_set(date, [callback, arg]() { callback(arg); });
-}
 
 #endif
