@@ -36,11 +36,11 @@ public:
   static MailboxImpl* by_name_or_null(const std::string& name);
   static MailboxImpl* by_name_or_create(const std::string& name);
   void set_receiver(s4u::ActorPtr actor);
-  void push(activity::CommImplPtr comm);
-  void remove(smx_activity_t activity);
-  smx_activity_t iprobe(int type, int (*match_fun)(void*, void*, CommImpl*), void* data);
+  void push(CommImplPtr comm);
+  void remove(const CommImplPtr& comm);
+  CommImplPtr iprobe(int type, int (*match_fun)(void*, void*, CommImpl*), void* data);
   CommImplPtr find_matching_comm(CommImpl::Type type, int (*match_fun)(void*, void*, CommImpl*), void* this_user_data,
-                                 CommImplPtr my_synchro, bool done, bool remove_matching);
+                                 const CommImplPtr& my_synchro, bool done, bool remove_matching);
 
 private:
   simgrid::s4u::Mailbox piface_;
@@ -48,9 +48,9 @@ private:
 
 public:
   simgrid::kernel::actor::ActorImplPtr permanent_receiver_; // actor to which the mailbox is attached
-  boost::circular_buffer_space_optimized<smx_activity_t> comm_queue_;
-  boost::circular_buffer_space_optimized<smx_activity_t>
-      done_comm_queue_; // messages already received in the permanent receive mode
+  boost::circular_buffer_space_optimized<CommImplPtr> comm_queue_;
+  boost::circular_buffer_space_optimized<CommImplPtr> done_comm_queue_; // messages already received in the permanent
+                                                                        // receive mode
 };
 }
 }

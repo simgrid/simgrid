@@ -60,20 +60,17 @@ void MailboxImpl::set_receiver(s4u::ActorPtr actor)
 /** @brief Pushes a communication activity into a mailbox
  *  @param comm What to add
  */
-void MailboxImpl::push(activity::CommImplPtr comm)
+void MailboxImpl::push(CommImplPtr comm)
 {
   comm->mbox = this;
   this->comm_queue_.push_back(std::move(comm));
 }
 
 /** @brief Removes a communication activity from a mailbox
- *  @param activity What to remove
+ *  @param comm What to remove
  */
-void MailboxImpl::remove(smx_activity_t activity)
+void MailboxImpl::remove(const CommImplPtr& comm)
 {
-  simgrid::kernel::activity::CommImplPtr comm =
-      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(activity);
-
   xbt_assert(comm->mbox == this, "Comm %p is in mailbox %s, not mailbox %s", comm.get(),
              (comm->mbox ? comm->mbox->get_cname() : "(null)"), this->get_cname());
   comm->mbox = nullptr;
@@ -85,7 +82,7 @@ void MailboxImpl::remove(smx_activity_t activity)
   xbt_die("Comm %p not found in mailbox %s", comm.get(), this->get_cname());
 }
 
-smx_activity_t MailboxImpl::iprobe(int type, int (*match_fun)(void*, void*, CommImpl*), void* data)
+CommImplPtr MailboxImpl::iprobe(int type, int (*match_fun)(void*, void*, CommImpl*), void* data)
 {
   XBT_DEBUG("iprobe from %p %p", this, &comm_queue_);
 
@@ -98,17 +95,17 @@ smx_activity_t MailboxImpl::iprobe(int type, int (*match_fun)(void*, void*, Comm
     this_comm = CommImplPtr(new CommImpl(CommImpl::Type::RECEIVE));
     smx_type  = CommImpl::Type::SEND;
   }
-  smx_activity_t other_synchro = nullptr;
+  CommImplPtr other_comm = nullptr;
   if (permanent_receiver_ != nullptr && not done_comm_queue_.empty()) {
     XBT_DEBUG("first check in the permanent recv mailbox, to see if we already got something");
-    other_synchro = find_matching_comm(smx_type, match_fun, data, this_comm, /*done*/ true, /*remove_matching*/ false);
+    other_comm = find_matching_comm(smx_type, match_fun, data, this_comm, /*done*/ true, /*remove_matching*/ false);
   }
-  if (not other_synchro) {
+  if (not other_comm) {
     XBT_DEBUG("check if we have more luck in the normal mailbox");
-    other_synchro = find_matching_comm(smx_type, match_fun, data, this_comm, /*done*/ false, /*remove_matching*/ false);
+    other_comm = find_matching_comm(smx_type, match_fun, data, this_comm, /*done*/ false, /*remove_matching*/ false);
   }
 
-  return other_synchro;
+  return other_comm;
 }
 
 /**
@@ -121,18 +118,14 @@ smx_activity_t MailboxImpl::iprobe(int type, int (*match_fun)(void*, void*, Comm
  *  @return The communication activity if found, nullptr otherwise
  */
 CommImplPtr MailboxImpl::find_matching_comm(CommImpl::Type type, int (*match_fun)(void*, void*, CommImpl*),
-                                            void* this_user_data, CommImplPtr my_synchro, bool done,
+                                            void* this_user_data, const CommImplPtr& my_synchro, bool done,
                                             bool remove_matching)
 {
   void* other_user_data = nullptr;
-  boost::circular_buffer_space_optimized<smx_activity_t>* deque;
-  if (done)
-    deque = &done_comm_queue_;
-  else
-    deque = &comm_queue_;
+  auto& comm_queue      = done ? done_comm_queue_ : comm_queue_;
 
-  for (auto it = deque->begin(); it != deque->end(); it++) {
-    CommImplPtr comm = boost::static_pointer_cast<CommImpl>(std::move(*it));
+  for (auto it = comm_queue.begin(); it != comm_queue.end(); it++) {
+    CommImplPtr& comm = *it;
 
     if (comm->type == CommImpl::Type::SEND) {
       other_user_data = comm->src_data_;
@@ -142,13 +135,14 @@ CommImplPtr MailboxImpl::find_matching_comm(CommImpl::Type type, int (*match_fun
     if (comm->type == type && (match_fun == nullptr || match_fun(this_user_data, other_user_data, comm.get())) &&
         (not comm->match_fun || comm->match_fun(other_user_data, this_user_data, my_synchro.get()))) {
       XBT_DEBUG("Found a matching communication synchro %p", comm.get());
-      if (remove_matching)
-        deque->erase(it);
 #if SIMGRID_HAVE_MC
       comm->mbox_cpy = comm->mbox;
 #endif
       comm->mbox = nullptr;
-      return comm;
+      CommImplPtr comm_cpy = comm;
+      if (remove_matching)
+        comm_queue.erase(it);
+      return comm_cpy;
     }
     XBT_DEBUG("Sorry, communication synchro %p does not match our needs:"
               " its type is %d but we are looking for a comm of type %d (or maybe the filtering didn't match)",
