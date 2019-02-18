@@ -17,6 +17,7 @@ namespace activity {
 
 class XBT_PUBLIC CommImpl : public ActivityImpl {
   ~CommImpl() override;
+  void cleanupSurf();
 
 public:
   enum class Type { SEND = 0, RECEIVE, READY, DONE };
@@ -30,7 +31,6 @@ public:
   void finish() override;
   void cancel();
   double remains();
-  void cleanupSurf(); // FIXME: make me protected
 
   CommImpl::Type type;          /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
   smx_mailbox_t mbox = nullptr; /* Rendez-vous where the comm is queued */
