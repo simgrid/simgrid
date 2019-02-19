@@ -32,15 +32,12 @@ Comm::~Comm()
 int Comm::wait_any_for(std::vector<CommPtr>* comms_in, double timeout)
 {
   // Map to dynar<Synchro*>:
-  xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::ActivityImpl*), [](void* ptr) {
-    intrusive_ptr_release(*(simgrid::kernel::activity::ActivityImpl**)ptr);
-  });
+  xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::ActivityImpl*), nullptr);
   for (auto const& comm : *comms_in) {
     if (comm->state_ == Activity::State::INITED)
       comm->start();
     xbt_assert(comm->state_ == Activity::State::STARTED);
     simgrid::kernel::activity::ActivityImpl* ptr = comm->pimpl_.get();
-    intrusive_ptr_add_ref(ptr);
     xbt_dynar_push_as(comms, simgrid::kernel::activity::ActivityImpl*, ptr);
   }
   // Call the underlying simcall:

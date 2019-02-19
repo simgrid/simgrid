@@ -848,9 +848,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
   if(count > 0) {
     int size = 0;
     // Wait for a request to complete
-    xbt_dynar_init(&comms, sizeof(smx_activity_t), [](void*ptr){
-      intrusive_ptr_release(*(simgrid::kernel::activity::ActivityImpl**)ptr);
-    });
+    xbt_dynar_init(&comms, sizeof(simgrid::kernel::activity::ActivityImpl*), nullptr);
     int *map = xbt_new(int, count);
     XBT_DEBUG("Wait for one of %d", count);
     for(int i = 0; i < count; i++) {
@@ -858,7 +856,6 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
           not(requests[i]->flags_ & MPI_REQ_FINISHED)) {
         if (requests[i]->action_ != nullptr) {
           XBT_DEBUG("Waiting any %p ", requests[i]);
-          intrusive_ptr_add_ref(requests[i]->action_.get());
           xbt_dynar_push_as(&comms, simgrid::kernel::activity::ActivityImpl*, requests[i]->action_.get());
           map[size] = i;
           size++;
