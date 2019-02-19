@@ -57,11 +57,11 @@ inline static int simcall_BODY_process_sleep(double duration)
   return simcall<int, double>(SIMCALL_PROCESS_SLEEP, duration);
 }
 
-inline static int simcall_BODY_execution_wait(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution)
+inline static int simcall_BODY_execution_wait(simgrid::kernel::activity::ExecImpl* execution)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
     simcall_HANDLER_execution_wait(&SIMIX_process_self()->simcall, execution);
-  return simcall<int, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(SIMCALL_EXECUTION_WAIT, execution);
+  return simcall<int, simgrid::kernel::activity::ExecImpl*>(SIMCALL_EXECUTION_WAIT, execution);
 }
 
 inline static int simcall_BODY_execution_test(simgrid::kernel::activity::ExecImpl* execution)

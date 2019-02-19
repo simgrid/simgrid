@@ -77,7 +77,8 @@ case SIMCALL_PROCESS_SLEEP:
   break;
 
 case SIMCALL_EXECUTION_WAIT:
-  simcall_HANDLER_execution_wait(simcall, simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0]));
+  simcall_HANDLER_execution_wait(simcall,
+                                 simgrid::simix::unmarshal<simgrid::kernel::activity::ExecImpl*>(simcall->args[0]));
   break;
 
 case SIMCALL_EXECUTION_TEST:

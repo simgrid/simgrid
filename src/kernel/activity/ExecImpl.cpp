@@ -15,9 +15,9 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
-void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchro)
+void simcall_HANDLER_execution_wait(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* synchro)
 {
-  XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro.get(), (int)synchro->state_);
+  XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state_);
 
   /* Associate this simcall to the synchro */
   synchro->simcalls_.push_back(simcall);
@@ -26,13 +26,13 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchr
   /* set surf's synchro */
   if (MC_is_active() || MC_record_replay_is_active()) {
     synchro->state_ = SIMIX_DONE;
-    boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro)->finish();
+    synchro->finish();
     return;
   }
 
   /* If the synchro is already finished then perform the error handling */
   if (synchro->state_ != SIMIX_RUNNING)
-    boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro)->finish();
+    synchro->finish();
 }
 
 void simcall_HANDLER_execution_test(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* synchro)
