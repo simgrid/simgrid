@@ -110,7 +110,7 @@ void IoImpl::finish()
             std::make_exception_ptr(simgrid::CancelException(XBT_THROW_POINT, "I/O Canceled"));
         break;
       default:
-        xbt_die("Internal error in SIMIX_io_finish: unexpected synchro state %d", static_cast<int>(state_));
+        xbt_die("Internal error in IoImpl::finish(): unexpected synchro state %d", static_cast<int>(state_));
     }
 
     simcall->issuer->waiting_synchro = nullptr;

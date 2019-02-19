@@ -60,11 +60,11 @@ void RawImpl::finish()
   switch (state_) {
     case SIMIX_DONE:
       /* do nothing, synchro done */
-      XBT_DEBUG("SIMIX_execution_finished: execution successful");
+      XBT_DEBUG("RawImpl::finish(): execution successful");
       break;
 
     case SIMIX_FAILED:
-      XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->get_host()->get_cname());
+      XBT_DEBUG("RawImpl::finish(): host '%s' failed", simcall->issuer->get_host()->get_cname());
       simcall->issuer->context_->iwannadie = true;
       simcall->issuer->exception_ =
           std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));

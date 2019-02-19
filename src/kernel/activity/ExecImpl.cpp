@@ -162,29 +162,29 @@ void ExecImpl::finish()
 
       case SIMIX_DONE:
         /* do nothing, synchro done */
-        XBT_DEBUG("SIMIX_execution_finished: execution successful");
+        XBT_DEBUG("ExecImpl::finish(): execution successful");
         break;
 
       case SIMIX_FAILED:
-        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->get_host()->get_cname());
+        XBT_DEBUG("ExecImpl::finish(): host '%s' failed", simcall->issuer->get_host()->get_cname());
         simcall->issuer->context_->iwannadie = true;
         simcall->issuer->exception_ =
             std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
         break;
 
       case SIMIX_CANCELED:
-        XBT_DEBUG("SIMIX_execution_finished: execution canceled");
+        XBT_DEBUG("ExecImpl::finish(): execution canceled");
         simcall->issuer->exception_ =
             std::make_exception_ptr(simgrid::CancelException(XBT_THROW_POINT, "Execution Canceled"));
         break;
 
       case SIMIX_TIMEOUT:
-        XBT_DEBUG("SIMIX_execution_finished: execution timeouted");
+        XBT_DEBUG("ExecImpl::finish(): execution timeouted");
         simcall->issuer->exception_ = std::make_exception_ptr(simgrid::TimeoutError(XBT_THROW_POINT, "Timeouted"));
         break;
 
       default:
-        xbt_die("Internal error in SIMIX_execution_finish: unexpected synchro state %d", static_cast<int>(state_));
+        xbt_die("Internal error in ExecImpl::finish(): unexpected synchro state %d", static_cast<int>(state_));
     }
 
     simcall->issuer->waiting_synchro = nullptr;
