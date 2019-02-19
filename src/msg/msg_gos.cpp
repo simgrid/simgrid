@@ -642,15 +642,12 @@ msg_task_t MSG_comm_get_task(msg_comm_t comm)
 
 /**
  * @brief This function is called by SIMIX in kernel mode to copy the data of a comm.
- * @param synchro the comm
+ * @param comm the comm
  * @param buff the data copied
  * @param buff_size size of the buffer
  */
-void MSG_comm_copy_data_from_SIMIX(smx_activity_t synchro, void* buff, size_t buff_size)
+void MSG_comm_copy_data_from_SIMIX(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
 {
-  simgrid::kernel::activity::CommImplPtr comm =
-      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
-
   SIMIX_comm_copy_pointer_callback(comm, buff, buff_size);
 
   // notify the user callback if any

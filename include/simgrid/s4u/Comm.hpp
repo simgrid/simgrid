@@ -141,7 +141,7 @@ private:
   int detached_ = 0;
   int (*match_fun_)(void*, void*, simgrid::kernel::activity::CommImpl*) = nullptr;
   void (*clean_fun_)(void*)                                             = nullptr;
-  void (*copy_data_function_)(smx_activity_t, void*, size_t)            = nullptr;
+  void (*copy_data_function_)(simgrid::kernel::activity::CommImpl*, void*, size_t) = nullptr;
 
   smx_actor_t sender_   = nullptr;
   smx_actor_t receiver_ = nullptr;

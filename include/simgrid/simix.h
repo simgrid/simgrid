@@ -153,9 +153,14 @@ XBT_PUBLIC void SIMIX_process_on_exit(smx_actor_t process, std::function<void(in
 #endif
 
 /****************************** Communication *********************************/
-XBT_PUBLIC void SIMIX_comm_set_copy_data_callback(void (*callback)(smx_activity_t, void*, size_t));
-XBT_PUBLIC void SIMIX_comm_copy_pointer_callback(smx_activity_t comm, void* buff, size_t buff_size);
-XBT_PUBLIC void SIMIX_comm_copy_buffer_callback(smx_activity_t comm, void* buff, size_t buff_size);
+#ifdef __cplusplus
+XBT_PUBLIC void SIMIX_comm_set_copy_data_callback(void (*callback)(simgrid::kernel::activity::CommImpl*, void*,
+                                                                   size_t));
+XBT_PUBLIC void SIMIX_comm_copy_pointer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff,
+                                                 size_t buff_size);
+XBT_PUBLIC void SIMIX_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff,
+                                                size_t buff_size);
+#endif
 
 XBT_ATTRIB_DEPRECATED_v325("Please use CommImpl::finish") XBT_PUBLIC void SIMIX_comm_finish(smx_activity_t synchro);
 
@@ -195,25 +200,26 @@ SG_END_DECL()
 XBT_PUBLIC void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
                                   size_t src_buff_size,
                                   int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                                  void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data, double timeout);
+                                  void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
+                                  void* data, double timeout);
 
 XBT_PUBLIC smx_activity_t simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate,
                                              void* src_buff, size_t src_buff_size,
                                              int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                                              void (*clean_fun)(void*),
-                                             void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data,
-                                             int detached);
+                                             void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
+                                             void* data, int detached);
 
 XBT_PUBLIC void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
                                   int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                                  void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data, double timeout,
-                                  double rate);
+                                  void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
+                                  void* data, double timeout, double rate);
 
 XBT_PUBLIC smx_activity_t simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff,
                                              size_t* dst_buff_size,
                                              int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                                             void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data,
-                                             double rate);
+                                             void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
+                                             void* data, double rate);
 
 XBT_PUBLIC smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
                                               int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),

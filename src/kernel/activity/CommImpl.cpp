@@ -21,8 +21,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related syn
 XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t src, smx_mailbox_t mbox, double task_size,
                                            double rate, void* src_buff, size_t src_buff_size,
                                            int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                                           void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data,
-                                           double timeout)
+                                           void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
+                                           void* data, double timeout)
 {
   smx_activity_t comm = simcall_HANDLER_comm_isend(simcall, src, mbox, task_size, rate, src_buff, src_buff_size,
                                                    match_fun, nullptr, copy_data_fun, data, 0);
@@ -34,7 +34,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
     smx_simcall_t /*simcall*/, smx_actor_t src_proc, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
     size_t src_buff_size, int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
     void (*clean_fun)(void*), // used to free the synchro in case of problem after a detached send
-    void (*copy_data_fun)(smx_activity_t, void*, size_t), // used to copy data if not default one
+    void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), // used to copy data if not default one
     void* data, int detached)
 {
   XBT_DEBUG("send from mailbox %p", mbox);
@@ -103,8 +103,8 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
 XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t receiver, smx_mailbox_t mbox,
                                            void* dst_buff, size_t* dst_buff_size,
                                            int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                                           void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data,
-                                           double timeout, double rate)
+                                           void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
+                                           void* data, double timeout, double rate)
 {
   smx_activity_t comm = simcall_HANDLER_comm_irecv(simcall, receiver, mbox, dst_buff, dst_buff_size, match_fun,
                                                    copy_data_fun, data, rate);
@@ -112,11 +112,10 @@ XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t re
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
 
-XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver,
-                                                      smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
-                                                      simix_match_func_t match_fun,
-                                                      void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data,
-                                                      double rate)
+XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(
+    smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
+    simix_match_func_t match_fun, void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
+    void* data, double rate)
 {
   simgrid::kernel::activity::CommImplPtr this_synchro = simgrid::kernel::activity::CommImplPtr(
       new simgrid::kernel::activity::CommImpl(simgrid::kernel::activity::CommImpl::Type::RECEIVE));
@@ -350,13 +349,11 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
 /******************************************************************************/
 /*                    SIMIX_comm_copy_data callbacks                       */
 /******************************************************************************/
-static void (*SIMIX_comm_copy_data_callback)(smx_activity_t, void*, size_t) = &SIMIX_comm_copy_pointer_callback;
+static void (*SIMIX_comm_copy_data_callback)(simgrid::kernel::activity::CommImpl*, void*,
+                                             size_t) = &SIMIX_comm_copy_pointer_callback;
 
-void SIMIX_comm_copy_buffer_callback(smx_activity_t synchro, void* buff, size_t buff_size)
+void SIMIX_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
 {
-  simgrid::kernel::activity::CommImplPtr comm =
-      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
-
   XBT_DEBUG("Copy the data over");
   memcpy(comm->dst_buff_, buff, buff_size);
   if (comm->detached) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the
@@ -366,16 +363,13 @@ void SIMIX_comm_copy_buffer_callback(smx_activity_t synchro, void* buff, size_t 
   }
 }
 
-void SIMIX_comm_set_copy_data_callback(void (*callback)(smx_activity_t, void*, size_t))
+void SIMIX_comm_set_copy_data_callback(void (*callback)(simgrid::kernel::activity::CommImpl*, void*, size_t))
 {
   SIMIX_comm_copy_data_callback = callback;
 }
 
-void SIMIX_comm_copy_pointer_callback(smx_activity_t synchro, void* buff, size_t buff_size)
+void SIMIX_comm_copy_pointer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
 {
-  simgrid::kernel::activity::CommImplPtr comm =
-      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
-
   xbt_assert((buff_size == sizeof(void*)), "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
   *(void**)(comm->dst_buff_) = buff;
 }

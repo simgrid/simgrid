@@ -47,7 +47,7 @@ public:
       nullptr; /* Filter function used by the other side. It is used when
 looking if a given communication matches my needs. For that, myself must match the
 expectations of the other side, too. See  */
-  void (*copy_data_fun)(smx_activity_t, void*, size_t) = nullptr;
+  void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t) = nullptr;
 
   /* Surf action data */
   resource::Action* surf_action_ = nullptr; /* The Surf communication action encapsulated */

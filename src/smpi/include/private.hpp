@@ -68,9 +68,11 @@ XBT_PRIVATE MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id)
 XBT_PRIVATE simgrid::s4u::Barrier* smpi_deployment_finalization_barrier(const std::string& instance_id);
 XBT_PRIVATE void smpi_deployment_cleanup_instances();
 
-XBT_PRIVATE void smpi_comm_copy_buffer_callback(smx_activity_t comm, void* buff, size_t buff_size);
+XBT_PRIVATE void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff,
+                                                size_t buff_size);
 
-XBT_PRIVATE void smpi_comm_null_copy_buffer_callback(smx_activity_t comm, void* buff, size_t buff_size);
+XBT_PRIVATE void smpi_comm_null_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff,
+                                                     size_t buff_size);
 
 XBT_PRIVATE int smpi_enabled();
 XBT_PRIVATE void smpi_global_init();

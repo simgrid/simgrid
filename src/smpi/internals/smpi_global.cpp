@@ -102,7 +102,8 @@ static const std::string smpi_default_instance_name("smpirun");
 static simgrid::config::Flag<double> smpi_init_sleep(
   "smpi/init", "Time to inject inside a call to MPI_Init", 0.0);
 
-void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t) = &smpi_comm_copy_buffer_callback;
+void (*smpi_comm_copy_data_callback)(simgrid::kernel::activity::CommImpl*, void*,
+                                     size_t) = &smpi_comm_copy_buffer_callback;
 
 int smpi_process_count()
 {
@@ -151,7 +152,11 @@ int smpi_global_size()
 
 void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, size_t))
 {
-  smpi_comm_copy_data_callback = callback;
+  static void (*saved_callback)(smx_activity_t, void*, size_t);
+  saved_callback               = callback;
+  smpi_comm_copy_data_callback = [](simgrid::kernel::activity::CommImpl* comm, void* buff, size_t size) {
+    saved_callback(smx_activity_t(comm), buff, size);
+  };
 }
 
 static void memcpy_private(void* dest, const void* src, std::vector<std::pair<size_t, size_t>>& private_blocks)
@@ -165,10 +170,8 @@ static void check_blocks(std::vector<std::pair<size_t, size_t>> &private_blocks,
     xbt_assert(block.first <= block.second && block.second <= buff_size, "Oops, bug in shared malloc.");
 }
 
-void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t buff_size)
+void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
 {
-  simgrid::kernel::activity::CommImplPtr comm =
-      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
   int src_shared                        = 0;
   int dst_shared                        = 0;
   size_t src_offset                     = 0;
@@ -227,7 +230,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
     xbt_free(tmpbuff);
 }
 
-void smpi_comm_null_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size)
+void smpi_comm_null_copy_buffer_callback(simgrid::kernel::activity::CommImpl*, void*, size_t)
 {
   /* nothing done in this version */
 }
