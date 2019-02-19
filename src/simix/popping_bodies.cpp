@@ -108,11 +108,11 @@ inline static int simcall_BODY_comm_waitany(boost::intrusive_ptr<simgrid::kernel
       SIMCALL_COMM_WAITANY, comms, count, timeout);
 }
 
-inline static void simcall_BODY_comm_wait(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> comm, double timeout)
+inline static void simcall_BODY_comm_wait(simgrid::kernel::activity::CommImpl* comm, double timeout)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
     simcall_HANDLER_comm_wait(&SIMIX_process_self()->simcall, comm, timeout);
-  return simcall<void, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>, double>(SIMCALL_COMM_WAIT, comm, timeout);
+  return simcall<void, simgrid::kernel::activity::CommImpl*, double>(SIMCALL_COMM_WAIT, comm, timeout);
 }
 
 inline static int simcall_BODY_comm_test(simgrid::kernel::activity::CommImpl* comm)

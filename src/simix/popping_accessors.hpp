@@ -677,17 +677,17 @@ static inline void simcall_comm_waitany__set__result(smx_simcall_t simcall, int 
   simgrid::simix::marshal<int>(simcall->result, result);
 }
 
-static inline boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> simcall_comm_wait__get__comm(smx_simcall_t simcall)
+static inline simgrid::kernel::activity::CommImpl* simcall_comm_wait__get__comm(smx_simcall_t simcall)
 {
-  return simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0]);
+  return simgrid::simix::unmarshal<simgrid::kernel::activity::CommImpl*>(simcall->args[0]);
 }
-static inline simgrid::kernel::activity::ActivityImpl* simcall_comm_wait__getraw__comm(smx_simcall_t simcall)
+static inline simgrid::kernel::activity::CommImpl* simcall_comm_wait__getraw__comm(smx_simcall_t simcall)
 {
-  return simgrid::simix::unmarshal_raw<simgrid::kernel::activity::ActivityImpl*>(simcall->args[0]);
+  return simgrid::simix::unmarshal_raw<simgrid::kernel::activity::CommImpl*>(simcall->args[0]);
 }
-static inline void simcall_comm_wait__set__comm(smx_simcall_t simcall, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> arg)
+static inline void simcall_comm_wait__set__comm(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* arg)
 {
-  simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0], arg);
+  simgrid::simix::marshal<simgrid::kernel::activity::CommImpl*>(simcall->args[0], arg);
 }
 static inline double simcall_comm_wait__get__timeout(smx_simcall_t simcall)
 {
@@ -1041,7 +1041,8 @@ XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> simcal
 XBT_PRIVATE void simcall_HANDLER_comm_waitany(smx_simcall_t simcall,
                                               boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>* comms,
                                               size_t count, double timeout);
-XBT_PRIVATE void simcall_HANDLER_comm_wait(smx_simcall_t simcall, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> comm, double timeout);
+XBT_PRIVATE void simcall_HANDLER_comm_wait(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comm,
+                                           double timeout);
 XBT_PRIVATE void simcall_HANDLER_comm_test(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comm);
 XBT_PRIVATE void simcall_HANDLER_comm_testany(smx_simcall_t simcall, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>* comms, size_t count);
 XBT_PRIVATE void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex);

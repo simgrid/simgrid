@@ -233,10 +233,10 @@ int simcall_comm_testany(smx_activity_t* comms, size_t count)
 /**
  * @ingroup simix_comm_management
  */
-void simcall_comm_wait(smx_activity_t comm, double timeout)
+void simcall_comm_wait(const smx_activity_t& comm, double timeout)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
-  simcall_BODY_comm_wait(comm, timeout);
+  simcall_BODY_comm_wait(static_cast<simgrid::kernel::activity::CommImpl*>(comm.get()), timeout);
 }
 
 /**
