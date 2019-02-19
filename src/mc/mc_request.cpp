@@ -9,7 +9,6 @@
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/mc_xbt.hpp"
 
 using simgrid::mc::remote;
 

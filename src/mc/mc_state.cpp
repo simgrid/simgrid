@@ -7,7 +7,6 @@
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/mc_state.hpp"
-#include "src/mc/mc_xbt.hpp"
 
 #include <boost/range/algorithm.hpp>
 

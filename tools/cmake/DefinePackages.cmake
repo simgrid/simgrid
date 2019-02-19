@@ -656,8 +656,6 @@ set(MC_SRC
   src/mc/mc_client_api.cpp
   src/mc/mc_smx.hpp
   src/mc/mc_smx.cpp
-  src/mc/mc_xbt.hpp
-  src/mc/mc_xbt.cpp
   src/mc/mc_exit.hpp
   src/mc/Transition.hpp
   )
