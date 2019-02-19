@@ -215,9 +215,13 @@ smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
 /**
  * @ingroup simix_comm_management
  */
-unsigned int simcall_comm_waitany(smx_activity_t* comms, size_t count, double timeout)
+unsigned int simcall_comm_waitany(smx_activity_t comms[], size_t count, double timeout)
 {
-  return simcall_BODY_comm_waitany(comms, count, timeout);
+  std::unique_ptr<simgrid::kernel::activity::CommImpl* []> rcomms(new simgrid::kernel::activity::CommImpl*[count]);
+  std::transform(comms, comms + count, rcomms.get(), [](const smx_activity_t& comm) {
+    return static_cast<simgrid::kernel::activity::CommImpl*>(comm.get());
+  });
+  return simcall_BODY_comm_waitany(rcomms.get(), count, timeout);
 }
 
 /**
@@ -228,7 +232,7 @@ int simcall_comm_testany(smx_activity_t comms[], size_t count)
   if (count == 0)
     return -1;
   std::unique_ptr<simgrid::kernel::activity::CommImpl* []> rcomms(new simgrid::kernel::activity::CommImpl*[count]);
-  std::transform(comms, comms + count, rcomms.get(), [](const smx_activity_t comm) {
+  std::transform(comms, comms + count, rcomms.get(), [](const smx_activity_t& comm) {
     return static_cast<simgrid::kernel::activity::CommImpl*>(comm.get());
   });
   return simcall_BODY_comm_testany(rcomms.get(), count);

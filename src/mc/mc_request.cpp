@@ -302,8 +302,8 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     type = "WaitAny";
     size_t count = simcall_comm_waitany__get__count(req);
     if (count > 0) {
-      simgrid::kernel::activity::ActivityImpl* remote_sync;
-      remote_sync = mc_model_checker->process().read(remote(simcall_comm_waitany__getraw__comms(req) + value));
+      simgrid::kernel::activity::CommImpl* remote_sync;
+      remote_sync = mc_model_checker->process().read(remote(simcall_comm_waitany__get__comms(req) + value));
       char* p     = pointer_to_string(remote_sync);
       args        = bprintf("comm=%s (%d of %zu)", p, value + 1, count);
       xbt_free(p);
@@ -373,7 +373,7 @@ namespace mc {
 
 bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
 {
-  simgrid::kernel::activity::ActivityImpl* remote_act = nullptr;
+  simgrid::kernel::activity::CommImpl* remote_act = nullptr;
   switch (req->call) {
 
   case SIMCALL_COMM_WAIT:
@@ -382,7 +382,7 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
     break;
 
   case SIMCALL_COMM_WAITANY:
-    remote_act = mc_model_checker->process().read(remote(simcall_comm_testany__getraw__comms(req) + idx));
+    remote_act = mc_model_checker->process().read(remote(simcall_comm_testany__get__comms(req) + idx));
     break;
 
   case SIMCALL_COMM_TESTANY:
@@ -394,7 +394,7 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
   }
 
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-  mc_model_checker->process().read(temp_comm, remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
+  mc_model_checker->process().read(temp_comm, remote(remote_act));
   simgrid::kernel::activity::CommImpl* comm = temp_comm.getBuffer();
   return comm->src_actor_.get() && comm->dst_actor_.get();
 }

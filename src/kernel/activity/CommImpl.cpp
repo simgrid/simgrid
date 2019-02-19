@@ -286,28 +286,29 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activi
 
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
 {
-  smx_activity_t* synchros = simcall_comm_waitany__get__comms(simcall);
-  size_t count             = simcall_comm_waitany__get__count(simcall);
+  simgrid::kernel::activity::CommImpl** comms = simcall_comm_waitany__get__comms(simcall);
+  size_t count                                = simcall_comm_waitany__get__count(simcall);
 
   for (size_t i = 0; i < count; i++) {
     // Remove the first occurence of simcall:
-    smx_activity_t& synchro = synchros[i];
-    auto j                  = boost::range::find(synchro->simcalls_, simcall);
-    if (j != synchro->simcalls_.end())
-      synchro->simcalls_.erase(j);
+    auto* comm = comms[i];
+    auto j     = boost::range::find(comm->simcalls_, simcall);
+    if (j != comm->simcalls_.end())
+      comm->simcalls_.erase(j);
   }
 }
-void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, smx_activity_t* synchros, size_t count, double timeout)
+void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count,
+                                  double timeout)
 {
   if (MC_is_active() || MC_record_replay_is_active()) {
     if (timeout > 0.0)
       xbt_die("Timeout not implemented for waitany in the model-checker");
     int idx                 = SIMCALL_GET_MC_VALUE(simcall);
-    smx_activity_t& synchro = synchros[idx];
-    synchro->simcalls_.push_back(simcall);
+    auto* comm              = comms[idx];
+    comm->simcalls_.push_back(simcall);
     simcall_comm_waitany__set__result(simcall, idx);
-    synchro->state_ = SIMIX_DONE;
-    synchro->finish();
+    comm->state_ = SIMIX_DONE;
+    comm->finish();
     return;
   }
 
@@ -323,12 +324,12 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, smx_activity_t* synchro
 
   for (size_t i = 0; i < count; i++) {
     /* associate this simcall to the the synchro */
-    smx_activity_t& synchro = synchros[i];
-    synchro->simcalls_.push_back(simcall);
+    auto* comm = comms[i];
+    comm->simcalls_.push_back(simcall);
 
     /* see if the synchro is already finished */
-    if (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING) {
-      synchro->finish();
+    if (comm->state_ != SIMIX_WAITING && comm->state_ != SIMIX_RUNNING) {
+      comm->finish();
       break;
     }
   }

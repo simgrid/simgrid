@@ -102,10 +102,10 @@ bool actor_is_enabled(smx_actor_t actor)
     }
 
     case SIMCALL_COMM_WAITANY: {
-      simgrid::kernel::activity::ActivityImpl** comms = simcall_comm_waitany__getraw__comms(req);
-      size_t count                                    = simcall_comm_waitany__get__count(req);
+      simgrid::kernel::activity::CommImpl** comms = simcall_comm_waitany__get__comms(req);
+      size_t count                                = simcall_comm_waitany__get__count(req);
       for (unsigned int index = 0; index < count; ++index) {
-        simgrid::kernel::activity::CommImpl* comm = static_cast<simgrid::kernel::activity::CommImpl*>(comms[index]);
+        auto* comm = comms[index];
         if (comm->src_actor_ && comm->dst_actor_)
           return true;
       }
