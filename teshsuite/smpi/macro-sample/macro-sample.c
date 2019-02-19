@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
         else
           fprintf(stderr, "(1)");
         fprintf(stderr,
-                " [rank:%d] Run the first (locally benched) computation. It's locally benched, and I want the "
+                " [rank:%d] Run the second (locally benched) computation. It's locally benched, and I want the "
                 "standard error to go below 0.1 second (count is not >0)\n", rank);
       }
       d = compute(d);

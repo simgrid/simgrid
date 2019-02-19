@@ -337,9 +337,10 @@ std::unordered_map<SampleLocation, LocalData, std::hash<std::string>> samples;
 void smpi_sample_1(int global, const char *file, int line, int iters, double threshold)
 {
   SampleLocation loc(global, file, line);
-
-  smpi_bench_end();     /* Take time from previous, unrelated computation into account */
-  smpi_process()->set_sampling(1);
+  if (not smpi_process()->sampling()) { /* Only at first call when benchmarking, skip for next ones */
+    smpi_bench_end();     /* Take time from previous, unrelated computation into account */
+    smpi_process()->set_sampling(1);
+  }
 
   auto insert = samples.emplace(loc, LocalData{
                                          threshold, // threshold
@@ -385,23 +386,33 @@ int smpi_sample_2(int global, const char *file, int line)
 
   if (data.benching) {
     // we need to run a new bench
-    XBT_DEBUG("benchmarking: count:%d iter:%d stderr:%f thres:%f; mean:%f",
-              data.count, data.iters, data.relstderr, data.threshold, data.mean);
+    XBT_DEBUG("benchmarking: count:%d iter:%d stderr:%f thres:%f; mean:%f; total:%f",
+              data.count, data.iters, data.relstderr, data.threshold, data.mean, data.sum);
+    smpi_bench_begin();
     res = 1;
   } else {
     // Enough data, no more bench (either we got enough data from previous visits to this benched nest, or we just
     //ran one bench and need to bail out now that our job is done). Just sleep instead
-    if (not data.need_more_benchs())
-      XBT_DEBUG("No benchmark (either no need, or just ran one): count >= iter (%d >= %d) or stderr<thres (%f<=%f)."
-              " apply the %fs delay instead",
-              data.count, data.iters, data.relstderr, data.threshold, data.mean);
-    else
-      XBT_DEBUG("Skipping - Benchmark already performed");
-    smpi_execute(data.mean);
-    smpi_process()->set_sampling(0);
+    if (not data.need_more_benchs()){
+      XBT_DEBUG("No benchmark (either no need, or just ran one): count >= iter (%d >= %d) or stderr<thres (%f<=%f). "
+              "Mean is %f %s",
+              data.count, data.iters, data.relstderr, data.threshold, data.mean, 
+              (data.sum != 0.0 ? "Applying it count times because we finished benching count iterations": ""));
+      double sleep = data.mean;
+      if (data.sum != 0.0){ //we finished benching, sum is unecessary after the first injection, we can reset it.
+        sleep = data.sum;
+        data.sum = 0.0;
+      }
+      smpi_process()->set_sampling(0);
+      smpi_execute(sleep);
+      smpi_bench_begin();
+    } else {
+      XBT_DEBUG("Skipping - Benchmark already performed - accumulating time");
+      xbt_os_threadtimer_start(smpi_process()->timer());
+    }
     res = 0; // prepare to capture future, unrelated computations
   }
-  smpi_bench_begin();
+
   return res;
 }
 
@@ -429,10 +440,7 @@ void smpi_sample_3(int global, const char *file, int line)
   double n       = static_cast<double>(data.count);
   data.mean      = data.sum / n;
   data.relstderr = sqrt((data.sum_pow2 / n - data.mean * data.mean) / n) / data.mean;
-  if (data.need_more_benchs()) {
-    data.mean = period; // Still in benching process; We want sample_2 to simulate the exact time of this loop
-    // occurrence before leaving, not the mean over the history
-  }
+
   XBT_DEBUG("Average mean after %d steps is %f, relative standard error is %f (sample was %f)",
             data.count, data.mean, data.relstderr, period);
 
