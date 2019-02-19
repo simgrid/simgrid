@@ -166,10 +166,9 @@ static inline smx_simcall_t MC_state_get_request_for_process(simgrid::mc::State*
     state->internal_req.call = SIMCALL_COMM_TEST;
 
     if (state->transition.argument > 0) {
-      simgrid::kernel::activity::ActivityImpl* remote_comm = mc_model_checker->process().read(
-          remote(simcall_comm_testany__getraw__comms(req) + state->transition.argument));
-      mc_model_checker->process().read(state->internal_comm,
-                                       remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_comm)));
+      simgrid::kernel::activity::CommImpl* remote_comm =
+          mc_model_checker->process().read(remote(simcall_comm_testany__get__comms(req) + state->transition.argument));
+      mc_model_checker->process().read(state->internal_comm, remote(remote_comm));
     }
 
     simcall_comm_test__set__comm(&state->internal_req, state->internal_comm.getBuffer());

@@ -386,7 +386,7 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
     break;
 
   case SIMCALL_COMM_TESTANY:
-    remote_act = mc_model_checker->process().read(remote(simcall_comm_testany__getraw__comms(req) + idx));
+    remote_act = mc_model_checker->process().read(remote(simcall_comm_testany__get__comms(req) + idx));
     break;
 
   default:

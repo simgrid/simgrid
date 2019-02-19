@@ -121,7 +121,9 @@ case SIMCALL_COMM_TEST:
   break;
 
 case SIMCALL_COMM_TESTANY:
-  simcall_HANDLER_comm_testany(simcall, simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>*>(simcall->args[0]), simgrid::simix::unmarshal<size_t>(simcall->args[1]));
+  simcall_HANDLER_comm_testany(simcall,
+                               simgrid::simix::unmarshal<simgrid::kernel::activity::CommImpl**>(simcall->args[0]),
+                               simgrid::simix::unmarshal<size_t>(simcall->args[1]));
   break;
 
 case SIMCALL_MUTEX_LOCK:

@@ -122,11 +122,11 @@ inline static int simcall_BODY_comm_test(simgrid::kernel::activity::CommImpl* co
   return simcall<int, simgrid::kernel::activity::CommImpl*>(SIMCALL_COMM_TEST, comm);
 }
 
-inline static int simcall_BODY_comm_testany(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>* comms, size_t count)
+inline static int simcall_BODY_comm_testany(simgrid::kernel::activity::CommImpl** comms, size_t count)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
     simcall_HANDLER_comm_testany(&SIMIX_process_self()->simcall, comms, count);
-  return simcall<int, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>*, size_t>(SIMCALL_COMM_TESTANY, comms, count);
+  return simcall<int, simgrid::kernel::activity::CommImpl**, size_t>(SIMCALL_COMM_TESTANY, comms, count);
 }
 
 inline static void simcall_BODY_mutex_lock(smx_mutex_t mutex)

@@ -252,8 +252,7 @@ void simcall_HANDLER_comm_test(smx_simcall_t simcall, simgrid::kernel::activity:
   }
 }
 
-void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activity::ActivityImplPtr comms[],
-                                  size_t count)
+void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count)
 {
   // The default result is -1 -- this means, "nothing is ready".
   // It can be changed below, but only if something matches.
@@ -264,21 +263,21 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activi
     if (idx == -1) {
       SIMIX_simcall_answer(simcall);
     } else {
-      simgrid::kernel::activity::ActivityImplPtr synchro = comms[idx];
+      simgrid::kernel::activity::CommImpl* comm = comms[idx];
       simcall_comm_testany__set__result(simcall, idx);
-      synchro->simcalls_.push_back(simcall);
-      synchro->state_ = SIMIX_DONE;
-      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro)->finish();
+      comm->simcalls_.push_back(simcall);
+      comm->state_ = SIMIX_DONE;
+      comm->finish();
     }
     return;
   }
 
   for (std::size_t i = 0; i != count; ++i) {
-    simgrid::kernel::activity::ActivityImplPtr synchro = comms[i];
-    if (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING) {
+    simgrid::kernel::activity::ActivityImplPtr comm = comms[i];
+    if (comm->state_ != SIMIX_WAITING && comm->state_ != SIMIX_RUNNING) {
       simcall_comm_testany__set__result(simcall, i);
-      synchro->simcalls_.push_back(simcall);
-      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro)->finish();
+      comm->simcalls_.push_back(simcall);
+      comm->finish();
       return;
     }
   }

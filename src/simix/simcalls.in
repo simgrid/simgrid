@@ -49,7 +49,7 @@ boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> comm_irecv(smx_act
 int            comm_waitany(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>* comms, size_t count, double timeout) [[block]];
 void           comm_wait(simgrid::kernel::activity::CommImpl* comm, double timeout) [[block]];
 int            comm_test(simgrid::kernel::activity::CommImpl* comm) [[block]];
-int            comm_testany(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>* comms, size_t count) [[block]];
+int            comm_testany(simgrid::kernel::activity::CommImpl** comms, size_t count) [[block]];
 
 void        mutex_lock(smx_mutex_t mutex) [[block]];
 int         mutex_trylock(smx_mutex_t mutex);
