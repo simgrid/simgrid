@@ -64,11 +64,11 @@ inline static int simcall_BODY_execution_wait(boost::intrusive_ptr<simgrid::kern
   return simcall<int, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(SIMCALL_EXECUTION_WAIT, execution);
 }
 
-inline static int simcall_BODY_execution_test(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution)
+inline static int simcall_BODY_execution_test(simgrid::kernel::activity::ExecImpl* execution)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
     simcall_HANDLER_execution_test(&SIMIX_process_self()->simcall, execution);
-  return simcall<int, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(SIMCALL_EXECUTION_TEST, execution);
+  return simcall<int, simgrid::kernel::activity::ExecImpl*>(SIMCALL_EXECUTION_TEST, execution);
 }
 
 inline static void simcall_BODY_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout)

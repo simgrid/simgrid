@@ -81,9 +81,8 @@ case SIMCALL_EXECUTION_WAIT:
   break;
 
 case SIMCALL_EXECUTION_TEST:
-  simcall_HANDLER_execution_test(
-      simcall,
-      simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0]));
+  simcall_HANDLER_execution_test(simcall,
+                                 simgrid::simix::unmarshal<simgrid::kernel::activity::ExecImpl*>(simcall->args[0]));
   break;
 
 case SIMCALL_COMM_SEND:

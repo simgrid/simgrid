@@ -176,9 +176,9 @@ XBT_ATTRIB_DEPRECATED_v325("Please use CommImpl::finish") XBT_PUBLIC void SIMIX_
 XBT_PUBLIC smx_activity_t simcall_execution_parallel_start(const std::string& name, int host_nb,
                                                            const sg_host_t* host_list, const double* flops_amount,
                                                            const double* bytes_amount, double rate, double timeout);
+XBT_PUBLIC e_smx_state_t simcall_execution_test(const smx_activity_t& execution);
 #endif
 XBT_PUBLIC e_smx_state_t simcall_execution_wait(smx_activity_t execution);
-XBT_PUBLIC e_smx_state_t simcall_execution_test(smx_activity_t execution);
 
 /**************************** Process simcalls ********************************/
 SG_BEGIN_DECL()
