@@ -31,13 +31,12 @@ Comm::~Comm()
 
 int Comm::wait_any_for(std::vector<CommPtr>* comms, double timeout)
 {
-  smx_activity_t* array = new smx_activity_t[comms->size()];
-  for (unsigned int i = 0; i < comms->size(); i++) {
-    array[i] = comms->at(i)->pimpl_;
-  }
-  int idx = simcall_comm_waitany(array, comms->size(), timeout);
-  delete[] array;
-  return idx;
+  std::unique_ptr<simgrid::kernel::activity::CommImpl* []> rcomms(
+      new simgrid::kernel::activity::CommImpl*[comms->size()]);
+  std::transform(begin(*comms), end(*comms), rcomms.get(), [](const CommPtr& comm) {
+    return static_cast<simgrid::kernel::activity::CommImpl*>(comm->pimpl_.get());
+  });
+  return simcall_comm_waitany(rcomms.get(), comms->size(), timeout);
 }
 
 void Comm::wait_all(std::vector<CommPtr>* comms)
@@ -172,13 +171,12 @@ Comm* Comm::wait_for(double timeout)
 }
 int Comm::test_any(std::vector<CommPtr>* comms)
 {
-  smx_activity_t* array = new smx_activity_t[comms->size()];
-  for (unsigned int i = 0; i < comms->size(); i++) {
-    array[i] = comms->at(i)->pimpl_;
-  }
-  int res = simcall_comm_testany(array, comms->size());
-  delete[] array;
-  return res;
+  std::unique_ptr<simgrid::kernel::activity::CommImpl* []> rcomms(
+      new simgrid::kernel::activity::CommImpl*[comms->size()]);
+  std::transform(begin(*comms), end(*comms), rcomms.get(), [](const CommPtr& comm) {
+    return static_cast<simgrid::kernel::activity::CommImpl*>(comm->pimpl_.get());
+  });
+  return simcall_comm_testany(rcomms.get(), comms->size());
 }
 
 Comm* Comm::detach()

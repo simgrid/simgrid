@@ -224,6 +224,11 @@ unsigned int simcall_comm_waitany(smx_activity_t comms[], size_t count, double t
   return simcall_BODY_comm_waitany(rcomms.get(), count, timeout);
 }
 
+unsigned int simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count, double timeout)
+{
+  return simcall_BODY_comm_waitany(comms, count, timeout);
+}
+
 /**
  * @ingroup simix_comm_management
  */
@@ -236,6 +241,13 @@ int simcall_comm_testany(smx_activity_t comms[], size_t count)
     return static_cast<simgrid::kernel::activity::CommImpl*>(comm.get());
   });
   return simcall_BODY_comm_testany(rcomms.get(), count);
+}
+
+int simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count)
+{
+  if (count == 0)
+    return -1;
+  return simcall_BODY_comm_testany(comms, count);
 }
 
 /**

@@ -227,9 +227,12 @@ XBT_PUBLIC smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
 
 /* FIXME: waitany is going to be a vararg function, and should take a timeout */
 XBT_PUBLIC unsigned int simcall_comm_waitany(smx_activity_t comms[], size_t count, double timeout);
+XBT_PUBLIC unsigned int simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count,
+                                             double timeout);
 XBT_PUBLIC void simcall_comm_wait(const smx_activity_t& comm, double timeout);
 XBT_PUBLIC int simcall_comm_test(const smx_activity_t& comm);
 XBT_PUBLIC int simcall_comm_testany(smx_activity_t comms[], size_t count);
+XBT_PUBLIC int simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count);
 #endif
 
 /************************** Synchro simcalls **********************************/

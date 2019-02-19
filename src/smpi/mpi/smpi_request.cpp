@@ -603,7 +603,7 @@ int Request::testsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
 
 int Request::testany(int count, MPI_Request requests[], int *index, MPI_Status * status)
 {
-  std::vector<simgrid::kernel::activity::ActivityImplPtr> comms;
+  std::vector<simgrid::kernel::activity::CommImpl*> comms;
   comms.reserve(count);
 
   int i;
@@ -614,7 +614,7 @@ int Request::testany(int count, MPI_Request requests[], int *index, MPI_Status *
   std::vector<int> map; /** Maps all matching comms back to their location in requests **/
   for(i = 0; i < count; i++) {
     if ((requests[i] != MPI_REQUEST_NULL) && requests[i]->action_ && not(requests[i]->flags_ & MPI_REQ_PREPARED)) {
-      comms.push_back(requests[i]->action_);
+      comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(requests[i]->action_.get()));
       map.push_back(i);
     }
   }
@@ -842,7 +842,7 @@ void Request::wait(MPI_Request * request, MPI_Status * status)
 
 int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
 {
-  std::vector<simgrid::kernel::activity::ActivityImplPtr> comms;
+  std::vector<simgrid::kernel::activity::CommImpl*> comms;
   comms.reserve(count);
   int index = MPI_UNDEFINED;
 
@@ -855,7 +855,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
           not(requests[i]->flags_ & MPI_REQ_FINISHED)) {
         if (requests[i]->action_ != nullptr) {
           XBT_DEBUG("Waiting any %p ", requests[i]);
-          comms.push_back(requests[i]->action_);
+          comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(requests[i]->action_.get()));
           map.push_back(i);
         } else {
           // This is a finished detached request, let's return this one
