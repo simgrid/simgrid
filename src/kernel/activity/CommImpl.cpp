@@ -297,10 +297,8 @@ static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
   unsigned int cursor  = 0;
   xbt_dynar_t synchros = simcall_comm_waitany__get__comms(simcall);
 
-  simgrid::kernel::activity::ActivityImpl* ptr;
-  xbt_dynar_foreach (synchros, cursor, ptr) {
-    smx_activity_t synchro = simgrid::kernel::activity::ActivityImplPtr(ptr);
-
+  simgrid::kernel::activity::ActivityImpl* synchro;
+  xbt_dynar_foreach (synchros, cursor, synchro) {
     // Remove the first occurence of simcall:
     auto i = boost::range::find(synchro->simcalls_, simcall);
     if (i != synchro->simcalls_.end())
@@ -313,11 +311,11 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
     if (timeout > 0.0)
       xbt_die("Timeout not implemented for waitany in the model-checker");
     int idx                = SIMCALL_GET_MC_VALUE(simcall);
-    smx_activity_t synchro = xbt_dynar_get_as(synchros, idx, smx_activity_t);
+    auto* synchro          = xbt_dynar_get_as(synchros, idx, simgrid::kernel::activity::ActivityImpl*);
     synchro->simcalls_.push_back(simcall);
     simcall_comm_waitany__set__result(simcall, idx);
     synchro->state_ = SIMIX_DONE;
-    boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro)->finish();
+    synchro->finish();
     return;
   }
 
@@ -332,15 +330,14 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
   }
 
   unsigned int cursor;
-  simgrid::kernel::activity::ActivityImpl* ptr;
-  xbt_dynar_foreach (synchros, cursor, ptr) {
-    smx_activity_t synchro = simgrid::kernel::activity::ActivityImplPtr(ptr);
+  simgrid::kernel::activity::ActivityImpl* synchro;
+  xbt_dynar_foreach (synchros, cursor, synchro) {
     /* associate this simcall to the the synchro */
     synchro->simcalls_.push_back(simcall);
 
     /* see if the synchro is already finished */
     if (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING) {
-      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro)->finish();
+      synchro->finish();
       break;
     }
   }
@@ -559,7 +556,6 @@ void CommImpl::post()
 
 void CommImpl::finish()
 {
-  smx_activity_t synchro = this;
   while (not simcalls_.empty()) {
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
@@ -576,9 +572,11 @@ void CommImpl::finish()
         simcall->timer->remove();
         simcall->timer = nullptr;
       }
-      if (not MC_is_active() && not MC_record_replay_is_active())
+      if (not MC_is_active() && not MC_record_replay_is_active()) {
+        ActivityImpl* synchro = this;
         simcall_comm_waitany__set__result(simcall,
                                           xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro));
+      }
     }
 
     /* If the synchro is still in a rendez-vous point then remove from it */
@@ -664,6 +662,7 @@ void CommImpl::finish()
       // First retrieve the rank of our failing synchro
       int rank = -1;
       if (simcall->call == SIMCALL_COMM_WAITANY) {
+        ActivityImpl* synchro = this;
         rank = xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro);
       } else if (simcall->call == SIMCALL_COMM_TESTANY) {
         rank         = -1;
