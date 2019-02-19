@@ -75,17 +75,14 @@ static inline smx_simcall_t MC_state_get_request_for_process(simgrid::mc::State*
   switch (actor->simcall.call) {
     case SIMCALL_COMM_WAITANY:
       state->transition.argument = -1;
-      while (procstate->times_considered <
-             read_length(mc_model_checker->process(), remote(simcall_comm_waitany__get__comms(&actor->simcall)))) {
+      while (procstate->times_considered < simcall_comm_waitany__get__count(&actor->simcall)) {
         if (simgrid::mc::request_is_enabled_by_idx(&actor->simcall, procstate->times_considered++)) {
           state->transition.argument = procstate->times_considered - 1;
           break;
         }
       }
 
-      if (procstate->times_considered >=
-          simgrid::mc::read_length(mc_model_checker->process(),
-                                   simgrid::mc::remote(simcall_comm_waitany__get__comms(&actor->simcall))))
+      if (procstate->times_considered >= simcall_comm_waitany__get__count(&actor->simcall))
         procstate->setDone();
       if (state->transition.argument != -1)
         req = &actor->simcall;
@@ -157,8 +154,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(simgrid::mc::State*
   case SIMCALL_COMM_WAITANY: {
     state->internal_req.call = SIMCALL_COMM_WAIT;
     simgrid::kernel::activity::ActivityImpl* remote_comm;
-    read_element(mc_model_checker->process(), &remote_comm, remote(simcall_comm_waitany__getraw__comms(req)),
-                 state->transition.argument, sizeof(remote_comm));
+    remote_comm =
+        mc_model_checker->process().read(remote(simcall_comm_waitany__getraw__comms(req) + state->transition.argument));
     mc_model_checker->process().read(state->internal_comm,
                                      remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_comm)));
     simcall_comm_wait__set__comm(&state->internal_req, state->internal_comm.getBuffer());

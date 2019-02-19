@@ -301,17 +301,12 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
 
   case SIMCALL_COMM_WAITANY: {
     type = "WaitAny";
-    s_xbt_dynar_t comms;
-    mc_model_checker->process().read_bytes(
-      &comms, sizeof(comms), remote(simcall_comm_waitany__get__comms(req)));
-    if (not xbt_dynar_is_empty(&comms)) {
-      smx_activity_t remote_sync;
-      read_element(mc_model_checker->process(),
-        &remote_sync, remote(simcall_comm_waitany__get__comms(req)), value,
-        sizeof(remote_sync));
-      char* p = pointer_to_string(remote_sync.get());
-      args = bprintf("comm=%s (%d of %lu)",
-        p, value + 1, xbt_dynar_length(&comms));
+    size_t count = simcall_comm_waitany__get__count(req);
+    if (count > 0) {
+      simgrid::kernel::activity::ActivityImpl* remote_sync;
+      remote_sync = mc_model_checker->process().read(remote(simcall_comm_waitany__getraw__comms(req) + value));
+      char* p     = pointer_to_string(remote_sync);
+      args        = bprintf("comm=%s (%d of %zu)", p, value + 1, count);
       xbt_free(p);
     } else
       args = bprintf("comm at idx %d", value);
@@ -388,8 +383,7 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
     break;
 
   case SIMCALL_COMM_WAITANY:
-    read_element(mc_model_checker->process(), &remote_act, remote(simcall_comm_waitany__getraw__comms(req)), idx,
-                 sizeof(remote_act));
+    remote_act = mc_model_checker->process().read(remote(simcall_comm_testany__getraw__comms(req) + idx));
     break;
 
   case SIMCALL_COMM_TESTANY:
@@ -497,13 +491,12 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
   }
 
   case SIMCALL_COMM_WAITANY: {
-    unsigned long comms_size = read_length(
-      mc_model_checker->process(), remote(simcall_comm_waitany__get__comms(req)));
+    size_t comms_size = simcall_comm_waitany__get__count(req);
     if (issuer->get_host())
-      label = simgrid::xbt::string_printf("[(%ld)%s] WaitAny [%d of %lu]", issuer->get_pid(),
+      label = simgrid::xbt::string_printf("[(%ld)%s] WaitAny [%d of %zu]", issuer->get_pid(),
                                           MC_smx_actor_get_host_name(issuer), value + 1, comms_size);
     else
-      label = simgrid::xbt::string_printf("[(%ld)] WaitAny [%d of %lu]", issuer->get_pid(), value + 1, comms_size);
+      label = simgrid::xbt::string_printf("[(%ld)] WaitAny [%d of %zu]", issuer->get_pid(), value + 1, comms_size);
     break;
   }
 
