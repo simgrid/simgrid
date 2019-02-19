@@ -134,7 +134,7 @@ public:
   }
 };
 
-/** Exception raised when a communication fails because of the network */
+/** Exception raised when a communication fails because of the network or because of the remote host */
 class NetworkFailureException : public xbt_ex {
 public:
   NetworkFailureException(simgrid::xbt::ThrowPoint throwpoint, std::string message)
