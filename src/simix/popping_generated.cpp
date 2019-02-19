@@ -116,7 +116,7 @@ case SIMCALL_COMM_WAIT:
   break;
 
 case SIMCALL_COMM_TEST:
-  simcall_HANDLER_comm_test(simcall, simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0]));
+  simcall_HANDLER_comm_test(simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::CommImpl*>(simcall->args[0]));
   break;
 
 case SIMCALL_COMM_TESTANY:
