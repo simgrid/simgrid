@@ -575,17 +575,18 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 {
   int finished_index = -1;
 
-  /* create the equivalent dynar with SIMIX objects */
-  xbt_dynar_t s_comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::ActivityImpl*), nullptr);
+  /* Create the equivalent array with SIMIX objects: */
+  std::vector<simgrid::kernel::activity::ActivityImplPtr> s_comms;
+  s_comms.reserve(xbt_dynar_length(comms));
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach(comms, cursor, comm) {
-    xbt_dynar_push_as(s_comms, simgrid::kernel::activity::ActivityImpl*, comm->s_comm.get());
+    s_comms.push_back(comm->s_comm);
   }
 
   msg_error_t status = MSG_OK;
   try {
-    finished_index = simcall_comm_waitany(s_comms, -1);
+    finished_index = simcall_comm_waitany(s_comms.data(), s_comms.size(), -1);
   } catch (simgrid::TimeoutError& e) {
     finished_index = e.value;
     status         = MSG_TIMEOUT;
@@ -600,7 +601,6 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   }
 
   xbt_assert(finished_index != -1, "WaitAny returned -1");
-  xbt_dynar_free(&s_comms);
 
   comm = xbt_dynar_get_as(comms, finished_index, msg_comm_t);
   /* the communication is finished */

@@ -842,26 +842,24 @@ void Request::wait(MPI_Request * request, MPI_Status * status)
 
 int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
 {
-  s_xbt_dynar_t comms; // Keep it on stack to save some extra mallocs
+  std::vector<simgrid::kernel::activity::ActivityImplPtr> comms;
+  comms.reserve(count);
   int index = MPI_UNDEFINED;
 
   if(count > 0) {
-    int size = 0;
     // Wait for a request to complete
-    xbt_dynar_init(&comms, sizeof(simgrid::kernel::activity::ActivityImpl*), nullptr);
-    int *map = xbt_new(int, count);
+    std::vector<int> map;
     XBT_DEBUG("Wait for one of %d", count);
     for(int i = 0; i < count; i++) {
       if (requests[i] != MPI_REQUEST_NULL && not(requests[i]->flags_ & MPI_REQ_PREPARED) &&
           not(requests[i]->flags_ & MPI_REQ_FINISHED)) {
         if (requests[i]->action_ != nullptr) {
           XBT_DEBUG("Waiting any %p ", requests[i]);
-          xbt_dynar_push_as(&comms, simgrid::kernel::activity::ActivityImpl*, requests[i]->action_.get());
-          map[size] = i;
-          size++;
+          comms.push_back(requests[i]->action_);
+          map.push_back(i);
         } else {
           // This is a finished detached request, let's return this one
-          size  = 0; // so we free the dynar but don't do the waitany call
+          comms.clear(); // so we free don't do the waitany call
           index = i;
           finish_wait(&requests[i], status); // cleanup if refcount = 0
           if (requests[i] != MPI_REQUEST_NULL && (requests[i]->flags_ & MPI_REQ_NON_PERSISTENT))
@@ -870,12 +868,12 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
         }
       }
     }
-    if (size > 0) {
-      XBT_DEBUG("Enter waitany for %lu comms", xbt_dynar_length(&comms));
+    if (not comms.empty()) {
+      XBT_DEBUG("Enter waitany for %zu comms", comms.size());
       int i=MPI_UNDEFINED;
       try{
         // this is not a detached send
-        i = simcall_comm_waitany(&comms, -1);
+        i = simcall_comm_waitany(comms.data(), comms.size(), -1);
       }catch (xbt_ex& e) {
       XBT_INFO("request %d cancelled ",i);
         return i;
@@ -893,9 +891,6 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
         }
       }
     }
-
-    xbt_dynar_free_data(&comms);
-    xbt_free(map);
   }
 
   if (index==MPI_UNDEFINED)

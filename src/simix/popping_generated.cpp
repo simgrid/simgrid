@@ -105,7 +105,10 @@ case SIMCALL_COMM_IRECV:
   break;
 
 case SIMCALL_COMM_WAITANY:
-  simcall_HANDLER_comm_waitany(simcall, simgrid::simix::unmarshal<xbt_dynar_t>(simcall->args[0]), simgrid::simix::unmarshal<double>(simcall->args[1]));
+  simcall_HANDLER_comm_waitany(
+      simcall,
+      simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>*>(simcall->args[0]),
+      simgrid::simix::unmarshal<size_t>(simcall->args[1]), simgrid::simix::unmarshal<double>(simcall->args[2]));
   break;
 
 case SIMCALL_COMM_WAIT:

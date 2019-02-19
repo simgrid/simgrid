@@ -294,24 +294,24 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activi
 
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
 {
-  unsigned int cursor  = 0;
-  xbt_dynar_t synchros = simcall_comm_waitany__get__comms(simcall);
+  smx_activity_t* synchros = simcall_comm_waitany__get__comms(simcall);
+  size_t count             = simcall_comm_waitany__get__count(simcall);
 
-  simgrid::kernel::activity::ActivityImpl* synchro;
-  xbt_dynar_foreach (synchros, cursor, synchro) {
+  for (size_t i = 0; i < count; i++) {
     // Remove the first occurence of simcall:
-    auto i = boost::range::find(synchro->simcalls_, simcall);
-    if (i != synchro->simcalls_.end())
-      synchro->simcalls_.erase(i);
+    smx_activity_t& synchro = synchros[i];
+    auto j                  = boost::range::find(synchro->simcalls_, simcall);
+    if (j != synchro->simcalls_.end())
+      synchro->simcalls_.erase(j);
   }
 }
-void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, double timeout)
+void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, smx_activity_t* synchros, size_t count, double timeout)
 {
   if (MC_is_active() || MC_record_replay_is_active()) {
     if (timeout > 0.0)
       xbt_die("Timeout not implemented for waitany in the model-checker");
-    int idx                = SIMCALL_GET_MC_VALUE(simcall);
-    auto* synchro          = xbt_dynar_get_as(synchros, idx, simgrid::kernel::activity::ActivityImpl*);
+    int idx                 = SIMCALL_GET_MC_VALUE(simcall);
+    smx_activity_t& synchro = synchros[idx];
     synchro->simcalls_.push_back(simcall);
     simcall_comm_waitany__set__result(simcall, idx);
     synchro->state_ = SIMIX_DONE;
@@ -329,10 +329,9 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
     });
   }
 
-  unsigned int cursor;
-  simgrid::kernel::activity::ActivityImpl* synchro;
-  xbt_dynar_foreach (synchros, cursor, synchro) {
+  for (size_t i = 0; i < count; i++) {
     /* associate this simcall to the the synchro */
+    smx_activity_t& synchro = synchros[i];
     synchro->simcalls_.push_back(simcall);
 
     /* see if the synchro is already finished */
@@ -561,7 +560,7 @@ void CommImpl::finish()
     simcalls_.pop_front();
 
     /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
-     * list. Afterwards, get the position of the actual synchro in the waitany dynar and return it as the result of the
+     * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
      * simcall */
 
     if (simcall->call == SIMCALL_NONE) // FIXME: maybe a better way to handle this case
@@ -573,9 +572,11 @@ void CommImpl::finish()
         simcall->timer = nullptr;
       }
       if (not MC_is_active() && not MC_record_replay_is_active()) {
-        ActivityImpl* synchro = this;
-        simcall_comm_waitany__set__result(simcall,
-                                          xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro));
+        CommImpl** comms   = simcall_comm_waitany__get__comms(simcall);
+        size_t count       = simcall_comm_waitany__get__count(simcall);
+        CommImpl** element = std::find(comms, comms + count, this);
+        int rank           = (element != comms + count) ? element - comms : -1;
+        simcall_comm_waitany__set__result(simcall, rank);
       }
     }
 
@@ -655,25 +656,22 @@ void CommImpl::finish()
           xbt_die("Unexpected synchro state in CommImpl::finish: %d", static_cast<int>(state_));
       }
     }
-
     /* if there is an exception during a waitany or a testany, indicate the position of the failed communication */
     if (simcall->issuer->exception_ &&
         (simcall->call == SIMCALL_COMM_WAITANY || simcall->call == SIMCALL_COMM_TESTANY)) {
       // First retrieve the rank of our failing synchro
-      int rank = -1;
+      CommImpl** comms;
+      size_t count;
       if (simcall->call == SIMCALL_COMM_WAITANY) {
-        ActivityImpl* synchro = this;
-        rank = xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro);
-      } else if (simcall->call == SIMCALL_COMM_TESTANY) {
-        rank         = -1;
-        auto* comms  = simcall_comm_testany__get__comms(simcall);
-        auto count   = simcall_comm_testany__get__count(simcall);
-        auto element = std::find(comms, comms + count, this);
-        if (element == comms + count)
-          rank = -1;
-        else
-          rank = element - comms;
+        comms = simcall_comm_waitany__get__comms(simcall);
+        count = simcall_comm_waitany__get__count(simcall);
+      } else {
+        /* simcall->call == SIMCALL_COMM_TESTANY */
+        comms = simcall_comm_testany__get__comms(simcall);
+        count = simcall_comm_testany__get__count(simcall);
       }
+      CommImpl** element = std::find(comms, comms + count, this);
+      int rank           = (element != comms + count) ? element - comms : -1;
 
       // In order to modify the exception we have to rethrow it:
       try {

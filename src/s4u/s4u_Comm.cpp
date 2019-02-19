@@ -29,20 +29,14 @@ Comm::~Comm()
   }
 }
 
-int Comm::wait_any_for(std::vector<CommPtr>* comms_in, double timeout)
+int Comm::wait_any_for(std::vector<CommPtr>* comms, double timeout)
 {
-  // Map to dynar<Synchro*>:
-  xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::ActivityImpl*), nullptr);
-  for (auto const& comm : *comms_in) {
-    if (comm->state_ == Activity::State::INITED)
-      comm->start();
-    xbt_assert(comm->state_ == Activity::State::STARTED);
-    simgrid::kernel::activity::ActivityImpl* ptr = comm->pimpl_.get();
-    xbt_dynar_push_as(comms, simgrid::kernel::activity::ActivityImpl*, ptr);
+  smx_activity_t* array = new smx_activity_t[comms->size()];
+  for (unsigned int i = 0; i < comms->size(); i++) {
+    array[i] = comms->at(i)->pimpl_;
   }
-  // Call the underlying simcall:
-  int idx = simcall_comm_waitany(comms, timeout);
-  xbt_dynar_free(&comms);
+  int idx = simcall_comm_waitany(array, comms->size(), timeout);
+  delete[] array;
   return idx;
 }
 

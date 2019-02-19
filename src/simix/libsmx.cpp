@@ -215,9 +215,9 @@ smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
 /**
  * @ingroup simix_comm_management
  */
-unsigned int simcall_comm_waitany(xbt_dynar_t comms, double timeout)
+unsigned int simcall_comm_waitany(smx_activity_t* comms, size_t count, double timeout)
 {
-  return simcall_BODY_comm_waitany(comms, timeout);
+  return simcall_BODY_comm_waitany(comms, count, timeout);
 }
 
 /**

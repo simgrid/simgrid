@@ -99,11 +99,13 @@ inline static boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> simc
   return simcall<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>, smx_actor_t, smx_mailbox_t, void*, size_t*, simix_match_func_t, simix_copy_data_func_t, void*, double>(SIMCALL_COMM_IRECV, receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
 }
 
-inline static int simcall_BODY_comm_waitany(xbt_dynar_t comms, double timeout)
+inline static int simcall_BODY_comm_waitany(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>* comms,
+                                            size_t count, double timeout)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_comm_waitany(&SIMIX_process_self()->simcall, comms, timeout);
-  return simcall<int, xbt_dynar_t, double>(SIMCALL_COMM_WAITANY, comms, timeout);
+    simcall_HANDLER_comm_waitany(&SIMIX_process_self()->simcall, comms, count, timeout);
+  return simcall<int, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>*, size_t, double>(
+      SIMCALL_COMM_WAITANY, comms, count, timeout);
 }
 
 inline static void simcall_BODY_comm_wait(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> comm, double timeout)
