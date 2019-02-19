@@ -27,7 +27,6 @@ set(EXTRA_DIST
   src/simix/popping_accessors.hpp
   src/simix/smx_host_private.hpp
   src/simix/smx_private.hpp
-  src/simix/smx_synchro_private.hpp
   src/smpi/colls/coll_tuned_topo.hpp
   src/smpi/colls/colls_private.hpp
   src/smpi/colls/smpi_mvapich2_selector_stampede.hpp
@@ -386,10 +385,8 @@ set(SIMIX_SRC
   src/simix/smx_environment.cpp
   src/simix/smx_global.cpp
   src/simix/smx_host.cpp
-  src/simix/smx_network.cpp
   src/simix/ActorImpl.cpp
   src/simix/ActorImpl.hpp
-  src/simix/smx_synchro.cpp
   src/simix/popping.cpp
   src/kernel/activity/ActivityImpl.cpp
   src/kernel/activity/ActivityImpl.hpp

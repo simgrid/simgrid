@@ -5,7 +5,6 @@
 
 #include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
-#include "src/simix/smx_synchro_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_semaphore, simix_synchro, "Semaphore kernel-space implementation");
 

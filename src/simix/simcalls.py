@@ -314,7 +314,6 @@ if __name__ == '__main__':
     fd.write('#endif\n')
     fd.write('#include "src/kernel/activity/ConditionVariableImpl.hpp"\n')
     fd.write('#include "src/simix/smx_host_private.hpp"\n')
-    fd.write('#include "src/simix/smx_synchro_private.hpp"\n')
 
     fd.write('\n')
     fd.write('XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);\n\n')
@@ -365,7 +364,6 @@ if __name__ == '__main__':
     fd = header('popping_bodies.cpp')
     fd.write('#include "smx_private.hpp"\n')
     fd.write('#include "src/mc/mc_forward.hpp"\n')
-    fd.write('#include "src/simix/smx_synchro_private.hpp"\n')
     fd.write('#include "xbt/ex.h"\n')
     fd.write('#include <functional>\n')
     fd.write('#include <simgrid/simix.hpp>\n')

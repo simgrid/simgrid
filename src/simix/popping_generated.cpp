@@ -21,7 +21,6 @@
 #endif
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
-#include "src/simix/smx_synchro_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 

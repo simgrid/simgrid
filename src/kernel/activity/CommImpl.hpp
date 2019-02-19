@@ -27,6 +27,7 @@ public:
   void suspend() override;
   void resume() override;
   void post() override;
+  void finish() override;
   void cancel();
   double remains();
   void cleanupSurf(); // FIXME: make me protected

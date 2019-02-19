@@ -4,14 +4,17 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/SynchroRaw.hpp"
+#include "simgrid/Exception.hpp"
 #include "simgrid/kernel/resource/Action.hpp"
+#include "src/kernel/activity/ConditionVariableImpl.hpp"
+#include "src/kernel/activity/MutexImpl.hpp"
+#include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/context/Context.hpp"
-#include "src/simix/smx_synchro_private.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 #include <simgrid/s4u/Host.hpp>
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_synchro);
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix, "SIMIX Synchronization (mutex, semaphores and conditions)");
 
 namespace simgrid {
 namespace kernel {
@@ -41,22 +44,70 @@ void RawImpl::resume()
 }
 void RawImpl::post()
 {
-  XBT_IN("(%p)",this);
+  if (surf_action_->get_state() == resource::Action::State::FAILED) {
+    state_ = SIMIX_FAILED;
+  } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
+    state_ = SIMIX_SRC_TIMEOUT;
+  }
+  finish();
+}
+
+void RawImpl::finish()
+{
   smx_simcall_t simcall = simcalls_.front();
   simcalls_.pop_front();
 
-  SIMIX_synchro_stop_waiting(simcall->issuer, simcall);
-  simcall->issuer->waiting_synchro = nullptr;
+  switch (state_) {
+    case SIMIX_DONE:
+      /* do nothing, synchro done */
+      XBT_DEBUG("SIMIX_execution_finished: execution successful");
+      break;
 
-  if (surf_action_->get_state() == resource::Action::State::FAILED) {
-    state_ = SIMIX_FAILED;
-    simcall->issuer->context_->iwannadie = true;
-  } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
-    state_ = SIMIX_SRC_TIMEOUT;
-    SIMIX_simcall_answer(simcall);
+    case SIMIX_FAILED:
+      XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->get_host()->get_cname());
+      simcall->issuer->context_->iwannadie = true;
+      simcall->issuer->exception_ =
+          std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
+      break;
+    case SIMIX_SRC_TIMEOUT:
+      simcall->issuer->exception_ =
+          std::make_exception_ptr(simgrid::TimeoutError(XBT_THROW_POINT, "Synchronization timeout"));
+      break;
+    default:
+      xbt_die("Internal error in RawImpl::finish() unexpected synchro state %d", static_cast<int>(state_));
   }
-  XBT_OUT();
+
+  switch (simcall->call) {
+
+    case SIMCALL_MUTEX_LOCK:
+      simgrid::xbt::intrusive_erase(simcall_mutex_lock__get__mutex(simcall)->sleeping, *simcall->issuer);
+      break;
+
+    case SIMCALL_COND_WAIT:
+      simgrid::xbt::intrusive_erase(simcall_cond_wait__get__cond(simcall)->sleeping_, *simcall->issuer);
+      break;
+
+    case SIMCALL_COND_WAIT_TIMEOUT:
+      simgrid::xbt::intrusive_erase(simcall_cond_wait_timeout__get__cond(simcall)->sleeping_, *simcall->issuer);
+      simcall_cond_wait_timeout__set__result(simcall, 1); // signal a timeout
+      break;
+
+    case SIMCALL_SEM_ACQUIRE:
+      simgrid::xbt::intrusive_erase(simcall_sem_acquire__get__sem(simcall)->sleeping_, *simcall->issuer);
+      break;
+
+    case SIMCALL_SEM_ACQUIRE_TIMEOUT:
+      simgrid::xbt::intrusive_erase(simcall_sem_acquire_timeout__get__sem(simcall)->sleeping_, *simcall->issuer);
+      simcall_sem_acquire_timeout__set__result(simcall, 1); // signal a timeout
+      break;
+
+    default:
+      THROW_IMPOSSIBLE;
+  }
+  simcall->issuer->waiting_synchro = nullptr;
+  SIMIX_simcall_answer(simcall);
 }
+
 } // namespace activity
 } // namespace kernel
 } // namespace simgrid

@@ -34,8 +34,8 @@ public:
 
   virtual void suspend();
   virtual void resume();
-  virtual void post()    = 0; // What to do when a simcall terminates
-
+  virtual void post()   = 0; // What to do when a simcall terminates
+  virtual void finish() = 0;
   void set_category(std::string category);
 
   // boost::intrusive_ptr<ActivityImpl> support:

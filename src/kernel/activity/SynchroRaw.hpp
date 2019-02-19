@@ -21,6 +21,7 @@ public:
   void suspend() override;
   void resume() override;
   void post() override;
+  void finish() override;
 };
 }}} // namespace simgrid::kernel::activity
 

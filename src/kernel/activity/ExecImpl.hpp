@@ -7,6 +7,7 @@
 #define SIMIX_SYNCHRO_EXEC_HPP
 
 #include "src/kernel/activity/ActivityImpl.hpp"
+#include "src/kernel/context/Context.hpp"
 #include "surf/surf.hpp"
 
 namespace simgrid {
@@ -22,6 +23,7 @@ public:
   ExecImpl* start(double flops_amount, double priority, double bound);
   void cancel();
   void post() override;
+  void finish() override;
   double get_remaining();
   double get_remaining_ratio();
   void set_bound(double bound);

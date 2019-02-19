@@ -157,7 +157,7 @@ XBT_PUBLIC void SIMIX_comm_set_copy_data_callback(void (*callback)(smx_activity_
 XBT_PUBLIC void SIMIX_comm_copy_pointer_callback(smx_activity_t comm, void* buff, size_t buff_size);
 XBT_PUBLIC void SIMIX_comm_copy_buffer_callback(smx_activity_t comm, void* buff, size_t buff_size);
 
-XBT_PUBLIC void SIMIX_comm_finish(smx_activity_t synchro);
+XBT_ATTRIB_DEPRECATED_v325("Please use CommImpl::finish") XBT_PUBLIC void SIMIX_comm_finish(smx_activity_t synchro);
 
 /******************************************************************************/
 /*                            SIMIX simcalls                                  */

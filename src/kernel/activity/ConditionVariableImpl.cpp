@@ -7,7 +7,6 @@
 #include "simgrid/Exception.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
-#include "src/simix/smx_synchro_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ConditionVariable, simix_synchro, "Condition variables");
 

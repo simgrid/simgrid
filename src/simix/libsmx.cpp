@@ -404,3 +404,9 @@ smx_activity_t simcall_execution_start(const std::string& name, const std::strin
         ->start(flops_amount, priority, bound);
   });
 }
+
+// deprecated
+void SIMIX_comm_finish(smx_activity_t synchro)
+{
+  boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro)->finish();
+}

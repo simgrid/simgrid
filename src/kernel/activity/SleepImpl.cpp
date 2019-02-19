@@ -8,8 +8,6 @@
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/context/Context.hpp"
-
-#include "simgrid/Exception.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/popping_private.hpp"
 #include "src/simix/smx_private.hpp"
@@ -80,7 +78,10 @@ void SleepImpl::post()
 
   SIMIX_process_sleep_destroy(this);
 }
-
+void SleepImpl::finish()
+{
+  /* FIXME some part of post should move to finish */
+}
 } // namespace activity
 } // namespace kernel
 } // namespace simgrid

@@ -19,6 +19,7 @@ class XBT_PUBLIC SleepImpl : public ActivityImpl {
 public:
   explicit SleepImpl(std::string name, s4u::Host* host) : ActivityImpl(std::move(name)), host_(host) {}
   void post() override;
+  void finish() override;
   SleepImpl* start(double duration);
 
   sg_host_t host_ = nullptr;

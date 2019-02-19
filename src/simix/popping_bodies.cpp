@@ -16,7 +16,6 @@
 
 #include "smx_private.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "src/simix/smx_synchro_private.hpp"
 #include "xbt/ex.h"
 #include <functional>
 #include <simgrid/simix.hpp>

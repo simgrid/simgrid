@@ -3,17 +3,50 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/kernel/activity/ExecImpl.hpp"
+#include "simgrid/Exception.hpp"
 #include "simgrid/modelchecker.h"
 #include "src/mc/mc_replay.hpp"
-
-#include "src/kernel/activity/ExecImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
-#include "src/surf/surf_interface.hpp"
 #include "src/surf/cpu_interface.hpp"
+#include "src/surf/surf_interface.hpp"
 
 #include "simgrid/s4u/Host.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
+
+void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchro)
+{
+  XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro.get(), (int)synchro->state_);
+
+  /* Associate this simcall to the synchro */
+  synchro->simcalls_.push_back(simcall);
+  simcall->issuer->waiting_synchro = synchro;
+
+  /* set surf's synchro */
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    synchro->state_ = SIMIX_DONE;
+    boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro)->finish();
+    return;
+  }
+
+  /* If the synchro is already finished then perform the error handling */
+  if (synchro->state_ != SIMIX_RUNNING)
+    boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro)->finish();
+}
+
+void simcall_HANDLER_execution_test(smx_simcall_t simcall, smx_activity_t synchro)
+{
+  int res = (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING);
+  if (res) {
+    synchro->simcalls_.push_back(simcall);
+    boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro)->finish();
+  } else {
+    SIMIX_simcall_answer(simcall);
+  }
+  simcall_execution_test__set__result(simcall, res);
+}
+
 namespace simgrid {
 namespace kernel {
 namespace activity {
@@ -117,7 +150,52 @@ void ExecImpl::post()
 
   /* If there are simcalls associated with the synchro, then answer them */
   if (not simcalls_.empty())
-    SIMIX_execution_finish(this);
+    finish();
+}
+
+void ExecImpl::finish()
+{
+  while (not simcalls_.empty()) {
+    smx_simcall_t simcall = simcalls_.front();
+    simcalls_.pop_front();
+    switch (state_) {
+
+      case SIMIX_DONE:
+        /* do nothing, synchro done */
+        XBT_DEBUG("SIMIX_execution_finished: execution successful");
+        break;
+
+      case SIMIX_FAILED:
+        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->get_host()->get_cname());
+        simcall->issuer->context_->iwannadie = true;
+        simcall->issuer->exception_ =
+            std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
+        break;
+
+      case SIMIX_CANCELED:
+        XBT_DEBUG("SIMIX_execution_finished: execution canceled");
+        simcall->issuer->exception_ =
+            std::make_exception_ptr(simgrid::CancelException(XBT_THROW_POINT, "Execution Canceled"));
+        break;
+
+      case SIMIX_TIMEOUT:
+        XBT_DEBUG("SIMIX_execution_finished: execution timeouted");
+        simcall->issuer->exception_ = std::make_exception_ptr(simgrid::TimeoutError(XBT_THROW_POINT, "Timeouted"));
+        break;
+
+      default:
+        xbt_die("Internal error in SIMIX_execution_finish: unexpected synchro state %d", static_cast<int>(state_));
+    }
+
+    simcall->issuer->waiting_synchro = nullptr;
+    simcall_execution_wait__set__result(simcall, state_);
+
+    /* Fail the process if the host is down */
+    if (simcall->issuer->get_host()->is_on())
+      SIMIX_simcall_answer(simcall);
+    else
+      simcall->issuer->context_->iwannadie = true;
+  }
 }
 
 ActivityImpl* ExecImpl::migrate(simgrid::s4u::Host* to)

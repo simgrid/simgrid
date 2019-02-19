@@ -16,7 +16,6 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/Client.hpp"
 #include "src/simix/smx_host_private.hpp"
-#include "src/simix/smx_synchro_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 
@@ -123,7 +122,7 @@ void ActorImpl::exit()
         sleep->surf_action_->cancel();
       sleep->post();
     } else if (raw != nullptr) {
-      SIMIX_synchro_stop_waiting(this, &simcall);
+      raw->finish();
     } else if (io != nullptr) {
       io->cancel();
     } else {
@@ -357,7 +356,7 @@ void ActorImpl::throw_exception(std::exception_ptr e)
 
     activity::RawImplPtr raw = boost::dynamic_pointer_cast<activity::RawImpl>(waiting_synchro);
     if (raw != nullptr) {
-      SIMIX_synchro_stop_waiting(this, &simcall);
+      raw->finish();
     }
 
     activity::IoImplPtr io = boost::dynamic_pointer_cast<activity::IoImpl>(waiting_synchro);
@@ -541,7 +540,7 @@ void SIMIX_process_throw(smx_actor_t actor, xbt_errcat_t cat, int value, const c
     simgrid::kernel::activity::RawImplPtr raw =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::RawImpl>(actor->waiting_synchro);
     if (raw != nullptr) {
-      SIMIX_synchro_stop_waiting(actor, &actor->simcall);
+      raw->finish();
     }
 
     simgrid::kernel::activity::IoImplPtr io =
