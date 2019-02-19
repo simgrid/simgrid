@@ -154,9 +154,7 @@ case SIMCALL_SEM_ACQUIRE_TIMEOUT:
   break;
 
 case SIMCALL_IO_WAIT:
-  simcall_HANDLER_io_wait(
-      simcall,
-      simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0]));
+  simcall_HANDLER_io_wait(simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::IoImpl*>(simcall->args[0]));
   break;
 
 case SIMCALL_MC_RANDOM:

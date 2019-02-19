@@ -940,19 +940,17 @@ static inline void simcall_sem_acquire_timeout__set__result(smx_simcall_t simcal
   simgrid::simix::marshal<int>(simcall->result, result);
 }
 
-static inline boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>
-simcall_io_wait__get__io(smx_simcall_t simcall)
+static inline simgrid::kernel::activity::IoImpl* simcall_io_wait__get__io(smx_simcall_t simcall)
 {
-  return simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0]);
+  return simgrid::simix::unmarshal<simgrid::kernel::activity::IoImpl*>(simcall->args[0]);
 }
-static inline simgrid::kernel::activity::ActivityImpl* simcall_io_wait__getraw__io(smx_simcall_t simcall)
+static inline simgrid::kernel::activity::IoImpl* simcall_io_wait__getraw__io(smx_simcall_t simcall)
 {
-  return simgrid::simix::unmarshal_raw<simgrid::kernel::activity::ActivityImpl*>(simcall->args[0]);
+  return simgrid::simix::unmarshal_raw<simgrid::kernel::activity::IoImpl*>(simcall->args[0]);
 }
-static inline void simcall_io_wait__set__io(smx_simcall_t simcall,
-                                            boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> arg)
+static inline void simcall_io_wait__set__io(smx_simcall_t simcall, simgrid::kernel::activity::IoImpl* arg)
 {
-  simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0], arg);
+  simgrid::simix::marshal<simgrid::kernel::activity::IoImpl*>(simcall->args[0], arg);
 }
 static inline sg_size_t simcall_io_wait__get__result(smx_simcall_t simcall)
 {
@@ -1056,6 +1054,5 @@ XBT_PRIVATE void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t con
 XBT_PRIVATE void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex, double timeout);
 XBT_PRIVATE void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem);
 XBT_PRIVATE void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout);
-XBT_PRIVATE void simcall_HANDLER_io_wait(smx_simcall_t simcall,
-                                         boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> io);
+XBT_PRIVATE void simcall_HANDLER_io_wait(smx_simcall_t simcall, simgrid::kernel::activity::IoImpl* io);
 XBT_PRIVATE int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max);

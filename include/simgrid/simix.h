@@ -247,13 +247,19 @@ XBT_PUBLIC int simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, dou
 
 XBT_PUBLIC void simcall_sem_acquire(smx_sem_t sem);
 XBT_PUBLIC int simcall_sem_acquire_timeout(smx_sem_t sem, double max_duration);
+SG_END_DECL()
 
 /*****************************   Io   **************************************/
-XBT_PUBLIC e_smx_state_t simcall_io_wait(smx_activity_t io);
+#ifdef __cplusplus
+XBT_PUBLIC e_smx_state_t simcall_io_wait(const smx_activity_t& io);
+#endif
 /************************** MC simcalls   **********************************/
+SG_BEGIN_DECL()
 XBT_PUBLIC int simcall_mc_random(int min, int max);
+SG_END_DECL()
 
 /***************************** DEPRECATED CALLS ****************************/
+SG_BEGIN_DECL()
 XBT_ATTRIB_DEPRECATED_v325("Please use sg_actor_set_kill_time()") XBT_PUBLIC
     void simcall_process_set_kill_time(smx_actor_t process, double kill_time);
 
