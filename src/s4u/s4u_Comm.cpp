@@ -47,7 +47,7 @@ void Comm::wait_all(std::vector<CommPtr>* comms)
     comm->wait();
 }
 
-Comm* Comm::set_rate(double rate)
+CommPtr Comm::set_rate(double rate)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);
@@ -55,7 +55,7 @@ Comm* Comm::set_rate(double rate)
   return this;
 }
 
-Comm* Comm::set_src_data(void* buff)
+CommPtr Comm::set_src_data(void* buff)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);
@@ -63,14 +63,16 @@ Comm* Comm::set_src_data(void* buff)
   src_buff_ = buff;
   return this;
 }
-Comm* Comm::set_src_data_size(size_t size)
+
+CommPtr Comm::set_src_data_size(size_t size)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);
   src_buff_size_ = size;
   return this;
 }
-Comm* Comm::set_src_data(void* buff, size_t size)
+
+CommPtr Comm::set_src_data(void* buff, size_t size)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);
@@ -80,7 +82,7 @@ Comm* Comm::set_src_data(void* buff, size_t size)
   src_buff_size_ = size;
   return this;
 }
-Comm* Comm::set_dst_data(void** buff)
+CommPtr Comm::set_dst_data(void** buff)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);
@@ -88,12 +90,13 @@ Comm* Comm::set_dst_data(void** buff)
   dst_buff_ = buff;
   return this;
 }
+
 size_t Comm::get_dst_data_size()
 {
   xbt_assert(state_ == State::FINISHED, "You cannot use %s before your communication terminated", __FUNCTION__);
   return dst_buff_size_;
 }
-Comm* Comm::set_dst_data(void** buff, size_t size)
+CommPtr Comm::set_dst_data(void** buff, size_t size)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);

@@ -19,7 +19,24 @@ namespace s4u {
  * Represents all asynchronous communications, that you can test or wait onto.
  */
 class XBT_PUBLIC Comm : public Activity {
+  MailboxPtr mailbox_                 = nullptr;
+  kernel::actor::ActorImpl* sender_   = nullptr;
+  kernel::actor::ActorImpl* receiver_ = nullptr;
+  double rate_                        = -1;
+  void* dst_buff_                     = nullptr;
+  size_t dst_buff_size_               = 0;
+  void* src_buff_                     = nullptr;
+  size_t src_buff_size_               = sizeof(void*);
+  std::atomic_int_fast32_t refcount_{0};
+
+  /* FIXME: expose these elements in the API */
+  int detached_                                                           = 0;
+  int (*match_fun_)(void*, void*, kernel::activity::CommImpl*)            = nullptr;
+  void (*clean_fun_)(void*)                                               = nullptr;
+  void (*copy_data_function_)(kernel::activity::CommImpl*, void*, size_t) = nullptr;
+
   Comm() : Activity() {}
+
 public:
   friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Comm * c);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Comm * c);
@@ -27,9 +44,9 @@ public:
 
   virtual ~Comm();
 
-  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_sender_start;
-  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_receiver_start;
-  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_completion;
+  static xbt::signal<void(ActorPtr)> on_sender_start;
+  static xbt::signal<void(ActorPtr)> on_receiver_start;
+  static xbt::signal<void(ActorPtr)> on_completion;
 
   /*! take a vector s4u::CommPtr and return when one of them is finished.
    * The return value is the rank of the first finished CommPtr. */
@@ -45,6 +62,7 @@ public:
   Comm* start() override;
   Comm* wait() override;
   Comm* wait_for(double timeout) override;
+  Comm* cancel() override;
   bool test() override;
 
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
@@ -57,7 +75,7 @@ public:
   }
 
   /** Sets the maximal communication rate (in byte/sec). Must be done before start */
-  Comm* set_rate(double rate);
+  CommPtr set_rate(double rate);
 
   /** Specify the data to send.
    *
@@ -66,7 +84,7 @@ public:
    * you can send a short buffer in your simulator, that represents a very large message
    * in the simulated world, or the opposite.
    */
-  Comm* set_src_data(void* buff);
+  CommPtr set_src_data(void* buff);
   /** Specify the size of the data to send. Not to be mixed with @ref Activity::set_remaining()
    *
    * That's the size of the data to actually copy in the simulator (ie, the data passed with Activity::set_src_data()).
@@ -74,7 +92,7 @@ public:
    * you can send a short buffer in your simulator, that represents a very large message
    * in the simulated world, or the opposite.
    */
-  Comm* set_src_data_size(size_t size);
+  CommPtr set_src_data_size(size_t size);
   /** Specify the data to send and its size. Don't mix the size with @ref Activity::set_remaining()
    *
    * This is way will get actually copied over to the receiver.
@@ -82,46 +100,47 @@ public:
    * you can send a short buffer in your simulator, that represents a very large message
    * in the simulated world, or the opposite.
    */
-  Comm* set_src_data(void* buff, size_t size);
+  CommPtr set_src_data(void* buff, size_t size);
 
   /** Specify where to receive the data.
    *
    * That's a buffer where the sent data will be copied */
-  Comm* set_dst_data(void** buff);
+  CommPtr set_dst_data(void** buff);
   /** Specify the buffer in which the data should be received
    *
    * That's a buffer where the sent data will be copied  */
-  Comm* set_dst_data(void** buff, size_t size);
-  /** Retrieve the size of the received data. Not to be mixed with @ref Activity::set_remaining()  */
-  size_t get_dst_data_size();
-
-  Comm* cancel() override;
+  CommPtr set_dst_data(void** buff, size_t size);
 
   /** Retrieve the mailbox on which this comm acts */
   MailboxPtr get_mailbox();
+  /** Retrieve the size of the received data. Not to be mixed with @ref Activity::set_remaining()  */
+  size_t get_dst_data_size();
 
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v324("Please use Comm::wait_for()") void wait(double t) override { wait_for(t); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_rate()") Activity* setRate(double rate) { return set_rate(rate); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_rate()") Activity* setRate(double rate)
+  {
+    return set_rate(rate).get();
+  }
   XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_src_data()") Activity* setSrcData(void* buff)
   {
-    return set_src_data(buff);
+    return set_src_data(buff).get();
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_src_data()") Activity* setSrcData(void* buff, size_t size)
   {
-    return set_src_data(buff, size);
+    return set_src_data(buff, size).get();
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_src_data_size()") Activity* setSrcDataSize(size_t size)
   {
-    return set_src_data_size(size);
+    return set_src_data_size(size).get();
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_dst_data()") Activity* setDstData(void** buff)
   {
-    return set_dst_data(buff);
+    return set_dst_data(buff).get();
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_dst_data()") Activity* setDstData(void** buff, size_t size)
   {
-    return set_dst_data(buff, size);
+    return set_dst_data(buff, size).get();
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_dst_data_size()") size_t getDstDataSize()
   {
@@ -129,25 +148,6 @@ public:
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") MailboxPtr getMailbox() { return get_mailbox(); }
 #endif
-
-private:
-  double rate_        = -1;
-  void* dst_buff_       = nullptr;
-  size_t dst_buff_size_ = 0;
-  void* src_buff_       = nullptr;
-  size_t src_buff_size_ = sizeof(void*);
-
-  /* FIXME: expose these elements in the API */
-  int detached_ = 0;
-  int (*match_fun_)(void*, void*, simgrid::kernel::activity::CommImpl*) = nullptr;
-  void (*clean_fun_)(void*)                                             = nullptr;
-  void (*copy_data_function_)(simgrid::kernel::activity::CommImpl*, void*, size_t) = nullptr;
-
-  smx_actor_t sender_   = nullptr;
-  smx_actor_t receiver_ = nullptr;
-  MailboxPtr mailbox_   = nullptr;
-
-  std::atomic_int_fast32_t refcount_{0};
 };
 } // namespace s4u
 } // namespace simgrid

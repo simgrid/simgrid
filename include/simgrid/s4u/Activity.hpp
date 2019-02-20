@@ -55,8 +55,6 @@ public:
    * This function is optional: you can call wait() even if you didn't call start()
    */
   virtual Activity* start() = 0;
-  /** Tests whether the given activity is terminated yet. This is a pure function. */
-  //virtual bool test()=0;
   /** Blocks until the activity is terminated */
   virtual Activity* wait() = 0;
   /** Blocks until the activity is terminated, or until the timeout is elapsed
@@ -70,7 +68,7 @@ public:
   virtual Activity* cancel() = 0;
   /** Retrieve the current state of the activity */
   Activity::State get_state() { return state_; }
-  /** Returns whether this activity is completed */
+  /** Tests whether the given activity is terminated yet. This is a pure function. */
   virtual bool test() = 0;
 
   /** Get the remaining amount of work that this Activity entails. When it's 0, it's done. */
@@ -90,7 +88,7 @@ public:
   /** Retrieve the user data of the Activity */
   void* get_user_data() { return user_data_; }
 
-  simgrid::kernel::activity::ActivityImplPtr get_impl() { return pimpl_; }
+  kernel::activity::ActivityImplPtr get_impl() { return pimpl_; }
 
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v324("Please use Activity::wait_for()") virtual void wait(double timeout) = 0;
@@ -108,12 +106,13 @@ public:
 #endif
 
 private:
-  simgrid::kernel::activity::ActivityImplPtr pimpl_ = nullptr;
-  Activity::State state_                            = Activity::State::INITED;
-  double remains_                                   = 0;
-  void* user_data_                                  = nullptr;
-}; // class
+  kernel::activity::ActivityImplPtr pimpl_ = nullptr;
+  Activity::State state_                   = Activity::State::INITED;
+  double remains_                          = 0;
+  void* user_data_                         = nullptr;
+};
 
-}}; // Namespace simgrid::s4u
+} // namespace s4u
+} // namespace simgrid
 
 #endif /* SIMGRID_S4U_ACTIVITY_HPP */

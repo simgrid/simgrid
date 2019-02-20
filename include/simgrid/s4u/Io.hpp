@@ -10,27 +10,33 @@
 #include <simgrid/s4u/Activity.hpp>
 
 #include <atomic>
-#include <string>
 
 namespace simgrid {
 namespace s4u {
 
 /** I/O Activity, representing the asynchronous disk access.
  *
- * They are generated from simgrid::s4u::Storage::read() and simgrid::s4u::Storage::write().
+ * They are generated from Storage::io_init() or Storage::read() and Storage::write().
  */
 
 class XBT_PUBLIC Io : public Activity {
 public:
-  friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Io* i);
-  friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Io* i);
-  friend simgrid::s4u::Storage; // Factory of IOs
   enum class OpType { READ, WRITE };
 
 private:
+  Storage* storage_ = nullptr;
+  sg_size_t size_   = 0;
+  OpType type_      = OpType::READ;
+  std::string name_ = "";
+  std::atomic_int_fast32_t refcount_{0};
+
   explicit Io(sg_storage_t storage, sg_size_t size, OpType type);
 
 public:
+  friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Io* i);
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Io* i);
+  friend simgrid::s4u::Storage; // Factory of IOs
+
   ~Io() = default;
 
   Io* start() override;
@@ -47,13 +53,8 @@ public:
 #endif
 
 private:
-  sg_storage_t storage_ = nullptr;
-  sg_size_t size_       = 0;
-  OpType type_          = OpType::READ;
-  std::string name_     = "";
-  std::atomic_int_fast32_t refcount_{0};
 }; // class
-}
-}; // Namespace simgrid::s4u
+} // namespace s4u
+} // namespace simgrid
 
 #endif /* SIMGRID_S4U_IO_HPP */

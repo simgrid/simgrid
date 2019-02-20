@@ -16,22 +16,30 @@ namespace s4u {
 
 /** Computation Activity, representing the asynchronous executions.
  *
- * They are generated from simgrid::s4u::this_actor::exec_init() or simgrid::s4u::Host::execute(),
- * and can be used to model pools of threads or similar mechanisms.
+ * They are generated from this_actor::exec_init() or Host::execute(), and can be used to model pools of threads or
+ * similar mechanisms.
  */
 
 class XBT_PUBLIC Exec : public Activity {
+  Host* host_                   = nullptr;
+  double flops_amount_          = 0.0;
+  double priority_              = 1.0;
+  double bound_                 = 0.0;
+  std::string name_             = "";
+  std::string tracing_category_ = "";
+  std::atomic_int_fast32_t refcount_{0};
+
   explicit Exec(sg_host_t host, double flops_amount);
 
 public:
-  friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Exec * e);
-  friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Exec * e);
+  friend XBT_PUBLIC void intrusive_ptr_release(Exec* e);
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(Exec* e);
   friend XBT_PUBLIC ExecPtr this_actor::exec_init(double flops_amount);
 
   ~Exec() = default;
 
-  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_start;
-  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_completion;
+  static xbt::signal<void(ActorPtr)> on_start;
+  static xbt::signal<void(ActorPtr)> on_completion;
 
   Exec* start() override;
   Exec* wait() override;
@@ -64,17 +72,8 @@ public:
     return get_remaining_ratio();
   }
 #endif
-
-private:
-  Host* host_                   = nullptr;
-  double flops_amount_          = 0.0;
-  double priority_              = 1.0;
-  double bound_                 = 0.0;
-  std::string name_             = "";
-  std::string tracing_category_ = "";
-  std::atomic_int_fast32_t refcount_{0};
-}; // class
-}
-}; // Namespace simgrid::s4u
+};
+} // namespace s4u
+} // namespace simgrid
 
 #endif /* SIMGRID_S4U_EXEC_HPP */
