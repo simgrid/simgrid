@@ -6,6 +6,7 @@
 #include "simgrid/Exception.hpp"
 #include <cmath>
 
+#include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
@@ -716,7 +717,11 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   msg_process_t process = MSG_process_self();
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(alias);
 
-  TRACE_msg_task_put_start(task);
+  if (TRACE_actor_is_enabled()) {
+    container_t process_container = simgrid::instr::Container::by_name(instr_pid(MSG_process_self()));
+    std::string key               = std::string("p") + std::to_string(task->counter);
+    simgrid::instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->start_event(process_container, "SR", key);
+  }
 
   /* Prepare the task to send */
   t_simdata = task->simdata;
@@ -730,13 +735,12 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
 
   /* Try to send it by calling SIMIX network layer */
   try {
-    smx_activity_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simix call  */
-    comm = simcall_comm_isend(SIMIX_process_self(), mailbox->get_impl(), t_simdata->bytes_amount, t_simdata->rate, task,
-                              sizeof(void*), nullptr, nullptr, nullptr, nullptr, 0);
+    simgrid::s4u::CommPtr comm = mailbox->put_init(task, t_simdata->bytes_amount)->set_rate(t_simdata->rate);
+    t_simdata->comm            = boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(comm->get_impl());
+    comm->start();
     if (TRACE_is_enabled() && task->category != nullptr)
-      simgrid::simix::simcall([comm, task] { comm->set_category(task->category); });
-    t_simdata->comm = boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(comm);
-    simcall_comm_wait(comm, timeout);
+      simgrid::simix::simcall([comm, task] { comm->get_impl()->set_category(task->category); });
+    comm->wait_for(timeout);
   } catch (simgrid::TimeoutError& e) {
     ret = MSG_TIMEOUT;
   } catch (simgrid::CancelException& e) {
@@ -751,7 +755,6 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
     t_simdata->setNotUsed();
   }
 
-  TRACE_msg_task_put_end();
   return ret;
 }
 
