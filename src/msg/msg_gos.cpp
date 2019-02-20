@@ -792,14 +792,9 @@ msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alia
  */
 int MSG_task_listen_from(const char *alias)
 {
-  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(alias);
-  simgrid::kernel::activity::CommImplPtr comm =
-      boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(mbox->front());
+  simgrid::kernel::activity::CommImplPtr comm = simgrid::s4u::Mailbox::by_name(alias)->front();
 
-  if (not comm)
-    return -1;
-
-  return MSG_process_get_PID(static_cast<msg_task_t>(comm->src_buff_)->simdata->sender);
+  return comm ? MSG_process_get_PID(static_cast<msg_task_t>(comm->src_buff_)->simdata->sender) : -1;
 }
 
 /**

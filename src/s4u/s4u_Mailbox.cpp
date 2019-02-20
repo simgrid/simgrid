@@ -56,7 +56,7 @@ bool Mailbox::ready()
   return comm_ready;
 }
 
-smx_activity_t Mailbox::front()
+kernel::activity::CommImplPtr Mailbox::front()
 {
   return pimpl_->comm_queue_.empty() ? nullptr : pimpl_->comm_queue_.front();
 }

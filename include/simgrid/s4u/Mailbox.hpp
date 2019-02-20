@@ -50,7 +50,7 @@ public:
   bool ready();
 
   /** Gets the first element in the queue (without dequeuing it), or nullptr if none is there */
-  smx_activity_t front();
+  kernel::activity::CommImplPtr front();
 
   /** Declare that the specified actor is a permanent receiver on that mailbox
    *
