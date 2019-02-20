@@ -991,11 +991,12 @@ void surf_parse_open(const std::string& file)
   surf_parsed_filename = file;
   std::string dir      = simgrid::xbt::Path(file).get_dir_name();
   surf_path.push_back(dir);
-  std::string cwd = simgrid::xbt::Path().get_dir_name();
 
   surf_file_to_parse = surf_fopen(file, "r");
-  if (surf_file_to_parse == nullptr)
+  if (surf_file_to_parse == nullptr) {
+    std::string cwd = simgrid::xbt::Path().get_name();
     xbt_die("Unable to open '%s' from '%s'\n", file.c_str(), cwd.c_str());
+  }
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
   surf_parse__switch_to_buffer(surf_input_buffer);
   surf_parse_lineno = 1;
