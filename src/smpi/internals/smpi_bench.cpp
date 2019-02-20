@@ -448,6 +448,29 @@ void smpi_sample_3(int global, const char *file, int line)
   data.benching = false;
 }
 
+void smpi_sample_exit(int global, const char *file, int line){
+  if (smpi_process()->sampling()){
+    SampleLocation loc(global, file, line);
+
+    XBT_DEBUG("sample exit %s", loc.c_str());
+    auto sample = samples.find(loc);
+    if (sample == samples.end())
+      xbt_die("Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
+    LocalData& data = sample->second;
+  
+    if (smpi_process()->sampling()){//end of loop, but still sampling needed
+        double sleep = data.mean;
+        if (data.sum != 0.0){ //we finished benching, sum is unecessary after the first injection, we can reset it.
+          sleep = data.sum;
+          data.sum = 0.0;
+        }
+        smpi_process()->set_sampling(0);
+        smpi_execute(sleep);
+        smpi_bench_begin();
+    }
+  }
+}
+
 smpi_trace_call_location_t* smpi_trace_get_call_location()
 {
   return smpi_process()->call_location();

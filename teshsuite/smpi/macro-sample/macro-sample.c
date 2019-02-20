@@ -32,9 +32,8 @@ int main(int argc, char *argv[])
   MPI_Comm_size(MPI_COMM_WORLD, &n);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   double d = 2.0;
-  for (int i = 0; i < 5; i++) {
     /* I want no more than n + 1 benchs (thres < 0) */
-    SMPI_SAMPLE_GLOBAL(n + 1, -1) {
+  SMPI_SAMPLE_GLOBAL(int i = 0, i < 5, i++, n + 1, -1,
       if (verbose)
         fprintf(stderr, "(%12.6f) [rank:%d]", MPI_Wtime(), rank);
       else
@@ -42,14 +41,10 @@ int main(int argc, char *argv[])
       fprintf(stderr, " Run the first computation. It's globally benched, "
               "and I want no more than %d benchmarks (thres<0)\n", n + 1);
       d = compute(2.0);
-     }
-  }
+  )
 
   n = 0;
-  for (int i = 0; i < 5; i++) {
-    /* I want the standard error to go below 0.1 second.
-     * Two tests at least will be run (count is not > 0) */
-    SMPI_SAMPLE_LOCAL(0, 0.1) {
+  SMPI_SAMPLE_LOCAL (int i = 0, i < 5, i++,0, 0.1,
       if (verbose || n < 2) {
         n++;
         if (verbose)
@@ -61,8 +56,7 @@ int main(int argc, char *argv[])
                 "standard error to go below 0.1 second (count is not >0)\n", rank);
       }
       d = compute(d);
-     }
-  }
+  )
 
   if (verbose)
     fprintf(stderr, "(%12.6f) [rank:%d] The result of the computation is: %f\n", MPI_Wtime(), rank, d);
