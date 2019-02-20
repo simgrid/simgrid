@@ -143,8 +143,8 @@ void ActorImpl::kill(ActorImpl* actor)
     return;
   }
 
-  XBT_DEBUG("Actor '%s'@%s is killing actor '%s'@%s", get_cname(), host_->get_cname(), actor->get_cname(),
-            actor->host_->get_cname());
+  XBT_DEBUG("Actor '%s'@%s is killing actor '%s'@%s", get_cname(), host_ ? host_->get_cname() : "", actor->get_cname(),
+            actor->host_ ? actor->host_->get_cname() : "");
 
   actor->exit();
 
