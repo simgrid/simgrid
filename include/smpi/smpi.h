@@ -955,7 +955,7 @@ XBT_PUBLIC unsigned long long smpi_rastro_timestamp();
 XBT_PUBLIC void smpi_sample_1(int global, const char* file, int line, int iters, double threshold);
 XBT_PUBLIC int smpi_sample_2(int global, const char* file, int line);
 XBT_PUBLIC void smpi_sample_3(int global, const char* file, int line);
-
+XBT_PUBLIC void smpi_sample_exit(int global, const char* file, int line);
 /**
  * Need a public setter for SMPI copy_callback function, so users can define
  * their own while still using default SIMIX_copy_callback for S4U copies.
@@ -973,11 +973,24 @@ XBT_PUBLIC void smpi_trace_set_call_location_(const char* file, int* line);
 /** Fortran binding + -fsecond-underscore **/
 XBT_PUBLIC void smpi_trace_set_call_location__(const char* file, int* line);
 
-#define SMPI_SAMPLE_LOOP(global, iters, thres)                                                                         \
-  for (smpi_sample_1(global, __FILE__, __LINE__, iters, thres); smpi_sample_2(global, __FILE__, __LINE__);             \
-       smpi_sample_3(global, __FILE__, __LINE__))
-#define SMPI_SAMPLE_LOCAL(iters, thres) SMPI_SAMPLE_LOOP(0, iters, thres)
-#define SMPI_SAMPLE_GLOBAL(iters, thres) SMPI_SAMPLE_LOOP(1, iters, thres)
+#define SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, global, iters, thres, loop_body)                                                                         \
+  {\
+    loop_init;\
+    for (;;){\
+      if(!(loop_end)) {\
+        smpi_sample_exit(global, __FILE__, __LINE__);\
+        break;\
+      }\
+      for (smpi_sample_1(global, __FILE__, __LINE__, iters, thres); smpi_sample_2(global, __FILE__, __LINE__);             \
+         smpi_sample_3(global, __FILE__, __LINE__)){\
+        loop_body\
+      }\
+      loop_iter;\
+    }\
+  }
+
+#define SMPI_SAMPLE_LOCAL(loop_init, loop_end, loop_iter, iters, thres, loop_body) SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, 0, iters, thres, loop_body)
+#define SMPI_SAMPLE_GLOBAL(loop_init, loop_end, loop_iter,iters, thres, loop_body) SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, 1, iters, thres, loop_body)
 
 #define SMPI_SAMPLE_DELAY(duration) for(smpi_execute(duration); 0; )
 #define SMPI_SAMPLE_FLOPS(flops) for(smpi_execute_flops(flops); 0; )
@@ -1090,4 +1103,4 @@ std::vector<std::pair<size_t, size_t>> merge_private_blocks(const std::vector<st
 
 #endif
 
-#endif
+#endif 

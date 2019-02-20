@@ -273,7 +273,7 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activi
   }
 
   for (std::size_t i = 0; i != count; ++i) {
-    simgrid::kernel::activity::ActivityImplPtr comm = comms[i];
+    simgrid::kernel::activity::CommImpl* comm = comms[i];
     if (comm->state_ != SIMIX_WAITING && comm->state_ != SIMIX_RUNNING) {
       simcall_comm_testany__set__result(simcall, i);
       comm->simcalls_.push_back(simcall);
