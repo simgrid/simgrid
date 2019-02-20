@@ -7,6 +7,7 @@
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Exec.hpp"
+#include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 
 #include <string>
@@ -637,6 +638,16 @@ sg_host_t sg_host_self()
 {
   smx_actor_t process = SIMIX_process_self();
   return (process == nullptr) ? nullptr : process->get_host();
+}
+
+/* needs to be public and without simcall for exceptions and logging events */
+const char* sg_host_self_get_name()
+{
+  sg_host_t host = sg_host_self();
+  if (host == nullptr || SIMIX_process_self() == simix_global->maestro_process)
+    return "";
+
+  return host->get_cname();
 }
 
 double sg_host_load(sg_host_t host)

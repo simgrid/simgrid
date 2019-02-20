@@ -13,16 +13,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");
 
-/* needs to be public and without simcall for exceptions and logging events */
-const char* sg_host_self_get_name()
-{
-  sg_host_t host = sg_host_self();
-  if (host == nullptr || SIMIX_process_self() == simix_global->maestro_process)
-    return "";
-
-  return host->get_cname();
-}
-
 simgrid::kernel::activity::ExecImplPtr
 SIMIX_execution_parallel_start(std::string name, int host_nb, const sg_host_t* host_list, const double* flops_amount,
                                const double* bytes_amount, double rate, double timeout)
