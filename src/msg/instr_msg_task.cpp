@@ -29,7 +29,6 @@ void TRACE_msg_set_task_category(msg_task_t task, const char *category)
   }
 }
 
-/* MSG_task_get related functions */
 void TRACE_msg_task_get_start()
 {
   XBT_DEBUG("GET,in");
@@ -58,8 +57,6 @@ void TRACE_msg_task_put_start(msg_task_t task)
 
   if (TRACE_actor_is_enabled()) {
     container_t process_container = simgrid::instr::Container::by_name(instr_pid(MSG_process_self()));
-    process_container->get_state("ACTOR_STATE")->push_event("send");
-
     std::string key = std::string("p") + std::to_string(task->counter);
     simgrid::instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->start_event(process_container, "SR", key);
   }

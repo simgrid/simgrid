@@ -239,8 +239,6 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
   if (host)
     THROW_UNIMPLEMENTED;
 
-  TRACE_msg_task_get_start();
-
   /* Sanity check */
   xbt_assert(task, "Null pointer for the task storage");
 
@@ -249,8 +247,9 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
 
   /* Try to receive it by calling SIMIX network layer */
   try {
-    simcall_comm_recv(MSG_process_self()->get_impl(), mailbox->get_impl(), task, nullptr, nullptr, nullptr, nullptr,
-                      timeout, rate);
+    void* payload;
+    mailbox->get_init()->set_dst_data(&payload, sizeof(msg_task_t*))->set_rate(rate)->wait_for(timeout);
+    *task = static_cast<msg_task_t>(payload);
     XBT_DEBUG("Got task %s from %s", (*task)->name, mailbox->get_cname());
     (*task)->simdata->setNotUsed();
   } catch (simgrid::HostFailureException& e) {
@@ -717,11 +716,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   msg_process_t process = MSG_process_self();
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(alias);
 
-  if (TRACE_actor_is_enabled()) {
-    container_t process_container = simgrid::instr::Container::by_name(instr_pid(MSG_process_self()));
-    std::string key               = std::string("p") + std::to_string(task->counter);
-    simgrid::instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->start_event(process_container, "SR", key);
-  }
+  TRACE_msg_task_put_start(task);
 
   /* Prepare the task to send */
   t_simdata = task->simdata;
