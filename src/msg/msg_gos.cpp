@@ -233,7 +233,6 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
                                          double rate)
 {
   XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(alias);
   msg_error_t ret = MSG_OK;
   /* We no longer support getting a task from a specific host */
   if (host)
@@ -248,9 +247,13 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
   /* Try to receive it by calling SIMIX network layer */
   try {
     void* payload;
-    mailbox->get_init()->set_dst_data(&payload, sizeof(msg_task_t*))->set_rate(rate)->wait_for(timeout);
+    simgrid::s4u::Mailbox::by_name(alias)
+        ->get_init()
+        ->set_dst_data(&payload, sizeof(msg_task_t*))
+        ->set_rate(rate)
+        ->wait_for(timeout);
     *task = static_cast<msg_task_t>(payload);
-    XBT_DEBUG("Got task %s from %s", (*task)->name, mailbox->get_cname());
+    XBT_DEBUG("Got task %s from %s", (*task)->name, alias);
     (*task)->simdata->setNotUsed();
   } catch (simgrid::HostFailureException& e) {
     ret = MSG_HOST_FAILURE;
@@ -712,25 +715,22 @@ msg_error_t MSG_task_send_bounded(msg_task_t task, const char *alias, double max
 msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, double timeout)
 {
   msg_error_t ret = MSG_OK;
-  simdata_task_t t_simdata = nullptr;
-  msg_process_t process = MSG_process_self();
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(alias);
 
   TRACE_msg_task_put_start(task);
 
   /* Prepare the task to send */
-  t_simdata = task->simdata;
-  t_simdata->sender = process;
+  simdata_task_t t_simdata = task->simdata;
+  t_simdata->sender        = MSG_process_self();
   t_simdata->source = MSG_host_self();
 
   t_simdata->setUsed();
 
-  t_simdata->comm = nullptr;
   msg_global->sent_msg++;
 
-  /* Try to send it by calling SIMIX network layer */
+  /* Try to send it */
   try {
-    simgrid::s4u::CommPtr comm = mailbox->put_init(task, t_simdata->bytes_amount)->set_rate(t_simdata->rate);
+    simgrid::s4u::CommPtr comm =
+        simgrid::s4u::Mailbox::by_name(alias)->put_init(task, t_simdata->bytes_amount)->set_rate(t_simdata->rate);
     t_simdata->comm            = boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(comm->get_impl());
     comm->start();
     if (TRACE_is_enabled() && task->category != nullptr)
