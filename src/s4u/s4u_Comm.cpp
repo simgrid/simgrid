@@ -167,6 +167,8 @@ Comm* Comm::wait_for(double timeout)
       state_ = State::FINISHED;
       return this;
 
+    case State::CANCELED:
+      return this;
     default:
       THROW_IMPOSSIBLE;
   }
@@ -193,7 +195,10 @@ Comm* Comm::detach()
 
 Comm* Comm::cancel()
 {
-  simgrid::simix::simcall([this] { static_cast<kernel::activity::CommImpl*>(pimpl_.get())->cancel(); });
+  simgrid::simix::simcall([this] {
+    if (pimpl_)
+      boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->cancel();
+  });
   state_ = State::CANCELED;
   return this;
 }
