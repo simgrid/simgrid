@@ -291,23 +291,24 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* al
   t_simdata->comm = nullptr;
   msg_global->sent_msg++;
 
-  /* Send it by calling SIMIX network layer */
-  smx_activity_t act =
-      simcall_comm_isend(myself->get_impl(), mailbox->get_impl(), t_simdata->bytes_amount, t_simdata->rate, task,
-                         sizeof(void*), nullptr, cleanup, nullptr, nullptr, detached);
-  t_simdata->comm = boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(act);
+  simgrid::s4u::CommPtr comm = mailbox->put_init(task, t_simdata->bytes_amount)->set_rate(t_simdata->rate);
+  t_simdata->comm            = comm;
+  if (detached)
+    comm->detach(cleanup);
+  else
+    comm->start();
 
-  msg_comm_t comm = nullptr;
+  msg_comm_t msg_comm = nullptr;
   if (not detached) {
-    comm = new simgrid::msg::Comm(task, nullptr, act);
+    msg_comm = new simgrid::msg::Comm(task, nullptr, comm);
   }
 
   if (TRACE_is_enabled() && task->category != nullptr)
-    simgrid::simix::simcall([act, task] { act->set_category(task->category); });
+    simgrid::simix::simcall([comm, task] { comm->get_impl()->set_category(task->category); });
 
   TRACE_msg_task_put_end();
 
-  return comm;
+  return msg_comm;
 }
 
 /**
@@ -431,8 +432,7 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
 
   /* Try to receive it by calling SIMIX network layer */
   msg_comm_t comm = new simgrid::msg::Comm(
-      nullptr, task,
-      simcall_comm_irecv(SIMIX_process_self(), mbox->get_impl(), task, nullptr, nullptr, nullptr, nullptr, rate));
+      nullptr, task, mbox->get_init()->set_dst_data((void**)task, sizeof(msg_task_t*))->set_rate(rate)->start());
 
   return comm;
 }
@@ -450,7 +450,7 @@ int MSG_comm_test(msg_comm_t comm)
   bool finished = false;
 
   try {
-    finished = simcall_comm_test(comm->s_comm);
+    finished = comm->s_comm->test();
     if (finished && comm->task_received != nullptr) {
       /* I am the receiver */
       (*comm->task_received)->simdata->setNotUsed();
@@ -488,7 +488,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach(comms, cursor, comm) {
-    s_comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(comm->s_comm.get()));
+    s_comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(comm->s_comm->get_impl().get()));
   }
 
   msg_error_t status = MSG_OK;
@@ -536,7 +536,7 @@ void MSG_comm_destroy(msg_comm_t comm)
 msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 {
   try {
-    simcall_comm_wait(comm->s_comm, timeout);
+    comm->s_comm->wait_for(timeout);
 
     if (comm->task_received != nullptr) {
       /* I am the receiver */
@@ -584,7 +584,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach(comms, cursor, comm) {
-    s_comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(comm->s_comm.get()));
+    s_comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(comm->s_comm->get_impl().get()));
   }
 
   msg_error_t status = MSG_OK;
@@ -722,7 +722,6 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   simdata_task_t t_simdata = task->simdata;
   t_simdata->sender        = MSG_process_self();
   t_simdata->source = MSG_host_self();
-
   t_simdata->setUsed();
 
   msg_global->sent_msg++;
@@ -731,7 +730,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   try {
     simgrid::s4u::CommPtr comm =
         simgrid::s4u::Mailbox::by_name(alias)->put_init(task, t_simdata->bytes_amount)->set_rate(t_simdata->rate);
-    t_simdata->comm            = boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(comm->get_impl());
+    t_simdata->comm = comm;
     comm->start();
     if (TRACE_is_enabled() && task->category != nullptr)
       simgrid::simix::simcall([comm, task] { comm->get_impl()->set_category(task->category); });

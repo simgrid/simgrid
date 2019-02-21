@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cmath>
 #include <simgrid/modelchecker.h>
+#include <simgrid/s4u/Comm.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)");
 
@@ -196,7 +197,7 @@ msg_error_t MSG_task_cancel(msg_task_t task)
   if (simdata->compute) {
     simgrid::simix::simcall([simdata] { simdata->compute->cancel(); });
   } else if (simdata->comm) {
-    simgrid::simix::simcall([simdata] { simdata->comm->cancel(); });
+    simdata->comm->cancel();
   }
   simdata->setNotUsed();
   return MSG_OK;
@@ -265,7 +266,7 @@ void MSG_task_set_bytes_amount(msg_task_t task, double data_size)
 double MSG_task_get_remaining_communication(msg_task_t task)
 {
   XBT_DEBUG("calling simcall_communication_get_remains(%p)", task->simdata->comm.get());
-  return task->simdata->comm->remains();
+  return task->simdata->comm->get_remaining();
 }
 
 /** @brief Returns the size of the data attached to the given task. */

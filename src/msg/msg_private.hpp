@@ -26,7 +26,7 @@ struct s_simdata_task_t {
   void setNotUsed() { this->isused = false; }
 
   simgrid::kernel::activity::ExecImplPtr compute = nullptr; /* SIMIX modeling of computation */
-  simgrid::kernel::activity::CommImplPtr comm    = nullptr; /* SIMIX modeling of communication */
+  simgrid::s4u::CommPtr comm                     = nullptr; /* S4U modeling of communication */
   double bytes_amount                            = 0.0;     /* Data size */
   double flops_amount                            = 0.0;     /* Computation size */
   msg_process_t sender                           = nullptr;
@@ -57,9 +57,9 @@ class Comm {
 public:
   msg_task_t task_sent;        /* task sent (NULL for the receiver) */
   msg_task_t* task_received;   /* where the task will be received (NULL for the sender) */
-  smx_activity_t s_comm;       /* SIMIX communication object encapsulated (the same for both processes) */
+  s4u::CommPtr s_comm;         /* SIMIX communication object encapsulated (the same for both processes) */
   msg_error_t status = MSG_OK; /* status of the communication once finished */
-  Comm(msg_task_t sent, msg_task_t* received, smx_activity_t comm)
+  Comm(msg_task_t sent, msg_task_t* received, s4u::CommPtr comm)
       : task_sent(sent), task_received(received), s_comm(std::move(comm))
   {
   }
