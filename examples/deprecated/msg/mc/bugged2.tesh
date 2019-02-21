@@ -124,6 +124,15 @@ $ ${bindir:=.}/../../../../bin/simgrid-mc ${bindir:=.}/bugged2 "--log=root.fmt:[
 > [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (3:client@HostC) Send 2
@@ -146,90 +155,6 @@ $ ${bindir:=.}/../../../../bin/simgrid-mc ${bindir:=.}/bugged2 "--log=root.fmt:[
 > [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (1:server@HostA) OK
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (1:server@HostA) OK
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) OK
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) OK
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) OK
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) OK
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (2:client@HostB) Send 1
@@ -258,39 +183,15 @@ $ ${bindir:=.}/../../../../bin/simgrid-mc ${bindir:=.}/bugged2 "--log=root.fmt:[
 > [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (1:server@HostA) OK
 > [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (3:client@HostC) Send 2
 > [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) OK
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) OK
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (3:client@HostC) Send 2
 > [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 2
@@ -331,6 +232,305 @@ $ ${bindir:=.}/../../../../bin/simgrid-mc ${bindir:=.}/bugged2 "--log=root.fmt:[
 > [  0.000000] (3:client@HostC) Send 2
 > [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (3:client@HostC) Send 2
@@ -485,6 +685,86 @@ $ ${bindir:=.}/../../../../bin/simgrid-mc ${bindir:=.}/bugged2 "--log=root.fmt:[
 > [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (3:client@HostC) Send 2
@@ -654,6 +934,34 @@ $ ${bindir:=.}/../../../../bin/simgrid-mc ${bindir:=.}/bugged2 "--log=root.fmt:[
 > [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (3:client@HostC) Send 2
 > [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (2:client@HostB) Send 1
@@ -706,6 +1014,8 @@ $ ${bindir:=.}/../../../../bin/simgrid-mc ${bindir:=.}/bugged2 "--log=root.fmt:[
 > [  0.000000] (3:client@HostC) Send 2
 > [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
 > [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (3:client@HostC) Send 2
@@ -718,34 +1028,8 @@ $ ${bindir:=.}/../../../../bin/simgrid-mc ${bindir:=.}/bugged2 "--log=root.fmt:[
 > [  0.000000] (3:client@HostC) Send 2
 > [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (1:server@HostA) OK
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) OK
-> [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (1:server@HostA) Received 1
-> [  0.000000] (3:client@HostC) Send 2
-> [  0.000000] (2:client@HostB) Send 1
-> [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (3:client@HostC) Send 2
@@ -775,6 +1059,85 @@ $ ${bindir:=.}/../../../../bin/simgrid-mc ${bindir:=.}/bugged2 "--log=root.fmt:[
 > [  0.000000] (3:client@HostC) Send 2
 > [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (3:client@HostC) Send 2
 > [  0.000000] (1:server@HostA) Received 1
@@ -811,6 +1174,34 @@ $ ${bindir:=.}/../../../../bin/simgrid-mc ${bindir:=.}/bugged2 "--log=root.fmt:[
 > [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (3:client@HostC) Send 2
 > [  0.000000] (1:server@HostA) Received 1
@@ -851,6 +1242,821 @@ $ ${bindir:=.}/../../../../bin/simgrid-mc ${bindir:=.}/bugged2 "--log=root.fmt:[
 > [  0.000000] (1:server@HostA) Received 1
 > [  0.000000] (2:client@HostB) Send 1
 > [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (3:client@HostC) Send 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (2:client@HostB) Send 1
+> [  0.000000] (1:server@HostA) Received 2
+> [  0.000000] (1:server@HostA) Received 1
+> [  0.000000] (1:server@HostA) OK
 > [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (3:client@HostC) Send 2
 > [  0.000000] (1:server@HostA) Received 1
@@ -893,6 +2099,6 @@ $ ${bindir:=.}/../../../../bin/simgrid-mc ${bindir:=.}/bugged2 "--log=root.fmt:[
 > [  0.000000] (0:maestro@) [(1)HostA (server)] iRecv(dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
 > [  0.000000] (0:maestro@) [(3)HostC (client)] iSend(src=(3)HostC (client), buff=(verbose only), size=(verbose only))
 > [  0.000000] (0:maestro@) [(1)HostA (server)] Wait(comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
-> [  0.000000] (0:maestro@) Expanded states = 461
-> [  0.000000] (0:maestro@) Visited states = 2271
-> [  0.000000] (0:maestro@) Executed transitions = 2117
+> [  0.000000] (0:maestro@) Expanded states = 1006
+> [  0.000000] (0:maestro@) Visited states = 5319
+> [  0.000000] (0:maestro@) Executed transitions = 4969
