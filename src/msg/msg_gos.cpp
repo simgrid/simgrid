@@ -275,8 +275,8 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
 }
 
 /* Internal function used to factorize code between MSG_task_isend(), MSG_task_isend_bounded(), and MSG_task_dsend(). */
-static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* alias,
-                                                 void_f_pvoid_t cleanup, int detached)
+static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* alias, void_f_pvoid_t cleanup,
+                                                 bool detached)
 {
   simdata_task_t t_simdata = nullptr;
   msg_process_t myself = MSG_process_self();
@@ -321,7 +321,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* al
  */
 msg_comm_t MSG_task_isend(msg_task_t task, const char *alias)
 {
-  return MSG_task_isend_internal(task, alias, nullptr, 0);
+  return MSG_task_isend_internal(task, alias, nullptr, false);
 }
 
 /**
@@ -338,7 +338,7 @@ msg_comm_t MSG_task_isend(msg_task_t task, const char *alias)
 msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate)
 {
   task->simdata->rate = maxrate;
-  return MSG_task_isend_internal(task, alias, nullptr, 0);
+  return MSG_task_isend_internal(task, alias, nullptr, false);
 }
 
 /**
@@ -358,7 +358,7 @@ msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double max
  */
 void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
 {
-  msg_comm_t XBT_ATTRIB_UNUSED comm = MSG_task_isend_internal(task, alias, cleanup, 1);
+  msg_comm_t XBT_ATTRIB_UNUSED comm = MSG_task_isend_internal(task, alias, cleanup, true);
   xbt_assert(comm == nullptr);
 }
 
