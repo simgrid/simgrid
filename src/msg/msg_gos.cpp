@@ -306,8 +306,6 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* al
   if (TRACE_is_enabled() && task->category != nullptr)
     simgrid::simix::simcall([comm, task] { comm->get_impl()->set_category(task->category); });
 
-  TRACE_msg_task_put_end();
-
   return msg_comm;
 }
 
