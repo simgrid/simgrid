@@ -22,8 +22,8 @@ struct s_simdata_task_t {
     delete[] flops_parallel_amount;
     delete[] bytes_parallel_amount;
   }
-  void setUsed();
-  void setNotUsed() { this->isused = false; }
+  void set_used();
+  void set_not_used() { this->is_used = false; }
 
   simgrid::kernel::activity::ExecImplPtr compute = nullptr; /* SIMIX modeling of computation */
   simgrid::s4u::CommPtr comm                     = nullptr; /* S4U modeling of communication */
@@ -37,7 +37,7 @@ struct s_simdata_task_t {
   double bound    = 0.0; /* Capping for CPU resource, or 0 for no capping */
   double rate     = -1;  /* Capping for network resource, or -1 for no capping*/
 
-  bool isused = false; /* Indicates whether the task is used in SIMIX currently */
+  bool is_used = false; /* Indicates whether the task is used in SIMIX currently */
   int host_nb = 0;     /* ==0 if sequential task; parallel task if not */
   /*******  Parallel Tasks Only !!!! *******/
   sg_host_t* host_list          = nullptr;
@@ -45,7 +45,7 @@ struct s_simdata_task_t {
   double* bytes_parallel_amount = nullptr;
 
 private:
-  void reportMultipleUse() const;
+  void report_multiple_use() const;
 };
 
 /******************************* Process *************************************/
@@ -85,12 +85,11 @@ XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(simgrid::kernel::activity::CommIm
 /* declaration of instrumentation functions from msg_task_instr.c */
 XBT_PRIVATE void TRACE_msg_task_put_start(msg_task_t task);
 
-
-inline void s_simdata_task_t::setUsed()
+inline void s_simdata_task_t::set_used()
 {
-  if (this->isused)
-    this->reportMultipleUse();
-  this->isused = true;
+  if (this->is_used)
+    this->report_multiple_use();
+  this->is_used = true;
 }
 
 #endif

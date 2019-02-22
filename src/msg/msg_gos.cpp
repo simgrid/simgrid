@@ -46,8 +46,7 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
   e_smx_state_t comp_state;
   msg_error_t status = MSG_OK;
 
-
-  xbt_assert((not simdata->compute) && not task->simdata->isused,
+  xbt_assert((not simdata->compute) && not task->simdata->is_used,
              "This task is executed somewhere else. Go fix your code!");
 
   XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
@@ -60,7 +59,7 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
     simgrid::instr::Container::by_name(instr_pid(MSG_process_self()))->get_state("ACTOR_STATE")->push_event("execute");
 
   try {
-    simdata->setUsed();
+    simdata->set_used();
 
     if (simdata->host_nb > 0) {
       simdata->compute =
@@ -86,7 +85,7 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
 
     comp_state = simcall_execution_wait(simdata->compute);
 
-    simdata->setNotUsed();
+    simdata->set_not_used();
 
     XBT_DEBUG("Execution task '%s' finished in state %d", task->name, (int)comp_state);
   } catch (simgrid::HostFailureException& e) {
@@ -254,7 +253,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
         ->wait_for(timeout);
     *task = static_cast<msg_task_t>(payload);
     XBT_DEBUG("Got task %s from %s", (*task)->name, alias);
-    (*task)->simdata->setNotUsed();
+    (*task)->simdata->set_not_used();
   } catch (simgrid::HostFailureException& e) {
     ret = MSG_HOST_FAILURE;
   } catch (simgrid::TimeoutError& e) {
@@ -290,7 +289,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* al
   t_simdata = task->simdata;
   t_simdata->sender = myself;
   t_simdata->source = MSG_host_self();
-  t_simdata->setUsed();
+  t_simdata->set_used();
   t_simdata->comm = nullptr;
   msg_global->sent_msg++;
 
@@ -454,7 +453,7 @@ int MSG_comm_test(msg_comm_t comm)
     finished = comm->s_comm->test();
     if (finished && comm->task_received != nullptr) {
       /* I am the receiver */
-      (*comm->task_received)->simdata->setNotUsed();
+      (*comm->task_received)->simdata->set_not_used();
     }
   } catch (simgrid::TimeoutError& e) {
     comm->status = MSG_TIMEOUT;
@@ -519,7 +518,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
 
     if (status == MSG_OK && comm->task_received != nullptr) {
       /* I am the receiver */
-      (*comm->task_received)->simdata->setNotUsed();
+      (*comm->task_received)->simdata->set_not_used();
     }
   }
 
@@ -547,7 +546,7 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 
     if (comm->task_received != nullptr) {
       /* I am the receiver */
-      (*comm->task_received)->simdata->setNotUsed();
+      (*comm->task_received)->simdata->set_not_used();
     }
 
     /* FIXME: these functions are not traceable */
@@ -623,7 +622,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 
   if (comm->task_received != nullptr) {
     /* I am the receiver */
-    (*comm->task_received)->simdata->setNotUsed();
+    (*comm->task_received)->simdata->set_not_used();
   }
 
   return finished_index;
@@ -734,7 +733,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   simdata_task_t t_simdata = task->simdata;
   t_simdata->sender        = MSG_process_self();
   t_simdata->source = MSG_host_self();
-  t_simdata->setUsed();
+  t_simdata->set_used();
 
   msg_global->sent_msg++;
 
@@ -758,7 +757,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
       throw;
 
     /* If the send failed, it is not used anymore */
-    t_simdata->setNotUsed();
+    t_simdata->set_not_used();
   }
 
   return ret;

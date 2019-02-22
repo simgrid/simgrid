@@ -12,7 +12,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)");
 
-void s_simdata_task_t::reportMultipleUse() const
+void s_simdata_task_t::report_multiple_use() const
 {
   if (msg_global->debug_multiple_use){
     XBT_ERROR("This task is already used in there:");
@@ -170,7 +170,7 @@ void MSG_task_set_name(msg_task_t task, const char *name)
  */
 msg_error_t MSG_task_destroy(msg_task_t task)
 {
-  if (task->simdata->isused) {
+  if (task->simdata->is_used) {
     /* the task is being sent or executed: cancel it first */
     MSG_task_cancel(task);
   }
@@ -199,7 +199,7 @@ msg_error_t MSG_task_cancel(msg_task_t task)
   } else if (simdata->comm) {
     simdata->comm->cancel();
   }
-  simdata->setNotUsed();
+  simdata->set_not_used();
   return MSG_OK;
 }
 
