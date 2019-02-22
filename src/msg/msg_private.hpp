@@ -83,8 +83,6 @@ XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(simgrid::kernel::activity::CommIm
 
 /********** Tracing **********/
 /* declaration of instrumentation functions from msg_task_instr.c */
-XBT_PRIVATE void TRACE_msg_set_task_category(msg_task_t task, const char* category);
-XBT_PRIVATE void TRACE_msg_task_get_end(msg_task_t task);
 XBT_PRIVATE void TRACE_msg_task_put_start(msg_task_t task);
 
 

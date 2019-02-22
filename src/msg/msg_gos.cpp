@@ -268,8 +268,11 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
       throw;
   }
 
-  if (ret != MSG_HOST_FAILURE && ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {
-    TRACE_msg_task_get_end(*task);
+  if (TRACE_actor_is_enabled() && ret != MSG_HOST_FAILURE && ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {
+    container_t process_container = simgrid::instr::Container::by_name(instr_pid(MSG_process_self()));
+
+    std::string key = std::string("p") + std::to_string((*task)->counter);
+    simgrid::instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->end_event(process_container, "SR", key);
   }
   return ret;
 }
@@ -817,7 +820,18 @@ int MSG_task_listen_from(const char *alias)
  */
 void MSG_task_set_category (msg_task_t task, const char *category)
 {
-  TRACE_msg_set_task_category (task, category);
+  xbt_assert(task->category == nullptr, "Task %p(%s) already has a category (%s).", task, task->name, task->category);
+
+  // if user provides a nullptr category, task is no longer traced
+  if (category == nullptr) {
+    xbt_free(task->category);
+    task->category = nullptr;
+    XBT_DEBUG("MSG task %p(%s), category removed", task, task->name);
+  } else {
+    // set task category
+    task->category = xbt_strdup(category);
+    XBT_DEBUG("MSG task %p(%s), category %s", task, task->name, task->category);
+  }
 }
 
 /**
