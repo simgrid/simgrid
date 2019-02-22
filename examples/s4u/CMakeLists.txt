@@ -110,6 +110,26 @@ if (NOT enable_memcheck AND NOT WIN32)
                             ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh)
 endif()
 
+# Examples accepting only thread factories
+##################################
+foreach (example maestro-set)
+  add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
+  target_link_libraries(s4u-${example} simgrid)
+  set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
+  add_dependencies(tests s4u-${example})
+
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
+
+  if(NOT WIN32)
+    ADD_TESH_FACTORIES(s4u-${example} "thread" --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+                                               --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+                                               ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
+  else()
+    message("Test maestro-set disabled on windows: this feature is not working")
+  endif()
+endforeach()
+
 # Add all extra files to the archive
 ####################################
 

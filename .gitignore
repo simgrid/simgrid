@@ -123,7 +123,6 @@ examples/deprecated/msg/cloud-masterworker/cloud-masterworker
 examples/deprecated/msg/dht-kademlia/dht-kademlia
 examples/deprecated/msg/dht-pastry/dht-pastry
 examples/deprecated/msg/energy-vm/energy-vm
-examples/deprecated/msg/maestro-set/maestro-set
 examples/deprecated/msg/mc/bugged1
 examples/deprecated/msg/mc/bugged1_liveness
 examples/deprecated/msg/mc/bugged2
@@ -184,6 +183,7 @@ examples/s4u/io-async/s4u-io-async
 examples/s4u/io-file-remote/s4u-io-file-remote
 examples/s4u/io-file-system/s4u-io-file-system
 examples/s4u/io-storage-raw/s4u-io-storage-raw
+examples/s4u/maestro-set/s4u-maestro-set
 examples/s4u/platform-failures/s4u-platform-failures
 examples/s4u/platform-properties/s4u-platform-properties
 examples/s4u/plugin-hostload/s4u-plugin-hostload

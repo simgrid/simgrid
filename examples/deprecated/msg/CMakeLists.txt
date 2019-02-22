@@ -13,16 +13,6 @@ foreach(x app-masterworker cloud-masterworker
   set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
 endforeach()
 
-# CPP examples
-foreach(x maestro-set)
-  add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
-  target_link_libraries(${x}     simgrid)
-  set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
-  add_dependencies(tests ${x})
-  set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
-  set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
-endforeach()
-
 if(SIMGRID_HAVE_NS3)
   add_executable       (network-ns3 EXCLUDE_FROM_ALL network-ns3/network-ns3.c)
   target_link_libraries(network-ns3 simgrid)
@@ -86,12 +76,6 @@ ADD_TESH_FACTORIES(msg-dht-kademlia-parallel "thread;ucontext;raw;boost" --cfg c
                                              --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/dht-kademlia
                                              --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
 					     ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/dht-kademlia/dht-kademlia.tesh)
-
-if(NOT WIN32)
-  ADD_TESH_FACTORIES(msg-maestro-set   "thread" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg --cd ${CMAKE_BINARY_DIR}/examples/deprecated/msg ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/maestro-set/maestro-set.tesh)
-else()
-  message("Test maestro-set disabled on windows: this feature is not working")
-endif()
 
 ADD_TESH_FACTORIES(app-masterworker-multicore   "thread;ucontext;raw;boost" 
                                                 --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/app-masterworker 
