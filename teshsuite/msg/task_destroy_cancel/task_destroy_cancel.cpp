@@ -31,24 +31,16 @@ static int master(int /*argc*/, char* /*argv*/ [])
   msg_comm_t comm = MSG_task_isend(task, "worker_mailbox");
   XBT_INFO("Canceling task \"%s\" during comm", task->name);
   MSG_task_cancel(task);
-  try {
-    MSG_comm_wait(comm, -1);
-  }
-  catch (xbt_ex& ex) {
+  if (MSG_comm_wait(comm, -1) != MSG_OK)
     MSG_comm_destroy(comm);
-  }
   MSG_task_destroy(task);
 
   task = MSG_task_create("finalize", task_comp_size, task_comm_size, NULL);
   comm = MSG_task_isend(task, "worker_mailbox");
   XBT_INFO("Destroying task \"%s\" during comm", task->name);
   MSG_task_destroy(task);
-  try {
-    MSG_comm_wait(comm, -1);
-  }
-  catch (xbt_ex& ex) {
+  if (MSG_comm_wait(comm, -1) != MSG_OK)
     MSG_comm_destroy(comm);
-  }
 
   task = MSG_task_create("cancel", task_comp_size, task_comm_size, NULL);
   MSG_task_send_with_timeout(task, "worker_mailbox", timeout);
