@@ -375,9 +375,9 @@ void Request::start()
 
     int async_small_thresh = simgrid::config::get_value<int>("smpi/async-small-thresh");
 
-    xbt_mutex_t mut = process->mailboxes_mutex();
+    simgrid::s4u::MutexPtr mut = process->mailboxes_mutex();
     if (async_small_thresh != 0 || (flags_ & MPI_REQ_RMA) != 0)
-      xbt_mutex_acquire(mut);
+      mut->lock();
 
     if (async_small_thresh == 0 && (flags_ & MPI_REQ_RMA) == 0) {
       mailbox = process->mailbox();
@@ -421,7 +421,7 @@ void Request::start()
     XBT_DEBUG("recv simcall posted");
 
     if (async_small_thresh != 0 || (flags_ & MPI_REQ_RMA) != 0)
-      xbt_mutex_release(mut);
+      mut->unlock();
   } else { /* the RECV flag was not set, so this is a send */
     simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
     int rank = src_;
@@ -470,10 +470,10 @@ void Request::start()
 
     int async_small_thresh = simgrid::config::get_value<int>("smpi/async-small-thresh");
 
-    xbt_mutex_t mut=process->mailboxes_mutex();
+    simgrid::s4u::MutexPtr mut = process->mailboxes_mutex();
 
     if (async_small_thresh != 0 || (flags_ & MPI_REQ_RMA) != 0)
-      xbt_mutex_acquire(mut);
+      mut->lock();
 
     if (not(async_small_thresh != 0 || (flags_ & MPI_REQ_RMA) != 0)) {
       mailbox = process->mailbox();
@@ -521,7 +521,7 @@ void Request::start()
     }
 
     if (async_small_thresh != 0 || ((flags_ & MPI_REQ_RMA) != 0))
-      xbt_mutex_release(mut);
+      mut->unlock();
   }
 }
 

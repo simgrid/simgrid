@@ -9,6 +9,10 @@
 namespace simgrid {
 namespace s4u {
 
+Mutex::~Mutex()
+{
+  SIMIX_mutex_unref(pimpl_);
+}
 /** @brief Blocks the calling actor until the mutex can be obtained */
 void Mutex::lock()
 {

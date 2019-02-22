@@ -17,9 +17,9 @@ namespace smpi {
 class ActorExt {
 private:
   double simulated_ = 0 /* Used to time with simulated_start/elapsed */;
-  simgrid::s4u::MailboxPtr mailbox_;
-  simgrid::s4u::MailboxPtr mailbox_small_;
-  xbt_mutex_t mailboxes_mutex_;
+  s4u::MailboxPtr mailbox_;
+  s4u::MailboxPtr mailbox_small_;
+  s4u::MutexPtr mailboxes_mutex_;
   xbt_os_timer_t timer_;
   MPI_Comm comm_self_   = MPI_COMM_NULL;
   MPI_Comm comm_intra_  = MPI_COMM_NULL;
@@ -28,9 +28,9 @@ private:
   int sampling_ = 0; /* inside an SMPI_SAMPLE_ block? */
   std::string instance_id_;
   bool replaying_ = false; /* is the process replaying a trace */
-  simgrid::s4u::Barrier* finalization_barrier_;
+  s4u::Barrier* finalization_barrier_;
   smpi_trace_call_location_t trace_call_loc_;
-  simgrid::s4u::ActorPtr actor_                  = nullptr;
+  s4u::ActorPtr actor_                           = nullptr;
   smpi_privatization_region_t privatized_region_ = nullptr;
   int optind                                     = 0; /*for getopt replacement */
 #if HAVE_PAPI
@@ -54,7 +54,7 @@ public:
   smpi_privatization_region_t privatized_region();
   s4u::MailboxPtr mailbox() { return mailbox_; }
   s4u::MailboxPtr mailbox_small() { return mailbox_small_; }
-  xbt_mutex_t mailboxes_mutex();
+  s4u::MutexPtr mailboxes_mutex();
 #if HAVE_PAPI
   int papi_event_set();
   papi_counter_t& papi_counters();

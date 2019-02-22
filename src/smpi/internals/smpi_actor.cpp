@@ -25,9 +25,9 @@ using simgrid::s4u::ActorPtr;
 ActorExt::ActorExt(ActorPtr actor, simgrid::s4u::Barrier* finalization_barrier)
     : finalization_barrier_(finalization_barrier), actor_(actor)
 {
-  mailbox_         = simgrid::s4u::Mailbox::by_name("SMPI-" + std::to_string(actor_->get_pid()));
-  mailbox_small_   = simgrid::s4u::Mailbox::by_name("small-" + std::to_string(actor_->get_pid()));
-  mailboxes_mutex_ = xbt_mutex_init();
+  mailbox_         = s4u::Mailbox::by_name("SMPI-" + std::to_string(actor_->get_pid()));
+  mailbox_small_   = s4u::Mailbox::by_name("small-" + std::to_string(actor_->get_pid()));
+  mailboxes_mutex_ = s4u::Mutex::create();
   timer_           = xbt_os_timer_new();
   state_           = SmpiProcessState::UNINITIALIZED;
   if (MC_is_active())
@@ -58,7 +58,6 @@ ActorExt::~ActorExt()
   if (comm_intra_ != MPI_COMM_NULL)
     simgrid::smpi::Comm::destroy(comm_intra_);
   xbt_os_timer_free(timer_);
-  xbt_mutex_destroy(mailboxes_mutex_);
 }
 
 void ActorExt::set_data(const char* instance_id)
@@ -155,7 +154,7 @@ MPI_Comm ActorExt::comm_world()
   return comm_world_ == nullptr ? MPI_COMM_NULL : *comm_world_;
 }
 
-xbt_mutex_t ActorExt::mailboxes_mutex()
+s4u::MutexPtr ActorExt::mailboxes_mutex()
 {
   return mailboxes_mutex_;
 }

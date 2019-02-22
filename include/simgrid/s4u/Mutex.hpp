@@ -32,7 +32,7 @@ class XBT_PUBLIC Mutex {
 
   simgrid::kernel::activity::MutexImpl* const pimpl_;
   explicit Mutex(simgrid::kernel::activity::MutexImpl* mutex) : pimpl_(mutex) {}
-
+  ~Mutex();
   /* refcounting */
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Mutex* mutex);
   friend XBT_PUBLIC void intrusive_ptr_release(Mutex* mutex);
@@ -46,7 +46,6 @@ public:
 
   /** Constructs a new mutex */
   static MutexPtr create();
-
   void lock();
   void unlock();
   bool try_lock();

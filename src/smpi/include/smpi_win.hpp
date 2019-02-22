@@ -27,15 +27,15 @@ class Win : public F2C, public Keyval {
   MPI_Info info_;
   MPI_Comm comm_;
   std::vector<MPI_Request> *requests_;
-  xbt_mutex_t mut_;
-  simgrid::s4u::Barrier* bar_;
+  s4u::MutexPtr mut_;
+  s4u::Barrier* bar_;
   MPI_Win* connected_wins_;
   char* name_;
   int opened_;
   MPI_Group group_;
   int count_; //for ordering the accs
-  xbt_mutex_t lock_mut_;
-  xbt_mutex_t atomic_mut_;
+  s4u::MutexPtr lock_mut_;
+  s4u::MutexPtr atomic_mut_;
   std::list<int> lockers_;
   int rank_; // to identify owner for barriers in MPI_COMM_WORLD
   int mode_; // exclusive or shared lock
