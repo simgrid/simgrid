@@ -6,6 +6,7 @@
 #include "src/msg/msg_private.hpp"
 #include "xbt/log.h"
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 
@@ -168,7 +169,8 @@ Comm* Comm::wait_for(double timeout)
       return this;
 
     case State::CANCELED:
-      return this;
+      throw CancelException(XBT_THROW_POINT, "Communication canceled");
+
     default:
       THROW_IMPOSSIBLE;
   }
