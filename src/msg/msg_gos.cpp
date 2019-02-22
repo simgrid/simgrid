@@ -457,7 +457,7 @@ int MSG_comm_test(msg_comm_t comm)
     comm->status = MSG_TIMEOUT;
     finished     = true;
   } catch (simgrid::CancelException& e) {
-    comm->status = MSG_HOST_FAILURE;
+    comm->status = MSG_TASK_CANCELED;
     finished     = true;
   }
   catch (xbt_ex& e) {
@@ -500,7 +500,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
     status         = MSG_TIMEOUT;
   } catch (simgrid::CancelException& e) {
     finished_index = e.value;
-    status         = MSG_HOST_FAILURE;
+    status         = MSG_TASK_CANCELED;
   }
   catch (xbt_ex& e) {
     if (e.category != network_error)
@@ -551,7 +551,7 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
   } catch (simgrid::TimeoutError& e) {
     comm->status = MSG_TIMEOUT;
   } catch (simgrid::CancelException& e) {
-    comm->status = MSG_HOST_FAILURE;
+    comm->status = MSG_TASK_CANCELED;
   }
   catch (xbt_ex& e) {
     if (e.category == network_error)
@@ -601,7 +601,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
     status         = MSG_TIMEOUT;
   } catch (simgrid::CancelException& e) {
     finished_index = e.value;
-    status         = MSG_HOST_FAILURE;
+    status         = MSG_TASK_CANCELED;
   }
   catch(xbt_ex& e) {
     if (e.category == network_error) {
