@@ -74,8 +74,12 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject 
   jstring jname         = (jstring)env->GetObjectField(jprocess, jprocess_field_Process_name);
   const char* name      = env->GetStringUTFChars(jname, 0);
   simgrid::simix::ActorCode function = [jprocess]() { simgrid::kernel::context::java_main_jprocess(jprocess); };
-  smx_actor_t actor =
-      simcall_process_create(name, function, /*data*/ nullptr, jhost_get_native(env, jhost), /* properties*/ nullptr);
+  smx_actor_t self                   = SIMIX_process_self();
+  sg_host_t host                     = jhost_get_native(env, jhost);
+  smx_actor_t actor                  = simgrid::simix::simcall([name, function, host, self] {
+    return simgrid::kernel::actor::ActorImpl::create(std::move(name), std::move(function), nullptr, host, nullptr, self)
+        .get();
+  });
   MSG_process_yield();
 
   env->ReleaseStringUTFChars(jname, name);

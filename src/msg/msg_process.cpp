@@ -81,7 +81,12 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
     props[key] = value;
   xbt_dict_free(&properties);
 
-  smx_actor_t process = simcall_process_create(name, std::move(function), data, host, &props);
+  smx_actor_t self    = SIMIX_process_self();
+  smx_actor_t process = simgrid::simix::simcall([name, function, data, host, &props, self] {
+    return simgrid::kernel::actor::ActorImpl::create(std::move(name), std::move(function), data, host, &props, self)
+        .get();
+  });
+
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
   xbt_free(argv);
