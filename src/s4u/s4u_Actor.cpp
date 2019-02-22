@@ -665,7 +665,7 @@ sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host, xbt_dic
   smx_actor_t actor = simgrid::kernel::actor::ActorImpl::attach(name, data, host, &props).get();
   if (not actor)
     xbt_die("Could not attach");
-  actor->yield();
+  simgrid::s4u::this_actor::yield();
   return actor->ciface();
 }
 
