@@ -23,7 +23,7 @@ namespace simgrid {
 namespace kernel {
 namespace actor {
 
-class ActorImpl : public surf::PropertyHolder {
+class XBT_PUBLIC ActorImpl : public surf::PropertyHolder {
   s4u::Host* host_   = nullptr; /* the host on which the actor is running */
   void* userdata_    = nullptr; /* kept for compatibility, it should be replaced with moddata */
   aid_t pid_         = 0;
