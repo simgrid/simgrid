@@ -105,6 +105,9 @@ public:
 
   static ActorImplPtr create(std::string name, simix::ActorCode code, void* data, s4u::Host* host,
                              std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor);
+  static ActorImplPtr attach(std::string name, void* data, s4u::Host* host,
+                             std::unordered_map<std::string, std::string>* properties);
+  static void detach();
   void cleanup();
   void exit();
   void kill(ActorImpl* actor);

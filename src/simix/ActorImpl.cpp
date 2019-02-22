@@ -62,6 +62,74 @@ ActorImpl::~ActorImpl()
 {
   delete this->context_;
 }
+/* Become an actor in the simulation
+ *
+ * Currently this can only be called by the main thread (once) and only work with some thread factories
+ * (currently ThreadContextFactory).
+ *
+ * In the future, it might be extended in order to attach other threads created by a third party library.
+ */
+
+ActorImplPtr ActorImpl::attach(std::string name, void* data, s4u::Host* host,
+                               std::unordered_map<std::string, std::string>* properties)
+{
+  // This is mostly a copy/paste from create(), it'd be nice to share some code between those two functions.
+
+  XBT_DEBUG("Attach process %s on host '%s'", name.c_str(), host->get_cname());
+
+  if (not host->is_on()) {
+    XBT_WARN("Cannot launch process '%s' on failed host '%s'", name.c_str(), host->get_cname());
+    return nullptr;
+  }
+
+  ActorImpl* actor = new ActorImpl(xbt::string(name), host);
+  /* Actor data */
+  actor->set_user_data(data);
+  actor->code = nullptr;
+
+  XBT_VERB("Create context %s", actor->get_cname());
+  xbt_assert(simix_global != nullptr, "simix is not initialized, please call MSG_init first");
+  actor->context_ = simix_global->context_factory->attach(actor);
+
+  /* Add properties */
+  if (properties != nullptr)
+    for (auto const& kv : *properties)
+      actor->set_property(kv.first, kv.second);
+
+  /* Add the process to it's host process list */
+  host->pimpl_->process_list_.push_back(*actor);
+
+  /* Now insert it in the global process list and in the process to run list */
+  simix_global->process_list[actor->get_pid()] = actor;
+  XBT_DEBUG("Inserting [%p] %s(%s) in the to_run list", actor, actor->get_cname(), host->get_cname());
+  simix_global->actors_to_run.push_back(actor);
+  intrusive_ptr_add_ref(actor);
+
+  auto* context = dynamic_cast<simgrid::kernel::context::AttachContext*>(actor->context_);
+  xbt_assert(nullptr != context, "Not a suitable context");
+  context->attach_start();
+
+  /* The on_creation() signal must be delayed until there, where the pid and everything is set */
+  simgrid::s4u::ActorPtr tmp = actor->iface(); // Passing this directly to on_creation will lead to crashes
+  simgrid::s4u::Actor::on_creation(tmp);
+
+  return ActorImplPtr(actor);
+}
+/** @brief Detach an actor attached with `attach()`
+ *
+ *  This is called when the current actor has finished its job.
+ *  Used in the main thread, it waits for the simulation to finish before returning. When it returns, the other
+ *  simulated actors and the maestro are destroyed.
+ */
+void ActorImpl::detach()
+{
+  auto* context = dynamic_cast<context::AttachContext*>(context::Context::self());
+  if (context == nullptr)
+    xbt_die("Not a suitable context");
+
+  context->get_actor()->cleanup();
+  context->attach_stop();
+}
 
 void ActorImpl::cleanup()
 {
@@ -439,67 +507,17 @@ void create_maestro(simix::ActorCode code)
 } // namespace kernel
 }
 
-smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostname,
-                                 std::unordered_map<std::string, std::string>* properties, smx_actor_t parent_process)
-{
-  // This is mostly a copy/paste from SIMIX_process_new(),
-  // it'd be nice to share some code between those two functions.
-
-  sg_host_t host = sg_host_by_name(hostname);
-  XBT_DEBUG("Attach process %s on host '%s'", name, hostname);
-
-  if (not host->is_on()) {
-    XBT_WARN("Cannot launch process '%s' on failed host '%s'", name, hostname);
-    return nullptr;
-  }
-
-  smx_actor_t actor = new simgrid::kernel::actor::ActorImpl(simgrid::xbt::string(name), host);
-  /* Actor data */
-  actor->set_user_data(data);
-  actor->code = nullptr;
-
-  if (parent_process != nullptr)
-    actor->set_ppid(parent_process->get_pid());
-
-  XBT_VERB("Create context %s", actor->get_cname());
-  xbt_assert(simix_global != nullptr, "simix is not initialized, please call MSG_init first");
-  actor->context_ = simix_global->context_factory->attach(actor);
-
-  /* Add properties */
-  if (properties != nullptr)
-    for (auto const& kv : *properties)
-      actor->set_property(kv.first, kv.second);
-
-  /* Add the process to it's host process list */
-  host->pimpl_->process_list_.push_back(*actor);
-
-  /* Now insert it in the global process list and in the process to run list */
-  simix_global->process_list[actor->get_pid()] = actor;
-  XBT_DEBUG("Inserting [%p] %s(%s) in the to_run list", actor, actor->get_cname(), host->get_cname());
-  simix_global->actors_to_run.push_back(actor);
-  intrusive_ptr_add_ref(actor);
-
-  auto* context = dynamic_cast<simgrid::kernel::context::AttachContext*>(actor->context_);
-  xbt_assert(nullptr != context, "Not a suitable context");
-  context->attach_start();
-
-  /* The on_creation() signal must be delayed until there, where the pid and everything is set */
-  simgrid::s4u::ActorPtr tmp = actor->iface(); // Passing this directly to on_creation will lead to crashes
-  simgrid::s4u::Actor::on_creation(tmp);
-
-  return actor;
-}
-
 void SIMIX_process_detach()
 {
-  auto* context = dynamic_cast<simgrid::kernel::context::AttachContext*>(simgrid::kernel::context::Context::self());
-  if (context == nullptr)
-    xbt_die("Not a suitable context");
-
-  context->get_actor()->cleanup();
-  context->attach_stop();
+  simgrid::kernel::actor::ActorImpl::detach();
 }
 
+smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostname,
+                                 std::unordered_map<std::string, std::string>* properties,
+                                 smx_actor_t /*parent_process*/)
+{
+  return simgrid::kernel::actor::ActorImpl::attach(name, data, sg_host_by_name(hostname), properties).get();
+}
 
 /** @deprecated When this function gets removed, also remove the xbt_ex class, that is only there to help users to
  * transition */

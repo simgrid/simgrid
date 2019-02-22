@@ -134,6 +134,17 @@ msg_error_t MSG_process_sleep(double duration)
     return MSG_HOST_FAILURE;
   }
 }
+
+msg_process_t MSG_process_attach(const char* name, void* data, msg_host_t host, xbt_dict_t properties)
+{
+  return sg_actor_attach(name, data, host, properties);
+}
+
+void MSG_process_detach()
+{
+  sg_actor_detach();
+}
+
 /* ************************** NetZones *************************** */
 sg_netzone_t MSG_zone_get_root()
 {

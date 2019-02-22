@@ -98,43 +98,6 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
   return process->ciface();
 }
 
-/* Become a process in the simulation
- *
- * Currently this can only be called by the main thread (once) and only work with some thread factories
- * (currently ThreadContextFactory).
- *
- * In the future, it might be extended in order to attach other threads created by a third party library.
- */
-msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, xbt_dict_t properties)
-{
-  xbt_assert(host != nullptr, "Invalid parameters: host and code params must not be nullptr");
-  std::unordered_map<std::string, std::string> props;
-  xbt_dict_cursor_t cursor = nullptr;
-  char* key;
-  char* value;
-  xbt_dict_foreach (properties, cursor, key, value)
-    props[key] = value;
-  xbt_dict_free(&properties);
-
-  /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
-  smx_actor_t process = SIMIX_process_attach(name, data, host->get_cname(), &props, nullptr);
-  if (not process)
-    xbt_die("Could not attach");
-  MSG_process_yield();
-  return process->ciface();
-}
-
-/** @brief Detach a process attached with `MSG_process_attach()`
- *
- *  This is called when the current process has finished its job.
- *  Used in the main thread, it waits for the simulation to finish before  returning. When it returns, the other
- *  simulated processes and the maestro are destroyed.
- */
-void MSG_process_detach()
-{
-  SIMIX_process_detach();
-}
-
 /** @brief Returns the user data of a process.
  *
  * This function checks whether @a process is a valid pointer and returns the user data associated to this process.

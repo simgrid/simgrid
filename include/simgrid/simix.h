@@ -129,12 +129,13 @@ XBT_PUBLIC void SIMIX_launch_application(const std::string& file);
  */
 
 #ifdef __cplusplus
-XBT_PUBLIC smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostname,
-                                            std::unordered_map<std::string, std::string>* properties,
-                                            smx_actor_t parent_process);
+XBT_ATTRIB_DEPRECATED_v325("Please use ActorImpl::attach() or sg_actor_attach()") XBT_PUBLIC smx_actor_t
+    SIMIX_process_attach(const char* name, void* data, const char* hostname,
+                         std::unordered_map<std::string, std::string>* properties, smx_actor_t parent_process);
 #endif
 SG_BEGIN_DECL()
-XBT_PUBLIC void SIMIX_process_detach();
+XBT_ATTRIB_DEPRECATED_v325("Please use ActorImpl::detach() or sg_actor_detach()") XBT_PUBLIC
+    void SIMIX_process_detach();
 SG_END_DECL()
 
 /********************************* Process ************************************/

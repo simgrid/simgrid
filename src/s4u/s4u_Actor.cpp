@@ -649,3 +649,27 @@ void sg_actor_sleep_for(double duration)
 {
   simgrid::s4u::this_actor::sleep_for(duration);
 }
+
+sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host, xbt_dict_t properties)
+{
+  xbt_assert(host != nullptr, "Invalid parameters: host and code params must not be nullptr");
+  std::unordered_map<std::string, std::string> props;
+  xbt_dict_cursor_t cursor = nullptr;
+  char* key;
+  char* value;
+  xbt_dict_foreach (properties, cursor, key, value)
+    props[key] = value;
+  xbt_dict_free(&properties);
+
+  /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
+  smx_actor_t actor = simgrid::kernel::actor::ActorImpl::attach(name, data, host, &props).get();
+  if (not actor)
+    xbt_die("Could not attach");
+  actor->yield();
+  return actor->ciface();
+}
+
+void sg_actor_detach()
+{
+  simgrid::kernel::actor::ActorImpl::detach();
+}
