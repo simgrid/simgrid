@@ -259,7 +259,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
   } catch (simgrid::TimeoutError& e) {
     ret = MSG_TIMEOUT;
   } catch (simgrid::CancelException& e) {
-    ret = MSG_HOST_FAILURE;
+    ret = MSG_TASK_CANCELED;
   } catch (xbt_ex& e) {
     if (e.category == network_error)
       ret = MSG_TRANSFER_FAILURE;
