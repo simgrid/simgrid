@@ -32,12 +32,12 @@ class XBT_PUBLIC Mutex {
 
   simgrid::kernel::activity::MutexImpl* const pimpl_;
   explicit Mutex(simgrid::kernel::activity::MutexImpl* mutex) : pimpl_(mutex) {}
-  ~Mutex();
   /* refcounting */
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Mutex* mutex);
   friend XBT_PUBLIC void intrusive_ptr_release(Mutex* mutex);
 
 public:
+  ~Mutex();
   // No copy:
   /** You cannot create a new mutex by copying an existing one. Use MutexPtr instead */
   Mutex(Mutex const&) = delete;
