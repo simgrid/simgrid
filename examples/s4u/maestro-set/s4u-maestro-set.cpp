@@ -53,7 +53,7 @@ static void receiver()
   delete payload;
 }
 
-static void maestro(void* data)
+static void maestro(void* /* data */)
 {
   ensure_other_tid();
   simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("Jupiter"), receiver);

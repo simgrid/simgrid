@@ -41,7 +41,6 @@ protected:
 class XBT_PUBLIC Context {
   friend ContextFactory;
 
-private:
   std::function<void()> code_;
   smx_actor_t actor_                  = nullptr;
   void declare_context(std::size_t size);

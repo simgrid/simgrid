@@ -53,7 +53,6 @@ public:
   XBT_ATTRIB_DEPRECATED_v324("Please use Io::wait_for()") void wait(double t) override { wait_for(t); }
 #endif
 
-private:
 }; // class
 } // namespace s4u
 } // namespace simgrid
