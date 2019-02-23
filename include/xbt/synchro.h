@@ -27,7 +27,11 @@ SG_BEGIN_DECL()
 /** @brief Thread mutex data type (opaque object)
  *  @hideinitializer
  */
+#ifdef __cplusplus
+typedef simgrid::kernel::activity::MutexImpl* xbt_mutex_t;
+#else
 typedef struct s_smx_mutex_* xbt_mutex_t;
+#endif
 
 /** @brief Creates a new mutex variable */
 XBT_PUBLIC xbt_mutex_t xbt_mutex_init(void);

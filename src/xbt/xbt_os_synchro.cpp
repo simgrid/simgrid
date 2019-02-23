@@ -9,6 +9,7 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/simix.h" /* used implementation */
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
+#include "src/kernel/activity/MutexImpl.hpp"
 #include "xbt/synchro.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync, xbt, "Synchronization mechanism");
@@ -36,7 +37,8 @@ void xbt_mutex_release(xbt_mutex_t mutex)
 
 void xbt_mutex_destroy(xbt_mutex_t mutex)
 {
-  SIMIX_mutex_unref((smx_mutex_t)mutex);
+  if (mutex != nullptr)
+    mutex->unref();
 }
 
 /***** condition related functions *****/
