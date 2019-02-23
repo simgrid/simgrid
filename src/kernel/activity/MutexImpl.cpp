@@ -96,9 +96,22 @@ void MutexImpl::unlock(smx_actor_t issuer)
   }
   XBT_OUT();
 }
+/** Increase the refcount for this mutex */
+MutexImpl* MutexImpl::ref()
+{
+  intrusive_ptr_add_ref(this);
+  return this;
 }
+
+/** Decrease the refcount for this mutex */
+void MutexImpl::unref()
+{
+  intrusive_ptr_release(this);
 }
-}
+
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid
 
 /** Increase the refcount for this mutex */
 smx_mutex_t SIMIX_mutex_ref(smx_mutex_t mutex)

@@ -25,6 +25,8 @@ public:
   bool try_lock(smx_actor_t issuer);
   void unlock(smx_actor_t issuer);
 
+  MutexImpl* ref();
+  void unref();
   bool locked       = false;
   smx_actor_t owner = nullptr;
   // List of sleeping processes:

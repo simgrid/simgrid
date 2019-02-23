@@ -11,8 +11,10 @@ namespace s4u {
 
 Mutex::~Mutex()
 {
-  SIMIX_mutex_unref(pimpl_);
+  if (pimpl_ != nullptr)
+    pimpl_->unref();
 }
+
 /** @brief Blocks the calling actor until the mutex can be obtained */
 void Mutex::lock()
 {
@@ -48,12 +50,15 @@ MutexPtr Mutex::create()
 void intrusive_ptr_add_ref(Mutex* mutex)
 {
   xbt_assert(mutex);
-  SIMIX_mutex_ref(mutex->pimpl_);
+  if (mutex->pimpl_)
+    mutex->pimpl_->ref();
 }
 void intrusive_ptr_release(Mutex* mutex)
 {
   xbt_assert(mutex);
-  SIMIX_mutex_unref(mutex->pimpl_);
+  if (mutex->pimpl_)
+    mutex->pimpl_->unref();
 }
+
 } // namespace s4u
 } // namespace simgrid
