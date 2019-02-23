@@ -113,21 +113,6 @@ void MutexImpl::unref()
 } // namespace kernel
 } // namespace simgrid
 
-/** Increase the refcount for this mutex */
-smx_mutex_t SIMIX_mutex_ref(smx_mutex_t mutex)
-{
-  if (mutex != nullptr)
-    intrusive_ptr_add_ref(mutex);
-  return mutex;
-}
-
-/** Decrease the refcount for this mutex */
-void SIMIX_mutex_unref(smx_mutex_t mutex)
-{
-  if (mutex != nullptr)
-    intrusive_ptr_release(mutex);
-}
-
 // Simcall handlers:
 
 void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex)

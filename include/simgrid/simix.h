@@ -239,8 +239,6 @@ XBT_PUBLIC int simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[]
 /************************** Synchro simcalls **********************************/
 SG_BEGIN_DECL()
 XBT_PUBLIC smx_mutex_t simcall_mutex_init();
-XBT_PUBLIC smx_mutex_t SIMIX_mutex_ref(smx_mutex_t mutex);
-XBT_PUBLIC void SIMIX_mutex_unref(smx_mutex_t mutex);
 XBT_PUBLIC void simcall_mutex_lock(smx_mutex_t mutex);
 XBT_PUBLIC int simcall_mutex_trylock(smx_mutex_t mutex);
 XBT_PUBLIC void simcall_mutex_unlock(smx_mutex_t mutex);
