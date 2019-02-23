@@ -73,8 +73,7 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
       sg_host_t host   = MSG_process_get_host(MSG_process_self());
       simdata->compute = simgrid::simix::simcall([task, host] {
         return simgrid::kernel::activity::ExecImplPtr(
-            new simgrid::kernel::activity::ExecImpl(task->name ?: "", task->category ?: "",
-                                                    /*timeout_detector*/ nullptr, host));
+            new simgrid::kernel::activity::ExecImpl(task->name ?: "", task->category ?: "", host));
       });
       /* checking for infinite values */
       xbt_assert(std::isfinite(simdata->flops_amount), "flops_amount is not finite!");

@@ -51,15 +51,22 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-ExecImpl::ExecImpl(std::string name, std::string tracing_category, resource::Action* timeout_detector, s4u::Host* host)
-    : ActivityImpl(std::move(name)), host_(host), timeout_detector_(timeout_detector)
+ExecImpl::ExecImpl(std::string name, std::string tracing_category, s4u::Host* host)
+    : ActivityImpl(std::move(name)), host_(host)
 {
   this->state_ = SIMIX_RUNNING;
   this->set_category(std::move(tracing_category));
 
-  if (timeout_detector != nullptr)
-    timeout_detector_->set_data(this);
+  XBT_DEBUG("Create exec %p", this);
+}
 
+ExecImpl::ExecImpl(std::string name, std::string tracing_category, s4u::Host* host, double timeout)
+    : ExecImpl(std::move(name), std::move(tracing_category), nullptr)
+{
+  if (timeout > 0 && not MC_is_active() && not MC_record_replay_is_active()) {
+    timeout_detector_ = host->pimpl_cpu->sleep(timeout);
+    timeout_detector_->set_data(this);
+  }
   XBT_DEBUG("Create exec %p", this);
 }
 

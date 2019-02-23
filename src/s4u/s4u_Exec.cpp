@@ -19,8 +19,7 @@ Exec::Exec(sg_host_t host, double flops_amount) : Activity(), host_(host), flops
 {
   Activity::set_remaining(flops_amount_);
   pimpl_ = simix::simcall([this] {
-    return kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl(name_, tracing_category_,
-                                                                        /*timeout_detector*/ nullptr, host_));
+    return kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl(name_, tracing_category_, host_));
   });
 }
 
