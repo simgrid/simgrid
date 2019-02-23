@@ -67,7 +67,7 @@ void ConditionVariableImpl::signal()
       simcall_mutex = simcall_cond_wait_timeout__get__mutex(simcall);
     simcall->call = SIMCALL_MUTEX_LOCK;
 
-    simcall_HANDLER_mutex_lock(simcall, simcall_mutex);
+    simcall_mutex->lock(simcall->issuer);
   }
   XBT_OUT();
 }
