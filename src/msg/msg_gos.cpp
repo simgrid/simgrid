@@ -266,7 +266,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
   if (TRACE_actor_is_enabled() && ret != MSG_HOST_FAILURE && ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {
     container_t process_container = simgrid::instr::Container::by_name(instr_pid(MSG_process_self()));
 
-    std::string key = std::string("p") + std::to_string((*task)->get_counter());
+    std::string key = std::string("p") + std::to_string((*task)->get_id());
     simgrid::instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->end_event(process_container, "SR", key);
   }
   return ret;

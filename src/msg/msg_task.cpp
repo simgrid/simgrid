@@ -91,7 +91,7 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
 
   /* Simulator Data specific to parallel tasks */
   task->host_nb = host_nb;
-  host_list     = new sg_host_t[host_nb];
+  task->host_list = new sg_host_t[host_nb];
   std::copy_n(host_list, host_nb, task->host_list);
   if (flops_amount != nullptr) {
     task->flops_parallel_amount = new double[host_nb];

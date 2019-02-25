@@ -11,8 +11,6 @@
 #include "src/kernel/activity/ExecImpl.hpp"
 #include <simgrid/modelchecker.h>
 
-static long long int msg_task_max_counter = 0;
-
 /**************** datatypes **********************************/
 namespace simgrid {
 namespace msg {
@@ -20,16 +18,17 @@ class Task {
   std::string name_             = "";
   std::string tracing_category_ = "";
   void* userdata_               = nullptr;
-  long long int counter_;
+  long long int id_;
 
 public:
   ~Task();
   explicit Task(std::string name, double flops_amount, double bytes_amount, void* data)
       : name_(std::move(name)), userdata_(data), flops_amount(flops_amount), bytes_amount(bytes_amount)
   {
-    counter_ = msg_task_max_counter++;
+    static std::atomic_ullong counter{0};
+    id_ = counter++;
     if (MC_is_active())
-      MC_ignore_heap(&(counter_), sizeof(long long int));
+      MC_ignore_heap(&(id_), sizeof(id_));
   }
   void set_used();
   void set_not_used() { this->is_used = false; }
@@ -42,7 +41,7 @@ public:
   bool has_tracing_category() { return not tracing_category_.empty(); }
   void* get_user_data() { return userdata_; }
   void set_user_data(void* data) { userdata_ = data; }
-  long long int get_counter() { return counter_; }
+  long long int get_id() { return id_; }
 
   kernel::activity::ExecImplPtr compute          = nullptr; /* SIMIX modeling of computation */
   s4u::CommPtr comm                              = nullptr; /* S4U modeling of communication */
