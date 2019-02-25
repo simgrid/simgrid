@@ -64,8 +64,8 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
     if (simdata->host_nb > 0) {
       simdata->compute =
           boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(simcall_execution_parallel_start(
-              task->name ?: "", simdata->host_nb, simdata->host_list, simdata->flops_parallel_amount,
-              simdata->bytes_parallel_amount, -1.0, timeout));
+              std::move(task->simdata->get_name()), simdata->host_nb, simdata->host_list,
+              simdata->flops_parallel_amount, simdata->bytes_parallel_amount, -1.0, timeout));
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute.get());
       if (task->category != nullptr)
         simgrid::simix::simcall([task] { task->simdata->compute->set_category(task->category); });
@@ -73,7 +73,7 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
       sg_host_t host   = MSG_process_get_host(MSG_process_self());
       simdata->compute = simgrid::simix::simcall([task, host] {
         return simgrid::kernel::activity::ExecImplPtr(
-            new simgrid::kernel::activity::ExecImpl(task->name ?: "", task->category ?: "", host));
+            new simgrid::kernel::activity::ExecImpl(std::move(task->simdata->get_name()), task->category ?: "", host));
       });
       /* checking for infinite values */
       xbt_assert(std::isfinite(simdata->flops_amount), "flops_amount is not finite!");
@@ -86,7 +86,7 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
 
     simdata->set_not_used();
 
-    XBT_DEBUG("Execution task '%s' finished in state %d", task->name, (int)comp_state);
+    XBT_DEBUG("Execution task '%s' finished in state %d", task->simdata->get_cname(), (int)comp_state);
   } catch (simgrid::HostFailureException& e) {
     status = MSG_HOST_FAILURE;
   } catch (simgrid::TimeoutError& e) {
@@ -251,7 +251,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
         ->set_rate(rate)
         ->wait_for(timeout);
     *task = static_cast<msg_task_t>(payload);
-    XBT_DEBUG("Got task %s from %s", (*task)->name, alias);
+    XBT_DEBUG("Got task %s from %s", (*task)->simdata->get_cname(), alias);
     (*task)->simdata->set_not_used();
   } catch (simgrid::HostFailureException& e) {
     ret = MSG_HOST_FAILURE;
@@ -816,17 +816,18 @@ int MSG_task_listen_from(const char *alias)
  */
 void MSG_task_set_category (msg_task_t task, const char *category)
 {
-  xbt_assert(task->category == nullptr, "Task %p(%s) already has a category (%s).", task, task->name, task->category);
+  xbt_assert(task->category == nullptr, "Task %p(%s) already has a category (%s).", task, task->simdata->get_cname(),
+             task->category);
 
   // if user provides a nullptr category, task is no longer traced
   if (category == nullptr) {
     xbt_free(task->category);
     task->category = nullptr;
-    XBT_DEBUG("MSG task %p(%s), category removed", task, task->name);
+    XBT_DEBUG("MSG task %p(%s), category removed", task, task->simdata->get_cname());
   } else {
     // set task category
     task->category = xbt_strdup(category);
-    XBT_DEBUG("MSG task %p(%s), category %s", task, task->name, task->category);
+    XBT_DEBUG("MSG task %p(%s), category %s", task, task->simdata->get_cname(), task->category);
   }
 }
 

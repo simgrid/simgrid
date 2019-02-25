@@ -65,10 +65,9 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
 
   msg_task_t task        = new s_msg_task_t;
   /* Simulator Data */
-  task->simdata = new simgrid::msg::Task(flop_amount, message_size);
+  task->simdata = new simgrid::msg::Task(name ? name : "", flop_amount, message_size);
 
   /* Task structure */
-  task->name = xbt_strdup(name);
   task->data = data;
 
   task->counter  = counter++;
@@ -164,13 +163,13 @@ msg_host_t MSG_task_get_source(msg_task_t task)
 /** @brief Returns the name of the given task. */
 const char *MSG_task_get_name(msg_task_t task)
 {
-  return task->name;
+  return task->simdata->get_cname();
 }
 
 /** @brief Sets the name of the given task. */
 void MSG_task_set_name(msg_task_t task, const char *name)
 {
-  task->name = xbt_strdup(name);
+  task->simdata->set_name(name);
 }
 
 /** @brief Destroys the given task.
@@ -191,7 +190,6 @@ msg_error_t MSG_task_destroy(msg_task_t task)
   }
 
   xbt_free(task->category);
-  xbt_free(task->name);
 
   /* free main structures */
   delete task->simdata;

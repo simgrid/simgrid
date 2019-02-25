@@ -15,11 +15,19 @@
 namespace simgrid {
 namespace msg {
 class Task {
+  std::string name_ = ""; /**< @brief task name if any */
 public:
   ~Task();
-  explicit Task(double flops_amount, double bytes_amount) : flops_amount(flops_amount), bytes_amount(bytes_amount) {}
+  explicit Task(std::string name, double flops_amount, double bytes_amount)
+      : name_(std::move(name)), flops_amount(flops_amount), bytes_amount(bytes_amount)
+  {
+  }
   void set_used();
   void set_not_used() { this->is_used = false; }
+
+  const std::string& get_name() const { return name_; }
+  const char* get_cname() { return name_.c_str(); }
+  void set_name(const char* new_name) { name_ = std::string(new_name); }
 
   kernel::activity::ExecImplPtr compute          = nullptr; /* SIMIX modeling of computation */
   s4u::CommPtr comm                              = nullptr; /* S4U modeling of communication */
