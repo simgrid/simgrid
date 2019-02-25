@@ -77,7 +77,6 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
       });
       /* checking for infinite values */
       xbt_assert(std::isfinite(simdata->flops_amount), "flops_amount is not finite!");
-      xbt_assert(std::isfinite(simdata->priority), "priority is not finite!");
 
       simdata->compute->start(simdata->flops_amount, simdata->priority, simdata->bound);
     }
@@ -287,7 +286,6 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* al
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = myself;
-  t_simdata->source = MSG_host_self();
   t_simdata->set_used();
   t_simdata->comm = nullptr;
   msg_global->sent_msg++;
@@ -731,7 +729,6 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   /* Prepare the task to send */
   simdata_task_t t_simdata = task->simdata;
   t_simdata->sender        = MSG_process_self();
-  t_simdata->source = MSG_host_self();
   t_simdata->set_used();
 
   msg_global->sent_msg++;

@@ -31,7 +31,6 @@ struct s_simdata_task_t {
   double flops_amount                            = 0.0;     /* Computation size */
   msg_process_t sender                           = nullptr;
   msg_process_t receiver                         = nullptr;
-  msg_host_t source                              = nullptr;
 
   double priority = 1.0;
   double bound    = 0.0; /* Capping for CPU resource, or 0 for no capping */

@@ -301,6 +301,7 @@ void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<do
 {
   parallel_execute(hosts, flops_amounts, bytes_amounts, -1);
 }
+
 void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                       const std::vector<double>& bytes_amounts, double timeout)
 {

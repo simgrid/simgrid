@@ -143,7 +143,7 @@ msg_process_t MSG_task_get_sender(msg_task_t task)
 /** @brief Returns the source (the sender's host) of the given task */
 msg_host_t MSG_task_get_source(msg_task_t task)
 {
-  return task->simdata->source;
+  return task->simdata->sender->get_host();
 }
 
 /** @brief Returns the name of the given task. */
