@@ -74,9 +74,7 @@ void StorageN11Model::update_actions_state(double /*now*/, double delta)
     StorageAction& action = static_cast<StorageAction&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     action.update_remains(lrint(action.get_variable()->get_value() * delta));
-
-    if (action.get_max_duration() > NO_MAX_DURATION)
-      action.update_max_duration(delta);
+    action.update_max_duration(delta);
 
     if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_weight() > 0)) ||
         ((action.get_max_duration() > NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {

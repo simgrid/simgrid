@@ -198,7 +198,8 @@ double Action::get_remains()
 
 void Action::update_max_duration(double delta)
 {
-  double_update(&max_duration_, delta, sg_surf_precision);
+  if (max_duration_ != NO_MAX_DURATION)
+    double_update(&max_duration_, delta, sg_surf_precision);
 }
 void Action::update_remains(double delta)
 {

@@ -59,8 +59,7 @@ void NetworkConstantModel::update_actions_state(double /*now*/, double delta)
       }
     }
     action.update_remains(action.get_cost() * delta / action.initial_latency_);
-    if (action.get_max_duration() != NO_MAX_DURATION)
-      action.update_max_duration(delta);
+    action.update_max_duration(delta);
 
     if ((action.get_remains_no_update() <= 0) ||
         ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {

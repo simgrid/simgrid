@@ -424,7 +424,6 @@ void NetworkCm02Action::update_remains_lazy(double now)
     return;
 
   double delta        = now - get_last_update();
-  double max_duration = get_max_duration();
 
   if (get_remains_no_update() > 0) {
     XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, get_remains_no_update(),
@@ -434,13 +433,10 @@ void NetworkCm02Action::update_remains_lazy(double now)
     XBT_DEBUG("Updating action(%p): remains is now %f", this, get_remains_no_update());
   }
 
-  if (max_duration > NO_MAX_DURATION) {
-    double_update(&max_duration, delta, sg_surf_precision);
-    set_max_duration(max_duration);
-  }
+  update_max_duration(delta);
 
   if ((get_remains_no_update() <= 0 && (get_variable()->get_weight() > 0)) ||
-      ((max_duration > NO_MAX_DURATION) && (max_duration <= 0))) {
+      ((get_max_duration() != NO_MAX_DURATION) && (get_max_duration() <= 0))) {
     finish(Action::State::FINISHED);
     get_model()->get_action_heap().remove(this);
   }

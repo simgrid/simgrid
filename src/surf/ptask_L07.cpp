@@ -99,9 +99,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
     XBT_DEBUG("Action (%p) : remains (%g) updated by %g.", &action, action.get_remains(),
               action.get_variable()->get_value() * delta);
     action.update_remains(action.get_variable()->get_value() * delta);
-
-    if (action.get_max_duration() > NO_MAX_DURATION)
-      action.update_max_duration(delta);
+    action.update_max_duration(delta);
 
     XBT_DEBUG("Action (%p) : remains (%g).", &action, action.get_remains());
 
