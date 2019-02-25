@@ -7,7 +7,6 @@
 #include "src/simix/smx_private.hpp"
 #include <algorithm>
 #include <cmath>
-#include <simgrid/modelchecker.h>
 #include <simgrid/s4u/Comm.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)");
@@ -61,14 +60,7 @@ void Task::report_multiple_use() const
  */
 msg_task_t MSG_task_create(const char *name, double flop_amount, double message_size, void *data)
 {
-  msg_task_t task        = new s_msg_task_t;
-  /* Simulator Data */
-  task->simdata = new simgrid::msg::Task(name ? name : "", flop_amount, message_size, data);
-
-  if (MC_is_active())
-    MC_ignore_heap(&(task->simdata->get_counter()), sizeof(long long int));
-
-  return task;
+  return new simgrid::msg::Task(name ? name : "", flop_amount, message_size, data);
 }
 
 /** @brief Creates a new parallel task
@@ -96,19 +88,18 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
   // Task's flops amount is set to an arbitrary value > 0.0 to be able to distinguish, in
   // MSG_task_get_remaining_work_ratio(), a finished task and a task that has not started yet.
   msg_task_t task        = MSG_task_create(name, 1.0, 0, data);
-  simdata_task_t simdata = task->simdata;
 
   /* Simulator Data specific to parallel tasks */
-  simdata->host_nb = host_nb;
-  simdata->host_list             = new sg_host_t[host_nb];
-  std::copy_n(host_list, host_nb, simdata->host_list);
+  task->host_nb = host_nb;
+  host_list     = new sg_host_t[host_nb];
+  std::copy_n(host_list, host_nb, task->host_list);
   if (flops_amount != nullptr) {
-    simdata->flops_parallel_amount = new double[host_nb];
-    std::copy_n(flops_amount, host_nb, simdata->flops_parallel_amount);
+    task->flops_parallel_amount = new double[host_nb];
+    std::copy_n(flops_amount, host_nb, task->flops_parallel_amount);
   }
   if (bytes_amount != nullptr) {
-    simdata->bytes_parallel_amount = new double[host_nb * host_nb];
-    std::copy_n(bytes_amount, host_nb * host_nb, simdata->bytes_parallel_amount);
+    task->bytes_parallel_amount = new double[host_nb * host_nb];
+    std::copy_n(bytes_amount, host_nb * host_nb, task->bytes_parallel_amount);
   }
 
   return task;
@@ -117,13 +108,13 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
 /** @brief Return the user data of the given task */
 void* MSG_task_get_data(msg_task_t task)
 {
-  return (task->simdata->get_user_data());
+  return task->get_user_data();
 }
 
 /** @brief Sets the user data of a given task */
 void MSG_task_set_data(msg_task_t task, void *data)
 {
-  task->simdata->set_user_data(data);
+  task->set_user_data(data);
 }
 
 /** @brief Sets a function to be called when a task has just been copied.
@@ -143,25 +134,25 @@ void MSG_task_set_copy_callback(void (*callback) (msg_task_t task, msg_process_t
 /** @brief Returns the sender of the given task */
 msg_process_t MSG_task_get_sender(msg_task_t task)
 {
-  return task->simdata->sender;
+  return task->sender;
 }
 
 /** @brief Returns the source (the sender's host) of the given task */
 msg_host_t MSG_task_get_source(msg_task_t task)
 {
-  return task->simdata->sender->get_host();
+  return task->sender->get_host();
 }
 
 /** @brief Returns the name of the given task. */
 const char *MSG_task_get_name(msg_task_t task)
 {
-  return task->simdata->get_cname();
+  return task->get_cname();
 }
 
 /** @brief Sets the name of the given task. */
 void MSG_task_set_name(msg_task_t task, const char *name)
 {
-  task->simdata->set_name(name);
+  task->set_name(name);
 }
 
 /** @brief Destroys the given task.
@@ -176,13 +167,12 @@ void MSG_task_set_name(msg_task_t task, const char *name)
  */
 msg_error_t MSG_task_destroy(msg_task_t task)
 {
-  if (task->simdata->is_used) {
+  if (task->is_used) {
     /* the task is being sent or executed: cancel it first */
     MSG_task_cancel(task);
   }
 
   /* free main structures */
-  delete task->simdata;
   delete task;
 
   return MSG_OK;
@@ -196,13 +186,12 @@ msg_error_t MSG_task_cancel(msg_task_t task)
 {
   xbt_assert((task != nullptr), "Cannot cancel a nullptr task");
 
-  simdata_task_t simdata = task->simdata;
-  if (simdata->compute) {
-    simgrid::simix::simcall([simdata] { simdata->compute->cancel(); });
-  } else if (simdata->comm) {
-    simdata->comm->cancel();
+  if (task->compute) {
+    simgrid::simix::simcall([task] { task->compute->cancel(); });
+  } else if (task->comm) {
+    task->comm->cancel();
   }
-  simdata->set_not_used();
+  task->set_not_used();
   return MSG_OK;
 }
 
@@ -214,12 +203,12 @@ msg_error_t MSG_task_cancel(msg_task_t task)
 double MSG_task_get_remaining_work_ratio(msg_task_t task) {
 
   xbt_assert((task != nullptr), "Cannot get information from a nullptr task");
-  if (task->simdata->compute) {
+  if (task->compute) {
     // Task in progress
-    return task->simdata->compute->get_remaining_ratio();
+    return task->compute->get_remaining_ratio();
   } else {
     // Task not started (flops_amount is > 0.0) or finished (flops_amount is set to 0.0)
-    return task->simdata->flops_amount > 0.0 ? 1.0 : 0.0;
+    return task->flops_amount > 0.0 ? 1.0 : 0.0;
   }
 }
 
@@ -231,13 +220,13 @@ double MSG_task_get_remaining_work_ratio(msg_task_t task) {
  * So you will get an exception if you call this function on parallel tasks. Just don't do it.
  */
 double MSG_task_get_flops_amount(msg_task_t task) {
-  if (task->simdata->compute != nullptr) {
-    return task->simdata->compute->get_remaining();
+  if (task->compute != nullptr) {
+    return task->compute->get_remaining();
   } else {
     // Not started or already done.
     // - Before starting, flops_amount is initially the task cost
     // - After execution, flops_amount is set to 0 (until someone uses MSG_task_set_flops_amount, if any)
-    return task->simdata->flops_amount;
+    return task->flops_amount;
   }
 }
 
@@ -249,7 +238,7 @@ double MSG_task_get_flops_amount(msg_task_t task) {
  */
 void MSG_task_set_flops_amount(msg_task_t task, double flops_amount)
 {
-  task->simdata->flops_amount = flops_amount;
+  task->flops_amount = flops_amount;
 }
 
 /** @brief set the amount data attached with the given task.
@@ -258,7 +247,7 @@ void MSG_task_set_flops_amount(msg_task_t task, double flops_amount)
  */
 void MSG_task_set_bytes_amount(msg_task_t task, double data_size)
 {
-  task->simdata->bytes_amount = data_size;
+  task->bytes_amount = data_size;
 }
 
 /** @brief Returns the total amount received by the given task
@@ -268,15 +257,15 @@ void MSG_task_set_bytes_amount(msg_task_t task, double data_size)
  */
 double MSG_task_get_remaining_communication(msg_task_t task)
 {
-  XBT_DEBUG("calling simcall_communication_get_remains(%p)", task->simdata->comm.get());
-  return task->simdata->comm->get_remaining();
+  XBT_DEBUG("calling simcall_communication_get_remains(%p)", task->comm.get());
+  return task->comm->get_remaining();
 }
 
 /** @brief Returns the size of the data attached to the given task. */
 double MSG_task_get_bytes_amount(msg_task_t task)
 {
-  xbt_assert((task != nullptr) && (task->simdata != nullptr), "Invalid parameter");
-  return task->simdata->bytes_amount;
+  xbt_assert(task != nullptr, "Invalid parameter");
+  return task->bytes_amount;
 }
 
 /** @brief Changes the priority of a computation task.
@@ -286,8 +275,8 @@ double MSG_task_get_bytes_amount(msg_task_t task)
  */
 void MSG_task_set_priority(msg_task_t task, double priority)
 {
-  task->simdata->priority = 1 / priority;
-  xbt_assert(std::isfinite(task->simdata->priority), "priority is not finite!");
+  task->priority = 1 / priority;
+  xbt_assert(std::isfinite(task->priority), "priority is not finite!");
 }
 
 /** @brief Changes the maximum CPU utilization of a computation task (in flops/s).
@@ -298,5 +287,5 @@ void MSG_task_set_bound(msg_task_t task, double bound)
 {
   if (bound < 1e-12) /* close enough to 0 without any floating precision surprise */
     XBT_INFO("bound == 0 means no capping (i.e., unlimited).");
-  task->simdata->bound = bound;
+  task->bound = bound;
 }

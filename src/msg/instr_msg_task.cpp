@@ -15,11 +15,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_msg, instr, "MSG instrumentation");
 /* MSG_task_put related functions */
 void TRACE_msg_task_put_start(msg_task_t task)
 {
-  XBT_DEBUG("PUT,in %p, %lld, %s", task, task->simdata->get_counter(), task->simdata->get_tracing_category().c_str());
+  XBT_DEBUG("PUT,in %p, %lld, %s", task, task->get_counter(), task->get_tracing_category().c_str());
 
   if (TRACE_actor_is_enabled()) {
     container_t process_container = simgrid::instr::Container::by_name(instr_pid(MSG_process_self()));
-    std::string key               = std::string("p") + std::to_string(task->simdata->get_counter());
+    std::string key               = std::string("p") + std::to_string(task->get_counter());
     simgrid::instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->start_event(process_container, "SR", key);
   }
 }

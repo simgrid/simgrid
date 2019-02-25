@@ -7,9 +7,9 @@
 #define MSG_PRIVATE_HPP
 
 #include "simgrid/msg.h"
-
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
+#include <simgrid/modelchecker.h>
 
 static long long int msg_task_max_counter = 0;
 
@@ -28,6 +28,8 @@ public:
       : name_(std::move(name)), userdata_(data), flops_amount(flops_amount), bytes_amount(bytes_amount)
   {
     counter_ = msg_task_max_counter++;
+    if (MC_is_active())
+      MC_ignore_heap(&(counter_), sizeof(long long int));
   }
   void set_used();
   void set_not_used() { this->is_used = false; }

@@ -42,16 +42,14 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
 
 msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeout)
 {
-  simdata_task_t simdata = task->simdata;
   e_smx_state_t comp_state;
   msg_error_t status = MSG_OK;
 
-  xbt_assert((not simdata->compute) && not task->simdata->is_used,
-             "This task is executed somewhere else. Go fix your code!");
+  xbt_assert((not task->compute) && not task->is_used, "This task is executed somewhere else. Go fix your code!");
 
   XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
 
-  if (simdata->flops_amount <= 0.0 && not simdata->host_nb) {
+  if (task->flops_amount <= 0.0 && not task->host_nb) {
     return MSG_OK;
   }
 
@@ -59,35 +57,33 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
     simgrid::instr::Container::by_name(instr_pid(MSG_process_self()))->get_state("ACTOR_STATE")->push_event("execute");
 
   try {
-    simdata->set_used();
+    task->set_used();
 
-    if (simdata->host_nb > 0) {
-      simdata->compute =
-          boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(simcall_execution_parallel_start(
-              std::move(task->simdata->get_name()), simdata->host_nb, simdata->host_list,
-              simdata->flops_parallel_amount, simdata->bytes_parallel_amount, -1.0, timeout));
-      XBT_DEBUG("Parallel execution action created: %p", simdata->compute.get());
-      if (task->simdata->has_tracing_category())
-        simgrid::simix::simcall(
-            [task] { task->simdata->compute->set_category(std::move(task->simdata->get_tracing_category())); });
+    if (task->host_nb > 0) {
+      task->compute = boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(
+          simcall_execution_parallel_start(std::move(task->get_name()), task->host_nb, task->host_list,
+                                           task->flops_parallel_amount, task->bytes_parallel_amount, -1.0, timeout));
+      XBT_DEBUG("Parallel execution action created: %p", task->compute.get());
+      if (task->has_tracing_category())
+        simgrid::simix::simcall([task] { task->compute->set_category(std::move(task->get_tracing_category())); });
     } else {
       sg_host_t host   = MSG_process_get_host(MSG_process_self());
-      simdata->compute = simgrid::simix::simcall([task, host] {
+      task->compute    = simgrid::simix::simcall([task, host] {
         return simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(
-            std::move(task->simdata->get_name()), std::move(task->simdata->get_tracing_category()), host));
+            std::move(task->get_name()), std::move(task->get_tracing_category()), host));
       });
       /* checking for infinite values */
-      xbt_assert(std::isfinite(simdata->flops_amount), "flops_amount is not finite!");
-      xbt_assert(std::isfinite(simdata->priority), "priority is not finite!");
+      xbt_assert(std::isfinite(task->flops_amount), "flops_amount is not finite!");
+      xbt_assert(std::isfinite(task->priority), "priority is not finite!");
 
-      simdata->compute->start(simdata->flops_amount, simdata->priority, simdata->bound);
+      task->compute->start(task->flops_amount, task->priority, task->bound);
     }
 
-    comp_state = simcall_execution_wait(simdata->compute);
+    comp_state = simcall_execution_wait(task->compute);
 
-    simdata->set_not_used();
+    task->set_not_used();
 
-    XBT_DEBUG("Execution task '%s' finished in state %d", task->simdata->get_cname(), (int)comp_state);
+    XBT_DEBUG("Execution task '%s' finished in state %d", task->get_cname(), (int)comp_state);
   } catch (simgrid::HostFailureException& e) {
     status = MSG_HOST_FAILURE;
   } catch (simgrid::TimeoutError& e) {
@@ -97,9 +93,9 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
   }
 
   /* action ended, set comm and compute = nullptr, the actions is already destroyed in the main function */
-  simdata->flops_amount = 0.0;
-  simdata->comm = nullptr;
-  simdata->compute = nullptr;
+  task->flops_amount = 0.0;
+  task->comm         = nullptr;
+  task->compute      = nullptr;
 
   if (TRACE_actor_is_enabled())
     simgrid::instr::Container::by_name(instr_pid(MSG_process_self()))->get_state("ACTOR_STATE")->pop_event();
@@ -252,8 +248,8 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
         ->set_rate(rate)
         ->wait_for(timeout);
     *task = static_cast<msg_task_t>(payload);
-    XBT_DEBUG("Got task %s from %s", (*task)->simdata->get_cname(), alias);
-    (*task)->simdata->set_not_used();
+    XBT_DEBUG("Got task %s from %s", (*task)->get_cname(), alias);
+    (*task)->set_not_used();
   } catch (simgrid::HostFailureException& e) {
     ret = MSG_HOST_FAILURE;
   } catch (simgrid::TimeoutError& e) {
@@ -270,7 +266,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
   if (TRACE_actor_is_enabled() && ret != MSG_HOST_FAILURE && ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {
     container_t process_container = simgrid::instr::Container::by_name(instr_pid(MSG_process_self()));
 
-    std::string key = std::string("p") + std::to_string((*task)->simdata->get_counter());
+    std::string key = std::string("p") + std::to_string((*task)->get_counter());
     simgrid::instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->end_event(process_container, "SR", key);
   }
   return ret;
@@ -280,20 +276,18 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
 static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* alias, void_f_pvoid_t cleanup,
                                                  bool detached)
 {
-  simdata_task_t t_simdata = nullptr;
   msg_process_t myself = MSG_process_self();
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(alias);
   TRACE_msg_task_put_start(task);
 
   /* Prepare the task to send */
-  t_simdata = task->simdata;
-  t_simdata->sender = myself;
-  t_simdata->set_used();
-  t_simdata->comm = nullptr;
+  task->sender = myself;
+  task->set_used();
+  task->comm = nullptr;
   msg_global->sent_msg++;
 
-  simgrid::s4u::CommPtr comm = mailbox->put_init(task, t_simdata->bytes_amount)->set_rate(t_simdata->rate);
-  t_simdata->comm            = comm;
+  simgrid::s4u::CommPtr comm = mailbox->put_init(task, task->bytes_amount)->set_rate(task->rate);
+  task->comm                 = comm;
   if (detached)
     comm->detach(cleanup);
   else
@@ -304,9 +298,8 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* al
     msg_comm = new simgrid::msg::Comm(task, nullptr, comm);
   }
 
-  if (TRACE_is_enabled() && task->simdata->has_tracing_category())
-    simgrid::simix::simcall(
-        [comm, task] { comm->get_impl()->set_category(std::move(task->simdata->get_tracing_category())); });
+  if (TRACE_is_enabled() && task->has_tracing_category())
+    simgrid::simix::simcall([comm, task] { comm->get_impl()->set_category(std::move(task->get_tracing_category())); });
 
   return msg_comm;
 }
@@ -338,7 +331,7 @@ msg_comm_t MSG_task_isend(msg_task_t task, const char *alias)
  */
 msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate)
 {
-  task->simdata->rate = maxrate;
+  task->rate = maxrate;
   return MSG_task_isend_internal(task, alias, nullptr, false);
 }
 
@@ -388,7 +381,7 @@ void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
  */
 void MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t cleanup, double maxrate)
 {
-  task->simdata->rate = maxrate;
+  task->rate = maxrate;
   MSG_task_dsend(task, alias, cleanup);
 }
 
@@ -453,7 +446,7 @@ int MSG_comm_test(msg_comm_t comm)
     finished = comm->s_comm->test();
     if (finished && comm->task_received != nullptr) {
       /* I am the receiver */
-      (*comm->task_received)->simdata->set_not_used();
+      (*comm->task_received)->set_not_used();
     }
   } catch (simgrid::TimeoutError& e) {
     comm->status = MSG_TIMEOUT;
@@ -518,7 +511,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
 
     if (status == MSG_OK && comm->task_received != nullptr) {
       /* I am the receiver */
-      (*comm->task_received)->simdata->set_not_used();
+      (*comm->task_received)->set_not_used();
     }
   }
 
@@ -546,7 +539,7 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 
     if (comm->task_received != nullptr) {
       /* I am the receiver */
-      (*comm->task_received)->simdata->set_not_used();
+      (*comm->task_received)->set_not_used();
     }
 
     /* FIXME: these functions are not traceable */
@@ -622,7 +615,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 
   if (comm->task_received != nullptr) {
     /* I am the receiver */
-    (*comm->task_received)->simdata->set_not_used();
+    (*comm->task_received)->set_not_used();
   }
 
   return finished_index;
@@ -707,7 +700,7 @@ msg_error_t MSG_task_send(msg_task_t task, const char *alias)
  */
 msg_error_t MSG_task_send_bounded(msg_task_t task, const char *alias, double maxrate)
 {
-  task->simdata->rate = maxrate;
+  task->rate = maxrate;
   return MSG_task_send(task, alias);
 }
 
@@ -730,21 +723,20 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   TRACE_msg_task_put_start(task);
 
   /* Prepare the task to send */
-  simdata_task_t t_simdata = task->simdata;
-  t_simdata->sender        = MSG_process_self();
-  t_simdata->set_used();
+  task->sender = MSG_process_self();
+  task->set_used();
 
   msg_global->sent_msg++;
 
   /* Try to send it */
   try {
     simgrid::s4u::CommPtr comm =
-        simgrid::s4u::Mailbox::by_name(alias)->put_init(task, t_simdata->bytes_amount)->set_rate(t_simdata->rate);
-    t_simdata->comm = comm;
+        simgrid::s4u::Mailbox::by_name(alias)->put_init(task, task->bytes_amount)->set_rate(task->rate);
+    task->comm = comm;
     comm->start();
-    if (TRACE_is_enabled() && task->simdata->has_tracing_category())
+    if (TRACE_is_enabled() && task->has_tracing_category())
       simgrid::simix::simcall(
-          [comm, task] { comm->get_impl()->set_category(std::move(task->simdata->get_tracing_category())); });
+          [comm, task] { comm->get_impl()->set_category(std::move(task->get_tracing_category())); });
     comm->wait_for(timeout);
   } catch (simgrid::TimeoutError& e) {
     ret = MSG_TIMEOUT;
@@ -757,7 +749,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
       throw;
 
     /* If the send failed, it is not used anymore */
-    t_simdata->set_not_used();
+    task->set_not_used();
   }
 
   return ret;
@@ -783,7 +775,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
  */
 msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alias, double timeout, double maxrate)
 {
-  task->simdata->rate = maxrate;
+  task->rate = maxrate;
   return MSG_task_send_with_timeout(task, alias, timeout);
 }
 
@@ -799,7 +791,7 @@ int MSG_task_listen_from(const char *alias)
 {
   simgrid::kernel::activity::CommImplPtr comm = simgrid::s4u::Mailbox::by_name(alias)->front();
 
-  return comm ? MSG_process_get_PID(static_cast<msg_task_t>(comm->src_buff_)->simdata->sender) : -1;
+  return comm ? MSG_process_get_PID(static_cast<msg_task_t>(comm->src_buff_)->sender) : -1;
 }
 
 /**
@@ -819,18 +811,17 @@ int MSG_task_listen_from(const char *alias)
  */
 void MSG_task_set_category (msg_task_t task, const char *category)
 {
-  xbt_assert(not task->simdata->has_tracing_category(), "Task %p(%s) already has a category (%s).", task,
-             task->simdata->get_cname(), task->simdata->get_tracing_category().c_str());
+  xbt_assert(not task->has_tracing_category(), "Task %p(%s) already has a category (%s).", task, task->get_cname(),
+             task->get_tracing_category().c_str());
 
   // if user provides a nullptr category, task is no longer traced
   if (category == nullptr) {
-    task->simdata->set_tracing_category("");
-    XBT_DEBUG("MSG task %p(%s), category removed", task, task->simdata->get_cname());
+    task->set_tracing_category("");
+    XBT_DEBUG("MSG task %p(%s), category removed", task, task->get_cname());
   } else {
     // set task category
-    task->simdata->set_tracing_category(category);
-    XBT_DEBUG("MSG task %p(%s), category %s", task, task->simdata->get_cname(),
-              task->simdata->get_tracing_category().c_str());
+    task->set_tracing_category(category);
+    XBT_DEBUG("MSG task %p(%s), category %s", task, task->get_cname(), task->get_tracing_category().c_str());
   }
 }
 
@@ -845,5 +836,5 @@ void MSG_task_set_category (msg_task_t task, const char *category)
  */
 const char *MSG_task_get_category (msg_task_t task)
 {
-  return task->simdata->get_tracing_category().c_str();
+  return task->get_tracing_category().c_str();
 }

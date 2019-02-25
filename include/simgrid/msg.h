@@ -37,10 +37,17 @@ class Task;
 }
 }
 typedef simgrid::msg::Comm sg_msg_Comm;
-typedef simgrid::msg::Task* simdata_task_t;
+/** @brief Task datatype.
+ *
+ *  Since most scheduling algorithms rely on a concept of task  that can be either <em>computed</em> locally or
+ *  <em>transferred</em> on another processor, it seems to be the right level of abstraction for our purposes.
+ *  A <em>task</em> may then be defined by a <em>computing amount</em>, a <em>message size</em> and
+ *  some <em>private data</em>.
+ */
+typedef simgrid::msg::Task* msg_task_t;
 #else
 typedef struct msg_Comm sg_msg_Comm;
-typedef struct msg_Task* simdata_task_t;
+typedef struct msg_Task* msg_task_t;
 #endif
 
 #ifdef __cplusplus
@@ -239,19 +246,6 @@ typedef sg_msg_Comm* msg_comm_t;
 
 /* ******************************** Task ************************************ */
 
-typedef struct msg_task {
-  simdata_task_t simdata; /**< @brief simulator data */
-} s_msg_task_t;
-
-/** @brief Task datatype.
- *
- *  Since most scheduling algorithms rely on a concept of task  that can be either <em>computed</em> locally or
- *  <em>transferred</em> on another processor, it seems to be the right level of abstraction for our purposes.
- *  A <em>task</em> may then be defined by a <em>computing amount</em>, a <em>message size</em> and
- *  some <em>private data</em>.
- */
-
-typedef struct msg_task* msg_task_t;
 
 /** @brief Default value for an uninitialized #msg_task_t. */
 #define MSG_TASK_UNINITIALIZED NULL
