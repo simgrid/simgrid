@@ -17,11 +17,12 @@ namespace msg {
 class Task {
   std::string name_             = "";
   std::string tracing_category_ = "";
+  void* userdata_               = nullptr;
 
 public:
   ~Task();
-  explicit Task(std::string name, double flops_amount, double bytes_amount)
-      : name_(std::move(name)), flops_amount(flops_amount), bytes_amount(bytes_amount)
+  explicit Task(std::string name, double flops_amount, double bytes_amount, void* data)
+      : name_(std::move(name)), userdata_(data), flops_amount(flops_amount), bytes_amount(bytes_amount)
   {
   }
   void set_used();
@@ -33,6 +34,8 @@ public:
   void set_tracing_category(const char* category) { tracing_category_ = category ? std::string(category) : ""; }
   const std::string& get_tracing_category() { return tracing_category_; }
   bool has_tracing_category() { return not tracing_category_.empty(); }
+  void* get_user_data() { return userdata_; }
+  void set_user_data(void* data) { userdata_ = data; }
 
   kernel::activity::ExecImplPtr compute          = nullptr; /* SIMIX modeling of computation */
   s4u::CommPtr comm                              = nullptr; /* S4U modeling of communication */

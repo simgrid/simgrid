@@ -65,10 +65,9 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
 
   msg_task_t task        = new s_msg_task_t;
   /* Simulator Data */
-  task->simdata = new simgrid::msg::Task(name ? name : "", flop_amount, message_size);
+  task->simdata = new simgrid::msg::Task(name ? name : "", flop_amount, message_size, data);
 
   /* Task structure */
-  task->data = data;
   task->counter  = counter++;
 
   if (MC_is_active())
@@ -121,15 +120,15 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
 }
 
 /** @brief Return the user data of the given task */
-void *MSG_task_get_data(msg_task_t task)
+void* MSG_task_get_data(msg_task_t task)
 {
-  return (task->data);
+  return (task->simdata->get_user_data());
 }
 
 /** @brief Sets the user data of a given task */
 void MSG_task_set_data(msg_task_t task, void *data)
 {
-  task->data = data;
+  task->simdata->set_user_data(data);
 }
 
 /** @brief Sets a function to be called when a task has just been copied.
