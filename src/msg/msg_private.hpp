@@ -12,23 +12,19 @@
 #include "src/kernel/activity/ExecImpl.hpp"
 
 /**************** datatypes **********************************/
-/********************************* Task **************************************/
-
-struct s_simdata_task_t {
-  ~s_simdata_task_t()
-  {
-    /* parallel tasks only */
-    delete[] host_list;
-    delete[] flops_parallel_amount;
-    delete[] bytes_parallel_amount;
-  }
+namespace simgrid {
+namespace msg {
+class Task {
+public:
+  ~Task();
+  explicit Task(double flops_amount, double bytes_amount) : flops_amount(flops_amount), bytes_amount(bytes_amount) {}
   void set_used();
   void set_not_used() { this->is_used = false; }
 
-  simgrid::kernel::activity::ExecImplPtr compute = nullptr; /* SIMIX modeling of computation */
-  simgrid::s4u::CommPtr comm                     = nullptr; /* S4U modeling of communication */
-  double bytes_amount                            = 0.0;     /* Data size */
+  kernel::activity::ExecImplPtr compute          = nullptr; /* SIMIX modeling of computation */
+  s4u::CommPtr comm                              = nullptr; /* S4U modeling of communication */
   double flops_amount                            = 0.0;     /* Computation size */
+  double bytes_amount                            = 0.0;     /* Data size */
   msg_process_t sender                           = nullptr;
   msg_process_t receiver                         = nullptr;
 
@@ -47,11 +43,6 @@ private:
   void report_multiple_use() const;
 };
 
-/******************************* Process *************************************/
-
-namespace simgrid {
-namespace msg {
-
 class Comm {
 public:
   msg_task_t task_sent;        /* task sent (NULL for the receiver) */
@@ -63,8 +54,9 @@ public:
   {
   }
 };
-}
-}
+
+} // namespace msg
+} // namespace simgrid
 
 /************************** Global variables ********************************/
 struct s_MSG_Global_t {
@@ -84,11 +76,5 @@ XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(simgrid::kernel::activity::CommIm
 /* declaration of instrumentation functions from msg_task_instr.c */
 XBT_PRIVATE void TRACE_msg_task_put_start(msg_task_t task);
 
-inline void s_simdata_task_t::set_used()
-{
-  if (this->is_used)
-    this->report_multiple_use();
-  this->is_used = true;
-}
 
 #endif

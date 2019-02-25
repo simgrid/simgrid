@@ -12,7 +12,24 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)");
 
-void s_simdata_task_t::report_multiple_use() const
+namespace simgrid {
+namespace msg {
+Task::~Task()
+{
+  /* parallel tasks only */
+  delete[] host_list;
+  delete[] flops_parallel_amount;
+  delete[] bytes_parallel_amount;
+}
+
+void Task::set_used()
+{
+  if (this->is_used)
+    this->report_multiple_use();
+  this->is_used = true;
+}
+
+void Task::report_multiple_use() const
 {
   if (msg_global->debug_multiple_use){
     XBT_ERROR("This task is already used in there:");
@@ -25,6 +42,8 @@ void s_simdata_task_t::report_multiple_use() const
              "(use --cfg=msg/debug-multiple-use:on to get the backtrace of the other process)");
   }
 }
+} // namespace msg
+} // namespace simgrid
 
 /********************************* Task **************************************/
 /** @brief Creates a new task
@@ -45,16 +64,12 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
   static std::atomic_ullong counter{0};
 
   msg_task_t task        = new s_msg_task_t;
-  simdata_task_t simdata = new s_simdata_task_t();
-  task->simdata = simdata;
+  /* Simulator Data */
+  task->simdata = new simgrid::msg::Task(flop_amount, message_size);
 
   /* Task structure */
   task->name = xbt_strdup(name);
   task->data = data;
-
-  /* Simulator Data */
-  simdata->bytes_amount = message_size;
-  simdata->flops_amount = flop_amount;
 
   task->counter  = counter++;
   task->category = nullptr;

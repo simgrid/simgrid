@@ -77,6 +77,7 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
       });
       /* checking for infinite values */
       xbt_assert(std::isfinite(simdata->flops_amount), "flops_amount is not finite!");
+      xbt_assert(std::isfinite(simdata->priority), "priority is not finite!");
 
       simdata->compute->start(simdata->flops_amount, simdata->priority, simdata->bound);
     }

@@ -33,11 +33,14 @@
 namespace simgrid {
 namespace msg {
 class Comm;
+class Task;
 }
 }
 typedef simgrid::msg::Comm sg_msg_Comm;
+typedef simgrid::msg::Task* simdata_task_t;
 #else
 typedef struct msg_Comm sg_msg_Comm;
+typedef struct msg_Task* simdata_task_t;
 #endif
 
 #ifdef __cplusplus
@@ -235,8 +238,6 @@ XBT_PUBLIC msg_error_t MSG_process_sleep(double nb_sec);
 typedef sg_msg_Comm* msg_comm_t;
 
 /* ******************************** Task ************************************ */
-
-typedef struct s_simdata_task_t* simdata_task_t;
 
 typedef struct msg_task {
   char* name;             /**< @brief task name if any */
