@@ -73,7 +73,7 @@ double Model::next_occuring_event_lazy(double now)
       min = now + time_to_completion; // when the task will complete if nothing changes
     }
 
-    if ((action->get_max_duration() > NO_MAX_DURATION) &&
+    if ((action->get_max_duration() != NO_MAX_DURATION) &&
         (min <= -1 || action->get_start_time() + action->get_max_duration() < min)) {
       // when the task will complete anyway because of the deadline if any
       min          = action->get_start_time() + action->get_max_duration();

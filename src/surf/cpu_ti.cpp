@@ -463,18 +463,18 @@ void CpuTi::update_actions_finish_time(double now)
 
       action.set_finish_time(speed_integrated_trace_->solve(now, total_area));
       /* verify which event will happen before (max_duration or finish time) */
-      if (action.get_max_duration() > NO_MAX_DURATION &&
+      if (action.get_max_duration() != NO_MAX_DURATION &&
           action.get_start_time() + action.get_max_duration() < action.get_finish_time())
         min_finish = action.get_start_time() + action.get_max_duration();
       else
         min_finish = action.get_finish_time();
     } else {
       /* put the max duration time on heap */
-      if (action.get_max_duration() > NO_MAX_DURATION)
+      if (action.get_max_duration() != NO_MAX_DURATION)
         min_finish = action.get_start_time() + action.get_max_duration();
     }
     /* add in action heap */
-    if (min_finish > NO_MAX_DURATION)
+    if (min_finish != NO_MAX_DURATION)
       get_model()->get_action_heap().update(&action, min_finish, kernel::resource::ActionHeap::Type::unset);
     else
       get_model()->get_action_heap().remove(&action);
@@ -557,7 +557,7 @@ CpuAction *CpuTi::sleep(double duration)
 
   action->set_max_duration(duration);
   action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
-  if (duration < 0) // NO_MAX_DURATION
+  if (duration == NO_MAX_DURATION)
     action->set_state(simgrid::kernel::resource::Action::State::IGNORED);
 
   action_set_.push_back(*action);

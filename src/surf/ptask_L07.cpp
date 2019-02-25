@@ -110,7 +110,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
      */
 
     if (((action.get_remains() <= 0) && (action.get_variable()->get_weight() > 0)) ||
-        ((action.get_max_duration() > NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
+        ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(kernel::resource::Action::State::FINISHED);
     } else {
       /* Need to check that none of the model has failed */

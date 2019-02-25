@@ -77,7 +77,7 @@ void StorageN11Model::update_actions_state(double /*now*/, double delta)
     action.update_max_duration(delta);
 
     if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_weight() > 0)) ||
-        ((action.get_max_duration() > NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
+        ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(kernel::resource::Action::State::FINISHED);
     }
   }

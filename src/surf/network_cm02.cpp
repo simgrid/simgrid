@@ -199,11 +199,11 @@ void NetworkCm02Model::update_actions_state_full(double now, double delta)
     }
     action.update_remains(action.get_variable()->get_value() * delta);
 
-    if (action.get_max_duration() > NO_MAX_DURATION)
+    if (action.get_max_duration() != NO_MAX_DURATION)
       action.update_max_duration(delta);
 
     if (((action.get_remains() <= 0) && (action.get_variable()->get_weight() > 0)) ||
-        ((action.get_max_duration() > NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
+        ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(Action::State::FINISHED);
     }
   }
