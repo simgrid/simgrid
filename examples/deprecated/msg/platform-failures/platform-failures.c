@@ -24,8 +24,7 @@ static int master(int argc, char *argv[])
     char mailbox[256];
     snprintf(mailbox, 255, "worker-%ld", i % workers_count);
     XBT_INFO("Send a message to %s", mailbox);
-    msg_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size, xbt_new0(double, 1));
-    *((double *) task->data) = MSG_get_clock();
+    msg_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size, NULL);
 
     switch ( MSG_task_send_with_timeout(task,mailbox,10.0) ) {
     case MSG_OK:
@@ -34,19 +33,16 @@ static int master(int argc, char *argv[])
 
     case MSG_HOST_FAILURE:
       XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-      free(task->data);
       MSG_task_destroy(task);
       return 0;
 
     case MSG_TRANSFER_FAILURE:
       XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox);
-      free(task->data);
       MSG_task_destroy(task);
       break;
 
     case MSG_TIMEOUT:
       XBT_INFO ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox);
-      free(task->data);
       MSG_task_destroy(task);
       break;
 
@@ -111,11 +107,9 @@ static int worker(int argc, char *argv[])
       retcode = MSG_task_execute(task);
       if (retcode == MSG_OK) {
         XBT_INFO("Execution complete.");
-        free(task->data);
         MSG_task_destroy(task);
       } else if (retcode == MSG_HOST_FAILURE) {
         XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-        free(task->data);
         MSG_task_destroy(task);
         return 0;
       } else {

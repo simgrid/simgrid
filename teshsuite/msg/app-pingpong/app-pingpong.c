@@ -17,9 +17,7 @@ static int pinger(int argc, char* argv[])
 
   /* - Do the ping with a 1-Byte task (latency bound) ... */
   double now                = MSG_get_clock();
-  msg_task_t ping_task      = MSG_task_create("small communication (latency bound)", 0.0, 1, NULL);
-  ping_task->data           = xbt_new(double, 1);
-  *(double*)ping_task->data = now;
+  msg_task_t ping_task      = MSG_task_create("small communication (latency bound)", 0.0, 1, &now);
   MSG_task_send(ping_task, argv[1]);
 
   /* - ... then wait for the (large) pong */
@@ -27,10 +25,9 @@ static int pinger(int argc, char* argv[])
   int a                = MSG_task_receive(&pong_task, MSG_host_get_name(MSG_host_self()));
   xbt_assert(a == MSG_OK, "Unexpected behavior");
 
-  double sender_time        = *((double*)(pong_task->data));
+  double sender_time        = *((double*)(MSG_task_get_data(pong_task)));
   double communication_time = MSG_get_clock() - sender_time;
   XBT_INFO("Task received : %s", MSG_task_get_name(pong_task));
-  xbt_free(pong_task->data);
   MSG_task_destroy(pong_task);
   XBT_INFO("Pong time (bandwidth bound): %.3f", communication_time);
 
@@ -48,19 +45,16 @@ static int ponger(int argc, char* argv[])
   int a                = MSG_task_receive(&ping_task, MSG_host_get_name(MSG_host_self()));
   xbt_assert(a == MSG_OK, "Unexpected behavior");
 
-  double sender_time        = *((double*)(ping_task->data));
+  double sender_time        = *((double*)(MSG_task_get_data(ping_task)));
   double communication_time = MSG_get_clock() - sender_time;
   XBT_INFO("Task received : %s", MSG_task_get_name(ping_task));
-  xbt_free(ping_task->data);
   MSG_task_destroy(ping_task);
   XBT_INFO(" Ping time (latency bound) %f", communication_time);
 
   /*  - ... Then send a 1GB pong back (bandwidth bound) */
   double now                = MSG_get_clock();
-  msg_task_t pong_task      = MSG_task_create("large communication (bandwidth bound)", 0.0, 1e9, NULL);
-  pong_task->data           = xbt_new(double, 1);
-  *(double*)pong_task->data = now;
-  XBT_INFO("task_bw->data = %.3f", *((double*)pong_task->data));
+  msg_task_t pong_task      = MSG_task_create("large communication (bandwidth bound)", 0.0, 1e9, &now);
+  XBT_INFO("task_bw->data = %.3f", *((double*)MSG_task_get_data(pong_task)));
   MSG_task_send(pong_task, argv[1]);
 
   return 0;
