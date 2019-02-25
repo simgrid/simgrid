@@ -189,7 +189,7 @@ else
   MAY_DISABLE_SOURCE_CHANGE="-DCMAKE_DISABLE_SOURCE_CHANGES=ON"
 fi
 
-if [ "$os" = "NixOS" -a "$(gcc -dumpversion)" = "7.4.0" -a "$(ld -v | cut -d\  -f5)" = "2.30" ]; then
+if [ "$os" = "NixOS" -a "$(gcc -dumpversion)" = "7.4.0" ]; then
     echo "Temporary disable LTO, believed to be broken on this system."
     MAY_DISABLE_LTO=-Denable_lto=OFF
 else
