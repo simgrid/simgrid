@@ -61,17 +61,12 @@ void Task::report_multiple_use() const
  */
 msg_task_t MSG_task_create(const char *name, double flop_amount, double message_size, void *data)
 {
-  static std::atomic_ullong counter{0};
-
   msg_task_t task        = new s_msg_task_t;
   /* Simulator Data */
   task->simdata = new simgrid::msg::Task(name ? name : "", flop_amount, message_size, data);
 
-  /* Task structure */
-  task->counter  = counter++;
-
   if (MC_is_active())
-    MC_ignore_heap(&(task->counter), sizeof(task->counter));
+    MC_ignore_heap(&(task->simdata->get_counter()), sizeof(long long int));
 
   return task;
 }

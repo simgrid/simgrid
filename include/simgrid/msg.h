@@ -241,7 +241,6 @@ typedef sg_msg_Comm* msg_comm_t;
 
 typedef struct msg_task {
   simdata_task_t simdata; /**< @brief simulator data */
-  long long int counter;  /* task unique identifier for instrumentation */
 } s_msg_task_t;
 
 /** @brief Task datatype.
