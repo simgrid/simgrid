@@ -61,7 +61,7 @@ static int commRX(int /*argc*/, char** /*argv*/)
   XBT_INFO("  Start RX");
   msg_error_t error = MSG_task_receive(&(task), mailbox);
   if (error == MSG_OK) {
-    XBT_INFO("  Receive message: %s", task->name);
+    XBT_INFO("  Receive message: %s", MSG_task_get_name(task));
     MSG_task_destroy(task);
   } else if (error == MSG_HOST_FAILURE) {
     XBT_INFO("  Receive message: HOST_FAILURE");

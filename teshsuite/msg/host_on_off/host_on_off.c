@@ -47,7 +47,7 @@ static int master(int argc, char *argv[])
   msg_host_t jupiter = MSG_host_by_name("Jupiter");
 
   msg_task_t task = MSG_task_create("task on", task_comp_size, task_comm_size, NULL);
-  XBT_INFO("Sending \"%s\"", task->name);
+  XBT_INFO("Sending \"%s\"", MSG_task_get_name(task));
   if (MSG_task_send_with_timeout(task, mailbox, 1) != MSG_OK)
     MSG_task_destroy(task);
 
@@ -55,7 +55,7 @@ static int master(int argc, char *argv[])
   MSG_host_off(jupiter);
 
   task = MSG_task_create("task off", task_comp_size, task_comm_size, NULL);
-  XBT_INFO("Sending \"%s\"", task->name);
+  XBT_INFO("Sending \"%s\"", MSG_task_get_name(task));
   if (MSG_task_send_with_timeout(task, mailbox, 1) != MSG_OK)
     MSG_task_destroy(task);
 
@@ -71,7 +71,7 @@ static int master(int argc, char *argv[])
   xbt_dynar_free(&jupi_processes);
 
   task = MSG_task_create("task on without proc", task_comp_size, task_comm_size, NULL);
-  XBT_INFO("Sending \"%s\"", task->name);
+  XBT_INFO("Sending \"%s\"", MSG_task_get_name(task));
   if (MSG_task_send_with_timeout(task, mailbox, 1) != MSG_OK)
     MSG_task_destroy(task);
 
@@ -80,12 +80,12 @@ static int master(int argc, char *argv[])
   MSG_process_create_with_arguments("slave", slave, NULL, MSG_host_by_name("Jupiter"), 1, argvF);
 
   task = MSG_task_create("task on with proc", task_comp_size, task_comm_size, NULL);
-  XBT_INFO("Sending \"%s\"", task->name);
+  XBT_INFO("Sending \"%s\"", MSG_task_get_name(task));
   if (MSG_task_send_with_timeout(task, mailbox, 1) != MSG_OK)
     MSG_task_destroy(task);
 
   task = MSG_task_create("finalize", 0, 0, 0);
-  XBT_INFO("Sending \"%s\"", task->name);
+  XBT_INFO("Sending \"%s\"", MSG_task_get_name(task));
   if (MSG_task_send_with_timeout(task, mailbox, 1) != MSG_OK)
     MSG_task_destroy(task);
 

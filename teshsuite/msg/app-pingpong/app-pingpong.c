@@ -29,7 +29,7 @@ static int pinger(int argc, char* argv[])
 
   double sender_time        = *((double*)(pong_task->data));
   double communication_time = MSG_get_clock() - sender_time;
-  XBT_INFO("Task received : %s", pong_task->name);
+  XBT_INFO("Task received : %s", MSG_task_get_name(pong_task));
   xbt_free(pong_task->data);
   MSG_task_destroy(pong_task);
   XBT_INFO("Pong time (bandwidth bound): %.3f", communication_time);
@@ -50,7 +50,7 @@ static int ponger(int argc, char* argv[])
 
   double sender_time        = *((double*)(ping_task->data));
   double communication_time = MSG_get_clock() - sender_time;
-  XBT_INFO("Task received : %s", ping_task->name);
+  XBT_INFO("Task received : %s", MSG_task_get_name(ping_task));
   xbt_free(ping_task->data);
   MSG_task_destroy(ping_task);
   XBT_INFO(" Ping time (latency bound) %f", communication_time);

@@ -22,7 +22,7 @@ static int relay_runner(int argc, char* argv[])
     snprintf(mailbox, 255, "%d", rank + 1);
     unsigned int task_comm_size = 1000000; /* The token is 1MB long*/
     msg_task_t task             = MSG_task_create("Token", 0, task_comm_size, NULL);
-    XBT_INFO("Host \"%d\" send '%s' to Host \"%s\"", rank, task->name, mailbox);
+    XBT_INFO("Host \"%d\" send '%s' to Host \"%s\"", rank, MSG_task_get_name(task), mailbox);
     MSG_task_send(task, mailbox);
     task    = NULL;
     int res = MSG_task_receive(&task, MSG_process_get_name(MSG_process_self()));
@@ -42,7 +42,7 @@ static int relay_runner(int argc, char* argv[])
       snprintf(mailbox, 255, "0");
     else
       snprintf(mailbox, 255, "%d", rank + 1);
-    XBT_INFO("Host \"%d\" send '%s' to Host \"%s\"", rank, task->name, mailbox);
+    XBT_INFO("Host \"%d\" send '%s' to Host \"%s\"", rank, MSG_task_get_name(task), mailbox);
     MSG_task_send(task, mailbox);
   }
   return 0;

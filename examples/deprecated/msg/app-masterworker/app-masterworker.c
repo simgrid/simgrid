@@ -28,7 +28,7 @@ static int master(int argc, char *argv[])
     snprintf(task_name,79, "Task_%d", i);
     msg_task_t task = MSG_task_create(task_name, comp_size, comm_size, NULL);   /* - Create a task */
     if (number_of_tasks < 10000 || i % 10000 == 0)
-      XBT_INFO("Sending \"%s\" (of %ld) to mailbox \"%s\"", task->name, number_of_tasks, mailbox);
+      XBT_INFO("Sending \"%s\" (of %ld) to mailbox \"%s\"", MSG_task_get_name(task), number_of_tasks, mailbox);
 
     MSG_task_send(task, mailbox); /* - Send the task to the @ref worker */
   }

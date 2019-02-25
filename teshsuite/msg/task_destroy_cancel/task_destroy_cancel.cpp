@@ -15,21 +15,21 @@ static int master(int /*argc*/, char* /*argv*/ [])
   double timeout = 1;
 
   msg_task_t task = MSG_task_create("normal", task_comp_size, task_comm_size, NULL);
-  XBT_INFO("Sending task: \"%s\"", task->name);
+  XBT_INFO("Sending task: \"%s\"", MSG_task_get_name(task));
   MSG_task_send_with_timeout(task, "worker_mailbox", timeout);
 
   task = MSG_task_create("cancel directly", task_comp_size, task_comm_size, NULL);
-  XBT_INFO("Canceling task \"%s\" directly", task->name);
+  XBT_INFO("Canceling task \"%s\" directly", MSG_task_get_name(task));
   MSG_task_cancel(task);
   MSG_task_destroy(task);
 
   task = MSG_task_create("destroy directly", task_comp_size, task_comm_size, NULL);
-  XBT_INFO("Destroying task \"%s\" directly", task->name);
+  XBT_INFO("Destroying task \"%s\" directly", MSG_task_get_name(task));
   MSG_task_destroy(task);
 
   task = MSG_task_create("cancel", task_comp_size, task_comm_size, NULL);
   msg_comm_t comm = MSG_task_isend(task, "worker_mailbox");
-  XBT_INFO("Canceling task \"%s\" during comm", task->name);
+  XBT_INFO("Canceling task \"%s\" during comm", MSG_task_get_name(task));
   MSG_task_cancel(task);
   if (MSG_comm_wait(comm, -1) != MSG_OK)
     MSG_comm_destroy(comm);
@@ -37,7 +37,7 @@ static int master(int /*argc*/, char* /*argv*/ [])
 
   task = MSG_task_create("finalize", task_comp_size, task_comm_size, NULL);
   comm = MSG_task_isend(task, "worker_mailbox");
-  XBT_INFO("Destroying task \"%s\" during comm", task->name);
+  XBT_INFO("Destroying task \"%s\" during comm", MSG_task_get_name(task));
   MSG_task_destroy(task);
   if (MSG_comm_wait(comm, -1) != MSG_OK)
     MSG_comm_destroy(comm);
@@ -56,7 +56,7 @@ static int worker_main(int /*argc*/, char* /*argv*/ [])
 {
   msg_task_t task = (msg_task_t) MSG_process_get_data(MSG_process_self());
   msg_error_t res;
-  XBT_INFO("Start %s", task->name);
+  XBT_INFO("Start %s", MSG_task_get_name(task));
   res = MSG_task_execute(task);
   XBT_INFO("Task %s", res == MSG_OK ? "done" : "failed");
   MSG_task_destroy(task);
@@ -72,7 +72,7 @@ static int worker(int /*argc*/, char* /*argv*/ [])
     XBT_INFO("Handling task \"%s\"", MSG_task_get_name(task));
 
     if (not strcmp(MSG_task_get_name(task), "finalize")) {
-      XBT_INFO("Destroying task \"%s\"", task->name);
+      XBT_INFO("Destroying task \"%s\"", MSG_task_get_name(task));
       MSG_task_destroy(task);
       break;
     }
@@ -80,7 +80,7 @@ static int worker(int /*argc*/, char* /*argv*/ [])
     if (not strcmp(MSG_task_get_name(task), "cancel")) {
       MSG_process_create("worker1", worker_main, task, MSG_host_self());
       MSG_process_sleep(0.1);
-      XBT_INFO("Canceling task \"%s\"", task->name);
+      XBT_INFO("Canceling task \"%s\"", MSG_task_get_name(task));
       MSG_task_cancel(task);
       continue;
     }

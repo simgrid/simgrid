@@ -19,14 +19,14 @@ static int seq_task(int /*argc*/, char* /*argv*/ [])
   msg_task_t task = MSG_task_create("simple", task_comp_size, task_comm_size, NULL);
   tasks.push_back(task);
 
-  XBT_INFO("get the progress of %s before the task starts", task->name);
+  XBT_INFO("get the progress of %s before the task starts", MSG_task_get_name(task));
   progress = MSG_task_get_remaining_work_ratio(task);
   xbt_assert(progress == 1.0, "Progress should be 1.0 not %f", progress);
 
-  XBT_INFO("Executing task: \"%s\"", task->name);
+  XBT_INFO("Executing task: \"%s\"", MSG_task_get_name(task));
   MSG_task_execute(task);
 
-  XBT_INFO("get the progress of %s after the task finishes", task->name);
+  XBT_INFO("get the progress of %s after the task finishes", MSG_task_get_name(task));
   progress = MSG_task_get_remaining_work_ratio(task);
   xbt_assert(progress == 0.0, "Progress should be equal to 0.0 not %f", progress);
 
@@ -48,14 +48,14 @@ static int par_task(int /*argc*/, char* /*argv*/ [])
   msg_task_t task = MSG_parallel_task_create("ptask", 2, hosts_to_use.data(), computation_amount, communication_amount, NULL);
   tasks.push_back(task);
 
-  XBT_INFO("get the progress of %s before the task starts", task->name);
+  XBT_INFO("get the progress of %s before the task starts", MSG_task_get_name(task));
   progress = MSG_task_get_remaining_work_ratio(task);
   xbt_assert(progress == 1.0, "Progress should be 1.0 not %f", progress);
 
-  XBT_INFO("Executing task: \"%s\"", task->name);
+  XBT_INFO("Executing task: \"%s\"", MSG_task_get_name(task));
   MSG_parallel_task_execute(task);
 
-  XBT_INFO("get the progress of %s after the task finishes", task->name);
+  XBT_INFO("get the progress of %s after the task finishes", MSG_task_get_name(task));
   progress = MSG_task_get_remaining_work_ratio(task);
   xbt_assert(progress == 0.0, "Progress should be equal to 0.0 not %f", progress);
 
@@ -80,7 +80,7 @@ static int get_progress(int /*argc*/, char* /*argv*/ [])
       progress = MSG_task_get_remaining_work_ratio(task);
       xbt_assert(progress >= 0 and progress < 1, "Progress should be in [0, 1[, and not %f", progress);
       xbt_assert(progress < progress_prev, "Progress should decrease, not increase");
-      XBT_INFO("Progress of \"%s\": %f", task->name, progress);
+      XBT_INFO("Progress of \"%s\": %f", MSG_task_get_name(task), progress);
       progress_prev = progress;
     }
   }
