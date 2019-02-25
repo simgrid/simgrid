@@ -67,13 +67,14 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
               std::move(task->simdata->get_name()), simdata->host_nb, simdata->host_list,
               simdata->flops_parallel_amount, simdata->bytes_parallel_amount, -1.0, timeout));
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute.get());
-      if (task->category != nullptr)
-        simgrid::simix::simcall([task] { task->simdata->compute->set_category(task->category); });
+      if (task->simdata->has_tracing_category())
+        simgrid::simix::simcall(
+            [task] { task->simdata->compute->set_category(std::move(task->simdata->get_tracing_category())); });
     } else {
       sg_host_t host   = MSG_process_get_host(MSG_process_self());
       simdata->compute = simgrid::simix::simcall([task, host] {
-        return simgrid::kernel::activity::ExecImplPtr(
-            new simgrid::kernel::activity::ExecImpl(std::move(task->simdata->get_name()), task->category ?: "", host));
+        return simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(
+            std::move(task->simdata->get_name()), std::move(task->simdata->get_tracing_category()), host));
       });
       /* checking for infinite values */
       xbt_assert(std::isfinite(simdata->flops_amount), "flops_amount is not finite!");
@@ -303,8 +304,9 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* al
     msg_comm = new simgrid::msg::Comm(task, nullptr, comm);
   }
 
-  if (TRACE_is_enabled() && task->category != nullptr)
-    simgrid::simix::simcall([comm, task] { comm->get_impl()->set_category(task->category); });
+  if (TRACE_is_enabled() && task->simdata->has_tracing_category())
+    simgrid::simix::simcall(
+        [comm, task] { comm->get_impl()->set_category(std::move(task->simdata->get_tracing_category())); });
 
   return msg_comm;
 }
@@ -740,8 +742,9 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
         simgrid::s4u::Mailbox::by_name(alias)->put_init(task, t_simdata->bytes_amount)->set_rate(t_simdata->rate);
     t_simdata->comm = comm;
     comm->start();
-    if (TRACE_is_enabled() && task->category != nullptr)
-      simgrid::simix::simcall([comm, task] { comm->get_impl()->set_category(task->category); });
+    if (TRACE_is_enabled() && task->simdata->has_tracing_category())
+      simgrid::simix::simcall(
+          [comm, task] { comm->get_impl()->set_category(std::move(task->simdata->get_tracing_category())); });
     comm->wait_for(timeout);
   } catch (simgrid::TimeoutError& e) {
     ret = MSG_TIMEOUT;
@@ -816,18 +819,18 @@ int MSG_task_listen_from(const char *alias)
  */
 void MSG_task_set_category (msg_task_t task, const char *category)
 {
-  xbt_assert(task->category == nullptr, "Task %p(%s) already has a category (%s).", task, task->simdata->get_cname(),
-             task->category);
+  xbt_assert(not task->simdata->has_tracing_category(), "Task %p(%s) already has a category (%s).", task,
+             task->simdata->get_cname(), task->simdata->get_tracing_category().c_str());
 
   // if user provides a nullptr category, task is no longer traced
   if (category == nullptr) {
-    xbt_free(task->category);
-    task->category = nullptr;
+    task->simdata->set_tracing_category("");
     XBT_DEBUG("MSG task %p(%s), category removed", task, task->simdata->get_cname());
   } else {
     // set task category
-    task->category = xbt_strdup(category);
-    XBT_DEBUG("MSG task %p(%s), category %s", task, task->simdata->get_cname(), task->category);
+    task->simdata->set_tracing_category(category);
+    XBT_DEBUG("MSG task %p(%s), category %s", task, task->simdata->get_cname(),
+              task->simdata->get_tracing_category().c_str());
   }
 }
 
@@ -842,5 +845,5 @@ void MSG_task_set_category (msg_task_t task, const char *category)
  */
 const char *MSG_task_get_category (msg_task_t task)
 {
-  return task->category;
+  return task->simdata->get_tracing_category().c_str();
 }

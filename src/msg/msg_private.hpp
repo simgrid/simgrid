@@ -15,7 +15,9 @@
 namespace simgrid {
 namespace msg {
 class Task {
-  std::string name_ = ""; /**< @brief task name if any */
+  std::string name_             = "";
+  std::string tracing_category_ = "";
+
 public:
   ~Task();
   explicit Task(std::string name, double flops_amount, double bytes_amount)
@@ -28,6 +30,9 @@ public:
   const std::string& get_name() const { return name_; }
   const char* get_cname() { return name_.c_str(); }
   void set_name(const char* new_name) { name_ = std::string(new_name); }
+  void set_tracing_category(const char* category) { tracing_category_ = category ? std::string(category) : ""; }
+  const std::string& get_tracing_category() { return tracing_category_; }
+  bool has_tracing_category() { return not tracing_category_.empty(); }
 
   kernel::activity::ExecImplPtr compute          = nullptr; /* SIMIX modeling of computation */
   s4u::CommPtr comm                              = nullptr; /* S4U modeling of communication */

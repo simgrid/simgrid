@@ -69,9 +69,7 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
 
   /* Task structure */
   task->data = data;
-
   task->counter  = counter++;
-  task->category = nullptr;
 
   if (MC_is_active())
     MC_ignore_heap(&(task->counter), sizeof(task->counter));
@@ -188,8 +186,6 @@ msg_error_t MSG_task_destroy(msg_task_t task)
     /* the task is being sent or executed: cancel it first */
     MSG_task_cancel(task);
   }
-
-  xbt_free(task->category);
 
   /* free main structures */
   delete task->simdata;

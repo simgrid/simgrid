@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_msg, instr, "MSG instrumentation");
 /* MSG_task_put related functions */
 void TRACE_msg_task_put_start(msg_task_t task)
 {
-  XBT_DEBUG("PUT,in %p, %lld, %s", task, task->counter, task->category);
+  XBT_DEBUG("PUT,in %p, %lld, %s", task, task->counter, task->simdata->get_tracing_category().c_str());
 
   if (TRACE_actor_is_enabled()) {
     container_t process_container = simgrid::instr::Container::by_name(instr_pid(MSG_process_self()));
