@@ -112,20 +112,21 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
     if (((action.get_remains() <= 0) && (action.get_variable()->get_weight() > 0)) ||
         ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(kernel::resource::Action::State::FINISHED);
-    } else {
-      /* Need to check that none of the model has failed */
-      int i = 0;
-      kernel::lmm::Constraint* cnst = action.get_variable()->get_constraint(i);
-      while (cnst != nullptr) {
-        i++;
-        void* constraint_id = cnst->get_id();
-        if (not static_cast<simgrid::kernel::resource::Resource*>(constraint_id)->is_on()) {
-          XBT_DEBUG("Action (%p) Failed!!", &action);
-          action.finish(kernel::resource::Action::State::FAILED);
-          break;
-        }
-        cnst = action.get_variable()->get_constraint(i);
+      continue;
+    }
+
+    /* Need to check that none of the model has failed */
+    int i                         = 0;
+    kernel::lmm::Constraint* cnst = action.get_variable()->get_constraint(i);
+    while (cnst != nullptr) {
+      i++;
+      void* constraint_id = cnst->get_id();
+      if (not static_cast<simgrid::kernel::resource::Resource*>(constraint_id)->is_on()) {
+        XBT_DEBUG("Action (%p) Failed!!", &action);
+        action.finish(kernel::resource::Action::State::FAILED);
+        break;
       }
+      cnst = action.get_variable()->get_constraint(i);
     }
   }
 }
@@ -146,33 +147,26 @@ L07Action::L07Action(kernel::resource::Model* model, size_t host_nb, s4u::Host* 
   double latency = 0.0;
   this->set_last_update();
 
-  this->hostList_.reserve(host_nb);
-  for (size_t i = 0; i < host_nb; i++)
-    this->hostList_.push_back(host_list[i]);
+  hostList_.insert(hostList_.end(), host_list, host_list + host_nb);
 
   if (flops_amount != nullptr)
-    for (size_t i = 0; i < host_nb; i++)
-      if (flops_amount[i] > 0)
-        used_host_nb++;
+    used_host_nb += std::count_if(flops_amount, flops_amount + host_nb, [](double x) { return x > 0.0; });
 
   /* Compute the number of affected resources... */
   if(bytes_amount != nullptr) {
     std::unordered_set<const char*> affected_links;
 
-    for (size_t i = 0; i < host_nb; i++) {
-      for (size_t j = 0; j < host_nb; j++) {
+    for (size_t k = 0; k < host_nb * host_nb; k++) {
+      if (bytes_amount[k] <= 0)
+        continue;
 
-        if (bytes_amount[i * host_nb + j] > 0) {
-          double lat=0.0;
+      double lat = 0.0;
+      std::vector<kernel::resource::LinkImpl*> route;
+      hostList_[k / host_nb]->route_to(hostList_[k % host_nb], route, &lat);
+      latency = std::max(latency, lat);
 
-          std::vector<kernel::resource::LinkImpl*> route;
-          hostList_.at(i)->route_to(hostList_.at(j), route, &lat);
-          latency = std::max(latency, lat);
-
-          for (auto const& link : route)
-            affected_links.insert(link->get_cname());
-        }
-      }
+      for (auto const& link : route)
+        affected_links.insert(link->get_cname());
     }
 
     link_nb = affected_links.size();
@@ -186,24 +180,21 @@ L07Action::L07Action(kernel::resource::Model* model, size_t host_nb, s4u::Host* 
   if (latency_ > 0)
     model->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
 
-  /* Expend it for the CPUs even if there is nothing to compute, to make sure that it gets expended even if there is no
+  /* Expand it for the CPUs even if there is nothing to compute, to make sure that it gets expended even if there is no
    * communication either */
   for (size_t i = 0; i < host_nb; i++)
     model->get_maxmin_system()->expand(host_list[i]->pimpl_cpu->get_constraint(), get_variable(),
                                        (flops_amount == nullptr ? 0.0 : flops_amount[i]));
 
   if (bytes_amount != nullptr) {
-    for (size_t i = 0; i < host_nb; i++) {
-      for (size_t j = 0; j < host_nb; j++) {
-        if (bytes_amount[i * host_nb + j] > 0.0) {
-          std::vector<kernel::resource::LinkImpl*> route;
-          hostList_.at(i)->route_to(hostList_.at(j), route, nullptr);
+    for (size_t k = 0; k < host_nb * host_nb; k++) {
+      if (bytes_amount[k] <= 0.0)
+        continue;
+      std::vector<kernel::resource::LinkImpl*> route;
+      hostList_[k / host_nb]->route_to(hostList_[k % host_nb], route, nullptr);
 
-          for (auto const& link : route)
-            model->get_maxmin_system()->expand_add(link->get_constraint(), this->get_variable(),
-                                                   bytes_amount[i * host_nb + j]);
-        }
-      }
+      for (auto const& link : route)
+        model->get_maxmin_system()->expand_add(link->get_constraint(), this->get_variable(), bytes_amount[k]);
     }
   }
 
