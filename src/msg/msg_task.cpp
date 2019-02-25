@@ -285,8 +285,6 @@ void MSG_task_set_priority(msg_task_t task, double priority)
 {
   task->simdata->priority = 1 / priority;
   xbt_assert(std::isfinite(task->simdata->priority), "priority is not finite!");
-  if (task->simdata->compute)
-    simgrid::simix::simcall([task] { task->simdata->compute->set_priority(task->simdata->priority); });
 }
 
 /** @brief Changes the maximum CPU utilization of a computation task (in flops/s).
@@ -297,8 +295,5 @@ void MSG_task_set_bound(msg_task_t task, double bound)
 {
   if (bound < 1e-12) /* close enough to 0 without any floating precision surprise */
     XBT_INFO("bound == 0 means no capping (i.e., unlimited).");
-
   task->simdata->bound = bound;
-  if (task->simdata->compute)
-    simgrid::simix::simcall([task, bound] { task->simdata->compute->set_bound(bound); });
 }
