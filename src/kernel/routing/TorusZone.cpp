@@ -15,17 +15,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_torus, surf_route_cluster, "Torus Routing part of surf");
 
-inline void rankId_to_coords(int rankId, std::vector<unsigned int> dimensions, unsigned int* coords)
-{
-  unsigned int dim_size_product = 1;
-  unsigned int i = 0;
-  for (auto const& cur_dim_size : dimensions) {
-    coords[i] = (rankId / dim_size_product) % cur_dim_size;
-    dim_size_product *= cur_dim_size;
-    i++;
-  }
-}
-
 namespace simgrid {
 namespace kernel {
 namespace routing {
@@ -41,8 +30,8 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
 
   for (unsigned int j = 0; j < dimensions_.size(); j++) {
     LinkCreationArgs link;
-    int current_dimension = dimensions_.at(j); // which dimension are we currently in?
-                                               // we need to iterate over all dimensions and create all links there
+    int current_dimension = dimensions_[j]; // which dimension are we currently in?
+                                            // we need to iterate over all dimensions and create all links there
     // The other node the link connects
     int neighbor_rank_id = ((static_cast<int>(rank) / dim_product) % current_dimension == current_dimension - 1)
                                ? rank - (current_dimension - 1) * dim_product
@@ -113,29 +102,36 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
    * Dimension based routing routes through each dimension consecutively
    * TODO Change to dynamic assignment
    */
-  unsigned int current_node = src->id();
-  unsigned int next_node    = 0;
+
   /*
    * Arrays that hold the coordinates of the current node andthe target; comparing the values at the i-th position of
    * both arrays, we can easily assess whether we need to route into this dimension or not.
    */
-  unsigned int myCoords[dimensions_.size()];
-  rankId_to_coords(src->id(), dimensions_, myCoords);
-  unsigned int targetCoords[dimensions_.size()];
-  rankId_to_coords(dst->id(), dimensions_, targetCoords);
+  const unsigned int dsize = dimensions_.size();
+  unsigned int myCoords[dsize];
+  unsigned int targetCoords[dsize];
+  unsigned int dim_size_product = 1;
+  for (unsigned i = 0; i < dsize; i++) {
+    unsigned cur_dim_size = dimensions_[i];
+    myCoords[i]           = (src->id() / dim_size_product) % cur_dim_size;
+    targetCoords[i]       = (dst->id() / dim_size_product) % cur_dim_size;
+    dim_size_product *= cur_dim_size;
+  }
+
   /*
    * linkOffset describes the offset where the link we want to use is stored(+1 is added because each node has a link
    * from itself to itself, which can only be the case if src->m_id == dst->m_id -- see above for this special case)
    */
-  int nodeOffset = (dimensions_.size() + 1) * src->id();
+  int nodeOffset = (dsize + 1) * src->id();
 
   int linkOffset  = nodeOffset;
-  bool use_lnk_up = false; // Is this link of the form "cur -> next" or "next -> cur"?
-  // false means: next -> cur
+  bool use_lnk_up = false; // Is this link of the form "cur -> next" or "next -> cur"? false means: next -> cur
+  unsigned int current_node = src->id();
   while (current_node != dst->id()) {
+    unsigned int next_node   = 0;
     unsigned int dim_product = 1; // First, we will route in x-dimension
-    int j=0;
-    for (auto const& cur_dim : dimensions_) {
+    for (unsigned j = 0; j < dsize; j++) {
+      const unsigned cur_dim = dimensions_[j];
       // current_node/dim_product = position in current dimension
       if ((current_node / dim_product) % cur_dim != (dst->id() / dim_product) % cur_dim) {
 
@@ -172,7 +168,6 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
         break;
       }
 
-      j++;
       dim_product *= cur_dim;
     }
 
@@ -184,18 +179,13 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
     }
 
     info = private_links_.at(linkOffset);
+    resource::LinkImpl* lnk = use_lnk_up ? info.first : info.second;
 
-    if (use_lnk_up == false) {
-      route->link_list.push_back(info.second);
-      if (lat)
-        *lat += info.second->get_latency();
-    } else {
-      route->link_list.push_back(info.first);
-      if (lat)
-        *lat += info.first->get_latency();
-    }
+    route->link_list.push_back(lnk);
+    if (lat)
+      *lat += lnk->get_latency();
+
     current_node = next_node;
-    next_node    = 0;
   }
 }
 }
