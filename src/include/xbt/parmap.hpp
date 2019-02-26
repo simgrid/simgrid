@@ -99,10 +99,10 @@ private:
   public:
     explicit PosixSynchro(Parmap<T>& parmap);
     ~PosixSynchro();
-    void master_signal();
-    void master_wait();
-    void worker_signal();
-    void worker_wait(unsigned round);
+    void master_signal() override;
+    void master_wait() override;
+    void worker_signal() override;
+    void worker_wait(unsigned round) override;
 
   private:
     std::condition_variable ready_cond;
@@ -115,10 +115,10 @@ private:
   class FutexSynchro : public Synchro {
   public:
     explicit FutexSynchro(Parmap<T>& parmap) : Synchro(parmap) {}
-    void master_signal();
-    void master_wait();
-    void worker_signal();
-    void worker_wait(unsigned);
+    void master_signal() override;
+    void master_wait() override;
+    void worker_signal() override;
+    void worker_wait(unsigned) override;
 
   private:
     static void futex_wait(std::atomic_uint* uaddr, unsigned val);
@@ -129,10 +129,10 @@ private:
   class BusyWaitSynchro : public Synchro {
   public:
     explicit BusyWaitSynchro(Parmap<T>& parmap) : Synchro(parmap) {}
-    void master_signal();
-    void master_wait();
-    void worker_signal();
-    void worker_wait(unsigned);
+    void master_signal() override;
+    void master_wait() override;
+    void worker_signal() override;
+    void worker_wait(unsigned) override;
   };
 
   static void* worker_main(void* arg);
