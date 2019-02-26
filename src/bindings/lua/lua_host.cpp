@@ -30,8 +30,7 @@ sg_host_t sglua_check_host(lua_State * L, int index)
   lua_getfield(L, index, HOST_FIELDNAME);
   sg_host_t *pi = (sg_host_t *) luaL_checkudata(L, lua_gettop(L), HOST_MODULE_NAME);
   lua_pop(L, 1);
-  if (pi == nullptr)
-    XBT_ERROR("luaL_checkudata() returned nullptr");
+  xbt_assert(pi != nullptr, "luaL_checkudata() returned nullptr");
   sg_host_t ht = *pi;
   if (not ht)
     luaL_error(L, "null Host");
