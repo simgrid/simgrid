@@ -6,7 +6,7 @@
 #include <mutex> /* std::mutex and std::lock_guard */
 #include "simgrid/s4u.hpp" /* All of S4U */
 
-#define NB_ACTOR 6
+constexpr int NB_ACTOR = 6;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 

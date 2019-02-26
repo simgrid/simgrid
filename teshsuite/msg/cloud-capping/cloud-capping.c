@@ -60,10 +60,9 @@ static int worker_busy_loop_main(int argc, char* argv[])
   return 0;
 }
 
-#define DOUBLE_MAX 1e11
-
 static void test_dynamic_change(void)
 {
+  const double DOUBLE_MAX = 1e11;
   msg_host_t pm0 = MSG_host_by_name("Fafard");
 
   msg_vm_t vm0 = MSG_vm_create_core(pm0, "VM0");

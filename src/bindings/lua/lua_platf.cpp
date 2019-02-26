@@ -24,8 +24,8 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(lua_platf, "Lua bindings (platform module)");
 
-#define PLATF_MODULE_NAME "simgrid.engine"
-#define AS_FIELDNAME   "__simgrid_as"
+constexpr char PLATF_MODULE_NAME[] = "simgrid.engine";
+constexpr char AS_FIELDNAME[]      = "__simgrid_as";
 
 /* ********************************************************************************* */
 /*                               simgrid.platf API                                   */

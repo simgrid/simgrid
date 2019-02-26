@@ -180,11 +180,11 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 }
 
 // Align functions, from http://stackoverflow.com/questions/4840410/how-to-align-a-pointer-in-c
-#define PAGE_SIZE 0x1000
 #define ALIGN_UP(n, align) (((n) + (align)-1) & -(align))
 #define ALIGN_DOWN(n, align) ((n) & -(align))
 
-#define HUGE_PAGE_SIZE 1<<21
+constexpr unsigned PAGE_SIZE      = 0x1000;
+constexpr unsigned HUGE_PAGE_SIZE = 1U << 21;
 
 /* Similar to smpi_shared_malloc, but only sharing the blocks described by shared_block_offsets.
  * This array contains the offsets (in bytes) of the block to share.

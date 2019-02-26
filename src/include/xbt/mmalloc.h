@@ -7,7 +7,7 @@
    This file was then part of the GNU C Library. */
 
 #ifndef SIMGRID_MMALLOC_H
-#define SIMGRID_MMALLOC_H 1
+#define SIMGRID_MMALLOC_H
 
 #include "src/internal_config.h"
 

@@ -30,11 +30,11 @@
 # ifndef MAC_OS_X_VERSION_10_12
 #   define MAC_OS_X_VERSION_10_12 101200
 # endif
-# define HAVE_WORKING_MMAP (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12)
+constexpr bool HAVE_WORKING_MMAP = (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12);
 #elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
-# define HAVE_WORKING_MMAP 0
+constexpr bool HAVE_WORKING_MMAP = false;
 #else
-# define HAVE_WORKING_MMAP 1
+constexpr bool HAVE_WORKING_MMAP = true;
 #endif
 
 #if SG_HAVE_SENDFILE
@@ -398,12 +398,10 @@ static void smpi_init_options(){
     XBT_DEBUG("Running without smpi_main(); disable smpi/privatization.");
     smpi_privatize_global_variables = SmpiPrivStrategies::NONE;
   }
-#if !HAVE_WORKING_MMAP
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
+  if (not HAVE_WORKING_MMAP && smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     XBT_INFO("mmap privatization is broken on this platform, switching to dlopen privatization instead.");
     smpi_privatize_global_variables = SmpiPrivStrategies::DLOPEN;
   }
-#endif
 
   if (smpi_cpu_threshold < 0)
     smpi_cpu_threshold = DBL_MAX;

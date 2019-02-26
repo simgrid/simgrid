@@ -14,15 +14,15 @@ namespace kademlia {
 /** @brief Initialization of a node routing table.  */
 RoutingTable::RoutingTable(unsigned int node_id) : id_(node_id)
 {
-  buckets = new Bucket*[identifier_size + 1];
-  for (unsigned int i = 0; i < identifier_size + 1; i++)
+  buckets = new Bucket*[IDENTIFIER_SIZE + 1];
+  for (unsigned int i = 0; i < IDENTIFIER_SIZE + 1; i++)
     buckets[i]        = new Bucket(i);
 }
 
 RoutingTable::~RoutingTable()
 {
   // Free the buckets.
-  for (unsigned int i = 0; i <= identifier_size; i++) {
+  for (unsigned int i = 0; i <= IDENTIFIER_SIZE; i++) {
     delete buckets[i];
   }
   delete[] buckets;
@@ -32,7 +32,7 @@ void RoutingTable::print()
 {
   XBT_INFO("Routing table of %08x:", id_);
 
-  for (unsigned int i = 0; i <= identifier_size; i++) {
+  for (unsigned int i = 0; i <= IDENTIFIER_SIZE; i++) {
     if (not buckets[i]->nodes.empty()) {
       XBT_INFO("Bucket number %u: ", i);
       int j = 0;
@@ -51,8 +51,8 @@ void RoutingTable::print()
 Bucket* RoutingTable::findBucket(unsigned int id)
 {
   unsigned int xor_number = id_ ^ id;
-  unsigned int prefix     = get_node_prefix(xor_number, identifier_size);
-  xbt_assert(prefix <= identifier_size, "Tried to return a  bucket that doesn't exist.");
+  unsigned int prefix     = get_node_prefix(xor_number, IDENTIFIER_SIZE);
+  xbt_assert(prefix <= IDENTIFIER_SIZE, "Tried to return a  bucket that doesn't exist.");
   return buckets[prefix];
 }
 

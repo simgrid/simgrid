@@ -10,23 +10,24 @@
 #include "smpi_keyvals.hpp"
 #include <string>
 
-#define DT_FLAG_DESTROYED     0x0001  /**< user destroyed but some other layers still have a reference */
-#define DT_FLAG_COMMITED      0x0002  /**< ready to be used for a send/recv operation */
-#define DT_FLAG_CONTIGUOUS    0x0004  /**< contiguous datatype */
-#define DT_FLAG_OVERLAP       0x0008  /**< datatype is unpropper for a recv operation */
-#define DT_FLAG_USER_LB       0x0010  /**< has a user defined LB */
-#define DT_FLAG_USER_UB       0x0020  /**< has a user defined UB */
-#define DT_FLAG_PREDEFINED    0x0040  /**< cannot be removed: initial and predefined datatypes */
-#define DT_FLAG_NO_GAPS       0x0080  /**< no gaps around the datatype */
-#define DT_FLAG_DATA          0x0100  /**< data or control structure */
-#define DT_FLAG_ONE_SIDED     0x0200  /**< datatype can be used for one sided operations */
-#define DT_FLAG_UNAVAILABLE   0x0400  /**< datatypes unavailable on the build (OS or compiler dependant) */
-#define DT_FLAG_DERIVED       0x0800  /**< is the datatype derived ? */
+constexpr unsigned DT_FLAG_DESTROYED   = 0x0001; /**< user destroyed but some other layers still have a reference */
+constexpr unsigned DT_FLAG_COMMITED    = 0x0002; /**< ready to be used for a send/recv operation */
+constexpr unsigned DT_FLAG_CONTIGUOUS  = 0x0004; /**< contiguous datatype */
+constexpr unsigned DT_FLAG_OVERLAP     = 0x0008; /**< datatype is unpropper for a recv operation */
+constexpr unsigned DT_FLAG_USER_LB     = 0x0010; /**< has a user defined LB */
+constexpr unsigned DT_FLAG_USER_UB     = 0x0020; /**< has a user defined UB */
+constexpr unsigned DT_FLAG_PREDEFINED  = 0x0040; /**< cannot be removed: initial and predefined datatypes */
+constexpr unsigned DT_FLAG_NO_GAPS     = 0x0080; /**< no gaps around the datatype */
+constexpr unsigned DT_FLAG_DATA        = 0x0100; /**< data or control structure */
+constexpr unsigned DT_FLAG_ONE_SIDED   = 0x0200; /**< datatype can be used for one sided operations */
+constexpr unsigned DT_FLAG_UNAVAILABLE = 0x0400; /**< datatypes unavailable on the build (OS or compiler dependant) */
+constexpr unsigned DT_FLAG_DERIVED     = 0x0800; /**< is the datatype derived ? */
 /*
  * We should make the difference here between the predefined contiguous and non contiguous
  * datatypes. The DT_FLAG_BASIC is held by all predefined contiguous datatypes.
  */
-#define DT_FLAG_BASIC      (DT_FLAG_PREDEFINED | DT_FLAG_CONTIGUOUS | DT_FLAG_NO_GAPS | DT_FLAG_DATA | DT_FLAG_COMMITED)
+constexpr unsigned DT_FLAG_BASIC =
+    (DT_FLAG_PREDEFINED | DT_FLAG_CONTIGUOUS | DT_FLAG_NO_GAPS | DT_FLAG_DATA | DT_FLAG_COMMITED);
 
 extern const MPI_Datatype MPI_PTR;
 

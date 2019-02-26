@@ -11,8 +11,6 @@
 #include "xbt/sysdep.h" /* time manipulation for benchmarking */
 #include "xbt/xbt_os_time.h"
 
-#define MYRANDMAX 1000
-
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -27,12 +25,13 @@ static int myrand() {
 
 static double float_random(double max)
 {
+  constexpr double MYRANDMAX = 1000.0;
   return ((max * myrand()) / (MYRANDMAX + 1.0));
 }
 
 static unsigned int int_random(int max)
 {
-  return static_cast<uint32_t>(((max * 1.0) * myrand()) / (MYRANDMAX + 1.0));
+  return static_cast<uint32_t>(float_random(max));
 }
 
 static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limit, unsigned int pw_max_limit,

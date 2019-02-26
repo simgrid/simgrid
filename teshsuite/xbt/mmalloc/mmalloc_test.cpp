@@ -17,8 +17,9 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,"this test");
 
-#define BUFFSIZE 204800
-#define TESTSIZE 100
+constexpr int BUFFSIZE = 204800;
+constexpr int TESTSIZE = 100;
+
 #define size_of_block(i) (((i % 50)+1)* 100)
 
 static void check_block(const void* s, int c, int n)

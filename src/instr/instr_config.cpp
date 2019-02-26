@@ -18,13 +18,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 
 std::ofstream tracing_file;
 
-#define OPT_TRACING_BASIC                "tracing/basic"
-#define OPT_TRACING_COMMENT_FILE         "tracing/comment-file"
-#define OPT_TRACING_DISABLE_DESTROY      "tracing/disable-destroy"
-#define OPT_TRACING_FORMAT_TI_ONEFILE    "tracing/smpi/format/ti-one-file"
-#define OPT_TRACING_SMPI_INTERNALS       "tracing/smpi/internals"
-#define OPT_TRACING_SMPI                 "tracing/smpi"
-#define OPT_TRACING_TOPOLOGY             "tracing/platform/topology"
+constexpr char OPT_TRACING_BASIC[]             = "tracing/basic";
+constexpr char OPT_TRACING_COMMENT_FILE[]      = "tracing/comment-file";
+constexpr char OPT_TRACING_DISABLE_DESTROY[]   = "tracing/disable-destroy";
+constexpr char OPT_TRACING_FORMAT_TI_ONEFILE[] = "tracing/smpi/format/ti-one-file";
+constexpr char OPT_TRACING_SMPI[]              = "tracing/smpi";
+constexpr char OPT_TRACING_TOPOLOGY[]          = "tracing/platform/topology";
 
 static simgrid::config::Flag<bool> trace_enabled{
     "tracing", "Enable the tracing system. You have to enable this option to use other tracing options.", false};

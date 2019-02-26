@@ -15,15 +15,15 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_bt_peer, "Messages specific for the peers");
  * User parameters for transferred file data. For the test, the default values are :
  * File size: 10 pieces * 5 blocks/piece * 16384 bytes/block = 819200 bytes
  */
-#define FILE_PIECES 10UL
-#define PIECES_BLOCKS 5UL
-#define BLOCK_SIZE 16384
+constexpr unsigned long FILE_PIECES   = 10UL;
+constexpr unsigned long PIECES_BLOCKS = 5UL;
+constexpr int BLOCK_SIZE              = 16384;
 
 /** Number of blocks asked by each request */
-#define BLOCKS_REQUESTED 2UL
+constexpr unsigned long BLOCKS_REQUESTED = 2UL;
 
-#define ENABLE_END_GAME_MODE 1
-#define SLEEP_DURATION 1
+constexpr bool ENABLE_END_GAME_MODE = true;
+constexpr double SLEEP_DURATION     = 1.0;
 #define BITS_TO_BYTES(x) (((x) / 8 + (x) % 8) ? 1 : 0)
 
 Peer::Peer(std::vector<std::string> args)
@@ -453,9 +453,8 @@ int Peer::selectPieceToDownload(Connection* remote_peer)
 
   // end game mode
   if (countPieces(current_pieces) >= (FILE_PIECES - countPieces(bitfield_)) && isInterestedBy(remote_peer)) {
-#if ENABLE_END_GAME_MODE == 0
-    return -1;
-#endif
+    if (not ENABLE_END_GAME_MODE)
+      return -1;
     int nb_interesting_pieces = 0;
     // compute the number of interesting pieces
     for (unsigned int i = 0; i < FILE_PIECES; i++)

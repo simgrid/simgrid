@@ -14,20 +14,20 @@ class Answer;
 class Message;
 }
 
-#define find_node_timeout 10
-#define find_node_global_timeout 50
+constexpr double FIND_NODE_TIMEOUT        = 10.0;
+constexpr double FIND_NODE_GLOBAL_TIMEOUT = 50.0;
 
-#define kademlia_alpha 3
-#define BUCKET_SIZE 20
+constexpr unsigned KADEMLIA_ALPHA = 3;
+constexpr unsigned BUCKET_SIZE    = 20;
 
-#define identifier_size 32
+constexpr int IDENTIFIER_SIZE = 32;
 
-#define random_lookup_interval 100
+constexpr double RANDOM_LOOKUP_INTERVAL = 100.0;
 
-#define MAX_STEPS 10
+constexpr unsigned MAX_STEPS = 10;
 
-#define JOIN_BUCKETS_QUERIES 5
+constexpr unsigned JOIN_BUCKETS_QUERIES = 5;
 
-#define RANDOM_LOOKUP_NODE 0
+constexpr unsigned RANDOM_LOOKUP_NODE = 0;
 
 #endif

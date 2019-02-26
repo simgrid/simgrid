@@ -6,9 +6,9 @@
 #include "simgrid/s4u.hpp"
 #include <vector>
 
-#define PIECE_SIZE 65536
-#define MESSAGE_BUILD_CHAIN_SIZE 40
-#define MESSAGE_SEND_DATA_HEADER_SIZE 1
+constexpr unsigned PIECE_SIZE                    = 65536;
+constexpr unsigned MESSAGE_BUILD_CHAIN_SIZE      = 40;
+constexpr unsigned MESSAGE_SEND_DATA_HEADER_SIZE = 1;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_chainsend, "Messages specific for chainsend");
 

@@ -15,9 +15,9 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(parmap_bench, "Bench for parmap");
 
-#define MODES_DEFAULT 0x7
-#define ARRAY_SIZE 10007
-#define FIBO_MAX 25
+constexpr unsigned MODES_DEFAULT = 0x7;
+constexpr unsigned ARRAY_SIZE    = 10007;
+constexpr unsigned FIBO_MAX      = 25;
 
 void (*fun_to_apply)(unsigned*);
 

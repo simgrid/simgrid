@@ -19,8 +19,6 @@
 
 SG_BEGIN_DECL()
 
-#define MAX_FILL_PERCENT 80
-
 typedef struct s_xbt_dict {
   void_f_pvoid_t free_f;
   xbt_dictelm_t *table;

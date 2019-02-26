@@ -11,8 +11,9 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(lua_host, "Lua Host module");
 
-#define HOST_MODULE_NAME "simgrid.host"
-#define HOST_FIELDNAME   "__simgrid_host"
+constexpr char HOST_MODULE_NAME[] = "simgrid.host";
+constexpr char HOST_FIELDNAME[]   = "__simgrid_host";
+
 /* ********************************************************************************* */
 /*                                simgrid.host API                                   */
 /* ********************************************************************************* */

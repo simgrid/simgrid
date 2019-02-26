@@ -19,6 +19,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt, "Dictionaries provide the same functionalities as hash tables");
 
+constexpr int MAX_FILL_PERCENT = 80;
+
 /**
  * @brief Constructor
  * @param free_ctn function to call with (@a data as argument) when @a data is removed from the dictionary

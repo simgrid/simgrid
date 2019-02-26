@@ -10,7 +10,7 @@
 
 #include "catch.hpp"
 
-#define NB_ELEM 5000
+constexpr int NB_ELEM = 5000;
 
 TEST_CASE("xbt::dynar: generic C vector", "dynar")
 {

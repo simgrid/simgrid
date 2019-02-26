@@ -13,35 +13,35 @@
 #include <unordered_map>
 #include <vector>
 
-#define MPI_REQ_PERSISTENT 0x1
-#define MPI_REQ_NON_PERSISTENT 0x2
-#define MPI_REQ_SEND 0x4
-#define MPI_REQ_RECV 0x8
-//#define MPI_REQ_RECV_DELETE 0x10
-#define MPI_REQ_ISEND 0x20
-#define MPI_REQ_SSEND 0x40
-#define MPI_REQ_PREPARED 0x80
-#define MPI_REQ_FINISHED 0x100
-#define MPI_REQ_RMA 0x200
-#define MPI_REQ_ACCUMULATE 0x400
+constexpr unsigned MPI_REQ_PERSISTENT     = 0x1;
+constexpr unsigned MPI_REQ_NON_PERSISTENT = 0x2;
+constexpr unsigned MPI_REQ_SEND           = 0x4;
+constexpr unsigned MPI_REQ_RECV           = 0x8;
+// constexpr unsigned MPI_REQ_RECV_DELETE    = 0x10;
+constexpr unsigned MPI_REQ_ISEND          = 0x20;
+constexpr unsigned MPI_REQ_SSEND          = 0x40;
+constexpr unsigned MPI_REQ_PREPARED       = 0x80;
+constexpr unsigned MPI_REQ_FINISHED       = 0x100;
+constexpr unsigned MPI_REQ_RMA            = 0x200;
+constexpr unsigned MPI_REQ_ACCUMULATE     = 0x400;
 
 enum class SmpiProcessState { UNINITIALIZED, INITIALIZING, INITIALIZED, FINALIZED };
 
-#define COLL_TAG_REDUCE -112
-#define COLL_TAG_SCATTER -223
-#define COLL_TAG_SCATTERV -334
-#define COLL_TAG_GATHER -445
-#define COLL_TAG_ALLGATHER -556
-#define COLL_TAG_ALLGATHERV -667
-#define COLL_TAG_BARRIER -778
-#define COLL_TAG_REDUCE_SCATTER -889
-#define COLL_TAG_ALLTOALLV -1000
-#define COLL_TAG_ALLTOALL -1112
-#define COLL_TAG_GATHERV -2223
-#define COLL_TAG_BCAST -3334
-#define COLL_TAG_ALLREDUCE -4445
+constexpr int COLL_TAG_REDUCE         = -112;
+constexpr int COLL_TAG_SCATTER        = -223;
+constexpr int COLL_TAG_SCATTERV       = -334;
+constexpr int COLL_TAG_GATHER         = -445;
+constexpr int COLL_TAG_ALLGATHER      = -556;
+constexpr int COLL_TAG_ALLGATHERV     = -667;
+constexpr int COLL_TAG_BARRIER        = -778;
+constexpr int COLL_TAG_REDUCE_SCATTER = -889;
+constexpr int COLL_TAG_ALLTOALLV      = -1000;
+constexpr int COLL_TAG_ALLTOALL       = -1112;
+constexpr int COLL_TAG_GATHERV        = -2223;
+constexpr int COLL_TAG_BCAST          = -3334;
+constexpr int COLL_TAG_ALLREDUCE      = -4445;
 // SMPI_RMA_TAG has to be the smallest one, as it will be decremented for accumulate ordering.
-#define SMPI_RMA_TAG -6666
+constexpr int SMPI_RMA_TAG            = -6666;
 
 /* Convert between Fortran and C */
 

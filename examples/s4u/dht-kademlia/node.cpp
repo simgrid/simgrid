@@ -58,13 +58,13 @@ bool Node::join(unsigned int known_id)
 
   /* Second step: Send a FIND_NODE to a a random node in buckets */
   unsigned int bucket_id = table->findBucket(known_id)->getId();
-  xbt_assert(bucket_id <= identifier_size);
-  for (i = 0; ((bucket_id > i) || (bucket_id + i) <= identifier_size) && i < JOIN_BUCKETS_QUERIES; i++) {
+  xbt_assert(bucket_id <= IDENTIFIER_SIZE);
+  for (i = 0; ((bucket_id > i) || (bucket_id + i) <= IDENTIFIER_SIZE) && i < JOIN_BUCKETS_QUERIES; i++) {
     if (bucket_id > i) {
       unsigned int id_in_bucket = get_id_in_prefix(id_, bucket_id - i);
       findNode(id_in_bucket, false);
     }
-    if (bucket_id + i <= identifier_size) {
+    if (bucket_id + i <= IDENTIFIER_SIZE) {
       unsigned int id_in_bucket = get_id_in_prefix(id_, bucket_id + i);
       findNode(id_in_bucket, false);
     }
@@ -90,7 +90,7 @@ void Node::sendFindNode(unsigned int id, unsigned int destination)
 }
 
 /**
-  * Sends to the best "kademlia_alpha" nodes in the "node_list" array a "FIND_NODE" request, to ask them for their best
+  * Sends to the best "KADEMLIA_ALPHA" nodes in the "node_list" array a "FIND_NODE" request, to ask them for their best
   * nodes
   */
 unsigned int Node::sendFindNodeToBest(Answer* node_list)
@@ -99,14 +99,14 @@ unsigned int Node::sendFindNodeToBest(Answer* node_list)
   unsigned int j           = 0;
   unsigned int destination = node_list->getDestinationId();
   for (auto node_to_query : node_list->nodes) {
-    /* We need to have at most "kademlia_alpha" requests each time, according to the protocol */
+    /* We need to have at most "KADEMLIA_ALPHA" requests each time, according to the protocol */
     /* Gets the node we want to send the query to */
     if (node_to_query.first != id_) { /* No need to query ourselves */
       sendFindNode(node_to_query.first, destination);
       j++;
     }
     i++;
-    if (j == kademlia_alpha)
+    if (j == KADEMLIA_ALPHA)
       break;
   }
   return i;
@@ -148,26 +148,26 @@ Answer* Node::findClosest(unsigned int destination_id)
   /* We find the corresponding bucket for the id */
   Bucket* bucket = table->findBucket(destination_id);
   int bucket_id  = bucket->getId();
-  xbt_assert((bucket_id <= identifier_size), "Bucket found has a wrong identifier");
+  xbt_assert((bucket_id <= IDENTIFIER_SIZE), "Bucket found has a wrong identifier");
   /* So, we copy the contents of the bucket unsigned into our answer */
   answer->addBucket(bucket);
 
-  /* However, if we don't have enough elements in our bucket, we NEED to include at least "bucket_size" elements
-   * (if, of course, we know at least "bucket_size" elements. So we're going to look unsigned into the other buckets.
+  /* However, if we don't have enough elements in our bucket, we NEED to include at least "BUCKET_SIZE" elements
+   * (if, of course, we know at least "BUCKET_SIZE" elements. So we're going to look unsigned into the other buckets.
    */
-  for (int i = 1; answer->getSize() < BUCKET_SIZE && ((bucket_id - i > 0) || (bucket_id + i < identifier_size)); i++) {
+  for (int i = 1; answer->getSize() < BUCKET_SIZE && ((bucket_id - i > 0) || (bucket_id + i < IDENTIFIER_SIZE)); i++) {
     /* We check the previous buckets */
     if (bucket_id - i >= 0) {
       Bucket* bucket_p = table->buckets[bucket_id - i];
       answer->addBucket(bucket_p);
     }
     /* We check the next buckets */
-    if (bucket_id + i <= identifier_size) {
+    if (bucket_id + i <= IDENTIFIER_SIZE) {
       Bucket* bucket_n = table->buckets[bucket_id + i];
       answer->addBucket(bucket_n);
     }
   }
-  /* We trim the array to have only bucket_size or less elements */
+  /* We trim the array to have only BUCKET_SIZE or less elements */
   std::sort(answer->nodes.begin(), answer->nodes.end(), sortbydistance);
   answer->trim();
 
@@ -183,7 +183,7 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
   unsigned int answers;
   bool destination_found   = false;
   unsigned int nodes_added = 0;
-  double global_timeout    = simgrid::s4u::Engine::get_clock() + find_node_global_timeout;
+  double global_timeout    = simgrid::s4u::Engine::get_clock() + FIND_NODE_GLOBAL_TIMEOUT;
   unsigned int steps       = 0;
 
   /* First we build a list of who we already know */
@@ -196,7 +196,7 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
     answers        = 0;
     queries        = sendFindNodeToBest(node_list);
     nodes_added    = 0;
-    double timeout = simgrid::s4u::Engine::get_clock() + find_node_timeout;
+    double timeout = simgrid::s4u::Engine::get_clock() + FIND_NODE_TIMEOUT;
     steps++;
     double time_beginreceive = simgrid::s4u::Engine::get_clock();
 

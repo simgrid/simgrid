@@ -40,7 +40,7 @@ static int node(int argc, char* argv[])
   if (join_success) {
     XBT_VERB("Ok, I'm joining the network with id %u", node->getId());
     // We start the main loop
-    double next_lookup_time = simgrid::s4u::Engine::get_clock() + random_lookup_interval;
+    double next_lookup_time = simgrid::s4u::Engine::get_clock() + RANDOM_LOOKUP_INTERVAL;
 
     XBT_VERB("Main loop start");
 
@@ -64,7 +64,7 @@ static int node(int argc, char* argv[])
         /* We search for a pseudo random node */
         if (simgrid::s4u::Engine::get_clock() >= next_lookup_time) {
           node->randomLookup();
-          next_lookup_time += random_lookup_interval;
+          next_lookup_time += RANDOM_LOOKUP_INTERVAL;
         } else {
           // Didn't get a message: sleep for a while...
           simgrid::s4u::this_actor::sleep_for(1);

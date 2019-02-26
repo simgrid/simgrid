@@ -10,12 +10,12 @@
 #include <xbt/RngStream.h>
 #include <xbt/str.h>
 
-#define MAX_SIMULATION_TIME 1000
-#define PERIODIC_STABILIZE_DELAY 20
-#define PERIODIC_FIX_FINGERS_DELAY 120
-#define PERIODIC_CHECK_PREDECESSOR_DELAY 120
-#define PERIODIC_LOOKUP_DELAY 10
-#define SLEEP_DELAY 4.9999
+constexpr double MAX_SIMULATION_TIME              = 1000;
+constexpr double PERIODIC_STABILIZE_DELAY         = 20;
+constexpr double PERIODIC_FIX_FINGERS_DELAY       = 120;
+constexpr double PERIODIC_CHECK_PREDECESSOR_DELAY = 120;
+constexpr double PERIODIC_LOOKUP_DELAY            = 10;
+constexpr double SLEEP_DELAY                      = 4.9999;
 
 extern int nb_bits;
 extern int nb_keys;

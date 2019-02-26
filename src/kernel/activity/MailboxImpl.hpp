@@ -13,7 +13,6 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/simix/ActorImpl.hpp"
 
-#define MAX_MAILBOX_SIZE 10000000
 namespace simgrid {
 namespace kernel {
 namespace activity {
@@ -21,6 +20,8 @@ namespace activity {
 /** @brief Implementation of the simgrid::s4u::Mailbox */
 
 class MailboxImpl {
+  static constexpr size_t MAX_MAILBOX_SIZE = 10000000;
+
   friend s4u::Mailbox;
   friend s4u::MailboxPtr s4u::Mailbox::by_name(const std::string& name);
   friend mc::CommunicationDeterminismChecker;

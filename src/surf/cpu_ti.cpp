@@ -8,7 +8,7 @@
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
-#define EPSILON 0.000000001
+constexpr double EPSILON = 0.000000001;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf_cpu, "Logging specific to the SURF CPU TRACE INTEGRATION module");
 

@@ -10,33 +10,33 @@
 #include <simgrid/s4u.hpp>
 #include <xbt/RngStream.h>
 
-#define TRACKER_MAILBOX "tracker_mailbox"
+constexpr char TRACKER_MAILBOX[] = "tracker_mailbox";
 /** Max number of peers sent by the tracker to clients */
-#define MAXIMUM_PEERS 50
+constexpr int MAXIMUM_PEERS = 50;
 /** Interval of time where the peer should send a request to the tracker */
-#define TRACKER_QUERY_INTERVAL 1000
+constexpr int TRACKER_QUERY_INTERVAL = 1000;
 /** Communication size for a task to the tracker */
-#define TRACKER_COMM_SIZE 1
-#define GET_PEERS_TIMEOUT 10000
+constexpr unsigned TRACKER_COMM_SIZE = 1;
+constexpr double GET_PEERS_TIMEOUT   = 10000.0;
 /** Number of peers that can be unchocked at a given time */
-#define MAX_UNCHOKED_PEERS 4
+constexpr int MAX_UNCHOKED_PEERS = 4;
 /** Interval between each update of the choked peers */
-#define UPDATE_CHOKED_INTERVAL 30
+constexpr int UPDATE_CHOKED_INTERVAL = 30;
 
 /** Message sizes
  * Sizes based on report by A. Legout et al, Understanding BitTorrent: An Experimental Perspective
  * http://hal.inria.fr/inria-00000156/en
  */
-#define MESSAGE_HANDSHAKE_SIZE 68
-#define MESSAGE_CHOKE_SIZE 5
-#define MESSAGE_UNCHOKE_SIZE 5
-#define MESSAGE_INTERESTED_SIZE 5
-#define MESSAGE_NOTINTERESTED_SIZE 5
-#define MESSAGE_HAVE_SIZE 9
-#define MESSAGE_BITFIELD_SIZE 5
-#define MESSAGE_REQUEST_SIZE 17
-#define MESSAGE_PIECE_SIZE 13
-#define MESSAGE_CANCEL_SIZE 17
+constexpr unsigned MESSAGE_HANDSHAKE_SIZE     = 68;
+constexpr unsigned MESSAGE_CHOKE_SIZE         = 5;
+constexpr unsigned MESSAGE_UNCHOKE_SIZE       = 5;
+constexpr unsigned MESSAGE_INTERESTED_SIZE    = 5;
+constexpr unsigned MESSAGE_NOTINTERESTED_SIZE = 5;
+constexpr unsigned MESSAGE_HAVE_SIZE          = 9;
+constexpr unsigned MESSAGE_BITFIELD_SIZE      = 5;
+constexpr unsigned MESSAGE_REQUEST_SIZE       = 17;
+constexpr unsigned MESSAGE_PIECE_SIZE         = 13;
+constexpr unsigned MESSAGE_CANCEL_SIZE        = 17;
 
 /** Types of messages exchanged between two peers. */
 enum e_message_type {
