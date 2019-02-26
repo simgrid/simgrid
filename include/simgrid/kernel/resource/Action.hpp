@@ -42,7 +42,6 @@ public:
   void update(Action* action, double date, ActionHeap::Type type);
   void remove(Action* action);
   Action* pop();
-  bool empty() const { return heap_type::empty(); }
 };
 
 /** @details An action is a consumption on a resource (e.g.: a communication for the network).
