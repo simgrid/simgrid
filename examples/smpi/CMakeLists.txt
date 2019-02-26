@@ -5,7 +5,7 @@ if(enable_smpi)
 
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/mc/")
 
-  foreach(x replay ampi_test trace trace_simple trace_call_location energy)
+  foreach(x replay ampi_test trace trace_simple trace_call_location energy gemm)
     add_executable       (smpi_${x} EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x})
     target_link_libraries(smpi_${x} simgrid)
     set_target_properties(smpi_${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -28,7 +28,7 @@ endif()
 foreach(x ampi_test replay)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
 endforeach()
-foreach(x trace trace_simple trace_call_location energy)
+foreach(x trace trace_simple trace_call_location energy gemm)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
 endforeach()
 foreach(x bugged1 bugged2 bugged1_liveness only_send_deterministic mutual_exclusion non_termination1
@@ -39,6 +39,7 @@ endforeach()
 set(examples_src  ${examples_src}                                                                          PARENT_SCOPE)
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/energy/energy.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace/trace.tesh
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/gemm/gemm.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_simple/trace_simple.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_call_location/trace_call_location.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/ampi_test/ampi_test.tesh
@@ -78,6 +79,7 @@ if(enable_smpi)
   ADD_TESH(smpi-tracing-call-location --setenv bindir=${CMAKE_BINARY_DIR}/examples/smpi/trace_call_location --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/trace_call_location ${CMAKE_HOME_DIRECTORY}/examples/smpi/trace_call_location/trace_call_location.tesh)
   ADD_TESH(smpi-replay         --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/replay.tesh)
   ADD_TESH(smpi-replay-override-replayer --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/replay-override-replayer.tesh)
+  ADD_TESH(smpi-gemm        --setenv bindir=${CMAKE_BINARY_DIR}/examples/smpi/gemm --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/gemm --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/gemm ${CMAKE_HOME_DIRECTORY}/examples/smpi/gemm/gemm.tesh)
   ADD_TESH_FACTORIES(smpi-energy "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/smpi/energy --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/energy --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/bin --cd ${CMAKE_BINARY_DIR}/examples/smpi/energy ${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/energy.tesh)
 
   ADD_TESH(smpi-ampi --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/ampi_test/ampi_test.tesh)
