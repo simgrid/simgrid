@@ -13,9 +13,6 @@
 #ifndef VM_INTERFACE_HPP_
 #define VM_INTERFACE_HPP_
 
-#define GUESTOS_NOISE 100 // This value corresponds to the cost of the global action associated to the VM
-                          // It corresponds to the cost of a VM running no tasks.
-
 namespace simgrid {
 namespace vm {
 

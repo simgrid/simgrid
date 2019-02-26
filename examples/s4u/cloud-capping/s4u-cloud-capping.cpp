@@ -32,11 +32,10 @@ static void worker(double computation_amount, bool use_bound, double bound)
     XBT_INFO("not bound => duration %f (%f flops/s)", duration, flops_per_sec);
 }
 
-#define DOUBLE_MAX 1e11
 static void worker_busy_loop(const char* name, double speed)
 {
-  simgrid::s4u::ExecPtr exec = simgrid::s4u::this_actor::exec_async(DOUBLE_MAX);
-  double exec_remain_prev    = DOUBLE_MAX;
+  double exec_remain_prev    = 1e11;
+  simgrid::s4u::ExecPtr exec = simgrid::s4u::this_actor::exec_async(exec_remain_prev);
   for (int i = 0; i < 10; i++) {
     if (speed > 0) {
       double new_bound = (speed / 10) * i;

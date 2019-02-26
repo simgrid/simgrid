@@ -10,7 +10,6 @@
 #include <simgrid/s4u.hpp>
 #include <xbt/RngStream.h>
 
-#define MAILBOX_SIZE 40
 #define TRACKER_MAILBOX "tracker_mailbox"
 /** Max number of peers sent by the tracker to clients */
 #define MAXIMUM_PEERS 50
@@ -19,14 +18,10 @@
 /** Communication size for a task to the tracker */
 #define TRACKER_COMM_SIZE 1
 #define GET_PEERS_TIMEOUT 10000
-#define TIMEOUT_MESSAGE 10
-#define TRACKER_RECEIVE_TIMEOUT 10
 /** Number of peers that can be unchocked at a given time */
 #define MAX_UNCHOKED_PEERS 4
 /** Interval between each update of the choked peers */
 #define UPDATE_CHOKED_INTERVAL 30
-/** Number of pieces the peer asks for simultaneously */
-#define MAX_PIECES 1
 
 /** Message sizes
  * Sizes based on report by A. Legout et al, Understanding BitTorrent: An Experimental Perspective

@@ -145,7 +145,10 @@ VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, sim
   allVms_.push_back(piface);
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
-  /* TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
+  /* TODO: we have to periodically input GUESTOS_NOISE to the system? how ?
+   * The value for GUESTOS_NOISE corresponds to the cost of the global action associated to the VM.  It corresponds to
+   * the cost of a VM running no tasks.
+   */
   action_ = host_PM->pimpl_cpu->execution_start(0, core_amount);
 
   // It's empty for now, so it should not request resources in the PM

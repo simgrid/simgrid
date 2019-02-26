@@ -8,8 +8,6 @@
 #define _KADEMLIA_EXAMPLES_COMMON
 #define max_join_trials 4
 
-#define RECEIVE_TIMEOUT 1
-
 #define find_node_timeout 10
 #define find_node_global_timeout 50
 
@@ -17,7 +15,6 @@
 #define bucket_size 20
 
 #define identifier_size 32
-#define max_answers_to_ask 20
 
 #define random_lookup_interval 100
 
