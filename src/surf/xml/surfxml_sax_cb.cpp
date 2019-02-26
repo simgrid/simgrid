@@ -88,7 +88,6 @@ double surf_parse_get_double(const std::string& s)
     return std::stod(s);
   } catch (std::invalid_argument& ia) {
     surf_parse_error(s + " is not a double");
-    return -1;
   }
 }
 
@@ -98,7 +97,6 @@ int surf_parse_get_int(const std::string& s)
     return std::stoi(s);
   } catch (std::invalid_argument& ia) {
     surf_parse_error(s + " is not a double");
-    return -1;
   }
 }
 
@@ -127,7 +125,6 @@ std::vector<int>* explodesRadical(const std::string& radicals)
         break;
       default:
         surf_parse_error(std::string("Malformed radical: ") + group);
-        break;
     }
     for (int i = start; i <= end; i++)
       exploded->push_back(i);
@@ -499,7 +496,6 @@ void ETag_surfxml_cluster(){
     break;
   default:
     surf_parse_error(std::string("Invalid cluster topology for cluster ") + cluster.id);
-    break;
   }
   cluster.topo_parameters = A_surfxml_cluster_topo___parameters;
   cluster.router_id = A_surfxml_cluster_router___id;
@@ -520,7 +516,6 @@ void ETag_surfxml_cluster(){
     break;
   default:
     surf_parse_error(std::string("Invalid cluster sharing policy for cluster ") + cluster.id);
-    break;
   }
   switch (AX_surfxml_cluster_bb___sharing___policy) {
   case A_surfxml_cluster_bb___sharing___policy_FATPIPE:
@@ -531,7 +526,6 @@ void ETag_surfxml_cluster(){
     break;
   default:
     surf_parse_error(std::string("Invalid bb sharing policy in cluster ") + cluster.id);
-    break;
   }
 
   sg_platf_new_cluster(&cluster);
@@ -621,7 +615,6 @@ void ETag_surfxml_link(){
     break;
   default:
     surf_parse_error(std::string("Invalid sharing policy in link ") + link.id);
-    break;
   }
 
   sg_platf_new_link(&link);
@@ -643,7 +636,6 @@ void STag_surfxml_link___ctn()
     break;
   default:
     surf_parse_error(std::string("Invalid direction for link ") + A_surfxml_link___ctn_id);
-    break;
   }
 
   const char* dirname = "";
@@ -836,7 +828,6 @@ void STag_surfxml_trace___connect()
     break;
   default:
     surf_parse_error("Invalid trace kind");
-    break;
   }
   sg_platf_trace_connect(&trace_connect);
 }
@@ -950,7 +941,6 @@ void ETag_surfxml_actor()
     break;
   default:
     surf_parse_error("Invalid on failure behavior");
-    break;
   }
 
   sg_platf_new_actor(&actor);

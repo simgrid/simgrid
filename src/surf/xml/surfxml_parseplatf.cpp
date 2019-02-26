@@ -55,7 +55,6 @@ void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* 
     default:
       surf_parse_error(std::string("Cannot connect trace ") + trace_connect->trace + " to " + trace_connect->element +
                        ": unknown kind of trace");
-      break;
   }
 }
 

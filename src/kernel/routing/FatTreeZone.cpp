@@ -247,7 +247,6 @@ void FatTreeZone::generate_switches()
     surf_parse_error(std::string("The number of provided nodes does not fit with the wanted topology.") +
                      " Please check your platform description (We need " + std::to_string(this->nodes_by_level_[0]) +
                      "nodes, we got " + std::to_string(this->nodes_.size()));
-    return;
   }
 
   for (unsigned int i = 0; i < this->levels_; i++) {
