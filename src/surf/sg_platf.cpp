@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/kernel/routing/ClusterZone.hpp"
 #include "simgrid/kernel/routing/DijkstraZone.hpp"
 #include "simgrid/kernel/routing/DragonflyZone.hpp"
@@ -463,9 +464,13 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
   } else {                      // start_time <= SIMIX_get_clock()
     XBT_DEBUG("Starting Process %s(%s) right now", arg->name.c_str(), host->get_cname());
 
-    simgrid::kernel::actor::ActorImplPtr actor = simgrid::kernel::actor::ActorImpl::create(
-        arg->name.c_str(), std::move(code), nullptr, host, arg->properties.get(), nullptr);
-
+    simgrid::kernel::actor::ActorImplPtr actor = nullptr;
+    try {
+      actor = simgrid::kernel::actor::ActorImpl::create(arg->name.c_str(), std::move(code), nullptr, host,
+                                                        arg->properties.get(), nullptr);
+    } catch (simgrid::HostFailureException const&) {
+      XBT_WARN("Deployment include some initially turned off Hosts, nevermind.");
+    }
     /* The actor creation will fail if the host is currently dead, but that's fine */
     if (actor != nullptr) {
       if (arg->kill_time >= 0)

@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg_private.hpp"
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/simix/ActorImpl.hpp"
@@ -82,20 +83,25 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
   xbt_dict_free(&properties);
 
   smx_actor_t self    = SIMIX_process_self();
-  smx_actor_t process = simgrid::simix::simcall([name, function, data, host, &props, self] {
-    return simgrid::kernel::actor::ActorImpl::create(std::move(name), std::move(function), data, host, &props, self)
-        .get();
-  });
+  smx_actor_t actor   = nullptr;
+  try {
+    actor = simgrid::simix::simcall([name, function, data, host, &props, self] {
+      return simgrid::kernel::actor::ActorImpl::create(std::move(name), std::move(function), data, host, &props, self)
+          .get();
+    });
+  } catch (simgrid::HostFailureException const&) {
+    XBT_DEBUG("The warning has already been issued. Do nothing more than catching the exception.");
+  }
 
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
   xbt_free(argv);
 
-  if (process == nullptr)
+  if (actor == nullptr)
     return nullptr;
 
   MSG_process_yield();
-  return process->ciface();
+  return actor->ciface();
 }
 
 /** @brief Returns the user data of a process.

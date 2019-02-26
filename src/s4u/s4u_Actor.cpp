@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/actor.h"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Exec.hpp"
@@ -663,9 +664,13 @@ sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host, xbt_dic
   xbt_dict_free(&properties);
 
   /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
-  smx_actor_t actor = simgrid::kernel::actor::ActorImpl::attach(name, data, host, &props).get();
-  if (not actor)
+  smx_actor_t actor = nullptr;
+  try {
+    actor = simgrid::kernel::actor::ActorImpl::attach(name, data, host, &props).get();
+  } catch (simgrid::HostFailureException const&) {
     xbt_die("Could not attach");
+  }
+
   simgrid::s4u::this_actor::yield();
   return actor->ciface();
 }
