@@ -953,9 +953,9 @@ XBT_ATTRIB_DEPRECATED_v324("Please use sg_host_get_consumed_energy(sg_host_self(
 XBT_PUBLIC unsigned long long smpi_rastro_resolution();
 XBT_PUBLIC unsigned long long smpi_rastro_timestamp();
 XBT_PUBLIC void smpi_sample_1(int global, const char* file, int line, int iters, double threshold);
-XBT_PUBLIC int smpi_sample_2(int global, const char* file, int line);
+XBT_PUBLIC int smpi_sample_2(int global, const char* file, int line, int iter_count);
 XBT_PUBLIC void smpi_sample_3(int global, const char* file, int line);
-XBT_PUBLIC void smpi_sample_exit(int global, const char* file, int line);
+XBT_PUBLIC int smpi_sample_exit(int global, const char* file, int line, int iter_count);
 /**
  * Need a public setter for SMPI copy_callback function, so users can define
  * their own while still using default SIMIX_copy_callback for S4U copies.
@@ -973,25 +973,21 @@ XBT_PUBLIC void smpi_trace_set_call_location_(const char* file, int* line);
 /** Fortran binding + -fsecond-underscore **/
 XBT_PUBLIC void smpi_trace_set_call_location__(const char* file, int* line);
 
-#define SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, global, iters, thres, loop_body)                                                                         \
-  {\
-    loop_init;\
-    for (;;){\
-      if(!(loop_end)) {\
-        smpi_sample_exit(global, __FILE__, __LINE__);\
-        break;\
-      }\
-      for (smpi_sample_1(global, __FILE__, __LINE__, iters, thres); smpi_sample_2(global, __FILE__, __LINE__);             \
-         smpi_sample_3(global, __FILE__, __LINE__)){\
-        loop_body\
-      }\
-      loop_iter;\
-    }\
-  }
-
-#define SMPI_SAMPLE_LOCAL(loop_init, loop_end, loop_iter, iters, thres, loop_body) SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, 0, iters, thres, loop_body)
-#define SMPI_SAMPLE_GLOBAL(loop_init, loop_end, loop_iter,iters, thres, loop_body) SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, 1, iters, thres, loop_body)
-
+#define SMPI_ITER_NAME1(line) iter_count##line
+#define SMPI_ITER_NAME(line) SMPI_ITER_NAME1(line)
+#define SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, global, iters, thres)\
+  int SMPI_ITER_NAME(__LINE__)=0;\
+  {loop_init;\
+  while(loop_end){\
+    SMPI_ITER_NAME(__LINE__)++;\
+    loop_iter;\
+  }}                                                                         \
+  for(loop_init; \
+      loop_end ? (smpi_sample_1(global, __FILE__, __LINE__, iters, thres), (smpi_sample_2(global, __FILE__, __LINE__, SMPI_ITER_NAME(__LINE__)))) :\
+      smpi_sample_exit(global, __FILE__, __LINE__, SMPI_ITER_NAME(__LINE__));\
+      smpi_sample_3(global, __FILE__, __LINE__),loop_iter)
+#define SMPI_SAMPLE_LOCAL(loop_init, loop_end, loop_iter, iters, thres) SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, 0, iters, thres)
+#define SMPI_SAMPLE_GLOBAL(loop_init, loop_end, loop_iter,iters, thres) SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, 1, iters, thres)
 #define SMPI_SAMPLE_DELAY(duration) for(smpi_execute(duration); 0; )
 #define SMPI_SAMPLE_FLOPS(flops) for(smpi_execute_flops(flops); 0; )
 

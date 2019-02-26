@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
     k_offset = no_large_nodes*(np+1) + (node-no_large_nodes)*np -1;
 
   int stop = FALSE;
-  SMPI_SAMPLE_GLOBAL(k = 1, k <= np, k++, 0.25 * np, 0.03,
+  SMPI_SAMPLE_GLOBAL(k = 1, k <= np, k++, 0.25 * np, 0.03){
     stop = FALSE;
     kk = k_offset + k ;
     t1 = s;
@@ -181,7 +181,7 @@ int main(int argc, char **argv) {
       }
     }
     timer_stop(2);
-  )
+  }
 
   TRACE_smpi_set_category ("finalize");
 

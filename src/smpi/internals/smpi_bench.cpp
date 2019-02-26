@@ -373,12 +373,11 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
   }
 }
 
-int smpi_sample_2(int global, const char *file, int line)
+int smpi_sample_2(int global, const char *file, int line, int iter_count)
 {
   SampleLocation loc(global, file, line);
-  int res;
 
-  XBT_DEBUG("sample2 %s", loc.c_str());
+  XBT_DEBUG("sample2 %s %d", loc.c_str(), iter_count);
   auto sample = samples.find(loc);
   if (sample == samples.end())
     xbt_die("Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
@@ -389,31 +388,25 @@ int smpi_sample_2(int global, const char *file, int line)
     XBT_DEBUG("benchmarking: count:%d iter:%d stderr:%f thres:%f; mean:%f; total:%f",
               data.count, data.iters, data.relstderr, data.threshold, data.mean, data.sum);
     smpi_bench_begin();
-    res = 1;
   } else {
     // Enough data, no more bench (either we got enough data from previous visits to this benched nest, or we just
     //ran one bench and need to bail out now that our job is done). Just sleep instead
     if (not data.need_more_benchs()){
       XBT_DEBUG("No benchmark (either no need, or just ran one): count >= iter (%d >= %d) or stderr<thres (%f<=%f). "
-              "Mean is %f %s",
-              data.count, data.iters, data.relstderr, data.threshold, data.mean, 
-              (data.sum != 0.0 ? "Applying it count times because we finished benching count iterations": ""));
-      double sleep = data.mean;
-      if (data.sum != 0.0){ //we finished benching, sum is unecessary after the first injection, we can reset it.
-        sleep = data.sum;
-        data.sum = 0.0;
-      }
+              "Mean is %f, will be injected %d times",
+              data.count, data.iters, data.relstderr, data.threshold, data.mean, iter_count);
+              
+      //we ended benchmarking, let's inject all the time, now, and fast forward out of the loop.
       smpi_process()->set_sampling(0);
-      smpi_execute(sleep);
+      smpi_execute(data.mean*iter_count);
       smpi_bench_begin();
+      return 0;
     } else {
       XBT_DEBUG("Skipping - Benchmark already performed - accumulating time");
       xbt_os_threadtimer_start(smpi_process()->timer());
     }
-    res = 0; // prepare to capture future, unrelated computations
   }
-
-  return res;
+  return 1;
 }
 
 void smpi_sample_3(int global, const char *file, int line)
@@ -448,7 +441,7 @@ void smpi_sample_3(int global, const char *file, int line)
   data.benching = false;
 }
 
-void smpi_sample_exit(int global, const char *file, int line){
+int smpi_sample_exit(int global, const char *file, int line, int iter_count){
   if (smpi_process()->sampling()){
     SampleLocation loc(global, file, line);
 
@@ -459,16 +452,12 @@ void smpi_sample_exit(int global, const char *file, int line){
     LocalData& data = sample->second;
   
     if (smpi_process()->sampling()){//end of loop, but still sampling needed
-        double sleep = data.mean;
-        if (data.sum != 0.0){ //we finished benching, sum is unecessary after the first injection, we can reset it.
-          sleep = data.sum;
-          data.sum = 0.0;
-        }
         smpi_process()->set_sampling(0);
-        smpi_execute(sleep);
+        smpi_execute(data.mean*iter_count);
         smpi_bench_begin();
     }
   }
+  return 0;
 }
 
 smpi_trace_call_location_t* smpi_trace_get_call_location()
