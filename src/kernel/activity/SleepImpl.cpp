@@ -60,7 +60,6 @@ void SleepImpl::post()
 
       default:
         THROW_IMPOSSIBLE;
-        break;
     }
     if (not simcall->issuer->get_host()->is_on()) {
       simcall->issuer->context_->iwannadie = true;

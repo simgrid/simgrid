@@ -52,7 +52,6 @@ Exec* Exec::wait()
 Exec* Exec::wait_for(double)
 {
   THROW_UNIMPLEMENTED;
-  return this;
 }
 
 /** @brief Returns whether the state of the exec is finished */

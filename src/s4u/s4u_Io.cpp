@@ -44,7 +44,6 @@ Io* Io::wait()
 Io* Io::wait_for(double)
 {
   THROW_UNIMPLEMENTED;
-  return this;
 }
 
 bool Io::test()
@@ -59,7 +58,7 @@ bool Io::test()
 
   THROW_UNIMPLEMENTED;
 
-  return false;
+  // return false
 }
 
 /** @brief Returns the amount of flops that remain to be done */

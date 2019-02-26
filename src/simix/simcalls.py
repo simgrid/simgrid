@@ -350,7 +350,6 @@ if __name__ == '__main__':
     fd.write('    case SIMCALL_NONE:\n')
     fd.write('      THROWF(arg_error, 0, "Asked to do the noop syscall on %s@%s", simcall->issuer->get_cname(),\n')
     fd.write('             sg_host_get_name(simcall->issuer->get_host()));\n')
-    fd.write('      break;\n')
     fd.write('    default:\n')
     fd.write('      THROW_IMPOSSIBLE;\n')
     fd.write('  }\n')

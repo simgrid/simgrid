@@ -234,7 +234,6 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
         break;
       default: /* SURF_VM_STATE_RUNNING or unexpected values */
         THROW_IMPOSSIBLE;
-        break;
     }
     XBT_VERB("Shutting down the VM %s even if it's not running but %s", piface_->get_cname(), stateName);
   }

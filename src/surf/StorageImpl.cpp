@@ -71,7 +71,6 @@ void StorageImpl::destroy()
 bool StorageImpl::is_used()
 {
   THROW_UNIMPLEMENTED;
-  return false;
 }
 
 void StorageImpl::apply_event(kernel::profile::Event* /*event*/, double /*value*/)

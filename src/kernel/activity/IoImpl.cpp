@@ -87,7 +87,6 @@ void IoImpl::post()
       break;
     default:
       THROW_IMPOSSIBLE;
-      break;
   }
   on_completion(this);
 

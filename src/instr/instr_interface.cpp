@@ -283,7 +283,6 @@ static void instr_user_variable(double time, const char* resource, const char* v
           break;
         default:
           THROW_IMPOSSIBLE;
-          break;
       }
     }
   }
