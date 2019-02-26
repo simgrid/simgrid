@@ -146,7 +146,7 @@ Comm* Comm::wait_for(double timeout)
 {
   switch (state_) {
     case State::FINISHED:
-      return this;
+      break;
 
     case State::INITED: // It's not started yet. Do it in one simcall
       if (src_buff_ != nullptr) {
@@ -160,13 +160,13 @@ Comm* Comm::wait_for(double timeout)
                           user_data_, timeout, rate_);
       }
       state_ = State::FINISHED;
-      return this;
+      break;
 
     case State::STARTED:
       simcall_comm_wait(pimpl_, timeout);
       on_completion(Actor::self());
       state_ = State::FINISHED;
-      return this;
+      break;
 
     case State::CANCELED:
       throw CancelException(XBT_THROW_POINT, "Communication canceled");

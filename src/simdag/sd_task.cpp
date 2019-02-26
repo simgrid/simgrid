@@ -593,7 +593,6 @@ int SD_task_dependency_exists(SD_task_t src, SD_task_t dst)
   } else {
     return dst->predecessors->size() + dst->inputs->size();
   }
-  return 0;
 }
 
 /**

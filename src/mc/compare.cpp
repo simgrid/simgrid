@@ -732,7 +732,6 @@ static int compare_heap_area_with_type(
           else
             return MC_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0;
         }
-        break;
 
       case DW_TAG_enumeration_type:
         if (area_size != -1 && type->byte_size != area_size)
@@ -775,7 +774,6 @@ static int compare_heap_area_with_type(
             break;
           default:
             return 0;
-            break;
         }
         for (int i = 0; i < type->element_count; i++) {
           // TODO, add support for variable stride (DW_AT_byte_stride)
@@ -1280,7 +1278,6 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state,
             break;
           default:
             return 0;
-            break;
         }
         for (i = 0; i < type->element_count; i++) {
           size_t off = i * elm_size;
@@ -1335,7 +1332,6 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state,
 
           return (addr_pointed1 != addr_pointed2);
         }
-        break;
       }
       case DW_TAG_structure_type:
       case DW_TAG_class_type:
@@ -1352,7 +1348,6 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state,
         break;
       case DW_TAG_subroutine_type:
         return -1;
-        break;
       default:
         XBT_VERB("Unknown case: %d", type->type);
         break;

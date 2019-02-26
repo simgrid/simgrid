@@ -65,7 +65,6 @@ const char* xbt_ex_catname(xbt_errcat_t cat)
     default:
       return "INVALID ERROR";
   }
-  return "INVALID ERROR";
 }
 
 namespace simgrid {
