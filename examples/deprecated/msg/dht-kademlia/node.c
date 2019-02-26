@@ -53,7 +53,7 @@ void node_routing_table_update(node_t node, unsigned int id)
 
   if (id_pos == -1) {
     /* We check if the bucket is full or not. If it is, we evict old offline elements */
-    if (xbt_dynar_length(bucket->nodes) < bucket_size) {
+    if (xbt_dynar_length(bucket->nodes) < BUCKET_SIZE) {
       //TODO: this is not really very efficient. Maybe we should use something else than dynars ?
       xbt_dynar_unshift(bucket->nodes, &id);
       XBT_VERB("I'm adding to my routing table %08x", id);
@@ -81,28 +81,28 @@ answer_t node_find_closest(node_t node, unsigned int destination_id)
   /* We find the corresponding bucket for the id */
   bucket_t bucket = routing_table_find_bucket(node->table, destination_id);
   int bucket_id = bucket->id;
-  xbt_assert((bucket_id <= identifier_size), "Bucket found has a wrong identifier");
+  xbt_assert((bucket_id <= IDENTIFIER_SIZE), "Bucket found has a wrong identifier");
   /* So, we copy the contents of the bucket unsigned into our result dynar */
   answer_add_bucket(bucket, answer);
 
-  /* However, if we don't have enough elements in our bucket, we NEED to include at least "bucket_size" elements
-   * (if, of course, we know at least "bucket_size" elements. So we're going to look unsigned into the other buckets.
+  /* However, if we don't have enough elements in our bucket, we NEED to include at least "BUCKET_SIZE" elements
+   * (if, of course, we know at least "BUCKET_SIZE" elements. So we're going to look unsigned into the other buckets.
    */
-  for (i = 1; answer->size < bucket_size && ((bucket_id - i > 0) || (bucket_id + i < identifier_size)); i++) {
+  for (i = 1; answer->size < BUCKET_SIZE && ((bucket_id - i > 0) || (bucket_id + i < IDENTIFIER_SIZE)); i++) {
     /* We check the previous buckets */
     if (bucket_id - i >= 0) {
       bucket_t bucket_p = &node->table->buckets[bucket_id - i];
       answer_add_bucket(bucket_p, answer);
     }
     /* We check the next buckets */
-    if (bucket_id + i <= identifier_size) {
+    if (bucket_id + i <= IDENTIFIER_SIZE) {
       bucket_t bucket_n = &node->table->buckets[bucket_id + i];
       answer_add_bucket(bucket_n, answer);
     }
   }
   /* We sort the array by XOR distance */
   answer_sort(answer);
-  /* We trim the array to have only bucket_size or less elements */
+  /* We trim the array to have only BUCKET_SIZE or less elements */
   answer_trim(answer);
 
   return answer;

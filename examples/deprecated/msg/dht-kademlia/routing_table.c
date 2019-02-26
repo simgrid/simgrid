@@ -14,8 +14,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_kademlia_routing_table, "Messages specific for 
 routing_table_t routing_table_init(unsigned int node_id)
 {
   routing_table_t table = xbt_new(s_routing_table_t, 1);
-  table->buckets = xbt_new(s_bucket_t, identifier_size + 1);
-  for (unsigned int i = 0; i < identifier_size + 1; i++) {
+  table->buckets        = xbt_new(s_bucket_t, IDENTIFIER_SIZE + 1);
+  for (unsigned int i = 0; i < IDENTIFIER_SIZE + 1; i++) {
     table->buckets[i].nodes = xbt_dynar_new(sizeof(unsigned int), NULL);
     table->buckets[i].id = i;
   }
@@ -28,7 +28,7 @@ void routing_table_free(routing_table_t table)
 {
   unsigned int i;
   //Free the buckets.
-  for (i = 0; i <= identifier_size; i++) {
+  for (i = 0; i <= IDENTIFIER_SIZE; i++) {
     xbt_dynar_free(&table->buckets[i].nodes);
   }
   xbt_free(table->buckets);
@@ -49,7 +49,7 @@ void routing_table_print(routing_table_t table)
   unsigned int value;
   XBT_INFO("Routing table of %08x:", table->id);
 
-  for (unsigned int i = 0; i <= identifier_size; i++) {
+  for (unsigned int i = 0; i <= IDENTIFIER_SIZE; i++) {
     if (!xbt_dynar_is_empty(table->buckets[i].nodes)) {
       XBT_INFO("Bucket number %u: ", i);
       xbt_dynar_foreach(table->buckets[i].nodes, j, value) {
@@ -89,8 +89,8 @@ unsigned int bucket_contains(bucket_t bucket, unsigned int id)
 bucket_t routing_table_find_bucket(routing_table_t table, unsigned int id)
 {
   unsigned int xor_number = table->id ^ id;
-  unsigned int prefix = get_node_prefix(xor_number, identifier_size);
-  xbt_assert(prefix <= identifier_size, "Tried to return a  bucket that doesn't exist.");
+  unsigned int prefix     = get_node_prefix(xor_number, IDENTIFIER_SIZE);
+  xbt_assert(prefix <= IDENTIFIER_SIZE, "Tried to return a  bucket that doesn't exist.");
   bucket_t bucket = &table->buckets[prefix];
   return bucket;
 }

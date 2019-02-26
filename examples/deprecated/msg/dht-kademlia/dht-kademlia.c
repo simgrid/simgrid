@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_kademlia, "Messages specific for this msg examp
 /* Main loop for the process */
 static void main_loop(node_t node, double deadline)
 {
-  double next_lookup_time = MSG_get_clock() + random_lookup_interval;
+  double next_lookup_time = MSG_get_clock() + RANDOM_LOOKUP_INTERVAL;
   XBT_VERB("Main loop start");
   while (MSG_get_clock() < deadline) {
 
@@ -33,7 +33,7 @@ static void main_loop(node_t node, double deadline)
         /* We search for a pseudo random node */
         if (MSG_get_clock() >= next_lookup_time) {
           random_lookup(node);
-          next_lookup_time += random_lookup_interval;
+          next_lookup_time += RANDOM_LOOKUP_INTERVAL;
         } else {
           //Didn't get a task: sleep for a while...
           MSG_process_sleep(1);
@@ -158,15 +158,15 @@ unsigned int join(node_t node, unsigned int id_known)
     } else {
       MSG_process_sleep(1);
     }
-  } while (answer_got == 0 && trial < max_join_trials);
+  } while (answer_got == 0 && trial < MAX_JOIN_TRIALS);
   /* Second step: Send a FIND_NODE to a a random node in buckets */
   unsigned int bucket_id = routing_table_find_bucket(node->table, id_known)->id;
-  for (i = 0; ((bucket_id  > i) || (bucket_id + i) <= identifier_size) && i < JOIN_BUCKETS_QUERIES; i++) {
+  for (i = 0; ((bucket_id > i) || (bucket_id + i) <= IDENTIFIER_SIZE) && i < JOIN_BUCKETS_QUERIES; i++) {
     if (bucket_id  > i) {
       unsigned int id_in_bucket = get_id_in_prefix(node->id, bucket_id - i);
       find_node(node, id_in_bucket, 0);
     }
-    if (bucket_id + i <= identifier_size) {
+    if (bucket_id + i <= IDENTIFIER_SIZE) {
       unsigned int id_in_bucket = get_id_in_prefix(node->id, bucket_id + i);
       find_node(node, id_in_bucket, 0);
     }
@@ -185,7 +185,7 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
   unsigned int answers;
   unsigned int destination_found = 0;
   unsigned int nodes_added = 0;
-  double global_timeout = MSG_get_clock() + find_node_global_timeout;
+  double global_timeout          = MSG_get_clock() + FIND_NODE_GLOBAL_TIMEOUT;
   unsigned int steps = 0;
 
   /* First we build a list of who we already know */
@@ -201,7 +201,7 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
     answers = 0;
     queries = send_find_node_to_best(node, node_list);
     nodes_added = 0;
-    double timeout = MSG_get_clock() + find_node_timeout;
+    double timeout = MSG_get_clock() + FIND_NODE_TIMEOUT;
     steps++;
     double time_beginreceive = MSG_get_clock();
     do {
@@ -298,15 +298,16 @@ void send_find_node(node_t node, unsigned int id, unsigned int destination)
 }
 
 /**
-  * Sends to the best "kademlia_alpha" nodes in the "node_list" array a "FIND_NODE" request, to ask them for their best nodes
+  * Sends to the best "KADEMLIA_ALPHA" nodes in the "node_list" array a "FIND_NODE" request, to ask them for their best
+ * nodes
   */
 unsigned int send_find_node_to_best(node_t node, answer_t node_list)
 {
   unsigned int i = 0;
   unsigned int j = 0;
   unsigned int destination = node_list->destination_id;
-  while (j < kademlia_alpha && i < node_list->size) {
-    /* We need to have at most "kademlia_alpha" requests each time, according to the protocol */
+  while (j < KADEMLIA_ALPHA && i < node_list->size) {
+    /* We need to have at most "KADEMLIA_ALPHA" requests each time, according to the protocol */
     /* Gets the node we want to send the query to */
     node_contact_t node_to_query = xbt_dynar_get_as(node_list->nodes, i, node_contact_t);
     if (node_to_query->id != node->id) {        /* No need to query ourselves */

@@ -6,17 +6,18 @@
 
 #ifndef _KADEMLIA_EXAMPLES_COMMON
 #define _KADEMLIA_EXAMPLES_COMMON
-#define max_join_trials 4
 
-#define find_node_timeout 10
-#define find_node_global_timeout 50
+#define MAX_JOIN_TRIALS 4
 
-#define kademlia_alpha 3
-#define bucket_size 20
+#define FIND_NODE_TIMEOUT 10
+#define FIND_NODE_GLOBAL_TIMEOUT 50
 
-#define identifier_size 32
+#define KADEMLIA_ALPHA 3
+#define BUCKET_SIZE 20
 
-#define random_lookup_interval 100
+#define IDENTIFIER_SIZE 32
+
+#define RANDOM_LOOKUP_INTERVAL 100
 
 #define MAILBOX_NAME_SIZE 16 /* (identifier_size / 4)  (hex encoded) */
 

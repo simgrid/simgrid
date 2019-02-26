@@ -88,13 +88,13 @@ void answer_sort(answer_t answer)
   xbt_dynar_sort(answer->nodes, &_answer_sort_function);
 }
 
-/** @brief Trims a answer_t, in order for it to have a size of less or equal to "bucket_size"
+/** @brief Trims a answer_t, in order for it to have a size of less or equal to "BUCKET_SIZE"
   * @param answer the answer_t to trim
   */
 void answer_trim(answer_t answer)
 {
   node_contact_t value;
-  while (answer->size > bucket_size) {
+  while (answer->size > BUCKET_SIZE) {
     xbt_dynar_pop(answer->nodes, &value);
     answer->size--;
     node_contact_free(value);
