@@ -377,7 +377,8 @@ CommImpl::CommImpl(CommImpl::Type type) : type(type)
 
 CommImpl::~CommImpl()
 {
-  XBT_DEBUG("Really free communication %p", this);
+  XBT_DEBUG("Really free communication %p in state %d (detached = %d)", this, static_cast<int>(state_),
+            static_cast<int>(detached));
 
   cleanupSurf();
 
@@ -387,10 +388,9 @@ CommImpl::~CommImpl()
     if (clean_fun)
       clean_fun(src_buff_);
     src_buff_ = nullptr;
-  }
-
-  if (mbox)
+  } else if (mbox) {
     mbox->remove(this);
+  }
 }
 
 /**  @brief Starts the simulation of a communication synchro. */
@@ -485,8 +485,10 @@ void CommImpl::cancel()
 {
   /* if the synchro is a waiting state means that it is still in a mbox so remove from it and delete it */
   if (state_ == SIMIX_WAITING) {
-    mbox->remove(this);
-    state_ = SIMIX_CANCELED;
+    if (not detached) {
+      mbox->remove(this);
+      state_ = SIMIX_CANCELED;
+    }
   } else if (not MC_is_active() /* when running the MC there are no surf actions */
              && not MC_record_replay_is_active() && (state_ == SIMIX_READY || state_ == SIMIX_RUNNING)) {
     surf_action_->cancel();

@@ -470,16 +470,17 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_nativeFinalize(JNIEnv * env, jo
 
 static void msg_task_cancel_on_failed_dsend(void*t) {
   msg_task_t task = (msg_task_t) t;
-  JNIEnv *env =get_current_thread_env();
-  jobject jtask_global = (jobject) MSG_task_get_data(task);
-
-  /* Destroy the global ref so that the JVM can free the stuff */
-  env->DeleteGlobalRef(jtask_global);
+  JNIEnv* env     = get_current_thread_env();
+  if (env) {
+    jobject jtask_global = (jobject)MSG_task_get_data(task);
+    /* Destroy the global ref so that the JVM can free the stuff */
+    env->DeleteGlobalRef(jtask_global);
+    /* Don't free the C data here, to avoid a race condition with the GC also sometimes doing so.
+     * A rare memleak is seen as preferable to a rare "free(): invalid pointer" failure that
+     * proves really hard to debug.
+     */
+  }
   MSG_task_set_data(task, nullptr);
-  /* Don't free the C data here, to avoid a race condition with the GC also sometimes doing so.
-   * A rare memleak is seen as preferable to a rare "free(): invalid pointer" failure that
-   * proves really hard to debug.
-   */
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_dsend(JNIEnv * env, jobject jtask, jstring jalias)

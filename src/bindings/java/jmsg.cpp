@@ -51,7 +51,10 @@ JNIEnv *get_current_thread_env()
 {
   using simgrid::kernel::context::JavaContext;
   JavaContext* ctx = static_cast<JavaContext*>(simgrid::kernel::context::Context::self());
-  return ctx->jenv_;
+  if (ctx)
+    return ctx->jenv_;
+  else
+    return nullptr;
 }
 
 void jmsg_throw_status(JNIEnv *env, msg_error_t status) {
