@@ -172,7 +172,7 @@ void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
   }
 }
 
-void NetworkCm02Model::update_actions_state_full(double now, double delta)
+void NetworkCm02Model::update_actions_state_full(double /*now*/, double delta)
 {
   for (auto it = std::begin(*get_started_action_set()); it != std::end(*get_started_action_set());) {
     NetworkCm02Action& action = static_cast<NetworkCm02Action&>(*it);

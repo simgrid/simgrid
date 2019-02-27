@@ -40,14 +40,15 @@ static simgrid::config::Flag<std::string> cfg_governor("plugin/dvfs/governor",
 
     [](std::string val) { if (val != "performance") sg_host_dvfs_plugin_init(); });
 
-static simgrid::config::Flag<int> cfg_min_pstate("plugin/dvfs/min-pstate", {"plugin/dvfs/min_pstate"},
-    "Which pstate is the minimum (and hence fastest) pstate for this governor?", 0,
-    [](int index) {});
+static simgrid::config::Flag<int>
+    cfg_min_pstate("plugin/dvfs/min-pstate", {"plugin/dvfs/min_pstate"},
+                   "Which pstate is the minimum (and hence fastest) pstate for this governor?", 0, [](int) {});
 
 static const int max_pstate_not_limited = -1;
-static simgrid::config::Flag<int> cfg_max_pstate("plugin/dvfs/max-pstate", {"plugin/dvfs/max_pstate"},
-    "Which pstate is the maximum (and hence slowest) pstate for this governor?", max_pstate_not_limited,
-    [](int index) {});
+static simgrid::config::Flag<int>
+    cfg_max_pstate("plugin/dvfs/max-pstate", {"plugin/dvfs/max_pstate"},
+                   "Which pstate is the maximum (and hence slowest) pstate for this governor?", max_pstate_not_limited,
+                   [](int) {});
 
 /** @addtogroup SURF_plugin_load
 
@@ -305,7 +306,7 @@ public:
     // FIXME I think that this fires at the same time for all hosts, so when the src sends something,
     // the dst will be notified even though it didn't even arrive at the recv yet
     simgrid::s4u::Link::on_communicate.connect(
-        [this](kernel::resource::NetworkAction* action, s4u::Host* src, s4u::Host* dst) {
+        [this](kernel::resource::NetworkAction*, s4u::Host* src, s4u::Host* dst) {
           if ((get_host() == src || get_host() == dst) && iteration_running) {
             post_task();
           }
