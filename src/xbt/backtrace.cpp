@@ -63,7 +63,12 @@ public:
   bool unref()
   {
     refcount_--;
-    return refcount_ == 0;
+    if (refcount_ == 0) {
+      delete this;
+      return true;
+    } else {
+      return false;
+    }
   }
 #if HAVE_BOOST_STACKTRACE
   boost::stacktrace::stacktrace st;
@@ -92,24 +97,31 @@ Backtrace::Backtrace(Backtrace&& bt)
 
 Backtrace& Backtrace::operator=(const Backtrace& rhs)
 {
-  impl_ = rhs.impl_;
-  if (impl_)
-    impl_->ref();
+  if (this != &rhs) {
+    if (impl_)
+      impl_->unref();
+    impl_ = rhs.impl_;
+    if (impl_)
+      impl_->ref();
+  }
   return *this;
 }
 
 Backtrace& Backtrace::operator=(Backtrace&& rhs)
 {
-  impl_     = rhs.impl_;
-  rhs.impl_ = nullptr;
+  if (this != &rhs) {
+    if (impl_)
+      impl_->unref();
+    impl_     = rhs.impl_;
+    rhs.impl_ = nullptr;
+  }
   return *this;
 }
 
 Backtrace::~Backtrace()
 {
-  if (impl_ != nullptr && impl_->unref()) {
-    delete impl_;
-  }
+  if (impl_)
+    impl_->unref();
 }
 
 std::string const Backtrace::resolve() const
