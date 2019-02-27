@@ -7,7 +7,9 @@
 
 #include <algorithm>
 #include <clocale>
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "simgrid/Exception.hpp"
 #include "simgrid/msg.h"
@@ -87,8 +89,6 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Msg_getClock(JNIEnv * env, jclass
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 {
-  int argc = 0;
-
   env->GetJavaVM(&__java_vm);
 
   simgrid::kernel::context::factory_initializer = &simgrid::kernel::context::java_factory;
@@ -99,32 +99,36 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
 
   setlocale(LC_NUMERIC,"C");
 
+  int argc = 1;
   if (jargs)
-    argc = static_cast<int>(env->GetArrayLength(jargs));
+    argc += static_cast<int>(env->GetArrayLength(jargs));
+  xbt_assert(argc > 0);
 
-  argc++;
-  char** argv = new char*[argc + 1];
-  argv[0] = xbt_strdup("java");
+  // Need a static storage because the XBT layer saves the arguments in xbt_binary_name and xbt_cmdline.
+  static std::vector<std::string> args;
+  args.reserve(argc);
 
-  for (int index = 0; index < argc - 1; index++) {
-    jstring jval    = (jstring)env->GetObjectArrayElement(jargs, index);
+  args.emplace_back("java");
+  for (int index = 1; index < argc; index++) {
+    jstring jval    = (jstring)env->GetObjectArrayElement(jargs, index - 1);
     const char* tmp = env->GetStringUTFChars(jval, 0);
-    argv[index + 1] = xbt_strdup(tmp);
+    args.emplace_back(tmp);
     env->ReleaseStringUTFChars(jval, tmp);
   }
+
+  std::unique_ptr<char* []> argv(new char*[argc + 1]);
+  std::transform(begin(args), end(args), argv.get(), [](std::string& s) { return &s.front(); });
   argv[argc] = nullptr;
 
-  MSG_init(&argc, argv);
+  int argc2 = argc;
+  MSG_init(&argc2, argv.get());
+  xbt_assert(argc2 <= argc);
+
+  for (int index = 1; index < argc2; index++)
+    env->SetObjectArrayElement(jargs, index - 1, (jstring)env->NewStringUTF(argv[index]));
+
   sg_vm_live_migration_plugin_init();
-
   JAVA_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
-
-  for (int index = 0; index < argc - 1; index++) {
-    env->SetObjectArrayElement(jargs, index, (jstring)env->NewStringUTF(argv[index + 1]));
-    free(argv[index]);
-  }
-  free(argv[argc]);
-  delete[] argv;
 }
 
 JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass cls)

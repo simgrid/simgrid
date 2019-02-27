@@ -29,7 +29,7 @@ ContextFactory* java_factory()
 
 JavaContextFactory::JavaContextFactory() : ContextFactory()
 {
-  xbt_binary_name = xbt_strdup("java"); // Used by the backtrace displayer
+  xbt_assert(xbt_binary_name && strcmp(xbt_binary_name, "java") == 0); // Set by Java_org_simgrid_msg_Msg_init
 }
 
 JavaContextFactory::~JavaContextFactory()=default;
