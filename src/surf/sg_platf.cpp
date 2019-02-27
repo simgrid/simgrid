@@ -469,7 +469,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
       actor = simgrid::kernel::actor::ActorImpl::create(arg->name.c_str(), std::move(code), nullptr, host,
                                                         arg->properties.get(), nullptr);
     } catch (simgrid::HostFailureException const&) {
-      XBT_WARN("Deployment include some initially turned off Hosts, nevermind.");
+      XBT_WARN("Deployment includes some initially turned off Hosts ... nevermind.");
     }
     /* The actor creation will fail if the host is currently dead, but that's fine */
     if (actor != nullptr) {
