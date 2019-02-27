@@ -47,8 +47,7 @@ static simgrid::config::Flag<int>
 static const int max_pstate_not_limited = -1;
 static simgrid::config::Flag<int>
     cfg_max_pstate("plugin/dvfs/max-pstate", {"plugin/dvfs/max_pstate"},
-                   "Which pstate is the maximum (and hence slowest) pstate for this governor?", max_pstate_not_limited,
-                   [](int) {});
+                   "Which pstate is the maximum (and hence slowest) pstate for this governor?", max_pstate_not_limited);
 
 /** @addtogroup SURF_plugin_load
 
