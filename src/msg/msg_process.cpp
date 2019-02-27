@@ -90,7 +90,7 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
           .get();
     });
   } catch (simgrid::HostFailureException const&) {
-    XBT_DEBUG("The warning has already been issued. Do nothing more than catching the exception.");
+    xbt_die("Could not create a new process on failed host %s.", host->get_cname());
   }
 
   for (int i = 0; i != argc; ++i)

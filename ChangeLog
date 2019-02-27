@@ -16,6 +16,8 @@ MSG:
    This C++ function was a pimple in the C API, made necessary at some
    point by the Java bindings. This is fixed now.
  - Hide the examples into examples/deprecated. New users should use S4U.
+ - MSG_process_create and MSG_process_attach now crash if the host used
+   to run this process is off.
 
 XBT:
  - Drop sg_cmdline. Please use xbt_cmdline instead.

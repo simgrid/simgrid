@@ -97,7 +97,7 @@ static int test_launcher(int /*argc*/, char** /*argv*/)
   }
 
   test = 2;
-  // Create a process that on a host that is turned off (this should not be possible)
+  // Create a process that on a host that is turned off (this is not allowed)
   if (xbt_dynar_search_or_negative(tests, &test) != -1) {
     XBT_INFO("Test 2:");
     XBT_INFO("  Turn off Jupiter");
@@ -108,17 +108,7 @@ static int test_launcher(int /*argc*/, char** /*argv*/)
     argvF[0] = xbt_strdup("process_daemon");
     MSG_process_create_with_arguments("process_daemon", process_daemon, NULL, jupiter, 1, argvF);
     MSG_process_sleep(10);
-    XBT_INFO("  Test 2 does not crash as it should (number of Process : %d, it should be 1)", MSG_process_get_number());
-    XBT_INFO("  Ok so let's turn on/off the node to see whether the process is correctly bound to Jupiter");
-    MSG_host_on(jupiter);
-    XBT_INFO("  Turn off");
-    MSG_host_off(jupiter);
-    XBT_INFO("  sleep");
-    MSG_process_sleep(10);
-    XBT_INFO("number of Process : %d it should be 1. The daemon that has been created for test2 has been correctly "
-             "destroyed....ok at least it looks rigorous, cool ! You just have to disallow the possibility to create "
-             "a new process on a node when the node is off.)",
-             MSG_process_get_number());
+    XBT_INFO("  Test 2 does crash as it should. This message will not be displayed.");
   }
 
   test = 3;

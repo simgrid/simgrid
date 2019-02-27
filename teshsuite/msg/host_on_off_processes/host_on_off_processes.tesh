@@ -12,17 +12,12 @@ $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 1 --log=no_loc
 > [Tremblay:test_launcher:(1) 13.000000] [msg_test/INFO]   Test done. See you!
 > [13.000000] [msg_test/INFO] Simulation time 13
 
+! expect signal SIGIOT
 $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 2 --log=no_loc
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 2:
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO]   Turn off Jupiter
 > [0.000000] [simix_process/WARNING] Cannot launch actor 'process_daemon' on failed host 'Jupiter'
-> [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Test 2 does not crash as it should (number of Process : 1, it should be 1)
-> [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Ok so let's turn on/off the node to see whether the process is correctly bound to Jupiter
-> [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Turn off
-> [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   sleep
-> [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO] number of Process : 1 it should be 1. The daemon that has been created for test2 has been correctly destroyed....ok at least it looks rigorous, cool ! You just have to disallow the possibility to create a new process on a node when the node is off.)
-> [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Test done. See you!
-> [20.000000] [msg_test/INFO] Simulation time 20
+> [Tremblay:test_launcher:(1) 0.000000] [xbt/CRITICAL] Could not create a new process on failed host Jupiter.
 
 $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 4 --log=no_loc
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 4 (turn off src during a communication) : Create a Process/task to make a communication between Jupiter and Tremblay and turn off Jupiter during the communication
