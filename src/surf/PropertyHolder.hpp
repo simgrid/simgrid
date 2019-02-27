@@ -19,6 +19,8 @@ class PropertyHolder { // DO NOT DERIVE THIS CLASS, or the diamond inheritance m
 
 public:
   PropertyHolder() = default;
+  PropertyHolder(const PropertyHolder&) = delete;
+  PropertyHolder& operator=(const PropertyHolder&) = delete;
   ~PropertyHolder();
 
   const char* get_property(const std::string& key);

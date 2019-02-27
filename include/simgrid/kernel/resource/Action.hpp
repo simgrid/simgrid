@@ -98,6 +98,8 @@ public:
    * @param var The lmm variable associated to this Action if it is part of a LMM component
    */
   Action(Model* model, double cost, bool failed, lmm::Variable* var);
+  Action(const Action&) = delete;
+  Action& operator=(const Action&) = delete;
 
   virtual ~Action();
 

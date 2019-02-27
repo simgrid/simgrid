@@ -36,6 +36,8 @@ class XBT_PRIVATE L07Action;
 class HostL07Model : public HostModel {
 public:
   HostL07Model();
+  HostL07Model(const HostL07Model&) = delete;
+  HostL07Model& operator=(const HostL07Model&) = delete;
   ~HostL07Model() override;
 
   double next_occuring_event(double now) override;
@@ -47,6 +49,8 @@ public:
 class CpuL07Model : public CpuModel {
 public:
   CpuL07Model(HostL07Model* hmodel, kernel::lmm::System* sys);
+  CpuL07Model(const CpuL07Model&) = delete;
+  CpuL07Model& operator=(const CpuL07Model&) = delete;
   ~CpuL07Model();
 
   Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core) override;
@@ -56,6 +60,8 @@ public:
 class NetworkL07Model : public kernel::resource::NetworkModel {
 public:
   NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys);
+  NetworkL07Model(const NetworkL07Model&) = delete;
+  NetworkL07Model& operator=(const NetworkL07Model&) = delete;
   ~NetworkL07Model();
   kernel::resource::LinkImpl* create_link(const std::string& name, double bandwidth, double latency,
                                           s4u::Link::SharingPolicy policy) override;
@@ -72,6 +78,8 @@ public:
 class CpuL07 : public Cpu {
 public:
   CpuL07(CpuL07Model* model, s4u::Host* host, std::vector<double>* speed_per_pstate, int core);
+  CpuL07(const CpuL07&) = delete;
+  CpuL07& operator=(const CpuL07&) = delete;
   ~CpuL07() override;
   bool is_used() override;
   void apply_event(kernel::profile::Event* event, double value) override;
@@ -91,6 +99,8 @@ class LinkL07 : public kernel::resource::LinkImpl {
 public:
   LinkL07(NetworkL07Model* model, const std::string& name, double bandwidth, double latency,
           s4u::Link::SharingPolicy policy);
+  LinkL07(const LinkL07&) = delete;
+  LinkL07& operator=(const LinkL07&) = delete;
   ~LinkL07() override;
   bool is_used() override;
   void apply_event(kernel::profile::Event* event, double value) override;
@@ -111,6 +121,8 @@ class L07Action : public CpuAction {
 public:
   L07Action(kernel::resource::Model* model, size_t host_nb, s4u::Host* const* host_list, const double* flops_amount,
             const double* bytes_amount, double rate);
+  L07Action(const L07Action&) = delete;
+  L07Action& operator=(const L07Action&) = delete;
   ~L07Action();
 
   void updateBound();

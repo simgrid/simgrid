@@ -67,6 +67,8 @@ public:
     return Extension<T, U>(extension_create([](void* p) { delete static_cast<U*>(p); }));
   }
   Extendable() : extensions_(deleters_.size(), nullptr) {}
+  Extendable(const Extendable&) = delete;
+  Extendable& operator=(const Extendable&) = delete;
   ~Extendable()
   {
     /* Call destructors in reverse order of their registrations

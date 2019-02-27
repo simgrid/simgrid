@@ -28,6 +28,8 @@ public:
   };
 
   explicit Model(Model::UpdateAlgo algo);
+  Model(const Model&) = delete;
+  Model& operator=(const Model&) = delete;
 
   virtual ~Model();
 

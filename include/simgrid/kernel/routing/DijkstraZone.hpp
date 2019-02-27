@@ -25,7 +25,8 @@ namespace routing {
 class XBT_PRIVATE DijkstraZone : public RoutedZone {
 public:
   DijkstraZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel, bool cached);
-  void seal() override;
+  DijkstraZone(const DijkstraZone&) = delete;
+  DijkstraZone& operator=(const DijkstraZone&) = delete;
 
   ~DijkstraZone() override;
 
@@ -46,6 +47,7 @@ public:
    * After this function returns, any node in the graph
    * will have a loopback attached to it.
    */
+  void seal() override;
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat) override;
   void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                  std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;

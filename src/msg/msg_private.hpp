@@ -21,7 +21,6 @@ class Task {
   long long int id_;
 
 public:
-  ~Task();
   explicit Task(std::string name, double flops_amount, double bytes_amount, void* data)
       : name_(std::move(name)), userdata_(data), flops_amount(flops_amount), bytes_amount(bytes_amount)
   {
@@ -30,6 +29,9 @@ public:
     if (MC_is_active())
       MC_ignore_heap(&(id_), sizeof(id_));
   }
+  Task(const Task&) = delete;
+  Task& operator=(const Task&) = delete;
+  ~Task();
   void set_used();
   void set_not_used() { this->is_used = false; }
 

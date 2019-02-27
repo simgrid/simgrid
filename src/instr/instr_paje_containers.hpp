@@ -21,6 +21,8 @@ class Container {
   std::string name_; /* Unique name of this container */
 public:
   Container(std::string name, const std::string& type_name, Container* father);
+  Container(const Container&) = delete;
+  Container& operator=(const Container&) = delete;
   virtual ~Container();
 
   Type* type_; /* Type of this container */

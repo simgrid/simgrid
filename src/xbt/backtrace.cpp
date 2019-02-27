@@ -84,6 +84,27 @@ Backtrace::Backtrace(const Backtrace& bt)
     impl_->ref();
 }
 
+Backtrace::Backtrace(Backtrace&& bt)
+{
+  impl_    = bt.impl_;
+  bt.impl_ = nullptr;
+}
+
+Backtrace& Backtrace::operator=(const Backtrace& rhs)
+{
+  impl_ = rhs.impl_;
+  if (impl_)
+    impl_->ref();
+  return *this;
+}
+
+Backtrace& Backtrace::operator=(Backtrace&& rhs)
+{
+  impl_     = rhs.impl_;
+  rhs.impl_ = nullptr;
+  return *this;
+}
+
 Backtrace::~Backtrace()
 {
   if (impl_ != nullptr && impl_->unref()) {

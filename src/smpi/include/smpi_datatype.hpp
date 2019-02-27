@@ -98,6 +98,8 @@ public:
   Datatype(int size, MPI_Aint lb, MPI_Aint ub, int flags);
   Datatype(char* name, int size, MPI_Aint lb, MPI_Aint ub, int flags);
   Datatype(Datatype* datatype, int* ret);
+  Datatype(const Datatype&) = delete;
+  Datatype& operator=(const Datatype&) = delete;
   virtual ~Datatype();
 
   char* name();

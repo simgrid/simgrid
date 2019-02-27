@@ -17,6 +17,8 @@ namespace jedule{
 class XBT_PUBLIC Jedule {
 public:
   Jedule()=default;
+  Jedule(const Jedule&) = delete;
+  Jedule& operator=(const Jedule&) = delete;
   ~Jedule();
   std::vector<Event*> event_set_;
   Container* root_container_ = nullptr;

@@ -77,6 +77,8 @@ class XBT_PRIVATE CpuTiAction : public CpuAction {
   friend class CpuTi;
 public:
   CpuTiAction(CpuTi* cpu, double cost);
+  CpuTiAction(const CpuTiAction&) = delete;
+  CpuTiAction& operator=(const CpuTiAction&) = delete;
   ~CpuTiAction();
 
   void set_state(kernel::resource::Action::State state) override;
@@ -101,6 +103,8 @@ typedef boost::intrusive::list<CpuTiAction, ActionTiListOptions > ActionTiList;
 class CpuTi : public Cpu {
 public:
   CpuTi(CpuTiModel* model, simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core);
+  CpuTi(const CpuTi&)            = delete;
+  CpuTi& operator&(const CpuTi&) = delete;
   ~CpuTi() override;
 
   void set_speed_profile(kernel::profile::Profile* profile) override;
@@ -140,6 +144,8 @@ public:
   static void create_pm_vm_models(); // Make both models be TI models
 
   CpuTiModel();
+  CpuTiModel(const CpuTiModel&) = delete;
+  CpuTiModel& operator=(const CpuTiModel&) = delete;
   ~CpuTiModel() override;
   Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core) override;
   double next_occuring_event(double now) override;

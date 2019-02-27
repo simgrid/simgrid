@@ -53,8 +53,7 @@ public:
 
 /** Create a ThrowPoint with (__FILE__, __LINE__, __func__) */
 #define XBT_THROW_POINT                                                                                                \
-  ::simgrid::xbt::ThrowPoint(__FILE__, __LINE__, __func__, std::move(simgrid::xbt::Backtrace()), xbt_procname(),       \
-                             xbt_getpid())
+  ::simgrid::xbt::ThrowPoint(__FILE__, __LINE__, __func__, simgrid::xbt::Backtrace(), xbt_procname(), xbt_getpid())
 } // namespace xbt
 
 /** Ancestor class of all SimGrid exception */

@@ -24,6 +24,8 @@ class XBT_PRIVATE CpuCas01Action;
 class CpuCas01Model : public simgrid::surf::CpuModel {
 public:
   explicit CpuCas01Model(kernel::resource::Model::UpdateAlgo algo);
+  CpuCas01Model(const CpuCas01Model&) = delete;
+  CpuCas01Model& operator=(const CpuCas01Model&) = delete;
   ~CpuCas01Model() override;
 
   Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core) override;
@@ -36,6 +38,8 @@ public:
 class CpuCas01 : public Cpu {
 public:
   CpuCas01(CpuCas01Model* model, simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core);
+  CpuCas01(const CpuCas01&) = delete;
+  CpuCas01& operator=(const CpuCas01&) = delete;
   ~CpuCas01() override;
   void apply_event(simgrid::kernel::profile::Event* event, double value) override;
   CpuAction* execution_start(double size) override;
@@ -59,6 +63,8 @@ public:
                  kernel::lmm::Constraint* constraint, int core_count);
   CpuCas01Action(kernel::resource::Model* model, double cost, bool failed, double speed,
                  kernel::lmm::Constraint* constraint);
+  CpuCas01Action(const CpuCas01Action&) = delete;
+  CpuCas01Action& operator=(const CpuCas01Action&) = delete;
   ~CpuCas01Action() override;
   int requested_core();
 

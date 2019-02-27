@@ -90,6 +90,8 @@ public:
     std::string descr = std::string("RngSream<") + host->get_cname() + ">";
     stream_           = RngStream_CreateStream(descr.c_str());
   }
+  HostBittorrent(const HostBittorrent&) = delete;
+  HostBittorrent& operator=(const HostBittorrent&) = delete;
 
   ~HostBittorrent() { RngStream_DeleteStream(&stream_); };
 

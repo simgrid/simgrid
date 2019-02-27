@@ -23,6 +23,8 @@ public:
   resource::LinkImpl** green_links_ = nullptr;
   resource::LinkImpl** my_nodes_    = nullptr;
   DragonflyRouter(int i, int j, int k);
+  DragonflyRouter(const DragonflyRouter&) = delete;
+  DragonflyRouter& operator=(const DragonflyRouter&) = delete;
   ~DragonflyRouter();
 };
 
@@ -62,6 +64,8 @@ public:
 class XBT_PUBLIC DragonflyZone : public ClusterZone {
 public:
   explicit DragonflyZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel);
+  DragonflyZone(const DragonflyZone&) = delete;
+  DragonflyZone& operator=(const DragonflyZone&) = delete;
   ~DragonflyZone() override;
   //      void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) override;
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;

@@ -21,6 +21,8 @@ namespace context {
 class XBT_PUBLIC ThreadContext : public AttachContext {
 public:
   ThreadContext(std::function<void()> code, smx_actor_t actor, bool maestro);
+  ThreadContext(const ThreadContext&) = delete;
+  ThreadContext& operator=(const ThreadContext&) = delete;
   ~ThreadContext() override;
   void stop() override;
   void suspend() override;
@@ -80,6 +82,8 @@ private:
 class ThreadContextFactory : public ContextFactory {
 public:
   ThreadContextFactory();
+  ThreadContextFactory(const ThreadContextFactory&) = delete;
+  ThreadContextFactory& operator=(const ThreadContextFactory&) = delete;
   ~ThreadContextFactory() override;
   ThreadContext* create_context(std::function<void()> code, smx_actor_t actor) override
   {

@@ -33,6 +33,8 @@ public:
       : Message(sender_id, destination_id, nullptr, mailbox, hostname)
   {
   }
+  Message(const Message&) = delete;
+  Message& operator=(const Message&) = delete;
   ~Message()
   {
     if (issuer_host_name_)

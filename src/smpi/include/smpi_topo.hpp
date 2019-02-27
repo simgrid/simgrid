@@ -33,6 +33,8 @@ class Topo_Cart: public Topo {
     int *position_;
   public:
     explicit Topo_Cart(int ndims);
+    Topo_Cart(const Topo_Cart&) = delete;
+    Topo_Cart& operator=(const Topo_Cart&) = delete;
     ~Topo_Cart();
     Topo_Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder, MPI_Comm *comm_cart);
     Topo_Cart* sub(const int remain_dims[], MPI_Comm *newcomm) ;
@@ -52,6 +54,8 @@ class Topo_Graph: public Topo {
     int *edges_;
   public:
     Topo_Graph();
+    Topo_Graph(const Topo_Graph&) = delete;
+    Topo_Graph& operator=(const Topo_Graph&) = delete;
     ~Topo_Graph();
 };
 
@@ -63,6 +67,8 @@ class Topo_Dist_Graph: public Topo {
     int *out_weights_;
   public:
     Topo_Dist_Graph();
+    Topo_Dist_Graph(const Topo_Dist_Graph&) = delete;
+    Topo_Dist_Graph& operator=(const Topo_Dist_Graph&) = delete;
     ~Topo_Dist_Graph();
 };
 

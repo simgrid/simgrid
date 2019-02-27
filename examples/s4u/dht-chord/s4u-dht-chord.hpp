@@ -33,6 +33,8 @@ public:
     std::string descr = std::string("RngSream<") + host->get_cname() + ">";
     stream_           = RngStream_CreateStream(descr.c_str());
   }
+  HostChord(const HostChord&) = delete;
+  HostChord& operator=(const HostChord&) = delete;
 
   ~HostChord() { RngStream_DeleteStream(&stream_); };
 

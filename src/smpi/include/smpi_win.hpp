@@ -48,6 +48,8 @@ public:
 
   Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, int allocated = 0, int dynamic = 0);
   Win(MPI_Info info, MPI_Comm comm) : Win(MPI_BOTTOM, 0, 1, info, comm, 0, 1) {};
+  Win(const Win&) = delete;
+  Win& operator=(const Win&) = delete;
   ~Win();
   int attach (void *base, MPI_Aint size);
   int detach (void *base);

@@ -49,6 +49,8 @@ private:
 public:
   NetworkIBModel();
   explicit NetworkIBModel(const char* name);
+  NetworkIBModel(const NetworkIBModel&) = delete;
+  NetworkIBModel& operator=(const NetworkIBModel&) = delete;
   ~NetworkIBModel() override;
   void updateIBfactors(NetworkAction* action, IBNode* from, IBNode* to, int remove);
 

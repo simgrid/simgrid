@@ -51,6 +51,8 @@ simgrid::xbt::signal<void(StorageAction*, kernel::resource::Action::State, kerne
 class StorageModel : public kernel::resource::Model {
 public:
   StorageModel();
+  StorageModel(const StorageModel&) = delete;
+  StorageModel& operator=(const StorageModel&) = delete;
   ~StorageModel();
 
   virtual StorageImpl* createStorage(std::string id, std::string type_id, std::string content_name,
@@ -69,6 +71,8 @@ public:
   /** @brief Storage constructor */
   StorageImpl(kernel::resource::Model* model, const std::string& name, kernel::lmm::System* maxmin_system, double bread,
               double bwrite, std::string type_id, std::string content_name, sg_size_t size, std::string attach);
+  StorageImpl(const StorageImpl&) = delete;
+  StorageImpl& operator=(const StorageImpl&) = delete;
 
   ~StorageImpl() override;
 

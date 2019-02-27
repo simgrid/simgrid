@@ -52,6 +52,8 @@ class XBT_PUBLIC NetZoneImpl {
 
 protected:
   explicit NetZoneImpl(NetZoneImpl* father, std::string name, resource::NetworkModel* network_model);
+  NetZoneImpl(const NetZoneImpl&) = delete;
+  NetZoneImpl& operator=(const NetZoneImpl&) = delete;
   virtual ~NetZoneImpl();
 
 public:

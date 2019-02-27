@@ -40,6 +40,8 @@ private:
 #endif
 public:
   explicit ActorExt(simgrid::s4u::ActorPtr actor, simgrid::s4u::Barrier* barrier);
+  ActorExt(const ActorExt&) = delete;
+  ActorExt& operator=(const ActorExt&) = delete;
   ~ActorExt();
   void set_data(const char* instance_id);
   void finalize();

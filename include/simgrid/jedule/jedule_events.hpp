@@ -20,6 +20,8 @@ namespace jedule{
 class XBT_PUBLIC Event {
 public:
   Event(std::string name, double start_time, double end_time, std::string type);
+  Event(const Event&) = delete;
+  Event& operator=(const Event&) = delete;
   ~Event();
   void add_characteristic(char* characteristic);
   void add_resources(std::vector<sg_host_t>* host_selection);

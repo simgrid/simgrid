@@ -90,6 +90,8 @@ class XBT_PUBLIC File {
 public:
   File(std::string fullpath, void* userdata);
   File(std::string fullpath, sg_host_t host, void* userdata);
+  File(const File&) = delete;
+  File& operator=(const File&) = delete;
   ~File();
 
   /** Retrieves the path to the file */
@@ -135,6 +137,8 @@ class XBT_PUBLIC FileSystemStorageExt {
 public:
   static simgrid::xbt::Extension<Storage, FileSystemStorageExt> EXTENSION_ID;
   explicit FileSystemStorageExt(Storage* ptr);
+  FileSystemStorageExt(const FileSystemStorageExt&) = delete;
+  FileSystemStorageExt& operator=(const FileSystemStorageExt&) = delete;
   ~FileSystemStorageExt();
   std::map<std::string, sg_size_t>* parse_content(const std::string& filename);
   std::map<std::string, sg_size_t>* get_content() { return content_; }
@@ -153,6 +157,8 @@ class XBT_PUBLIC FileDescriptorHostExt {
 public:
   static simgrid::xbt::Extension<Host, FileDescriptorHostExt> EXTENSION_ID;
   FileDescriptorHostExt() = default;
+  FileDescriptorHostExt(const FileDescriptorHostExt&) = delete;
+  FileDescriptorHostExt& operator=(const FileDescriptorHostExt&) = delete;
   ~FileDescriptorHostExt() { delete file_descriptor_table; }
   std::vector<int>* file_descriptor_table = nullptr; // Created lazily on need
 };

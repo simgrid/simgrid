@@ -94,6 +94,8 @@ private:
 class XBT_PUBLIC FutureEvtSet {
 public:
   FutureEvtSet();
+  FutureEvtSet(const FutureEvtSet&) = delete;
+  FutureEvtSet& operator=(const FutureEvtSet&) = delete;
   virtual ~FutureEvtSet();
   double next_date() const;
   Event* pop_leq(double date, double* value, resource::Resource** resource);

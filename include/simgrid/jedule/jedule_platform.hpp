@@ -18,6 +18,8 @@ namespace jedule{
 class XBT_PUBLIC Container {
 public:
   explicit Container(std::string name);
+  Container(const Container&) = delete;
+  Container& operator=(const Container&) = delete;
   virtual ~Container();
 private:
   int last_id_;

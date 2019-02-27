@@ -19,6 +19,8 @@ class SwappedContextFactory : public ContextFactory {
   friend SwappedContext; // Reads whether we are in parallel mode
 public:
   SwappedContextFactory();
+  SwappedContextFactory(const SwappedContextFactory&) = delete;
+  SwappedContextFactory& operator=(const SwappedContextFactory&) = delete;
   ~SwappedContextFactory() override;
   void run_all() override;
 
@@ -36,6 +38,8 @@ private:
 class SwappedContext : public Context {
 public:
   SwappedContext(std::function<void()> code, smx_actor_t get_actor, SwappedContextFactory* factory);
+  SwappedContext(const SwappedContext&) = delete;
+  SwappedContext& operator=(const SwappedContext&) = delete;
   virtual ~SwappedContext();
 
   void suspend() override;

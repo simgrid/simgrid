@@ -19,6 +19,8 @@ namespace context {
 class XBT_PUBLIC ContextFactory {
 public:
   explicit ContextFactory() {}
+  ContextFactory(const ContextFactory&) = delete;
+  ContextFactory& operator=(const ContextFactory&) = delete;
   virtual ~ContextFactory();
   virtual Context* create_context(std::function<void()> code, smx_actor_t actor) = 0;
 
@@ -71,7 +73,8 @@ public:
 class XBT_PUBLIC AttachContext : public Context {
 public:
   AttachContext(std::function<void()> code, smx_actor_t actor) : Context(std::move(code), actor) {}
-
+  AttachContext(const AttachContext&) = delete;
+  AttachContext& operator=(const AttachContext&) = delete;
   ~AttachContext() override;
 
   /** Called by the context when it is ready to give control

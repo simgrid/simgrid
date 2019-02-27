@@ -24,6 +24,8 @@ namespace routing {
 class XBT_PRIVATE FloydZone : public RoutedZone {
 public:
   explicit FloydZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel);
+  FloydZone(const FloydZone&) = delete;
+  FloydZone& operator=(const FloydZone&) = delete;
   ~FloydZone() override;
 
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;

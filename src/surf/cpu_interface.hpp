@@ -76,6 +76,8 @@ public:
   Cpu(simgrid::kernel::resource::Model * model, simgrid::s4u::Host * host, std::vector<double> * speedPerPstate,
       int core);
 
+  Cpu(const Cpu&) = delete;
+  Cpu& operator=(const Cpu&) = delete;
   ~Cpu();
 
   /**

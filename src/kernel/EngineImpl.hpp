@@ -15,6 +15,8 @@ namespace kernel {
 class EngineImpl {
 public:
   EngineImpl();
+  EngineImpl(const EngineImpl&) = delete;
+  EngineImpl& operator=(const EngineImpl&) = delete;
   virtual ~EngineImpl();
   kernel::routing::NetZoneImpl* netzone_root_ = nullptr;
 

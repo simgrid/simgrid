@@ -50,6 +50,7 @@ class UnwindContext {
 public:
   UnwindContext() = default;
   UnwindContext(const UnwindContext&) = default;
+  UnwindContext& operator=(const UnwindContext&) = default;
   ~UnwindContext() { clear(); }
   void initialize(simgrid::mc::RemoteClient* process, unw_context_t* c);
   void clear();

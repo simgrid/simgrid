@@ -21,9 +21,11 @@ namespace routing {
 class XBT_PRIVATE FullZone : public RoutedZone {
 public:
   explicit FullZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel);
-  void seal() override;
+  FullZone(const FullZone&) = delete;
+  FullZone& operator=(const FullZone) = delete;
   ~FullZone() override;
 
+  void seal() override;
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                  std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
