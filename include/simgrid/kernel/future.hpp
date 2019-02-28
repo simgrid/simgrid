@@ -357,7 +357,7 @@ public:
         [](Promise<R> promise, std::shared_ptr<FutureState<T>> state, F continuation) {
           // ...set the new future value by running the continuation.
           Future<T> future(std::move(state));
-          simgrid::xbt::fulfill_promise(promise, [&] { return continuation(std::move(future)); });
+          simgrid::xbt::fulfill_promise(promise, [&continuation, &future] { return continuation(std::move(future)); });
         },
         std::move(promise), state, std::move(continuation)));
     return future;
