@@ -184,10 +184,16 @@ smpi_privatization_region_t smpi_init_global_memory_segment_process()
   char path[24];
   int status;
 
-  do {
-    snprintf(path, sizeof(path), "/smpi-buffer-%06x", rand() % 0xffffffU);
+  constexpr unsigned VAL_MASK = 0xffffffU;
+  static unsigned prev_val    = VAL_MASK;
+  for (unsigned i = (prev_val + 1) & VAL_MASK; i != prev_val; i = (i + 1) & VAL_MASK) {
+    snprintf(path, sizeof(path), "/smpi-buffer-%06x", i);
     file_descriptor = shm_open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
-  } while (file_descriptor == -1 && errno == EEXIST);
+    if (file_descriptor != -1 || errno != EEXIST) {
+      prev_val = i;
+      break;
+    }
+  }
   if (file_descriptor < 0) {
     if (errno == EMFILE) {
       xbt_die("Impossible to create temporary file for memory mapping: %s\n\
