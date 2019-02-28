@@ -111,7 +111,7 @@ public class Host {
 	/** Starts the host if it is off */
 	public native void on();
 	/** Stops the host if it is on */
-	public native void off() throws HostFailureException;
+	public native void off() throws ProcessKilledError;
 
 	/**
 	 * This method returns the speed of the processor of a host (in flops),
