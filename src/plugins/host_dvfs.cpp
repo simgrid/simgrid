@@ -42,7 +42,7 @@ static simgrid::config::Flag<std::string> cfg_governor("plugin/dvfs/governor",
 
 static simgrid::config::Flag<int>
     cfg_min_pstate("plugin/dvfs/min-pstate", {"plugin/dvfs/min_pstate"},
-                   "Which pstate is the minimum (and hence fastest) pstate for this governor?", 0, [](int) {});
+                   "Which pstate is the minimum (and hence fastest) pstate for this governor?", 0);
 
 static const int max_pstate_not_limited = -1;
 static simgrid::config::Flag<int>
