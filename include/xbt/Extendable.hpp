@@ -117,9 +117,7 @@ public:
   template<class U> void extension_set(U* p) { extension_set<U>(U::EXTENSION_ID, p); }
 };
 
-template<class T>
-std::vector<void(*)(void*)> Extendable<T>::deleters_ = {};
-
+template <class T> std::vector<void (*)(void*)> Extendable<T>::deleters_;
 }
 }
 
