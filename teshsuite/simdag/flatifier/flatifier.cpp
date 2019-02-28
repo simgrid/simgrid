@@ -68,7 +68,7 @@ static void dump_hosts()
       std::printf("/>\n");
     }
   }
-  std::free(hosts);
+  xbt_free(hosts);
 }
 
 static void dump_links()
@@ -91,7 +91,7 @@ static void dump_links()
     }
   }
 
-  std::free(links);
+  xbt_free(links);
 }
 
 static void dump_routers()
@@ -173,7 +173,7 @@ static void dump_routes()
       }
     }
   }
-  std::free(hosts);
+  xbt_free(hosts);
 }
 
 static void dump_platform()
