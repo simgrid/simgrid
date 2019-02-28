@@ -6,7 +6,17 @@
 package org.simgrid.msg;
 
 /** Used internally to interrupt the user code when the process gets killed.
- * Don't catch it.
+ *
+ * You can catch it for cleanups or to debug, but DO NOT BLOCK IT, or your simulation will segfault!
+ *
+ * <code>
+ * try {
+ *   getHost().off();
+ * } catch (ProcessKilledError e) {
+ *   e.printStackTrace();
+ *   throw e;
+ * }
+ * </code>
  */
 
 public class ProcessKilledError extends Error {

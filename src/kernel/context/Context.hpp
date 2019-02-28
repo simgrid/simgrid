@@ -87,7 +87,24 @@ public:
 };
 
 class XBT_PUBLIC StopRequest {
-  /** @brief Exception launched to kill a process, in order to properly unwind its stack and release RAII stuff
+  /** @brief Exception launched to kill an actor; do not block it!
+   *
+   * This exception is thrown whenever the actor's host is turned off. The actor stack is properly unwinded to release
+   * all objects allocated on the stack (RAII powa).
+   *
+   * You may want to catch this exception to perform some extra cleanups in your simulation, but YOUR ACTORS MUST NEVER
+   * SURVIVE a StopRequest, or your simulation will segfault.
+   *
+   * @verbatim
+   * void* payload = malloc(512);
+   *
+   * try {
+   *   simgrid::s4u::this_actor::execute(100000);
+   * } catch (simgrid::kernel::context::StopRequest& e) { // oops, my host just turned off
+   *   free(malloc);
+   *   throw; // I shall never survive on an host that was switched off
+   * }
+   * @endverbatim
    *
    * Nope, Sonar, this should not inherit of std::exception nor of simgrid::Exception.
    * Otherwise, users may accidentally catch it with a try {} catch (std::exception)
