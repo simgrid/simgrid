@@ -144,6 +144,99 @@ static void test_sleep_restart_end()
   xbt_assert(sleeper_done,
              "Restarted actor was already dead in the scheduling round during which the host_off simcall was issued");
 }
+static void test_exec()
+{
+  XBT_INFO("%s: Launch a execute(5s), and let it proceed", __func__);
+  bool global = false;
+
+  simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5", all_hosts[1], [&global]() {
+    assert_exit(0, 5.);
+    simgrid::s4u::this_actor::execute(500000000);
+    global = true;
+  });
+  simgrid::s4u::this_actor::sleep_for(10);
+  xbt_assert(global, "The forked actor did not modify the global after executing. Was it killed before?");
+}
+
+static void test_exec_kill_middle()
+{
+  XBT_INFO("%s: Launch a execute(5s), and kill it after 2 secs", __func__);
+
+  simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5_killed", all_hosts[1], []() {
+    assert_exit(1, 2);
+    simgrid::s4u::this_actor::execute(500000000);
+    xbt_die("I should be dead now");
+  });
+
+  simgrid::s4u::this_actor::sleep_for(2);
+  exec5->kill();
+}
+
+static void test_exec_kill_begin()
+{
+  XBT_INFO("%s: Launch a execute(5s), and kill it right after start", __func__);
+
+  simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5_killed", all_hosts[1], []() {
+    assert_exit(1, 0);
+    simgrid::s4u::this_actor::execute(500000000);
+    xbt_die("I should be dead now");
+  });
+
+  simgrid::s4u::this_actor::yield();
+  exec5->kill();
+}
+
+static void test_exec_restart_begin()
+{
+  XBT_INFO("%s: Launch a execute(5s), and restart its host right after start", __func__);
+
+  simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5_restarted", all_hosts[1], []() {
+    assert_exit(1, 0);
+    simgrid::s4u::this_actor::execute(500000000);
+    xbt_die("I should be dead now");
+  });
+
+  simgrid::s4u::this_actor::yield();
+  exec5->get_host()->turn_off();
+  exec5->get_host()->turn_on();
+  XBT_INFO("Test %s is ending", __func__);
+}
+
+static void test_exec_restart_middle()
+{
+  XBT_INFO("%s: Launch a execute(5s), and restart its host after 2 secs", __func__);
+
+  simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5_restarted", all_hosts[1], []() {
+    assert_exit(1, 2);
+    simgrid::s4u::this_actor::execute(500000000);
+    xbt_die("I should be dead now");
+  });
+
+  simgrid::s4u::this_actor::sleep_for(2);
+  exec5->get_host()->turn_off();
+  exec5->get_host()->turn_on();
+  XBT_INFO("Test %s is ending", __func__);
+}
+static void test_exec_restart_end()
+{
+  XBT_INFO("%s: Launch a execute(5s), and restart its host right when it stops", __func__);
+  bool execution_done = false;
+
+  simgrid::s4u::Actor::create("exec5_restarted", all_hosts[1], [&execution_done]() {
+    assert_exit(0, 5);
+    simgrid::s4u::this_actor::execute(500000000);
+    execution_done = true;
+  });
+  simgrid::s4u::Actor::create("killer", all_hosts[0], []() {
+    simgrid::s4u::this_actor::sleep_for(5);
+    XBT_INFO("Killer!");
+    all_hosts[1]->turn_off();
+    all_hosts[1]->turn_on();
+  });
+  simgrid::s4u::this_actor::sleep_for(10);
+  xbt_assert(execution_done,
+             "Restarted actor was already dead in the scheduling round during which the host_off simcall was issued");
+}
 
 static void test_comm()
 {
@@ -212,6 +305,13 @@ static void main_dispatcher()
   run_test("sleep restarted at start", test_sleep_restart_begin);
   run_test("sleep restarted at middle", test_sleep_restart_middle);
   run_test("sleep restarted at end", test_sleep_restart_end);
+
+  run_test("exec", static_cast<std::function<void()>>(test_exec));
+  run_test("exec killed at start", test_exec_kill_begin);
+  run_test("exec killed in middle", test_exec_kill_middle);
+  run_test("exec restarted at start", test_exec_restart_begin);
+  run_test("exec restarted at middle", test_exec_restart_middle);
+  run_test("exec restarted at end", test_exec_restart_end);
 
   run_test("comm", test_comm);
   // run_test("comm kill sender", test_comm_killsend);
