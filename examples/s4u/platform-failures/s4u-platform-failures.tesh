@@ -94,7 +94,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-platform-failures$EXEEXT --log=xbt_cfg.thres:c
 > [ 40.278351] (1:master@Tremblay) Send to worker-3 completed
 > [ 40.278351] (1:master@Tremblay) Send a message to worker-4
 > [ 40.278351] (4:worker@Ginette) Start execution...
-> [ 41.000000] (4:worker@Ginette) Gloups. The cpu on which I'm running just turned off!. See you!
 > [ 41.309278] (1:master@Tremblay) Send to worker-4 completed
 > [ 41.309278] (1:master@Tremblay) All tasks have been dispatched. Let's tell everybody the computation is over.
 > [ 41.309278] (2:worker@Tremblay) I'm done. See you!
@@ -202,7 +201,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-platform-failures$EXEEXT --log=xbt_cfg.thres:c
 > [ 40.692268] (4:worker@Ginette) Start execution...
 > [ 40.692268] (1:master@Tremblay) Send to worker-3 completed
 > [ 40.692268] (1:master@Tremblay) Send a message to worker-4
-> [ 41.000000] (4:worker@Ginette) Gloups. The cpu on which I'm running just turned off!. See you!
 > [ 41.774742] (5:worker@Bourassa) Start execution...
 > [ 41.774742] (1:master@Tremblay) Send to worker-4 completed
 > [ 41.774742] (1:master@Tremblay) All tasks have been dispatched. Let's tell everybody the computation is over.

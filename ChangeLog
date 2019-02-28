@@ -44,6 +44,7 @@ Fixed bugs:
  - #314: SMPI args internal cleanup
  - #316: Fix a bug related to the CPU utilization of multi-core VM
  - #318: Invalid trace file when using option --cfg=tracing/smpi/display-sizes:yes
+ - #325: Turning off a host has different behavior on sleeping actors and computing actors
 
 ----------------------------------------------------------------------------
 

@@ -93,16 +93,15 @@ static int worker(int argc, char* argv[])
       payload   = static_cast<double*>(mailbox->get());
       xbt_assert(payload != nullptr, "mailbox->get() failed");
       comp_size = *payload;
+      delete payload;
       if (comp_size < 0) { /* - Exit when -1.0 is received */
         XBT_INFO("I'm done. See you!");
-        delete payload;
         break;
       }
       /*  - Otherwise, process the task */
       XBT_INFO("Start execution...");
       simgrid::s4u::this_actor::execute(comp_size);
       XBT_INFO("Execution complete.");
-      delete payload;
     } catch (simgrid::HostFailureException& e) {
       XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
       delete payload;

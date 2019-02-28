@@ -175,8 +175,10 @@ void ExecImpl::finish()
       case SIMIX_FAILED:
         XBT_DEBUG("ExecImpl::finish(): host '%s' failed", simcall->issuer->get_host()->get_cname());
         simcall->issuer->context_->iwannadie = true;
-        simcall->issuer->exception_ =
-            std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
+        if (simcall->issuer->get_host()->is_on())
+          simcall->issuer->exception_ =
+              std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
+        /* else, the actor will be killed with no possibility to survive */
         break;
 
       case SIMIX_CANCELED:
