@@ -29,7 +29,7 @@ public:
   unsigned int merge(Answer* a);
   void trim();
   bool destinationFound();
-  void addBucket(kademlia::Bucket* bucket);
+  void addBucket(const kademlia::Bucket* bucket);
 };
 }
 

@@ -69,7 +69,7 @@ bool Answer::destinationFound()
 /** @brief Adds the content of a bucket unsigned into a answer object.
   * @param bucket the bucket we have to had unsigned into
   */
-void Answer::addBucket(Bucket* bucket)
+void Answer::addBucket(const Bucket* bucket)
 {
   xbt_assert((bucket != nullptr), "Provided a NULL bucket");
 

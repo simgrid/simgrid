@@ -15,16 +15,15 @@ namespace kademlia {
 
 class Node {
   unsigned int id_;              // node id - 160 bits
-  RoutingTable* table = nullptr; // node routing table
+  RoutingTable table;            // node routing table
 public:
   simgrid::s4u::CommPtr receive_comm;
   void* received_msg             = nullptr;
   unsigned int find_node_success = 0; // Number of find_node which have succeeded.
   unsigned int find_node_failed  = 0; // Number of find_node which have failed.
-  explicit Node(unsigned int node_id) : id_(node_id), table(new RoutingTable(node_id)), receive_comm(nullptr) {}
+  explicit Node(unsigned int node_id) : id_(node_id), table(node_id), receive_comm(nullptr) {}
   Node(const Node&) = delete;
   Node& operator=(const Node&) = delete;
-  ~Node() { delete table; }
   unsigned int getId() { return id_; }
 
   bool join(unsigned int known_id);

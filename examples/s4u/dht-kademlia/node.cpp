@@ -57,7 +57,7 @@ bool Node::join(unsigned int known_id)
   } while (not got_answer);
 
   /* Second step: Send a FIND_NODE to a a random node in buckets */
-  unsigned int bucket_id = table->findBucket(known_id)->getId();
+  unsigned int bucket_id = table.findBucket(known_id)->getId();
   xbt_assert(bucket_id <= IDENTIFIER_SIZE);
   for (i = 0; ((bucket_id > i) || (bucket_id + i) <= IDENTIFIER_SIZE) && i < JOIN_BUCKETS_QUERIES; i++) {
     if (bucket_id > i) {
@@ -118,7 +118,7 @@ unsigned int Node::sendFindNodeToBest(Answer* node_list)
 void Node::routingTableUpdate(unsigned int id)
 {
   // retrieval of the bucket in which the should be
-  Bucket* bucket = table->findBucket(id);
+  Bucket* bucket = table.findBucket(id);
 
   // check if the id is already in the bucket.
   auto id_pos = std::find(bucket->nodes.begin(), bucket->nodes.end(), id);
@@ -146,7 +146,7 @@ Answer* Node::findClosest(unsigned int destination_id)
 {
   Answer* answer = new Answer(destination_id);
   /* We find the corresponding bucket for the id */
-  Bucket* bucket = table->findBucket(destination_id);
+  const Bucket* bucket = table.findBucket(destination_id);
   int bucket_id  = bucket->getId();
   xbt_assert((bucket_id <= IDENTIFIER_SIZE), "Bucket found has a wrong identifier");
   /* So, we copy the contents of the bucket unsigned into our answer */
@@ -158,12 +158,12 @@ Answer* Node::findClosest(unsigned int destination_id)
   for (int i = 1; answer->getSize() < BUCKET_SIZE && ((bucket_id - i > 0) || (bucket_id + i < IDENTIFIER_SIZE)); i++) {
     /* We check the previous buckets */
     if (bucket_id - i >= 0) {
-      Bucket* bucket_p = table->buckets[bucket_id - i];
+      const Bucket* bucket_p = &table.buckets[bucket_id - i];
       answer->addBucket(bucket_p);
     }
     /* We check the next buckets */
     if (bucket_id + i <= IDENTIFIER_SIZE) {
-      Bucket* bucket_n = table->buckets[bucket_id + i];
+      const Bucket* bucket_n = &table.buckets[bucket_id + i];
       answer->addBucket(bucket_n);
     }
   }
@@ -217,7 +217,7 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
 
           nodes_added = node_list->merge(msg->answer_);
           XBT_DEBUG("Received an answer from %s (%s) with %zu nodes on it", msg->answer_to_->get_cname(),
-                    msg->issuer_host_name_, msg->answer_->nodes.size());
+                    msg->issuer_host_name_.c_str(), msg->answer_->nodes.size());
         } else {
           if (msg->answer_) {
             routingTableUpdate(msg->sender_id_);
@@ -272,7 +272,7 @@ void Node::handleFindNode(Message* msg)
 {
   routingTableUpdate(msg->sender_id_);
   XBT_VERB("Received a FIND_NODE from %s (%s), he's trying to find %08x", msg->answer_to_->get_cname(),
-           msg->issuer_host_name_, msg->destination_id_);
+           msg->issuer_host_name_.c_str(), msg->destination_id_);
   // Building the answer to the request
   Message* answer =
       new Message(id_, msg->destination_id_, findClosest(msg->destination_id_),

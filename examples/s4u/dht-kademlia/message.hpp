@@ -9,6 +9,8 @@
 #include "s4u-dht-kademlia.hpp"
 #include "simgrid/s4u.hpp"
 
+#include <string>
+
 namespace kademlia {
 
 class Message {
@@ -17,7 +19,7 @@ public:
   unsigned int destination_id_        = 0;       // Id we are trying to find, if needed.
   Answer* answer_                     = nullptr; // Answer to the request made, if needed.
   simgrid::s4u::MailboxPtr answer_to_ = nullptr; // mailbox to send the answer to (if not an answer).
-  char* issuer_host_name_             = nullptr; // used for logging
+  std::string issuer_host_name_;                 // used for logging
 
   explicit Message(unsigned int sender_id, unsigned int destination_id, Answer* answer,
                    simgrid::s4u::MailboxPtr mailbox, const char* hostname)
@@ -25,7 +27,7 @@ public:
       , destination_id_(destination_id)
       , answer_(answer)
       , answer_to_(mailbox)
-      , issuer_host_name_(xbt_strdup(hostname))
+      , issuer_host_name_(hostname)
   {
   }
   explicit Message(unsigned int sender_id, unsigned int destination_id, simgrid::s4u::MailboxPtr mailbox,
@@ -35,11 +37,6 @@ public:
   }
   Message(const Message&) = delete;
   Message& operator=(const Message&) = delete;
-  ~Message()
-  {
-    if (issuer_host_name_)
-      xbt_free(issuer_host_name_);
-  }
 };
 }
 #endif
