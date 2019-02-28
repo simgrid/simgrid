@@ -262,6 +262,41 @@ static void test_comm()
   xbt_assert(recv_done, "Receiver killed somehow. It shouldn't");
 }
 
+static void test_comm_dsend_and_quit()
+{
+  XBT_INFO("%s: Launch a detached communication and end right after", __func__);
+  bool dsend_done = false;
+  bool recv_done  = false;
+
+  simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[1], [&dsend_done]() {
+    assert_exit(0, 0);
+    char* payload = xbt_strdup("toto");
+    simgrid::s4u::Mailbox::by_name("mb")->put_init(payload, 1000)->detach();
+    dsend_done = true;
+    return;
+  });
+
+  simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
+    assert_exit(0, 3);
+    bool got_exception = false;
+    simgrid::s4u::this_actor::sleep_for(2);
+    try {
+      void* payload = simgrid::s4u::Mailbox::by_name("mb")->get();
+      xbt_free(payload);
+    } catch (xbt_ex const& e) {
+      got_exception = true;
+    }
+    recv_done = true;
+    xbt_assert(not got_exception);
+    return;
+  });
+
+  // Sleep long enough to let the test ends by itself. 3 + surf_precision should be enough.
+  simgrid::s4u::this_actor::sleep_for(4);
+  xbt_assert(dsend_done, "Sender killed somehow. It shouldn't");
+  xbt_assert(recv_done, "Receiver killed somehow. It shouldn't");
+}
+
 static void test_comm_killsend()
 {
   XBT_INFO("%s: Launch a communication and kill the sender", __func__);
@@ -289,9 +324,11 @@ static void test_comm_killsend()
 
   simgrid::s4u::this_actor::sleep_for(2);
   sender->kill();
+  // let the test ends by itself. waiting for surf_precision should be enough.
+  simgrid::s4u::this_actor::sleep_for(0.00001);
 
   xbt_assert(not send_done, "Sender was not killed properly");
-  // xbt_assert(recv_done, "Receiver killed somehow. It shouldn't");
+  xbt_assert(recv_done, "Receiver killed somehow. It shouldn't");
 }
 
 /* We need an extra actor here, so that it can sleep until the end of each test */
@@ -314,7 +351,8 @@ static void main_dispatcher()
   run_test("exec restarted at end", test_exec_restart_end);
 
   run_test("comm", test_comm);
-  // run_test("comm kill sender", test_comm_killsend);
+  run_test("comm dsend and quit", test_comm_dsend_and_quit);
+  run_test("comm kill sender", test_comm_killsend);
 }
 
 int main(int argc, char* argv[])
