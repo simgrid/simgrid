@@ -11,6 +11,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
+#include <random>
 
 #include "src/mc/mc_private.hpp"
 
@@ -18,6 +19,8 @@
 #include "src/mc/Type.hpp"
 #include "src/mc/Variable.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
+
+static std::default_random_engine rnd_engine;
 
 static simgrid::mc::RemoteClient* process;
 
@@ -51,8 +54,8 @@ void basic_test(simgrid::dwarf::ExpressionContext const& state) {
 
   Dwarf_Op ops[60];
 
-  uintptr_t a = rand();
-  uintptr_t b = rand();
+  uintptr_t a = rnd_engine();
+  uintptr_t b = rnd_engine();
 
   simgrid::dwarf::ExpressionStack stack;
 
@@ -161,26 +164,26 @@ int main(int argc, char** argv) {
   basic_test(state);
 
   for(int i=0; i!=100; ++i) {
-    uintptr_t a = rand();
-    uintptr_t b = rand();
+    uintptr_t a = rnd_engine();
+    uintptr_t b = rnd_engine();
     assert(eval_binary_operation(state, DW_OP_plus, a, b) == (a + b));
   }
 
   for(int i=0; i!=100; ++i) {
-    uintptr_t a = rand();
-    uintptr_t b = rand();
+    uintptr_t a = rnd_engine();
+    uintptr_t b = rnd_engine();
     assert(eval_binary_operation(state, DW_OP_or, a, b) == (a | b));
   }
 
   for(int i=0; i!=100; ++i) {
-    uintptr_t a = rand();
-    uintptr_t b = rand();
+    uintptr_t a = rnd_engine();
+    uintptr_t b = rnd_engine();
     assert(eval_binary_operation(state, DW_OP_and, a, b) == (a & b));
   }
 
   for(int i=0; i!=100; ++i) {
-    uintptr_t a = rand();
-    uintptr_t b = rand();
+    uintptr_t a = rnd_engine();
+    uintptr_t b = rnd_engine();
     assert(eval_binary_operation(state, DW_OP_xor, a, b) == (a ^ b));
   }
 

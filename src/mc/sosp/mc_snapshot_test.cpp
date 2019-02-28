@@ -7,6 +7,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <random>
 
 #include <sys/mman.h>
 
@@ -41,11 +42,13 @@ public:
     mc_model_checker = nullptr;
   }
 
+  static std::default_random_engine rnd_engine;
   static bool sparse_checkpoint;
   static std::unique_ptr<simgrid::mc::RemoteClient> process;
 };
 
 // static member variables init.
+std::default_random_engine snap_test_helper::rnd_engine;
 bool snap_test_helper::sparse_checkpoint                             = 0;
 std::unique_ptr<simgrid::mc::RemoteClient> snap_test_helper::process = nullptr;
 
@@ -53,7 +56,7 @@ void snap_test_helper::init_memory(void* mem, size_t size)
 {
   char* dest = (char*)mem;
   for (size_t i = 0; i < size; ++i) {
-    dest[i] = rand() & 255;
+    dest[i] = rnd_engine() & 255;
   }
 }
 
@@ -118,8 +121,8 @@ void snap_test_helper::read_region_parts()
     prologue_return ret = prologue(n);
 
     for (int j = 0; j != 100; ++j) {
-      size_t offset    = rand() % ret.size;
-      size_t size      = rand() % (ret.size - offset);
+      size_t offset    = rnd_engine() % ret.size;
+      size_t size      = rnd_engine() % (ret.size - offset);
       const void* read = MC_region_read(&(ret.region), ret.dstn, (const char*)ret.src + offset, size);
       INFO("Mismatch in MC_region_read()");
       REQUIRE(not memcmp((char*)ret.src + offset, read, size));
@@ -150,8 +153,8 @@ void snap_test_helper::compare_region_parts()
     prologue_return ret = prologue(n);
 
     for (int j = 0; j != 100; ++j) {
-      size_t offset = rand() % ret.size;
-      size_t size   = rand() % (ret.size - offset);
+      size_t offset = rnd_engine() % ret.size;
+      size_t size   = rnd_engine() % (ret.size - offset);
 
       INFO("Mismatch in MC_snapshot_region_memcmp()");
       REQUIRE(not MC_snapshot_region_memcmp((char*)ret.src + offset, &(ret.region), (char*)ret.src + offset,

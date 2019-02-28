@@ -10,6 +10,7 @@
 #include "simgrid/Exception.hpp"
 #include <cstdio>
 #include <cstring>
+#include <random>
 
 #include "catch.hpp"
 
@@ -295,7 +296,8 @@ TEST_CASE("xbt::dict: dict data container", "dict")
 
   SECTION("Crash test")
   {
-    srand((unsigned int)time(nullptr));
+    std::random_device rd;
+    std::default_random_engine rnd_engine(rd());
 
     for (int i = 0; i < 10; i++) {
       INFO("CRASH test number " << i + 1 << " (" << 10 - i - 1 << " to go)");
@@ -308,7 +310,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
 
         do {
           for (int k = 0; k < SIZEOFKEY - 1; k++) {
-            key[k] = rand() % ('z' - 'a') + 'a';
+            key[k] = rnd_engine() % ('z' - 'a') + 'a';
           }
           key[SIZEOFKEY - 1] = '\0';
           data               = (char*)xbt_dict_get_or_null(head, key);
