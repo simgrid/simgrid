@@ -369,10 +369,9 @@ static bool SIMIX_execute_tasks()
   if (simix_global->tasks.empty())
     return false;
 
-  using std::swap;
   do {
     // We don't want the callbacks to modify the vector we are iterating over:
-    swap(simix_global->tasks, simix_global->tasksTemp);
+    simix_global->tasks.swap(simix_global->tasksTemp);
 
     // Execute all the queued tasks:
     for (auto& task : simix_global->tasksTemp)
