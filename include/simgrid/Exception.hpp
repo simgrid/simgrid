@@ -33,7 +33,8 @@ namespace xbt {
 class ThrowPoint {
 public:
   ThrowPoint() = default;
-  explicit ThrowPoint(const char* file, int line, const char* function, Backtrace bt, std::string actor_name, int pid)
+  explicit ThrowPoint(const char* file, int line, const char* function, Backtrace&& bt, std::string&& actor_name,
+                      int pid)
       : file_(file)
       , line_(line)
       , function_(function)
@@ -59,7 +60,7 @@ public:
 /** Ancestor class of all SimGrid exception */
 class Exception : public std::runtime_error {
 public:
-  Exception(simgrid::xbt::ThrowPoint throwpoint, std::string message)
+  Exception(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
       : std::runtime_error(std::move(message)), throwpoint_(std::move(throwpoint))
   {
   }
@@ -95,7 +96,7 @@ public:
    * @param throwpoint Throw point (use XBT_THROW_POINT)
    * @param message    Exception message
    */
-  xbt_ex(simgrid::xbt::ThrowPoint throwpoint, std::string message)
+  xbt_ex(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
       : simgrid::Exception(std::move(throwpoint), std::move(message))
   {
   }
@@ -116,7 +117,7 @@ namespace simgrid {
 /** Exception raised when a timeout elapsed */
 class TimeoutError : public xbt_ex {
 public:
-  TimeoutError(simgrid::xbt::ThrowPoint throwpoint, std::string message)
+  TimeoutError(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
       : xbt_ex(std::move(throwpoint), std::move(message))
   {
     category = timeout_error;
@@ -126,7 +127,7 @@ public:
 /** Exception raised when a host fails */
 class HostFailureException : public xbt_ex {
 public:
-  HostFailureException(simgrid::xbt::ThrowPoint throwpoint, std::string message)
+  HostFailureException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
       : xbt_ex(std::move(throwpoint), std::move(message))
   {
     category = host_error;
@@ -136,7 +137,7 @@ public:
 /** Exception raised when a communication fails because of the network or because of the remote host */
 class NetworkFailureException : public xbt_ex {
 public:
-  NetworkFailureException(simgrid::xbt::ThrowPoint throwpoint, std::string message)
+  NetworkFailureException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
       : xbt_ex(std::move(throwpoint), std::move(message))
   {
     category = network_error;
@@ -146,7 +147,7 @@ public:
 /** Exception raised when a storage fails */
 class StorageFailureException : public xbt_ex {
 public:
-  StorageFailureException(simgrid::xbt::ThrowPoint throwpoint, std::string message)
+  StorageFailureException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
       : xbt_ex(std::move(throwpoint), std::move(message))
   {
     category = io_error;
@@ -156,7 +157,7 @@ public:
 /** Exception raised when something got canceled before completion */
 class CancelException : public xbt_ex {
 public:
-  CancelException(simgrid::xbt::ThrowPoint throwpoint, std::string message)
+  CancelException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
       : xbt_ex(std::move(throwpoint), std::move(message))
   {
     category = cancel_error;
