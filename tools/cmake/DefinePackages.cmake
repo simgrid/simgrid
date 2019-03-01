@@ -831,7 +831,6 @@ set(DOC_SOURCES
   doc/Layout.xml
 
   doc/doxygen/FAQ.doc
-  doc/doxygen/community.doc
   doc/doxygen/deployment.doc
   doc/doxygen/footer.html
   doc/doxygen/header.html
@@ -888,6 +887,7 @@ set(DOC_SOURCES
   docs/source/app_msg.rst
   docs/source/app_s4u.rst
   docs/source/app_smpi.rst
+  docs/source/community.rst
   docs/source/index.rst
   docs/source/intro_concepts.rst
   docs/source/introduction.rst
