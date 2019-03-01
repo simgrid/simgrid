@@ -167,8 +167,8 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, si
 
 /********** Non Static functions ***********/
 
-void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_simcall_t request,
-                                                       e_mc_call_type_t call_type, int backtracking)
+void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_mc_call_type_t call_type,
+                                                       int backtracking)
 {
   const smx_actor_t issuer = MC_smx_simcall_get_issuer(request);
   simgrid::mc::PatternCommunicationList* initial_pattern =
@@ -257,8 +257,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
 }
 
 void CommunicationDeterminismChecker::complete_comm_pattern(
-    xbt_dynar_t list, simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr, unsigned int issuer,
-    int backtracking)
+    simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr, unsigned int issuer, int backtracking)
 {
   simgrid::mc::PatternCommunication* current_comm_pattern;
   unsigned int cursor = 0;
@@ -422,7 +421,7 @@ void CommunicationDeterminismChecker::restoreState()
     /* TODO : handle test and testany simcalls */
     e_mc_call_type_t call = MC_get_call_type(req);
     mc_model_checker->handle_simcall(state->transition);
-    MC_handle_comm_pattern(call, req, req_num, nullptr, 1);
+    MC_handle_comm_pattern(call, req, req_num, 1);
     mc_model_checker->wait_for_requests();
 
     /* Update statistics */
@@ -473,10 +472,7 @@ void CommunicationDeterminismChecker::real_run()
       mc_model_checker->handle_simcall(state->transition);
       /* After this call req is no longer useful */
 
-      if (not this->initial_communications_pattern_done)
-        MC_handle_comm_pattern(call, req, req_num, initial_communications_pattern, 0);
-      else
-        MC_handle_comm_pattern(call, req, req_num, nullptr, 0);
+      MC_handle_comm_pattern(call, req, req_num, 0);
 
       /* Wait for requests (schedules processes) */
       mc_model_checker->wait_for_requests();

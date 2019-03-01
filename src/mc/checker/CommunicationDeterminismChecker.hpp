@@ -34,9 +34,9 @@ private:
   void restoreState();
 public:
   // These are used by functions which should be moved in CommunicationDeterminismChecker:
-  void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type_t call_type, int backtracking);
-  void complete_comm_pattern(xbt_dynar_t list, simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr,
-                             unsigned int issuer, int backtracking);
+  void get_comm_pattern(smx_simcall_t request, e_mc_call_type_t call_type, int backtracking);
+  void complete_comm_pattern(simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr, unsigned int issuer,
+                             int backtracking);
 
 private:
   /** Stack representing the position in the exploration graph */

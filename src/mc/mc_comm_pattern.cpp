@@ -65,9 +65,7 @@ void MC_state_copy_index_communications_pattern(simgrid::mc::State* state)
     state->communicationIndices.push_back(list_process_comm->index_comm);
 }
 
-void MC_handle_comm_pattern(
-  e_mc_call_type_t call_type, smx_simcall_t req,
-  int value, xbt_dynar_t pattern, int backtracking)
+void MC_handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int value, int backtracking)
 {
   // HACK, do not rely on the Checker implementation outside of it
   simgrid::mc::CommunicationDeterminismChecker* checker =
@@ -78,7 +76,7 @@ void MC_handle_comm_pattern(
     break;
   case MC_CALL_TYPE_SEND:
   case MC_CALL_TYPE_RECV:
-    checker->get_comm_pattern(pattern, req, call_type, backtracking);
+    checker->get_comm_pattern(req, call_type, backtracking);
     break;
   case MC_CALL_TYPE_WAIT:
   case MC_CALL_TYPE_WAITANY:
@@ -92,7 +90,7 @@ void MC_handle_comm_pattern(
       addr      = mc_model_checker->process().read(remote(simcall_comm_waitany__getraw__comms(req) + value));
       comm_addr = remote(static_cast<simgrid::kernel::activity::CommImpl*>(addr));
       }
-      checker->complete_comm_pattern(pattern, comm_addr, MC_smx_simcall_get_issuer(req)->get_pid(), backtracking);
+      checker->complete_comm_pattern(comm_addr, MC_smx_simcall_get_issuer(req)->get_pid(), backtracking);
     }
     break;
   default:
