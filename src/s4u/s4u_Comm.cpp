@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/msg/msg_private.hpp"
+#include "src/simix/ActorImpl.hpp"
 #include "xbt/log.h"
 
 #include "simgrid/Exception.hpp"
@@ -225,6 +226,11 @@ bool Comm::test()
 MailboxPtr Comm::get_mailbox()
 {
   return mailbox_;
+}
+
+ActorPtr Comm::get_sender()
+{
+  return sender_ ? sender_->iface() : nullptr;
 }
 
 void intrusive_ptr_release(simgrid::s4u::Comm* c)

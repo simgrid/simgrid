@@ -3,37 +3,23 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/Exception.hpp"
 #include <cmath>
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/msg/msg_private.hpp"
-#include "src/simix/smx_private.hpp" /* MSG_task_listen looks inside the rdv directly. Not clean. */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg, "Logging specific to MSG (gos)");
-
-/**
- * @brief Executes a task and waits for its termination.
- *
- * This function is used for describing the behavior of a process. It takes only one parameter.
- * @param task a #msg_task_t to execute on the location on which the process is running.
- * @return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED or #MSG_HOST_FAILURE otherwise
- */
-msg_error_t MSG_task_execute(msg_task_t task)
-{
-  return MSG_parallel_task_execute(task);
-}
 
 /**
  * @brief Executes a parallel task and waits for its termination.
  *
  * @param task a #msg_task_t to execute on the location on which the process is running.
  *
- * @return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED
- * or #MSG_HOST_FAILURE otherwise
+ * @return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED or #MSG_HOST_FAILURE otherwise
  */
 msg_error_t MSG_parallel_task_execute(msg_task_t task)
 {
@@ -45,11 +31,11 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
   e_smx_state_t comp_state;
   msg_error_t status = MSG_OK;
 
-  xbt_assert((not task->compute) && not task->is_used, "This task is executed somewhere else. Go fix your code!");
+  xbt_assert((not task->compute) && not task->is_used(), "This task is executed somewhere else. Go fix your code!");
 
   XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
 
-  if (task->flops_amount <= 0.0 && not task->host_nb) {
+  if (task->flops_amount <= 0.0 && not task->hosts_.empty()) {
     return MSG_OK;
   }
 
@@ -59,25 +45,13 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
   try {
     task->set_used();
 
-    if (task->host_nb > 0) {
-      task->compute = boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(
-          simcall_execution_parallel_start(std::move(task->get_name()), task->host_nb, task->host_list,
-                                           task->flops_parallel_amount, task->bytes_parallel_amount, -1.0, timeout));
-      XBT_DEBUG("Parallel execution action created: %p", task->compute.get());
-      if (task->has_tracing_category())
-        simgrid::simix::simcall([task] { task->compute->set_category(std::move(task->get_tracing_category())); });
-    } else {
-      sg_host_t host   = MSG_process_get_host(MSG_process_self());
-      task->compute    = simgrid::simix::simcall([task, host] {
-        return simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(
-            std::move(task->get_name()), std::move(task->get_tracing_category()), host));
-      });
-      /* checking for infinite values */
-      xbt_assert(std::isfinite(task->flops_amount), "flops_amount is not finite!");
-      xbt_assert(std::isfinite(task->priority), "priority is not finite!");
-
-      task->compute->start(task->flops_amount, task->priority, task->bound);
-    }
+    task->compute = boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(simcall_execution_parallel_start(
+        std::move(task->get_name()), task->hosts_.size(), task->hosts_.data(),
+        (task->flops_parallel_amount.empty() ? nullptr : task->flops_parallel_amount.data()),
+        (task->bytes_parallel_amount.empty() ? nullptr : task->bytes_parallel_amount.data()), -1.0, timeout));
+    XBT_DEBUG("Parallel execution action created: %p", task->compute.get());
+    if (task->has_tracing_category())
+      simgrid::simix::simcall([task] { task->compute->set_category(std::move(task->get_tracing_category())); });
 
     comp_state = simcall_execution_wait(task->compute);
 
@@ -128,10 +102,8 @@ msg_error_t MSG_task_receive(msg_task_t * task, const char *alias)
  * @param alias name of the mailbox to receive the task from
  * @param rate limit the reception to rate bandwidth (byte/sec)
  *
- * The rate parameter can be used to receive a task with a limited
- * bandwidth (smaller than the physical available value). Use
- * MSG_task_receive() if you don't limit the rate (or pass -1 as a
- * rate value do disable this feature).
+ * The rate parameter can be used to receive a task with a limited bandwidth (smaller than the physical available
+ * value). Use MSG_task_receive() if you don't limit the rate (or pass -1 as a rate value do disable this feature).
  *
  * @return Returns
  * #MSG_OK if the task was successfully received,
@@ -179,7 +151,7 @@ msg_error_t MSG_task_receive_with_timeout(msg_task_t * task, const char *alias, 
  * #MSG_OK if the task was successfully received,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
-msg_error_t MSG_task_receive_with_timeout_bounded(msg_task_t * task, const char *alias, double timeout,double rate)
+msg_error_t MSG_task_receive_with_timeout_bounded(msg_task_t* task, const char* alias, double timeout, double rate)
 {
   return MSG_task_receive_ext_bounded(task, alias, timeout, nullptr, rate);
 }
@@ -215,10 +187,8 @@ msg_error_t MSG_task_receive_ext(msg_task_t * task, const char *alias, double ti
  * @param host a #msg_host_t host from where the task was sent
  * @param rate limit the reception to rate bandwidth (byte/sec)
  *
- * The rate parameter can be used to receive a task with a limited
- * bandwidth (smaller than the physical available value). Use
- * MSG_task_receive_ext() if you don't limit the rate (or pass -1 as a
- * rate value do disable this feature).
+ * The rate parameter can be used to receive a task with a limited bandwidth (smaller than the physical available
+ * value). Use MSG_task_receive_ext() if you don't limit the rate (or pass -1 as a rate value do disable this feature).
  *
  * @return Returns
  * #MSG_OK if the task was successfully received,
@@ -276,17 +246,15 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
 static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* alias, void_f_pvoid_t cleanup,
                                                  bool detached)
 {
-  msg_process_t myself = MSG_process_self();
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(alias);
   TRACE_msg_task_put_start(task);
 
   /* Prepare the task to send */
-  task->sender = myself;
   task->set_used();
   task->comm = nullptr;
   msg_global->sent_msg++;
 
-  simgrid::s4u::CommPtr comm = mailbox->put_init(task, task->bytes_amount)->set_rate(task->rate);
+  simgrid::s4u::CommPtr comm =
+      simgrid::s4u::Mailbox::by_name(alias)->put_init(task, task->bytes_amount)->set_rate(task->get_rate());
   task->comm                 = comm;
   if (detached)
     comm->detach(cleanup);
@@ -331,7 +299,7 @@ msg_comm_t MSG_task_isend(msg_task_t task, const char *alias)
  */
 msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate)
 {
-  task->rate = maxrate;
+  task->set_rate(maxrate);
   return MSG_task_isend_internal(task, alias, nullptr, false);
 }
 
@@ -381,7 +349,7 @@ void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
  */
 void MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t cleanup, double maxrate)
 {
-  task->rate = maxrate;
+  task->set_rate(maxrate);
   MSG_task_dsend(task, alias, cleanup);
 }
 
@@ -471,8 +439,7 @@ int MSG_comm_test(msg_comm_t comm)
  * @brief This function checks if a communication is finished.
  * @param comms a vector of communications
  * @return the position of the finished communication if any
- * (but it may have failed, use MSG_comm_get_status() to know its status),
- * or -1 if none is finished
+ * (but it may have failed, use MSG_comm_get_status() to know its status), or -1 if none is finished
  */
 int MSG_comm_testany(xbt_dynar_t comms)
 {
@@ -624,8 +591,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 /**
  * @brief Returns the error (if any) that occurred during a finished communication.
  * @param comm a finished communication
- * @return the status of the communication, or #MSG_OK if no error occurred
- * during the communication
+ * @return the status of the communication, or #MSG_OK if no error occurred during the communication
  */
 msg_error_t MSG_comm_get_status(msg_comm_t comm) {
 
@@ -686,10 +652,8 @@ msg_error_t MSG_task_send(msg_task_t task, const char *alias)
  * This is a blocking function, the execution flow will be blocked until the task is sent. The maxrate parameter allows
  * the application to limit the bandwidth utilization of network links when sending the task.
  *
- * The maxrate parameter can be used to send a task with a limited
- * bandwidth (smaller than the physical available value). Use
- * MSG_task_send() if you don't limit the rate (or pass -1 as a rate
- * value do disable this feature).
+ * The maxrate parameter can be used to send a task with a limited bandwidth (smaller than the physical available
+ * value). Use MSG_task_send() if you don't limit the rate (or pass -1 as a rate value do disable this feature).
  *
  * @param task the task to be sent
  * @param alias the mailbox name to where the task is sent
@@ -700,7 +664,7 @@ msg_error_t MSG_task_send(msg_task_t task, const char *alias)
  */
 msg_error_t MSG_task_send_bounded(msg_task_t task, const char *alias, double maxrate)
 {
-  task->rate = maxrate;
+  task->set_rate(maxrate);
   return MSG_task_send(task, alias);
 }
 
@@ -723,7 +687,6 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   TRACE_msg_task_put_start(task);
 
   /* Prepare the task to send */
-  task->sender = MSG_process_self();
   task->set_used();
 
   msg_global->sent_msg++;
@@ -731,7 +694,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   /* Try to send it */
   try {
     simgrid::s4u::CommPtr comm =
-        simgrid::s4u::Mailbox::by_name(alias)->put_init(task, task->bytes_amount)->set_rate(task->rate);
+        simgrid::s4u::Mailbox::by_name(alias)->put_init(task, task->bytes_amount)->set_rate(task->get_rate());
     task->comm = comm;
     comm->start();
     if (TRACE_is_enabled() && task->has_tracing_category())
@@ -760,10 +723,9 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
  *
  * This is a blocking function, the execution flow will be blocked until the task is sent or the timeout is achieved.
  *
- * The maxrate parameter can be used to send a task with a limited
- * bandwidth (smaller than the physical available value). Use
- * MSG_task_send_with_timeout() if you don't limit the rate (or pass -1 as a rate
- * value do disable this feature).
+ * The maxrate parameter can be used to send a task with a limited bandwidth (smaller than the physical available
+ * value). Use MSG_task_send_with_timeout() if you don't limit the rate (or pass -1 as a rate value do disable this
+ * feature).
  *
  * @param task the task to be sent
  * @param alias the mailbox name to where the task is sent
@@ -775,7 +737,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
  */
 msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alias, double timeout, double maxrate)
 {
-  task->rate = maxrate;
+  task->set_rate(maxrate);
   return MSG_task_send_with_timeout(task, alias, timeout);
 }
 
@@ -785,56 +747,17 @@ msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alia
  * @param alias the name of the mailbox to be considered
  *
  * @return Returns the PID of sender process,
- * -1 if there is no communication in the mailbox.
+ * -1 if there is no communication in the mailbox.#include <cmath>
+ *
  */
 int MSG_task_listen_from(const char *alias)
 {
+  /* looks inside the rdv directly. Not clean. */
   simgrid::kernel::activity::CommImplPtr comm = simgrid::s4u::Mailbox::by_name(alias)->front();
 
-  return comm ? MSG_process_get_PID(static_cast<msg_task_t>(comm->src_buff_)->sender) : -1;
+  if (comm && comm->src_actor_)
+    return comm->src_actor_->get_pid();
+  else
+    return -1;
 }
 
-/**
- * @brief Sets the tracing category of a task.
- *
- * This function should be called after the creation of a MSG task, to define the category of that task. The
- * first parameter task must contain a task that was  created with the function #MSG_task_create. The second
- * parameter category must contain a category that was previously declared with the function #TRACE_category
- * (or with #TRACE_category_with_color).
- *
- * See @ref outcomes_vizu for details on how to trace the (categorized) resource utilization.
- *
- * @param task the task that is going to be categorized
- * @param category the name of the category to be associated to the task
- *
- * @see MSG_task_get_category, TRACE_category, TRACE_category_with_color
- */
-void MSG_task_set_category (msg_task_t task, const char *category)
-{
-  xbt_assert(not task->has_tracing_category(), "Task %p(%s) already has a category (%s).", task, task->get_cname(),
-             task->get_tracing_category().c_str());
-
-  // if user provides a nullptr category, task is no longer traced
-  if (category == nullptr) {
-    task->set_tracing_category("");
-    XBT_DEBUG("MSG task %p(%s), category removed", task, task->get_cname());
-  } else {
-    // set task category
-    task->set_tracing_category(category);
-    XBT_DEBUG("MSG task %p(%s), category %s", task, task->get_cname(), task->get_tracing_category().c_str());
-  }
-}
-
-/**
- * @brief Gets the current tracing category of a task.
- *
- * @param task the task to be considered
- *
- * @see MSG_task_set_category
- *
- * @return Returns the name of the tracing category of the given task, nullptr otherwise
- */
-const char *MSG_task_get_category (msg_task_t task)
-{
-  return task->get_tracing_category().c_str();
-}

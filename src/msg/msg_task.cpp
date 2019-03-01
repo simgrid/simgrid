@@ -5,27 +5,127 @@
 
 #include "msg_private.hpp"
 #include "src/simix/smx_private.hpp"
-#include <algorithm>
-#include <cmath>
 #include <simgrid/s4u/Comm.hpp>
+#include <simgrid/s4u/Host.hpp>
+
+#include <algorithm>
+#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)");
 
 namespace simgrid {
 namespace msg {
-Task::~Task()
+
+Task::Task(std::string name, double flops_amount, double bytes_amount, void* data)
+    : name_(std::move(name)), userdata_(data), flops_amount(flops_amount), bytes_amount(bytes_amount)
 {
-  /* parallel tasks only */
-  delete[] host_list;
-  delete[] flops_parallel_amount;
-  delete[] bytes_parallel_amount;
+  static std::atomic_ullong counter{0};
+  id_ = counter++;
+  if (MC_is_active())
+    MC_ignore_heap(&(id_), sizeof(id_));
+}
+
+Task::Task(std::string name, std::vector<s4u::Host*> hosts, std::vector<double> flops_amount,
+           std::vector<double> bytes_amount, void* data)
+    : Task(std::move(name), 1.0, 0, data)
+{
+  parallel_             = true;
+  hosts_                = std::move(hosts);
+  flops_parallel_amount = std::move(flops_amount);
+  bytes_parallel_amount = std::move(bytes_amount);
+}
+
+Task* Task::create(std::string name, double flops_amount, double bytes_amount, void* data)
+{
+  return new Task(std::move(name), flops_amount, bytes_amount, data);
+}
+
+Task* Task::create_parallel(std::string name, int host_nb, const msg_host_t* host_list, double* flops_amount,
+                            double* bytes_amount, void* data)
+{
+  std::vector<s4u::Host*> hosts;
+  std::vector<double> flops;
+  std::vector<double> bytes;
+
+  for (int i = 0; i < host_nb; i++) {
+    hosts.push_back(host_list[i]);
+    if (flops_amount != nullptr)
+      flops.push_back(flops_amount[i]);
+    if (bytes_amount != nullptr) {
+      for (int j = 0; j < host_nb; j++)
+        bytes.push_back(bytes_amount[host_nb * i + j]);
+    }
+  }
+  return new Task(std::move(name), std::move(hosts), std::move(flops), std::move(bytes), data);
+}
+
+msg_error_t Task::execute()
+{
+  /* checking for infinite values */
+  xbt_assert(std::isfinite(flops_amount), "flops_amount is not finite!");
+
+  msg_error_t status = MSG_OK;
+  s4u::Host* host    = SIMIX_process_self()->get_host();
+
+  set_used();
+
+  compute = simix::simcall([this, host] {
+    return kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl(name_, tracing_category_, host));
+  });
+
+  try {
+    compute->start(flops_amount, priority_, bound_);
+    e_smx_state_t comp_state = simcall_execution_wait(compute);
+
+    set_not_used();
+    XBT_DEBUG("Execution task '%s' finished in state %d", get_cname(), (int)comp_state);
+  } catch (HostFailureException& e) {
+    status = MSG_HOST_FAILURE;
+  } catch (TimeoutError& e) {
+    status = MSG_TIMEOUT;
+  } catch (CancelException& e) {
+    status = MSG_TASK_CANCELED;
+  }
+
+  /* action ended, set comm and compute = nullptr, the actions is already destroyed in the main function */
+  flops_amount = 0.0;
+  comm         = nullptr;
+  compute      = nullptr;
+
+  return status;
+}
+
+void Task::cancel()
+{
+  if (compute) {
+    simgrid::simix::simcall([this] { compute->cancel(); });
+  } else if (comm) {
+    comm->cancel();
+  }
+  set_not_used();
+}
+
+void Task::set_priority(double priority)
+{
+  xbt_assert(std::isfinite(1.0 / priority), "priority is not finite!");
+  priority_ = 1.0 / priority;
+}
+
+s4u::Actor* Task::get_sender()
+{
+  return comm ? comm->get_sender().get() : nullptr;
+}
+
+s4u::Host* Task::get_source()
+{
+  return comm ? comm->get_sender()->get_host() : nullptr;
 }
 
 void Task::set_used()
 {
-  if (this->is_used)
-    this->report_multiple_use();
-  this->is_used = true;
+  if (is_used_)
+    report_multiple_use();
+  is_used_ = true;
 }
 
 void Task::report_multiple_use() const
@@ -60,7 +160,7 @@ void Task::report_multiple_use() const
  */
 msg_task_t MSG_task_create(const char *name, double flop_amount, double message_size, void *data)
 {
-  return new simgrid::msg::Task(name ? name : "", flop_amount, message_size, data);
+  return simgrid::msg::Task::create(name ? std::string(name) : "", flop_amount, message_size, data);
 }
 
 /** @brief Creates a new parallel task
@@ -87,22 +187,7 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
 {
   // Task's flops amount is set to an arbitrary value > 0.0 to be able to distinguish, in
   // MSG_task_get_remaining_work_ratio(), a finished task and a task that has not started yet.
-  msg_task_t task        = MSG_task_create(name, 1.0, 0, data);
-
-  /* Simulator Data specific to parallel tasks */
-  task->host_nb = host_nb;
-  task->host_list = new sg_host_t[host_nb];
-  std::copy_n(host_list, host_nb, task->host_list);
-  if (flops_amount != nullptr) {
-    task->flops_parallel_amount = new double[host_nb];
-    std::copy_n(flops_amount, host_nb, task->flops_parallel_amount);
-  }
-  if (bytes_amount != nullptr) {
-    task->bytes_parallel_amount = new double[host_nb * host_nb];
-    std::copy_n(bytes_amount, host_nb * host_nb, task->bytes_parallel_amount);
-  }
-
-  return task;
+  return simgrid::msg::Task::create_parallel(name ? name : "", host_nb, host_list, flops_amount, bytes_amount, data);
 }
 
 /** @brief Return the user data of the given task */
@@ -134,13 +219,13 @@ void MSG_task_set_copy_callback(void (*callback) (msg_task_t task, msg_process_t
 /** @brief Returns the sender of the given task */
 msg_process_t MSG_task_get_sender(msg_task_t task)
 {
-  return task->sender;
+  return task->get_sender();
 }
 
 /** @brief Returns the source (the sender's host) of the given task */
 msg_host_t MSG_task_get_source(msg_task_t task)
 {
-  return task->sender->get_host();
+  return task->get_source();
 }
 
 /** @brief Returns the name of the given task. */
@@ -155,6 +240,18 @@ void MSG_task_set_name(msg_task_t task, const char *name)
   task->set_name(name);
 }
 
+/**
+ * @brief Executes a task and waits for its termination.
+ *
+ * This function is used for describing the behavior of a process. It takes only one parameter.
+ * @param task a #msg_task_t to execute on the location on which the process is running.
+ * @return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED or #MSG_HOST_FAILURE otherwise
+ */
+msg_error_t MSG_task_execute(msg_task_t task)
+{
+  return task->execute();
+}
+
 /** @brief Destroys the given task.
  *
  * You should free user data, if any, @b before calling this destructor.
@@ -167,9 +264,9 @@ void MSG_task_set_name(msg_task_t task, const char *name)
  */
 msg_error_t MSG_task_destroy(msg_task_t task)
 {
-  if (task->is_used) {
+  if (task->is_used()) {
     /* the task is being sent or executed: cancel it first */
-    MSG_task_cancel(task);
+    task->cancel();
   }
 
   /* free main structures */
@@ -185,13 +282,7 @@ msg_error_t MSG_task_destroy(msg_task_t task)
 msg_error_t MSG_task_cancel(msg_task_t task)
 {
   xbt_assert((task != nullptr), "Cannot cancel a nullptr task");
-
-  if (task->compute) {
-    simgrid::simix::simcall([task] { task->compute->cancel(); });
-  } else if (task->comm) {
-    task->comm->cancel();
-  }
-  task->set_not_used();
+  task->cancel();
   return MSG_OK;
 }
 
@@ -275,8 +366,7 @@ double MSG_task_get_bytes_amount(msg_task_t task)
  */
 void MSG_task_set_priority(msg_task_t task, double priority)
 {
-  task->priority = 1 / priority;
-  xbt_assert(std::isfinite(task->priority), "priority is not finite!");
+  task->set_priority(priority);
 }
 
 /** @brief Changes the maximum CPU utilization of a computation task (in flops/s).
@@ -287,5 +377,46 @@ void MSG_task_set_bound(msg_task_t task, double bound)
 {
   if (bound < 1e-12) /* close enough to 0 without any floating precision surprise */
     XBT_INFO("bound == 0 means no capping (i.e., unlimited).");
-  task->bound = bound;
+  task->set_bound(bound);
+}
+
+/**
+ * @brief Sets the tracing category of a task.
+ *
+ * This function should be called after the creation of a MSG task, to define the category of that task. The
+ * first parameter task must contain a task that was  =created with the function #MSG_task_create. The second
+ * parameter category must contain a category that was previously declared with the function #TRACE_category
+ * (or with #TRACE_category_with_color).
+ *
+ * See @ref outcomes_vizu for details on how to trace the (categorized) resource utilization.
+ *
+ * @param task the task that is going to be categorized
+ * @param category the name of the category to be associated to the task
+ *
+ * @see MSG_task_get_category, TRACE_category, TRACE_category_with_color
+ */
+void MSG_task_set_category(msg_task_t task, const char* category)
+{
+  xbt_assert(not task->has_tracing_category(), "Task %p(%s) already has a category (%s).", task, task->get_cname(),
+             task->get_tracing_category().c_str());
+
+  // if user provides a nullptr category, task is no longer traced
+  if (category == nullptr) {
+    task->set_tracing_category("");
+    XBT_DEBUG("MSG task %p(%s), category removed", task, task->get_cname());
+  } else {
+    // set task category
+    task->set_tracing_category(category);
+    XBT_DEBUG("MSG task %p(%s), category %s", task, task->get_cname(), task->get_tracing_category().c_str());
+  }
+}
+
+/**
+ * @brief Gets the current tracing category of a task. (@see MSG_task_set_category)
+ * @param task the task to be considered
+ * @return Returns the name of the tracing category of the given task, "" otherwise
+ */
+const char* MSG_task_get_category(msg_task_t task)
+{
+  return task->get_tracing_category().c_str();
 }

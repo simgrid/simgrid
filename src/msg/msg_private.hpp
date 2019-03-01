@@ -6,10 +6,13 @@
 #ifndef MSG_PRIVATE_HPP
 #define MSG_PRIVATE_HPP
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/msg.h"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include <simgrid/modelchecker.h>
+
+#include <cmath>
 
 /**************** datatypes **********************************/
 namespace simgrid {
@@ -20,21 +23,33 @@ class Task {
   void* userdata_               = nullptr;
   long long int id_;
 
+  double priority_ = 1.0;
+  double bound_    = 0.0;   /* Capping for CPU resource, or 0 for no capping */
+  double rate_     = -1;    /* Capping for network resource, or -1 for no capping*/
+  bool is_used_    = false; /* Indicates whether the task is used in SIMIX currently */
+
+  explicit Task(std::string name, double flops_amount, double bytes_amount, void* data);
+  explicit Task(std::string name, std::vector<s4u::Host*> hosts, std::vector<double> flops_amount,
+                std::vector<double> bytes_amount, void* data);
+
+  void report_multiple_use() const;
+
 public:
-  explicit Task(std::string name, double flops_amount, double bytes_amount, void* data)
-      : name_(std::move(name)), userdata_(data), flops_amount(flops_amount), bytes_amount(bytes_amount)
-  {
-    static std::atomic_ullong counter{0};
-    id_ = counter++;
-    if (MC_is_active())
-      MC_ignore_heap(&(id_), sizeof(id_));
-  }
+  static Task* create(std::string name, double flops_amount, double bytes_amount, void* data);
+  static Task* create_parallel(std::string name, int host_nb, const msg_host_t* host_list, double* flops_amount,
+                               double* bytes_amount, void* data);
+  msg_error_t execute();
+  void cancel();
+
   Task(const Task&) = delete;
   Task& operator=(const Task&) = delete;
-  ~Task();
-  void set_used();
-  void set_not_used() { this->is_used = false; }
+  ~Task()                      = default;
 
+  bool is_used() { return is_used_; }
+  bool is_parallel() { return parallel_; }
+
+  void set_used();
+  void set_not_used() { this->is_used_ = false; }
   const std::string& get_name() const { return name_; }
   const char* get_cname() { return name_.c_str(); }
   void set_name(const char* new_name) { name_ = std::string(new_name); }
@@ -44,27 +59,27 @@ public:
   void* get_user_data() { return userdata_; }
   void set_user_data(void* data) { userdata_ = data; }
   long long int get_id() { return id_; }
+  double get_priority() { return priority_; }
+  void set_priority(double priority);
+  void set_bound(double bound) { bound_ = bound; }
+  double get_bound() { return bound_; }
+  void set_rate(double rate) { rate_ = rate; }
+  double get_rate() { return rate_; }
+
+  s4u::Actor* get_sender();
+  s4u::Host* get_source();
 
   kernel::activity::ExecImplPtr compute          = nullptr; /* SIMIX modeling of computation */
   s4u::CommPtr comm                              = nullptr; /* S4U modeling of communication */
   double flops_amount                            = 0.0;     /* Computation size */
   double bytes_amount                            = 0.0;     /* Data size */
-  msg_process_t sender                           = nullptr;
-  msg_process_t receiver                         = nullptr;
 
-  double priority = 1.0;
-  double bound    = 0.0; /* Capping for CPU resource, or 0 for no capping */
-  double rate     = -1;  /* Capping for network resource, or -1 for no capping*/
 
-  bool is_used = false; /* Indicates whether the task is used in SIMIX currently */
-  int host_nb = 0;     /* ==0 if sequential task; parallel task if not */
   /*******  Parallel Tasks Only !!!! *******/
-  sg_host_t* host_list          = nullptr;
-  double* flops_parallel_amount = nullptr;
-  double* bytes_parallel_amount = nullptr;
-
-private:
-  void report_multiple_use() const;
+  bool parallel_ = false;
+  std::vector<s4u::Host*> hosts_;
+  std::vector<double> flops_parallel_amount;
+  std::vector<double> bytes_parallel_amount;
 };
 
 class Comm {
