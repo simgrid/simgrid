@@ -16,20 +16,19 @@ namespace s4u {
 Io::Io(sg_storage_t storage, sg_size_t size, OpType type) : Activity(), storage_(storage), size_(size), type_(type)
 {
   Activity::set_remaining(size_);
-  pimpl_ = simix::simcall(
-      [this] { return kernel::activity::IoImplPtr(new kernel::activity::IoImpl(name_, storage_->get_impl())); });
+  pimpl_ = kernel::activity::IoImplPtr(new kernel::activity::IoImpl(name_, storage_->get_impl()));
 }
 
 Io* Io::start()
 {
-  simix::simcall([this] { static_cast<kernel::activity::IoImpl*>(pimpl_.get())->start(size_, type_); });
+  simix::simcall([this] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->start(size_, type_); });
   state_ = State::STARTED;
   return this;
 }
 
 Io* Io::cancel()
 {
-  simgrid::simix::simcall([this] { static_cast<kernel::activity::IoImpl*>(pimpl_.get())->cancel(); });
+  simgrid::simix::simcall([this] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->cancel(); });
   state_ = State::CANCELED;
   return this;
 }

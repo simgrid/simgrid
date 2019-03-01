@@ -23,8 +23,9 @@ Exec::Exec(sg_host_t host, double flops_amount) : Activity(), host_(host), flops
 
 Exec* Exec::start()
 {
-  simix::simcall(
-      [this] { static_cast<kernel::activity::ExecImpl*>(pimpl_.get())->start(flops_amount_, 1. / priority_, bound_); });
+  simix::simcall([this] {
+    boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->start(flops_amount_, 1. / priority_, bound_);
+  });
   state_ = State::STARTED;
   on_start(Actor::self());
   return this;
@@ -32,7 +33,7 @@ Exec* Exec::start()
 
 Exec* Exec::cancel()
 {
-  simgrid::simix::simcall([this] { static_cast<kernel::activity::ExecImpl*>(pimpl_.get())->cancel(); });
+  simgrid::simix::simcall([this] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->cancel(); });
   state_ = State::CANCELED;
   return this;
 }
