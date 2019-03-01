@@ -661,8 +661,6 @@ static void smpi_init_privatization_no_dlopen(const std::string& executable)
 
 int smpi_main(const char* executable, int argc, char* argv[])
 {
-  srand(SMPI_RAND_SEED);
-
   if (getenv("SMPI_PRETEND_CC") != nullptr) {
     /* Hack to ensure that smpicc can pretend to be a simple compiler. Particularly handy to pass it to the
      * configuration tools */

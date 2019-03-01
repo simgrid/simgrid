@@ -10,6 +10,7 @@ Core:
    with the Boost.Stacktrace library.
    You won't see your backtraces without this optional dependency.
  - Bump cmake dependency to 3.5 (provided by Ubuntu 16.04).
+ - Stop setting random seed with srand() at initialization.
 
 MSG:
  - Drop MSG_process_create_from_stdfunc() from the API.

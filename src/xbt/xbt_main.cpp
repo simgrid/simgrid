@@ -75,7 +75,6 @@ static BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserv
 
 static void xbt_preinit()
 {
-  unsigned int seed = 2147483647;
 #ifdef _WIN32
   SYSTEM_INFO si;
   GetSystemInfo(&si);
@@ -95,9 +94,9 @@ static void xbt_preinit()
   xbt_log_preinit();
   xbt_dict_preinit();
 
-  srand(seed);
 #ifndef _WIN32
-  srand48(seed);
+  constexpr unsigned seed = 2147483647;
+  srand48(seed); // FIXME: still worthwhile?
 #endif
   atexit(xbt_postexit);
 }
