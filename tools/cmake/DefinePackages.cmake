@@ -832,13 +832,9 @@ set(DOC_SOURCES
 
   doc/doxygen/FAQ.doc
   doc/doxygen/deployment.doc
-  doc/doxygen/footer.html
-  doc/doxygen/header.html
-  doc/doxygen/index.doc
   doc/doxygen/inside.doc
   doc/doxygen/inside_tests.doc
   doc/doxygen/inside_cmake.doc
-  doc/doxygen/inside_doxygen.doc
   doc/doxygen/inside_extending.doc
   doc/doxygen/inside_release.doc
   doc/doxygen/module-sd.doc
@@ -849,11 +845,9 @@ set(DOC_SOURCES
   doc/doxygen/ns3.doc
   doc/doxygen/outcomes.doc
   doc/doxygen/outcomes_logs.doc
-  doc/doxygen/outcomes_MC.doc
   doc/doxygen/outcomes_vizu.doc
   doc/doxygen/platform.doc
   doc/doxygen/platform_lua.doc
-  doc/doxygen/stylesheet.css
   doc/doxygen/uhood.doc
   doc/doxygen/uhood_switch.doc
   doc/doxygen/uhood_arch.doc

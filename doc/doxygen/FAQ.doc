@@ -88,54 +88,6 @@ it with MSG. Feel free to contribute...
 
 @subsection faq_MIA_MSG MSG features
 
-@subsubsection faq_MIA_examples I want some more complex MSG examples!
-
-Many people have come to ask me a more complex example and each time,
-they have realized afterward that the basics were in the previous three
-examples.
-
-Of course they have often been needing more complex functions like
-MSG_process_suspend(), MSG_process_resume() and
-MSG_process_isSuspended() (to perform synchronization), or
-MSG_task_Iprobe() and MSG_process_sleep() (to avoid blocking
-receptions), or even MSG_process_create() (to design asynchronous
-communications or computations). But the examples are sufficient to
-start.
-
-We know. We should add some more examples, but not really some more
-complex ones... We should add some examples that illustrate some other
-functionalists (like how to simply encode asynchronous
-communications, RPC, process migrations, thread synchronization, ...)
-and we will do it when we will have a little bit more time. We have
-tried to document the examples so that they are understandable. Tell
-us if something is not clear and once again feel free to participate!
-:)
-
-@subsubsection faq_MIA_taskdup Missing in action: MSG Task duplication/replication
-
-There is no task duplication in MSG. When you create a task, you can
-process it or send it somewhere else. As soon as a process has sent
-this task, he doesn't have this task anymore. It's gone. The receiver
-process has got the task. However, you could decide upon receiving to
-create a "copy" of a task but you have to handle by yourself the
-semantic associated to this "duplication".
-
-As we already told, we prefer keeping the API as simple as
-possible. This kind of feature is rather easy to implement by users
-and the semantic you associate really depends on people. Having a
-*generic* task duplication mechanism is not that trivial (in
-particular because of the data field). That is why I would recommend
-that you write it by yourself even if I can give you advice on how to
-do it.
-
-You have the following functions to get information about a task:
-MSG_task_get_name(), MSG_task_get_compute_duration(),
-MSG_task_get_remaining_computation(), MSG_task_get_data_size(),
-and MSG_task_get_data().
-
-You could use a dictionary (#xbt_dict_t) of dynars (#xbt_dynar_t). If
-you still don't see how to do it, please come back to us...
-
 @subsubsection faq_MIA_thread_synchronization How to synchronize my user processes?
 
 It depends on why you want to synchronize them.  If you just want to
@@ -172,51 +124,6 @@ many synchronization patterns can be encoded with communication on
 mailboxes. Typically, if you need one process to notify another one,
 you could use a condition variable or a semphore, but sending a
 message to a specific mailbox does the trick in most cases.
-
-@subsubsection faq_MIA_host_load Where is the get_host_load function hidden in MSG?
-
-There is no such thing because its semantic wouldn't be really
-clear. Of course, it is something about the amount of host throughput,
-but there is as many definition of "host load" as people asking for
-this function. First, you have to remember that resource availability
-may vary over time, which make any load notion harder to define.
-
-It may be instantaneous value or an average one. Moreover it may be only the
-power of the computer, or may take the background load into account, or may
-even take the currently running tasks into account. In some SURF models,
-communications have an influence on computational power. Should it be taken
-into account too?
-
-First of all, it's near to impossible to predict the load beforehand in the
-simulator since it depends on too much parameters (background load
-variation, bandwidth sharing algorithmic complexity) some of them even being
-not known beforehand (other task starting at the same time). So, getting
-this information is really hard (just like in real life). It's not just that
-we want MSG to be as painful as real life. But as it is in some way
-realistic, we face some of the same problems as we would face in real life.
-
-How would you do it for real? The most common option is to use something
-like NWS that performs active probes. The best solution is probably to do
-the same within MSG, as in next code snippet. It is very close from what you
-would have to do out of the simulator, and thus gives you information that
-you could also get in real settings to not hinder the realism of your
-simulation.
-
-@code
-double get_host_load() {
-   m_task_t task = MSG_task_create("test", 0.001, 0, NULL);
-   double date = MSG_get_clock();
-
-   MSG_task_execute(task);
-   date = MSG_get_clock() - date;
-   MSG_task_destroy(task);
-   return (0.001/date);
-}
-@endcode
-
-Of course, it may not match your personal definition of "host load". In this
-case, please detail what you mean on the mailing list, and we will extend
-this FAQ section to fit your taste if possible.
 
 @subsubsection faq_MIA_communication_time How can I get the *real* communication time?
 
@@ -368,20 +275,9 @@ You should refer to the Platform Description Archive
 have available, as well as the Simulacrum simulator, meant to generate
 SimGrid platforms using all classical generation algorithms.
 
-@subsubsection faq_platform_alnem How can I automatically map an existing platform?
-
-We are working on a project called ALNeM (Application-Level Network
-Mapper) which goal is to automatically discover the topology of an
-existing network. Its output will be a platform description file
-following the SimGrid syntax, so everybody will get the ability to map
-their own lab network (and contribute them to the catalog project).
-This tool is not ready yet, but it move quite fast forward. Just stay
-tuned.
-
 @subsubsection faq_platform_synthetic Generating synthetic but realistic platforms
 
-The third possibility to get a platform file (after manual or
-automatic mapping of real platforms) is to generate synthetic
+Another possibility to get a platform file is to generate synthetic
 platforms. Getting a realistic result is not a trivial task, and
 moreover, nobody is really able to define what "realistic" means when
 speaking of topology files. You can find some more thoughts on this
@@ -401,46 +297,6 @@ tasks on the host, each will get half of the computing power. Please
 note that although sound, this model were never scientifically
 assessed. Please keep this fact in mind when using it.
 
-
-@subsubsection faq_platform_random Using random variable for the resource power or availability
-
-The best way to model the resouce power using a random variable is to
-use an availability trace that is directed by a probability
-distribution. This can be done using the function
-tmgr_trace_generator_value() below. The date and value generators is
-created with one of tmgr_event_generator_new_uniform(),
-tmgr_event_generator_new_exponential() or
-tmgr_event_generator_new_weibull() (if you need other generators,
-adding them to src/surf/trace_mgr.c should be quite trivial and your
-patch will be welcomed). Once your trace is created, you have to
-connect it to the resource with the function
-sg_platf_new_trace_connect().
-
-That the process is very similar if you want to model the
-resource availability with a random variable (deciding whether it's
-on/off instead of deciding its speed) using the function
-tmgr_trace_generator_state() or tmgr_trace_generator_avail_unavail()
-instead of tmgr_trace_generator_value().
-
-Unfortunately, all this is currently lacking a proper documentation,
-and there is even no proper example of use. You'll thus have to check
-the header file include/simgrid/platf.h and experiment a bit by
-yourself. The following code should be a good starting point, and
-contributing a little clean example would be a good way to help the
-SimGrid project.
-
-@code
-tmgr_trace_generator_value("mytrace",tmgr_event_generator_new_exponential(.5)
-                                     tmgr_event_generator_new_uniform(100000,9999999));
-				     
-sg_platf_trace_connect_cbarg_t myconnect = SG_PLATF_TRACE_CONNECT_INITIALIZER;
-myconnect.kind = SURF_TRACE_CONNECT_KIND_BANDWIDTH;
-myconnect.trace = "mytrace";
-myconnect.element = "mylink";
-
-sg_platf_trace_connect(myconnect);
-@endcode
-
 @section faq_troubleshooting Troubleshooting
 
 @subsection faq_trouble_changelog The feature X stopped to work after my last update 
@@ -457,33 +313,6 @@ kill a feature that you were using, we are sorry. We think that you
 should update to the new way of doing things, but if you can't afford
 it, that's ok. Just stick to the last version that were working for
 you, and have a pleasant day.
-
-@subsection faq_trouble_lib_compil SimGrid compilation and installation problems
-
-@subsubsection faq_trouble_lib_config cmake fails!
-
-We know only one reason for the configure to fail:
-
- - <b>You are using a broken build environment</b>@n
-   Try updating your cmake version. If symptom is that the configury
-   magic complains about gcc not being able to build executables, you
-   are probably missing the libc6-dev package. Damn Ubuntu. 
-
-If you experience other kind of issue, please get in touch with us. We are
-always interested in improving our portability to new systems.
-
-@subsubsection faq_trouble_distcheck Dude! "ctest" fails on my machine!
-
-Don't assume we never run this target, because we do. Check
-http://cdash.inria.fr/CDash/index.php?project=Simgrid (click on
-previous if there is no result for today: results are produced only by
-11am, French time) and
-https://buildd.debian.org/status/logs.php?pkg=simgrid if you don't believe us.
-
-If it's failing on your machine in a way not experienced by the
-autobuilders above, please drop us a mail on the mailing list so that
-we can check it out. Make sure to read @ref faq_bugrepport before you
-do so.
 
 @subsection faq_trouble_compil User code compilation problems
 
@@ -542,52 +371,6 @@ Both options are needed in order to run the SMPI process under GDB.
 
 If you don't, you really should use valgrind to debug your code, it's
 almost magic.
-
-@subsubsection faq_trouble_vg_libc Valgrind spits tons of errors about backtraces!
-
-It may happen that valgrind, the memory debugger beloved by any decent C
-programmer, spits tons of warnings like the following :
-@verbatim ==8414== Conditional jump or move depends on uninitialised value(s)
-==8414==    at 0x400882D: (within /lib/ld-2.3.6.so)
-==8414==    by 0x414EDE9: (within /lib/tls/i686/cmov/libc-2.3.6.so)
-==8414==    by 0x400B105: (within /lib/ld-2.3.6.so)
-==8414==    by 0x414F937: _dl_open (in /lib/tls/i686/cmov/libc-2.3.6.so)
-==8414==    by 0x4150F4C: (within /lib/tls/i686/cmov/libc-2.3.6.so)
-==8414==    by 0x400B105: (within /lib/ld-2.3.6.so)
-==8414==    by 0x415102D: __libc_dlopen_mode (in /lib/tls/i686/cmov/libc-2.3.6.so)
-==8414==    by 0x412D6B9: backtrace (in /lib/tls/i686/cmov/libc-2.3.6.so)
-==8414==    by 0x8076446: xbt_dictelm_get_ext (dict_elm.c:714)
-==8414==    by 0x80764C1: xbt_dictelm_get (dict_elm.c:732)
-==8414==    by 0x8079010: xbt_cfg_register (config.c:208)
-==8414==    by 0x806821B: MSG_config (msg_config.c:42)
-@endverbatim
-
-This problem is somewhere in the libc when using the backtraces and there is
-very few things we can do ourselves to fix it. Instead, here is how to tell
-valgrind to ignore the error. Add the following to your ~/.valgrind.supp (or
-create this file on need). Make sure to change the obj line according to
-your personnal mileage (change 2.3.6 to the actual version you are using,
-which you can retrieve with a simple "ls /lib/ld*.so").
-
-@verbatim {
-   name: Backtrace madness
-   Memcheck:Cond
-   obj:/lib/ld-2.3.6.so
-   fun:dl_open_worker
-   fun:_dl_open
-   fun:do_dlopen
-   fun:dlerror_run
-   fun:__libc_dlopen_mode
-}@endverbatim
-
-Then, you have to specify valgrind to use this suppression file by passing
-the <tt>--suppressions=$HOME/.valgrind.supp</tt> option on the command line.
-You can also add the following to your ~/.bashrc so that it gets passed
-automatically. Actually, it passes a bit more options to valgrind, and this
-happen to be my personnal settings. Check the valgrind documentation for
-more information.
-
-@verbatim export VALGRIND_OPTS="--leak-check=yes --leak-resolution=high --num-callers=40 --tool=memcheck --suppressions=$HOME/.valgrind.supp" @endverbatim
 
 @subsubsection faq_trouble_backtraces Truncated backtraces
 

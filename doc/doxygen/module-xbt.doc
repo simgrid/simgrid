@@ -79,18 +79,3 @@
      /** @defgroup XBT_replay Replay */
 /** @} */ 
 
-/* ************************* *
- * * PORTABILITY-INTERNALS * * (not included in documentation)
- * ************************* */
-
- /** @addtogroup XBT_context Portable context implementation
-  *  @brief Contexts are a higher level system than <tt>setjump/longjmp</tt>
-  *  for non-preemptible threads.
-  *
-  *  You shouldn't use it directly since it is merely intended to ease the
-  *  implementation of the several programmation environment of the
-  *  SimGrid toolkit (namely, @ref MSG_API and @ref SMPI_API).
-  *
-  *  You should use those environments instead.
-  */
-
