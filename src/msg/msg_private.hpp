@@ -39,6 +39,7 @@ public:
   static Task* create_parallel(std::string name, int host_nb, const msg_host_t* host_list, double* flops_amount,
                                double* bytes_amount, void* data);
   msg_error_t execute();
+  Comm* send_async(std::string alias, void_f_pvoid_t cleanup, bool detached);
   void cancel();
 
   Task(const Task&) = delete;
@@ -84,8 +85,8 @@ public:
 
 class Comm {
 public:
-  msg_task_t task_sent;        /* task sent (NULL for the receiver) */
-  msg_task_t* task_received;   /* where the task will be received (NULL for the sender) */
+  Task* task_sent;             /* task sent (NULL for the receiver) */
+  Task** task_received;        /* where the task will be received (NULL for the sender) */
   s4u::CommPtr s_comm;         /* SIMIX communication object encapsulated (the same for both processes) */
   msg_error_t status = MSG_OK; /* status of the communication once finished */
   Comm(msg_task_t sent, msg_task_t* received, s4u::CommPtr comm)

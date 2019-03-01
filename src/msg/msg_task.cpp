@@ -4,10 +4,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg_private.hpp"
-#include "src/simix/smx_private.hpp"
+#include "src/instr/instr_private.hpp"
 #include <simgrid/s4u/Comm.hpp>
 #include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u/Mailbox.hpp>
 
 #include <algorithm>
 #include <vector>
@@ -94,6 +95,32 @@ msg_error_t Task::execute()
   compute      = nullptr;
 
   return status;
+}
+
+Comm* Task::send_async(std::string alias, void_f_pvoid_t cleanup, bool detached)
+{
+  TRACE_msg_task_put_start(this);
+
+  /* Prepare the task to send */
+  set_used();
+  this->comm = nullptr;
+  msg_global->sent_msg++;
+
+  s4u::CommPtr comm = s4u::Mailbox::by_name(alias)->put_init(this, bytes_amount)->set_rate(get_rate());
+  this->comm        = comm;
+
+  if (detached)
+    comm->detach(cleanup);
+  else
+    comm->start();
+
+  if (TRACE_is_enabled() && has_tracing_category())
+    simgrid::simix::simcall([comm, this] { comm->get_impl()->set_category(std::move(tracing_category_)); });
+
+  if (not detached)
+    return new Comm(this, nullptr, comm);
+  else
+    return nullptr;
 }
 
 void Task::cancel()
@@ -251,6 +278,83 @@ void MSG_task_set_name(msg_task_t task, const char *name)
 msg_error_t MSG_task_execute(msg_task_t task)
 {
   return task->execute();
+}
+/**
+ * @brief Sends a task on a mailbox.
+ *
+ * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test() to end the communication.
+ *
+ * @param task a #msg_task_t to send on another location.
+ * @param alias name of the mailbox to sent the task to
+ * @return the msg_comm_t communication created
+ */
+msg_comm_t MSG_task_isend(msg_task_t task, const char* alias)
+{
+  return task->send_async(alias, nullptr, false);
+}
+
+/**
+ * @brief Sends a task on a mailbox with a maximum rate
+ *
+ * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test() to end the communication. The maxrate
+ * parameter allows the application to limit the bandwidth utilization of network links when sending the task.
+ *
+ * @param task a #msg_task_t to send on another location.
+ * @param alias name of the mailbox to sent the task to
+ * @param maxrate the maximum communication rate for sending this task (byte/sec).
+ * @return the msg_comm_t communication created
+ */
+msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char* alias, double maxrate)
+{
+  task->set_rate(maxrate);
+  return task->send_async(alias, nullptr, false);
+}
+
+/**
+ * @brief Sends a task on a mailbox.
+ *
+ * This is a non blocking detached send function.
+ * Think of it as a best effort send. Keep in mind that the third parameter is only called if the communication fails.
+ * If the communication does work, it is responsibility of the receiver code to free anything related to the task, as
+ * usual. More details on this can be obtained on
+ * <a href="http://lists.gforge.inria.fr/pipermail/simgrid-user/2011-November/002649.html">this thread</a>
+ * in the SimGrid-user mailing list archive.
+ *
+ * @param task a #msg_task_t to send on another location.
+ * @param alias name of the mailbox to sent the task to
+ * @param cleanup a function to destroy the task if the communication fails, e.g. MSG_task_destroy
+ * (if nullptr, no function will be called)
+ */
+void MSG_task_dsend(msg_task_t task, const char* alias, void_f_pvoid_t cleanup)
+{
+  msg_comm_t XBT_ATTRIB_UNUSED comm = task->send_async(alias, cleanup, true);
+  xbt_assert(comm == nullptr);
+}
+
+/**
+ * @brief Sends a task on a mailbox with a maximal rate.
+ *
+ * This is a non blocking detached send function.
+ * Think of it as a best effort send. Keep in mind that the third parameter is only called if the communication fails.
+ * If the communication does work, it is responsibility of the receiver code to free anything related to the task, as
+ * usual. More details on this can be obtained on
+ * <a href="http://lists.gforge.inria.fr/pipermail/simgrid-user/2011-November/002649.html">this thread</a>
+ * in the SimGrid-user mailing list archive.
+ *
+ * The rate parameter can be used to send a task with a limited bandwidth (smaller than the physical available value).
+ * Use MSG_task_dsend() if you don't limit the rate (or pass -1 as a rate value do disable this feature).
+ *
+ * @param task a #msg_task_t to send on another location.
+ * @param alias name of the mailbox to sent the task to
+ * @param cleanup a function to destroy the task if the communication fails, e.g. MSG_task_destroy (if nullptr, no
+ *        function will be called)
+ * @param maxrate the maximum communication rate for sending this task (byte/sec)
+ *
+ */
+void MSG_task_dsend_bounded(msg_task_t task, const char* alias, void_f_pvoid_t cleanup, double maxrate)
+{
+  task->set_rate(maxrate);
+  MSG_task_dsend(task, alias, cleanup);
 }
 
 /** @brief Destroys the given task.
