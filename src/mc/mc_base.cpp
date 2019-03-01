@@ -13,6 +13,8 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 
+#include <random>
+
 #if SIMGRID_HAVE_MC
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
@@ -160,28 +162,12 @@ bool request_is_visible(smx_simcall_t req)
 }
 }
 
-static int prng_random(int min, int max)
-{
-  unsigned long output_size = ((unsigned long) max - (unsigned long) min) + 1;
-  unsigned long input_size = (unsigned long) RAND_MAX + 1;
-  unsigned long reject_size = input_size % output_size;
-  unsigned long accept_size = input_size - reject_size; // module*accept_size
-
-  // Use rejection in order to avoid skew
-  unsigned long x;
-  do {
-#ifndef _WIN32
-    x = (unsigned long) random();
-#else
-    x = (unsigned long) rand();
-#endif
-  } while( x >= accept_size );
-  return min + (x % output_size);
-}
-
 int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
 {
-  if (not MC_is_active() && MC_record_path.empty())
-    return prng_random(min, max);
+  if (not MC_is_active() && MC_record_path.empty()) {
+    static std::default_random_engine rnd_engine;
+    std::uniform_int_distribution<int> prng(min, max);
+    return prng(rnd_engine);
+  }
   return simcall->mc_value;
 }
