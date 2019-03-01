@@ -280,7 +280,8 @@ void ActorImpl::yield()
 
   if (suspended_) {
     XBT_DEBUG("Hey! I'm suspended.");
-    xbt_assert(exception_ != nullptr, "Gasp! This exception may be lost by subsequent calls.");
+
+    xbt_assert(exception_ == nullptr, "Gasp! This exception may be lost by subsequent calls.");
     suspended_ = false;
     suspend(this);
   }
