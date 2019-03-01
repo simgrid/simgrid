@@ -18,9 +18,7 @@ simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Exec::on_completion;
 Exec::Exec(sg_host_t host, double flops_amount) : Activity(), host_(host), flops_amount_(flops_amount)
 {
   Activity::set_remaining(flops_amount_);
-  pimpl_ = simix::simcall([this] {
-    return kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl(name_, tracing_category_, host_));
-  });
+  pimpl_ = kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl(name_, tracing_category_, host_));
 }
 
 Exec* Exec::start()
