@@ -419,7 +419,8 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
 {
   const size_t fd_dir_path_size = 20;
   char fd_dir_path[fd_dir_path_size];
-  int res = snprintf(fd_dir_path, fd_dir_path_size, "/proc/%lli/fd", (long long int)pid);
+  int res;
+  res = snprintf(fd_dir_path, fd_dir_path_size, "/proc/%lli/fd", (long long int)pid);
   xbt_assert(res >= 0);
   if ((size_t)res > fd_dir_path_size)
     xbt_die("Unexpected buffer is too small for fd_dir_path");
@@ -440,7 +441,7 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
 
     const size_t source_size = 25;
     char source[25];
-    int res = snprintf(source, source_size, "/proc/%lli/fd/%s", (long long int)pid, fd_number->d_name);
+    res = snprintf(source, source_size, "/proc/%lli/fd/%s", (long long int)pid, fd_number->d_name);
     xbt_assert(res >= 0);
     if ((size_t)res > source_size)
       xbt_die("Unexpected buffer is too small for fd %s", fd_number->d_name);

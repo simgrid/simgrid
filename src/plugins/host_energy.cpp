@@ -290,10 +290,10 @@ double HostEnergy::get_current_watts_value(double cpu_load)
   /* min_power corresponds to the power consumed when only one core is active */
   /* max_power is the power consumed at 100% cpu load       */
   auto range           = power_range_watts_list_.at(this->pstate_);
-  double current_power = 0;
-  double min_power     = 0;
-  double max_power     = 0;
-  double power_slope   = 0;
+  double current_power;
+  double min_power;
+  double max_power;
+  double power_slope;
 
   if (cpu_load > 0) { /* Something is going on, the machine is not idle */
     min_power = range.min_;
@@ -309,7 +309,6 @@ double HostEnergy::get_current_watts_value(double cpu_load)
      * i.e., we need min_power + (maxCpuLoad-1/coreCount)*power_slope == max_power
      * (maxCpuLoad is by definition 1)
      */
-    double power_slope;
     int coreCount         = host_->get_core_count();
     double coreReciprocal = static_cast<double>(1) / static_cast<double>(coreCount);
     if (coreCount > 1)
@@ -319,6 +318,9 @@ double HostEnergy::get_current_watts_value(double cpu_load)
 
     current_power = min_power + (cpu_load - coreReciprocal) * power_slope;
   } else { /* Our machine is idle, take the dedicated value! */
+    min_power     = 0;
+    max_power     = 0;
+    power_slope   = 0;
     current_power = range.idle_;
   }
 

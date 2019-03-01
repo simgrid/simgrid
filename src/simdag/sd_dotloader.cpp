@@ -217,14 +217,14 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
 
       for (auto const& elm : computers) {
         SD_task_t previous_task = nullptr;
-        for (auto const& task : *elm.second) {
+        for (auto const& cur_task : *elm.second) {
           /* add dependency between the previous and the task to avoid parallel execution */
-          if(task){
-            if (previous_task && not SD_task_dependency_exists(previous_task, task))
-              SD_task_dependency_add(previous_task, task);
+          if (cur_task) {
+            if (previous_task && not SD_task_dependency_exists(previous_task, cur_task))
+              SD_task_dependency_add(previous_task, cur_task);
 
-            SD_task_schedulel(task, 1, hosts[atoi(elm.first.c_str())]);
-            previous_task = task;
+            SD_task_schedulel(cur_task, 1, hosts[std::stod(elm.first)]);
+            previous_task = cur_task;
           }
         }
         delete elm.second;

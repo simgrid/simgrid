@@ -403,19 +403,19 @@ double Lagrange::partial_diff_lambda(double lambda, const Constraint& cnst)
 
 /** @brief Attribute the value bound to var->bound.
  *
- *  @param func_f    function (f)
- *  @param func_fp   partial differential of f (f prime, (f'))
- *  @param func_fpi  inverse of the partial differential of f (f prime inverse, (f')^{-1})
+ *  @param f    function (f)
+ *  @param fp   partial differential of f (f prime, (f'))
+ *  @param fpi  inverse of the partial differential of f (f prime inverse, (f')^{-1})
  *
  *  Set default functions to the ones passed as parameters.
  */
-void Lagrange::set_default_protocol_function(double (*func_f)(const Variable& var, double x),
-                                             double (*func_fp)(const Variable& var, double x),
-                                             double (*func_fpi)(const Variable& var, double x))
+void Lagrange::set_default_protocol_function(double (*f)(const Variable& var, double x),
+                                             double (*fp)(const Variable& var, double x),
+                                             double (*fpi)(const Variable& var, double x))
 {
-  Lagrange::func_f   = func_f;
-  Lagrange::func_fp  = func_fp;
-  Lagrange::func_fpi = func_fpi;
+  func_f   = f;
+  func_fp  = fp;
+  func_fpi = fpi;
 }
 
 double (*Lagrange::func_f)(const Variable&, double);

@@ -774,8 +774,8 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(simgrid::mc::Ob
   if (dwarf_hasattr(die, DW_AT_start_scope)) {
     Dwarf_Attribute attr;
     dwarf_attr(die, DW_AT_start_scope, &attr);
-    int form = dwarf_whatform(&attr);
-    simgrid::dwarf::FormClass form_class = simgrid::dwarf::classify_form(form);
+    form       = dwarf_whatform(&attr);
+    form_class = simgrid::dwarf::classify_form(form);
     if (form_class == simgrid::dwarf::FormClass::Constant) {
       Dwarf_Word value;
       variable->start_scope = dwarf_formudata(&attr, &value) == 0 ? (size_t)value : 0;
@@ -1187,7 +1187,7 @@ void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
     fd = open(debug_file.c_str(), O_RDONLY);
     if (fd < 0)
       xbt_die("Could not open file %s", debug_file.c_str());
-    Dwarf* dwarf = dwarf_begin(fd, DWARF_C_READ);
+    dwarf = dwarf_begin(fd, DWARF_C_READ);
     if (dwarf == nullptr)
       xbt_die("No DWARF info in %s for %s",
         debug_file.c_str(), info->file_name.c_str());
@@ -1327,9 +1327,9 @@ std::shared_ptr<simgrid::mc::ObjectInformation> createObjectInformation(
 
 void postProcessObjectInformation(simgrid::mc::RemoteClient* process, simgrid::mc::ObjectInformation* info)
 {
-  for (auto& i : info->types) {
+  for (auto& t : info->types) {
 
-    simgrid::mc::Type* type = &(i.second);
+    simgrid::mc::Type* type    = &(t.second);
     simgrid::mc::Type* subtype = type;
     while (subtype->type == DW_TAG_typedef
         || subtype->type == DW_TAG_volatile_type

@@ -146,7 +146,11 @@ void MigrationTx::operator()()
   bool skip_stage2   = false;
 
   size_t remaining_size = ramsize;
-  size_t threshold      = 0.0;
+
+  double clock_prev_send;
+  double clock_post_send;
+  double bandwidth;
+  size_t threshold;
 
   /* check parameters */
   if (ramsize == 0)
@@ -162,7 +166,7 @@ void MigrationTx::operator()()
   sg_vm_start_dirty_page_tracking(vm_);
 
   double computed_during_stage1 = 0;
-  double clock_prev_send        = s4u::Engine::get_clock();
+  clock_prev_send               = s4u::Engine::get_clock();
 
   try {
     /* At stage 1, we do not need timeout. We have to send all the memory pages even though the duration of this
@@ -185,7 +189,7 @@ void MigrationTx::operator()()
     return;
   }
 
-  double clock_post_send = s4u::Engine::get_clock();
+  clock_post_send = s4u::Engine::get_clock();
   mig_timeout -= (clock_post_send - clock_prev_send);
   if (mig_timeout < 0) {
     XBT_VERB("The duration of stage 1 exceeds the timeout value, skip stage 2");
@@ -193,8 +197,8 @@ void MigrationTx::operator()()
   }
 
   /* estimate bandwidth */
-  double bandwidth = ramsize / (clock_post_send - clock_prev_send);
-  threshold        = bandwidth * max_downtime;
+  bandwidth = ramsize / (clock_post_send - clock_prev_send);
+  threshold = bandwidth * max_downtime;
   XBT_DEBUG("actual bandwidth %f (MB/s), threshold %zu", bandwidth / 1024 / 1024, threshold);
 
   /* Stage2: send update pages iteratively until the size of remaining states becomes smaller than threshold value. */
@@ -221,8 +225,8 @@ void MigrationTx::operator()()
       if (remaining_size < threshold)
         break;
 
-      sg_size_t sent         = 0;
-      double clock_prev_send = s4u::Engine::get_clock();
+      sg_size_t sent  = 0;
+      clock_prev_send = s4u::Engine::get_clock();
       try {
         XBT_DEBUG("Stage 2, gonna send %llu", updated_size);
         sent = sendMigrationData(updated_size, 2, stage2_round, mig_speed, mig_timeout);
@@ -233,12 +237,12 @@ void MigrationTx::operator()()
         sg_vm_stop_dirty_page_tracking(vm_);
         return;
       }
-      double clock_post_send = s4u::Engine::get_clock();
+      clock_post_send = s4u::Engine::get_clock();
 
       if (sent == updated_size) {
         /* timeout did not happen */
-        double bandwidth = updated_size / (clock_post_send - clock_prev_send);
-        threshold        = bandwidth * max_downtime;
+        bandwidth = updated_size / (clock_post_send - clock_prev_send);
+        threshold = bandwidth * max_downtime;
         XBT_DEBUG("actual bandwidth %f, threshold %zu", bandwidth / 1024 / 1024, threshold);
         remaining_size -= sent;
         stage2_round += 1;

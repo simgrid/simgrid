@@ -196,13 +196,13 @@ MPI_Comm Comm::split(int color, int key)
   MPI_Group group_root = nullptr;
   MPI_Group group_out  = nullptr;
   MPI_Group group      = this->group();
-  int rank             = this->rank();
+  int myrank           = this->rank();
   int size             = this->size();
   /* Gather all colors and keys on rank 0 */
   int* sendbuf = xbt_new(int, 2);
   sendbuf[0] = color;
   sendbuf[1] = key;
-  if(rank == 0) {
+  if (myrank == 0) {
     recvbuf = xbt_new(int, 2 * size);
   } else {
     recvbuf = nullptr;
@@ -210,7 +210,7 @@ MPI_Comm Comm::split(int color, int key)
   Coll_gather_default::gather(sendbuf, 2, MPI_INT, recvbuf, 2, MPI_INT, 0, this);
   xbt_free(sendbuf);
   /* Do the actual job */
-  if(rank == 0) {
+  if (myrank == 0) {
     MPI_Group* group_snd = xbt_new(MPI_Group, size);
     std::vector<std::pair<int, int>> rankmap;
     rankmap.reserve(size);

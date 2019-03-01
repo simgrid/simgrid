@@ -292,7 +292,7 @@ void CommunicationDeterminismChecker::complete_comm_pattern(
   }
 }
 
-CommunicationDeterminismChecker::CommunicationDeterminismChecker(Session& session) : Checker(session)
+CommunicationDeterminismChecker::CommunicationDeterminismChecker(Session& s) : Checker(s)
 {
 }
 
@@ -385,10 +385,10 @@ static inline bool all_communications_are_finished()
 void CommunicationDeterminismChecker::restoreState()
 {
   /* Intermediate backtracking */
-  simgrid::mc::State* state = stack_.back().get();
-  if (state->system_state) {
-    simgrid::mc::restore_snapshot(state->system_state);
-    MC_restore_communications_pattern(state);
+  simgrid::mc::State* last_state = stack_.back().get();
+  if (last_state->system_state) {
+    simgrid::mc::restore_snapshot(last_state->system_state);
+    MC_restore_communications_pattern(last_state);
     return;
   }
 
@@ -437,23 +437,23 @@ void CommunicationDeterminismChecker::real_run()
 
   while (not stack_.empty()) {
     /* Get current state */
-    simgrid::mc::State* state = stack_.back().get();
+    simgrid::mc::State* cur_state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth = %zu (state = %d, interleaved processes = %zu)", stack_.size(), state->num,
-              state->interleaveSize());
+    XBT_DEBUG("Exploration depth = %zu (state = %d, interleaved processes = %zu)", stack_.size(), cur_state->num,
+              cur_state->interleaveSize());
 
     /* Update statistics */
     mc_model_checker->visited_states++;
 
     if (stack_.size() <= (std::size_t)_sg_mc_max_depth)
-      req = MC_state_get_request(state);
+      req = MC_state_get_request(cur_state);
     else
       req = nullptr;
 
     if (req != nullptr && visited_state == nullptr) {
 
-      int req_num = state->transition.argument;
+      int req_num = cur_state->transition.argument;
 
       XBT_DEBUG("Execute: %s", simgrid::mc::request_to_string(req, req_num, simgrid::mc::RequestType::simix).c_str());
 
@@ -469,7 +469,7 @@ void CommunicationDeterminismChecker::real_run()
         call = MC_get_call_type(req);
 
       /* Answer the request */
-      mc_model_checker->handle_simcall(state->transition);
+      mc_model_checker->handle_simcall(cur_state->transition);
       /* After this call req is no longer useful */
 
       MC_handle_comm_pattern(call, req, req_num, 0);
@@ -499,11 +499,10 @@ void CommunicationDeterminismChecker::real_run()
             next_state->addInterleavingSet(actor.copy.getBuffer());
 
         if (dot_output != nullptr)
-          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
-            state->num,  next_state->num, req_str.c_str());
+          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", cur_state->num, next_state->num, req_str.c_str());
 
       } else if (dot_output != nullptr)
-        fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num,
+        fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", cur_state->num,
                 visited_state->original_num == -1 ? visited_state->num : visited_state->original_num, req_str.c_str());
 
       stack_.push_back(std::move(next_state));
@@ -522,7 +521,7 @@ void CommunicationDeterminismChecker::real_run()
         this->initial_communications_pattern_done = 1;
 
       /* Trash the current state, no longer needed */
-      XBT_DEBUG("Delete state %d at depth %zu", state->num, stack_.size());
+      XBT_DEBUG("Delete state %d at depth %zu", cur_state->num, stack_.size());
       stack_.pop_back();
 
       visited_state = nullptr;
@@ -566,9 +565,9 @@ void CommunicationDeterminismChecker::run()
   this->real_run();
 }
 
-Checker* createCommunicationDeterminismChecker(Session& session)
+Checker* createCommunicationDeterminismChecker(Session& s)
 {
-  return new CommunicationDeterminismChecker(session);
+  return new CommunicationDeterminismChecker(s);
 }
 
 }

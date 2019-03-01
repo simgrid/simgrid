@@ -269,9 +269,9 @@ void SafetyChecker::backtrack()
 void SafetyChecker::restoreState()
 {
   /* Intermediate backtracking */
-  simgrid::mc::State* state = stack_.back().get();
-  if (state->system_state) {
-    simgrid::mc::restore_snapshot(state->system_state);
+  simgrid::mc::State* last_state = stack_.back().get();
+  if (last_state->system_state) {
+    simgrid::mc::restore_snapshot(last_state->system_state);
     return;
   }
 
@@ -289,7 +289,7 @@ void SafetyChecker::restoreState()
   }
 }
 
-SafetyChecker::SafetyChecker(Session& session) : Checker(session)
+SafetyChecker::SafetyChecker(Session& s) : Checker(s)
 {
   reductionMode_ = simgrid::mc::reduction_mode;
   if (_sg_mc_termination)
@@ -324,9 +324,9 @@ SafetyChecker::SafetyChecker(Session& session) : Checker(session)
   stack_.push_back(std::move(initial_state));
 }
 
-Checker* createSafetyChecker(Session& session)
+Checker* createSafetyChecker(Session& s)
 {
-  return new SafetyChecker(session);
+  return new SafetyChecker(s);
 }
 
 }

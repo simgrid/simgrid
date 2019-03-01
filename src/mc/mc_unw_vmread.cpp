@@ -78,16 +78,16 @@ static int access_mem(const unw_addr_space_t as,
   if (fd < 0)
     return - UNW_EINVAL;
   while (1) {
-    ssize_t s = pread(fd, buf, count, off);
-    if (s == 0) {
+    ssize_t nread = pread(fd, buf, count, off);
+    if (nread == 0) {
       close(fd);
       return - UNW_EINVAL;
     }
-    if (s == -1)
+    if (nread == -1)
       break;
-    count -= s;
-    buf += s;
-    off += s;
+    count -= nread;
+    buf += nread;
+    off += nread;
     if (count == 0) {
       close(fd);
       return 0;

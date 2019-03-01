@@ -708,7 +708,6 @@ static int compare_heap_area_with_type(
 
     simgrid::mc::Type* subtype;
     simgrid::mc::Type* subsubtype;
-    int res;
     int elm_size;
     const void* addr_pointed1;
     const void* addr_pointed2;
@@ -777,9 +776,9 @@ static int compare_heap_area_with_type(
         }
         for (int i = 0; i < type->element_count; i++) {
           // TODO, add support for variable stride (DW_AT_byte_stride)
-          res = compare_heap_area_with_type(state, process_index, (char*)real_area1 + (i * elm_size),
-                                            (char*)real_area2 + (i * elm_size), snapshot1, snapshot2, previous,
-                                            type->subtype, subtype->byte_size, check_ignore, pointer_level);
+          int res = compare_heap_area_with_type(state, process_index, (char*)real_area1 + (i * elm_size),
+                                                (char*)real_area2 + (i * elm_size), snapshot1, snapshot2, previous,
+                                                type->subtype, subtype->byte_size, check_ignore, pointer_level);
           if (res == 1)
             return res;
         }
@@ -807,6 +806,7 @@ static int compare_heap_area_with_type(
         for (size_t i = 0; i < (area_size / sizeof(void*)); i++) {
           addr_pointed1 = snapshot1->read(remote((void**)((char*)real_area1 + i * sizeof(void*))), process_index);
           addr_pointed2 = snapshot2->read(remote((void**)((char*)real_area2 + i * sizeof(void*))), process_index);
+          int res;
           if (addr_pointed1 > state.std_heap_copy.heapbase && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1) &&
               addr_pointed2 > state.std_heap_copy.heapbase && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2))
             res = compare_heap_area(state, process_index, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous,
@@ -1377,12 +1377,9 @@ static int compare_global_variables(
       && process_count == r2->privatized_data().size());
 
     // Compare the global variables separately for each simulates process:
-    for (size_t process_index = 0; process_index < process_count; process_index++) {
-      if (compare_global_variables(state,
-          object_info, process_index,
-          &r1->privatized_data()[process_index],
-          &r2->privatized_data()[process_index],
-          snapshot1, snapshot2))
+    for (size_t i = 0; i < process_count; i++) {
+      if (compare_global_variables(state, object_info, i, &r1->privatized_data()[i], &r2->privatized_data()[i],
+                                   snapshot1, snapshot2))
         return 1;
     }
     return 0;

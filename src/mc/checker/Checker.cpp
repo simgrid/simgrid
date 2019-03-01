@@ -14,7 +14,7 @@
 namespace simgrid {
 namespace mc {
 
-Checker::Checker(Session& session) : session_(&session)
+Checker::Checker(Session& s) : session_(&s)
 {
   xbt_assert(mc_model_checker);
   xbt_assert(mc_model_checker->getChecker() == nullptr);

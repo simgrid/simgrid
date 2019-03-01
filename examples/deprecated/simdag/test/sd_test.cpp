@@ -115,9 +115,8 @@ int main(int argc, char **argv)
   communication_amount[2] = comm_amount21;
 
   /* estimated time */
-  SD_task_t task = taskD;
-  XBT_INFO("Estimated time for '%s': %f", SD_task_get_name(task), SD_task_get_execution_time(task, 2, host_list,
-           computation_amount, communication_amount));
+  XBT_INFO("Estimated time for '%s': %f", SD_task_get_name(taskD),
+           SD_task_get_execution_time(taskD, 2, host_list, computation_amount, communication_amount));
 
   SD_task_schedule(taskA, 2, host_list, computation_amount, communication_amount, -1);
   SD_task_schedule(taskB, 2, host_list, computation_amount, communication_amount, -1);

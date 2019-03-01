@@ -94,8 +94,6 @@ void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
 /** @brief Add a "router" to the network element list */
 simgrid::kernel::routing::NetPoint* sg_platf_new_router(std::string name, const char* coords)
 {
-  simgrid::kernel::routing::NetZoneImpl* current_routing = routing_get_current();
-
   if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
     current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::base;
   xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name),
@@ -420,8 +418,8 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
 
     std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
 
-    for (auto const& host : list) {
-      msg += host->get_name();
+    for (auto const& some_host : list) {
+      msg += some_host->get_name();
       msg += "', '";
       if (msg.length() > 1024) {
         msg.pop_back(); // remove trailing quote
@@ -464,19 +462,17 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
   } else {                      // start_time <= SIMIX_get_clock()
     XBT_DEBUG("Starting Process %s(%s) right now", arg->name.c_str(), host->get_cname());
 
-    simgrid::kernel::actor::ActorImplPtr actor = nullptr;
     try {
-      actor = simgrid::kernel::actor::ActorImpl::create(arg->name.c_str(), std::move(code), nullptr, host,
-                                                        arg->properties.get(), nullptr);
+      simgrid::kernel::actor::ActorImplPtr new_actor = nullptr;
+      new_actor = simgrid::kernel::actor::ActorImpl::create(arg->name.c_str(), std::move(code), nullptr, host,
+                                                            arg->properties.get(), nullptr);
+      /* The actor creation will fail if the host is currently dead, but that's fine */
+      if (arg->kill_time >= 0)
+        new_actor->set_kill_time(arg->kill_time);
+      if (auto_restart)
+        new_actor->set_auto_restart(auto_restart);
     } catch (simgrid::HostFailureException const&) {
       XBT_WARN("Deployment includes some initially turned off Hosts ... nevermind.");
-    }
-    /* The actor creation will fail if the host is currently dead, but that's fine */
-    if (actor != nullptr) {
-      if (arg->kill_time >= 0)
-        actor->set_kill_time(arg->kill_time);
-      if (auto_restart)
-        actor->set_auto_restart(auto_restart);
     }
   }
 }

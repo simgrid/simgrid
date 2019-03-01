@@ -204,7 +204,6 @@ void NetworkIBModel::updateIBfactors(NetworkAction* action, IBNode* from, IBNode
   if (from == to) // disregard local comms (should use loopback)
     return;
 
-  ActiveComm* comm = nullptr;
   if (remove) {
     if (to->ActiveCommsDown[from] == 1)
       to->ActiveCommsDown.erase(from);
@@ -214,8 +213,8 @@ void NetworkIBModel::updateIBfactors(NetworkAction* action, IBNode* from, IBNode
     to->nbActiveCommsDown--;
     for (std::vector<ActiveComm*>::iterator it = from->ActiveCommsUp.begin(); it != from->ActiveCommsUp.end(); ++it) {
       if ((*it)->action == action) {
-        comm = (*it);
         from->ActiveCommsUp.erase(it);
+        delete *it;
         break;
       }
     }
@@ -234,7 +233,6 @@ void NetworkIBModel::updateIBfactors(NetworkAction* action, IBNode* from, IBNode
   std::vector<bool> updated(active_nodes.size(), false);
   updateIBfactors_rec(from, updated);
   XBT_DEBUG("IB - Finished updating %d", from->id);
-  delete comm;
 }
 }
 }
