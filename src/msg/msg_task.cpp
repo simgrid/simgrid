@@ -6,6 +6,7 @@
 #include "msg_private.hpp"
 #include "src/simix/smx_private.hpp"
 #include <simgrid/s4u/Comm.hpp>
+#include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Host.hpp>
 
 #include <algorithm>
@@ -65,20 +66,20 @@ msg_error_t Task::execute()
   xbt_assert(std::isfinite(flops_amount), "flops_amount is not finite!");
 
   msg_error_t status = MSG_OK;
-  s4u::Host* host    = SIMIX_process_self()->get_host();
 
   set_used();
-
-  compute = simix::simcall([this, host] {
-    return kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl(name_, tracing_category_, host));
-  });
-
   try {
-    compute->start(flops_amount, priority_, bound_);
-    e_smx_state_t comp_state = simcall_execution_wait(compute);
+    s4u::ExecPtr e = s4u::this_actor::exec_init(flops_amount)
+                         ->set_priority(1 / priority_)
+                         ->set_bound(bound_)
+                         ->set_tracing_category(tracing_category_)
+                         ->start();
+    compute = boost::static_pointer_cast<kernel::activity::ExecImpl>(e->get_impl());
+
+    e->wait();
 
     set_not_used();
-    XBT_DEBUG("Execution task '%s' finished in state %d", get_cname(), (int)comp_state);
+    XBT_DEBUG("Execution task '%s' finished", get_cname());
   } catch (HostFailureException& e) {
     status = MSG_HOST_FAILURE;
   } catch (TimeoutError& e) {
