@@ -305,6 +305,8 @@ static void test_comm_killsend()
 
   simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[1], [&send_done]() {
     assert_exit(1, 2);
+    // Encapsulate the payload in a std::unique_ptr so that it is correctly free'd when the sender is killed during its
+    // communication (thanks to RAII).  The pointer is then released when the communication is over.
     std::unique_ptr<char, decltype(&xbt_free_f)> payload(xbt_strdup("toto"), &xbt_free_f);
     simgrid::s4u::Mailbox::by_name("mb")->put(payload.get(), 5000);
     payload.release();
