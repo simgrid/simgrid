@@ -213,8 +213,8 @@ void NetworkIBModel::updateIBfactors(NetworkAction* action, IBNode* from, IBNode
     to->nbActiveCommsDown--;
     for (std::vector<ActiveComm*>::iterator it = from->ActiveCommsUp.begin(); it != from->ActiveCommsUp.end(); ++it) {
       if ((*it)->action == action) {
-        from->ActiveCommsUp.erase(it);
         delete *it;
+        from->ActiveCommsUp.erase(it);
         break;
       }
     }
