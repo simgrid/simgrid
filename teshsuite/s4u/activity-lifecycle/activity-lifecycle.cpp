@@ -305,8 +305,9 @@ static void test_comm_killsend()
 
   simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[1], [&send_done]() {
     assert_exit(1, 2);
-    char* payload = xbt_strdup("toto");
-    simgrid::s4u::Mailbox::by_name("mb")->put(payload, 5000);
+    std::unique_ptr<char, decltype(&xbt_free_f)> payload(xbt_strdup("toto"), &xbt_free_f);
+    simgrid::s4u::Mailbox::by_name("mb")->put(payload.get(), 5000);
+    payload.release();
     send_done = true;
   });
   simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
