@@ -39,7 +39,7 @@ public:
   static Task* create_parallel(std::string name, int host_nb, const msg_host_t* host_list, double* flops_amount,
                                double* bytes_amount, void* data);
   msg_error_t execute();
-  Comm* send_async(std::string alias, void_f_pvoid_t cleanup, bool detached);
+  s4u::CommPtr send_async(std::string alias, void_f_pvoid_t cleanup, bool detached);
   void cancel();
 
   Task(const Task&) = delete;
@@ -111,10 +111,5 @@ XBT_PUBLIC_DATA MSG_Global_t msg_global;
 
 /*************************************************************/
 XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size);
-
-/********** Tracing **********/
-/* declaration of instrumentation functions from msg_task_instr.c */
-XBT_PRIVATE void TRACE_msg_task_put_start(msg_task_t task);
-
 
 #endif

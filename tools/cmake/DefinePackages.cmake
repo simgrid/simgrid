@@ -449,7 +449,6 @@ set(SIMGRID_SRC
   )
 
 set(MSG_SRC
-  src/msg/instr_msg_task.cpp
   src/msg/msg_global.cpp
   src/msg/msg_gos.cpp
   src/msg/msg_legacy.cpp

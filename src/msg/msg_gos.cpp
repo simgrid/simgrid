@@ -573,23 +573,10 @@ msg_error_t MSG_task_send_bounded(msg_task_t task, const char *alias, double max
 msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, double timeout)
 {
   msg_error_t ret = MSG_OK;
-
-  TRACE_msg_task_put_start(task);
-
-  /* Prepare the task to send */
-  task->set_used();
-
-  msg_global->sent_msg++;
-
   /* Try to send it */
   try {
-    simgrid::s4u::CommPtr comm =
-        simgrid::s4u::Mailbox::by_name(alias)->put_init(task, task->bytes_amount)->set_rate(task->get_rate());
+    simgrid::s4u::CommPtr comm = task->send_async(alias, nullptr, false);
     task->comm = comm;
-    comm->start();
-    if (TRACE_is_enabled() && task->has_tracing_category())
-      simgrid::simix::simcall(
-          [comm, task] { comm->get_impl()->set_category(std::move(task->get_tracing_category())); });
     comm->wait_for(timeout);
   } catch (simgrid::TimeoutError& e) {
     ret = MSG_TIMEOUT;

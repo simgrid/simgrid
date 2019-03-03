@@ -97,9 +97,13 @@ msg_error_t Task::execute()
   return status;
 }
 
-Comm* Task::send_async(std::string alias, void_f_pvoid_t cleanup, bool detached)
+s4u::CommPtr Task::send_async(std::string alias, void_f_pvoid_t cleanup, bool detached)
 {
-  TRACE_msg_task_put_start(this);
+  if (TRACE_actor_is_enabled()) {
+    container_t process_container = simgrid::instr::Container::by_name(instr_pid(MSG_process_self()));
+    std::string key               = std::string("p") + std::to_string(get_id());
+    simgrid::instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->start_event(process_container, "SR", key);
+  }
 
   /* Prepare the task to send */
   set_used();
@@ -117,10 +121,7 @@ Comm* Task::send_async(std::string alias, void_f_pvoid_t cleanup, bool detached)
   if (TRACE_is_enabled() && has_tracing_category())
     simgrid::simix::simcall([comm, this] { comm->get_impl()->set_category(std::move(tracing_category_)); });
 
-  if (not detached)
-    return new Comm(this, nullptr, comm);
-  else
-    return nullptr;
+  return comm;
 }
 
 void Task::cancel()
@@ -290,7 +291,7 @@ msg_error_t MSG_task_execute(msg_task_t task)
  */
 msg_comm_t MSG_task_isend(msg_task_t task, const char* alias)
 {
-  return task->send_async(alias, nullptr, false);
+  return new simgrid::msg::Comm(task, nullptr, task->send_async(alias, nullptr, false));
 }
 
 /**
@@ -307,7 +308,7 @@ msg_comm_t MSG_task_isend(msg_task_t task, const char* alias)
 msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char* alias, double maxrate)
 {
   task->set_rate(maxrate);
-  return task->send_async(alias, nullptr, false);
+  return new simgrid::msg::Comm(task, nullptr, task->send_async(alias, nullptr, false));
 }
 
 /**
@@ -327,8 +328,7 @@ msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char* alias, double max
  */
 void MSG_task_dsend(msg_task_t task, const char* alias, void_f_pvoid_t cleanup)
 {
-  msg_comm_t XBT_ATTRIB_UNUSED comm = task->send_async(alias, cleanup, true);
-  xbt_assert(comm == nullptr);
+  task->send_async(alias, cleanup, true);
 }
 
 /**
@@ -354,7 +354,7 @@ void MSG_task_dsend(msg_task_t task, const char* alias, void_f_pvoid_t cleanup)
 void MSG_task_dsend_bounded(msg_task_t task, const char* alias, void_f_pvoid_t cleanup, double maxrate)
 {
   task->set_rate(maxrate);
-  MSG_task_dsend(task, alias, cleanup);
+  task->send_async(alias, cleanup, true);
 }
 
 /** @brief Destroys the given task.
