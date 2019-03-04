@@ -277,7 +277,7 @@ static void run_jprocess(JNIEnv *env, jobject jprocess)
     env->ExceptionClear();
     XBT_ATTRIB_UNUSED jint error = __java_vm->DetachCurrentThread();
     xbt_assert(error == JNI_OK, "Cannot detach failing thread");
-    simgrid::kernel::context::StopRequest::do_throw();
+    simgrid::kernel::context::ForcefulKillException::do_throw();
   }
 }
 

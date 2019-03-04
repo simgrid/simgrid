@@ -86,21 +86,21 @@ public:
   virtual void attach_stop() = 0;
 };
 
-class XBT_PUBLIC StopRequest {
-  /** @brief Exception launched to kill an actor; do not block it!
+class XBT_PUBLIC ForcefulKillException {
+  /** @brief Exception launched to kill an actor; DO NOT BLOCK IT!
    *
    * This exception is thrown whenever the actor's host is turned off. The actor stack is properly unwinded to release
    * all objects allocated on the stack (RAII powa).
    *
    * You may want to catch this exception to perform some extra cleanups in your simulation, but YOUR ACTORS MUST NEVER
-   * SURVIVE a StopRequest, or your simulation will segfault.
+   * SURVIVE a ForcefulKillException, or your simulation will segfault.
    *
    * @verbatim
    * void* payload = malloc(512);
    *
    * try {
    *   simgrid::s4u::this_actor::execute(100000);
-   * } catch (simgrid::kernel::context::StopRequest& e) { // oops, my host just turned off
+   * } catch (simgrid::kernel::context::ForcefulKillException& e) { // oops, my host just turned off
    *   free(malloc);
    *   throw; // I shall never survive on an host that was switched off
    * }
@@ -110,9 +110,11 @@ class XBT_PUBLIC StopRequest {
    * Otherwise, users may accidentally catch it with a try {} catch (std::exception)
    */
 public:
-  StopRequest() = default;
-  explicit StopRequest(const std::string& msg) : msg_(std::string("Actor killed (") + msg + std::string(").")) {}
-  ~StopRequest();
+  ForcefulKillException() = default;
+  explicit ForcefulKillException(const std::string& msg) : msg_(std::string("Actor killed (") + msg + std::string(")."))
+  {
+  }
+  ~ForcefulKillException();
   const char* what() const noexcept { return msg_.c_str(); }
 
   static void do_throw();

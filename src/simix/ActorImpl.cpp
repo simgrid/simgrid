@@ -164,7 +164,7 @@ void ActorImpl::exit()
 
   // Forcefully kill the actor if its host is turned off. Not a HostFailureException because you should not survive that
   if (not host_->is_on())
-    this->throw_exception(std::make_exception_ptr(simgrid::kernel::context::StopRequest("host failed")));
+    this->throw_exception(std::make_exception_ptr(simgrid::kernel::context::ForcefulKillException("host failed")));
 
   /* destroy the blocking synchro if any */
   if (waiting_synchro != nullptr) {
@@ -273,7 +273,7 @@ void ActorImpl::yield()
   if (context_->iwannadie) {
 
     XBT_DEBUG("Actor %s@%s is dead", get_cname(), host_->get_cname());
-    // throw simgrid::kernel::context::StopRequest(); Does not seem to properly kill the actor
+    // throw simgrid::kernel::context::ForcefulKillException(); Does not seem to properly kill the actor
     context_->stop();
     THROW_IMPOSSIBLE;
   }

@@ -112,21 +112,21 @@ void Context::stop()
 
 AttachContext::~AttachContext() = default;
 
-StopRequest::~StopRequest() = default;
+ForcefulKillException::~ForcefulKillException() = default;
 
-void StopRequest::do_throw()
+void ForcefulKillException::do_throw()
 {
-  throw StopRequest();
+  throw ForcefulKillException();
 }
 
-bool StopRequest::try_n_catch(std::function<void(void)> try_block)
+bool ForcefulKillException::try_n_catch(std::function<void(void)> try_block)
 {
   bool res;
   try {
     try_block();
     res = true;
-  } catch (StopRequest const&) {
-    XBT_DEBUG("Caught a StopRequest");
+  } catch (ForcefulKillException const&) {
+    XBT_DEBUG("Caught a ForcefulKillException");
     res = false;
   }
   return res;

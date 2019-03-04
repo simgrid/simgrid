@@ -147,7 +147,7 @@ void SwappedContext::stop()
 {
   Context::stop();
   /* We must cut the actor execution using an exception to properly free the C++ RAII variables */
-  throw StopRequest();
+  throw ForcefulKillException();
 }
 
 /** Maestro wants to run all ready actors */
