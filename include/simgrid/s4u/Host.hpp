@@ -47,7 +47,7 @@ protected:
   virtual ~Host();
 
 private:
-  bool currentlyDestroying_ = false;
+  bool currently_destroying_ = false;
 
 public:
   /*** Called on each newly created host */

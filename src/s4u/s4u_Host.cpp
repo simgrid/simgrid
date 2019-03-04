@@ -39,7 +39,7 @@ Host::Host(std::string name) : name_(std::move(name))
 
 Host::~Host()
 {
-  xbt_assert(currentlyDestroying_, "Please call h->destroy() instead of manually deleting it.");
+  xbt_assert(currently_destroying_, "Please call h->destroy() instead of manually deleting it.");
 
   delete pimpl_;
   if (pimpl_netpoint != nullptr) // not removed yet by a children class
@@ -58,8 +58,8 @@ Host::~Host()
  */
 void Host::destroy()
 {
-  if (not currentlyDestroying_) {
-    currentlyDestroying_ = true;
+  if (not currently_destroying_) {
+    currently_destroying_ = true;
     on_destruction(*this);
     Engine::get_instance()->host_unregister(std::string(name_));
     delete this;
