@@ -15,7 +15,7 @@
 #include <map>
 
 struct s_smx_process_exit_fun_t {
-  std::function<void(int, void*)> fun;
+  std::function<void(bool, void*)> fun;
   void *arg;
 };
 

@@ -84,15 +84,13 @@ PYBIND11_MODULE(simgrid, m)
   m2.def("on_exit",
          [](py::object fun) {
            ActorPtr act = Actor::self();
-           simgrid::s4u::this_actor::on_exit(
-               [act, fun](int /*ignored*/, void* /*data*/) {
-                 try {
-                   fun();
-                 } catch (py::error_already_set& e) {
-                   xbt_die("Error while executing the on_exit lambda: %s", e.what());
-                 }
-               },
-               nullptr);
+           simgrid::s4u::this_actor::on_exit([act, fun](bool /*failed*/) {
+             try {
+               fun();
+             } catch (py::error_already_set& e) {
+               xbt_die("Error while executing the on_exit lambda: %s", e.what());
+             }
+           });
          },
          "");
 

@@ -10,7 +10,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 /* Executed on process termination*/
-static int my_onexit(XBT_ATTRIB_UNUSED void* ignored1, XBT_ATTRIB_UNUSED void* ignored2)
+static int my_onexit(XBT_ATTRIB_UNUSED int ignored1, XBT_ATTRIB_UNUSED void* ignored2)
 {
   XBT_INFO("Exiting now (done sleeping or got killed)."); /* - Just display an informative message (see tesh file) */
   return 0;

@@ -19,6 +19,9 @@ MSG:
  - Hide the examples into examples/deprecated. New users should use S4U.
  - MSG_process_create and MSG_process_attach now crash if the host used
    to run this process is off.
+ - Fix the protype of MSG_process_on_exit()
+   Now use (int,void*) callbacks instead of (void*,void*) ones.
+   The implementation was ways too messy to actually work, I guess.
 
 XBT:
  - Drop sg_cmdline. Please use xbt_cmdline instead.
@@ -37,6 +40,10 @@ XBT:
 XML
  - In <host> and <peer>, availability_file is now speed_file.
    XML file version remains 4.2 since old files are still compatible.
+
+Internal:
+ - Many cleanups in the kernel::activity namespace. This was long
+   overdue, and shall open the path to many future endeavors.
 
 Fixed bugs:
  - #132: Java : a process can not shut down its own host

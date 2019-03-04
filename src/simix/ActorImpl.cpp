@@ -689,7 +689,7 @@ void SIMIX_process_on_exit(smx_actor_t actor, int_f_pvoid_pvoid_t fun, void* dat
   SIMIX_process_on_exit(actor, [fun](int a, void* b) { fun((void*)(intptr_t)a, b); }, data);
 }
 
-void SIMIX_process_on_exit(smx_actor_t actor, std::function<void(int, void*)> fun, void* data)
+void SIMIX_process_on_exit(smx_actor_t actor, std::function<void(bool, void*)> fun, void* data)
 {
   xbt_assert(actor, "current process not found: are you in maestro context ?");
 

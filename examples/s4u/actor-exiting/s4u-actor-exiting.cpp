@@ -32,7 +32,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_exiting, "Messages specific for this s4u 
 static void actor_a()
 {
   // Register a lambda function to be executed once it stops
-  simgrid::s4u::this_actor::on_exit([](int, void*) { XBT_INFO("I stop now"); }, nullptr);
+  simgrid::s4u::this_actor::on_exit([](bool /*failed*/) { XBT_INFO("I stop now"); });
 
   simgrid::s4u::this_actor::execute(1e9);
 }

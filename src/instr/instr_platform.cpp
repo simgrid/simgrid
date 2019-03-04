@@ -306,13 +306,11 @@ static void instr_actor_on_creation(simgrid::s4u::ActorPtr actor)
   root->type_->by_name_or_create("ACTOR_TASK_LINK", actor_type, actor_type);
 
   std::string container_name = instr_pid(actor.get());
-  actor->on_exit(
-      [container_name](int status, void*) {
-        if (status == SMX_EXIT_FAILURE)
-          // kill means that this actor no longer exists, let's destroy it
-          simgrid::instr::Container::by_name(container_name)->remove_from_parent();
-      },
-      actor->get_impl());
+  actor->on_exit([container_name](bool failed) {
+    if (failed)
+      // kill means that this actor no longer exists, let's destroy it
+      simgrid::instr::Container::by_name(container_name)->remove_from_parent();
+  });
 }
 
 static long long int counter = 0;
