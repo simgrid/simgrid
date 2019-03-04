@@ -282,10 +282,13 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
     XBT_CRITICAL("MSG_task_irecv() was asked to write in a non empty task struct.");
 
   /* Try to receive it by calling SIMIX network layer */
-  msg_comm_t comm = new simgrid::msg::Comm(
-      nullptr, task, mbox->get_init()->set_dst_data((void**)task, sizeof(msg_task_t*))->set_rate(rate)->start());
+  simgrid::s4u::CommPtr comm = simgrid::s4u::Mailbox::by_name(name)
+                                   ->get_init()
+                                   ->set_dst_data((void**)task, sizeof(msg_task_t*))
+                                   ->set_rate(rate)
+                                   ->start();
 
-  return comm;
+  return new simgrid::msg::Comm(nullptr, task, comm);
 }
 
 /**
@@ -637,4 +640,3 @@ int MSG_task_listen_from(const char *alias)
   else
     return -1;
 }
-
