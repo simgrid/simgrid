@@ -37,8 +37,13 @@ with qualitative changes (e.g., bandwidth changes representing an
 external load) and qualitative changes (representing how some elements
 fail and restart over time).
 
+
+
 Defining Basic Elements
 ***********************
+
+These are the components of your platform.
+
 
 There is not much to say about the definition of basic elements. Just
 use the appropriate tags: :ref:`pf_tag_host`, :ref:`pf_tag_link` and

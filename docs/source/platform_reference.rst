@@ -267,8 +267,26 @@ and a download link.
 :``state_file``: File containing the state profile.
    See the full description in :ref:`pf_tag_host`
 
+.. _pf_tag_platform:
 
-   
+------------------------------------------------------------------
+<platform>
+------------------------------------------------------------------
+
+**Parent tags:** none (this is the root tag of every file) |br|
+**Children tags:** :ref:`pf_tag_config` (must come first),
+:ref:`pf_tag_cluster`, :ref:`pf_tag_cabinet`, :ref:`pf_tag_peer`,
+:ref:`pf_tag_zone`, :ref:`pf_tag_trace`, :ref:`pf_tag_trace_connect` |br|
+**Attributes:** 
+
+:``version``: Version of the DTD, describing the whole XML format.
+	      This versionning allow future evolutions, even if we
+	      avoid backward-incompatible changes. The current version
+	      is **4.1**. The ``simgrid_update_xml`` program can
+	      upgrade most of the past platform files to the recent
+	      formalism.
+
+	      
 .. _pf_tag_prop:
 
 ------------------------------------------------------------------
