@@ -13,6 +13,7 @@
 #include <pybind11/stl.h>
 
 #include "src/kernel/context/Context.hpp"
+#include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
@@ -56,8 +57,7 @@ PYBIND11_MODULE(simgrid, m)
   m.attr("simgrid_version") = simgrid_version;
 
   // Internal exception used to kill actors and sweep the RAII chimney (free objects living on the stack)
-  py::object pyForcefulKillEx =
-      py::register_exception<simgrid::kernel::context::ForcefulKillException>(m, "ActorKilled");
+  py::object pyForcefulKillEx = py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled");
 
   /* this_actor namespace */
   void (*sleep_for_fun)(double) = &simgrid::s4u::this_actor::sleep_for; // pick the right overload

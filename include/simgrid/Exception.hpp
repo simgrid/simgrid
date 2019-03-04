@@ -15,6 +15,7 @@
 #include <xbt/ex.h>
 
 #include <atomic>
+#include <functional>
 #include <stdexcept>
 #include <string>
 
@@ -162,6 +163,44 @@ public:
   {
     category = cancel_error;
   }
+};
+
+class XBT_PUBLIC ForcefulKillException {
+  /** @brief Exception launched to kill an actor; DO NOT BLOCK IT!
+   *
+   * This exception is thrown whenever the actor's host is turned off. The actor stack is properly unwinded to release
+   * all objects allocated on the stack (RAII powa).
+   *
+   * You may want to catch this exception to perform some extra cleanups in your simulation, but YOUR ACTORS MUST NEVER
+   * SURVIVE a ForcefulKillException, or your simulation will segfault.
+   *
+   * @verbatim
+   * void* payload = malloc(512);
+   *
+   * try {
+   *   simgrid::s4u::this_actor::execute(100000);
+   * } catch (simgrid::kernel::context::ForcefulKillException& e) { // oops, my host just turned off
+   *   free(malloc);
+   *   throw; // I shall never survive on an host that was switched off
+   * }
+   * @endverbatim
+   */
+  /* Nope, Sonar, this should not inherit of std::exception nor of simgrid::Exception.
+   * Otherwise, users may accidentally catch it with a try {} catch (std::exception)
+   */
+public:
+  ForcefulKillException() = default;
+  explicit ForcefulKillException(const std::string& msg) : msg_(std::string("Actor killed (") + msg + std::string(")."))
+  {
+  }
+  ~ForcefulKillException();
+  const char* what() const noexcept { return msg_.c_str(); }
+
+  static void do_throw();
+  static bool try_n_catch(std::function<void(void)> try_block);
+
+private:
+  std::string msg_ = std::string("Actor killed.");
 };
 
 } // namespace simgrid

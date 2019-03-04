@@ -151,7 +151,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeMigration(JNIEnv* env, jobj
 {
   msg_vm_t vm = jvm_get_native(env,jvm);
   msg_host_t host = jhost_get_native(env, jhost);
-  if (not simgrid::kernel::context::ForcefulKillException::try_n_catch([&vm, &host]() { MSG_vm_migrate(vm, host); })) {
+  if (not simgrid::ForcefulKillException::try_n_catch([&vm, &host]() { MSG_vm_migrate(vm, host); })) {
     XBT_VERB("Caught exception during migration");
     jxbt_throw_host_failure(env, "during migration");
   }

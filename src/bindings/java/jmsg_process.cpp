@@ -229,8 +229,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cl
  {
   double time =  ((double)jmillis) / 1000 + ((double)jnanos) / 1000000000;
   msg_error_t rv = MSG_OK;
-  if (not simgrid::kernel::context::ForcefulKillException::try_n_catch(
-          [&time]() { simgrid::s4u::this_actor::sleep_for(time); })) {
+  if (not simgrid::ForcefulKillException::try_n_catch([&time]() { simgrid::s4u::this_actor::sleep_for(time); })) {
     rv = MSG_HOST_FAILURE;
   }
   if (rv != MSG_OK) {
@@ -241,7 +240,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cl
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess, jdouble jseconds)
 {
   msg_error_t rv = MSG_OK;
-  if (not simgrid::kernel::context::ForcefulKillException::try_n_catch(
+  if (not simgrid::ForcefulKillException::try_n_catch(
           [&jseconds]() { simgrid::s4u::this_actor::sleep_for((double)jseconds); })) {
     rv = MSG_HOST_FAILURE;
     jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
@@ -262,7 +261,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_kill(JNIEnv * env, jobject j
     jxbt_throw_notbound(env, "process", jprocess);
     return;
   }
-  if (not simgrid::kernel::context::ForcefulKillException::try_n_catch([&process]() { MSG_process_kill(process); })) {
+  if (not simgrid::ForcefulKillException::try_n_catch([&process]() { MSG_process_kill(process); })) {
     jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
   }
 }

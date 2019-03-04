@@ -164,7 +164,7 @@ void ActorImpl::exit()
 
   // Forcefully kill the actor if its host is turned off. Not a HostFailureException because you should not survive that
   if (not host_->is_on())
-    this->throw_exception(std::make_exception_ptr(simgrid::kernel::context::ForcefulKillException("host failed")));
+    this->throw_exception(std::make_exception_ptr(ForcefulKillException("host failed")));
 
   /* destroy the blocking synchro if any */
   if (waiting_synchro != nullptr) {
