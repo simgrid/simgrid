@@ -1236,6 +1236,7 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state,
   int res;
 
   do {
+    xbt_assert(type != nullptr);
     switch (type->type) {
       case DW_TAG_unspecified_type:
         return 1;
