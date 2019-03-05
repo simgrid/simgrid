@@ -47,8 +47,6 @@ public:
   boost::optional<T> next();
 
 private:
-  enum Flag { PARMAP_WORK, PARMAP_DESTROY };
-
   /**
    * @brief Thread data transmission structure
    */
@@ -140,7 +138,7 @@ private:
   Synchro* new_synchro(e_xbt_parmap_mode_t mode);
   void work();
 
-  Flag status;              /**< is the parmap active or being destroyed? */
+  bool destroying;                   /**< is the parmap being destroyed? */
   std::atomic_uint work_round;       /**< index of the current round */
   std::vector<std::thread*> workers; /**< worker thread handlers */
   unsigned num_workers;     /**< total number of worker threads including the controller */
@@ -162,7 +160,7 @@ template <typename T> Parmap<T>::Parmap(unsigned num_workers, e_xbt_parmap_mode_
   XBT_CDEBUG(xbt_parmap, "Create new parmap (%u workers)", num_workers);
 
   /* Initialize the thread pool data structure */
-  this->status      = PARMAP_WORK;
+  this->destroying  = false;
   this->work_round  = 0;
   this->workers.resize(num_workers);
   this->num_workers = num_workers;
@@ -201,7 +199,7 @@ template <typename T> Parmap<T>::Parmap(unsigned num_workers, e_xbt_parmap_mode_
  */
 template <typename T> Parmap<T>::~Parmap()
 {
-  status = PARMAP_DESTROY;
+  destroying = true;
   synchro->master_signal();
 
   for (unsigned i = 1; i < num_workers; i++) {
@@ -305,7 +303,7 @@ template <typename T> void Parmap<T>::worker_main(ThreadData* data)
   while (1) {
     round++; // New scheduling round
     parmap.synchro->worker_wait(round);
-    if (parmap.status == PARMAP_DESTROY)
+    if (parmap.destroying)
       break;
 
     XBT_CDEBUG(xbt_parmap, "Worker %d got a job", data->worker_id);
