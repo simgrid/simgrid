@@ -35,10 +35,6 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
 
   XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
 
-  if (task->flops_amount <= 0.0 && not task->hosts_.empty()) {
-    return MSG_OK;
-  }
-
   if (TRACE_actor_is_enabled())
     simgrid::instr::Container::by_name(instr_pid(MSG_process_self()))->get_state("ACTOR_STATE")->push_event("execute");
 

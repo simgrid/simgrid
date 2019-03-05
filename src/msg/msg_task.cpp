@@ -67,6 +67,8 @@ msg_error_t Task::execute()
   xbt_assert(std::isfinite(flops_amount), "flops_amount is not finite!");
 
   msg_error_t status = MSG_OK;
+  if (flops_amount <= 0.0)
+    return MSG_OK;
 
   set_used();
   try {
@@ -278,7 +280,7 @@ void MSG_task_set_name(msg_task_t task, const char *name)
  */
 msg_error_t MSG_task_execute(msg_task_t task)
 {
-  return task->execute();
+  return task->is_parallel() ? MSG_parallel_task_execute(task) : task->execute();
 }
 /**
  * @brief Sends a task on a mailbox.
