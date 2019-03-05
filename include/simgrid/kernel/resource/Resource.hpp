@@ -81,7 +81,7 @@ public: /* LMM */
   lmm::Constraint* get_constraint() const;
 
 private:
-  kernel::lmm::Constraint* const constraint_ = nullptr;
+  kernel::lmm::Constraint* const constraint_;
 
 public:
   profile::Event* state_event_ = nullptr;
