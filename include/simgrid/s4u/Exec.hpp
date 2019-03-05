@@ -46,10 +46,10 @@ public:
   static xbt::signal<void(ActorPtr)> on_start;
   static xbt::signal<void(ActorPtr)> on_completion;
 
-  virtual double get_remaining()       = 0;
-  virtual double get_remaining_ratio() = 0;
-  virtual Exec* start()                = 0;
-  virtual ExecPtr set_host(Host* host) = 0;
+  virtual double get_remaining() override = 0;
+  virtual Exec* start() override          = 0;
+  virtual double get_remaining_ratio()    = 0;
+  virtual ExecPtr set_host(Host* host)    = 0;
 
   Exec* wait() override;
   Exec* wait_for(double timeout) override;
@@ -82,7 +82,7 @@ public:
 
   Exec* start() override;
 
-  ExecPtr set_host(Host* host);
+  ExecPtr set_host(Host* host) override;
   Host* get_host();
 
   double get_remaining() override;
@@ -105,7 +105,7 @@ class XBT_PUBLIC ExecPar : public Exec {
   std::vector<double> bytes_amounts_;
   explicit ExecPar(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                    const std::vector<double>& bytes_amounts);
-  ExecPtr set_host(Host* host) { return this; }
+  ExecPtr set_host(Host* host) override { return this; }
 
 public:
   ~ExecPar() = default;
