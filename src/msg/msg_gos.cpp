@@ -6,7 +6,9 @@
 #include <cmath>
 
 #include "simgrid/Exception.hpp"
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Comm.hpp"
+#include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
@@ -28,7 +30,6 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
 
 msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeout)
 {
-  e_smx_state_t comp_state;
   msg_error_t status = MSG_OK;
 
   xbt_assert((not task->compute) && not task->is_used(), "This task is executed somewhere else. Go fix your code!");
@@ -40,20 +41,21 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
 
   try {
     task->set_used();
+    simgrid::s4u::ExecPtr e =
+        simgrid::s4u::this_actor::exec_init(task->hosts_, task->flops_parallel_amount, task->bytes_parallel_amount)
+            ->set_name(task->get_name())
+            ->set_tracing_category(task->get_tracing_category())
+            ->set_timeout(timeout)
+            ->start();
+    task->compute = boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(e->get_impl());
 
-    task->compute = boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(simcall_execution_parallel_start(
-        std::move(task->get_name()), task->hosts_.size(), task->hosts_.data(),
-        (task->flops_parallel_amount.empty() ? nullptr : task->flops_parallel_amount.data()),
-        (task->bytes_parallel_amount.empty() ? nullptr : task->bytes_parallel_amount.data()), -1.0, timeout));
     XBT_DEBUG("Parallel execution action created: %p", task->compute.get());
-    if (task->has_tracing_category())
-      simgrid::simix::simcall([task] { task->compute->set_category(std::move(task->get_tracing_category())); });
 
-    comp_state = simcall_execution_wait(task->compute);
+    e->wait();
 
     task->set_not_used();
 
-    XBT_DEBUG("Execution task '%s' finished in state %d", task->get_cname(), (int)comp_state);
+    XBT_DEBUG("Execution task '%s' finished", task->get_cname());
   } catch (simgrid::HostFailureException& e) {
     status = MSG_HOST_FAILURE;
   } catch (simgrid::TimeoutError& e) {

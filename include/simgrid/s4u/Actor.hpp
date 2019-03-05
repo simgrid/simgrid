@@ -496,6 +496,9 @@ XBT_ATTRIB_DEPRECATED_v325("Please use std::vectors as parameters") XBT_PUBLIC
 #endif
 
 XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
+XBT_PUBLIC ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
+                             const std::vector<double>& bytes_amounts);
+
 XBT_PUBLIC ExecPtr exec_async(double flops_amounts);
 
 /** @brief Returns the actor ID of the current actor. */

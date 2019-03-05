@@ -305,7 +305,7 @@ std::unordered_map<std::string, Storage*> const& Host::get_mounted_storages()
 
 ExecPtr Host::exec_async(double flops)
 {
-  return this_actor::exec_init(flops)->set_host(this);
+  return this_actor::exec_init(flops);
 }
 
 void Host::execute(double flops)
@@ -315,7 +315,7 @@ void Host::execute(double flops)
 
 void Host::execute(double flops, double priority)
 {
-  this_actor::exec_init(flops)->set_host(this)->set_priority(1 / priority)->start()->wait();
+  this_actor::exec_init(flops)->set_priority(1 / priority)->start()->wait();
 }
 
 } // namespace s4u

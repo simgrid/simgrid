@@ -794,8 +794,8 @@ void SD_task_run(SD_task_t task)
   XBT_VERB("Executing task '%s'", task->name);
 
   /* Beware! The scheduling data are now used by the surf action directly! no copy was done */
-  task->surf_action = surf_host_model->execute_parallel(task->allocation->size(), task->allocation->data(),
-                                                        task->flops_amount, task->bytes_amount, task->rate);
+  task->surf_action =
+      surf_host_model->execute_parallel(*task->allocation, task->flops_amount, task->bytes_amount, task->rate);
 
   task->surf_action->set_data(task);
 

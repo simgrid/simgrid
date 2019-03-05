@@ -8,11 +8,13 @@
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 
+#include <algorithm>
 #include <sstream>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor, "S4U actors");
@@ -315,15 +317,21 @@ void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<do
   xbt_assert(hosts.size() * hosts.size() == bytes_amounts.size() || bytes_amounts.empty(),
              "bytes_amounts must be a matrix of size host_count * host_count (%zu*%zu), but it's of size %zu.",
              hosts.size(), hosts.size(), flops_amounts.size());
+  /* Check that we are not mixing VMs and PMs in the parallel task */
+  bool is_a_vm = (nullptr != dynamic_cast<simgrid::s4u::VirtualMachine*>(hosts.front()));
+  xbt_assert(std::all_of(hosts.begin(), hosts.end(),
+                         [is_a_vm](s4u::Host* elm) {
+                           bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::s4u::VirtualMachine*>(elm));
+                           return is_a_vm == tmp_is_a_vm;
+                         }),
+             "parallel_execute: mixing VMs and PMs is not supported (yet).");
+  /* checking for infinite values */
+  xbt_assert(std::all_of(flops_amounts.begin(), flops_amounts.end(), [](double elm) { return std::isfinite(elm); }),
+             "flops_amounts comprises infinite values!");
+  xbt_assert(std::all_of(bytes_amounts.begin(), bytes_amounts.end(), [](double elm) { return std::isfinite(elm); }),
+             "flops_amounts comprises infinite values!");
 
-  /* The vectors live as parameter of parallel_execute. No copy is created for simcall_execution_parallel_start(),
-   * but that's OK because simcall_execution_wait() is called from here too.
-   */
-  smx_activity_t s = simcall_execution_parallel_start("", hosts.size(), hosts.data(),
-                                                      (flops_amounts.empty() ? nullptr : flops_amounts.data()),
-                                                      (bytes_amounts.empty() ? nullptr : bytes_amounts.data()),
-                                                      /* rate */ -1, timeout);
-  simcall_execution_wait(s);
+  exec_init(hosts, flops_amounts, bytes_amounts)->set_timeout(timeout)->wait();
 }
 
 // deprecated
@@ -349,7 +357,13 @@ void parallel_execute(int host_nb, s4u::Host* const* host_list, const double* fl
 
 ExecPtr exec_init(double flops_amount)
 {
-  return ExecPtr(new Exec(get_host(), flops_amount));
+  return ExecPtr(new ExecSeq(get_host(), flops_amount));
+}
+
+ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
+                  const std::vector<double>& bytes_amounts)
+{
+  return ExecPtr(new ExecPar(hosts, flops_amounts, bytes_amounts));
 }
 
 ExecPtr exec_async(double flops)

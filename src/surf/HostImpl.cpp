@@ -22,7 +22,6 @@ namespace surf {
 /*********
  * Model *
  *********/
-
 /* Helper function for executeParallelTask */
 static inline double has_cost(const double* array, size_t pos)
 {
@@ -32,20 +31,20 @@ static inline double has_cost(const double* array, size_t pos)
     return -1.0;
 }
 
-kernel::resource::Action* HostModel::execute_parallel(size_t host_nb, s4u::Host* const* host_list,
+kernel::resource::Action* HostModel::execute_parallel(const std::vector<s4u::Host*> host_list,
                                                       const double* flops_amount, const double* bytes_amount,
                                                       double rate)
 {
   kernel::resource::Action* action = nullptr;
-  if ((host_nb == 1) && (has_cost(bytes_amount, 0) <= 0) && (has_cost(flops_amount, 0) > 0)) {
+  if ((host_list.size() == 1) && (has_cost(bytes_amount, 0) <= 0) && (has_cost(flops_amount, 0) > 0)) {
     action = host_list[0]->pimpl_cpu->execution_start(flops_amount[0]);
-  } else if ((host_nb == 1) && (has_cost(flops_amount, 0) <= 0)) {
+  } else if ((host_list.size() == 1) && (has_cost(flops_amount, 0) <= 0)) {
     action = surf_network_model->communicate(host_list[0], host_list[0], bytes_amount[0], rate);
-  } else if ((host_nb == 2) && (has_cost(flops_amount, 0) <= 0) && (has_cost(flops_amount, 1) <= 0)) {
+  } else if ((host_list.size() == 2) && (has_cost(flops_amount, 0) <= 0) && (has_cost(flops_amount, 1) <= 0)) {
     int nb = 0;
     double value = 0.0;
 
-    for (size_t i = 0; i < host_nb * host_nb; i++) {
+    for (size_t i = 0; i < host_list.size() * host_list.size(); i++) {
       if (has_cost(bytes_amount, i) > 0.0) {
         nb++;
         value = has_cost(bytes_amount, i);

@@ -17,12 +17,15 @@ simgrid::kernel::activity::ExecImplPtr
 SIMIX_execution_parallel_start(std::string name, int host_nb, const sg_host_t* host_list, const double* flops_amount,
                                const double* bytes_amount, double rate, double timeout)
 {
-  simgrid::kernel::activity::ExecImplPtr exec = simgrid::kernel::activity::ExecImplPtr(
-      new simgrid::kernel::activity::ExecImpl(std::move(name), "", host_list[0], timeout));
+  simgrid::kernel::activity::ExecImplPtr exec =
+      simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(std::move(name), ""));
 
+  std::vector<simgrid::s4u::Host*> hosts;
+  for (int i = 0; i < host_nb; i++)
+    hosts.push_back(host_list[i]);
   /* set surf's synchro */
   if (not MC_is_active() && not MC_record_replay_is_active()) {
-    exec->surf_action_ = surf_host_model->execute_parallel(host_nb, host_list, flops_amount, bytes_amount, rate);
+    exec->surf_action_ = surf_host_model->execute_parallel(hosts, flops_amount, bytes_amount, rate);
     if (exec->surf_action_ != nullptr) {
       exec->surf_action_->set_data(exec.get());
     }

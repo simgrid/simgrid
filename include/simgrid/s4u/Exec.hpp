@@ -8,6 +8,7 @@
 
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Activity.hpp>
+#include <xbt/ex.h>
 
 #include <atomic>
 
@@ -19,52 +20,76 @@ namespace s4u {
  * They are generated from this_actor::exec_init() or Host::execute(), and can be used to model pools of threads or
  * similar mechanisms.
  */
-
 class XBT_PUBLIC Exec : public Activity {
-  Host* host_                   = nullptr;
-  double flops_amount_          = 0.0;
+  std::string name_             = "";
   double priority_              = 1.0;
   double bound_                 = 0.0;
-  std::string name_             = "";
+  double timeout_               = 0.0;
   std::string tracing_category_ = "";
   std::atomic_int_fast32_t refcount_{0};
+  Host* host_ = nullptr;
 
-  explicit Exec(sg_host_t host, double flops_amount);
+protected:
+  Exec();
+  virtual ~Exec() = default;
 
 public:
+#ifndef DOXYGEN
+  Exec(Exec const&) = delete;
+  Exec& operator=(Exec const&) = delete;
+#endif
+
+  friend simgrid::s4u::ExecSeq;
+  friend simgrid::s4u::ExecPar;
   friend XBT_PUBLIC void intrusive_ptr_release(Exec* e);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Exec* e);
-  friend XBT_PUBLIC ExecPtr this_actor::exec_init(double flops_amount);
-
-  ~Exec() = default;
-
   static xbt::signal<void(ActorPtr)> on_start;
   static xbt::signal<void(ActorPtr)> on_completion;
 
-  Exec* start() override;
+  virtual double get_remaining()       = 0;
+  virtual double get_remaining_ratio() = 0;
+  virtual Exec* start()                = 0;
+  virtual ExecPtr set_host(Host* host) = 0;
+
   Exec* wait() override;
   Exec* wait_for(double timeout) override;
-  Exec* cancel() override;
   bool test() override;
 
-  ExecPtr set_priority(double priority);
   ExecPtr set_bound(double bound);
-  ExecPtr set_host(Host* host);
   ExecPtr set_name(std::string name);
+  ExecPtr set_priority(double priority);
   ExecPtr set_tracing_category(std::string category);
-  Host* get_host();
+  ExecPtr set_timeout(double timeout);
+  Exec* cancel() override;
 
-  double get_remaining() override;
-  double get_remaining_ratio();
-
-#ifndef DOXYGEN
-  //////////////// Deprecated functions
-  XBT_ATTRIB_DEPRECATED_v324("Please use Exec::wait_for()") void wait(double t) override { wait_for(t); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_priority()") ExecPtr setPriority(double priority)
   {
     return set_priority(priority);
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_bound()") ExecPtr setBound(double bound) { return set_bound(bound); }
+  XBT_ATTRIB_DEPRECATED_v324("Please use Exec::wait_for()") void wait(double t) override { wait_for(t); }
+};
+
+class XBT_PUBLIC ExecSeq : public Exec {
+  double flops_amount_ = 0.0;
+
+  explicit ExecSeq(sg_host_t host, double flops_amount);
+
+public:
+  friend XBT_PUBLIC ExecPtr this_actor::exec_init(double flops_amount);
+
+  ~ExecSeq() = default;
+
+  Exec* start() override;
+
+  ExecPtr set_host(Host* host);
+  Host* get_host();
+
+  double get_remaining() override;
+  double get_remaining_ratio() override;
+
+#ifndef DOXYGEN
+  //////////////// Deprecated functions
   XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_host()") ExecPtr setHost(Host* host) { return set_host(host); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Exec::get_host()") Host* getHost() { return get_host(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Exec::get_remaining_ratio()") double getRemainingRatio()
@@ -73,6 +98,25 @@ public:
   }
 #endif
 };
+
+class XBT_PUBLIC ExecPar : public Exec {
+  std::vector<s4u::Host*> hosts_;
+  std::vector<double> flops_amounts_;
+  std::vector<double> bytes_amounts_;
+  explicit ExecPar(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
+                   const std::vector<double>& bytes_amounts);
+  ExecPtr set_host(Host* host) { return this; }
+
+public:
+  ~ExecPar() = default;
+  friend XBT_PUBLIC ExecPtr this_actor::exec_init(const std::vector<s4u::Host*>& hosts,
+                                                  const std::vector<double>& flops_amounts,
+                                                  const std::vector<double>& bytes_amounts);
+  double get_remaining() override;
+  double get_remaining_ratio() override;
+  Exec* start() override;
+};
+
 } // namespace s4u
 } // namespace simgrid
 

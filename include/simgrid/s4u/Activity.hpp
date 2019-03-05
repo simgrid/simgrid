@@ -32,6 +32,8 @@ class XBT_PUBLIC Activity {
   friend XBT_PUBLIC void intrusive_ptr_release(Comm * c);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Comm * c);
   friend simgrid::s4u::Exec;
+  friend simgrid::s4u::ExecSeq;
+  friend simgrid::s4u::ExecPar;
   friend XBT_PUBLIC void intrusive_ptr_release(Exec * e);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Exec * e);
   friend simgrid::s4u::Io;

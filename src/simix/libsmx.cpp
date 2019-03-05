@@ -65,7 +65,6 @@ smx_activity_t simcall_execution_parallel_start(const std::string& name, int hos
   }
 
   xbt_assert(std::isfinite(rate), "rate is not finite!");
-
   return simgrid::simix::simcall([name, host_nb, host_list, flops_amount, bytes_amount, rate, timeout] {
     return SIMIX_execution_parallel_start(std::move(name), host_nb, host_list, flops_amount, bytes_amount, rate,
                                           timeout);
@@ -431,7 +430,8 @@ smx_activity_t simcall_execution_start(const std::string& name, const std::strin
 {
   return simgrid::simix::simcall([name, category, flops_amount, priority, bound, host] {
     return simgrid::kernel::activity::ExecImplPtr(
-               new simgrid::kernel::activity::ExecImpl(std::move(name), std::move(category), host))
+               new simgrid::kernel::activity::ExecImpl(std::move(name), std::move(category)))
+        ->set_host(host)
         ->start(flops_amount, priority, bound);
   });
 }

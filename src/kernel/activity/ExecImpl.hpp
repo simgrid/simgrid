@@ -18,14 +18,19 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl {
   ~ExecImpl() override;
 
 public:
-  explicit ExecImpl(std::string name, std::string tracing_category, s4u::Host* host);
-  explicit ExecImpl(std::string name, std::string tracing_category, s4u::Host* host, double timeout);
+  explicit ExecImpl(std::string name, std::string tracing_category);
   ExecImpl* start(double flops_amount, double priority, double bound);
+  ExecImpl* start(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
+                  const std::vector<double>& bytes_amounts);
+
+  ExecImpl* set_host(s4u::Host* host);
+  ExecImpl* set_timeout(double timeout);
   void cancel();
   void post() override;
   void finish() override;
   double get_remaining();
-  double get_remaining_ratio();
+  double get_seq_remaining_ratio();
+  double get_par_remaining_ratio();
   void set_bound(double bound);       // deprecated. To be removed in v3.25
   void set_priority(double priority); // deprecated. To be removed in v3.25
   virtual ActivityImpl* migrate(s4u::Host* to);

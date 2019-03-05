@@ -131,14 +131,14 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
   }
 }
 
-kernel::resource::Action* HostL07Model::execute_parallel(size_t host_nb, s4u::Host* const* host_list,
+kernel::resource::Action* HostL07Model::execute_parallel(const std::vector<s4u::Host*> host_list,
                                                          const double* flops_amount, const double* bytes_amount,
                                                          double rate)
 {
-  return new L07Action(this, host_nb, host_list, flops_amount, bytes_amount, rate);
+  return new L07Action(this, host_list, flops_amount, bytes_amount, rate);
 }
 
-L07Action::L07Action(kernel::resource::Model* model, size_t host_nb, s4u::Host* const* host_list,
+L07Action::L07Action(kernel::resource::Model* model, const std::vector<s4u::Host*> host_list,
                      const double* flops_amount, const double* bytes_amount, double rate)
     : CpuAction(model, 1, 0), computationAmount_(flops_amount), communicationAmount_(bytes_amount), rate_(rate)
 {
@@ -147,22 +147,22 @@ L07Action::L07Action(kernel::resource::Model* model, size_t host_nb, s4u::Host* 
   double latency = 0.0;
   this->set_last_update();
 
-  hostList_.insert(hostList_.end(), host_list, host_list + host_nb);
+  hostList_.insert(hostList_.end(), host_list.begin(), host_list.end());
 
   if (flops_amount != nullptr)
-    used_host_nb += std::count_if(flops_amount, flops_amount + host_nb, [](double x) { return x > 0.0; });
+    used_host_nb += std::count_if(flops_amount, flops_amount + host_list.size(), [](double x) { return x > 0.0; });
 
   /* Compute the number of affected resources... */
   if(bytes_amount != nullptr) {
     std::unordered_set<const char*> affected_links;
 
-    for (size_t k = 0; k < host_nb * host_nb; k++) {
+    for (size_t k = 0; k < host_list.size() * host_list.size(); k++) {
       if (bytes_amount[k] <= 0)
         continue;
 
       double lat = 0.0;
       std::vector<kernel::resource::LinkImpl*> route;
-      hostList_[k / host_nb]->route_to(hostList_[k % host_nb], route, &lat);
+      hostList_[k / host_list.size()]->route_to(hostList_[k % host_list.size()], route, &lat);
       latency = std::max(latency, lat);
 
       for (auto const& link : route)
@@ -172,26 +172,27 @@ L07Action::L07Action(kernel::resource::Model* model, size_t host_nb, s4u::Host* 
     link_nb = affected_links.size();
   }
 
-  XBT_DEBUG("Creating a parallel task (%p) with %zu hosts and %zu unique links.", this, host_nb, link_nb);
+  XBT_DEBUG("Creating a parallel task (%p) with %zu hosts and %zu unique links.", this, host_list.size(), link_nb);
   latency_ = latency;
 
-  set_variable(model->get_maxmin_system()->variable_new(this, 1.0, (rate > 0 ? rate : -1.0), host_nb + link_nb));
+  set_variable(
+      model->get_maxmin_system()->variable_new(this, 1.0, (rate > 0 ? rate : -1.0), host_list.size() + link_nb));
 
   if (latency_ > 0)
     model->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
 
   /* Expand it for the CPUs even if there is nothing to compute, to make sure that it gets expended even if there is no
    * communication either */
-  for (size_t i = 0; i < host_nb; i++)
+  for (size_t i = 0; i < host_list.size(); i++)
     model->get_maxmin_system()->expand(host_list[i]->pimpl_cpu->get_constraint(), get_variable(),
                                        (flops_amount == nullptr ? 0.0 : flops_amount[i]));
 
   if (bytes_amount != nullptr) {
-    for (size_t k = 0; k < host_nb * host_nb; k++) {
+    for (size_t k = 0; k < host_list.size() * host_list.size(); k++) {
       if (bytes_amount[k] <= 0.0)
         continue;
       std::vector<kernel::resource::LinkImpl*> route;
-      hostList_[k / host_nb]->route_to(hostList_[k % host_nb], route, nullptr);
+      hostList_[k / host_list.size()]->route_to(hostList_[k % host_list.size()], route, nullptr);
 
       for (auto const& link : route)
         model->get_maxmin_system()->expand_add(link->get_constraint(), this->get_variable(), bytes_amount[k]);
@@ -206,15 +207,13 @@ L07Action::L07Action(kernel::resource::Model* model, size_t host_nb, s4u::Host* 
 
 kernel::resource::Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
-  sg_host_t* host_list = new sg_host_t[2]();
+  std::vector<s4u::Host*> host_list = {src, dst};
   double* flops_amount = new double[2]();
   double* bytes_amount = new double[4]();
 
-  host_list[0]    = src;
-  host_list[1]    = dst;
   bytes_amount[1] = size;
 
-  kernel::resource::Action* res = hostModel_->execute_parallel(2, host_list, flops_amount, bytes_amount, rate);
+  kernel::resource::Action* res = hostModel_->execute_parallel(host_list, flops_amount, bytes_amount, rate);
   static_cast<L07Action*>(res)->free_arrays_ = true;
   return res;
 }
@@ -257,13 +256,13 @@ LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwid
 
 kernel::resource::Action* CpuL07::execution_start(double size)
 {
-  sg_host_t host_list[1] = {get_host()};
+  std::vector<s4u::Host*> host_list = {get_host()};
 
   double* flops_amount = new double[1]();
   flops_amount[0] = size;
 
   kernel::resource::Action* res =
-      static_cast<CpuL07Model*>(get_model())->hostModel_->execute_parallel(1, host_list, flops_amount, nullptr, -1);
+      static_cast<CpuL07Model*>(get_model())->hostModel_->execute_parallel(host_list, flops_amount, nullptr, -1);
   static_cast<L07Action*>(res)->free_arrays_ = true;
   return res;
 }

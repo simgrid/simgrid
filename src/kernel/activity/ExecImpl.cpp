@@ -8,6 +8,7 @@
 #include "simgrid/modelchecker.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_host_private.hpp"
+#include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 
@@ -51,22 +52,11 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-ExecImpl::ExecImpl(std::string name, std::string tracing_category, s4u::Host* host)
-    : ActivityImpl(std::move(name)), host_(host)
+ExecImpl::ExecImpl(std::string name, std::string tracing_category) : ActivityImpl(std::move(name))
 {
   this->state_ = SIMIX_RUNNING;
   this->set_category(std::move(tracing_category));
 
-  XBT_DEBUG("Create exec %p", this);
-}
-
-ExecImpl::ExecImpl(std::string name, std::string tracing_category, s4u::Host* host, double timeout)
-    : ExecImpl(std::move(name), std::move(tracing_category), nullptr)
-{
-  if (timeout > 0 && not MC_is_active() && not MC_record_replay_is_active()) {
-    timeout_detector_ = host->pimpl_cpu->sleep(timeout);
-    timeout_detector_->set_data(this);
-  }
   XBT_DEBUG("Create exec %p", this);
 }
 
@@ -77,6 +67,21 @@ ExecImpl::~ExecImpl()
   if (timeout_detector_)
     timeout_detector_->unref();
   XBT_DEBUG("Destroy exec %p", this);
+}
+
+ExecImpl* ExecImpl::set_host(s4u::Host* host)
+{
+  host_ = host;
+  return this;
+}
+
+ExecImpl* ExecImpl::set_timeout(double timeout)
+{
+  if (timeout > 0 && not MC_is_active() && not MC_record_replay_is_active()) {
+    timeout_detector_ = host_->pimpl_cpu->sleep(timeout);
+    timeout_detector_->set_data(this);
+  }
+  return this;
 }
 
 ExecImpl* ExecImpl::start(double flops_amount, double priority, double bound)
@@ -94,6 +99,20 @@ ExecImpl* ExecImpl::start(double flops_amount, double priority, double bound)
   return this;
 }
 
+ExecImpl* ExecImpl::start(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
+                          const std::vector<double>& bytes_amounts)
+{
+  /* set surf's synchro */
+  if (not MC_is_active() && not MC_record_replay_is_active()) {
+    surf_action_ = surf_host_model->execute_parallel(hosts, flops_amounts.data(), bytes_amounts.data(), -1);
+    if (surf_action_ != nullptr) {
+      surf_action_->set_data(this);
+    }
+  }
+  XBT_DEBUG("Create parallel execute synchro %p", this);
+  ExecImpl::on_creation(this);
+  return this;
+}
 void ExecImpl::cancel()
 {
   XBT_VERB("This exec %p is canceled", this);
@@ -103,19 +122,18 @@ void ExecImpl::cancel()
 
 double ExecImpl::get_remaining()
 {
-  xbt_assert(host_ != nullptr, "Calling remains() on a parallel execution is not allowed. "
-                               "We would need to return a vector instead of a scalar. "
-                               "Did you mean remainingRatio() instead?");
   return surf_action_ ? surf_action_->get_remains() : 0;
 }
 
-double ExecImpl::get_remaining_ratio()
+double ExecImpl::get_seq_remaining_ratio()
 {
-  if (host_ ==
-      nullptr) // parallel task: their remain is already between 0 and 1 (see comment in ExecImpl::get_remaining())
-    return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains();
-  else // Actually compute the ratio for sequential tasks
-    return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains() / surf_action_->get_cost();
+  return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains() / surf_action_->get_cost();
+}
+
+double ExecImpl::get_par_remaining_ratio()
+{
+  // parallel task: their remain is already between 0 and 1
+  return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains();
 }
 
 void ExecImpl::set_bound(double bound)
