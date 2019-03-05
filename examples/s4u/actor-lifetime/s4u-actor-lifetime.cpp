@@ -16,12 +16,10 @@ class sleeper {
 public:
   explicit sleeper(std::vector<std::string> /*args*/)
   {
-    simgrid::s4u::this_actor::on_exit(
-        [](int, void*) {
-          /* Executed on process termination, to display a message helping to understand the output */
-          XBT_INFO("Exiting now (done sleeping or got killed).");
-        },
-        nullptr);
+    simgrid::s4u::this_actor::on_exit([](bool /*failed*/) {
+      /* Executed on process termination, to display a message helping to understand the output */
+      XBT_INFO("Exiting now (done sleeping or got killed).");
+    });
   }
   void operator()()
   {

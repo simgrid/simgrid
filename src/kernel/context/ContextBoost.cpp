@@ -69,8 +69,8 @@ void BoostContext::wrapper(BoostContext::arg_type arg)
   try {
     (*context)();
     context->Context::stop();
-  } catch (StopRequest const&) {
-    XBT_DEBUG("Caught a StopRequest");
+  } catch (ForcefulKillException const&) {
+    XBT_DEBUG("Caught a ForcefulKillException");
   } catch (simgrid::Exception const& e) {
     XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
     throw;

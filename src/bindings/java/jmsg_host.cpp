@@ -5,6 +5,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/plugins/energy.h"
 #include "simgrid/plugins/load.h"
 #include "simgrid/s4u/Host.hpp"
@@ -142,7 +143,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_on(JNIEnv *env, jobject jhost) 
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_off(JNIEnv *env, jobject jhost) {
   msg_host_t host = jhost_get_native(env, jhost);
-  if (not simgrid::kernel::context::StopRequest::try_n_catch([host]() { MSG_host_off(host); }))
+  if (not simgrid::ForcefulKillException::try_n_catch([host]() { MSG_host_off(host); }))
     jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Host turned off");
 }
 

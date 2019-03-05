@@ -85,14 +85,17 @@ void Actor::set_auto_restart(bool autorestart)
   });
 }
 
-void Actor::on_exit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */
+void Actor::on_exit(int_f_pvoid_pvoid_t fun,
+                    void* data) /* deprecated: cleanup SIMIX_process_on_exit: change prototype of second parameter and
+                                   remove the last one */
 {
   simgrid::simix::simcall([this, fun, data] { SIMIX_process_on_exit(pimpl_, fun, data); });
 }
 
-void Actor::on_exit(std::function<void(int, void*)> fun, void* data)
+void Actor::on_exit(std::function<void(bool /*failed*/)> const fun)
 {
-  simgrid::simix::simcall([this, fun, data] { SIMIX_process_on_exit(pimpl_, fun, data); });
+  simgrid::simix::simcall(
+      [this, fun] { SIMIX_process_on_exit(pimpl_, [fun](int a, void* /*data*/) { fun(a != 0); }, nullptr); });
 }
 
 void Actor::migrate(Host* new_host)
@@ -402,9 +405,14 @@ void exit()
   simgrid::simix::simcall([actor] { actor->exit(); });
 }
 
-void on_exit(std::function<void(int, void*)> fun, void* data)
+void on_exit(std::function<void(bool)> const fun)
 {
-  SIMIX_process_self()->iface()->on_exit(fun, data);
+  SIMIX_process_self()->iface()->on_exit(fun);
+}
+
+void on_exit(std::function<void(int, void*)> const fun, void* data) /* deprecated */
+{
+  SIMIX_process_self()->iface()->on_exit([fun, data](bool exit) { fun(exit, data); });
 }
 
 /** @brief Moves the current actor to another host
@@ -442,11 +450,11 @@ Host* getHost() /* deprecated */
 }
 void on_exit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */
 {
-  SIMIX_process_self()->iface()->on_exit([fun](int a, void* b) { fun((void*)(intptr_t)a, b); }, data);
+  SIMIX_process_self()->iface()->on_exit([fun, data](int a) { fun((void*)(intptr_t)a, data); });
 }
 void onExit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */
 {
-  on_exit([fun](int a, void* b) { fun((void*)(intptr_t)a, b); }, data);
+  on_exit([fun, data](int a) { fun((void*)(intptr_t)a, data); });
 }
 void kill() /* deprecated */
 {

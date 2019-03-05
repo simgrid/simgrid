@@ -5,6 +5,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/context/Context.hpp"
 
@@ -127,7 +128,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_execute(JNIEnv * env, jobject j
     return;
   }
   msg_error_t rv;
-  if (not simgrid::kernel::context::StopRequest::try_n_catch([&rv, &task]() { rv = MSG_task_execute(task); })) {
+  if (not simgrid::ForcefulKillException::try_n_catch([&rv, &task]() { rv = MSG_task_execute(task); })) {
     jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
   }
 
@@ -286,7 +287,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv* env, jclass 
 
   const char *alias = env->GetStringUTFChars(jalias, 0);
   msg_error_t rv;
-  if (not simgrid::kernel::context::StopRequest::try_n_catch([&rv, &task, &alias, &jtimeout]() {
+  if (not simgrid::ForcefulKillException::try_n_catch([&rv, &task, &alias, &jtimeout]() {
         rv = MSG_task_receive_ext(&task, alias, (double)jtimeout, /*host*/ nullptr);
       })) {
     jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");

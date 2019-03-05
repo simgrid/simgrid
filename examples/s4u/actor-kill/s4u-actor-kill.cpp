@@ -9,7 +9,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_kill, "Messages specific for this s4u exa
 
 static void victimA_fun()
 {
-  simgrid::s4u::this_actor::on_exit([](int, void*) { XBT_INFO("I have been killed!"); }, nullptr);
+  simgrid::s4u::this_actor::on_exit([](bool /*failed*/) { XBT_INFO("I have been killed!"); });
   XBT_INFO("Hello!");
   XBT_INFO("Suspending myself");
   simgrid::s4u::this_actor::suspend(); /* - Start by suspending itself */

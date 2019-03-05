@@ -103,9 +103,9 @@ void *ThreadContext::wrapper(void *param)
       context->Context::stop();
       context->stop_hook();
     }
-  } catch (StopRequest const&) {
-    XBT_DEBUG("Caught a StopRequest in Thread::wrapper");
-    xbt_assert(not context->is_maestro(), "Maestro shall not receive StopRequests, even when detached.");
+  } catch (ForcefulKillException const&) {
+    XBT_DEBUG("Caught a ForcefulKillException in Thread::wrapper");
+    xbt_assert(not context->is_maestro(), "Maestro shall not receive ForcefulKillExceptions, even when detached.");
   } catch (simgrid::Exception const& e) {
     XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
     throw;
@@ -148,7 +148,7 @@ void ThreadContext::stop()
 {
   Context::stop();
   stop_hook();
-  throw StopRequest();
+  throw ForcefulKillException();
 }
 
 void ThreadContext::suspend()

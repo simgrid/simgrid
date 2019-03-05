@@ -12,7 +12,7 @@ static void sendpid()
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name("mailbox");
   int pid                          = simgrid::s4u::this_actor::get_pid();
   double comm_size                 = 100000;
-  simgrid::s4u::this_actor::on_exit([pid](int, void*) { XBT_INFO("Process \"%d\" killed.", pid); }, nullptr);
+  simgrid::s4u::this_actor::on_exit([pid](bool /*failed*/) { XBT_INFO("Process \"%d\" killed.", pid); });
 
   XBT_INFO("Sending pid of \"%d\".", pid);
   mailbox->put(&pid, comm_size);

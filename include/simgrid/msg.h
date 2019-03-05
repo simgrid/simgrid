@@ -329,7 +329,7 @@ XBT_PUBLIC int MSG_process_get_number();
 XBT_PUBLIC void* MSG_process_get_data(msg_process_t process);
 XBT_PUBLIC msg_error_t MSG_process_set_data(msg_process_t process, void* data);
 
-XBT_PUBLIC void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void* data);
+XBT_PUBLIC void MSG_process_on_exit(int_f_int_pvoid_t fun, void* data);
 
 XBT_PUBLIC void MSG_process_ref(msg_process_t process);
 XBT_PUBLIC void MSG_process_unref(msg_process_t process);

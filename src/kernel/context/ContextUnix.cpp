@@ -41,8 +41,8 @@ static void smx_ctx_wrapper(int i1, int i2)
   try {
     (*context)();
     context->Context::stop();
-  } catch (simgrid::kernel::context::StopRequest const&) {
-    XBT_DEBUG("Caught a StopRequest");
+  } catch (simgrid::ForcefulKillException const&) {
+    XBT_DEBUG("Caught a ForcefulKillException");
   } catch (simgrid::Exception const& e) {
     XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
     throw;

@@ -31,9 +31,9 @@ to us and say hello! We love earing about how people use SimGrid.
    list.
  - Join us on IRC and ask your question directly on the channel \#simgrid at
    ``irc.debian.org``
-   (or use the ugly `web interface <https://webchat.oftc.net/?channels=%23simgrid>`_)
+   (or use the ugly `web interface <https://webchat.oftc.net/?channels=%23simgrid>`_
    if you don't have a
-   `real client <https://en.wikipedia.org/wiki/Comparison_of_Internet_Relay_Chat_clients>`_)
+   `real client <https://en.wikipedia.org/wiki/Comparison_of_Internet_Relay_Chat_clients>`_
    installed). When no non-french speaker are connected, we usually
    chat in french on this channel, but we do switch back to english
    when we have a guest.

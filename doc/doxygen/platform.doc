@@ -1,61 +1,10 @@
 /*! @page platform Describing the virtual platform
 
-@tableofcontents
 
-@htmlonly
-<div align="center">
-@endhtmlonly
-@htmlinclude graphical-toc.svg
-@htmlonly
-</div>
-<script>
-document.getElementById("VirtualPlatform").style="opacity:0.93999999;fill:#ff0000;fill-opacity:0.1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1";
-</script>
-@endhtmlonly
-
-As @ref starting_components "explained in the introduction," any
-SimGrid study must entail the description of the platform on which you
-want to simulate your application. You have to describe **each element
-of your platform**, such as computing hosts, clusters, each disks,
-links, etc. You must also define the **routing on your platform**, ie
-which path is taken between two hosts. Finally, you may also describe
-an **experimental scenario**, with qualitative changes (e.g.,
-bandwidth changes representing an external load) and qualitative
-changes (representing how some elements fail and restart over time).
-
-You should really separate your application from the platform
-description, as it will ease your experimental campain afterward.
-Mixing them is seen as a really bad experimental practice. The easiest
-to enforce this split is to put the platform description in a XML
-file. Many example platforms are provided in the archive, and this
-page gives all needed details to write such files, as well as some
-hints and tricks about describing your platform.
-
-On the other side, XML is sometimes not expressive enough for some
-platforms, in particular large platforms exhibiting repetitive
-patterns that are not simply expressed in XML.  In practice, many
-users end up generating their XML platform files from some sort of
-scripts. It is probably preferable to rewrite your XML @ref
-platform_lua "platform using the lua scripting language" instead.
-In the future, it should be possible to describe the platform directly
-in C++, but this is not possible yet.
 
 As usual, SimGrid is a versatile framework, and you should find the
 way of describing your platform that best fits your experimental
 practice. 
-
-@section pf_overview Describing the platform with XML
-
-Your platform description should follow the specification presented in
-the [simgrid.dtd](https://simgrid.org/simgrid.dtd)
-DTD file. The same DTD is used for both the platform and deployment
-files.
-
-From time to time, this DTD evolves to introduce possibly
-backward-incompatible changes. That is why each platform desciption is
-enclosed within a @c platform tag, that have a @c version attribute. 
-The current version is <b>4.1</b>. The @c simgrid_update_xml program can
-upgrade most of the past platform files to the recent formalism.
 
 @section pf_first_example First Platform Example 
 
@@ -79,8 +28,6 @@ and one link), and explicitly giving the route between the hosts.
 </platform>
 @endcode
 
-As we said, the englobing @ref pf_overview "&lt;platform&gt;" tag is
-used to specify the dtd version used for this file.
 
 Then, every resource (specified with @ref pf_tag_host, @ref
 pf_tag_link or others) must be located within a given **networking

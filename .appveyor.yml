@@ -47,7 +47,7 @@ build_script:
 - mingw32-make.exe VERBOSE=1 java-all python-bindings # Only the Java and Python parts
 - ctest --output-on-failure -R java
 # Don't test python, as pybind11 seems too complex for mingw for now (mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1)
-# The observed failure is around the StopRequest exception, that seems badly catched somehow.
+# The observed failure is around the ForcefulKill exception, that seems badly catched somehow.
 # - ctest --output-on-failure -R python
 
 artifacts:

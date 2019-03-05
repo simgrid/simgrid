@@ -126,7 +126,7 @@ class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<Actor> {
   friend simgrid::kernel::actor::ActorImpl;
   friend simgrid::kernel::activity::MailboxImpl;
 
-  kernel::actor::ActorImpl* const pimpl_ = nullptr;
+  kernel::actor::ActorImpl* const pimpl_;
 
   explicit Actor(smx_actor_t pimpl) : pimpl_(pimpl) {}
 
@@ -229,8 +229,12 @@ public:
    * Please note that functions registered in this signal cannot do any simcall themselves. It means that they cannot
    * send or receive messages, acquire or release mutexes, nor even modify a host property or something. Not only are
    * blocking functions forbidden in this setting, but also modifications to the global state.
+   *
+   * The parameter of on_exit's callbacks denotes whether or not the actor's execution failed.
+   * It will be set to true if the actor was killed or failed because of an exception,
+   * while it will remain to false if the actor terminated gracefully.
    */
-  void on_exit(std::function<void(int, void*)> fun, void* data);
+  void on_exit(std::function<void(bool /*failed*/)> fun);
 
   /** Sets the time at which that actor should be killed */
   void set_kill_time(double time);
@@ -289,6 +293,9 @@ public:
   void set_property(const std::string& key, std::string value);
 
 #ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v325("Please use Actor::on_exit(fun) instead") void on_exit(std::function<void(int, void*)> fun,
+                                                                                    void* data);
+
   XBT_ATTRIB_DEPRECATED_v325("Please use Actor::by_pid(pid).kill() instead") static void kill(aid_t pid);
 
   /** @deprecated See Actor::create() */
@@ -345,7 +352,7 @@ public:
   /** @deprecated See Actor::on_exit() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::on_exit()") void onExit(int_f_pvoid_pvoid_t fun, void* data)
   {
-    on_exit([fun](int a, void* b) { fun((void*)(intptr_t)a, b); }, data);
+    on_exit([fun, data](bool a) { fun((void*)(uintptr_t)a, data); });
   }
   /** @deprecated See Actor::set_kill_time() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::set_kill_time()") void setKillTime(double time) { set_kill_time(time); }
@@ -517,8 +524,21 @@ XBT_PUBLIC void resume();
 /** @brief kill the current actor. */
 XBT_PUBLIC void exit();
 
-/** @brief Add a function to the list of "on_exit" functions of the current actor. */
-XBT_PUBLIC void on_exit(std::function<void(int, void*)> fun, void* data);
+/** @brief Add a function to the list of "on_exit" functions of the current actor.
+ *
+ * The on_exit functions are the functions executed when your actor is killed. You should use them to free the data used
+ * by your actor.
+ *
+ * Please note that functions registered in this signal cannot do any simcall themselves. It means that they cannot
+ * send or receive messages, acquire or release mutexes, nor even modify a host property or something. Not only are
+ * blocking functions forbidden in this setting, but also modifications to the global state.
+ *
+ * The parameter of on_exit's callbacks denotes whether or not the actor's execution failed.
+ * It will be set to true if the actor was killed or failed because of an exception,
+ * while it will remain to false if the actor terminated gracefully.
+ */
+
+XBT_PUBLIC void on_exit(std::function<void(bool)> fun);
 
 /** @brief Migrate the current actor to a new host. */
 XBT_PUBLIC void migrate(Host* new_host);
@@ -526,8 +546,11 @@ XBT_PUBLIC void migrate(Host* new_host);
 /** @} */
 
 #ifndef DOXYGEN
+XBT_ATTRIB_DEPRECATED_v325("Please use std::function<void(bool)> for first parameter.") XBT_PUBLIC
+    void on_exit(std::function<void(int, void*)> fun, void* data);
+
 /** @deprecated Please use std::function<void(int, void*)> for first parameter */
-XBT_ATTRIB_DEPRECATED_v323("Please use std::function<void(int, void*)> for first parameter.") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v323("Please use std::function<void(bool)> for first parameter.") XBT_PUBLIC
     void on_exit(int_f_pvoid_pvoid_t fun, void* data);
 /** @deprecated See this_actor::get_name() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_name()") XBT_PUBLIC std::string getName();

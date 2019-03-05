@@ -194,8 +194,10 @@ smx_context_t MSG_process_get_smx_ctx(msg_process_t process) { // deprecated -- 
  *  The on_exit functions are the functions executed when your process is killed.
  *  You should use them to free the data used by your process.
  */
-void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data) {
-  simgrid::s4u::this_actor::on_exit([fun](int a, void* b) { fun((void*)(intptr_t)a, b); }, data);
+void MSG_process_on_exit(int_f_int_pvoid_t fun, void* data)
+{
+  simgrid::s4u::this_actor::on_exit(
+      [fun, data](bool failed) { fun(failed ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS, data); });
 }
 
 /** @brief Take an extra reference on that process to prevent it to be garbage-collected */

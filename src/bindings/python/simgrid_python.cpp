@@ -13,6 +13,7 @@
 #include <pybind11/stl.h>
 
 #include "src/kernel/context/Context.hpp"
+#include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
@@ -56,7 +57,7 @@ PYBIND11_MODULE(simgrid, m)
   m.attr("simgrid_version") = simgrid_version;
 
   // Internal exception used to kill actors and sweep the RAII chimney (free objects living on the stack)
-  py::object pyStopRequestEx = py::register_exception<simgrid::kernel::context::StopRequest>(m, "ActorKilled");
+  py::object pyForcefulKillEx = py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled");
 
   /* this_actor namespace */
   void (*sleep_for_fun)(double) = &simgrid::s4u::this_actor::sleep_for; // pick the right overload
@@ -83,15 +84,13 @@ PYBIND11_MODULE(simgrid, m)
   m2.def("on_exit",
          [](py::object fun) {
            ActorPtr act = Actor::self();
-           simgrid::s4u::this_actor::on_exit(
-               [act, fun](int /*ignored*/, void* /*data*/) {
-                 try {
-                   fun();
-                 } catch (py::error_already_set& e) {
-                   xbt_die("Error while executing the on_exit lambda: %s", e.what());
-                 }
-               },
-               nullptr);
+           simgrid::s4u::this_actor::on_exit([act, fun](bool /*failed*/) {
+             try {
+               fun();
+             } catch (py::error_already_set& e) {
+               xbt_die("Error while executing the on_exit lambda: %s", e.what());
+             }
+           });
          },
          "");
 
@@ -116,10 +115,10 @@ PYBIND11_MODULE(simgrid, m)
            ":cpp:func:`simgrid::s4u::Engine::load_deployment()`")
       .def("run", &Engine::run, "Run the simulation")
       .def("register_actor",
-           [pyStopRequestEx](Engine*, const std::string& name, py::object fun_or_class) {
+           [pyForcefulKillEx](Engine*, const std::string& name, py::object fun_or_class) {
              simgrid::simix::register_function(
-                 name, [pyStopRequestEx, fun_or_class](std::vector<std::string> args) -> simgrid::simix::ActorCode {
-                   return [pyStopRequestEx, fun_or_class, args]() {
+                 name, [pyForcefulKillEx, fun_or_class](std::vector<std::string> args) -> simgrid::simix::ActorCode {
+                   return [pyForcefulKillEx, fun_or_class, args]() {
                      try {
                        /* Convert the std::vector into a py::tuple */
                        py::tuple params(args.size() - 1);
@@ -132,9 +131,9 @@ PYBIND11_MODULE(simgrid, m)
                        if (py::isinstance<py::function>(res))
                          res();
                      } catch (py::error_already_set& ex) {
-                       if (ex.matches(pyStopRequestEx)) {
+                       if (ex.matches(pyForcefulKillEx)) {
                          XBT_VERB("Actor killed");
-                         /* Stop here that StopRequest exception which was meant to free the RAII stuff on the stack */
+                         /* Stop here that ForcefulKill exception which was meant to free the RAII stuff on the stack */
                        } else {
                          throw;
                        }
@@ -176,16 +175,16 @@ PYBIND11_MODULE(simgrid, m)
                                             "application, see :ref:`class s4u::Actor <API_s4u_Actor>`")
 
       .def("create",
-           [pyStopRequestEx](py::str name, py::object host, py::object fun, py::args args) {
+           [pyForcefulKillEx](py::str name, py::object host, py::object fun, py::args args) {
 
-             return simgrid::s4u::Actor::create(name, host.cast<Host*>(), [fun, args, pyStopRequestEx]() {
+             return simgrid::s4u::Actor::create(name, host.cast<Host*>(), [fun, args, pyForcefulKillEx]() {
 
                try {
                  fun(*args);
                } catch (py::error_already_set& ex) {
-                 if (ex.matches(pyStopRequestEx)) {
+                 if (ex.matches(pyForcefulKillEx)) {
                    XBT_VERB("Actor killed");
-                   /* Stop here that StopRequest exception which was meant to free the RAII stuff on the stack */
+                   /* Stop here that ForcefulKill exception which was meant to free the RAII stuff on the stack */
                  } else {
                    throw;
                  }
