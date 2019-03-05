@@ -135,7 +135,7 @@ private:
     void worker_wait(unsigned) override;
   };
 
-  static void* worker_main(void* arg);
+  static void worker_main(ThreadData* data);
   Synchro* new_synchro(e_xbt_parmap_mode_t mode);
   void work();
 
@@ -291,9 +291,8 @@ template <typename T> typename Parmap<T>::Synchro* Parmap<T>::new_synchro(e_xbt_
 }
 
 /** @brief Main function of a worker thread */
-template <typename T> void* Parmap<T>::worker_main(void* arg)
+template <typename T> void Parmap<T>::worker_main(ThreadData* data)
 {
-  ThreadData* data      = static_cast<ThreadData*>(arg);
   Parmap<T>& parmap     = data->parmap;
   unsigned round        = 0;
   smx_context_t context = simix_global->context_factory->create_context(std::function<void()>(), nullptr);
@@ -316,7 +315,6 @@ template <typename T> void* Parmap<T>::worker_main(void* arg)
   /* We are destroying the parmap */
   delete context;
   delete data;
-  return nullptr;
 }
 
 template <typename T> Parmap<T>::PosixSynchro::PosixSynchro(Parmap<T>& parmap) : Synchro(parmap)
