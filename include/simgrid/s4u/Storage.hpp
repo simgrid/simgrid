@@ -113,8 +113,8 @@ public:
 #endif
 
 private:
-  Host* attached_to_              = nullptr;
-  surf::StorageImpl* const pimpl_ = nullptr;
+  Host* attached_to_ = nullptr;
+  surf::StorageImpl* const pimpl_;
   std::string name_;
   void* userdata_ = nullptr;
 };
