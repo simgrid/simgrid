@@ -14,6 +14,7 @@
 
 #include <boost/optional.hpp>
 #include <condition_variable>
+#include <functional>
 #include <mutex>
 #include <thread>
 
@@ -42,7 +43,7 @@ public:
   Parmap(const Parmap&) = delete;
   Parmap& operator=(const Parmap&) = delete;
   ~Parmap();
-  void apply(void (*fun)(T), const std::vector<T>& data);
+  void apply(std::function<void(T)>&& fun, const std::vector<T>& data);
   boost::optional<T> next();
 
 private:
@@ -146,7 +147,7 @@ private:
   Synchro* synchro;         /**< synchronization object */
 
   std::atomic_uint thread_counter{0};   /**< number of workers that have done the work */
-  void (*fun)(const T)       = nullptr; /**< function to run in parallel on each element of data */
+  std::function<void(T)> fun;           /**< function to run in parallel on each element of data */
   const std::vector<T>* data = nullptr; /**< parameters to pass to fun in parallel */
   std::atomic_uint index;               /**< index of the next element of data to pick */
 };
@@ -215,10 +216,10 @@ template <typename T> Parmap<T>::~Parmap()
  * @param fun the function to call in parallel
  * @param data each element of this vector will be passed as an argument to fun
  */
-template <typename T> void Parmap<T>::apply(void (*fun)(T), const std::vector<T>& data)
+template <typename T> void Parmap<T>::apply(std::function<void(T)>&& fun, const std::vector<T>& data)
 {
   /* Assign resources to worker threads (we are maestro here)*/
-  this->fun   = fun;
+  this->fun   = std::move(fun);
   this->data  = &data;
   this->index = 0;
   this->synchro->master_signal(); // maestro runs futex_wake to wake all the minions (the working threads)
