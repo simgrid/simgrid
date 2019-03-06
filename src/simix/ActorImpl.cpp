@@ -41,6 +41,7 @@ smx_actor_t SIMIX_process_self()
 /**
  * @brief Returns whether a process has pending asynchronous communications.
  * @return true if there are asynchronous communications in this process
+ * @deprecated
  */
 int SIMIX_process_has_pending_comms(smx_actor_t process) {
 
@@ -595,7 +596,7 @@ int SIMIX_process_count()
   return simix_global->process_list.size();
 }
 
-void* SIMIX_process_self_get_data()
+void* SIMIX_process_self_get_data() // deprecated
 {
   smx_actor_t self = SIMIX_process_self();
 
@@ -605,7 +606,7 @@ void* SIMIX_process_self_get_data()
   return self->get_user_data();
 }
 
-void SIMIX_process_self_set_data(void *data)
+void SIMIX_process_self_set_data(void* data) // deprecated
 {
   SIMIX_process_self()->set_user_data(data);
 }
