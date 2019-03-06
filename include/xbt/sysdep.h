@@ -111,7 +111,7 @@ static XBT_ALWAYS_INLINE void *xbt_realloc(void *p, size_t s) {
 #define xbt_free(p) free(p) /*nothing specific to do here. A poor valgrind replacement? */
 
 #ifdef __cplusplus
-#define XBT_FREE_NOEXCEPT noexcept(noexcept(std::free))
+#define XBT_FREE_NOEXCEPT noexcept(noexcept(::free))
 #else
 #define XBT_FREE_NOEXCEPT
 #endif

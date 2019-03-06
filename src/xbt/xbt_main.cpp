@@ -135,13 +135,13 @@ void xbt_init(int *argc, char **argv)
 
 /* these two functions belong to xbt/sysdep.h, which have no corresponding .c file */
 /** @brief like xbt_free, but you can be sure that it is a function  */
-void xbt_free_f(void* p) noexcept(noexcept(std::free))
+void xbt_free_f(void* p) noexcept(noexcept(::free))
 {
   xbt_free(p);
 }
 
 /** @brief should be given a pointer to pointer, and frees the second one */
-void xbt_free_ref(void* d) noexcept(noexcept(std::free))
+void xbt_free_ref(void* d) noexcept(noexcept(::free))
 {
   xbt_free(*(void**)d);
 }
