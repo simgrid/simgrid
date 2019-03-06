@@ -149,7 +149,7 @@ int Coll_reduce_NTSL::reduce(void *buf, void *rbuf, int count,
                comm);
   }
 
-  free(tmp_buf);
+  smpi_free_tmp_buffer(tmp_buf);
   return MPI_SUCCESS;
 }
 }

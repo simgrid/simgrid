@@ -165,7 +165,7 @@ int Coll_scatter_ompi_binomial::scatter(void* sbuf, int scount, MPI_Datatype sdt
 
  err_hndl:
     if (NULL != tempbuf)
-      free(tempbuf);
+      smpi_free_tmp_buffer(tempbuf);
 
     XBT_DEBUG("%s:%4d\tError occurred %d, rank %2d", __FILE__, line, err, rank);
     return err;

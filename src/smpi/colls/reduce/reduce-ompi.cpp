@@ -309,9 +309,9 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
  error_hndl:  /* error handler */
     XBT_DEBUG("ERROR_HNDL: node %d file %s line %d error %d\n",
                    rank, __FILE__, line, ret );
-    if( inbuf_free[0] != NULL ) free(inbuf_free[0]);
-    if( inbuf_free[1] != NULL ) free(inbuf_free[1]);
-    if( accumbuf_free != NULL ) free(accumbuf);
+    smpi_free_tmp_buffer(inbuf_free[0]);
+    smpi_free_tmp_buffer(inbuf_free[1]);
+    smpi_free_tmp_buffer(accumbuf);
     return ret;
 }
 

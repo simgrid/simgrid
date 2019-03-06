@@ -92,7 +92,7 @@ static int MPIR_Reduce_knomial_trace(int root, int reduce_knomial_factor,
 
     /* Finally, fill up the src array */
     if(recv_iter > 0) {
-        knomial_reduce_src_array = static_cast<int*>(smpi_get_tmp_sendbuffer(sizeof(int)*recv_iter));
+      knomial_reduce_src_array = new int[recv_iter];
     }
 
     mask = orig_mask;
@@ -211,7 +211,7 @@ int Coll_reduce_mvapich2_knomial::reduce (
     }
 
     if(src_array != NULL) {
-        xbt_free(src_array);
+      delete[] src_array;
     }
 
     if(rank != root) {
