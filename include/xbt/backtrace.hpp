@@ -25,7 +25,7 @@ namespace xbt {
  *
  *  Return the origin string if this fails.
  */
-XBT_PUBLIC std::unique_ptr<char, void (*)(void*)> demangle(const char* name);
+XBT_PUBLIC std::unique_ptr<char, std::function<void(char*)>> demangle(const char* name);
 
 class BacktraceImpl;
 /** A backtrace
