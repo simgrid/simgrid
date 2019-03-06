@@ -3,11 +3,6 @@
 Simulating MPI Applications
 ===========================
 
-.. warning:: This document is still in early stage. You can try to
-   take this tutorial, but should not be surprised if things fall short.
-   It will be completed for the next release, v3.22, released by the end
-   of 2018.
-
 Discover SMPI
 -------------
 
@@ -367,7 +362,7 @@ nodes from the ``cluster_crossbar.xml`` platform as follows:
 Feel free to tweak the content of the XML platform file and the
 program to see the effect on the simulated execution time. It may be
 easier to compare the executions with the extra option
-``--cfg=smpi/display_timing:yes``.  Note that the simulation accounts
+``--cfg=smpi/display-timing:yes``.  Note that the simulation accounts
 for realistic network protocol effects and MPI implementation
 effects. As a result, you may see "unexpected behavior" like in the
 real world (e.g., sending a message 1 byte larger may lead to
@@ -477,7 +472,7 @@ is computationally hungry.
     The commands should be separated and executed by some CI to make sure
     the documentation is up-to-date.
 
-Lab 3: Execution Sampling on EP
+Lab 3: Execution Sampling on Matrix Multiplication example
 -------------------------------
 
 The second method to speed up simulations is to sample the computation
@@ -487,9 +482,128 @@ intensive and take time, while being regular enough not to ruin
 simulation accuracy. Furthermore there should not be any MPI calls
 inside such parts of the code.
 
-Use the EP benchmark, class B, 16 processes.
+Use for this part the `gemm_mpi.c
+<https://gitlab.com/PRACE-4IP/CodeVault/raw/master/hpc_kernel_samples/dense_linear_algebra/gemm/mpi/src/gemm_mpi.cpp>`_
+example, which is provided by the `PRACE Codevault repository
+<http://www.prace-ri.eu/prace-codevault/>`_.
 
-.. todo:: write this section, and the following ones.
+The computing part of this example is the matrix multiplication routine
+
+.. literalinclude:: /tuto_smpi/gemm_mpi.cpp
+   :language: c
+   :lines: 4-19
+   
+
+.. code-block:: shell
+
+  $ smpicc -O3 gemm_mpi.cpp -o gemm
+  $ time smpirun -np 16 -platform cluster_crossbar.xml -hostfile cluster_hostfile --cfg=smpi/display-timing:yes --cfg=smpi/running-power:1000000000 ./gemm
+  
+This should end quite quickly, as the size of each matrix is only 1000x1000. 
+But what happens if we want to simulate larger runs ?
+Replace the size by 2000, 3000, and try again.
+
+The simulation time increases a lot, while there are no more MPI calls performed, only computation.
+
+The ``--cfg=smpi/display-timing`` option gives more details about execution, 
+and advises to use sampling if the time spent in computing loops seems too high.
+
+The ``--cfg=smpi/running-power:1000000000`` option sets the speed of the processor used for 
+running the simulation. Here we say that its speed is the same as one of the 
+processors we are simulation (1Gf), so that 1 second of computation is injected 
+as 1 second in the simulation.
+
+.. code-block:: shell
+
+  [5.568556] [smpi_kernel/INFO] Simulated time: 5.56856 seconds.
+
+  The simulation took 24.9403 seconds (after parsing and platform setup)
+  24.0764 seconds were actual computation of the application
+  [5.568556] [smpi_kernel/INFO] More than 75% of the time was spent inside the application code.
+  You may want to use sampling functions or trace replay to reduce this.
+
+So in our case (size 3000) the simulation ran for 25 seconds, and simulated time was 5.57s at the end.
+Computation by itself took 24 seconds, and can quickly grow with larger sizes 
+(as computation is really performed, there will be variability between similar runs).
+
+SMPI provides sampling macros in order to accelerate simulation by sampling iterations 
+of large computation loops, and skip computation after a certain amount of iterations, 
+or when the sampling is stable enough.
+
+The two macros only slightly differ :
+
+- ``SMPI_SAMPLE_GLOBAL`` : specified number of samples is produced by all processors
+- ``SMPI_SAMPLE_LOCAL`` : each process executes a specified number of iterations
+
+So if the size of the computed part varies between processes (imbalance), 
+it's safer to use the LOCAL one.
+
+To use one of them, replacing the external for loop of the multiply routine:
+
+.. code-block:: c
+
+  for (int i = istart; i <= iend; ++i)
+
+by:
+
+.. code-block:: c
+
+  SMPI_SAMPLE_GLOBAL(int i = istart, i <= iend, ++i, 10, 0.005)
+
+First three parameters are the ones from the loop, while the two last ones are for sampling.
+They mean that at most 10 iterations will be performed, and that sampling phase can be exited 
+earlier if a certain stability is reached after less samples.
+
+Now run the code again with various sizes and parameters and check the time taken for the 
+simulation, as well as the resulting simulated time.
+
+.. code-block:: shell
+
+  [5.575691] [smpi_kernel/INFO] Simulated time: 5.57569 seconds.
+  The simulation took 1.23698 seconds (after parsing and platform setup)
+  0.0319454 seconds were actual computation of the application
+
+In this case the simulation only took 1.2 seconds, while the simulated time 
+stayed almost identical.
+
+Obviously the results of the computation will be altered as most of it is skipped, 
+so these macros cannot be used when results are critical for the application behavior 
+(convergence estimation for instance will be wrong on some codes).
+
+
+Lab 4: Memory folding on large allocations
+-------------------------------
+
+Another issue that can be encountered when simulation with SMPI is lack of memory.
+Indeed we are executing all MPI processes on a single node, which can lead to crashes.
+We will use the DT benchmark of the NAS suite to illustrate how to avoid such issues.
+
+With 85 processes and class C, the DT simulated benchmark will try to allocate 35GB of memory
+, which may not be available on the node your are using.
+
+To avoid this we can simply replace the largest calls to malloc and free by calls 
+to ``SMPI_SHARED_MALLOC`` and ``SMPI_SHARED_FREE``.
+This means that all processes will share one single instance of this buffer.
+As for sampling, results will be altered, and it shouldn't be used for control structures.
+
+For DT example, there are three different calls to malloc in the file, and one of them is for a needed structure.
+Find it and replace the two other ones by SMPI_SHARED_MALLOC (there is only one free to replace for both of them).
+
+Once done, you can now run
+
+.. code-block:: shell
+
+   $ make dt NPROCS=85 CLASS=C
+   (compilation logs)
+   $ smpirun -np 85 -platform ../cluster_backbone.xml bin/dt.C.x BH
+   (execution logs)
+
+And simulation should finish without swapping/crashing (Ignore the warning about the return value).
+
+If control structures are also problematic, you can use ``SMPI_PARTIAL_SHARED_MALLOC(size, offsets, offsetscount)`` 
+macro, which will shared only specific parts of the structure between processes, 
+and use specific memory for the important parts.
+It can be freed afterwards with SMPI_SHARED_FREE.
 
 Further Readings
 ----------------
