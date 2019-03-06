@@ -36,7 +36,7 @@ int Channel::send(const void* message, size_t size) const
 
 ssize_t Channel::receive(void* message, size_t size, bool block) const
 {
-  int res = recv(this->socket_, message, size, block ? 0 : MSG_DONTWAIT);
+  ssize_t res = recv(this->socket_, message, size, block ? 0 : MSG_DONTWAIT);
   if (res != -1)
     XBT_DEBUG("Receive %s", MC_message_type_name(*(e_mc_message_type*)message));
   return res;
