@@ -914,7 +914,7 @@ set(DOC_SOURCES
   docs/source/tuto_smpi/3hosts.xml
   docs/source/tuto_smpi/img/big-picture.svg
   docs/source/tuto_smpi/img/lu.S.4.png
-  docs/source/tuto_smpi/gemm_mpi.c
+  docs/source/tuto_smpi/gemm_mpi.cpp
   docs/source/tuto_smpi/roundtrip.c
 
   CITATION.bib
