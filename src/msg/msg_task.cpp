@@ -129,10 +129,34 @@ s4u::CommPtr Task::send_async(std::string alias, void_f_pvoid_t cleanup, bool de
   return comm;
 }
 
+msg_error_t Task::send(std::string alias, double timeout)
+{
+  msg_error_t ret = MSG_OK;
+  /* Try to send it */
+  try {
+    s4u::CommPtr s4u_comm = send_async(alias, nullptr, false);
+    comm                  = s4u_comm;
+    comm->wait_for(timeout);
+  } catch (simgrid::TimeoutError& e) {
+    ret = MSG_TIMEOUT;
+  } catch (simgrid::CancelException& e) {
+    ret = MSG_HOST_FAILURE;
+  } catch (xbt_ex& e) {
+    if (e.category == network_error)
+      ret = MSG_TRANSFER_FAILURE;
+    else
+      throw;
+
+    /* If the send failed, it is not used anymore */
+    set_not_used();
+  }
+
+  return ret;
+}
 void Task::cancel()
 {
   if (compute) {
-    simgrid::simix::simcall([this] { compute->cancel(); });
+    compute->cancel();
   } else if (comm) {
     comm->cancel();
   }
@@ -379,6 +403,86 @@ void MSG_task_dsend_bounded(msg_task_t task, const char* alias, void_f_pvoid_t c
 {
   task->set_rate(maxrate);
   task->send_async(alias, cleanup, true);
+}
+/**
+ * @brief Sends a task to a mailbox
+ *
+ * This is a blocking function, the execution flow will be blocked until the task is sent (and received on the other
+ * side if #MSG_task_receive is used).
+ * See #MSG_task_isend for sending tasks asynchronously.
+ *
+ * @param task the task to be sent
+ * @param alias the mailbox name to where the task is sent
+ *
+ * @return Returns #MSG_OK if the task was successfully sent,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
+ */
+msg_error_t MSG_task_send(msg_task_t task, const char* alias)
+{
+  XBT_DEBUG("MSG_task_send: Trying to send a message on mailbox '%s'", alias);
+  return task->send(alias, -1);
+}
+
+/**
+ * @brief Sends a task to a mailbox with a maximum rate
+ *
+ * This is a blocking function, the execution flow will be blocked until the task is sent. The maxrate parameter allows
+ * the application to limit the bandwidth utilization of network links when sending the task.
+ *
+ * The maxrate parameter can be used to send a task with a limited bandwidth (smaller than the physical available
+ * value). Use MSG_task_send() if you don't limit the rate (or pass -1 as a rate value do disable this feature).
+ *
+ * @param task the task to be sent
+ * @param alias the mailbox name to where the task is sent
+ * @param maxrate the maximum communication rate for sending this task (byte/sec)
+ *
+ * @return Returns #MSG_OK if the task was successfully sent,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
+ */
+msg_error_t MSG_task_send_bounded(msg_task_t task, const char* alias, double maxrate)
+{
+  task->set_rate(maxrate);
+  return task->send(alias, -1);
+}
+
+/**
+ * @brief Sends a task to a mailbox with a timeout
+ *
+ * This is a blocking function, the execution flow will be blocked until the task is sent or the timeout is achieved.
+ *
+ * @param task the task to be sent
+ * @param alias the mailbox name to where the task is sent
+ * @param timeout is the maximum wait time for completion (if -1, this call is the same as #MSG_task_send)
+ *
+ * @return Returns #MSG_OK if the task was successfully sent,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
+ */
+msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char* alias, double timeout)
+{
+  return task->send(alias, timeout);
+}
+
+/**
+ * @brief Sends a task to a mailbox with a timeout and with a maximum rate
+ *
+ * This is a blocking function, the execution flow will be blocked until the task is sent or the timeout is achieved.
+ *
+ * The maxrate parameter can be used to send a task with a limited bandwidth (smaller than the physical available
+ * value). Use MSG_task_send_with_timeout() if you don't limit the rate (or pass -1 as a rate value do disable this
+ * feature).
+ *
+ * @param task the task to be sent
+ * @param alias the mailbox name to where the task is sent
+ * @param timeout is the maximum wait time for completion (if -1, this call is the same as #MSG_task_send)
+ * @param maxrate the maximum communication rate for sending this task (byte/sec)
+ *
+ * @return Returns #MSG_OK if the task was successfully sent,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
+ */
+msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char* alias, double timeout, double maxrate)
+{
+  task->set_rate(maxrate);
+  return task->send(alias, timeout);
 }
 
 /** @brief Destroys the given task.

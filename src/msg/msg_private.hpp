@@ -9,7 +9,6 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/msg.h"
 #include "src/kernel/activity/CommImpl.hpp"
-#include "src/kernel/activity/ExecImpl.hpp"
 #include <simgrid/modelchecker.h>
 
 #include <cmath>
@@ -40,7 +39,9 @@ public:
   static Task* create_parallel(std::string name, int host_nb, const msg_host_t* host_list, double* flops_amount,
                                double* bytes_amount, void* data);
   msg_error_t execute();
+  msg_error_t send(std::string alias, double timeout);
   s4u::CommPtr send_async(std::string alias, void_f_pvoid_t cleanup, bool detached);
+
   void cancel();
 
   Task(const Task&) = delete;
