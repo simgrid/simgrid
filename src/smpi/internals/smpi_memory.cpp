@@ -250,40 +250,39 @@ void smpi_destroy_global_memory_segments(){
 #endif
 }
 
-static int sendbuffer_size = 0;
-static char* sendbuffer    = nullptr;
-static int recvbuffer_size = 0;
-static char* recvbuffer    = nullptr;
+static std::vector<unsigned char> sendbuffer;
+static std::vector<unsigned char> recvbuffer;
 
 //allocate a single buffer for all sends, growing it if needed
-void* smpi_get_tmp_sendbuffer(int size)
+void* smpi_get_tmp_sendbuffer(size_t size)
 {
   if (not smpi_process()->replaying())
-    return xbt_malloc(size);
-  if (sendbuffer_size<size){
-    sendbuffer=static_cast<char*>(xbt_realloc(sendbuffer,size));
-    sendbuffer_size=size;
-  }
-  return sendbuffer;
+    return new unsigned char[size];
+  // FIXME: a resize() may invalidate a previous pointer. Maybe we need to handle a queue of buffers with a reference
+  // counter. The same holds for smpi_get_tmp_recvbuffer.
+  if (sendbuffer.size() < size)
+    sendbuffer.resize(size);
+  return sendbuffer.data();
 }
 
 //allocate a single buffer for all recv
-void* smpi_get_tmp_recvbuffer(int size){
+void* smpi_get_tmp_recvbuffer(size_t size)
+{
   if (not smpi_process()->replaying())
-    return xbt_malloc(size);
-  if (recvbuffer_size<size){
-    recvbuffer=static_cast<char*>(xbt_realloc(recvbuffer,size));
-    recvbuffer_size=size;
-  }
-  return recvbuffer;
+    return new unsigned char[size];
+  if (recvbuffer.size() < size)
+    recvbuffer.resize(size);
+  return recvbuffer.data();
 }
 
-void smpi_free_tmp_buffer(void* buf){
+void smpi_free_tmp_buffer(const void* buf)
+{
   if (not smpi_process()->replaying())
-    xbt_free(buf);
+    delete[] static_cast<const unsigned char*>(buf);
 }
 
-void smpi_free_replay_tmp_buffers(){
-  xbt_free(sendbuffer);
-  xbt_free(recvbuffer);
+void smpi_free_replay_tmp_buffers()
+{
+  std::vector<unsigned char>().swap(sendbuffer);
+  std::vector<unsigned char>().swap(recvbuffer);
 }

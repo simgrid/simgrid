@@ -31,8 +31,8 @@
     }                                                                                                                  \
   }
 
-XBT_PRIVATE void* smpi_get_tmp_sendbuffer(int size);
-XBT_PRIVATE void* smpi_get_tmp_recvbuffer(int size);
+XBT_PRIVATE void* smpi_get_tmp_sendbuffer(size_t size);
+XBT_PRIVATE void* smpi_get_tmp_recvbuffer(size_t size);
 
 XBT_PRIVATE void log_timed_action(simgrid::xbt::ReplayAction& action, double clock);
 
