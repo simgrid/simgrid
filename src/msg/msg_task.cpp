@@ -134,6 +134,7 @@ msg_error_t Task::send(std::string alias, double timeout)
   msg_error_t ret = MSG_OK;
   /* Try to send it */
   try {
+    comm = nullptr; // needed, otherwise MC gets confused.
     s4u::CommPtr s4u_comm = send_async(alias, nullptr, false);
     comm                  = s4u_comm;
     comm->wait_for(timeout);
