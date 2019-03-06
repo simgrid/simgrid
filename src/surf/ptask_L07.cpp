@@ -258,7 +258,7 @@ kernel::resource::Action* CpuL07::execution_start(double size)
 {
   std::vector<s4u::Host*> host_list = {get_host()};
 
-  double* flops_amount = new double[1]();
+  double* flops_amount = new double[host_list.size()]();
   flops_amount[0] = size;
 
   kernel::resource::Action* res =
