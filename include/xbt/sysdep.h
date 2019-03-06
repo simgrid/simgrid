@@ -110,10 +110,16 @@ static XBT_ALWAYS_INLINE void *xbt_realloc(void *p, size_t s) {
     @hideinitializer */
 #define xbt_free(p) free(p) /*nothing specific to do here. A poor valgrind replacement? */
 
+#ifdef __cplusplus
+#define XBT_FREE_NOEXCEPT noexcept(noexcept(std::free))
+#else
+#define XBT_FREE_NOEXCEPT
+#endif
+
 /** @brief like free, but you can be sure that it is a function  */
-XBT_PUBLIC void xbt_free_f(void* p);
+XBT_PUBLIC void xbt_free_f(void* p) XBT_FREE_NOEXCEPT;
 /** @brief should be given a pointer to pointer, and frees the second one */
-XBT_PUBLIC void xbt_free_ref(void* d);
+XBT_PUBLIC void xbt_free_ref(void* d) XBT_FREE_NOEXCEPT;
 
 SG_END_DECL()
 
