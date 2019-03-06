@@ -11,69 +11,9 @@
 #include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/instr/instr_private.hpp"
-#include "src/kernel/activity/ExecImpl.hpp"
 #include "src/msg/msg_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg, "Logging specific to MSG (gos)");
-
-/**
- * @brief Executes a parallel task and waits for its termination.
- *
- * @param task a #msg_task_t to execute on the location on which the process is running.
- *
- * @return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED or #MSG_HOST_FAILURE otherwise
- */
-msg_error_t MSG_parallel_task_execute(msg_task_t task)
-{
-  return MSG_parallel_task_execute_with_timeout(task, -1);
-}
-
-msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeout)
-{
-  msg_error_t status = MSG_OK;
-
-  xbt_assert((not task->compute) && not task->is_used(), "This task is executed somewhere else. Go fix your code!");
-
-  XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
-
-  if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::by_name(instr_pid(MSG_process_self()))->get_state("ACTOR_STATE")->push_event("execute");
-
-  try {
-    task->set_used();
-    simgrid::s4u::ExecPtr e =
-        simgrid::s4u::this_actor::exec_init(task->hosts_, task->flops_parallel_amount, task->bytes_parallel_amount)
-            ->set_name(task->get_name())
-            ->set_tracing_category(task->get_tracing_category())
-            ->set_timeout(timeout)
-            ->start();
-    task->compute = boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(e->get_impl());
-
-    XBT_DEBUG("Parallel execution action created: %p", task->compute.get());
-
-    e->wait();
-
-    task->set_not_used();
-
-    XBT_DEBUG("Execution task '%s' finished", task->get_cname());
-  } catch (simgrid::HostFailureException& e) {
-    status = MSG_HOST_FAILURE;
-  } catch (simgrid::TimeoutError& e) {
-    status = MSG_TIMEOUT;
-  } catch (simgrid::CancelException& e) {
-    status = MSG_TASK_CANCELED;
-  }
-
-  /* action ended, set comm and compute = nullptr, the actions is already destroyed in the main function */
-  task->flops_amount = 0.0;
-  task->comm         = nullptr;
-  task->compute      = nullptr;
-
-  if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::by_name(instr_pid(MSG_process_self()))->get_state("ACTOR_STATE")->pop_event();
-
-  return status;
-}
 
 /**
  * @brief Receives a task from a mailbox.

@@ -23,6 +23,7 @@ class Task {
   void* userdata_               = nullptr;
   long long int id_;
 
+  double timeout_  = 0.0;
   double priority_ = 1.0;
   double bound_    = 0.0;   /* Capping for CPU resource, or 0 for no capping */
   double rate_     = -1;    /* Capping for network resource, or -1 for no capping*/
@@ -66,15 +67,15 @@ public:
   double get_bound() { return bound_; }
   void set_rate(double rate) { rate_ = rate; }
   double get_rate() { return rate_; }
+  void set_timeout(double timeout) { timeout_ = timeout; }
 
   s4u::Actor* get_sender();
   s4u::Host* get_source();
 
-  kernel::activity::ExecImplPtr compute          = nullptr; /* SIMIX modeling of computation */
-  s4u::CommPtr comm                              = nullptr; /* S4U modeling of communication */
-  double flops_amount                            = 0.0;     /* Computation size */
-  double bytes_amount                            = 0.0;     /* Data size */
-
+  s4u::ExecPtr compute = nullptr; /* S4U modeling of computation */
+  s4u::CommPtr comm    = nullptr; /* S4U modeling of communication */
+  double flops_amount  = 0.0;     /* Computation size */
+  double bytes_amount  = 0.0;     /* Data size */
 
   /*******  Parallel Tasks Only !!!! *******/
   bool parallel_ = false;

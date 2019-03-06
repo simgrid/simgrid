@@ -70,16 +70,19 @@ msg_error_t Task::execute()
   if (flops_amount <= 0.0)
     return MSG_OK;
 
-  set_used();
   try {
-    s4u::ExecPtr e = s4u::this_actor::exec_init(flops_amount)
-                         ->set_priority(1 / priority_)
-                         ->set_bound(bound_)
-                         ->set_tracing_category(tracing_category_)
-                         ->start();
-    compute = boost::static_pointer_cast<kernel::activity::ExecImpl>(e->get_impl());
+    set_used();
+    if (parallel_)
+      compute = s4u::this_actor::exec_init(hosts_, flops_parallel_amount, bytes_parallel_amount);
+    else
+      compute = s4u::this_actor::exec_init(flops_amount);
 
-    e->wait();
+    compute->set_name(name_)
+        ->set_tracing_category(tracing_category_)
+        ->set_timeout(timeout_)
+        ->set_priority(1 / priority_)
+        ->set_bound(bound_)
+        ->wait();
 
     set_not_used();
     XBT_DEBUG("Execution task '%s' finished", get_cname());
@@ -280,8 +283,27 @@ void MSG_task_set_name(msg_task_t task, const char *name)
  */
 msg_error_t MSG_task_execute(msg_task_t task)
 {
-  return task->is_parallel() ? MSG_parallel_task_execute(task) : task->execute();
+  return task->execute();
 }
+
+/**
+ * @brief Executes a parallel task and waits for its termination.
+ *
+ * @param task a #msg_task_t to execute on the location on which the process is running.
+ *
+ * @return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED or #MSG_HOST_FAILURE otherwise
+ */
+msg_error_t MSG_parallel_task_execute(msg_task_t task)
+{
+  return task->execute();
+}
+
+msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeout)
+{
+  task->set_timeout(timeout);
+  return task->execute();
+}
+
 /**
  * @brief Sends a task on a mailbox.
  *
@@ -403,10 +425,7 @@ double MSG_task_get_remaining_work_ratio(msg_task_t task) {
   xbt_assert((task != nullptr), "Cannot get information from a nullptr task");
   if (task->compute) {
     // Task in progress
-    if (task->is_parallel())
-      return task->compute->get_par_remaining_ratio();
-    else
-      return task->compute->get_seq_remaining_ratio();
+    return task->compute->get_remaining_ratio();
   } else {
     // Task not started (flops_amount is > 0.0) or finished (flops_amount is set to 0.0)
     return task->flops_amount > 0.0 ? 1.0 : 0.0;
