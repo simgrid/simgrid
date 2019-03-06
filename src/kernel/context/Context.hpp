@@ -104,7 +104,7 @@ XBT_PRIVATE void SIMIX_context_mod_init();
 XBT_PRIVATE void SIMIX_context_mod_exit();
 
 #ifndef WIN32
-XBT_PUBLIC_DATA char sigsegv_stack[SIGSTKSZ];
+XBT_PUBLIC_DATA unsigned char sigsegv_stack[SIGSTKSZ];
 #endif
 
 /** @brief Executes all the processes to run (in parallel if possible). */

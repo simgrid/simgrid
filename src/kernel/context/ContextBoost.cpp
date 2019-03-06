@@ -31,9 +31,9 @@ BoostContext::BoostContext(std::function<void()> code, smx_actor_t actor, Swappe
     /* We need to pass the bottom of the stack to make_fcontext,
        depending on the stack direction it may be the lower or higher address: */
 #if PTH_STACKGROWTH == -1
-    void* stack = static_cast<char*>(get_stack()) + smx_context_usable_stack_size;
+    unsigned char* stack = get_stack() + smx_context_usable_stack_size;
 #else
-    void* stack = get_stack();
+    unsigned char* stack = get_stack();
 #endif
 #if BOOST_VERSION < 106100
     this->fc_ = boost::context::make_fcontext(stack, smx_context_usable_stack_size, BoostContext::wrapper);

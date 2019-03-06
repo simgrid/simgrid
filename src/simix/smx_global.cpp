@@ -77,7 +77,7 @@ static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
   std::raise(signum);
 }
 
-char sigsegv_stack[SIGSTKSZ];   /* alternate stack for SIGSEGV handler */
+unsigned char sigsegv_stack[SIGSTKSZ]; /* alternate stack for SIGSEGV handler */
 
 /**
  * Install signal handler for SIGSEGV.  Check that nobody has already installed

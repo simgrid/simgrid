@@ -48,7 +48,7 @@ public:
 
   virtual void swap_into(SwappedContext* to) = 0; // Defined in Raw, Boost and UContext subclasses
 
-  void* get_stack();
+  unsigned char* get_stack();
 
   static thread_local uintptr_t worker_id_;
 
@@ -60,7 +60,7 @@ public:
 #endif
 
 private:
-  void* stack_ = nullptr;                /* the thread stack */
+  unsigned char* stack_ = nullptr;       /* the thread stack */
   SwappedContextFactory* const factory_; // for sequential and parallel run_all()
 };
 
