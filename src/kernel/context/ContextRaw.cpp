@@ -13,11 +13,11 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 // Raw context routines
 
-typedef void (*rawctx_entry_point_t)(void *);
+typedef void (*rawctx_entry_point_t)(simgrid::kernel::context::RawContext*);
 
 typedef void* raw_stack_t;
-extern "C" raw_stack_t raw_makecontext(void* malloced_stack, int stack_size,
-                                   rawctx_entry_point_t entry_point, void* arg);
+extern "C" raw_stack_t raw_makecontext(void* malloced_stack, int stack_size, rawctx_entry_point_t entry_point,
+                                       simgrid::kernel::context::RawContext* arg);
 extern "C" void raw_swapcontext(raw_stack_t* old, raw_stack_t new_context);
 
 // TODO, we should handle FP, MMX and the x87 control-word (for x86 and x86_64)
@@ -167,13 +167,15 @@ __asm__ (
 /* If you implement raw contexts for other processors, don't forget to
    update the definition of HAVE_RAW_CONTEXTS in tools/cmake/CompleteInFiles.cmake */
 
-raw_stack_t raw_makecontext(void* malloced_stack, int stack_size,
-                            rawctx_entry_point_t entry_point, void* arg) {
-   THROW_UNIMPLEMENTED;
+raw_stack_t raw_makecontext(void* malloced_stack, int stack_size, rawctx_entry_point_t entry_point,
+                            simgrid::kernel::context::RawContext* arg)
+{
+  THROW_UNIMPLEMENTED;
 }
 
-void raw_swapcontext(raw_stack_t* old, raw_stack_t new_context) {
-   THROW_UNIMPLEMENTED;
+void raw_swapcontext(raw_stack_t* old, raw_stack_t new_context)
+{
+  THROW_UNIMPLEMENTED;
 }
 
 #endif
@@ -204,9 +206,8 @@ RawContext::RawContext(std::function<void()> code, smx_actor_t actor, SwappedCon
    }
 }
 
-void RawContext::wrapper(void* arg)
+void RawContext::wrapper(RawContext* context)
 {
-  RawContext* context = static_cast<RawContext*>(arg);
   ASAN_FINISH_SWITCH(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
   try {
     (*context)();

@@ -80,9 +80,8 @@ ThreadContext::~ThreadContext()
   }
 }
 
-void *ThreadContext::wrapper(void *param)
+void ThreadContext::wrapper(ThreadContext* context)
 {
-  ThreadContext* context = static_cast<ThreadContext*>(param);
   Context::set_current(context);
 
 #ifndef WIN32
@@ -119,7 +118,6 @@ void *ThreadContext::wrapper(void *param)
 #endif
   XBT_DEBUG("Terminating");
   Context::set_current(nullptr);
-  return nullptr;
 }
 
 void ThreadContext::release()

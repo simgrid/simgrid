@@ -48,7 +48,7 @@ private:
   virtual void yield_hook() { /* empty placeholder, called before yield(). Used in parallel mode */}
   virtual void stop_hook() { /* empty placeholder, called at stop(). Used in Java */}
 
-  static void* wrapper(void *param);
+  static void wrapper(ThreadContext* context);
 };
 
 class XBT_PUBLIC SerialThreadContext : public ThreadContext {
