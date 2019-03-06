@@ -51,10 +51,10 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-ExecImpl::ExecImpl(std::string name, std::string tracing_category) : ActivityImpl(std::move(name))
+ExecImpl::ExecImpl(const std::string& name, const std::string& tracing_category) : ActivityImpl(name)
 {
   this->state_ = SIMIX_RUNNING;
-  this->set_category(std::move(tracing_category));
+  this->set_category(tracing_category);
 
   XBT_DEBUG("Create exec %p", this);
 }

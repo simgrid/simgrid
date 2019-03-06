@@ -18,7 +18,7 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl {
   ~ExecImpl() override;
 
 public:
-  explicit ExecImpl(std::string name, std::string tracing_category);
+  explicit ExecImpl(const std::string& name, const std::string& tracing_category);
   ExecImpl* start(double flops_amount, double priority, double bound);
   ExecImpl* start(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                   const std::vector<double>& bytes_amounts);

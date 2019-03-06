@@ -46,7 +46,6 @@ public:
   static xbt::signal<void(ActorPtr)> on_start;
   static xbt::signal<void(ActorPtr)> on_completion;
 
-  virtual double get_remaining() override = 0;
   virtual Exec* start() override          = 0;
   virtual double get_remaining_ratio()    = 0;
   virtual ExecPtr set_host(Host* host)    = 0;
