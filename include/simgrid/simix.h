@@ -175,9 +175,6 @@ XBT_ATTRIB_DEPRECATED_v325("Please use CommImpl::finish") XBT_PUBLIC void SIMIX_
 
 /******************************* Host simcalls ********************************/
 #ifdef __cplusplus
-XBT_PUBLIC smx_activity_t simcall_execution_parallel_start(const std::string& name, int host_nb,
-                                                           const sg_host_t* host_list, const double* flops_amount,
-                                                           const double* bytes_amount, double rate, double timeout);
 XBT_PUBLIC e_smx_state_t simcall_execution_wait(const smx_activity_t& execution);
 XBT_PUBLIC e_smx_state_t simcall_execution_test(const smx_activity_t& execution);
 #endif
@@ -280,6 +277,11 @@ SG_END_DECL()
 XBT_ATTRIB_DEPRECATED_v325("Please use Exec::start()") XBT_PUBLIC smx_activity_t
     simcall_execution_start(const std::string& name, const std::string& category, double flops_amount, double priority,
                             double bound, sg_host_t host);
+
+// Should be deprecated in v325 too but is still used in other deprecated calls
+XBT_PUBLIC smx_activity_t simcall_execution_parallel_start(const std::string& name, int host_nb,
+                                                           const sg_host_t* host_list, const double* flops_amount,
+                                                           const double* bytes_amount, double rate, double timeout);
 #endif
 
 #endif

@@ -19,7 +19,6 @@
 #include "src/include/simgrid/sg_config.hpp"
 #include "src/include/surf/surf.hpp"
 #include "src/kernel/EngineImpl.hpp"
-#include "src/simix/smx_host_private.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf_private.hpp"

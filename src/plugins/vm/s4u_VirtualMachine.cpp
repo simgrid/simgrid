@@ -8,7 +8,6 @@
 #include "src/include/surf/surf.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/plugins/vm/VmHostExt.hpp"
-#include "src/simix/smx_host_private.hpp"
 #include "src/surf/cpu_cas01.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_vm, "S4U virtual machines");

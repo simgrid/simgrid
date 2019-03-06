@@ -16,7 +16,6 @@
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/simix/smx_host_private.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/StorageImpl.hpp"
 #include "src/surf/xml/platf.hpp"

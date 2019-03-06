@@ -20,56 +20,10 @@
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include "src/simix/smx_host_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 #include "popping_bodies.cpp"
-
-/**
- * @ingroup simix_process_management
- * @brief Creates a synchro that may involve parallel computation on
- * several hosts and communication between them.
- *
- * @param name Name of the execution synchro to create
- * @param host_nb Number of hosts where the synchro will be executed
- * @param host_list Array (of size host_nb) of hosts where the synchro will be executed
- * @param flops_amount Array (of size host_nb) of computation amount of hosts (in bytes)
- * @param bytes_amount Array (of size host_nb * host_nb) representing the communication
- * amount between each pair of hosts
- * @param rate the SURF action rate
- * @param timeout timeout
- * @return A new SIMIX execution synchronization
- */
-smx_activity_t simcall_execution_parallel_start(const std::string& name, int host_nb, const sg_host_t* host_list,
-                                                const double* flops_amount, const double* bytes_amount, double rate,
-                                                double timeout)
-{
-  /* Check that we are not mixing VMs and PMs in the parallel task */
-  bool is_a_vm = (nullptr != dynamic_cast<simgrid::s4u::VirtualMachine*>(host_list[0]));
-  for (int i = 1; i < host_nb; i++) {
-    bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::s4u::VirtualMachine*>(host_list[i]));
-    xbt_assert(is_a_vm == tmp_is_a_vm, "parallel_execute: mixing VMs and PMs is not supported (yet).");
-  }
-
-  /* checking for infinite values */
-  for (int i = 0 ; i < host_nb ; ++i) {
-    if (flops_amount != nullptr)
-      xbt_assert(std::isfinite(flops_amount[i]), "flops_amount[%d] is not finite!", i);
-    if (bytes_amount != nullptr) {
-      for (int j = 0 ; j < host_nb ; ++j) {
-        xbt_assert(std::isfinite(bytes_amount[i + host_nb * j]),
-                   "bytes_amount[%d+%d*%d] is not finite!", i, host_nb, j);
-      }
-    }
-  }
-
-  xbt_assert(std::isfinite(rate), "rate is not finite!");
-  return simgrid::simix::simcall([name, host_nb, host_list, flops_amount, bytes_amount, rate, timeout] {
-    return SIMIX_execution_parallel_start(std::move(name), host_nb, host_list, flops_amount, bytes_amount, rate,
-                                          timeout);
-  });
-}
 
 /**
  * @ingroup simix_host_management
@@ -425,6 +379,7 @@ void simcall_execution_set_bound(smx_activity_t exec, double bound)
       [exec, bound] { boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->set_bound(bound); });
 }
 
+// deprecated
 smx_activity_t simcall_execution_start(const std::string& name, const std::string& category, double flops_amount,
                                        double priority, double bound, sg_host_t host)
 {
@@ -433,6 +388,47 @@ smx_activity_t simcall_execution_start(const std::string& name, const std::strin
                new simgrid::kernel::activity::ExecImpl(std::move(name), std::move(category)))
         ->set_host(host)
         ->start(flops_amount, priority, bound);
+  });
+}
+
+// deprecated
+smx_activity_t simcall_execution_parallel_start(const std::string& name, int host_nb, const sg_host_t* host_list,
+                                                const double* flops_amount, const double* bytes_amount, double rate,
+                                                double timeout)
+{
+  /* Check that we are not mixing VMs and PMs in the parallel task */
+  bool is_a_vm = (nullptr != dynamic_cast<simgrid::s4u::VirtualMachine*>(host_list[0]));
+  for (int i = 1; i < host_nb; i++) {
+    bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::s4u::VirtualMachine*>(host_list[i]));
+    xbt_assert(is_a_vm == tmp_is_a_vm, "parallel_execute: mixing VMs and PMs is not supported (yet).");
+  }
+
+  /* checking for infinite values */
+  for (int i = 0; i < host_nb; ++i) {
+    if (flops_amount != nullptr)
+      xbt_assert(std::isfinite(flops_amount[i]), "flops_amount[%d] is not finite!", i);
+    if (bytes_amount != nullptr) {
+      for (int j = 0; j < host_nb; ++j) {
+        xbt_assert(std::isfinite(bytes_amount[i + host_nb * j]), "bytes_amount[%d+%d*%d] is not finite!", i, host_nb,
+                   j);
+      }
+    }
+  }
+  xbt_assert(std::isfinite(rate), "rate is not finite!");
+
+  std::vector<simgrid::s4u::Host*> hosts;
+  std::vector<double> flops_parallel_amount;
+  std::vector<double> bytes_parallel_amount;
+  for (int i = 0; i < host_nb; i++) {
+    hosts.push_back(host_list[i]);
+    flops_parallel_amount.push_back(flops_amount[i]);
+    for (int j = 0; j < host_nb; j++)
+      bytes_parallel_amount.push_back(bytes_amount[i]);
+  }
+  return simgrid::simix::simcall([name, hosts, flops_parallel_amount, bytes_parallel_amount, timeout] {
+    return simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(std::move(name), ""))
+        ->set_timeout(timeout)
+        ->start(hosts, flops_parallel_amount, bytes_parallel_amount);
   });
 }
 

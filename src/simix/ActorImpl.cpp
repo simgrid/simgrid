@@ -15,7 +15,6 @@
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/Client.hpp"
-#include "src/simix/smx_host_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 

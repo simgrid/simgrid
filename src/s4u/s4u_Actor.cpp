@@ -10,7 +10,6 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
-#include "src/simix/smx_host_private.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 

@@ -25,7 +25,6 @@ set(EXTRA_DIST
   src/simix/popping_generated.cpp
   src/simix/popping_enum.h
   src/simix/popping_accessors.hpp
-  src/simix/smx_host_private.hpp
   src/simix/smx_private.hpp
   src/smpi/colls/coll_tuned_topo.hpp
   src/smpi/colls/colls_private.hpp
@@ -384,7 +383,6 @@ set(SIMIX_SRC
   src/simix/smx_deployment.cpp
   src/simix/smx_environment.cpp
   src/simix/smx_global.cpp
-  src/simix/smx_host.cpp
   src/simix/ActorImpl.cpp
   src/simix/ActorImpl.hpp
   src/simix/popping.cpp

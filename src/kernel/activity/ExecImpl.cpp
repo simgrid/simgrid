@@ -7,7 +7,6 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/modelchecker.h"
 #include "src/mc/mc_replay.hpp"
-#include "src/simix/smx_host_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_interface.hpp"
