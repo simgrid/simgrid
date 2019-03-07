@@ -107,7 +107,12 @@ void Actor::on_exit(int_f_pvoid_pvoid_t fun,
   simgrid::simix::simcall([this, fun, data] { SIMIX_process_on_exit(pimpl_, fun, data); });
 }
 
-void Actor::on_exit(std::function<void(bool /*failed*/)> const fun)
+void Actor::on_exit(const std::function<void(int, void*)>& fun, void* data) /* deprecated */
+{
+  on_exit([fun, data](bool exit) { fun(exit, data); });
+}
+
+void Actor::on_exit(const std::function<void(bool /*failed*/)>& fun)
 {
   simgrid::simix::simcall(
       [this, fun] { SIMIX_process_on_exit(pimpl_, [fun](int a, void* /*data*/) { fun(a != 0); }, nullptr); });
@@ -432,12 +437,12 @@ void exit()
   simgrid::simix::simcall([actor] { actor->exit(); });
 }
 
-void on_exit(std::function<void(bool)> const fun)
+void on_exit(const std::function<void(bool)>& fun)
 {
   SIMIX_process_self()->iface()->on_exit(fun);
 }
 
-void on_exit(std::function<void(int, void*)> const fun, void* data) /* deprecated */
+void on_exit(const std::function<void(int, void*)>& fun, void* data) /* deprecated */
 {
   SIMIX_process_self()->iface()->on_exit([fun, data](bool exit) { fun(exit, data); });
 }

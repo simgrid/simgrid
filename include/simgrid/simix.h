@@ -152,8 +152,8 @@ XBT_PUBLIC void SIMIX_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t f
 SG_END_DECL()
 
 #ifdef __cplusplus
-XBT_PUBLIC void SIMIX_process_on_exit(smx_actor_t process, std::function<void(bool /*failed*/, void* /*data*/)> fun,
-                                      void* data);
+XBT_PUBLIC void SIMIX_process_on_exit(smx_actor_t process,
+                                      const std::function<void(bool /*failed*/, void* /*data*/)>& fun, void* data);
 #endif
 
 /****************************** Communication *********************************/

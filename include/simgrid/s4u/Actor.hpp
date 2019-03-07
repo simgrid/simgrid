@@ -236,7 +236,7 @@ public:
    * It will be set to true if the actor was killed or failed because of an exception,
    * while it will remain to false if the actor terminated gracefully.
    */
-  void on_exit(std::function<void(bool /*failed*/)> fun);
+  void on_exit(const std::function<void(bool /*failed*/)>& fun);
 
   /** Sets the time at which that actor should be killed */
   void set_kill_time(double time);
@@ -295,8 +295,8 @@ public:
   void set_property(const std::string& key, std::string value);
 
 #ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v325("Please use Actor::on_exit(fun) instead") void on_exit(std::function<void(int, void*)> fun,
-                                                                                    void* data);
+  XBT_ATTRIB_DEPRECATED_v325("Please use Actor::on_exit(fun) instead") void on_exit(
+      const std::function<void(int, void*)>& fun, void* data);
 
   XBT_ATTRIB_DEPRECATED_v325("Please use Actor::by_pid(pid).kill() instead") static void kill(aid_t pid);
 
@@ -543,7 +543,7 @@ XBT_PUBLIC void exit();
  * while it will remain to false if the actor terminated gracefully.
  */
 
-XBT_PUBLIC void on_exit(std::function<void(bool)> fun);
+XBT_PUBLIC void on_exit(const std::function<void(bool)>& fun);
 
 /** @brief Migrate the current actor to a new host. */
 XBT_PUBLIC void migrate(Host* new_host);
@@ -552,7 +552,7 @@ XBT_PUBLIC void migrate(Host* new_host);
 
 #ifndef DOXYGEN
 XBT_ATTRIB_DEPRECATED_v325("Please use std::function<void(bool)> for first parameter.") XBT_PUBLIC
-    void on_exit(std::function<void(int, void*)> fun, void* data);
+    void on_exit(const std::function<void(int, void*)>& fun, void* data);
 
 /** @deprecated Please use std::function<void(int, void*)> for first parameter */
 XBT_ATTRIB_DEPRECATED_v323("Please use std::function<void(bool)> for first parameter.") XBT_PUBLIC
