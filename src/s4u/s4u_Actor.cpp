@@ -39,6 +39,16 @@ ActorPtr Actor::self()
 
   return self_context->get_actor()->iface();
 }
+ActorPtr Actor::init(std::string name, s4u::Host* host)
+{
+  return SIMIX_process_self()->init(std::move(name), host)->iface();
+}
+
+ActorPtr Actor::start(std::function<void()> code)
+{
+  simgrid::simix::simcall([this, code] { return this->get_impl()->start(code); });
+  return this;
+}
 
 ActorPtr Actor::create(std::string name, s4u::Host* host, std::function<void()> code)
 {

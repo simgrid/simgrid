@@ -18,7 +18,6 @@ std::string instr_pid(msg_process_t proc)
 }
 
 /******************************** Process ************************************/
-
 /** @brief Creates and runs a new #msg_process_t.
  *
  * Does exactly the same as #MSG_process_create_with_arguments but without providing standard arguments
@@ -69,7 +68,6 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
                                                   int argc, char **argv, xbt_dict_t properties)
 {
   xbt_assert(host != nullptr, "Invalid parameters: host param must not be nullptr");
-
   simgrid::simix::ActorCode function;
   if (code)
     function = simgrid::xbt::wrap_main(code, argc, static_cast<const char* const*>(argv));
@@ -82,13 +80,11 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
     props[key] = value;
   xbt_dict_free(&properties);
 
-  smx_actor_t self    = SIMIX_process_self();
-  smx_actor_t actor   = nullptr;
+  simgrid::s4u::ActorPtr actor = nullptr;
   try {
-    actor = simgrid::simix::simcall([name, function, data, host, &props, self] {
-      return simgrid::kernel::actor::ActorImpl::create(std::move(name), std::move(function), data, host, &props, self)
-          .get();
-    });
+    actor = simgrid::s4u::Actor::init(std::move(name), host);
+    actor->extension<simgrid::msg::ActorUserData>()->set_user_data(data);
+    actor->start(std::move(function));
   } catch (simgrid::HostFailureException const&) {
     xbt_die("Could not create a new process on failed host %s.", host->get_cname());
   }
@@ -101,7 +97,7 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
     return nullptr;
 
   MSG_process_yield();
-  return actor->ciface();
+  return actor.get();
 }
 
 /** @brief Returns the user data of a process.
@@ -113,7 +109,7 @@ void* MSG_process_get_data(msg_process_t process)
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
   /* get from SIMIX the MSG process data, and then the user data */
-  return process->get_impl()->get_user_data();
+  return process->extension<simgrid::msg::ActorUserData>()->get_user_data();
 }
 
 /** @brief Sets the user data of a process.
@@ -123,8 +119,7 @@ void* MSG_process_get_data(msg_process_t process)
 msg_error_t MSG_process_set_data(msg_process_t process, void *data)
 {
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
-
-  process->get_impl()->set_user_data(data);
+  process->extension<simgrid::msg::ActorUserData>()->set_user_data(data);
 
   return MSG_OK;
 }

@@ -169,6 +169,8 @@ public:
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
   static ActorPtr create(std::string name, s4u::Host* host, std::function<void()> code);
+  static ActorPtr init(std::string name, s4u::Host* host);
+  ActorPtr start(std::function<void()> code);
 
   /** Create an actor from a std::function
    *
