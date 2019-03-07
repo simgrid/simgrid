@@ -131,14 +131,14 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
   }
 }
 
-kernel::resource::Action* HostL07Model::execute_parallel(const std::vector<s4u::Host*> host_list,
+kernel::resource::Action* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_list,
                                                          const double* flops_amount, const double* bytes_amount,
                                                          double rate)
 {
   return new L07Action(this, host_list, flops_amount, bytes_amount, rate);
 }
 
-L07Action::L07Action(kernel::resource::Model* model, const std::vector<s4u::Host*> host_list,
+L07Action::L07Action(kernel::resource::Model* model, const std::vector<s4u::Host*>& host_list,
                      const double* flops_amount, const double* bytes_amount, double rate)
     : CpuAction(model, 1, 0), computationAmount_(flops_amount), communicationAmount_(bytes_amount), rate_(rate)
 {

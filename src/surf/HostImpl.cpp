@@ -31,7 +31,7 @@ static inline double has_cost(const double* array, size_t pos)
     return -1.0;
 }
 
-kernel::resource::Action* HostModel::execute_parallel(const std::vector<s4u::Host*> host_list,
+kernel::resource::Action* HostModel::execute_parallel(const std::vector<s4u::Host*>& host_list,
                                                       const double* flops_amount, const double* bytes_amount,
                                                       double rate)
 {

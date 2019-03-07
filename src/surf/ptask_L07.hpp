@@ -42,7 +42,7 @@ public:
 
   double next_occuring_event(double now) override;
   void update_actions_state(double now, double delta) override;
-  kernel::resource::Action* execute_parallel(const std::vector<s4u::Host*> host_list, const double* flops_amount,
+  kernel::resource::Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                                              const double* bytes_amount, double rate) override;
 };
 
@@ -114,12 +114,12 @@ public:
 class L07Action : public CpuAction {
   friend Action *CpuL07::execution_start(double size);
   friend Action *CpuL07::sleep(double duration);
-  friend Action* HostL07Model::execute_parallel(const std::vector<s4u::Host*> host_list, const double* flops_amount,
+  friend Action* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                                                 const double* bytes_amount, double rate);
   friend Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
 
 public:
-  L07Action(kernel::resource::Model* model, const std::vector<s4u::Host*> host_list, const double* flops_amount,
+  L07Action(kernel::resource::Model* model, const std::vector<s4u::Host*>& host_list, const double* flops_amount,
             const double* bytes_amount, double rate);
   L07Action(const L07Action&) = delete;
   L07Action& operator=(const L07Action&) = delete;
