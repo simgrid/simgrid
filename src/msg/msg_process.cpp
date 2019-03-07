@@ -7,7 +7,6 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/instr/instr_private.hpp"
-#include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
@@ -72,31 +71,27 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
   if (code)
     function = simgrid::xbt::wrap_main(code, argc, static_cast<const char* const*>(argv));
 
-  std::unordered_map<std::string, std::string> props;
+  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::init(std::move(name), host);
+  actor->extension<simgrid::msg::ActorUserData>()->set_user_data(data);
+
   xbt_dict_cursor_t cursor = nullptr;
   char* key;
   char* value;
   xbt_dict_foreach (properties, cursor, key, value)
-    props[key] = value;
+    actor->set_property(key, value);
   xbt_dict_free(&properties);
 
-  simgrid::s4u::ActorPtr actor = nullptr;
   try {
-    actor = simgrid::s4u::Actor::init(std::move(name), host);
-    actor->extension<simgrid::msg::ActorUserData>()->set_user_data(data);
     actor->start(std::move(function));
   } catch (simgrid::HostFailureException const&) {
-    xbt_die("Could not create a new process on failed host %s.", host->get_cname());
+    xbt_die("Could not launch a new process on failed host %s.", host->get_cname());
   }
 
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
   xbt_free(argv);
 
-  if (actor == nullptr)
-    return nullptr;
-
-  MSG_process_yield();
+  simgrid::s4u::this_actor::yield();
   return actor.get();
 }
 
