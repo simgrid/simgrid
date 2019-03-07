@@ -105,6 +105,9 @@ public:
   s4u::ActorPtr iface() { return s4u::ActorPtr(&piface_); }
   s4u::Actor* ciface() { return &piface_; }
 
+  ActorImplPtr init(std::string name, s4u::Host* host);
+  ActorImpl* start(simix::ActorCode code);
+
   static ActorImplPtr create(std::string name, simix::ActorCode code, void* data, s4u::Host* host,
                              std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor);
   static ActorImplPtr attach(std::string name, void* data, s4u::Host* host,

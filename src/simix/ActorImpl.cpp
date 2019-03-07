@@ -444,51 +444,63 @@ void ActorImpl::set_host(s4u::Host* dest)
   dest->pimpl_->process_list_.push_back(*this);
 }
 
+ActorImplPtr ActorImpl::init(std::string name, s4u::Host* host)
+{
+  ActorImpl* actor = new ActorImpl(simgrid::xbt::string(name), host);
+  actor->set_ppid(this->pid_);
+
+  intrusive_ptr_add_ref(actor);
+  /* The on_creation() signal must be delayed until there, where the pid and everything is set */
+  s4u::Actor::on_creation(actor->iface());
+
+  return ActorImplPtr(actor);
+}
+
+ActorImpl* ActorImpl::start(simix::ActorCode code)
+{
+  xbt_assert(code && host_ != nullptr, "Invalid parameters");
+
+  if (not host_->is_on()) {
+    XBT_WARN("Cannot launch actor '%s' on failed host '%s'", name_.c_str(), host_->get_cname());
+    std::rethrow_exception(
+        std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Cannot start actor on failed host.")));
+  }
+
+  this->code = code;
+  XBT_VERB("Create context %s", get_cname());
+  context_ = simix_global->context_factory->create_context(std::move(code), this);
+
+  XBT_DEBUG("Start context '%s'", get_cname());
+
+  /* Add the actor to its host's actor list */
+  host_->pimpl_->process_list_.push_back(*this);
+  simix_global->process_list[pid_] = this;
+
+  /* Now insert it in the global actor list and in the actor to run list */
+  XBT_DEBUG("Inserting [%p] %s(%s) in the to_run list", this, get_cname(), host_->get_cname());
+  simix_global->actors_to_run.push_back(this);
+
+  return this;
+}
+
 ActorImplPtr ActorImpl::create(std::string name, simix::ActorCode code, void* data, s4u::Host* host,
                                std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor)
 {
-
   XBT_DEBUG("Start actor %s@'%s'", name.c_str(), host->get_cname());
 
-  if (not host->is_on()) {
-    XBT_WARN("Cannot launch actor '%s' on failed host '%s'", name.c_str(), host->get_cname());
-    std::rethrow_exception(
-        std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Cannot create actor on failed host.")));
-  }
+  ActorImplPtr actor = SIMIX_process_self()->init(simgrid::xbt::string(name), host);
 
-  ActorImpl* actor = new ActorImpl(simgrid::xbt::string(name), host);
-
-  xbt_assert(code && host != nullptr, "Invalid parameters");
   /* actor data */
   actor->set_user_data(data);
-  actor->code = code;
-
-  if (parent_actor != nullptr)
-    actor->set_ppid(parent_actor->get_pid());
-
-  XBT_VERB("Create context %s", actor->get_cname());
-  actor->context_ = simix_global->context_factory->create_context(std::move(code), actor);
 
   /* Add properties */
   if (properties != nullptr)
     for (auto const& kv : *properties)
       actor->set_property(kv.first, kv.second);
 
-  /* Add the actor to its host's actor list */
-  host->pimpl_->process_list_.push_back(*actor);
+  actor->start(std::move(code));
 
-  XBT_DEBUG("Start context '%s'", actor->get_cname());
-
-  /* Now insert it in the global actor list and in the actor to run list */
-  simix_global->process_list[actor->get_pid()] = actor;
-  XBT_DEBUG("Inserting [%p] %s(%s) in the to_run list", actor, actor->get_cname(), host->get_cname());
-  simix_global->actors_to_run.push_back(actor);
-  intrusive_ptr_add_ref(actor);
-
-  /* The on_creation() signal must be delayed until there, where the pid and everything is set */
-  s4u::Actor::on_creation(actor->iface());
-
-  return ActorImplPtr(actor);
+  return actor;
 }
 
 void create_maestro(simix::ActorCode code)

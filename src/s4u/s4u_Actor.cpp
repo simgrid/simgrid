@@ -42,9 +42,12 @@ ActorPtr Actor::self()
 
 ActorPtr Actor::create(std::string name, s4u::Host* host, std::function<void()> code)
 {
+  smx_actor_t self = SIMIX_process_self();
+
   simgrid::kernel::actor::ActorImpl* actor =
-      simcall_process_create(std::move(name), std::move(code), nullptr, host, nullptr);
-  return actor->iface();
+      simgrid::simix::simcall([self, name, host, code] { return self->init(std::move(name), host)->start(code); });
+
+  return actor->ciface();
 }
 
 ActorPtr Actor::create(std::string name, s4u::Host* host, const std::string& function, std::vector<std::string> args)
