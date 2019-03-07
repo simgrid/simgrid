@@ -71,22 +71,25 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
   if (code)
     function = simgrid::xbt::wrap_main(code, argc, static_cast<const char* const*>(argv));
 
-  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::init(std::move(name), host);
-  actor->extension<simgrid::msg::ActorUserData>()->set_user_data(data);
-
-  xbt_dict_cursor_t cursor = nullptr;
-  char* key;
-  char* value;
-  xbt_dict_foreach (properties, cursor, key, value)
-    actor->set_property(key, value);
-  xbt_dict_free(&properties);
+  simgrid::s4u::ActorPtr actor;
 
   try {
-    actor->start(std::move(function));
+    if (data != nullptr) {
+      actor = simgrid::s4u::Actor::init(std::move(name), host);
+      actor->extension<simgrid::msg::ActorUserData>()->set_user_data(data);
+      xbt_dict_cursor_t cursor = nullptr;
+      char* key;
+      char* value;
+      xbt_dict_foreach (properties, cursor, key, value)
+        actor->set_property(key, value);
+      actor->start(std::move(function));
+    } else
+      actor = simgrid::s4u::Actor::create(std::move(name), host, std::move(function));
   } catch (simgrid::HostFailureException const&) {
     xbt_die("Could not launch a new process on failed host %s.", host->get_cname());
   }
 
+  xbt_dict_free(&properties);
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
   xbt_free(argv);

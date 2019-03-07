@@ -488,7 +488,11 @@ ActorImplPtr ActorImpl::create(std::string name, simix::ActorCode code, void* da
 {
   XBT_DEBUG("Start actor %s@'%s'", name.c_str(), host->get_cname());
 
-  ActorImplPtr actor = SIMIX_process_self()->init(simgrid::xbt::string(name), host);
+  ActorImplPtr actor;
+  if (parent_actor != nullptr)
+    actor = parent_actor->init(simgrid::xbt::string(name), host);
+  else
+    actor = SIMIX_process_self()->init(simgrid::xbt::string(name), host);
 
   /* actor data */
   actor->set_user_data(data);
