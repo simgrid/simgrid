@@ -197,7 +197,7 @@ public:
   const char* what() const noexcept { return msg_.c_str(); }
 
   static void do_throw();
-  static bool try_n_catch(std::function<void(void)> try_block);
+  static bool try_n_catch(const std::function<void()>& try_block);
 
 private:
   std::string msg_ = std::string("Actor killed.");

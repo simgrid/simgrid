@@ -106,9 +106,9 @@ public:
   s4u::Actor* ciface() { return &piface_; }
 
   ActorImplPtr init(std::string name, s4u::Host* host);
-  ActorImpl* start(simix::ActorCode code);
+  ActorImpl* start(const simix::ActorCode& code);
 
-  static ActorImplPtr create(std::string name, simix::ActorCode code, void* data, s4u::Host* host,
+  static ActorImplPtr create(std::string name, const simix::ActorCode& code, void* data, s4u::Host* host,
                              std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor);
   static ActorImplPtr attach(std::string name, void* data, s4u::Host* host,
                              std::unordered_map<std::string, std::string>* properties);
@@ -142,10 +142,11 @@ public:
   bool daemon_                                                             = false;
   ProcessArg()                                                             = default;
 
-  explicit ProcessArg(std::string name, std::function<void()> code, void* data, s4u::Host* host, double kill_time,
-                      std::shared_ptr<std::unordered_map<std::string, std::string>> properties, bool auto_restart)
+  explicit ProcessArg(std::string name, const std::function<void()>& code, void* data, s4u::Host* host,
+                      double kill_time, std::shared_ptr<std::unordered_map<std::string, std::string>> properties,
+                      bool auto_restart)
       : name(name)
-      , code(std::move(code))
+      , code(code)
       , data(data)
       , host(host)
       , kill_time(kill_time)
@@ -156,7 +157,7 @@ public:
 
   explicit ProcessArg(s4u::Host* host, ActorImpl* actor)
       : name(actor->get_name())
-      , code(std::move(actor->code))
+      , code(actor->code)
       , data(actor->get_user_data())
       , host(host)
       , kill_time(actor->get_kill_time())
@@ -172,7 +173,7 @@ typedef boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImp
                                                                         &ActorImpl::smx_synchro_hook>>
     SynchroList;
 
-XBT_PUBLIC void create_maestro(std::function<void()> code);
+XBT_PUBLIC void create_maestro(const std::function<void()>& code);
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid

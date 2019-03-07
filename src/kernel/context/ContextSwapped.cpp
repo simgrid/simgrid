@@ -48,7 +48,7 @@ SwappedContextFactory::~SwappedContextFactory()
   delete parmap_;
 }
 
-SwappedContext::SwappedContext(std::function<void()> code, smx_actor_t actor, SwappedContextFactory* factory)
+SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, SwappedContextFactory* factory)
     : Context(std::move(code), actor), factory_(factory)
 {
   // Save maestro (=context created first) in preparation for run_all

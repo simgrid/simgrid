@@ -37,7 +37,7 @@ private:
 
 class SwappedContext : public Context {
 public:
-  SwappedContext(std::function<void()> code, smx_actor_t get_actor, SwappedContextFactory* factory);
+  SwappedContext(std::function<void()>&& code, smx_actor_t get_actor, SwappedContextFactory* factory);
   SwappedContext(const SwappedContext&) = delete;
   SwappedContext& operator=(const SwappedContext&) = delete;
   virtual ~SwappedContext();

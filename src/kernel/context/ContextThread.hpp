@@ -20,7 +20,7 @@ namespace context {
 
 class XBT_PUBLIC ThreadContext : public AttachContext {
 public:
-  ThreadContext(std::function<void()> code, smx_actor_t actor, bool maestro);
+  ThreadContext(std::function<void()>&& code, smx_actor_t actor, bool maestro);
   ThreadContext(const ThreadContext&) = delete;
   ThreadContext& operator=(const ThreadContext&) = delete;
   ~ThreadContext() override;
@@ -53,7 +53,7 @@ private:
 
 class XBT_PUBLIC SerialThreadContext : public ThreadContext {
 public:
-  SerialThreadContext(std::function<void()> code, smx_actor_t actor, bool maestro)
+  SerialThreadContext(std::function<void()>&& code, smx_actor_t actor, bool maestro)
       : ThreadContext(std::move(code), actor, maestro)
   {
   }
@@ -63,7 +63,7 @@ public:
 
 class ParallelThreadContext : public ThreadContext {
 public:
-  ParallelThreadContext(std::function<void()> code, smx_actor_t actor, bool maestro)
+  ParallelThreadContext(std::function<void()>&& code, smx_actor_t actor, bool maestro)
       : ThreadContext(std::move(code), actor, maestro)
   {
   }
@@ -85,7 +85,7 @@ public:
   ThreadContextFactory(const ThreadContextFactory&) = delete;
   ThreadContextFactory& operator=(const ThreadContextFactory&) = delete;
   ~ThreadContextFactory() override;
-  ThreadContext* create_context(std::function<void()> code, smx_actor_t actor) override
+  ThreadContext* create_context(std::function<void()>&& code, smx_actor_t actor) override
   {
     bool maestro = not code;
     return create_context(std::move(code), actor, maestro);
@@ -94,7 +94,7 @@ public:
 
   // Optional methods:
   ThreadContext* attach(smx_actor_t actor) override { return create_context(std::function<void()>(), actor, false); }
-  ThreadContext* create_maestro(std::function<void()> code, smx_actor_t actor) override
+  ThreadContext* create_maestro(std::function<void()>&& code, smx_actor_t actor) override
   {
     return create_context(std::move(code), actor, true);
   }
@@ -102,7 +102,7 @@ public:
 private:
   bool parallel_;
 
-  ThreadContext* create_context(std::function<void()> code, smx_actor_t actor, bool maestro);
+  ThreadContext* create_context(std::function<void()>&& code, smx_actor_t actor, bool maestro);
 };
 }}} // namespace
 

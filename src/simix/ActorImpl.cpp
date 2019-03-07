@@ -456,7 +456,7 @@ ActorImplPtr ActorImpl::init(std::string name, s4u::Host* host)
   return ActorImplPtr(actor);
 }
 
-ActorImpl* ActorImpl::start(simix::ActorCode code)
+ActorImpl* ActorImpl::start(const simix::ActorCode& code)
 {
   xbt_assert(code && host_ != nullptr, "Invalid parameters");
 
@@ -469,7 +469,7 @@ ActorImpl* ActorImpl::start(simix::ActorCode code)
 
   this->code = code;
   XBT_VERB("Create context %s", get_cname());
-  context_ = simix_global->context_factory->create_context(std::move(code), this);
+  context_ = simix_global->context_factory->create_context(simix::ActorCode(code), this);
 
   XBT_DEBUG("Start context '%s'", get_cname());
 
@@ -484,7 +484,7 @@ ActorImpl* ActorImpl::start(simix::ActorCode code)
   return this;
 }
 
-ActorImplPtr ActorImpl::create(std::string name, simix::ActorCode code, void* data, s4u::Host* host,
+ActorImplPtr ActorImpl::create(std::string name, const simix::ActorCode& code, void* data, s4u::Host* host,
                                std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor)
 {
   XBT_DEBUG("Start actor %s@'%s'", name.c_str(), host->get_cname());
@@ -503,12 +503,12 @@ ActorImplPtr ActorImpl::create(std::string name, simix::ActorCode code, void* da
     for (auto const& kv : *properties)
       actor->set_property(kv.first, kv.second);
 
-  actor->start(std::move(code));
+  actor->start(code);
 
   return actor;
 }
 
-void create_maestro(simix::ActorCode code)
+void create_maestro(const std::function<void()>& code)
 {
   /* Create maestro actor and initialize it */
   ActorImpl* maestro = new ActorImpl(xbt::string(""), /*host*/ nullptr);
@@ -516,7 +516,7 @@ void create_maestro(simix::ActorCode code)
   if (not code) {
     maestro->context_ = simix_global->context_factory->create_context(simix::ActorCode(), maestro);
   } else {
-    maestro->context_ = simix_global->context_factory->create_maestro(code, maestro);
+    maestro->context_ = simix_global->context_factory->create_maestro(simix::ActorCode(code), maestro);
   }
 
   maestro->simcall.issuer       = maestro;

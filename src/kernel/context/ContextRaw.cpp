@@ -188,14 +188,14 @@ namespace context {
 
 // RawContextFactory
 
-Context* RawContextFactory::create_context(std::function<void()> code, smx_actor_t actor)
+Context* RawContextFactory::create_context(std::function<void()>&& code, smx_actor_t actor)
 {
   return this->new_context<RawContext>(std::move(code), actor, this);
 }
 
 // RawContext
 
-RawContext::RawContext(std::function<void()> code, smx_actor_t actor, SwappedContextFactory* factory)
+RawContext::RawContext(std::function<void()>&& code, smx_actor_t actor, SwappedContextFactory* factory)
     : SwappedContext(std::move(code), actor, factory)
 {
    if (has_code()) {

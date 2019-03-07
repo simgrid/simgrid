@@ -32,7 +32,7 @@ public:
   JNIEnv* jenv_           = nullptr;
 
   friend class JavaContextFactory;
-  JavaContext(std::function<void()> code, smx_actor_t actor);
+  JavaContext(std::function<void()>&& code, smx_actor_t actor);
 
   void start_hook() override;
   void stop_hook() override;
@@ -42,7 +42,7 @@ class JavaContextFactory : public simgrid::kernel::context::ContextFactory {
 public:
   JavaContextFactory();
   ~JavaContextFactory() override;
-  JavaContext* create_context(std::function<void()> code, smx_actor_t actor) override;
+  JavaContext* create_context(std::function<void()>&& code, smx_actor_t actor) override;
   void run_all() override;
 };
 

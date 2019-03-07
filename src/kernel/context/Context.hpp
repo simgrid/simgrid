@@ -22,12 +22,12 @@ public:
   ContextFactory(const ContextFactory&) = delete;
   ContextFactory& operator=(const ContextFactory&) = delete;
   virtual ~ContextFactory();
-  virtual Context* create_context(std::function<void()> code, smx_actor_t actor) = 0;
+  virtual Context* create_context(std::function<void()>&& code, smx_actor_t actor) = 0;
 
   /** Turn the current thread into a simulation context */
   virtual Context* attach(smx_actor_t actor);
   /** Turn the current thread into maestro (the old maestro becomes a regular actor) */
-  virtual Context* create_maestro(std::function<void()> code, smx_actor_t actor);
+  virtual Context* create_maestro(std::function<void()>&& code, smx_actor_t actor);
 
   virtual void run_all() = 0;
 
@@ -50,7 +50,7 @@ class XBT_PUBLIC Context {
 public:
   bool iwannadie = false;
 
-  Context(std::function<void()> code, smx_actor_t actor);
+  Context(std::function<void()>&& code, smx_actor_t actor);
   Context(const Context&) = delete;
   Context& operator=(const Context&) = delete;
   virtual ~Context();
@@ -72,7 +72,7 @@ public:
 
 class XBT_PUBLIC AttachContext : public Context {
 public:
-  AttachContext(std::function<void()> code, smx_actor_t actor) : Context(std::move(code), actor) {}
+  AttachContext(std::function<void()>&& code, smx_actor_t actor) : Context(std::move(code), actor) {}
   AttachContext(const AttachContext&) = delete;
   AttachContext& operator=(const AttachContext&) = delete;
   ~AttachContext() override;

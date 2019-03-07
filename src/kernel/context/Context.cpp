@@ -47,13 +47,13 @@ Context* ContextFactory::attach(smx_actor_t)
     "Try using --cfg=contexts/factory:thread instead.\n");
 }
 
-Context* ContextFactory::create_maestro(std::function<void()>, smx_actor_t)
+Context* ContextFactory::create_maestro(std::function<void()>&&, smx_actor_t)
 {
   xbt_die("Cannot create_maestro with this ContextFactory.\n"
     "Try using --cfg=contexts/factory:thread instead.\n");
 }
 
-Context::Context(std::function<void()> code, smx_actor_t actor) : code_(std::move(code)), actor_(actor)
+Context::Context(std::function<void()>&& code, smx_actor_t actor) : code_(std::move(code)), actor_(actor)
 {
   /* If no function was provided, this is the context for maestro
    * and we should set it as the current context */

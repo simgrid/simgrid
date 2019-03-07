@@ -16,7 +16,7 @@ void ForcefulKillException::do_throw()
   throw ForcefulKillException();
 }
 
-bool ForcefulKillException::try_n_catch(std::function<void(void)> try_block)
+bool ForcefulKillException::try_n_catch(const std::function<void()>& try_block)
 {
   bool res;
   try {

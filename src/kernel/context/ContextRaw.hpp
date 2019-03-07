@@ -26,7 +26,7 @@ namespace context {
   */
 class RawContext : public SwappedContext {
 public:
-  RawContext(std::function<void()> code, smx_actor_t actor, SwappedContextFactory* factory);
+  RawContext(std::function<void()>&& code, smx_actor_t actor, SwappedContextFactory* factory);
 
   void swap_into(SwappedContext* to) override;
 
@@ -39,7 +39,7 @@ private:
 
 class RawContextFactory : public SwappedContextFactory {
 public:
-  Context* create_context(std::function<void()> code, smx_actor_t actor) override;
+  Context* create_context(std::function<void()>&& code, smx_actor_t actor) override;
 };
 }}} // namespace
 
