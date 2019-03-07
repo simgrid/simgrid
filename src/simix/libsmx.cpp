@@ -416,15 +416,13 @@ smx_activity_t simcall_execution_parallel_start(const std::string& name, int hos
   }
   xbt_assert(std::isfinite(rate), "rate is not finite!");
 
-  std::vector<simgrid::s4u::Host*> hosts;
+  std::vector<simgrid::s4u::Host*> hosts(host_list, host_list + host_nb);
   std::vector<double> flops_parallel_amount;
   std::vector<double> bytes_parallel_amount;
-  for (int i = 0; i < host_nb; i++) {
-    hosts.push_back(host_list[i]);
-    flops_parallel_amount.push_back(flops_amount[i]);
-    for (int j = 0; j < host_nb; j++)
-      bytes_parallel_amount.push_back(bytes_amount[i]);
-  }
+  if (flops_amount != nullptr)
+    flops_parallel_amount = std::vector<double>(flops_amount, flops_amount + host_nb);
+  if (bytes_amount != nullptr)
+    bytes_parallel_amount = std::vector<double>(bytes_amount, bytes_amount + host_nb * host_nb);
   return simgrid::simix::simcall([name, hosts, flops_parallel_amount, bytes_parallel_amount, timeout] {
     return simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(std::move(name), ""))
         ->set_timeout(timeout)
