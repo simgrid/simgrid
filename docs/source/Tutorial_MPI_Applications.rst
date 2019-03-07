@@ -274,7 +274,7 @@ container to enjoy the provided dependencies.
    when you log out of the container, so don't edit the other files!
 
 All needed dependencies are already installed in this container
-(SimGrid, the C/C++/Fortran compilers, make, pajeng and R). Vite being
+(SimGrid, the C/C++/Fortran compilers, make, pajeng, R and pajengr). Vite being
 only optional in this tutorial, it is not installed to reduce the
 image size.
 
@@ -302,6 +302,14 @@ Debian and Ubuntu for example, you can get them as follows:
 .. code-block:: shell
 
    sudo apt install simgrid pajeng make gcc g++ gfortran vite
+
+For R analysis of the produced traces, you may want to install R, 
+and the `pajengr<https://github.com/schnorr/pajengr#installation/>_ package.
+
+.. code-block:: shell
+
+   sudo apt install r-base r-cran-devtools cmake flex bison
+   Rscript -e "library(devtools); install_github('schnorr/pajengr');"
 
 To take this tutorial, you will also need the platform files from the
 previous section as well as the source code of the NAS Parallel
@@ -397,7 +405,6 @@ use:
 .. code-block:: shell
 
    smpirun -np 4 -platform ../cluster_backbone.xml -trace --cfg=tracing/filename:lu.S.4.trace bin/lu.S.4
-   pj_dump --ignore-incomplete-links lu.S.4.trace | grep State > lu.S.4.state.csv
 
 You can then produce a Gantt Chart with the following R chunk. You can
 either copy/paste it in a R session, or `turn it into a Rscript executable
@@ -406,10 +413,11 @@ run it again and again.
 
 .. code-block:: R
 
+   library(pajengr)
    library(ggplot2)
 
    # Read the data
-   df_state = read.csv("lu.S.4.state.csv", header=F, strip.white=T)
+   df_state = pajeng_read("lu.S.4.trace")
    names(df_state) = c("Type", "Rank", "Container", "Start", "End", "Duration", "Level", "State");
    df_state = df_state[!(names(df_state) %in% c("Type","Container","Level"))]
    df_state$Rank = as.numeric(gsub("rank-","",df_state$Rank))
