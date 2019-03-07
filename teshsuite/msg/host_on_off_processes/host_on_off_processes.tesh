@@ -17,7 +17,7 @@ $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 2 --log=no_loc
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 2:
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO]   Turn off Jupiter
 > [0.000000] [simix_process/WARNING] Cannot launch actor 'process_daemon' on failed host 'Jupiter'
-> [Tremblay:test_launcher:(1) 0.000000] [xbt/CRITICAL] Could not create a new process on failed host Jupiter.
+> [Tremblay:test_launcher:(1) 0.000000] [xbt/CRITICAL] Could not launch a new process on failed host Jupiter.
 
 $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 4 --log=no_loc
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 4 (turn off src during a communication) : Create a Process/task to make a communication between Jupiter and Tremblay and turn off Jupiter during the communication
