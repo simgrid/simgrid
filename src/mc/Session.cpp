@@ -91,8 +91,7 @@ Session::Session(pid_t pid, int socket)
 #else
   process->privatized(false);
 #endif
-  modelChecker_ = std::unique_ptr<ModelChecker>(
-    new simgrid::mc::ModelChecker(std::move(process)));
+  modelChecker_.reset(new simgrid::mc::ModelChecker(std::move(process)));
   xbt_assert(mc_model_checker == nullptr);
   mc_model_checker = modelChecker_.get();
   mc_model_checker->start();

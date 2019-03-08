@@ -1480,7 +1480,7 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
   // TODO, make this a field of ModelChecker or something similar
 
   if (state_comparator == nullptr)
-    state_comparator = std::unique_ptr<StateComparator>(new StateComparator());
+    state_comparator.reset(new StateComparator());
   else
     state_comparator->clear();
 

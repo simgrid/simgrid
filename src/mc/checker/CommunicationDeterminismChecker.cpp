@@ -175,8 +175,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
       xbt_dynar_get_as(initial_communications_pattern, issuer->get_pid(), simgrid::mc::PatternCommunicationList*);
   xbt_dynar_t incomplete_pattern = xbt_dynar_get_as(incomplete_communications_pattern, issuer->get_pid(), xbt_dynar_t);
 
-  std::unique_ptr<simgrid::mc::PatternCommunication> pattern =
-      std::unique_ptr<simgrid::mc::PatternCommunication>(new simgrid::mc::PatternCommunication());
+  std::unique_ptr<simgrid::mc::PatternCommunication> pattern(new simgrid::mc::PatternCommunication());
   pattern->index = initial_pattern->index_comm + xbt_dynar_length(incomplete_pattern);
 
   if (call_type == MC_CALL_TYPE_SEND) {
@@ -271,7 +270,7 @@ void CommunicationDeterminismChecker::complete_comm_pattern(
       completed = 1;
       simgrid::mc::PatternCommunication* temp;
       xbt_dynar_remove_at(xbt_dynar_get_as(incomplete_communications_pattern, issuer, xbt_dynar_t), cursor, &temp);
-      comm_pattern = std::unique_ptr<simgrid::mc::PatternCommunication>(temp);
+      comm_pattern.reset(temp);
       XBT_DEBUG("Remove incomplete comm pattern for process %u at cursor %u", issuer, cursor);
       break;
     }

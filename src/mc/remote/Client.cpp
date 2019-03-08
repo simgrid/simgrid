@@ -54,7 +54,7 @@ Client* Client::initialize()
     xbt_die("Unexpected socket type %i", type);
   XBT_DEBUG("Model-checked application found expected socket type");
 
-  instance_ = std::unique_ptr<Client>(new simgrid::mc::Client(fd));
+  instance_.reset(new simgrid::mc::Client(fd));
 
   // Wait for the model-checker:
   errno = 0;

@@ -46,8 +46,8 @@ std::unique_ptr<char, std::function<void(char*)>> demangle(const char* name)
 {
 #ifdef __GXX_ABI_VERSION
   int status;
-  auto res = std::unique_ptr<char, std::function<void(char*)>>(abi::__cxa_demangle(name, nullptr, nullptr, &status),
-                                                               &std::free);
+  std::unique_ptr<char, std::function<void(char*)>> res(abi::__cxa_demangle(name, nullptr, nullptr, &status),
+                                                        &std::free);
   if (res != nullptr)
     return res;
   // We did not manage to resolve this. Probably because this is not a mangled symbol:

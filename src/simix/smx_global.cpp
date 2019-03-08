@@ -199,7 +199,7 @@ void SIMIX_global_init(int *argc, char **argv)
 #endif
 
   if (simix_global == nullptr) {
-    simix_global = std::unique_ptr<simgrid::simix::Global>(new simgrid::simix::Global());
+    simix_global.reset(new simgrid::simix::Global());
     simix_global->maestro_process = nullptr;
 
     surf_init(argc, argv);      /* Initialize SURF structures */

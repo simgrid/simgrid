@@ -239,7 +239,7 @@ void RemoteClient::refresh_heap()
 {
   // Read/dereference/refresh the std_heap pointer:
   if (not this->heap)
-    this->heap = std::unique_ptr<s_xbt_mheap_t>(new s_xbt_mheap_t());
+    this->heap.reset(new s_xbt_mheap_t());
   this->read_bytes(this->heap.get(), sizeof(mdesc), remote(this->heap_address), simgrid::mc::ProcessIndexDisabled);
   this->cache_flags_ |= RemoteClient::cache_heap;
 }

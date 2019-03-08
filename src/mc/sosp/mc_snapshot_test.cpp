@@ -66,7 +66,7 @@ void snap_test_helper::Init(bool sparse_ckpt)
   REQUIRE(xbt_pagesize == getpagesize());
   REQUIRE(1 << xbt_pagebits == xbt_pagesize);
 
-  process = std::unique_ptr<simgrid::mc::RemoteClient>(new simgrid::mc::RemoteClient(getpid(), -1));
+  process.reset(new simgrid::mc::RemoteClient(getpid(), -1));
   process->init();
   mc_model_checker = new ::simgrid::mc::ModelChecker(std::move(process));
 }
