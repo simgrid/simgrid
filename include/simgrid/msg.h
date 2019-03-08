@@ -441,9 +441,8 @@ XBT_PUBLIC int MSG_barrier_wait(msg_bar_t bar);
 
 /* ****************************************************************************************** */
 /* DO NOT USE this nasty pimple (unless if you're writing a binding) */
-XBT_PUBLIC smx_context_t
 XBT_ATTRIB_DEPRECATED_v323("MSG_process_get_smx_ctx is deprecated. Please contact us if you need it.")
-MSG_process_get_smx_ctx(msg_process_t process);
+    XBT_PUBLIC smx_context_t MSG_process_get_smx_ctx(msg_process_t process);
 
 #ifdef __cplusplus
 }
