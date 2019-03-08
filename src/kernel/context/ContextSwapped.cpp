@@ -43,10 +43,6 @@ SwappedContextFactory::SwappedContextFactory() : ContextFactory(), parallel_(SIM
   parmap_ = nullptr; // will be created lazily with the right parameters if needed (ie, in parallel)
   workers_context_.resize(parallel_ ? SIMIX_context_get_nthreads() : 1, nullptr);
 }
-SwappedContextFactory::~SwappedContextFactory()
-{
-  delete parmap_;
-}
 
 SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, SwappedContextFactory* factory)
     : Context(std::move(code), actor), factory_(factory)
@@ -164,7 +160,8 @@ void SwappedContextFactory::run_all()
 
     // We lazily create the parmap so that all options are actually processed when doing so.
     if (parmap_ == nullptr)
-      parmap_ = new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
+      parmap_.reset(
+          new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode()));
 
     // Usually, Parmap::apply() executes the provided function on all elements of the array.
     // Here, the executed function does not return the control to the parmap before all the array is processed:

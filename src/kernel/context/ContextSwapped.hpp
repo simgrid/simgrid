@@ -8,6 +8,7 @@
 
 #include "src/kernel/context/Context.hpp"
 
+#include <memory>
 #include <vector>
 
 namespace simgrid {
@@ -21,7 +22,6 @@ public:
   SwappedContextFactory();
   SwappedContextFactory(const SwappedContextFactory&) = delete;
   SwappedContextFactory& operator=(const SwappedContextFactory&) = delete;
-  ~SwappedContextFactory() override;
   void run_all() override;
 
 private:
@@ -30,7 +30,7 @@ private:
   unsigned long process_index_ = 0; // Next actor to execute during sequential run_all()
 
   /* For the parallel execution */
-  simgrid::xbt::Parmap<smx_actor_t>* parmap_;
+  std::unique_ptr<simgrid::xbt::Parmap<smx_actor_t>> parmap_;
   std::vector<SwappedContext*> workers_context_; /* space to save the worker's context in each thread */
   std::atomic<uintptr_t> threads_working_{0};    /* number of threads that have started their work */
 };
