@@ -461,6 +461,7 @@ ActorImpl* ActorImpl::start(simix::ActorCode code)
   xbt_assert(code && host_ != nullptr, "Invalid parameters");
 
   if (not host_->is_on()) {
+    intrusive_ptr_release(this);
     XBT_WARN("Cannot launch actor '%s' on failed host '%s'", name_.c_str(), host_->get_cname());
     std::rethrow_exception(
         std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Cannot start actor on failed host.")));

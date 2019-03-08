@@ -44,7 +44,6 @@ ActorPtr Actor::init(std::string name, s4u::Host* host)
   smx_actor_t self = SIMIX_process_self();
   simgrid::kernel::actor::ActorImpl* actor =
       simgrid::simix::simcall([self, name, host] { return self->init(std::move(name), host).get(); });
-  intrusive_ptr_release(actor);
   return actor->ciface();
 }
 

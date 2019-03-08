@@ -48,7 +48,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
     simgrid::s4u::Actor::on_creation.connect([](simgrid::s4u::ActorPtr actor) {
       XBT_DEBUG("creating the extension to store user data");
-      actor->extension_set(new simgrid::msg::ActorUserData(actor));
+      actor->extension_set(new simgrid::msg::ActorUserData());
     });
 
     simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::ActorPtr actor) {

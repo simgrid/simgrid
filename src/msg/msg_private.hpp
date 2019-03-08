@@ -99,13 +99,9 @@ public:
 
 class ActorUserData {
   void* userdata_      = nullptr;
-  s4u::ActorPtr actor_ = nullptr;
 
 public:
   static xbt::Extension<simgrid::s4u::Actor, ActorUserData> EXTENSION_ID;
-
-  explicit ActorUserData(s4u::ActorPtr ptr) : actor_(ptr) {}
-  ~ActorUserData() = default;
 
   void set_user_data(void* data) { userdata_ = data; }
   void* get_user_data() { return userdata_; }
