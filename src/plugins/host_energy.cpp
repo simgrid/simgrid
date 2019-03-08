@@ -244,7 +244,7 @@ double HostEnergy::get_current_watts_value()
   if (this->pstate_ == pstate_off_) // The host is off (or was off at the beginning of this time interval)
     return this->watts_off_;
 
-  double current_speed = host_->get_speed();
+  double current_speed = host_->get_pstate_speed(this->pstate_);
 
   double cpu_load;
 
@@ -252,16 +252,17 @@ double HostEnergy::get_current_watts_value()
     // Some users declare a pstate of speed 0 flops (e.g., to model boot time).
     // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
     cpu_load = 1;
-  else
+  else {
     cpu_load = host_->pimpl_cpu->get_constraint()->get_usage() / current_speed;
 
-  /** Divide by the number of cores here **/
-  cpu_load /= host_->pimpl_cpu->get_core_count();
+    /** Divide by the number of cores here **/
+    cpu_load /= host_->pimpl_cpu->get_core_count();
 
-  if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not more
-    cpu_load = 1;
-  if (cpu_load > 0)
-    host_was_used_ = true;
+    if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not more
+      cpu_load = 1;
+    if (cpu_load > 0)
+      host_was_used_ = true;
+  }
 
   /* The problem with this model is that the load is always 0 or 1, never something less.
    * Another possibility could be to model the total energy as
