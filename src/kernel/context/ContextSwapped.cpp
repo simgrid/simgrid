@@ -171,7 +171,7 @@ void SwappedContextFactory::run_all()
     //   - So, resume() is only launched from the parmap for the first job of each minion.
     parmap_->apply(
         [](smx_actor_t process) {
-          SwappedContext* context = static_cast<SwappedContext*>(process->context_);
+          SwappedContext* context = static_cast<SwappedContext*>(process->context_.get());
           context->resume();
         },
         simix_global->actors_to_run);
@@ -183,7 +183,7 @@ void SwappedContextFactory::run_all()
     smx_actor_t first_actor = simix_global->actors_to_run.front();
     process_index_          = 1;
     /* execute the first actor; it will chain to the others when using suspend() */
-    static_cast<SwappedContext*>(first_actor->context_)->resume();
+    static_cast<SwappedContext*>(first_actor->context_.get())->resume();
   }
 }
 
@@ -230,7 +230,7 @@ void SwappedContext::suspend()
     if (next_work) {
       // There is a next soul to embody (ie, another executable actor)
       XBT_DEBUG("Run next process");
-      next_context = static_cast<SwappedContext*>(next_work.get()->context_);
+      next_context = static_cast<SwappedContext*>(next_work.get()->context_.get());
     } else {
       // All actors were run, go back to the parmap context
       XBT_DEBUG("No more actors to run");
@@ -252,7 +252,7 @@ void SwappedContext::suspend()
     if (i < simix_global->actors_to_run.size()) {
       /* Actually swap into the next actor directly without transiting to maestro */
       XBT_DEBUG("Run next actor");
-      next_context = static_cast<SwappedContext*>(simix_global->actors_to_run[i]->context_);
+      next_context = static_cast<SwappedContext*>(simix_global->actors_to_run[i]->context_.get());
     } else {
       /* all processes were run, actually return to maestro */
       XBT_DEBUG("No more actors to run");

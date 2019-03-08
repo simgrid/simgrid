@@ -58,10 +58,8 @@ ActorImpl::ActorImpl(simgrid::xbt::string name, s4u::Host* host) : host_(host), 
   simcall.issuer = this;
 }
 
-ActorImpl::~ActorImpl()
-{
-  delete this->context_;
-}
+ActorImpl::~ActorImpl() = default;
+
 /* Become an actor in the simulation
  *
  * Currently this can only be called by the main thread (once) and only work with some thread factories
@@ -90,7 +88,7 @@ ActorImplPtr ActorImpl::attach(std::string name, void* data, s4u::Host* host,
 
   XBT_VERB("Create context %s", actor->get_cname());
   xbt_assert(simix_global != nullptr, "simix is not initialized, please call MSG_init first");
-  actor->context_ = simix_global->context_factory->attach(actor);
+  actor->context_.reset(simix_global->context_factory->attach(actor));
 
   /* Add properties */
   if (properties != nullptr)
@@ -106,7 +104,7 @@ ActorImplPtr ActorImpl::attach(std::string name, void* data, s4u::Host* host,
   simix_global->actors_to_run.push_back(actor);
   intrusive_ptr_add_ref(actor);
 
-  auto* context = dynamic_cast<simgrid::kernel::context::AttachContext*>(actor->context_);
+  auto* context = dynamic_cast<simgrid::kernel::context::AttachContext*>(actor->context_.get());
   xbt_assert(nullptr != context, "Not a suitable context");
   context->attach_start();
 
@@ -469,7 +467,7 @@ ActorImpl* ActorImpl::start(const simix::ActorCode& code)
 
   this->code = code;
   XBT_VERB("Create context %s", get_cname());
-  context_ = simix_global->context_factory->create_context(simix::ActorCode(code), this);
+  context_.reset(simix_global->context_factory->create_context(simix::ActorCode(code), this));
 
   XBT_DEBUG("Start context '%s'", get_cname());
 
@@ -514,9 +512,9 @@ void create_maestro(const std::function<void()>& code)
   ActorImpl* maestro = new ActorImpl(xbt::string(""), /*host*/ nullptr);
 
   if (not code) {
-    maestro->context_ = simix_global->context_factory->create_context(simix::ActorCode(), maestro);
+    maestro->context_.reset(simix_global->context_factory->create_context(simix::ActorCode(), maestro));
   } else {
-    maestro->context_ = simix_global->context_factory->create_maestro(simix::ActorCode(code), maestro);
+    maestro->context_.reset(simix_global->context_factory->create_maestro(simix::ActorCode(code), maestro));
   }
 
   maestro->simcall.issuer       = maestro;

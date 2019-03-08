@@ -288,8 +288,6 @@ void SIMIX_clean()
 #endif
 
   /* Let's free maestro now */
-  delete simix_global->maestro_process->context_;
-  simix_global->maestro_process->context_ = nullptr;
   delete simix_global->maestro_process;
   simix_global->maestro_process = nullptr;
 

@@ -158,7 +158,7 @@ void ThreadContext::suspend()
 void ThreadContext::attach_start()
 {
   // We're breaking the layers here by depending on the upper layer:
-  ThreadContext* maestro = (ThreadContext*)simix_global->maestro_process->context_;
+  ThreadContext* maestro = static_cast<ThreadContext*>(simix_global->maestro_process->context_.get());
   maestro->begin_.release();
   xbt_assert(not this->is_maestro());
   this->start();
@@ -169,7 +169,7 @@ void ThreadContext::attach_stop()
   xbt_assert(not this->is_maestro());
   this->yield();
 
-  ThreadContext* maestro = (ThreadContext*)simix_global->maestro_process->context_;
+  ThreadContext* maestro = static_cast<ThreadContext*>(simix_global->maestro_process->context_.get());
   maestro->end_.acquire();
 
   Context::set_current(nullptr);
@@ -181,7 +181,7 @@ void SerialThreadContext::run_all()
 {
   for (smx_actor_t const& actor : simix_global->actors_to_run) {
     XBT_DEBUG("Handling %p", actor);
-    ThreadContext* context = static_cast<ThreadContext*>(actor->context_);
+    ThreadContext* context = static_cast<ThreadContext*>(actor->context_.get());
     context->release();
     context->wait();
   }
@@ -205,9 +205,9 @@ void ParallelThreadContext::finalize()
 void ParallelThreadContext::run_all()
 {
   for (smx_actor_t const& actor : simix_global->actors_to_run)
-    static_cast<ThreadContext*>(actor->context_)->release();
+    static_cast<ThreadContext*>(actor->context_.get())->release();
   for (smx_actor_t const& actor : simix_global->actors_to_run)
-    static_cast<ThreadContext*>(actor->context_)->wait();
+    static_cast<ThreadContext*>(actor->context_.get())->wait();
 }
 
 void ParallelThreadContext::start_hook()

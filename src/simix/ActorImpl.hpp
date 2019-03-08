@@ -13,6 +13,7 @@
 #include <functional>
 #include <list>
 #include <map>
+#include <memory>
 
 struct s_smx_process_exit_fun_t {
   std::function<void(bool, void*)> fun;
@@ -59,7 +60,7 @@ public:
   bool has_to_auto_restart() { return auto_restart_; }
   void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }
 
-  context::Context* context_ = nullptr; /* the context (uctx/raw/thread) that executes the user function */
+  std::unique_ptr<context::Context> context_; /* the context (uctx/raw/thread) that executes the user function */
 
   std::exception_ptr exception_;
   bool finished_  = false;
