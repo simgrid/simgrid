@@ -345,6 +345,14 @@ Debian and Ubuntu for example, you can get them as follows:
 
    sudo apt install simgrid pajeng cmake g++ vite
 
+For R analysis of the produced traces, you may want to install R, 
+and the `pajengr<https://github.com/schnorr/pajengr#installation/>_ package.
+
+.. code-block:: shell
+
+   sudo apt install r-base r-cran-devtools cmake flex bison
+   Rscript -e "library(devtools); install_github('schnorr/pajengr');"
+
 An initial version of the source code is provided on framagit. This
 template compiles with cmake. If SimGrid is correctly installed, you
 should be able to clone the `repository
@@ -408,8 +416,7 @@ and use it as follows:
 .. code-block:: shell
 
    ./master-workers small_platform.xml master-workers_d.xml --cfg=tracing:yes --cfg=tracing/msg/process:yes
-   pj_dump --ignore-incomplete-links simgrid.trace | grep STATE > gantt.csv
-   Rscript draw_gantt.R gantt.csv
+   Rscript draw_gantt.R simgrid.trace
 
 It produces a ``Rplots.pdf`` with the following content:
 
