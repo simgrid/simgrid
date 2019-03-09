@@ -21,7 +21,9 @@
 #include "src/mc/Variable.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
 
-int test_some_array[4][5][6];
+// Test broken with multi-dimensional arrays. See https://sourceware.org/bugzilla/show_bug.cgi?id=22546
+// int test_some_array[4][5][6];
+int test_some_array[4 * 5 * 6];
 struct some_struct {
   int first;
   int second[4][5];
@@ -92,7 +94,7 @@ static simgrid::mc::Variable* test_global_variable(simgrid::mc::RemoteClient& pr
   auto i = process.binary_info->types.find(variable->type_id);
   xbt_assert(i != process.binary_info->types.end(), "Missing type for %s", name);
   simgrid::mc::Type* type = &i->second;
-  xbt_assert(type->byte_size = byte_size, "Byte size mismatch for %s", name);
+  xbt_assert(type->byte_size == byte_size, "Byte size mismatch for %s", name);
   return variable;
 }
 
