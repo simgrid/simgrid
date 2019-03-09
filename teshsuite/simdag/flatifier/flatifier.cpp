@@ -210,8 +210,8 @@ int main(int argc, char** argv)
 
   SD_init(&argc, argv);
 
-  xbt_assert(parse_cmdline(&timings, &platformFile, argc, argv) && platformFile,
-             "Invalid command line arguments: expected [--timings] platformFile");
+  if (not parse_cmdline(&timings, &platformFile, argc, argv) || not platformFile)
+    xbt_die("Invalid command line arguments: expected [--timings] platformFile");
 
   XBT_DEBUG("%d,%s", timings, platformFile);
 
