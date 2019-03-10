@@ -168,9 +168,9 @@ public:
    *
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
-  static ActorPtr create(std::string name, s4u::Host* host, std::function<void()> code);
+  static ActorPtr create(std::string name, s4u::Host* host, const std::function<void()>& code);
   static ActorPtr init(std::string name, s4u::Host* host);
-  ActorPtr start(std::function<void()> code);
+  ActorPtr start(const std::function<void()>& code);
 
   /** Create an actor from a std::function
    *
@@ -301,15 +301,15 @@ public:
   XBT_ATTRIB_DEPRECATED_v325("Please use Actor::by_pid(pid).kill() instead") static void kill(aid_t pid);
 
   /** @deprecated See Actor::create() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
-      const char* name, s4u::Host* host, std::function<void()> code)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr
+      createActor(const char* name, s4u::Host* host, const std::function<void()>& code)
   {
     return create(name, host, code);
   }
   /** @deprecated See Actor::create() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
-      const char* name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
-      std::vector<std::string>* args)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr
+      createActor(const char* name, s4u::Host* host, const std::function<void(std::vector<std::string>*)>& code,
+                  std::vector<std::string>* args)
   {
     return create(name, host, code, args);
   }

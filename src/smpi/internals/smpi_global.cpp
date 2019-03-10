@@ -423,7 +423,7 @@ typedef std::function<int(int argc, char *argv[])> smpi_entry_point_type;
 typedef int (* smpi_c_entry_point_type)(int argc, char **argv);
 typedef void (*smpi_fortran_entry_point_type)();
 
-static int smpi_run_entry_point(smpi_entry_point_type entry_point, const std::string& executable_path,
+static int smpi_run_entry_point(const smpi_entry_point_type& entry_point, const std::string& executable_path,
                                 std::vector<std::string> args)
 {
   // copy C strings, we need them writable

@@ -128,7 +128,7 @@ std::vector<Host*> Engine::get_all_hosts()
   return res;
 }
 
-std::vector<Host*> Engine::get_filtered_hosts(std::function<bool(Host*)> filter)
+std::vector<Host*> Engine::get_filtered_hosts(const std::function<bool(Host*)>& filter)
 {
   std::vector<Host*> hosts;
   for (auto const& kv : pimpl->hosts_) {
@@ -255,7 +255,7 @@ std::vector<Link*> Engine::get_all_links()
   return res;
 }
 
-std::vector<Link*> Engine::get_filtered_links(std::function<bool(Link*)> filter)
+std::vector<Link*> Engine::get_filtered_links(const std::function<bool(Link*)>& filter)
 {
   std::vector<Link*> filtered_list;
   for (auto const& kv : pimpl->links_)
@@ -279,7 +279,7 @@ std::vector<ActorPtr> Engine::get_all_actors()
   return actor_list;
 }
 
-std::vector<ActorPtr> Engine::get_filtered_actors(std::function<bool(ActorPtr)> filter)
+std::vector<ActorPtr> Engine::get_filtered_actors(const std::function<bool(ActorPtr)>& filter)
 {
   std::vector<ActorPtr> actor_list;
   for (auto& kv : simix_global->process_list) {

@@ -45,7 +45,7 @@ public:
     return host_to_actors.count(host); // TODO This is linear in the size of the map. Maybe replace by constant lookup through another map?
   }
 
-  void for_each_actor(simgrid::s4u::Host* host, std::function<void(simgrid::s4u::ActorPtr)> callback)
+  void for_each_actor(simgrid::s4u::Host* host, const std::function<void(simgrid::s4u::ActorPtr)>& callback)
   {
     auto range = host_to_actors.equal_range(host);
     std::for_each(

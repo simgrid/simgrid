@@ -105,19 +105,19 @@ public:
   size_t get_host_count();
   /** @brief Returns the list of all hosts found in the platform */
   std::vector<Host*> get_all_hosts();
-  std::vector<Host*> get_filtered_hosts(std::function<bool(Host*)> filter);
+  std::vector<Host*> get_filtered_hosts(const std::function<bool(Host*)>& filter);
   simgrid::s4u::Host* host_by_name(const std::string& name);
   simgrid::s4u::Host* host_by_name_or_null(const std::string& name);
 
   size_t get_link_count();
   std::vector<Link*> get_all_links();
-  std::vector<Link*> get_filtered_links(std::function<bool(Link*)> filter);
+  std::vector<Link*> get_filtered_links(const std::function<bool(Link*)>& filter);
   simgrid::s4u::Link* link_by_name(const std::string& name);
   simgrid::s4u::Link* link_by_name_or_null(const std::string& name);
 
   size_t get_actor_count();
   std::vector<ActorPtr> get_all_actors();
-  std::vector<ActorPtr> get_filtered_actors(std::function<bool(ActorPtr)> filter);
+  std::vector<ActorPtr> get_filtered_actors(const std::function<bool(ActorPtr)>& filter);
 
   size_t get_storage_count();
   std::vector<Storage*> get_all_storages();

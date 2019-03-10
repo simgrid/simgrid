@@ -726,13 +726,12 @@ void SIMIX_process_on_exit(smx_actor_t actor, const std::function<void(bool, voi
  * @param host where the new agent is executed.
  * @param properties the properties of the process
  */
-smx_actor_t simcall_process_create(std::string name, simgrid::simix::ActorCode code, void* data, sg_host_t host,
+smx_actor_t simcall_process_create(std::string name, const simgrid::simix::ActorCode& code, void* data, sg_host_t host,
                                    std::unordered_map<std::string, std::string>* properties)
 {
   smx_actor_t self = SIMIX_process_self();
-  return simgrid::simix::simcall([name, code, data, host, properties, self] {
-    return simgrid::kernel::actor::ActorImpl::create(std::move(name), std::move(code), data, host, properties, self)
-        .get();
+  return simgrid::simix::simcall([name, &code, data, host, properties, self] {
+    return simgrid::kernel::actor::ActorImpl::create(std::move(name), code, data, host, properties, self).get();
   });
 }
 

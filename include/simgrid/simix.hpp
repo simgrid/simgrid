@@ -74,7 +74,7 @@ typedef std::function<void()> ActorCode;
 // Create an ActorCode based on a std::string
 typedef std::function<ActorCode(std::vector<std::string> args)> ActorCodeFactory;
 
-XBT_PUBLIC void register_function(const std::string& name, ActorCodeFactory factory);
+XBT_PUBLIC void register_function(const std::string& name, const ActorCodeFactory& factory);
 
 typedef std::pair<double, Timer*> TimerQelt;
 static boost::heap::fibonacci_heap<TimerQelt, boost::heap::compare<xbt::HeapComparator<TimerQelt>>> simix_timers;
@@ -110,7 +110,7 @@ public:
 } // namespace simix
 } // namespace simgrid
 
-XBT_PUBLIC smx_actor_t simcall_process_create(std::string name, simgrid::simix::ActorCode code, void* data,
+XBT_PUBLIC smx_actor_t simcall_process_create(std::string name, const simgrid::simix::ActorCode& code, void* data,
                                               sg_host_t host, std::unordered_map<std::string, std::string>* properties);
 
 XBT_PUBLIC smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback);

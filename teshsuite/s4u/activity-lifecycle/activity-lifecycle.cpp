@@ -23,7 +23,7 @@ static void assert_exit(bool exp_failed, double duration)
   });
 }
 /* Helper function in charge of running a test and doing some sanity checks afterward */
-static void run_test(const char* test_name, std::function<void()> test)
+static void run_test(const char* test_name, const std::function<void()>& test)
 {
   simgrid::s4u::Actor::create(test_name, all_hosts[0], test);
   simgrid::s4u::this_actor::sleep_for(10);

@@ -47,16 +47,15 @@ ActorPtr Actor::init(std::string name, s4u::Host* host)
   return actor->ciface();
 }
 
-ActorPtr Actor::start(std::function<void()> code)
+ActorPtr Actor::start(const std::function<void()>& code)
 {
-  simgrid::simix::simcall([this, code] { pimpl_->start(code); });
+  simgrid::simix::simcall([this, &code] { pimpl_->start(code); });
   return this;
 }
 
-ActorPtr Actor::create(std::string name, s4u::Host* host, std::function<void()> code)
+ActorPtr Actor::create(std::string name, s4u::Host* host, const std::function<void()>& code)
 {
-  simgrid::kernel::actor::ActorImpl* actor =
-      simcall_process_create(std::move(name), std::move(code), nullptr, host, nullptr);
+  simgrid::kernel::actor::ActorImpl* actor = simcall_process_create(std::move(name), code, nullptr, host, nullptr);
 
   return actor->iface();
 }

@@ -163,7 +163,7 @@ int replay_runner(const char* actor_name, const char* trace_filename)
  * @param action_name the reference name of the action.
  * @param function prototype given by the type: void...(const char** action)
  */
-void xbt_replay_action_register(const char* action_name, action_fun function)
+void xbt_replay_action_register(const char* action_name, const action_fun& function)
 {
   simgrid::xbt::action_funs[std::string(action_name)] = function;
 }
