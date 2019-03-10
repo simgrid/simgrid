@@ -46,8 +46,8 @@ StorageN11Model::StorageN11Model()
   all_existing_models.push_back(this);
 }
 
-StorageImpl* StorageN11Model::createStorage(std::string id, std::string type_id, std::string content_name,
-                                            std::string attach)
+StorageImpl* StorageN11Model::createStorage(const std::string& id, const std::string& type_id,
+                                            const std::string& content_name, const std::string& attach)
 {
   StorageType* storage_type = storage_types.at(type_id);
 
@@ -59,8 +59,8 @@ StorageImpl* StorageN11Model::createStorage(std::string id, std::string type_id,
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id.c_str(), type_id.c_str(),
             Bread);
 
-  return new StorageN11(this, std::move(id), get_maxmin_system(), Bread, Bwrite, std::move(type_id),
-                        std::move(content_name), storage_type->size, std::move(attach));
+  return new StorageN11(this, id, get_maxmin_system(), Bread, Bwrite, type_id, content_name, storage_type->size,
+                        attach);
 }
 
 double StorageN11Model::next_occuring_event(double now)
@@ -87,8 +87,9 @@ void StorageN11Model::update_actions_state(double /*now*/, double delta)
  * Resource *
  ************/
 
-StorageN11::StorageN11(StorageModel* model, std::string name, kernel::lmm::System* maxminSystem, double bread,
-                       double bwrite, std::string type_id, std::string content_name, sg_size_t size, std::string attach)
+StorageN11::StorageN11(StorageModel* model, const std::string& name, kernel::lmm::System* maxminSystem, double bread,
+                       double bwrite, const std::string& type_id, const std::string& content_name, sg_size_t size,
+                       const std::string& attach)
     : StorageImpl(model, name, maxminSystem, bread, bwrite, type_id, content_name, size, attach)
 {
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);

@@ -18,8 +18,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)")
 namespace simgrid {
 namespace msg {
 
-Task::Task(std::string name, double flops_amount, double bytes_amount, void* data)
-    : name_(std::move(name)), userdata_(data), flops_amount(flops_amount), bytes_amount(bytes_amount)
+Task::Task(const std::string& name, double flops_amount, double bytes_amount, void* data)
+    : name_(name), userdata_(data), flops_amount(flops_amount), bytes_amount(bytes_amount)
 {
   static std::atomic_ullong counter{0};
   id_ = counter++;
@@ -27,9 +27,9 @@ Task::Task(std::string name, double flops_amount, double bytes_amount, void* dat
     MC_ignore_heap(&(id_), sizeof(id_));
 }
 
-Task::Task(std::string name, std::vector<s4u::Host*>&& hosts, std::vector<double>&& flops_amount,
+Task::Task(const std::string& name, std::vector<s4u::Host*>&& hosts, std::vector<double>&& flops_amount,
            std::vector<double>&& bytes_amount, void* data)
-    : Task(std::move(name), 1.0, 0, data)
+    : Task(name, 1.0, 0, data)
 {
   parallel_             = true;
   hosts_                = std::move(hosts);
@@ -37,12 +37,12 @@ Task::Task(std::string name, std::vector<s4u::Host*>&& hosts, std::vector<double
   bytes_parallel_amount = std::move(bytes_amount);
 }
 
-Task* Task::create(std::string name, double flops_amount, double bytes_amount, void* data)
+Task* Task::create(const std::string& name, double flops_amount, double bytes_amount, void* data)
 {
   return new Task(std::move(name), flops_amount, bytes_amount, data);
 }
 
-Task* Task::create_parallel(std::string name, int host_nb, const msg_host_t* host_list, double* flops_amount,
+Task* Task::create_parallel(const std::string& name, int host_nb, const msg_host_t* host_list, double* flops_amount,
                             double* bytes_amount, void* data)
 {
   std::vector<s4u::Host*> hosts;
@@ -102,7 +102,7 @@ msg_error_t Task::execute()
   return status;
 }
 
-s4u::CommPtr Task::send_async(std::string alias, void_f_pvoid_t cleanup, bool detached)
+s4u::CommPtr Task::send_async(const std::string& alias, void_f_pvoid_t cleanup, bool detached)
 {
   if (TRACE_actor_is_enabled()) {
     container_t process_container = simgrid::instr::Container::by_name(instr_pid(MSG_process_self()));
@@ -129,7 +129,7 @@ s4u::CommPtr Task::send_async(std::string alias, void_f_pvoid_t cleanup, bool de
   return comm;
 }
 
-msg_error_t Task::send(std::string alias, double timeout)
+msg_error_t Task::send(const std::string& alias, double timeout)
 {
   msg_error_t ret = MSG_OK;
   /* Try to send it */

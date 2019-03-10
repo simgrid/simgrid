@@ -35,14 +35,14 @@ StorageModel::~StorageModel()
  ************/
 
 StorageImpl::StorageImpl(kernel::resource::Model* model, const std::string& name, kernel::lmm::System* maxminSystem,
-                         double bread, double bwrite, std::string type_id, std::string content_name, sg_size_t size,
-                         std::string attach)
+                         double bread, double bwrite, const std::string& type_id, const std::string& content_name,
+                         sg_size_t size, const std::string& attach)
     : Resource(model, name, maxminSystem->constraint_new(this, std::max(bread, bwrite)))
     , piface_(name, this)
-    , typeId_(std::move(type_id))
-    , content_name(std::move(content_name))
+    , typeId_(type_id)
+    , content_name(content_name)
     , size_(size)
-    , attach_(std::move(attach))
+    , attach_(attach)
 {
   StorageImpl::turn_on();
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);

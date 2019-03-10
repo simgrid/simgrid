@@ -22,11 +22,11 @@ const char* PropertyHolder::get_property(const std::string& key)
 }
 
 /** @brief Change the value of a given key in the property set */
-void PropertyHolder::set_property(const std::string& key, std::string value)
+void PropertyHolder::set_property(const std::string& key, const std::string& value)
 {
   if (not properties_)
     properties_ = new std::unordered_map<std::string, std::string>;
-  (*properties_)[key] = std::move(value);
+  (*properties_)[key] = value;
 }
 
 /** @brief Return the whole set of properties. Don't mess with it, dude! */

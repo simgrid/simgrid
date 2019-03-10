@@ -16,8 +16,8 @@ namespace app {
 
 class Instance {
 public:
-  Instance(std::string name, int max_no_processes, MPI_Comm comm, simgrid::s4u::Barrier* finalization_barrier)
-      : name(std::move(name))
+  Instance(const std::string& name, int max_no_processes, MPI_Comm comm, simgrid::s4u::Barrier* finalization_barrier)
+      : name(name)
       , size(max_no_processes)
       , present_processes(0)
       , comm_world(comm)

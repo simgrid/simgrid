@@ -59,8 +59,8 @@ static std::vector<double>* netpoint_get_coords(NetPoint* np)
   return &coords->coords;
 }
 
-VivaldiZone::VivaldiZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel)
-    : ClusterZone(father, std::move(name), netmodel)
+VivaldiZone::VivaldiZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel)
+    : ClusterZone(father, name, netmodel)
 {
 }
 

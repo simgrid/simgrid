@@ -63,7 +63,7 @@ public:
  */
 class XBT_PUBLIC DragonflyZone : public ClusterZone {
 public:
-  explicit DragonflyZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel);
+  explicit DragonflyZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel);
   DragonflyZone(const DragonflyZone&) = delete;
   DragonflyZone& operator=(const DragonflyZone&) = delete;
   ~DragonflyZone() override;
@@ -77,7 +77,7 @@ public:
 private:
   void generate_routers();
   void generate_links();
-  void create_link(std::string id, int numlinks, resource::LinkImpl** linkup, resource::LinkImpl** linkdown);
+  void create_link(const std::string& id, int numlinks, resource::LinkImpl** linkup, resource::LinkImpl** linkdown);
 
   simgrid::s4u::Link::SharingPolicy sharing_policy_;
   double bw_  = 0;

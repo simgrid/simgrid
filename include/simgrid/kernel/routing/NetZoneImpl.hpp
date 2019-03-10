@@ -51,7 +51,7 @@ class XBT_PUBLIC NetZoneImpl {
   friend simgrid::kernel::EngineImpl; // it destroys netRoot_
 
 protected:
-  explicit NetZoneImpl(NetZoneImpl* father, std::string name, resource::NetworkModel* network_model);
+  explicit NetZoneImpl(NetZoneImpl* father, const std::string& name, resource::NetworkModel* network_model);
   NetZoneImpl(const NetZoneImpl&) = delete;
   NetZoneImpl& operator=(const NetZoneImpl&) = delete;
   virtual ~NetZoneImpl();

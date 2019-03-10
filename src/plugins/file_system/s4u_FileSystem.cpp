@@ -23,9 +23,9 @@ namespace s4u {
 simgrid::xbt::Extension<Storage, FileSystemStorageExt> FileSystemStorageExt::EXTENSION_ID;
 simgrid::xbt::Extension<Host, FileDescriptorHostExt> FileDescriptorHostExt::EXTENSION_ID;
 
-File::File(std::string fullpath, void* userdata) : File(std::move(fullpath), Host::current(), userdata){};
+File::File(const std::string& fullpath, void* userdata) : File(fullpath, Host::current(), userdata){};
 
-File::File(std::string fullpath, sg_host_t host, void* userdata) : fullpath_(std::move(fullpath)), userdata_(userdata)
+File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpath_(fullpath), userdata_(userdata)
 {
   // this cannot fail because we get a xbt_die if the mountpoint does not exist
   Storage* st                  = nullptr;

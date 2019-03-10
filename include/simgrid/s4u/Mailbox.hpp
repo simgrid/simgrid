@@ -125,7 +125,7 @@ public:
     return by_name(name);
   }
   /** @deprecated Mailbox::by_name() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::by_name()") static MailboxPtr byName(std::string name)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::by_name()") static MailboxPtr byName(const std::string& name)
   {
     return by_name(name);
   }

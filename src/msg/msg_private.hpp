@@ -28,19 +28,19 @@ class Task {
   double rate_     = -1;    /* Capping for network resource, or -1 for no capping*/
   bool is_used_    = false; /* Indicates whether the task is used in SIMIX currently */
 
-  explicit Task(std::string name, double flops_amount, double bytes_amount, void* data);
-  explicit Task(std::string name, std::vector<s4u::Host*>&& hosts, std::vector<double>&& flops_amount,
+  explicit Task(const std::string& name, double flops_amount, double bytes_amount, void* data);
+  explicit Task(const std::string& name, std::vector<s4u::Host*>&& hosts, std::vector<double>&& flops_amount,
                 std::vector<double>&& bytes_amount, void* data);
 
   void report_multiple_use() const;
 
 public:
-  static Task* create(std::string name, double flops_amount, double bytes_amount, void* data);
-  static Task* create_parallel(std::string name, int host_nb, const msg_host_t* host_list, double* flops_amount,
+  static Task* create(const std::string& name, double flops_amount, double bytes_amount, void* data);
+  static Task* create_parallel(const std::string& name, int host_nb, const msg_host_t* host_list, double* flops_amount,
                                double* bytes_amount, void* data);
   msg_error_t execute();
-  msg_error_t send(std::string alias, double timeout);
-  s4u::CommPtr send_async(std::string alias, void_f_pvoid_t cleanup, bool detached);
+  msg_error_t send(const std::string& alias, double timeout);
+  s4u::CommPtr send_async(const std::string& alias, void_f_pvoid_t cleanup, bool detached);
 
   void cancel();
 

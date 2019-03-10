@@ -26,7 +26,7 @@ class NetPoint : public simgrid::xbt::Extendable<NetPoint> {
 public:
   enum class Type { Host, Router, NetZone };
 
-  NetPoint(std::string name, NetPoint::Type component_type, NetZoneImpl* netzone_p);
+  NetPoint(const std::string& name, NetPoint::Type component_type, NetZoneImpl* netzone_p);
   ~NetPoint() = default;
 
   // Our rank in the vertices_ array of the netzone that contains us.

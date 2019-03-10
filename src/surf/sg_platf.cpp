@@ -91,15 +91,15 @@ void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
 }
 
 /** @brief Add a "router" to the network element list */
-simgrid::kernel::routing::NetPoint* sg_platf_new_router(std::string name, const char* coords)
+simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name, const char* coords)
 {
   if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
     current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::base;
   xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name),
              "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
 
-  simgrid::kernel::routing::NetPoint* netpoint = new simgrid::kernel::routing::NetPoint(
-      std::move(name), simgrid::kernel::routing::NetPoint::Type::Router, current_routing);
+  simgrid::kernel::routing::NetPoint* netpoint =
+      new simgrid::kernel::routing::NetPoint(name, simgrid::kernel::routing::NetPoint::Type::Router, current_routing);
   XBT_DEBUG("Router '%s' has the id %u", netpoint->get_cname(), netpoint->id());
 
   if (coords && strcmp(coords, ""))

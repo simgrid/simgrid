@@ -110,8 +110,9 @@ public:
 } // namespace simix
 } // namespace simgrid
 
-XBT_PUBLIC smx_actor_t simcall_process_create(std::string name, const simgrid::simix::ActorCode& code, void* data,
-                                              sg_host_t host, std::unordered_map<std::string, std::string>* properties);
+XBT_PUBLIC smx_actor_t simcall_process_create(const std::string& name, const simgrid::simix::ActorCode& code,
+                                              void* data, sg_host_t host,
+                                              std::unordered_map<std::string, std::string>* properties);
 
 XBT_PUBLIC smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback);
 

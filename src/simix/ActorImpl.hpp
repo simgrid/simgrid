@@ -34,7 +34,7 @@ class XBT_PUBLIC ActorImpl : public surf::PropertyHolder {
 
 public:
   xbt::string name_;
-  ActorImpl(xbt::string name, s4u::Host* host);
+  ActorImpl(const xbt::string& name, s4u::Host* host);
   ActorImpl(const ActorImpl&) = delete;
   ActorImpl& operator=(const ActorImpl&) = delete;
   ~ActorImpl();
@@ -106,12 +106,12 @@ public:
   s4u::ActorPtr iface() { return s4u::ActorPtr(&piface_); }
   s4u::Actor* ciface() { return &piface_; }
 
-  ActorImplPtr init(std::string name, s4u::Host* host);
+  ActorImplPtr init(const std::string& name, s4u::Host* host);
   ActorImpl* start(const simix::ActorCode& code);
 
-  static ActorImplPtr create(std::string name, const simix::ActorCode& code, void* data, s4u::Host* host,
+  static ActorImplPtr create(const std::string& name, const simix::ActorCode& code, void* data, s4u::Host* host,
                              std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor);
-  static ActorImplPtr attach(std::string name, void* data, s4u::Host* host,
+  static ActorImplPtr attach(const std::string& name, void* data, s4u::Host* host,
                              std::unordered_map<std::string, std::string>* properties);
   static void detach();
   void cleanup();
@@ -143,7 +143,7 @@ public:
   bool daemon_                                                             = false;
   ProcessArg()                                                             = default;
 
-  explicit ProcessArg(std::string name, const std::function<void()>& code, void* data, s4u::Host* host,
+  explicit ProcessArg(const std::string& name, const std::function<void()>& code, void* data, s4u::Host* host,
                       double kill_time, std::shared_ptr<std::unordered_map<std::string, std::string>> properties,
                       bool auto_restart)
       : name(name)

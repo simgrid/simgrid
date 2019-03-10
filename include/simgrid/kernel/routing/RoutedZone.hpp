@@ -50,7 +50,7 @@ namespace routing {
 
 class XBT_PRIVATE RoutedZone : public NetZoneImpl {
 public:
-  explicit RoutedZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel);
+  explicit RoutedZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel);
 
   void get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
                  std::map<std::string, xbt_edge_t>* edges) override;

@@ -173,7 +173,7 @@ protected:
   T args;
 
 public:
-  explicit ReplayAction(std::string name) : name(std::move(name)), my_proc_id(simgrid::s4u::this_actor::get_pid()) {}
+  explicit ReplayAction(const std::string& name) : name(name), my_proc_id(simgrid::s4u::this_actor::get_pid()) {}
   virtual ~ReplayAction() = default;
 
   void execute(simgrid::xbt::ReplayAction& action)
@@ -205,9 +205,7 @@ private:
   RequestStorage& req_storage;
 
 public:
-  explicit SendAction(std::string name, RequestStorage& storage) : ReplayAction(std::move(name)), req_storage(storage)
-  {
-  }
+  explicit SendAction(const std::string& name, RequestStorage& storage) : ReplayAction(name), req_storage(storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 
@@ -216,9 +214,7 @@ private:
   RequestStorage& req_storage;
 
 public:
-  explicit RecvAction(std::string name, RequestStorage& storage) : ReplayAction(std::move(name)), req_storage(storage)
-  {
-  }
+  explicit RecvAction(const std::string& name, RequestStorage& storage) : ReplayAction(name), req_storage(storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 
@@ -290,13 +286,13 @@ public:
 
 class GatherAction : public ReplayAction<GatherArgParser> {
 public:
-  explicit GatherAction(std::string name) : ReplayAction(std::move(name)) {}
+  explicit GatherAction(const std::string& name) : ReplayAction(name) {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 
 class GatherVAction : public ReplayAction<GatherVArgParser> {
 public:
-  explicit GatherVAction(std::string name) : ReplayAction(std::move(name)) {}
+  explicit GatherVAction(const std::string& name) : ReplayAction(name) {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 

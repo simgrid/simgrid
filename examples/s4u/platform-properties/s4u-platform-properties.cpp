@@ -11,7 +11,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Property test");
 
-static void test_host(std::string hostname)
+static void test_host(const std::string& hostname)
 {
   simgrid::s4u::Host* thehost = simgrid::s4u::Host::by_name(hostname);
   std::unordered_map<std::string, std::string>* props = thehost->get_properties();

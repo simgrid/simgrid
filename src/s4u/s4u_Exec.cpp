@@ -90,10 +90,10 @@ ExecPtr Exec::set_timeout(double timeout)
   return this;
 }
 
-ExecPtr Exec::set_name(std::string name)
+ExecPtr Exec::set_name(const std::string& name)
 {
   xbt_assert(state_ == State::INITED, "Cannot change the name of an exec after its start");
-  name_ = std::move(name);
+  name_ = name;
   return this;
 }
 
@@ -110,10 +110,10 @@ ExecPtr Exec::set_priority(double priority)
   return this;
 }
 
-ExecPtr Exec::set_tracing_category(std::string category)
+ExecPtr Exec::set_tracing_category(const std::string& category)
 {
   xbt_assert(state_ == State::INITED, "Cannot change the tracing category of an exec after its start");
-  tracing_category_ = std::move(category);
+  tracing_category_ = category;
   return this;
 }
 

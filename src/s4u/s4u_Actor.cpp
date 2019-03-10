@@ -39,11 +39,11 @@ ActorPtr Actor::self()
 
   return self_context->get_actor()->iface();
 }
-ActorPtr Actor::init(std::string name, s4u::Host* host)
+ActorPtr Actor::init(const std::string& name, s4u::Host* host)
 {
   smx_actor_t self = SIMIX_process_self();
   simgrid::kernel::actor::ActorImpl* actor =
-      simgrid::simix::simcall([self, name, host] { return self->init(std::move(name), host).get(); });
+      simgrid::simix::simcall([self, &name, host] { return self->init(name, host).get(); });
   return actor->ciface();
 }
 
@@ -53,17 +53,18 @@ ActorPtr Actor::start(const std::function<void()>& code)
   return this;
 }
 
-ActorPtr Actor::create(std::string name, s4u::Host* host, const std::function<void()>& code)
+ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::function<void()>& code)
 {
-  simgrid::kernel::actor::ActorImpl* actor = simcall_process_create(std::move(name), code, nullptr, host, nullptr);
+  simgrid::kernel::actor::ActorImpl* actor = simcall_process_create(name, code, nullptr, host, nullptr);
 
   return actor->iface();
 }
 
-ActorPtr Actor::create(std::string name, s4u::Host* host, const std::string& function, std::vector<std::string> args)
+ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::string& function,
+                       std::vector<std::string> args)
 {
   simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
-  return create(std::move(name), host, factory(std::move(args)));
+  return create(name, host, factory(std::move(args)));
 }
 
 void intrusive_ptr_add_ref(Actor* actor)
@@ -253,12 +254,12 @@ std::unordered_map<std::string, std::string>* Actor::get_properties()
 /** Retrieve the property value (or nullptr if not set) */
 const char* Actor::get_property(const std::string& key)
 {
-  return simgrid::simix::simcall([this, key] { return pimpl_->get_property(key); });
+  return simgrid::simix::simcall([this, &key] { return pimpl_->get_property(key); });
 }
 
-void Actor::set_property(const std::string& key, std::string value)
+void Actor::set_property(const std::string& key, const std::string& value)
 {
-  simgrid::simix::simcall([this, key, value] { pimpl_->set_property(key, std::move(value)); });
+  simgrid::simix::simcall([this, &key, &value] { pimpl_->set_property(key, value); });
 }
 
 Actor* Actor::restart()

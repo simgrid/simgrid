@@ -84,12 +84,12 @@ class LinkEvent : public PajeEvent {
   int size_ = -1;
 
 public:
-  LinkEvent(Container* container, Type* type, e_event_type event_type, Container* sourceContainer, std::string value,
-            std::string key, int size)
+  LinkEvent(Container* container, Type* type, e_event_type event_type, Container* sourceContainer,
+            const std::string& value, const std::string& key, int size)
       : PajeEvent(container, type, SIMIX_get_clock(), event_type)
       , endpoint_(sourceContainer)
-      , value_(std::move(value))
-      , key_(std::move(key))
+      , value_(value)
+      , key_(key)
       , size_(size)
   {
   }

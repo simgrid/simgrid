@@ -20,7 +20,7 @@ class Container {
   long long int id_;
   std::string name_; /* Unique name of this container */
 public:
-  Container(std::string name, const std::string& type_name, Container* father);
+  Container(const std::string& name, const std::string& type_name, Container* father);
   Container(const Container&) = delete;
   Container& operator=(const Container&) = delete;
   virtual ~Container();
@@ -42,18 +42,18 @@ public:
   StateType* get_state(const std::string& name);
   LinkType* get_link(const std::string& name);
   VariableType* get_variable(const std::string& name);
-  void create_child(std::string name, const std::string& type_name);
+  void create_child(const std::string& name, const std::string& type_name);
   static Container* get_root();
 };
 
 class NetZoneContainer : public Container {
 public:
-  NetZoneContainer(std::string name, unsigned int level, NetZoneContainer* father);
+  NetZoneContainer(const std::string& name, unsigned int level, NetZoneContainer* father);
 };
 
 class RouterContainer : public Container {
 public:
-  RouterContainer(std::string name, Container* father);
+  RouterContainer(const std::string& name, Container* father);
 };
 
 class HostContainer : public Container {

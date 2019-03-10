@@ -39,7 +39,7 @@ static int computation_fun(std::vector<std::string> argv)
   return 0;
 }
 
-static void run_test_process(std::string name, simgrid::s4u::Host *location, int size)
+static void run_test_process(const std::string& name, simgrid::s4u::Host* location, int size)
 {
   std::vector<std::string> arg = {std::to_string(size)};
   simgrid::s4u::Actor::create(std::move(name), location, computation_fun, arg);

@@ -65,7 +65,7 @@ extern template XBT_PUBLIC void set_value<bool>(const char* name, bool value);
 extern template XBT_PUBLIC void set_value<std::string>(const char* name, std::string value);
 
 XBT_PUBLIC void set_as_string(const char* name, const std::string& value);
-XBT_PUBLIC void set_parse(std::string options);
+XBT_PUBLIC void set_parse(const std::string& options);
 
 // Get config
 
@@ -86,16 +86,16 @@ extern template XBT_PUBLIC std::string const& get_value<std::string>(const std::
  *  @param callback    called with the option value
  */
 template <class T>
-XBT_PUBLIC void declare_flag(const std::string& name, std::string description, T value,
+XBT_PUBLIC void declare_flag(const std::string& name, const std::string& description, T value,
                              std::function<void(const T&)> callback = std::function<void(const T&)>());
 
-extern template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, int value,
+extern template XBT_PUBLIC void declare_flag(const std::string& name, const std::string& description, int value,
                                              std::function<void(int const&)> callback);
-extern template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, double value,
+extern template XBT_PUBLIC void declare_flag(const std::string& name, const std::string& description, double value,
                                              std::function<void(double const&)> callback);
-extern template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, bool value,
+extern template XBT_PUBLIC void declare_flag(const std::string& name, const std::string& description, bool value,
                                              std::function<void(bool const&)> callback);
-extern template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, std::string value,
+extern template XBT_PUBLIC void declare_flag(const std::string& name, const std::string& description, std::string value,
                                              std::function<void(std::string const&)> callback);
 
 // ***** alias *****

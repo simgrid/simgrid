@@ -24,7 +24,7 @@ public:
   ~PropertyHolder();
 
   const char* get_property(const std::string& key);
-  void set_property(const std::string& id, std::string value);
+  void set_property(const std::string& id, const std::string& value);
 
   /* FIXME: This should not be exposed, as users may do bad things with the map they got (it's not a copy).
    * But some user API expose this call so removing it is not so easy.

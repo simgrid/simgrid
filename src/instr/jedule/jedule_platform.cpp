@@ -24,7 +24,7 @@ Subset::Subset(int start_idx, int end_idx, Container* parent)
   nres=end_idx-start_idx+1;
 }
 
-Container::Container(std::string name) : name(std::move(name))
+Container::Container(const std::string& name) : name(name)
 {
   container_name2container.insert({this->name, this});
 }

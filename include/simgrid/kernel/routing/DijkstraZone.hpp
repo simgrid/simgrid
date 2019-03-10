@@ -24,7 +24,7 @@ namespace routing {
  */
 class XBT_PRIVATE DijkstraZone : public RoutedZone {
 public:
-  DijkstraZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel, bool cached);
+  DijkstraZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel, bool cached);
   DijkstraZone(const DijkstraZone&) = delete;
   DijkstraZone& operator=(const DijkstraZone&) = delete;
 

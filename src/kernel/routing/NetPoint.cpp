@@ -15,8 +15,8 @@ namespace routing {
 
 simgrid::xbt::signal<void(NetPoint*)> NetPoint::on_creation;
 
-NetPoint::NetPoint(std::string name, NetPoint::Type componentType, NetZoneImpl* netzone_p)
-    : name_(std::move(name)), component_type_(componentType), englobing_zone_(netzone_p)
+NetPoint::NetPoint(const std::string& name, NetPoint::Type componentType, NetZoneImpl* netzone_p)
+    : name_(name), component_type_(componentType), englobing_zone_(netzone_p)
 {
   if (netzone_p != nullptr)
     id_ = netzone_p->add_component(this);

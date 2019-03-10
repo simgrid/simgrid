@@ -17,7 +17,7 @@ namespace activity {
 class XBT_PUBLIC IoImpl : public ActivityImpl {
 public:
   ~IoImpl() override;
-  explicit IoImpl(std::string name, surf::StorageImpl* storage);
+  explicit IoImpl(const std::string& name, surf::StorageImpl* storage);
 
   IoImpl* start(sg_size_t size, simgrid::s4u::Io::OpType type);
   void post() override;

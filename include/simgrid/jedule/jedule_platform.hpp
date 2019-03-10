@@ -17,7 +17,7 @@ namespace simgrid {
 namespace jedule{
 class XBT_PUBLIC Container {
 public:
-  explicit Container(std::string name);
+  explicit Container(const std::string& name);
   Container(const Container&) = delete;
   Container& operator=(const Container&) = delete;
   virtual ~Container();

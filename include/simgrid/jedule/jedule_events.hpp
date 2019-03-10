@@ -19,7 +19,7 @@ namespace jedule{
 
 class XBT_PUBLIC Event {
 public:
-  Event(std::string name, double start_time, double end_time, std::string type);
+  Event(const std::string& name, double start_time, double end_time, const std::string& type);
   Event(const Event&) = delete;
   Event& operator=(const Event&) = delete;
   ~Event();

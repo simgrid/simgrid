@@ -55,8 +55,8 @@ public:
   StorageModel& operator=(const StorageModel&) = delete;
   ~StorageModel();
 
-  virtual StorageImpl* createStorage(std::string id, std::string type_id, std::string content_name,
-                                     std::string attach) = 0;
+  virtual StorageImpl* createStorage(const std::string& id, const std::string& type_id, const std::string& content_name,
+                                     const std::string& attach) = 0;
 };
 
 /************
@@ -70,7 +70,8 @@ class StorageImpl : public kernel::resource::Resource, public PropertyHolder {
 public:
   /** @brief Storage constructor */
   StorageImpl(kernel::resource::Model* model, const std::string& name, kernel::lmm::System* maxmin_system, double bread,
-              double bwrite, std::string type_id, std::string content_name, sg_size_t size, std::string attach);
+              double bwrite, const std::string& type_id, const std::string& content_name, sg_size_t size,
+              const std::string& attach);
   StorageImpl(const StorageImpl&) = delete;
   StorageImpl& operator=(const StorageImpl&) = delete;
 
@@ -172,15 +173,10 @@ public:
   std::unordered_map<std::string, std::string>* properties;
   std::unordered_map<std::string, std::string>* model_properties;
   sg_size_t size;
-  StorageType(std::string id, std::string model, std::string content,
+  StorageType(const std::string& id, const std::string& model, const std::string& content,
               std::unordered_map<std::string, std::string>* properties,
               std::unordered_map<std::string, std::string>* model_properties, sg_size_t size)
-      : id(std::move(id))
-      , model(std::move(model))
-      , content(std::move(content))
-      , properties(properties)
-      , model_properties(model_properties)
-      , size(size)
+      : id(id), model(model), content(content), properties(properties), model_properties(model_properties), size(size)
   {
   }
 };

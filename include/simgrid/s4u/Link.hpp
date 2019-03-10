@@ -94,7 +94,7 @@ public:
   void set_latency_profile(kernel::profile::Profile* profile);
 
   const char* get_property(const std::string& key);
-  void set_property(const std::string& key, std::string value);
+  void set_property(const std::string& key, const std::string& value);
 
   /* The signals */
   /** @brief Callback signal fired when a new Link is created */
@@ -143,7 +143,11 @@ public:
   /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_property()") const char* getProperty(const char* key) {return get_property(key);}
   /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::set_property()") void setProperty(std::string key, std::string value) {set_property(key, value);}
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::set_property()") void setProperty(const std::string& key,
+                                                                                 const std::string& value)
+  {
+    set_property(key, value);
+  }
 
   /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_data()") void* getData() {return get_data();}

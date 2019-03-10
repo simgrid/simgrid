@@ -26,8 +26,8 @@ public:
   std::vector<resource::LinkImpl*> links;
 };
 
-NetZoneImpl::NetZoneImpl(NetZoneImpl* father, std::string name, resource::NetworkModel* network_model)
-    : network_model_(network_model), piface_(this), father_(father), name_(std::move(name))
+NetZoneImpl::NetZoneImpl(NetZoneImpl* father, const std::string& name, resource::NetworkModel* network_model)
+    : network_model_(network_model), piface_(this), father_(father), name_(name)
 {
   xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name()),
              "Refusing to create a second NetZone called '%s'.", get_cname());

@@ -12,8 +12,8 @@ extern std::ofstream tracing_file;
 namespace simgrid {
 namespace instr {
 
-EntityValue::EntityValue(std::string name, std::string color, Type* father)
-    : id_(instr_new_paje_id()), name_(std::move(name)), color_(std::move(color)), father_(father){};
+EntityValue::EntityValue(const std::string& name, const std::string& color, Type* father)
+    : id_(instr_new_paje_id()), name_(name), color_(color), father_(father){};
 
 void EntityValue::print()
 {

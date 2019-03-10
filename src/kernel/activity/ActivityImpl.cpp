@@ -29,10 +29,10 @@ void ActivityImpl::resume()
   on_resumed(this);
 }
 
-void ActivityImpl::set_category(std::string category)
+void ActivityImpl::set_category(const std::string& category)
 {
   if (surf_action_)
-    surf_action_->set_category(std::move(category));
+    surf_action_->set_category(category);
 }
 
 // boost::intrusive_ptr<Activity> support:

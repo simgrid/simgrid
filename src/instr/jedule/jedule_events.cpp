@@ -12,8 +12,8 @@
 namespace simgrid{
 namespace jedule{
 
-Event::Event(std::string name, double start_time, double end_time, std::string type)
-    : name_(std::move(name)), start_time_(start_time), end_time_(end_time), type_(std::move(type))
+Event::Event(const std::string& name, double start_time, double end_time, const std::string& type)
+    : name_(name), start_time_(start_time), end_time_(end_time), type_(type)
 {
   this->resource_subsets_ = new std::vector<jed_subset_t>();
 }

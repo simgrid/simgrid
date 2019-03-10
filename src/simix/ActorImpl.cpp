@@ -52,7 +52,7 @@ namespace simgrid {
 namespace kernel {
 namespace actor {
 
-ActorImpl::ActorImpl(simgrid::xbt::string name, s4u::Host* host) : host_(host), name_(name), piface_(this)
+ActorImpl::ActorImpl(const simgrid::xbt::string& name, s4u::Host* host) : host_(host), name_(name), piface_(this)
 {
   pid_ = simix_process_maxpid++;
   simcall.issuer = this;
@@ -68,7 +68,7 @@ ActorImpl::~ActorImpl() = default;
  * In the future, it might be extended in order to attach other threads created by a third party library.
  */
 
-ActorImplPtr ActorImpl::attach(std::string name, void* data, s4u::Host* host,
+ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* host,
                                std::unordered_map<std::string, std::string>* properties)
 {
   // This is mostly a copy/paste from create(), it'd be nice to share some code between those two functions.
@@ -442,7 +442,7 @@ void ActorImpl::set_host(s4u::Host* dest)
   dest->pimpl_->process_list_.push_back(*this);
 }
 
-ActorImplPtr ActorImpl::init(std::string name, s4u::Host* host)
+ActorImplPtr ActorImpl::init(const std::string& name, s4u::Host* host)
 {
   ActorImpl* actor = new ActorImpl(simgrid::xbt::string(name), host);
   actor->set_ppid(this->pid_);
@@ -482,7 +482,7 @@ ActorImpl* ActorImpl::start(const simix::ActorCode& code)
   return this;
 }
 
-ActorImplPtr ActorImpl::create(std::string name, const simix::ActorCode& code, void* data, s4u::Host* host,
+ActorImplPtr ActorImpl::create(const std::string& name, const simix::ActorCode& code, void* data, s4u::Host* host,
                                std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor)
 {
   XBT_DEBUG("Start actor %s@'%s'", name.c_str(), host->get_cname());
@@ -726,12 +726,12 @@ void SIMIX_process_on_exit(smx_actor_t actor, const std::function<void(bool, voi
  * @param host where the new agent is executed.
  * @param properties the properties of the process
  */
-smx_actor_t simcall_process_create(std::string name, const simgrid::simix::ActorCode& code, void* data, sg_host_t host,
-                                   std::unordered_map<std::string, std::string>* properties)
+smx_actor_t simcall_process_create(const std::string& name, const simgrid::simix::ActorCode& code, void* data,
+                                   sg_host_t host, std::unordered_map<std::string, std::string>* properties)
 {
   smx_actor_t self = SIMIX_process_self();
-  return simgrid::simix::simcall([name, &code, data, host, properties, self] {
-    return simgrid::kernel::actor::ActorImpl::create(std::move(name), code, data, host, properties, self).get();
+  return simgrid::simix::simcall([&name, &code, data, host, properties, self] {
+    return simgrid::kernel::actor::ActorImpl::create(name, code, data, host, properties, self).get();
   });
 }
 

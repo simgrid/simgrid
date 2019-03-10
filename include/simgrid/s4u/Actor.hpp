@@ -168,17 +168,17 @@ public:
    *
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
-  static ActorPtr create(std::string name, s4u::Host* host, const std::function<void()>& code);
-  static ActorPtr init(std::string name, s4u::Host* host);
+  static ActorPtr create(const std::string& name, s4u::Host* host, const std::function<void()>& code);
+  static ActorPtr init(const std::string& name, s4u::Host* host);
   ActorPtr start(const std::function<void()>& code);
 
   /** Create an actor from a std::function
    *
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
-  template <class F> static ActorPtr create(std::string name, s4u::Host* host, F code)
+  template <class F> static ActorPtr create(const std::string& name, s4u::Host* host, F code)
   {
-    return create(std::move(name), host, std::function<void()>(std::move(code)));
+    return create(name, host, std::function<void()>(std::move(code)));
   }
 
   /** Create an actor using a callable thing and its arguments.
@@ -187,13 +187,14 @@ public:
   template <class F, class... Args,
             // This constructor is enabled only if the call code(args...) is valid:
             typename = typename std::result_of<F(Args...)>::type>
-  static ActorPtr create(std::string name, s4u::Host* host, F code, Args... args)
+  static ActorPtr create(const std::string& name, s4u::Host* host, F code, Args... args)
   {
-    return create(std::move(name), host, std::bind(std::move(code), std::move(args)...));
+    return create(name, host, std::bind(std::move(code), std::move(args)...));
   }
 
   // Create actor from function name:
-  static ActorPtr create(std::string name, s4u::Host* host, const std::string& function, std::vector<std::string> args);
+  static ActorPtr create(const std::string& name, s4u::Host* host, const std::string& function,
+                         std::vector<std::string> args);
 
   // ***** Methods *****
   /** This actor will be automatically terminated when the last non-daemon actor finishes **/
@@ -292,7 +293,7 @@ public:
   std::unordered_map<std::string, std::string>*
   get_properties(); // FIXME: do not export the map, but only the keys or something
   const char* get_property(const std::string& key);
-  void set_property(const std::string& key, std::string value);
+  void set_property(const std::string& key, const std::string& value);
 
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v325("Please use Actor::on_exit(fun) instead") void on_exit(

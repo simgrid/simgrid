@@ -27,7 +27,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_create, "The logging channel used in this
  *
  * Later, this actor class is instantiated within the simulation.
  */
-static void receiver(std::string mailbox_name)
+static void receiver(const std::string& mailbox_name)
 {
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
@@ -65,7 +65,7 @@ public:
   std::string mbox  = "mb42";
   std::string msg = "GaBuZoMeu";
   explicit Sender() = default; /* Sending the default message */
-  explicit Sender(std::string arg) : msg(arg) { /* Sending the specified message */}
+  explicit Sender(const std::string& arg) : msg(arg) { /* Sending the specified message */}
   explicit Sender(std::vector<std::string> args)
   {
     /* This constructor is used when we start the actor from the deployment file */

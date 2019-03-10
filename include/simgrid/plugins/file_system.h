@@ -88,8 +88,8 @@ namespace s4u {
  */
 class XBT_PUBLIC File {
 public:
-  File(std::string fullpath, void* userdata);
-  File(std::string fullpath, sg_host_t host, void* userdata);
+  File(const std::string& fullpath, void* userdata);
+  File(const std::string& fullpath, sg_host_t host, void* userdata);
   File(const File&) = delete;
   File& operator=(const File&) = delete;
   ~File();

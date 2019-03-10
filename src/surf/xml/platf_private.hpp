@@ -195,8 +195,8 @@ XBT_PUBLIC void sg_platf_new_link(simgrid::kernel::routing::LinkCreationArgs* li
 XBT_PUBLIC void sg_platf_new_peer(simgrid::kernel::routing::PeerCreationArgs* peer);          // Add a peer      to the current Zone
 XBT_PUBLIC void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* clust);   // Add a cluster   to the current Zone
 XBT_PUBLIC void sg_platf_new_cabinet(simgrid::kernel::routing::CabinetCreationArgs* cabinet); // Add a cabinet   to the current Zone
-XBT_PUBLIC simgrid::kernel::routing::NetPoint*                      // Add a router    to the current Zone
-    sg_platf_new_router(std::string, const char* coords);
+XBT_PUBLIC simgrid::kernel::routing::NetPoint* // Add a router    to the current Zone
+    sg_platf_new_router(const std::string&, const char* coords);
 
 XBT_PUBLIC void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route);             // Add a route
 XBT_PUBLIC void sg_platf_new_bypassRoute(simgrid::kernel::routing::RouteCreationArgs* bypassroute); // Add a bypassRoute

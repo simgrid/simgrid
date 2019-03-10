@@ -55,9 +55,9 @@ public:
   bool test() override;
 
   ExecPtr set_bound(double bound);
-  ExecPtr set_name(std::string name);
+  ExecPtr set_name(const std::string& name);
   ExecPtr set_priority(double priority);
-  ExecPtr set_tracing_category(std::string category);
+  ExecPtr set_tracing_category(const std::string& category);
   ExecPtr set_timeout(double timeout);
   Exec* cancel() override;
 

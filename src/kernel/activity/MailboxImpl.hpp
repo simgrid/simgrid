@@ -26,8 +26,8 @@ class MailboxImpl {
   friend s4u::MailboxPtr s4u::Mailbox::by_name(const std::string& name);
   friend mc::CommunicationDeterminismChecker;
 
-  explicit MailboxImpl(std::string name)
-      : piface_(this), name_(std::move(name)), comm_queue_(MAX_MAILBOX_SIZE), done_comm_queue_(MAX_MAILBOX_SIZE)
+  explicit MailboxImpl(const std::string& name)
+      : piface_(this), name_(name), comm_queue_(MAX_MAILBOX_SIZE), done_comm_queue_(MAX_MAILBOX_SIZE)
   {
   }
 

@@ -152,7 +152,7 @@ public:
    * Example:
    * e->set_config("host/model:ptask_L07");
    */
-  void set_config(std::string str);
+  void set_config(const std::string& str);
 
 private:
   simgrid::kernel::EngineImpl* const pimpl;
@@ -162,12 +162,12 @@ private:
 #ifndef DOXYGEN
 public:
   /** @deprecated See Engine::load_platform() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::load_platform()") void loadPlatform(std::string platf)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::load_platform()") void loadPlatform(const std::string& platf)
   {
     load_platform(platf);
   }
   /** @deprecated See Engine::register_function() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_function()") void registerFunction(std::string name,
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_function()") void registerFunction(const std::string& name,
                                                                                              int (*code)(int, char**))
   {
     register_function(name, code);
@@ -179,42 +179,44 @@ public:
   }
   /** @deprecated See Engine::register_actor() */
   template <class F>
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_actor()") void registerFunction(std::string name)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_actor()") void registerFunction(const std::string& name)
   {
     register_actor<F>(name);
   }
   /** @deprecated See Engine::register_actor() */
   template <class F>
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_actor()") void registerFunction(std::string name, F code)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_actor()") void registerFunction(const std::string& name,
+                                                                                          F code)
   {
     register_actor<F>(name, code);
   }
 
   /** @deprecated See Engine::load_deployment() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::load_deployment()") void loadDeployment(std::string deploy)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::load_deployment()") void loadDeployment(const std::string& deploy)
   {
     load_deployment(deploy);
   }
   /** @deprecated See Engine::host_by_name() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::host_by_name()") simgrid::s4u::Host* hostByName(std::string name)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::host_by_name()") simgrid::s4u::Host* hostByName(
+      const std::string& name)
   {
     return host_by_name(name);
   }
   /** @deprecated See Engine::host_by_name_or_null() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::host_by_name_or_null()") simgrid::s4u::Host* hostByNameOrNull(
-      std::string name)
+      const std::string& name)
   {
     return host_by_name_or_null(name);
   }
   /** @deprecated See Engine::storage_by_name() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::storage_by_name()") simgrid::s4u::Storage* storageByName(
-      std::string name)
+      const std::string& name)
   {
     return storage_by_name(name);
   }
   /** @deprecated See Engine::storage_by_name_or_null() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::storage_by_name_or_null()") simgrid::s4u::Storage* storageByNameOrNull(
-      std::string name)
+      const std::string& name)
   {
     return storage_by_name_or_null(name);
   }
@@ -244,7 +246,8 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_all_netpoints()") void getNetpointList(
       std::vector<simgrid::kernel::routing::NetPoint*>* list);
   /** @deprecated See Engine::netpoint_by_name_or_null() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::netpoint_by_name_or_null()") simgrid::kernel::routing::NetPoint* getNetpointByNameOrNull(std::string name)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::netpoint_by_name_or_null()")
+      simgrid::kernel::routing::NetPoint* getNetpointByNameOrNull(const std::string& name)
   {
     return netpoint_by_name_or_null(name);
   }
@@ -254,8 +257,8 @@ public:
     return get_netzone_root();
   }
   /** @deprecated See Engine::netzone_by_name_or_null() */
-  XBT_ATTRIB_DEPRECATED_v323(
-      "Please use Engine::netzone_by_name_or_null()") simgrid::s4u::NetZone* getNetzoneByNameOrNull(std::string name)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::netzone_by_name_or_null()")
+      simgrid::s4u::NetZone* getNetzoneByNameOrNull(const std::string& name)
   {
     return netzone_by_name_or_null(name);
   }
@@ -278,7 +281,10 @@ public:
     return is_initialized();
   }
   /** @deprecated See Engine::set_config() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::set_config()") void setConfig(std::string str) { set_config(str); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::set_config()") void setConfig(const std::string& str)
+  {
+    set_config(str);
+  }
 #endif
 };
 

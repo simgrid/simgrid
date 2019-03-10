@@ -23,7 +23,7 @@ namespace activity {
 class XBT_PUBLIC ActivityImpl {
 public:
   ActivityImpl() = default;
-  explicit ActivityImpl(std::string name) : name_(std::move(name)) {}
+  explicit ActivityImpl(const std::string& name) : name_(name) {}
   virtual ~ActivityImpl() = default;
   e_smx_state_t state_ = SIMIX_WAITING; /* State of the activity */
   std::list<smx_simcall_t> simcalls_;   /* List of simcalls waiting for this activity */
@@ -36,7 +36,7 @@ public:
   virtual void resume();
   virtual void post()   = 0; // What to do when a simcall terminates
   virtual void finish() = 0;
-  void set_category(std::string category);
+  void set_category(const std::string& category);
 
   // boost::intrusive_ptr<ActivityImpl> support:
   friend XBT_PUBLIC void intrusive_ptr_add_ref(ActivityImpl* activity);

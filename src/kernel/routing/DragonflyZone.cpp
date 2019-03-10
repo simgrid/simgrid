@@ -18,8 +18,8 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-DragonflyZone::DragonflyZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel)
-    : ClusterZone(father, std::move(name), netmodel)
+DragonflyZone::DragonflyZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel)
+    : ClusterZone(father, name, netmodel)
 {
 }
 
@@ -160,7 +160,7 @@ void DragonflyZone::generate_routers()
   }
 }
 
-void DragonflyZone::create_link(std::string id, int numlinks, resource::LinkImpl** linkup,
+void DragonflyZone::create_link(const std::string& id, int numlinks, resource::LinkImpl** linkup,
                                 resource::LinkImpl** linkdown)
 {
   *linkup   = nullptr;

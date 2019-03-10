@@ -40,7 +40,7 @@ class XBT_PUBLIC Host : public simgrid::xbt::Extendable<Host> {
   friend simgrid::vm::VirtualMachineImpl; // creates the the pimpl_cpu
 
 public:
-  explicit Host(std::string name);
+  explicit Host(const std::string& name);
 
   /** Host destruction logic */
 protected:
@@ -98,7 +98,7 @@ public:
   XBT_ATTRIB_DEPRECATED_v325("Please use !is_on()") bool is_off() const { return not is_on(); }
 
   const char* get_property(const std::string& key) const;
-  void set_property(const std::string& key, std::string value);
+  void set_property(const std::string& key, const std::string& value);
   std::unordered_map<std::string, std::string>* get_properties();
 
   void set_state_profile(kernel::profile::Profile* p);
@@ -195,7 +195,8 @@ public:
     return get_property(key);
   }
   /** @deprecated See Host::set_property() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::set_property()") void setProperty(std::string key, std::string value)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::set_property()") void setProperty(const std::string& key,
+                                                                                 const std::string& value)
   {
     set_property(key, value);
   }

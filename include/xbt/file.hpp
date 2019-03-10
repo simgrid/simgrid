@@ -19,7 +19,7 @@ public:
   /** Build a path from the provided parameter */
   explicit Path(const char* path): path_(path) {}
   /** Build a path from the provided parameter */
-  explicit Path(std::string path): path_(std::move(path)) {}
+  explicit Path(const std::string& path) : path_(path) {}
 
   /** @brief Returns the full path name */
   const std::string& get_name() const { return path_; }

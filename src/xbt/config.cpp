@@ -143,9 +143,9 @@ public:
   /* Callback */
   xbt_cfg_cb_t old_callback = nullptr;
 
-  ConfigurationElement(std::string key, std::string desc) : key(std::move(key)), desc(std::move(desc)) {}
-  ConfigurationElement(std::string key, std::string desc, xbt_cfg_cb_t cb)
-      : key(std::move(key)), desc(std::move(desc)), old_callback(cb)
+  ConfigurationElement(const std::string& key, const std::string& desc) : key(key), desc(desc) {}
+  ConfigurationElement(const std::string& key, const std::string& desc, xbt_cfg_cb_t cb)
+      : key(key), desc(desc), old_callback(cb)
   {
   }
 
@@ -184,14 +184,14 @@ private:
   std::function<void(T&)> callback;
 
 public:
-  TypedConfigurationElement(std::string key, std::string desc, T value = T())
-      : ConfigurationElement(std::move(key), std::move(desc)), content(std::move(value))
+  TypedConfigurationElement(const std::string& key, const std::string& desc, T value = T())
+      : ConfigurationElement(key, desc), content(std::move(value))
   {}
-  TypedConfigurationElement(std::string key, std::string desc, T value, xbt_cfg_cb_t cb)
-      : ConfigurationElement(std::move(key), std::move(desc), cb), content(std::move(value))
+  TypedConfigurationElement(const std::string& key, const std::string& desc, T value, xbt_cfg_cb_t cb)
+      : ConfigurationElement(key, desc, cb), content(std::move(value))
   {}
-  TypedConfigurationElement(std::string key, std::string desc, T value, std::function<void(T&)> callback)
-      : ConfigurationElement(std::move(key), std::move(desc)), content(std::move(value)), callback(std::move(callback))
+  TypedConfigurationElement(const std::string& key, const std::string& desc, T value, std::function<void(T&)> callback)
+      : ConfigurationElement(key, desc), content(std::move(value)), callback(std::move(callback))
   {}
   ~TypedConfigurationElement() = default;
 
@@ -403,8 +403,9 @@ void set_as_string(const char* name, const std::string& value)
   (*simgrid_config)[name].set_string_value(value.c_str());
 }
 
-void set_parse(std::string options)
+void set_parse(const std::string& opt)
 {
+  std::string options(opt);
   XBT_DEBUG("List to parse and set:'%s'", options.c_str());
   while (not options.empty()) {
     XBT_DEBUG("Still to parse and set: '%s'", options.c_str());
@@ -459,21 +460,21 @@ void alias(const char* realname, std::initializer_list<const char*> aliases)
 // ***** declare_flag *****
 
 template <class T>
-XBT_PUBLIC void declare_flag(const std::string& name, std::string description, T value,
+XBT_PUBLIC void declare_flag(const std::string& name, const std::string& description, T value,
                              std::function<void(const T&)> callback)
 {
   if (simgrid_config == nullptr)
     simgrid_config = new simgrid::config::Config();
-  simgrid_config->register_option<T>(name, std::move(description), std::move(value), std::move(callback));
+  simgrid_config->register_option<T>(name, description, std::move(value), std::move(callback));
 }
 
-template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, int value,
+template XBT_PUBLIC void declare_flag(const std::string& name, const std::string& description, int value,
                                       std::function<void(int const&)> callback);
-template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, double value,
+template XBT_PUBLIC void declare_flag(const std::string& name, const std::string& description, double value,
                                       std::function<void(double const&)> callback);
-template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, bool value,
+template XBT_PUBLIC void declare_flag(const std::string& name, const std::string& description, bool value,
                                       std::function<void(bool const&)> callback);
-template XBT_PUBLIC void declare_flag(const std::string& name, std::string description, std::string value,
+template XBT_PUBLIC void declare_flag(const std::string& name, const std::string& description, std::string value,
                                       std::function<void(std::string const&)> callback);
 
 void finalize()

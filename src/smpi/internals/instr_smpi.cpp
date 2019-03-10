@@ -77,8 +77,9 @@ static std::map<std::string, std::string> smpi_colors = {{"recv", "1 0 0"},
   {"win_flush_local_all", "1 0 0.3"}
 };
 
-static const char* instr_find_color(std::string state)
+static const char* instr_find_color(const char* c_state)
 {
+  std::string state(c_state);
   boost::algorithm::to_lower(state);
   if (state.substr(0, 5) == "pmpi_")
     state = state.substr(5, std::string::npos); // Remove pmpi_ to allow for exact matches
@@ -135,7 +136,7 @@ static std::string TRACE_smpi_get_key(int src, int dst, int tag, int send)
 
 static std::unordered_map<smx_actor_t, std::string> process_category;
 
-void TRACE_internal_smpi_set_category(std::string category)
+void TRACE_internal_smpi_set_category(const std::string& category)
 {
   if (not TRACE_smpi_is_enabled())
     return;
@@ -144,7 +145,7 @@ void TRACE_internal_smpi_set_category(std::string category)
   TRACE_category(category.c_str());
 
   if (not category.empty())
-    process_category[SIMIX_process_self()] = std::move(category);
+    process_category[SIMIX_process_self()] = category;
 }
 
 std::string TRACE_internal_smpi_get_category()

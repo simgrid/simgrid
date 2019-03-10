@@ -15,14 +15,14 @@ static std::set<std::string> platform_variables;
 namespace simgrid {
 namespace instr {
 
-Type::Type(std::string name, std::string alias, std::string color, Type* father)
-    : id_(instr_new_paje_id()), name_(std::move(name)), color_(std::move(color)), father_(father)
+Type::Type(const std::string& name, const std::string& alias, const std::string& color, Type* father)
+    : id_(instr_new_paje_id()), name_(name), color_(color), father_(father)
 {
   if (name_.empty() || alias.empty())
     THROWF(tracing_error, 0, "can't create a new type with no name or alias");
 
   if (father != nullptr){
-    father->children_.insert({std::move(alias), this});
+    father->children_.insert({alias, this});
     XBT_DEBUG("new type %s, child of %s", get_cname(), father->get_cname());
   }
   if (trace_format == simgrid::instr::TraceFormat::Paje) {
@@ -48,13 +48,13 @@ ContainerType::ContainerType(const std::string& name, Type* father) : Type(name,
   log_definition(PAJE_DefineContainerType);
 }
 
-EventType::EventType(std::string name, Type* father) : ValueType(std::move(name), father)
+EventType::EventType(const std::string& name, Type* father) : ValueType(name, father)
 {
   XBT_DEBUG("EventType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
   log_definition(PAJE_DefineEventType);
 }
 
-StateType::StateType(std::string name, Type* father) : ValueType(std::move(name), father)
+StateType::StateType(const std::string& name, Type* father) : ValueType(name, father)
 {
   XBT_DEBUG("StateType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
   log_definition(PAJE_DefineStateType);
@@ -90,8 +90,8 @@ void StateType::pop_event(TIData* extra)
   events_.push_back(new StateEvent(issuer_, this, PAJE_PopState, nullptr, extra));
 }
 
-VariableType::VariableType(const std::string& name, std::string color, Type* father)
-    : Type(name, name, std::move(color), father)
+VariableType::VariableType(const std::string& name, const std::string& color, Type* father)
+    : Type(name, name, color, father)
 {
   XBT_DEBUG("VariableType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
   log_definition(PAJE_DefineVariableType);
@@ -137,23 +137,22 @@ void VariableType::sub_event(double timestamp, double value)
   events_.push_back(new VariableEvent(timestamp, issuer_, this, PAJE_SubVariable, value));
 }
 
-LinkType::LinkType(std::string name, std::string alias, Type* father)
-    : ValueType(std::move(name), std::move(alias), father)
+LinkType::LinkType(const std::string& name, const std::string& alias, Type* father) : ValueType(name, alias, father)
 {
 }
-void LinkType::start_event(Container* startContainer, std::string value, std::string key)
+void LinkType::start_event(Container* startContainer, const std::string& value, const std::string& key)
 {
-  start_event(startContainer, value, std::move(key), -1);
-}
-
-void LinkType::start_event(Container* startContainer, std::string value, std::string key, int size)
-{
-  new LinkEvent(issuer_, this, PAJE_StartLink, startContainer, value, std::move(key), size);
+  start_event(startContainer, value, key, -1);
 }
 
-void LinkType::end_event(Container* endContainer, std::string value, std::string key)
+void LinkType::start_event(Container* startContainer, const std::string& value, const std::string& key, int size)
 {
-  new LinkEvent(issuer_, this, PAJE_EndLink, endContainer, value, std::move(key), -1);
+  new LinkEvent(issuer_, this, PAJE_StartLink, startContainer, value, key, size);
+}
+
+void LinkType::end_event(Container* endContainer, const std::string& value, const std::string& key)
+{
+  new LinkEvent(issuer_, this, PAJE_EndLink, endContainer, value, key, -1);
 }
 
 void Type::log_definition(e_event_type event_type)
@@ -201,14 +200,14 @@ void ValueType::add_entity_value(const std::string& name)
   add_entity_value(name, "");
 }
 
-void ValueType::add_entity_value(const std::string& name, std::string color)
+void ValueType::add_entity_value(const std::string& name, const std::string& color)
 {
   if (name.empty())
     THROWF(tracing_error, 0, "can't get a value with no name");
 
   auto it = values_.find(name);
   if (it == values_.end()) {
-    EntityValue* new_val = new EntityValue(name, std::move(color), this);
+    EntityValue* new_val = new EntityValue(name, color, this);
     values_.insert({name, new_val});
     XBT_DEBUG("new value %s, child of %s", name.c_str(), get_cname());
     new_val->print();
@@ -224,12 +223,11 @@ EntityValue* ValueType::get_entity_value(const std::string& name)
   return ret->second;
 }
 
-VariableType* Type::by_name_or_create(const std::string& name, std::string color)
+VariableType* Type::by_name_or_create(const std::string& name, const std::string& color)
 {
   auto cont = children_.find(name);
-  std::string mycolor = color.empty() ? "1 1 1" : std::move(color);
-  return cont == children_.end() ? new VariableType(name, std::move(mycolor), this)
-                                 : static_cast<VariableType*>(cont->second);
+  std::string mycolor = color.empty() ? "1 1 1" : color;
+  return cont == children_.end() ? new VariableType(name, mycolor, this) : static_cast<VariableType*>(cont->second);
 }
 
 LinkType* Type::by_name_or_create(const std::string& name, Type* source, Type* dest)

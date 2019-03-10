@@ -375,9 +375,9 @@ bool Engine::is_initialized()
 {
   return Engine::instance_ != nullptr;
 }
-void Engine::set_config(std::string str)
+void Engine::set_config(const std::string& str)
 {
-  simgrid::config::set_parse(std::move(str));
+  simgrid::config::set_parse(str);
 }
 } // namespace s4u
 } // namespace simgrid

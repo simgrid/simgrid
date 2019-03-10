@@ -27,7 +27,7 @@ public:
   Container* issuer_ = nullptr;
   std::stringstream stream_;
 
-  Type(std::string name, std::string alias, std::string color, Type* father);
+  Type(const std::string& name, const std::string& alias, const std::string& color, Type* father);
   virtual ~Type();
 
   const std::string& get_name() const { return name_; }
@@ -37,7 +37,7 @@ public:
 
   Type* by_name(const std::string& name);
   LinkType* by_name_or_create(const std::string& name, Type* source, Type* dest);
-  VariableType* by_name_or_create(const std::string& name, std::string color);
+  VariableType* by_name_or_create(const std::string& name, const std::string& color);
 
   template <class T> T* by_name_or_create(const std::string& name)
   {
@@ -60,7 +60,7 @@ public:
 class VariableType : public Type {
   std::vector<VariableEvent*> events_;
 public:
-  VariableType(const std::string& name, std::string color, Type* father);
+  VariableType(const std::string& name, const std::string& color, Type* father);
   ~VariableType();
   void instr_event(double now, double delta, const char* resource, double value);
   void set_event(double timestamp, double value);
@@ -71,31 +71,31 @@ public:
 class ValueType : public Type {
 public:
   std::map<std::string, EntityValue*> values_;
-  ValueType(std::string name, std::string alias, Type* father) : Type(std::move(name), std::move(alias), "", father){};
+  ValueType(const std::string& name, const std::string& alias, Type* father) : Type(name, alias, "", father){};
   ValueType(const std::string& name, Type* father) : Type(name, name, "", father){};
   virtual ~ValueType();
-  void add_entity_value(const std::string& name, std::string color);
+  void add_entity_value(const std::string& name, const std::string& color);
   void add_entity_value(const std::string& name);
   EntityValue* get_entity_value(const std::string& name);
 };
 
 class LinkType : public ValueType {
 public:
-  LinkType(std::string name, std::string alias, Type* father);
-  void start_event(Container* startContainer, std::string value, std::string key);
-  void start_event(Container* startContainer, std::string value, std::string key, int size);
-  void end_event(Container* endContainer, std::string value, std::string key);
+  LinkType(const std::string& name, const std::string& alias, Type* father);
+  void start_event(Container* startContainer, const std::string& value, const std::string& key);
+  void start_event(Container* startContainer, const std::string& value, const std::string& key, int size);
+  void end_event(Container* endContainer, const std::string& value, const std::string& key);
 };
 
 class EventType : public ValueType {
 public:
-  EventType(std::string name, Type* father);
+  EventType(const std::string& name, Type* father);
 };
 
 class StateType : public ValueType {
   std::vector<StateEvent*> events_;
 public:
-  StateType(std::string name, Type* father);
+  StateType(const std::string& name, Type* father);
   ~StateType();
   void set_event(const std::string& value_name);
   void push_event(const std::string& value_name);

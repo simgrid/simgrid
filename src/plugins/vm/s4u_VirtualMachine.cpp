@@ -23,13 +23,13 @@ simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_resume;
 simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_migration_start;
 simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_migration_end;
 
-VirtualMachine::VirtualMachine(std::string name, s4u::Host* physical_host, int core_amount)
-    : VirtualMachine(std::move(name), physical_host, core_amount, 1024)
+VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host, int core_amount)
+    : VirtualMachine(name, physical_host, core_amount, 1024)
 {
 }
 
-VirtualMachine::VirtualMachine(std::string name, s4u::Host* physical_host, int core_amount, size_t ramsize)
-    : Host(std::move(name)), pimpl_vm_(new vm::VirtualMachineImpl(this, physical_host, core_amount, ramsize))
+VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host, int core_amount, size_t ramsize)
+    : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, physical_host, core_amount, ramsize))
 {
   // xbt_assert(s4u::Host::by_name(name) == nullptr,
   //           "Cannot create a VM named %s: this name is already used by a host or a VM", get_cname());

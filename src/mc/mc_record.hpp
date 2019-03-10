@@ -35,7 +35,7 @@ XBT_PRIVATE std::string traceToString(simgrid::mc::RecordTrace const& trace);
 XBT_PRIVATE void dumpRecordPath();
 
 XBT_PRIVATE void replay(RecordTrace const& trace);
-XBT_PRIVATE void replay(std::string trace);
+XBT_PRIVATE void replay(const std::string& trace);
 }
 }
 

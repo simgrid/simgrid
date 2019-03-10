@@ -19,7 +19,7 @@ class EntityValue {
   Type* father_;
 
 public:
-  explicit EntityValue(std::string name, std::string color, Type* father);
+  explicit EntityValue(const std::string& name, const std::string& color, Type* father);
   ~EntityValue() = default;
   const char* get_cname() { return name_.c_str(); }
   long long int get_id() { return id_; }

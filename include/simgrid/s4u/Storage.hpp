@@ -31,7 +31,7 @@ class XBT_PUBLIC Storage : public simgrid::xbt::Extendable<Storage> {
   friend simgrid::surf::StorageImpl;
 
 public:
-  explicit Storage(std::string name, surf::StorageImpl * pimpl);
+  explicit Storage(const std::string& name, surf::StorageImpl* pimpl);
 
 protected:
   virtual ~Storage() = default;
@@ -58,7 +58,7 @@ public:
 
   std::unordered_map<std::string, std::string>* get_properties();
   const char* get_property(const std::string& key);
-  void set_property(const std::string&, std::string value);
+  void set_property(const std::string&, const std::string& value);
 
   void set_data(void* data) { userdata_ = data; }
   void* get_data() { return userdata_; }
@@ -75,7 +75,7 @@ public:
   // Deprecated functions
 #ifndef DOXYGEN
   /** @deprecated Storage::by_name() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::by_name()") Storage* byName(std::string name)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::by_name()") Storage* byName(const std::string& name)
   {
     return by_name(name);
   }
@@ -102,7 +102,8 @@ public:
     return get_property(key);
   }
   /** @deprecated Storage::set_property() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::set_property()") void setProperty(std::string key, std::string value)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::set_property()") void setProperty(const std::string& key,
+                                                                                    const std::string& value)
   {
     set_property(key, value);
   }

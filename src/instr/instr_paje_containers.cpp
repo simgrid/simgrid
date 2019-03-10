@@ -32,8 +32,8 @@ container_t Container::get_root()
   return rootContainer;
 }
 
-NetZoneContainer::NetZoneContainer(std::string name, unsigned int level, NetZoneContainer* father)
-    : Container::Container(std::move(name), "", father)
+NetZoneContainer::NetZoneContainer(const std::string& name, unsigned int level, NetZoneContainer* father)
+    : Container::Container(name, "", father)
 {
   netpoint_ = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name());
   xbt_assert(netpoint_, "Element '%s' not found", get_cname());
@@ -48,8 +48,8 @@ NetZoneContainer::NetZoneContainer(std::string name, unsigned int level, NetZone
   }
 }
 
-RouterContainer::RouterContainer(std::string name, Container* father)
-    : Container::Container(std::move(name), "ROUTER", father)
+RouterContainer::RouterContainer(const std::string& name, Container* father)
+    : Container::Container(name, "ROUTER", father)
 {
   xbt_assert(father, "Only the Root container has no father");
 
@@ -70,8 +70,8 @@ HostContainer::HostContainer(simgrid::s4u::Host& host, NetZoneContainer* father)
   trivaNodeTypes.insert(type_->get_name());
 }
 
-Container::Container(std::string name, const std::string& type_name, Container* father)
-    : name_(std::move(name)), father_(father)
+Container::Container(const std::string& name, const std::string& type_name, Container* father)
+    : name_(name), father_(father)
 {
   static long long int container_id = 0;
   id_                               = container_id; // id (or alias) of the container
@@ -117,9 +117,9 @@ Container::~Container()
   allContainers.erase(name_);
 }
 
-void Container::create_child(std::string name, const std::string& type_name)
+void Container::create_child(const std::string& name, const std::string& type_name)
 {
-  new Container(std::move(name), type_name, this);
+  new Container(name, type_name, this);
 }
 
 Container* Container::by_name_or_null(const std::string& name)

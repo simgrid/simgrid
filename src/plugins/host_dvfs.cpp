@@ -26,19 +26,21 @@ static simgrid::config::Flag<double> cfg_sampling_rate("plugin/dvfs/sampling-rat
     [](double val){if (val != 0.1) sg_host_dvfs_plugin_init();});
 
 static simgrid::config::Flag<std::string> cfg_governor("plugin/dvfs/governor",
-    "Which Governor should be used that adapts the CPU frequency?", "performance",
+                                                       "Which Governor should be used that adapts the CPU frequency?",
+                                                       "performance",
 
-    std::map<std::string, std::string>({
+                                                       std::map<std::string, std::string>({
 #if HAVE_SMPI
-        {"adagio", "TODO: Doc"},
+                                                         {"adagio", "TODO: Doc"},
 #endif
-        {"conservative", "TODO: Doc"},
-        {"ondemand", "TODO: Doc"},
-        {"performance", "TODO: Doc"},
-        {"powersave", "TODO: Doc"},
-    }),
+                                                             {"conservative", "TODO: Doc"}, {"ondemand", "TODO: Doc"},
+                                                             {"performance", "TODO: Doc"}, {"powersave", "TODO: Doc"},
+                                                       }),
 
-    [](std::string val) { if (val != "performance") sg_host_dvfs_plugin_init(); });
+                                                       [](const std::string& val) {
+                                                         if (val != "performance")
+                                                           sg_host_dvfs_plugin_init();
+                                                       });
 
 static simgrid::config::Flag<int>
     cfg_min_pstate("plugin/dvfs/min-pstate", {"plugin/dvfs/min_pstate"},

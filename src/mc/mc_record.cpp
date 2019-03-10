@@ -48,7 +48,7 @@ void replay(RecordTrace const& trace)
   }
 }
 
-void replay(std::string path_string)
+void replay(const std::string& path_string)
 {
   simgrid::mc::processes_time.resize(SIMIX_process_get_maxpid());
   simgrid::mc::RecordTrace trace = simgrid::mc::parseRecordTrace(path_string.c_str());

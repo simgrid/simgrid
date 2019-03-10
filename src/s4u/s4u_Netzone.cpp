@@ -37,9 +37,9 @@ const char* NetZone::get_property(const std::string& key)
 {
   return properties_.at(key).c_str();
 }
-void NetZone::set_property(const std::string& key, std::string value)
+void NetZone::set_property(const std::string& key, const std::string& value)
 {
-  simgrid::simix::simcall([this, key, value] { properties_[key] = std::move(value); });
+  simgrid::simix::simcall([this, &key, &value] { properties_[key] = value; });
 }
 
 /** @brief Returns the list of direct children (no grand-children) */
