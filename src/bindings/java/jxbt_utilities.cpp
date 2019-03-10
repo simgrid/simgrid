@@ -6,6 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "jxbt_utilities.hpp"
+#include "xbt/string.hpp"
 #include "xbt/sysdep.h"
 
 #include <cstdlib> /* abort */
@@ -162,7 +163,7 @@ void jxbt_throw_jni(JNIEnv* env, const std::string& msg)
 void jxbt_throw_notbound(JNIEnv* env, const std::string& kind, void* pointer)
 {
   jxbt_throw_by_name(env, "org/simgrid/msg/JniException",
-                     "Internal error: " + kind + " " + static_cast<const char*>(pointer) + " not bound");
+                     simgrid::xbt::string_printf("Internal error: %s %p not bound", kind.c_str(), pointer));
 }
 
 void jxbt_throw_null(JNIEnv* env, const std::string& msg)
