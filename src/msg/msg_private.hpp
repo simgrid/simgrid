@@ -29,8 +29,8 @@ class Task {
   bool is_used_    = false; /* Indicates whether the task is used in SIMIX currently */
 
   explicit Task(std::string name, double flops_amount, double bytes_amount, void* data);
-  explicit Task(std::string name, std::vector<s4u::Host*> hosts, std::vector<double> flops_amount,
-                std::vector<double> bytes_amount, void* data);
+  explicit Task(std::string name, std::vector<s4u::Host*>&& hosts, std::vector<double>&& flops_amount,
+                std::vector<double>&& bytes_amount, void* data);
 
   void report_multiple_use() const;
 

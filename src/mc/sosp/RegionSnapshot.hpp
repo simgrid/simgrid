@@ -205,7 +205,7 @@ public:
   const Buffer& flat_data() const { return flat_data_; }
   Buffer& flat_data() { return flat_data_; }
 
-  void page_data(ChunkedData page_data)
+  void page_data(ChunkedData&& page_data)
   {
     storage_type_ = StorageType::Chunked;
     flat_data_.clear();

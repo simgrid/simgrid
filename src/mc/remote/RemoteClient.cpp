@@ -628,7 +628,7 @@ void RemoteClient::dumpStack()
     return;
   }
 
-  simgrid::mc::dumpStack(stderr, cursor);
+  simgrid::mc::dumpStack(stderr, std::move(cursor));
 
   _UPT_destroy(context);
   unw_destroy_addr_space(as);

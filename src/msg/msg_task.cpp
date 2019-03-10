@@ -27,8 +27,8 @@ Task::Task(std::string name, double flops_amount, double bytes_amount, void* dat
     MC_ignore_heap(&(id_), sizeof(id_));
 }
 
-Task::Task(std::string name, std::vector<s4u::Host*> hosts, std::vector<double> flops_amount,
-           std::vector<double> bytes_amount, void* data)
+Task::Task(std::string name, std::vector<s4u::Host*>&& hosts, std::vector<double>&& flops_amount,
+           std::vector<double>&& bytes_amount, void* data)
     : Task(std::move(name), 1.0, 0, data)
 {
   parallel_             = true;

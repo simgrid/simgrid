@@ -122,7 +122,7 @@ void MC_automaton_load(const char *file)
 namespace simgrid {
 namespace mc {
 
-void dumpStack(FILE* file, unw_cursor_t cursor)
+void dumpStack(FILE* file, unw_cursor_t&& cursor)
 {
   int nframe = 0;
   char buffer[100];
@@ -165,7 +165,7 @@ static void MC_dump_stacks(FILE* file)
     context.initialize(&mc_model_checker->process(), &raw_context);
 
     unw_cursor_t cursor = context.cursor();
-    simgrid::mc::dumpStack(file, cursor);
+    simgrid::mc::dumpStack(file, std::move(cursor));
   }
 }
 #endif
