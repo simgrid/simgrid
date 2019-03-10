@@ -107,12 +107,13 @@ void StateEvent::print()
     /* Unimplemented calls are: WAITANY, SENDRECV, SCAN, EXSCAN, SSEND, and ISSEND. */
 
     // FIXME: dirty extract "rank-" from the name, as we want the bare process id here
-    if (get_container()->get_name().find("rank-") != 0)
+    if (get_container()->get_name().find("rank-") != 0) {
       stream_ << get_container()->get_name() << " " << extra_->print();
-    else
+    } else {
       /* Subtract -1 because this is the process id and we transform it to the rank id */
-      stream_ << stoi(get_container()->get_name().erase(0, 5)) - 1 << " " << extra_->print();
-
+      std::string container_name(get_container()->get_name());
+      stream_ << stoi(container_name.erase(0, 5)) - 1 << " " << extra_->print();
+    }
     *tracing_files.at(get_container()) << stream_.str() << std::endl;
   } else {
     THROW_IMPOSSIBLE;

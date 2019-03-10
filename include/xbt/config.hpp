@@ -278,7 +278,7 @@ public:
   T& get() { return value_; }
   T const& get() const { return value_; }
 
-  std::string get_name() const { return name_; }
+  const std::string& get_name() const { return name_; }
   // Implicit conversion to the underlying type:
   operator T&() { return value_; }
   operator T const&() const{ return value_; }

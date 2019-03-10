@@ -95,7 +95,7 @@ public:
 
   virtual ~TIData() {}
 
-  std::string getName() { return name_; }
+  const std::string& getName() const { return name_; }
   double getAmount() { return amount_; }
   virtual std::string print()        = 0;
   virtual std::string display_size() = 0;

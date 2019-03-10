@@ -22,7 +22,7 @@ public:
   explicit Path(std::string path): path_(std::move(path)) {}
 
   /** @brief Returns the full path name */
-  std::string get_name() { return path_; }
+  const std::string& get_name() const { return path_; }
   /** @brief Returns the directory component of a path (reimplementation of POSIX dirname) */
   std::string get_dir_name();
   /** @brief Returns the file component of a path (reimplementation of POSIX basename) */

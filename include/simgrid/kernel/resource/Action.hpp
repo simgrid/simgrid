@@ -180,7 +180,7 @@ public:
   virtual void set_max_duration(double duration);
 
   /** @brief Get the tracing category associated to the current action */
-  std::string get_category() const { return category_; }
+  const std::string& get_category() const { return category_; }
   /** @brief Set the tracing category of the current Action */
   void set_category(std::string category) { category_ = std::move(category); }
 

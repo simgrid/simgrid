@@ -30,7 +30,7 @@ public:
   Type(std::string name, std::string alias, std::string color, Type* father);
   virtual ~Type();
 
-  std::string get_name() { return name_; }
+  const std::string& get_name() const { return name_; }
   const char* get_cname() { return name_.c_str(); }
   long long int get_id() { return id_; }
   bool is_colored() { return not color_.empty(); }
