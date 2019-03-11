@@ -516,7 +516,7 @@ void Request::start()
 
     /* FIXME: detached sends are not traceable (action_ == nullptr) */
     if (action_ != nullptr) {
-      std::string category = TRACE_internal_smpi_get_category();
+      std::string category = smpi_process()->get_tracing_category();
       simgrid::simix::simcall([this, category] { this->action_->set_category(category); });
     }
 

@@ -134,29 +134,6 @@ static std::string TRACE_smpi_get_key(int src, int dst, int tag, int send)
   return key;
 }
 
-static std::unordered_map<smx_actor_t, std::string> process_category;
-
-void TRACE_internal_smpi_set_category(const std::string& category)
-{
-  if (not TRACE_smpi_is_enabled())
-    return;
-
-  //declare category
-  TRACE_category(category.c_str());
-
-  if (not category.empty())
-    process_category[SIMIX_process_self()] = category;
-}
-
-std::string TRACE_internal_smpi_get_category()
-{
-  if (not TRACE_smpi_is_enabled())
-    return "";
-
-  auto it = process_category.find(SIMIX_process_self());
-  return (it == process_category.end()) ? "" : it->second.c_str();
-}
-
 void TRACE_smpi_setup_container(int rank, sg_host_t host)
 {
   container_t father = simgrid::instr::Container::get_root();

@@ -33,6 +33,8 @@ private:
   s4u::ActorPtr actor_                           = nullptr;
   smpi_privatization_region_t privatized_region_ = nullptr;
   int optind                                     = 0; /*for getopt replacement */
+  std::string tracing_category_                  = "";
+
 #if HAVE_PAPI
   /** Contains hardware data as read by PAPI **/
   int papi_event_set_;
@@ -51,6 +53,8 @@ public:
   void mark_as_initialized();
   void set_replaying(bool value);
   bool replaying();
+  void set_tracing_category(const std::string& category) { tracing_category_ = category; }
+  const std::string& get_tracing_category() { return tracing_category_; }
   smpi_trace_call_location_t* call_location();
   void set_privatized_region(smpi_privatization_region_t region);
   smpi_privatization_region_t privatized_region();

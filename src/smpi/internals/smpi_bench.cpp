@@ -57,7 +57,7 @@ void smpi_execute_flops(double flops) {
   XBT_DEBUG("Handle real computation time: %f flops", flops);
   simgrid::s4u::this_actor::exec_init(flops)
       ->set_name("computation")
-      ->set_tracing_category(TRACE_internal_smpi_get_category())
+      ->set_tracing_category(smpi_process()->get_tracing_category())
       ->start()
       ->wait();
   smpi_switch_data_segment(simgrid::s4u::Actor::self());

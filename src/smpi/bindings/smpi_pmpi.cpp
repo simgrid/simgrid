@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.hpp"
+#include "simgrid/instr.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "smpi_comm.hpp"
@@ -19,8 +20,11 @@ void TRACE_smpi_set_category(const char *category)
 {
   //need to end bench otherwise categories for execution tasks are wrong
   smpi_bench_end();
-  if (category != nullptr)
-    TRACE_internal_smpi_set_category(category);
+  if (category != nullptr) {
+    // declare category
+    TRACE_category(category);
+    smpi_process()->set_tracing_category(category);
+  }
   //begin bench after changing process's category
   smpi_bench_begin();
 }
