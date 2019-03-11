@@ -16,10 +16,8 @@ const int crasher_amount = 99; /* Up to 99 to not break the logs (and thus the t
 int more_info = 0; /* SET IT TO TRUE TO GET MORE INFO */
 
 /* Code ran by each thread */
-static void* crasher_thread(void* arg)
+static void crasher_thread(int id)
 {
-  int id = *(int*)arg;
-
   for (int i = 0; i < test_amount; i++) {
     if (more_info)
       XBT_INFO("%03d (%02d|%02d|%02d|%02d|%02d|%02d|%02d|%02d|%02d)", test_amount - i, id, id, id, id, id, id, id, id,
@@ -27,20 +25,17 @@ static void* crasher_thread(void* arg)
     else
       XBT_INFO("XXX (XX|XX|XX|XX|XX|XX|XX|XX|XX)");
   }
-  return NULL;
 }
 
 int main(int argc, char* argv[])
 {
   MSG_init(&argc, argv);
 
-  int id[crasher_amount];
   std::thread crashers[crasher_amount];
 
   /* spawn threads */
   for (int i = 0; i < crasher_amount; i++) {
-    id[i]       = i;
-    crashers[i] = std::thread(crasher_thread, &id[i]);
+    crashers[i] = std::thread(crasher_thread, i);
   }
 
   /* wait for them */
