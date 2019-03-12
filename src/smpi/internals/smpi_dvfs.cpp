@@ -75,17 +75,7 @@ typedef int integer;
 #else
 typedef long int integer;
 #endif
-typedef char *address;
-typedef float real;
 typedef double doublereal;
-struct complex {
-  real r;
-  real i;
-};
-struct doublecomplex {
-  doublereal r;
-  doublereal i;
-};
 
 extern "C" XBT_PUBLIC doublereal smpi_get_host_power_peak_at_(integer* pstate_index);
 doublereal smpi_get_host_power_peak_at_(integer *pstate_index)
