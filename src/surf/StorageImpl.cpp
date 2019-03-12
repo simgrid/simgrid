@@ -11,10 +11,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SURF storage module");
 
-simgrid::surf::StorageModel* surf_storage_model = nullptr;
+simgrid::kernel::resource::StorageModel* surf_storage_model = nullptr;
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 /*********
  * Model *
@@ -104,5 +105,6 @@ void StorageAction::set_state(Action::State state)
   Action::set_state(state);
   on_state_change(this, old, state);
 }
-}
-}
+} // namespace resource
+} // namespace kernel
+} // namespace simgrid

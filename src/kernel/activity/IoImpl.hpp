@@ -17,19 +17,19 @@ namespace activity {
 class XBT_PUBLIC IoImpl : public ActivityImpl {
 public:
   ~IoImpl() override;
-  explicit IoImpl(const std::string& name, surf::StorageImpl* storage);
+  explicit IoImpl(const std::string& name, resource::StorageImpl* storage);
 
-  IoImpl* start(sg_size_t size, simgrid::s4u::Io::OpType type);
+  IoImpl* start(sg_size_t size, s4u::Io::OpType type);
   void post() override;
   void finish() override;
   void cancel();
   double get_remaining();
   sg_size_t get_performed_ioops() { return performed_ioops_; }
 
-  surf::StorageImpl* storage_                     = nullptr;
+  resource::StorageImpl* storage_                 = nullptr;
   sg_size_t performed_ioops_                      = 0;
-  static simgrid::xbt::signal<void(kernel::activity::IoImplPtr)> on_start;
-  static simgrid::xbt::signal<void(kernel::activity::IoImplPtr)> on_completion;
+  static xbt::signal<void(IoImplPtr)> on_start;
+  static xbt::signal<void(IoImplPtr)> on_completion;
 };
 }
 }

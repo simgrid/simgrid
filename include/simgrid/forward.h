@@ -140,6 +140,9 @@ class Resource;
 class NetworkModel;
 class LinkImpl;
 class NetworkAction;
+class StorageImpl;
+class StorageType;
+class StorageModel;
 }
 namespace routing {
 class ClusterCreationArgs;
@@ -163,9 +166,6 @@ namespace surf {
   class CpuModel;
   class HostImpl;
   class HostModel;
-  class StorageImpl;
-  class StorageType;
-  class StorageModel;
 }
 namespace mc {
 class CommunicationDeterminismChecker;

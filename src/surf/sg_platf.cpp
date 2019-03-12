@@ -27,7 +27,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
-XBT_PRIVATE std::map<std::string, simgrid::surf::StorageImpl*> mount_list;
+XBT_PRIVATE std::map<std::string, simgrid::kernel::resource::StorageImpl*> mount_list;
 XBT_PRIVATE std::vector<std::string> known_storages;
 
 namespace simgrid {
@@ -38,7 +38,7 @@ simgrid::xbt::signal<void(kernel::routing::ClusterCreationArgs*)> on_cluster;
 }
 
 static int surf_parse_models_setup_already_called = 0;
-std::map<std::string, simgrid::surf::StorageType*> storage_types;
+std::map<std::string, simgrid::kernel::resource::StorageType*> storage_types;
 
 /** The current AS in the parsing */
 static simgrid::kernel::routing::NetZoneImpl* current_routing = nullptr;
@@ -333,7 +333,7 @@ void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage
   xbt_assert(std::find(known_storages.begin(), known_storages.end(), storage->id) == known_storages.end(),
              "Refusing to add a second storage named \"%s\"", storage->id.c_str());
 
-  simgrid::surf::StorageType* stype;
+  simgrid::kernel::resource::StorageType* stype;
   auto st = storage_types.find(storage->type_id);
   if (st != storage_types.end()) {
     stype = st->second;
@@ -373,9 +373,9 @@ void sg_platf_new_storage_type(simgrid::kernel::routing::StorageTypeCreationArgs
   xbt_assert(storage_types.find(storage_type->id) == storage_types.end(),
              "Reading a storage type, processing unit \"%s\" already exists", storage_type->id.c_str());
 
-  simgrid::surf::StorageType* stype =
-      new simgrid::surf::StorageType(storage_type->id, storage_type->model, storage_type->content,
-                                     storage_type->properties, storage_type->model_properties, storage_type->size);
+  simgrid::kernel::resource::StorageType* stype = new simgrid::kernel::resource::StorageType(
+      storage_type->id, storage_type->model, storage_type->content, storage_type->properties,
+      storage_type->model_properties, storage_type->size);
 
   XBT_DEBUG("Create a storage type id '%s' with model '%s', content '%s'", storage_type->id.c_str(),
             storage_type->model.c_str(), storage_type->content.c_str());

@@ -13,17 +13,17 @@
 namespace simgrid {
 namespace xbt {
 template class Extendable<simgrid::s4u::Storage>;
-}
+} // namespace xbt
 
 namespace s4u {
 
-simgrid::xbt::signal<void(s4u::Storage&)> Storage::on_creation;
-simgrid::xbt::signal<void(s4u::Storage&)> Storage::on_destruction;
-simgrid::xbt::signal<void(s4u::Storage&)> Storage::on_state_change;
+xbt::signal<void(Storage&)> Storage::on_creation;
+xbt::signal<void(Storage&)> Storage::on_destruction;
+xbt::signal<void(Storage&)> Storage::on_state_change;
 
-Storage::Storage(const std::string& name, surf::StorageImpl* pimpl) : pimpl_(pimpl), name_(name)
+Storage::Storage(const std::string& name, kernel::resource::StorageImpl* pimpl) : pimpl_(pimpl), name_(name)
 {
-  simgrid::s4u::Engine::get_instance()->storage_register(name_, this);
+  Engine::get_instance()->storage_register(name_, this);
 }
 
 Storage* Storage::by_name(const std::string& name)
@@ -82,8 +82,8 @@ sg_size_t Storage::write(sg_size_t size)
   return IoPtr(io_init(size, Io::OpType::WRITE))->start()->wait()->get_performed_ioops();
 }
 
-} /* namespace s4u */
-} /* namespace simgrid */
+} // namespace s4u
+} // namespace simgrid
 
 /* **************************** Public C interface *************************** */
 

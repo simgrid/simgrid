@@ -26,22 +26,22 @@ namespace s4u {
  */
 
 class XBT_PUBLIC Storage : public simgrid::xbt::Extendable<Storage> {
-  friend simgrid::s4u::Engine;
-  friend simgrid::s4u::Io;
-  friend simgrid::surf::StorageImpl;
+  friend Engine;
+  friend Io;
+  friend kernel::resource::StorageImpl;
 
 public:
-  explicit Storage(const std::string& name, surf::StorageImpl* pimpl);
+  explicit Storage(const std::string& name, kernel::resource::StorageImpl* pimpl);
 
 protected:
   virtual ~Storage() = default;
 public:
   /** @brief Callback signal fired when a new Storage is created */
-  static simgrid::xbt::signal<void(s4u::Storage&)> on_creation;
+  static xbt::signal<void(s4u::Storage&)> on_creation;
   /** @brief Callback signal fired when a Storage is destroyed */
-  static simgrid::xbt::signal<void(s4u::Storage&)> on_destruction;
+  static xbt::signal<void(s4u::Storage&)> on_destruction;
   /** @brief Callback signal fired when a Storage's state changes */
-  static simgrid::xbt::signal<void(s4u::Storage&)> on_state_change;
+  static xbt::signal<void(s4u::Storage&)> on_state_change;
 
   /** Retrieve a Storage by its name. It must exist in the platform file */
   static Storage* by_name(const std::string& name);
@@ -70,7 +70,7 @@ public:
 
   IoPtr write_async(sg_size_t size);
   sg_size_t write(sg_size_t size);
-  surf::StorageImpl* get_impl() { return pimpl_; }
+  kernel::resource::StorageImpl* get_impl() { return pimpl_; }
 
   // Deprecated functions
 #ifndef DOXYGEN
@@ -115,7 +115,7 @@ public:
 
 private:
   Host* attached_to_ = nullptr;
-  surf::StorageImpl* const pimpl_;
+  kernel::resource::StorageImpl* const pimpl_;
   std::string name_;
   void* userdata_ = nullptr;
 };

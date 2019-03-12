@@ -11,7 +11,8 @@
 #define STORAGE_N11_HPP_
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 /***********
  * Classes *
@@ -55,8 +56,7 @@ public:
 
 class StorageN11Action : public StorageAction {
 public:
-  StorageN11Action(kernel::resource::Model* model, double cost, bool failed, StorageImpl* storage,
-                   s4u::Io::OpType type);
+  StorageN11Action(Model* model, double cost, bool failed, StorageImpl* storage, s4u::Io::OpType type);
   void suspend() override;
   void cancel() override;
   void resume() override;
@@ -65,7 +65,7 @@ public:
   void update_remains_lazy(double now) override;
 };
 
-}
-}
-
+} // namespace resource
+} // namespace kernel
+} // namespace simgrid
 #endif /* STORAGE_N11_HPP_ */

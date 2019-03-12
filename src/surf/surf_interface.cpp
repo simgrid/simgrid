@@ -34,7 +34,7 @@ simgrid::kernel::profile::FutureEvtSet future_evt_set;
 std::vector<std::string> surf_path;
 /**  set of hosts for which one want to be notified if they ever restart. */
 std::set<std::string> watched_hosts;
-extern std::map<std::string, simgrid::surf::StorageType*> storage_types;
+extern std::map<std::string, simgrid::kernel::resource::StorageType*> storage_types;
 
 s_surf_model_description_t* surf_plugin_description = nullptr;
 XBT_PUBLIC void simgrid_add_plugin_description(const char* name, const char* description, void_f_void_t init_fun)
@@ -305,7 +305,7 @@ void surf_exit()
 {
   simgrid::s4u::Engine::shutdown();
   for (auto const& e : storage_types) {
-    simgrid::surf::StorageType* stype = e.second;
+    simgrid::kernel::resource::StorageType* stype = e.second;
     delete stype->properties;
     delete stype->model_properties;
     delete stype;

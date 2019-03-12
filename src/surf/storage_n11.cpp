@@ -15,7 +15,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
 /*************
  * CallBacks *
  *************/
-extern std::map<std::string, simgrid::surf::StorageType*> storage_types;
+extern std::map<std::string, simgrid::kernel::resource::StorageType*> storage_types;
 
 void check_disk_attachment()
 {
@@ -35,11 +35,12 @@ void check_disk_attachment()
 
 void surf_storage_model_init_default()
 {
-  surf_storage_model = new simgrid::surf::StorageN11Model();
+  surf_storage_model = new simgrid::kernel::resource::StorageN11Model();
 }
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 StorageN11Model::StorageN11Model()
 {
@@ -78,7 +79,7 @@ void StorageN11Model::update_actions_state(double /*now*/, double delta)
 
     if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_weight() > 0)) ||
         ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
-      action.finish(kernel::resource::Action::State::FINISHED);
+      action.finish(Action::State::FINISHED);
     }
   }
 }
@@ -87,13 +88,13 @@ void StorageN11Model::update_actions_state(double /*now*/, double delta)
  * Resource *
  ************/
 
-StorageN11::StorageN11(StorageModel* model, const std::string& name, kernel::lmm::System* maxminSystem, double bread,
+StorageN11::StorageN11(StorageModel* model, const std::string& name, lmm::System* maxminSystem, double bread,
                        double bwrite, const std::string& type_id, const std::string& content_name, sg_size_t size,
                        const std::string& attach)
     : StorageImpl(model, name, maxminSystem, bread, bwrite, type_id, content_name, size, attach)
 {
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
-  simgrid::s4u::Storage::on_creation(this->piface_);
+  s4u::Storage::on_creation(this->piface_);
 }
 
 StorageAction* StorageN11::io_start(sg_size_t size, s4u::Io::OpType type)
@@ -115,8 +116,7 @@ StorageAction* StorageN11::write(sg_size_t size)
  * Action *
  **********/
 
-StorageN11Action::StorageN11Action(kernel::resource::Model* model, double cost, bool failed, StorageImpl* storage,
-                                   s4u::Io::OpType type)
+StorageN11Action::StorageN11Action(Model* model, double cost, bool failed, StorageImpl* storage, s4u::Io::OpType type)
     : StorageAction(model, cost, failed, model->get_maxmin_system()->variable_new(this, 1.0, -1.0, 3), storage, type)
 {
   XBT_IN("(%s,%g", storage->get_cname(), cost);
@@ -169,5 +169,6 @@ void StorageN11Action::update_remains_lazy(double /*now*/)
 {
   THROW_IMPOSSIBLE;
 }
-}
-}
+} // namespace resource
+} // namespace kernel
+} // namespace simgrid

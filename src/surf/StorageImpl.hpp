@@ -17,9 +17,15 @@
 #ifndef STORAGE_INTERFACE_HPP_
 #define STORAGE_INTERFACE_HPP_
 
-namespace simgrid {
-namespace surf {
+/*********
+ * Model *
+ *********/
 
+XBT_PUBLIC_DATA simgrid::kernel::resource::StorageModel* surf_storage_model;
+
+namespace simgrid {
+namespace kernel {
+namespace resource {
 /***********
  * Classes *
  ***********/
@@ -66,12 +72,11 @@ public:
  * @brief SURF storage interface class
  * @details A Storage represent a storage unit (e.g.: hard drive, usb key)
  */
-class StorageImpl : public kernel::resource::Resource, public PropertyHolder {
+class StorageImpl : public Resource, public surf::PropertyHolder {
 public:
   /** @brief Storage constructor */
-  StorageImpl(kernel::resource::Model* model, const std::string& name, kernel::lmm::System* maxmin_system, double bread,
-              double bwrite, const std::string& type_id, const std::string& content_name, sg_size_t size,
-              const std::string& attach);
+  StorageImpl(Model* model, const std::string& name, kernel::lmm::System* maxmin_system, double bread, double bwrite,
+              const std::string& type_id, const std::string& content_name, sg_size_t size, const std::string& attach);
   StorageImpl(const StorageImpl&) = delete;
   StorageImpl& operator=(const StorageImpl&) = delete;
 
@@ -83,13 +88,13 @@ public:
   /** @brief Check if the Storage is used (if an action currently uses its resources) */
   bool is_used() override;
 
-  void apply_event(simgrid::kernel::profile::Event* event, double value) override;
+  void apply_event(profile::Event* event, double value) override;
 
   void turn_on() override;
   void turn_off() override;
 
   void destroy(); // Must be called instead of the destructor
-  virtual simgrid::kernel::resource::Action* io_start(sg_size_t size, s4u::Io::OpType type) = 0;
+  virtual Action* io_start(sg_size_t size, s4u::Io::OpType type) = 0;
   /**
    * @brief Read a file
    *
@@ -107,8 +112,8 @@ public:
   virtual StorageAction* write(sg_size_t size) = 0;
   virtual std::string getHost() { return attach_; }
 
-  kernel::lmm::Constraint* constraintWrite_; /* Constraint for maximum write bandwidth*/
-  kernel::lmm::Constraint* constraintRead_;  /* Constraint for maximum write bandwidth*/
+  lmm::Constraint* constraintWrite_; /* Constraint for maximum write bandwidth*/
+  lmm::Constraint* constraintRead_;  /* Constraint for maximum write bandwidth*/
 
   std::string typeId_;
   std::string content_name; // Only used at parsing time then goes to the FileSystemExtension
@@ -128,10 +133,9 @@ private:
 /** @ingroup SURF_storage_interface
  * @brief SURF storage action interface class
  */
-class StorageAction : public kernel::resource::Action {
+class StorageAction : public Action {
 public:
-  static xbt::signal<void(StorageAction*, kernel::resource::Action::State, kernel::resource::Action::State)>
-      on_state_change;
+  static xbt::signal<void(StorageAction*, Action::State, Action::State)> on_state_change;
 
   /**
    * @brief StorageAction constructor
@@ -142,7 +146,7 @@ public:
    * @param storage The Storage associated to this StorageAction
    * @param type [description]
    */
-  StorageAction(kernel::resource::Model* model, double cost, bool failed, StorageImpl* storage, s4u::Io::OpType type)
+  StorageAction(Model* model, double cost, bool failed, StorageImpl* storage, s4u::Io::OpType type)
       : Action(model, cost, failed), type_(type), storage_(storage){};
 
   /**
@@ -180,7 +184,8 @@ public:
   {
   }
 };
-}
-}
 
+} // namespace resource
+} // namespace kernel
+} // namespace simgrid
 #endif /* STORAGE_INTERFACE_HPP_ */

@@ -18,8 +18,6 @@ XBT_PUBLIC_DATA simgrid::surf::CpuModel* surf_cpu_model_pm;
  */
 XBT_PUBLIC_DATA simgrid::surf::CpuModel* surf_cpu_model_vm;
 
-XBT_PUBLIC_DATA simgrid::surf::StorageModel* surf_storage_model;
-
 /** @ingroup SURF_models
  *  @brief The host model
  *

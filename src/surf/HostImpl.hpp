@@ -50,8 +50,8 @@ public:
   /** @brief Get the vector of storages (by names) attached to the Host */
   virtual std::vector<const char*> get_attached_storages();
 
-  std::map<std::string, simgrid::surf::StorageImpl*> storage_;
-  simgrid::s4u::Host* piface_ = nullptr;
+  std::map<std::string, kernel::resource::StorageImpl*> storage_;
+  s4u::Host* piface_ = nullptr;
 
   void turn_on();
   void turn_off();

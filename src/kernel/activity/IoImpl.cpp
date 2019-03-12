@@ -37,7 +37,7 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-IoImpl::IoImpl(const std::string& name, surf::StorageImpl* storage) : ActivityImpl(name), storage_(storage)
+IoImpl::IoImpl(const std::string& name, resource::StorageImpl* storage) : ActivityImpl(name), storage_(storage)
 {
   this->state_ = SIMIX_RUNNING;
 
@@ -51,13 +51,13 @@ IoImpl::~IoImpl()
   XBT_DEBUG("Destroy io %p", this);
 }
 
-IoImpl* IoImpl::start(sg_size_t size, simgrid::s4u::Io::OpType type)
+IoImpl* IoImpl::start(sg_size_t size, s4u::Io::OpType type)
 {
   surf_action_ = storage_->io_start(size, type);
   surf_action_->set_data(this);
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
-  simgrid::kernel::activity::IoImpl::on_start(this);
+  IoImpl::on_start(this);
 
   return this;
 }
@@ -79,10 +79,10 @@ void IoImpl::post()
 {
   performed_ioops_ = surf_action_->get_cost();
   switch (surf_action_->get_state()) {
-    case simgrid::kernel::resource::Action::State::FAILED:
+    case resource::Action::State::FAILED:
       state_ = SIMIX_FAILED;
       break;
-    case simgrid::kernel::resource::Action::State::FINISHED:
+    case resource::Action::State::FINISHED:
       state_ = SIMIX_DONE;
       break;
     default:
