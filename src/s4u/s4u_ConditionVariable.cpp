@@ -16,7 +16,8 @@ namespace s4u {
 
 ConditionVariablePtr ConditionVariable::create()
 {
-  smx_cond_t cond = simcall_cond_init();
+  kernel::activity::ConditionVariableImpl* cond =
+      simix::simcall([] { return new kernel::activity::ConditionVariableImpl(); });
   return ConditionVariablePtr(&cond->cond_, false);
 }
 
