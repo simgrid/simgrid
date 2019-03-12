@@ -287,9 +287,8 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv* env, jclass 
 
   const char *alias = env->GetStringUTFChars(jalias, 0);
   msg_error_t rv;
-  if (not simgrid::ForcefulKillException::try_n_catch([&rv, &task, &alias, &jtimeout]() {
-        rv = MSG_task_receive_ext(&task, alias, (double)jtimeout, /*host*/ nullptr);
-      })) {
+  if (not simgrid::ForcefulKillException::try_n_catch(
+          [&rv, &task, &alias, &jtimeout]() { rv = MSG_task_receive_with_timeout(&task, alias, (double)jtimeout); })) {
     jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
   }
   env->ReleaseStringUTFChars(jalias, alias);

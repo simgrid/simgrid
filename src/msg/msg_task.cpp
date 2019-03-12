@@ -264,6 +264,7 @@ void MSG_task_set_data(msg_task_t task, void *data)
 /** @brief Sets a function to be called when a task has just been copied.
  * @param callback a callback function
  */
+// deprecated
 void MSG_task_set_copy_callback(void (*callback) (msg_task_t task, msg_process_t sender, msg_process_t receiver)) {
 
   msg_global->task_copy_callback = callback;

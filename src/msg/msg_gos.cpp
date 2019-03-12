@@ -69,7 +69,7 @@ msg_error_t MSG_task_receive_bounded(msg_task_t * task, const char *alias, doubl
  */
 msg_error_t MSG_task_receive_with_timeout(msg_task_t * task, const char *alias, double timeout)
 {
-  return MSG_task_receive_ext(task, alias, timeout, nullptr);
+  return MSG_task_receive_ext_bounded(task, alias, timeout, nullptr, -1);
 }
 
 /**
@@ -447,6 +447,7 @@ msg_task_t MSG_comm_get_task(msg_comm_t comm)
  * @param buff the data copied
  * @param buff_size size of the buffer
  */
+// deprecated but used by MSG_set_copy_callback. Should be removed in v325
 void MSG_comm_copy_data_from_SIMIX(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
 {
   SIMIX_comm_copy_pointer_callback(comm, buff, buff_size);
