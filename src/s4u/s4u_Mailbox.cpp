@@ -29,7 +29,7 @@ MailboxPtr Mailbox::by_name(const std::string& name)
 {
   kernel::activity::MailboxImpl* mbox = kernel::activity::MailboxImpl::by_name_or_null(name);
   if (mbox == nullptr) {
-    mbox = simix::simcall([name] { return kernel::activity::MailboxImpl::by_name_or_create(name); });
+    mbox = simix::simcall([&name] { return kernel::activity::MailboxImpl::by_name_or_create(name); });
   }
   return MailboxPtr(&mbox->piface_, true);
 }

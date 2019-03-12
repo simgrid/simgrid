@@ -204,11 +204,11 @@ public:
   }
 };
 
-template <class T> void bind_promise(Promise<T> promise, Future<T> future)
+template <class T> void bind_promise(Promise<T>&& promise, Future<T> future)
 {
   class PromiseBinder {
   public:
-    explicit PromiseBinder(Promise<T> promise) : promise_(std::move(promise)) {}
+    explicit PromiseBinder(Promise<T>&& promise) : promise_(std::move(promise)) {}
     void operator()(Future<T> future) { simgrid::xbt::set_promise(promise_, future); }
 
   private:

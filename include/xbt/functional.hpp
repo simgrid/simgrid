@@ -32,7 +32,7 @@ private:
   std::shared_ptr<const std::vector<std::string>> args_;
 
 public:
-  MainFunction(F code, std::vector<std::string> args)
+  MainFunction(F code, std::vector<std::string>&& args)
       : code_(std::move(code)), args_(std::make_shared<const std::vector<std::string>>(std::move(args)))
   {
   }
@@ -52,7 +52,7 @@ public:
   }
 };
 
-template <class F> inline std::function<void()> wrap_main(F code, std::vector<std::string> args)
+template <class F> inline std::function<void()> wrap_main(F code, std::vector<std::string>&& args)
 {
   return MainFunction<F>(std::move(code), std::move(args));
 }
