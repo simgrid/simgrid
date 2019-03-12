@@ -2,3 +2,6 @@
 
 # ignore libunwind cruft
 interceptor_via_lib:libunwind.so
+
+# __gnu_cxx::__to_xstring
+interceptor_via_fun:__to_xstring
