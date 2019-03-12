@@ -157,7 +157,7 @@ public:
     xbt_assert(this->value_);
     auto result = std::move(this->value_.get());
     this->value_ = boost::optional<T>();
-    return std::move(result);
+    return result;
   }
 
 private:
@@ -426,7 +426,7 @@ template <class T> Future<T> unwrap_future(Future<Future<T>> future)
   Promise<T> promise;
   Future<T> result = promise.get_future();
   bind_promise(std::move(promise), std::move(future));
-  return std::move(result);
+  return result;
 }
 
 /** Producer side of a @ref simgrid::kernel::Future
