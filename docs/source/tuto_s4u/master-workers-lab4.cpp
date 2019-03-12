@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_masterworker, "Messages specific for this e
 static void worker(std::string category)
 {
   const std::string mailbox_name   = std::string("worker-") + std::to_string(simgrid::s4u::this_actor::get_pid());
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
+  simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
   while (true) { // Master forcefully kills the workers by the end of the simulation
     double* msg         = static_cast<double*>(mailbox->get());
@@ -60,7 +60,7 @@ static void master(std::vector<std::string> args)
     /* - Select a worker in a round-robin way */
     aid_t worker_pid                 = actors.at(task_id % actors.size())->get_pid();
     std::string mailbox_name         = std::string("worker-") + std::to_string(worker_pid);
-    simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
+    simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
     /* - Send the computation cost to that worker */
     XBT_DEBUG("Sending task %d to mailbox '%s'", task_id, mailbox->get_cname());

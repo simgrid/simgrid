@@ -17,8 +17,8 @@ namespace smpi {
 class ActorExt {
 private:
   double simulated_ = 0 /* Used to time with simulated_start/elapsed */;
-  s4u::MailboxPtr mailbox_;
-  s4u::MailboxPtr mailbox_small_;
+  s4u::Mailbox* mailbox_;
+  s4u::Mailbox* mailbox_small_;
   s4u::MutexPtr mailboxes_mutex_;
   xbt_os_timer_t timer_;
   MPI_Comm comm_self_   = MPI_COMM_NULL;
@@ -58,8 +58,8 @@ public:
   smpi_trace_call_location_t* call_location();
   void set_privatized_region(smpi_privatization_region_t region);
   smpi_privatization_region_t privatized_region();
-  s4u::MailboxPtr mailbox() { return mailbox_; }
-  s4u::MailboxPtr mailbox_small() { return mailbox_small_; }
+  s4u::Mailbox* mailbox() { return mailbox_; }
+  s4u::Mailbox* mailbox_small() { return mailbox_small_; }
   s4u::MutexPtr mailboxes_mutex();
 #if HAVE_PAPI
   int papi_event_set();

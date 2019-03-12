@@ -33,7 +33,7 @@ bool Node::join(unsigned int known_id)
   /* First step: Send a "FIND_NODE" request to the node we know */
   sendFindNode(known_id, id_);
 
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id_));
+  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id_));
   do {
     if (receive_comm == nullptr)
       receive_comm = mailbox->get_async(&received_msg);
@@ -79,7 +79,7 @@ bool Node::join(unsigned int known_id)
 void Node::sendFindNode(unsigned int id, unsigned int destination)
 {
   /* Gets the mailbox to send to */
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id));
+  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id));
   /* Build the task */
   Message* msg = new Message(id_, destination, simgrid::s4u::Mailbox::by_name(std::to_string(id_)),
                              simgrid::s4u::Host::current()->get_cname());
@@ -200,7 +200,7 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
     steps++;
     double time_beginreceive = simgrid::s4u::Engine::get_clock();
 
-    simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id_));
+    simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id_));
     do {
       if (receive_comm == nullptr)
         receive_comm = mailbox->get_async(&received_msg);

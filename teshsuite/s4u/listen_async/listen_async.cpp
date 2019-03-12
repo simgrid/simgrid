@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static void server()
 {
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name("mailbox");
+  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name("mailbox");
 
   simgrid::s4u::CommPtr sendComm = mailbox->put_async(new std::string("Some data"), 0);
 
@@ -28,7 +28,7 @@ static void server()
   delete res;
   sendComm->wait();
 
-  simgrid::s4u::MailboxPtr mailbox2 = simgrid::s4u::Mailbox::by_name("mailbox2");
+  simgrid::s4u::Mailbox* mailbox2 = simgrid::s4u::Mailbox::by_name("mailbox2");
   mailbox2->set_receiver(simgrid::s4u::Actor::self());
 
   mailbox2->put_init(new std::string("More data"), 0)->detach();

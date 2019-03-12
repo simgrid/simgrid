@@ -32,7 +32,7 @@ struct s_payload {
 
 static void communication_tx_fun(std::vector<std::string> args)
 {
-  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(args.at(0));
+  simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(args.at(0));
   s_payload* payload            = new s_payload;
   payload->tx_actor_name        = simgrid::s4u::Actor::self()->get_cname();
   payload->tx_host              = simgrid::s4u::this_actor::get_host();
@@ -45,7 +45,7 @@ static void communication_rx_fun(std::vector<std::string> args)
 {
   const char* actor_name        = simgrid::s4u::Actor::self()->get_cname();
   const char* host_name         = simgrid::s4u::this_actor::get_host()->get_cname();
-  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(args.at(0));
+  simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(args.at(0));
 
   struct s_payload* payload = static_cast<struct s_payload*>(mbox->get());
   double clock_end          = simgrid::s4u::Engine::get_clock();

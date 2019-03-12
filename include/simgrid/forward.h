@@ -62,10 +62,6 @@ XBT_PUBLIC void intrusive_ptr_add_ref(Io* i);
 class Link;
 
 class Mailbox;
-/** Smart pointer to a simgrid::s4u::Mailbox */
-typedef boost::intrusive_ptr<Mailbox> MailboxPtr;
-XBT_PUBLIC void intrusive_ptr_release(Mailbox* m);
-XBT_PUBLIC void intrusive_ptr_add_ref(Mailbox* m);
 
 class Mutex;
 XBT_PUBLIC void intrusive_ptr_release(Mutex* m);

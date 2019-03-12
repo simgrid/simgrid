@@ -23,7 +23,7 @@ class MailboxImpl {
   static constexpr size_t MAX_MAILBOX_SIZE = 10000000;
 
   friend s4u::Mailbox;
-  friend s4u::MailboxPtr s4u::Mailbox::by_name(const std::string& name);
+  friend s4u::Mailbox* s4u::Mailbox::by_name(const std::string& name);
   friend mc::CommunicationDeterminismChecker;
 
   explicit MailboxImpl(const std::string& name)

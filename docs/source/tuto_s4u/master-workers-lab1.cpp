@@ -31,7 +31,7 @@ static void master(std::vector<std::string> args)
     /* - Select a worker in a round-robin way */
     std::string worker_rank          = std::to_string(i % workers_count);
     std::string mailbox_name         = std::string("worker-") + worker_rank;
-    simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
+    simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
     /* - Send the computation cost to that worker */
     XBT_INFO("Sending task %d of %ld to mailbox '%s'", i, tasks_count, mailbox->get_cname());
@@ -42,7 +42,7 @@ static void master(std::vector<std::string> args)
   for (int i = 0; i < workers_count; i++) {
     /* The workers stop when receiving a negative compute_cost */
     std::string mailbox_name         = std::string("worker-") + std::to_string(i);
-    simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
+    simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
     mailbox->put(new double(-1.0), 0);
   }
@@ -54,7 +54,7 @@ static void worker(std::vector<std::string> args)
   long id = std::stol(args[1]);
 
   const std::string mailbox_name   = std::string("worker-") + std::to_string(id);
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
+  simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
   double compute_cost;
   do {

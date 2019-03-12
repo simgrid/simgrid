@@ -28,9 +28,9 @@ public:
 
 class MigrationRx {
   /* The miration_rx process uses mbox_ctl to let the caller of do_migration()  know the completion of the migration. */
-  s4u::MailboxPtr mbox_ctl;
+  s4u::Mailbox* mbox_ctl;
   /* The migration_rx and migration_tx processes use mbox to transfer migration data. */
-  s4u::MailboxPtr mbox;
+  s4u::Mailbox* mbox;
   s4u::VirtualMachine* vm_;
   s4u::Host* src_pm_ = nullptr;
   s4u::Host* dst_pm_ = nullptr;
@@ -50,7 +50,7 @@ public:
 
 class MigrationTx {
   /* The migration_rx and migration_tx processes use mbox to transfer migration data. */
-  s4u::MailboxPtr mbox;
+  s4u::Mailbox* mbox;
   s4u::VirtualMachine* vm_;
   s4u::Host* src_pm_ = nullptr;
   s4u::Host* dst_pm_ = nullptr;

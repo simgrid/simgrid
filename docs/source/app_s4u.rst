@@ -507,8 +507,6 @@ s4u::Mailbox
 
 Please also refer to the :ref:`full doc on s4u::Mailbox <s4u_mailbox>`.
 
-.. doxygentypedef:: MailboxPtr
-
 .. doxygenclass:: simgrid::s4u::Mailbox
    :members:
    :protected-members:

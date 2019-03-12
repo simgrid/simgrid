@@ -360,7 +360,7 @@ void Request::sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,int d
 
 void Request::start()
 {
-  s4u::MailboxPtr mailbox;
+  s4u::Mailbox* mailbox;
 
   xbt_assert(action_ == nullptr, "Cannot (re-)start unfinished communication");
   flags_ &= ~MPI_REQ_PREPARED;
@@ -706,7 +706,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
         ->wait();
   }
   // behave like a receive, but don't do it
-  s4u::MailboxPtr mailbox;
+  s4u::Mailbox* mailbox;
 
   request->print_request("New iprobe");
   // We have to test both mailboxes as we don't know if we will receive one one or another

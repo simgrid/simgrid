@@ -29,7 +29,7 @@ static int sender(int argc, char** argv)
   std::vector<simgrid::s4u::CommPtr> pending_comms;
 
   /* Make a vector of the mailboxes to use */
-  std::vector<simgrid::s4u::MailboxPtr> mboxes;
+  std::vector<simgrid::s4u::Mailbox*> mboxes;
   for (int i = 0; i < receivers_count; i++)
     mboxes.push_back(simgrid::s4u::Mailbox::by_name(std::string("receiver-") + std::to_string(i)));
 
@@ -70,7 +70,7 @@ static int sender(int argc, char** argv)
 static int receiver(int argc, char** argv)
 {
   xbt_assert(argc == 2, "Expecting one parameter from the XML deployment file but got %d", argc);
-  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(std::string("receiver-") + argv[1]);
+  simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(std::string("receiver-") + argv[1]);
 
   XBT_INFO("Wait for my first message");
   for (bool cont = true; cont;) {

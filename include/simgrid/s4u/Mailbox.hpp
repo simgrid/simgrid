@@ -23,11 +23,6 @@ class XBT_PUBLIC Mailbox {
 
   explicit Mailbox(kernel::activity::MailboxImpl * mbox) : pimpl_(mbox) {}
 
-  /** private function to manage the mailboxes' lifetime (see @ref s4u_raii) */
-  friend void intrusive_ptr_add_ref(Mailbox*) {}
-  /** private function to manage the mailboxes' lifetime (see @ref s4u_raii) */
-  friend void intrusive_ptr_release(Mailbox*) {}
-
 public:
   /** private function, do not use. FIXME: make me protected */
   kernel::activity::MailboxImpl* get_impl() { return pimpl_; }
@@ -38,7 +33,7 @@ public:
   const char* get_cname() const;
 
   /** Retrieve the mailbox associated to the given name */
-  static MailboxPtr by_name(const std::string& name);
+  static Mailbox* by_name(const std::string& name);
 
   /** Returns whether the mailbox contains queued communications */
   bool empty();
@@ -120,12 +115,12 @@ public:
     return get_impl();
   }
   /** @deprecated Mailbox::by_name() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::by_name()") static MailboxPtr byName(const char* name)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::by_name()") static Mailbox* byName(const char* name)
   {
     return by_name(name);
   }
   /** @deprecated Mailbox::by_name() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::by_name()") static MailboxPtr byName(const std::string& name)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::by_name()") static Mailbox* byName(const std::string& name)
   {
     return by_name(name);
   }

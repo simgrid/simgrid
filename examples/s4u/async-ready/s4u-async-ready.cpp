@@ -34,7 +34,7 @@ static int peer(int argc, char** argv)
   long peers_count    = std::stod(argv[4]); /* - number of peers */
 
   /* Set myself as the persistent receiver of my mailbox so that messages start flowing to me as soon as they are put into it */
-  simgrid::s4u::MailboxPtr my_mbox = simgrid::s4u::Mailbox::by_name(std::string("peer-") + std::to_string(my_id));
+  simgrid::s4u::Mailbox* my_mbox = simgrid::s4u::Mailbox::by_name(std::string("peer-") + std::to_string(my_id));
   my_mbox->set_receiver(simgrid::s4u::Actor::self());
 
   std::vector<simgrid::s4u::CommPtr> pending_comms;
@@ -44,7 +44,7 @@ static int peer(int argc, char** argv)
     for (int peer_id = 0; peer_id < peers_count; peer_id++) {
       if (peer_id != my_id) {
         std::string mboxName          = std::string("peer-") + std::to_string(peer_id);
-        simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(mboxName);
+        simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(mboxName);
         std::string msgName           = std::string("Message ") + std::to_string(i) + std::string(" from peer ") + std::to_string(my_id);
         std::string* payload          = new std::string(msgName); // copy the data we send:
         // 'msgName' is not a stable storage location
@@ -59,7 +59,7 @@ static int peer(int argc, char** argv)
   for (int peer_id = 0; peer_id < peers_count; peer_id++) {
     if (peer_id != my_id) {
       std::string mboxName          = std::string("peer-") + std::to_string(peer_id);
-      simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(mboxName);
+      simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(mboxName);
       std::string* payload          = new std::string("finalize"); // Make a copy of the data we will send
       pending_comms.push_back(mbox->put_async(payload, msg_size));
       XBT_INFO("Send 'finalize' to 'peer-%d'", peer_id);

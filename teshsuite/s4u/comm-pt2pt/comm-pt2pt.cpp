@@ -49,7 +49,7 @@ static void sender(std::vector<std::string> args)
   for (unsigned int test = 1; test <= args[0].size(); test++) {
     simgrid::s4u::this_actor::sleep_until(test * 5 - 5);
     std::string* mboxName         = new std::string("Test #" + std::to_string(test));
-    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(*mboxName);
+    simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(*mboxName);
 
     switch (args[0][test - 1]) {
       case 'r':
@@ -96,7 +96,7 @@ static void receiver(std::vector<std::string> args)
   for (unsigned int test = 1; test <= args[0].size(); test++) {
     simgrid::s4u::this_actor::sleep_until(test * 5 - 5);
     std::string mboxName          = "Test #" + std::to_string(test);
-    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(mboxName);
+    simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(mboxName);
     void* received                = nullptr;
 
     switch (args[0][test - 1]) {

@@ -461,7 +461,7 @@ messages to all workers based on their number, for example as follows:
    for (int i = 0; i < tasks_count; i++) {
      std::string worker_rank          = std::to_string(i % workers_count);
      std::string mailbox_name         = std::string("worker-") + worker_rank;
-     simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
+     simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
      mailbox->put(...);
 

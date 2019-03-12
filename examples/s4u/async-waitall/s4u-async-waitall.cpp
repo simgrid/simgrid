@@ -39,7 +39,7 @@ public:
     std::vector<simgrid::s4u::CommPtr> pending_comms;
 
     /* Make a vector of the mailboxes to use */
-    std::vector<simgrid::s4u::MailboxPtr> mboxes;
+    std::vector<simgrid::s4u::Mailbox*> mboxes;
     for (int i = 0; i < receivers_count; i++)
       mboxes.push_back(simgrid::s4u::Mailbox::by_name(std::string("receiver-") + std::to_string(i)));
     // sphinx-doc: init-end
@@ -76,7 +76,7 @@ public:
 
 /* Receiver actor expects 1 argument: its ID */
 class Receiver {
-  simgrid::s4u::MailboxPtr mbox;
+  simgrid::s4u::Mailbox* mbox;
 
 public:
   explicit Receiver(std::vector<std::string> args)

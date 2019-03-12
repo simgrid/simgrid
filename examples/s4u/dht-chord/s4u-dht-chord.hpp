@@ -61,7 +61,7 @@ public:
   int request_id     = -1;            // id (used by some types of messages)
   int request_finger = 1;             // finger parameter (used by some types of messages)
   int answer_id      = -1;            // answer (used by some types of messages)
-  simgrid::s4u::MailboxPtr answer_to; // mailbox to send an answer to (if any)
+  simgrid::s4u::Mailbox* answer_to;   // mailbox to send an answer to (if any)
 
   explicit ChordMessage(e_message_type_t type)
       : type(type), issuer_host_name(simgrid::s4u::this_actor::get_host()->get_name())
@@ -80,7 +80,7 @@ class Node {
   bool joined        = false;
   int id_;                           // my id
   int pred_id_ = -1;                 // predecessor id
-  simgrid::s4u::MailboxPtr mailbox_; // my mailbox
+  simgrid::s4u::Mailbox* mailbox_;   // my mailbox
   int* fingers_;                     // finger table,(fingers[0] is my successor)
   int next_finger_to_fix;            // index of the next finger to fix in fix_fingers()
   RngStream stream;

@@ -15,7 +15,7 @@ class Master {
   long tasks_count                 = 0;
   double compute_cost              = 0;
   double communicate_cost          = 0;
-  std::vector<simgrid::s4u::MailboxPtr> workers;
+  std::vector<simgrid::s4u::Mailbox*> workers;
 
 public:
   explicit Master(std::vector<std::string> args)
@@ -35,7 +35,7 @@ public:
   {
     for (int i = 0; i < tasks_count; i++) { /* For each task to be executed: */
       /* - Select a worker in a round-robin way */
-      simgrid::s4u::MailboxPtr mailbox = workers[i % workers.size()];
+      simgrid::s4u::Mailbox* mailbox = workers[i % workers.size()];
 
       /* - Send the computation amount to the worker */
       if (tasks_count < 10000 || (tasks_count < 100000 && i % 10000 == 0) || i % 100000 == 0)
@@ -46,14 +46,14 @@ public:
     XBT_INFO("All tasks have been dispatched. Request all workers to stop.");
     for (unsigned int i = 0; i < workers.size(); i++) {
       /* The workers stop when receiving a negative compute_cost */
-      simgrid::s4u::MailboxPtr mailbox = workers[i % workers.size()];
+      simgrid::s4u::Mailbox* mailbox = workers[i % workers.size()];
       mailbox->put(new double(-1.0), 0);
     }
   }
 };
 
 class Worker {
-  simgrid::s4u::MailboxPtr mailbox = nullptr;
+  simgrid::s4u::Mailbox* mailbox = nullptr;
 
 public:
   explicit Worker(std::vector<std::string> args)

@@ -13,7 +13,7 @@
 class Connection {
 public:
   int id; // Peer id
-  simgrid::s4u::MailboxPtr mailbox_;
+  simgrid::s4u::Mailbox* mailbox_;
   unsigned int bitfield = 0U; // Fields
   //  int messages_count;
   double peer_speed    = 0;
@@ -34,7 +34,7 @@ class Peer {
   int id;
   double deadline;
   RngStream stream;
-  simgrid::s4u::MailboxPtr mailbox_;
+  simgrid::s4u::Mailbox* mailbox_;
   std::unordered_map<int, Connection*> connected_peers;
   std::set<Connection*> active_peers; // active peers list
 
@@ -77,9 +77,9 @@ public:
   void requestNewPieceTo(Connection* remote_peer);
 
   bool getPeersFromTracker();
-  void sendMessage(simgrid::s4u::MailboxPtr mailbox, e_message_type type, uint64_t size);
-  void sendBitfield(simgrid::s4u::MailboxPtr mailbox);
-  void sendPiece(simgrid::s4u::MailboxPtr mailbox, unsigned int piece, int block_index, int block_length);
+  void sendMessage(simgrid::s4u::Mailbox* mailbox, e_message_type type, uint64_t size);
+  void sendBitfield(simgrid::s4u::Mailbox* mailbox);
+  void sendPiece(simgrid::s4u::Mailbox* mailbox, unsigned int piece, int block_index, int block_length);
   void sendHandshakeToAllPeers();
   void sendHaveToAllPeers(unsigned int piece);
   void sendRequestTo(Connection* remote_peer, unsigned int piece);

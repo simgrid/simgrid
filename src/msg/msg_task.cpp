@@ -681,8 +681,6 @@ msg_comm_t MSG_task_irecv(msg_task_t* task, const char* name)
  */
 msg_comm_t MSG_task_irecv_bounded(msg_task_t* task, const char* name, double rate)
 {
-  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(name);
-
   /* FIXME: these functions are not traceable */
   /* Sanity check */
   xbt_assert(task, "Null pointer for the task storage");

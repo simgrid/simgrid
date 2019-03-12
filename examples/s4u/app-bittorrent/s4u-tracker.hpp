@@ -12,13 +12,14 @@
 
 class TrackerQuery {
   int peer_id; // peer id
-  simgrid::s4u::MailboxPtr return_mailbox;
+  simgrid::s4u::Mailbox* return_mailbox;
+
 public:
-  explicit TrackerQuery(int peer_id, simgrid::s4u::MailboxPtr return_mailbox)
+  explicit TrackerQuery(int peer_id, simgrid::s4u::Mailbox* return_mailbox)
       : peer_id(peer_id), return_mailbox(return_mailbox){};
   ~TrackerQuery() = default;
   int getPeerId() { return peer_id; }
-  simgrid::s4u::MailboxPtr getReturnMailbox() { return return_mailbox; }
+  simgrid::s4u::Mailbox* getReturnMailbox() { return return_mailbox; }
 };
 
 class TrackerAnswer {
@@ -36,7 +37,7 @@ public:
 class Tracker {
   double deadline;
   RngStream stream;
-  simgrid::s4u::MailboxPtr mailbox;
+  simgrid::s4u::Mailbox* mailbox;
   std::set<int> known_peers;
 
 public:

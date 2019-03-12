@@ -222,7 +222,7 @@ bool Comm::test()
   return false;
 }
 
-MailboxPtr Comm::get_mailbox()
+Mailbox* Comm::get_mailbox()
 {
   return mailbox_;
 }

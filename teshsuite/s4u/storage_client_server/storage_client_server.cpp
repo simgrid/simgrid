@@ -52,7 +52,7 @@ static void hsm_put(const std::string& remote_host, const std::string& src, cons
   // Send file
   XBT_INFO("%s sends %llu to %s", simgrid::s4u::this_actor::get_cname(), read_size, remote_host.c_str());
   std::string* payload             = new std::string(simgrid::xbt::string_printf("%s %llu", dest.c_str(), read_size));
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(remote_host);
+  simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(remote_host);
   mailbox->put(payload, static_cast<double>(read_size));
   simgrid::s4u::this_actor::sleep_for(.4);
 }
@@ -122,7 +122,7 @@ static void client()
   hsm_put("alice", "/home/doc/simgrid/examples/msg/parallel_task/test_ptask_deployment.xml", "c:\\Windows\\titi.xml");
   hsm_put("alice", "/home/doc/simgrid/examples/msg/alias/masterslave_forwarder_with_alias.c", "c:\\Windows\\tata.c");
 
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name("alice");
+  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name("alice");
   mailbox->put(new std::string("finalize"), 0);
 
   get_set_storage_data("Disk1");
@@ -131,7 +131,7 @@ static void client()
 static void server()
 {
   storage_info(simgrid::s4u::this_actor::get_host());
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(simgrid::s4u::this_actor::get_host()->get_cname());
+  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(simgrid::s4u::this_actor::get_host()->get_cname());
 
   XBT_INFO("Server waiting for transfers ...");
   while (1) {

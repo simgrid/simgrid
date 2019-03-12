@@ -19,7 +19,7 @@ namespace s4u {
  * Represents all asynchronous communications, that you can test or wait onto.
  */
 class XBT_PUBLIC Comm : public Activity {
-  MailboxPtr mailbox_                 = nullptr;
+  Mailbox* mailbox_                   = nullptr;
   kernel::actor::ActorImpl* sender_   = nullptr;
   kernel::actor::ActorImpl* receiver_ = nullptr;
   double rate_                        = -1;
@@ -112,7 +112,7 @@ public:
   CommPtr set_dst_data(void** buff, size_t size);
 
   /** Retrieve the mailbox on which this comm acts */
-  MailboxPtr get_mailbox();
+  Mailbox* get_mailbox();
   /** Retrieve the size of the received data. Not to be mixed with @ref Activity::set_remaining()  */
   size_t get_dst_data_size();
 
@@ -148,7 +148,7 @@ public:
   {
     return get_dst_data_size();
   }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") MailboxPtr getMailbox() { return get_mailbox(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") Mailbox* getMailbox() { return get_mailbox(); }
 #endif
 };
 } // namespace s4u

@@ -7,7 +7,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_pingpong, "Messages specific for this s4u example");
 
-static void pinger(simgrid::s4u::MailboxPtr mailbox_in, simgrid::s4u::MailboxPtr mailbox_out)
+static void pinger(simgrid::s4u::Mailbox* mailbox_in, simgrid::s4u::Mailbox* mailbox_out)
 {
   XBT_INFO("Ping from mailbox %s to mailbox %s", mailbox_in->get_name().c_str(), mailbox_out->get_name().c_str());
 
@@ -25,7 +25,7 @@ static void pinger(simgrid::s4u::MailboxPtr mailbox_in, simgrid::s4u::MailboxPtr
   delete sender_time;
 }
 
-static void ponger(simgrid::s4u::MailboxPtr mailbox_in, simgrid::s4u::MailboxPtr mailbox_out)
+static void ponger(simgrid::s4u::Mailbox* mailbox_in, simgrid::s4u::Mailbox* mailbox_out)
 {
   XBT_INFO("Pong from mailbox %s to mailbox %s", mailbox_in->get_name().c_str(), mailbox_out->get_name().c_str());
 
@@ -49,8 +49,8 @@ int main(int argc, char* argv[])
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  simgrid::s4u::MailboxPtr mb1 = simgrid::s4u::Mailbox::by_name("Mailbox 1");
-  simgrid::s4u::MailboxPtr mb2 = simgrid::s4u::Mailbox::by_name("Mailbox 2");
+  simgrid::s4u::Mailbox* mb1 = simgrid::s4u::Mailbox::by_name("Mailbox 1");
+  simgrid::s4u::Mailbox* mb2 = simgrid::s4u::Mailbox::by_name("Mailbox 2");
 
   simgrid::s4u::Actor::create("pinger", simgrid::s4u::Host::by_name("Tremblay"), pinger, mb1, mb2);
   simgrid::s4u::Actor::create("ponger", simgrid::s4u::Host::by_name("Jupiter"), ponger, mb2, mb1);

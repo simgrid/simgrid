@@ -14,10 +14,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_chainsend, "Messages specific for chainsend");
 
 class ChainMessage {
 public:
-  simgrid::s4u::MailboxPtr prev_ = nullptr;
-  simgrid::s4u::MailboxPtr next_ = nullptr;
+  simgrid::s4u::Mailbox* prev_   = nullptr;
+  simgrid::s4u::Mailbox* next_   = nullptr;
   unsigned int num_pieces        = 0;
-  explicit ChainMessage(simgrid::s4u::MailboxPtr prev, simgrid::s4u::MailboxPtr next, const unsigned int num_pieces)
+  explicit ChainMessage(simgrid::s4u::Mailbox* prev, simgrid::s4u::Mailbox* next, const unsigned int num_pieces)
       : prev_(prev), next_(next), num_pieces(num_pieces)
   {
   }
@@ -32,9 +32,9 @@ public:
 
 class Peer {
 public:
-  simgrid::s4u::MailboxPtr prev = nullptr;
-  simgrid::s4u::MailboxPtr next = nullptr;
-  simgrid::s4u::MailboxPtr me   = nullptr;
+  simgrid::s4u::Mailbox* prev = nullptr;
+  simgrid::s4u::Mailbox* next = nullptr;
+  simgrid::s4u::Mailbox* me   = nullptr;
   std::vector<simgrid::s4u::CommPtr> pending_recvs;
   std::vector<simgrid::s4u::CommPtr> pending_sends;
 
@@ -90,20 +90,20 @@ public:
 
 class Broadcaster {
 public:
-  simgrid::s4u::MailboxPtr first = nullptr;
-  std::vector<simgrid::s4u::MailboxPtr> mailboxes;
+  simgrid::s4u::Mailbox* first = nullptr;
+  std::vector<simgrid::s4u::Mailbox*> mailboxes;
   unsigned int piece_count;
 
   void buildChain()
   {
     auto cur                      = mailboxes.begin();
-    simgrid::s4u::MailboxPtr prev = nullptr;
-    simgrid::s4u::MailboxPtr last = nullptr;
+    simgrid::s4u::Mailbox* prev   = nullptr;
+    simgrid::s4u::Mailbox* last   = nullptr;
 
     /* Build the chain if there's at least one peer */
     if (cur != mailboxes.end()) {
       /* init: prev=NULL, host=current cur, next=next cur */
-      simgrid::s4u::MailboxPtr next = *cur;
+      simgrid::s4u::Mailbox* next   = *cur;
       first                         = next;
 
       /* This iterator iterates one step ahead: cur is current iterated element, but is actually next in the chain */
@@ -111,7 +111,7 @@ public:
         /* following steps: prev=last, host=next, next=cur */
         ++cur;
         prev                                     = last;
-        simgrid::s4u::MailboxPtr current_mailbox = next;
+        simgrid::s4u::Mailbox* current_mailbox   = next;
         if (cur != mailboxes.end())
           next = *cur;
         else

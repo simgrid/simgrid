@@ -212,8 +212,8 @@ void Node::checkPredecessor()
   if (pred_id_ == -1)
     return;
 
-  simgrid::s4u::MailboxPtr mailbox        = simgrid::s4u::Mailbox::by_name(std::to_string(pred_id_));
-  simgrid::s4u::MailboxPtr return_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_is_alive");
+  simgrid::s4u::Mailbox* mailbox        = simgrid::s4u::Mailbox::by_name(std::to_string(pred_id_));
+  simgrid::s4u::Mailbox* return_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_is_alive");
 
   ChordMessage* message = new ChordMessage(PREDECESSOR_ALIVE);
   message->request_id   = pred_id_;
@@ -252,8 +252,8 @@ int Node::remoteGetPredecessor(int ask_to)
 {
   int predecessor_id                      = -1;
   void* data                              = nullptr;
-  simgrid::s4u::MailboxPtr mailbox        = simgrid::s4u::Mailbox::by_name(std::to_string(ask_to));
-  simgrid::s4u::MailboxPtr return_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_pred");
+  simgrid::s4u::Mailbox* mailbox          = simgrid::s4u::Mailbox::by_name(std::to_string(ask_to));
+  simgrid::s4u::Mailbox* return_mailbox   = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_pred");
 
   ChordMessage* message = new ChordMessage(GET_PREDECESSOR);
   message->request_id   = id_;
@@ -324,8 +324,8 @@ int Node::remoteFindSuccessor(int ask_to, int id)
 {
   int successor                           = -1;
   void* data                              = nullptr;
-  simgrid::s4u::MailboxPtr mailbox        = simgrid::s4u::Mailbox::by_name(std::to_string(ask_to));
-  simgrid::s4u::MailboxPtr return_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_succ");
+  simgrid::s4u::Mailbox* mailbox          = simgrid::s4u::Mailbox::by_name(std::to_string(ask_to));
+  simgrid::s4u::Mailbox* return_mailbox   = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_succ");
 
   ChordMessage* message = new ChordMessage(FIND_SUCCESSOR);
   message->request_id   = id_;
@@ -379,7 +379,7 @@ void Node::remoteNotify(int notify_id, int predecessor_candidate_id)
 
   // send a "Notify" request to notify_id
   XBT_DEBUG("Sending a 'Notify' request to %d", notify_id);
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(notify_id));
+  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(notify_id));
   mailbox->put_init(message, 10)->detach(ChordMessage::destroy);
 }
 
@@ -426,7 +426,7 @@ void Node::handleMessage(ChordMessage* message)
       int closest = closestPrecedingFinger(message->request_id);
       XBT_DEBUG("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
           message->request_id, closest);
-      simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(closest));
+      simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(closest));
       mailbox->put_init(message, 10)->detach(ChordMessage::destroy);
     }
     break;

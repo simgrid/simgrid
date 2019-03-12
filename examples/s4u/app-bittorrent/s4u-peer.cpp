@@ -85,7 +85,7 @@ void Peer::operator()()
 
 bool Peer::getPeersFromTracker()
 {
-  simgrid::s4u::MailboxPtr tracker_mailbox = simgrid::s4u::Mailbox::by_name(TRACKER_MAILBOX);
+  simgrid::s4u::Mailbox* tracker_mailbox = simgrid::s4u::Mailbox::by_name(TRACKER_MAILBOX);
   // Build the task to send to the tracker
   TrackerQuery* peer_request = new TrackerQuery(id, mailbox_);
   try {
@@ -121,14 +121,14 @@ void Peer::sendHandshakeToAllPeers()
   }
 }
 
-void Peer::sendMessage(simgrid::s4u::MailboxPtr mailbox, e_message_type type, uint64_t size)
+void Peer::sendMessage(simgrid::s4u::Mailbox* mailbox, e_message_type type, uint64_t size)
 {
   const char* type_names[6] = {"HANDSHAKE", "CHOKE", "UNCHOKE", "INTERESTED", "NOTINTERESTED", "CANCEL"};
   XBT_DEBUG("Sending %s to %s", type_names[type], mailbox->get_cname());
   mailbox->put_init(new Message(type, id, bitfield_, mailbox_), size)->detach();
 }
 
-void Peer::sendBitfield(simgrid::s4u::MailboxPtr mailbox)
+void Peer::sendBitfield(simgrid::s4u::Mailbox* mailbox)
 {
   XBT_DEBUG("Sending a BITFIELD to %s", mailbox->get_cname());
   mailbox
@@ -137,7 +137,7 @@ void Peer::sendBitfield(simgrid::s4u::MailboxPtr mailbox)
       ->detach();
 }
 
-void Peer::sendPiece(simgrid::s4u::MailboxPtr mailbox, unsigned int piece, int block_index, int block_length)
+void Peer::sendPiece(simgrid::s4u::Mailbox* mailbox, unsigned int piece, int block_index, int block_length)
 {
   xbt_assert(not hasNotPiece(piece), "Tried to send a unavailable piece.");
   XBT_DEBUG("Sending the PIECE %u (%d,%d) to %s", piece, block_index, block_length, mailbox->get_cname());

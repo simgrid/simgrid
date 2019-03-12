@@ -22,7 +22,7 @@ static void sender(std::vector<std::string> args)
   double comm_size = std::stod(args.at(1));
   XBT_INFO("Send %.0f bytes, in %d flows", comm_size, flow_amount);
 
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(std::string("message"));
+  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::string("message"));
 
   /* Sleep a while before starting the example */
   simgrid::s4u::this_actor::sleep_for(10);
@@ -48,7 +48,7 @@ static void receiver(std::vector<std::string> args)
 
   XBT_INFO("Receiving %d flows ...", flow_amount);
 
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(std::string("message"));
+  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::string("message"));
 
   if (flow_amount == 1) {
     void* res = mailbox->get();

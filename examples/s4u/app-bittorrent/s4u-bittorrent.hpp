@@ -56,16 +56,16 @@ class Message {
 public:
   e_message_type type;
   int peer_id;
-  simgrid::s4u::MailboxPtr return_mailbox;
+  simgrid::s4u::Mailbox* return_mailbox;
   unsigned int bitfield = 0U;
   int piece             = 0;
   int block_index       = 0;
   int block_length      = 0;
-  Message(e_message_type type, int peer_id, simgrid::s4u::MailboxPtr return_mailbox)
+  Message(e_message_type type, int peer_id, simgrid::s4u::Mailbox* return_mailbox)
       : type(type), peer_id(peer_id), return_mailbox(return_mailbox){};
-  Message(e_message_type type, int peer_id, unsigned int bitfield, simgrid::s4u::MailboxPtr return_mailbox)
+  Message(e_message_type type, int peer_id, unsigned int bitfield, simgrid::s4u::Mailbox* return_mailbox)
       : type(type), peer_id(peer_id), return_mailbox(return_mailbox), bitfield(bitfield){};
-  Message(e_message_type type, int peer_id, simgrid::s4u::MailboxPtr return_mailbox, int piece, int block_index,
+  Message(e_message_type type, int peer_id, simgrid::s4u::Mailbox* return_mailbox, int piece, int block_index,
           int block_length)
       : type(type)
       , peer_id(peer_id)
@@ -73,7 +73,7 @@ public:
       , piece(piece)
       , block_index(block_index)
       , block_length(block_length){};
-  Message(e_message_type type, int peer_id, simgrid::s4u::MailboxPtr return_mailbox, int piece)
+  Message(e_message_type type, int peer_id, simgrid::s4u::Mailbox* return_mailbox, int piece)
       : type(type), peer_id(peer_id), return_mailbox(return_mailbox), piece(piece){};
   ~Message() = default;
 };
