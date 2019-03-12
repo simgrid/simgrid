@@ -7,8 +7,8 @@
 #define SIMIX_PRIVATE_HPP
 
 #include "simgrid/s4u/Actor.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/context/Context.hpp"
-#include "src/simix/ActorImpl.hpp"
 
 #include <boost/intrusive/list.hpp>
 #include <mutex>

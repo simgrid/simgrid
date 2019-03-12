@@ -7,7 +7,7 @@
 #define SIMGRID_KERNEL_ACTIVITY_COMM_HPP
 
 #include "src/kernel/activity/ActivityImpl.hpp"
-#include "src/simix/ActorImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include "surf/surf.hpp"
 
 

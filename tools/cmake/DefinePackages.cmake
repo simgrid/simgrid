@@ -383,8 +383,6 @@ set(SIMIX_SRC
   src/simix/smx_deployment.cpp
   src/simix/smx_environment.cpp
   src/simix/smx_global.cpp
-  src/simix/ActorImpl.cpp
-  src/simix/ActorImpl.hpp
   src/simix/popping.cpp
   src/kernel/activity/ActivityImpl.cpp
   src/kernel/activity/ActivityImpl.hpp
@@ -406,6 +404,8 @@ set(SIMIX_SRC
   src/kernel/activity/SleepImpl.hpp
   src/kernel/activity/SynchroRaw.cpp
   src/kernel/activity/SynchroRaw.hpp
+  src/kernel/actor/ActorImpl.cpp
+  src/kernel/actor/ActorImpl.hpp
 
   ${SIMIX_GENERATED_SRC}
   )

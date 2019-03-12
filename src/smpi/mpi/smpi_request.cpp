@@ -15,7 +15,6 @@
 #include "smpi_op.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/simix/ActorImpl.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "xbt/config.hpp"
 

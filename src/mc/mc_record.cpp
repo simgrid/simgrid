@@ -9,7 +9,6 @@
 #include "src/mc/Transition.hpp"
 #include "src/mc/mc_base.h"
 #include "src/mc/mc_replay.hpp"
-#include "src/simix/ActorImpl.hpp"
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/checker/Checker.hpp"

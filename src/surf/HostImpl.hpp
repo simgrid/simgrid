@@ -6,11 +6,11 @@
 #ifndef SURF_HOST_INTERFACE_HPP_
 #define SURF_HOST_INTERFACE_HPP_
 
-#include "StorageImpl.hpp"
-#include "cpu_interface.hpp"
-#include "network_interface.hpp"
-#include "src/simix/ActorImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include "src/surf/PropertyHolder.hpp"
+#include "src/surf/StorageImpl.hpp"
+#include "src/surf/cpu_interface.hpp"
+#include "src/surf/network_interface.hpp"
 
 #include <vector>
 

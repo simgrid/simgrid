@@ -9,8 +9,8 @@
 
 #include "mc/mc.h"
 #include "simgrid/Exception.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/mc_ignore.hpp"
-#include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_private.hpp"
 
 #include "ContextUnix.hpp"

@@ -7,7 +7,6 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Exec.hpp"
-#include "smx_private.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/kernel/activity/IoImpl.hpp"
@@ -15,6 +14,7 @@
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/Client.hpp"
+#include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 
@@ -43,7 +43,8 @@ smx_actor_t SIMIX_process_self()
  * @return true if there are asynchronous communications in this process
  * @deprecated
  */
-int SIMIX_process_has_pending_comms(smx_actor_t process) {
+int SIMIX_process_has_pending_comms(smx_actor_t process)
+{
 
   return process->comms.size() > 0;
 }
@@ -54,7 +55,7 @@ namespace actor {
 
 ActorImpl::ActorImpl(const simgrid::xbt::string& name, s4u::Host* host) : host_(host), name_(name), piface_(this)
 {
-  pid_ = simix_process_maxpid++;
+  pid_           = simix_process_maxpid++;
   simcall.issuer = this;
 }
 
@@ -523,7 +524,7 @@ void create_maestro(const std::function<void()>& code)
 
 } // namespace actor
 } // namespace kernel
-}
+} // namespace simgrid
 
 void SIMIX_process_detach()
 {
@@ -602,7 +603,8 @@ void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t actor)
   /* If we are suspending ourselves, then just do not finish the simcall now */
 }
 
-int SIMIX_process_get_maxpid() {
+int SIMIX_process_get_maxpid()
+{
   return simix_process_maxpid;
 }
 
@@ -626,10 +628,10 @@ void SIMIX_process_self_set_data(void* data) // deprecated
   SIMIX_process_self()->set_user_data(data);
 }
 
-
 /* needs to be public and without simcall because it is called
    by exceptions and logging events */
-const char* SIMIX_process_self_get_name() {
+const char* SIMIX_process_self_get_name()
+{
 
   smx_actor_t process = SIMIX_process_self();
   if (process == nullptr || process == simix_global->maestro_process)

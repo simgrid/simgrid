@@ -7,7 +7,7 @@
 #define SIMIX_MUTEXIMPL_HPP
 
 #include "simgrid/s4u/ConditionVariable.hpp"
-#include "src/simix/ActorImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include <boost/intrusive/list.hpp>
 
 namespace simgrid {

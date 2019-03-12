@@ -6,8 +6,8 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/modelchecker.h"
 #include "src/internal_config.h"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/context/context_private.hpp"
-#include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_private.hpp"
 #include "xbt/parmap.hpp"
 

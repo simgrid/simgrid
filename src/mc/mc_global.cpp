@@ -26,7 +26,7 @@
 #include <sys/time.h>
 #endif
 
-#include "src/simix/ActorImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/checker/Checker.hpp"

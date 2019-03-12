@@ -11,7 +11,7 @@
 
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
-#include "src/simix/ActorImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 
 namespace simgrid {
 namespace kernel {

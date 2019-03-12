@@ -10,7 +10,7 @@
 #include <boost/intrusive/list.hpp>
 
 #include "simgrid/s4u/Semaphore.hpp"
-#include "src/simix/ActorImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 
 namespace simgrid {
 namespace kernel {

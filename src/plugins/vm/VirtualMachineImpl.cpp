@@ -5,7 +5,6 @@
 
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/include/surf/surf.hpp"
-#include "src/simix/ActorImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "xbt/asserts.h" // xbt_log_no_loc
 

@@ -10,7 +10,7 @@
 #include "smpi_comm.hpp"
 #include "smpi_datatype_derived.hpp"
 #include "smpi_status.hpp"
-#include "src/simix/ActorImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_pmpi, smpi, "Logging specific to SMPI (pmpi)");

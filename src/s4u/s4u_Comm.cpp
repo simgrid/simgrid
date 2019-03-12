@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/msg/msg_private.hpp"
-#include "src/simix/ActorImpl.hpp"
 #include "xbt/log.h"
 
 #include "simgrid/Exception.hpp"

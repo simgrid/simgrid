@@ -17,7 +17,7 @@
 
 struct s_smx_process_exit_fun_t {
   std::function<void(bool, void*)> fun;
-  void *arg;
+  void* arg;
 };
 
 namespace simgrid {
