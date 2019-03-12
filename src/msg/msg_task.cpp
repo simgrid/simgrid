@@ -487,6 +487,239 @@ msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char* alia
   return task->send(alias, timeout);
 }
 
+/**
+ * @brief Receives a task from a mailbox.
+ *
+ * This is a blocking function, the execution flow will be blocked until the task is received. See #MSG_task_irecv
+ * for receiving tasks asynchronously.
+ *
+ * @param task a memory location for storing a #msg_task_t.
+ * @param alias name of the mailbox to receive the task from
+ *
+ * @return Returns
+ * #MSG_OK if the task was successfully received,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
+ */
+msg_error_t MSG_task_receive(msg_task_t * task, const char *alias)
+{
+  return MSG_task_receive_with_timeout(task, alias, -1);
+}
+
+/**
+ * @brief Receives a task from a mailbox at a given rate.
+ *
+ * @param task a memory location for storing a #msg_task_t.
+ * @param alias name of the mailbox to receive the task from
+ * @param rate limit the reception to rate bandwidth (byte/sec)
+ *
+ * The rate parameter can be used to receive a task with a limited bandwidth (smaller than the physical available
+ * value). Use MSG_task_receive() if you don't limit the rate (or pass -1 as a rate value do disable this feature).
+ *
+ * @return Returns
+ * #MSG_OK if the task was successfully received,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
+ */
+msg_error_t MSG_task_receive_bounded(msg_task_t* task, const char* alias, double rate)
+{
+  return MSG_task_receive_with_timeout_bounded(task, alias, -1, rate);
+}
+
+/**
+ * @brief Receives a task from a mailbox with a given timeout.
+ *
+ * This is a blocking function with a timeout, the execution flow will be blocked until the task is received or the
+ * timeout is achieved. See #MSG_task_irecv for receiving tasks asynchronously.  You can provide a -1 timeout
+ * to obtain an infinite timeout.
+ *
+ * @param task a memory location for storing a #msg_task_t.
+ * @param alias name of the mailbox to receive the task from
+ * @param timeout is the maximum wait time for completion (if -1, this call is the same as #MSG_task_receive)
+ *
+ * @return Returns
+ * #MSG_OK if the task was successfully received,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
+ */
+msg_error_t MSG_task_receive_with_timeout(msg_task_t* task, const char* alias, double timeout)
+{
+  return MSG_task_receive_ext_bounded(task, alias, timeout, nullptr, -1);
+}
+
+/**
+ * @brief Receives a task from a mailbox with a given timeout and at a given rate.
+ *
+ * @param task a memory location for storing a #msg_task_t.
+ * @param alias name of the mailbox to receive the task from
+ * @param timeout is the maximum wait time for completion (if -1, this call is the same as #MSG_task_receive)
+ * @param rate limit the reception to rate bandwidth (byte/sec)
+ *
+ * The rate parameter can be used to send a task with a limited
+ * bandwidth (smaller than the physical available value). Use
+ * MSG_task_receive() if you don't limit the rate (or pass -1 as a
+ * rate value do disable this feature).
+ *
+ * @return Returns
+ * #MSG_OK if the task was successfully received,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
+ */
+msg_error_t MSG_task_receive_with_timeout_bounded(msg_task_t* task, const char* alias, double timeout, double rate)
+{
+  return MSG_task_receive_ext_bounded(task, alias, timeout, nullptr, rate);
+}
+
+/**
+ * @brief Receives a task from a mailbox from a specific host with a given timeout.
+ *
+ * This is a blocking function with a timeout, the execution flow will be blocked until the task is received or the
+ * timeout is achieved. See #MSG_task_irecv for receiving tasks asynchronously. You can provide a -1 timeout
+ * to obtain an infinite timeout.
+ *
+ * @param task a memory location for storing a #msg_task_t.
+ * @param alias name of the mailbox to receive the task from
+ * @param timeout is the maximum wait time for completion (provide -1 for no timeout)
+ * @param host a #msg_host_t host from where the task was sent
+ *
+ * @return Returns
+ * #MSG_OK if the task was successfully received,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
+ */
+msg_error_t MSG_task_receive_ext(msg_task_t* task, const char* alias, double timeout, msg_host_t host)
+{
+  XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
+  return MSG_task_receive_ext_bounded(task, alias, timeout, host, -1.0);
+}
+
+/**
+ * @brief Receives a task from a mailbox from a specific host with a given timeout  and at a given rate.
+ *
+ * @param task a memory location for storing a #msg_task_t.
+ * @param alias name of the mailbox to receive the task from
+ * @param timeout is the maximum wait time for completion (provide -1 for no timeout)
+ * @param host a #msg_host_t host from where the task was sent
+ * @param rate limit the reception to rate bandwidth (byte/sec)
+ *
+ * The rate parameter can be used to receive a task with a limited bandwidth (smaller than the physical available
+ * value). Use MSG_task_receive_ext() if you don't limit the rate (or pass -1 as a rate value do disable this feature).
+ *
+ * @return Returns
+ * #MSG_OK if the task was successfully received,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
+ */
+msg_error_t MSG_task_receive_ext_bounded(msg_task_t* task, const char* alias, double timeout, msg_host_t host,
+                                         double rate)
+{
+  XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
+  msg_error_t ret = MSG_OK;
+  /* We no longer support getting a task from a specific host */
+  if (host)
+    THROW_UNIMPLEMENTED;
+
+  /* Sanity check */
+  xbt_assert(task, "Null pointer for the task storage");
+
+  if (*task)
+    XBT_WARN("Asked to write the received task in a non empty struct -- proceeding.");
+
+  /* Try to receive it by calling SIMIX network layer */
+  try {
+    void* payload;
+    simgrid::s4u::Mailbox::by_name(alias)
+        ->get_init()
+        ->set_dst_data(&payload, sizeof(msg_task_t*))
+        ->set_rate(rate)
+        ->wait_for(timeout);
+    *task = static_cast<msg_task_t>(payload);
+    XBT_DEBUG("Got task %s from %s", (*task)->get_cname(), alias);
+    (*task)->set_not_used();
+  } catch (simgrid::HostFailureException& e) {
+    ret = MSG_HOST_FAILURE;
+  } catch (simgrid::TimeoutError& e) {
+    ret = MSG_TIMEOUT;
+  } catch (simgrid::CancelException& e) {
+    ret = MSG_TASK_CANCELED;
+  } catch (xbt_ex& e) {
+    if (e.category == network_error)
+      ret = MSG_TRANSFER_FAILURE;
+    else
+      throw;
+  }
+
+  if (TRACE_actor_is_enabled() && ret != MSG_HOST_FAILURE && ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {
+    container_t process_container = simgrid::instr::Container::by_name(instr_pid(MSG_process_self()));
+
+    std::string key = std::string("p") + std::to_string((*task)->get_id());
+    simgrid::instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->end_event(process_container, "SR", key);
+  }
+  return ret;
+}
+
+/**
+ * @brief Starts listening for receiving a task from an asynchronous communication.
+ *
+ * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test() to end the communication.
+ *
+ * @param task a memory location for storing a #msg_task_t. has to be valid until the end of the communication.
+ * @param name of the mailbox to receive the task on
+ * @return the msg_comm_t communication created
+ */
+msg_comm_t MSG_task_irecv(msg_task_t* task, const char* name)
+{
+  return MSG_task_irecv_bounded(task, name, -1.0);
+}
+
+/**
+ * @brief Starts listening for receiving a task from an asynchronous communication at a given rate.
+ *
+ * The rate parameter can be used to receive a task with a limited
+ * bandwidth (smaller than the physical available value). Use
+ * MSG_task_irecv() if you don't limit the rate (or pass -1 as a rate
+ * value do disable this feature).
+ *
+ * @param task a memory location for storing a #msg_task_t. has to be valid until the end of the communication.
+ * @param name of the mailbox to receive the task on
+ * @param rate limit the bandwidth to the given rate (byte/sec)
+ * @return the msg_comm_t communication created
+ */
+msg_comm_t MSG_task_irecv_bounded(msg_task_t* task, const char* name, double rate)
+{
+  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(name);
+
+  /* FIXME: these functions are not traceable */
+  /* Sanity check */
+  xbt_assert(task, "Null pointer for the task storage");
+
+  if (*task)
+    XBT_CRITICAL("MSG_task_irecv() was asked to write in a non empty task struct.");
+
+  /* Try to receive it by calling SIMIX network layer */
+  simgrid::s4u::CommPtr comm = simgrid::s4u::Mailbox::by_name(name)
+                                   ->get_init()
+                                   ->set_dst_data((void**)task, sizeof(msg_task_t*))
+                                   ->set_rate(rate)
+                                   ->start();
+
+  return new simgrid::msg::Comm(nullptr, task, comm);
+}
+
+/**
+ * @brief Look if there is a communication on a mailbox and return the PID of the sender process.
+ *
+ * @param alias the name of the mailbox to be considered
+ *
+ * @return Returns the PID of sender process,
+ * -1 if there is no communication in the mailbox.#include <cmath>
+ *
+ */
+int MSG_task_listen_from(const char* alias)
+{
+  /* looks inside the rdv directly. Not clean. */
+  simgrid::kernel::activity::CommImplPtr comm = simgrid::s4u::Mailbox::by_name(alias)->front();
+
+  if (comm && comm->src_actor_)
+    return comm->src_actor_->get_pid();
+  else
+    return -1;
+}
+
 /** @brief Destroys the given task.
  *
  * You should free user data, if any, @b before calling this destructor.
