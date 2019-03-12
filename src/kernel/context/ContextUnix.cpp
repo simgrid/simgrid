@@ -72,7 +72,7 @@ UContext::UContext(std::function<void()>&& code, smx_actor_t actor, SwappedConte
     getcontext(&this->uc_);
     this->uc_.uc_link = nullptr;
     this->uc_.uc_stack.ss_sp   = sg_makecontext_stack_addr(get_stack());
-    this->uc_.uc_stack.ss_size = sg_makecontext_stack_size(smx_context_usable_stack_size);
+    this->uc_.uc_stack.ss_size = sg_makecontext_stack_size(smx_context_stack_size);
     // Makecontext expects integer arguments; we want to pass a pointer.
     // This context address is decomposed into a serie of integers, which are passed as arguments to makecontext.
 
@@ -83,7 +83,7 @@ UContext::UContext(std::function<void()>&& code, smx_actor_t actor, SwappedConte
 
 #if SIMGRID_HAVE_MC
     if (MC_is_active()) {
-      MC_register_stack_area(get_stack(), actor, &(this->uc_), smx_context_usable_stack_size);
+      MC_register_stack_area(get_stack(), actor, &(this->uc_), smx_context_stack_size);
     }
 #endif
   }

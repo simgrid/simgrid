@@ -199,7 +199,7 @@ RawContext::RawContext(std::function<void()>&& code, smx_actor_t actor, SwappedC
     : SwappedContext(std::move(code), actor, factory)
 {
    if (has_code()) {
-     this->stack_top_ = raw_makecontext(get_stack(), smx_context_usable_stack_size, RawContext::wrapper, this);
+     this->stack_top_ = raw_makecontext(get_stack(), smx_context_stack_size, RawContext::wrapper, this);
    } else {
      if (MC_is_active())
        MC_ignore_heap(&stack_top_, sizeof(stack_top_));

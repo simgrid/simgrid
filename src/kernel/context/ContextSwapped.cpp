@@ -52,6 +52,7 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
     factory_->workers_context_[0] = this;
 
   if (has_code()) {
+    xbt_assert((smx_context_stack_size & 0xf) == 0, "smx_context_stack_size should be multiple of 16");
     if (smx_context_guard_size > 0 && not MC_is_active()) {
 
 #if !defined(PTH_STACKGROWTH) || (PTH_STACKGROWTH != -1)
@@ -97,13 +98,13 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
     }
 
 #if PTH_STACKGROWTH == -1
-    ASAN_ONLY(this->asan_stack_ = this->stack_ + smx_context_usable_stack_size);
+    ASAN_ONLY(this->asan_stack_ = this->stack_ + smx_context_stack_size);
 #else
     ASAN_ONLY(this->asan_stack_ = this->stack_);
 #endif
 #if HAVE_VALGRIND_H
-    unsigned int valgrind_stack_id = VALGRIND_STACK_REGISTER(this->stack_, this->stack_ + smx_context_stack_size);
-    memcpy(this->stack_ + smx_context_usable_stack_size, &valgrind_stack_id, sizeof valgrind_stack_id);
+    if (RUNNING_ON_VALGRIND)
+      this->valgrind_stack_id_ = VALGRIND_STACK_REGISTER(this->stack_, this->stack_ + smx_context_stack_size);
 #endif
   }
 }
@@ -114,9 +115,8 @@ SwappedContext::~SwappedContext()
     return;
 
 #if HAVE_VALGRIND_H
-  unsigned int valgrind_stack_id;
-  memcpy(&valgrind_stack_id, stack_ + smx_context_usable_stack_size, sizeof valgrind_stack_id);
-  VALGRIND_STACK_DEREGISTER(valgrind_stack_id);
+  if (RUNNING_ON_VALGRIND)
+    VALGRIND_STACK_DEREGISTER(valgrind_stack_id_);
 #endif
 
 #ifndef _WIN32

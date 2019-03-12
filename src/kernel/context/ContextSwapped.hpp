@@ -62,6 +62,10 @@ public:
 private:
   unsigned char* stack_ = nullptr;       /* the thread stack */
   SwappedContextFactory* const factory_; // for sequential and parallel run_all()
+
+#if HAVE_VALGRIND_H
+  unsigned int valgrind_stack_id_;
+#endif
 };
 
 } // namespace context
