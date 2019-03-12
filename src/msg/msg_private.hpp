@@ -86,15 +86,19 @@ public:
 };
 
 class Comm {
+  msg_error_t status_ = MSG_OK; /* status of the communication once finished */
 public:
   Task* task_sent;             /* task sent (NULL for the receiver) */
   Task** task_received;        /* where the task will be received (NULL for the sender) */
   s4u::CommPtr s_comm;         /* SIMIX communication object encapsulated (the same for both processes) */
-  msg_error_t status = MSG_OK; /* status of the communication once finished */
   Comm(msg_task_t sent, msg_task_t* received, s4u::CommPtr comm)
       : task_sent(sent), task_received(received), s_comm(std::move(comm))
   {
   }
+  bool test();
+  msg_error_t wait_for(double timeout);
+  void set_status(msg_error_t status) { status_ = status; }
+  msg_error_t get_status() { return status_; }
 };
 
 class ActorUserData {

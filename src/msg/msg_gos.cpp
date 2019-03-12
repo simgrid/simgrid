@@ -15,6 +15,63 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg, "Logging specific to MSG (gos)");
 
+namespace simgrid {
+namespace msg {
+
+bool Comm::test()
+{
+  bool finished = false;
+
+  try {
+    finished = s_comm->test();
+    if (finished && task_received != nullptr) {
+      /* I am the receiver */
+      (*task_received)->set_not_used();
+    }
+  } catch (simgrid::TimeoutError& e) {
+    status_  = MSG_TIMEOUT;
+    finished = true;
+  } catch (simgrid::CancelException& e) {
+    status_  = MSG_TASK_CANCELED;
+    finished = true;
+  } catch (xbt_ex& e) {
+    if (e.category == network_error) {
+      status_  = MSG_TRANSFER_FAILURE;
+      finished = true;
+    } else {
+      throw;
+    }
+  }
+
+  return finished;
+}
+msg_error_t Comm::wait_for(double timeout)
+{
+  try {
+    s_comm->wait_for(timeout);
+
+    if (task_received != nullptr) {
+      /* I am the receiver */
+      (*task_received)->set_not_used();
+    }
+
+    /* FIXME: these functions are not traceable */
+  } catch (simgrid::TimeoutError& e) {
+    status_ = MSG_TIMEOUT;
+  } catch (simgrid::CancelException& e) {
+    status_ = MSG_TASK_CANCELED;
+  } catch (xbt_ex& e) {
+    if (e.category == network_error)
+      status_ = MSG_TRANSFER_FAILURE;
+    else
+      throw;
+  }
+
+  return status_;
+}
+} // namespace msg
+} // namespace simgrid
+
 /**
  * @brief Receives a task from a mailbox.
  *
@@ -239,31 +296,7 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
  */
 int MSG_comm_test(msg_comm_t comm)
 {
-  bool finished = false;
-
-  try {
-    finished = comm->s_comm->test();
-    if (finished && comm->task_received != nullptr) {
-      /* I am the receiver */
-      (*comm->task_received)->set_not_used();
-    }
-  } catch (simgrid::TimeoutError& e) {
-    comm->status = MSG_TIMEOUT;
-    finished     = true;
-  } catch (simgrid::CancelException& e) {
-    comm->status = MSG_TASK_CANCELED;
-    finished     = true;
-  }
-  catch (xbt_ex& e) {
-    if (e.category == network_error) {
-      comm->status = MSG_TRANSFER_FAILURE;
-      finished     = true;
-    } else {
-      throw;
-    }
-  }
-
-  return finished;
+  return comm->test();
 }
 
 /**
@@ -305,7 +338,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
   if (finished_index != -1) {
     comm = xbt_dynar_get_as(comms, finished_index, msg_comm_t);
     /* the communication is finished */
-    comm->status = status;
+    comm->set_status(status);
 
     if (status == MSG_OK && comm->task_received != nullptr) {
       /* I am the receiver */
@@ -332,28 +365,7 @@ void MSG_comm_destroy(msg_comm_t comm)
  */
 msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 {
-  try {
-    comm->s_comm->wait_for(timeout);
-
-    if (comm->task_received != nullptr) {
-      /* I am the receiver */
-      (*comm->task_received)->set_not_used();
-    }
-
-    /* FIXME: these functions are not traceable */
-  } catch (simgrid::TimeoutError& e) {
-    comm->status = MSG_TIMEOUT;
-  } catch (simgrid::CancelException& e) {
-    comm->status = MSG_TASK_CANCELED;
-  }
-  catch (xbt_ex& e) {
-    if (e.category == network_error)
-      comm->status = MSG_TRANSFER_FAILURE;
-    else
-      throw;
-  }
-
-  return comm->status;
+  return comm->wait_for(timeout);
 }
 
 /** @brief This function is called by a sender and permit to wait for each communication
@@ -365,7 +377,7 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 void MSG_comm_waitall(msg_comm_t * comm, int nb_elem, double timeout)
 {
   for (int i = 0; i < nb_elem; i++)
-    MSG_comm_wait(comm[i], timeout);
+    comm[i]->wait_for(timeout);
 }
 
 /** @brief This function waits for the first communication finished in a list.
@@ -409,7 +421,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 
   comm = xbt_dynar_get_as(comms, finished_index, msg_comm_t);
   /* the communication is finished */
-  comm->status = status;
+  comm->set_status(status);
 
   if (comm->task_received != nullptr) {
     /* I am the receiver */
@@ -426,7 +438,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
  */
 msg_error_t MSG_comm_get_status(msg_comm_t comm) {
 
-  return comm->status;
+  return comm->get_status();
 }
 
 /** @brief Get a task (#msg_task_t) from a communication
