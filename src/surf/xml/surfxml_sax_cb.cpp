@@ -53,7 +53,7 @@ void surf_parse_error(const std::string& msg)
 
 void surf_parse_assert_netpoint(const std::string& hostname, const std::string& pre, const std::string& post)
 {
-  if (sg_netpoint_by_name_or_null(hostname.c_str()) != nullptr) // found
+  if (simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(hostname) != nullptr) // found
     return;
 
   std::string msg = pre + hostname + post + " Existing netpoints: \n";

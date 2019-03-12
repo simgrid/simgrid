@@ -636,7 +636,7 @@ void sg_platf_new_Zone_seal()
 /** @brief Add a link connecting a host to the rest of its AS (which must be cluster or vivaldi) */
 void sg_platf_new_hostlink(simgrid::kernel::routing::HostLinkCreationArgs* hostlink)
 {
-  simgrid::kernel::routing::NetPoint* netpoint = sg_host_by_name(hostlink->id.c_str())->pimpl_netpoint;
+  simgrid::kernel::routing::NetPoint* netpoint = simgrid::s4u::Host::by_name(hostlink->id)->pimpl_netpoint;
   xbt_assert(netpoint, "Host '%s' not found!", hostlink->id.c_str());
   xbt_assert(dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing),
              "Only hosts from Cluster and Vivaldi ASes can get a host_link.");

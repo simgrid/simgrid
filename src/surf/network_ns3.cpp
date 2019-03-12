@@ -73,7 +73,7 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs* cl
 
     // Create private link
     std::string host_id   = cluster->prefix + std::to_string(i) + cluster->suffix;
-    NetPointNs3* host_src = sg_host_by_name(host_id.c_str())->pimpl_netpoint->extension<NetPointNs3>();
+    NetPointNs3* host_src = simgrid::s4u::Host::by_name(host_id)->pimpl_netpoint->extension<NetPointNs3>();
     xbt_assert(host_src, "Cannot find a NS3 host of name %s", host_id.c_str());
 
     // Any NS3 route is symmetrical

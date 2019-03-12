@@ -6,6 +6,7 @@
 #include "storage_n11.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "surf/surf.hpp"
@@ -20,12 +21,13 @@ extern std::map<std::string, simgrid::kernel::resource::StorageType*> storage_ty
 void check_disk_attachment()
 {
   for (auto const& s : simgrid::s4u::Engine::get_instance()->get_all_storages()) {
-    simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s->get_impl()->getHost().c_str());
+    simgrid::kernel::routing::NetPoint* host_elm =
+        simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(s->get_impl()->getHost());
     if (not host_elm)
       surf_parse_error(std::string("Unable to attach storage ") + s->get_cname() + ": host " +
-                       s->get_impl()->getHost().c_str() + " does not exist.");
+                       s->get_impl()->getHost() + " does not exist.");
     else
-      s->set_host(sg_host_by_name(s->get_impl()->getHost().c_str()));
+      s->set_host(simgrid::s4u::Host::by_name(s->get_impl()->getHost()));
   }
 }
 
