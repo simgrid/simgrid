@@ -41,7 +41,7 @@ inline std::string const& to_string(std::string const& value)
 }
 inline std::string to_string(std::string&& value)
 {
-  return value;
+  return std::move(value);
 }
 
 // Set default
