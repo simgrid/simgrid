@@ -6,15 +6,17 @@
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 
+#include <unordered_map>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_mailbox, simix, "Mailbox implementation");
 
-static std::map<std::string, smx_mailbox_t>* mailboxes = new std::map<std::string, smx_mailbox_t>;
+static std::unordered_map<std::string, smx_mailbox_t> mailboxes;
 
 void SIMIX_mailbox_exit()
 {
-  for (auto const& elm : *mailboxes)
+  for (auto const& elm : mailboxes)
     delete elm.second;
-  delete mailboxes;
+  mailboxes.clear();
 }
 
 /******************************************************************************/
@@ -27,8 +29,8 @@ namespace activity {
 /** @brief Returns the mailbox of that name, or nullptr */
 MailboxImpl* MailboxImpl::by_name_or_null(const std::string& name)
 {
-  auto mbox = mailboxes->find(name);
-  if (mbox != mailboxes->end())
+  auto mbox = mailboxes.find(name);
+  if (mbox != mailboxes.end())
     return mbox->second;
   else
     return nullptr;
@@ -38,11 +40,11 @@ MailboxImpl* MailboxImpl::by_name_or_null(const std::string& name)
 MailboxImpl* MailboxImpl::by_name_or_create(const std::string& name)
 {
   /* two processes may have pushed the same mbox_create simcall at the same time */
-  auto m = mailboxes->find(name);
-  if (m == mailboxes->end()) {
+  auto m = mailboxes.find(name);
+  if (m == mailboxes.end()) {
     MailboxImpl* mbox = new MailboxImpl(name);
     XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name.c_str());
-    (*mailboxes)[mbox->name_] = mbox;
+    mailboxes[name] = mbox;
     return mbox;
   } else
     return m->second;
