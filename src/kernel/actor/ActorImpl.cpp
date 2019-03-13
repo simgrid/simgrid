@@ -145,7 +145,7 @@ void ActorImpl::cleanup()
     simgrid::xbt::intrusive_erase(host_->pimpl_->process_list_, *this);
   if (not smx_destroy_list_hook.is_linked()) {
 #if SIMGRID_HAVE_MC
-    xbt_dynar_push_as(simix_global->dead_actors_vector, smx_actor_t, this);
+    xbt_dynar_push_as(simix_global->dead_actors_vector, ActorImpl*, this);
 #endif
     simix_global->actors_to_destroy.push_back(*this);
   }
@@ -367,15 +367,15 @@ void ActorImpl::resume()
   XBT_OUT();
 }
 
-activity::ActivityImplPtr ActorImpl::join(smx_actor_t actor, double timeout)
+activity::ActivityImplPtr ActorImpl::join(ActorImpl* actor, double timeout)
 {
   activity::ActivityImplPtr res = this->sleep(timeout);
   intrusive_ptr_add_ref(res.get());
   SIMIX_process_on_exit(actor,
                         [](int, void* arg) {
-                          auto sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(arg);
+                          auto sleep = static_cast<activity::SleepImpl*>(arg);
                           if (sleep->surf_action_)
-                            sleep->surf_action_->finish(simgrid::kernel::resource::Action::State::FINISHED);
+                            sleep->surf_action_->finish(resource::Action::State::FINISHED);
                           intrusive_ptr_release(sleep);
                         },
                         res.get());
@@ -388,8 +388,7 @@ activity::ActivityImplPtr ActorImpl::sleep(double duration)
     throw_exception(std::make_exception_ptr(simgrid::HostFailureException(
         XBT_THROW_POINT, std::string("Host ") + host_->get_cname() + " failed, you cannot sleep there.")));
 
-  return simgrid::kernel::activity::SleepImplPtr(new simgrid::kernel::activity::SleepImpl("sleep", host_))
-      ->start(duration);
+  return activity::SleepImplPtr(new activity::SleepImpl("sleep", host_))->start(duration);
 }
 
 void ActorImpl::throw_exception(std::exception_ptr e)
@@ -438,14 +437,14 @@ void ActorImpl::throw_exception(std::exception_ptr e)
 
 void ActorImpl::set_host(s4u::Host* dest)
 {
-  simgrid::xbt::intrusive_erase(host_->pimpl_->process_list_, *this);
+  xbt::intrusive_erase(host_->pimpl_->process_list_, *this);
   host_ = dest;
   dest->pimpl_->process_list_.push_back(*this);
 }
 
 ActorImplPtr ActorImpl::init(const std::string& name, s4u::Host* host)
 {
-  ActorImpl* actor = new ActorImpl(simgrid::xbt::string(name), host);
+  ActorImpl* actor = new ActorImpl(xbt::string(name), host);
   actor->set_ppid(this->pid_);
 
   intrusive_ptr_add_ref(actor);
@@ -490,9 +489,9 @@ ActorImplPtr ActorImpl::create(const std::string& name, const simix::ActorCode& 
 
   ActorImplPtr actor;
   if (parent_actor != nullptr)
-    actor = parent_actor->init(simgrid::xbt::string(name), host);
+    actor = parent_actor->init(xbt::string(name), host);
   else
-    actor = SIMIX_process_self()->init(simgrid::xbt::string(name), host);
+    actor = SIMIX_process_self()->init(xbt::string(name), host);
 
   /* actor data */
   actor->set_user_data(data);

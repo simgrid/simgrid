@@ -80,7 +80,7 @@ void RawImpl::finish()
   switch (simcall->call) {
 
     case SIMCALL_MUTEX_LOCK:
-      simgrid::xbt::intrusive_erase(simcall_mutex_lock__get__mutex(simcall)->sleeping, *simcall->issuer);
+      simgrid::xbt::intrusive_erase(simcall_mutex_lock__get__mutex(simcall)->sleeping_, *simcall->issuer);
       break;
 
     case SIMCALL_COND_WAIT:

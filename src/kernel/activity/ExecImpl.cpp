@@ -224,7 +224,7 @@ void ExecImpl::finish()
   }
 }
 
-ActivityImpl* ExecImpl::migrate(simgrid::s4u::Host* to)
+ActivityImpl* ExecImpl::migrate(s4u::Host* to)
 {
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     resource::Action* old_action = this->surf_action_;

@@ -60,7 +60,7 @@ void ConditionVariableImpl::signal()
 
     /* Now transform the cond wait simcall into a mutex lock one */
     smx_simcall_t simcall = &proc.simcall;
-    smx_mutex_t simcall_mutex;
+    MutexImpl* simcall_mutex;
     if (simcall->call == SIMCALL_COND_WAIT)
       simcall_mutex = simcall_cond_wait__get__mutex(simcall);
     else
@@ -87,7 +87,7 @@ void ConditionVariableImpl::broadcast()
     signal();
 }
 
-void ConditionVariableImpl::wait(smx_mutex_t mutex, double timeout, smx_actor_t issuer, smx_simcall_t simcall)
+void ConditionVariableImpl::wait(smx_mutex_t mutex, double timeout, actor::ActorImpl* issuer, smx_simcall_t simcall)
 {
   XBT_IN("(%p, %p, %f, %p,%p)", this, mutex, timeout, issuer, simcall);
   RawImplPtr synchro = nullptr;

@@ -15,14 +15,14 @@ namespace kernel {
 namespace context {
 
 // BoostContextFactory
-smx_context_t BoostContextFactory::create_context(std::function<void()>&& code, smx_actor_t actor)
+smx_context_t BoostContextFactory::create_context(std::function<void()>&& code, actor::ActorImpl* actor)
 {
   return this->new_context<BoostContext>(std::move(code), actor, this);
 }
 
 // BoostContext
 
-BoostContext::BoostContext(std::function<void()>&& code, smx_actor_t actor, SwappedContextFactory* factory)
+BoostContext::BoostContext(std::function<void()>&& code, actor::ActorImpl* actor, SwappedContextFactory* factory)
     : SwappedContext(std::move(code), actor, factory)
 {
 
@@ -103,4 +103,6 @@ XBT_PRIVATE ContextFactory* boost_factory()
   XBT_VERB("Using Boost contexts. Welcome to the 21th century.");
   return new BoostContextFactory();
 }
-}}} // namespace
+} // namespace context
+} // namespace kernel
+} // namespace simgrid

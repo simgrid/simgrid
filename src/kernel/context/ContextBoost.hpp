@@ -32,7 +32,7 @@ namespace context {
 /** @brief Userspace context switching implementation based on Boost.Context */
 class BoostContext : public SwappedContext {
 public:
-  BoostContext(std::function<void()>&& code, smx_actor_t actor, SwappedContextFactory* factory);
+  BoostContext(std::function<void()>&& code, actor::ActorImpl* actor, SwappedContextFactory* factory);
   ~BoostContext() override;
 
   void swap_into(SwappedContext* to) override;
@@ -54,8 +54,10 @@ private:
 
 class BoostContextFactory : public SwappedContextFactory {
 public:
-  Context* create_context(std::function<void()>&& code, smx_actor_t actor) override;
+  Context* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
 };
-}}} // namespace
+} // namespace context
+} // namespace kernel
+} // namespace simgrid
 
 #endif

@@ -15,6 +15,7 @@ namespace kernel {
 namespace activity {
 
 class XBT_PUBLIC ExecImpl : public ActivityImpl {
+  resource::Action* timeout_detector_ = nullptr;
   ~ExecImpl() override;
 
 public:
@@ -38,15 +39,11 @@ public:
   /* The host where the execution takes place. nullptr means this is a parallel exec (and only surf knows the hosts) */
   s4u::Host* host_ = nullptr;
 
-private:
-  resource::Action* timeout_detector_ = nullptr;
-
-public:
-  static simgrid::xbt::signal<void(ExecImplPtr)> on_creation;
-  static simgrid::xbt::signal<void(ExecImplPtr)> on_completion;
-  static simgrid::xbt::signal<void(ExecImplPtr, simgrid::s4u::Host*)> on_migration;
+  static xbt::signal<void(ExecImplPtr)> on_creation;
+  static xbt::signal<void(ExecImplPtr)> on_completion;
+  static xbt::signal<void(ExecImplPtr, s4u::Host*)> on_migration;
 };
-}
-}
-} // namespace simgrid::kernel::activity
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid
 #endif

@@ -15,15 +15,12 @@
 namespace simgrid {
 namespace kernel {
 
-EngineImpl::EngineImpl() = default;
 EngineImpl::~EngineImpl()
 {
   /* copy all names to not modify the map while iterating over it.
    *
-   * Plus, the hosts are destroyed in the lexicographic order to ensure
-   * that the output is reproducible: we don't want to kill them in the
-   * pointer order as it could be platform-dependent, which would break
-   * the tests.
+   * Plus, the hosts are destroyed in the lexicographic order to ensure that the output is reproducible: we don't want
+   * to kill them in the pointer order as it could be platform-dependent, which would break the tests.
    */
   std::vector<std::string> names;
   for (auto const& kv : hosts_)

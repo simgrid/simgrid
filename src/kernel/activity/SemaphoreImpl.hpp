@@ -24,7 +24,7 @@ public:
   SemaphoreImpl(SemaphoreImpl const&) = delete;
   SemaphoreImpl& operator=(SemaphoreImpl const&) = delete;
 
-  void acquire(smx_actor_t issuer, double timeout);
+  void acquire(actor::ActorImpl* issuer, double timeout);
   void release();
   bool would_block() { return (value_ == 0); }
   unsigned int get_capacity() { return value_; }

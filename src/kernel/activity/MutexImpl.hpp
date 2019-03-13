@@ -21,16 +21,16 @@ public:
   MutexImpl(MutexImpl const&) = delete;
   MutexImpl& operator=(MutexImpl const&) = delete;
 
-  void lock(smx_actor_t issuer);
-  bool try_lock(smx_actor_t issuer);
-  void unlock(smx_actor_t issuer);
+  void lock(actor::ActorImpl* issuer);
+  bool try_lock(actor::ActorImpl* issuer);
+  void unlock(actor::ActorImpl* issuer);
 
   MutexImpl* ref();
   void unref();
-  bool locked       = false;
-  smx_actor_t owner = nullptr;
-  // List of sleeping processes:
-  simgrid::kernel::actor::SynchroList sleeping;
+  bool locked_             = false;
+  actor::ActorImpl* owner_ = nullptr;
+  // List of sleeping actors:
+  actor::SynchroList sleeping_;
 
   // boost::intrusive_ptr<Mutex> support:
   friend void intrusive_ptr_add_ref(MutexImpl* mutex)
@@ -38,17 +38,18 @@ public:
     XBT_ATTRIB_UNUSED auto previous = mutex->refcount_.fetch_add(1);
     xbt_assert(previous != 0);
   }
+
   friend void intrusive_ptr_release(MutexImpl* mutex)
   {
     if (mutex->refcount_.fetch_sub(1) == 1)
       delete mutex;
   }
 
-  simgrid::s4u::Mutex& mutex() { return piface_; }
+  s4u::Mutex& mutex() { return piface_; }
 
 private:
   std::atomic_int_fast32_t refcount_{1};
-  simgrid::s4u::Mutex piface_;
+  s4u::Mutex piface_;
 };
 }
 }

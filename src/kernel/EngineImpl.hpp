@@ -13,19 +13,20 @@ namespace simgrid {
 namespace kernel {
 
 class EngineImpl {
+  std::map<std::string, s4u::Host*> hosts_;
+  std::map<std::string, s4u::Link*> links_;
+  std::map<std::string, s4u::Storage*> storages_;
+  std::unordered_map<std::string, routing::NetPoint*> netpoints_;
+  friend s4u::Engine;
+
 public:
-  EngineImpl();
+  EngineImpl() = default;
+  ;
   EngineImpl(const EngineImpl&) = delete;
   EngineImpl& operator=(const EngineImpl&) = delete;
   virtual ~EngineImpl();
-  kernel::routing::NetZoneImpl* netzone_root_ = nullptr;
-
-private:
-  std::map<std::string, simgrid::s4u::Host*> hosts_;
-  std::map<std::string, simgrid::s4u::Link*> links_;
-  std::map<std::string, simgrid::s4u::Storage*> storages_;
-  std::unordered_map<std::string, simgrid::kernel::routing::NetPoint*> netpoints_;
-  friend simgrid::s4u::Engine;
+  routing::NetZoneImpl* netzone_root_ = nullptr;
 };
-}
-}
+
+} // namespace kernel
+} // namespace simgrid

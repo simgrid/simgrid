@@ -22,12 +22,12 @@ public:
   ContextFactory(const ContextFactory&) = delete;
   ContextFactory& operator=(const ContextFactory&) = delete;
   virtual ~ContextFactory();
-  virtual Context* create_context(std::function<void()>&& code, smx_actor_t actor) = 0;
+  virtual Context* create_context(std::function<void()>&& code, actor::ActorImpl* actor) = 0;
 
   /** Turn the current thread into a simulation context */
-  virtual Context* attach(smx_actor_t actor);
+  virtual Context* attach(actor::ActorImpl* actor);
   /** Turn the current thread into maestro (the old maestro becomes a regular actor) */
-  virtual Context* create_maestro(std::function<void()>&& code, smx_actor_t actor);
+  virtual Context* create_maestro(std::function<void()>&& code, actor::ActorImpl* actor);
 
   virtual void run_all() = 0;
 
@@ -44,20 +44,20 @@ class XBT_PUBLIC Context {
   friend ContextFactory;
 
   std::function<void()> code_;
-  smx_actor_t actor_                  = nullptr;
+  actor::ActorImpl* actor_ = nullptr;
   void declare_context(std::size_t size);
 
 public:
   bool iwannadie = false;
 
-  Context(std::function<void()>&& code, smx_actor_t actor);
+  Context(std::function<void()>&& code, actor::ActorImpl* actor);
   Context(const Context&) = delete;
   Context& operator=(const Context&) = delete;
   virtual ~Context();
 
   void operator()() { code_(); }
   bool has_code() const { return static_cast<bool>(code_); }
-  smx_actor_t get_actor() { return this->actor_; }
+  actor::ActorImpl* get_actor() { return this->actor_; }
 
   // Scheduling methods
   virtual void stop();
@@ -72,7 +72,7 @@ public:
 
 class XBT_PUBLIC AttachContext : public Context {
 public:
-  AttachContext(std::function<void()>&& code, smx_actor_t actor) : Context(std::move(code), actor) {}
+  AttachContext(std::function<void()>&& code, actor::ActorImpl* actor) : Context(std::move(code), actor) {}
   AttachContext(const AttachContext&) = delete;
   AttachContext& operator=(const AttachContext&) = delete;
   ~AttachContext() override;
@@ -96,7 +96,9 @@ XBT_PRIVATE ContextFactory* sysv_factory();
 XBT_PRIVATE ContextFactory* raw_factory();
 XBT_PRIVATE ContextFactory* boost_factory();
 
-}}}
+} // namespace context
+} // namespace kernel
+} // namespace simgrid
 
 typedef simgrid::kernel::context::ContextFactory *smx_context_factory_t;
 

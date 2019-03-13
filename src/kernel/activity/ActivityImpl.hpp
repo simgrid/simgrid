@@ -47,9 +47,11 @@ private:
   std::string name_;                    /* Activity name if any */
 
 public:
-  static simgrid::xbt::signal<void(ActivityImplPtr)> on_suspended;
-  static simgrid::xbt::signal<void(ActivityImplPtr)> on_resumed;
+  static xbt::signal<void(ActivityImplPtr)> on_suspended;
+  static xbt::signal<void(ActivityImplPtr)> on_resumed;
 };
-}}} // namespace simgrid::kernel::activity
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid
 
 #endif /* SIMGRID_KERNEL_ACTIVITY_ACTIVITYIMPL_HPP */

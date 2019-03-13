@@ -32,22 +32,21 @@ public:
   void cancel();
   double remains();
 
-  CommImpl::Type type;          /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
-  smx_mailbox_t mbox = nullptr; /* Rendez-vous where the comm is queued */
+  CommImpl::Type type;         /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
+  MailboxImpl* mbox = nullptr; /* Rendez-vous where the comm is queued */
 
 #if SIMGRID_HAVE_MC
-  smx_mailbox_t mbox_cpy = nullptr; /* Copy of the rendez-vous where the comm is queued, MC needs it for DPOR
+  MailboxImpl* mbox_cpy = nullptr; /* Copy of the rendez-vous where the comm is queued, MC needs it for DPOR
                                      (comm.mbox set to nullptr when the communication is removed from the mailbox
                                      (used as garbage collector)) */
 #endif
   bool detached = false; /* If detached or not */
 
   void (*clean_fun)(void*) = nullptr; /* Function to clean the detached src_buf if something goes wrong */
-  int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*) =
-      nullptr; /* Filter function used by the other side. It is used when
+  int (*match_fun)(void*, void*, CommImpl*) = nullptr; /* Filter function used by the other side. It is used when
 looking if a given communication matches my needs. For that, myself must match the
 expectations of the other side, too. See  */
-  void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t) = nullptr;
+  void (*copy_data_fun)(CommImpl*, void*, size_t) = nullptr;
 
   /* Surf action data */
   resource::Action* surf_action_ = nullptr; /* The Surf communication action encapsulated */
@@ -68,8 +67,8 @@ expectations of the other side, too. See  */
   void* src_data_ = nullptr; /* User data associated to the communication */
   void* dst_data_ = nullptr;
 };
-}
-}
-} // namespace simgrid::kernel::activity
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid
 
 #endif

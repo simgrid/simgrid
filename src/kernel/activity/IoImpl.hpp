@@ -31,8 +31,8 @@ public:
   static xbt::signal<void(IoImplPtr)> on_start;
   static xbt::signal<void(IoImplPtr)> on_completion;
 };
-}
-}
-} // namespace simgrid::kernel::activity
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid
 
 #endif

@@ -40,7 +40,7 @@ MailboxImpl* MailboxImpl::by_name_or_create(const std::string& name)
   /* two processes may have pushed the same mbox_create simcall at the same time */
   auto m = mailboxes->find(name);
   if (m == mailboxes->end()) {
-    smx_mailbox_t mbox = new MailboxImpl(name);
+    MailboxImpl* mbox = new MailboxImpl(name);
     XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name.c_str());
     (*mailboxes)[mbox->name_] = mbox;
     return mbox;
@@ -151,6 +151,6 @@ CommImplPtr MailboxImpl::find_matching_comm(CommImpl::Type type, int (*match_fun
   XBT_DEBUG("No matching communication synchro found");
   return nullptr;
 }
-}
-}
-}
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid

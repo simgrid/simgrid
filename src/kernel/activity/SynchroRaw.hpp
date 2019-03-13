@@ -23,6 +23,8 @@ public:
   void post() override;
   void finish() override;
 };
-}}} // namespace simgrid::kernel::activity
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid
 
 #endif

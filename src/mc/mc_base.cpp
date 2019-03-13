@@ -117,9 +117,9 @@ bool actor_is_enabled(smx_actor_t actor)
     case SIMCALL_MUTEX_LOCK: {
       smx_mutex_t mutex = simcall_mutex_lock__get__mutex(req);
 
-      if (mutex->owner == nullptr)
+      if (mutex->owner_ == nullptr)
         return true;
-      return mutex->owner->get_pid() == req->issuer->get_pid();
+      return mutex->owner_->get_pid() == req->issuer->get_pid();
     }
 
     case SIMCALL_SEM_ACQUIRE: {

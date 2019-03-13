@@ -19,13 +19,13 @@ public:
   ConditionVariableImpl();
   ~ConditionVariableImpl();
 
-  simgrid::kernel::actor::SynchroList sleeping_; /* list of sleeping processes */
-  smx_mutex_t mutex_ = nullptr;
-  simgrid::s4u::ConditionVariable cond_;
+  actor::SynchroList sleeping_; /* list of sleeping processes */
+  MutexImpl* mutex_ = nullptr;
+  s4u::ConditionVariable cond_;
 
   void broadcast();
   void signal();
-  void wait(smx_mutex_t mutex, double timeout, smx_actor_t issuer, smx_simcall_t simcall);
+  void wait(MutexImpl* mutex, double timeout, actor::ActorImpl* issuer, smx_simcall_t simcall);
 
 private:
   std::atomic_int_fast32_t refcount_{1};

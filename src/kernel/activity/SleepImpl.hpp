@@ -24,8 +24,8 @@ public:
 
   sg_host_t host_ = nullptr;
 };
-}
-}
-} // namespace simgrid::kernel::activity
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid
 
 #endif

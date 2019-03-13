@@ -24,23 +24,23 @@ MutexImpl::~MutexImpl()
   XBT_OUT();
 }
 
-void MutexImpl::lock(smx_actor_t issuer)
+void MutexImpl::lock(actor::ActorImpl* issuer)
 {
   XBT_IN("(%p; %p)", this, issuer);
   /* FIXME: check where to validate the arguments */
   RawImplPtr synchro = nullptr;
 
-  if (this->locked) {
+  if (locked_) {
     /* FIXME: check if the host is active ? */
     /* Somebody using the mutex, use a synchronization to get host failures */
     synchro = RawImplPtr(new RawImpl())->start(issuer->get_host(), -1);
     synchro->simcalls_.push_back(&issuer->simcall);
     issuer->waiting_synchro = synchro;
-    this->sleeping.push_back(*issuer);
+    sleeping_.push_back(*issuer);
   } else {
     /* mutex free */
-    this->locked = true;
-    this->owner  = issuer;
+    locked_ = true;
+    owner_  = issuer;
     SIMIX_simcall_answer(&issuer->simcall);
   }
   XBT_OUT();
@@ -51,16 +51,16 @@ void MutexImpl::lock(smx_actor_t issuer)
  * @param  issuer  the process that tries to acquire the mutex
  * @return whether we managed to lock the mutex
  */
-bool MutexImpl::try_lock(smx_actor_t issuer)
+bool MutexImpl::try_lock(actor::ActorImpl* issuer)
 {
   XBT_IN("(%p, %p)", this, issuer);
-  if (this->locked) {
+  if (locked_) {
     XBT_OUT();
     return false;
   }
 
-  this->locked = true;
-  this->owner  = issuer;
+  locked_ = true;
+  owner_  = issuer;
   XBT_OUT();
   return true;
 }
@@ -71,28 +71,28 @@ bool MutexImpl::try_lock(smx_actor_t issuer)
  * If the unlocker is not the owner of the mutex nothing happens.
  * If there are no process waiting, it sets the mutex as free.
  */
-void MutexImpl::unlock(smx_actor_t issuer)
+void MutexImpl::unlock(actor::ActorImpl* issuer)
 {
   XBT_IN("(%p, %p)", this, issuer);
-  if (not this->locked)
+  if (not locked_)
     THROWF(mismatch_error, 0, "Cannot release that mutex: it was not locked.");
 
   /* If the mutex is not owned by the issuer, that's not good */
-  if (issuer != this->owner)
+  if (issuer != owner_)
     THROWF(mismatch_error, 0, "Cannot release that mutex: it was locked by %s (pid:%ld), not by you.",
-           this->owner->get_cname(), this->owner->get_pid());
+           owner_->get_cname(), owner_->get_pid());
 
-  if (not this->sleeping.empty()) {
+  if (not sleeping_.empty()) {
     /*process to wake up */
-    smx_actor_t p = &this->sleeping.front();
-    this->sleeping.pop_front();
+    actor::ActorImpl* p = &sleeping_.front();
+    sleeping_.pop_front();
     p->waiting_synchro = nullptr;
-    this->owner        = p;
+    owner_             = p;
     SIMIX_simcall_answer(&p->simcall);
   } else {
     /* nobody to wake up */
-    this->locked = false;
-    this->owner  = nullptr;
+    locked_ = false;
+    owner_  = nullptr;
   }
   XBT_OUT();
 }

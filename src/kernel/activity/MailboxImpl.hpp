@@ -17,7 +17,7 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-/** @brief Implementation of the simgrid::s4u::Mailbox */
+/** @brief Implementation of the s4u::Mailbox */
 
 class MailboxImpl {
   static constexpr size_t MAX_MAILBOX_SIZE = 10000000;
@@ -32,7 +32,7 @@ class MailboxImpl {
   }
 
 public:
-  const simgrid::xbt::string& get_name() const { return name_; }
+  const xbt::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
   static MailboxImpl* by_name_or_null(const std::string& name);
   static MailboxImpl* by_name_or_create(const std::string& name);
@@ -44,18 +44,18 @@ public:
                                  const CommImplPtr& my_synchro, bool done, bool remove_matching);
 
 private:
-  simgrid::s4u::Mailbox piface_;
-  simgrid::xbt::string name_;
+  s4u::Mailbox piface_;
+  xbt::string name_;
 
 public:
-  simgrid::kernel::actor::ActorImplPtr permanent_receiver_; // actor to which the mailbox is attached
+  actor::ActorImplPtr permanent_receiver_; // actor to which the mailbox is attached
   boost::circular_buffer_space_optimized<CommImplPtr> comm_queue_;
   boost::circular_buffer_space_optimized<CommImplPtr> done_comm_queue_; // messages already received in the permanent
                                                                         // receive mode
 };
-}
-}
-}
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid
 
 XBT_PRIVATE void SIMIX_mailbox_exit();
 

@@ -12,7 +12,7 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-void SemaphoreImpl::acquire(smx_actor_t issuer, double timeout)
+void SemaphoreImpl::acquire(actor::ActorImpl* issuer, double timeout)
 {
   RawImplPtr synchro = nullptr;
 
