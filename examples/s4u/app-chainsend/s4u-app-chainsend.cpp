@@ -96,36 +96,18 @@ public:
 
   void buildChain()
   {
-    auto cur                      = mailboxes.begin();
-    simgrid::s4u::Mailbox* prev   = nullptr;
-    simgrid::s4u::Mailbox* last   = nullptr;
-
     /* Build the chain if there's at least one peer */
-    if (cur != mailboxes.end()) {
-      /* init: prev=NULL, host=current cur, next=next cur */
-      simgrid::s4u::Mailbox* next   = *cur;
-      first                         = next;
+    if (not mailboxes.empty())
+      first = mailboxes.front();
 
-      /* This iterator iterates one step ahead: cur is current iterated element, but is actually next in the chain */
-      do {
-        /* following steps: prev=last, host=next, next=cur */
-        ++cur;
-        prev                                     = last;
-        simgrid::s4u::Mailbox* current_mailbox   = next;
-        if (cur != mailboxes.end())
-          next = *cur;
-        else
-          next = nullptr;
-
-        XBT_DEBUG("Building chain--broadcaster:\"%s\" dest:\"%s\" prev:\"%s\" next:\"%s\"",
-                  simgrid::s4u::Host::current()->get_cname(), current_mailbox->get_cname(),
-                  prev ? prev->get_cname() : nullptr, next ? next->get_cname() : nullptr);
-
-        /* Send message to current peer */
-        current_mailbox->put(new ChainMessage(prev, next, piece_count), MESSAGE_BUILD_CHAIN_SIZE);
-
-        last = current_mailbox;
-      } while (cur != mailboxes.end());
+    for (unsigned i = 0; i < mailboxes.size(); i++) {
+      simgrid::s4u::Mailbox* prev = i > 0 ? mailboxes[i - 1] : nullptr;
+      simgrid::s4u::Mailbox* next = i < mailboxes.size() - 1 ? mailboxes[i + 1] : nullptr;
+      XBT_DEBUG("Building chain--broadcaster:\"%s\" dest:\"%s\" prev:\"%s\" next:\"%s\"",
+                simgrid::s4u::Host::current()->get_cname(), mailboxes[i]->get_cname(),
+                prev ? prev->get_cname() : nullptr, next ? next->get_cname() : nullptr);
+      /* Send message to current peer */
+      mailboxes[i]->put(new ChainMessage(prev, next, piece_count), MESSAGE_BUILD_CHAIN_SIZE);
     }
   }
 
