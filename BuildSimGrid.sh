@@ -27,4 +27,4 @@ fi
   echo "Target: ${target}"
   (nice make -j4 ${target} tests || make ${target} tests) && nice ctest -j4 --output-on-failure ; date
 ) 2>&1 | tee BuildSimGrid.sh.log
-exit 0
+
