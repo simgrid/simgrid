@@ -19,22 +19,10 @@ namespace smpi{
 
 using simgrid::s4u::ActorPtr;
 
-Group::Group()
-{
-  size_              = 0;       /* size */
-  refcount_          = 1;       /* refcount_: start > 0 so that this group never gets freed */
-}
-
-Group::Group(int n) : size_(n), rank_to_actor_map_(size_, nullptr), index_to_rank_map_(size_, MPI_UNDEFINED)
-{
-  refcount_ = 1;
-}
-
 Group::Group(Group* origin)
 {
   if (origin != MPI_GROUP_NULL && origin != MPI_GROUP_EMPTY) {
     size_              = origin->size();
-    refcount_          = 1;
     // FIXME: cheinrich: There is no such thing as an index any more; the two maps should be removed
     index_to_rank_map_ = origin->index_to_rank_map_;
     rank_to_actor_map_ = origin->rank_to_actor_map_;
@@ -93,11 +81,6 @@ void Group::unref(Group* group)
   if (group->refcount_ <= 0) {
     delete group;
   }
-}
-
-int Group::size()
-{
-  return size_;
 }
 
 int Group::compare(MPI_Group group2)

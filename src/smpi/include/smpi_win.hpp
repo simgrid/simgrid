@@ -19,7 +19,6 @@ namespace simgrid{
 namespace smpi{
 
 class Win : public F2C, public Keyval {
-  private :
   void* base_;
   MPI_Aint size_;
   int disp_unit_;

@@ -9,11 +9,8 @@
 namespace simgrid {
 namespace smpi {
 
-Info::Info(Info* info) : map_(info->map_)
+void Info::ref()
 {
-}
-
-void Info::ref(){
   refcount_++;
 }
 
@@ -22,10 +19,6 @@ void Info::unref(Info* info){
   if(info->refcount_==0){
     delete info;
   }
-}
-
-void Info::set(char *key, char *value){
-  map_[key] = value;
 }
 
 int Info::get(char *key, int valuelen, char *value, int *flag){

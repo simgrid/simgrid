@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_host, smpi, "Logging specific to SMPI (host
 namespace simgrid {
 namespace smpi {
 
-simgrid::xbt::Extension<simgrid::s4u::Host, Host> Host::EXTENSION_ID;
+xbt::Extension<s4u::Host, smpi::Host> Host::EXTENSION_ID;
 
 double Host::orecv(size_t size)
 {
@@ -46,9 +46,8 @@ double Host::osend(size_t size)
 {
   double current =
       osend_parsed_values.empty() ? 0.0 : osend_parsed_values[0].values[0] + osend_parsed_values[0].values[1] * size;
-  // Iterate over all the sections that were specified and find the right
-  // value. (fact.factor represents the interval sizes; we want to find the
-  // section that has fact.factor <= size and no other such fact.factor <= size)
+  // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
+  // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
   // Note: parse_factor() (used before) already sorts the vector we iterate over!
   for (auto const& fact : osend_parsed_values) {
     if (size <= fact.factor) { // Values already too large, use the previously computed value of current!
@@ -88,33 +87,32 @@ double Host::oisend(size_t size)
   return current;
 }
 
-Host::Host(simgrid::s4u::Host *ptr) : host(ptr)
+Host::Host(s4u::Host* ptr) : host(ptr)
 {
-  if (not Host::EXTENSION_ID.valid())
-    Host::EXTENSION_ID = simgrid::s4u::Host::extension_create<Host>();
+  if (not smpi::Host::EXTENSION_ID.valid())
+    smpi::Host::EXTENSION_ID = s4u::Host::extension_create<Host>();
 
   const char* orecv_string = host->get_property("smpi/or");
   if (orecv_string != nullptr) {
     orecv_parsed_values = parse_factor(orecv_string);
   } else {
-    orecv_parsed_values = parse_factor(simgrid::config::get_value<std::string>("smpi/or"));
+    orecv_parsed_values = parse_factor(config::get_value<std::string>("smpi/or"));
   }
 
   const char* osend_string = host->get_property("smpi/os");
   if (osend_string != nullptr) {
     osend_parsed_values = parse_factor(osend_string);
   } else {
-    osend_parsed_values = parse_factor(simgrid::config::get_value<std::string>("smpi/os"));
+    osend_parsed_values = parse_factor(config::get_value<std::string>("smpi/os"));
   }
 
   const char* oisend_string = host->get_property("smpi/ois");
   if (oisend_string != nullptr) {
     oisend_parsed_values = parse_factor(oisend_string);
   } else {
-    oisend_parsed_values = parse_factor(simgrid::config::get_value<std::string>("smpi/ois"));
+    oisend_parsed_values = parse_factor(config::get_value<std::string>("smpi/ois"));
   }
 }
 
-Host::~Host()=default;
-}
-}
+} // namespace smpi
+} // namespace simgrid

@@ -71,42 +71,6 @@ Request::Request(void* buf, int count, MPI_Datatype datatype, int src, int dst, 
   cancelled_ = 0;
 }
 
-MPI_Comm Request::comm(){
-  return comm_;
-}
-
-int Request::src(){
-  return src_;
-}
-
-int Request::dst(){
-  return dst_;
-}
-
-int Request::tag(){
-  return tag_;
-}
-
-int Request::flags(){
-  return flags_;
-}
-
-int Request::detached(){
-  return detached_;
-}
-
-MPI_Datatype Request::type(){
-  return old_type_;
-}
-
-size_t Request::size(){
-  return size_;
-}
-
-size_t Request::real_size(){
-  return real_size_;
-}
-
 void Request::ref(){
   refcount_++;
 }

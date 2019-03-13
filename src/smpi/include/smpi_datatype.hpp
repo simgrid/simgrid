@@ -102,24 +102,24 @@ public:
   Datatype& operator=(const Datatype&) = delete;
   virtual ~Datatype();
 
-  char* name();
-  size_t size();
-  MPI_Aint lb();
-  MPI_Aint ub();
-  int flags();
-  int refcount();
+  char* name() { return name_; }
+  size_t size() { return size_; }
+  MPI_Aint lb() { return lb_; }
+  MPI_Aint ub() { return ub_; }
+  int flags() { return flags_; }
+  int refcount() { return refcount_; }
 
   void ref();
   static void unref(MPI_Datatype datatype);
   void commit();
   bool is_valid();
   bool is_basic();
-  static const char* encode(MPI_Datatype dt);
+  static const char* encode(MPI_Datatype dt) { return dt->id.c_str(); }
   static MPI_Datatype decode(const std::string& datatype_id);
   bool is_replayable();
   void addflag(int flag);
   int extent(MPI_Aint* lb, MPI_Aint* extent);
-  MPI_Aint get_extent();
+  MPI_Aint get_extent() { return ub_ - lb_; };
   void get_name(char* name, int* length);
   void set_name(char* name);
   static int copy(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,

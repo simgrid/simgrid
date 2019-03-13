@@ -15,7 +15,6 @@ namespace simgrid {
 namespace smpi {
 
 class ActorExt {
-private:
   double simulated_ = 0 /* Used to time with simulated_start/elapsed */;
   s4u::Mailbox* mailbox_;
   s4u::Mailbox* mailbox_small_;
@@ -41,7 +40,7 @@ private:
   papi_counter_t papi_counter_data_;
 #endif
 public:
-  explicit ActorExt(simgrid::s4u::ActorPtr actor, simgrid::s4u::Barrier* barrier);
+  explicit ActorExt(s4u::ActorPtr actor, s4u::Barrier* barrier);
   ActorExt(const ActorExt&) = delete;
   ActorExt& operator=(const ActorExt&) = delete;
   ~ActorExt();
@@ -75,7 +74,7 @@ public:
   void set_sampling(int s);
   int sampling();
   static void init();
-  simgrid::s4u::ActorPtr get_actor();
+  s4u::ActorPtr get_actor();
   int get_optind();
   void set_optind(int optind);
 };

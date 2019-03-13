@@ -100,10 +100,6 @@ MPI_Group Comm::group()
   return group_;
 }
 
-MPI_Topology Comm::topo() {
-  return topo_;
-}
-
 int Comm::size()
 {
   if (this == MPI_COMM_UNINITIALIZED)
@@ -138,10 +134,6 @@ void Comm::set_leaders_comm(MPI_Comm leaders){
     return;
   }
   leaders_comm_=leaders;
-}
-
-void Comm::set_intra_comm(MPI_Comm leaders){
-  intra_comm_=leaders;
 }
 
 int* Comm::get_non_uniform_map(){
@@ -511,7 +503,5 @@ MPI_Comm Comm::split_type(int type, int key, MPI_Info info)
   return this->get_intra_comm();
 }
 
-}
-}
-
-
+} // namespace smpi
+} // namespace simgrid

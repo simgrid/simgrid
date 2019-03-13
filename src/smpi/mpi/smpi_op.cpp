@@ -217,27 +217,6 @@ CREATE_MPI_OP(MPI_NO_OP, no_func);
 namespace simgrid{
 namespace smpi{
 
-Op::Op(MPI_User_function * function, bool commutative) : func_(function), is_commutative_(commutative)
-{
-  is_fortran_op_ = false;
-}
-
-bool Op::is_commutative()
-{
-  return is_commutative_;
-}
-
-bool Op::is_fortran_op()
-{
-  return is_fortran_op_;
-}
-
-void Op::set_fortran_op()
-{
-  //tell that we were created from fortran, so we need to translate the type to fortran when called
-  is_fortran_op_ = true;
-}
-
 void Op::apply(void *invec, void *inoutvec, int *len, MPI_Datatype datatype)
 {
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {

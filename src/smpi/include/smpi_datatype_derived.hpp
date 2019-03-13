@@ -87,8 +87,7 @@ public:
   void unserialize(void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
 };
 
-
-}
-}
+} // namespace smpi
+} // namespace simgrid
 
 #endif

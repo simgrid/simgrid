@@ -16,23 +16,22 @@ namespace simgrid{
 namespace smpi{
 
 class Info : public F2C{
-  private:
-    std::map<std::string, std::string> map_;
-    int refcount_ = 1;
+  std::map<std::string, std::string> map_;
+  int refcount_ = 1;
 
-  public:
-    Info() = default;
-    explicit Info(Info* orig);
-    ~Info() = default;
-    void ref();
-    static void unref(MPI_Info info);
-    void set(char *key, char *value);
-    int get(char *key,int valuelen, char *value, int *flag);
-    int remove(char* key);
-    int get_nkeys(int *nkeys);
-    int get_nthkey(int n, char *key);
-    int get_valuelen(char *key, int *valuelen, int *flag);
-    static Info* f2c(int id);
+public:
+  Info() = default;
+  explicit Info(Info* orig) : map_(orig->map_) {}
+  ~Info() = default;
+  void ref();
+  static void unref(MPI_Info info);
+  void set(char* key, char* value) { map_[key] = value; }
+  int get(char* key, int valuelen, char* value, int* flag);
+  int remove(char* key);
+  int get_nkeys(int* nkeys);
+  int get_nthkey(int n, char* key);
+  int get_valuelen(char* key, int* valuelen, int* flag);
+  static Info* f2c(int id);
 };
 
 }

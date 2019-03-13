@@ -89,52 +89,51 @@ struct s_mpi_coll_description_t {
 };
 
 class Colls{
-  public:
-    static XBT_PUBLIC void coll_help(const char* category, s_mpi_coll_description_t* table);
-    static XBT_PUBLIC int find_coll_description(s_mpi_coll_description_t* table, const std::string& name,
-                                                const char* desc);
-    static void set_collectives();
+public:
+  static XBT_PUBLIC void coll_help(const char* category, s_mpi_coll_description_t* table);
+  static XBT_PUBLIC int find_coll_description(s_mpi_coll_description_t* table, const std::string& name,
+                                              const char* desc);
+  static void set_collectives();
 
-    // for each collective type, create the set_* prototype, the description array and the function pointer
-    COLL_APPLY(COLL_DEFS, COLL_GATHER_SIG, "");
-    COLL_APPLY(COLL_DEFS, COLL_ALLGATHER_SIG, "");
-    COLL_APPLY(COLL_DEFS, COLL_ALLGATHERV_SIG, "");
-    COLL_APPLY(COLL_DEFS, COLL_REDUCE_SIG, "");
-    COLL_APPLY(COLL_DEFS, COLL_ALLREDUCE_SIG, "");
-    COLL_APPLY(COLL_DEFS, COLL_REDUCE_SCATTER_SIG, "");
-    COLL_APPLY(COLL_DEFS, COLL_SCATTER_SIG, "");
-    COLL_APPLY(COLL_DEFS, COLL_BARRIER_SIG, "");
-    COLL_APPLY(COLL_DEFS, COLL_BCAST_SIG, "");
-    COLL_APPLY(COLL_DEFS, COLL_ALLTOALL_SIG, "");
-    COLL_APPLY(COLL_DEFS, COLL_ALLTOALLV_SIG, "");
+  // for each collective type, create the set_* prototype, the description array and the function pointer
+  COLL_APPLY(COLL_DEFS, COLL_GATHER_SIG, "");
+  COLL_APPLY(COLL_DEFS, COLL_ALLGATHER_SIG, "");
+  COLL_APPLY(COLL_DEFS, COLL_ALLGATHERV_SIG, "");
+  COLL_APPLY(COLL_DEFS, COLL_REDUCE_SIG, "");
+  COLL_APPLY(COLL_DEFS, COLL_ALLREDUCE_SIG, "");
+  COLL_APPLY(COLL_DEFS, COLL_REDUCE_SCATTER_SIG, "");
+  COLL_APPLY(COLL_DEFS, COLL_SCATTER_SIG, "");
+  COLL_APPLY(COLL_DEFS, COLL_BARRIER_SIG, "");
+  COLL_APPLY(COLL_DEFS, COLL_BCAST_SIG, "");
+  COLL_APPLY(COLL_DEFS, COLL_ALLTOALL_SIG, "");
+  COLL_APPLY(COLL_DEFS, COLL_ALLTOALLV_SIG, "");
 
-    // These fairly unused collectives only have one implementation in SMPI
-    static int gatherv(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int* recvcounts, int* displs,
-                       MPI_Datatype recvtype, int root, MPI_Comm comm);
-    static int scatterv(void* sendbuf, int* sendcounts, int* displs, MPI_Datatype sendtype, void* recvbuf,
-                        int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
-    static int scan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
-    static int exscan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+  // These fairly unused collectives only have one implementation in SMPI
+  static int gatherv(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int* recvcounts, int* displs,
+                     MPI_Datatype recvtype, int root, MPI_Comm comm);
+  static int scatterv(void* sendbuf, int* sendcounts, int* displs, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+                      MPI_Datatype recvtype, int root, MPI_Comm comm);
+  static int scan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+  static int exscan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 
-    static void (*smpi_coll_cleanup_callback)();
+  static void (*smpi_coll_cleanup_callback)();
 };
 
 class Coll {
-  public:
-    // for each collective type, create a function member
-    COLL_APPLY(COLL_SIG,COLL_GATHER_SIG,"");
-    COLL_APPLY(COLL_SIG,COLL_ALLGATHER_SIG,"");
-    COLL_APPLY(COLL_SIG,COLL_ALLGATHERV_SIG,"");
-    COLL_APPLY(COLL_SIG,COLL_REDUCE_SIG,"");
-    COLL_APPLY(COLL_SIG,COLL_ALLREDUCE_SIG,"");
-    COLL_APPLY(COLL_SIG,COLL_REDUCE_SCATTER_SIG,"");
-    COLL_APPLY(COLL_SIG,COLL_SCATTER_SIG,"");
-    COLL_APPLY(COLL_SIG,COLL_BARRIER_SIG,"");
-    COLL_APPLY(COLL_SIG,COLL_BCAST_SIG,"");
-    COLL_APPLY(COLL_SIG,COLL_ALLTOALL_SIG,"");
-    COLL_APPLY(COLL_SIG,COLL_ALLTOALLV_SIG,"");
+public:
+  // for each collective type, create a function member
+  COLL_APPLY(COLL_SIG, COLL_GATHER_SIG, "");
+  COLL_APPLY(COLL_SIG, COLL_ALLGATHER_SIG, "");
+  COLL_APPLY(COLL_SIG, COLL_ALLGATHERV_SIG, "");
+  COLL_APPLY(COLL_SIG, COLL_REDUCE_SIG, "");
+  COLL_APPLY(COLL_SIG, COLL_ALLREDUCE_SIG, "");
+  COLL_APPLY(COLL_SIG, COLL_REDUCE_SCATTER_SIG, "");
+  COLL_APPLY(COLL_SIG, COLL_SCATTER_SIG, "");
+  COLL_APPLY(COLL_SIG, COLL_BARRIER_SIG, "");
+  COLL_APPLY(COLL_SIG, COLL_BCAST_SIG, "");
+  COLL_APPLY(COLL_SIG, COLL_ALLTOALL_SIG, "");
+  COLL_APPLY(COLL_SIG, COLL_ALLTOALLV_SIG, "");
 };
-
 
 /*************
  * GATHER *

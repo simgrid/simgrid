@@ -177,7 +177,6 @@ Datatype::~Datatype(){
   xbt_free(name_);
 }
 
-
 void Datatype::ref(){
 
   refcount_++;
@@ -216,16 +215,6 @@ bool Datatype::is_basic()
   return (flags_ & DT_FLAG_BASIC);
 }
 
-const char* Datatype::encode(MPI_Datatype dt)
-{
-  return dt->id.c_str();
-}
-
-MPI_Datatype Datatype::decode(const std::string& datatype_id)
-{
-  return id2type_lookup.find(datatype_id)->second;
-}
-
 bool Datatype::is_replayable()
 {
   return (simgrid::instr::trace_format == simgrid::instr::TraceFormat::Ti) &&
@@ -233,43 +222,19 @@ bool Datatype::is_replayable()
           (this == MPI_SHORT) || (this == MPI_LONG) || (this == MPI_FLOAT));
 }
 
-size_t Datatype::size(){
-  return size_;
-}
-
-int Datatype::flags(){
-  return flags_;
-}
-
-int Datatype::refcount(){
-  return refcount_;
+MPI_Datatype Datatype::decode(const std::string& datatype_id)
+{
+  return id2type_lookup.find(datatype_id)->second;
 }
 
 void Datatype::addflag(int flag){
   flags_ &= flag;
 }
 
-MPI_Aint Datatype::lb(){
-  return lb_;
-}
-
-MPI_Aint Datatype::ub(){
-  return ub_;
-}
-
-char* Datatype::name(){
-  return name_;
-}
-
-
 int Datatype::extent(MPI_Aint * lb, MPI_Aint * extent){
   *lb = lb_;
   *extent = ub_ - lb_;
   return MPI_SUCCESS;
-}
-
-MPI_Aint Datatype::get_extent(){
-  return ub_ - lb_;
 }
 
 void Datatype::get_name(char* name, int* length){
@@ -298,7 +263,6 @@ int Datatype::unpack(void* inbuf, int insize, int* position, void* outbuf, int o
   *position += outcount * size_;
   return MPI_SUCCESS;
 }
-
 
 int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount, MPI_Datatype recvtype){
@@ -336,11 +300,11 @@ int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 }
 
 //Default serialization method : memcpy.
-void Datatype::serialize( void* noncontiguous_buf, void *contiguous_buf, int count){
+void Datatype::serialize(void* noncontiguous_buf, void* contiguous_buf, int count)
+{
   char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
   char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf)+lb_;
   memcpy(contiguous_buf_char, noncontiguous_buf_char, count*size_);
-
 }
 
 void Datatype::unserialize( void* contiguous_buf, void *noncontiguous_buf, int count, MPI_Op op){

@@ -15,61 +15,60 @@ namespace simgrid{
 namespace smpi{
 
 class Topo {
-  public:
-    virtual ~Topo()=default;
-    MPI_Comm getComm() const { return comm_; }
-    void setComm(MPI_Comm comm) { comm_ = comm; }
-  private:
-    MPI_Comm comm_;
+  MPI_Comm comm_;
+
+public:
+  virtual ~Topo() = default;
+  MPI_Comm getComm() const { return comm_; }
+  void setComm(MPI_Comm comm) { comm_ = comm; }
 };
 
-
 class Topo_Cart: public Topo {
-  private:
-    int nnodes_ = 0;
-    int ndims_;
-    int *dims_;
-    int *periodic_;
-    int *position_;
-  public:
-    explicit Topo_Cart(int ndims);
-    Topo_Cart(const Topo_Cart&) = delete;
-    Topo_Cart& operator=(const Topo_Cart&) = delete;
-    ~Topo_Cart();
-    Topo_Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder, MPI_Comm *comm_cart);
-    Topo_Cart* sub(const int remain_dims[], MPI_Comm *newcomm) ;
-    int coords(int rank, int maxdims, int coords[]) ;
-    int get(int maxdims, int* dims, int* periods, int* coords);
-    int rank(int* coords, int* rank);
-    int shift(int direction, int disp, int *rank_source, int *rank_dest) ;
-    int dim_get(int *ndims);
-    static int Dims_create(int nnodes, int ndims, int dims[]);
+  int nnodes_ = 0;
+  int ndims_;
+  int* dims_;
+  int* periodic_;
+  int* position_;
+
+public:
+  explicit Topo_Cart(int ndims);
+  Topo_Cart(const Topo_Cart&) = delete;
+  Topo_Cart& operator=(const Topo_Cart&) = delete;
+  ~Topo_Cart();
+  Topo_Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder, MPI_Comm* comm_cart);
+  Topo_Cart* sub(const int remain_dims[], MPI_Comm* newcomm);
+  int coords(int rank, int maxdims, int coords[]);
+  int get(int maxdims, int* dims, int* periods, int* coords);
+  int rank(int* coords, int* rank);
+  int shift(int direction, int disp, int* rank_source, int* rank_dest);
+  int dim_get(int* ndims);
+  static int Dims_create(int nnodes, int ndims, int dims[]);
 };
 
 
 class Topo_Graph: public Topo {
-  private:
-    int nnodes_;
-    int *index_;
-    int *edges_;
-  public:
-    Topo_Graph();
-    Topo_Graph(const Topo_Graph&) = delete;
-    Topo_Graph& operator=(const Topo_Graph&) = delete;
-    ~Topo_Graph();
+  int nnodes_;
+  int* index_;
+  int* edges_;
+
+public:
+  Topo_Graph();
+  Topo_Graph(const Topo_Graph&) = delete;
+  Topo_Graph& operator=(const Topo_Graph&) = delete;
+  ~Topo_Graph();
 };
 
 class Topo_Dist_Graph: public Topo {
-  private:
-    int *in_;
-    int *in_weights_;
-    int *out_;
-    int *out_weights_;
-  public:
-    Topo_Dist_Graph();
-    Topo_Dist_Graph(const Topo_Dist_Graph&) = delete;
-    Topo_Dist_Graph& operator=(const Topo_Dist_Graph&) = delete;
-    ~Topo_Dist_Graph();
+  int* in_;
+  int* in_weights_;
+  int* out_;
+  int* out_weights_;
+
+public:
+  Topo_Dist_Graph();
+  Topo_Dist_Graph(const Topo_Dist_Graph&) = delete;
+  Topo_Dist_Graph& operator=(const Topo_Dist_Graph&) = delete;
+  ~Topo_Dist_Graph();
 };
 
 }
