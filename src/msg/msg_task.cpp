@@ -39,26 +39,21 @@ Task::Task(const std::string& name, std::vector<s4u::Host*>&& hosts, std::vector
 
 Task* Task::create(const std::string& name, double flops_amount, double bytes_amount, void* data)
 {
-  return new Task(std::move(name), flops_amount, bytes_amount, data);
+  return new Task(name, flops_amount, bytes_amount, data);
 }
 
 Task* Task::create_parallel(const std::string& name, int host_nb, const msg_host_t* host_list, double* flops_amount,
                             double* bytes_amount, void* data)
 {
-  std::vector<s4u::Host*> hosts;
+  std::vector<simgrid::s4u::Host*> hosts(host_list, host_list + host_nb);
   std::vector<double> flops;
   std::vector<double> bytes;
+  if (flops_amount != nullptr)
+    flops = std::vector<double>(flops_amount, flops_amount + host_nb);
+  if (bytes_amount != nullptr)
+    bytes = std::vector<double>(bytes_amount, bytes_amount + host_nb * host_nb);
 
-  for (int i = 0; i < host_nb; i++) {
-    hosts.push_back(host_list[i]);
-    if (flops_amount != nullptr)
-      flops.push_back(flops_amount[i]);
-    if (bytes_amount != nullptr) {
-      for (int j = 0; j < host_nb; j++)
-        bytes.push_back(bytes_amount[host_nb * i + j]);
-    }
-  }
-  return new Task(std::move(name), std::move(hosts), std::move(flops), std::move(bytes), data);
+  return new Task(name, std::move(hosts), std::move(flops), std::move(bytes), data);
 }
 
 msg_error_t Task::execute()
