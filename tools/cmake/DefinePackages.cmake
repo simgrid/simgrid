@@ -973,19 +973,20 @@ set(txt_files
 set(CMAKEFILES_TXT
   examples/s4u/CMakeLists.txt
   examples/smpi/CMakeLists.txt
-    examples/smpi/NAS/CMakeLists.txt
-    examples/smpi/smpi_msg_masterslave/CMakeLists.txt
-    examples/smpi/replay_multiple/CMakeLists.txt
-    examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
-    examples/smpi/energy/f77/CMakeLists.txt
-    examples/smpi/energy/f90/CMakeLists.txt
+  examples/smpi/NAS/CMakeLists.txt
+  examples/smpi/smpi_msg_masterslave/CMakeLists.txt
+  examples/smpi/replay_multiple/CMakeLists.txt
+  examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
+  examples/smpi/energy/f77/CMakeLists.txt
+  examples/smpi/energy/f90/CMakeLists.txt
   examples/python/CMakeLists.txt
   examples/deprecated/java/CMakeLists.txt
   examples/deprecated/msg/CMakeLists.txt
-    examples/deprecated/msg/mc/CMakeLists.txt
+  examples/deprecated/msg/mc/CMakeLists.txt
   examples/deprecated/simdag/CMakeLists.txt
 
   teshsuite/java/CMakeLists.txt
+  teshsuite/lua/CMakeLists.txt
   teshsuite/mc/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
   teshsuite/s4u/CMakeLists.txt

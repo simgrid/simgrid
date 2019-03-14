@@ -91,35 +91,6 @@ IF(enable_java)
   ENDIF()
 ENDIF()
 
-IF(SIMGRID_HAVE_MC)
-  ADD_TESH_FACTORIES(mc-bugged1                "ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/mc bugged1.tesh)
-  ADD_TESH_FACTORIES(mc-bugged2                "ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/mc bugged2.tesh)
-  IF(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64) # liveness model-checking works only on 64bits (for now ...)
-    ADD_TESH(mc-bugged1-liveness-ucontext         --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/mc bugged1_liveness.tesh)
-    ADD_TESH(mc-bugged1-liveness-ucontext-sparse  --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/mc bugged1_liveness_sparse.tesh)
-    ADD_TESH(mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/mc bugged1_liveness_visited.tesh)
-    ADD_TESH(mc-bugged1-liveness-visited-ucontext-sparse --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/mc bugged1_liveness_visited_sparse.tesh)
-    IF(HAVE_C_STACK_CLEANER)
-      # This test checks if the stack cleaner is making a difference:
-      ADD_TEST(mc-bugged1-liveness-stack-cleaner ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/mc/bugged1_liveness_stack_cleaner ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/mc/ ${CMAKE_BINARY_DIR}/examples/deprecated/msg/mc/)
-    ENDIF()
-  ENDIF()
-ENDIF()
-
-IF(enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
-  ADD_TEST(test-smpi-mpich3-thread-f77     ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/f77/ ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests "-wrapper=${TESH_WRAPPER}" -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f77/ -tests=testlist -privatization=${HAVE_PRIVATIZATION} -execarg=--cfg=contexts/stack-size:8000 -execarg=--cfg=contexts/factory:thread -execarg=--cfg=smpi/privatization:${HAVE_PRIVATIZATION})
-  SET_TESTS_PROPERTIES(test-smpi-mpich3-thread-f77 PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
-  ADD_TEST(test-smpi-mpich3-thread-f90     ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/f90/ ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests "-wrapper=${TESH_WRAPPER}" -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f90/ -tests=testlist -privatization=${HAVE_PRIVATIZATION} -execarg=--cfg=smpi/privatization:${HAVE_PRIVATIZATION} -execarg=--cfg=contexts/factory:thread)
-  SET_TESTS_PROPERTIES(test-smpi-mpich3-thread-f90 PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
-ENDIF()
-
-IF(SIMGRID_HAVE_LUA)
-  # Tests testing simulation from C but using lua for platform files. Executed like this
-  # ~$ ./masterslave platform.lua deploy.lua
-  ADD_TESH(lua-platform-masterslave                --setenv srcdir=${CMAKE_HOME_DIRECTORY} --setenv bindir=${CMAKE_BINARY_DIR} --cd ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/teshsuite/lua/lua_platforms.tesh)
-  SET_TESTS_PROPERTIES(lua-platform-masterslave    PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/lib/lib?.${LIB_EXE}")
-ENDIF()
-
 # New tests should use the Catch Framework
 set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
                 src/kernel/resource/profile/trace_mgr_test.cpp
