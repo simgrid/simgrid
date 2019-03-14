@@ -31,6 +31,7 @@ public:
 
   const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
+  void set_name(const std::string& name) { name_ = name; }
 
   virtual void suspend();
   virtual void resume();

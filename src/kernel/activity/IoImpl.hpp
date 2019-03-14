@@ -15,19 +15,28 @@ namespace kernel {
 namespace activity {
 
 class XBT_PUBLIC IoImpl : public ActivityImpl {
+  resource::StorageImpl* storage_ = nullptr;
+  sg_size_t size_                 = 0;
+  s4u::Io::OpType type_           = s4u::Io::OpType::READ;
+  sg_size_t performed_ioops_      = 0;
+
 public:
   ~IoImpl() override;
-  explicit IoImpl(const std::string& name, resource::StorageImpl* storage);
+  IoImpl() = default;
 
-  IoImpl* start(sg_size_t size, s4u::Io::OpType type);
+  IoImplPtr set_name(const std::string& name);
+  IoImplPtr set_size(sg_size_t size);
+  IoImplPtr set_type(s4u::Io::OpType type);
+  IoImplPtr set_storage(resource::StorageImpl* storage);
+
+  sg_size_t get_performed_ioops() { return performed_ioops_; }
+
+  IoImpl* start();
   void post() override;
   void finish() override;
   void cancel();
   double get_remaining();
-  sg_size_t get_performed_ioops() { return performed_ioops_; }
 
-  resource::StorageImpl* storage_                 = nullptr;
-  sg_size_t performed_ioops_                      = 0;
   static xbt::signal<void(IoImplPtr)> on_start;
   static xbt::signal<void(IoImplPtr)> on_completion;
 };

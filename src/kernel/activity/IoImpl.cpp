@@ -37,13 +37,6 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-IoImpl::IoImpl(const std::string& name, resource::StorageImpl* storage) : ActivityImpl(name), storage_(storage)
-{
-  this->state_ = SIMIX_RUNNING;
-
-  XBT_DEBUG("Create io impl %p", this);
-}
-
 IoImpl::~IoImpl()
 {
   if (surf_action_ != nullptr)
@@ -51,9 +44,34 @@ IoImpl::~IoImpl()
   XBT_DEBUG("Destroy io %p", this);
 }
 
-IoImpl* IoImpl::start(sg_size_t size, s4u::Io::OpType type)
+IoImplPtr IoImpl::set_name(const std::string& name)
 {
-  surf_action_ = storage_->io_start(size, type);
+  ActivityImpl::set_name(name);
+  return this;
+}
+
+IoImplPtr IoImpl::set_type(s4u::Io::OpType type)
+{
+  type_ = type;
+  return this;
+}
+
+IoImplPtr IoImpl::set_size(sg_size_t size)
+{
+  size_ = size;
+  return this;
+}
+
+IoImplPtr IoImpl::set_storage(resource::StorageImpl* storage)
+{
+  storage_ = storage;
+  return this;
+}
+
+IoImpl* IoImpl::start()
+{
+  state_       = SIMIX_RUNNING;
+  surf_action_ = storage_->io_start(size_, type_);
   surf_action_->set_data(this);
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());

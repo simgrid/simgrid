@@ -16,12 +16,19 @@ namespace s4u {
 Io::Io(sg_storage_t storage, sg_size_t size, OpType type) : Activity(), storage_(storage), size_(size), type_(type)
 {
   Activity::set_remaining(size_);
-  pimpl_ = kernel::activity::IoImplPtr(new kernel::activity::IoImpl(name_, storage_->get_impl()));
+  pimpl_ = kernel::activity::IoImplPtr(new kernel::activity::IoImpl());
 }
 
 Io* Io::start()
 {
-  simix::simcall([this] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->start(size_, type_); });
+  simix::simcall([this] {
+    boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)
+        ->set_name(name_)
+        ->set_storage(storage_->get_impl())
+        ->set_size(size_)
+        ->set_type(type_)
+        ->start();
+  });
   state_ = State::STARTED;
   return this;
 }
