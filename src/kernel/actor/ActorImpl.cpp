@@ -138,6 +138,12 @@ void ActorImpl::cleanup()
 
   XBT_DEBUG("Cleanup actor %s (%p), waiting synchro %p", get_cname(), this, waiting_synchro.get());
 
+  /* Unregister from the kill timer if any */
+  if (kill_timer != nullptr) {
+    kill_timer->remove();
+    kill_timer = nullptr;
+  }
+
   simix_global->mutex.lock();
 
   simix_global->process_list.erase(pid_);

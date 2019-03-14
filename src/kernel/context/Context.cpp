@@ -99,12 +99,6 @@ void Context::stop()
   simgrid::simix::simcall([this] {
     simgrid::s4u::Actor::on_destruction(actor_->iface());
 
-    /* Unregister from the kill timer if any */
-    if (actor_->kill_timer != nullptr) {
-      actor_->kill_timer->remove();
-      actor_->kill_timer = nullptr;
-    }
-
     actor_->cleanup();
   });
   this->iwannadie = true;
