@@ -207,7 +207,7 @@ void Lagrange::lagrange_solve()
     /* Improve the value of lambda_i */
     for (Constraint& cnst : active_constraint_set) {
       XBT_DEBUG("Working on cnst (%p)", &cnst);
-      cnst.new_lambda = dichotomy(cnst.lambda, partial_diff_lambda, cnst, dichotomy_min_error);
+      cnst.new_lambda = dichotomy(cnst.lambda, cnst, dichotomy_min_error);
       XBT_DEBUG("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", &cnst, cnst.lambda, cnst.new_lambda);
       cnst.lambda = cnst.new_lambda;
 
@@ -264,8 +264,7 @@ void Lagrange::lagrange_solve()
  *
  * @return a double corresponding to the result of the dichotomy process
  */
-double Lagrange::dichotomy(double init, double diff(double, const Constraint&), const Constraint& cnst,
-                           double min_error)
+double Lagrange::dichotomy(double init, const Constraint& cnst, double min_error)
 {
   double min = init;
   double max = init;
@@ -283,15 +282,15 @@ double Lagrange::dichotomy(double init, double diff(double, const Constraint&), 
 
   overall_error = 1;
 
-  diff_0 = diff(1e-16, cnst);
+  diff_0 = partial_diff_lambda(1e-16, cnst);
   if (diff_0 >= 0) {
     XBT_CDEBUG(surf_lagrange_dichotomy, "returning 0.0 (diff = %e)", diff_0);
     XBT_OUT();
     return 0.0;
   }
 
-  double min_diff = diff(min, cnst);
-  double max_diff = diff(max, cnst);
+  double min_diff = partial_diff_lambda(min, cnst);
+  double max_diff = partial_diff_lambda(max, cnst);
 
   while (overall_error > min_error) {
     XBT_CDEBUG(surf_lagrange_dichotomy, "[min, max] = [%1.20f, %1.20f] || diffmin, diffmax = %1.20f, %1.20f", min, max,
@@ -301,7 +300,7 @@ double Lagrange::dichotomy(double init, double diff(double, const Constraint&), 
       if (min == max) {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Decreasing min");
         min      = min / 2.0;
-        min_diff = diff(min, cnst);
+        min_diff = partial_diff_lambda(min, cnst);
       } else {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Decreasing max");
         max      = min;
@@ -311,7 +310,7 @@ double Lagrange::dichotomy(double init, double diff(double, const Constraint&), 
       if (min == max) {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Increasing max");
         max      = max * 2.0;
-        max_diff = diff(max, cnst);
+        max_diff = partial_diff_lambda(max, cnst);
       } else {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Increasing min");
         min      = max;
@@ -328,7 +327,7 @@ double Lagrange::dichotomy(double init, double diff(double, const Constraint&), 
                   min, max - min, min_diff, max_diff);
         break;
       }
-      middle_diff = diff(middle, cnst);
+      middle_diff = partial_diff_lambda(middle, cnst);
 
       if (middle_diff < 0) {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Increasing min");

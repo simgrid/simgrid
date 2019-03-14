@@ -30,19 +30,22 @@ public:
    * @param name The name of the Resource
    * @param constraint The lmm constraint associated to this Resource if it is part of a LMM component
    */
-  Resource(Model* model, const std::string& name, lmm::Constraint* constraint);
+  Resource(Model* model, const std::string& name, lmm::Constraint* constraint)
+      : name_(name), model_(model), constraint_(constraint)
+  {
+  }
 
   virtual ~Resource();
 
   /** @brief Get the Model of the current Resource */
-  Model* get_model() const;
+  Model* get_model() const { return model_; }
 
   /** @brief Get the name of the current Resource */
-  const std::string& get_name() const;
+  const std::string& get_name() const { return name_; }
   /** @brief Get the name of the current Resource */
-  const char* get_cname() const;
+  const char* get_cname() const { return name_.c_str(); }
 
-  bool operator==(const Resource& other) const;
+  bool operator==(const Resource& other) const { return name_ == other.name_; }
 
   /** @brief Apply an event of external load event to that resource */
   virtual void apply_event(profile::Event* event, double value) = 0;
@@ -53,16 +56,16 @@ public:
   /** @brief returns the current load due to activities (in flops per second, byte per second or similar)
    *
    * The load due to external usages modeled by profile files is ignored.*/
-  virtual double get_load();
+  virtual double get_load() const;
 
   /** @brief Check if the current Resource is active */
-  virtual bool is_on() const;
+  virtual bool is_on() const { return is_on_; }
   /** @brief Check if the current Resource is shut down */
-  XBT_ATTRIB_DEPRECATED_v325("Please use !is_on()") virtual bool is_off() const;
+  XBT_ATTRIB_DEPRECATED_v325("Please use !is_on()") virtual bool is_off() const { return not is_on_; }
   /** @brief Turn on the current Resource */
-  virtual void turn_on();
+  virtual void turn_on() { is_on_ = true; }
   /** @brief Turn off the current Resource */
-  virtual void turn_off();
+  virtual void turn_off() { is_on_ = false; }
   /** @brief setup the profile file with states events (ON or OFF). The profile must contain boolean values. */
   virtual void set_state_profile(profile::Profile* profile);
 
@@ -78,7 +81,7 @@ private:
 
 public: /* LMM */
   /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
-  lmm::Constraint* get_constraint() const;
+  lmm::Constraint* get_constraint() const { return constraint_; }
 
 private:
   kernel::lmm::Constraint* const constraint_;

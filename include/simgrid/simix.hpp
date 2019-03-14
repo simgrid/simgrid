@@ -86,7 +86,7 @@ class Timer {
 public:
   decltype(simix_timers)::handle_type handle_;
 
-  Timer(double date, simgrid::xbt::Task<void()> callback) : date(date), callback(std::move(callback)) {}
+  Timer(double date, simgrid::xbt::Task<void()>&& callback) : date(date), callback(std::move(callback)) {}
 
   simgrid::xbt::Task<void()> callback;
   double get_date() { return date; }
@@ -97,13 +97,19 @@ public:
     return set(date, simgrid::xbt::Task<void()>(std::move(callback)));
   }
 
-  template <class R, class T> static inline Timer* set(double date, R (*callback)(T*), T* arg)
+  template <class R, class T>
+  XBT_ATTRIB_DEPRECATED_v325("Please use a lambda or std::bind") static inline Timer* set(double date,
+                                                                                          R (*callback)(T*), T* arg)
   {
-    return set(date, [callback, arg]() { callback(arg); });
+    return set(date, std::bind(callback, arg));
   }
 
-  static Timer* set(double date, void (*callback)(void*), void* arg);
-  static Timer* set(double date, simgrid::xbt::Task<void()> callback);
+  XBT_ATTRIB_DEPRECATED_v325("Please use a lambda or std::bind") static Timer* set(double date, void (*callback)(void*),
+                                                                                   void* arg)
+  {
+    return set(date, std::bind(callback, arg));
+  }
+  static Timer* set(double date, simgrid::xbt::Task<void()>&& callback);
   static double next() { return simix_timers.empty() ? -1.0 : simix_timers.top().first; }
 };
 
@@ -114,7 +120,7 @@ XBT_PUBLIC smx_actor_t simcall_process_create(const std::string& name, const sim
                                               void* data, sg_host_t host,
                                               std::unordered_map<std::string, std::string>* properties);
 
-XBT_PUBLIC smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback);
-
+XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::xbt::Timer::set") XBT_PUBLIC smx_timer_t
+    SIMIX_timer_set(double date, simgrid::xbt::Task<void()>&& callback);
 
 #endif
