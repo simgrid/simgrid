@@ -114,43 +114,39 @@ bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
 }
 
 // Those are internal_req
-bool request_depend(smx_simcall_t r1, smx_simcall_t r2)
+bool request_depend(smx_simcall_t req1, smx_simcall_t req2)
 {
-  if (r1->issuer == r2->issuer)
+  if (req1->issuer == req2->issuer)
     return false;
 
   /* Wait with timeout transitions are not considered by the independence theorem, thus we consider them as dependent with all other transitions */
-  if ((r1->call == SIMCALL_COMM_WAIT && simcall_comm_wait__get__timeout(r1) > 0)
-      || (r2->call == SIMCALL_COMM_WAIT
-          && simcall_comm_wait__get__timeout(r2) > 0))
+  if ((req1->call == SIMCALL_COMM_WAIT && simcall_comm_wait__get__timeout(req1) > 0) ||
+      (req2->call == SIMCALL_COMM_WAIT && simcall_comm_wait__get__timeout(req2) > 0))
     return true;
 
-  if (r1->call != r2->call)
-    return request_depend_asymmetric(r1, r2)
-      && request_depend_asymmetric(r2, r1);
+  if (req1->call != req2->call)
+    return request_depend_asymmetric(req1, req2) && request_depend_asymmetric(req2, req1);
 
   // Those are internal requests, we do not need indirection
   // because those objects are copies:
-  simgrid::kernel::activity::CommImpl* synchro1 = MC_get_comm(r1);
-  simgrid::kernel::activity::CommImpl* synchro2 = MC_get_comm(r2);
+  simgrid::kernel::activity::CommImpl* synchro1 = MC_get_comm(req1);
+  simgrid::kernel::activity::CommImpl* synchro2 = MC_get_comm(req2);
 
-  switch(r1->call) {
-  case SIMCALL_COMM_ISEND:
-    return simcall_comm_isend__get__mbox(r1)
-      == simcall_comm_isend__get__mbox(r2);
-  case SIMCALL_COMM_IRECV:
-    return simcall_comm_irecv__get__mbox(r1)
-      == simcall_comm_irecv__get__mbox(r2);
-  case SIMCALL_COMM_WAIT:
-    if (synchro1->src_buff_ == synchro2->src_buff_ && synchro1->dst_buff_ == synchro2->dst_buff_)
-      return false;
-    if (synchro1->src_buff_ != nullptr && synchro1->dst_buff_ != nullptr && synchro2->src_buff_ != nullptr &&
-        synchro2->dst_buff_ != nullptr && synchro1->dst_buff_ != synchro2->src_buff_ &&
-        synchro1->dst_buff_ != synchro2->dst_buff_ && synchro2->dst_buff_ != synchro1->src_buff_)
-      return false;
-    return true;
-  default:
-    return true;
+  switch (req1->call) {
+    case SIMCALL_COMM_ISEND:
+      return simcall_comm_isend__get__mbox(req1) == simcall_comm_isend__get__mbox(req2);
+    case SIMCALL_COMM_IRECV:
+      return simcall_comm_irecv__get__mbox(req1) == simcall_comm_irecv__get__mbox(req2);
+    case SIMCALL_COMM_WAIT:
+      if (synchro1->src_buff_ == synchro2->src_buff_ && synchro1->dst_buff_ == synchro2->dst_buff_)
+        return false;
+      if (synchro1->src_buff_ != nullptr && synchro1->dst_buff_ != nullptr && synchro2->src_buff_ != nullptr &&
+          synchro2->dst_buff_ != nullptr && synchro1->dst_buff_ != synchro2->src_buff_ &&
+          synchro1->dst_buff_ != synchro2->dst_buff_ && synchro2->dst_buff_ != synchro1->src_buff_)
+        return false;
+      return true;
+    default:
+      return true;
   }
 }
 
