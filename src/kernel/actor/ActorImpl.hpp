@@ -181,6 +181,6 @@ XBT_PUBLIC void create_maestro(const std::function<void()>& code);
 
 extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
 
-XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_activity_t synchro);
+XBT_PRIVATE void SIMIX_process_sleep_destroy(simgrid::kernel::activity::SleepImplPtr synchro);
 
 #endif

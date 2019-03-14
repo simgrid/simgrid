@@ -18,9 +18,27 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-SleepImpl* SleepImpl::start(double duration)
+SleepImplPtr SleepImpl::set_name(const std::string& name)
 {
-  surf_action_ = host_->pimpl_cpu->sleep(duration);
+  ActivityImpl::set_name(name);
+  return this;
+}
+
+SleepImplPtr SleepImpl::set_host(s4u::Host* host)
+{
+  host_ = host;
+  return this;
+}
+
+SleepImplPtr SleepImpl::set_duration(double duration)
+{
+  duration_ = duration;
+  return this;
+}
+
+SleepImpl* SleepImpl::start()
+{
+  surf_action_ = host_->pimpl_cpu->sleep(duration_);
   surf_action_->set_data(this);
   XBT_DEBUG("Create sleep synchronization %p", this);
   return this;
@@ -66,7 +84,6 @@ void SleepImpl::post()
       SIMIX_simcall_answer(simcall);
     }
   }
-
   SIMIX_process_sleep_destroy(this);
 }
 void SleepImpl::finish()

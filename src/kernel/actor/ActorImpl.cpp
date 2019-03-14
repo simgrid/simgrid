@@ -388,7 +388,11 @@ activity::ActivityImplPtr ActorImpl::sleep(double duration)
     throw_exception(std::make_exception_ptr(simgrid::HostFailureException(
         XBT_THROW_POINT, std::string("Host ") + host_->get_cname() + " failed, you cannot sleep there.")));
 
-  return activity::SleepImplPtr(new activity::SleepImpl("sleep", host_))->start(duration);
+  return activity::SleepImplPtr(new activity::SleepImpl())
+      ->set_name("sleep")
+      ->set_host(host_)
+      ->set_duration(duration)
+      ->start();
 }
 
 void ActorImpl::throw_exception(std::exception_ptr e)
@@ -413,7 +417,7 @@ void ActorImpl::throw_exception(std::exception_ptr e)
 
     activity::SleepImplPtr sleep = boost::dynamic_pointer_cast<activity::SleepImpl>(waiting_synchro);
     if (sleep != nullptr) {
-      SIMIX_process_sleep_destroy(waiting_synchro);
+      SIMIX_process_sleep_destroy(sleep);
       if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), this) ==
               end(simix_global->actors_to_run) &&
           this != SIMIX_process_self()) {
@@ -564,7 +568,7 @@ void SIMIX_process_throw(smx_actor_t actor, xbt_errcat_t cat, int value, const c
     simgrid::kernel::activity::SleepImplPtr sleep =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(actor->waiting_synchro);
     if (sleep != nullptr) {
-      SIMIX_process_sleep_destroy(actor->waiting_synchro);
+      SIMIX_process_sleep_destroy(sleep);
       if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), actor) ==
               end(simix_global->actors_to_run) &&
           actor != SIMIX_process_self()) {
@@ -665,11 +669,9 @@ void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration)
   simcall->issuer->waiting_synchro = sync;
 }
 
-void SIMIX_process_sleep_destroy(smx_activity_t synchro)
+void SIMIX_process_sleep_destroy(simgrid::kernel::activity::SleepImplPtr sleep)
 {
-  XBT_DEBUG("Destroy sleep synchro %p", synchro.get());
-  simgrid::kernel::activity::SleepImplPtr sleep =
-      boost::static_pointer_cast<simgrid::kernel::activity::SleepImpl>(synchro);
+  XBT_DEBUG("Destroy sleep synchro %p", sleep.get());
 
   if (sleep->surf_action_) {
     sleep->surf_action_->unref();
