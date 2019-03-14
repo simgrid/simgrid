@@ -51,7 +51,8 @@ can be configured this way.
    <!-- The rest of your platform -->
    </platform>
 
-
+|hr|
+   
 .. _pf_tag_host:
 
 ------------------------------------------------------------------
@@ -61,7 +62,7 @@ can be configured this way.
 An host is the computing resource on which an actor can execute. See :cpp:class:`simgrid::s4u::Host`.
 
 **Parent tags:** :ref:`pf_tag_zone` (only leaf zones, i.e. zones containing no inner zones nor clusters) |br|
-**Children tags:** :ref:`pf_tag_prop`, :ref:`pf_tag_storage` |br|
+**Children tags:** :ref:`pf_tag_mount`, :ref:`pf_tag_prop`, :ref:`pf_tag_storage` |br|
 **Attributes:**
 
 :``id``: Host name.
@@ -119,13 +120,19 @@ An host is the computing resource on which an actor can execute. See :cpp:class:
 :``pstate``: Initial pstate (default: 0, the first one).
    See :ref:`howto_dvfs`.
 
+|hr|
+   
 .. _pf_tag_link:
 
 ------------------------------------------------------------------
 <link>
 ------------------------------------------------------------------
 
-Network links can represent one-hop network connections. See :cpp:class:`simgrid::s4u::Link`.
+Network links can represent one-hop network connections (see
+:cpp:class:`simgrid::s4u::Link`). SimGrid links can be used to
+represent either a single wire, or to abstract a larger network
+interconnect in a single element. A single link can for example be
+used to model the transcontinental network.
 
 **Parent tags:** :ref:`pf_tag_zone` (both leaf zones and inner zones) |br|
 **Children tags:** :ref:`pf_tag_prop` |br|
@@ -225,7 +232,9 @@ Network links can represent one-hop network connections. See :cpp:class:`simgrid
       :ref:`pf_tag_link` are absolute values, but Availability
       profiles of :ref:`pf_tag_host` are ratio.
 :``state_file``: File containing the state profile. See :ref:`pf_tag_host`.
-   
+
+|hr|
+
 .. _pf_tag_peer:
 
 ------------------------------------------------------------------
@@ -267,6 +276,8 @@ and a download link.
 :``state_file``: File containing the state profile.
    See the full description in :ref:`pf_tag_host`
 
+|hr|
+
 .. _pf_tag_platform:
 
 ------------------------------------------------------------------
@@ -286,6 +297,7 @@ and a download link.
 	      upgrade most of the past platform files to the recent
 	      formalism.
 
+|hr|
 	      
 .. _pf_tag_prop:
 
@@ -316,6 +328,8 @@ following functions:
 :``id``: Name of the defined property.
 :``value``: Value of the defined property.
 
+|hr|
+
 .. _pf_tag_router:
 
 ------------------------------------------------------------------
@@ -338,3 +352,7 @@ break the routes that are longer than 1 hop.
 .. |br| raw:: html
 
    <br />
+
+.. |hr| raw:: html
+
+   <hr />
