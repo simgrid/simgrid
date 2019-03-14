@@ -33,6 +33,10 @@ if(SIMGRID_HAVE_MC)
       ADD_TEST(mc-bugged1-liveness-stack-cleaner ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/mc/bugged1_liveness_stack_cleaner ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/mc/ ${CMAKE_BINARY_DIR}/examples/deprecated/msg/mc/)
     ENDIF()
   ENDIF()
+
+  if (enable_coverage)
+    SET_TESTS_PROPERTIES(mc-bugged1-liveness-visited-ucontext PROPERTIES RUN_SERIAL "TRUE")
+  endif()
 endif()
 
 set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/bugged1.tesh
