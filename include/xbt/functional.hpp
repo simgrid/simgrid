@@ -175,7 +175,8 @@ public:
     vtable_ = that.vtable_;
     that.vtable_ = nullptr;
   }
-  Task& operator=(Task that)
+  Task& operator=(Task const& that) = delete;
+  Task& operator=(Task&& that)
   {
     this->clear();
     if (that.vtable_ && that.vtable_->move)
