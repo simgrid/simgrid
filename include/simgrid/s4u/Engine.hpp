@@ -65,8 +65,8 @@ public:
 
   template <class F> void register_actor(const std::string& name)
   {
-    simgrid::simix::register_function(name, [](std::vector<std::string> args) {
-      return simgrid::simix::ActorCode([args] {
+    simix::register_function(name, [](std::vector<std::string> args) {
+      return simix::ActorCode([args] {
         F code(std::move(args));
         code();
       });
@@ -75,8 +75,8 @@ public:
 
   template <class F> void register_actor(const std::string& name, F code)
   {
-    simgrid::simix::register_function(name, [code](std::vector<std::string> args) {
-      return simgrid::simix::ActorCode([code, args] { code(std::move(args)); });
+    simix::register_function(name, [code](std::vector<std::string> args) {
+      return simix::ActorCode([code, args] { code(std::move(args)); });
     });
   }
 
@@ -106,14 +106,14 @@ public:
   /** @brief Returns the list of all hosts found in the platform */
   std::vector<Host*> get_all_hosts();
   std::vector<Host*> get_filtered_hosts(const std::function<bool(Host*)>& filter);
-  simgrid::s4u::Host* host_by_name(const std::string& name);
-  simgrid::s4u::Host* host_by_name_or_null(const std::string& name);
+  Host* host_by_name(const std::string& name);
+  Host* host_by_name_or_null(const std::string& name);
 
   size_t get_link_count();
   std::vector<Link*> get_all_links();
   std::vector<Link*> get_filtered_links(const std::function<bool(Link*)>& filter);
-  simgrid::s4u::Link* link_by_name(const std::string& name);
-  simgrid::s4u::Link* link_by_name_or_null(const std::string& name);
+  Link* link_by_name(const std::string& name);
+  Link* link_by_name_or_null(const std::string& name);
 
   size_t get_actor_count();
   std::vector<ActorPtr> get_all_actors();
@@ -121,16 +121,16 @@ public:
 
   size_t get_storage_count();
   std::vector<Storage*> get_all_storages();
-  simgrid::s4u::Storage* storage_by_name(const std::string& name);
-  simgrid::s4u::Storage* storage_by_name_or_null(const std::string& name);
+  Storage* storage_by_name(const std::string& name);
+  Storage* storage_by_name_or_null(const std::string& name);
 
-  std::vector<simgrid::kernel::routing::NetPoint*> get_all_netpoints();
-  simgrid::kernel::routing::NetPoint* netpoint_by_name_or_null(const std::string& name);
+  std::vector<kernel::routing::NetPoint*> get_all_netpoints();
+  kernel::routing::NetPoint* netpoint_by_name_or_null(const std::string& name);
 
-  simgrid::s4u::NetZone* get_netzone_root();
-  void set_netzone_root(s4u::NetZone* netzone);
+  NetZone* get_netzone_root();
+  void set_netzone_root(NetZone* netzone);
 
-  simgrid::s4u::NetZone* netzone_by_name_or_null(const std::string& name);
+  NetZone* netzone_by_name_or_null(const std::string& name);
 
   /** @brief Retrieves all netzones of the type indicated by the template argument */
   template <class T> std::vector<T*> get_filtered_netzones()
@@ -155,8 +155,8 @@ public:
   void set_config(const std::string& str);
 
 private:
-  simgrid::kernel::EngineImpl* const pimpl;
-  static s4u::Engine* instance_;
+  kernel::EngineImpl* const pimpl;
+  static Engine* instance_;
 
   //////////////// Deprecated functions
 #ifndef DOXYGEN
@@ -318,7 +318,7 @@ template <class T> XBT_PRIVATE void get_filtered_netzones_recursive(s4u::NetZone
   }
 }
 #endif
-}
-} // namespace simgrid::s4u
+} // namespace s4u
+} // namespace simgrid
 
 #endif /* SIMGRID_S4U_ENGINE_HPP */

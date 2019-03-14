@@ -63,13 +63,13 @@ bool Io::test()
 /** @brief Returns the amount of flops that remain to be done */
 double Io::get_remaining()
 {
-  return simgrid::simix::simcall(
+  return simix::simcall(
       [this]() { return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_remaining(); });
 }
 
 sg_size_t Io::get_performed_ioops()
 {
-  return simgrid::simix::simcall(
+  return simix::simcall(
       [this]() { return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_performed_ioops(); });
 }
 

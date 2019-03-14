@@ -14,9 +14,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm, s4u_activity, "S4U asynchronous commun
 
 namespace simgrid {
 namespace s4u {
-simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Comm::on_sender_start;
-simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Comm::on_receiver_start;
-simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Comm::on_completion;
+xbt::signal<void(ActorPtr)> Comm::on_sender_start;
+xbt::signal<void(ActorPtr)> Comm::on_receiver_start;
+xbt::signal<void(ActorPtr)> Comm::on_completion;
 
 Comm::~Comm()
 {
@@ -32,11 +32,9 @@ Comm::~Comm()
 
 int Comm::wait_any_for(std::vector<CommPtr>* comms, double timeout)
 {
-  std::unique_ptr<simgrid::kernel::activity::CommImpl* []> rcomms(
-      new simgrid::kernel::activity::CommImpl*[comms->size()]);
-  std::transform(begin(*comms), end(*comms), rcomms.get(), [](const CommPtr& comm) {
-    return static_cast<simgrid::kernel::activity::CommImpl*>(comm->pimpl_.get());
-  });
+  std::unique_ptr<kernel::activity::CommImpl* []> rcomms(new kernel::activity::CommImpl*[comms->size()]);
+  std::transform(begin(*comms), end(*comms), rcomms.get(),
+                 [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
   return simcall_comm_waitany(rcomms.get(), comms->size(), timeout);
 }
 
@@ -178,11 +176,9 @@ Comm* Comm::wait_for(double timeout)
 }
 int Comm::test_any(std::vector<CommPtr>* comms)
 {
-  std::unique_ptr<simgrid::kernel::activity::CommImpl* []> rcomms(
-      new simgrid::kernel::activity::CommImpl*[comms->size()]);
-  std::transform(begin(*comms), end(*comms), rcomms.get(), [](const CommPtr& comm) {
-    return static_cast<simgrid::kernel::activity::CommImpl*>(comm->pimpl_.get());
-  });
+  std::unique_ptr<kernel::activity::CommImpl* []> rcomms(new kernel::activity::CommImpl*[comms->size()]);
+  std::transform(begin(*comms), end(*comms), rcomms.get(),
+                 [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
   return simcall_comm_testany(rcomms.get(), comms->size());
 }
 
@@ -197,7 +193,7 @@ Comm* Comm::detach()
 
 Comm* Comm::cancel()
 {
-  simgrid::simix::simcall([this] {
+  simix::simcall([this] {
     if (pimpl_)
       boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->cancel();
   });

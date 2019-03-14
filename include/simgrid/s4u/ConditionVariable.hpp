@@ -23,10 +23,10 @@ namespace s4u {
  */
 class XBT_PUBLIC ConditionVariable {
 private:
-  friend simgrid::kernel::activity::ConditionVariableImpl;
-  simgrid::kernel::activity::ConditionVariableImpl* const cond_;
+  friend kernel::activity::ConditionVariableImpl;
+  kernel::activity::ConditionVariableImpl* const cond_;
 
-  explicit ConditionVariable(simgrid::kernel::activity::ConditionVariableImpl* cond) : cond_(cond) {}
+  explicit ConditionVariable(kernel::activity::ConditionVariableImpl* cond) : cond_(cond) {}
 
 public:
   ConditionVariable(ConditionVariable const&) = delete;
@@ -105,7 +105,7 @@ public:
   void notify_all();
 };
 
-}
-} // namespace simgrid::s4u
+} // namespace s4u
+} // namespace simgrid
 
 #endif

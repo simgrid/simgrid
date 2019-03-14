@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel, s4u, "S4U Communication Mailboxes")
 namespace simgrid {
 namespace s4u {
 
-const simgrid::xbt::string& Mailbox::get_name() const
+const xbt::string& Mailbox::get_name() const
 {
   return pimpl_->get_name();
 }

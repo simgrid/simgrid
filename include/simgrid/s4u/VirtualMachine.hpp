@@ -20,12 +20,12 @@ namespace s4u {
  *
  */
 class XBT_PUBLIC VirtualMachine : public s4u::Host {
-  simgrid::vm::VirtualMachineImpl* const pimpl_vm_;
+  vm::VirtualMachineImpl* const pimpl_vm_;
   virtual ~VirtualMachine();
 
 public:
-  explicit VirtualMachine(const std::string& name, s4u::Host* physical_host, int core_amount);
-  explicit VirtualMachine(const std::string& name, s4u::Host* physical_host, int core_amount, size_t ramsize);
+  explicit VirtualMachine(const std::string& name, Host* physical_host, int core_amount);
+  explicit VirtualMachine(const std::string& name, Host* physical_host, int core_amount, size_t ramsize);
 
   // No copy/move
   VirtualMachine(VirtualMachine const&) = delete;
@@ -38,27 +38,27 @@ public:
     DESTROYED
   };
 
-  simgrid::vm::VirtualMachineImpl* get_impl() { return pimpl_vm_; }
+  vm::VirtualMachineImpl* get_impl() { return pimpl_vm_; }
   void start();
   void suspend();
   void resume();
   void shutdown();
   void destroy();
 
-  simgrid::s4u::Host* get_pm();
-  void set_pm(simgrid::s4u::Host* pm);
+  Host* get_pm();
+  void set_pm(Host* pm);
   size_t get_ramsize();
   void set_ramsize(size_t ramsize);
   void set_bound(double bound);
 
   VirtualMachine::state get_state();
-  static simgrid::xbt::signal<void(VirtualMachine&)> on_start;
-  static simgrid::xbt::signal<void(VirtualMachine&)> on_started;
-  static simgrid::xbt::signal<void(VirtualMachine&)> on_shutdown;
-  static simgrid::xbt::signal<void(VirtualMachine&)> on_suspend;
-  static simgrid::xbt::signal<void(VirtualMachine&)> on_resume;
-  static simgrid::xbt::signal<void(VirtualMachine&)> on_migration_start;
-  static simgrid::xbt::signal<void(VirtualMachine&)> on_migration_end;
+  static xbt::signal<void(VirtualMachine&)> on_start;
+  static xbt::signal<void(VirtualMachine&)> on_started;
+  static xbt::signal<void(VirtualMachine&)> on_shutdown;
+  static xbt::signal<void(VirtualMachine&)> on_suspend;
+  static xbt::signal<void(VirtualMachine&)> on_resume;
+  static xbt::signal<void(VirtualMachine&)> on_migration_start;
+  static xbt::signal<void(VirtualMachine&)> on_migration_end;
 
 #ifndef DOXYGEN
   // Deprecated methods
@@ -68,14 +68,14 @@ public:
     return get_state();
   }
   /** @deprecated See VirtualMachine::get_impl() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_impl()") simgrid::vm::VirtualMachineImpl* getImpl()
+  XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_impl()") vm::VirtualMachineImpl* getImpl()
   {
     return pimpl_vm_;
   }
   /** @deprecated See VirtualMachine::get_pm() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_pm()") simgrid::s4u::Host* getPm() { return get_pm(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_pm()") Host* getPm() { return get_pm(); }
   /** @deprecated See VirtualMachine::set_pm() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::set_pm()") void setPm(simgrid::s4u::Host* pm) { set_pm(pm); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::set_pm()") void setPm(Host* pm) { set_pm(pm); }
   /** @deprecated See VirtualMachine::get_ramsize() */
   XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_ramsize()") size_t getRamsize() { return get_ramsize(); }
   /** @deprecated See VirtualMachine::set_ramsize() */
@@ -87,7 +87,7 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::set_bound()") void setBound(double bound) { set_bound(bound); }
 #endif
 };
-}
-} // namespace simgrid::s4u
+} // namespace s4u
+} // namespace simgrid
 
 #endif

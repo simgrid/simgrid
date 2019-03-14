@@ -42,7 +42,7 @@ public:
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Barrier* barrier);
   friend XBT_PUBLIC void intrusive_ptr_release(Barrier* barrier);
 };
-}
-} // namespace simgrid::s4u
+} // namespace s4u
+} // namespace simgrid
 
 #endif

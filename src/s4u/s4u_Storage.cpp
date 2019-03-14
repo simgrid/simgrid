@@ -12,7 +12,7 @@
 
 namespace simgrid {
 namespace xbt {
-template class Extendable<simgrid::s4u::Storage>;
+template class Extendable<s4u::Storage>;
 } // namespace xbt
 
 namespace s4u {
@@ -43,7 +43,7 @@ const char* Storage::get_type()
 
 std::unordered_map<std::string, std::string>* Storage::get_properties()
 {
-  return simgrid::simix::simcall([this] { return pimpl_->get_properties(); });
+  return simix::simcall([this] { return pimpl_->get_properties(); });
 }
 
 const char* Storage::get_property(const std::string& key)
@@ -53,7 +53,7 @@ const char* Storage::get_property(const std::string& key)
 
 void Storage::set_property(const std::string& key, const std::string& value)
 {
-  simgrid::simix::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  simix::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
 }
 
 IoPtr Storage::io_init(sg_size_t size, Io::OpType type)

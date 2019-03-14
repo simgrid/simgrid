@@ -12,8 +12,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_exec, s4u_activity, "S4U asynchronous execut
 
 namespace simgrid {
 namespace s4u {
-simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Exec::on_start;
-simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Exec::on_completion;
+xbt::signal<void(ActorPtr)> Exec::on_start;
+xbt::signal<void(ActorPtr)> Exec::on_completion;
 
 Exec::Exec()
 {
@@ -55,7 +55,7 @@ Exec* Exec::wait_for(double)
 
 Exec* Exec::cancel()
 {
-  simgrid::simix::simcall([this] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->cancel(); });
+  simix::simcall([this] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->cancel(); });
   state_ = State::CANCELED;
   return this;
 }
@@ -196,9 +196,8 @@ Exec* ExecPar::start()
 }
 double ExecPar::get_remaining_ratio()
 {
-  return simgrid::simix::simcall([this]() {
-    return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->get_par_remaining_ratio();
-  });
+  return simix::simcall(
+      [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_par_remaining_ratio(); });
 }
 
 double ExecPar::get_remaining()

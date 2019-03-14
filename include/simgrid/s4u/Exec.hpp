@@ -39,8 +39,8 @@ public:
   Exec& operator=(Exec const&) = delete;
 #endif
 
-  friend simgrid::s4u::ExecSeq;
-  friend simgrid::s4u::ExecPar;
+  friend ExecSeq;
+  friend ExecPar;
   friend XBT_PUBLIC void intrusive_ptr_release(Exec* e);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Exec* e);
   static xbt::signal<void(ActorPtr)> on_start;

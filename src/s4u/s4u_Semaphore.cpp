@@ -15,7 +15,7 @@ namespace s4u {
 
 Semaphore::Semaphore(unsigned int initial_capacity)
 {
-  sem_ = simgrid::simix::simcall([initial_capacity] { return new kernel::activity::SemaphoreImpl(initial_capacity); });
+  sem_ = simix::simcall([initial_capacity] { return new kernel::activity::SemaphoreImpl(initial_capacity); });
 }
 
 Semaphore::~Semaphore()
@@ -43,17 +43,17 @@ int Semaphore::acquire_timeout(double timeout)
 
 void Semaphore::release()
 {
-  simgrid::simix::simcall([this] { sem_->release(); });
+  simix::simcall([this] { sem_->release(); });
 }
 
 int Semaphore::get_capacity()
 {
-  return simgrid::simix::simcall([this] { return sem_->get_capacity(); });
+  return simix::simcall([this] { return sem_->get_capacity(); });
 }
 
 int Semaphore::would_block()
 {
-  return simgrid::simix::simcall([this] { return sem_->would_block(); });
+  return simix::simcall([this] { return sem_->would_block(); });
 }
 
 void intrusive_ptr_add_ref(Semaphore* sem)
@@ -71,8 +71,9 @@ void intrusive_ptr_release(Semaphore* sem)
   }
 }
 
-}
-}
+} // namespace s4u
+} // namespace simgrid
+
 /* **************************** Public C interface *************************** */
 /** @brief creates a semaphore object of the given initial capacity */
 sg_sem_t sg_sem_init(int initial_value)

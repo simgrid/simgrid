@@ -18,12 +18,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_link, s4u, "Logging specific to the S4U link
 namespace simgrid {
 namespace s4u {
 
-simgrid::xbt::signal<void(Link&)> Link::on_creation;
-simgrid::xbt::signal<void(Link&)> Link::on_destruction;
-simgrid::xbt::signal<void(Link&)> Link::on_state_change;
-simgrid::xbt::signal<void(Link&)> Link::on_bandwidth_change;
-simgrid::xbt::signal<void(kernel::resource::NetworkAction*, Host* src, Host* dst)> Link::on_communicate;
-simgrid::xbt::signal<void(kernel::resource::NetworkAction*, kernel::resource::Action::State)>
+xbt::signal<void(Link&)> Link::on_creation;
+xbt::signal<void(Link&)> Link::on_destruction;
+xbt::signal<void(Link&)> Link::on_state_change;
+xbt::signal<void(Link&)> Link::on_bandwidth_change;
+xbt::signal<void(kernel::resource::NetworkAction*, Host* src, Host* dst)> Link::on_communicate;
+xbt::signal<void(kernel::resource::NetworkAction*, kernel::resource::Action::State)>
     Link::on_communication_state_change;
 
 Link* Link::by_name(const std::string& name)

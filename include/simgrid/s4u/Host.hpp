@@ -17,10 +17,10 @@
 namespace simgrid {
 
 namespace xbt {
-extern template class XBT_PUBLIC Extendable<simgrid::s4u::Host>;
-}
-namespace s4u {
+extern template class XBT_PUBLIC Extendable<s4u::Host>;
+} // namespace xbt
 
+namespace s4u {
 /** @ingroup s4u_api
  *
  * @tableofcontents
@@ -35,9 +35,9 @@ namespace s4u {
  * and actors can retrieve the host on which they run using @ref simgrid::s4u::Host::current() or
  * @ref simgrid::s4u::this_actor::get_host().
  */
-class XBT_PUBLIC Host : public simgrid::xbt::Extendable<Host> {
-  friend simgrid::vm::VMModel;            // Use the pimpl_cpu to compute the VM sharing
-  friend simgrid::vm::VirtualMachineImpl; // creates the the pimpl_cpu
+class XBT_PUBLIC Host : public xbt::Extendable<Host> {
+  friend vm::VMModel;            // Use the pimpl_cpu to compute the VM sharing
+  friend vm::VirtualMachineImpl; // creates the the pimpl_cpu
 
 public:
   explicit Host(const std::string& name);
@@ -51,14 +51,14 @@ private:
 
 public:
   /*** Called on each newly created host */
-  static simgrid::xbt::signal<void(Host&)> on_creation;
+  static xbt::signal<void(Host&)> on_creation;
   /*** Called just before destructing a host */
-  static simgrid::xbt::signal<void(Host&)> on_destruction;
+  static xbt::signal<void(Host&)> on_destruction;
   /*** Called when the machine is turned on or off (called AFTER the change) */
-  static simgrid::xbt::signal<void(Host&)> on_state_change;
+  static xbt::signal<void(Host&)> on_state_change;
   /*** Called when the speed of the machine is changed (called AFTER the change)
    * (either because of a pstate switch or because of an external load event coming from the profile) */
-  static simgrid::xbt::signal<void(Host&)> on_speed_change;
+  static xbt::signal<void(Host&)> on_speed_change;
 
   virtual void destroy();
   // No copy/move
@@ -68,12 +68,12 @@ public:
   /** Retrieve a host from its name, or return nullptr */
   static Host* by_name_or_null(const std::string& name);
   /** Retrieve a host from its name, or die */
-  static s4u::Host* by_name(const std::string& name);
+  static Host* by_name(const std::string& name);
   /** Retrieves the host on which the running actor is located */
-  static s4u::Host* current();
+  static Host* current();
 
   /** Retrieves the name of that host as a C++ string */
-  simgrid::xbt::string const& get_name() const { return name_; }
+  xbt::string const& get_name() const { return name_; }
   /** Retrieves the name of that host as a C string */
   const char* get_cname() const { return name_.c_str(); }
 
@@ -82,12 +82,12 @@ public:
 
   /** Turns that host on if it was previously off
    *
-   * This call does nothing if the host is already on. If it was off, all actors which were
-   * marked 'autorestart' on that host will be restarted automatically (note that this may differ
-   * from the actors that were initially running on the host).
+   * This call does nothing if the host is already on. If it was off, all actors which were marked 'autorestart' on that
+   * host will be restarted automatically (note that this may differ from the actors that were initially running on the
+   * host).
    *
-   * All other Host's properties are left unchanged; in particular, the pstate is left
-   * unchanged and not reset to its initial value.
+   * All other Host's properties are left unchanged; in particular, the pstate is left unchanged and not reset to its
+   * initial value.
    */
   void turn_on();
   /** Turns that host off. All actors are forcefully stopped. */
@@ -226,7 +226,7 @@ public:
 #endif /* !DOXYGEN */
 
 private:
-  simgrid::xbt::string name_ {"noname"};
+  xbt::string name_{"noname"};
   std::unordered_map<std::string, Storage*>* mounts_ = nullptr; // caching
 
 public:
@@ -239,8 +239,8 @@ public:
   kernel::routing::NetPoint* pimpl_netpoint = nullptr;
 #endif
 };
-}
-} // namespace simgrid::s4u
+} // namespace s4u
+} // namespace simgrid
 
 extern int USER_HOST_LEVEL;
 

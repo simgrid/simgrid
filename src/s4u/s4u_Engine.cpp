@@ -38,34 +38,33 @@ Engine* Engine::instance_ = nullptr; /* That singleton is awful, but I don't see
 
 Engine::Engine(int* argc, char** argv) : pimpl(new kernel::EngineImpl())
 {
-  xbt_assert(s4u::Engine::instance_ == nullptr,
-             "It is currently forbidden to create more than one instance of s4u::Engine");
+  xbt_assert(Engine::instance_ == nullptr, "It is currently forbidden to create more than one instance of s4u::Engine");
   TRACE_global_init();
   SIMIX_global_init(argc, argv);
 
-  s4u::Engine::instance_ = this;
+  Engine::instance_ = this;
 }
 
 Engine::~Engine()
 {
   delete pimpl;
-  s4u::Engine::instance_ = nullptr;
+  Engine::instance_ = nullptr;
 }
 
 /** @brief Retrieve the engine singleton */
 Engine* Engine::get_instance()
 {
-  if (s4u::Engine::instance_ == nullptr) {
+  if (Engine::instance_ == nullptr) {
     auto e = new Engine(0, nullptr);
-    xbt_assert(s4u::Engine::instance_ == e);
+    xbt_assert(Engine::instance_ == e);
   }
-  return s4u::Engine::instance_;
+  return Engine::instance_;
 }
 
 void Engine::shutdown()
 {
-  delete s4u::Engine::instance_;
-  s4u::Engine::instance_ = nullptr;
+  delete Engine::instance_;
+  Engine::instance_ = nullptr;
 }
 
 double Engine::get_clock()
@@ -139,7 +138,7 @@ std::vector<Host*> Engine::get_filtered_hosts(const std::function<bool(Host*)>& 
   return hosts;
 }
 
-void Engine::host_register(const std::string& name, simgrid::s4u::Host* host)
+void Engine::host_register(const std::string& name, Host* host)
 {
   pimpl->hosts_[name] = host;
 }
@@ -153,7 +152,7 @@ void Engine::host_unregister(const std::string& name)
  *
  *  @throw std::invalid_argument if the searched host does not exist.
  */
-simgrid::s4u::Host* Engine::host_by_name(const std::string& name)
+Host* Engine::host_by_name(const std::string& name)
 {
   if (pimpl->hosts_.find(name) == pimpl->hosts_.end())
     throw std::invalid_argument(std::string("Host not found: '") + name + std::string("'"));
@@ -161,7 +160,7 @@ simgrid::s4u::Host* Engine::host_by_name(const std::string& name)
 }
 
 /** @brief Find a host from its name (or nullptr if that host does not exist) */
-simgrid::s4u::Host* Engine::host_by_name_or_null(const std::string& name)
+Host* Engine::host_by_name_or_null(const std::string& name)
 {
   auto host = pimpl->hosts_.find(name);
   return host == pimpl->hosts_.end() ? nullptr : host->second;
@@ -171,7 +170,7 @@ simgrid::s4u::Host* Engine::host_by_name_or_null(const std::string& name)
  *
  *  @throw std::invalid_argument if the searched link does not exist.
  */
-simgrid::s4u::Link* Engine::link_by_name(const std::string& name)
+Link* Engine::link_by_name(const std::string& name)
 {
   if (pimpl->links_.find(name) == pimpl->links_.end())
     throw std::invalid_argument(std::string("Link not found: ") + name);
@@ -180,13 +179,13 @@ simgrid::s4u::Link* Engine::link_by_name(const std::string& name)
 }
 
 /** @brief Find an link from its name (or nullptr if that link does not exist) */
-simgrid::s4u::Link* Engine::link_by_name_or_null(const std::string& name)
+Link* Engine::link_by_name_or_null(const std::string& name)
 {
   auto link = pimpl->links_.find(name);
   return link == pimpl->links_.end() ? nullptr : link->second;
 }
 
-void Engine::link_register(const std::string& name, simgrid::s4u::Link* link)
+void Engine::link_register(const std::string& name, Link* link)
 {
   pimpl->links_[name] = link;
 }
@@ -215,7 +214,7 @@ std::vector<Storage*> Engine::get_all_storages()
  *
  *  @throw std::invalid_argument if the searched storage does not exist.
  */
-simgrid::s4u::Storage* Engine::storage_by_name(const std::string& name)
+Storage* Engine::storage_by_name(const std::string& name)
 {
   if (pimpl->storages_.find(name) == pimpl->storages_.end())
     throw std::invalid_argument(std::string("Storage not found: ") + name);
@@ -224,13 +223,13 @@ simgrid::s4u::Storage* Engine::storage_by_name(const std::string& name)
 }
 
 /** @brief Find a storage from its name (or nullptr if that storage does not exist) */
-simgrid::s4u::Storage* Engine::storage_by_name_or_null(const std::string& name)
+Storage* Engine::storage_by_name_or_null(const std::string& name)
 {
   auto storage = pimpl->storages_.find(name);
   return storage == pimpl->storages_.end() ? nullptr : storage->second;
 }
 
-void Engine::storage_register(const std::string& name, simgrid::s4u::Storage* storage)
+void Engine::storage_register(const std::string& name, Storage* storage)
 {
   pimpl->storages_[name] = storage;
 }
@@ -314,13 +313,13 @@ void Engine::set_netzone_root(s4u::NetZone* netzone)
   pimpl->netzone_root_ = netzone->get_impl();
 }
 
-static s4u::NetZone* netzone_by_name_recursive(s4u::NetZone* current, const std::string& name)
+static NetZone* netzone_by_name_recursive(NetZone* current, const std::string& name)
 {
   if (current->get_name() == name)
     return current;
 
   for (auto const& elem : current->get_children()) {
-    simgrid::s4u::NetZone* tmp = netzone_by_name_recursive(elem, name);
+    NetZone* tmp = netzone_by_name_recursive(elem, name);
     if (tmp != nullptr) {
       return tmp;
     }
@@ -335,37 +334,38 @@ NetZone* Engine::netzone_by_name_or_null(const std::string& name)
 }
 
 /** @brief Retrieve the netpoint of the given name (or nullptr if not found) */
-simgrid::kernel::routing::NetPoint* Engine::netpoint_by_name_or_null(const std::string& name)
+kernel::routing::NetPoint* Engine::netpoint_by_name_or_null(const std::string& name)
 {
   auto netp = pimpl->netpoints_.find(name);
   return netp == pimpl->netpoints_.end() ? nullptr : netp->second;
 }
 
 /** @brief Fill the provided vector with all existing netpoints */
-void Engine::getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*>* list)
+void Engine::getNetpointList(std::vector<kernel::routing::NetPoint*>* list)
 {
   for (auto const& kv : pimpl->netpoints_)
     list->push_back(kv.second);
 }
-std::vector<simgrid::kernel::routing::NetPoint*> Engine::get_all_netpoints()
+std::vector<kernel::routing::NetPoint*> Engine::get_all_netpoints()
 {
-  std::vector<simgrid::kernel::routing::NetPoint*> res;
+  std::vector<kernel::routing::NetPoint*> res;
   for (auto const& kv : pimpl->netpoints_)
     res.push_back(kv.second);
   return res;
 }
 
 /** @brief Register a new netpoint to the system */
-void Engine::netpoint_register(simgrid::kernel::routing::NetPoint* point)
+void Engine::netpoint_register(kernel::routing::NetPoint* point)
 {
   // simgrid::simix::simcall([&]{ FIXME: this segfaults in set_thread
   pimpl->netpoints_[point->get_name()] = point;
   // });
 }
+
 /** @brief Unregister a given netpoint */
-void Engine::netpoint_unregister(simgrid::kernel::routing::NetPoint* point)
+void Engine::netpoint_unregister(kernel::routing::NetPoint* point)
 {
-  simgrid::simix::simcall([this, point] {
+  simix::simcall([this, point] {
     pimpl->netpoints_.erase(point->get_name());
     delete point;
   });
@@ -377,7 +377,7 @@ bool Engine::is_initialized()
 }
 void Engine::set_config(const std::string& str)
 {
-  simgrid::config::set_parse(str);
+  config::set_parse(str);
 }
 } // namespace s4u
 } // namespace simgrid

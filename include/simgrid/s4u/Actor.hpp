@@ -120,11 +120,11 @@ namespace s4u {
  */
 
 /** @brief Simulation Agent */
-class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<Actor> {
-  friend simgrid::s4u::Exec;
-  friend simgrid::s4u::Mailbox;
-  friend simgrid::kernel::actor::ActorImpl;
-  friend simgrid::kernel::activity::MailboxImpl;
+class XBT_PUBLIC Actor : public xbt::Extendable<Actor> {
+  friend Exec;
+  friend Mailbox;
+  friend kernel::actor::ActorImpl;
+  friend kernel::activity::MailboxImpl;
 
   kernel::actor::ActorImpl* const pimpl_;
 
@@ -145,24 +145,23 @@ public:
   static ActorPtr self();
 
   /** Signal to others that a new actor has been created **/
-  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_creation;
+  static xbt::signal<void(ActorPtr)> on_creation;
   /** Signal to others that an actor has been suspended**/
-  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_suspend;
+  static xbt::signal<void(ActorPtr)> on_suspend;
   /** Signal to others that an actor has been resumed **/
-  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_resume;
+  static xbt::signal<void(ActorPtr)> on_resume;
   /** Signal to others that an actor is sleeping **/
-  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_sleep;
+  static xbt::signal<void(ActorPtr)> on_sleep;
   /** Signal to others that an actor wakes up for a sleep **/
-  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_wake_up;
+  static xbt::signal<void(ActorPtr)> on_wake_up;
   /** Signal to others that an actor is going to migrated to another host**/
-  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_migration_start;
+  static xbt::signal<void(ActorPtr)> on_migration_start;
   /** Signal to others that an actor is has been migrated to another host **/
-  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_migration_end;
+  static xbt::signal<void(ActorPtr)> on_migration_end;
   /** Signal indicating that an actor is about to disappear.
-   *  This signal is fired for any dying actor, which is mostly useful when
-   *  designing plugins and extensions. If you want to register to the
-   *  termination of a given actor, use this_actor::on_exit() instead.*/
-  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_destruction;
+   *  This signal is fired for any dying actor, which is mostly useful when designing plugins and extensions. If you
+   *  want to register to the termination of a given actor, use this_actor::on_exit() instead.*/
+  static xbt::signal<void(ActorPtr)> on_destruction;
 
   /** Create an actor from a std::function<void()>
    *
@@ -208,7 +207,7 @@ public:
   /** Retrieves the name of that actor as a C string */
   const char* get_cname() const;
   /** Retrieves the host on which that actor is running */
-  s4u::Host* get_host();
+  Host* get_host();
   /** Retrieves the actor ID of that actor */
   aid_t get_pid() const;
   /** Retrieves the actor ID of that actor's creator */

@@ -52,6 +52,7 @@ public:
   int would_block();
 };
 
-}} // namespace simgrid::s4u
+} // namespace s4u
+} // namespace simgrid
 
 #endif /* SIMGRID_S4U_SEMAPHORE_HPP */
