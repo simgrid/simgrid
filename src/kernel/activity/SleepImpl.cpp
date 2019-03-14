@@ -18,13 +18,6 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-SleepImpl::~SleepImpl()
-{
-  if (surf_action_)
-    surf_action_->unref();
-  XBT_DEBUG("Destroy activity %p", this);
-}
-
 SleepImpl* SleepImpl::start(double duration)
 {
   surf_action_ = host_->pimpl_cpu->sleep(duration);

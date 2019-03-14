@@ -61,8 +61,6 @@ ExecImpl::ExecImpl(const std::string& name, const std::string& tracing_category)
 
 ExecImpl::~ExecImpl()
 {
-  if (surf_action_)
-    surf_action_->unref();
   if (timeout_detector_)
     timeout_detector_->unref();
   XBT_DEBUG("Destroy exec %p", this);

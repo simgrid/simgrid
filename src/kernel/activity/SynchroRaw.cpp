@@ -27,11 +27,6 @@ RawImpl* RawImpl::start(s4u::Host* host, double timeout)
   return this;
 }
 
-RawImpl::~RawImpl()
-{
-  surf_action_->unref();
-}
-
 void RawImpl::suspend()
 {
   /* The suspension of raw synchros is delayed to when the process is rescheduled. */

@@ -11,6 +11,15 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
+ActivityImpl::~ActivityImpl()
+{
+  if (surf_action_) {
+    surf_action_->unref();
+    XBT_DEBUG("Destroy activity %p", this);
+    surf_action_ = nullptr;
+  }
+}
+
 void ActivityImpl::suspend()
 {
   if (surf_action_ == nullptr)

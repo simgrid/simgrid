@@ -24,7 +24,7 @@ class XBT_PUBLIC ActivityImpl {
 public:
   ActivityImpl() = default;
   explicit ActivityImpl(const std::string& name) : name_(name) {}
-  virtual ~ActivityImpl() = default;
+  virtual ~ActivityImpl();
   e_smx_state_t state_ = SIMIX_WAITING; /* State of the activity */
   std::list<smx_simcall_t> simcalls_;   /* List of simcalls waiting for this activity */
   resource::Action* surf_action_ = nullptr;

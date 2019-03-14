@@ -21,9 +21,6 @@ class XBT_PUBLIC IoImpl : public ActivityImpl {
   sg_size_t performed_ioops_      = 0;
 
 public:
-  ~IoImpl() override;
-  IoImpl() = default;
-
   IoImplPtr set_name(const std::string& name);
   IoImplPtr set_size(sg_size_t size);
   IoImplPtr set_type(s4u::Io::OpType type);

@@ -14,8 +14,6 @@ namespace kernel {
 namespace activity {
 
 class XBT_PUBLIC SleepImpl : public ActivityImpl {
-  ~SleepImpl() override;
-
 public:
   explicit SleepImpl(const std::string& name, s4u::Host* host) : ActivityImpl(name), host_(host) {}
   void post() override;

@@ -37,13 +37,6 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-IoImpl::~IoImpl()
-{
-  if (surf_action_ != nullptr)
-    surf_action_->unref();
-  XBT_DEBUG("Destroy io %p", this);
-}
-
 IoImplPtr IoImpl::set_name(const std::string& name)
 {
   ActivityImpl::set_name(name);

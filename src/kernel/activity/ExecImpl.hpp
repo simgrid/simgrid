@@ -16,7 +16,7 @@ namespace activity {
 
 class XBT_PUBLIC ExecImpl : public ActivityImpl {
   resource::Action* timeout_detector_ = nullptr;
-  ~ExecImpl() override;
+  ~ExecImpl();
 
 public:
   explicit ExecImpl(const std::string& name, const std::string& tracing_category);
