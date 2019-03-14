@@ -20,7 +20,7 @@ namespace s4u {
  * They are generated from Storage::io_init() or Storage::read() and Storage::write().
  */
 
-class XBT_PUBLIC Io : public Activity {
+class XBT_PUBLIC Io : public Activity_T<Io> {
 public:
   enum class OpType { READ, WRITE };
 
@@ -28,7 +28,6 @@ private:
   Storage* storage_ = nullptr;
   sg_size_t size_   = 0;
   OpType type_      = OpType::READ;
-  std::string name_ = "";
   std::atomic_int_fast32_t refcount_{0};
 
   explicit Io(sg_storage_t storage, sg_size_t size, OpType type);

@@ -17,7 +17,7 @@ xbt::signal<void(ActorPtr)> Exec::on_completion;
 
 Exec::Exec()
 {
-  pimpl_ = kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl(name_, tracing_category_));
+  pimpl_ = kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl(get_name(), get_tracing_category()));
 }
 
 bool Exec::test()
@@ -90,13 +90,6 @@ ExecPtr Exec::set_timeout(double timeout)
   return this;
 }
 
-ExecPtr Exec::set_name(const std::string& name)
-{
-  xbt_assert(state_ == State::INITED, "Cannot change the name of an exec after its start");
-  name_ = name;
-  return this;
-}
-
 /** @brief  Change the execution priority, don't you think?
  *
  * An execution with twice the priority will get twice the amount of flops when the resource is shared.
@@ -107,13 +100,6 @@ ExecPtr Exec::set_priority(double priority)
 {
   xbt_assert(state_ == State::INITED, "Cannot change the priority of an exec after its start");
   priority_ = priority;
-  return this;
-}
-
-ExecPtr Exec::set_tracing_category(const std::string& category)
-{
-  xbt_assert(state_ == State::INITED, "Cannot change the tracing category of an exec after its start");
-  tracing_category_ = category;
   return this;
 }
 

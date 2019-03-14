@@ -108,18 +108,18 @@ CommPtr Comm::set_dst_data(void** buff, size_t size)
 
 Comm* Comm::start()
 {
-  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+  xbt_assert(get_state() == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);
 
   if (src_buff_ != nullptr) { // Sender side
     on_sender_start(Actor::self());
     pimpl_ = simcall_comm_isend(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
-                                clean_fun_, copy_data_function_, user_data_, detached_);
+                                clean_fun_, copy_data_function_, get_user_data(), detached_);
   } else if (dst_buff_ != nullptr) { // Receiver side
     xbt_assert(not detached_, "Receive cannot be detached");
     on_receiver_start(Actor::self());
     pimpl_ = simcall_comm_irecv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_,
-                                copy_data_function_, user_data_, rate_);
+                                copy_data_function_, get_user_data(), rate_);
 
   } else {
     xbt_die("Cannot start a communication before specifying whether we are the sender or the receiver");
@@ -150,12 +150,12 @@ Comm* Comm::wait_for(double timeout)
       if (src_buff_ != nullptr) {
         on_sender_start(Actor::self());
         simcall_comm_send(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
-                          copy_data_function_, user_data_, timeout);
+                          copy_data_function_, get_user_data(), timeout);
 
       } else { // Receiver
         on_receiver_start(Actor::self());
         simcall_comm_recv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_, copy_data_function_,
-                          user_data_, timeout, rate_);
+                          get_user_data(), timeout, rate_);
       }
       state_ = State::FINISHED;
       break;

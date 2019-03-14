@@ -6,6 +6,7 @@
 #ifndef SIMGRID_S4U_ACTIVITY_HPP
 #define SIMGRID_S4U_ACTIVITY_HPP
 
+#include "xbt/asserts.h"
 #include <simgrid/forward.h>
 #include <xbt/signal.hpp>
 
@@ -84,13 +85,6 @@ public:
   Activity* set_remaining(double remains);
 
   /** Put some user data onto the Activity */
-  Activity* set_user_data(void* data)
-  {
-    user_data_ = data;
-    return this;
-  }
-  /** Retrieve the user data of the Activity */
-  void* get_user_data() { return user_data_; }
 
   kernel::activity::ActivityImplPtr get_impl() { return pimpl_; }
 
@@ -102,18 +96,50 @@ public:
   {
     return set_remaining(remains);
   }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::set_user_data()") Activity* setUserData(void* data)
-  {
-    return set_user_data(data);
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_user_data()") void* getUserData() { return user_data_; }
 #endif
 
 private:
   kernel::activity::ActivityImplPtr pimpl_ = nullptr;
   Activity::State state_                   = Activity::State::INITED;
   double remains_                          = 0;
-  void* user_data_                         = nullptr;
+};
+
+template <class AnyActivity> class Activity_T : public Activity {
+private:
+  std::string name_             = "";
+  std::string tracing_category_ = "";
+  void* user_data_              = nullptr;
+
+public:
+  AnyActivity* set_name(const std::string& name)
+  {
+    xbt_assert(get_state() == State::INITED, "Cannot change the name of an activity after its start");
+    name_ = name;
+    return static_cast<AnyActivity*>(this);
+  }
+  const std::string& get_name() { return name_; }
+  const char* get_cname() { return name_.c_str(); }
+
+  AnyActivity* set_tracing_category(const std::string& category)
+  {
+    xbt_assert(get_state() == State::INITED, "Cannot change the tracing category of an activity after its start");
+    tracing_category_ = category;
+    return static_cast<AnyActivity*>(this);
+  }
+  const std::string& get_tracing_category() { return tracing_category_; }
+
+  AnyActivity* set_user_data(void* data)
+  {
+    user_data_ = data;
+    return static_cast<AnyActivity*>(this);
+  }
+
+  void* get_user_data() { return user_data_; }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::set_user_data()") AnyActivity* setUserData(void* data)
+  {
+    return set_user_data(data);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_user_data()") void* getUserData() { return user_data_; }
 };
 
 } // namespace s4u

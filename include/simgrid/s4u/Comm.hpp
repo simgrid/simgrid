@@ -18,7 +18,7 @@ namespace s4u {
  *
  * Represents all asynchronous communications, that you can test or wait onto.
  */
-class XBT_PUBLIC Comm : public Activity {
+class XBT_PUBLIC Comm : public Activity_T<Comm> {
   Mailbox* mailbox_                   = nullptr;
   kernel::actor::ActorImpl* sender_   = nullptr;
   kernel::actor::ActorImpl* receiver_ = nullptr;
@@ -35,11 +35,11 @@ class XBT_PUBLIC Comm : public Activity {
   void (*clean_fun_)(void*)                                               = nullptr;
   void (*copy_data_function_)(kernel::activity::CommImpl*, void*, size_t) = nullptr;
 
-  Comm() : Activity() {}
+  Comm() = default;
 
 public:
-  friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Comm * c);
-  friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Comm * c);
+  friend XBT_PUBLIC void intrusive_ptr_release(Comm* c);
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(Comm* c);
   friend Mailbox; // Factory of comms
 
   virtual ~Comm();

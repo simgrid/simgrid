@@ -3,7 +3,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/asserts.h"
 #include "xbt/log.h"
 
 #include "simgrid/s4u/Activity.hpp"

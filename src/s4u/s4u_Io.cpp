@@ -13,10 +13,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_io, s4u_activity, "S4U asynchronous IOs");
 namespace simgrid {
 namespace s4u {
 
-Io::Io(sg_storage_t storage, sg_size_t size, OpType type) : Activity(), storage_(storage), size_(size), type_(type)
+Io::Io(sg_storage_t storage, sg_size_t size, OpType type) : storage_(storage), size_(size), type_(type)
 {
   Activity::set_remaining(size_);
-  pimpl_ = kernel::activity::IoImplPtr(new kernel::activity::IoImpl(name_, storage_->get_impl()));
+  pimpl_ = kernel::activity::IoImplPtr(new kernel::activity::IoImpl(get_name(), storage_->get_impl()));
 }
 
 Io* Io::start()

@@ -20,12 +20,10 @@ namespace s4u {
  * They are generated from this_actor::exec_init() or Host::execute(), and can be used to model pools of threads or
  * similar mechanisms.
  */
-class XBT_PUBLIC Exec : public Activity {
-  std::string name_             = "";
+class XBT_PUBLIC Exec : public Activity_T<Exec> {
   double priority_              = 1.0;
   double bound_                 = 0.0;
   double timeout_               = 0.0;
-  std::string tracing_category_ = "";
   std::atomic_int_fast32_t refcount_{0};
   Host* host_ = nullptr;
 
@@ -55,9 +53,7 @@ public:
   bool test() override;
 
   ExecPtr set_bound(double bound);
-  ExecPtr set_name(const std::string& name);
   ExecPtr set_priority(double priority);
-  ExecPtr set_tracing_category(const std::string& category);
   ExecPtr set_timeout(double timeout);
   Exec* cancel() override;
 
