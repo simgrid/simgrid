@@ -98,8 +98,6 @@ void Context::stop()
   this->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), because that's me
   simgrid::simix::simcall([this] {
     simgrid::s4u::Actor::on_destruction(actor_->iface());
-
-    actor_->cleanup();
   });
   this->iwannadie = true;
 }
