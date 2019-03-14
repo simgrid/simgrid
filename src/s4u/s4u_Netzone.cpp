@@ -14,12 +14,12 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_netzone, "S4U Networking Zones");
 namespace simgrid {
 namespace s4u {
 
-simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                          std::vector<kernel::resource::LinkImpl*>& link_list)>
+xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                 kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                 std::vector<kernel::resource::LinkImpl*>& link_list)>
     NetZone::on_route_creation;
-simgrid::xbt::signal<void(NetZone&)> NetZone::on_creation;
-simgrid::xbt::signal<void(NetZone&)> NetZone::on_seal;
+xbt::signal<void(NetZone&)> NetZone::on_creation;
+xbt::signal<void(NetZone&)> NetZone::on_seal;
 
 NetZone::NetZone(kernel::routing::NetZoneImpl* impl) : pimpl_(impl) {}
 
@@ -29,7 +29,7 @@ NetZone::~NetZone()
 
 std::unordered_map<std::string, std::string>* NetZone::get_properties()
 {
-  return simgrid::simix::simcall([this] { return &properties_; });
+  return simix::simcall([this] { return &properties_; });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
@@ -39,7 +39,7 @@ const char* NetZone::get_property(const std::string& key)
 }
 void NetZone::set_property(const std::string& key, const std::string& value)
 {
-  simgrid::simix::simcall([this, &key, &value] { properties_[key] = value; });
+  simix::simcall([this, &key, &value] { properties_[key] = value; });
 }
 
 /** @brief Returns the list of direct children (no grand-children) */
@@ -74,10 +74,10 @@ std::vector<Host*> NetZone::get_all_hosts()
   return pimpl_->get_all_hosts();
 }
 
-void NetZone::getHosts(std::vector<s4u::Host*>* whereto)
+void NetZone::getHosts(std::vector<Host*>* whereto)
 {
   for (auto const& card : pimpl_->get_vertices()) {
-    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->get_name());
+    Host* host = Host::by_name_or_null(card->get_name());
     if (host != nullptr)
       whereto->push_back(host);
   }

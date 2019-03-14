@@ -21,8 +21,8 @@
 namespace simgrid {
 namespace s4u {
 /** @brief A Link represents the network facilities between [hosts](@ref simgrid::s4u::Host) */
-class XBT_PUBLIC Link : public simgrid::xbt::Extendable<Link> {
-  friend simgrid::kernel::resource::LinkImpl;
+class XBT_PUBLIC Link : public xbt::Extendable<Link> {
+  friend kernel::resource::LinkImpl;
 
   // Links are created from the NetZone, and destroyed by their private implementation when the simulation ends
   explicit Link(kernel::resource::LinkImpl* pimpl) : pimpl_(pimpl) {}
@@ -98,22 +98,22 @@ public:
 
   /* The signals */
   /** @brief Callback signal fired when a new Link is created */
-  static simgrid::xbt::signal<void(s4u::Link&)> on_creation;
+  static xbt::signal<void(Link&)> on_creation;
 
   /** @brief Callback signal fired when a Link is destroyed */
-  static simgrid::xbt::signal<void(s4u::Link&)> on_destruction;
+  static xbt::signal<void(Link&)> on_destruction;
 
   /** @brief Callback signal fired when the state of a Link changes (when it is turned on or off) */
-  static simgrid::xbt::signal<void(s4u::Link&)> on_state_change;
+  static xbt::signal<void(Link&)> on_state_change;
 
   /** @brief Callback signal fired when the bandwidth of a Link changes */
-  static simgrid::xbt::signal<void(s4u::Link&)> on_bandwidth_change;
+  static xbt::signal<void(Link&)> on_bandwidth_change;
 
   /** @brief Callback signal fired when a communication starts */
-  static simgrid::xbt::signal<void(kernel::resource::NetworkAction*, s4u::Host* src, s4u::Host* dst)> on_communicate;
+  static xbt::signal<void(kernel::resource::NetworkAction*, Host* src, Host* dst)> on_communicate;
 
   /** @brief Callback signal fired when a communication changes it state (ready/done/cancel) */
-  static simgrid::xbt::signal<void(kernel::resource::NetworkAction*, kernel::resource::Action::State)>
+  static xbt::signal<void(kernel::resource::NetworkAction*, kernel::resource::Action::State)>
       on_communication_state_change;
 
 #ifndef DOXYGEN
@@ -156,16 +156,25 @@ public:
 
   /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_state_profile()") void setStateTrace(
-      simgrid::kernel::profile::Profile* profile) {set_state_profile(profile); }
+      kernel::profile::Profile* profile)
+  {
+    set_state_profile(profile);
+  }
   /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_bandwidth_profile()") void setBandwidthTrace(
-      simgrid::kernel::profile::Profile* profile) { set_bandwidth_profile(profile); }
+      kernel::profile::Profile* profile)
+  {
+    set_bandwidth_profile(profile);
+  }
   /** @deprecated */
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_latency_profile()") void setLatencyTrace(
-      simgrid::kernel::profile::Profile* profile) { set_latency_profile(profile); }
+      kernel::profile::Profile* profile)
+  {
+    set_latency_profile(profile);
+  }
 #endif
 };
-}
-}
+} // namespace s4u
+} // namespace simgrid
 
 #endif /* SURF_NETWORK_INTERFACE_HPP_ */

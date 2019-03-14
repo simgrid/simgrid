@@ -25,7 +25,7 @@ namespace s4u {
  */
 class XBT_PUBLIC NetZone {
 protected:
-  friend simgrid::kernel::routing::NetZoneImpl;
+  friend kernel::routing::NetZoneImpl;
 
   explicit NetZone(kernel::routing::NetZoneImpl* impl);
   ~NetZone();
@@ -67,12 +67,12 @@ public:
                         std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
 
   /*** Called on each newly created regular route (not on bypass routes) */
-  static simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                                   kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                                   std::vector<kernel::resource::LinkImpl*>& link_list)>
+  static xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                          std::vector<kernel::resource::LinkImpl*>& link_list)>
       on_route_creation;
-  static simgrid::xbt::signal<void(NetZone&)> on_creation;
-  static simgrid::xbt::signal<void(NetZone&)> on_seal;
+  static xbt::signal<void(NetZone&)> on_creation;
+  static xbt::signal<void(NetZone&)> on_seal;
 
 #ifndef DOXYGEN
   // Deprecation wrappers
@@ -85,14 +85,14 @@ public:
   /** @deprecated NetZone::add_route() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::add_route()") void addRoute(
       kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
-      kernel::routing::NetPoint* gw_dst, std::vector<simgrid::kernel::resource::LinkImpl*>& link_list, bool symmetrical)
+      kernel::routing::NetPoint* gw_dst, std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical)
   {
     add_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
   }
   /** @deprecated NetZone::add_bypass_route() */
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::add_bypass_route()") void addBypassRoute(
       kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
-      kernel::routing::NetPoint* gw_dst, std::vector<simgrid::kernel::resource::LinkImpl*>& link_list, bool symmetrical)
+      kernel::routing::NetPoint* gw_dst, std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical)
   {
     add_bypass_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
   }
@@ -133,7 +133,8 @@ public:
   }
 #endif
 };
-}
-}; // Namespace simgrid::s4u
+
+} // namespace s4u
+} // namespace simgrid
 
 #endif /* SIMGRID_S4U_NETZONE_HPP */

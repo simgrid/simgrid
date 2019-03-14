@@ -25,7 +25,7 @@ namespace s4u {
  * only computes the time taken by the corresponding data movement.
  */
 
-class XBT_PUBLIC Storage : public simgrid::xbt::Extendable<Storage> {
+class XBT_PUBLIC Storage : public xbt::Extendable<Storage> {
   friend Engine;
   friend Io;
   friend kernel::resource::StorageImpl;
@@ -37,11 +37,11 @@ protected:
   virtual ~Storage() = default;
 public:
   /** @brief Callback signal fired when a new Storage is created */
-  static xbt::signal<void(s4u::Storage&)> on_creation;
+  static xbt::signal<void(Storage&)> on_creation;
   /** @brief Callback signal fired when a Storage is destroyed */
-  static xbt::signal<void(s4u::Storage&)> on_destruction;
+  static xbt::signal<void(Storage&)> on_destruction;
   /** @brief Callback signal fired when a Storage's state changes */
-  static xbt::signal<void(s4u::Storage&)> on_state_change;
+  static xbt::signal<void(Storage&)> on_state_change;
 
   /** Retrieve a Storage by its name. It must exist in the platform file */
   static Storage* by_name(const std::string& name);
@@ -120,7 +120,7 @@ private:
   void* userdata_ = nullptr;
 };
 
-} /* namespace s4u */
-} /* namespace simgrid */
+} // namespace s4u
+} // namespace simgrid
 
 #endif /* INCLUDE_SIMGRID_S4U_STORAGE_HPP_ */

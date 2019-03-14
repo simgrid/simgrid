@@ -18,23 +18,22 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_route);
 int USER_HOST_LEVEL = -1;
 
 namespace simgrid {
-
 namespace xbt {
-template class Extendable<simgrid::s4u::Host>;
-}
+template class Extendable<s4u::Host>;
+} // namespace xbt
 
 namespace s4u {
 
-simgrid::xbt::signal<void(Host&)> Host::on_creation;
-simgrid::xbt::signal<void(Host&)> Host::on_destruction;
-simgrid::xbt::signal<void(Host&)> Host::on_state_change;
-simgrid::xbt::signal<void(Host&)> Host::on_speed_change;
+xbt::signal<void(Host&)> Host::on_creation;
+xbt::signal<void(Host&)> Host::on_destruction;
+xbt::signal<void(Host&)> Host::on_state_change;
+xbt::signal<void(Host&)> Host::on_speed_change;
 
 Host::Host(const std::string& name) : name_(name)
 {
   xbt_assert(Host::by_name_or_null(name_) == nullptr, "Refusing to create a second host named '%s'.", get_cname());
   Engine::get_instance()->host_register(name_, this);
-  new simgrid::surf::HostImpl(this);
+  new surf::HostImpl(this);
 }
 
 Host::~Host()
@@ -43,7 +42,7 @@ Host::~Host()
 
   delete pimpl_;
   if (pimpl_netpoint != nullptr) // not removed yet by a children class
-    simgrid::s4u::Engine::get_instance()->netpoint_unregister(pimpl_netpoint);
+    Engine::get_instance()->netpoint_unregister(pimpl_netpoint);
   delete pimpl_cpu;
   delete mounts_;
 }
@@ -52,9 +51,8 @@ Host::~Host()
  *
  * Don't delete directly a host, call h->destroy() instead.
  *
- * This is cumbersome but this is the simplest solution to ensure that the
- * onDestruction() callback receives a valid object (because of the destructor
- * order in a class hierarchy).
+ * This is cumbersome but this is the simplest solution to ensure that the onDestruction() callback receives a valid
+ * object (because of the destructor order in a class hierarchy).
  */
 void Host::destroy()
 {
@@ -77,7 +75,7 @@ Host* Host::by_name_or_null(const std::string& name)
 
 Host* Host::current()
 {
-  smx_actor_t self = SIMIX_process_self();
+  kernel::actor::ActorImpl* self = SIMIX_process_self();
   if (self == nullptr)
     xbt_die("Cannot call Host::current() from the maestro context");
   return self->get_host();
@@ -86,7 +84,7 @@ Host* Host::current()
 void Host::turn_on()
 {
   if (not is_on()) {
-    simgrid::simix::simcall([this] {
+    simix::simcall([this] {
       this->pimpl_cpu->turn_on();
       this->pimpl_->turn_on();
       on_state_change(*this);
@@ -98,7 +96,7 @@ void Host::turn_on()
 void Host::turn_off()
 {
   if (is_on()) {
-    simgrid::simix::simcall([this] {
+    simix::simcall([this] {
       this->pimpl_cpu->turn_off();
       this->pimpl_->turn_off();
 
@@ -172,7 +170,7 @@ void Host::route_to(Host* dest, std::vector<Link*>& links, double* latency)
 /** @brief Just like Host::routeTo, but filling an array of link implementations */
 void Host::route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency)
 {
-  simgrid::kernel::routing::NetZoneImpl::get_global_route(pimpl_netpoint, dest->pimpl_netpoint, links, latency);
+  kernel::routing::NetZoneImpl::get_global_route(pimpl_netpoint, dest->pimpl_netpoint, links, latency);
   if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
     XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", get_cname(), dest->get_cname(),
                (latency == nullptr ? -1 : *latency));
@@ -184,7 +182,7 @@ void Host::route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links,
 /** Get the properties assigned to a host */
 std::unordered_map<std::string, std::string>* Host::get_properties()
 {
-  return simgrid::simix::simcall([this] { return this->pimpl_->get_properties(); });
+  return simix::simcall([this] { return this->pimpl_->get_properties(); });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
@@ -195,13 +193,13 @@ const char* Host::get_property(const std::string& key) const
 
 void Host::set_property(const std::string& key, const std::string& value)
 {
-  simgrid::simix::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  simix::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
 }
 /** Specify a profile turning the host on and off according to a exhaustive list or a stochastic law.
  * The profile must contain boolean values. */
 void Host::set_state_profile(kernel::profile::Profile* p)
 {
-  return simgrid::simix::simcall([this, p] { pimpl_cpu->set_state_profile(p); });
+  return simix::simcall([this, p] { pimpl_cpu->set_state_profile(p); });
 }
 /** Specify a profile modeling the external load according to a exhaustive list or a stochastic law.
  *
@@ -211,13 +209,13 @@ void Host::set_state_profile(kernel::profile::Profile* p)
  */
 void Host::set_speed_profile(kernel::profile::Profile* p)
 {
-  return simgrid::simix::simcall([this, p] { pimpl_cpu->set_speed_profile(p); });
+  return simix::simcall([this, p] { pimpl_cpu->set_speed_profile(p); });
 }
 
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
 double Host::get_pstate_speed(int pstate_index) const
 {
-  return simgrid::simix::simcall([this, pstate_index] { return this->pimpl_cpu->get_pstate_peak_speed(pstate_index); });
+  return simix::simcall([this, pstate_index] { return this->pimpl_cpu->get_pstate_peak_speed(pstate_index); });
 }
 
 /** @brief Get the peak computing speed in flops/s at the current pstate, NOT taking the external load into account.
@@ -266,7 +264,7 @@ int Host::get_core_count() const
 /** @brief Set the pstate at which the host should run */
 void Host::set_pstate(int pstate_index)
 {
-  simgrid::simix::simcall([this, pstate_index] { this->pimpl_cpu->set_pstate(pstate_index); });
+  simix::simcall([this, pstate_index] { this->pimpl_cpu->set_pstate(pstate_index); });
 }
 /** @brief Retrieve the pstate at which the host is currently running */
 int Host::get_pstate() const
@@ -281,13 +279,12 @@ int Host::get_pstate() const
  */
 std::vector<const char*> Host::get_attached_storages() const
 {
-  return simgrid::simix::simcall([this] { return this->pimpl_->get_attached_storages(); });
+  return simix::simcall([this] { return this->pimpl_->get_attached_storages(); });
 }
 
 void Host::getAttachedStorages(std::vector<const char*>* storages)
 {
-  std::vector<const char*> local_storages =
-      simgrid::simix::simcall([this] { return this->pimpl_->get_attached_storages(); });
+  std::vector<const char*> local_storages = simix::simcall([this] { return this->pimpl_->get_attached_storages(); });
   for (auto elm : local_storages)
     storages->push_back(elm);
 }

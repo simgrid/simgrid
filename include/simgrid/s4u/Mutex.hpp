@@ -27,11 +27,11 @@ namespace s4u {
  *
  */
 class XBT_PUBLIC Mutex {
-  friend simgrid::s4u::ConditionVariable;
-  friend simgrid::kernel::activity::MutexImpl;
+  friend ConditionVariable;
+  friend kernel::activity::MutexImpl;
 
-  simgrid::kernel::activity::MutexImpl* const pimpl_;
-  explicit Mutex(simgrid::kernel::activity::MutexImpl* mutex) : pimpl_(mutex) {}
+  kernel::activity::MutexImpl* const pimpl_;
+  explicit Mutex(kernel::activity::MutexImpl* mutex) : pimpl_(mutex) {}
   /* refcounting */
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Mutex* mutex);
   friend XBT_PUBLIC void intrusive_ptr_release(Mutex* mutex);
@@ -57,6 +57,7 @@ public:
 #endif
 };
 
-}} // namespace simgrid::s4u
+} // namespace s4u
+} // namespace simgrid
 
 #endif /* SIMGRID_S4U_MUTEX_HPP */

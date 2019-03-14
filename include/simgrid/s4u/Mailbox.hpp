@@ -16,10 +16,10 @@ namespace s4u {
 
 /** @brief Mailboxes: Network rendez-vous points. */
 class XBT_PUBLIC Mailbox {
-  friend simgrid::s4u::Comm;
-  friend simgrid::kernel::activity::MailboxImpl;
+  friend Comm;
+  friend kernel::activity::MailboxImpl;
 
-  simgrid::kernel::activity::MailboxImpl* const pimpl_;
+  kernel::activity::MailboxImpl* const pimpl_;
 
   explicit Mailbox(kernel::activity::MailboxImpl * mbox) : pimpl_(mbox) {}
 
@@ -28,7 +28,7 @@ public:
   kernel::activity::MailboxImpl* get_impl() { return pimpl_; }
 
   /** @brief Retrieves the name of that mailbox as a C++ string */
-  const simgrid::xbt::string& get_name() const;
+  const xbt::string& get_name() const;
   /** @brief Retrieves the name of that mailbox as a C string */
   const char* get_cname() const;
 
@@ -103,10 +103,7 @@ public:
   /** @deprecated Mailbox::get_receiver() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_receiver()") ActorPtr getReceiver() { return get_receiver(); }
   /** @deprecated Mailbox::get_name() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_name()") const simgrid::xbt::string& getName() const
-  {
-    return get_name();
-  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_name()") const xbt::string& getName() const { return get_name(); }
   /** @deprecated Mailbox::get_cname() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_cname()") const char* getCname() const { return get_cname(); }
   /** @deprecated Mailbox::get_impl() */
@@ -127,6 +124,7 @@ public:
 #endif
 };
 
-}} // namespace simgrid::s4u
+} // namespace s4u
+} // namespace simgrid
 
 #endif /* SIMGRID_S4U_MAILBOX_HPP */

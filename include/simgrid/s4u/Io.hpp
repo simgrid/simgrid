@@ -36,7 +36,7 @@ private:
 public:
   friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Io* i);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Io* i);
-  friend simgrid::s4u::Storage; // Factory of IOs
+  friend Storage; // Factory of IOs
 
   ~Io() = default;
 
@@ -52,8 +52,8 @@ public:
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v324("Please use Io::wait_for()") void wait(double t) override { wait_for(t); }
 #endif
+};
 
-}; // class
 } // namespace s4u
 } // namespace simgrid
 
