@@ -133,6 +133,29 @@ void ActorImpl::detach()
 
 void ActorImpl::cleanup()
 {
+  finished_ = true;
+
+  if (has_to_auto_restart() && not get_host()->is_on()) {
+    XBT_DEBUG("Insert host %s to watched_hosts because it's off and %s needs to restart", get_host()->get_cname(),
+              get_cname());
+    watched_hosts.insert(get_host()->get_name());
+  }
+
+  // Execute the termination callbacks
+  smx_process_exit_status_t exit_status = (context_->iwannadie) ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
+  while (not on_exit.empty()) {
+    s_smx_process_exit_fun_t exit_fun = on_exit.back();
+    on_exit.pop_back();
+    (exit_fun.fun)(exit_status, exit_fun.arg);
+  }
+
+  /* cancel non-blocking activities */
+  for (auto activity : comms)
+    boost::static_pointer_cast<activity::CommImpl>(activity)->cancel();
+  comms.clear();
+
+  XBT_DEBUG("%s@%s(%ld) should not run anymore", get_cname(), get_host()->get_cname(), get_pid());
+
   if (this == simix_global->maestro_process) /* Do not cleanup maestro */
     return;
 
@@ -155,9 +178,12 @@ void ActorImpl::cleanup()
 #endif
     simix_global->actors_to_destroy.push_back(*this);
   }
-  context_->iwannadie = false;
 
   simix_global->mutex.unlock();
+
+  context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
+  simgrid::simix::simcall([this] { simgrid::s4u::Actor::on_destruction(iface()); });
+  context_->iwannadie = true;
 }
 
 void ActorImpl::exit()

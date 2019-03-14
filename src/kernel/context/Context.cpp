@@ -69,37 +69,7 @@ Context::~Context()
 
 void Context::stop()
 {
-  actor_->finished_ = true;
-
-  if (actor_->has_to_auto_restart() && not actor_->get_host()->is_on()) {
-    XBT_DEBUG("Insert host %s to watched_hosts because it's off and %s needs to restart",
-              actor_->get_host()->get_cname(), actor_->get_cname());
-    watched_hosts.insert(actor_->get_host()->get_name());
-  }
-
-  // Execute the termination callbacks
-  smx_process_exit_status_t exit_status = (actor_->context_->iwannadie) ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
-  while (not actor_->on_exit.empty()) {
-    s_smx_process_exit_fun_t exit_fun = actor_->on_exit.back();
-    actor_->on_exit.pop_back();
-    (exit_fun.fun)(exit_status, exit_fun.arg);
-  }
-
-  /* cancel non-blocking activities */
-  for (auto activity : actor_->comms)
-    boost::static_pointer_cast<activity::CommImpl>(activity)->cancel();
-  actor_->comms.clear();
-
-  XBT_DEBUG("%s@%s(%ld) should not run anymore", actor_->get_cname(), actor_->iface()->get_host()->get_cname(),
-            actor_->get_pid());
-
   this->actor_->cleanup();
-
-  this->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), because that's me
-  simgrid::simix::simcall([this] {
-    simgrid::s4u::Actor::on_destruction(actor_->iface());
-  });
-  this->iwannadie = true;
 }
 
 AttachContext::~AttachContext() = default;
