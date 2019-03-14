@@ -218,10 +218,8 @@ void Actor::kill()
 {
   kernel::actor::ActorImpl* process = SIMIX_process_self();
   simix::simcall([this, process] {
-    if (pimpl_ == simix_global->maestro_process)
-      pimpl_->exit();
-    else
-      process->kill(pimpl_);
+    xbt_assert(pimpl_ != simix_global->maestro_process, "Killing maestro is a rather bad idea");
+    process->kill(pimpl_);
   });
 }
 

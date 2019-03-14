@@ -341,13 +341,15 @@ void ActorImpl::daemonize()
 
 s4u::Actor* ActorImpl::restart()
 {
+  xbt_assert(this != simix_global->maestro_process, "Restarting maestro is not supported");
+
   XBT_DEBUG("Restarting actor %s on %s", get_cname(), host_->get_cname());
 
   // retrieve the arguments of the old actor
   ProcessArg arg = ProcessArg(host_, this);
 
   // kill the old actor
-  (this == simix_global->maestro_process) ? this->exit() : SIMIX_process_self()->kill(this);
+  context::Context::self()->get_actor()->kill(this);
 
   // start the new actor
   ActorImplPtr actor =
