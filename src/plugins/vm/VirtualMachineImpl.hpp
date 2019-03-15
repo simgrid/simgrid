@@ -35,8 +35,6 @@ public:
   static xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> on_creation;
   /** @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachineImpl*)` */
   static xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> on_destruction;
-  /** @brief Callbacks after VM State changes. Signature: `void(VirtualMachineImpl*)` */
-  static xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> on_state_change;
 
   virtual void suspend(kernel::actor::ActorImpl* issuer);
   virtual void resume();

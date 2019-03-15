@@ -169,10 +169,6 @@ public:
    *  Signature: `void(CpuAction *action, simgrid::kernel::resource::Action::State previous)`
    */
   static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, simgrid::kernel::resource::Action::State)> on_state_change;
-  /** @brief Signal emitted when the action share changes (amount of flops it gets)
-   *  Signature: `void(CpuAction *action)`
-   */
-  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> on_share_change;
 
   CpuAction(simgrid::kernel::resource::Model * model, double cost, bool failed) : Action(model, cost, failed) {}
   CpuAction(simgrid::kernel::resource::Model * model, double cost, bool failed, kernel::lmm::Variable* var)

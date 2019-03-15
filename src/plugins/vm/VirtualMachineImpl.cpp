@@ -25,7 +25,7 @@ namespace vm {
  *************/
 simgrid::xbt::signal<void(VirtualMachineImpl*)> VirtualMachineImpl::on_creation;
 simgrid::xbt::signal<void(VirtualMachineImpl*)> VirtualMachineImpl::on_destruction;
-simgrid::xbt::signal<void(VirtualMachineImpl*)> VirtualMachineImpl::on_state_change;
+
 /*********
  * Model *
  *********/

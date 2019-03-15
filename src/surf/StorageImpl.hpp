@@ -34,18 +34,6 @@ class StorageAction;
 /** @ingroup SURF_storage_interface
  * @brief The possible type of action for the storage component
  */
-/*************
- * Callbacks *
- *************/
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
- * @details Callback functions have the following signature: `void(StorageAction *action,
- * simgrid::kernel::resource::Action::State old, simgrid::kernel::resource::Action::State current)`
- */
-XBT_PUBLIC_DATA
-simgrid::xbt::signal<void(StorageAction*, kernel::resource::Action::State, kernel::resource::Action::State)>
-    on_state_change;
 
 /*********
  * Model *
@@ -135,6 +123,11 @@ private:
  */
 class StorageAction : public Action {
 public:
+  /**
+   * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
+   * @details Callback functions have the following signature: `void(StorageAction& action,
+   * simgrid::kernel::resource::Action::State old, simgrid::kernel::resource::Action::State current)`
+   */
   static xbt::signal<void(StorageAction*, Action::State, Action::State)> on_state_change;
 
   /**
