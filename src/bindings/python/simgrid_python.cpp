@@ -15,6 +15,7 @@
 #include "src/kernel/context/Context.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Actor.hpp>
+#include <simgrid/s4u/Comm.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
 #include <simgrid/s4u/Mailbox.hpp>
@@ -155,6 +156,9 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Mailbox */
   py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(m, "Mailbox", "Mailbox, see :ref:`class s4u::Mailbox <API_s4u_Mailbox>`")
+      .def("__str__", [](Mailbox self) -> const std::string {
+         return std::string("Mailbox(")+self.get_name()+")";
+      }, "Textual representation of the Mailbox`")
       .def("by_name", &Mailbox::by_name, "Retrieve a Mailbox from its name, see :cpp:func:`simgrid::s4u::Mailbox::by_name()`")
       .def_property_readonly("name", [](Mailbox* self) -> const std::string {
          return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
@@ -163,11 +167,24 @@ PYBIND11_MODULE(simgrid, m)
         data.inc_ref();
         self.put(data.ptr(), size);
       }, "Blocking data transmission, see :cpp:func:`void simgrid::s4u::Mailbox::put(void*, uint64_t)`")
+      .def("put_async", [](Mailbox self, py::object data, int size) -> simgrid::s4u::CommPtr {
+        data.inc_ref();
+        return self.put_async(data.ptr(), size);
+      }, "Non-blocking data transmission, see :cpp:func:`void simgrid::s4u::Mailbox::put_async(void*, uint64_t)`")
       .def("get", [](Mailbox self) -> py::object {
          py::object data = pybind11::reinterpret_steal<py::object>(pybind11::handle(static_cast<PyObject*>(self.get())));
          data.dec_ref();
          return data;
       }, "Blocking data reception, see :cpp:func:`void* simgrid::s4u::Mailbox::get()`");
+
+  /* Class Comm */
+  py::class_<simgrid::s4u::Comm, simgrid::s4u::CommPtr>(m, "Comm", "Communication, see :ref:`class s4u::Comm <API_s4u_Comm>`")
+      .def("test", [](simgrid::s4u::CommPtr self) {
+         return self->test();
+      }, "Test whether the communication is terminated, see :cpp:func:`simgrid::s4u::Comm::test()`")
+      .def("wait", [](simgrid::s4u::CommPtr self) {
+         self->wait();
+      }, "Block until the completion of that communication, see :cpp:func:`simgrid::s4u::Comm::wait()`");
 
   /* Class Actor */
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor",

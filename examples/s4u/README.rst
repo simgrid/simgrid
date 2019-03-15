@@ -155,10 +155,12 @@ Communications on the Network
  - **Basic asynchronous communications:**
    Illustrates how to have non-blocking communications, that are
    communications running in the background leaving the process free
-   to do something else during their completion. The main functions
-   involved are :cpp:func:`simgrid::s4u::Mailbox::put_async()` and 
-   :cpp:func:`simgrid::s4u::Comm::wait()`.
-   |br| `examples/s4u/async-wait/s4u-async-wait.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-wait/s4u-async-wait.cpp>`_
+   to do something else during their completion. 
+   
+   - |cpp| `examples/s4u/async-wait/s4u-async-wait.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-wait/s4u-async-wait.cpp>`_
+     :cpp:func:`simgrid::s4u::Mailbox::put_async()` and :cpp:func:`simgrid::s4u::Comm::wait()`
+   - |py|  `examples/python/async-wait/async-wait.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/async-wait/async-wait.py>`_
+     :py:func:`simgrid.Mailbox.put_async()` :py:func:`simgrid.Comm.wait()`
 
  - **Waiting for all communications in a set:**
    The :cpp:func:`simgrid::s4u::Comm::wait_all()` function is useful
@@ -172,7 +174,7 @@ Communications on the Network
    matter which terminates first.    
    |br| `examples/s4u/async-waitany/s4u-async-waitany.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-waitany/s4u-async-waitany.cpp>`_
 
-.. todo:: add the `ready` example here
+.. todo:: review the `ready` and `waituntil` examples and add them here.
    
 .. _s4u_ex_execution:
 
