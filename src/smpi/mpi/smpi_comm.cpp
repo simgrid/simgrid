@@ -18,8 +18,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm
 simgrid::smpi::Comm mpi_MPI_COMM_UNINITIALIZED;
 MPI_Comm MPI_COMM_UNINITIALIZED=&mpi_MPI_COMM_UNINITIALIZED;
 
-using simgrid::s4u::ActorPtr;
-
 /* Support for cartesian topology was added, but there are 2 other types of topology, graph et dist graph. In order to
  * support them, we have to add a field SMPI_Topo_type, and replace the MPI_Topology field by an union. */
 
@@ -54,7 +52,7 @@ void Comm::destroy(Comm* comm)
 int Comm::dup(MPI_Comm* newcomm){
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(simgrid::s4u::Actor::self());
+    smpi_switch_data_segment(s4u::Actor::self());
   }
   MPI_Group cp = new  Group(this->group());
   (*newcomm)   = new  Comm(cp, this->topo());
@@ -111,7 +109,7 @@ int Comm::rank()
 {
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->rank();
-  return group_->rank(simgrid::s4u::Actor::self());
+  return group_->rank(s4u::Actor::self());
 }
 
 void Comm::get_name (char* name, int* len)
@@ -224,7 +222,7 @@ MPI_Comm Comm::split(int color, int key)
           group_root = group_out; /* Save root's group */
         }
         for (unsigned j = 0; j < rankmap.size(); j++) {
-          ActorPtr actor = group->actor(rankmap[j].second);
+          s4u::ActorPtr actor = group->actor(rankmap[j].second);
           group_out->set_mapping(actor, j);
         }
         MPI_Request* requests = xbt_new(MPI_Request, rankmap.size());
@@ -305,7 +303,7 @@ void Comm::init_smp(){
 
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(simgrid::s4u::Actor::self());
+    smpi_switch_data_segment(s4u::Actor::self());
   }
   //identify neighbours in comm
   //get the indices of all processes sharing the same simix host
@@ -342,7 +340,7 @@ void Comm::init_smp(){
 
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(simgrid::s4u::Actor::self());
+    smpi_switch_data_segment(s4u::Actor::self());
   }
 
   if(leaders_map_==nullptr){
@@ -371,7 +369,7 @@ void Comm::init_smp(){
   if(MPI_COMM_WORLD!=MPI_COMM_UNINITIALIZED && this!=MPI_COMM_WORLD){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(simgrid::s4u::Actor::by_pid(leader_list[i]), i);
+      leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]), i);
     leader_comm = new  Comm(leaders_group, nullptr,1);
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
@@ -379,7 +377,7 @@ void Comm::init_smp(){
     // create intracommunicator
   }else{
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(simgrid::s4u::Actor::by_pid(leader_list[i]), i);
+      leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]), i);
 
     if(this->get_leaders_comm()==MPI_COMM_NULL){
       leader_comm = new  Comm(leaders_group, nullptr,1);
@@ -415,7 +413,7 @@ void Comm::init_smp(){
 
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(simgrid::s4u::Actor::self());
+    smpi_switch_data_segment(s4u::Actor::self());
   }
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
   int is_blocked=1;
