@@ -92,7 +92,7 @@ only executed once and not repetitively.
 Another possibility is to use the
 :cpp:func:`simgrid::s4u::Host::set_state_profile()` or 
 :cpp:func:`simgrid::s4u::Link::set_state_profile()` functions. These
-functions take a profile, that can be an fixed profile exhaustively
+functions take a profile, that can be a fixed profile exhaustively
 listing the events, or something else if you wish.
 
 .. _howto_multicore:
