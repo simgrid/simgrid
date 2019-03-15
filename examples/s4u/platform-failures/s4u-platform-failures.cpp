@@ -40,9 +40,6 @@ static int master(int argc, char* argv[])
       XBT_INFO("Send a message to %s", mailbox->get_cname());
       mailbox->put(payload, comm_size, 10.0);
       XBT_INFO("Send to %s completed", mailbox->get_cname());
-    } catch (simgrid::HostFailureException& e) {
-      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-      return -1;
     } catch (simgrid::TimeoutError& e) {
       delete payload;
       XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());

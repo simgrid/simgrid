@@ -39,8 +39,6 @@ $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 5 --log=no_loc
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Turn Jupiter off
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO] Test 5 seems ok (number of Process: 2, it should be 2)
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Test done. See you!
-> [Jupiter:commRX:(2) 20.000000] [msg_test/INFO]   Receive message: HOST_FAILURE
-> [Jupiter:commRX:(2) 20.000000] [msg_test/INFO]   RX Done
 > [Tremblay:commTX:(3) 40.000000] [msg_test/INFO]   TX done
 > [40.000000] [msg_test/INFO] Simulation time 40
 

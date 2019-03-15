@@ -19,9 +19,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-platform-failures$EXEEXT --log=xbt_cfg.thres:c
 > [  1.000000] (7:worker@Fafard) Waiting a message on worker-2
 > [  1.000000] (1:master@Tremblay) Mmh. The communication with 'worker-1' failed. Nevermind. Let's keep going!
 > [  1.000000] (1:master@Tremblay) Send a message to worker-2
-> [  1.000000] (3:worker@Jupiter) Gloups. The cpu on which I'm running just turned off!. See you!
 > [  2.000000] (1:master@Tremblay) Mmh. The communication with 'worker-2' failed. Nevermind. Let's keep going!
-> [  2.000000] (7:worker@Fafard) Gloups. The cpu on which I'm running just turned off!. See you!
 > [  2.000000] (0:maestro@) Restart processes on host Jupiter
 > [  2.000000] (1:master@Tremblay) Send a message to worker-3
 > [  2.000000] (8:worker@Jupiter) Waiting a message on worker-1
@@ -126,12 +124,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-platform-failures$EXEEXT --log=xbt_cfg.thres:c
 > [  1.000000] (7:worker@Fafard) Waiting a message on worker-2
 > [  1.000000] (1:master@Tremblay) Mmh. The communication with 'worker-1' failed. Nevermind. Let's keep going!
 > [  1.000000] (1:master@Tremblay) Send a message to worker-2
-> [  1.000000] (3:worker@Jupiter) Gloups. The cpu on which I'm running just turned off!. See you!
 > [  2.000000] (0:maestro@) Restart processes on host Jupiter
 > [  2.000000] (8:worker@Jupiter) Waiting a message on worker-1
 > [  2.000000] (1:master@Tremblay) Mmh. The communication with 'worker-2' failed. Nevermind. Let's keep going!
 > [  2.000000] (1:master@Tremblay) Send a message to worker-3
-> [  2.000000] (7:worker@Fafard) Gloups. The cpu on which I'm running just turned off!. See you!
 > [  2.010825] (2:worker@Tremblay) Execution complete.
 > [  2.010825] (2:worker@Tremblay) Waiting a message on worker-0
 > [  3.082474] (5:worker@Ginette) Start execution...

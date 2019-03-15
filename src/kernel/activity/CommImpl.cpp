@@ -585,8 +585,6 @@ void CommImpl::finish()
 
     if (not simcall->issuer->get_host()->is_on()) {
       simcall->issuer->context_->iwannadie = true;
-      simcall->issuer->exception_ =
-          std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
     } else {
       switch (state_) {
 
