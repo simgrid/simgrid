@@ -5,6 +5,12 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \|___ \
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|_____|
                (not released)
 
+The Sneaky Release.
+
+ * Introducing the Python bindings (still partial)
+ * Doc: SMPI tutorial and platform description ported to RTD
+ * Further replace XBT by the std library.
+ * (+ the classical bug fixes and internal refactorings)
                     _               _____  ____  _
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \/ |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | |
