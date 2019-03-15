@@ -136,7 +136,7 @@ Comm* Comm::wait()
 
 /** @brief Block the calling actor until the communication is finished, or until timeout
  *
- * On timeout, an exception is thrown.
+ * On timeout, an exception is thrown and the communication is invalidated.
  *
  * @param timeout the amount of seconds to wait for the comm termination.
  *                Negative values denote infinite wait times. 0 as a timeout returns immediately. */
