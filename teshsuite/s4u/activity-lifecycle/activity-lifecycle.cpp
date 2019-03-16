@@ -327,6 +327,59 @@ static void test_comm_killsend()
   xbt_assert(recv_done, "Receiver killed somehow. It shouldn't");
 }
 
+static void test_host_off_while_receive()
+{
+  XBT_INFO("%s: Launch an actor that waits on a recv, kill its host", __func__);
+  bool in_on_exit = false;
+  bool returned_from_main = false;
+  bool in_catch_before_on_exit = false;
+  bool in_catch_after_on_exit = false;
+
+  simgrid::s4u::ActorPtr receiver = simgrid::s4u::Actor::create(
+    "receiver", all_hosts[1], 
+    [&in_on_exit, &returned_from_main, &in_catch_before_on_exit, &in_catch_after_on_exit]() {
+       assert_exit(true, 1);
+       try {
+         void *msg = simgrid::s4u::Mailbox::by_name("mb")->get();
+       } catch (simgrid::HostFailureException const&) {
+         in_catch_before_on_exit = not in_on_exit;
+         in_catch_after_on_exit = in_on_exit;
+       } catch (simgrid::NetworkFailureException const&) {
+         in_catch_before_on_exit = not in_on_exit;
+         in_catch_after_on_exit = in_on_exit;
+       }
+       returned_from_main = true;
+     });
+
+  receiver->on_exit([&in_on_exit](bool failed) { in_on_exit = true; });
+  
+  simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create(
+    "sender", all_hosts[2], 
+    []() {
+       try {
+         int data;
+         simgrid::s4u::Mailbox::by_name("mb")->put(&data, 100000);
+       } catch (simgrid::HostFailureException const&) {
+       } catch (simgrid::NetworkFailureException const&) {
+       }
+     });
+
+  simgrid::s4u::this_actor::sleep_for(1);
+  receiver->get_host()->turn_off();
+  
+  // Note: If we don't sleep here, we don't "see" the bug
+  simgrid::s4u::this_actor::sleep_for(1);
+
+  xbt_assert(in_on_exit, 
+    "Receiver's on_exit function was never called");
+  xbt_assert(not in_catch_before_on_exit, 
+    "Receiver mistakenly went to catch clause (before the on_exit function was called)");
+  xbt_assert(not in_catch_after_on_exit, 
+    "Receiver mistakenly went to catch clause (after the on_exit function was called)");
+  xbt_assert(not returned_from_main, 
+    "Receiver returned from main normally even though its host was killed");
+}
+
 /* We need an extra actor here, so that it can sleep until the end of each test */
 static void main_dispatcher()
 {
@@ -349,6 +402,8 @@ static void main_dispatcher()
   run_test("comm", test_comm);
   run_test("comm dsend and quit", test_comm_dsend_and_quit);
   run_test("comm kill sender", test_comm_killsend);
+
+  //run_test("comm recv and kill", test_host_off_while_receive);
 }
 
 int main(int argc, char* argv[])
