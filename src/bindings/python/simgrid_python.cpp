@@ -157,7 +157,7 @@ PYBIND11_MODULE(simgrid, m)
   /* Class Mailbox */
   py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(m, "Mailbox", "Mailbox, see :ref:`class s4u::Mailbox <API_s4u_Mailbox>`")
       .def("__str__", [](Mailbox self) -> const std::string {
-         return std::string("Mailbox(")+self.get_name()+")";
+         return std::string("Mailbox(")+self.get_cname()+")";
       }, "Textual representation of the Mailbox`")
       .def("by_name", &Mailbox::by_name, "Retrieve a Mailbox from its name, see :cpp:func:`simgrid::s4u::Mailbox::by_name()`")
       .def_property_readonly("name", [](Mailbox* self) -> const std::string {
