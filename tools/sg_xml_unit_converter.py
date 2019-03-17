@@ -49,6 +49,7 @@ def convert(xml, formats, attrib):
 def formats(ll):
     return sorted(((Decimal(i), j) for i, j in ll), key=lambda x: x[0], reverse=True)
 
+
 for root, dirnames, filenames in os.walk(sys.argv[1]):
     for filename in fnmatch.filter(filenames, '*.xml'):
         print root, dirnames, filename

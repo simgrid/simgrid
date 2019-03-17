@@ -34,7 +34,7 @@ i = 0
 if "--" in sys.argv:
     i = sys.argv.index("--")
 e = Engine(sys.argv[0:i])
-e.load_platform(sys.argv[i+1])
+e.load_platform(sys.argv[i + 1])
 
 Actor.create("executor", Host.by_name("Tremblay"), executor)
 Actor.create("privileged", Host.by_name("Tremblay"), privileged)

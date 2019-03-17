@@ -13,14 +13,15 @@ from simgrid import *
 #
 # The sender then loops until there is no ongoing communication.
 
+
 class Sender:
     def __init__(self, *args):
         if len(args) != 3:
             raise AssertionError(
                 "Actor sender requires 3 parameters, but got {:d}".format(len(args)))
-        self.messages_count  = int(args[0]) # number of tasks
-        self.msg_size        = int(args[1]) # communication cost (in bytes)
-        self.receivers_count = int(args[2]) # number of receivers
+        self.messages_count = int(args[0])  # number of tasks
+        self.msg_size = int(args[1])  # communication cost (in bytes)
+        self.receivers_count = int(args[2])  # number of receivers
 
     def __call__(self):
         # List in which we store all ongoing communications
@@ -54,9 +55,10 @@ class Sender:
             comm.wait()
         this_actor.info("Goodbye now!")
 
+
 class Receiver:
     def __init__(self, *args):
-        if len(args) != 1: # Receiver actor expects 1 argument: its ID
+        if len(args) != 1:  # Receiver actor expects 1 argument: its ID
             raise AssertionError("Actor receiver requires 1 parameter, but got {:d}".format(len(args)))
         self.mbox = Mailbox.by_name("receiver-{:s}".format(args[0]))
 
@@ -66,7 +68,7 @@ class Receiver:
             received = self.mbox.get()
             this_actor.info("I got a '{:s}'.".format(received))
             if received == "finalize":
-                break # If it's a finalize message, we're done.
+                break  # If it's a finalize message, we're done.
 
 
 if __name__ == '__main__':

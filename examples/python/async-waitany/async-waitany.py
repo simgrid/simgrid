@@ -18,6 +18,7 @@ from simgrid import *
 # other messages of this application.  As expected, the trace shows that the finalize of worker 1 is
 # processed before 'Message 5' that is sent to worker 0.
 
+
 class Sender:
     def __init__(self, *args):
         if len(args) != 3:
@@ -60,10 +61,11 @@ class Sender:
         # terminated.
         # Even in this simple example, the pending comms do not terminate in the exact same order of creation.
         while pending_comms:
-          changed_pos = Comm.wait_any(pending_comms)
-          del pending_comms[changed_pos]
-          if (changed_pos != 0):
-            this_actor.info("Remove the {:d}th pending comm: it terminated earlier than another comm that was initiated first.".format(changed_pos));
+            changed_pos = Comm.wait_any(pending_comms)
+            del pending_comms[changed_pos]
+            if (changed_pos != 0):
+                this_actor.info(
+                    "Remove the {:d}th pending comm: it terminated earlier than another comm that was initiated first.".format(changed_pos))
 
         this_actor.info("Goodbye now!")
 

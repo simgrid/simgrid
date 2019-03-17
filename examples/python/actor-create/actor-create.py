@@ -59,7 +59,7 @@ class Sender:
     Later, this actor class is instantiated twice in the simulation.
     """
 
-    def __init__(self, msg = "GaBuZoMeu", mbox = "mb42"):
+    def __init__(self, msg="GaBuZoMeu", mbox="mb42"):
         self.msg = msg
         self.mbox = mbox
 
