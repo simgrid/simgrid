@@ -340,7 +340,6 @@ static void test_host_off_while_receive()
     [&in_on_exit, &returned_from_main, &in_catch_before_on_exit, &in_catch_after_on_exit]() {
        assert_exit(true, 1);
        try {
-         // void *msg =
          simgrid::s4u::Mailbox::by_name("mb")->get();
        } catch (simgrid::HostFailureException const&) {
          in_catch_before_on_exit = not in_on_exit;
@@ -357,13 +356,9 @@ static void test_host_off_while_receive()
   simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create(
     "sender", all_hosts[2], 
     []() {
-       try {
-         int data;
-         simgrid::s4u::Mailbox::by_name("mb")->put(&data, 100000);
-       } catch (simgrid::HostFailureException const&) {
-       } catch (simgrid::NetworkFailureException const&) {
-       }
-     });
+      int data;
+      simgrid::s4u::Mailbox::by_name("mb")->put(&data, 100000);
+    });
 
   simgrid::s4u::this_actor::sleep_for(1);
   receiver->get_host()->turn_off();
