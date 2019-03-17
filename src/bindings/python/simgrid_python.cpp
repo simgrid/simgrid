@@ -178,13 +178,15 @@ PYBIND11_MODULE(simgrid, m)
       }, "Blocking data reception, see :cpp:func:`void* simgrid::s4u::Mailbox::get()`");
 
   /* Class Comm */
-  py::class_<simgrid::s4u::Comm, simgrid::s4u::CommPtr>(m, "Comm", "Communication, see :ref:`class s4u::Comm <API_s4u_Comm>`")
-      .def("test", [](simgrid::s4u::CommPtr self) {
-         return self->test();
-      }, "Test whether the communication is terminated, see :cpp:func:`simgrid::s4u::Comm::test()`")
-      .def("wait", [](simgrid::s4u::CommPtr self) {
-         self->wait();
-      }, "Block until the completion of that communication, see :cpp:func:`simgrid::s4u::Comm::wait()`");
+  py::class_<simgrid::s4u::Comm, simgrid::s4u::CommPtr>(m, "Comm",
+                                                        "Communication, see :ref:`class s4u::Comm <API_s4u_Comm>`")
+      .def("test", [](simgrid::s4u::CommPtr self) { return self->test(); },
+           "Test whether the communication is terminated, see :cpp:func:`simgrid::s4u::Comm::test()`")
+      .def("wait", [](simgrid::s4u::CommPtr self) { self->wait(); },
+           "Block until the completion of that communication, see :cpp:func:`simgrid::s4u::Comm::wait()`")
+      .def("waitall", [](std::vector<simgrid::s4u::CommPtr>* comms) { simgrid::s4u::Comm::wait_all(comms); },
+           "Block until the completion of all communications in the list, see "
+           ":cpp:func:`simgrid::s4u::Comm::wait_all()`");
 
   /* Class Actor */
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor",
