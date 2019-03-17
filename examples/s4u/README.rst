@@ -203,13 +203,9 @@ Executions on the CPU
     background threads.
     |br| `examples/s4u/exec-async/s4u-exec-async.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-async/s4u-exec-async.cpp>`_
     
-  - **Monitoring asynchronous executions:**
-    This example shows how to start an asynchronous execution, and
-    monitor its status.
-    |br| `examples/s4u/exec-monitor/s4u-exec-monitor.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-monitor/s4u-exec-monitor.cpp>`_
-    
   - **Remote execution:**
-    Before its start, you can change the host on which a given execution will occur.
+    You can start executions on remote hosts, or even change the host
+    on which they occur during their execution.
     |br| `examples/s4u/exec-remote/s4u-exec-remote.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-remote/s4u-exec-remote.cpp>`_
 
   - **Using Pstates on a host:**
