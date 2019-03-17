@@ -49,7 +49,9 @@ typedef boost::intrusive_ptr<Exec> ExecPtr;
 XBT_PUBLIC void intrusive_ptr_release(Exec* e);
 XBT_PUBLIC void intrusive_ptr_add_ref(Exec* e);
 class ExecSeq;
+typedef boost::intrusive_ptr<ExecSeq> ExecSeqPtr;
 class ExecPar;
+typedef boost::intrusive_ptr<ExecPar> ExecParPtr;
 
 class Host;
 

@@ -201,12 +201,16 @@ Executions on the CPU
   - **Asynchronous execution:**
     You can start asynchronous executions, just like you would fire
     background threads.
-    |br| `examples/s4u/exec-async/s4u-exec-async.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-async/s4u-exec-async.cpp>`_
+    
+    - |cpp| `examples/s4u/exec-async/s4u-exec-async.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-async/s4u-exec-async.cpp>`_
+    - |py|  `examples/python/exec-async/exec-async.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/exec-async/exec-async.py>`_
     
   - **Remote execution:**
     You can start executions on remote hosts, or even change the host
     on which they occur during their execution.
-    |br| `examples/s4u/exec-remote/s4u-exec-remote.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-remote/s4u-exec-remote.cpp>`_
+    
+    - |cpp| `examples/s4u/exec-remote/s4u-exec-remote.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-remote/s4u-exec-remote.cpp>`_
+    - |py| `examples/python/exec-remote/exec-remote.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/exec-remote/exec-remote.py>`_
 
   - **Parallel executions:**
     These objects are convenient abstractions of parallel
