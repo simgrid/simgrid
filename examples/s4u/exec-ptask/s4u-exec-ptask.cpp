@@ -18,10 +18,9 @@
  * Please note that you must have the LV07 platform model enabled to use such constructs.
  */
 
-#include "simgrid/plugins/energy.h"
 #include <simgrid/s4u.hpp>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_energyptask, "Messages specific for this s4u example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_ptask, "Messages specific for this s4u example");
 
 static void runner()
 {
@@ -36,8 +35,8 @@ static void runner()
   std::vector<double> communication_amounts;
 
   /* ------[ test 1 ]----------------- */
-  computation_amounts.assign(hosts.size(), 1e9 /*1Gflop*/);
-  communication_amounts.assign(hosts.size() * hosts.size(), 0);
+  computation_amounts.assign(hosts_count, 1e9 /*1Gflop*/);
+  communication_amounts.assign(hosts_count * hosts_count, 0);
   for (size_t i = 0; i < hosts_count; i++)
     for (size_t j = i + 1; j < hosts_count; j++)
       communication_amounts[i * hosts_count + j] = 1e7; // 10 MB
@@ -45,50 +44,32 @@ static void runner()
   simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
 
   /* ------[ test 2 ]----------------- */
-  XBT_INFO("We can do the same with a timeout of one second enabled.");
-  computation_amounts.assign(hosts.size(), 1e9 /*1Gflop*/);
-  communication_amounts.assign(hosts.size() * hosts.size(), 0);
+  XBT_INFO("We can do the same with a timeout of 10 seconds enabled.");
+  computation_amounts.assign(hosts_count, 1e9 /*1Gflop*/);
+  communication_amounts.assign(hosts_count * hosts_count, 0);
   for (size_t i = 0; i < hosts_count; i++)
     for (size_t j = i + 1; j < hosts_count; j++)
       communication_amounts[i * hosts_count + j] = 1e7; // 10 MB
 
   try {
     simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts,
-                                               1.0 /* timeout (in seconds)*/);
-    XBT_WARN("Woops, this did not timeout as expected... Please report that bug.");
-  } catch (xbt_ex& e) {
-    /* Do nothing this exception on timeout was expected */
-    XBT_DEBUG("Caught expected exception: %s", e.what());
+                                               10.0 /* timeout (in seconds)*/);
+    xbt_die("Woops, this did not timeout as expected... Please report that bug.");
+  } catch (simgrid::TimeoutError& e) {
+    XBT_INFO("Caught the expected timeout exception.");
   }
 
   /* ------[ test 3 ]----------------- */
-  XBT_INFO("Then, build a parallel task involving only computations and no communication (1 Gflop per node)");
-  computation_amounts.assign(hosts.size(), 1e9 /*1Gflop*/);
-  communication_amounts.clear(); /* no comm */
+  XBT_INFO("Then, build a parallel task involving only computations (of different amounts) and no communication");
+  computation_amounts = {3e8, 6e8, 1e9}; // 300Mflop, 6Mflop, 1Gflop
+  communication_amounts.clear();         // no comm
   simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
 
   /* ------[ test 4 ]----------------- */
-  XBT_INFO("Then, build a parallel task involving only heterogeneous computations and no communication");
-  computation_amounts.resize(hosts.size());
-  for (size_t i = 0; i < hosts_count; i++)
-    computation_amounts[i] = 5 * (i + 1) * 1e8; // 500Mflop, 1Gflop, 1.5Gflop
-  communication_amounts.clear();                /* no comm */
-  simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
-
-  /* ------[ test 5 ]----------------- */
   XBT_INFO("Then, build a parallel task with no computation nor communication (synchro only)");
   computation_amounts.clear();
   communication_amounts.clear();
   simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
-
-  /* ------[ test 6 ]----------------- */
-  XBT_INFO("Finally, trick the ptask to do a 'remote execution', on host %s", hosts[1]->get_cname());
-  std::vector<simgrid::s4u::Host*> remote;
-  remote.push_back(hosts[1]);
-  computation_amounts.assign(1, 1e9);
-  communication_amounts.clear();
-
-  simgrid::s4u::this_actor::parallel_execute(remote, computation_amounts, communication_amounts);
 
   XBT_INFO("Goodbye now!");
 }
@@ -97,15 +78,9 @@ int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
 
-  xbt_assert(argc <= 3, "1Usage: %s <platform file> [--energy]", argv[0]);
-  xbt_assert(argc >= 2, "2Usage: %s <platform file> [--energy]", argv[0]);
-
-  if (argc == 3 && argv[2][2] == 'e')
-    sg_host_energy_plugin_init();
+  xbt_assert(argc == 2, "Usage: %s <platform file>", argv[0]);
 
   e.load_platform(argv[1]);
-
-  /* Pick a process, no matter which, from the platform file */
   simgrid::s4u::Actor::create("test", simgrid::s4u::Host::by_name("MyHost1"), runner);
 
   e.run();
