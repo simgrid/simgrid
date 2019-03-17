@@ -22,7 +22,7 @@ class Wizard:
 
         this_actor.sleep_for(0.1)
         this_actor.info("Loads in flops/s: Boivin={:.0f}; Fafard={:.0f}; Ginette={:.0f}".format(boivin.load, fafard.load,
-                                                                                             ginette.load))
+                                                                                                ginette.load))
         exec.wait()
         this_actor.info("Done!")
 
