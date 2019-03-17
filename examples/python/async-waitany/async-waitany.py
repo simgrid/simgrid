@@ -11,8 +11,12 @@ from simgrid import *
 # As for the other asynchronous examples, the sender initiate all the messages it wants to send and
 # pack the resulting simgrid.Comm objects in a list. All messages thus occur concurrently.
 #
-# The sender then blocks until all ongoing communication terminate, using simgrid.Comm.wait_all()
-
+# The sender then loops until there is no ongoing communication. Using wait_any() ensures that the sender
+# will notice events as soon as they occur even if it does not follow the order of the container.
+#
+# Here, finalize messages will terminate earlier because their size is 0, so they travel faster than the
+# other messages of this application.  As expected, the trace shows that the finalize of worker 1 is
+# processed before 'Message 5' that is sent to worker 0.
 
 class Sender:
     def __init__(self, *args):
@@ -50,8 +54,16 @@ class Sender:
 
         this_actor.info("Done dispatching all messages")
 
-        # Now that all message exchanges were initiated, wait for their completion in one single call
-        Comm.wait_all(pending_comms)
+        # Now that all message exchanges were initiated, wait for their completion, in order of completion.
+        #
+        # This loop waits for first terminating message with wait_any() and remove it with del, until all comms are
+        # terminated.
+        # Even in this simple example, the pending comms do not terminate in the exact same order of creation.
+        while pending_comms:
+          changed_pos = Comm.wait_any(pending_comms)
+          del pending_comms[changed_pos]
+          if (changed_pos != 0):
+            this_actor.info("Remove the {:d}th pending comm: it terminated earlier than another comm that was initiated first.".format(changed_pos));
 
         this_actor.info("Goodbye now!")
 

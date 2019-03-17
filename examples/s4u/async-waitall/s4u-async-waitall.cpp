@@ -6,7 +6,7 @@
 /* This example shows how to block on the completion of a set of communications.
  *
  * As for the other asynchronous examples, the sender initiate all the messages it wants to send and
- * pack the resulting simgrid::s4u::CommPtr objects in a vector. All messages thus occurs concurrently.
+ * pack the resulting simgrid::s4u::CommPtr objects in a vector. All messages thus occur concurrently.
  *
  * The sender then blocks until all ongoing communication terminate, using simgrid::s4u::Comm::wait_all()
  *

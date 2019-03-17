@@ -6,7 +6,7 @@
 /* This example shows how to use simgrid::s4u::this_actor::wait_any() to wait for the first occurring event.
  *
  * As for the other asynchronous examples, the sender initiate all the messages it wants to send and
- * pack the resulting simgrid::s4u::CommPtr objects in a vector. All messages thus occurs concurrently.
+ * pack the resulting simgrid::s4u::CommPtr objects in a vector. All messages thus occur concurrently.
  *
  * The sender then loops until there is no ongoing communication. Using wait_any() ensures that the sender
  * will notice events as soon as they occur even if it does not follow the order of the container.
