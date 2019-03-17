@@ -216,7 +216,7 @@ Executions on the CPU
     These objects are convenient abstractions of parallel
     computational kernels that span over several machines, such as a
     PDGEM and the other ScaLAPACK routines. Note that this only works
-    with the "ptask_L07" host model (`--cfg=host/model:ptask_L07`).
+    with the "ptask_L07" host model (``--cfg=host/model:ptask_L07``).
     |br| `examples/s4u/exec-ptask/s4u-exec-ptask.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-ptask/s4u-exec-ptask.cpp>`_
     
   - **Using Pstates on a host:**
