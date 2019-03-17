@@ -163,17 +163,24 @@ Communications on the Network
      :py:func:`simgrid.Mailbox.put_async()` :py:func:`simgrid.Comm.wait()`
 
  - **Waiting for all communications in a set:**
-   The :cpp:func:`simgrid::s4u::Comm::wait_all()` function is useful
-   when you want to block until all activities in a given set have
-   completed. 
-   |br| `examples/s4u/async-waitall/s4u-async-waitall.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-waitall/s4u-async-waitall.cpp>`_
+   The `wait_all()` function is useful when you want to block until
+   all activities in a given set have completed. 
+   
+   - |cpp| `examples/s4u/async-waitall/s4u-async-waitall.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-waitall/s4u-async-waitall.cpp>`_
+     :cpp:func:`simgrid::s4u::Comm::wait_all()`
+   - |py| `examples/python/async-waitall/async-waitall.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/async-waitall/async-waitall.py>`_
+     :py:func:`simgrid.Comm.wait_all()`
 
  - **Waiting for the first completed communication in a set:**
-   The :cpp:func:`simgrid::s4u::Comm::wait_any()` function is useful
+   The `wait_any()` function is useful
    when you want to block until one activity of the set completes, no
-   matter which terminates first.    
-   |br| `examples/s4u/async-waitany/s4u-async-waitany.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-waitany/s4u-async-waitany.cpp>`_
-
+   matter which terminates first.
+   
+   - |cpp| `examples/s4u/async-waitany/s4u-async-waitany.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-waitany/s4u-async-waitany.cpp>`_
+     :cpp:func:`simgrid::s4u::Comm::wait_any()`
+   - |py| `examples/python/async-waitany/async-waitany.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/async-waitany/async-waitany.py>`_
+     :py:func:`simgrid.Comm.wait_any()`
+     
 .. todo:: review the `ready` and `waituntil` examples and add them here.
    
 .. _s4u_ex_execution:
