@@ -15,21 +15,21 @@ class Wizard:
         boivin = Host.by_name("Boivin")
 
         this_actor.info("I'm a wizard! I can run a task on the Ginette host from the Fafard one! Look!")
-        exec = this_actor.exec_init(48.492e6)
-        exec.host = ginette
-        exec.start()
+        activity = this_actor.exec_init(48.492e6)
+        activity.host = ginette
+        activity.start()
         this_actor.info("It started. Running 48.492Mf takes exactly one second on Ginette (but not on Fafard).")
 
         this_actor.sleep_for(0.1)
         this_actor.info("Loads in flops/s: Boivin={:.0f}; Fafard={:.0f}; Ginette={:.0f}".format(boivin.load, fafard.load,
                                                                                                 ginette.load))
-        exec.wait()
+        activity.wait()
         this_actor.info("Done!")
 
         this_actor.info("And now, harder. Start a remote task on Ginette and move it to Boivin after 0.5 sec")
-        exec = this_actor.exec_init(73293500)
-        exec.host = ginette
-        exec.start()
+        activity = this_actor.exec_init(73293500)
+        activity.host = ginette
+        activity.start()
 
         this_actor.sleep_for(0.5)
         this_actor.info(
@@ -38,7 +38,7 @@ class Wizard:
                 fafard.load,
                 ginette.load))
 
-        exec.host = boivin
+        activity.host = boivin
 
         this_actor.sleep_for(0.1)
         this_actor.info(
@@ -47,7 +47,7 @@ class Wizard:
                 fafard.load,
                 ginette.load))
 
-        exec.wait()
+        activity.wait()
         this_actor.info("Done!")
 
 
