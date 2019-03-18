@@ -126,6 +126,8 @@ public:
   void set_pstate(int pstate_index);
   int get_pstate() const;
 
+  std::vector<const char*> get_attached_storages() const;
+
 #ifndef DOXYGEN
   /** @deprecated See Host::get_speed() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_speed() instead.") double getSpeed() { return get_speed(); }
@@ -134,8 +136,6 @@ public:
   {
     return get_pstate_speed(pstate_index);
   }
-
-  std::vector<const char*> get_attached_storages() const;
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_attached_storages() instead.") void getAttachedStorages(
       std::vector<const char*>* storages);
 #endif
