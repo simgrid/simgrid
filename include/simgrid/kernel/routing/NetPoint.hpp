@@ -36,9 +36,9 @@ public:
   /** @brief the NetZone in which this NetPoint is included */
   NetZoneImpl* get_englobing_zone() { return englobing_zone_; }
 
-  bool is_netzone() { return component_type_ == Type::NetZone; }
-  bool is_host() { return component_type_ == Type::Host; }
-  bool is_router() { return component_type_ == Type::Router; }
+  bool is_netzone() const { return component_type_ == Type::NetZone; }
+  bool is_host() const { return component_type_ == Type::Host; }
+  bool is_router() const { return component_type_ == Type::Router; }
 
   static simgrid::xbt::signal<void(NetPoint*)> on_creation;
 

@@ -170,7 +170,7 @@ void NetworkAction::set_state(Action::State state)
 }
 
 /** @brief returns a list of all Links that this action is using */
-std::list<LinkImpl*> NetworkAction::links()
+std::list<LinkImpl*> NetworkAction::links() const
 {
   std::list<LinkImpl*> retlist;
   int llen = get_variable()->get_number_of_constraint();

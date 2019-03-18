@@ -49,12 +49,12 @@ bool Link::is_used()
   return this->pimpl_->is_used();
 }
 
-double Link::get_latency()
+double Link::get_latency() const
 {
   return this->pimpl_->get_latency();
 }
 
-double Link::get_bandwidth()
+double Link::get_bandwidth() const
 {
   return this->pimpl_->get_bandwidth();
 }

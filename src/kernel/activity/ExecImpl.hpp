@@ -29,7 +29,7 @@ public:
   void cancel();
   void post() override;
   void finish() override;
-  double get_remaining();
+  double get_remaining() const;
   double get_seq_remaining_ratio();
   double get_par_remaining_ratio();
   void set_bound(double bound);       // deprecated. To be removed in v3.25

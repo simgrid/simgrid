@@ -113,7 +113,7 @@ void Actor::on_exit(const std::function<void(int, void*)>& fun, void* data) /* d
   on_exit([fun, data](bool exit) { fun(exit, data); });
 }
 
-void Actor::on_exit(const std::function<void(bool /*failed*/)>& fun)
+void Actor::on_exit(const std::function<void(bool /*failed*/)>& fun) const
 {
   simix::simcall(
       [this, fun] { SIMIX_process_on_exit(pimpl_, [fun](int a, void* /*data*/) { fun(a != 0); }, nullptr); });
@@ -138,7 +138,7 @@ void Actor::migrate(Host* new_host)
   s4u::Actor::on_migration_end(this);
 }
 
-s4u::Host* Actor::get_host()
+s4u::Host* Actor::get_host() const
 {
   return this->pimpl_->get_host();
 }
@@ -221,11 +221,6 @@ void Actor::kill()
     xbt_assert(pimpl_ != simix_global->maestro_process, "Killing maestro is a rather bad idea");
     process->kill(pimpl_);
   });
-}
-
-kernel::actor::ActorImpl* Actor::get_impl()
-{
-  return pimpl_;
 }
 
 // ***** Static functions *****

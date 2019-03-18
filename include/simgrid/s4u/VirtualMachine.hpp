@@ -38,7 +38,7 @@ public:
     DESTROYED
   };
 
-  vm::VirtualMachineImpl* get_impl() { return pimpl_vm_; }
+  vm::VirtualMachineImpl* get_impl() const { return pimpl_vm_; }
   void start();
   void suspend();
   void resume();

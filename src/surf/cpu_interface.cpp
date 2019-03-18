@@ -186,7 +186,8 @@ void CpuAction::set_state(Action::State state)
 }
 
 /** @brief returns a list of all CPUs that this action is using */
-std::list<Cpu*> CpuAction::cpus() {
+std::list<Cpu*> CpuAction::cpus() const
+{
   std::list<Cpu*> retlist;
   int llen = get_variable()->get_number_of_constraint();
 

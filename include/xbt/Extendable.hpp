@@ -26,7 +26,7 @@ class Extension {
 public:
   explicit constexpr Extension() : id_(INVALID_ID) {}
   std::size_t id() const { return id_; }
-  bool valid() { return id_ != INVALID_ID; }
+  bool valid() const { return id_ != INVALID_ID; }
 };
 
 /** An Extendable is an object that you can extend with external elements.
@@ -83,7 +83,7 @@ public:
   }
 
   // Type-unsafe versions of the facet access methods:
-  void* extension(std::size_t rank)
+  void* extension(std::size_t rank) const
   {
     if (rank >= extensions_.size())
       return nullptr;
@@ -101,11 +101,7 @@ public:
   }
 
   // Type safe versions of the facet access methods:
-  template<class U>
-  U* extension(Extension<T,U> rank)
-  {
-    return static_cast<U*>(extension(rank.id()));
-  }
+  template <class U> U* extension(Extension<T, U> rank) const { return static_cast<U*>(extension(rank.id())); }
   template<class U>
   void extension_set(Extension<T,U> rank, U* value, bool use_dtor = true)
   {
@@ -113,7 +109,7 @@ public:
   }
 
   // Convenience extension access when the type has a associated EXTENSION ID:
-  template<class U> U* extension()           { return extension<U>(U::EXTENSION_ID); }
+  template <class U> U* extension() const { return extension<U>(U::EXTENSION_ID); }
   template<class U> void extension_set(U* p) { extension_set<U>(U::EXTENSION_ID, p); }
 };
 

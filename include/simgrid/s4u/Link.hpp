@@ -45,10 +45,10 @@ public:
   const char* get_cname() const;
 
   /** @brief Get the bandwidth in bytes per second of current Link */
-  double get_bandwidth();
+  double get_bandwidth() const;
 
   /** @brief Get the latency in seconds of current Link */
-  double get_latency();
+  double get_latency() const;
 
   /** @brief Describes how the link is shared between flows */
   SharingPolicy get_sharing_policy();

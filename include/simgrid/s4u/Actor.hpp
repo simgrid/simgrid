@@ -207,7 +207,7 @@ public:
   /** Retrieves the name of that actor as a C string */
   const char* get_cname() const;
   /** Retrieves the host on which that actor is running */
-  Host* get_host();
+  Host* get_host() const;
   /** Retrieves the actor ID of that actor */
   aid_t get_pid() const;
   /** Retrieves the actor ID of that actor's creator */
@@ -236,7 +236,7 @@ public:
    * It will be set to true if the actor was killed or failed because of an exception,
    * while it will remain to false if the actor terminated gracefully.
    */
-  void on_exit(const std::function<void(bool /*failed*/)>& fun);
+  void on_exit(const std::function<void(bool /*failed*/)>& fun) const;
 
   /** Sets the time at which that actor should be killed */
   void set_kill_time(double time);
@@ -286,7 +286,7 @@ public:
   static void kill_all();
 
   /** Returns the internal implementation of this actor */
-  kernel::actor::ActorImpl* get_impl();
+  kernel::actor::ActorImpl* get_impl() const { return pimpl_; }
 
   /** Retrieve the property value (or nullptr if not set) */
   std::unordered_map<std::string, std::string>*
