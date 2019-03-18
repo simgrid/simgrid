@@ -36,6 +36,10 @@ MSG:
    Now use (int,void*) callbacks instead of (void*,void*) ones.
    The implementation was ways too messy to actually work, I guess.
 
+SMPI:
+ - Change the way SMPI_SAMPLE_* macros work to avoid invalidating cache 
+   too often and provide more accurate timings.
+
 XBT:
  - Drop sg_cmdline. Please use xbt_cmdline instead.
  - Drop the C xbt_os_mutex_t; Use the C++11 std::mutex.
