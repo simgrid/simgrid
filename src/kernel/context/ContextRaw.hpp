@@ -39,7 +39,7 @@ private:
 
 class RawContextFactory : public SwappedContextFactory {
 public:
-  Context* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
+  RawContext* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
 };
 } // namespace context
 } // namespace kernel
