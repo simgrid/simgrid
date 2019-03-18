@@ -48,8 +48,8 @@ private:
   std::string name_;                    /* Activity name if any */
 
 public:
-  static xbt::signal<void(ActivityImplPtr)> on_suspended;
-  static xbt::signal<void(ActivityImplPtr)> on_resumed;
+  static xbt::signal<void(ActivityImpl const&)> on_suspended;
+  static xbt::signal<void(ActivityImpl const&)> on_resumed;
 };
 } // namespace activity
 } // namespace kernel

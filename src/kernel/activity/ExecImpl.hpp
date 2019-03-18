@@ -39,9 +39,9 @@ public:
   /* The host where the execution takes place. nullptr means this is a parallel exec (and only surf knows the hosts) */
   s4u::Host* host_ = nullptr;
 
-  static xbt::signal<void(ExecImplPtr)> on_creation;
-  static xbt::signal<void(ExecImplPtr)> on_completion;
-  static xbt::signal<void(ExecImplPtr, s4u::Host*)> on_migration;
+  static xbt::signal<void(ExecImpl&)> on_creation;
+  static xbt::signal<void(ExecImpl const&)> on_completion;
+  static xbt::signal<void(ExecImpl const&, s4u::Host*)> on_migration;
 };
 } // namespace activity
 } // namespace kernel

@@ -110,8 +110,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
   context->attach_start();
 
   /* The on_creation() signal must be delayed until there, where the pid and everything is set */
-  simgrid::s4u::ActorPtr tmp = actor->iface(); // Passing this directly to on_creation will lead to crashes
-  simgrid::s4u::Actor::on_creation(tmp);
+  simgrid::s4u::Actor::on_creation(*actor->ciface());
 
   return ActorImplPtr(actor);
 }
@@ -182,7 +181,7 @@ void ActorImpl::cleanup()
   simix_global->mutex.unlock();
 
   context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
-  simgrid::simix::simcall([this] { simgrid::s4u::Actor::on_destruction(iface()); });
+  simgrid::simix::simcall([this] { simgrid::s4u::Actor::on_destruction(*ciface()); });
   context_->iwannadie = true;
 }
 
@@ -486,7 +485,7 @@ ActorImplPtr ActorImpl::init(const std::string& name, s4u::Host* host)
 
   intrusive_ptr_add_ref(actor);
   /* The on_creation() signal must be delayed until there, where the pid and everything is set */
-  s4u::Actor::on_creation(actor->iface());
+  s4u::Actor::on_creation(*actor->ciface());
 
   return ActorImplPtr(actor);
 }

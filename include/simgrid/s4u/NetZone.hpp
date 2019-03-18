@@ -69,10 +69,10 @@ public:
   /*** Called on each newly created regular route (not on bypass routes) */
   static xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                           kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                          std::vector<kernel::resource::LinkImpl*>& link_list)>
+                          std::vector<kernel::resource::LinkImpl*> const& link_list)>
       on_route_creation;
-  static xbt::signal<void(NetZone&)> on_creation;
-  static xbt::signal<void(NetZone&)> on_seal;
+  static xbt::signal<void(NetZone const&)> on_creation;
+  static xbt::signal<void(NetZone const&)> on_seal;
 
 #ifndef DOXYGEN
   // Deprecation wrappers

@@ -128,7 +128,7 @@ public:
    * @details Callback functions have the following signature: `void(StorageAction& action,
    * simgrid::kernel::resource::Action::State old, simgrid::kernel::resource::Action::State current)`
    */
-  static xbt::signal<void(StorageAction*, Action::State, Action::State)> on_state_change;
+  static xbt::signal<void(StorageAction const&, Action::State, Action::State)> on_state_change;
 
   /**
    * @brief StorageAction constructor

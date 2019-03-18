@@ -40,7 +40,7 @@ public:
   bool is_host() const { return component_type_ == Type::Host; }
   bool is_router() const { return component_type_ == Type::Router; }
 
-  static simgrid::xbt::signal<void(NetPoint*)> on_creation;
+  static simgrid::xbt::signal<void(NetPoint&)> on_creation;
 
   bool operator<(const NetPoint& rhs) const { return name_ < rhs.name_; }
 

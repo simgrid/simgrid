@@ -287,7 +287,7 @@ void MigrationTx::operator()()
 }
 }
 
-static void onVirtualMachineShutdown(simgrid::s4u::VirtualMachine& vm)
+static void onVirtualMachineShutdown(simgrid::s4u::VirtualMachine const& vm)
 {
   if (vm.get_impl()->is_migrating_) {
     vm.extension<simgrid::vm::VmMigrationExt>()->rx_->kill();

@@ -93,7 +93,7 @@ void StorageImpl::turn_off()
     s4u::Storage::on_state_change(this->piface_);
   }
 }
-xbt::signal<void(StorageAction*, kernel::resource::Action::State, kernel::resource::Action::State)>
+xbt::signal<void(StorageAction const&, kernel::resource::Action::State, kernel::resource::Action::State)>
     StorageAction::on_state_change;
 
 /**********
@@ -103,7 +103,7 @@ void StorageAction::set_state(Action::State state)
 {
   Action::State old = get_state();
   Action::set_state(state);
-  on_state_change(this, old, state);
+  on_state_change(*this, old, state);
 }
 } // namespace resource
 } // namespace kernel

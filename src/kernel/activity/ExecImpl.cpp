@@ -92,7 +92,7 @@ ExecImpl* ExecImpl::start(double flops_amount, double priority, double bound)
   }
 
   XBT_DEBUG("Create execute synchro %p: %s", this, get_cname());
-  ExecImpl::on_creation(this);
+  ExecImpl::on_creation(*this);
   return this;
 }
 
@@ -107,7 +107,7 @@ ExecImpl* ExecImpl::start(const std::vector<s4u::Host*>& hosts, const std::vecto
     }
   }
   XBT_DEBUG("Create parallel execute synchro %p", this);
-  ExecImpl::on_creation(this);
+  ExecImpl::on_creation(*this);
   return this;
 }
 void ExecImpl::cancel()
@@ -159,7 +159,7 @@ void ExecImpl::post()
     state_ = SIMIX_DONE;
   }
 
-  on_completion(this);
+  on_completion(*this);
 
   if (surf_action_) {
     surf_action_->unref();
@@ -240,16 +240,16 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
     this->surf_action_ = new_action;
   }
 
-  on_migration(this, to);
+  on_migration(*this, to);
   return this;
 }
 
 /*************
  * Callbacks *
  *************/
-xbt::signal<void(ExecImplPtr)> ExecImpl::on_creation;
-xbt::signal<void(ExecImplPtr)> ExecImpl::on_completion;
-xbt::signal<void(ExecImplPtr, s4u::Host*)> ExecImpl::on_migration;
+xbt::signal<void(ExecImpl&)> ExecImpl::on_creation;
+xbt::signal<void(ExecImpl const&)> ExecImpl::on_completion;
+xbt::signal<void(ExecImpl const&, s4u::Host*)> ExecImpl::on_migration;
 
 } // namespace activity
 } // namespace kernel

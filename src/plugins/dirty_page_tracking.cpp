@@ -11,7 +11,7 @@ namespace simgrid {
 namespace vm {
 class DirtyPageTrackingExt {
   bool dp_tracking_ = false;
-  std::map<kernel::activity::ExecImplPtr, double> dp_objs_;
+  std::map<kernel::activity::ExecImpl const*, double> dp_objs_;
   double dp_updated_by_deleted_tasks_ = 0.0;
   // Percentage of pages that get dirty compared to netspeed [0;1] bytes per 1 flop execution
   double dp_intensity_          = 0.0;
@@ -23,9 +23,9 @@ public:
   void start_tracking();
   void stop_tracking() { dp_tracking_ = false; }
   bool is_tracking() { return dp_tracking_; }
-  void track(kernel::activity::ExecImplPtr exec, double amount) { dp_objs_.insert({exec, amount}); }
-  void untrack(kernel::activity::ExecImplPtr exec) { dp_objs_.erase(exec); }
-  double get_stored_remains(kernel::activity::ExecImplPtr exec) { return dp_objs_.at(exec); }
+  void track(kernel::activity::ExecImpl const* exec, double amount) { dp_objs_.insert({exec, amount}); }
+  void untrack(kernel::activity::ExecImpl const* exec) { dp_objs_.erase(exec); }
+  double get_stored_remains(kernel::activity::ExecImpl const* exec) { return dp_objs_.at(exec); }
   void update_dirty_page_count(double delta) { dp_updated_by_deleted_tasks_ += delta; }
   double computed_flops_lookup();
   double get_intensity() { return dp_intensity_; }
@@ -67,37 +67,37 @@ double DirtyPageTrackingExt::computed_flops_lookup()
 } // namespace vm
 } // namespace simgrid
 
-static void on_virtual_machine_creation(simgrid::vm::VirtualMachineImpl* vm)
+static void on_virtual_machine_creation(simgrid::vm::VirtualMachineImpl& vm)
 {
-  vm->extension_set<simgrid::vm::DirtyPageTrackingExt>(new simgrid::vm::DirtyPageTrackingExt());
+  vm.extension_set<simgrid::vm::DirtyPageTrackingExt>(new simgrid::vm::DirtyPageTrackingExt());
 }
 
-static void on_exec_creation(simgrid::kernel::activity::ExecImplPtr exec)
+static void on_exec_creation(simgrid::kernel::activity::ExecImpl const& exec)
 {
-  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec->host_);
+  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec.host_);
   if (vm == nullptr)
     return;
 
   if (vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->is_tracking()) {
-    vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->track(exec, exec->get_remaining());
+    vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->track(&exec, exec.get_remaining());
   } else {
-    vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->track(exec, 0.0);
+    vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->track(&exec, 0.0);
   }
 }
 
-static void on_exec_completion(simgrid::kernel::activity::ExecImplPtr exec)
+static void on_exec_completion(simgrid::kernel::activity::ExecImpl const& exec)
 {
-  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec->host_);
+  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec.host_);
   if (vm == nullptr)
     return;
 
   /* If we are in the middle of dirty page tracking, we record how much computation has been done until now, and keep
    * the information for the lookup_() function that will called soon. */
   if (vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->is_tracking()) {
-    double delta = vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->get_stored_remains(exec);
+    double delta = vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->get_stored_remains(&exec);
     vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->update_dirty_page_count(delta);
   }
-  vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->untrack(exec);
+  vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->untrack(&exec);
 }
 
 void sg_vm_dirty_page_tracking_init()

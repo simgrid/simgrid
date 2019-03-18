@@ -14,9 +14,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm, s4u_activity, "S4U asynchronous commun
 
 namespace simgrid {
 namespace s4u {
-xbt::signal<void(ActorPtr)> Comm::on_sender_start;
-xbt::signal<void(ActorPtr)> Comm::on_receiver_start;
-xbt::signal<void(ActorPtr)> Comm::on_completion;
+xbt::signal<void(Actor const&)> Comm::on_sender_start;
+xbt::signal<void(Actor const&)> Comm::on_receiver_start;
+xbt::signal<void(Actor const&)> Comm::on_completion;
 
 Comm::~Comm()
 {
@@ -112,12 +112,12 @@ Comm* Comm::start()
              __FUNCTION__);
 
   if (src_buff_ != nullptr) { // Sender side
-    on_sender_start(Actor::self());
+    on_sender_start(*Actor::self());
     pimpl_ = simcall_comm_isend(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
                                 clean_fun_, copy_data_function_, user_data_, detached_);
   } else if (dst_buff_ != nullptr) { // Receiver side
     xbt_assert(not detached_, "Receive cannot be detached");
-    on_receiver_start(Actor::self());
+    on_receiver_start(*Actor::self());
     pimpl_ = simcall_comm_irecv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_,
                                 copy_data_function_, user_data_, rate_);
 
@@ -148,12 +148,12 @@ Comm* Comm::wait_for(double timeout)
 
     case State::INITED: // It's not started yet. Do it in one simcall
       if (src_buff_ != nullptr) {
-        on_sender_start(Actor::self());
+        on_sender_start(*Actor::self());
         simcall_comm_send(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
                           copy_data_function_, user_data_, timeout);
 
       } else { // Receiver
-        on_receiver_start(Actor::self());
+        on_receiver_start(*Actor::self());
         simcall_comm_recv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_, copy_data_function_,
                           user_data_, timeout, rate_);
       }
@@ -162,7 +162,7 @@ Comm* Comm::wait_for(double timeout)
 
     case State::STARTED:
       simcall_comm_wait(pimpl_, timeout);
-      on_completion(Actor::self());
+      on_completion(*Actor::self());
       state_ = State::FINISHED;
       break;
 

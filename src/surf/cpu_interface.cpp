@@ -164,17 +164,17 @@ void CpuAction::update_remains_lazy(double now)
   set_last_value(get_variable()->get_value());
 }
 
-simgrid::xbt::signal<void(simgrid::surf::CpuAction*, kernel::resource::Action::State)> CpuAction::on_state_change;
+simgrid::xbt::signal<void(simgrid::surf::CpuAction const&, kernel::resource::Action::State)> CpuAction::on_state_change;
 
 void CpuAction::suspend(){
   Action::State previous = get_state();
-  on_state_change(this, previous);
+  on_state_change(*this, previous);
   Action::suspend();
 }
 
 void CpuAction::resume(){
   Action::State previous = get_state();
-  on_state_change(this, previous);
+  on_state_change(*this, previous);
   Action::resume();
 }
 
@@ -182,7 +182,7 @@ void CpuAction::set_state(Action::State state)
 {
   Action::State previous = get_state();
   Action::set_state(state);
-  on_state_change(this, previous);
+  on_state_change(*this, previous);
 }
 
 /** @brief returns a list of all CPUs that this action is using */

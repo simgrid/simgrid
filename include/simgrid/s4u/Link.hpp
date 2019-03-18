@@ -101,19 +101,19 @@ public:
   static xbt::signal<void(Link&)> on_creation;
 
   /** @brief Callback signal fired when a Link is destroyed */
-  static xbt::signal<void(Link&)> on_destruction;
+  static xbt::signal<void(Link const&)> on_destruction;
 
   /** @brief Callback signal fired when the state of a Link changes (when it is turned on or off) */
-  static xbt::signal<void(Link&)> on_state_change;
+  static xbt::signal<void(Link const&)> on_state_change;
 
   /** @brief Callback signal fired when the bandwidth of a Link changes */
-  static xbt::signal<void(Link&)> on_bandwidth_change;
+  static xbt::signal<void(Link const&)> on_bandwidth_change;
 
   /** @brief Callback signal fired when a communication starts */
-  static xbt::signal<void(kernel::resource::NetworkAction*, Host* src, Host* dst)> on_communicate;
+  static xbt::signal<void(kernel::resource::NetworkAction&, Host* src, Host* dst)> on_communicate;
 
   /** @brief Callback signal fired when a communication changes it state (ready/done/cancel) */
-  static xbt::signal<void(kernel::resource::NetworkAction*, kernel::resource::Action::State)>
+  static xbt::signal<void(kernel::resource::NetworkAction&, kernel::resource::Action::State)>
       on_communication_state_change;
 
 #ifndef DOXYGEN

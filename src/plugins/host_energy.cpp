@@ -411,10 +411,10 @@ static void on_creation(simgrid::s4u::Host& host)
   host.extension_set(new HostEnergy(&host));
 }
 
-static void on_action_state_change(simgrid::surf::CpuAction* action,
+static void on_action_state_change(simgrid::surf::CpuAction const& action,
                                    simgrid::kernel::resource::Action::State /*previous*/)
 {
-  for (simgrid::surf::Cpu* const& cpu : action->cpus()) {
+  for (simgrid::surf::Cpu* const& cpu : action.cpus()) {
     simgrid::s4u::Host* host = cpu->get_host();
     if (host != nullptr) {
 
@@ -434,9 +434,9 @@ static void on_action_state_change(simgrid::surf::CpuAction* action,
 
 /* This callback is fired either when the host changes its state (on/off) ("onStateChange") or its speed
  * (because the user changed the pstate, or because of external trace events) ("onSpeedChange") */
-static void on_host_change(simgrid::s4u::Host& host)
+static void on_host_change(simgrid::s4u::Host const& host)
 {
-  if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
+  if (dynamic_cast<simgrid::s4u::VirtualMachine const*>(&host)) // Ignore virtual machines
     return;
 
   HostEnergy* host_energy = host.extension<HostEnergy>();
@@ -444,9 +444,9 @@ static void on_host_change(simgrid::s4u::Host& host)
   host_energy->update();
 }
 
-static void on_host_destruction(simgrid::s4u::Host& host)
+static void on_host_destruction(simgrid::s4u::Host const& host)
 {
-  if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
+  if (dynamic_cast<simgrid::s4u::VirtualMachine const*>(&host)) // Ignore virtual machines
     return;
 
   XBT_INFO("Energy consumption of host %s: %f Joules", host.get_cname(),
@@ -497,9 +497,9 @@ void sg_host_energy_plugin_init()
   // that the next trigger would be the 2nd compute, hence ignoring the idle time
   // during the recv call. By updating at the beginning of a compute, we can
   // fix that. (If the cpu is not idle, this is not required.)
-  simgrid::kernel::activity::ExecImpl::on_creation.connect([](simgrid::kernel::activity::ExecImplPtr activity){
-    if (activity->host_ != nullptr) { // We only run on one host
-      simgrid::s4u::Host* host = activity->host_;
+  simgrid::kernel::activity::ExecImpl::on_creation.connect([](simgrid::kernel::activity::ExecImpl const& activity) {
+    if (activity.host_ != nullptr) { // We only run on one host
+      simgrid::s4u::Host* host         = activity.host_;
       simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
       if (vm != nullptr)
         host = vm->get_pm();

@@ -12,8 +12,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_exec, s4u_activity, "S4U asynchronous execut
 
 namespace simgrid {
 namespace s4u {
-xbt::signal<void(ActorPtr)> Exec::on_start;
-xbt::signal<void(ActorPtr)> Exec::on_completion;
+xbt::signal<void(Actor const&)> Exec::on_start;
+xbt::signal<void(Actor const&)> Exec::on_completion;
 
 Exec::Exec()
 {
@@ -44,7 +44,7 @@ Exec* Exec::wait()
     start();
   simcall_execution_wait(pimpl_);
   state_ = State::FINISHED;
-  on_completion(Actor::self());
+  on_completion(*Actor::self());
   return this;
 }
 
@@ -130,7 +130,7 @@ Exec* ExecSeq::start()
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->start(flops_amount_, 1. / priority_, bound_);
   });
   state_ = State::STARTED;
-  on_start(Actor::self());
+  on_start(*Actor::self());
   return this;
 }
 
@@ -191,7 +191,7 @@ Exec* ExecPar::start()
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->start(hosts_, flops_amounts_, bytes_amounts_);
   });
   state_ = State::STARTED;
-  on_start(Actor::self());
+  on_start(*Actor::self());
   return this;
 }
 double ExecPar::get_remaining_ratio()

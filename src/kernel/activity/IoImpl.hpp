@@ -34,8 +34,8 @@ public:
   void cancel();
   double get_remaining();
 
-  static xbt::signal<void(IoImplPtr)> on_start;
-  static xbt::signal<void(IoImplPtr)> on_completion;
+  static xbt::signal<void(IoImpl const&)> on_start;
+  static xbt::signal<void(IoImpl const&)> on_completion;
 };
 } // namespace activity
 } // namespace kernel

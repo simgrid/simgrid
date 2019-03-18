@@ -26,7 +26,7 @@ void ActivityImpl::suspend()
     return;
   XBT_VERB("This activity is suspended (remain: %f)", surf_action_->get_remains());
   surf_action_->suspend();
-  on_suspended(this);
+  on_suspended(*this);
 }
 
 void ActivityImpl::resume()
@@ -35,7 +35,7 @@ void ActivityImpl::resume()
     return;
   XBT_VERB("This activity is resumed (remain: %f)", surf_action_->get_remains());
   surf_action_->resume();
-  on_resumed(this);
+  on_resumed(*this);
 }
 
 void ActivityImpl::set_category(const std::string& category)
@@ -57,8 +57,8 @@ void intrusive_ptr_release(simgrid::kernel::activity::ActivityImpl* activity)
     delete activity;
   }
 }
-xbt::signal<void(ActivityImplPtr)> ActivityImpl::on_resumed;
-xbt::signal<void(ActivityImplPtr)> ActivityImpl::on_suspended;
+xbt::signal<void(ActivityImpl const&)> ActivityImpl::on_resumed;
+xbt::signal<void(ActivityImpl const&)> ActivityImpl::on_suspended;
 }
 }
 } // namespace simgrid::kernel::activity::

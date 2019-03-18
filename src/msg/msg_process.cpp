@@ -11,9 +11,9 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
 
-std::string instr_pid(msg_process_t proc)
+std::string instr_pid(simgrid::s4u::Actor const& proc)
 {
-  return std::string(proc->get_name()) + "-" + std::to_string(proc->get_pid());
+  return std::string(proc.get_name()) + "-" + std::to_string(proc.get_pid());
 }
 
 /******************************** Process ************************************/

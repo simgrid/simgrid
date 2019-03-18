@@ -145,23 +145,23 @@ public:
   static ActorPtr self();
 
   /** Signal to others that a new actor has been created **/
-  static xbt::signal<void(ActorPtr)> on_creation;
+  static xbt::signal<void(Actor&)> on_creation;
   /** Signal to others that an actor has been suspended**/
-  static xbt::signal<void(ActorPtr)> on_suspend;
+  static xbt::signal<void(Actor const&)> on_suspend;
   /** Signal to others that an actor has been resumed **/
-  static xbt::signal<void(ActorPtr)> on_resume;
+  static xbt::signal<void(Actor const&)> on_resume;
   /** Signal to others that an actor is sleeping **/
-  static xbt::signal<void(ActorPtr)> on_sleep;
+  static xbt::signal<void(Actor const&)> on_sleep;
   /** Signal to others that an actor wakes up for a sleep **/
-  static xbt::signal<void(ActorPtr)> on_wake_up;
+  static xbt::signal<void(Actor const&)> on_wake_up;
   /** Signal to others that an actor is going to migrated to another host**/
-  static xbt::signal<void(ActorPtr)> on_migration_start;
+  static xbt::signal<void(Actor const&)> on_migration_start;
   /** Signal to others that an actor is has been migrated to another host **/
-  static xbt::signal<void(ActorPtr)> on_migration_end;
+  static xbt::signal<void(Actor const&)> on_migration_end;
   /** Signal indicating that an actor is about to disappear.
    *  This signal is fired for any dying actor, which is mostly useful when designing plugins and extensions. If you
    *  want to register to the termination of a given actor, use this_actor::on_exit() instead.*/
-  static xbt::signal<void(ActorPtr)> on_destruction;
+  static xbt::signal<void(Actor const&)> on_destruction;
 
   /** Create an actor from a std::function<void()>
    *

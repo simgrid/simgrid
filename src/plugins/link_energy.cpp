@@ -145,10 +145,11 @@ double LinkEnergy::get_consumed_energy()
 using simgrid::plugin::LinkEnergy;
 
 /* **************************** events  callback *************************** */
-static void on_communicate(simgrid::kernel::resource::NetworkAction* action, simgrid::s4u::Host*, simgrid::s4u::Host*)
+static void on_communicate(simgrid::kernel::resource::NetworkAction const& action, simgrid::s4u::Host*,
+                           simgrid::s4u::Host*)
 {
   XBT_DEBUG("onCommunicate is called");
-  for (simgrid::kernel::resource::LinkImpl* link : action->links()) {
+  for (simgrid::kernel::resource::LinkImpl* link : action.links()) {
 
     if (link == nullptr)
       continue;
@@ -194,21 +195,22 @@ void sg_link_energy_plugin_init()
 
   simgrid::s4u::Link::on_creation.connect([](simgrid::s4u::Link& link) { link.extension_set(new LinkEnergy(&link)); });
 
-  simgrid::s4u::Link::on_state_change.connect([](simgrid::s4u::Link& link) { link.extension<LinkEnergy>()->update(); });
+  simgrid::s4u::Link::on_state_change.connect(
+      [](simgrid::s4u::Link const& link) { link.extension<LinkEnergy>()->update(); });
 
-  simgrid::s4u::Link::on_destruction.connect([](simgrid::s4u::Link& link) {
+  simgrid::s4u::Link::on_destruction.connect([](simgrid::s4u::Link const& link) {
     if (link.get_name() != "__loopback__")
       XBT_INFO("Energy consumption of link '%s': %f Joules", link.get_cname(),
                link.extension<LinkEnergy>()->get_consumed_energy());
   });
 
-  simgrid::s4u::Link::on_communication_state_change.connect(
-      [](simgrid::kernel::resource::NetworkAction* action, simgrid::kernel::resource::Action::State /* previous */) {
-        for (simgrid::kernel::resource::LinkImpl* link : action->links()) {
-          if (link != nullptr)
-            link->piface_.extension<LinkEnergy>()->update();
-        }
-      });
+  simgrid::s4u::Link::on_communication_state_change.connect([](
+      simgrid::kernel::resource::NetworkAction const& action, simgrid::kernel::resource::Action::State /* previous */) {
+    for (simgrid::kernel::resource::LinkImpl* link : action.links()) {
+      if (link != nullptr)
+        link->piface_.extension<LinkEnergy>()->update();
+    }
+  });
 
   simgrid::s4u::Link::on_communicate.connect(&on_communicate);
   simgrid::s4u::on_simulation_end.connect(&on_simulation_end);

@@ -46,14 +46,14 @@ void MSG_init_nocheck(int *argc, char **argv) {
     msg_global->task_copy_callback = nullptr;
     msg_global->process_data_cleanup = nullptr;
 
-    simgrid::s4u::Actor::on_creation.connect([](simgrid::s4u::ActorPtr actor) {
+    simgrid::s4u::Actor::on_creation.connect([](simgrid::s4u::Actor& actor) {
       XBT_DEBUG("creating the extension to store user data");
-      actor->extension_set(new simgrid::msg::ActorUserData());
+      actor.extension_set(new simgrid::msg::ActorUserData());
     });
 
-    simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::ActorPtr actor) {
+    simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::Actor const& actor) {
       // free the data if a function was provided
-      void* userdata = actor->extension<simgrid::msg::ActorUserData>()->get_user_data();
+      void* userdata = actor.extension<simgrid::msg::ActorUserData>()->get_user_data();
       if (userdata && msg_global->process_data_cleanup) {
         msg_global->process_data_cleanup(userdata);
       }

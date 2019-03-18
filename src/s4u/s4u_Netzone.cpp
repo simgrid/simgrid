@@ -16,10 +16,10 @@ namespace s4u {
 
 xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                  kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                 std::vector<kernel::resource::LinkImpl*>& link_list)>
+                 std::vector<kernel::resource::LinkImpl*> const& link_list)>
     NetZone::on_route_creation;
-xbt::signal<void(NetZone&)> NetZone::on_creation;
-xbt::signal<void(NetZone&)> NetZone::on_seal;
+xbt::signal<void(NetZone const&)> NetZone::on_creation;
+xbt::signal<void(NetZone const&)> NetZone::on_seal;
 
 NetZone::NetZone(kernel::routing::NetZoneImpl* impl) : pimpl_(impl) {}
 

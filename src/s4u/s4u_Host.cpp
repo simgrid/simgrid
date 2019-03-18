@@ -25,9 +25,9 @@ template class Extendable<s4u::Host>;
 namespace s4u {
 
 xbt::signal<void(Host&)> Host::on_creation;
-xbt::signal<void(Host&)> Host::on_destruction;
-xbt::signal<void(Host&)> Host::on_state_change;
-xbt::signal<void(Host&)> Host::on_speed_change;
+xbt::signal<void(Host const&)> Host::on_destruction;
+xbt::signal<void(Host const&)> Host::on_state_change;
+xbt::signal<void(Host const&)> Host::on_speed_change;
 
 Host::Host(const std::string& name) : name_(name)
 {

@@ -33,7 +33,7 @@ XBT_PRIVATE std::vector<std::string> known_storages;
 namespace simgrid {
 namespace surf {
 
-simgrid::xbt::signal<void(kernel::routing::ClusterCreationArgs*)> on_cluster;
+simgrid::xbt::signal<void(kernel::routing::ClusterCreationArgs const&)> on_cluster;
 }
 }
 
@@ -285,7 +285,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
   XBT_DEBUG("</AS>");
   sg_platf_new_Zone_seal();
 
-  simgrid::surf::on_cluster(cluster);
+  simgrid::surf::on_cluster(*cluster);
   delete cluster->radicals;
 }
 

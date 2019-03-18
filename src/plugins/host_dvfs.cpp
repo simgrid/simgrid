@@ -278,36 +278,38 @@ public:
   explicit Adagio(simgrid::s4u::Host* ptr)
       : Governor(ptr), rates(100, std::vector<double>(ptr->get_pstate_count(), 0.0))
   {
-    simgrid::smpi::plugin::ampi::on_iteration_in.connect([this](simgrid::s4u::ActorPtr actor) {
+    simgrid::smpi::plugin::ampi::on_iteration_in.connect([this](simgrid::s4u::Actor const& actor) {
       // Every instance of this class subscribes to this event, so one per host
       // This means that for any actor, all 'hosts' are normally notified of these
       // changes, even those who don't currently run the actor 'proc_id'.
       // -> Let's check if this signal call is for us!
-      if (get_host() == actor->get_host()) {
+      if (get_host() == actor.get_host()) {
         iteration_running = true;
       }
     });
-    simgrid::smpi::plugin::ampi::on_iteration_out.connect([this](simgrid::s4u::ActorPtr actor) {
-      if (get_host() == actor->get_host()) {
+    simgrid::smpi::plugin::ampi::on_iteration_out.connect([this](simgrid::s4u::Actor const& actor) {
+      if (get_host() == actor.get_host()) {
         iteration_running = false;
         task_id           = 0;
       }
     });
-    simgrid::kernel::activity::ExecImpl::on_creation.connect([this](simgrid::kernel::activity::ExecImplPtr activity) {
-      if (activity->host_ == get_host())
-        pre_task();
-    });
-    simgrid::kernel::activity::ExecImpl::on_completion.connect([this](simgrid::kernel::activity::ExecImplPtr activity) {
-      // For more than one host (not yet supported), we can access the host via
-      // simcalls_.front()->issuer->iface()->get_host()
-      if (activity->host_ == get_host() && iteration_running) {
-        comp_timer += activity->surf_action_->get_finish_time() - activity->surf_action_->get_start_time();
-      }
-    });
+    simgrid::kernel::activity::ExecImpl::on_creation.connect(
+        [this](simgrid::kernel::activity::ExecImpl const& activity) {
+          if (activity.host_ == get_host())
+            pre_task();
+        });
+    simgrid::kernel::activity::ExecImpl::on_completion.connect(
+        [this](simgrid::kernel::activity::ExecImpl const& activity) {
+          // For more than one host (not yet supported), we can access the host via
+          // simcalls_.front()->issuer->iface()->get_host()
+          if (activity.host_ == get_host() && iteration_running) {
+            comp_timer += activity.surf_action_->get_finish_time() - activity.surf_action_->get_start_time();
+          }
+        });
     // FIXME I think that this fires at the same time for all hosts, so when the src sends something,
     // the dst will be notified even though it didn't even arrive at the recv yet
     simgrid::s4u::Link::on_communicate.connect(
-        [this](kernel::resource::NetworkAction*, s4u::Host* src, s4u::Host* dst) {
+        [this](kernel::resource::NetworkAction const&, s4u::Host* src, s4u::Host* dst) {
           if ((get_host() == src || get_host() == dst) && iteration_running) {
             post_task();
           }

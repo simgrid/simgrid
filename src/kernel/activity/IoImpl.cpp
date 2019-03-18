@@ -68,7 +68,7 @@ IoImpl* IoImpl::start()
   surf_action_->set_data(this);
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
-  IoImpl::on_start(this);
+  IoImpl::on_start(*this);
 
   return this;
 }
@@ -99,7 +99,7 @@ void IoImpl::post()
     default:
       THROW_IMPOSSIBLE;
   }
-  on_completion(this);
+  on_completion(*this);
 
   finish();
 }
@@ -134,8 +134,8 @@ void IoImpl::finish()
 /*************
  * Callbacks *
  *************/
-xbt::signal<void(IoImplPtr)> IoImpl::on_start;
-xbt::signal<void(IoImplPtr)> IoImpl::on_completion;
+xbt::signal<void(IoImpl const&)> IoImpl::on_start;
+xbt::signal<void(IoImpl const&)> IoImpl::on_completion;
 
 } // namespace activity
 } // namespace kernel
