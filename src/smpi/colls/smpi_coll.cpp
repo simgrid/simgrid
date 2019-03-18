@@ -150,8 +150,8 @@ int Colls::scan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype data
   Datatype::copy(sendbuf, count, datatype, recvbuf, count, datatype);
 
   // Send/Recv buffers to/from others
-  MPI_Request *requests = xbt_new(MPI_Request, size - 1);
-  void **tmpbufs = xbt_new(void *, rank);
+  MPI_Request* requests = new MPI_Request[size - 1];
+  void** tmpbufs        = new void*[rank];
   int index = 0;
   for (int other = 0; other < rank; other++) {
     tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);
@@ -191,8 +191,8 @@ int Colls::scan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype data
   for(index = 0; index < size-1; index++) {
     Request::unref(&requests[index]);
   }
-  xbt_free(tmpbufs);
-  xbt_free(requests);
+  delete[] tmpbufs;
+  delete[] requests;
   return MPI_SUCCESS;
 }
 
@@ -208,8 +208,8 @@ int Colls::exscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype da
   datatype->extent(&lb, &dataext);
 
   // Send/Recv buffers to/from others
-  MPI_Request *requests = xbt_new(MPI_Request, size - 1);
-  void **tmpbufs = xbt_new(void *, rank);
+  MPI_Request* requests = new MPI_Request[size - 1];
+  void** tmpbufs        = new void*[rank];
   int index = 0;
   for (int other = 0; other < rank; other++) {
     tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);
@@ -258,8 +258,8 @@ int Colls::exscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype da
   for(index = 0; index < size-1; index++) {
     Request::unref(&requests[index]);
   }
-  xbt_free(tmpbufs);
-  xbt_free(requests);
+  delete[] tmpbufs;
+  delete[] requests;
   return MPI_SUCCESS;
 }
 

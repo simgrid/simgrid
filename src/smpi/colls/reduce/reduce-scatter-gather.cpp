@@ -75,8 +75,8 @@ int Coll_reduce_scatter_gather::reduce(const void *sendbuf, void *recvbuf,
     } else                      /* rank >= 2*rem */
       newrank = rank - rem;
 
-    cnts = (int *) xbt_malloc(pof2 * sizeof(int));
-    disps = (int *) xbt_malloc(pof2 * sizeof(int));
+    cnts  = new int[pof2];
+    disps = new int[pof2];
 
     if (newrank != -1) {
       for (i = 0; i < (pof2 - 1); i++)
@@ -252,8 +252,8 @@ int Coll_reduce_scatter_gather::reduce(const void *sendbuf, void *recvbuf,
     } else                      /* rank >= 2*rem */
       newrank = rank - rem;
 
-    cnts = (int *) xbt_malloc(pof2 * sizeof(int));
-    disps = (int *) xbt_malloc(pof2 * sizeof(int));
+    cnts  = new int[pof2];
+    disps = new int[pof2];
 
     if (newrank != -1) {
       for (i = 0; i < (pof2 - 1); i++)
@@ -404,10 +404,8 @@ int Coll_reduce_scatter_gather::reduce(const void *sendbuf, void *recvbuf,
   if (tmp_buf)
     smpi_free_tmp_buffer(tmp_buf);
   if(temporary_buffer==1) smpi_free_tmp_buffer(recvbuf);
-  if (cnts)
-    free(cnts);
-  if (disps)
-    free(disps);
+  delete[] cnts;
+  delete[] disps;
 
   return 0;
 }

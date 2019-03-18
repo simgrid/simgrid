@@ -41,7 +41,6 @@ Coll_alltoall_bruck::alltoall(const void *send_buff, int send_count,
   MPI_Aint extent;
   MPI_Datatype new_type;
 
-  int *blocks_length, *disps;
   int i, src, dst, rank, num_procs, count, block, position;
   int pack_size, tag = COLL_TAG_ALLTOALL, pof2 = 1;
 
@@ -56,8 +55,8 @@ Coll_alltoall_bruck::alltoall(const void *send_buff, int send_count,
   extent = recv_type->get_extent();
 
   tmp_buff = (char *) smpi_get_tmp_sendbuffer(num_procs * recv_count * extent);
-  disps = (int *) xbt_malloc(sizeof(int) * num_procs);
-  blocks_length = (int *) xbt_malloc(sizeof(int) * num_procs);
+  int* disps         = new int[num_procs];
+  int* blocks_length = new int[num_procs];
 
   Request::sendrecv(send_ptr + rank * send_count * extent,
                (num_procs - rank) * send_count, send_type, rank, tag,
@@ -98,8 +97,8 @@ Coll_alltoall_bruck::alltoall(const void *send_buff, int send_count,
     pof2 *= 2;
   }
 
-  free(disps);
-  free(blocks_length);
+  delete[] disps;
+  delete[] blocks_length;
 
   Request::sendrecv(recv_ptr + (rank + 1) * recv_count * extent,
                (num_procs - rank - 1) * recv_count, send_type,

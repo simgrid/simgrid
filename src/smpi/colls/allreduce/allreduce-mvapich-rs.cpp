@@ -35,8 +35,7 @@ int Coll_allreduce_mvapich2_rs::allreduce(const void *sendbuf,
     int mpi_errno = MPI_SUCCESS;
     int newrank = 0;
     int mask, pof2, i, send_idx, recv_idx, last_idx, send_cnt;
-    int dst, is_commutative, rem, newdst,
-        recv_cnt, *cnts, *disps;
+    int dst, is_commutative, rem, newdst, recv_cnt;
     MPI_Aint true_lb, true_extent, extent;
     void *tmp_buf, *tmp_buf_free;
 
@@ -152,8 +151,8 @@ int Coll_allreduce_mvapich2_rs::allreduce(const void *sendbuf,
             /* for the reduce-scatter, calculate the count that
                each process receives and the displacement within
                the buffer */
-            cnts = (int *)xbt_malloc(pof2 * sizeof (int));
-            disps = (int *)xbt_malloc(pof2 * sizeof (int));
+            int* cnts  = new int[pof2];
+            int* disps = new int[pof2];
 
             for (i = 0; i < (pof2 - 1); i++) {
                 cnts[i] = count / pof2;
@@ -267,8 +266,8 @@ int Coll_allreduce_mvapich2_rs::allreduce(const void *sendbuf,
 
                 mask >>= 1;
             }
-            xbt_free(disps);
-            xbt_free(cnts);
+            delete[] disps;
+            delete[] cnts;
         }
     }
 

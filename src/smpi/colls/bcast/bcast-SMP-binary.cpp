@@ -16,8 +16,6 @@ int Coll_bcast_SMP_binary::bcast(void *buf, int count,
   int tag = COLL_TAG_BCAST;
   MPI_Status status;
   MPI_Request request;
-  MPI_Request *request_array;
-  MPI_Status *status_array;
   int rank, size;
   int i;
   MPI_Aint extent;
@@ -123,10 +121,8 @@ int Coll_bcast_SMP_binary::bcast(void *buf, int count,
 
   // pipeline bcast
   else {
-    request_array =
-        (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
-    status_array =
-        (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
+    MPI_Request* request_array = new MPI_Request[size + pipe_length];
+    MPI_Status* status_array   = new MPI_Status[size + pipe_length];
 
     // case ROOT-of-each-SMP
     if (rank % host_num_core == 0) {
@@ -215,8 +211,8 @@ int Coll_bcast_SMP_binary::bcast(void *buf, int count,
       }
     }
 
-    free(request_array);
-    free(status_array);
+    delete[] request_array;
+    delete[] status_array;
   }
 
   // when count is not divisible by block size, use default BCAST for the remainder

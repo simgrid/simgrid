@@ -115,7 +115,6 @@ Coll_allgather_2dmesh::allgather(const void *send_buff, int send_count, MPI_Data
                                  send_type, void *recv_buff, int recv_count,
                                  MPI_Datatype recv_type, MPI_Comm comm)
 {
-  MPI_Request *req, *req_ptr;
   MPI_Aint extent;
 
   int i, src, dst, rank, num_procs;
@@ -140,9 +139,8 @@ Coll_allgather_2dmesh::allgather(const void *send_buff, int send_count, MPI_Data
   if (Y > X)
     num_reqs = Y;
 
-  req = (MPI_Request *) xbt_malloc(num_reqs * sizeof(MPI_Request));
-
-  req_ptr = req;
+  MPI_Request* req     = new MPI_Request[num_reqs];
+  MPI_Request* req_ptr = req;
 
   // do local allgather/local copy
   recv_offset = rank * block_size;
@@ -193,7 +191,7 @@ Coll_allgather_2dmesh::allgather(const void *send_buff, int send_count, MPI_Data
 
   Request::waitall(X - 1, req, MPI_STATUSES_IGNORE);
 
-  free(req);
+  delete[] req;
 
   return MPI_SUCCESS;
 }

@@ -31,11 +31,8 @@ Coll_bcast_flattree_pipeline::bcast(void *buff, int count,
   rank = comm->rank();
   num_procs = comm->size();
 
-  MPI_Request *request_array;
-  MPI_Status *status_array;
-
-  request_array = (MPI_Request *) xbt_malloc(pipe_length * sizeof(MPI_Request));
-  status_array = (MPI_Status *) xbt_malloc(pipe_length * sizeof(MPI_Status));
+  MPI_Request* request_array = new MPI_Request[pipe_length];
+  MPI_Status* status_array   = new MPI_Status[pipe_length];
 
   if (rank != root) {
     for (i = 0; i < pipe_length; i++) {
@@ -58,8 +55,8 @@ Coll_bcast_flattree_pipeline::bcast(void *buff, int count,
 
   }
 
-  free(request_array);
-  free(status_array);
+  delete[] request_array;
+  delete[] status_array;
   return MPI_SUCCESS;
 }
 

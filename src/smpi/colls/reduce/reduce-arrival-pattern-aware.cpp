@@ -29,10 +29,6 @@ int Coll_reduce_arrival_pattern_aware::reduce(const void *buf, void *rbuf,
   int tag = -COLL_TAG_REDUCE;
   MPI_Status status;
   MPI_Request request;
-  MPI_Request *send_request_array;
-  MPI_Request *recv_request_array;
-  MPI_Status *send_status_array;
-  MPI_Status *recv_status_array;
 
   MPI_Status temp_status_array[MAX_NODE];
 
@@ -190,14 +186,10 @@ int Coll_reduce_arrival_pattern_aware::reduce(const void *buf, void *rbuf,
   else {
     //    printf("node %d start\n",rank);
 
-    send_request_array =
-        (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
-    recv_request_array =
-        (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
-    send_status_array =
-        (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
-    recv_status_array =
-        (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
+    MPI_Request* send_request_array = new MPI_Request[size + pipe_length];
+    MPI_Request* recv_request_array = new MPI_Request[size + pipe_length];
+    MPI_Status* send_status_array   = new MPI_Status[size + pipe_length];
+    MPI_Status* recv_status_array   = new MPI_Status[size + pipe_length];
 
     if (rank == 0) {
       sent_count = 0;
@@ -319,13 +311,10 @@ int Coll_reduce_arrival_pattern_aware::reduce(const void *buf, void *rbuf,
       }
     }                           /* non-root */
 
-
-
-
-    free(send_request_array);
-    free(recv_request_array);
-    free(send_status_array);
-    free(recv_status_array);
+    delete[] send_request_array;
+    delete[] recv_request_array;
+    delete[] send_status_array;
+    delete[] recv_status_array;
 
     //printf("node %d done\n",rank);
   }                             /* end pipeline */

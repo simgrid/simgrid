@@ -60,8 +60,7 @@ int Coll_alltoall_2dmesh::alltoall(const void *send_buff, int send_count,
                                     void *recv_buff, int recv_count,
                                     MPI_Datatype recv_type, MPI_Comm comm)
 {
-  MPI_Status *statuses, s;
-  MPI_Request *reqs, *req_ptr;;
+  MPI_Status s;
   MPI_Aint extent;
 
   char *tmp_buff1, *tmp_buff2;
@@ -89,10 +88,9 @@ int Coll_alltoall_2dmesh::alltoall(const void *send_buff, int send_count,
   if (Y > X)
     num_reqs = Y;
 
-  statuses = (MPI_Status *) xbt_malloc(num_reqs * sizeof(MPI_Status));
-  reqs = (MPI_Request *) xbt_malloc(num_reqs * sizeof(MPI_Request));
-
-  req_ptr = reqs;
+  MPI_Status* statuses = new MPI_Status[num_reqs];
+  MPI_Request* reqs    = new MPI_Request[num_reqs];
+  MPI_Request* req_ptr = reqs;
 
   count = send_count * num_procs;
 
@@ -168,8 +166,8 @@ int Coll_alltoall_2dmesh::alltoall(const void *send_buff, int send_count,
     Request::send(tmp_buff2, send_count * Y, send_type, dst, tag, comm);
   }
   Request::waitall(X - 1, reqs, statuses);
-  free(reqs);
-  free(statuses);
+  delete[] reqs;
+  delete[] statuses;
   smpi_free_tmp_buffer(tmp_buff1);
   smpi_free_tmp_buffer(tmp_buff2);
   return MPI_SUCCESS;

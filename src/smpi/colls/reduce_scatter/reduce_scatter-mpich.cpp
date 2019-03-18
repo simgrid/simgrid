@@ -29,7 +29,6 @@ int Coll_reduce_scatter_mpich_pair::reduce_scatter(const void *sendbuf, void *re
 {
     int   rank, comm_size, i;
     MPI_Aint extent, true_extent, true_lb;
-    int  *disps;
     void *tmp_recvbuf;
     int mpi_errno = MPI_SUCCESS;
     int total_count, dst, src;
@@ -44,7 +43,7 @@ int Coll_reduce_scatter_mpich_pair::reduce_scatter(const void *sendbuf, void *re
         is_commutative = 1;
     }
 
-    disps = (int*)xbt_malloc( comm_size * sizeof(int));
+    int* disps = new int[comm_size];
 
     total_count = 0;
     for (i=0; i<comm_size; i++) {
@@ -53,8 +52,8 @@ int Coll_reduce_scatter_mpich_pair::reduce_scatter(const void *sendbuf, void *re
     }
 
     if (total_count == 0) {
-        xbt_free(disps);
-        return MPI_ERR_COUNT;
+      delete[] disps;
+      return MPI_ERR_COUNT;
     }
 
         if (sendbuf != MPI_IN_PLACE) {
@@ -138,7 +137,7 @@ int Coll_reduce_scatter_mpich_pair::reduce_scatter(const void *sendbuf, void *re
             if (mpi_errno) return(mpi_errno);
         }
 
-        xbt_free(disps);
+        delete[] disps;
         smpi_free_tmp_buffer(tmp_recvbuf);
 
         return MPI_SUCCESS;
@@ -267,7 +266,6 @@ int Coll_reduce_scatter_mpich_rdb::reduce_scatter(const void *sendbuf, void *rec
 {
     int   rank, comm_size, i;
     MPI_Aint extent, true_extent, true_lb;
-    int  *disps;
     void *tmp_recvbuf, *tmp_results;
     int mpi_errno = MPI_SUCCESS;
     int dis[2], blklens[2], total_count, dst;
@@ -285,7 +283,7 @@ int Coll_reduce_scatter_mpich_rdb::reduce_scatter(const void *sendbuf, void *rec
         is_commutative = 1;
     }
 
-    disps = (int*)xbt_malloc( comm_size * sizeof(int));
+    int* disps = new int[comm_size];
 
     total_count = 0;
     for (i=0; i<comm_size; i++) {
@@ -485,7 +483,7 @@ int Coll_reduce_scatter_mpich_rdb::reduce_scatter(const void *sendbuf, void *rec
                                        recvcounts[rank], datatype);
             if (mpi_errno) return(mpi_errno);
 
-    xbt_free(disps);
+    delete[] disps;
     smpi_free_tmp_buffer(tmp_recvbuf);
     smpi_free_tmp_buffer(tmp_results);
     return MPI_SUCCESS;

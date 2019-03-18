@@ -26,10 +26,8 @@ Coll_allgather_NTSLR_NB::allgather(const void *sbuf, int scount, MPI_Datatype st
   size = comm->size();
   rextent = rtype->get_extent();
   sextent = stype->get_extent();
-  MPI_Request *rrequest_array;
-  MPI_Request *srequest_array;
-  rrequest_array = (MPI_Request *) xbt_malloc(size * sizeof(MPI_Request));
-  srequest_array = (MPI_Request *) xbt_malloc(size * sizeof(MPI_Request));
+  MPI_Request* rrequest_array = new MPI_Request[size];
+  MPI_Request* srequest_array = new MPI_Request[size];
 
   // irregular case use default MPI fucntions
   if (scount * sextent != rcount * rextent) {
@@ -66,8 +64,8 @@ Coll_allgather_NTSLR_NB::allgather(const void *sbuf, int scount, MPI_Datatype st
     Request::wait(&srequest_array[i], &status2);
   }
 
-  free(rrequest_array);
-  free(srequest_array);
+  delete[] rrequest_array;
+  delete[] srequest_array;
 
   return MPI_SUCCESS;
 }

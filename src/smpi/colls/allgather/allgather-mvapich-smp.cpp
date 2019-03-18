@@ -105,18 +105,13 @@ int Coll_allgather_mvapich2_smp::allgather(const void *sendbuf,int sendcnt, MPI_
         /*When data in each socket is different*/
         if (comm->is_uniform() != 1) {
 
-            int *displs = NULL;
-            int *recvcnts = NULL;
             int *node_sizes = NULL;
             int i = 0;
 
             node_sizes = comm->get_non_uniform_map();
 
-            displs =  static_cast<int *>(xbt_malloc(sizeof (int) * leader_comm_size));
-            recvcnts =  static_cast<int *>(xbt_malloc(sizeof (int) * leader_comm_size));
-            if (not displs || not recvcnts) {
-              return MPI_ERR_OTHER;
-            }
+            int* displs   = new int[leader_comm_size];
+            int* recvcnts = new int[leader_comm_size];
             recvcnts[0] = node_sizes[0] * recvcnt;
             displs[0] = 0;
 
@@ -134,8 +129,8 @@ int Coll_allgather_mvapich2_smp::allgather(const void *sendbuf,int sendcnt, MPI_
                                        recvbuf, recvcnts,
                                        displs, recvtype,
                                        leader_comm);
-            xbt_free(displs);
-            xbt_free(recvcnts);
+            delete[] displs;
+            delete[] recvcnts;
         } else {
         void* sendtmpbuf=((char*)recvbuf)+recvtype->get_extent()*(recvcnt*local_size)*leader_comm->rank();
 

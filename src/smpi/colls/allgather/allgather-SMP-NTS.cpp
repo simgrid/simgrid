@@ -84,8 +84,8 @@ int Coll_allgather_SMP_NTS::allgather(const void *sbuf, int scount,
 
   // root of each SMP
   if (intra_rank == 0) {
-    MPI_Request *rrequest_array = xbt_new(MPI_Request, inter_comm_size - 1);
-    MPI_Request *srequest_array = xbt_new(MPI_Request, inter_comm_size - 1);
+    MPI_Request* rrequest_array = new MPI_Request[inter_comm_size - 1];
+    MPI_Request* srequest_array = new MPI_Request[inter_comm_size - 1];
 
     src = ((inter_rank - 1 + inter_comm_size) % inter_comm_size) * num_core;
     dst = ((inter_rank + 1) % inter_comm_size) * num_core;
@@ -133,8 +133,8 @@ int Coll_allgather_SMP_NTS::allgather(const void *sbuf, int scount,
     }
 
     Request::waitall(inter_comm_size - 1, srequest_array, MPI_STATUSES_IGNORE);
-    xbt_free(rrequest_array);
-    xbt_free(srequest_array);
+    delete[] rrequest_array;
+    delete[] srequest_array;
   }
   // last rank of each SMP
   else if (intra_rank == (num_core_in_current_smp - 1)) {

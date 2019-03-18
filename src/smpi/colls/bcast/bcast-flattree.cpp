@@ -11,9 +11,6 @@ int
 Coll_bcast_flattree::bcast(void *buff, int count, MPI_Datatype data_type,
                                int root, MPI_Comm comm)
 {
-  MPI_Request *req_ptr;
-  MPI_Request *reqs;
-
   int i, rank, num_procs;
   int tag = COLL_TAG_BCAST;
 
@@ -25,8 +22,8 @@ Coll_bcast_flattree::bcast(void *buff, int count, MPI_Datatype data_type,
   }
 
   else {
-    reqs = (MPI_Request *) xbt_malloc((num_procs - 1) * sizeof(MPI_Request));
-    req_ptr = reqs;
+    MPI_Request* reqs    = new MPI_Request[num_procs - 1];
+    MPI_Request* req_ptr = reqs;
 
     // Root sends data to all others
     for (i = 0; i < num_procs; i++) {
@@ -38,7 +35,7 @@ Coll_bcast_flattree::bcast(void *buff, int count, MPI_Datatype data_type,
     // wait on all requests
     Request::waitall(num_procs - 1, reqs, MPI_STATUSES_IGNORE);
 
-    free(reqs);
+    delete[] reqs;
   }
   return MPI_SUCCESS;
 }

@@ -73,12 +73,10 @@ int Coll_allgather_smp_simple::allgather(const void *send_buf, int scount,
 
 
   if (intra_rank == 0) {
-    MPI_Request *reqs, *req_ptr;
     int num_req = (inter_comm_size - 1) * 2;
-    reqs = (MPI_Request *) xbt_malloc(num_req * sizeof(MPI_Request));
-    req_ptr = reqs;
-    MPI_Status *stat;
-    stat = (MPI_Status *) xbt_malloc(num_req * sizeof(MPI_Status));
+    MPI_Request* reqs    = new MPI_Request[num_req];
+    MPI_Request* req_ptr = reqs;
+    MPI_Status* stat     = new MPI_Status[num_req];
 
     for (i = 1; i < inter_comm_size; i++) {
 
@@ -105,9 +103,8 @@ int Coll_allgather_smp_simple::allgather(const void *send_buf, int scount,
       //MPIC_Irecv((recv_buf+recv_offset), (rcount * num_core), rtype, src, tag, comm, req_ptr++);
     }
     Request::waitall(num_req, reqs, stat);
-    free(reqs);
-    free(stat);
-
+    delete[] reqs;
+    delete[] stat;
   }
   //INTRA-BCAST (use flat tree)
 

@@ -177,8 +177,6 @@ int Coll_bcast_mvapich2_knomial_intra_node::bcast(void *buffer,
 {
     int local_size = 0, rank;
     int mpi_errno = MPI_SUCCESS;
-    MPI_Request *reqarray = NULL;
-    MPI_Status *starray = NULL;
     int src, dst, mask, relative_rank;
     int k;
     if (MV2_Bcast_function==NULL){
@@ -196,10 +194,9 @@ int Coll_bcast_mvapich2_knomial_intra_node::bcast(void *buffer,
     local_size = comm->size();
     rank = comm->rank();
 
+    MPI_Request* reqarray = new MPI_Request[2 * mv2_intra_node_knomial_factor];
 
-    reqarray=(MPI_Request *)xbt_malloc(2 * mv2_intra_node_knomial_factor * sizeof (MPI_Request));
-
-    starray=(MPI_Status *)xbt_malloc(2 * mv2_intra_node_knomial_factor * sizeof (MPI_Status));
+    MPI_Status* starray = new MPI_Status[2 * mv2_intra_node_knomial_factor];
 
     /* intra-node k-nomial bcast  */
     if (local_size > 1) {
@@ -240,8 +237,8 @@ int Coll_bcast_mvapich2_knomial_intra_node::bcast(void *buffer,
             mask /= mv2_intra_node_knomial_factor;
         }
     }
-    xbt_free(reqarray);
-    xbt_free(starray);
+    delete[] reqarray;
+    delete[] starray;
     return mpi_errno;
 }
 

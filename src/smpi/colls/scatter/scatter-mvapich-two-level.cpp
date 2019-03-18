@@ -150,8 +150,8 @@ int Coll_scatter_mvapich2_two_level_direct::scatter(const void *sendbuf,
 
             if (root != leader_of_root) {
               if (leader_comm_rank == leader_root) {
-                displs      = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
-                sendcnts    = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
+                displs      = new int[leader_comm_size];
+                sendcnts    = new int[leader_comm_size];
                 sendcnts[0] = node_sizes[0] * nbytes;
                 displs[0]   = 0;
 
@@ -164,8 +164,8 @@ int Coll_scatter_mvapich2_two_level_direct::scatter(const void *sendbuf,
                               leader_root, leader_comm);
             } else {
               if (leader_comm_rank == leader_root) {
-                displs      = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
-                sendcnts    = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
+                displs      = new int[leader_comm_size];
+                sendcnts    = new int[leader_comm_size];
                 sendcnts[0] = node_sizes[0] * sendcnt;
                 displs[0]   = 0;
 
@@ -178,8 +178,8 @@ int Coll_scatter_mvapich2_two_level_direct::scatter(const void *sendbuf,
                               leader_comm);
             }
             if (leader_comm_rank == leader_root) {
-              xbt_free(displs);
-              xbt_free(sendcnts);
+              delete[] displs;
+              delete[] sendcnts;
             }
             } else {
                 if (leader_of_root != root) {
@@ -326,8 +326,8 @@ int Coll_scatter_mvapich2_two_level_binomial::scatter(const void *sendbuf,
 
             if (root != leader_of_root) {
               if (leader_comm_rank == leader_root) {
-                displs      = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
-                sendcnts    = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
+                displs      = new int[leader_comm_size];
+                sendcnts    = new int[leader_comm_size];
                 sendcnts[0] = node_sizes[0] * nbytes;
                 displs[0]   = 0;
 
@@ -340,8 +340,8 @@ int Coll_scatter_mvapich2_two_level_binomial::scatter(const void *sendbuf,
                               leader_root, leader_comm);
             } else {
               if (leader_comm_rank == leader_root) {
-                displs      = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
-                sendcnts    = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
+                displs      = new int[leader_comm_size];
+                sendcnts    = new int[leader_comm_size];
                 sendcnts[0] = node_sizes[0] * sendcnt;
                 displs[0]   = 0;
 
@@ -354,8 +354,8 @@ int Coll_scatter_mvapich2_two_level_binomial::scatter(const void *sendbuf,
                               leader_comm);
             }
             if (leader_comm_rank == leader_root) {
-              xbt_free(displs);
-              xbt_free(sendcnts);
+              delete[] displs;
+              delete[] sendcnts;
             }
             } else {
                 if (leader_of_root != root) {

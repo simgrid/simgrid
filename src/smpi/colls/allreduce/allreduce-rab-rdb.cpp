@@ -13,8 +13,7 @@ int Coll_allreduce_rab_rdb::allreduce(const void *sbuff, void *rbuff, int count,
 {
   int tag = COLL_TAG_ALLREDUCE;
   unsigned int mask, pof2, i, recv_idx, last_idx, send_idx, send_cnt;
-  int dst, newrank, rem, newdst,
-      recv_cnt, *cnts, *disps;
+  int dst, newrank, rem, newdst, recv_cnt;
   MPI_Aint extent;
   MPI_Status status;
   void *tmp_buf = NULL;
@@ -81,8 +80,8 @@ int Coll_allreduce_rab_rdb::allreduce(const void *sbuff, void *rbuff, int count,
     // reduce-scatter, calculate the count that each process receives
     // and the displacement within the buffer
 
-    cnts = (int *) xbt_malloc(pof2 * sizeof(int));
-    disps = (int *) xbt_malloc(pof2 * sizeof(int));
+    int* cnts  = new int[pof2];
+    int* disps = new int[pof2];
 
     for (i = 0; i < (pof2 - 1); i++)
       cnts[i] = count / pof2;
@@ -177,9 +176,8 @@ int Coll_allreduce_rab_rdb::allreduce(const void *sbuff, void *rbuff, int count,
       mask >>= 1;
     }
 
-    free(cnts);
-    free(disps);
-
+    delete[] cnts;
+    delete[] disps;
   }
   // In the non-power-of-two case, all odd-numbered processes of
   // rank < 2 * rem send the result to (rank-1), the ranks who didn't

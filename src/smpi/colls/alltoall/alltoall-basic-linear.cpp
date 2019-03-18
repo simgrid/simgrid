@@ -20,7 +20,6 @@ int Coll_alltoall_basic_linear::alltoall(const void *sendbuf, int sendcount, MPI
   int i;
   int count;
   MPI_Aint lb = 0, sendext = 0, recvext = 0;
-  MPI_Request *requests;
 
   /* Initialize. */
   int rank = comm->rank();
@@ -33,7 +32,7 @@ int Coll_alltoall_basic_linear::alltoall(const void *sendbuf, int sendcount, MPI
                                static_cast<char *>(recvbuf) + rank * recvcount * recvext, recvcount, recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
-    requests = xbt_new(MPI_Request, 2 * (size - 1));
+    MPI_Request* requests = new MPI_Request[2 * (size - 1)];
     /* Post all receives first -- a simple optimization */
     count = 0;
     for (i = (rank + 1) % size; i != rank; i = (i + 1) % size) {
@@ -59,7 +58,7 @@ int Coll_alltoall_basic_linear::alltoall(const void *sendbuf, int sendcount, MPI
       if(requests[i]!=MPI_REQUEST_NULL)
         Request::unref(&requests[i]);
     }
-    xbt_free(requests);
+    delete[] requests;
   }
   return err;
 }

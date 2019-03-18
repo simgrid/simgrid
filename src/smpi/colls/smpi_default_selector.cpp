@@ -38,7 +38,7 @@ int Coll_reduce_scatter_default::reduce_scatter(const void *sendbuf, void *recvb
   /* arbitrarily choose root as rank 0 */
   int size = comm->size();
   int count = 0;
-  int *displs = xbt_new(int, size);
+  int* displs = new int[size];
   for (int i = 0; i < size; i++) {
     displs[i] = count;
     count += recvcounts[i];
@@ -48,7 +48,7 @@ int Coll_reduce_scatter_default::reduce_scatter(const void *sendbuf, void *recvb
   int ret = Coll_reduce_default::reduce(sendbuf, tmpbuf, count, datatype, op, 0, comm);
   if(ret==MPI_SUCCESS)
     ret = Colls::scatterv(tmpbuf, recvcounts, displs, datatype, recvbuf, recvcounts[rank], datatype, 0, comm);
-  xbt_free(displs);
+  delete[] displs;
   smpi_free_tmp_buffer(tmpbuf);
   return ret;
 }

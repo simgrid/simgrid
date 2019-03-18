@@ -303,12 +303,8 @@ int Coll_gather_mvapich2_two_level::gather(const void *sendbuf,
         node_sizes = comm->get_non_uniform_map();
 
         if (leader_comm_rank == leader_root) {
-          displs   = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
-          recvcnts = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
-          if (not displs || not recvcnts) {
-            mpi_errno = MPI_ERR_OTHER;
-            return mpi_errno;
-          }
+          displs   = new int[leader_comm_size];
+          recvcnts = new int[leader_comm_size];
         }
 
         if (root == leader_of_root) {
@@ -342,8 +338,8 @@ int Coll_gather_mvapich2_two_level::gather(const void *sendbuf,
                          leader_root, leader_comm);
         }
         if (leader_comm_rank == leader_root) {
-          xbt_free(displs);
-          xbt_free(recvcnts);
+          delete[] displs;
+          delete[] recvcnts;
         }
       }
     } else {

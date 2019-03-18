@@ -136,9 +136,6 @@ int Coll_reduce_mvapich2_knomial::reduce (
     MPI_Status status;
     int recv_iter=0, dst=-1, expected_send_count, expected_recv_count;
     int *src_array=NULL;
-    void **tmp_buf=NULL;
-    MPI_Request *requests=NULL;
-
 
     if (count == 0) return MPI_SUCCESS;
 
@@ -176,11 +173,11 @@ int Coll_reduce_mvapich2_knomial::reduce (
            &dst, &expected_send_count, &expected_recv_count, &src_array);
 
     if(expected_recv_count > 0 ) {
-        tmp_buf  = static_cast<void**>(xbt_malloc(sizeof(void *)*expected_recv_count));
-        requests = static_cast<MPI_Request*>(xbt_malloc(sizeof(MPI_Request)*expected_recv_count));
-        for(k=0; k < expected_recv_count; k++ ) {
-            tmp_buf[k] = smpi_get_tmp_sendbuffer(count * std::max(extent, true_extent));
-            tmp_buf[k] = (void *)((char*)tmp_buf[k] - true_lb);
+      void** tmp_buf        = new void*[expected_recv_count];
+      MPI_Request* requests = new MPI_Request[expected_recv_count];
+      for (k = 0; k < expected_recv_count; k++) {
+        tmp_buf[k] = smpi_get_tmp_sendbuffer(count * std::max(extent, true_extent));
+        tmp_buf[k] = (void*)((char*)tmp_buf[k] - true_lb);
         }
 
         while(recv_iter  < expected_recv_count) {
@@ -206,8 +203,8 @@ int Coll_reduce_mvapich2_knomial::reduce (
         for(k=0; k < expected_recv_count; k++ ) {
             smpi_free_tmp_buffer(tmp_buf[k]);
         }
-        xbt_free(tmp_buf);
-        xbt_free(requests);
+        delete[] tmp_buf;
+        delete[] requests;
     }
 
     if(src_array != NULL) {
