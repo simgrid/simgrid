@@ -33,7 +33,7 @@ static unsigned long simix_process_maxpid = 0;
  */
 smx_actor_t SIMIX_process_self()
 {
-  smx_context_t self_context = simgrid::kernel::context::Context::self();
+  simgrid::kernel::context::Context* self_context = simgrid::kernel::context::Context::self();
 
   return (self_context != nullptr) ? self_context->get_actor() : nullptr;
 }

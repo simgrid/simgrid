@@ -33,7 +33,7 @@ xbt::signal<void(ActorPtr)> s4u::Actor::on_destruction;
 // ***** Actor creation *****
 ActorPtr Actor::self()
 {
-  smx_context_t self_context = kernel::context::Context::self();
+  kernel::context::Context* self_context = kernel::context::Context::self();
   if (self_context == nullptr)
     return ActorPtr();
 
