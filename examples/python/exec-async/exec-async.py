@@ -54,6 +54,8 @@ class Canceller:
 
 if __name__ == '__main__':
     e = Engine(sys.argv)
+    if len(sys.argv) < 2:
+        raise AssertionError("Usage: exec-async.py platform_file [other parameters]")
 
     e.load_platform(sys.argv[1])
 

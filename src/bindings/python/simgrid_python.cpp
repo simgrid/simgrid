@@ -109,8 +109,8 @@ PYBIND11_MODULE(simgrid, m)
         // Currently this can be dangling, we should wrap this somehow.
         return new simgrid::s4u::Engine(&argc, argv.get());
       }))
+      .def_static("get_clock", &Engine::get_clock, "The simulation time, ie the amount of simulated seconds since the simulation start.")
       .def("get_all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
-      .def("get_clock", &Engine::get_clock, "Retrieve the simulation time (in seconds)")
       .def("load_platform", &Engine::load_platform,
            "Load a platform file describing the environment, see :cpp:func:`simgrid::s4u::Engine::load_platform()`")
       .def("load_deployment", &Engine::load_deployment,
@@ -149,14 +149,18 @@ PYBIND11_MODULE(simgrid, m)
   /* Class Host */
   py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>>(m, "Host", "Simulation Engine, see :ref:`class s4u::Host <API_s4u_Host>`")
       .def("by_name", &Host::by_name, "Retrieves a host from its name, or die")
+      .def("get_pstate_count", &Host::get_pstate_count, "Retrieve the cound of defined pstate levels, see :cpp:func:`simgrid::s4u::Host::get_pstate_count`")
+      .def("get_pstate_speed", &Host::get_pstate_speed, "Retrieve the maximal speed at the given pstate, see :cpp:func:`simgrid::s4u::Host::get_pstate_speed`")
+      .def_property("pstate", &Host::get_pstate, &Host::set_pstate, "The current pstate")
+
       .def("current", &Host::current, "Retrieves the host on which the running actor is located, see :cpp:func:`simgrid::s4u::Host::current()`")
       .def_property_readonly("name", [](Host* self) -> const std::string {
           return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
         }, "The name of this host")
       .def_property_readonly("load", &Host::get_load,
-          "Returns the current computation load (in flops per second), see :cpp:func:`simgrid::s4u::Host::get_load()`")
+          "Returns the current computation load (in flops per second). This is the currently achieved speed. See :cpp:func:`simgrid::s4u::Host::get_load()`")
       .def_property_readonly("speed", &Host::get_speed,
-          "The peak computing speed in flops/s at the current pstate, taking the external load into account, see :cpp:func:`simgrid::s4u::Host::get_speed()`");
+          "The peak computing speed in flops/s at the current pstate, taking the external load into account. This is the max potential speed. See :cpp:func:`simgrid::s4u::Host::get_speed()`");
 
   /* Class Mailbox */
   py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(m, "Mailbox", "Mailbox, see :ref:`class s4u::Mailbox <API_s4u_Mailbox>`")

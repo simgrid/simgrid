@@ -220,10 +220,14 @@ Executions on the CPU
     |br| `examples/s4u/exec-ptask/s4u-exec-ptask.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-ptask/s4u-exec-ptask.cpp>`_
     
   - **Using Pstates on a host:**
-    Shows how define a set of pstatesfor a host in the XML, and how the current
-    pstate can be accessed/changed with :cpp:func:`simgrid::s4u::Host::get_pstate_speed` and :cpp:func:`simgrid::s4u::Host::set_pstate`.
-    |br| `examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp>`_
-    |br| `examples/platforms/energy_platform.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/energy_platform.xml>`_
+    `examples/platforms/energy_platform.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/energy_platform.xml>`_
+    shows how define a set of pstates in the XML. The current pstate
+    of an host can then be accessed and changed from the program.
+
+    - |cpp| `examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp>`_
+      :cpp:func:`simgrid::s4u::Host::get_pstate_speed` and :cpp:func:`simgrid::s4u::Host::set_pstate`.
+    - |py|  `examples/python/exec-dvfs/exec-dvfs.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/exec-dvfs/exec-dvfs.py>`_
+      :py:func:`Host.get_pstate_speed` and :py:func:`Host.set_pstate`.
 
 I/O on Disks and Files
 ----------------------
