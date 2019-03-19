@@ -5,16 +5,22 @@ The Sneaky Release.
 Python:
  - We are excited to introduce the SimGrid/S4U interface to your neighborhood
  - Not complete yet: asynchronous activities (amongst others) are still missing
- - Still ongoing: the interface may change a bit in the future (please
-   report any glitches), but it seems rather fast and reliable already. 
- - Forget about Java now (and soon about C++)
+ - Still ongoing: the interface may change in the future. We need more
+   testers! Please report any glitches.
+ - No new project using Java should start now. Please switch to Python.
 
-Core:
- - Replace our own code to display a backtrace (that was forking addr2line)
+General:
+ - Some of the internal cleanups may lead to speed improvements:
+   - The hard limitation on the amount of simulated actors with
+     Java+Mac was removed. Now, the  available memory is the only limit.
+   - Our refcounting was tidyied, leading to 10% speedups in some cases.
+ - We are still working on making our code robust to the actor kills
+   and hosts' churn. Things are improving, but it's not perfect yet.
+ - Replaced our own code to display a backtrace (that was forking addr2line)
    with the Boost.Stacktrace library.
    You won't see your backtraces without this optional dependency.
  - Bump cmake dependency to 3.5 (provided by Ubuntu 16.04).
- - Stop setting random seed with srand() at initialization.
+ - Stop setting random seed with srand() at initialization. 
 
 XML
  - In <host> and <peer>, 'availability_file' is now 'speed_file'.

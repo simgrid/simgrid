@@ -7,9 +7,9 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \|___ \
 
 The Sneaky Release.
 
- * Introducing the Python bindings (still partial)
+ * Introducing the Python bindings (still beta)
  * Doc: SMPI tutorial and platform description ported to RTD
- * Further replace XBT by the std library.
+ * Many internal cleanups leading to some user-level speedups
  * (+ the classical bug fixes and internal refactorings)
                     _               _____  ____  _
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \/ |
