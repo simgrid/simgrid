@@ -164,23 +164,23 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Mailbox */
   py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(m, "Mailbox", "Mailbox, see :ref:`class s4u::Mailbox <API_s4u_Mailbox>`")
-      .def("__str__", [](Mailbox self) -> const std::string {
-         return std::string("Mailbox(")+self.get_cname()+")";
+      .def("__str__", [](Mailbox* self) -> const std::string {
+         return std::string("Mailbox(") + self->get_cname() + ")";
       }, "Textual representation of the Mailbox`")
       .def("by_name", &Mailbox::by_name, "Retrieve a Mailbox from its name, see :cpp:func:`simgrid::s4u::Mailbox::by_name()`")
       .def_property_readonly("name", [](Mailbox* self) -> const std::string {
          return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
       }, "The name of that mailbox, see :cpp:func:`simgrid::s4u::Mailbox::get_name()`")
-      .def("put", [](Mailbox self, py::object data, int size) {
+      .def("put", [](Mailbox* self, py::object data, int size) {
         data.inc_ref();
-        self.put(data.ptr(), size);
+        self->put(data.ptr(), size);
       }, "Blocking data transmission, see :cpp:func:`void simgrid::s4u::Mailbox::put(void*, uint64_t)`")
-      .def("put_async", [](Mailbox self, py::object data, int size) -> simgrid::s4u::CommPtr {
+      .def("put_async", [](Mailbox* self, py::object data, int size) -> simgrid::s4u::CommPtr {
         data.inc_ref();
-        return self.put_async(data.ptr(), size);
+        return self->put_async(data.ptr(), size);
       }, "Non-blocking data transmission, see :cpp:func:`void simgrid::s4u::Mailbox::put_async(void*, uint64_t)`")
-      .def("get", [](Mailbox self) -> py::object {
-         py::object data = pybind11::reinterpret_steal<py::object>(pybind11::handle(static_cast<PyObject*>(self.get())));
+      .def("get", [](Mailbox* self) -> py::object {
+         py::object data = pybind11::reinterpret_steal<py::object>(pybind11::handle(static_cast<PyObject*>(self->get())));
          data.dec_ref();
          return data;
       }, "Blocking data reception, see :cpp:func:`void* simgrid::s4u::Mailbox::get()`");
