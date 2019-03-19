@@ -351,8 +351,8 @@ static void test_host_off_while_receive()
        returned_from_main = true;
      });
 
-  receiver->on_exit([&in_on_exit](bool failed) { in_on_exit = true; });
-  
+  receiver->on_exit([&in_on_exit](bool) { in_on_exit = true; });
+
   simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create(
     "sender", all_hosts[2], 
     []() {
