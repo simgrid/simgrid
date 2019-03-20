@@ -118,33 +118,30 @@ PYBIND11_MODULE(simgrid, m)
            ":cpp:func:`simgrid::s4u::Engine::load_deployment()`")
       .def("run", &Engine::run, "Run the simulation")
       .def("register_actor",
-           [](Engine*, const std::string& name, py::object fun_or_class) {
-             simgrid::simix::register_function(
-                 name, [fun_or_class](std::vector<std::string> args) -> simgrid::simix::ActorCode {
-                   return [fun_or_class, args]() {
-                     try {
-                       /* Convert the std::vector into a py::tuple */
-                       py::tuple params(args.size() - 1);
-                       for (size_t i = 1; i < args.size(); i++)
-                         params[i - 1] = py::cast(args[i]);
+           [](Engine* e, const std::string& name, py::object fun_or_class) {
+             e->register_actor(name, [fun_or_class](std::vector<std::string> args) {
+               try {
+                 /* Convert the std::vector into a py::tuple */
+                 py::tuple params(args.size() - 1);
+                 for (size_t i = 1; i < args.size(); i++)
+                   params[i - 1] = py::cast(args[i]);
 
-                       py::object res = fun_or_class(*params);
+                 py::object res = fun_or_class(*params);
 
-                       /* If I was passed a class, I just built an instance, so I need to call it now */
-                       if (py::isinstance<py::function>(res))
-                         res();
-                     } catch (py::error_already_set& ex) {
-                       if (ex.matches(pyForcefulKillEx)) {
-                         XBT_VERB("Actor killed");
-                         /* Stop here that ForcefulKill exception which was meant to free the RAII stuff on the stack */
-                       } else {
-                         throw;
-                       }
-                     }
-                   };
-                 });
+                 /* If I was passed a class, I just built an instance, so I need to call it now */
+                 if (py::isinstance<py::function>(res))
+                   res();
+               } catch (py::error_already_set& ex) {
+                 if (ex.matches(pyForcefulKillEx)) {
+                   XBT_VERB("Actor killed");
+                   /* Stop here that ForcefulKill exception which was meant to free the RAII stuff on the stack */
+                 } else {
+                   throw;
+                 }
+               }
+             });
            },
-           "Registers the main function of an actor, see :cpp:func:`simgrid::s4u::Engine::register_function()`");
+           "Registers the main function of an actor, see :cpp:func:`simgrid::s4u::Engine::register_actor()`");
 
   /* Class Host */
   py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>>(m, "Host", "Simulation Engine, see :ref:`class s4u::Host <API_s4u_Host>`")
