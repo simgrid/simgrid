@@ -1,7 +1,7 @@
-# Copyright (c) 2007-2019. The SimGrid Team. All rights reserved.          
+# Copyright (c) 2007-2019. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
-# under the terms of the license (GNU LGPL) which comes with this package. 
+# under the terms of the license (GNU LGPL) which comes with this package.
 
 import sys
 from simgrid import *
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     e = Engine(sys.argv)
     if len(sys.argv) < 2:
         raise AssertionError("Usage: exec-dvfs.py platform_file [other parameters] (got {:d} params)".format(len(sys.argv)))
-                
+
     e.load_platform(sys.argv[1])
     Actor.create("dvfs_test", Host.by_name("MyHost1"), dvfs())
     Actor.create("dvfs_test", Host.by_name("MyHost2"), dvfs())
