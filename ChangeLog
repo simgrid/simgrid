@@ -66,11 +66,13 @@ Kernel:
 
 Fixed bugs:
  - #132: Java: a process can not shut down its own host
+ - #220: S4U: detached send causes exception if sender terminates soon after sending
  - #261: Document the parameters of parallel execution's constructor
  - #300: [s4u] BarrierPtr is missing
  - #314: SMPI args internal cleanup
  - #316: Fix a bug related to the CPU utilization of multi-core VM
  - #318: Invalid trace file when using option --cfg=tracing/smpi/display-sizes:yes
+ - #324: S4U: Attempting to create an actor on turned off host segfaults instead of throwing
  - #325: Turning off a host has different behavior on sleeping actors and computing actors
 
 ----------------------------------------------------------------------------
