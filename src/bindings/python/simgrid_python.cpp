@@ -59,7 +59,7 @@ PYBIND11_MODULE(simgrid, m)
   m.attr("simgrid_version") = simgrid_version;
 
   // Internal exception used to kill actors and sweep the RAII chimney (free objects living on the stack)
-  py::object pyForcefulKillEx = py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled");
+  static py::object pyForcefulKillEx(py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled"));
 
   /* this_actor namespace */
   void (*sleep_for_fun)(double) = &simgrid::s4u::this_actor::sleep_for; // pick the right overload
@@ -118,10 +118,10 @@ PYBIND11_MODULE(simgrid, m)
            ":cpp:func:`simgrid::s4u::Engine::load_deployment()`")
       .def("run", &Engine::run, "Run the simulation")
       .def("register_actor",
-           [pyForcefulKillEx](Engine*, const std::string& name, py::object fun_or_class) {
+           [](Engine*, const std::string& name, py::object fun_or_class) {
              simgrid::simix::register_function(
-                 name, [pyForcefulKillEx, fun_or_class](std::vector<std::string> args) -> simgrid::simix::ActorCode {
-                   return [pyForcefulKillEx, fun_or_class, args]() {
+                 name, [fun_or_class](std::vector<std::string> args) -> simgrid::simix::ActorCode {
+                   return [fun_or_class, args]() {
                      try {
                        /* Convert the std::vector into a py::tuple */
                        py::tuple params(args.size() - 1);
@@ -228,9 +228,9 @@ PYBIND11_MODULE(simgrid, m)
                                             "application, see :ref:`class s4u::Actor <API_s4u_Actor>`")
 
       .def("create",
-           [pyForcefulKillEx](py::str name, py::object host, py::object fun, py::args args) {
+           [](py::str name, py::object host, py::object fun, py::args args) {
 
-             return simgrid::s4u::Actor::create(name, host.cast<Host*>(), [fun, args, pyForcefulKillEx]() {
+             return simgrid::s4u::Actor::create(name, host.cast<Host*>(), [fun, args]() {
 
                try {
                  fun(*args);
