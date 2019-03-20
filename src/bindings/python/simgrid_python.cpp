@@ -180,7 +180,7 @@ PYBIND11_MODULE(simgrid, m)
         return self->put_async(data.ptr(), size);
       }, "Non-blocking data transmission, see :cpp:func:`void simgrid::s4u::Mailbox::put_async(void*, uint64_t)`")
       .def("get", [](Mailbox* self) -> py::object {
-         py::object data = pybind11::reinterpret_steal<py::object>(pybind11::handle(static_cast<PyObject*>(self->get())));
+         py::object data = pybind11::reinterpret_steal<py::object>(static_cast<PyObject*>(self->get()));
          data.dec_ref();
          return data;
       }, "Blocking data reception, see :cpp:func:`void* simgrid::s4u::Mailbox::get()`");
