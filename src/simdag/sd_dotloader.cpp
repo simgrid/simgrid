@@ -9,8 +9,10 @@
 #include "simgrid/simdag.h"
 #include "src/internal_config.h"
 #include "xbt/file.hpp"
+#include <algorithm>
 #include <cstring>
 #include <unordered_map>
+#include <vector>
 
 #if HAVE_GRAPHVIZ
 #include <graphviz/cgraph.h>
@@ -43,23 +45,12 @@ xbt_dynar_t SD_dotload_with_sched(const char *filename) {
   return SD_dotload_generic(filename, true, true);
 }
 
-static int edge_compare(const void *a, const void *b)
-{
-  unsigned va = AGSEQ(*(Agedge_t **)a);
-  unsigned vb = AGSEQ(*(Agedge_t **)b);
-  if (va == vb)
-    return 0;
-  else
-    return (va < vb ? -1 : 1);
-}
-
 xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool schedule)
 {
   xbt_assert(filename, "Unable to use a null file descriptor\n");
   FILE *in_file = fopen(filename, "r");
   xbt_assert(in_file != nullptr, "Failed to open file: %s", filename);
 
-  unsigned int i;
   SD_task_t root;
   SD_task_t end;
   SD_task_t task;
@@ -152,17 +143,16 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
     end = jobs.at("end");
 
   /* Create edges */
-  xbt_dynar_t edges = xbt_dynar_new(sizeof(Agedge_t*), nullptr);
+  std::vector<Agedge_t*> edges;
   for (node = agfstnode(dag_dot); node; node = agnxtnode(dag_dot, node)) {
-    Agedge_t * edge;
-    xbt_dynar_reset(edges);
-    for (edge = agfstout(dag_dot, node); edge; edge = agnxtout(dag_dot, edge))
-      xbt_dynar_push_as(edges, Agedge_t *, edge);
+    edges.clear();
+    for (Agedge_t* edge = agfstout(dag_dot, node); edge; edge = agnxtout(dag_dot, edge))
+      edges.push_back(edge);
 
     /* Be sure edges are sorted */
-    xbt_dynar_sort(edges, edge_compare);
+    std::sort(edges.begin(), edges.end(), [](const Agedge_t* a, const Agedge_t* b) { return AGSEQ(a) < AGSEQ(b); });
 
-    xbt_dynar_foreach(edges, i, edge) {
+    for (Agedge_t* edge : edges) {
       char *src_name=agnameof(agtail(edge));
       char *dst_name=agnameof(aghead(edge));
       double size = atof(agget(edge, (char *) "size"));
@@ -190,12 +180,12 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
       }
     }
   }
-  xbt_dynar_free(&edges);
 
   XBT_DEBUG("All tasks have been created, put %s at the end of the dynar", end->name);
   xbt_dynar_push(result, &end);
 
   /* Connect entry tasks to 'root', and exit tasks to 'end'*/
+  unsigned i;
   xbt_dynar_foreach (result, i, task){
     if (task->predecessors->empty() && task->inputs->empty() && task != root) {
       XBT_DEBUG("Task '%s' has no source. Add dependency from 'root'", task->name);
