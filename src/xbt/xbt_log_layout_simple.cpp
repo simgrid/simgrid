@@ -70,7 +70,7 @@ static int xbt_log_layout_simple_doit(xbt_log_layout_t, xbt_log_event_t ev, cons
   return 1;
 }
 
-xbt_log_layout_t xbt_log_layout_simple_new(char*)
+xbt_log_layout_t xbt_log_layout_simple_new(const char*)
 {
   xbt_log_layout_t res = xbt_new0(s_xbt_log_layout_t, 1);
   res->do_layout       = &xbt_log_layout_simple_doit;

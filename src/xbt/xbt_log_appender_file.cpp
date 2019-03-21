@@ -22,8 +22,8 @@ static void free_(xbt_log_appender_t this_) {
     fclose(static_cast<FILE*>(this_->data));
 }
 
-xbt_log_appender_t xbt_log_appender_file_new(char *arg) {
-
+xbt_log_appender_t xbt_log_appender_file_new(const char* arg)
+{
   xbt_log_appender_t res = xbt_new0(s_xbt_log_appender_t, 1);
   res->do_append         = &append_file;
   res->free_             = &free_;
@@ -105,8 +105,8 @@ static void free_append2_(xbt_log_appender_t this_)
 //syntax is  <maxsize>:<filename>
 //If roll is 0, use split files, otherwise, use roll file
 //For split, replace %  in the file by the current count
-xbt_log_appender_t xbt_log_appender2_file_new(char *arg,int roll) {
-
+xbt_log_appender_t xbt_log_appender2_file_new(const char* arg, int roll)
+{
   xbt_log_appender_t res      = xbt_new0(s_xbt_log_appender_t, 1);
   res->do_append              = &append2_file;
   res->free_                  = &free_append2_;
