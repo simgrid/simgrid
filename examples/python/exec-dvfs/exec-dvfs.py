@@ -7,7 +7,7 @@ import sys
 from simgrid import *
 
 
-class dvfs:
+class Dvfs:
     def __call__(self):
         workload = 100E6
         host = this_actor.get_host()
@@ -50,7 +50,7 @@ if __name__ == '__main__':
         raise AssertionError("Usage: exec-dvfs.py platform_file [other parameters] (got {:d} params)".format(len(sys.argv)))
 
     e.load_platform(sys.argv[1])
-    Actor.create("dvfs_test", Host.by_name("MyHost1"), dvfs())
-    Actor.create("dvfs_test", Host.by_name("MyHost2"), dvfs())
+    Actor.create("dvfs_test", Host.by_name("MyHost1"), Dvfs())
+    Actor.create("dvfs_test", Host.by_name("MyHost2"), Dvfs())
 
     e.run()
