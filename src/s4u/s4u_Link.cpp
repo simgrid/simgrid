@@ -156,7 +156,7 @@ sg_link_t* sg_link_list()
 {
   std::vector<simgrid::s4u::Link*> links = simgrid::s4u::Engine::get_instance()->get_all_links();
 
-  sg_link_t* res = (sg_link_t*)malloc(sizeof(sg_link_t) * links.size());
+  sg_link_t* res = xbt_new(sg_link_t, links.size());
   memcpy(res, links.data(), sizeof(sg_link_t) * links.size());
 
   return res;
