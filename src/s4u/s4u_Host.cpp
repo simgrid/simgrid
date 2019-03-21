@@ -10,6 +10,7 @@
 #include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 
+#include <algorithm>
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_host, s4u, "Logging specific to the S4U hosts");
@@ -366,19 +367,16 @@ sg_host_t sg_host_by_name(const char* name)
 
 xbt_dynar_t sg_hosts_as_dynar()
 {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), nullptr);
-
   std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
 
-  for (auto const& host : list) {
-    if (host && host->pimpl_netpoint && host->pimpl_netpoint->is_host())
-      xbt_dynar_push(res, &host);
-  }
-  xbt_dynar_sort(res, [](const void* pa, const void* pb) {
-    const std::string& na = (*static_cast<simgrid::s4u::Host* const*>(pa))->get_name();
-    const std::string& nb = (*static_cast<simgrid::s4u::Host* const*>(pb))->get_name();
-    return na.compare(nb);
+  auto last = std::remove_if(begin(list), end(list), [](const simgrid::s4u::Host* host) {
+    return not host || not host->pimpl_netpoint || not host->pimpl_netpoint->is_host();
   });
+  std::sort(begin(list), last,
+            [](const simgrid::s4u::Host* a, const simgrid::s4u::Host* b) { return a->get_name() < b->get_name(); });
+
+  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), nullptr);
+  std::for_each(begin(list), last, [res](sg_host_t host) { xbt_dynar_push_as(res, sg_host_t, host); });
   return res;
 }
 
