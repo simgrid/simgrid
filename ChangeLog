@@ -58,6 +58,7 @@ XBT:
    -fsplit-stack is the way to go nowadays when using threads.
  - Drop the xbt_os_thread_t module (now unused)
  - Drop xbt_ex_display(), use simgrid::xbt::log_exception() instead.
+ - Drop xbt_str_join_array().
  - Drop cunit, use Catch2 instead.
 
 Kernel:
