@@ -641,7 +641,7 @@ static void xbt_log_help_categories_rec(xbt_log_category_t category, const std::
     cats.push_back(cat);
 
   std::sort(begin(cats), end(cats),
-            [](xbt_log_category_t a, xbt_log_category_t b) { return strcmp(a->name, b->name) == -1; });
+            [](xbt_log_category_t a, xbt_log_category_t b) { return strcmp(a->name, b->name) < 0; });
 
   for (auto const& cat : cats) {
     printf("%s%s: %s\n", this_prefix.c_str(), cat->name, cat->description);
