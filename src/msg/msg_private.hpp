@@ -115,15 +115,14 @@ public:
 } // namespace simgrid
 
 /************************** Global variables ********************************/
-struct s_MSG_Global_t {
-  bool debug_multiple_use;           /* whether we want an error message when reusing the same Task for 2 things */
+struct MSG_Global_t {
+  static bool debug_multiple_use;    /* whether we want an error message when reusing the same Task for 2 things */
   std::atomic_int_fast32_t sent_msg; /* Total amount of messages sent during the simulation */
   void (*task_copy_callback)(msg_task_t task, msg_process_t src, msg_process_t dst);
   void_f_pvoid_t process_data_cleanup;
 };
-typedef s_MSG_Global_t* MSG_Global_t;
 
-XBT_PUBLIC_DATA MSG_Global_t msg_global;
+XBT_PUBLIC_DATA MSG_Global_t* msg_global;
 
 /*************************************************************/
 XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size);
