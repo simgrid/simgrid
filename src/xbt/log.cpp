@@ -371,85 +371,63 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
   XBT_DEBUG("Parse log setting '%s'", control_string);
 
   control_string += strspn(control_string, " ");
-  const char *name = control_string;
+  const char* name = control_string;
   control_string += strcspn(control_string, ".:= ");
-  const char *dot = control_string;
+  const char* option = control_string;
   control_string += strcspn(control_string, ":= ");
-  const char *eq = control_string;
+  const char* value = control_string;
 
-  xbt_assert(*dot == '.' || (*eq != '=' && *eq != ':'), "Invalid control string '%s'", orig_control_string);
+  xbt_assert(*option == '.' && (*value == '=' || *value == ':'), "Invalid control string '%s'", orig_control_string);
 
-  if (!strncmp(dot + 1, "threshold", (size_t) (eq - dot - 1))) {
+  size_t name_len = option - name;
+  ++option;
+  size_t option_len = value - option;
+  ++value;
+
+  if (strncmp(option, "threshold", option_len) == 0) {
+    XBT_DEBUG("New priority name = %s", value);
     int i;
-    char *neweq = xbt_strdup(eq + 1);
-    char *p = neweq - 1;
-
-    while (*(++p) != '\0') {
-      if (*p >= 'a' && *p <= 'z') {
-        *p -= 'a' - 'A';
-      }
-    }
-
-    XBT_DEBUG("New priority name = %s", neweq);
     for (i = 0; i < xbt_log_priority_infinite; i++) {
-      if (!strncmp(xbt_log_priority_names[i], neweq, p - eq)) {
+      if (strcasecmp(value, xbt_log_priority_names[i]) == 0) {
         XBT_DEBUG("This is priority %d", i);
         break;
       }
     }
 
     if(i<XBT_LOG_STATIC_THRESHOLD){
-     fprintf(stderr,
-         "Priority '%s' (in setting '%s') is above allowed priority '%s'.\n\n"
-         "Compiling SimGrid with -DNDEBUG forbids the levels 'trace' and 'debug'\n"
-         "while -DNLOG forbids any logging, at any level.",
-             eq + 1, name, xbt_log_priority_names[XBT_LOG_STATIC_THRESHOLD]);
-     exit(1);
+      fprintf(stderr, "Priority '%s' (in setting '%s') is above allowed priority '%s'.\n\n"
+                      "Compiling SimGrid with -DNDEBUG forbids the levels 'trace' and 'debug'\n"
+                      "while -DNLOG forbids any logging, at any level.",
+              value, name, xbt_log_priority_names[XBT_LOG_STATIC_THRESHOLD]);
+      exit(1);
     }else if (i < xbt_log_priority_infinite) {
       set.thresh = (e_xbt_log_priority_t)i;
     } else {
       THROWF(arg_error, 0,
-             "Unknown priority name: %s (must be one of: trace,debug,verbose,info,warning,error,critical)", eq + 1);
+             "Unknown priority name: %s (must be one of: trace,debug,verbose,info,warning,error,critical)", value);
     }
-    xbt_free(neweq);
-  } else if (!strncmp(dot + 1, "add", (size_t) (eq - dot - 1)) ||
-             !strncmp(dot + 1, "additivity", (size_t) (eq - dot - 1))) {
-    char *neweq = xbt_strdup(eq + 1);
-    char *p = neweq - 1;
-
-    while (*(++p) != '\0') {
-      if (*p >= 'a' && *p <= 'z') {
-        *p -= 'a' - 'A';
-      }
-    }
-    if (!strcmp(neweq, "ON") || !strcmp(neweq, "YES") || !strcmp(neweq, "1")) {
+  } else if (strncmp(option, "additivity", option_len) == 0) {
+    if (strcasecmp(value, "ON") == 0 || strcasecmp(value, "YES") == 0 || strcmp(value, "1") == 0) {
       set.additivity = 1;
     } else {
       set.additivity = 0;
     }
-    xbt_free(neweq);
-  } else if (!strncmp(dot + 1, "app", (size_t) (eq - dot - 1)) ||
-             !strncmp(dot + 1, "appender", (size_t) (eq - dot - 1))) {
-    char *neweq = xbt_strdup(eq + 1);
-
-    if (!strncmp(neweq, "file:", 5)) {
-      set.appender = xbt_log_appender_file_new(neweq + 5);
-    }else if (!strncmp(neweq, "rollfile:", 9)) {
-      set.appender = xbt_log_appender2_file_new(neweq + 9, 1);
-    }else if (!strncmp(neweq, "splitfile:", 10)) {
-      set.appender = xbt_log_appender2_file_new(neweq + 10, 0);
+  } else if (strncmp(option, "appender", option_len) == 0) {
+    if (strncmp(value, "file:", 5) == 0) {
+      set.appender = xbt_log_appender_file_new(value + 5);
+    } else if (strncmp(value, "rollfile:", 9) == 0) {
+      set.appender = xbt_log_appender2_file_new(value + 9, 1);
+    } else if (strncmp(value, "splitfile:", 10) == 0) {
+      set.appender = xbt_log_appender2_file_new(value + 10, 0);
     } else {
-      THROWF(arg_error, 0, "Unknown appender log type: '%s'", neweq);
+      THROWF(arg_error, 0, "Unknown appender log type: '%s'", value);
     }
-    xbt_free(neweq);
-  } else if (!strncmp(dot + 1, "fmt", (size_t) (eq - dot - 1))) {
-    set.fmt = std::string(eq + 1);
+  } else if (strncmp(option, "fmt", option_len) == 0) {
+    set.fmt = std::string(value);
   } else {
-    char buff[512];
-    snprintf(buff, std::min<int>(512, eq - dot), "%s", dot + 1);
-    xbt_die("Unknown setting of the log category: '%s'", buff);
+    xbt_die("Unknown setting of the log category: '%.*s'", static_cast<int>(option_len), option);
   }
-  set.catname = std::string(name, dot - name);
+  set.catname = std::string(name, name_len);
 
   XBT_DEBUG("This is for cat '%s'", set.catname.c_str());
 
