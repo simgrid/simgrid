@@ -90,17 +90,17 @@ void xbt_log_init(int *argc, char **argv)
 
   /* Set logs and init log submodule */
   for (int i = 1; i < *argc; i++) {
-    if (!strcmp("--", argv[i])) {
+    if (strcmp("--", argv[i]) == 0) {
       parse_args = 0;
       argv[j++]  = argv[i]; // Keep the '--' for sg_config
-    } else if (parse_args && !strncmp(argv[i], "--log=", strlen("--log="))) {
+    } else if (parse_args && strncmp(argv[i], "--log=", strlen("--log=")) == 0) {
       char* opt = strchr(argv[i], '=');
       opt++;
       xbt_log_control_set(opt);
       XBT_DEBUG("Did apply '%s' as log setting", opt);
-    } else if (parse_args && !strcmp(argv[i], "--help-logs")) {
+    } else if (parse_args && strcmp(argv[i], "--help-logs") == 0) {
       help_requested |= 1U;
-    } else if (parse_args && !strcmp(argv[i], "--help-log-categories")) {
+    } else if (parse_args && strcmp(argv[i], "--help-log-categories") == 0) {
       help_requested |= 2U;
     } else {
       argv[j++] = argv[i];
@@ -464,7 +464,7 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat, const c
   XBT_DEBUG("Search '%s' into '%s' (firstChild='%s'; nextSibling='%s')", name,
          cat->name, (cat->firstChild ? cat->firstChild->name : "none"),
          (cat->nextSibling ? cat->nextSibling->name : "none"));
-  if (!strcmp(cat->name, name))
+  if (strcmp(cat->name, name) == 0)
     return cat;
 
   for (child = cat->firstChild; child != nullptr; child = child->nextSibling) {
@@ -508,7 +508,7 @@ void xbt_log_control_set(const char *control_string)
   XBT_DEBUG("Parse log settings '%s'", control_string);
 
   /* Special handling of no_loc request, which asks for any file localization to be omitted (for tesh runs) */
-  if (!strcmp(control_string, "no_loc")) {
+  if (strcmp(control_string, "no_loc") == 0) {
     xbt_log_no_loc = 1;
     return;
   }
