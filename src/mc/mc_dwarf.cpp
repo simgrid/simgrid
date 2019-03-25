@@ -447,7 +447,7 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit)
 static bool MC_compare_variable(
   simgrid::mc::Variable const& a, simgrid::mc::Variable const& b)
 {
-  int cmp = strcmp(a.name.c_str(), b.name.c_str());
+  int cmp = a.name.compare(b.name);
   if (cmp < 0)
     return true;
   else if (cmp > 0)
