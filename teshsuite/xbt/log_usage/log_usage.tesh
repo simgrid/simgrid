@@ -90,4 +90,4 @@ $ rm -f ${bindir:=.}/log_usage.log ${bindir:=.}/log_usage_0.log ${bindir:=.}/log
 
 # Would be nice for code coverage, but the early exit leads to lots of memory leaks
 #! output ignore
-#$ $SG_TEST_EXENV ${bindir:=.}/log_usage --help --help-log-categories
+#$ $SG_TEST_EXENV ${bindir:=.}/log_usage --help-logs --help-log-categories

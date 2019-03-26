@@ -78,9 +78,9 @@ foreach(x availability basic0 basic1 basic3 basic4 basic5 basic6 basic-link-test
 endforeach()
 
 # test for code coverage
-ADD_TEST(test-help            ${CMAKE_BINARY_DIR}/teshsuite/simdag/basic-parsing-test/basic-parsing-test --help)
-ADD_TEST(test-help-models     ${CMAKE_BINARY_DIR}/teshsuite/simdag/basic-parsing-test/basic-parsing-test --help-models)
-ADD_TEST(test-tracing-help    ${CMAKE_BINARY_DIR}/teshsuite/simdag/basic-parsing-test/basic-parsing-test --help-tracing)
+foreach(x version help help-logs help-log-categories help-aliases help-models help-tracing)
+  ADD_TEST(test-${x} ${CMAKE_BINARY_DIR}/teshsuite/simdag/basic-parsing-test/basic-parsing-test --${x})
+endforeach()
 
 ADD_TESH(tesh-simdag-parser-bypass   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/basic-parsing-test --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic-parsing-test --setenv srcdir=${CMAKE_HOME_DIRECTORY} basic-parsing-test-bypass.tesh)
 ADD_TESH(tesh-simdag-parser-sym-full --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/basic-parsing-test --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic-parsing-test basic-parsing-test-sym-full.tesh)
