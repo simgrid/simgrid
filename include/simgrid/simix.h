@@ -148,12 +148,14 @@ XBT_ATTRIB_DEPRECATED_v325("Please use ActorImpl::set_user_data()") XBT_PUBLIC
 XBT_ATTRIB_DEPRECATED_v325("Please use ActorImpl::get_user_data()") XBT_PUBLIC void* SIMIX_process_self_get_data();
 XBT_ATTRIB_DEPRECATED_v325("Please manifest if you actually need this function") XBT_PUBLIC
     int SIMIX_process_has_pending_comms(smx_actor_t process);
-XBT_PUBLIC void SIMIX_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void* data);
+XBT_ATTRIB_DEPRECATED_v325("Please use SIMIX_process_on_exit(smx_actor_t, const std::function<void(bool)>&)") XBT_PUBLIC
+    void SIMIX_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void* data);
 SG_END_DECL()
 
 #ifdef __cplusplus
-XBT_PUBLIC void SIMIX_process_on_exit(smx_actor_t process,
-                                      const std::function<void(bool /*failed*/, void* /*data*/)>& fun, void* data);
+XBT_ATTRIB_DEPRECATED_v325("Please use SIMIX_process_on_exit(smx_actor_t, const std::function<void(bool)>&)") XBT_PUBLIC
+    void SIMIX_process_on_exit(smx_actor_t process, const std::function<void(int, void*)>& fun, void* data);
+XBT_PUBLIC void SIMIX_process_on_exit(smx_actor_t process, const std::function<void(bool /*failed*/)>& fun);
 #endif
 
 /****************************** Communication *********************************/
