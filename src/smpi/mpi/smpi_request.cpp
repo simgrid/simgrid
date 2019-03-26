@@ -2,7 +2,8 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
+#include "simgrid/s4u/Mutex.hpp"
+#include "simgrid/s4u/ConditionVariable.hpp"
 #include "smpi_request.hpp"
 
 #include "mc/mc.h"
@@ -17,6 +18,7 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "xbt/config.hpp"
+
 
 #include <algorithm>
 
@@ -84,11 +86,15 @@ void Request::unref(MPI_Request* request)
       xbt_die("Whoops, wrong refcount");
     }
     if((*request)->refcount_==0){
-        Datatype::unref((*request)->old_type_);
+      if ((*request)->flags_ & MPI_REQ_GENERALIZED){
+        ((*request)->generalized_funcs)->free_fn(((*request)->generalized_funcs)->extra_state);
+      }else{
         Comm::unref((*request)->comm_);
-        (*request)->print_request("Destroying");
-        delete *request;
-        *request = MPI_REQUEST_NULL;
+        Datatype::unref((*request)->old_type_);
+      }
+      (*request)->print_request("Destroying");
+      delete *request;
+      *request = MPI_REQUEST_NULL;
     }else{
       (*request)->print_request("Decrementing");
     }
@@ -506,28 +512,46 @@ void Request::cancel()
     (boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(this->action_))->cancel();
 }
 
-int Request::test(MPI_Request * request, MPI_Status * status) {
+int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
   //assume that request is not MPI_REQUEST_NULL (filtered in PMPI_Test or testall before)
   // to avoid deadlocks if used as a break condition, such as
   //     while (MPI_Test(request, flag, status) && flag) dostuff...
   // because the time will not normally advance when only calls to MPI_Test are made -> deadlock
   // multiplier to the sleeptime, to increase speed of execution, each failed test will increase it
   static int nsleeps = 1;
+  int ret = MPI_SUCCESS;
   if(smpi_test_sleep > 0)
     simcall_process_sleep(nsleeps*smpi_test_sleep);
 
+  MPI_Status* mystatus;
   Status::empty(status);
-  int flag = 1;
+  *flag = 1;
   if (((*request)->flags_ & MPI_REQ_PREPARED) == 0) {
     if ((*request)->action_ != nullptr){
       try{
-        flag = simcall_comm_test((*request)->action_);
+        *flag = simcall_comm_test((*request)->action_);
       }catch (xbt_ex& e) {
-        return 0;
+        *flag = 0;
+        return ret;
       }
     }
-    if (flag) {
+    if (*request != MPI_REQUEST_NULL && 
+        ((*request)->flags_ & MPI_REQ_GENERALIZED)
+        && !((*request)->flags_ & MPI_REQ_COMPLETE)) 
+      *flag=0;
+    if (*flag) {
       finish_wait(request,status);
+      if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & MPI_REQ_GENERALIZED)){
+        if(status==MPI_STATUS_IGNORE){
+          mystatus=new MPI_Status();
+          Status::empty(mystatus);
+        }else{
+          mystatus=status;
+        }
+        ret = ((*request)->generalized_funcs)->query_fn(((*request)->generalized_funcs)->extra_state, mystatus);
+        if(status==MPI_STATUS_IGNORE) 
+          delete mystatus;
+      }
       nsleeps=1;//reset the number of sleeps we will do next time
       if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & MPI_REQ_PERSISTENT) == 0)
         *request = MPI_REQUEST_NULL;
@@ -535,21 +559,27 @@ int Request::test(MPI_Request * request, MPI_Status * status) {
       nsleeps++;
     }
   }
-  return flag;
+  return ret;
 }
 
-int Request::testsome(int incount, MPI_Request requests[], int *indices, MPI_Status status[])
+int Request::testsome(int incount, MPI_Request requests[], int *count, int *indices, MPI_Status status[])
 {
-  int count = 0;
+  int ret = MPI_SUCCESS;
+  int error=0;
   int count_dead = 0;
+  int flag = 0;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
 
+  *count = 0;
   for (int i = 0; i < incount; i++) {
     if (requests[i] != MPI_REQUEST_NULL) {
-      if (test(&requests[i], pstat)) {
+      ret = test(&requests[i], pstat, &flag);
+      if(ret!=MPI_SUCCESS)
+        error = 1;
+      if(flag) {
         indices[i] = 1;
-        count++;
+        (*count)++;
         if (status != MPI_STATUSES_IGNORE)
           status[i] = *pstat;
         if ((requests[i] != MPI_REQUEST_NULL) && (requests[i]->flags_ & MPI_REQ_NON_PERSISTENT))
@@ -559,19 +589,22 @@ int Request::testsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
       count_dead++;
     }
   }
-  if(count_dead==incount)
-    return MPI_UNDEFINED;
-  else return count;
+  if(count_dead==incount)*count=MPI_UNDEFINED;
+  if(error!=0)
+    return MPI_ERR_IN_STATUS;
+  else
+    return MPI_SUCCESS;
 }
 
-int Request::testany(int count, MPI_Request requests[], int *index, MPI_Status * status)
+int Request::testany(int count, MPI_Request requests[], int *index, int* flag, MPI_Status * status)
 {
   std::vector<simgrid::kernel::activity::CommImpl*> comms;
   comms.reserve(count);
 
   int i;
-  int flag = 0;
-
+  *flag = 0;
+  int ret = MPI_SUCCESS;
+  MPI_Status* mystatus;
   *index = MPI_UNDEFINED;
 
   std::vector<int> map; /** Maps all matching comms back to their location in requests **/
@@ -594,36 +627,59 @@ int Request::testany(int count, MPI_Request requests[], int *index, MPI_Status *
     
     if (i != -1) { // -1 is not MPI_UNDEFINED but a SIMIX return code. (nothing matches)
       *index = map[i];
-      finish_wait(&requests[*index],status);
-      flag             = 1;
-      nsleeps          = 1;
-      if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags_ & MPI_REQ_NON_PERSISTENT)) {
-        requests[*index] = MPI_REQUEST_NULL;
+      if (requests[*index] != MPI_REQUEST_NULL && 
+          (requests[*index]->flags_ & MPI_REQ_GENERALIZED)
+          && !(requests[*index]->flags_ & MPI_REQ_COMPLETE)) {
+        *flag=0;
+      } else {
+        finish_wait(&requests[*index],status);
+      if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags_ & MPI_REQ_GENERALIZED)){
+        if(status==MPI_STATUS_IGNORE){
+          mystatus=new MPI_Status();
+          Status::empty(mystatus);
+        }else{
+          mystatus=status;
+        }
+        ret=(requests[*index]->generalized_funcs)->query_fn((requests[*index]->generalized_funcs)->extra_state, mystatus);
+        if(status==MPI_STATUS_IGNORE) 
+          delete mystatus;
       }
+
+        if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags_ & MPI_REQ_NON_PERSISTENT)) 
+          requests[*index] = MPI_REQUEST_NULL;
+        *flag=1;
+      }
+      nsleeps = 1;
     } else {
       nsleeps++;
     }
   } else {
       //all requests are null or inactive, return true
-      flag = 1;
+      *flag = 1;
       Status::empty(status);
   }
 
-  return flag;
+  return ret;
 }
 
-int Request::testall(int count, MPI_Request requests[], MPI_Status status[])
+int Request::testall(int count, MPI_Request requests[], int* outflag, MPI_Status status[])
 {
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
-  int flag=1;
+  int flag, error=0;
+  int ret=MPI_SUCCESS;
+  *outflag = 1;
   for(int i=0; i<count; i++){
     if (requests[i] != MPI_REQUEST_NULL && not(requests[i]->flags_ & MPI_REQ_PREPARED)) {
-      if (test(&requests[i], pstat)!=1){
+      ret = test(&requests[i], pstat, &flag);
+      if (flag){
         flag=0;
+        requests[i]=MPI_REQUEST_NULL;
       }else{
-          requests[i]=MPI_REQUEST_NULL;
+        *outflag=0;
       }
+      if (ret != MPI_SUCCESS) 
+        error = 1;
     }else{
       Status::empty(pstat);
     }
@@ -631,7 +687,10 @@ int Request::testall(int count, MPI_Request requests[], MPI_Status status[])
       status[i] = *pstat;
     }
   }
-  return flag;
+  if(error==1) 
+    return MPI_ERR_IN_STATUS;
+  else 
+    return MPI_SUCCESS;
 }
 
 void Request::probe(int source, int tag, MPI_Comm comm, MPI_Status* status){
@@ -720,7 +779,9 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
     return;
   }
 
-  if (not((req->detached_ != 0) && ((req->flags_ & MPI_REQ_SEND) != 0)) && ((req->flags_ & MPI_REQ_PREPARED) == 0)) {
+  if (not((req->detached_ != 0) && ((req->flags_ & MPI_REQ_SEND) != 0)) 
+  && ((req->flags_ & MPI_REQ_PREPARED) == 0)
+  && ((req->flags_ & MPI_REQ_GENERALIZED) == 0)) {
     if(status != MPI_STATUS_IGNORE) {
       int src = req->src_ == MPI_ANY_SOURCE ? req->real_src_ : req->src_;
       status->MPI_SOURCE = req->comm_->group()->rank(src);
@@ -780,12 +841,13 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   unref(request);
 }
 
-void Request::wait(MPI_Request * request, MPI_Status * status)
+int Request::wait(MPI_Request * request, MPI_Status * status)
 {
+  int ret=MPI_SUCCESS;
   (*request)->print_request("Waiting");
   if ((*request)->flags_ & MPI_REQ_PREPARED) {
     Status::empty(status);
-    return;
+    return ret;
   }
 
   if ((*request)->action_ != nullptr){
@@ -797,10 +859,28 @@ void Request::wait(MPI_Request * request, MPI_Status * status)
       }
   }
 
+  if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & MPI_REQ_GENERALIZED)){
+    MPI_Status* mystatus;
+    if(!((*request)->flags_ & MPI_REQ_COMPLETE)){
+      ((*request)->generalized_funcs)->mutex->lock();
+      ((*request)->generalized_funcs)->cond->wait(((*request)->generalized_funcs)->mutex);
+      ((*request)->generalized_funcs)->mutex->unlock();
+      }
+    if(status==MPI_STATUS_IGNORE){
+      mystatus=new MPI_Status();
+      Status::empty(mystatus);
+    }else{
+      mystatus=status;
+    }
+    ret = ((*request)->generalized_funcs)->query_fn(((*request)->generalized_funcs)->extra_state, mystatus);
+    if(status==MPI_STATUS_IGNORE) 
+      delete mystatus;
+  }
 
   finish_wait(request,status);
   if (*request != MPI_REQUEST_NULL && (((*request)->flags_ & MPI_REQ_NON_PERSISTENT) != 0))
     *request = MPI_REQUEST_NULL;
+  return ret;
 }
 
 int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
@@ -922,21 +1002,30 @@ int Request::waitall(int count, MPI_Request requests[], MPI_Status status[])
 int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Status status[])
 {
   int count = 0;
+  int flag = 0;
+  int index = 0;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
 
+  index = waitany(incount, (MPI_Request*)requests, pstat);
+  if(index==MPI_UNDEFINED) return MPI_UNDEFINED;
+  if(status != MPI_STATUSES_IGNORE) {
+    status[count] = *pstat;
+  }
+  indices[count] = index;
+  count++;
   for (int i = 0; i < incount; i++) {
-    int index = waitany(incount, requests, pstat);
-    if(index!=MPI_UNDEFINED){
-      indices[count] = index;
-      count++;
-      if(status != MPI_STATUSES_IGNORE) {
-        status[index] = *pstat;
+    if((requests[i] != MPI_REQUEST_NULL)) {
+      test(&requests[i], pstat,&flag);
+      if (flag==1){
+        indices[count] = i;
+        if(status != MPI_STATUSES_IGNORE) {
+          status[count] = *pstat;
+        }
+        if (requests[i] != MPI_REQUEST_NULL && (requests[i]->flags_ & MPI_REQ_NON_PERSISTENT))
+          requests[i]=MPI_REQUEST_NULL;
+        count++;
       }
-      if (requests[index] != MPI_REQUEST_NULL && (requests[index]->flags_ & MPI_REQ_NON_PERSISTENT))
-        requests[index] = MPI_REQUEST_NULL;
-    }else{
-      return MPI_UNDEFINED;
     }
   }
   return count;
@@ -966,6 +1055,33 @@ void Request::free_f(int id)
     char key[KEY_SIZE];
     F2C::f2c_lookup()->erase(get_key_id(key, id));
   }
+}
+
+
+int Request::grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest_free_function *free_fn, MPI_Grequest_cancel_function *cancel_fn, void *extra_state, MPI_Request *request){
+
+  *request = new Request();
+  (*request)->flags_ |= MPI_REQ_GENERALIZED;
+  (*request)->flags_ |= MPI_REQ_PERSISTENT;
+  (*request)->refcount_ = 1;
+  ((*request)->generalized_funcs)=xbt_new0(s_smpi_mpi_generalized_request_funcs_t ,1);
+  ((*request)->generalized_funcs)->query_fn=query_fn;
+  ((*request)->generalized_funcs)->free_fn=free_fn;
+  ((*request)->generalized_funcs)->cancel_fn=cancel_fn;
+  ((*request)->generalized_funcs)->extra_state=extra_state;
+  ((*request)->generalized_funcs)->cond = simgrid::s4u::ConditionVariable::create();
+  ((*request)->generalized_funcs)->mutex = simgrid::s4u::Mutex::create();
+  return MPI_SUCCESS;
+}
+
+int Request::grequest_complete( MPI_Request request){
+  if ((!(request->flags_ & MPI_REQ_GENERALIZED)) || request->generalized_funcs->mutex==NULL) 
+    return MPI_ERR_REQUEST;
+  request->generalized_funcs->mutex->lock();
+  request->flags_ |= MPI_REQ_COMPLETE; // in case wait would be called after complete
+  request->generalized_funcs->cond->notify_one();
+  request->generalized_funcs->mutex->unlock();
+  return MPI_SUCCESS;
 }
 
 }

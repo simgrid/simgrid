@@ -12,6 +12,16 @@
 namespace simgrid{
 namespace smpi{
 
+typedef struct s_smpi_mpi_generalized_request_funcs {
+  MPI_Grequest_query_function *query_fn;
+  MPI_Grequest_free_function *free_fn;
+  MPI_Grequest_cancel_function *cancel_fn;
+  void* extra_state;
+  s4u::ConditionVariablePtr cond;
+  s4u::MutexPtr mutex;
+} s_smpi_mpi_generalized_request_funcs_t; 
+typedef struct s_smpi_mpi_generalized_request_funcs *smpi_mpi_generalized_request_funcs;
+
 class Request : public F2C {
   void* buf_;
   /* in the case of non-contiguous memory the user address should be keep
@@ -38,6 +48,7 @@ class Request : public F2C {
   int refcount_;
   MPI_Op op_;
   int cancelled_;
+  smpi_mpi_generalized_request_funcs generalized_funcs;
 
 public:
   Request() = default;
@@ -57,7 +68,7 @@ public:
   void ref();
   static void finish_wait(MPI_Request* request, MPI_Status* status);
   static void unref(MPI_Request* request);
-  static void wait(MPI_Request* req, MPI_Status* status);
+  static int wait(MPI_Request* req, MPI_Status* status);
   static MPI_Request send_init(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
   static MPI_Request isend_init(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
   static MPI_Request ssend_init(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
@@ -80,10 +91,10 @@ public:
 
   static void startall(int count, MPI_Request* requests);
 
-  static int test(MPI_Request* request, MPI_Status* status);
-  static int testsome(int incount, MPI_Request requests[], int* indices, MPI_Status status[]);
-  static int testany(int count, MPI_Request requests[], int* index, MPI_Status* status);
-  static int testall(int count, MPI_Request requests[], MPI_Status status[]);
+  static int test(MPI_Request* request, MPI_Status* status, int* flag);
+  static int testsome(int incount, MPI_Request requests[], int* outcounts, int* indices, MPI_Status status[]);
+  static int testany(int count, MPI_Request requests[], int* index, int* flag, MPI_Status* status);
+  static int testall(int count, MPI_Request requests[], int* flag, MPI_Status status[]);
 
   static void probe(int source, int tag, MPI_Comm comm, MPI_Status* status);
   static void iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status);
@@ -95,6 +106,8 @@ public:
   static int match_send(void* a, void* b, kernel::activity::CommImpl* ignored);
   static int match_recv(void* a, void* b, kernel::activity::CommImpl* ignored);
 
+  static int grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest_free_function *free_fn, MPI_Grequest_cancel_function *cancel_fn, void *extra_state, MPI_Request *request);
+  static int grequest_complete( MPI_Request request);
   int add_f() override;
   static void free_f(int id);
   static Request* f2c(int);

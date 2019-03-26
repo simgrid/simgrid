@@ -493,7 +493,8 @@ void TestAction::kernel(simgrid::xbt::ReplayAction&)
     TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("test"));
 
     MPI_Status status;
-    int flag = Request::test(&request, &status);
+    int flag = 0;
+    Request::test(&request, &status, &flag);
 
     XBT_DEBUG("MPI_Test result: %d", flag);
     /* push back request in vector to be caught by a subsequent wait. if the test did succeed, the request is now
