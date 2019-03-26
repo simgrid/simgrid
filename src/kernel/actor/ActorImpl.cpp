@@ -141,11 +141,11 @@ void ActorImpl::cleanup()
   }
 
   // Execute the termination callbacks
-  smx_process_exit_status_t exit_status = (context_->iwannadie) ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
+  bool failed = context_->iwannadie;
   while (not on_exit.empty()) {
-    s_smx_process_exit_fun_t exit_fun = on_exit.back();
+    auto exit_fun = on_exit.back();
     on_exit.pop_back();
-    (exit_fun.fun)(exit_status, exit_fun.arg);
+    exit_fun(failed);
   }
 
   /* cancel non-blocking activities */
@@ -278,18 +278,6 @@ double ActorImpl::get_kill_time()
   return kill_timer ? kill_timer->get_date() : 0;
 }
 
-static void dying_daemon(int /*exit_status*/, void* data)
-{
-  std::vector<ActorImpl*>* vect = &simix_global->daemons;
-
-  auto it = std::find(vect->begin(), vect->end(), static_cast<ActorImpl*>(data));
-  xbt_assert(it != vect->end(), "The dying daemon is not a daemon after all. Please report that bug.");
-
-  /* Don't move the whole content since we don't really care about the order */
-  std::swap(*it, vect->back());
-  vect->pop_back();
-}
-
 void ActorImpl::yield()
 {
   XBT_DEBUG("Yield actor '%s'", get_cname());
@@ -333,7 +321,15 @@ void ActorImpl::daemonize()
   if (not daemon_) {
     daemon_ = true;
     simix_global->daemons.push_back(this);
-    SIMIX_process_on_exit(this, dying_daemon, this);
+    SIMIX_process_on_exit(this, [this](bool) {
+      auto& vect = simix_global->daemons;
+      auto it    = std::find(vect.begin(), vect.end(), this);
+      xbt_assert(it != vect.end(), "The dying daemon is not a daemon after all. Please report that bug.");
+
+      /* Don't move the whole content since we don't really care about the order */
+      std::swap(*it, vect.back());
+      vect.pop_back();
+    });
   }
 }
 
@@ -401,17 +397,12 @@ void ActorImpl::resume()
 
 activity::ActivityImplPtr ActorImpl::join(ActorImpl* actor, double timeout)
 {
-  activity::ActivityImplPtr res = this->sleep(timeout);
-  intrusive_ptr_add_ref(res.get());
-  SIMIX_process_on_exit(actor,
-                        [](int, void* arg) {
-                          auto sleep = static_cast<activity::SleepImpl*>(arg);
-                          if (sleep->surf_action_)
-                            sleep->surf_action_->finish(resource::Action::State::FINISHED);
-                          intrusive_ptr_release(sleep);
-                        },
-                        res.get());
-  return res;
+  activity::ActivityImplPtr sleep = this->sleep(timeout);
+  SIMIX_process_on_exit(actor, [sleep](bool) {
+    if (sleep->surf_action_)
+      sleep->surf_action_->finish(resource::Action::State::FINISHED);
+  });
+  return sleep;
 }
 
 activity::ActivityImplPtr ActorImpl::sleep(double duration)
@@ -736,14 +727,21 @@ smx_actor_t SIMIX_process_from_PID(aid_t PID)
 
 void SIMIX_process_on_exit(smx_actor_t actor, int_f_pvoid_pvoid_t fun, void* data)
 {
-  SIMIX_process_on_exit(actor, [fun](int a, void* b) { fun((void*)(intptr_t)a, b); }, data);
+  SIMIX_process_on_exit(actor, [fun, data](bool failed) {
+    intptr_t status = failed ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
+    fun(reinterpret_cast<void*>(status), data);
+  });
 }
 
-void SIMIX_process_on_exit(smx_actor_t actor, const std::function<void(bool, void*)>& fun, void* data)
+void SIMIX_process_on_exit(smx_actor_t actor, const std::function<void(int, void*)>& fun, void* data)
+{
+  SIMIX_process_on_exit(actor, [fun, data](bool failed) { fun(failed ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS, data); });
+}
+
+void SIMIX_process_on_exit(smx_actor_t actor, const std::function<void(bool /*failed*/)>& fun)
 {
   xbt_assert(actor, "current process not found: are you in maestro context ?");
-
-  actor->on_exit.emplace_back(s_smx_process_exit_fun_t{fun, data});
+  actor->on_exit.emplace_back(fun);
 }
 
 /** @brief Restart a process, starting it again from the beginning. */

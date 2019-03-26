@@ -15,11 +15,6 @@
 #include <map>
 #include <memory>
 
-struct s_smx_process_exit_fun_t {
-  std::function<void(bool, void*)> fun;
-  void* arg;
-};
-
 namespace simgrid {
 namespace kernel {
 namespace actor {
@@ -70,7 +65,7 @@ public:
   activity::ActivityImplPtr waiting_synchro = nullptr; /* the current blocking synchro if any */
   std::list<activity::ActivityImplPtr> comms;          /* the current non-blocking communication synchros */
   s_smx_simcall simcall;
-  std::vector<s_smx_process_exit_fun_t> on_exit; /* list of functions executed when the process dies */
+  std::vector<std::function<void(bool)>> on_exit; /* list of functions executed when the process dies */
 
   std::function<void()> code;
   simix::Timer* kill_timer = nullptr;

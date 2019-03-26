@@ -101,22 +101,22 @@ void Actor::set_auto_restart(bool autorestart)
   });
 }
 
-void Actor::on_exit(int_f_pvoid_pvoid_t fun,
-                    void* data) /* deprecated: cleanup SIMIX_process_on_exit: change prototype of second parameter and
-                                   remove the last one */
+void Actor::on_exit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */
 {
-  simix::simcall([this, fun, data] { SIMIX_process_on_exit(pimpl_, fun, data); });
+  on_exit([fun, data](bool failed) {
+    intptr_t status = failed ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
+    fun(reinterpret_cast<void*>(status), data);
+  });
 }
 
 void Actor::on_exit(const std::function<void(int, void*)>& fun, void* data) /* deprecated */
 {
-  on_exit([fun, data](bool exit) { fun(exit, data); });
+  on_exit([fun, data](bool failed) { fun(failed ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS, data); });
 }
 
 void Actor::on_exit(const std::function<void(bool /*failed*/)>& fun) const
 {
-  simix::simcall(
-      [this, fun] { SIMIX_process_on_exit(pimpl_, [fun](int a, void* /*data*/) { fun(a != 0); }, nullptr); });
+  simix::simcall([this, &fun] { SIMIX_process_on_exit(pimpl_, fun); });
 }
 
 void Actor::migrate(Host* new_host)
