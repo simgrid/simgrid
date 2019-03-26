@@ -173,9 +173,9 @@ single element.
    effects. Under the ``SHARED`` policy, two flows of reverse
    direction share the same resource, and can only get half of the
    bandwidth each. But TCP connections are full duplex, meaning that
-   all both directions can get the full bandwidth. To model this, any
-   link under the ``SPLITDUPLEX`` policy is split in two links (their
-   names are suffixed with "_UP" and "_DOWN"). You must then specify
+   both directions can get the full bandwidth. To model this, any
+   link under the ``SPLITDUPLEX`` policy is split in two links (whose
+   names are suffixed with "_UP" and "_DOWN"). Then you must specify
    which direction gets actually used when referring to that link in a
    :ref:`pf_tag_link_ctn`.
 	
@@ -190,13 +190,13 @@ single element.
       8.0 60000000
       LOOPAFTER 12.0
 
-   - At time t=4, the bandwidth is of 40 MBps.
-   - At time t=8, it raises to 60MBps.
-   - At time t=24, it drops at 40 MBps again.
+   - At time t = 4, the bandwidth is of 40 MBps.
+   - At time t = 8, it raises to 60MBps.
+   - At time t = 24, it drops at 40 MBps again.
 
-   .. warning:: Don't get fooled: Bandwidth and Latency profiles of a
-      :ref:`pf_tag_link` are absolute values, but Availability
-      profiles of :ref:`pf_tag_host` are ratio.
+   .. warning:: Don't get fooled: Bandwidth and Latency profiles of a :ref:`pf_tag_link` contain absolute values, while
+      Availability profiles of a :ref:`pf_tag_host` contain ratios.
+
 :``latency_file``: File containing the latency profile.
    Almost every lines of such files describe timed events as ``date
    latency`` (in seconds).
@@ -208,17 +208,16 @@ single element.
       3.0 0.1
       LOOPAFTER 5.0
 
-   - At time t=1, the latency is of 1ms (0.001 second)
-   - At time t=3, the latency is of 100ms (0.1 second)
-   - At time t=8 (5 seconds after the last event), the profile loops.
-   - At time t=9 (1 second after the loop reset), the latency is back at 1ms.
-      
-   If your trace does not contain a LOOPAFTER line, then your profile
-   is only executed once and not repetitively.
-  
-   .. warning:: Don't get fooled: Bandwidth and Latency profiles of a
-      :ref:`pf_tag_link` are absolute values, but Availability
-      profiles of :ref:`pf_tag_host` are ratio.
+   - At time t = 1, the latency is of 1ms (0.001 second)
+   - At time t = 3, the latency is of 100ms (0.1 second)
+   - At time t = 8 (5 seconds after the last event), the profile loops.
+   - At time t = 9 (1 second after the loop reset), the latency is back at 1ms.
+
+   If your profile does not contain any LOOPAFTER line, then it will be executed only once and not in a repetitive way.
+
+  .. warning:: Don't get fooled: Bandwidth and Latency profiles of a :ref:`pf_tag_link` contain absolute values, while
+      Availability profiles of a :ref:`pf_tag_host` contain ratios.
+
 :``state_file``: File containing the state profile. See :ref:`pf_tag_host`.
 
 |hr|
@@ -231,7 +230,7 @@ single element.
 
 This tag represents a peer, as in Peer-to-Peer (P2P) networks. It is
 handy to model situations where hosts have an asymmetric
-connectivity. Computers connected through set-to-boxes usually have a
+connectivity. Computers connected through set-top-boxes usually have a
 much better download rate than their upload rate.  To model this,
 <peer> creates and connects several elements: an host, an upload link
 and a download link.
@@ -250,14 +249,13 @@ and a download link.
 :``lat``: Latency of both private links. See :ref:`pf_tag_link`.
 :``coordinates``: Coordinates of the gateway for this peer.
 
-   The communication latency between an host A=(xA,yA,zA) and an host
-   B=(xB,yB,zB) is computed as follows:
+   The communication latency between a host A = (xA,yA,zA) and a host B = (xB,yB,zB) is computed as follows:
  
    latency = sqrt( (xA-xB)² + (yA-yB)² ) + zA + zB
 
    See the documentation of
    :cpp:class:`simgrid::kernel::routing::VivaldiZone` for details on
-   how the latency is computed from the coordinate, and on the the up
+   how the latency is computed from the coordinates, and on how the up
    and down bandwidth are used.
 :``availability_file``: File containing the availability profile.
    See the full description in :ref:`pf_tag_host`
@@ -282,7 +280,7 @@ and a download link.
 	      This versionning allow future evolutions, even if we
 	      avoid backward-incompatible changes. The current version
 	      is **4.1**. The ``simgrid_update_xml`` program can
-	      upgrade most of the past platform files to the recent
+	      upgrade most of the past platform files to the most recent
 	      formalism.
 
 |hr|
@@ -324,12 +322,12 @@ following functions:
 <router>
 ------------------------------------------------------------------
 
-A router is similar to an :ref:`pf_tag_host`, but it cannot contain
+A router is similar to a :ref:`pf_tag_host`, but it cannot contain
 any actor. It is only useful to some routing algorithms. In
 particular, they are useful when you want to use the NS3 bindings to
 break the routes that are longer than 1 hop.
 
-**Parent tags:** :ref:`pf_tag_zone` (only leaf zones, i.e. zones containing no inner zones nor clusters) |br|
+**Parent tags:** :ref:`pf_tag_zone` (only leaf zones, i.e., zones containing neither inner zones nor clusters) |br|
 **Children tags:** :ref:`pf_tag_prop`, :ref:`pf_tag_storage` |br|
 **Attributes:**
 
