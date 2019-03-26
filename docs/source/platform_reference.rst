@@ -15,10 +15,8 @@
 DTD Reference
 *************
 
-Your platform description should follow the specification presented in
-the `simgrid.dtd <https://simgrid.org/simgrid.dtd>`_
-DTD file. The same DTD is used for both the platform and deployment
-files. 
+Your platform description should follow the specification presented in the 
+`simgrid.dtd <https://simgrid.org/simgrid.dtd>`_ DTD file. The same DTD is used for both platform and deployment files. 
 
 .. _pf_tag_config:
 
@@ -26,11 +24,12 @@ files.
 <config>
 ------------------------------------------------------------------
 
-Adding configuration flags into the platform file is particularly
-useful when the described platform is best used with specific
-flags. For example, you could finely tune SMPI in your platform file
-directly.  Almost all :ref:`command-line configuration items <options_list>`
-can be configured this way.
+Adding configuration flags directly into the platform file becomes particularly useful when the realism of the described
+platform depends on some specific flags. For example, this could help you to finely tune SMPI. Almost all
+:ref:`command-line configuration items <options_list>` can be configured this way.
+
+Each configuration flag is described as a :ref:`pf_tag_prop` whose 'id' is the name of the flag and 'value' is what it
+has to be set to.
 
 **Parent tags:** :ref:`pf_tag_platform` (must appear before any other tags) |br|
 **Children tags:** :ref:`pf_tag_prop` |br|
@@ -38,17 +37,17 @@ can be configured this way.
 
 .. code-block:: xml
 
-   <?xml version='1.0'?>
+   <?xml version = '1.0'?>
    <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-   <platform version="4.1">
-   <config>
-	<prop id="maxmin/precision" value="0.000010" />
-	<prop id="cpu/optim" value="TI" />
-	<prop id="network/model" value="SMPI" />
-	<prop id="smpi/bw-factor" value="65472:0.940694;15424:0.697866;9376:0.58729" />
-   </config>
+   <platform version = "4.1">
+     <config>
+       <prop id = "maxmin/precision" value = "0.000010" />
+       <prop id = "cpu/optim" value = "TI" />
+       <prop id = "network/model" value = "SMPI" />
+       <prop id = "smpi/bw-factor" value = "65472:0.940694;15424:0.697866;9376:0.58729" />
+     </config>
 
-   <!-- The rest of your platform -->
+     <!-- The rest of your platform -->
    </platform>
 
 |hr|
@@ -59,9 +58,9 @@ can be configured this way.
 <host>
 ------------------------------------------------------------------
 
-An host is the computing resource on which an actor can execute. See :cpp:class:`simgrid::s4u::Host`.
+A host is the computing resource on which an actor can run. See :cpp:class:`simgrid::s4u::Host`.
 
-**Parent tags:** :ref:`pf_tag_zone` (only leaf zones, i.e. zones containing no inner zones nor clusters) |br|
+**Parent tags:** :ref:`pf_tag_zone` (only leaf zones, i.e., zones containing neither inner zones nor clusters) |br|
 **Children tags:** :ref:`pf_tag_mount`, :ref:`pf_tag_prop`, :ref:`pf_tag_storage` |br|
 **Attributes:**
 
@@ -81,41 +80,37 @@ An host is the computing resource on which an actor can execute. See :cpp:class:
       1 0.5
       2 0.2
       5 1
-      LOOPAFTER 8
+      LOOPAFTER 5
 
-   - At time t=1, half of its power is taken by some background
-     computations, so only 50% of its initial power remains available
-     (0.5 means 50%). 
-   - At time t=2, the available power drops at 20% of the total.
-   - At time t=5, the host computes back at full speed.
-   - At time t=10, the history is reset (because that's 5 seconds after
-     the last event). So the available speed will drop at t=11.
+   - At time t = 1, half of the host computational power (0.5 means 50%) is used to process some background load, hence 
+     only 50% of this initial power remains available to your own simulation. 
+   - At time t = 2, the available power drops at 20% of the initial value.
+   - At time t = 5, the host can compute at full speed again.
+   - At time t = 10, the profile is reset (as we are 5 seconds after the last event). Then the available speed will drop
+     again to 50% at time t = 11.
 
-   If your trace does not contain a LOOPAFTER line, then your profile
-   is only executed once and not repetitively.
+   If your profile does not contain any LOOPAFTER line, then it will be executed only once and not in a repetitive way.
 
-   .. warning:: Don't get fooled: Bandwidth and Latency profiles of a
-      :ref:`pf_tag_link` are absolute values, but Availability
-      profiles of :ref:`pf_tag_host` are ratio.
+   .. warning:: Don't get fooled: Bandwidth and Latency profiles of a :ref:`pf_tag_link` contain absolute values, while
+      Availability profiles of a :ref:`pf_tag_host` contain ratios.
 :``state_file``: File containing the state profile.
    Almost every lines of such files describe timed events as ``date boolean``.
    Example:
 
    .. code-block:: python
-		   
+
       1 0
       2 1
       LOOPAFTER 8
 
-   - At time t=1, the host is turned off (value 0 means OFF)
-   - At time t=2, it is turned back on (other values means ON)
-   - At time t=10, the history is reset (because that's 8 seconds after
-     the last event). So the host will be turned off again at t=11.
+   - At time t = 1, the host is turned off (a zero value means OFF)
+   - At time t = 2, the host is turned back on (any other value than zero means ON)
+   - At time t = 10, the profile is reset (as we are 8 seconds after the last event). Then the host will be turned off 
+     again at time t = 11.
 
-   If your trace does not contain a LOOPAFTER line, then your profile
-   is only executed once and not repetitively.
+   If your profile does not contain any LOOPAFTER line, then it will be executed only once and not in a repetitive way.
 
-:``coordinates``: Vivaldi coordinates (Vivaldi zones only).
+:``coordinates``: Vivaldi coordinates (meaningful for Vivaldi zones only).
    See :ref:`pf_tag_peer`.
 :``pstate``: Initial pstate (default: 0, the first one).
    See :ref:`howto_dvfs`.
@@ -128,31 +123,27 @@ An host is the computing resource on which an actor can execute. See :cpp:class:
 <link>
 ------------------------------------------------------------------
 
-Network links can represent one-hop network connections (see
-:cpp:class:`simgrid::s4u::Link`). SimGrid links can be used to
-represent either a single wire, or to abstract a larger network
-interconnect in a single element. A single link can for example be
-used to model the transcontinental network.
+SimGrid links usually represent one-hop network connections (see :cpp:class:`simgrid::s4u::Link`), i.e., a single wire. 
+They can also be used to abstract a larger network interconnect, e.g., the entire transcontinental network, into a 
+single element.
 
 **Parent tags:** :ref:`pf_tag_zone` (both leaf zones and inner zones) |br|
 **Children tags:** :ref:`pf_tag_prop` |br|
 **Attributes:**
 
 :``id``:  Link name. Must be unique over the whole platform.
-:``bandwidth``: Maximum bandwidth for this link. You must specify the
-   unit as follows.
+:``bandwidth``: Maximum bandwidth for this link. You must specify a unit as follows.
 
-   **Units in bytes and powers of 2** (1 KiBps = 1024 Bps):
-      Bps, KiBps, MiBps, GiBps, TiBps, PiBps, EiBps |br|
+   **Units in bytes and powers of 2** (1 KiBps = 1,024 Bps):
+     Bps, KiBps, MiBps, GiBps, TiBps, PiBps, or EiBps. |br|
    **Units in bits  and powers of 2** (1 Bps = 8 bps):
-      bps, Kibps, Mibps, Gibps, Tibps, Pibps, Eibps |br|
-   **Units in bytes and powers of 10:**  (1 KBps = 1000 Bps)
-      Bps, KBps, MBps, GBps, TBps, PBps, EBps |br|
+     bps, Kibps, Mibps, Gibps, Tibps, Pibps, or Eibps. |br|
+   **Units in bytes and powers of 10**  (1 KBps = 1,000 Bps):
+     Bps, KBps, MBps, GBps, TBps, PBps, or EBps. |br|
    **Units in bits  and powers of 10:**
-      'Ebps', 'Pbps', 'Tbps', 'Gbps', 'Mbps', 'kbps', 'bps'
+     bps, Kbps, Mbps, Gbps, Tbps, Pbps, or Ebps.
 
-:``latency``: Latency for this link (default: 0.0). You must specify
-   the unit as follows.
+:``latency``: Latency for this link (default: 0.0). You must specify a unit as follows.
 
    ==== =========== ======================
    Unit Meaning     Duration in seconds
@@ -167,19 +158,16 @@ used to model the transcontinental network.
    d    day         60 * 60 * 24
    w    week        60 * 60 * 24 * 7
    ==== =========== ======================
-   
-		      
-:``sharing_policy``: Sharing policy for the link. 
-   Either ``SHARED``, ``FATPIPE`` or ``SPLITDUPLEX`` (default: ``SHARED``).
 
-   If set to ``SHARED``, the available bandwidth is shared fairly
-   between all flows traversing this link. This tend to model the
-   sharing behavior of UDP or TCP.
+:``sharing_policy``: Sharing policy for the link. Possible values are ``SHARED``, ``FATPIPE`` or ``SPLITDUPLEX``
+   (default: ``SHARED``).
 
-   If set to ``FATPIPE``, the flows have no mutual impact, and each
-   flow can obtain the full bandwidth of this link. This is intended
-   to model the internet backbones that cannot get saturated by your
-   application: you mostly experience their latency.
+   If set to ``SHARED``, the available bandwidth is fairly shared among all the flows traversing this link. This tend to
+   model the bandwidth sharing behavior of the UDP or TCP protocols.
+
+   If set to ``FATPIPE``, flows have no impact on each other, hence each flow can exploit the full bandwidth of this
+   link. This aims at modeling the behavior of the Internet backbones that cannot get saturated by your application.
+   What you experience of such networks usually is their latency only.
 
    If set to ``SPLITDUPLEX``, the link models cross-traffic
    effects. Under the ``SHARED`` policy, two flows of reverse

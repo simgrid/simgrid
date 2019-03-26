@@ -23,20 +23,16 @@ work. When XML is too limiting, you may describe your platforms using
 the :ref:`lua bindings <platform_lua>` (it is not yet possible to do so in
 python or directly in C++).
 
-Since we know that writing platform description files is not trivial,
-we included :ref:`many examples <platform_examples>` in the archive. This
+We understand that writing a complex platform description can be tricky, we thus included 
+:ref:`many examples <platform_examples>` in the archive. This
 documentation also contains some :ref:`hints and howtos <howto>`, as well
 as the full :ref:`XML reference guide <platform_reference>`.
 
 
-Any simulated platform must contain **basic elements**, such as hosts,
-links, storages, etc.  SimGrid gives you a great liberty when defining
-**routing of your platform**, ie the path taken between each pair of
-hosts.  Finally, you may also describe an **experimental scenario**,
-with qualitative changes (e.g., bandwidth changes representing an
-external load) and qualitative changes (representing how some elements
-fail and restart over time).
-
+Any simulated platform must contain **basic elements**, such as hosts, links, storages, etc. SimGrid gives you a great
+liberty when defining the **routing of your platform**, i.e., the network path taken between each pair of hosts.
+Finally, you may also describe an **experimental scenario**, with qualitative (e.g., bandwidth variations representing
+an external load) and qualitative (e.g., representing how some elements fail and restart over time) changes.
 
 
 Defining Basic Elements
