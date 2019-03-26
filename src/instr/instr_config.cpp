@@ -301,15 +301,15 @@ static void print_line(const char* option, const char* desc, const char* longdes
   std::string str = std::string("--cfg=") + option + " ";
 
   int len = str.size();
-  printf("%s%*.*s %s\n", str.c_str(), 30 - len, 30 - len, "", desc);
+  XBT_HELP("%s%*.*s %s", str.c_str(), 30 - len, 30 - len, "", desc);
   if (longdesc != nullptr) {
-    printf ("%s\n\n", longdesc);
+    XBT_HELP("%s\n", longdesc);
   }
 }
 
 void TRACE_help()
 {
-  printf("Description of the tracing options accepted by this simulator:\n\n");
+  XBT_HELP("Description of the tracing options accepted by this simulator:\n");
   print_line(OPT_TRACING_SMPI, "Trace the MPI Interface (SMPI)",
              "  This option only has effect if this simulator is SMPI-based. Traces the MPI\n"
              "  interface and generates a trace that can be analyzed using Gantt-like\n"

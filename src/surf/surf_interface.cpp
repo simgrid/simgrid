@@ -186,9 +186,9 @@ FILE* surf_fopen(const std::string& name, const char* mode)
 /** Displays the long description of all registered models, and quit */
 void model_help(const char* category, const std::vector<surf_model_description_t>& table)
 {
-  printf("Long description of the %s models accepted by this simulator:\n", category);
+  XBT_HELP("Long description of the %s models accepted by this simulator:", category);
   for (auto const& item : table)
-    printf("  %s: %s\n", item.name, item.description);
+    XBT_HELP("  %s: %s", item.name, item.description);
 }
 
 int find_model_description(const std::vector<surf_model_description_t>& table, const std::string& name)
@@ -248,44 +248,44 @@ void sg_version_get(int* ver_major, int* ver_minor, int* ver_patch)
 
 void sg_version()
 {
-  std::printf("This program was linked against %s (git: %s), found in %s.\n",
-              SIMGRID_VERSION_STRING, SIMGRID_GIT_VERSION, SIMGRID_INSTALL_PREFIX);
+  XBT_HELP("This program was linked against %s (git: %s), found in %s.", SIMGRID_VERSION_STRING, SIMGRID_GIT_VERSION,
+           SIMGRID_INSTALL_PREFIX);
 
 #if SIMGRID_HAVE_MC
-  std::printf("   Model-checking support compiled in.\n");
+  XBT_HELP("   Model-checking support compiled in.");
 #else
-  std::printf("   Model-checking support disabled at compilation.\n");
+  XBT_HELP("   Model-checking support disabled at compilation.");
 #endif
 
 #if SIMGRID_HAVE_NS3
-  std::printf("   NS3 support compiled in.\n");
+  XBT_HELP("   NS3 support compiled in.");
 #else
-  std::printf("   NS3 support disabled at compilation.\n");
+  XBT_HELP("   NS3 support disabled at compilation.");
 #endif
 
 #if SIMGRID_HAVE_JEDULE
-  std::printf("   Jedule support compiled in.\n");
+  XBT_HELP("   Jedule support compiled in.");
 #else
-  std::printf("   Jedule support disabled at compilation.\n");
+  XBT_HELP("   Jedule support disabled at compilation.");
 #endif
 
 #if SIMGRID_HAVE_LUA
-  std::printf("   Lua support compiled in.\n");
+  XBT_HELP("   Lua support compiled in.");
 #else
-  std::printf("   Lua support disabled at compilation.\n");
+  XBT_HELP("   Lua support disabled at compilation.");
 #endif
 
 #if SIMGRID_HAVE_MALLOCATOR
-  std::printf("   Mallocator support compiled in.\n");
+  XBT_HELP("   Mallocator support compiled in.");
 #else
-  std::printf("   Mallocator support disabled at compilation.\n");
+  XBT_HELP("   Mallocator support disabled at compilation.");
 #endif
 
-  std::printf("\nTo cite SimGrid in a publication, please use:\n"
-              "   Henri Casanova, Arnaud Giersch, Arnaud Legrand, Martin Quinson, Frédéric Suter. \n"
-              "   Versatile, Scalable, and Accurate Simulation of Distributed Applications and Platforms. \n"
-              "   Journal of Parallel and Distributed Computing, Elsevier, 2014, 74 (10), pp.2899-2917.\n");
-  std::printf("The pdf file and a BibTeX entry for LaTeX users can be found at http://hal.inria.fr/hal-01017319\n");
+  XBT_HELP("\nTo cite SimGrid in a publication, please use:\n"
+           "   Henri Casanova, Arnaud Giersch, Arnaud Legrand, Martin Quinson, Frédéric Suter. \n"
+           "   Versatile, Scalable, and Accurate Simulation of Distributed Applications and Platforms. \n"
+           "   Journal of Parallel and Distributed Computing, Elsevier, 2014, 74 (10), pp.2899-2917.\n"
+           "The pdf file and a BibTeX entry for LaTeX users can be found at http://hal.inria.fr/hal-01017319");
 }
 
 void surf_init(int *argc, char **argv)

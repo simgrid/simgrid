@@ -88,6 +88,8 @@ void xbt_log_init(int *argc, char **argv)
   int j                   = 1;
   int parse_args          = 1; // Stop parsing the parameters once we found '--'
 
+  xbt_log_control_set("xbt_help.threshold:VERBOSE xbt_help.fmt:%m%n");
+
   /* Set logs and init log submodule */
   for (int i = 1; i < *argc; i++) {
     if (strcmp("--", argv[i]) == 0) {
@@ -549,56 +551,56 @@ void xbt_log_additivity_set(xbt_log_category_t cat, int additivity)
 
 static void xbt_log_help(void)
 {
-  printf("Description of the logging output:\n"
-         "\n"
-         "   Threshold configuration: --log=CATEGORY_NAME.thres:PRIORITY_LEVEL\n"
-         "      CATEGORY_NAME: defined in code with function 'XBT_LOG_NEW_CATEGORY'\n"
-         "      PRIORITY_LEVEL: the level to print (trace,debug,verbose,info,warning,error,critical)\n"
-         "         -> trace: enter and return of some functions\n"
-         "         -> debug: crufty output\n"
-         "         -> verbose: verbose output for the user wanting more\n"
-         "         -> info: output about the regular functioning\n"
-         "         -> warning: minor issue encountered\n"
-         "         -> error: issue encountered\n"
-         "         -> critical: major issue encountered\n"
-         "      The default priority level is 'info'.\n"
-         "\n"
-         "   Format configuration: --log=CATEGORY_NAME.fmt:FORMAT\n"
-         "      FORMAT string may contain:\n"
-         "         -> %%%%: the %% char\n"
-         "         -> %%n: platform-dependent line separator (LOG4J compatible)\n"
-         "         -> %%e: plain old space (SimGrid extension)\n"
-         "\n"
-         "         -> %%m: user-provided message\n"
-         "\n"
-         "         -> %%c: Category name (LOG4J compatible)\n"
-         "         -> %%p: Priority name (LOG4J compatible)\n"
-         "\n"
-         "         -> %%h: Hostname (SimGrid extension)\n"
-         "         -> %%P: Process name (SimGrid extension)\n"
-         "         -> %%t: Thread \"name\" (LOG4J compatible -- actually the address of the thread in memory)\n"
-         "         -> %%i: Process PID (SimGrid extension -- this is a 'i' as in 'i'dea)\n"
-         "\n"
-         "         -> %%F: file name where the log event was raised (LOG4J compatible)\n"
-         "         -> %%l: location where the log event was raised (LOG4J compatible, like '%%F:%%L' -- this is a l as "
-         "in 'l'etter)\n"
-         "         -> %%L: line number where the log event was raised (LOG4J compatible)\n"
-         "         -> %%M: function name (LOG4J compatible -- called method name here of course).\n"
-         "\n"
-         "         -> %%b: full backtrace (Called %%throwable in LOG4J). Defined only under windows or when using the "
-         "GNU libc because\n"
-         "                 backtrace() is not defined elsewhere, and we only have a fallback for windows boxes, not "
-         "mac ones for example.\n"
-         "         -> %%B: short backtrace (only the first line of the %%b). Called %%throwable{short} in LOG4J; "
-         "defined where %%b is.\n"
-         "\n"
-         "         -> %%d: date (UNIX-like epoch)\n"
-         "         -> %%r: application age (time elapsed since the beginning of the application)\n"
-         "\n"
-         "   Miscellaneous:\n"
-         "      --help-log-categories    Display the current hierarchy of log categories.\n"
-         "      --log=no_loc             Don't print file names in messages (for tesh tests).\n"
-         "\n");
+  XBT_HELP(
+      "Description of the logging output:\n"
+      "\n"
+      "   Threshold configuration: --log=CATEGORY_NAME.thres:PRIORITY_LEVEL\n"
+      "      CATEGORY_NAME: defined in code with function 'XBT_LOG_NEW_CATEGORY'\n"
+      "      PRIORITY_LEVEL: the level to print (trace,debug,verbose,info,warning,error,critical)\n"
+      "         -> trace: enter and return of some functions\n"
+      "         -> debug: crufty output\n"
+      "         -> verbose: verbose output for the user wanting more\n"
+      "         -> info: output about the regular functioning\n"
+      "         -> warning: minor issue encountered\n"
+      "         -> error: issue encountered\n"
+      "         -> critical: major issue encountered\n"
+      "      The default priority level is 'info'.\n"
+      "\n"
+      "   Format configuration: --log=CATEGORY_NAME.fmt:FORMAT\n"
+      "      FORMAT string may contain:\n"
+      "         -> %%%%: the %% char\n"
+      "         -> %%n: platform-dependent line separator (LOG4J compatible)\n"
+      "         -> %%e: plain old space (SimGrid extension)\n"
+      "\n"
+      "         -> %%m: user-provided message\n"
+      "\n"
+      "         -> %%c: Category name (LOG4J compatible)\n"
+      "         -> %%p: Priority name (LOG4J compatible)\n"
+      "\n"
+      "         -> %%h: Hostname (SimGrid extension)\n"
+      "         -> %%P: Process name (SimGrid extension)\n"
+      "         -> %%t: Thread \"name\" (LOG4J compatible -- actually the address of the thread in memory)\n"
+      "         -> %%i: Process PID (SimGrid extension -- this is a 'i' as in 'i'dea)\n"
+      "\n"
+      "         -> %%F: file name where the log event was raised (LOG4J compatible)\n"
+      "         -> %%l: location where the log event was raised (LOG4J compatible, like '%%F:%%L' -- this is a l as "
+      "in 'l'etter)\n"
+      "         -> %%L: line number where the log event was raised (LOG4J compatible)\n"
+      "         -> %%M: function name (LOG4J compatible -- called method name here of course).\n"
+      "\n"
+      "         -> %%b: full backtrace (Called %%throwable in LOG4J). Defined only under windows or when using the "
+      "GNU libc because\n"
+      "                 backtrace() is not defined elsewhere, and we only have a fallback for windows boxes, not "
+      "mac ones for example.\n"
+      "         -> %%B: short backtrace (only the first line of the %%b). Called %%throwable{short} in LOG4J; "
+      "defined where %%b is.\n"
+      "\n"
+      "         -> %%d: date (UNIX-like epoch)\n"
+      "         -> %%r: application age (time elapsed since the beginning of the application)\n"
+      "\n"
+      "   Miscellaneous:\n"
+      "      --help-log-categories    Display the current hierarchy of log categories.\n"
+      "      --log=no_loc             Don't print file names in messages (for tesh tests).\n");
 }
 
 static void xbt_log_help_categories_rec(xbt_log_category_t category, const std::string& prefix)
@@ -621,7 +623,7 @@ static void xbt_log_help_categories_rec(xbt_log_category_t category, const std::
             [](xbt_log_category_t a, xbt_log_category_t b) { return strcmp(a->name, b->name) < 0; });
 
   for (auto const& cat : cats) {
-    printf("%s%s: %s\n", this_prefix.c_str(), cat->name, cat->description);
+    XBT_HELP("%s%s: %s", this_prefix.c_str(), cat->name, cat->description);
     if (cat == cats.back() && category->parent)
       child_prefix[child_prefix.rfind('|')] = ' ';
     xbt_log_help_categories_rec(cat->firstChild, child_prefix);
@@ -630,7 +632,7 @@ static void xbt_log_help_categories_rec(xbt_log_category_t category, const std::
 
 static void xbt_log_help_categories(void)
 {
-  printf("Current log category hierarchy:\n");
+  XBT_HELP("Current log category hierarchy:");
   xbt_log_help_categories_rec(&_XBT_LOGV(XBT_LOG_ROOT_CAT), "   ");
-  printf("\n");
+  XBT_HELP("%s", "");
 }

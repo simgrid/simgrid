@@ -63,39 +63,36 @@ static void sg_config_cmd_line(int *argc, char **argv)
       sg_version();
       shall_exit = true;
     } else if (parse_args && (not strcmp(argv[i], "--cfg-help") || not strcmp(argv[i], "--help"))) {
-      printf("Description of the configuration accepted by this simulator:\n");
+      XBT_HELP("Description of the configuration accepted by this simulator:");
       simgrid::config::help();
-      printf(
-          "\n"
-          "Each of these configurations can be used by adding\n"
-          "    --cfg=<option name>:<option value>\n"
-          "to the command line.\n"
-          "\n"
-          "For more information, please refer to:\n"
-          "   --help-aliases for the list of all option aliases.\n"
-          "   --help-logs and --help-log-categories for the details of logging output.\n"
-          "   --help-models for a list of all models known by this simulator.\n"
-          "   --help-tracing for the details of all tracing options known by this simulator.\n"
-          "   --version to get SimGrid version information.\n"
-          "\n"
-        );
+      XBT_HELP("\n"
+               "Each of these configurations can be used by adding\n"
+               "    --cfg=<option name>:<option value>\n"
+               "to the command line.\n"
+               "\n"
+               "For more information, please refer to:\n"
+               "   --help-aliases for the list of all option aliases.\n"
+               "   --help-logs and --help-log-categories for the details of logging output.\n"
+               "   --help-models for a list of all models known by this simulator.\n"
+               "   --help-tracing for the details of all tracing options known by this simulator.\n"
+               "   --version to get SimGrid version information.\n");
       shall_exit = not cfg_continue_after_help;
       argv[j++]  = argv[i]; // Preserve the --help in argv just in case someone else wants to see it
     } else if (parse_args && not strcmp(argv[i], "--help-aliases")) {
-      printf("Here is a list of all deprecated option names, with their replacement.\n");
+      XBT_HELP("Here is a list of all deprecated option names, with their replacement.");
       simgrid::config::show_aliases();
-      printf("Please consider using the recent names\n");
+      XBT_HELP("Please consider using the recent names");
       shall_exit = true;
     } else if (parse_args && not strcmp(argv[i], "--help-models")) {
       model_help("host", surf_host_model_description);
-      printf("\n");
+      XBT_HELP("%s", "");
       model_help("CPU", surf_cpu_model_description);
-      printf("\n");
+      XBT_HELP("%s", "");
       model_help("network", surf_network_model_description);
-      printf("\nLong description of all optimization levels accepted by the models of this simulator:\n");
+      XBT_HELP("\nLong description of all optimization levels accepted by the models of this simulator:");
       for (auto const& item : surf_optimization_mode_description)
-        printf("  %s: %s\n", item.name, item.description);
-      printf("Both network and CPU models have 'Lazy' as default optimization level\n\n");
+        XBT_HELP("  %s: %s", item.name, item.description);
+      XBT_HELP("Both network and CPU models have 'Lazy' as default optimization level\n");
       shall_exit = true;
     } else if (parse_args && not strcmp(argv[i], "--help-tracing")) {
       TRACE_help();

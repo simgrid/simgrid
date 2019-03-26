@@ -644,5 +644,11 @@ extern xbt_log_layout_t xbt_log_default_layout;
  */
 #define XBT_HERE(...) XBT_LOG(xbt_log_priority_trace, "-- was here" __VA_ARGS__)
 
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log help messages through category xbt.xbt_help.
+ */
+#define XBT_HELP(...) XBT_CINFO(xbt_help, __VA_ARGS__)
+
 SG_END_DECL()
 #endif                          /* ! _XBT_LOG_H_ */

@@ -339,23 +339,23 @@ void Config::alias(const std::string& realname, const std::string& aliasname)
  */
 void Config::dump(const char *name, const char *indent)
 {
+  XBT_LOG_DEFAULT_CATEGORY(xbt_help);
   if (name)
-    printf("%s>> Dumping of the config set '%s':\n", indent, name);
+    XBT_VERB("%s>> Dumping of the config set '%s':", indent, name);
 
   for (auto const& elm : options)
-    printf("%s  %s: ()%s) %s", indent, elm.first.c_str(), elm.second->get_type_name(),
-           elm.second->get_string_value().c_str());
+    XBT_VERB("%s  %s: ()%s) %s", indent, elm.first.c_str(), elm.second->get_type_name(),
+             elm.second->get_string_value().c_str());
 
   if (name)
-    printf("%s<< End of the config set '%s'\n", indent, name);
-  fflush(stdout);
+    XBT_VERB("%s<< End of the config set '%s'", indent, name);
 }
 
 /** @brief Displays the declared aliases and their replacement */
 void Config::show_aliases()
 {
   for (auto const& elm : aliases)
-    printf("   %-40s %s\n", elm.first.c_str(), elm.second->get_key().c_str());
+    XBT_HELP("   %-40s %s", elm.first.c_str(), elm.second->get_key().c_str());
 }
 
 /** @brief Displays the declared options and their description */
@@ -363,9 +363,8 @@ void Config::help()
 {
   for (auto const& elm : options) {
     simgrid::config::ConfigurationElement* variable = this->options.at(elm.first);
-    printf("   %s: %s\n", elm.first.c_str(), variable->get_description().c_str());
-    printf("       Type: %s; ", variable->get_type_name());
-    printf("Current value: %s\n", variable->get_string_value().c_str());
+    XBT_HELP("   %s: %s", elm.first.c_str(), variable->get_description().c_str());
+    XBT_HELP("       Type: %s; Current value: %s", variable->get_type_name(), variable->get_string_value().c_str());
   }
 }
 
