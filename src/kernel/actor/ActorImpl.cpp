@@ -371,7 +371,7 @@ activity::ActivityImplPtr ActorImpl::suspend(ActorImpl* issuer)
 
     return nullptr;
   } else {
-    return activity::ExecImplPtr(new activity::ExecImpl("suspend", ""))->set_host(host_)->start(0.0, 1.0, 0.0);
+    return activity::ExecImplPtr(new activity::ExecImpl())->set_name("suspend")->set_host(host_)->start(0.0, 1.0, 0.0);
   }
 }
 

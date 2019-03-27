@@ -19,11 +19,12 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl {
   ~ExecImpl();
 
 public:
-  explicit ExecImpl(const std::string& name, const std::string& tracing_category);
   ExecImpl* start(double flops_amount, double priority, double bound);
   ExecImpl* start(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                   const std::vector<double>& bytes_amounts);
 
+  ExecImpl* set_name(const std::string& name);
+  ExecImpl* set_tracing_category(const std::string& category);
   ExecImpl* set_host(s4u::Host* host);
   ExecImpl* set_timeout(double timeout);
   void cancel();

@@ -51,14 +51,6 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-ExecImpl::ExecImpl(const std::string& name, const std::string& tracing_category) : ActivityImpl(name)
-{
-  this->state_ = SIMIX_RUNNING;
-  this->set_category(tracing_category);
-
-  XBT_DEBUG("Create exec %p", this);
-}
-
 ExecImpl::~ExecImpl()
 {
   if (timeout_detector_)
@@ -69,6 +61,18 @@ ExecImpl::~ExecImpl()
 ExecImpl* ExecImpl::set_host(s4u::Host* host)
 {
   host_ = host;
+  return this;
+}
+
+ExecImpl* ExecImpl::set_name(const std::string& name)
+{
+  ActivityImpl::set_name(name);
+  return this;
+}
+
+ExecImpl* ExecImpl::set_tracing_category(const std::string& category)
+{
+  ActivityImpl::set_category(category);
   return this;
 }
 
@@ -83,6 +87,7 @@ ExecImpl* ExecImpl::set_timeout(double timeout)
 
 ExecImpl* ExecImpl::start(double flops_amount, double priority, double bound)
 {
+  state_ = SIMIX_RUNNING;
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     surf_action_ = host_->pimpl_cpu->execution_start(flops_amount);
     surf_action_->set_data(this);
@@ -99,6 +104,7 @@ ExecImpl* ExecImpl::start(double flops_amount, double priority, double bound)
 ExecImpl* ExecImpl::start(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                           const std::vector<double>& bytes_amounts)
 {
+  state_ = SIMIX_RUNNING;
   /* set surf's synchro */
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     surf_action_ = surf_host_model->execute_parallel(hosts, flops_amounts.data(), bytes_amounts.data(), -1);
