@@ -184,7 +184,7 @@ void Task::set_used()
 
 void Task::report_multiple_use() const
 {
-  if (msg_global->debug_multiple_use){
+  if (MSG_Global_t::debug_multiple_use) {
     XBT_ERROR("This task is already used in there:");
     // TODO, backtrace
     XBT_ERROR("<missing backtrace>");
