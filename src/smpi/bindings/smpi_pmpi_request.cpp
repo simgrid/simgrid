@@ -789,6 +789,21 @@ int PMPI_Test_cancelled(MPI_Status* status, int* flag){
   return MPI_SUCCESS;  
 }
 
+int PMPI_Status_set_cancelled(MPI_Status* status, int flag){
+  if(status==MPI_STATUS_IGNORE){
+    return MPI_ERR_ARG;
+  }
+  simgrid::smpi::Status::set_cancelled(status,flag);
+  return MPI_SUCCESS;  
+}
+
+int PMPI_Status_set_elements(MPI_Status* status, MPI_Datatype datatype, int count){
+  if(status==MPI_STATUS_IGNORE){
+    return MPI_ERR_ARG;
+  }
+  simgrid::smpi::Status::set_elements(status,datatype, count);
+  return MPI_SUCCESS;  
+}
 
 int PMPI_Grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest_free_function *free_fn, MPI_Grequest_cancel_function *cancel_fn, void *extra_state, MPI_Request *request){
   return simgrid::smpi::Request::grequest_start(query_fn, free_fn,cancel_fn, extra_state, request);
@@ -796,6 +811,16 @@ int PMPI_Grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest_fre
 
 int PMPI_Grequest_complete( MPI_Request request){
   return simgrid::smpi::Request::grequest_complete(request);
+}
+
+
+int PMPI_Request_get_status( MPI_Request request, int *flag, MPI_Status *status){
+  if(request==MPI_REQUEST_NULL){
+    return MPI_ERR_REQUEST;
+  } else if (flag==NULL || status ==NULL){
+    return MPI_ERR_ARG;
+  }
+  return simgrid::smpi::Request::get_status(request,flag,status);
 }
 
 MPI_Request PMPI_Request_f2c(MPI_Fint request){

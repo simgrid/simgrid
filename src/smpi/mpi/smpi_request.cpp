@@ -1058,6 +1058,32 @@ void Request::free_f(int id)
 }
 
 
+int Request::get_status(MPI_Request req, int* flag, MPI_Status * status){
+  *flag=0;
+
+  if(req != MPI_REQUEST_NULL && req->action_ != nullptr) {
+    req->iprobe(req->src_, req->tag_, req->comm_, flag, status);
+    if(flag)
+      return MPI_SUCCESS;
+  }
+  if (req != MPI_REQUEST_NULL && 
+     (req->flags_ & MPI_REQ_GENERALIZED)
+     && !(req->flags_ & MPI_REQ_COMPLETE)) {
+     *flag=0;
+    return MPI_SUCCESS;
+  }
+
+  *flag=1;
+  if(status != MPI_STATUS_IGNORE) {
+    int src = req->src_ == MPI_ANY_SOURCE ? req->real_src_ : req->src_;
+    status->MPI_SOURCE = req->comm_->group()->rank(src);
+    status->MPI_TAG = req->tag_ == MPI_ANY_TAG ? req->real_tag_ : req->tag_;
+    status->MPI_ERROR = req->truncated_ ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
+    status->count = req->real_size_;
+  }
+  return MPI_SUCCESS;
+}
+
 int Request::grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest_free_function *free_fn, MPI_Grequest_cancel_function *cancel_fn, void *extra_state, MPI_Request *request){
 
   *request = new Request();
