@@ -304,7 +304,7 @@ Debian and Ubuntu for example, you can get them as follows:
    sudo apt install simgrid pajeng make gcc g++ gfortran vite
 
 For R analysis of the produced traces, you may want to install R, 
-and the `pajengr<https://github.com/schnorr/pajengr#installation/>_ package.
+and the `pajengr<https://github.com/schnorr/pajengr#installation/>`_ package.
 
 .. code-block:: shell
 
