@@ -816,6 +816,8 @@ int PMPI_Grequest_complete( MPI_Request request){
 
 int PMPI_Request_get_status( MPI_Request request, int *flag, MPI_Status *status){
   if(request==MPI_REQUEST_NULL){
+    *flag=1;
+    simgrid::smpi::Status::empty(status);
     return MPI_ERR_REQUEST;
   } else if (flag==NULL || status ==NULL){
     return MPI_ERR_ARG;

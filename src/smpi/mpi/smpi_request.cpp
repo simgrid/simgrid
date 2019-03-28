@@ -805,8 +805,6 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
       status->MPI_ERROR = req->truncated_ != 0 ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
       // this handles the case were size in receive differs from size in send
       status->count = req->real_size_;
-//      int flag;
-//      Request::get_status(req,&flag,status);
     }
 
     req->print_request("Finishing");
@@ -1095,7 +1093,7 @@ int Request::get_status(MPI_Request req, int* flag, MPI_Status * status){
 
   if(req != MPI_REQUEST_NULL && req->action_ != nullptr) {
     req->iprobe(req->src_, req->tag_, req->comm_, flag, status);
-    if(flag)
+    if(*flag)
       return MPI_SUCCESS;
   }
   if (req != MPI_REQUEST_NULL && 
@@ -1106,7 +1104,8 @@ int Request::get_status(MPI_Request req, int* flag, MPI_Status * status){
   }
 
   *flag=1;
-  if(status != MPI_STATUS_IGNORE) {
+  if(req != MPI_REQUEST_NULL &&
+     status != MPI_STATUS_IGNORE) {
     int src = req->src_ == MPI_ANY_SOURCE ? req->real_src_ : req->src_;
     status->MPI_SOURCE = req->comm_->group()->rank(src);
     status->MPI_TAG = req->tag_ == MPI_ANY_TAG ? req->real_tag_ : req->tag_;
