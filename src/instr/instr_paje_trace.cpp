@@ -85,8 +85,6 @@ static void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf)
 /* internal do the instrumentation module */
 void simgrid::instr::PajeEvent::insert_into_buffer()
 {
-  buffer_debug(&buffer);
-
   XBT_DEBUG("%s: insert event_type=%u, timestamp=%f, buffersize=%zu)", __func__, eventType_, timestamp_, buffer.size());
   std::vector<simgrid::instr::PajeEvent*>::reverse_iterator i;
   for (i = buffer.rbegin(); i != buffer.rend(); ++i) {
@@ -102,6 +100,4 @@ void simgrid::instr::PajeEvent::insert_into_buffer()
   else
     XBT_DEBUG("%s: inserted at pos= %zd from its end", __func__, std::distance(buffer.rbegin(), i));
   buffer.insert(i.base(), this);
-
-  buffer_debug(&buffer);
 }

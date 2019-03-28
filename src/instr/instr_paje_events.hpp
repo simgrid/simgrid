@@ -74,6 +74,7 @@ class StateEvent : public PajeEvent {
 
 public:
   StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value, TIData* extra);
+  ~StateEvent();
   void print() override;
 };
 
