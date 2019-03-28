@@ -27,6 +27,15 @@ int Status::cancelled(MPI_Status * status)
   return status->cancelled!=0;
 }
 
+void Status::set_cancelled(MPI_Status * status, int flag)
+{
+  status->cancelled=flag;
+}
+
+void Status::set_elements (MPI_Status * status, MPI_Datatype , int count){
+  status->count=count;
+}
+
 int Status::get_count(MPI_Status * status, MPI_Datatype datatype)
 {
   return status->count / datatype->size();

@@ -524,10 +524,9 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
 
     TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("test"));
     
-    *flag = simgrid::smpi::Request::test(request,status);
+    retval = simgrid::smpi::Request::test(request,status, flag);
 
     TRACE_smpi_comm_out(my_proc_id);
-    retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
   return retval;
@@ -543,9 +542,8 @@ int PMPI_Testany(int count, MPI_Request requests[], int *index, int *flag, MPI_S
   } else {
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
     TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("testany"));
-    *flag = simgrid::smpi::Request::testany(count, requests, index, status);
+    retval = simgrid::smpi::Request::testany(count, requests, index, flag, status);
     TRACE_smpi_comm_out(my_proc_id);
-    retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
   return retval;
@@ -561,9 +559,8 @@ int PMPI_Testall(int count, MPI_Request* requests, int* flag, MPI_Status* status
   } else {
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
     TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("testall"));
-    *flag = simgrid::smpi::Request::testall(count, requests, statuses);
+    retval = simgrid::smpi::Request::testall(count, requests, flag, statuses);
     TRACE_smpi_comm_out(my_proc_id);
-    retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
   return retval;
@@ -579,9 +576,8 @@ int PMPI_Testsome(int incount, MPI_Request requests[], int* outcount, int* indic
   } else {
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
     TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("testsome"));
-    *outcount = simgrid::smpi::Request::testsome(incount, requests, indices, status);
+    retval = simgrid::smpi::Request::testsome(incount, requests, outcount, indices, status);
     TRACE_smpi_comm_out(my_proc_id);
-    retval    = MPI_SUCCESS;
   }
   smpi_bench_begin();
   return retval;
@@ -662,7 +658,8 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
   } else {
     //for tracing, save the handle which might get overriden before we can use the helper on it
     MPI_Request savedreq = *request;
-    if (savedreq != MPI_REQUEST_NULL && not(savedreq->flags() & MPI_REQ_FINISHED))
+    if (savedreq != MPI_REQUEST_NULL && not(savedreq->flags() & MPI_REQ_FINISHED)
+    && not(savedreq->flags() & MPI_REQ_GENERALIZED))
       savedreq->ref();//don't erase te handle in Request::wait, we'll need it later
     else
       savedreq = MPI_REQUEST_NULL;
@@ -673,8 +670,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     TRACE_smpi_comm_in(my_proc_id, __func__,
                        new simgrid::instr::WaitTIData((*request)->src(), (*request)->dst(), (*request)->tag()));
 
-    simgrid::smpi::Request::wait(request, status);
-    retval = MPI_SUCCESS;
+    retval = simgrid::smpi::Request::wait(request, status);
 
     //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
     TRACE_smpi_comm_out(my_proc_id);
@@ -791,6 +787,40 @@ int PMPI_Test_cancelled(MPI_Status* status, int* flag){
   }
   *flag=simgrid::smpi::Status::cancelled(status);
   return MPI_SUCCESS;  
+}
+
+int PMPI_Status_set_cancelled(MPI_Status* status, int flag){
+  if(status==MPI_STATUS_IGNORE){
+    return MPI_ERR_ARG;
+  }
+  simgrid::smpi::Status::set_cancelled(status,flag);
+  return MPI_SUCCESS;  
+}
+
+int PMPI_Status_set_elements(MPI_Status* status, MPI_Datatype datatype, int count){
+  if(status==MPI_STATUS_IGNORE){
+    return MPI_ERR_ARG;
+  }
+  simgrid::smpi::Status::set_elements(status,datatype, count);
+  return MPI_SUCCESS;  
+}
+
+int PMPI_Grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest_free_function *free_fn, MPI_Grequest_cancel_function *cancel_fn, void *extra_state, MPI_Request *request){
+  return simgrid::smpi::Request::grequest_start(query_fn, free_fn,cancel_fn, extra_state, request);
+}
+
+int PMPI_Grequest_complete( MPI_Request request){
+  return simgrid::smpi::Request::grequest_complete(request);
+}
+
+
+int PMPI_Request_get_status( MPI_Request request, int *flag, MPI_Status *status){
+  if(request==MPI_REQUEST_NULL){
+    return MPI_ERR_REQUEST;
+  } else if (flag==NULL || status ==NULL){
+    return MPI_ERR_ARG;
+  }
+  return simgrid::smpi::Request::get_status(request,flag,status);
 }
 
 MPI_Request PMPI_Request_f2c(MPI_Fint request){

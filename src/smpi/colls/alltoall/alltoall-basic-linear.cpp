@@ -16,7 +16,7 @@ namespace smpi{
 int Coll_alltoall_basic_linear::alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                                           void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
-  int system_tag = 888;
+  int system_tag = COLL_TAG_ALLTOALL;
   int i;
   int count;
   MPI_Aint lb = 0, sendext = 0, recvext = 0;

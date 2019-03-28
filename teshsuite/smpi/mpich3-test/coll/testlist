@@ -130,9 +130,9 @@ scatterv 4
 #uoplong 4
 #uoplong 11
 #uoplong 16
-nonblocking 4 mpiversion=3.0
-nonblocking 5 mpiversion=3.0
-nonblocking 10 mpiversion=3.0
+nonblocking 4 
+nonblocking 5 
+nonblocking 10 
 nonblocking2 1 mpiversion=3.0
 nonblocking2 4 mpiversion=3.0
 nonblocking2 5 mpiversion=3.0
@@ -144,7 +144,7 @@ nonblocking3 10 timeLimit=600 mpiversion=3.0
 iallred 2 mpiversion=3.0
 # ibarrier will hang forever if it fails, but will complete quickly if it
 # succeeds
-ibarrier 2 mpiversion=3.0 timeLimit=30
+ibarrier 2 timeLimit=30
 
 # run some of the tests, relinked with the nbc_pmpi_adaptor.o file
 nballtoall1 8 mpiversion=3.0

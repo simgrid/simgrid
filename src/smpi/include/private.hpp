@@ -24,6 +24,8 @@ constexpr unsigned MPI_REQ_PREPARED       = 0x80;
 constexpr unsigned MPI_REQ_FINISHED       = 0x100;
 constexpr unsigned MPI_REQ_RMA            = 0x200;
 constexpr unsigned MPI_REQ_ACCUMULATE     = 0x400;
+constexpr unsigned MPI_REQ_GENERALIZED    = 0x800;
+constexpr unsigned MPI_REQ_COMPLETE       = 0x1000;
 
 enum class SmpiProcessState { UNINITIALIZED, INITIALIZING, INITIALIZED, FINALIZED };
 
@@ -42,6 +44,8 @@ constexpr int COLL_TAG_BCAST          = -3334;
 constexpr int COLL_TAG_ALLREDUCE      = -4445;
 // SMPI_RMA_TAG has to be the smallest one, as it will be decremented for accumulate ordering.
 constexpr int SMPI_RMA_TAG            = -6666;
+
+#define MPI_REQUEST_IGNORED ((MPI_Request*)-100)
 
 /* Convert between Fortran and C */
 
