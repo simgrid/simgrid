@@ -37,28 +37,28 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-IoImplPtr IoImpl::set_name(const std::string& name)
+IoImpl& IoImpl::set_name(const std::string& name)
 {
   ActivityImpl::set_name(name);
-  return this;
+  return *this;
 }
 
-IoImplPtr IoImpl::set_type(s4u::Io::OpType type)
+IoImpl& IoImpl::set_type(s4u::Io::OpType type)
 {
   type_ = type;
-  return this;
+  return *this;
 }
 
-IoImplPtr IoImpl::set_size(sg_size_t size)
+IoImpl& IoImpl::set_size(sg_size_t size)
 {
   size_ = size;
-  return this;
+  return *this;
 }
 
-IoImplPtr IoImpl::set_storage(resource::StorageImpl* storage)
+IoImpl& IoImpl::set_storage(resource::StorageImpl* storage)
 {
   storage_ = storage;
-  return this;
+  return *this;
 }
 
 IoImpl* IoImpl::start()

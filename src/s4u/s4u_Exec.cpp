@@ -127,10 +127,10 @@ ExecSeq::ExecSeq(sg_host_t host, double flops_amount) : Exec(), flops_amount_(fl
 Exec* ExecSeq::start()
 {
   simix::simcall([this] {
-    boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)
-        ->set_name(name_)
-        ->set_tracing_category(tracing_category_)
-        ->start(flops_amount_, 1. / priority_, bound_);
+    (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
+        .set_name(name_)
+        .set_tracing_category(tracing_category_)
+        .start(flops_amount_, 1. / priority_, bound_);
   });
   state_ = State::STARTED;
   on_start(*Actor::self());

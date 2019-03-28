@@ -58,31 +58,31 @@ ExecImpl::~ExecImpl()
   XBT_DEBUG("Destroy exec %p", this);
 }
 
-ExecImpl* ExecImpl::set_host(s4u::Host* host)
+ExecImpl& ExecImpl::set_host(s4u::Host* host)
 {
   host_ = host;
-  return this;
+  return *this;
 }
 
-ExecImpl* ExecImpl::set_name(const std::string& name)
+ExecImpl& ExecImpl::set_name(const std::string& name)
 {
   ActivityImpl::set_name(name);
-  return this;
+  return *this;
 }
 
-ExecImpl* ExecImpl::set_tracing_category(const std::string& category)
+ExecImpl& ExecImpl::set_tracing_category(const std::string& category)
 {
   ActivityImpl::set_category(category);
-  return this;
+  return *this;
 }
 
-ExecImpl* ExecImpl::set_timeout(double timeout)
+ExecImpl& ExecImpl::set_timeout(double timeout)
 {
   if (timeout > 0 && not MC_is_active() && not MC_record_replay_is_active()) {
     timeout_detector_ = host_->pimpl_cpu->sleep(timeout);
     timeout_detector_->set_data(this);
   }
-  return this;
+  return *this;
 }
 
 ExecImpl* ExecImpl::start(double flops_amount, double priority, double bound)

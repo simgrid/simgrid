@@ -23,10 +23,11 @@ public:
   ExecImpl* start(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                   const std::vector<double>& bytes_amounts);
 
-  ExecImpl* set_name(const std::string& name);
-  ExecImpl* set_tracing_category(const std::string& category);
-  ExecImpl* set_host(s4u::Host* host);
-  ExecImpl* set_timeout(double timeout);
+  ExecImpl& set_name(const std::string& name);
+  ExecImpl& set_tracing_category(const std::string& category);
+  ExecImpl& set_host(s4u::Host* host);
+  ExecImpl& set_timeout(double timeout);
+
   void cancel();
   void post() override;
   void finish() override;

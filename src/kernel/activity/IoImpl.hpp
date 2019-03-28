@@ -21,10 +21,10 @@ class XBT_PUBLIC IoImpl : public ActivityImpl {
   sg_size_t performed_ioops_      = 0;
 
 public:
-  IoImplPtr set_name(const std::string& name);
-  IoImplPtr set_size(sg_size_t size);
-  IoImplPtr set_type(s4u::Io::OpType type);
-  IoImplPtr set_storage(resource::StorageImpl* storage);
+  IoImpl& set_name(const std::string& name);
+  IoImpl& set_size(sg_size_t size);
+  IoImpl& set_type(s4u::Io::OpType type);
+  IoImpl& set_storage(resource::StorageImpl* storage);
 
   sg_size_t get_performed_ioops() { return performed_ioops_; }
 
