@@ -203,6 +203,7 @@ set(SMPI_SRC
   src/smpi/colls/reduce/reduce-rab.cpp
   src/smpi/colls/scatter/scatter-ompi.cpp
   src/smpi/colls/scatter/scatter-mvapich-two-level.cpp
+  src/smpi/colls/smpi_nbc_impl.cpp
   src/smpi/colls/smpi_automatic_selector.cpp
   src/smpi/colls/smpi_default_selector.cpp
   src/smpi/colls/smpi_mpich_selector.cpp

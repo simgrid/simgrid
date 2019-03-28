@@ -18,7 +18,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 	       coll2 coll3 coll4 coll5 coll6 coll7 coll8 coll9 coll10 coll11 coll12 coll13
 	       exscan exscan2 
 	       gather gather2 gather_big
-	     # iallred ibarrier icallgather icallgatherv icallreduce
+               ibarrier
+	     # iallred icallgather icallgatherv icallreduce
              # icalltoall icalltoallv icalltoallw icbarrier icbcast
 	     # icgather icgatherv icreduce icscatter icscatterv
 	       longuser

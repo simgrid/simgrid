@@ -49,6 +49,8 @@ class Request : public F2C {
   MPI_Op op_;
   int cancelled_;
   smpi_mpi_generalized_request_funcs generalized_funcs;
+  MPI_Request* nbc_requests_;
+  int nbc_requests_size_;
 
 public:
   Request() = default;
@@ -66,6 +68,7 @@ public:
   void start();
   void cancel();
   void ref();
+  void set_nbc_requests(MPI_Request* reqs, int size);
   static void finish_wait(MPI_Request* request, MPI_Status* status);
   static void unref(MPI_Request* request);
   static int wait(MPI_Request* req, MPI_Status* status);

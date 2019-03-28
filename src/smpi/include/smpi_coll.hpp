@@ -115,6 +115,9 @@ public:
                       MPI_Datatype recvtype, int root, MPI_Comm comm);
   static int scan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
   static int exscan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+  
+  //async collectives
+  static int Ibarrier(MPI_Comm comm, MPI_Request* request);
 
   static void (*smpi_coll_cleanup_callback)();
 };

@@ -6,6 +6,7 @@
 #include "private.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_comm.hpp"
+#include "smpi_request.hpp"
 #include "smpi_datatype_derived.hpp"
 #include "smpi_op.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
@@ -62,6 +63,24 @@ int PMPI_Barrier(MPI_Comm comm)
     TRACE_smpi_comm_out(rank);
   }
 
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Ibarrier(MPI_Comm comm, MPI_Request *request)
+{
+  int retval = 0;
+  smpi_bench_end();
+  if (comm == MPI_COMM_NULL) {
+    retval = MPI_ERR_COMM;
+  } else if(request == nullptr){
+    retval = MPI_ERR_ARG;
+  }else{
+    int rank = simgrid::s4u::this_actor::get_pid();
+    TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("ibarrier"));
+    simgrid::smpi::Colls::Ibarrier(comm, request);
+    TRACE_smpi_comm_out(rank);
+  }    
   smpi_bench_begin();
   return retval;
 }

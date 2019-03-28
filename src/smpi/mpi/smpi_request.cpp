@@ -71,6 +71,9 @@ Request::Request(void* buf, int count, MPI_Datatype datatype, int src, int dst, 
     refcount_ = 0;
   op_   = MPI_REPLACE;
   cancelled_ = 0;
+  generalized_funcs=nullptr;
+  nbc_requests_=nullptr;
+  nbc_requests_size_=0;
 }
 
 void Request::ref(){
@@ -520,6 +523,19 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
   // multiplier to the sleeptime, to increase speed of execution, each failed test will increase it
   static int nsleeps = 1;
   int ret = MPI_SUCCESS;
+  
+  // are we testing a request meant for non blocking comms ?
+  // If so, test all the subrequests.
+  if ((*request)->nbc_requests_size_>0){
+    ret = testall((*request)->nbc_requests_size_, (*request)->nbc_requests_, flag, MPI_STATUSES_IGNORE);
+    if(*flag){
+      delete[] (*request)->nbc_requests_;
+      (*request)->nbc_requests_size_=0;
+      unref(request);
+    }
+    return ret;
+  }
+  
   if(smpi_test_sleep > 0)
     simcall_process_sleep(nsleeps*smpi_test_sleep);
 
@@ -789,6 +805,8 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
       status->MPI_ERROR = req->truncated_ != 0 ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
       // this handles the case were size in receive differs from size in send
       status->count = req->real_size_;
+//      int flag;
+//      Request::get_status(req,&flag,status);
     }
 
     req->print_request("Finishing");
@@ -1108,6 +1126,11 @@ int Request::grequest_complete( MPI_Request request){
   request->generalized_funcs->cond->notify_one();
   request->generalized_funcs->mutex->unlock();
   return MPI_SUCCESS;
+}
+
+void Request::set_nbc_requests(MPI_Request* reqs, int size){
+  nbc_requests_=reqs;
+  nbc_requests_size_=size;
 }
 
 }
