@@ -121,38 +121,17 @@ void Colls::set_collectives(){
 int Colls::gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int *recvcounts, int *displs,
                       MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
-  int system_tag = COLL_TAG_GATHERV;
-  MPI_Aint lb = 0;
-  MPI_Aint recvext = 0;
-
-  int rank = comm->rank();
-  int size = comm->size();
-  if (rank != root) {
-    // Send buffer to root
-    Request::send(sendbuf, sendcount, sendtype, root, system_tag, comm);
-  } else {
-    recvtype->extent(&lb, &recvext);
-    // Local copy from root
-    Datatype::copy(sendbuf, sendcount, sendtype, static_cast<char*>(recvbuf) + displs[root] * recvext,
-                       recvcounts[root], recvtype);
-    // Receive buffers from senders
-    MPI_Request *requests = xbt_new(MPI_Request, size - 1);
-    int index = 0;
-    for (int src = 0; src < size; src++) {
-      if(src != root) {
-        requests[index] = Request::irecv_init(static_cast<char*>(recvbuf) + displs[src] * recvext,
-                          recvcounts[src], recvtype, src, system_tag, comm);
-        index++;
-      }
-    }
-    // Wait for completion of irecv's.
-    Request::startall(size - 1, requests);
-    Request::waitall(size - 1, requests, MPI_STATUS_IGNORE);
-    for (int src = 0; src < size-1; src++) {
-      Request::unref(&requests[src]);
-    }
-    xbt_free(requests);
+  MPI_Request request;
+  Colls::igatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, comm, &request);
+  MPI_Request* requests = request->get_nbc_requests();
+  int count = request->get_nbc_requests_size();
+  Request::waitall(count, requests, MPI_STATUS_IGNORE);
+  for (int i = 0; i < count; i++) {
+    if(requests[i]!=MPI_REQUEST_NULL)
+      Request::unref(&requests[i]);
   }
+  delete[] requests;
+  Request::unref(&request);
   return MPI_SUCCESS;
 }
 
@@ -160,40 +139,17 @@ int Colls::gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *re
 int Colls::scatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype sendtype, void *recvbuf, int recvcount,
                        MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
-  int system_tag = COLL_TAG_SCATTERV;
-  MPI_Aint lb = 0;
-  MPI_Aint sendext = 0;
-
-  int rank = comm->rank();
-  int size = comm->size();
-  if(rank != root) {
-    // Recv buffer from root
-    Request::recv(recvbuf, recvcount, recvtype, root, system_tag, comm, MPI_STATUS_IGNORE);
-  } else {
-    sendtype->extent(&lb, &sendext);
-    // Local copy from root
-    if(recvbuf!=MPI_IN_PLACE){
-      Datatype::copy(static_cast<char *>(sendbuf) + displs[root] * sendext, sendcounts[root],
-                       sendtype, recvbuf, recvcount, recvtype);
-    }
-    // Send buffers to receivers
-    MPI_Request *requests = xbt_new(MPI_Request, size - 1);
-    int index = 0;
-    for (int dst = 0; dst < size; dst++) {
-      if (dst != root) {
-        requests[index] = Request::isend_init(static_cast<char *>(sendbuf) + displs[dst] * sendext, sendcounts[dst],
-                            sendtype, dst, system_tag, comm);
-        index++;
-      }
-    }
-    // Wait for completion of isend's.
-    Request::startall(size - 1, requests);
-    Request::waitall(size - 1, requests, MPI_STATUS_IGNORE);
-    for (int dst = 0; dst < size-1; dst++) {
+  MPI_Request request;
+  Colls::iscatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm, &request);
+  MPI_Request* requests = request->get_nbc_requests();
+  int count = request->get_nbc_requests_size();
+  Request::waitall(count, requests, MPI_STATUS_IGNORE);
+  for (int dst = 0; dst < count; dst++) {
+    if(requests[dst]!=MPI_REQUEST_NULL)
       Request::unref(&requests[dst]);
-    }
-    xbt_free(requests);
   }
+  delete[] requests;
+  Request::unref(&request);
   return MPI_SUCCESS;
 }
 

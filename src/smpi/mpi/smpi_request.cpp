@@ -524,7 +524,7 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
   static int nsleeps = 1;
   int ret = MPI_SUCCESS;
   
-  // are we testing a request meant for non blocking comms ?
+  // Are we testing a request meant for non blocking collectives ?
   // If so, test all the subrequests.
   if ((*request)->nbc_requests_size_>0){
     ret = testall((*request)->nbc_requests_size_, (*request)->nbc_requests_, flag, MPI_STATUSES_IGNORE);
@@ -862,6 +862,20 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
 int Request::wait(MPI_Request * request, MPI_Status * status)
 {
   int ret=MPI_SUCCESS;
+  // Are we waiting on a request meant for non blocking collectives ?
+  // If so, wait for all the subrequests.
+  if ((*request)->nbc_requests_size_>0){
+    ret = waitall((*request)->nbc_requests_size_, (*request)->nbc_requests_, MPI_STATUSES_IGNORE);
+    for (int i = 0; i < (*request)->nbc_requests_size_; i++) {
+      if((*request)->nbc_requests_[i]!=MPI_REQUEST_NULL)
+        Request::unref(&((*request)->nbc_requests_[i]));
+    }
+    delete[] (*request)->nbc_requests_;
+    (*request)->nbc_requests_size_=0;
+    unref(request);
+    return ret;
+  }
+
   (*request)->print_request("Waiting");
   if ((*request)->flags_ & MPI_REQ_PREPARED) {
     Status::empty(status);
@@ -1131,6 +1145,14 @@ int Request::grequest_complete( MPI_Request request){
 void Request::set_nbc_requests(MPI_Request* reqs, int size){
   nbc_requests_=reqs;
   nbc_requests_size_=size;
+}
+
+int Request::get_nbc_requests_size(){
+  return nbc_requests_size_;
+}
+
+MPI_Request* Request::get_nbc_requests(){
+  return nbc_requests_;
 }
 
 }

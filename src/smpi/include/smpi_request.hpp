@@ -69,6 +69,8 @@ public:
   void cancel();
   void ref();
   void set_nbc_requests(MPI_Request* reqs, int size);
+  int get_nbc_requests_size();
+  MPI_Request* get_nbc_requests();
   static void finish_wait(MPI_Request* request, MPI_Status* status);
   static void unref(MPI_Request* request);
   static int wait(MPI_Request* req, MPI_Status* status);

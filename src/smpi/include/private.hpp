@@ -45,6 +45,8 @@ constexpr int COLL_TAG_ALLREDUCE      = -4445;
 // SMPI_RMA_TAG has to be the smallest one, as it will be decremented for accumulate ordering.
 constexpr int SMPI_RMA_TAG            = -6666;
 
+#define MPI_REQUEST_IGNORED ((MPI_Request*)-100)
+
 /* Convert between Fortran and C */
 
 #define FORT_BOTTOM(addr) ((*(int*)addr) == -200 ? MPI_BOTTOM : (void*)addr)
