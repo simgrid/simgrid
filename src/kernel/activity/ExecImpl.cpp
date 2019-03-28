@@ -60,7 +60,15 @@ ExecImpl::~ExecImpl()
 
 ExecImpl& ExecImpl::set_host(s4u::Host* host)
 {
-  host_ = host;
+  if (not hosts_.empty())
+    hosts_.clear();
+  hosts_.push_back(host);
+  return *this;
+}
+
+ExecImpl& ExecImpl::set_hosts(const std::vector<s4u::Host*>& hosts)
+{
+  hosts_ = hosts;
   return *this;
 }
 
@@ -79,21 +87,46 @@ ExecImpl& ExecImpl::set_tracing_category(const std::string& category)
 ExecImpl& ExecImpl::set_timeout(double timeout)
 {
   if (timeout > 0 && not MC_is_active() && not MC_record_replay_is_active()) {
-    timeout_detector_ = host_->pimpl_cpu->sleep(timeout);
+    timeout_detector_ = hosts_.front()->pimpl_cpu->sleep(timeout);
     timeout_detector_->set_data(this);
   }
   return *this;
 }
 
-ExecImpl* ExecImpl::start(double flops_amount, double priority, double bound)
+ExecImpl& ExecImpl::set_flops_amount(double flops_amount)
+{
+  if (not flops_amounts_.empty())
+    flops_amounts_.clear();
+  flops_amounts_.push_back(flops_amount);
+  return *this;
+}
+
+ExecImpl& ExecImpl::set_flops_amounts(const std::vector<double>& flops_amounts)
+{
+  flops_amounts_ = flops_amounts;
+  return *this;
+}
+
+ExecImpl& ExecImpl::set_bytes_amounts(const std::vector<double>& bytes_amounts)
+{
+  bytes_amounts_ = bytes_amounts;
+
+  return *this;
+}
+
+ExecImpl* ExecImpl::start()
 {
   state_ = SIMIX_RUNNING;
   if (not MC_is_active() && not MC_record_replay_is_active()) {
-    surf_action_ = host_->pimpl_cpu->execution_start(flops_amount);
+    if (hosts_.size() == 1) {
+      surf_action_ = hosts_.front()->pimpl_cpu->execution_start(flops_amounts_.front());
+      surf_action_->set_priority(priority_);
+      if (bound_ > 0)
+        surf_action_->set_bound(bound_);
+    } else {
+      surf_action_ = surf_host_model->execute_parallel(hosts_, flops_amounts_.data(), bytes_amounts_.data(), -1);
+    }
     surf_action_->set_data(this);
-    surf_action_->set_priority(priority);
-    if (bound > 0)
-      surf_action_->set_bound(bound);
   }
 
   XBT_DEBUG("Create execute synchro %p: %s", this, get_cname());
@@ -101,21 +134,6 @@ ExecImpl* ExecImpl::start(double flops_amount, double priority, double bound)
   return this;
 }
 
-ExecImpl* ExecImpl::start(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
-                          const std::vector<double>& bytes_amounts)
-{
-  state_ = SIMIX_RUNNING;
-  /* set surf's synchro */
-  if (not MC_is_active() && not MC_record_replay_is_active()) {
-    surf_action_ = surf_host_model->execute_parallel(hosts, flops_amounts.data(), bytes_amounts.data(), -1);
-    if (surf_action_ != nullptr) {
-      surf_action_->set_data(this);
-    }
-  }
-  XBT_DEBUG("Create parallel execute synchro %p", this);
-  ExecImpl::on_creation(*this);
-  return this;
-}
 void ExecImpl::cancel()
 {
   XBT_VERB("This exec %p is canceled", this);
@@ -139,20 +157,21 @@ double ExecImpl::get_par_remaining_ratio()
   return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains();
 }
 
-void ExecImpl::set_bound(double bound)
+ExecImpl& ExecImpl::set_bound(double bound)
 {
-  if (surf_action_)
-    surf_action_->set_bound(bound);
+  bound_ = bound;
+  return *this;
 }
-void ExecImpl::set_priority(double priority)
+
+ExecImpl& ExecImpl::set_priority(double priority)
 {
-  if (surf_action_)
-    surf_action_->set_priority(priority);
+  priority_ = priority;
+  return *this;
 }
 
 void ExecImpl::post()
 {
-  if (host_ && not host_->is_on()) { /* FIXME: handle resource failure for parallel tasks too */
+  if (hosts_.size() == 1 && not hosts_.front()->is_on()) { /* FIXME: handle resource failure for parallel tasks too */
     /* If the host running the synchro failed, notice it. This way, the asking
      * process can be killed if it runs on that host itself */
     state_ = SIMIX_FAILED;

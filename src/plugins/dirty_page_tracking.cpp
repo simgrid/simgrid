@@ -74,7 +74,7 @@ static void on_virtual_machine_creation(simgrid::vm::VirtualMachineImpl& vm)
 
 static void on_exec_creation(simgrid::kernel::activity::ExecImpl const& exec)
 {
-  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec.host_);
+  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec.get_host());
   if (vm == nullptr)
     return;
 
@@ -87,7 +87,7 @@ static void on_exec_creation(simgrid::kernel::activity::ExecImpl const& exec)
 
 static void on_exec_completion(simgrid::kernel::activity::ExecImpl const& exec)
 {
-  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec.host_);
+  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec.get_host());
   if (vm == nullptr)
     return;
 

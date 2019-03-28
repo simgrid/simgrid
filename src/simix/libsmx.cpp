@@ -385,7 +385,14 @@ smx_activity_t simcall_execution_start(const std::string& name, const std::strin
 {
   return simgrid::simix::simcall([name, category, flops_amount, priority, bound, host] {
     simgrid::kernel::activity::ExecImpl* exec = new simgrid::kernel::activity::ExecImpl();
-    (*exec).set_name(name).set_tracing_category(category).set_host(host).start(flops_amount, priority, bound);
+    (*exec)
+        .set_name(name)
+        .set_tracing_category(category)
+        .set_host(host)
+        .set_priority(priority)
+        .set_bound(bound)
+        .set_flops_amount(flops_amount)
+        .start();
     return simgrid::kernel::activity::ExecImplPtr(exec);
   });
 }
@@ -424,7 +431,13 @@ smx_activity_t simcall_execution_parallel_start(const std::string& name, int hos
     bytes_parallel_amount = std::vector<double>(bytes_amount, bytes_amount + host_nb * host_nb);
   return simgrid::simix::simcall([name, hosts, flops_parallel_amount, bytes_parallel_amount, timeout] {
     simgrid::kernel::activity::ExecImpl* exec = new simgrid::kernel::activity::ExecImpl();
-    (*exec).set_name(name).set_timeout(timeout).start(hosts, flops_parallel_amount, bytes_parallel_amount);
+    (*exec)
+        .set_name(name)
+        .set_hosts(hosts)
+        .set_timeout(timeout)
+        .set_flops_amounts(flops_parallel_amount)
+        .set_bytes_amounts(bytes_parallel_amount)
+        .start();
     return simgrid::kernel::activity::ExecImplPtr(exec);
   });
 }

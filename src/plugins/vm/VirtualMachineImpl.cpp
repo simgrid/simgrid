@@ -54,7 +54,7 @@ static void host_state_change(s4u::Host const& host)
 static s4u::VirtualMachine* get_vm_from_task(kernel::activity::ActivityImpl const& task)
 {
   auto* exec = dynamic_cast<kernel::activity::ExecImpl const*>(&task);
-  return exec != nullptr ? dynamic_cast<s4u::VirtualMachine*>(exec->host_) : nullptr;
+  return exec != nullptr ? dynamic_cast<s4u::VirtualMachine*>(exec->get_host()) : nullptr;
 }
 
 static void add_active_task(kernel::activity::ActivityImpl const& task)

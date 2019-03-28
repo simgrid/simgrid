@@ -372,7 +372,7 @@ activity::ActivityImplPtr ActorImpl::suspend(ActorImpl* issuer)
     return nullptr;
   } else {
     activity::ExecImpl* exec = new activity::ExecImpl();
-    (*exec).set_name("suspend").set_host(host_).start(0.0, 1.0, 0.0);
+    (*exec).set_name("suspend").set_host(host_).set_flops_amount(0.0).start();
     return activity::ExecImplPtr(exec);
   }
 }

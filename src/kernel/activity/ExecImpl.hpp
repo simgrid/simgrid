@@ -16,30 +16,38 @@ namespace activity {
 
 class XBT_PUBLIC ExecImpl : public ActivityImpl {
   resource::Action* timeout_detector_ = nullptr;
+  double priority_                    = 1.0;
+  double bound_                       = 0.0;
+  std::vector<s4u::Host*> hosts_;
+  std::vector<double> flops_amounts_;
+  std::vector<double> bytes_amounts_;
   ~ExecImpl();
 
 public:
-  ExecImpl* start(double flops_amount, double priority, double bound);
-  ExecImpl* start(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
-                  const std::vector<double>& bytes_amounts);
-
   ExecImpl& set_name(const std::string& name);
   ExecImpl& set_tracing_category(const std::string& category);
-  ExecImpl& set_host(s4u::Host* host);
   ExecImpl& set_timeout(double timeout);
+  ExecImpl& set_bound(double bound);
+  ExecImpl& set_priority(double priority);
 
-  void cancel();
-  void post() override;
-  void finish() override;
+  ExecImpl& set_flops_amount(double flop_amount);
+  ExecImpl& set_host(s4u::Host* host);
+  s4u::Host* get_host() const { return hosts_.front(); }
+
+  ExecImpl& set_flops_amounts(const std::vector<double>& flops_amounts);
+  ExecImpl& set_bytes_amounts(const std::vector<double>& bytes_amounts);
+  ExecImpl& set_hosts(const std::vector<s4u::Host*>& hosts);
+
+  unsigned int get_host_number() const { return hosts_.size(); }
   double get_remaining() const;
   double get_seq_remaining_ratio();
   double get_par_remaining_ratio();
-  void set_bound(double bound);       // deprecated. To be removed in v3.25
-  void set_priority(double priority); // deprecated. To be removed in v3.25
   virtual ActivityImpl* migrate(s4u::Host* to);
 
-  /* The host where the execution takes place. nullptr means this is a parallel exec (and only surf knows the hosts) */
-  s4u::Host* host_ = nullptr;
+  ExecImpl* start();
+  void cancel();
+  void post() override;
+  void finish() override;
 
   static xbt::signal<void(ExecImpl&)> on_creation;
   static xbt::signal<void(ExecImpl const&)> on_completion;

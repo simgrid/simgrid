@@ -295,14 +295,14 @@ public:
     });
     simgrid::kernel::activity::ExecImpl::on_creation.connect(
         [this](simgrid::kernel::activity::ExecImpl const& activity) {
-          if (activity.host_ == get_host())
+          if (activity.get_host() == get_host())
             pre_task();
         });
     simgrid::kernel::activity::ExecImpl::on_completion.connect(
         [this](simgrid::kernel::activity::ExecImpl const& activity) {
           // For more than one host (not yet supported), we can access the host via
           // simcalls_.front()->issuer->iface()->get_host()
-          if (activity.host_ == get_host() && iteration_running) {
+          if (activity.get_host() == get_host() && iteration_running) {
             comp_timer += activity.surf_action_->get_finish_time() - activity.surf_action_->get_start_time();
           }
         });
