@@ -115,14 +115,7 @@ void Colls::set_collectives(){
   }
 }
 
-
-//Implementations of the single algorith collectives
-
-int Colls::gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int *recvcounts, int *displs,
-                      MPI_Datatype recvtype, int root, MPI_Comm comm)
-{
-  MPI_Request request;
-  Colls::igatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, comm, &request);
+int Colls::finish_nbc_request(MPI_Request request){
   MPI_Request* requests = request->get_nbc_requests();
   int count = request->get_nbc_requests_size();
   Request::waitall(count, requests, MPI_STATUS_IGNORE);
@@ -135,22 +128,23 @@ int Colls::gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *re
   return MPI_SUCCESS;
 }
 
+//Implementations of the single algorith collectives
+
+int Colls::gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int *recvcounts, int *displs,
+                      MPI_Datatype recvtype, int root, MPI_Comm comm)
+{
+  MPI_Request request;
+  Colls::igatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, comm, &request);
+  return Colls::finish_nbc_request(request);
+}
+
 
 int Colls::scatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype sendtype, void *recvbuf, int recvcount,
                        MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   MPI_Request request;
   Colls::iscatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm, &request);
-  MPI_Request* requests = request->get_nbc_requests();
-  int count = request->get_nbc_requests_size();
-  Request::waitall(count, requests, MPI_STATUS_IGNORE);
-  for (int dst = 0; dst < count; dst++) {
-    if(requests[dst]!=MPI_REQUEST_NULL)
-      Request::unref(&requests[dst]);
-  }
-  delete[] requests;
-  Request::unref(&request);
-  return MPI_SUCCESS;
+  return Colls::finish_nbc_request(request);
 }
 
 
@@ -286,18 +280,8 @@ int Colls::alltoallw(void *sendbuf, int *sendcounts, int *senddisps, MPI_Datatyp
                               void *recvbuf, int *recvcounts, int *recvdisps, MPI_Datatype* recvtypes, MPI_Comm comm)
 {
   MPI_Request request;
-  int err = Colls::ialltoallw(sendbuf, sendcounts, senddisps, sendtypes, recvbuf, recvcounts, recvdisps, recvtypes, comm, &request);
-  MPI_Request* requests = request->get_nbc_requests();
-  int count = request->get_nbc_requests_size();
-  XBT_DEBUG("<%d> wait for %d requests", comm->rank(), count);
-  Request::waitall(count, requests, MPI_STATUS_IGNORE);
-  for (int i = 0; i < count; i++) {
-    if(requests[i]!=MPI_REQUEST_NULL)
-      Request::unref(&requests[i]);
-  }
-  delete[] requests;
-  Request::unref(&request);
-  return err;
+  Colls::ialltoallw(sendbuf, sendcounts, senddisps, sendtypes, recvbuf, recvcounts, recvdisps, recvtypes, comm, &request);
+  return Colls::finish_nbc_request(request);
 }
 
 }

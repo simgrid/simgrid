@@ -27,16 +27,7 @@ int Coll_gather_default::gather(void *sendbuf, int sendcount, MPI_Datatype sendt
 {
   MPI_Request request;
   Colls::igather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm, &request);
-  MPI_Request* requests = request->get_nbc_requests();
-  int count = request->get_nbc_requests_size();
-  Request::waitall(count, requests, MPI_STATUS_IGNORE);
-  for (int i = 0; i < count; i++) {
-    if(requests[i]!=MPI_REQUEST_NULL)
-      Request::unref(&requests[i]);
-  }
-  delete[] requests;
-  Request::unref(&request);
-  return MPI_SUCCESS;
+  return Colls::finish_nbc_request(request);
 }
 
 int Coll_reduce_scatter_default::reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datatype datatype, MPI_Op op,
@@ -68,15 +59,7 @@ int Coll_allgather_default::allgather(void *sendbuf, int sendcount, MPI_Datatype
 {
   MPI_Request request;
   Colls::iallgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, &request);
-  MPI_Request* requests = request->get_nbc_requests();
-  int count = request->get_nbc_requests_size();
-  Request::waitall(count, requests, MPI_STATUS_IGNORE);
-  for (int other = 0; other < count; other++) {
-    Request::unref(&requests[other]);
-  }
-  delete[] requests;
-  Request::unref(&request);
-  return MPI_SUCCESS;
+  return Colls::finish_nbc_request(request);
 }
 
 int Coll_allgatherv_default::allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
@@ -100,19 +83,8 @@ int Coll_scatter_default::scatter(void *sendbuf, int sendcount, MPI_Datatype sen
 {
   MPI_Request request;
   Colls::iscatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm, &request);
-  MPI_Request* requests = request->get_nbc_requests();
-  int count = request->get_nbc_requests_size();
-  Request::waitall(count, requests, MPI_STATUS_IGNORE);
-  for (int dst = 0; dst < count; dst++) {
-    if(requests[dst]!=MPI_REQUEST_NULL)
-      Request::unref(&requests[dst]);
-  }
-  delete[] requests;
-  Request::unref(&request);
-  return MPI_SUCCESS;
+  return Colls::finish_nbc_request(request);
 }
-
-
 
 int Coll_reduce_default::reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
                      MPI_Comm comm)
@@ -201,18 +173,8 @@ int Coll_alltoallv_default::alltoallv(void *sendbuf, int *sendcounts, int *sendd
                               void *recvbuf, int *recvcounts, int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm)
 {
   MPI_Request request;
-  int err = Colls::ialltoallv(sendbuf, sendcounts, senddisps, sendtype, recvbuf, recvcounts, recvdisps, recvtype, comm, &request);
-  MPI_Request* requests = request->get_nbc_requests();
-  int count = request->get_nbc_requests_size();
-  XBT_DEBUG("<%d> wait for %d requests", comm->rank(), count);
-  Request::waitall(count, requests, MPI_STATUS_IGNORE);
-  for (int i = 0; i < count; i++) {
-    if(requests[i]!=MPI_REQUEST_NULL)
-      Request::unref(&requests[i]);
-  }
-  delete[] requests;
-  Request::unref(&request);
-  return err;
+  Colls::ialltoallv(sendbuf, sendcounts, senddisps, sendtype, recvbuf, recvcounts, recvdisps, recvtype, comm, &request);
+  return Colls::finish_nbc_request(request);
 }
 
 }
