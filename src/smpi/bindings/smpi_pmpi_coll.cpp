@@ -70,6 +70,9 @@ int PMPI_Ibcast(void *buf, int count, MPI_Datatype datatype,
         simgrid::smpi::Colls::bcast(buf, count, datatype, root, comm);
       else
         simgrid::smpi::Colls::ibcast(buf, count, datatype, root, comm, request);
+    } else {
+      if(request!=MPI_REQUEST_IGNORED)
+        *request = MPI_REQUEST_NULL;
     }
     retval = MPI_SUCCESS;
 
