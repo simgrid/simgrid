@@ -45,10 +45,11 @@ MSG:
 SMPI:
  - Change the way SMPI_SAMPLE_* macros work to avoid invalidating cache 
    too often and provide more accurate timings.
- - Add -gdb and -lldb shortcuts to help debug MPI codes with smpirun
+ - Add -gdb, -lldb, and -vgdb shortcuts to help debug MPI codes with smpirun
+ - MPI_Alltoallw support
  - Partial MPI nonblocking collectives implementation: MPI_Ibcast, MPI_Ibarrier,
    MPI_Iallgather, MPI_Iallgatherv, MPI_Ialltoall, MPI_Ialltoallv, MPI_Igather,
-   MPI_Igatherv, MPI_Iscatter, MPI_Iscatterv.
+   MPI_Igatherv, MPI_Iscatter, MPI_Iscatterv, MPI_Ialltoallw.
  - MPI_Request_get_status, MPI_Status_set_cancelled, MPI_Status_set_elements 
    support
  - Basic implementation of generalized requests (SMPI doesn't 
