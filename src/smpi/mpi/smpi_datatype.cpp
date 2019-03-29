@@ -123,7 +123,7 @@ Datatype::Datatype(char* name, int ident, int size, MPI_Aint lb, MPI_Aint ub, in
 #endif
 }
 
-Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_), refcount_(1)
+Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), size_(datatype->size_), lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_), refcount_(1)
 {
   flags_ &= ~DT_FLAG_PREDEFINED;
   *ret = MPI_SUCCESS;

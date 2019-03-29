@@ -9,31 +9,25 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
  
-  foreach(test allgather2 allgather3 allgather_struct 
-               allgatherv2 allgatherv3
-	       allred2 allred3 allred4 allred5 allred6 allredmany
-	       alltoall1 alltoallv0 alltoallv
-	     # alltoallw1 alltoallw2 alltoallw_zeros
-	       bcasttest bcastzerotype 
-	       coll2 coll3 coll4 coll5 coll6 coll7 coll8 coll9 coll10 coll11 coll12 coll13
-	       exscan exscan2 
-	       gather gather2 gather_big
-               ibarrier nonblocking
-	     # iallred icallgather icallgatherv icallreduce
-             # icalltoall icalltoallv icalltoallw icbarrier icbcast
-	     # icgather icgatherv icreduce icscatter icscatterv
-	       longuser
-	     # nonblocking2 nonblocking3 
-	     # opband opbor opbxor opland oplor oplxor opmax opmaxloc
-             # opmin opminloc opprod opsum
-	       op_commutative
-	       red3 red4 redscat2 redscat3 redscatbkinter redscatblk3
-               redscat red_scat_block red_scat_block2
-	     # redscatinter
-	       reduce_local
-	       scantst scatter2 scatter3 scattern scatterv
-	     # uoplong
-	       )
+  foreach(test allgather2 allgather3 allgather_struct allgatherv2 allgatherv3
+          allred2 allred3 allred4 allred5 allred6 allredmany alltoall1 
+          alltoallv0 alltoallv
+        # alltoallw1 alltoallw2 alltoallw_zeros
+          bcasttest bcastzerotype coll2 coll3 coll4 coll5 coll6 coll7 coll8
+          coll9 coll10 coll11 coll12 coll13 exscan exscan2 gather gather2 
+          gather_big ibarrier longuser nonblocking nonblocking2
+        # iallred icallgather icallgatherv icallreduce
+        # icalltoall icalltoallv icalltoallw icbarrier icbcast
+        # icgather icgatherv icreduce icscatter icscatterv
+        # nonblocking3 
+        # opband opbor opbxor opland oplor oplxor opmax opmaxloc
+        # opmin opminloc opprod opsum
+          op_commutative red3 red4 redscat2 redscat3 redscatbkinter redscatblk3
+          redscat red_scat_block red_scat_block2
+        # redscatinter
+          reduce_local scantst scatter2 scatter3 scattern scatterv
+        # uoplong
+         )
     add_executable(${test} EXCLUDE_FROM_ALL ${test}.c)
     add_dependencies(tests ${test})
     target_link_libraries(${test} simgrid mtest_c)
