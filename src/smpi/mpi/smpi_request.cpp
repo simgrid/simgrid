@@ -782,6 +782,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
       nsleeps++;
   }
   unref(&request);
+  xbt_assert(request == MPI_REQUEST_NULL);
 }
 
 void Request::finish_wait(MPI_Request* request, MPI_Status * status)
