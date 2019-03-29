@@ -47,8 +47,8 @@ int main(int argc, char **argv)
     int *recvcounts = NULL;
     int *sdispls = NULL;
     int *rdispls = NULL;
-    int *sendtypes = NULL;
-    int *recvtypes = NULL;
+    MPI_Datatype *sendtypes = NULL;
+    MPI_Datatype *recvtypes = NULL;
     signed char *buf_alias = NULL;
     MPI_Request req;
 
@@ -422,27 +422,27 @@ int main(int argc, char **argv)
 /*    }*/
 
     /* MPI_Ialltoallw (a weak test, neither irregular nor sparse) */
-/*    for (i = 0; i < size; ++i) {*/
-/*        sendcounts[i] = COUNT;*/
-/*        recvcounts[i] = COUNT;*/
-/*        sdispls[i] = COUNT * i * sizeof(int);*/
-/*        rdispls[i] = COUNT * i * sizeof(int);*/
-/*        sendtypes[i] = MPI_INT;*/
-/*        recvtypes[i] = MPI_INT;*/
-/*        for (j = 0; j < COUNT; ++j) {*/
-/*            buf[i * COUNT + j] = rank + (i * j);*/
-/*            recvbuf[i * COUNT + j] = 0xdeadbeef;*/
-/*        }*/
-/*    }*/
-/*    MPI_Ialltoallw(buf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes,*/
-/*                   MPI_COMM_WORLD, &req);*/
-/*    MPI_Wait(&req, MPI_STATUS_IGNORE);*/
-/*    for (i = 0; i < size; ++i) {*/
-/*        for (j = 0; j < COUNT; ++j) {*/
-            /*printf("recvbuf[%d*COUNT+%d]=%d, expecting %d\n", i, j, recvbuf[i*COUNT+j], (i + (rank * j))); */
-/*            my_assert(recvbuf[i * COUNT + j] == (i + (rank * j)));*/
-/*        }*/
-/*    }*/
+    for (i = 0; i < size; ++i) {
+        sendcounts[i] = COUNT;
+        recvcounts[i] = COUNT;
+        sdispls[i] = COUNT * i * sizeof(int);
+        rdispls[i] = COUNT * i * sizeof(int);
+        sendtypes[i] = MPI_INT;
+        recvtypes[i] = MPI_INT;
+        for (j = 0; j < COUNT; ++j) {
+            buf[i * COUNT + j] = rank + (i * j);
+            recvbuf[i * COUNT + j] = 0xdeadbeef;
+        }
+    }
+    MPI_Ialltoallw(buf, sendcounts, sdispls, sendtypes, recvbuf, recvcounts, rdispls, recvtypes,
+                   MPI_COMM_WORLD, &req);
+    MPI_Wait(&req, MPI_STATUS_IGNORE);
+    for (i = 0; i < size; ++i) {
+        for (j = 0; j < COUNT; ++j) {
+/*            printf("recvbuf[%d*COUNT+%d]=%d, expecting %d\n", i, j, recvbuf[i*COUNT+j], (i + (rank * j))); */
+            my_assert(recvbuf[i * COUNT + j] == (i + (rank * j)));
+        }
+    }
 
     if (rank == 0)
         printf(" No Errors\n");

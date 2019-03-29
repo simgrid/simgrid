@@ -11,8 +11,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
  
   foreach(test allgather2 allgather3 allgather_struct allgatherv2 allgatherv3
           allred2 allred3 allred4 allred5 allred6 allredmany alltoall1 
-          alltoallv0 alltoallv
-        # alltoallw1 alltoallw2 alltoallw_zeros
+          alltoallv0 alltoallv alltoallw1 alltoallw2 alltoallw_zeros
           bcasttest bcastzerotype coll2 coll3 coll4 coll5 coll6 coll7 coll8
           coll9 coll10 coll11 coll12 coll13 exscan exscan2 gather gather2 
           gather_big ibarrier longuser nonblocking nonblocking2
