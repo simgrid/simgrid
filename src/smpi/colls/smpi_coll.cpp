@@ -282,5 +282,23 @@ int Colls::exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype
   return MPI_SUCCESS;
 }
 
+int Colls::alltoallw(void *sendbuf, int *sendcounts, int *senddisps, MPI_Datatype* sendtypes,
+                              void *recvbuf, int *recvcounts, int *recvdisps, MPI_Datatype* recvtypes, MPI_Comm comm)
+{
+  MPI_Request request;
+  int err = Colls::ialltoallw(sendbuf, sendcounts, senddisps, sendtypes, recvbuf, recvcounts, recvdisps, recvtypes, comm, &request);
+  MPI_Request* requests = request->get_nbc_requests();
+  int count = request->get_nbc_requests_size();
+  XBT_DEBUG("<%d> wait for %d requests", comm->rank(), count);
+  Request::waitall(count, requests, MPI_STATUS_IGNORE);
+  for (int i = 0; i < count; i++) {
+    if(requests[i]!=MPI_REQUEST_NULL)
+      Request::unref(&requests[i]);
+  }
+  delete[] requests;
+  Request::unref(&request);
+  return err;
+}
+
 }
 }

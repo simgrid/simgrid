@@ -197,8 +197,6 @@ int Coll_alltoall_default::alltoall( void *sbuf, int scount, MPI_Datatype sdtype
   return Coll_alltoall_ompi::alltoall(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
 }
 
-
-
 int Coll_alltoallv_default::alltoallv(void *sendbuf, int *sendcounts, int *senddisps, MPI_Datatype sendtype,
                               void *recvbuf, int *recvcounts, int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm)
 {

@@ -115,7 +115,10 @@ public:
                       MPI_Datatype recvtype, int root, MPI_Comm comm);
   static int scan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
   static int exscan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
-  
+  static int alltoallw
+         (void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype* sendtypes, void* recvbuf, int* recvcounts,
+          int* recvdisps, MPI_Datatype* recvtypes, MPI_Comm comm);
+
   //async collectives
   static int ibarrier(MPI_Comm comm, MPI_Request* request);
   static int ibcast(void *buf, int count, MPI_Datatype datatype, 
@@ -149,6 +152,9 @@ public:
   static int ialltoallv
          (void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype sendtype, void* recvbuf, int* recvcounts,
           int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request);
+  static int ialltoallw
+         (void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype* sendtypes, void* recvbuf, int* recvcounts,
+          int* recvdisps, MPI_Datatype* recvtypes, MPI_Comm comm, MPI_Request *request);
 
 
   static void (*smpi_coll_cleanup_callback)();

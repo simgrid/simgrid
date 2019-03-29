@@ -600,7 +600,9 @@ MPI_CALL(XBT_PUBLIC int, MPI_Ialltoall, (void* sendbuf, int sendcount, MPI_Datat
 MPI_CALL(XBT_PUBLIC int, MPI_Ialltoallv,
          (void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype sendtype, void* recvbuf, int* recvcounts,
           int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request));
-          
+MPI_CALL(XBT_PUBLIC int, MPI_Ialltoallw,
+         (void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype* sendtypes, void* recvbuf, int* recvcounts,
+          int* recvdisps, MPI_Datatype* recvtypes, MPI_Comm comm, MPI_Request *request));
 MPI_CALL(XBT_PUBLIC int, MPI_Gather, (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                                       MPI_Datatype recvtype, int root, MPI_Comm comm));
 MPI_CALL(XBT_PUBLIC int, MPI_Gatherv, (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,

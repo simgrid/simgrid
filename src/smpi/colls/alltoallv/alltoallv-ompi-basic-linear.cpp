@@ -56,7 +56,7 @@ Coll_alltoallv_ompi_basic_linear::alltoallv(void *sbuf, int *scounts, int *sdisp
 
     /* Post all receives first */
     for (i = 0; i < size; ++i) {
-        if (i == rank || 0 == rcounts[i]) {
+        if (i == rank) {
             continue;
         }
 
@@ -72,7 +72,7 @@ Coll_alltoallv_ompi_basic_linear::alltoallv(void *sbuf, int *scounts, int *sdisp
 
     /* Now post all sends */
     for (i = 0; i < size; ++i) {
-        if (i == rank || 0 == scounts[i]) {
+        if (i == rank) {
             continue;
         }
 
