@@ -15,8 +15,14 @@ namespace activity {
 
   /** Used to implement mutexes, semaphores and conditions */
 class XBT_PUBLIC RawImpl : public ActivityImpl {
+  sg_host_t host_ = nullptr;
+  double timeout_ = -1;
+
 public:
-  RawImpl* start(s4u::Host* host, double timeout);
+  RawImpl& set_host(s4u::Host* host);
+  RawImpl& set_timeout(double timeout);
+
+  RawImpl* start();
   void suspend() override;
   void resume() override;
   void post() override;

@@ -18,9 +18,9 @@ class XBT_PUBLIC SleepImpl : public ActivityImpl {
   double duration_ = 0;
 
 public:
-  SleepImplPtr set_name(const std::string& name);
-  SleepImplPtr set_host(s4u::Host* host);
-  SleepImplPtr set_duration(double duration);
+  SleepImpl& set_name(const std::string& name);
+  SleepImpl& set_host(s4u::Host* host);
+  SleepImpl& set_duration(double duration);
   void post() override;
   void finish() override;
   SleepImpl* start();

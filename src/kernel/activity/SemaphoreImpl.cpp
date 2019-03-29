@@ -18,7 +18,8 @@ void SemaphoreImpl::acquire(actor::ActorImpl* issuer, double timeout)
 
   XBT_DEBUG("Wait semaphore %p (timeout:%f)", this, timeout);
   if (value_ <= 0) {
-    synchro = RawImplPtr(new RawImpl())->start(issuer->get_host(), timeout);
+    synchro = RawImplPtr(new RawImpl());
+    (*synchro).set_host(issuer->get_host()).set_timeout(timeout).start();
     synchro->simcalls_.push_front(&issuer->simcall);
     issuer->waiting_synchro = synchro;
     sleeping_.push_back(*issuer);

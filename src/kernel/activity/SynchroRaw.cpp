@@ -20,9 +20,20 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-RawImpl* RawImpl::start(s4u::Host* host, double timeout)
+RawImpl& RawImpl::set_host(s4u::Host* host)
 {
-  surf_action_ = host->pimpl_cpu->sleep(timeout);
+  host_ = host;
+  return *this;
+}
+RawImpl& RawImpl::set_timeout(double timeout)
+{
+  timeout_ = timeout;
+  return *this;
+}
+
+RawImpl* RawImpl::start()
+{
+  surf_action_ = host_->pimpl_cpu->sleep(timeout_);
   surf_action_->set_data(this);
   return this;
 }

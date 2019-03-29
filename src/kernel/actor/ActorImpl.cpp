@@ -413,11 +413,9 @@ activity::ActivityImplPtr ActorImpl::sleep(double duration)
     throw_exception(std::make_exception_ptr(simgrid::HostFailureException(
         XBT_THROW_POINT, std::string("Host ") + host_->get_cname() + " failed, you cannot sleep there.")));
 
-  return activity::SleepImplPtr(new activity::SleepImpl())
-      ->set_name("sleep")
-      ->set_host(host_)
-      ->set_duration(duration)
-      ->start();
+  activity::SleepImpl* sleep = new activity::SleepImpl();
+  (*sleep).set_name("sleep").set_host(host_).set_duration(duration).start();
+  return activity::SleepImplPtr(sleep);
 }
 
 void ActorImpl::throw_exception(std::exception_ptr e)

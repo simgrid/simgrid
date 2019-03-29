@@ -101,7 +101,8 @@ void ConditionVariableImpl::wait(smx_mutex_t mutex, double timeout, actor::Actor
     mutex->unlock(issuer);
   }
 
-  synchro = RawImplPtr(new RawImpl())->start(issuer->get_host(), timeout);
+  synchro = RawImplPtr(new RawImpl());
+  (*synchro).set_host(issuer->get_host()).set_timeout(timeout).start();
   synchro->simcalls_.push_front(simcall);
   issuer->waiting_synchro = synchro;
   sleeping_.push_back(*simcall->issuer);
