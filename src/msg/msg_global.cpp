@@ -39,25 +39,11 @@ void MSG_init_nocheck(int *argc, char **argv) {
     SIMIX_global_init(argc, argv);
 
     msg_global = new MSG_Global_t();
-    if (not simgrid::msg::ActorUserData::EXTENSION_ID.valid())
-      simgrid::msg::ActorUserData::EXTENSION_ID = simgrid::s4u::Actor::extension_create<simgrid::msg::ActorUserData>();
 
     msg_global->sent_msg = 0;
     msg_global->task_copy_callback = nullptr;
     msg_global->process_data_cleanup = nullptr;
-
-    simgrid::s4u::Actor::on_creation.connect([](simgrid::s4u::Actor& actor) {
-      XBT_DEBUG("creating the extension to store user data");
-      actor.extension_set(new simgrid::msg::ActorUserData());
-    });
-
-    simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::Actor const& actor) {
-      // free the data if a function was provided
-      void* userdata = actor.extension<simgrid::msg::ActorUserData>()->get_user_data();
-      if (userdata && msg_global->process_data_cleanup) {
-        msg_global->process_data_cleanup(userdata);
-      }
-    });
+    MSG_process_userdata_init();
   }
 
   if(MC_is_active()){
