@@ -811,8 +811,11 @@ int PMPI_Ialltoallw(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype
     MPI_Datatype* sendtmptypes = sendtypes;
     unsigned long maxsize                = 0;
     for (int i = 0; i < size; i++) { // copy data to avoid bad free
-      if(recvtypes[i]==MPI_DATATYPE_NULL)
+      if(recvtypes[i]==MPI_DATATYPE_NULL){
+        delete trace_recvcounts;
+        delete trace_sendcounts;
         return MPI_ERR_TYPE;
+      }
       recv_size += recvcounts[i] * recvtypes[i]->size();
       trace_recvcounts->push_back(recvcounts[i] * recvtypes[i]->size());
       if ((recvdisps[i] + (recvcounts[i] * recvtypes[i]->size())) > maxsize)
