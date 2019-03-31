@@ -120,7 +120,6 @@ public:
           int* recvdisps, MPI_Datatype* recvtypes, MPI_Comm comm);
 
   //async collectives
-  static int finish_nbc_request(MPI_Request request);//helper
   static int ibarrier(MPI_Comm comm, MPI_Request* request);
   static int ibcast(void *buf, int count, MPI_Datatype datatype, 
                    int root, MPI_Comm comm, MPI_Request* request);

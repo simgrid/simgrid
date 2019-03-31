@@ -115,19 +115,6 @@ void Colls::set_collectives(){
   }
 }
 
-int Colls::finish_nbc_request(MPI_Request request){
-  MPI_Request* requests = request->get_nbc_requests();
-  int count = request->get_nbc_requests_size();
-  Request::waitall(count, requests, MPI_STATUS_IGNORE);
-  for (int i = 0; i < count; i++) {
-    if(requests[i]!=MPI_REQUEST_NULL)
-      Request::unref(&requests[i]);
-  }
-  delete[] requests;
-  Request::unref(&request);
-  return MPI_SUCCESS;
-}
-
 //Implementations of the single algorith collectives
 
 int Colls::gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int *recvcounts, int *displs,
@@ -135,7 +122,7 @@ int Colls::gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *re
 {
   MPI_Request request;
   Colls::igatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, comm, &request);
-  return Colls::finish_nbc_request(request);
+  return Request::wait(&request, MPI_STATUS_IGNORE);
 }
 
 
@@ -144,7 +131,7 @@ int Colls::scatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype se
 {
   MPI_Request request;
   Colls::iscatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm, &request);
-  return Colls::finish_nbc_request(request);
+  return Request::wait(&request, MPI_STATUS_IGNORE);
 }
 
 
@@ -280,8 +267,8 @@ int Colls::alltoallw(void *sendbuf, int *sendcounts, int *senddisps, MPI_Datatyp
                               void *recvbuf, int *recvcounts, int *recvdisps, MPI_Datatype* recvtypes, MPI_Comm comm)
 {
   MPI_Request request;
-  Colls::ialltoallw(sendbuf, sendcounts, senddisps, sendtypes, recvbuf, recvcounts, recvdisps, recvtypes, comm, &request);
-  return Colls::finish_nbc_request(request);
+  Colls::ialltoallw(sendbuf, sendcounts, senddisps, sendtypes, recvbuf, recvcounts, recvdisps, recvtypes, comm, &request);  
+  return Request::wait(&request, MPI_STATUS_IGNORE);
 }
 
 }
