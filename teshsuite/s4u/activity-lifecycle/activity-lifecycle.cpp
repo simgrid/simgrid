@@ -291,7 +291,7 @@ static void test_comm_dsend_and_quit_get_before_put()
   bool recv_done  = false;
 
   simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[1], [&dsend_done]() {
-    //assert_exit(false, 2);
+    assert_exit(false, 2);
     char* payload = xbt_strdup("toto");
     simgrid::s4u::this_actor::sleep_for(2);
     simgrid::s4u::Mailbox::by_name("mb")->put_init(payload, 1000)->detach();
@@ -300,7 +300,7 @@ static void test_comm_dsend_and_quit_get_before_put()
   });
 
   simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
-    //assert_exit(false, 3);
+    assert_exit(false, 3);
     void* payload = simgrid::s4u::Mailbox::by_name("mb")->get();
     xbt_free(payload);
     recv_done = true;
@@ -421,7 +421,7 @@ static void main_dispatcher()
 
   run_test("comm", test_comm);
   run_test("comm dsend and quit (put before get)", test_comm_dsend_and_quit_put_before_get);
-  // run_test("comm dsend and quit (get before put)", test_comm_dsend_and_quit_get_before_put); FAILING
+  run_test("comm dsend and quit (get before put)", test_comm_dsend_and_quit_get_before_put);
   run_test("comm kill sender", test_comm_killsend);
 
   //run_test("comm recv and kill", test_host_off_while_receive);

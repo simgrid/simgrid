@@ -27,9 +27,9 @@ $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 4 --log=no_loc
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Turn Jupiter off
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO] Test 4 is ok.  (number of Process : 2, it should be 1 or 2 if RX has not been satisfied). An exception is raised when we turn off a node that has a process sleeping
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Test done. See you!
-> [Tremblay:commRX:(2) 20.000000] [msg_test/INFO]   Receive message: TRANSFER_FAILURE
-> [Tremblay:commRX:(2) 20.000000] [msg_test/INFO]   RX Done
-> [20.000000] [msg_test/INFO] Simulation time 20
+> [Tremblay:commRX:(2) 25.033047] [msg_test/INFO]   Receive message: COMM
+> [Tremblay:commRX:(2) 25.033047] [msg_test/INFO]   RX Done
+> [25.033047] [msg_test/INFO] Simulation time 25.033
 
 $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 5 --log=no_loc
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 5 (turn off dest during a communication : Create a Process/task to make a communication between Tremblay and Jupiter and turn off Jupiter during the communication
