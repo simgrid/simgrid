@@ -3,9 +3,9 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \|___ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | __) |
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/ / __/
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|_____|
-               (not released)
+               April 1. 2019
 
-The Sneaky Release.
+The Easter Chrismas Release (this one is somewhat late).
 
  * Introducing the Python bindings (still beta)
  * Doc: SMPI tutorial and platform description ported to RTD
