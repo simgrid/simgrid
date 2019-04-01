@@ -81,21 +81,26 @@ examples.
 Simple Example with 3 hosts
 ...........................
 
-At the most basic level, you can describe your simulated platform as a
-graph of hosts and network links. For instance:
+Imagine you want to describe a little platform with three hosts,
+interconnected as follows:
 
 .. image:: /tuto_smpi/3hosts.png
    :align: center
 
+This can be done with the following platform file, that considers the
+simulated platform as a graph of hosts and network links.
+	   
 .. literalinclude:: /tuto_smpi/3hosts.xml
    :language: xml
 
-Note the way in which hosts, links, and routes are defined in
-this XML. All hosts are defined with a speed (in Gflops), and links
-with a latency (in us) and bandwidth (in MBytes per second). Other
-units are possible and written as expected. Routes specify the list of
-links encountered from one route to another. Routes are symmetrical by
-default.
+The elements basic elements (with :ref:`pf_tag_host` and
+:ref:`pf_tag_link`) are described first, and then the routes between
+any pair of hosts are explicitely given with :ref:`pf_tag_route`. Any
+host must be given a computational speed (in flops) while links must
+be given a latency (in seconds) and a bandwidth (in bytes per
+second). Note that you can write 1Gflops instead of 1000000000flops,
+and similar. Last point: :ref:`pf_tag_route`s are symmetrical by
+default (but this can be changed).
 
 Cluster with a Crossbar
 .......................

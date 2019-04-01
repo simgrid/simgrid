@@ -1,67 +1,6 @@
 /*! @page platform Describing the virtual platform
 
 
-
-As usual, SimGrid is a versatile framework, and you should find the
-way of describing your platform that best fits your experimental
-practice. 
-
-@section pf_first_example First Platform Example 
-
-Here is a very simple platform file, containing 3 resources (two hosts
-and one link), and explicitly giving the route between the hosts.
-
-@code{.xml}
-<?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-<platform version="4.1">
-  <zone id="first zone" routing="Full">
-    <!-- the resources -->
-    <host id="host1" speed="1Mf"/>
-    <host id="host2" speed="2Mf"/>
-    <link id="link1" bandwidth="125MBps" latency="100us"/>
-    <!-- the routing: specify how the hosts are interconnected -->
-    <route src="host1" dst="host2">
-      <link_ctn id="link1"/>
-    </route>
-  </zone>
-</platform>
-@endcode
-
-
-Then, every resource (specified with @ref pf_tag_host, @ref
-pf_tag_link or others) must be located within a given **networking
-zone**.  Each zone is in charge of the routing between its
-resources. It means that when an host wants to communicate with
-another host of the same zone, it is the zone's duty to find the list
-of links that are involved in the communication. Here, since the @ref
-pf_tag_zone tag has **Full** as a **routing attribute**, all routes
-must be explicitely given using the @ref pf_tag_route and @ref
-pf_tag_linkctn tags (this @ref pf_rm "routing model" is both simple
-and inefficient :) It is OK to not specify the route between two
-hosts, as long as the processes located on them never try to
-communicate together.
-
-A zone can contain several zones itself, leading to a hierarchical
-decomposition of the platform. This can be more efficient (as the
-inter-zone routing gets factorized with @ref pf_tag_zoneroute), and
-allows to have more than one routing model in your platform. For
-example, you could have a coordinate-based routing for the WAN parts
-of your platforms, a full routing within each datacenter, and a highly
-optimized routing within each cluster of the datacenter.  In this
-case, determining the route between two given hosts gets @ref
-routing_basics "somewhat more complex" but SimGrid still computes
-these routes for you in a time- and space-efficient manner.
-Here is an illustration of these concepts:
-
-![A hierarchy of networking zones.](AS_hierarchy.png)
-
-Circles represent processing units and squares represent network
-routers. Bold lines represent communication links. The zone "AS2"
-models the core of a national network interconnecting a small flat
-cluster (AS4) and a larger hierarchical cluster (AS5), a subset of a
-LAN (AS6), and a set of peers scattered around the world (AS7).
-
 @section pf_res Resource description
 
 @subsection pf_res_computing Computing Resources
@@ -699,29 +638,6 @@ eventually, when the routing tables have stabilized, your packets will follow
 the shortest paths.
 
 @subsection  pf_tag_zone &lt;zone&gt;
-
-Before SimGrid v3.16, networking zones used to be called Autonomous
-Systems, but this was misleading as zones may include other zones in a
-hierarchical manner. If you find any remaining reference to network
-zones, please report this as a bug.
-
-Attribute   | Value                                             | Description
------------ | ------------------------------------------------- | ----------------------------------------------
-id          | String (mandatory)                                | The identifier of this zone (must be unique)
-routing     | One of the existing routing algorithm (mandatory) | See Section @ref pf_rm for details.
-
-<b>Example:</b>
-@code
-<zone id="zone0" routing="Full">
-   <host id="host1" speed="1000000000"/>
-   <host id="host2" speed="1000000000"/>
-   <link id="link1" bandwidth="125000000" latency="0.000100"/>
-   <route src="host1" dst="host2"><link_ctn id="link1"/></route>
-</zone>
-@endcode
-
-In this example, zone0 contains two hosts (host1 and host2). The route
-between the hosts goes through link1.
 
 @subsection pf_rm Routing models
 

@@ -30,7 +30,6 @@ Welcome to SimGrid's documentation!
          The MSG Interface <app_msg.rst>
          The Java Bindings <app_java.rst>
       Describing the Simulated Platform <platform.rst>
-         Examples <platform_examples.rst>
          Modeling Hints <platform_howtos.rst>
          DTD Reference <platform_reference.rst>
       Describing the Experimental Scenario <scenario.rst>

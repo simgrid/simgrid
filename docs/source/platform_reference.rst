@@ -221,6 +221,25 @@ single element.
 :``state_file``: File containing the state profile. See :ref:`pf_tag_host`.
 
 |hr|
+	    
+.. _pf_tag_link_ctn:
+
+------------------------------------------------------------------
+<link_ctn>
+------------------------------------------------------------------
+
+An element in a route, representing a previously defined link.
+
+**Parent tags:** :ref:`pf_tag_route` |br| 
+**Children tags:** none |br|
+**Attributes:**
+
+:``id``: Link that is to be included in this route.
+:``direction``: Whether to use the uplink (with ``UP``) or downlink
+		(with ``DOWN``) of the link. This is only valid if the
+		link has ``sharing=SPLITDUPLEX``.
+
+|hr|
 
 .. _pf_tag_peer:
 
@@ -315,6 +334,26 @@ following functions:
 :``value``: Value of the defined property.
 
 |hr|
+	    
+.. _pf_tag_route:
+
+------------------------------------------------------------------
+<route>
+------------------------------------------------------------------
+
+A path between two network locations, composed of several :ref:`pf_tag_link`s. 
+
+**Parent tags:** :ref:`pf_tag_zone` |br| 
+**Children tags:** :ref:`pf_tag_link_ctn` |br|
+**Attributes:**
+
+:``src``: Host from which this route starts. Must be an existing host.
+:``dst``: Host to which this route leads. Must be an existing host.
+:``symmetrical``: Whether this route is symmetrical, ie, whether we
+		  are defining the route ``dst -> src`` at the same
+		  time. Valid values: ``yes``, ``no``,``YES``, ``NO``.
+
+|hr|
 
 .. _pf_tag_router:
 
@@ -334,6 +373,28 @@ break the routes that are longer than 1 hop.
 :``id``: Router name.
    No other host or router may have the same name over the whole platform.
 :``coordinates``: Vivaldi coordinates. See :ref:`pf_tag_peer`.	    
+
+|hr|
+
+.. _pf_tag_zone:
+
+------------------------------------------------------------------
+<zone>
+------------------------------------------------------------------
+
+A networking zone is an area in which elements are located. See :cpp:class:`simgrid::s4u::Zone`.
+
+**Parent tags:** :ref:`pf_tag_platform`, :ref:`pf_tag_zone` (only internal nodes, i.e., zones
+containing only inner zones or clusters but no basic
+elements such as host or peer) |br| 
+**Children tags (if internal zone):** :ref:`pf_tag_cluster`, :ref:`pf_tag_link`, :ref:`pf_tag_zone` |br|
+**Children tags (if leaf zone):** :ref:`pf_tag_host`, :ref:`pf_tag_link`, :ref:`pf_tag_peer` |br|
+**Attributes:**
+
+:``id``: Zone name.
+   No other zone may have the same name over the whole platform.
+:``routing``: Routing algorithm to use. 
+
 
 .. |br| raw:: html
 

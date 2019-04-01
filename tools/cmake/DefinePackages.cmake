@@ -888,7 +888,6 @@ set(DOC_SOURCES
   docs/source/Start_Your_Own_Project.rst
   docs/source/models.rst
   docs/source/platform.rst
-  docs/source/platform_examples.rst
   docs/source/platform_howtos.rst
   docs/source/platform_reference.rst
   docs/source/Configuring_SimGrid.rst
