@@ -71,13 +71,13 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
     other_comm->state_ = SIMIX_READY;
     other_comm->set_type(simgrid::kernel::activity::CommImpl::Type::READY);
   }
-  src_proc->comms.push_back(other_comm);
 
   if (detached) {
     other_comm->detached  = true;
     other_comm->clean_fun = clean_fun;
   } else {
     other_comm->clean_fun = nullptr;
+    src_proc->comms.push_back(other_comm);
   }
 
   /* Setup the communication synchro */
@@ -88,12 +88,10 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
   other_comm->match_fun     = match_fun;
   other_comm->copy_data_fun = copy_data_fun;
 
-  if (MC_is_active() || MC_record_replay_is_active()) {
+  if (MC_is_active() || MC_record_replay_is_active())
     other_comm->state_ = SIMIX_RUNNING;
-    return (detached ? nullptr : other_comm);
-  }
-
-  other_comm->start();
+  else
+    other_comm->start();
 
   return (detached ? nullptr : other_comm);
 }
