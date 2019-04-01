@@ -501,5 +501,40 @@ int Colls::ireduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
   }
   return MPI_SUCCESS;
 }
+
+int Colls::iallreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
+                      MPI_Op op, MPI_Comm comm, MPI_Request* request)
+{
+
+  const int system_tag = COLL_TAG_ALLREDUCE;
+  MPI_Aint lb = 0;
+  MPI_Aint dataext = 0;
+  MPI_Request *requests;
+
+  int rank = comm->rank();
+  int size = comm->size();
+  (*request) = new Request( recvbuf, count, datatype,
+                         rank,rank, COLL_TAG_ALLREDUCE, comm, MPI_REQ_PERSISTENT, op);
+  // FIXME: check for errors
+  datatype->extent(&lb, &dataext);
+  // Local copy from self
+  Datatype::copy(sendbuf, count, datatype, recvbuf, count, datatype);
+  // Send/Recv buffers to/from others;
+  requests = new MPI_Request[2 * (size - 1)];
+  int index = 0;
+  for (int other = 0; other < size; other++) {
+    if(other != rank) {
+      requests[index] = Request::isend_init(sendbuf, count, datatype, other, system_tag,comm);
+      index++;
+      requests[index] = Request::irecv_init(smpi_get_tmp_sendbuffer(count * dataext), count, datatype,
+                                        other, system_tag, comm);
+      index++;
+    }
+  }
+  Request::startall(2 * (size - 1), requests);
+  (*request)->set_nbc_requests(requests, 2 * (size - 1));
+  return MPI_SUCCESS;
+}
+
 }
 }

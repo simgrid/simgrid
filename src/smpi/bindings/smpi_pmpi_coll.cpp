@@ -455,11 +455,7 @@ int PMPI_Iallreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype dataty
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
-  } else if (request != MPI_REQUEST_IGNORED) {
-    xbt_die("Iallreduce is not yet implemented. WIP");
-    retval = MPI_ERR_ARG;
   } else {
-
     char* sendtmpbuf = static_cast<char*>(sendbuf);
     if( sendbuf == MPI_IN_PLACE ) {
       sendtmpbuf = static_cast<char*>(xbt_malloc(count*datatype->get_extent()));
@@ -472,10 +468,10 @@ int PMPI_Iallreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype dataty
                                                       datatype->is_replayable() ? count : count * datatype->size(), -1,
                                                       simgrid::smpi::Datatype::encode(datatype), ""));
 
-//    if(request == MPI_REQUEST_IGNORED)
+    if(request == MPI_REQUEST_IGNORED)
       simgrid::smpi::Colls::allreduce(sendtmpbuf, recvbuf, count, datatype, op, comm);
-//    else
-//      simgrid::smpi::Colls::iallreduce(sendtmpbuf, recvbuf, count, datatype, op, comm, request);
+    else
+      simgrid::smpi::Colls::iallreduce(sendtmpbuf, recvbuf, count, datatype, op, comm, request);
 
     if( sendbuf == MPI_IN_PLACE )
       xbt_free(sendtmpbuf);

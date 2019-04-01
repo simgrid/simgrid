@@ -871,11 +871,13 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
         void * buf=(*request)->nbc_requests_[i]->buf_;
         if((*request)->old_type_->flags() & DT_FLAG_DERIVED)
           buf=(*request)->nbc_requests_[i]->old_buf_;
-        if((*request)->op_!=MPI_OP_NULL){
-          int count=(*request)->size_/ (*request)->old_type_->size();
-          (*request)->op_->apply(buf, (*request)->buf_, &count, (*request)->old_type_);
+        if((*request)->nbc_requests_[i]->flags_ & MPI_REQ_RECV ){
+          if((*request)->op_!=MPI_OP_NULL){
+            int count=(*request)->size_/ (*request)->old_type_->size();
+            (*request)->op_->apply(buf, (*request)->buf_, &count, (*request)->old_type_);
+          }
+          smpi_free_tmp_buffer(buf);
         }
-        smpi_free_tmp_buffer(buf);
       }
       if((*request)->nbc_requests_[i]!=MPI_REQUEST_NULL)
         Request::unref(&((*request)->nbc_requests_[i]));

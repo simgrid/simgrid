@@ -117,7 +117,7 @@ int main(int argc, char **argv)
     if (rank == 0) {
         for (i = 0; i < COUNT; ++i) {
             if (recvbuf[i] != ((size * (size - 1) / 2) + (i * size)))
-                printf("aa got recvbuf[%d]=%d, expected %d\n", i, recvbuf[i],
+                printf("got recvbuf[%d]=%d, expected %d\n", i, recvbuf[i],
                        ((size * (size - 1) / 2) + (i * size)));
             my_assert(recvbuf[i] == ((size * (size - 1) / 2) + (i * size)));
         }
@@ -145,18 +145,18 @@ int main(int argc, char **argv)
     }
 
     /* MPI_Iallreduce */
-/*    for (i = 0; i < COUNT; ++i) {*/
-/*        buf[i] = rank + i;*/
-/*        recvbuf[i] = 0xdeadbeef;*/
-/*    }*/
-/*    MPI_Iallreduce(buf, recvbuf, COUNT, MPI_INT, MPI_SUM, MPI_COMM_WORLD, &req);*/
-/*    MPI_Wait(&req, MPI_STATUS_IGNORE);*/
-/*    for (i = 0; i < COUNT; ++i) {*/
-/*        if (recvbuf[i] != ((size * (size - 1) / 2) + (i * size)))*/
-/*            printf("got recvbuf[%d]=%d, expected %d\n", i, recvbuf[i],*/
-/*                   ((size * (size - 1) / 2) + (i * size)));*/
-/*        my_assert(recvbuf[i] == ((size * (size - 1) / 2) + (i * size)));*/
-/*    }*/
+    for (i = 0; i < COUNT; ++i) {
+        buf[i] = rank + i;
+        recvbuf[i] = 0xdeadbeef;
+    }
+    MPI_Iallreduce(buf, recvbuf, COUNT, MPI_INT, MPI_SUM, MPI_COMM_WORLD, &req);
+    MPI_Wait(&req, MPI_STATUS_IGNORE);
+    for (i = 0; i < COUNT; ++i) {
+        if (recvbuf[i] != ((size * (size - 1) / 2) + (i * size)))
+            printf("got recvbuf[%d]=%d, expected %d\n", i, recvbuf[i],
+                   ((size * (size - 1) / 2) + (i * size)));
+        my_assert(recvbuf[i] == ((size * (size - 1) / 2) + (i * size)));
+    }
 
     /* MPI_Ialltoallv (a weak test, neither irregular nor sparse) */
     for (i = 0; i < size; ++i) {

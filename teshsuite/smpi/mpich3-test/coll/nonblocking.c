@@ -162,11 +162,11 @@ int main(int argc, char **argv)
         MPI_Ireduce(sbuf, rbuf, NUM_INTS, MPI_INT, MPI_SUM, 0, comm, &req);
     MPI_Wait(&req, MPI_STATUS_IGNORE);
 
-/*    MPI_Iallreduce(sbuf, rbuf, NUM_INTS, MPI_INT, MPI_SUM, comm, &req);*/
-/*    MPI_Wait(&req, MPI_STATUS_IGNORE);*/
+    MPI_Iallreduce(sbuf, rbuf, NUM_INTS, MPI_INT, MPI_SUM, comm, &req);
+    MPI_Wait(&req, MPI_STATUS_IGNORE);
 
-/*    MPI_Iallreduce(MPI_IN_PLACE, rbuf, NUM_INTS, MPI_INT, MPI_SUM, comm, &req);*/
-/*    MPI_Wait(&req, MPI_STATUS_IGNORE);*/
+    MPI_Iallreduce(MPI_IN_PLACE, rbuf, NUM_INTS, MPI_INT, MPI_SUM, comm, &req);
+    MPI_Wait(&req, MPI_STATUS_IGNORE);
 
 /*    MPI_Ireduce_scatter(sbuf, rbuf, rcounts, MPI_INT, MPI_SUM, comm, &req);*/
 /*    MPI_Wait(&req, MPI_STATUS_IGNORE);*/
