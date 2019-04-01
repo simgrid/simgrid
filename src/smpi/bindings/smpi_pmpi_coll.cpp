@@ -309,7 +309,9 @@ int PMPI_Iscatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   } else if ((sendbuf == recvbuf) ||
       ((comm->rank()==root) && sendcount>0 && (sendbuf == nullptr))){
     retval = MPI_ERR_BUFFER;
-  }else {
+  }else if (request == nullptr){
+    retval = MPI_ERR_ARG;
+  } else {
 
     if (recvbuf == MPI_IN_PLACE) {
       recvtype  = sendtype;
@@ -403,6 +405,8 @@ int PMPI_Ireduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
     retval = MPI_ERR_COMM;
   } else if (not datatype->is_valid() || op == MPI_OP_NULL) {
     retval = MPI_ERR_ARG;
+  } else if (request == nullptr){
+    retval = MPI_ERR_ARG;
   } else {
     int rank = simgrid::s4u::this_actor::get_pid();
 
@@ -455,6 +459,8 @@ int PMPI_Iallreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype dataty
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
+  } else if (request == nullptr){
+    retval = MPI_ERR_ARG;
   } else {
     char* sendtmpbuf = static_cast<char*>(sendbuf);
     if( sendbuf == MPI_IN_PLACE ) {
@@ -486,6 +492,11 @@ int PMPI_Iallreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype dataty
 
 int PMPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
+  return PMPI_Iscan(sendbuf, recvbuf, count, datatype, op, comm, MPI_REQUEST_IGNORED);
+}
+
+int PMPI_Iscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request* request)
+{
   int retval = 0;
 
   smpi_bench_end();
@@ -496,6 +507,8 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MP
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
+  } else if (request == nullptr){
+    retval = MPI_ERR_ARG;
   } else {
     int rank = simgrid::s4u::this_actor::get_pid();
     void* sendtmpbuf = sendbuf;
@@ -503,11 +516,15 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MP
       sendtmpbuf = static_cast<void*>(xbt_malloc(count * datatype->size()));
       memcpy(sendtmpbuf, recvbuf, count * datatype->size());
     }
-    TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::Pt2PtTIData(
-                                           "scan", -1, datatype->is_replayable() ? count : count * datatype->size(),
+    TRACE_smpi_comm_in(rank, request==MPI_REQUEST_IGNORED ? "PMPI_Scan" : "PMPI_Iscan", new simgrid::instr::Pt2PtTIData(
+                                           request==MPI_REQUEST_IGNORED ? "scan":"iscan", -1, 
+                                           datatype->is_replayable() ? count : count * datatype->size(),
                                            simgrid::smpi::Datatype::encode(datatype)));
 
-    retval = simgrid::smpi::Colls::scan(sendtmpbuf, recvbuf, count, datatype, op, comm);
+    if(request == MPI_REQUEST_IGNORED)
+      retval = simgrid::smpi::Colls::scan(sendtmpbuf, recvbuf, count, datatype, op, comm);
+    else
+      retval = simgrid::smpi::Colls::iscan(sendtmpbuf, recvbuf, count, datatype, op, comm, request);
 
     TRACE_smpi_comm_out(rank);
     if (sendbuf == MPI_IN_PLACE)
@@ -518,7 +535,12 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MP
   return retval;
 }
 
-int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm){
+int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+{
+  return PMPI_Iexscan(sendbuf, recvbuf, count, datatype, op, comm, MPI_REQUEST_IGNORED);
+}
+
+int PMPI_Iexscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request* request){
   int retval = 0;
 
   smpi_bench_end();
@@ -529,6 +551,8 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
+  } else if (request == nullptr){
+    retval = MPI_ERR_ARG;
   } else {
     int rank         = simgrid::s4u::this_actor::get_pid();
     void* sendtmpbuf = sendbuf;
@@ -537,11 +561,14 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
       memcpy(sendtmpbuf, recvbuf, count * datatype->size());
     }
 
-    TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::Pt2PtTIData(
-                                           "exscan", -1, datatype->is_replayable() ? count : count * datatype->size(),
+    TRACE_smpi_comm_in(rank, request==MPI_REQUEST_IGNORED ? "PMPI_Exscan" : "PMPI_Iexscan", new simgrid::instr::Pt2PtTIData(
+                                           request==MPI_REQUEST_IGNORED ? "exscan":"iexscan", -1, datatype->is_replayable() ? count : count * datatype->size(),
                                            simgrid::smpi::Datatype::encode(datatype)));
 
-    retval = simgrid::smpi::Colls::exscan(sendtmpbuf, recvbuf, count, datatype, op, comm);
+    if(request == MPI_REQUEST_IGNORED)
+      retval = simgrid::smpi::Colls::exscan(sendtmpbuf, recvbuf, count, datatype, op, comm);
+    else
+      retval = simgrid::smpi::Colls::iexscan(sendtmpbuf, recvbuf, count, datatype, op, comm, request);
 
     TRACE_smpi_comm_out(rank);
     if (sendbuf == MPI_IN_PLACE)
