@@ -108,42 +108,41 @@ int main(int argc, char **argv)
     MPI_Wait(&req, MPI_STATUS_IGNORE);
 
     /* MPI_Ireduce */
-/*    for (i = 0; i < COUNT; ++i) {*/
-/*        buf[i] = rank + i;*/
-/*        recvbuf[i] = 0xdeadbeef;*/
-/*    }*/
-/*    MPI_Ireduce(buf, recvbuf, COUNT, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD, &req);*/
-/*    MPI_Wait(&req, MPI_STATUS_IGNORE);*/
-/*    if (rank == 0) {*/
-/*        for (i = 0; i < COUNT; ++i) {*/
-/*            if (recvbuf[i] != ((size * (size - 1) / 2) + (i * size)))*/
-/*                printf("got recvbuf[%d]=%d, expected %d\n", i, recvbuf[i],*/
-/*                       ((size * (size - 1) / 2) + (i * size)));*/
-/*            my_assert(recvbuf[i] == ((size * (size - 1) / 2) + (i * size)));*/
-/*        }*/
-/*    }*/
+    for (i = 0; i < COUNT; ++i) {
+        buf[i] = rank + i;
+        recvbuf[i] = 0xdeadbeef;
+    }
+    MPI_Ireduce(buf, recvbuf, COUNT, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD, &req);
+    MPI_Wait(&req, MPI_STATUS_IGNORE);
+    if (rank == 0) {
+        for (i = 0; i < COUNT; ++i) {
+            if (recvbuf[i] != ((size * (size - 1) / 2) + (i * size)))
+                printf("aa got recvbuf[%d]=%d, expected %d\n", i, recvbuf[i],
+                       ((size * (size - 1) / 2) + (i * size)));
+            my_assert(recvbuf[i] == ((size * (size - 1) / 2) + (i * size)));
+        }
+    }
 
     /* same again, use a user op and free it before the wait */
-/*    {*/
-/*        MPI_Op op = MPI_OP_NULL;*/
-/*        MPI_Op_create(sum_fn, 1, &op);*/
-
-/*        for (i = 0; i < COUNT; ++i) {*/
-/*            buf[i] = rank + i;*/
-/*            recvbuf[i] = 0xdeadbeef;*/
-/*        }*/
-/*        MPI_Ireduce(buf, recvbuf, COUNT, MPI_INT, op, 0, MPI_COMM_WORLD, &req);*/
-/*        MPI_Op_free(&op);*/
-/*        MPI_Wait(&req, MPI_STATUS_IGNORE);*/
-/*        if (rank == 0) {*/
-/*            for (i = 0; i < COUNT; ++i) {*/
-/*                if (recvbuf[i] != ((size * (size - 1) / 2) + (i * size)))*/
-/*                    printf("got recvbuf[%d]=%d, expected %d\n", i, recvbuf[i],*/
-/*                           ((size * (size - 1) / 2) + (i * size)));*/
-/*                my_assert(recvbuf[i] == ((size * (size - 1) / 2) + (i * size)));*/
-/*            }*/
-/*        }*/
-/*    }*/
+    {
+        MPI_Op op = MPI_OP_NULL;
+        MPI_Op_create(sum_fn, 1, &op);
+        for (i = 0; i < COUNT; ++i) {
+            buf[i] = rank + i;
+            recvbuf[i] = 0xdeadbeef;
+        }
+        MPI_Ireduce(buf, recvbuf, COUNT, MPI_INT, op, 0, MPI_COMM_WORLD, &req);
+        MPI_Op_free(&op);
+        MPI_Wait(&req, MPI_STATUS_IGNORE);
+        if (rank == 0) {
+            for (i = 0; i < COUNT; ++i) {
+                if (recvbuf[i] != ((size * (size - 1) / 2) + (i * size)))
+                    printf("got recvbuf[%d]=%d, expected %d\n", i, recvbuf[i],
+                           ((size * (size - 1) / 2) + (i * size)));
+                my_assert(recvbuf[i] == ((size * (size - 1) / 2) + (i * size)));
+            }
+        }
+    }
 
     /* MPI_Iallreduce */
 /*    for (i = 0; i < COUNT; ++i) {*/

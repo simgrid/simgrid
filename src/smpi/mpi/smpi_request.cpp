@@ -867,6 +867,16 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
   if ((*request)->nbc_requests_size_>0){
     ret = waitall((*request)->nbc_requests_size_, (*request)->nbc_requests_, MPI_STATUSES_IGNORE);
     for (int i = 0; i < (*request)->nbc_requests_size_; i++) {
+      if((*request)->buf_!=nullptr && (*request)->nbc_requests_[i]!=MPI_REQUEST_NULL){//reduce case
+        void * buf=(*request)->nbc_requests_[i]->buf_;
+        if((*request)->old_type_->flags() & DT_FLAG_DERIVED)
+          buf=(*request)->nbc_requests_[i]->old_buf_;
+        if((*request)->op_!=MPI_OP_NULL){
+          int count=(*request)->size_/ (*request)->old_type_->size();
+          (*request)->op_->apply(buf, (*request)->buf_, &count, (*request)->old_type_);
+        }
+        smpi_free_tmp_buffer(buf);
+      }
       if((*request)->nbc_requests_[i]!=MPI_REQUEST_NULL)
         Request::unref(&((*request)->nbc_requests_[i]));
     }

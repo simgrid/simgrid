@@ -442,5 +442,64 @@ int Colls::iscatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype s
   }
   return MPI_SUCCESS;
 }
+
+int Colls::ireduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
+                     MPI_Comm comm, MPI_Request* request)
+{
+  const int system_tag = COLL_TAG_REDUCE;
+  MPI_Aint lb = 0;
+  MPI_Aint dataext = 0;
+  MPI_Request* requests;
+
+  char* sendtmpbuf = static_cast<char *>(sendbuf);
+
+  int rank = comm->rank();
+  int size = comm->size();
+
+  if (size <= 0)
+    return MPI_ERR_COMM;
+
+  if( sendbuf == MPI_IN_PLACE ) {
+    sendtmpbuf = static_cast<char *>(smpi_get_tmp_sendbuffer(count*datatype->get_extent()));
+    Datatype::copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
+  }
+
+  if(rank == root){
+    (*request) =  new Request( recvbuf, count, datatype,
+                         rank,rank, COLL_TAG_REDUCE, comm, MPI_REQ_PERSISTENT, op);
+  }
+  else
+    (*request) = new Request( nullptr, count, datatype,
+                         rank,rank, COLL_TAG_REDUCE, comm, MPI_REQ_PERSISTENT);
+
+  if(rank != root) {
+    // Send buffer to root
+    requests = new MPI_Request[1];
+    requests[0]=Request::isend(sendtmpbuf, count, datatype, root, system_tag, comm);
+    (*request)->set_nbc_requests(requests, 1);
+  } else {
+    datatype->extent(&lb, &dataext);
+    // Local copy from root
+    if (sendtmpbuf != nullptr && recvbuf != nullptr)
+      Datatype::copy(sendtmpbuf, count, datatype, recvbuf, count, datatype);
+    // Receive buffers from senders
+    MPI_Request *requests = new MPI_Request[size - 1];
+    int index = 0;
+    for (int src = 0; src < size; src++) {
+      if (src != root) {
+        requests[index] =
+          Request::irecv_init(smpi_get_tmp_sendbuffer(count * dataext), count, datatype, src, system_tag, comm);
+        index++;
+      }
+    }
+    // Wait for completion of irecv's.
+    Request::startall(size - 1, requests);
+    (*request)->set_nbc_requests(requests, size - 1);
+  }	
+  if( sendbuf == MPI_IN_PLACE ) {
+    smpi_free_tmp_buffer(sendtmpbuf);
+  }
+  return MPI_SUCCESS;
+}
 }
 }
