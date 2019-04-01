@@ -271,16 +271,10 @@ static void test_comm_dsend_and_quit_put_before_get()
 
   simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
     assert_exit(false, 3);
-    bool got_exception = false;
     simgrid::s4u::this_actor::sleep_for(2);
-    try {
-      void* payload = simgrid::s4u::Mailbox::by_name("mb")->get();
-      xbt_free(payload);
-    } catch (xbt_ex const& e) {
-      got_exception = true;
-    }
+    void* payload = simgrid::s4u::Mailbox::by_name("mb")->get();
+    xbt_free(payload);
     recv_done = true;
-    xbt_assert(not got_exception);
     return;
   });
 
@@ -307,15 +301,9 @@ static void test_comm_dsend_and_quit_get_before_put()
 
   simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
     //assert_exit(false, 3);
-    bool got_exception = false;
-    try {
-      void* payload = simgrid::s4u::Mailbox::by_name("mb")->get();
-      xbt_free(payload);
-    } catch (xbt_ex const& e) {
-      got_exception = true;
-    }
+    void* payload = simgrid::s4u::Mailbox::by_name("mb")->get();
+    xbt_free(payload);
     recv_done = true;
-    xbt_assert(not got_exception);
     return;
   });
 
