@@ -242,5 +242,17 @@ Op* Op::f2c(int id){
   return static_cast<Op*>(F2C::f2c(id));
 }
 
+void Op::ref(){
+  refcount_++;
+}
+
+void Op::unref(MPI_Op* op){
+  if((*op)!=MPI_OP_NULL){
+    (*op)->refcount_--;
+    if((*op)->refcount_==0)
+      delete(*op);
+  }
+}
+
 }
 }

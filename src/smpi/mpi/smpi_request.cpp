@@ -36,8 +36,8 @@ extern void (*smpi_comm_copy_data_callback)(simgrid::kernel::activity::CommImpl*
 namespace simgrid{
 namespace smpi{
 
-Request::Request(void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags)
-    : buf_(buf), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags)
+Request::Request(void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags, MPI_Op op)
+    : buf_(buf), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags), op_(op)
 {
   void *old_buf = nullptr;
 // FIXME Handle the case of a partial shared malloc.
@@ -58,6 +58,8 @@ Request::Request(void* buf, int count, MPI_Datatype datatype, int src, int dst, 
   size_ = datatype->size() * count;
   datatype->ref();
   comm_->ref();
+  if(op != MPI_REPLACE && op != MPI_OP_NULL)
+    op_->ref();
   action_          = nullptr;
   detached_        = 0;
   detached_sender_ = nullptr;
@@ -69,7 +71,6 @@ Request::Request(void* buf, int count, MPI_Datatype datatype, int src, int dst, 
     refcount_ = 1;
   else
     refcount_ = 0;
-  op_   = MPI_REPLACE;
   cancelled_ = 0;
   generalized_funcs=nullptr;
   nbc_requests_=nullptr;
@@ -95,6 +96,9 @@ void Request::unref(MPI_Request* request)
         Comm::unref((*request)->comm_);
         Datatype::unref((*request)->old_type_);
       }
+      if ((*request)->op_!=MPI_REPLACE && (*request)->op_!=MPI_OP_NULL)
+        Op::unref(&(*request)->op_);
+
       (*request)->print_request("Destroying");
       delete *request;
       *request = MPI_REQUEST_NULL;
@@ -201,8 +205,7 @@ MPI_Request Request::rma_send_init(void *buf, int count, MPI_Datatype datatype, 
     request      = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, comm->group()->actor(src)->get_pid(),
                           comm->group()->actor(dst)->get_pid(), tag, comm,
                           MPI_REQ_RMA | MPI_REQ_NON_PERSISTENT | MPI_REQ_ISEND | MPI_REQ_SEND | MPI_REQ_PREPARED |
-                              MPI_REQ_ACCUMULATE);
-    request->op_ = op;
+                              MPI_REQ_ACCUMULATE, op);
   }
   return request;
 }
@@ -226,8 +229,7 @@ MPI_Request Request::rma_recv_init(void *buf, int count, MPI_Datatype datatype, 
   }else{
     request      = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, comm->group()->actor(src)->get_pid(),
                           comm->group()->actor(dst)->get_pid(), tag, comm,
-                          MPI_REQ_RMA | MPI_REQ_NON_PERSISTENT | MPI_REQ_RECV | MPI_REQ_PREPARED | MPI_REQ_ACCUMULATE);
-    request->op_ = op;
+                          MPI_REQ_RMA | MPI_REQ_NON_PERSISTENT | MPI_REQ_RECV | MPI_REQ_PREPARED | MPI_REQ_ACCUMULATE, op);
   }
   return request;
 }

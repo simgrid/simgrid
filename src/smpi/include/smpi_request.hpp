@@ -54,7 +54,7 @@ class Request : public F2C {
 
 public:
   Request() = default;
-  Request(void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags);
+  Request(void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags, MPI_Op op = MPI_REPLACE);
   MPI_Comm comm() { return comm_; }
   size_t size() { return size_; }
   size_t real_size() { return real_size_; }
