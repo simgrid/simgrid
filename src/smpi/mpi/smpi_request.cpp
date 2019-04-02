@@ -541,7 +541,6 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
   if(smpi_test_sleep > 0)
     simcall_process_sleep(nsleeps*smpi_test_sleep);
 
-  MPI_Status* mystatus;
   Status::empty(status);
   *flag = 1;
   if (((*request)->flags_ & MPI_REQ_PREPARED) == 0) {
@@ -560,6 +559,7 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
     if (*flag) {
       finish_wait(request,status);
       if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & MPI_REQ_GENERALIZED)){
+        MPI_Status* mystatus;
         if(status==MPI_STATUS_IGNORE){
           mystatus=new MPI_Status();
           Status::empty(mystatus);
@@ -622,7 +622,6 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
   int i;
   *flag = 0;
   int ret = MPI_SUCCESS;
-  MPI_Status* mystatus;
   *index = MPI_UNDEFINED;
 
   std::vector<int> map; /** Maps all matching comms back to their location in requests **/
@@ -652,6 +651,7 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
       } else {
         finish_wait(&requests[*index],status);
       if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags_ & MPI_REQ_GENERALIZED)){
+        MPI_Status* mystatus;
         if(status==MPI_STATUS_IGNORE){
           mystatus=new MPI_Status();
           Status::empty(mystatus);
