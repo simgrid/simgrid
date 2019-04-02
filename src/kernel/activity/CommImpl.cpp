@@ -134,7 +134,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(
       other_comm = std::move(this_synchro);
       mbox->push(other_comm);
     } else {
-      if (other_comm->surf_action_ && other_comm->remains() < 1e-12) {
+      if (other_comm->surf_action_ && other_comm->get_remaining() < 1e-12) {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
         other_comm->state_ = SIMIX_DONE;
         other_comm->set_type(simgrid::kernel::activity::CommImpl::Type::DONE);
@@ -516,12 +516,6 @@ void CommImpl::cancel()
              && not MC_record_replay_is_active() && (state_ == SIMIX_READY || state_ == SIMIX_RUNNING)) {
     surf_action_->cancel();
   }
-}
-
-/**  @brief get the amount remaining from the communication */
-double CommImpl::remains()
-{
-  return surf_action_->get_remains();
 }
 
 /** @brief This is part of the cleanup process, probably an internal command */

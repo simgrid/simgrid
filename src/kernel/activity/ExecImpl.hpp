@@ -37,7 +37,6 @@ public:
   ExecImpl& set_hosts(const std::vector<s4u::Host*>& hosts);
 
   unsigned int get_host_number() const { return hosts_.size(); }
-  double get_remaining() const;
   double get_seq_remaining_ratio();
   double get_par_remaining_ratio();
   virtual ActivityImpl* migrate(s4u::Host* to);

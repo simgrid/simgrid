@@ -131,11 +131,6 @@ void ExecImpl::cancel()
     surf_action_->cancel();
 }
 
-double ExecImpl::get_remaining() const
-{
-  return surf_action_ ? surf_action_->get_remains() : 0;
-}
-
 double ExecImpl::get_seq_remaining_ratio()
 {
   return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains() / surf_action_->get_cost();

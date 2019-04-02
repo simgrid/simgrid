@@ -75,11 +75,6 @@ void IoImpl::cancel()
   state_ = SIMIX_CANCELED;
 }
 
-double IoImpl::get_remaining()
-{
-  return surf_action_ ? surf_action_->get_remains() : 0;
-}
-
 void IoImpl::post()
 {
   performed_ioops_ = surf_action_->get_cost();

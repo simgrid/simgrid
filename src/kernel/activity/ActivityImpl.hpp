@@ -34,6 +34,7 @@ public:
   virtual void post()   = 0; // What to do when a simcall terminates
   virtual void finish() = 0;
 
+  virtual double get_remaining() const;
   // boost::intrusive_ptr<ActivityImpl> support:
   friend XBT_PUBLIC void intrusive_ptr_add_ref(ActivityImpl* activity);
   friend XBT_PUBLIC void intrusive_ptr_release(ActivityImpl* activity);

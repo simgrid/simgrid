@@ -31,7 +31,6 @@ public:
   void post() override;
   void finish() override;
   void cancel();
-  double get_remaining();
 
   static xbt::signal<void(IoImpl const&)> on_start;
   static xbt::signal<void(IoImpl const&)> on_completion;
