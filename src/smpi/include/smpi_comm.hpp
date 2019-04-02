@@ -7,6 +7,7 @@
 #define SMPI_COMM_HPP_INCLUDED
 
 #include <list>
+#include <string>
 #include "smpi_keyvals.hpp"
 #include "smpi_group.hpp"
 #include "smpi_topo.hpp"
