@@ -70,15 +70,13 @@ IoImpl* IoImpl::start()
 void IoImpl::post()
 {
   performed_ioops_ = surf_action_->get_cost();
-  switch (surf_action_->get_state()) {
-    case resource::Action::State::FAILED:
+  if (surf_action_->get_state() == resource::Action::State::FAILED) {
+    if (storage_ && not storage_->is_on())
       state_ = SIMIX_FAILED;
-      break;
-    case resource::Action::State::FINISHED:
-      state_ = SIMIX_DONE;
-      break;
-    default:
-      THROW_IMPOSSIBLE;
+    else
+      state_ = SIMIX_CANCELED;
+  } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
+    state_ = SIMIX_DONE;
   }
   on_completion(*this);
 
@@ -87,28 +85,27 @@ void IoImpl::post()
 
 void IoImpl::finish()
 {
-  for (smx_simcall_t const& simcall : simcalls_) {
+  while (not simcalls_.empty()) {
+    smx_simcall_t simcall = simcalls_.front();
+    simcalls_.pop_front();
     switch (state_) {
       case SIMIX_DONE:
         /* do nothing, synchro done */
         break;
       case SIMIX_FAILED:
+        simcall->issuer->context_->iwannadie = true;
         simcall->issuer->exception_ =
-            std::make_exception_ptr(simgrid::StorageFailureException(XBT_THROW_POINT, "Storage failed"));
+            std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Storage failed"));
         break;
       case SIMIX_CANCELED:
-        simcall->issuer->exception_ =
-            std::make_exception_ptr(simgrid::CancelException(XBT_THROW_POINT, "I/O Canceled"));
+        simcall->issuer->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "I/O Canceled"));
         break;
       default:
         xbt_die("Internal error in IoImpl::finish(): unexpected synchro state %d", static_cast<int>(state_));
     }
 
     simcall->issuer->waiting_synchro = nullptr;
-    if (simcall->issuer->get_host()->is_on())
-      SIMIX_simcall_answer(simcall);
-    else
-      simcall->issuer->context_->iwannadie = true;
+    SIMIX_simcall_answer(simcall);
   }
 }
 
