@@ -38,16 +38,16 @@ class Request : public F2C {
   // We can't override src, tag, and size, because the request may be reused later
   int real_src_;
   int real_tag_;
-  int truncated_;
+  bool truncated_;
   size_t real_size_;
   MPI_Comm comm_;
   smx_activity_t action_;
   unsigned flags_;
-  int detached_;
+  bool detached_;
   MPI_Request detached_sender_;
   int refcount_;
   MPI_Op op_;
-  int cancelled_;
+  int cancelled_; // tri-state
   smpi_mpi_generalized_request_funcs generalized_funcs;
   MPI_Request* nbc_requests_;
   int nbc_requests_size_;
@@ -62,7 +62,7 @@ public:
   int dst() { return dst_; }
   int tag() { return tag_; }
   int flags() { return flags_; }
-  int detached() { return detached_; }
+  bool detached() { return detached_; }
   MPI_Datatype type() { return old_type_; }
   void print_request(const char* message);
   void start();
