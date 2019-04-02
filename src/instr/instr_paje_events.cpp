@@ -83,10 +83,6 @@ void VariableEvent::print()
   tracing_file << stream_.str() << std::endl;
 }
 
-StateEvent::~StateEvent(){
-  delete extra_;
-}
-
 void StateEvent::print()
 {
   if (trace_format == simgrid::instr::TraceFormat::Paje) {
