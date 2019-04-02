@@ -443,8 +443,6 @@ XBT_PUBLIC int MSG_barrier_wait(msg_bar_t bar);
 
 /* ****************************************************************************************** */
 /* DO NOT USE this nasty pimple (unless if you're writing a binding) */
-XBT_ATTRIB_DEPRECATED_v323("MSG_process_get_smx_ctx is deprecated. Please contact us if you need it.")
-    XBT_PUBLIC smx_context_t MSG_process_get_smx_ctx(msg_process_t process);
 XBT_ATTRIB_DEPRECATED_v325("MSG_process_set_copy_callback is deprecated. Please contact us if you need it.") XBT_PUBLIC
     void MSG_task_set_copy_callback(void (*callback)(msg_task_t task, msg_process_t src, msg_process_t dst));
 

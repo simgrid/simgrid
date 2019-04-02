@@ -61,11 +61,6 @@ public:
   ExecPtr set_timeout(double timeout);
   Exec* cancel() override;
 
-  XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_priority()") ExecPtr setPriority(double priority)
-  {
-    return set_priority(priority);
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_bound()") ExecPtr setBound(double bound) { return set_bound(bound); }
   XBT_ATTRIB_DEPRECATED_v324("Please use Exec::wait_for()") void wait(double t) override { wait_for(t); }
 };
 
@@ -86,16 +81,6 @@ public:
 
   double get_remaining() override;
   double get_remaining_ratio() override;
-
-#ifndef DOXYGEN
-  //////////////// Deprecated functions
-  XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_host()") ExecPtr setHost(Host* host) { return set_host(host); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Exec::get_host()") Host* getHost() { return get_host(); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Exec::get_remaining_ratio()") double getRemainingRatio()
-  {
-    return get_remaining_ratio();
-  }
-#endif
 };
 
 class XBT_PUBLIC ExecPar : public Exec {

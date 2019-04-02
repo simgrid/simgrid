@@ -172,15 +172,6 @@ void install_exception_handler()
     previous_terminate_handler = std::set_terminate(handler);
   });
 }
-// deprecated
-void logException(e_xbt_log_priority_t priority, const char* context, std::exception const& exception)
-{
-  log_exception(priority, context, exception);
-}
-void installExceptionHandler()
-{
-  install_exception_handler();
-}
 
 } // namespace xbt
 } // namespace simgrid

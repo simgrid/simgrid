@@ -132,22 +132,6 @@ int Host::get_actor_count()
   return pimpl_->get_actor_count();
 }
 
-/** @deprecated */
-void Host::getProcesses(std::vector<ActorPtr>* list)
-{
-  auto actors = get_all_actors();
-  for (auto& actor : actors)
-    list->push_back(actor);
-}
-
-/** @deprecated */
-void Host::actorList(std::vector<ActorPtr>* whereto)
-{
-  auto actors = get_all_actors();
-  for (auto& actor : actors)
-    whereto->push_back(actor);
-}
-
 /**
  * @brief Find a route toward another host
  *
@@ -281,13 +265,6 @@ int Host::get_pstate() const
 std::vector<const char*> Host::get_attached_storages() const
 {
   return simix::simcall([this] { return this->pimpl_->get_attached_storages(); });
-}
-
-void Host::getAttachedStorages(std::vector<const char*>* storages)
-{
-  std::vector<const char*> local_storages = simix::simcall([this] { return this->pimpl_->get_attached_storages(); });
-  for (auto elm : local_storages)
-    storages->push_back(elm);
 }
 
 std::unordered_map<std::string, Storage*> const& Host::get_mounted_storages()

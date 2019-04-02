@@ -123,35 +123,6 @@ public:
 
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v324("Please use Comm::wait_for()") void wait(double t) override { wait_for(t); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_rate()") Activity* setRate(double rate)
-  {
-    return set_rate(rate).get();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_src_data()") Activity* setSrcData(void* buff)
-  {
-    return set_src_data(buff).get();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_src_data()") Activity* setSrcData(void* buff, size_t size)
-  {
-    return set_src_data(buff, size).get();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_src_data_size()") Activity* setSrcDataSize(size_t size)
-  {
-    return set_src_data_size(size).get();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_dst_data()") Activity* setDstData(void** buff)
-  {
-    return set_dst_data(buff).get();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_dst_data()") Activity* setDstData(void** buff, size_t size)
-  {
-    return set_dst_data(buff, size).get();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_dst_data_size()") size_t getDstDataSize()
-  {
-    return get_dst_data_size();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") Mailbox* getMailbox() { return get_mailbox(); }
 #endif
 };
 } // namespace s4u

@@ -74,15 +74,6 @@ std::vector<Host*> NetZone::get_all_hosts()
   return pimpl_->get_all_hosts();
 }
 
-void NetZone::getHosts(std::vector<Host*>* whereto)
-{
-  for (auto const& card : pimpl_->get_vertices()) {
-    Host* host = Host::by_name_or_null(card->get_name());
-    if (host != nullptr)
-      whereto->push_back(host);
-  }
-}
-
 int NetZone::get_host_count()
 {
   return pimpl_->get_host_count();
@@ -104,10 +95,6 @@ void NetZone::add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::
                                std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical)
 {
   pimpl_->add_bypass_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
-}
-std::vector<kernel::routing::NetPoint*> NetZone::getVertices()
-{
-  return pimpl_->get_vertices();
 }
 } // namespace s4u
 } // namespace simgrid

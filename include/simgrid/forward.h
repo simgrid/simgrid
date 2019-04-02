@@ -186,7 +186,6 @@ typedef simgrid::s4u::VirtualMachine s4u_VM;
 typedef boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> smx_activity_t;
 
 typedef simgrid::simix::Timer* smx_timer_t;
-typedef simgrid::kernel::context::Context* smx_context_t;
 typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 typedef simgrid::kernel::activity::ConditionVariableImpl* smx_cond_t;
 typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
@@ -209,7 +208,6 @@ typedef struct kernel_Activity* smx_activity_t;
 typedef struct s_smx_timer* smx_timer_t;
 typedef struct s_smx_actor* smx_actor_t;
 typedef struct s_smx_cond_t* smx_cond_t;
-typedef struct s_smx_context* smx_context_t;
 typedef struct s_smx_mailbox* smx_mailbox_t;
 typedef struct s_smx_mutex* smx_mutex_t;
 typedef struct s_smx_sem* smx_sem_t;

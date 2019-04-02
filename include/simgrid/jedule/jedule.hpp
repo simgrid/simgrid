@@ -26,14 +26,6 @@ public:
   void cleanup_output();
   void write_output(FILE* file);
 
-  // deprecated
-  XBT_ATTRIB_DEPRECATED_v323("Please use Jedule::add_meta_info()") void addMetaInfo(char* key, char* value)
-  {
-    add_meta_info(key, value);
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Jedule::cleanup_output()") void cleanupOutput() { cleanup_output(); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Jedule::write_output()") void writeOutput(FILE* file) { write_output(file); }
-
 private:
   std::unordered_map<char*, char*> meta_info_;
 };

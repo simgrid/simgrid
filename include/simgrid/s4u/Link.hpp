@@ -115,64 +115,6 @@ public:
   /** @brief Callback signal fired when a communication changes it state (ready/done/cancel) */
   static xbt::signal<void(kernel::resource::NetworkAction&, kernel::resource::Action::State)>
       on_communication_state_change;
-
-#ifndef DOXYGEN
-  // Deprecated methods
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::by_name()") static Link* byName(const char* name) { return by_name(name); }
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_name()") const std::string& getName() const { return get_name(); }
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_cname()") const char* getCname() const { return get_cname(); }
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_sharing_policy()") SharingPolicy sharingPolicy() {return get_sharing_policy();}
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_usage()") double getUsage() {return get_usage();}
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::is_used()") bool isUsed() {return is_used();}
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_bandwidth()") double bandwidth() {return get_bandwidth();}
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_latency()") double latency() {return get_latency();}
-
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::turn_on()") void turnOn() {turn_on();}
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::turn_off()") void turnOff() {turn_off();}
-
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_property()") const char* getProperty(const char* key) {return get_property(key);}
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::set_property()") void setProperty(const std::string& key,
-                                                                                 const std::string& value)
-  {
-    set_property(key, value);
-  }
-
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_data()") void* getData() {return get_data();}
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::set_data()") void setData(void* d) {set_data(d);}
-
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_state_profile()") void setStateTrace(
-      kernel::profile::Profile* profile)
-  {
-    set_state_profile(profile);
-  }
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_bandwidth_profile()") void setBandwidthTrace(
-      kernel::profile::Profile* profile)
-  {
-    set_bandwidth_profile(profile);
-  }
-  /** @deprecated */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_latency_profile()") void setLatencyTrace(
-      kernel::profile::Profile* profile)
-  {
-    set_latency_profile(profile);
-  }
-#endif
 };
 } // namespace s4u
 } // namespace simgrid

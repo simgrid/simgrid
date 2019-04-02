@@ -69,11 +69,6 @@ template <class F> auto kernel_sync(F code) -> decltype(code().get())
   });
   return result.get();
 }
-template <class F>
-XBT_ATTRIB_DEPRECATED_v323("Please use simix::kernel_sync()") auto kernelSync(F code) -> decltype(code().get())
-{
-  return kernel_sync(code);
-}
 
 /** A blocking (`wait()`-based) future for SIMIX processes */
 // TODO, .wait_for()
@@ -158,11 +153,6 @@ template <class F> auto kernel_async(F code) -> Future<decltype(code().get())>
 
   // Wrap the kernel future in a actor future:
   return simgrid::simix::Future<T>(std::move(future));
-}
-template <class F>
-XBT_ATTRIB_DEPRECATED_v323("Please use simix::kernel_sync()") auto kernelAsync(F code) -> Future<decltype(code().get())>
-{
-  return kernel_async(code);
 }
 }
 }

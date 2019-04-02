@@ -101,14 +101,6 @@ void Actor::set_auto_restart(bool autorestart)
   });
 }
 
-void Actor::on_exit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */
-{
-  on_exit([fun, data](bool failed) {
-    intptr_t status = failed ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
-    fun(reinterpret_cast<void*>(status), data);
-  });
-}
-
 void Actor::on_exit(const std::function<void(int, void*)>& fun, void* data) /* deprecated */
 {
   on_exit([fun, data](bool failed) { fun(failed ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS, data); });
@@ -450,38 +442,6 @@ void migrate(Host* new_host)
   SIMIX_process_self()->iface()->migrate(new_host);
 }
 
-std::string getName() /* deprecated */
-{
-  return get_name();
-}
-const char* getCname() /* deprecated */
-{
-  return get_cname();
-}
-bool isMaestro() /* deprecated */
-{
-  return is_maestro();
-}
-aid_t getPid() /* deprecated */
-{
-  return get_pid();
-}
-aid_t getPpid() /* deprecated */
-{
-  return get_ppid();
-}
-Host* getHost() /* deprecated */
-{
-  return get_host();
-}
-void on_exit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */
-{
-  SIMIX_process_self()->iface()->on_exit([fun, data](int a) { fun((void*)(intptr_t)a, data); });
-}
-void onExit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */
-{
-  on_exit([fun, data](int a) { fun((void*)(intptr_t)a, data); });
-}
 void kill() /* deprecated */
 {
   exit();

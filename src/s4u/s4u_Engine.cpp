@@ -340,12 +340,6 @@ kernel::routing::NetPoint* Engine::netpoint_by_name_or_null(const std::string& n
   return netp == pimpl->netpoints_.end() ? nullptr : netp->second;
 }
 
-/** @brief Fill the provided vector with all existing netpoints */
-void Engine::getNetpointList(std::vector<kernel::routing::NetPoint*>* list)
-{
-  for (auto const& kv : pimpl->netpoints_)
-    list->push_back(kv.second);
-}
 std::vector<kernel::routing::NetPoint*> Engine::get_all_netpoints()
 {
   std::vector<kernel::routing::NetPoint*> res;

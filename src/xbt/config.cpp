@@ -495,132 +495,7 @@ void help()
 }
 }
 
-// ***** C bindings *****
-
-xbt_cfg_t xbt_cfg_new()
-{
-  return new simgrid::config::Config();
-}
-void xbt_cfg_free(xbt_cfg_t * cfg) { delete *cfg; }
-
-void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
-{
-  cfg->dump(name, indent);
-}
-
-/*----[ Registering stuff ]-----------------------------------------------*/
-
-void xbt_cfg_register_double(const char *name, double default_value,
-  xbt_cfg_cb_t cb_set, const char *desc)
-{
-  if (simgrid_config == nullptr)
-    simgrid_config = new simgrid::config::Config();
-  simgrid_config->register_option<double>(name, desc, default_value, cb_set);
-}
-
-void xbt_cfg_register_int(const char *name, int default_value,xbt_cfg_cb_t cb_set, const char *desc)
-{
-  if (simgrid_config == nullptr)
-    simgrid_config = new simgrid::config::Config();
-  simgrid_config->register_option<int>(name, desc, default_value, cb_set);
-}
-
-void xbt_cfg_register_string(const char *name, const char *default_value, xbt_cfg_cb_t cb_set, const char *desc)
-{
-  if (simgrid_config == nullptr)
-    simgrid_config = new simgrid::config::Config();
-  simgrid_config->register_option<std::string>(name, desc, default_value ? default_value : "", cb_set);
-}
-
-void xbt_cfg_register_boolean(const char *name, const char*default_value,xbt_cfg_cb_t cb_set, const char *desc)
-{
-  if (simgrid_config == nullptr)
-    simgrid_config = new simgrid::config::Config();
-  simgrid_config->register_option<bool>(name, desc, simgrid::config::parse_bool(default_value), cb_set);
-}
-
-void xbt_cfg_register_alias(const char *realname, const char *aliasname)
-{
-  if (simgrid_config == nullptr)
-    simgrid_config = new simgrid::config::Config();
-  simgrid_config->alias(realname, aliasname);
-}
-
-void xbt_cfg_aliases()
-{
-  simgrid_config->show_aliases();
-}
-void xbt_cfg_help()
-{
-  simgrid_config->help();
-}
-
 /*----[ Setting ]---------------------------------------------------------*/
-
-/** @brief Add values parsed from a string into a config set
- *
- * @param options a string containing the content to add to the config set. This is a '\\t',' ' or '\\n' or ','
- * separated list of variables. Each individual variable is like "[name]:[value]" where [name] is the name of an
- * already registered variable, and [value] conforms to the data type under which this variable was registered.
- *
- * @todo This is a crude manual parser, it should be a proper lexer.
- */
-void xbt_cfg_set_parse(const char *options)
-{
-  if (options && strlen(options) > 0)
-    simgrid::config::set_parse(std::string(options));
-}
-
-/** @brief Set the value of a variable, using the string representation of that value
- *
- * @param key name of the variable to modify
- * @param value string representation of the value to set
- */
-
-void xbt_cfg_set_as_string(const char *key, const char *value)
-{
-  (*simgrid_config)[key].set_string_value(value);
-}
-
-/** @brief Set an integer value to \a name within \a cfg if it wasn't changed yet
- *
- * This is useful to change the default value of a variable while allowing
- * users to override it with command line arguments
- */
-void xbt_cfg_setdefault_int(const char *key, int value)
-{
-  (*simgrid_config)[key].set_default_value<int>(value);
-}
-
-/** @brief Set an integer value to \a name within \a cfg if it wasn't changed yet
- *
- * This is useful to change the default value of a variable while allowing
- * users to override it with command line arguments
- */
-void xbt_cfg_setdefault_double(const char *key, double value)
-{
-  (*simgrid_config)[key].set_default_value<double>(value);
-}
-
-/** @brief Set a string value to \a name within \a cfg if it wasn't changed yet
- *
- * This is useful to change the default value of a variable while allowing
- * users to override it with command line arguments
- */
-void xbt_cfg_setdefault_string(const char *key, const char *value)
-{
-  (*simgrid_config)[key].set_default_value<std::string>(value ? value : "");
-}
-
-/** @brief Set an boolean value to \a name within \a cfg if it wasn't changed yet
- *
- * This is useful to change the default value of a variable while allowing
- * users to override it with command line arguments
- */
-void xbt_cfg_setdefault_boolean(const char *key, const char *value)
-{
-  (*simgrid_config)[key].set_default_value<bool>(simgrid::config::parse_bool(value));
-}
 
 /** @brief Set an integer value to \a name within \a cfg
  *
@@ -663,13 +538,6 @@ void xbt_cfg_set_boolean(const char *key, const char *value)
   (*simgrid_config)[key].set_value<bool>(simgrid::config::parse_bool(value));
 }
 
-
-/* Say if the value is the default value */
-int xbt_cfg_is_default_value(const char *key)
-{
-  return (*simgrid_config)[key].is_default() ? 1 : 0;
-}
-
 /*----[ Getting ]---------------------------------------------------------*/
 /** @brief Retrieve an integer value of a variable (get a warning if not uniq)
  *
@@ -691,21 +559,6 @@ int xbt_cfg_get_int(const char *key)
 double xbt_cfg_get_double(const char *key)
 {
   return (*simgrid_config)[key].get_value<double>();
-}
-
-/** @brief Retrieve a string value of a variable (get a warning if not uniq)
- *
- * @param key the name of the variable
- *
- * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning.
- * Returns nullptr if there is no value.
- *
- * \warning the returned value is the actual content of the config set
- */
-std::string xbt_cfg_get_string(const char* key)
-{
-  return (*simgrid_config)[key].get_value<std::string>();
 }
 
 /** @brief Retrieve a boolean value of a variable (get a warning if not uniq)

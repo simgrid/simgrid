@@ -307,7 +307,5 @@ XBT_PUBLIC void show_aliases();
 XBT_PUBLIC void help();
 }
 }
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::get_value<std::string>") XBT_PUBLIC std::string
-    xbt_cfg_get_string(const char* name);
 
 #endif

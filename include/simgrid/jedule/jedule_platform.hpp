@@ -38,29 +38,6 @@ public:
   std::string get_hierarchy_as_string();
   void print(FILE *file);
   void print_resources(FILE* file);
-
-  // deprecated
-  XBT_ATTRIB_DEPRECATED_v323("Please use Container::add_child()") void addChild(Container* child) { add_child(child); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Container::add_resources()") void addResources(std::vector<sg_host_t> hosts)
-  {
-    add_resources(hosts);
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Container::create_hierarchy()") void createHierarchy(sg_netzone_t from_as)
-  {
-    create_hierarchy(from_as);
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Container::get_hierarchy()") std::vector<int> getHierarchy()
-  {
-    return get_hierarchy();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Container::get_hierarchy_as_string()") std::string getHierarchyAsString()
-  {
-    return get_hierarchy_as_string();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Container::print_resources()") void printResources(FILE* file)
-  {
-    print_resources(file);
-  }
 };
 
 class XBT_PUBLIC Subset {

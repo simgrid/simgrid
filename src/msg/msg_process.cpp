@@ -201,9 +201,6 @@ msg_process_t MSG_process_self()
   return SIMIX_process_self()->ciface();
 }
 
-smx_context_t MSG_process_get_smx_ctx(msg_process_t process) { // deprecated -- smx_context_t should die afterward
-  return process->get_impl()->context_.get();
-}
 /** @brief Add a function to the list of "on_exit" functions for the current process.
  *  The on_exit functions are the functions executed when your process is killed.
  *  You should use them to free the data used by your process.

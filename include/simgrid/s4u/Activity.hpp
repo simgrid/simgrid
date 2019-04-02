@@ -96,17 +96,6 @@ public:
 
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v324("Please use Activity::wait_for()") virtual void wait(double timeout) = 0;
-  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_state()") Activity::State getState() { return state_; }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_remaining()") double getRemains() { return get_remaining(); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::set_remaining()") Activity* setRemains(double remains)
-  {
-    return set_remaining(remains);
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::set_user_data()") Activity* setUserData(void* data)
-  {
-    return set_user_data(data);
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_user_data()") void* getUserData() { return user_data_; }
 #endif
 
 private:

@@ -39,9 +39,6 @@ namespace xbt {
     }
     void disconnect_slots() { handlers_.clear(); }
     int get_slot_count() { return handlers_.size(); }
-    // deprecated
-    XBT_ATTRIB_DEPRECATED_v323("Please use xbt::disconnect_slots)") void disconnectSlots() { disconnect_slots(); }
-    XBT_ATTRIB_DEPRECATED_v323("Please use xbt::get_slot_count)") int getSlotsAmount() { return get_slot_count(); }
   };
 
 }
