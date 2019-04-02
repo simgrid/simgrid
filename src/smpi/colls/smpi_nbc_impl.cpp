@@ -602,5 +602,42 @@ int Colls::iexscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
   return MPI_SUCCESS;
 }
 
+int Colls::ireduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datatype datatype, MPI_Op op,
+                             MPI_Comm comm, MPI_Request* request){
+//Version where each process performs the reduce for its own part. Alltoall pattern for comms.
+  const int system_tag = COLL_TAG_REDUCE_SCATTER;
+  MPI_Aint lb = 0;
+  MPI_Aint dataext = 0;
+  MPI_Request *requests;
+
+  int rank = comm->rank();
+  int size = comm->size();
+  int count=recvcounts[rank];
+  (*request) = new Request( recvbuf, count, datatype,
+                         rank,rank, system_tag, comm, MPI_REQ_PERSISTENT, op);
+  datatype->extent(&lb, &dataext);
+
+  // Send/Recv buffers to/from others;
+  requests = new MPI_Request[2 * (size - 1)];
+  int index = 0;
+  int recvdisp=0;
+  for (int other = 0; other < size; other++) {
+    if(other != rank) {
+      requests[index] = Request::isend_init(static_cast<char *>(sendbuf) + recvdisp * dataext, recvcounts[other], datatype, other, system_tag,comm);
+      XBT_VERB("sending with recvdisp %d", recvdisp);
+      index++;
+      requests[index] = Request::irecv_init(smpi_get_tmp_sendbuffer(count * dataext), count, datatype,
+                                        other, system_tag, comm);
+      index++;
+    }else{
+      Datatype::copy(static_cast<char *>(sendbuf) + recvdisp * dataext, count, datatype, recvbuf, count, datatype);
+    }
+    recvdisp+=recvcounts[other];
+  }
+  Request::startall(2 * (size - 1), requests);
+  (*request)->set_nbc_requests(requests, 2 * (size - 1));
+  return MPI_SUCCESS;
+}
+
 }
 }

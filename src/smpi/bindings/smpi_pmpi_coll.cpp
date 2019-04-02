@@ -469,7 +469,7 @@ int PMPI_Iallreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype dataty
     }
     int rank = simgrid::s4u::this_actor::get_pid();
 
-    TRACE_smpi_comm_in(rank, __func__,
+    TRACE_smpi_comm_in(rank, request==MPI_REQUEST_IGNORED ?"PMPI_Allreduce":"PMPI_Iallreduce",
                        new simgrid::instr::CollTIData(request==MPI_REQUEST_IGNORED ? "allreduce":"iallreduce", -1, 0,
                                                       datatype->is_replayable() ? count : count * datatype->size(), -1,
                                                       simgrid::smpi::Datatype::encode(datatype), ""));
@@ -581,6 +581,11 @@ int PMPI_Iexscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
 
 int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
+  return PMPI_Ireduce_scatter(sendbuf, recvbuf, recvcounts, datatype, op, comm, MPI_REQUEST_IGNORED);
+}
+
+int PMPI_Ireduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
+{
   int retval = 0;
   smpi_bench_end();
 
@@ -591,6 +596,8 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datat
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
   } else if (recvcounts == nullptr) {
+    retval = MPI_ERR_ARG;
+  }  else if (request == nullptr){
     retval = MPI_ERR_ARG;
   } else {
     int rank                           = simgrid::s4u::this_actor::get_pid();
@@ -609,11 +616,15 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datat
       memcpy(sendtmpbuf, recvbuf, totalcount * datatype->size());
     }
 
-    TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::VarCollTIData(
-                                           "reducescatter", -1, dt_send_size, nullptr, -1, trace_recvcounts,
+    TRACE_smpi_comm_in(rank, request==MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter": "PMPI_Ireduce_scatter", new simgrid::instr::VarCollTIData(
+                                           request==MPI_REQUEST_IGNORED ? "reducescatter":"ireducescatter", -1, dt_send_size, nullptr, -1, trace_recvcounts,
                                            simgrid::smpi::Datatype::encode(datatype), ""));
 
-    simgrid::smpi::Colls::reduce_scatter(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm);
+    if(request == MPI_REQUEST_IGNORED)
+      simgrid::smpi::Colls::reduce_scatter(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm);
+    else
+      simgrid::smpi::Colls::ireduce_scatter(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm, request);
+
     retval = MPI_SUCCESS;
     TRACE_smpi_comm_out(rank);
 
@@ -628,6 +639,12 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datat
 int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
                               MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
+  return PMPI_Ireduce_scatter_block(sendbuf, recvbuf, recvcount, datatype, op, comm, MPI_REQUEST_IGNORED);
+}
+
+int PMPI_Ireduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
+                              MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
+{
   int retval;
   smpi_bench_end();
 
@@ -639,7 +656,9 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
     retval = MPI_ERR_OP;
   } else if (recvcount < 0) {
     retval = MPI_ERR_ARG;
-  } else {
+  } else if (request == nullptr){
+    retval = MPI_ERR_ARG;
+  }  else {
     int count = comm->size();
 
     int rank                           = simgrid::s4u::this_actor::get_pid();
@@ -652,14 +671,17 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
       memcpy(sendtmpbuf, recvbuf, recvcount * count * datatype->size());
     }
 
-    TRACE_smpi_comm_in(rank, __func__,
-                       new simgrid::instr::VarCollTIData("reducescatter", -1, 0, nullptr, -1, trace_recvcounts,
+    TRACE_smpi_comm_in(rank, request==MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter_block":"PMPI_Ireduce_scatter_block",
+                       new simgrid::instr::VarCollTIData(request==MPI_REQUEST_IGNORED ? "reducescatter":"ireducescatter", -1, 0, nullptr, -1, trace_recvcounts,
                                                          simgrid::smpi::Datatype::encode(datatype), ""));
 
     int* recvcounts = new int[count];
     for (int i      = 0; i < count; i++)
       recvcounts[i] = recvcount;
-    simgrid::smpi::Colls::reduce_scatter(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm);
+    if(request == MPI_REQUEST_IGNORED)
+      simgrid::smpi::Colls::reduce_scatter(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm);
+    else
+      simgrid::smpi::Colls::ireduce_scatter(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm, request);
     delete[] recvcounts;
     retval = MPI_SUCCESS;
 

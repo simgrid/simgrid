@@ -168,17 +168,17 @@ int main(int argc, char **argv)
     MPI_Iallreduce(MPI_IN_PLACE, rbuf, NUM_INTS, MPI_INT, MPI_SUM, comm, &req);
     MPI_Wait(&req, MPI_STATUS_IGNORE);
 
-/*    MPI_Ireduce_scatter(sbuf, rbuf, rcounts, MPI_INT, MPI_SUM, comm, &req);*/
-/*    MPI_Wait(&req, MPI_STATUS_IGNORE);*/
+    MPI_Ireduce_scatter(sbuf, rbuf, rcounts, MPI_INT, MPI_SUM, comm, &req);
+    MPI_Wait(&req, MPI_STATUS_IGNORE);
 
-/*    MPI_Ireduce_scatter(MPI_IN_PLACE, rbuf, rcounts, MPI_INT, MPI_SUM, comm, &req);*/
-/*    MPI_Wait(&req, MPI_STATUS_IGNORE);*/
+    MPI_Ireduce_scatter(MPI_IN_PLACE, rbuf, rcounts, MPI_INT, MPI_SUM, comm, &req);
+    MPI_Wait(&req, MPI_STATUS_IGNORE);
 
-/*    MPI_Ireduce_scatter_block(sbuf, rbuf, NUM_INTS, MPI_INT, MPI_SUM, comm, &req);*/
-/*    MPI_Wait(&req, MPI_STATUS_IGNORE);*/
+    MPI_Ireduce_scatter_block(sbuf, rbuf, NUM_INTS, MPI_INT, MPI_SUM, comm, &req);
+    MPI_Wait(&req, MPI_STATUS_IGNORE);
 
-/*    MPI_Ireduce_scatter_block(MPI_IN_PLACE, rbuf, NUM_INTS, MPI_INT, MPI_SUM, comm, &req);*/
-/*    MPI_Wait(&req, MPI_STATUS_IGNORE);*/
+    MPI_Ireduce_scatter_block(MPI_IN_PLACE, rbuf, NUM_INTS, MPI_INT, MPI_SUM, comm, &req);
+    MPI_Wait(&req, MPI_STATUS_IGNORE);
 
     MPI_Iscan(sbuf, rbuf, NUM_INTS, MPI_INT, MPI_SUM, comm, &req);
     MPI_Wait(&req, MPI_STATUS_IGNORE);

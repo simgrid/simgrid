@@ -281,43 +281,43 @@ int main(int argc, char **argv)
     }
 
     /* MPI_Ireduce_scatter */
-/*    for (i = 0; i < size; ++i) {*/
-/*        recvcounts[i] = COUNT;*/
-/*        for (j = 0; j < COUNT; ++j) {*/
-/*            buf[i * COUNT + j] = rank + i;*/
-/*            recvbuf[i * COUNT + j] = 0xdeadbeef;*/
-/*        }*/
-/*    }*/
-/*    MPI_Ireduce_scatter(buf, recvbuf, recvcounts, MPI_INT, MPI_SUM, MPI_COMM_WORLD, &req);*/
-/*    MPI_Wait(&req, MPI_STATUS_IGNORE);*/
-/*    for (j = 0; j < COUNT; ++j) {*/
-/*        my_assert(recvbuf[j] == (size * rank + ((size - 1) * size) / 2));*/
-/*    }*/
-/*    for (i = 1; i < size; ++i) {*/
-/*        for (j = 0; j < COUNT; ++j) {*/
-            /* check we didn't corrupt the rest of the recvbuf */
-/*            my_assert(recvbuf[i * COUNT + j] == 0xdeadbeef);*/
-/*        }*/
-/*    }*/
+    for (i = 0; i < size; ++i) {
+        recvcounts[i] = COUNT;
+        for (j = 0; j < COUNT; ++j) {
+            buf[i * COUNT + j] = rank + i;
+            recvbuf[i * COUNT + j] = 0xdeadbeef;
+        }
+    }
+    MPI_Ireduce_scatter(buf, recvbuf, recvcounts, MPI_INT, MPI_SUM, MPI_COMM_WORLD, &req);
+    MPI_Wait(&req, MPI_STATUS_IGNORE);
+    for (j = 0; j < COUNT; ++j) {
+        my_assert(recvbuf[j] == (size * rank + ((size - 1) * size) / 2));
+    }
+    for (i = 1; i < size; ++i) {
+        for (j = 0; j < COUNT; ++j) {
+/*             check we didn't corrupt the rest of the recvbuf */
+            my_assert(recvbuf[i * COUNT + j] == 0xdeadbeef);
+        }
+    }
 
     /* MPI_Ireduce_scatter_block */
-/*    for (i = 0; i < size; ++i) {*/
-/*        for (j = 0; j < COUNT; ++j) {*/
-/*            buf[i * COUNT + j] = rank + i;*/
-/*            recvbuf[i * COUNT + j] = 0xdeadbeef;*/
-/*        }*/
-/*    }*/
-/*    MPI_Ireduce_scatter_block(buf, recvbuf, COUNT, MPI_INT, MPI_SUM, MPI_COMM_WORLD, &req);*/
-/*    MPI_Wait(&req, MPI_STATUS_IGNORE);*/
-/*    for (j = 0; j < COUNT; ++j) {*/
-/*        my_assert(recvbuf[j] == (size * rank + ((size - 1) * size) / 2));*/
-/*    }*/
-/*    for (i = 1; i < size; ++i) {*/
-/*        for (j = 0; j < COUNT; ++j) {*/
+    for (i = 0; i < size; ++i) {
+        for (j = 0; j < COUNT; ++j) {
+            buf[i * COUNT + j] = rank + i;
+            recvbuf[i * COUNT + j] = 0xdeadbeef;
+        }
+    }
+    MPI_Ireduce_scatter_block(buf, recvbuf, COUNT, MPI_INT, MPI_SUM, MPI_COMM_WORLD, &req);
+    MPI_Wait(&req, MPI_STATUS_IGNORE);
+    for (j = 0; j < COUNT; ++j) {
+        my_assert(recvbuf[j] == (size * rank + ((size - 1) * size) / 2));
+    }
+    for (i = 1; i < size; ++i) {
+        for (j = 0; j < COUNT; ++j) {
             /* check we didn't corrupt the rest of the recvbuf */
-/*            my_assert(recvbuf[i * COUNT + j] == 0xdeadbeef);*/
-/*        }*/
-/*    }*/
+            my_assert(recvbuf[i * COUNT + j] == 0xdeadbeef);
+        }
+    }
 
     /* MPI_Igatherv */
     for (i = 0; i < size * COUNT; ++i) {
