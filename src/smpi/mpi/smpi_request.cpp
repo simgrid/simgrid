@@ -1059,7 +1059,7 @@ int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
   indices[count] = index;
   count++;
   for (int i = 0; i < incount; i++) {
-    if((requests[i] != MPI_REQUEST_NULL)) {
+    if (requests[i] != MPI_REQUEST_NULL) {
       test(&requests[i], pstat,&flag);
       if (flag==1){
         indices[count] = i;
