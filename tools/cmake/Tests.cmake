@@ -30,6 +30,8 @@ IF(enable_memcheck)
     message(STATUS "Error: Command valgrind not found --> enable_memcheck autoset to false.")
   endif()
 ENDIF()
+SET(TESH_WRAPPER_UNBOXED "${TESH_WRAPPER}")
+SEPARATE_ARGUMENTS(TESH_WRAPPER_UNBOXED)
 
 #some tests may take forever on non futexes systems, using busy_wait with n cores < n workers
 # default to posix for these tests if futexes are not supported

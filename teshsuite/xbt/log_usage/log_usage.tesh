@@ -87,7 +87,3 @@ $ cat ${bindir:=.}/log_usage_1.log
 > [  0.000000] [0:maestro@] false alarm!
 
 $ rm -f ${bindir:=.}/log_usage.log ${bindir:=.}/log_usage_0.log ${bindir:=.}/log_usage_1.log
-
-# Would be nice for code coverage, but the early exit leads to lots of memory leaks
-#! output ignore
-#$ $SG_TEST_EXENV ${bindir:=.}/log_usage --help-logs --help-log-categories
