@@ -7,20 +7,43 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
-static void test(double computation_amount, double priority)
+/* This actor simply waits for its task completion after starting it.
+ * That's exactly equivalent to synchronous execution. */
+static void waiter()
 {
-  XBT_INFO("Hello! Execute %g flops with priority %g", computation_amount, priority);
+  double computation_amount = simgrid::s4u::this_actor::get_host()->get_speed();
+  XBT_INFO("Execute %g flops, should take 1 second.", computation_amount);
   simgrid::s4u::ExecPtr activity = simgrid::s4u::this_actor::exec_init(computation_amount);
-  activity->set_priority(priority);
   activity->start();
   activity->wait();
 
   XBT_INFO("Goodbye now!");
 }
 
-static void test_cancel(double computation_amount)
+/* This actor tests the ongoing execution until its completion, and don't wait before it's terminated. */
+static void monitor()
 {
-  XBT_INFO("Hello! Execute %g flops, should take 1 second", computation_amount);
+  double computation_amount = simgrid::s4u::this_actor::get_host()->get_speed();
+  XBT_INFO("Execute %g flops, should take 1 second.", computation_amount);
+  simgrid::s4u::ExecPtr activity = simgrid::s4u::this_actor::exec_init(computation_amount);
+  activity->start();
+
+  while (not activity->test()) {
+    XBT_INFO("Remaining amount of flops: %g (%.0f%%)", activity->get_remaining(),
+             100 * activity->get_remaining_ratio());
+    simgrid::s4u::this_actor::sleep_for(0.3);
+  }
+  activity->wait();
+
+  XBT_INFO("Goodbye now!");
+}
+
+/* This actor cancels the ongoing execution after a while. */
+static void canceller()
+{
+  double computation_amount = simgrid::s4u::this_actor::get_host()->get_speed();
+
+  XBT_INFO("Execute %g flops, should take 1 second.", computation_amount);
   simgrid::s4u::ExecPtr activity = simgrid::s4u::this_actor::exec_async(computation_amount);
   simgrid::s4u::this_actor::sleep_for(0.5);
   XBT_INFO("I changed my mind, cancel!");
@@ -33,9 +56,14 @@ int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("test", simgrid::s4u::Host::by_name("Fafard"), test, 7.6296e+07, 1.0);
-  simgrid::s4u::Actor::create("test", simgrid::s4u::Host::by_name("Fafard"), test, 7.6296e+07, 2.0);
-  simgrid::s4u::Actor::create("test_cancel", simgrid::s4u::Host::by_name("Boivin"), test_cancel, 98.095e+07);
+
+  simgrid::s4u::Host* fafard  = simgrid::s4u::Host::by_name("Fafard");
+  simgrid::s4u::Host* ginette = simgrid::s4u::Host::by_name("Ginette");
+  simgrid::s4u::Host* boivin  = simgrid::s4u::Host::by_name("Boivin");
+
+  simgrid::s4u::Actor::create("wait", fafard, waiter);
+  simgrid::s4u::Actor::create("monitor", ginette, monitor);
+  simgrid::s4u::Actor::create("cancel", boivin, canceller);
 
   e.run();
 

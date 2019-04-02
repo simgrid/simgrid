@@ -33,7 +33,7 @@ XBT_PRIVATE std::vector<std::string> known_storages;
 namespace simgrid {
 namespace surf {
 
-simgrid::xbt::signal<void(kernel::routing::ClusterCreationArgs*)> on_cluster;
+simgrid::xbt::signal<void(kernel::routing::ClusterCreationArgs const&)> on_cluster;
 }
 }
 
@@ -74,7 +74,7 @@ void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
   }
 
   simgrid::s4u::Host* host =
-      routing_get_current()->create_host(args->id, &args->speed_per_pstate, args->core_amount, &props);
+      routing_get_current()->create_host(args->id, args->speed_per_pstate, args->core_amount, &props);
 
   host->pimpl_->storage_ = mount_list;
   mount_list.clear();
@@ -285,7 +285,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
   XBT_DEBUG("</AS>");
   sg_platf_new_Zone_seal();
 
-  simgrid::surf::on_cluster(cluster);
+  simgrid::surf::on_cluster(*cluster);
   delete cluster->radicals;
 }
 
@@ -481,9 +481,9 @@ void sg_platf_new_peer(simgrid::kernel::routing::PeerCreationArgs* peer)
   simgrid::kernel::routing::VivaldiZone* as = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
   xbt_assert(as, "<peer> tag can only be used in Vivaldi netzones.");
 
-  std::vector<double> speedPerPstate;
-  speedPerPstate.push_back(peer->speed);
-  simgrid::s4u::Host* host = as->create_host(peer->id.c_str(), &speedPerPstate, 1, nullptr);
+  std::vector<double> speed_per_pstate;
+  speed_per_pstate.push_back(peer->speed);
+  simgrid::s4u::Host* host = as->create_host(peer->id.c_str(), speed_per_pstate, 1, nullptr);
 
   as->set_peer_link(host->pimpl_netpoint, peer->bw_in, peer->bw_out, peer->coord);
 

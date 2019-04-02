@@ -203,6 +203,7 @@ set(SMPI_SRC
   src/smpi/colls/reduce/reduce-rab.cpp
   src/smpi/colls/scatter/scatter-ompi.cpp
   src/smpi/colls/scatter/scatter-mvapich-two-level.cpp
+  src/smpi/colls/smpi_nbc_impl.cpp
   src/smpi/colls/smpi_automatic_selector.cpp
   src/smpi/colls/smpi_default_selector.cpp
   src/smpi/colls/smpi_mpich_selector.cpp
@@ -536,7 +537,7 @@ list(APPEND JMSG_JAVA_SRC ${JTRACE_JAVA_SRC})
 set(LUA_SRC
   src/bindings/lua/lua_host.cpp
   src/bindings/lua/lua_platf.cpp
-  src/bindings/lua/lua_debug.cpp
+  src/bindings/lua/lua_utils.cpp
   src/bindings/lua/simgrid_lua.cpp
   )
 
@@ -887,7 +888,6 @@ set(DOC_SOURCES
   docs/source/Start_Your_Own_Project.rst
   docs/source/models.rst
   docs/source/platform.rst
-  docs/source/platform_examples.rst
   docs/source/platform_howtos.rst
   docs/source/platform_reference.rst
   docs/source/Configuring_SimGrid.rst
@@ -973,19 +973,20 @@ set(txt_files
 set(CMAKEFILES_TXT
   examples/s4u/CMakeLists.txt
   examples/smpi/CMakeLists.txt
-    examples/smpi/NAS/CMakeLists.txt
-    examples/smpi/smpi_msg_masterslave/CMakeLists.txt
-    examples/smpi/replay_multiple/CMakeLists.txt
-    examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
-    examples/smpi/energy/f77/CMakeLists.txt
-    examples/smpi/energy/f90/CMakeLists.txt
+  examples/smpi/NAS/CMakeLists.txt
+  examples/smpi/smpi_msg_masterslave/CMakeLists.txt
+  examples/smpi/replay_multiple/CMakeLists.txt
+  examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
+  examples/smpi/energy/f77/CMakeLists.txt
+  examples/smpi/energy/f90/CMakeLists.txt
   examples/python/CMakeLists.txt
   examples/deprecated/java/CMakeLists.txt
   examples/deprecated/msg/CMakeLists.txt
-    examples/deprecated/msg/mc/CMakeLists.txt
+  examples/deprecated/msg/mc/CMakeLists.txt
   examples/deprecated/simdag/CMakeLists.txt
 
   teshsuite/java/CMakeLists.txt
+  teshsuite/lua/CMakeLists.txt
   teshsuite/mc/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
   teshsuite/s4u/CMakeLists.txt

@@ -22,6 +22,7 @@ class XBT_PUBLIC Mailbox {
   kernel::activity::MailboxImpl* const pimpl_;
 
   explicit Mailbox(kernel::activity::MailboxImpl * mbox) : pimpl_(mbox) {}
+  ~Mailbox() = default;
 
 public:
   /** private function, do not use. FIXME: make me protected */

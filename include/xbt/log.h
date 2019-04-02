@@ -297,10 +297,10 @@ XBT_PUBLIC void xbt_log_additivity_set(xbt_log_category_t cat, int additivity);
  *
  * This layout is not as flexible as the pattern one
  */
-XBT_PUBLIC xbt_log_layout_t xbt_log_layout_simple_new(char* arg);
-XBT_PUBLIC xbt_log_layout_t xbt_log_layout_format_new(char* arg);
-XBT_PUBLIC xbt_log_appender_t xbt_log_appender_file_new(char* arg);
-XBT_PUBLIC xbt_log_appender_t xbt_log_appender2_file_new(char* arg, int roll);
+XBT_PUBLIC xbt_log_layout_t xbt_log_layout_simple_new(const char* arg);
+XBT_PUBLIC xbt_log_layout_t xbt_log_layout_format_new(const char* arg);
+XBT_PUBLIC xbt_log_appender_t xbt_log_appender_file_new(const char* arg);
+XBT_PUBLIC xbt_log_appender_t xbt_log_appender2_file_new(const char* arg, int roll);
 
 /* ********************************** */
 /* Functions that you shouldn't call  */

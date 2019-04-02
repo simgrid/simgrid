@@ -19,11 +19,20 @@ class XBT_PUBLIC CommImpl : public ActivityImpl {
   ~CommImpl() override;
   void cleanupSurf();
 
+  double rate_ = 0.0;
+  double size_ = 0.0;
+
 public:
   enum class Type { SEND = 0, RECEIVE, READY, DONE };
 
-  explicit CommImpl(Type type);
-  void start();
+  CommImpl& set_type(CommImpl::Type type);
+  CommImpl& set_size(double size);
+  double get_rate() { return rate_; }
+  CommImpl& set_rate(double rate);
+  CommImpl& set_src_buff(void* buff, size_t size);
+  CommImpl& set_dst_buff(void* buff, size_t* size);
+
+  CommImpl* start();
   void copy_data();
   void suspend() override;
   void resume() override;
@@ -32,7 +41,7 @@ public:
   void cancel();
   double remains();
 
-  CommImpl::Type type;         /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
+  CommImpl::Type type_;        /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
   MailboxImpl* mbox = nullptr; /* Rendez-vous where the comm is queued */
 
 #if SIMGRID_HAVE_MC
@@ -49,13 +58,10 @@ expectations of the other side, too. See  */
   void (*copy_data_fun)(CommImpl*, void*, size_t) = nullptr;
 
   /* Surf action data */
-  resource::Action* surf_action_ = nullptr; /* The Surf communication action encapsulated */
   resource::Action* src_timeout_ = nullptr; /* Surf's actions to instrument the timeouts */
   resource::Action* dst_timeout_ = nullptr; /* Surf's actions to instrument the timeouts */
   actor::ActorImplPtr src_actor_ = nullptr;
   actor::ActorImplPtr dst_actor_ = nullptr;
-  double rate_                   = 0.0;
-  double task_size_              = 0.0;
 
   /* Data to be transfered */
   void* src_buff_        = nullptr;

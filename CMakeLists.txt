@@ -91,7 +91,7 @@ endif()
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "21")
+set(SIMGRID_VERSION_MINOR "22")
 set(SIMGRID_VERSION_PATCH "90")
 set(SIMGRID_VERSION_EXTRA "-DEVEL") # Extra words to add to version string (e.g. -rc1)
 
@@ -461,42 +461,23 @@ file(REMOVE test_stackgrowth)
 ## GIT version check
 ##
 if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
-  execute_process(
-     COMMAND git remote
-     COMMAND head -n 1
-     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
-     OUTPUT_VARIABLE remote
+  execute_process(COMMAND git rev-parse --verify --short HEAD
+     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
+     OUTPUT_VARIABLE GIT_VERSION
      OUTPUT_STRIP_TRAILING_WHITESPACE)
-  #message(STATUS "Git remote: ${remote}")
-  execute_process(COMMAND git config --get remote.${remote}.url
-     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
-     OUTPUT_VARIABLE url
-     OUTPUT_STRIP_TRAILING_WHITESPACE)
-  #message(STATUS "Git url: ${url}")
-  if(url)
-    execute_process(COMMAND git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --pretty=oneline --abbrev-commit -1
-       WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
-       OUTPUT_VARIABLE GIT_VERSION
-       OUTPUT_STRIP_TRAILING_WHITESPACE)
-    message(STATUS "Git version: ${GIT_VERSION}")
-
-    execute_process(COMMAND git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log -n 1 --pretty=format:%ai .
-       WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
-       OUTPUT_VARIABLE GIT_DATE 
-       OUTPUT_STRIP_TRAILING_WHITESPACE)
-    message(STATUS "Git date: ${GIT_DATE}")
-    string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
-
-    execute_process(COMMAND git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --pretty=format:%H -1
-       WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
-       OUTPUT_VARIABLE SIMGRID_GITHASH
-       OUTPUT_STRIP_TRAILING_WHITESPACE)
+  # Check for uncommitted changes
+  execute_process(COMMAND git diff --name-only HEAD
+    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
+    OUTPUT_VARIABLE files_changed)
+  if(files_changed)
+    set(GIT_VERSION "${GIT_VERSION}-dirty")
   endif()
 elseif(EXISTS ${CMAKE_HOME_DIRECTORY}/.gitversion)
   FILE(STRINGS ${CMAKE_HOME_DIRECTORY}/.gitversion GIT_VERSION)
 else()
   set(GIT_VERSION "none, release version")
 endif()
+message(STATUS "Git version: ${GIT_VERSION}")
 
 ### Define source packages for Libs
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/DefinePackages.cmake)

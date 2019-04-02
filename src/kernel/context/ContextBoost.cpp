@@ -15,7 +15,7 @@ namespace kernel {
 namespace context {
 
 // BoostContextFactory
-smx_context_t BoostContextFactory::create_context(std::function<void()>&& code, actor::ActorImpl* actor)
+BoostContext* BoostContextFactory::create_context(std::function<void()>&& code, actor::ActorImpl* actor)
 {
   return this->new_context<BoostContext>(std::move(code), actor, this);
 }

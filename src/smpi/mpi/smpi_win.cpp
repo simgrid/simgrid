@@ -16,7 +16,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_rma, smpi, "Logging specific to SMPI (RMA operations)");
 
-using simgrid::s4u::Actor;
 
 namespace simgrid{
 namespace smpi{
@@ -40,7 +39,7 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   connected_wins_[rank_] = this;
   count_                 = 0;
   if(rank_==0){
-    bar_ = new simgrid::s4u::Barrier(comm_size);
+    bar_ = new s4u::Barrier(comm_size);
   }
   mode_=0;
 
@@ -50,7 +49,7 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   Colls::allgather(&(connected_wins_[rank_]), sizeof(MPI_Win), MPI_BYTE, connected_wins_, sizeof(MPI_Win),
                          MPI_BYTE, comm);
 
-  Colls::bcast(&(bar_), sizeof(simgrid::s4u::Barrier*), MPI_BYTE, 0, comm);
+  Colls::bcast(&(bar_), sizeof(s4u::Barrier*), MPI_BYTE, 0, comm);
 
   Colls::barrier(comm);
 }

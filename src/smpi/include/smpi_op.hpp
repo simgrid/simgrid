@@ -16,6 +16,7 @@ class Op : public F2C{
   MPI_User_function* func_;
   bool is_commutative_;
   bool is_fortran_op_ = false;
+  int refcount_ = 1;
 
 public:
   Op(MPI_User_function* function, bool commutative) : func_(function), is_commutative_(commutative) {}
@@ -25,6 +26,8 @@ public:
   void set_fortran_op() { is_fortran_op_ = true; }
   void apply(void* invec, void* inoutvec, int* len, MPI_Datatype datatype);
   static Op* f2c(int id);
+  void ref();
+  static void unref(MPI_Op* op);
 };
 
 }

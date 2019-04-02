@@ -192,39 +192,6 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
   return res;
 }
 
-/** @brief Join a set of strings as a single string
- *
- * The parameter must be a nullptr-terminated array of chars,
- * just like xbt_dynar_to_array() produces
- */
-char *xbt_str_join_array(const char *const *strs, const char *sep)
-{
-  int amount_strings=0;
-  int len=0;
-
-  if ((not strs) || (not strs[0]))
-    return xbt_strdup("");
-
-  /* compute the length before malloc */
-  for (int i = 0; strs[i]; i++) {
-    len += strlen(strs[i]);
-    amount_strings++;
-  }
-  len += strlen(sep) * amount_strings;
-
-  /* Do the job */
-  char* res = (char*)xbt_malloc(len);
-  char* q   = res;
-  for (int i = 0; strs[i]; i++) {
-    if (i != 0) { // not first loop
-      q += snprintf(q,len, "%s%s", sep, strs[i]);
-    } else {
-      q += snprintf(q,len, "%s",strs[i]);
-    }
-  }
-  return res;
-}
-
 /** @brief Parse an integer out of a string, or raise an error
  *
  * The @a str is passed as argument to your @a error_msg, as follows:

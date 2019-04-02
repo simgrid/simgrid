@@ -41,8 +41,8 @@ public:
   friend ExecPar;
   friend XBT_PUBLIC void intrusive_ptr_release(Exec* e);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Exec* e);
-  static xbt::signal<void(ActorPtr)> on_start;
-  static xbt::signal<void(ActorPtr)> on_completion;
+  static xbt::signal<void(Actor const&)> on_start;
+  static xbt::signal<void(Actor const&)> on_completion;
 
   virtual Exec* start() override          = 0;
   virtual double get_remaining_ratio()    = 0;

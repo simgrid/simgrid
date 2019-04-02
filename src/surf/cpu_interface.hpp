@@ -37,7 +37,7 @@ public:
    *                         This ignores any potential external load coming from a trace.
    * @param core The number of core of this Cpu
    */
-  virtual Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core) = 0;
+  virtual Cpu* create_cpu(simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) = 0;
 
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;
@@ -62,8 +62,8 @@ public:
    * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
    */
-  Cpu(simgrid::kernel::resource::Model * model, simgrid::s4u::Host * host, kernel::lmm::Constraint * constraint,
-      std::vector<double> * speedPerPstate, int core);
+  Cpu(simgrid::kernel::resource::Model* model, simgrid::s4u::Host* host, kernel::lmm::Constraint* constraint,
+      const std::vector<double>& speed_per_pstate, int core);
 
   /**
    * @brief Cpu constructor
@@ -73,12 +73,11 @@ public:
    * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
    */
-  Cpu(simgrid::kernel::resource::Model * model, simgrid::s4u::Host * host, std::vector<double> * speedPerPstate,
+  Cpu(simgrid::kernel::resource::Model* model, simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate,
       int core);
 
   Cpu(const Cpu&) = delete;
   Cpu& operator=(const Cpu&) = delete;
-  ~Cpu();
 
   /**
    * @brief Execute some quantity of computation
@@ -117,7 +116,7 @@ public:
    *
    * If you want to know the amount of flops currently delivered, use  load = get_load()*get_speed_ratio()
    */
-  virtual double get_speed(double load);
+  virtual double get_speed(double load) const;
 
 protected:
   /** @brief Take speed changes (either load or max) into account */
@@ -131,11 +130,11 @@ public:
   virtual double get_speed_ratio();
 
   /** @brief Get the peak processor speed (in flops/s), at the specified pstate */
-  virtual double get_pstate_peak_speed(int pstate_index);
+  virtual double get_pstate_peak_speed(int pstate_index) const;
 
-  virtual int get_pstate_count();
+  virtual int get_pstate_count() const;
   virtual void set_pstate(int pstate_index);
-  virtual int get_pstate();
+  virtual int get_pstate() const;
 
   simgrid::s4u::Host* get_host() { return host_; }
 
@@ -144,7 +143,7 @@ private:
   simgrid::s4u::Host* host_;
 
   int pstate_ = 0;                       /*< Current pstate (index in the speed_per_pstate_)*/
-  std::vector<double> speed_per_pstate_; /*< List of supported CPU capacities (pstate related) */
+  const std::vector<double> speed_per_pstate_; /*< List of supported CPU capacities (pstate related) */
 
 public:
   /*< @brief Setup the trace file with availability events (peak speed changes due to external load).
@@ -166,13 +165,10 @@ protected:
 class XBT_PUBLIC CpuAction : public simgrid::kernel::resource::Action {
 public:
   /** @brief Signal emitted when the action state changes (ready/running/done, etc)
-   *  Signature: `void(CpuAction *action, simgrid::kernel::resource::Action::State previous)`
+   *  Signature: `void(CpuAction const& action, simgrid::kernel::resource::Action::State previous)`
    */
-  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, simgrid::kernel::resource::Action::State)> on_state_change;
-  /** @brief Signal emitted when the action share changes (amount of flops it gets)
-   *  Signature: `void(CpuAction *action)`
-   */
-  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> on_share_change;
+  static simgrid::xbt::signal<void(simgrid::surf::CpuAction const&, simgrid::kernel::resource::Action::State)>
+      on_state_change;
 
   CpuAction(simgrid::kernel::resource::Model * model, double cost, bool failed) : Action(model, cost, failed) {}
   CpuAction(simgrid::kernel::resource::Model * model, double cost, bool failed, kernel::lmm::Variable* var)
@@ -183,7 +179,7 @@ public:
   void set_state(simgrid::kernel::resource::Action::State state) override;
 
   void update_remains_lazy(double now) override;
-  std::list<Cpu*> cpus();
+  std::list<Cpu*> cpus() const;
 
   void suspend() override;
   void resume() override;

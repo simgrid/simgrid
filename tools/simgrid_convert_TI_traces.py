@@ -35,7 +35,7 @@ def convert_trace(trace_path, base_path, output_path, trace_version="1.0"):
 
         new_file_path = os.path.join(output_path, trace_path)
         pathlib.Path(os.path.dirname(new_file_path)).mkdir(
-                parents=True, exist_ok=True)
+            parents=True, exist_ok=True)
 
         with open(new_file_path, "w") as new_trace:
             # Write header
@@ -44,7 +44,7 @@ def convert_trace(trace_path, base_path, output_path, trace_version="1.0"):
             last_async_call_src = None
             last_async_call_dst = None
             for line_num, line in enumerate(trace_file.readlines()):
-                #print(line)
+                # print(line)
                 new_line = None
                 split_line = line.lower().strip().split(" ")
                 mpi_call = split_line[1]
@@ -63,8 +63,8 @@ def convert_trace(trace_path, base_path, output_path, trace_version="1.0"):
                     if (last_async_call_src is None
                             or last_async_call_dst is None):
                         raise Exception("Invalid traces: No Isend or Irecv "
-                                "found before the wait in line " +
-                                str(line_num) + " in file " + old_file_path )
+                                        "found before the wait in line " +
+                                        str(line_num) + " in file " + old_file_path)
                     new_line = insert_elem(split_line, 2, last_async_call_src)
                     new_line = insert_elem(split_line, 3, last_async_call_dst)
                     new_line = insert_elem(split_line, 4, "0")
@@ -81,14 +81,13 @@ if __name__ == "__main__":
     import argparse
     import sys
 
-
     parser = argparse.ArgumentParser(description=sys.modules[__name__].__doc__)
 
     parser.add_argument('trace_list_file', type=argparse.FileType('r'),
-            default=sys.stdin, help="The trace list file (e.g. smpi_simgrid.txt)")
+                        default=sys.stdin, help="The trace list file (e.g. smpi_simgrid.txt)")
 
     parser.add_argument('--output_path', '-o', default="converted_traces",
-            help="The path where converted traces will be put")
+                        help="The path where converted traces will be put")
 
     args = parser.parse_args()
 
@@ -96,7 +95,7 @@ if __name__ == "__main__":
 
     # creates results dir
     pathlib.Path(args.output_path).mkdir(
-            parents=True, exist_ok=True)
+        parents=True, exist_ok=True)
 
     # copy trace list file
     try:
@@ -105,7 +104,6 @@ if __name__ == "__main__":
         print("ERROR: Inplace replacement of the trace is not supported: "
               "Please, select another output path")
         sys.exit(-1)
-
 
     with open(trace_list_file_path) as tracelist_file:
         trace_list = tracelist_file.readlines()

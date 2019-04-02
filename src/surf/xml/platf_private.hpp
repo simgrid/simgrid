@@ -227,7 +227,7 @@ XBT_PUBLIC int surf_parse_lex_destroy();
 namespace simgrid {
 namespace surf {
 
-extern XBT_PRIVATE simgrid::xbt::signal<void(kernel::routing::ClusterCreationArgs*)> on_cluster;
+extern XBT_PRIVATE simgrid::xbt::signal<void(kernel::routing::ClusterCreationArgs const&)> on_cluster;
 }
 }
 

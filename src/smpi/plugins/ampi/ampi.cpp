@@ -5,11 +5,12 @@
 
 #include <simgrid/plugins/load_balancer.h>
 #include <simgrid/s4u/Actor.hpp>
-#include <src/smpi/include/smpi_comm.hpp>
-#include <src/smpi/include/smpi_actor.hpp>
-#include <src/smpi/plugins/ampi/instr_ampi.hpp>
 #include <src/instr/instr_smpi.hpp>
+#include <src/smpi/include/smpi_actor.hpp>
+#include <src/smpi/include/smpi_comm.hpp>
+#include <src/smpi/plugins/ampi/instr_ampi.hpp>
 #include <xbt/replay.hpp>
+#include <xbt/sysdep.h>
 
 #include "ampi.hpp"
 #include <smpi/sampi.h>
@@ -24,7 +25,7 @@ extern "C" XBT_PUBLIC void* _sampi_calloc(size_t num_elm, size_t elem_size);
 extern "C" XBT_PUBLIC void* _sampi_realloc(void* ptr, size_t size);
 extern "C" void* _sampi_malloc(size_t size)
 {
-  void* result = malloc (size); // We need the space here to prevent recursive substitution
+  void* result = xbt_malloc(size);
   alloc_table.insert({result, size});
   if (not simgrid::s4u::this_actor::is_maestro()) {
     memory_size[simgrid::s4u::this_actor::get_pid()] += size;
@@ -37,12 +38,12 @@ extern "C" void _sampi_free(void* ptr)
   size_t alloc_size = alloc_table.at(ptr);
   int my_proc_id    = simgrid::s4u::this_actor::get_pid();
   memory_size[my_proc_id] -= alloc_size;
-  free(ptr);
+  xbt_free(ptr);
 }
 
 extern "C" void* _sampi_calloc(size_t num_elm, size_t elem_size)
 {
-  void* result = calloc (num_elm, elem_size); // We need the space here to prevent recursive substitution
+  void* result = xbt_malloc0(num_elm * elem_size);
   alloc_table.insert({result, num_elm * elem_size});
   if (not simgrid::s4u::this_actor::is_maestro()) {
     memory_size[simgrid::s4u::this_actor::get_pid()] += num_elm * elem_size;
@@ -51,7 +52,7 @@ extern "C" void* _sampi_calloc(size_t num_elm, size_t elem_size)
 }
 extern "C" void* _sampi_realloc(void* ptr, size_t size)
 {
-  void* result = realloc (ptr, size); // We need the space here to prevent recursive substitution
+  void* result = xbt_realloc(ptr, size);
   int old_size = alloc_table.at(ptr);
   alloc_table.erase(ptr);
   alloc_table.insert({result, size});
@@ -65,8 +66,8 @@ namespace simgrid {
 namespace smpi {
 namespace plugin {
 namespace ampi {
-  simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_iteration_in;
-  simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_iteration_out;
+simgrid::xbt::signal<void(simgrid::s4u::Actor const&)> on_iteration_in;
+simgrid::xbt::signal<void(simgrid::s4u::Actor const&)> on_iteration_out;
 }
 }
 }

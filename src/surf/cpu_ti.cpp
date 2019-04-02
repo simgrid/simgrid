@@ -312,7 +312,7 @@ CpuTiModel::~CpuTiModel()
   surf_cpu_model_pm = nullptr;
 }
 
-Cpu* CpuTiModel::create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core)
+Cpu* CpuTiModel::create_cpu(simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
 {
   return new CpuTi(this, host, speed_per_pstate, core);
 }
@@ -351,12 +351,12 @@ void CpuTiModel::update_actions_state(double now, double /*delta*/)
 /************
  * Resource *
  ************/
-CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)
-  : Cpu(model, host, speedPerPstate, core)
+CpuTi::CpuTi(CpuTiModel* model, simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
+    : Cpu(model, host, speed_per_pstate, core)
 {
   xbt_assert(core == 1, "Multi-core not handled by this model yet");
 
-  speed_.peak = speedPerPstate->front();
+  speed_.peak = speed_per_pstate.front();
   XBT_DEBUG("CPU create: peak=%f", speed_.peak);
 
   speed_integrated_trace_ = new CpuTiTmgr(nullptr, 1 /*scale*/);

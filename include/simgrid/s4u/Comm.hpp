@@ -44,9 +44,9 @@ public:
 
   virtual ~Comm();
 
-  static xbt::signal<void(ActorPtr)> on_sender_start;
-  static xbt::signal<void(ActorPtr)> on_receiver_start;
-  static xbt::signal<void(ActorPtr)> on_completion;
+  static xbt::signal<void(Actor const&)> on_sender_start;
+  static xbt::signal<void(Actor const&)> on_receiver_start;
+  static xbt::signal<void(Actor const&)> on_completion;
 
   /*! take a vector s4u::CommPtr and return when one of them is finished.
    * The return value is the rank of the first finished CommPtr. */

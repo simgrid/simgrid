@@ -235,7 +235,7 @@ public:
 }
 }
 
-XBT_PRIVATE std::string instr_pid(s4u_Actor* proc);
+XBT_PRIVATE std::string instr_pid(simgrid::s4u::Actor const& proc);
 
 extern XBT_PRIVATE std::set<std::string> created_categories;
 extern XBT_PRIVATE std::set<std::string> declared_marks;

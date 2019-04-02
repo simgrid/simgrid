@@ -58,7 +58,7 @@ public:
 
 class HostContainer : public Container {
 public:
-  HostContainer(simgrid::s4u::Host& host, NetZoneContainer* father);
+  HostContainer(simgrid::s4u::Host const& host, NetZoneContainer* father);
 };
 }
 }

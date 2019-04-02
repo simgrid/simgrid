@@ -59,7 +59,7 @@ RouterContainer::RouterContainer(const std::string& name, Container* father)
   trivaNodeTypes.insert(type_->get_name());
 }
 
-HostContainer::HostContainer(simgrid::s4u::Host& host, NetZoneContainer* father)
+HostContainer::HostContainer(simgrid::s4u::Host const& host, NetZoneContainer* father)
     : Container::Container(host.get_name(), "HOST", father)
 {
   xbt_assert(father, "Only the Root container has no father");

@@ -54,7 +54,7 @@ private:
 
 class BoostContextFactory : public SwappedContextFactory {
 public:
-  Context* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
+  BoostContext* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
 };
 } // namespace context
 } // namespace kernel

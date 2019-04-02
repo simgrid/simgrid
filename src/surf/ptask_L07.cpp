@@ -218,7 +218,7 @@ kernel::resource::Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host
   return res;
 }
 
-Cpu* CpuL07Model::create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core)
+Cpu* CpuL07Model::create_cpu(simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
 {
   return new CpuL07(this, host, speed_per_pstate, core);
 }
@@ -233,8 +233,8 @@ kernel::resource::LinkImpl* NetworkL07Model::create_link(const std::string& name
  * Resource *
  ************/
 
-CpuL07::CpuL07(CpuL07Model* model, simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core)
-    : Cpu(model, host, model->get_maxmin_system()->constraint_new(this, speed_per_pstate->front()), speed_per_pstate,
+CpuL07::CpuL07(CpuL07Model* model, simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
+    : Cpu(model, host, model->get_maxmin_system()->constraint_new(this, speed_per_pstate.front()), speed_per_pstate,
           core)
 {
 }

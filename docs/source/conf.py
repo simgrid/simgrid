@@ -12,14 +12,14 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os, subprocess
+import os
+import subprocess
 
 # Search for our extensions too
 import sys
 sys.path.append(os.path.abspath('_ext'))
 
 # -- Run doxygen on readthedocs.org ------------------------------------------
-import subprocess, os
 
 read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 
@@ -35,9 +35,9 @@ copyright = u'2002-2019, The SimGrid Team'
 author = u'The SimGrid Team'
 
 # The short X.Y version
-version = u'alpha 3.22'
+version = u'alpha 3.23'
 # The full version, including alpha/beta/rc tags
-release = u'alpha 3.22'
+release = u'alpha 3.23'
 
 
 # -- General configuration ---------------------------------------------------
@@ -52,10 +52,10 @@ release = u'alpha 3.22'
 extensions = [
     'sphinx.ext.todo',
     'breathe',
-#    'exhale',
+    #    'exhale',
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
-#    'sphinx.ext.napoleon',
+    #    'sphinx.ext.napoleon',
     'sphinx.ext.autosummary',
     'hidden_code_block',
     'javasphinx',
@@ -63,19 +63,19 @@ extensions = [
 
 todo_include_todos = True
 
-breathe_projects = { 'simgrid': '../build/xml' }
+breathe_projects = {'simgrid': '../build/xml'}
 breathe_default_project = "simgrid"
 
 # Setup the exhale extension
 
 exhale_args = {
     # These arguments are required
-    "containmentFolder":     "./api",
-    "rootFileName":          "library_root.rst",
-    "rootFileTitle":         "SimGrid Full API",
-    "doxygenStripFromPath":  "..",
+    "containmentFolder": "./api",
+    "rootFileName": "library_root.rst",
+    "rootFileTitle": "SimGrid Full API",
+    "doxygenStripFromPath": "..",
     # Suggested optional arguments
-    "createTreeView":        True,
+    "createTreeView": True,
     "exhaleExecutesDoxygen": False,
     # "exhaleUseDoxyfile":     True,
 }
@@ -122,7 +122,7 @@ html_theme = 'sphinx_rtd_theme'
 # documentation.
 #
 html_theme_options = {
-    'navigation_depth' : 4,
+    'navigation_depth': 4,
     'sticky_navigation': True,
     'display_version': True,
     'includehidden': True,
@@ -151,11 +151,10 @@ htmlhelp_basename = 'SimGrid-doc'
 # -- Options for GitLab integration ------------------------------------------
 
 html_context = {
-    "display_gitlab": True, # Integrate Gitlab
+    "display_gitlab": True,  # Integrate Gitlab
     "gitlab_host": "framagit.org",
     "gitlab_user": "simgrid",
     "gitlab_repo": "simgrid",
-    "gitlab_version": "master", # Version
-    "conf_py_path": "/docs/source/", # Path in the checkout to the docs root
+    "gitlab_version": "master",  # Version
+    "conf_py_path": "/docs/source/",  # Path in the checkout to the docs root
 }
-

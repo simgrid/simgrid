@@ -255,7 +255,7 @@ static void test_comm()
   xbt_assert(recv_done, "Receiver killed somehow. It shouldn't");
 }
 
-static void test_comm_dsend_and_quit()
+static void test_comm_dsend_and_quit_put_before_get()
 {
   XBT_INFO("%s: Launch a detached communication and end right after", __func__);
   bool dsend_done = false;
@@ -271,16 +271,10 @@ static void test_comm_dsend_and_quit()
 
   simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
     assert_exit(false, 3);
-    bool got_exception = false;
     simgrid::s4u::this_actor::sleep_for(2);
-    try {
-      void* payload = simgrid::s4u::Mailbox::by_name("mb")->get();
-      xbt_free(payload);
-    } catch (xbt_ex const& e) {
-      got_exception = true;
-    }
+    void* payload = simgrid::s4u::Mailbox::by_name("mb")->get();
+    xbt_free(payload);
     recv_done = true;
-    xbt_assert(not got_exception);
     return;
   });
 
@@ -289,6 +283,36 @@ static void test_comm_dsend_and_quit()
   xbt_assert(dsend_done, "Sender killed somehow. It shouldn't");
   xbt_assert(recv_done, "Receiver killed somehow. It shouldn't");
 }
+
+static void test_comm_dsend_and_quit_get_before_put()
+{
+  XBT_INFO("%s: Launch a detached communication and end right after", __func__);
+  bool dsend_done = false;
+  bool recv_done  = false;
+
+  simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[1], [&dsend_done]() {
+    assert_exit(false, 2);
+    char* payload = xbt_strdup("toto");
+    simgrid::s4u::this_actor::sleep_for(2);
+    simgrid::s4u::Mailbox::by_name("mb")->put_init(payload, 1000)->detach();
+    dsend_done = true;
+    return;
+  });
+
+  simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
+    assert_exit(false, 3);
+    void* payload = simgrid::s4u::Mailbox::by_name("mb")->get();
+    xbt_free(payload);
+    recv_done = true;
+    return;
+  });
+
+  // Sleep long enough to let the test ends by itself. 3 + surf_precision should be enough.
+  simgrid::s4u::this_actor::sleep_for(4);
+  xbt_assert(dsend_done, "Sender killed somehow. It shouldn't");
+  xbt_assert(recv_done, "Receiver killed somehow. It shouldn't");
+}
+
 
 static void test_comm_killsend()
 {
@@ -327,6 +351,55 @@ static void test_comm_killsend()
   xbt_assert(recv_done, "Receiver killed somehow. It shouldn't");
 }
 
+static void test_host_off_while_receive()
+{
+  XBT_INFO("%s: Launch an actor that waits on a recv, kill its host", __func__);
+  bool in_on_exit = false;
+  bool returned_from_main = false;
+  bool in_catch_before_on_exit = false;
+  bool in_catch_after_on_exit = false;
+
+  simgrid::s4u::ActorPtr receiver = simgrid::s4u::Actor::create(
+    "receiver", all_hosts[1], 
+    [&in_on_exit, &returned_from_main, &in_catch_before_on_exit, &in_catch_after_on_exit]() {
+       assert_exit(true, 1);
+       try {
+         simgrid::s4u::Mailbox::by_name("mb")->get();
+       } catch (simgrid::HostFailureException const&) {
+         in_catch_before_on_exit = not in_on_exit;
+         in_catch_after_on_exit = in_on_exit;
+       } catch (simgrid::NetworkFailureException const&) {
+         in_catch_before_on_exit = not in_on_exit;
+         in_catch_after_on_exit = in_on_exit;
+       }
+       returned_from_main = true;
+     });
+
+  receiver->on_exit([&in_on_exit](bool) { in_on_exit = true; });
+
+  simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create(
+    "sender", all_hosts[2], 
+    []() {
+      int data;
+      simgrid::s4u::Mailbox::by_name("mb")->put(&data, 100000);
+    });
+
+  simgrid::s4u::this_actor::sleep_for(1);
+  receiver->get_host()->turn_off();
+  
+  // Note: If we don't sleep here, we don't "see" the bug
+  simgrid::s4u::this_actor::sleep_for(1);
+
+  xbt_assert(in_on_exit, 
+    "Receiver's on_exit function was never called");
+  xbt_assert(not in_catch_before_on_exit, 
+    "Receiver mistakenly went to catch clause (before the on_exit function was called)");
+  xbt_assert(not in_catch_after_on_exit, 
+    "Receiver mistakenly went to catch clause (after the on_exit function was called)");
+  xbt_assert(not returned_from_main, 
+    "Receiver returned from main normally even though its host was killed");
+}
+
 /* We need an extra actor here, so that it can sleep until the end of each test */
 static void main_dispatcher()
 {
@@ -336,19 +409,22 @@ static void main_dispatcher()
   /* We cannot kill right at the end of the action because killer actors are always rescheduled to the end of the round
    * to avoid that they exit before their victim dereferences their name */
   run_test("sleep restarted at start", test_sleep_restart_begin);
-  run_test("sleep restarted at middle", test_sleep_restart_middle);
+  run_test("sleep restarted in middle", test_sleep_restart_middle);
   // run_test("sleep restarted at end", test_sleep_restart_end);
 
   run_test("exec", static_cast<std::function<void()>>(test_exec));
   run_test("exec killed at start", test_exec_kill_begin);
   run_test("exec killed in middle", test_exec_kill_middle);
   run_test("exec restarted at start", test_exec_restart_begin);
-  run_test("exec restarted at middle", test_exec_restart_middle);
+  run_test("exec restarted in middle", test_exec_restart_middle);
   run_test("exec restarted at end", test_exec_restart_end);
 
   run_test("comm", test_comm);
-  run_test("comm dsend and quit", test_comm_dsend_and_quit);
+  run_test("comm dsend and quit (put before get)", test_comm_dsend_and_quit_put_before_get);
+  run_test("comm dsend and quit (get before put)", test_comm_dsend_and_quit_get_before_put);
   run_test("comm kill sender", test_comm_killsend);
+
+  //run_test("comm recv and kill", test_host_off_while_receive);
 }
 
 int main(int argc, char* argv[])

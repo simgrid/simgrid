@@ -53,12 +53,12 @@ public:
   /*** Called on each newly created host */
   static xbt::signal<void(Host&)> on_creation;
   /*** Called just before destructing a host */
-  static xbt::signal<void(Host&)> on_destruction;
+  static xbt::signal<void(Host const&)> on_destruction;
   /*** Called when the machine is turned on or off (called AFTER the change) */
-  static xbt::signal<void(Host&)> on_state_change;
+  static xbt::signal<void(Host const&)> on_state_change;
   /*** Called when the speed of the machine is changed (called AFTER the change)
    * (either because of a pstate switch or because of an external load event coming from the profile) */
-  static xbt::signal<void(Host&)> on_speed_change;
+  static xbt::signal<void(Host const&)> on_speed_change;
 
   virtual void destroy();
   // No copy/move
@@ -126,6 +126,8 @@ public:
   void set_pstate(int pstate_index);
   int get_pstate() const;
 
+  std::vector<const char*> get_attached_storages() const;
+
 #ifndef DOXYGEN
   /** @deprecated See Host::get_speed() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_speed() instead.") double getSpeed() { return get_speed(); }
@@ -134,8 +136,6 @@ public:
   {
     return get_pstate_speed(pstate_index);
   }
-
-  std::vector<const char*> get_attached_storages() const;
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_attached_storages() instead.") void getAttachedStorages(
       std::vector<const char*>* storages);
 #endif

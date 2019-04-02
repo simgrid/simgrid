@@ -21,34 +21,32 @@ namespace kernel {
 namespace activity {
 
 class XBT_PUBLIC ActivityImpl {
+  std::atomic_int_fast32_t refcount_{0};
+  std::string name_; /* Activity name if any */
 public:
+  virtual ~ActivityImpl();
   ActivityImpl() = default;
   explicit ActivityImpl(const std::string& name) : name_(name) {}
-  virtual ~ActivityImpl() = default;
   e_smx_state_t state_ = SIMIX_WAITING; /* State of the activity */
   std::list<smx_simcall_t> simcalls_;   /* List of simcalls waiting for this activity */
   resource::Action* surf_action_ = nullptr;
 
   const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
+  void set_name(const std::string& name) { name_ = name; }
+  void set_category(const std::string& category);
 
   virtual void suspend();
   virtual void resume();
   virtual void post()   = 0; // What to do when a simcall terminates
   virtual void finish() = 0;
-  void set_category(const std::string& category);
 
   // boost::intrusive_ptr<ActivityImpl> support:
   friend XBT_PUBLIC void intrusive_ptr_add_ref(ActivityImpl* activity);
   friend XBT_PUBLIC void intrusive_ptr_release(ActivityImpl* activity);
 
-private:
-  std::atomic_int_fast32_t refcount_{0};
-  std::string name_;                    /* Activity name if any */
-
-public:
-  static xbt::signal<void(ActivityImplPtr)> on_suspended;
-  static xbt::signal<void(ActivityImplPtr)> on_resumed;
+  static xbt::signal<void(ActivityImpl const&)> on_suspended;
+  static xbt::signal<void(ActivityImpl const&)> on_resumed;
 };
 } // namespace activity
 } // namespace kernel

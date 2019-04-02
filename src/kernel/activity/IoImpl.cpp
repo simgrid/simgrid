@@ -37,27 +37,38 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-IoImpl::IoImpl(const std::string& name, resource::StorageImpl* storage) : ActivityImpl(name), storage_(storage)
+IoImpl& IoImpl::set_name(const std::string& name)
 {
-  this->state_ = SIMIX_RUNNING;
-
-  XBT_DEBUG("Create io impl %p", this);
+  ActivityImpl::set_name(name);
+  return *this;
 }
 
-IoImpl::~IoImpl()
+IoImpl& IoImpl::set_type(s4u::Io::OpType type)
 {
-  if (surf_action_ != nullptr)
-    surf_action_->unref();
-  XBT_DEBUG("Destroy io %p", this);
+  type_ = type;
+  return *this;
 }
 
-IoImpl* IoImpl::start(sg_size_t size, s4u::Io::OpType type)
+IoImpl& IoImpl::set_size(sg_size_t size)
 {
-  surf_action_ = storage_->io_start(size, type);
+  size_ = size;
+  return *this;
+}
+
+IoImpl& IoImpl::set_storage(resource::StorageImpl* storage)
+{
+  storage_ = storage;
+  return *this;
+}
+
+IoImpl* IoImpl::start()
+{
+  state_       = SIMIX_RUNNING;
+  surf_action_ = storage_->io_start(size_, type_);
   surf_action_->set_data(this);
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
-  IoImpl::on_start(this);
+  IoImpl::on_start(*this);
 
   return this;
 }
@@ -88,7 +99,7 @@ void IoImpl::post()
     default:
       THROW_IMPOSSIBLE;
   }
-  on_completion(this);
+  on_completion(*this);
 
   finish();
 }
@@ -123,8 +134,8 @@ void IoImpl::finish()
 /*************
  * Callbacks *
  *************/
-xbt::signal<void(IoImplPtr)> IoImpl::on_start;
-xbt::signal<void(IoImplPtr)> IoImpl::on_completion;
+xbt::signal<void(IoImpl const&)> IoImpl::on_start;
+xbt::signal<void(IoImpl const&)> IoImpl::on_completion;
 
 } // namespace activity
 } // namespace kernel

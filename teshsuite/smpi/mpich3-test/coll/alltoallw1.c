@@ -163,10 +163,10 @@ MPI_Datatype transpose_type(int N, int m, int n, MPI_Datatype type)
         MPI_Type_size(type, &tsize);
         MPI_Type_get_true_extent(submatrix, &llb, &textent);
 
-        if (textent != tsize * (N * (m - 1) + n)) {
-            fprintf(stderr, "Transpose Submatrix extent is %ld, expected %ld (%d,%d,%d)\n",
-                    (long) textent, (long) (tsize * (N * (m - 1) + n)), N, n, m);
-        }
+/*        if (textent != tsize * (N * (m - 1) + n)) {*/
+/*            fprintf(stderr, "Transpose Submatrix extent is %ld, expected %ld (%d,%d,%d)\n",*/
+/*                    (long) textent, (long) (tsize * (N * (m - 1) + n)), N, n, m);*/
+/*        }*/
     }
 
     return (submatrix);

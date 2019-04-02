@@ -64,32 +64,32 @@ NetPointNs3::NetPointNs3()
  * Callbacks *
  *************/
 
-static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs* cluster)
+static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs const& cluster)
 {
-  for (int const& i : *cluster->radicals) {
+  for (int const& i : *cluster.radicals) {
     // Routers don't create a router on the other end of the private link by themselves.
     // We just need this router to be given an ID so we create a temporary NetPointNS3 so that it gets one
     NetPointNs3* host_dst = new NetPointNs3();
 
     // Create private link
-    std::string host_id   = cluster->prefix + std::to_string(i) + cluster->suffix;
+    std::string host_id   = cluster.prefix + std::to_string(i) + cluster.suffix;
     NetPointNs3* host_src = simgrid::s4u::Host::by_name(host_id)->pimpl_netpoint->extension<NetPointNs3>();
     xbt_assert(host_src, "Cannot find a NS3 host of name %s", host_id.c_str());
 
     // Any NS3 route is symmetrical
-    ns3_add_link(host_src, host_dst, cluster->bw, cluster->lat);
+    ns3_add_link(host_src, host_dst, cluster.bw, cluster.lat);
 
     delete host_dst;
   }
 
   //Create link backbone
-  ns3_add_cluster(cluster->id.c_str(), cluster->bb_bw, cluster->bb_lat);
+  ns3_add_cluster(cluster.id.c_str(), cluster.bb_bw, cluster.bb_lat);
 }
 
 static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoint* src,
                              simgrid::kernel::routing::NetPoint* dst, simgrid::kernel::routing::NetPoint* gw_src,
                              simgrid::kernel::routing::NetPoint* gw_dst,
-                             std::vector<simgrid::kernel::resource::LinkImpl*>& link_list)
+                             std::vector<simgrid::kernel::resource::LinkImpl*> const& link_list)
 {
   if (link_list.size() == 1) {
     simgrid::kernel::resource::LinkNS3* link = static_cast<simgrid::kernel::resource::LinkNS3*>(link_list[0]);
@@ -159,9 +159,9 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
 
   ns3_initialize(ns3_tcp_model.get().c_str());
 
-  simgrid::kernel::routing::NetPoint::on_creation.connect([](simgrid::kernel::routing::NetPoint* pt) {
-    pt->extension_set<NetPointNs3>(new NetPointNs3());
-    XBT_VERB("SimGrid's %s is known as node %d within NS3", pt->get_cname(), pt->extension<NetPointNs3>()->node_num);
+  simgrid::kernel::routing::NetPoint::on_creation.connect([](simgrid::kernel::routing::NetPoint& pt) {
+    pt.extension_set<NetPointNs3>(new NetPointNs3());
+    XBT_VERB("SimGrid's %s is known as node %d within NS3", pt.get_cname(), pt.extension<NetPointNs3>()->node_num);
   });
   simgrid::surf::on_cluster.connect(&clusterCreation_cb);
 
@@ -328,7 +328,7 @@ NetworkNS3Action::NetworkNS3Action(kernel::resource::Model* model, double totalB
   port_number++;
   xbt_assert(port_number <= 65000, "Too many connections! Port number is saturated.");
 
-  s4u::Link::on_communicate(this, src, dst);
+  s4u::Link::on_communicate(*this, src, dst);
 }
 
 void NetworkNS3Action::suspend() {
@@ -339,7 +339,7 @@ void NetworkNS3Action::resume() {
   THROW_UNIMPLEMENTED;
 }
 
-std::list<LinkImpl*> NetworkNS3Action::links()
+std::list<LinkImpl*> NetworkNS3Action::links() const
 {
   THROW_UNIMPLEMENTED;
 }

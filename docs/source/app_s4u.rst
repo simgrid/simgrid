@@ -592,11 +592,25 @@ Class Actor
 .. autoclass:: simgrid.Actor
    :members:
 
+==========
+Class Comm
+==========
+
+.. autoclass:: simgrid.Comm
+   :members:
+
 ============
 Class Engine
 ============
 
 .. autoclass:: simgrid.Engine
+   :members:
+
+==========
+Class Exec
+==========
+
+.. autoclass:: simgrid.Exec
    :members:
 
 ==========

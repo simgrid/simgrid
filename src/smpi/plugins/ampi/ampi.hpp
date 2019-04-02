@@ -12,8 +12,8 @@ namespace simgrid {
 namespace smpi {
 namespace plugin {
 namespace ampi {
-  extern simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_iteration_out;
-  extern simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_iteration_in;
+extern simgrid::xbt::signal<void(simgrid::s4u::Actor const&)> on_iteration_out;
+extern simgrid::xbt::signal<void(simgrid::s4u::Actor const&)> on_iteration_in;
 }
 }
 }

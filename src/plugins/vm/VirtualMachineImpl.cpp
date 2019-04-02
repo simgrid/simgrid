@@ -23,9 +23,9 @@ namespace vm {
 /*************
  * Callbacks *
  *************/
-simgrid::xbt::signal<void(VirtualMachineImpl*)> VirtualMachineImpl::on_creation;
-simgrid::xbt::signal<void(VirtualMachineImpl*)> VirtualMachineImpl::on_destruction;
-simgrid::xbt::signal<void(VirtualMachineImpl*)> VirtualMachineImpl::on_state_change;
+simgrid::xbt::signal<void(VirtualMachineImpl&)> VirtualMachineImpl::on_creation;
+simgrid::xbt::signal<void(VirtualMachineImpl const&)> VirtualMachineImpl::on_destruction;
+
 /*********
  * Model *
  *********/
@@ -38,7 +38,7 @@ std::deque<s4u::VirtualMachine*> VirtualMachineImpl::allVms_;
  */
 const double virt_overhead = 1; // 0.95
 
-static void host_state_change(s4u::Host& host)
+static void host_state_change(s4u::Host const& host)
 {
   if (not host.is_on()) { // just turned off.
     std::vector<s4u::VirtualMachine*> trash;
@@ -51,13 +51,13 @@ static void host_state_change(s4u::Host& host)
   }
 }
 
-static s4u::VirtualMachine* get_vm_from_task(kernel::activity::ActivityImplPtr task)
+static s4u::VirtualMachine* get_vm_from_task(kernel::activity::ActivityImpl const& task)
 {
-  kernel::activity::ExecImpl* exec = dynamic_cast<kernel::activity::ExecImpl*>(task.get());
-  return exec != nullptr ? dynamic_cast<s4u::VirtualMachine*>(exec->host_) : nullptr;
+  auto* exec = dynamic_cast<kernel::activity::ExecImpl const*>(&task);
+  return exec != nullptr ? dynamic_cast<s4u::VirtualMachine*>(exec->get_host()) : nullptr;
 }
 
-static void add_active_task(kernel::activity::ActivityImplPtr task)
+static void add_active_task(kernel::activity::ActivityImpl const& task)
 {
   s4u::VirtualMachine* vm = get_vm_from_task(task);
   if (vm != nullptr) {
@@ -67,7 +67,7 @@ static void add_active_task(kernel::activity::ActivityImplPtr task)
   }
 }
 
-static void remove_active_task(kernel::activity::ActivityImplPtr task)
+static void remove_active_task(kernel::activity::ActivityImpl const& task)
 {
   s4u::VirtualMachine* vm = get_vm_from_task(task);
   if (vm != nullptr) {
@@ -153,13 +153,13 @@ VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, sim
   update_action_weight();
 
   XBT_VERB("Create VM(%s)@PM(%s)", piface->get_cname(), physical_host_->get_cname());
-  on_creation(this);
+  on_creation(*this);
 }
 
 /** @brief A physical host does not disappear in the current SimGrid code, but a VM may disappear during a simulation */
 VirtualMachineImpl::~VirtualMachineImpl()
 {
-  on_destruction(this);
+  on_destruction(*this);
   /* I was already removed from the allVms set if the VM was destroyed cleanly */
   auto iter = find(allVms_.begin(), allVms_.end(), piface_);
   if (iter != allVms_.end())

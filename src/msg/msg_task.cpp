@@ -100,7 +100,7 @@ msg_error_t Task::execute()
 s4u::CommPtr Task::send_async(const std::string& alias, void_f_pvoid_t cleanup, bool detached)
 {
   if (TRACE_actor_is_enabled()) {
-    container_t process_container = simgrid::instr::Container::by_name(instr_pid(MSG_process_self()));
+    container_t process_container = simgrid::instr::Container::by_name(instr_pid(*MSG_process_self()));
     std::string key               = std::string("p") + std::to_string(get_id());
     simgrid::instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->start_event(process_container, "SR", key);
   }
@@ -184,7 +184,7 @@ void Task::set_used()
 
 void Task::report_multiple_use() const
 {
-  if (msg_global->debug_multiple_use){
+  if (MSG_Global_t::debug_multiple_use) {
     XBT_ERROR("This task is already used in there:");
     // TODO, backtrace
     XBT_ERROR("<missing backtrace>");
@@ -639,7 +639,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t* task, const char* alias, do
   }
 
   if (TRACE_actor_is_enabled() && ret != MSG_HOST_FAILURE && ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {
-    container_t process_container = simgrid::instr::Container::by_name(instr_pid(MSG_process_self()));
+    container_t process_container = simgrid::instr::Container::by_name(instr_pid(*MSG_process_self()));
 
     std::string key = std::string("p") + std::to_string((*task)->get_id());
     simgrid::instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->end_event(process_container, "SR", key);

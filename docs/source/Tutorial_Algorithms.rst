@@ -346,7 +346,7 @@ Debian and Ubuntu for example, you can get them as follows:
    sudo apt install simgrid pajeng cmake g++ vite
 
 For R analysis of the produced traces, you may want to install R, 
-and the `pajengr<https://github.com/schnorr/pajengr#installation/>_ package.
+and the `pajengr<https://github.com/schnorr/pajengr#installation/>`_ package.
 
 .. code-block:: shell
 
@@ -364,7 +364,7 @@ everything as follows:
    # (exporting SimGrid_PATH is only needed if SimGrid is installed in a non-standard path)
    export SimGrid_PATH=/where/to/simgrid
    
-   git clone https://framagit.org/simgrid/simgrid.git
+   git clone https://framagit.org/simgrid/simgrid-template-s4u.git
    cd simgrid-template-s4u/
    cmake . 
    make

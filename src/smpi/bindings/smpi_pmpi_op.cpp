@@ -27,7 +27,7 @@ int PMPI_Op_free(MPI_Op * op)
   } else if (*op == MPI_OP_NULL) {
     return MPI_ERR_OP;
   } else {
-    delete (*op);
+    simgrid::smpi::Op::unref(op);
     *op = MPI_OP_NULL;
     return MPI_SUCCESS;
   }

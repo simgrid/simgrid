@@ -15,13 +15,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_vm, "S4U virtual machines");
 
 namespace simgrid {
 namespace s4u {
-simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_start;
-simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_started;
-simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_shutdown;
-simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_suspend;
-simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_resume;
-simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_migration_start;
-simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_migration_end;
+simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_start;
+simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_started;
+simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_shutdown;
+simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_suspend;
+simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_resume;
+simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_migration_start;
+simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_migration_end;
 
 VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host, int core_amount)
     : VirtualMachine(name, physical_host, core_amount, 1024)
@@ -44,7 +44,7 @@ VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host
   for (int i = 0; i < physical_host->get_pstate_count(); i++)
     speeds.push_back(physical_host->get_pstate_speed(i));
 
-  surf_cpu_model_vm->create_cpu(this, &speeds, core_amount);
+  surf_cpu_model_vm->create_cpu(this, speeds, core_amount);
   if (physical_host->get_pstate() != 0)
     set_pstate(physical_host->get_pstate());
 }

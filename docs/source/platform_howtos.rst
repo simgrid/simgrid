@@ -17,10 +17,10 @@
 Modeling Hints
 ##############
 
-There is no perfect model, but only models that are adapted to the
-specific study that you want to do. SimGrid provide several advanced
+There is no perfect model. Only models that are adapted to the
+specific study that you want to do. SimGrid provides several advanced
 mechanisms that you can adapt to model the situation that you are
-interested into, and it is often uneasy to see where to start with.
+interested in, and it is often uneasy to see where to start with.
 This page collects several hints and tricks on modeling situations.
 Even if you are looking for a very advanced, specific use case, these
 examples may help you to design the solution you need.
@@ -31,9 +31,9 @@ Doing Science with SimGrid
 **************************
 
 Many users are using SimGrid as a scientific instrument for their
-research. This tool was indeed invented to that extend, and we strive
+research. This tool was indeed invented to that extent, and we strive
 to streamline this kind of usage. But SimGrid is no magical tool, and
-it is of your responsability that the tool actually provides sensible
+it is of your responsibility that the tool actually provides sensible
 results. Fortunately, there is a vast literature on how to avoid
 Modeling & Simulations pitfalls. We review here some specific works.
 
@@ -55,12 +55,12 @@ specific. Here are the listed pitfalls: (1) Don't know whether it's
 modeling or simulation, (2) No separation of concerns, (3) No clear
 scientific question, (4) Implementing everything from scratch, (5)
 Unsupported claims, (6) Toy duck approach, and (7) The tunnel view. As
-you can see, this article is a must read. It's a pitty that it's not
+you can see, this article is a must read. It's a pity that it's not
 freely available, though.
 
 .. _howto_churn:
 
-Modeling Churn (e.g. in P2P)
+Modeling Churn (e.g., in P2P)
 ****************************
 
 One of the biggest challenges in P2P settings is to cope with the
@@ -72,27 +72,26 @@ directly.
 
 This can be done through the XML file, using the ``state_file``
 attribute of :ref:`pf_tag_host`, :ref:`pf_tag_cluster` or
-:ref:`pf_tag_link`. Every lines (but the last) of such files describe
+:ref:`pf_tag_link`. Every line (but the last) of such files describes
 timed events with the form "date value". Example:
 
 .. code-block:: python
-		
+
    1 0
    2 1
    LOOPAFTER 8
 
-- At time t=1, the host is turned off (value 0 means OFF)
-- At time t=2, it is turned back on (other values means ON)
-- At time t=10, the history is reset (because that's 8 seconds after
-  the last event). So the host will be turned off again at t=11.
+  - At time t = 1, the host is turned off (a zero value means OFF)
+  - At time t = 2, the host is turned back on (any other value than zero means ON)
+  - At time t = 10, the profile is reset (as we are 8 seconds after the last event). Then the host will be turned off 
+    again at time t = 11.
 
-If your trace does not contain a LOOPAFTER line, then your profile is
-only executed once and not repetitively.
+   If your profile does not contain any LOOPAFTER line, then it will be executed only once and not in a repetitive way.
 
 Another possibility is to use the
 :cpp:func:`simgrid::s4u::Host::set_state_profile()` or 
 :cpp:func:`simgrid::s4u::Link::set_state_profile()` functions. These
-functions take a profile, that can be an fixed profile exhaustively
+functions take a profile, that can be a fixed profile exhaustively
 listing the events, or something else if you wish.
 
 .. _howto_multicore:
@@ -103,23 +102,23 @@ Modeling Multicore Machines
 Default Model
 =============
 
-Multicore machines are very complex, and there is many way to model
+Multicore machines are very complex, and there are many ways to model
 them. The default models of SimGrid are coarse grain and capture some
 elements of this reality. Here is how to declare simple multicore hosts:
 
 .. code-block:: xml
-		
+
    <host id="mymachine" speed="8Gf" core="4"/>
 
-It declares a 4-cores host called "mymachine", each core computing 8
-GFlops per second. If you put one activity of 8 GFlop on this host, it
+It declares a 4-core host called "mymachine", each core computing 8
+GFlops per second. If you put one activity of 8 GFlops on this host, it
 will be computed in 1 second (by default, activities are
 single-threaded and cannot leverage the computing power of more than
-one core). If you put two of them together, they will still be
-computed in one second, and so on up to 4 tasks. If you put 5 tasks,
-they will share the total computing resource, and all tasks will be
-computed at 5/4 = 1.25 second. That's a very simple model, but that's
-all what you will get by default from SimGrid.
+one core). If you run two such activities simultaneously, they will still be
+computed in one second, and so on up to 4 activities. If you start 5 activities,
+they will share the total computing power, and each activity will be
+computed in 5/4 = 1.25 seconds. This is a very simple model, but that is
+all what you get by default from SimGrid.
 
 Pinning tasks to cores
 ======================
@@ -127,47 +126,47 @@ Pinning tasks to cores
 The default model does not account for task pinning, where you
 manually select on which core each of the existing activity should
 execute. The best solution to model this is probably to model your
-4-core processor as 4 separte hosts, and assigning the activities to
+4-core processor as 4 distinct hosts, and assigning the activities to
 cores by migrating them to the declared hosts. In some sense, this 
 takes the whole Network-On-Chip idea really seriously.
 
-Some extra complications may arise here. If you have more tasks than
-cores, you'll have to `schedule your tasks
+Some extra complications may arise here. If you have more activities than
+cores, you'll have to `schedule your activities
 <https://en.wikipedia.org/wiki/Scheduling_%28computing%29#Operating_system_process_scheduler_implementations)>`_
 yourself on the cores (so you'd better avoid this complexity). Since
 you cannot have more than one network model in a given SimGrid
-simulation, you will end up with a TCP connexion between your cores. A
+simulation, you will end up with a TCP connection between your cores. A
 possible work around is to never start any simulated communication
 between the cores and have the same routes from each core to the
 rest of the external network.
 
 Modeling a multicore CPU as a set of SimGrid hosts may seem strange
 and unconvincing, but some users achieved very realistic simulations
-of multi-core and GPU machines this way.
+of multicore and GPU machines this way.
 
-Modeling machine bootup and shutdown periods
+Modeling machine boot and shutdown periods
 ********************************************
 
 When a physical host boots up, a lot of things happen. It takes time
 during which the machine is not usable but dissipates energy, and
-programs actually die and restart during a reboot. Since there is many
+programs actually die and restart during a reboot. Since there are many
 ways to model it, SimGrid does not do any modeling choice for you but
 the most obvious ones.
 
-Any actor (or process in MSG) running on an host that is shut down
+Any actor (or process in MSG) running on a host that is shut down
 will be killed and all its activities (tasks in MSG) will be
-automatically canceled. If killed the actor was marked as
+automatically canceled. If the actor killed was marked as
 auto-restartable (with
 :cpp:func:`simgrid::s4u::Actor::set_auto_restart` or with
 :cpp:func:`MSG_process_auto_restart_set`), it will start anew with the
 same parameters when the host boots back up.
 
-By default, shutdowns and bootups are instantaneous. If you want to
-add an extra delay, you have to do that yourself, for example from an
-`controler` actor that runs on another host. The best way to do so is
-to declare a fictionous pstate where the CPU delivers 0 flop per
+By default, shutdowns and boots are instantaneous. If you want to
+add an extra delay, you have to do that yourself, for example from a
+`controller` actor that runs on another host. The best way to do so is
+to declare a fictional pstate where the CPU delivers 0 flop per
 second (so every activity on that host will be frozen when the host is
-in this pstate). When you want to switch the host off, your controler
+in this pstate). When you want to switch the host off, your controller
 switches the host to that specific pstate (with
 :cpp:func:`simgrid::s4u::Host::set_pstate`), waits for the amount of
 time that you decided necessary for your host to shut down, and turns
@@ -181,7 +180,7 @@ the energy consumed is equal to the instantaneous consumption
 multiplied by the time in which the host keeps in that state. Do the
 maths, and set the right instantaneous consumption to your pstate, and
 you'll get the whole boot period to consume the amount of energy that
-you want. You may want to have one fictionous pstate for the bootup
+you want. You may want to have one fictional pstate for the boot
 period and another one for the shutdown period.
 
 Of course, this is only one possible way to model these things. YMMV ;)

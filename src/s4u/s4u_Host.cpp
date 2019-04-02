@@ -10,6 +10,7 @@
 #include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 
+#include <algorithm>
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_host, s4u, "Logging specific to the S4U hosts");
@@ -25,9 +26,9 @@ template class Extendable<s4u::Host>;
 namespace s4u {
 
 xbt::signal<void(Host&)> Host::on_creation;
-xbt::signal<void(Host&)> Host::on_destruction;
-xbt::signal<void(Host&)> Host::on_state_change;
-xbt::signal<void(Host&)> Host::on_speed_change;
+xbt::signal<void(Host const&)> Host::on_destruction;
+xbt::signal<void(Host const&)> Host::on_state_change;
+xbt::signal<void(Host const&)> Host::on_speed_change;
 
 Host::Host(const std::string& name) : name_(name)
 {
@@ -215,7 +216,7 @@ void Host::set_speed_profile(kernel::profile::Profile* p)
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
 double Host::get_pstate_speed(int pstate_index) const
 {
-  return simix::simcall([this, pstate_index] { return this->pimpl_cpu->get_pstate_peak_speed(pstate_index); });
+  return this->pimpl_cpu->get_pstate_peak_speed(pstate_index);
 }
 
 /** @brief Get the peak computing speed in flops/s at the current pstate, NOT taking the external load into account.
@@ -338,7 +339,7 @@ sg_host_t* sg_host_list()
   xbt_assert(sg_host_count() > 0, "There is no host!");
   std::vector<simgrid::s4u::Host*> hosts = simgrid::s4u::Engine::get_instance()->get_all_hosts();
 
-  sg_host_t* res = (sg_host_t*)malloc(sizeof(sg_host_t) * hosts.size());
+  sg_host_t* res = xbt_new(sg_host_t, hosts.size());
   memcpy(res, hosts.data(), sizeof(sg_host_t) * hosts.size());
 
   return res;
@@ -366,19 +367,16 @@ sg_host_t sg_host_by_name(const char* name)
 
 xbt_dynar_t sg_hosts_as_dynar()
 {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), nullptr);
-
   std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
 
-  for (auto const& host : list) {
-    if (host && host->pimpl_netpoint && host->pimpl_netpoint->is_host())
-      xbt_dynar_push(res, &host);
-  }
-  xbt_dynar_sort(res, [](const void* pa, const void* pb) {
-    const std::string& na = (*static_cast<simgrid::s4u::Host* const*>(pa))->get_name();
-    const std::string& nb = (*static_cast<simgrid::s4u::Host* const*>(pb))->get_name();
-    return na.compare(nb);
+  auto last = std::remove_if(begin(list), end(list), [](const simgrid::s4u::Host* host) {
+    return not host || not host->pimpl_netpoint || not host->pimpl_netpoint->is_host();
   });
+  std::sort(begin(list), last,
+            [](const simgrid::s4u::Host* a, const simgrid::s4u::Host* b) { return a->get_name() < b->get_name(); });
+
+  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), nullptr);
+  std::for_each(begin(list), last, [res](sg_host_t host) { xbt_dynar_push_as(res, sg_host_t, host); });
   return res;
 }
 

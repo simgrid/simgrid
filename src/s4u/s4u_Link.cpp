@@ -19,11 +19,11 @@ namespace simgrid {
 namespace s4u {
 
 xbt::signal<void(Link&)> Link::on_creation;
-xbt::signal<void(Link&)> Link::on_destruction;
-xbt::signal<void(Link&)> Link::on_state_change;
-xbt::signal<void(Link&)> Link::on_bandwidth_change;
-xbt::signal<void(kernel::resource::NetworkAction*, Host* src, Host* dst)> Link::on_communicate;
-xbt::signal<void(kernel::resource::NetworkAction*, kernel::resource::Action::State)>
+xbt::signal<void(Link const&)> Link::on_destruction;
+xbt::signal<void(Link const&)> Link::on_state_change;
+xbt::signal<void(Link const&)> Link::on_bandwidth_change;
+xbt::signal<void(kernel::resource::NetworkAction&, Host* src, Host* dst)> Link::on_communicate;
+xbt::signal<void(kernel::resource::NetworkAction&, kernel::resource::Action::State)>
     Link::on_communication_state_change;
 
 Link* Link::by_name(const std::string& name)
@@ -49,12 +49,12 @@ bool Link::is_used()
   return this->pimpl_->is_used();
 }
 
-double Link::get_latency()
+double Link::get_latency() const
 {
   return this->pimpl_->get_latency();
 }
 
-double Link::get_bandwidth()
+double Link::get_bandwidth() const
 {
   return this->pimpl_->get_bandwidth();
 }
@@ -156,7 +156,7 @@ sg_link_t* sg_link_list()
 {
   std::vector<simgrid::s4u::Link*> links = simgrid::s4u::Engine::get_instance()->get_all_links();
 
-  sg_link_t* res = (sg_link_t*)malloc(sizeof(sg_link_t) * links.size());
+  sg_link_t* res = xbt_new(sg_link_t, links.size());
   memcpy(res, links.data(), sizeof(sg_link_t) * links.size());
 
   return res;

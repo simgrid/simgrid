@@ -166,11 +166,11 @@ void NetworkAction::set_state(Action::State state)
   Action::State previous = get_state();
   Action::set_state(state);
   if (previous != state) // Trigger only if the state changed
-    s4u::Link::on_communication_state_change(this, previous);
+    s4u::Link::on_communication_state_change(*this, previous);
 }
 
 /** @brief returns a list of all Links that this action is using */
-std::list<LinkImpl*> NetworkAction::links()
+std::list<LinkImpl*> NetworkAction::links() const
 {
   std::list<LinkImpl*> retlist;
   int llen = get_variable()->get_number_of_constraint();

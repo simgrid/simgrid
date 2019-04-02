@@ -62,7 +62,11 @@ in Appveyor's YAML:
 
 """
 
-import random, socket, ssl, sys, time
+import random
+import socket
+import ssl
+import sys
+import time
 
 
 def appveyor_vars():
@@ -170,7 +174,7 @@ if __name__ == '__main__':
                 # leave the channel
                 irc_sock.send('PART #{}\r\n'.format(channel).encode('utf_8'))
                 sys.exit()
-    except:
+    except BaseException:
         e = sys.exc_info()[0]
         print(e)
         sys.exit()

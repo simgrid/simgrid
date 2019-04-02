@@ -112,7 +112,7 @@ void action_iteration_in(simgrid::xbt::ReplayAction& action)
 {
   CHECK_ACTION_PARAMS(action, 0, 0)
   TRACE_Iteration_in(simgrid::s4u::this_actor::get_pid(), nullptr);
-  simgrid::smpi::plugin::ampi::on_iteration_in(MPI_COMM_WORLD->group()->actor(std::stol(action[0])));
+  simgrid::smpi::plugin::ampi::on_iteration_in(*MPI_COMM_WORLD->group()->actor(std::stol(action[0])));
 }
 
 XBT_PRIVATE void action_iteration_out(simgrid::xbt::ReplayAction& action);
@@ -120,7 +120,7 @@ void action_iteration_out(simgrid::xbt::ReplayAction& action)
 {
   CHECK_ACTION_PARAMS(action, 0, 0)
   TRACE_Iteration_out(simgrid::s4u::this_actor::get_pid(), nullptr);
-  simgrid::smpi::plugin::ampi::on_iteration_out(MPI_COMM_WORLD->group()->actor(std::stol(action[0])));
+  simgrid::smpi::plugin::ampi::on_iteration_out(*MPI_COMM_WORLD->group()->actor(std::stol(action[0])));
 }
 }
 }
@@ -136,8 +136,9 @@ void sg_load_balancer_plugin_init()
   static bool done = false;
   if (!done) {
     done = true;
-    simgrid::kernel::activity::ExecImpl::on_completion.connect([](simgrid::kernel::activity::ExecImplPtr activity){
-        simgrid::smpi::plugin::lb.record_actor_computation(activity->simcalls_.front()->issuer->iface(), activity->surf_action_->get_cost());
+    simgrid::kernel::activity::ExecImpl::on_completion.connect([](simgrid::kernel::activity::ExecImpl const& activity) {
+      simgrid::smpi::plugin::lb.record_actor_computation(activity.simcalls_.front()->issuer->iface(),
+                                                         activity.surf_action_->get_cost());
     });
 
     xbt_replay_action_register(

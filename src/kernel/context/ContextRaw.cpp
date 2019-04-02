@@ -188,7 +188,7 @@ namespace context {
 
 // RawContextFactory
 
-Context* RawContextFactory::create_context(std::function<void()>&& code, actor::ActorImpl* actor)
+RawContext* RawContextFactory::create_context(std::function<void()>&& code, actor::ActorImpl* actor)
 {
   return this->new_context<RawContext>(std::move(code), actor, this);
 }

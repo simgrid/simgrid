@@ -21,19 +21,19 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor, "S4U actors");
 namespace simgrid {
 namespace s4u {
 
-xbt::signal<void(ActorPtr)> s4u::Actor::on_creation;
-xbt::signal<void(ActorPtr)> s4u::Actor::on_suspend;
-xbt::signal<void(ActorPtr)> s4u::Actor::on_resume;
-xbt::signal<void(ActorPtr)> s4u::Actor::on_sleep;
-xbt::signal<void(ActorPtr)> s4u::Actor::on_wake_up;
-xbt::signal<void(ActorPtr)> s4u::Actor::on_migration_start;
-xbt::signal<void(ActorPtr)> s4u::Actor::on_migration_end;
-xbt::signal<void(ActorPtr)> s4u::Actor::on_destruction;
+xbt::signal<void(Actor&)> s4u::Actor::on_creation;
+xbt::signal<void(Actor const&)> s4u::Actor::on_suspend;
+xbt::signal<void(Actor const&)> s4u::Actor::on_resume;
+xbt::signal<void(Actor const&)> s4u::Actor::on_sleep;
+xbt::signal<void(Actor const&)> s4u::Actor::on_wake_up;
+xbt::signal<void(Actor const&)> s4u::Actor::on_migration_start;
+xbt::signal<void(Actor const&)> s4u::Actor::on_migration_end;
+xbt::signal<void(Actor const&)> s4u::Actor::on_destruction;
 
 // ***** Actor creation *****
 ActorPtr Actor::self()
 {
-  smx_context_t self_context = kernel::context::Context::self();
+  kernel::context::Context* self_context = kernel::context::Context::self();
   if (self_context == nullptr)
     return ActorPtr();
 
@@ -101,27 +101,27 @@ void Actor::set_auto_restart(bool autorestart)
   });
 }
 
-void Actor::on_exit(int_f_pvoid_pvoid_t fun,
-                    void* data) /* deprecated: cleanup SIMIX_process_on_exit: change prototype of second parameter and
-                                   remove the last one */
+void Actor::on_exit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */
 {
-  simix::simcall([this, fun, data] { SIMIX_process_on_exit(pimpl_, fun, data); });
+  on_exit([fun, data](bool failed) {
+    intptr_t status = failed ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
+    fun(reinterpret_cast<void*>(status), data);
+  });
 }
 
 void Actor::on_exit(const std::function<void(int, void*)>& fun, void* data) /* deprecated */
 {
-  on_exit([fun, data](bool exit) { fun(exit, data); });
+  on_exit([fun, data](bool failed) { fun(failed ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS, data); });
 }
 
-void Actor::on_exit(const std::function<void(bool /*failed*/)>& fun)
+void Actor::on_exit(const std::function<void(bool /*failed*/)>& fun) const
 {
-  simix::simcall(
-      [this, fun] { SIMIX_process_on_exit(pimpl_, [fun](int a, void* /*data*/) { fun(a != 0); }, nullptr); });
+  simix::simcall([this, &fun] { SIMIX_process_on_exit(pimpl_, fun); });
 }
 
 void Actor::migrate(Host* new_host)
 {
-  s4u::Actor::on_migration_start(this);
+  s4u::Actor::on_migration_start(*this);
 
   simix::simcall([this, new_host]() {
     if (pimpl_->waiting_synchro != nullptr) {
@@ -135,10 +135,10 @@ void Actor::migrate(Host* new_host)
     this->pimpl_->set_host(new_host);
   });
 
-  s4u::Actor::on_migration_end(this);
+  s4u::Actor::on_migration_end(*this);
 }
 
-s4u::Host* Actor::get_host()
+s4u::Host* Actor::get_host() const
 {
   return this->pimpl_->get_host();
 }
@@ -175,14 +175,14 @@ aid_t Actor::get_ppid() const
 
 void Actor::suspend()
 {
-  s4u::Actor::on_suspend(this);
+  s4u::Actor::on_suspend(*this);
   simcall_process_suspend(pimpl_);
 }
 
 void Actor::resume()
 {
   simix::simcall([this] { pimpl_->resume(); });
-  s4u::Actor::on_resume(this);
+  s4u::Actor::on_resume(*this);
 }
 
 bool Actor::is_suspended()
@@ -218,16 +218,9 @@ void Actor::kill()
 {
   kernel::actor::ActorImpl* process = SIMIX_process_self();
   simix::simcall([this, process] {
-    if (pimpl_ == simix_global->maestro_process)
-      pimpl_->exit();
-    else
-      process->kill(pimpl_);
+    xbt_assert(pimpl_ != simix_global->maestro_process, "Killing maestro is a rather bad idea");
+    process->kill(pimpl_);
   });
-}
-
-kernel::actor::ActorImpl* Actor::get_impl()
-{
-  return pimpl_;
 }
 
 // ***** Static functions *****
@@ -291,11 +284,11 @@ void sleep_for(double duration)
 {
   if (duration > 0) {
     kernel::actor::ActorImpl* actor = SIMIX_process_self();
-    Actor::on_sleep(actor->iface());
+    Actor::on_sleep(*actor->ciface());
 
     simcall_process_sleep(duration);
 
-    Actor::on_wake_up(actor->iface());
+    Actor::on_wake_up(*actor->ciface());
   }
 }
 
@@ -420,7 +413,7 @@ Host* get_host()
 void suspend()
 {
   kernel::actor::ActorImpl* actor = SIMIX_process_self();
-  Actor::on_suspend(actor->iface());
+  Actor::on_suspend(*actor->ciface());
 
   simcall_process_suspend(actor);
 }
@@ -429,7 +422,7 @@ void resume()
 {
   kernel::actor::ActorImpl* self = SIMIX_process_self();
   simix::simcall([self] { self->resume(); });
-  Actor::on_resume(self->iface());
+  Actor::on_resume(*self->ciface());
 }
 
 void exit()

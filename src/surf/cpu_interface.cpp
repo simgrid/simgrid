@@ -51,35 +51,28 @@ void CpuModel::update_actions_state_full(double /*now*/, double delta)
 /************
  * Resource *
  ************/
-Cpu::Cpu(kernel::resource::Model* model, simgrid::s4u::Host* host, std::vector<double>* speedPerPstate, int core)
-    : Cpu(model, host, nullptr /*constraint*/, speedPerPstate, core)
+Cpu::Cpu(kernel::resource::Model* model, simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate,
+         int core)
+    : Cpu(model, host, nullptr /*constraint*/, speed_per_pstate, core)
 {
 }
 
 Cpu::Cpu(kernel::resource::Model* model, simgrid::s4u::Host* host, kernel::lmm::Constraint* constraint,
-         std::vector<double>* speedPerPstate, int core)
-    : Resource(model, host->get_cname(), constraint), core_count_(core), host_(host)
+         const std::vector<double>& speed_per_pstate, int core)
+    : Resource(model, host->get_cname(), constraint)
+    , core_count_(core)
+    , host_(host)
+    , speed_per_pstate_(speed_per_pstate)
 {
   xbt_assert(core > 0, "Host %s must have at least one core, not 0.", host->get_cname());
 
-  speed_.peak = speedPerPstate->front();
+  speed_.peak     = speed_per_pstate_.front();
   speed_.scale = 1;
   host->pimpl_cpu = this;
   xbt_assert(speed_.scale > 0, "Speed of host %s must be >0", host->get_cname());
-
-  // Copy the power peak array:
-  for (double const& value : *speedPerPstate) {
-    speed_per_pstate_.push_back(value);
-  }
 }
 
-Cpu::~Cpu()
-{
-  if (get_model() == surf_cpu_model_pm)
-    speed_per_pstate_.clear();
-}
-
-int Cpu::get_pstate_count()
+int Cpu::get_pstate_count() const
 {
   return speed_per_pstate_.size();
 }
@@ -98,12 +91,12 @@ void Cpu::set_pstate(int pstate_index)
   on_speed_change();
 }
 
-int Cpu::get_pstate()
+int Cpu::get_pstate() const
 {
   return pstate_;
 }
 
-double Cpu::get_pstate_peak_speed(int pstate_index)
+double Cpu::get_pstate_peak_speed(int pstate_index) const
 {
   xbt_assert((pstate_index <= static_cast<int>(speed_per_pstate_.size())),
              "Invalid parameters (pstate index out of bounds)");
@@ -111,7 +104,7 @@ double Cpu::get_pstate_peak_speed(int pstate_index)
   return speed_per_pstate_[pstate_index];
 }
 
-double Cpu::get_speed(double load)
+double Cpu::get_speed(double load) const
 {
   return load * speed_.peak;
 }
@@ -164,17 +157,17 @@ void CpuAction::update_remains_lazy(double now)
   set_last_value(get_variable()->get_value());
 }
 
-simgrid::xbt::signal<void(simgrid::surf::CpuAction*, kernel::resource::Action::State)> CpuAction::on_state_change;
+simgrid::xbt::signal<void(simgrid::surf::CpuAction const&, kernel::resource::Action::State)> CpuAction::on_state_change;
 
 void CpuAction::suspend(){
   Action::State previous = get_state();
-  on_state_change(this, previous);
+  on_state_change(*this, previous);
   Action::suspend();
 }
 
 void CpuAction::resume(){
   Action::State previous = get_state();
-  on_state_change(this, previous);
+  on_state_change(*this, previous);
   Action::resume();
 }
 
@@ -182,11 +175,12 @@ void CpuAction::set_state(Action::State state)
 {
   Action::State previous = get_state();
   Action::set_state(state);
-  on_state_change(this, previous);
+  on_state_change(*this, previous);
 }
 
 /** @brief returns a list of all CPUs that this action is using */
-std::list<Cpu*> CpuAction::cpus() {
+std::list<Cpu*> CpuAction::cpus() const
+{
   std::list<Cpu*> retlist;
   int llen = get_variable()->get_number_of_constraint();
 

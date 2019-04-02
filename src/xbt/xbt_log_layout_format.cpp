@@ -179,7 +179,7 @@ static void xbt_log_layout_format_free(xbt_log_layout_t lay)
   xbt_free(lay->data);
 }
 
-xbt_log_layout_t xbt_log_layout_format_new(char *arg)
+xbt_log_layout_t xbt_log_layout_format_new(const char* arg)
 {
   xbt_log_layout_t res = xbt_new0(s_xbt_log_layout_t, 1);
   res->do_layout       = &xbt_log_layout_format_doit;

@@ -38,7 +38,7 @@ public:
     DESTROYED
   };
 
-  vm::VirtualMachineImpl* get_impl() { return pimpl_vm_; }
+  vm::VirtualMachineImpl* get_impl() const { return pimpl_vm_; }
   void start();
   void suspend();
   void resume();
@@ -52,13 +52,13 @@ public:
   void set_bound(double bound);
 
   VirtualMachine::state get_state();
-  static xbt::signal<void(VirtualMachine&)> on_start;
-  static xbt::signal<void(VirtualMachine&)> on_started;
-  static xbt::signal<void(VirtualMachine&)> on_shutdown;
-  static xbt::signal<void(VirtualMachine&)> on_suspend;
-  static xbt::signal<void(VirtualMachine&)> on_resume;
-  static xbt::signal<void(VirtualMachine&)> on_migration_start;
-  static xbt::signal<void(VirtualMachine&)> on_migration_end;
+  static xbt::signal<void(VirtualMachine const&)> on_start;
+  static xbt::signal<void(VirtualMachine const&)> on_started;
+  static xbt::signal<void(VirtualMachine const&)> on_shutdown;
+  static xbt::signal<void(VirtualMachine const&)> on_suspend;
+  static xbt::signal<void(VirtualMachine const&)> on_resume;
+  static xbt::signal<void(VirtualMachine const&)> on_migration_start;
+  static xbt::signal<void(VirtualMachine const&)> on_migration_end;
 
 #ifndef DOXYGEN
   // Deprecated methods

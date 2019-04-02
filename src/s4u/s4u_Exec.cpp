@@ -12,12 +12,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_exec, s4u_activity, "S4U asynchronous execut
 
 namespace simgrid {
 namespace s4u {
-xbt::signal<void(ActorPtr)> Exec::on_start;
-xbt::signal<void(ActorPtr)> Exec::on_completion;
+xbt::signal<void(Actor const&)> Exec::on_start;
+xbt::signal<void(Actor const&)> Exec::on_completion;
 
 Exec::Exec()
 {
-  pimpl_ = kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl(get_name(), get_tracing_category()));
+  pimpl_ = kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl());
 }
 
 bool Exec::test()
@@ -44,7 +44,7 @@ Exec* Exec::wait()
     start();
   simcall_execution_wait(pimpl_);
   state_ = State::FINISHED;
-  on_completion(Actor::self());
+  on_completion(*Actor::self());
   return this;
 }
 
@@ -113,10 +113,16 @@ ExecSeq::ExecSeq(sg_host_t host, double flops_amount) : Exec(), flops_amount_(fl
 Exec* ExecSeq::start()
 {
   simix::simcall([this] {
-    boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->start(flops_amount_, 1. / priority_, bound_);
+    (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
+        .set_name(name_)
+        .set_tracing_category(tracing_category_)
+        .set_priority(1. / priority_)
+        .set_bound(bound_)
+        .set_flops_amount(flops_amount_)
+        .start();
   });
   state_ = State::STARTED;
-  on_start(Actor::self());
+  on_start(*Actor::self());
   return this;
 }
 
@@ -131,7 +137,7 @@ ExecPtr ExecSeq::set_host(Host* host)
   if (state_ == State::STARTED)
     boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->migrate(host);
   host_ = host;
-  boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->host_ = host;
+  boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->set_host(host);
   return this;
 }
 
@@ -165,21 +171,23 @@ ExecPar::ExecPar(const std::vector<s4u::Host*>& hosts, const std::vector<double>
                  const std::vector<double>& bytes_amounts)
     : Exec(), hosts_(hosts), flops_amounts_(flops_amounts), bytes_amounts_(bytes_amounts)
 {
-  // For parallel executions, we need a special host to run the timeout detector.
-  host_                                                                          = hosts.front();
-  boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->host_ = host_;
 }
 
 Exec* ExecPar::start()
 {
   simix::simcall([this] {
-    boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_timeout(timeout_);
-    boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->start(hosts_, flops_amounts_, bytes_amounts_);
+    (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
+        .set_hosts(hosts_)
+        .set_timeout(timeout_)
+        .set_flops_amounts(flops_amounts_)
+        .set_bytes_amounts(bytes_amounts_)
+        .start();
   });
   state_ = State::STARTED;
-  on_start(Actor::self());
+  on_start(*Actor::self());
   return this;
 }
+
 double ExecPar::get_remaining_ratio()
 {
   return simix::simcall(

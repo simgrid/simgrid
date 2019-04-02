@@ -69,7 +69,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
       simgrid::config::set_parse(opt);
       XBT_DEBUG("Did apply '%s' as config setting", opt);
     } else if (parse_args && not strcmp(argv[i], "--version")) {
-      printf("%s\n", SIMGRID_VERSION_STRING);
+      sg_version();
       shall_exit = true;
     } else if (parse_args && (not strcmp(argv[i], "--cfg-help") || not strcmp(argv[i], "--help"))) {
       printf("Description of the configuration accepted by this simulator:\n");

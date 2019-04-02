@@ -193,7 +193,7 @@ sg_size_t File::tell()
 void File::move(const std::string& fullpath)
 {
   /* Check if the new full path is on the same mount point */
-  if (not strncmp(mount_point_.c_str(), fullpath.c_str(), mount_point_.length())) {
+  if (fullpath.compare(0, mount_point_.length(), mount_point_) == 0) {
     std::map<std::string, sg_size_t>* content = local_storage_->extension<FileSystemStorageExt>()->get_content();
     auto sz = content->find(path_);
     if (sz != content->end()) { // src file exists

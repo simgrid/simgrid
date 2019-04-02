@@ -24,12 +24,11 @@ isendirecv 10
 #bsendfrag 2
 #needs MPI_Intercomm_create
 #icsend 4
-#needs MPI_Request_get_status
-#rqstatus 2
+rqstatus 2
 #needs MPI_Pack, MPI_Buffer_attach, MPI_Buffer_detach, MPI_Irsend, MPI_Ibsend
 #rqfreeb 4
 #needs MPI_Grequest_start MPI_Grequest_complete
-#greq1 1
+greq1 1
 probe-unexp 4
 probenull 1
 # For testing, scancel will run with 1 process as well

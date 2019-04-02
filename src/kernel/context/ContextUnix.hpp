@@ -35,7 +35,7 @@ private:
 
 class UContextFactory : public SwappedContextFactory {
 public:
-  Context* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
+  UContext* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
 };
 } // namespace context
 } // namespace kernel

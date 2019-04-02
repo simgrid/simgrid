@@ -124,14 +124,7 @@ static void install_segvhandler()
 namespace simgrid {
 namespace simix {
 
-Timer* Timer::set(double date, void (*callback)(void*), void* arg)
-{
-  Timer* timer   = new Timer(date, simgrid::xbt::make_task([callback, arg]() { callback(arg); }));
-  timer->handle_ = simix_timers.emplace(std::make_pair(date, timer));
-  return timer;
-}
-
-Timer* Timer::set(double date, simgrid::xbt::Task<void()> callback)
+Timer* Timer::set(double date, simgrid::xbt::Task<void()>&& callback)
 {
   Timer* timer   = new Timer(date, std::move(callback));
   timer->handle_ = simix_timers.emplace(std::make_pair(date, timer));
@@ -219,7 +212,7 @@ void SIMIX_global_init(int *argc, char **argv)
     sg_platf_init();
     simgrid::s4u::on_platform_created.connect(surf_presolve);
 
-    simgrid::s4u::Storage::on_creation.connect([](simgrid::s4u::Storage& storage) {
+    simgrid::s4u::Storage::on_creation.connect([](simgrid::s4u::Storage const& storage) {
       sg_storage_t s = simgrid::s4u::Storage::by_name(storage.get_name());
       xbt_assert(s != nullptr, "Storage not found for name %s", storage.get_cname());
     });
@@ -545,14 +538,12 @@ double SIMIX_timer_next()
 
 smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void *arg)
 {
-  return simgrid::simix::Timer::set(date, callback, arg);
+  return simgrid::simix::Timer::set(date, std::bind(callback, arg));
 }
 
-smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback)
+smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()>&& callback) // deprecated
 {
-  smx_timer_t timer = new simgrid::simix::Timer(date, std::move(callback));
-  timer->handle_    = simgrid::simix::simix_timers.emplace(std::make_pair(date, timer));
-  return timer;
+  return simgrid::simix::Timer::set(date, std::move(callback));
 }
 
 /** @brief cancels a timer that was added earlier */

@@ -76,7 +76,7 @@ CpuCas01Model::~CpuCas01Model()
   surf_cpu_model_pm = nullptr;
 }
 
-Cpu* CpuCas01Model::create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core)
+Cpu* CpuCas01Model::create_cpu(simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
 {
   return new CpuCas01(this, host, speed_per_pstate, core);
 }
@@ -84,9 +84,10 @@ Cpu* CpuCas01Model::create_cpu(simgrid::s4u::Host* host, std::vector<double>* sp
 /************
  * Resource *
  ************/
-CpuCas01::CpuCas01(CpuCas01Model* model, simgrid::s4u::Host* host, std::vector<double>* speedPerPstate, int core)
-    : Cpu(model, host, model->get_maxmin_system()->constraint_new(this, core * speedPerPstate->front()), speedPerPstate,
-          core)
+CpuCas01::CpuCas01(CpuCas01Model* model, simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate,
+                   int core)
+    : Cpu(model, host, model->get_maxmin_system()->constraint_new(this, core * speed_per_pstate.front()),
+          speed_per_pstate, core)
 {
 }
 

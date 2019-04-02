@@ -31,12 +31,10 @@ public:
   explicit VirtualMachineImpl(s4u::VirtualMachine* piface, s4u::Host* host, int core_amount, size_t ramsize);
   ~VirtualMachineImpl();
 
-  /** @brief Callbacks fired after VM creation. Signature: `void(VirtualMachineImpl*)` */
-  static xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> on_creation;
-  /** @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachineImpl*)` */
-  static xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> on_destruction;
-  /** @brief Callbacks after VM State changes. Signature: `void(VirtualMachineImpl*)` */
-  static xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> on_state_change;
+  /** @brief Callbacks fired after VM creation. Signature: `void(VirtualMachineImpl&)` */
+  static xbt::signal<void(simgrid::vm::VirtualMachineImpl&)> on_creation;
+  /** @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachineImpl const&)` */
+  static xbt::signal<void(simgrid::vm::VirtualMachineImpl const&)> on_destruction;
 
   virtual void suspend(kernel::actor::ActorImpl* issuer);
   virtual void resume();

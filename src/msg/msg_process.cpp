@@ -11,9 +11,30 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
 
-std::string instr_pid(msg_process_t proc)
+std::string instr_pid(simgrid::s4u::Actor const& proc)
 {
-  return std::string(proc->get_name()) + "-" + std::to_string(proc->get_pid());
+  return std::string(proc.get_name()) + "-" + std::to_string(proc.get_pid());
+}
+
+void MSG_process_userdata_init()
+{
+  if (not msg_global)
+    msg_global = new MSG_Global_t();
+
+  if (not simgrid::msg::ActorUserData::EXTENSION_ID.valid())
+    simgrid::msg::ActorUserData::EXTENSION_ID = simgrid::s4u::Actor::extension_create<simgrid::msg::ActorUserData>();
+  simgrid::s4u::Actor::on_creation.connect([](simgrid::s4u::Actor& actor) {
+    XBT_DEBUG("creating the extension to store user data");
+    actor.extension_set(new simgrid::msg::ActorUserData());
+  });
+
+  simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::Actor const& actor) {
+    // free the data if a function was provided
+    void* userdata = actor.extension<simgrid::msg::ActorUserData>()->get_user_data();
+    if (userdata && msg_global->process_data_cleanup) {
+      msg_global->process_data_cleanup(userdata);
+    }
+  });
 }
 
 /******************************** Process ************************************/

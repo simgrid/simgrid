@@ -39,9 +39,9 @@ public:
   /** @brief Callback signal fired when a new Storage is created */
   static xbt::signal<void(Storage&)> on_creation;
   /** @brief Callback signal fired when a Storage is destroyed */
-  static xbt::signal<void(Storage&)> on_destruction;
+  static xbt::signal<void(Storage const&)> on_destruction;
   /** @brief Callback signal fired when a Storage's state changes */
-  static xbt::signal<void(Storage&)> on_state_change;
+  static xbt::signal<void(Storage const&)> on_state_change;
 
   /** Retrieve a Storage by its name. It must exist in the platform file */
   static Storage* by_name(const std::string& name);

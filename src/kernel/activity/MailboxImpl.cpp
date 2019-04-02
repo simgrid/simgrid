@@ -91,10 +91,12 @@ CommImplPtr MailboxImpl::iprobe(int type, int (*match_fun)(void*, void*, CommImp
   CommImplPtr this_comm;
   CommImpl::Type smx_type;
   if (type == 1) {
-    this_comm = CommImplPtr(new CommImpl(CommImpl::Type::SEND));
+    this_comm = CommImplPtr(new CommImpl());
+    this_comm->set_type(CommImpl::Type::SEND);
     smx_type  = CommImpl::Type::RECEIVE;
   } else {
-    this_comm = CommImplPtr(new CommImpl(CommImpl::Type::RECEIVE));
+    this_comm = CommImplPtr(new CommImpl());
+    this_comm->set_type(CommImpl::Type::RECEIVE);
     smx_type  = CommImpl::Type::SEND;
   }
   CommImplPtr other_comm = nullptr;
@@ -129,12 +131,12 @@ CommImplPtr MailboxImpl::find_matching_comm(CommImpl::Type type, int (*match_fun
   for (auto it = comm_queue.begin(); it != comm_queue.end(); it++) {
     CommImplPtr& comm = *it;
 
-    if (comm->type == CommImpl::Type::SEND) {
+    if (comm->type_ == CommImpl::Type::SEND) {
       other_user_data = comm->src_data_;
-    } else if (comm->type == CommImpl::Type::RECEIVE) {
+    } else if (comm->type_ == CommImpl::Type::RECEIVE) {
       other_user_data = comm->dst_data_;
     }
-    if (comm->type == type && (match_fun == nullptr || match_fun(this_user_data, other_user_data, comm.get())) &&
+    if (comm->type_ == type && (match_fun == nullptr || match_fun(this_user_data, other_user_data, comm.get())) &&
         (not comm->match_fun || comm->match_fun(other_user_data, this_user_data, my_synchro.get()))) {
       XBT_DEBUG("Found a matching communication synchro %p", comm.get());
 #if SIMGRID_HAVE_MC
@@ -148,7 +150,7 @@ CommImplPtr MailboxImpl::find_matching_comm(CommImpl::Type type, int (*match_fun
     }
     XBT_DEBUG("Sorry, communication synchro %p does not match our needs:"
               " its type is %d but we are looking for a comm of type %d (or maybe the filtering didn't match)",
-              comm.get(), (int)comm->type, (int)type);
+              comm.get(), (int)comm->type_, (int)type);
   }
   XBT_DEBUG("No matching communication synchro found");
   return nullptr;

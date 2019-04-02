@@ -155,24 +155,33 @@ Communications on the Network
  - **Basic asynchronous communications:**
    Illustrates how to have non-blocking communications, that are
    communications running in the background leaving the process free
-   to do something else during their completion. The main functions
-   involved are :cpp:func:`simgrid::s4u::Mailbox::put_async()` and 
-   :cpp:func:`simgrid::s4u::Comm::wait()`.
-   |br| `examples/s4u/async-wait/s4u-async-wait.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-wait/s4u-async-wait.cpp>`_
+   to do something else during their completion. 
+   
+   - |cpp| `examples/s4u/async-wait/s4u-async-wait.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-wait/s4u-async-wait.cpp>`_
+     :cpp:func:`simgrid::s4u::Mailbox::put_async()` and :cpp:func:`simgrid::s4u::Comm::wait()`
+   - |py|  `examples/python/async-wait/async-wait.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/async-wait/async-wait.py>`_
+     :py:func:`simgrid.Mailbox.put_async()` :py:func:`simgrid.Comm.wait()`
 
  - **Waiting for all communications in a set:**
-   The :cpp:func:`simgrid::s4u::Comm::wait_all()` function is useful
-   when you want to block until all activities in a given set have
-   completed. 
-   |br| `examples/s4u/async-waitall/s4u-async-waitall.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-waitall/s4u-async-waitall.cpp>`_
+   The `wait_all()` function is useful when you want to block until
+   all activities in a given set have completed. 
+   
+   - |cpp| `examples/s4u/async-waitall/s4u-async-waitall.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-waitall/s4u-async-waitall.cpp>`_
+     :cpp:func:`simgrid::s4u::Comm::wait_all()`
+   - |py| `examples/python/async-waitall/async-waitall.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/async-waitall/async-waitall.py>`_
+     :py:func:`simgrid.Comm.wait_all()`
 
  - **Waiting for the first completed communication in a set:**
-   The :cpp:func:`simgrid::s4u::Comm::wait_any()` function is useful
+   The `wait_any()` function is useful
    when you want to block until one activity of the set completes, no
-   matter which terminates first.    
-   |br| `examples/s4u/async-waitany/s4u-async-waitany.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-waitany/s4u-async-waitany.cpp>`_
-
-.. todo:: add the `ready` example here
+   matter which terminates first.
+   
+   - |cpp| `examples/s4u/async-waitany/s4u-async-waitany.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-waitany/s4u-async-waitany.cpp>`_
+     :cpp:func:`simgrid::s4u::Comm::wait_any()`
+   - |py| `examples/python/async-waitany/async-waitany.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/async-waitany/async-waitany.py>`_
+     :py:func:`simgrid.Comm.wait_any()`
+     
+.. todo:: review the `ready` and `waituntil` examples and add them here.
    
 .. _s4u_ex_execution:
 
@@ -192,28 +201,33 @@ Executions on the CPU
   - **Asynchronous execution:**
     You can start asynchronous executions, just like you would fire
     background threads.
-    |br| `examples/s4u/exec-async/s4u-exec-async.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-async/s4u-exec-async.cpp>`_
     
-  - **Monitoring asynchronous executions:**
-    This example shows how to start an asynchronous execution, and
-    monitor its status.
-    |br| `examples/s4u/exec-monitor/s4u-exec-monitor.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-monitor/s4u-exec-monitor.cpp>`_
+    - |cpp| `examples/s4u/exec-async/s4u-exec-async.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-async/s4u-exec-async.cpp>`_
+    - |py|  `examples/python/exec-async/exec-async.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/exec-async/exec-async.py>`_
     
   - **Remote execution:**
-    Before its start, you can change the host on which a given execution will occur.
-    |br| `examples/s4u/exec-remote/s4u-exec-remote.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-remote/s4u-exec-remote.cpp>`_
-
-  - **Using Pstates on a host:**
-    Shows how define a set of pstatesfor a host in the XML, and how the current
-    pstate can be accessed/changed with :cpp:func:`simgrid::s4u::Host::get_pstate_speed` and :cpp:func:`simgrid::s4u::Host::set_pstate`.
-    |br| `examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp>`_
-    |br| `examples/platforms/energy_platform.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/energy_platform.xml>`_
+    You can start executions on remote hosts, or even change the host
+    on which they occur during their execution.
+    
+    - |cpp| `examples/s4u/exec-remote/s4u-exec-remote.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-remote/s4u-exec-remote.cpp>`_
+    - |py| `examples/python/exec-remote/exec-remote.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/exec-remote/exec-remote.py>`_
 
   - **Parallel executions:**
     These objects are convenient abstractions of parallel
     computational kernels that span over several machines, such as a
-    PDGEM and the other ScaLAPACK routines.
+    PDGEM and the other ScaLAPACK routines. Note that this only works
+    with the "ptask_L07" host model (``--cfg=host/model:ptask_L07``).
     |br| `examples/s4u/exec-ptask/s4u-exec-ptask.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-ptask/s4u-exec-ptask.cpp>`_
+    
+  - **Using Pstates on a host:**
+    `examples/platforms/energy_platform.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/energy_platform.xml>`_
+    shows how define a set of pstates in the XML. The current pstate
+    of an host can then be accessed and changed from the program.
+
+    - |cpp| `examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp>`_
+      :cpp:func:`simgrid::s4u::Host::get_pstate_speed` and :cpp:func:`simgrid::s4u::Host::set_pstate`.
+    - |py|  `examples/python/exec-dvfs/exec-dvfs.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/exec-dvfs/exec-dvfs.py>`_
+      :py:func:`Host.get_pstate_speed` and :py:func:`Host.set_pstate`.
 
 I/O on Disks and Files
 ----------------------

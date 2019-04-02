@@ -77,7 +77,7 @@ XBT_ATTRIB_NORETURN void xbt_throw_impossible(const char* file, int line, const 
 /** Throw an exception because something unimplemented stuff has been attempted
  *  @ingroup XBT_ex_c
  */
-XBT_ATTRIB_NORETURN void xbt_throw_unimplemented(const char* file, int line, const char* func);
+XBT_ATTRIB_NORETURN XBT_PUBLIC void xbt_throw_unimplemented(const char* file, int line, const char* func);
 #define THROW_UNIMPLEMENTED xbt_throw_unimplemented(__FILE__, __LINE__, __func__)
 
 /** Die because something impossible happened

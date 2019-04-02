@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 
   /* Register a callback in the Actor::on_destruction signal. It will be called for every terminated actors */
   simgrid::s4u::Actor::on_destruction.connect(
-      [](simgrid::s4u::ActorPtr actor) { XBT_INFO("Actor %s stops now", actor->get_cname()); });
+      [](simgrid::s4u::Actor const& actor) { XBT_INFO("Actor %s stops now", actor.get_cname()); });
 
   /* Create some actors */
   simgrid::s4u::Actor::create("A", simgrid::s4u::Host::by_name("Tremblay"), actor_a);

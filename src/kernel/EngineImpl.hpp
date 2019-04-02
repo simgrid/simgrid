@@ -21,7 +21,7 @@ class EngineImpl {
 
 public:
   EngineImpl() = default;
-  ;
+
   EngineImpl(const EngineImpl&) = delete;
   EngineImpl& operator=(const EngineImpl&) = delete;
   virtual ~EngineImpl();

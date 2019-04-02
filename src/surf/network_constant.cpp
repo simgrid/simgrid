@@ -72,7 +72,7 @@ kernel::resource::Action* NetworkConstantModel::communicate(s4u::Host* src, s4u:
 {
   NetworkConstantAction* action = new NetworkConstantAction(this, size, sg_latency_factor);
 
-  simgrid::s4u::Link::on_communicate(action, src, dst);
+  simgrid::s4u::Link::on_communicate(*action, src, dst);
   return action;
 }
 

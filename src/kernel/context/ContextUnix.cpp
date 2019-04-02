@@ -56,7 +56,7 @@ namespace kernel {
 namespace context {
 
 // UContextFactory
-Context* UContextFactory::create_context(std::function<void()>&& code, actor::ActorImpl* actor)
+UContext* UContextFactory::create_context(std::function<void()>&& code, actor::ActorImpl* actor)
 {
   return new_context<UContext>(std::move(code), actor, this);
 }

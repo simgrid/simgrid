@@ -47,8 +47,8 @@ int main(int argc, char **argv)
     int *recvcounts = NULL;
     int *sdispls = NULL;
     int *rdispls = NULL;
-    int *sendtypes = NULL;
-    int *recvtypes = NULL;
+    MPI_Datatype *sendtypes = NULL;
+    MPI_Datatype *recvtypes = NULL;
     signed char *buf_alias = NULL;
     MPI_Request req;
 
@@ -126,8 +126,7 @@ int main(int argc, char **argv)
     /* same again, use a user op and free it before the wait */
     {
         MPI_Op op = MPI_OP_NULL;
-        MPI_Op_create(sum_fn, /*commute= */ 1, &op);
-
+        MPI_Op_create(sum_fn, 1, &op);
         for (i = 0; i < COUNT; ++i) {
             buf[i] = rank + i;
             recvbuf[i] = 0xdeadbeef;
@@ -296,7 +295,7 @@ int main(int argc, char **argv)
     }
     for (i = 1; i < size; ++i) {
         for (j = 0; j < COUNT; ++j) {
-            /* check we didn't corrupt the rest of the recvbuf */
+/*             check we didn't corrupt the rest of the recvbuf */
             my_assert(recvbuf[i * COUNT + j] == 0xdeadbeef);
         }
     }
@@ -439,7 +438,7 @@ int main(int argc, char **argv)
     MPI_Wait(&req, MPI_STATUS_IGNORE);
     for (i = 0; i < size; ++i) {
         for (j = 0; j < COUNT; ++j) {
-            /*printf("recvbuf[%d*COUNT+%d]=%d, expecting %d\n", i, j, recvbuf[i*COUNT+j], (i + (rank * j))); */
+/*            printf("recvbuf[%d*COUNT+%d]=%d, expecting %d\n", i, j, recvbuf[i*COUNT+j], (i + (rank * j))); */
             my_assert(recvbuf[i * COUNT + j] == (i + (rank * j)));
         }
     }

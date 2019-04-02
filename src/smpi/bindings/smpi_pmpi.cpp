@@ -215,7 +215,7 @@ int PMPI_Error_class(int errorcode, int* errorclass) {
 }
 
 int PMPI_Error_string(int errorcode, char* string, int* resultlen){
-  if (errorcode<0 || string ==nullptr){
+  if (errorcode<0 || errorcode>= MPI_MAX_ERROR_STRING || string ==nullptr){
     return MPI_ERR_ARG;
   } else {
     static const char *smpi_error_string[] = {

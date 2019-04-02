@@ -15,11 +15,6 @@
 #include <map>
 #include <memory>
 
-struct s_smx_process_exit_fun_t {
-  std::function<void(bool, void*)> fun;
-  void* arg;
-};
-
 namespace simgrid {
 namespace kernel {
 namespace actor {
@@ -70,7 +65,7 @@ public:
   activity::ActivityImplPtr waiting_synchro = nullptr; /* the current blocking synchro if any */
   std::list<activity::ActivityImplPtr> comms;          /* the current non-blocking communication synchros */
   s_smx_simcall simcall;
-  std::vector<s_smx_process_exit_fun_t> on_exit; /* list of functions executed when the process dies */
+  std::vector<std::function<void(bool)>> on_exit; /* list of functions executed when the process dies */
 
   std::function<void()> code;
   simix::Timer* kill_timer = nullptr;
@@ -181,6 +176,6 @@ XBT_PUBLIC void create_maestro(const std::function<void()>& code);
 
 extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
 
-XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_activity_t synchro);
+XBT_PRIVATE void SIMIX_process_sleep_destroy(simgrid::kernel::activity::SleepImplPtr synchro);
 
 #endif

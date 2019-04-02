@@ -71,11 +71,9 @@ std::string papi_default_config_name = "default";
 std::map</* computation unit name */ std::string, papi_process_data> units2papi_setup;
 #endif
 
-using simgrid::s4u::Actor;
-using simgrid::s4u::ActorPtr;
 std::unordered_map<std::string, double> location2speedup;
 
-static std::map</*process_id*/ ActorPtr, simgrid::smpi::ActorExt*> process_data;
+static std::map</*process_id*/ simgrid::s4u::Actor const*, simgrid::smpi::ActorExt*> process_data;
 int process_count = 0;
 static int smpi_exit_status = 0;
 int smpi_universe_size = 0;
@@ -112,17 +110,17 @@ int smpi_process_count()
 
 simgrid::smpi::ActorExt* smpi_process()
 {
-  ActorPtr me = Actor::self();
+  simgrid::s4u::ActorPtr me = simgrid::s4u::Actor::self();
 
   if (me == nullptr) // This happens sometimes (eg, when linking against NS3 because it pulls openMPI...)
     return nullptr;
 
-  return process_data.at(me);
+  return process_data.at(me.get());
 }
 
-simgrid::smpi::ActorExt* smpi_process_remote(ActorPtr actor)
+simgrid::smpi::ActorExt* smpi_process_remote(simgrid::s4u::ActorPtr actor)
 {
-  return process_data.at(actor);
+  return process_data.at(actor.get());
 }
 
 MPI_Comm smpi_process_comm_self(){
@@ -134,11 +132,11 @@ void smpi_process_init(int *argc, char ***argv){
 }
 
 void * smpi_process_get_user_data(){
-  return Actor::self()->get_impl()->get_user_data();
+  return simgrid::s4u::Actor::self()->get_impl()->get_user_data();
 }
 
 void smpi_process_set_user_data(void *data){
-  Actor::self()->get_impl()->set_user_data(data);
+  simgrid::s4u::Actor::self()->get_impl()->set_user_data(data);
 }
 
 
@@ -720,13 +718,13 @@ int smpi_main(const char* executable, int argc, char* argv[])
 
 // Called either directly from the user code, or from the code called by smpirun
 void SMPI_init(){
-  simgrid::s4u::Actor::on_creation.connect([](simgrid::s4u::ActorPtr actor) {
-    if (not actor->is_daemon()) {
-      process_data.insert({actor, new simgrid::smpi::ActorExt(actor, nullptr)});
+  simgrid::s4u::Actor::on_creation.connect([](simgrid::s4u::Actor& actor) {
+    if (not actor.is_daemon()) {
+      process_data.insert({&actor, new simgrid::smpi::ActorExt(&actor, nullptr)});
     }
   });
-  simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::ActorPtr actor) {
-    auto it = process_data.find(actor);
+  simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::Actor const& actor) {
+    auto it = process_data.find(&actor);
     if (it != process_data.end()) {
       delete it->second;
       process_data.erase(it);

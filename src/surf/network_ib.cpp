@@ -14,7 +14,8 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
-static void IB_create_host_callback(simgrid::s4u::Host& host){
+static void IB_create_host_callback(simgrid::s4u::Host const& host)
+{
   using simgrid::kernel::resource::IBNode;
   using simgrid::kernel::resource::NetworkIBModel;
 
@@ -27,24 +28,23 @@ static void IB_create_host_callback(simgrid::s4u::Host& host){
   ((NetworkIBModel*)surf_network_model)->active_nodes.insert({host.get_name(), act});
 }
 
-static void IB_action_state_changed_callback(simgrid::kernel::resource::NetworkAction* action,
+static void IB_action_state_changed_callback(simgrid::kernel::resource::NetworkAction& action,
                                              simgrid::kernel::resource::Action::State /*previous*/)
 {
   using simgrid::kernel::resource::IBNode;
   using simgrid::kernel::resource::NetworkIBModel;
 
-  if (action->get_state() != simgrid::kernel::resource::Action::State::FINISHED)
+  if (action.get_state() != simgrid::kernel::resource::Action::State::FINISHED)
     return;
-  std::pair<IBNode*,IBNode*> pair = ((NetworkIBModel*)surf_network_model)->active_comms[action];
-  XBT_DEBUG("IB callback - action %p finished", action);
+  std::pair<IBNode*, IBNode*> pair = ((NetworkIBModel*)surf_network_model)->active_comms[&action];
+  XBT_DEBUG("IB callback - action %p finished", &action);
 
-  ((NetworkIBModel*)surf_network_model)->updateIBfactors(action, pair.first, pair.second, 1);
+  ((NetworkIBModel*)surf_network_model)->updateIBfactors(&action, pair.first, pair.second, 1);
 
-  ((NetworkIBModel*)surf_network_model)->active_comms.erase(action);
-
+  ((NetworkIBModel*)surf_network_model)->active_comms.erase(&action);
 }
 
-static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction* action, simgrid::s4u::Host* src,
+static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction& action, simgrid::s4u::Host* src,
                                     simgrid::s4u::Host* dst)
 {
   simgrid::kernel::resource::NetworkIBModel* ibModel = (simgrid::kernel::resource::NetworkIBModel*)surf_network_model;
@@ -65,9 +65,9 @@ static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction* ac
     throw std::out_of_range(std::string("Could not find '") + dst->get_cname() + "' active comms !");
   }
 
-  ibModel->active_comms[action]=std::make_pair(act_src, act_dst);
+  ibModel->active_comms[&action] = std::make_pair(act_src, act_dst);
 
-  ibModel->updateIBfactors(action, act_src, act_dst, 0);
+  ibModel->updateIBfactors(&action, act_src, act_dst, 0);
 }
 
 /*********

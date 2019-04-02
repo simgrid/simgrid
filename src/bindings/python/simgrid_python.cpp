@@ -15,6 +15,8 @@
 #include "src/kernel/context/Context.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Actor.hpp>
+#include <simgrid/s4u/Comm.hpp>
+#include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
 #include <simgrid/s4u/Mailbox.hpp>
@@ -57,7 +59,7 @@ PYBIND11_MODULE(simgrid, m)
   m.attr("simgrid_version") = simgrid_version;
 
   // Internal exception used to kill actors and sweep the RAII chimney (free objects living on the stack)
-  py::object pyForcefulKillEx = py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled");
+  static py::object pyForcefulKillEx(py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled"));
 
   /* this_actor namespace */
   void (*sleep_for_fun)(double) = &simgrid::s4u::this_actor::sleep_for; // pick the right overload
@@ -70,6 +72,7 @@ PYBIND11_MODULE(simgrid, m)
          "Block the current actor, computing the given amount of flops at the given priority, see :cpp:func:`void "
          "simgrid::s4u::this_actor::execute(double, double)`",
          py::arg("flops"), py::arg("priority") = 1);
+  m2.def("exec_init", [](double flops){return simgrid::s4u::this_actor::exec_init(flops);});
   m2.def("get_host", &simgrid::s4u::this_actor::get_host, "Retrieves host on which the current actor is located");
   m2.def("migrate", &simgrid::s4u::this_actor::migrate, "Moves the current actor to another host, see :cpp:func:`void simgrid::s4u::this_actor::migrate()`",
       py::arg("dest"));
@@ -106,8 +109,8 @@ PYBIND11_MODULE(simgrid, m)
         // Currently this can be dangling, we should wrap this somehow.
         return new simgrid::s4u::Engine(&argc, argv.get());
       }))
+      .def_static("get_clock", &Engine::get_clock, "The simulation time, ie the amount of simulated seconds since the simulation start.")
       .def("get_all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
-      .def("get_clock", &Engine::get_clock, "Retrieve the simulation time (in seconds)")
       .def("load_platform", &Engine::load_platform,
            "Load a platform file describing the environment, see :cpp:func:`simgrid::s4u::Engine::load_platform()`")
       .def("load_deployment", &Engine::load_deployment,
@@ -115,59 +118,106 @@ PYBIND11_MODULE(simgrid, m)
            ":cpp:func:`simgrid::s4u::Engine::load_deployment()`")
       .def("run", &Engine::run, "Run the simulation")
       .def("register_actor",
-           [pyForcefulKillEx](Engine*, const std::string& name, py::object fun_or_class) {
-             simgrid::simix::register_function(
-                 name, [pyForcefulKillEx, fun_or_class](std::vector<std::string> args) -> simgrid::simix::ActorCode {
-                   return [pyForcefulKillEx, fun_or_class, args]() {
-                     try {
-                       /* Convert the std::vector into a py::tuple */
-                       py::tuple params(args.size() - 1);
-                       for (size_t i = 1; i < args.size(); i++)
-                         params[i - 1] = py::cast(args[i]);
+           [](Engine* e, const std::string& name, py::object fun_or_class) {
+             e->register_actor(name, [fun_or_class](std::vector<std::string> args) {
+               try {
+                 /* Convert the std::vector into a py::tuple */
+                 py::tuple params(args.size() - 1);
+                 for (size_t i = 1; i < args.size(); i++)
+                   params[i - 1] = py::cast(args[i]);
 
-                       py::object res = fun_or_class(*params);
+                 py::object res = fun_or_class(*params);
 
-                       /* If I was passed a class, I just built an instance, so I need to call it now */
-                       if (py::isinstance<py::function>(res))
-                         res();
-                     } catch (py::error_already_set& ex) {
-                       if (ex.matches(pyForcefulKillEx)) {
-                         XBT_VERB("Actor killed");
-                         /* Stop here that ForcefulKill exception which was meant to free the RAII stuff on the stack */
-                       } else {
-                         throw;
-                       }
-                     }
-                   };
-                 });
+                 /* If I was passed a class, I just built an instance, so I need to call it now */
+                 if (py::isinstance<py::function>(res))
+                   res();
+               } catch (py::error_already_set& ex) {
+                 if (ex.matches(pyForcefulKillEx)) {
+                   XBT_VERB("Actor killed");
+                   /* Stop here that ForcefulKill exception which was meant to free the RAII stuff on the stack */
+                 } else {
+                   throw;
+                 }
+               }
+             });
            },
-           "Registers the main function of an actor, see :cpp:func:`simgrid::s4u::Engine::register_function()`");
+           "Registers the main function of an actor, see :cpp:func:`simgrid::s4u::Engine::register_actor()`");
 
   /* Class Host */
   py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>>(m, "Host", "Simulation Engine, see :ref:`class s4u::Host <API_s4u_Host>`")
       .def("by_name", &Host::by_name, "Retrieves a host from its name, or die")
+      .def("get_pstate_count", &Host::get_pstate_count, "Retrieve the cound of defined pstate levels, see :cpp:func:`simgrid::s4u::Host::get_pstate_count`")
+      .def("get_pstate_speed", &Host::get_pstate_speed, "Retrieve the maximal speed at the given pstate, see :cpp:func:`simgrid::s4u::Host::get_pstate_speed`")
+      .def_property("pstate", &Host::get_pstate, &Host::set_pstate, "The current pstate")
+
       .def("current", &Host::current, "Retrieves the host on which the running actor is located, see :cpp:func:`simgrid::s4u::Host::current()`")
       .def_property_readonly("name", [](Host* self) -> const std::string {
           return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
         }, "The name of this host")
+      .def_property_readonly("load", &Host::get_load,
+          "Returns the current computation load (in flops per second). This is the currently achieved speed. See :cpp:func:`simgrid::s4u::Host::get_load()`")
       .def_property_readonly("speed", &Host::get_speed,
-          "The peak computing speed in flops/s at the current pstate, taking the external load into account, see :cpp:func:`simgrid::s4u::Host::get_speed()`");
+          "The peak computing speed in flops/s at the current pstate, taking the external load into account. This is the max potential speed. See :cpp:func:`simgrid::s4u::Host::get_speed()`");
 
   /* Class Mailbox */
   py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(m, "Mailbox", "Mailbox, see :ref:`class s4u::Mailbox <API_s4u_Mailbox>`")
+      .def("__str__", [](Mailbox* self) -> const std::string {
+         return std::string("Mailbox(") + self->get_cname() + ")";
+      }, "Textual representation of the Mailbox`")
       .def("by_name", &Mailbox::by_name, "Retrieve a Mailbox from its name, see :cpp:func:`simgrid::s4u::Mailbox::by_name()`")
       .def_property_readonly("name", [](Mailbox* self) -> const std::string {
          return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
       }, "The name of that mailbox, see :cpp:func:`simgrid::s4u::Mailbox::get_name()`")
-      .def("put", [](Mailbox self, py::object data, int size) {
+      .def("put", [](Mailbox* self, py::object data, int size) {
         data.inc_ref();
-        self.put(data.ptr(), size);
+        self->put(data.ptr(), size);
       }, "Blocking data transmission, see :cpp:func:`void simgrid::s4u::Mailbox::put(void*, uint64_t)`")
-      .def("get", [](Mailbox self) -> py::object {
-         py::object data = pybind11::reinterpret_steal<py::object>(pybind11::handle(static_cast<PyObject*>(self.get())));
+      .def("put_async", [](Mailbox* self, py::object data, int size) -> simgrid::s4u::CommPtr {
+        data.inc_ref();
+        return self->put_async(data.ptr(), size);
+      }, "Non-blocking data transmission, see :cpp:func:`void simgrid::s4u::Mailbox::put_async(void*, uint64_t)`")
+      .def("get", [](Mailbox* self) -> py::object {
+         py::object data = pybind11::reinterpret_steal<py::object>(static_cast<PyObject*>(self->get()));
          data.dec_ref();
          return data;
       }, "Blocking data reception, see :cpp:func:`void* simgrid::s4u::Mailbox::get()`");
+
+  /* Class Comm */
+  py::class_<simgrid::s4u::Comm, simgrid::s4u::CommPtr>(m, "Comm",
+                                                        "Communication, see :ref:`class s4u::Comm <API_s4u_Comm>`")
+      .def("test", [](simgrid::s4u::CommPtr self) { return self->test(); },
+           "Test whether the communication is terminated, see :cpp:func:`simgrid::s4u::Comm::test()`")
+      .def("wait", [](simgrid::s4u::CommPtr self) { self->wait(); },
+           "Block until the completion of that communication, see :cpp:func:`simgrid::s4u::Comm::wait()`")
+      .def("wait_all", [](std::vector<simgrid::s4u::CommPtr>* comms) { simgrid::s4u::Comm::wait_all(comms); },
+           "Block until the completion of all communications in the list, see "
+           ":cpp:func:`simgrid::s4u::Comm::wait_all()`")
+      .def(
+          "wait_any", [](std::vector<simgrid::s4u::CommPtr>* comms) { return simgrid::s4u::Comm::wait_any(comms); },
+          "Block until the completion of any communication in the list and return the index of the terminated one, see "
+          ":cpp:func:`simgrid::s4u::Comm::wait_any()`");
+  py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr>(m, "Exec", "Execution, see :ref:`class s4u::Exec <API_s4u_Exec>`")
+      .def_property_readonly("remaining", [](simgrid::s4u::ExecPtr self) { return self->get_remaining(); },
+          "Amount of flops that remain to be computed until completion, see :cpp:func:`simgrid::s4u::Exec::get_remaining()`")
+      .def_property_readonly("remaining_ratio", [](simgrid::s4u::ExecPtr self) { return self->get_remaining_ratio(); },
+          "Amount of work remaining until completion from 0 (completely done) to 1 (nothing done yet). See :cpp:func:`simgrid::s4u::Exec::get_remaining_ratio()`")
+      .def_property("host",
+                    [](simgrid::s4u::ExecPtr self) {
+                        simgrid::s4u::ExecSeqPtr seq = boost::dynamic_pointer_cast<simgrid::s4u::ExecSeq>(self);
+                        if (seq != nullptr)
+                            return seq->get_host();
+                        xbt_throw_unimplemented(__FILE__, __LINE__, "host of parallel executions is not implemented in python yet.");
+                    },
+                    [](simgrid::s4u::ExecPtr self, simgrid::s4u::Host* host) { self->set_host(host); },
+          "Host on which this execution runs. See :cpp:func:`simgrid::s4u::ExecSeq::get_host()`")
+      .def("test", [](simgrid::s4u::ExecPtr self) { return self->test(); },
+          "Test whether the execution is terminated, see :cpp:func:`simgrid::s4u::Exec::test()`")
+      .def("cancel", [](simgrid::s4u::ExecPtr self) { self->cancel(); },
+          "Cancel that execution, see :cpp:func:`simgrid::s4u::Exec::cancel()`")
+      .def("start", [](simgrid::s4u::ExecPtr self) { return self->start(); },
+          "Start that execution, see :cpp:func:`simgrid::s4u::Exec::start()`")
+      .def("wait", [](simgrid::s4u::ExecPtr self) { return self->wait(); },
+          "Block until the completion of that execution, see :cpp:func:`simgrid::s4u::Exec::wait()`");
 
   /* Class Actor */
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor",
@@ -175,9 +225,9 @@ PYBIND11_MODULE(simgrid, m)
                                             "application, see :ref:`class s4u::Actor <API_s4u_Actor>`")
 
       .def("create",
-           [pyForcefulKillEx](py::str name, py::object host, py::object fun, py::args args) {
+           [](py::str name, py::object host, py::object fun, py::args args) {
 
-             return simgrid::s4u::Actor::create(name, host.cast<Host*>(), [fun, args, pyForcefulKillEx]() {
+             return simgrid::s4u::Actor::create(name, host.cast<Host*>(), [fun, args]() {
 
                try {
                  fun(*args);

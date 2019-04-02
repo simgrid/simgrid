@@ -115,6 +115,47 @@ public:
                       MPI_Datatype recvtype, int root, MPI_Comm comm);
   static int scan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
   static int exscan(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+  static int alltoallw
+         (void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype* sendtypes, void* recvbuf, int* recvcounts,
+          int* recvdisps, MPI_Datatype* recvtypes, MPI_Comm comm);
+
+  //async collectives
+  static int ibarrier(MPI_Comm comm, MPI_Request* request);
+  static int ibcast(void *buf, int count, MPI_Datatype datatype, 
+                   int root, MPI_Comm comm, MPI_Request* request);
+  static int igather (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+                                      MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request);
+  static int igatherv (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+                                       int* recvcounts, int* displs, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request);
+  static int iallgather (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+                                         int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request);
+  static int iallgatherv (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+                                          int* recvcounts, int* displs, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request);
+  static int iscatter (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+                                       int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request);
+  static int iscatterv (void* sendbuf, int* sendcounts, int* displs, MPI_Datatype sendtype,
+                                        void* recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request);
+  static int ireduce
+         (void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm, MPI_Request *request);
+  static int iallreduce
+         (void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request);
+  static int iscan
+         (void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request);
+  static int iexscan
+         (void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request);
+  static int ireduce_scatter
+         (void* sendbuf, void* recvbuf, int* recvcounts, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request);
+  static int ireduce_scatter_block
+         (void* sendbuf, void* recvbuf, int recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request);
+  static int ialltoall (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+                                        int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request);
+  static int ialltoallv
+         (void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype sendtype, void* recvbuf, int* recvcounts,
+          int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request);
+  static int ialltoallw
+         (void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype* sendtypes, void* recvbuf, int* recvcounts,
+          int* recvdisps, MPI_Datatype* recvtypes, MPI_Comm comm, MPI_Request *request);
+
 
   static void (*smpi_coll_cleanup_callback)();
 };

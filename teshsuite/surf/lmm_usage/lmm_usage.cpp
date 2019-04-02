@@ -41,12 +41,20 @@ static lmm::System* new_system(method_t method)
   }
 }
 
-static double dichotomy(double func(double), double min, double max, double min_error)
+double a_test_1 = 0;
+double b_test_1 = 0;
+static double diff_lagrange_test_1(double x)
+{
+  return -(3 / (1 + 3 * x * x / 2) - 3 / (2 * (3 * (a_test_1 - x) * (a_test_1 - x) / 2 + 1)) +
+           3 / (2 * (3 * (b_test_1 - a_test_1 + x) * (b_test_1 - a_test_1 + x) / 2 + 1)));
+}
+
+static double dichotomy(double min, double max, double min_error)
 {
   double overall_error = 2 * min_error;
 
-  double min_func = func(min);
-  double max_func = func(max);
+  double min_func = diff_lagrange_test_1(min);
+  double max_func = diff_lagrange_test_1(max);
 
   if (min_func > 0 && max_func > 0)
     return min - 1.0;
@@ -72,7 +80,7 @@ static double dichotomy(double func(double), double min, double max, double min_
     if (fabs(min - middle) < 1e-12 || fabs(max - middle) < 1e-12) {
       break;
     }
-    double middle_func = func(middle);
+    double middle_func = diff_lagrange_test_1(middle);
     SHOW_EXPR(middle);
     SHOW_EXPR(middle_func);
 
@@ -89,14 +97,6 @@ static double dichotomy(double func(double), double min, double max, double min_
     }
   }
   return ((min + max) / 2.0);
-}
-
-double a_test_1 = 0;
-double b_test_1 = 0;
-static double diff_lagrange_test_1(double x)
-{
-  return -(3 / (1 + 3 * x * x / 2) - 3 / (2 * (3 * (a_test_1 - x) * (a_test_1 - x) / 2 + 1)) +
-           3 / (2 * (3 * (b_test_1 - a_test_1 + x) * (b_test_1 - a_test_1 + x) / 2 + 1)));
 }
 
 static void test1(method_t method)
@@ -148,7 +148,7 @@ static void test1(method_t method)
     } else if (method == LAGRANGE_RENO) {
       a_test_1 = a;
       b_test_1 = b;
-      x = dichotomy(diff_lagrange_test_1, 0, a, 1e-13);
+      x        = dichotomy(0, a, 1e-13);
 
       if (x < 0)
         x = 0;

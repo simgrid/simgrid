@@ -40,8 +40,9 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
   XBT_DEBUG("send from mailbox %p", mbox);
 
   /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
-  simgrid::kernel::activity::CommImplPtr this_comm = simgrid::kernel::activity::CommImplPtr(
-      new simgrid::kernel::activity::CommImpl(simgrid::kernel::activity::CommImpl::Type::SEND));
+  simgrid::kernel::activity::CommImplPtr this_comm =
+      simgrid::kernel::activity::CommImplPtr(new simgrid::kernel::activity::CommImpl());
+  this_comm->set_type(simgrid::kernel::activity::CommImpl::Type::SEND);
 
   /* Look for communication synchro matching our needs. We also provide a description of
    * ourself so that the other side also gets a chance of choosing if it wants to match with us.
@@ -68,34 +69,29 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
     XBT_DEBUG("Receive already pushed");
 
     other_comm->state_ = SIMIX_READY;
-    other_comm->type   = simgrid::kernel::activity::CommImpl::Type::READY;
+    other_comm->set_type(simgrid::kernel::activity::CommImpl::Type::READY);
   }
-  src_proc->comms.push_back(other_comm);
 
   if (detached) {
     other_comm->detached  = true;
     other_comm->clean_fun = clean_fun;
   } else {
     other_comm->clean_fun = nullptr;
+    src_proc->comms.push_back(other_comm);
   }
 
   /* Setup the communication synchro */
   other_comm->src_actor_     = src_proc;
-  other_comm->task_size_     = task_size;
-  other_comm->rate_          = rate;
-  other_comm->src_buff_      = src_buff;
-  other_comm->src_buff_size_ = src_buff_size;
   other_comm->src_data_      = data;
+  (*other_comm).set_src_buff(src_buff, src_buff_size).set_size(task_size).set_rate(rate);
 
   other_comm->match_fun     = match_fun;
   other_comm->copy_data_fun = copy_data_fun;
 
-  if (MC_is_active() || MC_record_replay_is_active()) {
+  if (MC_is_active() || MC_record_replay_is_active())
     other_comm->state_ = SIMIX_RUNNING;
-    return (detached ? nullptr : other_comm);
-  }
-
-  other_comm->start();
+  else
+    other_comm->start();
 
   return (detached ? nullptr : other_comm);
 }
@@ -117,8 +113,9 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(
     simix_match_func_t match_fun, void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
     void* data, double rate)
 {
-  simgrid::kernel::activity::CommImplPtr this_synchro = simgrid::kernel::activity::CommImplPtr(
-      new simgrid::kernel::activity::CommImpl(simgrid::kernel::activity::CommImpl::Type::RECEIVE));
+  simgrid::kernel::activity::CommImplPtr this_synchro =
+      simgrid::kernel::activity::CommImplPtr(new simgrid::kernel::activity::CommImpl());
+  this_synchro->set_type(simgrid::kernel::activity::CommImpl::Type::RECEIVE);
   XBT_DEBUG("recv from mbox %p. this_synchro=%p", mbox, this_synchro.get());
 
   simgrid::kernel::activity::CommImplPtr other_comm;
@@ -140,7 +137,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(
       if (other_comm->surf_action_ && other_comm->remains() < 1e-12) {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
         other_comm->state_ = SIMIX_DONE;
-        other_comm->type   = simgrid::kernel::activity::CommImpl::Type::DONE;
+        other_comm->set_type(simgrid::kernel::activity::CommImpl::Type::DONE);
         other_comm->mbox   = nullptr;
       }
     }
@@ -163,19 +160,18 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(
       XBT_DEBUG("Match my %p with the existing %p", this_synchro.get(), other_comm.get());
 
       other_comm->state_ = SIMIX_READY;
-      other_comm->type   = simgrid::kernel::activity::CommImpl::Type::READY;
+      other_comm->set_type(simgrid::kernel::activity::CommImpl::Type::READY);
     }
     receiver->comms.push_back(other_comm);
   }
 
   /* Setup communication synchro */
   other_comm->dst_actor_     = receiver;
-  other_comm->dst_buff_      = dst_buff;
-  other_comm->dst_buff_size_ = dst_buff_size;
   other_comm->dst_data_      = data;
+  other_comm->set_dst_buff(dst_buff, dst_buff_size);
 
-  if (rate > -1.0 && (other_comm->rate_ < 0.0 || rate < other_comm->rate_))
-    other_comm->rate_ = rate;
+  if (rate > -1.0 && (other_comm->get_rate() < 0.0 || rate < other_comm->get_rate()))
+    other_comm->set_rate(rate);
 
   other_comm->match_fun     = match_fun;
   other_comm->copy_data_fun = copy_data_fun;
@@ -367,12 +363,36 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-CommImpl::CommImpl(CommImpl::Type type) : type(type)
+CommImpl& CommImpl::set_type(CommImpl::Type type)
 {
-  state_   = SIMIX_WAITING;
-  src_data_ = nullptr;
-  dst_data_ = nullptr;
-  XBT_DEBUG("Create comm activity %p", this);
+  type_ = type;
+  return *this;
+}
+
+CommImpl& CommImpl::set_size(double size)
+{
+  size_ = size;
+  return *this;
+}
+
+CommImpl& CommImpl::set_rate(double rate)
+{
+  rate_ = rate;
+  return *this;
+}
+
+CommImpl& CommImpl::set_src_buff(void* buff, size_t size)
+{
+  src_buff_      = buff;
+  src_buff_size_ = size;
+  return *this;
+}
+
+CommImpl& CommImpl::set_dst_buff(void* buff, size_t* size)
+{
+  dst_buff_      = buff;
+  dst_buff_size_ = size;
+  return *this;
 }
 
 CommImpl::~CommImpl()
@@ -394,7 +414,7 @@ CommImpl::~CommImpl()
 }
 
 /**  @brief Starts the simulation of a communication synchro. */
-void CommImpl::start()
+CommImpl* CommImpl::start()
 {
   /* If both the sender and the receiver are already there, start the communication */
   if (state_ == SIMIX_READY) {
@@ -402,7 +422,7 @@ void CommImpl::start()
     s4u::Host* sender   = src_actor_->get_host();
     s4u::Host* receiver = dst_actor_->get_host();
 
-    surf_action_ = surf_network_model->communicate(sender, receiver, task_size_, rate_);
+    surf_action_ = surf_network_model->communicate(sender, receiver, size_, rate_);
     surf_action_->set_data(this);
     state_ = SIMIX_RUNNING;
 
@@ -431,6 +451,8 @@ void CommImpl::start()
       surf_action_->suspend();
     }
   }
+
+  return this;
 }
 
 /** @brief Copy the communication data from the sender's buffer to the receiver's one  */
@@ -585,8 +607,6 @@ void CommImpl::finish()
 
     if (not simcall->issuer->get_host()->is_on()) {
       simcall->issuer->context_->iwannadie = true;
-      simcall->issuer->exception_ =
-          std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
     } else {
       switch (state_) {
 

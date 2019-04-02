@@ -18,8 +18,8 @@ template class Extendable<s4u::Storage>;
 namespace s4u {
 
 xbt::signal<void(Storage&)> Storage::on_creation;
-xbt::signal<void(Storage&)> Storage::on_destruction;
-xbt::signal<void(Storage&)> Storage::on_state_change;
+xbt::signal<void(Storage const&)> Storage::on_destruction;
+xbt::signal<void(Storage const&)> Storage::on_state_change;
 
 Storage::Storage(const std::string& name, kernel::resource::StorageImpl* pimpl) : pimpl_(pimpl), name_(name)
 {

@@ -145,23 +145,23 @@ public:
   static ActorPtr self();
 
   /** Signal to others that a new actor has been created **/
-  static xbt::signal<void(ActorPtr)> on_creation;
+  static xbt::signal<void(Actor&)> on_creation;
   /** Signal to others that an actor has been suspended**/
-  static xbt::signal<void(ActorPtr)> on_suspend;
+  static xbt::signal<void(Actor const&)> on_suspend;
   /** Signal to others that an actor has been resumed **/
-  static xbt::signal<void(ActorPtr)> on_resume;
+  static xbt::signal<void(Actor const&)> on_resume;
   /** Signal to others that an actor is sleeping **/
-  static xbt::signal<void(ActorPtr)> on_sleep;
+  static xbt::signal<void(Actor const&)> on_sleep;
   /** Signal to others that an actor wakes up for a sleep **/
-  static xbt::signal<void(ActorPtr)> on_wake_up;
+  static xbt::signal<void(Actor const&)> on_wake_up;
   /** Signal to others that an actor is going to migrated to another host**/
-  static xbt::signal<void(ActorPtr)> on_migration_start;
+  static xbt::signal<void(Actor const&)> on_migration_start;
   /** Signal to others that an actor is has been migrated to another host **/
-  static xbt::signal<void(ActorPtr)> on_migration_end;
+  static xbt::signal<void(Actor const&)> on_migration_end;
   /** Signal indicating that an actor is about to disappear.
    *  This signal is fired for any dying actor, which is mostly useful when designing plugins and extensions. If you
    *  want to register to the termination of a given actor, use this_actor::on_exit() instead.*/
-  static xbt::signal<void(ActorPtr)> on_destruction;
+  static xbt::signal<void(Actor const&)> on_destruction;
 
   /** Create an actor from a std::function<void()>
    *
@@ -207,7 +207,7 @@ public:
   /** Retrieves the name of that actor as a C string */
   const char* get_cname() const;
   /** Retrieves the host on which that actor is running */
-  Host* get_host();
+  Host* get_host() const;
   /** Retrieves the actor ID of that actor */
   aid_t get_pid() const;
   /** Retrieves the actor ID of that actor's creator */
@@ -236,7 +236,7 @@ public:
    * It will be set to true if the actor was killed or failed because of an exception,
    * while it will remain to false if the actor terminated gracefully.
    */
-  void on_exit(const std::function<void(bool /*failed*/)>& fun);
+  void on_exit(const std::function<void(bool /*failed*/)>& fun) const;
 
   /** Sets the time at which that actor should be killed */
   void set_kill_time(double time);
@@ -286,7 +286,7 @@ public:
   static void kill_all();
 
   /** Returns the internal implementation of this actor */
-  kernel::actor::ActorImpl* get_impl();
+  kernel::actor::ActorImpl* get_impl() const { return pimpl_; }
 
   /** Retrieve the property value (or nullptr if not set) */
   std::unordered_map<std::string, std::string>*
