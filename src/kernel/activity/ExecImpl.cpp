@@ -72,18 +72,6 @@ ExecImpl& ExecImpl::set_hosts(const std::vector<s4u::Host*>& hosts)
   return *this;
 }
 
-ExecImpl& ExecImpl::set_name(const std::string& name)
-{
-  ActivityImpl::set_name(name);
-  return *this;
-}
-
-ExecImpl& ExecImpl::set_tracing_category(const std::string& category)
-{
-  ActivityImpl::set_category(category);
-  return *this;
-}
-
 ExecImpl& ExecImpl::set_timeout(double timeout)
 {
   if (timeout > 0 && not MC_is_active() && not MC_record_replay_is_active()) {
@@ -121,6 +109,8 @@ ExecImpl* ExecImpl::start()
     if (hosts_.size() == 1) {
       surf_action_ = hosts_.front()->pimpl_cpu->execution_start(flops_amounts_.front());
       surf_action_->set_priority(priority_);
+      surf_action_->set_category(get_tracing_category());
+
       if (bound_ > 0)
         surf_action_->set_bound(bound_);
     } else {

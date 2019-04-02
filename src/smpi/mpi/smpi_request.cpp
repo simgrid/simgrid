@@ -490,8 +490,8 @@ void Request::start()
 
     /* FIXME: detached sends are not traceable (action_ == nullptr) */
     if (action_ != nullptr) {
-      std::string category = smpi_process()->get_tracing_category();
-      simgrid::simix::simcall([this, category] { this->action_->set_category(category); });
+      boost::static_pointer_cast<kernel::activity::CommImpl>(action_)->set_tracing_category(
+          smpi_process()->get_tracing_category());
     }
 
     if (async_small_thresh != 0 || ((flags_ & MPI_REQ_RMA) != 0))

@@ -22,19 +22,12 @@ namespace activity {
 
 class XBT_PUBLIC ActivityImpl {
   std::atomic_int_fast32_t refcount_{0};
-  std::string name_; /* Activity name if any */
 public:
   virtual ~ActivityImpl();
   ActivityImpl() = default;
-  explicit ActivityImpl(const std::string& name) : name_(name) {}
   e_smx_state_t state_ = SIMIX_WAITING; /* State of the activity */
   std::list<smx_simcall_t> simcalls_;   /* List of simcalls waiting for this activity */
   resource::Action* surf_action_ = nullptr;
-
-  const std::string& get_name() const { return name_; }
-  const char* get_cname() const { return name_.c_str(); }
-  void set_name(const std::string& name) { name_ = name; }
-  void set_category(const std::string& category);
 
   virtual void suspend();
   virtual void resume();
@@ -48,6 +41,29 @@ public:
   static xbt::signal<void(ActivityImpl const&)> on_suspended;
   static xbt::signal<void(ActivityImpl const&)> on_resumed;
 };
+
+template <class AnyActivityImpl> class ActivityImpl_T : public ActivityImpl {
+private:
+  std::string name_             = "";
+  std::string tracing_category_ = "";
+
+public:
+  AnyActivityImpl& set_name(const std::string& name)
+  {
+    name_ = name;
+    return static_cast<AnyActivityImpl&>(*this);
+  }
+  const std::string& get_name() { return name_; }
+  const char* get_cname() { return name_.c_str(); }
+
+  AnyActivityImpl& set_tracing_category(const std::string& category)
+  {
+    tracing_category_ = category;
+    return static_cast<AnyActivityImpl&>(*this);
+  }
+  const std::string& get_tracing_category() { return tracing_category_; }
+};
+
 } // namespace activity
 } // namespace kernel
 } // namespace simgrid

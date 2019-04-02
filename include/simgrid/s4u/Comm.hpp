@@ -27,8 +27,8 @@ class XBT_PUBLIC Comm : public Activity {
   size_t dst_buff_size_               = 0;
   void* src_buff_                     = nullptr;
   size_t src_buff_size_               = sizeof(void*);
+  std::string tracing_category_       = "";
   std::atomic_int_fast32_t refcount_{0};
-
   /* FIXME: expose these elements in the API */
   int detached_                                                           = 0;
   int (*match_fun_)(void*, void*, kernel::activity::CommImpl*)            = nullptr;
@@ -110,6 +110,8 @@ public:
    *
    * That's a buffer where the sent data will be copied  */
   CommPtr set_dst_data(void** buff, size_t size);
+
+  CommPtr set_tracing_category(const std::string& category);
 
   /** Retrieve the mailbox on which this comm acts */
   Mailbox* get_mailbox();

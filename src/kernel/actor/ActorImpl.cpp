@@ -226,8 +226,7 @@ void ActorImpl::exit()
       io->cancel();
     } else {
       simgrid::kernel::activity::ActivityImplPtr activity = waiting_synchro;
-      xbt_die("Activity %s is of unknown type %s", activity->get_cname(),
-              simgrid::xbt::demangle(typeid(activity).name()).get());
+      xbt_die("Activity is of unknown type %s", simgrid::xbt::demangle(typeid(activity).name()).get());
     }
 
     waiting_synchro = nullptr;

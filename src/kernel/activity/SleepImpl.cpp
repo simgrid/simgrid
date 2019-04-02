@@ -18,12 +18,6 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-SleepImpl& SleepImpl::set_name(const std::string& name)
-{
-  ActivityImpl::set_name(name);
-  return *this;
-}
-
 SleepImpl& SleepImpl::set_host(s4u::Host* host)
 {
   host_ = host;

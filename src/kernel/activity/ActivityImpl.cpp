@@ -38,12 +38,6 @@ void ActivityImpl::resume()
   on_resumed(*this);
 }
 
-void ActivityImpl::set_category(const std::string& category)
-{
-  if (surf_action_)
-    surf_action_->set_category(category);
-}
-
 // boost::intrusive_ptr<Activity> support:
 void intrusive_ptr_add_ref(simgrid::kernel::activity::ActivityImpl* activity)
 {

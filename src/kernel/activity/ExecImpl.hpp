@@ -14,7 +14,7 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-class XBT_PUBLIC ExecImpl : public ActivityImpl {
+class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
   resource::Action* timeout_detector_ = nullptr;
   double priority_                    = 1.0;
   double bound_                       = 0.0;
@@ -24,8 +24,6 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl {
   ~ExecImpl();
 
 public:
-  ExecImpl& set_name(const std::string& name);
-  ExecImpl& set_tracing_category(const std::string& category);
   ExecImpl& set_timeout(double timeout);
   ExecImpl& set_bound(double bound);
   ExecImpl& set_priority(double priority);

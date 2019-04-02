@@ -37,12 +37,6 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-IoImpl& IoImpl::set_name(const std::string& name)
-{
-  ActivityImpl::set_name(name);
-  return *this;
-}
-
 IoImpl& IoImpl::set_type(s4u::Io::OpType type)
 {
   type_ = type;

@@ -111,15 +111,15 @@ s4u::CommPtr Task::send_async(const std::string& alias, void_f_pvoid_t cleanup, 
   msg_global->sent_msg++;
 
   s4u::CommPtr s4u_comm = s4u::Mailbox::by_name(alias)->put_init(this, bytes_amount)->set_rate(get_rate());
+  if (TRACE_is_enabled() && has_tracing_category())
+    s4u_comm->set_tracing_category(tracing_category_);
+
   comm                  = s4u_comm;
 
   if (detached)
     comm->detach(cleanup);
   else
     comm->start();
-
-  if (TRACE_is_enabled() && has_tracing_category())
-    simgrid::simix::simcall([this] { comm->get_impl()->set_category(std::move(tracing_category_)); });
 
   return comm;
 }

@@ -424,6 +424,7 @@ CommImpl* CommImpl::start()
 
     surf_action_ = surf_network_model->communicate(sender, receiver, size_, rate_);
     surf_action_->set_data(this);
+    surf_action_->set_category(get_tracing_category());
     state_ = SIMIX_RUNNING;
 
     XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p)", this, sender->get_cname(),

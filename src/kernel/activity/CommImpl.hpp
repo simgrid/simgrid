@@ -15,7 +15,7 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-class XBT_PUBLIC CommImpl : public ActivityImpl {
+class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   ~CommImpl() override;
   void cleanupSurf();
 
