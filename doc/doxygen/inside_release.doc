@@ -102,13 +102,13 @@ the settings icon of the release you want to change.
 - Tag the git repository (don't forget to push the tags to the main repo)
 - Push the archive files (tar.gz and jar) on gforge
 - Post a news on gforge (before updating the website)
-- Update the link scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/latest
-  - Create the directory of the released version and upload the doc artefact in it
-  - Remove the older releases so that people don't find them in google
 - Document the tag on https://github.com/simgrid/simgrid/releases and
   on https://framagit.org/simgrid/simgrid/tags
   - Upload the files SimGrid-3.XX.tar.gz, simgrid-3_XX.jar and
-    SimGrid-doc-3_XX.zip files to the changelog.
+    SimGrid-doc-3_XX.zip (that is the artefact of the pages job on framagit) files to the changelog.
+- Update the .gitlab-ci.yml on the website
+  - Download the simgrid-doc from framagit and unpack it in position
+  - Only keep 2 versions so that people don't find older ones in google
 - Rebuild and resynchronize the website so that the file gets visible
   from our download page.@n
   - Edit org/org-templates/level-0.org to change the release version, the tgz link and the jar link.
