@@ -8,8 +8,8 @@ $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/exec-dvfs.py ${pla
 > [  0.000000] (2:dvfs_test@MyHost2) Count of Processor states=3
 > [  0.000000] (2:dvfs_test@MyHost2) Current power peak=100000000.000000
 > [  1.000000] (1:dvfs_test@MyHost1) Task1 duration: 1.00
-> [  1.000000] (2:dvfs_test@MyHost2) Task1 duration: 1.00
 > [  1.000000] (1:dvfs_test@MyHost1) Changing power peak value to 20000000.000000 (at index 2)
+> [  1.000000] (2:dvfs_test@MyHost2) Task1 duration: 1.00
 > [  1.000000] (2:dvfs_test@MyHost2) Changing power peak value to 20000000.000000 (at index 2)
 > [  1.000000] (1:dvfs_test@MyHost1) Current power peak=20000000.000000
 > [  1.000000] (2:dvfs_test@MyHost2) Current power peak=20000000.000000
@@ -26,8 +26,8 @@ $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/exec-dvfs.py ${pla
 > [  0.000000] (2:dvfs_test@MyHost2) Count of Processor states=3
 > [  0.000000] (2:dvfs_test@MyHost2) Current power peak=100000000.000000
 > [  1.000000] (1:dvfs_test@MyHost1) Task1 duration: 1.00
-> [  1.000000] (2:dvfs_test@MyHost2) Task1 duration: 1.00
 > [  1.000000] (1:dvfs_test@MyHost1) Changing power peak value to 20000000.000000 (at index 2)
+> [  1.000000] (2:dvfs_test@MyHost2) Task1 duration: 1.00
 > [  1.000000] (2:dvfs_test@MyHost2) Changing power peak value to 20000000.000000 (at index 2)
 > [  1.000000] (1:dvfs_test@MyHost1) Current power peak=20000000.000000
 > [  1.000000] (2:dvfs_test@MyHost2) Current power peak=20000000.000000

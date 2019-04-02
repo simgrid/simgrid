@@ -216,7 +216,7 @@ void Host::set_speed_profile(kernel::profile::Profile* p)
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
 double Host::get_pstate_speed(int pstate_index) const
 {
-  return simix::simcall([this, pstate_index] { return this->pimpl_cpu->get_pstate_peak_speed(pstate_index); });
+  return this->pimpl_cpu->get_pstate_peak_speed(pstate_index);
 }
 
 /** @brief Get the peak computing speed in flops/s at the current pstate, NOT taking the external load into account.
