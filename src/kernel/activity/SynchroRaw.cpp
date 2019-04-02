@@ -69,24 +69,14 @@ void RawImpl::finish()
   smx_simcall_t simcall = simcalls_.front();
   simcalls_.pop_front();
 
-  switch (state_) {
-    case SIMIX_DONE:
-      /* do nothing, synchro done */
-      XBT_DEBUG("RawImpl::finish(): execution successful");
-      break;
-
-    case SIMIX_FAILED:
-      XBT_DEBUG("RawImpl::finish(): host '%s' failed", simcall->issuer->get_host()->get_cname());
-      simcall->issuer->context_->iwannadie = true;
-      simcall->issuer->exception_ =
-          std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
-      break;
-    case SIMIX_SRC_TIMEOUT:
-      simcall->issuer->exception_ =
-          std::make_exception_ptr(simgrid::TimeoutError(XBT_THROW_POINT, "Synchronization timeout"));
-      break;
-    default:
-      xbt_die("Internal error in RawImpl::finish() unexpected synchro state %d", static_cast<int>(state_));
+  if (state_ == SIMIX_FAILED) {
+    XBT_DEBUG("RawImpl::finish(): host '%s' failed", simcall->issuer->get_host()->get_cname());
+    simcall->issuer->context_->iwannadie = true;
+    simcall->issuer->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
+  } else if (state_ == SIMIX_SRC_TIMEOUT) {
+    simcall->issuer->exception_ = std::make_exception_ptr(TimeoutError(XBT_THROW_POINT, "Synchronization timeout"));
+  } else {
+    xbt_die("Internal error in RawImpl::finish() unexpected synchro state %d", static_cast<int>(state_));
   }
 
   switch (simcall->call) {
