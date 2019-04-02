@@ -53,7 +53,7 @@ public:
   CpuL07Model& operator=(const CpuL07Model&) = delete;
   ~CpuL07Model();
 
-  Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core) override;
+  Cpu* create_cpu(simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) override;
   HostL07Model *hostModel_;
 };
 
@@ -77,7 +77,7 @@ public:
 
 class CpuL07 : public Cpu {
 public:
-  CpuL07(CpuL07Model* model, s4u::Host* host, std::vector<double>* speed_per_pstate, int core);
+  CpuL07(CpuL07Model* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core);
   CpuL07(const CpuL07&) = delete;
   CpuL07& operator=(const CpuL07&) = delete;
   ~CpuL07() override;
