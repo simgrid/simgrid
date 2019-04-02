@@ -47,8 +47,8 @@ Action::~Action()
 void Action::finish(Action::State state)
 {
   finish_time_ = surf_get_clock();
-  set_state(state);
   set_remains(0);
+  set_state(state);
 }
 
 Action::State Action::get_state() const
