@@ -148,6 +148,8 @@ void mpi_bcast_(void* buf, int* count, int* datatype, int* root, int* comm, int*
 void mpi_reduce_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* root, int* comm, int* ierr);
 void mpi_allreduce_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* comm, int* ierr);
 void mpi_reduce_scatter_(void* sendbuf, void* recvbuf, int* recvcounts, int* datatype, int* op, int* comm, int* ierr);
+void mpi_reduce_scatter_block_(void* sendbuf, void* recvbuf, int* recvcount, int* datatype, int* op, int* comm,
+                               int* ierr);
 void mpi_scatter_(void* sendbuf, int* sendcount, int* sendtype, void* recvbuf, int* recvcount, int* recvtype, int* root,
                   int* comm, int* ierr);
 void mpi_scatterv_(void* sendbuf, int* sendcounts, int* displs, int* sendtype, void* recvbuf, int* recvcount,
@@ -160,13 +162,44 @@ void mpi_allgather_(void* sendbuf, int* sendcount, int* sendtype, void* recvbuf,
                     int* comm, int* ierr);
 void mpi_allgatherv_(void* sendbuf, int* sendcount, int* sendtype, void* recvbuf, int* recvcount, int* displs,
                      int* recvtype, int* comm, int* ierr);
-void mpi_type_size_(int* datatype, int* size, int* ierr);
-
 void mpi_scan_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* comm, int* ierr);
 void mpi_alltoall_(void* sendbuf, int* sendcount, int* sendtype, void* recvbuf, int* recvcount, int* recvtype,
                    int* comm, int* ierr);
 void mpi_alltoallv_(void* sendbuf, int* sendcounts, int* senddisps, int* sendtype, void* recvbuf, int* recvcounts,
                     int* recvdisps, int* recvtype, int* comm, int* ierr);
+void mpi_alltoallw_(void* sendbuf, int* sendcnts, int* sdispls, int* sendtypes, void* recvbuf, int* recvcnts,
+                    int* rdispls, int* recvtypes, int* comm, int* ierr);
+void mpi_exscan_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* comm, int* ierr);
+
+void mpi_ibarrier_(int* comm, int* request, int* ierr);
+void mpi_ibcast_(void* buf, int* count, int* datatype, int* root, int* comm, int* request, int* ierr);
+void mpi_ireduce_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* root, int* comm, int* request, int* ierr);
+void mpi_iallreduce_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* comm, int* request, int* ierr);
+void mpi_ireduce_scatter_(void* sendbuf, void* recvbuf, int* recvcounts, int* datatype, int* op, int* comm, int* request, int* ierr);
+void mpi_ireduce_scatter_block_(void* sendbuf, void* recvbuf, int* recvcount, int* datatype, int* op, int* comm, int* request ,
+                               int* ierr);
+void mpi_iscatter_(void* sendbuf, int* sendcount, int* sendtype, void* recvbuf, int* recvcount, int* recvtype, int* root,
+                  int* comm, int* request, int* ierr);
+void mpi_iscatterv_(void* sendbuf, int* sendcounts, int* displs, int* sendtype, void* recvbuf, int* recvcount,
+                   int* recvtype, int* root, int* comm, int* request, int* ierr);
+void mpi_igather_(void* sendbuf, int* sendcount, int* sendtype, void* recvbuf, int* recvcount, int* recvtype, int* root,
+                 int* comm, int* request, int* ierr);
+void mpi_igatherv_(void* sendbuf, int* sendcount, int* sendtype, void* recvbuf, int* recvcounts, int* displs,
+                  int* recvtype, int* root, int* comm, int* request, int* ierr);
+void mpi_iallgather_(void* sendbuf, int* sendcount, int* sendtype, void* recvbuf, int* recvcount, int* recvtype,
+                    int* comm, int* request, int* ierr);
+void mpi_iallgatherv_(void* sendbuf, int* sendcount, int* sendtype, void* recvbuf, int* recvcount, int* displs,
+                     int* recvtype, int* comm, int* request, int* ierr);
+void mpi_iscan_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* comm, int* request, int* ierr);
+void mpi_ialltoall_(void* sendbuf, int* sendcount, int* sendtype, void* recvbuf, int* recvcount, int* recvtype,
+                   int* comm, int* request, int* ierr);
+void mpi_ialltoallv_(void* sendbuf, int* sendcounts, int* senddisps, int* sendtype, void* recvbuf, int* recvcounts,
+                    int* recvdisps, int* recvtype, int* comm, int* request, int* ierr);
+void mpi_ialltoallw_(void* sendbuf, int* sendcnts, int* sdispls, int* sendtypes, void* recvbuf, int* recvcnts,
+                    int* rdispls, int* recvtypes, int* comm, int* request, int* ierr);
+void mpi_iexscan_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* comm, int* request, int* ierr);
+
+void mpi_type_size_(int* datatype, int* size, int* ierr);
 void mpi_get_processor_name_(char* name, int* resultlen, int* ierr);
 void mpi_test_(int* request, int* flag, MPI_Status* status, int* ierr);
 void mpi_testall_(int* count, int* requests, int* flag, MPI_Status* statuses, int* ierr);
@@ -284,8 +317,6 @@ void mpi_sendrecv_replace_(void* buf, int* count, int* datatype, int* dst, int* 
 void mpi_testany_(int* count, int* requests, int* index, int* flag, MPI_Status* status, int* ierr);
 void mpi_waitsome_(int* incount, int* requests, int* outcount, int* indices, MPI_Status* status, int* ierr);
 void mpi_reduce_local_(void* inbuf, void* inoutbuf, int* count, int* datatype, int* op, int* ierr);
-void mpi_reduce_scatter_block_(void* sendbuf, void* recvbuf, int* recvcount, int* datatype, int* op, int* comm,
-                               int* ierr);
 void mpi_pack_size_(int* incount, int* datatype, int* comm, int* size, int* ierr);
 void mpi_cart_coords_(int* comm, int* rank, int* maxdims, int* coords, int* ierr);
 void mpi_cart_create_(int* comm_old, int* ndims, int* dims, int* periods, int* reorder, int* comm_cart, int* ierr);
@@ -363,9 +394,6 @@ void mpi_type_create_resized_(int* oldtype, MPI_Aint* lb, MPI_Aint* extent, int*
 void mpi_type_create_subarray_(int* ndims, int* array_of_sizes, int* array_of_subsizes, int* array_of_starts,
                                int* order, int* oldtype, int* newtype, int* ierr);
 void mpi_type_match_size_(int* typeclass, int* size, int* datatype, int* ierr);
-void mpi_alltoallw_(void* sendbuf, int* sendcnts, int* sdispls, int* sendtypes, void* recvbuf, int* recvcnts,
-                    int* rdispls, int* recvtypes, int* comm, int* ierr);
-void mpi_exscan_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* comm, int* ierr);
 void mpi_comm_set_name_(int* comm, char* name, int* ierr, int size);
 void mpi_comm_dup_with_info_(int* comm, int* info, int* newcomm, int* ierr);
 void mpi_comm_split_type_(int* comm, int* split_type, int* key, int* info, int* newcomm, int* ierr);

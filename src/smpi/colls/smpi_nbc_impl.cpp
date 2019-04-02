@@ -553,11 +553,9 @@ int Colls::iscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
 
   // Send/Recv buffers to/from others
   MPI_Request *requests = new MPI_Request[size - 1];
-  void **tmpbufs = xbt_new(void *, rank);
   int index = 0;
   for (int other = 0; other < rank; other++) {
-    tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);
-    requests[index] = Request::irecv_init(tmpbufs[index], count, datatype, other, system_tag, comm);
+    requests[index] = Request::irecv_init(smpi_get_tmp_sendbuffer(count * dataext), count, datatype, other, system_tag, comm);
     index++;
   }
   for (int other = rank + 1; other < size; other++) {
@@ -585,11 +583,9 @@ int Colls::iexscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
 
   // Send/Recv buffers to/from others
   MPI_Request *requests = new MPI_Request[size - 1];
-  void **tmpbufs = xbt_new(void *, rank);
   int index = 0;
   for (int other = 0; other < rank; other++) {
-    tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);
-    requests[index] = Request::irecv_init(tmpbufs[index], count, datatype, other, system_tag, comm);
+    requests[index] = Request::irecv_init(smpi_get_tmp_sendbuffer(count * dataext), count, datatype, other, system_tag, comm);
     index++;
   }
   for (int other = rank + 1; other < size; other++) {

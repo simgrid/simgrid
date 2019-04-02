@@ -806,7 +806,7 @@ int PMPI_Ialltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype
 
     TRACE_smpi_comm_in(rank, request==MPI_REQUEST_IGNORED?"PMPI_Alltoallv":"PMPI_Ialltoallv",
                        new simgrid::instr::VarCollTIData(request==MPI_REQUEST_IGNORED ? "alltoallv":"ialltoallv", -1, send_size, trace_sendcounts, recv_size,
-                                                         trace_recvcounts, simgrid::smpi::Datatype::encode(sendtype),
+                                                         trace_recvcounts, simgrid::smpi::Datatype::encode(sendtmptype),
                                                          simgrid::smpi::Datatype::encode(recvtype)));
 
     if(request == MPI_REQUEST_IGNORED)

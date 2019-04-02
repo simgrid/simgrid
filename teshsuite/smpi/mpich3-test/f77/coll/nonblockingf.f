@@ -19,7 +19,7 @@ C
       integer ii, ans
 
       errs = 0
-
+      rbuf=0
       call mtest_init(ierr)
 
       comm = MPI_COMM_WORLD

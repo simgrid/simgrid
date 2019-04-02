@@ -885,6 +885,7 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
     delete[] (*request)->nbc_requests_;
     (*request)->nbc_requests_size_=0;
     unref(request);
+    (*request)=MPI_REQUEST_NULL;
     return ret;
   }
 
