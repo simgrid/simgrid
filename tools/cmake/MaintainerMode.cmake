@@ -232,7 +232,7 @@ if(enable_maintainer_mode AND NOT WIN32)
       message(STATUS "Error : Install sed before use maintainer mode.")
     endif()
 
-    message(FATAL_ERROR STATUS "Error : Need to install all tools for maintainer mode !!!")
+    message(FATAL_ERROR STATUS "Error : Need to install all (flexml, flex, sed) tools for maintainer mode !!!")
   endif()
 
 endif()
