@@ -40,35 +40,30 @@ SleepImpl* SleepImpl::start()
 
 void SleepImpl::post()
 {
+  if (surf_action_->get_state() == resource::Action::State::FAILED) {
+    if (host_ && not host_->is_on())
+      state_ = SIMIX_SRC_HOST_FAILURE;
+    else
+      state_ = SIMIX_CANCELED;
+  } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
+    state_ = SIMIX_DONE;
+  }
+  finish();
+}
+
+void SleepImpl::finish()
+{
   while (not simcalls_.empty()) {
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
-    e_smx_state_t result;
-    if (host_ && not host_->is_on()) {
+    if (state_ == SIMIX_SRC_HOST_FAILURE) {
       /* If the host running the synchro failed, notice it. This way, the asking
        * actor can be killed if it runs on that host itself */
-      result = SIMIX_SRC_HOST_FAILURE;
-      simcall->issuer->throw_exception(
-          std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed")));
-    }
-
-    switch (surf_action_->get_state()) {
-      case resource::Action::State::FAILED:
-        simcall->issuer->context_->iwannadie = true;
-        result                               = SIMIX_FAILED;
-        break;
-
-      case resource::Action::State::FINISHED:
-        result = SIMIX_DONE;
-        break;
-
-      default:
-        THROW_IMPOSSIBLE;
-    }
-    if (not simcall->issuer->get_host()->is_on()) {
       simcall->issuer->context_->iwannadie = true;
+      simcall->issuer->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
     }
-    simcall_process_sleep__set__result(simcall, result);
+
+    simcall_process_sleep__set__result(simcall, state_);
     simcall->issuer->waiting_synchro = nullptr;
     if (simcall->issuer->is_suspended()) {
       XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
@@ -79,10 +74,6 @@ void SleepImpl::post()
     }
   }
   SIMIX_process_sleep_destroy(this);
-}
-void SleepImpl::finish()
-{
-  /* FIXME some part of post should move to finish */
 }
 } // namespace activity
 } // namespace kernel
