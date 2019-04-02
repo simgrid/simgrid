@@ -1033,9 +1033,9 @@ int MTestGetComm(MPI_Comm * comm, int min_size)
 
     if (!getinter) {
         idx = MTestGetIntracomm(comm, min_size);
-        if (idx == 0) {
-            getinter = 1;
-        }
+/*        if (idx == 0) {*/
+/*            getinter = 1;*/
+/*        }*/
     }
     if (getinter) {
         int isLeft;

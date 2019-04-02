@@ -102,7 +102,8 @@ void mpi_comm_free_keyval_ (int* keyval, int* ierr) {
 void mpi_comm_get_name_ (int* comm, char* name, int* len, int* ierr){
  *ierr = MPI_Comm_get_name(simgrid::smpi::Comm::f2c(*comm), name, len);
   if(*len>0)
-    name[*len]=' ';
+    for(int i = *len; i<MPI_MAX_OBJECT_NAME+1; i++)
+      name[i]=' ';
 }
 
 void mpi_comm_compare_ (int* comm1, int* comm2, int *result, int* ierr){
@@ -142,10 +143,13 @@ void mpi_comm_remote_size_ (int* comm, int* size, int* ierr) {
  *ierr = MPI_Comm_remote_size(simgrid::smpi::Comm::f2c(*comm), size);
 }
 
-void mpi_comm_set_name_ (int* comm, char* name, int* ierr, int size){
- char* tname = xbt_new(char, size+1);
- strncpy(tname, name, size);
- tname[size]='\0';
+void mpi_comm_set_name_ (int* comm, char* name, int* ierr){
+ int count;
+ for(count=MPI_MAX_OBJECT_NAME-1; count>=0 && name[count]==' '; count--);
+ count+=1;
+ char* tname = xbt_new(char, count+1);
+ strncpy(tname, name, count);
+ tname[count]='\0';
  *ierr = MPI_Comm_set_name (simgrid::smpi::Comm::f2c(*comm), tname);
  xbt_free(tname);
 }

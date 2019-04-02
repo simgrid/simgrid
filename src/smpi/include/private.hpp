@@ -394,7 +394,7 @@ void mpi_type_create_resized_(int* oldtype, MPI_Aint* lb, MPI_Aint* extent, int*
 void mpi_type_create_subarray_(int* ndims, int* array_of_sizes, int* array_of_subsizes, int* array_of_starts,
                                int* order, int* oldtype, int* newtype, int* ierr);
 void mpi_type_match_size_(int* typeclass, int* size, int* datatype, int* ierr);
-void mpi_comm_set_name_(int* comm, char* name, int* ierr, int size);
+void mpi_comm_set_name_(int* comm, char* name, int* ierr);
 void mpi_comm_dup_with_info_(int* comm, int* info, int* newcomm, int* ierr);
 void mpi_comm_split_type_(int* comm, int* split_type, int* key, int* info, int* newcomm, int* ierr);
 void mpi_comm_set_info_(int* comm, int* info, int* ierr);

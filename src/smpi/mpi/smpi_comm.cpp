@@ -118,13 +118,26 @@ void Comm::get_name (char* name, int* len)
     smpi_process()->comm_world()->get_name(name, len);
     return;
   }
-  if(this == MPI_COMM_WORLD) {
-    strncpy(name, "WORLD", 6);
-    *len = 5;
+  if(this == MPI_COMM_WORLD && name_.empty()) {
+    strncpy(name, "MPI_COMM_WORLD", 15);
+    *len = 14;
+  } else if(this == MPI_COMM_SELF && name_.empty()) {
+    strncpy(name, "MPI_COMM_SELF", 14);
+    *len = 13;
   } else {
-    *len = snprintf(name, MPI_MAX_NAME_STRING, "%p", this);
+    *len = snprintf(name, MPI_MAX_NAME_STRING+1, "%s", name_.c_str());
   }
 }
+
+void Comm::set_name (char* name)
+{
+  if (this == MPI_COMM_UNINITIALIZED){
+    smpi_process()->comm_world()->set_name(name);
+    return;
+  }
+  name_.replace (0, MPI_MAX_NAME_STRING+1, name);
+}
+
 
 void Comm::set_leaders_comm(MPI_Comm leaders){
   if (this == MPI_COMM_UNINITIALIZED){
