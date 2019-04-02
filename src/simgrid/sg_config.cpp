@@ -41,15 +41,6 @@ void sg_config_continue_after_help()
  */
 int _sg_cfg_init_status = 0;
 
-/* instruct the upper layer (simix or simdag) to exit as soon as possible */
-bool _sg_cfg_exit_asap = false;
-
-#define sg_cfg_exit_early()                                                                                            \
-  do {                                                                                                                 \
-    _sg_cfg_exit_asap = true;                                                                                          \
-    return;                                                                                                            \
-  } while (0)
-
 /* Parse the command line, looking for options */
 static void sg_config_cmd_line(int *argc, char **argv)
 {
@@ -120,7 +111,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
     *argc = j;
   }
   if (shall_exit)
-    sg_cfg_exit_early();
+    exit(0);
 }
 
 /* callback of the plugin variable */
@@ -133,7 +124,7 @@ static void _sg_cfg_cb__plugin(const std::string& value)
 
   if (value == "help") {
     model_help("plugin", surf_plugin_description);
-    sg_cfg_exit_early();
+    exit(0);
   }
 
   int plugin_id = find_model_description(surf_plugin_description, value);
@@ -147,7 +138,7 @@ static void _sg_cfg_cb__host_model(const std::string& value)
 
   if (value == "help") {
     model_help("host", surf_host_model_description);
-    sg_cfg_exit_early();
+    exit(0);
   }
 
   /* Make sure that the model exists */
@@ -161,7 +152,7 @@ static void _sg_cfg_cb__cpu_model(const std::string& value)
 
   if (value == "help") {
     model_help("CPU", surf_cpu_model_description);
-    sg_cfg_exit_early();
+    exit(0);
   }
 
   /* New Module missing */
@@ -175,7 +166,7 @@ static void _sg_cfg_cb__optimization_mode(const std::string& value)
 
   if (value == "help") {
     model_help("optimization", surf_optimization_mode_description);
-    sg_cfg_exit_early();
+    exit(0);
   }
 
   /* New Module missing */
@@ -189,7 +180,7 @@ static void _sg_cfg_cb__storage_mode(const std::string& value)
 
   if (value == "help") {
     model_help("storage", surf_storage_model_description);
-    sg_cfg_exit_early();
+    exit(0);
   }
 
   find_model_description(surf_storage_model_description, value);
@@ -202,7 +193,7 @@ static void _sg_cfg_cb__network_model(const std::string& value)
 
   if (value == "help") {
     model_help("network", surf_network_model_description);
-    sg_cfg_exit_early();
+    exit(0);
   }
 
   /* New Module missing */
@@ -489,9 +480,6 @@ void sg_config_init(int *argc, char **argv)
 
 void sg_config_finalize()
 {
-  if (not _sg_cfg_init_status)
-    return;                     /* Not initialized yet. Nothing to do */
-
   simgrid::config::finalize();
   _sg_cfg_init_status = 0;
 }

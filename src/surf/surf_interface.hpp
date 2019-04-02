@@ -216,10 +216,10 @@ typedef struct surf_model_description s_surf_model_description_t;
 XBT_PUBLIC int find_model_description(s_surf_model_description_t* table, const std::string& name);
 XBT_PUBLIC void model_help(const char* category, s_surf_model_description_t* table);
 
-#define SIMGRID_REGISTER_PLUGIN(id, desc, init)                       \
-  void simgrid_##id##_plugin_register();                              \
-  void XBT_ATTRIB_CONSTRUCTOR(800) simgrid_##id##_plugin_register() { \
-    simgrid_add_plugin_description(#id, desc, init);                  \
+#define SIMGRID_REGISTER_PLUGIN(id, desc, init)                                                                        \
+  static void XBT_ATTRIB_CONSTRUCTOR(800) simgrid_##id##_plugin_register()                                             \
+  {                                                                                                                    \
+    simgrid_add_plugin_description(#id, desc, init);                                                                   \
   }
 
 XBT_PUBLIC void simgrid_add_plugin_description(const char* name, const char* description, void_f_void_t init_fun);

@@ -157,16 +157,13 @@ void SD_init_nocheck(int *argc, char **argv)
 {
   xbt_assert(sd_global == nullptr, "SD_init() already called");
 
-  sd_global = new simgrid::sd::Global();
-
   surf_init(argc, argv);
+
+  sd_global = new simgrid::sd::Global();
 
   simgrid::config::set_default<std::string>("host/model", "ptask_L07");
   if (simgrid::config::get_value<bool>("clean-atexit"))
     atexit(SD_exit);
-  if (_sg_cfg_exit_asap) {
-    exit(0);
-  }
 }
 
 /** @brief set a configuration variable

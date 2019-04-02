@@ -37,6 +37,11 @@ std::set<std::string> watched_hosts;
 extern std::map<std::string, simgrid::kernel::resource::StorageType*> storage_types;
 
 s_surf_model_description_t* surf_plugin_description = nullptr;
+static void XBT_ATTRIB_DESTRUCTOR(800) simgrid_free_plugin_description()
+{
+  xbt_free(surf_plugin_description);
+}
+
 XBT_PUBLIC void simgrid_add_plugin_description(const char* name, const char* description, void_f_void_t init_fun)
 {
   static int plugin_amount = 0;
@@ -313,8 +318,6 @@ void surf_exit()
 
   for (auto const& model : all_existing_models)
     delete model;
-
-  xbt_free(surf_plugin_description);
 
   tmgr_finalize();
   sg_platf_exit();
