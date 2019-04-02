@@ -398,40 +398,6 @@ int xbt_dict_is_empty(xbt_dict_t dict)
 }
 
 /**
- * @brief Outputs the content of the structure (debugging purpose)
- *
- * @param dict the exibitionist
- * @param output a function to dump each data in the tree
- *
- * Outputs the content of the structure. (for debugging purpose).
- * @a output is a function to output the data. If nullptr, data won't be displayed.
- */
-void xbt_dict_dump(xbt_dict_t dict, void_f_pvoid_t output)
-{
-  xbt_dictelm_t element;
-  printf("Dict %p:\n", dict);
-  if (dict != nullptr) {
-    for (int i = 0; i < dict->table_size; i++) {
-      element = dict->table[i];
-      if (element) {
-        printf("[\n");
-        while (element != nullptr) {
-          printf(" %s -> '", element->key);
-          if (output != nullptr) {
-            output(element->content);
-          }
-          printf("'\n");
-          element = element->next;
-        }
-        printf("]\n");
-      } else {
-        printf("[]\n");
-      }
-    }
-  }
-}
-
-/**
  * Create the dict mallocators.
  * This is an internal XBT function called during the lib initialization.
  * It can be used several times to recreate the mallocator, for example when you switch to MC mode

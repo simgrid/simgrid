@@ -70,11 +70,10 @@ class StateEvent : public PajeEvent {
   std::string filename = "(null)";
   int linenumber       = -1;
 #endif
-  TIData* extra_;
+  std::unique_ptr<TIData> extra_;
 
 public:
   StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value, TIData* extra);
-  ~StateEvent();
   void print() override;
 };
 

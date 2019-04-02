@@ -48,7 +48,7 @@ public:
                                      (comm.mbox set to nullptr when the communication is removed from the mailbox
                                      (used as garbage collector)) */
 #endif
-  bool detached = false; /* If detached or not */
+  bool detached_ = false; /* If detached or not */
 
   void (*clean_fun)(void*) = nullptr; /* Function to clean the detached src_buf if something goes wrong */
   int (*match_fun)(void*, void*, CommImpl*) = nullptr; /* Filter function used by the other side. It is used when

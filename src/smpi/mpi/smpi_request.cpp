@@ -61,10 +61,10 @@ Request::Request(void* buf, int count, MPI_Datatype datatype, int src, int dst, 
   if(op != MPI_REPLACE && op != MPI_OP_NULL)
     op_->ref();
   action_          = nullptr;
-  detached_        = 0;
+  detached_        = false;
   detached_sender_ = nullptr;
   real_src_        = 0;
-  truncated_       = 0;
+  truncated_       = false;
   real_size_       = 0;
   real_tag_        = 0;
   if (flags & MPI_REQ_PERSISTENT)
@@ -126,8 +126,8 @@ int Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
     if(ref->tag_ == MPI_ANY_TAG)
       ref->real_tag_ = req->tag_;
     if(ref->real_size_ < req->real_size_)
-      ref->truncated_ = 1;
-    if(req->detached_==1)
+      ref->truncated_ = true;
+    if (req->detached_)
       ref->detached_sender_=req; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
     if(req->cancelled_==0)
       req->cancelled_=-1;//mark as uncancellable
@@ -151,8 +151,8 @@ int Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl*)
     if(req->tag_ == MPI_ANY_TAG)
       req->real_tag_ = ref->tag_;
     if(req->real_size_ < ref->real_size_)
-      req->truncated_ = 1;
-    if(ref->detached_==1)
+      req->truncated_ = true;
+    if (ref->detached_)
       req->detached_sender_=ref; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
     if(req->cancelled_==0)
       req->cancelled_=-1;//mark as uncancellable
@@ -409,7 +409,7 @@ void Request::start()
         ((flags_ & MPI_REQ_RMA) != 0 ||
          static_cast<int>(size_) < simgrid::config::get_value<int>("smpi/send-is-detached-thresh"))) {
       void *oldbuf = nullptr;
-      detached_ = 1;
+      detached_    = true;
       XBT_DEBUG("Send request %p is detached", this);
       this->ref();
       if (not(old_type_->flags() & DT_FLAG_DERIVED)) {
@@ -430,7 +430,7 @@ void Request::start()
 
     //if we are giving back the control to the user without waiting for completion, we have to inject timings
     double sleeptime = 0.0;
-    if (detached_ != 0 || ((flags_ & (MPI_REQ_ISEND | MPI_REQ_SSEND)) != 0)) { // issend should be treated as isend
+    if (detached_ || ((flags_ & (MPI_REQ_ISEND | MPI_REQ_SSEND)) != 0)) { // issend should be treated as isend
       // isend and send timings may be different
       sleeptime = ((flags_ & MPI_REQ_ISEND) != 0)
                       ? simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::Host>()->oisend(size_)
@@ -797,14 +797,13 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
     return;
   }
 
-  if (not((req->detached_ != 0) && ((req->flags_ & MPI_REQ_SEND) != 0)) 
-  && ((req->flags_ & MPI_REQ_PREPARED) == 0)
-  && ((req->flags_ & MPI_REQ_GENERALIZED) == 0)) {
+  if (not(req->detached_ && ((req->flags_ & MPI_REQ_SEND) != 0)) && ((req->flags_ & MPI_REQ_PREPARED) == 0) &&
+      ((req->flags_ & MPI_REQ_GENERALIZED) == 0)) {
     if(status != MPI_STATUS_IGNORE) {
       int src = req->src_ == MPI_ANY_SOURCE ? req->real_src_ : req->src_;
       status->MPI_SOURCE = req->comm_->group()->rank(src);
       status->MPI_TAG = req->tag_ == MPI_ANY_TAG ? req->real_tag_ : req->tag_;
-      status->MPI_ERROR = req->truncated_ != 0 ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
+      status->MPI_ERROR  = req->truncated_ ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
       // this handles the case were size in receive differs from size in send
       status->count = req->real_size_;
     }
@@ -1060,7 +1059,7 @@ int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
   indices[count] = index;
   count++;
   for (int i = 0; i < incount; i++) {
-    if((requests[i] != MPI_REQUEST_NULL)) {
+    if (requests[i] != MPI_REQUEST_NULL) {
       test(&requests[i], pstat,&flag);
       if (flag==1){
         indices[count] = i;

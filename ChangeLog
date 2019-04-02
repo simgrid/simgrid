@@ -1,5 +1,8 @@
 SimGrid (3.23) NOT RELEASED (Release Target: June 21. 2019, 15:54 UTC)
 
+XBT:
+ - Drop xbt_dict_dump.
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.22) April 1. 2019

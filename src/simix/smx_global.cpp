@@ -192,10 +192,10 @@ void SIMIX_global_init(int *argc, char **argv)
 #endif
 
   if (simix_global == nullptr) {
+    surf_init(argc, argv); /* Initialize SURF structures */
+
     simix_global.reset(new simgrid::simix::Global());
     simix_global->maestro_process = nullptr;
-
-    surf_init(argc, argv);      /* Initialize SURF structures */
     SIMIX_context_mod_init();
 
     // Either create a new context with maestro or create
@@ -220,9 +220,6 @@ void SIMIX_global_init(int *argc, char **argv)
 
   if (simgrid::config::get_value<bool>("clean-atexit"))
     atexit(SIMIX_clean);
-
-  if (_sg_cfg_exit_asap)
-    exit(0);
 }
 
 int smx_cleaned = 0;
