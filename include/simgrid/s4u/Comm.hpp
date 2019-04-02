@@ -10,6 +10,7 @@
 #include <simgrid/s4u/Activity.hpp>
 
 #include <atomic>
+#include <string>
 #include <vector>
 
 namespace simgrid {
