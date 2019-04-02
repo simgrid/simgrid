@@ -35,7 +35,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
     size_t src_buff_size, int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
     void (*clean_fun)(void*), // used to free the synchro in case of problem after a detached send
     void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), // used to copy data if not default one
-    void* data, int detached)
+    void* data, bool detached)
 {
   XBT_DEBUG("send from mailbox %p", mbox);
 
@@ -73,7 +73,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
   }
 
   if (detached) {
-    other_comm->detached  = true;
+    other_comm->detached_ = true;
     other_comm->clean_fun = clean_fun;
   } else {
     other_comm->clean_fun = nullptr;
@@ -341,7 +341,7 @@ void SIMIX_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, 
 {
   XBT_DEBUG("Copy the data over");
   memcpy(comm->dst_buff_, buff, buff_size);
-  if (comm->detached) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the
+  if (comm->detached_) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the
                         // original buffer available to the application ASAP
     xbt_free(buff);
     comm->src_buff_ = nullptr;
@@ -397,12 +397,11 @@ CommImpl& CommImpl::set_dst_buff(void* buff, size_t* size)
 
 CommImpl::~CommImpl()
 {
-  XBT_DEBUG("Really free communication %p in state %d (detached = %d)", this, static_cast<int>(state_),
-            static_cast<int>(detached));
+  XBT_DEBUG("Really free communication %p in state %d (detached = %d)", this, static_cast<int>(state_), detached_);
 
   cleanupSurf();
 
-  if (detached && state_ != SIMIX_DONE) {
+  if (detached_ && state_ != SIMIX_DONE) {
     /* the communication has failed and was detached:
      * we have to free the buffer */
     if (clean_fun)
@@ -508,7 +507,7 @@ void CommImpl::cancel()
 {
   /* if the synchro is a waiting state means that it is still in a mbox so remove from it and delete it */
   if (state_ == SIMIX_WAITING) {
-    if (not detached) {
+    if (not detached_) {
       mbox->remove(this);
       state_ = SIMIX_CANCELED;
     }
@@ -560,7 +559,7 @@ void CommImpl::post()
     state_ = SIMIX_DONE;
 
   XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d", this, (int)state_,
-            src_actor_.get(), dst_actor_.get(), detached);
+            src_actor_.get(), dst_actor_.get(), detached_);
 
   /* destroy the surf actions associated with the Simix communication */
   cleanupSurf();
@@ -647,7 +646,7 @@ void CommImpl::finish()
                     "detached:%d",
                     this, src_actor_ ? src_actor_->get_host()->get_cname() : nullptr,
                     dst_actor_ ? dst_actor_->get_host()->get_cname() : nullptr, simcall->issuer->get_cname(),
-                    simcall->issuer, detached);
+                    simcall->issuer, detached_);
           if (src_actor_ == simcall->issuer) {
             XBT_DEBUG("I'm source");
           } else if (dst_actor_ == simcall->issuer) {
@@ -706,7 +705,7 @@ void CommImpl::finish()
 
     simcall->issuer->waiting_synchro = nullptr;
     simcall->issuer->comms.remove(this);
-    if (detached) {
+    if (detached_) {
       if (simcall->issuer == src_actor_) {
         if (dst_actor_)
           dst_actor_->comms.remove(this);

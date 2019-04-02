@@ -110,7 +110,7 @@ smx_activity_t simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double
                                   int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                                   void (*clean_fun)(void*),
                                   void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
-                                  void* data, int detached)
+                                  void* data, bool detached)
 {
   /* checking for infinite values */
   xbt_assert(std::isfinite(task_size), "task_size is not finite!");

@@ -114,7 +114,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(simgrid::mc::State*
       if (act->src_actor_.get() && act->dst_actor_.get())
         state->transition.argument = 0;
       else if (act->src_actor_.get() == nullptr && act->type_ == simgrid::kernel::activity::CommImpl::Type::READY &&
-               act->detached == 1)
+               act->detached_)
         state->transition.argument = 0;
       else
         state->transition.argument = -1;
