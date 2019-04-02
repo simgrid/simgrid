@@ -31,6 +31,7 @@ public:
 
   virtual void suspend();
   virtual void resume();
+  virtual void cancel();
   virtual void post()   = 0; // What to do when a simcall terminates
   virtual void finish() = 0;
 

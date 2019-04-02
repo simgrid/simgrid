@@ -30,7 +30,6 @@ public:
   IoImpl* start();
   void post() override;
   void finish() override;
-  void cancel();
 
   static xbt::signal<void(IoImpl const&)> on_start;
   static xbt::signal<void(IoImpl const&)> on_completion;

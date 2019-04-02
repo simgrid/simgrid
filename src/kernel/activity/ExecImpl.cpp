@@ -124,13 +124,6 @@ ExecImpl* ExecImpl::start()
   return this;
 }
 
-void ExecImpl::cancel()
-{
-  XBT_VERB("This exec %p is canceled", this);
-  if (surf_action_ != nullptr)
-    surf_action_->cancel();
-}
-
 double ExecImpl::get_seq_remaining_ratio()
 {
   return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains() / surf_action_->get_cost();

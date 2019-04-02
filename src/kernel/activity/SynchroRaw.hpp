@@ -25,6 +25,7 @@ public:
   RawImpl* start();
   void suspend() override;
   void resume() override;
+  void cancel() override;
   void post() override;
   void finish() override;
 };

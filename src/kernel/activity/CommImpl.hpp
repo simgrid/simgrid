@@ -38,7 +38,7 @@ public:
   void resume() override;
   void post() override;
   void finish() override;
-  void cancel();
+  void cancel() override;
 
   CommImpl::Type type_;        /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
   MailboxImpl* mbox = nullptr; /* Rendez-vous where the comm is queued */

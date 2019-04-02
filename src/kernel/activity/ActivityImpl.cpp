@@ -43,6 +43,13 @@ void ActivityImpl::resume()
   on_resumed(*this);
 }
 
+void ActivityImpl::cancel()
+{
+  XBT_VERB("Activity %p is canceled", this);
+  if (surf_action_ != nullptr)
+    surf_action_->cancel();
+}
+
 // boost::intrusive_ptr<Activity> support:
 void intrusive_ptr_add_ref(simgrid::kernel::activity::ActivityImpl* activity)
 {

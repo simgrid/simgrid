@@ -42,7 +42,6 @@ public:
   virtual ActivityImpl* migrate(s4u::Host* to);
 
   ExecImpl* start();
-  void cancel();
   void post() override;
   void finish() override;
 

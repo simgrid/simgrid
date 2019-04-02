@@ -48,6 +48,12 @@ void RawImpl::resume()
   /* I cannot resume raw synchros directly. This is delayed to when the process is rescheduled at
    * the end of the synchro. */
 }
+
+void RawImpl::cancel()
+{
+  /* I cannot cancel raw synchros directly. */
+}
+
 void RawImpl::post()
 {
   if (surf_action_->get_state() == resource::Action::State::FAILED) {

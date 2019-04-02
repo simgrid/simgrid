@@ -67,14 +67,6 @@ IoImpl* IoImpl::start()
   return this;
 }
 
-void IoImpl::cancel()
-{
-  XBT_VERB("This exec %p is canceled", this);
-  if (surf_action_ != nullptr)
-    surf_action_->cancel();
-  state_ = SIMIX_CANCELED;
-}
-
 void IoImpl::post()
 {
   performed_ioops_ = surf_action_->get_cost();
