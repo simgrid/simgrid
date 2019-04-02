@@ -23,6 +23,7 @@ typedef void (*FPtr)(void); // Hide the ugliness
 
 /* Pack all possible scalar types in an union */
 union u_smx_scalar {
+  bool b;
   char c;
   short s;
   int i;
@@ -94,6 +95,7 @@ template <typename T> struct marshal_t {
   inline T unmarshal_raw(type<T>, u_smx_scalar const& simcall)                                                         \
   { /* Exactly same as unmarshal. It differs only for intrusive_ptr */ return simcall.field; }
 
+SIMIX_MARSHAL(bool, b);
 SIMIX_MARSHAL(char, c);
 SIMIX_MARSHAL(short, s);
 SIMIX_MARSHAL(int, i);
