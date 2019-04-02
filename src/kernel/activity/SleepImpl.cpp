@@ -33,7 +33,7 @@ SleepImpl& SleepImpl::set_duration(double duration)
 SleepImpl* SleepImpl::start()
 {
   surf_action_ = host_->pimpl_cpu->sleep(duration_);
-  surf_action_->set_data(this);
+  surf_action_->set_activity(this);
   XBT_DEBUG("Create sleep synchronization %p", this);
   return this;
 }

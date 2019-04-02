@@ -130,6 +130,11 @@ public:
   /** @brief Set the user data associated to the current action */
   void set_data(void* data) { data_ = data; }
 
+  /** @brief Get the user data associated to the current action */
+  activity::ActivityImpl* get_activity() const { return activity_; }
+  /** @brief Set the user data associated to the current action */
+  void set_activity(activity::ActivityImpl* activity) { activity_ = activity; }
+
   /** @brief Get the cost of the current action */
   double get_cost() const { return cost_; }
   /** @brief Set the cost of the current action */
@@ -209,7 +214,8 @@ private:
 
   double cost_;
   simgrid::kernel::resource::Model* model_;
-  void* data_ = nullptr; /**< for your convenience */
+  void* data_                       = nullptr; /**< for your convenience */
+  activity::ActivityImpl* activity_ = nullptr;
 
   /* LMM */
   double last_update_                                = 0;

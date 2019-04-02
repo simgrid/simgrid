@@ -59,7 +59,7 @@ IoImpl* IoImpl::start()
 {
   state_       = SIMIX_RUNNING;
   surf_action_ = storage_->io_start(size_, type_);
-  surf_action_->set_data(this);
+  surf_action_->set_activity(this);
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
   IoImpl::on_start(*this);

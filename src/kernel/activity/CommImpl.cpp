@@ -218,7 +218,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, simgrid::kernel::activity:
     comm->finish();
   } else { /* we need a sleep action (even when there is no timeout) to be notified of host failures */
     simgrid::kernel::resource::Action* sleep = simcall->issuer->get_host()->pimpl_cpu->sleep(timeout);
-    sleep->set_data(comm);
+    sleep->set_activity(comm);
 
     if (simcall->issuer == comm->src_actor_)
       comm->src_timeout_ = sleep;
@@ -422,7 +422,7 @@ CommImpl* CommImpl::start()
     s4u::Host* receiver = dst_actor_->get_host();
 
     surf_action_ = surf_network_model->communicate(sender, receiver, size_, rate_);
-    surf_action_->set_data(this);
+    surf_action_->set_activity(this);
     surf_action_->set_category(get_tracing_category());
     state_ = SIMIX_RUNNING;
 

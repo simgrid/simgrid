@@ -76,7 +76,7 @@ ExecImpl& ExecImpl::set_timeout(double timeout)
 {
   if (timeout > 0 && not MC_is_active() && not MC_record_replay_is_active()) {
     timeout_detector_ = hosts_.front()->pimpl_cpu->sleep(timeout);
-    timeout_detector_->set_data(this);
+    timeout_detector_->set_activity(this);
   }
   return *this;
 }
@@ -116,7 +116,7 @@ ExecImpl* ExecImpl::start()
     } else {
       surf_action_ = surf_host_model->execute_parallel(hosts_, flops_amounts_.data(), bytes_amounts_.data(), -1);
     }
-    surf_action_->set_data(this);
+    surf_action_->set_activity(this);
   }
 
   XBT_DEBUG("Create execute synchro %p: %s", this, get_cname());
@@ -231,13 +231,13 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
     resource::Action* old_action = this->surf_action_;
     resource::Action* new_action = to->pimpl_cpu->execution_start(old_action->get_cost());
     new_action->set_remains(old_action->get_remains());
-    new_action->set_data(this);
+    new_action->set_activity(this);
     new_action->set_priority(old_action->get_priority());
 
     // FIXME: the user-defined bound seem to not be kept by LMM, that seem to overwrite it for the multi-core modeling.
     // I hope that the user did not provide any.
 
-    old_action->set_data(nullptr);
+    old_action->set_activity(nullptr);
     old_action->cancel();
     old_action->unref();
     this->surf_action_ = new_action;

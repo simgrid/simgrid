@@ -34,7 +34,7 @@ RawImpl& RawImpl::set_timeout(double timeout)
 RawImpl* RawImpl::start()
 {
   surf_action_ = host_->pimpl_cpu->sleep(timeout_);
-  surf_action_->set_data(this);
+  surf_action_->set_activity(this);
   return this;
 }
 
