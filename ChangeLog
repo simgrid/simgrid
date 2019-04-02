@@ -1,3 +1,7 @@
+SimGrid (3.23) NOT RELEASED (Release Target: June 21. 2019, 15:54 UTC)
+
+----------------------------------------------------------------------------
+
 SimGrid (3.22) April 1. 2019
 
 The Easter Chrismas Release (this one is somewhat late).
@@ -20,7 +24,7 @@ General:
    with the Boost.Stacktrace library.
    You won't see your backtraces without this optional dependency.
  - Bump cmake dependency to 3.5 (provided by Ubuntu 16.04).
- - Stop setting random seed with srand() at initialization. 
+ - Stop setting random seed with srand() at initialization.
 
 XML
  - In <host> and <peer>, 'availability_file' is now 'speed_file'.
@@ -43,16 +47,16 @@ MSG:
    The implementation was ways too messy to actually work, I guess.
 
 SMPI:
- - Change the way SMPI_SAMPLE_* macros work to avoid invalidating cache 
+ - Change the way SMPI_SAMPLE_* macros work to avoid invalidating cache
    too often and provide more accurate timings.
  - Add -gdb, -lldb, and -vgdb shortcuts to help debug MPI codes with smpirun
  - MPI_Alltoallw support
  - Partial MPI nonblocking collectives implementation: MPI_Ibcast, MPI_Ibarrier,
    MPI_Iallgather, MPI_Iallgatherv, MPI_Ialltoall, MPI_Ialltoallv, MPI_Igather,
    MPI_Igatherv, MPI_Iscatter, MPI_Iscatterv, MPI_Ialltoallw.
- - MPI_Request_get_status, MPI_Status_set_cancelled, MPI_Status_set_elements 
+ - MPI_Request_get_status, MPI_Status_set_cancelled, MPI_Status_set_elements
    support
- - Basic implementation of generalized requests (SMPI doesn't 
+ - Basic implementation of generalized requests (SMPI doesn't
    allow MPI_THREAD_MULTIPLE) : MPI_Grequest_complete, MPI_Grequest_start
 
 XBT:
