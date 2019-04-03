@@ -73,7 +73,8 @@ void SleepImpl::finish()
       SIMIX_simcall_answer(simcall);
     }
   }
-  SIMIX_process_sleep_destroy(this);
+
+  clean_action();
 }
 } // namespace activity
 } // namespace kernel

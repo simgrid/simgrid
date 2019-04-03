@@ -13,9 +13,14 @@ namespace activity {
 
 ActivityImpl::~ActivityImpl()
 {
+  clean_action();
+  XBT_DEBUG("Destroy activity %p", this);
+}
+
+void ActivityImpl::clean_action()
+{
   if (surf_action_) {
     surf_action_->unref();
-    XBT_DEBUG("Destroy activity %p", this);
     surf_action_ = nullptr;
   }
 }

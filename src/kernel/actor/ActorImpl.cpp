@@ -207,8 +207,7 @@ void ActorImpl::exit()
 
     if (exec != nullptr && exec->surf_action_) {
       exec->cancel();
-      exec->surf_action_->unref();
-      exec->surf_action_ = nullptr;
+      exec->clean_action();
     } else if (comm != nullptr) {
       comms.remove(waiting_synchro);
       comm->cancel();
@@ -438,7 +437,7 @@ void ActorImpl::throw_exception(std::exception_ptr e)
 
     activity::SleepImplPtr sleep = boost::dynamic_pointer_cast<activity::SleepImpl>(waiting_synchro);
     if (sleep != nullptr) {
-      SIMIX_process_sleep_destroy(sleep);
+      sleep->clean_action();
       if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), this) ==
               end(simix_global->actors_to_run) &&
           this != SIMIX_process_self()) {
@@ -589,7 +588,7 @@ void SIMIX_process_throw(smx_actor_t actor, xbt_errcat_t cat, int value, const c
     simgrid::kernel::activity::SleepImplPtr sleep =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(actor->waiting_synchro);
     if (sleep != nullptr) {
-      SIMIX_process_sleep_destroy(sleep);
+      sleep->clean_action();
       if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), actor) ==
               end(simix_global->actors_to_run) &&
           actor != SIMIX_process_self()) {
@@ -688,16 +687,6 @@ void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration)
   smx_activity_t sync = simcall->issuer->sleep(duration);
   sync->simcalls_.push_back(simcall);
   simcall->issuer->waiting_synchro = sync;
-}
-
-void SIMIX_process_sleep_destroy(simgrid::kernel::activity::SleepImplPtr sleep)
-{
-  XBT_DEBUG("Destroy sleep synchro %p", sleep.get());
-
-  if (sleep->surf_action_) {
-    sleep->surf_action_->unref();
-    sleep->surf_action_ = nullptr;
-  }
 }
 
 /**

@@ -520,10 +520,7 @@ void CommImpl::cancel()
 /** @brief This is part of the cleanup process, probably an internal command */
 void CommImpl::cleanupSurf()
 {
-  if (surf_action_) {
-    surf_action_->unref();
-    surf_action_ = nullptr;
-  }
+  clean_action();
 
   if (src_timeout_) {
     src_timeout_->unref();

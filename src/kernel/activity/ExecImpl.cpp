@@ -164,10 +164,8 @@ void ExecImpl::post()
 
   on_completion(*this);
 
-  if (surf_action_) {
-    surf_action_->unref();
-    surf_action_ = nullptr;
-  }
+  clean_action();
+
   if (timeout_detector_) {
     timeout_detector_->unref();
     timeout_detector_ = nullptr;
