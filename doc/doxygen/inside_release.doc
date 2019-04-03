@@ -147,4 +147,36 @@ the settings icon of the release you want to change.
 - Update the Docker images (after pushing to the git)
   - cd tools/docker && make stable tuto-s4u push
 
+Release numbering semantic: 
+  - 3.X is a named release. 
+    - We have 4 named releases per year (for each equinox and solstice)
+    - The ChangeLog and NEWS are complete and informative
+    - All tests pass on all ci systems (or the workarounds are documented)
+    - We provide and store a source .tar.gz and a full jarfile on framagit
+    - Deprecated symbols remain usable for at least 3 named releases (~1 year)
+    - These releases are announced to the users
+  - 3.X.Y is a dot release of 3.X
+    - We provide and store a source .tar.gz and a full jarfile on framagit
+    - These releases are NOT announced publicly, nor really documented. 
+      The idea is to have something close to a rolling release.
+    - External projects can depend on dot releases to loosen their
+      release process from ours, when 4 release a year is not enough 
+  - 3.X.90 is a git version, a preversion of 3.(X+1) (3.22.90 = pre-3.23)
+    - No expectations on such versions
+    
+Doing a dot release:
+  - Update the version number in:
+      - CMakeLists.txt (in macros SIMGRID_VERSION_*)
+      - sonar-project.properties
+      - docs/source/conf.py
+  - Commit and push to both framagit and github
+  - Wait for both appveyor and jenkins/highsierra to complete the build
+  - If it's not successful, fix it and push again
+  - Once it's successful:
+    - tag the release v3_X_Y and push the tag
+    - Merge 'master' into 'releases' and push it to framagit
+    - Do not merge into 'releases' before appveyor and jenkins are done,
+      or your jarfile will not contain the code you expect for win and
+      mac.
+
 */
