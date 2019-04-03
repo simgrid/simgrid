@@ -90,7 +90,7 @@ int Coll_reduce_default::reduce(void *sendbuf, void *recvbuf, int count, MPI_Dat
                      MPI_Comm comm)
 {
   //non commutative case, use a working algo from openmpi
-  if (op != MPI_OP_NULL && not op->is_commutative()) {
+  if (op != MPI_OP_NULL && (datatype->flags() & DT_FLAG_DERIVED || not op->is_commutative())) {
     return Coll_reduce_ompi_basic_linear::reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
   }
   MPI_Request request;
@@ -100,6 +100,9 @@ int Coll_reduce_default::reduce(void *sendbuf, void *recvbuf, int count, MPI_Dat
 
 int Coll_allreduce_default::allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
+  //FIXME: have mpi_ireduce and iallreduce handle derived datatypes correctly
+  if(datatype->flags() & DT_FLAG_DERIVED)
+    return Coll_allreduce_ompi::allreduce(sendbuf, recvbuf, count, datatype, op, comm);
   int ret;
   ret = Coll_reduce_default::reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
   if(ret==MPI_SUCCESS)
