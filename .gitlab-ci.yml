@@ -23,6 +23,7 @@ release:
   #only:
   #- schedules
   script:
+  - apt install -y binutils-x86-64-linux-gnu wget
   # Build the linux version of the jarfile without the boost dependency
   - apt remove -y libboost-context-dev  libboost-stacktrace-dev
   - cmake -Denable_documentation=OFF -Denable_java=ON -Denable_lib_in_jar=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=OFF .
@@ -32,7 +33,6 @@ release:
   - export SGVER=`(echo '#include "simgrid/config.h"'; echo SIMGRID_VERSION_MAJOR.SIMGRID_VERSION_MINOR.SIMGRID_VERSION_PATCH)|gcc -E - -Iinclude|tail -1|sed 's/ //g'`
   - wget https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=simgrid-osx-highsierra/lastSuccessfulBuild/artifact/build/SimGrid-${SGVER}/build/simgrid.jar -O simgrid-mac.jar
   # Open all jar files, and strip them
-  - apt install -y binutils-x86-64-linux-gnu
   - mkdir content ; cd content
   - for j in  ../simgrid.jar ../simgrid-windows.jar ../simgrid-mac.jar ; do unzip -n $j ; done
   - strip NATIVE/*/*/*.so
