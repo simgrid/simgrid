@@ -23,7 +23,7 @@ release:
   #only:
   #- schedules
   script:
-  - apt install -y binutils-x86-64-linux-gnu wget
+  - apt update && apt install -y binutils-x86-64-linux-gnu wget
   # Build the linux version of the jarfile without the boost dependency
   - apt remove -y libboost-context-dev  libboost-stacktrace-dev
   - cmake -Denable_documentation=OFF -Denable_java=ON -Denable_lib_in_jar=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=OFF .
