@@ -127,17 +127,17 @@ static inline void simcall_execution_test__set__execution(smx_simcall_t simcall,
 {
   simgrid::simix::marshal<simgrid::kernel::activity::ExecImpl*>(simcall->args[0], arg);
 }
-static inline int simcall_execution_test__get__result(smx_simcall_t simcall)
+static inline bool simcall_execution_test__get__result(smx_simcall_t simcall)
 {
-  return simgrid::simix::unmarshal<int>(simcall->result);
+  return simgrid::simix::unmarshal<bool>(simcall->result);
 }
-static inline int simcall_execution_test__getraw__result(smx_simcall_t simcall)
+static inline bool simcall_execution_test__getraw__result(smx_simcall_t simcall)
 {
-  return simgrid::simix::unmarshal_raw<int>(simcall->result);
+  return simgrid::simix::unmarshal_raw<bool>(simcall->result);
 }
-static inline void simcall_execution_test__set__result(smx_simcall_t simcall, int result)
+static inline void simcall_execution_test__set__result(smx_simcall_t simcall, bool result)
 {
-  simgrid::simix::marshal<int>(simcall->result, result);
+  simgrid::simix::marshal<bool>(simcall->result, result);
 }
 
 static inline smx_actor_t simcall_comm_send__get__sender(smx_simcall_t simcall)
@@ -710,17 +710,17 @@ static inline void simcall_comm_test__set__comm(smx_simcall_t simcall, simgrid::
 {
   simgrid::simix::marshal<simgrid::kernel::activity::CommImpl*>(simcall->args[0], arg);
 }
-static inline int simcall_comm_test__get__result(smx_simcall_t simcall)
+static inline bool simcall_comm_test__get__result(smx_simcall_t simcall)
 {
-  return simgrid::simix::unmarshal<int>(simcall->result);
+  return simgrid::simix::unmarshal<bool>(simcall->result);
 }
-static inline int simcall_comm_test__getraw__result(smx_simcall_t simcall)
+static inline bool simcall_comm_test__getraw__result(smx_simcall_t simcall)
 {
-  return simgrid::simix::unmarshal_raw<int>(simcall->result);
+  return simgrid::simix::unmarshal_raw<bool>(simcall->result);
 }
-static inline void simcall_comm_test__set__result(smx_simcall_t simcall, int result)
+static inline void simcall_comm_test__set__result(smx_simcall_t simcall, bool result)
 {
-  simgrid::simix::marshal<int>(simcall->result, result);
+  simgrid::simix::marshal<bool>(simcall->result, result);
 }
 
 static inline simgrid::kernel::activity::CommImpl** simcall_comm_testany__get__comms(smx_simcall_t simcall)

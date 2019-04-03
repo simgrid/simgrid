@@ -13,9 +13,14 @@ namespace activity {
 
 ActivityImpl::~ActivityImpl()
 {
+  clean_action();
+  XBT_DEBUG("Destroy activity %p", this);
+}
+
+void ActivityImpl::clean_action()
+{
   if (surf_action_) {
     surf_action_->unref();
-    XBT_DEBUG("Destroy activity %p", this);
     surf_action_ = nullptr;
   }
 }
@@ -48,6 +53,7 @@ void ActivityImpl::cancel()
   XBT_VERB("Activity %p is canceled", this);
   if (surf_action_ != nullptr)
     surf_action_->cancel();
+  state_ = SIMIX_CANCELED;
 }
 
 // boost::intrusive_ptr<Activity> support:

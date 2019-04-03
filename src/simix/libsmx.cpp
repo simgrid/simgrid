@@ -36,9 +36,9 @@ e_smx_state_t simcall_execution_wait(const smx_activity_t& execution)
   return (e_smx_state_t)simcall_BODY_execution_wait(static_cast<simgrid::kernel::activity::ExecImpl*>(execution.get()));
 }
 
-e_smx_state_t simcall_execution_test(const smx_activity_t& execution)
+bool simcall_execution_test(const smx_activity_t& execution)
 {
-  return (e_smx_state_t)simcall_BODY_execution_test(static_cast<simgrid::kernel::activity::ExecImpl*>(execution.get()));
+  return simcall_BODY_execution_test(static_cast<simgrid::kernel::activity::ExecImpl*>(execution.get()));
 }
 
 void simcall_process_join(smx_actor_t process, double timeout)
@@ -223,7 +223,7 @@ void simcall_comm_wait(const smx_activity_t& comm, double timeout)
  * @ingroup simix_comm_management
  *
  */
-int simcall_comm_test(const smx_activity_t& comm)
+bool simcall_comm_test(const smx_activity_t& comm)
 {
   return simcall_BODY_comm_test(static_cast<simgrid::kernel::activity::CommImpl*>(comm.get()));
 }

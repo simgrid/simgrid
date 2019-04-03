@@ -229,7 +229,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, simgrid::kernel::activity:
 
 void simcall_HANDLER_comm_test(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comm)
 {
-  int res;
+  bool res;
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     res = comm->src_actor_ && comm->dst_actor_;
@@ -520,10 +520,7 @@ void CommImpl::cancel()
 /** @brief This is part of the cleanup process, probably an internal command */
 void CommImpl::cleanupSurf()
 {
-  if (surf_action_) {
-    surf_action_->unref();
-    surf_action_ = nullptr;
-  }
+  clean_action();
 
   if (src_timeout_) {
     src_timeout_->unref();

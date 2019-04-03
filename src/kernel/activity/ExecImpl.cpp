@@ -37,7 +37,7 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, simgrid::kernel::acti
 
 void simcall_HANDLER_execution_test(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* synchro)
 {
-  int res = (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING);
+  bool res = (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING);
   if (res) {
     synchro->simcalls_.push_back(simcall);
     synchro->finish();
@@ -164,10 +164,8 @@ void ExecImpl::post()
 
   on_completion(*this);
 
-  if (surf_action_) {
-    surf_action_->unref();
-    surf_action_ = nullptr;
-  }
+  clean_action();
+
   if (timeout_detector_) {
     timeout_detector_->unref();
     timeout_detector_ = nullptr;

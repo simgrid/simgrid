@@ -27,18 +27,19 @@ public:
 
   CommImpl& set_type(CommImpl::Type type);
   CommImpl& set_size(double size);
-  double get_rate() { return rate_; }
-  CommImpl& set_rate(double rate);
   CommImpl& set_src_buff(void* buff, size_t size);
   CommImpl& set_dst_buff(void* buff, size_t* size);
+  CommImpl& set_rate(double rate);
+  double get_rate() { return rate_; }
+
+  void copy_data();
 
   CommImpl* start();
-  void copy_data();
   void suspend() override;
   void resume() override;
+  void cancel() override;
   void post() override;
   void finish() override;
-  void cancel() override;
 
   CommImpl::Type type_;        /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
   MailboxImpl* mbox = nullptr; /* Rendez-vous where the comm is queued */
