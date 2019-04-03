@@ -27,6 +27,12 @@ option(enable_documentation "Whether to produce documentation" on)
 option(enable_ns3            "Whether ns3 model is activated." off)
 option(enable_java           "Whether the Java bindings are activated." off)
 option(enable_lib_in_jar     "Whether the native libraries are bundled in a Java jar file" on)
+option(minimal_java          "Whether to compile the jarfile with the minimal dependency set" off)
+mark_as_advanced(minimal_java)
+if(minimal_java)
+  set(enable_java on)
+  set(enable_lib_in_jar on)
+endif()
 
 option(enable_lua            "Whether the Lua bindings are activated." off)
 
