@@ -217,8 +217,7 @@ void ActorImpl::exit()
       if (i != waiting_synchro->simcalls_.end())
         waiting_synchro->simcalls_.remove(&simcall);
     } else if (sleep != nullptr) {
-      if (sleep->surf_action_)
-        sleep->surf_action_->cancel();
+      sleep->cancel();
       sleep->post();
     } else if (raw != nullptr) {
       raw->finish();
