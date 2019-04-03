@@ -217,11 +217,12 @@ void ActorImpl::exit()
         waiting_synchro->simcalls_.remove(&simcall);
     } else if (sleep != nullptr) {
       sleep->cancel();
-      sleep->post();
+      sleep->finish();
     } else if (raw != nullptr) {
       raw->finish();
     } else if (io != nullptr) {
       io->cancel();
+      io->finish();
     } else {
       simgrid::kernel::activity::ActivityImplPtr activity = waiting_synchro;
       xbt_die("Activity is of unknown type %s", simgrid::xbt::demangle(typeid(activity).name()).get());
