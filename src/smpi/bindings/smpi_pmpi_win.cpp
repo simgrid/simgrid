@@ -784,7 +784,7 @@ int PMPI_Win_shared_query (MPI_Win win, int rank, MPI_Aint* size, int* disp_unit
 int PMPI_Win_get_attr (MPI_Win win, int keyval, void *attribute_val, int* flag)
 {
   static MPI_Aint size;
-  static int disp_unit;
+  static MPI_Aint disp_unit;
   if (win==MPI_WIN_NULL)
     return MPI_ERR_TYPE;
   else{
@@ -800,7 +800,7 @@ int PMPI_Win_get_attr (MPI_Win win, int keyval, void *attribute_val, int* flag)
       return MPI_SUCCESS;
     case MPI_WIN_DISP_UNIT :
       disp_unit=win->disp_unit();
-      *static_cast<int**>(attribute_val)  = &disp_unit;
+      *static_cast<MPI_Aint**>(attribute_val)  = &disp_unit;
       *flag = 1;
       return MPI_SUCCESS;
     default:
