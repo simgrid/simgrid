@@ -9,6 +9,6 @@ winnamef90 1
 wingroupf90 4 needs_privatization=1
 winaccf90 4 needs_privatization=1
 c2f2cwinf90 1
-#baseattrwinf90 1
-#winattrf90 1
-#winattr2f90 1
+baseattrwinf90 1
+winattrf90 1
+winattr2f90 1

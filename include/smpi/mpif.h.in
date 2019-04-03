@@ -81,11 +81,8 @@
       parameter(MPI_COMM_NULL_DELETE_FN =0)
       integer MPI_COMM_DUP_FN
       parameter(MPI_COMM_DUP_FN =1)
-      integer MPI_WIN_NULL_COPY_FN, MPI_WIN_NULL_DELETE_FN
-      parameter(MPI_WIN_NULL_COPY_FN =0)
+      integer MPI_WIN_NULL_DELETE_FN
       parameter(MPI_WIN_NULL_DELETE_FN =0)
-      integer MPI_WIN_DUP_FN
-      parameter(MPI_WIN_DUP_FN =1)
       integer MPI_TYPE_NULL_COPY_FN, MPI_TYPE_NULL_DELETE_FN
       parameter(MPI_TYPE_NULL_COPY_FN =0)
       parameter(MPI_TYPE_NULL_DELETE_FN =0)
@@ -274,6 +271,7 @@
       external MPI_BCAST, MPI_BARRIER, MPI_REDUCE, MPI_ALLREDUCE
       external MPI_SCATTER, MPI_GATHER, MPI_ALLGATHER, MPI_SCAN
       external MPI_ALLTOALL, MPI_GATHERV, MPI_SENDRECV
+      external MPI_WIN_DUP_FN, MPI_WIN_NULL_COPY_FN
 
       external MPI_WTIME
       external MPI_WTICK

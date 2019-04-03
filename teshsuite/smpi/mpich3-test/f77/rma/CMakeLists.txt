@@ -9,12 +9,11 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
   foreach(test winaccf
-             # winerrf
-	       winfencef wingroupf
-	     # baseattrwinf winattr2f winattrf
-               wingetf winnamef winscale1f
-	     # winscale2f
-	       )
+           winfencef wingroupf
+           baseattrwinf winattr2f winattrf
+           wingetf winnamef winscale1f
+         # winscale2f winerrf
+           )
     add_executable(${test} EXCLUDE_FROM_ALL ${test}.f)
     add_dependencies(tests ${test})
     target_link_libraries(${test} simgrid mtest_f77)

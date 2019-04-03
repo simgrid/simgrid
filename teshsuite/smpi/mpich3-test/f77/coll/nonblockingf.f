@@ -93,6 +93,24 @@ C
      .                  MPI_SUM, comm, req, ierr)
       call MPI_Wait(req, MPI_STATUS_IGNORE, ierr)
 
+      call MPI_Iscatter(sbuf, NUM_INTS, MPI_INTEGER, rbuf, 
+     .                  NUM_INTS, MPI_INTEGER, 0, comm, req, ierr)
+      call MPI_Wait(req, MPI_STATUS_IGNORE, ierr)
+
+      call MPI_Iscatterv(sbuf, scounts, sdispls, MPI_INTEGER,
+     .                   rbuf, NUM_INTS, MPI_INTEGER,
+     .                   0, comm, req, ierr)
+      call MPI_Wait(req, MPI_STATUS_IGNORE, ierr)
+
+      call MPI_Iallgather(sbuf, NUM_INTS, MPI_INTEGER,
+     .                  rbuf, NUM_INTS, MPI_INTEGER, comm, req, ierr)
+      call MPI_Wait(req, MPI_STATUS_IGNORE, ierr)
+
+      call MPI_Iallgatherv(sbuf, NUM_INTS, MPI_INTEGER, 
+     .                  rbuf, rcounts, rdispls, MPI_INTEGER, 
+     .                  comm, req, ierr)
+      call MPI_Wait(req, MPI_STATUS_IGNORE, ierr)
+
       call mtest_finalize( errs )
       call MPI_Finalize( ierr )
       end
