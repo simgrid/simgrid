@@ -366,9 +366,11 @@ static void test_host_off_while_receive()
        try {
          simgrid::s4u::Mailbox::by_name("mb")->get();
        } catch (simgrid::HostFailureException const&) {
+         // Shouldn't get in here
          in_catch_before_on_exit = not in_on_exit;
          in_catch_after_on_exit = in_on_exit;
        } catch (simgrid::NetworkFailureException const&) {
+         // Shouldn't get in here
          in_catch_before_on_exit = not in_on_exit;
          in_catch_after_on_exit = in_on_exit;
        }
@@ -381,7 +383,11 @@ static void test_host_off_while_receive()
     "sender", all_hosts[2], 
     []() {
       int data;
+      try {
       simgrid::s4u::Mailbox::by_name("mb")->put(&data, 100000);
+      } catch (simgrid::NetworkFailureException const&) {
+        // nevermind
+      }
     });
 
   simgrid::s4u::this_actor::sleep_for(1);
@@ -424,7 +430,7 @@ static void main_dispatcher()
   run_test("comm dsend and quit (get before put)", test_comm_dsend_and_quit_get_before_put);
   run_test("comm kill sender", test_comm_killsend);
 
-  //run_test("comm recv and kill", test_host_off_while_receive);
+  run_test("comm recv and kill", test_host_off_while_receive);
 }
 
 int main(int argc, char* argv[])
