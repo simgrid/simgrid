@@ -684,7 +684,8 @@ int Request::testall(int count, MPI_Request requests[], int* outflag, MPI_Status
 {
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
-  int flag, error=0;
+  int flag;
+  int error = 0;
   int ret=MPI_SUCCESS;
   *outflag = 1;
   for(int i=0; i<count; i++){

@@ -178,8 +178,10 @@ int Colls::iallgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void
 }
 
 int Colls::ialltoall( void *sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request){
-int system_tag = COLL_TAG_ALLTOALL;
-  MPI_Aint lb = 0, sendext = 0, recvext = 0;
+  int system_tag   = COLL_TAG_ALLTOALL;
+  MPI_Aint lb      = 0;
+  MPI_Aint sendext = 0;
+  MPI_Aint recvext = 0;
 
   /* Initialize. */
   int rank = comm->rank();
