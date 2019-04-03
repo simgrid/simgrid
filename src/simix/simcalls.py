@@ -8,7 +8,7 @@
 
 import re
 import glob
-
+import sys
 
 class Arg(object):
 
@@ -274,10 +274,9 @@ if __name__ == '__main__':
     ok &= all(map(Simcall.check, simcalls))
     for k, v in simcalls_dict.items():
         ok &= all(map(Simcall.check, v))
-    # FIXME: we should not hide it
-    # if not ok:
-    #  print ("Some checks fail!")
-    #  sys.exit(1)
+    if not ok:
+      print ("Some checks fail!")
+      sys.exit(1)
 
     #
     # popping_accessors.hpp
