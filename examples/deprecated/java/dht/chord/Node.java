@@ -186,29 +186,26 @@ public class Node extends Process {
     GetPredecessorTask sendTask = new GetPredecessorTask(getHost().getName(), this.mailbox);
     try {
       sendTask.send(mailboxTo, Common.TIMEOUT);
-      try {
-        do {
-          if (commReceive == null) {
-            commReceive = Task.irecv(this.mailbox);
-          }
-          commReceive.waitCompletion(Common.TIMEOUT);
-          Task taskReceived = commReceive.getTask();
-          if (taskReceived instanceof GetPredecessorAnswerTask) {
-            predecessorId = ((GetPredecessorAnswerTask) taskReceived).getAnswerId();
-            stop = true;
-          } else {
-            handleTask(taskReceived);
-          }
-          commReceive = null;
-        } while (!stop);
-      }
-      catch (MsgException e) {
+      do {
+        if (commReceive == null) {
+          commReceive = Task.irecv(this.mailbox);
+        }
+        commReceive.waitCompletion(Common.TIMEOUT);
+        Task taskReceived = commReceive.getTask();
+        if (taskReceived instanceof GetPredecessorAnswerTask) {
+          predecessorId = ((GetPredecessorAnswerTask) taskReceived).getAnswerId();
+          stop = true;
+        } else {
+          handleTask(taskReceived);
+        }
         commReceive = null;
-      }
+      } while (!stop);
     }
     catch (MsgException e) {
       Msg.debug("Failed to send the Get Predecessor request");
     }
+    commReceive = null;
+
     return predecessorId;
   }
 
@@ -240,23 +237,17 @@ public class Node extends Process {
         if (commReceive == null) {
           commReceive = Task.irecv(this.mailbox);
         }
-        try {
-          commReceive.waitCompletion(Common.TIMEOUT);
-          Task task = commReceive.getTask();
-          if (task instanceof FindSuccessorAnswerTask) {
-            //TODO: Check if this this our answer.
-            FindSuccessorAnswerTask fTask = (FindSuccessorAnswerTask) task;
-            stop = true;
-            successor = fTask.getAnswerId();
-          } else {
-            handleTask(task);
-          }
-          commReceive = null;
-        }
-        catch (TimeoutException e) {
+        commReceive.waitCompletion(Common.TIMEOUT);
+        Task task = commReceive.getTask();
+        if (task instanceof FindSuccessorAnswerTask) {
+          //TODO: Check if this this our answer.
+          FindSuccessorAnswerTask fTask = (FindSuccessorAnswerTask) task;
           stop = true;
-          commReceive = null;
+          successor = fTask.getAnswerId();
+        } else {
+          handleTask(task);
         }
+        commReceive = null;
       } while (!stop);
     }
     catch (TimeoutException e) {
@@ -265,6 +256,7 @@ public class Node extends Process {
     catch (MsgException e) {
       Msg.debug("Failed to receive Find Successor");
     }
+    commReceive = null;
 
     return successor;
   }
