@@ -21,8 +21,6 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
-
 #include "popping_bodies.cpp"
 
 /**

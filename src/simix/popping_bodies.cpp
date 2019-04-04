@@ -19,7 +19,10 @@
 #include "xbt/ex.h"
 #include <functional>
 #include <simgrid/simix.hpp>
+#include <xbt/log.h>
 /** @cond */ // Please Doxygen, don't look at this
+
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 template<class R, class... T>
 inline static R simcall(e_smx_simcall_t call, T const&... t)
