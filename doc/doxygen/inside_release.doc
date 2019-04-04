@@ -174,8 +174,8 @@ Doing a dot release:
   - If it's not successful, fix it and push again
   - Once it's successful:
     - tag the release v3_X_Y and push the tag
-    - Merge 'master' into 'releases' and push it to framagit
-    - Do not merge into 'releases' before appveyor and jenkins are done,
+    - Merge 'master' into 'stable' and push it to framagit
+    - Do not merge into 'stable' before appveyor and jenkins are done,
       or your jarfile will not contain the code you expect for win and
       mac.
 
