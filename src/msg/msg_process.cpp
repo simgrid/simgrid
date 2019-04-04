@@ -30,7 +30,8 @@ void MSG_process_userdata_init()
 
   simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::Actor const& actor) {
     // free the data if a function was provided
-    void* userdata = actor.extension<simgrid::msg::ActorUserData>()->get_user_data();
+    auto extension = actor.extension<simgrid::msg::ActorUserData>();
+    void* userdata = extension ? extension->get_user_data() : nullptr;
     if (userdata && msg_global->process_data_cleanup) {
       msg_global->process_data_cleanup(userdata);
     }
