@@ -2,7 +2,7 @@
 ! output sort
 
 p Test scatter
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-scatter --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-scatter --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error
 > 	[0] ok.
 > 	[10] ok.
 > 	[11] ok.

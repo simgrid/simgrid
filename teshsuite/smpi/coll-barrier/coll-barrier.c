@@ -16,6 +16,10 @@ int main(int argc, char **argv)
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+  int status = MPI_Barrier(MPI_COMM_NULL);
+  if(status!=MPI_ERR_COMM)
+    printf("MPI_Barrier did not return MPI_ERR_COMM for MPI_COMM_NULL comm\n");
+
   MPI_Barrier(MPI_COMM_WORLD);
 
   if (0 == rank) {
