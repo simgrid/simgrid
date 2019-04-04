@@ -52,9 +52,8 @@ private:
 public:
   static size_t extension_create(void (*deleter)(void*))
   {
-    std::size_t res = deleters_.size();
     deleters_.push_back(deleter);
-    return res;
+    return deleters_.size() - 1;
   }
   template<class U>
   static Extension<T,U> extension_create(void (*deleter)(void*))
@@ -85,17 +84,14 @@ public:
   // Type-unsafe versions of the facet access methods:
   void* extension(std::size_t rank) const
   {
-    if (rank >= extensions_.size())
-      return nullptr;
-    else
-      return extensions_.at(rank);
+    return rank < extensions_.size() ? extensions_[rank] : nullptr;
   }
   void extension_set(std::size_t rank, void* value, bool use_dtor = true)
   {
     if (rank >= extensions_.size())
       extensions_.resize(rank + 1, nullptr);
     void* old_value = this->extension(rank);
-    extensions_.at(rank) = value;
+    extensions_[rank] = value;
     if (use_dtor && old_value != nullptr && deleters_[rank])
       deleters_[rank](old_value);
   }
