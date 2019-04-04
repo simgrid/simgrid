@@ -193,7 +193,8 @@ def parse(fn):
             continue
         match = re.match(
             r'^(\S+)\s+([^\)\(\s]+)\s*\(*(.*)\)\s*(\[\[.*\]\])?\s*;\s*?$', line)
-        assert match, line
+        if not match:
+            raise AssertionError(line)
         ret, name, args, attrs = match.groups()
         sargs = []
         if not re.match(r"^\s*$", args):
@@ -217,7 +218,7 @@ def parse(fn):
                 elif attr == "nohandler":
                     handler = False
                 else:
-                    assert False, "Unknown attribute %s in: %s" % (attr, line)
+                    raise AssertionError("Unknown attribute %s in: %s" % (attr, line))
         sim = Simcall(name, handler, Arg('result', ret), sargs, ans)
         if resdi is None:
             simcalls.append(sim)
