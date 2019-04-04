@@ -59,9 +59,11 @@ SMPI:
  - MPI_Alltoallw support
  - Partial MPI nonblocking collectives implementation: MPI_Ibcast, MPI_Ibarrier,
    MPI_Iallgather, MPI_Iallgatherv, MPI_Ialltoall, MPI_Ialltoallv, MPI_Igather,
-   MPI_Igatherv, MPI_Iscatter, MPI_Iscatterv, MPI_Ialltoallw.
+   MPI_Igatherv, MPI_Iscatter, MPI_Iscatterv, MPI_Ialltoallw, MPI_Ireduce,
+   MPI_Iallreduce, MPI_Iscan, MPI_Iexscan, MPI_Ireduce_scatter,
+   MPI_Ireduce_scatter_block, with fortran bindings.
  - MPI_Request_get_status, MPI_Status_set_cancelled, MPI_Status_set_elements
-   support
+   support, MPI_Comm_get_name, MPI_Comm_set_name
  - Basic implementation of generalized requests (SMPI doesn't
    allow MPI_THREAD_MULTIPLE) : MPI_Grequest_complete, MPI_Grequest_start
 
