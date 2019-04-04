@@ -284,14 +284,16 @@ void mpi_win_flush_local_all_(int* win, int* ierr){
   *ierr = MPI_Win_flush_local_all(simgrid::smpi::Win::f2c(*win));
 }
 
-void mpi_win_null_copy_fn_( int* win, int* keyval, int* extrastate, MPI_Aint* valin, MPI_Aint* valout,
-                            int* flag, int* ierr ){
+void mpi_win_null_copy_fn_(int* /*win*/, int* /*keyval*/, int* /*extrastate*/, MPI_Aint* /*valin*/,
+                           MPI_Aint* /*valout*/, int* flag, int* ierr)
+{
   *flag=0;
   *ierr=MPI_SUCCESS;
 }
 
-void mpi_win_dup_fn_( int* win, int* keyval, int* extrastate, MPI_Aint* valin, MPI_Aint* valout,
-                      int* flag, int* ierr ){
+void mpi_win_dup_fn_(int* /*win*/, int* /*keyval*/, int* /*extrastate*/, MPI_Aint* valin, MPI_Aint* valout, int* flag,
+                     int* ierr)
+{
   *flag=1;
   *valout=*valin;
   *ierr=MPI_SUCCESS;
