@@ -21,7 +21,7 @@ ctest:
 
 release:
   only:
-  - releases
+  - stable
   script:
   - apt update && apt install -y binutils-x86-64-linux-gnu wget unzip zip
   # Build the linux version of the jarfile without the boost dependency
