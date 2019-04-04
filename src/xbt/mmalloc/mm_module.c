@@ -332,7 +332,7 @@ void mmalloc_postexit(void)
 {
   /* Do not destroy the default mdp or ldl won't be able to free the memory it
    * allocated since we're in memory */
-  // xbt_mheap_destroy_no_free(__mmalloc_default_mdp);
+  // xbt_mheap_destroy_no_free(__mmalloc_default_mdp)
 }
 
 // This is the underlying implementation of mmalloc_get_bytes_used_remote.

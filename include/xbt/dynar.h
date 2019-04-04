@@ -210,11 +210,8 @@ static inline int _xbt_dynar_cursor_get(const xbt_dynar_t dynar, unsigned int id
   if (!dynar) /* iterating over a NULL dynar is a no-op */
     return 0;
 
-  if (idx >= dynar->used) {
-    //XBT_DEBUG("Cursor on %p already on last elem", (void *) dynar);
+  if (idx >= dynar->used)
     return 0;
-  }
-  //  XBT_DEBUG("Cash out cursor on %p at %u", (void *) dynar, *idx);
 
   memcpy(dst, ((char *) dynar->data) + idx * dynar->elmsize, dynar->elmsize);
 

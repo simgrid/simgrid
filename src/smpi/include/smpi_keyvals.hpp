@@ -158,7 +158,7 @@ template <typename T> void Keyval::cleanup_attr(){
           call_deleter<T>((T*)this, elem, it.first,it.second,&flag);
         }
       } else {
-        //already deleted, not a problem;
+        // already deleted, not a problem
         flag=0;
       }
     }

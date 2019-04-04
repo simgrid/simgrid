@@ -15,7 +15,6 @@ public:
   int id; // Peer id
   simgrid::s4u::Mailbox* mailbox_;
   unsigned int bitfield = 0U; // Fields
-  //  int messages_count;
   double peer_speed    = 0;
   double last_unchoke  = 0;
   int current_piece    = -1;

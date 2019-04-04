@@ -197,8 +197,6 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
   if (size < SMALLEST_POSSIBLE_MALLOC)
     size = SMALLEST_POSSIBLE_MALLOC;
 
-  //  printf("(%s) Mallocing %d bytes on %p (default: %p)...",xbt_thread_self_name(),size,mdp,__mmalloc_default_mdp);fflush(stdout);
-
   if (!(mdp->flags & MMALLOC_INITIALIZED))
     initialize(mdp);
 
@@ -345,7 +343,6 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
     mdp -> heapstats.bytes_free -= blocks * BLOCKSIZE;
 
   }
-  //printf("(%s) Done mallocing. Result is %p\n",xbt_thread_self_name(),result);fflush(stdout);
 
   return (result);
 }
