@@ -358,6 +358,7 @@ static void test_host_off_while_receive()
   bool returned_from_main = false;
   bool in_catch_before_on_exit = false;
   bool in_catch_after_on_exit = false;
+  bool send_done               = false;
 
   simgrid::s4u::ActorPtr receiver = simgrid::s4u::Actor::create(
     "receiver", all_hosts[1], 
@@ -379,16 +380,18 @@ static void test_host_off_while_receive()
 
   receiver->on_exit([&in_on_exit](bool) { in_on_exit = true; });
 
-  simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create(
-    "sender", all_hosts[2], 
-    []() {
-      int data;
-      try {
+  simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[2], [&send_done]() {
+    assert_exit(false, 1);
+    bool got_exception = false;
+    try {
+      int data = 42;
       simgrid::s4u::Mailbox::by_name("mb")->put(&data, 100000);
-      } catch (simgrid::NetworkFailureException const&) {
-        // nevermind
-      }
-    });
+    } catch (simgrid::NetworkFailureException const&) {
+      got_exception = true;
+    }
+    xbt_assert(got_exception);
+    send_done = true;
+  });
 
   simgrid::s4u::this_actor::sleep_for(1);
   receiver->get_host()->turn_off();
@@ -404,6 +407,7 @@ static void test_host_off_while_receive()
     "Receiver mistakenly went to catch clause (after the on_exit function was called)");
   xbt_assert(not returned_from_main, 
     "Receiver returned from main normally even though its host was killed");
+  xbt_assert(send_done, "Sender killed somehow. It shouldn't");
 }
 
 /* We need an extra actor here, so that it can sleep until the end of each test */
