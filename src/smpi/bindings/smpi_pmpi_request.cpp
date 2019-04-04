@@ -29,7 +29,7 @@ int PMPI_Send_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag
     retval = MPI_ERR_ARG;
   } else if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (not datatype->is_valid()) {
+  } else if (datatype==MPI_DATATYPE_NULL || not datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if (dst == MPI_PROC_NULL) {
     retval = MPI_SUCCESS;
@@ -52,7 +52,7 @@ int PMPI_Recv_init(void *buf, int count, MPI_Datatype datatype, int src, int tag
     retval = MPI_ERR_ARG;
   } else if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (not datatype->is_valid()) {
+  } else if (datatype==MPI_DATATYPE_NULL || not datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if (src == MPI_PROC_NULL) {
     retval = MPI_SUCCESS;
@@ -75,7 +75,7 @@ int PMPI_Ssend_init(void* buf, int count, MPI_Datatype datatype, int dst, int ta
     retval = MPI_ERR_ARG;
   } else if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
-  } else if (not datatype->is_valid()) {
+  } else if (datatype==MPI_DATATYPE_NULL || not datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if (dst == MPI_PROC_NULL) {
     retval = MPI_SUCCESS;
@@ -194,7 +194,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
-  } else if (not datatype->is_valid()) {
+  } else if (datatype==MPI_DATATYPE_NULL || not datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
@@ -236,7 +236,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
-  } else if (not datatype->is_valid()) {
+  } else if (datatype==MPI_DATATYPE_NULL || not datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
@@ -278,7 +278,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
     retval = MPI_ERR_RANK;
   } else if ((count < 0)|| (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
-  } else if (not datatype->is_valid()) {
+  } else if (datatype==MPI_DATATYPE_NULL || not datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
@@ -320,7 +320,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
-  } else if (not datatype->is_valid()) {
+  } else if (datatype==MPI_DATATYPE_NULL || not datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
@@ -365,7 +365,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf == nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
-  } else if (not datatype->is_valid()) {
+  } else if (datatype==MPI_DATATYPE_NULL || not datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if(tag < 0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
@@ -403,7 +403,7 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     retval = MPI_ERR_RANK;
   } else if ((count < 0) || (buf==nullptr && count > 0)) {
     retval = MPI_ERR_COUNT;
-  } else if (not datatype->is_valid()) {
+  } else if (datatype==MPI_DATATYPE_NULL || not datatype->is_valid()) {
     retval = MPI_ERR_TYPE;
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
@@ -490,7 +490,7 @@ int PMPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, 
                           MPI_Comm comm, MPI_Status* status)
 {
   int retval = 0;
-  if (not datatype->is_valid()) {
+  if (datatype==MPI_DATATYPE_NULL || not datatype->is_valid()) {
     return MPI_ERR_TYPE;
   } else if (count < 0) {
     return MPI_ERR_COUNT;

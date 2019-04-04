@@ -250,7 +250,7 @@ void Datatype::set_name(char* name){
 
 int Datatype::pack(void* inbuf, int incount, void* outbuf, int outcount, int* position,MPI_Comm comm){
   if (outcount - *position < incount*static_cast<int>(size_))
-    return MPI_ERR_BUFFER;
+    return MPI_ERR_OTHER;
   Datatype::copy(inbuf, incount, this, static_cast<char*>(outbuf) + *position, outcount, MPI_CHAR);
   *position += incount * size_;
   return MPI_SUCCESS;
@@ -258,7 +258,7 @@ int Datatype::pack(void* inbuf, int incount, void* outbuf, int outcount, int* po
 
 int Datatype::unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount,MPI_Comm comm){
   if (outcount*static_cast<int>(size_)> insize)
-    return MPI_ERR_BUFFER;
+    return MPI_ERR_OTHER;
   Datatype::copy(static_cast<char*>(inbuf) + *position, insize, MPI_CHAR, outbuf, outcount, this);
   *position += outcount * size_;
   return MPI_SUCCESS;
