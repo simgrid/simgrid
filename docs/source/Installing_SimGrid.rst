@@ -256,6 +256,9 @@ enable_smpi_ISP_testsuite (on/OFF)
 enable_smpi_MPICH3_testsuite (on/OFF)
   Adds many extra tests for the MPI module.
 
+minimal_java (on/OFF)
+  Build a java library with as few dependencies as possible.
+
 Reset the build configuration
 """""""""""""""""""""""""""""
 
