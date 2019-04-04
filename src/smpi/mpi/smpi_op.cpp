@@ -196,7 +196,7 @@ static void no_func(void*, void*, int*, MPI_Datatype*)
 }
 
 #define CREATE_MPI_OP(name, func)                             \
-  static SMPI_Op mpi_##name (&(func) /* func */, true ); \
+  static SMPI_Op mpi_##name (&(func) /* func */, true, true ); \
 MPI_Op name = &mpi_##name;
 
 CREATE_MPI_OP(MPI_MAX, max_func);
@@ -249,7 +249,7 @@ void Op::ref(){
 void Op::unref(MPI_Op* op){
   if((*op)!=MPI_OP_NULL){
     (*op)->refcount_--;
-    if((*op)->refcount_==0)
+    if((*op)->refcount_==0 && (*op)->predefined_==false)
       delete(*op);
   }
 }
