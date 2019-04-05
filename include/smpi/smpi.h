@@ -392,6 +392,9 @@ typedef void MPI_Type_delete_attr_function_fort(MPI_Datatype type, int keyval, v
 typedef void MPI_Win_copy_attr_function_fort(MPI_Win win, int keyval, void* extra_state, void* attribute_val_in,
                               void* attribute_val_out, int* flag, int* ierr);
 typedef void MPI_Win_delete_attr_function_fort(MPI_Win win, int keyval, void* attribute_val, void* extra_state, int* ierr);
+typedef int MPI_Grequest_query_function(void *extra_state, MPI_Status *status);
+typedef int MPI_Grequest_free_function(void *extra_state);
+typedef int MPI_Grequest_cancel_function(void *extra_state, int complete);
 #define MPI_COMM_NULL_COPY_FN ((MPI_Comm_copy_attr_function*)0)
 #define MPI_COMM_NULL_DELETE_FN ((MPI_Comm_delete_attr_function*)0)
 #define MPI_TYPE_NULL_COPY_FN ((MPI_Type_copy_attr_function*)0)
@@ -632,6 +635,9 @@ MPI_CALL(XBT_PUBLIC int, MPI_Alltoall, (void* sendbuf, int sendcount, MPI_Dataty
 MPI_CALL(XBT_PUBLIC int, MPI_Alltoallv,
          (void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype sendtype, void* recvbuf, int* recvcounts,
           int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC int, MPI_Alltoallw,
+         (void* sendbuf, int* sendcnts, int* sdispls, MPI_Datatype* sendtypes, void* recvbuf, int* recvcnts,
+          int* rdispls, MPI_Datatype* recvtypes, MPI_Comm comm));
 MPI_CALL(XBT_PUBLIC int, MPI_Reduce_local, (void* inbuf, void* inoutbuf, int count, MPI_Datatype datatype, MPI_Op op));
 
 MPI_CALL(XBT_PUBLIC int, MPI_Info_create, (MPI_Info * info));
@@ -725,6 +731,13 @@ MPI_CALL(XBT_PUBLIC int, MPI_Cart_shift, (MPI_Comm comm, int direction, int disp
 MPI_CALL(XBT_PUBLIC int, MPI_Cart_sub, (MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new));
 MPI_CALL(XBT_PUBLIC int, MPI_Cartdim_get, (MPI_Comm comm, int* ndims));
 MPI_CALL(XBT_PUBLIC int, MPI_Dims_create, (int nnodes, int ndims, int* dims));
+MPI_CALL(XBT_PUBLIC int, MPI_Request_get_status, (MPI_Request request, int* flag, MPI_Status* status));
+MPI_CALL(XBT_PUBLIC int, MPI_Grequest_start,
+         (MPI_Grequest_query_function * query_fn, MPI_Grequest_free_function* free_fn,
+          MPI_Grequest_cancel_function* cancel_fn, void* extra_state, MPI_Request* request));
+MPI_CALL(XBT_PUBLIC int, MPI_Grequest_complete, (MPI_Request request));
+MPI_CALL(XBT_PUBLIC int, MPI_Status_set_cancelled, (MPI_Status * status, int flag));
+MPI_CALL(XBT_PUBLIC int, MPI_Status_set_elements, (MPI_Status * status, MPI_Datatype datatype, int count));
 
 //FIXME: these are not yet implemented
 
@@ -757,9 +770,6 @@ typedef void* MPI_Errhandler;
 typedef void MPI_Comm_errhandler_function(MPI_Comm *, int *, ...);
 typedef void MPI_File_errhandler_function(MPI_File *, int *, ...);
 typedef void MPI_Win_errhandler_function(MPI_Win *, int *, ...);
-typedef int MPI_Grequest_query_function(void *extra_state, MPI_Status *status);
-typedef int MPI_Grequest_free_function(void *extra_state);
-typedef int MPI_Grequest_cancel_function(void *extra_state, int complete);
 #define MPI_DUP_FN 1
 
 #define MPI_WIN_DUP_FN ((MPI_Win_copy_attr_function*)MPI_DUP_FN)
@@ -838,9 +848,6 @@ MPI_CALL(XBT_PUBLIC int, MPI_Type_create_subarray,
          (int ndims, int* array_of_sizes, int* array_of_subsizes, int* array_of_starts, int order, MPI_Datatype oldtype,
           MPI_Datatype* newtype));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_match_size, (int typeclass, int size, MPI_Datatype* datatype));
-MPI_CALL(XBT_PUBLIC int, MPI_Alltoallw,
-         (void* sendbuf, int* sendcnts, int* sdispls, MPI_Datatype* sendtypes, void* recvbuf, int* recvcnts,
-          int* rdispls, MPI_Datatype* recvtypes, MPI_Comm comm));
 MPI_CALL(XBT_PUBLIC int, MPI_Comm_set_info, (MPI_Comm comm, MPI_Info info));
 MPI_CALL(XBT_PUBLIC int, MPI_Comm_get_info, (MPI_Comm comm, MPI_Info* info));
 MPI_CALL(XBT_PUBLIC int, MPI_Comm_dup_with_info, (MPI_Comm comm, MPI_Info info, MPI_Comm* newcomm));
@@ -848,13 +855,6 @@ MPI_CALL(XBT_PUBLIC int, MPI_Comm_split_type,
          (MPI_Comm comm, int split_type, int key, MPI_Info info, MPI_Comm* newcomm));
 MPI_CALL(XBT_PUBLIC int, MPI_Comm_connect,
          (char* port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm* newcomm));
-MPI_CALL(XBT_PUBLIC int, MPI_Request_get_status, (MPI_Request request, int* flag, MPI_Status* status));
-MPI_CALL(XBT_PUBLIC int, MPI_Grequest_start,
-         (MPI_Grequest_query_function * query_fn, MPI_Grequest_free_function* free_fn,
-          MPI_Grequest_cancel_function* cancel_fn, void* extra_state, MPI_Request* request));
-MPI_CALL(XBT_PUBLIC int, MPI_Grequest_complete, (MPI_Request request));
-MPI_CALL(XBT_PUBLIC int, MPI_Status_set_cancelled, (MPI_Status * status, int flag));
-MPI_CALL(XBT_PUBLIC int, MPI_Status_set_elements, (MPI_Status * status, MPI_Datatype datatype, int count));
 MPI_CALL(XBT_PUBLIC int, MPI_Unpublish_name, (char* service_name, MPI_Info info, char* port_name));
 MPI_CALL(XBT_PUBLIC int, MPI_Publish_name, (char* service_name, MPI_Info info, char* port_name));
 MPI_CALL(XBT_PUBLIC int, MPI_Lookup_name, (char* service_name, MPI_Info info, char* port_name));
@@ -1054,68 +1054,6 @@ XBT_PUBLIC void smpi_replay_run(const char* instance_id, int rank, double start_
 XBT_PUBLIC void SMPI_app_instance_register(const char* name, xbt_main_func_t code, int num_processes);
 XBT_PUBLIC void SMPI_init();
 XBT_PUBLIC void SMPI_finalize();
-
-/* Manual global privatization fallback */
-XBT_PUBLIC void smpi_register_static(void* arg, void_f_pvoid_t free_fn);
-XBT_PUBLIC void smpi_free_static();
-
-#define SMPI_VARINIT_GLOBAL(name,type)                          \
-type *name = NULL;                                              \
-static void __attribute__((constructor)) __preinit_##name(void) { \
-   if(!name)                                                    \
-      name = (type*)calloc(smpi_global_size(), sizeof(type));   \
-}                                                               \
-static void __attribute__((destructor)) __postfini_##name(void) { \
-   free(name);                                                  \
-   name = NULL;                                                 \
-}
-
-#define SMPI_VARINIT_GLOBAL_AND_SET(name,type,expr)             \
-type *name = NULL;                                              \
-static void __attribute__((constructor)) __preinit_##name(void) { \
-   size_t size = smpi_global_size();                            \
-   size_t i;                                                    \
-   type value = expr;                                           \
-   if(!name) {                                                  \
-      name = (type*)malloc(size * sizeof(type));                \
-      for(i = 0; i < size; i++) {                               \
-         name[i] = value;                                       \
-      }                                                         \
-   }                                                            \
-}                                                               \
-static void __attribute__((destructor)) __postfini_##name(void) { \
-   free(name);                                                  \
-   name = NULL;                                                 \
-}
-
-#define SMPI_VARGET_GLOBAL(name) name[SIMIX_process_self()->pid]
-
-/**
- * This is used for the old privatization method, i.e., on old
- * machines that do not yet support privatization via mmap
- */
-#define SMPI_VARINIT_STATIC(name,type)                      \
-static type *name = NULL;                                   \
-if(!name) {                                                 \
-   name = (type*)calloc(smpi_global_size(), sizeof(type));  \
-   smpi_register_static(name, xbt_free_f);                  \
-}
-
-#define SMPI_VARINIT_STATIC_AND_SET(name,type,expr) \
-static type *name = NULL;                           \
-if(!name) {                                         \
-   size_t size = smpi_global_size();                \
-   size_t i;                                        \
-   type value = expr;                               \
-   name = (type*)malloc(size * sizeof(type));       \
-   for(i = 0; i < size; i++) {                      \
-      name[i] = value;                              \
-   }                                                \
-   smpi_register_static(name, xbt_free_f);          \
-}
-
-#define SMPI_VARGET_STATIC(name) name[SIMIX_process_self()->pid]
-
 
 SG_END_DECL()
 

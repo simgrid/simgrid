@@ -505,7 +505,6 @@ if [ -n "${TRACE_ACTIVE}" ]; then
 fi
 ##---------------------- end SMPI TRACING OPTIONS ---------------------------------
 
-export SMPI_GLOBAL_SIZE=${NUMPROCS}
 if [ -n "${KEEP}" ] ; then
     echo ${EXEC} ${PRIVATIZE} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
     if [ ${HOSTFILETMP} = 1 ] ; then

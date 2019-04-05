@@ -12,4 +12,17 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform 
 > [3] The value in the shared buffer is: 4
 > hashing !
 
+! output sort
+! timeout 5
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/macro-shared --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/shared-malloc:local
+> [0] After change, the value in the shared buffer is: 16053117601147974045
+> [0] The value in the shared buffer is: 4
+> [1] After change, the value in the shared buffer is: 16053117601147974045
+> [1] The value in the shared buffer is: 4
+> [2] After change, the value in the shared buffer is: 16053117601147974045
+> [2] The value in the shared buffer is: 4
+> [3] After change, the value in the shared buffer is: 16053117601147974045
+> [3] The value in the shared buffer is: 4
+> hashing !
+
 

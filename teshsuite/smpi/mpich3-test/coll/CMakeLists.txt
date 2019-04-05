@@ -21,7 +21,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
         # opband opbor opbxor opland oplor oplxor opmax opmaxloc
         # opmin opminloc opprod opsum nonblocking3
           op_commutative red3 red4 redscat2 redscat3 redscatbkinter redscatblk3
-          redscat red_scat_block red_scat_block2
+          redscat red_scat_block red_scat_block2 allgatherv4 allred
         # redscatinter
           reduce_local scantst scatter2 scatter3 scattern scatterv
         # uoplong
@@ -31,15 +31,6 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
     target_link_libraries(${test} simgrid mtest_c)
   endforeach()
 
-  foreach(test allgatherv4 allred)
-    if(HAVE_PRIVATIZATION)
-      add_executable(${test} EXCLUDE_FROM_ALL ${test}.c)
-    else()
-      add_executable(${test} EXCLUDE_FROM_ALL ${test}_manual.c)
-    endif()
-    add_dependencies(tests ${test})
-    target_link_libraries(${test} simgrid mtest_c)
-  endforeach()
   set_target_properties(allred PROPERTIES COMPILE_FLAGS "-O0" LINK_FLAGS "-O0")
 
   foreach(test bcast_full bcast_min_datatypes bcast_comm_world)
@@ -98,14 +89,12 @@ set(examples_src  ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv2.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv3.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv4.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv4_manual.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allred2.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allred3.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allred4.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allred5.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allred6.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allred.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/allred_manual.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allredmany.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/alltoall1.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv0.c 

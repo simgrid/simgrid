@@ -438,9 +438,9 @@ void smpi_shared_free(void *ptr)
       close(data->fd);
       allocs.erase(allocs.find(meta->second.data->first));
       allocs_metadata.erase(ptr);
-      XBT_DEBUG("Shared free - with removal - of %p", ptr);
+      XBT_DEBUG("Shared free - Local - with removal - of %p", ptr);
     } else {
-      XBT_DEBUG("Shared free - no removal - of %p, count = %d", ptr, data->count);
+      XBT_DEBUG("Shared free - Local - no removal - of %p, count = %d", ptr, data->count);
     }
 
   } else if (smpi_cfg_shared_malloc == SharedMallocType::GLOBAL) {
@@ -450,7 +450,7 @@ void smpi_shared_free(void *ptr)
       if(meta->second.data->second.count==0)
         delete meta->second.data;
     }
-
+    XBT_DEBUG("Shared free - Global - of %p", ptr);
     munmap(ptr, meta->second.size);
   } else {
     XBT_DEBUG("Classic deallocation of %p", ptr);
