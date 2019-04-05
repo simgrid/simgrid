@@ -24,6 +24,7 @@ class Global {
   friend XBT_PUBLIC bool simgrid::s4u::this_actor::is_maestro();
 
 public:
+  bool execute_tasks();
   /**
    * Garbage collection
    *

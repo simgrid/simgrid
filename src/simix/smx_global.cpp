@@ -138,6 +138,28 @@ void Timer::remove()
   delete this;
 }
 
+/** Execute all the tasks that are queued, e.g. `.then()` callbacks of futures. */
+bool Global::execute_tasks()
+{
+  xbt_assert(tasksTemp.empty());
+
+  if (tasks.empty())
+    return false;
+
+  do {
+    // We don't want the callbacks to modify the vector we are iterating over:
+    tasks.swap(tasksTemp);
+
+    // Execute all the queued tasks:
+    for (auto& task : tasksTemp)
+      task();
+
+    tasksTemp.clear();
+  } while (not tasks.empty());
+
+  return true;
+}
+
 void Global::empty_trash()
 {
   while (not actors_to_destroy.empty()) {
@@ -346,31 +368,6 @@ static bool SIMIX_execute_timers()
   return result;
 }
 
-/** Execute all the tasks that are queued
- *
- *  e.g. `.then()` callbacks of futures.
- **/
-static bool SIMIX_execute_tasks()
-{
-  xbt_assert(simix_global->tasksTemp.empty());
-
-  if (simix_global->tasks.empty())
-    return false;
-
-  do {
-    // We don't want the callbacks to modify the vector we are iterating over:
-    simix_global->tasks.swap(simix_global->tasksTemp);
-
-    // Execute all the queued tasks:
-    for (auto& task : simix_global->tasksTemp)
-      task();
-
-    simix_global->tasksTemp.clear();
-  } while (not simix_global->tasks.empty());
-
-  return true;
-}
-
 /**
  * @ingroup SIMIX_API
  * @brief Run the main simulation loop.
@@ -397,7 +394,7 @@ void SIMIX_run()
 #endif
     }
 
-    SIMIX_execute_tasks();
+    simix_global->execute_tasks();
 
     while (not simix_global->actors_to_run.empty()) {
       XBT_DEBUG("New Sub-Schedule Round; size(queue)=%zu", simix_global->actors_to_run.size());
@@ -473,10 +470,10 @@ void SIMIX_run()
         }
       }
 
-      SIMIX_execute_tasks();
+      simix_global->execute_tasks();
       do {
         SIMIX_wake_processes();
-      } while (SIMIX_execute_tasks());
+      } while (simix_global->execute_tasks());
 
       /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
       if (simix_global->process_list.size() == simix_global->daemons.size())
@@ -501,7 +498,7 @@ void SIMIX_run()
     bool again = false;
     do {
       again = SIMIX_execute_timers();
-      if (SIMIX_execute_tasks())
+      if (simix_global->execute_tasks())
         again = true;
       SIMIX_wake_processes();
     } while (again);
