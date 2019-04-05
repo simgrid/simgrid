@@ -20,8 +20,7 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, simgrid::kernel::acti
   XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state_);
 
   /* Associate this simcall to the synchro */
-  synchro->simcalls_.push_back(simcall);
-  simcall->issuer->waiting_synchro = synchro;
+  synchro->register_simcall(simcall);
 
   /* set surf's synchro */
   if (MC_is_active() || MC_record_replay_is_active()) {

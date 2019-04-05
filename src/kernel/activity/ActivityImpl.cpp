@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/ActivityImpl.hpp"
+#include "src/simix/smx_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
@@ -15,6 +16,12 @@ ActivityImpl::~ActivityImpl()
 {
   clean_action();
   XBT_DEBUG("Destroy activity %p", this);
+}
+
+void ActivityImpl::register_simcall(smx_simcall_t simcall)
+{
+  simcalls_.push_back(simcall);
+  simcall->issuer->waiting_synchro = this;
 }
 
 void ActivityImpl::clean_action()

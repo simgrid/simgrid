@@ -35,6 +35,7 @@ public:
   virtual void post()   = 0; // What to do when a simcall terminates
   virtual void finish() = 0;
 
+  virtual void register_simcall(smx_simcall_t simcall);
   virtual void clean_action();
   virtual double get_remaining() const;
   // boost::intrusive_ptr<ActivityImpl> support:

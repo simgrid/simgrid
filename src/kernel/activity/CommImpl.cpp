@@ -189,8 +189,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, simgrid::kernel::activity:
   /* Associate this simcall to the wait synchro */
   XBT_DEBUG("simcall_HANDLER_comm_wait, %p", comm);
 
-  comm->simcalls_.push_back(simcall);
-  simcall->issuer->waiting_synchro = comm;
+  comm->register_simcall(simcall);
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     int idx = SIMCALL_GET_MC_VALUE(simcall);
