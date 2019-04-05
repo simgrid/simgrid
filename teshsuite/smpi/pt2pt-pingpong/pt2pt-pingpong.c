@@ -10,7 +10,6 @@
 #include <mpi.h>
 
 static void test_opts(int* argc, char **argv[]){
-#if defined __linux__
   int found = 0, ret;
   while ((ret = getopt(*argc, *argv, "s")) >= 0)
   {
@@ -23,7 +22,6 @@ static void test_opts(int* argc, char **argv[]){
   if (found!=1){
     printf("(smpi_)getopt failed ! \n");
   }
-#endif
 }
 
 int main(int argc, char *argv[])
