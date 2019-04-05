@@ -413,7 +413,7 @@ static void test_host_off_while_receive()
 /* We need an extra actor here, so that it can sleep until the end of each test */
 static void main_dispatcher()
 {
-  run_test("sleep", static_cast<std::function<void()>>(test_sleep));
+  run_test("sleep", test_sleep);
   run_test("sleep killed at start", test_sleep_kill_begin);
   run_test("sleep killed in middle", test_sleep_kill_middle);
   /* We cannot kill right at the end of the action because killer actors are always rescheduled to the end of the round
@@ -422,7 +422,7 @@ static void main_dispatcher()
   run_test("sleep restarted in middle", test_sleep_restart_middle);
   // run_test("sleep restarted at end", test_sleep_restart_end);
 
-  run_test("exec", static_cast<std::function<void()>>(test_exec));
+  run_test("exec", test_exec);
   run_test("exec killed at start", test_exec_kill_begin);
   run_test("exec killed in middle", test_exec_kill_middle);
   run_test("exec restarted at start", test_exec_restart_begin);
