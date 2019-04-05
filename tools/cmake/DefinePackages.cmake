@@ -215,7 +215,6 @@ set(SMPI_SRC
   src/smpi/internals/smpi_bench.cpp
   src/smpi/internals/smpi_memory.cpp
   src/smpi/internals/smpi_shared.cpp
-  src/smpi/internals/smpi_static_variables.cpp
   src/smpi/internals/smpi_deployment.cpp
   src/smpi/internals/smpi_dvfs.cpp
   src/smpi/internals/smpi_global.cpp

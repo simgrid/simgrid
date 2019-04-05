@@ -1055,68 +1055,6 @@ XBT_PUBLIC void SMPI_app_instance_register(const char* name, xbt_main_func_t cod
 XBT_PUBLIC void SMPI_init();
 XBT_PUBLIC void SMPI_finalize();
 
-/* Manual global privatization fallback */
-XBT_PUBLIC void smpi_register_static(void* arg, void_f_pvoid_t free_fn);
-XBT_PUBLIC void smpi_free_static();
-
-#define SMPI_VARINIT_GLOBAL(name,type)                          \
-type *name = NULL;                                              \
-static void __attribute__((constructor)) __preinit_##name(void) { \
-   if(!name)                                                    \
-      name = (type*)calloc(smpi_global_size(), sizeof(type));   \
-}                                                               \
-static void __attribute__((destructor)) __postfini_##name(void) { \
-   free(name);                                                  \
-   name = NULL;                                                 \
-}
-
-#define SMPI_VARINIT_GLOBAL_AND_SET(name,type,expr)             \
-type *name = NULL;                                              \
-static void __attribute__((constructor)) __preinit_##name(void) { \
-   size_t size = smpi_global_size();                            \
-   size_t i;                                                    \
-   type value = expr;                                           \
-   if(!name) {                                                  \
-      name = (type*)malloc(size * sizeof(type));                \
-      for(i = 0; i < size; i++) {                               \
-         name[i] = value;                                       \
-      }                                                         \
-   }                                                            \
-}                                                               \
-static void __attribute__((destructor)) __postfini_##name(void) { \
-   free(name);                                                  \
-   name = NULL;                                                 \
-}
-
-#define SMPI_VARGET_GLOBAL(name) name[SIMIX_process_self()->pid]
-
-/**
- * This is used for the old privatization method, i.e., on old
- * machines that do not yet support privatization via mmap
- */
-#define SMPI_VARINIT_STATIC(name,type)                      \
-static type *name = NULL;                                   \
-if(!name) {                                                 \
-   name = (type*)calloc(smpi_global_size(), sizeof(type));  \
-   smpi_register_static(name, xbt_free_f);                  \
-}
-
-#define SMPI_VARINIT_STATIC_AND_SET(name,type,expr) \
-static type *name = NULL;                           \
-if(!name) {                                         \
-   size_t size = smpi_global_size();                \
-   size_t i;                                        \
-   type value = expr;                               \
-   name = (type*)malloc(size * sizeof(type));       \
-   for(i = 0; i < size; i++) {                      \
-      name[i] = value;                              \
-   }                                                \
-   smpi_register_static(name, xbt_free_f);          \
-}
-
-#define SMPI_VARGET_STATIC(name) name[SIMIX_process_self()->pid]
-
-
 SG_END_DECL()
 
 /* C++ declarations for shared_malloc */

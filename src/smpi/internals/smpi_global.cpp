@@ -139,15 +139,6 @@ void smpi_process_set_user_data(void *data){
   simgrid::s4u::Actor::self()->get_impl()->set_user_data(data);
 }
 
-
-int smpi_global_size()
-{
-  char *value = getenv("SMPI_GLOBAL_SIZE");
-  xbt_assert(value,"Please set env var SMPI_GLOBAL_SIZE to the expected number of processes.");
-
-  return xbt_str_parse_int(value, "SMPI_GLOBAL_SIZE contains a non-numerical value: %s");
-}
-
 void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, size_t))
 {
   static void (*saved_callback)(smx_activity_t, void*, size_t);
@@ -366,7 +357,6 @@ void smpi_global_destroy()
 
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
     smpi_destroy_global_memory_segments();
-  smpi_free_static();
   if(simgrid::smpi::F2C::lookup() != nullptr)
     simgrid::smpi::F2C::delete_lookup();
 }
