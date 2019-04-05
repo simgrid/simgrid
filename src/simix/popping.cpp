@@ -22,12 +22,6 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
   }
 }
 
-void SIMIX_simcall_exit(smx_activity_t activity)
-{
-  if (activity != nullptr) // When migrating, the surf activity is disconnected from its simix activity before cancel
-    activity->post();
-}
-
 void SIMIX_run_kernel(std::function<void()> const* code)
 {
   (*code)();
@@ -35,7 +29,7 @@ void SIMIX_run_kernel(std::function<void()> const* code)
 
 /** Kernel code for run_blocking
  *
- * The implementtion looks a lot like SIMIX_run_kernel ^^
+ * The implementation looks a lot like SIMIX_run_kernel ^^
  *
  * However, this `run_blocking` is blocking so the process will not be woken
  * up until `SIMIX_simcall_answer(simcall)`` is called by the kernel.

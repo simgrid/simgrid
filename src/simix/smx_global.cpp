@@ -313,7 +313,8 @@ static void SIMIX_wake_processes()
     XBT_DEBUG("Handling the processes whose action failed (if any)");
     while ((action = model->extract_failed_action())) {
       XBT_DEBUG("   Handling Action %p",action);
-      SIMIX_simcall_exit(action->get_activity());
+      if (action->get_activity() != nullptr)
+        simgrid::kernel::activity::ActivityImplPtr(action->get_activity())->post();
     }
     XBT_DEBUG("Handling the processes whose action terminated normally (if any)");
     while ((action = model->extract_done_action())) {
@@ -321,7 +322,7 @@ static void SIMIX_wake_processes()
       if (action->get_activity() == nullptr)
         XBT_DEBUG("probably vcpu's action %p, skip", action);
       else
-        SIMIX_simcall_exit(action->get_activity());
+        simgrid::kernel::activity::ActivityImplPtr(action->get_activity())->post();
     }
   }
 }

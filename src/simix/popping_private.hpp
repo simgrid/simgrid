@@ -58,7 +58,6 @@ struct s_smx_simcall {
 
 XBT_PRIVATE void SIMIX_simcall_answer(smx_simcall_t simcall);
 XBT_PRIVATE void SIMIX_simcall_handle(smx_simcall_t simcall, int value);
-XBT_PRIVATE void SIMIX_simcall_exit(smx_activity_t synchro);
 XBT_PRIVATE const char* SIMIX_simcall_name(e_smx_simcall_t kind);
 XBT_PRIVATE void SIMIX_run_kernel(std::function<void()> const* code);
 XBT_PRIVATE void SIMIX_run_blocking(std::function<void()> const* code);
