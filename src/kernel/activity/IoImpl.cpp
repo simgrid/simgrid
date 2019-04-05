@@ -20,12 +20,8 @@ void simcall_HANDLER_io_wait(smx_simcall_t simcall, simgrid::kernel::activity::I
   /* Associate this simcall to the synchro */
   synchro->register_simcall(simcall);
 
-  /* set surf's synchro */
-  if (MC_is_active() || MC_record_replay_is_active()) {
+  if (MC_is_active() || MC_record_replay_is_active())
     synchro->state_ = SIMIX_DONE;
-    synchro->finish();
-    return;
-  }
 
   /* If the synchro is already finished then perform the error handling */
   if (synchro->state_ != SIMIX_RUNNING)
