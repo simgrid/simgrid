@@ -198,34 +198,22 @@ void ActorImpl::exit()
 
   /* destroy the blocking synchro if any */
   if (waiting_synchro != nullptr) {
+    waiting_synchro->cancel();
+    waiting_synchro->state_ = SIMIX_FAILED;
 
     activity::ExecImplPtr exec   = boost::dynamic_pointer_cast<activity::ExecImpl>(waiting_synchro);
     activity::CommImplPtr comm   = boost::dynamic_pointer_cast<activity::CommImpl>(waiting_synchro);
-    activity::SleepImplPtr sleep = boost::dynamic_pointer_cast<activity::SleepImpl>(waiting_synchro);
-    activity::RawImplPtr raw     = boost::dynamic_pointer_cast<activity::RawImpl>(waiting_synchro);
-    activity::IoImplPtr io       = boost::dynamic_pointer_cast<activity::IoImpl>(waiting_synchro);
 
-    if (exec != nullptr && exec->surf_action_) {
-      exec->cancel();
+    if (exec != nullptr) {
       exec->clean_action();
     } else if (comm != nullptr) {
       comms.remove(waiting_synchro);
-      comm->cancel();
       // Remove first occurrence of &actor->simcall:
       auto i = boost::range::find(waiting_synchro->simcalls_, &simcall);
       if (i != waiting_synchro->simcalls_.end())
         waiting_synchro->simcalls_.remove(&simcall);
-    } else if (sleep != nullptr) {
-      sleep->cancel();
-      sleep->finish();
-    } else if (raw != nullptr) {
-      raw->finish();
-    } else if (io != nullptr) {
-      io->cancel();
-      io->finish();
     } else {
-      simgrid::kernel::activity::ActivityImplPtr activity = waiting_synchro;
-      xbt_die("Activity is of unknown type %s", simgrid::xbt::demangle(typeid(activity).name()).get());
+      activity::ActivityImplPtr(waiting_synchro)->finish();
     }
 
     waiting_synchro = nullptr;
