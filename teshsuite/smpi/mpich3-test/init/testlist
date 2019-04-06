@@ -6,4 +6,4 @@ version 1
 finalized 1
 #needs PMPI_Comm_free_keyval
 #attrself 1
-library_version 1 mpiversion=3.0
+library_version 1
