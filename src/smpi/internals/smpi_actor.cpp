@@ -246,11 +246,11 @@ void ActorExt::init()
 
 int ActorExt::get_optind()
 {
-  return optind;
+  return optind_;
 }
 void ActorExt::set_optind(int new_optind)
 {
-  optind = new_optind;
+  optind_ = new_optind;
 }
 
 } // namespace smpi
