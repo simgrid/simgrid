@@ -760,7 +760,9 @@ int PMPI_Ialltoall(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* re
     MPI_Datatype sendtmptype = sendtype;
     if (sendbuf == MPI_IN_PLACE) {
       sendtmpbuf = static_cast<void*>(xbt_malloc(recvcount * comm->size() * recvtype->size()));
-      memcpy(sendtmpbuf, recvbuf, recvcount * comm->size() * recvtype->size());
+      //memcpy(??,nullptr,0) is actually undefined behavor, even if harmless.
+      if(recvbuf != nullptr)
+        memcpy(sendtmpbuf, recvbuf, recvcount * comm->size() * recvtype->size());
       sendtmpcount = recvcount;
       sendtmptype  = recvtype;
     }
