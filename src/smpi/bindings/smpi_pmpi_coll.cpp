@@ -534,6 +534,8 @@ int PMPI_Iscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, M
     retval = MPI_ERR_ARG;
   } else if (count < 0){
     retval = MPI_ERR_COUNT;
+  } else if (sendbuf == nullptr || recvbuf == nullptr){
+    retval = MPI_ERR_BUFFER;
   } else {
     int rank = simgrid::s4u::this_actor::get_pid();
     void* sendtmpbuf = sendbuf;
@@ -580,6 +582,8 @@ int PMPI_Iexscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
     retval = MPI_ERR_ARG;
   } else if (count < 0){
     retval = MPI_ERR_COUNT;
+  } else if (sendbuf == nullptr || recvbuf == nullptr){
+    retval = MPI_ERR_BUFFER;
   } else {
     int rank         = simgrid::s4u::this_actor::get_pid();
     void* sendtmpbuf = sendbuf;
