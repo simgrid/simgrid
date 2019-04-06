@@ -417,7 +417,7 @@ int PMPI_Ireduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
 {
   if (comm == MPI_COMM_NULL) {
     return MPI_ERR_COMM;
-  } if ((sendbuf == nullptr && count > 0) || ((comm->rank() == root) && recvbuf == nullptr)) {
+  } else if ((sendbuf == nullptr && count > 0) || ((comm->rank() == root) && recvbuf == nullptr)) {
     return MPI_ERR_BUFFER;
   } else if (datatype == MPI_DATATYPE_NULL || not datatype->is_valid()){
     return MPI_ERR_TYPE;
@@ -475,7 +475,7 @@ int PMPI_Iallreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype dataty
 {
   if (comm == MPI_COMM_NULL) {
     return MPI_ERR_COMM;
-  } if ((sendbuf == nullptr && count > 0) || (recvbuf == nullptr)) {
+  } else if ((sendbuf == nullptr && count > 0) || (recvbuf == nullptr)) {
     return MPI_ERR_BUFFER;
   } else if (datatype == MPI_DATATYPE_NULL || not datatype->is_valid()) {
     return MPI_ERR_TYPE;
