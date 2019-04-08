@@ -416,23 +416,12 @@ void ActorImpl::throw_exception(std::exception_ptr e)
     waiting_synchro->cancel();
 
     activity::CommImplPtr comm = boost::dynamic_pointer_cast<activity::CommImpl>(waiting_synchro);
-    activity::SleepImplPtr sleep = boost::dynamic_pointer_cast<activity::SleepImpl>(waiting_synchro);
 
-    if (comm != nullptr) {
+    if (comm != nullptr)
       comms.remove(comm);
-    }
 
-    if (sleep != nullptr) {
-      if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), this) ==
-              end(simix_global->actors_to_run) &&
-          this != SIMIX_process_self()) {
-        XBT_DEBUG("Inserting [%p] %s in the to_run list", this, get_cname());
-        simix_global->actors_to_run.push_back(this);
-      }
-    }
+    waiting_synchro = nullptr;
   }
-
-  waiting_synchro = nullptr;
 }
 
 void ActorImpl::set_host(s4u::Host* dest)
