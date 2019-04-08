@@ -413,20 +413,16 @@ void ActorImpl::throw_exception(std::exception_ptr e)
 
   /* cancel the blocking synchro if any */
   if (waiting_synchro) {
-
-    activity::ExecImplPtr exec = boost::dynamic_pointer_cast<activity::ExecImpl>(waiting_synchro);
-    if (exec != nullptr)
-      exec->cancel();
+    waiting_synchro->cancel();
 
     activity::CommImplPtr comm = boost::dynamic_pointer_cast<activity::CommImpl>(waiting_synchro);
+    activity::SleepImplPtr sleep = boost::dynamic_pointer_cast<activity::SleepImpl>(waiting_synchro);
+
     if (comm != nullptr) {
       comms.remove(comm);
-      comm->cancel();
     }
 
-    activity::SleepImplPtr sleep = boost::dynamic_pointer_cast<activity::SleepImpl>(waiting_synchro);
     if (sleep != nullptr) {
-      sleep->clean_action();
       if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), this) ==
               end(simix_global->actors_to_run) &&
           this != SIMIX_process_self()) {
@@ -434,17 +430,8 @@ void ActorImpl::throw_exception(std::exception_ptr e)
         simix_global->actors_to_run.push_back(this);
       }
     }
-
-    activity::RawImplPtr raw = boost::dynamic_pointer_cast<activity::RawImpl>(waiting_synchro);
-    if (raw != nullptr) {
-      raw->finish();
-    }
-
-    activity::IoImplPtr io = boost::dynamic_pointer_cast<activity::IoImpl>(waiting_synchro);
-    if (io != nullptr) {
-      io->cancel();
-    }
   }
+
   waiting_synchro = nullptr;
 }
 
