@@ -34,12 +34,12 @@ int F2C::f2c_id(){
 };
 
 char* F2C::get_key(char* key, int id) {
-  std::snprintf(key, KEY_SIZE, "%x", static_cast<unsigned>(id));
+  std::snprintf(key, KEY_SIZE, "%u", static_cast<unsigned>(id));
   return key;
 }
 
 char* F2C::get_key_id(char* key, int id) {
-  std::snprintf(key, KEY_SIZE, "%x_%ld", static_cast<unsigned>(id), simgrid::s4u::this_actor::get_pid());
+  std::snprintf(key, KEY_SIZE, "%u_%ld", static_cast<unsigned>(id), simgrid::s4u::this_actor::get_pid());
   return key;
 }
 
