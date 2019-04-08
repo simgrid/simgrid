@@ -10,14 +10,12 @@
 #include <mpi.h>
 
 static void test_opts(int* argc, char **argv[]){
-  int found = 0, ret;
+  int found = 0;
+  int ret;
   while ((ret = getopt(*argc, *argv, "s")) >= 0)
   {
-    switch (ret) {
-    case 's':
+    if (ret == 's')
       found = 1;
-      break;
-    }
   }
   if (found!=1){
     printf("(smpi_)getopt failed ! \n");

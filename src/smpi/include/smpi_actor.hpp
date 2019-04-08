@@ -31,7 +31,11 @@ class ActorExt {
   smpi_trace_call_location_t trace_call_loc_;
   s4u::ActorPtr actor_                           = nullptr;
   smpi_privatization_region_t privatized_region_ = nullptr;
-  int optind                                     = 1; /*for getopt replacement */
+#ifdef __linux__
+  int optind_                                     = 0; /*for getopt replacement */
+#else
+  int optind_                                     = 1; /*for getopt replacement */
+#endif
   std::string tracing_category_                  = "";
 
 #if HAVE_PAPI

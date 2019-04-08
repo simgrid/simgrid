@@ -417,7 +417,7 @@ int PMPI_Ireduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
 {
   if (comm == MPI_COMM_NULL) {
     return MPI_ERR_COMM;
-  } if ((sendbuf == nullptr && count > 0) || ((comm->rank() == root) && recvbuf == nullptr)) {
+  } else if ((sendbuf == nullptr && count > 0) || ((comm->rank() == root) && recvbuf == nullptr)) {
     return MPI_ERR_BUFFER;
   } else if (datatype == MPI_DATATYPE_NULL || not datatype->is_valid()){
     return MPI_ERR_TYPE;
@@ -475,7 +475,7 @@ int PMPI_Iallreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype dataty
 {
   if (comm == MPI_COMM_NULL) {
     return MPI_ERR_COMM;
-  } if ((sendbuf == nullptr && count > 0) || (recvbuf == nullptr)) {
+  } else if ((sendbuf == nullptr && count > 0) || (recvbuf == nullptr)) {
     return MPI_ERR_BUFFER;
   } else if (datatype == MPI_DATATYPE_NULL || not datatype->is_valid()) {
     return MPI_ERR_TYPE;
@@ -534,6 +534,8 @@ int PMPI_Iscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, M
     retval = MPI_ERR_ARG;
   } else if (count < 0){
     retval = MPI_ERR_COUNT;
+  } else if (sendbuf == nullptr || recvbuf == nullptr){
+    retval = MPI_ERR_BUFFER;
   } else {
     int rank = simgrid::s4u::this_actor::get_pid();
     void* sendtmpbuf = sendbuf;
@@ -580,6 +582,8 @@ int PMPI_Iexscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
     retval = MPI_ERR_ARG;
   } else if (count < 0){
     retval = MPI_ERR_COUNT;
+  } else if (sendbuf == nullptr || recvbuf == nullptr){
+    retval = MPI_ERR_BUFFER;
   } else {
     int rank         = simgrid::s4u::this_actor::get_pid();
     void* sendtmpbuf = sendbuf;
@@ -756,7 +760,9 @@ int PMPI_Ialltoall(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* re
     MPI_Datatype sendtmptype = sendtype;
     if (sendbuf == MPI_IN_PLACE) {
       sendtmpbuf = static_cast<void*>(xbt_malloc(recvcount * comm->size() * recvtype->size()));
-      memcpy(sendtmpbuf, recvbuf, recvcount * comm->size() * recvtype->size());
+      //memcpy(??,nullptr,0) is actually undefined behavor, even if harmless.
+      if(recvbuf != nullptr)
+        memcpy(sendtmpbuf, recvbuf, recvcount * comm->size() * recvtype->size());
       sendtmpcount = recvcount;
       sendtmptype  = recvtype;
     }
