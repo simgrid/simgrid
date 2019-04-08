@@ -530,51 +530,10 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
  * transition */
 void SIMIX_process_throw(smx_actor_t actor, xbt_errcat_t cat, int value, const char* msg)
 {
-  SMX_EXCEPTION(actor, cat, value, msg);
-
-  if (actor->is_suspended())
-    actor->resume();
-
-  /* cancel the blocking synchro if any */
-  if (actor->waiting_synchro) {
-
-    simgrid::kernel::activity::ExecImplPtr exec =
-        boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(actor->waiting_synchro);
-    if (exec != nullptr)
-      exec->cancel();
-
-    simgrid::kernel::activity::CommImplPtr comm =
-        boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(actor->waiting_synchro);
-    if (comm != nullptr) {
-      actor->comms.remove(comm);
-      comm->cancel();
-    }
-
-    simgrid::kernel::activity::SleepImplPtr sleep =
-        boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(actor->waiting_synchro);
-    if (sleep != nullptr) {
-      sleep->clean_action();
-      if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), actor) ==
-              end(simix_global->actors_to_run) &&
-          actor != SIMIX_process_self()) {
-        XBT_DEBUG("Inserting [%p] %s in the to_run list", actor, actor->get_cname());
-        simix_global->actors_to_run.push_back(actor);
-      }
-    }
-
-    simgrid::kernel::activity::RawImplPtr raw =
-        boost::dynamic_pointer_cast<simgrid::kernel::activity::RawImpl>(actor->waiting_synchro);
-    if (raw != nullptr) {
-      raw->finish();
-    }
-
-    simgrid::kernel::activity::IoImplPtr io =
-        boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(actor->waiting_synchro);
-    if (io != nullptr) {
-      io->cancel();
-    }
-  }
-  actor->waiting_synchro = nullptr;
+  xbt_ex e(XBT_THROW_POINT, msg);
+  e.category = cat;
+  e.value    = value;
+  actor->throw_exception(std::make_exception_ptr(e));
 }
 
 void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t actor)
