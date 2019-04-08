@@ -7,14 +7,12 @@
 static int myvalue = 0;
 static void test_opts(int* argc, char **argv[]){
   int found = 0;
-  int ret;
   static struct option long_options[] = {
   {"long",     no_argument, 0,  0 },
   {0,         0,                 0,  0 }
   };
   while (1) {
-    ret = getopt_long_only(*argc, *argv, "s",
-                long_options, NULL);
+    int ret = getopt_long_only(*argc, *argv, "s", long_options, NULL);
     if(ret==-1)
       break;
 

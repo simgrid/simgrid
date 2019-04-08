@@ -13,15 +13,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(dsend,"the dsend test");
 
 static void test_opts(int* argc, char **argv[]){
   int found = 0;
-  int ret;
   int option_index = 0;
   static struct option long_options[] = {
   {"long",     no_argument, 0,  0 },
   {0,         0,                 0,  0 }
   };
   while (1) {
-    ret = getopt_long(*argc, *argv, "s",
-                long_options, &option_index);
+    int ret = getopt_long(*argc, *argv, "s", long_options, &option_index);
     if(ret==-1)
       break;
 
