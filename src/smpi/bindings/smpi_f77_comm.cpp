@@ -37,12 +37,11 @@ void mpi_comm_create_(int* comm, int* group, int* newcomm, int* ierr) {
 
 void mpi_comm_free_(int* comm, int* ierr) {
   MPI_Comm tmp = simgrid::smpi::Comm::f2c(*comm);
-
-  *ierr = MPI_Comm_free(&tmp);
-
-  if(*ierr == MPI_SUCCESS) {
+  if(tmp != MPI_COMM_WORLD && tmp != MPI_COMM_NULL) {
+    simgrid::smpi::Comm::destroy(tmp);
     simgrid::smpi::Comm::free_f(*comm);
   }
+  *ierr = MPI_SUCCESS;
 }
 
 void mpi_comm_split_(int* comm, int* color, int* key, int* comm_out, int* ierr) {

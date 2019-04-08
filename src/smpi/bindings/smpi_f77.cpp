@@ -98,7 +98,7 @@ void mpi_group_incl_(int* group, int* n, int* ranks, int* group_out, int* ierr) 
 
   *ierr = MPI_Group_incl(simgrid::smpi::Group::f2c(*group), *n, ranks, &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *group_out = tmp->add_f();
+    *group_out = tmp->c2f();
   }
 }
 
@@ -508,11 +508,12 @@ void mpi_op_commutative_ (int* op, int* commute, int* ierr){
 }
 
 void mpi_group_free_ (int* group, int* ierr){
- MPI_Group tmp = simgrid::smpi::Group::f2c(*group);
- *ierr = MPI_Group_free(&tmp);
- if(*ierr == MPI_SUCCESS) {
-   simgrid::smpi::F2C::free_f(*group);
- }
+  MPI_Group tmp = simgrid::smpi::Group::f2c(*group);
+  if(tmp != MPI_COMM_WORLD->group() && tmp != MPI_GROUP_EMPTY){
+    simgrid::smpi::Group::unref(tmp);
+    simgrid::smpi::F2C::free_f(*group);
+  }
+  *ierr = MPI_SUCCESS;
 }
 
 void mpi_group_size_ (int* group, int *size, int* ierr){
