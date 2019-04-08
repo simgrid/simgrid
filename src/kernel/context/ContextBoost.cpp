@@ -72,7 +72,7 @@ void BoostContext::wrapper(BoostContext::arg_type arg)
   } catch (ForcefulKillException const&) {
     XBT_DEBUG("Caught a ForcefulKillException");
   } catch (simgrid::Exception const& e) {
-    XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
+    XBT_INFO("Actor killed by an uncaught exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
     throw;
   }
   ASAN_ONLY(context->asan_stop_ = true);

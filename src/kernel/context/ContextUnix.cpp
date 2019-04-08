@@ -44,7 +44,7 @@ static void smx_ctx_wrapper(int i1, int i2)
   } catch (simgrid::ForcefulKillException const&) {
     XBT_DEBUG("Caught a ForcefulKillException");
   } catch (simgrid::Exception const& e) {
-    XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
+    XBT_INFO("Actor killed by an uncaught exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
     throw;
   }
   ASAN_ONLY(context->asan_stop_ = true);
