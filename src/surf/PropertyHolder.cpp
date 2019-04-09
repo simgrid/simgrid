@@ -13,7 +13,7 @@ PropertyHolder::~PropertyHolder() {
 }
 
 /** @brief Return the property associated to the provided key (or nullptr if not existing) */
-const char* PropertyHolder::get_property(const std::string& key)
+const char* PropertyHolder::get_property(const std::string& key) const
 {
   if (properties_ == nullptr)
     return nullptr;

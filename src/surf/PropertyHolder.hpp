@@ -23,7 +23,7 @@ public:
   PropertyHolder& operator=(const PropertyHolder&) = delete;
   ~PropertyHolder();
 
-  const char* get_property(const std::string& key);
+  const char* get_property(const std::string& key) const;
   void set_property(const std::string& id, const std::string& value);
 
   /* FIXME: This should not be exposed, as users may do bad things with the map they got (it's not a copy).

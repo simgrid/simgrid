@@ -232,15 +232,15 @@ void Actor::kill_all()
   simix::simcall([self] { self->kill_all(); });
 }
 
-std::unordered_map<std::string, std::string>* Actor::get_properties()
+std::unordered_map<std::string, std::string>* Actor::get_properties() const
 {
-  return simix::simcall([this] { return this->pimpl_->get_properties(); });
+  return pimpl_->get_properties();
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char* Actor::get_property(const std::string& key)
+const char* Actor::get_property(const std::string& key) const
 {
-  return simix::simcall([this, &key] { return pimpl_->get_property(key); });
+  return pimpl_->get_property(key);
 }
 
 void Actor::set_property(const std::string& key, const std::string& value)
