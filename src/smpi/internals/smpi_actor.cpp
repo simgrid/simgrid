@@ -235,8 +235,8 @@ void ActorExt::init()
     SMPI_switch_data_segment(proc);
   }
 
-  const char* instance_id = simgrid::s4u::Actor::self()->get_property("instance_id");
-  const int rank          = xbt_str_parse_int(simgrid::s4u::Actor::self()->get_property("rank"), "Cannot parse rank");
+  const char* instance_id = proc->get_property("instance_id");
+  const int rank          = xbt_str_parse_int(proc->get_property("rank"), "Cannot parse rank");
 
   process->state_ = SmpiProcessState::INITIALIZING;
   smpi_deployment_register_process(instance_id, rank, proc);
