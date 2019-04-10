@@ -75,11 +75,12 @@ static void smpi_get_executable_global_size()
       ++i;
       if (i != map.end() && i->pathname.empty() && (i->prot & PROT_RWX) == PROT_RW &&
           (char*)i->start_addr == smpi_data_exe_start + smpi_data_exe_size) {
-        // Only count this region if it was not already present in the initial map.
-        auto found = std::find_if(begin(initial_vm_map), end(initial_vm_map),
-                                  [&i](const simgrid::xbt::VmMap& m) { return m.start_addr == i->start_addr; });
-        if (found == end(initial_vm_map))
-          smpi_data_exe_size = (char*)i->end_addr - smpi_data_exe_start;
+        // Only count the portion of this region not present in the initial map.
+        auto found = std::find_if(initial_vm_map.begin(), initial_vm_map.end(), [&i](const simgrid::xbt::VmMap& m) {
+          return i->start_addr <= m.start_addr && m.start_addr < i->end_addr;
+        });
+        auto end_addr      = (found == initial_vm_map.end() ? i->end_addr : found->start_addr);
+        smpi_data_exe_size = (char*)end_addr - smpi_data_exe_start;
       }
       return;
     }
