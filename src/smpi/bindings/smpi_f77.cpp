@@ -107,6 +107,8 @@ void mpi_initialized_(int* flag, int* ierr){
 }
 
 void mpi_get_processor_name_(char *name, int *resultlen, int* ierr){
+  //fortran does not handle string endings cleanly, so initialize everything before
+  sprintf(name,"%*c\n", MPI_MAX_PROCESSOR_NAME,' ');
   *ierr = MPI_Get_processor_name(name, resultlen);
 }
 
