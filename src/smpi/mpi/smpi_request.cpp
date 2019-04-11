@@ -92,6 +92,7 @@ void Request::unref(MPI_Request* request)
     if((*request)->refcount_==0){
       if ((*request)->flags_ & MPI_REQ_GENERALIZED){
         ((*request)->generalized_funcs)->free_fn(((*request)->generalized_funcs)->extra_state);
+        delete (*request)->generalized_funcs;
       }else{
         Comm::unref((*request)->comm_);
         Datatype::unref((*request)->old_type_);
@@ -1137,7 +1138,7 @@ int Request::grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest
   (*request)->flags_ |= MPI_REQ_GENERALIZED;
   (*request)->flags_ |= MPI_REQ_PERSISTENT;
   (*request)->refcount_ = 1;
-  ((*request)->generalized_funcs)=xbt_new0(s_smpi_mpi_generalized_request_funcs_t ,1);
+  ((*request)->generalized_funcs) = new s_smpi_mpi_generalized_request_funcs_t;
   ((*request)->generalized_funcs)->query_fn=query_fn;
   ((*request)->generalized_funcs)->free_fn=free_fn;
   ((*request)->generalized_funcs)->cancel_fn=cancel_fn;
@@ -1158,8 +1159,13 @@ int Request::grequest_complete( MPI_Request request){
 }
 
 void Request::set_nbc_requests(MPI_Request* reqs, int size){
-  nbc_requests_=reqs;
-  nbc_requests_size_=size;
+  nbc_requests_size_ = size;
+  if (size > 0) {
+    nbc_requests_ = reqs;
+  } else {
+    delete[] reqs;
+    nbc_requests_ = nullptr;
+  }
 }
 
 int Request::get_nbc_requests_size(){
