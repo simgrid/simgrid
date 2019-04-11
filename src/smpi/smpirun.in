@@ -505,6 +505,8 @@ if [ -n "${TRACE_ACTIVE}" ]; then
 fi
 ##---------------------- end SMPI TRACING OPTIONS ---------------------------------
 
+# Do not remove, this variable may be used by user code (e.g. StarPU)
+export SMPI_GLOBAL_SIZE=${NUMPROCS}
 if [ -n "${KEEP}" ] ; then
     echo ${EXEC} ${PRIVATIZE} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
     if [ ${HOSTFILETMP} = 1 ] ; then
