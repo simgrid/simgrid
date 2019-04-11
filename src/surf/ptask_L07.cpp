@@ -271,7 +271,7 @@ kernel::resource::Action* CpuL07::sleep(double duration)
 {
   L07Action *action = static_cast<L07Action*>(execution_start(1.0));
   action->set_max_duration(duration);
-  action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
+  action->set_suspend_state(kernel::resource::Action::SuspendStates::SLEEPING);
   get_model()->get_maxmin_system()->update_variable_weight(action->get_variable(), 0.0);
 
   return action;
@@ -405,7 +405,7 @@ void L07Action::updateBound()
   }
   double lat_bound = kernel::resource::NetworkModel::cfg_tcp_gamma / (2.0 * lat_current);
   XBT_DEBUG("action (%p) : lat_bound = %g", this, lat_bound);
-  if ((latency_ <= 0.0) && (suspended_ == Action::SuspendStates::not_suspended)) {
+  if ((latency_ <= 0.0) && is_running()) {
     if (rate_ < 0)
       get_model()->get_maxmin_system()->update_variable_bound(get_variable(), lat_bound);
     else

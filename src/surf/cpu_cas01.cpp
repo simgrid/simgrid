@@ -184,7 +184,7 @@ CpuAction* CpuCas01::sleep(double duration)
 
   // FIXME: sleep variables should not consume 1.0 in System::expand()
   action->set_max_duration(duration);
-  action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
+  action->set_suspend_state(kernel::resource::Action::SuspendStates::SLEEPING);
   if (duration == NO_MAX_DURATION)
     action->set_state(simgrid::kernel::resource::Action::State::IGNORED);
 

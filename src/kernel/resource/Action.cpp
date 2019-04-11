@@ -155,7 +155,7 @@ bool Action::unref()
 void Action::suspend()
 {
   XBT_IN("(%p)", this);
-  if (suspended_ != SuspendStates::sleeping) {
+  if (suspended_ != SuspendStates::SLEEPING) {
     get_model()->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
     if (get_model()->get_update_algorithm() == Model::UpdateAlgo::LAZY) {
       get_model()->get_action_heap().remove(this);
@@ -164,7 +164,7 @@ void Action::suspend()
         update_remains_lazy(surf_get_clock());
       }
     }
-    suspended_ = SuspendStates::suspended;
+    suspended_ = SuspendStates::SUSPENDED;
   }
   XBT_OUT();
 }
@@ -172,18 +172,13 @@ void Action::suspend()
 void Action::resume()
 {
   XBT_IN("(%p)", this);
-  if (suspended_ != SuspendStates::sleeping) {
+  if (suspended_ != SuspendStates::SLEEPING) {
     get_model()->get_maxmin_system()->update_variable_weight(get_variable(), get_priority());
-    suspended_ = SuspendStates::not_suspended;
+    suspended_ = SuspendStates::RUNNING;
     if (get_model()->get_update_algorithm() == Model::UpdateAlgo::LAZY)
       get_model()->get_action_heap().remove(this);
   }
   XBT_OUT();
-}
-
-bool Action::is_suspended()
-{
-  return suspended_ == SuspendStates::suspended;
 }
 
 double Action::get_remains()

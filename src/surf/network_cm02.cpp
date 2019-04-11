@@ -420,10 +420,10 @@ void NetworkCm02Link::set_latency(double value)
 
 void NetworkCm02Action::update_remains_lazy(double now)
 {
-  if (suspended_ != Action::SuspendStates::not_suspended)
+  if (not is_running())
     return;
 
-  double delta        = now - get_last_update();
+  double delta = now - get_last_update();
 
   if (get_remains_no_update() > 0) {
     XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, get_remains_no_update(),

@@ -75,9 +75,9 @@ public:
   };
 
   enum class SuspendStates {
-    not_suspended = 0, /**< Action currently not suspended **/
-    suspended,
-    sleeping
+    RUNNING = 0, /**< Action currently not suspended **/
+    SUSPENDED,
+    SLEEPING
   };
 
   /**
@@ -176,8 +176,10 @@ public:
   /** @brief Resume the current Action */
   virtual void resume();
 
+  /** @brief Returns true if the current action is suspended */
+  bool is_suspended() const { return suspended_ == SuspendStates::SUSPENDED; }
   /** @brief Returns true if the current action is running */
-  bool is_suspended();
+  bool is_running() const { return suspended_ == SuspendStates::RUNNING; }
 
   /** @brief Get the maximum duration of the current action */
   double get_max_duration() const { return max_duration_; }
@@ -200,10 +202,9 @@ public:
 
   simgrid::kernel::resource::Model* get_model() const { return model_; }
 
-protected:
-  StateSet* state_set_;
-
 private:
+  StateSet* state_set_;
+  Action::SuspendStates suspended_ = Action::SuspendStates::RUNNING;
   int refcount_            = 1;
   double sharing_priority_ = 1.0;             /**< priority (1.0 by default) */
   double max_duration_   = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
@@ -236,9 +237,9 @@ public:
 
   double get_last_value() const { return last_value_; }
   void set_last_value(double val) { last_value_ = val; }
+  void set_suspend_state(Action::SuspendStates state) { suspended_ = state; }
 
 protected:
-  Action::SuspendStates suspended_ = Action::SuspendStates::not_suspended;
 };
 
 } // namespace resource

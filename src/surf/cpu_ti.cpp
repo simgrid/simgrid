@@ -444,7 +444,7 @@ void CpuTi::update_actions_finish_time(double now)
       continue;
 
     /* action suspended, skip it */
-    if (action.suspended_ != kernel::resource::Action::SuspendStates::not_suspended)
+    if (not action.is_running())
       continue;
 
     sum_priority_ += 1.0 / action.get_priority();
@@ -457,7 +457,7 @@ void CpuTi::update_actions_finish_time(double now)
       continue;
 
     /* verify if the action is really running on cpu */
-    if (action.suspended_ == kernel::resource::Action::SuspendStates::not_suspended && action.get_priority() > 0) {
+    if (action.is_running() && action.get_priority() > 0) {
       /* total area needed to finish the action. Used in trace integration */
       double total_area = (action.get_remains() * sum_priority_ * action.get_priority()) / speed_.peak;
 
@@ -517,7 +517,7 @@ void CpuTi::update_remaining_amount(double now)
       continue;
 
     /* action suspended, skip it */
-    if (action.suspended_ != kernel::resource::Action::SuspendStates::not_suspended)
+    if (not action.is_running())
       continue;
 
     /* action don't need update */
@@ -556,7 +556,7 @@ CpuAction *CpuTi::sleep(double duration)
   CpuTiAction* action = new CpuTiAction(this, 1.0);
 
   action->set_max_duration(duration);
-  action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
+  action->set_suspend_state(kernel::resource::Action::SuspendStates::SLEEPING);
   if (duration == NO_MAX_DURATION)
     action->set_state(simgrid::kernel::resource::Action::State::IGNORED);
 
@@ -613,8 +613,8 @@ void CpuTiAction::cancel()
 void CpuTiAction::suspend()
 {
   XBT_IN("(%p)", this);
-  if (suspended_ != Action::SuspendStates::sleeping) {
-    suspended_ = Action::SuspendStates::suspended;
+  if (is_running()) {
+    set_suspend_state(Action::SuspendStates::SUSPENDED);
     get_model()->get_action_heap().remove(this);
     cpu_->set_modified(true);
   }
@@ -624,8 +624,8 @@ void CpuTiAction::suspend()
 void CpuTiAction::resume()
 {
   XBT_IN("(%p)", this);
-  if (suspended_ != Action::SuspendStates::sleeping) {
-    suspended_ = Action::SuspendStates::not_suspended;
+  if (is_suspended()) {
+    set_suspend_state(Action::SuspendStates::RUNNING);
     cpu_->set_modified(true);
   }
   XBT_OUT();
