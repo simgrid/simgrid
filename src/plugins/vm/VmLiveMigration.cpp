@@ -205,25 +205,17 @@ void MigrationTx::operator()()
   if (not skip_stage2) {
 
     int stage2_round = 0;
-    for (;;) {
-      sg_size_t updated_size = 0;
-      if (stage2_round == 0) {
-        /* just after stage1, nothing has been updated. But, we have to send the data updated during stage1 */
-        updated_size = get_updated_size(computed_during_stage1, dp_rate, dp_cap);
-      } else {
-        double computed = sg_vm_lookup_computed_flops(vm_);
-        updated_size    = get_updated_size(computed, dp_rate, dp_cap);
-      }
+    /* just after stage1, nothing has been updated. But, we have to send the data updated during stage1 */
+    sg_size_t updated_size = get_updated_size(computed_during_stage1, dp_rate, dp_cap);
+    remaining_size += updated_size;
+    XBT_DEBUG("mig-stage2.%d: remaining_size %zu (%s threshold %zu)", stage2_round, remaining_size,
+              (remaining_size < threshold) ? "<" : ">", threshold);
+
+    /* When the remaining size is below the threshold value, move to stage 3. */
+    while (threshold < remaining_size) {
 
       XBT_DEBUG("mig-stage 2:%d updated_size %llu computed_during_stage1 %f dp_rate %f dp_cap %llu", stage2_round,
                 updated_size, computed_during_stage1, dp_rate, dp_cap);
-
-      /* Check whether the remaining size is below the threshold value. If so, move to stage 3. */
-      remaining_size += updated_size;
-      XBT_DEBUG("mig-stage2.%d: remaining_size %zu (%s threshold %zu)", stage2_round, remaining_size,
-                (remaining_size < threshold) ? "<" : ">", threshold);
-      if (remaining_size < threshold)
-        break;
 
       sg_size_t sent  = 0;
       clock_prev_send = s4u::Engine::get_clock();
@@ -237,31 +229,32 @@ void MigrationTx::operator()()
         sg_vm_stop_dirty_page_tracking(vm_);
         return;
       }
+
+      remaining_size -= sent;
+      double computed = sg_vm_lookup_computed_flops(vm_);
+
       clock_post_send = s4u::Engine::get_clock();
 
       if (sent == updated_size) {
-        /* timeout did not happen */
         bandwidth = updated_size / (clock_post_send - clock_prev_send);
         threshold = bandwidth * max_downtime;
         XBT_DEBUG("actual bandwidth %f, threshold %zu", bandwidth / 1024 / 1024, threshold);
-        remaining_size -= sent;
         stage2_round += 1;
         mig_timeout -= (clock_post_send - clock_prev_send);
         xbt_assert(mig_timeout > 0);
-
-      } else if (sent < updated_size) {
+        XBT_DEBUG("mig-stage2.%d: remaining_size %zu (%s threshold %zu)", stage2_round, remaining_size,
+                  (remaining_size < threshold) ? "<" : ">", threshold);
+        updated_size = get_updated_size(computed, dp_rate, dp_cap);
+        remaining_size += updated_size;
+      } else {
         /* When timeout happens, we move to stage 3. The size of memory pages
          * updated before timeout must be added to the remaining size. */
         XBT_VERB("mig-stage2.%d: timeout, force moving to stage 3. sent %llu / %llu, eta %lf", stage2_round, sent,
                  updated_size, (clock_post_send - clock_prev_send));
-        remaining_size -= sent;
-
-        double computed = sg_vm_lookup_computed_flops(vm_);
         updated_size    = get_updated_size(computed, dp_rate, dp_cap);
         remaining_size += updated_size;
         break;
-      } else
-        XBT_CRITICAL("bug");
+      }
     }
   }
 
