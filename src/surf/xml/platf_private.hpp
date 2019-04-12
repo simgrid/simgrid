@@ -39,7 +39,7 @@ struct HostCreationArgs {
   int core_amount          = 0;
   profile::Profile* speed_trace                            = nullptr;
   profile::Profile* state_trace                            = nullptr;
-  const char* coord        = nullptr;
+  std::string coord                                        = "";
   std::unordered_map<std::string, std::string>* properties = nullptr;
 };
 
