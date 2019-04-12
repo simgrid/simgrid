@@ -8,7 +8,7 @@
 namespace simgrid {
 namespace kernel {
 namespace profile {
-	
+
 FutureEvtSet::FutureEvtSet() = default;
 FutureEvtSet::~FutureEvtSet()
 {
@@ -37,12 +37,12 @@ Event* FutureEvtSet::pop_leq(double date, double* value, resource::Resource** re
   if (event_date > date || heap_.empty())
     return nullptr;
 
-  Event* event = heap_.top().second;
-  Profile* profile = event->profile;
+  Event* event       = heap_.top().second;
+  Profile* profile   = event->profile;
   DatedValue dateVal = profile->next(event);
 
   *resource = event->resource;
-  *value = dateVal.value_;
+  *value    = dateVal.value_;
 
   heap_.pop();
 

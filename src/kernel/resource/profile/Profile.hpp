@@ -8,13 +8,13 @@
 
 #include "src/kernel/resource/profile/DatedValue.hpp"
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
-#include <vector>
 #include <queue>
+#include <vector>
 
 namespace simgrid {
 namespace kernel {
 namespace profile {
-	
+
 class Event {
 public:
   Profile* profile;
@@ -22,7 +22,7 @@ public:
   resource::Resource* resource;
   bool free_me;
 };
-	
+
 /** @brief A profile is a set of timed values, encoding the value that a variable takes at what time
  *
  * It is useful to model dynamic platforms, where an external load that makes the resource availability change over

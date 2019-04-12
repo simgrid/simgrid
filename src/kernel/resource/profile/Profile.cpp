@@ -3,14 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/kernel/resource/profile/Profile.hpp"
+#include "simgrid/forward.h"
+#include "src/kernel/resource/profile/DatedValue.cpp"
+#include "src/kernel/resource/profile/FutureEvtSet.cpp"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
-#include <ostream>
-#include "src/kernel/resource/profile/Profile.hpp"
 #include <boost/algorithm/string.hpp>
-#include "src/kernel/resource/profile/FutureEvtSet.cpp"
-#include "src/kernel/resource/profile/DatedValue.cpp"
-#include "simgrid/forward.h"
+#include <ostream>
 #include <vector>
 
 static std::unordered_map<std::string, simgrid::kernel::profile::Profile*> trace_list;
@@ -25,7 +25,7 @@ Profile::Profile()
   DatedValue val(0, -1);
   event_list.push_back(val);
 }
-Profile::~Profile()          = default;
+Profile::~Profile() = default;
 
 /** @brief Register this profile for that resource onto that FES,
  * and get an iterator over the integrated trace  */
@@ -122,7 +122,7 @@ Profile* Profile::from_file(const std::string& path)
 
   return Profile::from_string(path, buffer.str(), -1);
 }
-	
+
 } // namespace profile
 } // namespace kernel
 } // namespace simgrid

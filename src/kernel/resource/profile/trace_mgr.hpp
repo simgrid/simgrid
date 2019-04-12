@@ -25,6 +25,4 @@ extern XBT_PRIVATE simgrid::kernel::profile::FutureEvtSet future_evt_set;
 XBT_PUBLIC void tmgr_trace_event_unref(simgrid::kernel::profile::Event** trace_event);
 XBT_PUBLIC void tmgr_finalize();
 
-
-
 #endif /* SURF_PMGR_H */
