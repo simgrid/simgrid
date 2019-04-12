@@ -218,7 +218,7 @@ kernel::resource::Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host
   return res;
 }
 
-Cpu* CpuL07Model::create_cpu(simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
+kernel::resource::Cpu* CpuL07Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
 {
   return new CpuL07(this, host, speed_per_pstate, core);
 }

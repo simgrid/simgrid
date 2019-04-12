@@ -249,7 +249,7 @@ static void instr_action_on_state_change(simgrid::kernel::resource::Action const
     /* Beware of composite actions: ptasks put links and cpus together. Extra pb: we cannot dynamic_cast from void* */
     simgrid::kernel::resource::Resource* resource =
         static_cast<simgrid::kernel::resource::Resource*>(action.get_variable()->get_constraint(i)->get_id());
-    simgrid::surf::Cpu* cpu = dynamic_cast<simgrid::surf::Cpu*>(resource);
+    simgrid::kernel::resource::Cpu* cpu = dynamic_cast<simgrid::kernel::resource::Cpu*>(resource);
 
     if (cpu != nullptr)
       TRACE_surf_resource_set_utilization("HOST", "speed_used", cpu->get_cname(), action.get_category(), value,
@@ -367,7 +367,7 @@ void instr_define_callbacks()
   }
   simgrid::s4u::NetZone::on_creation.connect(instr_netzone_on_creation);
 
-  simgrid::surf::CpuAction::on_state_change.connect(instr_action_on_state_change);
+  simgrid::kernel::resource::CpuAction::on_state_change.connect(instr_action_on_state_change);
   simgrid::s4u::Link::on_communication_state_change.connect(instr_action_on_state_change);
 
   if (TRACE_actor_is_enabled()) {

@@ -73,7 +73,7 @@ private:
  * Action *
  **********/
 
-class XBT_PRIVATE CpuTiAction : public CpuAction {
+class XBT_PRIVATE CpuTiAction : public kernel::resource::CpuAction {
   friend class CpuTi;
 public:
   CpuTiAction(CpuTi* cpu, double cost);
@@ -100,9 +100,9 @@ typedef boost::intrusive::list<CpuTiAction, ActionTiListOptions > ActionTiList;
 /************
  * Resource *
  ************/
-class CpuTi : public Cpu {
+class CpuTi : public kernel::resource::Cpu {
 public:
-  CpuTi(CpuTiModel* model, simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core);
+  CpuTi(CpuTiModel* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core);
   CpuTi(const CpuTi&)            = delete;
   CpuTi& operator&(const CpuTi&) = delete;
   ~CpuTi() override;
@@ -114,13 +114,13 @@ public:
   void update_remaining_amount(double now);
 
   bool is_used() override;
-  CpuAction *execution_start(double size) override;
+  kernel::resource::CpuAction* execution_start(double size) override;
   kernel::resource::Action* execution_start(double, int) override
   {
     THROW_UNIMPLEMENTED;
     return nullptr;
   }
-  CpuAction *sleep(double duration) override;
+  kernel::resource::CpuAction* sleep(double duration) override;
   double get_speed_ratio() override;
 
   void set_modified(bool modified);
@@ -139,7 +139,7 @@ typedef boost::intrusive::list<CpuTi, CpuTiListOptions> CpuTiList;
 /*********
  * Model *
  *********/
-class CpuTiModel : public CpuModel {
+class CpuTiModel : public kernel::resource::CpuModel {
 public:
   static void create_pm_vm_models(); // Make both models be TI models
 
@@ -147,14 +147,14 @@ public:
   CpuTiModel(const CpuTiModel&) = delete;
   CpuTiModel& operator=(const CpuTiModel&) = delete;
   ~CpuTiModel() override;
-  Cpu* create_cpu(simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) override;
+  kernel::resource::Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) override;
   double next_occuring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 
   CpuTiList modified_cpus_;
 };
 
-}
-}
+} // namespace surf
+} // namespace simgrid
 
 #endif /* SURF_MODEL_CPUTI_H_ */

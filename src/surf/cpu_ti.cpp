@@ -312,7 +312,7 @@ CpuTiModel::~CpuTiModel()
   surf_cpu_model_pm = nullptr;
 }
 
-Cpu* CpuTiModel::create_cpu(simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
+kernel::resource::Cpu* CpuTiModel::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
 {
   return new CpuTi(this, host, speed_per_pstate, core);
 }
@@ -535,7 +535,7 @@ void CpuTi::update_remaining_amount(double now)
   last_update_ = now;
 }
 
-CpuAction *CpuTi::execution_start(double size)
+kernel::resource::CpuAction* CpuTi::execution_start(double size)
 {
   XBT_IN("(%s,%g)", get_cname(), size);
   CpuTiAction* action = new CpuTiAction(this, size);
@@ -546,8 +546,7 @@ CpuAction *CpuTi::execution_start(double size)
   return action;
 }
 
-
-CpuAction *CpuTi::sleep(double duration)
+kernel::resource::CpuAction* CpuTi::sleep(double duration)
 {
   if (duration > 0)
     duration = std::max(duration, sg_surf_precision);

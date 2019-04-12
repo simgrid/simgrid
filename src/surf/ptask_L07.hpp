@@ -46,14 +46,14 @@ public:
                                              const double* bytes_amount, double rate) override;
 };
 
-class CpuL07Model : public CpuModel {
+class CpuL07Model : public kernel::resource::CpuModel {
 public:
   CpuL07Model(HostL07Model* hmodel, kernel::lmm::System* sys);
   CpuL07Model(const CpuL07Model&) = delete;
   CpuL07Model& operator=(const CpuL07Model&) = delete;
   ~CpuL07Model();
 
-  Cpu* create_cpu(simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) override;
+  kernel::resource::Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) override;
   HostL07Model *hostModel_;
 };
 
@@ -75,7 +75,7 @@ public:
  * Resource *
  ************/
 
-class CpuL07 : public Cpu {
+class CpuL07 : public kernel::resource::Cpu {
 public:
   CpuL07(CpuL07Model* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core);
   CpuL07(const CpuL07&) = delete;
@@ -111,7 +111,7 @@ public:
 /**********
  * Action *
  **********/
-class L07Action : public CpuAction {
+class L07Action : public kernel::resource::CpuAction {
   friend Action *CpuL07::execution_start(double size);
   friend Action *CpuL07::sleep(double duration);
   friend Action* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
@@ -140,7 +140,7 @@ private:
                              // exec and regular comms
 };
 
-}
-}
+} // namespace surf
+} // namespace simgrid
 
 #endif /* HOST_L07_HPP_ */

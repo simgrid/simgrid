@@ -23,8 +23,8 @@ namespace vm {
 /*************
  * Callbacks *
  *************/
-simgrid::xbt::signal<void(VirtualMachineImpl&)> VirtualMachineImpl::on_creation;
-simgrid::xbt::signal<void(VirtualMachineImpl const&)> VirtualMachineImpl::on_destruction;
+xbt::signal<void(VirtualMachineImpl&)> VirtualMachineImpl::on_creation;
+xbt::signal<void(VirtualMachineImpl const&)> VirtualMachineImpl::on_destruction;
 
 /*********
  * Model *
@@ -115,7 +115,7 @@ double VMModel::next_occuring_event(double now)
 
   /* iterate for all virtual machines */
   for (s4u::VirtualMachine* const& ws_vm : VirtualMachineImpl::allVms_) {
-    surf::Cpu* cpu = ws_vm->pimpl_cpu;
+    kernel::resource::Cpu* cpu = ws_vm->pimpl_cpu;
 
     double solved_value =
         ws_vm->get_impl()->action_->get_variable()->get_value(); // this is X1 in comment above, what
@@ -266,8 +266,8 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
 
   /* Update vcpu's action for the new pm */
   /* create a cpu action bound to the pm model at the destination. */
-  surf::CpuAction* new_cpu_action =
-      static_cast<surf::CpuAction*>(destination->pimpl_cpu->execution_start(0, this->core_amount_));
+  kernel::resource::CpuAction* new_cpu_action =
+      static_cast<kernel::resource::CpuAction*>(destination->pimpl_cpu->execution_start(0, this->core_amount_));
 
   if (action_->get_remains_no_update() > 0)
     XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->get_remains_no_update());

@@ -133,8 +133,10 @@ class System;
 }
 namespace resource {
 class Action;
+class Cpu;
 class Model;
 class Resource;
+class CpuModel;
 class NetworkModel;
 class LinkImpl;
 class NetworkAction;
@@ -160,8 +162,6 @@ namespace simix {
   class Timer;
 }
 namespace surf {
-  class Cpu;
-  class CpuModel;
   class HostImpl;
   class HostModel;
 }

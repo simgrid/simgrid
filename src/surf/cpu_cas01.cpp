@@ -56,19 +56,19 @@ void surf_cpu_model_init_Cas01()
 namespace simgrid {
 namespace surf {
 
-CpuCas01Model::CpuCas01Model(kernel::resource::Model::UpdateAlgo algo) : simgrid::surf::CpuModel(algo)
+CpuCas01Model::CpuCas01Model(kernel::resource::Model::UpdateAlgo algo) : kernel::resource::CpuModel(algo)
 {
   all_existing_models.push_back(this);
 
-  bool select = simgrid::config::get_value<bool>("cpu/maxmin-selective-update");
+  bool select = config::get_value<bool>("cpu/maxmin-selective-update");
 
   if (algo == Model::UpdateAlgo::LAZY) {
-    xbt_assert(select || simgrid::config::is_default("cpu/maxmin-selective-update"),
+    xbt_assert(select || config::is_default("cpu/maxmin-selective-update"),
                "You cannot disable cpu selective update when using the lazy update mechanism");
     select = true;
   }
 
-  set_maxmin_system(new simgrid::kernel::lmm::System(select));
+  set_maxmin_system(new kernel::lmm::System(select));
 }
 
 CpuCas01Model::~CpuCas01Model()
@@ -76,7 +76,7 @@ CpuCas01Model::~CpuCas01Model()
   surf_cpu_model_pm = nullptr;
 }
 
-Cpu* CpuCas01Model::create_cpu(simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
+kernel::resource::Cpu* CpuCas01Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
 {
   return new CpuCas01(this, host, speed_per_pstate, core);
 }
@@ -84,8 +84,7 @@ Cpu* CpuCas01Model::create_cpu(simgrid::s4u::Host* host, const std::vector<doubl
 /************
  * Resource *
  ************/
-CpuCas01::CpuCas01(CpuCas01Model* model, simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate,
-                   int core)
+CpuCas01::CpuCas01(CpuCas01Model* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
     : Cpu(model, host, model->get_maxmin_system()->constraint_new(this, core * speed_per_pstate.front()),
           speed_per_pstate, core)
 {
@@ -162,18 +161,18 @@ void CpuCas01::apply_event(kernel::profile::Event* event, double value)
 }
 
 /** @brief Start a new execution on this CPU lasting @param size flops and using one core */
-CpuAction* CpuCas01::execution_start(double size)
+kernel::resource::CpuAction* CpuCas01::execution_start(double size)
 {
   return new CpuCas01Action(get_model(), size, not is_on(), speed_.scale * speed_.peak, get_constraint());
 }
 
-CpuAction* CpuCas01::execution_start(double size, int requested_cores)
+kernel::resource::CpuAction* CpuCas01::execution_start(double size, int requested_cores)
 {
   return new CpuCas01Action(get_model(), size, not is_on(), speed_.scale * speed_.peak, get_constraint(),
                             requested_cores);
 }
 
-CpuAction* CpuCas01::sleep(double duration)
+kernel::resource::CpuAction* CpuCas01::sleep(double duration)
 {
   if (duration > 0)
     duration = std::max(duration, sg_surf_precision);

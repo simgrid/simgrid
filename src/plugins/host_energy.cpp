@@ -411,10 +411,10 @@ static void on_creation(simgrid::s4u::Host& host)
   host.extension_set(new HostEnergy(&host));
 }
 
-static void on_action_state_change(simgrid::surf::CpuAction const& action,
+static void on_action_state_change(simgrid::kernel::resource::CpuAction const& action,
                                    simgrid::kernel::resource::Action::State /*previous*/)
 {
-  for (simgrid::surf::Cpu* const& cpu : action.cpus()) {
+  for (simgrid::kernel::resource::Cpu* const& cpu : action.cpus()) {
     simgrid::s4u::Host* host = cpu->get_host();
     if (host != nullptr) {
 
@@ -490,7 +490,7 @@ void sg_host_energy_plugin_init()
   simgrid::s4u::Host::on_speed_change.connect(&on_host_change);
   simgrid::s4u::Host::on_destruction.connect(&on_host_destruction);
   simgrid::s4u::on_simulation_end.connect(&on_simulation_end);
-  simgrid::surf::CpuAction::on_state_change.connect(&on_action_state_change);
+  simgrid::kernel::resource::CpuAction::on_state_change.connect(&on_action_state_change);
   // We may only have one actor on a node. If that actor executes something like
   //   compute -> recv -> compute
   // the recv operation will not trigger a "CpuAction::on_state_change". This means
