@@ -29,7 +29,7 @@ public:
   template<class T>
   void update(T& x)
   {
-    state_ = (state_ << 5) + state_ + state_;
+    state_ = (state_ << 5) + state_ + x;
   }
   hash_type value()
   {
