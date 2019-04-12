@@ -3,10 +3,10 @@ SimGrid (3.23) NOT RELEASED (Release Target: June 21. 2019, 15:54 UTC)
 XBT:
  - Drop xbt_dict_dump.
 
-Fixed bugs (GH=GitHub; FM=FramaGit):
+Fixed bugs (GH=GitHub; FG=FramaGit):
+ - FG#10: Can not use MSG_process_set_data from SMPI any more
  - GH#326: Valgrind-detected error for join() when energy plugin is activated
- - FM#10: Can not use MSG_process_set_data from SMPI any more
- 
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.22) April 1. 2019
