@@ -39,7 +39,7 @@ void surf_cpu_model_init_Cas01()
   xbt_assert(surf_cpu_model_vm == nullptr, "CPU model already initialized. This should not happen.");
 
   if (cpu_optim_opt == "TI") {
-    simgrid::surf::CpuTiModel::create_pm_vm_models();
+    simgrid::kernel::resource::CpuTiModel::create_pm_vm_models();
     return;
   }
 
@@ -49,14 +49,15 @@ void surf_cpu_model_init_Cas01()
   else
     algo = simgrid::kernel::resource::Model::UpdateAlgo::FULL;
 
-  surf_cpu_model_pm = new simgrid::surf::CpuCas01Model(algo);
-  surf_cpu_model_vm = new simgrid::surf::CpuCas01Model(algo);
+  surf_cpu_model_pm = new simgrid::kernel::resource::CpuCas01Model(algo);
+  surf_cpu_model_vm = new simgrid::kernel::resource::CpuCas01Model(algo);
 }
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
-CpuCas01Model::CpuCas01Model(kernel::resource::Model::UpdateAlgo algo) : kernel::resource::CpuModel(algo)
+CpuCas01Model::CpuCas01Model(Model::UpdateAlgo algo) : CpuModel(algo)
 {
   all_existing_models.push_back(this);
 
@@ -68,7 +69,7 @@ CpuCas01Model::CpuCas01Model(kernel::resource::Model::UpdateAlgo algo) : kernel:
     select = true;
   }
 
-  set_maxmin_system(new kernel::lmm::System(select));
+  set_maxmin_system(new lmm::System(select));
 }
 
 CpuCas01Model::~CpuCas01Model()
@@ -76,7 +77,7 @@ CpuCas01Model::~CpuCas01Model()
   surf_cpu_model_pm = nullptr;
 }
 
-kernel::resource::Cpu* CpuCas01Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
+Cpu* CpuCas01Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
 {
   return new CpuCas01(this, host, speed_per_pstate, core);
 }
@@ -100,8 +101,8 @@ bool CpuCas01::is_used()
 /** @brief take into account changes of speed (either load or max) */
 void CpuCas01::on_speed_change()
 {
-  kernel::lmm::Variable* var = nullptr;
-  const kernel::lmm::Element* elem = nullptr;
+  lmm::Variable* var       = nullptr;
+  const lmm::Element* elem = nullptr;
 
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
                                                             get_core_count() * speed_.scale * speed_.peak);
@@ -115,7 +116,7 @@ void CpuCas01::on_speed_change()
   Cpu::on_speed_change();
 }
 
-void CpuCas01::apply_event(kernel::profile::Event* event, double value)
+void CpuCas01::apply_event(profile::Event* event, double value)
 {
   if (event == speed_.event) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
@@ -135,21 +136,20 @@ void CpuCas01::apply_event(kernel::profile::Event* event, double value)
         get_host()->turn_on();
       }
     } else {
-      kernel::lmm::Constraint* cnst = get_constraint();
-      kernel::lmm::Variable* var    = nullptr;
-      const kernel::lmm::Element* elem = nullptr;
+      lmm::Constraint* cnst    = get_constraint();
+      lmm::Variable* var       = nullptr;
+      const lmm::Element* elem = nullptr;
       double date              = surf_get_clock();
 
       get_host()->turn_off();
 
       while ((var = cnst->get_variable(&elem))) {
-        kernel::resource::Action* action = static_cast<kernel::resource::Action*>(var->get_id());
+        Action* action = static_cast<Action*>(var->get_id());
 
-        if (action->get_state() == kernel::resource::Action::State::INITED ||
-            action->get_state() == kernel::resource::Action::State::STARTED ||
-            action->get_state() == kernel::resource::Action::State::IGNORED) {
+        if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED ||
+            action->get_state() == Action::State::IGNORED) {
           action->set_finish_time(date);
-          action->set_state(kernel::resource::Action::State::FAILED);
+          action->set_state(Action::State::FAILED);
         }
       }
     }
@@ -161,18 +161,18 @@ void CpuCas01::apply_event(kernel::profile::Event* event, double value)
 }
 
 /** @brief Start a new execution on this CPU lasting @param size flops and using one core */
-kernel::resource::CpuAction* CpuCas01::execution_start(double size)
+CpuAction* CpuCas01::execution_start(double size)
 {
   return new CpuCas01Action(get_model(), size, not is_on(), speed_.scale * speed_.peak, get_constraint());
 }
 
-kernel::resource::CpuAction* CpuCas01::execution_start(double size, int requested_cores)
+CpuAction* CpuCas01::execution_start(double size, int requested_cores)
 {
   return new CpuCas01Action(get_model(), size, not is_on(), speed_.scale * speed_.peak, get_constraint(),
                             requested_cores);
 }
 
-kernel::resource::CpuAction* CpuCas01::sleep(double duration)
+CpuAction* CpuCas01::sleep(double duration)
 {
   if (duration > 0)
     duration = std::max(duration, sg_surf_precision);
@@ -183,12 +183,12 @@ kernel::resource::CpuAction* CpuCas01::sleep(double duration)
 
   // FIXME: sleep variables should not consume 1.0 in System::expand()
   action->set_max_duration(duration);
-  action->set_suspend_state(kernel::resource::Action::SuspendStates::SLEEPING);
+  action->set_suspend_state(Action::SuspendStates::SLEEPING);
   if (duration == NO_MAX_DURATION)
-    action->set_state(simgrid::kernel::resource::Action::State::IGNORED);
+    action->set_state(Action::State::IGNORED);
 
   get_model()->get_maxmin_system()->update_variable_weight(action->get_variable(), 0.0);
-  if (get_model()->get_update_algorithm() == kernel::resource::Model::UpdateAlgo::LAZY) { // remove action from the heap
+  if (get_model()->get_update_algorithm() == Model::UpdateAlgo::LAZY) { // remove action from the heap
     get_model()->get_action_heap().remove(action);
     // this is necessary for a variable with weight 0 since such variables are ignored in lmm and we need to set its
     // max_duration correctly at the next call to share_resources
@@ -202,19 +202,18 @@ kernel::resource::CpuAction* CpuCas01::sleep(double duration)
 /**********
  * Action *
  **********/
-CpuCas01Action::CpuCas01Action(kernel::resource::Model* model, double cost, bool failed, double speed,
-                               kernel::lmm::Constraint* constraint, int requested_core)
+CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm::Constraint* constraint,
+                               int requested_core)
     : CpuAction(model, cost, failed,
                 model->get_maxmin_system()->variable_new(this, 1.0 / requested_core, requested_core * speed, 1))
     , requested_core_(requested_core)
 {
-  if (model->get_update_algorithm() == kernel::resource::Model::UpdateAlgo::LAZY)
+  if (model->get_update_algorithm() == Model::UpdateAlgo::LAZY)
     set_last_update();
   model->get_maxmin_system()->expand(constraint, get_variable(), 1.0);
 }
 
-CpuCas01Action::CpuCas01Action(kernel::resource::Model* model, double cost, bool failed, double speed,
-                               kernel::lmm::Constraint* constraint)
+CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm::Constraint* constraint)
     : CpuCas01Action(model, cost, failed, speed, constraint, /* requested_core */ 1)
 {
 }
@@ -226,5 +225,6 @@ int CpuCas01Action::requested_core()
 
 CpuCas01Action::~CpuCas01Action()=default;
 
-}
-}
+} // namespace resource
+} // namespace kernel
+} // namespace simgrid

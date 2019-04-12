@@ -13,13 +13,14 @@ constexpr double EPSILON = 0.000000001;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf_cpu, "Logging specific to the SURF CPU TRACE INTEGRATION module");
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 /*********
  * Trace *
  *********/
 
-CpuTiProfile::CpuTiProfile(kernel::profile::Profile* profile)
+CpuTiProfile::CpuTiProfile(profile::Profile* profile)
 {
   double integral = 0;
   double time = 0;
@@ -284,22 +285,17 @@ int CpuTiProfile::binary_search(double* array, double a, int low, int high)
   return low;
 }
 
-}
-}
-
 /*********
  * Model *
  *********/
-namespace simgrid {
-namespace surf {
 
 void CpuTiModel::create_pm_vm_models()
 {
   xbt_assert(surf_cpu_model_pm == nullptr, "CPU model already initialized. This should not happen.");
   xbt_assert(surf_cpu_model_vm == nullptr, "CPU model already initialized. This should not happen.");
 
-  surf_cpu_model_pm = new simgrid::surf::CpuTiModel();
-  surf_cpu_model_vm = new simgrid::surf::CpuTiModel();
+  surf_cpu_model_pm = new simgrid::kernel::resource::CpuTiModel();
+  surf_cpu_model_vm = new simgrid::kernel::resource::CpuTiModel();
 }
 
 CpuTiModel::CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL)
@@ -666,5 +662,6 @@ double CpuTiAction::get_remains()
   return get_remains_no_update();
 }
 
-}
-}
+} // namespace resource
+} // namespace kernel
+} // namespace simgrid

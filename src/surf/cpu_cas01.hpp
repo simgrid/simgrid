@@ -11,7 +11,8 @@
  ***********/
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 class XBT_PRIVATE CpuCas01Model;
 class XBT_PRIVATE CpuCas01;
@@ -21,30 +22,30 @@ class XBT_PRIVATE CpuCas01Action;
  * Model *
  *********/
 
-class CpuCas01Model : public kernel::resource::CpuModel {
+class CpuCas01Model : public CpuModel {
 public:
-  explicit CpuCas01Model(kernel::resource::Model::UpdateAlgo algo);
+  explicit CpuCas01Model(Model::UpdateAlgo algo);
   CpuCas01Model(const CpuCas01Model&) = delete;
   CpuCas01Model& operator=(const CpuCas01Model&) = delete;
   ~CpuCas01Model() override;
 
-  kernel::resource::Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) override;
+  Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) override;
 };
 
 /************
  * Resource *
  ************/
 
-class CpuCas01 : public kernel::resource::Cpu {
+class CpuCas01 : public Cpu {
 public:
-  CpuCas01(CpuCas01Model* model, simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core);
+  CpuCas01(CpuCas01Model* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core);
   CpuCas01(const CpuCas01&) = delete;
   CpuCas01& operator=(const CpuCas01&) = delete;
   ~CpuCas01() override;
-  void apply_event(simgrid::kernel::profile::Event* event, double value) override;
-  kernel::resource::CpuAction* execution_start(double size) override;
-  kernel::resource::CpuAction* execution_start(double size, int requested_cores) override;
-  kernel::resource::CpuAction* sleep(double duration) override;
+  void apply_event(profile::Event* event, double value) override;
+  CpuAction* execution_start(double size) override;
+  CpuAction* execution_start(double size, int requested_cores) override;
+  CpuAction* sleep(double duration) override;
 
   bool is_used() override;
 
@@ -55,15 +56,13 @@ protected:
 /**********
  * Action *
  **********/
-class CpuCas01Action : public kernel::resource::CpuAction {
-  friend kernel::resource::CpuAction* CpuCas01::execution_start(double size);
-  friend kernel::resource::CpuAction* CpuCas01::sleep(double duration);
+class CpuCas01Action : public CpuAction {
+  friend CpuAction* CpuCas01::execution_start(double size);
+  friend CpuAction* CpuCas01::sleep(double duration);
 
 public:
-  CpuCas01Action(kernel::resource::Model* model, double cost, bool failed, double speed,
-                 kernel::lmm::Constraint* constraint, int core_count);
-  CpuCas01Action(kernel::resource::Model* model, double cost, bool failed, double speed,
-                 kernel::lmm::Constraint* constraint);
+  CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm::Constraint* constraint, int core_count);
+  CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm::Constraint* constraint);
   CpuCas01Action(const CpuCas01Action&) = delete;
   CpuCas01Action& operator=(const CpuCas01Action&) = delete;
   ~CpuCas01Action() override;
@@ -73,5 +72,6 @@ private:
   int requested_core_ = 1;
 };
 
-}
-}
+} // namespace resource
+} // namespace kernel
+} // namespace simgrid
