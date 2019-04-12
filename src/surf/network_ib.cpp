@@ -103,7 +103,7 @@ NetworkIBModel::NetworkIBModel() : NetworkSmpiModel()
 {
   /* Do not add this into all_existing_models: our ancestor already does so */
 
-  std::string IB_factors_string = simgrid::config::get_value<std::string>("smpi/IB-penalty-factors");
+  std::string IB_factors_string = config::get_value<std::string>("smpi/IB-penalty-factors");
   std::vector<std::string> radical_elements;
   boost::split(radical_elements, IB_factors_string, boost::is_any_of(";"));
 
@@ -234,6 +234,6 @@ void NetworkIBModel::updateIBfactors(NetworkAction* action, IBNode* from, IBNode
   updateIBfactors_rec(from, updated);
   XBT_DEBUG("IB - Finished updating %d", from->id);
 }
-}
-}
+} // namespace resource
+} // namespace kernel
 } // namespace simgrid

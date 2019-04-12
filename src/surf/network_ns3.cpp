@@ -155,18 +155,18 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
 
   all_existing_models.push_back(this);
 
-  NetPointNs3::EXTENSION_ID = simgrid::kernel::routing::NetPoint::extension_create<NetPointNs3>();
+  NetPointNs3::EXTENSION_ID = routing::NetPoint::extension_create<NetPointNs3>();
 
   ns3_initialize(ns3_tcp_model.get().c_str());
 
-  simgrid::kernel::routing::NetPoint::on_creation.connect([](simgrid::kernel::routing::NetPoint& pt) {
+  routing::NetPoint::on_creation.connect([](routing::NetPoint& pt) {
     pt.extension_set<NetPointNs3>(new NetPointNs3());
     XBT_VERB("SimGrid's %s is known as node %d within NS3", pt.get_cname(), pt.extension<NetPointNs3>()->node_num);
   });
-  simgrid::surf::on_cluster.connect(&clusterCreation_cb);
+  surf::on_cluster.connect(&clusterCreation_cb);
 
-  simgrid::s4u::on_platform_created.connect(&postparse_cb);
-  simgrid::s4u::NetZone::on_route_creation.connect(&routeCreation_cb);
+  s4u::on_platform_created.connect(&postparse_cb);
+  s4u::NetZone::on_route_creation.connect(&routeCreation_cb);
 }
 
 NetworkNS3Model::~NetworkNS3Model() {
@@ -179,7 +179,7 @@ LinkImpl* NetworkNS3Model::create_link(const std::string& name, double bandwidth
   return new LinkNS3(this, name, bandwidth, latency);
 }
 
-kernel::resource::Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
+Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
   return new NetworkNS3Action(this, size, src, dst);
 }
@@ -294,7 +294,7 @@ void LinkNS3::set_latency_profile(profile::Profile* profile)
  * Action *
  **********/
 
-NetworkNS3Action::NetworkNS3Action(kernel::resource::Model* model, double totalBytes, s4u::Host* src, s4u::Host* dst)
+NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* src, s4u::Host* dst)
     : NetworkAction(model, totalBytes, false), src_(src), dst_(dst)
 {
   XBT_DEBUG("Communicate from %s to %s", src->get_cname(), dst->get_cname());
@@ -349,8 +349,8 @@ void NetworkNS3Action::update_remains_lazy(double /*now*/)
 }
 
 } // namespace resource
-}
-}
+} // namespace kernel
+} // namespace simgrid
 
 void ns3_simulator(double maxSeconds)
 {

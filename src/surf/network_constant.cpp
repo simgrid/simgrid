@@ -21,12 +21,14 @@ void surf_network_model_init_Constant()
 namespace simgrid {
 namespace kernel {
 namespace resource {
+
 NetworkConstantModel::NetworkConstantModel() : NetworkModel(Model::UpdateAlgo::FULL)
 {
   all_existing_models.push_back(this);
 }
 
-LinkImpl* NetworkConstantModel::create_link(const std::string& name, double, double, s4u::Link::SharingPolicy)
+LinkImpl* NetworkConstantModel::create_link(const std::string& name, double /*bandwidth*/, double /*latency*/,
+                                            s4u::Link::SharingPolicy)
 {
 
   xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
@@ -63,16 +65,16 @@ void NetworkConstantModel::update_actions_state(double /*now*/, double delta)
 
     if ((action.get_remains_no_update() <= 0) ||
         ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
-      action.finish(kernel::resource::Action::State::FINISHED);
+      action.finish(Action::State::FINISHED);
     }
   }
 }
 
-kernel::resource::Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double)
+Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double)
 {
   NetworkConstantAction* action = new NetworkConstantAction(this, size, sg_latency_factor);
 
-  simgrid::s4u::Link::on_communicate(*action, src, dst);
+  s4u::Link::on_communicate(*action, src, dst);
   return action;
 }
 
@@ -93,6 +95,7 @@ void NetworkConstantAction::update_remains_lazy(double /*now*/)
 {
   THROW_IMPOSSIBLE;
 }
-}
+
+} // namespace resource
 } // namespace kernel
-}
+} // namespace simgrid

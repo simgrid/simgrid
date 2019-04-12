@@ -42,7 +42,9 @@ public:
 };
 
 class XBT_PRIVATE NetworkIBModel : public NetworkSmpiModel {
-private:
+  double Bs;
+  double Be;
+  double ys;
   void updateIBfactors_rec(IBNode* root, std::vector<bool>& updatedlist);
   void computeIBfactors(IBNode* root);
 
@@ -57,11 +59,8 @@ public:
   std::unordered_map<std::string, IBNode*> active_nodes;
   std::unordered_map<NetworkAction*, std::pair<IBNode*, IBNode*>> active_comms;
 
-  double Bs;
-  double Be;
-  double ys;
 };
-}
+} // namespace resource
 } // namespace kernel
 } // namespace simgrid
 #endif
