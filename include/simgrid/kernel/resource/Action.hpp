@@ -238,8 +238,6 @@ public:
   double get_last_value() const { return last_value_; }
   void set_last_value(double val) { last_value_ = val; }
   void set_suspend_state(Action::SuspendStates state) { suspended_ = state; }
-
-protected:
 };
 
 } // namespace resource
