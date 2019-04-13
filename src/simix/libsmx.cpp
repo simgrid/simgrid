@@ -95,8 +95,8 @@ void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size,
     comm = nullptr;
   }
   else {
-    simcall_BODY_comm_send(sender, mbox, task_size, rate, src_buff, src_buff_size,
-                         match_fun, copy_data_fun, data, timeout);
+    simcall_BODY_comm_send(sender, mbox, task_size, rate, static_cast<unsigned char*>(src_buff), src_buff_size,
+                           match_fun, copy_data_fun, data, timeout);
   }
 }
 
@@ -116,9 +116,8 @@ smx_activity_t simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double
 
   xbt_assert(mbox, "No rendez-vous point defined for isend");
 
-  return simcall_BODY_comm_isend(sender, mbox, task_size, rate, src_buff,
-                                 src_buff_size, match_fun,
-                                 clean_fun, copy_data_fun, data, detached);
+  return simcall_BODY_comm_isend(sender, mbox, task_size, rate, static_cast<unsigned char*>(src_buff), src_buff_size,
+                                 match_fun, clean_fun, copy_data_fun, data, detached);
 }
 
 /**
@@ -141,8 +140,8 @@ void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff,
     comm = nullptr;
   }
   else {
-    simcall_BODY_comm_recv(receiver, mbox, dst_buff, dst_buff_size,
-                           match_fun, copy_data_fun, data, timeout, rate);
+    simcall_BODY_comm_recv(receiver, mbox, static_cast<unsigned char*>(dst_buff), dst_buff_size, match_fun,
+                           copy_data_fun, data, timeout, rate);
   }
 }
 /**
@@ -155,8 +154,8 @@ smx_activity_t simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void
 {
   xbt_assert(mbox, "No rendez-vous point defined for irecv");
 
-  return simcall_BODY_comm_irecv(receiver, mbox, dst_buff, dst_buff_size,
-                                 match_fun, copy_data_fun, data, rate);
+  return simcall_BODY_comm_irecv(receiver, mbox, static_cast<unsigned char*>(dst_buff), dst_buff_size, match_fun,
+                                 copy_data_fun, data, rate);
 }
 
 /**

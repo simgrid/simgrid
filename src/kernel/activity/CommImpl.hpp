@@ -27,8 +27,8 @@ public:
 
   CommImpl& set_type(CommImpl::Type type);
   CommImpl& set_size(double size);
-  CommImpl& set_src_buff(void* buff, size_t size);
-  CommImpl& set_dst_buff(void* buff, size_t* size);
+  CommImpl& set_src_buff(unsigned char* buff, size_t size);
+  CommImpl& set_dst_buff(unsigned char* buff, size_t* size);
   CommImpl& set_rate(double rate);
   double get_rate() { return rate_; }
 
@@ -64,11 +64,11 @@ expectations of the other side, too. See  */
   actor::ActorImplPtr dst_actor_ = nullptr;
 
   /* Data to be transfered */
-  void* src_buff_        = nullptr;
-  void* dst_buff_        = nullptr;
-  size_t src_buff_size_  = 0;
-  size_t* dst_buff_size_ = nullptr;
-  bool copied           = false; /* whether the data were already copied */
+  unsigned char* src_buff_ = nullptr;
+  unsigned char* dst_buff_ = nullptr;
+  size_t src_buff_size_    = 0;
+  size_t* dst_buff_size_   = nullptr;
+  bool copied              = false; /* whether the data were already copied */
 
   void* src_data_ = nullptr; /* User data associated to the communication */
   void* dst_data_ = nullptr;

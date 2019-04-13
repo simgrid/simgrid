@@ -84,20 +84,53 @@ case SIMCALL_EXECUTION_TEST:
   break;
 
 case SIMCALL_COMM_SEND:
-  simcall_HANDLER_comm_send(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]), simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[1]), simgrid::simix::unmarshal<double>(simcall->args[2]), simgrid::simix::unmarshal<double>(simcall->args[3]), simgrid::simix::unmarshal<void*>(simcall->args[4]), simgrid::simix::unmarshal<size_t>(simcall->args[5]), simgrid::simix::unmarshal<simix_match_func_t>(simcall->args[6]), simgrid::simix::unmarshal<simix_copy_data_func_t>(simcall->args[7]), simgrid::simix::unmarshal<void*>(simcall->args[8]), simgrid::simix::unmarshal<double>(simcall->args[9]));
+  simcall_HANDLER_comm_send(
+      simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]),
+      simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[1]), simgrid::simix::unmarshal<double>(simcall->args[2]),
+      simgrid::simix::unmarshal<double>(simcall->args[3]), simgrid::simix::unmarshal<unsigned char*>(simcall->args[4]),
+      simgrid::simix::unmarshal<size_t>(simcall->args[5]),
+      simgrid::simix::unmarshal<simix_match_func_t>(simcall->args[6]),
+      simgrid::simix::unmarshal<simix_copy_data_func_t>(simcall->args[7]),
+      simgrid::simix::unmarshal<void*>(simcall->args[8]), simgrid::simix::unmarshal<double>(simcall->args[9]));
   break;
 
 case SIMCALL_COMM_ISEND:
-  simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->result, simcall_HANDLER_comm_isend(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]), simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[1]), simgrid::simix::unmarshal<double>(simcall->args[2]), simgrid::simix::unmarshal<double>(simcall->args[3]), simgrid::simix::unmarshal<void*>(simcall->args[4]), simgrid::simix::unmarshal<size_t>(simcall->args[5]), simgrid::simix::unmarshal<simix_match_func_t>(simcall->args[6]), simgrid::simix::unmarshal<simix_clean_func_t>(simcall->args[7]), simgrid::simix::unmarshal<simix_copy_data_func_t>(simcall->args[8]), simgrid::simix::unmarshal<void*>(simcall->args[9]), simgrid::simix::unmarshal<bool>(simcall->args[10])));
+  simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(
+      simcall->result, simcall_HANDLER_comm_isend(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]),
+                                                  simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[1]),
+                                                  simgrid::simix::unmarshal<double>(simcall->args[2]),
+                                                  simgrid::simix::unmarshal<double>(simcall->args[3]),
+                                                  simgrid::simix::unmarshal<unsigned char*>(simcall->args[4]),
+                                                  simgrid::simix::unmarshal<size_t>(simcall->args[5]),
+                                                  simgrid::simix::unmarshal<simix_match_func_t>(simcall->args[6]),
+                                                  simgrid::simix::unmarshal<simix_clean_func_t>(simcall->args[7]),
+                                                  simgrid::simix::unmarshal<simix_copy_data_func_t>(simcall->args[8]),
+                                                  simgrid::simix::unmarshal<void*>(simcall->args[9]),
+                                                  simgrid::simix::unmarshal<bool>(simcall->args[10])));
   SIMIX_simcall_answer(simcall);
   break;
 
 case SIMCALL_COMM_RECV:
-  simcall_HANDLER_comm_recv(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]), simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[1]), simgrid::simix::unmarshal<void*>(simcall->args[2]), simgrid::simix::unmarshal<size_t*>(simcall->args[3]), simgrid::simix::unmarshal<simix_match_func_t>(simcall->args[4]), simgrid::simix::unmarshal<simix_copy_data_func_t>(simcall->args[5]), simgrid::simix::unmarshal<void*>(simcall->args[6]), simgrid::simix::unmarshal<double>(simcall->args[7]), simgrid::simix::unmarshal<double>(simcall->args[8]));
+  simcall_HANDLER_comm_recv(
+      simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]),
+      simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[1]),
+      simgrid::simix::unmarshal<unsigned char*>(simcall->args[2]), simgrid::simix::unmarshal<size_t*>(simcall->args[3]),
+      simgrid::simix::unmarshal<simix_match_func_t>(simcall->args[4]),
+      simgrid::simix::unmarshal<simix_copy_data_func_t>(simcall->args[5]),
+      simgrid::simix::unmarshal<void*>(simcall->args[6]), simgrid::simix::unmarshal<double>(simcall->args[7]),
+      simgrid::simix::unmarshal<double>(simcall->args[8]));
   break;
 
 case SIMCALL_COMM_IRECV:
-  simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->result, simcall_HANDLER_comm_irecv(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]), simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[1]), simgrid::simix::unmarshal<void*>(simcall->args[2]), simgrid::simix::unmarshal<size_t*>(simcall->args[3]), simgrid::simix::unmarshal<simix_match_func_t>(simcall->args[4]), simgrid::simix::unmarshal<simix_copy_data_func_t>(simcall->args[5]), simgrid::simix::unmarshal<void*>(simcall->args[6]), simgrid::simix::unmarshal<double>(simcall->args[7])));
+  simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(
+      simcall->result, simcall_HANDLER_comm_irecv(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]),
+                                                  simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[1]),
+                                                  simgrid::simix::unmarshal<unsigned char*>(simcall->args[2]),
+                                                  simgrid::simix::unmarshal<size_t*>(simcall->args[3]),
+                                                  simgrid::simix::unmarshal<simix_match_func_t>(simcall->args[4]),
+                                                  simgrid::simix::unmarshal<simix_copy_data_func_t>(simcall->args[5]),
+                                                  simgrid::simix::unmarshal<void*>(simcall->args[6]),
+                                                  simgrid::simix::unmarshal<double>(simcall->args[7])));
   SIMIX_simcall_answer(simcall);
   break;
 
