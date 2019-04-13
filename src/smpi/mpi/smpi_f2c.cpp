@@ -9,6 +9,11 @@
 
 #include <cstdio>
 
+int mpi_in_place_;
+int mpi_bottom_;
+int mpi_status_ignore_;
+int mpi_statuses_ignore_;
+
 namespace simgrid{
 namespace smpi{
 
