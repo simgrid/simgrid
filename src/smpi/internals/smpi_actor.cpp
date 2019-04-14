@@ -27,6 +27,7 @@ ActorExt::ActorExt(s4u::ActorPtr actor, s4u::Barrier* finalization_barrier)
   mailboxes_mutex_ = s4u::Mutex::create();
   timer_           = xbt_os_timer_new();
   state_           = SmpiProcessState::UNINITIALIZED;
+  info_env_        = MPI_INFO_NULL;
   if (MC_is_active())
     MC_ignore_heap(timer_, xbt_os_timer_size());
 
@@ -193,6 +194,11 @@ MPI_Comm ActorExt::comm_self()
   return comm_self_;
 }
 
+MPI_Info ActorExt::info_env()
+{
+  return info_env_;
+}
+
 MPI_Comm ActorExt::comm_intra()
 {
   return comm_intra_;
@@ -248,6 +254,7 @@ int ActorExt::get_optind()
 {
   return optind_;
 }
+
 void ActorExt::set_optind(int new_optind)
 {
   optind_ = new_optind;

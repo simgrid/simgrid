@@ -37,6 +37,7 @@ class ActorExt {
   int optind_                                     = 1; /*for getopt replacement */
 #endif
   std::string tracing_category_                  = "";
+  MPI_Info info_env_;
 
 #if HAVE_PAPI
   /** Contains hardware data as read by PAPI **/
@@ -81,6 +82,7 @@ public:
   s4u::ActorPtr get_actor();
   int get_optind();
   void set_optind(int optind);
+  MPI_Info info_env();
 };
 
 } // namespace smpi

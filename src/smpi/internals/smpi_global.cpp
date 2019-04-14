@@ -127,6 +127,10 @@ MPI_Comm smpi_process_comm_self(){
   return smpi_process()->comm_self();
 }
 
+MPI_Info smpi_process_info_env(){
+  return smpi_process()->info_env();
+}
+
 void smpi_process_init(int *argc, char ***argv){
   simgrid::smpi::ActorExt::init();
 }
