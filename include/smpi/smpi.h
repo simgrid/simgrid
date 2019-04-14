@@ -214,10 +214,7 @@ typedef ptrdiff_t MPI_Aint;
 typedef long long MPI_Offset;
 typedef long long MPI_Count;
 
-struct s_MPI_File;
-typedef struct s_MPI_File *MPI_File;
-
-
+typedef SMPI_File *MPI_File;
 typedef SMPI_Datatype *MPI_Datatype;
 
 typedef struct {
