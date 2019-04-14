@@ -212,6 +212,7 @@ enum ERROR_ENUM {
 
 typedef ptrdiff_t MPI_Aint;
 typedef long long MPI_Offset;
+typedef long long MPI_Count;
 
 struct s_MPI_File;
 typedef struct s_MPI_File *MPI_File;
@@ -292,9 +293,7 @@ XBT_PUBLIC_DATA const MPI_Datatype MPI_INTEGER4;
 XBT_PUBLIC_DATA const MPI_Datatype MPI_INTEGER8;
 XBT_PUBLIC_DATA const MPI_Datatype MPI_INTEGER16;
 
-//for now we only send int values at max
-#define MPI_Count int
-#define MPI_COUNT MPI_INT
+XBT_PUBLIC_DATA const MPI_Datatype MPI_COUNT;
 
 //defines for fortran compatibility
 #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
