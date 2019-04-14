@@ -32,11 +32,11 @@ set(umpire_tests_passing
   send-recv-ok
   irecv-isend-ok
   lost-request-waitall
-  partial-recv
  ) # Passing (no deadlock) tests
 
 set(umpire_tests_passing_broken
   irecv-isend-ok2
+  partial-recv
   )
 
 # These are supposed to deadlock but ISP does not find deadlock
