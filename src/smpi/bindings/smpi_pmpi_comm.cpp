@@ -221,6 +221,26 @@ int PMPI_Comm_set_attr (MPI_Comm comm, int comm_keyval, void *attribute_val)
   return PMPI_Attr_put(comm, comm_keyval, attribute_val);
 }
 
+int PMPI_Comm_get_info(MPI_Comm comm, MPI_Info* info)
+{
+  if (comm == MPI_COMM_NULL)  {
+    return MPI_ERR_WIN;
+  } else {
+    *info = comm->info();
+    return MPI_SUCCESS;
+  }
+}
+
+int PMPI_Comm_set_info(MPI_Comm  comm, MPI_Info info)
+{
+  if (comm == MPI_COMM_NULL)  {
+    return MPI_ERR_TYPE;
+  } else {
+    comm->set_info(info);
+    return MPI_SUCCESS;
+  }
+}
+
 int PMPI_Comm_delete_attr (MPI_Comm comm, int comm_keyval)
 {
   return PMPI_Attr_delete(comm, comm_keyval);

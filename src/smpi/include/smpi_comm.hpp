@@ -30,6 +30,7 @@ class Comm : public F2C, public Keyval{
   int is_smp_comm_;             // set to 0 in case this is already an intra-comm or a leader-comm to avoid recursivity
   std::list<MPI_Win> rma_wins_; // attached windows for synchronization.
   std::string name_;
+  MPI_Info info_;
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;
@@ -44,6 +45,8 @@ public:
   int rank();
   void get_name(char* name, int* len);
   void set_name(char* name);
+  MPI_Info info();
+  void set_info( MPI_Info info);
   void set_leaders_comm(MPI_Comm leaders);
   void set_intra_comm(MPI_Comm leaders) { intra_comm_ = leaders; };
   int* get_non_uniform_map();

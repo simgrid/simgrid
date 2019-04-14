@@ -8,6 +8,7 @@
 #include "smpi_datatype.hpp"
 #include "smpi_request.hpp"
 #include "smpi_win.hpp"
+#include "smpi_info.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "src/surf/HostImpl.hpp"
 
@@ -501,6 +502,19 @@ void Comm::finish_rma_calls(){
       XBT_DEBUG("Barrier for rank %d - Finished %d RMA calls",this->rank(), finished);
     }
   }
+}
+
+MPI_Info Comm::info(){
+  if(info_== MPI_INFO_NULL)
+    info_ = new Info();
+  info_->ref();
+  return info_;
+}
+
+void Comm::set_info(MPI_Info info){
+  if(info_!= MPI_INFO_NULL)
+    info->ref();
+  info_=info;
 }
 
 MPI_Comm Comm::split_type(int type, int key, MPI_Info info)
