@@ -40,8 +40,8 @@
 use File::Path;
 
 # Global variables
-$MPIMajorVersion = "2";
-$MPIMinorVersion = "2";
+$MPIMajorVersion = "3";
+$MPIMinorVersion = "1";
 $mpiexec = "smpirun";    # Name of mpiexec program (including path, if necessary)
 $testIsStrict = "true";
 $MPIhasMPIX   = "no";

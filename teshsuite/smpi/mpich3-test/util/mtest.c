@@ -340,7 +340,7 @@ int MTestGetIntracommGeneral(MPI_Comm * comm, int min_size, int allowSmaller)
             break;
         case 5:
             {
-#if MTEST_HAVE_MIN_MPI_VERSION(3,0)
+#if MTEST_HAVE_MIN_MPI_VERSION(4,0)
                 /* Dup of the world using MPI_Intercomm_merge */
                 int rleader, isLeft;
                 MPI_Comm local_comm, inter_comm;

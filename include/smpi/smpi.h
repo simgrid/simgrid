@@ -180,8 +180,8 @@ enum ERROR_ENUM {
 #define MPI_COMM_TYPE_SHARED    1
 #define MPI_WIN_NULL ((MPI_Win)NULL)
 
-#define MPI_VERSION 2
-#define MPI_SUBVERSION 2
+#define MPI_VERSION 3
+#define MPI_SUBVERSION 1
 #define MPI_UNWEIGHTED      (int *)0
 #define MPI_ARGV_NULL (char **)0
 #define MPI_ARGVS_NULL (char ***)0
@@ -777,7 +777,7 @@ typedef void MPI_Win_errhandler_function(MPI_Win *, int *, ...);
 typedef MPI_Comm_errhandler_function MPI_Comm_errhandler_fn;
 typedef MPI_File_errhandler_function MPI_File_errhandler_fn;
 typedef MPI_Win_errhandler_function MPI_Win_errhandler_fn;
-#define MPI_INFO_ENV 1
+#define MPI_INFO_ENV smpi_process_info_env()
 XBT_PUBLIC_DATA const MPI_Datatype MPI_PACKED;
 XBT_PUBLIC_DATA MPI_Errhandler* MPI_ERRORS_RETURN;
 XBT_PUBLIC_DATA MPI_Errhandler* MPI_ERRORS_ARE_FATAL;
@@ -965,6 +965,7 @@ MPI_CALL(XBT_PUBLIC int, MPI_File_sync, (MPI_File fh));
 // smpi functions
 XBT_PUBLIC int smpi_global_size();
 XBT_PUBLIC MPI_Comm smpi_process_comm_self();
+XBT_PUBLIC MPI_Info smpi_process_info_env();
 XBT_PUBLIC void* smpi_process_get_user_data();
 XBT_PUBLIC void smpi_process_set_user_data(void*);
 
