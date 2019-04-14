@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
         int disp_unit;
         for (i = 0; i < shm_nproc; i++) {
             MPI_Win_shared_query(shm_win, i, &size, &disp_unit, &shm_bases[i]);
-            printf("%d --    shared query: base[%d]=%p, size %ld, "
+            printf("%d --    shared query: base[%d]=%p, size %zd, "
                    "unit %d\n", rank, i, shm_bases[i], size, disp_unit);
         }
     }
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
     get_target_base_offsets = (shm_nproc - 1) * win_size / win_unit;
 
     if (origin == rank && verbose)
-        printf("%d --    base_offset of put_target %d on get_target %d: %ld\n",
+        printf("%d --    base_offset of put_target %d on get_target %d: %zd\n",
                rank, put_target, get_target, get_target_base_offsets);
 
     /* Create using MPI_Win_create(). Note that new window size of get_target(0)
