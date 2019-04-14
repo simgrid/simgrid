@@ -35,7 +35,8 @@ int main(int argc, char *argv[])
                    MPI_COMM_WORLD, &window);
 
     MPI_Win_lock_all(0, window);
-
+    buf[0] = 0;
+    winbuf[0]=0;
     /* Test Raccumulate local completion with small data.
      * Small data is always copied to header packet as immediate data. */
     if (rank == 1) {

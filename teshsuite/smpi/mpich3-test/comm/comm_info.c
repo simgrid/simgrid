@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     MPI_Comm_get_info(comm, &info_out);
 
     MPI_Info_get(info_out, invalid_key, MPI_MAX_INFO_VAL, buf, &flag);
-#ifndef USE_STRICT_MPI
+#ifdef USE_STRICT_MPI
     /* Check if our invalid key was ignored.  Note, this check's MPICH's
      * behavior, but this behavior may not be required for a standard
      * conforming MPI implementation. */
