@@ -5,6 +5,7 @@
 
 #include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
+#include "simgrid/plugins/file_system.h"
 #include "smpi_coll.hpp"
 #include "smpi_f2c.hpp"
 #include "smpi_host.hpp"
@@ -663,7 +664,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
   SIMIX_global_init(&argc, argv);
 
   SMPI_switch_data_segment = &smpi_switch_data_segment;
-
+  sg_storage_file_system_init();
   // parse the platform file: get the host list
   simgrid::s4u::Engine::get_instance()->load_platform(argv[1]);
   SIMIX_comm_set_copy_data_callback(smpi_comm_copy_buffer_callback);

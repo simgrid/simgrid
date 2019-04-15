@@ -6,6 +6,7 @@
 
 #include "smpi_comm.hpp"
 #include "smpi_coll.hpp"
+#include "smpi_datatype.hpp"
 #include "smpi_info.hpp"
 #include "smpi_file.hpp"
 #include "simgrid/plugins/file_system.h"
@@ -23,28 +24,66 @@ namespace smpi{
   File::~File(){
     delete file_;
   }
-  
+
   int File::close(MPI_File *fh){
+    XBT_DEBUG("Closing MPI_File %s", (*fh)->file_->get_path());
     (*fh)->sync();
     if((*fh)->flags() & MPI_MODE_DELETE_ON_CLOSE)
       (*fh)->file_->unlink();
-    delete fh;
+    delete (*fh);
     return MPI_SUCCESS;
   }
-  
+
   int File::del(char *filename, MPI_Info info){
+    //get the file with MPI_MODE_DELETE_ON_CLOSE and then close it
     File* f = new File(MPI_COMM_SELF,filename,MPI_MODE_DELETE_ON_CLOSE|MPI_MODE_RDWR, nullptr);
     close(&f);
     return MPI_SUCCESS;
   }
+
+  int File::seek(MPI_Offset offset, int whence){
+    switch(whence){
+      case(MPI_SEEK_SET):
+        XBT_DEBUG("Seeking in MPI_File %s, setting offset %lld", file_->get_path(), offset);
+        file_->seek(offset,SEEK_SET);
+        break;
+      case(MPI_SEEK_CUR):
+        XBT_DEBUG("Seeking in MPI_File %s, current offset + %lld", file_->get_path(), offset);
+        file_->seek(offset,SEEK_CUR);
+        break;
+      case(MPI_SEEK_END):
+        XBT_DEBUG("Seeking in MPI_File %s, end offset + %lld", file_->get_path(), offset);
+        file_->seek(offset,SEEK_END);
+        break;
+      default:
+        return MPI_ERR_FILE;
+    }
+    return MPI_SUCCESS;
+  }
   
+  int File::read(void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
+    //get position first as we may be doing non contiguous reads and it will probably be updated badly
+    MPI_Offset position = file_->tell();
+    MPI_Offset movesize = datatype->get_extent()*count;
+    MPI_Offset readsize = datatype->size()*count;
+    XBT_DEBUG("Position before read in MPI_File %s : %llu",file_->get_path(),file_->tell());
+    MPI_Offset read = file_->read(readsize);
+    XBT_DEBUG("Read in MPI_File %s, %lld bytes read, readsize %lld bytes, movesize %lld", file_->get_path(), read, readsize, movesize);
+    if(readsize!=movesize){
+      file_->seek(position+movesize, SEEK_SET);
+    }
+    XBT_DEBUG("Position after read in MPI_File %s : %llu",file_->get_path(), file_->tell());
+    return MPI_SUCCESS;
+  }
+
   int File::size(){
     return file_->size();
   }
-  
+
   int File::flags(){
     return flags_;
   }
+
   int File::sync(){
     //no idea
     return simgrid::smpi::Colls::barrier(comm_);
