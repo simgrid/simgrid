@@ -183,10 +183,6 @@ double surf_parse_get_value_with_unit(const char* string, const unit_scale& unit
   if (ptr == string)
     surf_parse_error(std::string("cannot parse number:") + string);
   if (ptr[0] == '\0') {
-    if (res == 0)
-      return res; // Ok, 0 can be unit-less
-
-    XBT_WARN("Deprecated unit-less value '%s' for %s %s. %s", string, entity_kind, name.c_str(), error_msg);
     ptr = (char*)default_unit;
   }
   auto u = units.find(ptr);
