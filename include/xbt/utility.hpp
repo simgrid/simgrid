@@ -57,10 +57,6 @@ template <class List, class Elem> inline void intrusive_erase(List& list, Elem& 
  */
 template<class T, T... N>
 class integer_sequence {
-  static constexpr std::size_t size()
-  {
-    return std::tuple_size<decltype(std::make_tuple(N...))>::value;
-  }
 };
 
 namespace bits {
