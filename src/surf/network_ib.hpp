@@ -53,10 +53,9 @@ public:
   explicit NetworkIBModel(const char* name);
   NetworkIBModel(const NetworkIBModel&) = delete;
   NetworkIBModel& operator=(const NetworkIBModel&) = delete;
-  ~NetworkIBModel() override;
   void updateIBfactors(NetworkAction* action, IBNode* from, IBNode* to, int remove);
 
-  std::unordered_map<std::string, IBNode*> active_nodes;
+  std::unordered_map<std::string, IBNode> active_nodes;
   std::unordered_map<NetworkAction*, std::pair<IBNode*, IBNode*>> active_comms;
 
 };
