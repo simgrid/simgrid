@@ -29,12 +29,14 @@ void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
              "Cluster routing: no links attached to the source node - did you use host_link tag?");
 
   if ((src->id() == dst->id()) && has_loopback_) {
-    xbt_assert(not src->is_router(), "Routing from a cluster private router to itself is meaningless");
-
-    std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(node_pos(src->id()));
-    route->link_list.push_back(info.first);
-    if (lat)
-      *lat += info.first->get_latency();
+    if (src->is_router()) {
+      XBT_WARN("Routing from a cluster private router to itself is meaningless");
+    } else {
+      std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(node_pos(src->id()));
+      route->link_list.push_back(info.first);
+      if (lat)
+        *lat += info.first->get_latency();
+    }
     return;
   }
 
