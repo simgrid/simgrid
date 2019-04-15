@@ -20,8 +20,6 @@ static void IB_create_host_callback(simgrid::s4u::Host const& host)
   using simgrid::kernel::resource::NetworkIBModel;
 
   static int id=0;
-  // pour t->id -> rajouter une nouvelle struct dans le dict, pour stocker les comms actives
-
   IBNode* act = new IBNode(id);
 
   id++;
