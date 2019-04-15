@@ -22,7 +22,8 @@ extern int nb_keys;
 extern int timeout;
 
 class HostChord {
-  RngStream stream_;
+  std::unique_ptr<std::remove_pointer<RngStream>::type, std::function<void(RngStream)>> stream_ = {
+      nullptr, [](RngStream stream) { RngStream_DeleteStream(&stream); }};
   simgrid::s4u::Host* host = nullptr;
 
 public:
@@ -31,14 +32,12 @@ public:
   explicit HostChord(simgrid::s4u::Host* ptr) : host(ptr)
   {
     std::string descr = std::string("RngSream<") + host->get_cname() + ">";
-    stream_           = RngStream_CreateStream(descr.c_str());
+    stream_.reset(RngStream_CreateStream(descr.c_str()));
   }
   HostChord(const HostChord&) = delete;
   HostChord& operator=(const HostChord&) = delete;
 
-  ~HostChord() { RngStream_DeleteStream(&stream_); };
-
-  RngStream getStream() { return stream_; };
+  RngStream getStream() { return stream_.get(); };
 };
 
 /* Types of tasks exchanged between nodes. */
@@ -68,8 +67,6 @@ public:
   {
   }
 
-  ~ChordMessage() = default;
-
   static void destroy(void* message);
 };
 
@@ -81,7 +78,7 @@ class Node {
   int id_;                           // my id
   int pred_id_ = -1;                 // predecessor id
   simgrid::s4u::Mailbox* mailbox_;   // my mailbox
-  int* fingers_;                     // finger table,(fingers[0] is my successor)
+  std::vector<int> fingers_;         // finger table,(fingers[0] is my successor)
   int next_finger_to_fix;            // index of the next finger to fix in fix_fingers()
   RngStream stream;
 
@@ -89,7 +86,6 @@ public:
   explicit Node(std::vector<std::string> args);
   Node(const Node&) = delete;
   Node& operator=(const Node&) = delete;
-  ~Node();
   void join(int known_id);
   void leave();
   void notifyAndQuit();

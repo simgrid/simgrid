@@ -56,7 +56,7 @@ void Tracker::operator()()
         do {
           next_peer = known_peers.begin();
           std::advance(next_peer, RngStream_RandInt(stream, 0, nb_known_peers - 1));
-        } while (ta->getPeers()->find(*next_peer) != ta->getPeers()->end());
+        } while (ta->getPeers().find(*next_peer) != ta->getPeers().end());
         ta->addPeer(*next_peer);
         tried++;
       }

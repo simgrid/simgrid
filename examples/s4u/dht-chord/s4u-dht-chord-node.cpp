@@ -55,11 +55,7 @@ Node::Node(std::vector<std::string> args)
   stream             = simgrid::s4u::this_actor::get_host()->extension<HostChord>()->getStream();
   mailbox_           = simgrid::s4u::Mailbox::by_name(std::to_string(id_));
   next_finger_to_fix = 0;
-  fingers_           = new int[nb_bits];
-
-  for (int i = 0; i < nb_bits; i++) {
-    fingers_[i] = id_;
-  }
+  fingers_.resize(nb_bits, id_);
 
   if (args.size() == 3) { // first ring
     deadline_   = std::stod(args[2]);
@@ -74,10 +70,6 @@ Node::Node(std::vector<std::string> args)
   }
 }
 
-Node::~Node()
-{
-  delete[] fingers_;
-}
 /* Makes the current node join the ring, knowing the id of a node already in the ring
  *
  * @param known_id id of a node already in the ring

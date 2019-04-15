@@ -75,11 +75,11 @@ public:
       , block_length(block_length){};
   Message(e_message_type type, int peer_id, simgrid::s4u::Mailbox* return_mailbox, int piece)
       : type(type), peer_id(peer_id), return_mailbox(return_mailbox), piece(piece){};
-  ~Message() = default;
 };
 
 class HostBittorrent {
-  RngStream stream_;
+  std::unique_ptr<std::remove_pointer<RngStream>::type, std::function<void(RngStream)>> stream_ = {
+      nullptr, [](RngStream stream) { RngStream_DeleteStream(&stream); }};
   simgrid::s4u::Host* host = nullptr;
 
 public:
@@ -88,14 +88,12 @@ public:
   explicit HostBittorrent(simgrid::s4u::Host* ptr) : host(ptr)
   {
     std::string descr = std::string("RngSream<") + host->get_cname() + ">";
-    stream_           = RngStream_CreateStream(descr.c_str());
+    stream_.reset(RngStream_CreateStream(descr.c_str()));
   }
   HostBittorrent(const HostBittorrent&) = delete;
   HostBittorrent& operator=(const HostBittorrent&) = delete;
 
-  ~HostBittorrent() { RngStream_DeleteStream(&stream_); };
-
-  RngStream getStream() { return stream_; };
+  RngStream getStream() { return stream_.get(); };
 };
 
 #endif /* BITTORRENT_BITTORRENT_HPP_ */
