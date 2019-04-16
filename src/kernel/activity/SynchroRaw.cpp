@@ -73,9 +73,7 @@ void RawImpl::finish()
     XBT_DEBUG("RawImpl::finish(): host '%s' failed", simcall->issuer->get_host()->get_cname());
     simcall->issuer->context_->iwannadie = true;
     simcall->issuer->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
-  } else if (state_ == SIMIX_SRC_TIMEOUT) {
-    simcall->issuer->exception_ = std::make_exception_ptr(TimeoutError(XBT_THROW_POINT, "Synchronization timeout"));
-  } else {
+  } else if (state_ != SIMIX_SRC_TIMEOUT) {
     xbt_die("Internal error in RawImpl::finish() unexpected synchro state %d", static_cast<int>(state_));
   }
 
