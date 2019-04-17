@@ -61,16 +61,20 @@ namespace smpi{
     return MPI_SUCCESS;
   }
   
-  int File::read(void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
+  int File::read(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
     //get position first as we may be doing non contiguous reads and it will probably be updated badly
-    MPI_Offset position = file_->tell();
+    MPI_Offset position = fh->file_->tell();
     MPI_Offset movesize = datatype->get_extent()*count;
     MPI_Offset readsize = datatype->size()*count;
-    XBT_DEBUG("Position before read in MPI_File %s : %llu",file_->get_path(),file_->tell());
-    MPI_Offset read = file_->read(readsize);
-    XBT_DEBUG("Read in MPI_File %s, %lld bytes read, readsize %lld bytes, movesize %lld", file_->get_path(), read, readsize, movesize);
+    XBT_DEBUG("Position before read in MPI_File %s : %llu",fh->file_->get_path(),fh->file_->tell());
+    MPI_Offset read = fh->file_->read(readsize);
+    XBT_DEBUG("Read in MPI_File %s, %lld bytes read, readsize %lld bytes, movesize %lld", fh->file_->get_path(), read, readsize, movesize);
     if(readsize!=movesize){
-      file_->seek(position+movesize, SEEK_SET);
+      fh->file_->seek(position+movesize, SEEK_SET);
+    }
+    XBT_DEBUG("Position after read in MPI_File %s : %llu",fh->file_->get_path(), fh->file_->tell());
+    return MPI_SUCCESS;
+  }
     }
     XBT_DEBUG("Position after read in MPI_File %s : %llu",file_->get_path(), file_->tell());
     return MPI_SUCCESS;
