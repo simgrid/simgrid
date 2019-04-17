@@ -43,6 +43,8 @@ protected:
 class XBT_PUBLIC Context {
   friend ContextFactory;
 
+  static thread_local Context* current_;
+
   std::function<void()> code_;
   actor::ActorImpl* actor_ = nullptr;
   void declare_context(std::size_t size);
@@ -65,9 +67,9 @@ public:
 
   // Retrieving the self() context
   /** @brief Retrives the current context of this thread */
-  static Context* self();
+  static Context* self() { return current_; }
   /** @brief Sets the current context of this thread */
-  static void set_current(Context* self);
+  static void set_current(Context* self) { current_ = self; }
 };
 
 class XBT_PUBLIC AttachContext : public Context {

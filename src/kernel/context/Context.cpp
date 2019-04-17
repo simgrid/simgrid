@@ -22,15 +22,7 @@ ContextFactoryInitializer factory_initializer = nullptr;
 
 ContextFactory::~ContextFactory() = default;
 
-static thread_local Context* smx_current_context = nullptr;
-Context* Context::self()
-{
-  return smx_current_context;
-}
-void Context::set_current(Context* self)
-{
-  smx_current_context = self;
-}
+thread_local Context* Context::current_ = nullptr;
 
 void Context::declare_context(std::size_t size)
 {
