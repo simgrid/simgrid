@@ -41,7 +41,7 @@ public:
   std::vector<Host*> get_all_hosts();
   int get_host_count();
 
-  kernel::routing::NetZoneImpl* get_impl() { return pimpl_; }
+  kernel::routing::NetZoneImpl* get_impl() const { return pimpl_; }
 
 private:
   kernel::routing::NetZoneImpl* const pimpl_;

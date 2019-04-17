@@ -26,7 +26,7 @@ class XBT_PUBLIC Mailbox {
 
 public:
   /** private function, do not use. FIXME: make me protected */
-  kernel::activity::MailboxImpl* get_impl() { return pimpl_; }
+  kernel::activity::MailboxImpl* get_impl() const { return pimpl_; }
 
   /** @brief Retrieves the name of that mailbox as a C++ string */
   const xbt::string& get_name() const;

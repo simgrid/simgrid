@@ -101,7 +101,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach (comms, cursor, comm) {
-    s_comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(comm->s_comm->get_impl().get()));
+    s_comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(comm->s_comm->get_impl()));
   }
 
   msg_error_t status = MSG_OK;
@@ -180,7 +180,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach (comms, cursor, comm) {
-    s_comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(comm->s_comm->get_impl().get()));
+    s_comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(comm->s_comm->get_impl()));
   }
 
   msg_error_t status = MSG_OK;

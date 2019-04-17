@@ -70,7 +70,7 @@ public:
 
   IoPtr write_async(sg_size_t size);
   sg_size_t write(sg_size_t size);
-  kernel::resource::StorageImpl* get_impl() { return pimpl_; }
+  kernel::resource::StorageImpl* get_impl() const { return pimpl_; }
 
 private:
   Host* attached_to_ = nullptr;
