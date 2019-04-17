@@ -24,6 +24,7 @@ class File{
   int sync();
   int seek(MPI_Offset offset, int whence);
   static int read(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
+  static int write(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
   static int close(MPI_File *fh);
   static int del(char *filename, MPI_Info info);
 };

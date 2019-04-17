@@ -11,7 +11,6 @@
 #include "smpi_file.hpp"
 #include "simgrid/plugins/file_system.h"
 
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_io, smpi, "Logging specific to SMPI (RMA operations)");
 
 
@@ -75,8 +74,20 @@ namespace smpi{
     XBT_DEBUG("Position after read in MPI_File %s : %llu",fh->file_->get_path(), fh->file_->tell());
     return MPI_SUCCESS;
   }
+
+
+  int File::write(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
+    //get position first as we may be doing non contiguous reads and it will probably be updated badly
+    MPI_Offset position = fh->file_->tell();
+    MPI_Offset movesize = datatype->get_extent()*count;
+    MPI_Offset writesize = datatype->size()*count;
+    XBT_DEBUG("Position before write in MPI_File %s : %llu",fh->file_->get_path(),fh->file_->tell());
+    MPI_Offset write = fh->file_->write(writesize);
+    XBT_DEBUG("Write in MPI_File %s, %lld bytes read, readsize %lld bytes, movesize %lld", fh->file_->get_path(), write, writesize, movesize);
+    if(writesize!=movesize){
+      fh->file_->seek(position+movesize, SEEK_SET);
     }
-    XBT_DEBUG("Position after read in MPI_File %s : %llu",file_->get_path(), file_->tell());
+    XBT_DEBUG("Position after write in MPI_File %s : %llu",fh->file_->get_path(), fh->file_->tell());
     return MPI_SUCCESS;
   }
 

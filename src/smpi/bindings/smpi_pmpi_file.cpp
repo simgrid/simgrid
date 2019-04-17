@@ -79,16 +79,72 @@ int PMPI_File_read(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_
     return ret;
   }
 }
+
+int PMPI_File_write(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
+  CHECK_FILE(fh);
+  CHECK_BUFFER(buf, count);
+  CHECK_COUNT(count);
+  PASS_ZEROCOUNT(count);
+  CHECK_DATATYPE(datatype, count);
+  CHECK_STATUS(status);
+  CHECK_FLAGS(fh);
+  else {
     smpi_bench_end();
     int rank_traced = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::CpuTIData("IO - read", static_cast<double>(count*datatype->size())));
-    int ret = fh->read(buf, count, datatype, status);
+    TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::CpuTIData("IO - write", static_cast<double>(count*datatype->size())));
+    int ret = simgrid::smpi::File::write(fh, buf, count, datatype, status);
     TRACE_smpi_comm_out(rank_traced);
     smpi_bench_begin();
     return ret;
   }
 }
 
+int PMPI_File_read_at(MPI_File fh, MPI_Offset offset, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
+  CHECK_FILE(fh);
+  CHECK_BUFFER(buf, count);
+  CHECK_OFFSET(offset);
+  CHECK_COUNT(count);
+  PASS_ZEROCOUNT(count);
+  CHECK_DATATYPE(datatype, count);
+  CHECK_STATUS(status);
+  CHECK_FLAGS(fh);
+  else {
+    smpi_bench_end();
+    int rank_traced = simgrid::s4u::this_actor::get_pid();
+    TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::CpuTIData("IO - read", static_cast<double>(count*datatype->size())));
+    int ret = fh->seek(offset,SEEK_SET);
+    if(ret!=MPI_SUCCESS)
+      return ret;
+    ret = simgrid::smpi::File::read(fh, buf, count, datatype, status);
+    TRACE_smpi_comm_out(rank_traced);
+    smpi_bench_begin();
+    return ret;
+  }
+}
+
+
+int PMPI_File_write_at(MPI_File fh, MPI_Offset offset, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
+  CHECK_FILE(fh);
+  CHECK_BUFFER(buf, count);
+  CHECK_OFFSET(offset);
+  CHECK_COUNT(count);
+  PASS_ZEROCOUNT(count);
+  CHECK_DATATYPE(datatype, count);
+  CHECK_STATUS(status);
+  CHECK_FLAGS(fh);
+  else {
+    smpi_bench_end();
+    int rank_traced = simgrid::s4u::this_actor::get_pid();
+    TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::CpuTIData("IO - write", static_cast<double>(count*datatype->size())));
+    int ret = fh->seek(offset,SEEK_SET);
+    if(ret!=MPI_SUCCESS)
+      return ret;
+    ret = simgrid::smpi::File::write(fh, buf, count, datatype, status);
+    TRACE_smpi_comm_out(rank_traced);
+    smpi_bench_begin();
+    return ret;
+  }
+}
 
 int PMPI_File_delete(char *filename, MPI_Info info){
   if (filename == nullptr) {
