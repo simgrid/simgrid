@@ -100,11 +100,11 @@ namespace smpi{
     MPI_Offset readsize = datatype->size()*count;
     XBT_DEBUG("Position before read in MPI_File %s : %llu",fh->file_->get_path(),fh->file_->tell());
     MPI_Offset read = fh->file_->read(readsize);
-    XBT_DEBUG("Read in MPI_File %s, %lld bytes read, readsize %lld bytes, movesize %lld", fh->file_->get_path(), read, readsize, movesize);
+    XBT_VERB("Read in MPI_File %s, %lld bytes read, readsize %lld bytes, movesize %lld", fh->file_->get_path(), read, readsize, movesize);
     if(readsize!=movesize){
       fh->file_->seek(position+movesize, SEEK_SET);
     }
-    XBT_DEBUG("Position after read in MPI_File %s : %llu",fh->file_->get_path(), fh->file_->tell());
+    XBT_VERB("Position after read in MPI_File %s : %llu",fh->file_->get_path(), fh->file_->tell());
     status->count=count*datatype->size();
     return MPI_SUCCESS;
   }
@@ -156,11 +156,11 @@ namespace smpi{
     MPI_Offset writesize = datatype->size()*count;
     XBT_DEBUG("Position before write in MPI_File %s : %llu",fh->file_->get_path(),fh->file_->tell());
     MPI_Offset write = fh->file_->write(writesize);
-    XBT_DEBUG("Write in MPI_File %s, %lld bytes read, readsize %lld bytes, movesize %lld", fh->file_->get_path(), write, writesize, movesize);
+    XBT_VERB("Write in MPI_File %s, %lld bytes read, readsize %lld bytes, movesize %lld", fh->file_->get_path(), write, writesize, movesize);
     if(writesize!=movesize){
       fh->file_->seek(position+movesize, SEEK_SET);
     }
-    XBT_DEBUG("Position after write in MPI_File %s : %llu",fh->file_->get_path(), fh->file_->tell());
+    XBT_VERB("Position after write in MPI_File %s : %llu",fh->file_->get_path(), fh->file_->tell());
     status->count=count*datatype->size();
     return MPI_SUCCESS;
   }
