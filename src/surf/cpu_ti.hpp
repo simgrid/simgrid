@@ -27,18 +27,14 @@ class XBT_PRIVATE CpuTi;
 class CpuTiProfile {
 public:
   explicit CpuTiProfile(profile::Profile* profile);
-  CpuTiProfile(const CpuTiProfile&) = delete;
-  CpuTiProfile& operator=(const CpuTiProfile&) = delete;
-  ~CpuTiProfile();
 
   double integrate_simple(double a, double b);
   double integrate_simple_point(double a);
   double solve_simple(double a, double amount);
 
-  double* time_points_;
-  double *integral_;
-  int nb_points_;
-  static int binary_search(double* array, double a, int size);
+  std::vector<double> time_points_;
+  std::vector<double> integral_;
+  static int binary_search(const std::vector<double>& array, double a);
 };
 
 class CpuTiTmgr {
