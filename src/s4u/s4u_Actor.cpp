@@ -43,7 +43,7 @@ ActorPtr Actor::init(const std::string& name, s4u::Host* host)
 {
   smx_actor_t self = SIMIX_process_self();
   kernel::actor::ActorImpl* actor = simix::simcall([self, &name, host] { return self->init(name, host).get(); });
-  return actor->ciface();
+  return actor->iface();
 }
 
 ActorPtr Actor::start(const std::function<void()>& code)
