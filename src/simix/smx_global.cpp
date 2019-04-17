@@ -361,7 +361,7 @@ static bool SIMIX_execute_timers()
     try {
       timer->callback();
     } catch (...) {
-      xbt_die("Exception thrown ouf of timer callback");
+      xbt_die("Exception thrown out of timer callback");
     }
     delete timer;
   }
