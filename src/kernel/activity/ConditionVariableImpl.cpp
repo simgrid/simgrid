@@ -89,9 +89,6 @@ void ConditionVariableImpl::broadcast()
 
 void ConditionVariableImpl::wait(smx_mutex_t mutex, double timeout, actor::ActorImpl* issuer, smx_simcall_t simcall)
 {
-  XBT_IN("(%p, %p, %f, %p,%p)", this, mutex, timeout, issuer, simcall);
-  RawImplPtr synchro = nullptr;
-
   XBT_DEBUG("Wait condition %p", this);
 
   /* If there is a mutex unlock it */
@@ -101,12 +98,11 @@ void ConditionVariableImpl::wait(smx_mutex_t mutex, double timeout, actor::Actor
     mutex->unlock(issuer);
   }
 
-  synchro = RawImplPtr(new RawImpl());
+  RawImplPtr synchro(new RawImpl());
   (*synchro).set_host(issuer->get_host()).set_timeout(timeout).start();
   synchro->simcalls_.push_front(simcall);
-  issuer->waiting_synchro = synchro;
+  issuer->waiting_synchro = std::move(synchro);
   sleeping_.push_back(*simcall->issuer);
-  XBT_OUT();
 }
 
 // boost::intrusive_ptr<ConditionVariableImpl> support:
