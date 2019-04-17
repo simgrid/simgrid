@@ -169,22 +169,22 @@ void Global::empty_trash()
     intrusive_ptr_release(actor);
   }
 #if SIMGRID_HAVE_MC
-  xbt_dynar_reset(simix_global->dead_actors_vector);
+  xbt_dynar_reset(dead_actors_vector);
 #endif
 }
 /**
- * @brief Executes the actors in simix_global->actors_to_run.
+ * @brief Executes the actors in actors_to_run.
  *
- * The actors in simix_global->actors_to_run are run (in parallel if  possible). On exit, simix_global->actors_to_run
- * is empty, and simix_global->actors_that_ran contains the list of actors that just ran.
- * The two lists are swapped so, be careful when using them before and after a call to this function.
+ * The actors in actors_to_run are run (in parallel if possible). On exit, actors_to_run is empty, and actors_that_ran
+ * contains the list of actors that just ran.  The two lists are swapped so, be careful when using them before and after
+ * a call to this function.
  */
 void Global::run_all_actors()
 {
   SIMIX_context_runall();
 
-  simix_global->actors_to_run.swap(simix_global->actors_that_ran);
-  simix_global->actors_to_run.clear();
+  actors_to_run.swap(actors_that_ran);
+  actors_to_run.clear();
 }
 
 simgrid::config::Flag<double> breakpoint{"simix/breakpoint",
