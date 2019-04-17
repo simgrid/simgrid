@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[])
 {
-  if (simgrid::s4u::Actor::self().get() == nullptr) {
+  if (simgrid::s4u::Actor::self() == nullptr) {
     printf("smpireplaymain should not be called directly. Please use smpirun -replay instead.\n");
     return 1;
   }

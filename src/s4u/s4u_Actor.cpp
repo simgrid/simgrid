@@ -31,13 +31,13 @@ xbt::signal<void(Actor const&)> s4u::Actor::on_migration_end;
 xbt::signal<void(Actor const&)> s4u::Actor::on_destruction;
 
 // ***** Actor creation *****
-ActorPtr Actor::self()
+Actor* Actor::self()
 {
   kernel::context::Context* self_context = kernel::context::Context::self();
   if (self_context == nullptr)
-    return ActorPtr();
+    return nullptr;
 
-  return self_context->get_actor()->iface();
+  return self_context->get_actor()->ciface();
 }
 ActorPtr Actor::init(const std::string& name, s4u::Host* host)
 {

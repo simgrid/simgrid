@@ -142,7 +142,7 @@ public:
 
   // ***** Actor creation *****
   /** Retrieve a reference to myself */
-  static ActorPtr self();
+  static Actor* self();
 
   /** Signal to others that a new actor has been created **/
   static xbt::signal<void(Actor&)> on_creation;
