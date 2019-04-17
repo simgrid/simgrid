@@ -167,7 +167,7 @@ void Task::set_priority(double priority)
 
 s4u::Actor* Task::get_sender()
 {
-  return comm ? comm->get_sender().get() : nullptr;
+  return comm ? comm->get_sender() : nullptr;
 }
 
 s4u::Host* Task::get_source()

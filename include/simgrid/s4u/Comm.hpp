@@ -119,7 +119,7 @@ public:
   /** Retrieve the size of the received data. Not to be mixed with @ref Activity::set_remaining()  */
   size_t get_dst_data_size();
 
-  s4u::ActorPtr get_sender();
+  Actor* get_sender();
 
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v324("Please use Comm::wait_for()") void wait(double t) override { wait_for(t); }

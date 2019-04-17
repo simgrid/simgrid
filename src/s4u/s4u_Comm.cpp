@@ -230,9 +230,9 @@ Mailbox* Comm::get_mailbox()
   return mailbox_;
 }
 
-ActorPtr Comm::get_sender()
+Actor* Comm::get_sender()
 {
-  return sender_ ? sender_->iface() : nullptr;
+  return sender_ ? sender_->ciface() : nullptr;
 }
 
 void intrusive_ptr_release(simgrid::s4u::Comm* c)
