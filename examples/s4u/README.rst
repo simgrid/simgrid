@@ -80,6 +80,10 @@ Starting and Stoping Actors
 Inter-Actors Interactions
 -------------------------
 
+See also the examples on :ref:`inter-actors communications
+<s4u_ex_communication>` and the ones on :ref:`classical
+synchronization objects <s4u_ex_IPC>`.
+
   - **Suspend and Resume actors:**    
     Actors can be suspended and resumed during their executions.
     
@@ -148,6 +152,8 @@ also the tesh files in the example directories for details.
 ==========================
 Activities: what Actors do
 ==========================
+
+.. _s4u_ex_communication:
 
 Communications on the Network
 -----------------------------
@@ -255,6 +261,8 @@ result in short reads and short write, as in reality.
     I/O operations on files can also be done in a remote fashion, 
     i.e. when the accessed disk is not mounted on the caller's host.
     |br| `examples/s4u/io-file-remote/s4u-io-file-remote.cpp  <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/io-file-remote/s4u-io-file-remote.cpp>`_
+
+.. _s4u_ex_IPC:
 
 Classical synchronization objects
 ---------------------------------
