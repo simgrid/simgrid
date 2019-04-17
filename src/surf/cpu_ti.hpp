@@ -38,7 +38,7 @@ public:
   double* time_points_;
   double *integral_;
   int nb_points_;
-  int binary_search(double* array, double a, int low, int high);
+  static int binary_search(double* array, double a, int size);
 };
 
 class CpuTiTmgr {

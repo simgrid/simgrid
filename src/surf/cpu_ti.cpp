@@ -8,6 +8,8 @@
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
+#include <algorithm>
+
 constexpr double EPSILON = 0.000000001;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf_cpu, "Logging specific to the SURF CPU TRACE INTEGRATION module");
@@ -113,7 +115,7 @@ double CpuTiProfile::integrate_simple_point(double a)
 {
   double integral = 0;
   double a_aux = a;
-  int ind         = binary_search(time_points_, a, 0, nb_points_ - 1);
+  int ind         = binary_search(time_points_, a, nb_points_);
   integral += integral_[ind];
 
   XBT_DEBUG("a %f ind %d integral %f ind + 1 %f ind %f time +1 %f time %f", a, ind, integral, integral_[ind + 1],
@@ -195,7 +197,7 @@ double CpuTiTmgr::solve(double a, double amount)
 double CpuTiProfile::solve_simple(double a, double amount)
 {
   double integral_a = integrate_simple_point(a);
-  int ind           = binary_search(integral_, integral_a + amount, 0, nb_points_ - 1);
+  int ind           = binary_search(integral_, integral_a + amount, nb_points_);
   double time       = time_points_[ind];
   time += (integral_a + amount - integral_[ind]) /
           ((integral_[ind + 1] - integral_[ind]) / (time_points_[ind + 1] - time_points_[ind]));
@@ -213,7 +215,7 @@ double CpuTiProfile::solve_simple(double a, double amount)
 double CpuTiTmgr::get_power_scale(double a)
 {
   double reduced_a          = a - floor(a / last_time_) * last_time_;
-  int point                 = profile_->binary_search(profile_->time_points_, reduced_a, 0, profile_->nb_points_ - 1);
+  int point                       = profile_->binary_search(profile_->time_points_, reduced_a, profile_->nb_points_);
   kernel::profile::DatedValue val = speed_profile_->event_list.at(point);
   return val.value_;
 }
@@ -260,29 +262,19 @@ CpuTiTmgr::CpuTiTmgr(kernel::profile::Profile* speed_profile, double value) : sp
 
 /**
  * @brief Binary search in array.
- *  It returns the first point of the interval in which "a" is.
+ *  It returns the last point of the interval in which "a" is.
  * @param array    Array
  * @param a        Value to search
- * @param low     Low bound to search in array
- * @param high    Upper bound to search in array
+ * @param size     Size of the array
  * @return Index of point
  */
-int CpuTiProfile::binary_search(double* array, double a, int low, int high)
+int CpuTiProfile::binary_search(double* array, double a, int size)
 {
-  xbt_assert(low < high, "Wrong parameters: low (%d) should be smaller than high (%d)", low, high);
-
-  do {
-    int mid = low + (high - low) / 2;
-    XBT_DEBUG("a %f low %d high %d mid %d value %f", a, low, high, mid, array[mid]);
-
-    if (array[mid] > a)
-      high = mid;
-    else
-      low = mid;
-  }
-  while (low < high - 1);
-
-  return low;
+  xbt_assert(size > 0, "Wrong parameters: empty array");
+  if (array[0] > a)
+    return 0;
+  auto pos = std::upper_bound(array, array + size, a);
+  return std::distance(array, pos) - 1;
 }
 
 /*********
