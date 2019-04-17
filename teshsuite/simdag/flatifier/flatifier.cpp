@@ -42,7 +42,6 @@ static void create_environment(xbt_os_timer_t parse_time, const char *platformFi
 
 static void dump_hosts()
 {
-  std::unordered_map<std::string, std::string>* props = nullptr;
   unsigned int totalHosts = sg_host_count();
   sg_host_t* hosts        = sg_host_list();
   std::sort(hosts, hosts + totalHosts,
@@ -50,7 +49,7 @@ static void dump_hosts()
 
   for (unsigned int i = 0; i < totalHosts; i++) {
     std::printf("  <host id=\"%s\" speed=\"%.0f\"", hosts[i]->get_cname(), sg_host_speed(hosts[i]));
-    props = hosts[i]->get_properties();
+    const std::unordered_map<std::string, std::string>* props = hosts[i]->get_properties();
     if (hosts[i]->get_core_count() > 1) {
       std::printf(" core=\"%d\"", hosts[i]->get_core_count());
     }

@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Property test");
 static void test_host(const std::string& hostname)
 {
   simgrid::s4u::Host* thehost = simgrid::s4u::Host::by_name(hostname);
-  std::unordered_map<std::string, std::string>* props = thehost->get_properties();
+  const std::unordered_map<std::string, std::string>* props = thehost->get_properties();
   const char* noexist = "Unknown";
   const char* exist   = "Hdd";
   const char* value;
@@ -81,7 +81,7 @@ static void bob(std::vector<std::string> /*args*/)
   XBT_INFO("   Zone property: author -> %s", root->get_property("author"));
 
   /* Get the property list of current bob process */
-  std::unordered_map<std::string, std::string>* props = simgrid::s4u::Actor::self()->get_properties();
+  const std::unordered_map<std::string, std::string>* props = simgrid::s4u::Actor::self()->get_properties();
   const char* noexist = "UnknownProcessProp";
   XBT_ATTRIB_UNUSED const char* value;
 

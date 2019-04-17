@@ -93,7 +93,7 @@ int NetZoneImpl::get_host_count()
 }
 
 simgrid::s4u::Host* NetZoneImpl::create_host(const char* name, const std::vector<double>& speed_per_pstate,
-                                             int coreAmount, std::map<std::string, std::string>* props)
+                                             int coreAmount, const std::map<std::string, std::string>* props)
 {
   simgrid::s4u::Host* res = new simgrid::s4u::Host(name);
 

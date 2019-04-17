@@ -105,7 +105,7 @@ void Link::set_latency_profile(kernel::profile::Profile* trace)
   simgrid::simix::simcall([this, trace]() { this->pimpl_->set_latency_profile(trace); });
 }
 
-const char* Link::get_property(const std::string& key)
+const char* Link::get_property(const std::string& key) const
 {
   return this->pimpl_->get_property(key);
 }

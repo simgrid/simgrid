@@ -93,7 +93,7 @@ public:
    * The profile must contain absolute values */
   void set_latency_profile(kernel::profile::Profile* profile);
 
-  const char* get_property(const std::string& key);
+  const char* get_property(const std::string& key) const;
   void set_property(const std::string& key, const std::string& value);
 
   /* The signals */

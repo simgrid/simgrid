@@ -105,9 +105,9 @@ public:
   ActorImpl* start(const simix::ActorCode& code);
 
   static ActorImplPtr create(const std::string& name, const simix::ActorCode& code, void* data, s4u::Host* host,
-                             std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor);
+                             const std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor);
   static ActorImplPtr attach(const std::string& name, void* data, s4u::Host* host,
-                             std::unordered_map<std::string, std::string>* properties);
+                             const std::unordered_map<std::string, std::string>* properties);
   static void detach();
   void cleanup();
   void exit();
@@ -133,7 +133,7 @@ public:
   void* data                                                               = nullptr;
   s4u::Host* host                                                          = nullptr;
   double kill_time                                                         = 0.0;
-  std::shared_ptr<std::unordered_map<std::string, std::string>> properties = nullptr;
+  std::shared_ptr<const std::unordered_map<std::string, std::string>> properties = nullptr;
   bool auto_restart                                                        = false;
   bool daemon_                                                             = false;
   ProcessArg()                                                             = default;

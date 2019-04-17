@@ -165,9 +165,9 @@ void Host::route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links,
 }
 
 /** Get the properties assigned to a host */
-std::unordered_map<std::string, std::string>* Host::get_properties()
+const std::unordered_map<std::string, std::string>* Host::get_properties() const
 {
-  return simix::simcall([this] { return this->pimpl_->get_properties(); });
+  return this->pimpl_->get_properties();
 }
 
 /** Retrieve the property value (or nullptr if not set) */
@@ -505,7 +505,7 @@ int sg_host_is_off(sg_host_t host)
 xbt_dict_t sg_host_get_properties(sg_host_t host)
 {
   xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
-  std::unordered_map<std::string, std::string>* props = host->get_properties();
+  const std::unordered_map<std::string, std::string>* props = host->get_properties();
   if (props == nullptr)
     return nullptr;
   for (auto const& elm : *props) {
@@ -584,7 +584,7 @@ void sg_host_dump(sg_host_t host)
   XBT_INFO("Displaying host %s", host->get_cname());
   XBT_INFO("  - speed: %.0f", host->get_speed());
   XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(host));
-  std::unordered_map<std::string, std::string>* props = host->get_properties();
+  const std::unordered_map<std::string, std::string>* props = host->get_properties();
 
   if (not props->empty()) {
     XBT_INFO("  - properties:");

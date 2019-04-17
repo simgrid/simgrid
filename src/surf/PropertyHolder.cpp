@@ -26,7 +26,7 @@ void PropertyHolder::set_property(const std::string& key, const std::string& val
 }
 
 /** @brief Return the whole set of properties. Don't mess with it, dude! */
-std::unordered_map<std::string, std::string>* PropertyHolder::get_properties()
+const std::unordered_map<std::string, std::string>* PropertyHolder::get_properties()
 {
   if (not properties_)
     properties_.reset(new std::unordered_map<std::string, std::string>);

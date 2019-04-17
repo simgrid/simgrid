@@ -70,7 +70,7 @@ ActorImpl::~ActorImpl() = default;
  */
 
 ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* host,
-                               std::unordered_map<std::string, std::string>* properties)
+                               const std::unordered_map<std::string, std::string>* properties)
 {
   // This is mostly a copy/paste from create(), it'd be nice to share some code between those two functions.
 
@@ -472,7 +472,7 @@ ActorImpl* ActorImpl::start(const simix::ActorCode& code)
 }
 
 ActorImplPtr ActorImpl::create(const std::string& name, const simix::ActorCode& code, void* data, s4u::Host* host,
-                               std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor)
+                               const std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor)
 {
   XBT_DEBUG("Start actor %s@'%s'", name.c_str(), host->get_cname());
 

@@ -232,7 +232,7 @@ void Actor::kill_all()
   simix::simcall([self] { self->kill_all(); });
 }
 
-std::unordered_map<std::string, std::string>* Actor::get_properties() const
+const std::unordered_map<std::string, std::string>* Actor::get_properties() const
 {
   return pimpl_->get_properties();
 }
@@ -525,7 +525,7 @@ xbt_dict_t sg_actor_get_properties(sg_actor_t actor)
 {
   xbt_assert(actor != nullptr, "Invalid parameter: First argument must not be nullptr");
   xbt_dict_t as_dict                        = xbt_dict_new_homogeneous(xbt_free_f);
-  std::unordered_map<std::string, std::string>* props = actor->get_properties();
+  const std::unordered_map<std::string, std::string>* props = actor->get_properties();
   if (props == nullptr)
     return nullptr;
   for (auto const& kv : *props) {
