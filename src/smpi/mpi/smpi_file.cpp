@@ -109,6 +109,16 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
+  /*Ordered and Shared Versions, with RMA-based locks : Based on the model described in :*/
+  /* @InProceedings{10.1007/11557265_15,*/
+  /* author="Latham, Robert and Ross, Robert and Thakur, Rajeev and Toonen, Brian",*/ 
+  /* title="Implementing MPI-IO Shared File Pointers Without File System Support",*/
+  /* booktitle="Recent Advances in Parallel Virtual Machine and Message Passing Interface",*/
+  /* year="2005",*/
+  /* publisher="Springer Berlin Heidelberg",*/
+  /* address="Berlin, Heidelberg",*/
+  /* pages="84--93"*/
+  /* }*/
   int File::read_shared(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
     fh->lock();
     fh->seek(fh->shared_file_pointer_,MPI_SEEK_SET);

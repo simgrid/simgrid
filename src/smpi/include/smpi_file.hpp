@@ -49,6 +49,14 @@ class File{
   static int del(char *filename, MPI_Info info);
 };
 
+  /* Read_all, Write_all : loosely based on */
+  /* @article{Thakur:1996:ETM:245875.245879,*/
+  /* author = {Thakur, Rajeev and Choudhary, Alok},*/
+  /* title = {An Extended Two-phase Method for Accessing Sections of Out-of-core Arrays},*/
+  /* journal = {Sci. Program.},*/
+  /* issue_date = {Winter 1996},*/
+  /* pages = {301--317},*/
+  /* }*/ 
   template <int (*T)(MPI_File, void *, int, MPI_Datatype, MPI_Status *)>
   int File::op_all(void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
     //get min and max offsets from everyone.
