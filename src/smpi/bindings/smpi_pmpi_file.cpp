@@ -44,10 +44,10 @@ int PMPI_File_close(MPI_File *fh){
 }
 #define CHECK_FILE(fh) if(fh==MPI_FILE_NULL) return MPI_ERR_FILE
 #define CHECK_BUFFER(buf, count)  else if (buf==nullptr && count > 0) return MPI_ERR_BUFFER
-#define CHECK_COUNT(count)  else if ( count < 0) return MPI_ERR_COUNT
-#define CHECK_OFFSET(offset)  else if ( offset < 0) return MPI_ERR_DISP
-#define PASS_ZEROCOUNT(count)  else if ( count == 0) return MPI_SUCCESS
-#define CHECK_DATATYPE(datatype, count) else if ( datatype == MPI_DATATYPE_NULL && count > 0) return MPI_ERR_TYPE
+#define CHECK_COUNT(count)  else if (count < 0) return MPI_ERR_COUNT
+#define CHECK_OFFSET(offset)  else if (offset < 0) return MPI_ERR_DISP
+#define PASS_ZEROCOUNT(count)  else if (count == 0) return MPI_SUCCESS
+#define CHECK_DATATYPE(datatype, count) else if (datatype == MPI_DATATYPE_NULL && count > 0) return MPI_ERR_TYPE
 #define CHECK_STATUS(status) else if (status == nullptr) return MPI_ERR_ARG
 #define CHECK_FLAGS(fh) else if (fh->flags() & MPI_MODE_SEQUENTIAL) return MPI_ERR_AMODE
 
@@ -56,6 +56,19 @@ int PMPI_File_seek(MPI_File fh, MPI_Offset offset, int whence){
   else {
     smpi_bench_end();
     int ret = fh->seek(offset,whence);
+    smpi_bench_begin();
+    return ret;
+  }
+}
+
+
+int PMPI_File_get_position(MPI_File fh, MPI_Offset* offset){
+  CHECK_FILE(fh);
+  else if (offset==nullptr)
+    return MPI_ERR_DISP;
+  else {
+    smpi_bench_end();
+    int ret = fh->get_position(offset);
     smpi_bench_begin();
     return ret;
   }
@@ -236,3 +249,20 @@ int PMPI_File_delete(char *filename, MPI_Info info){
   }
 }
 
+int PMPI_File_get_info(MPI_File  fh, MPI_Info* info)
+{
+  CHECK_FILE(fh);
+  else {
+    *info = fh->info();
+    return MPI_SUCCESS;
+  }
+}
+
+int PMPI_File_set_info(MPI_File  fh, MPI_Info info)
+{
+  CHECK_FILE(fh);
+  else {
+    fh->set_info(info);
+    return MPI_SUCCESS;
+  }
+}

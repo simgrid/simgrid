@@ -40,6 +40,11 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
+  int File::get_position(MPI_Offset* offset){
+    *offset=file_->tell();
+    return MPI_SUCCESS;
+  }
+
   int File::seek(MPI_Offset offset, int whence){
     switch(whence){
       case(MPI_SEEK_SET):
@@ -103,5 +108,18 @@ namespace smpi{
     //no idea
     return simgrid::smpi::Colls::barrier(comm_);
   }
+MPI_Info File::info(){
+  if(info_== MPI_INFO_NULL)
+    info_ = new Info();
+  info_->ref();
+  return info_;
+}
+
+void File::set_info(MPI_Info info){
+  if(info_!= MPI_INFO_NULL)
+    info->ref();
+  info_=info;
+}
+
 }
 }

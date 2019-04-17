@@ -21,13 +21,17 @@ class File{
   int flags_;
   simgrid::s4u::File* file_;
   MPI_Info info_;
+  MPI_Offset shared_file_pointer_;
   public:
   File(MPI_Comm comm, char *filename, int amode, MPI_Info info);
   ~File();
   int size();
+  int get_position(MPI_Offset* offset);
   int flags();
   int sync();
   int seek(MPI_Offset offset, int whence);
+  MPI_Info info();
+  void set_info( MPI_Info info);
   static int read(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
   static int write(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
   template <int (*T)(MPI_File, void *, int, MPI_Datatype, MPI_Status *)> int op_all(void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
