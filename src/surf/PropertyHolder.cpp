@@ -8,14 +8,10 @@
 namespace simgrid {
 namespace surf {
 
-PropertyHolder::~PropertyHolder() {
-  delete properties_;
-}
-
 /** @brief Return the property associated to the provided key (or nullptr if not existing) */
 const char* PropertyHolder::get_property(const std::string& key) const
 {
-  if (properties_ == nullptr)
+  if (not properties_)
     return nullptr;
   auto prop = properties_->find(key);
   return prop == properties_->end() ? nullptr : prop->second.c_str();
@@ -25,7 +21,7 @@ const char* PropertyHolder::get_property(const std::string& key) const
 void PropertyHolder::set_property(const std::string& key, const std::string& value)
 {
   if (not properties_)
-    properties_ = new std::unordered_map<std::string, std::string>;
+    properties_.reset(new std::unordered_map<std::string, std::string>);
   (*properties_)[key] = value;
 }
 
@@ -33,8 +29,8 @@ void PropertyHolder::set_property(const std::string& key, const std::string& val
 std::unordered_map<std::string, std::string>* PropertyHolder::get_properties()
 {
   if (not properties_)
-    properties_ = new std::unordered_map<std::string, std::string>;
-  return properties_;
+    properties_.reset(new std::unordered_map<std::string, std::string>);
+  return properties_.get();
 }
 
 } /* namespace surf */
