@@ -22,18 +22,28 @@ class File{
   simgrid::s4u::File* file_;
   MPI_Info info_;
   MPI_Offset shared_file_pointer_;
+  MPI_Win win_;
+  char* list_;
   public:
   File(MPI_Comm comm, char *filename, int amode, MPI_Info info);
   ~File();
   int size();
   int get_position(MPI_Offset* offset);
+  int get_position_shared(MPI_Offset* offset);
   int flags();
   int sync();
   int seek(MPI_Offset offset, int whence);
+  int seek_shared(MPI_Offset offset, int whence);
+  int lock();
+  int unlock();
   MPI_Info info();
   void set_info( MPI_Info info);
   static int read(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
+  static int read_shared(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
+  static int read_ordered(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
   static int write(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
+  static int write_shared(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
+  static int write_ordered(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
   template <int (*T)(MPI_File, void *, int, MPI_Datatype, MPI_Status *)> int op_all(void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
   static int close(MPI_File *fh);
   static int del(char *filename, MPI_Info info);
