@@ -92,6 +92,7 @@ set(SMPI_SRC
   src/smpi/bindings/smpi_pmpi.cpp
   src/smpi/bindings/smpi_pmpi_coll.cpp
   src/smpi/bindings/smpi_pmpi_comm.cpp
+  src/smpi/bindings/smpi_pmpi_file.cpp
   src/smpi/bindings/smpi_pmpi_group.cpp
   src/smpi/bindings/smpi_pmpi_info.cpp
   src/smpi/bindings/smpi_pmpi_op.cpp
@@ -226,6 +227,7 @@ set(SMPI_SRC
   src/smpi/mpi/smpi_datatype.cpp
   src/smpi/mpi/smpi_datatype_derived.cpp
   src/smpi/mpi/smpi_f2c.cpp
+  src/smpi/mpi/smpi_file.cpp
   src/smpi/mpi/smpi_group.cpp
   src/smpi/mpi/smpi_info.cpp
   src/smpi/mpi/smpi_keyvals.cpp
@@ -240,6 +242,7 @@ set(SMPI_SRC
   src/smpi/include/smpi_datatype_derived.hpp
   src/smpi/include/smpi_datatype.hpp
   src/smpi/include/smpi_f2c.hpp
+  src/smpi/include/smpi_file.hpp
   src/smpi/include/smpi_group.hpp
   src/smpi/include/smpi_host.hpp
   src/smpi/include/smpi_info.hpp

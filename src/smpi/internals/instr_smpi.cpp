@@ -74,7 +74,9 @@ static std::map<std::string, std::string> smpi_colors = {{"recv", "1 0 0"},
   {"win_flush", "1 0 0.3"},
   {"win_flush_local", "1 0 0.8"},
   {"win_flush_all", "1 0.8 0"},
-  {"win_flush_local_all", "1 0 0.3"}
+  {"win_flush_local_all", "1 0 0.3"},
+  
+  {"file_read", "1 1 0.3"}
 };
 
 static const char* instr_find_color(const char* c_state)

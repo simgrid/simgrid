@@ -1,0 +1,40 @@
+# Test for MPI_File_read and MPI_File_write
+! output sort
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_io -platform ../../../examples/platforms/storage/remote_io.xml -np 4 --log=xbt_cfg.thres:critical --log=smpi_kernel.thres:warning --log=smpi_mpi.thres:error --log=smpi_io.thres:verbose "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n" --cfg=smpi/simulate-computation:0 ${bindir:=.}/io-ordered
+> You requested to use 4 ranks, but there is only 2 processes in your hostfile...
+> [rank 0] -> bob
+> [rank 1] -> carl
+> [rank 2] -> bob
+> [rank 3] -> carl
+> [  0.000282] (0@bob) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 0
+> [  0.000635] (2@bob) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 80
+> [  0.000635] (1@carl) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 40
+> [  0.000635] (3@carl) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 120
+> [  0.000839] (3@carl) Write in MPI_File /scratch/lib/libsimgrid.so.3.6.2, 40 bytes written, readsize 40 bytes, movesize 40
+> [  0.000839] (3@carl) Position after write in MPI_File /scratch/lib/libsimgrid.so.3.6.2 : 160
+> [  0.000839] (1@carl) Write in MPI_File /scratch/lib/libsimgrid.so.3.6.2, 40 bytes written, readsize 40 bytes, movesize 40
+> [  0.000839] (1@carl) Position after write in MPI_File /scratch/lib/libsimgrid.so.3.6.2 : 80
+> [  0.000940] (2@bob) Write in MPI_File /scratch/lib/libsimgrid.so.3.6.2, 40 bytes written, readsize 40 bytes, movesize 40
+> [  0.000940] (2@bob) Position after write in MPI_File /scratch/lib/libsimgrid.so.3.6.2 : 120
+> [  0.000940] (0@bob) Write in MPI_File /scratch/lib/libsimgrid.so.3.6.2, 40 bytes written, readsize 40 bytes, movesize 40
+> [  0.000940] (0@bob) Position after write in MPI_File /scratch/lib/libsimgrid.so.3.6.2 : 40
+> [  0.001091] (0@bob) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 0
+> [  0.001091] (0@bob) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 0
+> [  0.001106] (2@bob) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 0
+> [  0.001141] (3@carl) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 0
+> [  0.001141] (1@carl) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 0
+> [  0.001242] (2@bob) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 80
+> [  0.001242] (1@carl) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 40
+> [  0.001242] (3@carl) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 120
+> [  0.001446] (3@carl) Read in MPI_File /scratch/lib/libsimgrid.so.3.6.2, 40 bytes read, readsize 40 bytes, movesize 40
+> [  0.001446] (3@carl) Position after read in MPI_File /scratch/lib/libsimgrid.so.3.6.2 : 160
+> [  0.001446] (1@carl) Read in MPI_File /scratch/lib/libsimgrid.so.3.6.2, 40 bytes read, readsize 40 bytes, movesize 40
+> [  0.001446] (1@carl) Position after read in MPI_File /scratch/lib/libsimgrid.so.3.6.2 : 80
+> [  0.001548] (2@bob) Read in MPI_File /scratch/lib/libsimgrid.so.3.6.2, 40 bytes read, readsize 40 bytes, movesize 40
+> [  0.001548] (2@bob) Position after read in MPI_File /scratch/lib/libsimgrid.so.3.6.2 : 120
+> [  0.001548] (0@bob) Read in MPI_File /scratch/lib/libsimgrid.so.3.6.2, 40 bytes read, readsize 40 bytes, movesize 40
+> [  0.001548] (0@bob) Position after read in MPI_File /scratch/lib/libsimgrid.so.3.6.2 : 40
+> [  0.001699] (0@bob) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 0
+> [  0.001714] (2@bob) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 0
+> [  0.001749] (3@carl) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 0
+> [  0.001749] (1@carl) Seeking in MPI_File /scratch/lib/libsimgrid.so.3.6.2, setting offset 0
