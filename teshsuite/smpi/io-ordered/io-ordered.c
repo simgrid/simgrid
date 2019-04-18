@@ -20,7 +20,7 @@ int main( int argc, char *argv[] )
     MPI_File_open( comm, (char*)"/scratch/lib/libsimgrid.so.3.6.2", MPI_MODE_RDWR | MPI_MODE_CREATE | MPI_MODE_DELETE_ON_CLOSE, MPI_INFO_NULL, &fh );
     MPI_Comm_size( comm, &size );
     MPI_Comm_rank( comm, &rank );
-    buf = (int *)malloc( 10+size * sizeof(int) );
+    buf = (int *)malloc( 10* sizeof(int) );
     buf[0] = rank;
  
     /* Write to file */
