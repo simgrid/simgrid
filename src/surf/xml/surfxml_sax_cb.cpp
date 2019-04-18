@@ -171,7 +171,7 @@ unit_scale::unit_scale(std::initializer_list<std::tuple<const std::string, doubl
   }
 }
 
-/* Note: field `unit' for the last element of parameter `units' should be nullptr. */
+/* Note: no warning is issued for unit-less values when `name' is empty. */
 double surf_parse_get_value_with_unit(const char* string, const unit_scale& units, const char* entity_kind,
                                       const std::string& name, const char* error_msg, const char* default_unit)
 {
@@ -183,6 +183,9 @@ double surf_parse_get_value_with_unit(const char* string, const unit_scale& unit
   if (ptr == string)
     surf_parse_error(std::string("cannot parse number:") + string);
   if (ptr[0] == '\0') {
+    // Ok, 0 can be unit-less
+    if (res != 0 && not name.empty())
+      XBT_WARN("Deprecated unit-less value '%s' for %s %s. %s", string, entity_kind, name.c_str(), error_msg);
     ptr = (char*)default_unit;
   }
   auto u = units.find(ptr);
