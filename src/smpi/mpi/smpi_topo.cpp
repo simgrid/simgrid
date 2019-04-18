@@ -19,35 +19,12 @@ static int getfactors(int num, int *nfators, int **factors);
 namespace simgrid{
 namespace smpi{
 
-Topo_Graph::~Topo_Graph()
-{
-  delete[] index_;
-  delete[] edges_;
-}
-
-Topo_Dist_Graph::~Topo_Dist_Graph()
-{
-  delete[] in_;
-  delete[] in_weights_;
-  delete[] out_;
-  delete[] out_weights_;
-}
-
 /*******************************************************************************
  * Cartesian topologies
  ******************************************************************************/
-Topo_Cart::~Topo_Cart()
-{
-  delete[] dims_;
-  delete[] periodic_;
-  delete[] position_;
-}
 
-Topo_Cart::Topo_Cart(int ndims) : ndims_(ndims)
+Topo_Cart::Topo_Cart(int ndims) : ndims_(ndims), dims_(ndims), periodic_(ndims), position_(ndims)
 {
-  dims_ = new int[ndims];
-  periodic_ = new int[ndims];
-  position_ = new int[ndims];
 }
 
 /* reorder is ignored, don't know what would be the consequences of a dumb reordering but neither do I see the point of
