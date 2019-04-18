@@ -27,6 +27,8 @@ class File{
   char* list_;
   public:
   File(MPI_Comm comm, char *filename, int amode, MPI_Info info);
+  File(const File&) = delete;
+  File& operator=(const File&) = delete;
   ~File();
   int size();
   int get_position(MPI_Offset* offset);
