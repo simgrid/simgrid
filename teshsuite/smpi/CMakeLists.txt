@@ -53,6 +53,7 @@ set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/c
 set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_cluster
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_coll
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_io
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_empty  PARENT_SCOPE)
 
 
