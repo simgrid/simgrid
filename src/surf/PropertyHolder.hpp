@@ -28,6 +28,7 @@ public:
   void set_property(const std::string& id, const std::string& value);
 
   const std::unordered_map<std::string, std::string>* get_properties();
+  template <class Assoc> void set_properties(const Assoc& properties);
 
 private:
   std::unique_ptr<std::unordered_map<std::string, std::string>> properties_ = nullptr;

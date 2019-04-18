@@ -105,8 +105,7 @@ simgrid::s4u::Host* NetZoneImpl::create_host(const char* name, const std::vector
   surf_cpu_model_pm->create_cpu(res, speed_per_pstate, coreAmount);
 
   if (props != nullptr)
-    for (auto const& kv : *props)
-      res->set_property(kv.first, kv.second);
+    res->set_properties(*props);
 
   simgrid::s4u::Host::on_creation(*res); // notify the signal
 

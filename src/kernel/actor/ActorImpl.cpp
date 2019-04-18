@@ -93,8 +93,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
 
   /* Add properties */
   if (properties != nullptr)
-    for (auto const& kv : *properties)
-      actor->set_property(kv.first, kv.second);
+    actor->set_properties(*properties);
 
   /* Add the process to it's host process list */
   host->pimpl_->process_list_.push_back(*actor);
@@ -487,8 +486,7 @@ ActorImplPtr ActorImpl::create(const std::string& name, const simix::ActorCode& 
 
   /* Add properties */
   if (properties != nullptr)
-    for (auto const& kv : *properties)
-      actor->set_property(kv.first, kv.second);
+    actor->set_properties(*properties);
 
   actor->start(code);
 

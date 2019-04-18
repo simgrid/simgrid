@@ -180,6 +180,12 @@ void Host::set_property(const std::string& key, const std::string& value)
 {
   simix::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
 }
+
+void Host::set_properties(const std::map<std::string, std::string>& properties)
+{
+  simix::simcall([this, &properties] { this->pimpl_->set_properties(properties); });
+}
+
 /** Specify a profile turning the host on and off according to a exhaustive list or a stochastic law.
  * The profile must contain boolean values. */
 void Host::set_state_profile(kernel::profile::Profile* p)

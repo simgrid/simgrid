@@ -5,6 +5,8 @@
 
 #include "PropertyHolder.hpp"
 
+#include <map>
+
 namespace simgrid {
 namespace surf {
 
@@ -32,6 +34,23 @@ const std::unordered_map<std::string, std::string>* PropertyHolder::get_properti
     properties_.reset(new std::unordered_map<std::string, std::string>);
   return properties_.get();
 }
+
+/** @brief Change the value of the given keys in the property set */
+template <class Assoc> void PropertyHolder::set_properties(const Assoc& properties)
+{
+  if (not properties_)
+    properties_.reset(new std::unordered_map<std::string, std::string>);
+  std::unordered_map<std::string, std::string> props(properties.cbegin(), properties.cend());
+#if __cplusplus >= 201703L
+  props.merge(properties_);
+#else
+  props.insert(properties_->cbegin(), properties_->cend());
+#endif
+  properties_->swap(props);
+}
+
+template void PropertyHolder::set_properties(const std::map<std::string, std::string>& properties);
+template void PropertyHolder::set_properties(const std::unordered_map<std::string, std::string>& properties);
 
 } /* namespace surf */
 } /* namespace simgrid */
