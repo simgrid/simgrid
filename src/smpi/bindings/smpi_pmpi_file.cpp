@@ -20,7 +20,7 @@ int PMPI_File_open(MPI_Comm comm, char *filename, int amode, MPI_Info info, MPI_
   smpi_bench_end();
   *fh =  new simgrid::smpi::File(comm, filename, amode, info);
   smpi_bench_begin();
-  if (((*fh)->size() == 0 && (not amode & MPI_MODE_CREATE)) ||
+  if (((*fh)->size() == 0 && not (amode & MPI_MODE_CREATE)) ||
      ((*fh)->size() != 0 && (amode & MPI_MODE_EXCL))){
     delete fh;
     return MPI_ERR_AMODE;
