@@ -9,11 +9,13 @@
 #include "smpi_datatype.hpp"
 #include "smpi_info.hpp"
 #include "smpi_win.hpp"
+//setup here, because we have templates in smpi_file we want to log
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_io, smpi, "Logging specific to SMPI (RMA operations)");
+
 #include "smpi_file.hpp"
 #include "smpi_status.hpp"
 #include "simgrid/plugins/file_system.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_io, smpi, "Logging specific to SMPI (RMA operations)");
 #define FP_SIZE sizeof(MPI_Offset)
 
 
@@ -68,15 +70,15 @@ namespace smpi{
   int File::seek(MPI_Offset offset, int whence){
     switch(whence){
       case(MPI_SEEK_SET):
-        XBT_DEBUG("Seeking in MPI_File %s, setting offset %lld", file_->get_path(), offset);
+        XBT_VERB("Seeking in MPI_File %s, setting offset %lld", file_->get_path(), offset);
         file_->seek(offset,SEEK_SET);
         break;
       case(MPI_SEEK_CUR):
-        XBT_DEBUG("Seeking in MPI_File %s, current offset + %lld", file_->get_path(), offset);
+        XBT_VERB("Seeking in MPI_File %s, current offset + %lld", file_->get_path(), offset);
         file_->seek(offset,SEEK_CUR);
         break;
       case(MPI_SEEK_END):
-        XBT_DEBUG("Seeking in MPI_File %s, end offset + %lld", file_->get_path(), offset);
+        XBT_VERB("Seeking in MPI_File %s, end offset + %lld", file_->get_path(), offset);
         file_->seek(offset,SEEK_END);
         break;
       default:
@@ -156,7 +158,7 @@ namespace smpi{
     MPI_Offset writesize = datatype->size()*count;
     XBT_DEBUG("Position before write in MPI_File %s : %llu",fh->file_->get_path(),fh->file_->tell());
     MPI_Offset write = fh->file_->write(writesize);
-    XBT_VERB("Write in MPI_File %s, %lld bytes read, readsize %lld bytes, movesize %lld", fh->file_->get_path(), write, writesize, movesize);
+    XBT_VERB("Write in MPI_File %s, %lld bytes written, readsize %lld bytes, movesize %lld", fh->file_->get_path(), write, writesize, movesize);
     if(writesize!=movesize){
       fh->file_->seek(position+movesize, SEEK_SET);
     }
