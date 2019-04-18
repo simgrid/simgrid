@@ -61,7 +61,6 @@ class VariableType : public Type {
   std::vector<VariableEvent*> events_;
 public:
   VariableType(const std::string& name, const std::string& color, Type* father);
-  ~VariableType();
   void instr_event(double now, double delta, const char* resource, double value);
   void set_event(double timestamp, double value);
   void add_event(double timestamp, double value);
@@ -70,10 +69,10 @@ public:
 
 class ValueType : public Type {
 public:
-  std::map<std::string, EntityValue*> values_;
+  std::map<std::string, EntityValue> values_;
   ValueType(const std::string& name, const std::string& alias, Type* father) : Type(name, alias, "", father){};
   ValueType(const std::string& name, Type* father) : Type(name, name, "", father){};
-  virtual ~ValueType();
+  virtual ~ValueType() = default;
   void add_entity_value(const std::string& name, const std::string& color);
   void add_entity_value(const std::string& name);
   EntityValue* get_entity_value(const std::string& name);
@@ -96,7 +95,6 @@ class StateType : public ValueType {
   std::vector<StateEvent*> events_;
 public:
   StateType(const std::string& name, Type* father);
-  ~StateType();
   void set_event(const std::string& value_name);
   void push_event(const std::string& value_name);
   void push_event(const std::string& value_name, TIData* extra);

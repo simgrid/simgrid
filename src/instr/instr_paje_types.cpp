@@ -36,12 +36,6 @@ Type::~Type()
     delete elm.second;
 }
 
-ValueType::~ValueType()
-{
-  for (auto elm : values_)
-    delete elm.second;
-}
-
 ContainerType::ContainerType(const std::string& name, Type* father) : Type(name, name, "", father)
 {
   XBT_DEBUG("ContainerType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
@@ -58,11 +52,6 @@ StateType::StateType(const std::string& name, Type* father) : ValueType(name, fa
 {
   XBT_DEBUG("StateType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
   log_definition(PAJE_DefineStateType);
-}
-
-StateType::~StateType()
-{
-  events_.clear();
 }
 
 void StateType::set_event(const std::string& value_name)
@@ -95,11 +84,6 @@ VariableType::VariableType(const std::string& name, const std::string& color, Ty
 {
   XBT_DEBUG("VariableType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
   log_definition(PAJE_DefineVariableType);
-}
-
-VariableType::~VariableType()
-{
-  events_.clear();
 }
 
 void VariableType::instr_event(double now, double delta, const char* resource, double value)
@@ -207,10 +191,9 @@ void ValueType::add_entity_value(const std::string& name, const std::string& col
 
   auto it = values_.find(name);
   if (it == values_.end()) {
-    EntityValue* new_val = new EntityValue(name, color, this);
-    values_.insert({name, new_val});
+    auto res = values_.emplace(name, EntityValue(name, color, this));
     XBT_DEBUG("new value %s, child of %s", name.c_str(), get_cname());
-    new_val->print();
+    res.first->second.print();
   }
 }
 
@@ -220,7 +203,7 @@ EntityValue* ValueType::get_entity_value(const std::string& name)
   if (ret == values_.end()) {
     THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name.c_str(), get_cname());
   }
-  return ret->second;
+  return &ret->second;
 }
 
 VariableType* Type::by_name_or_create(const std::string& name, const std::string& color)
