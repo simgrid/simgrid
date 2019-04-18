@@ -16,12 +16,9 @@ namespace jedule{
 
 class XBT_PUBLIC Jedule {
 public:
-  Jedule()=default;
-  Jedule(const Jedule&) = delete;
-  Jedule& operator=(const Jedule&) = delete;
-  ~Jedule();
-  std::vector<Event*> event_set_;
-  Container* root_container_ = nullptr;
+  Jedule(const std::string& name) : root_container_(name) {}
+  std::vector<Event> event_set_;
+  Container root_container_;
   void add_meta_info(char* key, char* value);
   void cleanup_output();
   void write_output(FILE* file);

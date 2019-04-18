@@ -31,9 +31,8 @@ Container::Container(const std::string& name) : name(name)
 
 Container::~Container()
 {
-  if (not this->children.empty())
-    for (auto const& child : this->children)
-      delete child;
+  for (auto const& child : this->children)
+    delete child;
 }
 
 void Container::add_child(jed_container_t child)
@@ -160,7 +159,8 @@ void Container::print(FILE* jed_file)
 }
 }
 
-static void add_subsets_to(std::vector<jed_subset_t> *subset_list, std::vector<const char*> hostgroup, jed_container_t parent)
+static void add_subsets_to(std::vector<simgrid::jedule::Subset>& subset_list, std::vector<const char*> hostgroup,
+                           jed_container_t parent)
 {
   // get ids for each host
   // sort ids
@@ -185,15 +185,15 @@ static void add_subsets_to(std::vector<jed_subset_t> *subset_list, std::vector<c
     int pos = start;
     for(unsigned int i=0; i<nb_ids; i++) {
       if( id_list[i] - id_list[pos] > 1 ) {
-        subset_list->push_back(new simgrid::jedule::Subset(id_list[start], id_list[pos], parent));
+        subset_list.emplace_back(id_list[start], id_list[pos], parent);
         start = i;
 
         if( i == nb_ids-1 ) {
-         subset_list->push_back(new simgrid::jedule::Subset(id_list[i], id_list[i], parent));
+          subset_list.emplace_back(id_list[i], id_list[i], parent);
         }
       } else {
         if( i == nb_ids-1 ) {
-          subset_list->push_back(new simgrid::jedule::Subset(id_list[start], id_list[i], parent));
+          subset_list.emplace_back(id_list[start], id_list[i], parent);
         }
       }
       pos = i;
@@ -202,14 +202,14 @@ static void add_subsets_to(std::vector<jed_subset_t> *subset_list, std::vector<c
 
 }
 
-void get_resource_selection_by_hosts(std::vector<jed_subset_t> *subset_list, std::vector<sg_host_t> *host_list)
+void get_resource_selection_by_hosts(std::vector<simgrid::jedule::Subset>& subset_list,
+                                     const std::vector<sg_host_t>& host_list)
 {
-  xbt_assert( host_list != nullptr );
   // for each host name
   //  find parent container
   //  group by parent container
   std::unordered_map<const char*, std::vector<const char*>> parent2hostgroup;
-  for (auto const& host : *host_list) {
+  for (auto const& host : host_list) {
     const char *host_name = sg_host_get_name(host);
     jed_container_t parent = host2_simgrid_parent_container.at(host_name);
     xbt_assert( parent != nullptr );

@@ -18,9 +18,8 @@ namespace jedule{
 class XBT_PUBLIC Container {
 public:
   explicit Container(const std::string& name);
-  Container(const Container&) = delete;
-  Container& operator=(const Container&) = delete;
-  virtual ~Container();
+  ~Container();
+
 private:
   int last_id_;
   int is_lowest_ = 0;
@@ -43,7 +42,6 @@ public:
 class XBT_PUBLIC Subset {
 public:
   Subset(int s, int n, Container* p);
-  virtual ~Subset()=default;
   int start_idx; // start idx in resource_list of container
   int nres;      // number of resources spanning starting at start_idx
   Container *parent;
@@ -52,7 +50,7 @@ public:
 }
 }
 typedef simgrid::jedule::Container * jed_container_t;
-typedef simgrid::jedule::Subset * jed_subset_t;
-void get_resource_selection_by_hosts(std::vector<jed_subset_t>* subset_list, std::vector<sg_host_t> *host_list);
+void get_resource_selection_by_hosts(std::vector<simgrid::jedule::Subset>& subset_list,
+                                     const std::vector<sg_host_t>& host_list);
 
 #endif /* JED_SIMGRID_PLATFORM_H_ */
