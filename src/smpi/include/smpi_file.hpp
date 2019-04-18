@@ -21,7 +21,8 @@ class File{
   int flags_;
   simgrid::s4u::File* file_;
   MPI_Info info_;
-  MPI_Offset shared_file_pointer_;
+  MPI_Offset* shared_file_pointer_;
+  s4u::MutexPtr shared_mutex_;
   MPI_Win win_;
   char* list_;
   public:
@@ -34,8 +35,6 @@ class File{
   int sync();
   int seek(MPI_Offset offset, int whence);
   int seek_shared(MPI_Offset offset, int whence);
-  int lock();
-  int unlock();
   MPI_Info info();
   void set_info( MPI_Info info);
   static int read(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);

@@ -9,6 +9,8 @@
 #include "smpi_datatype.hpp"
 #include "smpi_info.hpp"
 #include "smpi_win.hpp"
+#include "smpi_request.hpp"
+
 //setup here, because we have templates in smpi_file we want to log
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_io, smpi, "Logging specific to SMPI (RMA operations)");
 
@@ -22,17 +24,24 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_io, smpi, "Logging specific to SMPI (RMA op
 namespace simgrid{
 namespace smpi{
 
-  File::File(MPI_Comm comm, char *filename, int amode, MPI_Info info): comm_(comm), flags_(amode), info_(info), shared_file_pointer_(0) {
+  File::File(MPI_Comm comm, char *filename, int amode, MPI_Info info): comm_(comm), flags_(amode), info_(info) {
     file_= new simgrid::s4u::File(filename, nullptr);
     list_=nullptr;
     if (comm_->rank() == 0) {
       int size= comm_->size() + FP_SIZE;
       list_ = new char[size];
       memset(list_, 0, size);
+      shared_file_pointer_ = new MPI_Offset[1];
+      shared_mutex_ = s4u::Mutex::create();
+      *shared_file_pointer_ = 0;
       win_=new Win(list_, size, 1, MPI_INFO_NULL, comm_);
     }else{
       win_=new Win(list_, 0, 1, MPI_INFO_NULL, comm_);
     }
+    simgrid::smpi::Colls::bcast(&shared_file_pointer_, 1, MPI_AINT, 0, comm);
+    simgrid::smpi::Colls::bcast(&shared_mutex_, 1, MPI_AINT, 0, comm);
+    if(comm_->rank() != 0)
+      intrusive_ptr_add_ref(&*shared_mutex_);
   }
 
   File::~File(){
@@ -61,9 +70,9 @@ namespace smpi{
   }
 
   int File::get_position_shared(MPI_Offset* offset){
-    lock();
-    *offset=shared_file_pointer_;
-    unlock();
+    shared_mutex_->lock();
+    *offset=*shared_file_pointer_;
+    shared_mutex_->unlock();
     return MPI_SUCCESS;
   }
 
@@ -88,10 +97,10 @@ namespace smpi{
   }
 
   int File::seek_shared(MPI_Offset offset, int whence){
-    lock();
+    shared_mutex_->lock();
     seek(offset,whence);
-    shared_file_pointer_=file_->tell();
-    unlock();
+    *shared_file_pointer_=offset;
+    shared_mutex_->unlock();
     return MPI_SUCCESS;
   }
 
@@ -122,29 +131,31 @@ namespace smpi{
   /* pages="84--93"*/
   /* }*/
   int File::read_shared(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
-    fh->lock();
-    fh->seek(fh->shared_file_pointer_,MPI_SEEK_SET);
+    fh->shared_mutex_->lock();
+    fh->seek(*(fh->shared_file_pointer_),MPI_SEEK_SET);
     read(fh, buf, count, datatype, status);
-    fh->shared_file_pointer_=fh->file_->tell();
-    fh->unlock();
+    *(fh->shared_file_pointer_)=fh->file_->tell();
+    fh->shared_mutex_->unlock();
     return MPI_SUCCESS;
   }
 
   int File::read_ordered(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
     //0 needs to get the shared pointer value
+    MPI_Offset val;
     if(fh->comm_->rank()==0){
-      fh->lock();
-      fh->unlock();
+      val=*(fh->shared_file_pointer_);
     }else{
-      fh->shared_file_pointer_=count*datatype->size();
+      val=count*datatype->size();
     }
+
     MPI_Offset result;
-    simgrid::smpi::Colls::scan(&(fh->shared_file_pointer_), &result, 1, MPI_OFFSET, MPI_SUM, fh->comm_);
+    simgrid::smpi::Colls::scan(&val, &result, 1, MPI_OFFSET, MPI_SUM, fh->comm_);
     fh->seek(result, MPI_SEEK_SET);
     int ret = fh->op_all<simgrid::smpi::File::read>(buf, count, datatype, status);
     if(fh->comm_->rank()==fh->comm_->size()-1){
-      fh->lock();
-      fh->unlock();
+      fh->shared_mutex_->lock();
+      *(fh->shared_file_pointer_)=fh->file_->tell();
+      fh->shared_mutex_->unlock();
     }
     char c;
     simgrid::smpi::Colls::bcast(&c, 1, MPI_BYTE, fh->comm_->size()-1, fh->comm_);
@@ -168,29 +179,30 @@ namespace smpi{
   }
 
   int File::write_shared(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
-    fh->lock();
-    fh->seek(fh->shared_file_pointer_,MPI_SEEK_SET);
+    fh->shared_mutex_->lock();
+    fh->seek(*(fh->shared_file_pointer_),MPI_SEEK_SET);
     write(fh, buf, count, datatype, status);
-    fh->shared_file_pointer_=fh->file_->tell();
-    fh->unlock();
+    *(fh->shared_file_pointer_)=fh->file_->tell();
+    fh->shared_mutex_->unlock();
     return MPI_SUCCESS;
   }
 
   int File::write_ordered(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
     //0 needs to get the shared pointer value
+    MPI_Offset val;
     if(fh->comm_->rank()==0){
-      fh->lock();
-      fh->unlock();
+      val=*(fh->shared_file_pointer_);
     }else{
-      fh->shared_file_pointer_=count*datatype->size();
+      val=count*datatype->size();
     }
     MPI_Offset result;
-    simgrid::smpi::Colls::scan(&(fh->shared_file_pointer_), &result, 1, MPI_OFFSET, MPI_SUM, fh->comm_);
+    simgrid::smpi::Colls::scan(&val, &result, 1, MPI_OFFSET, MPI_SUM, fh->comm_);
     fh->seek(result, MPI_SEEK_SET);
     int ret = fh->op_all<simgrid::smpi::File::write>(buf, count, datatype, status);
     if(fh->comm_->rank()==fh->comm_->size()-1){
-      fh->lock();
-      fh->unlock();
+      fh->shared_mutex_->lock();
+      *(fh->shared_file_pointer_)=fh->file_->tell();
+      fh->shared_mutex_->unlock();
     }
     char c;
     simgrid::smpi::Colls::bcast(&c, 1, MPI_BYTE, fh->comm_->size()-1, fh->comm_);
@@ -209,54 +221,6 @@ namespace smpi{
     //no idea
     return simgrid::smpi::Colls::barrier(comm_);
   }
-
-  int File::lock()
-{
-  int rank = comm_->rank();
-  int size = comm_->size();
-  char waitlist[size];
-  char lock = 1;
-  int tag=444;
-  int i;
-  win_->lock(MPI_LOCK_EXCLUSIVE, 0, 0);
-  win_->put(&lock, 1, MPI_CHAR, 0, FP_SIZE+rank, 1, MPI_CHAR);
-  win_->get(waitlist, size, MPI_CHAR, 0, FP_SIZE, size, MPI_CHAR);
-  win_->get(&shared_file_pointer_ , 1 , MPI_OFFSET , 0 , 0, 1, MPI_OFFSET);
-  win_->unlock(0);
-  for (i = 0; i < size; i++) {
-    if (waitlist[i] == 1 && i != rank) {
-      // wait for the lock
-      MPI_Recv(&lock, 1, MPI_CHAR, MPI_ANY_SOURCE, tag, comm_, MPI_STATUS_IGNORE);
-      break;
-    }
-  }
-  return 0;
-}
-
-int File::unlock()
-{
-  int rank = comm_->rank();
-  int size = comm_->size();
-  char waitlist[size];
-  char lock = 0;
-  int tag=444;
-  int i, next;
-  win_->lock(MPI_LOCK_EXCLUSIVE, 0, 0);
-  win_->put(&lock, 1, MPI_CHAR, 0, FP_SIZE+rank, 1, MPI_CHAR);
-  win_->get(waitlist, size, MPI_CHAR, 0, FP_SIZE, size, MPI_CHAR);
-  shared_file_pointer_=file_->tell();
-  win_->put(&shared_file_pointer_, 1 , MPI_OFFSET , 0 , 0, 1, MPI_OFFSET);
-
-  win_->unlock(0);
-  next = (rank + 1 + size) % size;
-  for (i = 0; i < size; i++, next = (next + 1) % size) {
-    if (waitlist[next] == 1) {
-      MPI_Send(&lock, 1, MPI_CHAR, next, tag, comm_);
-      break;
-    }
-  }
-  return 0;
-}
 
 MPI_Info File::info(){
   if(info_== MPI_INFO_NULL)
