@@ -273,7 +273,7 @@ void STag_dax__uses()
   SD_task_t file;
   if (it == files.end()) {
     file = SD_task_create_comm_e2e(A_dax__uses_file, nullptr, size);
-    sd_global->initial_tasks->erase(file);
+    sd_global->initial_tasks.erase(file);
     files[A_dax__uses_file] = file;
   } else {
     file = it->second;

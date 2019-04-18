@@ -37,7 +37,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   SD_task_t task = xbt_new0(s_SD_task_t, 1);
   task->kind = SD_TASK_NOT_TYPED;
   task->state= SD_NOT_SCHEDULED;
-  sd_global->initial_tasks->insert(task);
+  sd_global->initial_tasks.insert(task);
 
   task->marked = 0;
   task->start_time = -1.0;
@@ -265,28 +265,28 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
   std::set<SD_task_t>::iterator idx;
   XBT_DEBUG("Set state of '%s' to %d", task->name, new_state);
   if ((new_state == SD_NOT_SCHEDULED || new_state == SD_SCHEDULABLE) && task->state == SD_FAILED){
-    sd_global->completed_tasks->erase(task);
-    sd_global->initial_tasks->insert(task);
+    sd_global->completed_tasks.erase(task);
+    sd_global->initial_tasks.insert(task);
   }
 
   if (new_state == SD_SCHEDULED && task->state == SD_RUNNABLE){
-    sd_global->initial_tasks->insert(task);
-    sd_global->runnable_tasks->erase(task);
+    sd_global->initial_tasks.insert(task);
+    sd_global->runnable_tasks.erase(task);
   }
 
   if (new_state == SD_RUNNABLE){
-    idx = sd_global->initial_tasks->find(task);
-    if (idx != sd_global->initial_tasks->end()) {
-      sd_global->runnable_tasks->insert(*idx);
-      sd_global->initial_tasks->erase(idx);
+    idx = sd_global->initial_tasks.find(task);
+    if (idx != sd_global->initial_tasks.end()) {
+      sd_global->runnable_tasks.insert(*idx);
+      sd_global->initial_tasks.erase(idx);
     }
   }
 
   if (new_state == SD_RUNNING)
-    sd_global->runnable_tasks->erase(task);
+    sd_global->runnable_tasks.erase(task);
 
   if (new_state == SD_DONE || new_state == SD_FAILED){
-    sd_global->completed_tasks->insert(task);
+    sd_global->completed_tasks.insert(task);
     task->start_time = task->surf_action->get_start_time();
     if (new_state == SD_DONE){
       task->finish_time = task->surf_action->get_finish_time();
@@ -802,7 +802,7 @@ void SD_task_run(SD_task_t task)
   XBT_DEBUG("surf_action = %p", task->surf_action);
 
   SD_task_set_state(task, SD_RUNNING);
-  sd_global->return_set->insert(task);
+  sd_global->return_set.insert(task);
 }
 
 /**
