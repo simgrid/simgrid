@@ -220,16 +220,8 @@ unw_addr_space_t UnwindContext::createUnwindAddressSpace()
   return unw_create_addr_space(&UnwindContext::accessors, BYTE_ORDER);
 }
 
-void UnwindContext::clear()
-{
-  addressSpace_ = nullptr;
-  process_ = nullptr;
-}
-
 void UnwindContext::initialize(simgrid::mc::RemoteClient* process, unw_context_t* c)
 {
-  clear();
-
   this->addressSpace_ = process;
   this->process_ = process;
 

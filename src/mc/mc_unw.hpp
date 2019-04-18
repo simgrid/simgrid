@@ -48,12 +48,7 @@ class UnwindContext {
   unw_context_t unwindContext_;
 
 public:
-  UnwindContext() = default;
-  UnwindContext(const UnwindContext&) = default;
-  UnwindContext& operator=(const UnwindContext&) = default;
-  ~UnwindContext() { clear(); }
   void initialize(simgrid::mc::RemoteClient* process, unw_context_t* c);
-  void clear();
   unw_cursor_t cursor();
 
 private: // Methods and virtual table for libunwind
