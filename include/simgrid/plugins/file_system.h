@@ -73,6 +73,7 @@ SG_END_DECL()
 #include <xbt/Extendable.hpp>
 
 #include <map>
+#include <memory>
 #include <string>
 
 namespace simgrid {
@@ -139,16 +140,15 @@ public:
   explicit FileSystemStorageExt(Storage* ptr);
   FileSystemStorageExt(const FileSystemStorageExt&) = delete;
   FileSystemStorageExt& operator=(const FileSystemStorageExt&) = delete;
-  ~FileSystemStorageExt();
   std::map<std::string, sg_size_t>* parse_content(const std::string& filename);
-  std::map<std::string, sg_size_t>* get_content() { return content_; }
+  std::map<std::string, sg_size_t>* get_content() { return content_.get(); }
   sg_size_t get_size() { return size_; }
   sg_size_t get_used_size() { return used_size_; }
   void decr_used_size(sg_size_t size) { used_size_ -= size; }
   void incr_used_size(sg_size_t size) { used_size_ += size; }
 
 private:
-  std::map<std::string, sg_size_t>* content_;
+  std::unique_ptr<std::map<std::string, sg_size_t>> content_;
   sg_size_t used_size_ = 0;
   sg_size_t size_     = 0;
 };
@@ -159,8 +159,7 @@ public:
   FileDescriptorHostExt() = default;
   FileDescriptorHostExt(const FileDescriptorHostExt&) = delete;
   FileDescriptorHostExt& operator=(const FileDescriptorHostExt&) = delete;
-  ~FileDescriptorHostExt() { delete file_descriptor_table; }
-  std::vector<int>* file_descriptor_table = nullptr; // Created lazily on need
+  std::unique_ptr<std::vector<int>> file_descriptor_table        = nullptr; // Created lazily on need
 };
 } // namespace s4u
 } // namespace simgrid

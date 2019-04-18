@@ -53,7 +53,7 @@ File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpa
   // assign a file descriptor id to the newly opened File
   FileDescriptorHostExt* ext = host->extension<simgrid::s4u::FileDescriptorHostExt>();
   if (ext->file_descriptor_table == nullptr) {
-    ext->file_descriptor_table = new std::vector<int>(sg_storage_max_file_descriptors);
+    ext->file_descriptor_table.reset(new std::vector<int>(sg_storage_max_file_descriptors));
     std::iota(ext->file_descriptor_table->rbegin(), ext->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
   }
   xbt_assert(not ext->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
@@ -288,13 +288,8 @@ int File::remote_move(sg_host_t host, const char* fullpath)
 
 FileSystemStorageExt::FileSystemStorageExt(simgrid::s4u::Storage* ptr)
 {
-  content_ = parse_content(ptr->get_impl()->content_name);
+  content_.reset(parse_content(ptr->get_impl()->content_name));
   size_    = ptr->get_impl()->size_;
-}
-
-FileSystemStorageExt::~FileSystemStorageExt()
-{
-  delete content_;
 }
 
 std::map<std::string, sg_size_t>* FileSystemStorageExt::parse_content(const std::string& filename)
