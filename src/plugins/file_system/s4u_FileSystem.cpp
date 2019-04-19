@@ -140,8 +140,8 @@ sg_size_t File::write(sg_size_t size)
 
   XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu' '%llu:%llu'", get_path(), local_storage_->get_cname(), size, size_, sg_storage_get_size_used(local_storage_), sg_storage_get_size(local_storage_));
   // If the storage is full before even starting to write
-  // if (sg_storage_get_size_used(local_storage_) >= sg_storage_get_size(local_storage_))
-    // return 0;
+   if (sg_storage_get_size_used(local_storage_) >= sg_storage_get_size(local_storage_))
+     return 0;
   /* Substract the part of the file that might disappear from the used sized on the storage element */
   local_storage_->extension<FileSystemStorageExt>()->decr_used_size(size_ - current_position_);
 
