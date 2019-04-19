@@ -253,9 +253,9 @@ template <class T> const char* TypedConfigurationElement<T>::get_type_name() // 
 class Config {
 private:
   // name -> ConfigElement:
-  std::map<std::string, std::unique_ptr<simgrid::config::ConfigurationElement>> options;
+  std::map<std::string, std::unique_ptr<ConfigurationElement>> options;
   // alias -> ConfigElement from options:
-  std::map<std::string, simgrid::config::ConfigurationElement*> aliases;
+  std::map<std::string, ConfigurationElement*> aliases;
   bool warn_for_aliases = true;
 
 public:
@@ -268,15 +268,14 @@ public:
   ConfigurationElement& operator[](const std::string& name);
   void alias(const std::string& realname, const std::string& aliasname);
 
-  template <class T, class... A>
-  simgrid::config::TypedConfigurationElement<T>* register_option(const std::string& name, A&&... a)
+  template <class T, class... A> TypedConfigurationElement<T>* register_option(const std::string& name, A&&... a)
   {
     xbt_assert(options.find(name) == options.end(), "Refusing to register the config element '%s' twice.",
                name.c_str());
     TypedConfigurationElement<T>* variable = new TypedConfigurationElement<T>(name, std::forward<A>(a)...);
     XBT_DEBUG("Register cfg elm %s (%s) of type %s @%p in set %p)", name.c_str(), variable->get_description().c_str(),
               variable->get_type_name(), variable, this);
-    options.emplace(name, variable);
+    options.emplace(name, std::unique_ptr<ConfigurationElement>(variable));
     variable->update();
     return variable;
   }
