@@ -12,6 +12,7 @@
 
 #include <functional>
 #include <map>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <string>
@@ -252,14 +253,13 @@ template <class T> const char* TypedConfigurationElement<T>::get_type_name() // 
 class Config {
 private:
   // name -> ConfigElement:
-  std::map<std::string, simgrid::config::ConfigurationElement*> options;
+  std::map<std::string, std::unique_ptr<simgrid::config::ConfigurationElement>> options;
   // alias -> ConfigElement from options:
   std::map<std::string, simgrid::config::ConfigurationElement*> aliases;
   bool warn_for_aliases = true;
 
 public:
   Config();
-  ~Config();
 
   // No copy:
   Config(Config const&) = delete;
@@ -276,7 +276,7 @@ public:
     TypedConfigurationElement<T>* variable = new TypedConfigurationElement<T>(name, std::forward<A>(a)...);
     XBT_DEBUG("Register cfg elm %s (%s) of type %s @%p in set %p)", name.c_str(), variable->get_description().c_str(),
               variable->get_type_name(), variable, this);
-    options.insert({name, variable});
+    options.emplace(name, variable);
     variable->update();
     return variable;
   }
@@ -294,18 +294,12 @@ Config::Config()
 {
   atexit(&sg_config_finalize);
 }
-Config::~Config()
-{
-  XBT_DEBUG("Frees cfg set %p", this);
-  for (auto const& elm : options)
-    delete elm.second;
-}
 
 inline ConfigurationElement* Config::get_dict_element(const std::string& name)
 {
   auto opt = options.find(name);
   if (opt != options.end()) {
-    return opt->second;
+    return opt->second.get();
   } else {
     auto als = aliases.find(name);
     if (als != aliases.end()) {
@@ -362,7 +356,7 @@ void Config::show_aliases()
 void Config::help()
 {
   for (auto const& elm : options) {
-    simgrid::config::ConfigurationElement* variable = this->options.at(elm.first);
+    simgrid::config::ConfigurationElement* variable = elm.second.get();
     XBT_HELP("   %s: %s", elm.first.c_str(), variable->get_description().c_str());
     XBT_HELP("       Type: %s; Current value: %s", variable->get_type_name(), variable->get_string_value().c_str());
   }

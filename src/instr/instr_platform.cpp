@@ -439,8 +439,8 @@ static void recursiveNewVariableType(const std::string& new_typename, const std:
   if (root->get_name() == "LINK")
     root->by_name_or_create(std::string("b") + new_typename, color);
 
-  for (auto elm : root->children_) {
-    recursiveNewVariableType(new_typename, color, elm.second);
+  for (auto const& elm : root->children_) {
+    recursiveNewVariableType(new_typename, color, elm.second.get());
   }
 }
 
@@ -455,8 +455,8 @@ static void recursiveNewUserVariableType(const std::string& father_type, const s
   if (root->get_name() == father_type) {
     root->by_name_or_create(new_typename, color);
   }
-  for (auto elm : root->children_)
-    recursiveNewUserVariableType(father_type, new_typename, color, elm.second);
+  for (auto const& elm : root->children_)
+    recursiveNewUserVariableType(father_type, new_typename, color, elm.second.get());
 }
 
 void instr_new_user_variable_type(const std::string& father_type, const std::string& new_typename,
@@ -471,8 +471,8 @@ static void recursiveNewUserStateType(const std::string& father_type, const std:
   if (root->get_name() == father_type)
     root->by_name_or_create<simgrid::instr::StateType>(new_typename);
 
-  for (auto elm : root->children_)
-    recursiveNewUserStateType(father_type, new_typename, elm.second);
+  for (auto const& elm : root->children_)
+    recursiveNewUserStateType(father_type, new_typename, elm.second.get());
 }
 
 void instr_new_user_state_type(const std::string& father_type, const std::string& new_typename)
@@ -486,8 +486,8 @@ static void recursiveNewValueForUserStateType(const std::string& type_name, cons
   if (root->get_name() == type_name)
     static_cast<simgrid::instr::StateType*>(root)->add_entity_value(val, color);
 
-  for (auto elm : root->children_)
-    recursiveNewValueForUserStateType(type_name, val, color, elm.second);
+  for (auto const& elm : root->children_)
+    recursiveNewValueForUserStateType(type_name, val, color, elm.second.get());
 }
 
 void instr_new_value_for_user_state_type(const std::string& type_name, const char* value, const std::string& color)

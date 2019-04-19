@@ -22,18 +22,12 @@ Type::Type(const std::string& name, const std::string& alias, const std::string&
     THROWF(tracing_error, 0, "can't create a new type with no name or alias");
 
   if (father != nullptr){
-    father->children_.insert({alias, this});
+    father->children_.emplace(alias, this);
     XBT_DEBUG("new type %s, child of %s", get_cname(), father->get_cname());
   }
   if (trace_format == simgrid::instr::TraceFormat::Paje) {
     stream_ << std::fixed << std::setprecision(TRACE_precision());
   }
-}
-
-Type::~Type()
-{
-  for (auto elm : children_)
-    delete elm.second;
 }
 
 ContainerType::ContainerType(const std::string& name, Type* father) : Type(name, name, "", father)
@@ -165,12 +159,12 @@ void Type::log_definition(simgrid::instr::Type* source, simgrid::instr::Type* de
 Type* Type::by_name(const std::string& name)
 {
   Type* ret = nullptr;
-  for (auto elm : children_) {
+  for (auto const& elm : children_) {
     if (elm.second->name_ == name) {
       if (ret != nullptr) {
         THROWF (tracing_error, 0, "there are two children types with the same name?");
       } else {
-        ret = elm.second;
+        ret = elm.second.get();
       }
     }
   }
@@ -210,7 +204,8 @@ VariableType* Type::by_name_or_create(const std::string& name, const std::string
 {
   auto cont = children_.find(name);
   std::string mycolor = color.empty() ? "1 1 1" : color;
-  return cont == children_.end() ? new VariableType(name, mycolor, this) : static_cast<VariableType*>(cont->second);
+  return cont == children_.end() ? new VariableType(name, mycolor, this)
+                                 : static_cast<VariableType*>(cont->second.get());
 }
 
 LinkType* Type::by_name_or_create(const std::string& name, Type* source, Type* dest)
@@ -224,7 +219,7 @@ LinkType* Type::by_name_or_create(const std::string& name, Type* source, Type* d
     ret->log_definition(source, dest);
     return ret;
   } else
-    return static_cast<LinkType*>(it->second);
+    return static_cast<LinkType*>(it->second.get());
 }
 }
 }

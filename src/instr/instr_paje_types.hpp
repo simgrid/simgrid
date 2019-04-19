@@ -7,6 +7,7 @@
 #define INSTR_PAJE_TYPES_HPP
 
 #include "src/instr/instr_private.hpp"
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -23,12 +24,12 @@ class Type {
   Type* father_;
 
 public:
-  std::map<std::string, Type*> children_;
+  std::map<std::string, std::unique_ptr<Type>> children_;
   Container* issuer_ = nullptr;
   std::stringstream stream_;
 
   Type(const std::string& name, const std::string& alias, const std::string& color, Type* father);
-  virtual ~Type();
+  virtual ~Type() = default;
 
   const std::string& get_name() const { return name_; }
   const char* get_cname() { return name_.c_str(); }
@@ -42,7 +43,7 @@ public:
   template <class T> T* by_name_or_create(const std::string& name)
   {
     auto cont = children_.find(name);
-    return cont == children_.end() ? new T(name, this) : static_cast<T*>(cont->second);
+    return cont == children_.end() ? new T(name, this) : static_cast<T*>(cont->second.get());
   }
 
   void set_calling_container(Container* container) { issuer_ = container; }

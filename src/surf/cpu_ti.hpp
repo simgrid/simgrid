@@ -10,6 +10,7 @@
 #include "src/surf/cpu_interface.hpp"
 
 #include <boost/intrusive/list.hpp>
+#include <memory>
 
 namespace simgrid {
 namespace kernel {
@@ -48,7 +49,6 @@ public:
   CpuTiTmgr(profile::Profile* speed_profile, double value);
   CpuTiTmgr(const CpuTiTmgr&) = delete;
   CpuTiTmgr& operator=(const CpuTiTmgr&) = delete;
-  ~CpuTiTmgr();
 
   double integrate(double a, double b);
   double solve(double a, double amount);
@@ -62,8 +62,8 @@ private:
   double last_time_ = 0.0;             /*< Integral interval last point (discrete time) */
   double total_    = 0.0;             /*< Integral total between 0 and last_pointn */
 
-  CpuTiProfile* profile_                   = nullptr;
-  profile::Profile* speed_profile_         = nullptr;
+  std::unique_ptr<CpuTiProfile> profile_ = nullptr;
+  profile::Profile* speed_profile_       = nullptr;
 };
 
 /**********

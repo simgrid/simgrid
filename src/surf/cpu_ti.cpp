@@ -39,11 +39,6 @@ CpuTiProfile::CpuTiProfile(profile::Profile* profile)
   integral_.push_back(integral);
 }
 
-CpuTiTmgr::~CpuTiTmgr()
-{
-  delete profile_;
-}
-
 /**
  * @brief Integrate trace
  *
@@ -222,7 +217,7 @@ double CpuTiTmgr::get_power_scale(double a)
 CpuTiTmgr::CpuTiTmgr(kernel::profile::Profile* speed_profile, double value) : speed_profile_(speed_profile)
 {
   double total_time = 0.0;
-  profile_          = 0;
+  profile_.reset(nullptr);
 
   /* no availability file, fixed trace */
   if (not speed_profile) {
@@ -245,7 +240,7 @@ CpuTiTmgr::CpuTiTmgr(kernel::profile::Profile* speed_profile, double value) : sp
   for (auto const& val : speed_profile->event_list)
     total_time += val.date_;
 
-  profile_   = new CpuTiProfile(speed_profile);
+  profile_.reset(new CpuTiProfile(speed_profile));
   last_time_ = total_time;
   total_     = profile_->integrate_simple(0, total_time);
 

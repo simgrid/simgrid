@@ -9,16 +9,18 @@
 #include <simgrid/forward.h>
 #include <xbt/dynar.h>
 
+#include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
-#include <string>
 
 namespace simgrid {
 namespace jedule{
 class XBT_PUBLIC Container {
 public:
   explicit Container(const std::string& name);
-  ~Container();
+  Container(const Container&) = delete;
+  Container& operator=(const Container&) = delete;
 
 private:
   int last_id_;
@@ -28,7 +30,7 @@ public:
   std::string name;
   std::unordered_map<const char*, unsigned int> name2id;
   Container *parent = nullptr;
-  std::vector<Container*> children;
+  std::vector<std::unique_ptr<Container>> children;
   std::vector<sg_host_t> resource_list;
   void add_child(Container* child);
   void add_resources(std::vector<sg_host_t> hosts);

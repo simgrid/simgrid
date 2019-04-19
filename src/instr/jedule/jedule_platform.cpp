@@ -29,16 +29,10 @@ Container::Container(const std::string& name) : name(name)
   container_name2container.insert({this->name, this});
 }
 
-Container::~Container()
-{
-  for (auto const& child : this->children)
-    delete child;
-}
-
 void Container::add_child(jed_container_t child)
 {
   xbt_assert(child != nullptr);
-  this->children.push_back(child);
+  this->children.emplace_back(child);
   child->parent = this;
 }
 
@@ -86,7 +80,7 @@ std::vector<int> Container::get_hierarchy()
       int child_nb = -1;
 
       for (auto const& child : this->parent->children) {
-        if( child == this) {
+        if (child.get() == this) {
           child_nb = i;
           break;
         }
