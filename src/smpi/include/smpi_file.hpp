@@ -13,6 +13,7 @@
 #include "smpi_info.hpp"
 #include  <algorithm>
 
+XBT_LOG_EXTERNAL_CATEGORY(smpi_pmpi);
 
 namespace simgrid{
 namespace smpi{
@@ -83,7 +84,7 @@ class File{
         max=max_offsets[i];
     }
     
-    XBT_DEBUG("my offsets to read : %lld:%lld, global min and max %lld:%lld", min_offset, max_offset, min, max);
+    XBT_CDEBUG(smpi_pmpi, "my offsets to read : %lld:%lld, global min and max %lld:%lld", min_offset, max_offset, min, max);
     if(empty==1){
       status->count=0;
       return MPI_SUCCESS;
@@ -98,7 +99,7 @@ class File{
     //Interleaved case : How much do I need to read, and whom to send it ?
     MPI_Offset my_chunk_start=(max-min+1)/size*rank;
     MPI_Offset my_chunk_end=((max-min+1)/size*(rank+1));
-    XBT_DEBUG("my chunks to read : %lld:%lld", my_chunk_start, my_chunk_end);
+    XBT_CDEBUG(smpi_pmpi, "my chunks to read : %lld:%lld", my_chunk_start, my_chunk_end);
     int* send_sizes = xbt_new0(int, size);
     int* recv_sizes = xbt_new(int, size);
     int* send_disps = xbt_new(int, size);
@@ -112,7 +113,7 @@ class File{
         min_offset=std::min(min_offset, min_offsets[i]);
         send_disps[i]=0;//send_sizes[i]; cheat to avoid issues when send>recv as we use recv buffer
         total_sent+=send_sizes[i];
-        XBT_DEBUG("will have to send %d bytes to %d", send_sizes[i], i);
+        XBT_CDEBUG(smpi_pmpi, "will have to send %d bytes to %d", send_sizes[i], i);
       }
     }
     min_offset=std::max(min_offset, my_chunk_start);
@@ -151,7 +152,7 @@ class File{
       else
         totreads += (std::min(chunks[i].second, my_chunk_end-1)-std::max(chunks[i].first, my_chunk_start));
     }
-    XBT_DEBUG("will have to access %lld from my chunk", totreads);
+    XBT_CDEBUG(smpi_pmpi, "will have to access %lld from my chunk", totreads);
 
     char* sendbuf= static_cast<char *>(smpi_get_tmp_sendbuffer(total_sent));
 

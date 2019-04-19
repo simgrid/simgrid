@@ -16,7 +16,7 @@ namespace jedule{
 
 class XBT_PUBLIC Jedule {
 public:
-  Jedule(const std::string& name) : root_container_(name) {}
+  explicit Jedule(const std::string& name) : root_container_(name) {}
   std::vector<Event> event_set_;
   Container root_container_;
   void add_meta_info(char* key, char* value);

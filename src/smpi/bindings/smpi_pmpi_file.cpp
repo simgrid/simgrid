@@ -4,11 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.hpp"
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
 #include "smpi_file.hpp"
 #include "smpi_datatype.hpp"
-
 
 int PMPI_File_open(MPI_Comm comm, char *filename, int amode, MPI_Info info, MPI_File *fh){
   if (comm == MPI_COMM_NULL)

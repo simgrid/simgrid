@@ -11,15 +11,13 @@
 #include "smpi_win.hpp"
 #include "smpi_request.hpp"
 
-//setup here, because we have templates in smpi_file we want to log
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_io, smpi, "Logging specific to SMPI (RMA operations)");
-
 #include "smpi_file.hpp"
 #include "smpi_status.hpp"
 #include "simgrid/plugins/file_system.h"
 
 #define FP_SIZE sizeof(MPI_Offset)
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_io, smpi, "Logging specific to SMPI (RMA operations)");
 
 namespace simgrid{
 namespace smpi{
