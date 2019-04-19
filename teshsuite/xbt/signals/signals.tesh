@@ -1,4 +1,4 @@
-$ ./signals ${platfdir}/small_platform.xml
+$ $SG_EXENV_TEST ${bindir:=.}/signals ${platfdir}/small_platform.xml
 > [Tremblay:worker:(1) 0.000000] [s4u_test/INFO] Turning off: Three callbacks should be triggered
 > [0.000000] [s4u_test/INFO] First callback
 > [0.000000] [s4u_test/INFO] Second callback
