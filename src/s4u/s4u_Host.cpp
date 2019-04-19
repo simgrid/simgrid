@@ -7,6 +7,8 @@
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Exec.hpp"
+#include "simgrid/s4u/VirtualMachine.hpp"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 
@@ -98,6 +100,11 @@ void Host::turn_off()
 {
   if (is_on()) {
     simix::simcall([this] {
+      for (VirtualMachine* const& vm : vm::VirtualMachineImpl::allVms_)
+        if (vm->get_pm() == this) {
+          vm->shutdown();
+          vm->turn_off();
+        }
       this->pimpl_cpu->turn_off();
       this->pimpl_->turn_off();
 
