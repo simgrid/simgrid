@@ -7,8 +7,8 @@
 #define SIMGRID_XBT_SIGNAL_HPP
 
 #include <functional>
+#include <map>
 #include <utility>
-#include <vector>
 
 namespace simgrid {
 namespace xbt {
@@ -23,20 +23,22 @@ namespace xbt {
   */
   template<class R, class... P>
   class signal<R(P...)> {
-  private:
     typedef std::function<R(P...)> callback_type;
-    std::vector<callback_type> handlers_;
+    std::map<unsigned int, callback_type> handlers_;
+    unsigned int callback_sequence_id = 0;
+
   public:
-    template<class U>
-    void connect(U slot)
+    template <class U> unsigned int connect(U slot)
     {
-      handlers_.push_back(std::move(slot));
+      handlers_.insert({callback_sequence_id, std::move(slot)});
+      return callback_sequence_id++;
     }
     R operator()(P... args) const
     {
       for (auto const& handler : handlers_)
-        handler(args...);
+        handler.second(args...);
     }
+    void disconnect(unsigned int id) { handlers_.erase(id); }
     void disconnect_slots() { handlers_.clear(); }
     int get_slot_count() { return handlers_.size(); }
   };
