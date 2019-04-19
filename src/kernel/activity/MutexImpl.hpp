@@ -16,8 +16,7 @@ namespace activity {
 
 class XBT_PUBLIC MutexImpl {
 public:
-  MutexImpl();
-  ~MutexImpl();
+  MutexImpl() : piface_(this) {}
   MutexImpl(MutexImpl const&) = delete;
   MutexImpl& operator=(MutexImpl const&) = delete;
 

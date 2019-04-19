@@ -14,8 +14,6 @@ namespace loadbalancer {
 
 class XBT_PRIVATE Mapping {
 public:
-  Mapping() = default;
-  ~Mapping() = default;
   /** Each host can have an arbitrary number of actors -> multimap **/
   typedef std::unordered_multimap<simgrid::s4u::Host*, simgrid::s4u::ActorPtr> host_to_actors_map_t;
   host_to_actors_map_t host_to_actors;
@@ -62,8 +60,6 @@ class XBT_PRIVATE LoadBalancer
   std::map</*proc id*/int, double> actor_computation;
 
 public:
-  LoadBalancer();
-  ~LoadBalancer();
   void run();
   void assign(simgrid::s4u::ActorPtr actor, simgrid::s4u::Host* host);
   

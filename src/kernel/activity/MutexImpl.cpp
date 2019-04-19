@@ -12,18 +12,6 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-MutexImpl::MutexImpl() : piface_(this)
-{
-  XBT_IN("(%p)", this);
-  XBT_OUT();
-}
-
-MutexImpl::~MutexImpl()
-{
-  XBT_IN("(%p)", this);
-  XBT_OUT();
-}
-
 void MutexImpl::lock(actor::ActorImpl* issuer)
 {
   XBT_IN("(%p; %p)", this, issuer);

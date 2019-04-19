@@ -27,8 +27,7 @@ class XBT_PUBLIC NetZone {
 protected:
   friend kernel::routing::NetZoneImpl;
 
-  explicit NetZone(kernel::routing::NetZoneImpl* impl);
-  ~NetZone();
+  explicit NetZone(kernel::routing::NetZoneImpl* impl) : pimpl_(impl) {}
 
 public:
   /** @brief Retrieves the name of that netzone as a C++ string */

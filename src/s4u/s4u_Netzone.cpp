@@ -21,12 +21,6 @@ xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routi
 xbt::signal<void(NetZone const&)> NetZone::on_creation;
 xbt::signal<void(NetZone const&)> NetZone::on_seal;
 
-NetZone::NetZone(kernel::routing::NetZoneImpl* impl) : pimpl_(impl) {}
-
-NetZone::~NetZone()
-{
-}
-
 const std::unordered_map<std::string, std::string>* NetZone::get_properties() const
 {
   return &properties_;

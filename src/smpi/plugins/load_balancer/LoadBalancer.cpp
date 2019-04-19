@@ -42,14 +42,6 @@ bool compare_hosts::operator()(simgrid::s4u::Host* const a, simgrid::s4u::Host* 
 }
 
 
-LoadBalancer::LoadBalancer()
-{
-}
-
-LoadBalancer::~LoadBalancer()
-{
-}
-
 void LoadBalancer::run()
 {
   simgrid::s4u::Engine* engine                     = simgrid::s4u::Engine::get_instance();
