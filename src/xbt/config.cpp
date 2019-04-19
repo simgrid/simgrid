@@ -275,7 +275,7 @@ public:
     TypedConfigurationElement<T>* variable = new TypedConfigurationElement<T>(name, std::forward<A>(a)...);
     XBT_DEBUG("Register cfg elm %s (%s) of type %s @%p in set %p)", name.c_str(), variable->get_description().c_str(),
               variable->get_type_name(), variable, this);
-    options.emplace(name, std::unique_ptr<ConfigurationElement>(variable));
+    options[name].reset(variable);
     variable->update();
     return variable;
   }

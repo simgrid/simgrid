@@ -22,7 +22,7 @@ Type::Type(const std::string& name, const std::string& alias, const std::string&
     THROWF(tracing_error, 0, "can't create a new type with no name or alias");
 
   if (father != nullptr){
-    father->children_.emplace(alias, std::unique_ptr<Type>(this));
+    father->children_[alias].reset(this);
     XBT_DEBUG("new type %s, child of %s", get_cname(), father->get_cname());
   }
   if (trace_format == simgrid::instr::TraceFormat::Paje) {
