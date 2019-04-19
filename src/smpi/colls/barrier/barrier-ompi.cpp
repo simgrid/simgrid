@@ -267,9 +267,7 @@ int Coll_barrier_ompi_basic_linear::barrier(MPI_Comm comm)
 
         requests = new MPI_Request[size];
         for (i = 1; i < size; ++i) {
-            requests[i] = Request::irecv(NULL, 0, MPI_BYTE, MPI_ANY_SOURCE,
-                                     COLL_TAG_BARRIER, comm
-                                     );
+          requests[i] = Request::irecv(NULL, 0, MPI_BYTE, i, COLL_TAG_BARRIER, comm);
         }
         Request::waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
 
