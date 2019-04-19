@@ -15,8 +15,9 @@ large-scale distributed systems such as Grids, Clouds, HPC or P2P
 systems. It can be used to evaluate heuristics, prototype applications 
 or even assess legacy MPI applications.
 
-More documentation is included in this archive (doc/html/index.html)
-or [online](https://simgrid.org/)
+Please refer to the [Installing SimGrid](docs/source/Installing_SimGrid.rst) part of the documentation shipped with this
+repository to learn about the different ways to intall SimGrid. More documentation is also available 
+[online](https://simgrid.frama.io/simgrid/)
 
 In any case, you may want to subscribe to the [user mailing list](http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user). 
 There, you can find answers to your questions, or simply discuss with
