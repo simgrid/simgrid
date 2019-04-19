@@ -66,8 +66,8 @@ class File{
     int rank = comm_-> rank();
     MPI_Offset min_offset = file_->tell();
     MPI_Offset max_offset = (min_offset + count * datatype->size());//cheating, as we don't care about exact data location, we can skip extent
-    MPI_Offset* min_offsets = xbt_new(MPI_Offset, size);
-    MPI_Offset* max_offsets = xbt_new(MPI_Offset, size);
+    MPI_Offset* min_offsets = new MPI_Offset[size];
+    MPI_Offset* max_offsets = new MPI_Offset[size];
     simgrid::smpi::Colls::allgather(&min_offset, 1, MPI_OFFSET, min_offsets, 1, MPI_OFFSET, comm_);
     simgrid::smpi::Colls::allgather(&max_offset, 1, MPI_OFFSET, max_offsets, 1, MPI_OFFSET, comm_);
     MPI_Offset min=min_offset;
@@ -86,11 +86,15 @@ class File{
     
     XBT_CDEBUG(smpi_pmpi, "my offsets to read : %lld:%lld, global min and max %lld:%lld", min_offset, max_offset, min, max);
     if(empty==1){
+      delete[] min_offsets;
+      delete[] max_offsets;
       status->count=0;
       return MPI_SUCCESS;
     }
     MPI_Offset total = max-min;
     if(total==tot && (datatype->flags() & DT_FLAG_CONTIGUOUS)){
+      delete[] min_offsets;
+      delete[] max_offsets;
       //contiguous. Just have each proc perform its read
       status->count=count * datatype->size();
       return T(this,buf,count,datatype, status);
@@ -100,18 +104,19 @@ class File{
     MPI_Offset my_chunk_start=(max-min+1)/size*rank;
     MPI_Offset my_chunk_end=((max-min+1)/size*(rank+1));
     XBT_CDEBUG(smpi_pmpi, "my chunks to read : %lld:%lld", my_chunk_start, my_chunk_end);
-    int* send_sizes = xbt_new0(int, size);
-    int* recv_sizes = xbt_new(int, size);
-    int* send_disps = xbt_new(int, size);
-    int* recv_disps = xbt_new(int, size);
+    int* send_sizes = new int[size];
+    int* recv_sizes = new int[size];
+    int* send_disps = new int[size];
+    int* recv_disps = new int[size];
     int total_sent=0;
     for(int i=0;i<size;i++){
+      send_sizes[i]=0;
+      send_disps[i]=0;//cheat to avoid issues when send>recv as we use recv buffer
       if((my_chunk_start>=min_offsets[i] && my_chunk_start < max_offsets[i])||
           ((my_chunk_end<=max_offsets[i]) && my_chunk_end> min_offsets[i])){
         send_sizes[i]=(std::min(max_offsets[i]-1, my_chunk_end-1)-std::max(min_offsets[i], my_chunk_start));
         //store min and max offest to actually read
         min_offset=std::min(min_offset, min_offsets[i]);
-        send_disps[i]=0;//send_sizes[i]; cheat to avoid issues when send>recv as we use recv buffer
         total_sent+=send_sizes[i];
         XBT_CDEBUG(smpi_pmpi, "will have to send %d bytes to %d", send_sizes[i], i);
       }
@@ -171,12 +176,12 @@ class File{
                               buf, recv_sizes, recv_disps, MPI_BYTE, comm_);
     status->count=count * datatype->size();
     smpi_free_tmp_buffer(sendbuf);
-    xbt_free(send_sizes);
-    xbt_free(recv_sizes);
-    xbt_free(send_disps);
-    xbt_free(recv_disps);
-    xbt_free(min_offsets);
-    xbt_free(max_offsets);
+    delete[] send_sizes;
+    delete[] recv_sizes;
+    delete[] send_disps;
+    delete[] recv_disps;
+    delete[] min_offsets;
+    delete[] max_offsets;
     return MPI_SUCCESS;
   }
 }

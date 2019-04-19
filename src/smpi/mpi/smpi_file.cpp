@@ -29,7 +29,7 @@ namespace smpi{
       int size= comm_->size() + FP_SIZE;
       list_ = new char[size];
       memset(list_, 0, size);
-      shared_file_pointer_ = new MPI_Offset[1];
+      shared_file_pointer_ = new MPI_Offset();
       shared_mutex_ = s4u::Mutex::create();
       *shared_file_pointer_ = 0;
       win_=new Win(list_, size, 1, MPI_INFO_NULL, comm_);
@@ -43,6 +43,11 @@ namespace smpi{
   }
 
   File::~File(){
+    if(comm_->rank() == 0){
+      delete shared_file_pointer_;
+      delete[] list_;
+    }
+    delete win_;
     delete file_;
   }
 
