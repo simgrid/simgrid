@@ -17,23 +17,30 @@ static void append_file(xbt_log_appender_t this_, char *str) {
   fputs(str, (FILE *) this_->data);
 }
 
-static void free_(xbt_log_appender_t this_) {
-  if (this_->data != stderr)
-    fclose(static_cast<FILE*>(this_->data));
+static void free_(xbt_log_appender_t this_)
+{
+  fclose(static_cast<FILE*>(this_->data));
+}
+
+xbt_log_appender_t xbt_log_appender_stream(FILE* f)
+{
+  xbt_log_appender_t res = xbt_new0(s_xbt_log_appender_t, 1);
+  res->do_append         = &append_file;
+  res->free_             = nullptr;
+  res->data              = static_cast<void*>(f);
+  return res;
 }
 
 xbt_log_appender_t xbt_log_appender_file_new(const char* arg)
 {
+  if (arg == nullptr)
+    return xbt_log_appender_stream(stderr);
   xbt_log_appender_t res = xbt_new0(s_xbt_log_appender_t, 1);
   res->do_append         = &append_file;
   res->free_             = &free_;
-  if (arg) {
-    res->data = (void *) fopen(arg, "w");
-    if (res->data == nullptr)
-      xbt_die("Cannot open file: %s: %s", arg, strerror(errno));
-  } else {
-    res->data = (void *) stderr;
-  }
+  res->data              = static_cast<void*>(fopen(arg, "w"));
+  if (res->data == nullptr)
+    xbt_die("Cannot open file: %s: %s", arg, strerror(errno));
   return res;
 }
 

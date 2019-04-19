@@ -68,7 +68,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log, xbt, "Loggings from the logging mechanism i
    which were already created (damnit. Too slow little beetle) */
 void xbt_log_preinit(void)
 {
-  xbt_log_default_appender             = xbt_log_appender_file_new(nullptr);
+  xbt_log_default_appender             = xbt_log_appender_stream(stderr);
   xbt_log_default_layout               = xbt_log_layout_simple_new(nullptr);
   _XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
   _XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
@@ -88,7 +88,7 @@ void xbt_log_init(int *argc, char **argv)
   int j                   = 1;
   int parse_args          = 1; // Stop parsing the parameters once we found '--'
 
-  xbt_log_control_set("xbt_help.threshold:VERBOSE xbt_help.fmt:%m%n");
+  xbt_log_control_set("xbt_help.app:stdout xbt_help.threshold:VERBOSE xbt_help.fmt:%m%n");
 
   /* Set logs and init log submodule */
   for (int i = 1; i < *argc; i++) {
@@ -421,6 +421,10 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
       set.appender = xbt_log_appender2_file_new(value + 9, 1);
     } else if (strncmp(value, "splitfile:", 10) == 0) {
       set.appender = xbt_log_appender2_file_new(value + 10, 0);
+    } else if (strcmp(value, "stderr") == 0) {
+      set.appender = xbt_log_appender_stream(stderr);
+    } else if (strcmp(value, "stdout") == 0) {
+      set.appender = xbt_log_appender_stream(stdout);
     } else {
       THROWF(arg_error, 0, "Unknown appender log type: '%s'", value);
     }

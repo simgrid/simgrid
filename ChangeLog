@@ -1,6 +1,7 @@
 SimGrid (3.23) NOT RELEASED (Release Target: June 21. 2019, 15:54 UTC)
 
 XBT:
+ - New log appenders: stdout and stderr. Use stdout for xbt_help.
  - Drop xbt_dict_dump.
 
 Fixed bugs (GH=GitHub; FG=FramaGit):
