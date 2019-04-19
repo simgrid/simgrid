@@ -6,6 +6,7 @@
 #ifndef SIMGRID_KERNEL_RESOURCE_MODEL_HPP
 #define SIMGRID_KERNEL_RESOURCE_MODEL_HPP
 
+#include <memory>
 #include <simgrid/kernel/resource/Action.hpp>
 
 namespace simgrid {
@@ -31,31 +32,31 @@ public:
   Model(const Model&) = delete;
   Model& operator=(const Model&) = delete;
 
-  virtual ~Model();
+  virtual ~Model() = default;
 
   /** @brief Get the set of [actions](@ref Action) in *inited* state */
-  Action::StateSet* get_inited_action_set() const { return inited_action_set_; }
+  Action::StateSet* get_inited_action_set() { return &inited_action_set_; }
 
   /** @brief Get the set of [actions](@ref Action) in *started* state */
-  Action::StateSet* get_started_action_set() const { return started_action_set_; }
+  Action::StateSet* get_started_action_set() { return &started_action_set_; }
 
   /** @brief Get the set of [actions](@ref Action) in *failed* state */
-  Action::StateSet* get_failed_action_set() const { return failed_action_set_; }
+  Action::StateSet* get_failed_action_set() { return &failed_action_set_; }
 
   /** @brief Get the set of [actions](@ref Action) in *finished* state */
-  Action::StateSet* get_finished_action_set() const { return finished_action_set_; }
+  Action::StateSet* get_finished_action_set() { return &finished_action_set_; }
 
   /** @brief Get the set of [actions](@ref Action) in *ignored* state */
-  Action::StateSet* get_ignored_action_set() const { return ignored_action_set_; }
+  Action::StateSet* get_ignored_action_set() { return &ignored_action_set_; }
 
   /** @brief Get the set of modified [actions](@ref Action) */
   Action::ModifiedSet* get_modified_set() const;
 
   /** @brief Get the maxmin system of the current Model */
-  lmm::System* get_maxmin_system() const { return maxmin_system_; }
+  lmm::System* get_maxmin_system() const { return maxmin_system_.get(); }
 
   /** @brief Set the maxmin system of the current Model */
-  void set_maxmin_system(lmm::System* system) { maxmin_system_ = system; }
+  void set_maxmin_system(lmm::System* system);
 
   /** @brief Get the update algorithm of the current Model */
   UpdateAlgo get_update_algorithm() const { return update_algorithm_; }
@@ -98,13 +99,13 @@ public:
   virtual bool next_occuring_event_is_idempotent() { return true; }
 
 private:
-  lmm::System* maxmin_system_           = nullptr;
+  std::unique_ptr<lmm::System> maxmin_system_;
   const UpdateAlgo update_algorithm_;
-  Action::StateSet* inited_action_set_  = new Action::StateSet(); /**< Created not started */
-  Action::StateSet* started_action_set_  = new Action::StateSet(); /**< Started not done */
-  Action::StateSet* failed_action_set_  = new Action::StateSet(); /**< Done with failure */
-  Action::StateSet* finished_action_set_ = new Action::StateSet(); /**< Done successful */
-  Action::StateSet* ignored_action_set_  = new Action::StateSet(); /**< not considered (failure detectors?) */
+  Action::StateSet inited_action_set_;   /**< Created not started */
+  Action::StateSet started_action_set_;  /**< Started not done */
+  Action::StateSet failed_action_set_;   /**< Done with failure */
+  Action::StateSet finished_action_set_; /**< Done successful */
+  Action::StateSet ignored_action_set_;  /**< not considered (failure detectors?) */
 
   ActionHeap action_heap_;
 };

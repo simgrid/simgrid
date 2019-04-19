@@ -14,19 +14,15 @@ namespace resource {
 
 Model::Model(Model::UpdateAlgo algo) : update_algorithm_(algo) {}
 
-Model::~Model()
-{
-  delete inited_action_set_;
-  delete started_action_set_;
-  delete failed_action_set_;
-  delete finished_action_set_;
-  delete ignored_action_set_;
-  delete maxmin_system_;
-}
-
 Action::ModifiedSet* Model::get_modified_set() const
 {
   return maxmin_system_->modified_set_;
+}
+
+void Model::set_maxmin_system(lmm::System* system)
+{
+  maxmin_system_.release(); // ugly...
+  maxmin_system_.reset(system);
 }
 
 double Model::next_occuring_event(double now)
@@ -51,7 +47,7 @@ double Model::next_occuring_event_lazy(double now)
     maxmin_system_->modified_set_->pop_front();
     bool max_duration_flag = false;
 
-    if (action->get_state_set() != started_action_set_)
+    if (action->get_state_set() != &started_action_set_)
       continue;
 
     /* bogus priority, skip it */
