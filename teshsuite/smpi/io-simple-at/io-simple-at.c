@@ -9,7 +9,11 @@
 int main( int argc, char *argv[] )
 {
     int errs = 0;
-    int size, rank, i, *buf, count;
+    int size;
+    int rank;
+    int i;
+    int* buf;
+    int count;
     MPI_File fh;
     MPI_Comm comm;
     MPI_Status status;
