@@ -21,6 +21,7 @@
 #include <dlfcn.h>
 #include <fcntl.h>
 #include <fstream>
+#include <sys/stat.h>
 
 #if not defined(__APPLE__)
 #include <link.h>

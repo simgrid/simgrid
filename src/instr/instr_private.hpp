@@ -24,10 +24,6 @@
 #include <set>
 #include <sstream>
 #include <string>
-#include <sys/stat.h>
-#ifdef WIN32
-#include <direct.h> // _mkdir
-#endif
 
 typedef simgrid::instr::Container* container_t;
 

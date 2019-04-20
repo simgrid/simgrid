@@ -6,6 +6,10 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/instr/instr_private.hpp"
+#include <sys/stat.h>
+#ifdef WIN32
+#include <direct.h> // _mkdir
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
 
