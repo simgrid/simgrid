@@ -409,11 +409,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
              "Unknown priority name: %s (must be one of: trace,debug,verbose,info,warning,error,critical)", value);
     }
   } else if (strncmp(option, "additivity", option_len) == 0) {
-    if (strcasecmp(value, "ON") == 0 || strcasecmp(value, "YES") == 0 || strcmp(value, "1") == 0) {
-      set.additivity = 1;
-    } else {
-      set.additivity = 0;
-    }
+    set.additivity = (strcasecmp(value, "ON") == 0 || strcasecmp(value, "YES") == 0 || strcmp(value, "1") == 0);
   } else if (strncmp(option, "appender", option_len) == 0) {
     if (strncmp(value, "file:", 5) == 0) {
       set.appender = xbt_log_appender_file_new(value + 5);
