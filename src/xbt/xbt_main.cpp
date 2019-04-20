@@ -93,11 +93,6 @@ static void xbt_preinit()
 #endif
   xbt_log_preinit();
   xbt_dict_preinit();
-
-#ifndef _WIN32
-  constexpr unsigned seed = 2147483647;
-  srand48(seed); // FIXME: still worthwhile?
-#endif
   atexit(xbt_postexit);
 }
 
