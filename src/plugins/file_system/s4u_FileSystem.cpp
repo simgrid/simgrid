@@ -142,15 +142,19 @@ sg_size_t File::write(sg_size_t size, int write_inside)
   // If the storage is full before even starting to write
    if (sg_storage_get_size_used(local_storage_) >= sg_storage_get_size(local_storage_))
      return 0;
-  /* Substract the part of the file that might disappear from the used sized on the storage element */
-  sg_size_t write_size = local_storage_->write(size);
-  current_position_ += write_size;
+  sg_size_t write_size=0;
   if(write_inside==0){
+    /* Substract the part of the file that might disappear from the used sized on the storage element */
     local_storage_->extension<FileSystemStorageExt>()->decr_used_size(size_ - current_position_);
+    write_size = local_storage_->write(size);
     local_storage_->extension<FileSystemStorageExt>()->incr_used_size(write_size);
+    current_position_ += write_size;
     size_ = current_position_;
-  }else if(current_position_>size_){
-    size_ = current_position_;
+  }else {
+    write_size = local_storage_->write(size);
+    current_position_ += write_size;
+    if(current_position_>size_)
+      size_ = current_position_;
   }
   std::map<std::string, sg_size_t>* content = local_storage_->extension<FileSystemStorageExt>()->get_content();
 
