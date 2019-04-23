@@ -136,6 +136,8 @@ public:
   std::shared_ptr<const std::unordered_map<std::string, std::string>> properties = nullptr;
   bool auto_restart                                                        = false;
   bool daemon_                                                             = false;
+  std::vector<std::function<void(bool)>> on_exit; /* list of functions executed when the process dies */
+
   ProcessArg()                                                             = default;
 
   explicit ProcessArg(const std::string& name, const std::function<void()>& code, void* data, s4u::Host* host,
@@ -159,6 +161,7 @@ public:
       , kill_time(actor->get_kill_time())
       , auto_restart(actor->has_to_auto_restart())
       , daemon_(actor->is_daemon())
+      , on_exit(actor->on_exit)
   {
     properties.reset(actor->get_properties(), [](decltype(actor->get_properties())) {});
   }
