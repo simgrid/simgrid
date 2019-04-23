@@ -120,7 +120,7 @@ sg_size_t File::read(sg_size_t size)
  * @param size of the file to write
  * @return the number of bytes successfully write or -1 if an error occurred
  */
-sg_size_t File::write(sg_size_t size)
+sg_size_t File::write(sg_size_t size, int write_inside)
 {
   if (size == 0) /* Nothing to write, return */
     return 0;
@@ -143,13 +143,15 @@ sg_size_t File::write(sg_size_t size)
    if (sg_storage_get_size_used(local_storage_) >= sg_storage_get_size(local_storage_))
      return 0;
   /* Substract the part of the file that might disappear from the used sized on the storage element */
-  local_storage_->extension<FileSystemStorageExt>()->decr_used_size(size_ - current_position_);
-
   sg_size_t write_size = local_storage_->write(size);
-  local_storage_->extension<FileSystemStorageExt>()->incr_used_size(write_size);
-
   current_position_ += write_size;
-  size_ = current_position_;
+  if(write_inside==0){
+    local_storage_->extension<FileSystemStorageExt>()->decr_used_size(size_ - current_position_);
+    local_storage_->extension<FileSystemStorageExt>()->incr_used_size(write_size);
+    size_ = current_position_;
+  }else if(current_position_>size_){
+    size_ = current_position_;
+  }
   std::map<std::string, sg_size_t>* content = local_storage_->extension<FileSystemStorageExt>()->get_content();
 
   content->erase(path_);
