@@ -35,6 +35,7 @@ class File{
   int get_position(MPI_Offset* offset);
   int get_position_shared(MPI_Offset* offset);
   int flags();
+  MPI_Comm comm();
   int sync();
   int seek(MPI_Offset offset, int whence);
   int seek_shared(MPI_Offset offset, int whence);

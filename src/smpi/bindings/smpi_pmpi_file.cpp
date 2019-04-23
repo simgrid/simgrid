@@ -18,8 +18,7 @@ int PMPI_File_open(MPI_Comm comm, char *filename, int amode, MPI_Info info, MPI_
   smpi_bench_end();
   *fh =  new simgrid::smpi::File(comm, filename, amode, info);
   smpi_bench_begin();
-  if (((*fh)->size() == 0 && not (amode & MPI_MODE_CREATE)) ||
-     ((*fh)->size() != 0 && (amode & MPI_MODE_EXCL))){
+  if ((*fh)->size() != 0 && (amode & MPI_MODE_EXCL)){
     delete fh;
     return MPI_ERR_AMODE;
   }
@@ -328,5 +327,33 @@ int PMPI_File_set_info(MPI_File  fh, MPI_Info info)
 {
   CHECK_FILE(fh)
   fh->set_info(info);
+  return MPI_SUCCESS;
+}
+
+int PMPI_File_get_size(MPI_File  fh, MPI_Offset* size)
+{
+  CHECK_FILE(fh)
+  *size = fh->size();
+  return MPI_SUCCESS;
+}
+
+int PMPI_File_get_amode(MPI_File  fh, int* amode)
+{
+  CHECK_FILE(fh)
+  *amode = fh->flags();
+  return MPI_SUCCESS;
+}
+
+int PMPI_File_get_group(MPI_File  fh, MPI_Group* group)
+{
+  CHECK_FILE(fh)
+  *group = fh->comm()->group();
+  return MPI_SUCCESS;
+}
+
+int PMPI_File_sync(MPI_File  fh)
+{
+  CHECK_FILE(fh)
+  fh->sync();
   return MPI_SUCCESS;
 }

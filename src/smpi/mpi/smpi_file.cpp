@@ -225,18 +225,21 @@ namespace smpi{
     return simgrid::smpi::Colls::barrier(comm_);
   }
 
-MPI_Info File::info(){
-  if(info_== MPI_INFO_NULL)
-    info_ = new Info();
-  info_->ref();
-  return info_;
-}
+  MPI_Info File::info(){
+    if(info_== MPI_INFO_NULL)
+      info_ = new Info();
+    info_->ref();
+    return info_;
+  }
 
-void File::set_info(MPI_Info info){
-  if(info_!= MPI_INFO_NULL)
-    info->ref();
-  info_=info;
-}
+  void File::set_info(MPI_Info info){
+    if(info_!= MPI_INFO_NULL)
+      info->ref();
+    info_=info;
+  }
 
+  MPI_Comm File::comm(){
+    return comm_;
+  }
 }
 }
