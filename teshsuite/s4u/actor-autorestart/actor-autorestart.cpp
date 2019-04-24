@@ -24,7 +24,9 @@ static void autostart()
   XBT_INFO("starting a dummy process on %s ", host->get_cname());
 
   simgrid::s4u::ActorPtr dummy_actor = simgrid::s4u::Actor::create("Dummy", host, dummy);
+  dummy_actor->on_exit([](bool failed) { XBT_INFO("On_exit callback set before autorestart"); });
   dummy_actor->set_auto_restart(true);
+  dummy_actor->on_exit([](bool failed) { XBT_INFO("On_exit callback set after autorestart"); });
 
   simgrid::s4u::this_actor::sleep_for(50);
 
