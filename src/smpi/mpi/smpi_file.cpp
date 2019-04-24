@@ -60,7 +60,8 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::del(char *filename, MPI_Info info){
+  int File::del(char* filename, MPI_Info)
+  {
     //get the file with MPI_MODE_DELETE_ON_CLOSE and then close it
     File* f = new File(MPI_COMM_SELF,filename,MPI_MODE_DELETE_ON_CLOSE|MPI_MODE_RDWR, nullptr);
     close(&f);
@@ -107,7 +108,8 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::read(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
+  int File::read(MPI_File fh, void* /*buf*/, int count, MPI_Datatype datatype, MPI_Status* status)
+  {
     //get position first as we may be doing non contiguous reads and it will probably be updated badly
     MPI_Offset position = fh->file_->tell();
     MPI_Offset movesize = datatype->get_extent()*count;
@@ -165,7 +167,8 @@ namespace smpi{
     return ret;
   }
 
-  int File::write(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
+  int File::write(MPI_File fh, void* /*buf*/, int count, MPI_Datatype datatype, MPI_Status* status)
+  {
     //get position first as we may be doing non contiguous reads and it will probably be updated badly
     MPI_Offset position = fh->file_->tell();
     MPI_Offset movesize = datatype->get_extent()*count;

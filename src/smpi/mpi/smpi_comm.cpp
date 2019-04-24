@@ -517,7 +517,7 @@ void Comm::set_info(MPI_Info info){
   info_=info;
 }
 
-MPI_Comm Comm::split_type(int type, int key, MPI_Info info)
+MPI_Comm Comm::split_type(int type, int /*key*/, MPI_Info)
 {
   if(type != MPI_COMM_TYPE_SHARED){
     return MPI_COMM_NULL;

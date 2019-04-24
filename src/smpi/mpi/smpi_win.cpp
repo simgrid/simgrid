@@ -84,7 +84,8 @@ Win::~Win(){
   cleanup_attr<Win>();
 }
 
-int Win::attach (void *base, MPI_Aint size){
+int Win::attach(void* /*base*/, MPI_Aint size)
+{
   if (not(base_ == MPI_BOTTOM || base_ == 0))
     return MPI_ERR_ARG;
   base_=0;//actually the address will be given in the RMA calls, as being the disp.
@@ -92,7 +93,8 @@ int Win::attach (void *base, MPI_Aint size){
   return MPI_SUCCESS;
 }
 
-int Win::detach (void *base){
+int Win::detach(void* /*base*/)
+{
   base_=MPI_BOTTOM;
   size_=-1;
   return MPI_SUCCESS;
@@ -364,10 +366,10 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   return MPI_SUCCESS;
 }
 
-int Win::get_accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
-              int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
-              MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request){
-
+int Win::get_accumulate(void* origin_addr, int origin_count, MPI_Datatype origin_datatype, void* result_addr,
+                        int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp,
+                        int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Request*)
+{
   //get sender pointer
   MPI_Win send_win = connected_wins_[target_rank];
 
@@ -433,7 +435,8 @@ int Win::compare_and_swap(void *origin_addr, void *compare_addr,
   return MPI_SUCCESS;
 }
 
-int Win::start(MPI_Group group, int assert){
+int Win::start(MPI_Group group, int /*assert*/)
+{
   /* From MPI forum advices
   The call to MPI_WIN_COMPLETE does not return until the put call has completed at the origin; and the target window
   will be accessed by the put operation only after the call to MPI_WIN_START has matched a call to MPI_WIN_POST by
@@ -475,7 +478,8 @@ int Win::start(MPI_Group group, int assert){
   return MPI_SUCCESS;
 }
 
-int Win::post(MPI_Group group, int assert){
+int Win::post(MPI_Group group, int /*assert*/)
+{
   //let's make a synchronous send here
   int i             = 0;
   int j             = 0;
@@ -574,7 +578,8 @@ int Win::wait(){
   return MPI_SUCCESS;
 }
 
-int Win::lock(int lock_type, int rank, int assert){
+int Win::lock(int lock_type, int rank, int /*assert*/)
+{
   MPI_Win target_win = connected_wins_[rank];
 
   if ((lock_type == MPI_LOCK_EXCLUSIVE && target_win->mode_ != MPI_LOCK_SHARED)|| target_win->mode_ == MPI_LOCK_EXCLUSIVE){

@@ -250,7 +250,8 @@ void Datatype::set_name(char* name){
   name_ = xbt_strdup(name);
 }
 
-int Datatype::pack(void* inbuf, int incount, void* outbuf, int outcount, int* position,MPI_Comm comm){
+int Datatype::pack(void* inbuf, int incount, void* outbuf, int outcount, int* position, MPI_Comm)
+{
   if (outcount - *position < incount*static_cast<int>(size_))
     return MPI_ERR_OTHER;
   Datatype::copy(inbuf, incount, this, static_cast<char*>(outbuf) + *position, outcount, MPI_CHAR);
@@ -258,7 +259,8 @@ int Datatype::pack(void* inbuf, int incount, void* outbuf, int outcount, int* po
   return MPI_SUCCESS;
 }
 
-int Datatype::unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount,MPI_Comm comm){
+int Datatype::unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Comm)
+{
   if (outcount*static_cast<int>(size_)> insize)
     return MPI_ERR_OTHER;
   Datatype::copy(static_cast<char*>(inbuf) + *position, insize, MPI_CHAR, outbuf, outcount, this);

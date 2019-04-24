@@ -31,7 +31,7 @@ void TRACE_smpi_set_category(const char *category)
 
 /* PMPI User level calls */
 
-int PMPI_Init(int *argc, char ***argv)
+int PMPI_Init(int*, char***)
 {
   xbt_assert(simgrid::s4u::Engine::is_initialized(),
              "Your MPI program was not properly initialized. The easiest is to use smpirun to start it.");
