@@ -90,8 +90,7 @@ public:
    */
   std::vector<FunctionIndexEntry> functions_index;
 
-  // TODO, remove the mutable (to remove it we'll have to add a lot of const everywhere)
-  mutable std::vector<simgrid::mc::Variable> global_variables;
+  std::vector<simgrid::mc::Variable> global_variables;
 
   /** Types indexed by DWARF ID */
   std::unordered_map<std::uint64_t, simgrid::mc::Type> types;
@@ -142,7 +141,7 @@ public:
    *  @param name scopes name of the global variable (`myproject::Foo::count`)
    *  @return corresponding variable (if any) or nullptr
    */
-  simgrid::mc::Variable* find_variable(const char* name) const;
+  const simgrid::mc::Variable* find_variable(const char* name) const;
 
   /** Remove a global variable (in order to ignore it)
    *

@@ -200,7 +200,7 @@ void RemoteClient::init()
   this->memory_file = fd;
 
   // Read std_heap (is a struct mdesc*):
-  simgrid::mc::Variable* std_heap_var = this->find_variable("__mmalloc_default_mdp");
+  const simgrid::mc::Variable* std_heap_var = this->find_variable("__mmalloc_default_mdp");
   if (not std_heap_var)
     xbt_die("No heap information in the target process");
   if (not std_heap_var->address)
@@ -365,7 +365,7 @@ simgrid::mc::Frame* RemoteClient::find_function(RemotePtr<void> ip) const
 
 /** Find (one occurrence of) the named variable definition
  */
-simgrid::mc::Variable* RemoteClient::find_variable(const char* name) const
+const simgrid::mc::Variable* RemoteClient::find_variable(const char* name) const
 {
   // First lookup the variable in the executable shared object.
   // A global variable used directly by the executable code from a library
@@ -373,13 +373,13 @@ simgrid::mc::Variable* RemoteClient::find_variable(const char* name) const
   // We need to look up the variable in the executable first.
   if (this->binary_info) {
     std::shared_ptr<simgrid::mc::ObjectInformation> const& info = this->binary_info;
-    simgrid::mc::Variable* var                                  = info->find_variable(name);
+    const simgrid::mc::Variable* var                            = info->find_variable(name);
     if (var)
       return var;
   }
 
   for (std::shared_ptr<simgrid::mc::ObjectInformation> const& info : this->object_infos) {
-    simgrid::mc::Variable* var = info->find_variable(name);
+    const simgrid::mc::Variable* var = info->find_variable(name);
     if (var)
       return var;
   }
@@ -389,7 +389,7 @@ simgrid::mc::Variable* RemoteClient::find_variable(const char* name) const
 
 void RemoteClient::read_variable(const char* name, void* target, size_t size) const
 {
-  simgrid::mc::Variable* var = this->find_variable(name);
+  const simgrid::mc::Variable* var = this->find_variable(name);
   xbt_assert(var->address, "No simple location for this variable");
   xbt_assert(var->type->full_type, "Partial type for %s, cannot check size", name);
   xbt_assert((size_t)var->type->full_type->byte_size == size, "Unexpected size for %s (expected %zu, was %zu)", name,

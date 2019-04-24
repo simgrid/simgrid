@@ -80,11 +80,11 @@ static void test_local_variable(simgrid::mc::ObjectInformation* info, const char
   xbt_assert(location.address() == address, "Bad resolution of local variable %s of %s", variable, function);
 }
 
-static simgrid::mc::Variable* test_global_variable(simgrid::mc::RemoteClient& process,
-                                                   simgrid::mc::ObjectInformation* info, const char* name,
-                                                   void* address, long byte_size)
+static const simgrid::mc::Variable* test_global_variable(simgrid::mc::RemoteClient& process,
+                                                         simgrid::mc::ObjectInformation* info, const char* name,
+                                                         void* address, long byte_size)
 {
-  simgrid::mc::Variable* variable = info->find_variable(name);
+  const simgrid::mc::Variable* variable = info->find_variable(name);
   xbt_assert(variable, "Global variable %s was not found", name);
   xbt_assert(variable->name == name, "Name mismatch for %s", name);
   xbt_assert(variable->global, "Variable %s is not global", name);
@@ -121,7 +121,7 @@ int main(int argc, char** argv)
 {
   SIMIX_global_init(&argc, argv);
 
-  simgrid::mc::Variable* var;
+  const simgrid::mc::Variable* var;
   simgrid::mc::Type* type;
 
   simgrid::mc::RemoteClient process(getpid(), -1);

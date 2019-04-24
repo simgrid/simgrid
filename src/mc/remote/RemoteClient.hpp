@@ -107,7 +107,7 @@ public:
   std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_exec(RemotePtr<void> addr) const;
   std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_rw(RemotePtr<void> addr) const;
   simgrid::mc::Frame* find_function(RemotePtr<void> ip) const;
-  simgrid::mc::Variable* find_variable(const char* name) const;
+  const simgrid::mc::Variable* find_variable(const char* name) const;
 
   // Heap access:
   xbt_mheap_t get_heap()
