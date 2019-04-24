@@ -186,7 +186,6 @@ void ActorImpl::cleanup()
 void ActorImpl::exit()
 {
   context_->iwannadie = true;
-  blocked_            = false;
   suspended_          = false;
   exception_          = nullptr;
 

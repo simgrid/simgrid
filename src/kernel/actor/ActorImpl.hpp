@@ -59,7 +59,6 @@ public:
 
   std::exception_ptr exception_;
   bool finished_  = false;
-  bool blocked_   = false; /* FIXME this field is never set to true. Either use it or remove it. */
   bool suspended_ = false;
 
   activity::ActivityImplPtr waiting_synchro = nullptr; /* the current blocking synchro if any */
