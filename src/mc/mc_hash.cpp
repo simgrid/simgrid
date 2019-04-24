@@ -43,11 +43,12 @@ hash_type hash(Snapshot const& snapshot)
 {
   XBT_DEBUG("START hash %i", snapshot.num_state);
   djb_hash hash;
-  // TODO, nb_processes
-  // TODO, heap_bytes_used
-  // TODO, root variables
-  // TODO, basic stack frame information
-  // TODO, stack frame local variables
+  // TODO:
+  // * nb_processes
+  // * heap_bytes_used
+  // * root variables
+  // * basic stack frame information
+  // * stack frame local variables
   XBT_DEBUG("END hash %i", snapshot.num_state);
   return hash.value();
 }
