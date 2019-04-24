@@ -141,11 +141,8 @@ void ActorImpl::cleanup()
 
   // Execute the termination callbacks
   bool failed = context_->iwannadie;
-  while (not on_exit.empty()) {
-    auto exit_fun = on_exit.back();
-    on_exit.pop_back();
-    exit_fun(failed);
-  }
+  for (auto exit_fun = on_exit->crbegin(); exit_fun != on_exit->crend(); ++exit_fun)
+    (*exit_fun)(failed);
 
   /* cancel non-blocking activities */
   for (auto activity : comms)
@@ -333,7 +330,7 @@ s4u::Actor* ActorImpl::restart()
   // start the new actor
   ActorImplPtr actor =
       ActorImpl::create(arg.name, std::move(arg.code), arg.data, arg.host, arg.properties.get(), nullptr);
-  actor->on_exit = std::move(arg.on_exit);
+  *actor->on_exit = std::move(*arg.on_exit);
   actor->set_kill_time(arg.kill_time);
   actor->set_auto_restart(arg.auto_restart);
 
@@ -651,7 +648,7 @@ void SIMIX_process_on_exit(smx_actor_t actor, const std::function<void(int, void
 void SIMIX_process_on_exit(smx_actor_t actor, const std::function<void(bool /*failed*/)>& fun)
 {
   xbt_assert(actor, "current process not found: are you in maestro context ?");
-  actor->on_exit.emplace_back(fun);
+  actor->on_exit->emplace_back(fun);
 }
 
 /** @brief Restart a process, starting it again from the beginning. */

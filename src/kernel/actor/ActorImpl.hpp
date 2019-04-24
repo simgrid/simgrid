@@ -65,7 +65,9 @@ public:
   activity::ActivityImplPtr waiting_synchro = nullptr; /* the current blocking synchro if any */
   std::list<activity::ActivityImplPtr> comms;          /* the current non-blocking communication synchros */
   s_smx_simcall simcall;
-  std::vector<std::function<void(bool)>> on_exit; /* list of functions executed when the process dies */
+  /* list of functions executed when the process dies */
+  const std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit =
+      std::make_shared<std::vector<std::function<void(bool)>>>();
 
   std::function<void()> code;
   simix::Timer* kill_timer = nullptr;
@@ -136,7 +138,8 @@ public:
   std::shared_ptr<const std::unordered_map<std::string, std::string>> properties = nullptr;
   bool auto_restart                                                        = false;
   bool daemon_                                                             = false;
-  std::vector<std::function<void(bool)>> on_exit; /* list of functions executed when the process dies */
+  /* list of functions executed when the process dies */
+  const std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit;
 
   ProcessArg()                                                             = default;
 
