@@ -143,6 +143,8 @@ void ActorImpl::cleanup()
   bool failed = context_->iwannadie;
   for (auto exit_fun = on_exit->crbegin(); exit_fun != on_exit->crend(); ++exit_fun)
     (*exit_fun)(failed);
+  if (not has_to_auto_restart())
+    on_exit->clear();
 
   /* cancel non-blocking activities */
   for (auto activity : comms)
