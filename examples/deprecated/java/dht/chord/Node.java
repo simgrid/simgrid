@@ -305,13 +305,12 @@ public class Node extends Process {
   // It refreshes the finger table of the current node.
   private void fixFingers() {
     Msg.debug("Fixing fingers");
-    int i = this.nextFingerToFix;
-    int successorId = this.findSuccessor(this.id + (int)Math.pow(2,i)); //FIXME: SLOW
+    int successorId = findSuccessor(id + (1 << nextFingerToFix));
     if (successorId != -1) {
-      if (successorId != fingers[i]) {
-        setFinger(i, successorId);
+      if (successorId != fingers[nextFingerToFix]) {
+        setFinger(nextFingerToFix, successorId);
       }
-      nextFingerToFix = (i + 1) % Common.NB_BITS;
+      nextFingerToFix = (nextFingerToFix + 1) % Common.NB_BITS;
     }
   }
 
