@@ -65,7 +65,7 @@ public:
   std::list<activity::ActivityImplPtr> comms;          /* the current non-blocking communication synchros */
   s_smx_simcall simcall;
   /* list of functions executed when the process dies */
-  const std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit =
+  std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit =
       std::make_shared<std::vector<std::function<void(bool)>>>();
 
   std::function<void()> code;
@@ -98,6 +98,9 @@ public:
   /* S4U/implem interfaces */
 private:
   s4u::Actor piface_; // Our interface is part of ourselves
+
+  void undaemonize();
+
 public:
   s4u::ActorPtr iface() { return s4u::ActorPtr(&piface_); }
   s4u::Actor* ciface() { return &piface_; }

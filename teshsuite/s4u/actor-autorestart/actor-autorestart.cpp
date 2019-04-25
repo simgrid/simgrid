@@ -18,15 +18,30 @@ static void dummy()
   }
 }
 
+static void dummy_daemon()
+{
+  simgrid::s4u::Actor::self()->daemonize();
+  while (1) {
+    XBT_INFO("Hello from the infinite loop");
+    simgrid::s4u::this_actor::sleep_for(80.0);
+  }
+}
+
 static void autostart()
 {
   simgrid::s4u::Host* host = simgrid::s4u::Host::by_name("Fafard");
-  XBT_INFO("starting a dummy process on %s ", host->get_cname());
 
+  XBT_INFO("starting a dummy process on %s", host->get_cname());
   simgrid::s4u::ActorPtr dummy_actor = simgrid::s4u::Actor::create("Dummy", host, dummy);
   dummy_actor->on_exit([](bool) { XBT_INFO("On_exit callback set before autorestart"); });
   dummy_actor->set_auto_restart(true);
   dummy_actor->on_exit([](bool) { XBT_INFO("On_exit callback set after autorestart"); });
+
+  XBT_INFO("starting a daemon process on %s", host->get_cname());
+  simgrid::s4u::ActorPtr daemon_actor = simgrid::s4u::Actor::create("Daemon", host, dummy_daemon);
+  daemon_actor->on_exit([](bool) { XBT_INFO("On_exit callback set before autorestart"); });
+  daemon_actor->set_auto_restart(true);
+  daemon_actor->on_exit([](bool) { XBT_INFO("On_exit callback set after autorestart"); });
 
   simgrid::s4u::this_actor::sleep_for(50);
 

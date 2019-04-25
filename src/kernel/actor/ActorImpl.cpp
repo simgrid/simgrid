@@ -139,12 +139,14 @@ void ActorImpl::cleanup()
     watched_hosts.insert(get_host()->get_name());
   }
 
-  // Execute the termination callbacks
-  bool failed = context_->iwannadie;
-  for (auto exit_fun = on_exit->crbegin(); exit_fun != on_exit->crend(); ++exit_fun)
-    (*exit_fun)(failed);
-  if (not has_to_auto_restart())
-    on_exit->clear();
+  if (on_exit) {
+    // Execute the termination callbacks
+    bool failed = context_->iwannadie;
+    for (auto exit_fun = on_exit->crbegin(); exit_fun != on_exit->crend(); ++exit_fun)
+      (*exit_fun)(failed);
+    on_exit.reset();
+  }
+  undaemonize();
 
   /* cancel non-blocking activities */
   for (auto activity : comms)
@@ -304,15 +306,20 @@ void ActorImpl::daemonize()
   if (not daemon_) {
     daemon_ = true;
     simix_global->daemons.push_back(this);
-    SIMIX_process_on_exit(this, [this](bool) {
-      auto& vect = simix_global->daemons;
-      auto it    = std::find(vect.begin(), vect.end(), this);
-      xbt_assert(it != vect.end(), "The dying daemon is not a daemon after all. Please report that bug.");
+  }
+}
 
-      /* Don't move the whole content since we don't really care about the order */
-      std::swap(*it, vect.back());
-      vect.pop_back();
-    });
+void ActorImpl::undaemonize()
+{
+  if (daemon_) {
+    auto& vect = simix_global->daemons;
+    auto it    = std::find(vect.begin(), vect.end(), this);
+    xbt_assert(it != vect.end(), "The dying daemon is not a daemon after all. Please report that bug.");
+    /* Don't move the whole content since we don't really care about the order */
+
+    std::swap(*it, vect.back());
+    vect.pop_back();
+    daemon_ = false;
   }
 }
 
