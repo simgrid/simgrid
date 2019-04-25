@@ -241,8 +241,10 @@ static void smpi_check_options()
   if (simgrid::config::is_default("smpi/host-speed")) {
     XBT_INFO("You did not set the power of the host running the simulation.  "
              "The timings will certainly not be accurate.  "
-             "Use the option \"--cfg=smpi/host-speed:<flops>\" to set its value."
-             "Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.");
+             "Use the option \"--cfg=smpi/host-speed:<flops>\" to set its value.  "
+             "Check "
+             "https://simgrid.org/doc/latest/Configuring_SimGrid.html#automatic-benchmarking-of-smpi-code for more "
+             "information.");
   }
 
   xbt_assert(simgrid::config::get_value<double>("smpi/cpu-threshold") >= 0,

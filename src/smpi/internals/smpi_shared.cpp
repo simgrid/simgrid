@@ -129,12 +129,13 @@ static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
 
   void* mem = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if(mem == MAP_FAILED) {
-    xbt_die(
-        "Failed to map fd %d with size %zu: %s\n"
-        "If you are running a lot of ranks, you may be exceeding the amount of mappings allowed per process.\n"
-        "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
-        "Please see http://simgrid.gforge.inria.fr/simgrid/latest/doc/html/options.html#options_virt for more info.",
-        fd, size, strerror(errno));
+    xbt_die("Failed to map fd %d with size %zu: %s\n"
+            "If you are running a lot of ranks, you may be exceeding the amount of mappings allowed per process.\n"
+            "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
+            "Please see "
+            "https://simgrid.org/doc/latest/Configuring_SimGrid.html#configuring-the-user-code-virtualization for more "
+            "information.",
+            fd, size, strerror(errno));
   }
   snprintf(loc, PTR_STRLEN, "%p", mem);
   meta.size = size;

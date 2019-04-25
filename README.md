@@ -4,7 +4,7 @@
 [![AppVeyor Status](https://ci.appveyor.com/api/projects/status/gvcssh340fwtoc35?svg=true)](https://ci.appveyor.com/project/mquinson/simgrid)
 [![SonarCloud Status](https://sonarcloud.io/api/project_badges/measure?project=simgrid&metric=alert_status)](https://sonarcloud.io/dashboard/?id=simgrid)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/bf1bdba50440485fbda2ac19f462ccc7)](https://www.codacy.com/app/mquinson/simgrid?utm_source=github.com&amp)
-[![Doc](https://readthedocs.org/projects/pip/badge/?version=stable)](http://simgrid.gforge.inria.fr/simgrid/latest/doc/)
+[![Doc](https://readthedocs.org/projects/pip/badge/?version=stable)](https://simgrid.org/doc/latest/)
 [![License: LGPL v3][license-badge]](COPYING)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/1845/badge)](https://bestpractices.coreinfrastructure.org/projects/1845)
 

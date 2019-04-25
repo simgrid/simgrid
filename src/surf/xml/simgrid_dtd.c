@@ -9340,7 +9340,7 @@ FAIL("Premature EOF: `</peer>' expected.");
 
 /* <!--
   *              DTD of SimGrid platform and deployment files.
-  * More info: http://simgrid.gforge.inria.fr/simgrid/latest/doc/platform.html
+  * More info: https://simgrid.org/doc/latest/platform.html
   * To upgrade your files, use the tool simgrid_update_xml
   * * Things that will change in upcoming version 5 (TODO):
   *   - The following tags will be removed:
