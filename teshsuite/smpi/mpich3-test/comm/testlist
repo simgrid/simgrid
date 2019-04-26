@@ -18,7 +18,7 @@ cmfree 4
 cmsplit 4
 cmsplit2 12
 #probe-intercomm 2
-#cmsplit_type 4 mpiversion=3.0
+cmsplit_type 4 mpiversion=3.0
 comm_create_group 4 mpiversion=3.0
 comm_create_group 8 mpiversion=3.0
 comm_group_half 2 mpiversion=3.0
@@ -32,7 +32,7 @@ comm_group_rand 8 mpiversion=3.0
 #comm_idup 9 mpiversion=3.0
 #comm_idup_mul 2 mpiversion=3.0
 #comm_idup_overlap 2 mpiversion=3.0
-#dup_with_info 2 mpiversion=3.0
-#dup_with_info 4 mpiversion=3.0
-#dup_with_info 9 mpiversion=3.0
+dup_with_info 2 mpiversion=3.0
+dup_with_info 4 mpiversion=3.0
+dup_with_info 9 mpiversion=3.0
 comm_info 6 mpiversion=3.0

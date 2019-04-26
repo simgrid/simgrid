@@ -7,6 +7,7 @@
 
 #include "private.hpp"
 #include "smpi_comm.hpp"
+#include "smpi_info.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
@@ -102,6 +103,20 @@ int PMPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm)
     return MPI_ERR_ARG;
   } else {
     return comm->dup(newcomm);
+  }
+}
+
+int PMPI_Comm_dup_with_info(MPI_Comm comm, MPI_Info info, MPI_Comm * newcomm)
+{
+  if (comm == MPI_COMM_NULL) {
+    return MPI_ERR_COMM;
+  } else if (newcomm == nullptr) {
+    return MPI_ERR_ARG;
+  } else {
+    comm->dup(newcomm);
+    if(info!=MPI_INFO_NULL)
+      (*newcomm)->set_info(info);
+    return MPI_SUCCESS;
   }
 }
 

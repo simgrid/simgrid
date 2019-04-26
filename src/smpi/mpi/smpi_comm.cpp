@@ -38,6 +38,7 @@ Comm::Comm(MPI_Group group, MPI_Topology topo, int smp) : group_(group), topo_(t
   non_uniform_map_ = nullptr;
   leaders_map_     = nullptr;
   is_blocked_      = 0;
+  info_            = MPI_INFO_NULL;
 }
 
 void Comm::destroy(Comm* comm)
@@ -519,13 +520,17 @@ void Comm::set_info(MPI_Info info){
 
 MPI_Comm Comm::split_type(int type, int /*key*/, MPI_Info)
 {
-  if(type != MPI_COMM_TYPE_SHARED){
+  //MPI_UNDEFINED can be given to some nodes... but we need them to still perform the smp part which is collective
+  if(type != MPI_COMM_TYPE_SHARED && type != MPI_UNDEFINED){
     return MPI_COMM_NULL;
   }
   this->init_smp();
   this->ref();
   this->get_intra_comm()->ref();
-  return this->get_intra_comm();
+  if(type != MPI_UNDEFINED)
+    return this->get_intra_comm();
+  else
+    return MPI_COMM_NULL;
 }
 
 } // namespace smpi
