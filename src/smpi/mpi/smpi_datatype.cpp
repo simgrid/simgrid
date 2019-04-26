@@ -250,7 +250,7 @@ void Datatype::set_name(char* name){
   name_ = xbt_strdup(name);
 }
 
-int Datatype::pack(void* inbuf, int incount, void* outbuf, int outcount, int* position, MPI_Comm)
+int Datatype::pack(const void* inbuf, int incount, void* outbuf, int outcount, int* position, MPI_Comm)
 {
   if (outcount - *position < incount*static_cast<int>(size_))
     return MPI_ERR_OTHER;
@@ -259,16 +259,16 @@ int Datatype::pack(void* inbuf, int incount, void* outbuf, int outcount, int* po
   return MPI_SUCCESS;
 }
 
-int Datatype::unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Comm)
+int Datatype::unpack(const void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Comm)
 {
   if (outcount*static_cast<int>(size_)> insize)
     return MPI_ERR_OTHER;
-  Datatype::copy(static_cast<char*>(inbuf) + *position, insize, MPI_CHAR, outbuf, outcount, this);
+  Datatype::copy(static_cast<const char*>(inbuf) + *position, insize, MPI_CHAR, outbuf, outcount, this);
   *position += outcount * size_;
   return MPI_SUCCESS;
 }
 
-int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
+int Datatype::copy(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount, MPI_Datatype recvtype){
 
 // FIXME Handle the case of a partial shared malloc.
@@ -304,15 +304,15 @@ int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 }
 
 //Default serialization method : memcpy.
-void Datatype::serialize(void* noncontiguous_buf, void* contiguous_buf, int count)
+void Datatype::serialize(const void* noncontiguous_buf, void* contiguous_buf, int count)
 {
   char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
-  char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf)+lb_;
+  const char* noncontiguous_buf_char = static_cast<const char*>(noncontiguous_buf)+lb_;
   memcpy(contiguous_buf_char, noncontiguous_buf_char, count*size_);
 }
 
-void Datatype::unserialize( void* contiguous_buf, void *noncontiguous_buf, int count, MPI_Op op){
-  char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
+void Datatype::unserialize(const void* contiguous_buf, void *noncontiguous_buf, int count, MPI_Op op){
+  const char* contiguous_buf_char = static_cast<const char*>(contiguous_buf);
   char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf)+lb_;
   int n=count;
   if(op!=MPI_OP_NULL)
@@ -380,7 +380,7 @@ int Datatype::create_hvector(int count, int block_length, MPI_Aint stride, MPI_D
   return retval;
 }
 
-int Datatype::create_indexed(int count, int* block_lengths, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type){
+int Datatype::create_indexed(int count, const int* block_lengths, const int* indices, MPI_Datatype old_type, MPI_Datatype* new_type){
   int size = 0;
   bool contiguous=true;
   MPI_Aint lb = 0;
@@ -415,7 +415,7 @@ int Datatype::create_indexed(int count, int* block_lengths, int* indices, MPI_Da
   return MPI_SUCCESS;
 }
 
-int Datatype::create_hindexed(int count, int* block_lengths, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type){
+int Datatype::create_hindexed(int count, const int* block_lengths, const MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type){
   int size = 0;
   bool contiguous=true;
   MPI_Aint lb = 0;
@@ -449,7 +449,7 @@ int Datatype::create_hindexed(int count, int* block_lengths, MPI_Aint* indices, 
   return MPI_SUCCESS;
 }
 
-int Datatype::create_struct(int count, int* block_lengths, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type){
+int Datatype::create_struct(int count, const int* block_lengths, const MPI_Aint* indices, const MPI_Datatype* old_types, MPI_Datatype* new_type){
   size_t size = 0;
   bool contiguous=true;
   size = 0;
@@ -494,8 +494,8 @@ int Datatype::create_struct(int count, int* block_lengths, MPI_Aint* indices, MP
   return MPI_SUCCESS;
 }
 
-int Datatype::create_subarray(int ndims, int* array_of_sizes,
-                             int* array_of_subsizes, int* array_of_starts,
+int Datatype::create_subarray(int ndims, const int* array_of_sizes,
+                             const int* array_of_subsizes, const int* array_of_starts,
                              int order, MPI_Datatype oldtype, MPI_Datatype *newtype){
   MPI_Datatype tmp;
 

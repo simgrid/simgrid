@@ -21,8 +21,8 @@ public:
   Type_Contiguous(const Type_Contiguous&) = delete;
   Type_Contiguous& operator=(const Type_Contiguous&) = delete;
   ~Type_Contiguous();
-  void serialize(void* noncontiguous, void* contiguous, int count);
-  void unserialize(void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
+  void serialize(const void* noncontiguous, void* contiguous, int count);
+  void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
 };
 
 class Type_Hvector: public Datatype{
@@ -37,8 +37,8 @@ public:
   Type_Hvector(const Type_Hvector&) = delete;
   Type_Hvector& operator=(const Type_Hvector&) = delete;
   ~Type_Hvector();
-  void serialize(void* noncontiguous, void* contiguous, int count);
-  void unserialize(void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
+  void serialize(const void* noncontiguous, void* contiguous, int count);
+  void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
 };
 
 class Type_Vector : public Type_Hvector {
@@ -54,20 +54,20 @@ class Type_Hindexed: public Datatype{
   MPI_Datatype old_type_;
 
 public:
-  Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int* block_lengths,
-                MPI_Aint* block_indices, MPI_Datatype old_type);
-  Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int* block_lengths, int* block_indices,
+  Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, const int* block_lengths,
+                const MPI_Aint* block_indices, MPI_Datatype old_type);
+  Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, const int* block_lengths, const int* block_indices,
                 MPI_Datatype old_type, MPI_Aint factor);
   Type_Hindexed(const Type_Hindexed&) = delete;
   Type_Hindexed& operator=(const Type_Hindexed&) = delete;
   ~Type_Hindexed();
-  void serialize(void* noncontiguous, void* contiguous, int count);
-  void unserialize(void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
+  void serialize(const void* noncontiguous, void* contiguous, int count);
+  void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
 };
 
 class Type_Indexed : public Type_Hindexed {
 public:
-  Type_Indexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int* block_lengths, int* block_indices,
+  Type_Indexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, const int* block_lengths, const int* block_indices,
                MPI_Datatype old_type);
 };
 
@@ -78,13 +78,13 @@ class Type_Struct: public Datatype{
   MPI_Datatype* old_types_;
 
 public:
-  Type_Struct(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int* block_lengths,
-              MPI_Aint* block_indices, MPI_Datatype* old_types);
+  Type_Struct(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, const int* block_lengths,
+              const MPI_Aint* block_indices, const MPI_Datatype* old_types);
   Type_Struct(const Type_Struct&) = delete;
   Type_Struct& operator=(const Type_Struct&) = delete;
   ~Type_Struct();
-  void serialize(void* noncontiguous, void* contiguous, int count);
-  void unserialize(void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
+  void serialize(const void* noncontiguous, void* contiguous, int count);
+  void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
 };
 
 } // namespace smpi

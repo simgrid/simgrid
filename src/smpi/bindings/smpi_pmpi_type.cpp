@@ -159,7 +159,7 @@ int PMPI_Type_create_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datat
   return MPI_Type_hvector(count, blocklen, stride, old_type, new_type);
 }
 
-int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
+int PMPI_Type_indexed(int count, const int* blocklens, const int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
   if (old_type == MPI_DATATYPE_NULL) {
     return MPI_ERR_TYPE;
   } else if (count<0){
@@ -169,7 +169,7 @@ int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_
   }
 }
 
-int PMPI_Type_create_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
+int PMPI_Type_create_indexed(int count, const int* blocklens, const int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
   if (old_type == MPI_DATATYPE_NULL) {
     return MPI_ERR_TYPE;
   } else if (count<0){
@@ -179,7 +179,7 @@ int PMPI_Type_create_indexed(int count, int* blocklens, int* indices, MPI_Dataty
   }
 }
 
-int PMPI_Type_create_indexed_block(int count, int blocklength, int* indices, MPI_Datatype old_type,
+int PMPI_Type_create_indexed_block(int count, int blocklength, const int* indices, MPI_Datatype old_type,
                                    MPI_Datatype* new_type)
 {
   if (old_type == MPI_DATATYPE_NULL) {
@@ -207,12 +207,12 @@ int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatyp
   }
 }
 
-int PMPI_Type_create_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type,
+int PMPI_Type_create_hindexed(int count, const int* blocklens, const MPI_Aint* indices, MPI_Datatype old_type,
                               MPI_Datatype* new_type) {
-  return PMPI_Type_hindexed(count, blocklens,indices,old_type,new_type);
+  return PMPI_Type_hindexed(count, const_cast<int*>(blocklens),const_cast<MPI_Aint*>(indices),old_type,new_type);
 }
 
-int PMPI_Type_create_hindexed_block(int count, int blocklength, MPI_Aint* indices, MPI_Datatype old_type,
+int PMPI_Type_create_hindexed_block(int count, int blocklength, const MPI_Aint* indices, MPI_Datatype old_type,
                                     MPI_Datatype* new_type) {
   if (old_type == MPI_DATATYPE_NULL) {
     return MPI_ERR_TYPE;
@@ -239,14 +239,14 @@ int PMPI_Type_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype*
   }
 }
 
-int PMPI_Type_create_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types,
+int PMPI_Type_create_struct(int count, const int* blocklens, const MPI_Aint* indices, const MPI_Datatype* old_types,
                             MPI_Datatype* new_type) {
-  return PMPI_Type_struct(count, blocklens, indices, old_types, new_type);
+  return PMPI_Type_struct(count, const_cast<int*>(blocklens), const_cast<MPI_Aint*>(indices), const_cast<MPI_Datatype*>(old_types), new_type);
 }
 
 
-int PMPI_Type_create_subarray(int ndims, int* array_of_sizes,
-                             int* array_of_subsizes, int* array_of_starts,
+int PMPI_Type_create_subarray(int ndims, const int* array_of_sizes,
+                             const int* array_of_subsizes, const int* array_of_starts,
                              int order, MPI_Datatype oldtype, MPI_Datatype *newtype) {
   if (ndims<0){
     return MPI_ERR_COUNT;
@@ -341,7 +341,7 @@ int PMPI_Type_free_keyval(int* keyval) {
   return simgrid::smpi::Keyval::keyval_free<simgrid::smpi::Datatype>(keyval);
 }
 
-int PMPI_Unpack(void* inbuf, int incount, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
+int PMPI_Unpack(const void* inbuf, int incount, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
   if(incount<0 || outcount < 0){
     return MPI_ERR_COUNT;
   } else if (inbuf==nullptr || outbuf==nullptr){
@@ -355,7 +355,7 @@ int PMPI_Unpack(void* inbuf, int incount, int* position, void* outbuf, int outco
   }
 }
 
-int PMPI_Pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm) {
+int PMPI_Pack(const void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm) {
   if(incount<0){
     return MPI_ERR_COUNT;
   } else if(inbuf==nullptr || outbuf==nullptr || outcount < 0){
