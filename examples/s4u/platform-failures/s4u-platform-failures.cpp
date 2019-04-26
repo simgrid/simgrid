@@ -58,10 +58,6 @@ static int master(int argc, char* argv[])
     double* payload = new double(-1.0);
     try {
       mailbox->put(payload, 0, 1.0);
-    } catch (simgrid::HostFailureException& e) {
-      delete payload;
-      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-      return -1;
     } catch (simgrid::TimeoutError& e) {
       delete payload;
       XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
@@ -99,10 +95,6 @@ static int worker(int argc, char* argv[])
       XBT_INFO("Start execution...");
       simgrid::s4u::this_actor::execute(comp_size);
       XBT_INFO("Execution complete.");
-    } catch (simgrid::HostFailureException& e) {
-      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-      delete payload;
-      return -1;
     } catch (xbt_ex& e) {
       if (e.category != network_error)
         xbt_die("Unexpected behavior. Category: %s", xbt_ex_catname(e.category));

@@ -10,12 +10,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 static void dummy()
 {
   XBT_INFO("I start");
-  try {
     simgrid::s4u::this_actor::sleep_for(200);
     XBT_INFO("I stop");
-  } catch (simgrid::HostFailureException& e) {
-    XBT_DEBUG("The host has died ... as expected. This actor silently stops");
-  }
 }
 
 static void dummy_daemon()

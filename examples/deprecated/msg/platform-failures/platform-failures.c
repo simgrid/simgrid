@@ -31,11 +31,6 @@ static int master(int argc, char *argv[])
       XBT_INFO("Send to %s completed", mailbox);
       break;
 
-    case MSG_HOST_FAILURE:
-      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-      MSG_task_destroy(task);
-      return 0;
-
     case MSG_TRANSFER_FAILURE:
       XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox);
       MSG_task_destroy(task);
@@ -58,10 +53,6 @@ static int master(int argc, char *argv[])
     msg_task_t task = MSG_task_create("finalize", 0, 0, FINALIZE);
 
     switch (MSG_task_send_with_timeout(task,mailbox,1.0)) {
-    case MSG_HOST_FAILURE:
-      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-      MSG_task_destroy(task);
-      break;
 
     case MSG_TRANSFER_FAILURE:
       XBT_INFO("Mmh. Can't reach '%s'! Nevermind. Let's keep going!", mailbox);
@@ -108,17 +99,10 @@ static int worker(int argc, char *argv[])
       if (retcode == MSG_OK) {
         XBT_INFO("Execution complete.");
         MSG_task_destroy(task);
-      } else if (retcode == MSG_HOST_FAILURE) {
-        XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-        MSG_task_destroy(task);
-        return 0;
       } else {
         XBT_INFO("Hey ?! What's up ? ");
         xbt_die("Unexpected behavior");
       }
-    } else if (retcode == MSG_HOST_FAILURE) {
-      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-      return 0;
     } else if (retcode == MSG_TRANSFER_FAILURE) {
       XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
     } else {

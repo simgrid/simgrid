@@ -366,10 +366,6 @@ static void test_host_off_while_receive()
        assert_exit(true, 1);
        try {
          simgrid::s4u::Mailbox::by_name("mb")->get();
-       } catch (simgrid::HostFailureException const&) {
-         // Shouldn't get in here
-         in_catch_before_on_exit = not in_on_exit;
-         in_catch_after_on_exit = in_on_exit;
        } catch (simgrid::NetworkFailureException const&) {
          // Shouldn't get in here
          in_catch_before_on_exit = not in_on_exit;
