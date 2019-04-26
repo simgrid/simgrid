@@ -22,7 +22,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_io, smpi, "Logging specific to SMPI (RMA op
 namespace simgrid{
 namespace smpi{
 
-  File::File(MPI_Comm comm, char *filename, int amode, MPI_Info info): comm_(comm), flags_(amode), info_(info) {
+  File::File(MPI_Comm comm, const char *filename, int amode, MPI_Info info): comm_(comm), flags_(amode), info_(info) {
     file_= new simgrid::s4u::File(filename, nullptr);
     list_=nullptr;
     if (comm_->rank() == 0) {
@@ -60,7 +60,7 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::del(char* filename, MPI_Info)
+  int File::del(const char* filename, MPI_Info)
   {
     //get the file with MPI_MODE_DELETE_ON_CLOSE and then close it
     File* f = new File(MPI_COMM_SELF,filename,MPI_MODE_DELETE_ON_CLOSE|MPI_MODE_RDWR, nullptr);
@@ -184,16 +184,16 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::write_shared(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
+  int File::write_shared(MPI_File fh, const void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
     fh->shared_mutex_->lock();
     fh->seek(*(fh->shared_file_pointer_),MPI_SEEK_SET);
-    write(fh, buf, count, datatype, status);
+    write(fh, const_cast<void*>(buf), count, datatype, status);
     *(fh->shared_file_pointer_)=fh->file_->tell();
     fh->shared_mutex_->unlock();
     return MPI_SUCCESS;
   }
 
-  int File::write_ordered(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
+  int File::write_ordered(MPI_File fh, const void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
     //0 needs to get the shared pointer value
     MPI_Offset val;
     if(fh->comm_->rank()==0){
@@ -204,7 +204,7 @@ namespace smpi{
     MPI_Offset result;
     simgrid::smpi::Colls::scan(&val, &result, 1, MPI_OFFSET, MPI_SUM, fh->comm_);
     fh->seek(result, MPI_SEEK_SET);
-    int ret = fh->op_all<simgrid::smpi::File::write>(buf, count, datatype, status);
+    int ret = fh->op_all<simgrid::smpi::File::write>(const_cast<void*>(buf), count, datatype, status);
     if(fh->comm_->rank()==fh->comm_->size()-1){
       fh->shared_mutex_->lock();
       *(fh->shared_file_pointer_)=fh->file_->tell();

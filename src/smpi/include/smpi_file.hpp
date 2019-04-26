@@ -27,7 +27,7 @@ class File{
   MPI_Win win_;
   char* list_;
   public:
-  File(MPI_Comm comm, char *filename, int amode, MPI_Info info);
+  File(MPI_Comm comm, const char *filename, int amode, MPI_Info info);
   File(const File&) = delete;
   File& operator=(const File&) = delete;
   ~File();
@@ -45,11 +45,11 @@ class File{
   static int read_shared(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
   static int read_ordered(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
   static int write(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
-  static int write_shared(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
-  static int write_ordered(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
+  static int write_shared(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
+  static int write_ordered(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
   template <int (*T)(MPI_File, void *, int, MPI_Datatype, MPI_Status *)> int op_all(void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
   static int close(MPI_File *fh);
-  static int del(char *filename, MPI_Info info);
+  static int del(const char *filename, MPI_Info info);
 };
 
   /* Read_all, Write_all : loosely based on */
