@@ -22,7 +22,7 @@ void Status::empty(MPI_Status * status)
   }
 }
 
-int Status::cancelled(MPI_Status * status)
+int Status::cancelled(const MPI_Status * status)
 {
   return status->cancelled!=0;
 }
