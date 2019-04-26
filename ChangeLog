@@ -7,6 +7,11 @@ XBT:
  - New log appenders: stdout and stderr. Use stdout for xbt_help.
  - Drop xbt_dict_dump.
 
+SMPI:
+ - SMPI now reports support of MPI3.1. This does not mean SMPI supports all MPI 3 calls, but it was already the case with 2.2
+ - MPI/IO is now supported over the Storage API (no files are written or read, storage is simulated). Supported calls are all synchronous ones.
+ - MPI interface is now const correct for input parameters
+
 Fixed bugs (GH=GitHub; FG=FramaGit):
  - FG#10: Can not use MSG_process_set_data from SMPI any more
  - FG#11: Auto-restart actors forget their on_exit behavior
