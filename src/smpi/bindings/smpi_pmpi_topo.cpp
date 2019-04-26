@@ -14,7 +14,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
  * check if the topology is nullptr, but we should check if it is the good topology type (so we have to add a
  *  MPIR_Topo_Type field, and replace the MPI_Topology field by an union)*/
 
-int PMPI_Cart_create(MPI_Comm comm_old, int ndims, int* dims, int* periodic, int reorder, MPI_Comm* comm_cart) {
+int PMPI_Cart_create(MPI_Comm comm_old, int ndims, const int* dims, const int* periodic, int reorder, MPI_Comm* comm_cart) {
   if (comm_old == MPI_COMM_NULL){
     return MPI_ERR_COMM;
   } else if (ndims < 0 || (ndims > 0 && (dims == nullptr || periodic == nullptr)) || comm_cart == nullptr) {
@@ -30,7 +30,7 @@ int PMPI_Cart_create(MPI_Comm comm_old, int ndims, int* dims, int* periodic, int
   }
 }
 
-int PMPI_Cart_rank(MPI_Comm comm, int* coords, int* rank) {
+int PMPI_Cart_rank(MPI_Comm comm, const int* coords, int* rank) {
   if(comm == MPI_COMM_NULL || comm->topo() == nullptr) {
     return MPI_ERR_TOPOLOGY;
   }
@@ -116,7 +116,7 @@ int PMPI_Dims_create(int nnodes, int ndims, int* dims) {
   return simgrid::smpi::Topo_Cart::Dims_create(nnodes, ndims, dims);
 }
 
-int PMPI_Cart_sub(MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new) {
+int PMPI_Cart_sub(MPI_Comm comm, const int* remain_dims, MPI_Comm* comm_new) {
   if(comm == MPI_COMM_NULL || comm->topo() == nullptr) {
     return MPI_ERR_TOPOLOGY;
   }

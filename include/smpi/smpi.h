@@ -720,11 +720,11 @@ MPI_CALL(XBT_PUBLIC int, MPI_Compare_and_swap,
 
 MPI_CALL(XBT_PUBLIC int, MPI_Cart_coords, (MPI_Comm comm, int rank, int maxdims, int* coords));
 MPI_CALL(XBT_PUBLIC int, MPI_Cart_create,
-         (MPI_Comm comm_old, int ndims, int* dims, int* periods, int reorder, MPI_Comm* comm_cart));
+         (MPI_Comm comm_old, int ndims, const int* dims, const int* periods, int reorder, MPI_Comm* comm_cart));
 MPI_CALL(XBT_PUBLIC int, MPI_Cart_get, (MPI_Comm comm, int maxdims, int* dims, int* periods, int* coords));
-MPI_CALL(XBT_PUBLIC int, MPI_Cart_rank, (MPI_Comm comm, int* coords, int* rank));
+MPI_CALL(XBT_PUBLIC int, MPI_Cart_rank, (MPI_Comm comm, const int* coords, int* rank));
 MPI_CALL(XBT_PUBLIC int, MPI_Cart_shift, (MPI_Comm comm, int direction, int displ, int* source, int* dest));
-MPI_CALL(XBT_PUBLIC int, MPI_Cart_sub, (MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new));
+MPI_CALL(XBT_PUBLIC int, MPI_Cart_sub, (MPI_Comm comm, const int* remain_dims, MPI_Comm* comm_new));
 MPI_CALL(XBT_PUBLIC int, MPI_Cartdim_get, (MPI_Comm comm, int* ndims));
 MPI_CALL(XBT_PUBLIC int, MPI_Dims_create, (int nnodes, int ndims, int* dims));
 MPI_CALL(XBT_PUBLIC int, MPI_Request_get_status, (MPI_Request request, int* flag, MPI_Status* status));
@@ -782,11 +782,11 @@ XBT_PUBLIC_DATA MPI_Errhandler* MPI_ERRHANDLER_NULL;
 
 MPI_CALL(XBT_PUBLIC MPI_Errhandler, MPI_Errhandler_f2c, (MPI_Fint errhandler));
 MPI_CALL(XBT_PUBLIC MPI_Fint, MPI_Errhandler_c2f, (MPI_Errhandler errhandler));
-MPI_CALL(XBT_PUBLIC int, MPI_Cart_map, (MPI_Comm comm_old, int ndims, int* dims, int* periods, int* newrank));
+MPI_CALL(XBT_PUBLIC int, MPI_Cart_map, (MPI_Comm comm_old, int ndims, const int* dims, const int* periods, int* newrank));
 MPI_CALL(XBT_PUBLIC int, MPI_Graph_create,
-         (MPI_Comm comm_old, int nnodes, int* index, int* edges, int reorder, MPI_Comm* comm_graph));
+         (MPI_Comm comm_old, int nnodes, const int* index, const int* edges, int reorder, MPI_Comm* comm_graph));
 MPI_CALL(XBT_PUBLIC int, MPI_Graph_get, (MPI_Comm comm, int maxindex, int maxedges, int* index, int* edges));
-MPI_CALL(XBT_PUBLIC int, MPI_Graph_map, (MPI_Comm comm_old, int nnodes, int* index, int* edges, int* newrank));
+MPI_CALL(XBT_PUBLIC int, MPI_Graph_map, (MPI_Comm comm_old, int nnodes, const int* index, const int* edges, int* newrank));
 MPI_CALL(XBT_PUBLIC int, MPI_Graph_neighbors, (MPI_Comm comm, int rank, int maxneighbors, int* neighbors));
 MPI_CALL(XBT_PUBLIC int, MPI_Graph_neighbors_count, (MPI_Comm comm, int rank, int* nneighbors));
 MPI_CALL(XBT_PUBLIC int, MPI_Graphdims_get, (MPI_Comm comm, int* nnodes, int* nedges));

@@ -32,11 +32,11 @@ class Topo_Cart: public Topo {
 
 public:
   explicit Topo_Cart(int ndims);
-  Topo_Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder, MPI_Comm* comm_cart);
+  Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int periods[], int reorder, MPI_Comm* comm_cart);
   Topo_Cart* sub(const int remain_dims[], MPI_Comm* newcomm);
   int coords(int rank, int maxdims, int coords[]);
   int get(int maxdims, int* dims, int* periods, int* coords);
-  int rank(int* coords, int* rank);
+  int rank(const int* coords, int* rank);
   int shift(int direction, int disp, int* rank_source, int* rank_dest);
   int dim_get(int* ndims);
   static int Dims_create(int nnodes, int ndims, int dims[]);

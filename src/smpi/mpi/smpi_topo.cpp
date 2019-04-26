@@ -29,7 +29,7 @@ Topo_Cart::Topo_Cart(int ndims) : ndims_(ndims), dims_(ndims), periodic_(ndims),
 
 /* reorder is ignored, don't know what would be the consequences of a dumb reordering but neither do I see the point of
  * reordering*/
-Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int /*reorder*/, MPI_Comm* comm_cart)
+Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int periods[], int /*reorder*/, MPI_Comm* comm_cart)
     : Topo_Cart(ndims)
 {
   MPI_Group newGroup;
@@ -131,7 +131,7 @@ int Topo_Cart::get(int maxdims, int* dims, int* periods, int* coords) {
   return MPI_SUCCESS;
 }
 
-int Topo_Cart::rank(int* coords, int* rank) {
+int Topo_Cart::rank(const int* coords, int* rank) {
   int ndims =ndims_;
   *rank = 0;
   int multiplier = 1;
