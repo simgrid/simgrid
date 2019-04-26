@@ -762,7 +762,7 @@ typedef enum MPIR_Combiner_enum{
 typedef void MPI_Handler_function(MPI_Comm*, int*, ...);
 
 typedef void* MPI_Errhandler;
-
+typedef void* MPI_Message;
 typedef void MPI_Comm_errhandler_function(MPI_Comm *, int *, ...);
 typedef void MPI_File_errhandler_function(MPI_File *, int *, ...);
 typedef void MPI_Win_errhandler_function(MPI_Win *, int *, ...);
@@ -956,7 +956,8 @@ MPI_CALL(XBT_PUBLIC int, MPI_File_get_type_extent, (MPI_File fh, MPI_Datatype da
 MPI_CALL(XBT_PUBLIC int, MPI_File_set_atomicity, (MPI_File fh, int flag));
 MPI_CALL(XBT_PUBLIC int, MPI_File_get_atomicity, (MPI_File fh, int* flag));
 MPI_CALL(XBT_PUBLIC int, MPI_File_sync, (MPI_File fh));
-
+MPI_CALL(XBT_PUBLIC int, MPI_Mrecv, (void* buf, int count, MPI_Datatype datatype, MPI_Message* message, MPI_Status* status));
+MPI_CALL(XBT_PUBLIC int, MPI_Mprobe, (int source, int tag, MPI_Comm comm, MPI_Message* message, MPI_Status* status));
 //FIXME: End of all the not yet implemented stuff
 
 // smpi functions

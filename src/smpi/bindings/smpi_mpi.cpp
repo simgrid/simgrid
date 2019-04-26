@@ -433,3 +433,5 @@ UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Win_test,(MPI_Win win, int *flag),(win, 
 UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Win_sync,(MPI_Win win),(win))
 //UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(MPI_Errhandler, MPI_Errhandler_f2c,(MPI_Fint errhandler),(errhandler))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(MPI_Fint, MPI_Errhandler_c2f,(MPI_Errhandler errhandler),(errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Mprobe,(int source, int tag, MPI_Comm comm, MPI_Message *message, MPI_Status* status) ,(source, tag, comm, message, status))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Mrecv,(void *buf, int count, MPI_Datatype datatype, MPI_Message *message, MPI_Status* status),(buf, count, datatype, message, status))
