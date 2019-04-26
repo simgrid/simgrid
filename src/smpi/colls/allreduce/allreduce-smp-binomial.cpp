@@ -29,7 +29,7 @@ This fucntion performs all-reduce operation as follow.
 */
 namespace simgrid{
 namespace smpi{
-int Coll_allreduce_smp_binomial::allreduce(void *send_buf, void *recv_buf,
+int Coll_allreduce_smp_binomial::allreduce(const void *send_buf, void *recv_buf,
                                            int count, MPI_Datatype dtype,
                                            MPI_Op op, MPI_Comm comm)
 {

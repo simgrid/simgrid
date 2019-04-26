@@ -570,71 +570,71 @@ MPI_CALL(XBT_PUBLIC int, MPI_Bcast, (void* buf, int count, MPI_Datatype datatype
 MPI_CALL(XBT_PUBLIC int, MPI_Barrier, (MPI_Comm comm));
 MPI_CALL(XBT_PUBLIC int, MPI_Ibarrier, (MPI_Comm comm, MPI_Request *request));
 MPI_CALL(XBT_PUBLIC int, MPI_Ibcast, (void* buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm, MPI_Request *request));
-MPI_CALL(XBT_PUBLIC int, MPI_Igather, (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+MPI_CALL(XBT_PUBLIC int, MPI_Igather, (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                                       MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request));
-MPI_CALL(XBT_PUBLIC int, MPI_Igatherv, (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
-                                       int* recvcounts, int* displs, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request));
-MPI_CALL(XBT_PUBLIC int, MPI_Iallgather, (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+MPI_CALL(XBT_PUBLIC int, MPI_Igatherv, (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+                                       const int* recvcounts, const int* displs, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request));
+MPI_CALL(XBT_PUBLIC int, MPI_Iallgather, (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
                                          int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request));
-MPI_CALL(XBT_PUBLIC int, MPI_Iallgatherv, (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
-                                          int* recvcounts, int* displs, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request));
-MPI_CALL(XBT_PUBLIC int, MPI_Iscatter, (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+MPI_CALL(XBT_PUBLIC int, MPI_Iallgatherv, (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+                                          const int* recvcounts, const int* displs, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request));
+MPI_CALL(XBT_PUBLIC int, MPI_Iscatter, (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
                                        int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request));
-MPI_CALL(XBT_PUBLIC int, MPI_Iscatterv, (void* sendbuf, int* sendcounts, int* displs, MPI_Datatype sendtype,
+MPI_CALL(XBT_PUBLIC int, MPI_Iscatterv, (const void* sendbuf, const int* sendcounts, const int* displs, MPI_Datatype sendtype,
                                         void* recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request));
 MPI_CALL(XBT_PUBLIC int, MPI_Ireduce,
-         (void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm, MPI_Request *request));
+         (const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm, MPI_Request *request));
 MPI_CALL(XBT_PUBLIC int, MPI_Iallreduce,
-         (void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request));
+         (const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request));
 MPI_CALL(XBT_PUBLIC int, MPI_Iscan,
-         (void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request));
+         (const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request));
 MPI_CALL(XBT_PUBLIC int, MPI_Iexscan,
-         (void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request));
+         (const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request));
 MPI_CALL(XBT_PUBLIC int, MPI_Ireduce_scatter,
-         (void* sendbuf, void* recvbuf, int* recvcounts, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request));
+         (const void* sendbuf, void* recvbuf, const int* recvcounts, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request));
 MPI_CALL(XBT_PUBLIC int, MPI_Ireduce_scatter_block,
-         (void* sendbuf, void* recvbuf, int recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request));
-MPI_CALL(XBT_PUBLIC int, MPI_Ialltoall, (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+         (const void* sendbuf, void* recvbuf, int recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request));
+MPI_CALL(XBT_PUBLIC int, MPI_Ialltoall, (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
                                         int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request));
 MPI_CALL(XBT_PUBLIC int, MPI_Ialltoallv,
-         (void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype sendtype, void* recvbuf, int* recvcounts,
-          int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request));
+         (const void* sendbuf, const int* sendcounts, const int* senddisps, MPI_Datatype sendtype, void* recvbuf, const int* recvcounts,
+          const int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request));
 MPI_CALL(XBT_PUBLIC int, MPI_Ialltoallw,
-         (void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype* sendtypes, void* recvbuf, int* recvcounts,
-          int* recvdisps, MPI_Datatype* recvtypes, MPI_Comm comm, MPI_Request *request));
-MPI_CALL(XBT_PUBLIC int, MPI_Gather, (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+         (const void* sendbuf, const int* sendcounts, const int* senddisps, const MPI_Datatype* sendtypes, void* recvbuf, const int* recvcounts,
+          const int* recvdisps, const MPI_Datatype* recvtypes, MPI_Comm comm, MPI_Request *request));
+MPI_CALL(XBT_PUBLIC int, MPI_Gather, (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                                       MPI_Datatype recvtype, int root, MPI_Comm comm));
-MPI_CALL(XBT_PUBLIC int, MPI_Gatherv, (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
-                                       int* recvcounts, int* displs, MPI_Datatype recvtype, int root, MPI_Comm comm));
-MPI_CALL(XBT_PUBLIC int, MPI_Allgather, (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+MPI_CALL(XBT_PUBLIC int, MPI_Gatherv, (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+                                       const int* recvcounts, const int* displs, MPI_Datatype recvtype, int root, MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC int, MPI_Allgather, (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
                                          int recvcount, MPI_Datatype recvtype, MPI_Comm comm));
-MPI_CALL(XBT_PUBLIC int, MPI_Allgatherv, (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
-                                          int* recvcounts, int* displs, MPI_Datatype recvtype, MPI_Comm comm));
-MPI_CALL(XBT_PUBLIC int, MPI_Scatter, (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+MPI_CALL(XBT_PUBLIC int, MPI_Allgatherv, (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+                                          const int* recvcounts, const int* displs, MPI_Datatype recvtype, MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC int, MPI_Scatter, (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
                                        int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm));
-MPI_CALL(XBT_PUBLIC int, MPI_Scatterv, (void* sendbuf, int* sendcounts, int* displs, MPI_Datatype sendtype,
+MPI_CALL(XBT_PUBLIC int, MPI_Scatterv, (const void* sendbuf, const int* sendcounts, const int* displs, MPI_Datatype sendtype,
                                         void* recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm));
 MPI_CALL(XBT_PUBLIC int, MPI_Reduce,
-         (void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm));
+         (const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm));
 MPI_CALL(XBT_PUBLIC int, MPI_Allreduce,
-         (void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm));
+         (const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm));
 MPI_CALL(XBT_PUBLIC int, MPI_Scan,
-         (void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm));
+         (const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm));
 MPI_CALL(XBT_PUBLIC int, MPI_Exscan,
-         (void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm));
+         (const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm));
 MPI_CALL(XBT_PUBLIC int, MPI_Reduce_scatter,
-         (void* sendbuf, void* recvbuf, int* recvcounts, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm));
+         (const void* sendbuf, void* recvbuf, const int* recvcounts, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm));
 MPI_CALL(XBT_PUBLIC int, MPI_Reduce_scatter_block,
-         (void* sendbuf, void* recvbuf, int recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm));
-MPI_CALL(XBT_PUBLIC int, MPI_Alltoall, (void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+         (const void* sendbuf, void* recvbuf, int recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC int, MPI_Alltoall, (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
                                         int recvcount, MPI_Datatype recvtype, MPI_Comm comm));
 MPI_CALL(XBT_PUBLIC int, MPI_Alltoallv,
-         (void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype sendtype, void* recvbuf, int* recvcounts,
-          int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm));
+         (const void* sendbuf, const int* sendcounts, const int* senddisps, MPI_Datatype sendtype, void* recvbuf, const int* recvcounts,
+          const int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm));
 MPI_CALL(XBT_PUBLIC int, MPI_Alltoallw,
-         (void* sendbuf, int* sendcnts, int* sdispls, MPI_Datatype* sendtypes, void* recvbuf, int* recvcnts,
-          int* rdispls, MPI_Datatype* recvtypes, MPI_Comm comm));
-MPI_CALL(XBT_PUBLIC int, MPI_Reduce_local, (void* inbuf, void* inoutbuf, int count, MPI_Datatype datatype, MPI_Op op));
+         (const void* sendbuf, const int* sendcnts, const int* sdispls, const MPI_Datatype* sendtypes, void* recvbuf, const int* recvcnts,
+          const int* rdispls, const MPI_Datatype* recvtypes, MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC int, MPI_Reduce_local, (const void* inbuf, void* inoutbuf, int count, MPI_Datatype datatype, MPI_Op op));
 
 MPI_CALL(XBT_PUBLIC int, MPI_Info_create, (MPI_Info * info));
 MPI_CALL(XBT_PUBLIC int, MPI_Info_set, (MPI_Info info, const char* key, const char* value));

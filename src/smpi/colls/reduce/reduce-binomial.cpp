@@ -10,7 +10,7 @@
 //#include <star-reduction.c>
 namespace simgrid{
 namespace smpi{
-int Coll_reduce_binomial::reduce(void *sendbuf, void *recvbuf, int count,
+int Coll_reduce_binomial::reduce(const void *sendbuf, void *recvbuf, int count,
                                     MPI_Datatype datatype, MPI_Op op, int root,
                                     MPI_Comm comm)
 {

@@ -13,7 +13,7 @@ namespace simgrid{
 namespace smpi{
 
 
-int Coll_alltoall_basic_linear::alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype,
+int Coll_alltoall_basic_linear::alltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
                                           void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
   int system_tag = COLL_TAG_ALLTOALL;
@@ -29,7 +29,7 @@ int Coll_alltoall_basic_linear::alltoall(void *sendbuf, int sendcount, MPI_Datat
   sendtype->extent(&lb, &sendext);
   recvtype->extent(&lb, &recvext);
   /* simple optimization */
-  int err = Datatype::copy(static_cast<char *>(sendbuf) + rank * sendcount * sendext, sendcount, sendtype,
+  int err = Datatype::copy(static_cast<const char *>(sendbuf) + rank * sendcount * sendext, sendcount, sendtype,
                                static_cast<char *>(recvbuf) + rank * recvcount * recvext, recvcount, recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
@@ -47,7 +47,7 @@ int Coll_alltoall_basic_linear::alltoall(void *sendbuf, int sendcount, MPI_Datat
      * TODO: check the previous assertion
      */
     for (i = (rank + size - 1) % size; i != rank; i = (i + size - 1) % size) {
-      requests[count] = Request::isend_init(static_cast<char *>(sendbuf) + i * sendcount * sendext, sendcount,
+      requests[count] = Request::isend_init(static_cast<const char *>(sendbuf) + i * sendcount * sendext, sendcount,
                                         sendtype, i, system_tag, comm);
       count++;
     }

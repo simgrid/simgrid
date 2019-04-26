@@ -26,7 +26,7 @@
 
 namespace simgrid{
 namespace smpi{
-int Coll_allreduce_mvapich2_rs::allreduce(void *sendbuf,
+int Coll_allreduce_mvapich2_rs::allreduce(const void *sendbuf,
                             void *recvbuf,
                             int count,
                             MPI_Datatype datatype,

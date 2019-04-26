@@ -80,10 +80,10 @@
 namespace simgrid{
 namespace smpi{
 
-int Coll_allgatherv_ompi_bruck::allgatherv(void *sbuf, int scount,
+int Coll_allgatherv_ompi_bruck::allgatherv(const void *sbuf, int scount,
                                            MPI_Datatype sdtype,
-                                           void *rbuf, int *rcounts,
-                                           int *rdispls,
+                                           void *rbuf, const int *rcounts,
+                                           const int *rdispls,
                                            MPI_Datatype rdtype,
                                            MPI_Comm comm)
 {

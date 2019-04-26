@@ -30,7 +30,7 @@
  ****************************************************************************/
 namespace simgrid{
 namespace smpi{
-int Coll_alltoall_pair_rma::alltoall(void *send_buff, int send_count, MPI_Datatype send_type,
+int Coll_alltoall_pair_rma::alltoall(const void *send_buff, int send_count, MPI_Datatype send_type,
                   void *recv_buff, int recv_count, MPI_Datatype recv_type,
                   MPI_Comm comm)
 {
@@ -64,7 +64,7 @@ int Coll_alltoall_pair_rma::alltoall(void *send_buff, int send_count, MPI_Dataty
 }
 
 
-int Coll_alltoall_pair::alltoall(void *send_buff, int send_count,
+int Coll_alltoall_pair::alltoall(const void *send_buff, int send_count,
                                   MPI_Datatype send_type,
                                   void *recv_buff, int recv_count,
                                   MPI_Datatype recv_type, MPI_Comm comm)

@@ -50,7 +50,7 @@
 #define MPIR_Reduce_redscat_gather_MV2 Coll_reduce_scatter_gather::reduce
 #define MPIR_Reduce_shmem_MV2 Coll_reduce_ompi_basic_linear::reduce
 
-extern int (*MV2_Reduce_function)( void *sendbuf,
+extern int (*MV2_Reduce_function)( const void *sendbuf,
     void *recvbuf,
     int count,
     MPI_Datatype datatype,
@@ -58,7 +58,7 @@ extern int (*MV2_Reduce_function)( void *sendbuf,
     int root,
     MPI_Comm  comm_ptr);
 
-extern int (*MV2_Reduce_intra_function)( void *sendbuf,
+extern int (*MV2_Reduce_intra_function)( const void *sendbuf,
     void *recvbuf,
     int count,
     MPI_Datatype datatype,
@@ -68,14 +68,14 @@ extern int (*MV2_Reduce_intra_function)( void *sendbuf,
 
 
 /*Fn pointers for collectives */
-static int (*reduce_fn)(void *sendbuf,
+static int (*reduce_fn)(const void *sendbuf,
                              void *recvbuf,
                              int count,
                              MPI_Datatype datatype,
                              MPI_Op op, int root, MPI_Comm  comm);
 namespace simgrid{
 namespace smpi{
-int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
+int Coll_reduce_mvapich2_two_level::reduce( const void *sendbuf,
                                      void *recvbuf,
                                      int count,
                                      MPI_Datatype datatype,

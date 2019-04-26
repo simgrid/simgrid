@@ -45,7 +45,7 @@
 namespace simgrid{
 namespace smpi{
 int Coll_alltoall_mvapich2_scatter_dest::alltoall(
-                            void *sendbuf,
+                            const void *sendbuf,
                             int sendcount,
                             MPI_Datatype sendtype,
                             void *recvbuf,

@@ -72,7 +72,7 @@ namespace smpi{
 
 
 int
-Coll_allgather_spreading_simple::allgather(void *send_buff, int send_count,
+Coll_allgather_spreading_simple::allgather(const void *send_buff, int send_count,
                                            MPI_Datatype send_type,
                                            void *recv_buff, int recv_count,
                                            MPI_Datatype recv_type,

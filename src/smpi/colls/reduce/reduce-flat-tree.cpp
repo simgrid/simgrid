@@ -9,7 +9,7 @@
 namespace simgrid{
 namespace smpi{
 int
-Coll_reduce_flat_tree::reduce(void *sbuf, void *rbuf, int count,
+Coll_reduce_flat_tree::reduce(const void *sbuf, void *rbuf, int count,
                                  MPI_Datatype dtype, MPI_Op op,
                                  int root, MPI_Comm comm)
 {
@@ -18,7 +18,7 @@ Coll_reduce_flat_tree::reduce(void *sbuf, void *rbuf, int count,
   int rank;
   MPI_Aint extent;
   char *origin = 0;
-  char *inbuf;
+  const char *inbuf;
   MPI_Status status;
 
   rank = comm->rank();
@@ -50,7 +50,7 @@ Coll_reduce_flat_tree::reduce(void *sbuf, void *rbuf, int count,
 
   for (i = size - 2; i >= 0; --i) {
     if (rank == i)
-      inbuf = static_cast<char*>(sbuf);
+      inbuf = static_cast<const char*>(sbuf);
     else {
       Request::recv(origin, count, dtype, i, tag, comm, &status);
       inbuf = origin;

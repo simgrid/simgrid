@@ -50,7 +50,7 @@ MPI_Allreduce
 namespace simgrid{
 namespace smpi{
 
-int (*intel_allreduce_functions_table[])(void *sendbuf,
+int (*intel_allreduce_functions_table[])(const void *sendbuf,
       void *recvbuf,
       int count,
       MPI_Datatype datatype,
@@ -634,7 +634,7 @@ intel_tuning_table_element intel_alltoall_table[] =
   }
   }
 };
-int (*intel_alltoall_functions_table[])(void *sbuf, int scount,
+int (*intel_alltoall_functions_table[])(const void *sbuf, int scount,
                                              MPI_Datatype sdtype,
                                              void* rbuf, int rcount,
                                              MPI_Datatype rdtype,
@@ -967,7 +967,7 @@ MPI_Reduce
 
 */
 
-int (*intel_reduce_functions_table[])(void *sendbuf, void *recvbuf,
+int (*intel_reduce_functions_table[])(const void *sendbuf, void *recvbuf,
                                             int count, MPI_Datatype  datatype,
                                             MPI_Op   op, int root,
                                             MPI_Comm   comm) ={
@@ -1055,8 +1055,8 @@ MPI_Reduce_scatter
 5. Topology aware Reduce + Scatterv algorithm
 
 */
-static  int intel_reduce_scatter_reduce_scatterv(void *sbuf, void *rbuf,
-                                                    int *rcounts,
+static  int intel_reduce_scatter_reduce_scatterv(const void *sbuf, void *rbuf,
+                                                    const int *rcounts,
                                                     MPI_Datatype dtype,
                                                     MPI_Op  op,
                                                     MPI_Comm  comm)
@@ -1065,8 +1065,8 @@ static  int intel_reduce_scatter_reduce_scatterv(void *sbuf, void *rbuf,
   return MPI_SUCCESS;
 }
 
-static  int  intel_reduce_scatter_recursivehalving(void *sbuf, void *rbuf,
-                                                    int *rcounts,
+static  int  intel_reduce_scatter_recursivehalving(const void *sbuf, void *rbuf,
+                                                    const int *rcounts,
                                                     MPI_Datatype dtype,
                                                     MPI_Op  op,
                                                     MPI_Comm  comm)
@@ -1077,8 +1077,8 @@ static  int  intel_reduce_scatter_recursivehalving(void *sbuf, void *rbuf,
     return Coll_reduce_scatter_mvapich2::reduce_scatter(sbuf, rbuf, rcounts,dtype, op,comm);
 }
 
-int (*intel_reduce_scatter_functions_table[])( void *sbuf, void *rbuf,
-                                                    int *rcounts,
+int (*intel_reduce_scatter_functions_table[])( const void *sbuf, void *rbuf,
+                                                    const int *rcounts,
                                                     MPI_Datatype dtype,
                                                     MPI_Op  op,
                                                     MPI_Comm  comm
@@ -1487,7 +1487,7 @@ MPI_Allgather
 
 */
 
-int (*intel_allgather_functions_table[])(void *sbuf, int scount,
+int (*intel_allgather_functions_table[])(const void *sbuf, int scount,
                                               MPI_Datatype sdtype,
                                               void* rbuf, int rcount,
                                               MPI_Datatype rdtype,
@@ -1656,10 +1656,10 @@ MPI_Allgatherv
 
 */
 
-int (*intel_allgatherv_functions_table[])(void *sbuf, int scount,
+int (*intel_allgatherv_functions_table[])(const void *sbuf, int scount,
                                                MPI_Datatype sdtype,
-                                               void* rbuf, int *rcounts,
-                                               int *rdispls,
+                                               void* rbuf, const int *rcounts,
+                                               const int *rdispls,
                                                MPI_Datatype rdtype,
                                                MPI_Comm  comm
                                                     ) ={
@@ -1867,7 +1867,7 @@ MPI_Gather
 
 */
 
-int (*intel_gather_functions_table[])(void *sbuf, int scount,
+int (*intel_gather_functions_table[])(const void *sbuf, int scount,
                                            MPI_Datatype sdtype,
                                            void* rbuf, int rcount,
                                            MPI_Datatype rdtype,
@@ -1971,7 +1971,7 @@ MPI_Scatter
 
 */
 
-int (*intel_scatter_functions_table[])(void *sbuf, int scount,
+int (*intel_scatter_functions_table[])(const void *sbuf, int scount,
                                             MPI_Datatype sdtype,
                                             void* rbuf, int rcount,
                                             MPI_Datatype rdtype,
@@ -2145,9 +2145,9 @@ MPI_Alltoallv
 
 */
 
-int (*intel_alltoallv_functions_table[])(void *sbuf, int *scounts, int *sdisps,
+int (*intel_alltoallv_functions_table[])(const void *sbuf, const int *scounts, const int *sdisps,
                                               MPI_Datatype sdtype,
-                                              void *rbuf, int *rcounts, int *rdisps,
+                                              void *rbuf, const int *rcounts, const int *rdisps,
                                               MPI_Datatype rdtype,
                                               MPI_Comm  comm
                                                     ) ={

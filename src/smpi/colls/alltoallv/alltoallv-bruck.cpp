@@ -15,9 +15,9 @@
  **/
 namespace simgrid{
 namespace smpi{
-int Coll_alltoallv_bruck::alltoallv(void *sendbuf, int *sendcounts, int *senddisps,
+int Coll_alltoallv_bruck::alltoallv(const void *sendbuf, const int *sendcounts, const int *senddisps,
                                    MPI_Datatype sendtype, void *recvbuf,
-                                   int *recvcounts, int *recvdisps, MPI_Datatype recvtype,
+                                   const int *recvcounts,const int *recvdisps, MPI_Datatype recvtype,
                                    MPI_Comm comm)
 {
   int system_tag = COLL_TAG_ALLTOALLV;

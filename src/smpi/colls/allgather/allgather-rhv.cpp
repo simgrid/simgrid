@@ -13,7 +13,7 @@ namespace smpi{
 // now only work with power of two processes
 
 int
-Coll_allgather_rhv::allgather(void *sbuf, int send_count,
+Coll_allgather_rhv::allgather(const void *sbuf, int send_count,
                               MPI_Datatype send_type, void *rbuf,
                               int recv_count, MPI_Datatype recv_type,
                               MPI_Comm comm)

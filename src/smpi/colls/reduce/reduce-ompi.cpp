@@ -25,7 +25,7 @@
 namespace simgrid{
 namespace smpi{
 
-int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int original_count,
+int smpi_coll_tuned_ompi_reduce_generic(const void* sendbuf, void* recvbuf, int original_count,
                                     MPI_Datatype datatype, MPI_Op  op,
                                     int root, MPI_Comm comm,
                                     ompi_coll_tree_t* tree, int count_by_segment,
@@ -41,7 +41,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
  * for the first block: thus we must copy sendbuf to accumbuf on intermediate
  * to keep the optimized loop happy.
  */
-int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int original_count,
+int smpi_coll_tuned_ompi_reduce_generic(const void* sendbuf, void* recvbuf, int original_count,
                                     MPI_Datatype datatype, MPI_Op  op,
                                     int root, MPI_Comm comm,
                                     ompi_coll_tree_t* tree, int count_by_segment,
@@ -323,7 +323,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
 */
 
 
-int Coll_reduce_ompi_chain::reduce( void *sendbuf, void *recvbuf, int count,
+int Coll_reduce_ompi_chain::reduce(const void *sendbuf, void *recvbuf, int count,
                                         MPI_Datatype datatype,
                                         MPI_Op  op, int root,
                                         MPI_Comm  comm
@@ -351,7 +351,7 @@ int Coll_reduce_ompi_chain::reduce( void *sendbuf, void *recvbuf, int count,
 }
 
 
-int Coll_reduce_ompi_pipeline::reduce( void *sendbuf, void *recvbuf,
+int Coll_reduce_ompi_pipeline::reduce(const void *sendbuf, void *recvbuf,
                                            int count, MPI_Datatype datatype,
                                            MPI_Op  op, int root,
                                            MPI_Comm  comm  )
@@ -395,7 +395,7 @@ int Coll_reduce_ompi_pipeline::reduce( void *sendbuf, void *recvbuf,
                                            segcount, 0);
 }
 
-int Coll_reduce_ompi_binary::reduce( void *sendbuf, void *recvbuf,
+int Coll_reduce_ompi_binary::reduce(const void *sendbuf, void *recvbuf,
                                          int count, MPI_Datatype datatype,
                                          MPI_Op  op, int root,
                                          MPI_Comm  comm)
@@ -425,7 +425,7 @@ int Coll_reduce_ompi_binary::reduce( void *sendbuf, void *recvbuf,
                                            segcount, 0);
 }
 
-int Coll_reduce_ompi_binomial::reduce( void *sendbuf, void *recvbuf,
+int Coll_reduce_ompi_binomial::reduce(const void *sendbuf, void *recvbuf,
                                            int count, MPI_Datatype datatype,
                                            MPI_Op  op, int root,
                                            MPI_Comm  comm)
@@ -472,7 +472,7 @@ int Coll_reduce_ompi_binomial::reduce( void *sendbuf, void *recvbuf,
  * Acecpts:       same as MPI_Reduce()
  * Returns:       MPI_SUCCESS or error code
  */
-int Coll_reduce_ompi_in_order_binary::reduce( void *sendbuf, void *recvbuf,
+int Coll_reduce_ompi_in_order_binary::reduce(const void *sendbuf, void *recvbuf,
                                                   int count,
                                                   MPI_Datatype datatype,
                                                   MPI_Op  op, int root,
@@ -504,7 +504,7 @@ int Coll_reduce_ompi_in_order_binary::reduce( void *sendbuf, void *recvbuf,
        operations for non-commutative ops.
     */
     io_root = size - 1;
-    use_this_sendbuf = sendbuf;
+    use_this_sendbuf = const_cast<void*>(sendbuf);
     use_this_recvbuf = recvbuf;
     if (io_root != root) {
         ptrdiff_t text, ext;
@@ -584,7 +584,7 @@ int Coll_reduce_ompi_in_order_binary::reduce( void *sendbuf, void *recvbuf,
  */
 
 int
-Coll_reduce_ompi_basic_linear::reduce(void *sbuf, void *rbuf, int count,
+Coll_reduce_ompi_basic_linear::reduce(const void *sbuf, void *rbuf, int count,
                                           MPI_Datatype dtype,
                                           MPI_Op op,
                                           int root,

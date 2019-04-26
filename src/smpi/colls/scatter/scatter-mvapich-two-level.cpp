@@ -39,14 +39,14 @@
 #define MPIR_Scatter_MV2_Binomial Coll_scatter_ompi_binomial::scatter
 #define MPIR_Scatter_MV2_Direct Coll_scatter_ompi_basic_linear::scatter
 
-extern int (*MV2_Scatter_intra_function) (void *sendbuf, int sendcount, MPI_Datatype sendtype,
+extern int (*MV2_Scatter_intra_function) (const void *sendbuf, int sendcount, MPI_Datatype sendtype,
     void *recvbuf, int recvcount, MPI_Datatype recvtype,
     int root, MPI_Comm comm);
 
 namespace simgrid{
 namespace smpi{
 
-int Coll_scatter_mvapich2_two_level_direct::scatter(void *sendbuf,
+int Coll_scatter_mvapich2_two_level_direct::scatter(const void *sendbuf,
                                       int sendcnt,
                                       MPI_Datatype sendtype,
                                       void *recvbuf,
@@ -223,7 +223,7 @@ int Coll_scatter_mvapich2_two_level_direct::scatter(void *sendbuf,
 }
 
 
-int Coll_scatter_mvapich2_two_level_binomial::scatter(void *sendbuf,
+int Coll_scatter_mvapich2_two_level_binomial::scatter(const void *sendbuf,
                                         int sendcnt,
                                         MPI_Datatype sendtype,
                                         void *recvbuf,

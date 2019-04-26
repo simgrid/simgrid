@@ -27,8 +27,8 @@
  ****************************************************************************/
 namespace simgrid{
 namespace smpi{
-int Coll_alltoallv_ring::alltoallv(void* send_buff, int* send_counts, int* send_disps, MPI_Datatype send_type,
-                                   void* recv_buff, int* recv_counts, int* recv_disps, MPI_Datatype recv_type,
+int Coll_alltoallv_ring::alltoallv(const void* send_buff, const int* send_counts, const int* send_disps, MPI_Datatype send_type,
+                                   void* recv_buff, const int* recv_counts, const int* recv_disps, MPI_Datatype recv_type,
                                    MPI_Comm comm)
 {
   MPI_Status s;

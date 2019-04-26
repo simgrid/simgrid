@@ -14,7 +14,7 @@ int reduce_NTSL_segment_size_in_byte = 8192;
 */
 namespace simgrid{
 namespace smpi{
-int Coll_reduce_NTSL::reduce(void *buf, void *rbuf, int count,
+int Coll_reduce_NTSL::reduce(const void *buf, void *rbuf, int count,
                                 MPI_Datatype datatype, MPI_Op op, int root,
                                 MPI_Comm comm)
 {

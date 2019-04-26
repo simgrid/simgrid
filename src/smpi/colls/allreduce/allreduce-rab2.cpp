@@ -10,7 +10,7 @@
 namespace simgrid{
 namespace smpi{
 // this requires that count >= NP
-int Coll_allreduce_rab2::allreduce(void *sbuff, void *rbuff,
+int Coll_allreduce_rab2::allreduce(const void *sbuff, void *rbuff,
                                    int count, MPI_Datatype dtype,
                                    MPI_Op op, MPI_Comm comm)
 {
@@ -62,7 +62,7 @@ int Coll_allreduce_rab2::allreduce(void *sbuff, void *rbuff,
     smpi_free_tmp_buffer(tmp);
     smpi_free_tmp_buffer(send);
   } else {
-    send = sbuff;
+    send = const_cast<void*>(sbuff);
     send_size = count / nprocs;
     nbytes = send_size * s_extent;
     r_offset = rank * nbytes;

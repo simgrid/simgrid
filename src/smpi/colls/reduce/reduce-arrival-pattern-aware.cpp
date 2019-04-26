@@ -19,7 +19,7 @@ int reduce_arrival_pattern_aware_segment_size_in_byte = 8192;
 namespace simgrid{
 namespace smpi{
 /* Non-topology-specific pipelined linear-reduce function */
-int Coll_reduce_arrival_pattern_aware::reduce(void *buf, void *rbuf,
+int Coll_reduce_arrival_pattern_aware::reduce(const void *buf, void *rbuf,
                                                  int count,
                                                  MPI_Datatype datatype,
                                                  MPI_Op op, int root,

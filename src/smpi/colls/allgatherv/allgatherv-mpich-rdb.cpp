@@ -14,12 +14,12 @@ namespace simgrid{
 namespace smpi{
 
 int Coll_allgatherv_mpich_rdb::allgatherv (
-  void *sendbuf,
+  const void *sendbuf,
   int sendcount,
   MPI_Datatype sendtype,
   void *recvbuf,
-  int *recvcounts,
-  int *displs,
+  const int *recvcounts,
+  const int *displs,
   MPI_Datatype recvtype,
   MPI_Comm comm)
 {

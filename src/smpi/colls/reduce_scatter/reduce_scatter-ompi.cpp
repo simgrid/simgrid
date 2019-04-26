@@ -44,9 +44,9 @@
 namespace simgrid{
 namespace smpi{
 int
-Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(void *sbuf,
+Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(const void *sbuf,
                                                             void *rbuf,
-                                                            int *rcounts,
+                                                            const int *rcounts,
                                                             MPI_Datatype dtype,
                                                             MPI_Op op,
                                                             MPI_Comm comm
@@ -362,7 +362,7 @@ Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(void *sbuf,
  *
  */
 int
-Coll_reduce_scatter_ompi_ring::reduce_scatter(void *sbuf, void *rbuf, int *rcounts,
+Coll_reduce_scatter_ompi_ring::reduce_scatter(const void *sbuf, void *rbuf, const int *rcounts,
                                           MPI_Datatype dtype,
                                           MPI_Op op,
                                           MPI_Comm comm
@@ -483,7 +483,7 @@ Coll_reduce_scatter_ompi_ring::reduce_scatter(void *sbuf, void *rbuf, int *rcoun
            rbuf[prevblock] = inbuf[inbi ^ 0x1] (op) rbuf[prevblock]
         */
         tmprecv = accumbuf + (ptrdiff_t)displs[prevblock] * extent;
-        if(op!=MPI_OP_NULL) op->apply( inbuf[inbi ^ 0x1], tmprecv, &(rcounts[prevblock]), dtype);
+        if(op!=MPI_OP_NULL) op->apply( inbuf[inbi ^ 0x1], tmprecv, &((const_cast<int*>(rcounts))[prevblock]), dtype);
 
         /* send previous block to send_to */
         Request::send(tmprecv, rcounts[prevblock], dtype, send_to,
@@ -497,7 +497,7 @@ Coll_reduce_scatter_ompi_ring::reduce_scatter(void *sbuf, void *rbuf, int *rcoun
     /* Apply operation on the last block (my block)
        rbuf[rank] = inbuf[inbi] (op) rbuf[rank] */
     tmprecv = accumbuf + (ptrdiff_t)displs[rank] * extent;
-    if(op!=MPI_OP_NULL) op->apply( inbuf[inbi], tmprecv, &(rcounts[rank]), dtype);
+    if(op!=MPI_OP_NULL) op->apply( inbuf[inbi], tmprecv, &((const_cast<int*>(rcounts))[rank]), dtype);
 
     /* Copy result from tmprecv to rbuf */
     ret = Datatype::copy(tmprecv, rcounts[rank], dtype, (char*)rbuf, rcounts[rank], dtype);

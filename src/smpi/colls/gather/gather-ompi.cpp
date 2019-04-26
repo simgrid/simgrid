@@ -25,7 +25,7 @@
 namespace simgrid{
 namespace smpi{
 
-int Coll_gather_ompi_binomial::gather(void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
+int Coll_gather_ompi_binomial::gather(const void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
                                       MPI_Datatype rdtype, int root, MPI_Comm comm)
 {
     int line = -1;
@@ -199,7 +199,7 @@ int Coll_gather_ompi_binomial::gather(void* sbuf, int scount, MPI_Datatype sdtyp
  *  Accepts:  - same arguments as MPI_Gather(), first segment size
  *  Returns:  - MPI_SUCCESS or error code
  */
-int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
+int Coll_gather_ompi_linear_sync::gather(const void *sbuf, int scount,
                                          MPI_Datatype sdtype,
                                          void *rbuf, int rcount,
                                          MPI_Datatype rdtype,
@@ -247,7 +247,7 @@ int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
        first_segment_count = scount;
        COLL_TUNED_COMPUTED_SEGCOUNT((size_t)first_segment_size, typelng, first_segment_count);
 
-       Request::recv(sbuf, 0, MPI_BYTE, root, COLL_TAG_GATHER, comm, MPI_STATUS_IGNORE);
+       Request::recv(const_cast<void*>(sbuf), 0, MPI_BYTE, root, COLL_TAG_GATHER, comm, MPI_STATUS_IGNORE);
 
        Request::send(sbuf, first_segment_count, sdtype, root, COLL_TAG_GATHER, comm);
 
@@ -352,7 +352,7 @@ int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
  *  Accepts:  - same arguments as MPI_Gather()
  *  Returns:  - MPI_SUCCESS or error code
  */
-int Coll_gather_ompi_basic_linear::gather(void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
+int Coll_gather_ompi_basic_linear::gather(const void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
                                           MPI_Datatype rdtype, int root, MPI_Comm comm)
 {
     int i;

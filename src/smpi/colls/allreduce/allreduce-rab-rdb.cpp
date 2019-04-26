@@ -7,7 +7,7 @@
 #include "../colls_private.hpp"
 namespace simgrid{
 namespace smpi{
-int Coll_allreduce_rab_rdb::allreduce(void *sbuff, void *rbuff, int count,
+int Coll_allreduce_rab_rdb::allreduce(const void *sbuff, void *rbuff, int count,
                                       MPI_Datatype dtype, MPI_Op op,
                                       MPI_Comm comm)
 {

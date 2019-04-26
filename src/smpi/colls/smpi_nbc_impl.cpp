@@ -69,7 +69,7 @@ int Colls::ibcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Com
   return MPI_SUCCESS;
 }
 
-int Colls::iallgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
+int Colls::iallgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
                         void *recvbuf,int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request)
 {
 
@@ -103,7 +103,7 @@ int Colls::iallgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   return MPI_SUCCESS;
 }
 
-int Colls::iscatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
+int Colls::iscatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
                       void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
 {
   const int system_tag = COLL_TAG_SCATTER;
@@ -123,7 +123,7 @@ int Colls::iscatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     sendtype->extent(&lb, &sendext);
     // Local copy from root
     if(recvbuf!=MPI_IN_PLACE){
-        Datatype::copy(static_cast<char *>(sendbuf) + root * sendcount * sendext,
+        Datatype::copy(static_cast<const char *>(sendbuf) + root * sendcount * sendext,
                            sendcount, sendtype, recvbuf, recvcount, recvtype);
     }
     // Send buffers to receivers
@@ -131,7 +131,7 @@ int Colls::iscatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     int index = 0;
     for(int dst = 0; dst < size; dst++) {
       if(dst != root) {
-        requests[index] = Request::isend_init(static_cast<char *>(sendbuf) + dst * sendcount * sendext, sendcount, sendtype,
+        requests[index] = Request::isend_init(static_cast<const char *>(sendbuf) + dst * sendcount * sendext, sendcount, sendtype,
                                           dst, system_tag, comm);
         index++;
       }
@@ -143,8 +143,8 @@ int Colls::iscatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   return MPI_SUCCESS;
 }
 
-int Colls::iallgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
-                         int *recvcounts, int *displs, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request)
+int Colls::iallgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
+                         const int *recvcounts, const int *displs, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request)
 {
   const int system_tag = COLL_TAG_ALLGATHERV;
   MPI_Aint lb = 0;
@@ -177,7 +177,7 @@ int Colls::iallgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void
   return MPI_SUCCESS;
 }
 
-int Colls::ialltoall( void *sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request){
+int Colls::ialltoall( const void *sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request){
   int system_tag   = COLL_TAG_ALLTOALL;
   MPI_Aint lb      = 0;
   MPI_Aint sendext = 0;
@@ -191,7 +191,7 @@ int Colls::ialltoall( void *sendbuf, int sendcount, MPI_Datatype sendtype, void*
   sendtype->extent(&lb, &sendext);
   recvtype->extent(&lb, &recvext);
   /* simple optimization */
-  int err = Datatype::copy(static_cast<char *>(sendbuf) + rank * sendcount * sendext, sendcount, sendtype,
+  int err = Datatype::copy(static_cast<const char *>(sendbuf) + rank * sendcount * sendext, sendcount, sendtype,
                                static_cast<char *>(recvbuf) + rank * recvcount * recvext, recvcount, recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
@@ -209,7 +209,7 @@ int Colls::ialltoall( void *sendbuf, int sendcount, MPI_Datatype sendtype, void*
      * TODO: check the previous assertion
      */
     for (int i = (rank + size - 1) % size; i != rank; i = (i + size - 1) % size) {
-      requests[count] = Request::isend_init(static_cast<char *>(sendbuf) + i * sendcount * sendext, sendcount,
+      requests[count] = Request::isend_init(static_cast<const char *>(sendbuf) + i * sendcount * sendext, sendcount,
                                         sendtype, i, system_tag, comm);
       count++;
     }
@@ -220,8 +220,8 @@ int Colls::ialltoall( void *sendbuf, int sendcount, MPI_Datatype sendtype, void*
   return MPI_SUCCESS;
 }
 
-int Colls::ialltoallv(void *sendbuf, int *sendcounts, int *senddisps, MPI_Datatype sendtype,
-                              void *recvbuf, int *recvcounts, int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request){
+int Colls::ialltoallv(const void *sendbuf, const int *sendcounts, const int *senddisps, MPI_Datatype sendtype,
+                              void *recvbuf, const int *recvcounts, const int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request){
   const int system_tag = COLL_TAG_ALLTOALLV;
   MPI_Aint lb = 0;
   MPI_Aint sendext = 0;
@@ -235,7 +235,7 @@ int Colls::ialltoallv(void *sendbuf, int *sendcounts, int *senddisps, MPI_Dataty
   sendtype->extent(&lb, &sendext);
   recvtype->extent(&lb, &recvext);
   /* Local copy from self */
-  int err = Datatype::copy(static_cast<char *>(sendbuf) + senddisps[rank] * sendext, sendcounts[rank], sendtype,
+  int err = Datatype::copy(static_cast<const char *>(sendbuf) + senddisps[rank] * sendext, sendcounts[rank], sendtype,
                                static_cast<char *>(recvbuf) + recvdisps[rank] * recvext, recvcounts[rank], recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
@@ -254,7 +254,7 @@ int Colls::ialltoallv(void *sendbuf, int *sendcounts, int *senddisps, MPI_Dataty
     /* Now create all sends  */
     for (int i = 0; i < size; ++i) {
       if (i != rank) {
-      requests[count] = Request::isend_init(static_cast<char *>(sendbuf) + senddisps[i] * sendext,
+      requests[count] = Request::isend_init(static_cast<const char *>(sendbuf) + senddisps[i] * sendext,
                                         sendcounts[i], sendtype, i, system_tag, comm);
       count++;
       }else{
@@ -268,8 +268,8 @@ int Colls::ialltoallv(void *sendbuf, int *sendcounts, int *senddisps, MPI_Dataty
   return err;
 }
 
-int Colls::ialltoallw(void *sendbuf, int *sendcounts, int *senddisps, MPI_Datatype* sendtypes,
-                              void *recvbuf, int *recvcounts, int *recvdisps, MPI_Datatype* recvtypes, MPI_Comm comm, MPI_Request *request){
+int Colls::ialltoallw(const void *sendbuf, const int *sendcounts, const int *senddisps, const MPI_Datatype* sendtypes,
+                              void *recvbuf, const int *recvcounts, const int *recvdisps, const MPI_Datatype* recvtypes, MPI_Comm comm, MPI_Request *request){
   const int system_tag = COLL_TAG_ALLTOALLV;
 
   /* Initialize. */
@@ -278,7 +278,7 @@ int Colls::ialltoallw(void *sendbuf, int *sendcounts, int *senddisps, MPI_Dataty
   (*request) = new Request( nullptr, 0, MPI_BYTE,
                          rank,rank, system_tag, comm, MPI_REQ_PERSISTENT);
   /* Local copy from self */
-  int err = (sendcounts[rank]>0 && recvcounts[rank]) ? Datatype::copy(static_cast<char *>(sendbuf) + senddisps[rank], sendcounts[rank], sendtypes[rank],
+  int err = (sendcounts[rank]>0 && recvcounts[rank]) ? Datatype::copy(static_cast<const char *>(sendbuf) + senddisps[rank], sendcounts[rank], sendtypes[rank],
                                static_cast<char *>(recvbuf) + recvdisps[rank], recvcounts[rank], recvtypes[rank]): MPI_SUCCESS;
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
@@ -297,7 +297,7 @@ int Colls::ialltoallw(void *sendbuf, int *sendcounts, int *senddisps, MPI_Dataty
     /* Now create all sends  */
     for (int i = 0; i < size; ++i) {
       if (i != rank) {
-      requests[count] = Request::isend_init(static_cast<char *>(sendbuf) + senddisps[i] ,
+      requests[count] = Request::isend_init(static_cast<const char *>(sendbuf) + senddisps[i] ,
                                         sendcounts[i], sendtypes[i], i, system_tag, comm);
       count++;
       }else{
@@ -311,7 +311,7 @@ int Colls::ialltoallw(void *sendbuf, int *sendcounts, int *senddisps, MPI_Dataty
   return err;
 }
 
-int Colls::igather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
+int Colls::igather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
                      void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
 {
   const int system_tag = COLL_TAG_GATHER;
@@ -349,7 +349,7 @@ int Colls::igather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   return MPI_SUCCESS;
 }
 
-int Colls::igatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int *recvcounts, int *displs,
+int Colls::igatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int *recvcounts, const int *displs,
                       MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
 {
   int system_tag = COLL_TAG_GATHERV;
@@ -386,7 +386,7 @@ int Colls::igatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *r
   }
   return MPI_SUCCESS;
 }
-int Colls::iscatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype sendtype, void *recvbuf, int recvcount,
+int Colls::iscatterv(const void *sendbuf, const int *sendcounts, const int *displs, MPI_Datatype sendtype, void *recvbuf, int recvcount,
                        MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
 {
   int system_tag = COLL_TAG_SCATTERV;
@@ -406,7 +406,7 @@ int Colls::iscatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype s
     sendtype->extent(&lb, &sendext);
     // Local copy from root
     if(recvbuf!=MPI_IN_PLACE){
-      Datatype::copy(static_cast<char *>(sendbuf) + displs[root] * sendext, sendcounts[root],
+      Datatype::copy(static_cast<const char *>(sendbuf) + displs[root] * sendext, sendcounts[root],
                        sendtype, recvbuf, recvcount, recvtype);
     }
     // Send buffers to receivers
@@ -414,7 +414,7 @@ int Colls::iscatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype s
     int index = 0;
     for (int dst = 0; dst < size; dst++) {
       if (dst != root) {
-        requests[index] = Request::isend_init(static_cast<char *>(sendbuf) + displs[dst] * sendext, sendcounts[dst],
+        requests[index] = Request::isend_init(static_cast<const char *>(sendbuf) + displs[dst] * sendext, sendcounts[dst],
                             sendtype, dst, system_tag, comm);
         index++;
       }
@@ -426,14 +426,14 @@ int Colls::iscatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype s
   return MPI_SUCCESS;
 }
 
-int Colls::ireduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
+int Colls::ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
                      MPI_Comm comm, MPI_Request* request)
 {
   const int system_tag = COLL_TAG_REDUCE;
   MPI_Aint lb = 0;
   MPI_Aint dataext = 0;
 
-  char* sendtmpbuf = static_cast<char *>(sendbuf);
+  void* sendtmpbuf = const_cast<void *>(sendbuf);
 
   int rank = comm->rank();
   int size = comm->size();
@@ -442,7 +442,7 @@ int Colls::ireduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
     return MPI_ERR_COMM;
 
   if( sendbuf == MPI_IN_PLACE ) {
-    sendtmpbuf = static_cast<char *>(smpi_get_tmp_sendbuffer(count*datatype->get_extent()));
+    sendtmpbuf = static_cast<void *>(smpi_get_tmp_sendbuffer(count*datatype->get_extent()));
     Datatype::copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
   }
 
@@ -484,7 +484,7 @@ int Colls::ireduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
   return MPI_SUCCESS;
 }
 
-int Colls::iallreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
+int Colls::iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
                       MPI_Op op, MPI_Comm comm, MPI_Request* request)
 {
 
@@ -517,7 +517,7 @@ int Colls::iallreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype data
   return MPI_SUCCESS;
 }
 
-int Colls::iscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request* request)
+int Colls::iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request* request)
 {
   int system_tag = -888;
   MPI_Aint lb      = 0;
@@ -549,7 +549,7 @@ int Colls::iscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
   return MPI_SUCCESS;
 }
 
-int Colls::iexscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request* request)
+int Colls::iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request* request)
 {
   int system_tag = -888;
   MPI_Aint lb         = 0;
@@ -579,7 +579,7 @@ int Colls::iexscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
   return MPI_SUCCESS;
 }
 
-int Colls::ireduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datatype datatype, MPI_Op op,
+int Colls::ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcounts, MPI_Datatype datatype, MPI_Op op,
                              MPI_Comm comm, MPI_Request* request){
 //Version where each process performs the reduce for its own part. Alltoall pattern for comms.
   const int system_tag = COLL_TAG_REDUCE_SCATTER;
@@ -599,14 +599,14 @@ int Colls::ireduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Da
   int recvdisp=0;
   for (int other = 0; other < size; other++) {
     if(other != rank) {
-      requests[index] = Request::isend_init(static_cast<char *>(sendbuf) + recvdisp * dataext, recvcounts[other], datatype, other, system_tag,comm);
+      requests[index] = Request::isend_init(static_cast<const char *>(sendbuf) + recvdisp * dataext, recvcounts[other], datatype, other, system_tag,comm);
       XBT_VERB("sending with recvdisp %d", recvdisp);
       index++;
       requests[index] = Request::irecv_init(smpi_get_tmp_sendbuffer(count * dataext), count, datatype,
                                         other, system_tag, comm);
       index++;
     }else{
-      Datatype::copy(static_cast<char *>(sendbuf) + recvdisp * dataext, count, datatype, recvbuf, count, datatype);
+      Datatype::copy(static_cast<const char *>(sendbuf) + recvdisp * dataext, count, datatype, recvbuf, count, datatype);
     }
     recvdisp+=recvcounts[other];
   }

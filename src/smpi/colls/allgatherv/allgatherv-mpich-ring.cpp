@@ -29,9 +29,9 @@ namespace simgrid{
 namespace smpi{
 
 int
-Coll_allgatherv_mpich_ring::allgatherv(void *sendbuf, int sendcount,
+Coll_allgatherv_mpich_ring::allgatherv(const void *sendbuf, int sendcount,
     MPI_Datatype send_type, void *recvbuf,
-    int *recvcounts, int *displs, MPI_Datatype recvtype,
+    const int *recvcounts, const int *displs, MPI_Datatype recvtype,
     MPI_Comm comm)
 {
 

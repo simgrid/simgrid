@@ -10,7 +10,7 @@ namespace simgrid{
 namespace smpi{
 
 
-int Coll_allgather_smp_simple::allgather(void *send_buf, int scount,
+int Coll_allgather_smp_simple::allgather(const void *send_buf, int scount,
                                          MPI_Datatype stype, void *recv_buf,
                                          int rcount, MPI_Datatype rtype,
                                          MPI_Comm comm)

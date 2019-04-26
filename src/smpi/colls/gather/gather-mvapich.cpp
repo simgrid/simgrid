@@ -41,7 +41,7 @@
 #define MPIR_Gather_MV2_Direct Coll_gather_ompi_basic_linear::gather
 #define MPIR_Gather_MV2_two_level_Direct Coll_gather_ompi_basic_linear::gather
 #define MPIR_Gather_intra Coll_gather_mpich::gather
-typedef int (*MV2_Gather_function_ptr) (void *sendbuf,
+typedef int (*MV2_Gather_function_ptr) (const void *sendbuf,
     int sendcnt,
     MPI_Datatype sendtype,
     void *recvbuf,
@@ -80,7 +80,7 @@ namespace smpi{
  *                      intra node gather function
  * errflag           - (out) to record errors
  */
-static int MPIR_pt_pt_intra_gather( void *sendbuf, int sendcnt, MPI_Datatype sendtype,
+static int MPIR_pt_pt_intra_gather( const void *sendbuf, int sendcnt, MPI_Datatype sendtype,
                             void *recvbuf, int recvcnt, MPI_Datatype recvtype,
                             int root, int rank,
                             void *tmp_buf, int nbytes,
@@ -127,7 +127,7 @@ static int MPIR_pt_pt_intra_gather( void *sendbuf, int sendcnt, MPI_Datatype sen
 
 
 
-int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
+int Coll_gather_mvapich2_two_level::gather(const void *sendbuf,
                                             int sendcnt,
                                             MPI_Datatype sendtype,
                                             void *recvbuf,

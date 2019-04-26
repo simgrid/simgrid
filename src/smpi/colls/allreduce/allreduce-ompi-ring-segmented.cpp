@@ -158,7 +158,7 @@
 namespace simgrid{
 namespace smpi{
 int
-Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
+Coll_allreduce_ompi_ring_segmented::allreduce(const void *sbuf, void *rbuf, int count,
                                                MPI_Datatype dtype,
                                                MPI_Op op,
                                                MPI_Comm comm)
