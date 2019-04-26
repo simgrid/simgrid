@@ -103,7 +103,7 @@ int PMPI_Win_attach(MPI_Win win, void *base, MPI_Aint size){
   return retval;
 }
 
-int PMPI_Win_detach(MPI_Win win, void* base)
+int PMPI_Win_detach(MPI_Win win, const void* base)
 {
   int retval = 0;
   smpi_bench_end();
@@ -132,7 +132,7 @@ int PMPI_Win_free( MPI_Win* win){
   return retval;
 }
 
-int PMPI_Win_set_name(MPI_Win  win, char * name)
+int PMPI_Win_set_name(MPI_Win  win, const char * name)
 {
   if (win == MPI_WIN_NULL)  {
     return MPI_ERR_TYPE;
@@ -280,7 +280,7 @@ int PMPI_Rget( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
   return retval;
 }
 
-int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+int PMPI_Put(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
   int retval = 0;
   smpi_bench_end();
@@ -320,7 +320,7 @@ int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   return retval;
 }
 
-int PMPI_Rput( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+int PMPI_Rput(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request* request){
   int retval = 0;
   smpi_bench_end();
@@ -363,7 +363,7 @@ int PMPI_Rput( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
   return retval;
 }
 
-int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+int PMPI_Accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
   int retval = 0;
   smpi_bench_end();
@@ -402,7 +402,7 @@ int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   return retval;
 }
 
-int PMPI_Raccumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+int PMPI_Raccumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
   int retval = 0;
   smpi_bench_end();
@@ -445,7 +445,7 @@ int PMPI_Raccumulate( void *origin_addr, int origin_count, MPI_Datatype origin_d
   return retval;
 }
 
-int PMPI_Get_accumulate(void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
+int PMPI_Get_accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
 int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
 MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
   int retval = 0;
@@ -489,7 +489,7 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
 }
 
 
-int PMPI_Rget_accumulate(void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
+int PMPI_Rget_accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
 int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
 MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
   int retval = 0;
@@ -535,11 +535,11 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
   return retval;
 }
 
-int PMPI_Fetch_and_op(void *origin_addr, void *result_addr, MPI_Datatype dtype, int target_rank, MPI_Aint target_disp, MPI_Op op, MPI_Win win){
+int PMPI_Fetch_and_op(const void *origin_addr, void *result_addr, MPI_Datatype dtype, int target_rank, MPI_Aint target_disp, MPI_Op op, MPI_Win win){
   return PMPI_Get_accumulate(origin_addr, origin_addr==nullptr?0:1, dtype, result_addr, 1, dtype, target_rank, target_disp, 1, dtype, op, win);
 }
 
-int PMPI_Compare_and_swap(void* origin_addr, void* compare_addr, void* result_addr, MPI_Datatype datatype,
+int PMPI_Compare_and_swap(const void* origin_addr, void* compare_addr, void* result_addr, MPI_Datatype datatype,
                           int target_rank, MPI_Aint target_disp, MPI_Win win)
 {
   int retval = 0;

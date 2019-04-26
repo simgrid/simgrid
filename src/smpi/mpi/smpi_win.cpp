@@ -93,7 +93,7 @@ int Win::attach(void* /*base*/, MPI_Aint size)
   return MPI_SUCCESS;
 }
 
-int Win::detach(void* /*base*/)
+int Win::detach(const void* /*base*/)
 {
   base_=MPI_BOTTOM;
   size_=-1;
@@ -151,7 +151,7 @@ void Win::set_info(MPI_Info info){
   info_=info;
 }
 
-void Win::set_name(char* name){
+void Win::set_name(const char* name){
   name_ = xbt_strdup(name);
 }
 
@@ -189,7 +189,7 @@ int Win::fence(int assert)
   return MPI_SUCCESS;
 }
 
-int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+int Win::put(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Request* request)
 {
   //get receiver pointer
@@ -311,7 +311,7 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 }
 
 
-int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+int Win::accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request)
 {
   XBT_DEBUG("Entering MPI_Win_Accumulate");
@@ -366,7 +366,7 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   return MPI_SUCCESS;
 }
 
-int Win::get_accumulate(void* origin_addr, int origin_count, MPI_Datatype origin_datatype, void* result_addr,
+int Win::get_accumulate(const void* origin_addr, int origin_count, MPI_Datatype origin_datatype, void* result_addr,
                         int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp,
                         int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Request*)
 {
@@ -404,7 +404,7 @@ int Win::get_accumulate(void* origin_addr, int origin_count, MPI_Datatype origin
 
 }
 
-int Win::compare_and_swap(void *origin_addr, void *compare_addr,
+int Win::compare_and_swap(const void *origin_addr, void *compare_addr,
         void *result_addr, MPI_Datatype datatype, int target_rank,
         MPI_Aint target_disp){
   //get sender pointer

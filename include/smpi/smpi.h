@@ -657,8 +657,8 @@ MPI_CALL(XBT_PUBLIC int, MPI_Win_allocate_shared,
          (MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void* base, MPI_Win* win));
 MPI_CALL(XBT_PUBLIC int, MPI_Win_create_dynamic, (MPI_Info info, MPI_Comm comm, MPI_Win* win));
 MPI_CALL(XBT_PUBLIC int, MPI_Win_attach, (MPI_Win win, void* base, MPI_Aint size));
-MPI_CALL(XBT_PUBLIC int, MPI_Win_detach, (MPI_Win win, void* base));
-MPI_CALL(XBT_PUBLIC int, MPI_Win_set_name, (MPI_Win win, char* name));
+MPI_CALL(XBT_PUBLIC int, MPI_Win_detach, (MPI_Win win, const void* base));
+MPI_CALL(XBT_PUBLIC int, MPI_Win_set_name, (MPI_Win win, const char* name));
 MPI_CALL(XBT_PUBLIC int, MPI_Win_get_name, (MPI_Win win, char* name, int* len));
 MPI_CALL(XBT_PUBLIC int, MPI_Win_set_info, (MPI_Win win, MPI_Info info));
 MPI_CALL(XBT_PUBLIC int, MPI_Win_get_info, (MPI_Win win, MPI_Info* info));
@@ -690,32 +690,32 @@ MPI_CALL(XBT_PUBLIC MPI_Fint, MPI_Win_c2f, (MPI_Win win));
 
 MPI_CALL(XBT_PUBLIC int, MPI_Get, (void* origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
                                    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win));
-MPI_CALL(XBT_PUBLIC int, MPI_Put, (void* origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+MPI_CALL(XBT_PUBLIC int, MPI_Put, (const void* origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
                                    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win));
 MPI_CALL(XBT_PUBLIC int, MPI_Accumulate,
-         (void* origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, MPI_Aint target_disp,
+         (const void* origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, MPI_Aint target_disp,
           int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win));
 MPI_CALL(XBT_PUBLIC int, MPI_Get_accumulate,
-         (void* origin_addr, int origin_count, MPI_Datatype origin_datatype, void* result_addr, int result_count,
+         (const void* origin_addr, int origin_count, MPI_Datatype origin_datatype, void* result_addr, int result_count,
           MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
           MPI_Datatype target_datatype, MPI_Op op, MPI_Win win));
 MPI_CALL(XBT_PUBLIC int, MPI_Rget,
          (void* origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, MPI_Aint target_disp,
           int target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request* request));
 MPI_CALL(XBT_PUBLIC int, MPI_Rput,
-         (void* origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, MPI_Aint target_disp,
+         (const void* origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, MPI_Aint target_disp,
           int target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request* request));
 MPI_CALL(XBT_PUBLIC int, MPI_Raccumulate,
-         (void* origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, MPI_Aint target_disp,
+         (const void* origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank, MPI_Aint target_disp,
           int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request));
 MPI_CALL(XBT_PUBLIC int, MPI_Rget_accumulate,
-         (void* origin_addr, int origin_count, MPI_Datatype origin_datatype, void* result_addr, int result_count,
+         (const void* origin_addr, int origin_count, MPI_Datatype origin_datatype, void* result_addr, int result_count,
           MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
           MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request));
-MPI_CALL(XBT_PUBLIC int, MPI_Fetch_and_op, (void* origin_addr, void* result_addr, MPI_Datatype datatype,
+MPI_CALL(XBT_PUBLIC int, MPI_Fetch_and_op, (const void* origin_addr, void* result_addr, MPI_Datatype datatype,
                                             int target_rank, MPI_Aint target_disp, MPI_Op op, MPI_Win win));
 MPI_CALL(XBT_PUBLIC int, MPI_Compare_and_swap,
-         (void* origin_addr, void* compare_addr, void* result_addr, MPI_Datatype datatype, int target_rank,
+         (const void* origin_addr, void* compare_addr, void* result_addr, MPI_Datatype datatype, int target_rank,
           MPI_Aint target_disp, MPI_Win win));
 
 MPI_CALL(XBT_PUBLIC int, MPI_Cart_coords, (MPI_Comm comm, int rank, int maxdims, int* coords));
