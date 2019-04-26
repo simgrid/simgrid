@@ -50,7 +50,7 @@ int PMPI_Group_rank(MPI_Group group, int *rank)
   }
 }
 
-int PMPI_Group_translate_ranks(MPI_Group group1, int n, int *ranks1, MPI_Group group2, int *ranks2)
+int PMPI_Group_translate_ranks(MPI_Group group1, int n, const int *ranks1, MPI_Group group2, int *ranks2)
 {
   if (group1 == MPI_GROUP_NULL || group2 == MPI_GROUP_NULL) {
     return MPI_ERR_GROUP;
@@ -114,7 +114,7 @@ int PMPI_Group_difference(MPI_Group group1, MPI_Group group2, MPI_Group * newgro
   }
 }
 
-int PMPI_Group_incl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
+int PMPI_Group_incl(MPI_Group group, int n, const int *ranks, MPI_Group * newgroup)
 {
   if (group == MPI_GROUP_NULL) {
     return MPI_ERR_GROUP;
@@ -125,7 +125,7 @@ int PMPI_Group_incl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
   }
 }
 
-int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
+int PMPI_Group_excl(MPI_Group group, int n, const int *ranks, MPI_Group * newgroup)
 {
   if (group == MPI_GROUP_NULL) {
     return MPI_ERR_GROUP;

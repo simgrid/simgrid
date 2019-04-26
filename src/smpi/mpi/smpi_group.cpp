@@ -106,7 +106,7 @@ int Group::compare(MPI_Group group2)
   return result;
 }
 
-int Group::incl(int n, int* ranks, MPI_Group* newgroup)
+int Group::incl(int n, const int* ranks, MPI_Group* newgroup)
 {
   int i=0;
   if (n == 0) {
@@ -206,7 +206,7 @@ int Group::difference(MPI_Group group2, MPI_Group* newgroup)
   return MPI_SUCCESS;
 }
 
-int Group::excl(int n, int *ranks, MPI_Group * newgroup){
+int Group::excl(int n, const int *ranks, MPI_Group * newgroup){
   int oldsize = size_;
   int newsize = oldsize - n;
   *newgroup = new  Group(newsize);

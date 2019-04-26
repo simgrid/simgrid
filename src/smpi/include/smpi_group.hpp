@@ -38,8 +38,8 @@ public:
   static void unref(MPI_Group group);
   int size() { return size_; }
   int compare(MPI_Group group2);
-  int incl(int n, int* ranks, MPI_Group* newgroup);
-  int excl(int n, int* ranks, MPI_Group* newgroup);
+  int incl(int n, const int* ranks, MPI_Group* newgroup);
+  int excl(int n, const int* ranks, MPI_Group* newgroup);
   int group_union(MPI_Group group2, MPI_Group* newgroup);
   int intersection(MPI_Group group2, MPI_Group* newgroup);
   int difference(MPI_Group group2, MPI_Group* newgroup);

@@ -492,13 +492,13 @@ MPI_CALL(XBT_PUBLIC int, MPI_Group_free, (MPI_Group * group));
 MPI_CALL(XBT_PUBLIC int, MPI_Group_size, (MPI_Group group, int* size));
 MPI_CALL(XBT_PUBLIC int, MPI_Group_rank, (MPI_Group group, int* rank));
 MPI_CALL(XBT_PUBLIC int, MPI_Group_translate_ranks,
-         (MPI_Group group1, int n, int* ranks1, MPI_Group group2, int* ranks2));
+         (MPI_Group group1, int n, const int* ranks1, MPI_Group group2, int* ranks2));
 MPI_CALL(XBT_PUBLIC int, MPI_Group_compare, (MPI_Group group1, MPI_Group group2, int* result));
 MPI_CALL(XBT_PUBLIC int, MPI_Group_union, (MPI_Group group1, MPI_Group group2, MPI_Group* newgroup));
 MPI_CALL(XBT_PUBLIC int, MPI_Group_intersection, (MPI_Group group1, MPI_Group group2, MPI_Group* newgroup));
 MPI_CALL(XBT_PUBLIC int, MPI_Group_difference, (MPI_Group group1, MPI_Group group2, MPI_Group* newgroup));
-MPI_CALL(XBT_PUBLIC int, MPI_Group_incl, (MPI_Group group, int n, int* ranks, MPI_Group* newgroup));
-MPI_CALL(XBT_PUBLIC int, MPI_Group_excl, (MPI_Group group, int n, int* ranks, MPI_Group* newgroup));
+MPI_CALL(XBT_PUBLIC int, MPI_Group_incl, (MPI_Group group, int n, const int* ranks, MPI_Group* newgroup));
+MPI_CALL(XBT_PUBLIC int, MPI_Group_excl, (MPI_Group group, int n, const int* ranks, MPI_Group* newgroup));
 MPI_CALL(XBT_PUBLIC int, MPI_Group_range_incl, (MPI_Group group, int n, int ranges[][3], MPI_Group* newgroup));
 MPI_CALL(XBT_PUBLIC int, MPI_Group_range_excl, (MPI_Group group, int n, int ranges[][3], MPI_Group* newgroup));
 MPI_CALL(XBT_PUBLIC MPI_Group, MPI_Group_f2c, (MPI_Fint group));
