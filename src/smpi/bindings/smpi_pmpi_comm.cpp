@@ -49,7 +49,7 @@ int PMPI_Comm_get_name (MPI_Comm comm, char* name, int* len)
   }
 }
 
-int PMPI_Comm_set_name (MPI_Comm comm, char* name)
+int PMPI_Comm_set_name (MPI_Comm comm, const char* name)
 {
   if (comm == MPI_COMM_NULL)  {
     return MPI_ERR_COMM;

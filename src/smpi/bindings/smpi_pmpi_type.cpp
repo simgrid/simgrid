@@ -273,7 +273,7 @@ int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, 
 }
 
 
-int PMPI_Type_set_name(MPI_Datatype  datatype, char * name)
+int PMPI_Type_set_name(MPI_Datatype  datatype, const char * name)
 {
   if (datatype == MPI_DATATYPE_NULL)  {
     return MPI_ERR_TYPE;

@@ -418,7 +418,7 @@ MPI_CALL(XBT_PUBLIC double, MPI_Wtime, (void));
 MPI_CALL(XBT_PUBLIC double, MPI_Wtick, (void));
 
 MPI_CALL(XBT_PUBLIC int, MPI_Address, (void* location, MPI_Aint* address));
-MPI_CALL(XBT_PUBLIC int, MPI_Get_address, (void* location, MPI_Aint* address));
+MPI_CALL(XBT_PUBLIC int, MPI_Get_address, (const void* location, MPI_Aint* address));
 MPI_CALL(XBT_PUBLIC int, MPI_Error_class, (int errorcode, int* errorclass));
 
 MPI_CALL(XBT_PUBLIC int, MPI_Attr_delete, (MPI_Comm comm, int keyval));
@@ -464,7 +464,7 @@ MPI_CALL(XBT_PUBLIC int, MPI_Type_create_resized,
          (MPI_Datatype oldtype, MPI_Aint lb, MPI_Aint extent, MPI_Datatype* newtype));
 MPI_CALL(XBT_PUBLIC MPI_Datatype, MPI_Type_f2c, (MPI_Fint datatype));
 MPI_CALL(XBT_PUBLIC MPI_Fint, MPI_Type_c2f, (MPI_Datatype datatype));
-MPI_CALL(XBT_PUBLIC int, MPI_Get_count, (MPI_Status * status, MPI_Datatype datatype, int* count));
+MPI_CALL(XBT_PUBLIC int, MPI_Get_count, (const MPI_Status * status, MPI_Datatype datatype, int* count));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_get_attr, (MPI_Datatype type, int type_keyval, void* attribute_val, int* flag));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_set_attr, (MPI_Datatype type, int type_keyval, void* att));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_delete_attr, (MPI_Datatype type, int comm_keyval));
@@ -473,7 +473,7 @@ MPI_CALL(XBT_PUBLIC int, MPI_Type_create_keyval,
           void* extra_state));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_free_keyval, (int* keyval));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_dup, (MPI_Datatype datatype, MPI_Datatype* newtype));
-MPI_CALL(XBT_PUBLIC int, MPI_Type_set_name, (MPI_Datatype datatype, char* name));
+MPI_CALL(XBT_PUBLIC int, MPI_Type_set_name, (MPI_Datatype datatype, const char* name));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_get_name, (MPI_Datatype datatype, char* name, int* len));
 
 MPI_CALL(XBT_PUBLIC int, MPI_Pack,
@@ -507,7 +507,7 @@ MPI_CALL(XBT_PUBLIC MPI_Fint, MPI_Group_c2f, (MPI_Group group));
 MPI_CALL(XBT_PUBLIC int, MPI_Comm_rank, (MPI_Comm comm, int* rank));
 MPI_CALL(XBT_PUBLIC int, MPI_Comm_size, (MPI_Comm comm, int* size));
 MPI_CALL(XBT_PUBLIC int, MPI_Comm_get_name, (MPI_Comm comm, char* name, int* len));
-MPI_CALL(XBT_PUBLIC int, MPI_Comm_set_name, (MPI_Comm comm, char* name));
+MPI_CALL(XBT_PUBLIC int, MPI_Comm_set_name, (MPI_Comm comm, const char* name));
 MPI_CALL(XBT_PUBLIC int, MPI_Comm_dup, (MPI_Comm comm, MPI_Comm* newcomm));
 MPI_CALL(XBT_PUBLIC int, MPI_Comm_get_attr, (MPI_Comm comm, int comm_keyval, void* attribute_val, int* flag));
 MPI_CALL(XBT_PUBLIC int, MPI_Comm_set_attr, (MPI_Comm comm, int comm_keyval, void* attribute_val));
@@ -850,15 +850,15 @@ MPI_CALL(XBT_PUBLIC int, MPI_Comm_dup_with_info, (MPI_Comm comm, MPI_Info info, 
 MPI_CALL(XBT_PUBLIC int, MPI_Comm_split_type,
          (MPI_Comm comm, int split_type, int key, MPI_Info info, MPI_Comm* newcomm));
 MPI_CALL(XBT_PUBLIC int, MPI_Comm_connect,
-         (char* port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm* newcomm));
+         (const char* port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm* newcomm));
 MPI_CALL(XBT_PUBLIC int, MPI_Unpublish_name, (char* service_name, MPI_Info info, char* port_name));
 MPI_CALL(XBT_PUBLIC int, MPI_Publish_name, (char* service_name, MPI_Info info, char* port_name));
 MPI_CALL(XBT_PUBLIC int, MPI_Lookup_name, (char* service_name, MPI_Info info, char* port_name));
 MPI_CALL(XBT_PUBLIC int, MPI_Comm_join, (int fd, MPI_Comm* intercomm));
 MPI_CALL(XBT_PUBLIC int, MPI_Open_port, (MPI_Info info, char* port_name));
-MPI_CALL(XBT_PUBLIC int, MPI_Close_port, (char* port_name));
-MPI_CALL(XBT_PUBLIC int, MPI_Comm_accept, (char* port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm* newcomm));
-MPI_CALL(XBT_PUBLIC int, MPI_Comm_spawn, (char* command, char** argv, int maxprocs, MPI_Info info, int root,
+MPI_CALL(XBT_PUBLIC int, MPI_Close_port, (const char* port_name));
+MPI_CALL(XBT_PUBLIC int, MPI_Comm_accept, (const char* port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm* newcomm));
+MPI_CALL(XBT_PUBLIC int, MPI_Comm_spawn, (const char* command, char** argv, int maxprocs, MPI_Info info, int root,
                                           MPI_Comm comm, MPI_Comm* intercomm, int* array_of_errcodes));
 MPI_CALL(XBT_PUBLIC int, MPI_Comm_spawn_multiple,
          (int count, char** array_of_commands, char*** array_of_argv, int* array_of_maxprocs, MPI_Info* array_of_info,

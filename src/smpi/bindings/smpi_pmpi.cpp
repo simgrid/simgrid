@@ -152,9 +152,9 @@ int PMPI_Address(void *location, MPI_Aint * address)
   }
 }
 
-int PMPI_Get_address(void *location, MPI_Aint * address)
+int PMPI_Get_address(const void *location, MPI_Aint * address)
 {
-  return PMPI_Address(location, address);
+  return PMPI_Address(const_cast<void*>(location), address);
 }
 
 int PMPI_Get_processor_name(char *name, int *resultlen)
@@ -167,7 +167,7 @@ int PMPI_Get_processor_name(char *name, int *resultlen)
   return MPI_SUCCESS;
 }
 
-int PMPI_Get_count(MPI_Status * status, MPI_Datatype datatype, int *count)
+int PMPI_Get_count(const MPI_Status * status, MPI_Datatype datatype, int *count)
 {
   if (status == nullptr || count == nullptr) {
     return MPI_ERR_ARG;

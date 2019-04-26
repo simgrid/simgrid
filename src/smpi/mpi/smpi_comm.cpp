@@ -130,7 +130,7 @@ void Comm::get_name (char* name, int* len)
   }
 }
 
-void Comm::set_name (char* name)
+void Comm::set_name (const char* name)
 {
   if (this == MPI_COMM_UNINITIALIZED){
     smpi_process()->comm_world()->set_name(name);

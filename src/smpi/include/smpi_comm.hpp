@@ -44,7 +44,7 @@ public:
   int size();
   int rank();
   void get_name(char* name, int* len);
-  void set_name(char* name);
+  void set_name(const char* name);
   MPI_Info info();
   void set_info( MPI_Info info);
   void set_leaders_comm(MPI_Comm leaders);

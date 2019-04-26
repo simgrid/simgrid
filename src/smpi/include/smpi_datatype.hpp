@@ -121,7 +121,7 @@ public:
   int extent(MPI_Aint* lb, MPI_Aint* extent);
   MPI_Aint get_extent() { return ub_ - lb_; };
   void get_name(char* name, int* length);
-  void set_name(char* name);
+  void set_name(const char* name);
   static int copy(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                   MPI_Datatype recvtype);
   virtual void serialize(const void* noncontiguous, void* contiguous, int count);

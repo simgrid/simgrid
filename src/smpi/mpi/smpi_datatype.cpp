@@ -244,7 +244,7 @@ void Datatype::get_name(char* name, int* length){
   strncpy(name, name_, *length+1);
 }
 
-void Datatype::set_name(char* name){
+void Datatype::set_name(const char* name){
   if(name_!=nullptr &&  (flags_ & DT_FLAG_PREDEFINED) == 0)
     xbt_free(name_);
   name_ = xbt_strdup(name);
