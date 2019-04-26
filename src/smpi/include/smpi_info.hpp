@@ -25,12 +25,12 @@ public:
   ~Info() = default;
   void ref();
   static void unref(MPI_Info info);
-  void set(char* key, char* value) { map_[key] = value; }
-  int get(char* key, int valuelen, char* value, int* flag);
-  int remove(char* key);
+  void set(const char* key, const char* value) { map_[key] = value; }
+  int get(const char* key, int valuelen, char* value, int* flag);
+  int remove(const char* key);
   int get_nkeys(int* nkeys);
   int get_nthkey(int n, char* key);
-  int get_valuelen(char* key, int* valuelen, int* flag);
+  int get_valuelen(const char* key, int* valuelen, int* flag);
   static Info* f2c(int id);
 };
 

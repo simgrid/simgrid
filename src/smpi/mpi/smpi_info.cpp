@@ -21,7 +21,7 @@ void Info::unref(Info* info){
   }
 }
 
-int Info::get(char *key, int valuelen, char *value, int *flag){
+int Info::get(const char *key, int valuelen, char *value, int *flag){
   *flag=false;
   auto val = map_.find(key);
   if (val != map_.end()) {
@@ -37,7 +37,7 @@ int Info::get(char *key, int valuelen, char *value, int *flag){
   }
 }
 
-int Info::remove(char *key){
+int Info::remove(const char *key){
   if (map_.erase(key) == 0)
     return MPI_ERR_INFO_NOKEY;
   else
@@ -61,7 +61,7 @@ int Info::get_nthkey(int n, char *key){
   return MPI_ERR_ARG;
 }
 
-int Info::get_valuelen(char *key, int *valuelen, int *flag){
+int Info::get_valuelen(const char *key, int *valuelen, int *flag){
   *flag=false;
   auto val = map_.find(key);
   if (val != map_.end()) {
