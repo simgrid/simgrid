@@ -17,7 +17,7 @@ int PMPI_Info_create( MPI_Info *info){
   return MPI_SUCCESS;
 }
 
-int PMPI_Info_set( MPI_Info info, char *key, char *value){
+int PMPI_Info_set( MPI_Info info, const char *key, const char *value){
   if (info == nullptr || key == nullptr || value == nullptr)
     return MPI_ERR_ARG;
   info->set(key, value);
@@ -32,7 +32,7 @@ int PMPI_Info_free( MPI_Info *info){
   return MPI_SUCCESS;
 }
 
-int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
+int PMPI_Info_get(MPI_Info info, const char *key,int valuelen, char *value, int *flag){
   *flag=false;
   if (info == nullptr || key == nullptr || valuelen <0)
     return MPI_ERR_ARG;
@@ -48,7 +48,7 @@ int PMPI_Info_dup(MPI_Info info, MPI_Info *newinfo){
   return MPI_SUCCESS;
 }
 
-int PMPI_Info_delete(MPI_Info info, char *key){
+int PMPI_Info_delete(MPI_Info info, const char *key){
   if (info == nullptr || key==nullptr)
     return MPI_ERR_ARG;
   return info->remove(key);
@@ -66,7 +66,7 @@ int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
   return info->get_nthkey(n, key);
 }
 
-int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
+int PMPI_Info_get_valuelen( MPI_Info info, const char *key, int *valuelen, int *flag){
   *flag=false;
   if (info == nullptr || key == nullptr || valuelen==nullptr)
     return MPI_ERR_ARG;

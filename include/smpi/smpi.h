@@ -637,14 +637,14 @@ MPI_CALL(XBT_PUBLIC int, MPI_Alltoallw,
 MPI_CALL(XBT_PUBLIC int, MPI_Reduce_local, (void* inbuf, void* inoutbuf, int count, MPI_Datatype datatype, MPI_Op op));
 
 MPI_CALL(XBT_PUBLIC int, MPI_Info_create, (MPI_Info * info));
-MPI_CALL(XBT_PUBLIC int, MPI_Info_set, (MPI_Info info, char* key, char* value));
-MPI_CALL(XBT_PUBLIC int, MPI_Info_get, (MPI_Info info, char* key, int valuelen, char* value, int* flag));
+MPI_CALL(XBT_PUBLIC int, MPI_Info_set, (MPI_Info info, const char* key, const char* value));
+MPI_CALL(XBT_PUBLIC int, MPI_Info_get, (MPI_Info info, const char* key, int valuelen, char* value, int* flag));
 MPI_CALL(XBT_PUBLIC int, MPI_Info_free, (MPI_Info * info));
-MPI_CALL(XBT_PUBLIC int, MPI_Info_delete, (MPI_Info info, char* key));
+MPI_CALL(XBT_PUBLIC int, MPI_Info_delete, (MPI_Info info, const char* key));
 MPI_CALL(XBT_PUBLIC int, MPI_Info_dup, (MPI_Info info, MPI_Info* newinfo));
 MPI_CALL(XBT_PUBLIC int, MPI_Info_get_nkeys, (MPI_Info info, int* nkeys));
 MPI_CALL(XBT_PUBLIC int, MPI_Info_get_nthkey, (MPI_Info info, int n, char* key));
-MPI_CALL(XBT_PUBLIC int, MPI_Info_get_valuelen, (MPI_Info info, char* key, int* valuelen, int* flag));
+MPI_CALL(XBT_PUBLIC int, MPI_Info_get_valuelen, (MPI_Info info, const char* key, int* valuelen, int* flag));
 MPI_CALL(XBT_PUBLIC MPI_Info, MPI_Info_f2c, (MPI_Fint info));
 MPI_CALL(XBT_PUBLIC MPI_Fint, MPI_Info_c2f, (MPI_Info info));
 
