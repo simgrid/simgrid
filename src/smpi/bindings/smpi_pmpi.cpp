@@ -142,7 +142,7 @@ double PMPI_Wtick()
   return sg_maxmin_precision;
 }
 
-int PMPI_Address(void *location, MPI_Aint * address)
+int PMPI_Address(const void* location, MPI_Aint* address)
 {
   if (address==nullptr) {
     return MPI_ERR_ARG;
@@ -154,7 +154,7 @@ int PMPI_Address(void *location, MPI_Aint * address)
 
 int PMPI_Get_address(const void *location, MPI_Aint * address)
 {
-  return PMPI_Address(const_cast<void*>(location), address);
+  return PMPI_Address(location, address);
 }
 
 int PMPI_Get_processor_name(char *name, int *resultlen)

@@ -417,7 +417,7 @@ MPI_CALL(XBT_PUBLIC int, MPI_Free_mem, (void* base));
 MPI_CALL(XBT_PUBLIC double, MPI_Wtime, (void));
 MPI_CALL(XBT_PUBLIC double, MPI_Wtick, (void));
 
-MPI_CALL(XBT_PUBLIC int, MPI_Address, (void* location, MPI_Aint* address));
+MPI_CALL(XBT_PUBLIC int, MPI_Address, (const void* location, MPI_Aint* address));
 MPI_CALL(XBT_PUBLIC int, MPI_Get_address, (const void* location, MPI_Aint* address));
 MPI_CALL(XBT_PUBLIC int, MPI_Error_class, (int errorcode, int* errorclass));
 
