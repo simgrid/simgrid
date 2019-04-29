@@ -25,7 +25,7 @@ public:
   bool is_fortran_op() { return is_fortran_op_; }
   // tell that we were created from fortran, so we need to translate the type to fortran when called
   void set_fortran_op() { is_fortran_op_ = true; }
-  void apply(const void* invec, void* inoutvec, int* len, MPI_Datatype datatype);
+  void apply(const void* invec, void* inoutvec, const int* len, MPI_Datatype datatype);
   static Op* f2c(int id);
   void ref();
   static void unref(MPI_Op* op);

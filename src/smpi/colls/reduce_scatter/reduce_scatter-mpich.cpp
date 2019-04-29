@@ -93,11 +93,11 @@ int Coll_reduce_scatter_mpich_pair::reduce_scatter(const void *sendbuf, void *re
             if (is_commutative || (src < rank)) {
                 if (sendbuf != MPI_IN_PLACE) {
                   if (op != MPI_OP_NULL)
-                    op->apply(tmp_recvbuf, recvbuf, &((const_cast<int*>(recvcounts))[rank]), datatype);
+                    op->apply(tmp_recvbuf, recvbuf, &recvcounts[rank], datatype);
                 }
                 else {
                   if (op != MPI_OP_NULL)
-                    op->apply(tmp_recvbuf, ((char*)recvbuf + disps[rank] * extent), &((const_cast<int*>(recvcounts))[rank]), datatype);
+                    op->apply(tmp_recvbuf, ((char*)recvbuf + disps[rank] * extent), &recvcounts[rank], datatype);
                   /* we can't store the result at the beginning of
                      recvbuf right here because there is useful data
                      there that other process/processes need. at the
@@ -108,7 +108,7 @@ int Coll_reduce_scatter_mpich_pair::reduce_scatter(const void *sendbuf, void *re
             else {
                 if (sendbuf != MPI_IN_PLACE) {
                   if (op != MPI_OP_NULL)
-                    op->apply(recvbuf, tmp_recvbuf, &((const_cast<int*>(recvcounts))[rank]), datatype);
+                    op->apply(recvbuf, tmp_recvbuf, &recvcounts[rank], datatype);
                   /* copy result back into recvbuf */
                   mpi_errno =
                       Datatype::copy(tmp_recvbuf, recvcounts[rank], datatype, recvbuf, recvcounts[rank], datatype);
@@ -117,7 +117,7 @@ int Coll_reduce_scatter_mpich_pair::reduce_scatter(const void *sendbuf, void *re
                 }
                 else {
                   if (op != MPI_OP_NULL)
-                    op->apply(((char*)recvbuf + disps[rank] * extent), tmp_recvbuf, &((const_cast<int*>(recvcounts))[rank]), datatype);
+                    op->apply(((char*)recvbuf + disps[rank] * extent), tmp_recvbuf, &recvcounts[rank], datatype);
                   /* copy result back into recvbuf */
                   mpi_errno = Datatype::copy(tmp_recvbuf, recvcounts[rank], datatype,
                                              ((char*)recvbuf + disps[rank] * extent), recvcounts[rank], datatype);

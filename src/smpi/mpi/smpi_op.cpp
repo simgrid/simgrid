@@ -219,7 +219,7 @@ CREATE_MPI_OP(MPI_NO_OP, no_func);
 namespace simgrid{
 namespace smpi{
 
-void Op::apply(const void *invec, void *inoutvec, int *len, MPI_Datatype datatype)
+void Op::apply(const void* invec, void* inoutvec, const int* len, MPI_Datatype datatype)
 {
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
@@ -229,13 +229,13 @@ void Op::apply(const void *invec, void *inoutvec, int *len, MPI_Datatype datatyp
 
   if (not smpi_process()->replaying() && *len > 0) {
     if (not is_fortran_op_)
-      this->func_(const_cast<void*>(invec), inoutvec, len, &datatype);
+      this->func_(const_cast<void*>(invec), inoutvec, const_cast<int*>(len), &datatype);
     else{
       XBT_DEBUG("Applying operation of length %d from %p and from/to %p", *len, invec, inoutvec);
       int tmp = datatype->c2f();
       /* Unfortunately, the C and Fortran version of the MPI standard do not agree on the type here,
          thus the reinterpret_cast. */
-      this->func_(const_cast<void*>(invec), inoutvec, len, reinterpret_cast<MPI_Datatype*>(&tmp) );
+      this->func_(const_cast<void*>(invec), inoutvec, const_cast<int*>(len), reinterpret_cast<MPI_Datatype*>(&tmp));
     }
   }
 }
