@@ -55,8 +55,7 @@ Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(const void *sbuf
     int i, rank, size, count, err = MPI_SUCCESS;
     int tmp_size = 1, remain = 0, tmp_rank;
     ptrdiff_t true_lb, true_extent, lb, extent, buf_size;
-    char *recv_buf = NULL, *recv_buf_free = NULL;
-    char *result_buf = NULL, *result_buf_free = NULL;
+    unsigned char *result_buf = nullptr, *result_buf_free = nullptr;
 
     /* Initialize */
     rank = comm->rank();
@@ -92,17 +91,15 @@ Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(const void *sbuf
     }
 
     /* Allocate temporary receive buffer. */
-    recv_buf_free = (char*) smpi_get_tmp_recvbuffer(buf_size);
-
-    recv_buf = recv_buf_free - lb;
+    unsigned char* recv_buf_free = smpi_get_tmp_recvbuffer(buf_size);
+    unsigned char* recv_buf      = recv_buf_free - lb;
     if (NULL == recv_buf_free) {
         err = MPI_ERR_OTHER;
         goto cleanup;
     }
 
     /* allocate temporary buffer for results */
-    result_buf_free = (char*) smpi_get_tmp_sendbuffer(buf_size);
-
+    result_buf_free = smpi_get_tmp_sendbuffer(buf_size);
     result_buf = result_buf_free - lb;
 
     /* copy local buffer into the temporary results */
@@ -359,8 +356,8 @@ Coll_reduce_scatter_ompi_ring::reduce_scatter(const void *sbuf, void *rbuf, cons
 {
     int ret, line, rank, size, i, k, recv_from, send_to, total_count, max_block_count;
     int inbi;
-    char *tmpsend = NULL, *tmprecv = NULL, *accumbuf = NULL, *accumbuf_free = NULL;
-    char *inbuf_free[2] = {NULL, NULL}, *inbuf[2] = {NULL, NULL};
+    unsigned char *tmpsend = NULL, *tmprecv = NULL, *accumbuf = NULL, *accumbuf_free = NULL;
+    unsigned char *inbuf_free[2] = {NULL, NULL}, *inbuf[2] = {NULL, NULL};
     ptrdiff_t true_lb, true_extent, lb, extent, max_real_segsize;
     MPI_Request reqs[2] = {NULL, NULL};
 
@@ -404,17 +401,21 @@ Coll_reduce_scatter_ompi_ring::reduce_scatter(const void *sbuf, void *rbuf, cons
 
     max_real_segsize = true_extent + (ptrdiff_t)(max_block_count - 1) * extent;
 
-    accumbuf_free = (char*)smpi_get_tmp_recvbuffer(true_extent + (ptrdiff_t)(total_count - 1) * extent);
+    accumbuf_free = smpi_get_tmp_recvbuffer(true_extent + (ptrdiff_t)(total_count - 1) * extent);
     if (NULL == accumbuf_free) { ret = -1; line = __LINE__; goto error_hndl; }
     accumbuf = accumbuf_free - lb;
 
-    inbuf_free[0] = (char*)smpi_get_tmp_sendbuffer(max_real_segsize);
+    inbuf_free[0] = smpi_get_tmp_sendbuffer(max_real_segsize);
     if (NULL == inbuf_free[0]) { ret = -1; line = __LINE__; goto error_hndl; }
     inbuf[0] = inbuf_free[0] - lb;
     if (size > 2) {
-        inbuf_free[1] = (char*)smpi_get_tmp_sendbuffer(max_real_segsize);
-        if (NULL == inbuf_free[1]) { ret = -1; line = __LINE__; goto error_hndl; }
-        inbuf[1] = inbuf_free[1] - lb;
+      inbuf_free[1] = smpi_get_tmp_sendbuffer(max_real_segsize);
+      if (NULL == inbuf_free[1]) {
+        ret  = -1;
+        line = __LINE__;
+        goto error_hndl;
+      }
+      inbuf[1] = inbuf_free[1] - lb;
     }
 
     /* Handle MPI_IN_PLACE for size > 1 */

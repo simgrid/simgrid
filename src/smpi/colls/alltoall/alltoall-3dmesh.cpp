@@ -58,8 +58,6 @@ int Coll_alltoall_3dmesh::alltoall(const void *send_buff, int send_count,
   int my_z, two_dsize, my_row_base, my_col_base, my_z_base, src_row_base;
   int src_z_base, send_offset, recv_offset, tag = COLL_TAG_ALLTOALL;
 
-  char *tmp_buff1, *tmp_buff2;
-
   rank = comm->rank();
   num_procs = comm->size();
   extent = send_type->get_extent();
@@ -82,8 +80,8 @@ int Coll_alltoall_3dmesh::alltoall(const void *send_buff, int send_count,
 
   block_size = extent * send_count;
 
-  tmp_buff1 = (char *) smpi_get_tmp_sendbuffer(block_size * num_procs * two_dsize);
-  tmp_buff2 = (char *) smpi_get_tmp_recvbuffer(block_size * two_dsize);
+  unsigned char* tmp_buff1 = smpi_get_tmp_sendbuffer(block_size * num_procs * two_dsize);
+  unsigned char* tmp_buff2 = smpi_get_tmp_recvbuffer(block_size * two_dsize);
 
   MPI_Status* statuses = new MPI_Status[num_reqs];
   MPI_Request* reqs    = new MPI_Request[num_reqs];

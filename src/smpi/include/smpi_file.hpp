@@ -160,7 +160,7 @@ class File{
     }
     XBT_CDEBUG(smpi_pmpi, "will have to access %lld from my chunk", totreads);
 
-    char* sendbuf= static_cast<char *>(smpi_get_tmp_sendbuffer(total_sent));
+    unsigned char* sendbuf = smpi_get_tmp_sendbuffer(total_sent);
 
     if(totreads>0){
       seek(min_offset, MPI_SEEK_SET);

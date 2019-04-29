@@ -25,7 +25,6 @@ int Coll_alltoall_mvapich2::alltoall( const void *sendbuf, int sendcount,
     init_mv2_alltoall_tables_stampede();
 
   int sendtype_size, recvtype_size, comm_size;
-  char * tmp_buf = NULL;
   int mpi_errno=MPI_SUCCESS;
   int range = 0;
   int range_threshold = 0;
@@ -63,16 +62,11 @@ int Coll_alltoall_mvapich2::alltoall( const void *sendbuf, int sendcount,
           mv2_alltoall_thresholds_table[conf_index][range].in_place_algo_table[range_threshold].min
           ||nbytes > mv2_alltoall_thresholds_table[conf_index][range].in_place_algo_table[range_threshold].max
       ) {
-          tmp_buf = (char *)smpi_get_tmp_sendbuffer( comm_size * recvcount * recvtype_size );
-          Datatype::copy((char *)recvbuf,
-              comm_size*recvcount, recvtype,
-              (char *)tmp_buf,
-              comm_size*recvcount, recvtype);
+        unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(comm_size * recvcount * recvtype_size);
+        Datatype::copy(recvbuf, comm_size * recvcount, recvtype, tmp_buf, comm_size * recvcount, recvtype);
 
-          mpi_errno = MV2_Alltoall_function(tmp_buf, recvcount, recvtype,
-              recvbuf, recvcount, recvtype,
-              comm );
-          smpi_free_tmp_buffer(tmp_buf);
+        mpi_errno = MV2_Alltoall_function(tmp_buf, recvcount, recvtype, recvbuf, recvcount, recvtype, comm);
+        smpi_free_tmp_buffer(tmp_buf);
       } else {
           mpi_errno = MPIR_Alltoall_inplace_MV2(sendbuf, sendcount, sendtype,
               recvbuf, recvcount, recvtype,
@@ -482,7 +476,7 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
     // int is_homogeneous, is_contig;
     MPI_Aint type_size;
     //, position;
-    // void *tmp_buf = NULL;
+    // unsigned char *tmp_buf = NULL;
     MPI_Comm shmem_comm;
     //MPID_Datatype *dtp;
 
@@ -593,16 +587,16 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
 #endif
      if (two_level_bcast == 1) {
        // if (not is_contig || not is_homogeneous) {
-       //   tmp_buf = (void*)smpi_get_tmp_sendbuffer(nbytes);
+//   tmp_buf = smpi_get_tmp_sendbuffer(nbytes);
 
-         /*            position = 0;*/
-         /*            if (rank == root) {*/
-         /*                mpi_errno =*/
-         /*                    MPIR_Pack_impl(buffer, count, datatype, tmp_buf, nbytes, &position);*/
-         /*                if (mpi_errno)*/
-         /*                    MPIU_ERR_POP(mpi_errno);*/
-         /*            }*/
-       // }
+/*            position = 0;*/
+/*            if (rank == root) {*/
+/*                mpi_errno =*/
+/*                    MPIR_Pack_impl(buffer, count, datatype, tmp_buf, nbytes, &position);*/
+/*                if (mpi_errno)*/
+/*                    MPIU_ERR_POP(mpi_errno);*/
+/*            }*/
+// }
 #ifdef CHANNEL_MRAIL_GEN2
         if ((mv2_enable_zcpy_bcast == 1) &&
               (&MPIR_Pipelined_Bcast_Zcpy_MV2 == MV2_Bcast_function)) {

@@ -44,8 +44,6 @@ Coll_alltoall_bruck::alltoall(const void *send_buff, int send_count,
   int i, src, dst, rank, num_procs, count, block, position;
   int pack_size, tag = COLL_TAG_ALLTOALL, pof2 = 1;
 
-
-  char *tmp_buff;
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;
 
@@ -54,7 +52,7 @@ Coll_alltoall_bruck::alltoall(const void *send_buff, int send_count,
 
   extent = recv_type->get_extent();
 
-  tmp_buff = (char *) smpi_get_tmp_sendbuffer(num_procs * recv_count * extent);
+  unsigned char* tmp_buff = smpi_get_tmp_sendbuffer(num_procs * recv_count * extent);
   int* disps         = new int[num_procs];
   int* blocks_length = new int[num_procs];
 

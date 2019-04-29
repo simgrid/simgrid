@@ -60,8 +60,7 @@ int Coll_reduce_NTSL::reduce(const void *buf, void *rbuf, int count,
      }
    */
 
-  char *tmp_buf;
-  tmp_buf = (char *) smpi_get_tmp_sendbuffer(count * extent);
+  unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(count * extent);
 
   Request::sendrecv(buf, count, datatype, rank, tag, rbuf, count, datatype, rank,
                tag, comm, &status);
@@ -92,8 +91,7 @@ int Coll_reduce_NTSL::reduce(const void *buf, void *rbuf, int count,
     /* root recv data */
     if (rank == root) {
       for (i = 0; i < pipe_length; i++) {
-        recv_request_array[i] = Request::irecv((char *) tmp_buf + (i * increment), segment, datatype, from,
-                  (tag + i), comm);
+        recv_request_array[i] = Request::irecv(tmp_buf + (i * increment), segment, datatype, from, (tag + i), comm);
       }
       for (i = 0; i < pipe_length; i++) {
         Request::wait(&recv_request_array[i], &status);
@@ -114,8 +112,7 @@ int Coll_reduce_NTSL::reduce(const void *buf, void *rbuf, int count,
     /* intermediate nodes relay (receive, reduce, then send) data */
     else {
       for (i = 0; i < pipe_length; i++) {
-        recv_request_array[i] = Request::irecv((char *) tmp_buf + (i * increment), segment, datatype, from,
-                  (tag + i), comm);
+        recv_request_array[i] = Request::irecv(tmp_buf + (i * increment), segment, datatype, from, (tag + i), comm);
       }
       for (i = 0; i < pipe_length; i++) {
         Request::wait(&recv_request_array[i], &status);

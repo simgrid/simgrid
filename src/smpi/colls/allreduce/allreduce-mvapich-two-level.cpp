@@ -135,7 +135,7 @@ int Coll_allreduce_mvapich2_two_level::allreduce(const void *sendbuf,
         }
 
         if (local_size != total_size) {
-          void* sendtmpbuf = (char *)smpi_get_tmp_sendbuffer(count*datatype->get_extent());
+          unsigned char* sendtmpbuf = smpi_get_tmp_sendbuffer(count * datatype->get_extent());
           Datatype::copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
             /* inter-node allreduce */
             if(MV2_Allreducection == &MPIR_Allreduce_pt2pt_rd_MV2){

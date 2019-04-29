@@ -151,7 +151,7 @@ int Colls::scan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype data
 
   // Send/Recv buffers to/from others
   MPI_Request* requests = new MPI_Request[size - 1];
-  void** tmpbufs        = new void*[rank];
+  unsigned char** tmpbufs = new unsigned char*[rank];
   int index = 0;
   for (int other = 0; other < rank; other++) {
     tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);
@@ -209,7 +209,7 @@ int Colls::exscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype da
 
   // Send/Recv buffers to/from others
   MPI_Request* requests = new MPI_Request[size - 1];
-  void** tmpbufs        = new void*[rank];
+  unsigned char** tmpbufs = new unsigned char*[rank];
   int index = 0;
   for (int other = 0; other < rank; other++) {
     tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);

@@ -43,7 +43,7 @@ int Coll_reduce_scatter_default::reduce_scatter(const void *sendbuf, void *recvb
     displs[i] = count;
     count += recvcounts[i];
   }
-  void *tmpbuf = static_cast<void*>(smpi_get_tmp_sendbuffer(count*datatype->get_extent()));
+  unsigned char* tmpbuf = smpi_get_tmp_sendbuffer(count * datatype->get_extent());
 
   int ret = Coll_reduce_default::reduce(sendbuf, tmpbuf, count, datatype, op, 0, comm);
   if(ret==MPI_SUCCESS)

@@ -16,13 +16,12 @@ int Coll_allreduce_rab_rdb::allreduce(const void *sbuff, void *rbuff, int count,
   int dst, newrank, rem, newdst, recv_cnt;
   MPI_Aint extent;
   MPI_Status status;
-  void *tmp_buf = NULL;
 
   unsigned int nprocs = comm->size();
   int rank = comm->rank();
 
   extent = dtype->get_extent();
-  tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
+  unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(count * extent);
 
   Datatype::copy(sbuff, count, dtype, rbuff, count, dtype);
 
@@ -115,18 +114,17 @@ int Coll_allreduce_rab_rdb::allreduce(const void *sbuff, void *rbuff, int count,
       }
 
       // Send data from recvbuf. Recv into tmp_buf
-      Request::sendrecv((char *) rbuff + disps[send_idx] * extent, send_cnt,
-                   dtype, dst, tag,
-                   (char *) tmp_buf + disps[recv_idx] * extent, recv_cnt,
-                   dtype, dst, tag, comm, &status);
+      Request::sendrecv(static_cast<char*>(rbuff) + disps[send_idx] * extent, send_cnt, dtype, dst, tag,
+                        tmp_buf + disps[recv_idx] * extent, recv_cnt, dtype, dst, tag, comm, &status);
 
       // tmp_buf contains data received in this step.
       // recvbuf contains data accumulated so far
 
       // This algorithm is used only for predefined ops
       // and predefined ops are always commutative.
-      if(op!=MPI_OP_NULL) op->apply( (char *) tmp_buf + disps[recv_idx] * extent,
-                        (char *) rbuff + disps[recv_idx] * extent, &recv_cnt, dtype);
+      if (op != MPI_OP_NULL)
+        op->apply(tmp_buf + disps[recv_idx] * extent, static_cast<char*>(rbuff) + disps[recv_idx] * extent, &recv_cnt,
+                  dtype);
 
       // update send_idx for next iteration
       send_idx = recv_idx;

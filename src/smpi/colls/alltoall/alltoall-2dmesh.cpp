@@ -63,7 +63,6 @@ int Coll_alltoall_2dmesh::alltoall(const void *send_buff, int send_count,
   MPI_Status s;
   MPI_Aint extent;
 
-  char *tmp_buff1, *tmp_buff2;
   int i, j, src, dst, rank, num_procs, count, num_reqs;
   int X, Y, send_offset, recv_offset;
   int my_row_base, my_col_base, src_row_base, block_size;
@@ -81,8 +80,8 @@ int Coll_alltoall_2dmesh::alltoall(const void *send_buff, int send_count,
 
   block_size = extent * send_count;
 
-  tmp_buff1 = (char *) smpi_get_tmp_sendbuffer(block_size * num_procs * Y);
-  tmp_buff2 = (char *) smpi_get_tmp_recvbuffer(block_size * Y);
+  unsigned char* tmp_buff1 = smpi_get_tmp_sendbuffer(block_size * num_procs * Y);
+  unsigned char* tmp_buff2 = smpi_get_tmp_recvbuffer(block_size * Y);
 
   num_reqs = X;
   if (Y > X)

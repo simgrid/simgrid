@@ -15,7 +15,6 @@ int Coll_allreduce_rdb::allreduce(const void *sbuff, void *rbuff, int count,
   int mask, dst, pof2, newrank, rem, newdst;
   MPI_Aint extent, lb;
   MPI_Status status;
-  void *tmp_buf = NULL;
   /*
      #ifdef MPICH2_REDUCTION
      MPI_User_function * uop = MPIR_Op_table[op % 16 - 1];
@@ -30,7 +29,7 @@ int Coll_allreduce_rdb::allreduce(const void *sbuff, void *rbuff, int count,
   rank=comm->rank();
 
   dtype->extent(&lb, &extent);
-  tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
+  unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(count * extent);
 
   Request::sendrecv(sbuff, count, dtype, rank, 500,
                rbuff, count, dtype, rank, 500, comm, &status);

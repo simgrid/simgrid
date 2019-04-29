@@ -136,26 +136,25 @@ int Coll_gather_mvapich2_two_level::gather(const void *sendbuf,
                                             int root,
                                             MPI_Comm comm)
 {
-    void *leader_gather_buf = NULL;
-    int comm_size, rank;
-    int local_rank, local_size;
-    int leader_comm_rank = -1, leader_comm_size = 0;
-    int mpi_errno = MPI_SUCCESS;
-    int recvtype_size = 0, sendtype_size = 0, nbytes=0;
-    int leader_root, leader_of_root;
-    MPI_Status status;
-    MPI_Aint sendtype_extent = 0, recvtype_extent = 0;  /* Datatype extent */
-    MPI_Aint true_lb = 0, sendtype_true_extent = 0, recvtype_true_extent = 0;
-    MPI_Comm shmem_comm, leader_comm;
-    void* tmp_buf = NULL;
+  unsigned char* leader_gather_buf = NULL;
+  int comm_size, rank;
+  int local_rank, local_size;
+  int leader_comm_rank = -1, leader_comm_size = 0;
+  int mpi_errno     = MPI_SUCCESS;
+  int recvtype_size = 0, sendtype_size = 0, nbytes = 0;
+  int leader_root, leader_of_root;
+  MPI_Status status;
+  MPI_Aint sendtype_extent = 0, recvtype_extent = 0; /* Datatype extent */
+  MPI_Aint true_lb = 0, sendtype_true_extent = 0, recvtype_true_extent = 0;
+  MPI_Comm shmem_comm, leader_comm;
+  unsigned char* tmp_buf = NULL;
 
+  // if not set (use of the algo directly, without mvapich2 selector)
+  if (MV2_Gather_intra_node_function == NULL)
+    MV2_Gather_intra_node_function = Coll_gather_mpich::gather;
 
-    //if not set (use of the algo directly, without mvapich2 selector)
-    if(MV2_Gather_intra_node_function==NULL)
-      MV2_Gather_intra_node_function= Coll_gather_mpich::gather;
-
-    if(comm->get_leaders_comm()==MPI_COMM_NULL){
-      comm->init_smp();
+  if (comm->get_leaders_comm() == MPI_COMM_NULL) {
+    comm->init_smp();
     }
     comm_size = comm->size();
     rank = comm->rank();

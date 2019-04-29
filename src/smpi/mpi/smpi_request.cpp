@@ -878,7 +878,7 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
             int count=(*request)->size_/ (*request)->old_type_->size();
             (*request)->op_->apply(buf, (*request)->buf_, &count, (*request)->old_type_);
           }
-          smpi_free_tmp_buffer(buf);
+          smpi_free_tmp_buffer(static_cast<unsigned char*>(buf));
         }
       }
       if((*request)->nbc_requests_[i]!=MPI_REQUEST_NULL)

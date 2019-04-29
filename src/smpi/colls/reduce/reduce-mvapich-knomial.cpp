@@ -173,11 +173,11 @@ int Coll_reduce_mvapich2_knomial::reduce (
            &dst, &expected_send_count, &expected_recv_count, &src_array);
 
     if(expected_recv_count > 0 ) {
-      void** tmp_buf        = new void*[expected_recv_count];
+      unsigned char** tmp_buf = new unsigned char*[expected_recv_count];
       MPI_Request* requests = new MPI_Request[expected_recv_count];
       for (k = 0; k < expected_recv_count; k++) {
         tmp_buf[k] = smpi_get_tmp_sendbuffer(count * std::max(extent, true_extent));
-        tmp_buf[k] = (void*)((char*)tmp_buf[k] - true_lb);
+        tmp_buf[k] = tmp_buf[k] - true_lb;
         }
 
         while(recv_iter  < expected_recv_count) {
@@ -217,7 +217,7 @@ int Coll_reduce_mvapich2_knomial::reduce (
 
         Request::waitall(1, &send_request, &status);
 
-        smpi_free_tmp_buffer((void *)((char*)recvbuf + true_lb));
+        smpi_free_tmp_buffer(static_cast<unsigned char*>(recvbuf) + true_lb);
     }
 
     /* --END ERROR HANDLING-- */

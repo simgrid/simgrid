@@ -441,7 +441,7 @@ int Colls::ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype d
   if (size <= 0)
     return MPI_ERR_COMM;
 
-  void* tmp_sendbuf = nullptr;
+  unsigned char* tmp_sendbuf = nullptr;
   if( sendbuf == MPI_IN_PLACE ) {
     tmp_sendbuf = smpi_get_tmp_sendbuffer(count * datatype->get_extent());
     Datatype::copy(recvbuf, count, datatype, tmp_sendbuf, count, datatype);

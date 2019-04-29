@@ -68,8 +68,7 @@ int Coll_reduce_arrival_pattern_aware::reduce(const void *buf, void *rbuf,
     already_received[i] = 0;
   }
 
-  char *tmp_buf;
-  tmp_buf = (char *) smpi_get_tmp_sendbuffer(count * extent);
+  unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(count * extent);
 
   Request::sendrecv(buf, count, datatype, rank, tag, rbuf, count, datatype, rank,
                tag, comm, &status);

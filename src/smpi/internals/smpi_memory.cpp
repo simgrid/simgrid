@@ -254,7 +254,7 @@ static std::vector<unsigned char> sendbuffer;
 static std::vector<unsigned char> recvbuffer;
 
 //allocate a single buffer for all sends, growing it if needed
-void* smpi_get_tmp_sendbuffer(size_t size)
+unsigned char* smpi_get_tmp_sendbuffer(size_t size)
 {
   if (not smpi_process()->replaying())
     return new unsigned char[size];
@@ -266,7 +266,7 @@ void* smpi_get_tmp_sendbuffer(size_t size)
 }
 
 //allocate a single buffer for all recv
-void* smpi_get_tmp_recvbuffer(size_t size)
+unsigned char* smpi_get_tmp_recvbuffer(size_t size)
 {
   if (not smpi_process()->replaying())
     return new unsigned char[size];
@@ -275,10 +275,10 @@ void* smpi_get_tmp_recvbuffer(size_t size)
   return recvbuffer.data();
 }
 
-void smpi_free_tmp_buffer(const void* buf)
+void smpi_free_tmp_buffer(const unsigned char* buf)
 {
   if (not smpi_process()->replaying())
-    delete[] static_cast<const unsigned char*>(buf);
+    delete[] buf;
 }
 
 void smpi_free_replay_tmp_buffers()

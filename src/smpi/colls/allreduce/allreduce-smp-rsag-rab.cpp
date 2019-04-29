@@ -25,7 +25,6 @@ int Coll_allreduce_smp_rsag_rab::allreduce(const void *sbuf, void *rbuf, int cou
                                            MPI_Comm comm)
 {
   int comm_size, rank;
-  void *tmp_buf;
   int tag = COLL_TAG_ALLREDUCE;
   int mask, src, dst;
   MPI_Status status;
@@ -45,7 +44,7 @@ int Coll_allreduce_smp_rsag_rab::allreduce(const void *sbuf, void *rbuf, int cou
   rank = comm->rank();
   MPI_Aint extent;
   extent = dtype->get_extent();
-  tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
+  unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(count * extent);
 
   int intra_rank, inter_rank;
   intra_rank = rank % num_core;

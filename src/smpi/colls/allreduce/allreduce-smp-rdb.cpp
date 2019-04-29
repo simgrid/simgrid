@@ -33,7 +33,6 @@ int Coll_allreduce_smp_rdb::allreduce(const void *send_buf, void *recv_buf, int 
                                       MPI_Comm comm)
 {
   int comm_size, rank;
-  void *tmp_buf;
   int tag = COLL_TAG_ALLREDUCE;
   int mask, src, dst;
   MPI_Status status;
@@ -58,7 +57,7 @@ int Coll_allreduce_smp_rdb::allreduce(const void *send_buf, void *recv_buf, int 
   rank = comm->rank();
   MPI_Aint extent;
   extent = dtype->get_extent();
-  tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
+  unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(count * extent);
 
   /* compute intra and inter ranking */
   int intra_rank, inter_rank;

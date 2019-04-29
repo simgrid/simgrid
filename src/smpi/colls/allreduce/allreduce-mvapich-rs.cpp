@@ -37,7 +37,6 @@ int Coll_allreduce_mvapich2_rs::allreduce(const void *sendbuf,
     int mask, pof2, i, send_idx, recv_idx, last_idx, send_cnt;
     int dst, is_commutative, rem, newdst, recv_cnt;
     MPI_Aint true_lb, true_extent, extent;
-    void *tmp_buf, *tmp_buf_free;
 
     if (count == 0) {
         return MPI_SUCCESS;
@@ -54,10 +53,10 @@ int Coll_allreduce_mvapich2_rs::allreduce(const void *sendbuf,
     datatype->extent(&true_lb, &true_extent);
     extent = datatype->get_extent();
 
-    tmp_buf_free = smpi_get_tmp_recvbuffer(count * std::max(extent, true_extent));
+    unsigned char* tmp_buf_free = smpi_get_tmp_recvbuffer(count * std::max(extent, true_extent));
 
     /* adjust for potential negative lower bound in datatype */
-    tmp_buf = (void *) ((char *) tmp_buf_free - true_lb);
+    unsigned char* tmp_buf = tmp_buf_free - true_lb;
 
     /* copy local data into recvbuf */
     if (sendbuf != MPI_IN_PLACE) {
@@ -188,15 +187,9 @@ int Coll_allreduce_mvapich2_rs::allreduce(const void *sendbuf,
                 }
 
                 /* Send data from recvbuf. Recv into tmp_buf */
-                Request::sendrecv((char *) recvbuf +
-                                             disps[send_idx] * extent,
-                                             send_cnt, datatype,
-                                             dst, COLL_TAG_ALLREDUCE,
-                                             (char *) tmp_buf +
-                                             disps[recv_idx] * extent,
-                                             recv_cnt, datatype, dst,
-                                             COLL_TAG_ALLREDUCE, comm,
-                                             MPI_STATUS_IGNORE);
+                Request::sendrecv(static_cast<char*>(recvbuf) + disps[send_idx] * extent, send_cnt, datatype, dst,
+                                  COLL_TAG_ALLREDUCE, tmp_buf + disps[recv_idx] * extent, recv_cnt, datatype, dst,
+                                  COLL_TAG_ALLREDUCE, comm, MPI_STATUS_IGNORE);
 
                 /* tmp_buf contains data received in this step.
                    recvbuf contains data accumulated so far */
@@ -204,9 +197,9 @@ int Coll_allreduce_mvapich2_rs::allreduce(const void *sendbuf,
                 /* This algorithm is used only for predefined ops
                    and predefined ops are always commutative. */
 
-                if(op!=MPI_OP_NULL) op->apply( (char *) tmp_buf + disps[recv_idx] * extent,
-                        (char *) recvbuf + disps[recv_idx] * extent,
-                        &recv_cnt, datatype);
+                if (op != MPI_OP_NULL)
+                  op->apply(tmp_buf + disps[recv_idx] * extent, static_cast<char*>(recvbuf) + disps[recv_idx] * extent,
+                            &recv_cnt, datatype);
 
                 /* update send_idx for next iteration */
                 send_idx = recv_idx;

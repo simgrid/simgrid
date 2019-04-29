@@ -31,8 +31,8 @@
     }                                                                                                                  \
   }
 
-XBT_PRIVATE void* smpi_get_tmp_sendbuffer(size_t size);
-XBT_PRIVATE void* smpi_get_tmp_recvbuffer(size_t size);
+XBT_PRIVATE unsigned char* smpi_get_tmp_sendbuffer(size_t size);
+XBT_PRIVATE unsigned char* smpi_get_tmp_recvbuffer(size_t size);
 
 XBT_PRIVATE void log_timed_action(simgrid::xbt::ReplayAction& action, double clock);
 
@@ -187,8 +187,8 @@ public:
   }
 
   virtual void kernel(simgrid::xbt::ReplayAction& action) = 0;
-  void* send_buffer(int size) { return smpi_get_tmp_sendbuffer(size); }
-  void* recv_buffer(int size) { return smpi_get_tmp_recvbuffer(size); }
+  unsigned char* send_buffer(int size) { return smpi_get_tmp_sendbuffer(size); }
+  unsigned char* recv_buffer(int size) { return smpi_get_tmp_recvbuffer(size); }
 };
 
 class WaitAction : public ReplayAction<WaitTestParser> {

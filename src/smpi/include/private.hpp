@@ -112,9 +112,9 @@ XBT_PRIVATE void smpi_bench_begin();
 XBT_PRIVATE void smpi_bench_end();
 XBT_PRIVATE void smpi_shared_destroy();
 
-XBT_PRIVATE void* smpi_get_tmp_sendbuffer(size_t size);
-XBT_PRIVATE void* smpi_get_tmp_recvbuffer(size_t size);
-XBT_PRIVATE void smpi_free_tmp_buffer(const void* buf);
+XBT_PRIVATE unsigned char* smpi_get_tmp_sendbuffer(size_t size);
+XBT_PRIVATE unsigned char* smpi_get_tmp_recvbuffer(size_t size);
+XBT_PRIVATE void smpi_free_tmp_buffer(const unsigned char* buf);
 XBT_PRIVATE void smpi_free_replay_tmp_buffers();
 
 extern "C" {

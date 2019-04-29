@@ -254,7 +254,7 @@ int Coll_bcast_mvapich2_intra_node::bcast(void *buffer,
     size_t nbytes = 0;
     int is_homogeneous, is_contig;
     MPI_Aint type_size;
-    void *tmp_buf = NULL;
+    unsigned char* tmp_buf = nullptr;
     MPI_Comm shmem_comm;
 
     if (count == 0)
@@ -316,7 +316,7 @@ int Coll_bcast_mvapich2_intra_node::bcast(void *buffer,
         ) {
 
       if (not is_contig || not is_homogeneous) {
-        tmp_buf = (void*)smpi_get_tmp_sendbuffer(nbytes);
+        tmp_buf = smpi_get_tmp_sendbuffer(nbytes);
 
         /* TODO: Pipeline the packing and communication */
         // position = 0;
