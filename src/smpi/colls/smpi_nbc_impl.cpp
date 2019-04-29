@@ -433,7 +433,7 @@ int Colls::ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype d
   MPI_Aint lb = 0;
   MPI_Aint dataext = 0;
 
-  void* sendtmpbuf = const_cast<void *>(sendbuf);
+  const void* real_sendbuf = sendbuf;
 
   int rank = comm->rank();
   int size = comm->size();
@@ -441,9 +441,11 @@ int Colls::ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype d
   if (size <= 0)
     return MPI_ERR_COMM;
 
+  void* tmp_sendbuf = nullptr;
   if( sendbuf == MPI_IN_PLACE ) {
-    sendtmpbuf = static_cast<void *>(smpi_get_tmp_sendbuffer(count*datatype->get_extent()));
-    Datatype::copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
+    tmp_sendbuf = smpi_get_tmp_sendbuffer(count * datatype->get_extent());
+    Datatype::copy(recvbuf, count, datatype, tmp_sendbuf, count, datatype);
+    real_sendbuf = tmp_sendbuf;
   }
 
   if(rank == root){
@@ -457,13 +459,13 @@ int Colls::ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype d
   if(rank != root) {
     // Send buffer to root
     MPI_Request* requests = new MPI_Request[1];
-    requests[0]=Request::isend(sendtmpbuf, count, datatype, root, system_tag, comm);
+    requests[0]           = Request::isend(real_sendbuf, count, datatype, root, system_tag, comm);
     (*request)->set_nbc_requests(requests, 1);
   } else {
     datatype->extent(&lb, &dataext);
     // Local copy from root
-    if (sendtmpbuf != nullptr && recvbuf != nullptr)
-      Datatype::copy(sendtmpbuf, count, datatype, recvbuf, count, datatype);
+    if (real_sendbuf != nullptr && recvbuf != nullptr)
+      Datatype::copy(real_sendbuf, count, datatype, recvbuf, count, datatype);
     // Receive buffers from senders
     MPI_Request *requests = new MPI_Request[size - 1];
     int index = 0;
@@ -479,7 +481,7 @@ int Colls::ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype d
     (*request)->set_nbc_requests(requests, size - 1);
   }	
   if( sendbuf == MPI_IN_PLACE ) {
-    smpi_free_tmp_buffer(sendtmpbuf);
+    smpi_free_tmp_buffer(tmp_sendbuf);
   }
   return MPI_SUCCESS;
 }

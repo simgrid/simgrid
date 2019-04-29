@@ -17,7 +17,6 @@ int Coll_allreduce_rab2::allreduce(const void *sbuff, void *rbuff,
   MPI_Aint s_extent;
   int i, rank, nprocs;
   int nbytes, send_size, s_offset, r_offset;
-  void *recv, *send, *tmp;
   /*
      #ifdef MPICH2_REDUCTION
      MPI_User_function * uop = MPIR_Op_table[op % 16 - 1];
@@ -42,9 +41,9 @@ int Coll_allreduce_rab2::allreduce(const void *sbuff, void *rbuff,
       send_size = (count + nprocs) / nprocs;
     nbytes = send_size * s_extent;
 
-    send = (void *) smpi_get_tmp_sendbuffer(s_extent * send_size * nprocs);
-    recv = (void *) smpi_get_tmp_recvbuffer(s_extent * send_size * nprocs);
-    tmp = (void *) smpi_get_tmp_sendbuffer(nbytes);
+    void* send = smpi_get_tmp_sendbuffer(s_extent * send_size * nprocs);
+    void* recv = smpi_get_tmp_recvbuffer(s_extent * send_size * nprocs);
+    void* tmp  = smpi_get_tmp_sendbuffer(nbytes);
 
     memcpy(send, sbuff, s_extent * count);
 
@@ -62,12 +61,12 @@ int Coll_allreduce_rab2::allreduce(const void *sbuff, void *rbuff,
     smpi_free_tmp_buffer(tmp);
     smpi_free_tmp_buffer(send);
   } else {
-    send = const_cast<void*>(sbuff);
+    const void* send = sbuff;
     send_size = count / nprocs;
     nbytes = send_size * s_extent;
     r_offset = rank * nbytes;
 
-    recv = (void *) smpi_get_tmp_recvbuffer(s_extent * send_size * nprocs);
+    void* recv = smpi_get_tmp_recvbuffer(s_extent * send_size * nprocs);
 
     Colls::alltoall(send, send_size, dtype, recv, send_size, dtype, comm);
 

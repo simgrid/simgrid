@@ -247,7 +247,7 @@ int Coll_gather_ompi_linear_sync::gather(const void *sbuf, int scount,
        first_segment_count = scount;
        COLL_TUNED_COMPUTED_SEGCOUNT((size_t)first_segment_size, typelng, first_segment_count);
 
-       Request::recv(const_cast<void*>(sbuf), 0, MPI_BYTE, root, COLL_TAG_GATHER, comm, MPI_STATUS_IGNORE);
+       Request::recv(nullptr, 0, MPI_BYTE, root, COLL_TAG_GATHER, comm, MPI_STATUS_IGNORE);
 
        Request::send(sbuf, first_segment_count, sdtype, root, COLL_TAG_GATHER, comm);
 

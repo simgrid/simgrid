@@ -482,7 +482,6 @@ int Coll_reduce_ompi_in_order_binary::reduce(const void *sendbuf, void *recvbuf,
     int ret;
     int rank, size, io_root;
     int segcount = count;
-    void *use_this_sendbuf = NULL, *use_this_recvbuf = NULL;
     size_t typelng;
 
     rank = comm->rank();
@@ -504,30 +503,29 @@ int Coll_reduce_ompi_in_order_binary::reduce(const void *sendbuf, void *recvbuf,
        operations for non-commutative ops.
     */
     io_root = size - 1;
-    use_this_sendbuf = const_cast<void*>(sendbuf);
-    use_this_recvbuf = recvbuf;
+    const void* use_this_sendbuf = sendbuf;
+    void* use_this_recvbuf       = recvbuf;
+    void* tmp_sendbuf            = nullptr;
+    void* tmp_recvbuf            = nullptr;
     if (io_root != root) {
         ptrdiff_t text, ext;
-        char *tmpbuf = NULL;
 
         ext=datatype->get_extent();
         text=datatype->get_extent();
 
         if ((root == rank) && (MPI_IN_PLACE == sendbuf)) {
-            tmpbuf = (char *) smpi_get_tmp_sendbuffer(text + (count - 1) * ext);
-            if (NULL == tmpbuf) {
-                return MPI_ERR_INTERN;
-            }
-            Datatype::copy (
-                                                (char*)recvbuf, count, datatype,
-                                                (char*)tmpbuf, count, datatype);
-            use_this_sendbuf = tmpbuf;
+          tmp_sendbuf = smpi_get_tmp_sendbuffer(text + (count - 1) * ext);
+          if (NULL == tmp_sendbuf) {
+            return MPI_ERR_INTERN;
+          }
+          Datatype::copy(recvbuf, count, datatype, tmp_sendbuf, count, datatype);
+          use_this_sendbuf = tmp_sendbuf;
         } else if (io_root == rank) {
-            tmpbuf = (char *) smpi_get_tmp_recvbuffer(text + (count - 1) * ext);
-            if (NULL == tmpbuf) {
-                return MPI_ERR_INTERN;
-            }
-            use_this_recvbuf = tmpbuf;
+          tmp_recvbuf = smpi_get_tmp_recvbuffer(text + (count - 1) * ext);
+          if (NULL == tmp_recvbuf) {
+            return MPI_ERR_INTERN;
+          }
+          use_this_recvbuf = tmp_recvbuf;
         }
     }
 
@@ -546,7 +544,7 @@ int Coll_reduce_ompi_in_order_binary::reduce(const void *sendbuf, void *recvbuf,
                                     COLL_TAG_REDUCE, comm,
                                     MPI_STATUS_IGNORE);
             if (MPI_IN_PLACE == sendbuf) {
-              smpi_free_tmp_buffer(use_this_sendbuf);
+              smpi_free_tmp_buffer(tmp_sendbuf);
             }
 
         } else if (io_root == rank) {
@@ -554,7 +552,7 @@ int Coll_reduce_ompi_in_order_binary::reduce(const void *sendbuf, void *recvbuf,
             Request::send(use_this_recvbuf, count, datatype, root,
                                     COLL_TAG_REDUCE,
                                     comm);
-            smpi_free_tmp_buffer(use_this_recvbuf);
+            smpi_free_tmp_buffer(tmp_recvbuf);
         }
     }
 

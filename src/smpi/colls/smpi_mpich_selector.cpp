@@ -710,18 +710,14 @@ int Coll_scatter_mpich::scatter(const void *sbuf, int scount,
                                             int root, MPI_Comm  comm
                                             )
 {
+  std::unique_ptr<unsigned char[]> tmp_buf;
   if(comm->rank()!=root){
-      sbuf=xbt_malloc(rcount*rdtype->get_extent());
-      scount=rcount;
-      sdtype=rdtype;
+    tmp_buf.reset(new unsigned char[rcount * rdtype->get_extent()]);
+    sbuf   = tmp_buf.get();
+    scount = rcount;
+    sdtype = rdtype;
   }
-  int ret= Coll_scatter_ompi_binomial::scatter (sbuf, scount, sdtype,
-                                                       rbuf, rcount, rdtype,
-                                                       root, comm);
-  if(comm->rank()!=root){
-      xbt_free(const_cast<void*>(sbuf));
-  }
-  return ret;
+  return Coll_scatter_ompi_binomial::scatter(sbuf, scount, sdtype, rbuf, rcount, rdtype, root, comm);
 }
 }
 }

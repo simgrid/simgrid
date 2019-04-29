@@ -595,18 +595,14 @@ int Coll_scatter_ompi::scatter(const void *sbuf, int scount,
 
     if ((communicator_size > small_comm_size) &&
         (block_size < small_block_size)) {
-        if(rank!=root){
-            sbuf=xbt_malloc(rcount*rdtype->get_extent());
-            scount=rcount;
-            sdtype=rdtype;
-        }
-        int ret=Coll_scatter_ompi_binomial::scatter (sbuf, scount, sdtype,
-            rbuf, rcount, rdtype,
-            root, comm);
-        if(rank!=root){
-            xbt_free(const_cast<void*>(sbuf));
-        }
-        return ret;
+      std::unique_ptr<unsigned char[]> tmp_buf;
+      if (rank != root) {
+        tmp_buf.reset(new unsigned char[rcount * rdtype->get_extent()]);
+        sbuf   = tmp_buf.get();
+        scount = rcount;
+        sdtype = rdtype;
+      }
+      return Coll_scatter_ompi_binomial::scatter(sbuf, scount, sdtype, rbuf, rcount, rdtype, root, comm);
     }
     return Coll_scatter_ompi_basic_linear::scatter (sbuf, scount, sdtype,
                                                        rbuf, rcount, rdtype,
