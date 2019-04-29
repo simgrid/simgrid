@@ -196,7 +196,8 @@ int PMPI_Type_create_indexed_block(int count, int blocklength, const int* indice
   }
 }
 
-int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type)
+int PMPI_Type_hindexed(int count, const int* blocklens, const MPI_Aint* indices, MPI_Datatype old_type,
+                       MPI_Datatype* new_type)
 {
   if (old_type == MPI_DATATYPE_NULL) {
     return MPI_ERR_TYPE;
@@ -209,7 +210,7 @@ int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatyp
 
 int PMPI_Type_create_hindexed(int count, const int* blocklens, const MPI_Aint* indices, MPI_Datatype old_type,
                               MPI_Datatype* new_type) {
-  return PMPI_Type_hindexed(count, const_cast<int*>(blocklens),const_cast<MPI_Aint*>(indices),old_type,new_type);
+  return PMPI_Type_hindexed(count, blocklens, indices, old_type, new_type);
 }
 
 int PMPI_Type_create_hindexed_block(int count, int blocklength, const MPI_Aint* indices, MPI_Datatype old_type,
@@ -228,7 +229,9 @@ int PMPI_Type_create_hindexed_block(int count, int blocklength, const MPI_Aint* 
   }
 }
 
-int PMPI_Type_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type) {
+int PMPI_Type_struct(int count, const int* blocklens, const MPI_Aint* indices, const MPI_Datatype* old_types,
+                     MPI_Datatype* new_type)
+{
   if (count<0){
     return MPI_ERR_COUNT;
   } else {
@@ -241,7 +244,7 @@ int PMPI_Type_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype*
 
 int PMPI_Type_create_struct(int count, const int* blocklens, const MPI_Aint* indices, const MPI_Datatype* old_types,
                             MPI_Datatype* new_type) {
-  return PMPI_Type_struct(count, const_cast<int*>(blocklens), const_cast<MPI_Aint*>(indices), const_cast<MPI_Datatype*>(old_types), new_type);
+  return PMPI_Type_struct(count, blocklens, indices, old_types, new_type);
 }
 
 

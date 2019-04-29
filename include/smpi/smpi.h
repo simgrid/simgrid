@@ -438,7 +438,7 @@ MPI_CALL(XBT_PUBLIC int, MPI_Type_lb, (MPI_Datatype datatype, MPI_Aint* disp));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_ub, (MPI_Datatype datatype, MPI_Aint* disp));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_commit, (MPI_Datatype * datatype));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_hindexed,
-         (int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* newtype));
+         (int count, const int* blocklens, const MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* newtype));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_create_hindexed,
          (int count, const int* blocklens, const MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* newtype));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_create_hindexed_block,
@@ -454,7 +454,7 @@ MPI_CALL(XBT_PUBLIC int, MPI_Type_create_indexed,
 MPI_CALL(XBT_PUBLIC int, MPI_Type_create_indexed_block,
          (int count, int blocklength, const int* indices, MPI_Datatype old_type, MPI_Datatype* newtype));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_struct,
-         (int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* newtype));
+         (int count, const int* blocklens, const MPI_Aint* indices, const MPI_Datatype* old_types, MPI_Datatype* newtype));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_create_struct,
          (int count, const int* blocklens, const MPI_Aint* indices, const MPI_Datatype* old_types, MPI_Datatype* newtype));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_vector,
