@@ -54,6 +54,7 @@ public:
   int* get_leaders_map();
   MPI_Comm get_leaders_comm();
   MPI_Comm get_intra_comm();
+  MPI_Comm find_intra_comm(int* leader);
   int is_uniform();
   int is_blocked();
   int is_smp_comm();
