@@ -90,6 +90,21 @@ int Comm::dup(MPI_Comm* newcomm){
       }
     }
   }
+  //duplicate info if present
+  if(info_!=MPI_INFO_NULL)
+    (*newcomm)->info_ = new simgrid::smpi::Info(info_);
+  return ret;
+}
+
+int Comm::dup_with_info(MPI_Info info, MPI_Comm* newcomm){
+  int ret = dup(newcomm);
+  if((*newcomm)->info_!=MPI_INFO_NULL){
+    simgrid::smpi::Info::unref((*newcomm)->info_);
+    (*newcomm)->info_=MPI_INFO_NULL;
+  }
+  if(info != MPI_INFO_NULL){
+    (*newcomm)->info_=info;
+  }
   return ret;
 }
 

@@ -113,9 +113,7 @@ int PMPI_Comm_dup_with_info(MPI_Comm comm, MPI_Info info, MPI_Comm * newcomm)
   } else if (newcomm == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    comm->dup(newcomm);
-    if(info!=MPI_INFO_NULL)
-      (*newcomm)->set_info(info);
+    comm->dup_with_info(info, newcomm);
     return MPI_SUCCESS;
   }
 }

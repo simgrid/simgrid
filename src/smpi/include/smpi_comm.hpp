@@ -39,6 +39,7 @@ public:
   Comm() = default;
   Comm(MPI_Group group, MPI_Topology topo, int smp = 0);
   int dup(MPI_Comm* newcomm);
+  int dup_with_info(MPI_Info info, MPI_Comm* newcomm);
   MPI_Group group();
   MPI_Topology topo() { return topo_; }
   int size();
