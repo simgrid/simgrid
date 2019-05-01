@@ -98,6 +98,8 @@ int Comm::dup(MPI_Comm* newcomm){
 
 int Comm::dup_with_info(MPI_Info info, MPI_Comm* newcomm){
   int ret = dup(newcomm);
+  if(ret != MPI_SUCCESS)
+    return ret;
   if((*newcomm)->info_!=MPI_INFO_NULL){
     simgrid::smpi::Info::unref((*newcomm)->info_);
     (*newcomm)->info_=MPI_INFO_NULL;
