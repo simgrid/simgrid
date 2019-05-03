@@ -33,7 +33,7 @@ std::unique_ptr<simgrid::simix::Global> simix_global;
 void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr) = nullptr;
 
 bool _sg_do_verbose_exit = true;
-static void inthandler(int)
+XBT_ATTRIB_NORETURN static void inthandler(int)
 {
   if ( _sg_do_verbose_exit ) {
      XBT_INFO("CTRL-C pressed. The current status will be displayed before exit (disable that behavior with option 'verbose-exit').");

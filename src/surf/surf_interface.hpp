@@ -6,6 +6,7 @@
 #ifndef SURF_MODEL_H_
 #define SURF_MODEL_H_
 
+#include "src/internal_config.h"
 #include "src/surf/surf_private.hpp"
 
 #include <cmath>
@@ -72,6 +73,9 @@ XBT_PUBLIC void surf_cpu_model_init_Cas01();
  *
  *  @see surf_host_model_init_SMPI()
  */
+#if !HAVE_SMPI
+XBT_ATTRIB_NORETURN
+#endif
 XBT_PUBLIC void surf_network_model_init_SMPI();
 
 /** @ingroup SURF_models
@@ -82,6 +86,9 @@ XBT_PUBLIC void surf_network_model_init_SMPI();
  *
  *  @see surf_host_model_init_IB()
  */
+#if !HAVE_SMPI
+XBT_ATTRIB_NORETURN
+#endif
 XBT_PUBLIC void surf_network_model_init_IB();
 
 /** @ingroup SURF_models
@@ -121,6 +128,9 @@ XBT_PUBLIC void surf_network_model_init_CM02();
  *
  *  @see surf_host_model_init_NS3()
  */
+#if !SIMGRID_HAVE_NS3
+XBT_ATTRIB_NORETURN
+#endif
 XBT_PUBLIC void surf_network_model_init_NS3();
 
 /** @ingroup SURF_models

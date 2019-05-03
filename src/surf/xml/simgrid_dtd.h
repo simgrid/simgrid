@@ -74,7 +74,7 @@ XBT_PUBLIC void STag_surfxml_host(void);
 XBT_PUBLIC void ETag_surfxml_host(void);
 XBT_PUBLIC void STag_surfxml_host___link(void);
 XBT_PUBLIC void ETag_surfxml_host___link(void);
-XBT_PUBLIC void STag_surfxml_include(void);
+XBT_ATTRIB_NORETURN XBT_PUBLIC void STag_surfxml_include(void);
 XBT_PUBLIC void ETag_surfxml_include(void);
 XBT_PUBLIC void STag_surfxml_link(void);
 XBT_PUBLIC void ETag_surfxml_link(void);

@@ -196,7 +196,7 @@ public:
   ~ForcefulKillException();
   const char* what() const noexcept { return msg_.c_str(); }
 
-  static void do_throw();
+  XBT_ATTRIB_NORETURN static void do_throw();
   static bool try_n_catch(const std::function<void()>& try_block);
 
 private:

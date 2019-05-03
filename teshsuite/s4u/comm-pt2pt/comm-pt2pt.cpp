@@ -16,7 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
-static void usage(const char* binaryName, const char* defaultSend, const char* defaultRecv)
+XBT_ATTRIB_NORETURN static void usage(const char* binaryName, const char* defaultSend, const char* defaultRecv)
 {
   std::fprintf(stderr, "Usage: %s examples/platforms/cluster_backbone.xml <send_spec> <recv_spec>\n"
                        "where spec is a list of letters giving the kind of tests you want to see.\n"

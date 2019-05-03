@@ -7,7 +7,6 @@
 #include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
-#include "src/internal_config.h"
 #include "src/simgrid/version.h"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf.hpp"

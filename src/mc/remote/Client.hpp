@@ -37,7 +37,7 @@ private:
 public:
   Channel const& getChannel() const { return channel_; }
   Channel& getChannel() { return channel_; }
-  void mainLoop();
+  XBT_ATTRIB_NORETURN void mainLoop();
   void reportAssertionFailure();
   void ignoreMemory(void* addr, std::size_t size);
   void ignoreHeap(void* addr, std::size_t size);
