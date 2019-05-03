@@ -5,11 +5,6 @@
 
 #include <unistd.h>
 
-#include <cstring>
-#include <dirent.h>
-#include <fcntl.h>
-#include <link.h>
-
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
@@ -415,87 +410,6 @@ static void snapshot_ignore_restore(simgrid::mc::Snapshot* snapshot)
     snapshot->process()->write_bytes(ignored_data.data.data(), ignored_data.data.size(), remote(ignored_data.start));
 }
 
-static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
-{
-  const size_t fd_dir_path_size = 20;
-  char fd_dir_path[fd_dir_path_size];
-  int res;
-  res = snprintf(fd_dir_path, fd_dir_path_size, "/proc/%lli/fd", (long long int)pid);
-  xbt_assert(res >= 0);
-  if ((size_t)res > fd_dir_path_size)
-    xbt_die("Unexpected buffer is too small for fd_dir_path");
-
-  DIR* fd_dir = opendir(fd_dir_path);
-  if (fd_dir == nullptr)
-    xbt_die("Cannot open directory '/proc/self/fd'\n");
-
-  std::vector<s_fd_infos_t> fds;
-
-  struct dirent* fd_number;
-  while ((fd_number = readdir(fd_dir))) {
-
-    int fd_value = xbt_str_parse_int(fd_number->d_name, "Found a non-numerical FD: %s. Freaking out!");
-
-    if (fd_value < 3)
-      continue;
-
-    const size_t source_size = 25;
-    char source[25];
-    res = snprintf(source, source_size, "/proc/%lli/fd/%s", (long long int)pid, fd_number->d_name);
-    xbt_assert(res >= 0);
-    if ((size_t)res > source_size)
-      xbt_die("Unexpected buffer is too small for fd %s", fd_number->d_name);
-
-    const size_t link_size = 200;
-    char link[200];
-    res = readlink(source, link, link_size);
-
-    if (res < 0)
-      xbt_die("Could not read link for %s", source);
-    if (res == 200)
-      xbt_die("Buffer to small for link of %s", source);
-
-    link[res] = '\0';
-
-#if HAVE_SMPI
-    if (smpi_is_privatization_file(link))
-      continue;
-#endif
-
-    // This is (probably) the DIR* we are reading:
-    // TODO, read all the file entries at once and close the DIR.*
-    if (strcmp(fd_dir_path, link) == 0)
-      continue;
-
-    // We don't handle them.
-    // It does not mean we should silently ignore them however.
-    if (strncmp(link, "pipe:", std::strlen("pipe:")) == 0 || strncmp(link, "socket:", std::strlen("socket:")) == 0)
-      continue;
-
-    // If dot_output enabled, do not handle the corresponding file
-    if (dot_output != nullptr) {
-      std::string link_basename = simgrid::xbt::Path(link).get_base_name();
-      if (link_basename == _sg_mc_dot_output_file.get())
-        continue;
-    }
-
-    // This is probably a shared memory used by lttng-ust:
-    if (strncmp("/dev/shm/ust-shm-tmp-", link, std::strlen("/dev/shm/ust-shm-tmp-")) == 0)
-      continue;
-
-    // Add an entry for this FD in the snapshot:
-    s_fd_infos_t fd;
-    fd.filename         = std::string(link);
-    fd.number           = fd_value;
-    fd.flags            = fcntl(fd_value, F_GETFL) | fcntl(fd_value, F_GETFD);
-    fd.current_position = lseek(fd_value, 0, SEEK_CUR);
-    fds.push_back(std::move(fd));
-  }
-
-  closedir(fd_dir);
-  return fds;
-}
-
 std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
 {
   XBT_DEBUG("Taking snapshot %i", num_state);
@@ -508,9 +422,6 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
     snapshot->enabled_processes.insert(p.copy.getBuffer()->get_pid());
 
   snapshot_handle_ignore(snapshot.get());
-
-  if (_sg_mc_snapshot_fds)
-    snapshot->current_fds = get_current_fds(mc_model_checker->process().pid());
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   get_memory_regions(mc_process, snapshot.get());
@@ -547,29 +458,10 @@ static inline void restore_snapshot_regions(simgrid::mc::Snapshot* snapshot)
 #endif
 }
 
-static inline void restore_snapshot_fds(simgrid::mc::Snapshot* snapshot)
-{
-  xbt_die("FD snapshot not implemented in client/server mode.");
-
-  for (auto const& fd : snapshot->current_fds) {
-
-    int new_fd = open(fd.filename.c_str(), fd.flags);
-    if (new_fd < 0)
-      xbt_die("Could not reopen the file %s fo restoring the file descriptor", fd.filename.c_str());
-    if (new_fd != fd.number) {
-      dup2(new_fd, fd.number);
-      close(new_fd);
-    }
-    lseek(fd.number, fd.current_position, SEEK_SET);
-  }
-}
-
 void restore_snapshot(std::shared_ptr<simgrid::mc::Snapshot> snapshot)
 {
   XBT_DEBUG("Restore snapshot %i", snapshot->num_state);
   restore_snapshot_regions(snapshot.get());
-  if (_sg_mc_snapshot_fds)
-    restore_snapshot_fds(snapshot.get());
   snapshot_ignore_restore(snapshot.get());
   mc_model_checker->process().clear_cache();
 }

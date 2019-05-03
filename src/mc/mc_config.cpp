@@ -108,13 +108,6 @@ simgrid::config::Flag<bool> _sg_mc_hash{
     "model-check/hash", "Whether to enable state hash for state comparison (experimental)", false,
     [](bool) { _mc_cfg_cb_check("value to enable/disable the use of global hash to speedup state comparaison"); }};
 
-simgrid::config::Flag<bool> _sg_mc_snapshot_fds{
-    "model-check/snapshot-fds",
-    {"model-check/snapshot_fds"},
-    "Whether file descriptors must be snapshoted (currently unusable)",
-    false,
-    [](bool) { _mc_cfg_cb_check("value to enable/disable the use of FD snapshotting"); }};
-
 simgrid::config::Flag<int> _sg_mc_max_depth{"model-check/max-depth",
                                             {"model-check/max_depth"},
                                             "Maximal exploration depth (default: 1000)",

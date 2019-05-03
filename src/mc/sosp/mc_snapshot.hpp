@@ -59,13 +59,6 @@ struct s_mc_snapshot_ignored_data_t {
   std::vector<char> data;
 };
 
-struct s_fd_infos_t {
-  std::string filename;
-  int number;
-  off_t current_position;
-  int flags;
-};
-
 /** Information about a given stack frame */
 struct s_mc_stack_frame_t {
   /** Instruction pointer */
@@ -118,7 +111,6 @@ public:
   std::vector<simgrid::mc::IgnoredHeapRegion> to_ignore;
   std::uint64_t hash;
   std::vector<s_mc_snapshot_ignored_data_t> ignored_data;
-  std::vector<s_fd_infos_t> current_fds;
 };
 } // namespace mc
 } // namespace simgrid

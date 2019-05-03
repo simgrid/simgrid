@@ -143,12 +143,6 @@ void smpi_really_switch_data_segment(simgrid::s4u::ActorPtr actor)
 #endif
 }
 
-int smpi_is_privatization_file(char* file)
-{
-  const std::string buffer_path("/dev/shm/my-buffer-");
-  return buffer_path.compare(0, std::string::npos, file, buffer_path.length()) == 0;
-}
-
 /**
  * @brief Makes a backup of the segment in memory that stores the global variables of a process.
  *        This backup is then used to initialize the global variables for every single
