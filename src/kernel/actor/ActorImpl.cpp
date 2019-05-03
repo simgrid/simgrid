@@ -85,7 +85,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
   ActorImpl* actor = new ActorImpl(xbt::string(name), host);
   /* Actor data */
   actor->set_user_data(data);
-  actor->code = nullptr;
+  actor->code_ = nullptr;
 
   XBT_VERB("Create context %s", actor->get_cname());
   xbt_assert(simix_global != nullptr, "simix is not initialized, please call MSG_init first");
@@ -459,7 +459,7 @@ ActorImpl* ActorImpl::start(const simix::ActorCode& code)
         std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Cannot start actor on failed host.")));
   }
 
-  this->code = code;
+  this->code_ = code;
   XBT_VERB("Create context %s", get_cname());
   context_.reset(simix_global->context_factory->create_context(simix::ActorCode(code), this));
 

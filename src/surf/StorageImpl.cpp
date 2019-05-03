@@ -41,7 +41,7 @@ StorageImpl::StorageImpl(kernel::resource::Model* model, const std::string& name
     : Resource(model, name, maxminSystem->constraint_new(this, std::max(bread, bwrite)))
     , piface_(name, this)
     , typeId_(type_id)
-    , content_name(content_name)
+    , content_name_(content_name)
     , size_(size)
     , attach_(attach)
 {

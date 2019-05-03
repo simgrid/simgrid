@@ -68,7 +68,7 @@ public:
   std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit =
       std::make_shared<std::vector<std::function<void(bool)>>>();
 
-  std::function<void()> code;
+  std::function<void()> code_;
   simix::Timer* kill_timer = nullptr;
 
 private:
@@ -160,7 +160,7 @@ public:
 
   explicit ProcessArg(s4u::Host* host, ActorImpl* actor)
       : name(actor->get_name())
-      , code(actor->code)
+      , code(actor->code_)
       , data(actor->get_user_data())
       , host(host)
       , kill_time(actor->get_kill_time())

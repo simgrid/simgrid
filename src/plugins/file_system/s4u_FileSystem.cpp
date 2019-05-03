@@ -294,7 +294,7 @@ int File::remote_move(sg_host_t host, const char* fullpath)
 
 FileSystemStorageExt::FileSystemStorageExt(simgrid::s4u::Storage* ptr)
 {
-  content_.reset(parse_content(ptr->get_impl()->content_name));
+  content_.reset(parse_content(ptr->get_impl()->content_name_));
   size_    = ptr->get_impl()->size_;
 }
 

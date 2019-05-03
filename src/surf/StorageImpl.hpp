@@ -104,7 +104,7 @@ public:
   lmm::Constraint* constraintRead_;  /* Constraint for maximum write bandwidth*/
 
   std::string typeId_;
-  std::string content_name; // Only used at parsing time then goes to the FileSystemExtension
+  std::string content_name_; // Only used at parsing time then goes to the FileSystemExtension
   sg_size_t size_;          // Only used at parsing time then goes to the FileSystemExtension
 
 private:
