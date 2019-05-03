@@ -503,7 +503,7 @@ void sg_host_energy_plugin_init()
       simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
       if (vm != nullptr)
         host = vm->get_pm();
-
+      xbt_assert(host != nullptr);
       host->extension<HostEnergy>()->update();
     }
   });
@@ -520,8 +520,10 @@ void sg_host_energy_update_all()
   simgrid::simix::simcall([]() {
     std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
     for (auto const& host : list)
-      if (dynamic_cast<simgrid::s4u::VirtualMachine*>(host) == nullptr) // Ignore virtual machines
+      if (dynamic_cast<simgrid::s4u::VirtualMachine*>(host) == nullptr) { // Ignore virtual machines
+        xbt_assert(host != nullptr);
         host->extension<HostEnergy>()->update();
+      }
   });
 }
 

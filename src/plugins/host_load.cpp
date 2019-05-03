@@ -210,7 +210,7 @@ void sg_host_load_plugin_init()
       simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
       if (vm != nullptr)
         host = vm->get_pm();
-
+      xbt_assert(host != nullptr);
       host->extension<HostLoad>()->add_activity(&activity);
       host->extension<HostLoad>()->update(); // If the system was idle until now, we need to update *before*
                                              // this computation starts running so we can keep track of the
@@ -226,7 +226,7 @@ void sg_host_load_plugin_init()
       simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
       if (vm != nullptr)
         host = vm->get_pm();
-
+      xbt_assert(host != nullptr);
       host->extension<HostLoad>()->update();
     }
     else { // This runs on multiple hosts
