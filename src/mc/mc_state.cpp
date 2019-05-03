@@ -75,10 +75,12 @@ static inline smx_simcall_t MC_state_get_request_for_process(simgrid::mc::State*
     case SIMCALL_COMM_WAITANY:
       state->transition.argument = -1;
       while (procstate->times_considered < simcall_comm_waitany__get__count(&actor->simcall)) {
-        if (simgrid::mc::request_is_enabled_by_idx(&actor->simcall, procstate->times_considered++)) {
-          state->transition.argument = procstate->times_considered - 1;
+        if (simgrid::mc::request_is_enabled_by_idx(&actor->simcall, procstate->times_considered)) {
+          state->transition.argument = procstate->times_considered;
+          ++procstate->times_considered;
           break;
         }
+        ++procstate->times_considered;
       }
 
       if (procstate->times_considered >= simcall_comm_waitany__get__count(&actor->simcall))
@@ -90,11 +92,14 @@ static inline smx_simcall_t MC_state_get_request_for_process(simgrid::mc::State*
     case SIMCALL_COMM_TESTANY: {
       unsigned start_count       = procstate->times_considered;
       state->transition.argument = -1;
-      while (procstate->times_considered < simcall_comm_testany__get__count(&actor->simcall))
-        if (simgrid::mc::request_is_enabled_by_idx(&actor->simcall, procstate->times_considered++)) {
-          state->transition.argument = procstate->times_considered - 1;
+      while (procstate->times_considered < simcall_comm_testany__get__count(&actor->simcall)) {
+        if (simgrid::mc::request_is_enabled_by_idx(&actor->simcall, procstate->times_considered)) {
+          state->transition.argument = procstate->times_considered;
+          ++procstate->times_considered;
           break;
         }
+        ++procstate->times_considered;
+      }
 
       if (procstate->times_considered >= simcall_comm_testany__get__count(&actor->simcall))
         procstate->setDone();

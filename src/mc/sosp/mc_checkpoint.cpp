@@ -131,9 +131,11 @@ static void get_memory_regions(simgrid::mc::RemoteClient* process, simgrid::mc::
   const size_t n = process->object_infos.size();
   snapshot->snapshot_regions.resize(n + 1);
   int i = 0;
-  for (auto const& object_info : process->object_infos)
-    add_region(i++, snapshot, simgrid::mc::RegionType::Data, object_info.get(), object_info->start_rw,
+  for (auto const& object_info : process->object_infos) {
+    add_region(i, snapshot, simgrid::mc::RegionType::Data, object_info.get(), object_info->start_rw,
                object_info->start_rw, object_info->end_rw - object_info->start_rw);
+    ++i;
+  }
 
   xbt_mheap_t heap = process->get_heap();
   void* start_heap = heap->base;
