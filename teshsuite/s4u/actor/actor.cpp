@@ -12,7 +12,7 @@ static void worker()
   simgrid::s4u::this_actor::sleep_for(.5);
   XBT_INFO("Worker started (PID:%ld, PPID:%ld)", simgrid::s4u::this_actor::get_pid(),
            simgrid::s4u::this_actor::get_ppid());
-  while (1) {
+  while (simgrid::s4u::this_actor::get_host()->is_on()) {
     simgrid::s4u::this_actor::yield();
     XBT_INFO("Plop i am not suspended");
     simgrid::s4u::this_actor::sleep_for(1);

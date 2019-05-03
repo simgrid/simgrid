@@ -17,7 +17,7 @@ static void dummy()
 static void dummy_daemon()
 {
   simgrid::s4u::Actor::self()->daemonize();
-  while (1) {
+  while (simgrid::s4u::this_actor::get_host()->is_on()) {
     XBT_INFO("Hello from the infinite loop");
     simgrid::s4u::this_actor::sleep_for(80.0);
   }
