@@ -97,7 +97,6 @@ void MC_run()
   MC_ignore_heap(simgrid::mc::processes_time.data(),
     simgrid::mc::processes_time.size() * sizeof(simgrid::mc::processes_time[0]));
   simgrid::mc::Client::get()->mainLoop();
-  simgrid::mc::processes_time.clear();
 }
 
 void MC_show_deadlock()

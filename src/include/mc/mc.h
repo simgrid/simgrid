@@ -25,7 +25,7 @@
 SG_BEGIN_DECL()
 
 /********************************* Global *************************************/
-XBT_PUBLIC void MC_run();
+XBT_ATTRIB_NORETURN XBT_PUBLIC void MC_run();
 XBT_PUBLIC void MC_process_clock_add(smx_actor_t, double);
 XBT_PUBLIC double MC_process_clock_get(smx_actor_t);
 XBT_PRIVATE void MC_automaton_load(const char *file);

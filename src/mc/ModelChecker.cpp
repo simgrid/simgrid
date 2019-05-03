@@ -265,7 +265,6 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
   case MC_MESSAGE_ASSERTION_FAILED:
     MC_report_assertion_error();
     this->exit(SIMGRID_MC_EXIT_SAFETY);
-    break;
 
   default:
     xbt_die("Unexpected message from model-checked application");
