@@ -107,7 +107,7 @@ sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_r
       comm = mbox->put_init(msg, size)->set_rate(mig_speed)->wait_for(timeout);
     else
       comm = mbox->put_async(msg, size)->wait_for(timeout);
-  } catch (xbt_ex& e) {
+  } catch (const xbt_ex&) {
     if (comm) {
       sg_size_t remaining = static_cast<sg_size_t>(comm->get_remaining());
       XBT_VERB("timeout (%lf s) in sending_migration_data, remaining %llu bytes of %llu", timeout, remaining, size);
@@ -182,7 +182,7 @@ void MigrationTx::operator()()
     } else if (sent > ramsize)
       XBT_CRITICAL("bug");
 
-  } catch (xbt_ex& e) {
+  } catch (const xbt_ex&) {
     // hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
     // Stop the dirty page tracking an return (there is no memory space to release)
     sg_vm_stop_dirty_page_tracking(vm_);
@@ -222,7 +222,7 @@ void MigrationTx::operator()()
       try {
         XBT_DEBUG("Stage 2, gonna send %llu", updated_size);
         sent = sendMigrationData(updated_size, 2, stage2_round, mig_speed, mig_timeout);
-      } catch (xbt_ex& e) {
+      } catch (const xbt_ex&) {
         // hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data
         // code)
         // Stop the dirty page tracking an return (there is no memory space to release)
@@ -266,7 +266,7 @@ void MigrationTx::operator()()
   try {
     XBT_DEBUG("Stage 3: Gonna send %zu bytes", remaining_size);
     sendMigrationData(remaining_size, 3, 0, mig_speed, -1);
-  } catch (xbt_ex& e) {
+  } catch (const xbt_ex&) {
     // hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
     // Stop the dirty page tracking an return (there is no memory space to release)
     vm_->resume();

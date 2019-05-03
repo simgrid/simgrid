@@ -43,14 +43,14 @@ std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string)
       if (factor_iter == factor_values.begin()) { /* first element */
         try {
           fact.factor = std::stoi(*factor_iter);
-        } catch (std::invalid_argument& ia) {
+        } catch (const std::invalid_argument&) {
           throw std::invalid_argument(std::string("Invalid factor in chunk ") + std::to_string(smpi_factor.size() + 1) +
                                       ": " + *factor_iter);
         }
       } else {
         try {
           fact.values.push_back(surf_parse_get_time((*factor_iter).c_str(), "smpi factor", ""));
-        } catch (std::invalid_argument& ia) {
+        } catch (const std::invalid_argument&) {
           throw std::invalid_argument(std::string("Invalid factor value ") + std::to_string(iteration) + " in chunk " +
                                       std::to_string(smpi_factor.size() + 1) + ": " + *factor_iter);
         }

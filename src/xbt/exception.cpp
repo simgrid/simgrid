@@ -145,7 +145,7 @@ static void handler()
     std::abort();
   }
 
-  catch (simgrid::ForcefulKillException const& e) {
+  catch (const simgrid::ForcefulKillException&) {
     XBT_ERROR("Received a ForcefulKillException at the top-level exception handler. Maybe a Java->C++ call that is not "
               "protected "
               "in a try/catch?");

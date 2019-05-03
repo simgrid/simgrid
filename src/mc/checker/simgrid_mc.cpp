@@ -59,11 +59,11 @@ int main(int argc, char** argv)
     int res = SIMGRID_MC_EXIT_SUCCESS;
     try {
       checker->run();
-    } catch (simgrid::mc::DeadlockError& de) {
+    } catch (const simgrid::mc::DeadlockError&) {
       res = SIMGRID_MC_EXIT_DEADLOCK;
-    } catch (simgrid::mc::TerminationError& te) {
+    } catch (const simgrid::mc::TerminationError&) {
       res = SIMGRID_MC_EXIT_NON_TERMINATION;
-    } catch (simgrid::mc::LivenessError& le) {
+    } catch (const simgrid::mc::LivenessError&) {
       res = SIMGRID_MC_EXIT_LIVENESS;
     }
     checker = nullptr;

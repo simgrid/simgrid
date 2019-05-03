@@ -39,8 +39,7 @@ uintptr_t eval_binary_operation(
 
   try {
     simgrid::dwarf::execute(ops, 3, state, stack);
-  }
-  catch(std::runtime_error& e) {
+  } catch (const std::runtime_error&) {
     fprintf(stderr,"Expression evaluation error");
   }
 
@@ -63,7 +62,7 @@ void basic_test(simgrid::dwarf::ExpressionContext const& state) {
   try {
     ops[0].atom = DW_OP_drop;
     simgrid::dwarf::execute(ops, 1, state, stack);
-  } catch (simgrid::dwarf::evaluation_error& e) {
+  } catch (const simgrid::dwarf::evaluation_error&) {
     caught_ex = true;
   }
   if (not caught_ex)
@@ -125,8 +124,7 @@ void basic_test(simgrid::dwarf::ExpressionContext const& state) {
   assert(stack.top()  == a);
   assert(stack.top(1) == b);
 
-  }
-  catch(std::runtime_error& e) {
+  } catch (const std::runtime_error&) {
     fprintf(stderr,"Expression evaluation error");
   }
 }
@@ -148,8 +146,7 @@ void test_deref(simgrid::dwarf::ExpressionContext const& state) {
   assert(stack.size() == 1);
   assert(stack.top()  == foo);
 
-  }
-  catch(std::runtime_error& e) {
+  } catch (const std::runtime_error&) {
     fprintf(stderr,"Expression evaluation error");
   }
 }

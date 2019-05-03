@@ -130,7 +130,7 @@ msg_error_t MSG_process_sleep(double duration)
   try {
     sg_actor_sleep_for(duration);
     return MSG_OK;
-  } catch (simgrid::HostFailureException& e) {
+  } catch (const simgrid::HostFailureException&) {
     return MSG_HOST_FAILURE;
   }
 }

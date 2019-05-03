@@ -28,10 +28,10 @@ bool Comm::test()
       /* I am the receiver */
       (*task_received)->set_not_used();
     }
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutError&) {
     status_  = MSG_TIMEOUT;
     finished = true;
-  } catch (simgrid::CancelException& e) {
+  } catch (const simgrid::CancelException&) {
     status_  = MSG_TASK_CANCELED;
     finished = true;
   } catch (xbt_ex& e) {
@@ -56,9 +56,9 @@ msg_error_t Comm::wait_for(double timeout)
     }
 
     /* FIXME: these functions are not traceable */
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutError&) {
     status_ = MSG_TIMEOUT;
-  } catch (simgrid::CancelException& e) {
+  } catch (const simgrid::CancelException&) {
     status_ = MSG_TASK_CANCELED;
   } catch (xbt_ex& e) {
     if (e.category == network_error)

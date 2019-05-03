@@ -373,7 +373,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   // The first parts of topo_parameters should be the levels number
   try {
     this->levels_ = std::stoi(parameters[0]);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("First parameter is not the amount of levels:") + parameters[0]);
   }
 
@@ -385,7 +385,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
       this->num_children_per_node_.push_back(std::stoi(tmp[i]));
-    } catch (std::invalid_argument& ia) {
+    } catch (const std::invalid_argument&) {
       throw std::invalid_argument(std::string("Invalid lower level node number:") + tmp[i]);
     }
   }
@@ -398,7 +398,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
       this->num_parents_per_node_.push_back(std::stoi(tmp[i]));
-    } catch (std::invalid_argument& ia) {
+    } catch (const std::invalid_argument&) {
       throw std::invalid_argument(std::string("Invalid upper level node number:") + tmp[i]);
     }
   }
@@ -411,7 +411,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
       this->num_port_lower_level_.push_back(std::stoi(tmp[i]));
-    } catch (std::invalid_argument& ia) {
+    } catch (const std::invalid_argument&) {
       throw std::invalid_argument(std::string("Invalid lower level port number:") + tmp[i]);
     }
   }

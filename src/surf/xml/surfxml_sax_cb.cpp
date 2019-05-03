@@ -86,7 +86,7 @@ double surf_parse_get_double(const std::string& s)
 {
   try {
     return std::stod(s);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     surf_parse_error(s + " is not a double");
   }
 }
@@ -95,7 +95,7 @@ int surf_parse_get_int(const std::string& s)
 {
   try {
     return std::stoi(s);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     surf_parse_error(s + " is not a double");
   }
 }

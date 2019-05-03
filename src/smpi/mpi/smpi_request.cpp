@@ -548,7 +548,7 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
     if ((*request)->action_ != nullptr){
       try{
         *flag = simcall_comm_test((*request)->action_);
-      }catch (xbt_ex& e) {
+      } catch (const xbt_ex&) {
         *flag = 0;
         return ret;
       }
@@ -639,7 +639,7 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
       simcall_process_sleep(nsleeps*smpi_test_sleep);
     try{
       i = simcall_comm_testany(comms.data(), comms.size()); // The i-th element in comms matches!
-    }catch (xbt_ex& e) {
+    } catch (const xbt_ex&) {
       return 0;
     }
     
@@ -901,7 +901,7 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
       try{
         // this is not a detached send
         simcall_comm_wait((*request)->action_, -1.0);
-      }catch (xbt_ex& e) {
+      } catch (const xbt_ex&) {
         XBT_VERB("Request cancelled");
       }
   }
@@ -964,8 +964,8 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
       try{
         // this is not a detached send
         i = simcall_comm_waitany(comms.data(), comms.size(), -1);
-      }catch (xbt_ex& e) {
-      XBT_INFO("request %d cancelled ",i);
+      } catch (const xbt_ex&) {
+        XBT_INFO("request %d cancelled ", i);
         return i;
       }
 

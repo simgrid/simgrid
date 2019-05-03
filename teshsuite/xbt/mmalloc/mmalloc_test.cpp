@@ -77,7 +77,7 @@ int main(int argc, char**argv)
     mfree(heapA, pointers[i]);
     try {
       mfree(heapA, pointers[i]);
-    } catch(xbt_ex& e) {
+    } catch (const xbt_ex&) {
       gotit = true;
     }
     if (not gotit)
@@ -89,7 +89,7 @@ int main(int argc, char**argv)
     bool gotit = false;
     try {
       mfree(heapA, pointers[i]);
-    } catch(xbt_ex& e) {
+    } catch (const xbt_ex&) {
       gotit = true;
     }
     if (not gotit)

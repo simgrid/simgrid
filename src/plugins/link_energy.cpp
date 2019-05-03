@@ -107,13 +107,13 @@ void LinkEnergy::init_watts_range_list()
     /* max_power is the power consumed at 100% link load       */
     try {
       idle_ = std::stod(current_power_values.front());
-    } catch (std::invalid_argument& ia) {
+    } catch (const std::invalid_argument&) {
       throw std::invalid_argument(std::string("Invalid idle power value for link ") + this->link_->get_cname());
     }
 
     try {
       busy_ = std::stod(current_power_values.back());
-    } catch (std::invalid_argument& ia) {
+    } catch (const std::invalid_argument&) {
       throw std::invalid_argument(std::string("Invalid busy power value for link ") + this->link_->get_cname());
     }
   }

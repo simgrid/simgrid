@@ -33,13 +33,13 @@ Peer::Peer(std::vector<std::string> args)
   try {
     id       = std::stoi(args[1]);
     mailbox_ = simgrid::s4u::Mailbox::by_name(std::to_string(id));
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid ID:") + args[1].c_str());
   }
 
   try {
     deadline = std::stod(args[2]);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid deadline:") + args[2].c_str());
   }
   xbt_assert(deadline > 0, "Wrong deadline supplied");
@@ -84,7 +84,7 @@ bool Peer::getPeersFromTracker()
   try {
     XBT_DEBUG("Sending a peer request to the tracker.");
     tracker_mailbox->put(peer_request, TRACKER_COMM_SIZE, GET_PEERS_TIMEOUT);
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutError&) {
     XBT_DEBUG("Timeout expired when requesting peers to tracker");
     delete peer_request;
     return false;
@@ -97,7 +97,7 @@ bool Peer::getPeersFromTracker()
       if (id != peer_id)
         connected_peers.emplace(peer_id, Connection(peer_id));
     delete answer;
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutError&) {
     XBT_DEBUG("Timeout expired when requesting peers to tracker");
     return false;
   }

@@ -81,11 +81,11 @@ msg_error_t Task::execute()
 
     set_not_used();
     XBT_DEBUG("Execution task '%s' finished", get_cname());
-  } catch (HostFailureException& e) {
+  } catch (const HostFailureException&) {
     status = MSG_HOST_FAILURE;
-  } catch (TimeoutError& e) {
+  } catch (const TimeoutError&) {
     status = MSG_TIMEOUT;
-  } catch (CancelException& e) {
+  } catch (const CancelException&) {
     status = MSG_TASK_CANCELED;
   }
 
@@ -133,9 +133,9 @@ msg_error_t Task::send(const std::string& alias, double timeout)
     s4u::CommPtr s4u_comm = send_async(alias, nullptr, false);
     comm                  = s4u_comm;
     comm->wait_for(timeout);
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutError&) {
     ret = MSG_TIMEOUT;
-  } catch (simgrid::CancelException& e) {
+  } catch (const simgrid::CancelException&) {
     ret = MSG_HOST_FAILURE;
   } catch (xbt_ex& e) {
     if (e.category == network_error)
@@ -625,11 +625,11 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t* task, const char* alias, do
     *task = static_cast<msg_task_t>(payload);
     XBT_DEBUG("Got task %s from %s", (*task)->get_cname(), alias);
     (*task)->set_not_used();
-  } catch (simgrid::HostFailureException& e) {
+  } catch (const simgrid::HostFailureException&) {
     ret = MSG_HOST_FAILURE;
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutError&) {
     ret = MSG_TIMEOUT;
-  } catch (simgrid::CancelException& e) {
+  } catch (const simgrid::CancelException&) {
     ret = MSG_TASK_CANCELED;
   } catch (xbt_ex& e) {
     if (e.category == network_error)

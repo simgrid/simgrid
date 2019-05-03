@@ -53,13 +53,13 @@ void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 
   try {
     this->num_groups_ = std::stoi(tmp[0]);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
   }
 
   try {
     this->num_links_blue_ = std::stoi(tmp[1]);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of links for the blue level:") + tmp[1]);
   }
   // Black network : number of chassis/group, number of links between each router on the black network
@@ -70,13 +70,13 @@ void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 
   try {
     this->num_chassis_per_group_ = std::stoi(tmp[0]);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
   }
 
   try {
     this->num_links_black_ = std::stoi(tmp[1]);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of links for the black level:") + tmp[1]);
   }
 
@@ -88,20 +88,20 @@ void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 
   try {
     this->num_blades_per_chassis_ = std::stoi(tmp[0]);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
   }
 
   try {
     this->num_links_green_ = std::stoi(tmp[1]);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of links for the green level:") + tmp[1]);
   }
 
   // The last part of topo_parameters should be the number of nodes per blade
   try {
     this->num_nodes_per_blade_ = std::stoi(parameters[3]);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Last parameter is not the amount of nodes per blade:") + parameters[3]);
   }
 

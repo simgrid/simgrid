@@ -48,8 +48,7 @@ void SIMIX_launch_application(const std::string& file)
     parse_status = surf_parse();
     surf_parse_close();
     xbt_assert(not parse_status, "Parse error at %s:%d", file.c_str(), surf_parse_lineno);
-  }
-  catch (xbt_ex& e) {
+  } catch (const xbt_ex&) {
     XBT_ERROR(
         "Unrecoverable error at %s:%d. The full exception stack follows, in case it helps you to diagnose the problem.",
         file.c_str(), surf_parse_lineno);

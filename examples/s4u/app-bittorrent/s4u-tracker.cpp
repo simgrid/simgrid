@@ -17,7 +17,7 @@ Tracker::Tracker(std::vector<std::string> args)
   // Retrieving end time
   try {
     deadline = std::stod(args[1]);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid deadline:") + args[1].c_str());
   }
   xbt_assert(deadline > 0, "Wrong deadline supplied");
