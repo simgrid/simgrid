@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "smpi/smpi.h"
-#include "xbt/dynar.h"
 
 #include "src/mc/mc_state.hpp"
 
@@ -23,15 +22,8 @@ struct PatternCommunicationList {
 }
 }
 
-/**
- *  Type: `xbt_dynar_t<mc_list_comm_pattern_t>`
- */
-extern XBT_PRIVATE xbt_dynar_t initial_communications_pattern;
-
-/**
- *  Type: `xbt_dynar_t<xbt_dynar_t<simgrid::mc::PatternCommunication*>>`
- */
-extern XBT_PRIVATE xbt_dynar_t incomplete_communications_pattern;
+extern XBT_PRIVATE std::vector<simgrid::mc::PatternCommunicationList> initial_communications_pattern;
+extern XBT_PRIVATE std::vector<std::vector<simgrid::mc::PatternCommunication*>> incomplete_communications_pattern;
 
 enum e_mc_call_type_t {
   MC_CALL_TYPE_NONE,
