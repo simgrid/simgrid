@@ -30,14 +30,6 @@ struct some_struct {
 };
 some_struct test_some_struct;
 
-static simgrid::mc::Type* find_type_by_name(simgrid::mc::ObjectInformation* info, const char* name)
-{
-  for (auto& entry : info->types)
-    if(entry.second.name == name)
-      return &entry.second;
-  return nullptr;
-}
-
 static simgrid::mc::Frame* find_function_by_name(
     simgrid::mc::ObjectInformation* info, const char* name)
 {
@@ -161,5 +153,5 @@ int main(int argc, char** argv)
   s_foo my_foo = {0};
   test_type_by_name(process, my_foo);
 
-  _exit(0);
+  return 0;
 }
