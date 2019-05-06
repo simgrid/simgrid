@@ -196,8 +196,9 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
     pattern->src_host = MC_smx_actor_get_host_name(issuer);
 
 #if HAVE_SMPI
-    simgrid::smpi::Request mpi_request = mc_model_checker->process().read<simgrid::smpi::Request>(
-        RemotePtr<simgrid::smpi::Request>((std::uint64_t)simcall_comm_isend__get__data(request)));
+    simgrid::smpi::Request mpi_request;
+    mc_model_checker->process().read(
+        &mpi_request, remote(static_cast<simgrid::smpi::Request*>(simcall_comm_isend__get__data(request))));
     pattern->tag = mpi_request.tag();
 #endif
 
@@ -224,8 +225,8 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
 
 #if HAVE_SMPI
     simgrid::smpi::Request mpi_request;
-    mc_model_checker->process().read(&mpi_request,
-                                     remote((simgrid::smpi::Request*)simcall_comm_irecv__get__data(request)));
+    mc_model_checker->process().read(
+        &mpi_request, remote(static_cast<simgrid::smpi::Request*>(simcall_comm_irecv__get__data(request))));
     pattern->tag = mpi_request.tag();
 #endif
 
