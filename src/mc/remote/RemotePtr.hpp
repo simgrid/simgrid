@@ -7,6 +7,7 @@
 #define SIMGRID_MC_REMOTE_PTR_HPP
 
 #include "src/simix/smx_private.hpp"
+#include <type_traits>
 
 namespace simgrid {
 namespace mc {
@@ -19,40 +20,29 @@ namespace mc {
  *
  *  * raw memory copy (std::memcpy) is used to copy Remote<T>;
  *
- *  * raw memory comparison is used to compare them;
- *
  *  * when T is a trivial type, Remote is convertible to a T.
  *
  *  We currently only handle the case where the type has the same layout
  *  in the current process and in the target process: we don't handle
  *  cross-architecture (such as 32-bit/64-bit access).
  */
-template <class T> union Remote {
+template <class T> class Remote {
 private:
-  T buffer;
+  typename std::aligned_storage<sizeof(T), alignof(T)>::type buffer;
 
 public:
-  Remote() { /* Nothing to do */}
-  ~Remote() { /* Nothing to do */}
-  Remote(T const& p) { std::memcpy(static_cast<void*>(&buffer), static_cast<const void*>(&p), sizeof(buffer)); }
-  Remote(Remote const& that)
-  {
-    std::memcpy(static_cast<void*>(&buffer), static_cast<const void*>(&that.buffer), sizeof(buffer));
-  }
-  Remote& operator=(Remote const& that)
-  {
-    std::memcpy(static_cast<void*>(&buffer), static_cast<const void*>(&that.buffer), sizeof(buffer));
-    return *this;
-  }
-  T* getBuffer() { return &buffer; }
-  const T* getBuffer() const { return &buffer; }
+  Remote() = default;
+  Remote(T const& p) { std::memcpy(&buffer, &p, sizeof buffer); }
+
+  T* getBuffer() { return reinterpret_cast<T*>(&buffer); }
+  const T* getBuffer() const { return reinterpret_cast<const T*>(&buffer); }
   std::size_t getBufferSize() const { return sizeof(T); }
   operator T() const
   {
     static_assert(std::is_trivial<T>::value, "Cannot convert non trivial type");
-    return buffer;
+    return *getBuffer();
   }
-  void clear() { std::memset(static_cast<void*>(&buffer), 0, sizeof(T)); }
+  void clear() { std::memset(&buffer, 0, sizeof buffer); }
 };
 
 /** Pointer to a remote address-space (process, snapshot)
