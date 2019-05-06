@@ -35,10 +35,9 @@ copyright = u'2002-2019, The SimGrid Team'
 author = u'The SimGrid Team'
 
 # The short X.Y version
-version = u'alpha 3.23'
+version = u'3.22.2'
 # The full version, including alpha/beta/rc tags
-release = u'alpha 3.23'
-
+release = u'3.22.2'
 
 # -- General configuration ---------------------------------------------------
 
