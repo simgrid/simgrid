@@ -22,7 +22,7 @@ Fixed bugs (GH=GitHub; FG=FramaGit):
 
 SimGrid (3.22) April 1. 2019
 
-The Easter Chrismas Release (this one is somewhat late).
+The Easter Christmas Release (this one is somewhat late).
 
 Python:
  - We are excited to introduce the SimGrid/S4U interface to your neighborhood
@@ -3051,7 +3051,7 @@ SimGrid (3.0.1) stable; urgency=low
     the pthread backend. It caused some weird deadlock or behavior
     depending on the pthread implementation. [AL]
   * Bugfix: get the exceptions raised in the simulator repport where
-    and why they come from when they are not catched in time [AL, MQ]
+    and why they come from when they are not caught in time [AL, MQ]
 
   SURF:
   * Bugfix: Do repport the error when two non-connected hosts try to
@@ -3143,7 +3143,7 @@ SimGrid (2.96) unstable; urgency=low
   * New! Exception handling with setjmp or such (code from OSSP ex) [MQ]
     This deprecates the xbt_error_t mechanisms.
     It modifies (simplifies) all XBT and GRAS API.
-    MSG API keeps unchanged (exceptions raised by XBT are catched from
+    MSG API keeps unchanged (exceptions raised by XBT are caught from
      within MSG and masked with existing error handling facilities)
 
   SURF:
