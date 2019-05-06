@@ -121,27 +121,9 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
 
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
-  /* HACK, Horrible hack to find the offset of the id in the simgrid::s4u::Host.
-
-     Offsetof is not supported for non-POD types but this should
-     work in practice for the targets currently supported by the MC
-     as long as we do not add funny features to the Host class
-     (such as virtual base).
-
-     We are using a (C++11) unrestricted union in order to avoid
-     any construction/destruction of the simgrid::s4u::Host.
-  */
-  union fake_host {
-    simgrid::s4u::Host host;
-    fake_host() { /* Nothing to do*/}
-    ~fake_host() { /* Nothing to do*/}
-  };
-  fake_host foo;
-  const size_t offset = (char*)&foo.host.get_name() - (char*)&foo.host;
-
   // Read the simgrid::xbt::string in the MCed process:
   simgrid::mc::ActorInformation* info     = actor_info_cast(actor);
-  auto remote_string_address              = remote((simgrid::xbt::string_data*)((char*)actor->get_host() + offset));
+  auto remote_string_address              = remote((simgrid::xbt::string_data*)&actor->get_host()->get_name());
   simgrid::xbt::string_data remote_string = process->read(remote_string_address);
   char hostname[remote_string.len];
   process->read_bytes(hostname, remote_string.len + 1, remote(remote_string.data));
