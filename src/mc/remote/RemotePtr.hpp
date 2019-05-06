@@ -32,7 +32,7 @@ private:
 
 public:
   Remote() = default;
-  Remote(T const& p) { std::memcpy(&buffer, &p, sizeof buffer); }
+  explicit Remote(T const& p) { std::memcpy(&buffer, &p, sizeof buffer); }
 
   T* getBuffer() { return reinterpret_cast<T*>(&buffer); }
   const T* getBuffer() const { return reinterpret_cast<const T*>(&buffer); }
