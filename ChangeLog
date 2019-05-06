@@ -1,7 +1,5 @@
 SimGrid (3.23) NOT RELEASED (Release Target: June 21. 2019, 15:54 UTC)
 
-This was released as 3.22.2 as is, in the hope it will help you.
-
 General:
  - Stop setting random seed with srand48() at initialization.
 
