@@ -335,7 +335,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
         : simcall_mutex_trylock__get__mutex(req)
       ));
     args = bprintf(
-        "locked = %d, owner = %d, sleeping = n/a", mutex.getBuffer()->locked_,
+        "locked = %d, owner = %d, sleeping = n/a", mutex.getBuffer()->is_locked(),
         mutex.getBuffer()->owner_ != nullptr
             ? (int)mc_model_checker->process().resolveActor(simgrid::mc::remote(mutex.getBuffer()->owner_))->get_pid()
             : -1);

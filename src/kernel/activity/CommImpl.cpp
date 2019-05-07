@@ -73,7 +73,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
   }
 
   if (detached) {
-    other_comm->detached_ = true;
+    other_comm->detach();
     other_comm->clean_fun = clean_fun;
   } else {
     other_comm->clean_fun = nullptr;
@@ -137,8 +137,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(
       if (other_comm->surf_action_ && other_comm->get_remaining() < 1e-12) {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
         other_comm->state_ = SIMIX_DONE;
-        other_comm->set_type(simgrid::kernel::activity::CommImpl::Type::DONE);
-        other_comm->mbox   = nullptr;
+        other_comm->set_type(simgrid::kernel::activity::CommImpl::Type::DONE).set_mailbox(nullptr);
       }
     }
   } else {
@@ -340,8 +339,8 @@ void SIMIX_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, 
 {
   XBT_DEBUG("Copy the data over");
   memcpy(comm->dst_buff_, buff, buff_size);
-  if (comm->detached_) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the
-                        // original buffer available to the application ASAP
+  if (comm->detached()) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the
+                          // original buffer available to the application ASAP
     xbt_free(buff);
     comm->src_buff_ = nullptr;
   }
@@ -379,6 +378,11 @@ CommImpl& CommImpl::set_rate(double rate)
   rate_ = rate;
   return *this;
 }
+CommImpl& CommImpl::set_mailbox(MailboxImpl* mbox)
+{
+  mbox_ = mbox;
+  return *this;
+}
 
 CommImpl& CommImpl::set_src_buff(unsigned char* buff, size_t size)
 {
@@ -394,6 +398,12 @@ CommImpl& CommImpl::set_dst_buff(unsigned char* buff, size_t* size)
   return *this;
 }
 
+CommImpl& CommImpl::detach()
+{
+  detached_ = true;
+  return *this;
+}
+
 CommImpl::~CommImpl()
 {
   XBT_DEBUG("Really free communication %p in state %d (detached = %d)", this, static_cast<int>(state_), detached_);
@@ -406,8 +416,8 @@ CommImpl::~CommImpl()
     if (clean_fun)
       clean_fun(src_buff_);
     src_buff_ = nullptr;
-  } else if (mbox) {
-    mbox->remove(this);
+  } else if (mbox_) {
+    mbox_->remove(this);
   }
 }
 
@@ -459,7 +469,7 @@ void CommImpl::copy_data()
 {
   size_t buff_size = src_buff_size_;
   /* If there is no data to copy then return */
-  if (not src_buff_ || not dst_buff_ || copied)
+  if (not src_buff_ || not dst_buff_ || copied_)
     return;
 
   XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)", this,
@@ -483,7 +493,7 @@ void CommImpl::copy_data()
 
   /* Set the copied flag so we copy data only once */
   /* (this function might be called from both communication ends) */
-  copied = true;
+  copied_ = true;
 }
 
 void CommImpl::suspend()
@@ -507,7 +517,7 @@ void CommImpl::cancel()
   /* if the synchro is a waiting state means that it is still in a mbox so remove from it and delete it */
   if (state_ == SIMIX_WAITING) {
     if (not detached_) {
-      mbox->remove(this);
+      mbox_->remove(this);
       state_ = SIMIX_CANCELED;
     }
   } else if (not MC_is_active() /* when running the MC there are no surf actions */
@@ -588,8 +598,8 @@ void CommImpl::finish()
     }
 
     /* If the synchro is still in a rendez-vous point then remove from it */
-    if (mbox)
-      mbox->remove(this);
+    if (mbox_)
+      mbox_->remove(this);
 
     XBT_DEBUG("CommImpl::finish(): synchro state = %d", static_cast<int>(state_));
 

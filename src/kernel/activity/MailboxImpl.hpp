@@ -22,6 +22,9 @@ namespace activity {
 class MailboxImpl {
   static constexpr size_t MAX_MAILBOX_SIZE = 10000000;
 
+  s4u::Mailbox piface_;
+  xbt::string name_;
+
   friend s4u::Mailbox;
   friend s4u::Mailbox* s4u::Mailbox::by_name(const std::string& name);
   friend mc::CommunicationDeterminismChecker;
@@ -43,11 +46,6 @@ public:
   CommImplPtr find_matching_comm(CommImpl::Type type, int (*match_fun)(void*, void*, CommImpl*), void* this_user_data,
                                  const CommImplPtr& my_synchro, bool done, bool remove_matching);
 
-private:
-  s4u::Mailbox piface_;
-  xbt::string name_;
-
-public:
   actor::ActorImplPtr permanent_receiver_; // actor to which the mailbox is attached
   boost::circular_buffer_space_optimized<CommImplPtr> comm_queue_;
   boost::circular_buffer_space_optimized<CommImplPtr> done_comm_queue_; // messages already received in the permanent

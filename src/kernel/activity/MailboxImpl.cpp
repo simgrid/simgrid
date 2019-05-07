@@ -64,7 +64,7 @@ void MailboxImpl::set_receiver(s4u::ActorPtr actor)
  */
 void MailboxImpl::push(CommImplPtr comm)
 {
-  comm->mbox = this;
+  comm->set_mailbox(this);
   this->comm_queue_.push_back(std::move(comm));
 }
 
@@ -73,9 +73,10 @@ void MailboxImpl::push(CommImplPtr comm)
  */
 void MailboxImpl::remove(const CommImplPtr& comm)
 {
-  xbt_assert(comm->mbox == this, "Comm %p is in mailbox %s, not mailbox %s", comm.get(),
-             (comm->mbox ? comm->mbox->get_cname() : "(null)"), this->get_cname());
-  comm->mbox = nullptr;
+  xbt_assert(comm->get_mailbox() == this, "Comm %p is in mailbox %s, not mailbox %s", comm.get(),
+             (comm->get_mailbox() ? comm->get_mailbox()->get_cname() : "(null)"), this->get_cname());
+
+  comm->set_mailbox(nullptr);
   for (auto it = this->comm_queue_.begin(); it != this->comm_queue_.end(); it++)
     if (*it == comm) {
       this->comm_queue_.erase(it);
@@ -140,9 +141,9 @@ CommImplPtr MailboxImpl::find_matching_comm(CommImpl::Type type, int (*match_fun
         (not comm->match_fun || comm->match_fun(other_user_data, this_user_data, my_synchro.get()))) {
       XBT_DEBUG("Found a matching communication synchro %p", comm.get());
 #if SIMGRID_HAVE_MC
-      comm->mbox_cpy = comm->mbox;
+      comm->mbox_cpy = comm->get_mailbox();
 #endif
-      comm->mbox = nullptr;
+      comm->set_mailbox(nullptr);
       CommImplPtr comm_cpy = comm;
       if (remove_matching)
         comm_queue.erase(it);
