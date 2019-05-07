@@ -11,6 +11,12 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 #define FINALIZE ((void*)221297)        /* a magic number to tell people to stop working */
 
+static void task_cleanup_handler(void* task)
+{
+  if (task)
+    MSG_task_destroy(task);
+}
+
 static int master(int argc, char *argv[])
 {
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
@@ -95,7 +101,9 @@ static int worker(int argc, char *argv[])
         break;
       }
       XBT_INFO("Start execution...");
+      MSG_process_set_data(MSG_process_self(), task);
       retcode = MSG_task_execute(task);
+      MSG_process_set_data(MSG_process_self(), NULL);
       if (retcode == MSG_OK) {
         XBT_INFO("Execution complete.");
         MSG_task_destroy(task);
@@ -123,6 +131,7 @@ int main(int argc, char *argv[])
 
   MSG_function_register("master", master);
   MSG_function_register("worker", worker);
+  MSG_process_set_data_cleanup(task_cleanup_handler);
   MSG_launch_application(argv[2]);
 
   msg_error_t res = MSG_main();
