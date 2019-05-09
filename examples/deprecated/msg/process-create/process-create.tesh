@@ -1,4 +1,4 @@
 #!/usr/bin/env tesh
 
 p Start remote processes 
-$ $SG_TEST_EXENV ${bindir:=.}/process-create$EXEEXT ${platfdir}/small_platform.xml
+$ ${bindir:=.}/process-create ${platfdir}/small_platform.xml

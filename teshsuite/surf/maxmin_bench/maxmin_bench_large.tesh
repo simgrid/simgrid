@@ -3,7 +3,7 @@
 ! timeout 300
 ! expect return 0
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench big 1
+$ ${bindir:=.}/maxmin_bench big 1
 > Starting 0: (807)
 > Starting to solve(812)
 > 1x One shot execution time for a total of 2000 constraints, 2000 variables with 96 active constraint each, concurrency in [32,288] and max concurrency share 2

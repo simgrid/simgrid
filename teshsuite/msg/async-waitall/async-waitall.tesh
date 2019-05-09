@@ -2,7 +2,7 @@
 p Test1 MSG_comm_waitall() for sender
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/async-waitall ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/async-waitall_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/async-waitall ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/async-waitall_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_0
 > [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_1
 > [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_2

@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 p Let's filter some hosts...
-$ ${bindir:=.}/s4u-engine-filtering$EXEEXT ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:CM02 --cfg=network/crosstraffic:no
+$ ${bindir:=.}/s4u-engine-filtering ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:CM02 --cfg=network/crosstraffic:no
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to 'no'
 > [  0.000000] (0:maestro@) Hosts currently registered with this engine: 3

@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 p Tracing user variables for hosts
-$ $SG_TEST_EXENV ${bindir:=.}/trace-host-user-variables$EXEEXT --cfg=tracing:yes --cfg=tracing/platform:yes ${platfdir}/small_platform.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml
+$ ${bindir:=.}/trace-host-user-variables --cfg=tracing:yes --cfg=tracing/platform:yes ${platfdir}/small_platform.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to 'yes'
 > [0.004078] [msg_test/INFO] Declared host variables:
@@ -19,4 +19,4 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace-host-user-variables$EXEEXT --cfg=tracing:yes
 $ rm -f simgrid.trace
 
 p Not tracing user variables
-$ $SG_TEST_EXENV ${bindir:=.}/trace-host-user-variables$EXEEXT ${platfdir}/small_platform.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml
+$ ${bindir:=.}/trace-host-user-variables ${platfdir}/small_platform.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml

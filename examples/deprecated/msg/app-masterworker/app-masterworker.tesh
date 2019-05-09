@@ -3,7 +3,7 @@
 p Testing a simple master/worker example application (mailbox version)
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/app-masterworker$EXEEXT ${platfdir}/small_platform_with_routers.xml ${srcdir}/app-masterworker_d.xml --cfg=network/crosstraffic:0 --trace "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/app-masterworker ${platfdir}/small_platform_with_routers.xml ${srcdir}/app-masterworker_d.xml --cfg=network/crosstraffic:0 --trace "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to '0'
 > [  0.000000] (1:master@Tremblay) Got 5 workers and 20 tasks to process
 > [  0.000000] (1:master@Tremblay) Sending "Task_0" (of 20) to mailbox "worker-0"
@@ -34,7 +34,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/app-masterworker$EXEEXT ${platfdir}/small_platform
 > [  5.094868] (0:maestro@) Simulation time 5.09487
 > [  5.094868] (6:worker@Bourassa) I'm done. See you!
 
-$ $SG_TEST_EXENV ${bindir:=.}/app-masterworker$EXEEXT ${platfdir}/small_platform_with_routers.xml ${srcdir}/app-masterworker_d.xml --trace "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/app-masterworker ${platfdir}/small_platform_with_routers.xml ${srcdir}/app-masterworker_d.xml --trace "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:master@Tremblay) Got 5 workers and 20 tasks to process
 > [  0.000000] (1:master@Tremblay) Sending "Task_0" (of 20) to mailbox "worker-0"
 > [  0.002265] (1:master@Tremblay) Sending "Task_1" (of 20) to mailbox "worker-1"
