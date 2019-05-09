@@ -119,7 +119,7 @@ int Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
 
   xbt_assert(ref, "Cannot match recv against null reference");
   xbt_assert(req, "Cannot match recv against null request");
-  if((ref->src_ == MPI_ANY_SOURCE || req->src_ == ref->src_)
+  if(((ref->src_ == MPI_ANY_SOURCE  && (ref->comm_->group()->rank(req->src_) != MPI_UNDEFINED)) || req->src_ == ref->src_)
     && ((ref->tag_ == MPI_ANY_TAG && req->tag_ >=0) || req->tag_ == ref->tag_)){
     //we match, we can transfer some values
     if(ref->src_ == MPI_ANY_SOURCE)
@@ -145,7 +145,7 @@ int Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl*)
   xbt_assert(ref, "Cannot match send against null reference");
   xbt_assert(req, "Cannot match send against null request");
 
-  if((req->src_ == MPI_ANY_SOURCE || req->src_ == ref->src_)
+  if(((req->src_ == MPI_ANY_SOURCE  && (req->comm_->group()->rank(ref->src_) != MPI_UNDEFINED)) || req->src_ == ref->src_)
       && ((req->tag_ == MPI_ANY_TAG && ref->tag_ >=0)|| req->tag_ == ref->tag_)){
     if(req->src_ == MPI_ANY_SOURCE)
       req->real_src_ = ref->src_;
