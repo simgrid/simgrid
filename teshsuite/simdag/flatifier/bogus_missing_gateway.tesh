@@ -1,12 +1,12 @@
 ! expect signal SIGABRT
-$ ${bindir:=.}/flatifier ../platforms/bogus_missing_src_gateway.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/flatifier ../platforms/bogus_missing_src_gateway.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > [  0.000000] [0:maestro@] Parse error at ../platforms/bogus_missing_src_gateway.xml:14: zoneRoute gw_src='nod-cluster_router.cluster.us' does name a node. Existing netpoints: 
 > 'node-1.cluster.us','node-2.cluster.us','node-3.cluster.us','node-4.cluster.us','node-cluster_router.cluster.us','noeud-1.grappe.fr','noeud-2.grappe.fr','noeud-3.grappe.fr','noeud-4.grappe.fr','noeud-grappe_router.grappe.fr'
 > [  0.000000] [0:maestro@] Exiting now
 
 ! expect signal SIGABRT
-$ ${bindir:=.}/flatifier ../platforms/bogus_missing_dst_gateway.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/flatifier ../platforms/bogus_missing_dst_gateway.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > [  0.000000] [0:maestro@] Parse error at ../platforms/bogus_missing_dst_gateway.xml:14: zoneRoute gw_dst='neud-grappe_router.grappe.fr' does name a node. Existing netpoints: 
 > 'node-1.cluster.us','node-2.cluster.us','node-3.cluster.us','node-4.cluster.us','node-cluster_router.cluster.us','noeud-1.grappe.fr','noeud-2.grappe.fr','noeud-3.grappe.fr','noeud-4.grappe.fr','noeud-grappe_router.grappe.fr'
