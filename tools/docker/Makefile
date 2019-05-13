@@ -5,6 +5,7 @@ default:
 	@echo "   make unstable   -> build the git version of SimGrid (with SMPI, w/o MC)"
 	@echo "   make tuto-s4u   -> build all what you need to take the S4U tutorial"
 	@echo "   make tuto-smpi  -> build all what you need to take the SMPI tutorial"
+	@echo "   make tuto-mc    -> build the git version of SimGrid (with SMPI and MC)"
 	@echo "   make all        -> build all but stable (ie, build-deps unstable tuto-s4u tuto-smpi)"
 	@echo "   make push       -> push all images to the cloud"
 	@echo "All our images are based on debian:testing"
@@ -37,6 +38,13 @@ build-deps:
 		 $(DOCKER_EXTRA) \
                  . | tee > build-deps.log
 
+tuto-mc:
+	docker build -f Dockerfile.tuto-mc \
+	         -t simgrid/tuto-mc:latest \
+                 -t simgrid/tuto-mc:$$(date --iso-8601) \
+		 $(DOCKER_EXTRA) \
+                 . | tee > tuto-mc.log
+
 build-deps-stable:
 	docker build -f Dockerfile.build-deps-stable \
 	         -t simgrid/build-deps-stable:latest \
@@ -64,3 +72,4 @@ push:
 	docker push simgrid/unstable
 	docker push simgrid/tuto-s4u
 	docker push simgrid/tuto-smpi
+	docker push simgrid/tuto-mc
