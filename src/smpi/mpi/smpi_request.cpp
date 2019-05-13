@@ -640,6 +640,7 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
     try{
       i = simcall_comm_testany(comms.data(), comms.size()); // The i-th element in comms matches!
     } catch (const xbt_ex&) {
+      XBT_DEBUG("Exception in testany");
       return 0;
     }
     
@@ -666,6 +667,7 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
 
         if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags_ & MPI_REQ_NON_PERSISTENT)) 
           requests[*index] = MPI_REQUEST_NULL;
+        XBT_DEBUG("Testany - returning with index %d", *index);
         *flag=1;
       }
       nsleeps = 1;
@@ -673,8 +675,10 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
       nsleeps++;
     }
   } else {
+      XBT_DEBUG("Testany on inactive handles, returning flag=1 but empty status");
       //all requests are null or inactive, return true
       *flag = 1;
+      *index = MPI_UNDEFINED;
       Status::empty(status);
   }
 
