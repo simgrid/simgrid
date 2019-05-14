@@ -34,9 +34,11 @@ private:
   explicit Io(sg_storage_t storage, sg_size_t size, OpType type);
 
 public:
+#ifndef DOXYGEN
   friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Io* i);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Io* i);
   friend Storage; // Factory of IOs
+#endif
 
   ~Io() = default;
 
