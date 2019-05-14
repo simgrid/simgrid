@@ -98,17 +98,17 @@ public:
    * @return The StorageAction corresponding to the writing
    */
   virtual StorageAction* write(sg_size_t size) = 0;
-  virtual std::string getHost() { return attach_; }
+  const std::string& get_host() const { return attach_; }
 
-  lmm::Constraint* constraintWrite_; /* Constraint for maximum write bandwidth*/
-  lmm::Constraint* constraintRead_;  /* Constraint for maximum write bandwidth*/
+  lmm::Constraint* constraint_write_; /* Constraint for maximum write bandwidth*/
+  lmm::Constraint* constraint_read_;  /* Constraint for maximum write bandwidth*/
 
   std::string typeId_;
   std::string content_name_; // Only used at parsing time then goes to the FileSystemExtension
   sg_size_t size_;          // Only used at parsing time then goes to the FileSystemExtension
 
 private:
-  bool currentlyDestroying_ = false;
+  bool currently_destroying_ = false;
   // Name of the host to which this storage is attached. Only used at platform parsing time, then the interface stores
   // the Host directly.
   std::string attach_;
