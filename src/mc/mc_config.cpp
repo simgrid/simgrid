@@ -54,7 +54,7 @@ simgrid::config::Flag<bool> _sg_mc_timeout{
 int _sg_do_model_check = 0;
 int _sg_mc_max_visited_states = 0;
 
-simgrid::config::Flag<bool> _sg_do_model_check_record{"model-check/record", "Record the model-checking paths", false};
+simgrid::config::Flag<bool> _sg_do_model_check_record{"model-check/record", "Record the model-checking paths", true};
 
 simgrid::config::Flag<int> _sg_mc_checkpoint{
     "model-check/checkpoint", "Specify the amount of steps between checkpoints during stateful model-checking "

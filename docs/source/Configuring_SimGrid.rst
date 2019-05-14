@@ -684,24 +684,21 @@ it could be. For this reason, it is currently disabled by default.
 .. _cfg=model-check/record:
 .. _cfg=model-check/replay:
 
-Record/Replay of Verification
-.............................
+Recording and replaying verifications
+.....................................
 
-As the model-checker keeps jumping at different places in the execution graph,
-it is difficult to understand what happens when trying to debug an application
-under the model-checker. Event the output of the program is difficult to
-interpret. Moreover, the model-checker does not behave nicely with advanced
-debugging tools such as valgrind. For those reason, to identify a trajectory
-in the execution graph with the model-checker and replay this trajcetory and
-without the model-checker black-magic but with more standard tools
-(such as a debugger, valgrind, etc.). For this reason, Simgrid implements an
-experimental record/replay functionnality in order to record a trajectory with
-the model-checker and replay it without the model-checker.
+Debugging the problems reported by the model-checker is challenging: First, the
+application under verification cannot be debugged with gdb because the
+model-checker already traces it. Then, the model-checker may explore several
+execution paths before encountering the issue, making it very difficult to
+understand the outputs. Fortunately, SimGrid provides the execution path leading
+to any reported issue so that you can replay this path out of the model checker,
+enabling the usage of classical debugging tools.
 
 When the model-checker finds an interesting path in the application
 execution graph (where a safety or liveness property is violated), it
 can generate an identifier for this path. To enable this behavious the
-``model-check/record`` must be set to **yes**, which is not the case
+``model-check/record`` must be set to **yes**, which is the case
 by default.
 
 Here is an example of output:
@@ -713,9 +710,9 @@ Here is an example of output:
    [  0.000000] (0:@) *** PROPERTY NOT VALID ***
    [  0.000000] (0:@) **************************
    [  0.000000] (0:@) Counter-example execution trace:
+   [  0.000000] (0:@)   [(1)Tremblay (app)] MC_RANDOM(3)
+   [  0.000000] (0:@)   [(1)Tremblay (app)] MC_RANDOM(4)
    [  0.000000] (0:@) Path = 1/3;1/4
-   [  0.000000] (0:@) [(1)Tremblay (app)] MC_RANDOM(3)
-   [  0.000000] (0:@) [(1)Tremblay (app)] MC_RANDOM(4)
    [  0.000000] (0:@) Expanded states = 27
    [  0.000000] (0:@) Visited states = 68
    [  0.000000] (0:@) Executed transitions = 46
@@ -723,11 +720,8 @@ Here is an example of output:
 This path can then be replayed outside of the model-checker (and even
 in non-MC build of simgrid) by setting the ``model-check/replay`` item
 to the given path. The other options should be the same (but the
-model-checker should be disabled).
-
-The format and meaning of the path may change between different
-releases so the same release of Simgrid should be used for the record
-phase and the replay phase.
+model-checker should be disabled). Note that format and meaning of the
+path may change between different releases.
 
 Configuring the User Code Virtualization
 ----------------------------------------
