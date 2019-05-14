@@ -418,12 +418,12 @@ mode is rather experimental in SimGrid (as of v3.22). You should not
 enable it unless you really want to formally verify your applications:
 SimGrid is slower and maybe less robust when MC is enabled.
 
-  - **Failed assert**
+  - **Failing assert**
     In this example, two actors send some data to a central server,
     which asserts that the messages are always received in the same order.
     This is obviously wrong, and the model-checker correctly finds a
     counter-example to that assertion.
-    |br| `examples/s4u/mc-failed-assert/s4u-mc-failed-assert.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/mc-failed-assert/s4u-mc-failed-assert.cpp>`_
+    |br| `examples/s4u/mc-failing-assert/s4u-mc-failing-assert.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/mc-failing-assert/s4u-mc-failing-assert.cpp>`_
 
 .. |br| raw:: html
 

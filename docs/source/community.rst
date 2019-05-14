@@ -165,9 +165,9 @@ Futures and Promises
 """"""""""""""""""""
 
  - Some features are missing in the Maestro future implementation
-  (`simgrid::kernel::Future`, `simgrid::kernel::Promise`)
-  could be extended to support additional features:
-  `when_any`, `shared_future`, etc.
+   (`simgrid::kernel::Future`, `simgrid::kernel::Promise`)
+   could be extended to support additional features:
+   `when_any`, `shared_future`, etc.
 
  - The corresponding feature might then be implemented in the user process
    futures (`simgrid::simix::Future`).
