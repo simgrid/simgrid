@@ -169,7 +169,7 @@ means that the selected algorithm will be used
 MPI_Alltoall
 ^^^^^^^^^^^^
 
-Most of these are best described in `STAR-MPI <http://www.cs.arizona.edu/~dkl/research/papers/ics06.pdf>`_.
+Most of these are best described in `STAR-MPI's white paper <www.cs.fsu.edu/~xyuan/paper/06ics.pdf>`_.
 
  - default: naive one, by default
  - ompi: use openmpi selector for the alltoall operations
@@ -532,7 +532,7 @@ privatized the globals through static analysis of the source code. But
 our implementation was not robust enough to be used in production, so
 it was removed at some point. Currently, SMPI comes with two
 privatization mechanisms that you can :ref:`select at runtime
-<options_smpi_privatization>`_.  The dlopen approach is used by
+<cfg=smpi/privatization>`_.  The dlopen approach is used by
 default as it is much faster and still very robust.  The mmap approach
 is an older approach that proves to be slower.
 
