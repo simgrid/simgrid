@@ -13,7 +13,7 @@
    <br/>
 
 .. _howto:
-   
+
 Modeling Hints
 ##############
 

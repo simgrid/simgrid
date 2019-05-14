@@ -14,7 +14,7 @@ public class VM extends Host {
 	private int coreAmount = 1;
 
 	/**
-	 * Create a `basic' VM : 1 core and 1GB of RAM.
+	 * Create a `basic` VM : 1 core and 1GB of RAM.
 	 * @param host Host node
 	 * @param name name of the machine
 	 */	

@@ -89,7 +89,7 @@ interconnected as follows:
 
 This can be done with the following platform file, that considers the
 simulated platform as a graph of hosts and network links.
-	   
+
 .. literalinclude:: /tuto_smpi/3hosts.xml
    :language: xml
 
@@ -308,8 +308,8 @@ Debian and Ubuntu for example, you can get them as follows:
 
    sudo apt install simgrid pajeng make gcc g++ gfortran vite
 
-For R analysis of the produced traces, you may want to install R, 
-and the `pajengr<https://github.com/schnorr/pajengr#installation/>`_ package.
+For R analysis of the produced traces, you may want to install R,
+and the `pajengr <https://github.com/schnorr/pajengr#installation/>`_ package.
 
 .. code-block:: shell
 
@@ -486,7 +486,7 @@ is computationally hungry.
     the documentation is up-to-date.
 
 Lab 3: Execution Sampling on Matrix Multiplication example
--------------------------------
+----------------------------------------------------------
 
 The second method to speed up simulations is to sample the computation
 parts in the code.  This means that the person doing the simulation
@@ -505,13 +505,12 @@ The computing part of this example is the matrix multiplication routine
 .. literalinclude:: /tuto_smpi/gemm_mpi.cpp
    :language: c
    :lines: 4-19
-   
 
 .. code-block:: shell
 
   $ smpicc -O3 gemm_mpi.cpp -o gemm
   $ time smpirun -np 16 -platform cluster_crossbar.xml -hostfile cluster_hostfile --cfg=smpi/display-timing:yes --cfg=smpi/running-power:1000000000 ./gemm
-  
+
 This should end quite quickly, as the size of each matrix is only 1000x1000. 
 But what happens if we want to simulate larger runs ?
 Replace the size by 2000, 3000, and try again.
@@ -585,7 +584,7 @@ so these macros cannot be used when results are critical for the application beh
 
 
 Lab 4: Memory folding on large allocations
--------------------------------
+------------------------------------------
 
 Another issue that can be encountered when simulation with SMPI is lack of memory.
 Indeed we are executing all MPI processes on a single node, which can lead to crashes.
