@@ -11,18 +11,19 @@
    <br/>
 
 .. _platform_reference:
-   
+
 DTD Reference
 *************
 
-Your platform description should follow the specification presented in the 
-`simgrid.dtd <https://simgrid.org/simgrid.dtd>`_ DTD file. The same DTD is used for both platform and deployment files. 
+Your platform description should follow the specification presented in the
+`simgrid.dtd <https://simgrid.org/simgrid.dtd>`_ DTD file. The same DTD is used for both platform and deployment files.
+
+-------------------------------------------------------------------------------
 
 .. _pf_tag_config:
 
-------------------------------------------------------------------
 <config>
-------------------------------------------------------------------
+--------
 
 Adding configuration flags directly into the platform file becomes particularly useful when the realism of the described
 platform depends on some specific flags. For example, this could help you to finely tune SMPI. Almost all
@@ -50,13 +51,12 @@ has to be set to.
      <!-- The rest of your platform -->
    </platform>
 
-|hr|
-   
+-------------------------------------------------------------------------------
+
 .. _pf_tag_host:
 
-------------------------------------------------------------------
 <host>
-------------------------------------------------------------------
+------
 
 A host is the computing resource on which an actor can run. See :cpp:class:`simgrid::s4u::Host`.
 
@@ -82,8 +82,8 @@ A host is the computing resource on which an actor can run. See :cpp:class:`simg
       5 1
       LOOPAFTER 5
 
-   - At time t = 1, half of the host computational power (0.5 means 50%) is used to process some background load, hence 
-     only 50% of this initial power remains available to your own simulation. 
+   - At time t = 1, half of the host computational power (0.5 means 50%) is used to process some background load, hence
+     only 50% of this initial power remains available to your own simulation.
    - At time t = 2, the available power drops at 20% of the initial value.
    - At time t = 5, the host can compute at full speed again.
    - At time t = 10, the profile is reset (as we are 5 seconds after the last event). Then the available speed will drop
@@ -115,13 +115,12 @@ A host is the computing resource on which an actor can run. See :cpp:class:`simg
 :``pstate``: Initial pstate (default: 0, the first one).
    See :ref:`howto_dvfs`.
 
-|hr|
-   
+-------------------------------------------------------------------------------
+
 .. _pf_tag_link:
 
-------------------------------------------------------------------
 <link>
-------------------------------------------------------------------
+------
 
 SimGrid links usually represent one-hop network connections (see :cpp:class:`simgrid::s4u::Link`), i.e., a single wire. 
 They can also be used to abstract a larger network interconnect, e.g., the entire transcontinental network, into a 
@@ -178,7 +177,7 @@ single element.
    names are suffixed with "_UP" and "_DOWN"). Then you must specify
    which direction gets actually used when referring to that link in a
    :ref:`pf_tag_link_ctn`.
-	
+
 :``bandwidth_file``: File containing the bandwidth profile.
    Almost every lines of such files describe timed events as ``date
    bandwidth`` (in bytes per second).
@@ -201,9 +200,9 @@ single element.
    Almost every lines of such files describe timed events as ``date
    latency`` (in seconds).
    Example:
-		   
+
    .. code-block:: python
-		   
+
       1.0 0.001
       3.0 0.1
       LOOPAFTER 5.0
@@ -220,17 +219,16 @@ single element.
 
 :``state_file``: File containing the state profile. See :ref:`pf_tag_host`.
 
-|hr|
-	    
+-------------------------------------------------------------------------------
+
 .. _pf_tag_link_ctn:
 
-------------------------------------------------------------------
 <link_ctn>
-------------------------------------------------------------------
+----------
 
 An element in a route, representing a previously defined link.
 
-**Parent tags:** :ref:`pf_tag_route` |br| 
+**Parent tags:** :ref:`pf_tag_route` |br|
 **Children tags:** none |br|
 **Attributes:**
 
@@ -239,13 +237,12 @@ An element in a route, representing a previously defined link.
 		(with ``DOWN``) of the link. This is only valid if the
 		link has ``sharing=SPLITDUPLEX``.
 
-|hr|
+-------------------------------------------------------------------------------
 
 .. _pf_tag_peer:
 
-------------------------------------------------------------------
 <peer>
-------------------------------------------------------------------
+------
 
 This tag represents a peer, as in Peer-to-Peer (P2P) networks. It is
 handy to model situations where hosts have an asymmetric
@@ -269,7 +266,7 @@ and a download link.
 :``coordinates``: Coordinates of the gateway for this peer.
 
    The communication latency between a host A = (xA,yA,zA) and a host B = (xB,yB,zB) is computed as follows:
- 
+
    latency = sqrt( (xA-xB)² + (yA-yB)² ) + zA + zB
 
    See the documentation of
@@ -281,19 +278,18 @@ and a download link.
 :``state_file``: File containing the state profile.
    See the full description in :ref:`pf_tag_host`
 
-|hr|
+-------------------------------------------------------------------------------
 
 .. _pf_tag_platform:
 
-------------------------------------------------------------------
 <platform>
-------------------------------------------------------------------
+----------
 
 **Parent tags:** none (this is the root tag of every file) |br|
 **Children tags:** :ref:`pf_tag_config` (must come first),
 :ref:`pf_tag_cluster`, :ref:`pf_tag_cabinet`, :ref:`pf_tag_peer`,
 :ref:`pf_tag_zone`, :ref:`pf_tag_trace`, :ref:`pf_tag_trace_connect` |br|
-**Attributes:** 
+**Attributes:**
 
 :``version``: Version of the DTD, describing the whole XML format.
 	      This versionning allow future evolutions, even if we
@@ -302,13 +298,12 @@ and a download link.
 	      upgrade most of the past platform files to the most recent
 	      formalism.
 
-|hr|
-	      
+-------------------------------------------------------------------------------
+
 .. _pf_tag_prop:
 
-------------------------------------------------------------------
 <prop>
-------------------------------------------------------------------
+------
 
 This tag can be used to attach user-defined properties to some
 platform elements. Both the name and the value can be any string of
@@ -333,17 +328,16 @@ following functions:
 :``id``: Name of the defined property.
 :``value``: Value of the defined property.
 
-|hr|
-	    
+-------------------------------------------------------------------------------
+
 .. _pf_tag_route:
 
-------------------------------------------------------------------
 <route>
-------------------------------------------------------------------
+-------
 
-A path between two network locations, composed of several :ref:`pf_tag_link`s. 
+A path between two network locations, composed of several :ref:`pf_tag_link`s.
 
-**Parent tags:** :ref:`pf_tag_zone` |br| 
+**Parent tags:** :ref:`pf_tag_zone` |br|
 **Children tags:** :ref:`pf_tag_link_ctn` |br|
 **Attributes:**
 
@@ -353,11 +347,10 @@ A path between two network locations, composed of several :ref:`pf_tag_link`s.
 		  are defining the route ``dst -> src`` at the same
 		  time. Valid values: ``yes``, ``no``,``YES``, ``NO``.
 
-|hr|
+-------------------------------------------------------------------------------
 
 .. _pf_tag_router:
 
-------------------------------------------------------------------
 <router>
 ------------------------------------------------------------------
 
@@ -372,34 +365,29 @@ break the routes that are longer than 1 hop.
 
 :``id``: Router name.
    No other host or router may have the same name over the whole platform.
-:``coordinates``: Vivaldi coordinates. See :ref:`pf_tag_peer`.	    
+:``coordinates``: Vivaldi coordinates. See :ref:`pf_tag_peer`.
 
-|hr|
+-------------------------------------------------------------------------------
 
 .. _pf_tag_zone:
 
-------------------------------------------------------------------
 <zone>
-------------------------------------------------------------------
+------
 
 A networking zone is an area in which elements are located. See :cpp:class:`simgrid::s4u::Zone`.
 
 **Parent tags:** :ref:`pf_tag_platform`, :ref:`pf_tag_zone` (only internal nodes, i.e., zones
 containing only inner zones or clusters but no basic
-elements such as host or peer) |br| 
+elements such as host or peer) |br|
 **Children tags (if internal zone):** :ref:`pf_tag_cluster`, :ref:`pf_tag_link`, :ref:`pf_tag_zone` |br|
 **Children tags (if leaf zone):** :ref:`pf_tag_host`, :ref:`pf_tag_link`, :ref:`pf_tag_peer` |br|
 **Attributes:**
 
 :``id``: Zone name.
    No other zone may have the same name over the whole platform.
-:``routing``: Routing algorithm to use. 
+:``routing``: Routing algorithm to use.
 
 
 .. |br| raw:: html
 
    <br />
-
-.. |hr| raw:: html
-
-   <hr />
