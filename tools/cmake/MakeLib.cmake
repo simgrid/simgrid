@@ -42,7 +42,7 @@ endif()
 # Compute the dependencies of SimGrid
 #####################################
 # search for dlopen
-if("${CMAKE_SYSTEM_NAME}" MATCHES "kFreeBSD|Linux")
+if("${CMAKE_SYSTEM_NAME}" MATCHES "kFreeBSD|Linux|SunOS")
   find_library(DL_LIBRARY dl)
 endif()
 mark_as_advanced(DL_LIBRARY)
