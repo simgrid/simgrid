@@ -82,7 +82,7 @@ public:
   void turn_off() override;
 
   void destroy(); // Must be called instead of the destructor
-  virtual Action* io_start(sg_size_t size, s4u::Io::OpType type) = 0;
+  virtual StorageAction* io_start(sg_size_t size, s4u::Io::OpType type) = 0;
   /**
    * @brief Read a file
    *

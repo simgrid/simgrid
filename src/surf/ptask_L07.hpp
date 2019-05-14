@@ -42,8 +42,8 @@ public:
 
   double next_occuring_event(double now) override;
   void update_actions_state(double now, double delta) override;
-  kernel::resource::Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
-                                             const double* bytes_amount, double rate) override;
+  kernel::resource::CpuAction* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
+                                                const double* bytes_amount, double rate) override;
 };
 
 class CpuL07Model : public kernel::resource::CpuModel {
@@ -83,13 +83,13 @@ public:
   ~CpuL07() override;
   bool is_used() override;
   void apply_event(kernel::profile::Event* event, double value) override;
-  kernel::resource::Action* execution_start(double size) override;
-  kernel::resource::Action* execution_start(double, int) override
+  kernel::resource::CpuAction* execution_start(double size) override;
+  kernel::resource::CpuAction* execution_start(double, int) override
   {
     THROW_UNIMPLEMENTED;
     return nullptr;
   }
-  kernel::resource::Action* sleep(double duration) override;
+  kernel::resource::CpuAction* sleep(double duration) override;
 
 protected:
   void on_speed_change() override;
@@ -112,10 +112,10 @@ public:
  * Action *
  **********/
 class L07Action : public kernel::resource::CpuAction {
-  friend Action *CpuL07::execution_start(double size);
-  friend Action *CpuL07::sleep(double duration);
-  friend Action* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
-                                                const double* bytes_amount, double rate);
+  friend CpuAction* CpuL07::execution_start(double size);
+  friend CpuAction* CpuL07::sleep(double duration);
+  friend CpuAction* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
+                                                   const double* bytes_amount, double rate);
   friend Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
 
 public:

@@ -112,7 +112,7 @@ public:
 
   bool is_used() override;
   CpuAction* execution_start(double size) override;
-  Action* execution_start(double, int) override
+  CpuAction* execution_start(double, int) override
   {
     THROW_UNIMPLEMENTED;
     return nullptr;
