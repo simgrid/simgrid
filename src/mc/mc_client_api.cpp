@@ -12,6 +12,7 @@
 #include "src/mc/mc_ignore.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
+#include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/Client.hpp"
 #include "src/mc/remote/mc_protocol.h"
 
@@ -29,8 +30,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client_api, mc,
 void MC_assert(int prop)
 {
   xbt_assert(mc_model_checker == nullptr);
-  if (MC_is_active() && not prop)
-    simgrid::mc::Client::get()->reportAssertionFailure();
+  if (not prop) {
+    if (MC_is_active())
+      simgrid::mc::Client::get()->reportAssertionFailure();
+    if (MC_record_replay_is_active())
+      xbt_die("MC assertion failed");
+  }
 }
 
 void MC_cut()
