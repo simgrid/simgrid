@@ -50,8 +50,80 @@ rm consoleText
 
 
 echo "<br>Description of the nodes - Automatically updated by project_description.sh script - Don't edit here<br><br>
-<table id="configuration-matrix"> 
-<tr class="matrix-row">  <td class="matrix-header" style="min-width:75px">Name of the Builder</td><td class="matrix-header" style="min-width:75px">OS</td><td class="matrix-header" style="min-width:75px">Compiler</td><td class="matrix-header" style="min-width:75px">Boost</td><td class="matrix-header" style="min-width:75px">Java</td><td class="matrix-header" style="min-width:75px">Cmake</td><td class="matrix-header" style="min-width:50px">NS3</td><td class="matrix-header" style="min-width:50px">Python</td></tr>"
+<script>
+function compareVersion(v1, v2) {
+    if (typeof v1 !== 'string') return false;
+    if (typeof v2 !== 'string') return false;
+    v1 = v1.split('.');
+    v2 = v2.split('.');
+    const k = Math.min(v1.length, v2.length);
+    for (let i = 0; i < k; ++ i) {
+        v1[i] = parseInt(v1[i], 10);
+        v2[i] = parseInt(v2[i], 10);
+        if (v1[i] > v2[i]) return 1;
+        if (v1[i] < v2[i]) return -1;        
+    }
+    return v1.length == v2.length ? 0: (v1.length < v2.length ? -1 : 1);
+}</script>
+<script>
+function sortTable(n, type) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("configuration-matrix");
+  switching = true;
+  //Set the sorting direction to ascending:
+  dir = "asc"; 
+  /*Make a loop that will continue until
+  no switching has been done:*/
+  while (switching) {
+    //start by saying: no switching is done:
+    switching = false;
+    rows = table.rows;
+    /*Loop through all table rows (except the
+    first, which contains table headers):*/
+    for (i = 1; i < (rows.length - 1); i++) {
+      //start by saying there should be no switching:
+      shouldSwitch = false;
+      /*Get the two elements you want to compare,
+      one from current row and one from the next:*/
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      /*check if the two rows should switch place,
+      based on the direction, asc or desc:*/
+      if (dir == "asc") {
+        if(type == "version"){
+          shouldSwitch = (compareVersion(x.innerHTML.toLowerCase(), y.innerHTML.toLowerCase()) > 0);
+        }else{
+          shouldSwitch = (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase());
+        }
+      } else if (dir == "desc") {
+        if(type == "version"){
+          shouldSwitch = (compareVersion(x.innerHTML.toLowerCase(), y.innerHTML.toLowerCase()) < 0);
+        }else{
+          shouldSwitch = (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase());
+        }
+      }
+      if (shouldSwitch)
+        break;
+    }
+    if (shouldSwitch) {
+      /*If a switch has been marked, make the switch
+      and mark that a switch has been done:*/
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      //Each time a switch is done, increase this count by 1:
+      switchcount ++;      
+    } else {
+      /*If no switching has been done AND the direction is "asc",
+      set the direction to "desc" and run the while loop again.*/
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}</script>
+<table id=configuration-matrix> 
+<tr class=matrix-row>  <td class=matrix-header style=min-width:75px onclick='sortTable(0);'>Name of the Builder</td><td class=matrix-header style=min-width:75px onclick='sortTable(1);'>OS</td><td class=matrix-header style=min-width:75px onclick='sortTable(2);'>Compiler</td><td class=matrix-header style=min-width:75px onclick='sortTable(3, 'version');'>Boost</td><td class=matrix-header style=min-width:75px onclick='sortTable(4,'version');'>Java</td><td class=matrix-header style=min-width:75px onclick='sortTable(5,'version');'>Cmake</td><td class=matrix-header style=min-width:50px onclick='sortTable(6);'>NS3</td><td class=matrix-header style=min-width:50px onclick='sortTable(7);'>Python</td></tr>"
 
 for node in "${nodes[@]}"
 do
