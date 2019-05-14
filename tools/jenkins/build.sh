@@ -26,7 +26,7 @@ fi
 
 # usage: die status message...
 die () {
-  local status=${1:-1}
+  status=${1:-1}
   shift
   [ $# -gt 0 ] || set -- "Error - Halting"
   echo "$@" >&2
