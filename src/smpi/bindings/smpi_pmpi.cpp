@@ -222,7 +222,7 @@ int PMPI_Error_string(int errorcode, char* string, int* resultlen){
       FOREACH_ERROR(GENERATE_STRING)
     };
     *resultlen = strlen(smpi_error_string[errorcode]);
-    strncpy(string, smpi_error_string[errorcode], *resultlen);
+    memcpy(string, smpi_error_string[errorcode], *resultlen*sizeof(char));
     return MPI_SUCCESS;  
   }
 }
