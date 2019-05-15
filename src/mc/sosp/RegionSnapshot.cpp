@@ -36,44 +36,6 @@ static inline const char* to_cstr(RegionType region)
   }
 }
 
-Buffer::Buffer(std::size_t size, Type type) : size_(size), type_(type)
-{
-  switch (type_) {
-    case Type::Malloc:
-      data_ = ::operator new(size_);
-      break;
-    case Type::Mmap:
-      data_ = ::mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
-      if (data_ == MAP_FAILED) {
-        data_ = nullptr;
-        size_ = 0;
-        type_ = Type::Malloc;
-        throw std::bad_alloc();
-      }
-      break;
-    default:
-      abort();
-  }
-}
-
-void Buffer::clear() noexcept
-{
-  switch (type_) {
-    case Type::Malloc:
-      ::operator delete(data_);
-      break;
-    case Type::Mmap:
-      if (munmap(data_, size_) != 0)
-        abort();
-      break;
-    default:
-      abort();
-  }
-  data_ = nullptr;
-  size_ = 0;
-  type_ = Type::Malloc;
-}
-
 RegionSnapshot dense_region(RegionType region_type, void* start_addr, void* permanent_addr, size_t size)
 {
   simgrid::mc::Buffer data = Buffer::malloc(size);

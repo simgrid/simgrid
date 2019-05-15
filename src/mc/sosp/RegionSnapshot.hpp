@@ -28,42 +28,43 @@ enum class StorageType { NoData = 0, Flat = 1, Chunked = 2, Privatized = 3 };
 
 class Buffer {
 private:
-  enum class Type { Malloc, Mmap };
   void* data_ = nullptr;
   std::size_t size_;
-  Type type_ = Type::Malloc;
 
-  Buffer(std::size_t size, Type type = Type::Malloc);
-  Buffer(void* data, std::size_t size, Type type = Type::Malloc) : data_(data), size_(size), type_(type) {}
+  Buffer(std::size_t size) : size_(size) { data_ = ::operator new(size_); }
+
+  Buffer(void* data, std::size_t size) : data_(data), size_(size) {}
 
 public:
   Buffer() = default;
-  void clear() noexcept;
+  void clear() noexcept
+  {
+    ::operator delete(data_);
+    data_ = nullptr;
+    size_ = 0;
+  }
+
   ~Buffer() noexcept { clear(); }
 
-  static Buffer malloc(std::size_t size) { return Buffer(size, Type::Malloc); }
-  static Buffer mmap(std::size_t size) { return Buffer(size, Type::Mmap); }
+  static Buffer malloc(std::size_t size) { return Buffer(size); }
 
   // No copy
   Buffer(Buffer const& buffer) = delete;
   Buffer& operator=(Buffer const& buffer) = delete;
 
   // Move
-  Buffer(Buffer&& that) noexcept : data_(that.data_), size_(that.size_), type_(that.type_)
+  Buffer(Buffer&& that) noexcept : data_(that.data_), size_(that.size_)
   {
     that.data_ = nullptr;
     that.size_ = 0;
-    that.type_ = Type::Malloc;
   }
   Buffer& operator=(Buffer&& that) noexcept
   {
     clear();
     data_      = that.data_;
     size_      = that.size_;
-    type_      = that.type_;
     that.data_ = nullptr;
     that.size_ = 0;
-    that.type_ = Type::Malloc;
     return *this;
   }
 
