@@ -317,21 +317,12 @@ int mmalloc_compare_heap(
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
   /* Start comparison */
-  size_t i1;
-  size_t i2;
-  size_t j1;
-  size_t j2;
-  size_t k;
-  void* addr_block1;
-  void* addr_block2;
-  void* addr_frag1;
-  void* addr_frag2;
   int nb_diff1 = 0;
   int nb_diff2 = 0;
-  int equal;
+  bool equal;
 
   /* Check busy blocks */
-  i1 = 1;
+  size_t i1 = 1;
 
   malloc_info heapinfo_temp1;
   malloc_info heapinfo_temp2;
@@ -364,14 +355,14 @@ int mmalloc_compare_heap(
       abort();
     }
 
-    addr_block1 = ((void*)(((ADDR2UINT(i1)) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase));
+    void* addr_block1 = ((void*)(((ADDR2UINT(i1)) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase));
 
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED) {       /* Large block */
 
       if (is_stack(addr_block1)) {
-        for (k = 0; k < heapinfo1->busy_block.size; k++)
+        for (size_t k = 0; k < heapinfo1->busy_block.size; k++)
           state.equals_to1_(i1 + k, 0) = HeapArea(i1, -1);
-        for (k = 0; k < heapinfo2->busy_block.size; k++)
+        for (size_t k = 0; k < heapinfo2->busy_block.size; k++)
           state.equals_to2_(i1 + k, 0) = HeapArea(i1, -1);
         i1 += heapinfo1->busy_block.size;
         continue;
@@ -382,27 +373,27 @@ int mmalloc_compare_heap(
         continue;
       }
 
-      i2          = 1;
-      equal       = 0;
+      size_t i2 = 1;
+      equal     = false;
 
       /* Try first to associate to same block in the other heap */
       if (heapinfo2->type == heapinfo1->type && state.equals_to2_(i1, 0).valid_ == 0) {
-        addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
+        void* addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
         int res_compare = compare_heap_area(state, simgrid::mc::ProcessIndexMissing, addr_block1, addr_block2,
                                             snapshot1, snapshot2, nullptr, nullptr, 0);
         if (res_compare != 1) {
-          for (k = 1; k < heapinfo2->busy_block.size; k++)
+          for (size_t k = 1; k < heapinfo2->busy_block.size; k++)
             state.equals_to2_(i1 + k, 0) = HeapArea(i1, -1);
-          for (k = 1; k < heapinfo1->busy_block.size; k++)
+          for (size_t k = 1; k < heapinfo1->busy_block.size; k++)
             state.equals_to1_(i1 + k, 0) = HeapArea(i1, -1);
-          equal = 1;
+          equal = true;
           i1 += heapinfo1->busy_block.size;
         }
       }
 
       while (i2 < state.heaplimit && not equal) {
 
-        addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
+        void* addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
 
         if (i2 == i1) {
           i2++;
@@ -425,11 +416,11 @@ int mmalloc_compare_heap(
                                             snapshot1, snapshot2, nullptr, nullptr, 0);
 
         if (res_compare != 1) {
-          for (k = 1; k < heapinfo2b->busy_block.size; k++)
+          for (size_t k = 1; k < heapinfo2b->busy_block.size; k++)
             state.equals_to2_(i2 + k, 0) = HeapArea(i1, -1);
-          for (k = 1; k < heapinfo1->busy_block.size; k++)
+          for (size_t k = 1; k < heapinfo1->busy_block.size; k++)
             state.equals_to1_(i1 + k, 0) = HeapArea(i2, -1);
-          equal = 1;
+          equal = true;
           i1 += heapinfo1->busy_block.size;
         }
 
@@ -444,7 +435,7 @@ int mmalloc_compare_heap(
 
     } else {                    /* Fragmented block */
 
-      for (j1 = 0; j1 < (size_t) (BLOCKSIZE >> heapinfo1->type); j1++) {
+      for (size_t j1 = 0; j1 < (size_t)(BLOCKSIZE >> heapinfo1->type); j1++) {
 
         if (heapinfo1->busy_frag.frag_size[j1] == -1) /* Free fragment_ */
           continue;
@@ -452,22 +443,19 @@ int mmalloc_compare_heap(
         if (state.equals_to1_(i1, j1).valid_)
           continue;
 
-        addr_frag1 = (void*)((char*)addr_block1 + (j1 << heapinfo1->type));
+        void* addr_frag1 = (void*)((char*)addr_block1 + (j1 << heapinfo1->type));
 
-        i2 = 1;
-        equal = 0;
+        size_t i2 = 1;
+        equal     = false;
 
         /* Try first to associate to same fragment_ in the other heap */
         if (heapinfo2->type == heapinfo1->type && not state.equals_to2_(i1, j1).valid_) {
-          addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE +
-                         (char *) state.std_heap_copy.heapbase;
-          addr_frag2 =
-              (void *) ((char *) addr_block2 +
-                        (j1 << heapinfo2->type));
+          void* addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
+          void* addr_frag2  = (void*)((char*)addr_block2 + (j1 << heapinfo2->type));
           int res_compare = compare_heap_area(state, simgrid::mc::ProcessIndexMissing, addr_frag1, addr_frag2,
                                               snapshot1, snapshot2, nullptr, nullptr, 0);
           if (res_compare != 1)
-            equal = 1;
+            equal = true;
         }
 
         while (i2 < state.heaplimit && not equal) {
@@ -492,8 +480,7 @@ int mmalloc_compare_heap(
             abort();
           }
 
-          for (j2 = 0; j2 < (size_t) (BLOCKSIZE >> heapinfo2b->type);
-               j2++) {
+          for (size_t j2 = 0; j2 < (size_t)(BLOCKSIZE >> heapinfo2b->type); j2++) {
 
             if (i2 == i1 && j2 == j1)
               continue;
@@ -501,13 +488,13 @@ int mmalloc_compare_heap(
             if (state.equals_to2_(i2, j2).valid_)
               continue;
 
-            addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
-            addr_frag2  = (void*)((char*)addr_block2 + (j2 << heapinfo2b->type));
+            void* addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
+            void* addr_frag2  = (void*)((char*)addr_block2 + (j2 << heapinfo2b->type));
 
             int res_compare = compare_heap_area(state, simgrid::mc::ProcessIndexMissing, addr_frag1, addr_frag2,
                                                 snapshot2, snapshot2, nullptr, nullptr, 0);
             if (res_compare != 1) {
-              equal = 1;
+              equal = true;
               break;
             }
           }
@@ -529,10 +516,7 @@ int mmalloc_compare_heap(
   }
 
   /* All blocks/fragments are equal to another block/fragment_ ? */
-  size_t i = 1;
-  size_t j = 0;
-
-  for(i = 1; i < state.heaplimit; i++) {
+  for (size_t i = 1; i < state.heaplimit; i++) {
     const malloc_info* heapinfo1 = (const malloc_info*) MC_region_read(
       heap_region1, &heapinfo_temp1, &heapinfos1[i], sizeof(malloc_info));
 
@@ -544,7 +528,7 @@ int mmalloc_compare_heap(
 
     if (heapinfo1->type <= 0)
       continue;
-    for (j = 0; j < (size_t) (BLOCKSIZE >> heapinfo1->type); j++)
+    for (size_t j = 0; j < (size_t)(BLOCKSIZE >> heapinfo1->type); j++)
       if (i1 == state.heaplimit && heapinfo1->busy_frag.frag_size[j] > 0 && not state.equals_to1_(i, j).valid_) {
         XBT_DEBUG("Block %zu, Fragment %zu not found (size used = %zd)", i, j, heapinfo1->busy_frag.frag_size[j]);
         nb_diff1++;
@@ -554,7 +538,7 @@ int mmalloc_compare_heap(
   if (i1 == state.heaplimit)
     XBT_DEBUG("Number of blocks/fragments not found in heap1: %d", nb_diff1);
 
-  for (i=1; i < state.heaplimit; i++) {
+  for (size_t i = 1; i < state.heaplimit; i++) {
     const malloc_info* heapinfo2 = (const malloc_info*) MC_region_read(
       heap_region2, &heapinfo_temp2, &heapinfos2[i], sizeof(malloc_info));
     if (heapinfo2->type == MMALLOC_TYPE_UNFRAGMENTED && i1 == state.heaplimit && heapinfo2->busy_block.busy_size > 0 &&
@@ -567,7 +551,7 @@ int mmalloc_compare_heap(
     if (heapinfo2->type <= 0)
       continue;
 
-    for (j = 0; j < (size_t) (BLOCKSIZE >> heapinfo2->type); j++)
+    for (size_t j = 0; j < (size_t)(BLOCKSIZE >> heapinfo2->type); j++)
       if (i1 == state.heaplimit && heapinfo2->busy_frag.frag_size[j] > 0 && not state.equals_to2_(i, j).valid_) {
         XBT_DEBUG("Block %zu, Fragment %zu not found (size used = %zd)",
           i, j, heapinfo2->busy_frag.frag_size[j]);
