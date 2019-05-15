@@ -22,20 +22,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_RegionSnaphot, mc, "Logging specific to regio
 namespace simgrid {
 namespace mc {
 
-static inline const char* to_cstr(RegionType region)
-{
-  switch (region) {
-    case RegionType::Unknown:
-      return "unknown";
-    case RegionType::Heap:
-      return "Heap";
-    case RegionType::Data:
-      return "Data";
-    default:
-      return "?";
-  }
-}
-
 RegionSnapshot dense_region(RegionType region_type, void* start_addr, void* permanent_addr, size_t size)
 {
   simgrid::mc::Buffer data = Buffer::malloc(size);
@@ -45,7 +31,8 @@ RegionSnapshot dense_region(RegionType region_type, void* start_addr, void* perm
   simgrid::mc::RegionSnapshot region(region_type, start_addr, permanent_addr, size);
   region.flat_data(std::move(data));
 
-  XBT_DEBUG("New region : type : %s, data : %p (real addr %p), size : %zu", to_cstr(region_type),
+  XBT_DEBUG("New region : type : %s, data : %p (real addr %p), size : %zu",
+            (region_type == RegionType::Heap ? "Heap" : (region_type == RegionType::Data ? "Data" : "?")),
             region.flat_data().get(), permanent_addr, size);
   return region;
 }
@@ -71,8 +58,9 @@ RegionSnapshot sparse_region(RegionType region_type, void* start_addr, void* per
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
   assert(process != nullptr);
 
-  xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize - 1)) == 0, "Not at the beginning of a page");
-  xbt_assert((((uintptr_t)permanent_addr) & (xbt_pagesize - 1)) == 0, "Not at the beginning of a page");
+  xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize - 1)) == 0, "Start address not at the beginning of a page");
+  xbt_assert((((uintptr_t)permanent_addr) & (xbt_pagesize - 1)) == 0,
+             "Permanent address not at the beginning of a page");
   size_t page_count = simgrid::mc::mmu::chunkCount(size);
 
   simgrid::mc::ChunkedData page_data(mc_model_checker->page_store(), *process, RemotePtr<void>(permanent_addr),
