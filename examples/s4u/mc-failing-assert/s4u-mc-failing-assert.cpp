@@ -20,7 +20,7 @@ static int server(int worker_amount)
   for (int count = 0; count < worker_amount; count++) {
     int* msg  = static_cast<int*>(mb->get());
     value_got = *msg;
-    free(msg);
+    delete msg;
   }
   /*
    * We assert here that the last message we got (which overwrite any previously received message) is the one from the
