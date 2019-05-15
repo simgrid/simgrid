@@ -25,11 +25,12 @@
  *  @param snapshot Snapshot
  *  @param process_index rank requesting the region
  * */
-mc_mem_region_t mc_get_snapshot_region(const void* addr, const simgrid::mc::Snapshot* snapshot, int process_index)
+simgrid::mc::RegionSnapshot* mc_get_snapshot_region(const void* addr, const simgrid::mc::Snapshot* snapshot,
+                                                    int process_index)
 {
   size_t n = snapshot->snapshot_regions.size();
   for (size_t i = 0; i != n; ++i) {
-    mc_mem_region_t region = snapshot->snapshot_regions[i].get();
+    simgrid::mc::RegionSnapshot* region = snapshot->snapshot_regions[i].get();
     if (not(region && region->contain(simgrid::mc::remote(addr))))
       continue;
 
@@ -64,7 +65,7 @@ mc_mem_region_t mc_get_snapshot_region(const void* addr, const simgrid::mc::Snap
  *  @param size    Size of the data to read in bytes
  *  @return Pointer where the data is located (target buffer of original location)
  */
-const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, const void* addr, size_t size)
+const void* MC_region_read_fragmented(simgrid::mc::RegionSnapshot* region, void* target, const void* addr, size_t size)
 {
   // Last byte of the memory area:
   void* end = (char*)addr + size - 1;
@@ -106,8 +107,8 @@ const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, cons
  * @param region2 Region of the address in the second snapshot
  * @return same semantic as memcmp
  */
-int MC_snapshot_region_memcmp(const void* addr1, mc_mem_region_t region1, const void* addr2, mc_mem_region_t region2,
-                              size_t size)
+int MC_snapshot_region_memcmp(const void* addr1, simgrid::mc::RegionSnapshot* region1, const void* addr2,
+                              simgrid::mc::RegionSnapshot* region2, size_t size)
 {
   // Using alloca() for large allocations may trigger stack overflow:
   // use malloc if the buffer is too big.
@@ -148,7 +149,7 @@ Snapshot::Snapshot(RemoteClient* process, int _num_state)
 const void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, int process_index,
                                  ReadOptions options) const
 {
-  mc_mem_region_t region = mc_get_snapshot_region((void*)address.address(), this, process_index);
+  RegionSnapshot* region = mc_get_snapshot_region((void*)address.address(), this, process_index);
   if (region) {
     const void* res = MC_region_read(region, buffer, (void*)address.address(), size);
     if (buffer == res || options & ReadOptions::lazy())

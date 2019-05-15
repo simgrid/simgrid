@@ -57,7 +57,7 @@ namespace mc {
  *
  *  @param region     Target region
  */
-static void restore(mc_mem_region_t region)
+static void restore(RegionSnapshot* region)
 {
   switch (region->storage_type()) {
     case simgrid::mc::StorageType::Flat:
@@ -445,7 +445,7 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
 
 static inline void restore_snapshot_regions(simgrid::mc::Snapshot* snapshot)
 {
-  for (std::unique_ptr<s_mc_mem_region_t> const& region : snapshot->snapshot_regions) {
+  for (std::unique_ptr<simgrid::mc::RegionSnapshot> const& region : snapshot->snapshot_regions) {
     // For privatized, variables we decided it was not necessary to take the snapshot:
     if (region)
       restore(region.get());

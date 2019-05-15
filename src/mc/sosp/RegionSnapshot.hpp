@@ -247,6 +247,4 @@ simgrid::mc::RegionSnapshot region(RegionType type, void* start_addr, void* data
 } // namespace mc
 } // namespace simgrid
 
-typedef simgrid::mc::RegionSnapshot s_mc_mem_region_t;
-typedef s_mc_mem_region_t* mc_mem_region_t;
 #endif

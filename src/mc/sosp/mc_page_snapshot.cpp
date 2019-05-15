@@ -39,7 +39,7 @@ void mc_restore_page_snapshot_region(simgrid::mc::RemoteClient* process, void* s
 
 // ***** High level API
 
-void mc_region_restore_sparse(simgrid::mc::RemoteClient* process, mc_mem_region_t reg)
+void mc_region_restore_sparse(simgrid::mc::RemoteClient* process, simgrid::mc::RegionSnapshot* reg)
 {
   xbt_assert(((reg->permanent_address().address()) & (xbt_pagesize - 1)) == 0, "Not at the beginning of a page");
   xbt_assert(simgrid::mc::mmu::chunkCount(reg->size()) == reg->page_data().page_count());
