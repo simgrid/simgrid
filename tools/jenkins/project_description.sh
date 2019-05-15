@@ -68,10 +68,10 @@ function compareVersion(v1, v2) {
 <script>
 function sortTable(n, type) {
   var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-  table = document.getElementById("configuration-matrix");
+  table = document.getElementById('configuration-matrix');
   switching = true;
   //Set the sorting direction to ascending:
-  dir = "asc"; 
+  dir = 'asc'; 
   /*Make a loop that will continue until
   no switching has been done:*/
   while (switching) {
@@ -85,18 +85,18 @@ function sortTable(n, type) {
       shouldSwitch = false;
       /*Get the two elements you want to compare,
       one from current row and one from the next:*/
-      x = rows[i].getElementsByTagName("TD")[n];
-      y = rows[i + 1].getElementsByTagName("TD")[n];
+      x = rows[i].getElementsByTagName('TD')[n];
+      y = rows[i + 1].getElementsByTagName('TD')[n];
       /*check if the two rows should switch place,
       based on the direction, asc or desc:*/
-      if (dir == "asc") {
-        if(type == "version"){
+      if (dir == 'asc') {
+        if(type == 'version'){
           shouldSwitch = (compareVersion(x.innerHTML.toLowerCase(), y.innerHTML.toLowerCase()) > 0);
         }else{
           shouldSwitch = (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase());
         }
-      } else if (dir == "desc") {
-        if(type == "version"){
+      } else if (dir == 'desc') {
+        if(type == 'version'){
           shouldSwitch = (compareVersion(x.innerHTML.toLowerCase(), y.innerHTML.toLowerCase()) < 0);
         }else{
           shouldSwitch = (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase());
@@ -113,17 +113,17 @@ function sortTable(n, type) {
       //Each time a switch is done, increase this count by 1:
       switchcount ++;      
     } else {
-      /*If no switching has been done AND the direction is "asc",
-      set the direction to "desc" and run the while loop again.*/
-      if (switchcount == 0 && dir == "asc") {
-        dir = "desc";
+      /*If no switching has been done AND the direction is 'asc',
+      set the direction to 'desc' and run the while loop again.*/
+      if (switchcount == 0 && dir == 'asc') {
+        dir = 'desc';
         switching = true;
       }
     }
   }
 }</script>
 <table id=configuration-matrix> 
-<tr class=matrix-row>  <td class=matrix-header style=min-width:75px onclick='sortTable(0);'>Name of the Builder</td><td class=matrix-header style=min-width:75px onclick='sortTable(1);'>OS</td><td class=matrix-header style=min-width:75px onclick='sortTable(2);'>Compiler</td><td class=matrix-header style=min-width:75px onclick='sortTable(3, 'version');'>Boost</td><td class=matrix-header style=min-width:75px onclick='sortTable(4,'version');'>Java</td><td class=matrix-header style=min-width:75px onclick='sortTable(5,'version');'>Cmake</td><td class=matrix-header style=min-width:50px onclick='sortTable(6);'>NS3</td><td class=matrix-header style=min-width:50px onclick='sortTable(7);'>Python</td></tr>"
+<tr class=matrix-row>  <td class=matrix-header style=min-width:75px onclick='sortTable(0);'>Name of the Builder</td><td class=matrix-header style=min-width:75px onclick='sortTable(1);'>OS</td><td class=matrix-header style=min-width:75px onclick='sortTable(2);'>Compiler</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(3, 'version');\">Boost</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(4,'version');\">Java</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(5,'version');\">Cmake</td><td class=matrix-header style=min-width:50px onclick='sortTable(6);'>NS3</td><td class=matrix-header style=min-width:50px onclick='sortTable(7);'>Python</td></tr>"
 
 for node in "${nodes[@]}"
 do
