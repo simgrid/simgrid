@@ -18,8 +18,7 @@
 #include "src/mc/mc_state.hpp"
 #endif
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc,
-  " Logging specific to MC record/replay facility");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc, "Logging specific to MC record/replay facility");
 
 namespace simgrid {
 namespace mc {
@@ -99,10 +98,8 @@ std::string traceToString(simgrid::mc::RecordTrace const& trace)
 
 void dumpRecordPath()
 {
-  if (MC_record_is_active()) {
-    RecordTrace trace = mc_model_checker->getChecker()->getRecordTrace();
-    XBT_INFO("Path = %s", traceToString(trace).c_str());
-  }
+  RecordTrace trace = mc_model_checker->getChecker()->getRecordTrace();
+  XBT_INFO("Path = %s", traceToString(trace).c_str());
 }
 
 #endif

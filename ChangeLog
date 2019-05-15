@@ -12,6 +12,9 @@ SMPI:
  - MPI/IO is now supported over the Storage API (no files are written or read, storage is simulated). Supported calls are all synchronous ones.
  - MPI interface is now const correct for input parameters
 
+Model-checker:
+ - Remove option 'model-check/record': Paths are recorded in any cases now.
+
 Fixed bugs (GH=GitHub; FG=FramaGit):
  - FG#10: Can not use MSG_process_set_data from SMPI any more
  - FG#11: Auto-restart actors forget their on_exit behavior

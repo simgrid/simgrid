@@ -110,7 +110,6 @@ Existing Configuration Items
 - **model-check/hash:** :ref:`cfg=model-checker/hash`
 - **model-check/max-depth:** :ref:`cfg=model-check/max-depth`
 - **model-check/property:** :ref:`cfg=model-check/property`
-- **model-check/record:** :ref:`cfg=model-check/record`
 - **model-check/reduction:** :ref:`cfg=model-check/reduction`
 - **model-check/replay:** :ref:`cfg=model-check/replay`
 - **model-check/send-determinism:** :ref:`cfg=model-check/send-determinism`
@@ -681,11 +680,10 @@ Currently most of the state is not included in the hash because the
 implementation was found to be buggy and this options is not as useful as
 it could be. For this reason, it is currently disabled by default.
 
-.. _cfg=model-check/record:
 .. _cfg=model-check/replay:
 
-Recording and replaying verifications
-.....................................
+Replaying buggy execution paths out of the model-checker
+........................................................
 
 Debugging the problems reported by the model-checker is challenging: First, the
 application under verification cannot be debugged with gdb because the
@@ -697,11 +695,7 @@ enabling the usage of classical debugging tools.
 
 When the model-checker finds an interesting path in the application
 execution graph (where a safety or liveness property is violated), it
-can generate an identifier for this path. To enable this behavious the
-``model-check/record`` must be set to **yes**, which is the case
-by default.
-
-Here is an example of output:
+generates an identifier for this path. Here is an example of output:
 
 .. code-block:: shell
 
@@ -717,11 +711,11 @@ Here is an example of output:
    [  0.000000] (0:@) Visited states = 68
    [  0.000000] (0:@) Executed transitions = 46
 
-This path can then be replayed outside of the model-checker (and even
-in non-MC build of simgrid) by setting the ``model-check/replay`` item
-to the given path. The other options should be the same (but the
-model-checker should be disabled). Note that format and meaning of the
-path may change between different releases.
+The interesting line is ``Path = 1/3;1/4``, which means that you should use
+`--cfg=model-check/replay:1/3;1/4`` to replay your application on the buggy
+execution path. The other options should be the same (but the model-checker
+should be disabled). Note that format and meaning of the path may change between
+different releases.
 
 Configuring the User Code Virtualization
 ----------------------------------------
