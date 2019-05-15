@@ -13,7 +13,6 @@ extern "C" XBT_PUBLIC int _sg_do_model_check;
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_record_path;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_checkpoint;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_sparse_checkpoint;
-extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_ksm;
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_property_file;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_comms_determinism;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_send_determinism;

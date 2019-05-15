@@ -92,12 +92,12 @@ RegionSnapshot privatized_region(RegionType region_type, void* start_addr, void*
   mc_model_checker->process().read_bytes(&privatization_regions, sizeof(privatization_regions),
                                          remote(remote_smpi_privatization_regions));
 
-  std::vector<simgrid::mc::RegionSnapshot> data;
+  std::vector<RegionSnapshot> data;
   data.reserve(process_count);
   for (size_t i = 0; i < process_count; i++)
-    data.push_back(simgrid::mc::region(region_type, start_addr, privatization_regions[i].address, size));
+    data.push_back(region(region_type, start_addr, privatization_regions[i].address, size));
 
-  simgrid::mc::RegionSnapshot region = simgrid::mc::RegionSnapshot(region_type, start_addr, permanent_addr, size);
+  RegionSnapshot region = RegionSnapshot(region_type, start_addr, permanent_addr, size);
   region.privatized_data(std::move(data));
   return region;
 }

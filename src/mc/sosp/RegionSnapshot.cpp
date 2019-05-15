@@ -76,23 +76,9 @@ void Buffer::clear() noexcept
 
 RegionSnapshot dense_region(RegionType region_type, void* start_addr, void* permanent_addr, size_t size)
 {
-  // When KSM support is enables, we allocate memory using mmap:
-  // * we don't want to advise bits of the heap as mergable
-  // * mmap gives data aligned on page boundaries which is merge friendly
-  simgrid::mc::Buffer data;
-  if (_sg_mc_ksm)
-    data = Buffer::mmap(size);
-  else
-    data = Buffer::malloc(size);
+  simgrid::mc::Buffer data = Buffer::malloc(size);
 
   mc_model_checker->process().read_bytes(data.get(), size, remote(permanent_addr), simgrid::mc::ProcessIndexDisabled);
-
-#ifdef __linux__
-  if (_sg_mc_ksm)
-    // Mark the region as mergeable *after* we have written into it.
-    // Trying to merge them before is useless/counterproductive.
-    madvise(data.get(), size, MADV_MERGEABLE);
-#endif
 
   simgrid::mc::RegionSnapshot region(region_type, start_addr, permanent_addr, size);
   region.flat_data(std::move(data));
