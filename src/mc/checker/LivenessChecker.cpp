@@ -100,9 +100,7 @@ int LivenessChecker::compare(simgrid::mc::VisitedPair* state1, simgrid::mc::Visi
 {
   simgrid::mc::Snapshot* s1 = state1->graph_state->system_state.get();
   simgrid::mc::Snapshot* s2 = state2->graph_state->system_state.get();
-  int num1 = state1->num;
-  int num2 = state2->num;
-  return simgrid::mc::snapshot_compare(num1, s1, num2, s2);
+  return simgrid::mc::snapshot_compare(s1, s2);
 }
 
 std::shared_ptr<VisitedPair> LivenessChecker::insertAcceptancePair(simgrid::mc::Pair* pair)
