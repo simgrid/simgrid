@@ -3,9 +3,7 @@
 #########################################
 
 # doc
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/doc/html/)
-install(DIRECTORY "${CMAKE_BINARY_DIR}/doc/html/"
-  DESTINATION doc/simgrid/html/)
+install(DIRECTORY "${CMAKE_BINARY_DIR}/doc/html/" DESTINATION doc/simgrid/html/ OPTIONAL)
 
 # binaries
 if(enable_smpi)
