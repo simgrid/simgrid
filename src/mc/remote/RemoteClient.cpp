@@ -42,6 +42,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libboost_chrono",
     "libboost_context",
     "libboost_context-mt",
+    "libboost_stacktrace_addr2line",
     "libboost_stacktrace_backtrace",
     "libboost_system",
     "libboost_thread",
