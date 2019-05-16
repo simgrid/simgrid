@@ -22,6 +22,7 @@ Fixed bugs (GH=GitHub; FG=FramaGit):
  - FG#10: Can not use MSG_process_set_data from SMPI any more
  - FG#11: Auto-restart actors forget their on_exit behavior
  - FG#12: -Denable_lto=OFF doesn't disable LTO
+ - FG#13: Installs unstripped file 'bin/graphicator'
  - GH#133: Java : a process can run on a VM even if its host is off
  - GH#326: Valgrind-detected error for join() when energy plugin is activated
 

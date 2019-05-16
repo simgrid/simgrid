@@ -27,7 +27,7 @@ endif()
 
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh  DESTINATION bin/)
 
-install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/graphicator  DESTINATION bin/)
+install(TARGETS graphicator DESTINATION bin/)
 
 install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/tools/MSG_visualization/colorize.pl
   DESTINATION bin/
