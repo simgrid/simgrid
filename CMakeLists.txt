@@ -768,34 +768,36 @@ endif()
 # Python binding (with pybind11)
 ################
 # Our usage of pybind11::overload_cast mandates C++14
-get_property(known_features GLOBAL PROPERTY CMAKE_CXX_KNOWN_FEATURES)
+if((NOT DEFINED enable_python) OR enable_python)
+  get_property(known_features GLOBAL PROPERTY CMAKE_CXX_KNOWN_FEATURES)
 
-if("cxx_std_14" IN_LIST known_features)
+  if("cxx_std_14" IN_LIST known_features)
 
-  if(EXISTS ${CMAKE_HOME_DIRECTORY}/pybind11) # Try to use a local copy of pybind11, if any
-    message(STATUS "Use the internal copy of pybind11 (using C++14).")
-    add_subdirectory(${CMAKE_HOME_DIRECTORY}/pybind11)
-    set(pybind11_FOUND ON)
-    
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/pybind11/tools/)
-    set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4)
-    find_package(PythonLibsNew ${PYBIND11_PYTHON_VERSION} REQUIRED)
-    
+    if(EXISTS ${CMAKE_HOME_DIRECTORY}/pybind11) # Try to use a local copy of pybind11, if any
+      message(STATUS "Use the internal copy of pybind11 (using C++14).")
+      add_subdirectory(${CMAKE_HOME_DIRECTORY}/pybind11)
+      set(pybind11_FOUND ON)
+
+      set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/pybind11/tools/)
+      set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4)
+      find_package(PythonLibsNew ${PYBIND11_PYTHON_VERSION} REQUIRED)
+
+    else()
+      find_package(pybind11 2.2.0)
+    endif()
+
+    if(NOT PYTHONLIBS_FOUND)
+      message(STATUS "Python libs not found. Turn pybind11 off.")
+
+      set(pybind11_FOUND OFF)
+    endif()
+
   else()
-    find_package(pybind11 2.2.0)
-  endif()
-  
-  if(NOT PYTHONLIBS_FOUND)
-    message(STATUS "Python libs not found. Turn pybind11 off.")
-
+    message(STATUS "No support for C++14 detected, don't even search for pybind11.")
     set(pybind11_FOUND OFF)
   endif()
-  
-else()
-  message(STATUS "No support for C++14 detected, don't even search for pybind11.")
-  set(pybind11_FOUND OFF)
+  unset(known_features)
 endif()
-unset(known_features)
 
 option(enable_python "Whether the Python bindings are activated." ${pybind11_FOUND}) # ON by default if dependencies are met
 
