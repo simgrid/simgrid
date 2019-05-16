@@ -2,6 +2,7 @@ SimGrid (3.23) NOT RELEASED (Release Target: June 21. 2019, 15:54 UTC)
 
 General:
  - Stop setting random seed with srand48() at initialization.
+ - Use addr2line as a fallback for stacktraces when backtrace is not available.
 
 XBT:
  - New log appenders: stdout and stderr. Use stdout for xbt_help.

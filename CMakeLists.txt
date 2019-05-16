@@ -253,22 +253,31 @@ endif()
 # Usable components: https://www.boost.org/doc/libs/1_65_1/doc/html/stacktrace/configuration_and_build.html
 set(_Boost_STACKTRACE_HEADERS           "boost/stacktrace.hpp")
 set(_Boost_STACKTRACE_BACKTRACE_HEADERS "boost/stacktrace.hpp")
+set(_Boost_STACKTRACE_ADDR2LINE_HEADERS "boost/stacktrace.hpp")
 
 if(minimal_java) # When we want a minimal jarfile, don't even search for boost optional components
   message(STATUS "Don't even look for boost optional components, as we build a minimal jar file")
 else()
-  find_package(Boost 1.59 COMPONENTS context stacktrace_backtrace)
+  find_package(Boost 1.59 COMPONENTS context stacktrace_backtrace stacktrace_addr2line)
   set(Boost_FOUND 1) # These components are optionals
   message(STATUS "Mandatory components found. SimGrid is compilable.")
   message(STATUS "Looking for optional Boost components:")
 
   if (Boost_STACKTRACE_BACKTRACE_FOUND)
-    message (STATUS "  stacktrace: found. Activating human-readable stack traces.")
-    set(HAVE_BOOST_STACKTRACE 1)
+    message (STATUS "  stacktrace: found the fast 'backtrace' implementation. Activating human-readable stack traces.")
+    set(HAVE_BOOST_STACKTRACE_BACKTRACE 1)
     set(SIMGRID_DEP "${SIMGRID_DEP} -lboost_stacktrace_backtrace")
   else()
-    message (STATUS "  stacktrace: MISSING. Install libboost-stacktrace-dev to display the stacktraces.")
-    set(HAVE_BOOST_STACKTRACE 0)
+    set(HAVE_BOOST_STACKTRACE_BACKTRACE 0)
+    
+    if (Boost_STACKTRACE_ADDR2LINE_FOUND)
+      message (STATUS "  stacktrace: found the slow 'addr2line' implementation. Activating human-readable stack traces.")
+      set(HAVE_BOOST_STACKTRACE_ADDR2LINE 1)
+      set(SIMGRID_DEP "${SIMGRID_DEP} -lboost_stacktrace_addr2line")
+    else()
+      message (STATUS "  stacktrace: MISSING. Install libboost-stacktrace-dev to display the stacktraces.")
+      set(HAVE_BOOST_STACKTRACE_ADDR2LINE 0)
+    endif()
   endif()
 
   if(Boost_CONTEXT_FOUND)
