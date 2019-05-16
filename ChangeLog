@@ -3,6 +3,7 @@ SimGrid (3.23) NOT RELEASED (Release Target: June 21. 2019, 15:54 UTC)
 General:
  - Stop setting random seed with srand48() at initialization.
  - Use addr2line as a fallback for stacktraces when backtrace is not available.
+ - Build option -Denable_documentation is now OFF by default.
 
 XBT:
  - New log appenders: stdout and stderr. Use stdout for xbt_help.
@@ -17,8 +18,10 @@ Model-checker:
  - Remove option 'model-check/record': Paths are recorded in any cases now.
 
 Fixed bugs (GH=GitHub; FG=FramaGit):
+ - FG#7: simple cmake call requires doxygen
  - FG#10: Can not use MSG_process_set_data from SMPI any more
  - FG#11: Auto-restart actors forget their on_exit behavior
+ - FG#12: -Denable_lto=OFF doesn't disable LTO
  - GH#133: Java : a process can run on a VM even if its host is off
  - GH#326: Valgrind-detected error for join() when energy plugin is activated
 
