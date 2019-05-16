@@ -72,8 +72,7 @@ elif [ -f /etc/debian_version ]; then
     os=Debian
     ver=$(cat /etc/debian_version)
 elif [ -f /etc/redhat-release ]; then
-    os=""
-    ver=$(cat /etc/redhat-release)
+    read -r os ver < /etc/redhat-release
 elif [ -f /usr/bin/sw_vers ]; then
     os=$(sw_vers -productName)
     ver=$(sw_vers -productVersion)
