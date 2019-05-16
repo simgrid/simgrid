@@ -151,8 +151,7 @@ int MC_smpi_process_count()
   if (mc_model_checker == nullptr)
     return smpi_process_count();
   int res;
-  mc_model_checker->process().read_variable("process_count",
-    &res, sizeof(res));
+  mc_model_checker->process().read_variable("process_count", &res, sizeof(res));
   return res;
 }
 #endif

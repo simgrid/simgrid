@@ -61,7 +61,7 @@ RegionSnapshot sparse_region(RegionType region_type, void* start_addr, void* per
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize - 1)) == 0, "Start address not at the beginning of a page");
   xbt_assert((((uintptr_t)permanent_addr) & (xbt_pagesize - 1)) == 0,
              "Permanent address not at the beginning of a page");
-  size_t page_count = simgrid::mc::mmu::chunkCount(size);
+  size_t page_count = simgrid::mc::mmu::chunk_count(size);
 
   simgrid::mc::ChunkedData page_data(mc_model_checker->page_store(), *process, RemotePtr<void>(permanent_addr),
                                      page_count);

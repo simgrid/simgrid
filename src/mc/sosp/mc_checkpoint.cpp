@@ -66,7 +66,7 @@ static void restore(RegionSnapshot* region)
 
     case simgrid::mc::StorageType::Chunked:
       xbt_assert(((region->permanent_address().address()) & (xbt_pagesize - 1)) == 0, "Not at the beginning of a page");
-      xbt_assert(simgrid::mc::mmu::chunkCount(region->size()) == region->page_data().page_count());
+      xbt_assert(simgrid::mc::mmu::chunk_count(region->size()) == region->page_data().page_count());
 
       for (size_t i = 0; i != region->page_data().page_count(); ++i) {
         void* target_page =
@@ -112,7 +112,7 @@ RegionSnapshot privatized_region(RegionType region_type, void* start_addr, void*
 }
 #endif
 
-static void add_region(int index, simgrid::mc::Snapshot* snapshot, simgrid::mc::RegionType type,
+static void add_region(simgrid::mc::Snapshot* snapshot, simgrid::mc::RegionType type,
                        simgrid::mc::ObjectInformation* object_info, void* start_addr, void* permanent_addr,
                        std::size_t size)
 {
@@ -131,26 +131,23 @@ static void add_region(int index, simgrid::mc::Snapshot* snapshot, simgrid::mc::
     region = simgrid::mc::region(type, start_addr, permanent_addr, size);
 
   region.object_info(object_info);
-  snapshot->snapshot_regions[index] =
-      std::unique_ptr<simgrid::mc::RegionSnapshot>(new simgrid::mc::RegionSnapshot(std::move(region)));
+  snapshot->snapshot_regions.push_back(
+      std::unique_ptr<simgrid::mc::RegionSnapshot>(new simgrid::mc::RegionSnapshot(std::move(region))));
 }
 
 static void get_memory_regions(simgrid::mc::RemoteClient* process, simgrid::mc::Snapshot* snapshot)
 {
-  const size_t n = process->object_infos.size();
-  snapshot->snapshot_regions.resize(n + 1);
-  int i = 0;
-  for (auto const& object_info : process->object_infos) {
-    add_region(i, snapshot, simgrid::mc::RegionType::Data, object_info.get(), object_info->start_rw,
-               object_info->start_rw, object_info->end_rw - object_info->start_rw);
-    ++i;
-  }
+  snapshot->snapshot_regions.clear();
+
+  for (auto const& object_info : process->object_infos)
+    add_region(snapshot, simgrid::mc::RegionType::Data, object_info.get(), object_info->start_rw, object_info->start_rw,
+               object_info->end_rw - object_info->start_rw);
 
   xbt_mheap_t heap = process->get_heap();
   void* start_heap = heap->base;
   void* end_heap   = heap->breakval;
 
-  add_region(n, snapshot, simgrid::mc::RegionType::Heap, nullptr, start_heap, start_heap,
+  add_region(snapshot, simgrid::mc::RegionType::Heap, nullptr, start_heap, start_heap,
              (char*)end_heap - (char*)start_heap);
   snapshot->heap_bytes_used = mmalloc_get_bytes_used_remote(heap->heaplimit, process->get_malloc_info());
 
@@ -443,10 +440,7 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
     snapshot->stacks = take_snapshot_stacks(snapshot.get());
     if (_sg_mc_hash)
       snapshot->hash = simgrid::mc::hash(*snapshot);
-    else
-      snapshot->hash = 0;
-  } else
-    snapshot->hash = 0;
+  }
 
   snapshot_ignore_restore(snapshot.get());
   return snapshot;

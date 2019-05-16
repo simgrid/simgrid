@@ -108,7 +108,7 @@ public:
   std::vector<std::size_t> stack_sizes;
   std::vector<s_mc_snapshot_stack_t> stacks;
   std::vector<simgrid::mc::IgnoredHeapRegion> to_ignore;
-  std::uint64_t hash;
+  std::uint64_t hash = 0;
   std::vector<s_mc_snapshot_ignored_data_t> ignored_data;
 };
 } // namespace mc
@@ -171,7 +171,7 @@ static XBT_ALWAYS_INLINE const void* MC_region_read(simgrid::mc::RegionSnapshot*
     case simgrid::mc::StorageType::Chunked: {
       // Last byte of the region:
       void* end = (char*)addr + size - 1;
-      if (simgrid::mc::mmu::sameChunk((std::uintptr_t)addr, (std::uintptr_t)end)) {
+      if (simgrid::mc::mmu::same_chunk((std::uintptr_t)addr, (std::uintptr_t)end)) {
         // The memory is contained in a single page:
         return mc_translate_address_region_chunked((uintptr_t)addr, region);
       }
