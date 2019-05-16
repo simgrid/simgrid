@@ -79,7 +79,10 @@ Existing Configuration Items
 
 .. note::
   The full list can be retrieved by passing ``--help`` and
-  ``--help-cfg`` to an executable that uses SimGrid.
+  ``--help-cfg`` to an executable that uses SimGrid. Try passing
+  ``help`` as a value to get the list of values accepted by a given
+   option. For example, ``--cfg=plugin:help`` will give you the list
+   of plugins available in your installation of SimGrid.
 
 - **clean-atexit:** :ref:`cfg=clean-atexit`
 
