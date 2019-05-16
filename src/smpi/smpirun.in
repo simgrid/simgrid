@@ -301,21 +301,25 @@ if [ -z "${HOSTFILE}" ] ; then
     HOSTFILE="$(mktemp smpitmp-hostfXXXXXX)"
     perl -ne 'print "$1\n" if /.*<host.*?id="(.*?)".*?\/>.*/' ${PLATFORM} > ${HOSTFILE}
     # put all <cluster tag on its own line.
-    cat ${PLATFORM} | tr '\n' ' ' | sed 's/<cluster/\n<cluster/' | \
-      perl -ne 'if (m/.*<cluster.*?prefix="(.*?)".*?radical="(.*?)".*?suffix="(.*?)".*/s) {
-                my ($pre,$rad,$post)=($1,$2,$3);
-	        for my $elm (split(",",$rad)) {
-	          if ($elm=~/^([^-]*?)-([^-]*)$/) {
-	             for (my $i=$1; $i<=$2;$i++) {
-	                print "$pre$i$post\n";
-	             }
-	          } else {
-	             print "$pre$elm$post\n";
-	          }
-	        }
-	      } elsif (/<cluster/) {
-            die ("Unparsable cluster tag. smpirun uses a primitive regular expression to parse cluster tags. Either provide a hostfile yourself or give the attributes prefix, radical and suffix IN THAT ORDER.");
-	      }' ${PLATFORM} >> ${HOSTFILE}
+    python -c '
+import xml.etree.ElementTree as ET
+import sys
+import re
+
+tree = ET.parse(sys.stdin)
+
+for elem in tree.findall(".//cluster"):
+    prefix = elem.attrib["prefix"]
+    radical = elem.attrib["radical"]
+    suffix = elem.attrib["suffix"]
+    for r in radical.split(","):
+        m = re.match("^([^-]*?)-([^-]*)$", r)
+        if m:
+            for i in range(int(m.group(1)), int(m.group(2))):
+                print "{}{}{}".format(prefix, i, suffix)
+        else:
+            print "{}{}{}".format(prefix, r, suffix)
+            ' < ${PLATFORM} >> ${HOSTFILE}
 fi
 UNROLLEDHOSTFILETMP=0
 
