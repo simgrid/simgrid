@@ -26,7 +26,7 @@ fi
 
 # usage: die status message...
 die () {
-  local status=${1:-1}
+  status=${1:-1}
   shift
   [ $# -gt 0 ] || set -- "Error - Halting"
   echo "$@" >&2
@@ -163,7 +163,7 @@ echo "XX   pwd: "$(pwd)
 echo "XX"
 
 cmake -G"$GENERATOR" -Denable_documentation=OFF $WORKSPACE
-make dist -j$NUMBER_OF_PROCESSORS
+make dist -j $NUMBER_OF_PROCESSORS
 SIMGRID_VERSION=$(cat VERSION)
 
 echo "XX"
@@ -211,7 +211,7 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
 #  -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
 set +x
 
-make -j$NUMBER_OF_PROCESSORS VERBOSE=1 tests
+make -j $NUMBER_OF_PROCESSORS VERBOSE=1 tests
 
 echo "XX"
 echo "XX Run the tests"

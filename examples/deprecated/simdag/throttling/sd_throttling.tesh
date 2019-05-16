@@ -4,7 +4,7 @@ p Modify the rate of communication tasks even when they are auto-scheduled
 # We need to sort this out because the order changes with the sanitizers (at least)
 ! output sort
 
-$ $SG_TEST_EXENV ./throttling/sd_throttling ${srcdir:=.}/../../platforms/cluster_backbone.xml
+$ ./throttling/sd_throttling ${srcdir:=.}/../../platforms/cluster_backbone.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [5.000000] [sd_comm_throttling/INFO] Simulation stopped after 5.0000 seconds
 > [5.000000] [sd_comm_throttling/INFO] Task 'Task A' start time: 0.000000, finish time: 5.000000

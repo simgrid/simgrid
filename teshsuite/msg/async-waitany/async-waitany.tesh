@@ -3,7 +3,7 @@
 p Testing the MSG_comm_waitany function
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/async-waitany ${platfdir:=.}/small_platform.xml ${srcdir:=.}/async-waitany_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/async-waitany ${platfdir:=.}/small_platform.xml ${srcdir:=.}/async-waitany_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_0 comm_size 1000000.000000
 > [  0.000000] (1:sender@Tremblay) Send to receiver-1 Task_1 comm_size 1000000.000000
 > [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_2 comm_size 1000000.000000

@@ -30,4 +30,4 @@ while (defined(my $arg = shift)) {
 # map { print "$_ " } @argv;
 # print "\n";
 
-system @argv;
+exec @argv;

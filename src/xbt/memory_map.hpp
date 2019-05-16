@@ -11,9 +11,6 @@
 #include <string>
 #include <vector>
 
-#include <xbt/base.h>
-#include <sys/types.h>
-
 namespace simgrid {
 namespace xbt {
 
@@ -30,8 +27,7 @@ struct VmMap {
   std::string pathname;         /* Path name of the mapped file */
 };
 
-XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid);
-
+std::vector<VmMap> get_memory_map(pid_t pid);
 }
 }
 

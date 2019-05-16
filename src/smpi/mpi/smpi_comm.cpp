@@ -212,7 +212,7 @@ MPI_Comm Comm::split(int color, int key)
 {
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->split(color, key);
-  int system_tag = 123;
+  int system_tag = -123;
   int* recvbuf;
 
   MPI_Group group_root = nullptr;

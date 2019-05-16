@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-io-file-remote$EXEEXT ${platfdir}/storage/remote_io.xml s4u-io-file-remote_d.xml "--log=root.fmt:[%10.6r]%e(%i@%5h)%e%m%n"
+$ ${bindir:=.}/s4u-io-file-remote ${platfdir}/storage/remote_io.xml s4u-io-file-remote_d.xml "--log=root.fmt:[%10.6r]%e(%i@%5h)%e%m%n"
 > [  0.000000] (0@     ) Init: 12/476824 MiB used/free on 'Disk1'
 > [  0.000000] (0@     ) Init: 2280/474556 MiB used/free on 'Disk2'
 > [  0.000000] (1@alice) Opened file 'c:\Windows\setupact.log'

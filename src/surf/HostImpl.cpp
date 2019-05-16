@@ -152,7 +152,7 @@ std::vector<const char*> HostImpl::get_attached_storages()
 {
   std::vector<const char*> storages;
   for (auto const& s : storage_)
-    if (s.second->getHost() == piface_->get_cname())
+    if (s.second->get_host() == piface_->get_cname())
       storages.push_back(s.second->piface_.get_cname());
   return storages;
 }

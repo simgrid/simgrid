@@ -131,9 +131,9 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
   }
 }
 
-kernel::resource::Action* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_list,
-                                                         const double* flops_amount, const double* bytes_amount,
-                                                         double rate)
+kernel::resource::CpuAction* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_list,
+                                                            const double* flops_amount, const double* bytes_amount,
+                                                            double rate)
 {
   return new L07Action(this, host_list, flops_amount, bytes_amount, rate);
 }
@@ -254,20 +254,20 @@ LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwid
   s4u::Link::on_creation(this->piface_);
 }
 
-kernel::resource::Action* CpuL07::execution_start(double size)
+kernel::resource::CpuAction* CpuL07::execution_start(double size)
 {
   std::vector<s4u::Host*> host_list = {get_host()};
 
   double* flops_amount = new double[host_list.size()]();
   flops_amount[0] = size;
 
-  kernel::resource::Action* res =
+  kernel::resource::CpuAction* res =
       static_cast<CpuL07Model*>(get_model())->hostModel_->execute_parallel(host_list, flops_amount, nullptr, -1);
   static_cast<L07Action*>(res)->free_arrays_ = true;
   return res;
 }
 
-kernel::resource::Action* CpuL07::sleep(double duration)
+kernel::resource::CpuAction* CpuL07::sleep(double duration)
 {
   L07Action *action = static_cast<L07Action*>(execution_start(1.0));
   action->set_max_duration(duration);

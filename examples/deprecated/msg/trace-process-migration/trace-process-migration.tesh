@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 p Tracing processes
-$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:yes ${platfdir}/small_platform.xml
+$ ${bindir:=.}/trace-process-migration --cfg=tracing:yes --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:yes ${platfdir}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'procmig.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to 'yes'

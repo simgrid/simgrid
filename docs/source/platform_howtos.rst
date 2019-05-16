@@ -13,7 +13,7 @@
    <br/>
 
 .. _howto:
-   
+
 Modeling Hints
 ##############
 
@@ -61,7 +61,7 @@ freely available, though.
 .. _howto_churn:
 
 Modeling Churn (e.g., in P2P)
-****************************
+*****************************
 
 One of the biggest challenges in P2P settings is to cope with the
 churn, meaning that resources keep appearing and disappearing. In

@@ -33,7 +33,7 @@
 static int alltoall_check_is_2dmesh(int num, int *i, int *j)
 {
   int x, max = num / 2;
-  x = sqrt(num);
+  x = sqrt(double(num));
 
   while (x <= max) {
     if ((num % x) == 0) {

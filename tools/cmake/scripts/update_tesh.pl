@@ -33,8 +33,6 @@ while(defined($line=<SH_LIGNE>))
 		$line =~ s/\$\{srcdir\:\=\.\}/./g;
 		$line =~ s/\(/\\(/g;
 		$line =~ s/\)/\\)/g;
-		$line =~ s/\$SG_TEST_EXENV//g;
-		$line =~ s/\$EXEEXT//g;
 		$line =~ s/^\$\ */.\//g;
 		$line =~ s/^.\/lua/lua/g;
 		$line =~ s/^.\/ruby/ruby/g;

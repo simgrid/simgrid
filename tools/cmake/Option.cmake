@@ -22,7 +22,7 @@ option(enable_debug                 "Turn this off to remove all debug messages 
 
 # Optional modules
 ###
-option(enable_documentation "Whether to produce documentation" on)
+option(enable_documentation "Whether to produce documentation" off)
 
 option(enable_ns3            "Whether ns3 model is activated." off)
 option(enable_java           "Whether the Java bindings are activated." off)

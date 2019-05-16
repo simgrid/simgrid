@@ -211,8 +211,10 @@ enable_debug (ON/off)
   runtime. However, it obviously becomes impossible to get any debug
   info from SimGrid if something goes wrong.
 
-enable_documentation (ON/off)
-  Generates the documentation pages.
+enable_documentation (on/OFF)
+  Generates the documentation pages. Building the documentation is not
+  as easy as it used to be, and you should probably use the online
+  version for now.
 
 enable_java (on/OFF)
   Generates the java bindings of SimGrid.

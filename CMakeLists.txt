@@ -396,7 +396,7 @@ endif()
 
 if(enable_smpi)
   SET(HAVE_SMPI 1)
-  if("${CMAKE_SYSTEM}" MATCHES "Darwin|FreeBSD|Linux")
+  if("${CMAKE_SYSTEM}" MATCHES "Darwin|FreeBSD|Linux|SunOS")
     SET(HAVE_PRIVATIZATION 1)
   else()
     message (STATUS "Warning:  no support for SMPI automatic privatization on this platform")

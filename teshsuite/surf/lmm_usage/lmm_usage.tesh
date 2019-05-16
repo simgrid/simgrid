@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/lmm_usage
+$ ${bindir:=.}/lmm_usage
 > [0.000000] [surf_test/INFO] ***** Test 1 (Max-Min)
 > [0.000000] [surf_test/INFO] ***** Test 1 (Lagrange - Vegas)
 > [0.000000] [surf_test/INFO] ***** Test 1 (Lagrange - Reno)

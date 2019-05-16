@@ -1,4 +1,4 @@
-$ $SG_TEST_EXENV ${bindir:=.}/cloud-interrupt-migration ${platfdir}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/cloud-interrupt-migration ${platfdir}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:master_@Fafard) Start the migration of VM0 from Fafard to Tremblay
 > [  2.000000] (1:master_@Fafard) Wait! change my mind, shutdown VM0. This ends the migration
 > [ 10.000000] (1:master_@Fafard) Start again the migration of VM0 from Fafard to Tremblay

@@ -34,9 +34,7 @@ static int snapshot_compare(simgrid::mc::State* state1, simgrid::mc::State* stat
 {
   simgrid::mc::Snapshot* s1 = state1->system_state.get();
   simgrid::mc::Snapshot* s2 = state2->system_state.get();
-  int num1 = state1->num;
-  int num2 = state2->num;
-  return snapshot_compare(num1, s1, num2, s2);
+  return snapshot_compare(s1, s2);
 }
 
 void SafetyChecker::checkNonTermination(simgrid::mc::State* current_state)
@@ -49,7 +47,8 @@ void SafetyChecker::checkNonTermination(simgrid::mc::State* current_state)
       XBT_INFO("******************************************");
       XBT_INFO("Counter-example execution trace:");
       for (auto const& s : mc_model_checker->getChecker()->getTextualTrace())
-        XBT_INFO("%s", s.c_str());
+        XBT_INFO("  %s", s.c_str());
+      simgrid::mc::dumpRecordPath();
       simgrid::mc::session->logState();
 
       throw simgrid::mc::TerminationError();

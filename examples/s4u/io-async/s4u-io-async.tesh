@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-io-async$EXEEXT ${platfdir}/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-io-async ${platfdir}/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:test@bob) Hello! read 20000000 bytes from Storage Disk1
 > [  0.000000] (2:test_cancel@alice) Hello! write 50000000 bytes from Storage Disk2
 > [  0.200000] (1:test@bob) Goodbye now!

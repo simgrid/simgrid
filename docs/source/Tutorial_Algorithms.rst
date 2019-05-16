@@ -320,9 +320,9 @@ All needed dependencies are already installed in this container
 optional in this tutorial, it is not installed to reduce the image
 size.
 
-The code template is available under ``/source/simgrid-template-s4u.git`` 
+The code template is available under ``/source/simgrid-template-s4u.git``
 in the image. You should copy it to your working directory and
-recompile it when you first log in: 
+recompile it when you first log in:
 
 .. code-block:: shell
 
@@ -345,8 +345,8 @@ Debian and Ubuntu for example, you can get them as follows:
 
    sudo apt install simgrid pajeng cmake g++ vite
 
-For R analysis of the produced traces, you may want to install R, 
-and the `pajengr<https://github.com/schnorr/pajengr#installation/>`_ package.
+For R analysis of the produced traces, you may want to install R,
+and the `pajengr <https://github.com/schnorr/pajengr#installation/>`_ package.
 
 .. code-block:: shell
 
@@ -363,10 +363,10 @@ everything as follows:
 
    # (exporting SimGrid_PATH is only needed if SimGrid is installed in a non-standard path)
    export SimGrid_PATH=/where/to/simgrid
-   
+
    git clone https://framagit.org/simgrid/simgrid-template-s4u.git
    cd simgrid-template-s4u/
-   cmake . 
+   cmake .
    make
 
 If you struggle with the compilation, then you should double check

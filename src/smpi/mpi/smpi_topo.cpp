@@ -387,8 +387,8 @@ static int getfactors(int num, int *nfactors, int **factors) {
     return MPI_SUCCESS;
   }
   /* Allocate the array of prime factors which cannot exceed log_2(num) entries */
-  int sqrtnum = ceil(sqrt(num));
-  int size = ceil(log(num) / log(2));
+  int sqrtnum = ceil(sqrt(double(num)));
+  int size = ceil(log(double(num)) / log(2.0));
   *factors = new int[size];
 
   int i = 0;

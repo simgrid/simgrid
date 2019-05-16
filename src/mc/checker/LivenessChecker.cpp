@@ -100,9 +100,7 @@ int LivenessChecker::compare(simgrid::mc::VisitedPair* state1, simgrid::mc::Visi
 {
   simgrid::mc::Snapshot* s1 = state1->graph_state->system_state.get();
   simgrid::mc::Snapshot* s2 = state2->graph_state->system_state.get();
-  int num1 = state1->num;
-  int num2 = state2->num;
-  return simgrid::mc::snapshot_compare(num1, s1, num2, s2);
+  return simgrid::mc::snapshot_compare(s1, s2);
 }
 
 std::shared_ptr<VisitedPair> LivenessChecker::insertAcceptancePair(simgrid::mc::Pair* pair)
@@ -275,12 +273,12 @@ void LivenessChecker::showAcceptanceCycle(std::size_t depth)
   XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
   XBT_INFO("|             ACCEPTANCE CYCLE            |");
   XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
-  XBT_INFO("Counter-example that violates formula :");
-  simgrid::mc::dumpRecordPath();
+  XBT_INFO("Counter-example that violates formula:");
   for (auto const& s : this->getTextualTrace())
-    XBT_INFO("%s", s.c_str());
+    XBT_INFO("  %s", s.c_str());
+  simgrid::mc::dumpRecordPath();
   simgrid::mc::session->logState();
-  XBT_INFO("Counter-example depth : %zu", depth);
+  XBT_INFO("Counter-example depth: %zu", depth);
 }
 
 std::vector<std::string> LivenessChecker::getTextualTrace() // override

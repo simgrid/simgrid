@@ -39,9 +39,11 @@ class XBT_PUBLIC Comm : public Activity {
   Comm() : Activity() {}
 
 public:
+#ifndef DOXYGEN
   friend XBT_PUBLIC void intrusive_ptr_release(Comm* c);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Comm* c);
   friend Mailbox; // Factory of comms
+#endif
 
   virtual ~Comm();
 

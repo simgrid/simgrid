@@ -37,12 +37,12 @@ public:
 #ifndef DOXYGEN
   Exec(Exec const&) = delete;
   Exec& operator=(Exec const&) = delete;
-#endif
 
   friend ExecSeq;
   friend ExecPar;
   friend XBT_PUBLIC void intrusive_ptr_release(Exec* e);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Exec* e);
+#endif
   static xbt::signal<void(Actor const&)> on_start;
   static xbt::signal<void(Actor const&)> on_completion;
 

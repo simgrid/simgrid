@@ -33,7 +33,7 @@ example, to set the item ``Item`` to the value ``Value``, simply
 type the following on the command-line:
 
 .. code-block:: shell
-		
+
    my_simulator --cfg=Item:Value (other arguments)
 
 Several ``--cfg`` command line arguments can naturally be used. If you
@@ -52,7 +52,7 @@ can be done by adding the following to the beginning of your platform
 file:
 
 .. code-block:: xml
-		
+
   <config>
     <prop id="Item" value="Value"/>
   </config>
@@ -61,19 +61,19 @@ A last solution is to pass your configuration directly in your program
 with :cpp:func:`simgrid::s4u::Engine::set_config` or :cpp:func:`MSG_config`.
 
 .. code-block:: cpp
-		
+
    #include <simgrid/s4u.hpp>
 
    int main(int argc, char *argv[]) {
      simgrid::s4u::Engine e(&argc, argv);
-     
+
      e->set_config("Item:Value");
-     
+
      // Rest of your code
    }
 
 .. _options_list:
-   
+
 Existing Configuration Items
 ----------------------------
 
@@ -110,7 +110,6 @@ Existing Configuration Items
 - **model-check/hash:** :ref:`cfg=model-checker/hash`
 - **model-check/max-depth:** :ref:`cfg=model-check/max-depth`
 - **model-check/property:** :ref:`cfg=model-check/property`
-- **model-check/record:** :ref:`cfg=model-check/record`
 - **model-check/reduction:** :ref:`cfg=model-check/reduction`
 - **model-check/replay:** :ref:`cfg=model-check/replay`
 - **model-check/send-determinism:** :ref:`cfg=model-check/send-determinism`
@@ -193,13 +192,13 @@ models). Also, ``--help-models`` should provide information about all
 models for all existing resources.
 
 - ``network/model``: specify the used network model. Possible values:
-  
+
   - **LV08 (default one):** Realistic network analytic model
     (slow-start modeled by multiplying latency by 13.01, bandwidth by
     .97; bottleneck sharing uses a payload of S=20537 for evaluating
     RTT). Described in `Accuracy Study and Improvement of Network
     Simulation in the SimGrid Framework
-    <http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf>`_.     
+    <http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf>`_.
   - **Constant:** Simplistic network model where all communication
     take a constant time (one second). This model provides the lowest
     realism, but is (marginally) faster.
@@ -219,11 +218,11 @@ models for all existing resources.
     <ftp://ftp.ens-lyon.fr/pub/LIP/Rapports/RR/RR2002/RR2002-40.ps.gz>`_.
   - **Reno/Reno2/Vegas:** Models from Steven H. Low using lagrange_solve instead of
     lmm_solve (experts only; check the code for more info).
-  - **NS3** (only available if you compiled SimGrid accordingly): 
+  - **NS3** (only available if you compiled SimGrid accordingly):
     Use the packet-level network
     simulators as network models (see :ref:`pls_ns3`).
     This model can be :ref:`further configured <options_pls>`.
-    
+
 - ``cpu/model``: specify the used CPU model.  We have only one model
   for now:
 
@@ -238,7 +237,7 @@ models for all existing resources.
   allow parallel tasks because these beasts need some collaboration
   between the network and CPU model. That is why, ptask_07 is used by
   default when using SimDag.
-  
+
   - **default:** Default host model. Currently, CPU:Cas01 and
     network:LV08 (with cross traffic enabled)
   - **compound:** Host model that is automatically chosen if
@@ -264,7 +263,7 @@ is, all our analytical models) accept specific optimization
 configurations.
 
   - items ``network/optim`` and ``cpu/optim`` (both default to 'Lazy'):
-    
+
     - **Lazy:** Lazy action management (partial invalidation in lmm +
       heap in action remaining).
     - **TI:** Trace integration. Highly optimized mode when using
@@ -272,7 +271,7 @@ configurations.
       now).
     - **Full:** Full update of remaining and variables. Slow but may be
       useful when debugging.
-      
+
   - items ``network/maxmin-selective-update`` and
     ``cpu/maxmin-selective-update``: configure whether the underlying
     should be lazily updated or not. It should have no impact on the
@@ -340,7 +339,7 @@ be retrieved using the following commands. Both give a set of values,
 and you should use the last one, which is the maximal size.
 
 .. code-block:: shell
-		
+
    cat /proc/sys/net/ipv4/tcp_rmem # gives the sender window
    cat /proc/sys/net/ipv4/tcp_wmem # gives the receiver window
 
@@ -348,7 +347,7 @@ and you should use the last one, which is the maximal size.
 .. _cfg=network/bandwidth-factor:
 .. _cfg=network/latency-factor:
 .. _cfg=network/weight-S:
-   
+
 Correcting Important Network Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -469,11 +468,11 @@ Here is the full list of plugins that can be activated this way:
    computations. More details in @ref plugin_energy.
  - **link_energy:** keeps track of the energy dissipated by
    communications. More details in @ref SURF_plugin_energy.
- - **host_load:** keeps track of the computational load. 
+ - **host_load:** keeps track of the computational load.
    More details in @ref plugin_load.
 
 .. _options_modelchecking:
-   
+
 Configuring the Model-Checking
 ------------------------------
 
@@ -481,14 +480,14 @@ To enable the SimGrid model-checking support the program should
 be executed using the simgrid-mc wrapper:
 
 .. code-block:: shell
-		
+
    simgrid-mc ./my_program
 
 Safety properties are expressed as assertions using the function
 :cpp:func:`void MC_assert(int prop)`.
 
 .. _cfg=model-check/property:
-     
+
 Specifying a liveness property
 ..............................
 
@@ -500,11 +499,11 @@ property, as formatted by the ltl2ba program.
 
 
 .. code-block:: shell
-		
+
    simgrid-mc ./my_program --cfg=model-check/property:<filename>
 
 .. _cfg=model-check/checkpoint:
-   
+
 Going for Stateful Verification
 ...............................
 
@@ -681,30 +680,22 @@ Currently most of the state is not included in the hash because the
 implementation was found to be buggy and this options is not as useful as
 it could be. For this reason, it is currently disabled by default.
 
-.. _cfg=model-check/record:
 .. _cfg=model-check/replay:
 
-Record/Replay of Verification
-.............................
+Replaying buggy execution paths out of the model-checker
+........................................................
 
-As the model-checker keeps jumping at different places in the execution graph,
-it is difficult to understand what happens when trying to debug an application
-under the model-checker. Event the output of the program is difficult to
-interpret. Moreover, the model-checker does not behave nicely with advanced
-debugging tools such as valgrind. For those reason, to identify a trajectory
-in the execution graph with the model-checker and replay this trajcetory and
-without the model-checker black-magic but with more standard tools
-(such as a debugger, valgrind, etc.). For this reason, Simgrid implements an
-experimental record/replay functionnality in order to record a trajectory with
-the model-checker and replay it without the model-checker.
+Debugging the problems reported by the model-checker is challenging: First, the
+application under verification cannot be debugged with gdb because the
+model-checker already traces it. Then, the model-checker may explore several
+execution paths before encountering the issue, making it very difficult to
+understand the outputs. Fortunately, SimGrid provides the execution path leading
+to any reported issue so that you can replay this path out of the model checker,
+enabling the usage of classical debugging tools.
 
 When the model-checker finds an interesting path in the application
 execution graph (where a safety or liveness property is violated), it
-can generate an identifier for this path. To enable this behavious the
-``model-check/record`` must be set to **yes**, which is not the case
-by default.
-
-Here is an example of output:
+generates an identifier for this path. Here is an example of output:
 
 .. code-block:: shell
 
@@ -713,21 +704,18 @@ Here is an example of output:
    [  0.000000] (0:@) *** PROPERTY NOT VALID ***
    [  0.000000] (0:@) **************************
    [  0.000000] (0:@) Counter-example execution trace:
+   [  0.000000] (0:@)   [(1)Tremblay (app)] MC_RANDOM(3)
+   [  0.000000] (0:@)   [(1)Tremblay (app)] MC_RANDOM(4)
    [  0.000000] (0:@) Path = 1/3;1/4
-   [  0.000000] (0:@) [(1)Tremblay (app)] MC_RANDOM(3)
-   [  0.000000] (0:@) [(1)Tremblay (app)] MC_RANDOM(4)
    [  0.000000] (0:@) Expanded states = 27
    [  0.000000] (0:@) Visited states = 68
    [  0.000000] (0:@) Executed transitions = 46
 
-This path can then be replayed outside of the model-checker (and even
-in non-MC build of simgrid) by setting the ``model-check/replay`` item
-to the given path. The other options should be the same (but the
-model-checker should be disabled).
-
-The format and meaning of the path may change between different
-releases so the same release of Simgrid should be used for the record
-phase and the replay phase.
+The interesting line is ``Path = 1/3;1/4``, which means that you should use
+`--cfg=model-check/replay:1/3;1/4`` to replay your application on the buggy
+execution path. The other options should be the same (but the model-checker
+should be disabled). Note that format and meaning of the path may change between
+different releases.
 
 Configuring the User Code Virtualization
 ----------------------------------------
@@ -768,7 +756,7 @@ the slowest to the most efficient:
    raw implementation.
    |br| Install the relevant library (e.g. with the
    libboost-contexts-dev package on Debian/Ubuntu) and recompile
-   SimGrid. 
+   SimGrid.
  - **raw:** amazingly fast factory using a context switching mechanism
    of our own, directly implemented in assembly (only available for x86
    and amd64 platforms for now) and without any unneeded system call.
@@ -832,7 +820,7 @@ application.
 .. _cfg=contexts/nthreads:
 .. _cfg=contexts/parallel-threshold:
 .. _cfg=contexts/synchro:
-  
+
 Running User Code in Parallel
 .............................
 
@@ -874,7 +862,6 @@ which value is either:
    your machine for no good reason. You probably prefer the other less
    eager schemas.
 
-   
 Configuring the Tracing
 -----------------------
 
@@ -915,7 +902,7 @@ you never used the tracing API.
 - SMPI simulator and traces for a space/time view:
 
   .. code-block:: shell
-     
+
      smpirun -trace ...
 
   The `-trace` parameter for the smpirun script runs the simulation
@@ -935,7 +922,7 @@ reproduce an experiment. You have two ways to do that:
 - Add the contents of a textual file on top of the trace file as comment:
 
   .. code-block:: shell
-		  
+
      --cfg=tracing/comment-file:my_file_with_additional_information.txt
 
 Please, use these two parameters (for comments) to make reproducible
@@ -1011,12 +998,12 @@ To disable the benchmarking/simulation of computation in the simulated
 application, the variable ``smpi/simulate-computation`` should be set
 to no.  This option just ignores the timings in your simulation; it
 still executes the computations itself. If you want to stop SMPI from
-doing that, you should check the SMPI_SAMPLE macros, documented in 
+doing that, you should check the SMPI_SAMPLE macros, documented in
 Section :ref:`SMPI_adapting_speed`.
 
 +------------------------------------+-------------------------+-----------------------------+
 |  Solution                          | Computations executed?  | Computations simulated?     |
-+====================================+=========================+=============================+   
++====================================+=========================+=============================+
 | --cfg=smpi/simulate-computation:no | Yes                     | Never                       |
 +------------------------------------+-------------------------+-----------------------------+
 | --cfg=smpi/cpu-threshold:42        | Yes, in all cases       | If it lasts over 42 seconds |
@@ -1077,7 +1064,7 @@ http://simgrid.gforge.inria.fr/contrib/smpi-calibration-doc.html
 http://simgrid.gforge.inria.fr/contrib/smpi-saturation-doc.html
 
 .. _cfg=smpi/display-timing:
-       
+
 Reporting Simulation Time
 .........................
 
@@ -1120,7 +1107,7 @@ actual bandwidth (i.e., values between 0 and 1 are valid), latency factors
 increase the latency, i.e., values larger than or equal to 1 are valid here.
 
 .. _cfg=smpi/papi-events:
-       
+
 Trace hardware counters with PAPI
 .................................
 
@@ -1131,7 +1118,7 @@ names of PAPI counters and adds their respective values to the trace
 files (See Section :ref:`tracing_tracing_options`).
 
 .. warning::
-   
+
    This feature currently requires superuser privileges, as registers
    are queried.  Only use this feature with code you trust! Call
    smpirun for instance via ``smpirun -wrapper "sudo "
@@ -1195,7 +1182,7 @@ or full names.  Check with ldd the name of the library you want to
 use.  Example:
 
 .. code-block:: shell
-		  
+
    ldd allpairf90
       ...
       libgfortran.so.3 => /usr/lib/x86_64-linux-gnu/libgfortran.so.3 (0x00007fbb4d91b000)
@@ -1420,14 +1407,14 @@ mem[100..199] are shared while other area remain private.
 Then, it can be deallocated by calling SMPI_SHARED_FREE(mem).
 
 When smpi/shared-malloc:global is used, the memory consumption problem
-is solved, but it may induce too much load on the kernel's pages table. 
+is solved, but it may induce too much load on the kernel's pages table.
 In this case, you should use huge pages so that we create only one
 entry per Mb of malloced data instead of one entry per 4k.
 To activate this, you must mount a hugetlbfs on your system and allocate
 at least one huge page:
 
 .. code-block:: shell
-		
+
     mkdir /home/huge
     sudo mount none /home/huge -t hugetlbfs -o rw,mode=0777
     sudo sh -c 'echo 1 > /proc/sys/vm/nr_hugepages' # echo more if you need more
@@ -1449,7 +1436,7 @@ to 0, the simulated clock is not advanced in these calls, which leads
 to issue if your application contains such a loop:
 
 .. code-block:: cpp
-		
+
    while(MPI_Wtime() < some_time_bound) {
         /* some tests, with no communication nor computation */
    }
@@ -1514,7 +1501,7 @@ with gdb:
    set variable simgrid::simix::breakpoint = 3.1416
 
 .. _cfg=verbose-exit:
-   
+
 Behavior on Ctrl-C
 ..................
 

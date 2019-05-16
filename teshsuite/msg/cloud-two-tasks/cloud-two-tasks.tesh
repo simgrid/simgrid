@@ -2,7 +2,7 @@
 
 p Testing a vm with two successive tasks
 
-$ $SG_TEST_EXENV ${bindir:=.}/cloud-two-tasks$EXEEXT ${platfdir}/small_platform.xml
+$ ${bindir:=.}/cloud-two-tasks ${platfdir}/small_platform.xml
 > [VM0:compute:(2) 0.000000] [msg_test/INFO] VM0:compute task 1 created 0
 > [Fafard:master_:(1) 0.000000] [msg_test/INFO] aTask remaining duration: 1e+09
 > [Fafard:master_:(1) 1.000000] [msg_test/INFO] aTask remaining duration: 9.23704e+08

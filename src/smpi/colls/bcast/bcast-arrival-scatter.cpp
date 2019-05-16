@@ -21,7 +21,7 @@ int Coll_bcast_arrival_scatter::bcast(void *buf, int count,
                                           MPI_Comm comm)
 {
   int tag = -COLL_TAG_BCAST;//in order to use ANY_TAG, make this one positive
-  int header_tag = 10;
+  int header_tag = -10;
   MPI_Status status;
 
   int curr_remainder;

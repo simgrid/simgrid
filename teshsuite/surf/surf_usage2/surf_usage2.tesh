@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/surf_usage2 ${platfdir}/two_hosts_profiles.xml
+$ ${bindir:=.}/surf_usage2 ${platfdir}/two_hosts_profiles.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'CM02'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
 > [0.200000] [surf_test/INFO] Next Event : 0.2

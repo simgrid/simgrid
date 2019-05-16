@@ -22,12 +22,12 @@ void check_disk_attachment()
 {
   for (auto const& s : simgrid::s4u::Engine::get_instance()->get_all_storages()) {
     simgrid::kernel::routing::NetPoint* host_elm =
-        simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(s->get_impl()->getHost());
+        simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(s->get_impl()->get_host());
     if (not host_elm)
       surf_parse_error(std::string("Unable to attach storage ") + s->get_cname() + ": host " +
-                       s->get_impl()->getHost() + " does not exist.");
+                       s->get_impl()->get_host() + " does not exist.");
     else
-      s->set_host(simgrid::s4u::Host::by_name(s->get_impl()->getHost()));
+      s->set_host(simgrid::s4u::Host::by_name(s->get_impl()->get_host()));
   }
 }
 
@@ -127,10 +127,10 @@ StorageN11Action::StorageN11Action(Model* model, double cost, bool failed, Stora
   model->get_maxmin_system()->expand(storage->get_constraint(), get_variable(), 1.0);
   switch(type) {
     case s4u::Io::OpType::READ:
-      model->get_maxmin_system()->expand(storage->constraintRead_, get_variable(), 1.0);
+      model->get_maxmin_system()->expand(storage->constraint_read_, get_variable(), 1.0);
       break;
     case s4u::Io::OpType::WRITE:
-      model->get_maxmin_system()->expand(storage->constraintWrite_, get_variable(), 1.0);
+      model->get_maxmin_system()->expand(storage->constraint_write_, get_variable(), 1.0);
       break;
     default:
       THROW_UNIMPLEMENTED;

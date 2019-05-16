@@ -8,7 +8,7 @@ static int myvalue = 0;
 static void test_opts(int* argc, char **argv[]){
   int found = 0;
   static struct option long_options[] = {
-  {"long",     no_argument, 0,  0 },
+  {(char*)"long",     no_argument, 0,  0 },
   {0,         0,                 0,  0 }
   };
   while (1) {

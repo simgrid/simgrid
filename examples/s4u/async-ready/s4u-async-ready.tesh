@@ -2,7 +2,7 @@
 
 p Test1 Peer sending and receiving
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-async-ready ${platfdir}/small_platform_fatpipe.xml s4u-async-ready_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-async-ready ${platfdir}/small_platform_fatpipe.xml s4u-async-ready_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:peer@Tremblay) Send 'Message 0 from peer 0' to 'peer-1'
 > [  0.000000] (2:peer@Ruby) Send 'Message 0 from peer 1' to 'peer-0'
 > [  0.000000] (1:peer@Tremblay) Send 'Message 0 from peer 0' to 'peer-2'

@@ -48,6 +48,8 @@ public:
  * Resource *
  ************/
 
+class CpuAction;
+
 /** @ingroup SURF_cpu_interface
 * @brief SURF cpu resource interface class
 * @details A Cpu represent a cpu associated to a host
@@ -90,7 +92,7 @@ public:
    * @param size The value of the processing amount (in flop) needed to process
    * @return The CpuAction corresponding to the processing
    */
-  virtual Action* execution_start(double size) = 0;
+  virtual CpuAction* execution_start(double size) = 0;
 
   /**
    * @brief Execute some quantity of computation on more than one core
@@ -99,7 +101,7 @@ public:
    * @param requested_cores The desired amount of cores. Must be >= 1
    * @return The CpuAction corresponding to the processing
    */
-  virtual Action* execution_start(double size, int requested_cores) = 0;
+  virtual CpuAction* execution_start(double size, int requested_cores) = 0;
 
   /**
    * @brief Make a process sleep for duration (in seconds)
@@ -107,7 +109,7 @@ public:
    * @param duration The number of seconds to sleep
    * @return The CpuAction corresponding to the sleeping
    */
-  virtual Action* sleep(double duration) = 0;
+  virtual CpuAction* sleep(double duration) = 0;
 
   /** @brief Get the amount of cores */
   virtual int get_core_count();

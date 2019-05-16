@@ -31,6 +31,30 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
 				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
 endforeach()
 
+
+# Model-checking examples: with only one source and tested with all factories but thread
+######################################################################
+
+foreach (example mc-failing-assert)
+  if(SIMGRID_HAVE_MC)
+    add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
+    add_dependencies     (tests s4u-${example})
+    target_link_libraries(s4u-${example} simgrid)
+    set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
+
+  
+    ADD_TESH_FACTORIES(s4u-${example} "ucontext;raw;boost"
+                                      --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
+				    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+				    --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
+				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
+  endif()
+  
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
+endforeach()
+
+
 # Multi-files examples
 ######################
 
