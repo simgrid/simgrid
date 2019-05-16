@@ -3,9 +3,7 @@
 #########################################
 
 # doc
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/doc/html/)
-install(DIRECTORY "${CMAKE_BINARY_DIR}/doc/html/"
-  DESTINATION doc/simgrid/html/)
+install(DIRECTORY "${CMAKE_BINARY_DIR}/doc/html/" DESTINATION doc/simgrid/html/ OPTIONAL)
 
 # binaries
 if(enable_smpi)
@@ -27,7 +25,7 @@ endif()
 
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh  DESTINATION bin/)
 
-install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/graphicator  DESTINATION bin/)
+install(TARGETS graphicator DESTINATION bin/)
 
 install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/tools/MSG_visualization/colorize.pl
   DESTINATION bin/
