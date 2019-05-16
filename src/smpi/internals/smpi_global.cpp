@@ -507,7 +507,7 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
 #endif
   // If this point is reached, sendfile() actually is not available.  Copy file by hand.
   const int bufsize = 1024 * 1024 * 4;
-  char buf[bufsize];
+  char* buf         = new char[bufsize];
   while (int got = read(fdin, buf, bufsize)) {
     if (got == -1) {
       xbt_assert(errno == EINTR, "Cannot read from %s", src.c_str());
@@ -524,6 +524,7 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
       }
     }
   }
+  delete[] buf;
   close(fdin);
   close(fdout);
 }
