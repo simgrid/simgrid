@@ -612,7 +612,6 @@ set(MC_SRC
   src/mc/sosp/mc_checkpoint.cpp
   src/mc/sosp/mc_snapshot.hpp
   src/mc/sosp/mc_snapshot.cpp
-  src/mc/sosp/mc_page_snapshot.cpp
   
   src/mc/AddressSpace.hpp
   src/mc/Frame.hpp

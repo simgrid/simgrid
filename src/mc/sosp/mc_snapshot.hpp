@@ -13,8 +13,6 @@
 
 // ***** Snapshot region
 
-XBT_PRIVATE void mc_region_restore_sparse(simgrid::mc::RemoteClient* process, simgrid::mc::RegionSnapshot* reg);
-
 static XBT_ALWAYS_INLINE void* mc_translate_address_region_chunked(uintptr_t addr, simgrid::mc::RegionSnapshot* region)
 {
   auto split                = simgrid::mc::mmu::split(addr - region->start().address());
@@ -135,9 +133,6 @@ XBT_PRIVATE std::shared_ptr<Snapshot> take_snapshot(int num_state);
 XBT_PRIVATE void restore_snapshot(std::shared_ptr<Snapshot> snapshot);
 } // namespace mc
 } // namespace simgrid
-
-XBT_PRIVATE void mc_restore_page_snapshot_region(simgrid::mc::RemoteClient* process, void* start_addr,
-                                                 simgrid::mc::ChunkedData const& pagenos);
 
 const void* MC_region_read_fragmented(simgrid::mc::RegionSnapshot* region, void* target, const void* addr,
                                       std::size_t size);

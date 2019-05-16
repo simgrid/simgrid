@@ -65,7 +65,16 @@ static void restore(RegionSnapshot* region)
       break;
 
     case simgrid::mc::StorageType::Chunked:
-      mc_region_restore_sparse(&mc_model_checker->process(), region);
+      xbt_assert(((region->permanent_address().address()) & (xbt_pagesize - 1)) == 0, "Not at the beginning of a page");
+      xbt_assert(simgrid::mc::mmu::chunkCount(region->size()) == region->page_data().page_count());
+
+      for (size_t i = 0; i != region->page_data().page_count(); ++i) {
+        void* target_page =
+            (void*)simgrid::mc::mmu::join(i, (std::uintptr_t)(void*)region->permanent_address().address());
+        const void* source_page = region->page_data().page(i);
+        mc_model_checker->process().write_bytes(source_page, xbt_pagesize, remote(target_page));
+      }
+
       break;
 
     case simgrid::mc::StorageType::Privatized:
