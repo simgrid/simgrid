@@ -28,11 +28,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_init(JNIEnv * env, jobject obj
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_acquire(JNIEnv * env, jobject obj) {
   xbt_mutex_t mutex = (xbt_mutex_t)(uintptr_t)env->GetLongField(obj, jsynchro_field_Mutex_bind);
-  try {
-    xbt_mutex_acquire(mutex);
-  } catch (xbt_ex const& e) {
-    XBT_DEBUG("Caught an exception: %s", e.what());
-  }
+  xbt_mutex_acquire(mutex);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_release(JNIEnv * env, jobject obj) {
