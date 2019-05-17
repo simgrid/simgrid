@@ -66,7 +66,7 @@ public:
   ExecPtr set_tracing_category(const std::string& category);
   ExecPtr set_timeout(double timeout);
   Exec* cancel() override;
-  std::string get_name() const { return name_; }
+  const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
 
   XBT_ATTRIB_DEPRECATED_v324("Please use Exec::wait_for()") void wait(double t) override { wait_for(t); }
