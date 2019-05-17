@@ -78,8 +78,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
 
   if (not host->is_on()) {
     XBT_WARN("Cannot launch process '%s' on failed host '%s'", name.c_str(), host->get_cname());
-    std::rethrow_exception(
-        std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Cannot attach actor on failed host.")));
+    throw simgrid::HostFailureException(XBT_THROW_POINT, "Cannot attach actor on failed host.");
   }
 
   ActorImpl* actor = new ActorImpl(xbt::string(name), host);
@@ -455,8 +454,7 @@ ActorImpl* ActorImpl::start(const simix::ActorCode& code)
   if (not host_->is_on()) {
     XBT_WARN("Cannot launch actor '%s' on failed host '%s'", name_.c_str(), host_->get_cname());
     intrusive_ptr_release(this);
-    std::rethrow_exception(
-        std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Cannot start actor on failed host.")));
+    throw simgrid::HostFailureException(XBT_THROW_POINT, "Cannot start actor on failed host.");
   }
 
   this->code_ = code;
