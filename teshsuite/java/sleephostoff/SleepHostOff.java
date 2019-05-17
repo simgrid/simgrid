@@ -21,7 +21,7 @@ class Sleeper extends Process {
         stillAlive = true;
       } catch (HostFailureException e) {
         stillAlive = false;
-        Msg.info("catch HostException: "+e.getLocalizedMessage());
+        Msg.info("catch HostFailureException: "+e.getLocalizedMessage());
       }
     }
   }
