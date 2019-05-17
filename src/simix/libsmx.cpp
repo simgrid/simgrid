@@ -39,6 +39,11 @@ bool simcall_execution_test(const smx_activity_t& execution)
   return simcall_BODY_execution_test(static_cast<simgrid::kernel::activity::ExecImpl*>(execution.get()));
 }
 
+unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count, double timeout)
+{
+  return simcall_BODY_execution_waitany_for(execs, count, timeout);
+}
+
 void simcall_process_join(smx_actor_t process, double timeout)
 {
   simcall_BODY_process_join(process, timeout);

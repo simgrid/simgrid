@@ -52,6 +52,12 @@ public:
 
   Exec* wait() override;
   Exec* wait_for(double timeout) override;
+  /*! take a vector of s4u::ExecPtr and return when one of them is finished.
+   * The return value is the rank of the first finished ExecPtr. */
+  static int wait_any(std::vector<ExecPtr>* execs) { return wait_any_for(execs, -1); }
+  /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
+  static int wait_any_for(std::vector<ExecPtr>* execs, double timeout);
+
   bool test() override;
 
   ExecPtr set_bound(double bound);
@@ -60,6 +66,8 @@ public:
   ExecPtr set_tracing_category(const std::string& category);
   ExecPtr set_timeout(double timeout);
   Exec* cancel() override;
+  std::string get_name() const { return name_; }
+  const char* get_cname() const { return name_.c_str(); }
 
   XBT_ATTRIB_DEPRECATED_v324("Please use Exec::wait_for()") void wait(double t) override { wait_for(t); }
 };

@@ -1,0 +1,22 @@
+#!/usr/bin/env tesh
+
+! output sort 19
+$ ${bindir:=.}/s4u-exec-waitany ${platfdir}/multicore_machine.xml "--log=root.fmt:[%10.6r]%e[%14P]%e%m%n"
+> [  0.000000] [        worker] Activity Exec-0 has started for 1 seconds
+> [  0.000000] [worker_timeout] Activity Exec-0 has started for 1 seconds
+> [  0.000000] [        worker] Activity Exec-1 has started for 8 seconds
+> [  0.000000] [worker_timeout] Activity Exec-1 has started for 8 seconds
+> [  0.000000] [        worker] Activity Exec-2 has started for 3 seconds
+> [  0.000000] [worker_timeout] Activity Exec-2 has started for 3 seconds
+> [  1.000000] [worker_timeout] Activity 'Exec-0' (at position 0) is complete
+> [  1.000000] [worker_timeout] 2 activities remain pending
+> [  1.000000] [        worker] Activity 'Exec-0' (at position 0) is complete
+> [  1.000000] [        worker] 2 activities remain pending
+> [  3.000000] [worker_timeout] Activity 'Exec-2' (at position 1) is complete
+> [  3.000000] [worker_timeout] 1 activities remain pending
+> [  3.000000] [        worker] Activity 'Exec-2' (at position 1) is complete
+> [  3.000000] [        worker] 1 activities remain pending
+> [  7.000000] [worker_timeout] Do not wait any longer for an activity
+> [  7.000000] [worker_timeout] 0 activities remain pending
+> [  8.000000] [        worker] Activity 'Exec-1' (at position 0) is complete
+> [  8.000000] [        worker] 0 activities remain pending

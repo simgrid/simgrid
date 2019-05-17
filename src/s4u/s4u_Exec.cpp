@@ -53,6 +53,14 @@ Exec* Exec::wait_for(double)
   THROW_UNIMPLEMENTED;
 }
 
+int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
+{
+  std::unique_ptr<kernel::activity::ExecImpl* []> rexecs(new kernel::activity::ExecImpl*[execs->size()]);
+  std::transform(begin(*execs), end(*execs), rexecs.get(),
+                 [](const ExecPtr& exec) { return static_cast<kernel::activity::ExecImpl*>(exec->pimpl_.get()); });
+  return simcall_execution_waitany_for(rexecs.get(), execs->size(), timeout);
+}
+
 Exec* Exec::cancel()
 {
   simix::simcall([this] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->cancel(); });

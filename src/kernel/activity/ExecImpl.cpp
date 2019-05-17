@@ -13,6 +13,8 @@
 
 #include "simgrid/s4u/Host.hpp"
 
+#include <boost/range/algorithm.hpp>
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
 void simcall_HANDLER_execution_wait(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* synchro)
@@ -44,6 +46,41 @@ void simcall_HANDLER_execution_test(smx_simcall_t simcall, simgrid::kernel::acti
     SIMIX_simcall_answer(simcall);
   }
   simcall_execution_test__set__result(simcall, res);
+}
+
+void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* execs[],
+                                           size_t count, double timeout)
+{
+  if (timeout < 0.0) {
+    simcall->timer = nullptr;
+  } else {
+    simcall->timer = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall]() {
+      simgrid::kernel::activity::ExecImpl** execs = simcall_execution_waitany_for__get__execs(simcall);
+      size_t count                                = simcall_execution_waitany_for__get__count(simcall);
+
+      for (size_t i = 0; i < count; i++) {
+        // Remove the first occurence of simcall:
+        auto* exec = execs[i];
+        auto j     = boost::range::find(exec->simcalls_, simcall);
+        if (j != exec->simcalls_.end())
+          exec->simcalls_.erase(j);
+      }
+      simcall_execution_waitany_for__set__result(simcall, -1);
+      SIMIX_simcall_answer(simcall);
+    });
+  }
+
+  for (size_t i = 0; i < count; i++) {
+    /* associate this simcall to the the synchro */
+    auto* exec = execs[i];
+    exec->simcalls_.push_back(simcall);
+
+    /* see if the synchro is already finished */
+    if (exec->state_ != SIMIX_WAITING && exec->state_ != SIMIX_RUNNING) {
+      exec->finish();
+      break;
+    }
+  }
 }
 
 namespace simgrid {
@@ -180,6 +217,37 @@ void ExecImpl::finish()
   while (not simcalls_.empty()) {
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
+
+    /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
+     * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
+     * simcall */
+
+    if (simcall->call == SIMCALL_NONE) // FIXME: maybe a better way to handle this case
+      continue;                        // if process handling comm is killed
+    if (simcall->call == SIMCALL_EXECUTION_WAITANY_FOR) {
+      simgrid::kernel::activity::ExecImpl** execs = simcall_execution_waitany_for__get__execs(simcall);
+      size_t count                                = simcall_execution_waitany_for__get__count(simcall);
+
+      for (size_t i = 0; i < count; i++) {
+        // Remove the first occurence of simcall:
+        auto* exec = execs[i];
+        auto j     = boost::range::find(exec->simcalls_, simcall);
+        if (j != exec->simcalls_.end())
+          exec->simcalls_.erase(j);
+
+        if (simcall->timer) {
+          simcall->timer->remove();
+          simcall->timer = nullptr;
+        }
+      }
+
+      if (not MC_is_active() && not MC_record_replay_is_active()) {
+        ExecImpl** element = std::find(execs, execs + count, this);
+        int rank           = (element != execs + count) ? element - execs : -1;
+        simcall_execution_waitany_for__set__result(simcall, rank);
+      }
+    }
+
     switch (state_) {
 
       case SIMIX_DONE:
@@ -212,8 +280,6 @@ void ExecImpl::finish()
     }
 
     simcall->issuer->waiting_synchro = nullptr;
-    simcall_execution_wait__set__result(simcall, state_);
-
     /* Fail the process if the host is down */
     if (simcall->issuer->get_host()->is_on())
       SIMIX_simcall_answer(simcall);

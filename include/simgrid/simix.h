@@ -180,6 +180,8 @@ XBT_ATTRIB_DEPRECATED_v325("Please use CommImpl::finish()") XBT_PUBLIC void SIMI
 /******************************* Host simcalls ********************************/
 #ifdef __cplusplus
 XBT_PUBLIC e_smx_state_t simcall_execution_wait(const smx_activity_t& execution);
+XBT_PUBLIC unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count,
+                                                      double timeout);
 XBT_PUBLIC bool simcall_execution_test(const smx_activity_t& execution);
 #endif
 

@@ -115,6 +115,56 @@ static inline void simcall_execution_wait__set__result(smx_simcall_t simcall, in
   simgrid::simix::marshal<int>(simcall->result, result);
 }
 
+static inline simgrid::kernel::activity::ExecImpl** simcall_execution_waitany_for__get__execs(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal<simgrid::kernel::activity::ExecImpl**>(simcall->args[0]);
+}
+static inline simgrid::kernel::activity::ExecImpl** simcall_execution_waitany_for__getraw__execs(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal_raw<simgrid::kernel::activity::ExecImpl**>(simcall->args[0]);
+}
+static inline void simcall_execution_waitany_for__set__execs(smx_simcall_t simcall,
+                                                             simgrid::kernel::activity::ExecImpl** arg)
+{
+  simgrid::simix::marshal<simgrid::kernel::activity::ExecImpl**>(simcall->args[0], arg);
+}
+static inline size_t simcall_execution_waitany_for__get__count(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal<size_t>(simcall->args[1]);
+}
+static inline size_t simcall_execution_waitany_for__getraw__count(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal_raw<size_t>(simcall->args[1]);
+}
+static inline void simcall_execution_waitany_for__set__count(smx_simcall_t simcall, size_t arg)
+{
+  simgrid::simix::marshal<size_t>(simcall->args[1], arg);
+}
+static inline double simcall_execution_waitany_for__get__timeout(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal<double>(simcall->args[2]);
+}
+static inline double simcall_execution_waitany_for__getraw__timeout(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal_raw<double>(simcall->args[2]);
+}
+static inline void simcall_execution_waitany_for__set__timeout(smx_simcall_t simcall, double arg)
+{
+  simgrid::simix::marshal<double>(simcall->args[2], arg);
+}
+static inline int simcall_execution_waitany_for__get__result(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal<int>(simcall->result);
+}
+static inline int simcall_execution_waitany_for__getraw__result(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal_raw<int>(simcall->result);
+}
+static inline void simcall_execution_waitany_for__set__result(smx_simcall_t simcall, int result)
+{
+  simgrid::simix::marshal<int>(simcall->result, result);
+}
+
 static inline simgrid::kernel::activity::ExecImpl* simcall_execution_test__get__execution(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<simgrid::kernel::activity::ExecImpl*>(simcall->args[0]);
@@ -1029,6 +1079,9 @@ XBT_PRIVATE void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_acto
 XBT_PRIVATE void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, double timeout);
 XBT_PRIVATE void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration);
 XBT_PRIVATE void simcall_HANDLER_execution_wait(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* execution);
+XBT_PRIVATE void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall,
+                                                       simgrid::kernel::activity::ExecImpl** execs, size_t count,
+                                                       double timeout);
 XBT_PRIVATE void simcall_HANDLER_execution_test(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* execution);
 XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t sender, smx_mailbox_t mbox,
                                            double task_size, double rate, unsigned char* src_buff, size_t src_buff_size,

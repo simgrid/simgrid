@@ -67,6 +67,15 @@ inline static int simcall_BODY_execution_wait(simgrid::kernel::activity::ExecImp
   return simcall<int, simgrid::kernel::activity::ExecImpl*>(SIMCALL_EXECUTION_WAIT, execution);
 }
 
+inline static int simcall_BODY_execution_waitany_for(simgrid::kernel::activity::ExecImpl** execs, size_t count,
+                                                     double timeout)
+{
+  if (0) /* Go to that function to follow the code flow through the simcall barrier */
+    simcall_HANDLER_execution_waitany_for(&SIMIX_process_self()->simcall, execs, count, timeout);
+  return simcall<int, simgrid::kernel::activity::ExecImpl**, size_t, double>(SIMCALL_EXECUTION_WAITANY_FOR, execs,
+                                                                             count, timeout);
+}
+
 inline static bool simcall_BODY_execution_test(simgrid::kernel::activity::ExecImpl* execution)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */

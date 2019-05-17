@@ -30,6 +30,7 @@ const char* simcall_names[] = {
     "SIMCALL_PROCESS_JOIN",
     "SIMCALL_PROCESS_SLEEP",
     "SIMCALL_EXECUTION_WAIT",
+    "SIMCALL_EXECUTION_WAITANY_FOR",
     "SIMCALL_EXECUTION_TEST",
     "SIMCALL_COMM_SEND",
     "SIMCALL_COMM_ISEND",
@@ -77,6 +78,12 @@ case SIMCALL_PROCESS_SLEEP:
 
 case SIMCALL_EXECUTION_WAIT:
   simcall_HANDLER_execution_wait(simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::ExecImpl*>(simcall->args[0]));
+  break;
+
+case SIMCALL_EXECUTION_WAITANY_FOR:
+  simcall_HANDLER_execution_waitany_for(
+      simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::ExecImpl**>(simcall->args[0]),
+      simgrid::simix::unmarshal<size_t>(simcall->args[1]), simgrid::simix::unmarshal<double>(simcall->args[2]));
   break;
 
 case SIMCALL_EXECUTION_TEST:
