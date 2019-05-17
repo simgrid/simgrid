@@ -24,7 +24,9 @@ Fixed bugs (GH=GitHub; FG=FramaGit):
  - FG#12: -Denable_lto=OFF doesn't disable LTO
  - FG#13: Installs unstripped file 'bin/graphicator'
  - FG#14: Installs the empty directory 'doc/simgrid/html'
+ - FG#15: Setting -Denable_python=OFF doesn't disable the search for pybind11
  - GH#133: Java : a process can run on a VM even if its host is off
+ - GH#320: Stacktrace: Avoid the backtrace variant of Boost.Stacktrace?
  - GH#326: Valgrind-detected error for join() when energy plugin is activated
 
 ----------------------------------------------------------------------------

@@ -16,7 +16,7 @@ CMAKE_LINKARGS="-L@libdir@"
 
 @SMPITOOLS_SH@
 
-list_set CXXFLAGS "-std=gnu++11"
+list_set CXXFLAGS "-std=gnu++11" @SMPI_CXX_FLAGS@
 list_set LINKARGS
 if [ "@WIN32@" != "1" ]; then
     list_add CXXFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"

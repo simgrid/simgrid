@@ -23,7 +23,7 @@ else
     LINKER_UNDEFINED_ERROR="1"
 fi
 
-list_set CFLAGS
+list_set CFLAGS @SMPI_C_FLAGS@
 list_set LINKARGS "-lm"
 if [ "x@WIN32@" = "x1" ]; then
     list_add CFLAGS "-include" "@includedir@/smpi/smpi_main.h"
