@@ -12,6 +12,7 @@ export LC_ALL=C
 
 echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -rf /tmp/simgrid-java*
+rm -rf /var/tmp/simgrid-java*
 rm -rf /tmp/jvm-*
 find /builds/workspace/SimGrid/ -name "hs_err_pid*.log" | xargs rm -f
 ls /tmp
