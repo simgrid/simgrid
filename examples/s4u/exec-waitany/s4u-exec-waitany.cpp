@@ -46,7 +46,7 @@ static void worker(bool with_timeout)
       XBT_INFO("Activity '%s' (at position %d) is complete", pending_executions[pos]->get_cname(), pos);
       pending_executions.erase(pending_executions.begin() + pos);
     }
-    XBT_INFO("%lu activities remain pending", pending_executions.size());
+    XBT_INFO("%zu activities remain pending", pending_executions.size());
   }
 }
 
