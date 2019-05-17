@@ -31,7 +31,7 @@ private:
   void* data_ = nullptr;
   std::size_t size_;
 
-  Buffer(std::size_t size) : size_(size) { data_ = ::operator new(size_); }
+  explicit Buffer(std::size_t size) : size_(size) { data_ = ::operator new(size_); }
 
   Buffer(void* data, std::size_t size) : data_(data), size_(size) {}
 
