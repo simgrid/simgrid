@@ -98,15 +98,15 @@ public:
   static const RegionType DataRegion    = RegionType::Data;
 
 private:
-  RegionType region_type_;
-  StorageType storage_type_;
-  simgrid::mc::ObjectInformation* object_info_;
+  RegionType region_type_                      = UnknownRegion;
+  StorageType storage_type_                    = StorageType::NoData;
+  simgrid::mc::ObjectInformation* object_info_ = nullptr;
 
   /** @brief  Virtual address of the region in the simulated process */
-  void* start_addr_;
+  void* start_addr_ = nullptr;
 
   /** @brief Size of the data region in bytes */
-  std::size_t size_;
+  std::size_t size_ = 0;
 
   /** @brief Permanent virtual address of the region
    *
@@ -117,26 +117,16 @@ private:
    * on the region of the global variables.
    *
    * */
-  void* permanent_addr_;
+  void* permanent_addr_ = nullptr;
 
   Buffer flat_data_;
   ChunkedData page_numbers_;
   std::vector<RegionSnapshot> privatized_regions_;
 
 public:
-  RegionSnapshot()
-      : region_type_(UnknownRegion)
-      , storage_type_(StorageType::NoData)
-      , object_info_(nullptr)
-      , start_addr_(nullptr)
-      , size_(0)
-      , permanent_addr_(nullptr)
-  {
-  }
+  RegionSnapshot() {}
   RegionSnapshot(RegionType type, void* start_addr, void* permanent_addr, size_t size)
       : region_type_(type)
-      , storage_type_(StorageType::NoData)
-      , object_info_(nullptr)
       , start_addr_(start_addr)
       , size_(size)
       , permanent_addr_(permanent_addr)
