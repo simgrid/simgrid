@@ -316,9 +316,9 @@ for elem in tree.findall(".//cluster"):
         m = re.match("^([^-]*?)-([^-]*)$", r)
         if m:
             for i in range(int(m.group(1)), int(m.group(2))):
-                print "{}{}{}".format(prefix, i, suffix)
+                print(prefix + str(i) + suffix)
         else:
-            print "{}{}{}".format(prefix, r, suffix)
+            print(prefix + r + suffix)
             ' < ${PLATFORM} >> ${HOSTFILE}
 fi
 UNROLLEDHOSTFILETMP=0
