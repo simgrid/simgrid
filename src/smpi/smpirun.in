@@ -301,7 +301,7 @@ if [ -z "${HOSTFILE}" ] ; then
     HOSTFILE="$(mktemp smpitmp-hostfXXXXXX)"
     perl -ne 'print "$1\n" if /.*<host.*?id="(.*?)".*?\/>.*/' ${PLATFORM} > ${HOSTFILE}
     # put all <cluster tag on its own line.
-    python -c '
+    @PYTHON_EXECUTABLE@ -c '
 import xml.etree.ElementTree as ET
 import sys
 import re
