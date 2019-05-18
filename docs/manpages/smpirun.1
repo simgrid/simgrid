@@ -11,7 +11,11 @@ arguments. It is intended to be easy to use to regular MPI users.
 .SH MANDATORY PARAMETERS
 .TP
 \fB\-platform\fR <platform.xml>
-XML file describing the platform on which we want to deploy the program 
+XML file describing the platform on which we want to deploy the program.
+Please refer to the
+.UR https://simgrid.org/doc/latest/Tutorial_MPI_Applications.html#describing-your-platform
+online documentation.
+.UE
 .TP
 \fB\-hostfile\fR, \fB\-machinefile\fR <hostfile>
 Hostfile listing all the machines in use
@@ -21,7 +25,7 @@ be mixed with the configuration options described in the next section.
 
 .TP
 \fB\-help\fR
-Print the usage and a résumé of the available options
+Print the usage and a summary of the available options.
 .TP
 \fB\-keep-temps\fR
 Do not remove the generated files after execution.
