@@ -41,7 +41,7 @@ public:
 
 hash_type hash(Snapshot const& snapshot)
 {
-  XBT_DEBUG("START hash %i", snapshot.num_state);
+  XBT_DEBUG("START hash %i", snapshot.num_state_);
   djb_hash hash;
   // TODO:
   // * nb_processes
@@ -49,7 +49,7 @@ hash_type hash(Snapshot const& snapshot)
   // * root variables
   // * basic stack frame information
   // * stack frame local variables
-  XBT_DEBUG("END hash %i", snapshot.num_state);
+  XBT_DEBUG("END hash %i", snapshot.num_state_);
   return hash.value();
 }
 

@@ -16,46 +16,10 @@
 
 #include "src/mc/mc_mmu.hpp"
 #include "src/mc/mc_private.hpp"
+#include "src/mc/mc_smx.hpp"
 #include "src/mc/sosp/PageStore.hpp"
 #include "src/mc/sosp/mc_snapshot.hpp"
 
-/** @brief Find the snapshoted region from a pointer
- *
- *  @param addr     Pointer
- *  @param snapshot Snapshot
- *  @param process_index rank requesting the region
- * */
-simgrid::mc::RegionSnapshot* mc_get_snapshot_region(const void* addr, const simgrid::mc::Snapshot* snapshot,
-                                                    int process_index)
-{
-  size_t n = snapshot->snapshot_regions.size();
-  for (size_t i = 0; i != n; ++i) {
-    simgrid::mc::RegionSnapshot* region = snapshot->snapshot_regions[i].get();
-    if (not(region && region->contain(simgrid::mc::remote(addr))))
-      continue;
-
-    if (region->storage_type() == simgrid::mc::StorageType::Privatized) {
-#if HAVE_SMPI
-      // Use the current process index of the snapshot:
-      if (process_index == simgrid::mc::ProcessIndexDisabled)
-        process_index = snapshot->privatization_index;
-      if (process_index < 0)
-        xbt_die("Missing process index");
-      if (process_index >= (int)region->privatized_data().size())
-        xbt_die("Invalid process index");
-      simgrid::mc::RegionSnapshot& priv_region = region->privatized_data()[process_index];
-      xbt_assert(priv_region.contain(simgrid::mc::remote(addr)));
-      return &priv_region;
-#else
-      xbt_die("Privatized region in a non SMPI build (this should not happen)");
-#endif
-    }
-
-    return region;
-  }
-
-  return nullptr;
-}
 
 /** @brief Read memory from a snapshot region broken across fragmented pages
  *
@@ -138,18 +102,39 @@ namespace mc {
 
 Snapshot::Snapshot(RemoteClient* process, int _num_state)
     : AddressSpace(process)
-    , num_state(_num_state)
-    , heap_bytes_used(0)
-    , enabled_processes()
-    , privatization_index(0)
-    , hash(0)
+    , num_state_(_num_state)
+    , heap_bytes_used_(0)
+    , enabled_processes_()
+    , privatization_index_(0)
+    , hash_(0)
 {
+}
+
+void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void* start_addr, void* permanent_addr,
+                          std::size_t size)
+{
+  if (type == simgrid::mc::RegionType::Data)
+    xbt_assert(object_info, "Missing object info for object.");
+  else if (type == simgrid::mc::RegionType::Heap)
+    xbt_assert(not object_info, "Unexpected object info for heap region.");
+
+  simgrid::mc::RegionSnapshot region;
+#if HAVE_SMPI
+  const bool privatization_aware = object_info && mc_model_checker->process().privatized(*object_info);
+  if (privatization_aware && MC_smpi_process_count())
+    region = simgrid::mc::privatized_region(type, start_addr, permanent_addr, size);
+  else
+#endif
+    region = simgrid::mc::region(type, start_addr, permanent_addr, size);
+
+  region.object_info(object_info);
+  snapshot_regions_.push_back(std::unique_ptr<simgrid::mc::RegionSnapshot>(new RegionSnapshot(std::move(region))));
 }
 
 const void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, int process_index,
                                  ReadOptions options) const
 {
-  RegionSnapshot* region = mc_get_snapshot_region((void*)address.address(), this, process_index);
+  RegionSnapshot* region = this->get_region((void*)address.address(), process_index);
   if (region) {
     const void* res = MC_region_read(region, buffer, (void*)address.address(), size);
     if (buffer == res || options & ReadOptions::lazy())
@@ -160,6 +145,49 @@ const void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void>
     }
   } else
     return this->process()->read_bytes(buffer, size, address, process_index, options);
+}
+/** @brief Find the snapshoted region from a pointer
+ *
+ *  @param addr     Pointer
+ *  @param process_index rank requesting the region
+ * */
+RegionSnapshot* Snapshot::get_region(const void* addr, int process_index) const
+{
+  size_t n = snapshot_regions_.size();
+  for (size_t i = 0; i != n; ++i) {
+    RegionSnapshot* region = snapshot_regions_[i].get();
+    if (not(region && region->contain(simgrid::mc::remote(addr))))
+      continue;
+
+    if (region->storage_type() == simgrid::mc::StorageType::Privatized) {
+#if HAVE_SMPI
+      // Use the current process index of the snapshot:
+      if (process_index == simgrid::mc::ProcessIndexDisabled)
+        process_index = privatization_index_;
+      xbt_assert(process_index >= 0, "Missing process index");
+      xbt_assert(process_index < (int)region->privatized_data().size(), "Invalid process index");
+
+      RegionSnapshot& priv_region = region->privatized_data()[process_index];
+      xbt_assert(priv_region.contain(simgrid::mc::remote(addr)));
+      return &priv_region;
+#else
+      xbt_die("Privatized region in a non SMPI build (this should not happen)");
+#endif
+    }
+
+    return region;
+  }
+
+  return nullptr;
+}
+
+/** @brief Find the snapshoted region from a pointer, with a hinted_region */
+RegionSnapshot* Snapshot::get_region(const void* addr, int process_index, RegionSnapshot* hinted_region) const
+{
+  if (hinted_region->contain(simgrid::mc::remote(addr)))
+    return hinted_region;
+  else
+    return get_region(addr, process_index);
 }
 
 } // namespace mc

@@ -43,9 +43,6 @@ static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, simgr
   }
 }
 
-XBT_PRIVATE simgrid::mc::RegionSnapshot* mc_get_snapshot_region(const void* addr, const simgrid::mc::Snapshot* snapshot,
-                                                                int process_index);
-
 // ***** MC Snapshot
 
 /** Ignored data
@@ -96,33 +93,31 @@ class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
   Snapshot(RemoteClient* process, int num_state);
   ~Snapshot() = default;
+
+  /* Initialization */
+  void add_region(RegionType type, ObjectInformation* object_info, void* start_addr, void* permanent_addr,
+                  std::size_t size);
+
+  /* Regular use */
   const void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, int process_index = ProcessIndexAny,
                          ReadOptions options = ReadOptions::none()) const override;
+  RegionSnapshot* get_region(const void* addr, int process_index) const;
+  RegionSnapshot* get_region(const void* addr, int process_index, RegionSnapshot* hinted_region) const;
 
   // To be private
-  int num_state;
-  std::size_t heap_bytes_used;
-  std::vector<std::unique_ptr<RegionSnapshot>> snapshot_regions;
-  std::set<pid_t> enabled_processes;
-  int privatization_index;
-  std::vector<std::size_t> stack_sizes;
-  std::vector<s_mc_snapshot_stack_t> stacks;
-  std::vector<simgrid::mc::IgnoredHeapRegion> to_ignore;
-  std::uint64_t hash = 0;
-  std::vector<s_mc_snapshot_ignored_data_t> ignored_data;
+  int num_state_;
+  std::size_t heap_bytes_used_;
+  std::vector<std::unique_ptr<RegionSnapshot>> snapshot_regions_;
+  std::set<pid_t> enabled_processes_;
+  int privatization_index_;
+  std::vector<std::size_t> stack_sizes_;
+  std::vector<s_mc_snapshot_stack_t> stacks_;
+  std::vector<simgrid::mc::IgnoredHeapRegion> to_ignore_;
+  std::uint64_t hash_ = 0;
+  std::vector<s_mc_snapshot_ignored_data_t> ignored_data_;
 };
 } // namespace mc
 } // namespace simgrid
-
-static XBT_ALWAYS_INLINE simgrid::mc::RegionSnapshot* mc_get_region_hinted(void* addr, simgrid::mc::Snapshot* snapshot,
-                                                                           int process_index,
-                                                                           simgrid::mc::RegionSnapshot* region)
-{
-  if (region->contain(simgrid::mc::remote(addr)))
-    return region;
-  else
-    return mc_get_snapshot_region(addr, snapshot, process_index);
-}
 
 static const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot);
 

@@ -303,7 +303,7 @@ int StateComparator::initHeapInformation(xbt_mheap_t heap1, xbt_mheap_t heap2,
 // TODO, have a robust way to find it in O(1)
 static inline RegionSnapshot* MC_get_heap_region(Snapshot* snapshot)
 {
-  for (auto const& region : snapshot->snapshot_regions)
+  for (auto const& region : snapshot->snapshot_regions_)
     if (region->region_type() == simgrid::mc::RegionType::Heap)
       return region.get();
   xbt_die("No heap region");
@@ -1321,8 +1321,8 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state, int proc
         for (simgrid::mc::Member& member : type->members) {
           void* member1 = simgrid::dwarf::resolve_member(real_area1, type, &member, snapshot1, process_index);
           void* member2 = simgrid::dwarf::resolve_member(real_area2, type, &member, snapshot2, process_index);
-          simgrid::mc::RegionSnapshot* subregion1 = mc_get_region_hinted(member1, snapshot1, process_index, region1);
-          simgrid::mc::RegionSnapshot* subregion2 = mc_get_region_hinted(member2, snapshot2, process_index, region2);
+          simgrid::mc::RegionSnapshot* subregion1 = snapshot1->get_region(member1, process_index, region1); // region1 is hinted
+          simgrid::mc::RegionSnapshot* subregion2 = snapshot2->get_region(member2, process_index, region2); // region2 is hinted
           res = compare_areas_with_type(state, process_index, member1, snapshot1, subregion1, member2, snapshot2,
                                         subregion2, member.type, pointer_level);
           if (res == 1)
@@ -1431,10 +1431,10 @@ static int compare_local_variables(simgrid::mc::StateComparator& state,
       // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
 
         simgrid::mc::Type* subtype = current_var1->type;
-        int res                    = compare_areas_with_type(
-            state, process_index, current_var1->address, snapshot1,
-            mc_get_snapshot_region(current_var1->address, snapshot1, process_index), current_var2->address, snapshot2,
-            mc_get_snapshot_region(current_var2->address, snapshot2, process_index), subtype, 0);
+        int res =
+            compare_areas_with_type(state, process_index, current_var1->address, snapshot1,
+                                    snapshot1->get_region(current_var1->address, process_index), current_var2->address,
+                                    snapshot2, snapshot2->get_region(current_var2->address, process_index), subtype, 0);
 
         if (res == 1) {
           // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
@@ -1468,27 +1468,28 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
 
   int hash_result = 0;
   if (_sg_mc_hash) {
-    hash_result = (s1->hash != s2->hash);
+    hash_result = (s1->hash_ != s2->hash_);
     if (hash_result) {
-      XBT_VERB("(%d - %d) Different hash: 0x%" PRIx64 "--0x%" PRIx64, s1->num_state, s2->num_state, s1->hash, s2->hash);
+      XBT_VERB("(%d - %d) Different hash: 0x%" PRIx64 "--0x%" PRIx64, s1->num_state_, s2->num_state_, s1->hash_,
+               s2->hash_);
 #ifndef MC_DEBUG
       return 1;
 #endif
     } else
-      XBT_VERB("(%d - %d) Same hash: 0x%" PRIx64, s1->num_state, s2->num_state, s1->hash);
+      XBT_VERB("(%d - %d) Same hash: 0x%" PRIx64, s1->num_state_, s2->num_state_, s1->hash_);
   }
 
   /* Compare enabled processes */
-  if (s1->enabled_processes != s2->enabled_processes) {
-    XBT_VERB("(%d - %d) Different amount of enabled processes", s1->num_state, s2->num_state);
+  if (s1->enabled_processes_ != s2->enabled_processes_) {
+    XBT_VERB("(%d - %d) Different amount of enabled processes", s1->num_state_, s2->num_state_);
     return 1;
   }
 
   /* Compare size of stacks */
   int is_diff = 0;
-  for (unsigned long i = 0; i < s1->stacks.size(); i++) {
-    size_t size_used1 = s1->stack_sizes[i];
-    size_t size_used2 = s2->stack_sizes[i];
+  for (unsigned long i = 0; i < s1->stacks_.size(); i++) {
+    size_t size_used1 = s1->stack_sizes_[i];
+    size_t size_used2 = s2->stack_sizes_[i];
     if (size_used1 != size_used2) {
 #ifdef MC_DEBUG
       XBT_DEBUG("(%d - %d) Different size used in stacks: %zu - %zu", s1->num_state, s2->num_state, size_used1,
@@ -1497,7 +1498,7 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
       is_diff = 1;
 #else
 #ifdef MC_VERBOSE
-      XBT_VERB("(%d - %d) Different size used in stacks: %zu - %zu", s1->num_state, s2->num_state, size_used1,
+      XBT_VERB("(%d - %d) Different size used in stacks: %zu - %zu", s1->num_state_, s2->num_state_, size_used1,
                size_used2);
 #endif
       return 1;
@@ -1516,7 +1517,7 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
     alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
     remote(process->heap_address),
     simgrid::mc::ProcessIndexMissing, simgrid::mc::ReadOptions::lazy());
-  int res_init = state_comparator->initHeapInformation(heap1, heap2, &s1->to_ignore, &s2->to_ignore);
+  int res_init = state_comparator->initHeapInformation(heap1, heap2, &s1->to_ignore_, &s2->to_ignore_);
 
   if (res_init == -1) {
 #ifdef MC_DEBUG
@@ -1524,7 +1525,7 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
     errors++;
 #else
 #ifdef MC_VERBOSE
-    XBT_VERB("(%d - %d) Different heap information", s1->num_state, s2->num_state);
+    XBT_VERB("(%d - %d) Different heap information", s1->num_state_, s2->num_state_);
 #endif
 
     return 1;
@@ -1533,13 +1534,13 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
 
   /* Stacks comparison */
   int diff_local = 0;
-  for (unsigned int cursor = 0; cursor < s1->stacks.size(); cursor++) {
-    mc_snapshot_stack_t stack1 = &s1->stacks[cursor];
-    mc_snapshot_stack_t stack2 = &s2->stacks[cursor];
+  for (unsigned int cursor = 0; cursor < s1->stacks_.size(); cursor++) {
+    mc_snapshot_stack_t stack1 = &s1->stacks_[cursor];
+    mc_snapshot_stack_t stack2 = &s2->stacks_[cursor];
 
     if (stack1->process_index != stack2->process_index) {
       diff_local = 1;
-      XBT_DEBUG("(%d - %d) Stacks with different process index (%i vs %i)", s1->num_state, s2->num_state,
+      XBT_DEBUG("(%d - %d) Stacks with different process index (%i vs %i)", s1->num_state_, s2->num_state_,
                 stack1->process_index, stack2->process_index);
     }
     else diff_local = compare_local_variables(*state_comparator,
@@ -1552,7 +1553,7 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
 #else
 
 #ifdef MC_VERBOSE
-      XBT_VERB("(%d - %d) Different local variables between stacks %u", s1->num_state, s2->num_state, cursor + 1);
+      XBT_VERB("(%d - %d) Different local variables between stacks %u", s1->num_state_, s2->num_state_, cursor + 1);
 #endif
 
       return 1;
@@ -1560,13 +1561,13 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
     }
   }
 
-  size_t regions_count = s1->snapshot_regions.size();
+  size_t regions_count = s1->snapshot_regions_.size();
   // TODO, raise a difference instead?
-  xbt_assert(regions_count == s2->snapshot_regions.size());
+  xbt_assert(regions_count == s2->snapshot_regions_.size());
 
   for (size_t k = 0; k != regions_count; ++k) {
-    RegionSnapshot* region1 = s1->snapshot_regions[k].get();
-    RegionSnapshot* region2 = s2->snapshot_regions[k].get();
+    RegionSnapshot* region1 = s1->snapshot_regions_[k].get();
+    RegionSnapshot* region2 = s2->snapshot_regions_[k].get();
 
     // Preconditions:
     if (region1->region_type() != RegionType::Data)
@@ -1587,7 +1588,7 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
       errors++;
 #else
 #ifdef MC_VERBOSE
-      XBT_VERB("(%d - %d) Different global variables in %s", s1->num_state, s2->num_state, name.c_str());
+      XBT_VERB("(%d - %d) Different global variables in %s", s1->num_state_, s2->num_state_, name.c_str());
 #endif
 
       return 1;
@@ -1604,7 +1605,7 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
 #else
 
 #ifdef MC_VERBOSE
-    XBT_VERB("(%d - %d) Different heap (mmalloc_compare)", s1->num_state, s2->num_state);
+    XBT_VERB("(%d - %d) Different heap (mmalloc_compare)", s1->num_state_, s2->num_state_);
 #endif
     return 1;
 #endif
@@ -1612,9 +1613,9 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
 
 #ifdef MC_VERBOSE
   if (errors || hash_result)
-    XBT_VERB("(%d - %d) Difference found", s1->num_state, s2->num_state);
+    XBT_VERB("(%d - %d) Difference found", s1->num_state_, s2->num_state_);
   else
-    XBT_VERB("(%d - %d) No difference found", s1->num_state, s2->num_state);
+    XBT_VERB("(%d - %d) No difference found", s1->num_state_, s2->num_state_);
 #endif
 
 #if defined(MC_DEBUG) && defined(MC_VERBOSE)
