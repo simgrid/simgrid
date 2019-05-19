@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
   sg_host_energy_plugin_init();
   simgrid::s4u::Engine e(&argc, argv);
 
-  xbt_assert(argc > 1, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
+  xbt_assert(argc > 1, "Usage: %s platform_file\n\tExample: %s ../platforms/energy_platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
 

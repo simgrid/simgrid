@@ -45,7 +45,7 @@ static void actor_b()
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
+  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/small_platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]); /* - Load the platform description */
 

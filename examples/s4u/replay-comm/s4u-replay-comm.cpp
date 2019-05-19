@@ -81,11 +81,12 @@ int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
 
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file [action_files]\n"
-                       "\t# if all actions are in the same file\n"
-                       "\tExample: %s msg_platform.xml msg_deployment.xml actions\n"
-                       "\t# if actions are in separate files, specified in deployment\n"
-                       "\tExample: %s msg_platform.xml msg_deployment.xml ",
+  xbt_assert(argc > 2,
+             "Usage: %s platform_file deployment_file [action_files]\n"
+             "\t# if all actions are in the same file\n"
+             "\tExample: %s platform.xml deployment.xml actions\n"
+             "\t# if actions are in separate files, specified in deployment\n"
+             "\tExample: %s platform.xml deployment.xml ",
              argv[0], argv[0], argv[0]);
 
   e.load_platform(argv[1]);

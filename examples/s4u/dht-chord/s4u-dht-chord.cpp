@@ -15,8 +15,9 @@ int timeout  = 50;
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  xbt_assert(argc > 2, "Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n"
-                       "\tExample: %s ../msg_platform.xml chord.xml\n",
+  xbt_assert(argc > 2,
+             "Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n"
+             "\tExample: %s ../platforms/cluster_backbone.xml ./s4u-dht-chord_d.xml\n",
              argv[0], argv[0]);
   char** options = &argv[1];
   while (not strncmp(options[0], "-", 1)) {
