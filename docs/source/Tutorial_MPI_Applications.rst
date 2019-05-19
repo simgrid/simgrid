@@ -6,14 +6,14 @@ Simulating MPI Applications
 Discover SMPI
 -------------
 
-SimGrid can not only :ref:`simulate algorithms <usecase_simalgo>`, but
+SimGrid can not only :ref:`simulate algorithms <Tutorial_Algorithms>`, but
 it can also be used to execute real MPI applications on top of
 virtual, simulated platforms with the SMPI module. Even complex
 C/C++/F77/F90 applications should run out of the box in this
 environment. In fact, almost all proxy apps provided by the `ExaScale
 Project <https://proxyapps.exascaleproject.org/>`_ only require minor
 modifications to `run on top of SMPI
-<https://github.com/simgrid/SMPI-proxy-apps/>`_.
+<https://framagit.org/simgrid/SMPI-proxy-apps>`_.
 
 This setting permits to debug your MPI applications in a perfectly
 reproducible setup, with no Heisenbugs. Enjoy the full Clairevoyance
@@ -623,7 +623,7 @@ Further Readings
 You may also be interested in the `SMPI reference article
 <https://hal.inria.fr/hal-01415484>`_ or these `introductory slides
 <http://simgrid.org/tutorials/simgrid-smpi-101.pdf>`_. The `SMPI
-reference documentation <SMPI_doc>`_ covers much more content than
+reference documentation <app_smpi>`_ covers much more content than
 this short tutorial.
 
 Finally, we regularly use SimGrid in our teachings on MPI. This way,

@@ -22,41 +22,40 @@ actors, but posted onto a |Mailbox|_ that serve as rendez-vous point
 between communicating actors.
 
 .. |Actors| replace:: **Actors**
-.. _Actors: api/classsimgrid_1_1s4u_1_1Actor.html
+.. _Actors: app_s4u.html#s4u-actor
 
 .. |Activities| replace:: **Activities**
-.. _Activities: api/classsimgrid_1_1s4u_1_1Activity.html
+.. _Activities: app_s4u.html#s4u-activity
 
 .. |Hosts| replace:: **Hosts**
-.. _Hosts: api/classsimgrid_1_1s4u_1_1Host.html
+.. _Hosts: app_s4u.html#s4u-host
 
 .. |Links| replace:: **Links**
-.. _Links: api/classsimgrid_1_1s4u_1_1Link.html
+.. _Links: app_s4u.html#s4u-link
 
 .. |Storages| replace:: **Storages**
-.. _Storages: api/classsimgrid_1_1s4u_1_1Storage.html
+.. _Storages: app_s4u.html#s4u-storage
 
 .. |VirtualMachines| replace:: **VirtualMachines**
-.. _VirtualMachines: api/classsimgrid_1_1s4u_1_1VirtualMachine.html
+.. _VirtualMachines: app_s4u.html#s4u-virtualmachine
 
 .. |Host| replace:: **Host**
-.. _Host: api/classsimgrid_1_1s4u_1_1Host.html
+.. _Host: app_s4u.html#s4u-host
 
 .. |Link| replace:: **Link**
-.. _Link: api/classsimgrid_1_1s4u_1_1Link.html
+.. _Link: app_s4u.html#s4u-link
 
 .. |Mailbox| replace:: **Mailbox**
-.. _Mailbox: api/classsimgrid_1_1s4u_1_1Mailbox.html
+.. _Mailbox: app_s4u.html#s4u-mailbox
 
 .. |Barrier| replace:: **Barrier**
-.. _Barrier: api/classsimgrid_1_1s4u_1_1Barrier.html
+.. _Barrier: app_s4u.html#s4u-barrier
 
 .. |ConditionVariable| replace:: **ConditionVariable**
-.. _ConditionVariable: api/classsimgrid_1_1s4u_1_1ConditionVariable.html
+.. _ConditionVariable: app_s4u.html#s4u-conditionvariable
 
 .. |Mutex| replace:: **Mutex**
-.. _Mutex: api/classsimgrid_1_1s4u_1_1Mutex.html
-
+.. _Mutex: app_s4u.html#s4u-mutex
 
 **In the remainder of this tutorial**, you will discover a simple yet
 fully functioning example of SimGrid simulation: the Master/Workers

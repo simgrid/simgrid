@@ -8,6 +8,7 @@ pages:
   - cd docs
   - LC_ALL=C.UTF-8 ./Build.sh
   - mv build/html ../public
+  - linkchecker --ignore-url=https://simgrid.org/doc/3 https://simgrid.org
   artifacts:
     paths:
     - public

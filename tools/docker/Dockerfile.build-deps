@@ -13,6 +13,7 @@ RUN apt update && \
        doxygen fig2dev \
        chrpath \
        libdw-dev libevent-dev libunwind8-dev \
+       linkchecker \
        && \
     pip3 install breathe javasphinx 'sphinx>=1.8.0b1' sphinx_rtd_theme
 		   
