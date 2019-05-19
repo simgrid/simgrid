@@ -7,13 +7,13 @@
 #ifndef SIMGRID_MC_OBJECT_INFORMATION_HPP
 #define SIMGRID_MC_OBJECT_INFORMATION_HPP
 
+#include <memory>
 #include <string>
 #include <unordered_map>
-#include <memory>
 #include <vector>
 
-#include "src/mc/Frame.hpp"
-#include "src/mc/Type.hpp"
+#include "src/mc/inspect/Frame.hpp"
+#include "src/mc/inspect/Type.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/xbt/memory_map.hpp"
 
@@ -63,16 +63,16 @@ public:
   int flags = 0;
   std::string file_name;
   const void* start = nullptr;
-  const void *end = nullptr;
+  const void* end   = nullptr;
   // Location of its text segment:
-  char *start_exec = nullptr;
-  char *end_exec = nullptr;
+  char* start_exec = nullptr;
+  char* end_exec   = nullptr;
   // Location of the read-only part of its data segment:
-  char *start_rw = nullptr;
-  char *end_rw = nullptr;
+  char* start_rw = nullptr;
+  char* end_rw   = nullptr;
   // Location of the read/write part of its data segment:
-  char *start_ro = nullptr;
-  char *end_ro = nullptr;
+  char* start_ro = nullptr;
+  char* end_ro   = nullptr;
 
   /** All of its subprograms indexed by their address */
   std::unordered_map<std::uint64_t, simgrid::mc::Frame> subprograms;
@@ -110,10 +110,7 @@ public:
    *  use fixed addresses instead of base-addres relative addresses.
    *  Position independant executables are in fact ET_DYN.
    */
-  bool executable() const
-  {
-    return this->flags & simgrid::mc::ObjectInformation::Executable;
-  }
+  bool executable() const { return this->flags & simgrid::mc::ObjectInformation::Executable; }
 
   /** Base address of the module
    *
@@ -131,7 +128,7 @@ public:
    *  @param ip instruction address
    *  @return corresponding function (if any) or nullptr
    */
-  simgrid::mc::Frame* find_function(const void *ip) const;
+  simgrid::mc::Frame* find_function(const void* ip) const;
 
   /** Find a global variable by name
    *
@@ -154,16 +151,15 @@ public:
    *  @param name Name of the globale variable
    *  @param scope Namespaceed name of the function (or null for all functions)
    */
-  void remove_local_variable(
-    const char* name, const char* scope);
+  void remove_local_variable(const char* name, const char* scope);
 };
 
-XBT_PRIVATE std::shared_ptr<ObjectInformation> createObjectInformation(
-  std::vector<simgrid::xbt::VmMap> const& maps, const char* name);
+XBT_PRIVATE std::shared_ptr<ObjectInformation> createObjectInformation(std::vector<simgrid::xbt::VmMap> const& maps,
+                                                                       const char* name);
 
 /** Augment the current module with informations about the other ones */
 XBT_PRIVATE void postProcessObjectInformation(simgrid::mc::RemoteClient* process, simgrid::mc::ObjectInformation* info);
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 #endif

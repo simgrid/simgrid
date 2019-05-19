@@ -8,8 +8,8 @@
 #include <sys/uio.h>
 
 #include <fcntl.h>
-#include <libunwind.h>
 #include <libunwind-ptrace.h>
+#include <libunwind.h>
 
 #include "src/mc/mc_unw.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
@@ -33,8 +33,7 @@ struct _UPT_info {
 
 /** Get the PID of a `libunwind-ptrace` context
  */
-static inline
-pid_t _UPT_getpid(void* arg)
+static inline pid_t _UPT_getpid(void* arg)
 {
   _UPT_info* info = static_cast<_UPT_info*>(arg);
   return info->pid;
@@ -42,46 +41,45 @@ pid_t _UPT_getpid(void* arg)
 
 /** Read from the memory, avoid using `ptrace` (libunwind method)
  */
-static int access_mem(const unw_addr_space_t as,
-              const unw_word_t addr, unw_word_t* const  valp,
-              const int write, void* const arg)
+static int access_mem(const unw_addr_space_t as, const unw_word_t addr, unw_word_t* const valp, const int write,
+                      void* const arg)
 {
   if (write)
-    return - UNW_EINVAL;
-  pid_t pid = _UPT_getpid(arg);
+    return -UNW_EINVAL;
+  pid_t pid   = _UPT_getpid(arg);
   size_t size = sizeof(unw_word_t);
 
 #if HAVE_PROCESS_VM_READV
   // process_vm_read implementation.
   // This is only available since Linux 3.2.
 
-  struct iovec local = { valp, size };
-  struct iovec remote = { (void*) addr, size };
-  ssize_t s = process_vm_readv(pid, &local, 1, &remote, 1, 0);
+  struct iovec local  = {valp, size};
+  struct iovec remote = {(void*)addr, size};
+  ssize_t s           = process_vm_readv(pid, &local, 1, &remote, 1, 0);
   if (s >= 0) {
-    if ((size_t) s != size)
-      return - UNW_EINVAL;
+    if ((size_t)s != size)
+      return -UNW_EINVAL;
     else
       return 0;
   }
   if (s < 0 && errno != ENOSYS)
-    return - UNW_EINVAL;
+    return -UNW_EINVAL;
 #endif
 
   // /proc/${pid}/mem implementation.
   // On recent kernels, we do not need to ptrace the target process.
   // On older kernels, it is necessary to ptrace the target process.
   size_t count = size;
-  off_t off = (off_t) addr;
-  char* buf = (char*) valp;
-  int fd = simgrid::mc::open_vm(pid, O_RDONLY);
+  off_t off    = (off_t)addr;
+  char* buf    = (char*)valp;
+  int fd       = simgrid::mc::open_vm(pid, O_RDONLY);
   if (fd < 0)
-    return - UNW_EINVAL;
+    return -UNW_EINVAL;
   while (1) {
     ssize_t nread = pread(fd, buf, count, off);
     if (nread == 0) {
       close(fd);
-      return - UNW_EINVAL;
+      return -UNW_EINVAL;
     }
     if (nread == -1)
       break;
@@ -116,16 +114,9 @@ namespace unw {
  */
 // TODO, we could get rid of this if we properly stop the model-checked
 // process before reading the memory.
-static unw_accessors_t accessors = {
-  &_UPT_find_proc_info,
-  &_UPT_put_unwind_info,
-  &_UPT_get_dyn_info_list_addr,
-  &access_mem,
-  &_UPT_access_reg,
-  &_UPT_access_fpreg,
-  &_UPT_resume,
-  &_UPT_get_proc_name
-};
+static unw_accessors_t accessors = {&_UPT_find_proc_info, &_UPT_put_unwind_info, &_UPT_get_dyn_info_list_addr,
+                                    &access_mem,          &_UPT_access_reg,      &_UPT_access_fpreg,
+                                    &_UPT_resume,         &_UPT_get_proc_name};
 
 unw_addr_space_t create_addr_space()
 {
@@ -137,5 +128,5 @@ void* create_context(unw_addr_space_t /*as*/, pid_t pid)
   return _UPT_create(pid);
 }
 
-}
-}
+} // namespace unw
+} // namespace simgrid

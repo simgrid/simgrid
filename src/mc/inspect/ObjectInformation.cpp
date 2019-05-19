@@ -25,7 +25,7 @@ namespace mc {
  * i.e. \f$\text{virtual address} = \text{shared object base address}
  *             + \text{dwarf address}\f$.
  */
-void *ObjectInformation::base_address() const
+void* ObjectInformation::base_address() const
 {
   // For an executable (more precisely for a ET_EXEC) the base it 0:
   if (this->executable())
@@ -33,15 +33,15 @@ void *ObjectInformation::base_address() const
 
   // For an a shared-object (ET_DYN, including position-independant executables)
   // the base address is its lowest address:
-  void *result = this->start_exec;
-  if (this->start_rw != nullptr && result > (void *) this->start_rw)
+  void* result = this->start_exec;
+  if (this->start_rw != nullptr && result > (void*)this->start_rw)
     result = this->start_rw;
-  if (this->start_ro != nullptr && result > (void *) this->start_ro)
+  if (this->start_ro != nullptr && result > (void*)this->start_ro)
     result = this->start_ro;
   return result;
 }
 
-simgrid::mc::Frame* ObjectInformation::find_function(const void *ip) const
+simgrid::mc::Frame* ObjectInformation::find_function(const void* ip) const
 {
   /* This is implemented by binary search on a sorted array.
    *
@@ -55,10 +55,9 @@ simgrid::mc::Frame* ObjectInformation::find_function(const void *ip) const
    * We could use std::binary_search by including the high_pc inside
    * the FunctionIndexEntry.
    */
-  const simgrid::mc::FunctionIndexEntry* base =
-    this->functions_index.data();
-  int i = 0;
-  int j = this->functions_index.size() - 1;
+  const simgrid::mc::FunctionIndexEntry* base = this->functions_index.data();
+  int i                                       = 0;
+  int j                                       = this->functions_index.size() - 1;
   while (j >= i) {
     int k = i + ((j - i) / 2);
 
@@ -73,7 +72,7 @@ simgrid::mc::Frame* ObjectInformation::find_function(const void *ip) const
      * Either we have found the correct function or we do not know
      * any function corresponding to this instruction address.
      * Only at the point do we dereference the function pointer. */
-    else if ((std::uint64_t) ip < base[k].function->range.end())
+    else if ((std::uint64_t)ip < base[k].function->range.end())
       return base[k].function;
     else
       return nullptr;
@@ -84,7 +83,7 @@ simgrid::mc::Frame* ObjectInformation::find_function(const void *ip) const
 const simgrid::mc::Variable* ObjectInformation::find_variable(const char* name) const
 {
   for (simgrid::mc::Variable const& variable : this->global_variables)
-    if(variable.name == name)
+    if (variable.name == name)
       return &variable;
   return nullptr;
 }
@@ -98,12 +97,12 @@ void ObjectInformation::remove_global_variable(const char* name)
 
   // Binary search:
   size_type first = 0;
-  size_type last = this->global_variables.size() - 1;
+  size_type last  = this->global_variables.size() - 1;
 
   while (first <= last) {
-    size_type cursor = first + (last - first) / 2;
+    size_type cursor                   = first + (last - first) / 2;
     simgrid::mc::Variable& current_var = this->global_variables[cursor];
-    int cmp = current_var.name.compare(name);
+    int cmp                            = current_var.name.compare(name);
 
     if (cmp == 0) {
 
@@ -117,9 +116,7 @@ void ObjectInformation::remove_global_variable(const char* name)
         last++;
 
       // Remove the whole range:
-      this->global_variables.erase(
-        this->global_variables.begin() + first,
-        this->global_variables.begin() + last + 1);
+      this->global_variables.erase(this->global_variables.begin() + first, this->global_variables.begin() + last + 1);
 
       return;
     } else if (cmp < 0)
@@ -142,10 +139,8 @@ void ObjectInformation::remove_global_variable(const char* name)
  *  @param subprogram      (possibly inlined) Subprogram of the scope current scope
  *  @param scope           Current scope
  */
-static void remove_local_variable(simgrid::mc::Frame& scope,
-                            const char *var_name,
-                            const char *subprogram_name,
-                            simgrid::mc::Frame const& subprogram)
+static void remove_local_variable(simgrid::mc::Frame& scope, const char* var_name, const char* subprogram_name,
+                                  simgrid::mc::Frame const& subprogram)
 {
   typedef std::vector<Variable>::size_type size_type;
 
@@ -155,13 +150,13 @@ static void remove_local_variable(simgrid::mc::Frame& scope,
 
     // Try to find the variable and remove it:
     size_type start = 0;
-    size_type end = scope.variables.size() - 1;
+    size_type end   = scope.variables.size() - 1;
 
     // Binary search:
     while (start <= end) {
-      size_type cursor = start + (end - start) / 2;
+      size_type cursor                   = start + (end - start) / 2;
       simgrid::mc::Variable& current_var = scope.variables[cursor];
-      int compare = current_var.name.compare(var_name);
+      int compare                        = current_var.name.compare(var_name);
       if (compare == 0) {
         // Variable found, remove it:
         scope.variables.erase(scope.variables.begin() + cursor);
@@ -180,20 +175,16 @@ static void remove_local_variable(simgrid::mc::Frame& scope,
     // The new scope may be an inlined subroutine, in this case we want to use its
     // namespaced name in recursive calls:
     simgrid::mc::Frame const& nested_subprogram =
-        nested_scope.tag ==
-        DW_TAG_inlined_subroutine ? nested_scope : subprogram;
-    remove_local_variable(nested_scope, var_name, subprogram_name,
-                          nested_subprogram);
+        nested_scope.tag == DW_TAG_inlined_subroutine ? nested_scope : subprogram;
+    remove_local_variable(nested_scope, var_name, subprogram_name, nested_subprogram);
   }
 }
 
-void ObjectInformation::remove_local_variable(
-  const char* var_name, const char* subprogram_name)
+void ObjectInformation::remove_local_variable(const char* var_name, const char* subprogram_name)
 {
   for (auto& entry : this->subprograms)
-    simgrid::mc::remove_local_variable(entry.second,
-      var_name, subprogram_name, entry.second);
+    simgrid::mc::remove_local_variable(entry.second, var_name, subprogram_name, entry.second);
 }
 
-}
-}
+} // namespace mc
+} // namespace simgrid

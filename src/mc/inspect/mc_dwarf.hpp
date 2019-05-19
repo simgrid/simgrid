@@ -8,7 +8,7 @@
 
 #include "xbt/base.h"
 
-#define DW_LANG_Objc DW_LANG_ObjC       /* fix spelling error in older dwarf.h */
+#define DW_LANG_Objc DW_LANG_ObjC /* fix spelling error in older dwarf.h */
 #include <dwarf.h>
 
 #include "src/mc/mc_forward.hpp"
@@ -19,14 +19,13 @@ namespace dwarf {
 XBT_PRIVATE const char* attrname(int attr);
 XBT_PRIVATE const char* tagname(int tag);
 
-XBT_PRIVATE void* resolve_member(
-  const void* base, simgrid::mc::Type* type, simgrid::mc::Member* member,
-  simgrid::mc::AddressSpace* snapshot, int process_index);
+XBT_PRIVATE void* resolve_member(const void* base, simgrid::mc::Type* type, simgrid::mc::Member* member,
+                                 simgrid::mc::AddressSpace* snapshot, int process_index);
 
 XBT_PRIVATE
 int dwarf_register_to_libunwind(int dwarf_register);
 
-}
-}
+} // namespace dwarf
+} // namespace simgrid
 
 #endif

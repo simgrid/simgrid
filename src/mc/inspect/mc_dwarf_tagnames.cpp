@@ -100,11 +100,11 @@ namespace dwarf {
  *  @return name of the tag
  */
 XBT_PRIVATE
-const char *tagname(int tag)
+const char* tagname(int tag)
 {
   auto name = tagname_map.find(tag);
   return name == tagname_map.end() ? "DW_TAG_unknown" : name->second;
 }
 
-}
-}
+} // namespace dwarf
+} // namespace simgrid

@@ -15,9 +15,8 @@ namespace mc {
 
 void* Frame::frame_base(unw_cursor_t& unw_cursor) const
 {
-  simgrid::dwarf::Location location = simgrid::dwarf::resolve(
-                             frame_base_location, object_info,
-                             &unw_cursor, nullptr, nullptr, -1);
+  simgrid::dwarf::Location location =
+      simgrid::dwarf::resolve(frame_base_location, object_info, &unw_cursor, nullptr, nullptr, -1);
   if (location.in_memory())
     return location.address();
   else if (location.in_register()) {
@@ -28,10 +27,10 @@ void* Frame::frame_base(unw_cursor_t& unw_cursor) const
     // contains the address of the frame base.
     unw_word_t word;
     unw_get_reg(&unw_cursor, location.register_id(), &word);
-    return (void*) word;
-  }
-  else xbt_die("Unexpected location type");
+    return (void*)word;
+  } else
+    xbt_die("Unexpected location type");
 }
 
-}
-}
+} // namespace mc
+} // namespace simgrid

@@ -6,9 +6,9 @@
 #ifndef SIMGRID_MC_PROCESS_H
 #define SIMGRID_MC_PROCESS_H
 
-#include "src/xbt/mmalloc/mmprivate.h"
+#include "src/mc/inspect/ObjectInformation.hpp"
 #include "src/mc/remote/Channel.hpp"
-#include "src/mc/ObjectInformation.hpp"
+#include "src/xbt/mmalloc/mmprivate.h"
 
 #include <vector>
 

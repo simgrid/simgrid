@@ -23,16 +23,16 @@ void* resolve_member(const void* base, simgrid::mc::Type* /*type*/, simgrid::mc:
                      simgrid::mc::AddressSpace* address_space, int process_index)
 {
   ExpressionContext state;
-  state.frame_base = nullptr;
-  state.cursor = nullptr;
+  state.frame_base    = nullptr;
+  state.cursor        = nullptr;
   state.address_space = address_space;
   state.process_index = process_index;
 
   ExpressionStack stack;
-  stack.push((ExpressionStack::value_type) base);
+  stack.push((ExpressionStack::value_type)base);
   simgrid::dwarf::execute(member->location_expression, state, stack);
-  return (void*) stack.top();
+  return (void*)stack.top();
 }
 
-}
-}
+} // namespace dwarf
+} // namespace simgrid

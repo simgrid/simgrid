@@ -7,7 +7,7 @@
 #define SIMGRID_MC_SNAPSHOT_HPP
 
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/mc_unw.hpp"
+#include "src/mc/inspect/mc_unw.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
 #include "src/mc/sosp/RegionSnapshot.hpp"
 

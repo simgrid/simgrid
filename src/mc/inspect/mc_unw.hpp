@@ -36,8 +36,8 @@ namespace unw {
 
 XBT_PRIVATE unw_addr_space_t create_addr_space();
 XBT_PRIVATE void* create_context(unw_addr_space_t as, pid_t pid);
-}
-}
+} // namespace unw
+} // namespace simgrid
 
 namespace simgrid {
 namespace mc {
@@ -72,7 +72,7 @@ public:
 
 void dumpStack(FILE* file, unw_cursor_t&& cursor);
 void dumpStack(FILE* file, pid_t pid);
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 #endif

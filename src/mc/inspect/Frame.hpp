@@ -7,15 +7,15 @@
 #ifndef SIMGRID_MC_FRAME_HPP
 #define SIMGRID_MC_FRAME_HPP
 
-#include <string>
 #include <cstdint>
+#include <string>
 
 #include "xbt/base.h"
 #include "xbt/range.hpp"
 
+#include "src/mc/inspect/LocationList.hpp"
+#include "src/mc/inspect/Variable.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/LocationList.hpp"
-#include "src/mc/Variable.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -59,17 +59,16 @@ public:
   void remove_variable(char* name);
 };
 
-inline
-Frame::Frame()
+inline Frame::Frame()
 {
-  this->tag = 0;
-  this->range = {0, 0};
-  this->id = 0;
+  this->tag                = 0;
+  this->range              = {0, 0};
+  this->id                 = 0;
   this->abstract_origin_id = 0;
-  this->object_info = nullptr;
+  this->object_info        = nullptr;
 }
 
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 #endif

@@ -17,7 +17,7 @@
 #include <libunwind.h>
 
 #include "src/mc/AddressSpace.hpp"
-#include "src/mc/mc_dwarf.hpp"
+#include "src/mc/inspect/mc_dwarf.hpp"
 #include "src/mc/mc_forward.hpp"
 
 /** @file DwarfExpression.hpp
@@ -45,9 +45,14 @@ typedef std::vector<Dwarf_Op> DwarfExpression;
  */
 class ExpressionContext {
 public:
-  ExpressionContext() :
-    cursor(nullptr), frame_base(nullptr), address_space(nullptr),
-    object_info(nullptr), process_index(simgrid::mc::ProcessIndexMissing) {}
+  ExpressionContext()
+      : cursor(nullptr)
+      , frame_base(nullptr)
+      , address_space(nullptr)
+      , object_info(nullptr)
+      , process_index(simgrid::mc::ProcessIndexMissing)
+  {
+  }
   /** CPU state (registers) */
   unw_cursor_t* cursor;
   void* frame_base;
@@ -71,18 +76,20 @@ class ExpressionStack {
 public:
   typedef std::uintptr_t value_type;
   static const std::size_t max_size = 64;
+
 private:
   // Values of the stack (the top is stack_[size_ - 1]):
-  uintptr_t stack_[max_size] {0};
+  uintptr_t stack_[max_size]{0};
   size_t size_;
+
 public:
   ExpressionStack() : size_(0) {}
 
   // Access:
   std::size_t size() const { return size_; }
-  bool empty()       const { return size_ == 0; }
-  void clear()             { size_ = 0; }
-  uintptr_t&       operator[](int i)       { return stack_[i]; }
+  bool empty() const { return size_ == 0; }
+  void clear() { size_ = 0; }
+  uintptr_t& operator[](int i) { return stack_[i]; }
   uintptr_t const& operator[](int i) const { return stack_[i]; }
 
   /** Top of the stack */
@@ -133,8 +140,7 @@ public:
  *  @param context evaluation context (registers, memory, etc.)
  *  @param stack   DWARf stack where the operations are executed
  */
-void execute(const Dwarf_Op* ops, std::size_t n,
-  ExpressionContext const& context, ExpressionStack& stack);
+void execute(const Dwarf_Op* ops, std::size_t n, ExpressionContext const& context, ExpressionStack& stack);
 
 /** Executes/evaluates a DWARF expression
  *
@@ -142,14 +148,13 @@ void execute(const Dwarf_Op* ops, std::size_t n,
  *  @param context    evaluation context (registers, memory, etc.)
  *  @param stack      DWARf stack where the operations are executed
  */
-inline
-void execute(simgrid::dwarf::DwarfExpression const& expression,
-  ExpressionContext const& context, ExpressionStack& stack)
+inline void execute(simgrid::dwarf::DwarfExpression const& expression, ExpressionContext const& context,
+                    ExpressionStack& stack)
 {
   execute(expression.data(), expression.size(), context, stack);
 }
 
-}
-}
+} // namespace dwarf
+} // namespace simgrid
 
 #endif

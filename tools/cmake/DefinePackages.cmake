@@ -593,6 +593,26 @@ set(MC_SRC
   src/mc/checker/SafetyChecker.hpp
   src/mc/checker/LivenessChecker.cpp
   src/mc/checker/LivenessChecker.hpp
+  
+  src/mc/inspect/DwarfExpression.hpp
+  src/mc/inspect/DwarfExpression.cpp
+  src/mc/inspect/Frame.hpp
+  src/mc/inspect/Frame.cpp
+  src/mc/inspect/LocationList.hpp
+  src/mc/inspect/LocationList.cpp
+  src/mc/inspect/ObjectInformation.hpp
+  src/mc/inspect/ObjectInformation.cpp
+  src/mc/inspect/Type.hpp
+  src/mc/inspect/Variable.hpp
+  src/mc/inspect/mc_dwarf.hpp
+  src/mc/inspect/mc_dwarf.cpp
+  src/mc/inspect/mc_dwarf_attrnames.cpp
+  src/mc/inspect/mc_dwarf_tagnames.cpp
+  src/mc/inspect/mc_member.cpp
+  src/mc/inspect/mc_unw.hpp
+  src/mc/inspect/mc_unw.cpp
+  src/mc/inspect/mc_unw_vmread.cpp
+
   src/mc/remote/Channel.cpp
   src/mc/remote/Channel.hpp
   src/mc/remote/Client.cpp
@@ -614,36 +634,18 @@ set(MC_SRC
   src/mc/sosp/mc_snapshot.cpp
   
   src/mc/AddressSpace.hpp
-  src/mc/Frame.hpp
-  src/mc/Frame.cpp
   src/mc/ModelChecker.hpp
   src/mc/ModelChecker.cpp
-  src/mc/ObjectInformation.hpp
-  src/mc/ObjectInformation.cpp
-  src/mc/Type.hpp
-  src/mc/Variable.hpp
   src/mc/mc_forward.hpp
   src/mc/Session.cpp
   src/mc/Session.hpp
-  src/mc/mc_unw.hpp
-  src/mc/mc_unw.cpp
-  src/mc/mc_unw_vmread.cpp
   src/mc/mc_comm_pattern.cpp
   src/mc/mc_comm_pattern.hpp
   src/mc/compare.cpp
-  src/mc/mc_dwarf.hpp
-  src/mc/mc_dwarf.cpp
-  src/mc/mc_dwarf_attrnames.cpp
-  src/mc/DwarfExpression.hpp
-  src/mc/DwarfExpression.cpp
-  src/mc/mc_dwarf_tagnames.cpp
   src/mc/mc_hash.hpp
   src/mc/mc_hash.cpp
   src/mc/mc_ignore.hpp
-  src/mc/LocationList.hpp
-  src/mc/LocationList.cpp
   src/mc/mc_record.cpp
-  src/mc/mc_member.cpp
   src/mc/mc_memory.cpp
   src/mc/mc_private.hpp
   src/mc/mc_request.hpp

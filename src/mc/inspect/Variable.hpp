@@ -11,8 +11,8 @@
 
 #include <string>
 
+#include "src/mc/inspect/LocationList.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/LocationList.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -20,11 +20,11 @@ namespace mc {
 /** A variable (global or local) in the model-checked program */
 class Variable {
 public:
-  Variable() = default;
+  Variable()       = default;
   std::uint32_t id = 0;
-  bool global = false;
+  bool global      = false;
   std::string name;
-  unsigned type_id = 0;
+  unsigned type_id        = 0;
   simgrid::mc::Type* type = nullptr;
 
   /** Address of the variable (if it is fixed) */
@@ -43,7 +43,7 @@ public:
   simgrid::mc::ObjectInformation* object_info = nullptr;
 };
 
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 #endif

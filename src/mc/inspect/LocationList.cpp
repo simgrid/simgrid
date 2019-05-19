@@ -12,26 +12,23 @@
 
 #include <libunwind.h>
 
-#include "src/mc/mc_dwarf.hpp"
-#include "src/mc/ObjectInformation.hpp"
 #include "src/mc/LocationList.hpp"
+#include "src/mc/ObjectInformation.hpp"
+#include "src/mc/mc_dwarf.hpp"
 
 namespace simgrid {
 namespace dwarf {
 
 /** Resolve a location expression */
-Location resolve(
-                      simgrid::dwarf::DwarfExpression const& expression,
-                      simgrid::mc::ObjectInformation* object_info,
-                      unw_cursor_t * c,
-                      void *frame_pointer_address,
-                      simgrid::mc::AddressSpace* address_space, int process_index)
+Location resolve(simgrid::dwarf::DwarfExpression const& expression, simgrid::mc::ObjectInformation* object_info,
+                 unw_cursor_t* c, void* frame_pointer_address, simgrid::mc::AddressSpace* address_space,
+                 int process_index)
 {
   simgrid::dwarf::ExpressionContext context;
-  context.frame_base = frame_pointer_address;
-  context.cursor = c;
+  context.frame_base    = frame_pointer_address;
+  context.cursor        = c;
   context.address_space = address_space;
-  context.object_info = object_info;
+  context.object_info   = object_info;
   context.process_index = process_index;
 
   if (not expression.empty() && expression[0].atom >= DW_OP_reg0 && expression[0].atom <= DW_OP_reg31) {
@@ -42,12 +39,12 @@ Location resolve(
 
   simgrid::dwarf::ExpressionStack stack;
   simgrid::dwarf::execute(expression, context, stack);
-  return Location((void*) stack.top());
+  return Location((void*)stack.top());
 }
 
 // TODO, move this in a method of LocationList
-static simgrid::dwarf::DwarfExpression const* find_expression(
-    simgrid::dwarf::LocationList const& locations, unw_word_t ip)
+static simgrid::dwarf::DwarfExpression const* find_expression(simgrid::dwarf::LocationList const& locations,
+                                                              unw_word_t ip)
 {
   for (simgrid::dwarf::LocationListEntry const& entry : locations)
     if (entry.valid_for_ip(ip))
@@ -55,29 +52,20 @@ static simgrid::dwarf::DwarfExpression const* find_expression(
   return nullptr;
 }
 
-Location resolve(
-  simgrid::dwarf::LocationList const& locations,
-  simgrid::mc::ObjectInformation* object_info,
-  unw_cursor_t * c,
-  void *frame_pointer_address,
-  simgrid::mc::AddressSpace* address_space,
-  int process_index)
+Location resolve(simgrid::dwarf::LocationList const& locations, simgrid::mc::ObjectInformation* object_info,
+                 unw_cursor_t* c, void* frame_pointer_address, simgrid::mc::AddressSpace* address_space,
+                 int process_index)
 {
   unw_word_t ip = 0;
   if (c && unw_get_reg(c, UNW_REG_IP, &ip))
     xbt_die("Could not resolve IP");
-  simgrid::dwarf::DwarfExpression const* expression =
-    find_expression(locations, ip);
+  simgrid::dwarf::DwarfExpression const* expression = find_expression(locations, ip);
   if (not expression)
     xbt_die("Could not resolve location");
-  return simgrid::dwarf::resolve(
-          *expression, object_info, c,
-          frame_pointer_address, address_space, process_index);
+  return simgrid::dwarf::resolve(*expression, object_info, c, frame_pointer_address, address_space, process_index);
 }
 
-LocationList location_list(
-  simgrid::mc::ObjectInformation& info,
-  Dwarf_Attribute& attr)
+LocationList location_list(simgrid::mc::ObjectInformation& info, Dwarf_Attribute& attr)
 {
   LocationList locations;
   std::ptrdiff_t offset = 0;
@@ -85,7 +73,7 @@ LocationList location_list(
     Dwarf_Addr base;
     Dwarf_Addr start;
     Dwarf_Addr end;
-    Dwarf_Op *ops;
+    Dwarf_Op* ops;
     std::size_t len;
 
     offset = dwarf_getlocations(&attr, offset, &base, &start, &end, &ops, &len);
@@ -95,19 +83,19 @@ LocationList location_list(
     else if (offset == -1)
       xbt_die("Error while loading location list");
 
-    std::uint64_t base_address = (std::uint64_t) info.base_address();
+    std::uint64_t base_address = (std::uint64_t)info.base_address();
 
     LocationListEntry::range_type range;
     if (start == 0)
       // If start == 0, this is not a location list:
-      range = { 0, UINT64_MAX };
+      range = {0, UINT64_MAX};
     else
-      range =  { base_address + start, base_address + end };
+      range = {base_address + start, base_address + end};
 
-    locations.push_back({ DwarfExpression(ops, ops+len), range });
+    locations.push_back({DwarfExpression(ops, ops + len), range});
   }
 
   return locations;
 }
-}
-}
+} // namespace dwarf
+} // namespace simgrid
