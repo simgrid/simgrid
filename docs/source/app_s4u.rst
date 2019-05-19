@@ -343,14 +343,13 @@ Memory Management
 
 For sake of simplicity, we use `RAII
 <https://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization>`_
-everywhere in S4U. This is an idiom where resources are automatically
+for many classes in S4U. This is an idiom where resources are automatically
 managed through the context. Provided that you never manipulate
 objects of type Foo directly but always FooPtr references (which are
 defined as `boost::intrusive_ptr
 <http://www.boost.org/doc/libs/1_61_0/libs/smart_ptr/intrusive_ptr.html>`_
 <Foo>), you will never have to explicitely release the resource that
 you use nor to free the memory of unused objects.
-
 Here is a little example:
 
 .. code-block:: cpp
@@ -364,6 +363,11 @@ Here is a little example:
      mutex->unlock(); 
   
    } // The mutex gets automatically freed because the only existing reference gets out of scope
+
+Note that Mailboxes, Hosts and Links are not handled thought smart
+pointers (yet?). This means that it is currently impossible to destroy a
+mailbox or a link. You can still destroy an host (but probably
+shouldn't), using :cpp:func:`simgrid::s4u::Host::destroy`.
 
 C++ API Reference
 *****************
