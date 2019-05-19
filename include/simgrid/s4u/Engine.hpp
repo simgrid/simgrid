@@ -6,10 +6,6 @@
 #ifndef SIMGRID_S4U_ENGINE_HPP
 #define SIMGRID_S4U_ENGINE_HPP
 
-#include <string>
-#include <utility>
-#include <vector>
-
 #include <xbt/base.h>
 #include <xbt/functional.hpp>
 
@@ -17,6 +13,10 @@
 #include <simgrid/simix.hpp>
 
 #include <simgrid/s4u/NetZone.hpp>
+
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace simgrid {
 namespace s4u {

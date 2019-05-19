@@ -6,14 +6,17 @@
 #ifndef SIMGRID_S4U_ACTOR_HPP
 #define SIMGRID_S4U_ACTOR_HPP
 
-#include <functional>
-#include <map> // deprecated wrappers
+#include <simgrid/forward.h>
+
 #include <simgrid/chrono.hpp>
-#include <unordered_map>
 #include <xbt/Extendable.hpp>
 #include <xbt/functional.hpp>
 #include <xbt/signal.hpp>
 #include <xbt/string.hpp>
+
+#include <functional>
+#include <map> // deprecated wrappers
+#include <unordered_map>
 
 namespace simgrid {
 namespace s4u {

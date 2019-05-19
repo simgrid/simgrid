@@ -6,6 +6,7 @@
 #ifndef S4U_LINK_HPP_
 #define S4U_LINK_HPP_
 
+#include <simgrid/forward.h>
 #include <simgrid/kernel/resource/Action.hpp>
 #include <simgrid/link.h>
 #include <string>

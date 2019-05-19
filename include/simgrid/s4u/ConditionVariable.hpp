@@ -6,6 +6,8 @@
 #ifndef SIMGRID_S4U_COND_VARIABLE_HPP
 #define SIMGRID_S4U_COND_VARIABLE_HPP
 
+#include <simgrid/forward.h>
+
 #include <simgrid/chrono.hpp>
 #include <simgrid/s4u/Mutex.hpp>
 

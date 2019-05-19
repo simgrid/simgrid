@@ -6,8 +6,10 @@
 #ifndef SIMGRID_S4U_MAILBOX_HPP
 #define SIMGRID_S4U_MAILBOX_HPP
 
-#include <xbt/string.hpp>
+#include <simgrid/forward.h>
+
 #include <simgrid/s4u/Actor.hpp>
+#include <xbt/string.hpp>
 
 #include <string>
 

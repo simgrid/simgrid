@@ -6,6 +6,8 @@
 #ifndef SIMGRID_S4U_S4U_H
 #define SIMGRID_S4U_S4U_H
 
+#include <simgrid/forward.h>
+
 #include <simgrid/s4u/Activity.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Barrier.hpp>
