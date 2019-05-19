@@ -21,7 +21,7 @@ the SimGrid simulator. This is particularly interesting to study
 existing MPI applications within the comfort of the simulator.
 
 To get started with SMPI, you should head to `the SMPI tutorial
-<Tutorial_MPI_Applications>`_. You may also want to read the `SMPI reference
+<usecase_smpi>`_. You may also want to read the `SMPI reference
 article <https://hal.inria.fr/hal-01415484>`_ or these `introductory
 slides <http://simgrid.org/tutorials/simgrid-smpi-101.pdf>`_.  If you
 are new to MPI, you should first take our online `SMPI CourseWare
@@ -169,7 +169,7 @@ means that the selected algorithm will be used
 MPI_Alltoall
 ^^^^^^^^^^^^
 
-Most of these are best described in `STAR-MPI's white paper <www.cs.fsu.edu/~xyuan/paper/06ics.pdf>`_.
+Most of these are best described in `STAR-MPI's white paper <https://www.cs.fsu.edu/~xyuan/paper/06ics.pdf>`_.
 
  - default: naive one, by default
  - ompi: use openmpi selector for the alltoall operations

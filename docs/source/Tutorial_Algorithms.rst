@@ -173,12 +173,12 @@ examples of platforms in the archive under ``examples/platforms``.
 .. |api_s4u_NetZone| image:: /img/extlink.png
    :align: middle
    :width: 12
-.. _api_s4u_NetZone: api/classsimgrid_1_1s4u_1_1NetZone.html#class-documentation
+.. _api_s4u_NetZone: app_s4u.html#s4u-netzone
 
 .. |api_s4u_Link| image:: /img/extlink.png
    :align: middle
    :width: 12
-.. _api_s4u_Link: api/classsimgrid_1_1s4u_1_1Link.html#class-documentation
+.. _api_s4u_Link: app_s4u.html#s4u-link
 
 .. literalinclude:: ../../examples/platforms/small_platform.xml
    :language: xml
@@ -481,8 +481,7 @@ initiators' location and then the real communication occures between
 the involved parties.
 
 Please refer to the full `API of Mailboxes
-<api/classsimgrid_1_1s4u_1_1Mailbox.html#class-documentation>`_ for
-more details.
+<app_s4u.html#s4u-mailbox>`_ for more details.
 
 
 Lab 2: Using the Whole Platform

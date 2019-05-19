@@ -83,7 +83,7 @@ the relevant part of the documentation on need, and help them becoming
 part of our community too. 
 
 Another easy way to help the project is to add a link to the `SimGrid
-homepage <simgrid.org>`_ on your site to improve SimGrid's ranking in
+homepage <https://simgrid.org>`_ on your site to improve SimGrid's ranking in
 search engines.
 
 Finally, if you organize a scientific event where you expect many
