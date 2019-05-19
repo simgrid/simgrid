@@ -8,7 +8,7 @@ pages:
   - cd docs
   - LC_ALL=C.UTF-8 ./Build.sh
   - mv build/html ../public
-  - linkchecker --ignore-url="*.css" ../public
+  - linkchecker --ignore-url='.*\.css$' ../public
   artifacts:
     paths:
     - public
