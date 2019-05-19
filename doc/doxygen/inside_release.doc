@@ -146,6 +146,8 @@ the settings icon of the release you want to change.
   - Do the possible cleanups now that these features are gone.
 - Update the Docker images (after pushing to the git)
   - cd tools/docker && make stable tuto-s4u push
+  - Update the simgrid-template-s4u repository to test against this new release
+    jed ~/Code/simgrid-template-s4u/.gitlab-ci.yml
 
 Release numbering semantic: 
   - 3.X is a named release. 
