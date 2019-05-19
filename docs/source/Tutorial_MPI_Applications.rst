@@ -622,8 +622,8 @@ Further Readings
 
 You may also be interested in the `SMPI reference article
 <https://hal.inria.fr/hal-01415484>`_ or these `introductory slides
-<http://simgrid.org/tutorials/simgrid-smpi-101.pdf>`_. The `SMPI
-reference documentation <app_smpi>`_ covers much more content than
+<http://simgrid.org/tutorials/simgrid-smpi-101.pdf>`_. The :ref:`SMPI
+reference documentation <app_smpi>` covers much more content than
 this short tutorial.
 
 Finally, we regularly use SimGrid in our teachings on MPI. This way,

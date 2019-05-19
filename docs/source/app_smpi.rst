@@ -20,8 +20,8 @@ SMPI enables the study of MPI application by emulating them on top of
 the SimGrid simulator. This is particularly interesting to study
 existing MPI applications within the comfort of the simulator.
 
-To get started with SMPI, you should head to `the SMPI tutorial
-<usecase_smpi>`_. You may also want to read the `SMPI reference
+To get started with SMPI, you should head to :ref:`the SMPI tutorial
+<usecase_smpi>`. You may also want to read the `SMPI reference
 article <https://hal.inria.fr/hal-01415484>`_ or these `introductory
 slides <http://simgrid.org/tutorials/simgrid-smpi-101.pdf>`_.  If you
 are new to MPI, you should first take our online `SMPI CourseWare
