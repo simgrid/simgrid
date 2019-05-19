@@ -406,7 +406,15 @@ Distributed Hash Tables (DHT)
     One of the most famous DHT protocol.
     |br| `examples/s4u/dht-chord/s4u-dht-chord.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/dht-chord/s4u-dht-chord.cpp>`_
 
-.. TODO:: document here the examples about plugins
+Simulating Clouds
+-----------------
+
+  - **Cloud basics**
+    This example starts some computations both on PMs and VMs, and
+    migrates some VMs around.
+    |br| `examples/s4u/cloud-simple/s4u-cloud-simple.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/cloud-simple/s4u-cloud-simple.cpp>`_
+
+.. TODO:: document here the examples about clouds and plugins
 
 =======================
 Model-Checking Examples
