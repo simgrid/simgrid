@@ -334,12 +334,12 @@ recompile it when you first log in:
 Using your Computer Natively
 ............................
 
-To take the tutorial on your machine, you first need to :ref:`install
-SimGrid <install>`, a C++ compiler and also ``pajeng`` to visualize
-the traces. You may want to install `Vite
-<http://vite.gforge.inria.fr/>`_ to get a first glance at the
-traces. The provided code template requires cmake to compile. On
-Debian and Ubuntu for example, you can get them as follows:
+To take the tutorial on your machine, you first need to :ref:`install 
+a recent version of SimGrid <install>`, a C++ compiler and also
+``pajeng`` to visualize the traces. You may want to install `Vite
+<http://vite.gforge.inria.fr/>`_ to get a first glance at the traces.
+The provided code template requires cmake to compile. On Debian and
+Ubuntu for example, you can get them as follows:
 
 .. code-block:: shell
 
