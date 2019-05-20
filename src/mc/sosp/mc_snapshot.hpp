@@ -74,7 +74,6 @@ struct s_local_variable_t {
   std::string name;
   simgrid::mc::Type* type;
   void* address;
-  int region;
 };
 typedef s_local_variable_t* local_variable_t;
 

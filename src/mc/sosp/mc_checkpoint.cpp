@@ -223,8 +223,6 @@ static bool valid_variable(simgrid::mc::Variable* var, simgrid::mc::Frame* scope
 static void fill_local_variables_values(mc_stack_frame_t stack_frame, simgrid::mc::Frame* scope, int process_index,
                                         std::vector<s_local_variable_t>& result)
 {
-  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
-
   if (not scope || not scope->range.contain(stack_frame->ip))
     return;
 
@@ -233,19 +231,11 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame, simgrid::m
     if (not valid_variable(&current_variable, scope, (void*)stack_frame->ip))
       continue;
 
-    int region_type;
-    // FIXME, get rid of `region_type`
-    if ((long)stack_frame->ip > (long)process->libsimgrid_info->start_exec)
-      region_type = 1;
-    else
-      region_type = 2;
-
     s_local_variable_t new_var;
     new_var.subprogram = stack_frame->frame;
     new_var.ip         = stack_frame->ip;
     new_var.name       = current_variable.name;
     new_var.type       = current_variable.type;
-    new_var.region     = region_type;
     new_var.address    = nullptr;
 
     if (current_variable.address != nullptr)
