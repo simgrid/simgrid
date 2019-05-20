@@ -30,13 +30,9 @@
 #include "src/mc/mc_hash.hpp"
 #include "src/mc/mc_mmu.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/mc_unw.hpp"
 #include "src/mc/remote/mc_protocol.h"
 #include "src/mc/sosp/mc_snapshot.hpp"
 
-#include "src/mc/Frame.hpp"
-#include "src/mc/ObjectInformation.hpp"
-#include "src/mc/Variable.hpp"
 #include "src/mc/sosp/RegionSnapshot.hpp"
 
 using simgrid::mc::remote;

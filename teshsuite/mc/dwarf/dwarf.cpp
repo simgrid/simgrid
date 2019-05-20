@@ -1,5 +1,4 @@
-/* Copyright (c) 2014-2019. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2019. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,18 +7,18 @@
 #undef NDEBUG
 #endif
 
-#include <cassert>
-#include <cstring>
-
 #include <mc/mc.h>
 
 #include "mc/datatypes.h"
 #include "src/mc/mc_private.hpp"
 
-#include "src/mc/ObjectInformation.hpp"
-#include "src/mc/Type.hpp"
-#include "src/mc/Variable.hpp"
+#include "src/mc/inspect/ObjectInformation.hpp"
+#include "src/mc/inspect/Type.hpp"
+#include "src/mc/inspect/Variable.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
+
+#include <cassert>
+#include <cstring>
 
 // Test broken with multi-dimensional arrays. See https://sourceware.org/bugzilla/show_bug.cgi?id=22546
 // int test_some_array[4][5][6];

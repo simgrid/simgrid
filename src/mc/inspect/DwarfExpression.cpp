@@ -7,11 +7,11 @@
 #include <cstdint>
 
 #include "src/mc/AddressSpace.hpp"
-#include "src/mc/DwarfExpression.hpp"
-#include "src/mc/Frame.hpp"
-#include "src/mc/LocationList.hpp"
-#include "src/mc/ObjectInformation.hpp"
-#include "src/mc/mc_dwarf.hpp"
+#include "src/mc/inspect/DwarfExpression.hpp"
+#include "src/mc/inspect/Frame.hpp"
+#include "src/mc/inspect/LocationList.hpp"
+#include "src/mc/inspect/ObjectInformation.hpp"
+#include "src/mc/inspect/mc_dwarf.hpp"
 #include "src/mc/mc_private.hpp"
 
 using simgrid::mc::remote;

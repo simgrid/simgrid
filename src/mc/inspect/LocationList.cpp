@@ -3,18 +3,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstddef>
-#include <cstdint>
-#include <utility>
+#include "src/mc/inspect/LocationList.hpp"
+#include "src/mc/inspect/ObjectInformation.hpp"
+#include "src/mc/inspect/mc_dwarf.hpp"
 
 #include "xbt/asserts.h"
 #include "xbt/sysdep.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <libunwind.h>
-
-#include "src/mc/LocationList.hpp"
-#include "src/mc/ObjectInformation.hpp"
-#include "src/mc/mc_dwarf.hpp"
+#include <utility>
 
 namespace simgrid {
 namespace dwarf {

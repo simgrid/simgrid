@@ -5,37 +5,7 @@
 
 /** \file compare.cpp Memory snapshooting and comparison                    */
 
-#include <cinttypes>
-
-#include <array>
-#include <memory>
-#include <set>
-#include <utility>
-#include <unordered_set>
-
-#include "xbt/dynar.h"
-#include "xbt/sysdep.h"
-#include <xbt/mmalloc.h>
-
-#include <mc/mc.h>
-#include <mc/datatypes.h>
-
-#include "src/internal_config.h"
-
-#include "src/xbt/mmalloc/mmprivate.h"
-
-#if HAVE_SMPI
-#include "src/smpi/include/private.hpp"
-#endif
-
-#include "src/mc/Frame.hpp"
-#include "src/mc/ObjectInformation.hpp"
-#include "src/mc/Type.hpp"
-#include "src/mc/Variable.hpp"
 #include "src/mc/mc_config.hpp"
-#include "src/mc/mc_dwarf.hpp"
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_private.hpp"
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/sosp/mc_snapshot.hpp"
 
@@ -1577,17 +1547,17 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
     xbt_assert(region1->object_info() == region2->object_info());
     xbt_assert(region1->object_info());
 
-    std::string const& name = region1->object_info()->file_name;
-
     /* Compare global variables */
     if (compare_global_variables(*state_comparator, region1->object_info(), simgrid::mc::ProcessIndexDisabled, region1,
                                  region2, s1, s2)) {
 
 #ifdef MC_DEBUG
+      std::string const& name = region1->object_info()->file_name;
       XBT_DEBUG("(%d - %d) Different global variables in %s", s1->num_state, s2->num_state, name.c_str());
       errors++;
 #else
 #ifdef MC_VERBOSE
+      std::string const& name = region1->object_info()->file_name;
       XBT_VERB("(%d - %d) Different global variables in %s", s1->num_state_, s2->num_state_, name.c_str());
 #endif
 

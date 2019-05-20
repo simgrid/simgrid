@@ -3,32 +3,30 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cinttypes>
-#include <cstdint>
-
-#include <memory>
-#include <utility>
-
-#include <boost/range/algorithm.hpp>
-
-#include <cstdlib>
-#include <elfutils/libdw.h>
-#include <fcntl.h>
-
-#include <boost/algorithm/string/predicate.hpp>
-
 #include "src/simgrid/util.hpp"
 #include "xbt/log.h"
 #include "xbt/string.hpp"
 #include "xbt/sysdep.h"
 #include <simgrid/config.h>
 
-#include "src/mc/mc_dwarf.hpp"
+#include "src/mc/inspect/ObjectInformation.hpp"
+#include "src/mc/inspect/Variable.hpp"
+#include "src/mc/inspect/mc_dwarf.hpp"
 #include "src/mc/mc_private.hpp"
-
-#include "src/mc/ObjectInformation.hpp"
-#include "src/mc/Variable.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
+
+#include <cinttypes>
+#include <cstdint>
+#include <cstdlib>
+#include <fcntl.h>
+#include <memory>
+#include <utility>
+
+#include <boost/range/algorithm.hpp>
+
+#include <elfutils/libdw.h>
+
+#include <boost/algorithm/string/predicate.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 

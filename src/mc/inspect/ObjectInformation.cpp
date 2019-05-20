@@ -8,9 +8,9 @@
 
 #include <vector>
 
-#include "src/mc/Frame.hpp"
-#include "src/mc/ObjectInformation.hpp"
-#include "src/mc/Variable.hpp"
+#include "src/mc/inspect/Frame.hpp"
+#include "src/mc/inspect/ObjectInformation.hpp"
+#include "src/mc/inspect/Variable.hpp"
 
 namespace simgrid {
 namespace mc {

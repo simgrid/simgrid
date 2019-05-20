@@ -1,11 +1,10 @@
-/* Copyright (c) 2014-2019. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2019. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/Type.hpp"
-#include "src/mc/mc_dwarf.hpp"
+#include "src/mc/inspect/Type.hpp"
+#include "src/mc/inspect/mc_dwarf.hpp"
 #include "src/mc/mc_private.hpp"
 
 namespace simgrid {

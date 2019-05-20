@@ -1,8 +1,10 @@
-/* Copyright (c) 2015-2019. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2019. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include "src/mc/inspect/mc_unw.hpp"
+#include "src/mc/remote/RemoteClient.hpp"
 
 #include <sys/types.h>
 #include <sys/uio.h>
@@ -11,13 +13,8 @@
 #include <libunwind-ptrace.h>
 #include <libunwind.h>
 
-#include "src/mc/mc_unw.hpp"
-#include "src/mc/remote/RemoteClient.hpp"
-
 /** \file
  *  Libunwind namespace implementation using process_vm_readv.
- *.
- *  This implem
  */
 
 /** Partial structure of libunwind-ptrace context in order to get the PID

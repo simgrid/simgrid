@@ -8,7 +8,7 @@
 
 #include "xbt/sysdep.h"
 
-#include "src/mc/Frame.hpp"
+#include "src/mc/inspect/Frame.hpp"
 
 namespace simgrid {
 namespace mc {

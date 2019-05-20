@@ -1,5 +1,4 @@
-/* Copyright (c) 2015-2019. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2019. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,6 +10,10 @@
 // We need this for the register indices:
 // #define _GNU_SOURCE
 
+#include "src/mc/inspect/mc_unw.hpp"
+#include "src/mc/inspect/Frame.hpp"
+#include "src/mc/remote/RemoteClient.hpp"
+
 #include <cstring>
 
 // On x86_64, libunwind unw_context_t has the same layout as ucontext_t:
@@ -21,10 +24,6 @@ typedef register_t greg_t;
 #endif
 
 #include <libunwind.h>
-
-#include "src/mc/Frame.hpp"
-#include "src/mc/mc_unw.hpp"
-#include "src/mc/remote/RemoteClient.hpp"
 
 using simgrid::mc::remote;
 
