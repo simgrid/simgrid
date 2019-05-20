@@ -85,7 +85,7 @@ static void restore(RegionSnapshot* region)
 }
 
 #if HAVE_SMPI
-RegionSnapshot privatized_region(RegionType region_type, void* start_addr, void* permanent_addr, std::size_t size)
+RegionSnapshot* privatized_region(RegionType region_type, void* start_addr, void* permanent_addr, std::size_t size)
 {
   size_t process_count = MC_smpi_process_count();
 
@@ -101,10 +101,10 @@ RegionSnapshot privatized_region(RegionType region_type, void* start_addr, void*
   data.reserve(process_count);
   for (size_t i = 0; i < process_count; i++)
     data.push_back(std::unique_ptr<simgrid::mc::RegionSnapshot>(
-        new RegionSnapshot(region(region_type, start_addr, privatization_regions[i].address, size))));
+        region(region_type, start_addr, privatization_regions[i].address, size)));
 
-  RegionSnapshot reg = RegionSnapshot(region_type, start_addr, permanent_addr, size);
-  reg.privatized_data(std::move(data));
+  RegionSnapshot* reg = new RegionSnapshot(region_type, start_addr, permanent_addr, size);
+  reg->privatized_data(std::move(data));
   return reg;
 }
 #endif

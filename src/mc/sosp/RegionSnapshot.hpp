@@ -230,10 +230,10 @@ public:
   bool contain(RemotePtr<void> p) const { return p >= start() && p < end(); }
 };
 
-RegionSnapshot privatized_region(RegionType region_type, void* start_addr, void* permanent_addr, std::size_t size);
-RegionSnapshot dense_region(RegionType type, void* start_addr, void* data_addr, std::size_t size);
-RegionSnapshot sparse_region(RegionType type, void* start_addr, void* data_addr, std::size_t size);
-RegionSnapshot region(RegionType type, void* start_addr, void* data_addr, std::size_t size);
+RegionSnapshot* privatized_region(RegionType region_type, void* start_addr, void* permanent_addr, std::size_t size);
+RegionSnapshot* dense_region(RegionType type, void* start_addr, void* data_addr, std::size_t size);
+RegionSnapshot* sparse_region(RegionType type, void* start_addr, void* data_addr, std::size_t size);
+RegionSnapshot* region(RegionType type, void* start_addr, void* data_addr, std::size_t size);
 
 } // namespace mc
 } // namespace simgrid

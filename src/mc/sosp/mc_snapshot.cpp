@@ -118,7 +118,7 @@ void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void*
   else if (type == simgrid::mc::RegionType::Heap)
     xbt_assert(not object_info, "Unexpected object info for heap region.");
 
-  simgrid::mc::RegionSnapshot region;
+  simgrid::mc::RegionSnapshot* region;
 #if HAVE_SMPI
   const bool privatization_aware = object_info && mc_model_checker->process().privatized(*object_info);
   if (privatization_aware && MC_smpi_process_count())
@@ -127,8 +127,8 @@ void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void*
 #endif
     region = simgrid::mc::region(type, start_addr, permanent_addr, size);
 
-  region.object_info(object_info);
-  snapshot_regions_.push_back(std::unique_ptr<simgrid::mc::RegionSnapshot>(new RegionSnapshot(std::move(region))));
+  region->object_info(object_info);
+  snapshot_regions_.push_back(std::unique_ptr<simgrid::mc::RegionSnapshot>(std::move(region)));
 }
 
 const void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, int process_index,

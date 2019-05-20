@@ -26,8 +26,8 @@ public:
     size_t size;
     void* src;
     void* dstn;
-    RegionSnapshot region0;
-    RegionSnapshot region;
+    RegionSnapshot* region0;
+    RegionSnapshot* region;
   } prologue_return;
   static prologue_return prologue(int n); // common to the below 5 fxs
   static void read_whole_region();
@@ -81,12 +81,12 @@ snap_test_helper::prologue_return snap_test_helper::prologue(int n)
 
   // Init memory and take snapshots:
   init_memory(source, byte_size);
-  simgrid::mc::RegionSnapshot region0 =
+  simgrid::mc::RegionSnapshot* region0 =
       simgrid::mc::sparse_region(simgrid::mc::RegionType::Unknown, source, source, byte_size);
   for (int i = 0; i < n; i += 2) {
     init_memory((char*)source + i * xbt_pagesize, xbt_pagesize);
   }
-  simgrid::mc::RegionSnapshot region =
+  simgrid::mc::RegionSnapshot* region =
       simgrid::mc::sparse_region(simgrid::mc::RegionType::Unknown, source, source, byte_size);
 
   void* destination = mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
@@ -105,12 +105,14 @@ void snap_test_helper::read_whole_region()
   for (int n = 1; n != 32; ++n) {
 
     prologue_return ret = prologue(n);
-    const void* read    = MC_region_read(&(ret.region), ret.dstn, ret.src, ret.size);
+    const void* read    = MC_region_read(ret.region, ret.dstn, ret.src, ret.size);
     INFO("Mismatch in MC_region_read()");
     REQUIRE(not memcmp(ret.src, read, ret.size));
 
     munmap(ret.dstn, ret.size);
     munmap(ret.src, ret.size);
+    delete ret.region0;
+    delete ret.region;
   }
 }
 
@@ -123,12 +125,14 @@ void snap_test_helper::read_region_parts()
     for (int j = 0; j != 100; ++j) {
       size_t offset    = rnd_engine() % ret.size;
       size_t size      = rnd_engine() % (ret.size - offset);
-      const void* read = MC_region_read(&(ret.region), ret.dstn, (const char*)ret.src + offset, size);
+      const void* read = MC_region_read(ret.region, ret.dstn, (const char*)ret.src + offset, size);
       INFO("Mismatch in MC_region_read()");
       REQUIRE(not memcmp((char*)ret.src + offset, read, size));
     }
     munmap(ret.dstn, ret.size);
     munmap(ret.src, ret.size);
+    delete ret.region0;
+    delete ret.region;
   }
 }
 
@@ -139,10 +143,12 @@ void snap_test_helper::compare_whole_region()
     prologue_return ret = prologue(n);
 
     INFO("Unexpected match in MC_snapshot_region_memcmp() with previous snapshot");
-    REQUIRE(MC_snapshot_region_memcmp(ret.src, &(ret.region0), ret.src, &(ret.region), ret.size));
+    REQUIRE(MC_snapshot_region_memcmp(ret.src, ret.region0, ret.src, ret.region, ret.size));
 
     munmap(ret.dstn, ret.size);
     munmap(ret.src, ret.size);
+    delete ret.region0;
+    delete ret.region;
   }
 }
 
@@ -157,11 +163,13 @@ void snap_test_helper::compare_region_parts()
       size_t size   = rnd_engine() % (ret.size - offset);
 
       INFO("Mismatch in MC_snapshot_region_memcmp()");
-      REQUIRE(not MC_snapshot_region_memcmp((char*)ret.src + offset, &(ret.region), (char*)ret.src + offset,
-                                            &(ret.region), size));
+      REQUIRE(not MC_snapshot_region_memcmp((char*)ret.src + offset, ret.region, (char*)ret.src + offset, ret.region,
+                                            size));
     }
     munmap(ret.dstn, ret.size);
     munmap(ret.src, ret.size);
+    delete ret.region0;
+    delete ret.region;
   }
 }
 
@@ -170,13 +178,15 @@ void snap_test_helper::read_pointer()
 
   prologue_return ret = prologue(1);
   memcpy(ret.src, &mc_model_checker, sizeof(void*));
-  simgrid::mc::RegionSnapshot region2 =
+  simgrid::mc::RegionSnapshot* region2 =
       simgrid::mc::sparse_region(simgrid::mc::RegionType::Unknown, ret.src, ret.src, ret.size);
   INFO("Mismtach in MC_region_read_pointer()");
-  REQUIRE(MC_region_read_pointer(&region2, ret.src) == mc_model_checker);
+  REQUIRE(MC_region_read_pointer(region2, ret.src) == mc_model_checker);
 
   munmap(ret.dstn, ret.size);
   munmap(ret.src, ret.size);
+  delete ret.region0;
+  delete ret.region;
 }
 
 /*************** End: class snap_test_helper *****************************/

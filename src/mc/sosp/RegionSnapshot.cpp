@@ -22,18 +22,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_RegionSnaphot, mc, "Logging specific to regio
 namespace simgrid {
 namespace mc {
 
-RegionSnapshot dense_region(RegionType region_type, void* start_addr, void* permanent_addr, size_t size)
+RegionSnapshot* dense_region(RegionType region_type, void* start_addr, void* permanent_addr, size_t size)
 {
   simgrid::mc::Buffer data = Buffer::malloc(size);
 
   mc_model_checker->process().read_bytes(data.get(), size, remote(permanent_addr), simgrid::mc::ProcessIndexDisabled);
 
-  simgrid::mc::RegionSnapshot region(region_type, start_addr, permanent_addr, size);
-  region.flat_data(std::move(data));
+  simgrid::mc::RegionSnapshot* region = new RegionSnapshot(region_type, start_addr, permanent_addr, size);
+  region->flat_data(std::move(data));
 
   XBT_DEBUG("New region : type : %s, data : %p (real addr %p), size : %zu",
             (region_type == RegionType::Heap ? "Heap" : (region_type == RegionType::Data ? "Data" : "?")),
-            region.flat_data().get(), permanent_addr, size);
+            region->flat_data().get(), permanent_addr, size);
   return region;
 }
 
@@ -45,7 +45,7 @@ RegionSnapshot dense_region(RegionType region_type, void* start_addr, void* perm
  * privatized mapping)
  * @param size         Size of the data*
  */
-RegionSnapshot region(RegionType type, void* start_addr, void* permanent_addr, size_t size)
+RegionSnapshot* region(RegionType type, void* start_addr, void* permanent_addr, size_t size)
 {
   if (_sg_mc_sparse_checkpoint)
     return sparse_region(type, start_addr, permanent_addr, size);
@@ -53,7 +53,7 @@ RegionSnapshot region(RegionType type, void* start_addr, void* permanent_addr, s
     return dense_region(type, start_addr, permanent_addr, size);
 }
 
-RegionSnapshot sparse_region(RegionType region_type, void* start_addr, void* permanent_addr, size_t size)
+RegionSnapshot* sparse_region(RegionType region_type, void* start_addr, void* permanent_addr, size_t size)
 {
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
   assert(process != nullptr);
@@ -66,8 +66,8 @@ RegionSnapshot sparse_region(RegionType region_type, void* start_addr, void* per
   simgrid::mc::ChunkedData page_data(mc_model_checker->page_store(), *process, RemotePtr<void>(permanent_addr),
                                      page_count);
 
-  simgrid::mc::RegionSnapshot region(region_type, start_addr, permanent_addr, size);
-  region.page_data(std::move(page_data));
+  simgrid::mc::RegionSnapshot* region = new RegionSnapshot(region_type, start_addr, permanent_addr, size);
+  region->page_data(std::move(page_data));
   return region;
 }
 
