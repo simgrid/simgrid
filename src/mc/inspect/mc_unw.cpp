@@ -77,7 +77,7 @@ int UnwindContext::access_mem(unw_addr_space_t /*as*/, unw_word_t addr, unw_word
   simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*)arg;
   if (write)
     return -UNW_EREADONLYREG;
-  context->addressSpace_->read_bytes(valp, sizeof(unw_word_t), remote(addr));
+  context->address_space_->read_bytes(valp, sizeof(unw_word_t), remote(addr));
   return 0;
 }
 
@@ -173,7 +173,7 @@ int UnwindContext::access_reg(unw_addr_space_t /*as*/, unw_regnum_t regnum, unw_
                               void* arg) noexcept
 {
   simgrid::mc::UnwindContext* as_context = (simgrid::mc::UnwindContext*)arg;
-  unw_context_t* context                 = &as_context->unwindContext_;
+  unw_context_t* context                 = &as_context->unwind_context_;
   if (write)
     return -UNW_EREADONLYREG;
   greg_t* preg = (greg_t*)get_reg(context, regnum);
@@ -244,11 +244,11 @@ unw_addr_space_t UnwindContext::createUnwindAddressSpace()
 
 void UnwindContext::initialize(simgrid::mc::RemoteClient* process, unw_context_t* c)
 {
-  this->addressSpace_ = process;
+  this->address_space_ = process;
   this->process_      = process;
 
   // Take a copy of the context for our own purpose:
-  this->unwindContext_ = *c;
+  this->unwind_context_ = *c;
 #if SIMGRID_PROCESSOR_x86_64 || SIMGRID_PROCESSOR_i686
 #ifdef __linux__
   // On x86_64, ucontext_t contains a pointer to itself for FP registers.
@@ -256,7 +256,7 @@ void UnwindContext::initialize(simgrid::mc::RemoteClient* process, unw_context_t
   // and probably never use those fields as libunwind-x86_64 does not read
   // FP registers from the unw_context_t
   // Let's ignore this and see what happens:
-  this->unwindContext_.uc_mcontext.fpregs = nullptr;
+  this->unwind_context_.uc_mcontext.fpregs = nullptr;
 #endif
 #else
   // Do we need to do any fixup like this?
@@ -267,7 +267,7 @@ void UnwindContext::initialize(simgrid::mc::RemoteClient* process, unw_context_t
 unw_cursor_t UnwindContext::cursor()
 {
   unw_cursor_t cursor;
-  if (process_ == nullptr || addressSpace_ == nullptr || unw_init_remote(&cursor, process_->unw_addr_space, this) != 0)
+  if (process_ == nullptr || address_space_ == nullptr || unw_init_remote(&cursor, process_->unw_addr_space, this) != 0)
     xbt_die("UnwindContext not initialized");
   return cursor;
 }
