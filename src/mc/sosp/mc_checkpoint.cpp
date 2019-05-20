@@ -84,31 +84,6 @@ static void restore(RegionSnapshot* region)
   }
 }
 
-#if HAVE_SMPI
-RegionSnapshot* privatized_region(RegionType region_type, void* start_addr, void* permanent_addr, std::size_t size)
-{
-  size_t process_count = MC_smpi_process_count();
-
-  // Read smpi_privatization_regions from MCed:
-  smpi_privatization_region_t remote_smpi_privatization_regions;
-  mc_model_checker->process().read_variable("smpi_privatization_regions", &remote_smpi_privatization_regions,
-                                            sizeof(remote_smpi_privatization_regions));
-  s_smpi_privatization_region_t privatization_regions[process_count];
-  mc_model_checker->process().read_bytes(&privatization_regions, sizeof(privatization_regions),
-                                         remote(remote_smpi_privatization_regions));
-
-  std::vector<std::unique_ptr<RegionSnapshot>> data;
-  data.reserve(process_count);
-  for (size_t i = 0; i < process_count; i++)
-    data.push_back(std::unique_ptr<simgrid::mc::RegionSnapshot>(
-        region(region_type, start_addr, privatization_regions[i].address, size)));
-
-  RegionSnapshot* reg = new RegionSnapshot(region_type, start_addr, permanent_addr, size);
-  reg->privatized_data(std::move(data));
-  return reg;
-}
-#endif
-
 static void get_memory_regions(simgrid::mc::RemoteClient* process, simgrid::mc::Snapshot* snapshot)
 {
   snapshot->snapshot_regions_.clear();

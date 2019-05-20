@@ -122,7 +122,7 @@ void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void*
 #if HAVE_SMPI
   const bool privatization_aware = object_info && mc_model_checker->process().privatized(*object_info);
   if (privatization_aware && MC_smpi_process_count())
-    region = simgrid::mc::privatized_region(type, start_addr, permanent_addr, size);
+    region = new RegionPrivatized(type, start_addr, permanent_addr, size);
   else
 #endif
     region = simgrid::mc::region(type, start_addr, permanent_addr, size);

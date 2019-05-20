@@ -97,7 +97,7 @@ public:
   static const RegionType HeapRegion    = RegionType::Heap;
   static const RegionType DataRegion    = RegionType::Data;
 
-private:
+protected:
   RegionType region_type_                      = UnknownRegion;
   StorageType storage_type_                    = StorageType::NoData;
   simgrid::mc::ObjectInformation* object_info_ = nullptr;
@@ -186,32 +186,11 @@ public:
     privatized_regions_.clear();
   }
 
-  void flat_data(Buffer data)
-  {
-    storage_type_ = StorageType::Flat;
-    flat_data_    = std::move(data);
-    page_numbers_.clear();
-    privatized_regions_.clear();
-  }
   const Buffer& flat_data() const { return flat_data_; }
   Buffer& flat_data() { return flat_data_; }
 
-  void page_data(ChunkedData&& page_data)
-  {
-    storage_type_ = StorageType::Chunked;
-    flat_data_.clear();
-    page_numbers_ = std::move(page_data);
-    privatized_regions_.clear();
-  }
   ChunkedData const& page_data() const { return page_numbers_; }
 
-  void privatized_data(std::vector<std::unique_ptr<RegionSnapshot>> data)
-  {
-    storage_type_ = StorageType::Privatized;
-    flat_data_.clear();
-    page_numbers_.clear();
-    privatized_regions_ = std::move(data);
-  }
   std::vector<std::unique_ptr<RegionSnapshot>> const& privatized_data() const { return privatized_regions_; }
   std::vector<std::unique_ptr<RegionSnapshot>>& privatized_data() { return privatized_regions_; }
 
@@ -230,9 +209,19 @@ public:
   bool contain(RemotePtr<void> p) const { return p >= start() && p < end(); }
 };
 
-RegionSnapshot* privatized_region(RegionType region_type, void* start_addr, void* permanent_addr, std::size_t size);
-RegionSnapshot* dense_region(RegionType type, void* start_addr, void* data_addr, std::size_t size);
-RegionSnapshot* sparse_region(RegionType type, void* start_addr, void* data_addr, std::size_t size);
+class RegionDense : public RegionSnapshot {
+public:
+  RegionDense(RegionType type, void* start_addr, void* data_addr, std::size_t size);
+};
+class RegionSparse : public RegionSnapshot {
+public:
+  RegionSparse(RegionType type, void* start_addr, void* data_addr, std::size_t size);
+};
+class RegionPrivatized : public RegionSnapshot {
+public:
+  RegionPrivatized(RegionType type, void* start_addr, void* data_addr, std::size_t size);
+};
+
 RegionSnapshot* region(RegionType type, void* start_addr, void* data_addr, std::size_t size);
 
 } // namespace mc
