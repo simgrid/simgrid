@@ -6,6 +6,7 @@
 /** \file compare.cpp Memory snapshooting and comparison                    */
 
 #include "src/mc/mc_config.hpp"
+#include "src/mc/mc_private.hpp"
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/sosp/mc_snapshot.hpp"
 
