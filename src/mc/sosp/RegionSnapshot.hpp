@@ -121,7 +121,7 @@ private:
 
   Buffer flat_data_;
   ChunkedData page_numbers_;
-  std::vector<RegionSnapshot> privatized_regions_;
+  std::vector<std::unique_ptr<RegionSnapshot>> privatized_regions_;
 
 public:
   RegionSnapshot() {}
@@ -205,15 +205,15 @@ public:
   }
   ChunkedData const& page_data() const { return page_numbers_; }
 
-  void privatized_data(std::vector<RegionSnapshot> data)
+  void privatized_data(std::vector<std::unique_ptr<RegionSnapshot>> data)
   {
     storage_type_ = StorageType::Privatized;
     flat_data_.clear();
     page_numbers_.clear();
     privatized_regions_ = std::move(data);
   }
-  std::vector<RegionSnapshot> const& privatized_data() const { return privatized_regions_; }
-  std::vector<RegionSnapshot>& privatized_data() { return privatized_regions_; }
+  std::vector<std::unique_ptr<RegionSnapshot>> const& privatized_data() const { return privatized_regions_; }
+  std::vector<std::unique_ptr<RegionSnapshot>>& privatized_data() { return privatized_regions_; }
 
   simgrid::mc::ObjectInformation* object_info() const { return object_info_; }
   void object_info(simgrid::mc::ObjectInformation* info) { object_info_ = info; }
@@ -232,8 +232,8 @@ public:
 
 RegionSnapshot privatized_region(RegionType region_type, void* start_addr, void* permanent_addr, std::size_t size);
 RegionSnapshot dense_region(RegionType type, void* start_addr, void* data_addr, std::size_t size);
-simgrid::mc::RegionSnapshot sparse_region(RegionType type, void* start_addr, void* data_addr, std::size_t size);
-simgrid::mc::RegionSnapshot region(RegionType type, void* start_addr, void* data_addr, std::size_t size);
+RegionSnapshot sparse_region(RegionType type, void* start_addr, void* data_addr, std::size_t size);
+RegionSnapshot region(RegionType type, void* start_addr, void* data_addr, std::size_t size);
 
 } // namespace mc
 } // namespace simgrid

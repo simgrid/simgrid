@@ -1329,8 +1329,8 @@ static int compare_global_variables(simgrid::mc::StateComparator& state, simgrid
 
     // Compare the global variables separately for each simulates process:
     for (size_t i = 0; i < process_count; i++) {
-      if (compare_global_variables(state, object_info, i, &r1->privatized_data()[i], &r2->privatized_data()[i],
-                                   snapshot1, snapshot2))
+      if (compare_global_variables(state, object_info, i, r1->privatized_data()[i].get(),
+                                   r2->privatized_data()[i].get(), snapshot1, snapshot2))
         return 1;
     }
     return 0;

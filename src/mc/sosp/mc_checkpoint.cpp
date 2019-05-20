@@ -75,7 +75,7 @@ static void restore(RegionSnapshot* region)
 
     case simgrid::mc::StorageType::Privatized:
       for (auto& p : region->privatized_data())
-        restore(&p);
+        restore(p.get());
       break;
 
     default: // includes StorageType::NoData
@@ -97,14 +97,15 @@ RegionSnapshot privatized_region(RegionType region_type, void* start_addr, void*
   mc_model_checker->process().read_bytes(&privatization_regions, sizeof(privatization_regions),
                                          remote(remote_smpi_privatization_regions));
 
-  std::vector<RegionSnapshot> data;
+  std::vector<std::unique_ptr<RegionSnapshot>> data;
   data.reserve(process_count);
   for (size_t i = 0; i < process_count; i++)
-    data.push_back(region(region_type, start_addr, privatization_regions[i].address, size));
+    data.push_back(std::unique_ptr<simgrid::mc::RegionSnapshot>(
+        new RegionSnapshot(region(region_type, start_addr, privatization_regions[i].address, size))));
 
-  RegionSnapshot region = RegionSnapshot(region_type, start_addr, permanent_addr, size);
-  region.privatized_data(std::move(data));
-  return region;
+  RegionSnapshot reg = RegionSnapshot(region_type, start_addr, permanent_addr, size);
+  reg.privatized_data(std::move(data));
+  return reg;
 }
 #endif
 
@@ -123,15 +124,14 @@ static void get_memory_regions(simgrid::mc::RemoteClient* process, simgrid::mc::
   snapshot->add_region(simgrid::mc::RegionType::Heap, nullptr, start_heap, start_heap,
                        (char*)end_heap - (char*)start_heap);
   snapshot->heap_bytes_used_ = mmalloc_get_bytes_used_remote(heap->heaplimit, process->get_malloc_info());
+  snapshot->privatization_index_ = simgrid::mc::ProcessIndexMissing;
 
 #if HAVE_SMPI
   if (mc_model_checker->process().privatized() && MC_smpi_process_count())
     // snapshot->privatization_index = smpi_loaded_page
     mc_model_checker->process().read_variable("smpi_loaded_page", &snapshot->privatization_index_,
                                               sizeof(snapshot->privatization_index_));
-  else
 #endif
-    snapshot->privatization_index_ = simgrid::mc::ProcessIndexMissing;
 }
 
 /** @brief Fills the position of the segments (executable, read-only, read/write).

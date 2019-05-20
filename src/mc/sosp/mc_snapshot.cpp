@@ -167,9 +167,9 @@ RegionSnapshot* Snapshot::get_region(const void* addr, int process_index) const
       xbt_assert(process_index >= 0, "Missing process index");
       xbt_assert(process_index < (int)region->privatized_data().size(), "Invalid process index");
 
-      RegionSnapshot& priv_region = region->privatized_data()[process_index];
-      xbt_assert(priv_region.contain(simgrid::mc::remote(addr)));
-      return &priv_region;
+      RegionSnapshot* priv_region = region->privatized_data()[process_index].get();
+      xbt_assert(priv_region->contain(simgrid::mc::remote(addr)));
+      return priv_region;
 #else
       xbt_die("Privatized region in a non SMPI build (this should not happen)");
 #endif

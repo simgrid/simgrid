@@ -35,8 +35,8 @@ static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, simgr
     case simgrid::mc::StorageType::Privatized: {
       xbt_assert(process_index >= 0, "Missing process index for privatized region");
       xbt_assert((size_t)process_index < region->privatized_data().size(), "Out of range process index");
-      simgrid::mc::RegionSnapshot& subregion = region->privatized_data()[process_index];
-      return mc_translate_address_region(addr, &subregion, process_index);
+      simgrid::mc::RegionSnapshot* subregion = region->privatized_data()[process_index].get();
+      return mc_translate_address_region(addr, subregion, process_index);
     }
     default: // includes StorageType::NoData
       xbt_die("Storage type not supported");
