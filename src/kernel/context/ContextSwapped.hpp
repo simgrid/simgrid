@@ -9,7 +9,6 @@
 #include "src/kernel/context/Context.hpp"
 
 #include <memory>
-#include <vector>
 
 namespace simgrid {
 namespace kernel {
