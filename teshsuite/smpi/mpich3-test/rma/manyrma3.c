@@ -7,7 +7,7 @@
 #include "mpi.h"
 #include <stdio.h>
 
-#define MAX_COUNT 4096
+#define MAX_COUNT 2048
 
 int main(int argc, char *argv[])
 {
