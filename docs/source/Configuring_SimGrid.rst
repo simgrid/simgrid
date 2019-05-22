@@ -218,7 +218,7 @@ models for all existing resources.
     without corrective factors. The timings of small messages are thus
     poorly modeled. This model is described in `A Network Model for
     Simulation of Grid Application
-    <ftp://ftp.ens-lyon.fr/pub/LIP/Rapports/RR/RR2002/RR2002-40.ps.gz>`_.
+    <https://hal.inria.fr/inria-00071989/document>`_.
   - **Reno/Reno2/Vegas:** Models from Steven H. Low using lagrange_solve instead of
     lmm_solve (experts only; check the code for more info).
   - **NS3** (only available if you compiled SimGrid accordingly):

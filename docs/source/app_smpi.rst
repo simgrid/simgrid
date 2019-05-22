@@ -169,7 +169,7 @@ means that the selected algorithm will be used
 MPI_Alltoall
 ^^^^^^^^^^^^
 
-Most of these are best described in `STAR-MPI's white paper <https://www.cs.fsu.edu/~xyuan/paper/06ics.pdf>`_.
+Most of these are best described in `STAR-MPI's white paper <https://doi.org/10.1145/1183401.1183431>`_.
 
  - default: naive one, by default
  - ompi: use openmpi selector for the alltoall operations

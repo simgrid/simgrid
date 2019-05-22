@@ -389,9 +389,9 @@ see how we manage to use mingw-64 to build the DLL that the Java file
 needs.
 
 The drawback of MinGW-64 is that the produced DLL are not compatible
-with MS Visual C. `clang-cl <http://clang.llvm.org/docs/MSVCCompatibility.html">`_
-sounds promising to fix this. If you get something working or if you
-have any other improvement, please @ref community_contact "tell us".
+with MS Visual C. Some clang-based tools seem promising to fix this,
+but this is of rather low priority for us. It it's important for you
+and if you get it working, please @ref community_contact "tell us".
 
 Java Specifics
 ^^^^^^^^^^^^^^
