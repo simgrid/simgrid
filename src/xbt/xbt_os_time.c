@@ -231,6 +231,8 @@ void xbt_os_cputimer_start(xbt_os_timer_t timer)
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetProcessTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
   w32_times_to_timeval(&timer->start, &kernelTime, &userTime);
+#else
+# error The cpu timers of SimGrid do not seem to work on your platform.
 #endif
 }
 
@@ -251,6 +253,8 @@ void xbt_os_cputimer_resume(xbt_os_timer_t timer)
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetProcessTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
   w32_times_to_timeval(&timer->start, &kernelTime, &userTime);
+#else
+# error The cpu timers of SimGrid do not seem to work on your platform.
 #endif
 }
 
@@ -265,6 +269,8 @@ void xbt_os_cputimer_stop(xbt_os_timer_t timer)
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetProcessTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
   w32_times_to_timeval(&timer->stop, &kernelTime, &userTime);
+#else
+# error The cpu timers of SimGrid do not seem to work on your platform.
 #endif
 }
 
@@ -292,6 +298,8 @@ void xbt_os_threadtimer_start(xbt_os_timer_t timer)
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetThreadTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
   w32_times_to_timeval(&timer->start, &kernelTime, &userTime);
+#else
+# error The thread timers of SimGrid do not seem to work on your platform.
 #endif
 }
 
@@ -321,6 +329,8 @@ void xbt_os_threadtimer_resume(xbt_os_timer_t timer)
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetThreadTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
   w32_times_to_timeval(&timer->start, &kernelTime, &userTime);
+#else
+# error The thread timers of SimGrid do not seem to work on your platform.
 #endif
 }
 
@@ -342,5 +352,7 @@ void xbt_os_threadtimer_stop(xbt_os_timer_t timer)
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetThreadTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
   w32_times_to_timeval(&timer->stop, &kernelTime, &userTime);
+#else
+# error The thread timers of SimGrid do not seem to work on your platform.
 #endif
 }
