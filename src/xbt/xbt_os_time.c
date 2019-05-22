@@ -110,7 +110,7 @@ void xbt_os_sleep(double sec)
  * @brief This section describes many macros/functions that can serve as  an OS abstraction.
  */
 struct s_xbt_os_timer {
-#if HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME && defined (_POSIX_THREAD_CPUTIME)
   struct timespec start;
   struct timespec stop;
   struct timespec elapse;
