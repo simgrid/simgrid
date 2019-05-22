@@ -1063,8 +1063,8 @@ MAX_BANDWIDTH*0.697866 and so on (where MAX_BANDWIDTH denotes the
 bandwidth of the link).
 
 An experimental script to compute these factors is available online. See
-http://simgrid.gforge.inria.fr/contrib/smpi-calibration-doc.html
-http://simgrid.gforge.inria.fr/contrib/smpi-saturation-doc.html
+https://framagit.org/simgrid/platform-calibration/
+https://simgrid.org/contrib/smpi-saturation-doc.html
 
 .. _cfg=smpi/display-timing:
 

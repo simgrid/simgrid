@@ -307,7 +307,7 @@ Interacting with the Platform
    resources must be turned off and on again, and how to react to such
    failures in your code.
    
-   |br| `examples/platforms/small_platform_with_failure.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/small_platform_with_failure.xml>`_
+   |br| `examples/platforms/small_platform_failures.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/small_platform_failures.xml>`_
    |br| The state profiles in `examples/platforms/profiles <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/profiles>`_
 
  - **Specifying speed profiles:** shows how to specify an external
