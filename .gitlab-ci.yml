@@ -8,7 +8,10 @@ pages:
   - cd docs
   - LC_ALL=C.UTF-8 ./Build.sh
   - mv build/html ../public
-  - linkchecker --check-extern --ignore-url='.*\.css$' ../public
+  # The CSS contains a reference to a font or something, not something we gonna fix on our side
+  # The javasphinx output does not exist in the git, so the "open on GitLab" link is broken.
+  #  I'd like to report this as a bug, but javasphinx seems abandoned upstream. 
+  - linkchecker --check-extern --ignore-url='.*\.css$' --ignore-url=/public/java/org ../public
   artifacts:
     paths:
     - public
