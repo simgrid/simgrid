@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 get_boost(){
     grep -m 1 "Boost version:" ./consoleText | sed  "s/.*-- Boost version: \([a-zA-Z0-9\.]*\)/\1/g"
@@ -45,7 +45,7 @@ fi
 
 #get the list of nodes on jenkins
 wget --quiet ${BUILD_URL}/consoleText >/dev/null 2>&1
-nodes=($(grep -rR "Triggering SimGrid ? Debug," ./consoleText | sed "s/Triggering SimGrid ? Debug,\(.*\)/\1/g"| sort))
+nodes=($(sed -n 's/^Triggering SimGrid [^ ]* Debug,//p' ./consoleText| sort))
 rm consoleText
 
 
