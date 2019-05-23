@@ -1,5 +1,4 @@
-/* Copyright (c) 2016-2019. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2016-2019. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -60,7 +59,7 @@ public:
   /** Create a new session by forking
    *
    *  This sets up the environment for the model-checked process
-   *  (environoment variables, sockets, etc.).
+   *  (environment variables, sockets, etc.).
    *
    *  The code is expected to `exec` the model-checker program.
    */

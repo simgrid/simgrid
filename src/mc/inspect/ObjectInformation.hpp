@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2019. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2019. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -107,7 +106,7 @@ public:
   /** Whether this module is an executable
    *
    *  More precisely we check if this is an ET_EXE ELF. These ELF files
-   *  use fixed addresses instead of base-addres relative addresses.
+   *  use fixed addresses instead of base-address relative addresses.
    *  Position independant executables are in fact ET_DYN.
    */
   bool executable() const { return this->flags & simgrid::mc::ObjectInformation::Executable; }
@@ -117,7 +116,7 @@ public:
    *  All the location information in ELF and DWARF are expressed as an offsets
    *  from this base address:
    *
-   *  - location of the functions and globale variables;
+   *  - location of the functions and global variables;
    *
    *  - the DWARF instruction `OP_addr` pushes this on the DWARF stack.
    **/
@@ -146,10 +145,10 @@ public:
    */
   void remove_global_variable(const char* name);
 
-  /** Remove a loval variables (in order to ignore it)
+  /** Remove a local variables (in order to ignore it)
    *
-   *  @param name Name of the globale variable
-   *  @param scope Namespaceed name of the function (or null for all functions)
+   *  @param name Name of the local variable
+   *  @param scope scopes name name of the function (myproject::Foo::count) or null for all functions
    */
   void remove_local_variable(const char* name, const char* scope);
 };

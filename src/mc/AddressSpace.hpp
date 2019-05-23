@@ -136,7 +136,7 @@ public:
     this->read_bytes(buffer.getBuffer(), sizeof(T), ptr, process_index);
   }
 
-  /** Read a given data structure from the addres space
+  /** Read a given data structure from the address space
    *
    *  This version returns by value.
    */

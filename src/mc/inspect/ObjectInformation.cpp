@@ -1,5 +1,4 @@
-/* Copyright (c) 2014-2019. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2019. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -19,7 +18,7 @@ namespace mc {
  * (there is no offset) i.e.
  * \f$\text{virtual address} = \{dwarf address}\f$
  *
- * For a shared object, the addreses are offset from the begining
+ * For a shared object, the addresses are offset from the begining
  * of the shared object (the base address of the mapped shared
  * object must be used as offset
  * i.e. \f$\text{virtual address} = \text{shared object base address}
@@ -31,7 +30,7 @@ void* ObjectInformation::base_address() const
   if (this->executable())
     return nullptr;
 
-  // For an a shared-object (ET_DYN, including position-independant executables)
+  // For an a shared-object (ET_DYN, including position-independent executables)
   // the base address is its lowest address:
   void* result = this->start_exec;
   if (this->start_rw != nullptr && result > (void*)this->start_rw)

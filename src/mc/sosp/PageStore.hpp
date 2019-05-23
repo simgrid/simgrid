@@ -36,7 +36,7 @@ namespace mc {
  *
  *    We want to keep this memory region aligned on the memory pages (so
  *    that we might be able to create non-linear memory mappings on those
- *    pages in the future) and be able to expand it without coyping the
+ *    pages in the future) and be able to expand it without copying the
  *    data (there will be a lot of pages here): we will be able to
  *    efficiently expand the memory mapping using `mremap()`, moving it
  *    to another virtual address if necessary.
@@ -130,7 +130,7 @@ public:
    * store.
    *
    * This will be the case if a page if soft clean: we know that is has not
-   * changed since the previous cnapshot/restoration and we can avoid
+   * changed since the previous snapshot/restoration and we can avoid
    * hashing the page, comparing byte-per-byte to candidates.
    * */
   void ref_page(size_t pageno);
