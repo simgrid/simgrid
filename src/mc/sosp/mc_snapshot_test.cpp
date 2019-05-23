@@ -187,6 +187,7 @@ void snap_test_helper::read_pointer()
   munmap(ret.src, ret.size);
   delete ret.region0;
   delete ret.region;
+  delete region2;
 }
 
 /*************** End: class snap_test_helper *****************************/
