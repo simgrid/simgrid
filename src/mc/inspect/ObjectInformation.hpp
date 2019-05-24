@@ -116,7 +116,7 @@ public:
    *  All the location information in ELF and DWARF are expressed as an offsets
    *  from this base address:
    *
-   *  - location of the functions and global variables;
+   *  - location of the functions and global variables
    *
    *  - the DWARF instruction `OP_addr` pushes this on the DWARF stack.
    **/
