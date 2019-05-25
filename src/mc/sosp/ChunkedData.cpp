@@ -3,17 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstddef>
-#include <cstdint>
-
-#include <vector>
-
-#include "xbt/asserts.h"
-#include "xbt/misc.h"
-
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/sosp/ChunkedData.hpp"
-#include "src/mc/sosp/PageStore.hpp"
 
 namespace simgrid {
 namespace mc {

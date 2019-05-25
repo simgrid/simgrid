@@ -10,12 +10,11 @@
 #define MAP_POPULATE MAP_PREFAULT_READ
 #endif
 
-#include "mc/mc.h"
+#include "src/mc/ModelChecker.hpp"
 #include "src/mc/mc_config.hpp"
-#include "src/mc/sosp/mc_snapshot.hpp"
+#include "src/mc/mc_forward.hpp"
 
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/sosp/ChunkedData.hpp"
 #include "src/mc/sosp/RegionSnapshot.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_RegionSnaphot, mc, "Logging specific to region snapshots");

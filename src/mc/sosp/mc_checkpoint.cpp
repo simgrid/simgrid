@@ -3,37 +3,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <unistd.h>
-
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
 
-#include "src/internal_config.h"
-#include "src/mc/mc_private.hpp"
-#include "src/smpi/include/private.hpp"
 #include "xbt/file.hpp"
-#include "xbt/mmalloc.h"
-#include "xbt/module.h"
-
-#include "src/xbt/mmalloc/mmprivate.h"
-
-#include "src/simix/smx_private.hpp"
-
-#include <libelf.h>
-#include <libunwind.h>
-
-#include "src/mc/mc_private.hpp"
-#include <mc/mc.h>
 
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_hash.hpp"
-#include "src/mc/mc_mmu.hpp"
+#include "src/mc/mc_private.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/remote/mc_protocol.h"
 #include "src/mc/sosp/mc_snapshot.hpp"
-
-#include "src/mc/sosp/RegionSnapshot.hpp"
 
 using simgrid::mc::remote;
 

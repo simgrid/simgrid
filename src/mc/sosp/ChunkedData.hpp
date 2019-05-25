@@ -6,10 +6,6 @@
 #ifndef SIMGRID_MC_CHUNKED_DATA_HPP
 #define SIMGRID_MC_CHUNKED_DATA_HPP
 
-#include <cstddef>
-#include <cstdint>
-
-#include <utility>
 #include <vector>
 
 #include "src/mc/mc_forward.hpp"

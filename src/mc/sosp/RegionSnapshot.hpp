@@ -6,18 +6,9 @@
 #ifndef SIMGRID_MC_REGION_SNAPSHOT_HPP
 #define SIMGRID_MC_REGION_SNAPSHOT_HPP
 
-#include <cstddef>
-#include <utility>
-
-#include <memory>
-#include <vector>
-
-#include "xbt/base.h"
-
-#include "src/mc/AddressSpace.hpp"
-#include "src/mc/remote/RemotePtr.hpp"
 #include "src/mc/sosp/ChunkedData.hpp"
-#include "src/mc/sosp/PageStore.hpp"
+
+#include <vector>
 
 namespace simgrid {
 namespace mc {

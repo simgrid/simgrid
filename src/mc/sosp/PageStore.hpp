@@ -6,14 +6,12 @@
 #ifndef SIMGRID_MC_PAGESTORE_HPP
 #define SIMGRID_MC_PAGESTORE_HPP
 
-#include <cstdint>
-#include <vector>
+#include "src/mc/mc_forward.hpp"
+#include "src/mc/mc_mmu.hpp"
 
 #include <unordered_map>
 #include <unordered_set>
-
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_mmu.hpp"
+#include <vector>
 
 #ifndef XBT_ALWAYS_INLINE
 #define XBT_ALWAYS_INLINE inline __attribute__((always_inline))
