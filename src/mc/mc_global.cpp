@@ -5,20 +5,21 @@
 
 #include "mc/mc.h"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/mc/Session.hpp"
-#include "src/mc/mc_config.hpp"
-#include "src/mc/remote/Client.hpp"
-#include "xbt/backtrace.hpp"
 
 #if SIMGRID_HAVE_MC
+#include "src/mc/Session.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/inspect/mc_unw.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_safety.hpp"
 #include "src/mc/mc_smx.hpp"
+#include "src/mc/remote/Client.hpp"
 #include "src/mc/sosp/mc_snapshot.hpp"
+#include "xbt/backtrace.hpp"
+
 #include <libunwind.h>
 #endif
 
