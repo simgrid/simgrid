@@ -183,27 +183,6 @@ int UnwindContext::access_reg(unw_addr_space_t /*as*/, unw_regnum_t regnum, unw_
   return 0;
 }
 
-/** Read a floating-point register (libunwind method)
- *
- *  FP registers are caller-saved. The values saved by functions such as
- *  `getcontext()` is not relevant for the caller. It is not really necessary
- *  to save and handle them.
- */
-int UnwindContext::access_fpreg(unw_addr_space_t /*as*/, unw_regnum_t /*regnum*/, unw_fpreg_t* /*fpvalp*/,
-                                int /*write*/, void* /*arg*/) noexcept
-{
-  return -UNW_EBADREG;
-}
-
-/** Resume the execution of the context (libunwind method)
- *
- * We don't use this.
- */
-int UnwindContext::resume(unw_addr_space_t /*as*/, unw_cursor_t* /*cp*/, void* /*arg*/) noexcept
-{
-  return -UNW_EUNSPEC;
-}
-
 /** Find informations about a function (libunwind method)
  */
 int UnwindContext::get_proc_name(unw_addr_space_t /*as*/, unw_word_t addr, char* bufp, size_t buf_len, unw_word_t* offp,
@@ -231,11 +210,13 @@ int UnwindContext::get_proc_name(unw_addr_space_t /*as*/, unw_word_t addr, char*
  *  Stack unwinding on a `simgrid::mc::Process*` (for memory, unwinding information)
  *  and `ucontext_t` (for processor registers).
  *
- *  It works with the `simgrid::mc::UnwindContext` context.
+ * It works with the `simgrid::mc::UnwindContext` context.
+ *
+ * Use nullptr as access_fpreg and resume, as we don't need them.
  */
 unw_accessors_t UnwindContext::accessors = {&find_proc_info, &put_unwind_info, &get_dyn_info_list_addr,
-                                            &access_mem,     &access_reg,      &access_fpreg,
-                                            &resume,         &get_proc_name};
+                                            &access_mem,     &access_reg,      nullptr,
+                                            nullptr,         &get_proc_name};
 
 unw_addr_space_t UnwindContext::createUnwindAddressSpace()
 {
@@ -267,8 +248,9 @@ void UnwindContext::initialize(simgrid::mc::RemoteClient* process, unw_context_t
 unw_cursor_t UnwindContext::cursor()
 {
   unw_cursor_t cursor;
-  if (process_ == nullptr || address_space_ == nullptr || unw_init_remote(&cursor, process_->unw_addr_space, this) != 0)
-    xbt_die("UnwindContext not initialized");
+  xbt_assert(process_ != nullptr && address_space_ != nullptr &&
+                 unw_init_remote(&cursor, process_->unw_addr_space, this) == 0,
+             "UnwindContext not initialized");
   return cursor;
 }
 

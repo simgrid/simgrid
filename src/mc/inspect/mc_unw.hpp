@@ -59,8 +59,6 @@ private: // Methods and virtual table for libunwind
   static int access_mem(unw_addr_space_t as, unw_word_t addr, unw_word_t* valp, int write, void* arg) noexcept;
   static void* get_reg(unw_context_t* context, unw_regnum_t regnum) noexcept;
   static int access_reg(unw_addr_space_t as, unw_regnum_t regnum, unw_word_t* valp, int write, void* arg) noexcept;
-  static int access_fpreg(unw_addr_space_t as, unw_regnum_t regnum, unw_fpreg_t* fpvalp, int write, void* arg) noexcept;
-  static int resume(unw_addr_space_t as, unw_cursor_t* cp, void* arg) noexcept;
   static int get_proc_name(unw_addr_space_t as, unw_word_t addr, char* bufp, size_t buf_len, unw_word_t* offp,
                            void* arg) noexcept;
   static unw_accessors_t accessors;

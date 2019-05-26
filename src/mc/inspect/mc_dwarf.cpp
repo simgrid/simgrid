@@ -254,8 +254,7 @@ static Dwarf_Off MC_dwarf_attr_dieoffset(Dwarf_Die* die, int attribute)
     return 0;
   dwarf_attr_integrate(die, attribute, &attr);
   Dwarf_Die subtype_die;
-  if (dwarf_formref_die(&attr, &subtype_die) == nullptr)
-    xbt_die("Could not find DIE");
+  xbt_assert(dwarf_formref_die(&attr, &subtype_die) != nullptr, "Could not find DIE");
   return dwarf_dieoffset(&subtype_die);
 }
 
@@ -266,8 +265,7 @@ static Dwarf_Off MC_dwarf_attr_integrate_dieoffset(Dwarf_Die* die, int attribute
     return 0;
   dwarf_attr_integrate(die, DW_AT_type, &attr);
   Dwarf_Die subtype_die;
-  if (dwarf_formref_die(&attr, &subtype_die) == nullptr)
-    xbt_die("Could not find DIE");
+  xbt_assert(dwarf_formref_die(&attr, &subtype_die) != nullptr, "Could not find DIE");
   return dwarf_dieoffset(&subtype_die);
 }
 
@@ -309,8 +307,8 @@ static bool MC_dwarf_attr_flag(Dwarf_Die* die, int attribute, bool integrate)
     return false;
 
   bool result;
-  if (dwarf_formflag(&attr, &result))
-    xbt_die("Unexpected form for attribute %s", simgrid::dwarf::attrname(attribute));
+  xbt_assert(not dwarf_formflag(&attr, &result), "Unexpected form for attribute %s",
+             simgrid::dwarf::attrname(attribute));
   return result;
 }
 
@@ -436,8 +434,7 @@ static bool MC_compare_variable(simgrid::mc::Variable const& a, simgrid::mc::Var
  */
 static void MC_dwarf_fill_member_location(simgrid::mc::Type* type, simgrid::mc::Member* member, Dwarf_Die* child)
 {
-  if (dwarf_hasattr(child, DW_AT_data_bit_offset))
-    xbt_die("Can't groke DW_AT_data_bit_offset.");
+  xbt_assert(not dwarf_hasattr(child, DW_AT_data_bit_offset), "Can't groke DW_AT_data_bit_offset.");
 
   if (not dwarf_hasattr_integrate(child, DW_AT_data_member_location)) {
     if (type->type == DW_TAG_union_type)
@@ -457,10 +454,10 @@ static void MC_dwarf_fill_member_location(simgrid::mc::Type* type, simgrid::mc::
       {
         Dwarf_Op* expr;
         size_t len;
-        if (dwarf_getlocation(&attr, &expr, &len))
-          xbt_die("Could not read location expression DW_AT_data_member_location in DW_TAG_member %s of type <%" PRIx64
-                  ">%s",
-                  MC_dwarf_attr_integrate_string(child, DW_AT_name), (uint64_t)type->id, type->name.c_str());
+        xbt_assert(not dwarf_getlocation(&attr, &expr, &len),
+                   "Could not read location expression DW_AT_data_member_location in DW_TAG_member %s of type <%" PRIx64
+                   ">%s",
+                   MC_dwarf_attr_integrate_string(child, DW_AT_name), (uint64_t)type->id, type->name.c_str());
         member->location_expression = simgrid::dwarf::DwarfExpression(expr, expr + len);
         break;
       }
@@ -468,11 +465,9 @@ static void MC_dwarf_fill_member_location(simgrid::mc::Type* type, simgrid::mc::
       // Offset from the base address of the object:
       {
         Dwarf_Word offset;
-        if (not dwarf_formudata(&attr, &offset))
-          member->offset(offset);
-        else
-          xbt_die("Cannot get %s location <%" PRIx64 ">%s", MC_dwarf_attr_integrate_string(child, DW_AT_name),
-                  (uint64_t)type->id, type->name.c_str());
+        xbt_assert(not dwarf_formudata(&attr, &offset), "Cannot get %s location <%" PRIx64 ">%s",
+                   MC_dwarf_attr_integrate_string(child, DW_AT_name), (uint64_t)type->id, type->name.c_str());
+        member->offset(offset);
         break;
       }
 
@@ -542,14 +537,12 @@ static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* /*info*/, Dwarf
       member.byte_size = MC_dwarf_attr_integrate_uint(&child, DW_AT_byte_size, 0);
       member.type_id   = MC_dwarf_at_type(&child);
 
-      if (dwarf_hasattr(&child, DW_AT_data_bit_offset))
-        xbt_die("Can't groke DW_AT_data_bit_offset.");
+      xbt_assert(not dwarf_hasattr(&child, DW_AT_data_bit_offset), "Can't groke DW_AT_data_bit_offset.");
 
       MC_dwarf_fill_member_location(type, &member, &child);
 
-      if (not member.type_id)
-        xbt_die("Missing type for member %s of <%" PRIx64 ">%s", member.name.c_str(), (uint64_t)type->id,
-                type->name.c_str());
+      xbt_assert(member.type_id, "Missing type for member %s of <%" PRIx64 ">%s", member.name.c_str(),
+                 (uint64_t)type->id, type->name.c_str());
 
       type->members.push_back(std::move(member));
     }
@@ -692,11 +685,10 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(simgrid::mc::Ob
       {
         Dwarf_Op* expr;
         size_t len;
-        if (dwarf_getlocation(&attr_location, &expr, &len)) {
-          xbt_die("Could not read location expression in DW_AT_location "
-                  "of variable <%" PRIx64 ">%s",
-                  (uint64_t)variable->id, variable->name.c_str());
-        }
+        xbt_assert(not dwarf_getlocation(&attr_location, &expr, &len),
+                   "Could not read location expression in DW_AT_location "
+                   "of variable <%" PRIx64 ">%s",
+                   (uint64_t)variable->id, variable->name.c_str());
 
         if (len == 1 && expr[0].atom == DW_OP_addr) {
           variable->global  = true;
@@ -804,8 +796,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
   if (low_pc) {
     // DW_AT_high_pc:
     Dwarf_Attribute attr;
-    if (not dwarf_attr_integrate(die, DW_AT_high_pc, &attr))
-      xbt_die("Missing DW_AT_high_pc matching with DW_AT_low_pc");
+    xbt_assert(dwarf_attr_integrate(die, DW_AT_high_pc, &attr), "Missing DW_AT_high_pc matching with DW_AT_low_pc");
 
     Dwarf_Sword offset;
     Dwarf_Addr high_pc;
@@ -815,15 +806,13 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
         // DW_AT_high_pc if an offset from the low_pc:
       case simgrid::dwarf::FormClass::Constant:
 
-        if (dwarf_formsdata(&attr, &offset) != 0)
-          xbt_die("Could not read constant");
+        xbt_assert(dwarf_formsdata(&attr, &offset) == 0, "Could not read constant");
         frame.range.end() = frame.range.begin() + offset;
         break;
 
         // DW_AT_high_pc is a relocatable address:
       case simgrid::dwarf::FormClass::Address:
-        if (dwarf_formaddr(&attr, &high_pc) != 0)
-          xbt_die("Could not read address");
+        xbt_assert(dwarf_formaddr(&attr, &high_pc) == 0, "Could not read address");
         frame.range.end() = base + high_pc;
         break;
 
@@ -856,8 +845,7 @@ static void mc_dwarf_handle_namespace_die(simgrid::mc::ObjectInformation* info, 
                                           simgrid::mc::Frame* frame, const char* ns)
 {
   const char* name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
-  if (frame)
-    xbt_die("Unexpected namespace in a subprogram");
+  xbt_assert(not frame, "Unexpected namespace in a subprogram");
   char* new_ns = ns == nullptr ? xbt_strdup(name) : bprintf("%s::%s", ns, name);
   MC_dwarf_handle_children(info, die, unit, frame, new_ns);
   xbt_free(new_ns);
@@ -946,8 +934,7 @@ static std::vector<char> get_build_id(Elf* elf)
   // found in a PT_NOTE entry in the program header table.
 
   size_t phnum;
-  if (elf_getphdrnum(elf, &phnum) != 0)
-    xbt_die("Could not read program headers");
+  xbt_assert(elf_getphdrnum(elf, &phnum) == 0, "Could not read program headers");
 
   // Iterate over the program headers and find the PT_NOTE ones:
   for (size_t i = 0; i < phnum; ++i) {
@@ -1048,19 +1035,15 @@ static std::string find_by_build_id(std::vector<char> id)
  */
 static void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
 {
-  if (elf_version(EV_CURRENT) == EV_NONE)
-    xbt_die("libelf initialization error");
+  xbt_assert(elf_version(EV_CURRENT) != EV_NONE, "libelf initialization error");
 
   // Open the ELF file:
   int fd = open(info->file_name.c_str(), O_RDONLY);
-  if (fd < 0)
-    xbt_die("Could not open file %s", info->file_name.c_str());
+  xbt_assert(fd >= 0, "Could not open file %s", info->file_name.c_str());
   Elf* elf = elf_begin(fd, ELF_C_READ, nullptr);
-  if (elf == nullptr)
-    xbt_die("Not an ELF file");
+  xbt_assert(elf != nullptr, "Not an ELF file");
   Elf_Kind kind = elf_kind(elf);
-  if (kind != ELF_K_ELF)
-    xbt_die("Not an ELF file");
+  xbt_assert(kind == ELF_K_ELF, "Not an ELF file");
 
   // Remember if this is a `ET_EXEC` (fixed location) or `ET_DYN`:
   Elf64_Half type = get_type(elf);
@@ -1094,21 +1077,17 @@ static void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
 
     // Find the debug file using the build id:
     std::string debug_file = find_by_build_id(build_id);
-    if (debug_file.empty()) {
-      std::string hex = to_hex(build_id);
-      xbt_die("Missing debug info for %s with build-id %s\n"
-              "You might want to install the suitable debugging package.\n",
-              info->file_name.c_str(), hex.c_str());
-    }
+    xbt_assert(not debug_file.empty(),
+               "Missing debug info for %s with build-id %s\n"
+               "You might want to install the suitable debugging package.\n",
+               info->file_name.c_str(), to_hex(build_id).c_str());
 
     // Load the DWARF info from this file:
     XBT_DEBUG("Load DWARF for %s from %s", info->file_name.c_str(), debug_file.c_str());
     fd = open(debug_file.c_str(), O_RDONLY);
-    if (fd < 0)
-      xbt_die("Could not open file %s", debug_file.c_str());
+    xbt_assert(fd >= 0, "Could not open file %s", debug_file.c_str());
     dwarf = dwarf_begin(fd, DWARF_C_READ);
-    if (dwarf == nullptr)
-      xbt_die("No DWARF info in %s for %s", debug_file.c_str(), info->file_name.c_str());
+    xbt_assert(dwarf != nullptr, "No DWARF info in %s for %s", debug_file.c_str(), info->file_name.c_str());
     read_dwarf_info(info, dwarf);
     dwarf_end(dwarf);
     close(fd);
