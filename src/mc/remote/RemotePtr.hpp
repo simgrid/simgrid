@@ -7,7 +7,6 @@
 #define SIMGRID_MC_REMOTE_PTR_HPP
 
 #include "src/simix/smx_private.hpp"
-#include <type_traits>
 
 namespace simgrid {
 namespace mc {

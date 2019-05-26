@@ -5,11 +5,7 @@
 
 #include <cstring>
 
-#include "xbt/dynar.h"
-#include "xbt/sysdep.h"
-
 #include "src/mc/checker/CommunicationDeterminismChecker.hpp"
-#include "src/mc/mc_comm_pattern.hpp"
 #include "src/mc/mc_smx.hpp"
 
 using simgrid::mc::remote;

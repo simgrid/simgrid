@@ -3,15 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <list>
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
-#include "src/mc/mc_forward.hpp"
+
+#include <string>
+#include <vector>
 
 #ifndef SIMGRID_MC_COMMUNICATION_DETERMINISM_CHECKER_HPP
 #define SIMGRID_MC_COMMUNICATION_DETERMINISM_CHECKER_HPP

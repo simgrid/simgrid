@@ -3,30 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cinttypes>
-#include <cassert>
-#include <cstddef>
-#include <cstdint>
-
-#include <cxxabi.h>
-
-#include <vector>
-
-#include "xbt/automaton.h"
-#include "xbt/backtrace.hpp"
-#include "xbt/dynar.h"
-
-#include "mc_base.h"
-
 #include "mc/mc.h"
-
-#ifndef _WIN32
-#include <unistd.h>
-#include <sys/wait.h>
-#include <sys/time.h>
-#endif
-
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/mc/Session.hpp"
+#include "src/mc/mc_config.hpp"
+#include "src/mc/remote/Client.hpp"
+#include "xbt/backtrace.hpp"
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/checker/Checker.hpp"
@@ -40,10 +22,11 @@
 #include <libunwind.h>
 #endif
 
-#include "src/mc/Transition.hpp"
-#include "src/mc/mc_record.hpp"
-#include "src/mc/remote/Client.hpp"
-#include "src/mc/remote/mc_protocol.h"
+#ifndef _WIN32
+#include <sys/time.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc, "Logging specific to MC (global)");
 

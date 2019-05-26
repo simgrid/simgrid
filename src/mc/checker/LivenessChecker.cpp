@@ -3,32 +3,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstring>
-
-#include <memory>
-#include <list>
-
-#include <boost/range/algorithm.hpp>
-
-#include <unistd.h>
-#include <sys/wait.h>
-
-#include <xbt/automaton.h>
-#include <xbt/dynar.h>
-#include <xbt/log.h>
-#include <xbt/sysdep.h>
-
-#include "src/mc/Session.hpp"
-#include "src/mc/Transition.hpp"
 #include "src/mc/checker/LivenessChecker.hpp"
+#include "src/mc/Session.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/mc_private.hpp"
-#include "src/mc/mc_record.hpp"
-#include "src/mc/mc_replay.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/remote/Client.hpp"
+
+#include <boost/range/algorithm.hpp>
+#include <cstring>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc, "Logging specific to algorithms for liveness properties verification");
 

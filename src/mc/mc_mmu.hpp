@@ -35,7 +35,7 @@ static int chunk_size()
  */
 static XBT_ALWAYS_INLINE std::size_t chunk_count(std::size_t size)
 {
-  size_t page_count = size >> xbt_pagebits;
+  std::size_t page_count = size >> xbt_pagebits;
   if (size & (xbt_pagesize - 1))
     page_count++;
   return page_count;

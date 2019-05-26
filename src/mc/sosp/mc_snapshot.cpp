@@ -3,23 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstddef>
+#include <cstddef> /* std::size_t */
 
-#include <memory>
-#include <utility>
-
-#include "xbt/asserts.h"
-#include "xbt/sysdep.h"
-
-#include "src/internal_config.h"
-#include "src/smpi/include/private.hpp"
-
-#include "src/mc/mc_mmu.hpp"
-#include "src/mc/mc_private.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/sosp/PageStore.hpp"
 #include "src/mc/sosp/mc_snapshot.hpp"
-
 
 /** @brief Read memory from a snapshot region broken across fragmented pages
  *

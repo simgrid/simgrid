@@ -6,21 +6,9 @@
 #ifndef SIMGRID_MC_SESSION_HPP
 #define SIMGRID_MC_SESSION_HPP
 
-#ifdef __linux__
-#include <sys/prctl.h>
-#endif
-
-#include "xbt/sysdep.h"
-#include "xbt/system_error.hpp"
-#include <sys/socket.h>
-#include <sys/types.h>
+#include "src/mc/ModelChecker.hpp"
 
 #include <functional>
-
-#include "xbt/log.h"
-
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/ModelChecker.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -80,7 +68,7 @@ public:
   static Session* spawnvp(const char *file, char *const argv[]);
 };
 
-// Temporary
+// Temporary :)
 extern simgrid::mc::Session* session;
 
 }

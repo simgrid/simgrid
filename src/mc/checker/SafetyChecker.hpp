@@ -7,15 +7,14 @@
 #ifndef SIMGRID_MC_SAFETY_CHECKER_HPP
 #define SIMGRID_MC_SAFETY_CHECKER_HPP
 
+#include "src/mc/VisitedState.hpp"
+#include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_safety.hpp"
+
 #include <list>
 #include <memory>
 #include <string>
 #include <vector>
-
-#include "src/mc/VisitedState.hpp"
-#include "src/mc/checker/Checker.hpp"
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_safety.hpp"
 
 namespace simgrid {
 namespace mc {

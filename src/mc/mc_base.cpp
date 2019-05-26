@@ -5,11 +5,8 @@
 
 #include "src/mc/mc_base.h"
 #include "mc/mc.h"
-#include "simgrid/config.h"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
-#include "src/mc/mc_config.hpp"
-#include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 

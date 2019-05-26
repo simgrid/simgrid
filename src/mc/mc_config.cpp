@@ -3,21 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/config.hpp"
-#include "xbt/log.h"
-#include <xbt/sysdep.h>
-
 #include "src/mc/mc_replay.hpp"
-#include <mc/mc.h>
-
 #include <simgrid/sg_config.hpp>
-
 #if SIMGRID_HAVE_MC
-#include "src/mc/mc_private.hpp"
 #include "src/mc/mc_safety.hpp"
 #endif
-
-#include "src/mc/mc_record.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_config, mc, "Configuration of the Model Checker");
 

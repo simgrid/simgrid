@@ -4,12 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <string>
-
-#include <xbt/asserts.h>
-
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/ModelChecker.hpp"
+#include "xbt/asserts.h"
 
 namespace simgrid {
 namespace mc {

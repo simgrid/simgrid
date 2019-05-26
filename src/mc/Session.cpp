@@ -3,23 +3,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <csignal>
-#include <fcntl.h>
-
-#include <functional>
-
-#include "xbt/log.h"
-#include "xbt/system_error.hpp"
-#include <mc/mc.h>
-#include <simgrid/modelchecker.h>
-#include <simgrid/sg_config.hpp>
-
 #include "src/mc/Session.hpp"
 #include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_state.hpp"
+#include "xbt/log.h"
+#include "xbt/system_error.hpp"
 
-#include "src/smpi/include/private.hpp"
+#include <fcntl.h>
+#ifdef __linux__
+#include <sys/prctl.h>
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
 

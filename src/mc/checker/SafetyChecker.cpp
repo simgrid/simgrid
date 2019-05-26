@@ -17,6 +17,7 @@
 #include "src/mc/Transition.hpp"
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/checker/SafetyChecker.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"

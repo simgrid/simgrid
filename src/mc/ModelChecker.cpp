@@ -3,26 +3,19 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/socket.h>
-#include <sys/ptrace.h>
-
-#include <memory>
-#include <system_error>
-
-#include "xbt/automaton.h"
-#include "xbt/automaton.hpp"
-#include "xbt/log.h"
-#include "xbt/system_error.hpp"
-
-#include "simgrid/sg_config.hpp"
-
+#include "src/mc/ModelChecker.hpp"
+#include "src/mc/Session.hpp"
 #include "src/mc/Transition.hpp"
 #include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
+#include "xbt/automaton.hpp"
+#include "xbt/system_error.hpp"
+
+#include <sys/ptrace.h>
+#include <sys/wait.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 

@@ -4,17 +4,12 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/include/catch.hpp"
-
-#include <cstdlib>
-#include <cstring>
-#include <random>
-
-#include <sys/mman.h>
-
 #include "src/mc/mc_config.hpp"
-#include "src/mc/mc_mmu.hpp"
-#include "src/mc/mc_private.hpp"
 #include "src/mc/sosp/mc_snapshot.hpp"
+
+#include <cstddef>
+#include <random>
+#include <sys/mman.h>
 
 /**************** Class BOOST_tests *************************/
 using simgrid::mc::RegionSnapshot;

@@ -7,18 +7,13 @@
 #ifndef SIMGRID_MC_LIVENESS_CHECKER_HPP
 #define SIMGRID_MC_LIVENESS_CHECKER_HPP
 
-#include <cstddef>
+#include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_state.hpp"
+#include "xbt/automaton.hpp"
 
-#include <string>
 #include <list>
 #include <memory>
 #include <vector>
-
-#include "src/mc/checker/Checker.hpp"
-#include "src/mc/mc_state.hpp"
-#include <simgrid/config.h>
-#include <xbt/automaton.h>
-#include <xbt/base.h>
 
 namespace simgrid {
 namespace mc {

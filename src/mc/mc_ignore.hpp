@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_IGNORE_HPP
 #define SIMGRID_MC_IGNORE_HPP
 
+#include "simgrid/forward.h"
 #include "src/internal_config.h"
 
 #if HAVE_UCONTEXT_H

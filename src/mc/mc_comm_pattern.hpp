@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "smpi/smpi.h"
-
 #include "src/mc/mc_state.hpp"
 
 namespace simgrid {

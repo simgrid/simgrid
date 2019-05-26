@@ -6,19 +6,14 @@
 #ifndef SIMGRID_MC_MODEL_CHECKER_HPP
 #define SIMGRID_MC_MODEL_CHECKER_HPP
 
-#include <sys/types.h>
+#include "src/mc/sosp/PageStore.hpp"
+#include "xbt/base.h"
 
 #include <memory>
 #include <set>
 #include <string>
 
 #include <event2/event.h>
-
-#include <sys/types.h>
-
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/remote/mc_protocol.h"
-#include "src/mc/sosp/PageStore.hpp"
 
 namespace simgrid {
 namespace mc {

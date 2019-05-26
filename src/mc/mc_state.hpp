@@ -6,12 +6,7 @@
 #ifndef SIMGRID_MC_STATE_HPP
 #define SIMGRID_MC_STATE_HPP
 
-#include <list>
-#include <memory>
-
-#include "src/mc/mc_record.hpp"
 #include "src/mc/sosp/mc_snapshot.hpp"
-
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/Transition.hpp"
 

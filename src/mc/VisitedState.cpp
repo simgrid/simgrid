@@ -3,21 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/mc/VisitedState.hpp"
+#include "src/mc/mc_private.hpp"
+
 #include <unistd.h>
 #include <sys/wait.h>
-
 #include <memory>
-
 #include <boost/range/algorithm.hpp>
-
-#include "xbt/log.h"
-#include "xbt/sysdep.h"
-
-#include "src/mc/VisitedState.hpp"
-#include "src/mc/mc_comm_pattern.hpp"
-#include "src/mc/mc_private.hpp"
-#include "src/mc/mc_smx.hpp"
-#include "src/mc/remote/RemoteClient.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_VisitedState, mc, "Logging specific to state equality detection mechanisms");
 

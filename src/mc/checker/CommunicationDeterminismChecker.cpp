@@ -5,14 +5,12 @@
 
 #include "src/mc/checker/CommunicationDeterminismChecker.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
-#include "src/mc/VisitedState.hpp"
+#include "src/mc/Session.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/mc_record.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/mc_state.hpp"
-#include "src/mc/remote/Client.hpp"
 
 #if HAVE_SMPI
 #include "smpi_request.hpp"
