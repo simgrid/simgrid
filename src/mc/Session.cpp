@@ -112,7 +112,7 @@ void Session::execute(Transition const& transition)
 
 void Session::restoreInitialState()
 {
-  simgrid::mc::restore_snapshot(this->initialSnapshot_);
+  this->initialSnapshot_->restore(&mc_model_checker->process());
 }
 
 void Session::logState()

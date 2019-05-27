@@ -271,7 +271,7 @@ void SafetyChecker::restoreState()
   /* Intermediate backtracking */
   simgrid::mc::State* last_state = stack_.back().get();
   if (last_state->system_state) {
-    simgrid::mc::restore_snapshot(last_state->system_state);
+    last_state->system_state->restore(&mc_model_checker->process());
     return;
   }
 

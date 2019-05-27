@@ -94,26 +94,31 @@ public:
   ~Snapshot() = default;
 
   /* Initialization */
-  void add_region(RegionType type, ObjectInformation* object_info, void* start_addr, void* permanent_addr,
-                  std::size_t size);
 
   /* Regular use */
   const void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, int process_index = ProcessIndexAny,
                          ReadOptions options = ReadOptions::none()) const override;
   RegionSnapshot* get_region(const void* addr, int process_index) const;
   RegionSnapshot* get_region(const void* addr, int process_index, RegionSnapshot* hinted_region) const;
+  void restore(RemoteClient* process);
 
   // To be private
   int num_state_;
   std::size_t heap_bytes_used_;
   std::vector<std::unique_ptr<RegionSnapshot>> snapshot_regions_;
   std::set<pid_t> enabled_processes_;
-  int privatization_index_;
+  int privatization_index_ = 0;
   std::vector<std::size_t> stack_sizes_;
   std::vector<s_mc_snapshot_stack_t> stacks_;
   std::vector<simgrid::mc::IgnoredHeapRegion> to_ignore_;
   std::uint64_t hash_ = 0;
   std::vector<s_mc_snapshot_ignored_data_t> ignored_data_;
+
+private:
+  void add_region(RegionType type, ObjectInformation* object_info, void* start_addr, void* permanent_addr,
+                  std::size_t size);
+  void snapshot_regions(simgrid::mc::RemoteClient* process);
+  void snapshot_stacks(simgrid::mc::RemoteClient* process);
 };
 } // namespace mc
 } // namespace simgrid
@@ -124,7 +129,6 @@ namespace simgrid {
 namespace mc {
 
 XBT_PRIVATE std::shared_ptr<Snapshot> take_snapshot(int num_state);
-XBT_PRIVATE void restore_snapshot(std::shared_ptr<Snapshot> snapshot);
 } // namespace mc
 } // namespace simgrid
 

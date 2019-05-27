@@ -93,30 +93,29 @@ namespace mc {
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
-static void get_memory_regions(simgrid::mc::RemoteClient* process, simgrid::mc::Snapshot* snapshot)
+void simgrid::mc::Snapshot::snapshot_regions(simgrid::mc::RemoteClient* process)
 {
-  snapshot->snapshot_regions_.clear();
+  snapshot_regions_.clear();
 
   for (auto const& object_info : process->object_infos)
-    snapshot->add_region(simgrid::mc::RegionType::Data, object_info.get(), object_info->start_rw, object_info->start_rw,
-                         object_info->end_rw - object_info->start_rw);
+    add_region(simgrid::mc::RegionType::Data, object_info.get(), object_info->start_rw, object_info->start_rw,
+               object_info->end_rw - object_info->start_rw);
 
   xbt_mheap_t heap = process->get_heap();
   void* start_heap = heap->base;
   void* end_heap   = heap->breakval;
 
-  snapshot->add_region(simgrid::mc::RegionType::Heap, nullptr, start_heap, start_heap,
-                       (char*)end_heap - (char*)start_heap);
-  snapshot->heap_bytes_used_     = mmalloc_get_bytes_used_remote(heap->heaplimit, process->get_malloc_info());
-  snapshot->privatization_index_ = simgrid::mc::ProcessIndexMissing;
+  add_region(simgrid::mc::RegionType::Heap, nullptr, start_heap, start_heap, (char*)end_heap - (char*)start_heap);
+  heap_bytes_used_     = mmalloc_get_bytes_used_remote(heap->heaplimit, process->get_malloc_info());
+  privatization_index_ = simgrid::mc::ProcessIndexMissing;
 
 #if HAVE_SMPI
   if (mc_model_checker->process().privatized() && MC_smpi_process_count())
     // snapshot->privatization_index = smpi_loaded_page
-    mc_model_checker->process().read_variable("smpi_loaded_page", &snapshot->privatization_index_,
-                                              sizeof(snapshot->privatization_index_));
+    mc_model_checker->process().read_variable("smpi_loaded_page", &privatization_index_, sizeof(privatization_index_));
 #endif
 }
+
 /** @brief Checks whether the variable is in scope for a given IP.
  *
  *  A variable may be defined only from a given value of IP.
@@ -239,9 +238,9 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(simgrid::mc::UnwindCo
   return result;
 }
 
-static void take_snapshot_stacks(simgrid::mc::Snapshot* snapshot)
+void simgrid::mc::Snapshot::snapshot_stacks(simgrid::mc::RemoteClient* process)
 {
-  for (auto const& stack : mc_model_checker->process().stack_areas()) {
+  for (auto const& stack : process->stack_areas()) {
     s_mc_snapshot_stack_t st;
 
     // Read the context from remote process:
@@ -256,10 +255,10 @@ static void take_snapshot_stacks(simgrid::mc::Snapshot* snapshot)
 
     unw_word_t sp = st.stack_frames[0].sp;
 
-    snapshot->stacks_.push_back(std::move(st));
+    stacks_.push_back(std::move(st));
 
     size_t stack_size = (char*)stack.address + stack.size - (char*)sp;
-    snapshot->stack_sizes_.push_back(stack_size);
+    stack_sizes_.push_back(stack_size);
   }
 }
 
@@ -296,18 +295,18 @@ Snapshot::Snapshot(int _num_state, RemoteClient* process)
     , privatization_index_(0)
     , hash_(0)
 {
-  for (auto const& p : mc_model_checker->process().actors())
+  for (auto const& p : process->actors())
     enabled_processes_.insert(p.copy.getBuffer()->get_pid());
 
   snapshot_handle_ignore(this);
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
-  get_memory_regions(process, this);
+  snapshot_regions(process);
 
-  to_ignore_ = mc_model_checker->process().ignored_heap();
+  to_ignore_ = process->ignored_heap();
 
   if (_sg_mc_max_visited_states > 0 || not _sg_mc_property_file.get().empty()) {
-    take_snapshot_stacks(this);
+    snapshot_stacks(process);
     if (_sg_mc_hash)
       hash_ = simgrid::mc::hash(*this);
   }
@@ -395,29 +394,24 @@ RegionSnapshot* Snapshot::get_region(const void* addr, int process_index, Region
     return get_region(addr, process_index);
 }
 
-static inline void restore_snapshot_regions(simgrid::mc::Snapshot* snapshot)
+void Snapshot::restore(RemoteClient* process)
 {
-  for (std::unique_ptr<simgrid::mc::RegionSnapshot> const& region : snapshot->snapshot_regions_) {
-    // For privatized, variables we decided it was not necessary to take the snapshot:
-    if (region)
+  XBT_DEBUG("Restore snapshot %i", num_state_);
+
+  // Restore regions
+  for (std::unique_ptr<simgrid::mc::RegionSnapshot> const& region : snapshot_regions_) {
+    if (region) // privatized variables are not snapshoted
       region.get()->restore();
   }
 
-#if HAVE_SMPI
-  if (snapshot->privatization_index_ >= 0) {
-    // Fix the privatization mmap:
-    s_mc_message_restore_t message{MC_MESSAGE_RESTORE, snapshot->privatization_index_};
-    mc_model_checker->process().getChannel().send(message);
+  // Fix the privatization mmap if needed
+  if (privatization_index_ >= 0) {
+    s_mc_message_restore_t message{MC_MESSAGE_RESTORE, privatization_index_};
+    process->getChannel().send(message);
   }
-#endif
-}
 
-void restore_snapshot(std::shared_ptr<simgrid::mc::Snapshot> snapshot)
-{
-  XBT_DEBUG("Restore snapshot %i", snapshot->num_state_);
-  restore_snapshot_regions(snapshot.get());
-  snapshot_ignore_restore(snapshot.get());
-  mc_model_checker->process().clear_cache();
+  snapshot_ignore_restore(this);
+  process->clear_cache();
 }
 
 } // namespace mc

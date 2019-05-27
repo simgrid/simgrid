@@ -132,7 +132,7 @@ void LivenessChecker::replay()
   if(_sg_mc_checkpoint > 0) {
     simgrid::mc::Pair* pair = explorationStack_.back().get();
     if(pair->graph_state->system_state){
-      simgrid::mc::restore_snapshot(pair->graph_state->system_state);
+      pair->graph_state->system_state->restore(&mc_model_checker->process());
       return;
     }
   }
