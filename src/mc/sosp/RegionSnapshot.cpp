@@ -99,5 +99,39 @@ RegionPrivatized::RegionPrivatized(RegionType region_type, void* start_addr, voi
 }
 #endif
 
+/** @brief Restore a region from a snapshot
+ *
+ *  @param region     Target region
+ */
+void RegionSnapshot::restore()
+{
+  switch (storage_type()) {
+    case simgrid::mc::StorageType::Flat:
+      mc_model_checker->process().write_bytes(flat_data().get(), size(), permanent_address());
+      break;
+
+    case simgrid::mc::StorageType::Chunked:
+      xbt_assert(((permanent_address().address()) & (xbt_pagesize - 1)) == 0, "Not at the beginning of a page");
+      xbt_assert(simgrid::mc::mmu::chunk_count(size()) == page_data().page_count());
+
+      for (size_t i = 0; i != page_data().page_count(); ++i) {
+        void* target_page = (void*)simgrid::mc::mmu::join(i, (std::uintptr_t)(void*)permanent_address().address());
+        const void* source_page = page_data().page(i);
+        mc_model_checker->process().write_bytes(source_page, xbt_pagesize, remote(target_page));
+      }
+
+      break;
+
+    case simgrid::mc::StorageType::Privatized:
+      for (auto& p : privatized_data())
+        p.get()->restore();
+      break;
+
+    default: // includes StorageType::NoData
+      xbt_die("Storage type not supported");
+      break;
+  }
+}
+
 } // namespace mc
 } // namespace simgrid

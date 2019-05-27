@@ -6,8 +6,10 @@
 #ifndef SIMGRID_MC_REGION_SNAPSHOT_HPP
 #define SIMGRID_MC_REGION_SNAPSHOT_HPP
 
+#include "src/mc/remote/RemotePtr.hpp"
 #include "src/mc/sosp/ChunkedData.hpp"
 
+#include <memory>
 #include <vector>
 
 namespace simgrid {
@@ -198,6 +200,9 @@ public:
   RegionType region_type() const { return region_type_; }
 
   bool contain(RemotePtr<void> p) const { return p >= start() && p < end(); }
+
+  /** @brief Restore a region from a snapshot */
+  void restore();
 };
 
 class RegionDense : public RegionSnapshot {

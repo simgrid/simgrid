@@ -90,7 +90,7 @@ namespace mc {
 
 class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
-  Snapshot(RemoteClient* process, int num_state);
+  Snapshot(int num_state, RemoteClient* process = &mc_model_checker->process());
   ~Snapshot() = default;
 
   /* Initialization */
