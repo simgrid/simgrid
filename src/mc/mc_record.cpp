@@ -98,7 +98,7 @@ std::string traceToString(simgrid::mc::RecordTrace const& trace)
 
 void dumpRecordPath()
 {
-  RecordTrace trace = mc_model_checker->getChecker()->getRecordTrace();
+  RecordTrace trace = mc_model_checker->getChecker()->get_record_trace();
   XBT_INFO("Path = %s", traceToString(trace).c_str());
 }
 

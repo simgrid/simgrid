@@ -89,7 +89,7 @@ void MC_show_deadlock()
   XBT_INFO("*** DEAD-LOCK DETECTED ***");
   XBT_INFO("**************************");
   XBT_INFO("Counter-example execution trace:");
-  for (auto const& s : mc_model_checker->getChecker()->getTextualTrace())
+  for (auto const& s : mc_model_checker->getChecker()->get_textual_trace())
     XBT_INFO("  %s", s.c_str());
   simgrid::mc::dumpRecordPath();
   simgrid::mc::session->log_state();

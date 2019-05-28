@@ -117,7 +117,7 @@ void Session::restore_initial_state()
 
 void Session::log_state()
 {
-  mc_model_checker->getChecker()->logState();
+  mc_model_checker->getChecker()->log_state();
 
   if (not _sg_mc_dot_output_file.get().empty()) {
     fprintf(dot_output, "}\n");

@@ -38,7 +38,7 @@ static int snapshot_compare(simgrid::mc::State* state1, simgrid::mc::State* stat
   return snapshot_compare(s1, s2);
 }
 
-void SafetyChecker::checkNonTermination(simgrid::mc::State* current_state)
+void SafetyChecker::check_non_termination(simgrid::mc::State* current_state)
 {
   for (auto state = stack_.rbegin(); state != stack_.rend(); ++state)
     if (snapshot_compare(state->get(), current_state) == 0) {
@@ -47,7 +47,7 @@ void SafetyChecker::checkNonTermination(simgrid::mc::State* current_state)
       XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
       XBT_INFO("******************************************");
       XBT_INFO("Counter-example execution trace:");
-      for (auto const& s : mc_model_checker->getChecker()->getTextualTrace())
+      for (auto const& s : mc_model_checker->getChecker()->get_textual_trace())
         XBT_INFO("  %s", s.c_str());
       simgrid::mc::dumpRecordPath();
       simgrid::mc::session->log_state();
@@ -56,7 +56,7 @@ void SafetyChecker::checkNonTermination(simgrid::mc::State* current_state)
     }
 }
 
-RecordTrace SafetyChecker::getRecordTrace() // override
+RecordTrace SafetyChecker::get_record_trace() // override
 {
   RecordTrace res;
   for (auto const& state : stack_)
@@ -64,7 +64,7 @@ RecordTrace SafetyChecker::getRecordTrace() // override
   return res;
 }
 
-std::vector<std::string> SafetyChecker::getTextualTrace() // override
+std::vector<std::string> SafetyChecker::get_textual_trace() // override
 {
   std::vector<std::string> trace;
   for (auto const& state : stack_) {
@@ -77,9 +77,9 @@ std::vector<std::string> SafetyChecker::getTextualTrace() // override
   return trace;
 }
 
-void SafetyChecker::logState() // override
+void SafetyChecker::log_state() // override
 {
-  XBT_INFO("Expanded states = %lu", expandedStatesCount_);
+  XBT_INFO("Expanded states = %lu", expanded_states_count_);
   XBT_INFO("Visited states = %lu", mc_model_checker->visited_states);
   XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
 }
@@ -109,11 +109,11 @@ void SafetyChecker::run()
     }
 
     // Backtrack if we are revisiting a state we saw previously
-    if (visitedState_ != nullptr) {
+    if (visited_state_ != nullptr) {
       XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.",
-                visitedState_->original_num == -1 ? visitedState_->num : visitedState_->original_num);
+                visited_state_->original_num == -1 ? visited_state_->num : visited_state_->original_num);
 
-      visitedState_ = nullptr;
+      visited_state_ = nullptr;
       this->backtrack();
       continue;
     }
@@ -143,21 +143,21 @@ void SafetyChecker::run()
     mc_model_checker->executed_transitions++;
 
     /* Actually answer the request: let execute the selected request (MCed does one step) */
-    this->getSession().execute(state->transition);
+    this->get_session().execute(state->transition);
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     std::unique_ptr<simgrid::mc::State> next_state =
-        std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expandedStatesCount_));
+        std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expanded_states_count_));
 
     if (_sg_mc_termination)
-      this->checkNonTermination(next_state.get());
+      this->check_non_termination(next_state.get());
 
     /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction) */
     if (_sg_mc_max_visited_states > 0)
-      visitedState_ = visitedStates_.addVisitedState(expandedStatesCount_, next_state.get(), true);
+      visited_state_ = visited_states_.addVisitedState(expanded_states_count_, next_state.get(), true);
 
     /* If this is a new state (or if we don't care about state-equality reduction) */
-    if (visitedState_ == nullptr) {
+    if (visited_state_ == nullptr) {
 
       /* Get an enabled process and insert it in the interleave set of the next state */
       for (auto& remoteActor : mc_model_checker->process().actors()) {
@@ -175,7 +175,7 @@ void SafetyChecker::run()
 
     } else if (dot_output != nullptr)
       std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num,
-                   visitedState_->original_num == -1 ? visitedState_->num : visitedState_->original_num,
+                   visited_state_->original_num == -1 ? visited_state_->num : visited_state_->original_num,
                    req_str.c_str());
 
     stack_.push_back(std::move(next_state));
@@ -257,7 +257,7 @@ void SafetyChecker::backtrack()
       /* We found a back-tracking point, let's loop */
       XBT_DEBUG("Back-tracking to state %d at depth %zu", state->num, stack_.size() + 1);
       stack_.push_back(std::move(state));
-      this->restoreState();
+      this->restore_state();
       XBT_DEBUG("Back-tracking to state %d at depth %zu done", stack_.back()->num, stack_.size());
       break;
     } else {
@@ -266,7 +266,7 @@ void SafetyChecker::backtrack()
   }
 }
 
-void SafetyChecker::restoreState()
+void SafetyChecker::restore_state()
 {
   /* Intermediate backtracking */
   simgrid::mc::State* last_state = stack_.back().get();
@@ -308,7 +308,7 @@ SafetyChecker::SafetyChecker(Session& s) : Checker(s)
   XBT_DEBUG("Starting the safety algorithm");
 
   std::unique_ptr<simgrid::mc::State> initial_state =
-      std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expandedStatesCount_));
+      std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expanded_states_count_));
 
   XBT_DEBUG("**************************************************");
   XBT_DEBUG("Initial state");

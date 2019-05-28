@@ -282,7 +282,7 @@ CommunicationDeterminismChecker::CommunicationDeterminismChecker(Session& s) : C
 
 CommunicationDeterminismChecker::~CommunicationDeterminismChecker() = default;
 
-RecordTrace CommunicationDeterminismChecker::getRecordTrace() // override
+RecordTrace CommunicationDeterminismChecker::get_record_trace() // override
 {
   RecordTrace res;
   for (auto const& state : stack_)
@@ -290,7 +290,7 @@ RecordTrace CommunicationDeterminismChecker::getRecordTrace() // override
   return res;
 }
 
-std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // override
+std::vector<std::string> CommunicationDeterminismChecker::get_textual_trace() // override
 {
   std::vector<std::string> trace;
   for (auto const& state : stack_) {
@@ -302,7 +302,7 @@ std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // o
   return trace;
 }
 
-void CommunicationDeterminismChecker::logState() // override
+void CommunicationDeterminismChecker::log_state() // override
 {
   if (_sg_mc_comms_determinism && not this->recv_deterministic && this->send_deterministic) {
     XBT_INFO("******************************************************");
@@ -315,7 +315,7 @@ void CommunicationDeterminismChecker::logState() // override
     XBT_INFO("******************************************************");
     XBT_INFO("%s", this->send_diff);
   }
-  XBT_INFO("Expanded states = %lu", expandedStatesCount_);
+  XBT_INFO("Expanded states = %lu", expanded_states_count_);
   XBT_INFO("Visited states = %lu", mc_model_checker->visited_states);
   XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
   XBT_INFO("Send-deterministic : %s", not this->send_deterministic ? "No" : "Yes");
@@ -331,7 +331,7 @@ void CommunicationDeterminismChecker::prepare()
   incomplete_communications_pattern.resize(maxpid);
 
   std::unique_ptr<simgrid::mc::State> initial_state =
-      std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expandedStatesCount_));
+      std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expanded_states_count_));
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
@@ -451,7 +451,7 @@ void CommunicationDeterminismChecker::real_run()
 
       /* Create the new expanded state */
       std::unique_ptr<simgrid::mc::State> next_state =
-          std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expandedStatesCount_));
+          std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expanded_states_count_));
 
       /* If comm determinism verification, we cannot stop the exploration if some communications are not finished (at
        * least, data are transferred). These communications  are incomplete and they cannot be analyzed and compared
@@ -459,7 +459,7 @@ void CommunicationDeterminismChecker::real_run()
       bool compare_snapshots = all_communications_are_finished() && this->initial_communications_pattern_done;
 
       if (_sg_mc_max_visited_states != 0)
-        visited_state = visitedStates_.addVisitedState(expandedStatesCount_, next_state.get(), compare_snapshots);
+        visited_state = visited_states_.addVisitedState(expanded_states_count_, next_state.get(), compare_snapshots);
       else
         visited_state = nullptr;
 
