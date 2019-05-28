@@ -138,7 +138,7 @@ void LivenessChecker::replay()
   }
 
   /* Restore the initial state */
-  simgrid::mc::session->restoreInitialState();
+  simgrid::mc::session->restore_initial_state();
 
   /* Traverse the stack from the initial state and re-execute the transitions */
   int depth = 1;
@@ -261,7 +261,7 @@ void LivenessChecker::showAcceptanceCycle(std::size_t depth)
   for (auto const& s : this->getTextualTrace())
     XBT_INFO("  %s", s.c_str());
   simgrid::mc::dumpRecordPath();
-  simgrid::mc::session->logState();
+  simgrid::mc::session->log_state();
   XBT_INFO("Counter-example depth: %zu", depth);
 }
 
@@ -439,7 +439,7 @@ void LivenessChecker::run()
   }
 
   XBT_INFO("No property violation found.");
-  simgrid::mc::session->logState();
+  simgrid::mc::session->log_state();
 }
 
 Checker* createLivenessChecker(Session& s)

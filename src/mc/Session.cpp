@@ -86,9 +86,9 @@ Session::Session(pid_t pid, int socket)
 #else
   process->privatized(false);
 #endif
-  modelChecker_.reset(new simgrid::mc::ModelChecker(std::move(process)));
+  model_checker_.reset(new simgrid::mc::ModelChecker(std::move(process)));
   xbt_assert(mc_model_checker == nullptr);
-  mc_model_checker = modelChecker_.get();
+  mc_model_checker = model_checker_.get();
   mc_model_checker->start();
 }
 
@@ -99,23 +99,23 @@ Session::~Session()
 
 void Session::initialize()
 {
-  xbt_assert(initialSnapshot_ == nullptr);
+  xbt_assert(initial_snapshot_ == nullptr);
   mc_model_checker->wait_for_requests();
-  initialSnapshot_ = simgrid::mc::take_snapshot(0);
+  initial_snapshot_ = simgrid::mc::take_snapshot(0);
 }
 
 void Session::execute(Transition const& transition)
 {
-  modelChecker_->handle_simcall(transition);
-  modelChecker_->wait_for_requests();
+  model_checker_->handle_simcall(transition);
+  model_checker_->wait_for_requests();
 }
 
-void Session::restoreInitialState()
+void Session::restore_initial_state()
 {
-  this->initialSnapshot_->restore(&mc_model_checker->process());
+  this->initial_snapshot_->restore(&mc_model_checker->process());
 }
 
-void Session::logState()
+void Session::log_state()
 {
   mc_model_checker->getChecker()->logState();
 
@@ -172,10 +172,10 @@ Session* Session::spawnvp(const char *file, char *const argv[])
 
 void Session::close()
 {
-  initialSnapshot_ = nullptr;
-  if (modelChecker_) {
-    modelChecker_->shutdown();
-    modelChecker_ = nullptr;
+  initial_snapshot_ = nullptr;
+  if (model_checker_) {
+    model_checker_->shutdown();
+    model_checker_   = nullptr;
     mc_model_checker = nullptr;
   }
 }

@@ -50,7 +50,7 @@ void SafetyChecker::checkNonTermination(simgrid::mc::State* current_state)
       for (auto const& s : mc_model_checker->getChecker()->getTextualTrace())
         XBT_INFO("  %s", s.c_str());
       simgrid::mc::dumpRecordPath();
-      simgrid::mc::session->logState();
+      simgrid::mc::session->log_state();
 
       throw simgrid::mc::TerminationError();
     }
@@ -182,7 +182,7 @@ void SafetyChecker::run()
   }
 
   XBT_INFO("No property violation found.");
-  simgrid::mc::session->logState();
+  simgrid::mc::session->log_state();
 }
 
 void SafetyChecker::backtrack()
@@ -276,7 +276,7 @@ void SafetyChecker::restoreState()
   }
 
   /* Restore the initial state */
-  simgrid::mc::session->restoreInitialState();
+  simgrid::mc::session->restore_initial_state();
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (std::unique_ptr<simgrid::mc::State> const& state : stack_) {

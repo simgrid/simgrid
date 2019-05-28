@@ -153,7 +153,7 @@ static void MC_report_crash(int status)
   for (auto const& s : mc_model_checker->getChecker()->getTextualTrace())
     XBT_INFO("  %s", s.c_str());
   simgrid::mc::dumpRecordPath();
-  simgrid::mc::session->logState();
+  simgrid::mc::session->log_state();
   XBT_INFO("Stack trace:");
   mc_model_checker->process().dumpStack();
 }
@@ -167,7 +167,7 @@ static void MC_report_assertion_error()
   for (auto const& s : mc_model_checker->getChecker()->getTextualTrace())
     XBT_INFO("  %s", s.c_str());
   simgrid::mc::dumpRecordPath();
-  simgrid::mc::session->logState();
+  simgrid::mc::session->log_state();
 }
 
 bool ModelChecker::handle_message(char* buffer, ssize_t size)

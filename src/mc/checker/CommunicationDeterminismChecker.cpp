@@ -143,7 +143,7 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, si
         XBT_INFO("%s", this->send_diff);
         xbt_free(this->send_diff);
         this->send_diff = nullptr;
-        simgrid::mc::session->logState();
+        simgrid::mc::session->log_state();
         mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
       } else if (_sg_mc_comms_determinism && (not this->send_deterministic && not this->recv_deterministic)) {
         XBT_INFO("****************************************************");
@@ -155,7 +155,7 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, si
         this->send_diff = nullptr;
         xbt_free(this->recv_diff);
         this->recv_diff = nullptr;
-        simgrid::mc::session->logState();
+        simgrid::mc::session->log_state();
         mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
       }
     }
@@ -365,7 +365,7 @@ void CommunicationDeterminismChecker::restoreState()
   }
 
   /* Restore the initial state */
-  simgrid::mc::session->restoreInitialState();
+  simgrid::mc::session->restore_initial_state();
 
   unsigned n = MC_smx_get_maxpid();
   assert(n == incomplete_communications_pattern.size());
@@ -524,7 +524,7 @@ void CommunicationDeterminismChecker::real_run()
     }
   }
 
-  simgrid::mc::session->logState();
+  simgrid::mc::session->log_state();
 }
 
 void CommunicationDeterminismChecker::run()

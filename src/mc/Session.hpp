@@ -23,8 +23,8 @@ namespace mc {
  */
 class Session {
 private:
-  std::unique_ptr<ModelChecker> modelChecker_;
-  std::shared_ptr<simgrid::mc::Snapshot> initialSnapshot_;
+  std::unique_ptr<ModelChecker> model_checker_;
+  std::shared_ptr<simgrid::mc::Snapshot> initial_snapshot_;
 
   Session(pid_t pid, int socket);
 
@@ -38,9 +38,9 @@ public:
 
   void initialize();
   void execute(Transition const& transition);
-  void logState();
+  void log_state();
 
-  void restoreInitialState();
+  void restore_initial_state();
 
   // static constructors
 
