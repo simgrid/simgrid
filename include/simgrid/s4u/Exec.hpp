@@ -97,7 +97,7 @@ class XBT_PUBLIC ExecPar : public Exec {
   std::vector<double> bytes_amounts_;
   explicit ExecPar(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                    const std::vector<double>& bytes_amounts);
-  ExecPtr set_host(Host* host) override { return this; }
+  ExecPtr set_host(Host* host) override { THROW_UNIMPLEMENTED; }
 
 public:
   ~ExecPar() = default;
