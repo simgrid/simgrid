@@ -8,6 +8,7 @@
 #define MAP_POPULATE MAP_PREFAULT_READ
 #endif
 
+#include "src/internal_config.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
