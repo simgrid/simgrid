@@ -50,7 +50,6 @@ public:
       , frame_base(nullptr)
       , address_space(nullptr)
       , object_info(nullptr)
-      , process_index(simgrid::mc::ProcessIndexMissing)
   {
   }
   /** CPU state (registers) */
@@ -59,7 +58,6 @@ public:
   /** Address space used to read memory */
   simgrid::mc::AddressSpace* address_space;
   simgrid::mc::ObjectInformation* object_info;
-  int process_index;
 };
 
 /** When an error happens in the execution of a DWARF expression */

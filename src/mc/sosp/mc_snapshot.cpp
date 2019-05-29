@@ -107,7 +107,6 @@ void simgrid::mc::Snapshot::snapshot_regions(simgrid::mc::RemoteClient* process)
 
   add_region(simgrid::mc::RegionType::Heap, nullptr, start_heap, start_heap, (char*)end_heap - (char*)start_heap);
   heap_bytes_used_     = mmalloc_get_bytes_used_remote(heap->heaplimit, process->get_malloc_info());
-  privatization_index_ = simgrid::mc::ProcessIndexMissing;
 }
 
 /** @brief Checks whether the variable is in scope for a given IP.
@@ -128,7 +127,7 @@ static bool valid_variable(simgrid::mc::Variable* var, simgrid::mc::Frame* scope
     return true;
 }
 
-static void fill_local_variables_values(mc_stack_frame_t stack_frame, simgrid::mc::Frame* scope, int process_index,
+static void fill_local_variables_values(mc_stack_frame_t stack_frame, simgrid::mc::Frame* scope,
                                         std::vector<s_local_variable_t>& result)
 {
   if (not scope || not scope->range.contain(stack_frame->ip))
@@ -151,7 +150,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame, simgrid::m
     else if (not current_variable.location_list.empty()) {
       simgrid::dwarf::Location location = simgrid::dwarf::resolve(
           current_variable.location_list, current_variable.object_info, &(stack_frame->unw_cursor),
-          (void*)stack_frame->frame_base, &mc_model_checker->process(), process_index);
+          (void*)stack_frame->frame_base, &mc_model_checker->process());
 
       if (not location.in_memory())
         xbt_die("Cannot handle non-address variable");
@@ -165,15 +164,14 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame, simgrid::m
 
   // Recursive processing of nested scopes:
   for (simgrid::mc::Frame& nested_scope : scope->scopes)
-    fill_local_variables_values(stack_frame, &nested_scope, process_index, result);
+    fill_local_variables_values(stack_frame, &nested_scope, result);
 }
 
-static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_mc_stack_frame_t>& stack_frames,
-                                                                  int process_index)
+static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_mc_stack_frame_t>& stack_frames)
 {
   std::vector<s_local_variable_t> variables;
   for (s_mc_stack_frame_t& stack_frame : stack_frames)
-    fill_local_variables_values(&stack_frame, stack_frame.frame, process_index, variables);
+    fill_local_variables_values(&stack_frame, stack_frame.frame, variables);
   return variables;
 }
 
@@ -244,8 +242,7 @@ void simgrid::mc::Snapshot::snapshot_stacks(simgrid::mc::RemoteClient* process)
     st.context.initialize(&mc_model_checker->process(), &context);
 
     st.stack_frames    = unwind_stack_frames(&st.context);
-    st.local_variables = get_local_variables_values(st.stack_frames, stack.process_index);
-    st.process_index   = stack.process_index;
+    st.local_variables = get_local_variables_values(st.stack_frames);
 
     unw_word_t sp = st.stack_frames[0].sp;
 
@@ -266,8 +263,7 @@ static void snapshot_handle_ignore(simgrid::mc::Snapshot* snapshot)
     ignored_data.start = (void*)region.addr;
     ignored_data.data.resize(region.size);
     // TODO, we should do this once per privatization segment:
-    snapshot->process()->read_bytes(ignored_data.data.data(), region.size, remote(region.addr),
-                                    simgrid::mc::ProcessIndexDisabled);
+    snapshot->process()->read_bytes(ignored_data.data.data(), region.size, remote(region.addr));
     snapshot->ignored_data_.push_back(std::move(ignored_data));
   }
 
@@ -286,7 +282,6 @@ Snapshot::Snapshot(int _num_state, RemoteClient* process)
     , num_state_(_num_state)
     , heap_bytes_used_(0)
     , enabled_processes_()
-    , privatization_index_(0)
     , hash_(0)
 {
   for (auto const& p : process->actors())
@@ -321,10 +316,9 @@ void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void*
   snapshot_regions_.push_back(std::unique_ptr<simgrid::mc::RegionSnapshot>(std::move(region)));
 }
 
-const void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, int process_index,
-                                 ReadOptions options) const
+const void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, ReadOptions options) const
 {
-  RegionSnapshot* region = this->get_region((void*)address.address(), process_index);
+  RegionSnapshot* region = this->get_region((void*)address.address());
   if (region) {
     const void* res = MC_region_read(region, buffer, (void*)address.address(), size);
     if (buffer == res || options & ReadOptions::lazy())
@@ -334,14 +328,13 @@ const void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void>
       return buffer;
     }
   } else
-    return this->process()->read_bytes(buffer, size, address, process_index, options);
+    return this->process()->read_bytes(buffer, size, address, options);
 }
 /** @brief Find the snapshoted region from a pointer
  *
  *  @param addr     Pointer
- *  @param process_index rank requesting the region
  * */
-RegionSnapshot* Snapshot::get_region(const void* addr, int process_index) const
+RegionSnapshot* Snapshot::get_region(const void* addr) const
 {
   size_t n = snapshot_regions_.size();
   for (size_t i = 0; i != n; ++i) {
@@ -356,12 +349,12 @@ RegionSnapshot* Snapshot::get_region(const void* addr, int process_index) const
 }
 
 /** @brief Find the snapshoted region from a pointer, with a hinted_region */
-RegionSnapshot* Snapshot::get_region(const void* addr, int process_index, RegionSnapshot* hinted_region) const
+RegionSnapshot* Snapshot::get_region(const void* addr, RegionSnapshot* hinted_region) const
 {
   if (hinted_region->contain(simgrid::mc::remote(addr)))
     return hinted_region;
   else
-    return get_region(addr, process_index);
+    return get_region(addr);
 }
 
 void Snapshot::restore(RemoteClient* process)

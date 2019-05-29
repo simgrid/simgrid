@@ -34,7 +34,7 @@ ChunkedData::ChunkedData(PageStore& store, AddressSpace& as, RemotePtr<void> add
        - move the segments in shared memory (this will break `fork` however)
     */
 
-    as.read_bytes(buffer.data(), xbt_pagesize, page, simgrid::mc::ProcessIndexDisabled);
+    as.read_bytes(buffer.data(), xbt_pagesize, page);
 
     pagenos_[i] = store_->store_page(buffer.data());
   }

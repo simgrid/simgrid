@@ -80,7 +80,7 @@ public:
   RemoteClient& operator=(RemoteClient&&) = delete;
 
   // Read memory:
-  const void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, int process_index = ProcessIndexAny,
+  const void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
                          ReadOptions options = ReadOptions::none()) const override;
 
   void read_variable(const char* name, void* target, size_t size) const;

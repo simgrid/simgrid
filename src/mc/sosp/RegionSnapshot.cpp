@@ -27,8 +27,7 @@ RegionDense::RegionDense(RegionType region_type, void* start_addr, void* permane
 {
   flat_data_ = Buffer::malloc(size);
 
-  mc_model_checker->process().read_bytes(flat_data_.get(), size, remote(permanent_addr),
-                                         simgrid::mc::ProcessIndexDisabled);
+  mc_model_checker->process().read_bytes(flat_data_.get(), size, remote(permanent_addr));
 
   storage_type_ = StorageType::Flat;
   page_numbers_.clear();

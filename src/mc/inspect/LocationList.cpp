@@ -20,15 +20,13 @@ namespace dwarf {
 
 /** Resolve a location expression */
 Location resolve(simgrid::dwarf::DwarfExpression const& expression, simgrid::mc::ObjectInformation* object_info,
-                 unw_cursor_t* c, void* frame_pointer_address, simgrid::mc::AddressSpace* address_space,
-                 int process_index)
+                 unw_cursor_t* c, void* frame_pointer_address, simgrid::mc::AddressSpace* address_space)
 {
   simgrid::dwarf::ExpressionContext context;
   context.frame_base    = frame_pointer_address;
   context.cursor        = c;
   context.address_space = address_space;
   context.object_info   = object_info;
-  context.process_index = process_index;
 
   if (not expression.empty() && expression[0].atom >= DW_OP_reg0 && expression[0].atom <= DW_OP_reg31) {
     int dwarf_register = expression[0].atom - DW_OP_reg0;
@@ -52,8 +50,7 @@ static simgrid::dwarf::DwarfExpression const* find_expression(simgrid::dwarf::Lo
 }
 
 Location resolve(simgrid::dwarf::LocationList const& locations, simgrid::mc::ObjectInformation* object_info,
-                 unw_cursor_t* c, void* frame_pointer_address, simgrid::mc::AddressSpace* address_space,
-                 int process_index)
+                 unw_cursor_t* c, void* frame_pointer_address, simgrid::mc::AddressSpace* address_space)
 {
   unw_word_t ip = 0;
   if (c && unw_get_reg(c, UNW_REG_IP, &ip))
@@ -61,7 +58,7 @@ Location resolve(simgrid::dwarf::LocationList const& locations, simgrid::mc::Obj
   simgrid::dwarf::DwarfExpression const* expression = find_expression(locations, ip);
   if (not expression)
     xbt_die("Could not resolve location");
-  return simgrid::dwarf::resolve(*expression, object_info, c, frame_pointer_address, address_space, process_index);
+  return simgrid::dwarf::resolve(*expression, object_info, c, frame_pointer_address, address_space);
 }
 
 LocationList location_list(simgrid::mc::ObjectInformation& info, Dwarf_Attribute& attr)

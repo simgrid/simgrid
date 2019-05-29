@@ -22,12 +22,8 @@ struct HeapArea;
 struct ProcessComparisonState;
 struct StateComparator;
 
-static int compare_heap_area(
-  StateComparator& state,
-  int process_index, const void *area1, const void* area2,
-  Snapshot* snapshot1, Snapshot* snapshot2,
-  HeapLocationPairs* previous, Type* type, int pointer_level);
-
+static int compare_heap_area(StateComparator& state, const void* area1, const void* area2, Snapshot* snapshot1,
+                             Snapshot* snapshot2, HeapLocationPairs* previous, Type* type, int pointer_level);
 }
 }
 
@@ -305,10 +301,10 @@ int mmalloc_compare_heap(
   void* heapinfo_address = &((xbt_mheap_t) process->heap_address)->heapinfo;
 
   // This is in snapshot do not use them directly:
-  const malloc_info* heapinfos1 = snapshot1->read<malloc_info*>(
-      RemotePtr<malloc_info*>((std::uint64_t)heapinfo_address), simgrid::mc::ProcessIndexMissing);
-  const malloc_info* heapinfos2 = snapshot2->read<malloc_info*>(
-      RemotePtr<malloc_info*>((std::uint64_t)heapinfo_address), simgrid::mc::ProcessIndexMissing);
+  const malloc_info* heapinfos1 =
+      snapshot1->read<malloc_info*>(RemotePtr<malloc_info*>((std::uint64_t)heapinfo_address));
+  const malloc_info* heapinfos2 =
+      snapshot2->read<malloc_info*>(RemotePtr<malloc_info*>((std::uint64_t)heapinfo_address));
 
   while (i1 < state.heaplimit) {
 
@@ -349,8 +345,7 @@ int mmalloc_compare_heap(
       /* Try first to associate to same block in the other heap */
       if (heapinfo2->type == heapinfo1->type && state.equals_to2_(i1, 0).valid_ == 0) {
         void* addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
-        int res_compare = compare_heap_area(state, simgrid::mc::ProcessIndexMissing, addr_block1, addr_block2,
-                                            snapshot1, snapshot2, nullptr, nullptr, 0);
+        int res_compare = compare_heap_area(state, addr_block1, addr_block2, snapshot1, snapshot2, nullptr, nullptr, 0);
         if (res_compare != 1) {
           for (size_t k = 1; k < heapinfo2->busy_block.size; k++)
             state.equals_to2_(i1 + k, 0) = HeapArea(i1, -1);
@@ -382,8 +377,7 @@ int mmalloc_compare_heap(
           continue;
         }
 
-        int res_compare = compare_heap_area(state, simgrid::mc::ProcessIndexMissing, addr_block1, addr_block2,
-                                            snapshot1, snapshot2, nullptr, nullptr, 0);
+        int res_compare = compare_heap_area(state, addr_block1, addr_block2, snapshot1, snapshot2, nullptr, nullptr, 0);
 
         if (res_compare != 1) {
           for (size_t k = 1; k < heapinfo2b->busy_block.size; k++)
@@ -422,8 +416,7 @@ int mmalloc_compare_heap(
         if (heapinfo2->type == heapinfo1->type && not state.equals_to2_(i1, j1).valid_) {
           void* addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
           void* addr_frag2  = (void*)((char*)addr_block2 + (j1 << heapinfo2->type));
-          int res_compare = compare_heap_area(state, simgrid::mc::ProcessIndexMissing, addr_frag1, addr_frag2,
-                                              snapshot1, snapshot2, nullptr, nullptr, 0);
+          int res_compare = compare_heap_area(state, addr_frag1, addr_frag2, snapshot1, snapshot2, nullptr, nullptr, 0);
           if (res_compare != 1)
             equal = true;
         }
@@ -461,8 +454,8 @@ int mmalloc_compare_heap(
             void* addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
             void* addr_frag2  = (void*)((char*)addr_block2 + (j2 << heapinfo2b->type));
 
-            int res_compare = compare_heap_area(state, simgrid::mc::ProcessIndexMissing, addr_frag1, addr_frag2,
-                                                snapshot2, snapshot2, nullptr, nullptr, 0);
+            int res_compare =
+                compare_heap_area(state, addr_frag1, addr_frag2, snapshot2, snapshot2, nullptr, nullptr, 0);
             if (res_compare != 1) {
               equal = true;
               break;
@@ -547,13 +540,10 @@ int mmalloc_compare_heap(
  * @param size
  * @param check_ignore
  */
-static int compare_heap_area_without_type(
-  simgrid::mc::StateComparator& state, int process_index,
-  const void *real_area1, const void *real_area2,
-  simgrid::mc::Snapshot* snapshot1,
-  simgrid::mc::Snapshot* snapshot2,
-  HeapLocationPairs* previous, int size,
-  int check_ignore)
+static int compare_heap_area_without_type(simgrid::mc::StateComparator& state, const void* real_area1,
+                                          const void* real_area2, simgrid::mc::Snapshot* snapshot1,
+                                          simgrid::mc::Snapshot* snapshot2, HeapLocationPairs* previous, int size,
+                                          int check_ignore)
 {
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
   simgrid::mc::RegionSnapshot* heap_region1 = MC_get_heap_region(snapshot1);
@@ -583,10 +573,8 @@ static int compare_heap_area_without_type(
     if (MC_snapshot_region_memcmp(((char *) real_area1) + i, heap_region1, ((char *) real_area2) + i, heap_region2, 1) != 0) {
 
       int pointer_align = (i / sizeof(void *)) * sizeof(void *);
-      const void* addr_pointed1 = snapshot1->read(
-        remote((void**)((char *) real_area1 + pointer_align)), process_index);
-      const void* addr_pointed2 = snapshot2->read(
-        remote((void**)((char *) real_area2 + pointer_align)), process_index);
+      const void* addr_pointed1 = snapshot1->read(remote((void**)((char*)real_area1 + pointer_align)));
+      const void* addr_pointed2 = snapshot2->read(remote((void**)((char*)real_area2 + pointer_align)));
 
       if (process->in_maestro_stack(remote(addr_pointed1))
         && process->in_maestro_stack(remote(addr_pointed2))) {
@@ -599,9 +587,8 @@ static int compare_heap_area_without_type(
            && addr_pointed2 > state.std_heap_copy.heapbase
            && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)) {
         // Both addreses are in the heap:
-        int res_compare = compare_heap_area(state ,process_index,
-          addr_pointed1, addr_pointed2,
-          snapshot1, snapshot2, previous, nullptr, 0);
+        int res_compare =
+            compare_heap_area(state, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, nullptr, 0);
         if (res_compare == 1)
           return res_compare;
         i = pointer_align + sizeof(void *);
@@ -631,14 +618,10 @@ static int compare_heap_area_without_type(
  * @param pointer_level
  * @return               0 (same), 1 (different), -1 (unknown)
  */
-static int compare_heap_area_with_type(
-  simgrid::mc::StateComparator& state, int process_index,
-  const void *real_area1, const void *real_area2,
-  simgrid::mc::Snapshot* snapshot1,
-  simgrid::mc::Snapshot* snapshot2,
-  HeapLocationPairs* previous, simgrid::mc::Type* type,
-  int area_size, int check_ignore,
-  int pointer_level)
+static int compare_heap_area_with_type(simgrid::mc::StateComparator& state, const void* real_area1,
+                                       const void* real_area2, simgrid::mc::Snapshot* snapshot1,
+                                       simgrid::mc::Snapshot* snapshot2, HeapLocationPairs* previous,
+                                       simgrid::mc::Type* type, int area_size, int check_ignore, int pointer_level)
 {
   do {
 
@@ -730,7 +713,7 @@ static int compare_heap_area_with_type(
         }
         for (int i = 0; i < type->element_count; i++) {
           // TODO, add support for variable stride (DW_AT_byte_stride)
-          int res = compare_heap_area_with_type(state, process_index, (char*)real_area1 + (i * elm_size),
+          int res = compare_heap_area_with_type(state, (char*)real_area1 + (i * elm_size),
                                                 (char*)real_area2 + (i * elm_size), snapshot1, snapshot2, previous,
                                                 type->subtype, subtype->byte_size, check_ignore, pointer_level);
           if (res == 1)
@@ -742,29 +725,29 @@ static int compare_heap_area_with_type(
       case DW_TAG_rvalue_reference_type:
       case DW_TAG_pointer_type:
         if (type->subtype && type->subtype->type == DW_TAG_subroutine_type) {
-          addr_pointed1 = snapshot1->read(remote((void**)real_area1), process_index);
-          addr_pointed2 = snapshot2->read(remote((void**)real_area2), process_index);
+          addr_pointed1 = snapshot1->read(remote((void**)real_area1));
+          addr_pointed2 = snapshot2->read(remote((void**)real_area2));
           return (addr_pointed1 != addr_pointed2);
         }
         pointer_level++;
         if (pointer_level <= 1) {
-          addr_pointed1 = snapshot1->read(remote((void**)real_area1), process_index);
-          addr_pointed2 = snapshot2->read(remote((void**)real_area2), process_index);
+          addr_pointed1 = snapshot1->read(remote((void**)real_area1));
+          addr_pointed2 = snapshot2->read(remote((void**)real_area2));
           if (addr_pointed1 > state.std_heap_copy.heapbase && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1) &&
               addr_pointed2 > state.std_heap_copy.heapbase && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2))
-            return compare_heap_area(state, process_index, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous,
-                                     type->subtype, pointer_level);
+            return compare_heap_area(state, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, type->subtype,
+                                     pointer_level);
           else
             return (addr_pointed1 != addr_pointed2);
         }
         for (size_t i = 0; i < (area_size / sizeof(void*)); i++) {
-          addr_pointed1 = snapshot1->read(remote((void**)((char*)real_area1 + i * sizeof(void*))), process_index);
-          addr_pointed2 = snapshot2->read(remote((void**)((char*)real_area2 + i * sizeof(void*))), process_index);
+          addr_pointed1 = snapshot1->read(remote((void**)((char*)real_area1 + i * sizeof(void*))));
+          addr_pointed2 = snapshot2->read(remote((void**)((char*)real_area2 + i * sizeof(void*))));
           int res;
           if (addr_pointed1 > state.std_heap_copy.heapbase && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1) &&
               addr_pointed2 > state.std_heap_copy.heapbase && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2))
-            res = compare_heap_area(state, process_index, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous,
-                                    type->subtype, pointer_level);
+            res = compare_heap_area(state, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, type->subtype,
+                                    pointer_level);
           else
             res = (addr_pointed1 != addr_pointed2);
           if (res == 1)
@@ -780,7 +763,7 @@ static int compare_heap_area_with_type(
           if (area_size <= type->byte_size || area_size % type->byte_size != 0)
             return -1;
           for (size_t i = 0; i < (size_t)(area_size / type->byte_size); i++) {
-            int res = compare_heap_area_with_type(state, process_index, (char*)real_area1 + i * type->byte_size,
+            int res = compare_heap_area_with_type(state, (char*)real_area1 + i * type->byte_size,
                                                   (char*)real_area2 + i * type->byte_size, snapshot1, snapshot2,
                                                   previous, type, -1, check_ignore, 0);
             if (res == 1)
@@ -789,12 +772,12 @@ static int compare_heap_area_with_type(
         } else {
           for (simgrid::mc::Member& member : type->members) {
             // TODO, optimize this? (for the offset case)
-            void* real_member1 = simgrid::dwarf::resolve_member(real_area1, type, &member,
-                                                                (simgrid::mc::AddressSpace*)snapshot1, process_index);
-            void* real_member2 = simgrid::dwarf::resolve_member(real_area2, type, &member,
-                                                                (simgrid::mc::AddressSpace*)snapshot2, process_index);
-            int res = compare_heap_area_with_type(state, process_index, real_member1, real_member2, snapshot1,
-                                                  snapshot2, previous, member.type, -1, check_ignore, 0);
+            void* real_member1 =
+                simgrid::dwarf::resolve_member(real_area1, type, &member, (simgrid::mc::AddressSpace*)snapshot1);
+            void* real_member2 =
+                simgrid::dwarf::resolve_member(real_area2, type, &member, (simgrid::mc::AddressSpace*)snapshot2);
+            int res = compare_heap_area_with_type(state, real_member1, real_member2, snapshot1, snapshot2, previous,
+                                                  member.type, -1, check_ignore, 0);
             if (res == 1)
               return res;
           }
@@ -802,8 +785,8 @@ static int compare_heap_area_with_type(
         return 0;
 
       case DW_TAG_union_type:
-        return compare_heap_area_without_type(state, process_index, real_area1, real_area2, snapshot1, snapshot2,
-                                              previous, type->byte_size, check_ignore);
+        return compare_heap_area_without_type(state, real_area1, real_area2, snapshot1, snapshot2, previous,
+                                              type->byte_size, check_ignore);
 
       default:
         return 0;
@@ -823,9 +806,8 @@ static int compare_heap_area_with_type(
  * @param  area_size
  * @return                    DWARF type ID for given offset
  */
-static simgrid::mc::Type* get_offset_type(void *real_base_address, simgrid::mc::Type* type,
-                                 int offset, int area_size,
-                                 simgrid::mc::Snapshot* snapshot, int process_index)
+static simgrid::mc::Type* get_offset_type(void* real_base_address, simgrid::mc::Type* type, int offset, int area_size,
+                                          simgrid::mc::Snapshot* snapshot)
 {
 
   // Beginning of the block, the infered variable type if the type of the block:
@@ -851,7 +833,7 @@ static simgrid::mc::Type* get_offset_type(void *real_base_address, simgrid::mc::
         if (member.offset() == offset)
           return member.type;
       } else {
-        void* real_member = simgrid::dwarf::resolve_member(real_base_address, type, &member, snapshot, process_index);
+        void* real_member = simgrid::dwarf::resolve_member(real_base_address, type, &member, snapshot);
         if ((char*)real_member - (char*)real_base_address == offset)
           return member.type;
       }
@@ -876,13 +858,9 @@ static simgrid::mc::Type* get_offset_type(void *real_base_address, simgrid::mc::
  * @param pointer_level
  * @return 0 (same), 1 (different), -1
  */
-static
-int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
-                      const void *area1, const void *area2,
-                      simgrid::mc::Snapshot* snapshot1,
-                      simgrid::mc::Snapshot* snapshot2,
-                      HeapLocationPairs* previous,
-                      simgrid::mc::Type* type, int pointer_level)
+static int compare_heap_area(simgrid::mc::StateComparator& state, const void* area1, const void* area2,
+                             simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot* snapshot2,
+                             HeapLocationPairs* previous, simgrid::mc::Type* type, int pointer_level)
 {
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
@@ -905,8 +883,8 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
   // This is the address of std_heap->heapinfo in the application process:
   void* heapinfo_address = &((xbt_mheap_t) process->heap_address)->heapinfo;
 
-  const malloc_info* heapinfos1 = snapshot1->read(remote((const malloc_info**)heapinfo_address), process_index);
-  const malloc_info* heapinfos2 = snapshot2->read(remote((const malloc_info**)heapinfo_address), process_index);
+  const malloc_info* heapinfos1 = snapshot1->read(remote((const malloc_info**)heapinfo_address));
+  const malloc_info* heapinfos2 = snapshot2->read(remote((const malloc_info**)heapinfo_address));
 
   malloc_info heapinfo_temp1;
   malloc_info heapinfo_temp2;
@@ -1087,20 +1065,14 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
       offset2 = (char*)area2 - (char*)real_addr_frag2;
 
       if (state.types1_(block1, frag1) != nullptr && state.types2_(block2, frag2) != nullptr) {
-        new_type1 =
-            get_offset_type(real_addr_frag1, state.types1_(block1, frag1), offset1, size, snapshot1, process_index);
-        new_type2 =
-            get_offset_type(real_addr_frag2, state.types2_(block2, frag2), offset1, size, snapshot2, process_index);
+        new_type1 = get_offset_type(real_addr_frag1, state.types1_(block1, frag1), offset1, size, snapshot1);
+        new_type2 = get_offset_type(real_addr_frag2, state.types2_(block2, frag2), offset1, size, snapshot2);
       } else if (state.types1_(block1, frag1) != nullptr) {
-        new_type1 =
-            get_offset_type(real_addr_frag1, state.types1_(block1, frag1), offset1, size, snapshot1, process_index);
-        new_type2 =
-            get_offset_type(real_addr_frag2, state.types1_(block1, frag1), offset2, size, snapshot2, process_index);
+        new_type1 = get_offset_type(real_addr_frag1, state.types1_(block1, frag1), offset1, size, snapshot1);
+        new_type2 = get_offset_type(real_addr_frag2, state.types1_(block1, frag1), offset2, size, snapshot2);
       } else if (state.types2_(block2, frag2) != nullptr) {
-        new_type1 =
-            get_offset_type(real_addr_frag1, state.types2_(block2, frag2), offset1, size, snapshot1, process_index);
-        new_type2 =
-            get_offset_type(real_addr_frag2, state.types2_(block2, frag2), offset2, size, snapshot2, process_index);
+        new_type1 = get_offset_type(real_addr_frag1, state.types2_(block2, frag2), offset1, size, snapshot1);
+        new_type2 = get_offset_type(real_addr_frag2, state.types2_(block2, frag2), offset2, size, snapshot2);
       } else {
         if (match_pairs)
           state.match_equals(previous);
@@ -1155,11 +1127,11 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
   /* Start comparison */
   int res_compare;
   if (type)
-    res_compare = compare_heap_area_with_type(state, process_index, area1, area2, snapshot1, snapshot2, previous, type,
-                                              size, check_ignore, pointer_level);
+    res_compare = compare_heap_area_with_type(state, area1, area2, snapshot1, snapshot2, previous, type, size,
+                                              check_ignore, pointer_level);
   else
-    res_compare = compare_heap_area_without_type(state, process_index, area1, area2, snapshot1, snapshot2, previous,
-                                                 size, check_ignore);
+    res_compare =
+        compare_heap_area_without_type(state, area1, area2, snapshot1, snapshot2, previous, size, check_ignore);
 
   if (res_compare == 1)
     return res_compare;
@@ -1175,7 +1147,7 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
 /************************** Snapshot comparison *******************************/
 /******************************************************************************/
 
-static int compare_areas_with_type(simgrid::mc::StateComparator& state, int process_index, void* real_area1,
+static int compare_areas_with_type(simgrid::mc::StateComparator& state, void* real_area1,
                                    simgrid::mc::Snapshot* snapshot1, simgrid::mc::RegionSnapshot* region1,
                                    void* real_area2, simgrid::mc::Snapshot* snapshot2,
                                    simgrid::mc::RegionSnapshot* region2, simgrid::mc::Type* type, int pointer_level)
@@ -1235,8 +1207,8 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state, int proc
         }
         for (i = 0; i < type->element_count; i++) {
           size_t off = i * elm_size;
-          res        = compare_areas_with_type(state, process_index, (char*)real_area1 + off, snapshot1, region1,
-                                        (char*)real_area2 + off, snapshot2, region2, type->subtype, pointer_level);
+          res = compare_areas_with_type(state, (char*)real_area1 + off, snapshot1, region1, (char*)real_area2 + off,
+                                        snapshot2, region2, type->subtype, pointer_level);
           if (res == 1)
             return res;
         }
@@ -1267,8 +1239,8 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state, int proc
           if (not(addr_pointed2 > process->heap_address && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)))
             return 1;
           // The pointers are both in the heap:
-          return simgrid::mc::compare_heap_area(state, process_index, addr_pointed1, addr_pointed2, snapshot1,
-                                                snapshot2, nullptr, type->subtype, pointer_level);
+          return simgrid::mc::compare_heap_area(state, addr_pointed1, addr_pointed2, snapshot1, snapshot2, nullptr,
+                                                type->subtype, pointer_level);
 
         } else if (region1->contain(simgrid::mc::remote(addr_pointed1))) {
           // The pointers are both in the current object R/W segment:
@@ -1277,8 +1249,8 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state, int proc
           if (not type->type_id)
             return (addr_pointed1 != addr_pointed2);
           else
-            return compare_areas_with_type(state, process_index, addr_pointed1, snapshot1, region1, addr_pointed2,
-                                           snapshot2, region2, type->subtype, pointer_level);
+            return compare_areas_with_type(state, addr_pointed1, snapshot1, region1, addr_pointed2, snapshot2, region2,
+                                           type->subtype, pointer_level);
         } else {
 
           // TODO, We do not handle very well the case where
@@ -1290,12 +1262,12 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state, int proc
       case DW_TAG_structure_type:
       case DW_TAG_class_type:
         for (simgrid::mc::Member& member : type->members) {
-          void* member1 = simgrid::dwarf::resolve_member(real_area1, type, &member, snapshot1, process_index);
-          void* member2 = simgrid::dwarf::resolve_member(real_area2, type, &member, snapshot2, process_index);
-          simgrid::mc::RegionSnapshot* subregion1 = snapshot1->get_region(member1, process_index, region1); // region1 is hinted
-          simgrid::mc::RegionSnapshot* subregion2 = snapshot2->get_region(member2, process_index, region2); // region2 is hinted
-          res = compare_areas_with_type(state, process_index, member1, snapshot1, subregion1, member2, snapshot2,
-                                        subregion2, member.type, pointer_level);
+          void* member1 = simgrid::dwarf::resolve_member(real_area1, type, &member, snapshot1);
+          void* member2 = simgrid::dwarf::resolve_member(real_area2, type, &member, snapshot2);
+          simgrid::mc::RegionSnapshot* subregion1 = snapshot1->get_region(member1, region1); // region1 is hinted
+          simgrid::mc::RegionSnapshot* subregion2 = snapshot2->get_region(member2, region2); // region2 is hinted
+          res = compare_areas_with_type(state, member1, snapshot1, subregion1, member2, snapshot2, subregion2,
+                                        member.type, pointer_level);
           if (res == 1)
             return res;
         }
@@ -1312,7 +1284,7 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state, int proc
 }
 
 static int compare_global_variables(simgrid::mc::StateComparator& state, simgrid::mc::ObjectInformation* object_info,
-                                    int process_index, simgrid::mc::RegionSnapshot* r1, simgrid::mc::RegionSnapshot* r2,
+                                    simgrid::mc::RegionSnapshot* r1, simgrid::mc::RegionSnapshot* r2,
                                     simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot* snapshot2)
 {
   xbt_assert(r1 && r2, "Missing region.");
@@ -1329,10 +1301,8 @@ static int compare_global_variables(simgrid::mc::StateComparator& state, simgrid
       continue;
 
     simgrid::mc::Type* bvariable_type = current_var.type;
-    int res = compare_areas_with_type(state, process_index,
-                                (char *) current_var.address, snapshot1, r1,
-                                (char *) current_var.address, snapshot2, r2,
-                                bvariable_type, 0);
+    int res = compare_areas_with_type(state, (char*)current_var.address, snapshot1, r1, (char*)current_var.address,
+                                      snapshot2, r2, bvariable_type, 0);
     if (res == 1) {
       XBT_VERB("Global variable %s (%p) is different between snapshots",
                current_var.name.c_str(),
@@ -1345,7 +1315,6 @@ static int compare_global_variables(simgrid::mc::StateComparator& state, simgrid
 }
 
 static int compare_local_variables(simgrid::mc::StateComparator& state,
-                                   int process_index,
                                    simgrid::mc::Snapshot* snapshot1,
                                    simgrid::mc::Snapshot* snapshot2,
                                    mc_snapshot_stack_t stack1,
@@ -1379,10 +1348,9 @@ static int compare_local_variables(simgrid::mc::StateComparator& state,
       // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
 
         simgrid::mc::Type* subtype = current_var1->type;
-        int res =
-            compare_areas_with_type(state, process_index, current_var1->address, snapshot1,
-                                    snapshot1->get_region(current_var1->address, process_index), current_var2->address,
-                                    snapshot2, snapshot2->get_region(current_var2->address, process_index), subtype, 0);
+        int res                    = compare_areas_with_type(state, current_var1->address, snapshot1,
+                                          snapshot1->get_region(current_var1->address), current_var2->address,
+                                          snapshot2, snapshot2->get_region(current_var2->address), subtype, 0);
 
         if (res == 1) {
           // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
@@ -1457,14 +1425,10 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
     return 1;
 
   /* Init heap information used in heap comparison algorithm */
-  xbt_mheap_t heap1 = (xbt_mheap_t)s1->read_bytes(
-    alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
-    remote(process->heap_address),
-    simgrid::mc::ProcessIndexMissing, simgrid::mc::ReadOptions::lazy());
-  xbt_mheap_t heap2 = (xbt_mheap_t)s2->read_bytes(
-    alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
-    remote(process->heap_address),
-    simgrid::mc::ProcessIndexMissing, simgrid::mc::ReadOptions::lazy());
+  xbt_mheap_t heap1 = (xbt_mheap_t)s1->read_bytes(alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
+                                                  remote(process->heap_address), simgrid::mc::ReadOptions::lazy());
+  xbt_mheap_t heap2 = (xbt_mheap_t)s2->read_bytes(alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
+                                                  remote(process->heap_address), simgrid::mc::ReadOptions::lazy());
   int res_init = state_comparator->initHeapInformation(heap1, heap2, &s1->to_ignore_, &s2->to_ignore_);
 
   if (res_init == -1) {
@@ -1481,19 +1445,12 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
   }
 
   /* Stacks comparison */
-  int diff_local = 0;
+  // int diff_local = 0;
   for (unsigned int cursor = 0; cursor < s1->stacks_.size(); cursor++) {
     mc_snapshot_stack_t stack1 = &s1->stacks_[cursor];
     mc_snapshot_stack_t stack2 = &s2->stacks_[cursor];
 
-    if (stack1->process_index != stack2->process_index) {
-      diff_local = 1;
-      XBT_DEBUG("(%d - %d) Stacks with different process index (%i vs %i)", s1->num_state_, s2->num_state_,
-                stack1->process_index, stack2->process_index);
-    }
-    else diff_local = compare_local_variables(*state_comparator,
-      stack1->process_index, s1, s2, stack1, stack2);
-    if (diff_local > 0) {
+    if (compare_local_variables(*state_comparator, s1, s2, stack1, stack2) > 0) {
 #ifdef MC_DEBUG
       XBT_DEBUG("(%d - %d) Different local variables between stacks %d", num1,
                 num2, cursor + 1);
@@ -1526,8 +1483,7 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
     xbt_assert(region1->object_info());
 
     /* Compare global variables */
-    if (compare_global_variables(*state_comparator, region1->object_info(), simgrid::mc::ProcessIndexDisabled, region1,
-                                 region2, s1, s2)) {
+    if (compare_global_variables(*state_comparator, region1->object_info(), region1, region2, s1, s2)) {
 
 #ifdef MC_DEBUG
       std::string const& name = region1->object_info()->file_name;

@@ -22,8 +22,7 @@ static XBT_ALWAYS_INLINE void* mc_translate_address_region_chunked(uintptr_t add
   return (char*)snapshot_page + offset;
 }
 
-static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, simgrid::mc::RegionSnapshot* region,
-                                                           int process_index)
+static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, simgrid::mc::RegionSnapshot* region)
 {
   switch (region->storage_type()) {
     case simgrid::mc::StorageType::Flat: {
@@ -75,7 +74,6 @@ struct XBT_PRIVATE s_mc_snapshot_stack_t {
   std::vector<s_local_variable_t> local_variables;
   simgrid::mc::UnwindContext context;
   std::vector<s_mc_stack_frame_t> stack_frames;
-  int process_index;
 };
 typedef s_mc_snapshot_stack_t* mc_snapshot_stack_t;
 
@@ -90,10 +88,10 @@ public:
   /* Initialization */
 
   /* Regular use */
-  const void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, int process_index = ProcessIndexAny,
+  const void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
                          ReadOptions options = ReadOptions::none()) const override;
-  RegionSnapshot* get_region(const void* addr, int process_index) const;
-  RegionSnapshot* get_region(const void* addr, int process_index, RegionSnapshot* hinted_region) const;
+  RegionSnapshot* get_region(const void* addr) const;
+  RegionSnapshot* get_region(const void* addr, RegionSnapshot* hinted_region) const;
   void restore(RemoteClient* process);
 
   // To be private
@@ -101,7 +99,6 @@ public:
   std::size_t heap_bytes_used_;
   std::vector<std::unique_ptr<RegionSnapshot>> snapshot_regions_;
   std::set<pid_t> enabled_processes_;
-  int privatization_index_ = 0;
   std::vector<std::size_t> stack_sizes_;
   std::vector<s_mc_snapshot_stack_t> stacks_;
   std::vector<simgrid::mc::IgnoredHeapRegion> to_ignore_;
@@ -172,9 +169,7 @@ static XBT_ALWAYS_INLINE const void* MC_region_read(simgrid::mc::RegionSnapshot*
     }
 
     default:
-      // includes StorageType::NoData and StorageType::Privatized (we currently do not pass the process_index to this
-      // function so we assume that the privatized region has been resolved in the callers)
-      xbt_die("Storage type not supported");
+      xbt_die("StorageType::NoData not supported");
   }
 }
 

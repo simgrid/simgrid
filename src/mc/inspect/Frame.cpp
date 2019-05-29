@@ -16,7 +16,7 @@ namespace mc {
 void* Frame::frame_base(unw_cursor_t& unw_cursor) const
 {
   simgrid::dwarf::Location location =
-      simgrid::dwarf::resolve(frame_base_location, object_info, &unw_cursor, nullptr, nullptr, -1);
+      simgrid::dwarf::resolve(frame_base_location, object_info, &unw_cursor, nullptr, nullptr);
   if (location.in_memory())
     return location.address();
   else if (location.in_register()) {

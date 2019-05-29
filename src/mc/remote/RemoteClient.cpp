@@ -206,8 +206,7 @@ void RemoteClient::init()
     xbt_die("No heap information in the target process");
   if (not std_heap_var->address)
     xbt_die("No constant address for this variable");
-  this->read_bytes(&this->heap_address, sizeof(mdesc*), remote(std_heap_var->address),
-                   simgrid::mc::ProcessIndexDisabled);
+  this->read_bytes(&this->heap_address, sizeof(mdesc*), remote(std_heap_var->address));
 
   this->smx_actors_infos.clear();
   this->smx_dead_actors_infos.clear();
@@ -241,7 +240,7 @@ void RemoteClient::refresh_heap()
   // Read/dereference/refresh the std_heap pointer:
   if (not this->heap)
     this->heap.reset(new s_xbt_mheap_t());
-  this->read_bytes(this->heap.get(), sizeof(mdesc), remote(this->heap_address), simgrid::mc::ProcessIndexDisabled);
+  this->read_bytes(this->heap.get(), sizeof(mdesc), remote(this->heap_address));
   this->cache_flags_ |= RemoteClient::cache_heap;
 }
 
@@ -258,8 +257,7 @@ void RemoteClient::refresh_malloc_info()
   size_t count = this->heap->heaplimit + 1;
   if (this->heap_info.size() < count)
     this->heap_info.resize(count);
-  this->read_bytes(this->heap_info.data(), count * sizeof(malloc_info), remote(this->heap->heapinfo),
-                   simgrid::mc::ProcessIndexDisabled);
+  this->read_bytes(this->heap_info.data(), count * sizeof(malloc_info), remote(this->heap->heapinfo));
   this->cache_flags_ |= RemoteClient::cache_malloc;
 }
 
@@ -427,7 +425,7 @@ std::string RemoteClient::read_string(RemotePtr<char> address) const
   }
 }
 
-const void* RemoteClient::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, int process_index,
+const void* RemoteClient::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
                                      ReadOptions /*options*/) const
 {
   if (pread_whole(this->memory_file, buffer, size, (size_t)address.address()) < 0)

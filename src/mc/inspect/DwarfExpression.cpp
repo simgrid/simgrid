@@ -256,7 +256,7 @@ void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& contex
         // Computed address:
         if (not context.address_space)
           throw evaluation_error("Missing address space");
-        context.address_space->read_bytes(&stack.top(), sizeof(uintptr_t), remote(stack.top()), context.process_index);
+        context.address_space->read_bytes(&stack.top(), sizeof(uintptr_t), remote(stack.top()));
         break;
 
         // Not handled:

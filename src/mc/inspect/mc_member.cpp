@@ -19,13 +19,12 @@ namespace dwarf {
  * @return Process address of the given member of the 'object' struct/class
  */
 void* resolve_member(const void* base, simgrid::mc::Type* /*type*/, simgrid::mc::Member* member,
-                     simgrid::mc::AddressSpace* address_space, int process_index)
+                     simgrid::mc::AddressSpace* address_space)
 {
   ExpressionContext state;
   state.frame_base    = nullptr;
   state.cursor        = nullptr;
   state.address_space = address_space;
-  state.process_index = process_index;
 
   ExpressionStack stack;
   stack.push((ExpressionStack::value_type)base);
