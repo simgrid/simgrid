@@ -1317,29 +1317,6 @@ static int compare_global_variables(simgrid::mc::StateComparator& state, simgrid
 {
   xbt_assert(r1 && r2, "Missing region.");
 
-#if HAVE_SMPI
-  if (r1->storage_type() == simgrid::mc::StorageType::Privatized) {
-    xbt_assert(process_index >= 0);
-    if (r2->storage_type() != simgrid::mc::StorageType::Privatized)
-      return 1;
-
-    size_t process_count = MC_smpi_process_count();
-    xbt_assert(process_count == r1->privatized_data().size()
-      && process_count == r2->privatized_data().size());
-
-    // Compare the global variables separately for each simulates process:
-    for (size_t i = 0; i < process_count; i++) {
-      if (compare_global_variables(state, object_info, i, r1->privatized_data()[i].get(),
-                                   r2->privatized_data()[i].get(), snapshot1, snapshot2))
-        return 1;
-    }
-    return 0;
-  }
-#else
-  xbt_assert(r1->storage_type() != simgrid::mc::StorageType::Privatized);
-#endif
-  xbt_assert(r2->storage_type() != simgrid::mc::StorageType::Privatized);
-
   std::vector<simgrid::mc::Variable>& variables = object_info->global_variables;
 
   for (simgrid::mc::Variable const& current_var : variables) {

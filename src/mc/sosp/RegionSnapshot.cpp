@@ -32,7 +32,6 @@ RegionDense::RegionDense(RegionType region_type, void* start_addr, void* permane
 
   storage_type_ = StorageType::Flat;
   page_numbers_.clear();
-  privatized_regions_.clear();
 
   XBT_DEBUG("New region : type : %s, data : %p (real addr %p), size : %zu",
             (region_type == RegionType::Heap ? "Heap" : (region_type == RegionType::Data ? "Data" : "?")),
@@ -67,37 +66,10 @@ RegionSparse::RegionSparse(RegionType region_type, void* start_addr, void* perma
 
   storage_type_ = StorageType::Chunked;
   flat_data_.clear();
-  privatized_regions_.clear();
 
   page_numbers_ =
       ChunkedData(mc_model_checker->page_store(), *process, RemotePtr<void>(permanent_addr), mmu::chunk_count(size));
 }
-
-#if HAVE_SMPI
-RegionPrivatized::RegionPrivatized(RegionType region_type, void* start_addr, void* permanent_addr, std::size_t size)
-    : RegionSnapshot(region_type, start_addr, permanent_addr, size)
-{
-  storage_type_ = StorageType::Privatized;
-
-  size_t process_count = MC_smpi_process_count();
-
-  // Read smpi_privatization_regions from MCed:
-  smpi_privatization_region_t remote_smpi_privatization_regions;
-  mc_model_checker->process().read_variable("smpi_privatization_regions", &remote_smpi_privatization_regions,
-                                            sizeof(remote_smpi_privatization_regions));
-  s_smpi_privatization_region_t privatization_regions[process_count];
-  mc_model_checker->process().read_bytes(&privatization_regions, sizeof(privatization_regions),
-                                         remote(remote_smpi_privatization_regions));
-
-  privatized_regions_.reserve(process_count);
-  for (size_t i = 0; i < process_count; i++)
-    privatized_regions_.push_back(std::unique_ptr<simgrid::mc::RegionSnapshot>(
-        region(region_type, start_addr, privatization_regions[i].address, size)));
-
-  flat_data_.clear();
-  page_numbers_.clear();
-}
-#endif
 
 /** @brief Restore a region from a snapshot
  *
@@ -120,11 +92,6 @@ void RegionSnapshot::restore()
         mc_model_checker->process().write_bytes(source_page, xbt_pagesize, remote(target_page));
       }
 
-      break;
-
-    case simgrid::mc::StorageType::Privatized:
-      for (auto& p : privatized_data())
-        p.get()->restore();
       break;
 
     default: // includes StorageType::NoData

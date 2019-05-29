@@ -101,12 +101,7 @@ void Client::handleSimcall(s_mc_message_simcall_handle_t* message)
   if (channel_.send(MC_MESSAGE_WAITING))
     xbt_die("Could not send MESSAGE_WAITING to model-checker");
 }
-void Client::handleRestore(s_mc_message_restore_t* message)
-{
-#if HAVE_SMPI
-  smpi_really_switch_data_segment(simgrid::s4u::Actor::by_pid(message->index));
-#endif
-}
+
 void Client::handleActorEnabled(s_mc_message_actor_enabled_t* msg)
 {
   bool res = simgrid::mc::actor_is_enabled(SIMIX_process_from_PID(msg->aid));
@@ -145,12 +140,6 @@ void Client::handleMessages()
                    "Unexpected size for SIMCALL_HANDLE (%zd != %zu)", received_size,
                    sizeof(s_mc_message_simcall_handle_t));
         handleSimcall((s_mc_message_simcall_handle_t*)message_buffer);
-        break;
-
-      case MC_MESSAGE_RESTORE:
-        xbt_assert(received_size == sizeof(s_mc_message_t), "Unexpected size for MESSAGE_RESTORE (%zd != %zu)",
-                   received_size, sizeof(s_mc_message_t));
-        handleRestore((s_mc_message_restore_t*)message_buffer);
         break;
 
       case MC_MESSAGE_ACTOR_ENABLED:

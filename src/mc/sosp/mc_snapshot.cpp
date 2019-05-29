@@ -108,12 +108,6 @@ void simgrid::mc::Snapshot::snapshot_regions(simgrid::mc::RemoteClient* process)
   add_region(simgrid::mc::RegionType::Heap, nullptr, start_heap, start_heap, (char*)end_heap - (char*)start_heap);
   heap_bytes_used_     = mmalloc_get_bytes_used_remote(heap->heaplimit, process->get_malloc_info());
   privatization_index_ = simgrid::mc::ProcessIndexMissing;
-
-#if HAVE_SMPI
-  if (mc_model_checker->process().privatized() && MC_smpi_process_count())
-    // snapshot->privatization_index = smpi_loaded_page
-    mc_model_checker->process().read_variable("smpi_loaded_page", &privatization_index_, sizeof(privatization_index_));
-#endif
 }
 
 /** @brief Checks whether the variable is in scope for a given IP.
@@ -322,15 +316,7 @@ void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void*
   else if (type == simgrid::mc::RegionType::Heap)
     xbt_assert(not object_info, "Unexpected object info for heap region.");
 
-  simgrid::mc::RegionSnapshot* region;
-#if HAVE_SMPI
-  const bool privatization_aware = object_info && mc_model_checker->process().privatized(*object_info);
-  if (privatization_aware && MC_smpi_process_count())
-    region = new RegionPrivatized(type, start_addr, permanent_addr, size);
-  else
-#endif
-    region = simgrid::mc::region(type, start_addr, permanent_addr, size);
-
+  simgrid::mc::RegionSnapshot* region = simgrid::mc::region(type, start_addr, permanent_addr, size);
   region->object_info(object_info);
   snapshot_regions_.push_back(std::unique_ptr<simgrid::mc::RegionSnapshot>(std::move(region)));
 }
@@ -363,22 +349,6 @@ RegionSnapshot* Snapshot::get_region(const void* addr, int process_index) const
     if (not(region && region->contain(simgrid::mc::remote(addr))))
       continue;
 
-    if (region->storage_type() == simgrid::mc::StorageType::Privatized) {
-#if HAVE_SMPI
-      // Use the current process index of the snapshot:
-      if (process_index == simgrid::mc::ProcessIndexDisabled)
-        process_index = privatization_index_;
-      xbt_assert(process_index >= 0, "Missing process index");
-      xbt_assert(process_index < (int)region->privatized_data().size(), "Invalid process index");
-
-      RegionSnapshot* priv_region = region->privatized_data()[process_index].get();
-      xbt_assert(priv_region->contain(simgrid::mc::remote(addr)));
-      return priv_region;
-#else
-      xbt_die("Privatized region in a non SMPI build (this should not happen)");
-#endif
-    }
-
     return region;
   }
 
@@ -402,12 +372,6 @@ void Snapshot::restore(RemoteClient* process)
   for (std::unique_ptr<simgrid::mc::RegionSnapshot> const& region : snapshot_regions_) {
     if (region) // privatized variables are not snapshoted
       region.get()->restore();
-  }
-
-  // Fix the privatization mmap if needed
-  if (privatization_index_ >= 0) {
-    s_mc_message_restore_t message{MC_MESSAGE_RESTORE, privatization_index_};
-    process->getChannel().send(message);
   }
 
   snapshot_ignore_restore(this);

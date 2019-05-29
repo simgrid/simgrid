@@ -17,7 +17,7 @@ namespace mc {
 
 enum class RegionType { Unknown = 0, Heap = 1, Data = 2 };
 
-enum class StorageType { NoData = 0, Flat = 1, Chunked = 2, Privatized = 3 };
+enum class StorageType { NoData = 0, Flat = 1, Chunked = 2 };
 
 class Buffer {
 private:
@@ -114,7 +114,6 @@ protected:
 
   Buffer flat_data_;
   ChunkedData page_numbers_;
-  std::vector<std::unique_ptr<RegionSnapshot>> privatized_regions_;
 
 public:
   RegionSnapshot() {}
@@ -137,7 +136,6 @@ public:
       , permanent_addr_(that.permanent_addr_)
       , flat_data_(std::move(that.flat_data_))
       , page_numbers_(std::move(that.page_numbers_))
-      , privatized_regions_(std::move(that.privatized_regions_))
   {
     that.clear();
   }
@@ -151,7 +149,6 @@ public:
     permanent_addr_     = that.permanent_addr_;
     flat_data_          = std::move(that.flat_data_);
     page_numbers_       = std::move(that.page_numbers_);
-    privatized_regions_ = std::move(that.privatized_regions_);
     that.clear();
     return *this;
   }
@@ -162,7 +159,6 @@ public:
   {
     region_type_  = UnknownRegion;
     storage_type_ = StorageType::NoData;
-    privatized_regions_.clear();
     page_numbers_.clear();
     flat_data_.clear();
     object_info_    = nullptr;
@@ -176,16 +172,12 @@ public:
     storage_type_ = StorageType::NoData;
     flat_data_.clear();
     page_numbers_.clear();
-    privatized_regions_.clear();
   }
 
   const Buffer& flat_data() const { return flat_data_; }
   Buffer& flat_data() { return flat_data_; }
 
   ChunkedData const& page_data() const { return page_numbers_; }
-
-  std::vector<std::unique_ptr<RegionSnapshot>> const& privatized_data() const { return privatized_regions_; }
-  std::vector<std::unique_ptr<RegionSnapshot>>& privatized_data() { return privatized_regions_; }
 
   simgrid::mc::ObjectInformation* object_info() const { return object_info_; }
   void object_info(simgrid::mc::ObjectInformation* info) { object_info_ = info; }
@@ -212,10 +204,6 @@ public:
 class RegionSparse : public RegionSnapshot {
 public:
   RegionSparse(RegionType type, void* start_addr, void* data_addr, std::size_t size);
-};
-class RegionPrivatized : public RegionSnapshot {
-public:
-  RegionPrivatized(RegionType type, void* start_addr, void* data_addr, std::size_t size);
 };
 
 RegionSnapshot* region(RegionType type, void* start_addr, void* data_addr, std::size_t size);

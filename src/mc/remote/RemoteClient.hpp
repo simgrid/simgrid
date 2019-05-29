@@ -142,10 +142,6 @@ public:
 
   void terminate() { running_ = false; }
 
-  bool privatized(ObjectInformation const& info) const { return privatized_ && info.executable(); }
-  bool privatized() const { return privatized_; }
-  void privatized(bool privatized) { privatized_ = privatized; }
-
   void ignore_global_variable(const char* name)
   {
     for (std::shared_ptr<simgrid::mc::ObjectInformation> const& info : this->object_infos)
@@ -205,7 +201,6 @@ private:
   RemotePtr<void> maestro_stack_end_;
   int memory_file = -1;
   std::vector<IgnoredRegion> ignored_regions_;
-  bool privatized_ = false;
   std::vector<s_stack_region_t> stack_areas_;
   std::vector<IgnoredHeapRegion> ignored_heap_;
 
