@@ -39,7 +39,6 @@ RegionSparse::RegionSparse(RegionType region_type, void* start_addr, void* perma
     : RegionSnapshot(region_type, start_addr, permanent_addr, size)
 {
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
-  assert(process != nullptr);
 
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize - 1)) == 0, "Start address not at the beginning of a page");
   xbt_assert((((uintptr_t)permanent_addr) & (xbt_pagesize - 1)) == 0,

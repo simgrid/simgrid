@@ -233,9 +233,9 @@ void simgrid::mc::Snapshot::snapshot_stacks(simgrid::mc::RemoteClient* process)
 
     // Read the context from remote process:
     unw_context_t context;
-    mc_model_checker->process().read_bytes(&context, sizeof(context), remote(stack.context));
+    process->read_bytes(&context, sizeof(context), remote(stack.context));
 
-    st.context.initialize(&mc_model_checker->process(), &context);
+    st.context.initialize(process, &context);
 
     st.stack_frames    = unwind_stack_frames(&st.context);
     st.local_variables = get_local_variables_values(st.stack_frames);
@@ -254,7 +254,7 @@ static void snapshot_handle_ignore(simgrid::mc::Snapshot* snapshot)
   xbt_assert(snapshot->process());
 
   // Copy the memory:
-  for (auto const& region : mc_model_checker->process().ignored_regions()) {
+  for (auto const& region : snapshot->process()->ignored_regions()) {
     s_mc_snapshot_ignored_data_t ignored_data;
     ignored_data.start = (void*)region.addr;
     ignored_data.data.resize(region.size);
@@ -264,7 +264,7 @@ static void snapshot_handle_ignore(simgrid::mc::Snapshot* snapshot)
   }
 
   // Zero the memory:
-  for (auto const& region : mc_model_checker->process().ignored_regions())
+  for (auto const& region : snapshot->process()->ignored_regions())
     snapshot->process()->clear_bytes(remote(region.addr), region.size);
 }
 static void snapshot_ignore_restore(simgrid::mc::Snapshot* snapshot)
