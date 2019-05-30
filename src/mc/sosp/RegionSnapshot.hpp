@@ -17,24 +17,7 @@ namespace mc {
 
 enum class RegionType { Unknown = 0, Heap = 1, Data = 2 };
 
-/** A copy/snapshot of a given memory region
- *
- *  Different types of region snapshot storage types exist:
- *
- *  * flat/dense snapshots are a simple copy of the region;
- *
- *  * sparse/per-page snapshots are snaapshots which shared
- *    identical pages.
- *
- *  * privatized (SMPI global variable privatization).
- *
- *  This is handled with a variant based approach:
- *
- *  * `storage_type` identified the type of storage;
- *
- *  * an anonymous enum is used to distinguish the relevant types for
- *    each type.
- */
+/** A copy/snapshot of a given memory region, where identical pages are stored only once */
 class RegionSnapshot {
 public:
   static const RegionType UnknownRegion = RegionType::Unknown;
@@ -126,8 +109,6 @@ public:
   /** @brief Restore a region from a snapshot */
   void restore();
 };
-
-RegionSnapshot* region(RegionType type, void* start_addr, void* data_addr, std::size_t size);
 
 } // namespace mc
 } // namespace simgrid

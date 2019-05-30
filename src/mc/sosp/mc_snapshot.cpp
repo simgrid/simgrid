@@ -307,7 +307,7 @@ void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void*
   else if (type == simgrid::mc::RegionType::Heap)
     xbt_assert(not object_info, "Unexpected object info for heap region.");
 
-  simgrid::mc::RegionSnapshot* region = simgrid::mc::region(type, start_addr, permanent_addr, size);
+  simgrid::mc::RegionSnapshot* region = new RegionSnapshot(type, start_addr, permanent_addr, size);
   region->object_info(object_info);
   snapshot_regions_.push_back(std::unique_ptr<simgrid::mc::RegionSnapshot>(std::move(region)));
 }

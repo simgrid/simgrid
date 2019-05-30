@@ -22,19 +22,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_RegionSnaphot, mc, "Logging specific to regio
 namespace simgrid {
 namespace mc {
 
-/** @brief Take a snapshot of a given region
- *
- * @param type
- * @param start_addr   Address of the region in the simulated process
- * @param permanent_addr Permanent address of this data (for privatized variables, this is the virtual address of the
- * privatized mapping)
- * @param size         Size of the data*
- */
-RegionSnapshot* region(RegionType type, void* start_addr, void* permanent_addr, size_t size)
-{
-  return new RegionSnapshot(type, start_addr, permanent_addr, size);
-}
-
 RegionSnapshot::RegionSnapshot(RegionType region_type, void* start_addr, void* permanent_addr, size_t size)
     : region_type_(region_type), start_addr_(start_addr), size_(size), permanent_addr_(permanent_addr)
 {

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "src/mc/mc_forward.hpp"
+#include "src/mc/remote/RemotePtr.hpp"
 #include "src/mc/sosp/PageStore.hpp"
 
 namespace simgrid {
