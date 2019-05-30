@@ -13,27 +13,13 @@
 
 // ***** Snapshot region
 
-static XBT_ALWAYS_INLINE void* mc_translate_address_region_chunked(uintptr_t addr, simgrid::mc::RegionSnapshot* region)
+static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, simgrid::mc::RegionSnapshot* region)
 {
   auto split                = simgrid::mc::mmu::split(addr - region->start().address());
   auto pageno               = split.first;
   auto offset               = split.second;
   const void* snapshot_page = region->page_data().page(pageno);
   return (char*)snapshot_page + offset;
-}
-
-static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, simgrid::mc::RegionSnapshot* region)
-{
-  switch (region->storage_type()) {
-    case simgrid::mc::StorageType::Flat: {
-      uintptr_t offset = (uintptr_t)addr - (uintptr_t)region->start().address();
-      return (void*)((uintptr_t)region->flat_data().get() + offset);
-    }
-    case simgrid::mc::StorageType::Chunked:
-      return mc_translate_address_region_chunked(addr, region);
-    default: // includes StorageType::NoData
-      xbt_die("Storage type not supported");
-  }
 }
 
 // ***** MC Snapshot
@@ -149,28 +135,16 @@ static XBT_ALWAYS_INLINE const void* MC_region_read(simgrid::mc::RegionSnapshot*
 {
   xbt_assert(region);
 
-  std::uintptr_t offset = (std::uintptr_t)addr - (std::uintptr_t)region->start().address();
-
   xbt_assert(region->contain(simgrid::mc::remote(addr)), "Trying to read out of the region boundary.");
 
-  switch (region->storage_type()) {
-    case simgrid::mc::StorageType::Flat:
-      return (char*)region->flat_data().get() + offset;
-
-    case simgrid::mc::StorageType::Chunked: {
       // Last byte of the region:
       void* end = (char*)addr + size - 1;
       if (simgrid::mc::mmu::same_chunk((std::uintptr_t)addr, (std::uintptr_t)end)) {
         // The memory is contained in a single page:
-        return mc_translate_address_region_chunked((uintptr_t)addr, region);
+        return mc_translate_address_region((uintptr_t)addr, region);
       }
       // Otherwise, the memory spans several pages:
       return MC_region_read_fragmented(region, target, addr, size);
-    }
-
-    default:
-      xbt_die("StorageType::NoData not supported");
-  }
 }
 
 static XBT_ALWAYS_INLINE void* MC_region_read_pointer(simgrid::mc::RegionSnapshot* region, const void* addr)

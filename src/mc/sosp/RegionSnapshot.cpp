@@ -22,21 +22,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_RegionSnaphot, mc, "Logging specific to regio
 namespace simgrid {
 namespace mc {
 
-RegionDense::RegionDense(RegionType region_type, void* start_addr, void* permanent_addr, size_t size)
-    : RegionSnapshot(region_type, start_addr, permanent_addr, size)
-{
-  flat_data_ = Buffer::malloc(size);
-
-  mc_model_checker->process().read_bytes(flat_data_.get(), size, remote(permanent_addr));
-
-  storage_type_ = StorageType::Flat;
-  page_numbers_.clear();
-
-  XBT_DEBUG("New region : type : %s, data : %p (real addr %p), size : %zu",
-            (region_type == RegionType::Heap ? "Heap" : (region_type == RegionType::Data ? "Data" : "?")),
-            flat_data().get(), permanent_addr, size);
-}
-
 /** @brief Take a snapshot of a given region
  *
  * @param type
@@ -47,10 +32,7 @@ RegionDense::RegionDense(RegionType region_type, void* start_addr, void* permane
  */
 RegionSnapshot* region(RegionType type, void* start_addr, void* permanent_addr, size_t size)
 {
-  if (_sg_mc_sparse_checkpoint)
     return new RegionSparse(type, start_addr, permanent_addr, size);
-  else
-    return new RegionDense(type, start_addr, permanent_addr, size);
 }
 
 RegionSparse::RegionSparse(RegionType region_type, void* start_addr, void* permanent_addr, size_t size)
@@ -63,9 +45,6 @@ RegionSparse::RegionSparse(RegionType region_type, void* start_addr, void* perma
   xbt_assert((((uintptr_t)permanent_addr) & (xbt_pagesize - 1)) == 0,
              "Permanent address not at the beginning of a page");
 
-  storage_type_ = StorageType::Chunked;
-  flat_data_.clear();
-
   page_numbers_ =
       ChunkedData(mc_model_checker->page_store(), *process, RemotePtr<void>(permanent_addr), mmu::chunk_count(size));
 }
@@ -76,12 +55,6 @@ RegionSparse::RegionSparse(RegionType region_type, void* start_addr, void* perma
  */
 void RegionSnapshot::restore()
 {
-  switch (storage_type()) {
-    case simgrid::mc::StorageType::Flat:
-      mc_model_checker->process().write_bytes(flat_data().get(), size(), permanent_address());
-      break;
-
-    case simgrid::mc::StorageType::Chunked:
       xbt_assert(((permanent_address().address()) & (xbt_pagesize - 1)) == 0, "Not at the beginning of a page");
       xbt_assert(simgrid::mc::mmu::chunk_count(size()) == page_data().page_count());
 
@@ -90,13 +63,6 @@ void RegionSnapshot::restore()
         const void* source_page = page_data().page(i);
         mc_model_checker->process().write_bytes(source_page, xbt_pagesize, remote(target_page));
       }
-
-      break;
-
-    default: // includes StorageType::NoData
-      xbt_die("Storage type not supported");
-      break;
-  }
 }
 
 } // namespace mc

@@ -38,7 +38,7 @@ const void* MC_region_read_fragmented(simgrid::mc::RegionSnapshot* region, void*
 
   // Read each page:
   while (simgrid::mc::mmu::split((std::uintptr_t)addr).first != page_end) {
-    void* snapshot_addr = mc_translate_address_region_chunked((uintptr_t)addr, region);
+    void* snapshot_addr = mc_translate_address_region((uintptr_t)addr, region);
     void* next_page     = (void*)simgrid::mc::mmu::join(simgrid::mc::mmu::split((std::uintptr_t)addr).first + 1, 0);
     size_t readable     = (char*)next_page - (char*)addr;
     memcpy(dest, snapshot_addr, readable);
@@ -48,7 +48,7 @@ const void* MC_region_read_fragmented(simgrid::mc::RegionSnapshot* region, void*
   }
 
   // Read the end:
-  void* snapshot_addr = mc_translate_address_region_chunked((uintptr_t)addr, region);
+  void* snapshot_addr = mc_translate_address_region((uintptr_t)addr, region);
   memcpy(dest, snapshot_addr, size);
 
   return target;
@@ -68,12 +68,8 @@ int MC_snapshot_region_memcmp(const void* addr1, simgrid::mc::RegionSnapshot* re
   // Using alloca() for large allocations may trigger stack overflow:
   // use malloc if the buffer is too big.
   bool stack_alloc = size < 64;
-  void* buffer1a   = nullptr;
-  void* buffer2a   = nullptr;
-  if (region1 != nullptr && region1->storage_type() != simgrid::mc::StorageType::Flat)
-    buffer1a = stack_alloc ? alloca(size) : ::operator new(size);
-  if (region2 != nullptr && region2->storage_type() != simgrid::mc::StorageType::Flat)
-    buffer2a = stack_alloc ? alloca(size) : ::operator new(size);
+  void* buffer1a      = stack_alloc ? alloca(size) : ::operator new(size);
+  void* buffer2a      = stack_alloc ? alloca(size) : ::operator new(size);
   const void* buffer1 = MC_region_read(region1, buffer1a, addr1, size);
   const void* buffer2 = MC_region_read(region2, buffer2a, addr2, size);
   int res;

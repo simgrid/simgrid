@@ -116,7 +116,6 @@ Existing Configuration Items
 - **model-check/reduction:** :ref:`cfg=model-check/reduction`
 - **model-check/replay:** :ref:`cfg=model-check/replay`
 - **model-check/send-determinism:** :ref:`cfg=model-check/send-determinism`
-- **model-check/sparse-checkpoint:** :ref:`cfg=model-check/sparse-checkpoint`
 - **model-check/termination:** :ref:`cfg=model-check/termination`
 - **model-check/timeout:** :ref:`cfg=model-check/timeout`
 - **model-check/visited:** :ref:`cfg=model-check/visited`
@@ -619,35 +618,6 @@ The ``model-check/communications-determinism`` and
 communication determinism mode of the model-checker which checks
 determinism properties of the communications of an application.
 
-.. _cfg=model-check/sparse-checkpoint:
-
-Incremental Checkpoints
-.......................
-
-When the model-checker is configured to take a snapshot of each
-explored state (with the ``model-checker/visited`` item), the memory
-consumption can rapidly reach GiB ou Tib of memory. However, for many
-workloads, the memory does not change much between different snapshots
-and taking a complete copy of each snapshot is a waste of memory.
-
-The ``model-check/sparse-checkpoint`` option item can be set to
-**yes** to avoid making a complete copy of each snapshot. Instead,
-each snapshot will be decomposed in blocks which will be stored
-separately.  If multiple snapshots share the same block (or if the
-same block is used in the same snapshot), the same copy of the block
-will be shared leading to a reduction of the memory footprint.
-
-For many applications, this option considerably reduces the memory
-consumption.  In somes cases, the model-checker might be slightly
-slower because of the time taken to manage the metadata about the
-blocks. In other cases however, this snapshotting strategy will be
-much faster by reducing the cache consumption.  When the memory
-consumption is important, by avoiding to hit the swap or reducing the
-swap usage, this option might be much faster than the basic
-snapshotting strategy.
-
-This option is currently disabled by default.
-
 Verification Performance Considerations
 .......................................
 
@@ -657,9 +627,6 @@ save a copy of the whole stacks and not only of the part which is
 really meaningful: you should expect the contribution of the memory
 consumption of the snapshots to be @f$ @mbox{number of processes}
 @times @mbox{stack size} @times @mbox{number of states} @f$.
-
-The ``model-check/sparse-checkpoint`` can be used to reduce the memory
-consumption by trying to share memory between the different snapshots.
 
 When compiled against the model checker, the stacks are not
 protected with guards: if the stack size is too small for your

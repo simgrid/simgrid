@@ -16,6 +16,10 @@ SMPI:
 
 Model-checker:
  - Remove option 'model-check/record': Paths are recorded in any cases now.
+ - Remove option 'model-check/sparse-checkpoint': Checkpoints are now
+   always sparse. That's an immense gain in memory, and can even be
+   faster because of cache effects. So there is no need to clutter the
+   code to allow the user to go for the unefficient mode.
 
 Fixed bugs (FG=FramaGit; GH=GitHub):
  - FG#1: Broken link in error messages

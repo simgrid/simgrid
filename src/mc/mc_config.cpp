@@ -51,9 +51,6 @@ simgrid::config::Flag<int> _sg_mc_checkpoint{
                               "compromises between speed and memory consumption.",
     0, [](int) { _mc_cfg_cb_check("checkpointing value"); }};
 
-simgrid::config::Flag<bool> _sg_mc_sparse_checkpoint{"model-check/sparse-checkpoint", "Use sparse per-page snapshots.",
-                                                     false, [](bool) { _mc_cfg_cb_check("checkpointing value"); }};
-
 simgrid::config::Flag<std::string> _sg_mc_property_file{
     "model-check/property", "Name of the file containing the property, as formatted by the ltl2ba program.", "",
     [](const std::string&) { _mc_cfg_cb_check("property"); }};

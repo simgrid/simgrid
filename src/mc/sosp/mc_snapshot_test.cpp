@@ -16,7 +16,7 @@ using simgrid::mc::RegionSnapshot;
 class snap_test_helper {
 public:
   static void init_memory(void* mem, size_t size);
-  static void Init(bool sparse_ckpt);
+  static void Init();
   typedef struct {
     size_t size;
     void* src;
@@ -38,13 +38,11 @@ public:
   }
 
   static std::default_random_engine rnd_engine;
-  static bool sparse_checkpoint;
   static std::unique_ptr<simgrid::mc::RemoteClient> process;
 };
 
 // static member variables init.
 std::default_random_engine snap_test_helper::rnd_engine;
-bool snap_test_helper::sparse_checkpoint                             = 0;
 std::unique_ptr<simgrid::mc::RemoteClient> snap_test_helper::process = nullptr;
 
 void snap_test_helper::init_memory(void* mem, size_t size)
@@ -55,9 +53,8 @@ void snap_test_helper::init_memory(void* mem, size_t size)
   }
 }
 
-void snap_test_helper::Init(bool sparse_ckpt)
+void snap_test_helper::Init()
 {
-  _sg_mc_sparse_checkpoint = sparse_ckpt;
   REQUIRE(xbt_pagesize == getpagesize());
   REQUIRE(1 << xbt_pagebits == xbt_pagesize);
 
@@ -189,15 +186,10 @@ void snap_test_helper::read_pointer()
 
 TEST_CASE("MC::Snapshot: A copy/snapshot of a given memory region", "MC::Snapshot")
 {
-  auto sparse = GENERATE(false, true);
 
-  if (sparse) {
-    INFO("Sparse snapshot (using pages)");
-  } else {
-    INFO("Flat snapshot (no pages)");
-  }
+  INFO("Sparse snapshot (using pages)");
 
-  snap_test_helper::Init(sparse);
+  snap_test_helper::Init();
 
   INFO("Read whole region");
   snap_test_helper::read_whole_region();
