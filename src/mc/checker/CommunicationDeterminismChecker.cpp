@@ -96,10 +96,10 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
   // HACK, type punning
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
   mc_model_checker->process().read(temp_comm, comm_addr);
-  simgrid::kernel::activity::CommImpl* comm = temp_comm.getBuffer();
+  simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
-  smx_actor_t src_proc   = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->src_actor_.get()));
-  smx_actor_t dst_proc   = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_actor_.get()));
+  smx_actor_t src_proc   = mc_model_checker->process().resolve_actor(simgrid::mc::remote(comm->src_actor_.get()));
+  smx_actor_t dst_proc   = mc_model_checker->process().resolve_actor(simgrid::mc::remote(comm->dst_actor_.get()));
   comm_pattern->src_proc = src_proc->get_pid();
   comm_pattern->dst_proc = dst_proc->get_pid();
   comm_pattern->src_host = MC_smx_actor_get_host_name(src_proc);
@@ -184,13 +184,13 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
     mc_model_checker->process().read(temp_synchro,
                                      remote(static_cast<simgrid::kernel::activity::CommImpl*>(pattern->comm_addr)));
     simgrid::kernel::activity::CommImpl* synchro =
-        static_cast<simgrid::kernel::activity::CommImpl*>(temp_synchro.getBuffer());
+        static_cast<simgrid::kernel::activity::CommImpl*>(temp_synchro.get_buffer());
 
     char* remote_name = mc_model_checker->process().read<char*>(RemotePtr<char*>(
         (uint64_t)(synchro->get_mailbox() ? &synchro->get_mailbox()->name_ : &synchro->mbox_cpy->name_)));
     pattern->rdv      = mc_model_checker->process().read_string(RemotePtr<char>(remote_name));
     pattern->src_proc =
-        mc_model_checker->process().resolveActor(simgrid::mc::remote(synchro->src_actor_.get()))->get_pid();
+        mc_model_checker->process().resolve_actor(simgrid::mc::remote(synchro->src_actor_.get()))->get_pid();
     pattern->src_host = MC_smx_actor_get_host_name(issuer);
 
 #if HAVE_SMPI
@@ -231,7 +231,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
     simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
     mc_model_checker->process().read(temp_comm,
                                      remote(static_cast<simgrid::kernel::activity::CommImpl*>(pattern->comm_addr)));
-    simgrid::kernel::activity::CommImpl* comm = temp_comm.getBuffer();
+    simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
     char* remote_name;
     mc_model_checker->process().read(&remote_name,
@@ -240,7 +240,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
                                                 : &simgrid::xbt::string::to_string_data(comm->mbox_cpy->name_).data));
     pattern->rdv      = mc_model_checker->process().read_string(RemotePtr<char>(remote_name));
     pattern->dst_proc =
-        mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_actor_.get()))->get_pid();
+        mc_model_checker->process().resolve_actor(simgrid::mc::remote(comm->dst_actor_.get()))->get_pid();
     pattern->dst_host = MC_smx_actor_get_host_name(issuer);
   } else
     xbt_die("Unexpected call_type %i", (int) call_type);
@@ -337,8 +337,8 @@ void CommunicationDeterminismChecker::prepare()
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   for (auto& actor : mc_model_checker->process().actors())
-    if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer()))
-      initial_state->addInterleavingSet(actor.copy.getBuffer());
+    if (simgrid::mc::actor_is_enabled(actor.copy.get_buffer()))
+      initial_state->addInterleavingSet(actor.copy.get_buffer());
 
   stack_.push_back(std::move(initial_state));
 }
@@ -467,8 +467,8 @@ void CommunicationDeterminismChecker::real_run()
 
         /* Get enabled actors and insert them in the interleave set of the next state */
         for (auto& actor : mc_model_checker->process().actors())
-          if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer()))
-            next_state->addInterleavingSet(actor.copy.getBuffer());
+          if (simgrid::mc::actor_is_enabled(actor.copy.get_buffer()))
+            next_state->addInterleavingSet(actor.copy.get_buffer());
 
         if (dot_output != nullptr)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", cur_state->num, next_state->num, req_str.c_str());

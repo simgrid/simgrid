@@ -33,13 +33,13 @@ public:
   Remote() = default;
   explicit Remote(T const& p) { std::memcpy(&buffer, &p, sizeof buffer); }
 
-  T* getBuffer() { return reinterpret_cast<T*>(&buffer); }
-  const T* getBuffer() const { return reinterpret_cast<const T*>(&buffer); }
-  std::size_t getBufferSize() const { return sizeof(T); }
+  T* get_buffer() { return reinterpret_cast<T*>(&buffer); }
+  const T* get_buffer() const { return reinterpret_cast<const T*>(&buffer); }
+  std::size_t get_buffer_size() const { return sizeof(T); }
   operator T() const
   {
     static_assert(std::is_trivial<T>::value, "Cannot convert non trivial type");
-    return *getBuffer();
+    return *get_buffer();
   }
   void clear() { std::memset(&buffer, 0, sizeof buffer); }
 };
@@ -66,7 +66,7 @@ public:
   explicit RemotePtr(std::nullptr_t) : address_(0) {}
   explicit RemotePtr(std::uint64_t address) : address_(address) {}
   explicit RemotePtr(T* address) : address_((std::uintptr_t)address) {}
-  explicit RemotePtr(Remote<T*> p) : address_((std::uintptr_t)*p.getBuffer()) {}
+  explicit RemotePtr(Remote<T*> p) : address_((std::uintptr_t)*p.get_buffer()) {}
   std::uint64_t address() const { return address_; }
 
   /** Turn into a local pointer

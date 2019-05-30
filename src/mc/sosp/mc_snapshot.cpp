@@ -285,7 +285,7 @@ Snapshot::Snapshot(int _num_state, RemoteClient* process)
     , hash_(0)
 {
   for (auto const& p : process->actors())
-    enabled_processes_.insert(p.copy.getBuffer()->get_pid());
+    enabled_processes_.insert(p.copy.get_buffer()->get_pid());
 
   snapshot_handle_ignore(this);
 

@@ -91,7 +91,7 @@ public:
   template <class T> Remote<T> read_variable(const char* name) const
   {
     Remote<T> res;
-    read_variable(name, res.getBuffer(), sizeof(T));
+    read_variable(name, res.get_buffer(), sizeof(T));
     return res;
   }
 
@@ -125,8 +125,8 @@ public:
 
   void clear_cache() { this->cache_flags_ = RemoteClient::cache_none; }
 
-  Channel const& getChannel() const { return channel_; }
-  Channel& getChannel() { return channel_; }
+  Channel const& get_channel() const { return channel_; }
+  Channel& get_channel() { return channel_; }
 
   std::vector<IgnoredRegion> const& ignored_regions() const { return ignored_regions_; }
   void ignore_region(std::uint64_t address, std::size_t size);
@@ -160,7 +160,7 @@ public:
   std::vector<simgrid::mc::ActorInformation>& dead_actors();
 
   /** Get a local description of a remote SIMIX actor */
-  simgrid::mc::ActorInformation* resolveActorInfo(simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl> actor)
+  simgrid::mc::ActorInformation* resolve_actor_info(simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl> actor)
   {
     xbt_assert(mc_model_checker != nullptr);
     if (not actor)
@@ -176,16 +176,16 @@ public:
   }
 
   /** Get a local copy of the SIMIX actor structure */
-  simgrid::kernel::actor::ActorImpl* resolveActor(simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl> process)
+  simgrid::kernel::actor::ActorImpl* resolve_actor(simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl> process)
   {
-    simgrid::mc::ActorInformation* actor_info = this->resolveActorInfo(process);
+    simgrid::mc::ActorInformation* actor_info = this->resolve_actor_info(process);
     if (actor_info)
-      return actor_info->copy.getBuffer();
+      return actor_info->copy.get_buffer();
     else
       return nullptr;
   }
 
-  void dumpStack();
+  void dump_stack();
 
 private:
   void init_memory_map_info();

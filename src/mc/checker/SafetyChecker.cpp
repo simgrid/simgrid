@@ -161,7 +161,7 @@ void SafetyChecker::run()
 
       /* Get an enabled process and insert it in the interleave set of the next state */
       for (auto& remoteActor : mc_model_checker->process().actors()) {
-        auto actor = remoteActor.copy.getBuffer();
+        auto actor = remoteActor.copy.get_buffer();
         if (simgrid::mc::actor_is_enabled(actor)) {
           next_state->addInterleavingSet(actor);
           if (reductionMode_ == simgrid::mc::ReductionMode::dpor)
@@ -315,8 +315,8 @@ SafetyChecker::SafetyChecker(Session& s) : Checker(s)
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   for (auto& actor : mc_model_checker->process().actors())
-    if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer())) {
-      initial_state->addInterleavingSet(actor.copy.getBuffer());
+    if (simgrid::mc::actor_is_enabled(actor.copy.get_buffer())) {
+      initial_state->addInterleavingSet(actor.copy.get_buffer());
       if (reductionMode_ != simgrid::mc::ReductionMode::none)
         break;
     }

@@ -61,10 +61,7 @@ void ModelChecker::start()
   {
     ((ModelChecker *)arg)->handle_events(fd, events);
   };
-  socket_event_ = event_new(base_,
-                            process_->getChannel().getSocket(),
-                            EV_READ|EV_PERSIST,
-                            event_callback, this);
+  socket_event_ = event_new(base_, process_->get_channel().get_socket(), EV_READ | EV_PERSIST, event_callback, this);
   event_add(socket_event_, NULL);
   signal_event_ = event_new(base_,
                             SIGCHLD,
@@ -130,7 +127,7 @@ void ModelChecker::shutdown()
 
 void ModelChecker::resume(simgrid::mc::RemoteClient& process)
 {
-  int res = process.getChannel().send(MC_MESSAGE_CONTINUE);
+  int res = process.get_channel().send(MC_MESSAGE_CONTINUE);
   if (res)
     throw simgrid::xbt::errno_error();
   process.clear_cache();
@@ -155,7 +152,7 @@ static void MC_report_crash(int status)
   simgrid::mc::dumpRecordPath();
   simgrid::mc::session->log_state();
   XBT_INFO("Stack trace:");
-  mc_model_checker->process().dumpStack();
+  mc_model_checker->process().dump_stack();
 }
 
 static void MC_report_assertion_error()
@@ -273,7 +270,7 @@ void ModelChecker::handle_events(int fd, short events)
 {
   if (events == EV_READ) {
     char buffer[MC_MESSAGE_LENGTH];
-    ssize_t size = process_->getChannel().receive(buffer, sizeof(buffer), false);
+    ssize_t size = process_->get_channel().receive(buffer, sizeof(buffer), false);
     if (size == -1 && errno != EAGAIN)
       throw simgrid::xbt::errno_error();
     if (not handle_message(buffer, size)) {
@@ -368,7 +365,7 @@ void ModelChecker::handle_simcall(Transition const& transition)
   m.type  = MC_MESSAGE_SIMCALL_HANDLE;
   m.pid   = transition.pid;
   m.value = transition.argument;
-  this->process_->getChannel().send(m);
+  this->process_->get_channel().send(m);
   this->process_->clear_cache();
   if (this->process_->running())
     event_base_dispatch(base_);
@@ -377,10 +374,10 @@ void ModelChecker::handle_simcall(Transition const& transition)
 bool ModelChecker::checkDeadlock()
 {
   int res;
-  if ((res = this->process().getChannel().send(MC_MESSAGE_DEADLOCK_CHECK)))
+  if ((res = this->process().get_channel().send(MC_MESSAGE_DEADLOCK_CHECK)))
     xbt_die("Could not check deadlock state");
   s_mc_message_int_t message;
-  ssize_t s = mc_model_checker->process().getChannel().receive(message);
+  ssize_t s = mc_model_checker->process().get_channel().receive(message);
   if (s == -1)
     xbt_die("Could not receive message");
   if (s != sizeof(message) || message.type != MC_MESSAGE_DEADLOCK_CHECK_REPLY)

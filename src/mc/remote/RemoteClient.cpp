@@ -580,7 +580,7 @@ std::vector<simgrid::mc::ActorInformation>& RemoteClient::dead_actors()
   return smx_dead_actors_infos;
 }
 
-void RemoteClient::dumpStack()
+void RemoteClient::dump_stack()
 {
   unw_addr_space_t as = unw_create_addr_space(&_UPT_accessors, BYTE_ORDER);
   if (as == nullptr) {
@@ -612,9 +612,9 @@ void RemoteClient::dumpStack()
 bool RemoteClient::actor_is_enabled(aid_t pid)
 {
   s_mc_message_actor_enabled_t msg{MC_MESSAGE_ACTOR_ENABLED, pid};
-  process()->getChannel().send(msg);
+  process()->get_channel().send(msg);
   char buff[MC_MESSAGE_LENGTH];
-  ssize_t received = process()->getChannel().receive(buff, MC_MESSAGE_LENGTH, true);
+  ssize_t received = process()->get_channel().receive(buff, MC_MESSAGE_LENGTH, true);
   xbt_assert(received == sizeof(s_mc_message_int_t), "Unexpected size in answer to ACTOR_ENABLED");
   return ((s_mc_message_int_t*)buff)->value;
 }

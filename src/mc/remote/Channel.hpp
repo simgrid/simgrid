@@ -63,7 +63,7 @@ public:
     return this->receive(&m, sizeof(M));
   }
 
-  int getSocket() const { return socket_; }
+  int get_socket() const { return socket_; }
 };
 }
 }

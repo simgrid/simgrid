@@ -28,7 +28,7 @@ void MC_assert(int prop)
   xbt_assert(mc_model_checker == nullptr);
   if (not prop) {
     if (MC_is_active())
-      simgrid::mc::Client::get()->reportAssertionFailure();
+      simgrid::mc::Client::get()->report_assertion_failure();
     if (MC_record_replay_is_active())
       xbt_die("MC assertion failed");
   }
@@ -48,7 +48,7 @@ void MC_ignore(void* addr, size_t size)
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->ignoreMemory(addr, size);
+  simgrid::mc::Client::get()->ignore_memory(addr, size);
 }
 
 void MC_automaton_new_propositional_symbol(const char* /*id*/, int (*/*fct*/)())
@@ -65,7 +65,7 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->declareSymbol(name, value);
+  simgrid::mc::Client::get()->declare_symbol(name, value);
 }
 
 /** @brief Register a stack in the model checker
@@ -84,7 +84,7 @@ void MC_register_stack_area(void* stack, smx_actor_t actor, ucontext_t* context,
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->declareStack(stack, size, actor, context);
+  simgrid::mc::Client::get()->declare_stack(stack, size, actor, context);
 }
 
 void MC_ignore_global_variable(const char* /*name*/)
@@ -101,7 +101,7 @@ void MC_ignore_heap(void *address, size_t size)
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->ignoreHeap(address, size);
+  simgrid::mc::Client::get()->ignore_heap(address, size);
 }
 
 void MC_unignore_heap(void* address, size_t size)
@@ -109,5 +109,5 @@ void MC_unignore_heap(void* address, size_t size)
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->unignoreHeap(address, size);
+  simgrid::mc::Client::get()->unignore_heap(address, size);
 }

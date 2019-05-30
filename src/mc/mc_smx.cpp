@@ -19,7 +19,7 @@ using simgrid::mc::remote;
 static inline simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor)
 {
   simgrid::mc::ActorInformation temp;
-  std::size_t offset = (char*) temp.copy.getBuffer() - (char*)&temp;
+  std::size_t offset = (char*)temp.copy.get_buffer() - (char*)&temp;
 
   simgrid::mc::ActorInformation* process_info = (simgrid::mc::ActorInformation*)((char*)actor - offset);
   return process_info;
@@ -77,9 +77,9 @@ void RemoteClient::refresh_simix()
   Remote<simgrid::simix::Global> simix_global =
     this->read<simgrid::simix::Global>(simix_global_p);
 
-  MC_process_refresh_simix_actor_dynar(this, this->smx_actors_infos, remote(simix_global.getBuffer()->actors_vector));
+  MC_process_refresh_simix_actor_dynar(this, this->smx_actors_infos, remote(simix_global.get_buffer()->actors_vector));
   MC_process_refresh_simix_actor_dynar(this, this->smx_dead_actors_infos,
-                                       remote(simix_global.getBuffer()->dead_actors_vector));
+                                       remote(simix_global.get_buffer()->dead_actors_vector));
 
   this->cache_flags_ |= RemoteClient::cache_simix_processes;
 }
@@ -106,10 +106,10 @@ smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall const* req)
   // Lookup by address:
   for (auto& actor : mc_model_checker->process().actors())
     if (actor.address == address)
-      return actor.copy.getBuffer();
+      return actor.copy.get_buffer();
   for (auto& actor : mc_model_checker->process().dead_actors())
     if (actor.address == address)
-      return actor.copy.getBuffer();
+      return actor.copy.get_buffer();
 
   xbt_die("Issuer not found");
 }

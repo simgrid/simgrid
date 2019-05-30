@@ -292,8 +292,8 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(Pair* current_pair, xbt_autom
     next_pair->depth = 1;
   /* Get enabled actors and insert them in the interleave set of the next graph_state */
   for (auto& actor : mc_model_checker->process().actors())
-    if (simgrid::mc::actor_is_enabled(actor.copy.getBuffer()))
-      next_pair->graph_state->addInterleavingSet(actor.copy.getBuffer());
+    if (simgrid::mc::actor_is_enabled(actor.copy.get_buffer()))
+      next_pair->graph_state->addInterleavingSet(actor.copy.get_buffer());
   next_pair->requests = next_pair->graph_state->interleaveSize();
   /* FIXME : get search_cycle value for each accepting state */
   if (next_pair->automaton_state->type == 1 || (current_pair && current_pair->search_cycle))

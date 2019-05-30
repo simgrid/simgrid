@@ -110,7 +110,7 @@ public:
 
   template <class T> inline void read(Remote<T>& buffer, RemotePtr<T> ptr) const
   {
-    this->read_bytes(buffer.getBuffer(), sizeof(T), ptr);
+    this->read_bytes(buffer.get_buffer(), sizeof(T), ptr);
   }
 
   /** Read a given data structure from the address space
