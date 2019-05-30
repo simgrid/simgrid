@@ -65,14 +65,7 @@ protected:
   ChunkedData page_numbers_;
 
 public:
-  RegionSnapshot() {}
-  RegionSnapshot(RegionType type, void* start_addr, void* permanent_addr, size_t size)
-      : region_type_(type)
-      , start_addr_(start_addr)
-      , size_(size)
-      , permanent_addr_(permanent_addr)
-  {
-  }
+  RegionSnapshot(RegionType type, void* start_addr, void* permanent_addr, size_t size);
   ~RegionSnapshot()                     = default;
   RegionSnapshot(RegionSnapshot const&) = delete;
   RegionSnapshot& operator=(RegionSnapshot const&) = delete;
@@ -132,11 +125,6 @@ public:
 
   /** @brief Restore a region from a snapshot */
   void restore();
-};
-
-class RegionSparse : public RegionSnapshot {
-public:
-  RegionSparse(RegionType type, void* start_addr, void* data_addr, std::size_t size);
 };
 
 RegionSnapshot* region(RegionType type, void* start_addr, void* data_addr, std::size_t size);

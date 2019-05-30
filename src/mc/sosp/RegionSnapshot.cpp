@@ -32,11 +32,11 @@ namespace mc {
  */
 RegionSnapshot* region(RegionType type, void* start_addr, void* permanent_addr, size_t size)
 {
-    return new RegionSparse(type, start_addr, permanent_addr, size);
+  return new RegionSnapshot(type, start_addr, permanent_addr, size);
 }
 
-RegionSparse::RegionSparse(RegionType region_type, void* start_addr, void* permanent_addr, size_t size)
-    : RegionSnapshot(region_type, start_addr, permanent_addr, size)
+RegionSnapshot::RegionSnapshot(RegionType region_type, void* start_addr, void* permanent_addr, size_t size)
+    : region_type_(region_type), start_addr_(start_addr), size_(size), permanent_addr_(permanent_addr)
 {
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
