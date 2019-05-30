@@ -21,7 +21,7 @@ pages:
     - public
   only:
   - master
-  allow_fail: true
+  allow_failure: true
 
 ctest:
   stage: build
