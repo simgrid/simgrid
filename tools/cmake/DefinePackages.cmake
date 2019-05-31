@@ -872,6 +872,7 @@ set(DOC_SOURCES
   docs/source/conf.py
   docs/source/Doxyfile
   docs/source/_ext/hidden_code_block.py
+  docs/source/_templates/breadcrumbs.html
 
   docs/source/img/eclipseScreenShot.png
   docs/source/img/extlink.png
