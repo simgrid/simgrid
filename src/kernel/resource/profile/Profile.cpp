@@ -13,6 +13,7 @@
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <ostream>
+#include <sstream>
 #include <unordered_map>
 #include <vector>
 
