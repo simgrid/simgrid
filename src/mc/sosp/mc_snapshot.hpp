@@ -18,7 +18,7 @@ static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, simgr
   auto split                = simgrid::mc::mmu::split(addr - region->start().address());
   auto pageno               = split.first;
   auto offset               = split.second;
-  const void* snapshot_page = region->chunks().page(pageno);
+  const void* snapshot_page = region->get_chunks().page(pageno);
   return (char*)snapshot_page + offset;
 }
 
@@ -92,8 +92,7 @@ public:
   std::vector<s_mc_snapshot_ignored_data_t> ignored_data_;
 
 private:
-  void add_region(RegionType type, ObjectInformation* object_info, void* start_addr, void* permanent_addr,
-                  std::size_t size);
+  void add_region(RegionType type, ObjectInformation* object_info, void* start_addr, std::size_t size);
   void snapshot_regions(simgrid::mc::RemoteClient* process);
   void snapshot_stacks(simgrid::mc::RemoteClient* process);
 };

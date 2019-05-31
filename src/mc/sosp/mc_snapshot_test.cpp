@@ -74,12 +74,12 @@ snap_test_helper::prologue_return snap_test_helper::prologue(int n)
   // Init memory and take snapshots:
   init_memory(source, byte_size);
   simgrid::mc::RegionSnapshot* region0 =
-      new simgrid::mc::RegionSnapshot(simgrid::mc::RegionType::Unknown, source, source, byte_size);
+      new simgrid::mc::RegionSnapshot(simgrid::mc::RegionType::Unknown, source, byte_size);
   for (int i = 0; i < n; i += 2) {
     init_memory((char*)source + i * xbt_pagesize, xbt_pagesize);
   }
   simgrid::mc::RegionSnapshot* region =
-      new simgrid::mc::RegionSnapshot(simgrid::mc::RegionType::Unknown, source, source, byte_size);
+      new simgrid::mc::RegionSnapshot(simgrid::mc::RegionType::Unknown, source, byte_size);
 
   void* destination = mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   INFO("Could not allocate destination memory");
@@ -171,7 +171,7 @@ void snap_test_helper::read_pointer()
   prologue_return ret = prologue(1);
   memcpy(ret.src, &mc_model_checker, sizeof(void*));
   simgrid::mc::RegionSnapshot* region2 =
-      new simgrid::mc::RegionSnapshot(simgrid::mc::RegionType::Unknown, ret.src, ret.src, ret.size);
+      new simgrid::mc::RegionSnapshot(simgrid::mc::RegionType::Unknown, ret.src, ret.size);
   INFO("Mismtach in MC_region_read_pointer()");
   REQUIRE(MC_region_read_pointer(region2, ret.src) == mc_model_checker);
 

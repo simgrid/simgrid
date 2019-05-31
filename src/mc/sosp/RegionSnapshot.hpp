@@ -34,21 +34,10 @@ protected:
   /** @brief Size of the data region in bytes */
   std::size_t size_ = 0;
 
-  /** @brief Permanent virtual address of the region
-   *
-   * This is usually the same address as the simuilated process address.
-   * However, when using SMPI privatization of global variables,
-   * each SMPI process has its own set of global variables stored
-   * at a different virtual address. The scheduler maps those region
-   * on the region of the global variables.
-   *
-   * */
-  void* permanent_addr_ = nullptr;
-
   ChunkedData chunks_;
 
 public:
-  RegionSnapshot(RegionType type, void* start_addr, void* permanent_addr, size_t size);
+  RegionSnapshot(RegionType type, void* start_addr, size_t size);
   ~RegionSnapshot()                     = default;
   RegionSnapshot(RegionSnapshot const&) = delete;
   RegionSnapshot& operator=(RegionSnapshot const&) = delete;
@@ -57,7 +46,6 @@ public:
       , object_info_(that.object_info_)
       , start_addr_(that.start_addr_)
       , size_(that.size_)
-      , permanent_addr_(that.permanent_addr_)
       , chunks_(std::move(that.chunks_))
   {
     that.clear();
@@ -68,7 +56,6 @@ public:
     object_info_        = that.object_info_;
     start_addr_         = that.start_addr_;
     size_               = that.size_;
-    permanent_addr_     = that.permanent_addr_;
     chunks_             = std::move(that.chunks_);
     that.clear();
     return *this;
@@ -83,10 +70,9 @@ public:
     object_info_    = nullptr;
     start_addr_     = nullptr;
     size_           = 0;
-    permanent_addr_ = nullptr;
   }
 
-  ChunkedData const& chunks() const { return chunks_; }
+  ChunkedData const& get_chunks() const { return chunks_; }
 
   simgrid::mc::ObjectInformation* object_info() const { return object_info_; }
   void object_info(simgrid::mc::ObjectInformation* info) { object_info_ = info; }
@@ -95,7 +81,6 @@ public:
 
   RemotePtr<void> start() const { return remote(start_addr_); }
   RemotePtr<void> end() const { return remote((char*)start_addr_ + size_); }
-  RemotePtr<void> permanent_address() const { return remote(permanent_addr_); }
   std::size_t size() const { return size_; }
   RegionType region_type() const { return region_type_; }
 

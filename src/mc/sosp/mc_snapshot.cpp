@@ -94,14 +94,14 @@ void simgrid::mc::Snapshot::snapshot_regions(simgrid::mc::RemoteClient* process)
   snapshot_regions_.clear();
 
   for (auto const& object_info : process->object_infos)
-    add_region(simgrid::mc::RegionType::Data, object_info.get(), object_info->start_rw, object_info->start_rw,
+    add_region(simgrid::mc::RegionType::Data, object_info.get(), object_info->start_rw,
                object_info->end_rw - object_info->start_rw);
 
   xbt_mheap_t heap = process->get_heap();
   void* start_heap = heap->base;
   void* end_heap   = heap->breakval;
 
-  add_region(simgrid::mc::RegionType::Heap, nullptr, start_heap, start_heap, (char*)end_heap - (char*)start_heap);
+  add_region(simgrid::mc::RegionType::Heap, nullptr, start_heap, (char*)end_heap - (char*)start_heap);
   heap_bytes_used_     = mmalloc_get_bytes_used_remote(heap->heaplimit, process->get_malloc_info());
 }
 
@@ -299,15 +299,14 @@ Snapshot::Snapshot(int _num_state, RemoteClient* process)
   snapshot_ignore_restore(this);
 }
 
-void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void* start_addr, void* permanent_addr,
-                          std::size_t size)
+void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void* start_addr, std::size_t size)
 {
   if (type == simgrid::mc::RegionType::Data)
     xbt_assert(object_info, "Missing object info for object.");
   else if (type == simgrid::mc::RegionType::Heap)
     xbt_assert(not object_info, "Unexpected object info for heap region.");
 
-  simgrid::mc::RegionSnapshot* region = new RegionSnapshot(type, start_addr, permanent_addr, size);
+  simgrid::mc::RegionSnapshot* region = new RegionSnapshot(type, start_addr, size);
   region->object_info(object_info);
   snapshot_regions_.push_back(std::unique_ptr<simgrid::mc::RegionSnapshot>(std::move(region)));
 }

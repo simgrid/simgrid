@@ -22,17 +22,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_RegionSnaphot, mc, "Logging specific to regio
 namespace simgrid {
 namespace mc {
 
-RegionSnapshot::RegionSnapshot(RegionType region_type, void* start_addr, void* permanent_addr, size_t size)
-    : region_type_(region_type), start_addr_(start_addr), size_(size), permanent_addr_(permanent_addr)
+RegionSnapshot::RegionSnapshot(RegionType region_type, void* start_addr, size_t size)
+    : region_type_(region_type), start_addr_(start_addr), size_(size)
 {
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize - 1)) == 0, "Start address not at the beginning of a page");
-  xbt_assert((((uintptr_t)permanent_addr) & (xbt_pagesize - 1)) == 0,
-             "Permanent address not at the beginning of a page");
 
-  chunks_ =
-      ChunkedData(mc_model_checker->page_store(), *process, RemotePtr<void>(permanent_addr), mmu::chunk_count(size));
+  chunks_ = ChunkedData(mc_model_checker->page_store(), *process, RemotePtr<void>(start_addr), mmu::chunk_count(size));
 }
 
 /** @brief Restore a region from a snapshot
@@ -41,13 +38,13 @@ RegionSnapshot::RegionSnapshot(RegionType region_type, void* start_addr, void* p
  */
 void RegionSnapshot::restore()
 {
-      xbt_assert(((permanent_address().address()) & (xbt_pagesize - 1)) == 0, "Not at the beginning of a page");
-      xbt_assert(simgrid::mc::mmu::chunk_count(size()) == chunks().page_count());
+  xbt_assert(((start().address()) & (xbt_pagesize - 1)) == 0, "Not at the beginning of a page");
+  xbt_assert(simgrid::mc::mmu::chunk_count(size()) == get_chunks().page_count());
 
-      for (size_t i = 0; i != chunks().page_count(); ++i) {
-        void* target_page = (void*)simgrid::mc::mmu::join(i, (std::uintptr_t)(void*)permanent_address().address());
-        const void* source_page = chunks().page(i);
-        mc_model_checker->process().write_bytes(source_page, xbt_pagesize, remote(target_page));
+  for (size_t i = 0; i != get_chunks().page_count(); ++i) {
+    void* target_page       = (void*)simgrid::mc::mmu::join(i, (std::uintptr_t)(void*)start().address());
+    const void* source_page = get_chunks().page(i);
+    mc_model_checker->process().write_bytes(source_page, xbt_pagesize, remote(target_page));
       }
 }
 
