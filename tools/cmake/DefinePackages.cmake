@@ -635,7 +635,6 @@ set(MC_SRC
   src/mc/sosp/ChunkedData.cpp
   src/mc/sosp/RegionSnapshot.cpp
   src/mc/sosp/RegionSnapshot.hpp
-  src/mc/sosp/mc_checkpoint.cpp
   src/mc/sosp/mc_snapshot.hpp
   src/mc/sosp/mc_snapshot.cpp
   
