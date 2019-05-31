@@ -5,7 +5,8 @@
 
 #include "simgrid/kernel/resource/Resource.hpp"
 #include "src/kernel/lmm/maxmin.hpp" // Constraint
-#include "src/kernel/resource/profile/trace_mgr.hpp"
+#include "src/kernel/resource/profile/FutureEvtSet.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/surf_interface.hpp"
 
 namespace simgrid {
@@ -22,7 +23,7 @@ double Resource::get_load() const
 void Resource::set_state_profile(profile::Profile* profile)
 {
   xbt_assert(state_event_ == nullptr, "Cannot set a second state profile to %s", get_cname());
-  state_event_ = profile->schedule(&future_evt_set, this);
+  state_event_ = profile->schedule(&profile::future_evt_set, this);
 }
 
 } // namespace resource

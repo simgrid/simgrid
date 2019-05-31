@@ -5,12 +5,15 @@
 
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "simgrid/forward.h"
-#include "src/kernel/resource/profile/DatedValue.cpp"
-#include "src/kernel/resource/profile/FutureEvtSet.cpp"
-#include "xbt/log.h"
-#include "xbt/sysdep.h"
+#include "src/kernel/resource/profile/DatedValue.hpp"
+#include "src/kernel/resource/profile/Event.hpp"
+#include "src/kernel/resource/profile/FutureEvtSet.hpp"
+#include "src/surf/surf_interface.hpp"
+
 #include <boost/algorithm/string.hpp>
+#include <fstream>
 #include <ostream>
+#include <unordered_map>
 #include <vector>
 
 static std::unordered_map<std::string, simgrid::kernel::profile::Profile*> trace_list;
@@ -126,3 +129,18 @@ Profile* Profile::from_file(const std::string& path)
 } // namespace profile
 } // namespace kernel
 } // namespace simgrid
+
+void tmgr_finalize()
+{
+  for (auto const& kv : trace_list)
+    delete kv.second;
+  trace_list.clear();
+}
+
+void tmgr_trace_event_unref(simgrid::kernel::profile::Event** event)
+{
+  if ((*event)->free_me) {
+    delete *event;
+    *event = nullptr;
+  }
+}

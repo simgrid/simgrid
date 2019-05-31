@@ -312,8 +312,14 @@ set(SURF_SRC
   src/kernel/resource/Action.cpp
   src/kernel/resource/Model.cpp
   src/kernel/resource/Resource.cpp
-  src/kernel/resource/profile/trace_mgr.hpp
-  src/kernel/resource/profile/trace_mgr.cpp
+
+  src/kernel/resource/profile/DatedValue.cpp
+  src/kernel/resource/profile/DatedValue.hpp
+  src/kernel/resource/profile/Event.hpp
+  src/kernel/resource/profile/FutureEvtSet.cpp
+  src/kernel/resource/profile/FutureEvtSet.hpp
+  src/kernel/resource/profile/Profile.cpp
+  src/kernel/resource/profile/Profile.hpp
 
   src/kernel/routing/ClusterZone.cpp
   src/kernel/routing/DijkstraZone.cpp

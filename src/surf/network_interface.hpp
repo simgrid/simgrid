@@ -10,7 +10,6 @@
 #include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/s4u/Link.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
-#include "src/kernel/resource/profile/trace_mgr.hpp"
 #include "src/surf/PropertyHolder.hpp"
 
 #include <list>

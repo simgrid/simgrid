@@ -6,7 +6,9 @@
 #include "catch.hpp"
 
 #include "simgrid/kernel/resource/Resource.hpp"
-#include "src/kernel/resource/profile/trace_mgr.hpp"
+#include "src/kernel/resource/profile/DatedValue.hpp"
+#include "src/kernel/resource/profile/Event.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/surf_interface.hpp"
 
 #include "xbt/log.h"

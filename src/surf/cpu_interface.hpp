@@ -10,7 +10,6 @@
 #include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
-#include "src/kernel/resource/profile/trace_mgr.hpp"
 
 #include <list>
 

@@ -6,6 +6,8 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/resource/profile/FutureEvtSet.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"

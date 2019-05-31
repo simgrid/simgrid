@@ -4,10 +4,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
+#include "src/kernel/resource/profile/Event.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 
 namespace simgrid {
 namespace kernel {
 namespace profile {
+
+simgrid::kernel::profile::FutureEvtSet future_evt_set; // FIXME: singleton antipattern
 
 FutureEvtSet::FutureEvtSet() = default;
 FutureEvtSet::~FutureEvtSet()

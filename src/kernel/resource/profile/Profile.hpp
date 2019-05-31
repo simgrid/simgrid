@@ -3,25 +3,19 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef PROFILE_HPP
-#define PROFILE_HPP
+#ifndef SIMGRID_KERNEL_PROFILE_HPP
+#define SIMGRID_KERNEL_PROFILE_HPP
 
+#include "simgrid/forward.h"
 #include "src/kernel/resource/profile/DatedValue.hpp"
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
+
 #include <queue>
 #include <vector>
 
 namespace simgrid {
 namespace kernel {
 namespace profile {
-
-class Event {
-public:
-  Profile* profile;
-  unsigned int idx;
-  resource::Resource* resource;
-  bool free_me;
-};
 
 /** @brief A profile is a set of timed values, encoding the value that a variable takes at what time
  *
@@ -49,5 +43,8 @@ private:
 } // namespace profile
 } // namespace kernel
 } // namespace simgrid
+
+/** Module finalizer: frees all profiles */
+XBT_PUBLIC void tmgr_finalize();
 
 #endif

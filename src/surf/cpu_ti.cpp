@@ -4,7 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_ti.hpp"
-#include "src/kernel/resource/profile/trace_mgr.hpp"
+#include "src/kernel/resource/profile/Event.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
@@ -350,7 +351,7 @@ void CpuTi::set_speed_profile(kernel::profile::Profile* profile)
     kernel::profile::DatedValue val = profile->event_list.back();
     if (val.date_ < 1e-12) {
       simgrid::kernel::profile::Profile* prof = new simgrid::kernel::profile::Profile();
-      speed_.event                            = prof->schedule(&future_evt_set, this);
+      speed_.event                            = prof->schedule(&profile::future_evt_set, this);
     }
   }
 }

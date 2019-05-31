@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_interface.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
@@ -129,7 +130,7 @@ void Cpu::set_speed_profile(kernel::profile::Profile* profile)
 {
   xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", host_->get_cname());
 
-  speed_.event = profile->schedule(&future_evt_set, this);
+  speed_.event = profile->schedule(&profile::future_evt_set, this);
 }
 
 

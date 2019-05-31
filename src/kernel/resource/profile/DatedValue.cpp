@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-//#include "src/kernel/resource/profile/DatedValue.hpp"
+#include "src/kernel/resource/profile/DatedValue.hpp"
 #include <math.h>
 
 namespace simgrid {

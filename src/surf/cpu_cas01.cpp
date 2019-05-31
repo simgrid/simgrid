@@ -5,6 +5,7 @@
 
 #include "cpu_cas01.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/resource/profile/Event.hpp"
 #include "src/surf/cpu_ti.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"

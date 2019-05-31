@@ -7,6 +7,8 @@
 #include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/resource/profile/FutureEvtSet.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/simgrid/version.h"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf.hpp"

@@ -3,9 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <queue>
 #ifndef FUTUREEVTSET_HPP
 #define FUTUREEVTSET_HPP
+
+#include "simgrid/forward.h"
+#include <queue>
 
 namespace simgrid {
 namespace kernel {
@@ -27,6 +29,9 @@ private:
   typedef std::pair<double, Event*> Qelt;
   std::priority_queue<Qelt, std::vector<Qelt>, std::greater<Qelt>> heap_;
 };
+
+// FIXME: kill that singleton
+extern XBT_PRIVATE simgrid::kernel::profile::FutureEvtSet future_evt_set;
 
 } // namespace profile
 } // namespace kernel

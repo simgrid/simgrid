@@ -3,6 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef SIMGRID_KERNEL_PROFILE_DATEDVALUE
+#define SIMGRID_KERNEL_PROFILE_DATEDVALUE
+
+#include "simgrid/forward.h"
 #include <iostream>
 
 namespace simgrid {
@@ -33,3 +37,5 @@ std::ostream& operator<<(std::ostream& out, const DatedValue& e);
 } // namespace profile
 } // namespace kernel
 } // namespace simgrid
+
+#endif
