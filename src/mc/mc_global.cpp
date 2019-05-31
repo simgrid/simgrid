@@ -17,7 +17,7 @@
 #include "src/mc/mc_safety.hpp"
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/remote/Client.hpp"
-#include "src/mc/sosp/mc_snapshot.hpp"
+#include "src/mc/sosp/Snapshot.hpp"
 #include "xbt/backtrace.hpp"
 
 #include <libunwind.h>

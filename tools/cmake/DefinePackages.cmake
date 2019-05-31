@@ -633,10 +633,10 @@ set(MC_SRC
   src/mc/sosp/PageStore.cpp
   src/mc/sosp/ChunkedData.hpp
   src/mc/sosp/ChunkedData.cpp
-  src/mc/sosp/RegionSnapshot.cpp
-  src/mc/sosp/RegionSnapshot.hpp
-  src/mc/sosp/mc_snapshot.hpp
-  src/mc/sosp/mc_snapshot.cpp
+  src/mc/sosp/Region.cpp
+  src/mc/sosp/Region.hpp
+  src/mc/sosp/Snapshot.hpp
+  src/mc/sosp/Snapshot.cpp
   
   src/mc/AddressSpace.hpp
   src/mc/ModelChecker.hpp

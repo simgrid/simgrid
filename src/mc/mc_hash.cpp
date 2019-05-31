@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <cinttypes>
-
 #include <cstdint>
 
 #include "xbt/log.h"
@@ -12,7 +11,7 @@
 #include "mc/datatypes.h"
 #include "src/mc/mc_hash.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/sosp/mc_snapshot.hpp"
+#include "src/mc/sosp/Snapshot.hpp"
 #include <mc/mc.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_hash, mc, "Logging specific to mc_hash");

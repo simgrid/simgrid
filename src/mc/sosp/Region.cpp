@@ -3,19 +3,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstdlib>
-
-#include <sys/mman.h>
-#ifdef __FreeBSD__
-#define MAP_POPULATE MAP_PREFAULT_READ
-#endif
-
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_forward.hpp"
 
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/sosp/RegionSnapshot.hpp"
+#include "src/mc/sosp/Region.hpp"
+
+#include <cstdlib>
+#include <sys/mman.h>
+#ifdef __FreeBSD__
+#define MAP_POPULATE MAP_PREFAULT_READ
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_RegionSnaphot, mc, "Logging specific to region snapshots");
 
@@ -45,7 +44,7 @@ void RegionSnapshot::restore()
     void* target_page       = (void*)simgrid::mc::mmu::join(i, (std::uintptr_t)(void*)start().address());
     const void* source_page = get_chunks().page(i);
     mc_model_checker->process().write_bytes(source_page, xbt_pagesize, remote(target_page));
-      }
+  }
 }
 
 } // namespace mc

@@ -102,9 +102,9 @@ set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
                 src/xbt/dynar_test.cpp
                 src/xbt/xbt_str_test.cpp)
 if (SIMGRID_HAVE_MC)
-  set(UNIT_TESTS ${UNIT_TESTS} src/mc/sosp/mc_snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
+  set(UNIT_TESTS ${UNIT_TESTS} src/mc/sosp/Snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
 else()
-  set(EXTRA_DIST ${EXTRA_DIST} src/mc/sosp/mc_snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
+  set(EXTRA_DIST ${EXTRA_DIST} src/mc/sosp/Snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
 endif()  
 
 add_executable       (unit-tests ${UNIT_TESTS})

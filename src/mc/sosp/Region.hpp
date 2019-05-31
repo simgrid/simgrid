@@ -52,11 +52,11 @@ public:
   }
   RegionSnapshot& operator=(RegionSnapshot&& that)
   {
-    region_type_        = that.region_type_;
-    object_info_        = that.object_info_;
-    start_addr_         = that.start_addr_;
-    size_               = that.size_;
-    chunks_             = std::move(that.chunks_);
+    region_type_ = that.region_type_;
+    object_info_ = that.object_info_;
+    start_addr_  = that.start_addr_;
+    size_        = that.size_;
+    chunks_      = std::move(that.chunks_);
     that.clear();
     return *this;
   }
@@ -65,11 +65,11 @@ public:
 
   void clear()
   {
-    region_type_  = UnknownRegion;
+    region_type_ = UnknownRegion;
     chunks_.clear();
-    object_info_    = nullptr;
-    start_addr_     = nullptr;
-    size_           = 0;
+    object_info_ = nullptr;
+    start_addr_  = nullptr;
+    size_        = 0;
   }
 
   ChunkedData const& get_chunks() const { return chunks_; }

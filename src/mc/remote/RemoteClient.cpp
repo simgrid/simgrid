@@ -7,10 +7,10 @@
 
 #include "src/mc/remote/RemoteClient.hpp"
 
+#include "src/mc/mc_smx.hpp"
+#include "src/mc/sosp/Snapshot.hpp"
 #include "xbt/file.hpp"
 #include "xbt/log.h"
-#include "src/mc/mc_smx.hpp"
-#include "src/mc/sosp/mc_snapshot.hpp"
 
 #include <fcntl.h>
 #include <libunwind-ptrace.h>

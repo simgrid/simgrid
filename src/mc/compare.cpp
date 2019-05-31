@@ -8,7 +8,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/sosp/mc_snapshot.hpp"
+#include "src/mc/sosp/Snapshot.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, xbt, "Logging specific to mc_compare in mc");
 

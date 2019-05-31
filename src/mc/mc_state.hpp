@@ -6,9 +6,9 @@
 #ifndef SIMGRID_MC_STATE_HPP
 #define SIMGRID_MC_STATE_HPP
 
-#include "src/mc/sosp/mc_snapshot.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/Transition.hpp"
+#include "src/mc/sosp/Snapshot.hpp"
 
 namespace simgrid {
 namespace mc {

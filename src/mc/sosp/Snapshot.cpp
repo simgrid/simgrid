@@ -3,12 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstddef> /* std::size_t */
-
+#include "src/mc/sosp/Snapshot.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_hash.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/sosp/mc_snapshot.hpp"
+
+#include <cstddef> /* std::size_t */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_snapshot, mc, "Taking and restoring snapshots");
 
@@ -67,7 +67,7 @@ int MC_snapshot_region_memcmp(const void* addr1, simgrid::mc::RegionSnapshot* re
 {
   // Using alloca() for large allocations may trigger stack overflow:
   // use malloc if the buffer is too big.
-  bool stack_alloc = size < 64;
+  bool stack_alloc    = size < 64;
   void* buffer1a      = stack_alloc ? alloca(size) : ::operator new(size);
   void* buffer2a      = stack_alloc ? alloca(size) : ::operator new(size);
   const void* buffer1 = MC_region_read(region1, buffer1a, addr1, size);
@@ -102,7 +102,7 @@ void simgrid::mc::Snapshot::snapshot_regions(simgrid::mc::RemoteClient* process)
   void* end_heap   = heap->breakval;
 
   add_region(simgrid::mc::RegionType::Heap, nullptr, start_heap, (char*)end_heap - (char*)start_heap);
-  heap_bytes_used_     = mmalloc_get_bytes_used_remote(heap->heaplimit, process->get_malloc_info());
+  heap_bytes_used_ = mmalloc_get_bytes_used_remote(heap->heaplimit, process->get_malloc_info());
 }
 
 /** @brief Checks whether the variable is in scope for a given IP.
@@ -274,11 +274,7 @@ static void snapshot_ignore_restore(simgrid::mc::Snapshot* snapshot)
 }
 
 Snapshot::Snapshot(int num_state, RemoteClient* process)
-    : AddressSpace(process)
-    , num_state_(num_state)
-    , heap_bytes_used_(0)
-    , enabled_processes_()
-    , hash_(0)
+    : AddressSpace(process), num_state_(num_state), heap_bytes_used_(0), enabled_processes_(), hash_(0)
 {
   XBT_DEBUG("Taking snapshot %i", num_state);
 

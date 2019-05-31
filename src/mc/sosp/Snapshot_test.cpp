@@ -5,7 +5,7 @@
 
 #include "src/include/catch.hpp"
 #include "src/mc/mc_config.hpp"
-#include "src/mc/sosp/mc_snapshot.hpp"
+#include "src/mc/sosp/Snapshot.hpp"
 
 #include <cstddef>
 #include <random>

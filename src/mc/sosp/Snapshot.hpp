@@ -9,7 +9,7 @@
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/inspect/mc_unw.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
-#include "src/mc/sosp/RegionSnapshot.hpp"
+#include "src/mc/sosp/Region.hpp"
 
 // ***** Snapshot region
 
@@ -129,14 +129,14 @@ static XBT_ALWAYS_INLINE const void* MC_region_read(simgrid::mc::RegionSnapshot*
 
   xbt_assert(region->contain(simgrid::mc::remote(addr)), "Trying to read out of the region boundary.");
 
-      // Last byte of the region:
-      void* end = (char*)addr + size - 1;
-      if (simgrid::mc::mmu::same_chunk((std::uintptr_t)addr, (std::uintptr_t)end)) {
-        // The memory is contained in a single page:
-        return mc_translate_address_region((uintptr_t)addr, region);
-      }
-      // Otherwise, the memory spans several pages:
-      return MC_region_read_fragmented(region, target, addr, size);
+  // Last byte of the region:
+  void* end = (char*)addr + size - 1;
+  if (simgrid::mc::mmu::same_chunk((std::uintptr_t)addr, (std::uintptr_t)end)) {
+    // The memory is contained in a single page:
+    return mc_translate_address_region((uintptr_t)addr, region);
+  }
+  // Otherwise, the memory spans several pages:
+  return MC_region_read_fragmented(region, target, addr, size);
 }
 
 static XBT_ALWAYS_INLINE void* MC_region_read_pointer(simgrid::mc::RegionSnapshot* region, const void* addr)
