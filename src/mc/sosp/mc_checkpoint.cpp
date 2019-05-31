@@ -96,14 +96,5 @@ void find_object_address(std::vector<simgrid::xbt::VmMap> const& maps, simgrid::
   xbt_assert(result->start_exec || result->start_rw || result->start_ro);
 }
 
-
-std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
-{
-  XBT_DEBUG("Taking snapshot %i", num_state);
-
-  std::shared_ptr<simgrid::mc::Snapshot> snapshot = std::make_shared<simgrid::mc::Snapshot>(num_state);
-  return snapshot;
-}
-
 } // namespace mc
 } // namespace simgrid

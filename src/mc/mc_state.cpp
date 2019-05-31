@@ -27,7 +27,7 @@ State::State(unsigned long state_number) : num(state_number)
   actorStates.resize(MC_smx_get_maxpid());
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (state_number % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
-    system_state = simgrid::mc::take_snapshot(num);
+    system_state = std::make_shared<simgrid::mc::Snapshot>(num);
     if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
       MC_state_copy_incomplete_communications_pattern(this);
       MC_state_copy_index_communications_pattern(this);

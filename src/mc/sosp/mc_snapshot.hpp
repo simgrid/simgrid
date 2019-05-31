@@ -101,13 +101,6 @@ private:
 
 static const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot);
 
-namespace simgrid {
-namespace mc {
-
-XBT_PRIVATE std::shared_ptr<Snapshot> take_snapshot(int num_state);
-} // namespace mc
-} // namespace simgrid
-
 const void* MC_region_read_fragmented(simgrid::mc::RegionSnapshot* region, void* target, const void* addr,
                                       std::size_t size);
 

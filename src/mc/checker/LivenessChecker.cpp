@@ -30,7 +30,7 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
 
   this->graph_state = std::move(graph_state);
   if(this->graph_state->system_state == nullptr)
-    this->graph_state->system_state = simgrid::mc::take_snapshot(pair_num);
+    this->graph_state->system_state = std::make_shared<simgrid::mc::Snapshot>(pair_num);
   this->heap_bytes_used = mmalloc_get_bytes_used_remote(process->get_heap()->heaplimit, process->get_malloc_info());
 
   this->actors_count = mc_model_checker->process().actors().size();

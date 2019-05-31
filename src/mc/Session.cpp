@@ -101,7 +101,7 @@ void Session::initialize()
 {
   xbt_assert(initial_snapshot_ == nullptr);
   mc_model_checker->wait_for_requests();
-  initial_snapshot_ = simgrid::mc::take_snapshot(0);
+  initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0);
 }
 
 void Session::execute(Transition const& transition)
