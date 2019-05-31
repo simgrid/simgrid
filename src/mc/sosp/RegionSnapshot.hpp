@@ -45,7 +45,7 @@ protected:
    * */
   void* permanent_addr_ = nullptr;
 
-  ChunkedData page_numbers_;
+  ChunkedData chunks_;
 
 public:
   RegionSnapshot(RegionType type, void* start_addr, void* permanent_addr, size_t size);
@@ -58,7 +58,7 @@ public:
       , start_addr_(that.start_addr_)
       , size_(that.size_)
       , permanent_addr_(that.permanent_addr_)
-      , page_numbers_(std::move(that.page_numbers_))
+      , chunks_(std::move(that.chunks_))
   {
     that.clear();
   }
@@ -69,7 +69,7 @@ public:
     start_addr_         = that.start_addr_;
     size_               = that.size_;
     permanent_addr_     = that.permanent_addr_;
-    page_numbers_       = std::move(that.page_numbers_);
+    chunks_             = std::move(that.chunks_);
     that.clear();
     return *this;
   }
@@ -79,19 +79,14 @@ public:
   void clear()
   {
     region_type_  = UnknownRegion;
-    page_numbers_.clear();
+    chunks_.clear();
     object_info_    = nullptr;
     start_addr_     = nullptr;
     size_           = 0;
     permanent_addr_ = nullptr;
   }
 
-  void clear_data()
-  {
-    page_numbers_.clear();
-  }
-
-  ChunkedData const& page_data() const { return page_numbers_; }
+  ChunkedData const& chunks() const { return chunks_; }
 
   simgrid::mc::ObjectInformation* object_info() const { return object_info_; }
   void object_info(simgrid::mc::ObjectInformation* info) { object_info_ = info; }

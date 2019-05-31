@@ -18,7 +18,7 @@ static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, simgr
   auto split                = simgrid::mc::mmu::split(addr - region->start().address());
   auto pageno               = split.first;
   auto offset               = split.second;
-  const void* snapshot_page = region->page_data().page(pageno);
+  const void* snapshot_page = region->chunks().page(pageno);
   return (char*)snapshot_page + offset;
 }
 
