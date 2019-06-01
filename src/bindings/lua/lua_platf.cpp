@@ -7,20 +7,22 @@
 
 #include "lua_private.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf_private.hpp"
-#include <cctype>
-#include <cstring>
-
-#include <lauxlib.h>
-
 #include "src/surf/surf_private.hpp"
+#include "src/surf/xml/platf_private.hpp"
+
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
+
+#include <cctype>
+#include <cstring>
 #include <string>
 #include <vector>
+
+#include <lauxlib.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(lua_platf, "Lua bindings (platform module)");
 
