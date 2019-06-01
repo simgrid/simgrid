@@ -10,6 +10,7 @@
 #include "src/mc/inspect/Frame.hpp"
 #include "src/mc/inspect/ObjectInformation.hpp"
 #include "src/mc/inspect/Variable.hpp"
+#include "src/mc/mc_private.hpp"
 #include "xbt/file.hpp"
 
 namespace simgrid {
