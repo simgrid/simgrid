@@ -19,8 +19,8 @@ namespace lmm {
 
 typedef std::vector<int> dyn_light_t;
 
-int Variable::Global_debug_id_  = 1;
-int Constraint::Global_debug_id_ = 1;
+int Variable::next_rank_   = 1;
+int Constraint::next_rank_ = 1;
 
 System* make_new_maxmin_system(bool selective_update)
 {
@@ -153,7 +153,7 @@ System::~System()
   while ((var = extract_variable())) {
     auto demangled = simgrid::xbt::demangle(typeid(*var->id_).name());
     XBT_WARN("Probable bug: a %s variable (#%d) not removed before the LMM system destruction.", demangled.get(),
-             var->id_int_);
+             var->rank_);
     var_free(var);
   }
   while ((cnst = extract_constraint()))
@@ -171,7 +171,7 @@ void System::cnst_free(Constraint* cnst)
 
 Constraint::Constraint(void* id_value, double bound_value) : bound_(bound_value), id_(id_value)
 {
-  id_int_ = Global_debug_id_++;
+  rank_ = next_rank_++;
 
   remaining_           = 0.0;
   usage_               = 0.0;
@@ -421,7 +421,7 @@ static void format_element_list(const ElemList& elem_list, s4u::Link::SharingPol
                                 std::string& buf)
 {
   for (Element const& elem : elem_list) {
-    buf += std::to_string(elem.consumption_weight) + ".'" + std::to_string(elem.variable->id_int_) + "'(" +
+    buf += std::to_string(elem.consumption_weight) + ".'" + std::to_string(elem.variable->rank_) + "'(" +
            std::to_string(elem.variable->value_) + ")" +
            (sharing_policy != s4u::Link::SharingPolicy::FATPIPE ? " + " : " , ");
     if (sharing_policy != s4u::Link::SharingPolicy::FATPIPE)
@@ -437,7 +437,7 @@ void System::print() const
 
   /* Printing Objective */
   for (Variable const& var : variable_set)
-    buf += "'" + std::to_string(var.id_int_) + "'(" + std::to_string(var.sharing_weight_) + ") ";
+    buf += "'" + std::to_string(var.rank_) + "'(" + std::to_string(var.sharing_weight_) + ") ";
   buf += ")";
   XBT_DEBUG("%20s", buf.c_str());
   buf.clear();
@@ -453,7 +453,7 @@ void System::print() const
     // TODO: Adding disabled elements only for test compatibility, but do we really want them to be printed?
     format_element_list(cnst.disabled_element_set_, cnst.sharing_policy_, sum, buf);
 
-    buf += "0) <= " + std::to_string(cnst.bound_) + " ('" + std::to_string(cnst.id_int_) + "')";
+    buf += "0) <= " + std::to_string(cnst.bound_) + " ('" + std::to_string(cnst.rank_) + "')";
 
     if (cnst.sharing_policy_ == s4u::Link::SharingPolicy::FATPIPE) {
       buf += " [MAX-Constraint]";
@@ -468,11 +468,11 @@ void System::print() const
   /* Printing Result */
   for (Variable const& var : variable_set) {
     if (var.bound_ > 0) {
-      XBT_DEBUG("'%d'(%f) : %f (<=%f)", var.id_int_, var.sharing_weight_, var.value_, var.bound_);
+      XBT_DEBUG("'%d'(%f) : %f (<=%f)", var.rank_, var.sharing_weight_, var.value_, var.bound_);
       xbt_assert(not double_positive(var.value_ - var.bound_, var.bound_ * sg_maxmin_precision),
                  "Incorrect value (%f is not smaller than %f", var.value_, var.bound_);
     } else {
-      XBT_DEBUG("'%d'(%f) : %f", var.id_int_, var.sharing_weight_, var.value_);
+      XBT_DEBUG("'%d'(%f) : %f", var.rank_, var.sharing_weight_, var.value_);
     }
   }
 }
@@ -531,7 +531,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
           modified_set_->push_back(*action);
       }
     }
-    XBT_DEBUG("Constraint '%d' usage: %f remaining: %f concurrency: %i<=%i<=%i", cnst.id_int_, cnst.usage_,
+    XBT_DEBUG("Constraint '%d' usage: %f remaining: %f concurrency: %i<=%i<=%i", cnst.rank_, cnst.usage_,
               cnst.remaining_, cnst.concurrency_current_, cnst.concurrency_maximum_, cnst.get_concurrency_limit());
     /* Saturated constraints update */
 
@@ -557,7 +557,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
       if (var.sharing_weight_ <= 0.0)
         DIE_IMPOSSIBLE;
       /* First check if some of these variables could reach their upper bound and update min_bound accordingly. */
-      XBT_DEBUG("var=%d, var.bound=%f, var.weight=%f, min_usage=%f, var.bound*var.weight=%f", var.id_int_, var.bound_,
+      XBT_DEBUG("var=%d, var.bound=%f, var.weight=%f, min_usage=%f, var.bound*var.weight=%f", var.rank_, var.bound_,
                 var.sharing_weight_, min_usage, var.bound_ * var.sharing_weight_);
       if ((var.bound_ > 0) && (var.bound_ * var.sharing_weight_ < min_usage)) {
         if (min_bound < 0)
@@ -574,21 +574,21 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
         // If no variable could reach its bound, deal iteratively the constraints usage ( at worst one constraint is
         // saturated at each cycle)
         var.value_ = min_usage / var.sharing_weight_;
-        XBT_DEBUG("Setting var (%d) value to %f\n", var.id_int_, var.value_);
+        XBT_DEBUG("Setting var (%d) value to %f\n", var.rank_, var.value_);
       } else {
         // If there exist a variable that can reach its bound, only update it (and other with the same bound) for now.
         if (double_equals(min_bound, var.bound_ * var.sharing_weight_, sg_maxmin_precision)) {
           var.value_ = var.bound_;
-          XBT_DEBUG("Setting %p (%d) value to %f\n", &var, var.id_int_, var.value_);
+          XBT_DEBUG("Setting %p (%d) value to %f\n", &var, var.rank_, var.value_);
         } else {
           // Variables which bound is different are not considered for this cycle, but they will be afterwards.
-          XBT_DEBUG("Do not consider %p (%d) \n", &var, var.id_int_);
+          XBT_DEBUG("Do not consider %p (%d) \n", &var, var.rank_);
           var_list.pop_front();
           continue;
         }
       }
-      XBT_DEBUG("Min usage: %f, Var(%d).weight: %f, Var(%d).value: %f ", min_usage, var.id_int_, var.sharing_weight_,
-                var.id_int_, var.value_);
+      XBT_DEBUG("Min usage: %f, Var(%d).weight: %f, Var(%d).value: %f ", min_usage, var.rank_, var.sharing_weight_,
+                var.rank_, var.value_);
 
       /* Update the usage of contraints where this variable is involved */
       for (Element& elem : var.cnsts_) {
@@ -702,7 +702,7 @@ void Variable::initialize(resource::Action* id_value, double sharing_weight_valu
                           int number_of_constraints, unsigned visited_value)
 {
   id_     = id_value;
-  id_int_ = Global_debug_id_++;
+  rank_   = next_rank_++;
   cnsts_.reserve(number_of_constraints);
   sharing_weight_    = sharing_weight_value;
   staged_weight_     = 0.0;

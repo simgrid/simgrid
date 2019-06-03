@@ -76,7 +76,7 @@ double Model::next_occuring_event_lazy(double now)
       max_duration_flag = true;
     }
 
-    XBT_DEBUG("Action(%p) corresponds to variable %d", action, action->get_variable()->id_int_);
+    XBT_DEBUG("Action(%p) corresponds to variable %d", action, action->get_variable()->rank_);
 
     XBT_DEBUG("Action(%p) Start %f. May finish at %f (got a share of %f). Max_duration %f", action,
               action->get_start_time(), min, share, action->get_max_duration());

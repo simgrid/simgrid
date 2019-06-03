@@ -284,13 +284,13 @@ public:
                              * any given time (essentially for tracing)*/
 
   s4u::Link::SharingPolicy sharing_policy_;
-  int id_int_;
+  int rank_; // Only used in debug messages to identify the constraint
   double lambda_;
   double new_lambda_;
   ConstraintLight* cnst_light_;
 
 private:
-  static int Global_debug_id_;
+  static int next_rank_;  // To give a separate rank_ to each contraint
   int concurrency_limit_; /* The maximum number of variables that may be enabled at any time (stage variables if
                            * necessary) */
   void* id_;
@@ -386,7 +386,7 @@ public:
   double value_;
   short int concurrency_share_; /* The maximum number of elements that variable will add to a constraint */
   resource::Action* id_;
-  int id_int_;
+  int rank_;         // Only used in debug messages to identify the variable
   unsigned visited_; /* used by System::update_modified_set() */
   /* \begin{For Lagrange only} */
   double mu_;
@@ -394,7 +394,7 @@ public:
   /* \end{For Lagrange only} */
 
 private:
-  static int Global_debug_id_;
+  static int next_rank_; // To give a separate rank_ to each variable
 };
 
 inline void Element::make_active()
