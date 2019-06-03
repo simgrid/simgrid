@@ -38,7 +38,6 @@ ModelChecker::ModelChecker(std::unique_ptr<RemoteClient> process)
     , signal_event_(nullptr)
     , page_store_(500)
     , process_(std::move(process))
-    , parent_snapshot_(nullptr)
 {
 
 }
