@@ -43,7 +43,6 @@ $ ${bindir:=.}/basic-parsing-test ../platforms/properties.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/optim' to 'TI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'host/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '0.000010'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vegas'
 > Workstation number: 1, link number: 1
 
 $ ${bindir:=.}/basic-parsing-test ../platforms/properties.xml --cfg=cpu/optim:TI
@@ -51,6 +50,5 @@ $ ${bindir:=.}/basic-parsing-test ../platforms/properties.xml --cfg=cpu/optim:TI
 > [0.000000] [surf_parse/INFO] The custom configuration 'cpu/optim' is already defined by user!
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'host/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '0.000010'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vegas'
 > Workstation number: 1, link number: 1
 

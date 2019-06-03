@@ -25,20 +25,9 @@ namespace lmm = simgrid::kernel::lmm;
 /*  ==l1==  L2  ==L3==           */
 /*        ------                 */
 
-enum method_t { MAXMIN, LAGRANGE_RENO, LAGRANGE_VEGAS };
-
-static lmm::System* new_system(method_t method)
+static lmm::System* new_system()
 {
-  /* selective update would need real actions instead of NULL as a first parameter to the variable constructor */
-  switch (method) {
-    case MAXMIN:
-      return lmm::make_new_maxmin_system(false);
-    case LAGRANGE_VEGAS:
-    case LAGRANGE_RENO:
-      return lmm::make_new_lagrange_system(false);
-    default:
-      xbt_die("Invalid method");
-  }
+  return lmm::make_new_maxmin_system(false);
 }
 
 double a_test_1 = 0;
@@ -99,17 +88,12 @@ static double dichotomy(double min, double max, double min_error)
   return ((min + max) / 2.0);
 }
 
-static void test1(method_t method)
+static void test1()
 {
   double a = 1.0;
   double b = 10.0;
 
-  if (method == LAGRANGE_VEGAS)
-    lmm::Lagrange::set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
-  else if (method == LAGRANGE_RENO)
-    lmm::Lagrange::set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
-
-  lmm::System* Sys    = new_system(method);
+  lmm::System* Sys    = new_system();
   lmm::Constraint* L1 = Sys->constraint_new(nullptr, a);
   lmm::Constraint* L2 = Sys->constraint_new(nullptr, b);
   lmm::Constraint* L3 = Sys->constraint_new(nullptr, a);
@@ -132,49 +116,7 @@ static void test1(method_t method)
   Sys->expand(L2, R_2, 1.0);
   Sys->expand(L3, R_3, 1.0);
 
-  if (method == MAXMIN) {
-    Sys->solve();
-  } else {
-    double x;
-    if (method == LAGRANGE_VEGAS) {
-      x = 3 * a / 4 - 3 * b / 8 + sqrt(9 * b * b + 4 * a * a - 4 * a * b) / 8;
-      /* Computed with mupad and D_f=1.0 */
-      if (x > a) {
-        x = a;
-      }
-      if (x < 0) {
-        x = 0;
-      }
-    } else if (method == LAGRANGE_RENO) {
-      a_test_1 = a;
-      b_test_1 = b;
-      x        = dichotomy(0, a, 1e-13);
-
-      if (x < 0)
-        x = 0;
-      if (x > a)
-        x = a;
-    } else {
-      xbt_die( "Invalid method");
-    }
-
-    Sys->solve();
-
-    double max_deviation = 0.0;
-    max_deviation        = std::max(max_deviation, fabs(R_1->get_value() - x));
-    max_deviation        = std::max(max_deviation, fabs(R_3->get_value() - x));
-    max_deviation        = std::max(max_deviation, fabs(R_2->get_value() - (b - a + x)));
-    max_deviation        = std::max(max_deviation, fabs(R_1_2_3->get_value() - (a - x)));
-
-    if (max_deviation > 0.00001) { // Legacy value used in lagrange.c
-      XBT_WARN("Max Deviation from optimal solution : %g", max_deviation);
-      XBT_WARN("Found x = %1.20f", x);
-      XBT_WARN("Deviation from optimal solution (R_1 = %g): %1.20f", x, R_1->get_value() - x);
-      XBT_WARN("Deviation from optimal solution (R_2 = %g): %1.20f", b - a + x, R_2->get_value() - (b - a + x));
-      XBT_WARN("Deviation from optimal solution (R_3 = %g): %1.20f", x, R_3->get_value() - x);
-      XBT_WARN("Deviation from optimal solution (R_1_2_3 = %g): %1.20f", a - x, R_1_2_3->get_value() - (a - x));
-    }
-  }
+  Sys->solve();
 
   PRINT_VAR(R_1_2_3);
   PRINT_VAR(R_1);
@@ -188,14 +130,9 @@ static void test1(method_t method)
   delete Sys;
 }
 
-static void test2(method_t method)
+static void test2()
 {
-  if (method == LAGRANGE_VEGAS)
-    lmm::Lagrange::set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
-  if (method == LAGRANGE_RENO)
-    lmm::Lagrange::set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
-
-  lmm::System* Sys = new_system(method);
+  lmm::System* Sys = new_system();
 
   lmm::Constraint* CPU1 = Sys->constraint_new(nullptr, 200.0);
   lmm::Constraint* CPU2 = Sys->constraint_new(nullptr, 100.0);
@@ -219,7 +156,7 @@ static void test2(method_t method)
   delete Sys;
 }
 
-static void test3(method_t method)
+static void test3()
 {
   int flows = 11;
   int links = 10;
@@ -256,12 +193,7 @@ static void test3(method_t method)
   A[13][14] =                                        1.0;
   A[14][15] =                                        1.0;
 
-  if (method == LAGRANGE_VEGAS)
-    lmm::Lagrange::set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
-  if (method == LAGRANGE_RENO)
-    lmm::Lagrange::set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
-
-  lmm::System* Sys = new_system(method);
+  lmm::System* Sys = new_system();
 
   /* Creates the constraints */
   lmm::Constraint** tmp_cnst = new lmm::Constraint*[15];
@@ -299,26 +231,14 @@ static void test3(method_t method)
 int main(int argc, char** argv)
 {
   MSG_init(&argc, argv);
-  XBT_INFO("***** Test 1 (Max-Min)");
-  test1(MAXMIN);
-  XBT_INFO("***** Test 1 (Lagrange - Vegas)");
-  test1(LAGRANGE_VEGAS);
-  XBT_INFO("***** Test 1 (Lagrange - Reno)");
-  test1(LAGRANGE_RENO);
+  XBT_INFO("***** Test 1");
+  test1();
 
-  XBT_INFO("***** Test 2 (Max-Min)");
-  test2(MAXMIN);
-  XBT_INFO("***** Test 2 (Lagrange - Vegas)");
-  test2(LAGRANGE_VEGAS);
-  XBT_INFO("***** Test 2 (Lagrange - Reno)");
-  test2(LAGRANGE_RENO);
+  XBT_INFO("***** Test 2");
+  test2();
 
-  XBT_INFO("***** Test 3 (Max-Min)");
-  test3(MAXMIN);
-  XBT_INFO("***** Test 3 (Lagrange - Vegas)");
-  test3(LAGRANGE_VEGAS);
-  XBT_INFO("***** Test 3 (Lagrange - Reno)");
-  test3(LAGRANGE_RENO);
+  XBT_INFO("***** Test 3");
+  test3();
 
   return 0;
 }

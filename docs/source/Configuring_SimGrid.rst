@@ -218,8 +218,6 @@ models for all existing resources.
     poorly modeled. This model is described in `A Network Model for
     Simulation of Grid Application
     <https://hal.inria.fr/inria-00071989/document>`_.
-  - **Reno/Reno2/Vegas:** Models from Steven H. Low using lagrange_solve instead of
-    lmm_solve (experts only; check the code for more info).
   - **NS3** (only available if you compiled SimGrid accordingly):
     Use the packet-level network
     simulators as network models (see :ref:`pls_ns3`).

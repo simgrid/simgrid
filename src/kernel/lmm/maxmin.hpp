@@ -131,20 +131,6 @@ namespace lmm {
 
 /** @{ @ingroup SURF_lmm */
 
-/** Default functions associated to the chosen protocol. When using the lagrangian approach. */
-
-XBT_PUBLIC double func_reno_f(const Variable& var, double x);
-XBT_PUBLIC double func_reno_fp(const Variable& var, double x);
-XBT_PUBLIC double func_reno_fpi(const Variable& var, double x);
-
-XBT_PUBLIC double func_reno2_f(const Variable& var, double x);
-XBT_PUBLIC double func_reno2_fp(const Variable& var, double x);
-XBT_PUBLIC double func_reno2_fpi(const Variable& var, double x);
-
-XBT_PUBLIC double func_vegas_f(const Variable& var, double x);
-XBT_PUBLIC double func_vegas_fp(const Variable& var, double x);
-XBT_PUBLIC double func_vegas_fpi(const Variable& var, double x);
-
 /**
  * @brief LMM element
  * Elements can be seen as glue between constraint objects and variable objects.
@@ -613,40 +599,8 @@ private:
   void bottleneck_solve();
 };
 
-class XBT_PUBLIC Lagrange : public System {
-public:
-  explicit Lagrange(bool selective_update) : System(selective_update) {}
-  void solve() final { lagrange_solve(); }
-
-  static void set_default_protocol_function(double (*func_f)(const Variable& var, double x),
-                                            double (*func_fp)(const Variable& var, double x),
-                                            double (*func_fpi)(const Variable& var, double x));
-
-private:
-  void lagrange_solve();
-
-  bool check_feasible(bool warn);
-  double dual_objective();
-
-  static double (*func_f)(const Variable& var, double x);   /* (f)    */
-  static double (*func_fp)(const Variable& var, double x);  /* (f')    */
-  static double (*func_fpi)(const Variable& var, double x); /* (f')^{-1}    */
-
-  /*
-   * Local prototypes to implement the Lagrangian optimization with optimal step, also called dichotomy.
-   */
-  // computes the value of the dichotomy using a initial values, init, with a specific variable or constraint
-  static double dichotomy(double init, const Constraint& cnst, double min_error);
-  // computes the value of the differential of constraint cnst applied to lambda
-  static double partial_diff_lambda(double lambda, const Constraint& cnst);
-
-  static double new_value(const Variable& var);
-  static double new_mu(const Variable& var);
-};
-
 XBT_PUBLIC System* make_new_maxmin_system(bool selective_update);
 XBT_PUBLIC System* make_new_fair_bottleneck_system(bool selective_update);
-XBT_PUBLIC System* make_new_lagrange_system(bool selective_update);
 
 /** @} */
 }

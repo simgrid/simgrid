@@ -21,6 +21,10 @@ Model-checker:
    faster because of cache effects. So there is no need to clutter the
    code to allow the user to go for the unefficient mode.
 
+Network models:
+ - Remove the lagrange-based models (Reno/Reno2/Vegas). The regular
+   models proved to be more accurate than these old experiments.
+
 Fixed bugs (FG=FramaGit; GH=GitHub):
  - FG#1: Broken link in error messages
  - FG#2: missing installation documentation

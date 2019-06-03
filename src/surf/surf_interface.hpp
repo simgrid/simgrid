@@ -134,45 +134,6 @@ XBT_ATTRIB_NORETURN
 XBT_PUBLIC void surf_network_model_init_NS3();
 
 /** @ingroup SURF_models
- *  @brief Initializes the platform with the network model Reno
- *
- *  The problem is related to max( sum( arctan(C * Df * xi) ) ).
- *
- *  Reference:
- *  [LOW03] S. H. Low. A duality model of TCP and queue management algorithms.
- *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
- *
- *  Call this function only if you plan using surf_host_model_init_compound.
- */
-XBT_PUBLIC void surf_network_model_init_Reno();
-
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the network model Reno2
- *
- *  The problem is related to max( sum( arctan(C * Df * xi) ) ).
- *
- *  Reference:
- *  [LOW01] S. H. Low. A duality model of TCP and queue management algorithms.
- *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
- *
- *  Call this function only if you plan using surf_host_model_init_compound.
- */
-XBT_PUBLIC void surf_network_model_init_Reno2();
-
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the network model Vegas
- *
- *  This problem is related to max( sum( a * Df * ln(xi) ) ) which is equivalent  to the proportional fairness.
- *
- *  Reference:
- *  [LOW03] S. H. Low. A duality model of TCP and queue management algorithms.
- *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
- *
- *  Call this function only if you plan using surf_host_model_init_compound.
- */
-XBT_PUBLIC void surf_network_model_init_Vegas();
-
-/** @ingroup SURF_models
  *  @brief Initializes the platform with the current best network and cpu models at hand
  *
  *  This platform model seperates the host model and the network model.

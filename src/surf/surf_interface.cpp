@@ -69,15 +69,6 @@ const std::vector<surf_model_description_t> surf_network_model_description = {
              "small messages are thus poorly modeled).",
      &surf_network_model_init_CM02},
     {"NS3", "Network pseudo-model using the NS3 tcp model instead of an analytic model", &surf_network_model_init_NS3},
-    {"Reno",
-     "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
-     &surf_network_model_init_Reno},
-    {"Reno2",
-     "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
-     &surf_network_model_init_Reno2},
-    {"Vegas",
-     "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
-     &surf_network_model_init_Vegas},
 };
 
 #if ! HAVE_SMPI

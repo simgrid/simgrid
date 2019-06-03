@@ -3,15 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <algorithm>
-#include <numeric>
-
 #include "network_cm02.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
+
+#include <algorithm>
+#include <numeric>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
@@ -64,59 +64,6 @@ void surf_network_model_init_CM02()
   simgrid::config::set_default<double>("network/weight-S", 0.0);
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model();
-}
-
-/***************************************************************************/
-/* The models from Steven H. Low                                           */
-/***************************************************************************/
-/* @article{Low03,                                                         */
-/*   author={Steven H. Low},                                               */
-/*   title={A Duality Model of {TCP} and Queue Management Algorithms},     */
-/*   year={2003},                                                          */
-/*   journal={{IEEE/ACM} Transactions on Networking},                      */
-/*    volume={11}, number={4},                                             */
-/*  }                                                                      */
-void surf_network_model_init_Reno()
-{
-  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
-
-  namespace lmm = simgrid::kernel::lmm;
-  lmm::Lagrange::set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
-
-  simgrid::config::set_default<double>("network/latency-factor", 13.01);
-  simgrid::config::set_default<double>("network/bandwidth-factor", 0.97);
-  simgrid::config::set_default<double>("network/weight-S", 20537);
-
-  surf_network_model = new simgrid::kernel::resource::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
-}
-
-
-void surf_network_model_init_Reno2()
-{
-  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
-
-  namespace lmm = simgrid::kernel::lmm;
-  lmm::Lagrange::set_default_protocol_function(lmm::func_reno2_f, lmm::func_reno2_fp, lmm::func_reno2_fpi);
-
-  simgrid::config::set_default<double>("network/latency-factor", 13.01);
-  simgrid::config::set_default<double>("network/bandwidth-factor", 0.97);
-  simgrid::config::set_default<double>("network/weight-S", 20537);
-
-  surf_network_model = new simgrid::kernel::resource::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
-}
-
-void surf_network_model_init_Vegas()
-{
-  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
-
-  namespace lmm = simgrid::kernel::lmm;
-  lmm::Lagrange::set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
-
-  simgrid::config::set_default<double>("network/latency-factor", 13.01);
-  simgrid::config::set_default<double>("network/bandwidth-factor", 0.97);
-  simgrid::config::set_default<double>("network/weight-S", 20537);
-
-  surf_network_model = new simgrid::kernel::resource::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
 }
 
 namespace simgrid {
