@@ -44,10 +44,6 @@ public:
     return page_store_;
   }
 
-  std::string const& get_host_name(const char* hostname)
-  {
-    return *this->hostnames_.insert(hostname).first;
-  }
   std::string const& get_host_name(std::string const& hostname)
   {
     return *this->hostnames_.insert(hostname).first;
