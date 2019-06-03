@@ -112,12 +112,12 @@ void log_exception(e_xbt_log_priority_t prio, const char* context, std::exceptio
 static void show_backtrace(const simgrid::xbt::Backtrace& bt)
 {
   if (simgrid::config::get_value<bool>("exception/cutpath")) {
-    XBT_LOG(xbt_log_priority_critical, "Display of current backtrace disabled by --cfg=exception/cutpath.");
+    XBT_CRITICAL("Display of current backtrace disabled by --cfg=exception/cutpath.");
     return;
   }
   std::string res = bt.resolve();
-  XBT_LOG(xbt_log_priority_critical, "Current backtrace:");
-  XBT_LOG(xbt_log_priority_critical, "  -> %s", res.c_str());
+  XBT_CRITICAL("Current backtrace:");
+  XBT_CRITICAL("  -> %s", res.c_str());
 }
 
 static std::terminate_handler previous_terminate_handler = nullptr;
