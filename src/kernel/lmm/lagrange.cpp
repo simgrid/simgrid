@@ -36,30 +36,31 @@ bool Lagrange::check_feasible(bool warn)
 {
   for (Constraint const& cnst : active_constraint_set) {
     double tmp = 0;
-    for (Element const& elem : cnst.enabled_element_set) {
+    for (Element const& elem : cnst.enabled_element_set_) {
       Variable* var = elem.variable;
-      xbt_assert(var->sharing_weight > 0);
-      tmp += var->value;
+      xbt_assert(var->sharing_weight_ > 0);
+      tmp += var->value_;
     }
 
-    if (double_positive(tmp - cnst.bound, sg_maxmin_precision)) {
+    if (double_positive(tmp - cnst.bound_, sg_maxmin_precision)) {
       if (warn)
-        XBT_WARN("The link (%p) is over-used. Expected less than %f and got %f", &cnst, cnst.bound, tmp);
+        XBT_WARN("The link (%p) is over-used. Expected less than %f and got %f", &cnst, cnst.bound_, tmp);
       return false;
     }
-    XBT_DEBUG("Checking feasability for constraint (%p): sat = %f, lambda = %f ", &cnst, tmp - cnst.bound, cnst.lambda);
+    XBT_DEBUG("Checking feasability for constraint (%p): sat = %f, lambda = %f ", &cnst, tmp - cnst.bound_,
+              cnst.lambda_);
   }
 
   for (Variable const& var : variable_set) {
-    if (not var.sharing_weight)
+    if (not var.sharing_weight_)
       break;
-    if (var.bound < 0)
+    if (var.bound_ < 0)
       continue;
-    XBT_DEBUG("Checking feasability for variable (%p): sat = %f mu = %f", &var, var.value - var.bound, var.mu);
+    XBT_DEBUG("Checking feasability for variable (%p): sat = %f mu = %f", &var, var.value_ - var.bound_, var.mu_);
 
-    if (double_positive(var.value - var.bound, sg_maxmin_precision)) {
+    if (double_positive(var.value_ - var.bound_, sg_maxmin_precision)) {
       if (warn)
-        XBT_WARN("The variable (%p) is too large. Expected less than %f and got %f", &var, var.bound, var.value);
+        XBT_WARN("The variable (%p) is too large. Expected less than %f and got %f", &var, var.bound_, var.value_);
       return false;
     }
   }
@@ -70,12 +71,12 @@ double Lagrange::new_value(const Variable& var)
 {
   double tmp = 0;
 
-  for (Element const& elem : var.cnsts) {
-    tmp += elem.constraint->lambda;
+  for (Element const& elem : var.cnsts_) {
+    tmp += elem.constraint->lambda_;
   }
-  if (var.bound > 0)
-    tmp += var.mu;
-  XBT_DEBUG("\t Working on var (%p). cost = %e; Weight = %e", &var, tmp, var.sharing_weight);
+  if (var.bound_ > 0)
+    tmp += var.mu_;
+  XBT_DEBUG("\t Working on var (%p). cost = %e; Weight = %e", &var, tmp, var.sharing_weight_);
   // uses the partial differential inverse function
   return func_fpi(var, tmp);
 }
@@ -85,10 +86,10 @@ double Lagrange::new_mu(const Variable& var)
   double mu_i    = 0.0;
   double sigma_i = 0.0;
 
-  for (Element const& elem : var.cnsts) {
-    sigma_i += elem.constraint->lambda;
+  for (Element const& elem : var.cnsts_) {
+    sigma_i += elem.constraint->lambda_;
   }
-  mu_i = func_fp(var, var.bound) - sigma_i;
+  mu_i = func_fp(var, var.bound_) - sigma_i;
   if (mu_i < 0.0)
     return 0.0;
   return mu_i;
@@ -101,25 +102,25 @@ double Lagrange::dual_objective()
   for (Variable const& var : variable_set) {
     double sigma_i = 0.0;
 
-    if (not var.sharing_weight)
+    if (not var.sharing_weight_)
       break;
 
-    for (Element const& elem : var.cnsts)
-      sigma_i += elem.constraint->lambda;
+    for (Element const& elem : var.cnsts_)
+      sigma_i += elem.constraint->lambda_;
 
-    if (var.bound > 0)
-      sigma_i += var.mu;
+    if (var.bound_ > 0)
+      sigma_i += var.mu_;
 
     XBT_DEBUG("var %p : sigma_i = %1.20f", &var, sigma_i);
 
     obj += func_f(var, func_fpi(var, sigma_i)) - sigma_i * func_fpi(var, sigma_i);
 
-    if (var.bound > 0)
-      obj += var.mu * var.bound;
+    if (var.bound_ > 0)
+      obj += var.mu_ * var.bound_;
   }
 
   for (Constraint const& cnst : active_constraint_set)
-    obj += cnst.lambda * cnst.bound;
+    obj += cnst.lambda_ * cnst.bound_;
 
   return obj;
 }
@@ -148,34 +149,34 @@ void Lagrange::lagrange_solve()
 
   /* Initialize lambda. */
   for (Constraint& cnst : active_constraint_set) {
-    cnst.lambda     = 1.0;
-    cnst.new_lambda = 2.0;
-    XBT_DEBUG("#### cnst(%p)->lambda :  %e", &cnst, cnst.lambda);
+    cnst.lambda_     = 1.0;
+    cnst.new_lambda_ = 2.0;
+    XBT_DEBUG("#### cnst(%p)->lambda :  %e", &cnst, cnst.lambda_);
   }
 
   /*
    * Initialize the active variables. Initialize mu.
    */
   for (Variable& var : variable_set) {
-    if (not var.sharing_weight)
-      var.value = 0.0;
+    if (not var.sharing_weight_)
+      var.value_ = 0.0;
     else {
-      if (var.bound < 0.0) {
+      if (var.bound_ < 0.0) {
         XBT_DEBUG("#### NOTE var(%p) is a boundless variable", &var);
-        var.mu = -1.0;
+        var.mu_ = -1.0;
       } else {
-        var.mu     = 1.0;
-        var.new_mu = 2.0;
+        var.mu_     = 1.0;
+        var.new_mu_ = 2.0;
       }
-      var.value = new_value(var);
-      XBT_DEBUG("#### var(%p) ->weight :  %e", &var, var.sharing_weight);
-      XBT_DEBUG("#### var(%p) ->mu :  %e", &var, var.mu);
-      XBT_DEBUG("#### var(%p) ->weight: %e", &var, var.sharing_weight);
-      XBT_DEBUG("#### var(%p) ->bound: %e", &var, var.bound);
-      auto weighted =
-          std::find_if(begin(var.cnsts), end(var.cnsts), [](Element const& x) { return x.consumption_weight != 0.0; });
-      if (weighted == end(var.cnsts))
-        var.value = 1.0;
+      var.value_ = new_value(var);
+      XBT_DEBUG("#### var(%p) ->weight :  %e", &var, var.sharing_weight_);
+      XBT_DEBUG("#### var(%p) ->mu :  %e", &var, var.mu_);
+      XBT_DEBUG("#### var(%p) ->weight: %e", &var, var.sharing_weight_);
+      XBT_DEBUG("#### var(%p) ->bound: %e", &var, var.bound_);
+      auto weighted = std::find_if(begin(var.cnsts_), end(var.cnsts_),
+                                   [](Element const& x) { return x.consumption_weight != 0.0; });
+      if (weighted == end(var.cnsts_))
+        var.value_ = 1.0;
     }
   }
 
@@ -191,11 +192,11 @@ void Lagrange::lagrange_solve()
 
     /* Improve the value of mu_i */
     for (Variable& var : variable_set) {
-      if (var.sharing_weight && var.bound >= 0) {
+      if (var.sharing_weight_ && var.bound_ >= 0) {
         XBT_DEBUG("Working on var (%p)", &var);
-        var.new_mu = new_mu(var);
-        XBT_DEBUG("Updating mu : var->mu (%p) : %1.20f -> %1.20f", &var, var.mu, var.new_mu);
-        var.mu = var.new_mu;
+        var.new_mu_ = new_mu(var);
+        XBT_DEBUG("Updating mu : var->mu (%p) : %1.20f -> %1.20f", &var, var.mu_, var.new_mu_);
+        var.mu_ = var.new_mu_;
 
         double new_obj = dual_objective();
         XBT_DEBUG("Improvement for Objective (%g -> %g) : %g", obj, new_obj, obj - new_obj);
@@ -207,9 +208,9 @@ void Lagrange::lagrange_solve()
     /* Improve the value of lambda_i */
     for (Constraint& cnst : active_constraint_set) {
       XBT_DEBUG("Working on cnst (%p)", &cnst);
-      cnst.new_lambda = dichotomy(cnst.lambda, cnst, dichotomy_min_error);
-      XBT_DEBUG("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", &cnst, cnst.lambda, cnst.new_lambda);
-      cnst.lambda = cnst.new_lambda;
+      cnst.new_lambda_ = dichotomy(cnst.lambda_, cnst, dichotomy_min_error);
+      XBT_DEBUG("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", &cnst, cnst.lambda_, cnst.new_lambda_);
+      cnst.lambda_ = cnst.new_lambda_;
 
       double new_obj = dual_objective();
       XBT_DEBUG("Improvement for Objective (%g -> %g) : %g", obj, new_obj, obj - new_obj);
@@ -221,15 +222,15 @@ void Lagrange::lagrange_solve()
     XBT_DEBUG("-------------- Check convergence ----------");
     overall_modification = 0;
     for (Variable& var : variable_set) {
-      if (var.sharing_weight <= 0)
-        var.value = 0.0;
+      if (var.sharing_weight_ <= 0)
+        var.value_ = 0.0;
       else {
         double tmp = new_value(var);
 
-        overall_modification = std::max(overall_modification, fabs(var.value - tmp));
+        overall_modification = std::max(overall_modification, fabs(var.value_ - tmp));
 
-        var.value = tmp;
-        XBT_DEBUG("New value of var (%p)  = %e, overall_modification = %e", &var, var.value, overall_modification);
+        var.value_ = tmp;
+        XBT_DEBUG("New value of var (%p)  = %e, overall_modification = %e", &var, var.value_, overall_modification);
       }
     }
 
@@ -372,28 +373,28 @@ double Lagrange::partial_diff_lambda(double lambda, const Constraint& cnst)
 
   XBT_CDEBUG(surf_lagrange_dichotomy, "Computing diff of cnst (%p)", &cnst);
 
-  for (Element const& elem : cnst.enabled_element_set) {
+  for (Element const& elem : cnst.enabled_element_set_) {
     Variable& var = *elem.variable;
-    xbt_assert(var.sharing_weight > 0);
+    xbt_assert(var.sharing_weight_ > 0);
     XBT_CDEBUG(surf_lagrange_dichotomy, "Computing sigma_i for var (%p)", &var);
     // Initialize the summation variable
     double sigma_i = 0.0;
 
     // Compute sigma_i
-    for (Element const& elem2 : var.cnsts)
-      sigma_i += elem2.constraint->lambda;
+    for (Element const& elem2 : var.cnsts_)
+      sigma_i += elem2.constraint->lambda_;
 
     // add mu_i if this flow has a RTT constraint associated
-    if (var.bound > 0)
-      sigma_i += var.mu;
+    if (var.bound_ > 0)
+      sigma_i += var.mu_;
 
     // replace value of cnst.lambda by the value of parameter lambda
-    sigma_i = (sigma_i - cnst.lambda) + lambda;
+    sigma_i = (sigma_i - cnst.lambda_) + lambda;
 
     diff += -func_fpi(var, sigma_i);
   }
 
-  diff += cnst.bound;
+  diff += cnst.bound_;
 
   XBT_CDEBUG(surf_lagrange_dichotomy, "d D/d lambda for cnst (%p) at %1.20f = %1.20f", &cnst, lambda, diff);
   XBT_OUT();
@@ -432,19 +433,19 @@ double (*Lagrange::func_fpi)(const Variable&, double);
 double func_vegas_f(const Variable& var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
-  return VEGAS_SCALING * var.sharing_weight * log(x);
+  return VEGAS_SCALING * var.sharing_weight_ * log(x);
 }
 
 double func_vegas_fp(const Variable& var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
-  return VEGAS_SCALING * var.sharing_weight / x;
+  return VEGAS_SCALING * var.sharing_weight_ / x;
 }
 
 double func_vegas_fpi(const Variable& var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
-  return var.sharing_weight / (x / VEGAS_SCALING);
+  return var.sharing_weight_ / (x / VEGAS_SCALING);
 }
 
 /*
@@ -454,25 +455,25 @@ double func_vegas_fpi(const Variable& var, double x)
  */
 double func_reno_f(const Variable& var, double x)
 {
-  xbt_assert(var.sharing_weight > 0.0, "Don't call me with stupid values!");
+  xbt_assert(var.sharing_weight_ > 0.0, "Don't call me with stupid values!");
 
-  return RENO_SCALING * sqrt(3.0 / 2.0) / var.sharing_weight * atan(sqrt(3.0 / 2.0) * var.sharing_weight * x);
+  return RENO_SCALING * sqrt(3.0 / 2.0) / var.sharing_weight_ * atan(sqrt(3.0 / 2.0) * var.sharing_weight_ * x);
 }
 
 double func_reno_fp(const Variable& var, double x)
 {
-  return RENO_SCALING * 3.0 / (3.0 * var.sharing_weight * var.sharing_weight * x * x + 2.0);
+  return RENO_SCALING * 3.0 / (3.0 * var.sharing_weight_ * var.sharing_weight_ * x * x + 2.0);
 }
 
 double func_reno_fpi(const Variable& var, double x)
 {
   double res_fpi;
 
-  xbt_assert(var.sharing_weight > 0.0, "Don't call me with stupid values!");
+  xbt_assert(var.sharing_weight_ > 0.0, "Don't call me with stupid values!");
   xbt_assert(x > 0.0, "Don't call me with stupid values!");
 
-  res_fpi = 1.0 / (var.sharing_weight * var.sharing_weight * (x / RENO_SCALING)) -
-            2.0 / (3.0 * var.sharing_weight * var.sharing_weight);
+  res_fpi = 1.0 / (var.sharing_weight_ * var.sharing_weight_ * (x / RENO_SCALING)) -
+            2.0 / (3.0 * var.sharing_weight_ * var.sharing_weight_);
   if (res_fpi <= 0.0)
     return 0.0;
   return sqrt(res_fpi);
@@ -485,20 +486,20 @@ double func_reno_fpi(const Variable& var, double x)
  */
 double func_reno2_f(const Variable& var, double x)
 {
-  xbt_assert(var.sharing_weight > 0.0, "Don't call me with stupid values!");
-  return RENO2_SCALING * (1.0 / var.sharing_weight) *
-         log((x * var.sharing_weight) / (2.0 * x * var.sharing_weight + 3.0));
+  xbt_assert(var.sharing_weight_ > 0.0, "Don't call me with stupid values!");
+  return RENO2_SCALING * (1.0 / var.sharing_weight_) *
+         log((x * var.sharing_weight_) / (2.0 * x * var.sharing_weight_ + 3.0));
 }
 
 double func_reno2_fp(const Variable& var, double x)
 {
-  return RENO2_SCALING * 3.0 / (var.sharing_weight * x * (2.0 * var.sharing_weight * x + 3.0));
+  return RENO2_SCALING * 3.0 / (var.sharing_weight_ * x * (2.0 * var.sharing_weight_ * x + 3.0));
 }
 
 double func_reno2_fpi(const Variable& var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values!");
-  double tmp     = x * var.sharing_weight * var.sharing_weight;
+  double tmp     = x * var.sharing_weight_ * var.sharing_weight_;
   double res_fpi = tmp * (9.0 * x + 24.0);
 
   if (res_fpi <= 0.0)
