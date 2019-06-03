@@ -23,7 +23,7 @@
 #include <fstream>
 #include <sys/stat.h>
 
-#if not defined(__APPLE__)
+#if not defined(__APPLE__) && not defined(__HAIKU__)
 #include <link.h>
 #endif
 
@@ -33,7 +33,7 @@
 #   define MAC_OS_X_VERSION_10_12 101200
 # endif
 constexpr bool HAVE_WORKING_MMAP = (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12);
-#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__sun)
+#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__sun) || defined(__HAIKU__)
 constexpr bool HAVE_WORKING_MMAP = false;
 #else
 constexpr bool HAVE_WORKING_MMAP = true;
@@ -529,7 +529,7 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
   close(fdout);
 }
 
-#if not defined(__APPLE__)
+#if not defined(__APPLE__) && not defined(__HAIKU__)
 static int visit_libs(struct dl_phdr_info* info, size_t, void* data)
 {
   char* libname = (char*)(data);
@@ -562,7 +562,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
       // get library name from path
       char fullpath[512] = {'\0'};
       strncpy(fullpath, libname.c_str(), 511);
-#if not defined(__APPLE__)
+#if not defined(__APPLE__) && not defined(__HAIKU__)
       int ret = dl_iterate_phdr(visit_libs, fullpath);
       if (ret == 0)
         xbt_die("Can't find a linked %s - check the setting you gave to smpi/privatize-libs", fullpath);

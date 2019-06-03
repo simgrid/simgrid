@@ -1111,7 +1111,7 @@ void MTestError(const char *msg)
 /* ------------------------------------------------------------------------ */
 static void MTestResourceSummary(FILE * fp)
 {
-#ifdef HAVE_GETRUSAGE
+#if defined(HAVE_GETRUSAGE) && !defined(__HAIKU__)
     struct rusage ru;
     static int pfThreshold = -2;
     int doOutput = 1;
