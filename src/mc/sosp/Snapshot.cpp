@@ -11,79 +11,6 @@
 #include <cstddef> /* std::size_t */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_snapshot, mc, "Taking and restoring snapshots");
-
-/** @brief Read memory from a snapshot region broken across fragmented pages
- *
- *  @param addr    Process (non-snapshot) address of the data
- *  @param region  Snapshot memory region where the data is located
- *  @param target  Buffer to store the value
- *  @param size    Size of the data to read in bytes
- *  @return Pointer where the data is located (target buffer of original location)
- */
-const void* MC_region_read_fragmented(simgrid::mc::Region* region, void* target, const void* addr, size_t size)
-{
-  // Last byte of the memory area:
-  void* end = (char*)addr + size - 1;
-
-  // TODO, we assume the chunks are aligned to natural chunk boundaries.
-  // We should remove this assumption.
-
-  // Page of the last byte of the memory area:
-  size_t page_end = simgrid::mc::mmu::split((std::uintptr_t)end).first;
-
-  void* dest = target;
-
-  if (dest == nullptr)
-    xbt_die("Missing destination buffer for fragmented memory access");
-
-  // Read each page:
-  while (simgrid::mc::mmu::split((std::uintptr_t)addr).first != page_end) {
-    void* snapshot_addr = mc_translate_address_region((uintptr_t)addr, region);
-    void* next_page     = (void*)simgrid::mc::mmu::join(simgrid::mc::mmu::split((std::uintptr_t)addr).first + 1, 0);
-    size_t readable     = (char*)next_page - (char*)addr;
-    memcpy(dest, snapshot_addr, readable);
-    addr = (char*)addr + readable;
-    dest = (char*)dest + readable;
-    size -= readable;
-  }
-
-  // Read the end:
-  void* snapshot_addr = mc_translate_address_region((uintptr_t)addr, region);
-  memcpy(dest, snapshot_addr, size);
-
-  return target;
-}
-
-/** Compare memory between snapshots (with known regions)
- *
- * @param addr1 Address in the first snapshot
- * @param region1 Region of the address in the first snapshot
- * @param addr2 Address in the second snapshot
- * @param region2 Region of the address in the second snapshot
- * @return same semantic as memcmp
- */
-int MC_snapshot_region_memcmp(const void* addr1, simgrid::mc::Region* region1, const void* addr2,
-                              simgrid::mc::Region* region2, size_t size)
-{
-  // Using alloca() for large allocations may trigger stack overflow:
-  // use malloc if the buffer is too big.
-  bool stack_alloc    = size < 64;
-  void* buffer1a      = stack_alloc ? alloca(size) : ::operator new(size);
-  void* buffer2a      = stack_alloc ? alloca(size) : ::operator new(size);
-  const void* buffer1 = MC_region_read(region1, buffer1a, addr1, size);
-  const void* buffer2 = MC_region_read(region2, buffer2a, addr2, size);
-  int res;
-  if (buffer1 == buffer2)
-    res = 0;
-  else
-    res = memcmp(buffer1, buffer2, size);
-  if (not stack_alloc) {
-    ::operator delete(buffer1a);
-    ::operator delete(buffer2a);
-  }
-  return res;
-}
-
 namespace simgrid {
 namespace mc {
 /************************************* Take Snapshot ************************************/
@@ -313,7 +240,7 @@ const void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void>
 {
   Region* region = this->get_region((void*)address.address());
   if (region) {
-    const void* res = MC_region_read(region, buffer, (void*)address.address(), size);
+    const void* res = region->read(buffer, (void*)address.address(), size);
     if (buffer == res || options & ReadOptions::lazy())
       return res;
     else {

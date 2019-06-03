@@ -61,9 +61,27 @@ public:
 
   /** @brief Restore a region from a snapshot */
   void restore();
+
+  /** @brief Read memory that was snapshoted in this region
+   *
+   *  @param target  Buffer to store contiguously the value if it spans over several pages
+   *  @param addr    Process (non-snapshot) address of the data
+   *  @param size    Size of the data to read in bytes
+   *  @return Pointer where the data is located (either target buffer or original location)
+   */
+  const void* read(void* target, const void* addr, std::size_t size);
 };
 
 } // namespace mc
 } // namespace simgrid
+
+int MC_snapshot_region_memcmp(const void* addr1, simgrid::mc::Region* region1, const void* addr2,
+                              simgrid::mc::Region* region2, std::size_t size);
+
+static XBT_ALWAYS_INLINE void* MC_region_read_pointer(simgrid::mc::Region* region, const void* addr)
+{
+  void* res;
+  return *(void**)region->read(&res, addr, sizeof(void*));
+}
 
 #endif

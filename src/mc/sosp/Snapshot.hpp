@@ -11,17 +11,6 @@
 #include "src/mc/remote/RemoteClient.hpp"
 #include "src/mc/sosp/Region.hpp"
 
-// ***** Snapshot region
-
-static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, simgrid::mc::Region* region)
-{
-  auto split                = simgrid::mc::mmu::split(addr - region->start().address());
-  auto pageno               = split.first;
-  auto offset               = split.second;
-  const void* snapshot_page = region->get_chunks().page(pageno);
-  return (char*)snapshot_page + offset;
-}
-
 // ***** MC Snapshot
 
 /** Ignored data
@@ -99,49 +88,11 @@ private:
 } // namespace mc
 } // namespace simgrid
 
-static const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot);
-
-const void* MC_region_read_fragmented(simgrid::mc::Region* region, void* target, const void* addr, std::size_t size);
-
-int MC_snapshot_region_memcmp(const void* addr1, simgrid::mc::Region* region1, const void* addr2,
-                              simgrid::mc::Region* region2, std::size_t size);
-
 static XBT_ALWAYS_INLINE const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot)
 {
   if (snapshot == nullptr)
     xbt_die("snapshot is nullptr");
   return mc_model_checker->process().get_heap()->breakval;
-}
-
-/** @brief Read memory from a snapshot region
- *
- *  @param addr    Process (non-snapshot) address of the data
- *  @param region  Snapshot memory region where the data is located
- *  @param target  Buffer to store the value
- *  @param size    Size of the data to read in bytes
- *  @return Pointer where the data is located (target buffer of original location)
- */
-static XBT_ALWAYS_INLINE const void* MC_region_read(simgrid::mc::Region* region, void* target, const void* addr,
-                                                    std::size_t size)
-{
-  xbt_assert(region);
-
-  xbt_assert(region->contain(simgrid::mc::remote(addr)), "Trying to read out of the region boundary.");
-
-  // Last byte of the region:
-  void* end = (char*)addr + size - 1;
-  if (simgrid::mc::mmu::same_chunk((std::uintptr_t)addr, (std::uintptr_t)end)) {
-    // The memory is contained in a single page:
-    return mc_translate_address_region((uintptr_t)addr, region);
-  }
-  // Otherwise, the memory spans several pages:
-  return MC_region_read_fragmented(region, target, addr, size);
-}
-
-static XBT_ALWAYS_INLINE void* MC_region_read_pointer(simgrid::mc::Region* region, const void* addr)
-{
-  void* res;
-  return *(void**)MC_region_read(region, &res, addr, sizeof(void*));
 }
 
 #endif

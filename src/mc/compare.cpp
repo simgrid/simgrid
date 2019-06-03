@@ -308,8 +308,10 @@ int mmalloc_compare_heap(
 
   while (i1 < state.heaplimit) {
 
-    const malloc_info* heapinfo1 = (const malloc_info*) MC_region_read(heap_region1, &heapinfo_temp1, &heapinfos1[i1], sizeof(malloc_info));
-    const malloc_info* heapinfo2 = (const malloc_info*) MC_region_read(heap_region2, &heapinfo_temp2, &heapinfos2[i1], sizeof(malloc_info));
+    const malloc_info* heapinfo1 =
+        (const malloc_info*)heap_region1->read(&heapinfo_temp1, &heapinfos1[i1], sizeof(malloc_info));
+    const malloc_info* heapinfo2 =
+        (const malloc_info*)heap_region2->read(&heapinfo_temp2, &heapinfos2[i1], sizeof(malloc_info));
 
     if (heapinfo1->type == MMALLOC_TYPE_FREE || heapinfo1->type == MMALLOC_TYPE_HEAPINFO) {      /* Free block */
       i1 ++;
@@ -365,7 +367,8 @@ int mmalloc_compare_heap(
           continue;
         }
 
-        const malloc_info* heapinfo2b = (const malloc_info*) MC_region_read(heap_region2, &heapinfo_temp2b, &heapinfos2[i2], sizeof(malloc_info));
+        const malloc_info* heapinfo2b =
+            (const malloc_info*)heap_region2->read(&heapinfo_temp2b, &heapinfos2[i2], sizeof(malloc_info));
 
         if (heapinfo2b->type != MMALLOC_TYPE_UNFRAGMENTED) {
           i2++;
@@ -423,9 +426,8 @@ int mmalloc_compare_heap(
 
         while (i2 < state.heaplimit && not equal) {
 
-          const malloc_info* heapinfo2b = (const malloc_info*) MC_region_read(
-            heap_region2, &heapinfo_temp2b, &heapinfos2[i2],
-            sizeof(malloc_info));
+          const malloc_info* heapinfo2b =
+              (const malloc_info*)heap_region2->read(&heapinfo_temp2b, &heapinfos2[i2], sizeof(malloc_info));
 
           if (heapinfo2b->type == MMALLOC_TYPE_FREE || heapinfo2b->type == MMALLOC_TYPE_HEAPINFO) {
             i2 ++;
@@ -480,8 +482,8 @@ int mmalloc_compare_heap(
 
   /* All blocks/fragments are equal to another block/fragment_ ? */
   for (size_t i = 1; i < state.heaplimit; i++) {
-    const malloc_info* heapinfo1 = (const malloc_info*) MC_region_read(
-      heap_region1, &heapinfo_temp1, &heapinfos1[i], sizeof(malloc_info));
+    const malloc_info* heapinfo1 =
+        (const malloc_info*)heap_region1->read(&heapinfo_temp1, &heapinfos1[i], sizeof(malloc_info));
 
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED && i1 == state.heaplimit && heapinfo1->busy_block.busy_size > 0 &&
         not state.equals_to1_(i, 0).valid_) {
@@ -502,8 +504,8 @@ int mmalloc_compare_heap(
     XBT_DEBUG("Number of blocks/fragments not found in heap1: %d", nb_diff1);
 
   for (size_t i = 1; i < state.heaplimit; i++) {
-    const malloc_info* heapinfo2 = (const malloc_info*) MC_region_read(
-      heap_region2, &heapinfo_temp2, &heapinfos2[i], sizeof(malloc_info));
+    const malloc_info* heapinfo2 =
+        (const malloc_info*)heap_region2->read(&heapinfo_temp2, &heapinfos2[i], sizeof(malloc_info));
     if (heapinfo2->type == MMALLOC_TYPE_UNFRAGMENTED && i1 == state.heaplimit && heapinfo2->busy_block.busy_size > 0 &&
         not state.equals_to2_(i, 0).valid_) {
       XBT_DEBUG("Block %zu not found (size used = %zu)", i,
@@ -938,10 +940,10 @@ static int compare_heap_area(simgrid::mc::StateComparator& state, const void* ar
   simgrid::mc::Region* heap_region1 = MC_get_heap_region(snapshot1);
   simgrid::mc::Region* heap_region2 = MC_get_heap_region(snapshot2);
 
-  const malloc_info* heapinfo1 = (const malloc_info*) MC_region_read(
-    heap_region1, &heapinfo_temp1, &heapinfos1[block1], sizeof(malloc_info));
-  const malloc_info* heapinfo2 = (const malloc_info*) MC_region_read(
-    heap_region2, &heapinfo_temp2, &heapinfos2[block2], sizeof(malloc_info));
+  const malloc_info* heapinfo1 =
+      (const malloc_info*)heap_region1->read(&heapinfo_temp1, &heapinfos1[block1], sizeof(malloc_info));
+  const malloc_info* heapinfo2 =
+      (const malloc_info*)heap_region2->read(&heapinfo_temp2, &heapinfos2[block2], sizeof(malloc_info));
 
   if ((heapinfo1->type == MMALLOC_TYPE_FREE || heapinfo1->type==MMALLOC_TYPE_HEAPINFO)
     && (heapinfo2->type == MMALLOC_TYPE_FREE || heapinfo2->type ==MMALLOC_TYPE_HEAPINFO)) {

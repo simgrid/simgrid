@@ -95,7 +95,7 @@ void snap_test_helper::read_whole_region()
   for (int n = 1; n != 32; ++n) {
 
     prologue_return ret = prologue(n);
-    const void* read    = MC_region_read(ret.region, ret.dstn, ret.src, ret.size);
+    const void* read    = ret.region->read(ret.dstn, ret.src, ret.size);
     INFO("Mismatch in MC_region_read()");
     REQUIRE(not memcmp(ret.src, read, ret.size));
 
@@ -115,7 +115,7 @@ void snap_test_helper::read_region_parts()
     for (int j = 0; j != 100; ++j) {
       size_t offset    = rnd_engine() % ret.size;
       size_t size      = rnd_engine() % (ret.size - offset);
-      const void* read = MC_region_read(ret.region, ret.dstn, (const char*)ret.src + offset, size);
+      const void* read = ret.region->read(ret.dstn, (const char*)ret.src + offset, size);
       INFO("Mismatch in MC_region_read()");
       REQUIRE(not memcmp((char*)ret.src + offset, read, size));
     }
