@@ -711,7 +711,6 @@ void Variable::initialize(resource::Action* id_value, double sharing_weight_valu
   value_             = 0.0;
   visited_           = visited_value;
   mu_                = 0.0;
-  new_mu_            = 0.0;
 
   xbt_assert(not variable_set_hook_.is_linked());
   xbt_assert(not saturated_variable_set_hook_.is_linked());

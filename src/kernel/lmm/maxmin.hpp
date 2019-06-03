@@ -388,10 +388,7 @@ public:
   resource::Action* id_;
   int rank_;         // Only used in debug messages to identify the variable
   unsigned visited_; /* used by System::update_modified_set() */
-  /* \begin{For Lagrange only} */
   double mu_;
-  double new_mu_;
-  /* \end{For Lagrange only} */
 
 private:
   static int next_rank_; // To give a separate rank_ to each variable
