@@ -54,8 +54,9 @@ struct string_data {
  *  * the [C++11-conforming implementation](https://gcc.gnu.org/gcc-5/changes.html)
  *    does not use refcouting/COW but has a small string optimization.
  */
-class XBT_PUBLIC string : private string_data {
+class XBT_PUBLIC string {
   static char NUL;
+  string_data str;
 
 public:
   // Types
@@ -68,21 +69,21 @@ public:
   // Dtor
   ~string()
   {
-    if (string_data::data != &NUL)
-      delete[] string_data::data;
+    if (str.data != &NUL)
+      delete[] str.data;
   }
 
   // Ctors
   string(const char* s, size_t size)
   {
     if (size == 0) {
-      string_data::len = 0;
-      string_data::data = &NUL;
+      str.len  = 0;
+      str.data = &NUL;
     } else {
-      string_data::len = size;
-      string_data::data = new char[string_data::len + 1];
-      std::copy_n(s, string_data::len, string_data::data);
-      string_data::data[string_data::len] = '\0';
+      str.len  = size;
+      str.data = new char[str.len + 1];
+      std::copy_n(s, str.len, str.data);
+      str.data[str.len] = '\0';
     }
   }
   string() : string(&NUL, 0) {}
@@ -90,26 +91,26 @@ public:
   string(string const& s) : string(s.c_str(), s.size()) {}
   string(string&& s)
   {
-    string_data::len = s.string_data::len;
-    string_data::data = s.string_data::data;
-    s.string_data::len = 0;
-    s.string_data::data = &NUL;
+    str.len    = s.str.len;
+    str.data   = s.str.data;
+    s.str.len  = 0;
+    s.str.data = &NUL;
   }
   explicit string(std::string const& s) : string(s.c_str(), s.size()) {}
 
   // Assign
   void assign(const char* s, size_t size)
   {
-    if (string_data::data != &NUL) {
-      delete[] string_data::data;
-      string_data::data = nullptr;
-      string_data::len = 0;
+    if (str.data != &NUL) {
+      delete[] str.data;
+      str.data = nullptr;
+      str.len  = 0;
     }
     if (size != 0) {
-      string_data::len = size;
-      string_data::data = new char[string_data::len + 1];
-      std::copy_n(s, string_data::len, string_data::data);
-      string_data::data[string_data::len] = '\0';
+      str.len  = size;
+      str.data = new char[str.len + 1];
+      std::copy_n(s, str.len, str.data);
+      str.data[str.len] = '\0';
     }
   }
 
@@ -132,16 +133,16 @@ public:
   }
 
   // Capacity
-  size_t size() const   { return len; }
-  size_t length() const { return len; }
-  bool empty() const    { return len != 0; }
+  size_t size() const { return str.len; }
+  size_t length() const { return str.len; }
+  bool empty() const { return str.len != 0; }
   void shrink_to_fit() { /* Being there, but doing nothing */}
 
   // Element access
-  char* data()              { return string_data::data; }
-  const char* data()  const { return string_data::data; }
-  char* c_str()             { return string_data::data; }
-  const char* c_str() const { return string_data::data; };
+  char* data() { return str.data; }
+  const char* data() const { return str.data; }
+  char* c_str() { return str.data; }
+  const char* c_str() const { return str.data; };
   reference at(size_type i)
   {
     if (i >= size())
@@ -163,7 +164,7 @@ public:
     return data()[i];
   }
   // Conversion
-  static string_data& to_string_data(string& s) { return s; }
+  static string_data& to_string_data(string& s) { return s.str; }
   operator std::string() const { return std::string(this->c_str(), this->size()); }
 
   // Iterators
@@ -178,8 +179,8 @@ public:
   // Operations
   void clear()
   {
-    string_data::len = 0;
-    string_data::data = &NUL;
+    str.len  = 0;
+    str.data = &NUL;
   }
 
   bool equals(const char* data, std::size_t len) const
