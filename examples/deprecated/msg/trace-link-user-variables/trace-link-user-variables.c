@@ -13,7 +13,7 @@ static void create_and_execute_task (void)
   MSG_task_destroy (task);
 }
 
-static int trace_fun(int argc, char *argv[])
+static int trace_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   //set initial values for the link user variables this example only shows for links identified by "6" and "3" in the
   //platform file

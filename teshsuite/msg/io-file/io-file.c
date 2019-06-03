@@ -10,7 +10,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(io_file, "Messages specific for this io example");
 
-static int host(int argc, char* argv[])
+static int host(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_file_t file = NULL;
   sg_size_t read;

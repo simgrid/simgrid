@@ -149,7 +149,8 @@ void test_deref(simgrid::dwarf::ExpressionContext const& state) {
   }
 }
 
-int main(int argc, char** argv) {
+int main()
+{
   process = new simgrid::mc::RemoteClient(getpid(), -1);
   process->init();
 

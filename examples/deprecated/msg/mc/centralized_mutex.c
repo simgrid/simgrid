@@ -16,7 +16,7 @@
 #define CS_PER_PROCESS 2
 XBT_LOG_NEW_DEFAULT_CATEGORY(centralized, "my log messages");
 
-static int coordinator(int argc, char *argv[])
+static int coordinator(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   xbt_dynar_t requests = xbt_dynar_new(sizeof(char *), NULL);   // dynamic vector storing requests (which are char*)
   int CS_used = 0;              // initially the CS is idle
@@ -55,7 +55,7 @@ static int coordinator(int argc, char *argv[])
   return 0;
 }
 
-static int client(int argc, char *argv[])
+static int client(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   int my_pid = MSG_process_get_PID(MSG_process_self());
   // use my pid as name of mailbox to contact me

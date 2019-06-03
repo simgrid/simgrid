@@ -9,6 +9,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_trace_masterworker, "Messages specific for this
 
 static int master(int argc, char *argv[])
 {
+  xbt_assert(argc == 5);
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
   double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");
   double task_comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");
@@ -40,7 +41,7 @@ static int master(int argc, char *argv[])
   return 0;
 }
 
-static int worker(int argc, char *argv[])
+static int worker(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_task_t task = NULL;
 

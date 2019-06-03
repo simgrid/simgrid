@@ -17,8 +17,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(electric_fence, "Example to check the soundness of DPOR");
 
-
-static int server(int argc, char *argv[])
+static int server(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_task_t task1 = NULL;
   msg_task_t task2 = NULL;
@@ -35,6 +34,7 @@ static int server(int argc, char *argv[])
 
 static int client(int argc, char *argv[])
 {
+  xbt_assert(argc == 2);
   msg_task_t task = MSG_task_create(argv[1], 0, 10000, NULL);
 
   MSG_task_send(task, "mymailbox");

@@ -11,7 +11,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(random_bug, "Application");
 
 /** An (fake) application with a bug occuring for some random values */
-static int app(int argc, char *argv[])
+static int app(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   int x = MC_random(0, 5);
   int y = MC_random(0, 5);

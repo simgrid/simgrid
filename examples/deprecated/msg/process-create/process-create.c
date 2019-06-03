@@ -6,7 +6,7 @@
 #include "simgrid/msg.h"
 
 /* Main function of the process I want to start manually */
-static int process_function(int argc, char *argv[])
+static int process_function(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_task_t task = MSG_task_create("task", 100, 0, NULL);
   MSG_task_execute (task);

@@ -8,7 +8,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-static int trace_fun(int argc, char *argv[])
+static int trace_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   const char *hostname = MSG_host_get_name(MSG_host_self());
 

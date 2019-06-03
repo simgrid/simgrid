@@ -13,7 +13,7 @@ static void create_and_execute_task (void)
   MSG_task_destroy (task);
 }
 
-static int trace_fun(int argc, char *argv[])
+static int trace_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   //Set initial values for the link user variables
   //This example uses source and destination where source and destination are the name of hosts inthe platform file.

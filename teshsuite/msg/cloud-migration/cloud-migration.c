@@ -50,7 +50,7 @@ static void vm_migrate_async(msg_vm_t vm, msg_host_t dst_pm)
   MSG_process_create_with_arguments(pr_name, migration_worker_main, NULL, host, 3, argv);
 }
 
-static int master_main(int argc, char* argv[])
+static int master_main(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_host_t pm0 = MSG_host_by_name("Fafard");
   msg_host_t pm1 = MSG_host_by_name("Tremblay");

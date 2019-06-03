@@ -19,6 +19,7 @@ static int my_onexit(XBT_ATTRIB_UNUSED int ignored1, XBT_ATTRIB_UNUSED void* ign
 /* Just sleep until termination */
 static int sleeper(int argc, char* argv[])
 {
+  xbt_assert(argc == 2);
   XBT_INFO("Hello! I go to sleep.");
   MSG_process_on_exit(my_onexit, NULL);
 

@@ -17,8 +17,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(bugged3, "this example");
 
-
-static int server(int argc, char *argv[])
+static int server(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_task_t task1 = NULL;
   msg_task_t task2 = NULL;
@@ -39,6 +38,7 @@ static int server(int argc, char *argv[])
 
 static int client(int argc, char *argv[])
 {
+  xbt_assert(argc == 2);
   msg_task_t task1 = MSG_task_create(argv[1], 0, 10000, NULL);
 
   char *mbox = bprintf("mymailbox%s", argv[1]);

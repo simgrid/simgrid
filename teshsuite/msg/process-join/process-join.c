@@ -8,7 +8,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-static int slave(int argc, char* argv[])
+static int slave(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Slave started");
   MSG_process_sleep(3);
@@ -16,7 +16,7 @@ static int slave(int argc, char* argv[])
   return 0;
 }
 
-static int master(int argc, char* argv[])
+static int master(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_process_t process;
 

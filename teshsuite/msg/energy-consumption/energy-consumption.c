@@ -9,7 +9,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-static int dvfs(int argc, char* argv[])
+static int dvfs(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_host_t host = MSG_host_by_name("MyHost1");
 

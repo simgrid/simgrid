@@ -6,7 +6,7 @@
 #include "simgrid/msg.h"
 
 /* The guy we will move from host to host. It move alone and then is moved by policeman back  */
-static int emigrant(int argc, char *argv[])
+static int emigrant(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_task_t task = NULL;
   char *destination = NULL;
@@ -27,7 +27,7 @@ static int emigrant(int argc, char *argv[])
   return 0;
 }
 
-static int policeman(int argc, char *argv[])
+static int policeman(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   // I am the master of emigrant process,
   // I tell it where it must emigrate to.

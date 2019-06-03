@@ -8,7 +8,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-static int computation_fun(int argc, char* argv[])
+static int computation_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   const char* pr_name   = MSG_process_get_name(MSG_process_self());
   const char* host_name = MSG_host_get_name(MSG_host_self());
@@ -106,7 +106,7 @@ static void launch_communication_worker(msg_host_t tx_host, msg_host_t rx_host)
   xbt_free(mbox);
 }
 
-static int master_main(int argc, char* argv[])
+static int master_main(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_host_t pm0 = MSG_host_by_name("Fafard");
   msg_host_t pm1 = MSG_host_by_name("Tremblay");

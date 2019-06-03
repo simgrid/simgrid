@@ -30,7 +30,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 static xbt_mutex_t mutex = NULL;
 #endif
 
-static int receiver(int argc, char *argv[])
+static int receiver(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_task_t task = NULL;
 
@@ -47,6 +47,7 @@ static int receiver(int argc, char *argv[])
 
 static int sender(int argc, char *argv[])
 {
+  xbt_assert(argc == 2);
   char* message_name = argv[1];
 #ifndef DISABLE_THE_MUTEX
   xbt_mutex_acquire(mutex);
