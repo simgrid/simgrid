@@ -184,23 +184,14 @@ public:
   /** @brief Unshare a constraint. */
   void unshare() { sharing_policy_ = s4u::Link::SharingPolicy::FATPIPE; }
 
-  /**
-   * @brief Check if a constraint is shared (shared by default)
-   * @return 1 if shared, 0 otherwise
-   */
+  /** @brief Check how a constraint is shared  */
   s4u::Link::SharingPolicy get_sharing_policy() const { return sharing_policy_; }
 
-  /**
-   * @brief Get the usage of the constraint after the last lmm solve
-   * @return The usage of the constraint
-   */
+  /** @brief Get the usage of the constraint after the last lmm solve */
   double get_usage() const;
   int get_variable_amount() const;
 
-  /**
-   * @brief Sets the concurrency limit for this constraint
-   * @param limit The concurrency limit to use for this constraint
-   */
+  /** @brief Sets the concurrency limit for this constraint */
   void set_concurrency_limit(int limit)
   {
     xbt_assert(limit < 0 || concurrency_maximum_ <= limit,
@@ -209,10 +200,7 @@ public:
     concurrency_limit_ = limit;
   }
 
-  /**
-   * @brief Gets the concurrency limit for this constraint
-   * @return The concurrency limit used by this constraint
-   */
+  /** @brief Gets the concurrency limit for this constraint */
   int get_concurrency_limit() const { return concurrency_limit_; }
 
   /**
@@ -221,10 +209,7 @@ public:
    */
   void reset_concurrency_maximum() { concurrency_maximum_ = 0; }
 
-  /**
-   * @brief Get the concurrency maximum for a given variable (which reflects constraint evolution).
-   * @return the maximum concurrency of the constraint
-   */
+  /** @brief Get the concurrency maximum for a given constraint (which reflects constraint evolution). */
   int get_concurrency_maximum() const
   {
     xbt_assert(concurrency_limit_ < 0 || concurrency_maximum_ <= concurrency_limit_,
@@ -307,16 +292,10 @@ public:
   void initialize(resource::Action* id_value, double sharing_weight_value, double bound_value,
                   int number_of_constraints, unsigned visited_value);
 
-  /**
-   * @brief Get the value of the variable after the last lmm solve
-   * @return The value of the variable
-   */
+  /** @brief Get the value of the variable after the last lmm solve */
   double get_value() const { return value_; }
 
-  /**
-   * @brief Get the maximum value of the variable (-1.0 if no maximum value)
-   * @return The bound of the variable
-   */
+  /** @brief Get the maximum value of the variable (-1.0 if no specified maximum) */
   double get_bound() const { return bound_; }
 
   /**
@@ -342,22 +321,13 @@ public:
     return num < cnsts_.size() ? cnsts_[num].consumption_weight : 0.0;
   }
 
-  /**
-   * @brief Get the number of constraint associated to a variable
-   * @return The number of constraint associated to the variable
-   */
+  /** @brief Get the number of constraint associated to a variable */
   size_t get_number_of_constraint() const { return cnsts_.size(); }
 
-  /**
-   * @brief Get the data associated to a variable
-   * @return The data associated to the variable
-   */
+  /** @brief Get the data associated to a variable */
   resource::Action* get_id() const { return id_; }
 
-  /**
-   * @brief Get the weight of a variable
-   * @return The weight of the variable
-   */
+  /** @brief Get the weight of a variable */
   double get_weight() const { return sharing_weight_; }
 
   /** @brief Measure the minimum concurrency slack across all constraints where the given var is involved */
@@ -455,11 +425,7 @@ public:
    */
   void expand_add(Constraint * cnst, Variable * var, double value);
 
-  /**
-   * @brief Update the bound of a variable
-   * @param var A constraint
-   * @param bound The new bound
-   */
+  /** @brief Update the bound of a variable */
   void update_variable_bound(Variable * var, double bound);
 
   /**
@@ -469,18 +435,9 @@ public:
    */
   void update_variable_weight(Variable * var, double weight);
 
-  /**
-   * @brief Update a constraint bound
-   * @param cnst A constraint
-   * @param bound The new bound of the consrtaint
-   */
+  /** @brief Update a constraint bound */
   void update_constraint_bound(Constraint * cnst, double bound);
 
-  /**
-   * @brief [brief description]
-   * @param cnst A constraint
-   * @return [description]
-   */
   int constraint_used(Constraint* cnst) { return cnst->active_constraint_set_hook_.is_linked(); }
 
   /** @brief Print the lmm system */
