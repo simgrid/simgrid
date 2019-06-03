@@ -105,6 +105,7 @@ void log_exception(e_xbt_log_priority_t prio, const char* context, std::exceptio
   }
   catch (...) {
     // Don't log exceptions we got when trying to log exception
+    XBT_LOG(prio, "Ignoring exception caught while while trying to log an exception!");
   }
 }
 
