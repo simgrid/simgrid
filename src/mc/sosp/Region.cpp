@@ -21,21 +21,20 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_RegionSnaphot, mc, "Logging specific to regio
 namespace simgrid {
 namespace mc {
 
-RegionSnapshot::RegionSnapshot(RegionType region_type, void* start_addr, size_t size)
+Region::Region(RegionType region_type, void* start_addr, size_t size)
     : region_type_(region_type), start_addr_(start_addr), size_(size)
 {
-  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
-
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize - 1)) == 0, "Start address not at the beginning of a page");
 
-  chunks_ = ChunkedData(mc_model_checker->page_store(), *process, RemotePtr<void>(start_addr), mmu::chunk_count(size));
+  chunks_ = ChunkedData(mc_model_checker->page_store(), mc_model_checker->process(), RemotePtr<void>(start_addr),
+                        mmu::chunk_count(size));
 }
 
 /** @brief Restore a region from a snapshot
  *
  *  @param region     Target region
  */
-void RegionSnapshot::restore()
+void Region::restore()
 {
   xbt_assert(((start().address()) & (xbt_pagesize - 1)) == 0, "Not at the beginning of a page");
   xbt_assert(simgrid::mc::mmu::chunk_count(size()) == get_chunks().page_count());

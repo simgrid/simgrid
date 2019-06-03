@@ -13,7 +13,7 @@
 
 // ***** Snapshot region
 
-static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, simgrid::mc::RegionSnapshot* region)
+static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, simgrid::mc::Region* region)
 {
   auto split                = simgrid::mc::mmu::split(addr - region->start().address());
   auto pageno               = split.first;
@@ -76,14 +76,14 @@ public:
   /* Regular use */
   const void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
                          ReadOptions options = ReadOptions::none()) const override;
-  RegionSnapshot* get_region(const void* addr) const;
-  RegionSnapshot* get_region(const void* addr, RegionSnapshot* hinted_region) const;
+  Region* get_region(const void* addr) const;
+  Region* get_region(const void* addr, Region* hinted_region) const;
   void restore(RemoteClient* process);
 
   // To be private
   int num_state_;
   std::size_t heap_bytes_used_;
-  std::vector<std::unique_ptr<RegionSnapshot>> snapshot_regions_;
+  std::vector<std::unique_ptr<Region>> snapshot_regions_;
   std::set<pid_t> enabled_processes_;
   std::vector<std::size_t> stack_sizes_;
   std::vector<s_mc_snapshot_stack_t> stacks_;
@@ -101,11 +101,10 @@ private:
 
 static const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot);
 
-const void* MC_region_read_fragmented(simgrid::mc::RegionSnapshot* region, void* target, const void* addr,
-                                      std::size_t size);
+const void* MC_region_read_fragmented(simgrid::mc::Region* region, void* target, const void* addr, std::size_t size);
 
-int MC_snapshot_region_memcmp(const void* addr1, simgrid::mc::RegionSnapshot* region1, const void* addr2,
-                              simgrid::mc::RegionSnapshot* region2, std::size_t size);
+int MC_snapshot_region_memcmp(const void* addr1, simgrid::mc::Region* region1, const void* addr2,
+                              simgrid::mc::Region* region2, std::size_t size);
 
 static XBT_ALWAYS_INLINE const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot)
 {
@@ -122,7 +121,7 @@ static XBT_ALWAYS_INLINE const void* mc_snapshot_get_heap_end(simgrid::mc::Snaps
  *  @param size    Size of the data to read in bytes
  *  @return Pointer where the data is located (target buffer of original location)
  */
-static XBT_ALWAYS_INLINE const void* MC_region_read(simgrid::mc::RegionSnapshot* region, void* target, const void* addr,
+static XBT_ALWAYS_INLINE const void* MC_region_read(simgrid::mc::Region* region, void* target, const void* addr,
                                                     std::size_t size)
 {
   xbt_assert(region);
@@ -139,7 +138,7 @@ static XBT_ALWAYS_INLINE const void* MC_region_read(simgrid::mc::RegionSnapshot*
   return MC_region_read_fragmented(region, target, addr, size);
 }
 
-static XBT_ALWAYS_INLINE void* MC_region_read_pointer(simgrid::mc::RegionSnapshot* region, const void* addr)
+static XBT_ALWAYS_INLINE void* MC_region_read_pointer(simgrid::mc::Region* region, const void* addr)
 {
   void* res;
   return *(void**)MC_region_read(region, &res, addr, sizeof(void*));

@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_MC_REGION_SNAPSHOT_HPP
-#define SIMGRID_MC_REGION_SNAPSHOT_HPP
+#ifndef SIMGRID_MC_SOSP_REGION_HPP
+#define SIMGRID_MC_SOSP_REGION_HPP
 
 #include "src/mc/remote/RemotePtr.hpp"
 #include "src/mc/sosp/ChunkedData.hpp"
@@ -15,17 +15,16 @@
 namespace simgrid {
 namespace mc {
 
-enum class RegionType { Unknown = 0, Heap = 1, Data = 2 };
+enum class RegionType { Heap = 1, Data = 2 };
 
 /** A copy/snapshot of a given memory region, where identical pages are stored only once */
-class RegionSnapshot {
+class Region {
 public:
-  static const RegionType UnknownRegion = RegionType::Unknown;
   static const RegionType HeapRegion    = RegionType::Heap;
   static const RegionType DataRegion    = RegionType::Data;
 
-protected:
-  RegionType region_type_                      = UnknownRegion;
+private:
+  RegionType region_type_;
   simgrid::mc::ObjectInformation* object_info_ = nullptr;
 
   /** @brief  Virtual address of the region in the simulated process */
@@ -37,40 +36,14 @@ protected:
   ChunkedData chunks_;
 
 public:
-  RegionSnapshot(RegionType type, void* start_addr, size_t size);
-  ~RegionSnapshot()                     = default;
-  RegionSnapshot(RegionSnapshot const&) = delete;
-  RegionSnapshot& operator=(RegionSnapshot const&) = delete;
-  RegionSnapshot(RegionSnapshot&& that)
-      : region_type_(that.region_type_)
-      , object_info_(that.object_info_)
-      , start_addr_(that.start_addr_)
-      , size_(that.size_)
-      , chunks_(std::move(that.chunks_))
-  {
-    that.clear();
-  }
-  RegionSnapshot& operator=(RegionSnapshot&& that)
-  {
-    region_type_ = that.region_type_;
-    object_info_ = that.object_info_;
-    start_addr_  = that.start_addr_;
-    size_        = that.size_;
-    chunks_      = std::move(that.chunks_);
-    that.clear();
-    return *this;
-  }
+  Region(RegionType type, void* start_addr, size_t size);
+  ~Region()             = default;
+  Region(Region const&) = delete;
+  Region& operator=(Region const&) = delete;
+  Region(Region&& that)            = delete;
+  Region& operator=(Region&& that) = delete;
 
   // Data
-
-  void clear()
-  {
-    region_type_ = UnknownRegion;
-    chunks_.clear();
-    object_info_ = nullptr;
-    start_addr_  = nullptr;
-    size_        = 0;
-  }
 
   ChunkedData const& get_chunks() const { return chunks_; }
 

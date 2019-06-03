@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_snapshot, mc, "Taking and restoring snapshots
  *  @param size    Size of the data to read in bytes
  *  @return Pointer where the data is located (target buffer of original location)
  */
-const void* MC_region_read_fragmented(simgrid::mc::RegionSnapshot* region, void* target, const void* addr, size_t size)
+const void* MC_region_read_fragmented(simgrid::mc::Region* region, void* target, const void* addr, size_t size)
 {
   // Last byte of the memory area:
   void* end = (char*)addr + size - 1;
@@ -62,8 +62,8 @@ const void* MC_region_read_fragmented(simgrid::mc::RegionSnapshot* region, void*
  * @param region2 Region of the address in the second snapshot
  * @return same semantic as memcmp
  */
-int MC_snapshot_region_memcmp(const void* addr1, simgrid::mc::RegionSnapshot* region1, const void* addr2,
-                              simgrid::mc::RegionSnapshot* region2, size_t size)
+int MC_snapshot_region_memcmp(const void* addr1, simgrid::mc::Region* region1, const void* addr2,
+                              simgrid::mc::Region* region2, size_t size)
 {
   // Using alloca() for large allocations may trigger stack overflow:
   // use malloc if the buffer is too big.
@@ -304,14 +304,14 @@ void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void*
   else if (type == simgrid::mc::RegionType::Heap)
     xbt_assert(not object_info, "Unexpected object info for heap region.");
 
-  simgrid::mc::RegionSnapshot* region = new RegionSnapshot(type, start_addr, size);
+  simgrid::mc::Region* region = new Region(type, start_addr, size);
   region->object_info(object_info);
-  snapshot_regions_.push_back(std::unique_ptr<simgrid::mc::RegionSnapshot>(std::move(region)));
+  snapshot_regions_.push_back(std::unique_ptr<simgrid::mc::Region>(std::move(region)));
 }
 
 const void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, ReadOptions options) const
 {
-  RegionSnapshot* region = this->get_region((void*)address.address());
+  Region* region = this->get_region((void*)address.address());
   if (region) {
     const void* res = MC_region_read(region, buffer, (void*)address.address(), size);
     if (buffer == res || options & ReadOptions::lazy())
@@ -327,11 +327,11 @@ const void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void>
  *
  *  @param addr     Pointer
  * */
-RegionSnapshot* Snapshot::get_region(const void* addr) const
+Region* Snapshot::get_region(const void* addr) const
 {
   size_t n = snapshot_regions_.size();
   for (size_t i = 0; i != n; ++i) {
-    RegionSnapshot* region = snapshot_regions_[i].get();
+    Region* region = snapshot_regions_[i].get();
     if (not(region && region->contain(simgrid::mc::remote(addr))))
       continue;
 
@@ -342,7 +342,7 @@ RegionSnapshot* Snapshot::get_region(const void* addr) const
 }
 
 /** @brief Find the snapshoted region from a pointer, with a hinted_region */
-RegionSnapshot* Snapshot::get_region(const void* addr, RegionSnapshot* hinted_region) const
+Region* Snapshot::get_region(const void* addr, Region* hinted_region) const
 {
   if (hinted_region->contain(simgrid::mc::remote(addr)))
     return hinted_region;
@@ -355,7 +355,7 @@ void Snapshot::restore(RemoteClient* process)
   XBT_DEBUG("Restore snapshot %i", num_state_);
 
   // Restore regions
-  for (std::unique_ptr<simgrid::mc::RegionSnapshot> const& region : snapshot_regions_) {
+  for (std::unique_ptr<simgrid::mc::Region> const& region : snapshot_regions_) {
     if (region) // privatized variables are not snapshoted
       region.get()->restore();
   }

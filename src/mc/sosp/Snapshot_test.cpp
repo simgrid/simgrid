@@ -12,7 +12,7 @@
 #include <sys/mman.h>
 
 /**************** Class BOOST_tests *************************/
-using simgrid::mc::RegionSnapshot;
+using simgrid::mc::Region;
 class snap_test_helper {
 public:
   static void init_memory(void* mem, size_t size);
@@ -21,8 +21,8 @@ public:
     size_t size;
     void* src;
     void* dstn;
-    RegionSnapshot* region0;
-    RegionSnapshot* region;
+    Region* region0;
+    Region* region;
   } prologue_return;
   static prologue_return prologue(int n); // common to the below 5 fxs
   static void read_whole_region();
@@ -73,13 +73,11 @@ snap_test_helper::prologue_return snap_test_helper::prologue(int n)
 
   // Init memory and take snapshots:
   init_memory(source, byte_size);
-  simgrid::mc::RegionSnapshot* region0 =
-      new simgrid::mc::RegionSnapshot(simgrid::mc::RegionType::Unknown, source, byte_size);
+  simgrid::mc::Region* region0 = new simgrid::mc::Region(simgrid::mc::RegionType::Data, source, byte_size);
   for (int i = 0; i < n; i += 2) {
     init_memory((char*)source + i * xbt_pagesize, xbt_pagesize);
   }
-  simgrid::mc::RegionSnapshot* region =
-      new simgrid::mc::RegionSnapshot(simgrid::mc::RegionType::Unknown, source, byte_size);
+  simgrid::mc::Region* region = new simgrid::mc::Region(simgrid::mc::RegionType::Data, source, byte_size);
 
   void* destination = mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   INFO("Could not allocate destination memory");
@@ -170,8 +168,7 @@ void snap_test_helper::read_pointer()
 
   prologue_return ret = prologue(1);
   memcpy(ret.src, &mc_model_checker, sizeof(void*));
-  simgrid::mc::RegionSnapshot* region2 =
-      new simgrid::mc::RegionSnapshot(simgrid::mc::RegionType::Unknown, ret.src, ret.size);
+  simgrid::mc::Region* region2 = new simgrid::mc::Region(simgrid::mc::RegionType::Data, ret.src, ret.size);
   INFO("Mismtach in MC_region_read_pointer()");
   REQUIRE(MC_region_read_pointer(region2, ret.src) == mc_model_checker);
 

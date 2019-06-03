@@ -268,7 +268,7 @@ int StateComparator::initHeapInformation(xbt_mheap_t heap1, xbt_mheap_t heap2,
 }
 
 // TODO, have a robust way to find it in O(1)
-static inline RegionSnapshot* MC_get_heap_region(Snapshot* snapshot)
+static inline Region* MC_get_heap_region(Snapshot* snapshot)
 {
   for (auto const& region : snapshot->snapshot_regions_)
     if (region->region_type() == simgrid::mc::RegionType::Heap)
@@ -294,8 +294,8 @@ int mmalloc_compare_heap(
   malloc_info heapinfo_temp2;
   malloc_info heapinfo_temp2b;
 
-  simgrid::mc::RegionSnapshot* heap_region1 = MC_get_heap_region(snapshot1);
-  simgrid::mc::RegionSnapshot* heap_region2 = MC_get_heap_region(snapshot2);
+  simgrid::mc::Region* heap_region1 = MC_get_heap_region(snapshot1);
+  simgrid::mc::Region* heap_region2 = MC_get_heap_region(snapshot2);
 
   // This is the address of std_heap->heapinfo in the application process:
   void* heapinfo_address = &((xbt_mheap_t) process->heap_address)->heapinfo;
@@ -546,8 +546,8 @@ static int compare_heap_area_without_type(simgrid::mc::StateComparator& state, c
                                           int check_ignore)
 {
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
-  simgrid::mc::RegionSnapshot* heap_region1 = MC_get_heap_region(snapshot1);
-  simgrid::mc::RegionSnapshot* heap_region2 = MC_get_heap_region(snapshot2);
+  simgrid::mc::Region* heap_region1  = MC_get_heap_region(snapshot1);
+  simgrid::mc::Region* heap_region2  = MC_get_heap_region(snapshot2);
 
   for (int i = 0; i < size; ) {
 
@@ -649,8 +649,8 @@ static int compare_heap_area_with_type(simgrid::mc::StateComparator& state, cons
     const void* addr_pointed1;
     const void* addr_pointed2;
 
-    simgrid::mc::RegionSnapshot* heap_region1 = MC_get_heap_region(snapshot1);
-    simgrid::mc::RegionSnapshot* heap_region2 = MC_get_heap_region(snapshot2);
+    simgrid::mc::Region* heap_region1 = MC_get_heap_region(snapshot1);
+    simgrid::mc::Region* heap_region2 = MC_get_heap_region(snapshot2);
 
     switch (type->type) {
       case DW_TAG_unspecified_type:
@@ -935,8 +935,8 @@ static int compare_heap_area(simgrid::mc::StateComparator& state, const void* ar
 
   }
 
-  simgrid::mc::RegionSnapshot* heap_region1 = MC_get_heap_region(snapshot1);
-  simgrid::mc::RegionSnapshot* heap_region2 = MC_get_heap_region(snapshot2);
+  simgrid::mc::Region* heap_region1 = MC_get_heap_region(snapshot1);
+  simgrid::mc::Region* heap_region2 = MC_get_heap_region(snapshot2);
 
   const malloc_info* heapinfo1 = (const malloc_info*) MC_region_read(
     heap_region1, &heapinfo_temp1, &heapinfos1[block1], sizeof(malloc_info));
@@ -1148,9 +1148,9 @@ static int compare_heap_area(simgrid::mc::StateComparator& state, const void* ar
 /******************************************************************************/
 
 static int compare_areas_with_type(simgrid::mc::StateComparator& state, void* real_area1,
-                                   simgrid::mc::Snapshot* snapshot1, simgrid::mc::RegionSnapshot* region1,
-                                   void* real_area2, simgrid::mc::Snapshot* snapshot2,
-                                   simgrid::mc::RegionSnapshot* region2, simgrid::mc::Type* type, int pointer_level)
+                                   simgrid::mc::Snapshot* snapshot1, simgrid::mc::Region* region1, void* real_area2,
+                                   simgrid::mc::Snapshot* snapshot2, simgrid::mc::Region* region2,
+                                   simgrid::mc::Type* type, int pointer_level)
 {
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
@@ -1264,8 +1264,8 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state, void* re
         for (simgrid::mc::Member& member : type->members) {
           void* member1 = simgrid::dwarf::resolve_member(real_area1, type, &member, snapshot1);
           void* member2 = simgrid::dwarf::resolve_member(real_area2, type, &member, snapshot2);
-          simgrid::mc::RegionSnapshot* subregion1 = snapshot1->get_region(member1, region1); // region1 is hinted
-          simgrid::mc::RegionSnapshot* subregion2 = snapshot2->get_region(member2, region2); // region2 is hinted
+          simgrid::mc::Region* subregion1 = snapshot1->get_region(member1, region1); // region1 is hinted
+          simgrid::mc::Region* subregion2 = snapshot2->get_region(member2, region2); // region2 is hinted
           res = compare_areas_with_type(state, member1, snapshot1, subregion1, member2, snapshot2, subregion2,
                                         member.type, pointer_level);
           if (res == 1)
@@ -1284,8 +1284,8 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state, void* re
 }
 
 static int compare_global_variables(simgrid::mc::StateComparator& state, simgrid::mc::ObjectInformation* object_info,
-                                    simgrid::mc::RegionSnapshot* r1, simgrid::mc::RegionSnapshot* r2,
-                                    simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot* snapshot2)
+                                    simgrid::mc::Region* r1, simgrid::mc::Region* r2, simgrid::mc::Snapshot* snapshot1,
+                                    simgrid::mc::Snapshot* snapshot2)
 {
   xbt_assert(r1 && r2, "Missing region.");
 
@@ -1471,8 +1471,8 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
   xbt_assert(regions_count == s2->snapshot_regions_.size());
 
   for (size_t k = 0; k != regions_count; ++k) {
-    RegionSnapshot* region1 = s1->snapshot_regions_[k].get();
-    RegionSnapshot* region2 = s2->snapshot_regions_[k].get();
+    Region* region1 = s1->snapshot_regions_[k].get();
+    Region* region2 = s2->snapshot_regions_[k].get();
 
     // Preconditions:
     if (region1->region_type() != RegionType::Data)
