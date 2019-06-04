@@ -226,7 +226,7 @@ void Client::declare_symbol(const char* name, int* value)
     xbt_die("Could send REGISTER_SYMBOL message to model-checker");
 }
 
-void Client::declare_stack(void* stack, size_t size, smx_actor_t process, ucontext_t* context)
+void Client::declare_stack(void* stack, size_t size, ucontext_t* context)
 {
   xbt_mheap_t heap = mmalloc_get_current_heap();
 

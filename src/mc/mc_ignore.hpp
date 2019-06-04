@@ -12,7 +12,7 @@
 #if HAVE_UCONTEXT_H
 #include <ucontext.h> /* context relative declarations */
 
-XBT_PUBLIC void MC_register_stack_area(void* stack, smx_actor_t process, ucontext_t* context, size_t size);
+XBT_PUBLIC void MC_register_stack_area(void* stack, ucontext_t* context, size_t size);
 
 #endif
 

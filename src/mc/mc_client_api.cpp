@@ -79,12 +79,12 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
  *  @param context The context associated to that stack
  *  @param size    Size of the stack
  */
-void MC_register_stack_area(void* stack, smx_actor_t actor, ucontext_t* context, size_t size)
+void MC_register_stack_area(void* stack, ucontext_t* context, size_t size)
 {
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->declare_stack(stack, size, actor, context);
+  simgrid::mc::Client::get()->declare_stack(stack, size, context);
 }
 
 void MC_ignore_global_variable(const char* /*name*/)
