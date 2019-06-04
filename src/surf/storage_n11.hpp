@@ -61,7 +61,7 @@ public:
   void cancel() override;
   void resume() override;
   void set_max_duration(double duration) override;
-  void set_priority(double priority) override;
+  void set_sharing_penalty(double sharing_penalty) override;
   void update_remains_lazy(double now) override;
 };
 

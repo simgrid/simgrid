@@ -414,14 +414,14 @@ void CpuTi::update_actions_finish_time(double now)
       continue;
 
     /* bogus priority, skip it */
-    if (action.get_priority() <= 0)
+    if (action.get_sharing_penalty() <= 0)
       continue;
 
     /* action suspended, skip it */
     if (not action.is_running())
       continue;
 
-    sum_priority_ += 1.0 / action.get_priority();
+    sum_priority_ += 1.0 / action.get_sharing_penalty();
   }
 
   for (CpuTiAction& action : action_set_) {
@@ -431,9 +431,9 @@ void CpuTi::update_actions_finish_time(double now)
       continue;
 
     /* verify if the action is really running on cpu */
-    if (action.is_running() && action.get_priority() > 0) {
+    if (action.is_running() && action.get_sharing_penalty() > 0) {
       /* total area needed to finish the action. Used in trace integration */
-      double total_area = (action.get_remains() * sum_priority_ * action.get_priority()) / speed_.peak;
+      double total_area = (action.get_remains() * sum_priority_ * action.get_sharing_penalty()) / speed_.peak;
 
       action.set_finish_time(speed_integrated_trace_->solve(now, total_area));
       /* verify which event will happen before (max_duration or finish time) */
@@ -487,7 +487,7 @@ void CpuTi::update_remaining_amount(double now)
       continue;
 
     /* bogus priority, skip it */
-    if (action.get_priority() <= 0)
+    if (action.get_sharing_penalty() <= 0)
       continue;
 
     /* action suspended, skip it */
@@ -503,7 +503,7 @@ void CpuTi::update_remaining_amount(double now)
       continue;
 
     /* update remaining */
-    action.update_remains(area_total / (sum_priority_ * action.get_priority()));
+    action.update_remains(area_total / (sum_priority_ * action.get_sharing_penalty()));
     XBT_DEBUG("Update remaining action(%p) remaining %f", &action, action.get_remains_no_update());
   }
   last_update_ = now;
@@ -624,10 +624,10 @@ void CpuTiAction::set_max_duration(double duration)
   XBT_OUT();
 }
 
-void CpuTiAction::set_priority(double priority)
+void CpuTiAction::set_sharing_penalty(double sharing_penalty)
 {
-  XBT_IN("(%p,%g)", this, priority);
-  set_priority_no_update(priority);
+  XBT_IN("(%p,%g)", this, sharing_penalty);
+  set_sharing_penalty_no_update(sharing_penalty);
   cpu_->set_modified(true);
   XBT_OUT();
 }

@@ -163,7 +163,7 @@ void StorageN11Action::set_max_duration(double /*duration*/)
   THROW_UNIMPLEMENTED;
 }
 
-void StorageN11Action::set_priority(double /*priority*/)
+void StorageN11Action::set_sharing_penalty(double)
 {
   THROW_UNIMPLEMENTED;
 }

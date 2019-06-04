@@ -142,7 +142,7 @@ void CpuAction::update_remains_lazy(double now)
 {
   xbt_assert(get_state_set() == get_model()->get_started_action_set(),
              "You're updating an action that is not running.");
-  xbt_assert(get_priority() > 0, "You're updating an action that seems suspended.");
+  xbt_assert(get_sharing_penalty() > 0, "You're updating an action that seems suspended.");
 
   double delta = now - get_last_update();
 

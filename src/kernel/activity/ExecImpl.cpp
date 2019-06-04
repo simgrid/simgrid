@@ -141,7 +141,7 @@ ExecImpl* ExecImpl::start()
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     if (hosts_.size() == 1) {
       surf_action_ = hosts_.front()->pimpl_cpu->execution_start(flops_amounts_.front());
-      surf_action_->set_priority(priority_);
+      surf_action_->set_sharing_penalty(sharing_penalty_);
       surf_action_->set_category(get_tracing_category());
 
       if (bound_ > 0)
@@ -174,9 +174,9 @@ ExecImpl& ExecImpl::set_bound(double bound)
   return *this;
 }
 
-ExecImpl& ExecImpl::set_priority(double priority)
+ExecImpl& ExecImpl::set_sharing_penalty(double sharing_penalty)
 {
-  priority_ = priority;
+  sharing_penalty_ = sharing_penalty;
   return *this;
 }
 
@@ -292,7 +292,7 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
     resource::Action* new_action = to->pimpl_cpu->execution_start(old_action->get_cost());
     new_action->set_remains(old_action->get_remains());
     new_action->set_activity(this);
-    new_action->set_priority(old_action->get_priority());
+    new_action->set_sharing_penalty(old_action->get_sharing_penalty());
 
     // FIXME: the user-defined bound seem to not be kept by LMM, that seem to overwrite it for the multi-core modeling.
     // I hope that the user did not provide any.

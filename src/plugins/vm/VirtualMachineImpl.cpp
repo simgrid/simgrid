@@ -300,9 +300,9 @@ void VirtualMachineImpl::update_action_weight(){
   XBT_DEBUG("set the weight of the dummy CPU action of VM%p on PM to %d (#tasks: %d)", this, impact, active_tasks_);
 
   if (impact > 0)
-    action_->set_priority(1. / impact);
+    action_->set_sharing_penalty(1. / impact);
   else
-    action_->set_priority(0.);
+    action_->set_sharing_penalty(0.);
 
   action_->set_bound(std::min(impact * physical_host_->get_speed(), user_bound_));
 }

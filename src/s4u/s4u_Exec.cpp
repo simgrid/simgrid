@@ -138,7 +138,7 @@ Exec* ExecSeq::start()
     (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
         .set_name(name_)
         .set_tracing_category(tracing_category_)
-        .set_priority(1. / priority_)
+        .set_sharing_penalty(1. / priority_)
         .set_bound(bound_)
         .set_flops_amount(flops_amount_)
         .start();
@@ -177,7 +177,7 @@ double ExecSeq::get_remaining()
       [this]() { return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->get_remaining(); });
 }
 
-/** @brief Returns the ratio of elements that are still to do
+/** @brief Returns the ratio of elements that are still to do
  *
  * The returned value is between 0 (completely done) and 1 (nothing done yet).
  */

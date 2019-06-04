@@ -16,7 +16,7 @@ namespace activity {
 
 class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
   resource::Action* timeout_detector_ = nullptr;
-  double priority_                    = 1.0;
+  double sharing_penalty_             = 1.0;
   double bound_                       = 0.0;
   std::vector<s4u::Host*> hosts_;
   std::vector<double> flops_amounts_;
@@ -26,7 +26,7 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
 public:
   ExecImpl& set_timeout(double timeout);
   ExecImpl& set_bound(double bound);
-  ExecImpl& set_priority(double priority);
+  ExecImpl& set_sharing_penalty(double sharing_penalty);
 
   ExecImpl& set_flops_amount(double flop_amount);
   ExecImpl& set_host(s4u::Host* host);

@@ -273,16 +273,14 @@ XBT_ATTRIB_DEPRECATED_v325("Please use Comm::cancel()") XBT_PUBLIC void simcall_
 
 XBT_ATTRIB_DEPRECATED_v325("Please use Exec::cancel()") XBT_PUBLIC
     void simcall_execution_cancel(smx_activity_t execution);
-XBT_ATTRIB_DEPRECATED_v325("Please use Exec::set_priority()") XBT_PUBLIC
-    void simcall_execution_set_priority(smx_activity_t execution, double priority);
 XBT_ATTRIB_DEPRECATED_v325("Please use Exec::set_bound()") XBT_PUBLIC
     void simcall_execution_set_bound(smx_activity_t execution, double bound);
 SG_END_DECL()
 
 #ifdef __cplusplus
 XBT_ATTRIB_DEPRECATED_v325("Please use Exec::start()") XBT_PUBLIC smx_activity_t
-    simcall_execution_start(const std::string& name, const std::string& category, double flops_amount, double priority,
-                            double bound, sg_host_t host);
+    simcall_execution_start(const std::string& name, const std::string& category, double flops_amount,
+                            double sharing_penalty, double bound, sg_host_t host);
 
 // Should be deprecated in v325 too but is still used in other deprecated calls
 XBT_PUBLIC smx_activity_t simcall_execution_parallel_start(const std::string& name, int host_nb,

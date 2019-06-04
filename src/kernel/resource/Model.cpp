@@ -52,7 +52,7 @@ double Model::next_occuring_event_lazy(double now)
       continue;
 
     /* bogus priority, skip it */
-    if (action->get_priority() <= 0 || action->get_type() == ActionHeap::Type::latency)
+    if (action->get_sharing_penalty() <= 0 || action->get_type() == ActionHeap::Type::latency)
       continue;
 
     action->update_remains_lazy(now);

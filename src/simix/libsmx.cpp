@@ -368,12 +368,6 @@ void simcall_execution_cancel(smx_activity_t exec)
 {
   simgrid::simix::simcall([exec] { boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->cancel(); });
 }
-void simcall_execution_set_priority(smx_activity_t exec, double priority)
-{
-  simgrid::simix::simcall([exec, priority] {
-    boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->set_priority(priority);
-  });
-}
 
 void simcall_execution_set_bound(smx_activity_t exec, double bound)
 {
@@ -383,15 +377,15 @@ void simcall_execution_set_bound(smx_activity_t exec, double bound)
 
 // deprecated
 smx_activity_t simcall_execution_start(const std::string& name, const std::string& category, double flops_amount,
-                                       double priority, double bound, sg_host_t host)
+                                       double sharing_penalty, double bound, sg_host_t host)
 {
-  return simgrid::simix::simcall([name, category, flops_amount, priority, bound, host] {
+  return simgrid::simix::simcall([name, category, flops_amount, sharing_penalty, bound, host] {
     simgrid::kernel::activity::ExecImpl* exec = new simgrid::kernel::activity::ExecImpl();
     (*exec)
         .set_name(name)
         .set_tracing_category(category)
         .set_host(host)
-        .set_priority(priority)
+        .set_sharing_penalty(sharing_penalty)
         .set_bound(bound)
         .set_flops_amount(flops_amount)
         .start();
