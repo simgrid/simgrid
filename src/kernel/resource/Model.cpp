@@ -13,6 +13,7 @@ namespace kernel {
 namespace resource {
 
 Model::Model(Model::UpdateAlgo algo) : update_algorithm_(algo) {}
+Model::~Model() = default;
 
 Action::ModifiedSet* Model::get_modified_set() const
 {
