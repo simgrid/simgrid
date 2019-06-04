@@ -17,13 +17,15 @@ pages:
   # - The javasphinx output does not exist in the git, so the "open on GitLab" link is broken.
   #   I'd like to report this as a bug, but javasphinx seems abandonned upstream.
   # - public/search.html and public/genindex.html are also generated.
-  - linkchecker --check-extern --ignore-url='.*\.css$' --ignore-url=public/java/org ../public
+  - linkchecker --ignore-url='.*\.css$' --ignore-url=public/java/org ../public
+  # From time to time, we should check external links with the
+  # following, but it has a lot of false positive
+  # - linkchecker --ignore-url='.*\.css$' --ignore-url=public/java/org --check-extern ../public
   artifacts:
     paths:
     - public
   only:
   - master
-  allow_failure: true
 
 ctest:
   stage: build
