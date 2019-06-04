@@ -7,6 +7,8 @@ stages:
 pages:
   stage: test
   script:
+  - cmake -Denable_model-checking=OFF -Denable_documentation=ON -Denable_compile_optimizations=OFF -Denable_smpi=OFF -Dpython=ON .
+  - make -j4
   - pip3 install --requirement docs/requirements.txt
   - cd docs
   - LC_ALL=C.UTF-8 ./Build.sh
