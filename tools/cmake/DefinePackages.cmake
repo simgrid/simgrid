@@ -1081,6 +1081,9 @@ set(CMAKE_SOURCE_FILES
   tools/stack-cleaner/clean-stack-filter
   tools/stack-cleaner/compiler-wrapper
   tools/stack-cleaner/README
+  
+  setup.py 
+  MANIFEST.in.in
   )
 
 set(PLATFORMS_EXAMPLES

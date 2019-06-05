@@ -348,8 +348,8 @@ on `our Jenkins <https://ci.inria.fr/simgrid/>`_.
 
 .. _install_cmake_mac:
 
-macOS Specifics
-^^^^^^^^^^^^^^^
+macOS-specific instructions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 SimGrid compiles like a charm with clang (version 3.0 or higher) on macOS:
 
@@ -376,8 +376,8 @@ CMake Error: Parse error in cache file build_dir/CMakeCache.txt. Offending entry
 
 .. _install_cmake_windows:
 
-Windows Specifics
-^^^^^^^^^^^^^^^^^
+Windows-specific instructions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The best solution to get SimGrid working on windows is to install the
 Ubuntu subsystem of Windows 10. All of SimGrid (but the model-checker)
@@ -394,15 +394,32 @@ with MS Visual C. Some clang-based tools seem promising to fix this,
 but this is of rather low priority for us. It it's important for you
 and if you get it working, please @ref community_contact "tell us".
 
-Java Specifics
-^^^^^^^^^^^^^^
+Python-specific instructions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Recompiling the python bindings from the source should be as easy as:
+
+.. code-block:: shell
+
+  # cd simgrid-source-tree
+  python setup.py build install
+  
+Starting with SimGrid 3.13, it should even be possible to install
+simgrid without downloading the source with pip:
+
+.. code-block:: shell
+
+  pip install simgrid
+
+Java-specific instructions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Once you have the `full JDK <http://www.oracle.com/technetwork/java/javase/downloads>`_ installed,
 things should be as simple as:
 
 .. code-block:: shell
 
-   cmake -Denable_java=ON .
+   cmake -Denable_java=ON -Dminimal-bindings=ON .
    make  simgrid-java_jar # Only build the jarfile
 
 After the compilation, the file ```simgrid.jar``` is produced in the
@@ -433,8 +450,8 @@ path, and relaunch cmake. If you have several versions of JNI installed
 
 Note that the filename ```jni.h``` was removed from the path.
 
-Linux Multi-Arch Specifics
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Linux Multi-Arch specific instructions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 On a multiarch x86_64 Linux, it should be possible to compile a 32-bit
 version of SimGrid with something like:

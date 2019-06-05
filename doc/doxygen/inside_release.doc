@@ -171,14 +171,21 @@ Doing a dot release:
       - CMakeLists.txt (in macros SIMGRID_VERSION_*)
       - sonar-project.properties
       - docs/source/conf.py
+      - setup.py
   - Commit and push to both framagit and github
   - Wait for both appveyor and jenkins/highsierra to complete the build
   - If it's not successful, fix it and push again
-  - Once it's successful:
+  - Once it's successful on both appveyor and jenkins:
     - tag the release v3_X_Y and push the tag
     - Merge 'master' into 'stable' and push it to framagit
     - Do not merge into 'stable' before appveyor and jenkins are done,
       or your jarfile will not contain the code you expect for win and
       mac.
+  - python3 setup.py sdist # Build a source distrib
+    - test that the built distrib recompiles:
+      rm -rf /tmp/pysimgrid && mkdir /tmp/pysimgrid && cp dist/simgrid-*.tar.gz /tmp/pysimgrid 
+      (cd /tmp/pysimgrid && tar xfz simgrid*.tgz && cd simgrid-* && python3 setup.py build)
+    - Upload it to pypi (WARNING: you cannot modify uploaded files, ever)
+      twine upload dist/simgrid-*.tar.gz
 
 */

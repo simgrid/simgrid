@@ -177,7 +177,6 @@ set(source_to_pack
   ${examples_src}
   ${tesh_files}
   ${teshsuite_src}
-  ${testsuite_src}
   ${tools_src}
   ${txt_files}
   ${xml_files}
@@ -206,10 +205,14 @@ if(IS_DIRECTORY ${CMAKE_BINARY_DIR}/doc/html/)
 endif()
 
 set(dirs_in_tarball "")
+set(PYTHON_SOURCES "include MANIFEST.in")
 foreach(file ${source_to_pack})
   #message(${file})
   # This damn prefix is still set somewhere (seems to be in subdirs)
   string(REPLACE "${CMAKE_HOME_DIRECTORY}/" "" file "${file}")
+  
+  # Prepare the list of files to include in the python sdist, one per line
+  set(PYTHON_SOURCES "${PYTHON_SOURCES}\ninclude ${file}")
 
   # Create the directory on need
   get_filename_component(file_location ${file} PATH)
@@ -226,6 +229,9 @@ foreach(file ${source_to_pack})
     TARGET dist-dir
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/${file} ${PROJECT_NAME}-${release_version}/${file_location})
 endforeach(file ${source_to_pack})
+configure_file("${CMAKE_HOME_DIRECTORY}/MANIFEST.in.in" "${CMAKE_BINARY_DIR}/MANIFEST.in" @ONLY IMMEDIATE)
+unset(PYTHON_SOURCES)
+
 
 add_custom_command(
   TARGET dist-dir
