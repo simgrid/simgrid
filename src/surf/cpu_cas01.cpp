@@ -188,7 +188,7 @@ CpuAction* CpuCas01::sleep(double duration)
   if (duration == NO_MAX_DURATION)
     action->set_state(Action::State::IGNORED);
 
-  get_model()->get_maxmin_system()->update_variable_weight(action->get_variable(), 0.0);
+  get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), 0.0);
   if (get_model()->get_update_algorithm() == Model::UpdateAlgo::LAZY) { // remove action from the heap
     get_model()->get_action_heap().remove(action);
     // this is necessary for a variable with weight 0 since such variables are ignored in lmm and we need to set its

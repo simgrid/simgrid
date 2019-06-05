@@ -289,8 +289,8 @@ private:
  */
 class XBT_PUBLIC Variable {
 public:
-  void initialize(resource::Action* id_value, double sharing_weight_value, double bound_value,
-                  int number_of_constraints, unsigned visited_value);
+  void initialize(resource::Action* id_value, double sharing_penalty, double bound_value, int number_of_constraints,
+                  unsigned visited_value);
 
   /** @brief Get the value of the variable after the last lmm solve */
   double get_value() const { return value_; }
@@ -327,16 +327,16 @@ public:
   /** @brief Get the data associated to a variable */
   resource::Action* get_id() const { return id_; }
 
-  /** @brief Get the weight of a variable */
-  double get_weight() const { return sharing_weight_; }
+  /** @brief Get the penalty of a variable */
+  double get_penalty() const { return sharing_penalty_; }
 
   /** @brief Measure the minimum concurrency slack across all constraints where the given var is involved */
   int get_min_concurrency_slack() const;
 
   /** @brief Check if a variable can be enabled
-   * Make sure to set staged_weight before, if your intent is only to check concurrency
+   * Make sure to set staged_penalty before, if your intent is only to check concurrency
    */
-  int can_enable() const { return staged_weight_ > 0 && get_min_concurrency_slack() >= concurrency_share_; }
+  int can_enable() const { return staged_penalty_ > 0 && get_min_concurrency_slack() >= concurrency_share_; }
 
   /* hookup to system */
   boost::intrusive::list_member_hook<> variable_set_hook_;
@@ -344,13 +344,13 @@ public:
 
   std::vector<Element> cnsts_;
 
-  // sharing_weight: variable's impact on the resource during the sharing
+  // sharing_penalty: variable's impact on the resource during the sharing
   //   if == 0, the variable is not considered by LMM
   //   on CPU, actions with N threads have a sharing of N
-  //   on network, the actions with higher latency have a lesser sharing_weight
-  double sharing_weight_;
+  //   on network, the actions with higher latency have a lesser sharing_penalty
+  double sharing_penalty_;
 
-  double staged_weight_; /* If non-zero, variable is staged for addition as soon as maxconcurrency constraints will be
+  double staged_penalty_; /* If non-zero, variable is staged for addition as soon as maxconcurrency constraints will be
                             met */
   double bound_;
   double value_;
@@ -428,12 +428,8 @@ public:
   /** @brief Update the bound of a variable */
   void update_variable_bound(Variable * var, double bound);
 
-  /**
-   * @brief Update the weight of a variable
-   * @param var A variable
-   * @param weight The new weight of the variable
-   */
-  void update_variable_weight(Variable * var, double weight);
+  /** @brief Update the sharing penalty of a variable */
+  void update_variable_penalty(Variable* var, double penalty);
 
   /** @brief Update a constraint bound */
   void update_constraint_bound(Constraint * cnst, double bound);

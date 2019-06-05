@@ -105,7 +105,7 @@ void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
     // if I am wearing a latency hat
     if (action->get_type() == ActionHeap::Type::latency) {
       XBT_DEBUG("Latency paid for action %p. Activating", action);
-      get_maxmin_system()->update_variable_weight(action->get_variable(), action->weight_);
+      get_maxmin_system()->update_variable_penalty(action->get_variable(), action->sharing_penalty_);
       get_action_heap().remove(action);
       action->set_last_update();
 
@@ -136,7 +136,7 @@ void NetworkCm02Model::update_actions_state_full(double /*now*/, double delta)
         action.latency_ = 0.0;
       }
       if (action.latency_ <= 0.0 && not action.is_suspended())
-        get_maxmin_system()->update_variable_weight(action.get_variable(), action.weight_);
+        get_maxmin_system()->update_variable_penalty(action.get_variable(), action.sharing_penalty_);
     }
 
     if (not action.get_variable()->get_number_of_constraint()) {
@@ -150,7 +150,7 @@ void NetworkCm02Model::update_actions_state_full(double /*now*/, double delta)
     if (action.get_max_duration() != NO_MAX_DURATION)
       action.update_max_duration(delta);
 
-    if (((action.get_remains() <= 0) && (action.get_variable()->get_weight() > 0)) ||
+    if (((action.get_remains() <= 0) && (action.get_variable()->get_penalty() > 0)) ||
         ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(Action::State::FINISHED);
     }
@@ -180,7 +180,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   }
 
   NetworkCm02Action *action = new NetworkCm02Action(this, size, failed);
-  action->weight_ = latency;
+  action->sharing_penalty_  = latency;
   action->latency_ = latency;
   action->rate_ = rate;
   if (get_update_algorithm() == Model::UpdateAlgo::LAZY) {
@@ -188,8 +188,8 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   }
 
   if (sg_weight_S_parameter > 0) {
-    action->weight_ =
-        std::accumulate(route.begin(), route.end(), action->weight_, [](double total, LinkImpl* const& link) {
+    action->sharing_penalty_ =
+        std::accumulate(route.begin(), route.end(), action->sharing_penalty_, [](double total, LinkImpl* const& link) {
           return total + sg_weight_S_parameter / link->get_bandwidth();
         });
   }
@@ -323,9 +323,9 @@ void NetworkCm02Link::set_bandwidth(double value)
     int numelem                  = 0;
     while ((var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
       NetworkCm02Action* action = static_cast<NetworkCm02Action*>(var->get_id());
-      action->weight_ += delta;
+      action->sharing_penalty_ += delta;
       if (not action->is_suspended())
-        get_model()->get_maxmin_system()->update_variable_weight(action->get_variable(), action->weight_);
+        get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), action->sharing_penalty_);
     }
   }
 }
@@ -343,7 +343,7 @@ void NetworkCm02Link::set_latency(double value)
   while ((var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
     NetworkCm02Action* action = static_cast<NetworkCm02Action*>(var->get_id());
     action->lat_current_ += delta;
-    action->weight_ += delta;
+    action->sharing_penalty_ += delta;
     if (action->rate_ < 0)
       get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), NetworkModel::cfg_tcp_gamma /
                                                                                           (2.0 * action->lat_current_));
@@ -358,7 +358,7 @@ void NetworkCm02Link::set_latency(double value)
       }
     }
     if (not action->is_suspended())
-      get_model()->get_maxmin_system()->update_variable_weight(action->get_variable(), action->weight_);
+      get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), action->sharing_penalty_);
   }
 }
 
@@ -383,7 +383,7 @@ void NetworkCm02Action::update_remains_lazy(double now)
 
   update_max_duration(delta);
 
-  if ((get_remains_no_update() <= 0 && (get_variable()->get_weight() > 0)) ||
+  if ((get_remains_no_update() <= 0 && (get_variable()->get_penalty() > 0)) ||
       ((get_max_duration() != NO_MAX_DURATION) && (get_max_duration() <= 0))) {
     finish(Action::State::FINISHED);
     get_model()->get_action_heap().remove(this);

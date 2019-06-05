@@ -43,7 +43,7 @@ void CpuModel::update_actions_state_full(double /*now*/, double delta)
     action.update_remains(action.get_variable()->get_value() * delta);
     action.update_max_duration(delta);
 
-    if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_weight() > 0)) ||
+    if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_penalty() > 0)) ||
         ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(Action::State::FINISHED);
     }

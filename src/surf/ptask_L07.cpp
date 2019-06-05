@@ -93,7 +93,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
       }
       if ((action.latency_ <= 0.0) && (action.is_suspended() == 0)) {
         action.updateBound();
-        get_maxmin_system()->update_variable_weight(action.get_variable(), 1.0);
+        get_maxmin_system()->update_variable_penalty(action.get_variable(), 1.0);
         action.set_last_update();
       }
     }
@@ -110,7 +110,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
      * If it's not done, it may have failed.
      */
 
-    if (((action.get_remains() <= 0) && (action.get_variable()->get_weight() > 0)) ||
+    if (((action.get_remains() <= 0) && (action.get_variable()->get_penalty() > 0)) ||
         ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(kernel::resource::Action::State::FINISHED);
       continue;
@@ -180,7 +180,7 @@ L07Action::L07Action(kernel::resource::Model* model, const std::vector<s4u::Host
       model->get_maxmin_system()->variable_new(this, 1.0, (rate > 0 ? rate : -1.0), host_list.size() + link_nb));
 
   if (latency_ > 0)
-    model->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
+    model->get_maxmin_system()->update_variable_penalty(get_variable(), 0.0);
 
   /* Expand it for the CPUs even if there is nothing to compute, to make sure that it gets expended even if there is no
    * communication either */
@@ -273,7 +273,7 @@ kernel::resource::CpuAction* CpuL07::sleep(double duration)
   L07Action *action = static_cast<L07Action*>(execution_start(1.0));
   action->set_max_duration(duration);
   action->set_suspend_state(kernel::resource::Action::SuspendStates::SLEEPING);
-  get_model()->get_maxmin_system()->update_variable_weight(action->get_variable(), 0.0);
+  get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), 0.0);
 
   return action;
 }

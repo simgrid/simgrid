@@ -103,10 +103,10 @@ static void test1()
   lmm::Variable* R_2     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
   lmm::Variable* R_3     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
 
-  Sys->update_variable_weight(R_1_2_3, 1.0);
-  Sys->update_variable_weight(R_1, 1.0);
-  Sys->update_variable_weight(R_2, 1.0);
-  Sys->update_variable_weight(R_3, 1.0);
+  Sys->update_variable_penalty(R_1_2_3, 1.0);
+  Sys->update_variable_penalty(R_1, 1.0);
+  Sys->update_variable_penalty(R_2, 1.0);
+  Sys->update_variable_penalty(R_3, 1.0);
 
   Sys->expand(L1, R_1_2_3, 1.0);
   Sys->expand(L2, R_1_2_3, 1.0);
@@ -140,8 +140,8 @@ static void test2()
   lmm::Variable* T1 = Sys->variable_new(nullptr, 1.0, -1.0, 1);
   lmm::Variable* T2 = Sys->variable_new(nullptr, 1.0, -1.0, 1);
 
-  Sys->update_variable_weight(T1, 1.0);
-  Sys->update_variable_weight(T2, 1.0);
+  Sys->update_variable_penalty(T1, 1.0);
+  Sys->update_variable_penalty(T2, 1.0);
 
   Sys->expand(CPU1, T1, 1.0);
   Sys->expand(CPU2, T2, 1.0);
@@ -204,7 +204,7 @@ static void test3()
   lmm::Variable** tmp_var = new lmm::Variable*[16];
   for (int j = 0; j < 16; j++) {
     tmp_var[j] = Sys->variable_new(nullptr, 1.0, -1.0, 15);
-    Sys->update_variable_weight(tmp_var[j], 1.0);
+    Sys->update_variable_penalty(tmp_var[j], 1.0);
   }
 
   /* Link constraints and variables */

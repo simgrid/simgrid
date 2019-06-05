@@ -194,7 +194,7 @@ public:
 
   double latency_    = {};
   double lat_current_ = {};
-  double weight_     = {};
+  double sharing_penalty_ = {};
   double rate_       = {};
 };
 } // namespace resource

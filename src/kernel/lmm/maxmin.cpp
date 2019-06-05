@@ -66,13 +66,13 @@ void System::check_concurrency() const
   for (Constraint const& cnst : constraint_set) {
     int concurrency       = 0;
     for (Element const& elem : cnst.enabled_element_set_) {
-      xbt_assert(elem.variable->sharing_weight_ > 0);
+      xbt_assert(elem.variable->sharing_penalty_ > 0);
       concurrency += elem.get_concurrency();
     }
 
     for (Element const& elem : cnst.disabled_element_set_) {
       // We should have staged variables only if concurrency is reached in some constraint
-      xbt_assert(cnst.get_concurrency_limit() < 0 || elem.variable->staged_weight_ == 0 ||
+      xbt_assert(cnst.get_concurrency_limit() < 0 || elem.variable->staged_penalty_ == 0 ||
                      elem.variable->get_min_concurrency_slack() < elem.variable->concurrency_share_,
                  "should not have staged variable!");
     }
@@ -114,7 +114,7 @@ void System::var_free(Variable* var)
     update_modified_set(var->cnsts_[0].constraint);
 
   for (Element& elem : var->cnsts_) {
-    if (var->sharing_weight_ > 0)
+    if (var->sharing_penalty_ > 0)
       elem.decrease_concurrency();
     if (elem.enabled_element_set_hook.is_linked())
       simgrid::xbt::intrusive_erase(elem.constraint->enabled_element_set_, elem);
@@ -202,13 +202,14 @@ void System::variable_mallocator_free_f(void* var)
   delete static_cast<Variable*>(var);
 }
 
-Variable* System::variable_new(resource::Action* id, double sharing_weight, double bound, size_t number_of_constraints)
+Variable* System::variable_new(resource::Action* id, double sharing_penalty, double bound, size_t number_of_constraints)
 {
-  XBT_IN("(sys=%p, id=%p, weight=%f, bound=%f, num_cons =%zu)", this, id, sharing_weight, bound, number_of_constraints);
+  XBT_IN("(sys=%p, id=%p, penalty=%f, bound=%f, num_cons =%zu)", this, id, sharing_penalty, bound,
+         number_of_constraints);
 
   Variable* var = static_cast<Variable*>(xbt_mallocator_get(variable_mallocator_));
-  var->initialize(id, sharing_weight, bound, number_of_constraints, visited_counter_ - 1);
-  if (sharing_weight > 0)
+  var->initialize(id, sharing_penalty, bound, number_of_constraints, visited_counter_ - 1);
+  if (sharing_penalty > 0)
     variable_set.push_front(*var);
   else
     variable_set.push_back(*var);
@@ -238,14 +239,14 @@ void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
   }
 
   // Check if we need to disable the variable
-  if (var->sharing_weight_ > 0 && var->concurrency_share_ - current_share > cnst->get_concurrency_slack()) {
-    double weight = var->sharing_weight_;
+  if (var->sharing_penalty_ > 0 && var->concurrency_share_ - current_share > cnst->get_concurrency_slack()) {
+    double penalty = var->sharing_penalty_;
     disable_var(var);
     for (Element const& elem : var->cnsts_)
       on_disabled_var(elem.constraint);
     consumption_weight = 0;
-    var->staged_weight_ = weight;
-    xbt_assert(not var->sharing_weight_);
+    var->staged_penalty_ = penalty;
+    xbt_assert(not var->sharing_penalty_);
   }
 
   xbt_assert(var->cnsts_.size() < var->cnsts_.capacity(), "Too much constraints");
@@ -257,7 +258,7 @@ void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
   elem.constraint         = cnst;
   elem.variable           = var;
 
-  if (var->sharing_weight_) {
+  if (var->sharing_penalty_) {
     elem.constraint->enabled_element_set_.push_front(elem);
     elem.increase_concurrency();
   } else
@@ -265,7 +266,7 @@ void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
 
   if (not selective_update_active) {
     make_constraint_active(cnst);
-  } else if (elem.consumption_weight > 0 || var->sharing_weight_ > 0) {
+  } else if (elem.consumption_weight > 0 || var->sharing_penalty_ > 0) {
     make_constraint_active(cnst);
     update_modified_set(cnst);
     // TODOLATER: Why do we need this second call?
@@ -287,7 +288,7 @@ void System::expand_add(Constraint* cnst, Variable* var, double value)
       std::find_if(begin(var->cnsts_), end(var->cnsts_), [&cnst](Element const& x) { return x.constraint == cnst; });
   if (elem_it != end(var->cnsts_)) {
     Element& elem = *elem_it;
-    if (var->sharing_weight_)
+    if (var->sharing_penalty_)
       elem.decrease_concurrency();
 
     if (cnst->sharing_policy_ != s4u::Link::SharingPolicy::FATPIPE)
@@ -296,14 +297,14 @@ void System::expand_add(Constraint* cnst, Variable* var, double value)
       elem.consumption_weight = std::max(elem.consumption_weight, value);
 
     // We need to check that increasing value of the element does not cross the concurrency limit
-    if (var->sharing_weight_) {
+    if (var->sharing_penalty_) {
       if (cnst->get_concurrency_slack() < elem.get_concurrency()) {
-        double weight = var->sharing_weight_;
+        double penalty = var->sharing_penalty_;
         disable_var(var);
         for (Element const& elem2 : var->cnsts_)
           on_disabled_var(elem2.constraint);
-        var->staged_weight_ = weight;
-        xbt_assert(not var->sharing_weight_);
+        var->staged_penalty_ = penalty;
+        xbt_assert(not var->sharing_penalty_);
       }
       elem.increase_concurrency();
     }
@@ -408,8 +409,7 @@ static inline void saturated_variable_set_update(ConstraintLight* cnst_light_tab
   for (int const& saturated_cnst : saturated_constraints) {
     ConstraintLight& cnst = cnst_light_tab[saturated_cnst];
     for (Element const& elem : cnst.cnst->active_element_set_) {
-      // Visiting active_element_set, so, by construction, should never get a zero weight, correct?
-      xbt_assert(elem.variable->sharing_weight_ > 0);
+      xbt_assert(elem.variable->sharing_penalty_ > 0); // All elements of active_element_set should be active
       if (elem.consumption_weight > 0 && not elem.variable->saturated_variable_set_hook_.is_linked())
         sys->saturated_variable_set.push_back(*elem.variable);
     }
@@ -437,7 +437,7 @@ void System::print() const
 
   /* Printing Objective */
   for (Variable const& var : variable_set)
-    buf += "'" + std::to_string(var.rank_) + "'(" + std::to_string(var.sharing_weight_) + ") ";
+    buf += "'" + std::to_string(var.rank_) + "'(" + std::to_string(var.sharing_penalty_) + ") ";
   buf += ")";
   XBT_DEBUG("%20s", buf.c_str());
   buf.clear();
@@ -468,11 +468,11 @@ void System::print() const
   /* Printing Result */
   for (Variable const& var : variable_set) {
     if (var.bound_ > 0) {
-      XBT_DEBUG("'%d'(%f) : %f (<=%f)", var.rank_, var.sharing_weight_, var.value_, var.bound_);
+      XBT_DEBUG("'%d'(%f) : %f (<=%f)", var.rank_, var.sharing_penalty_, var.value_, var.bound_);
       xbt_assert(not double_positive(var.value_ - var.bound_, var.bound_ * sg_maxmin_precision),
                  "Incorrect value (%f is not smaller than %f", var.value_, var.bound_);
     } else {
-      XBT_DEBUG("'%d'(%f) : %f", var.rank_, var.sharing_weight_, var.value_);
+      XBT_DEBUG("'%d'(%f) : %f", var.rank_, var.sharing_penalty_, var.value_);
     }
   }
 }
@@ -501,7 +501,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
   /* Init: Only modified code portions: reset the value of active variables */
   for (Constraint const& cnst : cnst_list) {
     for (Element const& elem : cnst.enabled_element_set_) {
-      xbt_assert(elem.variable->sharing_weight_ > 0.0);
+      xbt_assert(elem.variable->sharing_penalty_ > 0.0);
       elem.variable->value_ = 0.0;
     }
   }
@@ -518,12 +518,12 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
       continue;
     cnst.usage_ = 0;
     for (Element& elem : cnst.enabled_element_set_) {
-      xbt_assert(elem.variable->sharing_weight_ > 0);
+      xbt_assert(elem.variable->sharing_penalty_ > 0);
       if (elem.consumption_weight > 0) {
         if (cnst.sharing_policy_ != s4u::Link::SharingPolicy::FATPIPE)
-          cnst.usage_ += elem.consumption_weight / elem.variable->sharing_weight_;
-        else if (cnst.usage_ < elem.consumption_weight / elem.variable->sharing_weight_)
-          cnst.usage_ = elem.consumption_weight / elem.variable->sharing_weight_;
+          cnst.usage_ += elem.consumption_weight / elem.variable->sharing_penalty_;
+        else if (cnst.usage_ < elem.consumption_weight / elem.variable->sharing_penalty_)
+          cnst.usage_ = elem.consumption_weight / elem.variable->sharing_penalty_;
 
         elem.make_active();
         resource::Action* action = static_cast<resource::Action*>(elem.variable->id_);
@@ -554,16 +554,16 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
     /* Fix the variables that have to be */
     auto& var_list = saturated_variable_set;
     for (Variable const& var : var_list) {
-      if (var.sharing_weight_ <= 0.0)
+      if (var.sharing_penalty_ <= 0.0)
         DIE_IMPOSSIBLE;
       /* First check if some of these variables could reach their upper bound and update min_bound accordingly. */
-      XBT_DEBUG("var=%d, var.bound=%f, var.weight=%f, min_usage=%f, var.bound*var.weight=%f", var.rank_, var.bound_,
-                var.sharing_weight_, min_usage, var.bound_ * var.sharing_weight_);
-      if ((var.bound_ > 0) && (var.bound_ * var.sharing_weight_ < min_usage)) {
+      XBT_DEBUG("var=%d, var.bound=%f, var.penalty=%f, min_usage=%f, var.bound*var.penalty=%f", var.rank_, var.bound_,
+                var.sharing_penalty_, min_usage, var.bound_ * var.sharing_penalty_);
+      if ((var.bound_ > 0) && (var.bound_ * var.sharing_penalty_ < min_usage)) {
         if (min_bound < 0)
-          min_bound = var.bound_ * var.sharing_weight_;
+          min_bound = var.bound_ * var.sharing_penalty_;
         else
-          min_bound = std::min(min_bound, (var.bound_ * var.sharing_weight_));
+          min_bound = std::min(min_bound, (var.bound_ * var.sharing_penalty_));
         XBT_DEBUG("Updated min_bound=%f", min_bound);
       }
     }
@@ -573,11 +573,11 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
       if (min_bound < 0) {
         // If no variable could reach its bound, deal iteratively the constraints usage ( at worst one constraint is
         // saturated at each cycle)
-        var.value_ = min_usage / var.sharing_weight_;
+        var.value_ = min_usage / var.sharing_penalty_;
         XBT_DEBUG("Setting var (%d) value to %f\n", var.rank_, var.value_);
       } else {
         // If there exist a variable that can reach its bound, only update it (and other with the same bound) for now.
-        if (double_equals(min_bound, var.bound_ * var.sharing_weight_, sg_maxmin_precision)) {
+        if (double_equals(min_bound, var.bound_ * var.sharing_penalty_, sg_maxmin_precision)) {
           var.value_ = var.bound_;
           XBT_DEBUG("Setting %p (%d) value to %f\n", &var, var.rank_, var.value_);
         } else {
@@ -587,7 +587,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
           continue;
         }
       }
-      XBT_DEBUG("Min usage: %f, Var(%d).weight: %f, Var(%d).value: %f ", min_usage, var.rank_, var.sharing_weight_,
+      XBT_DEBUG("Min usage: %f, Var(%d).penalty: %f, Var(%d).value: %f ", min_usage, var.rank_, var.sharing_penalty_,
                 var.rank_, var.value_);
 
       /* Update the usage of contraints where this variable is involved */
@@ -596,7 +596,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
         if (cnst->sharing_policy_ != s4u::Link::SharingPolicy::FATPIPE) {
           // Remember: shared constraints require that sum(elem.value * var.value) < cnst->bound
           double_update(&(cnst->remaining_), elem.consumption_weight * var.value_, cnst->bound_ * sg_maxmin_precision);
-          double_update(&(cnst->usage_), elem.consumption_weight / var.sharing_weight_, sg_maxmin_precision);
+          double_update(&(cnst->usage_), elem.consumption_weight / var.sharing_penalty_, sg_maxmin_precision);
           // If the constraint is saturated, remove it from the set of active constraints (light_tab)
           if (not double_positive(cnst->usage_, sg_maxmin_precision) ||
               not double_positive(cnst->remaining_, cnst->bound_ * sg_maxmin_precision)) {
@@ -618,11 +618,11 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
           cnst->usage_ = 0.0;
           elem.make_inactive();
           for (Element& elem2 : cnst->enabled_element_set_) {
-            xbt_assert(elem2.variable->sharing_weight_ > 0);
+            xbt_assert(elem2.variable->sharing_penalty_ > 0);
             if (elem2.variable->value_ > 0)
               continue;
             if (elem2.consumption_weight > 0)
-              cnst->usage_ = std::max(cnst->usage_, elem2.consumption_weight / elem2.variable->sharing_weight_);
+              cnst->usage_ = std::max(cnst->usage_, elem2.consumption_weight / elem2.variable->sharing_penalty_);
           }
           // If the constraint is saturated, remove it from the set of active constraints (light_tab)
           if (not double_positive(cnst->usage_, sg_maxmin_precision) ||
@@ -698,14 +698,14 @@ void System::update_variable_bound(Variable* var, double bound)
     update_modified_set(var->cnsts_[0].constraint);
 }
 
-void Variable::initialize(resource::Action* id_value, double sharing_weight_value, double bound_value,
+void Variable::initialize(resource::Action* id_value, double sharing_penalty, double bound_value,
                           int number_of_constraints, unsigned visited_value)
 {
   id_     = id_value;
   rank_   = next_rank_++;
   cnsts_.reserve(number_of_constraints);
-  sharing_weight_    = sharing_weight_value;
-  staged_weight_     = 0.0;
+  sharing_penalty_   = sharing_penalty;
+  staged_penalty_    = 0.0;
   bound_             = bound_value;
   concurrency_share_ = 1;
   value_             = 0.0;
@@ -739,8 +739,8 @@ void System::enable_var(Variable* var)
 {
   xbt_assert(not XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug) || var->can_enable());
 
-  var->sharing_weight_ = var->staged_weight_;
-  var->staged_weight_  = 0;
+  var->sharing_penalty_ = var->staged_penalty_;
+  var->staged_penalty_  = 0;
 
   // Enabling the variable, move var to list head. Subtlety is: here, we need to call update_modified_set AFTER
   // moving at least one element of var.
@@ -762,7 +762,7 @@ void System::enable_var(Variable* var)
 
 void System::disable_var(Variable* var)
 {
-  xbt_assert(not var->staged_weight_, "Staged weight should have been cleared");
+  xbt_assert(not var->staged_penalty_, "Staged penalty should have been cleared");
   // Disabling the variable, move to var to list tail. Subtlety is: here, we need to call update_modified_set
   // BEFORE moving the last element of var.
   simgrid::xbt::intrusive_erase(variable_set, *var);
@@ -777,15 +777,15 @@ void System::disable_var(Variable* var)
     elem.decrease_concurrency();
   }
 
-  var->sharing_weight_ = 0.0;
-  var->staged_weight_  = 0.0;
+  var->sharing_penalty_ = 0.0;
+  var->staged_penalty_  = 0.0;
   var->value_          = 0.0;
   check_concurrency();
 }
 
 /* /brief Find variables that can be enabled and enable them.
  *
- * Assuming that the variable has already been removed from non-zero weights
+ * Assuming that the variable has already been removed from non-zero penalties
  * Can we find a staged variable to add?
  * If yes, check that none of the constraints that this variable is involved in is at the limit of its concurrency
  * And then add it to enabled variables
@@ -812,7 +812,7 @@ void System::on_disabled_var(Constraint* cnstr)
       nextelem = nullptr;
     }
 
-    if (elem->variable->staged_weight_ > 0 && elem->variable->can_enable()) {
+    if (elem->variable->staged_penalty_ > 0 && elem->variable->can_enable()) {
       // Found a staged variable
       // TODOLATER: Add random timing function to model reservation protocol fuzziness? Then how to make sure that
       // staged variables will eventually be called?
@@ -831,40 +831,37 @@ void System::on_disabled_var(Constraint* cnstr)
   // Anyway, caller functions all call check_concurrency() in the end.
 }
 
-/* @brief update the weight of a variable, and enable/disable it.
- * @return Returns whether a change was made
- */
-void System::update_variable_weight(Variable* var, double weight)
+/** @brief update the penalty of a variable (disable it by passing 0 as a penalty) */
+void System::update_variable_penalty(Variable* var, double penalty)
 {
-  xbt_assert(weight >= 0, "Variable weight should not be negative!");
+  xbt_assert(penalty >= 0, "Variable penalty should not be negative!");
 
-  if (weight == var->sharing_weight_)
+  if (penalty == var->sharing_penalty_)
     return;
 
-  int enabling_var  = (weight > 0 && var->sharing_weight_ <= 0);
-  int disabling_var = (weight <= 0 && var->sharing_weight_ > 0);
+  int enabling_var  = (penalty > 0 && var->sharing_penalty_ <= 0);
+  int disabling_var = (penalty <= 0 && var->sharing_penalty_ > 0);
 
-  XBT_IN("(sys=%p, var=%p, weight=%f)", this, var, weight);
+  XBT_IN("(sys=%p, var=%p, penalty=%f)", this, var, penalty);
 
   modified_ = true;
 
   // Are we enabling this variable?
   if (enabling_var) {
-    var->staged_weight_ = weight;
+    var->staged_penalty_ = penalty;
     int minslack       = var->get_min_concurrency_slack();
     if (minslack < var->concurrency_share_) {
-      XBT_DEBUG("Staging var (instead of enabling) because min concurrency slack %i, with weight %f and concurrency"
+      XBT_DEBUG("Staging var (instead of enabling) because min concurrency slack %i, with penalty %f and concurrency"
                 " share %i",
-                minslack, weight, var->concurrency_share_);
+                minslack, penalty, var->concurrency_share_);
       return;
     }
     XBT_DEBUG("Enabling var with min concurrency slack %i", minslack);
     enable_var(var);
   } else if (disabling_var) {
-    // Are we disabling this variable?
     disable_var(var);
   } else {
-    var->sharing_weight_ = weight;
+    var->sharing_penalty_ = penalty;
   }
 
   check_concurrency();

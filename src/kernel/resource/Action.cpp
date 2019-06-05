@@ -125,7 +125,7 @@ void Action::set_sharing_penalty(double sharing_penalty)
 {
   XBT_IN("(%p,%g)", this, sharing_penalty);
   sharing_penalty_ = sharing_penalty;
-  get_model()->get_maxmin_system()->update_variable_weight(get_variable(), sharing_penalty);
+  get_model()->get_maxmin_system()->update_variable_penalty(get_variable(), sharing_penalty);
 
   if (get_model()->get_update_algorithm() == Model::UpdateAlgo::LAZY)
     get_model()->get_action_heap().remove(this);
@@ -156,7 +156,7 @@ void Action::suspend()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != SuspendStates::SLEEPING) {
-    get_model()->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
+    get_model()->get_maxmin_system()->update_variable_penalty(get_variable(), 0.0);
     if (get_model()->get_update_algorithm() == Model::UpdateAlgo::LAZY) {
       get_model()->get_action_heap().remove(this);
       if (state_set_ == get_model()->get_started_action_set() && sharing_penalty_ > 0) {
@@ -173,7 +173,7 @@ void Action::resume()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != SuspendStates::SLEEPING) {
-    get_model()->get_maxmin_system()->update_variable_weight(get_variable(), get_sharing_penalty());
+    get_model()->get_maxmin_system()->update_variable_penalty(get_variable(), get_sharing_penalty());
     suspended_ = SuspendStates::RUNNING;
     if (get_model()->get_update_algorithm() == Model::UpdateAlgo::LAZY)
       get_model()->get_action_heap().remove(this);
