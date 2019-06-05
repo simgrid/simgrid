@@ -214,11 +214,14 @@ include(CheckLibraryExists)
 include(CheckSymbolExists)
 
 set(HAVE_GRAPHVIZ 0)
-include(FindGraphviz)
-
 set(SIMGRID_HAVE_LUA 0)
-if(enable_lua)
-  include(FindLuaSimgrid)
+if(minimal-bindings)
+  message(STATUS "Don't even look for graphviz nor lua, as we build minimal binding libraries.")
+else()
+  include(FindGraphviz)
+  if(enable_lua)
+    include(FindLuaSimgrid)
+  endif()
 endif()
 
 set(SIMGRID_HAVE_NS3 0)
@@ -264,8 +267,8 @@ set(_Boost_STACKTRACE_HEADERS           "boost/stacktrace.hpp")
 set(_Boost_STACKTRACE_BACKTRACE_HEADERS "boost/stacktrace.hpp")
 set(_Boost_STACKTRACE_ADDR2LINE_HEADERS "boost/stacktrace.hpp")
 
-if(minimal_java) # When we want a minimal jarfile, don't even search for boost optional components
-  message(STATUS "Don't even look for boost optional components, as we build a minimal jar file")
+if(minimal-bindings) # When we want a minimal jarfile, don't even search for boost optional components
+  message(STATUS "Don't even look for boost optional components, as we build minimal binding libraries.")
 else()
   find_package(Boost 1.59 COMPONENTS context stacktrace_backtrace stacktrace_addr2line)
   set(Boost_FOUND 1) # These components are optionals
@@ -374,10 +377,10 @@ else()
   SET(SIMGRID_HAVE_MALLOCATOR 0)
 endif()
 
-if (minimal_java)
-  message(STATUS "Don't look for libunwind as we build a minimal jar file.")
+if (minimal-bindings)
+  message(STATUS "Don't look for libunwind as we build minimal binding libraries.")
   if(enable_model-checking)
-    message(FATAL_ERROR "You cannot enable model-checking and minimal_java at the same time.")
+    message(FATAL_ERROR "You cannot enable model-checking and minimal-bindings at the same time.")
   endif()
 else()
   include(FindLibunwind)
