@@ -794,7 +794,7 @@ if((NOT DEFINED enable_python) OR enable_python)
       find_package(PythonLibsNew ${PYBIND11_PYTHON_VERSION} REQUIRED)
 
     else()
-      find_package(pybind11 2.2.0)
+      find_package(pybind11 CONFIG)
     endif()
 
     if(NOT PYTHONLIBS_FOUND)
