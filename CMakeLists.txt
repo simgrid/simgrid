@@ -13,12 +13,6 @@ set(SMPI_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #     Check for the compiler        #
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-
-### Need to set rc ccompiler before enable language
-if(WIN32)
-  SET(CMAKE_RC_COMPILER "windres")
-endif()
-
 ## 
 ## Check the C/C++ standard that we need
 ##   See also tools/cmake/Flags.cmake that sets our paranoid warning flags
