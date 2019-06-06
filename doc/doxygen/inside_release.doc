@@ -188,7 +188,7 @@ Doing a dot release:
   - python3 setup.py sdist # Build a source distrib
     - test that the built distrib recompiles:
       rm -rf /tmp/pysimgrid && mkdir /tmp/pysimgrid && cp dist/simgrid-*.tar.gz /tmp/pysimgrid 
-      (cd /tmp/pysimgrid && tar xfz simgrid*.tgz && cd simgrid-* && python3 setup.py build)
+      (cd /tmp/pysimgrid && tar xfz simgrid*.tar.gz && cd simgrid-*/ && python3 setup.py build)
     - Upload it to pypi (WARNING: you cannot modify uploaded files, ever)
       twine upload dist/simgrid-*.tar.gz
 
