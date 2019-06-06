@@ -25,75 +25,12 @@ namespace lmm = simgrid::kernel::lmm;
 /*  ==l1==  L2  ==L3==           */
 /*        ------                 */
 
-static lmm::System* new_system()
-{
-  return lmm::make_new_maxmin_system(false);
-}
-
-double a_test_1 = 0;
-double b_test_1 = 0;
-static double diff_lagrange_test_1(double x)
-{
-  return -(3 / (1 + 3 * x * x / 2) - 3 / (2 * (3 * (a_test_1 - x) * (a_test_1 - x) / 2 + 1)) +
-           3 / (2 * (3 * (b_test_1 - a_test_1 + x) * (b_test_1 - a_test_1 + x) / 2 + 1)));
-}
-
-static double dichotomy(double min, double max, double min_error)
-{
-  double overall_error = 2 * min_error;
-
-  double min_func = diff_lagrange_test_1(min);
-  double max_func = diff_lagrange_test_1(max);
-
-  if (min_func > 0 && max_func > 0)
-    return min - 1.0;
-  if (min_func < 0 && max_func < 0)
-    return max + 1.0;
-  if (min_func > 0 && max_func < 0)
-    abort();
-
-  SHOW_EXPR(min_error);
-
-  while (overall_error > min_error) {
-    SHOW_EXPR(overall_error);
-    xbt_assert(min_func <= 0 || max_func <= 0);
-    xbt_assert(min_func >= 0 || max_func >= 0);
-    xbt_assert(min_func <= 0 || max_func >= 0);
-
-    SHOW_EXPR(min);
-    SHOW_EXPR(min_func);
-    SHOW_EXPR(max);
-    SHOW_EXPR(max_func);
-
-    double middle = (max + min) / 2.0;
-    if (fabs(min - middle) < 1e-12 || fabs(max - middle) < 1e-12) {
-      break;
-    }
-    double middle_func = diff_lagrange_test_1(middle);
-    SHOW_EXPR(middle);
-    SHOW_EXPR(middle_func);
-
-    if (middle_func < 0) {
-      min = middle;
-      min_func = middle_func;
-      overall_error = max_func - middle_func;
-    } else if (middle_func > 0) {
-      max = middle;
-      max_func = middle_func;
-      overall_error = middle_func - min_func;
-    } else {
-      overall_error = 0;
-    }
-  }
-  return ((min + max) / 2.0);
-}
-
 static void test1()
 {
   double a = 1.0;
   double b = 10.0;
 
-  lmm::System* Sys    = new_system();
+  lmm::System* Sys    = lmm::make_new_maxmin_system(false);
   lmm::Constraint* L1 = Sys->constraint_new(nullptr, a);
   lmm::Constraint* L2 = Sys->constraint_new(nullptr, b);
   lmm::Constraint* L3 = Sys->constraint_new(nullptr, a);
@@ -132,7 +69,7 @@ static void test1()
 
 static void test2()
 {
-  lmm::System* Sys = new_system();
+  lmm::System* Sys = lmm::make_new_maxmin_system(false);
 
   lmm::Constraint* CPU1 = Sys->constraint_new(nullptr, 200.0);
   lmm::Constraint* CPU2 = Sys->constraint_new(nullptr, 100.0);
@@ -193,7 +130,7 @@ static void test3()
   A[13][14] =                                        1.0;
   A[14][15] =                                        1.0;
 
-  lmm::System* Sys = new_system();
+  lmm::System* Sys = lmm::make_new_maxmin_system(false);
 
   /* Creates the constraints */
   lmm::Constraint** tmp_cnst = new lmm::Constraint*[15];
