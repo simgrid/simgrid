@@ -180,7 +180,7 @@ Doing a dot release:
   - Wait for both appveyor and jenkins/highsierra to complete the build
   - If it's not successful, fix it and push again
   - Once it's successful on both appveyor and jenkins:
-    - tag the release v3_X_Y and push the tag
+    - tag the release v3.X.Y and push the tag
     - Merge 'master' into 'stable' and push it to framagit
     - Do not merge into 'stable' before appveyor and jenkins are done,
       or your jarfile will not contain the code you expect for win and
