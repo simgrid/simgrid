@@ -101,8 +101,7 @@ endif()
 
 set(SIMGRID_VERSION_MAJOR "3")
 set(SIMGRID_VERSION_MINOR "22")
-set(SIMGRID_VERSION_PATCH "90")
-set(SIMGRID_VERSION_EXTRA "-DEVEL") # Extra words to add to version string (e.g. -rc1)
+set(SIMGRID_VERSION_PATCH "4") # odd => git branch; even => stable release or released snapshot
 
 set(SIMGRID_VERSION_DATE  "2019") # Year for copyright information
 
