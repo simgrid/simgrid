@@ -29,11 +29,14 @@ pages:
 
 ctest:
   stage: build
+  except:
+  - stable
   script:
   - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON .
   - make VERBOSE=1 all tests && ctest --output-on-failure
 
 release:
+  stage: build
   only:
   - stable
   script:
@@ -44,7 +47,7 @@ release:
   # Get the foreign architectures
   - wget https://ci.appveyor.com/api/projects/mquinson/simgrid/artifacts/simgrid.jar -O simgrid-windows.jar
   - export SGVER=`(echo '#include "simgrid/config.h"'; echo SIMGRID_VERSION_MAJOR.SIMGRID_VERSION_MINOR.SIMGRID_VERSION_PATCH)|gcc -E - -Iinclude|tail -1|sed 's/ //g'`
-  - wget https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=simgrid-osx-highsierra/lastSuccessfulBuild/artifact/build/SimGrid-${SGVER}/build/simgrid.jar -O simgrid-mac.jar
+  - wget https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=osx/lastSuccessfulBuild/artifact/build/SimGrid-${SGVER}/build/simgrid.jar -O simgrid-mac.jar
   # Open all jar files, and strip them
   - mkdir content ; cd content
   - for j in  ../simgrid.jar ../simgrid-windows.jar ../simgrid-mac.jar ; do unzip -n $j ; done
