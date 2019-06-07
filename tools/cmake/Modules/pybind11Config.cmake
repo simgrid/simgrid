@@ -1,6 +1,9 @@
 # pybind11Config.cmake
 # --------------------
 #
+# Edited for simgrid so that we survive when pybind11Tools is not found, 
+# concluding that pybind11 is not installed. Original version was 2.2.4-2.
+#
 # PYBIND11 cmake module.
 # This module sets the following variables in your project::
 #
@@ -97,9 +100,10 @@ check_required_components(${PN})
 # make detectable the FindPythonLibsNew.cmake module
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
-include(pybind11Tools)
+# SimGrid edit: survive to the fact that pybind11Tools is not found, but stop searching when it happens
+include(pybind11Tools OPTIONAL RESULT_VARIABLE found_pybind11_tools)
 
-if(NOT (CMAKE_VERSION VERSION_LESS 3.0))
+if((NOT (found_pybind11_tools STREQUAL "NOT_FOUND")) AND (NOT (CMAKE_VERSION VERSION_LESS 3.0)))
 #-----------------------------------------------------------------------------
 # Don't include targets if this file is being picked up by another
 # project which has already built this as a subproject
@@ -122,3 +126,4 @@ if(NOT TARGET ${PN}::pybind11)
     set(${PN}_LIBRARIES ${_ico} ${_ill})
 endif()
 endif()
+unset(found_pybind11tools)
