@@ -100,7 +100,8 @@ set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
                 src/xbt/config_test.cpp
                 src/xbt/dict_test.cpp
                 src/xbt/dynar_test.cpp
-                src/xbt/xbt_str_test.cpp)
+                src/xbt/xbt_str_test.cpp
+                teshsuite/surf/lmm_usage/lmm_basic.cpp)
 if (SIMGRID_HAVE_MC)
   set(UNIT_TESTS ${UNIT_TESTS} src/mc/sosp/Snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
 else()
