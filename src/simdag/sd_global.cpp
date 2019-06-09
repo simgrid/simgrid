@@ -148,7 +148,7 @@ void SD_init_nocheck(int *argc, char **argv)
   sd_global = new simgrid::sd::Global();
 
   simgrid::config::set_default<std::string>("host/model", "ptask_L07");
-  if (simgrid::config::get_value<bool>("clean-atexit"))
+  if (simgrid::config::get_value<bool>("debug/clean-atexit"))
     atexit(SD_exit);
 }
 

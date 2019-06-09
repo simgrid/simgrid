@@ -37,7 +37,11 @@ char *xbt_binary_name = NULL;   /* Name of the system process containing us (man
 xbt_dynar_t xbt_cmdline = NULL; /* all we got in argv */
 
 int xbt_initialized = 0;
-bool _sg_do_clean_atexit = true;
+simgrid::config::Flag<bool> cfg_dbg_clean_atexit{
+    "debug/clean-atexit",
+    {"clean-atexit"},
+    "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.",
+    true};
 
 int xbt_pagesize;
 int xbt_pagebits = 0;
@@ -98,7 +102,7 @@ static void xbt_preinit()
 
 static void xbt_postexit()
 {
-  if (not _sg_do_clean_atexit)
+  if (not cfg_dbg_clean_atexit)
     return;
   xbt_initialized--;
   xbt_dict_postexit();

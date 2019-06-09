@@ -84,8 +84,6 @@ Existing Configuration Items
    option. For example, ``--cfg=plugin:help`` will give you the list
    of plugins available in your installation of SimGrid.
 
-- **clean-atexit:** :ref:`cfg=clean-atexit`
-
 - **contexts/factory:** :ref:`cfg=contexts/factory`
 - **contexts/guard-size:** :ref:`cfg=contexts/guard-size`
 - **contexts/nthreads:** :ref:`cfg=contexts/nthreads`
@@ -96,6 +94,10 @@ Existing Configuration Items
 - **cpu/maxmin-selective-update:** :ref:`Cpu Optimization Level <options_model_optim>`
 - **cpu/model:** :ref:`options_model_select`
 - **cpu/optim:** :ref:`Cpu Optimization Level <options_model_optim>`
+
+- **debug/breakpoint:** :ref:`cfg=debug/breakpoint`
+- **debug/clean-atexit:** :ref:`cfg=debug/clean-atexit`
+- **debug/verbose-exit:** :ref:`cfg=debug/verbose-exit`
 
 - **exception/cutpath:** :ref:`cfg=exception/cutpath`
 
@@ -133,8 +135,6 @@ Existing Configuration Items
 - **path:** :ref:`cfg=path`
 - **plugin:** :ref:`cfg=plugin`
 
-- **simix/breakpoint:** :ref:`cfg=simix/breakpoint`
-
 - **storage/max_file_descriptors:** :ref:`cfg=storage/max_file_descriptors`
 
 - **surf/precision:** :ref:`cfg=surf/precision`
@@ -170,7 +170,6 @@ Existing Configuration Items
 - **Tracing configuration options** can be found in Section :ref:`tracing_tracing_options`
 
 - **storage/model:** :ref:`options_model_select`
-- **verbose-exit:** :ref:`cfg=verbose-exit`
 
 - **vm/model:** :ref:`options_model_select`
 
@@ -1425,12 +1424,12 @@ extra delay by setting smpi/wtime to 0.
 Other Configurations
 --------------------
 
-.. _cfg=clean-atexit:
+.. _cfg=debug/clean-atexit:
 
 Cleanup at Termination
 ......................
 
-**Option** ``clean-atexit`` **default:** on
+**Option** ``debug/clean-atexit`` **default:** on
 
 If your code is segfaulting during its finalization, it may help to
 disable this option to request SimGrid to not attempt any cleanups at
@@ -1449,12 +1448,12 @@ trace files (see :ref:`pf_trace`) by using this configuration
 item. To add several directory to the path, set the configuration
 item several times, as in ``--cfg=path:toto --cfg=path:tutu``
 
-.. _cfg=simix/breakpoint:
+.. _cfg=debug/breakpoint:
 
 Set a Breakpoint
 ................
 
-**Option** ``simix/breakpoint`` **default:** unset
+**Option** ``debug/breakpoint`` **default:** unset
 
 This configuration option sets a breakpoint: when the simulated clock
 reaches the given time, a SIGTRAP is raised.  This can be used to stop
@@ -1468,12 +1467,12 @@ with gdb:
 
    set variable simgrid::simix::breakpoint = 3.1416
 
-.. _cfg=verbose-exit:
+.. _cfg=debug/verbose-exit:
 
 Behavior on Ctrl-C
 ..................
 
-**Option** ``verbose-exit`` **default:** on
+**Option** ``debug/verbose-exit`` **default:** on
 
 By default, when Ctrl-C is pressed, the status of all existing actors
 is displayed before exiting the simulation. This is very useful to

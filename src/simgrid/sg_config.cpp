@@ -299,9 +299,6 @@ void sg_config_init(int *argc, char **argv)
                                       "no");
   simgrid::config::alias("network/maxmin-selective-update", {"network/maxmin_selective_update"});
 
-  extern bool _sg_do_verbose_exit;
-  simgrid::config::bind_flag(_sg_do_verbose_exit, "verbose-exit", "Activate the \"do nothing\" mode in Ctrl-C");
-
   simgrid::config::declare_flag<int>("contexts/stack-size", "Stack size of contexts in KiB (not with threads)",
                                      8 * 1024, [](int value) { smx_context_stack_size = value * 1024; });
   simgrid::config::alias("contexts/stack-size", {"contexts/stack_size"});
@@ -455,10 +452,6 @@ void sg_config_init(int *argc, char **argv)
 
   simgrid::config::declare_flag<bool>(
       "exception/cutpath", "Whether to cut all path information from call traces, used e.g. in exceptions.", false);
-
-  extern bool _sg_do_clean_atexit;
-  simgrid::config::bind_flag(_sg_do_clean_atexit, "clean-atexit", {"clean_atexit"},
-                             "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.");
 
   if (surf_path.empty())
     simgrid::config::set_default<std::string>("path", "./");

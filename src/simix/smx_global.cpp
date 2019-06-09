@@ -32,15 +32,21 @@ std::unique_ptr<simgrid::simix::Global> simix_global;
 
 void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr) = nullptr;
 
-bool _sg_do_verbose_exit = true;
+namespace simgrid {
+namespace simix {
+simgrid::config::Flag<double> cfg_verbose_exit{
+    "debug/verbose-exit", {"verbose-exit"}, "Display the actor status at exit", true};
+}
+} // namespace simgrid
 XBT_ATTRIB_NORETURN static void inthandler(int)
 {
-  if ( _sg_do_verbose_exit ) {
-     XBT_INFO("CTRL-C pressed. The current status will be displayed before exit (disable that behavior with option 'verbose-exit').");
-     SIMIX_display_process_status();
+  if (simgrid::simix::cfg_verbose_exit) {
+    XBT_INFO("CTRL-C pressed. The current status will be displayed before exit (disable that behavior with option "
+             "'debug/verbose-exit').");
+    SIMIX_display_process_status();
   }
   else {
-     XBT_INFO("CTRL-C pressed, exiting. Hiding the current process status since 'verbose-exit' is set to false.");
+    XBT_INFO("CTRL-C pressed, exiting. Hiding the current process status since 'debug/verbose-exit' is set to false.");
   }
   exit(1);
 }
@@ -187,8 +193,8 @@ void Global::run_all_actors()
   actors_to_run.clear();
 }
 
-simgrid::config::Flag<double> breakpoint{"simix/breakpoint",
-                                         "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
+simgrid::config::Flag<double> cfg_breakpoint{
+    "debug/breakpoint", {"simix/breakpoint"}, "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
 }
 }
 
@@ -240,7 +246,7 @@ void SIMIX_global_init(int *argc, char **argv)
     });
   }
 
-  if (simgrid::config::get_value<bool>("clean-atexit"))
+  if (simgrid::config::get_value<bool>("debug/clean-atexit"))
     atexit(SIMIX_clean);
 }
 
@@ -384,9 +390,9 @@ void SIMIX_run()
   do {
     XBT_DEBUG("New Schedule Round; size(queue)=%zu", simix_global->actors_to_run.size());
 
-    if (simgrid::simix::breakpoint >= 0.0 && surf_get_clock() >= simgrid::simix::breakpoint) {
-      XBT_DEBUG("Breakpoint reached (%g)", simgrid::simix::breakpoint.get());
-      simgrid::simix::breakpoint = -1.0;
+    if (simgrid::simix::cfg_breakpoint >= 0.0 && surf_get_clock() >= simgrid::simix::cfg_breakpoint) {
+      XBT_DEBUG("Breakpoint reached (%g)", simgrid::simix::cfg_breakpoint.get());
+      simgrid::simix::cfg_breakpoint = -1.0;
 #ifdef SIGTRAP
       std::raise(SIGTRAP);
 #else
