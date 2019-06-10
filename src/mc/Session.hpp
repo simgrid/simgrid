@@ -26,13 +26,20 @@ private:
   std::unique_ptr<ModelChecker> model_checker_;
   std::shared_ptr<simgrid::mc::Snapshot> initial_snapshot_;
 
-  Session(pid_t pid, int socket);
-
   // No copy:
   Session(Session const&) = delete;
   Session& operator=(Session const&) = delete;
 
 public:
+  /** Create a new session by executing the provided code in a fork()
+   *
+   *  This sets up the environment for the model-checked process
+   *  (environment variables, sockets, etc.).
+   *
+   *  The code is expected to `exec` the model-checked application.
+   */
+  Session(const std::function<void()>& code);
+
   ~Session();
   void close();
 
@@ -41,31 +48,6 @@ public:
   void log_state();
 
   void restore_initial_state();
-
-  // static constructors
-
-  /** Create a new session by forking
-   *
-   *  This sets up the environment for the model-checked process
-   *  (environment variables, sockets, etc.).
-   *
-   *  The code is expected to `exec` the model-checker program.
-   */
-  static Session* fork(const std::function<void()>& code);
-
-  /** Spawn a model-checked process
-   *
-   *  @param path full path of the executable
-   *  @param argv arguments for the model-checked process (NULL-terminated)
-   */
-  static Session* spawnv(const char *path, char *const argv[]);
-
-  /** Spawn a model-checked process (using PATH)
-   *
-   *  @param file file name of the executable (found using `PATH`)
-   *  @param argv arguments for the model-checked process (NULL-terminated)
-   */
-  static Session* spawnvp(const char *file, char *const argv[]);
 };
 
 // Temporary :)

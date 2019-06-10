@@ -12,6 +12,7 @@
 
 #include <cstring>
 #include <memory>
+#include <unistd.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
 
@@ -52,12 +53,12 @@ int main(int argc, char** argv)
     xbt_log_init(&argc, argv);
     sg_config_init(&argc, argv);
 
-    std::unique_ptr<Session> session =
-      std::unique_ptr<Session>(Session::spawnvp(argv_copy[1], argv_copy+1));
+    simgrid::mc::session = new Session([argv_copy] {
+        execvp(argv_copy[1], argv_copy+1);
+      });
     delete[] argv_copy;
 
-    simgrid::mc::session = session.get();
-    std::unique_ptr<simgrid::mc::Checker> checker = createChecker(*session);
+    std::unique_ptr<simgrid::mc::Checker> checker = createChecker(*simgrid::mc::session);
     int res = SIMGRID_MC_EXIT_SUCCESS;
     try {
       checker->run();
@@ -69,7 +70,7 @@ int main(int argc, char** argv)
       res = SIMGRID_MC_EXIT_LIVENESS;
     }
     checker = nullptr;
-    session->close();
+    simgrid::mc::session->close();
     return res;
   }
   catch(std::exception& e) {

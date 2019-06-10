@@ -77,16 +77,35 @@ pid_t do_fork(F code)
   }
 }
 
-Session::Session(pid_t pid, int socket)
+Session::Session(const std::function<void()>& code)
 {
-  std::unique_ptr<simgrid::mc::RemoteClient> process(new simgrid::mc::RemoteClient(pid, socket));
-
 #if HAVE_SMPI
   xbt_assert(smpi_privatize_global_variables != SmpiPrivStrategies::MMAP,
              "Please use the dlopen privatization schema when model-checking SMPI code");
 #endif
 
+  // Create a AF_LOCAL socketpair used for exchanging messages
+  // between the model-checker process (ourselves) and the model-checked
+  // process:
+  int res;
+  int sockets[2];
+  res = socketpair(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0, sockets);
+  if (res == -1)
+    throw simgrid::xbt::errno_error("Could not create socketpair");
+
+  pid_t pid = do_fork([sockets, &code] {
+    ::close(sockets[1]);
+    setup_child_environment(sockets[0]);
+    code();
+    xbt_die("The model-checked process failed to exec()");
+  });
+
+  // Parent (model-checker):
+  ::close(sockets[0]);
+
+  std::unique_ptr<simgrid::mc::RemoteClient> process(new simgrid::mc::RemoteClient(pid, sockets[1]));
   model_checker_.reset(new simgrid::mc::ModelChecker(std::move(process)));
+
   xbt_assert(mc_model_checker == nullptr);
   mc_model_checker = model_checker_.get();
   mc_model_checker->start();
@@ -127,47 +146,6 @@ void Session::log_state()
     int ret=system("free");
     if(ret!=0)XBT_WARN("system call did not return 0, but %d",ret);
   }
-}
-
-// static
-Session* Session::fork(const std::function<void()>& code)
-{
-  // Create a AF_LOCAL socketpair used for exchanging messages
-  // between the model-checker process (ourselves) and the model-checked
-  // process:
-  int res;
-  int sockets[2];
-  res = socketpair(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0, sockets);
-  if (res == -1)
-    throw simgrid::xbt::errno_error("Could not create socketpair");
-
-  pid_t pid = do_fork([sockets, &code] {
-    ::close(sockets[1]);
-    setup_child_environment(sockets[0]);
-    code();
-    xbt_die("The model-checked process failed to exec()");
-  });
-
-  // Parent (model-checker):
-  ::close(sockets[0]);
-
-  return new Session(pid, sockets[1]);
-}
-
-// static
-Session* Session::spawnv(const char *path, char *const argv[])
-{
-  return Session::fork([path, argv] {
-    execv(path, argv);
-  });
-}
-
-// static
-Session* Session::spawnvp(const char *file, char *const argv[])
-{
-  return Session::fork([file, argv] {
-    execvp(file, argv);
-  });
 }
 
 void Session::close()

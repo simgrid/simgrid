@@ -53,8 +53,6 @@ ModelChecker::~ModelChecker() {
 
 void ModelChecker::start()
 {
-  const pid_t pid = process_->pid();
-
   base_ = event_base_new();
   event_callback_fn event_callback = [](evutil_socket_t fd, short events, void *arg)
   {
@@ -72,6 +70,8 @@ void ModelChecker::start()
   int status;
 
   // The model-checked process SIGSTOP itself to signal it's ready:
+  const pid_t pid = process_->pid();
+
   pid_t res = waitpid(pid, &status, WAITPID_CHECKED_FLAGS);
   if (res < 0 || not WIFSTOPPED(status) || WSTOPSIG(status) != SIGSTOP)
     xbt_die("Could not wait model-checked process");
