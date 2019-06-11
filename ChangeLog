@@ -1,8 +1,3 @@
-This is SimGrid v3.22.4, a preview of v3.23 that is not released yet.
-
-It is distributed in the hope that it can be useful to you, but with
-no waranty whatsoever. Released June 6. 2019.
-
 ----------------------------------------------------------------------------
 
 SimGrid (3.23) NOT RELEASED (Release Target: June 21. 2019, 15:54 UTC)
@@ -48,6 +43,7 @@ Fixed bugs (FG=FramaGit; GH=GitHub):
  - FG#13: Installs unstripped file 'bin/graphicator'
  - FG#14: Installs the empty directory 'doc/simgrid/html'
  - FG#15: Setting -Denable_python=OFF doesn't disable the search for pybind11
+ - FG#20: 'tesh --help' should return 0
  - GH#133: Java: a process can run on a VM even if its host is off
  - GH#320: Stacktrace: Avoid the backtrace variant of Boost.Stacktrace?
  - GH#326: Valgrind-detected error for join() when energy plugin is activated

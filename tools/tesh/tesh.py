@@ -469,7 +469,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
-    parser = argparse.ArgumentParser(description='tesh -- testing shell', add_help=True)
+    parser = argparse.ArgumentParser(description='tesh -- testing shell')
     group1 = parser.add_argument_group('Options')
     group1.add_argument('teshfile', nargs='?', help='Name of teshfile, stdin if omitted')
     group1.add_argument(
@@ -489,10 +489,7 @@ if __name__ == '__main__':
         action='store_true',
         help='Keep the obtained output when it does not match the expected one')
 
-    try:
-        options = parser.parse_args()
-    except SystemExit:
-        tesh_exit(1)
+    options = parser.parse_args()
 
     if options.cd is not None:
         print("[Tesh/INFO] change directory to " + options.cd)
