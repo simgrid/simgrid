@@ -394,7 +394,7 @@ if(enable_model-checking)
   set(SIMGRID_DEP "${SIMGRID_DEP} ${LIBEVENT_LIBRARIES} ${LIBELF_LIBRARIES} ${LIBDW_LIBRARIES}")
   set(SIMGRID_HAVE_MC 1)
   if("${CMAKE_SYSTEM}" MATCHES "FreeBSD" AND enable_java)
-    message(WARNING "FreeBSD + Model-Checking + Java = too much for now. Disabling java")
+    message(WARNING "FreeBSD + Model-Checking + Java = too much for now. Disabling the Java bindings.")
     set(enable_java FALSE)
   endif()
 else()
@@ -811,7 +811,7 @@ endif()
 option(enable_python "Whether the Python bindings are activated." ${pybind11_FOUND}) # ON by default if dependencies are met
 
 if("${CMAKE_SYSTEM}" MATCHES "FreeBSD" AND enable_model-checking AND enable_python)
-  message(WARNING "FreeBSD + Model-Checking + Python = too much for now. Disabling python.")
+  message(WARNING "FreeBSD + Model-Checking + Python = too much for now. Disabling the Python bindings.")
   set(enable_python FALSE)
 endif()
 
