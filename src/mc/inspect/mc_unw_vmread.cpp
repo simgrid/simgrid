@@ -36,8 +36,7 @@ static inline pid_t _UPT_getpid(void* arg)
   return info->pid;
 }
 
-/** Read from the memory, avoid using `ptrace` (libunwind method)
- */
+/** Read from the memory, avoid using `ptrace` (libunwind method) */
 static int access_mem(const unw_addr_space_t as, const unw_word_t addr, unw_word_t* const valp, const int write,
                       void* const arg)
 {
@@ -46,7 +45,7 @@ static int access_mem(const unw_addr_space_t as, const unw_word_t addr, unw_word
   pid_t pid   = _UPT_getpid(arg);
   size_t size = sizeof(unw_word_t);
 
-#if HAVE_PROCESS_VM_READV
+#if HAVE_PROCESS_VM_READV /* linux but not freebsd */
   // process_vm_read implementation.
   // This is only available since Linux 3.2.
 
@@ -72,27 +71,24 @@ static int access_mem(const unw_addr_space_t as, const unw_word_t addr, unw_word
   int fd       = simgrid::mc::open_vm(pid, O_RDONLY);
   if (fd < 0)
     return -UNW_EINVAL;
-  while (1) {
+
+  while (count > 0) {
     ssize_t nread = pread(fd, buf, count, off);
     if (nread == 0) {
       close(fd);
       return -UNW_EINVAL;
     }
     if (nread == -1)
-      break;
+      // ptrace implementation.
+      // We need to have PTRACE_ATTACH-ed it before.
+      return _UPT_access_mem(as, addr, valp, write, arg);
+
     count -= nread;
     buf += nread;
     off += nread;
-    if (count == 0) {
-      close(fd);
-      return 0;
-    }
   }
   close(fd);
-
-  // ptrace implementation.
-  // We need to have PTRACE_ATTACH-ed it before.
-  return _UPT_access_mem(as, addr, valp, write, arg);
+  return 0;
 }
 
 namespace simgrid {

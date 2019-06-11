@@ -76,10 +76,11 @@ Session::Session(const std::function<void()>& code)
   // Parent (model-checker):
   ::close(sockets[0]);
 
+  xbt_assert(mc_model_checker == nullptr, "Did you manage to start the MC twice in this process?");
+
   std::unique_ptr<simgrid::mc::RemoteClient> process(new simgrid::mc::RemoteClient(pid, sockets[1]));
   model_checker_.reset(new simgrid::mc::ModelChecker(std::move(process)));
 
-  xbt_assert(mc_model_checker == nullptr);
   mc_model_checker = model_checker_.get();
   mc_model_checker->start();
 }
