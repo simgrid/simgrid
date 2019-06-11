@@ -16,11 +16,15 @@ Pre-compiled Packages
 Binaries for Linux
 ^^^^^^^^^^^^^^^^^^
 
-On Debian or Ubuntu, simply type:
+To get all of SimGrid on Debian or Ubuntu, simply type the following.
 
 .. code-block:: shell
 
-   apt install simgrid
+   apt install libsimgrid-dev simgrid-java
+
+The package ``libsimgrid-dev`` is sufficient if you only plan to use the
+C or C++ interfaces of SimGrid while ``simgrid-java`` if you only plan
+to use the Java bindings.
 
 If you build pre-compiled packages for other distributions, drop us an
 email.
