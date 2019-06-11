@@ -44,6 +44,7 @@ Fixed bugs (FG=FramaGit; GH=GitHub):
  - FG#14: Installs the empty directory 'doc/simgrid/html'
  - FG#15: Setting -Denable_python=OFF doesn't disable the search for pybind11
  - FG#20: 'tesh --help' should return 0
+ - FG#21: Documentation link on http://simgrid.org/ broken
  - FG#22: Debian installation instruction are broken
  - GH#133: Java: a process can run on a VM even if its host is off
  - GH#320: Stacktrace: Avoid the backtrace variant of Boost.Stacktrace?
