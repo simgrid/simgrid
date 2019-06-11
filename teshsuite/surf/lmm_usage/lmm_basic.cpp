@@ -96,8 +96,6 @@ TEST_CASE("kernel::lmm Multiple constraint systems", "[kernel-lmm-multiple-sys]"
      * 6\times\rho_5^1                                                   \le 7
      */
 
-    double test_accuracy = 0.001; // Don't go to far with the accuracy
-
     lmm::Constraint* sys_cnst_1 = Sys->constraint_new(nullptr, 14.6);
     lmm::Constraint* sys_cnst_2 = Sys->constraint_new(nullptr, 10.7);
     lmm::Constraint* sys_cnst_3 = Sys->constraint_new(nullptr, 7);
@@ -120,10 +118,10 @@ TEST_CASE("kernel::lmm Multiple constraint systems", "[kernel-lmm-multiple-sys]"
     Sys->expand(sys_cnst_3, sys_var_5, 6);
     Sys->solve();
 
-    REQUIRE(double_equals(sys_var_1->get_value(), 2.779119, test_accuracy));
-    REQUIRE(double_equals(sys_var_2->get_value(), 0.9708181, test_accuracy));
-    REQUIRE(double_equals(sys_var_3->get_value(), 0.7994973, test_accuracy));
-    REQUIRE(double_equals(sys_var_4->get_value(), 1.096085, test_accuracy));
-    REQUIRE(double_equals(sys_var_5->get_value(), 1.166667, test_accuracy));
+    REQUIRE(double_equals(sys_var_1->get_value(), 2.779119, sg_maxmin_precision));
+    REQUIRE(double_equals(sys_var_2->get_value(), 0.9708181, sg_maxmin_precision));
+    REQUIRE(double_equals(sys_var_3->get_value(), 0.7994973, sg_maxmin_precision));
+    REQUIRE(double_equals(sys_var_4->get_value(), 1.096085, sg_maxmin_precision));
+    REQUIRE(double_equals(sys_var_5->get_value(), 1.166667, sg_maxmin_precision));
   }
 }
