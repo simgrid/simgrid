@@ -10,7 +10,7 @@
 
 namespace lmm = simgrid::kernel::lmm;
 
-TEST_CASE("kernel::lmm Single constraint systems", "[kernel-lmm-single-sys]")
+TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-single-sys]")
 {
   lmm::System* Sys = lmm::make_new_maxmin_system(false);
 
@@ -81,7 +81,7 @@ TEST_CASE("kernel::lmm Single constraint systems", "[kernel-lmm-single-sys]")
   }
 }
 
-TEST_CASE("kernel::lmm Multiple constraint systems", "[kernel-lmm-multiple-sys]")
+TEST_CASE("kernel::lmm Multiple constraint shared systems", "[kernel-lmm-shared-multiple-sys]")
 {
 
   lmm::System* Sys = lmm::make_new_maxmin_system(false);
