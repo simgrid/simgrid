@@ -311,10 +311,10 @@ namespace this_actor {
 
 XBT_PUBLIC bool is_maestro();
 
-/** Block the current actor sleeping for that amount of seconds (may throw hostFailure) */
+/** Block the current actor sleeping for that amount of seconds */
 XBT_PUBLIC void sleep_for(double duration);
-/** Block the current actor sleeping until the specified timestamp (may throw hostFailure) */
-XBT_PUBLIC void sleep_until(double timeout);
+/** Block the current actor sleeping until the specified timestamp */
+XBT_PUBLIC void sleep_until(double wakeup_time);
 
 template <class Rep, class Period> inline void sleep_for(std::chrono::duration<Rep, Period> duration)
 {

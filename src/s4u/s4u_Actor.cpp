@@ -289,11 +289,11 @@ void yield()
   simix::simcall([] { /* do nothing*/ });
 }
 
-XBT_PUBLIC void sleep_until(double timeout)
+XBT_PUBLIC void sleep_until(double wakeup_time)
 {
   double now = SIMIX_get_clock();
-  if (timeout > now)
-    sleep_for(timeout - now);
+  if (wakeup_time > now)
+    sleep_for(wakeup_time - now);
 }
 
 void execute(double flops)
