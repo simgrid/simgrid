@@ -1,0 +1,19 @@
+#!/usr/bin/env tesh
+
+# Checks that the output of a timeout process can be printed.
+
+! expect return 2
+< ! timeout 1
+< $ sh -c 'echo "I crashed" && sleep 6'
+> Test suite from stdin
+> [(stdin):2] sh -c 'echo "I crashed" && sleep 6'
+> Test suite `(stdin)': NOK (<(stdin):2> timeout after 1 sec)
+> Output of <(stdin):2> mismatch:
+> --- expected
+> +++ obtained
+> @@ -0,0 +1 @@
+> +I crashed
+> Test suite `(stdin)': NOK (<(stdin):2> output mismatch)
+$ ${bindir:=.}/tesh
+
+
