@@ -327,6 +327,9 @@ class Cmd(object):
         global pgtokill
 
         try:
+            preexec_function = None
+            if not isWindows():
+                preexec_function = lambda: os.setpgid(0, 0)
             proc = subprocess.Popen(
                 args,
                 bufsize=1,
@@ -334,7 +337,7 @@ class Cmd(object):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 universal_newlines=True,
-                start_new_session=True)
+                preexec_fn=preexec_function)
             try:
                 if not isWindows():
                     pgtokill = os.getpgid(proc.pid)
