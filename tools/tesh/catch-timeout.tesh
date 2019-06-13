@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-# This suite must be functional because we changed the timeout value to 10
+# This suite must be functional because we changed the timeout value to 1
 # before sleeping 6 secs.
 
 ! expect return 3

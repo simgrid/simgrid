@@ -364,11 +364,19 @@ class Cmd(object):
         try:
             (stdout_data, stderr_data) = proc.communicate("\n".join(self.input_pipe), self.timeout)
             pgtokill = None
+            timeout_reached = False
         except subprocess.TimeoutExpired:
+            timeout_reached = True
             print("Test suite `" + FileReader().filename + "': NOK (<" +
                   cmdName + "> timeout after " + str(self.timeout) + " sec)")
             kill_process_group(pgtokill)
-            tesh_exit(3)
+            # Try to get the output of the timeout process, to help in debugging.
+            try:
+                (stdout_data, stderr_data) = proc.communicate(timeout=1)
+            except subprocess.TimeoutExpired:
+                print("[{file}:{number}] Could not retrieve output. Killing the process group failed?".format(
+                    file=FileReader().filename, number=self.linenumber))
+                tesh_exit(3)
 
         if self.output_display:
             print(stdout_data)
@@ -434,6 +442,9 @@ class Cmd(object):
                     f.close()
                     print("Obtained output kept as requested: " + os.path.abspath("obtained"))
                 tesh_exit(2)
+
+        if timeout_reached:
+            tesh_exit(3)
 
         #print ((proc.returncode, self.expect_return))
 
