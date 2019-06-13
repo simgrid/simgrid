@@ -114,8 +114,7 @@ except NameError:
 #
 
 # Global variable. Stores which process group should be killed (or None otherwise)
-pgtokill = None
-
+running_pgids = list()
 
 def kill_process_group(pgid):
     if pgid is None:  # Nobody to kill. We don't know who to kill on windows, or we don't have anyone to kill on signal handler
@@ -131,8 +130,11 @@ def kill_process_group(pgid):
 
 def signal_handler(signal, frame):
     print("Caught signal {}".format(SIGNALS_TO_NAMES_DICT[signal]))
-    if pgtokill is not None:
-        kill_process_group(pgtokill)
+    global running_pgids
+    running_pgids_copy = running_pgids # Just in case of interthread conflicts.
+    for pgid in running_pgids_copy:
+        kill_process_group(pgid)
+    running_pgids.clear()
     tesh_exit(5)
 
 
@@ -324,7 +326,8 @@ class Cmd(object):
         args = shlex.split(self.args)
         #print (args)
 
-        global pgtokill
+        global running_pgids
+        local_pgid = None
 
         try:
             preexec_function = None
@@ -340,7 +343,8 @@ class Cmd(object):
                 preexec_fn=preexec_function)
             try:
                 if not isWindows():
-                    pgtokill = os.getpgid(proc.pid)
+                    local_pgid = os.getpgid(proc.pid)
+                    running_pgids.append(local_pgid)
             except OSError:
                 # os.getpgid failed. OK. No cleanup.
                 pass
@@ -366,13 +370,14 @@ class Cmd(object):
         cmdName = FileReader().filename + ":" + str(self.linenumber)
         try:
             (stdout_data, stderr_data) = proc.communicate("\n".join(self.input_pipe), self.timeout)
-            pgtokill = None
+            local_pgid = None
             timeout_reached = False
         except subprocess.TimeoutExpired:
             timeout_reached = True
             print("Test suite `" + FileReader().filename + "': NOK (<" +
                   cmdName + "> timeout after " + str(self.timeout) + " sec)")
-            kill_process_group(pgtokill)
+            running_pgids.remove(local_pgid)
+            kill_process_group(local_pgid)
             # Try to get the output of the timeout process, to help in debugging.
             try:
                 (stdout_data, stderr_data) = proc.communicate(timeout=1)
