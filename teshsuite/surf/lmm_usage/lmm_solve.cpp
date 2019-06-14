@@ -79,11 +79,13 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
     REQUIRE(double_equals(sys_var_2->get_value(), 2.575916, sg_maxmin_precision));
     REQUIRE(double_equals(sys_var_3->get_value(), 18.03141, sg_maxmin_precision));
   }
+
+  Sys->variable_free_all();
+  delete Sys;
 }
 
 TEST_CASE("kernel::lmm Multiple constraint shared systems", "[kernel-lmm-shared-multiple-sys]")
 {
-
   lmm::System* Sys = lmm::make_new_maxmin_system(false);
 
   SECTION("3 Constraints system")
@@ -124,6 +126,9 @@ TEST_CASE("kernel::lmm Multiple constraint shared systems", "[kernel-lmm-shared-
     REQUIRE(double_equals(sys_var_4->get_value(), 1.096085, sg_maxmin_precision));
     REQUIRE(double_equals(sys_var_5->get_value(), 1.166667, sg_maxmin_precision));
   }
+
+  Sys->variable_free_all();
+  delete Sys;
 }
 
 TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshared-single-sys]")
@@ -198,11 +203,13 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
     REQUIRE(double_equals(sys_var_2->get_value(), 4.432432, sg_maxmin_precision));
     REQUIRE(double_equals(sys_var_3->get_value(), 31.02703, sg_maxmin_precision));
   }
+
+  Sys->variable_free_all();
+  delete Sys;
 }
 
 TEST_CASE("kernel::lmm Multiple constraint unshared systems", "[kernel-lmm-unshared-multiple-sys]")
 {
-
   lmm::System* Sys = lmm::make_new_maxmin_system(false);
 
   SECTION("3 Constraints system")
@@ -246,4 +253,7 @@ TEST_CASE("kernel::lmm Multiple constraint unshared systems", "[kernel-lmm-unsha
     REQUIRE(double_equals(sys_var_4->get_value(), 2.14, sg_maxmin_precision));
     REQUIRE(double_equals(sys_var_5->get_value(), 1.166667, sg_maxmin_precision));
   }
+
+  Sys->variable_free_all();
+  delete Sys;
 }
