@@ -224,6 +224,13 @@ void System::variable_free(Variable* var)
   var_free(var);
 }
 
+void System::variable_free_all()
+{
+  Variable* var;
+  while ((var = extract_variable()))
+    variable_free(var);
+}
+
 void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
 {
   modified_ = true;

@@ -409,6 +409,9 @@ public:
    */
   void variable_free(Variable * var);
 
+  /** @brief Free all variables */
+  void variable_free_all();
+
   /**
    * @brief Associate a variable to a constraint with a coefficient
    * @param cnst A constraint
