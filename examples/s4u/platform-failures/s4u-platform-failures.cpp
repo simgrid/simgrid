@@ -9,9 +9,10 @@
  * To set such a profile, the first way is to use a file in the XML, while the second is to use the programmatic
  * interface. Once this profile is in place, the resource will automatically be turned on and off.
  *
- * The actors running on an host that is turned off will receive a simgrid::HostFailureException. Since we specified
- * on_failure="RESTART" for each actors in the XML file, they will be automatically restarted when the host starts
- * again.
+ * The actors running on an host that is turned off are forcefully killed
+ * once their on_exit callbacks are executed. They cannot avoid this fate.
+ * Since we specified on_failure="RESTART" for each actors in the XML file,
+ * they will be automatically restarted when the host starts again.
  *
  * Communications using failed links will .. fail.
  */

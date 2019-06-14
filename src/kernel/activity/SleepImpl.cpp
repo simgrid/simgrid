@@ -56,12 +56,6 @@ void SleepImpl::finish()
   while (not simcalls_.empty()) {
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
-    if (state_ == SIMIX_SRC_HOST_FAILURE) {
-      /* If the host running the synchro failed, notice it. This way, the asking
-       * actor can be killed if it runs on that host itself */
-      simcall->issuer->context_->iwannadie = true;
-      simcall->issuer->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
-    }
 
     simcall_process_sleep__set__result(simcall, state_);
     simcall->issuer->waiting_synchro = nullptr;
