@@ -24,57 +24,29 @@ namespace mc {
 static void setup_child_environment(int socket)
 {
 #ifdef __linux__
-  // Make sure we do not outlive our parent:
+  // Make sure we do not outlive our parent
   sigset_t mask;
   sigemptyset (&mask);
-  if (sigprocmask(SIG_SETMASK, &mask, nullptr) < 0)
-    throw simgrid::xbt::errno_error("Could not unblock signals");
-  if (prctl(PR_SET_PDEATHSIG, SIGHUP) != 0)
-    throw simgrid::xbt::errno_error("Could not PR_SET_PDEATHSIG");
+  xbt_assert(sigprocmask(SIG_SETMASK, &mask, nullptr) >= 0, "Could not unblock signals");
+  xbt_assert(prctl(PR_SET_PDEATHSIG, SIGHUP) == 0, "Could not PR_SET_PDEATHSIG");
 #endif
 
-  int res;
-
-  // Remove CLOEXEC in order to pass the socket to the exec-ed program:
+  // Remove CLOEXEC to pass the socket to the application
   int fdflags = fcntl(socket, F_GETFD, 0);
-  if (fdflags == -1 || fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) == -1)
-    throw simgrid::xbt::errno_error("Could not remove CLOEXEC for socket");
+  xbt_assert(fdflags != -1 && fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) != -1,
+             "Could not remove CLOEXEC for socket");
 
-  // Set environment:
+  // Set environment so that mmalloc gets used in application
   setenv(MC_ENV_VARIABLE, "1", 1);
 
-  // Disable lazy relocation in the model-checked process.
-  // We don't want the model-checked process to modify its .got.plt during
-  // snapshot.
+  // Disable lazy relocation in the model-checked process to prevent the application from
+  // modifying its .got.plt during snapshot.
   setenv("LC_BIND_NOW", "1", 1);
 
   char buffer[64];
-  res = std::snprintf(buffer, sizeof(buffer), "%i", socket);
-  if ((size_t) res >= sizeof(buffer) || res == -1)
-    std::abort();
+  int res = std::snprintf(buffer, sizeof(buffer), "%i", socket);
+  xbt_assert((size_t)res < sizeof(buffer) && res != -1);
   setenv(MC_ENV_SOCKET_FD, buffer, 1);
-}
-
-/** Execute some code in a forked process */
-template<class F>
-static inline
-pid_t do_fork(F code)
-{
-  pid_t pid = fork();
-  if (pid < 0)
-    throw simgrid::xbt::errno_error("Could not fork model-checked process");
-  if (pid != 0)
-    return pid;
-
-  // Child-process:
-  try {
-    code();
-    _exit(EXIT_SUCCESS);
-  }
-  catch(...) {
-    // The callback should catch exceptions:
-    std::terminate();
-  }
 }
 
 Session::Session(const std::function<void()>& code)
@@ -87,26 +59,28 @@ Session::Session(const std::function<void()>& code)
   // Create a AF_LOCAL socketpair used for exchanging messages
   // between the model-checker process (ourselves) and the model-checked
   // process:
-  int res;
   int sockets[2];
-  res = socketpair(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0, sockets);
-  if (res == -1)
-    throw simgrid::xbt::errno_error("Could not create socketpair");
+  int res = socketpair(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0, sockets);
+  xbt_assert(res != -1, "Could not create socketpair");
 
-  pid_t pid = do_fork([sockets, &code] {
+  pid_t pid = fork();
+  xbt_assert(pid >= 0, "Could not fork model-checked process");
+
+  if (pid == 0) { // Child
     ::close(sockets[1]);
     setup_child_environment(sockets[0]);
     code();
     xbt_die("The model-checked process failed to exec()");
-  });
+  }
 
   // Parent (model-checker):
   ::close(sockets[0]);
 
+  xbt_assert(mc_model_checker == nullptr, "Did you manage to start the MC twice in this process?");
+
   std::unique_ptr<simgrid::mc::RemoteClient> process(new simgrid::mc::RemoteClient(pid, sockets[1]));
   model_checker_.reset(new simgrid::mc::ModelChecker(std::move(process)));
 
-  xbt_assert(mc_model_checker == nullptr);
   mc_model_checker = model_checker_.get();
   mc_model_checker->start();
 }
