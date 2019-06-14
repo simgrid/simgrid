@@ -322,9 +322,9 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
   this_actor::sleep_for(seconds.count());
 }
 
-template <class Duration> inline void sleep_until(const SimulationTimePoint<Duration>& timeout_time)
+template <class Duration> inline void sleep_until(const SimulationTimePoint<Duration>& wakeup_time)
 {
-  auto timeout_native = std::chrono::time_point_cast<SimulationClockDuration>(timeout_time);
+  auto timeout_native = std::chrono::time_point_cast<SimulationClockDuration>(wakeup_time);
   this_actor::sleep_until(timeout_native.time_since_epoch().count());
 }
 
