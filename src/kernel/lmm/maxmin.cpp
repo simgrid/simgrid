@@ -151,7 +151,7 @@ System::~System()
   Constraint* cnst;
 
   while ((var = extract_variable())) {
-    auto demangled = simgrid::xbt::demangle(typeid(*var->id_).name());
+    auto demangled = simgrid::xbt::demangle(var->id_ ? typeid(*var->id_).name() : "(unidentified)");
     XBT_WARN("Probable bug: a %s variable (#%d) not removed before the LMM system destruction.", demangled.get(),
              var->rank_);
     var_free(var);
