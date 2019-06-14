@@ -179,7 +179,7 @@ public:
 class XBT_PUBLIC Constraint {
 public:
   Constraint() = delete;
-  Constraint(void* id_value, double bound_value);
+  Constraint(resource::Resource* id_value, double bound_value);
 
   /** @brief Unshare a constraint. */
   void unshare() { sharing_policy_ = s4u::Link::SharingPolicy::FATPIPE; }
@@ -244,7 +244,7 @@ public:
    * @brief Get the data associated to a constraint
    * @return The data associated to the constraint
    */
-  void* get_id() const { return id_; }
+  resource::Resource* get_id() const { return id_; }
 
   /* hookup to system */
   boost::intrusive::list_member_hook<> constraint_set_hook_;
@@ -278,7 +278,7 @@ private:
   static int next_rank_;  // To give a separate rank_ to each contraint
   int concurrency_limit_; /* The maximum number of variables that may be enabled at any time (stage variables if
                            * necessary) */
-  void* id_;
+  resource::Resource* id_;
 };
 
 /**
@@ -392,7 +392,7 @@ public:
    * @param id Data associated to the constraint (e.g.: a network link)
    * @param bound_value The bound value of the constraint
    */
-  Constraint* constraint_new(void* id, double bound_value);
+  Constraint* constraint_new(resource::Resource* id, double bound_value);
 
   /**
    * @brief Create a new Linear MaxMin variable

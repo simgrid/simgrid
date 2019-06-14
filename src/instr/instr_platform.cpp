@@ -247,8 +247,7 @@ static void instr_action_on_state_change(simgrid::kernel::resource::Action const
   for (int i = 0; i < n; i++) {
     double value = action.get_variable()->get_value() * action.get_variable()->get_constraint_weight(i);
     /* Beware of composite actions: ptasks put links and cpus together. Extra pb: we cannot dynamic_cast from void* */
-    simgrid::kernel::resource::Resource* resource =
-        static_cast<simgrid::kernel::resource::Resource*>(action.get_variable()->get_constraint(i)->get_id());
+    simgrid::kernel::resource::Resource* resource = action.get_variable()->get_constraint(i)->get_id();
     simgrid::kernel::resource::Cpu* cpu = dynamic_cast<simgrid::kernel::resource::Cpu*>(resource);
 
     if (cpu != nullptr)

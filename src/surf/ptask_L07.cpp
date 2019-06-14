@@ -121,8 +121,8 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
     kernel::lmm::Constraint* cnst = action.get_variable()->get_constraint(i);
     while (cnst != nullptr) {
       i++;
-      void* constraint_id = cnst->get_id();
-      if (not static_cast<simgrid::kernel::resource::Resource*>(constraint_id)->is_on()) {
+      kernel::resource::Resource* constraint_id = cnst->get_id();
+      if (not constraint_id->is_on()) {
         XBT_DEBUG("Action (%p) Failed!!", &action);
         action.finish(kernel::resource::Action::State::FAILED);
         break;

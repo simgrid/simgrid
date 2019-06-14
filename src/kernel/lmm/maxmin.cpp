@@ -169,7 +169,7 @@ void System::cnst_free(Constraint* cnst)
   delete cnst;
 }
 
-Constraint::Constraint(void* id_value, double bound_value) : bound_(bound_value), id_(id_value)
+Constraint::Constraint(resource::Resource* id_value, double bound_value) : bound_(bound_value), id_(id_value)
 {
   rank_ = next_rank_++;
 
@@ -185,7 +185,7 @@ Constraint::Constraint(void* id_value, double bound_value) : bound_(bound_value)
   cnst_light_ = nullptr;
 }
 
-Constraint* System::constraint_new(void* id, double bound_value)
+Constraint* System::constraint_new(resource::Resource* id, double bound_value)
 {
   Constraint* cnst = new Constraint(id, bound_value);
   insert_constraint(cnst);

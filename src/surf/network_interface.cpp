@@ -179,7 +179,7 @@ std::list<LinkImpl*> NetworkAction::links() const
   for (int i = 0; i < llen; i++) {
     /* Beware of composite actions: ptasks put links and cpus together */
     // extra pb: we cannot dynamic_cast from void*...
-    Resource* resource = static_cast<Resource*>(get_variable()->get_constraint(i)->get_id());
+    Resource* resource = get_variable()->get_constraint(i)->get_id();
     LinkImpl* link     = dynamic_cast<LinkImpl*>(resource);
     if (link != nullptr)
       retlist.push_back(link);
