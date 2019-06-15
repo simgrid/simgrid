@@ -1063,6 +1063,7 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindLuaSimgrid.cmake
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindPAPI.cmake
+  tools/cmake/Modules/pybind11Config.cmake
   tools/cmake/Modules/FindValgrind.cmake
   tools/cmake/Option.cmake
   tools/cmake/scripts/fixup_simgrid_dtd_l.pl
