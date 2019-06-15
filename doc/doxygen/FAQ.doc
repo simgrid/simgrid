@@ -19,24 +19,6 @@ Another great source of inspiration can be found in the @ref s4u_examples.
 If you are stuck at any point and if this FAQ cannot help you, please drop us a
 mail to the user mailing list: <simgrid-user@lists.gforge.inria.fr>.
 
-@subsection faq_interfaces What is the difference between MSG and SimDag? Do they serve the same purpose?
-
-It depend on how you define "purpose", I guess ;)
-
-They all allow you to build a prototype of application which you can run
-within the simulator afterward. They all share the same simulation kernel,
-which is the core of the SimGrid project. They differ by the way you express
-your application.
-
-With SimDag, you express your code as a collection of interdependent
-parallel tasks. So, in this model, applications can be seen as a DAG of
-tasks. This is the interface of choice for people wanting to port old
-code designed for SimGrid v1 or v2 to the framework current version.
-
-With MSG, your application is seen as a set of communicating
-processes, exchanging data by the way of messages and performing
-computation on their own.
-
 @subsection faq_visualization Visualizing and analyzing the results
 
 It is sometime convenient to "see" how the agents are behaving. If you
@@ -49,19 +31,6 @@ filter (e.g. with bash):
 @endverbatim
 
 We also have a more graphical output. Have a look at section @ref options_tracing.
-
-@subsection faq_C Argh! Do I really have to code in C?
-
-We provide Java bindings of the MSG interface, which is the main
-SimGrid user API.
-
-Moreover If you use C++, you should be able to use the SimGrid library
-as a standard C library and everything should work fine (simply
-<i>link</i> against this library; recompiling SimGrid with a C++
-compiler won't work and it wouldn't help if you could).
-
-For now, we do not feel a real demand for any other language. But if
-you think there is one, please speak up!
 
 @section faq_howto Feature related questions
 
@@ -231,37 +200,6 @@ their own batch schedulers. Vincent Garonne wrote one during his PhD
 and put his code in the contrib directory of our SVN so that other can
 keep working on it. You may find inspiring ideas in it.
 
-@subsubsection faq_MIA_checkpointing I need a checkpointing thing
-
-Actually, it depends on whether you want to checkpoint the simulation, or to
-simulate checkpoints.
-
-The first one could help if your simulation is a long standing process you
-want to keep running even on hardware issues. It could also help to
-<i>rewind</i> the simulation by jumping sometimes on an old checkpoint to
-cancel recent calculations.@n
-Unfortunately, such thing will probably never exist in SG. One would have to
-duplicate all data structures because doing a rewind at the simulator level
-is very very hard (not talking about the malloc free operations that might
-have been done in between). Instead, you may be interested in the Libckpt
-library (http://www.cs.utk.edu/~plank/plank/www/libckpt.html). This is the
-checkpointing solution used in the condor project, for example. It makes it
-easy to create checkpoints (at the OS level, creating something like core
-files), and rerunning them on need.
-
-If you want to simulate checkpoints instead, it means that you want the
-state of an executing task (in particular, the progress made towards
-completion) to be saved somewhere.  So if a host (and the task executing on
-it) fails (cf. #MSG_HOST_FAILURE), then the task can be restarted
-from the last checkpoint.@n
-
-Actually, such a thing does not exist in SimGrid either, but it's just
-because we don't think it is fundamental and it may be done in the user code
-at relatively low cost. You could for example use a watcher that
-periodically get the remaining amount of things to do (using
-MSG_task_get_remaining_computation()), or fragment the task in smaller
-subtasks.
-
 @subsection faq_platform Platform building and Dynamic resources
 
 @subsubsection faq_platform_example Where can I find SimGrid platform files?
@@ -299,21 +237,6 @@ assessed. Please keep this fact in mind when using it.
 
 @section faq_troubleshooting Troubleshooting
 
-@subsection faq_trouble_changelog The feature X stopped to work after my last update 
-
-I guess that you want to read the ChangeLog file, that always contains
-all the information that could be important to the users during the
-upgrade. Actually, you may want to read it (alongside with the NEWS
-file that highlights the most important changes) even before you
-upgrade your copy of SimGrid, too.
-
-We do our best to maintain the backward compatibility, but we
-sometimes have to fix the things that are too broken. If we happen to
-kill a feature that you were using, we are sorry. We think that you
-should update to the new way of doing things, but if you can't afford
-it, that's ok. Just stick to the last version that were working for
-you, and have a pleasant day.
-
 @subsection faq_trouble_compil User code compilation problems
 
 @subsubsection faq_trouble_err_logcat "gcc: _simgrid_this_log_category_does_not_exist__??? undeclared (first use in this function)"
@@ -322,18 +245,6 @@ This is because you are using the log mechanism, but you didn't created
 any default category in this file. You should refer to @ref XBT_log
 for all the details, but you simply forgot to call one of
 XBT_LOG_NEW_DEFAULT_CATEGORY() or XBT_LOG_NEW_DEFAULT_SUBCATEGORY().
-
-@subsubsection faq_trouble_pthreadstatic "gcc: undefined reference to pthread_key_create"
-
-This indicates that one of the library SimGrid depends on (libpthread
-here) was missing on the linking command line. Dependencies of
-libsimgrid are expressed directly in the dynamic library, so it's
-quite impossible that you see this message when doing dynamic linking.
-
-If you compile your code statically (and if you use a pthread version
-of SimGrid), you must absolutely
-specify <tt>-lpthread</tt> on the linker command line. As usual, this should
-come after <tt>-lsimgrid</tt> on this command line.
 
 @subsection faq_trouble_errors Runtime error messages
 
@@ -366,20 +277,6 @@ In order to debug SMPI programs, you can use the following options:
   which is needed in order to use an interactive debugger.
 
 Both options are needed in order to run the SMPI process under GDB.
-
-@subsection faq_trouble_valgrind Valgrind-related and other debugger issues
-
-If you don't, you really should use valgrind to debug your code, it's
-almost magic.
-
-@subsubsection faq_trouble_backtraces Truncated backtraces
-
-When debugging SimGrid, it's easier to pass the
---disable-compiler-optimization flag to the configure if valgrind or
-gdb get fooled by the optimization done by the compiler. But you
-should remove these flag when everything works before going in
-production (before launching your 1252135 experiments), or everything
-will run only one half of the true SimGrid potential.
 
 @subsection faq_deadlock There is a deadlock in my code!!!
 
@@ -443,14 +340,14 @@ still an academic project so please be patient if/when you find bugs in it.
 If you do, the best solution is to drop an email either on the simgrid-user
 or the simgrid-devel mailing list and explain us about the issue.  You can
 also decide to open a formal bug report using the
-<a href="https://gforge.inria.fr/tracker/?atid=165&group_id=12&func=browse">relevant
+<a href="https://framagit.org/simgrid/simgrid/issues">relevant
 interface</a>. You need to login on the server to get the ability to submit
 bugs.
 
-We will do our best to solve any problem repported, but you need to help us
+We will do our best to solve any problem reported, but you need to help us
 finding the issue. Just telling "it segfault" isn't enough. Telling "It
 segfaults when running the attached simulator" doesn't really help either.
-You may find the following article interesting to see how to repport
+You may find the following article interesting to see how to report
 informative bug repports:
 http://www.chiark.greenend.org.uk/~sgtatham/bugs.html (it is not SimGrid
 specific at all, but it's full of good advices).

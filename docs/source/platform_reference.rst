@@ -25,12 +25,14 @@ Your platform description should follow the specification presented in the
 <config>
 --------
 
-Adding configuration flags directly into the platform file becomes particularly useful when the realism of the described
-platform depends on some specific flags. For example, this could help you to finely tune SMPI. Almost all
-:ref:`command-line configuration items <options_list>` can be configured this way.
+Adding configuration flags directly into the platform file becomes particularly
+useful when the realism of the described platform depends on some specific
+flags. For example, this could help you to finely tune SMPI. Almost all
+:ref:`command-line configuration items <options_list>` can be configured this
+way.
 
-Each configuration flag is described as a :ref:`pf_tag_prop` whose 'id' is the name of the flag and 'value' is what it
-has to be set to.
+Each configuration flag is described as a :ref:`pf_tag_prop` whose ``id`` is the
+name of the flag and ``value`` is what it has to be set to.
 
 **Parent tags:** :ref:`pf_tag_platform` (must appear before any other tags) |br|
 **Children tags:** :ref:`pf_tag_prop` |br|
@@ -89,7 +91,8 @@ A host is the computing resource on which an actor can run. See :cpp:class:`simg
    - At time t = 10, the profile is reset (as we are 5 seconds after the last event). Then the available speed will drop
      again to 50% at time t = 11.
 
-   If your profile does not contain any LOOPAFTER line, then it will be executed only once and not in a repetitive way.
+   If your profile does not contain any LOOPAFTER line, then it will
+   be executed only once and not repeated.
 
    .. warning:: Don't get fooled: Bandwidth and Latency profiles of a :ref:`pf_tag_link` contain absolute values, while
       Availability profiles of a :ref:`pf_tag_host` contain ratios.
@@ -108,7 +111,8 @@ A host is the computing resource on which an actor can run. See :cpp:class:`simg
    - At time t = 10, the profile is reset (as we are 8 seconds after the last event). Then the host will be turned off 
      again at time t = 11.
 
-   If your profile does not contain any LOOPAFTER line, then it will be executed only once and not in a repetitive way.
+   If your profile does not contain any LOOPAFTER line, then it will
+   be executed only once and not repeated.
 
 :``coordinates``: Vivaldi coordinates (meaningful for Vivaldi zones only).
    See :ref:`pf_tag_peer`.
@@ -159,24 +163,24 @@ single element.
    ==== =========== ======================
 
 :``sharing_policy``: Sharing policy for the link. Possible values are ``SHARED``, ``FATPIPE`` or ``SPLITDUPLEX``
-   (default: ``SHARED``).
+   (default: ``SPLITDUPLEX``).
 
-   If set to ``SHARED``, the available bandwidth is fairly shared among all the flows traversing this link. This tend to
-   model the bandwidth sharing behavior of the UDP or TCP protocols.
+   If set to ``SPLITDUPLEX``, the link models the full-duplex
+   behavior, as meant in TCP or UDP. To that extend, the link is
+   actually split in two links whose names are suffixed with "_UP" and
+   "_DOWN". You should then specify the direction to use when
+   referring to that link in a :ref:`pf_tag_link_ctn`.
 
-   If set to ``FATPIPE``, flows have no impact on each other, hence each flow can exploit the full bandwidth of this
-   link. This aims at modeling the behavior of the Internet backbones that cannot get saturated by your application.
-   What you experience of such networks usually is their latency only.
+   If set to ``FATPIPE``, flows have no impact on each other, hence
+   each flow can exploit the full bandwidth. This models Internet
+   backbones that cannot get saturated by your application. From your
+   application point of view, there is no congestion on these
+   backbones.
 
-   If set to ``SPLITDUPLEX``, the link models cross-traffic
-   effects. Under the ``SHARED`` policy, two flows of reverse
-   direction share the same resource, and can only get half of the
-   bandwidth each. But TCP connections are full duplex, meaning that
-   both directions can get the full bandwidth. To model this, any
-   link under the ``SPLITDUPLEX`` policy is split in two links (whose
-   names are suffixed with "_UP" and "_DOWN"). Then you must specify
-   which direction gets actually used when referring to that link in a
-   :ref:`pf_tag_link_ctn`.
+   If set to ``SHARED``, the available bandwidth is fairly shared
+   among ALL flows traversing this link. The resulting link is not
+   full-duplex (as UDP or TCP would be): communications in both
+   directions share the same link. Prefer ``SPLITDUPLEX`` for TCP flows.
 
 :``bandwidth_file``: File containing the bandwidth profile.
    Almost every lines of such files describe timed events as ``date
@@ -192,6 +196,9 @@ single element.
    - At time t = 4, the bandwidth is of 40 MBps.
    - At time t = 8, it raises to 60MBps.
    - At time t = 24, it drops at 40 MBps again.
+
+   If your profile does not contain any LOOPAFTER line, then it will
+   be executed only once and not repeated.
 
    .. warning:: Don't get fooled: Bandwidth and Latency profiles of a :ref:`pf_tag_link` contain absolute values, while
       Availability profiles of a :ref:`pf_tag_host` contain ratios.
@@ -212,7 +219,8 @@ single element.
    - At time t = 8 (5 seconds after the last event), the profile loops.
    - At time t = 9 (1 second after the loop reset), the latency is back at 1ms.
 
-   If your profile does not contain any LOOPAFTER line, then it will be executed only once and not in a repetitive way.
+   If your profile does not contain any LOOPAFTER line, then it will
+   be executed only once and not repeated.
 
   .. warning:: Don't get fooled: Bandwidth and Latency profiles of a :ref:`pf_tag_link` contain absolute values, while
       Availability profiles of a :ref:`pf_tag_host` contain ratios.
@@ -233,9 +241,11 @@ An element in a route, representing a previously defined link.
 **Attributes:**
 
 :``id``: Link that is to be included in this route.
-:``direction``: Whether to use the uplink (with ``UP``) or downlink
-		(with ``DOWN``) of the link. This is only valid if the
-		link has ``sharing=SPLITDUPLEX``.
+:``direction``: either ``UP`` (by default) or ``DOWN``, specifying whether to
+                use the uplink or downlink component of the link (that must
+                follow the ``SPLITDUPLEX`` sharing policy). |br|
+                Please refer to the ``sharing_policy`` attribute in
+                :ref:`pf_tag_link`.
 
 -------------------------------------------------------------------------------
 
