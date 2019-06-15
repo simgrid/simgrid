@@ -38,7 +38,7 @@ public:
    *
    *  The code is expected to `exec` the model-checked application.
    */
-  Session(const std::function<void()>& code);
+  explicit Session(const std::function<void()>& code);
 
   ~Session();
   void close();
