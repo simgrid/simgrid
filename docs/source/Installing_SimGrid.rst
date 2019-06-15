@@ -251,7 +251,7 @@ enable_model-checking (on/OFF)
   run time.
 
 enable_ns3 (on/OFF)
-  Activates the ns-3 bindings. See section @ref pls_ns3.
+  Activates the ns-3 bindings. See section :ref:`model_ns3`.
 
 enable_smpi (ON/off)
   Allows to run MPI code on top of SimGrid.
