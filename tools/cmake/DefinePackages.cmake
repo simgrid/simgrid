@@ -848,7 +848,6 @@ set(DOC_SOURCES
   doc/doxygen/module-trace.doc
   doc/doxygen/module-xbt.doc
   doc/doxygen/module-index.doc
-  doc/doxygen/outcomes.doc
   doc/doxygen/outcomes_logs.doc
   doc/doxygen/outcomes_vizu.doc
   doc/doxygen/platform.doc
@@ -895,6 +894,7 @@ set(DOC_SOURCES
   docs/source/Start_Your_Own_Project.rst
   docs/source/models.rst
   docs/source/ns3.rst
+  docs/source/outcomes.rst
   docs/source/platform.rst
   docs/source/platform_howtos.rst
   docs/source/platform_reference.rst
