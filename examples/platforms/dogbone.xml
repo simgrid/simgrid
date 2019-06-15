@@ -10,7 +10,7 @@
   -- S2 ---[ 4 ]---                 ---[ 5 ]--- C2
   --
   --
-  -- This platform is a valid NS3 platform, even if it exhibits routes of length >1,
+  -- This platform is a valid ns-3 platform, even if it exhibits routes of length >1,
   -- because when you only keep the routes of length 1,
   -- you get a graph where every host can speak to any other host.
   --

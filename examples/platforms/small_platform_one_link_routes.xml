@@ -1,8 +1,8 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 
-<!-- All routes of this platform are of length 1, so you can use it with the NS3 model
-     http://simgrid.gforge.inria.fr/simgrid/latest/doc/pls_ns3.html -->
+<!-- All routes of this platform are of length 1, so you can use it with the ns-3 model.
+     https://simgrid.org/doc/latest/ns3.html -->
 
 <platform version="4.1">
   <zone  id="AS0"  routing="Full">

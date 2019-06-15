@@ -30,7 +30,7 @@
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network NS3 module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network ns-3 module");
 
 std::vector<std::string> IPV4addr;
 
@@ -74,9 +74,9 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
     // Create private link
     std::string host_id   = cluster.prefix + std::to_string(i) + cluster.suffix;
     NetPointNs3* host_src = simgrid::s4u::Host::by_name(host_id)->pimpl_netpoint->extension<NetPointNs3>();
-    xbt_assert(host_src, "Cannot find a NS3 host of name %s", host_id.c_str());
+    xbt_assert(host_src, "Cannot find a ns-3 host of name %s", host_id.c_str());
 
-    // Any NS3 route is symmetrical
+    // Any ns-3 route is symmetrical
     ns3_add_link(host_src, host_dst, cluster.bw, cluster.lat);
 
     delete host_dst;
@@ -104,15 +104,15 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
     NetPointNs3* host_src = src->extension<NetPointNs3>();
     NetPointNs3* host_dst = dst->extension<NetPointNs3>();
 
-    xbt_assert(host_src != nullptr, "Network element %s does not seem to be NS3-ready", src->get_cname());
-    xbt_assert(host_dst != nullptr, "Network element %s does not seem to be NS3-ready", dst->get_cname());
+    xbt_assert(host_src != nullptr, "Network element %s does not seem to be ns-3-ready", src->get_cname());
+    xbt_assert(host_dst != nullptr, "Network element %s does not seem to be ns-3-ready", dst->get_cname());
 
     ns3_add_link(host_src, host_dst, link->get_bandwidth(), link->get_latency());
   } else {
     static bool warned_about_long_routes = false;
 
     if (not warned_about_long_routes)
-      XBT_WARN("Ignoring a route between %s and %s of length %zu: Only routes of length 1 are considered with NS3.\n"
+      XBT_WARN("Ignoring a route between %s and %s of length %zu: Only routes of length 1 are considered with ns-3.\n"
                "WARNING: You can ignore this warning if your hosts can still communicate when only considering routes "
                "of length 1.\n"
                "WARNING: Remove long routes to avoid this harmless message; subsequent long routes will be silently "
@@ -142,7 +142,7 @@ void surf_network_model_init_NS3()
 }
 
 static simgrid::config::Flag<std::string>
-    ns3_tcp_model("ns3/TcpModel", "The ns3 tcp model can be : NewReno or Reno or Tahoe", "default");
+    ns3_tcp_model("ns3/TcpModel", "The ns-3 tcp model can be : NewReno or Reno or Tahoe", "default");
 
 namespace simgrid {
 namespace kernel {
@@ -151,7 +151,7 @@ namespace resource {
 NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
 {
   xbt_assert(not sg_link_energy_is_inited(),
-             "LinkEnergy plugin and NS3 network models are not compatible. Are you looking for Ecofen, maybe?");
+             "LinkEnergy plugin and ns-3 network models are not compatible. Are you looking for Ecofen, maybe?");
 
   all_existing_models.push_back(this);
 
@@ -161,7 +161,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
 
   routing::NetPoint::on_creation.connect([](routing::NetPoint& pt) {
     pt.extension_set<NetPointNs3>(new NetPointNs3());
-    XBT_VERB("SimGrid's %s is known as node %d within NS3", pt.get_cname(), pt.extension<NetPointNs3>()->node_num);
+    XBT_VERB("SimGrid's %s is known as node %d within ns-3", pt.get_cname(), pt.extension<NetPointNs3>()->node_num);
   });
   surf::on_cluster.connect(&clusterCreation_cb);
 
@@ -210,7 +210,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
 {
   static std::vector<std::string> socket_to_destroy;
 
-  /* If there are no running flows, advance the NS3 simulator and return */
+  /* If there are no running flows, advance the ns-3 simulator and return */
   if (get_started_action_set()->empty()) {
 
     while(double_positive(now - ns3::Simulator::Now().GetSeconds(), sg_surf_precision))
@@ -283,11 +283,11 @@ void LinkNS3::apply_event(profile::Event* event, double value)
 }
 void LinkNS3::set_bandwidth_profile(profile::Profile* profile)
 {
-  xbt_die("The NS3 network model doesn't support bandwidth profiles");
+  xbt_die("The ns-3 network model doesn't support bandwidth profiles");
 }
 void LinkNS3::set_latency_profile(profile::Profile* profile)
 {
-  xbt_die("The NS3 network model doesn't support latency profiles");
+  xbt_die("The ns-3 network model doesn't support latency profiles");
 }
 
 /**********
@@ -307,10 +307,10 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   ns3::Ptr<ns3::Node> src_node = src->pimpl_netpoint->extension<NetPointNs3>()->ns3_node_;
   ns3::Ptr<ns3::Node> dst_node = dst->pimpl_netpoint->extension<NetPointNs3>()->ns3_node_;
 
-  xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
+  xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to ns-3. Is it connected to any one-hop link?",
              dst->pimpl_netpoint->get_cname());
   std::string& addr = IPV4addr[node2];
-  xbt_assert(not addr.empty(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
+  xbt_assert(not addr.empty(), "Element %s is unknown to ns-3. Is it connected to any one-hop link?",
              dst->pimpl_netpoint->get_cname());
 
   XBT_DEBUG("ns3: Create flow of %.0f Bytes from %u to %u with Interface %s", totalBytes, node1, node2, addr.c_str());
@@ -360,8 +360,7 @@ void ns3_simulator(double maxSeconds)
   ns3::Simulator::Run ();
 }
 
-
-// initialize the NS3 interface and environment
+// initialize the ns-3 interface and environment
 void ns3_initialize(std::string TcpProtocol)
 {
   //  tcpModel are:
@@ -405,9 +404,9 @@ void ns3_add_cluster(const char* id, double bw, double lat) {
   XBT_DEBUG("Add router %u to cluster", nodes.GetN() - Nodes.GetN() - 1);
   Nodes.Add(nodes.Get(nodes.GetN()-Nodes.GetN()-1));
 
-  xbt_assert(Nodes.GetN() <= 65000, "Cluster with NS3 is limited to 65000 nodes");
+  xbt_assert(Nodes.GetN() <= 65000, "Cluster with ns-3 is limited to 65000 nodes");
   ns3::CsmaHelper csma;
-  csma.SetChannelAttribute("DataRate", ns3::DataRateValue(ns3::DataRate(bw * 8))); // NS3 takes bps, but we provide Bps
+  csma.SetChannelAttribute("DataRate", ns3::DataRateValue(ns3::DataRate(bw * 8))); // ns-3 takes bps, but we provide Bps
   csma.SetChannelAttribute("Delay", ns3::TimeValue(ns3::Seconds(lat)));
   ns3::NetDeviceContainer devices = csma.Install(Nodes);
   XBT_DEBUG("Create CSMA");
@@ -448,7 +447,7 @@ void ns3_add_link(NetPointNs3* src, NetPointNs3* dst, double bw, double lat) {
 
   XBT_DEBUG("\tAdd PTP from %d to %d bw:'%f Bps' lat:'%fs'", srcNum, dstNum, bw, lat);
   pointToPoint.SetDeviceAttribute("DataRate",
-                                  ns3::DataRateValue(ns3::DataRate(bw * 8))); // NS3 takes bps, but we provide Bps
+                                  ns3::DataRateValue(ns3::DataRate(bw * 8))); // ns-3 takes bps, but we provide Bps
   pointToPoint.SetChannelAttribute("Delay", ns3::TimeValue(ns3::Seconds(lat)));
 
   ns3::NetDeviceContainer netA;

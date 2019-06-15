@@ -39,7 +39,7 @@ SG_END_DECL()
 #cmakedefine01 SIMGRID_HAVE_MALLOCATOR
 /* Was the model-checking compiled in? */
 #cmakedefine01 SIMGRID_HAVE_MC
-/* Was the NS3 support compiled in? */
+/* Was the ns-3 support compiled in? */
 #cmakedefine01 SIMGRID_HAVE_NS3
 
 #endif /* SIMGRID_PUBLIC_CONFIG_H */

@@ -57,7 +57,7 @@ static void send_cb(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace)
   /* While not all is buffered and there remain space in the buffers */
   while (flow->buffered_bytes_ < flow->total_bytes_ && sock->GetTxAvailable() > 0) {
 
-    // Send at most 1040 bytes (data size in a TCP packet), as NS3 seems to not split correctly by itself
+    // Send at most 1040 bytes (data size in a TCP packet), as ns-3 seems to not split correctly by itself
     uint32_t toWrite = std::min({flow->remaining_, sock->GetTxAvailable(), std::uint32_t(1040)});
     if (toWrite == 0) { // buffer full
       XBT_DEBUG("%f: buffer full on flow %p (still %u to go)", ns3::Simulator::Now().GetSeconds(), flow,
@@ -102,7 +102,7 @@ static void errorClose_callback(ns3::Ptr<ns3::Socket> socket)
 {
   SgFlow* flow = getFlowFromSocket(socket);
   XBT_DEBUG("errorClose_cb of F[%p, %p, %u]", flow, flow->action_, flow->total_bytes_);
-  xbt_die("NS3: a socket was closed anormally");
+  xbt_die("ns-3: a socket was closed anormally");
 }
 
 static void succeededConnect_callback(ns3::Ptr<ns3::Socket> socket)
@@ -115,7 +115,7 @@ static void failedConnect_callback(ns3::Ptr<ns3::Socket> socket)
 {
   SgFlow* mysocket = getFlowFromSocket(socket);
   XBT_DEBUG("failedConnect_cb of F[%p, %p, %u]", mysocket, mysocket->action_, mysocket->total_bytes_);
-  xbt_die("NS3: a socket failed to connect");
+  xbt_die("ns-3: a socket failed to connect");
 }
 
 void start_flow(ns3::Ptr<ns3::Socket> sock, const char* to, uint16_t port_number)

@@ -54,21 +54,26 @@ XBT_PUBLIC void simgrid_add_plugin_description(const char* name, const char* des
 
 /* Don't forget to update the option description in smx_config when you change this */
 const std::vector<surf_model_description_t> surf_network_model_description = {
-    {"LV08", "Realistic network analytic model (slow-start modeled by multiplying latency by 13.01, bandwidth by .97; "
-             "bottleneck sharing uses a payload of S=20537 for evaluating RTT). ",
+    {"LV08",
+     "Realistic network analytic model (slow-start modeled by multiplying latency by 13.01, bandwidth by .97; "
+     "bottleneck sharing uses a payload of S=20537 for evaluating RTT). ",
      &surf_network_model_init_LegrandVelho},
-    {"Constant", "Simplistic network model where all communication take a constant time (one second). This model "
-                 "provides the lowest realism, but is (marginally) faster.",
+    {"Constant",
+     "Simplistic network model where all communication take a constant time (one second). This model "
+     "provides the lowest realism, but is (marginally) faster.",
      &surf_network_model_init_Constant},
-    {"SMPI", "Realistic network model specifically tailored for HPC settings (accurate modeling of slow start with "
-             "correction factors on three intervals: < 1KiB, < 64 KiB, >= 64 KiB)",
+    {"SMPI",
+     "Realistic network model specifically tailored for HPC settings (accurate modeling of slow start with "
+     "correction factors on three intervals: < 1KiB, < 64 KiB, >= 64 KiB)",
      &surf_network_model_init_SMPI},
     {"IB", "Realistic network model specifically tailored for HPC settings, with Infiniband contention model",
      &surf_network_model_init_IB},
-    {"CM02", "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of "
-             "small messages are thus poorly modeled).",
+    {"CM02",
+     "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of "
+     "small messages are thus poorly modeled).",
      &surf_network_model_init_CM02},
-    {"NS3", "Network pseudo-model using the NS3 tcp model instead of an analytic model", &surf_network_model_init_NS3},
+    {"ns-3", "Network pseudo-model using the ns-3 tcp model instead of an analytic model",
+     &surf_network_model_init_NS3},
 };
 
 #if ! HAVE_SMPI
@@ -81,7 +86,7 @@ void surf_network_model_init_IB() {
 #endif
 #if !SIMGRID_HAVE_NS3
 void surf_network_model_init_NS3() {
-  xbt_die("Please activate NS3 support in cmake and install the dependencies to use the NS3 network model.");
+  xbt_die("Please activate ns-3 support in cmake and install the dependencies to use the NS3 network model.");
 }
 #endif
 
@@ -250,9 +255,9 @@ void sg_version()
 #endif
 
 #if SIMGRID_HAVE_NS3
-  XBT_HELP("   NS3 support compiled in.");
+  XBT_HELP("   ns-3 support compiled in.");
 #else
-  XBT_HELP("   NS3 support disabled at compilation.");
+  XBT_HELP("   ns-3 support disabled at compilation.");
 #endif
 
 #if SIMGRID_HAVE_JEDULE

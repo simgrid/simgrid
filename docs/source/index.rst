@@ -31,11 +31,11 @@ Welcome to SimGrid's documentation!
          The Java Bindings <app_java.rst>
       Describing the Simulated Platform <platform.rst>
          Modeling Hints <platform_howtos.rst>
-         ns-3 as a SimGrid model <ns3.rst>
          DTD Reference <platform_reference.rst>
       Describing the Experimental Scenario <scenario.rst>
          Configuring SimGrid <Configuring_SimGrid.rst>
       The SimGrid Models <models.rst>
+         ns-3 as a SimGrid model <ns3.rst>
       Simulation Outcomes <outcomes.rst>
       Use Cases and Howto <howto.rst>
       The SimGrid Community <community.rst>

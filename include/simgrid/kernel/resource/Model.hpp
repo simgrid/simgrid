@@ -93,7 +93,7 @@ public:
 
   /** @brief Returns whether this model have an idempotent share_resource()
    *
-   * The only model that is not is NS3: computing the next timestamp moves the model up to that point,
+   * The only model that is not is ns-3: computing the next timestamp moves the model up to that point,
    * so we need to call it only when the next timestamp of other sources is computed.
    */
   virtual bool next_occuring_event_is_idempotent() { return true; }

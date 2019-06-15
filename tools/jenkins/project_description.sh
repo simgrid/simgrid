@@ -17,7 +17,7 @@ get_cmake(){
 }
 
 get_ns3(){
-  found=$(grep -c "NS-3 found" ./consoleText)
+  found=$(grep -c "ns-3 found" ./consoleText)
   if [ $found != 0 ]; then
     echo "✔"
   else
@@ -123,7 +123,7 @@ function sortTable(n, type) {
   }
 }</script>
 <table id=configuration-matrix> 
-<tr class=matrix-row>  <td class=matrix-header style=min-width:75px onclick='sortTable(0);'>Name of the Builder</td><td class=matrix-header style=min-width:75px onclick='sortTable(1);'>OS</td><td class=matrix-header style=min-width:75px onclick='sortTable(2);'>Compiler</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(3, 'version');\">Boost</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(4,'version');\">Java</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(5,'version');\">Cmake</td><td class=matrix-header style=min-width:50px onclick='sortTable(6);'>NS3</td><td class=matrix-header style=min-width:50px onclick='sortTable(7);'>Python</td></tr>"
+<tr class=matrix-row>  <td class=matrix-header style=min-width:75px onclick='sortTable(0);'>Name of the Builder</td><td class=matrix-header style=min-width:75px onclick='sortTable(1);'>OS</td><td class=matrix-header style=min-width:75px onclick='sortTable(2);'>Compiler</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(3, 'version');\">Boost</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(4,'version');\">Java</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(5,'version');\">Cmake</td><td class=matrix-header style=min-width:50px onclick='sortTable(6);'>ns-3</td><td class=matrix-header style=min-width:50px onclick='sortTable(7);'>Python</td></tr>"
 
 for node in "${nodes[@]}"
 do

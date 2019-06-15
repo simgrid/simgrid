@@ -6,6 +6,7 @@ General:
  - Stop setting random seed with srand48() at initialization.
  - Use addr2line as a fallback for stacktraces when backtrace is not available.
  - Build option -Denable_documentation is now OFF by default.
+ - Network model 'NS3' was renamed into 'ns-3'.
 
 XBT:
  - New log appenders: stdout and stderr. Use stdout for xbt_help.
