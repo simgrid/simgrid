@@ -195,15 +195,6 @@ add_custom_target(dist-dir
   )
 add_dependencies(dist-dir maintainer_files)
 
-if(IS_DIRECTORY ${CMAKE_BINARY_DIR}/doc/html/)
-  add_custom_command(TARGET dist-dir POST_BUILD
-    COMMENT "Copying the documentation"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/doc/html/ ${PROJECT_NAME}-${release_version}/doc/html/
-    COMMAND rm -f `grep -rl " Reference" ${PROJECT_NAME}-${release_version}/doc/html/` # Doxygen, go away
-    COMMAND rm -f `grep -rl "Member List" ${PROJECT_NAME}-${release_version}/doc/html/` # Doxygen, you're getting annoying
-    )
-endif()
-
 set(dirs_in_tarball "")
 set(PYTHON_SOURCES "include MANIFEST.in")
 foreach(file ${source_to_pack})
