@@ -21,6 +21,10 @@ set(NS3_HINT ${ns3_path} CACHE PATH "Path to search for NS3 lib and include")
 
 find_library(NS3_LIBRARIES
   NAME ns3-core
+       ns3.22-core ns3.22-core-optimized ns3.22-core-debug
+       ns3.23-core ns3.23-core-optimized ns3.23-core-debug
+       ns3.24-core ns3.24-core-optimized ns3.24-core-debug
+       ns3.25-core ns3.25-core-optimized ns3.25-core-debug
        ns3.26-core ns3.26-core-optimized ns3.26-core-debug
        ns3.27-core ns3.27-core-optimized ns3.27-core-debug
        ns3.28-core ns3.28-core-optimized ns3.28-core-debug
@@ -37,7 +41,9 @@ find_library(NS3_LIBRARIES
 
 find_path(NS3_INCLUDE_DIR
   NAME ns3/core-module.h
-  PATH_SUFFIXES include ns3/include include/ns3.26 include/ns3.27 include/ns3.28 include/ns3.29 include/ns3.30 include/ns3.31 include/ns3.32 include/ns3.33 include/ns3.34
+  PATH_SUFFIXES include ns3/include 
+                include/ns3.22 include/ns3.23 include/ns3.24 include/ns3.25 include/ns3.26 include/ns3.27 include/ns3.28 include/ns3.29 include/ns3.30
+                include/ns3.31 include/ns3.32 include/ns3.33 include/ns3.34
   PATHS
   ${NS3_HINT}
   )
@@ -74,7 +80,7 @@ if(NS3_INCLUDE_DIR)
     # Compute NS3_PATH
     string(REGEX REPLACE "(.*)/lib" "\\1" NS3_PATH "${NS3_LIBRARY_PATH}")
 
-    message(STATUS "NS-3 found (v${NS3_VERSION}; incl:${NS3_INCLUDE_DIR}; lib: ${NS3_LIBRARY_PATH}).")
+    message(STATUS "ns-3 found (v${NS3_VERSION}; incl:${NS3_INCLUDE_DIR}; lib: ${NS3_LIBRARY_PATH}).")
 
     if (NOT NS3_LIBRARY_PATH STREQUAL "/usr/lib")
       string(REGEX MATCH "${NS3_LIBRARY_PATH}" MatchResult "$ENV{LD_LIBRARY_PATH}")
@@ -91,5 +97,5 @@ if(SIMGRID_HAVE_NS3)
   link_directories(${NS3_LIBRARY_PATH})
   include_directories(${NS3_INCLUDE_DIR})
 else()
-  message(STATUS "Warning: To use ns-3 in SimGrid, please install ns-3 at least version 3.26 (http://www.nsnam.org/releases/)")
+  message(STATUS "Warning: Please install ns-3 (version 3.22 or higher -- http://www.nsnam.org/releases/) or disable this feature.")
 endif()
