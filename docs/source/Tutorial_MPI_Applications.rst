@@ -6,7 +6,7 @@ Simulating MPI Applications
 Discover SMPI
 -------------
 
-SimGrid can not only :ref:`simulate algorithms <Tutorial_Algorithms>`, but
+SimGrid can not only :ref:`simulate algorithms <usecase_simalgo>`, but
 it can also be used to execute real MPI applications on top of
 virtual, simulated platforms with the SMPI module. Even complex
 C/C++/F77/F90 applications should run out of the box in this
@@ -95,12 +95,16 @@ simulated platform as a graph of hosts and network links.
 
 The elements basic elements (with :ref:`pf_tag_host` and
 :ref:`pf_tag_link`) are described first, and then the routes between
-any pair of hosts are explicitely given with :ref:`pf_tag_route`. Any
-host must be given a computational speed (in flops) while links must
-be given a latency (in seconds) and a bandwidth (in bytes per
-second). Note that you can write 1Gflops instead of 1000000000flops,
-and similar. Last point: :ref:`pf_tag_route`s are symmetrical by
-default (but this can be changed).
+any pair of hosts are explicitely given with :ref:`pf_tag_route`. 
+
+Any host must be given a computational speed in flops while links must
+be given a latency and a bandwidth. You can write 1Gf for
+1,000,000,000 flops (full list of units in the reference guide of 
+:ref:`pf_tag_host` and :ref:`pf_tag_link`). 
+
+Routes defined with :ref:`pf_tag_route` are symmetrical by default,
+meaning that the list of traversed links from A to B is the same as
+from B to A. Explicitely define non-symmetrical routes if you prefer.
 
 Cluster with a Crossbar
 .......................
@@ -623,7 +627,7 @@ Further Readings
 You may also be interested in the `SMPI reference article
 <https://hal.inria.fr/hal-01415484>`_ or these `introductory slides
 <http://simgrid.org/tutorials/simgrid-smpi-101.pdf>`_. The :ref:`SMPI
-reference documentation <app_smpi>` covers much more content than
+reference documentation <SMPI_doc>` covers much more content than
 this short tutorial.
 
 Finally, we regularly use SimGrid in our teachings on MPI. This way,

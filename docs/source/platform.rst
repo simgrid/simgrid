@@ -75,7 +75,7 @@ Networking zones (:ref:`pf_tag_zone`) are used to factorize the description
 to reduce the size of your platform on disk and in memory. Then, when
 a host wants to communicate with another host belonging to the same
 zone, it is the zone's duty to find the list of links that are
-involved in the communication. In the above example, since we use
+involved in the communication. In the above examples, since we use
 ``routing="Full"``, all routes must be explicitly given using the
 :ref:`pf_tag_route` and :ref:`pf_tag_link_ctn` tags (this :ref:`routing
 model <pf_rm>` is both simple and inefficient :) It is OK to not
