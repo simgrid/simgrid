@@ -19,6 +19,9 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
     /*
      * System under consideration:
      * 1\times\rho_1^{1} + 1\times\rho_2^{2} + 1\times\rho_3^{3} \le 10
+     * Expectations:
+     *  - \rho_1 should have twice the resources of \rho_2
+     *  - \rho_1 should have thrice the resources of \rho_3
      */
 
     lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 10);
@@ -41,6 +44,9 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
     /*
      * System under consideration:
      * 1\times\rho_1^{1} + 2\times\rho_2^{1} + 3\times\rho_3^{1} \le 10
+     * Expectations:
+     *  - All variable should have the same amount of resources
+     *  - This amount should be equal to \frac{10}{\sum{\text{consumption weight}}}
      */
 
     lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 10);
@@ -63,6 +69,9 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
     /*
      * Strange system under consideration:
      * 56\times\rho_1^{74} + 21\times\rho_2^{6} + 2\times\rho_3^{2} \le 123
+     * Expectations:
+     *  - This test combine variable weight and consumption weight
+     *  - Thus, we expect that \rho_j=\frac{\frac{10}{\sum{\frac{a_i}{w_i}}}}{w_j}
      */
 
     lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 123);
@@ -96,6 +105,9 @@ TEST_CASE("kernel::lmm Multiple constraint shared systems", "[kernel-lmm-shared-
      * 4\times\rho_1^{5.1} + 2.6\times\rho_2^{7} + 1.2\times\rho_3^{8.5} \le 14.6 \\
      * 5\times\rho_4^{6.2} + 2\times\rho_2^{7}   + 4.1\times\rho_3^{8.5} \le 40.7 \\
      * 6\times\rho_5^1                                                   \le 7
+     * Expectation:
+     *  - Order of inequation solving: 3, 1 and 2
+     *  - Variable values are fixed using: \rho_j=\frac{\frac{C_r}{\sum{\frac{a_{r,i}}{w_i}}}}{w_j}
      */
 
     lmm::Constraint* sys_cnst_1 = Sys->constraint_new(nullptr, 14.6);
@@ -140,6 +152,8 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
     /*
      * System under consideration:
      * 1\times\rho_1^{1} + 1\times\rho_2^{2} + 1\times\rho_3^{3} \le 10
+     * Expectation:
+     *  - Variables are fixed using: \rho_j=\frac{\frac{10}{\frac{1}{1}}}{w_j}
      */
 
     lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 10);
@@ -163,6 +177,8 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
     /*
      * System under consideration:
      * 1\times\rho_1^{1} + 2\times\rho_2^{1} + 3\times\rho_3^{1} \le 10
+     * Expectations:
+     *  - Variables are fixed using: \rho_j=\frac{\frac{10}{\frac{3}{1}}}{w_j}
      */
 
     lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 10);
@@ -186,6 +202,8 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
     /*
      * Strange system under consideration:
      * 56\times\rho_1^{74} + 21\times\rho_2^{6} + 2\times\rho_3^{2} \le 123
+     * Expectation:
+     *  - Variables are fixed using: \rho_j=\frac{\frac{123}{\frac{74}{56}}}{w_j}
      */
 
     lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 123);
@@ -220,6 +238,9 @@ TEST_CASE("kernel::lmm Multiple constraint unshared systems", "[kernel-lmm-unsha
      * 4\times\rho_1^{5.1} + 2.6\times\rho_2^{7} + 1.2\times\rho_3^{8.5} \le 14.6 \\
      * 5\times\rho_4^{6.2} + 2\times\rho_2^{7}   + 4.1\times\rho_3^{8.5} \le 40.7 \\
      * 6\times\rho_5^1                                                   \le 7
+     * Expectations:
+     *  - Variable are fixed using: \rho_j=\frac{\frac{C_r}{max\left(\frac{a_{r},i}{w_i}\right)}}{w_j}
+     *  - The order of inequation solving is expected to be: 3, 2 and 1 
      */
 
     lmm::Constraint* sys_cnst_1 = Sys->constraint_new(nullptr, 14.6);
