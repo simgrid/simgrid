@@ -70,7 +70,6 @@ This describes the process structure :cpp:type:`msg_process_t` and the functions
 .. doxygenfunction:: MSG_process_create
 .. doxygenfunction:: MSG_process_create_with_arguments
 .. doxygenfunction:: MSG_process_create_with_environment
-.. doxygenfunction:: MSG_process_create_from_stdfunc
 .. doxygenfunction:: MSG_process_daemonize
 .. doxygenfunction:: MSG_process_detach
 .. doxygenfunction:: MSG_processes_as_dynar
@@ -83,7 +82,6 @@ This describes the process structure :cpp:type:`msg_process_t` and the functions
 .. doxygenfunction:: MSG_process_get_PPID
 .. doxygenfunction:: MSG_process_get_properties
 .. doxygenfunction:: MSG_process_get_property_value
-.. doxygenfunction:: MSG_process_get_smx_ctx
 .. doxygenfunction:: MSG_process_is_suspended
 .. doxygenfunction:: MSG_process_join
 .. doxygenfunction:: MSG_process_kill
@@ -172,8 +170,8 @@ Task structure of MSG :cpp:type:`msg_task_t` and associated functions.
 .. doxygenfunction:: MSG_task_receive_ext_bounded
 .. doxygenfunction:: MSG_task_receive_with_timeout
 .. doxygenfunction:: MSG_task_receive_with_timeout_bounded
-.. doxygenfunction:: MSG_task_recv
-.. doxygenfunction:: MSG_task_recv_bounded
+.. doxygendefine:: MSG_task_recv
+.. doxygendefine:: MSG_task_recv_bounded
 .. doxygenfunction:: MSG_task_send
 .. doxygenfunction:: MSG_task_send_bounded
 .. doxygenfunction:: MSG_task_send_with_timeout
@@ -243,7 +241,6 @@ into, and interact directly with the VMs to manage groups of
 processes.
 
 .. doxygentypedef:: msg_vm_t
-.. doxygenfunction:: MSG_vm_create
 .. doxygenfunction:: MSG_vm_create_core
 .. doxygenfunction:: MSG_vm_create_multicore
 .. doxygenfunction:: MSG_vm_destroy

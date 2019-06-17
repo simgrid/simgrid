@@ -217,9 +217,9 @@ models for all existing resources.
     poorly modeled. This model is described in `A Network Model for
     Simulation of Grid Application
     <https://hal.inria.fr/inria-00071989/document>`_.
-  - **NS3** (only available if you compiled SimGrid accordingly):
+  - **ns-3** (only available if you compiled SimGrid accordingly):
     Use the packet-level network
-    simulators as network models (see :ref:`pls_ns3`).
+    simulators as network models (see :ref:`model_ns3`).
     This model can be :ref:`further configured <options_pls>`.
 
 - ``cpu/model``: specify the used CPU model.  We have only one model
@@ -417,15 +417,15 @@ meant to be detached as well.
 
 .. _options_pls:
 
-Configuring NS3
-^^^^^^^^^^^^^^^
+Configuring ns-3
+^^^^^^^^^^^^^^^^
 
-**Option** ``ns3/TcpModel`` **Default:** "default" (NS3 default)
+**Option** ``ns3/TcpModel`` **Default:** "default" (ns-3 default)
 
-When using NS3, there is an extra item ``ns3/TcpModel``, corresponding
+When using ns-3, there is an extra item ``ns3/TcpModel``, corresponding
 to the ``ns3::TcpL4Protocol::SocketType`` configuration item in
-NS3. The only valid values (enforced on the SimGrid side) are
-'default' (no change to the NS3 configuration), 'NewReno' or 'Reno' or
+ns-3. The only valid values (enforced on the SimGrid side) are
+'default' (no change to the ns-3 configuration), 'NewReno' or 'Reno' or
 'Tahoe'.
 
 Configuring the Storage model
