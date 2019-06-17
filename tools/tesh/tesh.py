@@ -71,6 +71,7 @@ class Singleton(_Singleton('SingletonMeta', (object,), {})):
 SIGNALS_TO_NAMES_DICT = dict((getattr(signal, n), n)
                              for n in dir(signal) if n.startswith('SIG') and '_' not in n)
 
+return_code = 0
 
 # exit correctly
 def tesh_exit(errcode):
@@ -328,6 +329,7 @@ class Cmd(object):
 
         global running_pgids
         local_pgid = None
+        global return_code
 
         try:
             preexec_function = None
@@ -352,16 +354,19 @@ class Cmd(object):
             print("[" + FileReader().filename + ":" + str(self.linenumber) +
                   "] Cannot start '" + args[0] + "': The binary is not executable.")
             print("[" + FileReader().filename + ":" + str(self.linenumber) + "] Current dir: " + os.getcwd())
-            tesh_exit(3)
+            return_code = max(3, return_code)
+            return
         except NotADirectoryError:
             print("[" + FileReader().filename + ":" + str(self.linenumber) + "] Cannot start '" +
                   args[0] + "': The path to binary does not exist.")
             print("[" + FileReader().filename + ":" + str(self.linenumber) + "] Current dir: " + os.getcwd())
-            tesh_exit(3)
+            return_code = max(3, return_code)
+            return
         except FileNotFoundError:
             print("[" + FileReader().filename + ":" + str(self.linenumber) +
                   "] Cannot start '" + args[0] + "': File not found")
-            tesh_exit(3)
+            return_code = max(3, return_code)
+            return
         except OSError as osE:
             if osE.errno == 8:
                 osE.strerror += "\nOSError: [Errno 8] Executed scripts should start with shebang line (like #!/usr/bin/env sh)"
@@ -384,7 +389,8 @@ class Cmd(object):
             except subprocess.TimeoutExpired:
                 print("[{file}:{number}] Could not retrieve output. Killing the process group failed?".format(
                     file=FileReader().filename, number=self.linenumber))
-                tesh_exit(3)
+                return_code = max(3, return_code)
+                return
 
         if self.output_display:
             print(stdout_data)
@@ -449,10 +455,12 @@ class Cmd(object):
                         f.write("> " + line + "\n")
                     f.close()
                     print("Obtained output kept as requested: " + os.path.abspath("obtained"))
-                tesh_exit(2)
+                return_code = max(2, return_code)
+                return
 
         if timeout_reached:
-            tesh_exit(3)
+            return_code = max(3, return_code)
+            return
 
         #print ((proc.returncode, self.expect_return))
 
@@ -462,13 +470,15 @@ class Cmd(object):
                       cmdName + "> returned code " + str(proc.returncode) + ")")
                 if lock is not None:
                     lock.release()
-                tesh_exit(2)
+                return_code = max(2, return_code)
+                return
             else:
                 print("Test suite `" + FileReader().filename + "': NOK (<" + cmdName +
                       "> got signal " + SIGNALS_TO_NAMES_DICT[-proc.returncode] + ")")
                 if lock is not None:
                     lock.release()
-                tesh_exit(-proc.returncode)
+                return_code = max(max(-proc.returncode, 1), return_code)
+                return
 
         if lock is not None:
             lock.release()
@@ -647,7 +657,10 @@ if __name__ == '__main__':
 
     TeshState().join_all_threads()
 
-    if f.filename == "(stdin)":
-        print("Test suite from stdin OK")
+    if return_code == 0:
+        if f.filename == "(stdin)":
+            print("Test suite from stdin OK")
+        else:
+            print("Test suite `" + f.filename + "' OK")
     else:
-        print("Test suite `" + f.filename + "' OK")
+        tesh_exit(return_code)
