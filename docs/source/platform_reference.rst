@@ -345,7 +345,8 @@ following functions:
 <route>
 -------
 
-A path between two network locations, composed of several :ref:`pf_tag_link`s.
+A path between two network locations, composed of several occurences
+of :ref:`pf_tag_link` .
 
 **Parent tags:** :ref:`pf_tag_zone` |br|
 **Children tags:** :ref:`pf_tag_link_ctn` |br|
