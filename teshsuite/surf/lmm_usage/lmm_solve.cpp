@@ -14,54 +14,59 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
 {
   lmm::System* Sys = lmm::make_new_maxmin_system(false);
 
-  SECTION("Variable weight")
+  SECTION("Variable penalty")
   {
     /*
-     * System under consideration:
-     * 1\times\rho_1^{1} + 1\times\rho_2^{2} + 1\times\rho_3^{3} \le 10
-     * Expectations:
-     *  - \rho_1 should have twice the resources of \rho_2
-     *  - \rho_1 should have thrice the resources of \rho_3
+     * A variable with twice the penalty gets half of the share
+     *
+     * In details:
+     *   o System:  a1 * p1 * \rho1  +  a2 * p2 * \rho2 < C
+     *   o consumption_weight: a1=1 ; a2=1
+     *   o sharing_penalty:    p1=1 ; p2=2
+     *
+     * Expectations
+     *   o rho1 = 2* rho2 (because rho2 has twice the penalty)
+     *   o rho1 + rho2 = C (because all weights are 1)
      */
 
-    lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 10);
-    lmm::Variable* sys_var_1  = Sys->variable_new(nullptr, 1, 0.0, 1);
-    lmm::Variable* sys_var_2  = Sys->variable_new(nullptr, 2, 0.0, 1);
-    lmm::Variable* sys_var_3  = Sys->variable_new(nullptr, 3, 0.0, 1);
+    lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 3);
+    lmm::Variable* rho_1      = Sys->variable_new(nullptr, 1);
+    lmm::Variable* rho_2      = Sys->variable_new(nullptr, 2);
 
-    Sys->expand(sys_cnst, sys_var_1, 1);
-    Sys->expand(sys_cnst, sys_var_2, 1);
-    Sys->expand(sys_cnst, sys_var_3, 1);
+    Sys->expand(sys_cnst, rho_1, 1);
+    Sys->expand(sys_cnst, rho_2, 1);
     Sys->solve();
 
-    REQUIRE(double_equals(sys_var_1->get_value(), 5.45455, sg_maxmin_precision));
-    REQUIRE(double_equals(sys_var_2->get_value(), 2.72727, sg_maxmin_precision));
-    REQUIRE(double_equals(sys_var_3->get_value(), 1.81818, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 2, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_2->get_value(), 1, sg_maxmin_precision));
   }
 
   SECTION("Consumption weight")
   {
     /*
-     * System under consideration:
-     * 1\times\rho_1^{1} + 2\times\rho_2^{1} + 3\times\rho_3^{1} \le 10
-     * Expectations:
-     *  - All variable should have the same amount of resources
-     *  - This amount should be equal to \frac{10}{\sum{\text{consumption weight}}}
+     * Variables of higher consumption weight consume more resource but get the same share
+     *
+     * In details:
+     *   o System:  a1 * p1 * \rho1  +  a2 * p2 * \rho2 < C
+     *   o consumption_weight: a1=1 ; a2=2
+     *   o sharing_penalty:    p1=1 ; p2=1
+     *
+     * Expectations
+     *   o rho1 = rho2 (because all penalties are 1)
+     *   o rho1 + 2* rho2 = C (because weight_2 is 2)
+     *   o so, rho1 = rho2 = 1 (because C is 3)
      */
 
-    lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 10);
-    lmm::Variable* sys_var_1  = Sys->variable_new(nullptr, 1, 0.0, 1);
-    lmm::Variable* sys_var_2  = Sys->variable_new(nullptr, 1, 0.0, 1);
-    lmm::Variable* sys_var_3  = Sys->variable_new(nullptr, 1, 0.0, 1);
+    lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 3);
+    lmm::Variable* rho_1      = Sys->variable_new(nullptr, 1);
+    lmm::Variable* rho_2      = Sys->variable_new(nullptr, 1);
 
-    Sys->expand(sys_cnst, sys_var_1, 1);
-    Sys->expand(sys_cnst, sys_var_2, 2);
-    Sys->expand(sys_cnst, sys_var_3, 3);
+    Sys->expand(sys_cnst, rho_1, 1);
+    Sys->expand(sys_cnst, rho_2, 2);
     Sys->solve();
 
-    REQUIRE(double_equals(sys_var_1->get_value(), 1.666667, sg_maxmin_precision));
-    REQUIRE(double_equals(sys_var_2->get_value(), 1.666667, sg_maxmin_precision));
-    REQUIRE(double_equals(sys_var_3->get_value(), 1.666667, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 1, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_2->get_value(), 1, sg_maxmin_precision));
   }
 
   SECTION("Consumption weight + variable weight")
@@ -75,9 +80,9 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
      */
 
     lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 123);
-    lmm::Variable* sys_var_1  = Sys->variable_new(nullptr, 56, 0.0, 1);
-    lmm::Variable* sys_var_2  = Sys->variable_new(nullptr, 21, 0.0, 1);
-    lmm::Variable* sys_var_3  = Sys->variable_new(nullptr, 3, 0.0, 1);
+    lmm::Variable* sys_var_1  = Sys->variable_new(nullptr, 56);
+    lmm::Variable* sys_var_2  = Sys->variable_new(nullptr, 21);
+    lmm::Variable* sys_var_3  = Sys->variable_new(nullptr, 3);
 
     Sys->expand(sys_cnst, sys_var_1, 74);
     Sys->expand(sys_cnst, sys_var_2, 6);
