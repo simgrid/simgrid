@@ -397,11 +397,12 @@ public:
   /**
    * @brief Create a new Linear MaxMin variable
    * @param id Data associated to the variable (e.g.: a network communication)
-   * @param weight_value The weight of the variable (0.0 if not used)
+   * @param sharing_penalty The weight of the variable (0.0 if not used)
    * @param bound The maximum value of the variable (-1.0 if no maximum value)
-   * @param number_of_constraints The maximum number of constraint to associate to the variable
+   * @param number_of_constraints The maximum number of constraints to associate to the variable
    */
-  Variable* variable_new(resource::Action* id, double weight_value, double bound, size_t number_of_constraints);
+  Variable* variable_new(resource::Action* id, double sharing_penalty, double bound = -1.0,
+                         size_t number_of_constraints = 1);
 
   /**
    * @brief Free a variable
