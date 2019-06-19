@@ -71,6 +71,7 @@ class Singleton(_Singleton('SingletonMeta', (object,), {})):
 SIGNALS_TO_NAMES_DICT = dict((getattr(signal, n), n)
                              for n in dir(signal) if n.startswith('SIG') and '_' not in n)
 
+return_code = 0
 
 # exit correctly
 def tesh_exit(errcode):
@@ -321,13 +322,15 @@ class Cmd(object):
 
         self.args += TeshState().args_suffix
 
-        print("[" + FileReader().filename + ":" + str(self.linenumber) + "] " + self.args)
+        logs = list()
+        logs.append("[{file}:{number}] {args}".format(file=FileReader().filename,
+            number=self.linenumber, args=self.args))
 
         args = shlex.split(self.args)
-        #print (args)
 
         global running_pgids
         local_pgid = None
+        global return_code
 
         try:
             preexec_function = None
@@ -349,19 +352,27 @@ class Cmd(object):
                 # os.getpgid failed. OK. No cleanup.
                 pass
         except PermissionError:
-            print("[" + FileReader().filename + ":" + str(self.linenumber) +
-                  "] Cannot start '" + args[0] + "': The binary is not executable.")
-            print("[" + FileReader().filename + ":" + str(self.linenumber) + "] Current dir: " + os.getcwd())
-            tesh_exit(3)
+            logs.append("[{file}:{number}] Cannot start '{cmd}': The binary is not executable.".format(
+                file=FileReader().filename, number=self.linenumber, cmd=args[0]))
+            logs.append("[{file}:{number}] Current dir: {dir}".format(file=FileReader().filename,
+                number=self.linenumber, dir=os.getcwd()))
+            return_code = max(3, return_code)
+            print('\n'.join(logs))
+            return
         except NotADirectoryError:
-            print("[" + FileReader().filename + ":" + str(self.linenumber) + "] Cannot start '" +
-                  args[0] + "': The path to binary does not exist.")
-            print("[" + FileReader().filename + ":" + str(self.linenumber) + "] Current dir: " + os.getcwd())
-            tesh_exit(3)
+            logs.append("[{file}:{number}] Cannot start '{cmd}': The path to binary does not exist.".format(
+                file=FileReader().filename, number=self.linenumber, cmd=args[0]))
+            logs.append("[{file}:{number}] Current dir: {dir}".format(file=FileReader().filename,
+                number=self.linenumber, dir=os.getcwd()))
+            return_code = max(3, return_code)
+            print('\n'.join(logs))
+            return
         except FileNotFoundError:
-            print("[" + FileReader().filename + ":" + str(self.linenumber) +
-                  "] Cannot start '" + args[0] + "': File not found")
-            tesh_exit(3)
+            logs.append("[{file}:{number}] Cannot start '{cmd}': File not found.".format(
+                file=FileReader().filename, number=self.linenumber, cmd=args[0]))
+            return_code = max(3, return_code)
+            print('\n'.join(logs))
+            return
         except OSError as osE:
             if osE.errno == 8:
                 osE.strerror += "\nOSError: [Errno 8] Executed scripts should start with shebang line (like #!/usr/bin/env sh)"
@@ -374,29 +385,29 @@ class Cmd(object):
             timeout_reached = False
         except subprocess.TimeoutExpired:
             timeout_reached = True
-            print("Test suite `" + FileReader().filename + "': NOK (<" +
-                  cmdName + "> timeout after " + str(self.timeout) + " sec)")
+            logs.append("Test suite `{file}': NOK (<{cmd}> timeout after {timeout} sec)".format(
+                file=FileReader().filename, cmd=cmdName, timeout=self.timeout))
             running_pgids.remove(local_pgid)
             kill_process_group(local_pgid)
             # Try to get the output of the timeout process, to help in debugging.
             try:
                 (stdout_data, stderr_data) = proc.communicate(timeout=1)
             except subprocess.TimeoutExpired:
-                print("[{file}:{number}] Could not retrieve output. Killing the process group failed?".format(
+                logs.append("[{file}:{number}] Could not retrieve output. Killing the process group failed?".format(
                     file=FileReader().filename, number=self.linenumber))
-                tesh_exit(3)
+                return_code = max(3, return_code)
+                print('\n'.join(logs))
+                return
 
         if self.output_display:
-            print(stdout_data)
+            logs.append(str(stdout_data))
 
         # remove text colors
         ansi_escape = re.compile(r'\x1b[^m]*m')
         stdout_data = ansi_escape.sub('', stdout_data)
 
-        #print ((stdout_data, stderr_data))
-
         if self.ignore_output:
-            print("(ignoring the output of <" + cmdName + "> as requested)")
+            logs.append("(ignoring the output of <{cmd}> as requested)".format(cmd=cmdName))
         else:
             stdouta = stdout_data.split("\n")
             while len(stdouta) > 0 and stdouta[-1] == "":
@@ -420,7 +431,7 @@ class Cmd(object):
                     fromfile='expected',
                     tofile='obtained'))
             if len(diff) > 0:
-                print("Output of <" + cmdName + "> mismatch:")
+                logs.append("Output of <{cmd}> mismatch:".format(cmd=cmdName))
                 if self.sort >= 0:  # If sorted, truncate the diff output and show the unsorted version
                     difflen = 0
                     for line in diff:
@@ -428,15 +439,16 @@ class Cmd(object):
                             print(line)
                         difflen += 1
                     if difflen > 50:
-                        print("(diff truncated after 50 lines)")
-                    print("Unsorted observed output:\n")
+                        logs.append("(diff truncated after 50 lines)")
+                    logs.append("Unsorted observed output:\n")
                     for line in stdcpy:
-                        print(line)
+                        logs.append(line)
                 else:  # If not sorted, just display the diff
                     for line in diff:
-                        print(line)
+                        logs.append(line)
 
-                print("Test suite `" + FileReader().filename + "': NOK (<" + cmdName + "> output mismatch)")
+                logs.append("Test suite `{file}': NOK (<{cmd}> output mismatch)".format(
+                    file=FileReader().filename, cmd=cmdName))
                 if lock is not None:
                     lock.release()
                 if TeshState().keep:
@@ -448,30 +460,39 @@ class Cmd(object):
                     for line in obtained:
                         f.write("> " + line + "\n")
                     f.close()
-                    print("Obtained output kept as requested: " + os.path.abspath("obtained"))
-                tesh_exit(2)
+                    logs.append("Obtained output kept as requested: {path}".format(path=os.path.abspath("obtained")))
+                return_code = max(2, return_code)
+                print('\n'.join(logs))
+                return
 
         if timeout_reached:
-            tesh_exit(3)
-
-        #print ((proc.returncode, self.expect_return))
+            return_code = max(3, return_code)
+            print('\n'.join(logs))
+            return
 
         if proc.returncode != self.expect_return:
             if proc.returncode >= 0:
-                print("Test suite `" + FileReader().filename + "': NOK (<" +
-                      cmdName + "> returned code " + str(proc.returncode) + ")")
+                logs.append("Test suite `{file}': NOK (<{cmd}> returned code {code})".format(
+                    file=FileReader().filename, cmd=cmdName, code=proc.returncode))
                 if lock is not None:
                     lock.release()
-                tesh_exit(2)
+                return_code = max(2, return_code)
+                print('\n'.join(logs))
+                return
             else:
-                print("Test suite `" + FileReader().filename + "': NOK (<" + cmdName +
-                      "> got signal " + SIGNALS_TO_NAMES_DICT[-proc.returncode] + ")")
+                logs.append("Test suite `{file}': NOK (<{cmd}> got signal {sig})".format(
+                    file=FileReader().filename, cmd=cmdName,
+                    sig=SIGNALS_TO_NAMES_DICT[-proc.returncode]))
                 if lock is not None:
                     lock.release()
-                tesh_exit(-proc.returncode)
+                return_code = max(max(-proc.returncode, 1), return_code)
+                print('\n'.join(logs))
+                return
 
         if lock is not None:
             lock.release()
+
+        print('\n'.join(logs))
 
     def can_run(self):
         return self.args is not None
@@ -647,7 +668,10 @@ if __name__ == '__main__':
 
     TeshState().join_all_threads()
 
-    if f.filename == "(stdin)":
-        print("Test suite from stdin OK")
+    if return_code == 0:
+        if f.filename == "(stdin)":
+            print("Test suite from stdin OK")
+        else:
+            print("Test suite `" + f.filename + "' OK")
     else:
-        print("Test suite `" + f.filename + "' OK")
+        tesh_exit(return_code)
