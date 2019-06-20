@@ -31,6 +31,6 @@ feedback.
 Cheers,
 Da SimGrid Team.
 
-[license-badge]: https://img.shields.io/badge/License-LGPL%20v3-blue.svg
+[license-badge]: https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg
 [release-badge]: https://img.shields.io/github/release/simgrid/simgrid.svg
 [release-link]:  https://gforge.inria.fr/frs/?group_id=12
