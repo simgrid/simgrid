@@ -6239,7 +6239,7 @@
        transform="translate(-2.8431311e-6,13.229176)">
       <a
          style="fill:#ffffff;fill-opacity:1"
-         xlink:href="http://simgrid.gforge.inria.fr/contrib/smpi-calibration-doc/"
+         xlink:href="https://framagit.org/simgrid/platform-calibration/"
          id="a6161">
         <rect
            style="opacity:0.93999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
@@ -6272,7 +6272,7 @@
              style="font-size:5.29166698px;stroke-width:0.26458332px" /></text>
       </a>
       <a
-         xlink:href="http://simgrid.gforge.inria.fr/contrib/smpi-calibration-doc/"
+         xlink:href="https://framagit.org/simgrid/platform-calibration/"
          id="a6164">
         <text
            id="text1024-2-7-6"
