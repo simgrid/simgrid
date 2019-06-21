@@ -10,25 +10,28 @@
 < ! timeout 2
 < & sh -c 'echo "I also crash in background" && sleep 1'
 < 
-< !timeout 1
+< ! timeout 1
 < $ sh -c 'echo "I crash in foreground"'
 $ ${bindir:=.}/tesh
-> Output of <meh.tesh:8> mismatch:
+> Test suite from stdin
+> [(stdin):8] sh -c 'echo "I crash in foreground"'
+> Output of <(stdin):8> mismatch:
 > --- expected
 > +++ obtained
 > @@ -0,0 +1 @@
 > +I crash in foreground
-> Test suite `meh.tesh': NOK (<meh.tesh:8> output mismatch)
-> Output of <meh.tesh:5> mismatch:
+> Test suite `(stdin)': NOK (<(stdin):8> output mismatch)
+> [(stdin):5] sh -c 'echo "I also crash in background" && sleep 1'
+> Output of <(stdin):5> mismatch:
 > --- expected
 > +++ obtained
 > @@ -0,0 +1 @@
 > +I also crash in background
-> Test suite `meh.tesh': NOK (<meh.tesh:5> output mismatch)
-> Test suite `meh.tesh': NOK (<meh.tesh:2> timeout after 4 sec)
-> Output of <meh.tesh:2> mismatch:
+> Test suite `(stdin)': NOK (<(stdin):5> output mismatch)
+> [(stdin):2] sh -c 'echo "I crash in background" && sleep 2'
+> Output of <(stdin):2> mismatch:
 > --- expected
 > +++ obtained
 > @@ -0,0 +1 @@
 > +I crash in background
-> Test suite `meh.tesh': NOK (<meh.tesh:2> output mismatch)
+> Test suite `(stdin)': NOK (<(stdin):2> output mismatch)
