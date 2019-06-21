@@ -5,6 +5,12 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \|___ /
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|____/
                (not released)
 
+The Exotic Solstice Release.
+
+ * Support for Solaris and Haiku OSes. Just for fun :)
+ * SMPI: more of MPI3.1; some MPI/IO and async collectives.
+ * Python bindings can now be installed from pip.
+ * (+ the many many bug fixes and internal refactorings)
                     _               _____  ____  ____
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \|___ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | __) |

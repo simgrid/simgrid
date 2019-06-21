@@ -7,7 +7,13 @@ General:
  - Use addr2line as a fallback for stacktraces when backtrace is not available.
  - Build option -Denable_documentation is now OFF by default.
  - Network model 'NS3' was renamed into 'ns-3'.
- - Haiku OS support
+ - SunOS and Haiku OS support. Because exotic platforms are fun.
+
+Python:
+ - Simgrid can now hopefully be installed with pip.
+
+S4U: 
+ - wait_any can now be used for asynchronous executions too.
 
 XBT:
  - New log appenders: stdout and stderr. Use stdout for xbt_help.
@@ -31,9 +37,6 @@ Model-checker:
 Network models:
  - Remove the lagrange-based models (Reno/Reno2/Vegas). The regular
    models proved to be more accurate than these old experiments.
-
-Python:
- - Simgrid can now hopefully be installed with pip.
 
 Fixed bugs (FG=FramaGit; GH=GitHub):
  - FG#1: Broken link in error messages
