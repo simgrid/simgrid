@@ -168,14 +168,12 @@ static void check_blocks(std::vector<std::pair<size_t, size_t>> &private_blocks,
 
 void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
 {
-  int src_shared                        = 0;
-  int dst_shared                        = 0;
   size_t src_offset                     = 0;
   size_t dst_offset                     = 0;
   std::vector<std::pair<size_t, size_t>> src_private_blocks;
   std::vector<std::pair<size_t, size_t>> dst_private_blocks;
   XBT_DEBUG("Copy the data over");
-  if((src_shared=smpi_is_shared(buff, src_private_blocks, &src_offset))) {
+  if(smpi_is_shared(buff, src_private_blocks, &src_offset)) {
     XBT_DEBUG("Sender %p is shared. Let's ignore it.", buff);
     src_private_blocks = shift_and_frame_private_blocks(src_private_blocks, src_offset, buff_size);
   }
@@ -183,7 +181,7 @@ void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, v
     src_private_blocks.clear();
     src_private_blocks.push_back(std::make_pair(0, buff_size));
   }
-  if ((dst_shared = smpi_is_shared((char*)comm->dst_buff_, dst_private_blocks, &dst_offset))) {
+  if (smpi_is_shared((char*)comm->dst_buff_, dst_private_blocks, &dst_offset)) {
     XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff_);
     dst_private_blocks = shift_and_frame_private_blocks(dst_private_blocks, dst_offset, buff_size);
   }
