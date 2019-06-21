@@ -69,9 +69,9 @@ public final class NativeLib {
 		
 		System.err.println("\nCannot load the bindings to the "+name+" library in path "+getPath()+" and no usable SimGrid installation found on disk.");
 		if (cause != null) {
-			if (cause.getMessage().matches(".*libcgraph.so.*"))
+			if (cause.getMessage().contains("libcgraph.so"))
 				System.err.println("HINT: Try to install the libcgraph package (sudo apt-get install libcgraph).");
-			else if (cause.getMessage().matches(".*libboost_context.so.*"))
+			else if (cause.getMessage().contains("libboost_context.so"))
 				System.err.println("HINT: Try to install the boost-context package (sudo apt-get install libboost-context-dev).");
 			else
 				System.err.println("Try to install the missing dependencies, if any. Read carefully the following error message.");
