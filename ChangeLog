@@ -7,6 +7,7 @@ General:
  - Use addr2line as a fallback for stacktraces when backtrace is not available.
  - Build option -Denable_documentation is now OFF by default.
  - Network model 'NS3' was renamed into 'ns-3'.
+ - Haiku OS support
 
 XBT:
  - New log appenders: stdout and stderr. Use stdout for xbt_help.
@@ -16,6 +17,9 @@ SMPI:
  - SMPI now reports support of MPI3.1. This does not mean SMPI supports all MPI 3 calls, but it was already the case with 2.2
  - MPI/IO is now supported over the Storage API (no files are written or read, storage is simulated). Supported calls are all synchronous ones.
  - MPI interface is now const correct for input parameters
+ - MPI_Ireduce, MPI_Iallreduce, MPI_Iscan, MPI_Iexscan, MPI_Ireduce_scatter, MPI_Ireduce_scatter_block support
+ - Fortran bindings for async collectives.
+ - MPI_Comm_get_name, MPI_Comm_set_name, MPI_Count support.
 
 Model-checker:
  - Remove option 'model-check/record': Paths are recorded in any cases now.
@@ -105,11 +109,9 @@ SMPI:
  - MPI_Alltoallw support
  - Partial MPI nonblocking collectives implementation: MPI_Ibcast, MPI_Ibarrier,
    MPI_Iallgather, MPI_Iallgatherv, MPI_Ialltoall, MPI_Ialltoallv, MPI_Igather,
-   MPI_Igatherv, MPI_Iscatter, MPI_Iscatterv, MPI_Ialltoallw, MPI_Ireduce,
-   MPI_Iallreduce, MPI_Iscan, MPI_Iexscan, MPI_Ireduce_scatter,
-   MPI_Ireduce_scatter_block, with fortran bindings.
+   MPI_Igatherv, MPI_Iscatter, MPI_Iscatterv, MPI_Ialltoallw.
  - MPI_Request_get_status, MPI_Status_set_cancelled, MPI_Status_set_elements
-   support, MPI_Comm_get_name, MPI_Comm_set_name
+   support
  - Basic implementation of generalized requests (SMPI doesn't
    allow MPI_THREAD_MULTIPLE) : MPI_Grequest_complete, MPI_Grequest_start
 
