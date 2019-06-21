@@ -13,7 +13,7 @@ interface nor a command-line simulator running user scripts. The
 interaction with SimGrid is done by writing programs with the exposed
 functions to build your own simulator.
 
-SimGrid is a Free Software distributed under the LGPLv3 license. You are
+SimGrid is a Free Software distributed under the LGPL-2.1 license. You are
 thus welcome to use it as you wish or even to modify and distribute
 your version (provided that your version is as free as ours). It also
 means that SimGrid is developed by a vivid community of users and
