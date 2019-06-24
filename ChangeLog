@@ -12,7 +12,7 @@ General:
 Python:
  - Simgrid can now hopefully be installed with pip.
 
-S4U: 
+S4U:
  - wait_any can now be used for asynchronous executions too.
 
 XBT:
@@ -55,6 +55,7 @@ Fixed bugs (FG=FramaGit; GH=GitHub):
  - FG#20: 'tesh --help' should return 0
  - FG#21: Documentation link on http://simgrid.org/ broken
  - FG#22: Debian installation instruction are broken
+ - FG#26: Turning off a link should raise NetworkFailureException exceptions
  - GH#133: Java: a process can run on a VM even if its host is off
  - GH#320: Stacktrace: Avoid the backtrace variant of Boost.Stacktrace?
  - GH#326: Valgrind-detected error for join() when energy plugin is activated

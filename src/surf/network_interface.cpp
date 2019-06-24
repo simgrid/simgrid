@@ -138,6 +138,17 @@ void LinkImpl::turn_off()
   if (is_on()) {
     Resource::turn_off();
     s4u::Link::on_state_change(this->piface_);
+
+    kernel::lmm::Variable* var       = nullptr;
+    const kernel::lmm::Element* elem = nullptr;
+    double now                       = surf_get_clock();
+    while ((var = get_constraint()->get_variable(&elem))) {
+      Action* action = static_cast<Action*>(var->get_id());
+      if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED) {
+        action->set_finish_time(now);
+        action->set_state(Action::State::FAILED);
+      }
+    }
   }
 }
 

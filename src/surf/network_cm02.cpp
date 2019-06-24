@@ -282,19 +282,7 @@ void NetworkCm02Link::apply_event(kernel::profile::Event* triggered, double valu
     if (value > 0)
       turn_on();
     else {
-      kernel::lmm::Variable* var = nullptr;
-      const kernel::lmm::Element* elem = nullptr;
-      double now               = surf_get_clock();
-
       turn_off();
-      while ((var = get_constraint()->get_variable(&elem))) {
-        Action* action = static_cast<Action*>(var->get_id());
-
-        if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED) {
-          action->set_finish_time(now);
-          action->set_state(Action::State::FAILED);
-        }
-      }
     }
     tmgr_trace_event_unref(&state_event_);
   } else {
