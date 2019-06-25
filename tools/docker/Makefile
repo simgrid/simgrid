@@ -14,7 +14,7 @@ default:
 all: build-deps unstable tuto-s4u tuto-smpi
 
 stable:
-	export last_tag=`wget https://framagit.org/simgrid/simgrid/tags 2>/dev/null -O - | grep /simgrid/simgrid/tags/v | head -n1  | sed 's/[^>]*>//' | sed 's/<.*//'`; \
+	export last_tag=`wget https://framagit.org/simgrid/simgrid/tags 2>/dev/null -O - | grep /simgrid/simgrid/-/tags/v | head -n1  | sed 's/[^>]*>//' | sed 's/<.*//'`; \
 	export url=`wget https://framagit.org/simgrid/simgrid/tags/$${last_tag} 2>/dev/null -O - | grep SimGrid- | perl -pe 's/.*?<a href="//' | sed 's/tar.gz.*/tar.gz/'` ;\
 	echo URL:$${url} ; \
 	docker build -f Dockerfile.stable \
