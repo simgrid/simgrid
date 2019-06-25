@@ -106,24 +106,21 @@ the settings icon of the release you want to change.
   on https://framagit.org/simgrid/simgrid/tags
   - Upload the files SimGrid-3.XX.tar.gz, simgrid-3_XX.jar and
     SimGrid-doc-3_XX.zip (that is the artefact of the pages job on framagit) files to the changelog.
-- Update the .gitlab-ci.yml on the website
-  - Download the simgrid-doc from framagit and unpack it in position
-  - Only keep 2 versions so that people don't find older ones in google
-- Rebuild and resynchronize the website so that the file gets visible from our download page.
+- Update the website
   - Edit org/org-templates/level-0.org to change the release version, the tgz link and the jar link.
   - emacs org/site/index.org and C-c C-c the first source block to refresh the news; fake the date in the result.
   - emacs org/site/download.org and C-c C-c the first source block to refresh the download.
   - emacs org/site/documentation.org and edit the version links.
   - make -C org all sync
   - jed .gitlab-ci.yml
-    - Change the link to the SimGrid-doc-3_XX.zip file
-    - Change the version number
+    - Change the link to the SimGrid-doc-3_XX.zip file 
+    - Only keep 2 versions so that people don't find older ones in google
     - Change the link to latest
   - git commit -a && git push
 - Announce the release
  - Mail the simgrid-user mailing list
     - the NEWS chunk in the mail;
-    - Hall of Fame in the mail@n
+    - Hall of Fame in the mail
       git shortlog -se v3.21..
     - Link to the ChangeLog on framagit (the version of that tag)
  - Also mail some other lists (G5K users)
@@ -137,14 +134,14 @@ the settings icon of the release you want to change.
 - Update the simgrid/package.py for spack: https://gitlab.inria.fr/solverstack/spack-repo
 - Create the template for the next release in ChangeLog and NEWS files
   Release Target date: https://en.wikipedia.org/wiki/Equinox
-- Bump elease number to 3.X.1 in CMakeLists.txt sonar-project.properties docs/source/conf.py setup.py
+- Bump release number to 3.X.1 in CMakeLists.txt sonar-project.properties docs/source/conf.py setup.py
 - Deal with deprecations:
-  - Introduce the XBT_ATTRIB_DEPRECATED_v??? macro for the next release.
+  - jed include/xbt/base.h: Introduce the next XBT_ATTRIB_DEPRECATED_v??? macro 
   - Kill the one for the current release and remove all code that were
     mandated by the deprecated functions (both in source and headers).
   - Do the possible cleanups now that these features are gone.
 - Update the Docker images (after pushing to the git)
-  - cd tools/docker && make stable tuto-s4u push
+  - cd tools/docker && make stable tuto-s4u tuto-smpi push
   - Update the simgrid-template-s4u repository to test against this new release
     jed ~/Code/simgrid-template-s4u/.gitlab-ci.yml
 
@@ -184,7 +181,9 @@ Doing a dot release:
     - Do not merge into 'stable' before appveyor and jenkins are done,
       or your jarfile will not contain the code you expect for win and
       mac.
-  - python3 setup.py sdist # Build a source distrib
+  - Rebuild the python package
+    - test -e MANIFEST.in || echo "Copy MANIFEST.in from a freshly configured build tree"
+    - rm -rf dist/ ; python3 setup.py sdist # Build a source distrib
     - test that the built distrib recompiles:
       rm -rf /tmp/pysimgrid && mkdir /tmp/pysimgrid && cp dist/simgrid-*.tar.gz /tmp/pysimgrid 
       (cd /tmp/pysimgrid && tar xfz simgrid*.tar.gz && cd simgrid-*/ && python3 setup.py build)
