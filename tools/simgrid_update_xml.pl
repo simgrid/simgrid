@@ -148,7 +148,7 @@ Rename the FULLDUPLEX sharing into SPLITDUPLEX.
 
 =item
 
-In <host> and <peer>, rename the 'availability_file' atribute into 'speed_file'.
+In <host> and <peer>, rename the 'availability_file' attribute into 'speed_file'.
 
 =back
 
