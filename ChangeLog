@@ -1,13 +1,15 @@
 ----------------------------------------------------------------------------
 
-SimGrid (3.23) NOT RELEASED (Release Target: June 21. 2019, 15:54 UTC)
+SimGrid (3.23) June 25. 2019
+
+The Exotic Solstice Release.
 
 General:
+ - SunOS and Haiku OS support. Because exotic platforms are fun.
  - Stop setting random seed with srand48() at initialization.
  - Use addr2line as a fallback for stacktraces when backtrace is not available.
  - Build option -Denable_documentation is now OFF by default.
  - Network model 'NS3' was renamed into 'ns-3'.
- - SunOS and Haiku OS support. Because exotic platforms are fun.
 
 Python:
  - Simgrid can now hopefully be installed with pip.

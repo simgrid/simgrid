@@ -15,13 +15,13 @@ Please apply the following checklist before releasing.
     - CMakeLists.txt (in macros SIMGRID_VERSION_*)
     - sonar-project.properties
     - docs/source/conf.py
-  - The "make distcheck" target works (testing that every files needed
-    to build and install are included in the archive)
+    - setup.py
 - Tests
-  - All tests pass on a reasonable amount of platforms (typically,
-    everything on ci + travis/macOS + AppVeyor)
-  - You also tested to build and install the content of the source
-    archive on a reasonable amount of platforms (typically, 2 or 3).
+  - The "make distcheck" target works (tested by jenkins)
+  - All tests pass oneverything on ci + travis/macOS + AppVeyor
+  - Tutorials and derivative projects build correctly
+    https://framagit.org/simgrid/simgrid-template-s4u/pipelines
+    https://framagit.org/simgrid/external-projects-ci/pipelines
 - ChangeLog file
   - All changes are documented
   - The release date is indicated below the changes
