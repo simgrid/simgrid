@@ -84,6 +84,8 @@ setup(
                       "or even assess legacy MPI applications."),
     ext_modules=[CMakeExtension('simgrid')],
     cmdclass=dict(build_ext=CMakeBuild),
+    install_requires=['pybind11>=2.3'],
+    setup_requires=['pybind11>=2.3'],
     zip_safe=False,
     classifiers=[
       "Development Status :: 4 - Beta",
