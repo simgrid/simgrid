@@ -46,7 +46,7 @@ release:
   - make VERBOSE=1 dist simgrid simgrid-java_jar
   # Get the foreign architectures
   - wget https://ci.appveyor.com/api/projects/mquinson/simgrid/artifacts/simgrid.jar -O simgrid-windows.jar
-  - export SGVER=`(echo '#include "simgrid/config.h"'; echo SIMGRID_VERSION_MAJOR.SIMGRID_VERSION_MINOR.SIMGRID_VERSION_PATCH)|gcc -E - -Iinclude|tail -1|sed 's/ //g'`
+  - export SGVER=`printf '#include "simgrid/config.h"\n#if SIMGRID_VERSION_PATCH\nSIMGRID_VERSION_MAJOR.SIMGRID_VERSION_MINOR.SIMGRID_VERSION_PATCH\n#else\nSIMGRID_VERSION_MAJOR.SIMGRID_VERSION_MINOR\n#endif'|gcc -E - -Iinclude|tail -1|sed 's/ //g'`
   - wget https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=osx/lastSuccessfulBuild/artifact/build/SimGrid-${SGVER}/build/simgrid.jar -O simgrid-mac.jar
   # Open all jar files, and strip them
   - mkdir content ; cd content
