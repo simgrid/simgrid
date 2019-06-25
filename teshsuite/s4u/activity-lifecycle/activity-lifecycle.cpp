@@ -439,6 +439,40 @@ static void test_link_off()
   xbt_assert(sender_got_exception, "Sender should have caught a NetworkFailureException");
 }
 
+static void test_link_off_before_detached_send()
+{
+  XBT_INFO("%s: Launch an actor that waits on a recv, turn communicating link off, and a sender then places a detached send", __func__);
+  bool sender_got_exception   = false;
+  bool receiver_got_exception = false;
+
+  simgrid::s4u::ActorPtr receiver = simgrid::s4u::Actor::create("receiver", all_hosts[1], [&receiver_got_exception]() {
+    assert_exit(false, 2);
+    try {
+      simgrid::s4u::Mailbox::by_name("mb")->get();
+    } catch (simgrid::NetworkFailureException const&) {
+      receiver_got_exception = true;
+    }
+  });
+
+  simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[2], [&sender_got_exception]() {
+    assert_exit(false, 2);
+    simgrid::s4u::this_actor::sleep_for(2);
+    try {
+      int data = 42;
+      simgrid::s4u::Mailbox::by_name("mb")->put_init(&data, 100000)->detach();
+      //This works: simgrid::s4u::Mailbox::by_name("mb")->put(&data, 100000);
+    } catch (simgrid::NetworkFailureException const&) {
+      sender_got_exception = true;
+    }
+  });
+
+  simgrid::s4u::this_actor::sleep_for(1);
+  simgrid::s4u::Link::by_name("link1")->turn_off();
+  simgrid::s4u::this_actor::sleep_for(2);
+  xbt_assert(receiver_got_exception, "Receiver should have caught a NetworkFailureException");
+}
+
+
 /* We need an extra actor here, so that it can sleep until the end of each test */
 static void main_dispatcher()
 {
@@ -465,6 +499,7 @@ static void main_dispatcher()
 
   run_test("comm recv and kill", test_host_off_while_receive);
   run_test("comm turn link off", test_link_off);
+  run_test("comm turn link off before detached send", test_link_off_before_detached_send);
 }
 
 int main(int argc, char* argv[])
