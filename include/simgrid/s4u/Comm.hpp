@@ -122,10 +122,6 @@ public:
   size_t get_dst_data_size();
 
   Actor* get_sender();
-
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v324("Please use Comm::wait_for()") void wait(double t) override { wait_for(t); }
-#endif
 };
 } // namespace s4u
 } // namespace simgrid

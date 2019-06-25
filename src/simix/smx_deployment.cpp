@@ -56,11 +56,6 @@ void SIMIX_launch_application(const std::string& file)
   }
 }
 
-void SIMIX_launch_application(const char* file) // deprecated
-{
-  simgrid_load_deployment(file);
-}
-
 // Wrap a main() function into a ActorCodeFactory:
 static simgrid::simix::ActorCodeFactory toActorCodeFactory(xbt_main_func_t code)
 {
@@ -86,11 +81,6 @@ void SIMIX_function_register(const std::string& name, xbt_main_func_t code)
 void SIMIX_function_register(const std::string& name, void (*code)(std::vector<std::string>))
 {
   simix_global->registered_functions[name] = toActorCodeFactory(code);
-}
-
-void SIMIX_function_register(const char* name, xbt_main_func_t code) // deprecated
-{
-  simgrid_register_function(name, code);
 }
 
 /**

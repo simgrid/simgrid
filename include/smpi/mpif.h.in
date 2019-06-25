@@ -283,5 +283,6 @@
       double precision smpi_get_host_power_peak_at
       double precision smpi_get_host_current_power_peak
       integer smpi_get_host_nb_pstates
+      integer smpi_get_host_pstate
       double precision smpi_get_host_consumed_energy
 @MODULE_MPIF_OUT@

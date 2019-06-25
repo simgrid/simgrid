@@ -442,11 +442,6 @@ void migrate(Host* new_host)
   SIMIX_process_self()->iface()->migrate(new_host);
 }
 
-void kill() /* deprecated */
-{
-  exit();
-}
-
 } // namespace this_actor
 } // namespace s4u
 } // namespace simgrid

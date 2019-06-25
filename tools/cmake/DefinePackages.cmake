@@ -389,7 +389,6 @@ set(SIMIX_SRC
   src/kernel/context/ContextThread.cpp
   src/kernel/context/ContextThread.hpp
   src/simix/smx_deployment.cpp
-  src/simix/smx_environment.cpp
   src/simix/smx_global.cpp
   src/simix/popping.cpp
   src/kernel/activity/ActivityImpl.cpp

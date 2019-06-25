@@ -528,16 +528,6 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   return simgrid::kernel::actor::ActorImpl::attach(name, data, sg_host_by_name(hostname), properties).get();
 }
 
-/** @deprecated When this function gets removed, also remove the xbt_ex class, that is only there to help users to
- * transition */
-void SIMIX_process_throw(smx_actor_t actor, xbt_errcat_t cat, int value, const char* msg)
-{
-  xbt_ex e(XBT_THROW_POINT, msg);
-  e.category = cat;
-  e.value    = value;
-  actor->throw_exception(std::make_exception_ptr(e));
-}
-
 void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t actor)
 {
   smx_activity_t sync_suspend = actor->suspend(simcall->issuer);

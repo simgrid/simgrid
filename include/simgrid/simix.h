@@ -94,18 +94,8 @@ XBT_PUBLIC double SIMIX_timer_get_date(smx_timer_t timer);
 XBT_PUBLIC void SIMIX_display_process_status();
 SG_END_DECL()
 
-/******************************* Environment **********************************/
-SG_BEGIN_DECL()
-XBT_ATTRIB_DEPRECATED_v324("Please use simgrid_load_platform()") XBT_PUBLIC
-    void SIMIX_create_environment(const char* file);
-SG_END_DECL()
-
 /******************************** Deployment **********************************/
 SG_BEGIN_DECL()
-XBT_ATTRIB_DEPRECATED_v324("Please use simgrid_register_function()") XBT_PUBLIC
-    void SIMIX_function_register(const char* name, xbt_main_func_t code);
-XBT_ATTRIB_DEPRECATED_v324("Please use simgrid_load_deployment()") XBT_PUBLIC
-    void SIMIX_launch_application(const char* file);
 XBT_PUBLIC void SIMIX_function_register_default(xbt_main_func_t code);
 
 XBT_PUBLIC void SIMIX_init_application();
@@ -187,9 +177,6 @@ XBT_PUBLIC bool simcall_execution_test(const smx_activity_t& execution);
 
 /**************************** Process simcalls ********************************/
 SG_BEGIN_DECL()
-XBT_ATTRIB_DEPRECATED_v324("Please use ActorImpl::throw_exception") XBT_PUBLIC
-    void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const char* mesg);
-
 void simcall_process_set_data(smx_actor_t process, void* data);
 /* Process handling */
 XBT_PUBLIC void simcall_process_suspend(smx_actor_t process);

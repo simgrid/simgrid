@@ -87,6 +87,7 @@ private:
  *  @ref WithContextException base class. We should deprecate it and replace it
  *  with either C++ different exceptions or `std::system_error` which already
  *  provides this (category + error code) logic.
+ *  TODO ^^
  *
  *  @ingroup XBT_ex_c
  */

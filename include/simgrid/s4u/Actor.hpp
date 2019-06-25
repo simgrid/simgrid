@@ -464,9 +464,6 @@ XBT_PUBLIC void migrate(Host* new_host);
 #ifndef DOXYGEN
 XBT_ATTRIB_DEPRECATED_v325("Please use std::function<void(bool)> for first parameter.") XBT_PUBLIC
     void on_exit(const std::function<void(int, void*)>& fun, void* data);
-
-/** @deprecated See this_actor::exit() */
-XBT_ATTRIB_DEPRECATED_v324("Please use this_actor::exit()") XBT_PUBLIC void kill();
 #endif
 }
 

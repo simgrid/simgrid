@@ -94,10 +94,6 @@ public:
 
   kernel::activity::ActivityImpl* get_impl() const { return pimpl_.get(); }
 
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v324("Please use Activity::wait_for()") virtual void wait(double timeout) = 0;
-#endif
-
 private:
   kernel::activity::ActivityImplPtr pimpl_ = nullptr;
   Activity::State state_                   = Activity::State::INITED;
