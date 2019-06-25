@@ -30,8 +30,8 @@ class CMakeBuild(build_ext):
         try:
             out = subprocess.check_output(['cmake', '--version'])
         except OSError:
-            raise RuntimeError("CMake must be installed to build the following extensions: " +
-                               ", ".join(e.name for e in self.extensions))
+            raise RuntimeError("CMake must be installed to build python bindings of SimGrid")
+        
         if not os.path.exists("MANIFEST.in"):
             raise RuntimeError("Please generate a MANIFEST.in file (configure simgrid, and copy it here if you build out of tree)")
 
@@ -81,7 +81,10 @@ setup(
     long_description=("SimGrid is a scientific instrument to study the behavior of "
                       "large-scale distributed systems such as Grids, Clouds, HPC or P2P "
                       "systems. It can be used to evaluate heuristics, prototype applications "
-                      "or even assess legacy MPI applications."),
+                      "or even assess legacy MPI applications.\n\n"
+                      "This package contains a native library. Please install cmake boost and a "
+                      "C++ compiler before using pip. On Debian/Ubuntu, this is as easy as\n"                      
+                      "sudo apt install g++ gcc cmake libboost-all-dev"),
     ext_modules=[CMakeExtension('simgrid')],
     cmdclass=dict(build_ext=CMakeBuild),
     install_requires=['pybind11>=2.3'],
