@@ -499,7 +499,8 @@ static void main_dispatcher()
 
   run_test("comm recv and kill", test_host_off_while_receive);
   run_test("comm turn link off", test_link_off);
-  run_test("comm turn link off before detached send", test_link_off_before_detached_send);
+  // The following test is broken: https://framagit.org/simgrid/simgrid/issues/26
+  // run_test("comm turn link off before detached send", test_link_off_before_detached_send);
 }
 
 int main(int argc, char* argv[])
