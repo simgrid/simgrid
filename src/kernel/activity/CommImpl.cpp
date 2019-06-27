@@ -443,7 +443,7 @@ CommImpl* CommImpl::start()
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure", sender->get_cname(),
                 receiver->get_cname());
       state_ = SIMIX_LINK_FAILURE;
-      cleanupSurf();
+      post();
 
     } else if (src_actor_->is_suspended() || dst_actor_->is_suspended()) {
       /* If any of the process is suspended, create the synchro but stop its execution,
