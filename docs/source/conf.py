@@ -25,7 +25,7 @@ read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 
 if read_the_docs_build:
     subprocess.call('cd source; doxygen', shell=True)
-    subprocess.call('javasphinx-apidoc --force -o source/java/ ../src/bindings/java/org/simgrid/msg', shell=True)
+    subprocess.call('source/_ext/javasphinx-apidoc --force -o source/java/ ../src/bindings/java/org/simgrid/msg', shell=True)
     subprocess.call('rm source/java/packages.rst', shell=True)
 
 # -- Project information -----------------------------------------------------
