@@ -177,9 +177,10 @@ unit_scale::unit_scale(std::initializer_list<std::tuple<const std::string, doubl
 double surf_parse_get_value_with_unit(const char* string, const unit_scale& units, const char* entity_kind,
                                       const std::string& name, const char* error_msg, const char* default_unit)
 {
-  char* ptr;
+  char* endptr;
   errno = 0;
-  double res   = strtod(string, &ptr);
+  double res      = strtod(string, &endptr);
+  const char* ptr = endptr; // for const-correctness
   if (errno == ERANGE)
     surf_parse_error(std::string("value out of range: ") + string);
   if (ptr == string)
@@ -188,7 +189,7 @@ double surf_parse_get_value_with_unit(const char* string, const unit_scale& unit
     // Ok, 0 can be unit-less
     if (res != 0 && not name.empty())
       XBT_WARN("Deprecated unit-less value '%s' for %s %s. %s", string, entity_kind, name.c_str(), error_msg);
-    ptr = (char*)default_unit;
+    ptr = default_unit;
   }
   auto u = units.find(ptr);
   if (u == units.end())

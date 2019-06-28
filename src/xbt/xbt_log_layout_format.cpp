@@ -184,7 +184,7 @@ xbt_log_layout_t xbt_log_layout_format_new(const char* arg)
   xbt_log_layout_t res = xbt_new0(s_xbt_log_layout_t, 1);
   res->do_layout       = &xbt_log_layout_format_doit;
   res->free_           = &xbt_log_layout_format_free;
-  res->data = xbt_strdup((char *) arg);
+  res->data            = xbt_strdup(arg);
 
   return res;
 }
