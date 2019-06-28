@@ -202,6 +202,8 @@ This time, we have all parts: once the program is compiled, we can
 execute it as follows. Note how the XBT_INFO() requests turned into
 informative messages.
 
+.. "WARNING: Over dedent has detected" is expected here as we remove the $ marker this way
+
 .. literalinclude:: ../../examples/s4u/app-masterworkers/s4u-app-masterworkers.tesh
    :language: shell
    :start-after: s4u-app-masterworkers-fun

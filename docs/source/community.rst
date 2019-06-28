@@ -22,7 +22,7 @@ to us and say hello! We love earing about how people use SimGrid.
  - For questions or remarks, drop us an email on the `user mailing
    list <mailto:simgrid-user@lists.gforge.inria.fr>`_ (to subscribe,
    visit the `web interface
-   <http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user>`_);
+   <http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user>`__);
    you can also check out `our archives
    <http://lists.gforge.inria.fr/pipermail/simgrid-user/>`_.  We
    prefer you to **not use private emails**. SimGrid is an open
@@ -31,7 +31,7 @@ to us and say hello! We love earing about how people use SimGrid.
    list.
  - Join us on IRC and ask your question directly on the channel \#simgrid at
    ``irc.debian.org``
-   (or use the ugly `web interface <https://webchat.oftc.net/?channels=%23simgrid>`_
+   (or use the ugly `web interface <https://webchat.oftc.net/?channels=%23simgrid>`__
    if you don't have a
    `real client <https://en.wikipedia.org/wiki/Comparison_of_Internet_Relay_Chat_clients>`_
    installed). When no non-french speaker are connected, we usually

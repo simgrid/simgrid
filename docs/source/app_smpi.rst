@@ -532,7 +532,7 @@ privatized the globals through static analysis of the source code. But
 our implementation was not robust enough to be used in production, so
 it was removed at some point. Currently, SMPI comes with two
 privatization mechanisms that you can :ref:`select at runtime
-<cfg=smpi/privatization>`_.  The dlopen approach is used by
+<cfg=smpi/privatization>`.  The dlopen approach is used by
 default as it is much faster and still very robust.  The mmap approach
 is an older approach that proves to be slower.
 
