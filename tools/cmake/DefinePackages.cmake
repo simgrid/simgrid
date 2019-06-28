@@ -881,7 +881,6 @@ set(DOC_SOURCES
 
   docs/ignored_symbols
   docs/source/application.rst
-  docs/source/app_java.rst
   docs/source/app_msg.rst
   docs/source/app_s4u.rst
   docs/source/app_smpi.rst

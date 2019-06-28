@@ -73,7 +73,6 @@ of every page. Bugs in the code should be reported
          The S4U Interface <app_s4u.rst>
          The SMPI Interface <app_smpi.rst>
          The MSG Interface <app_msg.rst>
-         The Java Bindings <app_java.rst>
       Describing the Simulated Platform <platform.rst>
          Modeling Hints <platform_howtos.rst>
          DTD Reference <platform_reference.rst>
