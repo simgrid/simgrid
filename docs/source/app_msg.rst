@@ -46,8 +46,8 @@ The basic workflow is the following:
 .. doxygenfunction:: MSG_main
 .. doxygenfunction:: MSG_set_function
 
-Process Management Functions
-============================
+Process Management
+==================
 
 This describes the process structure :cpp:type:`msg_process_t` and the functions for managing it.
 
@@ -88,10 +88,11 @@ This describes the process structure :cpp:type:`msg_process_t` and the functions
 .. doxygenfunction:: MSG_process_sleep
 .. doxygenfunction:: MSG_process_suspend
 .. doxygenfunction:: MSG_process_unref
+.. doxygenfunction:: MSG_process_userdata_init
 .. doxygenfunction:: MSG_process_yield
 
-Host Management Functions
-=========================
+Host Management
+===============
 
 .. doxygentypedef:: msg_host_t
 .. doxygenfunction:: MSG_host_by_name
@@ -103,6 +104,7 @@ Host Management Functions
 .. doxygenfunction:: MSG_host_get_mounted_storage_list
 .. doxygenfunction:: MSG_host_get_name
 .. doxygenfunction:: MSG_host_get_nb_pstates
+.. doxygenfunction:: MSG_host_get_load
 .. doxygenfunction:: MSG_host_get_power_peak_at
 .. doxygenfunction:: MSG_host_get_process_list
 .. doxygenfunction:: MSG_host_get_properties
@@ -119,8 +121,8 @@ Host Management Functions
 .. doxygenfunction:: MSG_host_set_property_value
 .. doxygenfunction:: MSG_host_set_pstate
 
-Task Management Functions
-=========================
+Task Management
+===============
 
 Task structure of MSG :cpp:type:`msg_task_t` and associated functions.
 
@@ -173,8 +175,8 @@ Task structure of MSG :cpp:type:`msg_task_t` and associated functions.
 .. doxygenfunction:: MSG_task_set_priority
 
 		   
-Mailbox Management Functions
-============================
+Mailbox Management
+==================
 
 .. doxygenfunction:: MSG_mailbox_set_async
 
@@ -192,8 +194,8 @@ Communications
 .. doxygenfunction:: MSG_comm_waitall
 .. doxygenfunction:: MSG_comm_waitany
 
-Explicit Synchronization Functions
-==================================
+Explicit Synchronization
+========================
 
 Explicit synchronization mechanisms: semaphores (:cpp:type:`msg_sem_t`) and friends.
 
@@ -244,8 +246,8 @@ processes.
 .. doxygenfunction:: MSG_vm_start
 .. doxygenfunction:: MSG_vm_suspend
 
-Storage Management Functions
-============================
+Storage Management
+==================
 Storage structure of MSG (:cpp:type:`msg_storage_t`) and associated functions, inspired from POSIX.
 
 .. doxygentypedef:: msg_storage_t
@@ -261,8 +263,8 @@ Storage structure of MSG (:cpp:type:`msg_storage_t`) and associated functions, i
 .. doxygenfunction:: MSG_storage_set_property_value
 .. doxygenfunction:: MSG_storage_write
 
-Zone Management Functions
-=========================
+NetZone Management
+==================
 Network Zone (:cpp:class:`msg_file_t`) and associated functions.
 
 .. doxygentypedef:: msg_netzone_t

@@ -468,6 +468,32 @@ s4u::Exec
    :protected-members:
    :undoc-members:
 
+.. _API_s4u_ExecSeq:
+
+============
+s4u::ExecSeq
+============
+
+.. doxygentypedef:: ExecSeqPtr
+
+.. doxygenclass:: simgrid::s4u::ExecSeq
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_ExecPar:
+
+============
+s4u::ExecPar
+============
+
+.. doxygentypedef:: ExecParPtr
+
+.. doxygenclass:: simgrid::s4u::ExecPar
+   :members:
+   :protected-members:
+   :undoc-members:
+
 .. _API_s4u_Host:
 
 =========
