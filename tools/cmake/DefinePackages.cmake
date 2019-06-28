@@ -887,8 +887,7 @@ set(DOC_SOURCES
   docs/source/app_smpi.rst
   docs/source/community.rst
   docs/source/index.rst
-  docs/source/intro_concepts.rst
-  docs/source/introduction.rst
+  docs/source/Introduction.rst
   docs/source/Installing_SimGrid.rst
   docs/source/Start_Your_Own_Project.rst
   docs/source/models.rst

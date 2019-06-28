@@ -406,6 +406,8 @@ Distributed Hash Tables (DHT)
     One of the most famous DHT protocol.
     |br| `examples/s4u/dht-chord/s4u-dht-chord.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/dht-chord/s4u-dht-chord.cpp>`_
 
+.. _s4u_ex_clouds:
+
 Simulating Clouds
 -----------------
 

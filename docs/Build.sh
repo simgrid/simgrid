@@ -2,6 +2,9 @@
 #
 # Simplistic script to rebuild our documentation with sphinx-build
 
+# Python needs to find simgrid on my machine, but not ctest -- sorry for the hack
+if [ -e /opt/simgrid ] ; then chmod +x /opt/simgrid; fi
+
 set -e
 
 if [ "x$1" != 'xdoxy' -a -e build/xml ] ; then
@@ -53,3 +56,6 @@ do
     fi
   fi
 done
+
+set +e
+if [ -e /opt/simgrid ] ; then chmod +x /opt/simgrid; fi
