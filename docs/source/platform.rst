@@ -7,6 +7,11 @@
    window.onload=function() { // Wait for the SVG to be loaded before changing it
      var elem=document.querySelector("#TOC").contentDocument.getElementById("PlatformBox")
      elem.style="opacity:0.93999999;fill:#ff0000;fill-opacity:0.1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1";
+
+     for (name of ["RoutingBox", "ProfileBox"]) {
+       var elem=document.querySelector("#TOC").contentDocument.getElementById(name)
+       elem.style="fill-opacity:0;opacity:0.93999999;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1";
+     }
    }
    </script>
    <br/>

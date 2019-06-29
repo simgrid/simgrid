@@ -15,7 +15,7 @@
    viewBox="0 0 210.6227 82.696243"
    version="1.1"
    id="SVGRoot"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    sodipodi:docname="graphical-toc.svg">
   <sodipodi:namedview
      id="base"
@@ -25,8 +25,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
-     inkscape:cx="196.07267"
-     inkscape:cy="183.99119"
+     inkscape:cx="312.89091"
+     inkscape:cy="188.31731"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -2300,20 +2300,57 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:groupmode="layer"
-     id="layer2"
-     inkscape:label="underlining" />
-  <g
      id="layer1"
      inkscape:groupmode="layer"
-     inkscape:label="Calque 1"
+     inkscape:label="Zones clicables"
      transform="translate(-2.308124,-62.995623)"
      style="display:inline">
+    <a
+       xlink:href="platform.html"
+       id="a2388"
+       style="fill:#ffffff;fill-opacity:1">
+      <rect
+         inkscape:label="#rect834-7"
+         ry="4.7955747"
+         y="63.333332"
+         x="60.854168"
+         height="38.364586"
+         width="56.88541"
+         id="PlatformBox"
+         style="display:inline;opacity:0.93999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.67500001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    </a>
+    <a
+       xlink:href="platform.html#performance-profiles-and-churn"
+       id="a6097"
+       style="fill:#ffffff;fill-opacity:1"
+       inkscape:label="ProfileLink">
+      <rect
+         inkscape:label="ProfileBox"
+         ry="0.87357658"
+         y="92.4375"
+         x="62.177086"
+         height="6.9886174"
+         width="54.239582"
+         id="ProfileBox"
+         style="display:inline;opacity:0.93999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458302px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="68.412704"
+         y="97.351173"
+         id="ProfileText"
+         inkscape:label="ProfileText"><tspan
+           sodipodi:role="line"
+           id="tspan1034"
+           x="68.412704"
+           y="97.351173"
+           style="font-size:4.93888903px;stroke-width:0.26458332px">Dynamic profiles</tspan></text>
+    </a>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111126px;line-height:7.14375019px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -2362,14 +2399,6 @@
          y="128.03876"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05555534px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px"
          id="tspan832" /></text>
-    <rect
-       style="opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.67500001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="rect834-7"
-       width="56.88541"
-       height="42.333332"
-       x="60.854168"
-       y="63.333332"
-       ry="5.2916679" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.3499999px;line-height:6.61458302px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -2394,7 +2423,7 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.46805573px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px">Reduction</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.67486387;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 120.85583,98.107143 v 7.559517 l 60.38375,1e-5 0,3.96875 3.96875,-7.74851 -3.96875,-8.126494 0,4.346736 z"
+       d="m 120.85583,98.107143 v 7.559517 l 60.38375,1e-5 v 3.96875 l 3.96875,-7.74851 -3.96875,-8.126494 v 4.346736 z"
        id="path885-2-0"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccccccc" />
@@ -6152,74 +6181,37 @@
          y="90.272514"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.17499995px;line-height:2.91041636px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px"
          id="tspan2707-0-8" /></text>
-    <g
-       id="g2521"
-       transform="translate(-2.9999912e-7,-7.9374984)">
-      <rect
-         inkscape:label="#rect1020"
-         ry="2.6458309"
-         y="89.791664"
-         x="63.5"
-         height="21.166662"
-         width="51.59375"
-         id="PlatformBox"
-         style="opacity:0.93999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
-      <text
-         id="text1028"
-         y="94.176186"
-         x="69.055466"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458302px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px"
-           y="94.176186"
-           x="69.055466"
-           id="tspan1026"
-           sodipodi:role="line">▸ Resources</tspan></text>
-      <text
-         id="text1032"
-         y="103.17203"
-         x="69.055466"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458302px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-size:4.93888903px;stroke-width:0.26458332px"
-           y="103.17203"
-           x="69.055466"
-           id="tspan1030"
-           sodipodi:role="line">▸ Routing  </tspan></text>
-      <text
-         id="text1036"
-         y="108.99284"
-         x="69.055466"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458302px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-size:4.93888903px;stroke-width:0.26458332px"
-           y="108.99284"
-           x="69.055466"
-           id="tspan1034"
-           sodipodi:role="line">▸ External Events</tspan></text>
-      <text
-         id="text1028-1-4-3-0"
-         y="97.87088"
-         x="73.476288"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.17499995px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px"
-           y="97.87088"
-           x="73.476288"
-           id="tspan1026-2-99-6-3"
-           sodipodi:role="line">(CPU, Links, Disks)</tspan></text>
-      <text
-         id="text1028-1-4-3-0-8"
-         y="102.87907"
-         x="93.981499"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.17499995px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px"
-           y="102.87907"
-           x="93.981499"
-           id="tspan1026-2-99-6-3-6"
-           sodipodi:role="line">(paths)</tspan></text>
-    </g>
+    <rect
+       style="display:inline;opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.35277781;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect834-7"
+       width="31.75"
+       height="10.583332"
+       x="62.177086"
+       y="80.53125"
+       ry="1.3229156"
+       inkscape:label="#rect1020" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458302px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="65.309364"
+       y="85.314552"
+       id="text1028"><tspan
+         sodipodi:role="line"
+         id="tspan1026"
+         x="65.309364"
+         y="85.314552"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px">Resources:</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="64.469971"
+       y="89.404213"
+       id="text1028-1-4-3-0"><tspan
+         sodipodi:role="line"
+         id="tspan1026-2-99-6-3"
+         x="64.469971"
+         y="89.404213"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.17499995px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px">CPU, Links, Disks</tspan></text>
     <a
        id="a6158"
        xlink:href="https://simgrid.org/contrib/R_visualization.html"
@@ -6234,95 +6226,94 @@
          x="181.23958"
          y="89.791664" />
     </a>
-    <g
-       id="g2841"
-       transform="translate(-2.8431311e-6,13.229176)">
-      <a
-         style="fill:#ffffff;fill-opacity:1"
-         xlink:href="https://framagit.org/simgrid/platform-calibration/"
-         id="a6161">
-        <rect
-           style="opacity:0.93999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-           id="rect1020-5-6-3"
-           width="31.75"
-           height="7.9375086"
-           x="83.34375"
-           y="121.54166"
-           ry="2.6458309" />
-      </a>
-      <a
-         xlink:href="scenario.html#configuring-simgrid"
-         id="a6149"
-         transform="translate(-0.52916667)">
-        <text
-           xml:space="preserve"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.29166698px;line-height:6.61458349px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           x="64.221893"
-           y="126.93988"
-           id="text1024-2-7"><tspan
-             sodipodi:role="line"
-             id="tspan1022-4-5"
-             x="64.221893"
-             y="126.93988"
-             style="font-size:5.29166698px;stroke-width:0.26458332px">Config </tspan><tspan
-             id="tspan2827"
-             sodipodi:role="line"
-             x="64.221893"
-             y="133.55446"
-             style="font-size:5.29166698px;stroke-width:0.26458332px" /></text>
-      </a>
-      <a
-         xlink:href="https://framagit.org/simgrid/platform-calibration/"
-         id="a6164">
-        <text
-           id="text1024-2-7-6"
-           y="126.93988"
-           x="84.122337"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.29166698px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           xml:space="preserve"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.29166698px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px"
-             y="126.93988"
-             x="84.122337"
-             id="tspan1022-4-5-7"
-             sodipodi:role="line">Calibration</tspan></text>
-      </a>
-      <a
-         xlink:href="deployment.html"
-         id="a6179">
-        <text
-           xml:space="preserve"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444447px;line-height:6.61458349px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           x="65.007576"
-           y="117.80719"
-           id="text1024-2"><tspan
-             sodipodi:role="line"
-             id="tspan1022-4"
-             x="65.007576"
-             y="117.80719"
-             style="fill:#000000;fill-opacity:1;stroke-width:0.26458332px">App Deployment</tspan></text>
-      </a>
+    <a
+       id="a6161"
+       xlink:href="https://framagit.org/simgrid/platform-calibration/"
+       style="fill:#ffffff;fill-opacity:1"
+       transform="translate(-2.8431311e-6,13.758343)">
       <rect
-         inkscape:label="#rect1020-5-9-7"
          ry="2.6458309"
          y="121.54166"
-         x="63.5"
+         x="83.34375"
          height="7.9375086"
-         width="18.520834"
-         id="ConfigBox"
-         style="display:inline;opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
-      <rect
-         inkscape:label="#rect1020-5-9-7"
-         ry="2.6458309"
-         y="112.28125"
-         x="63.5"
-         height="7.9374981"
-         width="51.59375"
-         id="Deployment"
-         style="display:inline;opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
-    </g>
+         width="31.75"
+         id="rect1020-5-6-3"
+         style="opacity:0.93999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    </a>
+    <a
+       xlink:href="Configuring_SimGrid.html"
+       transform="translate(-0.52916951,13.758343)"
+       id="a6149">
+      <text
+         id="text1024-2-7"
+         y="126.93988"
+         x="64.221893"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.29166698px;line-height:6.61458349px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           style="font-size:5.29166698px;stroke-width:0.26458332px"
+           y="126.93988"
+           x="64.221893"
+           id="tspan1022-4-5"
+           sodipodi:role="line">Config </tspan><tspan
+           style="font-size:5.29166698px;stroke-width:0.26458332px"
+           y="133.55446"
+           x="64.221893"
+           sodipodi:role="line"
+           id="tspan2827" /></text>
+    </a>
+    <a
+       id="a6164"
+       xlink:href="https://framagit.org/simgrid/platform-calibration/"
+       transform="translate(-2.8431311e-6,13.758343)">
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.29166698px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="84.122337"
+         y="126.93988"
+         id="text1024-2-7-6"><tspan
+           sodipodi:role="line"
+           id="tspan1022-4-5-7"
+           x="84.122337"
+           y="126.93988"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.29166698px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px">Calibration</tspan></text>
+    </a>
+    <a
+       xlink:href="deployment.html"
+       id="a6179"
+       transform="translate(-2.8431311e-6,13.758343)">
+      <text
+         id="text1024-2"
+         y="117.80719"
+         x="65.007576"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444447px;line-height:6.61458349px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           style="fill:#000000;fill-opacity:1;stroke-width:0.26458332px"
+           y="117.80719"
+           x="65.007576"
+           id="tspan1022-4"
+           sodipodi:role="line">App Deployment</tspan></text>
+    </a>
+    <rect
+       style="display:inline;opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="ConfigBox"
+       width="18.520834"
+       height="7.9375086"
+       x="63.499996"
+       y="135.29999"
+       ry="2.6458309"
+       inkscape:label="#rect1020-5-9-7" />
+    <rect
+       style="display:inline;opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="DeploymentBox"
+       width="51.59375"
+       height="7.9374981"
+       x="63.499996"
+       y="126.0396"
+       ry="2.6458309"
+       inkscape:label="#rect1020-5-9-7" />
     <path
        style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.67486387;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 120.85583,114.92707 v 7.55951 l 60.38375,1e-5 0,4.34674 3.96875,-8.1265 -3.96875,-7.7485 0,3.96875 z"
+       d="m 120.85583,114.92707 v 7.55951 l 60.38375,1e-5 v 4.34674 l 3.96875,-8.1265 -3.96875,-7.7485 v 3.96875 z"
        id="path885-2-0-3"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccccccc" />
@@ -6336,7 +6327,7 @@
        ry="5.2916684" />
     <g
        id="g982"
-       transform="translate(-2.2622938,4.2333338)">
+       transform="translate(-2.2622938,3.1750004)">
       <circle
          r="5.953125"
          cy="102.47958"
@@ -6441,6 +6432,45 @@
          y="140.32338"
          style="line-height:4.4979167px;text-align:start;text-anchor:start;fill:#0a3455;fill-opacity:1;stroke-width:0.26458332px"
          id="tspan4614">Manual</tspan></text>
+    <a
+       xlink:href="platform.html#defining-a-routing"
+       inkscape:label="PlatfRoutingLink"
+       id="a6094"
+       style="display:inline;fill:#ffffff;fill-opacity:1">
+      <rect
+         inkscape:label="RoutingBox"
+         ry="1.3229153"
+         y="80.53125"
+         x="95.250008"
+         height="10.58333"
+         width="21.16667"
+         id="RoutingBox"
+         style="display:inline;opacity:0.93999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.35277775;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458302px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="96.337799"
+       y="85.314552"
+       id="text1032"
+       inkscape:label="RoutingText1"><tspan
+         sodipodi:role="line"
+         id="tspan1030"
+         x="96.337799"
+         y="85.314552"
+         style="font-size:4.93888903px;stroke-width:0.26458332px">Routing</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="99.324783"
+       y="89.863449"
+       id="text1028-1-4-3-0-8"
+       inkscape:label="RoutingText2"><tspan
+         sodipodi:role="line"
+         id="tspan1026-2-99-6-3-6"
+         x="99.324783"
+         y="89.863449"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.58611107px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px">paths</tspan></text>
+    </a>
   </g>
   <g
      inkscape:groupmode="layer"
