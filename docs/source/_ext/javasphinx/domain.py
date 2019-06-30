@@ -22,7 +22,7 @@ from docutils.parsers.rst import Directive, directives
 
 from sphinx import addnodes, version_info
 from sphinx.roles import XRefRole
-from sphinx.locale import l_, _
+from sphinx.locale import _
 from sphinx.domains import Domain, ObjType
 from sphinx.directives import ObjectDescription
 from sphinx.util.nodes import make_refnode
@@ -202,12 +202,12 @@ class JavaObject(ObjectDescription):
 
 class JavaMethod(JavaObject):
     doc_field_types = [
-        TypedField('parameter', label=l_('Parameters'),
+        TypedField('parameter', label=_('Parameters'),
                    names=('param', 'parameter', 'arg', 'argument'),
                    typerolename='type', typenames=('type',)),
-        Field('returnvalue', label=l_('Returns'), has_arg=False,
+        Field('returnvalue', label=_('Returns'), has_arg=False,
               names=('returns', 'return')),
-        GroupedField('throws', names=('throws',), label=l_('Throws'), rolename='type')
+        GroupedField('throws', names=('throws',), label=_('Throws'), rolename='type')
     ]
 
     def handle_method_signature(self, sig, signode):
@@ -254,10 +254,10 @@ class JavaMethod(JavaObject):
 
 class JavaConstructor(JavaObject):
     doc_field_types = [
-        TypedField('parameter', label=l_('Parameters'),
+        TypedField('parameter', label=_('Parameters'),
                    names=('param', 'parameter', 'arg', 'argument'),
                    typerolename='type', typenames=('type',)),
-        GroupedField('throws', names=('throws',), label=l_('Throws'))
+        GroupedField('throws', names=('throws',), label=_('Throws'))
     ]
 
     def handle_constructor_signature(self, sig, signode):
@@ -294,7 +294,7 @@ class JavaConstructor(JavaObject):
 
 class JavaType(JavaObject):
     doc_field_types = [
-        GroupedField('parameter', names=('param',), label=l_('Parameters'))
+        GroupedField('parameter', names=('param',), label=_('Parameters'))
     ]
 
     declaration_type = None
@@ -488,11 +488,11 @@ class JavaDomain(Domain):
     label = 'Java'
 
     object_types = {
-        'package':     ObjType(l_('package'), 'package', 'ref'),
-        'type':        ObjType(l_('type'), 'type', 'ref'),
-        'field':       ObjType(l_('field'), 'field', 'ref'),
-        'constructor': ObjType(l_('constructor'), 'construct', 'ref'),
-        'method':      ObjType(l_('method'), 'meth', 'ref')
+        'package':     ObjType(_('package'), 'package', 'ref'),
+        'type':        ObjType(_('type'), 'type', 'ref'),
+        'field':       ObjType(_('field'), 'field', 'ref'),
+        'constructor': ObjType(_('constructor'), 'construct', 'ref'),
+        'method':      ObjType(_('method'), 'meth', 'ref')
     }
 
     directives = {
