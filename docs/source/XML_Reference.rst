@@ -3,7 +3,7 @@
    <object id="TOC" data="graphical-toc.svg" width="100%" type="image/svg+xml"></object>
    <script>
    window.onload=function() { // Wait for the SVG to be loaded before changing it
-     var elem=document.querySelector("#TOC").contentDocument.getElementById("PlatformBox")
+     var elem=document.querySelector("#TOC").contentDocument.getElementById("ReferenceBox")
      elem.style="opacity:0.93999999;fill:#ff0000;fill-opacity:0.1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1";
    }
    </script>
@@ -12,8 +12,8 @@
 
 .. _platform_reference:
 
-DTD Reference
-*************
+Complete XML Reference
+**********************
 
 Your platform description should follow the specification presented in the
 `simgrid.dtd <https://simgrid.org/simgrid.dtd>`_ DTD file. The same DTD is used for both platform and deployment files.

@@ -74,8 +74,9 @@ of every page. Bugs in the code should be reported
          The SMPI Interface <app_smpi.rst>
          The MSG Interface <app_msg.rst>
       Describing the Simulated Platform <platform.rst>
+         Examples <Platform_Examples.rst>
          Modeling Hints <platform_howtos.rst>
-         DTD Reference <platform_reference.rst>
+         XML Reference <XML_Reference.rst>
       Describing the Experimental Scenario <Experimental_Setup.rst>
          Configuring SimGrid <Configuring_SimGrid.rst>
       The SimGrid Models <models.rst>

@@ -3,13 +3,18 @@
 Main Concepts
 =============
 
-Typical Study based on SimGrid
-------------------------------
 
 .. raw:: html
 
    <object data="graphical-toc.svg" width="100%" type="image/svg+xml"></object>
+   <br/>
+   <br/>
 
+Introduction
+============
+
+Typical Study based on SimGrid
+------------------------------
 
 Any SimGrid study entails the following components:
 

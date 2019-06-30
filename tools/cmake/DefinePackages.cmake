@@ -896,7 +896,8 @@ set(DOC_SOURCES
   docs/source/outcomes.rst
   docs/source/platform.rst
   docs/source/platform_howtos.rst
-  docs/source/platform_reference.rst
+  docs/source/Platform_Examples.rst
+  docs/source/XML_Reference.rst
 
   docs/source/Tutorial_Algorithms.rst
   docs/source/tuto_s4u/deployment1.xml
