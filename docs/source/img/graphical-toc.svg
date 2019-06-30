@@ -25,8 +25,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.8"
-     inkscape:cx="260.34874"
-     inkscape:cy="201.73977"
+     inkscape:cx="221.05408"
+     inkscape:cy="26.288995"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -45,7 +45,7 @@
     <inkscape:grid
        type="xygrid"
        id="grid924"
-       visible="true"
+       visible="false"
        originx="-2.3081243"
        originy="-2.3081328" />
   </sodipodi:namedview>
@@ -2300,7 +2300,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -2312,15 +2312,15 @@
      style="display:inline">
     <a
        xlink:href="platform.html"
-       inkscape:label="PlatformLink"
+       style="fill:#ffffff;fill-opacity:1"
        id="a2388"
-       style="fill:#ffffff;fill-opacity:1">
+       inkscape:label="PlatformLink">
       <rect
          inkscape:label="PlatformBox"
-         ry="4.7955747"
+         ry="4.9609389"
          y="63.333332"
          x="60.854168"
-         height="38.364586"
+         height="39.6875"
          width="56.88541"
          id="PlatformBox"
          style="display:inline;opacity:0.93999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.67500001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
@@ -2344,9 +2344,10 @@
     </a>
     <a
        xlink:href="platform.html#performance-profiles-and-churn"
-       id="a6097"
+       transform="translate(0,0.52916663)"
+       inkscape:label="ProfileLink"
        style="fill:#ffffff;fill-opacity:1"
-       inkscape:label="ProfileLink">
+       id="a6097">
       <rect
          inkscape:label="ProfileBox"
          ry="0.87357658"
@@ -2369,23 +2370,37 @@
            y="97.351173"
            style="font-size:4.93888903px;stroke-width:0.26458332px">Dynamic profiles</tspan></text>
     </a>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111126px;line-height:7.14375019px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="88.616463"
-       y="116.2941"
-       id="text818"
-       inkscape:label="SetupText"><tspan
-         sodipodi:role="line"
-         id="tspan816"
+    <a
+       xlink:href="Experimental_Setup.html"
+       inkscape:label="XPSetupLink"
+       id="a6081">
+      <rect
+         inkscape:label="XPSetupBox"
+         ry="5.2916684"
+         y="108.3125"
+         x="60.854168"
+         height="37.041664"
+         width="56.885418"
+         id="XPSetupBox"
+         style="display:inline;opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.67500001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111126px;line-height:7.14375019px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          x="88.616463"
          y="116.2941"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111126px;line-height:7.14375019px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:center;text-anchor:middle;stroke-width:0.26458332px">Experimental</tspan><tspan
-         sodipodi:role="line"
-         x="88.616463"
-         y="123.43785"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111126px;line-height:7.14375019px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:center;text-anchor:middle;stroke-width:0.26458332px"
-         id="tspan820">Setup</tspan></text>
+         id="text818"
+         inkscape:label="XPSetupText"><tspan
+           sodipodi:role="line"
+           id="tspan816"
+           x="88.616463"
+           y="116.2941"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111126px;line-height:7.14375019px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:center;text-anchor:middle;stroke-width:0.26458332px">Experimental</tspan><tspan
+           sodipodi:role="line"
+           x="88.616463"
+           y="123.43785"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111126px;line-height:7.14375019px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:center;text-anchor:middle;stroke-width:0.26458332px"
+           id="tspan820">Setup</tspan></text>
+    </a>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111126px;line-height:6.61458302px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -2451,19 +2466,10 @@
          x="151.19989"
          y="129.10596"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.46805573px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px">Reduction</tspan></text>
-    <rect
-       style="opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="ApplicationBox"
-       width="50.270832"
-       height="26.458334"
-       x="5.2916665"
-       y="81.854164"
-       ry="2.6458309"
-       inkscape:label="#rect1020-7" />
     <a
        xlink:href="application.html"
-       inkscape:label="AppLink"
-       id="a6242">
+       id="a6242"
+       inkscape:label="ApplicationLink">
       <rect
          rx="3.9687512"
          ry="5.2916679"
@@ -2471,98 +2477,34 @@
          x="2.6458333"
          height="47.625"
          width="55.5625"
-         id="rect834"
+         id="ApplicationBox"
          style="opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.67541802;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-         inkscape:label="AppBox" />
+         inkscape:label="ApplicationBox" />
+      <text
+         id="text1018"
+         y="78.263397"
+         x="30.003435"
+         style="font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444447px;line-height:6.61458302px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Oblique';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#d40000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"
+         inkscape:label="ApplicationText2"><tspan
+           style="font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Oblique';text-align:center;text-anchor:middle;fill:#d40000;stroke-width:0.26458332px"
+           y="78.263397"
+           x="30.003435"
+           id="tspan1016"
+           sodipodi:role="line">(what you test)</tspan></text>
       <text
          id="text814"
          y="71.701172"
          x="8.285965"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111126px;line-height:6.61458302px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          xml:space="preserve"
-         inkscape:label="AppText1"><tspan
+         inkscape:label="ApplicationText1"><tspan
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111126px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px"
            y="71.701172"
            x="8.285965"
            id="tspan812"
            sodipodi:role="line">Application</tspan></text>
     </a>
-    <a
-       xlink:href="application.html"
-       id="a6245">
-      <text
-         id="text1018"
-         y="78.263397"
-         x="30.003435"
-         style="font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444447px;line-height:6.61458302px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Oblique';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#d40000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Oblique';text-align:center;text-anchor:middle;fill:#d40000;stroke-width:0.26458332px"
-           y="78.263397"
-           x="30.003435"
-           id="tspan1016"
-           sodipodi:role="line">(what you test)</tspan></text>
-    </a>
-    <a
-       xlink:href="app_s4u.html"
-       inkscape:label="ActorLink"
-       id="a6253">
-      <text
-         inkscape:label="ActorText"
-         id="Actors"
-         y="87.184937"
-         x="6.6014075"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px"
-           y="87.184937"
-           x="6.6014075"
-           id="tspan1026-3"
-           sodipodi:role="line">▸ Abstract Actors</tspan></text>
-      <rect
-         style="display:inline;opacity:1;vector-effect:none;fill:none;fill-opacity:1;stroke:none;stroke-width:0.52899998;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-         id="S4UBox"
-         width="50.270832"
-         height="7.9375029"
-         x="5.2916665"
-         y="81.854164"
-         inkscape:label="ActorBox" />
-    </a>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;opacity:0.93000034;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="6.6014075"
-       y="93.328972"
-       id="text1028-9-6"
-       inkscape:label="MPI Text"><tspan
-         sodipodi:role="line"
-         id="tspan1026-3-0"
-         x="6.6014075"
-         y="93.328972"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px">▸ MPI Legacy Code</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;opacity:0.93000034;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="6.6014075"
-       y="99.473015"
-       id="text1028-9-6-2"
-       inkscape:label="OfflineText"><tspan
-         sodipodi:role="line"
-         id="tspan1026-3-0-6"
-         x="6.6014075"
-         y="99.473015"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px">▸ Offline Traces</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;opacity:0.93000034;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="6.6014075"
-       y="105.61705"
-       id="text1028-9-6-2-1"
-       inkscape:label="CentralizedText"><tspan
-         sodipodi:role="line"
-         id="tspan1026-3-0-6-0"
-         x="6.6014075"
-         y="105.61705"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px">▸ Centralized Algo</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:6.61458349px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -2639,7 +2581,8 @@
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:6.61458349px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        x="151.79578"
        y="133.68773"
-       id="text1028-1-5"><tspan
+       id="text1028-1-5"
+       inkscape:label="DPOR"><tspan
          sodipodi:role="line"
          id="tspan1026-2-9"
          x="151.79578"
@@ -5656,7 +5599,8 @@
     </g>
     <g
        id="g34108"
-       transform="matrix(0.0830545,0,0,-0.0830545,77.484414,170.53818)" />
+       transform="matrix(0.0830545,0,0,-0.0830545,77.484414,170.53818)"
+       inkscape:label="g34108" />
     <g
        id="g34354"
        transform="matrix(0.0830545,0,0,-0.0830545,77.484414,170.53818)">
@@ -6256,13 +6200,13 @@
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.29166698px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px">Calibration</tspan></text>
     </a>
     <a
-       xlink:href="scenario.html#configuring-simgrid"
-       transform="translate(-0.52916951,13.758343)"
-       id="a6149"
+       xlink:href="Configuring_SimGrid.html"
+       style="display:inline"
        inkscape:label="ConfigLink"
-       style="display:inline">
+       id="a6149"
+       transform="translate(-0.52916951,14.28751)">
       <rect
-         style="display:inline;opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         style="display:inline;opacity:0.93999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
          id="ConfigBox"
          width="18.520834"
          height="7.9375086"
@@ -6290,11 +6234,11 @@
     </a>
     <a
        xlink:href="deployment.html"
-       id="a6179"
+       inkscape:label="DeployLink"
        transform="translate(-2.8431311e-6,13.758343)"
-       inkscape:label="DeployLink">
+       id="a6179">
       <rect
-         style="display:inline;opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         style="display:inline;opacity:0.93999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
          id="DeployBox"
          width="51.59375"
          height="7.9374981"
@@ -6318,41 +6262,10 @@
     <path
        style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.67486387;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 120.85583,114.92707 v 7.55951 l 60.38375,1e-5 v 4.34674 l 3.96875,-8.1265 -3.96875,-7.7485 v 3.96875 z"
-       id="path885-2-0-3"
+       id="ModelCheckBox"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccccccc"
        inkscape:label="ModelCheckBox" />
-    <rect
-       style="display:inline;opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.67500001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="rect834-7-6"
-       width="56.885418"
-       height="37.041664"
-       x="60.854168"
-       y="108.3125"
-       ry="5.2916684"
-       inkscape:label="SetupBox" />
-    <g
-       id="g982"
-       transform="translate(-2.2622938,3.1750004)"
-       inkscape:label="CenterPlus">
-      <circle
-         r="5.953125"
-         cy="102.47958"
-         cx="61.903095"
-         id="path977"
-         style="opacity:0.93999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
-      <text
-         id="text853"
-         y="106.90308"
-         x="55.99131"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.3499999px;line-height:6.61458302px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-size:14.11111069px;stroke-width:0.26458332px"
-           y="106.90308"
-           x="55.99131"
-           id="tspan851"
-           sodipodi:role="line">+</tspan></text>
-    </g>
     <g
        id="g4608"
        transform="matrix(0.42986539,0,0,0.42986539,-4.7757413,41.585473)"
@@ -6443,9 +6356,9 @@
          id="tspan4614">Manual</tspan></text>
     <a
        xlink:href="platform.html#defining-a-routing"
-       inkscape:label="PlatfRoutingLink"
+       style="display:inline;fill:#ffffff;fill-opacity:1"
        id="a6094"
-       style="display:inline;fill:#ffffff;fill-opacity:1">
+       inkscape:label="PlatfRoutingLink">
       <rect
          inkscape:label="RoutingBox"
          ry="1.3229153"
@@ -6480,5 +6393,126 @@
            y="89.863449"
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.58611107px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px">paths</tspan></text>
     </a>
+    <a
+       xlink:href="app_s4u.html"
+       transform="translate(-56.885422,12.69999)"
+       id="a6097-3-3"
+       style="display:inline;fill:#ffffff;fill-opacity:1"
+       inkscape:label="ActorLink">
+      <rect
+         inkscape:label="ActorBox"
+         ry="0.87357658"
+         y="68.625"
+         x="62.177086"
+         height="6.9886174"
+         width="50.270832"
+         id="ActorBox"
+         style="display:inline;opacity:0.93999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458302px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="68.460075"
+         y="73.960541"
+         id="ProfileText-7-6"
+         inkscape:label="ActorText"><tspan
+           sodipodi:role="line"
+           id="tspan1034-5-2"
+           x="68.460075"
+           y="73.960541"
+           style="font-size:4.93888903px;stroke-width:0.26458332px">Abstract Actors</tspan><tspan
+           sodipodi:role="line"
+           x="68.460075"
+           y="80.575127"
+           style="font-size:4.93888903px;stroke-width:0.26458332px"
+           id="tspan2316-9" /></text>
+    </a>
+    <a
+       inkscape:label="OfflineTraceLink"
+       style="display:inline;fill:#ffffff;fill-opacity:1"
+       id="a6097-3-1"
+       transform="translate(-56.885422,31.905132)"
+       xlink:href="">
+      <rect
+         inkscape:label="OfflineTraceBox"
+         ry="0.87357658"
+         y="68.625"
+         x="62.177086"
+         height="6.9886174"
+         width="50.270832"
+         id="OfflineTraceBox"
+         style="display:inline;opacity:0.93999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458302px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="70.530411"
+         y="73.960541"
+         id="ProfileText-7-7"
+         inkscape:label="OfflineTraceText"><tspan
+           sodipodi:role="line"
+           id="tspan1034-5-0"
+           x="70.530411"
+           y="73.960541"
+           style="font-size:4.93888903px;stroke-width:0.26458332px">Offline Traces</tspan><tspan
+           sodipodi:role="line"
+           x="70.530411"
+           y="80.575127"
+           style="font-size:4.93888903px;stroke-width:0.26458332px"
+           id="tspan2316-93" /></text>
+    </a>
+    <a
+       xlink:href="app_smpi.html"
+       transform="translate(-56.885424,22.302561)"
+       id="a6097-3-6"
+       style="display:inline;fill:#ffffff;fill-opacity:1"
+       inkscape:label="MPI Link">
+      <rect
+         inkscape:label="SMPIBox"
+         ry="0.87357658"
+         y="68.625"
+         x="62.177086"
+         height="6.9886174"
+         width="50.270832"
+         id="SMPIBox"
+         style="display:inline;opacity:0.93999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458302px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="66.196823"
+         y="73.481842"
+         id="ProfileText-7-62"
+         inkscape:label="MPI Text"><tspan
+           sodipodi:role="line"
+           id="tspan1034-5-6"
+           x="66.196823"
+           y="73.481842"
+           style="font-size:4.93888903px;stroke-width:0.26458332px">MPI Legacy Code</tspan><tspan
+           sodipodi:role="line"
+           x="66.196823"
+           y="80.096428"
+           style="font-size:4.93888903px;stroke-width:0.26458332px"
+           id="tspan2316-1" /></text>
+    </a>
+    <g
+       id="g982"
+       transform="translate(-2.2622938,3.1750004)"
+       inkscape:label="CenterPlus">
+      <circle
+         r="5.953125"
+         cy="102.47958"
+         cx="61.903095"
+         id="path977"
+         style="opacity:0.93999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <text
+         id="text853"
+         y="106.90308"
+         x="55.99131"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.3499999px;line-height:6.61458302px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           style="font-size:14.11111069px;stroke-width:0.26458332px"
+           y="106.90308"
+           x="55.99131"
+           id="tspan851"
+           sodipodi:role="line">+</tspan></text>
+    </g>
   </g>
 </svg>

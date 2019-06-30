@@ -885,6 +885,8 @@ set(DOC_SOURCES
   docs/source/app_s4u.rst
   docs/source/app_smpi.rst
   docs/source/community.rst
+  docs/source/Configuring_SimGrid.rst
+  docs/source/Experimental_Setup.rst
   docs/source/index.rst
   docs/source/Introduction.rst
   docs/source/Installing_SimGrid.rst
@@ -895,8 +897,6 @@ set(DOC_SOURCES
   docs/source/platform.rst
   docs/source/platform_howtos.rst
   docs/source/platform_reference.rst
-  docs/source/Configuring_SimGrid.rst
-  docs/source/scenario.rst
 
   docs/source/Tutorial_Algorithms.rst
   docs/source/tuto_s4u/deployment1.xml

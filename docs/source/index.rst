@@ -76,7 +76,7 @@ of every page. Bugs in the code should be reported
       Describing the Simulated Platform <platform.rst>
          Modeling Hints <platform_howtos.rst>
          DTD Reference <platform_reference.rst>
-      Describing the Experimental Scenario <scenario.rst>
+      Describing the Experimental Scenario <Experimental_Setup.rst>
          Configuring SimGrid <Configuring_SimGrid.rst>
       The SimGrid Models <models.rst>
          ns-3 as a SimGrid model <ns3.rst>
