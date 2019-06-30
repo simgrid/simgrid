@@ -31,10 +31,10 @@ on Linux, Mac OSX or Windows (using the WSL).
 
 SimGrid is a Free Software distributed under the LGPL-2.1 license. You are
 welcome to use, study, share and improve it, provided that your version are as
-free as ours. SimGrid is developed by a vivid community of users and developers.
-We hope that you will come and join us! SimGrid is the result of almost 20 years
-of research from several groups, both in France and in the U.S.A. It benefited
-of many funding from various research bodies.
+free as ours. SimGrid is developed since 20 years by a vivid community of users
+and researchers from several groups, initially in France and in the U.S.A. It
+benefited of many funding from various research bodies. We hope that you will
+come and join us!
 
 SimGrid is a powerful tool, and this documentation will help you taking the best
 of it. Check its contents on the left. Each tutorial presents a classical use
@@ -77,7 +77,7 @@ of every page. Bugs in the code should be reported
          Examples <Platform_Examples.rst>
          Modeling Hints <platform_howtos.rst>
          XML Reference <XML_Reference.rst>
-      Describing the Experimental Scenario <Experimental_Setup.rst>
+      Describing the Experimental Setup <Experimental_Setup.rst>
          Configuring SimGrid <Configuring_SimGrid.rst>
       The SimGrid Models <models.rst>
          ns-3 as a SimGrid model <ns3.rst>
