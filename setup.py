@@ -82,9 +82,9 @@ setup(
                       "large-scale distributed systems such as Grids, Clouds, HPC or P2P "
                       "systems. It can be used to evaluate heuristics, prototype applications "
                       "or even assess legacy MPI applications.\n\n"
-                      "This package contains a native library. Please install cmake boost and a "
-                      "C++ compiler before using pip. On Debian/Ubuntu, this is as easy as\n"                      
-                      "sudo apt install g++ gcc cmake libboost-all-dev"),
+                      "This package contains a native library. Please install cmake, boost, pybind11 and a "
+                      "C++ compiler before using pip3. On Debian/Ubuntu, this is as easy as\n"
+                      "sudo apt install cmake libboost-dev pybind11-dev g++ gcc"),
     ext_modules=[CMakeExtension('simgrid')],
     cmdclass=dict(build_ext=CMakeBuild),
     install_requires=['pybind11>=2.3'],
