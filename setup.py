@@ -30,13 +30,16 @@ class CMakeBuild(build_ext):
         try:
             out = subprocess.check_output(['cmake', '--version'])
         except OSError:
-            raise RuntimeError("CMake must be installed to build python bindings of SimGrid")
-        
+            raise RuntimeError(
+                "CMake must be installed to build python bindings of SimGrid")
+
         if not os.path.exists("MANIFEST.in"):
-            raise RuntimeError("Please generate a MANIFEST.in file (configure simgrid, and copy it here if you build out of tree)")
+            raise RuntimeError(
+                "Please generate a MANIFEST.in file (configure simgrid, and copy it here if you build out of tree)")
 
         if platform.system() == "Windows":
-            cmake_version = LooseVersion(re.search(r'version\s*([\d.]+)', out.decode()).group(1))
+            cmake_version = LooseVersion(
+                re.search(r'version\s*([\d.]+)', out.decode()).group(1))
             if cmake_version < '3.1.0':
                 raise RuntimeError("CMake >= 3.1.0 is required on Windows")
 
@@ -44,7 +47,8 @@ class CMakeBuild(build_ext):
             self.build_extension(ext)
 
     def build_extension(self, ext):
-        extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+        extdir = os.path.abspath(os.path.dirname(
+            self.get_ext_fullpath(ext.name)))
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable,
                       '-Denable_smpi=OFF',
@@ -56,7 +60,8 @@ class CMakeBuild(build_ext):
         build_args = ['--config', cfg]
 
         if platform.system() == "Windows":
-            cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir)]
+            cmake_args += [
+                '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir)]
             if sys.maxsize > 2**32:
                 cmake_args += ['-A', 'x64']
             build_args += ['--', '/m']
@@ -69,8 +74,11 @@ class CMakeBuild(build_ext):
                                                               self.distribution.get_version())
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
-        subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
-        subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
+        subprocess.check_call(['cmake', ext.sourcedir] +
+                              cmake_args, cwd=self.build_temp, env=env)
+        subprocess.check_call(['cmake', '--build', '.'] +
+                              build_args, cwd=self.build_temp)
+
 
 setup(
     name='simgrid',
@@ -91,28 +99,28 @@ setup(
     setup_requires=['pybind11>=2.3'],
     zip_safe=False,
     classifiers=[
-      "Development Status :: 4 - Beta",
-      "Environment :: Console",
-      "Intended Audience :: Education",
-      "Intended Audience :: Developers",
-      "Intended Audience :: Science/Research",
-      "Intended Audience :: System Administrators",
-      "License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)",
-      "Operating System :: POSIX",
-      "Operating System :: MacOS",
-      "Operating System :: Microsoft :: Windows",
-      "Programming Language :: Python :: 3",
-      "Programming Language :: C++",
-      "Programming Language :: C",
-      "Programming Language :: Fortran",
-      "Programming Language :: Java",
-      "Topic :: System :: Distributed Computing",
-      "Topic :: System :: Systems Administration",
+        "Development Status :: 4 - Beta",
+        "Environment :: Console",
+        "Intended Audience :: Education",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Science/Research",
+        "Intended Audience :: System Administrators",
+        "License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)",
+        "Operating System :: POSIX",
+        "Operating System :: MacOS",
+        "Operating System :: Microsoft :: Windows",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: C++",
+        "Programming Language :: C",
+        "Programming Language :: Fortran",
+        "Programming Language :: Java",
+        "Topic :: System :: Distributed Computing",
+        "Topic :: System :: Systems Administration",
     ],
     url="https://simgrid.org",
     project_urls={
-      'Tracker': 'https://framagit.org/simgrid/simgrid/issues/',
-      'Source':  'https://framagit.org/simgrid/simgrid/',
-      'Documentation': 'https://simgrid.org/doc/latest/',
+        'Tracker': 'https://framagit.org/simgrid/simgrid/issues/',
+        'Source':  'https://framagit.org/simgrid/simgrid/',
+        'Documentation': 'https://simgrid.org/doc/latest/',
     },
 )
