@@ -57,5 +57,14 @@ do
   fi
 done
 
-set +e
-if [ -e /opt/simgrid ] ; then chmod +x /opt/simgrid; fi
+if [ -e /opt/simgrid ] ; then chmod -x /opt/simgrid; fi
+
+if [ -e /usr/bin/linkchecker ] ; then
+  linkchecker --no-status -o csv --ignore-url='.*\.css$' --ignore-url=public/java/org build/html \
+     | grep -v '^#' \
+     | grep -v 'urlname;parentname;baseref;result;warningstring'
+  echo "done."
+else
+  echo "Install linkchecker to have it executed when you build the doc."
+fi
+
