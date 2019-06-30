@@ -14,9 +14,8 @@ pages:
   - LC_ALL=C.UTF-8 ./Build.sh
   - mv build/html ../public
   # - The CSS contains a reference to a font or something, not something we gonna fix on our side
-  # - The javasphinx output does not exist in the git, so the "open on GitLab" link is broken.
+  # - The javasphinx output does not exist in the git, so the "edit on FramaGit" link is broken.
   #   I'd like to report this as a bug, but javasphinx seems abandonned upstream.
-  # - public/search.html and public/genindex.html are also generated.
   - linkchecker --ignore-url='.*\.css$' --ignore-url=public/java/org ../public
   # From time to time, we should check external links with the
   # following, but it has a lot of false positive

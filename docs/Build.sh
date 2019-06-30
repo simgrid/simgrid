@@ -59,6 +59,7 @@ done
 
 if [ -e /opt/simgrid ] ; then chmod -x /opt/simgrid; fi
 
+set +e # Don't fail
 if [ -e /usr/bin/linkchecker ] ; then
   linkchecker --no-status -o csv --ignore-url='.*\.css$' --ignore-url=public/java/org build/html \
      | grep -v '^#' \
