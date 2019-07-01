@@ -691,8 +691,7 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t* task, const char* name, double rat
  *
  * @param alias the name of the mailbox to be considered
  *
- * @return Returns the PID of sender process,
- * -1 if there is no communication in the mailbox.#include <cmath>
+ * @return Returns the PID of sender process (or -1 if there is no communication in the mailbox)
  *
  */
 int MSG_task_listen_from(const char* alias)
