@@ -92,6 +92,15 @@
 #  endif
 #endif
 
+/* Stringify argument. */
+#define _XBT_STRINGIFY(a) #a
+
+/* Concatenate arguments. _XBT_CONCAT2 adds a level of indirection over _XBT_CONCAT. */
+#define _XBT_CONCAT(a, b) a##b
+#define _XBT_CONCAT2(a, b) _XBT_CONCAT(a, b)
+#define _XBT_CONCAT3(a, b, c) _XBT_CONCAT2(_XBT_CONCAT(a, b), c)
+#define _XBT_CONCAT4(a, b, c, d) _XBT_CONCAT2(_XBT_CONCAT3(a, b, c), d)
+
 /*
  * Expands to `one' if there is only one argument for the variadic part.
  * Otherwise, expands to `more'.

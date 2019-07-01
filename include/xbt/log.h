@@ -84,10 +84,8 @@ typedef enum {
 #endif                          /* !defined(NLOG) */
 
 /* Transforms a category name to a global variable name. */
-#define _XBT_LOGV(cat) _XBT_LOG_CONCAT(_simgrid_log_category__, cat)
-#define _XBT_LOGV_CTOR(cat) _XBT_LOG_CONCAT2(_XBT_LOGV(cat), __constructor__)
-#define _XBT_LOG_CONCAT(x, y) x ## y
-#define _XBT_LOG_CONCAT2(x, y) _XBT_LOG_CONCAT(x, y)
+#define _XBT_LOGV(cat) _XBT_CONCAT(_simgrid_log_category__, cat)
+#define _XBT_LOGV_CTOR(cat) _XBT_CONCAT2(_XBT_LOGV(cat), __constructor__)
 
 /* The root of the category hierarchy. */
 #define XBT_LOG_ROOT_CAT   root
@@ -118,7 +116,7 @@ typedef enum {
       &_XBT_LOGV(parent),                                                                                              \
       NULL /* firstChild */,                                                                                           \
       NULL /* nextSibling */,                                                                                          \
-      #catName,                                                                                                        \
+      _XBT_STRINGIFY(catName),                                                                                         \
       desc,                                                                                                            \
       0 /*initialized */,                                                                                              \
       xbt_log_priority_uninitialized /* threshold */,                                                                  \

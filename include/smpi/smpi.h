@@ -16,13 +16,13 @@
 #include <xbt/misc.h>
 
 #ifdef _WIN32
-#define MPI_CALL(type,name,args) \
-  type name args; \
-  type P##name args
+#define MPI_CALL(type, name, args)                                                                                     \
+  type name args;                                                                                                      \
+  type _XBT_CONCAT(P, name) args
 #else
-#define MPI_CALL(type,name,args) \
-  type name args __attribute__((weak)); \
-  type P##name args
+#define MPI_CALL(type, name, args)                                                                                     \
+  type name args __attribute__((weak));                                                                                \
+  type _XBT_CONCAT(P, name) args
 #endif
 
 SG_BEGIN_DECL()
@@ -125,7 +125,7 @@ SG_BEGIN_DECL()
           ERROR(MPI_T_ERR_PVAR_NO_ATOMIC)
 
 #define GENERATE_ENUM(ENUM) ENUM,
-#define GENERATE_STRING(STRING) #STRING,
+#define GENERATE_STRING(STRING) _XBT_STRINGIFY(STRING),
 
 enum ERROR_ENUM {
     FOREACH_ERROR(GENERATE_ENUM)
@@ -998,7 +998,7 @@ XBT_PUBLIC void smpi_trace_set_call_location_(const char* file, int* line);
 /** Fortran binding + -fsecond-underscore **/
 XBT_PUBLIC void smpi_trace_set_call_location__(const char* file, int* line);
 
-#define SMPI_ITER_NAME1(line) iter_count##line
+#define SMPI_ITER_NAME1(line) _XBT_CONCAT(iter_count, line)
 #define SMPI_ITER_NAME(line) SMPI_ITER_NAME1(line)
 #define SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, global, iters, thres)\
   int SMPI_ITER_NAME(__LINE__)=0;\
@@ -1028,9 +1028,10 @@ XBT_PUBLIC void smpi_shared_free(void* data);
 XBT_PUBLIC int smpi_shared_known_call(const char* func, const char* input);
 XBT_PUBLIC void* smpi_shared_get_call(const char* func, const char* input);
 XBT_PUBLIC void* smpi_shared_set_call(const char* func, const char* input, void* data);
-#define SMPI_SHARED_CALL(func, input, ...) \
-   (smpi_shared_known_call(#func, input) ? smpi_shared_get_call(#func, input) \
-                                         : smpi_shared_set_call(#func, input, (func(__VA_ARGS__))))
+#define SMPI_SHARED_CALL(func, input, ...)                                                                             \
+  (smpi_shared_known_call(_XBT_STRINGIFY(func), input)                                                                 \
+       ? smpi_shared_get_call(_XBT_STRINGIFY(func), input)                                                             \
+       : smpi_shared_set_call(_XBT_STRINGIFY(func), input, (func(__VA_ARGS__))))
 
 /* Fortran specific stuff */
 

@@ -30,12 +30,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
   type name args                                                                                                       \
   {                                                                                                                    \
     XBT_VERB("SMPI - Entering %s", __func__);                                                                          \
-    type ret = P##name args2;					                                                       \
-    if(ret!=MPI_SUCCESS) {                                                                                             \
+    type ret = _XBT_CONCAT(P, name) args2;                                                                             \
+    if (ret != MPI_SUCCESS) {                                                                                          \
       char error_string[MPI_MAX_ERROR_STRING];                                                                         \
       int error_size;                                                                                                  \
       PMPI_Error_string(ret, error_string, &error_size);                                                               \
-      XBT_WARN("%s - returned %.*s instead of MPI_SUCCESS", __func__, error_size,error_string);                       \
+      XBT_WARN("%s - returned %.*s instead of MPI_SUCCESS", __func__, error_size, error_string);                       \
     }                                                                                                                  \
     XBT_VERB("SMPI - Leaving %s", __func__);                                                                           \
     return ret;                                                                                                        \
@@ -45,27 +45,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
   type name args                                                                                                       \
   {                                                                                                                    \
     XBT_VERB("SMPI - Entering %s", __func__);                                                                          \
-    type ret = P##name args2;                                                                                          \
+    type ret = _XBT_CONCAT(P, name) args2;                                                                             \
     XBT_VERB("SMPI - Leaving %s", __func__);                                                                           \
     return ret;                                                                                                        \
   }
 
-#define UNIMPLEMENTED_WRAPPED_PMPI_CALL(type,name,args,args2) \
-type P##name args { \
-NOT_YET_IMPLEMENTED \
-}\
-type name args { \
-return P##name args2 ; \
-}\
+#define UNIMPLEMENTED_WRAPPED_PMPI_CALL(type, name, args, args2)                                                       \
+  type _XBT_CONCAT(P, name) args { NOT_YET_IMPLEMENTED }                                                               \
+  type name args { return _XBT_CONCAT(P, name) args2; }
 
-#define UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(type,name,args,args2) \
-type P##name args { \
-NOT_YET_IMPLEMENTED_NOFAIL \
-}\
-type name args { \
-return P##name args2 ; \
-}\
-
+#define UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(type, name, args, args2)                                                \
+  type _XBT_CONCAT(P, name) args { NOT_YET_IMPLEMENTED_NOFAIL }                                                        \
+  type name args { return _XBT_CONCAT(P, name) args2; }
 
 /* MPI User level calls */
 

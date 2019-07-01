@@ -14,24 +14,24 @@
 /** @brief MPI collective description */
 
 #define COLL_DEFS(cat, ret, args, args2)                                                                               \
-  static void set_##cat(const std::string& name);                                                                      \
-  static s_mpi_coll_description_t mpi_coll_##cat##_description[];                                                      \
+  static void _XBT_CONCAT(set_, cat)(const std::string& name);                                                         \
+  static s_mpi_coll_description_t _XBT_CONCAT3(mpi_coll_, cat, _description)[];                                        \
   static int(*cat) args;
 
 #define COLL_SIG(cat, ret, args, args2)\
     static int cat args;
 
+#define COLL_DESCRIPTION(cat, ret, args, name)                                                                         \
+  {                                                                                                                    \
+    _XBT_STRINGIFY(name)                                                                                               \
+    , _XBT_STRINGIFY(cat) " " _XBT_STRINGIFY(name) " collective", (void*)_XBT_CONCAT4(Coll_, cat, _, name)::cat        \
+  }
 
-#define COLL_DESCRIPTION(cat, ret, args, name) \
-  {# name,\
-   # cat " " # name " collective",\
-   (void*) Coll_ ## cat ## _ ## name::cat }
-
-#define COLL_PROTO(cat, ret, args, name) \
-class Coll_ ## cat ## _ ## name : public Coll { \
-public: \
-static ret cat  (COLL_UNPAREN args); \
-};
+#define COLL_PROTO(cat, ret, args, name)                                                                               \
+  class _XBT_CONCAT4(Coll_, cat, _, name) : public Coll {                                                              \
+  public:                                                                                                              \
+    static ret cat(COLL_UNPAREN args);                                                                                 \
+  };
 
 #define COLL_UNPAREN(...)  __VA_ARGS__
 

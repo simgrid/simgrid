@@ -10,8 +10,8 @@
 #include <smpi/smpi.h>
 
 #define AMPI_CALL(type, name, args)                                                                                    \
-  type A##name args __attribute__((weak));                                                                             \
-  type AP##name args;
+  type _XBT_CONCAT(A, name) args __attribute__((weak));                                                                \
+  type _XBT_CONCAT(AP, name) args;
 
 #ifndef HAVE_SMPI
 // Internally disable these overrides (HAVE_SMPI is only defined when building the library)

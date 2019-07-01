@@ -13,31 +13,32 @@
 #define TRACE_AUTO_COLL(cat)                                                                                           \
   if (TRACE_is_enabled()) {                                                                                            \
     simgrid::instr::EventType* type =                                                                                  \
-        simgrid::instr::Container::get_root()->type_->by_name_or_create<simgrid::instr::EventType>(#cat);              \
+        simgrid::instr::Container::get_root()->type_->by_name_or_create<simgrid::instr::EventType>(                    \
+            _XBT_STRINGIFY(cat));                                                                                      \
                                                                                                                        \
     std::string cont_name = std::string("rank-" + std::to_string(simgrid::s4u::this_actor::get_pid()));                \
-    type->add_entity_value(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0");                                \
+    type->add_entity_value(Colls::_XBT_CONCAT3(mpi_coll_, cat, _description)[i].name, "1.0 1.0 1.0");                  \
     new simgrid::instr::NewEvent(SIMIX_get_clock(), simgrid::instr::Container::by_name(cont_name), type,               \
-                                 type->get_entity_value(Colls::mpi_coll_##cat##_description[i].name));                 \
+                                 type->get_entity_value(Colls::_XBT_CONCAT3(mpi_coll_, cat, _description)[i].name));   \
   }
 
 #define AUTOMATIC_COLL_BENCH(cat, ret, args, args2)                                                                    \
-  ret Coll_##cat##_automatic::cat(COLL_UNPAREN args)                                                                   \
+  ret _XBT_CONCAT3(Coll_, cat, _automatic)::cat(COLL_UNPAREN args)                                                     \
   {                                                                                                                    \
     double time1, time2, time_min = DBL_MAX;                                                                           \
     int min_coll = -1, global_coll = -1;                                                                               \
     int i;                                                                                                             \
     double buf_in, buf_out, max_min = DBL_MAX;                                                                         \
-    for (i = 0; not Colls::mpi_coll_##cat##_description[i].name.empty(); i++) {                                        \
-      if (Colls::mpi_coll_##cat##_description[i].name == "automatic")                                                  \
+    for (i = 0; not Colls::_XBT_CONCAT3(mpi_coll_, cat, _description)[i].name.empty(); i++) {                          \
+      if (Colls::_XBT_CONCAT3(mpi_coll_, cat, _description)[i].name == "automatic")                                    \
         continue;                                                                                                      \
-      if (Colls::mpi_coll_##cat##_description[i].name == "default")                                                    \
+      if (Colls::_XBT_CONCAT3(mpi_coll_, cat, _description)[i].name == "default")                                      \
         continue;                                                                                                      \
       Coll_barrier_default::barrier(comm);                                                                             \
       TRACE_AUTO_COLL(cat)                                                                                             \
       time1 = SIMIX_get_clock();                                                                                       \
       try {                                                                                                            \
-        ((int(*) args)Colls::mpi_coll_##cat##_description[i].coll) args2;                                              \
+        ((int(*) args)Colls::_XBT_CONCAT3(mpi_coll_, cat, _description)[i].coll) args2;                                \
       } catch (std::exception & ex) {                                                                                  \
         continue;                                                                                                      \
       }                                                                                                                \
@@ -57,11 +58,11 @@
     }                                                                                                                  \
     if (comm->rank() == 0) {                                                                                           \
       XBT_WARN("For rank 0, the quickest was %s : %f , but global was %s : %f at max",                                 \
-               Colls::mpi_coll_##cat##_description[min_coll].name.c_str(), time_min,                                           \
-               Colls::mpi_coll_##cat##_description[global_coll].name.c_str(), max_min);                                        \
+               Colls::_XBT_CONCAT3(mpi_coll_, cat, _description)[min_coll].name.c_str(), time_min,                     \
+               Colls::_XBT_CONCAT3(mpi_coll_, cat, _description)[global_coll].name.c_str(), max_min);                  \
     } else                                                                                                             \
-      XBT_WARN("The quickest %s was %s on rank %d and took %f", #cat,                                                  \
-               Colls::mpi_coll_##cat##_description[min_coll].name.c_str(), comm->rank(), time_min);                            \
+      XBT_WARN("The quickest " _XBT_STRINGIFY(cat) " was %s on rank %d and took %f",                                   \
+               Colls::_XBT_CONCAT3(mpi_coll_, cat, _description)[min_coll].name.c_str(), comm->rank(), time_min);      \
     return (min_coll != -1) ? MPI_SUCCESS : MPI_ERR_INTERN;                                                            \
   }
 

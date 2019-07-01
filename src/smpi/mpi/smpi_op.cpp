@@ -98,9 +98,9 @@ APPLY_OP_LOOP(MPI_2DOUBLE, double_double,op)\
 APPLY_OP_LOOP(MPI_LONG_DOUBLE_INT, long_double_int,op)\
 APPLY_OP_LOOP(MPI_2LONG, long_long,op)
 
-#define APPLY_END_OP_LOOP(op)\
-  {\
-    xbt_die("Failed to apply " #op " to type %s", (*datatype)->name());\
+#define APPLY_END_OP_LOOP(op)                                                                                          \
+  {                                                                                                                    \
+    xbt_die("Failed to apply " _XBT_STRINGIFY(op) " to type %s", (*datatype)->name());                                 \
   }
 
 static void max_func(void *a, void *b, int *length, MPI_Datatype * datatype)
@@ -197,9 +197,9 @@ static void no_func(void*, void*, int*, MPI_Datatype*)
   /* obviously a no-op */
 }
 
-#define CREATE_MPI_OP(name, func)                             \
-  static SMPI_Op mpi_##name (&(func) /* func */, true, true ); \
-MPI_Op name = &mpi_##name;
+#define CREATE_MPI_OP(name, func)                                                                                      \
+  static SMPI_Op _XBT_CONCAT(mpi_, name)(&(func) /* func */, true, true);                                              \
+  MPI_Op name = &_XBT_CONCAT(mpi_, name);
 
 CREATE_MPI_OP(MPI_MAX, max_func);
 CREATE_MPI_OP(MPI_MIN, min_func);

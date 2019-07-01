@@ -17,12 +17,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI (coll
 
 #define COLL_SETTER(cat, ret, args, args2)                                                                             \
   int(*Colls::cat) args;                                                                                               \
-  void Colls::set_##cat(const std::string& name)                                                                       \
+  void Colls::_XBT_CONCAT(set_, cat)(const std::string& name)                                                          \
   {                                                                                                                    \
-    int id = find_coll_description(mpi_coll_##cat##_description, name, #cat);                                          \
-    cat    = reinterpret_cast<ret(*) args>(mpi_coll_##cat##_description[id].coll);                                     \
+    int id = find_coll_description(_XBT_CONCAT3(mpi_coll_, cat, _description), name, _XBT_STRINGIFY(cat));             \
+    cat    = reinterpret_cast<ret(*) args>(_XBT_CONCAT3(mpi_coll_, cat, _description)[id].coll);                       \
     if (cat == nullptr)                                                                                                \
-      xbt_die("Collective " #cat " set to nullptr!");                                                                  \
+      xbt_die("Collective " _XBT_STRINGIFY(cat) " set to nullptr!");                                                   \
   }
 
 namespace simgrid{
