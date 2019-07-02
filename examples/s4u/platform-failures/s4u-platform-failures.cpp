@@ -44,11 +44,9 @@ static int master(int argc, char* argv[])
     } catch (const simgrid::TimeoutError&) {
       delete payload;
       XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
-    } catch (xbt_ex& e) {
-      if (e.category != network_error)
-        xbt_die("Unexpected behavior");
-      XBT_INFO("Mmh. The communication with '%s' failed. Nevermind. Let's keep going!", mailbox->get_cname());
+    } catch (const simgrid::NetworkFailureException&) {
       delete payload;
+      XBT_INFO("Mmh. The communication with '%s' failed. Nevermind. Let's keep going!", mailbox->get_cname());
     }
   }
 
@@ -62,10 +60,8 @@ static int master(int argc, char* argv[])
     } catch (const simgrid::TimeoutError&) {
       delete payload;
       XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
-    } catch (xbt_ex& e) {
+    } catch (const simgrid::NetworkFailureException&) {
       delete payload;
-      if (e.category != network_error)
-        xbt_die("Unexpected behavior");
       XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
     }
   }
@@ -96,9 +92,7 @@ static int worker(int argc, char* argv[])
       XBT_INFO("Start execution...");
       simgrid::s4u::this_actor::execute(comp_size);
       XBT_INFO("Execution complete.");
-    } catch (xbt_ex& e) {
-      if (e.category != network_error)
-        xbt_die("Unexpected behavior. Category: %s", xbt_ex_catname(e.category));
+    } catch (const simgrid::NetworkFailureException&) {
       XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
     }
   }

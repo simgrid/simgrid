@@ -137,12 +137,8 @@ msg_error_t Task::send(const std::string& alias, double timeout)
     ret = MSG_TIMEOUT;
   } catch (const simgrid::CancelException&) {
     ret = MSG_HOST_FAILURE;
-  } catch (xbt_ex& e) {
-    if (e.category == network_error)
-      ret = MSG_TRANSFER_FAILURE;
-    else
-      throw;
-
+  } catch (const simgrid::NetworkFailureException&) {
+    ret = MSG_TRANSFER_FAILURE;
     /* If the send failed, it is not used anymore */
     set_not_used();
   }
@@ -631,11 +627,8 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t* task, const char* alias, do
     ret = MSG_TIMEOUT;
   } catch (const simgrid::CancelException&) {
     ret = MSG_TASK_CANCELED;
-  } catch (xbt_ex& e) {
-    if (e.category == network_error)
-      ret = MSG_TRANSFER_FAILURE;
-    else
-      throw;
+  } catch (const simgrid::NetworkFailureException&) {
+    ret = MSG_TRANSFER_FAILURE;
   }
 
   if (TRACE_actor_is_enabled() && ret != MSG_HOST_FAILURE && ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {

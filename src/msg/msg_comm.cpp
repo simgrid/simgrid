@@ -34,13 +34,9 @@ bool Comm::test()
   } catch (const simgrid::CancelException&) {
     status_  = MSG_TASK_CANCELED;
     finished = true;
-  } catch (xbt_ex& e) {
-    if (e.category == network_error) {
-      status_  = MSG_TRANSFER_FAILURE;
-      finished = true;
-    } else {
-      throw;
-    }
+  } catch (const simgrid::NetworkFailureException&) {
+    status_  = MSG_TRANSFER_FAILURE;
+    finished = true;
   }
 
   return finished;
@@ -60,11 +56,8 @@ msg_error_t Comm::wait_for(double timeout)
     status_ = MSG_TIMEOUT;
   } catch (const simgrid::CancelException&) {
     status_ = MSG_TASK_CANCELED;
-  } catch (xbt_ex& e) {
-    if (e.category == network_error)
-      status_ = MSG_TRANSFER_FAILURE;
-    else
-      throw;
+  } catch (const simgrid::NetworkFailureException&) {
+    status_ = MSG_TRANSFER_FAILURE;
   }
 
   return status_;
@@ -107,15 +100,13 @@ int MSG_comm_testany(xbt_dynar_t comms)
   msg_error_t status = MSG_OK;
   try {
     finished_index = simcall_comm_testany(s_comms.data(), s_comms.size());
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutError& e) {
     finished_index = e.value;
     status         = MSG_TIMEOUT;
-  } catch (simgrid::CancelException& e) {
+  } catch (const simgrid::CancelException& e) {
     finished_index = e.value;
     status         = MSG_TASK_CANCELED;
-  } catch (xbt_ex& e) {
-    if (e.category != network_error)
-      throw;
+  } catch (const simgrid::NetworkFailureException& e) {
     finished_index = e.value;
     status         = MSG_TRANSFER_FAILURE;
   }
@@ -186,19 +177,15 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   msg_error_t status = MSG_OK;
   try {
     finished_index = simcall_comm_waitany(s_comms.data(), s_comms.size(), -1);
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutError& e) {
     finished_index = e.value;
     status         = MSG_TIMEOUT;
-  } catch (simgrid::CancelException& e) {
+  } catch (const simgrid::CancelException& e) {
     finished_index = e.value;
     status         = MSG_TASK_CANCELED;
-  } catch (xbt_ex& e) {
-    if (e.category == network_error) {
-      finished_index = e.value;
-      status         = MSG_TRANSFER_FAILURE;
-    } else {
-      throw;
-    }
+  } catch (const simgrid::NetworkFailureException& e) {
+    finished_index = e.value;
+    status         = MSG_TRANSFER_FAILURE;
   }
 
   xbt_assert(finished_index != -1, "WaitAny returned -1");
