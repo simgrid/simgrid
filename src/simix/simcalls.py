@@ -129,9 +129,10 @@ class Simcall(object):
 
     def case(self):
         res = []
+        indent = '    '
         args = ["simgrid::simix::unmarshal<%s>(simcall->args[%d])" % (arg.rettype(), i)
                 for i, arg in enumerate(self.args)]
-        res.append('case SIMCALL_%s:' % (self.name.upper()))
+        res.append(indent + 'case SIMCALL_%s:' % (self.name.upper()))
         if self.need_handler:
             call = "simcall_HANDLER_%s(simcall%s%s)" % (self.name,
                                                         ", " if len(args) > 0 else "",
@@ -139,12 +140,12 @@ class Simcall(object):
         else:
             call = "SIMIX_%s(%s)" % (self.name, ', '.join(args))
         if self.call_kind == 'Func':
-            res.append("  simgrid::simix::marshal<%s>(simcall->result, %s);" % (self.res.rettype(), call))
+            res.append(indent + "  simgrid::simix::marshal<%s>(simcall->result, %s);" % (self.res.rettype(), call))
         else:
-            res.append("  " + call + ";")
+            res.append(indent + "  " + call + ";")
         if self.call_kind != 'Blck':
-            res.append('  SIMIX_simcall_answer(simcall);')
-        res.append('  break;')
+            res.append(indent + '  SIMIX_simcall_answer(simcall);')
+        res.append(indent + '  break;')
         res.append('')
         return '\n'.join(res)
 
@@ -265,8 +266,9 @@ def handle(fd, func, simcalls, guarded_simcalls):
     for guard, ll in guarded_simcalls.items():
         fd.write('\n#if %s\n' % (guard))
         fd.write('\n'.join(func(simcall) for simcall in ll))
-        fd.write('\n#endif\n')
+        fd.write('\n#endif')
 
+    fd.write('\n')
 
 if __name__ == '__main__':
     simcalls, simcalls_dict = parse('simcalls.in')
@@ -286,7 +288,7 @@ if __name__ == '__main__':
     fd.write('#include "src/simix/popping_private.hpp"')
     handle(fd, Simcall.accessors, simcalls, simcalls_dict)
     fd.write(
-        "\n\n/* The prototype of all simcall handlers, automatically generated for you */\n\n")
+        "\n/* The prototype of all simcall handlers, automatically generated for you */\n\n")
     handle(fd, Simcall.handler_prototype, simcalls, simcalls_dict)
     fd.close()
 
@@ -302,7 +304,6 @@ if __name__ == '__main__':
 
     handle(fd, Simcall.enum, simcalls, simcalls_dict)
 
-    fd.write('\n')
     fd.write('  NUM_SIMCALLS\n')
     fd.write('} e_smx_simcall_t;\n')
     fd.close()
@@ -330,7 +331,7 @@ if __name__ == '__main__':
     fd.write('    "SIMCALL_NONE",\n')
     handle(fd, Simcall.string, simcalls, simcalls_dict)
 
-    fd.write('\n};\n\n')
+    fd.write('};\n\n')
 
     fd.write('/** @private\n')
     fd.write(
@@ -393,5 +394,5 @@ inline static R simcall(e_smx_simcall_t call, T const&... t)
 }
 ''')
     handle(fd, Simcall.body, simcalls, simcalls_dict)
-    fd.write(" /** @endcond */\n")
+    fd.write("/** @endcond */\n")
     fd.close()

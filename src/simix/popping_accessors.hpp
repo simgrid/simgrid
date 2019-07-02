@@ -123,8 +123,7 @@ static inline simgrid::kernel::activity::ExecImpl** simcall_execution_waitany_fo
 {
   return simgrid::simix::unmarshal_raw<simgrid::kernel::activity::ExecImpl**>(simcall->args[0]);
 }
-static inline void simcall_execution_waitany_for__set__execs(smx_simcall_t simcall,
-                                                             simgrid::kernel::activity::ExecImpl** arg)
+static inline void simcall_execution_waitany_for__set__execs(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl** arg)
 {
   simgrid::simix::marshal<simgrid::kernel::activity::ExecImpl**>(simcall->args[0], arg);
 }
@@ -1079,27 +1078,12 @@ XBT_PRIVATE void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_acto
 XBT_PRIVATE void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, double timeout);
 XBT_PRIVATE void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration);
 XBT_PRIVATE void simcall_HANDLER_execution_wait(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* execution);
-XBT_PRIVATE void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall,
-                                                       simgrid::kernel::activity::ExecImpl** execs, size_t count,
-                                                       double timeout);
+XBT_PRIVATE void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl** execs, size_t count, double timeout);
 XBT_PRIVATE void simcall_HANDLER_execution_test(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* execution);
-XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t sender, smx_mailbox_t mbox,
-                                           double task_size, double rate, unsigned char* src_buff, size_t src_buff_size,
-                                           simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun,
-                                           void* data, double timeout);
-XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>
-simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate,
-                           unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun,
-                           simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data,
-                           bool detached);
-XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t receiver, smx_mailbox_t mbox,
-                                           unsigned char* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun,
-                                           simix_copy_data_func_t copy_data_fun, void* data, double timeout,
-                                           double rate);
-XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>
-simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_actor_t receiver, smx_mailbox_t mbox, unsigned char* dst_buff,
-                           size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun,
-                           void* data, double rate);
+XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout);
+XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, bool detached);
+XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t receiver, smx_mailbox_t mbox, unsigned char* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate);
+XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_actor_t receiver, smx_mailbox_t mbox, unsigned char* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate);
 XBT_PRIVATE void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl** comms, size_t count, double timeout);
 XBT_PRIVATE void simcall_HANDLER_comm_wait(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comm, double timeout);
 XBT_PRIVATE void simcall_HANDLER_comm_test(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comm);
