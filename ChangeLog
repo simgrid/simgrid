@@ -6,6 +6,9 @@ Documentation:
  - Nicer introduction page.
  - Move Java as a subtree of MSG.
 
+General:
+ - Rename simgrid::TimeoutError to simgrid::TimeoutException.
+
 XBT:
  - Drop xbt_dynar_sort_strings().
 

@@ -708,7 +708,7 @@ std::cv_status ConditionVariable::wait_for(
     simcall_cond_wait_timeout(cond_, lock.mutex()->mutex_, timeout);
     return std::cv_status::no_timeout;
   }
-  catch (const simgrid::TimeoutError& e) {
+  catch (const simgrid::TimeoutException& e) {
     // If the exception was a timeout, we have to take the lock again:
     try {
       lock.mutex()->lock();

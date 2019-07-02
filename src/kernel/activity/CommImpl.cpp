@@ -617,12 +617,12 @@ void CommImpl::finish()
 
         case SIMIX_SRC_TIMEOUT:
           simcall->issuer->exception_ = std::make_exception_ptr(
-              simgrid::TimeoutError(XBT_THROW_POINT, "Communication timeouted because of the sender"));
+              simgrid::TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the sender"));
           break;
 
         case SIMIX_DST_TIMEOUT:
           simcall->issuer->exception_ = std::make_exception_ptr(
-              simgrid::TimeoutError(XBT_THROW_POINT, "Communication timeouted because of the receiver"));
+              simgrid::TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the receiver"));
           break;
 
         case SIMIX_SRC_HOST_FAILURE:

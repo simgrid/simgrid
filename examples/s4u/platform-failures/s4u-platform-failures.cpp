@@ -41,7 +41,7 @@ static int master(int argc, char* argv[])
       XBT_INFO("Send a message to %s", mailbox->get_cname());
       mailbox->put(payload, comm_size, 10.0);
       XBT_INFO("Send to %s completed", mailbox->get_cname());
-    } catch (const simgrid::TimeoutError&) {
+    } catch (const simgrid::TimeoutException&) {
       delete payload;
       XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
     } catch (const simgrid::NetworkFailureException&) {
@@ -57,7 +57,7 @@ static int master(int argc, char* argv[])
     double* payload = new double(-1.0);
     try {
       mailbox->put(payload, 0, 1.0);
-    } catch (const simgrid::TimeoutError&) {
+    } catch (const simgrid::TimeoutException&) {
       delete payload;
       XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
     } catch (const simgrid::NetworkFailureException&) {

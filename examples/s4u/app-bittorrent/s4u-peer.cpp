@@ -84,7 +84,7 @@ bool Peer::getPeersFromTracker()
   try {
     XBT_DEBUG("Sending a peer request to the tracker.");
     tracker_mailbox->put(peer_request, TRACKER_COMM_SIZE, GET_PEERS_TIMEOUT);
-  } catch (const simgrid::TimeoutError&) {
+  } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Timeout expired when requesting peers to tracker");
     delete peer_request;
     return false;
@@ -97,7 +97,7 @@ bool Peer::getPeersFromTracker()
       if (id != peer_id)
         connected_peers.emplace(peer_id, Connection(peer_id));
     delete answer;
-  } catch (const simgrid::TimeoutError&) {
+  } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Timeout expired when requesting peers to tracker");
     return false;
   }

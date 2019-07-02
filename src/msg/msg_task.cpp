@@ -83,7 +83,7 @@ msg_error_t Task::execute()
     XBT_DEBUG("Execution task '%s' finished", get_cname());
   } catch (const HostFailureException&) {
     status = MSG_HOST_FAILURE;
-  } catch (const TimeoutError&) {
+  } catch (const TimeoutException&) {
     status = MSG_TIMEOUT;
   } catch (const CancelException&) {
     status = MSG_TASK_CANCELED;
@@ -133,7 +133,7 @@ msg_error_t Task::send(const std::string& alias, double timeout)
     s4u::CommPtr s4u_comm = send_async(alias, nullptr, false);
     comm                  = s4u_comm;
     comm->wait_for(timeout);
-  } catch (const simgrid::TimeoutError&) {
+  } catch (const simgrid::TimeoutException&) {
     ret = MSG_TIMEOUT;
   } catch (const simgrid::CancelException&) {
     ret = MSG_HOST_FAILURE;
@@ -623,7 +623,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t* task, const char* alias, do
     (*task)->set_not_used();
   } catch (const simgrid::HostFailureException&) {
     ret = MSG_HOST_FAILURE;
-  } catch (const simgrid::TimeoutError&) {
+  } catch (const simgrid::TimeoutException&) {
     ret = MSG_TIMEOUT;
   } catch (const simgrid::CancelException&) {
     ret = MSG_TASK_CANCELED;

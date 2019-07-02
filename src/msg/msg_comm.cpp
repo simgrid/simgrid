@@ -28,7 +28,7 @@ bool Comm::test()
       /* I am the receiver */
       (*task_received)->set_not_used();
     }
-  } catch (const simgrid::TimeoutError&) {
+  } catch (const simgrid::TimeoutException&) {
     status_  = MSG_TIMEOUT;
     finished = true;
   } catch (const simgrid::CancelException&) {
@@ -52,7 +52,7 @@ msg_error_t Comm::wait_for(double timeout)
     }
 
     /* FIXME: these functions are not traceable */
-  } catch (const simgrid::TimeoutError&) {
+  } catch (const simgrid::TimeoutException&) {
     status_ = MSG_TIMEOUT;
   } catch (const simgrid::CancelException&) {
     status_ = MSG_TASK_CANCELED;
@@ -100,7 +100,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
   msg_error_t status = MSG_OK;
   try {
     finished_index = simcall_comm_testany(s_comms.data(), s_comms.size());
-  } catch (const simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutException& e) {
     finished_index = e.value;
     status         = MSG_TIMEOUT;
   } catch (const simgrid::CancelException& e) {
@@ -177,7 +177,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   msg_error_t status = MSG_OK;
   try {
     finished_index = simcall_comm_waitany(s_comms.data(), s_comms.size(), -1);
-  } catch (const simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutException& e) {
     finished_index = e.value;
     status         = MSG_TIMEOUT;
   } catch (const simgrid::CancelException& e) {

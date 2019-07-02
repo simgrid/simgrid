@@ -93,13 +93,15 @@ private:
 };
 
 /** Exception raised when a timeout elapsed */
-class TimeoutError : public Exception {
+class TimeoutException : public Exception {
 public:
-  TimeoutError(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
+  TimeoutException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
       : Exception(std::move(throwpoint), std::move(message))
   {
   }
 };
+
+XBT_ATTRIB_DEPRECATED_v327("Please use simgrid::TimeoutException") typedef TimeoutException TimeoutError;
 
 /** Exception raised when a host fails */
 class HostFailureException : public Exception {

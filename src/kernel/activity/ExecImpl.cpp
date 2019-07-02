@@ -269,7 +269,7 @@ void ExecImpl::finish()
 
       case SIMIX_TIMEOUT:
         XBT_DEBUG("ExecImpl::finish(): execution timeouted");
-        simcall->issuer->exception_ = std::make_exception_ptr(simgrid::TimeoutError(XBT_THROW_POINT, "Timeouted"));
+        simcall->issuer->exception_ = std::make_exception_ptr(simgrid::TimeoutException(XBT_THROW_POINT, "Timeouted"));
         break;
 
       default:
