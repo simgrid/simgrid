@@ -45,7 +45,7 @@ Task* Task::create(const std::string& name, double flops_amount, double bytes_am
 Task* Task::create_parallel(const std::string& name, int host_nb, const msg_host_t* host_list, double* flops_amount,
                             double* bytes_amount, void* data)
 {
-  std::vector<simgrid::s4u::Host*> hosts(host_list, host_list + host_nb);
+  std::vector<s4u::Host*> hosts(host_list, host_list + host_nb);
   std::vector<double> flops;
   std::vector<double> bytes;
   if (flops_amount != nullptr)
@@ -100,9 +100,9 @@ msg_error_t Task::execute()
 s4u::CommPtr Task::send_async(const std::string& alias, void_f_pvoid_t cleanup, bool detached)
 {
   if (TRACE_actor_is_enabled()) {
-    container_t process_container = simgrid::instr::Container::by_name(instr_pid(*MSG_process_self()));
+    container_t process_container = instr::Container::by_name(instr_pid(*MSG_process_self()));
     std::string key               = std::string("p") + std::to_string(get_id());
-    simgrid::instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->start_event(process_container, "SR", key);
+    instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->start_event(process_container, "SR", key);
   }
 
   /* Prepare the task to send */
@@ -133,11 +133,11 @@ msg_error_t Task::send(const std::string& alias, double timeout)
     s4u::CommPtr s4u_comm = send_async(alias, nullptr, false);
     comm                  = s4u_comm;
     comm->wait_for(timeout);
-  } catch (const simgrid::TimeoutException&) {
+  } catch (const TimeoutException&) {
     ret = MSG_TIMEOUT;
-  } catch (const simgrid::CancelException&) {
+  } catch (const CancelException&) {
     ret = MSG_HOST_FAILURE;
-  } catch (const simgrid::NetworkFailureException&) {
+  } catch (const NetworkFailureException&) {
     ret = MSG_TRANSFER_FAILURE;
     /* If the send failed, it is not used anymore */
     set_not_used();
