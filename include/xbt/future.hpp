@@ -12,6 +12,7 @@
 #include <boost/variant.hpp>
 #include <exception>
 #include <functional>
+#include <future> // std::future_error
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
@@ -66,7 +67,7 @@ public:
         break;
       }
       default:
-        throw std::logic_error("Invalid result");
+        throw std::future_error(std::future_errc::no_state);
     }
   }
 private:
