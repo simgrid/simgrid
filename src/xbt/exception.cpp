@@ -14,57 +14,14 @@
 XBT_LOG_EXTERNAL_CATEGORY(xbt);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_exception, xbt, "Exceptions");
 
-// DO NOT define ~xbt_ex() in exception.hpp.
-// Defining it here ensures that xbt_ex is defined only in libsimgrid, but not in libsimgrid-java.
-// Doing otherwise naturally breaks things (at least on freebsd with clang).
-
-xbt_ex::~xbt_ex() = default;
-
-void _xbt_throw(char* message, xbt_errcat_t errcat, int value, const char* file, int line, const char* func)
+void _xbt_throw(char* message, int value, const char* file, int line, const char* func)
 {
-  xbt_ex e(simgrid::xbt::ThrowPoint(file, line, func, simgrid::xbt::Backtrace(), xbt_procname(), xbt_getpid()),
-           message);
+  simgrid::Exception e(
+      simgrid::xbt::ThrowPoint(file, line, func, simgrid::xbt::Backtrace(), xbt_procname(), xbt_getpid()),
+      message ? message : "");
   xbt_free(message);
-  e.category = errcat;
   e.value    = value;
   throw e;
-}
-
-/** @brief returns a short name for the given exception category */
-const char* xbt_ex_catname(xbt_errcat_t cat)
-{
-  switch (cat) {
-    case unknown_error:
-      return "unknown error";
-    case arg_error:
-      return "invalid argument";
-    case bound_error:
-      return "out of bounds";
-    case mismatch_error:
-      return "mismatch";
-    case not_found_error:
-      return "not found";
-    case system_error:
-      return "system error";
-    case network_error:
-      return "network error";
-    case timeout_error:
-      return "timeout";
-    case cancel_error:
-      return "action canceled";
-    case thread_error:
-      return "thread error";
-    case host_error:
-      return "host failed";
-    case tracing_error:
-      return "tracing error";
-    case io_error:
-      return "io error";
-    case vm_error:
-      return "vm error";
-    default:
-      return "INVALID ERROR";
-  }
 }
 
 namespace simgrid {

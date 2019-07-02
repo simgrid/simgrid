@@ -89,7 +89,7 @@ void Engine::load_platform(const std::string& platf)
   double start = xbt_os_time();
   try {
     parse_platform_file(platf);
-  } catch (xbt_ex& e) {
+  } catch (const Exception& e) {
     xbt_die("Error while loading %s: %s", platf.c_str(), e.what());
   }
 

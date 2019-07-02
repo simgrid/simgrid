@@ -75,7 +75,7 @@ int main(int argc, char**argv)
     mfree(heapA, pointers[i]);
     try {
       mfree(heapA, pointers[i]);
-    } catch (const xbt_ex&) {
+    } catch (const simgrid::Exception&) {
       gotit = true;
     }
     if (not gotit)
@@ -87,7 +87,7 @@ int main(int argc, char**argv)
     bool gotit = false;
     try {
       mfree(heapA, pointers[i]);
-    } catch (const xbt_ex&) {
+    } catch (const simgrid::Exception&) {
       gotit = true;
     }
     if (not gotit)

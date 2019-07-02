@@ -102,7 +102,7 @@ static void handle_action(ReplayAction& action)
   action_fun function = action_funs.at(action.at(1));
   try {
     function(action);
-  } catch (xbt_ex& e) {
+  } catch (const Exception& e) {
     action.clear();
     xbt_die("Replay error:\n %s", e.what());
   }

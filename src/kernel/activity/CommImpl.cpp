@@ -691,13 +691,7 @@ void CommImpl::finish()
       // In order to modify the exception we have to rethrow it:
       try {
         std::rethrow_exception(simcall->issuer->exception_);
-      } catch (simgrid::TimeoutError& e) {
-        e.value                     = rank;
-        simcall->issuer->exception_ = std::make_exception_ptr(e);
-      } catch (simgrid::NetworkFailureException& e) {
-        e.value                     = rank;
-        simcall->issuer->exception_ = std::make_exception_ptr(e);
-      } catch (simgrid::CancelException& e) {
+      } catch (simgrid::Exception& e) {
         e.value                     = rank;
         simcall->issuer->exception_ = std::make_exception_ptr(e);
       }
