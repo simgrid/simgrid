@@ -88,7 +88,7 @@ HostImpl::~HostImpl()
       msg += "\n\t" + std::string(process.get_name());
 
     SIMIX_display_process_status();
-    THROWF(arg_error, 0, "%s", msg.c_str());
+    xbt_die("%s", msg.c_str());
   }
   for (auto const& arg : actors_at_boot_)
     delete arg;

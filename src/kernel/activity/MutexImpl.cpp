@@ -63,13 +63,9 @@ bool MutexImpl::try_lock(actor::ActorImpl* issuer)
 void MutexImpl::unlock(actor::ActorImpl* issuer)
 {
   XBT_IN("(%p, %p)", this, issuer);
-  if (not locked_)
-    THROWF(mismatch_error, 0, "Cannot release that mutex: it was not locked.");
-
-  /* If the mutex is not owned by the issuer, that's not good */
-  if (issuer != owner_)
-    THROWF(mismatch_error, 0, "Cannot release that mutex: it was locked by %s (pid:%ld), not by you.",
-           owner_->get_cname(), owner_->get_pid());
+  xbt_assert(locked_, "Cannot release that mutex: it was not locked.");
+  xbt_assert(issuer == owner_, "Cannot release that mutex: it was locked by %s (pid:%ld), not by you.",
+             owner_->get_cname(), owner_->get_pid());
 
   if (not sleeping_.empty()) {
     /*process to wake up */
