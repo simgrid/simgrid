@@ -70,6 +70,9 @@ const char* xbt_ex_catname(xbt_errcat_t cat)
 namespace simgrid {
 namespace xbt {
 
+ImpossibleError::~ImpossibleError()       = default;
+UnimplementedError::~UnimplementedError() = default;
+
 void log_exception(e_xbt_log_priority_t prio, const char* context, std::exception const& exception)
 {
   try {
@@ -181,11 +184,11 @@ void xbt_throw_impossible(const char* file, int line, const char* func)
 {
   std::stringstream ss;
   ss << file << ":" << line << ":" << func << ": The Impossible Did Happen (yet again). Please report this bug.";
-  throw std::runtime_error(ss.str());
+  throw simgrid::xbt::ImpossibleError(ss.str());
 }
 void xbt_throw_unimplemented(const char* file, int line, const char* func)
 {
   std::stringstream ss;
   ss << file << ":" << line << ":" << func << ": Feature unimplemented yet. Please report this bug.";
-  throw std::runtime_error(ss.str());
+  throw simgrid::xbt::UnimplementedError(ss.str());
 }

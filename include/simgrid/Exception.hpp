@@ -56,6 +56,19 @@ public:
 /** Create a ThrowPoint with (__FILE__, __LINE__, __func__) */
 #define XBT_THROW_POINT                                                                                                \
   ::simgrid::xbt::ThrowPoint(__FILE__, __LINE__, __func__, simgrid::xbt::Backtrace(), xbt_procname(), xbt_getpid())
+
+class XBT_PUBLIC ImpossibleError : public std::logic_error {
+public:
+  explicit ImpossibleError(const std::string& arg) : std::logic_error(arg) {}
+  ~ImpossibleError();
+};
+
+class XBT_PUBLIC UnimplementedError : public std::logic_error {
+public:
+  explicit UnimplementedError(const std::string& arg) : std::logic_error(arg) {}
+  ~UnimplementedError();
+};
+
 } // namespace xbt
 
 /** Ancestor class of all SimGrid exception */
