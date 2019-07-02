@@ -4,9 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "simgrid/Exception.hpp"
 #include "src/include/surf/surf.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
-#include "xbt/asserts.h" // xbt_log_no_loc
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
 
@@ -173,10 +173,11 @@ VirtualMachineImpl::~VirtualMachineImpl()
 void VirtualMachineImpl::suspend(smx_actor_t issuer)
 {
   if (get_state() != s4u::VirtualMachine::state::RUNNING)
-    THROWF(vm_error, 0, "Cannot suspend VM %s: it is not running.", piface_->get_cname());
+    throw VmFailureException(XBT_THROW_POINT,
+                             xbt::string_printf("Cannot suspend VM %s: it is not running.", piface_->get_cname()));
   if (issuer->get_host() == piface_)
-    THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->get_cname(),
-           piface_->get_cname());
+    throw VmFailureException(XBT_THROW_POINT, xbt::string_printf("Actor %s cannot suspend the VM %s in which it runs",
+                                                                 issuer->get_cname(), piface_->get_cname()));
 
   XBT_DEBUG("suspend VM(%s), where %zu processes exist", piface_->get_cname(), process_list_.size());
 
@@ -195,7 +196,8 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
 void VirtualMachineImpl::resume()
 {
   if (get_state() != s4u::VirtualMachine::state::SUSPENDED)
-    THROWF(vm_error, 0, "Cannot resume VM %s: it was not suspended", piface_->get_cname());
+    throw VmFailureException(XBT_THROW_POINT,
+                             xbt::string_printf("Cannot resume VM %s: it was not suspended", piface_->get_cname()));
 
   XBT_DEBUG("Resume VM %s, containing %zu processes.", piface_->get_cname(), process_list_.size());
 

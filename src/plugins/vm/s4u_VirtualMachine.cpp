@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/vm.h"
 #include "src/include/surf/surf.hpp"
@@ -84,8 +85,9 @@ void VirtualMachine::start()
       if (vm_ramsize > pm_ramsize - total_ramsize_of_vms) {
         XBT_WARN("cannot start %s@%s due to memory shortage: vm_ramsize %ld, free %ld, pm_ramsize %ld (bytes).",
                  this->get_cname(), pm->get_cname(), vm_ramsize, pm_ramsize - total_ramsize_of_vms, pm_ramsize);
-        THROWF(vm_error, 0, "Memory shortage on host '%s', VM '%s' cannot be started", pm->get_cname(),
-               this->get_cname());
+        throw VmFailureException(XBT_THROW_POINT,
+                                 xbt::string_printf("Memory shortage on host '%s', VM '%s' cannot be started",
+                                                    pm->get_cname(), this->get_cname()));
       }
     }
 

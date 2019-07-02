@@ -324,14 +324,21 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   simgrid::s4u::Host* src_pm = vm->get_pm();
 
   if (not src_pm->is_on())
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' from host '%s', which is offline.", vm->get_cname(),
-           src_pm->get_cname());
+    throw simgrid::VmFailureException(
+        XBT_THROW_POINT, simgrid::xbt::string_printf("Cannot migrate VM '%s' from host '%s', which is offline.",
+                                                     vm->get_cname(), src_pm->get_cname()));
   if (not dst_pm->is_on())
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' to host '%s', which is offline.", vm->get_cname(), dst_pm->get_cname());
+    throw simgrid::VmFailureException(
+        XBT_THROW_POINT, simgrid::xbt::string_printf("Cannot migrate VM '%s' to host '%s', which is offline.",
+                                                     vm->get_cname(), dst_pm->get_cname()));
   if (vm->get_state() != simgrid::s4u::VirtualMachine::state::RUNNING)
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' that is not running yet.", vm->get_cname());
+    throw simgrid::VmFailureException(
+        XBT_THROW_POINT,
+        simgrid::xbt::string_printf("Cannot migrate VM '%s' that is not running yet.", vm->get_cname()));
   if (vm->get_impl()->is_migrating_)
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->get_cname());
+    throw simgrid::VmFailureException(
+        XBT_THROW_POINT,
+        simgrid::xbt::string_printf("Cannot migrate VM '%s' that is already migrating.", vm->get_cname()));
 
   vm->get_impl()->is_migrating_ = true;
   simgrid::s4u::VirtualMachine::on_migration_start(*vm);

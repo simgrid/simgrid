@@ -169,6 +169,16 @@ public:
   }
 };
 
+/** Exception raised when a VM fails */
+class VmFailureException : public xbt_ex {
+public:
+  VmFailureException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
+      : xbt_ex(std::move(throwpoint), std::move(message))
+  {
+    category = vm_error;
+  }
+};
+
 /** Exception raised when something got canceled before completion */
 class CancelException : public xbt_ex {
 public:
