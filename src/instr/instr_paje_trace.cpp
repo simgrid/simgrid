@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/sg_config.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/instr/instr_smpi.hpp"
@@ -30,7 +31,9 @@ void dump_comment_file(const std::string& filename)
   std::ifstream fs(filename.c_str(), std::ifstream::in);
 
   if (fs.fail())
-    THROWF(system_error, 1, "Comment file %s could not be opened for reading.", filename.c_str());
+    throw simgrid::TracingError(
+        XBT_THROW_POINT,
+        simgrid::xbt::string_printf("Comment file %s could not be opened for reading.", filename.c_str()));
 
   while (not fs.eof()) {
     std::string line;

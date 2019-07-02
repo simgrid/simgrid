@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "include/xbt/config.hpp"
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/instr/instr_private.hpp"
 #include "surf/surf.hpp"
@@ -103,7 +104,9 @@ static void TRACE_start()
     std::string filename = TRACE_get_filename();
     tracing_file.open(filename.c_str(), std::ofstream::out);
     if (tracing_file.fail()) {
-      THROWF(system_error, 1, "Tracefile %s could not be opened for writing.", filename.c_str());
+      throw simgrid::TracingError(
+          XBT_THROW_POINT,
+          simgrid::xbt::string_printf("Tracefile %s could not be opened for writing.", filename.c_str()));
     }
 
     XBT_DEBUG("Filename %s is open for writing", filename.c_str());

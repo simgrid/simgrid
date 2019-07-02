@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "src/instr/instr_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event system (types)");
@@ -19,7 +20,7 @@ Type::Type(const std::string& name, const std::string& alias, const std::string&
     : id_(instr_new_paje_id()), name_(name), color_(color), father_(father)
 {
   if (name_.empty() || alias.empty())
-    THROWF(tracing_error, 0, "can't create a new type with no name or alias");
+    throw simgrid::TracingError(XBT_THROW_POINT, "can't create a new type with no name or alias");
 
   if (father != nullptr){
     father->children_[alias].reset(this);
@@ -162,14 +163,16 @@ Type* Type::by_name(const std::string& name)
   for (auto const& elm : children_) {
     if (elm.second->name_ == name) {
       if (ret != nullptr) {
-        THROWF (tracing_error, 0, "there are two children types with the same name?");
+        throw simgrid::TracingError(XBT_THROW_POINT, "there are two children types with the same name?");
       } else {
         ret = elm.second.get();
       }
     }
   }
   if (ret == nullptr)
-    THROWF(tracing_error, 2, "type with name (%s) not found in father type (%s)", name.c_str(), get_cname());
+    throw simgrid::TracingError(
+        XBT_THROW_POINT,
+        simgrid::xbt::string_printf("type with name (%s) not found in father type (%s)", name.c_str(), get_cname()));
   return ret;
 }
 
@@ -181,7 +184,7 @@ void ValueType::add_entity_value(const std::string& name)
 void ValueType::add_entity_value(const std::string& name, const std::string& color)
 {
   if (name.empty())
-    THROWF(tracing_error, 0, "can't get a value with no name");
+    throw simgrid::TracingError(XBT_THROW_POINT, "can't get a value with no name");
 
   auto it = values_.find(name);
   if (it == values_.end()) {
@@ -195,7 +198,9 @@ EntityValue* ValueType::get_entity_value(const std::string& name)
 {
   auto ret = values_.find(name);
   if (ret == values_.end()) {
-    THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name.c_str(), get_cname());
+    throw simgrid::TracingError(
+        XBT_THROW_POINT,
+        simgrid::xbt::string_printf("value with name (%s) not found in father type (%s)", name.c_str(), get_cname()));
   }
   return &ret->second;
 }

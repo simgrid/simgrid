@@ -189,6 +189,16 @@ public:
   }
 };
 
+/** Exception raised when something is going wrong during the simulation tracing */
+class TracingError : public xbt_ex {
+public:
+  TracingError(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
+      : xbt_ex(std::move(throwpoint), std::move(message))
+  {
+    category = tracing_error;
+  }
+};
+
 class XBT_PUBLIC ForcefulKillException {
   /** @brief Exception launched to kill an actor; DO NOT BLOCK IT!
    *
