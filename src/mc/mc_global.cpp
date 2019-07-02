@@ -134,24 +134,6 @@ void dumpStack(FILE* file, unw_cursor_t&& cursor)
 
 }
 }
-
-static void MC_dump_stacks(FILE* file)
-{
-  int nstack = 0;
-  for (auto const& stack : mc_model_checker->process().stack_areas()) {
-    fprintf(file, "Stack %i:\n", nstack);
-    nstack++;
-
-    simgrid::mc::UnwindContext context;
-    unw_context_t raw_context =
-      (unw_context_t) mc_model_checker->process().read<unw_context_t>(
-        simgrid::mc::remote((unw_context_t *)stack.context));
-    context.initialize(&mc_model_checker->process(), &raw_context);
-
-    unw_cursor_t cursor = context.cursor();
-    simgrid::mc::dumpStack(file, std::move(cursor));
-  }
-}
 #endif
 
 double MC_process_clock_get(smx_actor_t process)

@@ -68,20 +68,6 @@ void TRACE_paje_dump_buffer(bool force)
   XBT_DEBUG("%s: ends", __func__);
 }
 
-static void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf)
-{
-  if (not XBT_LOG_ISENABLED(instr_paje_trace, xbt_log_priority_debug))
-    return;
-  XBT_DEBUG(">>>>>> Dump the state of the buffer. %zu events", buf->size());
-  for (auto const& event : *buf) {
-    event->print();
-    XBT_DEBUG("%p %s", event, event->stream_.str().c_str());
-    event->stream_.str("");
-    event->stream_.clear();
-  }
-  XBT_DEBUG("<<<<<<");
-}
-
 /* internal do the instrumentation module */
 void simgrid::instr::PajeEvent::insert_into_buffer()
 {
