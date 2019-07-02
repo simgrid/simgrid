@@ -307,7 +307,7 @@ inline ConfigurationElement* Config::get_dict_element(const std::string& name)
         XBT_INFO("Option %s has been renamed to %s. Consider switching.", name.c_str(), res->get_key().c_str());
       return res;
     } else {
-      THROWF(not_found_error, 0, "Bad config key: %s", name.c_str());
+      throw std::out_of_range("Bad config key: " + name);
     }
   }
 }

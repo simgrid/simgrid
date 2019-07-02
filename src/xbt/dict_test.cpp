@@ -16,11 +16,6 @@
 
 #define STR(str) ((str) ? (str) : "(null)")
 
-#define REQUIRE_THROWS_XBT_EX(...)                                                                                     \
-  REQUIRE_THROWS_MATCHES((__VA_ARGS__), xbt_ex, Catch::Matchers::Predicate<xbt_ex>(                                    \
-                                                    [](xbt_ex const& e) { return e.category == not_found_error; },     \
-                                                    "category not_found_error"))
-
 static constexpr int NB_ELM    = 20000;
 static constexpr int SIZEOFKEY = 1024;
 
@@ -95,7 +90,7 @@ static void traverse(xbt_dict_t head)
 static void search_not_found(xbt_dict_t head, const char* data)
 {
   INFO("Search " << STR(data) << " (expected not to be found)");
-  REQUIRE_THROWS_XBT_EX(data = (const char*)xbt_dict_get(head, data));
+  REQUIRE_THROWS_AS(xbt_dict_get(head, data), std::out_of_range);
 }
 
 static void count(xbt_dict_t dict, int length)
@@ -156,7 +151,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     INFO("Traversal and search the empty dictionary");
     xbt_dict_t head = xbt_dict_new_homogeneous(&free);
     traverse(head);
-    REQUIRE_THROWS_XBT_EX(debugged_remove(head, "12346"));
+    REQUIRE_THROWS_AS(debugged_remove(head, "12346"), std::out_of_range);
     xbt_dict_free(&head);
 
     INFO("Traverse the full dictionary");
@@ -228,7 +223,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     xbt_dict_t head = new_fixture();
     count(head, 7);
     INFO("Remove non existing data");
-    REQUIRE_THROWS_XBT_EX(debugged_remove(head, "Does not exist"));
+    REQUIRE_THROWS_AS(debugged_remove(head, "Does not exist"), std::out_of_range);
     traverse(head);
 
     xbt_dict_free(&head);
@@ -247,7 +242,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     debugged_remove(head, "123456");
     traverse(head);
     count(head, 3);
-    REQUIRE_THROWS_XBT_EX(debugged_remove(head, "12346"));
+    REQUIRE_THROWS_AS(debugged_remove(head, "12346"), std::out_of_range);
     traverse(head);
     debugged_remove(head, "1234");
     traverse(head);
@@ -255,7 +250,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     traverse(head);
     debugged_remove(head, "123");
     traverse(head);
-    REQUIRE_THROWS_XBT_EX(debugged_remove(head, "12346"));
+    REQUIRE_THROWS_AS(debugged_remove(head, "12346"), std::out_of_range);
     traverse(head);
 
     INFO("Free dict, create new fresh one, and then reset the dict");
