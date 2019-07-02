@@ -8,6 +8,7 @@
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
+#include "xbt/string.hpp"
 
 #include <cfloat>
 #include <queue>
@@ -124,7 +125,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
     xbt_edge_t edge     = xbt_graph_get_edge(route_graph_, node_s_v, node_e_v);
 
     if (edge == nullptr)
-      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->get_cname(), dst->get_cname());
+      throw std::invalid_argument(xbt::string_printf("No route from '%s' to '%s'", src->get_cname(), dst->get_cname()));
 
     RouteCreationArgs* e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
 
@@ -193,7 +194,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
     xbt_edge_t edge        = xbt_graph_get_edge(route_graph_, node_pred_v, node_v);
 
     if (edge == nullptr)
-      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->get_cname(), dst->get_cname());
+      throw std::invalid_argument(xbt::string_printf("No route from '%s' to '%s'", src->get_cname(), dst->get_cname()));
 
     RouteCreationArgs* e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
 
@@ -265,10 +266,12 @@ void DijkstraZone::new_edge(int src_id, int dst_id, simgrid::kernel::routing::Ro
   // Make sure that this graph edge was not already added to the graph
   if (xbt_graph_get_edge(route_graph_, src, dst) != nullptr) {
     if (route->gw_dst == nullptr || route->gw_src == nullptr)
-      THROWF(arg_error, 0, "Route from %s to %s already exists", route->src->get_cname(), route->dst->get_cname());
+      throw std::invalid_argument(
+          xbt::string_printf("Route from %s to %s already exists", route->src->get_cname(), route->dst->get_cname()));
     else
-      THROWF(arg_error, 0, "Route from %s@%s to %s@%s already exists", route->src->get_cname(),
-             route->gw_src->get_cname(), route->dst->get_cname(), route->gw_dst->get_cname());
+      throw std::invalid_argument(xbt::string_printf("Route from %s@%s to %s@%s already exists",
+                                                     route->src->get_cname(), route->gw_src->get_cname(),
+                                                     route->dst->get_cname(), route->gw_dst->get_cname()));
   }
 
   // Finally add it

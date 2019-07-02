@@ -87,7 +87,7 @@ Coll_allgatherv_pair::allgatherv(const void *send_buff, int send_count,
   unsigned int num_procs = comm->size();
 
   if((num_procs&(num_procs-1)))
-    THROWF(arg_error,0, "allgatherv pair algorithm can't be used with non power of two number of processes ! ");
+    throw std::invalid_argument("allgatherv pair algorithm can't be used with non power of two number of processes!");
 
   extent = send_type->get_extent();
 

@@ -32,7 +32,9 @@ if(comm->get_leaders_comm()==MPI_COMM_NULL){
   }
 
   if(comm_size%num_core)
-    THROWF(arg_error,0, "allgather loosely lr algorithm can't be used with non multiple of NUM_CORE=%d number of processes ! ",num_core);
+    throw std::invalid_argument(xbt::string_printf(
+        "allgather loosely lr algorithm can't be used with non multiple of NUM_CORE=%d number of processes!",
+        num_core));
 
   rank = comm->rank();
   MPI_Aint rextent, sextent;

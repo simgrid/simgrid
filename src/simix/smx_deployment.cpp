@@ -125,7 +125,7 @@ void SIMIX_process_set_function(const char* process_host, const char* process_fu
 
   sg_host_t host = sg_host_by_name(process_host);
   if (not host)
-    THROWF(arg_error, 0, "Host '%s' unknown", process_host);
+    throw std::invalid_argument(simgrid::xbt::string_printf("Host '%s' unknown", process_host));
   actor.host = process_host;
   actor.args.push_back(process_function);
   /* add arguments */

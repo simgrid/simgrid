@@ -23,7 +23,7 @@ int Coll_allreduce_rab1::allreduce(const void *sbuff, void *rbuff,
   unsigned int nprocs = comm->size();
 
   if((nprocs&(nprocs-1)))
-    THROWF(arg_error,0, "allreduce rab1 algorithm can't be used with non power of two number of processes ! ");
+    throw std::invalid_argument("allreduce rab1 algorithm can't be used with non power of two number of processes!");
 
   extent = dtype->get_extent();
 

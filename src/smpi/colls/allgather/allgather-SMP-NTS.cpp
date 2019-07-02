@@ -41,7 +41,8 @@ int Coll_allgather_SMP_NTS::allgather(const void *sbuf, int scount,
   int num_core_in_current_smp = num_core;
 
   if(comm_size%num_core)
-    THROWF(arg_error,0, "allgather SMP NTS algorithm can't be used with non multiple of NUM_CORE=%d number of processes ! ", num_core);
+    throw std::invalid_argument(xbt::string_printf(
+        "allgather SMP NTS algorithm can't be used with non multiple of NUM_CORE=%d number of processes!", num_core));
 
   /* for too small number of processes, use default implementation */
   if (comm_size <= num_core) {

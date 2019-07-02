@@ -34,13 +34,13 @@ Peer::Peer(std::vector<std::string> args)
     id       = std::stoi(args[1]);
     mailbox_ = simgrid::s4u::Mailbox::by_name(std::to_string(id));
   } catch (const std::invalid_argument&) {
-    throw std::invalid_argument(std::string("Invalid ID:") + args[1].c_str());
+    throw std::invalid_argument("Invalid ID:" + args[1]);
   }
 
   try {
     deadline = std::stod(args[2]);
   } catch (const std::invalid_argument&) {
-    throw std::invalid_argument(std::string("Invalid deadline:") + args[2].c_str());
+    throw std::invalid_argument("Invalid deadline:" + args[2]);
   }
   xbt_assert(deadline > 0, "Wrong deadline supplied");
 

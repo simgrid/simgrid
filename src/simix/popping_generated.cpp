@@ -173,8 +173,9 @@ void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {
     case NUM_SIMCALLS:
       break;
     case SIMCALL_NONE:
-      THROWF(arg_error, 0, "Asked to do the noop syscall on %s@%s", simcall->issuer->get_cname(),
-             sg_host_get_name(simcall->issuer->get_host()));
+      throw std::invalid_argument(simgrid::xbt::string_printf("Asked to do the noop syscall on %s@%s",
+                                                              simcall->issuer->get_cname(),
+                                                              sg_host_get_name(simcall->issuer->get_host())));
     default:
       THROW_IMPOSSIBLE;
   }

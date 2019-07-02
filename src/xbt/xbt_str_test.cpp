@@ -29,9 +29,7 @@ void test_split_quoted(const std::string& name, const char* input, const std::ve
 template <typename F> void test_parse_error(F function, const std::string& name, const char* str)
 {
   INFO(name);
-  REQUIRE_THROWS_MATCHES(function(str, "Parse error"), xbt_ex,
-                         Catch::Matchers::Predicate<xbt_ex>([](xbt_ex const& e) { return e.category == arg_error; },
-                                                            "category arg_error"));
+  REQUIRE_THROWS_AS(function(str, "Parse error"), std::invalid_argument);
 }
 
 template <typename F, typename T> void test_parse_ok(F function, const std::string& name, const char* str, T value)

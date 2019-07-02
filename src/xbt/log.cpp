@@ -5,11 +5,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/xbt_modinter.h"
 #include "src/xbt/log_private.hpp"
+#include "src/xbt_modinter.h"
 #include "xbt/asserts.h"
 #include "xbt/dynar.h"
 #include "xbt/str.h"
+#include "xbt/string.hpp"
 
 #include <algorithm>
 #include <mutex>
@@ -405,8 +406,8 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
     }else if (i < xbt_log_priority_infinite) {
       set.thresh = (e_xbt_log_priority_t)i;
     } else {
-      THROWF(arg_error, 0,
-             "Unknown priority name: %s (must be one of: trace,debug,verbose,info,warning,error,critical)", value);
+      throw std::invalid_argument(simgrid::xbt::string_printf(
+          "Unknown priority name: %s (must be one of: trace,debug,verbose,info,warning,error,critical)", value));
     }
   } else if (strncmp(option, "additivity", option_len) == 0) {
     set.additivity = (strcasecmp(value, "ON") == 0 || strcasecmp(value, "YES") == 0 || strcmp(value, "1") == 0);
@@ -422,7 +423,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
     } else if (strcmp(value, "stdout") == 0) {
       set.appender = xbt_log_appender_stream(stdout);
     } else {
-      THROWF(arg_error, 0, "Unknown appender log type: '%s'", value);
+      throw std::invalid_argument(simgrid::xbt::string_printf("Unknown appender log type: '%s'", value));
     }
   } else if (strncmp(option, "fmt", option_len) == 0) {
     set.fmt = std::string(value);

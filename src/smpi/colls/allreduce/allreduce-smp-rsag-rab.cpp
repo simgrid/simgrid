@@ -39,7 +39,8 @@ int Coll_allreduce_smp_rsag_rab::allreduce(const void *sbuf, void *rbuf, int cou
   comm_size = comm->size();
 
   if((comm_size&(comm_size-1)))
-    THROWF(arg_error,0, "allreduce smp rsag rab algorithm can't be used with non power of two number of processes ! ");
+    throw std::invalid_argument(
+        "allreduce smp rsag rab algorithm can't be used with non power of two number of processes!");
 
   rank = comm->rank();
   MPI_Aint extent;

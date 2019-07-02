@@ -54,10 +54,12 @@ int Coll_allgather_mvapich2_smp::allgather(const void *sendbuf,int sendcnt, MPI_
   }
 
   if (not comm->is_uniform() || not comm->is_blocked())
-    THROWF(arg_error,0, "allgather MVAPICH2 smp algorithm can't be used with irregular deployment. Please insure that processes deployed on the same node are contiguous and that each node has the same number of processes");
+    throw std::invalid_argument("allgather MVAPICH2 smp algorithm can't be used with irregular deployment. Please "
+                                "insure that processes deployed on the same node are contiguous and that each node has "
+                                "the same number of processes");
 
-    if (recvcnt == 0) {
-        return MPI_SUCCESS;
+  if (recvcnt == 0) {
+    return MPI_SUCCESS;
     }
 
     rank = comm->rank();

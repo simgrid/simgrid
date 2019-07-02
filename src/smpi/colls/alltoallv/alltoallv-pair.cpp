@@ -46,7 +46,7 @@ int Coll_alltoallv_pair::alltoallv(const void *send_buff, const int *send_counts
   num_procs = comm->size();
 
   if((num_procs&(num_procs-1)))
-    THROWF(arg_error,0, "alltoallv pair algorithm can't be used with non power of two number of processes ! ");
+    throw std::invalid_argument("alltoallv pair algorithm can't be used with non power of two number of processes!");
 
   send_chunk = send_type->get_extent();
   recv_chunk = recv_type->get_extent();
