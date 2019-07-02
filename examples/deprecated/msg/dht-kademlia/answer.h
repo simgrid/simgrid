@@ -18,8 +18,6 @@ typedef struct s_node_answer {
 
 typedef s_answer_t *answer_t;
 
-#include "node.h"
-
 answer_t answer_init(unsigned int destination_id);
 void answer_free(answer_t answer);
 void answer_print(answer_t answer);
