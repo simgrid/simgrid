@@ -364,11 +364,7 @@ static bool SIMIX_execute_timers()
     // FIXME: make the timers being real callbacks (i.e. provide dispatchers that read and expand the args)
     smx_timer_t timer = simgrid::simix::simix_timers.top().second;
     simgrid::simix::simix_timers.pop();
-    try {
-      timer->callback();
-    } catch (...) {
-      xbt_die("Exception thrown out of timer callback");
-    }
+    timer->callback();
     delete timer;
   }
   return result;
