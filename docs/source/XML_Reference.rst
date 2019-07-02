@@ -267,6 +267,7 @@ and a download link.
 
 :``id``: Name of the host. Must be unique on the whole platform.
 :``speed``: Computational power (in flop/s).
+
    If you use DVFS, provide a comma-separated list of values for each pstate (see :ref:`howto_dvfs`). 
 :``bw_in``: Bandwidth of the private downstream link, along with its
 	    unit. See :ref:`pf_tag_link`.
@@ -298,7 +299,8 @@ and a download link.
 **Parent tags:** none (this is the root tag of every file) |br|
 **Children tags:** :ref:`pf_tag_config` (must come first),
 :ref:`pf_tag_cluster`, :ref:`pf_tag_cabinet`, :ref:`pf_tag_peer`,
-:ref:`pf_tag_zone`, :ref:`pf_tag_trace`, :ref:`pf_tag_trace_connect` |br|
+:ref:`pf_tag_zone`, :ref:`pf_tag_trace`, :ref:`pf_tag_trace_connect`, or
+:ref:`pf_tag_actor` in :ref:`deployment <Deploying_your_Applications>` files.|br|
 **Attributes:**
 
 :``version``: Version of the DTD, describing the whole XML format.

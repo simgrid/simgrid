@@ -79,6 +79,7 @@ of every page. Bugs in the code should be reported
          XML Reference <XML_Reference.rst>
       Describing the Experimental Setup <Experimental_Setup.rst>
          Configuring SimGrid <Configuring_SimGrid.rst>
+         Deploying your Application <Deploying_your_Application.rst>
       The SimGrid Models <models.rst>
          ns-3 as a SimGrid model <ns3.rst>
       Simulation Outcomes <outcomes.rst>

@@ -836,7 +836,6 @@ set(DOC_SOURCES
   doc/Layout.xml
 
   doc/doxygen/FAQ.doc
-  doc/doxygen/deployment.doc
   doc/doxygen/inside.doc
   doc/doxygen/inside_tests.doc
   doc/doxygen/inside_cmake.doc
@@ -895,6 +894,7 @@ set(DOC_SOURCES
   docs/source/app_smpi.rst
   docs/source/community.rst
   docs/source/Configuring_SimGrid.rst
+  doc/doxygen/Deploying_your_Application.rst
   docs/source/Experimental_Setup.rst
   docs/source/index.rst
   docs/source/Introduction.rst

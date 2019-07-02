@@ -31,6 +31,7 @@ to simulate.
 Actors: the Active Entities
 ===========================
 
+.. _s4u_ex_actors:
 
 Starting and Stoping Actors
 ---------------------------

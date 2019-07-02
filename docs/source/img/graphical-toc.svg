@@ -25,8 +25,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.8"
-     inkscape:cx="205.77445"
-     inkscape:cy="161.83279"
+     inkscape:cx="24.34588"
+     inkscape:cy="160.40421"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -2300,7 +2300,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -6208,7 +6208,7 @@
            id="tspan2827" /></text>
     </a>
     <a
-       xlink:href="deployment.html"
+       xlink:href="Deploying_your_Application.html"
        inkscape:label="DeployLink"
        transform="translate(-2.8431311e-6,13.229176)"
        id="a6179">
@@ -6453,17 +6453,17 @@
       <text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:6.61458302px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         x="66.196823"
+         x="69.626068"
          y="73.481842"
          id="ProfileText-7-62"
          inkscape:label="MPI Text"><tspan
            sodipodi:role="line"
            id="tspan1034-5-6"
-           x="66.196823"
+           x="69.626068"
            y="73.481842"
-           style="font-size:4.93888903px;stroke-width:0.26458332px">MPI Legacy Code</tspan><tspan
+           style="font-size:4.93888903px;stroke-width:0.26458332px">Real MPI Code</tspan><tspan
            sodipodi:role="line"
-           x="66.196823"
+           x="69.626068"
            y="80.096428"
            style="font-size:4.93888903px;stroke-width:0.26458332px"
            id="tspan2316-1" /></text>

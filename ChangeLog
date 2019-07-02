@@ -4,6 +4,7 @@ SimGrid (3.23.1) NOT RELEASED YET (v3.24 expected September 23. 7:50 UTC)
 
 Documentation:
  - Nicer introduction page.
+ - Migrate the "Deploy your application" page to the new doc.
  - Move Java as a subtree of MSG.
 
 General:
