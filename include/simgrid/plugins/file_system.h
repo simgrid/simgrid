@@ -10,6 +10,14 @@
 #include <xbt/base.h>
 #include <xbt/dict.h>
 
+#ifdef __cplusplus
+#include <xbt/Extendable.hpp>
+
+#include <map>
+#include <memory>
+#include <string>
+#endif
+
 // C interface
 ////////////////
 typedef sg_file_t msg_file_t; // MSG backwards compatibility
@@ -70,11 +78,6 @@ SG_END_DECL()
 //////////////////
 
 #ifdef __cplusplus
-#include <xbt/Extendable.hpp>
-
-#include <map>
-#include <memory>
-#include <string>
 
 namespace simgrid {
 namespace s4u {

@@ -15,6 +15,8 @@
 #include "xbt/config.hpp"
 
 #include <algorithm>
+#include <boost/algorithm/string.hpp> /* trim_right / trim_left */
+#include <boost/tokenizer.hpp>
 #include <cfloat> /* DBL_MAX */
 #include <cinttypes>
 #include <cstdint> /* intmax_t */
@@ -22,6 +24,14 @@
 #include <fcntl.h>
 #include <fstream>
 #include <sys/stat.h>
+
+#if SG_HAVE_SENDFILE
+#include <sys/sendfile.h>
+#endif
+
+#if HAVE_PAPI
+#include "papi.h"
+#endif
 
 #if not defined(__APPLE__) && not defined(__HAIKU__)
 #include <link.h>
@@ -39,13 +49,7 @@ constexpr bool HAVE_WORKING_MMAP = false;
 constexpr bool HAVE_WORKING_MMAP = true;
 #endif
 
-#if SG_HAVE_SENDFILE
-#include <sys/sendfile.h>
-#endif
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (kernel)");
-#include <boost/tokenizer.hpp>
-#include <boost/algorithm/string.hpp> /* trim_right / trim_left */
 
 #if SMPI_IFORT
   extern "C" void for_rtl_init_ (int *, char **);
@@ -68,7 +72,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
 #endif
 
 #if HAVE_PAPI
-#include "papi.h"
 std::string papi_default_config_name = "default";
 std::map</* computation unit name */ std::string, papi_process_data> units2papi_setup;
 #endif
