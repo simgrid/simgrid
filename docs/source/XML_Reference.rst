@@ -300,7 +300,7 @@ and a download link.
 **Children tags:** :ref:`pf_tag_config` (must come first),
 :ref:`pf_tag_cluster`, :ref:`pf_tag_cabinet`, :ref:`pf_tag_peer`,
 :ref:`pf_tag_zone`, :ref:`pf_tag_trace`, :ref:`pf_tag_trace_connect`, or
-:ref:`pf_tag_actor` in :ref:`deployment <Deploying_your_Applications>` files.|br|
+:ref:`pf_tag_actor` in :ref:`deployment <deploy>` files.|br|
 **Attributes:**
 
 :``version``: Version of the DTD, describing the whole XML format.

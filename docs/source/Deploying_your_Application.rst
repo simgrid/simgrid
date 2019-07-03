@@ -33,20 +33,21 @@ archive for files named ``???_d.xml`` for more):
    <?xml version='1.0'?>
    <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
    <platform version="4.1">
-     <!-- The following starts an actor that runs the function `alice` on the given host.
-       -- It is not given any parameter.
+     <!-- The following starts an actor that runs the function `alice()` on the given host.
+       -- It is not given any parameter, so its args is empty.
        -->
      <actor host="host1" function="alice" />
 
      <!-- The following starts another actor that runs `bob()` on host2.
-       -- The argv of this actor contains "3" and "3000" on creation.
+       -- The args of this actor contains "3" and "3000" on creation.
        -->
      <actor host="host2" function="bob" />
        <argument value="3"/>
        <argument value="3000"/>
      </actor>
 
-     <!-- Carole runs on 'host3', has 1 parameter "42" in its argv and one property -->
+     <!-- Carole runs on 'host3', has 1 parameter "42" in its argv and one property. 
+       -- Use simgrid::s4u::Actor::get_property() to retrive it.-->
      <actor host="host3" function="carol">
        <argument value="42"/>
        <prop id="SomeProp" value="SomeValue"/>
