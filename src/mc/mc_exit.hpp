@@ -19,11 +19,11 @@ constexpr int SIMGRID_MC_EXIT_ERROR           = 63;
 
 namespace simgrid {
 namespace mc {
-class XBT_PUBLIC DeadlockError {
+class XBT_PUBLIC DeadlockError : public std::exception {
 };
-class XBT_PUBLIC TerminationError {
+class XBT_PUBLIC TerminationError : public std::exception {
 };
-class XBT_PUBLIC LivenessError {
+class XBT_PUBLIC LivenessError : public std::exception {
 };
 }
 }
