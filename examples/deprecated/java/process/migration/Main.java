@@ -36,6 +36,7 @@ class Main {
         policeman.start();
         Emigrant emigrant   = new Emigrant("Jacquelin","emigrant");
         emigrant.start();
+        processToMigrate = emigrant;
     } catch (HostNotFoundException e){
       Msg.error("Create processes failed!");
       e.printStackTrace();
