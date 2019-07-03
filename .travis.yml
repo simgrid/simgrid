@@ -48,7 +48,12 @@ addons:
 #   - ls -lR $TRAVIS_BUILD_DIR/LuaInstall
 
 script:
-   - if [[ "$TRAVIS_OS_NAME" != "windows"   ]]; then
+   - if [[ "$TRAVIS_OS_NAME" == "windows"   ]]; then
+       choco install boost-msvc-12 python jdk8
+       CC=clang CXX=clang++ cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .;
+       mingw32-make.exe VERBOSE=1 java-all python-bindings; 
+       ctest --output-on-failure -R java;
+     else
        if [[ "$TRAVIS_OS_NAME" == "osx"   ]]; then 
          cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON .; 
        fi
@@ -58,11 +63,6 @@ script:
        make -j2 VERBOSE=1 all tests;
        ctest -j2 --output-on-failure;
      else
-       choco install boost-msvc-12 python jdk8
-       CC=clang CXX=clang++ cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .;
-       mingw32-make.exe VERBOSE=1 java-all python-bindings; 
-       ctest --output-on-failure -R java;
-     fi
 notifications:
   recipients:
     - martin.quinson@ens-rennes.fr
