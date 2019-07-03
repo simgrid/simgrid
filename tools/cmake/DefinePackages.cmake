@@ -894,7 +894,7 @@ set(DOC_SOURCES
   docs/source/app_smpi.rst
   docs/source/community.rst
   docs/source/Configuring_SimGrid.rst
-  doc/doxygen/Deploying_your_Application.rst
+  docs/source/Deploying_your_Application.rst
   docs/source/Experimental_Setup.rst
   docs/source/index.rst
   docs/source/Introduction.rst
