@@ -50,7 +50,7 @@ addons:
 script:
    - if [[ "$TRAVIS_OS_NAME" == "windows"   ]]; then
        choco install boost-msvc-12 python jdk8;
-       CC=clang CXX=clang++ cmake -G "MSYS Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .;
+       CC=clang CXX=clang++ cmake -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .;
        make VERBOSE=1 java-all; 
        ctest --output-on-failure -R java;
      fi
