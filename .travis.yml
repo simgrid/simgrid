@@ -62,7 +62,7 @@ script:
        fi
        make -j2 VERBOSE=1 all tests;
        ctest -j2 --output-on-failure;
-     else
+     fi
 notifications:
   recipients:
     - martin.quinson@ens-rennes.fr
