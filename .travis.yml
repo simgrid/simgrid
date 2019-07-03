@@ -52,7 +52,7 @@ script:
        choco install boost-msvc-12 python jdk8;
        export CC=clang;
        export CXX=clang++;
-       export PATH='C:\Python37':$PATH
+       export PATH='C:\Python37':$PATH;
        cmake -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .;
        make VERBOSE=1 java-all; 
        ctest --output-on-failure -R java;
