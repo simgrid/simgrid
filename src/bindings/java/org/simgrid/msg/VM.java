@@ -68,6 +68,7 @@ public class VM extends Host {
 	public static native VM getVMByName(String name);
 
 	/* Make sure that the GC also destroys the C object */
+	@Deprecated @Override
 	protected void finalize() throws Throwable {
 		nativeFinalize();
 	}

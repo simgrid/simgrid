@@ -67,7 +67,7 @@ public class Semaphore {
 
 
 	/** Deletes this semaphore when the GC reclaims it */
-	@Override
+	@Deprecated @Override
 	protected void finalize() throws Throwable {
 		nativeFinalize();
 	}

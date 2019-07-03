@@ -30,7 +30,7 @@ public class Comm {
 
 	}
 	/** Destroy the C communication object, when the GC reclaims the java part. */
-	@Override
+	@Deprecated @Override
 	protected void finalize() throws Throwable{
 		nativeFinalize();
 	}

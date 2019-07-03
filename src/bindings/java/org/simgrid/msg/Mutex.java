@@ -18,7 +18,7 @@ public class Mutex {
 		init();
 	}
 
-	@Override
+	@Deprecated @Override
 	protected void finalize() throws Throwable {
 		nativeFinalize();
 	}
