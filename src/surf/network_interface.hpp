@@ -160,8 +160,6 @@ public:
   Metric latency_                   = {1.0, 0, nullptr};
   Metric bandwidth_                 = {1.0, 0, nullptr};
 
-  /** @brief A link can have several bandwith attach to it (mostly use by wifi model) */
-  std::vector<Metric> bandwidths_;
 };
 
 /**********

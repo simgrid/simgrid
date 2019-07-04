@@ -47,8 +47,6 @@ class NetworkCm02Link : public LinkImpl {
 public:
   NetworkCm02Link(NetworkCm02Model* model, const std::string& name, double bandwidth, double latency,
                   s4u::Link::SharingPolicy policy, lmm::System* system);
-  NetworkCm02Link(NetworkCm02Model* model, const std::string& name, std::vector<double> bandwidths,
-                  s4u::Link::SharingPolicy policy, lmm::System* system);
   virtual ~NetworkCm02Link() = default;
   void apply_event(kernel::profile::Event* event, double value) override;
   void set_bandwidth(double value) override;
