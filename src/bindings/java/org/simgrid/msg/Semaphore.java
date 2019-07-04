@@ -66,7 +66,10 @@ public class Semaphore {
 	}
 
 
-	/** Deletes this semaphore when the GC reclaims it */
+	/**
+	 * Deletes this semaphore when the GC reclaims it
+	 * @deprecated (from Java9 onwards)
+	 */
 	@Deprecated @Override
 	protected void finalize() throws Throwable {
 		nativeFinalize();

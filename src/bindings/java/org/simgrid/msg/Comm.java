@@ -29,7 +29,10 @@ public class Comm {
 	protected Comm() {
 
 	}
-	/** Destroy the C communication object, when the GC reclaims the java part. */
+	/**
+	 * Destroy the C communication object, when the GC reclaims the java part.
+	 * @deprecated (from Java9 onwards)
+	 */
 	@Deprecated @Override
 	protected void finalize() throws Throwable{
 		nativeFinalize();

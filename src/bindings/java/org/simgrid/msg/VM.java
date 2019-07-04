@@ -67,7 +67,10 @@ public class VM extends Host {
 	/** Retrieve a VM from its name */
 	public static native VM getVMByName(String name);
 
-	/* Make sure that the GC also destroys the C object */
+	/**
+	 * Make sure that the GC also destroys the C object
+	 * @deprecated (from Java9 onwards)
+	 */
 	@Deprecated @Override
 	protected void finalize() throws Throwable {
 		nativeFinalize();
