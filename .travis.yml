@@ -55,8 +55,8 @@ script:
        export CXX=g++;
        export PATH='C:\Python37':'C:\boost_1_58_0':$PATH;
        export BOOST_ROOT='C:\boost_1_58_0';
-       ls "C:\";
-       ls C:\boost.*;
+       ls 'C:/';
+       ls C:/boost.*;
        choco install python jdk8;
        export JAVA_HOME='C:/Program Files/Java/jdk1.8.0_211';
        cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .;
