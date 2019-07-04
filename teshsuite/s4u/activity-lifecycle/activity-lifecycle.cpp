@@ -482,7 +482,7 @@ static void test_link_off_during_wait_any()
   const double start = simgrid::s4u::Engine::get_clock();
 
   simgrid::s4u::ActorPtr receiver = simgrid::s4u::Actor::create("receiver", all_hosts[1], [&start]() {
-    assert_exit(false, 2);
+    assert_exit(false, start + 2);
     bool receiver_got_network_failure_execution = false;
     bool receiver_got_base_execution = false;
     int *data;
@@ -503,7 +503,7 @@ static void test_link_off_during_wait_any()
   });
 
   simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[2], [&start]() {
-    assert_exit(false, 2);
+    assert_exit(false, start + 2);
     int data = 42;
     bool sender_got_network_failure_execution = false;
     bool sender_got_base_execution = false;
