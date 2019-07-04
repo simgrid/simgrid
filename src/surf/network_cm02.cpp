@@ -267,6 +267,16 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const std::string& nam
   simgrid::s4u::Link::on_creation(this->piface_);
 }
 
+NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const std::string& name, std::vector<double> bandwidths,
+                                 s4u::Link::SharingPolicy policy, lmm::System* system)
+    : NetworkCm02Link(model, name, 0, 0, policy, system)
+{
+  /* Setup Metrics for bandwidths_ */
+  for (auto bandwith : bandwidths) {
+    bandwidths_.push_back({bandwith, 1.0, nullptr});
+  }
+}
+
 void NetworkCm02Link::apply_event(kernel::profile::Event* triggered, double value)
 {
   /* Find out which of my iterators was triggered, and react accordingly */
