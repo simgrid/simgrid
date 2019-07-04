@@ -20,7 +20,7 @@ class NetworkWifiLink : public NetworkCm02Link {
   std::map<xbt::string, int> host_rates;
 
   /** @brief Hold every rates available for this Access Point */
-  double* rates;
+  // double* rates; FIXME: unused
 
 public:
   void set_host_rate(sg_host_t host, int rate_level);
