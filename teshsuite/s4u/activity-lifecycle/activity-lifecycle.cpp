@@ -479,10 +479,8 @@ static void test_link_off_during_transfer()
 
 static void test_link_off_during_wait_any()
 {
-  const double start = simgrid::s4u::Engine::get_clock();
-
-  simgrid::s4u::ActorPtr receiver = simgrid::s4u::Actor::create("receiver", all_hosts[1], [&start]() {
-    assert_exit(false, start + 2);
+  simgrid::s4u::ActorPtr receiver = simgrid::s4u::Actor::create("receiver", all_hosts[1], []() {
+    assert_exit(false, 2);
     bool receiver_got_network_failure_execution = false;
     bool receiver_got_base_execution = false;
     int *data;
@@ -502,8 +500,8 @@ static void test_link_off_during_wait_any()
     xbt_assert(not receiver_got_base_execution, "The receiver should not have gotten a base Exception");
   });
 
-  simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[2], [&start]() {
-    assert_exit(false, start + 2);
+  simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[2], []() {
+    assert_exit(false, 2);
     int data = 42;
     bool sender_got_network_failure_execution = false;
     bool sender_got_base_execution = false;
@@ -520,9 +518,12 @@ static void test_link_off_during_wait_any()
     xbt_assert(not sender_got_base_execution, "The sender should not have gotten a base Exception");
   });
 
-    simgrid::s4u::this_actor::sleep_for(2.0);
-    XBT_VERB("link off");
-    simgrid::s4u::Link::by_name("link1")->turn_off();
+  simgrid::s4u::this_actor::sleep_for(2.0);
+  XBT_VERB("link off");
+  simgrid::s4u::Link::by_name("link1")->turn_off();
+  simgrid::s4u::this_actor::sleep_for(2.0);
+  XBT_VERB("link on");
+  simgrid::s4u::Link::by_name("link1")->turn_on();
 }
 
 
