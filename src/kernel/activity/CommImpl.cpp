@@ -692,8 +692,7 @@ void CommImpl::finish()
       try {
         std::rethrow_exception(simcall->issuer->exception_);
       } catch (simgrid::Exception& e) {
-        e.value                     = rank;
-        simcall->issuer->exception_ = std::make_exception_ptr(e);
+        e.value = rank;
       }
     }
 

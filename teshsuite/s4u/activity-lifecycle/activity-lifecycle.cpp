@@ -482,7 +482,7 @@ static void test_link_off_during_wait_any()
   const double start = simgrid::s4u::Engine::get_clock();
 
   simgrid::s4u::ActorPtr receiver = simgrid::s4u::Actor::create("receiver", all_hosts[1], [&start]() {
-    assert_exit(false, 2);
+    assert_exit(false, start + 2);
     bool receiver_got_network_failure_execution = false;
     bool receiver_got_base_execution = false;
     int *data;
@@ -499,11 +499,11 @@ static void test_link_off_during_wait_any()
       receiver_got_base_execution = true;
     }
     xbt_assert(receiver_got_network_failure_execution, "The receiver should have gotten a NetworkFailureException");
-    xbt_assert(not receiver_got_network_failure_execution, "The receiver should not have gotten a base Exception");
+    xbt_assert(not receiver_got_base_execution, "The receiver should not have gotten a base Exception");
   });
 
   simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[2], [&start]() {
-    assert_exit(false, 2);
+    assert_exit(false, start + 2);
     int data = 42;
     bool sender_got_network_failure_execution = false;
     bool sender_got_base_execution = false;
@@ -517,7 +517,7 @@ static void test_link_off_during_wait_any()
       sender_got_base_execution = true;
     }
     xbt_assert(sender_got_network_failure_execution, "The sender should have gotten a NetworkFailureException");
-    xbt_assert(not sender_got_network_failure_execution, "The sender should not have gotten a base Exception");
+    xbt_assert(not sender_got_base_execution, "The sender should not have gotten a base Exception");
   });
 
     simgrid::s4u::this_actor::sleep_for(2.0);
@@ -554,7 +554,7 @@ static void main_dispatcher()
   run_test("comm turn link off before send/recv", test_link_off_before_send_recv);
   run_test("comm turn link off between send/recv", test_link_off_between_send_recv);
   run_test("comm turn link off during transfer", test_link_off_during_transfer);
-//  run_test("comm turn link off during wait_any", test_link_off_during_wait_any);
+  run_test("comm turn link off during wait_any", test_link_off_during_wait_any);
 }
 
 int main(int argc, char* argv[])
