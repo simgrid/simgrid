@@ -312,7 +312,6 @@ include src/kernel/context/ContextSwapped.hpp
 include src/kernel/context/ContextThread.cpp
 include src/kernel/context/ContextThread.hpp
 include src/simix/smx_deployment.cpp
-include src/simix/smx_environment.cpp
 include src/simix/smx_global.cpp
 include src/simix/popping.cpp
 include src/kernel/activity/ActivityImpl.cpp
@@ -340,8 +339,6 @@ include src/kernel/actor/ActorImpl.hpp
 include src/simix/popping_generated.cpp
 include src/kernel/context/ContextBoost.hpp
 include src/kernel/context/ContextBoost.cpp
-include src/kernel/context/ContextUnix.hpp
-include src/kernel/context/ContextUnix.cpp
 include src/smpi/bindings/smpi_mpi.cpp
 include src/smpi/bindings/smpi_pmpi.cpp
 include src/smpi/bindings/smpi_pmpi_coll.cpp
@@ -607,7 +604,6 @@ include src/xbt/xbt_replay.cpp
 include src/xbt/xbt_str.cpp
 include src/xbt/xbt_virtu.c
 include src/xbt_modinter.h
-include src/xbt/mmalloc/mm.c
 include src/bindings/java/MANIFEST.in
 include src/bindings/python/simgrid_python.cpp
 include src/include/mc/datatypes.h
@@ -689,6 +685,8 @@ include examples/smpi/mc/only_send_deterministic.tesh
 include examples/smpi/mc/non_deterministic.tesh
 include examples/deprecated/java/.classpath
 include examples/deprecated/java/.project
+include src/kernel/context/ContextUnix.hpp
+include src/kernel/context/ContextUnix.cpp
 include include/simgrid/jedule/jedule_events.hpp
 include include/simgrid/jedule/jedule.hpp
 include include/simgrid/jedule/jedule_platform.hpp
@@ -701,6 +699,8 @@ include src/bindings/lua/lua_host.cpp
 include src/bindings/lua/lua_platf.cpp
 include src/bindings/lua/lua_utils.cpp
 include src/bindings/lua/simgrid_lua.cpp
+include src/mc/sosp/Snapshot_test.cpp
+include src/mc/sosp/PageStore_test.cpp
 include src/xbt/unit-tests_main.cpp
 include src/kernel/resource/profile/Profile_test.cpp
 include src/xbt/config_test.cpp
@@ -708,8 +708,6 @@ include src/xbt/dict_test.cpp
 include src/xbt/dynar_test.cpp
 include src/xbt/xbt_str_test.cpp
 include src/kernel/lmm/maxmin_test.cpp
-include src/mc/sosp/Snapshot_test.cpp
-include src/mc/sosp/PageStore_test.cpp
 include CMakeLists.txt
 include FindSimGrid.cmake
 include tools/cmake/Tests.cmake
@@ -751,6 +749,7 @@ include tools/stack-cleaner/clean-stack-filter
 include tools/stack-cleaner/compiler-wrapper
 include tools/stack-cleaner/README
 include setup.py
+include MANIFEST.in
 include MANIFEST.in.in
 include examples/s4u/CMakeLists.txt
 include examples/smpi/CMakeLists.txt
@@ -827,7 +826,6 @@ include doc/webcruft/simgrid_logo_2011_small.png
 include doc/Doxyfile.in
 include doc/Layout.xml
 include doc/doxygen/FAQ.doc
-include doc/doxygen/deployment.doc
 include doc/doxygen/inside.doc
 include doc/doxygen/inside_tests.doc
 include doc/doxygen/inside_cmake.doc
@@ -856,6 +854,15 @@ include docs/requirements.txt
 include docs/source/conf.py
 include docs/source/Doxyfile
 include docs/source/_ext/hidden_code_block.py
+include docs/source/_ext/javasphinx-apidoc
+include docs/source/_ext/javasphinx/apidoc.py
+include docs/source/_ext/javasphinx/compiler.py
+include docs/source/_ext/javasphinx/domain.py
+include docs/source/_ext/javasphinx/extdoc.py
+include docs/source/_ext/javasphinx/formatter.py
+include docs/source/_ext/javasphinx/htmlrst.py
+include docs/source/_ext/javasphinx/__init__.py
+include docs/source/_ext/javasphinx/util.py
 include docs/source/_templates/breadcrumbs.html
 include docs/source/img/eclipseScreenShot.png
 include docs/source/img/extlink.png
@@ -868,14 +875,15 @@ include docs/source/img/smpi_simgrid_alltoall_ring_16.png
 include docs/source/img/zone_hierarchy.png
 include docs/ignored_symbols
 include docs/source/application.rst
-include docs/source/app_java.rst
 include docs/source/app_msg.rst
 include docs/source/app_s4u.rst
 include docs/source/app_smpi.rst
 include docs/source/community.rst
+include docs/source/Configuring_SimGrid.rst
+include docs/source/Deploying_your_Application.rst
+include docs/source/Experimental_Setup.rst
 include docs/source/index.rst
-include docs/source/intro_concepts.rst
-include docs/source/introduction.rst
+include docs/source/Introduction.rst
 include docs/source/Installing_SimGrid.rst
 include docs/source/Start_Your_Own_Project.rst
 include docs/source/models.rst
@@ -883,9 +891,8 @@ include docs/source/ns3.rst
 include docs/source/outcomes.rst
 include docs/source/platform.rst
 include docs/source/platform_howtos.rst
-include docs/source/platform_reference.rst
-include docs/source/Configuring_SimGrid.rst
-include docs/source/scenario.rst
+include docs/source/Platform_Examples.rst
+include docs/source/XML_Reference.rst
 include docs/source/Tutorial_Algorithms.rst
 include docs/source/tuto_s4u/deployment1.xml
 include docs/source/tuto_s4u/deployment2.xml
