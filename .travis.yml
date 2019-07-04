@@ -61,7 +61,7 @@ script:
        mingw32-make.exe VERBOSE=1 java-all; 
        ctest --output-on-failure -R java;
      fi
-   - if [[ "$TRAVIS_OS_NAME" == "osx"   ]]; then cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON . && make -j2 VERBOSE=1 all tests && ctest -j2 --output-on-failure fi
+   - if [[ "$TRAVIS_OS_NAME" == "osx"   ]]; then cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON . && make -j2 VERBOSE=1 all tests && ctest -j2 --output-on-failure; fi
    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then (cmake -Denable_model-checking=ON  -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON . || (echo XXX CMakeOutput.log; cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeOutput.log; echo XXX CMakeError.log;cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeError.log; exit 1)) && make -j2 VERBOSE=1 all tests && ctest -j2 --output-on-failure ; fi
 #notifications:
 #  recipients:
