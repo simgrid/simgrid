@@ -57,8 +57,8 @@ script:
        export BOOST_ROOT='C:\local\boost_1_58_0';
        export BOOST_LIBRARYDIR='C:/local/boost_1_58_0/lib64-msvc-12.0';
        export BOOST_INCLUDEDIR='C:/local/boost_1_58_0/include';
-       ls 'C:/local';
-       ls C:/local/boost_1_58_0/;
+       echo $PATH;
+       which mingw32-make.exe;
        choco install python jdk8;
        export JAVA_HOME='C:/Program Files/Java/jdk1.8.0_211';
        cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .;
