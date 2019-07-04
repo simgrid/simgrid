@@ -272,8 +272,8 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const std::string& nam
     : NetworkCm02Link(model, name, 0, 0, policy, system)
 {
   /* Setup Metrics for bandwidths_ */
-  for (auto bandwith : bandwidths) {
-    bandwidths_.push_back({bandwith, 1.0, nullptr});
+  for (auto bandwidth : bandwidths) {
+    bandwidths_.push_back({bandwidth, 1.0, nullptr});
   }
 }
 
