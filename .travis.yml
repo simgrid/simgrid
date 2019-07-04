@@ -51,7 +51,7 @@ script:
    - if [[ "$TRAVIS_OS_NAME" == "windows"   ]]; then
        mv "C:/Program Files/Git/usr/bin/sh.exe" "sh-ignored.exe";
        choco install boost-msvc-12 python jdk8;
-       export CC=clangt-cl;
+       export CC=clang-cl;
        export CXX=clang-cl;
        export PATH='C:\Python37':$PATH;
        export JAVA_HOME='C:/Program Files/Java/jdk1.8.0_211';
