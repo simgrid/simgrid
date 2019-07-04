@@ -49,12 +49,12 @@ addons:
 
 script:
    - if [[ "$TRAVIS_OS_NAME" == "windows"   ]]; then
+       mv "C:/Program Files/Git/usr/bin/sh.exe" "sh-ignored.exe";
        choco install boost-msvc-12 python jdk8;
-       export CC=clang;
-       export CXX=clang++;
+       export CC=clangt-cl;
+       export CXX=clang-cl;
        export PATH='C:\Python37':$PATH;
        export JAVA_HOME='C:/Program Files/Java/jdk1.8.0_211';
-       mv "C:/Program Files/Git/usr/bin/sh.exe" "sh-ignored.exe";
        cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .;
        mingw32-make.exe VERBOSE=1 java-all; 
        ctest --output-on-failure -R java;
