@@ -17,12 +17,18 @@ namespace resource {
 
 class NetworkWifiLink : public NetworkCm02Link {
   /** @brief Hold every rates association between host and links (host name, rates id) */
-  std::map<xbt::string, int> host_rates;
+  std::map<xbt::string, int> host_rates_;
 
   /** @brief Hold every rates available for this Access Point */
   // double* rates; FIXME: unused
 
+  /** @brief A link can have several bandwith attach to it (mostly use by wifi model) */
+  std::vector<Metric> bandwidths_;
+
 public:
+  NetworkWifiLink(NetworkCm02Model* model, const std::string& name, std::vector<double> bandwidths,
+                  s4u::Link::SharingPolicy policy, lmm::System* system);
+
   void set_host_rate(sg_host_t host, int rate_level);
 };
 
