@@ -157,7 +157,7 @@ do
       os="Ubuntu 16.04 (<a href=\"https://docs.travis-ci.com/user/reference/xenial/\">xenial</a>) 64 bits"
     elif [ $id == 1 ]; then
       node="<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">travis-mac</a>"
-      os="(<a href=\"https://docs.travis-ci.com/user/reference/osx/\">Mac OSX</a>) High Sierra (kernel: 17.4.0) "
+      os="(<a href=\"https://docs.travis-ci.com/user/reference/osx/\">Mac OSX</a>) Mojave (10.14) "
     elif [ $id == 2 ]; then
       node="<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">travis-windows</a>"
       os="(<a href=\"https://docs.travis-ci.com/user/reference/windows/\">Windows</a>) 10 v17134"
