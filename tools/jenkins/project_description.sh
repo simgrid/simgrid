@@ -146,18 +146,21 @@ done
 
 #Travis - get ID of the last jobs with the API
 BUILD_NUM=$(curl -s 'https://api.travis-ci.org/repos/simgrid/simgrid/builds?limit=1' | grep -o '^\[{"id":[0-9]*,' | grep -o '[0-9]' | tr -d '\n')
-BUILDS=($(curl -s https://api.travis-ci.org/repos/simgrid/simgrid/builds/${BUILD_NUM} | grep -o '{"id":[0-9]*,' | grep -o '[0-9]*'| tail -n 2))
+BUILDS=($(curl -s https://api.travis-ci.org/repos/simgrid/simgrid/builds/${BUILD_NUM} | grep -o '{"id":[0-9]*,' | grep -o '[0-9]*'| tail -n 3))
 
 for id in "${!BUILDS[@]}"
 do
     wget --quiet https://api.travis-ci.org/v3/job/${BUILDS[$id]}/log.txt -O ./consoleText >/dev/null 2>&1
     sed -i -e "s/\r//g" ./consoleText
     if [ $id == 0 ]; then
-      node="<a href=\"https://travis-ci.org/simgrid/simgrid\">travis-linux</a>"
+      node="<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">travis-linux</a>"
       os="Ubuntu 16.04 (<a href=\"https://docs.travis-ci.com/user/reference/xenial/\">xenial</a>) 64 bits"
-    else
-      node="<a href=\"https://travis-ci.org/simgrid/simgrid\">travis-mac</a>"
-      os="Mac OSX High Sierra (kernel: 17.4.0)"
+    elif [ $id == 1 ]; then
+      node="<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">travis-mac</a>"
+      os="(<a href=\"https://docs.travis-ci.com/user/reference/osx/\">Mac OSX</a>) High Sierra (kernel: 17.4.0) "
+    elif [ $id == 2 ]; then
+      node="<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">travis-windows</a>"
+      os="(<a href=\"https://docs.travis-ci.com/user/reference/windows/\">Windows</a>) 10 v17134"
     fi
     boost=$(get_boost)
     compiler=$(get_compiler)
@@ -168,20 +171,5 @@ do
     echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td></tr>"
     rm consoleText
 done
-
-#Appveyor - get ID of the last job with the API
-BUILD_ID=$(curl -s "https://ci.appveyor.com/api/projects/mquinson/simgrid" | grep -o '\[{"jobId":"[a-zA-Z0-9]*",' | sed "s/\[{\"jobId\":\"//" | sed "s/\",//")
-wget --quiet https://ci.appveyor.com/api/buildjobs/$BUILD_ID/log -O ./consoleText >/dev/null 2>&1
-sed -i -e "s/\r//g" ./consoleText
-node="<a href="https://ci.appveyor.com/project/mquinson/simgrid">appveyor</a>"
-os="Windows Server 2012 - VS2015 + mingw64 5.3.0"
-boost=$(get_boost)
-compiler=$(get_compiler)
-java=$(get_java)
-cmake=$(get_cmake)
-ns3=$(get_ns3)
-py=$(get_python)
-echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td></tr>"
-rm consoleText
 
 echo "</table>"
