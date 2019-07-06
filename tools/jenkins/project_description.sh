@@ -153,14 +153,14 @@ do
     wget --quiet https://api.travis-ci.org/v3/job/${BUILDS[$id]}/log.txt -O ./consoleText >/dev/null 2>&1
     sed -i -e "s/\r//g" ./consoleText
     if [ $id == 0 ]; then
-      node="<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">travis-linux</a>"
-      os="Ubuntu 16.04 (<a href=\"https://docs.travis-ci.com/user/reference/xenial/\">xenial</a>) 64 bits"
+      node="travis-linux (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
+      os="Ubuntu  <a href=\"https://docs.travis-ci.com/user/reference/xenial/\">16.04 xenial</a>"
     elif [ $id == 1 ]; then
-      node="<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">travis-mac</a>"
-      os="(<a href=\"https://docs.travis-ci.com/user/reference/osx/\">Mac OSX</a>) Mojave (10.14) "
+      node="travis-mac (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
+      os="Mac OS X <a href=\"https://docs.travis-ci.com/user/reference/osx/\">Mojave (10.14)</a> "
     elif [ $id == 2 ]; then
-      node="<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">travis-windows</a>"
-      os="(<a href=\"https://docs.travis-ci.com/user/reference/windows/\">Windows</a>) 10 v17134"
+      node="travis-windows (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
+      os="Windows <a href=\"https://docs.travis-ci.com/user/reference/windows/\">10 v17134</a>"
     fi
     boost=$(get_boost)
     compiler=$(get_compiler)
