@@ -310,7 +310,7 @@ add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build
           ${CMAKE_COMMAND} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst -Denable_lto=OFF ..
 
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX Check generated files (please copy new version if they differ)"
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Check generated files -- please copy new version if they differ"
   COMMAND ${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/MANIFEST.in build_/MANIFEST.in
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Build"
