@@ -163,9 +163,9 @@ public final class NativeLib {
 		public void run() {
 			try {
 				for (File f : dir.listFiles())
-					if (! f.delete() && !f.getAbsolutePath().contains("travis")) // Be silent on Travis to not break the tests. Ugly trick :)
+					if (! f.delete() && !f.getAbsolutePath().contains("travis") && !f.getAbsolutePath().contains("appveyor")) // Be silent on Travis to not break the tests. Ugly trick :)
 						System.out.println("Unable to clean temporary file "+f.getAbsolutePath()+" during shutdown.");
-				if (! dir.delete() && !dir.getAbsolutePath().contains("travis") )
+				if (! dir.delete() && !dir.getAbsolutePath().contains("travis") && !dir.getAbsolutePath().contains("appveyor"))
 					System.out.println("Unable to clean temporary file "+dir.getAbsolutePath()+" during shutdown.");			    	
 			} catch(Exception e) {
 				System.out.println("Error while cleaning temporary file "+dir.getAbsolutePath()+" during shutdown: "+e.getCause());
