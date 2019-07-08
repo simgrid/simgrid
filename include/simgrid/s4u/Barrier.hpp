@@ -30,17 +30,21 @@ private:
 public:
   explicit Barrier(unsigned int count);
   ~Barrier()              = default;
+#ifndef DOXYGEN
   Barrier(Barrier const&) = delete;
   Barrier& operator=(Barrier const&) = delete;
+#endif
 
   /** Constructs a new barrier */
   static BarrierPtr create(unsigned int expected_processes);
 
   int wait();
 
+#ifndef DOXYGEN
   /* refcounting */
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Barrier* barrier);
   friend XBT_PUBLIC void intrusive_ptr_release(Barrier* barrier);
+#endif
 };
 } // namespace s4u
 } // namespace simgrid
