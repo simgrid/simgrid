@@ -339,6 +339,8 @@ include src/kernel/actor/ActorImpl.hpp
 include src/simix/popping_generated.cpp
 include src/kernel/context/ContextBoost.hpp
 include src/kernel/context/ContextBoost.cpp
+include src/kernel/context/ContextUnix.hpp
+include src/kernel/context/ContextUnix.cpp
 include src/smpi/bindings/smpi_mpi.cpp
 include src/smpi/bindings/smpi_pmpi.cpp
 include src/smpi/bindings/smpi_pmpi_coll.cpp
@@ -544,6 +546,7 @@ include src/surf/cpu_interface.cpp
 include src/surf/cpu_ti.cpp
 include src/surf/network_cm02.cpp
 include src/surf/link_wifi.cpp
+include src/surf/link_wifi.hpp
 include src/surf/network_constant.cpp
 include src/surf/network_interface.cpp
 include src/surf/PropertyHolder.cpp
@@ -605,6 +608,7 @@ include src/xbt/xbt_replay.cpp
 include src/xbt/xbt_str.cpp
 include src/xbt/xbt_virtu.c
 include src/xbt_modinter.h
+include src/xbt/mmalloc/mm.c
 include src/bindings/java/MANIFEST.in
 include src/bindings/python/simgrid_python.cpp
 include src/include/mc/datatypes.h
@@ -686,8 +690,6 @@ include examples/smpi/mc/only_send_deterministic.tesh
 include examples/smpi/mc/non_deterministic.tesh
 include examples/deprecated/java/.classpath
 include examples/deprecated/java/.project
-include src/kernel/context/ContextUnix.hpp
-include src/kernel/context/ContextUnix.cpp
 include include/simgrid/jedule/jedule_events.hpp
 include include/simgrid/jedule/jedule.hpp
 include include/simgrid/jedule/jedule_platform.hpp
@@ -700,8 +702,6 @@ include src/bindings/lua/lua_host.cpp
 include src/bindings/lua/lua_platf.cpp
 include src/bindings/lua/lua_utils.cpp
 include src/bindings/lua/simgrid_lua.cpp
-include src/mc/sosp/Snapshot_test.cpp
-include src/mc/sosp/PageStore_test.cpp
 include src/xbt/unit-tests_main.cpp
 include src/kernel/resource/profile/Profile_test.cpp
 include src/xbt/config_test.cpp
@@ -709,6 +709,8 @@ include src/xbt/dict_test.cpp
 include src/xbt/dynar_test.cpp
 include src/xbt/xbt_str_test.cpp
 include src/kernel/lmm/maxmin_test.cpp
+include src/mc/sosp/Snapshot_test.cpp
+include src/mc/sosp/PageStore_test.cpp
 include CMakeLists.txt
 include FindSimGrid.cmake
 include tools/cmake/Tests.cmake
