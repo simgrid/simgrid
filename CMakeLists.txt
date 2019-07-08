@@ -95,7 +95,7 @@ endif()
 
 set(SIMGRID_VERSION_MAJOR "3")
 set(SIMGRID_VERSION_MINOR "23")
-set(SIMGRID_VERSION_PATCH "2") # odd => git branch; even => stable release or released snapshot
+set(SIMGRID_VERSION_PATCH "3") # odd => git branch; even => stable release or released snapshot
 
 set(SIMGRID_VERSION_DATE  "2019") # Year for copyright information
 
