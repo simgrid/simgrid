@@ -96,12 +96,13 @@ void HostLoad::update()
   while (iter != end(current_activities)) {
     auto& activity                         = iter->first;  // Just an alias
     auto& remaining_cost_after_last_update = iter->second; // Just an alias
+    auto& action                           = activity->surf_action_;
     auto current_iter                      = iter;
     ++iter;
 
-    if (activity->surf_action_->get_finish_time() != now && activity->state_ == e_smx_state_t::SIMIX_RUNNING) {
+    if (action != nullptr && action->get_finish_time() != now && activity->state_ == e_smx_state_t::SIMIX_RUNNING) {
       if (remaining_cost_after_last_update == activity_uninitialized_remaining_cost) {
-        remaining_cost_after_last_update = activity->surf_action_->get_cost();
+        remaining_cost_after_last_update = action->get_cost();
       }
       double computed_flops_since_last_update = remaining_cost_after_last_update - /*remaining now*/activity->get_remaining();
       computed_flops_                        += computed_flops_since_last_update;

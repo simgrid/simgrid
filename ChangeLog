@@ -16,6 +16,7 @@ XBT:
 Bugs:
  - Really fix FG#26: Turning off a link should raise NetworkFailureException
  - FG#27: Wrong exception thrown to wait_any when link is turned off
+ - GH#328: Java: Canceling multiple tasks in a single vm/host
 
 ----------------------------------------------------------------------------
 
