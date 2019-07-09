@@ -181,6 +181,7 @@ set(source_to_pack
   ${txt_files}
   ${xml_files}
   )
+list(SORT source_to_pack)
 
 ##########################################
 ### Fill in the "make dist-dir" target ###
