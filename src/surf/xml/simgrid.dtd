@@ -212,7 +212,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST link latency CDATA "0">
 <!ATTLIST link latency_file CDATA "">
 <!ATTLIST link state_file CDATA "">
-<!ATTLIST link sharing_policy (SHARED|SPLITDUPLEX|FULLDUPLEX|FATPIPE) "SHARED">
+<!ATTLIST link sharing_policy (SHARED|SPLITDUPLEX|FULLDUPLEX|FATPIPE|WIFI) "SHARED">
 
 <!ELEMENT route (link_ctn*)>
 <!ATTLIST route src CDATA #REQUIRED>
