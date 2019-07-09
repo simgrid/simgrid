@@ -27,7 +27,7 @@ NetworkConstantModel::NetworkConstantModel() : NetworkModel(Model::UpdateAlgo::F
   all_existing_models.push_back(this);
 }
 
-LinkImpl* NetworkConstantModel::create_link(const std::string& name, std::vector<double> /*bandwidth*/,
+LinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::vector<double>& /*bandwidth*/,
                                             double /*latency*/, s4u::Link::SharingPolicy)
 {
 

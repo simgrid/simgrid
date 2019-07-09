@@ -173,7 +173,7 @@ NetworkNS3Model::~NetworkNS3Model() {
   IPV4addr.clear();
 }
 
-LinkImpl* NetworkNS3Model::create_link(const std::string& name, std::vector<double> bandwidths, double latency,
+LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
                                        s4u::Link::SharingPolicy policy)
 {
   xbt_assert(bandwidths.size() == 1, "Non WIFI links must use only 1 bandwidth.");

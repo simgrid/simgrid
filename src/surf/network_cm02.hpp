@@ -32,7 +32,7 @@ class NetworkCm02Model : public NetworkModel {
 public:
   explicit NetworkCm02Model(lmm::System* (*make_new_sys)(bool) = &lmm::make_new_maxmin_system);
   virtual ~NetworkCm02Model() = default;
-  LinkImpl* create_link(const std::string& name, std::vector<double> bandwidths, double latency,
+  LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
                         s4u::Link::SharingPolicy policy) override;
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;

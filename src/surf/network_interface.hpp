@@ -48,7 +48,7 @@ public:
    * @param latency The initial latency of the Link in seconds
    * @param policy The sharing policy of the Link
    */
-  virtual LinkImpl* create_link(const std::string& name, std::vector<double> bandwidths, double latency,
+  virtual LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
                                 s4u::Link::SharingPolicy policy) = 0;
 
   /**

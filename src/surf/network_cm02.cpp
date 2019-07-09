@@ -90,7 +90,7 @@ NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(b
                                             s4u::Link::SharingPolicy::FATPIPE);
 }
 
-LinkImpl* NetworkCm02Model::create_link(const std::string& name, std::vector<double> bandwidths, double latency,
+LinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
                                         s4u::Link::SharingPolicy policy)
 {
   if (policy == s4u::Link::SharingPolicy::WIFI) {
