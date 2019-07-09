@@ -294,16 +294,16 @@ set(CMAKE_BINARY_TEST_DIR ${CMAKE_BINARY_DIR})
 
 # Allow to test the "make dist"
 add_custom_target(distcheck
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX compare archive with git repository"
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Compare archive with git repository"
   COMMAND ${CMAKE_HOME_DIRECTORY}/tools/internal/check_dist_archive -batch ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}.tar.gz
 
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX remove old copy"
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Remove old copy"
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Untar distrib"
   COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}.tar.gz ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
 
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX create build and install subtrees"
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Create build and install subtrees"
   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build
   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst
 
@@ -311,8 +311,8 @@ add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build
           ${CMAKE_COMMAND} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst -Denable_lto=OFF ..
 
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX Check generated files -- please copy new version if they differ"
-  COMMAND ${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/MANIFEST.in build_/MANIFEST.in
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Check generated files -- please copy new version if they are different"
+  COMMAND ${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/MANIFEST.in ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build/MANIFEST.in
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Build"
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} -j 4
