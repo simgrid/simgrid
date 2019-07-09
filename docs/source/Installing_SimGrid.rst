@@ -16,15 +16,14 @@ Pre-compiled Packages
 Binaries for Linux
 ^^^^^^^^^^^^^^^^^^
 
-To get all of SimGrid on Debian or Ubuntu, simply type the following.
+To get all of SimGrid on Debian or Ubuntu, simply type one of the
+following lines, or several lines if you need several languages.
 
 .. code-block:: shell
 
-   apt install libsimgrid-dev simgrid-java
-
-The package ``libsimgrid-dev`` is sufficient if you only plan to use the
-C or C++ interfaces of SimGrid while ``simgrid-java`` if you only plan
-to use the Java bindings.
+   apt install libsimgrid-dev  # if you want to develop in C or C++
+   apt install simgrid-java    # if you want to develop in Java
+   apt install python3-simgrid # if you want to develop in Python
 
 If you build pre-compiled packages for other distributions, drop us an
 email.
@@ -35,7 +34,7 @@ Stable Java Package
 ^^^^^^^^^^^^^^^^^^^
 
 The jar file can be retrieved from the `Release page
-<https://framagit.org/simgrid/simgrid/tags>`_. This file is
+<https://framagit.org/simgrid/simgrid/releases>`_. This file is
 self-contained, including the native components for Linux, macOS and
 Windows. Copy it to your project's classpath and you're set.
 
@@ -78,7 +77,7 @@ C++ compiler (either g++, clang, or icc).
   boost).  SimGrid compiles well with `clang` or `icc` too.
 Python 3.
   SimGrid should build without Python, that is only needed by our regresion test suite.
-cmake (v2.8.8).
+cmake (v3.5).
   ``ccmake`` provides a nicer graphical interface compared to ``cmake``.
   Press ``t`` in ``ccmake`` if you need to see absolutely all
   configuration options (e.g., if your python installation is not standard).
@@ -106,7 +105,7 @@ Getting the Sources
 ^^^^^^^^^^^^^^^^^^^
 
 Grab the last **stable release** from `FramaGit
-<https://framagit.org/simgrid/simgrid/tags>`_, and compile it as follows:
+<https://framagit.org/simgrid/simgrid/releases>`_, and compile it as follows:
 
 .. code-block:: shell
 
