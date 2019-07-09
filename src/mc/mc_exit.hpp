@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_EXIT_HPP
 #define SIMGRID_MC_EXIT_HPP
 #include "xbt/base.h"
+#include <exception>
 
 constexpr int SIMGRID_MC_EXIT_SUCCESS         = 0;
 constexpr int SIMGRID_MC_EXIT_SAFETY          = 1;
