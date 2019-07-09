@@ -150,8 +150,12 @@ static void MC_report_crash(int status)
     XBT_INFO("  %s", s.c_str());
   simgrid::mc::dumpRecordPath();
   simgrid::mc::session->log_state();
-  XBT_INFO("Stack trace:");
-  mc_model_checker->process().dump_stack();
+  if (xbt_log_no_loc) {
+    XBT_INFO("Stack trace not displayed because you passed --log=no_loc");
+  } else {
+    XBT_INFO("Stack trace:");
+    mc_model_checker->process().dump_stack();
+  }
 }
 
 static void MC_report_assertion_error()
