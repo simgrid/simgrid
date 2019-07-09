@@ -6,11 +6,10 @@
 #include "src/mc/remote/Client.hpp"
 #include "src/internal_config.h"
 #include <simgrid/modelchecker.h>
+#include <xbt/system_error.hpp>
 
-#include <cerrno>
 #include <cstdlib>
 #include <cstring>
-#include <sys/ptrace.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 
@@ -57,16 +56,8 @@ Client* Client::initialize()
   instance_.reset(new simgrid::mc::Client(fd));
 
   // Wait for the model-checker:
-  errno = 0;
-#if defined __linux__
-  ptrace(PTRACE_TRACEME, 0, nullptr, nullptr);
-#elif defined BSD
-  ptrace(PT_TRACE_ME, 0, nullptr, 0);
-#else
-#error "no ptrace equivalent coded for this platform"
-#endif
-  if (errno != 0 || raise(SIGSTOP) != 0)
-    xbt_die("Could not wait for the model-checker (errno = %d: %s)", errno, strerror(errno));
+  if (raise(SIGSTOP) != 0)
+    throw simgrid::xbt::errno_error("Could not wait for the model-checker");
 
   instance_->handle_messages();
   return instance_.get();
