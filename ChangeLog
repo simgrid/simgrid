@@ -2,7 +2,8 @@
 
 SimGrid (3.23.3) NOT RELEASED YET (v3.24 expected September 23. 7:50 UTC)
 
-
+SMPI:
+ - Fortran bindings for DVFS have been removed.
 
 ----------------------------------------------------------------------------
 

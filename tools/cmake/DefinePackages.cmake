@@ -217,7 +217,6 @@ set(SMPI_SRC
   src/smpi/internals/smpi_memory.cpp
   src/smpi/internals/smpi_shared.cpp
   src/smpi/internals/smpi_deployment.cpp
-  src/smpi/internals/smpi_dvfs.cpp
   src/smpi/internals/smpi_global.cpp
   src/smpi/internals/smpi_host.cpp
   src/smpi/internals/smpi_replay.cpp
@@ -992,8 +991,6 @@ set(CMAKEFILES_TXT
   examples/smpi/smpi_msg_masterslave/CMakeLists.txt
   examples/smpi/replay_multiple/CMakeLists.txt
   examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
-  examples/smpi/energy/f77/CMakeLists.txt
-  examples/smpi/energy/f90/CMakeLists.txt
   examples/python/CMakeLists.txt
   examples/deprecated/java/CMakeLists.txt
   examples/deprecated/msg/CMakeLists.txt

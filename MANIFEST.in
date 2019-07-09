@@ -432,10 +432,6 @@ include examples/smpi/ampi_test/ampi_test.cpp
 include examples/smpi/ampi_test/ampi_test.tesh
 include examples/smpi/energy/energy.c
 include examples/smpi/energy/energy.tesh
-include examples/smpi/energy/f77/energy.tesh
-include examples/smpi/energy/f77/sef.f
-include examples/smpi/energy/f90/energy.tesh
-include examples/smpi/energy/f90/sef90.f90
 include examples/smpi/energy/hostfile
 include examples/smpi/gemm/gemm.c
 include examples/smpi/gemm/gemm.tesh
@@ -1903,8 +1899,6 @@ include examples/python/async-waitany/async-waitany_d.xml
 include examples/s4u/CMakeLists.txt
 include examples/smpi/CMakeLists.txt
 include examples/smpi/NAS/CMakeLists.txt
-include examples/smpi/energy/f77/CMakeLists.txt
-include examples/smpi/energy/f90/CMakeLists.txt
 include examples/smpi/mc/non_deterministic.tesh
 include examples/smpi/mc/only_send_deterministic.tesh
 include examples/smpi/replay_multiple/CMakeLists.txt
@@ -2482,7 +2476,6 @@ include src/smpi/internals/instr_smpi.cpp
 include src/smpi/internals/smpi_actor.cpp
 include src/smpi/internals/smpi_bench.cpp
 include src/smpi/internals/smpi_deployment.cpp
-include src/smpi/internals/smpi_dvfs.cpp
 include src/smpi/internals/smpi_global.cpp
 include src/smpi/internals/smpi_host.cpp
 include src/smpi/internals/smpi_memory.cpp
