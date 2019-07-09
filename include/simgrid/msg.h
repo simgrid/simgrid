@@ -235,6 +235,10 @@ XBT_PUBLIC void MSG_process_set_kill_time(msg_process_t process, double kill_tim
 XBT_PUBLIC void MSG_process_yield();
 /*** @brief Sleep for the specified number of seconds */
 XBT_PUBLIC msg_error_t MSG_process_sleep(double nb_sec);
+XBT_PUBLIC msg_process_t MSG_process_self();
+XBT_PUBLIC aid_t MSG_process_self_PID();
+XBT_PUBLIC aid_t MSG_process_self_PPID();
+XBT_PUBLIC const char* MSG_process_self_name();
 
 /** @brief Object representing an ongoing communication between processes.
  *
@@ -320,10 +324,6 @@ XBT_PUBLIC msg_process_t MSG_process_attach(const char* name, void* data, msg_ho
 XBT_PUBLIC void MSG_process_detach();
 
 XBT_PUBLIC void MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup);
-XBT_PUBLIC int MSG_process_self_PID();
-XBT_PUBLIC int MSG_process_self_PPID();
-XBT_PUBLIC const char* MSG_process_self_name();
-XBT_PUBLIC msg_process_t MSG_process_self();
 XBT_PUBLIC xbt_dynar_t MSG_processes_as_dynar();
 XBT_PUBLIC int MSG_process_get_number();
 

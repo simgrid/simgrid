@@ -144,6 +144,33 @@ void MSG_process_detach()
 {
   sg_actor_detach();
 }
+aid_t MSG_process_self_PID()
+{
+  return sg_actor_self_get_pid();
+}
+
+/** @brief Return the PPID of the current process.
+ *
+ * This function returns the PID of the parent of the currently running #msg_process_t.
+ */
+aid_t MSG_process_self_PPID()
+{
+  return sg_actor_self_get_ppid();
+}
+
+/** @brief Return the name of the current process. */
+const char* MSG_process_self_name()
+{
+  return sg_actor_self_get_name();
+}
+/** @brief Return the current process.
+ *
+ * This function returns the currently running #msg_process_t.
+ */
+msg_process_t MSG_process_self()
+{
+  return sg_actor_self();
+}
 
 /* ************************** NetZones *************************** */
 sg_netzone_t MSG_zone_get_root()

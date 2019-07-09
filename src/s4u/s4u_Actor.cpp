@@ -668,3 +668,23 @@ void sg_actor_detach()
 {
   simgrid::kernel::actor::ActorImpl::detach();
 }
+
+aid_t sg_actor_self_get_pid()
+{
+  return simgrid::s4u::this_actor::get_pid();
+}
+
+aid_t sg_actor_self_get_ppid()
+{
+  return simgrid::s4u::this_actor::get_ppid();
+}
+
+const char* sg_actor_self_get_name()
+{
+  return simgrid::s4u::this_actor::get_cname();
+}
+
+sg_actor_t sg_actor_self()
+{
+  return simgrid::s4u::Actor::self();
+}
