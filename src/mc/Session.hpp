@@ -21,7 +21,7 @@ namespace mc {
  *  algorithms should be able to be written in high-level languages
  *  (e.g. Python) using bindings on this interface.
  */
-class Session {
+class XBT_PUBLIC Session {
 private:
   std::unique_ptr<ModelChecker> model_checker_;
   std::shared_ptr<simgrid::mc::Snapshot> initial_snapshot_;
