@@ -138,7 +138,7 @@ void DragonflyZone::create_link(const std::string& id, int numlinks, resource::L
   *linkup   = nullptr;
   *linkdown = nullptr;
   LinkCreationArgs linkTemplate;
-  linkTemplate.bandwidth = this->bw_ * numlinks;
+  linkTemplate.bandwidths.push_back(this->bw_ * numlinks);
   linkTemplate.latency   = this->lat_;
   linkTemplate.policy    = this->sharing_policy_;
   linkTemplate.id        = std::move(id);

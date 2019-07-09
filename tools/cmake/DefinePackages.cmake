@@ -340,8 +340,6 @@ set(SURF_SRC
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
   src/surf/network_cm02.cpp
-  src/surf/link_wifi.cpp
-  src/surf/link_wifi.hpp
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
   src/surf/PropertyHolder.cpp

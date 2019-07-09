@@ -445,7 +445,7 @@ FatTreeNode::FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int po
 {
   LinkCreationArgs linkTemplate;
   if (cluster->limiter_link) {
-    linkTemplate.bandwidth = cluster->limiter_link;
+    linkTemplate.bandwidths.push_back(cluster->limiter_link);
     linkTemplate.latency   = 0;
     linkTemplate.policy    = s4u::Link::SharingPolicy::SHARED;
     linkTemplate.id        = "limiter_"+std::to_string(id);
@@ -453,7 +453,7 @@ FatTreeNode::FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int po
     this->limiter_link_ = s4u::Link::by_name(linkTemplate.id)->get_impl();
   }
   if (cluster->loopback_bw || cluster->loopback_lat) {
-    linkTemplate.bandwidth = cluster->loopback_bw;
+    linkTemplate.bandwidths.push_back(cluster->loopback_bw);
     linkTemplate.latency   = cluster->loopback_lat;
     linkTemplate.policy    = s4u::Link::SharingPolicy::FATPIPE;
     linkTemplate.id        = "loopback_"+ std::to_string(id);
@@ -467,7 +467,7 @@ FatTreeLink::FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* downNode, Fa
 {
   static int uniqueId = 0;
   LinkCreationArgs linkTemplate;
-  linkTemplate.bandwidth = cluster->bw;
+  linkTemplate.bandwidths.push_back(cluster->bw);
   linkTemplate.latency   = cluster->lat;
   linkTemplate.policy    = cluster->sharing_policy; // sthg to do with that ?
   linkTemplate.id =

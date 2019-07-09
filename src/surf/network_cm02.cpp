@@ -86,13 +86,18 @@ NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(b
   }
 
   set_maxmin_system(make_new_lmm_system(select));
-  loopback_ = NetworkCm02Model::create_link("__loopback__", 498000000, 0.000015, s4u::Link::SharingPolicy::FATPIPE);
+  loopback_ = NetworkCm02Model::create_link("__loopback__", std::vector<double>(1, 498000000), 0.000015,
+                                            s4u::Link::SharingPolicy::FATPIPE);
 }
 
-LinkImpl* NetworkCm02Model::create_link(const std::string& name, double bandwidth, double latency,
+LinkImpl* NetworkCm02Model::create_link(const std::string& name, std::vector<double> bandwidths, double latency,
                                         s4u::Link::SharingPolicy policy)
 {
-  return new NetworkCm02Link(this, name, bandwidth, latency, policy, get_maxmin_system());
+  if (policy == s4u::Link::SharingPolicy::WIFI) {
+    return (new NetworkWifiLink(this, name, bandwidths, policy, get_maxmin_system()));
+  }
+  xbt_assert(bandwidths.size() == 1, "Non WIFI links must use only 1 bandwidth.");
+  return new NetworkCm02Link(this, name, bandwidths[0], latency, policy, get_maxmin_system());
 }
 
 void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
@@ -348,6 +353,20 @@ void NetworkCm02Link::set_latency(double value)
     if (not action->is_suspended())
       get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), action->sharing_penalty_);
   }
+}
+
+NetworkWifiLink::NetworkWifiLink(NetworkCm02Model* model, const std::string& name, std::vector<double> bandwidths,
+                                 s4u::Link::SharingPolicy policy, lmm::System* system)
+    : NetworkCm02Link(model, name, 0, 0, policy, system)
+{
+  for (auto bandwith : bandwidths) {
+    bandwidths_.push_back({bandwith, 1.0, nullptr});
+  }
+}
+
+void NetworkWifiLink::set_host_rate(sg_host_t host, int rate_level)
+{
+  host_rates_.insert(std::make_pair(host->get_name(), rate_level));
 }
 
 /**********

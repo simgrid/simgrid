@@ -63,7 +63,7 @@ public:
   NetworkL07Model(const NetworkL07Model&) = delete;
   NetworkL07Model& operator=(const NetworkL07Model&) = delete;
   ~NetworkL07Model();
-  kernel::resource::LinkImpl* create_link(const std::string& name, double bandwidth, double latency,
+  kernel::resource::LinkImpl* create_link(const std::string& name, std::vector<double> bandwidths, double latency,
                                           s4u::Link::SharingPolicy policy) override;
 
   kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;

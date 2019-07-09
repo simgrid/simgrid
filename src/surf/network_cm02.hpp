@@ -10,7 +10,7 @@
 
 #include "network_interface.hpp"
 #include "xbt/graph.h"
-
+#include "xbt/string.hpp"
 
 /***********
  * Classes *
@@ -32,7 +32,7 @@ class NetworkCm02Model : public NetworkModel {
 public:
   explicit NetworkCm02Model(lmm::System* (*make_new_sys)(bool) = &lmm::make_new_maxmin_system);
   virtual ~NetworkCm02Model() = default;
-  LinkImpl* create_link(const std::string& name, double bandwidth, double latency,
+  LinkImpl* create_link(const std::string& name, std::vector<double> bandwidths, double latency,
                         s4u::Link::SharingPolicy policy) override;
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;
@@ -51,6 +51,23 @@ public:
   void apply_event(kernel::profile::Event* event, double value) override;
   void set_bandwidth(double value) override;
   void set_latency(double value) override;
+};
+
+class NetworkWifiLink : public NetworkCm02Link {
+  /** @brief Hold every rates association between host and links (host name, rates id) */
+  std::map<xbt::string, int> host_rates_;
+
+  /** @brief Hold every rates available for this Access Point */
+  // double* rates; FIXME: unused
+
+  /** @brief A link can have several bandwith attach to it (mostly use by wifi model) */
+  std::vector<Metric> bandwidths_;
+
+public:
+  NetworkWifiLink(NetworkCm02Model* model, const std::string& name, std::vector<double> bandwidths,
+                  s4u::Link::SharingPolicy policy, lmm::System* system);
+
+  void set_host_rate(sg_host_t host, int rate_level);
 };
 
 /**********

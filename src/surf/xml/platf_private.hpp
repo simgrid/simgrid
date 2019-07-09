@@ -53,7 +53,7 @@ public:
 class LinkCreationArgs {
 public:
   std::string id;
-  double bandwidth                    = 0;
+  std::vector<double> bandwidths;
   profile::Profile* bandwidth_trace                        = nullptr;
   double latency                      = 0;
   profile::Profile* latency_trace                          = nullptr;

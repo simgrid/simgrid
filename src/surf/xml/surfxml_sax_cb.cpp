@@ -229,6 +229,23 @@ double surf_parse_get_bandwidth(const char* string, const char* entity_kind, con
       "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)", "Bps");
 }
 
+std::vector<double> surf_parse_get_bandwidths(const char* string, const char* entity_kind, const std::string& name)
+{
+  static const unit_scale units{std::make_tuple("bps", 0.125, 2, true), std::make_tuple("bps", 0.125, 10, true),
+                                std::make_tuple("Bps", 1.0, 2, true), std::make_tuple("Bps", 1.0, 10, true)};
+
+  std::vector<double> bandwidths;
+  std::vector<std::string> tokens;
+  boost::split(tokens, string, boost::is_any_of(";"));
+  for (auto token : tokens) {
+    bandwidths.push_back(surf_parse_get_value_with_unit(
+        token.c_str(), units, entity_kind, name,
+        "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)", "Bps"));
+  }
+
+  return (bandwidths);
+}
+
 double surf_parse_get_speed(const char* string, const char* entity_kind, const std::string& name)
 {
   static const unit_scale units{std::make_tuple("f", 1.0, 10, true), std::make_tuple("flops", 1.0, 10, false)};
@@ -589,7 +606,7 @@ void ETag_surfxml_link(){
   current_property_set     = nullptr;
 
   link.id                  = std::string(A_surfxml_link_id);
-  link.bandwidth           = surf_parse_get_bandwidth(A_surfxml_link_bandwidth, "bandwidth of link", link.id.c_str());
+  link.bandwidths          = surf_parse_get_bandwidths(A_surfxml_link_bandwidth, "bandwidth of link", link.id.c_str());
   link.bandwidth_trace     = A_surfxml_link_bandwidth___file[0]
                              ? simgrid::kernel::profile::Profile::from_file(A_surfxml_link_bandwidth___file)
                              : nullptr;
@@ -614,6 +631,9 @@ void ETag_surfxml_link(){
     break;
   case A_surfxml_link_sharing___policy_SPLITDUPLEX:
     link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
+    break;
+  case A_surfxml_link_sharing___policy_WIFI:
+    link.policy = simgrid::s4u::Link::SharingPolicy::WIFI;
     break;
   default:
     surf_parse_error(std::string("Invalid sharing policy in link ") + link.id);
@@ -660,7 +680,8 @@ void ETag_surfxml_backbone(){
 
   link.properties = nullptr;
   link.id = std::string(A_surfxml_backbone_id);
-  link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id.c_str());
+  link.bandwidths.push_back(
+      surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id.c_str()));
   link.latency = surf_parse_get_time(A_surfxml_backbone_latency, "latency of backbone", link.id.c_str());
   link.policy     = simgrid::s4u::Link::SharingPolicy::SHARED;
 

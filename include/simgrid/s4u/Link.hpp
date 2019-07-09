@@ -32,7 +32,7 @@ class XBT_PUBLIC Link : public xbt::Extendable<Link> {
   kernel::resource::LinkImpl* const pimpl_;
 
 public:
-  enum class SharingPolicy { SPLITDUPLEX = 2, SHARED = 1, FATPIPE = 0 };
+  enum class SharingPolicy { WIFI = 3, SPLITDUPLEX = 2, SHARED = 1, FATPIPE = 0 };
 
   kernel::resource::LinkImpl* get_impl() const { return pimpl_; }
 

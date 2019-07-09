@@ -94,7 +94,7 @@ int console_add_backbone(lua_State *L) {
   type = lua_gettable(L, -2);
   lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
       "Attribute 'bandwidth' must be specified for backbone and must either be a string (in the right format; see docs) or a number.");
-  link.bandwidth = surf_parse_get_bandwidth(lua_tostring(L, -1), "bandwidth of backbone", link.id.c_str());
+  link.bandwidths.push_back(surf_parse_get_bandwidth(lua_tostring(L, -1), "bandwidth of backbone", link.id.c_str()));
   lua_pop(L, 1);
 
   lua_pushstring(L, "lat");
@@ -228,9 +228,9 @@ int  console_add_link(lua_State *L) {
   lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
       "Attribute 'bandwidth' must be specified for any link and must either be either a string (in the right format; see docs) or a number.");
   if (type == LUA_TNUMBER)
-    link.bandwidth = lua_tonumber(L, -1);
+    link.bandwidths.push_back(lua_tonumber(L, -1));
   else // LUA_TSTRING
-    link.bandwidth = surf_parse_get_bandwidth(lua_tostring(L, -1), "bandwidth of link", link.id.c_str());
+    link.bandwidths.push_back(surf_parse_get_bandwidth(lua_tostring(L, -1), "bandwidth of link", link.id.c_str()));
   lua_pop(L, 1);
 
   //get latency value

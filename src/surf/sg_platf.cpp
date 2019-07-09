@@ -113,7 +113,7 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
 static void sg_platf_new_link(simgrid::kernel::routing::LinkCreationArgs* link, const std::string& link_name)
 {
   simgrid::kernel::resource::LinkImpl* l =
-      surf_network_model->create_link(link_name, link->bandwidth, link->latency, link->policy);
+      surf_network_model->create_link(link_name, link->bandwidths, link->latency, link->policy);
 
   if (link->properties) {
     l->set_properties(*link->properties);
@@ -217,7 +217,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
 
       simgrid::kernel::routing::LinkCreationArgs link;
       link.id        = tmp_link;
-      link.bandwidth = cluster->loopback_bw;
+      link.bandwidths.push_back(cluster->loopback_bw);
       link.latency   = cluster->loopback_lat;
       link.policy    = simgrid::s4u::Link::SharingPolicy::FATPIPE;
       sg_platf_new_link(&link);
@@ -237,7 +237,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
 
       simgrid::kernel::routing::LinkCreationArgs link;
       link.id        = tmp_link;
-      link.bandwidth = cluster->limiter_link;
+      link.bandwidths.push_back(cluster->limiter_link);
       link.latency = 0;
       link.policy    = simgrid::s4u::Link::SharingPolicy::SHARED;
       sg_platf_new_link(&link);
@@ -272,7 +272,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
 
     simgrid::kernel::routing::LinkCreationArgs link;
     link.id        = std::string(cluster->id)+ "_backbone";
-    link.bandwidth = cluster->bb_bw;
+    link.bandwidths.push_back(cluster->bb_bw);
     link.latency   = cluster->bb_lat;
     link.policy    = cluster->bb_sharing_policy;
 
@@ -315,7 +315,7 @@ void sg_platf_new_cabinet(simgrid::kernel::routing::CabinetCreationArgs* cabinet
     simgrid::kernel::routing::LinkCreationArgs link;
     link.policy    = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
     link.latency   = cabinet->lat;
-    link.bandwidth = cabinet->bw;
+    link.bandwidths.push_back(cabinet->bw);
     link.id        = "link_" + hostname;
     sg_platf_new_link(&link);
 
