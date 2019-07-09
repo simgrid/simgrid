@@ -24,7 +24,7 @@ foreach(example semaphoregc sleephostoff)
   set(examples_src ${examples_src} ${sources})
 endforeach()
 
-set(examples_src ${examples_src} ${sources}                                                    PARENT_SCOPE)
+set(examples_src ${examples_src}                                                               PARENT_SCOPE)
 set(tesh_files   ${tesh_files}                                                                 PARENT_SCOPE)
 
 if(enable_java)

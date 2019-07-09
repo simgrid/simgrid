@@ -320,7 +320,6 @@ include examples/s4u/async-ready/s4u-async-ready_d.xml
 include examples/s4u/async-wait/s4u-async-wait.cpp
 include examples/s4u/async-wait/s4u-async-wait.tesh
 include examples/s4u/async-wait/s4u-async-wait_d.xml
-include examples/s4u/async-wait/s4u-async-wait_d.xml
 include examples/s4u/async-waitall/s4u-async-waitall.cpp
 include examples/s4u/async-waitall/s4u-async-waitall.tesh
 include examples/s4u/async-waitall/s4u-async-waitall_d.xml
@@ -549,7 +548,6 @@ include examples/smpi/trace_simple/trace_simple.tesh
 include teshsuite/java/semaphoregc/SemaphoreGC.java
 include teshsuite/java/semaphoregc/semaphoregc.tesh
 include teshsuite/java/sleephostoff/SleepHostOff.java
-include teshsuite/java/sleephostoff/SleepHostOff.java
 include teshsuite/java/sleephostoff/sleephostoff.tesh
 include teshsuite/mc/dwarf-expression/dwarf-expression.cpp
 include teshsuite/mc/dwarf-expression/dwarf-expression.tesh
@@ -685,7 +683,6 @@ include teshsuite/s4u/activity-lifecycle/activity-lifecycle.cpp
 include teshsuite/s4u/activity-lifecycle/activity-lifecycle.tesh
 include teshsuite/s4u/activity-lifecycle/testing_platform.xml
 include teshsuite/s4u/actor-autorestart/actor-autorestart.cpp
-include teshsuite/s4u/actor-autorestart/actor-autorestart.tesh
 include teshsuite/s4u/actor-autorestart/actor-autorestart.tesh
 include teshsuite/s4u/actor-migration/actor-migration.cpp
 include teshsuite/s4u/actor-migration/actor-migration.tesh
@@ -886,8 +883,6 @@ include teshsuite/smpi/isp/umpire/collective-exhaustive-byte-int-mismatch.c
 include teshsuite/smpi/isp/umpire/collective-exhaustive-no-error.c
 include teshsuite/smpi/isp/umpire/collective-misorder-allreduce.c
 include teshsuite/smpi/isp/umpire/collective-misorder.c
-include teshsuite/smpi/isp/umpire/collective-misorder.c
-include teshsuite/smpi/isp/umpire/collective-misorder2.c
 include teshsuite/smpi/isp/umpire/collective-misorder2.c
 include teshsuite/smpi/isp/umpire/comm-bcast-deadlock.c
 include teshsuite/smpi/isp/umpire/comm-deadlock.c
@@ -1123,15 +1118,12 @@ include teshsuite/smpi/mpich3-test/comm/comm_create_group_idup.c
 include teshsuite/smpi/mpich3-test/comm/comm_group_half.c
 include teshsuite/smpi/mpich3-test/comm/comm_group_rand.c
 include teshsuite/smpi/mpich3-test/comm/comm_idup.c
-include teshsuite/smpi/mpich3-test/comm/comm_idup.c
 include teshsuite/smpi/mpich3-test/comm/comm_idup_comm.c
 include teshsuite/smpi/mpich3-test/comm/comm_idup_comm2.c
 include teshsuite/smpi/mpich3-test/comm/comm_idup_iallreduce.c
 include teshsuite/smpi/mpich3-test/comm/comm_idup_isend.c
 include teshsuite/smpi/mpich3-test/comm/comm_idup_mul.c
-include teshsuite/smpi/mpich3-test/comm/comm_idup_mul.c
 include teshsuite/smpi/mpich3-test/comm/comm_idup_nb.c
-include teshsuite/smpi/mpich3-test/comm/comm_idup_overlap.c
 include teshsuite/smpi/mpich3-test/comm/comm_idup_overlap.c
 include teshsuite/smpi/mpich3-test/comm/comm_info.c
 include teshsuite/smpi/mpich3-test/comm/commcreate1.c
@@ -1285,7 +1277,6 @@ include teshsuite/smpi/mpich3-test/f77/rma/baseattrwinf.f
 include teshsuite/smpi/mpich3-test/f77/rma/c2f2cwin.c
 include teshsuite/smpi/mpich3-test/f77/rma/c2f2cwinf.f
 include teshsuite/smpi/mpich3-test/f77/rma/testlist
-include teshsuite/smpi/mpich3-test/f77/rma/testlist
 include teshsuite/smpi/mpich3-test/f77/rma/winaccf.f
 include teshsuite/smpi/mpich3-test/f77/rma/winattr2f.f
 include teshsuite/smpi/mpich3-test/f77/rma/winattrf.f
@@ -1352,7 +1343,6 @@ include teshsuite/smpi/mpich3-test/f90/rma/baseattrwinf90.f90
 include teshsuite/smpi/mpich3-test/f90/rma/c2f2cwinf90.f90
 include teshsuite/smpi/mpich3-test/f90/rma/c2f902cwin.c
 include teshsuite/smpi/mpich3-test/f90/rma/testlist
-include teshsuite/smpi/mpich3-test/f90/rma/testlist
 include teshsuite/smpi/mpich3-test/f90/rma/winaccf90.f90
 include teshsuite/smpi/mpich3-test/f90/rma/winattr2f90.f90
 include teshsuite/smpi/mpich3-test/f90/rma/winattrf90.f90
@@ -1366,7 +1356,6 @@ include teshsuite/smpi/mpich3-test/f90/rma/winscale2f90.f90
 include teshsuite/smpi/mpich3-test/f90/testlist
 include teshsuite/smpi/mpich3-test/f90/util/../util/mtestf90.f90
 include teshsuite/smpi/mpich3-test/generate_report
-include teshsuite/smpi/mpich3-test/generate_report
 include teshsuite/smpi/mpich3-test/group/glpid.c
 include teshsuite/smpi/mpich3-test/group/groupcreate.c
 include teshsuite/smpi/mpich3-test/group/groupnullincl.c
@@ -1378,7 +1367,6 @@ include teshsuite/smpi/mpich3-test/group/testlist
 include teshsuite/smpi/mpich3-test/hostfile
 include teshsuite/smpi/mpich3-test/include/dtypes.h
 include teshsuite/smpi/mpich3-test/include/mpicolltest.h
-include teshsuite/smpi/mpich3-test/include/mpitest.h
 include teshsuite/smpi/mpich3-test/include/mpitest.h
 include teshsuite/smpi/mpich3-test/include/mpitestconf.h
 include teshsuite/smpi/mpich3-test/include/mpitestcxx.h
@@ -1914,12 +1902,8 @@ include include/simgrid/forward.h
 include include/simgrid/host.h
 include include/simgrid/instr.h
 include include/simgrid/jedule/jedule.hpp
-include include/simgrid/jedule/jedule.hpp
-include include/simgrid/jedule/jedule_events.hpp
 include include/simgrid/jedule/jedule_events.hpp
 include include/simgrid/jedule/jedule_platform.hpp
-include include/simgrid/jedule/jedule_platform.hpp
-include include/simgrid/jedule/jedule_sd_binding.h
 include include/simgrid/jedule/jedule_sd_binding.h
 include include/simgrid/kernel/future.hpp
 include include/simgrid/kernel/resource/Action.hpp
@@ -2074,14 +2058,10 @@ include src/bindings/java/org/simgrid/msg/TransferFailureException.java
 include src/bindings/java/org/simgrid/msg/VM.java
 include src/bindings/java/org/simgrid/trace/Trace.java
 include src/bindings/lua/lua_host.cpp
-include src/bindings/lua/lua_host.cpp
-include src/bindings/lua/lua_platf.cpp
 include src/bindings/lua/lua_platf.cpp
 include src/bindings/lua/lua_private.hpp
 include src/bindings/lua/lua_utils.cpp
-include src/bindings/lua/lua_utils.cpp
 include src/bindings/lua/lua_utils.hpp
-include src/bindings/lua/simgrid_lua.cpp
 include src/bindings/lua/simgrid_lua.cpp
 include src/bindings/lua/simgrid_lua.hpp
 include src/bindings/python/simgrid_python.cpp
@@ -2110,12 +2090,8 @@ include src/instr/instr_private.hpp
 include src/instr/instr_resource_utilization.cpp
 include src/instr/instr_smpi.hpp
 include src/instr/jedule/jedule.cpp
-include src/instr/jedule/jedule.cpp
-include src/instr/jedule/jedule_events.cpp
 include src/instr/jedule/jedule_events.cpp
 include src/instr/jedule/jedule_platform.cpp
-include src/instr/jedule/jedule_platform.cpp
-include src/instr/jedule/jedule_sd_binding.cpp
 include src/instr/jedule/jedule_sd_binding.cpp
 include src/internal_config.h.in
 include src/kernel/EngineImpl.cpp
@@ -2236,8 +2212,6 @@ include src/mc/mc_memory.cpp
 include src/mc/mc_mmu.hpp
 include src/mc/mc_private.hpp
 include src/mc/mc_record.cpp
-include src/mc/mc_record.cpp
-include src/mc/mc_record.hpp
 include src/mc/mc_record.hpp
 include src/mc/mc_replay.hpp
 include src/mc/mc_request.cpp
@@ -2280,7 +2254,6 @@ include src/plugins/host_load.cpp
 include src/plugins/link_energy.cpp
 include src/plugins/vm/VirtualMachineImpl.cpp
 include src/plugins/vm/VirtualMachineImpl.hpp
-include src/plugins/vm/VirtualMachineImpl.hpp
 include src/plugins/vm/VmHostExt.cpp
 include src/plugins/vm/VmHostExt.hpp
 include src/plugins/vm/VmLiveMigration.cpp
@@ -2318,7 +2291,6 @@ include src/simix/popping.cpp
 include src/simix/popping_accessors.hpp
 include src/simix/popping_bodies.cpp
 include src/simix/popping_enum.h
-include src/simix/popping_generated.cpp
 include src/simix/popping_generated.cpp
 include src/simix/popping_private.hpp
 include src/simix/simcalls.in
@@ -2553,7 +2525,6 @@ include src/surf/xml/simgrid.dtd
 include src/surf/xml/simgrid_dtd.c
 include src/surf/xml/simgrid_dtd.h
 include src/surf/xml/surfxml_parseplatf.cpp
-include src/surf/xml/surfxml_sax_cb.cpp
 include src/surf/xml/surfxml_sax_cb.cpp
 include src/xbt/OsSemaphore.hpp
 include src/xbt/RngStream.c

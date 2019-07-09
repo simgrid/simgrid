@@ -66,7 +66,6 @@ set(EXTRA_DIST
   src/xbt/mallocator_private.h
 
   src/xbt/mmalloc/mfree.c
-  src/xbt/mmalloc/mm.c
   src/xbt/mmalloc/mm_legacy.c
   src/xbt/mmalloc/mm_module.c
   src/xbt/mmalloc/mmalloc.c
@@ -297,6 +296,8 @@ set(XBT_SRC
 
 if(HAVE_MMALLOC)
   set(XBT_SRC ${XBT_SRC}  src/xbt/mmalloc/mm.c )
+else()
+  set(EXTRA_DIST ${EXTRA_DIST} src/xbt/mmalloc/mm.c)
 endif()
 
 set(NS3_SRC  src/surf/network_ns3.cpp

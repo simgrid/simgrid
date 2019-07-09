@@ -182,6 +182,7 @@ set(source_to_pack
   ${xml_files}
   )
 list(SORT source_to_pack)
+list(REMOVE_DUPLICATES source_to_pack)
 
 ##########################################
 ### Fill in the "make dist-dir" target ###

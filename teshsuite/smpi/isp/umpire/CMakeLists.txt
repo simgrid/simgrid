@@ -110,8 +110,6 @@ set(umpire_src_other
   change-send-buffer-type-exhaustive.c
   collective-exhaustive-byte-int-mismatch.c
   collective-exhaustive-no-error.c
-  collective-misorder.c
-  collective-misorder2.c
 
   deadlock-config_blocking.c
   errhandler-no-error.c
