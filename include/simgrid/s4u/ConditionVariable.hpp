@@ -28,9 +28,8 @@ private:
   friend kernel::activity::ConditionVariableImpl;
   kernel::activity::ConditionVariableImpl* const cond_;
 
-  explicit ConditionVariable(kernel::activity::ConditionVariableImpl* cond) : cond_(cond) {}
-
 public:
+  explicit ConditionVariable(kernel::activity::ConditionVariableImpl* cond) : cond_(cond) {}
   ConditionVariable(ConditionVariable const&) = delete;
   ConditionVariable& operator=(ConditionVariable const&) = delete;
 

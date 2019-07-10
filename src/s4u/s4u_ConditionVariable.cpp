@@ -3,6 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/cond.h"
+#include "simgrid/forward.h"
 #include "simgrid/s4u/ConditionVariable.hpp"
 #include "simgrid/simix.h"
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
@@ -85,3 +87,38 @@ void intrusive_ptr_release(ConditionVariable* cond)
 
 } // namespace s4u
 } // namespace simgrid
+
+/* **************************** Public C interface *************************** */
+sg_cond_t sg_cond_init()
+{
+  simgrid::kernel::activity::ConditionVariableImpl* cond =
+      simgrid::simix::simcall([] { return new simgrid::kernel::activity::ConditionVariableImpl(); });
+
+  return new simgrid::s4u::ConditionVariable(cond);
+}
+
+void sg_cond_wait(sg_cond_t cond, sg_mutex_t mutex)
+{
+  cond->wait(mutex);
+}
+
+int sg_cond_wait_for(sg_cond_t cond, sg_mutex_t mutex, double delay)
+{
+  std::unique_lock<simgrid::s4u::Mutex> lock(*mutex);
+  return static_cast<int>(cond->wait_for(lock, delay));
+}
+
+void sg_cond_notify_one(sg_cond_t cond)
+{
+  cond->notify_one();
+}
+
+void sg_cond_notify_all(sg_cond_t cond)
+{
+  cond->notify_all();
+}
+
+void sg_cond_destroy(sg_cond_t cond)
+{
+  delete cond;
+}

@@ -1896,6 +1896,7 @@ include include/simgrid/Exception.hpp
 include include/simgrid/actor.h
 include include/simgrid/barrier.h
 include include/simgrid/chrono.hpp
+include include/simgrid/cond.h
 include include/simgrid/config.h.in
 include include/simgrid/engine.h
 include include/simgrid/forward.h
@@ -1925,6 +1926,7 @@ include include/simgrid/link.h
 include include/simgrid/mailbox.h
 include include/simgrid/modelchecker.h
 include include/simgrid/msg.h
+include include/simgrid/mutex.h
 include include/simgrid/plugins/dvfs.h
 include include/simgrid/plugins/energy.h
 include include/simgrid/plugins/file_system.h
