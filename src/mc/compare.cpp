@@ -276,9 +276,8 @@ static inline Region* MC_get_heap_region(Snapshot* snapshot)
   xbt_die("No heap region");
 }
 
-static
-int mmalloc_compare_heap(
-  simgrid::mc::StateComparator& state, simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot* snapshot2)
+static bool mmalloc_heap_equal(simgrid::mc::StateComparator& state, simgrid::mc::Snapshot* snapshot1,
+                               simgrid::mc::Snapshot* snapshot2)
 {
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
@@ -528,7 +527,7 @@ int mmalloc_compare_heap(
   if (i1 == state.heaplimit)
     XBT_DEBUG("Number of blocks/fragments not found in heap2: %d", nb_diff2);
 
-  return nb_diff1 > 0 || nb_diff2 > 0;
+  return nb_diff1 == 0 && nb_diff2 == 0;
 }
 
 /**
@@ -1440,7 +1439,7 @@ bool snapshot_equal(Snapshot* s1, Snapshot* s2)
   }
 
   /* Compare heap */
-  if (mmalloc_compare_heap(*state_comparator, s1, s2) > 0) {
+  if (not mmalloc_heap_equal(*state_comparator, s1, s2)) {
     XBT_VERB("(%d - %d) Different heap (mmalloc_compare)", s1->num_state_, s2->num_state_);
     return false;
   }
