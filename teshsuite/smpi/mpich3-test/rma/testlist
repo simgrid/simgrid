@@ -27,7 +27,7 @@ lockcontention 3
 lockcontention2 4
 lockcontention2 8
 #Buggy one.
-#lockcontention3 8
+lockcontention3 8
 lockopts 2
 lock_dt 2
 lock_dt_flush 2

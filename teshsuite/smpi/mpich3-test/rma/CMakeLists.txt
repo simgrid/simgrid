@@ -16,13 +16,13 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
           at_complete  acc-pairtype manyget large-small-acc lock_dt win_dynamic_acc fetch_and_op flush req_example rmanull rmazero badrma
           lock_nested winname attrorderwin baseattrwin fkeyvalwin strided_acc_indexed strided_getacc_indexed compare_and_swap
           lockall_dt lockall_dt_flushall lock_dt_flush lockall_dt_flush lockall_dt_flushlocalall lockall_dt_flushlocal  lock_dt_flushlocal 
-     strided_acc_onelock strided_get_indexed strided_putget_indexed contention_put contention_putget
+     strided_acc_onelock strided_get_indexed strided_putget_indexed contention_put contention_putget lockcontention3
      adlb_mimic1 lock_contention_dt acc-loc get_acc_local get_accumulate put_base put_bottom
      linked_list_bench_lock_all linked_list_bench_lock_excl manyrma2 pscw_ordering rma-contig get-struct
      rput_local_comp racc_local_comp rget-testall win_shared win_shared_put_flush_get)
     # fence_shm fetchandadd_am fetchandadd fetchandadd_tree_am fetchandadd_tree 
     #  linked_list_bench_lock_shr linked_list linked_list_fop linked_list_lockall 
-    #   mcs-mutex mixedsync mutex_bench lockcontention3 reqops
+    #   mcs-mutex mixedsync mutex_bench  reqops
     # strided_getacc_indexed_shared rget-unlock 
     # win_flavors win_shared_zerobyte win_shared_noncontig win_shared_noncontig_put 
     # win_large_shm win_zero wintest  atomic_rmw_fop atomic_rmw_gacc  atomic_get atomic_rmw_cas
