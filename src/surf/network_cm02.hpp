@@ -57,9 +57,6 @@ class NetworkWifiLink : public NetworkCm02Link {
   /** @brief Hold every rates association between host and links (host name, rates id) */
   std::map<xbt::string, int> host_rates_;
 
-  /** @brief Hold every rates available for this Access Point */
-  // double* rates; FIXME: unused
-
   /** @brief A link can have several bandwith attach to it (mostly use by wifi model) */
   std::vector<Metric> bandwidths_;
 

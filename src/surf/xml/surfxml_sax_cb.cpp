@@ -243,7 +243,7 @@ std::vector<double> surf_parse_get_bandwidths(const char* string, const char* en
         "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)", "Bps"));
   }
 
-  return (bandwidths);
+  return bandwidths;
 }
 
 double surf_parse_get_speed(const char* string, const char* entity_kind, const std::string& name)

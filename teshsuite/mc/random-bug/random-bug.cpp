@@ -3,10 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstring>
 #include <simgrid/modelchecker.h>
 #include <simgrid/s4u.hpp>
+#include <xbt/log.h>
 
-#include <stdio.h> /* snprintf */
+XBT_LOG_NEW_DEFAULT_CATEGORY(random_bug, "For this example");
 
 enum { ABORT, ASSERT, PRINTF } behavior;
 
@@ -16,13 +18,16 @@ static void app()
   int x = MC_random(0, 5);
   int y = MC_random(0, 5);
 
-  if (behavior == ABORT) {
-    abort();
-  } else if (behavior == ASSERT) {
-    MC_assert(x != 3 || y != 4);
-  } else if (behavior == PRINTF) {
-    if (x == 3 && y == 4)
-      fprintf(stderr, "Error reached\n");
+  switch (behavior) {
+    case ABORT:
+      abort();
+    case ASSERT:
+      MC_assert(x != 3 || y != 4);
+      break;
+    case PRINTF:
+      if (x == 3 && y == 4)
+        XBT_ERROR("Error reached");
+      break;
   }
 }
 
@@ -32,13 +37,13 @@ int main(int argc, char* argv[])
   simgrid::s4u::Engine e(&argc, argv);
   xbt_assert(argc == 3, "Usage: random-bug raise|assert <platformfile>");
   if (strcmp(argv[1], "abort") == 0) {
-    printf("Behavior: abort\n");
+    XBT_INFO("Behavior: abort");
     behavior = ABORT;
   } else if (strcmp(argv[1], "assert") == 0) {
-    printf("Behavior: assert\n");
+    XBT_INFO("Behavior: assert");
     behavior = ASSERT;
   } else if (strcmp(argv[1], "printf") == 0) {
-    printf("Behavior: printf\n");
+    XBT_INFO("Behavior: printf");
     behavior = PRINTF;
   }
 
