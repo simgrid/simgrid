@@ -2,11 +2,24 @@
 
 SimGrid (3.23.3) NOT RELEASED YET (v3.24 expected September 23. 7:50 UTC)
 
+MSG:
+ - convert a new set of functions to the S4U C interface and move the old MSG
+   versions to legacy (MSG_process_self*, MSG_process_{un}ref, ...)
+
 SMPI:
  - Fortran bindings for DVFS have been removed.
 
 Model-Checker:
  - Option model-checker/hash was removed. This is always activated now.
+
+XBT:
+ - xbt_mutex_t and xbt_cond_t are now marked as deprecated, a new C interface
+   on S4U is already available to replace them by sg_mutex_t and sg_cond_t. 
+
+Bugs:
+ - FG#28: add sg_actor_self (and other wrappers on this_actor methods)
+ - FG#29 and FG#33: provide a new C API to mutexes and condition variables 
+ - FG#30: convert MSG_process_{un}ref to sg_actor_{un}ref
 
 ----------------------------------------------------------------------------
 
