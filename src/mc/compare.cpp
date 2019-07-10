@@ -1327,42 +1327,33 @@ static int compare_local_variables(simgrid::mc::StateComparator& state,
     return 1;
   }
 
-    unsigned int cursor = 0;
-    local_variable_t current_var1;
-    local_variable_t current_var2;
-    while (cursor < stack1->local_variables.size()) {
-      current_var1 = &stack1->local_variables[cursor];
-      current_var2 = &stack1->local_variables[cursor];
-      if (current_var1->name != current_var2->name
-          || current_var1->subprogram != current_var2->subprogram
-          || current_var1->ip != current_var2->ip) {
-        // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
-        XBT_VERB
-            ("Different name of variable (%s - %s) "
-             "or frame (%s - %s) or ip (%lu - %lu)",
-             current_var1->name.c_str(),
-             current_var2->name.c_str(),
-             current_var1->subprogram->name.c_str(),
-             current_var2->subprogram->name.c_str(),
-             current_var1->ip, current_var2->ip);
-        return 1;
-      }
+  for (unsigned int cursor = 0; cursor < stack1->local_variables.size(); cursor++) {
+    local_variable_t current_var1 = &stack1->local_variables[cursor];
+    local_variable_t current_var2 = &stack2->local_variables[cursor];
+    if (current_var1->name != current_var2->name || current_var1->subprogram != current_var2->subprogram ||
+        current_var1->ip != current_var2->ip) {
       // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
+      XBT_VERB("Different name of variable (%s - %s) "
+               "or frame (%s - %s) or ip (%lu - %lu)",
+               current_var1->name.c_str(), current_var2->name.c_str(), current_var1->subprogram->name.c_str(),
+               current_var2->subprogram->name.c_str(), current_var1->ip, current_var2->ip);
+      return 1;
+    }
+    // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
 
-        simgrid::mc::Type* subtype = current_var1->type;
-        int res                    = compare_areas_with_type(state, current_var1->address, snapshot1,
-                                          snapshot1->get_region(current_var1->address), current_var2->address,
-                                          snapshot2, snapshot2->get_region(current_var2->address), subtype, 0);
+    simgrid::mc::Type* subtype = current_var1->type;
+    int res                    = compare_areas_with_type(state, current_var1->address, snapshot1,
+                                      snapshot1->get_region(current_var1->address), current_var2->address, snapshot2,
+                                      snapshot2->get_region(current_var2->address), subtype, 0);
 
-        if (res == 1) {
-          // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
-          XBT_VERB("Local variable %s (%p - %p) in frame %s "
-                   "is different between snapshots",
-                   current_var1->name.c_str(), current_var1->address, current_var2->address,
-                   current_var1->subprogram->name.c_str());
-          return res;
-      }
-      cursor++;
+    if (res == 1) {
+      // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
+      XBT_VERB("Local variable %s (%p - %p) in frame %s "
+               "is different between snapshots",
+               current_var1->name.c_str(), current_var1->address, current_var2->address,
+               current_var1->subprogram->name.c_str());
+      return res;
+    }
     }
     return 0;
 }
@@ -1396,7 +1387,6 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
   }
 
   /* Compare size of stacks */
-  int is_diff = 0;
   for (unsigned long i = 0; i < s1->stacks_.size(); i++) {
     size_t size_used1 = s1->stack_sizes_[i];
     size_t size_used2 = s2->stack_sizes_[i];
@@ -1406,8 +1396,6 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
       return 1;
     }
   }
-  if (is_diff) // do not proceed if there is any stacks that don't match
-    return 1;
 
   /* Init heap information used in heap comparison algorithm */
   xbt_mheap_t heap1 = (xbt_mheap_t)s1->read_bytes(alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
@@ -1422,7 +1410,6 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
   }
 
   /* Stacks comparison */
-  // int diff_local = 0;
   for (unsigned int cursor = 0; cursor < s1->stacks_.size(); cursor++) {
     mc_snapshot_stack_t stack1 = &s1->stacks_[cursor];
     mc_snapshot_stack_t stack2 = &s2->stacks_[cursor];
@@ -1434,8 +1421,8 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
   }
 
   size_t regions_count = s1->snapshot_regions_.size();
-  // TODO, raise a difference instead?
-  xbt_assert(regions_count == s2->snapshot_regions_.size());
+  if (regions_count != s2->snapshot_regions_.size())
+    return 1;
 
   for (size_t k = 0; k != regions_count; ++k) {
     Region* region1 = s1->snapshot_regions_[k].get();
