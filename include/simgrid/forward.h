@@ -179,6 +179,7 @@ typedef simgrid::s4u::Barrier s4u_Barrier;
 typedef simgrid::s4u::Host s4u_Host;
 typedef simgrid::s4u::Link s4u_Link;
 typedef simgrid::s4u::File s4u_File;
+typedef simgrid::s4u::Mutex s4u_Mutex;
 typedef simgrid::s4u::Semaphore s4u_Semaphore;
 typedef simgrid::s4u::Storage s4u_Storage;
 typedef simgrid::s4u::NetZone s4u_NetZone;
@@ -199,6 +200,7 @@ typedef struct s4u_Barrier s4u_Barrier;
 typedef struct s4u_Host s4u_Host;
 typedef struct s4u_Link s4u_Link;
 typedef struct s4u_File s4u_File;
+typedef struct s4u_Mutex s4u_Mutex;
 typedef struct s4u_Semaphore s4u_Semaphore;
 typedef struct s4u_Storage s4u_Storage;
 typedef struct s4u_NetZone s4u_NetZone;
@@ -215,6 +217,7 @@ typedef struct s_smx_sem* smx_sem_t;
 #endif
 
 typedef s4u_Barrier* sg_bar_t;
+typedef s4u_Mutex* sg_mutex_t;
 typedef s4u_Semaphore* sg_sem_t;
 typedef s4u_NetZone* sg_netzone_t;
 typedef s4u_Host* sg_host_t;

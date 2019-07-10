@@ -13,6 +13,7 @@
 #include <simgrid/host.h>
 #include <simgrid/instr.h>
 #include <simgrid/mailbox.h>
+#include <simgrid/mutex.h>
 #include <simgrid/plugins/live_migration.h>
 #include <simgrid/semaphore.h>
 #include <simgrid/storage.h>

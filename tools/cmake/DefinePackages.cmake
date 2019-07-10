@@ -693,6 +693,7 @@ set(headers_to_install
   include/simgrid/kernel/future.hpp
   include/simgrid/host.h
   include/simgrid/link.h
+  include/simgrid/mutex.h
   include/simgrid/semaphore.h
   include/simgrid/storage.h
   include/simgrid/vm.h
