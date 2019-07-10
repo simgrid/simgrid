@@ -482,7 +482,7 @@ timing. ``put()`` and ``get()`` are matched regardless of their
 initiators' location and then the real communication occures between
 the involved parties.
 
-Please refer to the full `API of Mailboxes
+Please refer to the full `Mailboxes' documentation
 <app_s4u.html#s4u-mailbox>`_ for more details.
 
 
