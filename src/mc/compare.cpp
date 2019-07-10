@@ -281,11 +281,6 @@ static bool mmalloc_heap_equal(simgrid::mc::StateComparator& state, simgrid::mc:
 {
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
-  /* Start comparison */
-  int nb_diff1 = 0;
-  int nb_diff2 = 0;
-  bool equal;
-
   /* Check busy blocks */
   size_t i1 = 1;
 
@@ -341,7 +336,7 @@ static bool mmalloc_heap_equal(simgrid::mc::StateComparator& state, simgrid::mc:
       }
 
       size_t i2 = 1;
-      equal     = false;
+      bool equal = false;
 
       /* Try first to associate to same block in the other heap */
       if (heapinfo2->type == heapinfo1->type && state.equals_to2_(i1, 0).valid_ == 0) {
@@ -396,7 +391,7 @@ static bool mmalloc_heap_equal(simgrid::mc::StateComparator& state, simgrid::mc:
       if (not equal) {
         XBT_DEBUG("Block %zu not found (size_used = %zu, addr = %p)", i1, heapinfo1->busy_block.busy_size, addr_block1);
         i1 = state.heaplimit + 1;
-        nb_diff1++;
+        return false;
       }
 
     } else {                    /* Fragmented block */
@@ -412,7 +407,7 @@ static bool mmalloc_heap_equal(simgrid::mc::StateComparator& state, simgrid::mc:
         void* addr_frag1 = (void*)((char*)addr_block1 + (j1 << heapinfo1->type));
 
         size_t i2 = 1;
-        equal     = false;
+        bool equal = false;
 
         /* Try first to associate to same fragment_ in the other heap */
         if (heapinfo2->type == heapinfo1->type && not state.equals_to2_(i1, j1).valid_) {
@@ -470,8 +465,7 @@ static bool mmalloc_heap_equal(simgrid::mc::StateComparator& state, simgrid::mc:
           XBT_DEBUG("Block %zu, fragment_ %zu not found (size_used = %zd, address = %p)\n", i1, j1,
                     heapinfo1->busy_frag.frag_size[j1], addr_frag1);
           i1 = state.heaplimit + 1;
-          nb_diff1++;
-          break;
+          return false;
         }
       }
 
@@ -487,7 +481,7 @@ static bool mmalloc_heap_equal(simgrid::mc::StateComparator& state, simgrid::mc:
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED && i1 == state.heaplimit && heapinfo1->busy_block.busy_size > 0 &&
         not state.equals_to1_(i, 0).valid_) {
       XBT_DEBUG("Block %zu not found (size used = %zu)", i, heapinfo1->busy_block.busy_size);
-      nb_diff1++;
+      return false;
     }
 
     if (heapinfo1->type <= 0)
@@ -495,12 +489,9 @@ static bool mmalloc_heap_equal(simgrid::mc::StateComparator& state, simgrid::mc:
     for (size_t j = 0; j < (size_t)(BLOCKSIZE >> heapinfo1->type); j++)
       if (i1 == state.heaplimit && heapinfo1->busy_frag.frag_size[j] > 0 && not state.equals_to1_(i, j).valid_) {
         XBT_DEBUG("Block %zu, Fragment %zu not found (size used = %zd)", i, j, heapinfo1->busy_frag.frag_size[j]);
-        nb_diff1++;
+        return false;
       }
   }
-
-  if (i1 == state.heaplimit)
-    XBT_DEBUG("Number of blocks/fragments not found in heap1: %d", nb_diff1);
 
   for (size_t i = 1; i < state.heaplimit; i++) {
     const malloc_info* heapinfo2 =
@@ -509,7 +500,7 @@ static bool mmalloc_heap_equal(simgrid::mc::StateComparator& state, simgrid::mc:
         not state.equals_to2_(i, 0).valid_) {
       XBT_DEBUG("Block %zu not found (size used = %zu)", i,
                 heapinfo2->busy_block.busy_size);
-      nb_diff2++;
+      return false;
     }
 
     if (heapinfo2->type <= 0)
@@ -519,15 +510,11 @@ static bool mmalloc_heap_equal(simgrid::mc::StateComparator& state, simgrid::mc:
       if (i1 == state.heaplimit && heapinfo2->busy_frag.frag_size[j] > 0 && not state.equals_to2_(i, j).valid_) {
         XBT_DEBUG("Block %zu, Fragment %zu not found (size used = %zd)",
           i, j, heapinfo2->busy_frag.frag_size[j]);
-        nb_diff2++;
+        return false;
       }
-
   }
 
-  if (i1 == state.heaplimit)
-    XBT_DEBUG("Number of blocks/fragments not found in heap2: %d", nb_diff2);
-
-  return nb_diff1 == 0 && nb_diff2 == 0;
+  return true;
 }
 
 /**
@@ -553,11 +540,9 @@ static bool heap_area_equal_without_type(simgrid::mc::StateComparator& state, co
   for (int i = 0; i < size; ) {
 
     if (check_ignore > 0) {
-      ssize_t ignore1 = heap_comparison_ignore_size(
-        state.processStates[0].to_ignore, (char *) real_area1 + i);
+      ssize_t ignore1 = heap_comparison_ignore_size(state.processStates[0].to_ignore, (char*)real_area1 + i);
       if (ignore1 != -1) {
-        ssize_t ignore2 = heap_comparison_ignore_size(
-          state.processStates[1].to_ignore, (char *) real_area2 + i);
+        ssize_t ignore2 = heap_comparison_ignore_size(state.processStates[1].to_ignore, (char*)real_area2 + i);
         if (ignore2 == ignore1) {
           if (ignore1 == 0) {
             check_ignore--;
