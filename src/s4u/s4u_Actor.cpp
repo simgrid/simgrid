@@ -688,3 +688,14 @@ sg_actor_t sg_actor_self()
 {
   return simgrid::s4u::Actor::self();
 }
+
+/** @brief Take an extra reference on that actor to prevent it to be garbage-collected */
+void sg_actor_ref(sg_actor_t actor)
+{
+  intrusive_ptr_add_ref(actor);
+}
+/** @brief Release a reference on that actor so that it can get be garbage-collected */
+void sg_actor_unref(sg_actor_t actor)
+{
+  intrusive_ptr_release(actor);
+}

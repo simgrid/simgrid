@@ -177,14 +177,3 @@ void MSG_process_on_exit(int_f_int_pvoid_t fun, void* data)
   simgrid::s4u::this_actor::on_exit(
       [fun, data](bool failed) { fun(failed ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS, data); });
 }
-
-/** @brief Take an extra reference on that process to prevent it to be garbage-collected */
-XBT_PUBLIC void MSG_process_ref(msg_process_t process)
-{
-  intrusive_ptr_add_ref(process);
-}
-/** @brief Release a reference on that process so that it can get be garbage-collected */
-XBT_PUBLIC void MSG_process_unref(msg_process_t process)
-{
-  intrusive_ptr_release(process);
-}

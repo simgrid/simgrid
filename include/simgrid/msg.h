@@ -240,6 +240,8 @@ XBT_PUBLIC msg_process_t MSG_process_self();
 XBT_PUBLIC aid_t MSG_process_self_PID();
 XBT_PUBLIC aid_t MSG_process_self_PPID();
 XBT_PUBLIC const char* MSG_process_self_name();
+XBT_PUBLIC void MSG_process_ref(msg_process_t process);
+XBT_PUBLIC void MSG_process_unref(msg_process_t process);
 
 /** @brief Object representing an ongoing communication between processes.
  *
@@ -332,9 +334,6 @@ XBT_PUBLIC void* MSG_process_get_data(msg_process_t process);
 XBT_PUBLIC msg_error_t MSG_process_set_data(msg_process_t process, void* data);
 
 XBT_PUBLIC void MSG_process_on_exit(int_f_int_pvoid_t fun, void* data);
-
-XBT_PUBLIC void MSG_process_ref(msg_process_t process);
-XBT_PUBLIC void MSG_process_unref(msg_process_t process);
 
 /************************** Task handling ************************************/
 XBT_PUBLIC msg_task_t MSG_task_create(const char* name, double flops_amount, double bytes_amount, void* data);

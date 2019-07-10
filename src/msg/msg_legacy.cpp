@@ -172,6 +172,17 @@ msg_process_t MSG_process_self()
   return sg_actor_self();
 }
 
+/** @brief Take an extra reference on that process to prevent it to be garbage-collected */
+void MSG_process_ref(msg_process_t process)
+{
+  sg_actor_ref(process);
+}
+/** @brief Release a reference on that process so that it can get be garbage-collected */
+void MSG_process_unref(msg_process_t process)
+{
+  sg_actor_unref(process);
+}
+
 /* ************************** NetZones *************************** */
 sg_netzone_t MSG_zone_get_root()
 {
