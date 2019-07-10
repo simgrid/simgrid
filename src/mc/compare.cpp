@@ -624,8 +624,6 @@ static int compare_heap_area_with_type(simgrid::mc::StateComparator& state, cons
                                        simgrid::mc::Snapshot* snapshot2, HeapLocationPairs* previous,
                                        simgrid::mc::Type* type, int area_size, int check_ignore, int pointer_level)
 {
-  do {
-
     // HACK: This should not happen but in pratice, there are some
     // DW_TAG_typedef without an associated DW_AT_type:
     //<1><538832>: Abbrev Number: 111 (DW_TAG_typedef)
@@ -678,9 +676,8 @@ static int compare_heap_area_with_type(simgrid::mc::StateComparator& state, cons
       case DW_TAG_typedef:
       case DW_TAG_const_type:
       case DW_TAG_volatile_type:
-        // Poor man's TCO:
-        type = type->subtype;
-        continue; // restart
+        return compare_heap_area_with_type(state, real_area1, real_area2, snapshot1, snapshot2, previous, type->subtype,
+                                           area_size, check_ignore, pointer_level);
 
       case DW_TAG_array_type:
         subtype = type->subtype;
@@ -788,13 +785,8 @@ static int compare_heap_area_with_type(simgrid::mc::StateComparator& state, cons
       case DW_TAG_union_type:
         return compare_heap_area_without_type(state, real_area1, real_area2, snapshot1, snapshot2, previous,
                                               type->byte_size, check_ignore);
-
-      default:
-        return 0;
     }
-
-    xbt_die("Unreachable");
-  } while (true);
+    return 0;
 }
 
 /** Infer the type of a part of the block from the type of the block
@@ -1161,7 +1153,6 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state, void* re
   int i;
   int res;
 
-  do {
     xbt_assert(type != nullptr);
     switch (type->type) {
       case DW_TAG_unspecified_type:
@@ -1174,9 +1165,8 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state, void* re
       case DW_TAG_typedef:
       case DW_TAG_volatile_type:
       case DW_TAG_const_type:
-        // Poor man's TCO:
-        type = type->subtype;
-        continue; // restart
+        return compare_areas_with_type(state, real_area1, snapshot1, region1, real_area2, snapshot2, region2,
+                                       type->subtype, pointer_level);
       case DW_TAG_array_type:
         subtype = type->subtype;
         switch (subtype->type) {
@@ -1281,7 +1271,6 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state, void* re
     }
 
     return 0;
-  } while (true);
 }
 
 static bool global_variables_equal(simgrid::mc::StateComparator& state, simgrid::mc::ObjectInformation* object_info,
