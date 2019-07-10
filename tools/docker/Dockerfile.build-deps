@@ -2,7 +2,7 @@
 FROM debian:testing
 
 # - Install SimGrid's dependencies
-RUN apt update && \
+RUN apt-get --allow-releaseinfo-change update && \
     apt install -y \
        g++ gcc gfortran default-jdk pybind11-dev \
        git \

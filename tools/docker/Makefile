@@ -14,12 +14,11 @@ default:
 all: build-deps unstable tuto-s4u tuto-smpi
 
 stable:
-	export last_tag=`wget https://framagit.org/simgrid/simgrid/tags 2>/dev/null -O - | grep /simgrid/simgrid/-/tags/v | head -n1  | sed 's/[^>]*>//' | sed 's/<.*//'`; \
-	export url=`wget https://framagit.org/simgrid/simgrid/tags/$${last_tag} 2>/dev/null -O - | grep SimGrid- | perl -pe 's/.*?<a href="//' | sed 's/tar.gz.*/tar.gz/'` ;\
-	echo URL:$${url} ; \
+	export last_tag=$$(wget https://framagit.org/simgrid/simgrid/tags 2>/dev/null -O - | grep /simgrid/simgrid/-/tags/v | head -n1  | sed 's/[^>]*>//' | sed 's/<.*//'); \
+	export DLURL=$$(wget https://framagit.org/simgrid/simgrid/tags/$${last_tag} 2>/dev/null -O - | grep SimGrid- | perl -pe 's/.*?<a href="//' | sed 's/tar.gz.*/tar.gz/'); \
 	docker build -f Dockerfile.stable \
-	         --build-arg DLURL=$${url} \
-	         -t simgrid/stable:latest \
+	         --build-arg DLURL=$${DLURL} \
+		 -t simgrid/stable:latest \
                  -t simgrid/stable:$${last_tag} \
 		 $(DOCKER_EXTRA) \
                  . | tee > stable.log
