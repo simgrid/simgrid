@@ -15,18 +15,28 @@ large-scale distributed systems such as Grids, Clouds, HPC or P2P
 systems. It can be used to evaluate heuristics, prototype applications 
 or even assess legacy MPI applications.
 
-Please refer to the [Installing SimGrid](docs/source/Installing_SimGrid.rst) part of the documentation shipped with this
-repository to learn about the different ways to intall SimGrid. More documentation is also available 
-[online](https://simgrid.frama.io/simgrid/)
+## Installation
+Documentation: [online](https://simgrid.org/doc/latest/Installing_SimGrid.html#installing-from-the-source);
+[local copy](docs/source/Installing_SimGrid.rst). TL;DR:
+```
+cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid .
+# Check the full list of options with `cmake -LH`
+make
+make install
+```
 
-In any case, you may want to subscribe to the [user mailing list](http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user). 
-There, you can find answers to your questions, or simply discuss with
-people doing the same kind of research than you do, in an active and
-friendly community.
+## More information
+[Online documentation](https://simgrid.org/doc/latest/) or 
+[local version](docs/source).
+
+You can also ask your questions, or simply discuss with other users on 
+to the [user mailing list](http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user)
+or on the #simgrid IRC channel of the oftc network.
+
 
 Thanks for using our software. Please do great things with it and tell
 the world about it. Tell us, too, because we love to have positive
-feedback.
+feedback. Welcome to our community.
 
 Cheers,
 Da SimGrid Team.
