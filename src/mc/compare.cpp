@@ -1382,17 +1382,11 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
 
   RemoteClient* process = &mc_model_checker->process();
 
-  int errors = 0;
-
-  int hash_result = 0;
   if (_sg_mc_hash) {
-    hash_result = (s1->hash_ != s2->hash_);
-    if (hash_result) {
+    if (s1->hash_ != s2->hash_) {
       XBT_VERB("(%d - %d) Different hash: 0x%" PRIx64 "--0x%" PRIx64, s1->num_state_, s2->num_state_, s1->hash_,
                s2->hash_);
-#ifndef MC_DEBUG
       return 1;
-#endif
     } else
       XBT_VERB("(%d - %d) Same hash: 0x%" PRIx64, s1->num_state_, s2->num_state_, s1->hash_);
   }
@@ -1409,18 +1403,9 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
     size_t size_used1 = s1->stack_sizes_[i];
     size_t size_used2 = s2->stack_sizes_[i];
     if (size_used1 != size_used2) {
-#ifdef MC_DEBUG
-      XBT_DEBUG("(%d - %d) Different size used in stacks: %zu - %zu", s1->num_state, s2->num_state, size_used1,
-                size_used2);
-      errors++;
-      is_diff = 1;
-#else
-#ifdef MC_VERBOSE
       XBT_VERB("(%d - %d) Different size used in stacks: %zu - %zu", s1->num_state_, s2->num_state_, size_used1,
                size_used2);
-#endif
       return 1;
-#endif
     }
   }
   if (is_diff) // do not proceed if there is any stacks that don't match
@@ -1434,16 +1419,8 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
   int res_init = state_comparator->initHeapInformation(heap1, heap2, &s1->to_ignore_, &s2->to_ignore_);
 
   if (res_init == -1) {
-#ifdef MC_DEBUG
-    XBT_DEBUG("(%d - %d) Different heap information", num1, nus1->num_state, s2->num_statem2);
-    errors++;
-#else
-#ifdef MC_VERBOSE
     XBT_VERB("(%d - %d) Different heap information", s1->num_state_, s2->num_state_);
-#endif
-
     return 1;
-#endif
   }
 
   /* Stacks comparison */
@@ -1453,18 +1430,8 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
     mc_snapshot_stack_t stack2 = &s2->stacks_[cursor];
 
     if (compare_local_variables(*state_comparator, s1, s2, stack1, stack2) > 0) {
-#ifdef MC_DEBUG
-      XBT_DEBUG("(%d - %d) Different local variables between stacks %d", num1,
-                num2, cursor + 1);
-      errors++;
-#else
-
-#ifdef MC_VERBOSE
       XBT_VERB("(%d - %d) Different local variables between stacks %u", s1->num_state_, s2->num_state_, cursor + 1);
-#endif
-
       return 1;
-#endif
     }
   }
 
@@ -1486,55 +1453,21 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
 
     /* Compare global variables */
     if (compare_global_variables(*state_comparator, region1->object_info(), region1, region2, s1, s2)) {
-
-#ifdef MC_DEBUG
-      std::string const& name = region1->object_info()->file_name;
-      XBT_DEBUG("(%d - %d) Different global variables in %s", s1->num_state, s2->num_state, name.c_str());
-      errors++;
-#else
-#ifdef MC_VERBOSE
       std::string const& name = region1->object_info()->file_name;
       XBT_VERB("(%d - %d) Different global variables in %s", s1->num_state_, s2->num_state_, name.c_str());
-#endif
-
       return 1;
-#endif
     }
   }
 
   /* Compare heap */
   if (mmalloc_compare_heap(*state_comparator, s1, s2) > 0) {
-
-#ifdef MC_DEBUG
-    XBT_DEBUG("(%d - %d) Different heap (mmalloc_compare)", s1->num_state, s2->num_state);
-    errors++;
-#else
-
-#ifdef MC_VERBOSE
     XBT_VERB("(%d - %d) Different heap (mmalloc_compare)", s1->num_state_, s2->num_state_);
-#endif
     return 1;
-#endif
   }
 
-#ifdef MC_VERBOSE
-  if (errors || hash_result)
-    XBT_VERB("(%d - %d) Difference found", s1->num_state_, s2->num_state_);
-  else
     XBT_VERB("(%d - %d) No difference found", s1->num_state_, s2->num_state_);
-#endif
 
-#if defined(MC_DEBUG) && defined(MC_VERBOSE)
-  if (_sg_mc_hash) {
-    // * false positive SHOULD be avoided.
-    // * There MUST not be any false negative.
-
-    XBT_VERB("(%d - %d) State equality hash test is %s %s", s1->num_state, s2->num_state,
-             (hash_result != 0) == (errors != 0) ? "true" : "false", not hash_result ? "positive" : "negative");
-  }
-#endif
-
-  return errors > 0 || hash_result;
+    return 0;
 }
 
 }

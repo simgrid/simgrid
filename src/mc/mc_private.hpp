@@ -32,11 +32,6 @@ XBT_PRIVATE extern FILE* dot_output;
 
 XBT_PRIVATE void MC_show_deadlock(void);
 
-/********************************** Snapshot comparison **********************************/
-
-//#define MC_DEBUG 1
-#define MC_VERBOSE 1
-
 /********************************** Miscellaneous **********************************/
 namespace simgrid {
 namespace mc {
