@@ -338,7 +338,10 @@ void ModelChecker::handle_waitpid()
           xbt_die("Could not PTRACE_CONT");
       }
 
-      else if (WIFEXITED(status) || WIFSIGNALED(status)) {
+      else if (WIFSIGNALED(status)) {
+        MC_report_crash(status);
+        mc_model_checker->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
+      } else if (WIFEXITED(status)) {
         XBT_DEBUG("Child process is over");
         this->process().terminate();
       }
