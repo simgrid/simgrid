@@ -105,7 +105,7 @@ void sg_cond_wait(sg_cond_t cond, sg_mutex_t mutex)
 int sg_cond_wait_for(sg_cond_t cond, sg_mutex_t mutex, double delay)
 {
   std::unique_lock<simgrid::s4u::Mutex> lock(*mutex);
-  return static_cast<int>(cond->wait_for(lock, delay));
+  return cond->wait_for(lock, delay) == std::cv_status::timeout ? 1 : 0;
 }
 
 void sg_cond_notify_one(sg_cond_t cond)
