@@ -451,7 +451,7 @@ static bool mmalloc_heap_equal(simgrid::mc::StateComparator& state, simgrid::mc:
             void* addr_frag2  = (void*)((char*)addr_block2 + (j2 << heapinfo2b->type));
 
             int res_compare =
-                compare_heap_area(state, addr_frag1, addr_frag2, snapshot2, snapshot2, nullptr, nullptr, 0);
+                compare_heap_area(state, addr_frag1, addr_frag2, snapshot1, snapshot2, nullptr, nullptr, 0);
             if (res_compare != 1) {
               equal = true;
               break;
