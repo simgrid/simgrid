@@ -112,7 +112,6 @@ Existing Configuration Items
 - **model-check/checkpoint:** :ref:`cfg=model-check/checkpoint`
 - **model-check/communications-determinism:** :ref:`cfg=model-check/communications-determinism`
 - **model-check/dot-output:** :ref:`cfg=model-check/dot-output`
-- **model-check/hash:** :ref:`cfg=model-checker/hash`
 - **model-check/max-depth:** :ref:`cfg=model-check/max-depth`
 - **model-check/property:** :ref:`cfg=model-check/property`
 - **model-check/reduction:** :ref:`cfg=model-check/reduction`
@@ -629,23 +628,6 @@ When compiled against the model checker, the stacks are not
 protected with guards: if the stack size is too small for your
 application, the stack will silently overflow on other parts of the
 memory (see :ref:`contexts/guard-size <cfg=contexts/guard-size>`).
-
-.. _cfg=model-checker/hash:
-
-State Hashing
-.............
-
-Usually most of the time of the model-checker is spent comparing states. This
-process is complicated and consumes a lot of bandwidth and cache.
-In order to speedup the state comparison, the experimental ``model-checker/hash``
-configuration item enables the computation of a hash summarizing as much
-information of the state as possible into a single value. This hash can be used
-to avoid most of the comparisons: the costly comparison is then only used when
-the hashes are identical.
-
-Currently most of the state is not included in the hash because the
-implementation was found to be buggy and this options is not as useful as
-it could be. For this reason, it is currently disabled by default.
 
 .. _cfg=model-check/replay:
 

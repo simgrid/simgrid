@@ -1382,14 +1382,12 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
 
   RemoteClient* process = &mc_model_checker->process();
 
-  if (_sg_mc_hash) {
-    if (s1->hash_ != s2->hash_) {
-      XBT_VERB("(%d - %d) Different hash: 0x%" PRIx64 "--0x%" PRIx64, s1->num_state_, s2->num_state_, s1->hash_,
-               s2->hash_);
-      return 1;
+  if (s1->hash_ != s2->hash_) {
+    XBT_VERB("(%d - %d) Different hash: 0x%" PRIx64 "--0x%" PRIx64, s1->num_state_, s2->num_state_, s1->hash_,
+             s2->hash_);
+    return 1;
     } else
       XBT_VERB("(%d - %d) Same hash: 0x%" PRIx64, s1->num_state_, s2->num_state_, s1->hash_);
-  }
 
   /* Compare enabled processes */
   if (s1->enabled_processes_ != s2->enabled_processes_) {

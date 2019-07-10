@@ -86,10 +86,6 @@ static simgrid::config::Flag<std::string> _sg_mc_reduce{
         xbt_die("configuration option model-check/reduction can only take 'none' or 'dpor' as a value");
     }};
 
-simgrid::config::Flag<bool> _sg_mc_hash{
-    "model-check/hash", "Whether to enable state hash for state comparison (experimental)", false,
-    [](bool) { _mc_cfg_cb_check("value to enable/disable the use of global hash to speedup state comparaison"); }};
-
 simgrid::config::Flag<int> _sg_mc_max_depth{"model-check/max-depth",
                                             {"model-check/max_depth"},
                                             "Maximal exploration depth (default: 1000)",

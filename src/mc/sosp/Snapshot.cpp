@@ -217,8 +217,7 @@ Snapshot::Snapshot(int num_state, RemoteClient* process)
 
   if (_sg_mc_max_visited_states > 0 || not _sg_mc_property_file.get().empty()) {
     snapshot_stacks(process);
-    if (_sg_mc_hash)
-      hash_ = simgrid::mc::hash(*this);
+    hash_ = simgrid::mc::hash(*this);
   }
 
   snapshot_ignore_restore(this);
