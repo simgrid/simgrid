@@ -496,6 +496,11 @@ void help()
  */
 void xbt_cfg_set_int(const char *key, int value)
 {
+  sg_cfg_set_int(key, value);
+}
+
+void sg_cfg_set_int(const char* key, int value)
+{
   (*simgrid_config)[key].set_value<int>(value);
 }
 
@@ -505,6 +510,11 @@ void xbt_cfg_set_int(const char *key, int value)
  * @param value the double to set
  */
 void xbt_cfg_set_double(const char *key, double value)
+{
+  sg_cfg_set_double(key, value);
+}
+
+void sg_cfg_set_double(const char* key, double value)
 {
   (*simgrid_config)[key].set_value<double>(value);
 }
@@ -517,6 +527,11 @@ void xbt_cfg_set_double(const char *key, double value)
  */
 void xbt_cfg_set_string(const char* key, const char* value)
 {
+  sg_cfg_set_string(key, value);
+}
+
+void sg_cfg_set_string(const char* key, const char* value)
+{
   (*simgrid_config)[key].set_value<std::string>(value);
 }
 
@@ -526,6 +541,11 @@ void xbt_cfg_set_string(const char* key, const char* value)
  * @param value the value of the variable
  */
 void xbt_cfg_set_boolean(const char *key, const char *value)
+{
+  sg_cfg_set_boolean(key, value);
+}
+
+void sg_cfg_set_boolean(const char* key, const char* value)
 {
   (*simgrid_config)[key].set_value<bool>(simgrid::config::parse_bool(value));
 }
@@ -539,6 +559,11 @@ void xbt_cfg_set_boolean(const char *key, const char *value)
  */
 int xbt_cfg_get_int(const char *key)
 {
+  return sg_cfg_get_int(key);
+}
+
+int sg_cfg_get_int(const char* key)
+{
   return (*simgrid_config)[key].get_value<int>();
 }
 
@@ -549,6 +574,11 @@ int xbt_cfg_get_int(const char *key)
  * Returns the first value from the config set under the given name.
  */
 double xbt_cfg_get_double(const char *key)
+{
+  return sg_cfg_get_double(key);
+}
+
+double sg_cfg_get_double(const char* key)
 {
   return (*simgrid_config)[key].get_value<double>();
 }
@@ -561,6 +591,11 @@ double xbt_cfg_get_double(const char *key)
  * If there is more than one value, it will issue a warning.
  */
 int xbt_cfg_get_boolean(const char *key)
+{
+  return sg_cfg_get_boolean(key);
+}
+
+int sg_cfg_get_boolean(const char* key)
 {
   return (*simgrid_config)[key].get_value<bool>() ? 1 : 0;
 }
