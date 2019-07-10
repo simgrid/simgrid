@@ -63,7 +63,6 @@ public:
   void log_state() override;
 
 private:
-  int compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2);
   std::shared_ptr<const std::vector<int>> get_proposition_values();
   std::shared_ptr<VisitedPair> insert_acceptance_pair(simgrid::mc::Pair* pair);
   int insert_visited_pair(std::shared_ptr<VisitedPair> visited_pair, simgrid::mc::Pair* pair);

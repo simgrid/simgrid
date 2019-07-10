@@ -1285,9 +1285,9 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state, void* re
   } while (true);
 }
 
-static int compare_global_variables(simgrid::mc::StateComparator& state, simgrid::mc::ObjectInformation* object_info,
-                                    simgrid::mc::Region* r1, simgrid::mc::Region* r2, simgrid::mc::Snapshot* snapshot1,
-                                    simgrid::mc::Snapshot* snapshot2)
+static bool global_variables_equal(simgrid::mc::StateComparator& state, simgrid::mc::ObjectInformation* object_info,
+                                   simgrid::mc::Region* r1, simgrid::mc::Region* r2, simgrid::mc::Snapshot* snapshot1,
+                                   simgrid::mc::Snapshot* snapshot2)
 {
   xbt_assert(r1 && r2, "Missing region.");
 
@@ -1309,22 +1309,20 @@ static int compare_global_variables(simgrid::mc::StateComparator& state, simgrid
       XBT_VERB("Global variable %s (%p) is different between snapshots",
                current_var.name.c_str(),
                (char *) current_var.address);
-      return 1;
+      return false;
     }
   }
 
-  return 0;
+  return true;
 }
 
-static int compare_local_variables(simgrid::mc::StateComparator& state,
-                                   simgrid::mc::Snapshot* snapshot1,
-                                   simgrid::mc::Snapshot* snapshot2,
-                                   mc_snapshot_stack_t stack1,
-                                   mc_snapshot_stack_t stack2)
+static bool local_variables_equal(simgrid::mc::StateComparator& state, simgrid::mc::Snapshot* snapshot1,
+                                  simgrid::mc::Snapshot* snapshot2, mc_snapshot_stack_t stack1,
+                                  mc_snapshot_stack_t stack2)
 {
   if (stack1->local_variables.size() != stack2->local_variables.size()) {
     XBT_VERB("Different number of local variables");
-    return 1;
+    return false;
   }
 
   for (unsigned int cursor = 0; cursor < stack1->local_variables.size(); cursor++) {
@@ -1337,25 +1335,22 @@ static int compare_local_variables(simgrid::mc::StateComparator& state,
                "or frame (%s - %s) or ip (%lu - %lu)",
                current_var1->name.c_str(), current_var2->name.c_str(), current_var1->subprogram->name.c_str(),
                current_var2->subprogram->name.c_str(), current_var1->ip, current_var2->ip);
-      return 1;
+      return false;
     }
     // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
 
-    simgrid::mc::Type* subtype = current_var1->type;
-    int res                    = compare_areas_with_type(state, current_var1->address, snapshot1,
-                                      snapshot1->get_region(current_var1->address), current_var2->address, snapshot2,
-                                      snapshot2->get_region(current_var2->address), subtype, 0);
-
-    if (res == 1) {
+    if (compare_areas_with_type(state, current_var1->address, snapshot1, snapshot1->get_region(current_var1->address),
+                                current_var2->address, snapshot2, snapshot2->get_region(current_var2->address),
+                                current_var1->type, 0) == 1) {
       // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
       XBT_VERB("Local variable %s (%p - %p) in frame %s "
                "is different between snapshots",
                current_var1->name.c_str(), current_var1->address, current_var2->address,
                current_var1->subprogram->name.c_str());
-      return res;
+      return false;
     }
     }
-    return 0;
+    return true;
 }
 
 namespace simgrid {
@@ -1363,7 +1358,7 @@ namespace mc {
 
 static std::unique_ptr<simgrid::mc::StateComparator> state_comparator;
 
-int snapshot_compare(Snapshot* s1, Snapshot* s2)
+bool snapshot_equal(Snapshot* s1, Snapshot* s2)
 {
   // TODO, make this a field of ModelChecker or something similar
   if (state_comparator == nullptr)
@@ -1376,14 +1371,14 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
   if (s1->hash_ != s2->hash_) {
     XBT_VERB("(%d - %d) Different hash: 0x%" PRIx64 "--0x%" PRIx64, s1->num_state_, s2->num_state_, s1->hash_,
              s2->hash_);
-    return 1;
+    return false;
     } else
       XBT_VERB("(%d - %d) Same hash: 0x%" PRIx64, s1->num_state_, s2->num_state_, s1->hash_);
 
   /* Compare enabled processes */
   if (s1->enabled_processes_ != s2->enabled_processes_) {
     XBT_VERB("(%d - %d) Different amount of enabled processes", s1->num_state_, s2->num_state_);
-    return 1;
+    return false;
   }
 
   /* Compare size of stacks */
@@ -1393,7 +1388,7 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
     if (size_used1 != size_used2) {
       XBT_VERB("(%d - %d) Different size used in stacks: %zu - %zu", s1->num_state_, s2->num_state_, size_used1,
                size_used2);
-      return 1;
+      return false;
     }
   }
 
@@ -1406,7 +1401,7 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
 
   if (res_init == -1) {
     XBT_VERB("(%d - %d) Different heap information", s1->num_state_, s2->num_state_);
-    return 1;
+    return false;
   }
 
   /* Stacks comparison */
@@ -1414,15 +1409,15 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
     mc_snapshot_stack_t stack1 = &s1->stacks_[cursor];
     mc_snapshot_stack_t stack2 = &s2->stacks_[cursor];
 
-    if (compare_local_variables(*state_comparator, s1, s2, stack1, stack2) > 0) {
+    if (not local_variables_equal(*state_comparator, s1, s2, stack1, stack2)) {
       XBT_VERB("(%d - %d) Different local variables between stacks %u", s1->num_state_, s2->num_state_, cursor + 1);
-      return 1;
+      return false;
     }
   }
 
   size_t regions_count = s1->snapshot_regions_.size();
   if (regions_count != s2->snapshot_regions_.size())
-    return 1;
+    return false;
 
   for (size_t k = 0; k != regions_count; ++k) {
     Region* region1 = s1->snapshot_regions_[k].get();
@@ -1437,22 +1432,22 @@ int snapshot_compare(Snapshot* s1, Snapshot* s2)
     xbt_assert(region1->object_info());
 
     /* Compare global variables */
-    if (compare_global_variables(*state_comparator, region1->object_info(), region1, region2, s1, s2)) {
+    if (not global_variables_equal(*state_comparator, region1->object_info(), region1, region2, s1, s2)) {
       std::string const& name = region1->object_info()->file_name;
       XBT_VERB("(%d - %d) Different global variables in %s", s1->num_state_, s2->num_state_, name.c_str());
-      return 1;
+      return false;
     }
   }
 
   /* Compare heap */
   if (mmalloc_compare_heap(*state_comparator, s1, s2) > 0) {
     XBT_VERB("(%d - %d) Different heap (mmalloc_compare)", s1->num_state_, s2->num_state_);
-    return 1;
+    return false;
   }
 
     XBT_VERB("(%d - %d) No difference found", s1->num_state_, s2->num_state_);
 
-    return 0;
+    return true;
 }
 
 }

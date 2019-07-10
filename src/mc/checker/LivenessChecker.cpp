@@ -80,13 +80,6 @@ std::shared_ptr<const std::vector<int>> LivenessChecker::get_proposition_values(
   return std::make_shared<const std::vector<int>>(std::move(values));
 }
 
-int LivenessChecker::compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2)
-{
-  simgrid::mc::Snapshot* s1 = state1->graph_state->system_state.get();
-  simgrid::mc::Snapshot* s2 = state2->graph_state->system_state.get();
-  return simgrid::mc::snapshot_compare(s1, s2);
-}
-
 std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc::Pair* pair)
 {
   std::shared_ptr<VisitedPair> new_pair = std::make_shared<VisitedPair>(
@@ -98,10 +91,9 @@ std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc
 
   if (pair->search_cycle) for (auto i = res.first; i != res.second; ++i) {
     std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
-    if (xbt_automaton_state_compare(
-          pair_test->automaton_state, new_pair->automaton_state) != 0
-        || *(pair_test->atomic_propositions) != *(new_pair->atomic_propositions)
-        || this->compare(pair_test.get(), new_pair.get()) != 0)
+    if (xbt_automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) != 0 ||
+        *(pair_test->atomic_propositions) != *(new_pair->atomic_propositions) ||
+        not snapshot_equal(pair_test->graph_state->system_state.get(), new_pair->graph_state->system_state.get()))
       continue;
     XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
     exploration_stack_.pop_back();
@@ -200,11 +192,10 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
 
   for (auto i = range.first; i != range.second; ++i) {
     VisitedPair* pair_test = i->get();
-    if (xbt_automaton_state_compare(
-          pair_test->automaton_state, visited_pair->automaton_state) != 0
-        || *(pair_test->atomic_propositions) != *(visited_pair->atomic_propositions)
-        || this->compare(pair_test, visited_pair.get()) != 0)
-        continue;
+    if (xbt_automaton_state_compare(pair_test->automaton_state, visited_pair->automaton_state) != 0 ||
+        *(pair_test->atomic_propositions) != *(visited_pair->atomic_propositions) ||
+        not snapshot_equal(pair_test->graph_state->system_state.get(), visited_pair->graph_state->system_state.get()))
+      continue;
     if (pair_test->other_num == -1)
       visited_pair->other_num = pair_test->num;
     else

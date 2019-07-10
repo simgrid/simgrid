@@ -31,17 +31,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc,
 namespace simgrid {
 namespace mc {
 
-static int snapshot_compare(simgrid::mc::State* state1, simgrid::mc::State* state2)
-{
-  simgrid::mc::Snapshot* s1 = state1->system_state.get();
-  simgrid::mc::Snapshot* s2 = state2->system_state.get();
-  return snapshot_compare(s1, s2);
-}
-
 void SafetyChecker::check_non_termination(simgrid::mc::State* current_state)
 {
   for (auto state = stack_.rbegin(); state != stack_.rend(); ++state)
-    if (snapshot_compare(state->get(), current_state) == 0) {
+    if (snapshot_equal((*state)->system_state.get(), current_state->system_state.get())) {
       XBT_INFO("Non-progressive cycle: state %d -> state %d", (*state)->num, current_state->num);
       XBT_INFO("******************************************");
       XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");

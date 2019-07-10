@@ -16,13 +16,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_VisitedState, mc, "Logging specific to state 
 namespace simgrid {
 namespace mc {
 
-static int snapshot_compare(simgrid::mc::VisitedState* state1, simgrid::mc::VisitedState* state2)
-{
-  simgrid::mc::Snapshot* s1 = state1->system_state.get();
-  simgrid::mc::Snapshot* s2 = state2->system_state.get();
-  return snapshot_compare(s1, s2);
-}
-
 /** @brief Save the current state */
 VisitedState::VisitedState(unsigned long state_number) : num(state_number)
 {
@@ -68,7 +61,7 @@ std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(
   if (compare_snpashots)
     for (auto i = range.first; i != range.second; ++i) {
       auto& visited_state = *i;
-      if (snapshot_compare(visited_state.get(), new_state.get()) == 0) {
+      if (snapshot_equal(visited_state->system_state.get(), new_state->system_state.get())) {
         // The state has been visited:
 
         std::unique_ptr<simgrid::mc::VisitedState> old_state =

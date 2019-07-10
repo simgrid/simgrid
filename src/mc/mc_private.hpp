@@ -40,7 +40,7 @@ XBT_PRIVATE void find_object_address(std::vector<simgrid::xbt::VmMap> const& map
                                      simgrid::mc::ObjectInformation* result);
 
 XBT_PRIVATE
-int snapshot_compare(Snapshot* s1, Snapshot* s2);
+bool snapshot_equal(Snapshot* s1, Snapshot* s2);
 
 // Move is somewhere else (in the LivenessChecker class, in the Session class?):
 extern XBT_PRIVATE xbt_automaton_t property_automaton;
