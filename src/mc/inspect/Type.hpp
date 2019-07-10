@@ -11,6 +11,9 @@
 #include <string>
 #include <vector>
 
+#define DW_LANG_Objc DW_LANG_ObjC /* fix spelling error in older dwarf.h */
+#include <dwarf.h>
+
 #include "xbt/asserts.h"
 #include "xbt/base.h"
 
