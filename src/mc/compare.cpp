@@ -541,10 +541,10 @@ static bool mmalloc_heap_equal(simgrid::mc::StateComparator& state, simgrid::mc:
  * @param size
  * @param check_ignore
  */
-static int compare_heap_area_without_type(simgrid::mc::StateComparator& state, const void* real_area1,
-                                          const void* real_area2, simgrid::mc::Snapshot* snapshot1,
-                                          simgrid::mc::Snapshot* snapshot2, HeapLocationPairs* previous, int size,
-                                          int check_ignore)
+static bool heap_area_equal_without_type(simgrid::mc::StateComparator& state, const void* real_area1,
+                                         const void* real_area2, simgrid::mc::Snapshot* snapshot1,
+                                         simgrid::mc::Snapshot* snapshot2, HeapLocationPairs* previous, int size,
+                                         int check_ignore)
 {
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
   simgrid::mc::Region* heap_region1  = MC_get_heap_region(snapshot1);
@@ -561,7 +561,7 @@ static int compare_heap_area_without_type(simgrid::mc::StateComparator& state, c
         if (ignore2 == ignore1) {
           if (ignore1 == 0) {
             check_ignore--;
-            return 0;
+            return true;
           } else {
             i = i + ignore2;
             check_ignore--;
@@ -591,18 +591,18 @@ static int compare_heap_area_without_type(simgrid::mc::StateComparator& state, c
         int res_compare =
             compare_heap_area(state, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, nullptr, 0);
         if (res_compare == 1)
-          return res_compare;
+          return false;
         i = pointer_align + sizeof(void *);
         continue;
       }
 
-      return 1;
+      return false;
     }
 
     i++;
   }
 
-  return 0;
+  return true;
 }
 
 /**
@@ -783,8 +783,8 @@ static int compare_heap_area_with_type(simgrid::mc::StateComparator& state, cons
         return 0;
 
     case DW_TAG_union_type:
-      return compare_heap_area_without_type(state, real_area1, real_area2, snapshot1, snapshot2, previous,
-                                            type->byte_size, check_ignore);
+      return not heap_area_equal_without_type(state, real_area1, real_area2, snapshot1, snapshot2, previous,
+                                              type->byte_size, check_ignore);
   }
   return 0;
 }
@@ -1124,7 +1124,7 @@ static int compare_heap_area(simgrid::mc::StateComparator& state, const void* ar
                                               check_ignore, pointer_level);
   else
     res_compare =
-        compare_heap_area_without_type(state, area1, area2, snapshot1, snapshot2, previous, size, check_ignore);
+        not heap_area_equal_without_type(state, area1, area2, snapshot1, snapshot2, previous, size, check_ignore);
 
   if (res_compare == 1)
     return res_compare;
