@@ -31,7 +31,9 @@ class XBT_PRIVATE VisitedStates {
   std::vector<std::unique_ptr<simgrid::mc::VisitedState>> states_;
 public:
   void clear() { states_.clear(); }
-  std::unique_ptr<simgrid::mc::VisitedState> addVisitedState(unsigned long state_number, simgrid::mc::State* graph_state, bool compare_snpashots);
+  std::unique_ptr<simgrid::mc::VisitedState> addVisitedState(unsigned long state_number,
+                                                             simgrid::mc::State* graph_state, bool compare_snapshots);
+
 private:
   void prune();
 };

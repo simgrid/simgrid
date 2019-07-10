@@ -46,8 +46,8 @@ void VisitedStates::prune()
 }
 
 /** @brief Checks whether a given state has already been visited by the algorithm. */
-std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(
-  unsigned long state_number, simgrid::mc::State* graph_state, bool compare_snpashots)
+std::unique_ptr<simgrid::mc::VisitedState>
+VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* graph_state, bool compare_snapshots)
 {
   std::unique_ptr<simgrid::mc::VisitedState> new_state =
     std::unique_ptr<simgrid::mc::VisitedState>(new VisitedState(state_number));
@@ -58,7 +58,7 @@ std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(
   auto range =
       boost::range::equal_range(states_, new_state.get(), simgrid::mc::DerefAndCompareByActorsCountAndUsedHeap());
 
-  if (compare_snpashots)
+  if (compare_snapshots)
     for (auto i = range.first; i != range.second; ++i) {
       auto& visited_state = *i;
       if (snapshot_equal(visited_state->system_state.get(), new_state->system_state.get())) {

@@ -587,7 +587,7 @@ static int compare_heap_area_without_type(simgrid::mc::StateComparator& state, c
            && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
            && addr_pointed2 > state.std_heap_copy.heapbase
            && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)) {
-        // Both addreses are in the heap:
+        // Both addresses are in the heap:
         int res_compare =
             compare_heap_area(state, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, nullptr, 0);
         if (res_compare == 1)
@@ -1325,12 +1325,10 @@ static bool local_variables_equal(simgrid::mc::StateComparator& state, simgrid::
                current_var2->subprogram->name.c_str(), current_var1->ip, current_var2->ip);
       return false;
     }
-    // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
 
     if (compare_areas_with_type(state, current_var1->address, snapshot1, snapshot1->get_region(current_var1->address),
                                 current_var2->address, snapshot2, snapshot2->get_region(current_var2->address),
                                 current_var1->type, 0) == 1) {
-      // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
       XBT_VERB("Local variable %s (%p - %p) in frame %s "
                "is different between snapshots",
                current_var1->name.c_str(), current_var1->address, current_var2->address,
