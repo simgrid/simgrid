@@ -6,8 +6,10 @@
 #ifndef SIMGRID_MC_PROCESS_H
 #define SIMGRID_MC_PROCESS_H
 
+#include "src/mc/AddressSpace.hpp"
 #include "src/mc/inspect/ObjectInformation.hpp"
 #include "src/mc/remote/Channel.hpp"
+#include "src/mc/remote/RemotePtr.hpp"
 #include "src/xbt/mmalloc/mmprivate.h"
 
 #include <vector>

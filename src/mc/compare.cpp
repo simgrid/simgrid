@@ -151,12 +151,6 @@ static ssize_t heap_comparison_ignore_size(const std::vector<simgrid::mc::Ignore
   return -1;
 }
 
-static bool is_on_heap(const void* address)
-{
-  const xbt_mheap_t heap = mc_model_checker->process().get_heap();
-  return address >= heap->heapbase && address < heap->breakval;
-}
-
 static bool is_stack(const void *address)
 {
   for (auto const& stack : mc_model_checker->process().stack_areas())
@@ -509,7 +503,7 @@ static bool heap_area_differ_without_type(simgrid::mc::StateComparator& state, c
         continue;
       }
 
-      if (is_on_heap(addr_pointed1) && is_on_heap(addr_pointed2)) {
+      if (snapshot1.on_heap(addr_pointed1) && snapshot2.on_heap(addr_pointed2)) {
         // Both addresses are in the heap:
         if (heap_area_differ(state, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, nullptr, 0))
           return true;
@@ -651,7 +645,7 @@ static bool heap_area_differ_with_type(simgrid::mc::StateComparator& state, cons
       if (pointer_level <= 1) {
         addr_pointed1 = snapshot1.read(remote((void* const*)real_area1));
         addr_pointed2 = snapshot2.read(remote((void* const*)real_area2));
-        if (is_on_heap(addr_pointed1) && is_on_heap(addr_pointed2))
+        if (snapshot1.on_heap(addr_pointed1) && snapshot2.on_heap(addr_pointed2))
           return heap_area_differ(state, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, type->subtype,
                                   pointer_level);
         else
@@ -660,7 +654,7 @@ static bool heap_area_differ_with_type(simgrid::mc::StateComparator& state, cons
       for (size_t i = 0; i < (area_size / sizeof(void*)); i++) {
         addr_pointed1 = snapshot1.read(remote((void* const*)((const char*)real_area1 + i * sizeof(void*))));
         addr_pointed2 = snapshot2.read(remote((void* const*)((const char*)real_area2 + i * sizeof(void*))));
-        bool differ   = is_on_heap(addr_pointed1) && is_on_heap(addr_pointed2)
+        bool differ   = snapshot1.on_heap(addr_pointed1) && snapshot2.on_heap(addr_pointed2)
                           ? heap_area_differ(state, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous,
                                              type->subtype, pointer_level)
                           : addr_pointed1 != addr_pointed2;
@@ -1131,8 +1125,8 @@ static bool areas_differ_with_type(simgrid::mc::StateComparator& state, const vo
       // * a pointer leads to the read-only segment of the current object
       // * a pointer lead to a different ELF object
 
-      if (is_on_heap(addr_pointed1)) {
-        if (not is_on_heap(addr_pointed2))
+      if (snapshot1.on_heap(addr_pointed1)) {
+        if (not snapshot2.on_heap(addr_pointed2))
           return true;
         // The pointers are both in the heap:
         return simgrid::mc::heap_area_differ(state, addr_pointed1, addr_pointed2, snapshot1, snapshot2, nullptr,

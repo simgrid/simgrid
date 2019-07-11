@@ -16,7 +16,6 @@
 #include <elfutils/libdw.h>
 #include <libunwind.h>
 
-#include "src/mc/AddressSpace.hpp"
 #include "src/mc/inspect/mc_dwarf.hpp"
 #include "src/mc/mc_forward.hpp"
 

@@ -59,12 +59,17 @@ namespace mc {
 
 class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
+  /* Initialization */
   Snapshot(int num_state, RemoteClient* process = &mc_model_checker->process());
   ~Snapshot() = default;
 
-  /* Initialization */
-
   /* Regular use */
+  bool on_heap(const void* address) const
+  {
+    const xbt_mheap_t heap = process()->get_heap();
+    return address >= heap->heapbase && address < heap->breakval;
+  }
+
   void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
                    ReadOptions options = ReadOptions::none()) const override;
   Region* get_region(const void* addr) const;
