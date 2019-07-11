@@ -18,7 +18,7 @@ if [ "x$1" != 'xjava' -a -e source/java ] ; then
   echo "javasphinx not rerun: 'java' was not provided as an argument"
 else
   rm -rf source/java
-  source/_ext/javasphinx-apidoc --force -o source/java/ ../src/bindings/java/org/simgrid/msg
+  javasphinx-apidoc --force -o source/java/ ../src/bindings/java/org/simgrid/msg
   rm -f source/java/packages.rst # api_generated/source_java_packages.rst
   rm -f source/java/org/simgrid/msg/package-index.rst # api_generated/source_java_org_simgrid_msg_package-index.rst
   for f in source/java/org/simgrid/msg/* ; do
