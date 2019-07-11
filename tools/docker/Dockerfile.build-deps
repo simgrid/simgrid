@@ -1,8 +1,12 @@
 # Base image 
 FROM debian:testing
 
-# - Install SimGrid's dependencies
+# Install the dependencies:
+#  - of the website
+#  - of SimGrid itself
 RUN apt-get --allow-releaseinfo-change update && \
+    apt install -y \
+       emacs-nox org-mode elpa-ess elpa-htmlize wget unzip r-cran-ggplot2 r-cran-tidyr r-cran-dplyr libtext-bibtex-perl && \
     apt install -y \
        g++ gcc gfortran default-jdk pybind11-dev \
        git \
