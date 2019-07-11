@@ -1184,7 +1184,7 @@ static bool global_variables_differ(simgrid::mc::StateComparator& state, simgrid
 {
   xbt_assert(r1 && r2, "Missing region.");
 
-  std::vector<simgrid::mc::Variable>& variables = object_info->global_variables;
+  const std::vector<simgrid::mc::Variable>& variables = object_info->global_variables;
 
   for (simgrid::mc::Variable const& current_var : variables) {
 
@@ -1196,11 +1196,9 @@ static bool global_variables_differ(simgrid::mc::StateComparator& state, simgrid
       continue;
 
     simgrid::mc::Type* bvariable_type = current_var.type;
-    if (areas_differ_with_type(state, (char*)current_var.address, snapshot1, r1, (char*)current_var.address, snapshot2,
-                               r2, bvariable_type, 0)) {
-      XBT_VERB("Global variable %s (%p) is different between snapshots",
-               current_var.name.c_str(),
-               (char *) current_var.address);
+    if (areas_differ_with_type(state, current_var.address, snapshot1, r1, current_var.address, snapshot2, r2,
+                               bvariable_type, 0)) {
+      XBT_VERB("Global variable %s (%p) is different between snapshots", current_var.name.c_str(), current_var.address);
       return true;
     }
   }
@@ -1223,9 +1221,8 @@ static bool local_variables_differ(simgrid::mc::StateComparator& state, const si
     if (current_var1->name != current_var2->name || current_var1->subprogram != current_var2->subprogram ||
         current_var1->ip != current_var2->ip) {
       // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
-      XBT_VERB("Different name of variable (%s - %s) "
-               "or frame (%s - %s) or ip (%lu - %lu)",
-               current_var1->name.c_str(), current_var2->name.c_str(), current_var1->subprogram->name.c_str(),
+      XBT_VERB("Different name of variable (%s - %s) or frame (%s - %s) or ip (%lu - %lu)", current_var1->name.c_str(),
+               current_var2->name.c_str(), current_var1->subprogram->name.c_str(),
                current_var2->subprogram->name.c_str(), current_var1->ip, current_var2->ip);
       return true;
     }
@@ -1233,10 +1230,8 @@ static bool local_variables_differ(simgrid::mc::StateComparator& state, const si
     if (areas_differ_with_type(state, current_var1->address, snapshot1, snapshot1.get_region(current_var1->address),
                                current_var2->address, snapshot2, snapshot2.get_region(current_var2->address),
                                current_var1->type, 0)) {
-      XBT_VERB("Local variable %s (%p - %p) in frame %s "
-               "is different between snapshots",
-               current_var1->name.c_str(), current_var1->address, current_var2->address,
-               current_var1->subprogram->name.c_str());
+      XBT_VERB("Local variable %s (%p - %p) in frame %s is different between snapshots", current_var1->name.c_str(),
+               current_var1->address, current_var2->address, current_var1->subprogram->name.c_str());
       return true;
     }
   }
