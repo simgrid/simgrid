@@ -63,8 +63,8 @@ public:
   /* Initialization */
 
   /* Regular use */
-  const void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
-                         ReadOptions options = ReadOptions::none()) const override;
+  void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
+                   ReadOptions options = ReadOptions::none()) const override;
   Region* get_region(const void* addr) const;
   Region* get_region(const void* addr, Region* hinted_region) const;
   void restore(RemoteClient* process);

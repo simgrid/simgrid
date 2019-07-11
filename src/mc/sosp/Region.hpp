@@ -69,7 +69,7 @@ public:
    *  @param size    Size of the data to read in bytes
    *  @return Pointer where the data is located (either target buffer or original location)
    */
-  const void* read(void* target, const void* addr, std::size_t size);
+  void* read(void* target, const void* addr, std::size_t size);
 };
 
 } // namespace mc

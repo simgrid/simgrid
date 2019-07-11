@@ -235,11 +235,11 @@ void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void*
   snapshot_regions_.push_back(std::unique_ptr<simgrid::mc::Region>(std::move(region)));
 }
 
-const void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, ReadOptions options) const
+void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, ReadOptions options) const
 {
   Region* region = this->get_region((void*)address.address());
   if (region) {
-    const void* res = region->read(buffer, (void*)address.address(), size);
+    void* res = region->read(buffer, (void*)address.address(), size);
     if (buffer == res || options & ReadOptions::lazy())
       return res;
     else {

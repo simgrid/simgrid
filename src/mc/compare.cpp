@@ -1284,10 +1284,12 @@ bool snapshot_equal(Snapshot* s1, Snapshot* s2)
   }
 
   /* Init heap information used in heap comparison algorithm */
-  xbt_mheap_t heap1 = (xbt_mheap_t)s1->read_bytes(alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
-                                                  remote(process.heap_address), simgrid::mc::ReadOptions::lazy());
-  xbt_mheap_t heap2 = (xbt_mheap_t)s2->read_bytes(alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
-                                                  remote(process.heap_address), simgrid::mc::ReadOptions::lazy());
+  xbt_mheap_t heap1 =
+      static_cast<xbt_mheap_t>(s1->read_bytes(alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
+                                              remote(process.heap_address), simgrid::mc::ReadOptions::lazy()));
+  xbt_mheap_t heap2 =
+      static_cast<xbt_mheap_t>(s2->read_bytes(alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
+                                              remote(process.heap_address), simgrid::mc::ReadOptions::lazy()));
   if (state_comparator.initHeapInformation(heap1, heap2, &s1->to_ignore_, &s2->to_ignore_) == -1) {
     XBT_VERB("(%d - %d) Different heap information", s1->num_state_, s2->num_state_);
     return false;

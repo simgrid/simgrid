@@ -55,7 +55,7 @@ static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, simgr
   return (char*)snapshot_page + offset;
 }
 
-const void* Region::read(void* target, const void* addr, std::size_t size)
+void* Region::read(void* target, const void* addr, std::size_t size)
 {
   xbt_assert(contain(simgrid::mc::remote(addr)), "Trying to read out of the region boundary.");
 

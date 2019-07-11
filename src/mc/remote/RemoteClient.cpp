@@ -425,8 +425,7 @@ std::string RemoteClient::read_string(RemotePtr<char> address) const
   }
 }
 
-const void* RemoteClient::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
-                                     ReadOptions /*options*/) const
+void* RemoteClient::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, ReadOptions /*options*/) const
 {
   if (pread_whole(this->memory_file, buffer, size, (size_t)address.address()) < 0)
     xbt_die("Read at %p from process %lli failed", (void*)address.address(), (long long)this->pid_);
