@@ -182,6 +182,12 @@ static ssize_t heap_comparison_ignore_size(
   return -1;
 }
 
+static bool is_on_heap(const void* address)
+{
+  const xbt_mheap_t heap = mc_model_checker->process().get_heap();
+  return address >= heap->heapbase && address < heap->breakval;
+}
+
 static bool is_stack(const void *address)
 {
   for (auto const& stack : mc_model_checker->process().stack_areas())
@@ -538,10 +544,7 @@ static bool heap_area_equal_without_type(simgrid::mc::StateComparator& state, co
         continue;
       }
 
-      if (addr_pointed1 > state.std_heap_copy.heapbase
-           && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
-           && addr_pointed2 > state.std_heap_copy.heapbase
-           && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)) {
+      if (is_on_heap(addr_pointed1) && is_on_heap(addr_pointed2)) {
         // Both addresses are in the heap:
         int res_compare =
             compare_heap_area(state, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, nullptr, 0);
@@ -686,8 +689,7 @@ static int compare_heap_area_with_type(simgrid::mc::StateComparator& state, cons
       if (pointer_level <= 1) {
         addr_pointed1 = snapshot1->read(remote((void* const*)real_area1));
         addr_pointed2 = snapshot2->read(remote((void* const*)real_area2));
-        if (addr_pointed1 > state.std_heap_copy.heapbase && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1) &&
-            addr_pointed2 > state.std_heap_copy.heapbase && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2))
+        if (is_on_heap(addr_pointed1) && is_on_heap(addr_pointed2))
           return compare_heap_area(state, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, type->subtype,
                                    pointer_level);
         else
@@ -697,8 +699,7 @@ static int compare_heap_area_with_type(simgrid::mc::StateComparator& state, cons
         addr_pointed1 = snapshot1->read(remote((void* const*)((const char*)real_area1 + i * sizeof(void*))));
         addr_pointed2 = snapshot2->read(remote((void* const*)((const char*)real_area2 + i * sizeof(void*))));
         int res;
-        if (addr_pointed1 > state.std_heap_copy.heapbase && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1) &&
-            addr_pointed2 > state.std_heap_copy.heapbase && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2))
+        if (is_on_heap(addr_pointed1) && is_on_heap(addr_pointed2))
           res = compare_heap_area(state, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous, type->subtype,
                                   pointer_level);
         else
@@ -1104,8 +1105,6 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state, const vo
                                    const void* real_area2, simgrid::mc::Snapshot* snapshot2,
                                    simgrid::mc::Region* region2, simgrid::mc::Type* type, int pointer_level)
 {
-  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
-
   simgrid::mc::Type* subtype;
   simgrid::mc::Type* subsubtype;
   int elm_size;
@@ -1185,8 +1184,8 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state, const vo
       // * a pointer leads to the read-only segment of the current object
       // * a pointer lead to a different ELF object
 
-      if (addr_pointed1 > process->heap_address && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)) {
-        if (not(addr_pointed2 > process->heap_address && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)))
+      if (is_on_heap(addr_pointed1)) {
+        if (not is_on_heap(addr_pointed2))
           return 1;
         // The pointers are both in the heap:
         return simgrid::mc::compare_heap_area(state, addr_pointed1, addr_pointed2, snapshot1, snapshot2, nullptr,
