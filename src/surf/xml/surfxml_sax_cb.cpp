@@ -462,6 +462,12 @@ void ETag_surfxml_host()    {
   sg_platf_new_host(&host);
 }
 
+void STag_surfxml_disk() {
+  THROW_UNIMPLEMENTED;
+}
+void ETag_surfxml_disk() {
+}
+
 void STag_surfxml_host___link(){
   XBT_DEBUG("Create a Host_link for %s",A_surfxml_host___link_id);
   simgrid::kernel::routing::HostLinkCreationArgs host_link;
