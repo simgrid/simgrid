@@ -102,8 +102,8 @@ public:
    *  @param address       remote source address of the data
    *  @param options
    */
-  virtual const void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
-                                 ReadOptions options = ReadOptions::none()) const = 0;
+  virtual void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
+                           ReadOptions options = ReadOptions::none()) const = 0;
 
   /** Read a given data structure from the address space */
   template <class T> inline void read(T* buffer, RemotePtr<T> ptr) const { this->read_bytes(buffer, sizeof(T), ptr); }
