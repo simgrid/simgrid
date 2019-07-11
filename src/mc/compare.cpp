@@ -12,28 +12,13 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, xbt, "Logging specific to mc_compare in mc");
 
+using simgrid::mc::remote;
+
 namespace simgrid {
 namespace mc {
-
-struct HeapLocation;
-typedef std::array<HeapLocation, 2> HeapLocationPair;
-typedef std::set<HeapLocationPair> HeapLocationPairs;
-struct HeapArea;
-struct ProcessComparisonState;
-struct StateComparator;
-
-static int compare_heap_area(StateComparator& state, const void* area1, const void* area2, Snapshot* snapshot1,
-                             Snapshot* snapshot2, HeapLocationPairs* previous, Type* type, int pointer_level);
-}
-}
-
-using simgrid::mc::remote;
 
 /*********************************** Heap comparison ***********************************/
 /***************************************************************************************/
-
-namespace simgrid {
-namespace mc {
 
 class HeapLocation {
 public:
@@ -53,13 +38,16 @@ public:
   }
 };
 
+typedef std::array<HeapLocation, 2> HeapLocationPair;
+typedef std::set<HeapLocationPair> HeapLocationPairs;
+
+struct ProcessComparisonState;
+struct StateComparator;
+
 static inline
 HeapLocationPair makeHeapLocationPair(int block1, int fragment1, int block2, int fragment2)
 {
-  return simgrid::mc::HeapLocationPair{{
-    simgrid::mc::HeapLocation(block1, fragment1),
-    simgrid::mc::HeapLocation(block2, fragment2)
-  }};
+  return HeapLocationPair{{HeapLocation(block1, fragment1), HeapLocation(block2, fragment2)}};
 }
 
 class HeapArea : public HeapLocation {
@@ -83,6 +71,9 @@ public:
 
   void initHeapInformation(xbt_mheap_t heap, std::vector<simgrid::mc::IgnoredHeapRegion>* i);
 };
+
+static int compare_heap_area(StateComparator& state, const void* area1, const void* area2, Snapshot* snapshot1,
+                             Snapshot* snapshot2, HeapLocationPairs* previous, Type* type, int pointer_level);
 
 namespace {
 
