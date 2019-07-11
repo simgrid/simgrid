@@ -689,6 +689,11 @@ sg_actor_t sg_actor_self()
   return simgrid::s4u::Actor::self();
 }
 
+void sg_actor_self_execute(double flops)
+{
+  simgrid::s4u::this_actor::execute(flops);
+}
+
 /** @brief Take an extra reference on that actor to prevent it to be garbage-collected */
 void sg_actor_ref(sg_actor_t actor)
 {
