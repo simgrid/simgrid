@@ -75,34 +75,13 @@ public:
 static int compare_heap_area(StateComparator& state, const void* area1, const void* area2, Snapshot* snapshot1,
                              Snapshot* snapshot2, HeapLocationPairs* previous, Type* type, int pointer_level);
 
-namespace {
-
-/** A hash which works with more stuff
- *
- *  It can hash pairs: the standard hash currently doesn't include this.
- */
-template <class X> class hash : public std::hash<X> {
-};
-
-template <class X, class Y> class hash<std::pair<X, Y>> {
-public:
-  std::size_t operator()(std::pair<X,Y>const& x) const
-  {
-    hash<X> h1;
-    hash<X> h2;
-    return h1(x.first) ^ h2(x.second);
-  }
-};
-
-}
-
 class StateComparator {
 public:
   s_xbt_mheap_t std_heap_copy;
   std::size_t heaplimit;
   std::array<ProcessComparisonState, 2> processStates;
 
-  std::unordered_set<std::pair<void*, void*>, hash<std::pair<void*, void*>>> compared_pointers;
+  std::unordered_set<std::pair<void*, void*>, simgrid::xbt::hash<std::pair<void*, void*>>> compared_pointers;
 
   void clear()
   {
