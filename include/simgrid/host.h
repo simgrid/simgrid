@@ -132,6 +132,8 @@ XBT_PUBLIC void sg_host_set_property_value(sg_host_t host, const char* name, con
 XBT_PUBLIC void sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links);
 XBT_PUBLIC double sg_host_route_latency(sg_host_t from, sg_host_t to);
 XBT_PUBLIC double sg_host_route_bandwidth(sg_host_t from, sg_host_t to);
+void sg_host_send_to(sg_host_t from, sg_host_t to, double byte_amount);
+
 XBT_PUBLIC void sg_host_dump(sg_host_t ws);
 
 XBT_PUBLIC void sg_host_get_actor_list(sg_host_t host, xbt_dynar_t whereto);

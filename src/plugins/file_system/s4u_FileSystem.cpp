@@ -105,11 +105,7 @@ sg_size_t File::read(sg_size_t size)
   if (host->get_name() != Host::current()->get_name() && read_size > 0) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), read_size);
-    std::vector<Host*> m_host_list   = {Host::current(), host};
-    std::vector<double> flops_amount = {0., 0.};
-    std::vector<double> bytes_amount = {0., 0., static_cast<double>(read_size), 0.};
-
-    this_actor::parallel_execute(m_host_list, flops_amount, bytes_amount);
+    host->send_to(Host::current(), read_size);
   }
 
   return read_size;
@@ -131,11 +127,7 @@ sg_size_t File::write(sg_size_t size, int write_inside)
   if (host->get_name() != Host::current()->get_name()) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), size);
-    std::vector<Host*> m_host_list   = {Host::current(), host};
-    std::vector<double> flops_amount = {0, 0};
-    std::vector<double> bytes_amount = {0, static_cast<double>(size), 0, 0};
-
-    this_actor::parallel_execute(m_host_list, flops_amount, bytes_amount);
+    Host::current()->send_to(host, size);
   }
 
   XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu' '%llu:%llu'", get_path(), local_storage_->get_cname(), size, size_, sg_storage_get_size_used(local_storage_), sg_storage_get_size(local_storage_));
@@ -270,11 +262,7 @@ int File::remote_copy(sg_host_t host, const char* fullpath)
 
   XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->get_cname(),
             storage_dest->get_host()->get_cname());
-  std::vector<Host*> m_host_list   = {src_host, dst_host};
-  std::vector<double> flops_amount = {0, 0};
-  std::vector<double> bytes_amount = {0, static_cast<double>(read_size), 0, 0};
-
-  this_actor::parallel_execute(m_host_list, flops_amount, bytes_amount);
+  src_host->send_to(dst_host, read_size);
 
   /* Create file on remote host, write it and close it */
   File* fd = new File(fullpath, dst_host, nullptr);

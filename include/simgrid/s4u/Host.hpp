@@ -125,6 +125,7 @@ public:
 
   void route_to(Host* dest, std::vector<Link*>& links, double* latency);
   void route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency);
+  void send_to(Host* dest, double byte_amount);
 
   /** Block the calling actor on an execution located on the called host
    *

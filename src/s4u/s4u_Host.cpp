@@ -171,6 +171,14 @@ void Host::route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links,
   }
 }
 
+void Host::send_to(Host* dest, double byte_amount)
+{
+  std::vector<Host*> m_host_list   = {this, dest};
+  std::vector<double> flops_amount = {0, 0};
+  std::vector<double> bytes_amount = {0, byte_amount, 0, 0};
+  this_actor::parallel_execute(m_host_list, flops_amount, bytes_amount);
+}
+
 /** Get the properties assigned to a host */
 const std::unordered_map<std::string, std::string>* Host::get_properties() const
 {
@@ -589,6 +597,11 @@ double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
       min_bandwidth = bandwidth;
   }
   return min_bandwidth;
+}
+
+void sg_host_send_to(sg_host_t from, sg_host_t to, double byte_amount)
+{
+  from->send_to(to, byte_amount);
 }
 
 /** @brief Displays debugging information about a host */
