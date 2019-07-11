@@ -82,38 +82,22 @@ public:
     std::vector<simgrid::mc::IgnoredHeapRegion>* i1,
     std::vector<simgrid::mc::IgnoredHeapRegion>* i2);
 
-  HeapArea& equals_to1_(std::size_t i, std::size_t j)
+  template <int rank> HeapArea& equals_to_(std::size_t i, std::size_t j)
   {
-    return processStates[0].equals_to[ MAX_FRAGMENT_PER_BLOCK * i + j];
+    return processStates[rank - 1].equals_to[MAX_FRAGMENT_PER_BLOCK * i + j];
   }
-  HeapArea& equals_to2_(std::size_t i, std::size_t j)
+  template <int rank> Type*& types_(std::size_t i, std::size_t j)
   {
-    return processStates[1].equals_to[ MAX_FRAGMENT_PER_BLOCK * i + j];
-  }
-  Type*& types1_(std::size_t i, std::size_t j)
-  {
-    return processStates[0].types[ MAX_FRAGMENT_PER_BLOCK * i + j];
-  }
-  Type*& types2_(std::size_t i, std::size_t j)
-  {
-    return processStates[1].types[ MAX_FRAGMENT_PER_BLOCK * i + j];
+    return processStates[rank - 1].types[MAX_FRAGMENT_PER_BLOCK * i + j];
   }
 
-  HeapArea const& equals_to1_(std::size_t i, std::size_t j) const
+  template <int rank> HeapArea const& equals_to_(std::size_t i, std::size_t j) const
   {
-    return processStates[0].equals_to[ MAX_FRAGMENT_PER_BLOCK * i + j];
+    return processStates[rank - 1].equals_to[MAX_FRAGMENT_PER_BLOCK * i + j];
   }
-  HeapArea const& equals_to2_(std::size_t i, std::size_t j) const
+  template <int rank> Type* const& types_(std::size_t i, std::size_t j) const
   {
-    return processStates[1].equals_to[ MAX_FRAGMENT_PER_BLOCK * i + j];
-  }
-  Type* const& types1_(std::size_t i, std::size_t j) const
-  {
-    return processStates[0].types[ MAX_FRAGMENT_PER_BLOCK * i + j];
-  }
-  Type* const& types2_(std::size_t i, std::size_t j) const
-  {
-    return processStates[1].types[ MAX_FRAGMENT_PER_BLOCK * i + j];
+    return processStates[rank - 1].types[MAX_FRAGMENT_PER_BLOCK * i + j];
   }
 
   /** Check whether two blocks are known to be matching
@@ -124,7 +108,7 @@ public:
    */
   bool blocksEqual(int b1, int b2) const
   {
-    return this->equals_to1_(b1, 0).block_ == b2 && this->equals_to2_(b2, 0).block_ == b1;
+    return this->equals_to_<1>(b1, 0).block_ == b2 && this->equals_to_<2>(b2, 0).block_ == b1;
   }
 
   /** Check whether two fragments are known to be matching
@@ -137,8 +121,8 @@ public:
    */
   int fragmentsEqual(int b1, int f1, int b2, int f2) const
   {
-    return this->equals_to1_(b1, f1).block_ == b2 && this->equals_to1_(b1, f1).fragment_ == f2 &&
-           this->equals_to2_(b2, f2).block_ == b1 && this->equals_to2_(b2, f2).fragment_ == f1;
+    return this->equals_to_<1>(b1, f1).block_ == b2 && this->equals_to_<1>(b1, f1).fragment_ == f2 &&
+           this->equals_to_<2>(b2, f2).block_ == b1 && this->equals_to_<2>(b2, f2).fragment_ == f1;
   }
 
   void match_equals(HeapLocationPairs* list);
@@ -200,11 +184,11 @@ void StateComparator::match_equals(HeapLocationPairs* list)
 {
   for (auto const& pair : *list) {
     if (pair[0].fragment_ != -1) {
-      this->equals_to1_(pair[0].block_, pair[0].fragment_) = simgrid::mc::HeapArea(pair[1].block_, pair[1].fragment_);
-      this->equals_to2_(pair[1].block_, pair[1].fragment_) = simgrid::mc::HeapArea(pair[0].block_, pair[0].fragment_);
+      this->equals_to_<1>(pair[0].block_, pair[0].fragment_) = simgrid::mc::HeapArea(pair[1].block_, pair[1].fragment_);
+      this->equals_to_<2>(pair[1].block_, pair[1].fragment_) = simgrid::mc::HeapArea(pair[0].block_, pair[0].fragment_);
     } else {
-      this->equals_to1_(pair[0].block_, 0) = simgrid::mc::HeapArea(pair[1].block_, pair[1].fragment_);
-      this->equals_to2_(pair[1].block_, 0) = simgrid::mc::HeapArea(pair[0].block_, pair[0].fragment_);
+      this->equals_to_<1>(pair[0].block_, 0) = simgrid::mc::HeapArea(pair[1].block_, pair[1].fragment_);
+      this->equals_to_<2>(pair[1].block_, 0) = simgrid::mc::HeapArea(pair[0].block_, pair[0].fragment_);
     }
   }
 }
@@ -291,14 +275,14 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, simgrid::mc
 
       if (is_stack(addr_block1)) {
         for (size_t k = 0; k < heapinfo1->busy_block.size; k++)
-          state.equals_to1_(i1 + k, 0) = HeapArea(i1, -1);
+          state.equals_to_<1>(i1 + k, 0) = HeapArea(i1, -1);
         for (size_t k = 0; k < heapinfo2->busy_block.size; k++)
-          state.equals_to2_(i1 + k, 0) = HeapArea(i1, -1);
+          state.equals_to_<2>(i1 + k, 0) = HeapArea(i1, -1);
         i1 += heapinfo1->busy_block.size;
         continue;
       }
 
-      if (state.equals_to1_(i1, 0).valid_) {
+      if (state.equals_to_<1>(i1, 0).valid_) {
         i1++;
         continue;
       }
@@ -307,13 +291,13 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, simgrid::mc
       bool equal = false;
 
       /* Try first to associate to same block in the other heap */
-      if (heapinfo2->type == heapinfo1->type && state.equals_to2_(i1, 0).valid_ == 0) {
+      if (heapinfo2->type == heapinfo1->type && state.equals_to_<2>(i1, 0).valid_ == 0) {
         void* addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
         if (not heap_area_differ(state, addr_block1, addr_block2, snapshot1, snapshot2, nullptr, nullptr, 0)) {
           for (size_t k = 1; k < heapinfo2->busy_block.size; k++)
-            state.equals_to2_(i1 + k, 0) = HeapArea(i1, -1);
+            state.equals_to_<2>(i1 + k, 0) = HeapArea(i1, -1);
           for (size_t k = 1; k < heapinfo1->busy_block.size; k++)
-            state.equals_to1_(i1 + k, 0) = HeapArea(i1, -1);
+            state.equals_to_<1>(i1 + k, 0) = HeapArea(i1, -1);
           equal = true;
           i1 += heapinfo1->busy_block.size;
         }
@@ -336,16 +320,16 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, simgrid::mc
           continue;
         }
 
-        if (state.equals_to2_(i2, 0).valid_) {
+        if (state.equals_to_<2>(i2, 0).valid_) {
           i2++;
           continue;
         }
 
         if (not heap_area_differ(state, addr_block1, addr_block2, snapshot1, snapshot2, nullptr, nullptr, 0)) {
           for (size_t k = 1; k < heapinfo2b->busy_block.size; k++)
-            state.equals_to2_(i2 + k, 0) = HeapArea(i1, -1);
+            state.equals_to_<2>(i2 + k, 0) = HeapArea(i1, -1);
           for (size_t k = 1; k < heapinfo1->busy_block.size; k++)
-            state.equals_to1_(i1 + k, 0) = HeapArea(i2, -1);
+            state.equals_to_<1>(i1 + k, 0) = HeapArea(i2, -1);
           equal = true;
           i1 += heapinfo1->busy_block.size;
         }
@@ -365,7 +349,7 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, simgrid::mc
         if (heapinfo1->busy_frag.frag_size[j1] == -1) /* Free fragment_ */
           continue;
 
-        if (state.equals_to1_(i1, j1).valid_)
+        if (state.equals_to_<1>(i1, j1).valid_)
           continue;
 
         void* addr_frag1 = (void*)((char*)addr_block1 + (j1 << heapinfo1->type));
@@ -374,7 +358,7 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, simgrid::mc
         bool equal = false;
 
         /* Try first to associate to same fragment_ in the other heap */
-        if (heapinfo2->type == heapinfo1->type && not state.equals_to2_(i1, j1).valid_) {
+        if (heapinfo2->type == heapinfo1->type && not state.equals_to_<2>(i1, j1).valid_) {
           void* addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
           void* addr_frag2  = (void*)((char*)addr_block2 + (j1 << heapinfo2->type));
           if (not heap_area_differ(state, addr_frag1, addr_frag2, snapshot1, snapshot2, nullptr, nullptr, 0))
@@ -407,7 +391,7 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, simgrid::mc
             if (i2 == i1 && j2 == j1)
               continue;
 
-            if (state.equals_to2_(i2, j2).valid_)
+            if (state.equals_to_<2>(i2, j2).valid_)
               continue;
 
             void* addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
@@ -439,7 +423,7 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, simgrid::mc
         (const malloc_info*)heap_region1->read(&heapinfo_temp1, &heapinfos1[i], sizeof(malloc_info));
 
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED && i1 == state.heaplimit && heapinfo1->busy_block.busy_size > 0 &&
-        not state.equals_to1_(i, 0).valid_) {
+        not state.equals_to_<1>(i, 0).valid_) {
       XBT_DEBUG("Block %zu not found (size used = %zu)", i, heapinfo1->busy_block.busy_size);
       return true;
     }
@@ -447,7 +431,7 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, simgrid::mc
     if (heapinfo1->type <= 0)
       continue;
     for (size_t j = 0; j < (size_t)(BLOCKSIZE >> heapinfo1->type); j++)
-      if (i1 == state.heaplimit && heapinfo1->busy_frag.frag_size[j] > 0 && not state.equals_to1_(i, j).valid_) {
+      if (i1 == state.heaplimit && heapinfo1->busy_frag.frag_size[j] > 0 && not state.equals_to_<1>(i, j).valid_) {
         XBT_DEBUG("Block %zu, Fragment %zu not found (size used = %zd)", i, j, heapinfo1->busy_frag.frag_size[j]);
         return true;
       }
@@ -457,7 +441,7 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, simgrid::mc
     const malloc_info* heapinfo2 =
         (const malloc_info*)heap_region2->read(&heapinfo_temp2, &heapinfos2[i], sizeof(malloc_info));
     if (heapinfo2->type == MMALLOC_TYPE_UNFRAGMENTED && i1 == state.heaplimit && heapinfo2->busy_block.busy_size > 0 &&
-        not state.equals_to2_(i, 0).valid_) {
+        not state.equals_to_<2>(i, 0).valid_) {
       XBT_DEBUG("Block %zu not found (size used = %zu)", i,
                 heapinfo2->busy_block.busy_size);
       return true;
@@ -467,7 +451,7 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, simgrid::mc
       continue;
 
     for (size_t j = 0; j < (size_t)(BLOCKSIZE >> heapinfo2->type); j++)
-      if (i1 == state.heaplimit && heapinfo2->busy_frag.frag_size[j] > 0 && not state.equals_to2_(i, j).valid_) {
+      if (i1 == state.heaplimit && heapinfo2->busy_frag.frag_size[j] > 0 && not state.equals_to_<2>(i, j).valid_) {
         XBT_DEBUG("Block %zu, Fragment %zu not found (size used = %zd)",
           i, j, heapinfo2->busy_frag.frag_size[j]);
         return true;
@@ -887,7 +871,7 @@ static bool heap_area_differ(simgrid::mc::StateComparator& state, const void* ar
 
     // TODO, lookup variable type from block type as done for fragmented blocks
 
-    if (state.equals_to1_(block1, 0).valid_ && state.equals_to2_(block2, 0).valid_ &&
+    if (state.equals_to_<1>(block1, 0).valid_ && state.equals_to_<2>(block2, 0).valid_ &&
         state.blocksEqual(block1, block2)) {
       if (match_pairs)
         state.match_equals(previous);
@@ -917,9 +901,9 @@ static bool heap_area_differ(simgrid::mc::StateComparator& state, const void* ar
     // Remember (basic) type inference.
     // The current data structure only allows us to do this for the whole block.
     if (type != nullptr && area1 == real_addr_block1)
-      state.types1_(block1, 0) = type;
+      state.types_<1>(block1, 0) = type;
     if (type != nullptr && area2 == real_addr_block2)
-      state.types2_(block2, 0) = type;
+      state.types_<2>(block2, 0) = type;
 
     if (size <= 0) {
       if (match_pairs)
@@ -958,7 +942,7 @@ static bool heap_area_differ(simgrid::mc::StateComparator& state, const void* ar
     }
 
     // Check if the blocks are already matched together:
-    if (state.equals_to1_(block1, frag1).valid_ && state.equals_to2_(block2, frag2).valid_ && offset1 == offset2 &&
+    if (state.equals_to_<1>(block1, frag1).valid_ && state.equals_to_<2>(block2, frag2).valid_ && offset1 == offset2 &&
         state.fragmentsEqual(block1, frag1, block2, frag2)) {
       if (match_pairs)
         state.match_equals(previous);
@@ -980,29 +964,29 @@ static bool heap_area_differ(simgrid::mc::StateComparator& state, const void* ar
     // Remember (basic) type inference.
     // The current data structure only allows us to do this for the whole fragment_.
     if (type != nullptr && area1 == real_addr_frag1)
-      state.types1_(block1, frag1) = type;
+      state.types_<1>(block1, frag1) = type;
     if (type != nullptr && area2 == real_addr_frag2)
-      state.types2_(block2, frag2) = type;
+      state.types_<2>(block2, frag2) = type;
 
     // The type of the variable is already known:
     if (type) {
       new_type1 = new_type2 = type;
     }
     // Type inference from the block type.
-    else if (state.types1_(block1, frag1) != nullptr || state.types2_(block2, frag2) != nullptr) {
+    else if (state.types_<1>(block1, frag1) != nullptr || state.types_<2>(block2, frag2) != nullptr) {
 
       offset1 = (char*)area1 - (char*)real_addr_frag1;
       offset2 = (char*)area2 - (char*)real_addr_frag2;
 
-      if (state.types1_(block1, frag1) != nullptr && state.types2_(block2, frag2) != nullptr) {
-        new_type1 = get_offset_type(real_addr_frag1, state.types1_(block1, frag1), offset1, size, snapshot1);
-        new_type2 = get_offset_type(real_addr_frag2, state.types2_(block2, frag2), offset1, size, snapshot2);
-      } else if (state.types1_(block1, frag1) != nullptr) {
-        new_type1 = get_offset_type(real_addr_frag1, state.types1_(block1, frag1), offset1, size, snapshot1);
-        new_type2 = get_offset_type(real_addr_frag2, state.types1_(block1, frag1), offset2, size, snapshot2);
-      } else if (state.types2_(block2, frag2) != nullptr) {
-        new_type1 = get_offset_type(real_addr_frag1, state.types2_(block2, frag2), offset1, size, snapshot1);
-        new_type2 = get_offset_type(real_addr_frag2, state.types2_(block2, frag2), offset2, size, snapshot2);
+      if (state.types_<1>(block1, frag1) != nullptr && state.types_<2>(block2, frag2) != nullptr) {
+        new_type1 = get_offset_type(real_addr_frag1, state.types_<1>(block1, frag1), offset1, size, snapshot1);
+        new_type2 = get_offset_type(real_addr_frag2, state.types_<2>(block2, frag2), offset1, size, snapshot2);
+      } else if (state.types_<1>(block1, frag1) != nullptr) {
+        new_type1 = get_offset_type(real_addr_frag1, state.types_<1>(block1, frag1), offset1, size, snapshot1);
+        new_type2 = get_offset_type(real_addr_frag2, state.types_<1>(block1, frag1), offset2, size, snapshot2);
+      } else if (state.types_<2>(block2, frag2) != nullptr) {
+        new_type1 = get_offset_type(real_addr_frag1, state.types_<2>(block2, frag2), offset1, size, snapshot1);
+        new_type2 = get_offset_type(real_addr_frag2, state.types_<2>(block2, frag2), offset2, size, snapshot2);
       } else {
         if (match_pairs)
           state.match_equals(previous);
