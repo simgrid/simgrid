@@ -868,15 +868,6 @@ set(DOC_SOURCES
   docs/source/conf.py
   docs/source/Doxyfile
   docs/source/_ext/hidden_code_block.py
-  docs/source/_ext/javasphinx-apidoc
-  docs/source/_ext/javasphinx/apidoc.py
-  docs/source/_ext/javasphinx/compiler.py
-  docs/source/_ext/javasphinx/domain.py
-  docs/source/_ext/javasphinx/extdoc.py
-  docs/source/_ext/javasphinx/formatter.py
-  docs/source/_ext/javasphinx/htmlrst.py
-  docs/source/_ext/javasphinx/__init__.py
-  docs/source/_ext/javasphinx/util.py
   docs/source/_templates/breadcrumbs.html
 
   docs/source/img/eclipseScreenShot.png

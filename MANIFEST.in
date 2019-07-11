@@ -1748,15 +1748,6 @@ include docs/source/Tutorial_Algorithms.rst
 include docs/source/Tutorial_MPI_Applications.rst
 include docs/source/XML_Reference.rst
 include docs/source/_ext/hidden_code_block.py
-include docs/source/_ext/javasphinx-apidoc
-include docs/source/_ext/javasphinx/__init__.py
-include docs/source/_ext/javasphinx/apidoc.py
-include docs/source/_ext/javasphinx/compiler.py
-include docs/source/_ext/javasphinx/domain.py
-include docs/source/_ext/javasphinx/extdoc.py
-include docs/source/_ext/javasphinx/formatter.py
-include docs/source/_ext/javasphinx/htmlrst.py
-include docs/source/_ext/javasphinx/util.py
 include docs/source/_templates/breadcrumbs.html
 include docs/source/app_msg.rst
 include docs/source/app_s4u.rst
