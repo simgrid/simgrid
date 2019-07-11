@@ -18,16 +18,13 @@ static void app()
   int x = MC_random(0, 5);
   int y = MC_random(0, 5);
 
-  switch (behavior) {
-    case ABORT:
-      abort();
-    case ASSERT:
-      MC_assert(x != 3 || y != 4);
-      break;
-    case PRINTF:
-      if (x == 3 && y == 4)
-        XBT_ERROR("Error reached");
-      break;
+  if (behavior == ASSERT) {
+    MC_assert(x != 3 || y != 4);
+  } else if (behavior == PRINTF) {
+    if (x == 3 && y == 4)
+      XBT_ERROR("Error reached");
+  } else { // behavior == ABORT
+    abort();
   }
 }
 

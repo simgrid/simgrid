@@ -738,6 +738,10 @@ static int compare_heap_area_with_type(simgrid::mc::StateComparator& state, cons
     case DW_TAG_union_type:
       return not heap_area_equal_without_type(state, real_area1, real_area2, snapshot1, snapshot2, previous,
                                               type->byte_size, check_ignore);
+
+    default:
+      XBT_VERB("Unknown case: %d", type->type);
+      break;
   }
   return 0;
 }
