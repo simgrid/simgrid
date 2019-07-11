@@ -41,15 +41,6 @@ public:
 typedef std::array<HeapLocation, 2> HeapLocationPair;
 typedef std::set<HeapLocationPair> HeapLocationPairs;
 
-struct ProcessComparisonState;
-struct StateComparator;
-
-static inline
-HeapLocationPair makeHeapLocationPair(int block1, int fragment1, int block2, int fragment2)
-{
-  return HeapLocationPair{{HeapLocation(block1, fragment1), HeapLocation(block2, fragment2)}};
-}
-
 class HeapArea : public HeapLocation {
 public:
   bool valid_ = false;
@@ -71,9 +62,6 @@ public:
 
   void initHeapInformation(xbt_mheap_t heap, std::vector<simgrid::mc::IgnoredHeapRegion>* i);
 };
-
-static bool heap_area_differ(StateComparator& state, const void* area1, const void* area2, Snapshot* snapshot1,
-                             Snapshot* snapshot2, HeapLocationPairs* previous, Type* type, int pointer_level);
 
 class StateComparator {
 public:
@@ -253,10 +241,13 @@ static inline Region* MC_get_heap_region(Snapshot* snapshot)
   xbt_die("No heap region");
 }
 
+static bool heap_area_differ(StateComparator& state, const void* area1, const void* area2, Snapshot* snapshot1,
+                             Snapshot* snapshot2, HeapLocationPairs* previous, Type* type, int pointer_level);
+
 static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, simgrid::mc::Snapshot* snapshot1,
                                 simgrid::mc::Snapshot* snapshot2)
 {
-  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
+  const simgrid::mc::RemoteClient& process = mc_model_checker->process();
 
   /* Check busy blocks */
   size_t i1 = 1;
@@ -269,7 +260,7 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, simgrid::mc
   simgrid::mc::Region* heap_region2 = MC_get_heap_region(snapshot2);
 
   // This is the address of std_heap->heapinfo in the application process:
-  void* heapinfo_address = &((xbt_mheap_t) process->heap_address)->heapinfo;
+  void* heapinfo_address = &((xbt_mheap_t)process.heap_address)->heapinfo;
 
   // This is in snapshot do not use them directly:
   const malloc_info* heapinfos1 =
@@ -503,7 +494,7 @@ static bool heap_area_differ_without_type(simgrid::mc::StateComparator& state, c
                                           simgrid::mc::Snapshot* snapshot2, HeapLocationPairs* previous, int size,
                                           int check_ignore)
 {
-  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
+  const simgrid::mc::RemoteClient& process = mc_model_checker->process();
   simgrid::mc::Region* heap_region1  = MC_get_heap_region(snapshot1);
   simgrid::mc::Region* heap_region2  = MC_get_heap_region(snapshot2);
 
@@ -533,8 +524,7 @@ static bool heap_area_differ_without_type(simgrid::mc::StateComparator& state, c
       const void* addr_pointed1 = snapshot1->read(remote((void**)((const char*)real_area1 + pointer_align)));
       const void* addr_pointed2 = snapshot2->read(remote((void**)((const char*)real_area2 + pointer_align)));
 
-      if (process->in_maestro_stack(remote(addr_pointed1))
-        && process->in_maestro_stack(remote(addr_pointed2))) {
+      if (process.in_maestro_stack(remote(addr_pointed1)) && process.in_maestro_stack(remote(addr_pointed2))) {
         i = pointer_align + sizeof(void *);
         continue;
       }
@@ -803,7 +793,7 @@ static bool heap_area_differ(simgrid::mc::StateComparator& state, const void* ar
                              simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot* snapshot2,
                              HeapLocationPairs* previous, simgrid::mc::Type* type, int pointer_level)
 {
-  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
+  const simgrid::mc::RemoteClient& process = mc_model_checker->process();
 
   ssize_t block1;
   ssize_t block2;
@@ -822,7 +812,7 @@ static bool heap_area_differ(simgrid::mc::StateComparator& state, const void* ar
   bool match_pairs = false;
 
   // This is the address of std_heap->heapinfo in the application process:
-  void* heapinfo_address = &((xbt_mheap_t) process->heap_address)->heapinfo;
+  void* heapinfo_address = &((xbt_mheap_t)process.heap_address)->heapinfo;
 
   const malloc_info* heapinfos1 = snapshot1->read(remote((const malloc_info**)heapinfo_address));
   const malloc_info* heapinfos2 = snapshot2->read(remote((const malloc_info**)heapinfo_address));
@@ -842,7 +832,7 @@ static bool heap_area_differ(simgrid::mc::StateComparator& state, const void* ar
 
   // If either block is a stack block:
   if (is_block_stack((int) block1) && is_block_stack((int) block2)) {
-    previous->insert(simgrid::mc::makeHeapLocationPair(block1, -1, block2, -1));
+    previous->insert(HeapLocationPair{{HeapLocation(block1, -1), HeapLocation(block2, -1)}});
     if (match_pairs)
       state.match_equals(previous);
     return false;
@@ -916,7 +906,7 @@ static bool heap_area_differ(simgrid::mc::StateComparator& state, const void* ar
         heapinfo1->busy_block.busy_size != heapinfo2->busy_block.busy_size)
       return true;
 
-    if (not previous->insert(simgrid::mc::makeHeapLocationPair(block1, -1, block2, -1)).second) {
+    if (not previous->insert(HeapLocationPair{{HeapLocation(block1, -1), HeapLocation(block2, -1)}}).second) {
       if (match_pairs)
         state.match_equals(previous);
       return false;
@@ -1044,7 +1034,7 @@ static bool heap_area_differ(simgrid::mc::StateComparator& state, const void* ar
     }
 
     if (offset1 == 0 && offset2 == 0 &&
-        not previous->insert(simgrid::mc::makeHeapLocationPair(block1, frag1, block2, frag2)).second) {
+        not previous->insert(HeapLocationPair{{HeapLocation(block1, frag1), HeapLocation(block2, frag2)}}).second) {
       if (match_pairs)
         state.match_equals(previous);
       return false;
@@ -1278,17 +1268,12 @@ static bool local_variables_differ(simgrid::mc::StateComparator& state, simgrid:
 namespace simgrid {
 namespace mc {
 
-static std::unique_ptr<simgrid::mc::StateComparator> state_comparator;
-
 bool snapshot_equal(Snapshot* s1, Snapshot* s2)
 {
   // TODO, make this a field of ModelChecker or something similar
-  if (state_comparator == nullptr)
-    state_comparator.reset(new StateComparator());
-  else
-    state_comparator->clear();
+  static StateComparator state_comparator;
 
-  RemoteClient* process = &mc_model_checker->process();
+  const RemoteClient& process = mc_model_checker->process();
 
   if (s1->hash_ != s2->hash_) {
     XBT_VERB("(%d - %d) Different hash: 0x%" PRIx64 "--0x%" PRIx64, s1->num_state_, s2->num_state_, s1->hash_,
@@ -1316,10 +1301,10 @@ bool snapshot_equal(Snapshot* s1, Snapshot* s2)
 
   /* Init heap information used in heap comparison algorithm */
   xbt_mheap_t heap1 = (xbt_mheap_t)s1->read_bytes(alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
-                                                  remote(process->heap_address), simgrid::mc::ReadOptions::lazy());
+                                                  remote(process.heap_address), simgrid::mc::ReadOptions::lazy());
   xbt_mheap_t heap2 = (xbt_mheap_t)s2->read_bytes(alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
-                                                  remote(process->heap_address), simgrid::mc::ReadOptions::lazy());
-  if (state_comparator->initHeapInformation(heap1, heap2, &s1->to_ignore_, &s2->to_ignore_) == -1) {
+                                                  remote(process.heap_address), simgrid::mc::ReadOptions::lazy());
+  if (state_comparator.initHeapInformation(heap1, heap2, &s1->to_ignore_, &s2->to_ignore_) == -1) {
     XBT_VERB("(%d - %d) Different heap information", s1->num_state_, s2->num_state_);
     return false;
   }
@@ -1329,7 +1314,7 @@ bool snapshot_equal(Snapshot* s1, Snapshot* s2)
     mc_snapshot_stack_t stack1 = &s1->stacks_[cursor];
     mc_snapshot_stack_t stack2 = &s2->stacks_[cursor];
 
-    if (local_variables_differ(*state_comparator, s1, s2, stack1, stack2)) {
+    if (local_variables_differ(state_comparator, s1, s2, stack1, stack2)) {
       XBT_VERB("(%d - %d) Different local variables between stacks %u", s1->num_state_, s2->num_state_, cursor + 1);
       return false;
     }
@@ -1352,7 +1337,7 @@ bool snapshot_equal(Snapshot* s1, Snapshot* s2)
     xbt_assert(region1->object_info());
 
     /* Compare global variables */
-    if (global_variables_differ(*state_comparator, region1->object_info(), region1, region2, s1, s2)) {
+    if (global_variables_differ(state_comparator, region1->object_info(), region1, region2, s1, s2)) {
       std::string const& name = region1->object_info()->file_name;
       XBT_VERB("(%d - %d) Different global variables in %s", s1->num_state_, s2->num_state_, name.c_str());
       return false;
@@ -1360,7 +1345,7 @@ bool snapshot_equal(Snapshot* s1, Snapshot* s2)
   }
 
   /* Compare heap */
-  if (mmalloc_heap_differ(*state_comparator, s1, s2)) {
+  if (mmalloc_heap_differ(state_comparator, s1, s2)) {
     XBT_VERB("(%d - %d) Different heap (mmalloc_compare)", s1->num_state_, s2->num_state_);
     return false;
   }
