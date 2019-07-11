@@ -35,9 +35,8 @@ static void execute_load_test()
            "far: %.2E, average load as reported by the HostLoad plugin: %.5f (should be %.5f)",
            simgrid::s4u::Engine::get_clock() - start, host->get_speed(), speed, sg_host_get_computed_flops(host),
            sg_host_get_avg_load(host),
-           static_cast<double>(200E6) /
-               (10.5 * speed * host->get_core_count() +
-                (simgrid::s4u::Engine::get_clock() - start - 0.5) * host->get_speed() * host->get_core_count()));
+           200E6 / (10.5 * speed * host->get_core_count() +
+                    (simgrid::s4u::Engine::get_clock() - start - 0.5) * host->get_speed() * host->get_core_count()));
 
   // ========= Change power peak =========
   int pstate = 1;

@@ -311,7 +311,7 @@ double HostEnergy::get_current_watts_value(double cpu_load)
      * (maxCpuLoad is by definition 1)
      */
     int coreCount         = host_->get_core_count();
-    double coreReciprocal = static_cast<double>(1) / static_cast<double>(coreCount);
+    double coreReciprocal = 1.0 / coreCount;
     if (coreCount > 1)
       power_slope = (max_power - min_power) / (1 - coreReciprocal);
     else

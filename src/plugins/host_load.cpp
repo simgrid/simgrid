@@ -145,7 +145,7 @@ void HostLoad::update()
 double HostLoad::get_current_load()
 {
   // We don't need to call update() here because it is called every time an action terminates or starts
-  return current_flops_ / static_cast<double>(host_->get_speed() * host_->get_core_count());
+  return current_flops_ / (host_->get_speed() * host_->get_core_count());
 }
 
 /*

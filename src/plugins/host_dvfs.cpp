@@ -336,9 +336,8 @@ public:
   {
     double computed_flops = sg_host_get_computed_flops(get_host()) - comp_counter;
     double target_time    = (simgrid::s4u::Engine::get_clock() - start_time);
-    target_time =
-        target_time *
-        static_cast<double>(99.0 / 100.0); // FIXME We account for t_copy arbitrarily with 1% -- this needs to be fixed
+    target_time           = target_time * 99.0 / 100.0; // FIXME We account for t_copy arbitrarily with 1%
+                                                        // -- this needs to be fixed
 
     bool is_initialized         = rates[task_id][best_pstate] != 0;
     rates[task_id][best_pstate] = computed_flops / comp_timer;

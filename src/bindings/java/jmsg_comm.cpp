@@ -109,7 +109,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, job
   }
 
   msg_error_t status;
-  status = MSG_comm_wait(comm,static_cast<double>(timeout));
+  status = MSG_comm_wait(comm, timeout);
   env->SetBooleanField(jcomm, jcomm_field_Comm_finished, JNI_TRUE);
   if (status == MSG_OK) {
     jcomm_bind_task(env,jcomm);
@@ -145,7 +145,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitAll(JNIEnv *env, jclass cls
   if (not comms)
     return;
 
-  MSG_comm_waitall(comms, count, static_cast<double>(timeout));
+  MSG_comm_waitall(comms, count, timeout);
   delete[] comms;
 }
 JNIEXPORT int JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jclass cls, jobjectArray jcomms)

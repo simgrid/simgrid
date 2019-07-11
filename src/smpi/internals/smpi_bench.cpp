@@ -188,14 +188,14 @@ unsigned int smpi_sleep(unsigned int secs)
 {
   if (not smpi_process())
     return sleep(secs);
-  return private_sleep(static_cast<double>(secs));
+  return private_sleep(secs);
 }
 
 int smpi_usleep(useconds_t usecs)
 {
   if (not smpi_process())
     return usleep(usecs);
-  return static_cast<int>(private_sleep(static_cast<double>(usecs) / 1000000.0));
+  return static_cast<int>(private_sleep(usecs / 1000000.0));
 }
 
 #if _POSIX_TIMERS > 0
@@ -203,7 +203,7 @@ int smpi_nanosleep(const struct timespec* tp, struct timespec* t)
 {
   if (not smpi_process())
     return nanosleep(tp,t);
-  return static_cast<int>(private_sleep(static_cast<double>(tp->tv_sec + tp->tv_nsec / 1000000000.0)));
+  return static_cast<int>(private_sleep(tp->tv_sec + tp->tv_nsec / 1000000000.0));
 }
 #endif
 
@@ -416,7 +416,7 @@ void smpi_sample_3(int global, const char *file, int line)
   double period  = xbt_os_timer_elapsed(smpi_process()->timer());
   data.sum      += period;
   data.sum_pow2 += period * period;
-  double n       = static_cast<double>(data.count);
+  double n       = data.count;
   data.mean      = data.sum / n;
   data.relstderr = sqrt((data.sum_pow2 / n - data.mean * data.mean) / n) / data.mean;
 
