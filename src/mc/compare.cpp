@@ -699,7 +699,7 @@ static bool heap_area_differ_with_type(simgrid::mc::StateComparator& state, cons
                                            type->byte_size, check_ignore);
 
     default:
-      XBT_VERB("Unknown case: %d", type->type);
+      THROW_IMPOSSIBLE;
       break;
   }
   return false;
