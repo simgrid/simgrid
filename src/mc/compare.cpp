@@ -390,7 +390,6 @@ static bool mmalloc_heap_equal(simgrid::mc::StateComparator& state, simgrid::mc:
 
       if (not equal) {
         XBT_DEBUG("Block %zu not found (size_used = %zu, addr = %p)", i1, heapinfo1->busy_block.busy_size, addr_block1);
-        i1 = state.heaplimit + 1;
         return false;
       }
 
@@ -464,7 +463,6 @@ static bool mmalloc_heap_equal(simgrid::mc::StateComparator& state, simgrid::mc:
         if (not equal) {
           XBT_DEBUG("Block %zu, fragment_ %zu not found (size_used = %zd, address = %p)\n", i1, j1,
                     heapinfo1->busy_frag.frag_size[j1], addr_frag1);
-          i1 = state.heaplimit + 1;
           return false;
         }
       }
