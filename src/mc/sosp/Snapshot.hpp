@@ -44,6 +44,7 @@ struct s_local_variable_t {
   void* address;
 };
 typedef s_local_variable_t* local_variable_t;
+typedef const s_local_variable_t* const_local_variable_t;
 
 struct XBT_PRIVATE s_mc_snapshot_stack_t {
   std::vector<s_local_variable_t> local_variables;
@@ -51,6 +52,7 @@ struct XBT_PRIVATE s_mc_snapshot_stack_t {
   std::vector<s_mc_stack_frame_t> stack_frames;
 };
 typedef s_mc_snapshot_stack_t* mc_snapshot_stack_t;
+typedef const s_mc_snapshot_stack_t* const_mc_snapshot_stack_t;
 
 namespace simgrid {
 namespace mc {

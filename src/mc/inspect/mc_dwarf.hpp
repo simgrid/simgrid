@@ -17,7 +17,7 @@ XBT_PRIVATE const char* attrname(int attr);
 XBT_PRIVATE const char* tagname(int tag);
 
 XBT_PRIVATE void* resolve_member(const void* base, simgrid::mc::Type* type, simgrid::mc::Member* member,
-                                 simgrid::mc::AddressSpace* snapshot);
+                                 const simgrid::mc::AddressSpace* snapshot);
 
 XBT_PRIVATE
 int dwarf_register_to_libunwind(int dwarf_register);

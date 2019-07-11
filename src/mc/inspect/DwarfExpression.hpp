@@ -56,7 +56,7 @@ public:
   unw_cursor_t* cursor;
   void* frame_base;
   /** Address space used to read memory */
-  simgrid::mc::AddressSpace* address_space;
+  const simgrid::mc::AddressSpace* address_space;
   simgrid::mc::ObjectInformation* object_info;
 };
 
