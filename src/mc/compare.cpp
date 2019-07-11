@@ -700,7 +700,6 @@ static bool heap_area_differ_with_type(simgrid::mc::StateComparator& state, cons
 
     default:
       THROW_IMPOSSIBLE;
-      break;
   }
   return false;
 }
