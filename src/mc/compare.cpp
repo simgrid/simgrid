@@ -254,10 +254,7 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, const simgr
       continue;
     }
 
-    if (heapinfo1->type < 0) {
-      fprintf(stderr, "Unkown mmalloc block type.\n");
-      abort();
-    }
+    xbt_assert(heapinfo1->type >= 0, "Unkown mmalloc block type: %d", heapinfo1->type);
 
     void* addr_block1 = ((void*)(((ADDR2UINT(i1)) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase));
 
@@ -371,10 +368,7 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, const simgr
             continue;
           }
 
-          if (heapinfo2b->type < 0) {
-            fprintf(stderr, "Unknown mmalloc block type.\n");
-            abort();
-          }
+          xbt_assert(heapinfo2b->type >= 0, "Unkown mmalloc block type: %d", heapinfo2b->type);
 
           for (size_t j2 = 0; j2 < (size_t)(BLOCKSIZE >> heapinfo2b->type); j2++) {
 
@@ -695,7 +689,6 @@ static bool heap_area_differ_with_type(simgrid::mc::StateComparator& state, cons
     default:
       THROW_IMPOSSIBLE;
   }
-  return false;
 }
 
 /** Infer the type of a part of the block from the type of the block
