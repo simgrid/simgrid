@@ -489,8 +489,8 @@ static bool heap_area_differ_without_type(simgrid::mc::StateComparator& state, c
                                   1) != 0) {
 
       int pointer_align = (i / sizeof(void *)) * sizeof(void *);
-      const void* addr_pointed1 = snapshot1.read(remote((void**)((const char*)real_area1 + pointer_align)));
-      const void* addr_pointed2 = snapshot2.read(remote((void**)((const char*)real_area2 + pointer_align)));
+      const void* addr_pointed1 = snapshot1.read(remote((void* const*)((const char*)real_area1 + pointer_align)));
+      const void* addr_pointed2 = snapshot2.read(remote((void* const*)((const char*)real_area2 + pointer_align)));
 
       if (process.in_maestro_stack(remote(addr_pointed1)) && process.in_maestro_stack(remote(addr_pointed2))) {
         i = pointer_align + sizeof(void *);
@@ -1091,8 +1091,8 @@ static bool areas_differ_with_type(simgrid::mc::StateComparator& state, const vo
       }
       for (i = 0; i < type->element_count; i++) {
         size_t off = i * elm_size;
-        if (areas_differ_with_type(state, (char*)real_area1 + off, snapshot1, region1, (char*)real_area2 + off,
-                                   snapshot2, region2, type->subtype, pointer_level))
+        if (areas_differ_with_type(state, (const char*)real_area1 + off, snapshot1, region1,
+                                   (const char*)real_area2 + off, snapshot2, region2, type->subtype, pointer_level))
           return true;
       }
       break;
