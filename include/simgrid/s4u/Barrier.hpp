@@ -14,6 +14,8 @@
 #include <atomic>
 #include <future>
 
+constexpr int SG_BARRIER_SERIAL_THREAD = -1;
+
 namespace simgrid {
 namespace s4u {
 
@@ -21,8 +23,8 @@ class XBT_PUBLIC Barrier {
 private:
   MutexPtr mutex_;
   ConditionVariablePtr cond_;
-  unsigned int expected_processes_;
-  unsigned int arrived_processes_ = 0;
+  unsigned int expected_actors_;
+  unsigned int arrived_actors_ = 0;
 
   /* refcounting */
   std::atomic_int_fast32_t refcount_{0};
@@ -35,9 +37,7 @@ public:
   Barrier& operator=(Barrier const&) = delete;
 #endif
 
-  /** Constructs a new barrier */
-  static BarrierPtr create(unsigned int expected_processes);
-
+  static BarrierPtr create(unsigned int expected_actors);
   int wait();
 
 #ifndef DOXYGEN

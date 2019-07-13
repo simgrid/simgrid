@@ -2,6 +2,10 @@
 
 SimGrid (3.23.3) NOT RELEASED YET (v3.24 expected September 23. 7:50 UTC)
 
+S4U:
+ - Barrier::wait returns SG_BARRIER_SERIAL_THREAD for (only) one actor
+   for consistency with pthread_barrier_wait()
+
 MSG:
  - convert a new set of functions to the S4U C interface and move the old MSG
    versions to legacy (MSG_process_self*, MSG_process_{un}ref, ...)
@@ -20,6 +24,7 @@ Bugs:
  - FG#28: add sg_actor_self (and other wrappers on this_actor methods)
  - FG#29 and FG#33: provide a new C API to mutexes and condition variables 
  - FG#30: convert MSG_process_{un}ref to sg_actor_{un}ref
+ - FG#34: SG_BARRIER_SERIAL_THREAD?
 
 ----------------------------------------------------------------------------
 
