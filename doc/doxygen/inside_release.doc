@@ -182,7 +182,6 @@ Doing a dot release:
       or your jarfile will not contain the code you expect for win and
       mac.
   - Rebuild the python package
-    - test -e MANIFEST.in || echo "Copy MANIFEST.in from a freshly configured build tree"
     - rm -rf dist/ ; python3 setup.py sdist # Build a source distrib
     - test that the built distrib recompiles:
       rm -rf /tmp/pysimgrid && mkdir /tmp/pysimgrid && cp dist/simgrid-*.tar.gz /tmp/pysimgrid 
