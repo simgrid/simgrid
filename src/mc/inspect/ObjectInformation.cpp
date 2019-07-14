@@ -233,7 +233,10 @@ void find_object_address(std::vector<simgrid::xbt::VmMap> const& maps, simgrid::
 
     // This is the GNU_RELRO-part of the data segment:
     else if (reg.prot == PROT_READ) {
-      xbt_assert(not result->start_ro, "Multiple read only segments for %s, not supported", maps[i].pathname.c_str());
+      xbt_assert(not result->start_ro,
+                 "Multiple read-only segments for %s, not supported. Compiling with the following may help: -Wl,-z "
+                 "-Wl,noseparate-code",
+                 maps[i].pathname.c_str());
       result->start_ro = (char*)reg.start_addr;
       result->end_ro   = (char*)reg.end_addr;
     }

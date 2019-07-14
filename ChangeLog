@@ -25,6 +25,7 @@ Bugs:
  - FG#29 and FG#33: provide a new C API to mutexes and condition variables 
  - FG#30: convert MSG_process_{un}ref to sg_actor_{un}ref
  - FG#34: SG_BARRIER_SERIAL_THREAD?
+ - FG#35: model-checker does not like buster-produced binaries
 
 ----------------------------------------------------------------------------
 
