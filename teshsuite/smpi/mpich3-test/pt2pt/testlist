@@ -25,7 +25,7 @@ isendirecv 10
 #needs MPI_Intercomm_create
 #icsend 4
 rqstatus 2
-#needs MPI_Pack, MPI_Buffer_attach, MPI_Buffer_detach, MPI_Irsend, MPI_Ibsend
+#needs MPI_Pack, MPI_Buffer_attach, MPI_Buffer_detach, MPI_Ibsend
 #rqfreeb 4
 #needs MPI_Grequest_start MPI_Grequest_complete
 greq1 1
@@ -52,6 +52,5 @@ many_isend 3
 manylmt 2
 huge_anysrc 2
 huge_underflow 2
-#Needs MPI_Irsend
-#dtype_send 2
+dtype_send 2
 recv_any 2

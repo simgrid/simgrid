@@ -12,6 +12,7 @@ MSG:
 
 SMPI:
  - Fortran bindings for DVFS have been removed.
+ - Add support for MPI_Irsend
 
 Model-Checker:
  - Option model-checker/hash was removed. This is always activated now.

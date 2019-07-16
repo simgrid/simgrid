@@ -262,6 +262,12 @@ int PMPI_Isend(const void *buf, int count, MPI_Datatype datatype, int dst, int t
   return retval;
 }
 
+int PMPI_Irsend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm,
+                MPI_Request* request)
+{
+  return PMPI_Isend(buf, count, datatype, dst, tag, comm, request);
+}
+
 int PMPI_Issend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request* request)
 {
   int retval = 0;
