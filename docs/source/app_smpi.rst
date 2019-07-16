@@ -70,6 +70,14 @@ the right compilation flags along the way. If your application is in
 C++, Fortran 77 or Fortran 90, use respectively ``smpicxx``,
 ``smpiff`` or ``smpif90``.
 
+If you use cmake, set the variables ``MPI_C_COMPILER``, ``MPI_CXX_COMPILER`` and
+``MPI_Fortran_COMPILER`` to the full path of smpicc, smpicxx and smpiff (or
+smpif90), respectively. Example:
+
+.. code-block:: shell
+
+   cmake -DMPI_C_COMPILER=/opt/simgrid/bin/smpicc -DMPI_CXX_COMPILER=/opt/simgrid/bin/smpicxx -DMPI_Fortran_COMPILER=/opt/simgrid/bin/smpiff .
+
 ....................
 Simulating your Code
 ....................
