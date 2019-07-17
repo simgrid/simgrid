@@ -31,19 +31,21 @@ class Comm : public F2C, public Keyval{
   std::list<MPI_Win> rma_wins_; // attached windows for synchronization.
   std::string name_;
   MPI_Info info_;
+  int id_;
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;
   static int keyval_id_;
 
   Comm() = default;
-  Comm(MPI_Group group, MPI_Topology topo, int smp = 0);
+  Comm(MPI_Group group, MPI_Topology topo, int smp = 0, int id=MPI_UNDEFINED);
   int dup(MPI_Comm* newcomm);
   int dup_with_info(MPI_Info info, MPI_Comm* newcomm);
   MPI_Group group();
   MPI_Topology topo() { return topo_; }
   int size();
   int rank();
+  int id();
   void get_name(char* name, int* len);
   void set_name(const char* name);
   MPI_Info info();

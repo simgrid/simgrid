@@ -66,7 +66,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
 
   Instance instance(std::string(name), num_processes, MPI_COMM_NULL, new simgrid::s4u::Barrier(num_processes));
   MPI_Group group     = new simgrid::smpi::Group(instance.size);
-  instance.comm_world = new simgrid::smpi::Comm(group, nullptr);
+  instance.comm_world = new simgrid::smpi::Comm(group, nullptr, 0, -1);
 //  FIXME : using MPI_Attr_put with MPI_UNIVERSE_SIZE is forbidden and we make it a no-op (which triggers a warning as MPI_ERR_ARG is returned). 
 //  Directly calling Comm::attr_put breaks for now, as MPI_UNIVERSE_SIZE,is <0
 //  instance.comm_world->attr_put<simgrid::smpi::Comm>(MPI_UNIVERSE_SIZE, reinterpret_cast<void*>(instance.size));

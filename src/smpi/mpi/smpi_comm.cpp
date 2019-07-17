@@ -28,7 +28,7 @@ namespace smpi{
 std::unordered_map<int, smpi_key_elem> Comm::keyvals_;
 int Comm::keyval_id_=0;
 
-Comm::Comm(MPI_Group group, MPI_Topology topo, int smp) : group_(group), topo_(topo),is_smp_comm_(smp)
+Comm::Comm(MPI_Group group, MPI_Topology topo, int smp, int id) : group_(group), topo_(topo),is_smp_comm_(smp), id_(id)
 {
   refcount_        = 1;
   topoType_        = MPI_INVALID_TOPO;
@@ -39,6 +39,19 @@ Comm::Comm(MPI_Group group, MPI_Topology topo, int smp) : group_(group), topo_(t
   leaders_map_     = nullptr;
   is_blocked_      = 0;
   info_            = MPI_INFO_NULL;
+  static int global_id_=0;
+  //First creation of comm is done before SIMIX_run, so only do comms for others
+  if(id==MPI_UNDEFINED && smp==0 && this->rank()!=MPI_UNDEFINED ){
+    int id;
+    if(this->rank()==0){
+      id=global_id_;
+      global_id_++;
+    }
+    Colls::bcast(&id, 1, MPI_INT, 0, this);
+    XBT_DEBUG("Communicator %p has id %d", this, id);
+    id_=id;//only set here, as we don't want to change it in the middle of the bcast
+    Colls::barrier(this);
+  }
 }
 
 void Comm::destroy(Comm* comm)
@@ -129,6 +142,11 @@ int Comm::rank()
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->rank();
   return group_->rank(s4u::Actor::self());
+}
+
+int Comm::id()
+{
+  return id_;
 }
 
 void Comm::get_name (char* name, int* len)
