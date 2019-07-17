@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 
     MPI_Errhandler_set(newcomm1, MPI_ERRORS_RETURN);
     /* Allocate many communicators in batches, then free them */
-    for (i = 0; i < 1000; i++) {
+    for (i = 0; i < 100; i++) {
         for (j = 0; j < 200; j++) {
             err = MPI_Comm_dup(newcomm1, &newcomm2[j]);
             if (err) {
