@@ -66,6 +66,12 @@ int PMPI_Recv_init(void *buf, int count, MPI_Datatype datatype, int src, int tag
   return retval;
 }
 
+int PMPI_Rsend_init(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm,
+                    MPI_Request* request)
+{
+  return PMPI_Send_init(buf, count, datatype, dst, tag, comm, request);
+}
+
 int PMPI_Ssend_init(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request* request)
 {
   int retval = 0;
@@ -394,6 +400,11 @@ int PMPI_Send(const void *buf, int count, MPI_Datatype datatype, int dst, int ta
 
   smpi_bench_begin();
   return retval;
+}
+
+int PMPI_Rsend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
+{
+  return PMPI_Send(buf, count, datatype, dst, tag, comm);
 }
 
 int PMPI_Ssend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm) {

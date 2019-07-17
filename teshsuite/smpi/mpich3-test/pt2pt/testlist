@@ -2,8 +2,7 @@ sendrecv1 4
 sendrecv2 2
 sendrecv3 2
 sendflood 8 timeLimit=600
-#needs rsend
-#sendself 1
+sendself 1
 sendall 4
 anyall 2
 eagerdt 2

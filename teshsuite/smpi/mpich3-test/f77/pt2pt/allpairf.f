@@ -23,9 +23,9 @@ C      verbose = .true.
       do while ( mtestGetIntraComm( comm, 2, .false. ) )
          call test_pair_send( comm, errs )
          call test_pair_ssend( comm, errs )
-         !call test_pair_rsend( comm, errs )
+         call test_pair_rsend( comm, errs )
          call test_pair_isend( comm, errs )
-         !call test_pair_irsend( comm, errs )
+         !call test_pair_irsend( comm, errs ) !FIXME
          call test_pair_issend( comm, errs )
          !call test_pair_psend( comm, errs )
          !call test_pair_prsend( comm, errs )
