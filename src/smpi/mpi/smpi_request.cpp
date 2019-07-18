@@ -806,8 +806,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
     return;
   }
 
-  if (not(req->detached_ && ((req->flags_ & MPI_REQ_SEND) != 0)) && ((req->flags_ & MPI_REQ_PREPARED) == 0) &&
-      ((req->flags_ & MPI_REQ_GENERALIZED) == 0)) {
+  if ((req->flags_ & (MPI_REQ_PREPARED | MPI_REQ_GENERALIZED | MPI_REQ_FINISHED)) == 0) {
     if(status != MPI_STATUS_IGNORE) {
       int src = req->src_ == MPI_ANY_SOURCE ? req->real_src_ : req->src_;
       status->MPI_SOURCE = req->comm_->group()->rank(src);
@@ -816,32 +815,34 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
       // this handles the case were size in receive differs from size in send
       status->count = req->real_size_;
     }
+    //detached send will be finished at the other end
+    if (not(req->detached_ && ((req->flags_ & MPI_REQ_SEND) != 0))) {
+      req->print_request("Finishing");
+      MPI_Datatype datatype = req->old_type_;
 
-    req->print_request("Finishing");
-    MPI_Datatype datatype = req->old_type_;
+      // FIXME Handle the case of a partial shared malloc.
+      if (((req->flags_ & MPI_REQ_ACCUMULATE) != 0) ||
+          (datatype->flags() & DT_FLAG_DERIVED)) { // && (not smpi_is_shared(req->old_buf_))){
 
-// FIXME Handle the case of a partial shared malloc.
-    if (((req->flags_ & MPI_REQ_ACCUMULATE) != 0) ||
-        (datatype->flags() & DT_FLAG_DERIVED)) { // && (not smpi_is_shared(req->old_buf_))){
-
-      if (not smpi_process()->replaying() && smpi_privatize_global_variables != SmpiPrivStrategies::NONE &&
-          static_cast<char*>(req->old_buf_) >= smpi_data_exe_start &&
-          static_cast<char*>(req->old_buf_) < smpi_data_exe_start + smpi_data_exe_size) {
-        XBT_VERB("Privatization : We are unserializing to a zone in global memory  Switch data segment ");
-        smpi_switch_data_segment(simgrid::s4u::Actor::self());
-      }
-
-      if(datatype->flags() & DT_FLAG_DERIVED){
-        // This part handles the problem of non-contignous memory the unserialization at the reception
-        if ((req->flags_ & MPI_REQ_RECV) && datatype->size() != 0)
-          datatype->unserialize(req->buf_, req->old_buf_, req->real_size_/datatype->size() , req->op_);
-        xbt_free(req->buf_);
-      } else if (req->flags_ & MPI_REQ_RECV) { // apply op on contiguous buffer for accumulate
-        if (datatype->size() != 0) {
-          int n = req->real_size_ / datatype->size();
-          req->op_->apply(req->buf_, req->old_buf_, &n, datatype);
+        if (not smpi_process()->replaying() && smpi_privatize_global_variables != SmpiPrivStrategies::NONE &&
+            static_cast<char*>(req->old_buf_) >= smpi_data_exe_start &&
+            static_cast<char*>(req->old_buf_) < smpi_data_exe_start + smpi_data_exe_size) {
+          XBT_VERB("Privatization : We are unserializing to a zone in global memory  Switch data segment ");
+          smpi_switch_data_segment(simgrid::s4u::Actor::self());
         }
-        xbt_free(req->buf_);
+
+        if(datatype->flags() & DT_FLAG_DERIVED){
+          // This part handles the problem of non-contignous memory the unserialization at the reception
+          if ((req->flags_ & MPI_REQ_RECV) && datatype->size() != 0)
+            datatype->unserialize(req->buf_, req->old_buf_, req->real_size_/datatype->size() , req->op_);
+          xbt_free(req->buf_);
+        } else if (req->flags_ & MPI_REQ_RECV) { // apply op on contiguous buffer for accumulate
+          if (datatype->size() != 0) {
+            int n = req->real_size_ / datatype->size();
+            req->op_->apply(req->buf_, req->old_buf_, &n, datatype);
+          }
+          xbt_free(req->buf_);
+        }
       }
     }
   }
@@ -1068,6 +1069,8 @@ int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
   indices[count] = index;
   count++;
   for (int i = 0; i < incount; i++) {
+    if (i==index)
+      continue;
     if (requests[i] != MPI_REQUEST_NULL) {
       test(&requests[i], pstat,&flag);
       if (flag==1){
