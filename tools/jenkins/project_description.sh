@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
 get_boost(){
-    grep -m 1 "Boost version:" ./consoleText | sed  "s/.*-- Boost version: \([a-zA-Z0-9\.]*\)/\1/g"
+    BOOST=$(grep -m 1 "Boost version:" ./consoleText | sed  "s/.*-- Boost version: \([a-zA-Z0-9\.]*\)/\1/g")
+    if [ -z "$BOOST" ]
+    then
+      BOOST=$(grep -m 1 "Found Boost:" ./consoleText | sed  "s/.*-- Found Boost:.*found suitable version \"\([a-zA-Z0-9\.]*\)\",.*/\1/g")
+    fi
+  echo $BOOST
 }
 
 get_compiler(){
