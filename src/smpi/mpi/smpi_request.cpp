@@ -599,10 +599,10 @@ int Request::testsome(int incount, MPI_Request requests[], int *count, int *indi
       if(ret!=MPI_SUCCESS)
         error = 1;
       if(flag) {
-        indices[i] = 1;
-        (*count)++;
+        indices[*count] = i;
         if (status != MPI_STATUSES_IGNORE)
-          status[i] = *pstat;
+          status[*count] = *pstat;
+        (*count)++;
         if ((requests[i] != MPI_REQUEST_NULL) && (requests[i]->flags_ & MPI_REQ_NON_PERSISTENT))
           requests[i] = MPI_REQUEST_NULL;
       }
