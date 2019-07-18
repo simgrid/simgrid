@@ -20,7 +20,7 @@ list_set CXXFLAGS "-std=gnu++11" @SMPI_CXX_FLAGS@
 list_set LINKARGS
 if [ "@WIN32@" != "1" ]; then
     list_add CXXFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
-    list_add CXXFLAGS "-fpic"
+    list_add CXXFLAGS "-fPIC"
     if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
        list_add LINKARGS "-shared"
     else
