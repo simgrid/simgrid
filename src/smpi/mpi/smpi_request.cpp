@@ -594,7 +594,7 @@ int Request::testsome(int incount, MPI_Request requests[], int *count, int *indi
 
   *count = 0;
   for (int i = 0; i < incount; i++) {
-    if (requests[i] != MPI_REQUEST_NULL) {
+    if (requests[i] != MPI_REQUEST_NULL && not (requests[i]->flags_ & MPI_REQ_FINISHED)) {
       ret = test(&requests[i], pstat, &flag);
       if(ret!=MPI_SUCCESS)
         error = 1;
@@ -1060,7 +1060,6 @@ int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
   int index = 0;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
-
   index = waitany(incount, (MPI_Request*)requests, pstat);
   if(index==MPI_UNDEFINED) return MPI_UNDEFINED;
   if(status != MPI_STATUSES_IGNORE) {
@@ -1069,9 +1068,8 @@ int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
   indices[count] = index;
   count++;
   for (int i = 0; i < incount; i++) {
-    if (i==index)
-      continue;
-    if (requests[i] != MPI_REQUEST_NULL) {
+    if (i!=index && requests[i] != MPI_REQUEST_NULL 
+        && not(requests[i]->flags_ & MPI_REQ_FINISHED)) {
       test(&requests[i], pstat,&flag);
       if (flag==1){
         indices[count] = i;
