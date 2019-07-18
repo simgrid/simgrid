@@ -18,13 +18,14 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
         # icallgather icallgatherv icallreduce
         # icalltoall icalltoallv icalltoallw icbarrier icbcast
         # icgather icgatherv icreduce icscatter icscatterv
-        # opband opbor opbxor opland oplor oplxor opmax opmaxloc
-        # opmin opminloc opprod opsum nonblocking3
+         opband opbor opbxor opland oplor oplxor opmax opmaxloc
+         opmin opminloc opprod opsum 
+         #nonblocking3
           op_commutative red3 red4 redscat2 redscat3 redscatbkinter redscatblk3
           redscat red_scat_block red_scat_block2 allgatherv4 allred
         # redscatinter
           reduce_local scantst scatter2 scatter3 scattern scatterv
-        # uoplong
+         uoplong
          )
     add_executable(${test} EXCLUDE_FROM_ALL ${test}.c)
     add_dependencies(tests ${test})

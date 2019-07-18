@@ -136,6 +136,7 @@ static void prod_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 static void land_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   APPLY_BASIC_OP_LOOP(LAND_OP)
+  APPLY_FLOAT_OP_LOOP(LAND_OP)
   APPLY_BOOL_OP_LOOP(LAND_OP)
   APPLY_END_OP_LOOP(LAND_OP)
 }
@@ -143,6 +144,7 @@ static void land_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 static void lor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   APPLY_BASIC_OP_LOOP(LOR_OP)
+  APPLY_FLOAT_OP_LOOP(LOR_OP)
   APPLY_BOOL_OP_LOOP(LOR_OP)
   APPLY_END_OP_LOOP(LOR_OP)
 }
@@ -150,6 +152,7 @@ static void lor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 static void lxor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   APPLY_BASIC_OP_LOOP(LXOR_OP)
+  APPLY_FLOAT_OP_LOOP(LXOR_OP)
   APPLY_BOOL_OP_LOOP(LXOR_OP)
   APPLY_END_OP_LOOP(LXOR_OP)
 }
