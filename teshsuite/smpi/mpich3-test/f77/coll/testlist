@@ -9,4 +9,7 @@ split_typef 4
 nonblockingf 4
 vw_inplacef 4 mpiversion=2.2
 red_scat_blockf 4 mpiversion=2.2
-nonblocking_inpf 4 
+nonblocking_inpf 4
+allredint8f 4
+allredopttf 4
+uallreducef 4 

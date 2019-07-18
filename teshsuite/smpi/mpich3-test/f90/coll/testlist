@@ -11,3 +11,6 @@ nonblockingf90 4
 vw_inplacef90 4
 red_scat_blockf90 4
 nonblocking_inpf90 4
+allredint8f90 4
+allredopttf90 4
+uallreducef90 4
