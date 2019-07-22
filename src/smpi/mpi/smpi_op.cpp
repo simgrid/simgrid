@@ -13,7 +13,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_op, smpi, "Logging specific to SMPI (op)");
 #define MAX_OP(a, b)  (b) = (a) < (b) ? (b) : (a)
 #define MIN_OP(a, b)  (b) = (a) < (b) ? (a) : (b)
 #define SUM_OP(a, b)  (b) += (a)
+#define SUM_OP_COMPLEX(a, b) {(b.value) += (a.value);(b.index) += (a.index);}
 #define PROD_OP(a, b) (b) *= (a)
+#define PROD_OP_COMPLEX(a, b) {(b.value) *= (a.value);(b.index) *= (a.index);}
 #define LAND_OP(a, b) (b) = (a) && (b)
 #define LOR_OP(a, b)  (b) = (a) || (b)
 #define LXOR_OP(a, b) (b) = (not(a) && (b)) || ((a) && not(b))
@@ -96,7 +98,10 @@ APPLY_OP_LOOP(MPI_2INT, int_int,op)\
 APPLY_OP_LOOP(MPI_2FLOAT, float_float,op)\
 APPLY_OP_LOOP(MPI_2DOUBLE, double_double,op)\
 APPLY_OP_LOOP(MPI_LONG_DOUBLE_INT, long_double_int,op)\
-APPLY_OP_LOOP(MPI_2LONG, long_long,op)
+APPLY_OP_LOOP(MPI_2LONG, long_long,op)\
+APPLY_OP_LOOP(MPI_COMPLEX8, float_float,op)\
+APPLY_OP_LOOP(MPI_COMPLEX16, double_double,op)\
+APPLY_OP_LOOP(MPI_COMPLEX32, double_double,op)
 
 #define APPLY_END_OP_LOOP(op)                                                                                          \
   {                                                                                                                    \
@@ -122,6 +127,7 @@ static void sum_func(void *a, void *b, int *length, MPI_Datatype * datatype)
   APPLY_BASIC_OP_LOOP(SUM_OP)
   APPLY_FLOAT_OP_LOOP(SUM_OP)
   APPLY_COMPLEX_OP_LOOP(SUM_OP)
+  APPLY_PAIR_OP_LOOP(SUM_OP_COMPLEX)
   APPLY_END_OP_LOOP(SUM_OP)
 }
 
@@ -130,6 +136,7 @@ static void prod_func(void *a, void *b, int *length, MPI_Datatype * datatype)
   APPLY_BASIC_OP_LOOP(PROD_OP)
   APPLY_FLOAT_OP_LOOP(PROD_OP)
   APPLY_COMPLEX_OP_LOOP(PROD_OP)
+  APPLY_PAIR_OP_LOOP(PROD_OP_COMPLEX)
   APPLY_END_OP_LOOP(PROD_OP)
 }
 

@@ -128,8 +128,8 @@
       integer MPI_DOUBLE_PRECISION, MPI_COMPLEX, MPI_DOUBLE_COMPLEX
       integer MPI_2INTEGER, MPI_LOGICAL1, MPI_LOGICAL2, MPI_LOGICAL4
       integer MPI_LOGICAL8, MPI_2REAL, MPI_2DOUBLE_PRECISION
-      integer MPI_AINT, MPI_OFFSET, MPI_COUNT
-      integer MPI_REAL16, MPI_PACKED
+      integer MPI_AINT, MPI_OFFSET, MPI_COUNT, MPI_REAL16
+      integer MPI_PACKED, MPI_COMPLEX8, MPI_COMPLEX16, MPI_COMPLEX32
 
       integer MPI_MAX, MPI_MIN, MPI_MAXLOC, MPI_MINLOC
       integer MPI_SUM, MPI_PROD, MPI_LAND, MPI_LOR, MPI_LXOR, MPI_BAND
@@ -188,19 +188,21 @@
       parameter(MPI_COUNT=24)
       parameter(MPI_REAL16=25)
       parameter(MPI_PACKED=26)
-
-      parameter(MPI_MAX=27)
-      parameter(MPI_MIN=28)
-      parameter(MPI_MAXLOC=29)
-      parameter(MPI_MINLOC=30)
-      parameter(MPI_SUM=31)
-      parameter(MPI_PROD=32)
-      parameter(MPI_LAND=33)
-      parameter(MPI_LOR=34)
-      parameter(MPI_LXOR=35)
-      parameter(MPI_BAND=36)
-      parameter(MPI_BOR=37)
-      parameter(MPI_BXOR=38)
+      parameter(MPI_COMPLEX8=27)
+      parameter(MPI_COMPLEX16=28)
+      parameter(MPI_COMPLEX32=29)
+      parameter(MPI_MAX=30)
+      parameter(MPI_MIN=31)
+      parameter(MPI_MAXLOC=32)
+      parameter(MPI_MINLOC=33)
+      parameter(MPI_SUM=34)
+      parameter(MPI_PROD=35)
+      parameter(MPI_LAND=36)
+      parameter(MPI_LOR=37)
+      parameter(MPI_LXOR=38)
+      parameter(MPI_BAND=39)
+      parameter(MPI_BOR=40)
+      parameter(MPI_BXOR=41)
 
       INTEGER MPI_ADDRESS_KIND, MPI_OFFSET_KIND
       PARAMETER (MPI_ADDRESS_KIND=@CMAKE_SIZEOF_VOID_P@)

@@ -12,8 +12,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/typeaints.h.in typeaints.h @ONLY)
 
   foreach(test gaddressf
-             # allctypesf hindex1f hindexed_blockf packef typecntsf
-             # typem2f typename3f typenamef typesnamef
+             allctypesf hindex1f hindexed_blockf packef typecntsf
+             typem2f typename3f typenamef typesnamef
 	       typesubf)
     add_executable(${test} EXCLUDE_FROM_ALL ${test}.f)
     add_dependencies(tests ${test})

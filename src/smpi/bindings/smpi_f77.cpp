@@ -33,8 +33,8 @@ void smpi_init_fortran_types(){
      MPI_REAL4->add_f();//MPI_REAL4
      MPI_REAL8->add_f();//MPI_REAL8
      MPI_DOUBLE->add_f();//MPI_DOUBLE_PRECISION
-     MPI_C_FLOAT_COMPLEX->add_f();//MPI_COMPLEX
-     MPI_C_DOUBLE_COMPLEX->add_f();//MPI_DOUBLE_COMPLEX
+     MPI_COMPLEX8->add_f();//MPI_COMPLEX
+     MPI_COMPLEX16->add_f();//MPI_DOUBLE_COMPLEX
 #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
      MPI_2INT->add_f();//MPI_2INTEGER
 #else
@@ -51,6 +51,9 @@ void smpi_init_fortran_types(){
      MPI_AINT->add_f();//MPI_COUNT
      MPI_REAL16->add_f();//MPI_REAL16
      MPI_PACKED->add_f();//MPI_PACKED
+     MPI_COMPLEX8->add_f();//MPI_COMPLEX8
+     MPI_COMPLEX16->add_f();//MPI_COMPLEX16
+     MPI_COMPLEX32->add_f();//MPI_COMPLEX32
 
      MPI_MAX->add_f();
      MPI_MIN->add_f();
