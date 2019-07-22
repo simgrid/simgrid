@@ -128,7 +128,7 @@ function sortTable(n, type) {
   }
 }</script>
 <table id=configuration-matrix> 
-<tr class=matrix-row>  <td class=matrix-header style=min-width:75px onclick='sortTable(0);'>Name of the Builder</td><td class=matrix-header style=min-width:75px onclick='sortTable(1);'>OS</td><td class=matrix-header style=min-width:75px onclick='sortTable(2);'>Compiler</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(3, 'version');\">Boost</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(4,'version');\">Java</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(5,'version');\">Cmake</td><td class=matrix-header style=min-width:50px onclick='sortTable(6);'>ns-3</td><td class=matrix-header style=min-width:50px onclick='sortTable(7);'>Python</td></tr>"
+<tr class=matrix-row>  <td class=matrix-header style=min-width:75px onclick='sortTable(0);'>Name of the Builder</td><td class=matrix-header style=min-width:75px onclick='sortTable(1);'>OS</td><td class=matrix-header style=min-width:75px onclick='sortTable(2);'>Compiler</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(3, 'version');\">Boost</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(4,'version');\">Java</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(5,'version');\">Cmake</td><td class=matrix-header style=min-width:50px onclick='sortTable(6);'>ns-3</td><td class=matrix-header style=min-width:50px onclick='sortTable(7);'>Python</td><td class=matrix-header style=min-width:50px onclick='sortTable(1);'>Debug</td><td class=matrix-header style=min-width:50px onclick='sortTable(1);'>MC</td></tr>"
 
 for node in "${nodes[@]}"
 do
@@ -144,7 +144,27 @@ do
     ns3=$(get_ns3)
     py=$(get_python)
     os=$(grep -m 1 "OS Version" ./consoleText| sed "s/OS Version : \(.*\)/\1/g")
-    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td></tr>"
+    
+    color1=""
+    color2=""
+    #in case of success, replace blue by green in status balls
+    wget --quiet https://ci.inria.fr/simgrid/buildStatus/text?job=SimGrid%2Fbuild_mode%3DDebug%2Cnode%3D${node} -O status  >/dev/null 2>&1
+    status=$(cat status)
+    if [ $status == "Success" ]; then
+      color1="&color=green"
+    fi
+    rm status
+    statusmc=""
+    wget --quiet https://ci.inria.fr/simgrid/buildStatus/text?job=SimGrid%2Fbuild_mode%3DModelChecker%2Cnode%3D${node} -O status >/dev/null 2>&1
+    status=$(cat status)
+    if [ $status ]; then 
+      if [ $status == "Success" ]; then
+        color2="&color=green"
+      fi
+      statusmc="<a href="build_mode=ModelChecker,node=${node}/"><img src="https://ci.inria.fr/simgrid/job/SimGrid/build_mode=ModelChecker,node=${node}/badge/icon?style=ball-24x24${color2}"/>"
+    fi
+    rm status
+    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class="matrix-cell" style="text-align:center"><a href="build_mode=Debug,node=${node}/"><img src="https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=${node}/badge/icon?style=ball-24x24${color1}"/></td><td class="matrix-cell" style="text-align:center">${statusmc}</td></tr>"
     rm consoleText
 done
 
@@ -173,7 +193,7 @@ do
     cmake=$(get_cmake)
     ns3=$(get_ns3)
     py=$(get_python)
-    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td></tr>"
+    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class=\"matrix-cell\" style=\"text-align:center\"></td><td class=\"matrix-cell\" style=\"text-align:center\"></td></tr>"
     rm consoleText
 done
 
