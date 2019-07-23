@@ -5,7 +5,7 @@
 #   apt-get libns3-dev ns3
 #
 #
-dist: xenial
+dist: bionic
 language: cpp
 compiler:
    - gcc
