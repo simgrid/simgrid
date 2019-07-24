@@ -131,29 +131,41 @@ void mpi_type_create_hvector_(int* count, int* blocklen, MPI_Aint* stride, int* 
   }
 }
 
-void mpi_type_hindexed_ (int* count, int* blocklens, MPI_Aint* indices, int* old_type, int*  newtype, int* ierr) {
+void mpi_type_hindexed_ (int* count, int* blocklens, int* indices, int* old_type, int*  newtype, int* ierr) {
   MPI_Datatype tmp;
-  *ierr = MPI_Type_hindexed(*count, blocklens, indices, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
+  MPI_Aint* indices_aint=new MPI_Aint[*count];
+  for(int i=0; i<*count; i++)
+    indices_aint[i]=indices[i];
+  *ierr = MPI_Type_hindexed(*count, blocklens, indices_aint, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newtype = tmp->add_f();
   }
+  delete[] indices_aint;
 }
 
-void mpi_type_create_hindexed_(int* count, int* blocklens, MPI_Aint* indices, int* old_type, int*  newtype, int* ierr){
+void mpi_type_create_hindexed_(int* count, int* blocklens, int* indices, int* old_type, int*  newtype, int* ierr){
   MPI_Datatype tmp;
-  *ierr = MPI_Type_create_hindexed(*count, blocklens, indices, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
+  MPI_Aint* indices_aint=new MPI_Aint[*count];
+  for(int i=0; i<*count; i++)
+    indices_aint[i]=indices[i];
+  *ierr = MPI_Type_create_hindexed(*count, blocklens, indices_aint, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newtype = tmp->add_f();
   }
+  delete[] indices_aint;
 }
 
-void mpi_type_create_hindexed_block_ (int* count, int* blocklength, MPI_Aint* indices, int* old_type, int*  newtype,
+void mpi_type_create_hindexed_block_ (int* count, int* blocklength, int* indices, int* old_type, int*  newtype,
                                       int* ierr) {
   MPI_Datatype tmp;
-  *ierr = MPI_Type_create_hindexed_block(*count, *blocklength, indices, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
+  MPI_Aint* indices_aint=new MPI_Aint[*count];
+  for(int i=0; i<*count; i++)
+    indices_aint[i]=indices[i];
+  *ierr = MPI_Type_create_hindexed_block(*count, *blocklength, indices_aint, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newtype = tmp->add_f();
   }
+  delete[] indices_aint;
 }
 
 void mpi_type_indexed_ (int* count, int* blocklens, int* indices, int* old_type, int*  newtype, int* ierr) {
@@ -181,32 +193,38 @@ void mpi_type_create_indexed_block_ (int* count, int* blocklength, int* indices,
   }
 }
 
-void mpi_type_struct_ (int* count, int* blocklens, MPI_Aint* indices, int* old_types, int*  newtype, int* ierr) {
+void mpi_type_struct_ (int* count, int* blocklens, int* indices, int* old_types, int*  newtype, int* ierr) {
   MPI_Datatype tmp;
   int i=0;
   MPI_Datatype* types = static_cast<MPI_Datatype*>(xbt_malloc(*count*sizeof(MPI_Datatype)));
+  MPI_Aint* indices_aint=new MPI_Aint[*count];
   for(i=0; i< *count; i++){
+    indices_aint[i]=indices[i];
     types[i] = simgrid::smpi::Datatype::f2c(old_types[i]);
   }
-  *ierr = MPI_Type_struct(*count, blocklens, indices, types, &tmp);
+  *ierr = MPI_Type_struct(*count, blocklens, indices_aint, types, &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newtype = tmp->add_f();
   }
   xbt_free(types);
+  delete[] indices_aint;
 }
 
-void mpi_type_create_struct_(int* count, int* blocklens, MPI_Aint* indices, int*  old_types, int*  newtype, int* ierr){
+void mpi_type_create_struct_(int* count, int* blocklens, int* indices, int*  old_types, int*  newtype, int* ierr){
   MPI_Datatype tmp;
   int i=0;
   MPI_Datatype* types = static_cast<MPI_Datatype*>(xbt_malloc(*count*sizeof(MPI_Datatype)));
+  MPI_Aint* indices_aint=new MPI_Aint[*count];
   for(i=0; i< *count; i++){
+    indices_aint[i]=indices[i];
     types[i] = simgrid::smpi::Datatype::f2c(old_types[i]);
   }
-  *ierr = MPI_Type_create_struct(*count, blocklens, indices, types, &tmp);
+  *ierr = MPI_Type_create_struct(*count, blocklens, indices_aint, types, &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newtype = tmp->add_f();
   }
   xbt_free(types);
+  delete[] indices_aint;
 }
 
 void mpi_pack_ (void* inbuf, int* incount, int* type, void* outbuf, int* outcount, int* position, int* comm, int* ierr) {
