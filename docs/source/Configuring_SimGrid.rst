@@ -661,10 +661,20 @@ generates an identifier for this path. Here is an example of output:
    [  0.000000] (0:@) Executed transitions = 46
 
 The interesting line is ``Path = 1/3;1/4``, which means that you should use
-`--cfg=model-check/replay:1/3;1/4`` to replay your application on the buggy
-execution path. The other options should be the same (but the model-checker
-should be disabled). Note that format and meaning of the path may change between
-different releases.
+``--cfg=model-check/replay:1/3;1/4`` to replay your application on the buggy
+execution path. All options (but the model-checker related ones) must
+remain the same. In particular, if you ran your application with
+``smpirun -wrapper simgrid-mc``, then do it again. Remove all
+MC-related options, keep the other ones and add
+``--cfg=model-check/replay``.
+
+Currently, if the path is of the form ``X;Y;Z``, each number denotes
+the actor's pid that is selected at each indecision point. If it's of
+the form ``X/a;Y/b``, the X and Y are the selected pids while the a
+and b are the return values of their simcalls. In the previouse
+example, ``1/3;1/4``, you can see from the full output that the actor
+1 is doing MC_RANDOM simcalls, so the 3 and 4 simply denote the values
+that these simcall return.
 
 Configuring the User Code Virtualization
 ----------------------------------------
