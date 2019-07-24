@@ -179,7 +179,7 @@ do
     sed -i -e "s/\r//g" ./consoleText
     if [ $id == 0 ]; then
       node="travis-linux (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
-      os="Ubuntu  <a href=\"https://docs.travis-ci.com/user/reference/xenial/\">16.04 xenial</a>"
+      os="Ubuntu  <a href=\"https://docs.travis-ci.com/user/reference/bionic/\">18.04 bionic</a>"
     elif [ $id == 1 ]; then
       node="travis-mac (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
       os="Mac OS X <a href=\"https://docs.travis-ci.com/user/reference/osx/\">Mojave (10.14)</a> "
