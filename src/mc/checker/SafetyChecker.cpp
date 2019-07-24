@@ -89,8 +89,8 @@ void SafetyChecker::run()
     simgrid::mc::State* state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth=%zu (state=%p, num %d)(%zu interleave)", stack_.size(), state, state->num,
-              state->interleaveSize());
+    XBT_VERB("Exploration depth=%zu (state=%p, num %d)(%zu interleave)", stack_.size(), state, state->num,
+             state->interleaveSize());
 
     mc_model_checker->visited_states++;
 
