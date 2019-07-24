@@ -5,6 +5,7 @@ SimGrid (3.23.3) NOT RELEASED YET (v3.24 expected September 23. 7:50 UTC)
 S4U:
  - Barrier::wait returns SG_BARRIER_SERIAL_THREAD for (only) one actor
    for consistency with pthread_barrier_wait()
+ - Host::get_englobing_zone() returns the englobing netzone
 
 MSG:
  - convert a new set of functions to the S4U C interface and move the old MSG

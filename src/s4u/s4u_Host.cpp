@@ -171,6 +171,12 @@ void Host::route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links,
   }
 }
 
+/** @brief Returns the networking zone englobing that host */
+NetZone* Host::get_englobing_zone()
+{
+  return pimpl_netpoint->get_englobing_zone()->get_iface();
+}
+
 void Host::send_to(Host* dest, double byte_amount)
 {
   std::vector<Host*> m_host_list   = {this, dest};

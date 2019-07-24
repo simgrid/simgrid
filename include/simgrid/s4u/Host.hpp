@@ -127,6 +127,7 @@ public:
   void route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency);
   void send_to(Host* dest, double byte_amount);
 
+  NetZone* get_englobing_zone();
   /** Block the calling actor on an execution located on the called host
    *
    * It is not a problem if the actor is not located on the called host.
