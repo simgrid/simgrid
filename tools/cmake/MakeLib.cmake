@@ -106,7 +106,7 @@ if(enable_smpi)
 
   add_executable(smpireplaymain src/smpi/smpi_replay_main.cpp)
   target_compile_options(smpireplaymain PRIVATE -fpic)
-  target_link_libraries(smpireplaymain simgrid -shared)
+  target_link_libraries(smpireplaymain simgrid -fpic -shared)
   set_target_properties(smpireplaymain
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/simgrid)
   install(TARGETS smpireplaymain # install that binary without breaking the rpath on Mac
