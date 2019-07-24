@@ -167,6 +167,9 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
   sg_platf_new_Zone_begin(&zone);
   simgrid::kernel::routing::ClusterZone* current_as = static_cast<ClusterZone*>(routing_get_current());
   current_as->parse_specific_arguments(cluster);
+  if (cluster->properties != nullptr)
+    for (auto const& elm : *cluster->properties)
+      current_as->get_iface()->set_property(elm.first, elm.second);
 
   if(cluster->loopback_bw > 0 || cluster->loopback_lat > 0){
     current_as->num_links_per_node_++;
