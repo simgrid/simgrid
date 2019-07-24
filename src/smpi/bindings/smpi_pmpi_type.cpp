@@ -301,10 +301,14 @@ int PMPI_Type_get_name(MPI_Datatype  datatype, char * name, int* len)
 }
 
 MPI_Datatype PMPI_Type_f2c(MPI_Fint datatype){
+  if(datatype==-1)
+    return MPI_DATATYPE_NULL;
   return static_cast<MPI_Datatype>(simgrid::smpi::F2C::f2c(datatype));
 }
 
 MPI_Fint PMPI_Type_c2f(MPI_Datatype datatype){
+  if(datatype==MPI_DATATYPE_NULL)
+    return -1;
   return datatype->c2f();
 }
 

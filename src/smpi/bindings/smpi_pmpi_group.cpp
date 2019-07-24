@@ -182,9 +182,13 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3], MPI_Group * n
 }
 
 MPI_Group PMPI_Group_f2c(MPI_Fint group){
+  if(group==-1)
+    return MPI_GROUP_NULL;
   return simgrid::smpi::Group::f2c(group);
 }
 
 MPI_Fint PMPI_Group_c2f(MPI_Group group){
+  if(group==MPI_GROUP_NULL)
+    return -1;
   return group->c2f();
 }

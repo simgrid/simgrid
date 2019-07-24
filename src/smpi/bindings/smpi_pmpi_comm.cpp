@@ -217,10 +217,14 @@ int PMPI_Comm_create_group(MPI_Comm comm, MPI_Group group, int, MPI_Comm* comm_o
 }
 
 MPI_Comm PMPI_Comm_f2c(MPI_Fint comm){
+  if(comm==-1)
+    return MPI_COMM_NULL;
   return static_cast<MPI_Comm>(simgrid::smpi::Comm::f2c(comm));
 }
 
 MPI_Fint PMPI_Comm_c2f(MPI_Comm comm){
+  if(comm==MPI_COMM_NULL)
+    return -1;
   return comm->c2f();
 }
 

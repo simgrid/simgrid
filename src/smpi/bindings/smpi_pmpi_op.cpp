@@ -45,9 +45,13 @@ int PMPI_Op_commutative(MPI_Op op, int* commute){
 }
 
 MPI_Op PMPI_Op_f2c(MPI_Fint op){
+  if(op==-1)
+    return MPI_OP_NULL;
   return static_cast<MPI_Op>(simgrid::smpi::Op::f2c(op));
 }
 
 MPI_Fint PMPI_Op_c2f(MPI_Op op){
+  if(op==MPI_OP_NULL)
+    return -1;
   return op->c2f();
 }
