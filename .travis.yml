@@ -14,8 +14,6 @@ jdk:
    - openjdk11
 addons:
   apt:
-    update: true
-    allow_unauthenticated: yes
     packages:
     - cmake
     - valgrind
@@ -25,7 +23,7 @@ addons:
     - libdw-dev
     - libevent-dev
     - libunwind8-dev
-#    - pybind11-dev # Not available in Xenial
+    - pybind11-dev
   homebrew:
     packages:
     - python
@@ -37,15 +35,6 @@ addons:
     build_command_prepend: "cmake -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=OFF -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=OFF ."
     build_command:   "make VERBOSE=1"
     branch_pattern: coverity
-
-# Don't install lua from Debian as we need 5.3 and don't have a backport.
-#   Installing lua from the source does not make any dynamic library.
-#   - curl http://www.lua.org/ftp/lua-5.3.1.tar.gz | tar xz
-#   - cd lua-5.3.1 
-#   -   if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then make linux ; else make macosx ; fi
-#   -   make INSTALL_TOP=$TRAVIS_BUILD_DIR/LuaInstall install
-#   - cd ..
-#   - ls -lR $TRAVIS_BUILD_DIR/LuaInstall
 
 script:
    - if [[ "$TRAVIS_OS_NAME" == "windows"   ]]; then
@@ -61,8 +50,16 @@ script:
        mingw32-make.exe VERBOSE=1 java-all; 
        ctest --output-on-failure -R java;
      fi
-   - if [[ "$TRAVIS_OS_NAME" == "osx"   ]]; then cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON . && make -j2 VERBOSE=1 all tests && ctest -j2 --output-on-failure; fi
-   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then (cmake -Denable_model-checking=ON  -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON . || (echo XXX CMakeOutput.log; cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeOutput.log; echo XXX CMakeError.log;cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeError.log; exit 1)) && make -j2 VERBOSE=1 all tests && ctest -j2 --output-on-failure ; fi
+   - if [[ "$TRAVIS_OS_NAME" == "osx"   ]]; then
+       cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON .;
+       make -j2 VERBOSE=1 all tests;
+       ctest -j2 --output-on-failure;
+     fi
+   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+       cmake -Denable_model-checking=ON  -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON . || (echo XXX CMakeOutput.log; cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeOutput.log; echo XXX CMakeError.log;cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeError.log; exit 1);
+       make -j2 VERBOSE=1 all tests;
+       ctest -j2 --output-on-failure;
+     fi
 notifications:
   recipients:
     - martin.quinson@ens-rennes.fr
