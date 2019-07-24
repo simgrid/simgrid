@@ -187,7 +187,7 @@ void Global::empty_trash()
  */
 void Global::run_all_actors()
 {
-  SIMIX_context_runall();
+  simix_global->context_factory->run_all();
 
   actors_to_run.swap(actors_that_ran);
   actors_to_run.clear();
@@ -284,7 +284,7 @@ void SIMIX_clean()
 
   /* Kill all processes (but maestro) */
   simix_global->maestro_process->kill_all();
-  SIMIX_context_runall();
+  simix_global->context_factory->run_all();
   simix_global->empty_trash();
 
   /* Exit the SIMIX network module */

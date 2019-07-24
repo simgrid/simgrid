@@ -77,9 +77,3 @@ AttachContext::~AttachContext() = default;
 } // namespace context
 } // namespace kernel
 } // namespace simgrid
-
-/** @brief Executes all the processes to run (in parallel if possible). */
-void SIMIX_context_runall()
-{
-  simix_global->context_factory->run_all();
-}
