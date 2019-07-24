@@ -2,8 +2,7 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-#include "simgrid/s4u/Mutex.hpp"
-#include "simgrid/s4u/ConditionVariable.hpp"
+
 #include "smpi_request.hpp"
 
 #include "mc/mc.h"
@@ -17,8 +16,6 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
-#include "xbt/config.hpp"
-
 
 #include <algorithm>
 
