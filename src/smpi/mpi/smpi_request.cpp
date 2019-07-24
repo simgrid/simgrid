@@ -547,7 +547,7 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
   Status::empty(status);
   *flag = 1;
   if (((*request)->flags_ & MPI_REQ_PREPARED) == 0) {
-    if ((*request)->action_ != nullptr){
+    if ((*request)->action_ != nullptr && (*request)->cancelled_ != 1){
       try{
         *flag = simcall_comm_test((*request)->action_);
       } catch (const Exception&) {
