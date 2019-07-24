@@ -40,11 +40,11 @@ Comm::Comm(MPI_Group group, MPI_Topology topo, int smp, int in_id) : group_(grou
   is_blocked_      = 0;
   info_            = MPI_INFO_NULL;
   errhandler_      = MPI_ERRORS_ARE_FATAL;
-  static int global_id_=0;
   //First creation of comm is done before SIMIX_run, so only do comms for others
   if(in_id==MPI_UNDEFINED && smp==0 && this->rank()!=MPI_UNDEFINED ){
     int id;
     if(this->rank()==0){
+      static int global_id_ = 0;
       id=global_id_;
       global_id_++;
     }
