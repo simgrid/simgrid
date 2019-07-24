@@ -7,15 +7,19 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   endif()
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
+  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../../include/")
 
-#  add_executable(allocmemf EXCLUDE_FROM_ALL allocmemf.f)
-#  add_executable(c2f2cf    EXCLUDE_FROM_ALL c2f2cf.f c2f2c.c)
-#  add_executable(ctypesinf EXCLUDE_FROM_ALL ctypesinf.f ctypesfromc.c)
-# add_dependencies(tests allocmemf c2f2cf ctypesinf)
-
-#  target_link_libraries(allocmemf simgrid mtest_f77)
-#  target_link_libraries(c2f2cf simgrid mtest_f77)
-#  target_link_libraries(ctypesinf simgrid mtest_f77)
+  #  add_executable(allocmemf EXCLUDE_FROM_ALL allocmemf.f)
+  add_executable(c2fmult    EXCLUDE_FROM_ALL c2fmult.c)
+  add_executable(c2f2cf    EXCLUDE_FROM_ALL c2f2cf.f c2f2c.c)
+  #add_executable(ctypesinf EXCLUDE_FROM_ALL ctypesinf.f ctypesfromc.c)
+  add_dependencies(tests c2f2cf c2fmult
+                   #ctypesinf allocmemf
+  )
+  # target_link_libraries(allocmemf simgrid mtest_f77)
+  target_link_libraries(c2fmult simgrid mtest_c)
+  target_link_libraries(c2f2cf simgrid mtest_f77)
+  #target_link_libraries(ctypesinf simgrid mtest_f77)
 endif()
 
 set(examples_src

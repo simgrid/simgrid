@@ -41,7 +41,7 @@ C Test passing a Fortran MPI object to C
       errs = errs + c2frequest( req )
       call mpi_wait( req, MPI_STATUS_IGNORE, ierr )
 
-      errs = errs + c2ferrhandler( MPI_ERRORS_RETURN )
+      !errs = errs + c2ferrhandler( MPI_ERRORS_RETURN )
 
       errs = errs + c2fop( MPI_SUM )
 
