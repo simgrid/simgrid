@@ -209,7 +209,7 @@ java=$(get_java)
 cmake=$(get_cmake)
 ns3=$(get_ns3)
 py=$(get_python)
-echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class=\"matrix-cell\" style=\"text-align:center\"><img src=https://ci.inria.fr/simgrid/images/24x24/grey.png></td><td class=\"matrix-cell\" style=\"text-align:center\"><img src=https://ci.inria.fr/simgrid/images/24x24/grey.png></td><</tr>"
+echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class=\"matrix-cell\" style=\"text-align:center\"><img src=https://ci.inria.fr/simgrid/images/24x24/grey.png></td><td class=\"matrix-cell\" style=\"text-align:center\"><img src=https://ci.inria.fr/simgrid/images/24x24/grey.png></td></tr>"
 rm consoleText
 
 echo "</table>"
