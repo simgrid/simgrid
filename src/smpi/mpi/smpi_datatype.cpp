@@ -238,8 +238,12 @@ int Datatype::extent(MPI_Aint * lb, MPI_Aint * extent){
 }
 
 void Datatype::get_name(char* name, int* length){
-  *length = strlen(name_);
-  strncpy(name, name_, *length+1);
+  if(name_!=nullptr){
+    *length = strlen(name_);
+    strncpy(name, name_, *length+1);
+  }else{
+    *length = 0;
+  }
 }
 
 void Datatype::set_name(const char* name){

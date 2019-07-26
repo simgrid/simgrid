@@ -100,9 +100,8 @@ void mpi_comm_free_keyval_ (int* keyval, int* ierr) {
 
 void mpi_comm_get_name_ (int* comm, char* name, int* len, int* ierr){
  *ierr = MPI_Comm_get_name(simgrid::smpi::Comm::f2c(*comm), name, len);
-  if(*len>0)
-    for(int i = *len; i<MPI_MAX_OBJECT_NAME+1; i++)
-      name[i]=' ';
+  for(int i = *len; i<MPI_MAX_OBJECT_NAME+1; i++)
+    name[i]=' ';
 }
 
 void mpi_comm_compare_ (int* comm1, int* comm2, int *result, int* ierr){

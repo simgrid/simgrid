@@ -52,8 +52,8 @@ void mpi_type_set_name_ (int*  datatype, char * name, int* ierr, int size){
 
 void mpi_type_get_name_ (int*  datatype, char * name, int* len, int* ierr){
  *ierr = MPI_Type_get_name(simgrid::smpi::Datatype::f2c(*datatype),name,len);
-  if(*len>0)
-    name[*len]=' ';
+  for(int i = *len; i<MPI_MAX_OBJECT_NAME+1; i++)
+    name[i]=' ';
 }
 
 void mpi_type_get_attr_ (int* type, int* type_keyval, int *attribute_val, int* flag, int* ierr){

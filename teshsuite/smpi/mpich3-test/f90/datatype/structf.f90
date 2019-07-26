@@ -14,8 +14,9 @@
 ! for MPICH, and to fit in the MPICH test harness - WDG
 !
       program bustit
-      implicit none
       use mpi
+      implicit none
+
       
       integer comm
       integer newtype
