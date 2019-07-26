@@ -361,14 +361,14 @@ void mpi_pack_external_(char* datarep, void* inbuf, int* incount, int* datatype,
 void mpi_unpack_external_(char* datarep, void* inbuf, MPI_Aint* insize, MPI_Aint* position, void* outbuf, int* outcount,
                           int* datatype, int* ierr);
 void mpi_type_hindexed_(int* count, int* blocklens, int* indices, int* old_type, int* newtype, int* ierr);
-void mpi_type_create_hindexed_(int* count, int* blocklens, int* indices, int* old_type, int* newtype, int* ierr);
-void mpi_type_create_hindexed_block_(int* count, int* blocklength, int* indices, int* old_type, int* newtype,
+void mpi_type_create_hindexed_(int* count, int* blocklens, MPI_Aint* indices, int* old_type, int* newtype, int* ierr);
+void mpi_type_create_hindexed_block_(int* count, int* blocklength, MPI_Aint* indices, int* old_type, int* newtype,
                                      int* ierr);
 void mpi_type_indexed_(int* count, int* blocklens, int* indices, int* old_type, int* newtype, int* ierr);
 void mpi_type_create_indexed_(int* count, int* blocklens, int* indices, int* old_type, int* newtype, int* ierr);
 void mpi_type_create_indexed_block_(int* count, int* blocklength, int* indices, int* old_type, int* newtype, int* ierr);
 void mpi_type_struct_(int* count, int* blocklens, int* indices, int* old_types, int* newtype, int* ierr);
-void mpi_type_create_struct_(int* count, int* blocklens, int* indices, int* old_types, int* newtype, int* ierr);
+void mpi_type_create_struct_(int* count, int* blocklens, MPI_Aint* indices, int* old_types, int* newtype, int* ierr);
 void mpi_ssend_(void* buf, int* count, int* datatype, int* dest, int* tag, int* comm, int* ierr);
 void mpi_ssend_init_(void* buf, int* count, int* datatype, int* dest, int* tag, int* comm, int* request, int* ierr);
 void mpi_intercomm_create_(int* local_comm, int* local_leader, int* peer_comm, int* remote_leader, int* tag,

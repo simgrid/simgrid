@@ -10,7 +10,7 @@ gaddressf90 1
 #allctypesf90 1
 #hindex1f90 1
 #hindexed_blockf90 1 mpiversion=1.0
-#structf 2
+structf 2
 indtype 2
 #createf90 1
 #sizeof 1
