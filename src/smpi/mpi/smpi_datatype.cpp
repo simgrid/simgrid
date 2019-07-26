@@ -129,8 +129,6 @@ Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), size_(datatyp
 {
   flags_ &= ~DT_FLAG_PREDEFINED;
   *ret = MPI_SUCCESS;
-  if(datatype->name_)
-    name_ = xbt_strdup(datatype->name_);
     
   if (not datatype->attributes()->empty()) {
     int flag=0;
