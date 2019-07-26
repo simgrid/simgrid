@@ -67,7 +67,6 @@ public:
   static void destroy(MPI_Comm comm);
   void init_smp();
 
-  int add_f() override;
   static void free_f(int id);
   static Comm* f2c(int);
 

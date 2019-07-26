@@ -28,7 +28,7 @@ namespace smpi{
 std::unordered_map<int, smpi_key_elem> Comm::keyvals_;
 int Comm::keyval_id_=0;
 
-Comm::Comm(MPI_Group group, MPI_Topology topo, int smp, int id) : group_(group), topo_(topo),is_smp_comm_(smp), id_(id)
+Comm::Comm(MPI_Group group, MPI_Topology topo, int smp, int in_id) : group_(group), topo_(topo),is_smp_comm_(smp), id_(in_id)
 {
   refcount_        = 1;
   topoType_        = MPI_INVALID_TOPO;
@@ -41,7 +41,7 @@ Comm::Comm(MPI_Group group, MPI_Topology topo, int smp, int id) : group_(group),
   info_            = MPI_INFO_NULL;
   static int global_id_=0;
   //First creation of comm is done before SIMIX_run, so only do comms for others
-  if(id==MPI_UNDEFINED && smp==0 && this->rank()!=MPI_UNDEFINED ){
+  if(in_id==MPI_UNDEFINED && smp==0 && this->rank()!=MPI_UNDEFINED ){
     int id;
     if(this->rank()==0){
       id=global_id_;
@@ -505,7 +505,7 @@ MPI_Comm Comm::f2c(int id) {
   } else if(F2C::f2c_lookup() != nullptr && id >= 0) {
     char key[KEY_SIZE];
     const auto& lookup = F2C::f2c_lookup();
-    auto comm          = lookup->find(get_key_id(key, id));
+    auto comm          = lookup->find(get_key(key, id));
     return comm == lookup->end() ? MPI_COMM_NULL : static_cast<MPI_Comm>(comm->second);
   } else {
     return MPI_COMM_NULL;
@@ -514,17 +514,7 @@ MPI_Comm Comm::f2c(int id) {
 
 void Comm::free_f(int id) {
   char key[KEY_SIZE];
-  F2C::f2c_lookup()->erase(id == 0 ? get_key(key, id) : get_key_id(key, id));
-}
-
-int Comm::add_f() {
-  if(F2C::f2c_lookup()==nullptr){
-    F2C::set_f2c_lookup(new std::unordered_map<std::string, F2C*>);
-  }
-  char key[KEY_SIZE];
-  (*(F2C::f2c_lookup()))[this == MPI_COMM_WORLD ? get_key(key, F2C::f2c_id()) : get_key_id(key, F2C::f2c_id())] = this;
-  f2c_id_increment();
-  return F2C::f2c_id()-1;
+  F2C::f2c_lookup()->erase(get_key(key, id));
 }
 
 void Comm::add_rma_win(MPI_Win win){

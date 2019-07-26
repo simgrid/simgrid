@@ -115,7 +115,6 @@ public:
   static int grequest_complete( MPI_Request request);
   static int get_status(MPI_Request req, int* flag, MPI_Status * status);
 
-  int add_f() override;
   static void free_f(int id);
   static Request* f2c(int);
 };

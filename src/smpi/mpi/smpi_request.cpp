@@ -1089,28 +1089,16 @@ MPI_Request Request::f2c(int id) {
   char key[KEY_SIZE];
   if(id==MPI_FORTRAN_REQUEST_NULL)
     return static_cast<MPI_Request>(MPI_REQUEST_NULL);
-  return static_cast<MPI_Request>(F2C::f2c_lookup()->at(get_key_id(key, id)));
-}
-
-int Request::add_f()
-{
-  if (F2C::f2c_lookup() == nullptr) {
-    F2C::set_f2c_lookup(new std::unordered_map<std::string, F2C*>);
-  }
-  char key[KEY_SIZE];
-  (*(F2C::f2c_lookup()))[get_key_id(key, F2C::f2c_id())] = this;
-  F2C::f2c_id_increment();
-  return F2C::f2c_id()-1;
+  return static_cast<MPI_Request>(F2C::f2c_lookup()->at(get_key(key,id)));
 }
 
 void Request::free_f(int id)
 {
   if (id != MPI_FORTRAN_REQUEST_NULL) {
     char key[KEY_SIZE];
-    F2C::f2c_lookup()->erase(get_key_id(key, id));
+    F2C::f2c_lookup()->erase(get_key(key, id));
   }
 }
-
 
 int Request::get_status(MPI_Request req, int* flag, MPI_Status * status){
   *flag=0;
