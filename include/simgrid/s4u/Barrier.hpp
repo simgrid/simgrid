@@ -6,15 +6,14 @@
 #ifndef SIMGRID_S4U_BARRIER_HPP
 #define SIMGRID_S4U_BARRIER_HPP
 
+#include <simgrid/barrier.h>
+#include <simgrid/chrono.hpp>
 #include <simgrid/forward.h>
 #include <simgrid/s4u/ConditionVariable.hpp>
-#include <simgrid/chrono.hpp>
 #include <simgrid/s4u/Mutex.hpp>
 
 #include <atomic>
 #include <future>
-
-constexpr int SG_BARRIER_SERIAL_THREAD = -1;
 
 namespace simgrid {
 namespace s4u {

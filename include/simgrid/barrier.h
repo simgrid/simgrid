@@ -10,6 +10,12 @@
 
 #include <simgrid/forward.h>
 
+#ifdef __cplusplus
+constexpr int SG_BARRIER_SERIAL_THREAD = -1;
+#else
+#define SG_BARRIER_SERIAL_THREAD -1
+#endif
+
 /* C interface */
 SG_BEGIN_DECL()
 
