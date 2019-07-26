@@ -197,4 +197,19 @@ do
     rm consoleText
 done
 
+#Appveyor - get ID of the last job with the API
+BUILD_ID=$(curl -s "https://ci.appveyor.com/api/projects/mquinson/simgrid" | grep -o '\[{"jobId":"[a-zA-Z0-9]*",' | sed "s/\[{\"jobId\":\"//" | sed "s/\",//")
+wget --quiet https://ci.appveyor.com/api/buildjobs/$BUILD_ID/log -O ./consoleText >/dev/null 2>&1
+sed -i -e "s/\r//g" ./consoleText
+node="<a href="https://ci.appveyor.com/project/mquinson/simgrid">appveyor</a>"
+os="Windows Server 2012 - VS2015 + mingw64 5.3.0"
+boost=$(get_boost)
+compiler=$(get_compiler)
+java=$(get_java)
+cmake=$(get_cmake)
+ns3=$(get_ns3)
+py=$(get_python)
+echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class=\"matrix-cell\" style=\"text-align:center\"><img src=https://ci.inria.fr/simgrid/images/24x24/grey.png></td><td class=\"matrix-cell\" style=\"text-align:center\"><img src=https://ci.inria.fr/simgrid/images/24x24/grey.png></td><</tr>"
+rm consoleText
+
 echo "</table>"
