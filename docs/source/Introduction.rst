@@ -25,11 +25,11 @@ Any SimGrid study entails the following components:
 
  - The **Simulated Platform**. This is a description of a given
    distributed system (machines, links, disks, clusters, etc). Most of
-   the platform files are written in XML althrough a Lua interface is
+   the platform files are written in XML although a Lua interface is
    under development.  SimGrid makes it easy to augment the Simulated
    Platform with a Dynamic Scenario where for example the links are
    slowed down (because of external usage) or the machines fail. You
-   have even support to specify the applicative workload that you want
+   even have support to specify the applicative workload that you want
    to feed to your application
    :ref:`(more info) <platform>`.
 
@@ -37,7 +37,7 @@ Any SimGrid study entails the following components:
    terminology, the application is an inert set of source files and
    binaries. To make it run, you have to describe how your application
    should be deployed on the simulated platform. You need to specify
-   which process is mapped on which machine, along with their parameters
+   which process is mapped onto which machine, along with their parameters
    :ref:`(more info) <scenario>`.
 
  - The **Platform Models**. They describe how the simulated platform
@@ -106,7 +106,7 @@ testing mode, where every possible outcome of your application is
 explored. In some sense, this mode tests your application for all
 possible platforms that you could imagine (and more).
 
-You just provide the application and its deployment (amount of
+You just provide the application and its deployment (number of
 processes and parameters), and the model-checker will literally
 explore all possible outcomes by testing all possible message
 interleavings: if at some point a given process can either receive the
@@ -115,24 +115,24 @@ characteristics, the model-checker will explore the scenario where A
 arrives first, and then rewind to the same point to explore the
 scenario where B arrives first.
 
-This is a very powerful mode, where you can evaluate the correction of
+This is a very powerful mode, where you can evaluate the correctness of
 your application. It can verify either **safety properties** (asserts)
-or **liveless properties** stating for example that if a given event
+or **liveness properties** stating for example that if a given event
 occurs, then another given event will occur in a finite amount of
 steps. This mode is not only usable with the abstract algorithms
 developed on top of the SimGrid APIs, but also with real MPI
 applications (to some extent).
 
-The main limit of Model Checking lays in the huge amount of scenarios
+The main limit of Model Checking lies in the huge amount of scenarios
 to explore. SimGrid tries to explore only non-redundant scenarios
 thanks to classical reduction techniques (such as DPOR and stateful
 exploration) but the exploration may well never finish if you don't
 carefully adapt your application to this mode.
 
 A classical trap is that the Model Checker can only verify whether
-your application fits the provided properties, which is useless if you
+your application fits the properties provided, which is useless if you
 have a bug in your property. Remember also that one way for your
-application to never violate a given assert is to not start at all
+application to never violate a given assert is to not start at all,
 because of a stupid bug.
 
 Another limit of this mode is that it does not use the performance
@@ -147,28 +147,28 @@ checker.
 
 The model checker may well miss existing issues, as it computes the
 possible outcomes *from a given initial situation*. There is no way to
-prove the correction of your application in all generality with this
+prove the correctness of your application in full generality with this
 tool.
 
 **Benchmark Recording Mode**. During debug sessions, continuous
 integration testing, and other similar use cases, you are often only
-interested in the control flow. If your application apply filters to
-huge images split in small blocks, the filtered image is probably not
+interested in the control flow. If your application applies filters to
+huge images split into small blocks, the filtered image is probably not
 what you are interested in. You are probably looking for a way to run
-each computation kernel only once, save on disk the time it takes and
-some other metadata. This code block can then be skipped in simulation
+each computational kernel only once, and record the time it takes to cache it.
+This code block can then be skipped in simulation
 and replaced by a synthetic block using the cached information. The
 simulated platform will take this block into account without requesting
-the real hosting machine to benchmark it.
+the actual hosting machine to benchmark it.
 
 SimGrid Limits
 --------------
 
-This framework is by no means the perfect holly grail able to solve
-every problem on earth.
+This framework is by no means the holly grail, able to solve
+every problem on Earth.
 
 **SimGrid scope is limited to distributed systems.** Real-time
-multi-threaded systems are out of scope. You could probably tweak
+multi-threaded systems are out of this scope. You could probably tweak
 SimGrid for such studies (or the framework could possibly be extended
 in this direction), but another framework specifically targeting such a
 use case would probably be more suited.
@@ -177,15 +177,14 @@ use case would probably be more suited.
 The framework could certainly be improved in this direction, but this
 still has to be done.
 
-**There is no perfect model, only models adapted to your study.**
-The SimGrid models target fast and large studies yet requesting
-realistic results. In particular, our models abstract away parameters
-and phenomena that are often irrelevant to the realism in our
-context.
+**There is no perfect model, only models adapted to your study.** The SimGrid
+models target fast and large studies, and yet they target realistic results. In
+particular, our models abstract away parameters and phenomena that are often
+irrelevant to reality in our context.
 
-SimGrid is simply not intended to any study that would mandate the
-abstracted phenomenon. Here are some **studies that you should not do
-with SimGrid**:
+SimGrid is obviously not intended for a study of any phenomenon that our
+abstraction removes. Here are some **studies that you should not do with
+SimGrid**:
 
  - Studying the effect of L3 vs. L2 cache effects on your application
  - Comparing kernel schedulers and policies
@@ -226,7 +225,7 @@ we determined the speedup achieved by the Tibidabo ARM-based
 cluster before its construction
 (`paper <http://hal.inria.fr/hal-00919507>`_). In this case,
 some differences between the prediction and the real timings were due to
-misconfiguration or other problems with the real platform. To some extent,
+misconfigurations with the real platform. To some extent,
 SimGrid could even be used to debug the real platform :)
 
 SimGrid is also used to debug, improve, and tune several large
@@ -237,7 +236,7 @@ the CEA), `StarPU <http://starpu.gforge.inria.fr/>`_ (a
 Unified Runtime System for Heterogeneous Multicore Architectures
 developped by Inria Bordeaux) and
 `TomP2P <https://tomp2p.net/dev/simgrid/>`_ (a high performance
-key-value pair storage library developed at University of Zurich).
+key-value pair storage library developed at the University of Zurich).
 Some of these applications enjoy large user communities themselves.
 
 ..  LocalWords:  SimGrid

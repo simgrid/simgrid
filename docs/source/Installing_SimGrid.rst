@@ -43,11 +43,11 @@ Nightly built Java Package
 
 For non-Windows systems (Linux, macOS, or FreeBSD), head to `Jenkins <https://ci.inria.fr/simgrid/job/SimGrid>`_.
 In the build history, pick the last green (or at least yellow) build that is not blinking (i.e., not currently under
-build). In the list, pick a system that is close to yours, and click on the ball in the Debug row. The build artefact
+build). In the list, pick a system that is close to yours, and click on the ball in the Debug row. The build artifact
 will appear at the top of the resulting page.
 
 For Windows, head to `AppVeyor <https://ci.appveyor.com/project/simgrid/simgrid>`_.
-Click on the artefact link on the right, and grab your file. If the latest build failed, there will be no artefact. Then
+Click on the artifact link on the right, and grab your file. If the latest build failed, there will be no artifact. Then
 you will need to first click on "History" at the top and look for the last successful build.
 
 Binary Java Troubleshooting
@@ -76,11 +76,11 @@ C++ compiler (either g++, clang, or icc).
   us. It seems that g++ 5.0 or higher is required nowadays (because of
   boost).  SimGrid compiles well with `clang` or `icc` too.
 Python 3.
-  SimGrid should build without Python, that is only needed by our regresion test suite.
+  SimGrid should build without Python. That is only needed by our regression test suite.
 cmake (v3.5).
   ``ccmake`` provides a nicer graphical interface compared to ``cmake``.
   Press ``t`` in ``ccmake`` if you need to see absolutely all
-  configuration options (e.g., if your python installation is not standard).
+  configuration options (e.g., if your Python installation is not standard).
 boost (at least v1.48, v1.59 recommended)
   - On Debian / Ubuntu: ``apt install libboost-dev libboost-context-dev``
   - On macOS with homebrew: ``brew install boost``
@@ -132,7 +132,7 @@ dependencies.
 Build Configuration
 ^^^^^^^^^^^^^^^^^^^
 
-This section is about **compile-time options**, that are very
+This section is about **compile-time options**, which are very
 different from :ref:`run-time options <options>`. Compile-time options
 fall into two categories. **SimGrid-specific options** define which part
 of the framework to compile while **Generic options** are provided by
@@ -143,7 +143,7 @@ cmake itself.
    Our build system often gets mixed up if you change something on
    your machine after the build configuration.  For example, if
    SimGrid fails to detect your fortran compiler, it is not enough to
-   install a fortran compiler. You also need to clean every Cmake
+   install a fortran compiler. You also need to delete all Cmake
    files, such as ``CMakeCache.txt``. Since Cmake also generates some
    files in the tree, you may need to wipe out your complete tree and
    start with a fresh one when you install new dependencies.
@@ -154,14 +154,13 @@ cmake itself.
 Generic build-time options
 """"""""""""""""""""""""""
 
-These options specify for example the path to various system elements
-(Python path, compiler to use, etc). In most case, CMake automatically
-discovers the right value for these ones, but you can set them
-manually on need.  Notable such variables include ``CC`` and ``CXX``,
-defining respectively the paths to the C and C++ compilers, ``CFLAGS``
-and ``CXXFLAGS`` respectively specifying extra options to pass to the C
-and C++ compilers, or ``PYTHON_EXECUTABLE`` specifying the path to the
-python executable.
+These options specify, for example, the path to various system elements (Python
+path, compiler to use, etc). In most case, CMake automatically discovers the
+right value for these elements, but you can set them manually as needed.
+Notably, such variables include ``CC`` and ``CXX``, defining the paths to the C
+and C++ compilers; ``CFLAGS`` and ``CXXFLAGS`` specifying extra options to pass
+to the C and C++ compilers; and ``PYTHON_EXECUTABLE`` specifying the path to the
+Python executable.
 
 The best way to discover the exact name of the option that you need to
 change is to press ``t`` in the ``ccmake`` graphical interface, as all
@@ -172,8 +171,8 @@ build-time options. You can naturally use the ccmake graphical
 interface for that, or you can use environment variables, or you can
 prefer the ``-D`` flag of ``cmake``.
 
-For example, you can change the compilers with environment variables
-by issuing these commands before launching cmake:
+For example, you can change the compilers by issuing these commands to set some
+environment variables before launching cmake:
 
 .. code-block:: shell
 
@@ -181,7 +180,7 @@ by issuing these commands before launching cmake:
    export CXX=g++-5.1
 
 The same can be done by passing ``-D`` parameters to cmake, as follows.
-Note that the ending dot is mandatory (see :ref:`install_cmake_outsrc`).
+Note that the dot at the end is mandatory (see :ref:`install_cmake_outsrc`).
 
 .. code-block:: shell
 
@@ -191,24 +190,24 @@ SimGrid compilation options
 """""""""""""""""""""""""""
 
 Here is the list of all SimGrid-specific compile-time options (the
-default choice is in uppercase).
+default choice is in upper case).
 
 CMAKE_INSTALL_PREFIX (path)
   Where to install SimGrid (/opt/simgrid, /usr/local, or elsewhere).
 
 enable_compile_optimizations (ON/off)
-  Request the compiler to produce efficient code. You probably want to
-  activate this option, unless you plan modify SimGrid itself:
-  efficient code takes more time to compile, and appears mangled to debuggers.
+  Ask the compiler to produce efficient code. You probably want to
+  leave this option activated, unless you plan to modify SimGrid itself:
+  efficient code takes more time to compile, and appears mangled to some debuggers.
 
 enable_compile_warnings (on/OFF)
-  Request the compiler to issue error messages whenever the source
+  Ask the compiler to issue error messages whenever the source
   code is not perfectly clean. If you are a SimGrid developer, you
   have to activate this option to enforce the code quality. As a
   regular user, this option is of little use.
 
 enable_debug (ON/off)
-  Disabling this option discards all log messages of gravity
+  Disabling this option discards all log messages of severity
   debug or below at compile time (see @ref XBT_log). The resulting
   code is faster than if you discard these messages at
   runtime. However, it obviously becomes impossible to get any debug
@@ -223,7 +222,7 @@ enable_java (on/OFF)
   Generates the java bindings of SimGrid.
 
 enable_jedule (on/OFF)
-  Produces execution traces from SimDag simulations, that can then be visualized with the
+  Produces execution traces from SimDag simulations, which can then be visualized with the
   Jedule external tool.
 
 enable_lua (on/OFF)
@@ -234,7 +233,7 @@ enable_lib_in_jar (ON/off)
 
 enable_lto (ON/off)
   Enables the *Link Time Optimization* in the C++ compiler.
-  This feature really speeds up the produced code, but it is fragile
+  This feature really speeds up the code produced, but it is fragile
   with older gcc versions.
 
 enable_maintainer_mode (on/OFF)
@@ -253,7 +252,7 @@ enable_ns3 (on/OFF)
   Activates the ns-3 bindings. See section :ref:`model_ns3`.
 
 enable_smpi (ON/off)
-  Allows to run MPI code on top of SimGrid.
+  Allows one to run MPI code on top of SimGrid.
 
 enable_smpi_ISP_testsuite (on/OFF)
   Adds many extra tests for the model-checker module.
@@ -402,7 +401,7 @@ and if you get it working, please @ref community_contact "tell us".
 Python-specific instructions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Recompiling the python bindings from the source should be as easy as:
+Recompiling the Python bindings from the source should be as easy as:
 
 .. code-block:: shell
 

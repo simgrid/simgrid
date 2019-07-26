@@ -31,9 +31,9 @@ on Linux, Mac OSX or Windows (using the WSL).
 
 SimGrid is a Free Software distributed under the LGPL-2.1 license. You are
 welcome to use, study, share and improve it, provided that your version are as
-free as ours. SimGrid is developed since 20 years by a vivid community of users
+free as ours. SimGrid is developed since 20 years by a lively community of users
 and researchers from several groups, initially in France and in the U.S.A. It
-benefited of many funding from various research bodies. We hope that you will
+is steadily funded by several research bodies. We hope that you will
 come and join us!
 
 SimGrid is a powerful tool, and this documentation will help you taking the best
@@ -48,10 +48,6 @@ can even propose changes by clicking on the "Edit on FramaGit" button at the top
 of every page. Bugs in the code should be reported
 `on FramaGit <https://framagit.org/simgrid/simgrid/issues>`_
 
-
-.. TODO
-..
-.. The webpage should be made light, graphical and nice looking.
 
 .. toctree::
    :hidden:
