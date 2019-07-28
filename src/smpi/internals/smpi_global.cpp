@@ -79,9 +79,7 @@ std::map</* computation unit name */ std::string, papi_process_data> units2papi_
 std::unordered_map<std::string, double> location2speedup;
 
 static std::map</*process_id*/ simgrid::s4u::Actor const*, simgrid::smpi::ActorExt*> process_data;
-int process_count = 0;
 static int smpi_exit_status = 0;
-int smpi_universe_size = 0;
 extern double smpi_total_benched_time;
 xbt_os_timer_t global_timer;
 static std::vector<std::string> privatize_libs_paths;
@@ -107,11 +105,6 @@ static simgrid::config::Flag<double> smpi_init_sleep(
 
 void (*smpi_comm_copy_data_callback)(simgrid::kernel::activity::CommImpl*, void*,
                                      size_t) = &smpi_comm_copy_buffer_callback;
-
-int smpi_process_count()
-{
-  return process_count;
-}
 
 simgrid::smpi::ActorExt* smpi_process()
 {
@@ -683,8 +676,6 @@ int smpi_main(const char* executable, int argc, char* argv[])
   SMPI_app_instance_register(smpi_default_instance_name.c_str(), nullptr,
                              process_data.size()); // This call has a side effect on process_count...
   MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);
-  smpi_universe_size = process_count;
-
 
   /* Clean IO before the run */
   fflush(stdout);

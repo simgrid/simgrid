@@ -50,7 +50,7 @@ public:
   void kernel(simgrid::xbt::ReplayAction&)
   {
     static std::map<simgrid::s4u::ActorPtr, int> migration_call_counter;
-    static simgrid::s4u::Barrier smpilb_bar(smpi_process_count());
+    static simgrid::s4u::Barrier smpilb_bar(smpi_get_universe_size());
     simgrid::s4u::Host* cur_host = simgrid::s4u::this_actor::get_host();
     simgrid::s4u::Host* migrate_to_host;
 

@@ -71,7 +71,7 @@ typedef SMPI_Dist_Graph_topology* MPIR_Dist_Graph_Topology;
 
 XBT_PRIVATE simgrid::smpi::ActorExt* smpi_process();
 XBT_PRIVATE simgrid::smpi::ActorExt* smpi_process_remote(simgrid::s4u::ActorPtr actor);
-XBT_PRIVATE int smpi_process_count();
+XBT_PRIVATE int smpi_get_universe_size();
 
 XBT_PRIVATE void smpi_deployment_register_process(const std::string& instance_id, int rank,
                                                   simgrid::s4u::ActorPtr actor);
@@ -455,7 +455,6 @@ struct s_smpi_privatization_region_t {
 typedef s_smpi_privatization_region_t* smpi_privatization_region_t;
 
 extern XBT_PRIVATE int smpi_loaded_page;
-extern XBT_PRIVATE int smpi_universe_size;
 XBT_PRIVATE smpi_privatization_region_t smpi_init_global_memory_segment_process();
 
 /**

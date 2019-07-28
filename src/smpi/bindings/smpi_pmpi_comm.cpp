@@ -288,6 +288,7 @@ int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
   static int zero = 0;
   static int tag_ub = INT_MAX;
   static int last_used_code = MPI_ERR_LASTCODE;
+  static int universe_size;
 
   if (comm==MPI_COMM_NULL){
     *flag = 0;
@@ -303,7 +304,8 @@ int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
     return MPI_SUCCESS;
   case MPI_UNIVERSE_SIZE:
     *flag = 1;
-    *static_cast<int**>(attr_value) = &smpi_universe_size;
+    universe_size                   = smpi_get_universe_size();
+    *static_cast<int**>(attr_value) = &universe_size;
     return MPI_SUCCESS;
   case MPI_LASTUSEDCODE:
     *flag = 1;

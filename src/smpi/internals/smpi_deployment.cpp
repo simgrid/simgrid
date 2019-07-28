@@ -14,6 +14,8 @@ namespace simgrid {
 namespace smpi {
 namespace app {
 
+static int universe_size = 0;
+
 class Instance {
 public:
   Instance(const std::string& name, int max_no_processes, MPI_Comm comm, simgrid::s4u::Barrier* finalization_barrier)
@@ -28,6 +30,8 @@ public:
     //  FIXME : using MPI_Attr_put with MPI_UNIVERSE_SIZE is forbidden and we make it a no-op (which triggers a warning
     //  as MPI_ERR_ARG is returned). Directly calling Comm::attr_put breaks for now, as MPI_UNIVERSE_SIZE,is <0
     //  instance.comm_world->attr_put<simgrid::smpi::Comm>(MPI_UNIVERSE_SIZE, reinterpret_cast<void*>(instance.size));
+
+    universe_size += max_no_processes;
   }
 
   const std::string name;
@@ -43,7 +47,6 @@ public:
 using simgrid::smpi::app::Instance;
 
 static std::map<std::string, Instance> smpi_instances;
-extern int process_count; // How many processes have been allocated over all instances?
 
 /** @ingroup smpi_simulation
  * @brief Registers a running instance of a MPI program.
@@ -68,8 +71,6 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   }
 
   Instance instance(std::string(name), num_processes, MPI_COMM_NULL, new simgrid::s4u::Barrier(num_processes));
-
-  process_count+=num_processes;
 
   smpi_instances.insert(std::pair<std::string, Instance>(name, instance));
 }
@@ -107,4 +108,9 @@ void smpi_deployment_cleanup_instances(){
     simgrid::smpi::Comm::destroy(instance.comm_world);
   }
   smpi_instances.clear();
+}
+
+int smpi_get_universe_size()
+{
+  return simgrid::smpi::app::universe_size;
 }
