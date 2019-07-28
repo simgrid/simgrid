@@ -145,17 +145,6 @@ const char* MC_smx_actor_get_name(smx_actor_t actor)
   return info->name.c_str();
 }
 
-#if HAVE_SMPI
-int MC_smpi_process_count()
-{
-  if (mc_model_checker == nullptr)
-    return smpi_process_count();
-  int res;
-  mc_model_checker->process().read_variable("process_count", &res, sizeof(res));
-  return res;
-}
-#endif
-
 unsigned long MC_smx_get_maxpid()
 {
   unsigned long maxpid;
