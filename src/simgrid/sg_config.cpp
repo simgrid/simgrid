@@ -354,7 +354,9 @@ void sg_config_init(int *argc, char **argv)
 #if HAVE_SMPI
   simgrid::config::declare_flag<double>("smpi/host-speed", "Speed of the host running the simulation (in flop/s). "
                                                            "Used to bench the operations.",
-                                        20000.0);
+                                        20000.0, [](const double& val) {
+      xbt_assert(val > 0.0, "Invalid value (%f) for 'smpi/host-speed': it must be positive.", val);
+    });
   simgrid::config::alias("smpi/host-speed", {"smpi/running_power", "smpi/running-power"});
 
   simgrid::config::declare_flag<bool>("smpi/keep-temps", "Whether we should keep the generated temporary files.",

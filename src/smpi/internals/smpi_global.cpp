@@ -378,8 +378,10 @@ static void smpi_init_options(){
   simgrid::smpi::Colls::set_collectives();
   simgrid::smpi::Colls::smpi_coll_cleanup_callback = nullptr;
   smpi_cpu_threshold                               = simgrid::config::get_value<double>("smpi/cpu-threshold");
-  smpi_host_speed                                  = simgrid::config::get_value<double>("smpi/host-speed");
-  xbt_assert(smpi_host_speed > 0.0, "You're trying to set the host_speed to a non-positive value (given: %f)", smpi_host_speed);
+  if (smpi_cpu_threshold < 0)
+    smpi_cpu_threshold = DBL_MAX;
+
+  smpi_host_speed                   = simgrid::config::get_value<double>("smpi/host-speed");
   std::string smpi_privatize_option = simgrid::config::get_value<std::string>("smpi/privatization");
   if (smpi_privatize_option == "no" || smpi_privatize_option == "0")
     smpi_privatize_global_variables = SmpiPrivStrategies::NONE;
@@ -400,9 +402,6 @@ static void smpi_init_options(){
     XBT_INFO("mmap privatization is broken on this platform, switching to dlopen privatization instead.");
     smpi_privatize_global_variables = SmpiPrivStrategies::DLOPEN;
   }
-
-  if (smpi_cpu_threshold < 0)
-    smpi_cpu_threshold = DBL_MAX;
 
   std::string val = simgrid::config::get_value<std::string>("smpi/shared-malloc");
   if ((val == "yes") || (val == "1") || (val == "on") || (val == "global")) {
@@ -564,13 +563,11 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
       char fullpath[512] = {'\0'};
       strncpy(fullpath, libname.c_str(), 511);
 #if not defined(__APPLE__) && not defined(__HAIKU__)
-      int ret = dl_iterate_phdr(visit_libs, fullpath);
-      if (ret == 0)
-        xbt_die("Can't find a linked %s - check the setting you gave to smpi/privatize-libs", fullpath);
-      else
-        XBT_DEBUG("Extra lib to privatize found : %s", fullpath);
+      xbt_assert(0 != dl_iterate_phdr(visit_libs, fullpath),
+                 "Can't find a linked %s - check your settings in smpi/privatize-libs", fullpath);
+      XBT_DEBUG("Extra lib to privatize '%s' found", fullpath);
 #else
-      xbt_die("smpi/privatize-libs is not (yet) compatible with OSX");
+      xbt_die("smpi/privatize-libs is not (yet) compatible with OSX nor with Haiku");
 #endif
       privatize_libs_paths.push_back(fullpath);
       dlclose(libhandle);
