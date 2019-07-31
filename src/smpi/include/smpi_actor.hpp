@@ -49,7 +49,7 @@ public:
   ActorExt(const ActorExt&) = delete;
   ActorExt& operator=(const ActorExt&) = delete;
   ~ActorExt();
-  void set_data(const char* instance_id);
+  void set_data(const std::string& instance_id);
   void finalize();
   int finalized();
   int initializing();
