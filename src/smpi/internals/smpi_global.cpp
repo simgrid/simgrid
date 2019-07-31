@@ -247,7 +247,7 @@ static void smpi_check_options()
 }
 
 int smpi_enabled() {
-  return not process_data.empty();
+  return MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED;
 }
 
 void smpi_global_init()
