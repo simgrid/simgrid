@@ -260,9 +260,7 @@ void smpi_global_init()
   std::string filename = simgrid::config::get_value<std::string>("smpi/comp-adjustment-file");
   if (not filename.empty()) {
     std::ifstream fstream(filename);
-    if (not fstream.is_open()) {
-      xbt_die("Could not open file %s. Does it exist?", filename.c_str());
-    }
+    xbt_assert(fstream.is_open(), "Could not open file %s. Does it exist?", filename.c_str());
 
     std::string line;
     typedef boost::tokenizer< boost::escaped_list_separator<char>> Tokenizer;
@@ -602,9 +600,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
           smpi_copy_file(libpath, target_lib, fdin_size2);
 
           std::string sedcommand = "sed -i -e 's/" + libname + "/" + target_lib + "/g' " + target_executable;
-          int ret                = system(sedcommand.c_str());
-          if (ret != 0)
-            xbt_die("error while applying sed command %s \n", sedcommand.c_str());
+          xbt_assert(system(sedcommand.c_str()) == 0, "error while applying sed command %s \n", sedcommand.c_str());
         }
       }
 
@@ -617,11 +613,11 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
         for (const std::string& target_lib : target_libs)
           unlink(target_lib.c_str());
       }
-      if (handle == nullptr)
-        xbt_die("dlopen failed: %s (errno: %d -- %s)", dlerror(), saved_errno, strerror(saved_errno));
+      xbt_assert(handle != nullptr, "dlopen failed: %s (errno: %d -- %s)", dlerror(), saved_errno,
+                 strerror(saved_errno));
+
       smpi_entry_point_type entry_point = smpi_resolve_function(handle);
-      if (not entry_point)
-        xbt_die("Could not resolve entry point");
+      xbt_assert(entry_point, "Could not resolve entry point");
       smpi_run_entry_point(entry_point, executable, args);
     });
   };
@@ -631,13 +627,14 @@ static void smpi_init_privatization_no_dlopen(const std::string& executable)
 {
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
     smpi_prepare_global_memory_segment();
+
   // Load the dynamic library and resolve the entry point:
   void* handle = dlopen(executable.c_str(), RTLD_LAZY | RTLD_LOCAL);
-  if (handle == nullptr)
-    xbt_die("dlopen failed for %s: %s (errno: %d -- %s)", executable.c_str(), dlerror(), errno, strerror(errno));
+  xbt_assert(handle != nullptr, "dlopen failed for %s: %s (errno: %d -- %s)", executable.c_str(), dlerror(), errno,
+             strerror(errno));
   smpi_entry_point_type entry_point = smpi_resolve_function(handle);
-  if (not entry_point)
-    xbt_die("main not found in %s", executable.c_str());
+  xbt_assert(entry_point, "main not found in %s", executable.c_str());
+
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
     smpi_backup_global_memory_segment();
 
