@@ -27,7 +27,7 @@ constexpr unsigned MPI_REQ_ACCUMULATE     = 0x400;
 constexpr unsigned MPI_REQ_GENERALIZED    = 0x800;
 constexpr unsigned MPI_REQ_COMPLETE       = 0x1000;
 
-enum class SmpiProcessState { UNINITIALIZED, INITIALIZING, INITIALIZED, FINALIZED };
+enum class SmpiProcessState { UNINITIALIZED, INITIALIZING, INITIALIZED /*(=MPI_Init called)*/, FINALIZED };
 
 constexpr int COLL_TAG_REDUCE         = -112;
 constexpr int COLL_TAG_SCATTER        = -223;
@@ -101,7 +101,6 @@ enum class SharedMallocType { NONE, LOCAL, GLOBAL };
 extern XBT_PRIVATE SharedMallocType smpi_cfg_shared_malloc; // Whether to activate shared malloc
 
 XBT_PRIVATE void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor);
-XBT_PRIVATE void smpi_really_switch_data_segment(simgrid::s4u::ActorPtr actor);
 
 XBT_PRIVATE void smpi_prepare_global_memory_segment();
 XBT_PRIVATE void smpi_backup_global_memory_segment();

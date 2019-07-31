@@ -213,7 +213,7 @@ void ActorExt::init()
   simgrid::s4u::ActorPtr self = simgrid::s4u::Actor::self();
   // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
   // this up here so that I can set the privatized region before the switch.
-  ActorExt* ext = smpi_process_remote(self);
+  ActorExt* ext = smpi_process();
   // if we are in MPI_Init and argc handling has already been done.
   if (ext->initialized())
     return;

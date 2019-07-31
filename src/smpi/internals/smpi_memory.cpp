@@ -57,8 +57,7 @@ static void smpi_get_executable_global_size()
 {
   char buffer[PATH_MAX];
   char* full_name = realpath(xbt_binary_name, buffer);
-  if (full_name == nullptr)
-    xbt_die("Could not resolve binary file name");
+  xbt_assert(full_name != nullptr, "Could not resolve real path of binary file '%s'", xbt_binary_name);
 
   std::vector<simgrid::xbt::VmMap> map = simgrid::xbt::get_memory_map(getpid());
   for (auto i = map.begin(); i != map.end() ; ++i) {
@@ -111,23 +110,16 @@ static void* asan_safe_memcpy(void* dest, void* src, size_t n)
 #define asan_safe_memcpy(dest, src, n) memcpy(dest, src, n)
 #endif
 
-/** Map a given SMPI privatization segment (make a SMPI process active) */
+/** Map a given SMPI privatization segment (make a SMPI process active)
+ *
+ *  When doing a state restoration, the state of the restored variables  might not be consistent with the state of the
+ *  virtual memory. In this case, we to change the data segment.
+ */
 void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor)
 {
   if (smpi_loaded_page == actor->get_pid()) // no need to switch, we've already loaded the one we want
     return;
 
-  // So the job:
-  smpi_really_switch_data_segment(actor);
-}
-
-/** Map a given SMPI privatization segment (make a SMPI process active)  even if SMPI thinks it is already active
- *
- *  When doing a state restoration, the state of the restored variables  might not be consistent with the state of the
- *  virtual memory. In this case, we to change the data segment.
- */
-void smpi_really_switch_data_segment(simgrid::s4u::ActorPtr actor)
-{
   if (smpi_data_exe_size == 0) // no need to switch
     return;
 
