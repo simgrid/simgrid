@@ -58,19 +58,6 @@ ActorExt::~ActorExt()
   xbt_os_timer_free(timer_);
 }
 
-void ActorExt::set_data(const std::string& instance_id)
-{
-  instance_id_                   = instance_id;
-  comm_world_                    = smpi_deployment_comm_world(instance_id_);
-  simgrid::s4u::Barrier* barrier = smpi_deployment_finalization_barrier(instance_id_);
-  if (barrier != nullptr) // don't overwrite the current one if the instance has none
-    finalization_barrier_ = barrier;
-
-  // set the process attached to the mailbox
-  mailbox_small_->set_receiver(actor_);
-  XBT_DEBUG("<%ld> SMPI process has been initialized: %p", actor_->get_pid(), actor_.get());
-}
-
 /** @brief Prepares the current process for termination. */
 void ActorExt::finalize()
 {
@@ -245,7 +232,15 @@ void ActorExt::init()
   ext->state_ = SmpiProcessState::INITIALIZING;
   smpi_deployment_register_process(instance_id, rank, self);
 
-  ext->set_data(instance_id);
+  ext->instance_id_              = instance_id;
+  ext->comm_world_               = smpi_deployment_comm_world(instance_id);
+  simgrid::s4u::Barrier* barrier = smpi_deployment_finalization_barrier(instance_id);
+  if (barrier != nullptr) // don't overwrite the current one if the instance has none
+    ext->finalization_barrier_ = barrier;
+
+  // set the process attached to the mailbox
+  ext->mailbox_small_->set_receiver(ext->actor_);
+  XBT_DEBUG("<%ld> SMPI process has been initialized: %p", ext->actor_->get_pid(), ext->actor_.get());
 }
 
 int ActorExt::get_optind()
