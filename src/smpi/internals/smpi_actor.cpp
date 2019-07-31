@@ -19,8 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (k
 namespace simgrid {
 namespace smpi {
 
-ActorExt::ActorExt(s4u::ActorPtr actor, s4u::Barrier* finalization_barrier)
-    : finalization_barrier_(finalization_barrier), actor_(actor)
+ActorExt::ActorExt(s4u::ActorPtr actor) : actor_(actor)
 {
   mailbox_         = s4u::Mailbox::by_name("SMPI-" + std::to_string(actor_->get_pid()));
   mailbox_small_   = s4u::Mailbox::by_name("small-" + std::to_string(actor_->get_pid()));

@@ -709,7 +709,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
 void SMPI_init(){
   simgrid::s4u::Actor::on_creation.connect([](simgrid::s4u::Actor& actor) {
     if (not actor.is_daemon()) {
-      process_data.insert({&actor, new simgrid::smpi::ActorExt(&actor, nullptr)});
+      process_data.insert({&actor, new simgrid::smpi::ActorExt(&actor)});
     }
   });
   simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::Actor const& actor) {
