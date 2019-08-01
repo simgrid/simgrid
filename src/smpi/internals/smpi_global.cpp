@@ -118,6 +118,8 @@ simgrid::smpi::ActorExt* smpi_process()
 
 simgrid::smpi::ActorExt* smpi_process_remote(simgrid::s4u::ActorPtr actor)
 {
+  if (actor.get() == nullptr)
+    return nullptr;
   return process_data.at(actor.get());
 }
 
@@ -659,6 +661,7 @@ void SMPI_init(){
     }
   });
   simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::Actor const& actor) {
+    XBT_DEBUG("Delete the extension of actor %s", actor.get_cname());
     auto it = process_data.find(&actor);
     if (it != process_data.end()) {
       delete it->second;

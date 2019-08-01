@@ -76,6 +76,10 @@ void intrusive_ptr_release(Actor* actor)
 {
   intrusive_ptr_release(actor->pimpl_);
 }
+int Actor::get_refcount()
+{
+  return pimpl_->get_refcount();
+}
 
 // ***** Actor methods *****
 

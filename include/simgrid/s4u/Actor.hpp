@@ -142,6 +142,7 @@ public:
   // ***** Reference count *****
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Actor * actor);
   friend XBT_PUBLIC void intrusive_ptr_release(Actor * actor);
+  int get_refcount();
 
   // ***** Actor creation *****
   /** Retrieve a reference to myself */

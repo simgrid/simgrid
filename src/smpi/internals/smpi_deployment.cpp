@@ -33,7 +33,7 @@ public:
   }
 
   const std::string name_;
-  int size_;
+  unsigned int size_;
   std::vector<simgrid::s4u::ActorPtr> present_processes_;
   unsigned int finalized_ranks_ = 0;
   MPI_Comm comm_world_;
@@ -76,7 +76,6 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
 void smpi_deployment_register_process(const std::string& instance_id, int rank, simgrid::s4u::ActorPtr actor)
 {
   Instance& instance = smpi_instances.at(instance_id);
-
   instance.present_processes_.push_back(actor);
   instance.comm_world_->group()->set_mapping(actor, rank);
 }
@@ -84,9 +83,9 @@ void smpi_deployment_register_process(const std::string& instance_id, int rank, 
 void smpi_deployment_unregister_process(const std::string& instance_id)
 {
   Instance& instance = smpi_instances.at(instance_id);
-
   instance.finalized_ranks_++;
-  if (instance.finalized_ranks_ == instance.present_processes_.size()) {
+
+  if (instance.finalized_ranks_ == instance.size_) {
     instance.present_processes_.clear();
     simgrid::smpi::Comm::destroy(instance.comm_world_);
     smpi_instances.erase(instance_id);
@@ -95,7 +94,8 @@ void smpi_deployment_unregister_process(const std::string& instance_id)
 
 MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id)
 {
-  if (smpi_instances.empty()) { // no instance registered, we probably used smpirun.
+  if (smpi_instances
+          .empty()) { // no instance registered, we probably used smpirun. (FIXME: I guess this never happens for real)
     return nullptr;
   }
   Instance& instance = smpi_instances.at(instance_id);

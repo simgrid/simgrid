@@ -171,7 +171,7 @@ void Global::empty_trash()
   while (not actors_to_destroy.empty()) {
     smx_actor_t actor = &actors_to_destroy.front();
     actors_to_destroy.pop_front();
-    XBT_DEBUG("Getting rid of %p", actor);
+    XBT_DEBUG("Getting rid of %s (refcount: %d)", actor->get_cname(), actor->get_refcount());
     intrusive_ptr_release(actor);
   }
 #if SIMGRID_HAVE_MC

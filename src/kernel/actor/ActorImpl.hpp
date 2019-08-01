@@ -76,6 +76,7 @@ private:
   std::atomic_int_fast32_t refcount_{0};
 
 public:
+  int get_refcount() { return refcount_; }
   friend void intrusive_ptr_add_ref(ActorImpl* actor)
   {
     // std::memory_order_relaxed ought to be enough here instead of std::memory_order_seq_cst
