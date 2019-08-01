@@ -59,7 +59,8 @@ ActorImpl::ActorImpl(const simgrid::xbt::string& name, s4u::Host* host) : host_(
   simcall.issuer = this;
 }
 
-ActorImpl::~ActorImpl() {
+ActorImpl::~ActorImpl()
+{
   context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
   simgrid::simix::simcall([this] { simgrid::s4u::Actor::on_destruction(*ciface()); });
   context_->iwannadie = true;
@@ -624,8 +625,14 @@ const std::vector<smx_actor_t>& simgrid::simix::process_get_runnable()
 /** @brief Returns the process from PID. */
 smx_actor_t SIMIX_process_from_PID(aid_t PID)
 {
-  auto actor = simix_global->process_list.find(PID);
-  return actor == simix_global->process_list.end() ? nullptr : actor->second;
+  auto item = simix_global->process_list.find(PID);
+  if (item == simix_global->process_list.end()) {
+    for (auto& a : simix_global->actors_to_destroy)
+      if (a.get_pid() == PID)
+        return &a;
+    return nullptr; // Not found, even in the trash
+  }
+  return item->second;
 }
 
 void SIMIX_process_on_exit(smx_actor_t actor, int_f_pvoid_pvoid_t fun, void* data)
