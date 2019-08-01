@@ -425,7 +425,6 @@ static int smpi_run_entry_point(const F& entry_point, const std::string& executa
   args4argv->push_back(nullptr);
   char** argv = args4argv->data();
 
-  simgrid::smpi::ActorExt::init();
 #if SMPI_IFORT
   for_rtl_init_ (&argc, argv);
 #elif SMPI_FLANG
