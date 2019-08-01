@@ -86,8 +86,6 @@ XBT_PRIVATE void smpi_comm_null_copy_buffer_callback(simgrid::kernel::activity::
                                                      size_t buff_size);
 
 XBT_PRIVATE int smpi_enabled();
-XBT_PRIVATE void smpi_global_init();
-XBT_PRIVATE void smpi_global_destroy();
 XBT_PRIVATE double smpi_mpi_wtime();
 XBT_PRIVATE void smpi_mpi_init();
 

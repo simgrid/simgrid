@@ -245,32 +245,8 @@ int smpi_enabled() {
   return MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED;
 }
 
-void smpi_global_init()
+static void smpi_init_papi()
 {
-  if (not MC_is_active()) {
-    global_timer = xbt_os_timer_new();
-    xbt_os_walltimer_start(global_timer);
-  }
-
-  std::string filename = simgrid::config::get_value<std::string>("smpi/comp-adjustment-file");
-  if (not filename.empty()) {
-    std::ifstream fstream(filename);
-    xbt_assert(fstream.is_open(), "Could not open file %s. Does it exist?", filename.c_str());
-
-    std::string line;
-    typedef boost::tokenizer< boost::escaped_list_separator<char>> Tokenizer;
-    std::getline(fstream, line); // Skip the header line
-    while (std::getline(fstream, line)) {
-      Tokenizer tok(line);
-      Tokenizer::iterator it  = tok.begin();
-      Tokenizer::iterator end = std::next(tok.begin());
-
-      std::string location = *it;
-      boost::trim(location);
-      location2speedup.insert(std::pair<std::string, double>(location, std::stod(*end)));
-    }
-  }
-
 #if HAVE_PAPI
   // This map holds for each computation unit (such as "default" or "process1" etc.)
   // the configuration as given by the user (counter data as a pair of (counter_name, counter_counter))
@@ -334,27 +310,6 @@ void smpi_global_init()
     }
   }
 #endif
-}
-
-void smpi_global_destroy()
-{
-  smpi_bench_destroy();
-  smpi_shared_destroy();
-  smpi_deployment_cleanup_instances();
-
-  if (simgrid::smpi::Colls::smpi_coll_cleanup_callback != nullptr)
-    simgrid::smpi::Colls::smpi_coll_cleanup_callback();
-
-  MPI_COMM_WORLD = MPI_COMM_NULL;
-
-  if (not MC_is_active()) {
-    xbt_os_timer_free(global_timer);
-  }
-
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
-    smpi_destroy_global_memory_segments();
-  if(simgrid::smpi::F2C::lookup() != nullptr)
-    simgrid::smpi::F2C::delete_lookup();
 }
 
 static void smpi_init_options(){
@@ -691,7 +646,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
       "You may want to use sampling functions or trace replay to reduce this.");
     }
   }
-  smpi_global_destroy();
+  SMPI_finalize();
 
   return smpi_exit_status;
 }
@@ -714,12 +669,52 @@ void SMPI_init(){
       [](simgrid::s4u::Host& host) { host.extension_set(new simgrid::smpi::Host(&host)); });
 
   smpi_init_options();
-  smpi_global_init();
+  if (not MC_is_active()) {
+    global_timer = xbt_os_timer_new();
+    xbt_os_walltimer_start(global_timer);
+  }
+
+  std::string filename = simgrid::config::get_value<std::string>("smpi/comp-adjustment-file");
+  if (not filename.empty()) {
+    std::ifstream fstream(filename);
+    xbt_assert(fstream.is_open(), "Could not open file %s. Does it exist?", filename.c_str());
+
+    std::string line;
+    typedef boost::tokenizer<boost::escaped_list_separator<char>> Tokenizer;
+    std::getline(fstream, line); // Skip the header line
+    while (std::getline(fstream, line)) {
+      Tokenizer tok(line);
+      Tokenizer::iterator it  = tok.begin();
+      Tokenizer::iterator end = std::next(tok.begin());
+
+      std::string location = *it;
+      boost::trim(location);
+      location2speedup.insert(std::pair<std::string, double>(location, std::stod(*end)));
+    }
+  }
+  smpi_init_papi();
   smpi_check_options();
 }
 
-void SMPI_finalize(){
-  smpi_global_destroy();
+void SMPI_finalize()
+{
+  smpi_bench_destroy();
+  smpi_shared_destroy();
+  smpi_deployment_cleanup_instances();
+
+  if (simgrid::smpi::Colls::smpi_coll_cleanup_callback != nullptr)
+    simgrid::smpi::Colls::smpi_coll_cleanup_callback();
+
+  MPI_COMM_WORLD = MPI_COMM_NULL;
+
+  if (not MC_is_active()) {
+    xbt_os_timer_free(global_timer);
+  }
+
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
+    smpi_destroy_global_memory_segments();
+  if (simgrid::smpi::F2C::lookup() != nullptr)
+    simgrid::smpi::F2C::delete_lookup();
 }
 
 void smpi_mpi_init() {
