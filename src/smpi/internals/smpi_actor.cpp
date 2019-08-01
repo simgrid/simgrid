@@ -50,6 +50,8 @@ ActorExt::ActorExt(s4u::ActorPtr actor) : actor_(actor)
 
 ActorExt::~ActorExt()
 {
+  TRACE_smpi_finalize(actor_->get_pid());
+
   if (comm_self_ != MPI_COMM_NULL)
     simgrid::smpi::Comm::destroy(comm_self_);
   if (comm_intra_ != MPI_COMM_NULL)

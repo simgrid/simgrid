@@ -63,7 +63,6 @@ int PMPI_Finalize()
   smpi_process()->finalize();
 
   TRACE_smpi_comm_out(rank_traced);
-  TRACE_smpi_finalize(rank_traced);
   return MPI_SUCCESS;
 }
 
