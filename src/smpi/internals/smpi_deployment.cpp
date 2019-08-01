@@ -19,14 +19,14 @@ static int universe_size = 0;
 class Instance {
 public:
   Instance(const std::string& name, int max_no_processes, MPI_Comm comm, simgrid::s4u::Barrier* finalization_barrier)
-      : name(name)
-      , size(max_no_processes)
-      , present_processes(0)
-      , comm_world(comm)
-      , finalization_barrier(finalization_barrier)
+      : name_(name)
+      , size_(max_no_processes)
+      , present_processes_(0)
+      , comm_world_(comm)
+      , finalization_barrier_(finalization_barrier)
   {
-    MPI_Group group = new simgrid::smpi::Group(size);
-    comm_world      = new simgrid::smpi::Comm(group, nullptr, 0, -1);
+    MPI_Group group = new simgrid::smpi::Group(size_);
+    comm_world_     = new simgrid::smpi::Comm(group, nullptr, 0, -1);
     //  FIXME : using MPI_Attr_put with MPI_UNIVERSE_SIZE is forbidden and we make it a no-op (which triggers a warning
     //  as MPI_ERR_ARG is returned). Directly calling Comm::attr_put breaks for now, as MPI_UNIVERSE_SIZE,is <0
     //  instance.comm_world->attr_put<simgrid::smpi::Comm>(MPI_UNIVERSE_SIZE, reinterpret_cast<void*>(instance.size));
@@ -34,11 +34,11 @@ public:
     universe_size += max_no_processes;
   }
 
-  const std::string name;
-  int size;
-  int present_processes;
-  MPI_Comm comm_world;
-  simgrid::s4u::Barrier* finalization_barrier;
+  const std::string name_;
+  int size_;
+  int present_processes_;
+  MPI_Comm comm_world_;
+  simgrid::s4u::Barrier* finalization_barrier_;
 };
 }
 }
@@ -79,8 +79,8 @@ void smpi_deployment_register_process(const std::string& instance_id, int rank, 
 {
   Instance& instance = smpi_instances.at(instance_id);
 
-  instance.present_processes++;
-  instance.comm_world->group()->set_mapping(actor, rank);
+  instance.present_processes_++;
+  instance.comm_world_->group()->set_mapping(actor, rank);
 }
 
 MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id)
@@ -89,7 +89,7 @@ MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id)
     return nullptr;
   }
   Instance& instance = smpi_instances.at(instance_id);
-  return &instance.comm_world;
+  return &instance.comm_world_;
 }
 
 simgrid::s4u::Barrier* smpi_deployment_finalization_barrier(const std::string& instance_id)
@@ -98,14 +98,14 @@ simgrid::s4u::Barrier* smpi_deployment_finalization_barrier(const std::string& i
     return nullptr;
   }
   Instance& instance = smpi_instances.at(instance_id);
-  return instance.finalization_barrier;
+  return instance.finalization_barrier_;
 }
 
 void smpi_deployment_cleanup_instances(){
   for (auto const& item : smpi_instances) {
     Instance instance = item.second;
-    delete instance.finalization_barrier;
-    simgrid::smpi::Comm::destroy(instance.comm_world);
+    delete instance.finalization_barrier_;
+    simgrid::smpi::Comm::destroy(instance.comm_world_);
   }
   smpi_instances.clear();
 }
