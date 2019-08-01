@@ -129,11 +129,6 @@ MPI_Info smpi_process_info_env(){
   return smpi_process()->info_env();
 }
 
-void smpi_process_init(int*, char***)
-{
-  simgrid::smpi::ActorExt::init();
-}
-
 void * smpi_process_get_user_data(){
   return simgrid::s4u::Actor::self()->get_impl()->get_user_data();
 }

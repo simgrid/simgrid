@@ -42,12 +42,7 @@ sub output_macro {
     print "#define ". uc($id) ." smpi_trace_set_call_location(__FILE__,__LINE__); call ". ucfirst $id ."\n";
   }
   else {
-    if ($id eq "MPI_Init") {
-      print "#define MPI_Init(...) ({ smpi_process_init(__VA_ARGS__); smpi_trace_set_call_location(__FILE__,__LINE__); MPI_Init(NULL, NULL); })\n";
-    }
-    else {
-      print "#define $id(...) ({ smpi_trace_set_call_location(__FILE__,__LINE__); $id(__VA_ARGS__); })\n";
-    }
+    print "#define $id(...) ({ smpi_trace_set_call_location(__FILE__,__LINE__); $id(__VA_ARGS__); })\n";
   }
 }
 

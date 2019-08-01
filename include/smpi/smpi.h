@@ -1041,7 +1041,6 @@ XBT_PUBLIC void* smpi_shared_set_call(const char* func, const char* input, void*
 /* Fortran specific stuff */
 
 XBT_PUBLIC int smpi_main(const char* program, int argc, char* argv[]);
-XBT_PUBLIC void smpi_process_init(int* argc, char*** argv);
 
 /* Trace replay specific stuff */
 XBT_PUBLIC void smpi_replay_init(const char* instance_id, int rank, double start_delay_flops); // Only initialization
