@@ -59,7 +59,11 @@ ActorImpl::ActorImpl(const simgrid::xbt::string& name, s4u::Host* host) : host_(
   simcall.issuer = this;
 }
 
-ActorImpl::~ActorImpl() = default;
+ActorImpl::~ActorImpl() {
+  context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
+  simgrid::simix::simcall([this] { simgrid::s4u::Actor::on_destruction(*ciface()); });
+  context_->iwannadie = true;
+}
 
 /* Become an actor in the simulation
  *
@@ -178,10 +182,6 @@ void ActorImpl::cleanup()
   }
 
   simix_global->mutex.unlock();
-
-  context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
-  simgrid::simix::simcall([this] { simgrid::s4u::Actor::on_destruction(*ciface()); });
-  context_->iwannadie = true;
 }
 
 void ActorImpl::exit()
