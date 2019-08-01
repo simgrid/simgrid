@@ -19,11 +19,11 @@ $ ./replay_multiple_manual ${srcdir:=.}/../../platforms/small_platform_with_rout
 > [   0.000000] (job_0001@Bourassa) Executing job 1 (smpi_app 'job1')
 > [   0.000000] (rank_1_0@Bourassa) Replaying rank 0 of job 1 (smpi_app 'job1')
 > [   0.000000] (rank_1_1@Fafard) Replaying rank 1 of job 1 (smpi_app 'job1')
+> [ 155.249699] (rank_0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'job0')
+> [ 155.249699] (rank_1_1@Fafard) Finished replaying rank 1 of job 1 (smpi_app 'job1')
 > [ 155.256538] (rank_0_0@Bourassa) Simulation time 155.256538
 > [ 155.256538] (rank_0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'job0')
-> [ 155.256538] (rank_0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'job0')
 > [ 155.256538] (rank_1_0@Bourassa) Finished replaying rank 0 of job 1 (smpi_app 'job1')
-> [ 155.256538] (rank_1_1@Fafard) Finished replaying rank 1 of job 1 (smpi_app 'job1')
 > [ 156.256538] (job_0000@Bourassa) Finished job 0 (smpi_app 'job0')
 > [ 156.256538] (job_0001@Bourassa) Finished job 1 (smpi_app 'job1')
 > [ 156.256538] (maestro@) Simulation finished! Final time: 156.257

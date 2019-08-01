@@ -75,8 +75,9 @@ XBT_PRIVATE int smpi_get_universe_size();
 
 XBT_PRIVATE void smpi_deployment_register_process(const std::string& instance_id, int rank,
                                                   simgrid::s4u::ActorPtr actor);
+XBT_PRIVATE void smpi_deployment_unregister_process(const std::string& instance_id);
+
 XBT_PRIVATE MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id);
-XBT_PRIVATE simgrid::s4u::Barrier* smpi_deployment_finalization_barrier(const std::string& instance_id);
 XBT_PRIVATE void smpi_deployment_cleanup_instances();
 
 XBT_PRIVATE void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff,

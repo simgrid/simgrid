@@ -63,11 +63,7 @@ void ActorExt::finalize()
   state_ = SmpiProcessState::FINALIZED;
   XBT_DEBUG("<%ld> Process left the game", actor_->get_pid());
 
-  // This leads to an explosion of the search graph which cannot be reduced:
-  if (MC_is_active() || MC_record_replay_is_active())
-    return;
-  // wait for all pending asynchronous comms to finish
-  finalization_barrier_->wait();
+  smpi_deployment_unregister_process(instance_id_);
 }
 
 /** @brief Check if a process is finalized */
@@ -225,17 +221,13 @@ void ActorExt::init()
     SMPI_switch_data_segment(self);
   }
 
-  std::string instance_id = self->get_property("instance_id");
-  const int rank          = xbt_str_parse_int(self->get_property("rank"), "Cannot parse rank");
+  ext->instance_id_ = self->get_property("instance_id");
+  const int rank    = xbt_str_parse_int(self->get_property("rank"), "Cannot parse rank");
 
   ext->state_ = SmpiProcessState::INITIALIZING;
-  smpi_deployment_register_process(instance_id, rank, self);
+  smpi_deployment_register_process(ext->instance_id_, rank, self);
 
-  ext->instance_id_              = instance_id;
-  ext->comm_world_               = smpi_deployment_comm_world(instance_id);
-  simgrid::s4u::Barrier* barrier = smpi_deployment_finalization_barrier(instance_id);
-  if (barrier != nullptr) // don't overwrite the current one if the instance has none
-    ext->finalization_barrier_ = barrier;
+  ext->comm_world_ = smpi_deployment_comm_world(ext->instance_id_);
 
   // set the process attached to the mailbox
   ext->mailbox_small_->set_receiver(ext->actor_);

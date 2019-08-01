@@ -10,6 +10,8 @@
 #include "smpi_comm.hpp"
 #include <map>
 
+XBT_LOG_EXTERNAL_CATEGORY(smpi);
+
 namespace simgrid {
 namespace smpi {
 namespace app {
@@ -18,12 +20,8 @@ static int universe_size = 0;
 
 class Instance {
 public:
-  Instance(const std::string& name, int max_no_processes, MPI_Comm comm, simgrid::s4u::Barrier* finalization_barrier)
-      : name_(name)
-      , size_(max_no_processes)
-      , present_processes_(0)
-      , comm_world_(comm)
-      , finalization_barrier_(finalization_barrier)
+  Instance(const std::string& name, int max_no_processes, MPI_Comm comm)
+      : name_(name), size_(max_no_processes), comm_world_(comm)
   {
     MPI_Group group = new simgrid::smpi::Group(size_);
     comm_world_     = new simgrid::smpi::Comm(group, nullptr, 0, -1);
@@ -36,9 +34,9 @@ public:
 
   const std::string name_;
   int size_;
-  int present_processes_;
+  std::vector<simgrid::s4u::ActorPtr> present_processes_;
+  unsigned int finalized_ranks_ = 0;
   MPI_Comm comm_world_;
-  simgrid::s4u::Barrier* finalization_barrier_;
 };
 }
 }
@@ -70,7 +68,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
       host->extension_set(new simgrid::smpi::Host(host));
   }
 
-  Instance instance(std::string(name), num_processes, MPI_COMM_NULL, new simgrid::s4u::Barrier(num_processes));
+  Instance instance(std::string(name), num_processes, MPI_COMM_NULL);
 
   smpi_instances.insert(std::pair<std::string, Instance>(name, instance));
 }
@@ -79,8 +77,20 @@ void smpi_deployment_register_process(const std::string& instance_id, int rank, 
 {
   Instance& instance = smpi_instances.at(instance_id);
 
-  instance.present_processes_++;
+  instance.present_processes_.push_back(actor);
   instance.comm_world_->group()->set_mapping(actor, rank);
+}
+
+void smpi_deployment_unregister_process(const std::string& instance_id)
+{
+  Instance& instance = smpi_instances.at(instance_id);
+
+  instance.finalized_ranks_++;
+  if (instance.finalized_ranks_ == instance.present_processes_.size()) {
+    instance.present_processes_.clear();
+    simgrid::smpi::Comm::destroy(instance.comm_world_);
+    smpi_instances.erase(instance_id);
+  }
 }
 
 MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id)
@@ -92,19 +102,11 @@ MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id)
   return &instance.comm_world_;
 }
 
-simgrid::s4u::Barrier* smpi_deployment_finalization_barrier(const std::string& instance_id)
-{
-  if (smpi_instances.empty()) { // no instance registered, we probably used smpirun.
-    return nullptr;
-  }
-  Instance& instance = smpi_instances.at(instance_id);
-  return instance.finalization_barrier_;
-}
-
 void smpi_deployment_cleanup_instances(){
   for (auto const& item : smpi_instances) {
+    XBT_CINFO(smpi, "Stalling SMPI instance: %s. Do all your MPI ranks call MPI_Finalize()?", item.first.c_str());
     Instance instance = item.second;
-    delete instance.finalization_barrier_;
+    instance.present_processes_.clear();
     simgrid::smpi::Comm::destroy(instance.comm_world_);
   }
   smpi_instances.clear();

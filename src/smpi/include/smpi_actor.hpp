@@ -27,7 +27,6 @@ class ActorExt {
   int sampling_ = 0; /* inside an SMPI_SAMPLE_ block? */
   std::string instance_id_;
   bool replaying_ = false; /* is the process replaying a trace */
-  s4u::Barrier* finalization_barrier_ = nullptr;
   smpi_trace_call_location_t trace_call_loc_;
   s4u::ActorPtr actor_                           = nullptr;
   smpi_privatization_region_t privatized_region_ = nullptr;
