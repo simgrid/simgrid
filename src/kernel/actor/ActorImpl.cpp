@@ -61,10 +61,12 @@ ActorImpl::ActorImpl(const simgrid::xbt::string& name, s4u::Host* host) : host_(
 
 ActorImpl::~ActorImpl()
 {
-  if (this != simix_global->maestro_process) {
-    context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
+  if (simix_global != nullptr && this != simix_global->maestro_process) {
+    if (context_.get() != nullptr) /* the actor was not start()ed yet. This happens if its host was initially off */
+      context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
     simgrid::simix::simcall([this] { simgrid::s4u::Actor::on_destruction(*ciface()); });
-    context_->iwannadie = true;
+    if (context_.get() != nullptr)
+      context_->iwannadie = true;
   }
 }
 
