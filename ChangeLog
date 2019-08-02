@@ -6,6 +6,9 @@ S4U:
  - Barrier::wait returns SG_BARRIER_SERIAL_THREAD for (only) one actor
    for consistency with pthread_barrier_wait()
  - Host::get_englobing_zone() returns the englobing netzone
+ - Actor::on_destruction is now called in the destructor
+   Actor::on_termination new signal called when the actor terminates
+   its code.
 
 MSG:
  - convert a new set of functions to the S4U C interface and move the old MSG

@@ -28,6 +28,7 @@ xbt::signal<void(Actor const&)> s4u::Actor::on_sleep;
 xbt::signal<void(Actor const&)> s4u::Actor::on_wake_up;
 xbt::signal<void(Actor const&)> s4u::Actor::on_migration_start;
 xbt::signal<void(Actor const&)> s4u::Actor::on_migration_end;
+xbt::signal<void(Actor const&)> s4u::Actor::on_termination;
 xbt::signal<void(Actor const&)> s4u::Actor::on_destruction;
 
 // ***** Actor creation *****

@@ -49,6 +49,7 @@ Starting and Stoping Actors
     of doing so, depending of whether you want your callback to be
     executed when a specific actor ends (with ```this_actor::on_exit()```)
     or whether it should be executed when any actor ends (with
+    ```Actor::on_termination()```) or when it gets destroyed (with
     ```Actor::on_destruction()```)
 
     - |cpp| `examples/s4u/actor-exiting/s4u-actor-exiting.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-exiting/s4u-actor-exiting.cpp>`_
