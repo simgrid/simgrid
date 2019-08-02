@@ -199,10 +199,6 @@ void ActorImpl::exit()
   suspended_          = false;
   exception_          = nullptr;
 
-  // Forcefully kill the actor if its host is turned off. Not a HostFailureException because you should not survive that
-  if (not host_->is_on())
-    this->throw_exception(std::make_exception_ptr(ForcefulKillException("host failed")));
-
   /* destroy the blocking synchro if any */
   if (waiting_synchro != nullptr) {
     waiting_synchro->cancel();
@@ -225,6 +221,9 @@ void ActorImpl::exit()
 
     waiting_synchro = nullptr;
   }
+
+  // Forcefully kill the actor if its host is turned off. Not a HostFailureException because you should not survive that
+  this->throw_exception(std::make_exception_ptr(ForcefulKillException(host_->is_on() ? "exited" : "host failed")));
 }
 
 void ActorImpl::kill(ActorImpl* actor)
