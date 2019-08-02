@@ -338,13 +338,13 @@ static void SIMIX_wake_processes()
   for (auto const& model : all_existing_models) {
     simgrid::kernel::resource::Action* action;
 
-    XBT_DEBUG("Handling the processes whose action failed (if any)");
+    XBT_DEBUG("Handling the failed actions (if any)");
     while ((action = model->extract_failed_action())) {
       XBT_DEBUG("   Handling Action %p",action);
       if (action->get_activity() != nullptr)
         simgrid::kernel::activity::ActivityImplPtr(action->get_activity())->post();
     }
-    XBT_DEBUG("Handling the processes whose action terminated normally (if any)");
+    XBT_DEBUG("Handling the terminated actions (if any)");
     while ((action = model->extract_done_action())) {
       XBT_DEBUG("   Handling Action %p",action);
       if (action->get_activity() == nullptr)
