@@ -59,7 +59,7 @@ static void test_sleep()
     simgrid::s4u::this_actor::sleep_for(5);
     global = true;
   });
-  simgrid::s4u::this_actor::sleep_for(10);
+  simgrid::s4u::this_actor::sleep_for(9);
   xbt_assert(global, "The forked actor did not modify the global after sleeping. Was it killed before?");
 }
 
@@ -133,7 +133,7 @@ static void test_sleep_restart_end()
     all_hosts[1]->turn_off(); // kill the host right at the end of this sleep and of this actor
     sleeper_done = true;
   });
-  simgrid::s4u::this_actor::sleep_for(10);
+  simgrid::s4u::this_actor::sleep_for(9);
   xbt_assert(sleeper_done, "Not sure of how the actor survived the shutdown of its host.");
   all_hosts[1]->turn_on();
 }
@@ -147,7 +147,7 @@ static void test_exec()
     simgrid::s4u::this_actor::execute(500000000);
     global = true;
   });
-  simgrid::s4u::this_actor::sleep_for(10);
+  simgrid::s4u::this_actor::sleep_for(9);
   xbt_assert(global, "The forked actor did not modify the global after executing. Was it killed before?");
 }
 
@@ -226,7 +226,7 @@ static void test_exec_restart_end()
     all_hosts[1]->turn_off();
     all_hosts[1]->turn_on();
   });
-  simgrid::s4u::this_actor::sleep_for(10);
+  simgrid::s4u::this_actor::sleep_for(9);
   xbt_assert(execution_done,
              "Restarted actor was already dead in the scheduling round during which the host_off simcall was issued");
 }
@@ -250,7 +250,7 @@ static void test_comm()
     recv_done = true;
   });
 
-  simgrid::s4u::this_actor::sleep_for(10);
+  simgrid::s4u::this_actor::sleep_for(9);
   xbt_assert(send_done, "Sender killed somehow. It shouldn't");
   xbt_assert(recv_done, "Receiver killed somehow. It shouldn't");
 }
