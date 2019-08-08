@@ -77,7 +77,7 @@ void MC_init_dot_output()
 
 void MC_run()
 {
-  simgrid::mc::processes_time.resize(SIMIX_process_get_maxpid());
+  simgrid::mc::processes_time.resize(simgrid::kernel::actor::get_maxpid());
   MC_ignore_heap(simgrid::mc::processes_time.data(),
     simgrid::mc::processes_time.size() * sizeof(simgrid::mc::processes_time[0]));
   simgrid::mc::Client::get()->main_loop();

@@ -109,8 +109,6 @@ XBT_PRIVATE void SIMIX_context_mod_exit();
 XBT_PUBLIC_DATA unsigned char sigsegv_stack[SIGSTKSZ];
 #endif
 
-XBT_PUBLIC int SIMIX_process_get_maxpid();
-
 XBT_PRIVATE simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const std::string& name);
 
 #endif

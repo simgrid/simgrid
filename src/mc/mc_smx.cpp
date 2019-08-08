@@ -148,7 +148,6 @@ const char* MC_smx_actor_get_name(smx_actor_t actor)
 unsigned long MC_smx_get_maxpid()
 {
   unsigned long maxpid;
-  mc_model_checker->process().read_variable("simix_process_maxpid",
-    &maxpid, sizeof(maxpid));
+  mc_model_checker->process().read_variable("simgrid::kernel::actor::maxpid", &maxpid, sizeof(maxpid));
   return maxpid;
 }

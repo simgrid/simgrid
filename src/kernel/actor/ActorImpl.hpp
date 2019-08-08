@@ -179,6 +179,7 @@ typedef boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImp
     SynchroList;
 
 XBT_PUBLIC void create_maestro(const std::function<void()>& code);
+XBT_PUBLIC int get_maxpid();
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid

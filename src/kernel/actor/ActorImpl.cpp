@@ -22,8 +22,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix, "Logging specific to SIMIX (process)");
 
-static unsigned long simix_process_maxpid = 0;
-
 /**
  * @brief Returns the current agent.
  *
@@ -53,9 +51,15 @@ namespace simgrid {
 namespace kernel {
 namespace actor {
 
+static unsigned long maxpid = 0;
+int get_maxpid()
+{
+  return maxpid;
+}
+
 ActorImpl::ActorImpl(const simgrid::xbt::string& name, s4u::Host* host) : host_(host), name_(name), piface_(this)
 {
-  pid_           = simix_process_maxpid++;
+  pid_           = maxpid++;
   simcall.issuer = this;
 }
 
@@ -524,14 +528,14 @@ void create_maestro(const std::function<void()>& code)
 } // namespace kernel
 } // namespace simgrid
 
-void SIMIX_process_detach()
+void SIMIX_process_detach() // deprecated v3.25
 {
   simgrid::kernel::actor::ActorImpl::detach();
 }
 
 smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostname,
                                  std::unordered_map<std::string, std::string>* properties,
-                                 smx_actor_t /*parent_process*/)
+                                 smx_actor_t /*parent_process*/) // deprecated 3.25
 {
   return simgrid::kernel::actor::ActorImpl::attach(name, data, sg_host_by_name(hostname), properties).get();
 }
@@ -548,11 +552,6 @@ void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t actor)
     actor->waiting_synchro->suspend();
   }
   /* If we are suspending ourselves, then just do not finish the simcall now */
-}
-
-int SIMIX_process_get_maxpid()
-{
-  return simix_process_maxpid;
 }
 
 int SIMIX_process_count()
