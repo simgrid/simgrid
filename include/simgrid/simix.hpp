@@ -29,17 +29,6 @@ XBT_PUBLIC void simcall_run_kernel(std::function<void()> const& code);
  */
 XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code);
 
-template<class F> inline
-void simcall_run_kernel(F& f)
-{
-  simcall_run_kernel(std::function<void()>(std::ref(f)));
-}
-template<class F> inline
-void simcall_run_blocking(F& f)
-{
-  simcall_run_blocking(std::function<void()>(std::ref(f)));
-}
-
 namespace simgrid {
 namespace simix {
 

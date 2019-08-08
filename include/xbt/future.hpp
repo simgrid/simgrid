@@ -127,7 +127,7 @@ template <class R, class F> auto fulfill_promise(R& promise, F&& code) -> declty
   }
 }
 
-template <class P, class F> auto fulfill_promise(P& promise, F&& code) -> decltype(promise.set_value())
+template <class R, class F> auto fulfill_promise(R& promise, F&& code) -> decltype(promise.set_value())
 {
   try {
     std::forward<F>(code)();
