@@ -43,7 +43,7 @@ void wait_for_requests()
     for (smx_actor_t const& process : simix_global->actors_that_ran) {
       smx_simcall_t req = &process->simcall;
       if (req->call != SIMCALL_NONE && not simgrid::mc::request_is_visible(req))
-        SIMIX_simcall_handle(req, 0);
+        process->simcall_handle(0);
     }
   }
 #if SIMGRID_HAVE_MC

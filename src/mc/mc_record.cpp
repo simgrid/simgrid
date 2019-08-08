@@ -41,7 +41,7 @@ void replay(RecordTrace const& trace)
       xbt_die("Unexpected simcall.");
 
     // Execute the request:
-    SIMIX_simcall_handle(simcall, transition.argument);
+    simcall->issuer->simcall_handle(transition.argument);
     simgrid::mc::wait_for_requests();
   }
 }

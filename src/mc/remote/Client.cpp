@@ -97,7 +97,7 @@ void Client::handle_simcall(s_mc_message_simcall_handle_t* message)
   smx_actor_t process = SIMIX_process_from_PID(message->pid);
   if (not process)
     xbt_die("Invalid pid %lu", (unsigned long)message->pid);
-  SIMIX_simcall_handle(&process->simcall, message->value);
+  process->simcall_handle(message->value);
   if (channel_.send(MC_MESSAGE_WAITING))
     xbt_die("Could not send MESSAGE_WAITING to model-checker");
 }

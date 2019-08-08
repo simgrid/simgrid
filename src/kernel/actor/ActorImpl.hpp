@@ -129,6 +129,9 @@ public:
   activity::ActivityImplPtr sleep(double duration);
   /** Ask the actor to throw an exception right away */
   void throw_exception(std::exception_ptr e);
+
+  /** execute the pending simcall -- must be called from the maestro context */
+  void simcall_handle(int value);
 };
 
 class ProcessArg {

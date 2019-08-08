@@ -74,7 +74,7 @@ public:
       schedule(std::move(continuation));
       break;
     case FutureStatus::not_ready:
-      // The future is not ready so we mast keep the continuation for
+      // The future is not ready so we must keep the continuation for
       // executing it later:
       continuation_ = std::move(continuation);
       break;

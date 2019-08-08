@@ -34,7 +34,7 @@ inline static R simcall(e_smx_simcall_t call, T const&... t)
               (int)self->simcall.call);
     self->yield();
   } else {
-    SIMIX_simcall_handle(&self->simcall, 0);
+    self->simcall_handle(0);
   }
   return simgrid::simix::unmarshal<R>(self->simcall.result);
 }

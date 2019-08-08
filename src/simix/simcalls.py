@@ -130,21 +130,21 @@ class Simcall(object):
     def case(self):
         res = []
         indent = '    '
-        args = ["simgrid::simix::unmarshal<%s>(simcall->args[%d])" % (arg.rettype(), i)
+        args = ["simgrid::simix::unmarshal<%s>(simcall.args[%d])" % (arg.rettype(), i)
                 for i, arg in enumerate(self.args)]
         res.append(indent + 'case SIMCALL_%s:' % (self.name.upper()))
         if self.need_handler:
-            call = "simcall_HANDLER_%s(simcall%s%s)" % (self.name,
+            call = "simcall_HANDLER_%s(&simcall%s%s)" % (self.name,
                                                         ", " if len(args) > 0 else "",
                                                         ', '.join(args))
         else:
             call = "SIMIX_%s(%s)" % (self.name, ', '.join(args))
         if self.call_kind == 'Func':
-            res.append(indent + "  simgrid::simix::marshal<%s>(simcall->result, %s);" % (self.res.rettype(), call))
+            res.append(indent + "  simgrid::simix::marshal<%s>(simcall.result, %s);" % (self.res.rettype(), call))
         else:
             res.append(indent + "  " + call + ";")
         if self.call_kind != 'Blck':
-            res.append(indent + '  SIMIX_simcall_answer(simcall);')
+            res.append(indent + '  SIMIX_simcall_answer(&simcall);')
         res.append(indent + '  break;')
         res.append('')
         return '\n'.join(res)
@@ -340,14 +340,14 @@ if __name__ == '__main__':
     fd.write(' * This function is generated from src/simix/simcalls.in\n')
     fd.write(' */\n')
     fd.write(
-        'void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {\n')
+        'void simgrid::kernel::actor::ActorImpl::simcall_handle(int value) {\n')
     fd.write(
-        '  XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));\n')
+        '  XBT_DEBUG("Handling simcall %p: %s", &simcall, SIMIX_simcall_name(simcall.call));\n')
     fd.write('  SIMCALL_SET_MC_VALUE(simcall, value);\n')
     fd.write(
-        '  if (simcall->issuer->context_->iwannadie)\n')
+        '  if (context_->iwannadie)\n')
     fd.write('    return;\n')
-    fd.write('  switch (simcall->call) {\n')
+    fd.write('  switch (simcall.call) {\n')
 
     handle(fd, Simcall.case, simcalls, simcalls_dict)
 
@@ -355,8 +355,8 @@ if __name__ == '__main__':
     fd.write('      break;\n')
     fd.write('    case SIMCALL_NONE:\n')
     fd.write('      throw std::invalid_argument(simgrid::xbt::string_printf("Asked to do the noop syscall on %s@%s",\n')
-    fd.write('                                                              simcall->issuer->get_cname(),\n')
-    fd.write('                                                              sg_host_get_name(simcall->issuer->get_host())));\n')
+    fd.write('                                                              get_cname(),\n')
+    fd.write('                                                              sg_host_get_name(get_host())));\n')
     fd.write('    default:\n')
     fd.write('      THROW_IMPOSSIBLE;\n')
     fd.write('  }\n')
@@ -389,7 +389,7 @@ inline static R simcall(e_smx_simcall_t call, T const&... t)
               (int)self->simcall.call);
     self->yield();
   } else {
-    SIMIX_simcall_handle(&self->simcall, 0);
+    self->simcall_handle(0);
   }
   return simgrid::simix::unmarshal<R>(self->simcall.result);
 }

@@ -26,7 +26,7 @@ XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t sr
 {
   smx_activity_t comm = simcall_HANDLER_comm_isend(simcall, src, mbox, task_size, rate, src_buff, src_buff_size,
                                                    match_fun, nullptr, copy_data_fun, data, 0);
-  SIMCALL_SET_MC_VALUE(simcall, 0);
+  SIMCALL_SET_MC_VALUE(*simcall, 0);
   simcall_HANDLER_comm_wait(simcall, static_cast<simgrid::kernel::activity::CommImpl*>(comm.get()), timeout);
 }
 
@@ -104,7 +104,7 @@ XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t re
 {
   smx_activity_t comm = simcall_HANDLER_comm_irecv(simcall, receiver, mbox, dst_buff, dst_buff_size, match_fun,
                                                    copy_data_fun, data, rate);
-  SIMCALL_SET_MC_VALUE(simcall, 0);
+  SIMCALL_SET_MC_VALUE(*simcall, 0);
   simcall_HANDLER_comm_wait(simcall, static_cast<simgrid::kernel::activity::CommImpl*>(comm.get()), timeout);
 }
 
@@ -191,7 +191,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, simgrid::kernel::activity:
   comm->register_simcall(simcall);
 
   if (MC_is_active() || MC_record_replay_is_active()) {
-    int idx = SIMCALL_GET_MC_VALUE(simcall);
+    int idx = SIMCALL_GET_MC_VALUE(*simcall);
     if (idx == 0) {
       comm->state_ = SIMIX_DONE;
     } else {
@@ -253,7 +253,7 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activi
   simcall_comm_testany__set__result(simcall, -1);
 
   if (MC_is_active() || MC_record_replay_is_active()) {
-    int idx = SIMCALL_GET_MC_VALUE(simcall);
+    int idx = SIMCALL_GET_MC_VALUE(*simcall);
     if (idx == -1) {
       SIMIX_simcall_answer(simcall);
     } else {
@@ -297,7 +297,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activi
   if (MC_is_active() || MC_record_replay_is_active()) {
     if (timeout > 0.0)
       xbt_die("Timeout not implemented for waitany in the model-checker");
-    int idx                 = SIMCALL_GET_MC_VALUE(simcall);
+    int idx                 = SIMCALL_GET_MC_VALUE(*simcall);
     auto* comm              = comms[idx];
     comm->simcalls_.push_back(simcall);
     simcall_comm_waitany__set__result(simcall, idx);

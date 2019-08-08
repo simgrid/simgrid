@@ -83,9 +83,10 @@ simgrid::mc::Frame* ObjectInformation::find_function(const void* ip) const
 
 const simgrid::mc::Variable* ObjectInformation::find_variable(const char* name) const
 {
-  for (simgrid::mc::Variable const& variable : this->global_variables)
+  for (simgrid::mc::Variable const& variable : this->global_variables) {
     if (variable.name == name)
       return &variable;
+  }
   return nullptr;
 }
 
