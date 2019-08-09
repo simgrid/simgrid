@@ -68,12 +68,11 @@ void MutexImpl::unlock(actor::ActorImpl* issuer)
              owner_->get_cname(), owner_->get_pid());
 
   if (not sleeping_.empty()) {
-    /* pick one actor to wake up */
-    actor::ActorImpl* act = &sleeping_.front();
+    /* Give the ownership to the first waiting actor */
+    owner_ = &sleeping_.front();
     sleeping_.pop_front();
-    act->waiting_synchro = nullptr;
-    owner_             = act;
-    act->simcall_answer();
+    owner_->waiting_synchro = nullptr;
+    owner_->simcall_answer();
   } else {
     /* nobody to wake up */
     locked_ = false;
