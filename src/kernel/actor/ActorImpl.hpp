@@ -132,7 +132,8 @@ public:
 
   /** execute the pending simcall -- must be called from the maestro context */
   void simcall_handle(int value);
-  /** Terminates a simcall currently executed in maestro context */
+  /** Terminates a simcall currently executed in maestro context. The actor will be restarted in the next scheduling
+   * round */
   void simcall_answer();
 };
 
