@@ -148,6 +148,9 @@ const char* MC_smx_actor_get_name(smx_actor_t actor)
 unsigned long MC_smx_get_maxpid()
 {
   unsigned long maxpid;
-  mc_model_checker->process().read_variable("simgrid::kernel::actor::maxpid", &maxpid, sizeof(maxpid));
+  const char* name = "simgrid::kernel::actor::maxpid";
+  if (mc_model_checker->process().find_variable(name) == nullptr)
+    name = "maxpid"; // We seem to miss the namespaces when compiling with GCC
+  mc_model_checker->process().read_variable(name, &maxpid, sizeof(maxpid));
   return maxpid;
 }
