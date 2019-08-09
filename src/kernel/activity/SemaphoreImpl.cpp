@@ -25,7 +25,7 @@ void SemaphoreImpl::acquire(actor::ActorImpl* issuer, double timeout)
     sleeping_.push_back(*issuer);
   } else {
     value_--;
-    SIMIX_simcall_answer(&issuer->simcall);
+    issuer->simcall_answer();
   }
 }
 void SemaphoreImpl::release()
@@ -36,7 +36,7 @@ void SemaphoreImpl::release()
     auto& actor = sleeping_.front();
     sleeping_.pop_front();
     actor.waiting_synchro = nullptr;
-    SIMIX_simcall_answer(&actor.simcall);
+    actor.simcall_answer();
   } else {
     value_++;
   }

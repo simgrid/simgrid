@@ -347,10 +347,10 @@ const char *SIMIX_simcall_name(e_smx_simcall_t kind) {
 namespace simgrid {
 namespace simix {
 
-void unblock(smx_actor_t process)
+void unblock(smx_actor_t actor)
 {
   xbt_assert(SIMIX_is_maestro());
-  SIMIX_simcall_answer(&process->simcall);
+  actor->simcall_answer();
 }
 } // namespace simix
 } // namespace simgrid

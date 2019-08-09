@@ -242,7 +242,7 @@ void simcall_HANDLER_comm_test(smx_simcall_t simcall, simgrid::kernel::activity:
     comm->simcalls_.push_back(simcall);
     comm->finish();
   } else {
-    SIMIX_simcall_answer(simcall);
+    simcall->issuer->simcall_answer();
   }
 }
 
@@ -255,7 +255,7 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activi
   if (MC_is_active() || MC_record_replay_is_active()) {
     int idx = SIMCALL_GET_MC_VALUE(*simcall);
     if (idx == -1) {
-      SIMIX_simcall_answer(simcall);
+      simcall->issuer->simcall_answer();
     } else {
       simgrid::kernel::activity::CommImpl* comm = comms[idx];
       simcall_comm_testany__set__result(simcall, idx);
@@ -275,7 +275,7 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activi
       return;
     }
   }
-  SIMIX_simcall_answer(simcall);
+  simcall->issuer->simcall_answer();
 }
 
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
@@ -312,7 +312,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activi
     simcall->timer = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall]() {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
       simcall_comm_waitany__set__result(simcall, -1);
-      SIMIX_simcall_answer(simcall);
+      simcall->issuer->simcall_answer();
     });
   }
 
@@ -712,7 +712,7 @@ void CommImpl::finish()
     }
 
     if (simcall->issuer->get_host()->is_on())
-      SIMIX_simcall_answer(simcall);
+      simcall->issuer->simcall_answer();
     else
       simcall->issuer->context_->iwannadie = true;
   }

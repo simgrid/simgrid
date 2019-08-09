@@ -30,7 +30,7 @@ void MutexImpl::lock(actor::ActorImpl* issuer)
     /* mutex free */
     locked_ = true;
     owner_  = issuer;
-    SIMIX_simcall_answer(&issuer->simcall);
+    issuer->simcall_answer();
   }
   XBT_OUT();
 }
@@ -68,12 +68,12 @@ void MutexImpl::unlock(actor::ActorImpl* issuer)
              owner_->get_cname(), owner_->get_pid());
 
   if (not sleeping_.empty()) {
-    /*process to wake up */
-    actor::ActorImpl* p = &sleeping_.front();
+    /* pick one actor to wake up */
+    actor::ActorImpl* act = &sleeping_.front();
     sleeping_.pop_front();
-    p->waiting_synchro = nullptr;
-    owner_             = p;
-    SIMIX_simcall_answer(&p->simcall);
+    act->waiting_synchro = nullptr;
+    owner_             = act;
+    act->simcall_answer();
   } else {
     /* nobody to wake up */
     locked_ = false;

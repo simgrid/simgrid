@@ -132,6 +132,8 @@ public:
 
   /** execute the pending simcall -- must be called from the maestro context */
   void simcall_handle(int value);
+  /** Terminates a simcall currently executed in maestro context */
+  void simcall_answer();
 };
 
 class ProcessArg {

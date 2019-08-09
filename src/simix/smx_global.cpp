@@ -426,7 +426,7 @@ void SIMIX_run()
        *        - If a process is added because it's getting killed, its subsequent actions shouldn't matter
        *        - If a process gets added to actors_to_run because one of their blocking action constituting the meat
        *          of a simcall terminates, we're still good. Proof:
-       *          - You are added from SIMIX_simcall_answer() only. When this function is called depends on the resource
+       *          - You are added from ActorImpl::simcall_answer() only. When this function is called depends on the resource
        *            kind (network, cpu, disk, whatever), but the same arguments hold. Let's take communications as an
        *            example.
        *          - For communications, this function is called from SIMIX_comm_finish().

@@ -440,6 +440,20 @@ void ActorImpl::throw_exception(std::exception_ptr e)
   }
 }
 
+void ActorImpl::simcall_answer()
+{
+  if (this != simix_global->maestro_process){
+    XBT_DEBUG("Answer simcall %s (%d) issued by %s (%p)", SIMIX_simcall_name(simcall.call), (int)simcall.call,
+              get_cname(), this);
+    simcall.call = SIMCALL_NONE;
+    xbt_assert(not XBT_LOG_ISENABLED(simix_process, xbt_log_priority_debug) ||
+                   std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), this) ==
+                       end(simix_global->actors_to_run),
+               "Actor %p should not exist in actors_to_run!", this);
+    simix_global->actors_to_run.push_back(this);
+  }
+}
+
 void ActorImpl::set_host(s4u::Host* dest)
 {
   xbt::intrusive_erase(host_->pimpl_->process_list_, *this);
@@ -545,7 +559,7 @@ void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t actor)
   smx_activity_t sync_suspend = actor->suspend(simcall->issuer);
 
   if (actor != simcall->issuer) {
-    SIMIX_simcall_answer(simcall);
+    simcall->issuer->simcall_answer();
   } else {
     sync_suspend->simcalls_.push_back(simcall);
     actor->waiting_synchro = sync_suspend;
@@ -586,15 +600,15 @@ const char* SIMIX_process_self_get_name()
   return process->get_cname();
 }
 
-void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, double timeout)
+void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t actor, double timeout)
 {
-  if (process->finished_) {
+  if (actor->finished_) {
     // The joined process is already finished, just wake up the issuer process right away
     simcall_process_sleep__set__result(simcall, SIMIX_DONE);
-    SIMIX_simcall_answer(simcall);
+    simcall->issuer->simcall_answer();
     return;
   }
-  smx_activity_t sync = simcall->issuer->join(process, timeout);
+  smx_activity_t sync = simcall->issuer->join(actor, timeout);
   sync->simcalls_.push_back(simcall);
   simcall->issuer->waiting_synchro = sync;
 }
@@ -604,7 +618,7 @@ void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration)
   if (MC_is_active() || MC_record_replay_is_active()) {
     MC_process_clock_add(simcall->issuer, duration);
     simcall_process_sleep__set__result(simcall, SIMIX_DONE);
-    SIMIX_simcall_answer(simcall);
+    simcall->issuer->simcall_answer();
     return;
   }
   smx_activity_t sync = simcall->issuer->sleep(duration);

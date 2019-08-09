@@ -56,7 +56,6 @@ struct s_smx_simcall {
 
 /******************************** General *************************************/
 
-XBT_PRIVATE void SIMIX_simcall_answer(smx_simcall_t simcall);
 XBT_PRIVATE const char* SIMIX_simcall_name(e_smx_simcall_t kind);
 XBT_PRIVATE void SIMIX_run_kernel(std::function<void()> const* code);
 XBT_PRIVATE void SIMIX_run_blocking(std::function<void()> const* code);

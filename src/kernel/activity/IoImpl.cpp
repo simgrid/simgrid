@@ -100,7 +100,7 @@ void IoImpl::finish()
     }
 
     simcall->issuer->waiting_synchro = nullptr;
-    SIMIX_simcall_answer(simcall);
+    simcall->issuer->simcall_answer();
   }
 }
 

@@ -64,7 +64,7 @@ void SleepImpl::finish()
       simcall->issuer->suspended_ = false;
       simcall_HANDLER_process_suspend(simcall, simcall->issuer);
     } else {
-      SIMIX_simcall_answer(simcall);
+      simcall->issuer->simcall_answer();
     }
   }
 

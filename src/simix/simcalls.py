@@ -144,7 +144,7 @@ class Simcall(object):
         else:
             res.append(indent + "  " + call + ";")
         if self.call_kind != 'Blck':
-            res.append(indent + '  SIMIX_simcall_answer(&simcall);')
+            res.append(indent + '  simcall_answer();')
         res.append(indent + '  break;')
         res.append('')
         return '\n'.join(res)

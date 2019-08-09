@@ -105,7 +105,7 @@ void RawImpl::finish()
       THROW_IMPOSSIBLE;
   }
   simcall->issuer->waiting_synchro = nullptr;
-  SIMIX_simcall_answer(simcall);
+  simcall->issuer->simcall_answer();
 }
 
 } // namespace activity

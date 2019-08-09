@@ -43,7 +43,7 @@ void simcall_HANDLER_execution_test(smx_simcall_t simcall, simgrid::kernel::acti
     synchro->simcalls_.push_back(simcall);
     synchro->finish();
   } else {
-    SIMIX_simcall_answer(simcall);
+    simcall->issuer->simcall_answer();
   }
   simcall_execution_test__set__result(simcall, res);
 }
@@ -63,7 +63,7 @@ void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, simgrid::kerne
           exec->simcalls_.erase(j);
       }
       simcall_execution_waitany_for__set__result(simcall, -1);
-      SIMIX_simcall_answer(simcall);
+      simcall->issuer->simcall_answer();
     });
   }
 
@@ -279,7 +279,7 @@ void ExecImpl::finish()
     simcall->issuer->waiting_synchro = nullptr;
     /* Fail the process if the host is down */
     if (simcall->issuer->get_host()->is_on())
-      SIMIX_simcall_answer(simcall);
+      simcall->issuer->simcall_answer();
     else
       simcall->issuer->context_->iwannadie = true;
   }
