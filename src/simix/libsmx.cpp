@@ -46,7 +46,7 @@ unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* 
 
 void simcall_process_join(smx_actor_t process, double timeout)
 {
-  simcall_BODY_process_join(process, timeout);
+  SIMIX_process_self()->join(process, timeout);
 }
 
 /**

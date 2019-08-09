@@ -86,12 +86,23 @@ int Actor::get_refcount()
 
 void Actor::join()
 {
-  simcall_process_join(this->pimpl_, -1);
+  join(-1);
 }
 
 void Actor::join(double timeout)
 {
-  simcall_process_join(this->pimpl_, timeout);
+  auto issuer = SIMIX_process_self();
+  auto target = pimpl_;
+  simix::simcall_blocking([issuer, target, timeout] {
+    if (target->finished_) {
+      // The joined process is already finished, just wake up the issuer right away
+      issuer->simcall_answer();
+    } else {
+      smx_activity_t sync = issuer->join(target, timeout);
+      sync->simcalls_.push_back(&issuer->simcall);
+      issuer->waiting_synchro = sync;
+    }
+  });
 }
 
 void Actor::set_auto_restart(bool autorestart)

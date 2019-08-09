@@ -36,7 +36,6 @@
 # ./include/simgrid/simix.h (otherwise you will get a warning at compile time)
 
 void process_suspend(smx_actor_t process) [[block]];
-int  process_join(smx_actor_t process, double timeout) [[block]];
 int  process_sleep(double duration) [[block]];
 
 int           execution_wait(simgrid::kernel::activity::ExecImpl* execution) [[block]];

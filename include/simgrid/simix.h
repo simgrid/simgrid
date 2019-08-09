@@ -180,7 +180,9 @@ SG_BEGIN_DECL()
 void simcall_process_set_data(smx_actor_t process, void* data);
 /* Process handling */
 XBT_PUBLIC void simcall_process_suspend(smx_actor_t process);
-XBT_PUBLIC void simcall_process_join(smx_actor_t process, double timeout);
+
+XBT_ATTRIB_DEPRECATED_v327("Please use Actor::join()") XBT_PUBLIC
+    void simcall_process_join(smx_actor_t process, double timeout);
 
 /* Sleep control */
 XBT_PUBLIC e_smx_state_t simcall_process_sleep(double duration);

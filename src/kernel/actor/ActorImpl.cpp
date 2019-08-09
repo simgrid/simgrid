@@ -600,19 +600,6 @@ const char* SIMIX_process_self_get_name()
   return process->get_cname();
 }
 
-void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t actor, double timeout)
-{
-  if (actor->finished_) {
-    // The joined process is already finished, just wake up the issuer process right away
-    simcall_process_sleep__set__result(simcall, SIMIX_DONE);
-    simcall->issuer->simcall_answer();
-    return;
-  }
-  smx_activity_t sync = simcall->issuer->join(actor, timeout);
-  sync->simcalls_.push_back(simcall);
-  simcall->issuer->waiting_synchro = sync;
-}
-
 void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration)
 {
   if (MC_is_active() || MC_record_replay_is_active()) {

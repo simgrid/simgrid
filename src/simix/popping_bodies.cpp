@@ -46,13 +46,6 @@ inline static void simcall_BODY_process_suspend(smx_actor_t process)
   return simcall<void, smx_actor_t>(SIMCALL_PROCESS_SUSPEND, process);
 }
 
-inline static int simcall_BODY_process_join(smx_actor_t process, double timeout)
-{
-  if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_process_join(&SIMIX_process_self()->simcall, process, timeout);
-  return simcall<int, smx_actor_t, double>(SIMCALL_PROCESS_JOIN, process, timeout);
-}
-
 inline static int simcall_BODY_process_sleep(double duration)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
