@@ -85,11 +85,10 @@ int Coll_reduce_arrival_pattern_aware::reduce(const void *buf, void *rbuf,
 
         for (i = 1; i < size; i++) {
           if (already_received[i] == 0) {
-            Request::iprobe(i, MPI_ANY_TAG, comm, &flag_array[i],
-                             MPI_STATUSES_IGNORE);
-            simcall_process_sleep(0.0001);
+            Request::iprobe(i, MPI_ANY_TAG, comm, &flag_array[i], MPI_STATUSES_IGNORE);
+            simgrid::s4u::this_actor::sleep_for(0.0001);
+          }
             }
-        }
 
         header_index = 0;
         /* recv 1-byte message */

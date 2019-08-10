@@ -723,5 +723,5 @@ void SMPI_finalize()
 void smpi_mpi_init() {
   smpi_init_fortran_types();
   if(smpi_init_sleep > 0)
-    simcall_process_sleep(smpi_init_sleep);
+    simgrid::s4u::this_actor::sleep_for(smpi_init_sleep);
 }

@@ -176,7 +176,7 @@ static unsigned int private_sleep(double secs)
   int rank = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_sleeping_in(rank, secs);
 
-  simcall_process_sleep(secs);
+  simgrid::s4u::this_actor::sleep_for(secs);
 
   TRACE_smpi_sleeping_out(rank);
 
@@ -223,7 +223,7 @@ int smpi_gettimeofday(struct timeval* tv, struct timezone* tz)
 #endif
   }
   if (smpi_wtime_sleep > 0)
-    simcall_process_sleep(smpi_wtime_sleep);
+    simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
   smpi_bench_begin();
   return 0;
 }
@@ -241,7 +241,7 @@ int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp)
     tp->tv_nsec = static_cast<long int>((now - tp->tv_sec) * 1e9);
   }
   if (smpi_wtime_sleep > 0)
-    simcall_process_sleep(smpi_wtime_sleep);
+    simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
   smpi_bench_begin();
   return 0;
 }
@@ -254,7 +254,7 @@ double smpi_mpi_wtime()
     smpi_bench_end();
     time = SIMIX_get_clock();
     if (smpi_wtime_sleep > 0)
-      simcall_process_sleep(smpi_wtime_sleep);
+      simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
     smpi_bench_begin();
   } else {
     time = SIMIX_get_clock();

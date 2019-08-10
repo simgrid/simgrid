@@ -439,7 +439,7 @@ void Request::start()
     }
 
     if(sleeptime > 0.0){
-      simcall_process_sleep(sleeptime);
+      simgrid::s4u::this_actor::sleep_for(sleeptime);
       XBT_DEBUG("sending size of %zu : sleep %f ", size_, sleeptime);
     }
 
@@ -540,7 +540,7 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
   }
   
   if(smpi_test_sleep > 0)
-    simcall_process_sleep(nsleeps*smpi_test_sleep);
+    simgrid::s4u::this_actor::sleep_for(nsleeps * smpi_test_sleep);
 
   Status::empty(status);
   *flag = 1;
@@ -636,7 +636,7 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
     //multiplier to the sleeptime, to increase speed of execution, each failed testany will increase it
     static int nsleeps = 1;
     if(smpi_test_sleep > 0)
-      simcall_process_sleep(nsleeps*smpi_test_sleep);
+      simgrid::s4u::this_actor::sleep_for(nsleeps * smpi_test_sleep);
     try{
       i = simcall_comm_testany(comms.data(), comms.size()); // The i-th element in comms matches!
     } catch (const Exception&) {
@@ -854,8 +854,8 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
     double sleeptime =
         simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::Host>()->orecv(req->real_size());
-    if(sleeptime > 0.0){
-      simcall_process_sleep(sleeptime);
+    if (sleeptime > 0.0) {
+      simgrid::s4u::this_actor::sleep_for(sleeptime);
       XBT_DEBUG("receiving size of %zu : sleep %f ", req->real_size_, sleeptime);
     }
     unref(&(req->detached_sender_));
