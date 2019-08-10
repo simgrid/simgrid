@@ -26,7 +26,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 /** @brief Simcalls' names (generated from src/simix/simcalls.in) */
 const char* simcall_names[] = {
     "SIMCALL_NONE",
-    "SIMCALL_PROCESS_SUSPEND",
     "SIMCALL_EXECUTION_WAIT",
     "SIMCALL_EXECUTION_WAITANY_FOR",
     "SIMCALL_EXECUTION_TEST",
@@ -62,10 +61,6 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int value) {
   if (context_->iwannadie)
     return;
   switch (simcall.call) {
-    case SIMCALL_PROCESS_SUSPEND:
-      simcall_HANDLER_process_suspend(&simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall.args[0]));
-      break;
-
     case SIMCALL_EXECUTION_WAIT:
       simcall_HANDLER_execution_wait(&simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::ExecImpl*>(simcall.args[0]));
       break;

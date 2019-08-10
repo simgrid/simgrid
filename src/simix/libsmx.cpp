@@ -49,13 +49,9 @@ void simcall_process_join(smx_actor_t process, double timeout)
   SIMIX_process_self()->join(process, timeout);
 }
 
-/**
- * @ingroup simix_process_management
- * @brief Suspends an actor
- */
 void simcall_process_suspend(smx_actor_t process)
 {
-  simcall_BODY_process_suspend(process);
+  SIMIX_process_self()->iface()->suspend();
 }
 
 e_smx_state_t simcall_process_sleep(double duration)

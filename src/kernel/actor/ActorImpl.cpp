@@ -356,27 +356,24 @@ s4u::Actor* ActorImpl::restart()
   return actor->ciface();
 }
 
-activity::ActivityImplPtr ActorImpl::suspend(ActorImpl* issuer)
+void ActorImpl::suspend(ActorImpl* issuer)
 {
   if (suspended_) {
     XBT_DEBUG("Actor '%s' is already suspended", get_cname());
-    return nullptr;
+    return;
   }
 
   suspended_ = true;
 
-  /* If we are suspending another actor that is waiting on a sync, suspend its synchronization. */
-  if (this != issuer) {
-    if (waiting_synchro)
-      waiting_synchro->suspend();
-    /* If the other actor is not waiting, its suspension is delayed to when the actor is rescheduled. */
-
-    return nullptr;
-  } else {
+  /* If the suspended actor is waiting on a sync, suspend its synchronization. */
+  if (waiting_synchro == nullptr) {
     activity::ExecImpl* exec = new activity::ExecImpl();
-    (*exec).set_name("suspend").set_host(host_).set_flops_amount(0.0).start();
-    return activity::ExecImplPtr(exec);
+    exec->set_name("suspend").set_host(host_).set_flops_amount(0.0).start();
+    waiting_synchro = activity::ExecImplPtr(exec);
+
+    waiting_synchro->simcalls_.push_back(&simcall);
   }
+  waiting_synchro->suspend();
 }
 
 void ActorImpl::resume()
@@ -552,20 +549,6 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
                                  smx_actor_t /*parent_process*/) // deprecated 3.25
 {
   return simgrid::kernel::actor::ActorImpl::attach(name, data, sg_host_by_name(hostname), properties).get();
-}
-
-void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t actor)
-{
-  smx_activity_t sync_suspend = actor->suspend(simcall->issuer);
-
-  if (actor != simcall->issuer) {
-    simcall->issuer->simcall_answer();
-  } else {
-    sync_suspend->simcalls_.push_back(simcall);
-    actor->waiting_synchro = sync_suspend;
-    actor->waiting_synchro->suspend();
-  }
-  /* If we are suspending ourselves, then just do not finish the simcall now */
 }
 
 int SIMIX_process_count()

@@ -186,8 +186,16 @@ aid_t Actor::get_ppid() const
 
 void Actor::suspend()
 {
+  auto issuer = SIMIX_process_self();
+  auto target = pimpl_;
   s4u::Actor::on_suspend(*this);
-  simcall_process_suspend(pimpl_);
+  simix::simcall_blocking([issuer, target]() {
+    target->suspend(issuer);
+    if (target != issuer) {
+      /* If we are suspending ourselves, then just do not finish the simcall now */
+      issuer->simcall_answer();
+    }
+  });
 }
 
 void Actor::resume()
@@ -435,10 +443,7 @@ Host* get_host()
 
 void suspend()
 {
-  kernel::actor::ActorImpl* actor = SIMIX_process_self();
-  Actor::on_suspend(*actor->ciface());
-
-  simcall_process_suspend(actor);
+  SIMIX_process_self()->iface()->suspend();
 }
 
 void resume()
