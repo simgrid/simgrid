@@ -198,7 +198,7 @@ void Actor::resume()
 
 bool Actor::is_suspended()
 {
-  return simix::simcall([this] { return pimpl_->is_suspended(); });
+  return pimpl_->is_suspended();
 }
 
 void Actor::set_kill_time(double kill_time)
