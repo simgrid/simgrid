@@ -5,11 +5,14 @@
 
 #include "simgrid/Exception.hpp"
 #include "simgrid/actor.h"
+#include "simgrid/modelchecker.h"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
+#include "src/include/mc/mc.h"
 #include "src/kernel/activity/ExecImpl.hpp"
+#include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 
@@ -290,13 +293,25 @@ bool is_maestro()
 
 void sleep_for(double duration)
 {
+  xbt_assert(std::isfinite(duration), "duration is not finite!");
+
   if (duration > 0) {
-    kernel::actor::ActorImpl* actor = SIMIX_process_self();
-    Actor::on_sleep(*actor->ciface());
+    kernel::actor::ActorImpl* issuer = SIMIX_process_self();
+    Actor::on_sleep(*issuer->ciface());
 
-    simcall_process_sleep(duration);
+    simix::simcall_blocking([issuer, duration]() {
+      if (MC_is_active() || MC_record_replay_is_active()) {
+        MC_process_clock_add(issuer, duration);
+        issuer->simcall_answer();
+        return;
+      }
+      smx_activity_t sync = issuer->sleep(duration);
+      sync->simcalls_.push_back(&issuer->simcall);
+      issuer->waiting_synchro = sync;
 
-    Actor::on_wake_up(*actor->ciface());
+    });
+
+    Actor::on_wake_up(*issuer->ciface());
   }
 }
 

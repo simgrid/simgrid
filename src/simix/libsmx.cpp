@@ -58,22 +58,10 @@ void simcall_process_suspend(smx_actor_t process)
   simcall_BODY_process_suspend(process);
 }
 
-/**
- * @ingroup simix_process_management
- * @brief Creates a new sleep SIMIX synchro.
- *
- * This function creates a SURF action and allocates the data necessary
- * to create the SIMIX synchro. It can raise a HostFailureException if the
- * host crashed. The default SIMIX name of the synchro is "sleep".
- *
- *   @param duration Time duration of the sleep.
- *   @return A result telling whether the sleep was successful
- */
 e_smx_state_t simcall_process_sleep(double duration)
 {
-  /* checking for infinite values */
-  xbt_assert(std::isfinite(duration), "duration is not finite!");
-  return (e_smx_state_t) simcall_BODY_process_sleep(duration);
+  SIMIX_process_self()->sleep(duration);
+  return SIMIX_DONE;
 }
 
 /**

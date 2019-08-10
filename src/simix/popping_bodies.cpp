@@ -46,13 +46,6 @@ inline static void simcall_BODY_process_suspend(smx_actor_t process)
   return simcall<void, smx_actor_t>(SIMCALL_PROCESS_SUSPEND, process);
 }
 
-inline static int simcall_BODY_process_sleep(double duration)
-{
-  if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_process_sleep(&SIMIX_process_self()->simcall, duration);
-  return simcall<int, double>(SIMCALL_PROCESS_SLEEP, duration);
-}
-
 inline static int simcall_BODY_execution_wait(simgrid::kernel::activity::ExecImpl* execution)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */

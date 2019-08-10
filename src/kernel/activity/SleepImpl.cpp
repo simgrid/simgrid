@@ -57,7 +57,6 @@ void SleepImpl::finish()
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
 
-    simcall_process_sleep__set__result(simcall, state_);
     simcall->issuer->waiting_synchro = nullptr;
     if (simcall->issuer->is_suspended()) {
       XBT_DEBUG("Wait! This process is suspended and can't wake up now.");

@@ -600,19 +600,6 @@ const char* SIMIX_process_self_get_name()
   return process->get_cname();
 }
 
-void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration)
-{
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    MC_process_clock_add(simcall->issuer, duration);
-    simcall_process_sleep__set__result(simcall, SIMIX_DONE);
-    simcall->issuer->simcall_answer();
-    return;
-  }
-  smx_activity_t sync = simcall->issuer->sleep(duration);
-  sync->simcalls_.push_back(simcall);
-  simcall->issuer->waiting_synchro = sync;
-}
-
 /**
  * @brief Calling this function makes the process to yield.
  *
