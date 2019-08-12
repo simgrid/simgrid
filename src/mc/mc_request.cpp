@@ -176,6 +176,9 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
 {
   xbt_assert(mc_model_checker != nullptr, "Must be called from MCer");
 
+  if (req->transition != nullptr)
+    return req->transition->to_string();
+
   bool use_remote_comm = true;
   switch(request_type) {
   case simgrid::mc::RequestType::simix:
@@ -417,9 +420,15 @@ static inline const char* get_color(int id)
 
 std::string request_get_dot_output(smx_simcall_t req, int value)
 {
+  const smx_actor_t issuer = MC_smx_simcall_get_issuer(req);
+  const char* color        = get_color(issuer->get_pid() - 1);
+
+  if (req->transition != nullptr)
+    return simgrid::xbt::string_printf("label = \"%s\", color = %s, fontcolor = %s",
+                                       req->transition->dot_label().c_str(), color, color);
+
   std::string label;
 
-  const smx_actor_t issuer = MC_smx_simcall_get_issuer(req);
 
   switch (req->call) {
   case SIMCALL_COMM_ISEND:
@@ -531,7 +540,6 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
     THROW_UNIMPLEMENTED;
   }
 
-  const char* color = get_color(issuer->get_pid() - 1);
   return  simgrid::xbt::string_printf(
         "label = \"%s\", color = %s, fontcolor = %s", label.c_str(),
         color, color);

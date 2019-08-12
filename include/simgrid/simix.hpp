@@ -16,8 +16,26 @@
 #include <string>
 #include <unordered_map>
 
-XBT_PUBLIC void simcall_run_kernel(std::function<void()> const& code);
-XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code);
+namespace simgrid {
+namespace kernel {
+namespace actor {
+
+class Transition {
+public:
+  virtual bool fireable()
+  {
+    return true;
+  } // whether this transition can currently be taken (if not, it could block the process)
+  virtual bool visible() { return true; } // whether the model-checker should pay any attention to this simcall
+  virtual std::string to_string() = 0;
+  virtual std::string dot_label() = 0;
+};
+} // namespace actor
+} // namespace kernel
+} // namespace simgrid
+
+XBT_PUBLIC void simcall_run_kernel(std::function<void()> const& code, simgrid::kernel::actor::Transition* t);
+XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code, simgrid::kernel::actor::Transition* t);
 
 namespace simgrid {
 namespace kernel {
@@ -42,7 +60,7 @@ namespace actor {
  * you may need to wait for that mutex to be unlocked by its current owner.
  * Potentially blocking simcall must be issued using simcall_blocking(), right below in this file.
  */
-template <class F> typename std::result_of<F()>::type simcall(F&& code)
+template <class F> typename std::result_of<F()>::type simcall(F&& code, Transition* t = nullptr)
 {
   // If we are in the maestro, we take the fast path and execute the
   // code directly without simcall mashalling/unmarshalling/dispatch:
@@ -54,7 +72,7 @@ template <class F> typename std::result_of<F()>::type simcall(F&& code)
   // conveniently handles the success/failure value for us.
   typedef typename std::result_of<F()>::type R;
   simgrid::xbt::Result<R> result;
-  simcall_run_kernel([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); });
+  simcall_run_kernel([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, t);
   return result.get();
 }
 
@@ -72,7 +90,7 @@ template <class F> typename std::result_of<F()>::type simcall(F&& code)
  *
  * If your code never calls actor->simcall_answer() itself, the actor will never return from its simcall.
  */
-template <class F> typename std::result_of<F()>::type simcall_blocking(F&& code)
+template <class F> typename std::result_of<F()>::type simcall_blocking(F&& code, Transition* t = nullptr)
 {
   // If we are in the maestro, we take the fast path and execute the
   // code directly without simcall mashalling/unmarshalling/dispatch:
@@ -84,7 +102,7 @@ template <class F> typename std::result_of<F()>::type simcall_blocking(F&& code)
   // conveniently handles the success/failure value for us.
   typedef typename std::result_of<F()>::type R;
   simgrid::xbt::Result<R> result;
-  simcall_run_blocking([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); });
+  simcall_run_blocking([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, t);
   return result.get();
 }
 } // namespace actor

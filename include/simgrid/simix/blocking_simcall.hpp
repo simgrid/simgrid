@@ -18,8 +18,6 @@
 #include <simgrid/simix.h>
 #include <simgrid/simix.hpp>
 
-XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code);
-
 namespace simgrid {
 namespace simix {
 
@@ -54,19 +52,20 @@ template <class F> auto kernel_sync(F code) -> decltype(code().get())
   smx_actor_t self = SIMIX_process_self();
   simgrid::xbt::Result<T> result;
 
-  simcall_run_blocking([&result, self, &code]{
-    try {
-      auto future = code();
-      future.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
-        simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(value));
-        simgrid::simix::unblock(self);
-      });
-    }
-    catch (...) {
-      result.set_exception(std::current_exception());
-      simgrid::simix::unblock(self);
-    }
-  });
+  simcall_run_blocking(
+      [&result, self, &code] {
+        try {
+          auto future = code();
+          future.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
+            simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(value));
+            simgrid::simix::unblock(self);
+          });
+        } catch (...) {
+          result.set_exception(std::current_exception());
+          simgrid::simix::unblock(self);
+        }
+      },
+      nullptr);
   return result.get();
 }
 
@@ -89,20 +88,21 @@ public:
       throw std::future_error(std::future_errc::no_state);
     smx_actor_t self = SIMIX_process_self();
     simgrid::xbt::Result<T> result;
-    simcall_run_blocking([this, &result, self]{
-      try {
-        // When the kernel future is ready...
-        this->future_.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
-          // ... wake up the process with the result of the kernel future.
-          simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(value));
-          simgrid::simix::unblock(self);
-        });
-      }
-      catch (...) {
-        result.set_exception(std::current_exception());
-        simgrid::simix::unblock(self);
-      }
-    });
+    simcall_run_blocking(
+        [this, &result, self] {
+          try {
+            // When the kernel future is ready...
+            this->future_.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
+              // ... wake up the process with the result of the kernel future.
+              simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(value));
+              simgrid::simix::unblock(self);
+            });
+          } catch (...) {
+            result.set_exception(std::current_exception());
+            simgrid::simix::unblock(self);
+          }
+        },
+        nullptr);
     return result.get();
   }
   bool is_ready() const
@@ -119,20 +119,21 @@ public:
     // The future is not ready. We have to delegate to the SimGrid kernel:
     std::exception_ptr exception;
     smx_actor_t self = SIMIX_process_self();
-    simcall_run_blocking([this, &exception, self]{
-      try {
-        // When the kernel future is ready...
-        this->future_.then_([this, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
-          // ...store it the simix kernel and wake up.
-          this->future_ = std::move(simgrid::kernel::Future<T>(value));
-          simgrid::simix::unblock(self);
-        });
-      }
-      catch (...) {
-        exception = std::current_exception();
-        simgrid::simix::unblock(self);
-      }
-    });
+    simcall_run_blocking(
+        [this, &exception, self] {
+          try {
+            // When the kernel future is ready...
+            this->future_.then_([this, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
+              // ...store it the simix kernel and wake up.
+              this->future_ = std::move(simgrid::kernel::Future<T>(value));
+              simgrid::simix::unblock(self);
+            });
+          } catch (...) {
+            exception = std::current_exception();
+            simgrid::simix::unblock(self);
+          }
+        },
+        nullptr);
   }
 private:
   // We wrap an event-based kernel future:

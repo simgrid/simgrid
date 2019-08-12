@@ -46,6 +46,7 @@ struct s_smx_simcall {
   e_smx_simcall_t call;
   smx_actor_t issuer;
   smx_timer_t timeout_cb; // Callback to timeouts
+  simgrid::kernel::actor::Transition* transition = nullptr;
   int mc_value;
   u_smx_scalar args[11];
   u_smx_scalar result;
