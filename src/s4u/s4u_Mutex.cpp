@@ -44,7 +44,7 @@ bool Mutex::try_lock()
  */
 MutexPtr Mutex::create()
 {
-  kernel::activity::MutexImpl* mutex = simix::simcall([] { return new kernel::activity::MutexImpl(); });
+  kernel::activity::MutexImpl* mutex = kernel::actor::simcall([] { return new kernel::activity::MutexImpl(); });
   return MutexPtr(&mutex->mutex(), false);
 }
 
@@ -69,7 +69,7 @@ void intrusive_ptr_release(Mutex* mutex)
 sg_mutex_t sg_mutex_init()
 {
   simgrid::kernel::activity::MutexImpl* mutex =
-      simgrid::simix::simcall([] { return new simgrid::kernel::activity::MutexImpl(); });
+      simgrid::kernel::actor::simcall([] { return new simgrid::kernel::activity::MutexImpl(); });
 
   return new simgrid::s4u::Mutex(mutex);
 }

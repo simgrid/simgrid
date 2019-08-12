@@ -35,7 +35,7 @@ static void master()
 {
   // Test the simple immediate execution:
   XBT_INFO("Start");
-  simgrid::simix::simcall([] { XBT_INFO("kernel"); });
+  simgrid::kernel::actor::simcall([] { XBT_INFO("kernel"); });
   XBT_INFO("kernel, returned");
 
   // Synchronize on a successful Future<void>:

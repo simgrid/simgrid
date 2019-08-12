@@ -53,7 +53,7 @@ const char* Storage::get_property(const std::string& key) const
 
 void Storage::set_property(const std::string& key, const std::string& value)
 {
-  simix::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  kernel::actor::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
 }
 
 IoPtr Storage::io_init(sg_size_t size, Io::OpType type)

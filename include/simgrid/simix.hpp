@@ -20,7 +20,8 @@ XBT_PUBLIC void simcall_run_kernel(std::function<void()> const& code);
 XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code);
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace actor {
 
 /** Execute some code in kernel context on behalf of the user code.
  *
@@ -86,6 +87,11 @@ template <class F> typename std::result_of<F()>::type simcall_blocking(F&& code)
   simcall_run_blocking([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); });
   return result.get();
 }
+} // namespace actor
+} // namespace kernel
+} // namespace simgrid
+namespace simgrid {
+namespace simix {
 
 XBT_ATTRIB_DEPRECATED_v325("Please manifest if you actually need this function")
     XBT_PUBLIC const std::vector<smx_actor_t>& process_get_runnable();

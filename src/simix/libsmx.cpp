@@ -155,7 +155,7 @@ smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
 {
   xbt_assert(mbox, "No rendez-vous point defined for iprobe");
 
-  return simgrid::simix::simcall([mbox, type, match_fun, data] { return mbox->iprobe(type, match_fun, data); });
+  return simgrid::kernel::actor::simcall([mbox, type, match_fun, data] { return mbox->iprobe(type, match_fun, data); });
 }
 
 /**
@@ -225,7 +225,7 @@ smx_mutex_t simcall_mutex_init()
                                                                                  // get there before the initialization
     xbt_abort();
   }
-  return simgrid::simix::simcall([] { return new simgrid::kernel::activity::MutexImpl(); });
+  return simgrid::kernel::actor::simcall([] { return new simgrid::kernel::activity::MutexImpl(); });
 }
 
 /**
@@ -261,7 +261,7 @@ void simcall_mutex_unlock(smx_mutex_t mutex)
  */
 smx_cond_t simcall_cond_init()
 {
-  return simgrid::simix::simcall([] { return new simgrid::kernel::activity::ConditionVariableImpl(); });
+  return simgrid::kernel::actor::simcall([] { return new simgrid::kernel::activity::ConditionVariableImpl(); });
 }
 
 /**
@@ -342,20 +342,22 @@ void unblock(smx_actor_t actor)
 /* ****************************DEPRECATED CALLS******************************* */
 void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
 {
-  simgrid::simix::simcall([process, kill_time] { process->set_kill_time(kill_time); });
+  simgrid::kernel::actor::simcall([process, kill_time] { process->set_kill_time(kill_time); });
 }
 void simcall_comm_cancel(smx_activity_t comm)
 {
-  simgrid::simix::simcall([comm] { boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(comm)->cancel(); });
+  simgrid::kernel::actor::simcall(
+      [comm] { boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(comm)->cancel(); });
 }
 void simcall_execution_cancel(smx_activity_t exec)
 {
-  simgrid::simix::simcall([exec] { boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->cancel(); });
+  simgrid::kernel::actor::simcall(
+      [exec] { boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->cancel(); });
 }
 
 void simcall_execution_set_bound(smx_activity_t exec, double bound)
 {
-  simgrid::simix::simcall(
+  simgrid::kernel::actor::simcall(
       [exec, bound] { boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(exec)->set_bound(bound); });
 }
 
@@ -363,7 +365,7 @@ void simcall_execution_set_bound(smx_activity_t exec, double bound)
 smx_activity_t simcall_execution_start(const std::string& name, const std::string& category, double flops_amount,
                                        double sharing_penalty, double bound, sg_host_t host)
 {
-  return simgrid::simix::simcall([name, category, flops_amount, sharing_penalty, bound, host] {
+  return simgrid::kernel::actor::simcall([name, category, flops_amount, sharing_penalty, bound, host] {
     simgrid::kernel::activity::ExecImpl* exec = new simgrid::kernel::activity::ExecImpl();
     (*exec)
         .set_name(name)
@@ -409,7 +411,7 @@ smx_activity_t simcall_execution_parallel_start(const std::string& name, int hos
     flops_parallel_amount = std::vector<double>(flops_amount, flops_amount + host_nb);
   if (bytes_amount != nullptr)
     bytes_parallel_amount = std::vector<double>(bytes_amount, bytes_amount + host_nb * host_nb);
-  return simgrid::simix::simcall([name, hosts, flops_parallel_amount, bytes_parallel_amount, timeout] {
+  return simgrid::kernel::actor::simcall([name, hosts, flops_parallel_amount, bytes_parallel_amount, timeout] {
     simgrid::kernel::activity::ExecImpl* exec = new simgrid::kernel::activity::ExecImpl();
     (*exec)
         .set_name(name)

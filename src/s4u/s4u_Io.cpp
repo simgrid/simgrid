@@ -21,7 +21,7 @@ Io::Io(sg_storage_t storage, sg_size_t size, OpType type) : storage_(storage), s
 
 Io* Io::start()
 {
-  simix::simcall([this] {
+  kernel::actor::simcall([this] {
     (*boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_))
         .set_name(name_)
         .set_storage(storage_->get_impl())
@@ -35,7 +35,7 @@ Io* Io::start()
 
 Io* Io::cancel()
 {
-  simgrid::simix::simcall([this] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->cancel(); });
+  simgrid::kernel::actor::simcall([this] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->cancel(); });
   state_ = State::CANCELED;
   return this;
 }
@@ -70,13 +70,13 @@ bool Io::test()
 /** @brief Returns the amount of flops that remain to be done */
 double Io::get_remaining()
 {
-  return simix::simcall(
+  return kernel::actor::simcall(
       [this]() { return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_remaining(); });
 }
 
 sg_size_t Io::get_performed_ioops()
 {
-  return simix::simcall(
+  return kernel::actor::simcall(
       [this]() { return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_performed_ioops(); });
 }
 

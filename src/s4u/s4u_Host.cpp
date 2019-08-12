@@ -87,7 +87,7 @@ Host* Host::current()
 void Host::turn_on()
 {
   if (not is_on()) {
-    simix::simcall([this] {
+    kernel::actor::simcall([this] {
       this->pimpl_cpu->turn_on();
       this->pimpl_->turn_on();
       on_state_change(*this);
@@ -99,7 +99,7 @@ void Host::turn_on()
 void Host::turn_off()
 {
   if (is_on()) {
-    simix::simcall([this] {
+    kernel::actor::simcall([this] {
       for (VirtualMachine* const& vm : vm::VirtualMachineImpl::allVms_)
         if (vm->get_pm() == this) {
           vm->shutdown();
@@ -199,19 +199,19 @@ const char* Host::get_property(const std::string& key) const
 
 void Host::set_property(const std::string& key, const std::string& value)
 {
-  simix::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  kernel::actor::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
 }
 
 void Host::set_properties(const std::map<std::string, std::string>& properties)
 {
-  simix::simcall([this, &properties] { this->pimpl_->set_properties(properties); });
+  kernel::actor::simcall([this, &properties] { this->pimpl_->set_properties(properties); });
 }
 
 /** Specify a profile turning the host on and off according to a exhaustive list or a stochastic law.
  * The profile must contain boolean values. */
 void Host::set_state_profile(kernel::profile::Profile* p)
 {
-  return simix::simcall([this, p] { pimpl_cpu->set_state_profile(p); });
+  return kernel::actor::simcall([this, p] { pimpl_cpu->set_state_profile(p); });
 }
 /** Specify a profile modeling the external load according to a exhaustive list or a stochastic law.
  *
@@ -221,7 +221,7 @@ void Host::set_state_profile(kernel::profile::Profile* p)
  */
 void Host::set_speed_profile(kernel::profile::Profile* p)
 {
-  return simix::simcall([this, p] { pimpl_cpu->set_speed_profile(p); });
+  return kernel::actor::simcall([this, p] { pimpl_cpu->set_speed_profile(p); });
 }
 
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
@@ -276,7 +276,7 @@ int Host::get_core_count() const
 /** @brief Set the pstate at which the host should run */
 void Host::set_pstate(int pstate_index)
 {
-  simix::simcall([this, pstate_index] { this->pimpl_cpu->set_pstate(pstate_index); });
+  kernel::actor::simcall([this, pstate_index] { this->pimpl_cpu->set_pstate(pstate_index); });
 }
 /** @brief Retrieve the pstate at which the host is currently running */
 int Host::get_pstate() const
@@ -291,7 +291,7 @@ int Host::get_pstate() const
  */
 std::vector<const char*> Host::get_attached_storages() const
 {
-  return simix::simcall([this] { return this->pimpl_->get_attached_storages(); });
+  return kernel::actor::simcall([this] { return this->pimpl_->get_attached_storages(); });
 }
 
 std::unordered_map<std::string, Storage*> const& Host::get_mounted_storages()

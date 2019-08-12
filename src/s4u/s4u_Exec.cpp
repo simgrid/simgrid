@@ -63,7 +63,7 @@ int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
 
 Exec* Exec::cancel()
 {
-  simix::simcall([this] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->cancel(); });
+  kernel::actor::simcall([this] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->cancel(); });
   state_ = State::CANCELED;
   return this;
 }
@@ -134,7 +134,7 @@ ExecSeq::ExecSeq(sg_host_t host, double flops_amount) : Exec(), flops_amount_(fl
 
 Exec* ExecSeq::start()
 {
-  simix::simcall([this] {
+  kernel::actor::simcall([this] {
     (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
         .set_name(name_)
         .set_tracing_category(tracing_category_)
@@ -173,7 +173,7 @@ Host* ExecSeq::get_host()
 /** @brief Returns the amount of flops that remain to be done */
 double ExecSeq::get_remaining()
 {
-  return simgrid::simix::simcall(
+  return simgrid::kernel::actor::simcall(
       [this]() { return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->get_remaining(); });
 }
 
@@ -183,7 +183,7 @@ double ExecSeq::get_remaining()
  */
 double ExecSeq::get_remaining_ratio()
 {
-  return simgrid::simix::simcall([this]() {
+  return simgrid::kernel::actor::simcall([this]() {
     return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->get_seq_remaining_ratio();
   });
 }
@@ -197,7 +197,7 @@ ExecPar::ExecPar(const std::vector<s4u::Host*>& hosts, const std::vector<double>
 
 Exec* ExecPar::start()
 {
-  simix::simcall([this] {
+  kernel::actor::simcall([this] {
     (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
         .set_hosts(hosts_)
         .set_timeout(timeout_)
@@ -212,7 +212,7 @@ Exec* ExecPar::start()
 
 double ExecPar::get_remaining_ratio()
 {
-  return simix::simcall(
+  return kernel::actor::simcall(
       [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_par_remaining_ratio(); });
 }
 

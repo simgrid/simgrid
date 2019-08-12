@@ -64,7 +64,7 @@ void VirtualMachine::start()
 {
   on_start(*this);
 
-  simgrid::simix::simcall([this]() {
+  simgrid::kernel::actor::simcall([this]() {
     simgrid::vm::VmHostExt::ensureVmExtInstalled();
 
     simgrid::s4u::Host* pm = this->pimpl_vm_->get_physical_host();
@@ -101,7 +101,7 @@ void VirtualMachine::suspend()
 {
   on_suspend(*this);
   smx_actor_t issuer = SIMIX_process_self();
-  simgrid::simix::simcall([this, issuer]() { pimpl_vm_->suspend(issuer); });
+  simgrid::kernel::actor::simcall([this, issuer]() { pimpl_vm_->suspend(issuer); });
 }
 
 void VirtualMachine::resume()
@@ -113,7 +113,7 @@ void VirtualMachine::resume()
 void VirtualMachine::shutdown()
 {
   smx_actor_t issuer = SIMIX_process_self();
-  simgrid::simix::simcall([this, issuer]() { pimpl_vm_->shutdown(issuer); });
+  simgrid::kernel::actor::simcall([this, issuer]() { pimpl_vm_->shutdown(issuer); });
   on_shutdown(*this);
 }
 
@@ -133,12 +133,12 @@ simgrid::s4u::Host* VirtualMachine::get_pm()
 
 void VirtualMachine::set_pm(simgrid::s4u::Host* pm)
 {
-  simgrid::simix::simcall([this, pm]() { pimpl_vm_->set_physical_host(pm); });
+  simgrid::kernel::actor::simcall([this, pm]() { pimpl_vm_->set_physical_host(pm); });
 }
 
 VirtualMachine::state VirtualMachine::get_state()
 {
-  return simgrid::simix::simcall([this]() { return pimpl_vm_->get_state(); });
+  return simgrid::kernel::actor::simcall([this]() { return pimpl_vm_->get_state(); });
 }
 
 size_t VirtualMachine::get_ramsize()
@@ -178,7 +178,7 @@ void VirtualMachine::set_ramsize(size_t ramsize)
  */
 void VirtualMachine::set_bound(double bound)
 {
-  simgrid::simix::simcall([this, bound]() { pimpl_vm_->set_bound(bound); });
+  simgrid::kernel::actor::simcall([this, bound]() { pimpl_vm_->set_bound(bound); });
 }
 
 } // namespace simgrid

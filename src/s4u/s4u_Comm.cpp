@@ -200,7 +200,7 @@ Comm* Comm::detach()
 
 Comm* Comm::cancel()
 {
-  simix::simcall([this] {
+  kernel::actor::simcall([this] {
     if (pimpl_)
       boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->cancel();
   });

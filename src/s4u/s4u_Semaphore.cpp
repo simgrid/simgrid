@@ -15,7 +15,7 @@ namespace s4u {
 
 Semaphore::Semaphore(unsigned int initial_capacity)
 {
-  sem_ = simix::simcall([initial_capacity] { return new kernel::activity::SemaphoreImpl(initial_capacity); });
+  sem_ = kernel::actor::simcall([initial_capacity] { return new kernel::activity::SemaphoreImpl(initial_capacity); });
 }
 
 Semaphore::~Semaphore()
@@ -43,17 +43,17 @@ int Semaphore::acquire_timeout(double timeout)
 
 void Semaphore::release()
 {
-  simix::simcall([this] { sem_->release(); });
+  kernel::actor::simcall([this] { sem_->release(); });
 }
 
 int Semaphore::get_capacity()
 {
-  return simix::simcall([this] { return sem_->get_capacity(); });
+  return kernel::actor::simcall([this] { return sem_->get_capacity(); });
 }
 
 int Semaphore::would_block()
 {
-  return simix::simcall([this] { return sem_->would_block(); });
+  return kernel::actor::simcall([this] { return sem_->would_block(); });
 }
 
 void intrusive_ptr_add_ref(Semaphore* sem)

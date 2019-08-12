@@ -35,7 +35,7 @@ const char* NetZone::get_property(const std::string& key) const
 
 void NetZone::set_property(const std::string& key, const std::string& value)
 {
-  simix::simcall([this, &key, &value] { properties_[key] = value; });
+  kernel::actor::simcall([this, &key, &value] { properties_[key] = value; });
 }
 
 /** @brief Returns the list of direct children (no grand-children) */

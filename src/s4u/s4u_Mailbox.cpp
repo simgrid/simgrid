@@ -29,7 +29,7 @@ Mailbox* Mailbox::by_name(const std::string& name)
 {
   kernel::activity::MailboxImpl* mbox = kernel::activity::MailboxImpl::by_name_or_null(name);
   if (mbox == nullptr) {
-    mbox = simix::simcall([&name] { return kernel::activity::MailboxImpl::by_name_or_create(name); });
+    mbox = kernel::actor::simcall([&name] { return kernel::activity::MailboxImpl::by_name_or_create(name); });
   }
   return &mbox->piface_;
 }
@@ -63,7 +63,7 @@ kernel::activity::CommImplPtr Mailbox::front()
 
 void Mailbox::set_receiver(ActorPtr actor)
 {
-  simix::simcall([this, actor]() { this->pimpl_->set_receiver(actor); });
+  kernel::actor::simcall([this, actor]() { this->pimpl_->set_receiver(actor); });
 }
 
 /** @brief get the receiver (process associated to the mailbox) */
@@ -152,7 +152,7 @@ void* Mailbox::get(double timeout)
 
 smx_activity_t Mailbox::iprobe(int type, int (*match_fun)(void*, void*, kernel::activity::CommImpl*), void* data)
 {
-  return simix::simcall([this, type, match_fun, data] { return pimpl_->iprobe(type, match_fun, data); });
+  return kernel::actor::simcall([this, type, match_fun, data] { return pimpl_->iprobe(type, match_fun, data); });
 }
 } // namespace s4u
 } // namespace simgrid

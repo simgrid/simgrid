@@ -19,7 +19,7 @@ namespace s4u {
 ConditionVariablePtr ConditionVariable::create()
 {
   kernel::activity::ConditionVariableImpl* cond =
-      simix::simcall([] { return new kernel::activity::ConditionVariableImpl(); });
+      kernel::actor::simcall([] { return new kernel::activity::ConditionVariableImpl(); });
   return ConditionVariablePtr(&cond->cond_, false);
 }
 
@@ -67,12 +67,12 @@ std::cv_status ConditionVariable::wait_until(std::unique_lock<Mutex>& lock, doub
  */
 void ConditionVariable::notify_one()
 {
-  simgrid::simix::simcall([this]() { cond_->signal(); });
+  simgrid::kernel::actor::simcall([this]() { cond_->signal(); });
 }
 
 void ConditionVariable::notify_all()
 {
-  simgrid::simix::simcall([this]() { cond_->broadcast(); });
+  simgrid::kernel::actor::simcall([this]() { cond_->broadcast(); });
 }
 
 void intrusive_ptr_add_ref(ConditionVariable* cond)
@@ -92,7 +92,7 @@ void intrusive_ptr_release(ConditionVariable* cond)
 sg_cond_t sg_cond_init()
 {
   simgrid::kernel::activity::ConditionVariableImpl* cond =
-      simgrid::simix::simcall([] { return new simgrid::kernel::activity::ConditionVariableImpl(); });
+      simgrid::kernel::actor::simcall([] { return new simgrid::kernel::activity::ConditionVariableImpl(); });
 
   return new simgrid::s4u::ConditionVariable(cond);
 }

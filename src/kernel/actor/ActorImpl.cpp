@@ -68,7 +68,7 @@ ActorImpl::~ActorImpl()
   if (simix_global != nullptr && this != simix_global->maestro_process) {
     if (context_.get() != nullptr) /* the actor was not start()ed yet. This happens if its host was initially off */
       context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
-    simgrid::simix::simcall([this] { simgrid::s4u::Actor::on_destruction(*ciface()); });
+    simgrid::kernel::actor::simcall([this] { simgrid::s4u::Actor::on_destruction(*ciface()); });
     if (context_.get() != nullptr)
       context_->iwannadie = true;
   }
@@ -193,7 +193,7 @@ void ActorImpl::cleanup()
   simix_global->mutex.unlock();
 
   context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
-  simgrid::simix::simcall([this] { simgrid::s4u::Actor::on_termination(*ciface()); });
+  simgrid::kernel::actor::simcall([this] { simgrid::s4u::Actor::on_termination(*ciface()); });
   context_->iwannadie = true;
 }
 
@@ -650,12 +650,12 @@ smx_actor_t simcall_process_create(const std::string& name, const simgrid::simix
                                    sg_host_t host, std::unordered_map<std::string, std::string>* properties)
 {
   smx_actor_t self = SIMIX_process_self();
-  return simgrid::simix::simcall([&name, &code, data, host, properties, self] {
+  return simgrid::kernel::actor::simcall([&name, &code, data, host, properties, self] {
     return simgrid::kernel::actor::ActorImpl::create(name, code, data, host, properties, self).get();
   });
 }
 
 void simcall_process_set_data(smx_actor_t process, void* data)
 {
-  simgrid::simix::simcall([process, data] { process->set_user_data(data); });
+  simgrid::kernel::actor::simcall([process, data] { process->set_user_data(data); });
 }
