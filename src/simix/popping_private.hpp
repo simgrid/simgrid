@@ -45,7 +45,7 @@ union u_smx_scalar {
 struct s_smx_simcall {
   e_smx_simcall_t call;
   smx_actor_t issuer;
-  smx_timer_t timer;
+  smx_timer_t timeout_cb; // Callback to timeouts
   int mc_value;
   u_smx_scalar args[11];
   u_smx_scalar result;
@@ -176,20 +176,20 @@ template <class T> inline typename std::remove_reference<T>::type unmarshal_raw(
   return unmarshal(type<T>(), simcall);
 }
 
-template <std::size_t I> inline void marshalArgs(smx_simcall_t simcall)
+template <std::size_t I> inline void marshal_args(smx_simcall_t simcall)
 {
   /* Nothing to do when no args */
 }
 
-template <std::size_t I, class A> inline void marshalArgs(smx_simcall_t simcall, A const& a)
+template <std::size_t I, class A> inline void marshal_args(smx_simcall_t simcall, A const& a)
 {
   marshal(simcall->args[I], a);
 }
 
-template <std::size_t I, class A, class... B> inline void marshalArgs(smx_simcall_t simcall, A const& a, B const&... b)
+template <std::size_t I, class A, class... B> inline void marshal_args(smx_simcall_t simcall, A const& a, B const&... b)
 {
   marshal(simcall->args[I], a);
-  marshalArgs<I + 1>(simcall, b...);
+  marshal_args<I + 1>(simcall, b...);
 }
 
 /** Initialize the simcall */
@@ -198,7 +198,7 @@ template <class... A> inline void marshal(smx_simcall_t simcall, e_smx_simcall_t
   simcall->call = call;
   memset(&simcall->result, 0, sizeof(simcall->result));
   memset(simcall->args, 0, sizeof(simcall->args));
-  marshalArgs<0>(simcall, a...);
+  marshal_args<0>(simcall, a...);
 }
 }
 }

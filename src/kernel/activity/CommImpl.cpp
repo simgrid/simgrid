@@ -307,9 +307,9 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activi
   }
 
   if (timeout < 0.0) {
-    simcall->timer = NULL;
+    simcall->timeout_cb = NULL;
   } else {
-    simcall->timer = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall]() {
+    simcall->timeout_cb = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall]() {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
       simcall_comm_waitany__set__result(simcall, -1);
       simcall->issuer->simcall_answer();
@@ -584,9 +584,9 @@ void CommImpl::finish()
       continue;                        // if process handling comm is killed
     if (simcall->call == SIMCALL_COMM_WAITANY) {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
-      if (simcall->timer) {
-        simcall->timer->remove();
-        simcall->timer = nullptr;
+      if (simcall->timeout_cb) {
+        simcall->timeout_cb->remove();
+        simcall->timeout_cb = nullptr;
       }
       if (not MC_is_active() && not MC_record_replay_is_active()) {
         CommImpl** comms   = simcall_comm_waitany__get__comms(simcall);
