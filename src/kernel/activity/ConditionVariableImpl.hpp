@@ -25,7 +25,7 @@ public:
 
   void broadcast();
   void signal();
-  void wait(MutexImpl* mutex, double timeout, actor::ActorImpl* issuer, smx_simcall_t simcall);
+  void wait(MutexImpl* mutex, double timeout, actor::ActorImpl* issuer);
 
 private:
   std::atomic_int_fast32_t refcount_{1};
