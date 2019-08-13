@@ -53,13 +53,13 @@ public:
   }
 };
 
-/* On every state, each process has an entry of the following type.
- * This represents both the process and its transition because
- *   a process cannot have more than one enabled transition at a given time.
+/* On every state, each actor has an entry of the following type.
+ * This represents both the actor and its transition because
+ *   an actor cannot have more than one enabled transition at a given time.
  */
-class ProcessState {
-  /* Possible exploration status of a process transition in a state.
-   * Either the checker did not consider the transition, or it was considered and to do, or considered and done.
+class ActorState {
+  /* Possible exploration status of a actor transition in a state.
+   * Either the checker did not consider the transition, or it was considered and still to do, or considered and done.
    */
   enum class InterleavingType {
     /** This actor transition is not considered by the checker (yet?) */
@@ -90,15 +90,14 @@ public:
   void set_done() { this->state = InterleavingType::done; }
 };
 
-/* A node in the exploration graph (kind-of)
- */
+/* A node in the exploration graph (kind-of) */
 class XBT_PRIVATE State {
 public:
   /** Sequential state number (used for debugging) */
   int num_ = 0;
 
   /** State's exploration status by process */
-  std::vector<ProcessState> actor_states_;
+  std::vector<ActorState> actor_states_;
 
   Transition transition_;
 

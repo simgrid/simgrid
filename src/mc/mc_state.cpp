@@ -37,7 +37,7 @@ State::State(unsigned long state_number) : num_(state_number)
 
 std::size_t State::interleave_size() const
 {
-  return boost::range::count_if(this->actor_states_, [](simgrid::mc::ProcessState const& p) { return p.is_todo(); });
+  return boost::range::count_if(this->actor_states_, [](simgrid::mc::ActorState const& a) { return a.is_todo(); });
 }
 
 Transition State::get_transition() const
@@ -53,7 +53,7 @@ Transition State::get_transition() const
  * This can be seen as an iterator returning the next transition of the process.
  *
  * We only consider the processes that are both
- *  - marked "to be interleaved" in their ProcessState (controlled by the checker algorithm).
+ *  - marked "to be interleaved" in their ActorState (controlled by the checker algorithm).
  *  - which simcall can currently be executed (like a comm where the other partner is already known)
  * Once we returned the last enabled transition of a process, it is marked done.
  *
@@ -63,7 +63,7 @@ Transition State::get_transition() const
 static inline smx_simcall_t MC_state_get_request_for_process(simgrid::mc::State* state, smx_actor_t actor)
 {
   /* reset the outgoing transition */
-  simgrid::mc::ProcessState* procstate = &state->actor_states_[actor->get_pid()];
+  simgrid::mc::ActorState* procstate   = &state->actor_states_[actor->get_pid()];
   state->transition_.pid_              = -1;
   state->transition_.argument_         = -1;
   state->executed_req_.call_           = SIMCALL_NONE;
