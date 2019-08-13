@@ -581,7 +581,7 @@ void CommImpl::finish()
      * simcall */
 
     if (simcall->call_ == SIMCALL_NONE) // FIXME: maybe a better way to handle this case
-      continue;                        // if process handling comm is killed
+      continue;                         // if actor handling comm is killed
     if (simcall->call_ == SIMCALL_COMM_WAITANY) {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
       if (simcall->timeout_cb_) {
@@ -670,6 +670,7 @@ void CommImpl::finish()
         default:
           xbt_die("Unexpected synchro state in CommImpl::finish: %d", static_cast<int>(state_));
       }
+      simcall->issuer_->simcall_answer();
     }
     /* if there is an exception during a waitany or a testany, indicate the position of the failed communication */
     if (simcall->issuer_->exception_ &&
@@ -681,7 +682,7 @@ void CommImpl::finish()
         comms = simcall_comm_waitany__get__comms(simcall);
         count = simcall_comm_waitany__get__count(simcall);
       } else {
-        /* simcall->call == SIMCALL_COMM_TESTANY */
+        /* simcall->call_ == SIMCALL_COMM_TESTANY */
         comms = simcall_comm_testany__get__comms(simcall);
         count = simcall_comm_testany__get__count(simcall);
       }
@@ -710,11 +711,6 @@ void CommImpl::finish()
         src_actor_->comms.remove(this);
       }
     }
-
-    if (simcall->issuer_->get_host()->is_on())
-      simcall->issuer_->simcall_answer();
-    else
-      simcall->issuer_->context_->iwannadie = true;
   }
 }
 
