@@ -617,7 +617,9 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
               cnst->cnst_light_ = nullptr;
             }
           } else {
-            cnst->cnst_light_->remaining_over_usage = cnst->remaining_ / cnst->usage_;
+            if (cnst->cnst_light_) {
+              cnst->cnst_light_->remaining_over_usage = cnst->remaining_ / cnst->usage_;
+            }
           }
           elem.make_inactive();
         } else {
@@ -646,10 +648,12 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
               cnst->cnst_light_ = nullptr;
             }
           } else {
-            cnst->cnst_light_->remaining_over_usage = cnst->remaining_ / cnst->usage_;
-            xbt_assert(not cnst->active_element_set_.empty(),
-                       "Should not keep a maximum constraint that has no active"
-                       " element! You want to check the maxmin precision and possible rounding effects.");
+            if (cnst->cnst_light_) {
+              cnst->cnst_light_->remaining_over_usage = cnst->remaining_ / cnst->usage_;
+              xbt_assert(not cnst->active_element_set_.empty(),
+                         "Should not keep a maximum constraint that has no active"
+                         " element! You want to check the maxmin precision and possible rounding effects.");
+            }
           }
         }
       }
