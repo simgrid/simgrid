@@ -88,19 +88,19 @@ void IoImpl::finish()
         /* do nothing, synchro done */
         break;
       case SIMIX_FAILED:
-        simcall->issuer->context_->iwannadie = true;
-        simcall->issuer->exception_ =
+        simcall->issuer_->context_->iwannadie = true;
+        simcall->issuer_->exception_ =
             std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Storage failed"));
         break;
       case SIMIX_CANCELED:
-        simcall->issuer->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "I/O Canceled"));
+        simcall->issuer_->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "I/O Canceled"));
         break;
       default:
         xbt_die("Internal error in IoImpl::finish(): unexpected synchro state %d", static_cast<int>(state_));
     }
 
-    simcall->issuer->waiting_synchro = nullptr;
-    simcall->issuer->simcall_answer();
+    simcall->issuer_->waiting_synchro = nullptr;
+    simcall->issuer_->simcall_answer();
   }
 }
 

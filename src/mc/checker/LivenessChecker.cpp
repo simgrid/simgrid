@@ -142,8 +142,8 @@ void LivenessChecker::replay()
 
     if (pair->exploration_started) {
 
-      int req_num = state->transition.argument;
-      smx_simcall_t saved_req = &state->executed_req;
+      int req_num             = state->transition_.argument_;
+      smx_simcall_t saved_req = &state->executed_req_;
 
       smx_simcall_t req = nullptr;
 
@@ -161,7 +161,7 @@ void LivenessChecker::replay()
           state.get());
       }
 
-      this->get_session().execute(state->transition);
+      this->get_session().execute(state->transition_);
     }
 
     /* Update statistics */
@@ -232,7 +232,7 @@ RecordTrace LivenessChecker::get_record_trace() // override
 {
   RecordTrace res;
   for (std::shared_ptr<Pair> const& pair : exploration_stack_)
-    res.push_back(pair->graph_state->getTransition());
+    res.push_back(pair->graph_state->get_transition());
   return res;
 }
 
@@ -260,9 +260,9 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
 {
   std::vector<std::string> trace;
   for (std::shared_ptr<Pair> const& pair : exploration_stack_) {
-    int req_num = pair->graph_state->transition.argument;
-    smx_simcall_t req = &pair->graph_state->executed_req;
-    if (req && req->call != SIMCALL_NONE)
+    int req_num       = pair->graph_state->transition_.argument_;
+    smx_simcall_t req = &pair->graph_state->executed_req_;
+    if (req && req->call_ != SIMCALL_NONE)
       trace.push_back(simgrid::mc::request_to_string(
         req, req_num, simgrid::mc::RequestType::executed));
   }
@@ -284,8 +284,8 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(Pair* current_pair, xbt_autom
   /* Get enabled actors and insert them in the interleave set of the next graph_state */
   for (auto& actor : mc_model_checker->process().actors())
     if (simgrid::mc::actor_is_enabled(actor.copy.get_buffer()))
-      next_pair->graph_state->addInterleavingSet(actor.copy.get_buffer());
-  next_pair->requests = next_pair->graph_state->interleaveSize();
+      next_pair->graph_state->add_interleaving_set(actor.copy.get_buffer());
+  next_pair->requests = next_pair->graph_state->interleave_size();
   /* FIXME : get search_cycle value for each accepting state */
   if (next_pair->automaton_state->type == 1 || (current_pair && current_pair->search_cycle))
     next_pair->search_cycle = true;
@@ -346,8 +346,8 @@ void LivenessChecker::run()
 
     XBT_DEBUG(
         "********************* ( Depth = %d, search_cycle = %d, interleave size = %zu, pair_num = %d, requests = %d)",
-        current_pair->depth, current_pair->search_cycle, current_pair->graph_state->interleaveSize(), current_pair->num,
-        current_pair->requests);
+        current_pair->depth, current_pair->search_cycle, current_pair->graph_state->interleave_size(),
+        current_pair->num, current_pair->requests);
 
     if (current_pair->requests == 0) {
       this->backtrack();
@@ -380,7 +380,7 @@ void LivenessChecker::run()
     }
 
     smx_simcall_t req = MC_state_get_request(current_pair->graph_state.get());
-    int req_num = current_pair->graph_state->transition.argument;
+    int req_num       = current_pair->graph_state->transition_.argument_;
 
     if (dot_output != nullptr) {
       if (this->previous_pair_ != 0 && this->previous_pair_ != current_pair->num) {
@@ -405,7 +405,7 @@ void LivenessChecker::run()
       visited_pairs_count_++;
 
     /* Answer the request */
-    mc_model_checker->handle_simcall(current_pair->graph_state->transition);
+    mc_model_checker->handle_simcall(current_pair->graph_state->transition_);
 
     /* Wait for requests (schedules processes) */
     mc_model_checker->wait_for_requests();

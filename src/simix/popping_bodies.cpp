@@ -30,13 +30,13 @@ inline static R simcall(e_smx_simcall_t call, T const&... t)
   smx_actor_t self = SIMIX_process_self();
   simgrid::simix::marshal(&self->simcall, call, t...);
   if (self != simix_global->maestro_process) {
-    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->get_cname(), SIMIX_simcall_name(self->simcall.call),
-              (int)self->simcall.call);
+    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->get_cname(), SIMIX_simcall_name(self->simcall.call_),
+              (int)self->simcall.call_);
     self->yield();
   } else {
     self->simcall_handle(0);
   }
-  return simgrid::simix::unmarshal<R>(self->simcall.result);
+  return simgrid::simix::unmarshal<R>(self->simcall.result_);
 }
 
 inline static int simcall_BODY_execution_wait(simgrid::kernel::activity::ExecImpl* execution)

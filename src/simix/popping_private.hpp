@@ -43,17 +43,17 @@ union u_smx_scalar {
  * @brief Represents a simcall to the kernel.
  */
 struct s_smx_simcall {
-  e_smx_simcall_t call;
-  smx_actor_t issuer;
-  smx_timer_t timeout_cb; // Callback to timeouts
-  simgrid::kernel::actor::Transition* transition = nullptr;
-  int mc_value;
-  u_smx_scalar args[11];
-  u_smx_scalar result;
+  e_smx_simcall_t call_;
+  smx_actor_t issuer_;
+  smx_timer_t timeout_cb_; // Callback to timeouts
+  simgrid::kernel::actor::Transition* transition_ = nullptr;
+  int mc_value_;
+  u_smx_scalar args_[11];
+  u_smx_scalar result_;
 };
 
-#define SIMCALL_SET_MC_VALUE(simcall, value) ((simcall).mc_value = (value))
-#define SIMCALL_GET_MC_VALUE(simcall) ((simcall).mc_value)
+#define SIMCALL_SET_MC_VALUE(simcall, value) ((simcall).mc_value_ = (value))
+#define SIMCALL_GET_MC_VALUE(simcall) ((simcall).mc_value_)
 
 /******************************** General *************************************/
 
@@ -184,21 +184,21 @@ template <std::size_t I> inline void marshal_args(smx_simcall_t simcall)
 
 template <std::size_t I, class A> inline void marshal_args(smx_simcall_t simcall, A const& a)
 {
-  marshal(simcall->args[I], a);
+  marshal(simcall->args_[I], a);
 }
 
 template <std::size_t I, class A, class... B> inline void marshal_args(smx_simcall_t simcall, A const& a, B const&... b)
 {
-  marshal(simcall->args[I], a);
+  marshal(simcall->args_[I], a);
   marshal_args<I + 1>(simcall, b...);
 }
 
 /** Initialize the simcall */
 template <class... A> inline void marshal(smx_simcall_t simcall, e_smx_simcall_t call, A const&... a)
 {
-  simcall->call = call;
-  memset(&simcall->result, 0, sizeof(simcall->result));
-  memset(simcall->args, 0, sizeof(simcall->args));
+  simcall->call_ = call;
+  memset(&simcall->result_, 0, sizeof(simcall->result_));
+  memset(simcall->args_, 0, sizeof(simcall->args_));
   marshal_args<0>(simcall, a...);
 }
 }

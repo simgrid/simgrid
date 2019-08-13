@@ -367,8 +367,8 @@ void ModelChecker::handle_simcall(Transition const& transition)
   s_mc_message_simcall_handle_t m;
   memset(&m, 0, sizeof(m));
   m.type  = MC_MESSAGE_SIMCALL_HANDLE;
-  m.pid   = transition.pid;
-  m.value = transition.argument;
+  m.pid   = transition.pid_;
+  m.value = transition.argument_;
   this->process_->get_channel().send(m);
   this->process_->clear_cache();
   if (this->process_->running())

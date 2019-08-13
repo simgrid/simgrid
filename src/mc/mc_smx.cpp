@@ -101,7 +101,7 @@ smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall const* req)
   xbt_assert(mc_model_checker != nullptr);
 
   // This is the address of the smx_actor in the MCed process:
-  auto address = simgrid::mc::remote(req->issuer);
+  auto address = simgrid::mc::remote(req->issuer_);
 
   // Lookup by address:
   for (auto& actor : mc_model_checker->process().actors())

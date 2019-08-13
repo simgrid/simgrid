@@ -45,7 +45,7 @@ enum e_mc_comm_pattern_difference_t {
 
 static inline e_mc_call_type_t MC_get_call_type(smx_simcall_t req)
 {
-  switch (req->call) {
+  switch (req->call_) {
     case SIMCALL_COMM_ISEND:
       return MC_CALL_TYPE_SEND;
     case SIMCALL_COMM_IRECV:

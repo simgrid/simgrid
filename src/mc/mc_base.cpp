@@ -42,7 +42,7 @@ void wait_for_requests()
     simix_global->run_all_actors();
     for (smx_actor_t const& process : simix_global->actors_that_ran) {
       smx_simcall_t req = &process->simcall;
-      if (req->call != SIMCALL_NONE && not simgrid::mc::request_is_visible(req))
+      if (req->call_ != SIMCALL_NONE && not simgrid::mc::request_is_visible(req))
         process->simcall_handle(0);
     }
   }
@@ -78,10 +78,10 @@ bool actor_is_enabled(smx_actor_t actor)
   // Now, we are in the client app, no need for remote memory reading.
   smx_simcall_t req = &actor->simcall;
 
-  if (req->transition != nullptr)
-    return req->transition->fireable();
+  if (req->transition_ != nullptr)
+    return req->transition_->fireable();
 
-  switch (req->call) {
+  switch (req->call_) {
     case SIMCALL_NONE:
       return false;
 
@@ -119,7 +119,7 @@ bool actor_is_enabled(smx_actor_t actor)
 
       if (mutex->owner_ == nullptr)
         return true;
-      return mutex->owner_->get_pid() == req->issuer->get_pid();
+      return mutex->owner_->get_pid() == req->issuer_->get_pid();
     }
 
     case SIMCALL_SEM_ACQUIRE: {
@@ -153,10 +153,10 @@ bool request_is_visible(smx_simcall_t req)
   xbt_assert(mc_model_checker == nullptr, "This should be called from the client side");
 #endif
 
-  return (req->transition != nullptr && req->transition->visible()) || req->call == SIMCALL_COMM_ISEND ||
-         req->call == SIMCALL_COMM_IRECV || req->call == SIMCALL_COMM_WAIT || req->call == SIMCALL_COMM_WAITANY ||
-         req->call == SIMCALL_COMM_TEST || req->call == SIMCALL_COMM_TESTANY || req->call == SIMCALL_MC_RANDOM ||
-         req->call == SIMCALL_MUTEX_LOCK || req->call == SIMCALL_MUTEX_TRYLOCK || req->call == SIMCALL_MUTEX_UNLOCK;
+  return (req->transition_ != nullptr && req->transition_->visible()) || req->call_ == SIMCALL_COMM_ISEND ||
+         req->call_ == SIMCALL_COMM_IRECV || req->call_ == SIMCALL_COMM_WAIT || req->call_ == SIMCALL_COMM_WAITANY ||
+         req->call_ == SIMCALL_COMM_TEST || req->call_ == SIMCALL_COMM_TESTANY || req->call_ == SIMCALL_MC_RANDOM ||
+         req->call_ == SIMCALL_MUTEX_LOCK || req->call_ == SIMCALL_MUTEX_TRYLOCK || req->call_ == SIMCALL_MUTEX_UNLOCK;
 }
 
 }
@@ -169,5 +169,5 @@ int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
     std::uniform_int_distribution<int> prng(min, max);
     return prng(rnd_engine);
   }
-  return simcall->mc_value;
+  return simcall->mc_value_;
 }

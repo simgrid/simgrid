@@ -60,7 +60,7 @@ int get_maxpid()
 ActorImpl::ActorImpl(const simgrid::xbt::string& name, s4u::Host* host) : host_(host), name_(name), piface_(this)
 {
   pid_           = maxpid++;
-  simcall.issuer = this;
+  simcall.issuer_ = this;
 }
 
 ActorImpl::~ActorImpl()
@@ -440,9 +440,9 @@ void ActorImpl::throw_exception(std::exception_ptr e)
 void ActorImpl::simcall_answer()
 {
   if (this != simix_global->maestro_process){
-    XBT_DEBUG("Answer simcall %s (%d) issued by %s (%p)", SIMIX_simcall_name(simcall.call), (int)simcall.call,
+    XBT_DEBUG("Answer simcall %s (%d) issued by %s (%p)", SIMIX_simcall_name(simcall.call_), (int)simcall.call_,
               get_cname(), this);
-    simcall.call = SIMCALL_NONE;
+    simcall.call_ = SIMCALL_NONE;
     xbt_assert(not XBT_LOG_ISENABLED(simix_process, xbt_log_priority_debug) ||
                    std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), this) ==
                        end(simix_global->actors_to_run),
@@ -531,7 +531,7 @@ void create_maestro(const std::function<void()>& code)
     maestro->context_.reset(simix_global->context_factory->create_maestro(simix::ActorCode(code), maestro));
   }
 
-  maestro->simcall.issuer       = maestro;
+  maestro->simcall.issuer_      = maestro;
   simix_global->maestro_process = maestro;
 }
 

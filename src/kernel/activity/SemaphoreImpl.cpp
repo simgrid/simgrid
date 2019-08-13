@@ -52,7 +52,7 @@ void SemaphoreImpl::release()
  */
 void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem)
 {
-  sem->acquire(simcall->issuer, -1);
+  sem->acquire(simcall->issuer_, -1);
 }
 
 /**
@@ -61,5 +61,5 @@ void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem)
 void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout)
 {
   simcall_sem_acquire_timeout__set__result(simcall, 0); // default result, will be set to 1 on timeout
-  sem->acquire(simcall->issuer, timeout);
+  sem->acquire(simcall->issuer_, timeout);
 }

@@ -20,7 +20,7 @@ namespace mc {
  */
 class Transition {
 public:
-  int pid = 0;
+  int pid_ = 0;
 
   /* Which transition was executed for this simcall
    *
@@ -30,7 +30,7 @@ public:
    *
    * * random can produce different values.
    */
-  int argument = 0;
+  int argument_ = 0;
 };
 
 }

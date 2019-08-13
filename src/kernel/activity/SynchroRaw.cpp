@@ -70,42 +70,42 @@ void RawImpl::finish()
   simcalls_.pop_front();
 
   if (state_ == SIMIX_FAILED) {
-    XBT_DEBUG("RawImpl::finish(): host '%s' failed", simcall->issuer->get_host()->get_cname());
-    simcall->issuer->context_->iwannadie = true;
-    simcall->issuer->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
+    XBT_DEBUG("RawImpl::finish(): host '%s' failed", simcall->issuer_->get_host()->get_cname());
+    simcall->issuer_->context_->iwannadie = true;
+    simcall->issuer_->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
   } else if (state_ != SIMIX_SRC_TIMEOUT) {
     xbt_die("Internal error in RawImpl::finish() unexpected synchro state %d", static_cast<int>(state_));
   }
 
-  switch (simcall->call) {
+  switch (simcall->call_) {
 
     case SIMCALL_MUTEX_LOCK:
-      simgrid::xbt::intrusive_erase(simcall_mutex_lock__get__mutex(simcall)->sleeping_, *simcall->issuer);
+      simgrid::xbt::intrusive_erase(simcall_mutex_lock__get__mutex(simcall)->sleeping_, *simcall->issuer_);
       break;
 
     case SIMCALL_COND_WAIT:
-      simgrid::xbt::intrusive_erase(simcall_cond_wait__get__cond(simcall)->sleeping_, *simcall->issuer);
+      simgrid::xbt::intrusive_erase(simcall_cond_wait__get__cond(simcall)->sleeping_, *simcall->issuer_);
       break;
 
     case SIMCALL_COND_WAIT_TIMEOUT:
-      simgrid::xbt::intrusive_erase(simcall_cond_wait_timeout__get__cond(simcall)->sleeping_, *simcall->issuer);
+      simgrid::xbt::intrusive_erase(simcall_cond_wait_timeout__get__cond(simcall)->sleeping_, *simcall->issuer_);
       simcall_cond_wait_timeout__set__result(simcall, 1); // signal a timeout
       break;
 
     case SIMCALL_SEM_ACQUIRE:
-      simgrid::xbt::intrusive_erase(simcall_sem_acquire__get__sem(simcall)->sleeping_, *simcall->issuer);
+      simgrid::xbt::intrusive_erase(simcall_sem_acquire__get__sem(simcall)->sleeping_, *simcall->issuer_);
       break;
 
     case SIMCALL_SEM_ACQUIRE_TIMEOUT:
-      simgrid::xbt::intrusive_erase(simcall_sem_acquire_timeout__get__sem(simcall)->sleeping_, *simcall->issuer);
+      simgrid::xbt::intrusive_erase(simcall_sem_acquire_timeout__get__sem(simcall)->sleeping_, *simcall->issuer_);
       simcall_sem_acquire_timeout__set__result(simcall, 1); // signal a timeout
       break;
 
     default:
       THROW_IMPOSSIBLE;
   }
-  simcall->issuer->waiting_synchro = nullptr;
-  simcall->issuer->simcall_answer();
+  simcall->issuer_->waiting_synchro = nullptr;
+  simcall->issuer_->simcall_answer();
 }
 
 } // namespace activity

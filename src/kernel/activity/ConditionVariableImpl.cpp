@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ConditionVariable, simix_synchro, "Condition var
 void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex)
 {
   XBT_IN("(%p)", simcall);
-  smx_actor_t issuer = simcall->issuer;
+  smx_actor_t issuer = simcall->issuer_;
 
   cond->wait(mutex, -1, issuer, simcall);
   XBT_OUT();
@@ -26,7 +26,7 @@ void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex
 void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex, double timeout)
 {
   XBT_IN("(%p)", simcall);
-  smx_actor_t issuer = simcall->issuer;
+  smx_actor_t issuer = simcall->issuer_;
   simcall_cond_wait_timeout__set__result(simcall, 0); // default result, will be set to 1 on timeout
   cond->wait(mutex, timeout, issuer, simcall);
   XBT_OUT();
@@ -61,13 +61,13 @@ void ConditionVariableImpl::signal()
     /* Now transform the cond wait simcall into a mutex lock one */
     smx_simcall_t simcall = &proc.simcall;
     MutexImpl* simcall_mutex;
-    if (simcall->call == SIMCALL_COND_WAIT)
+    if (simcall->call_ == SIMCALL_COND_WAIT)
       simcall_mutex = simcall_cond_wait__get__mutex(simcall);
     else
       simcall_mutex = simcall_cond_wait_timeout__get__mutex(simcall);
-    simcall->call = SIMCALL_MUTEX_LOCK;
+    simcall->call_ = SIMCALL_MUTEX_LOCK;
 
-    simcall_mutex->lock(simcall->issuer);
+    simcall_mutex->lock(simcall->issuer_);
   }
   XBT_OUT();
 }
@@ -102,7 +102,7 @@ void ConditionVariableImpl::wait(smx_mutex_t mutex, double timeout, actor::Actor
   (*synchro).set_host(issuer->get_host()).set_timeout(timeout).start();
   synchro->simcalls_.push_front(simcall);
   issuer->waiting_synchro = std::move(synchro);
-  sleeping_.push_back(*simcall->issuer);
+  sleeping_.push_back(*simcall->issuer_);
 }
 
 // boost::intrusive_ptr<ConditionVariableImpl> support:

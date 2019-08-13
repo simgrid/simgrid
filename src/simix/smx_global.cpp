@@ -467,7 +467,7 @@ void SIMIX_run()
        */
 
       for (smx_actor_t const& process : simix_global->actors_that_ran) {
-        if (process->simcall.call != SIMCALL_NONE) {
+        if (process->simcall.call_ != SIMCALL_NONE) {
           process->simcall_handle(0);
         }
       }

@@ -62,9 +62,9 @@ class ProcessState {
    * Either the checker did not consider the transition, or it was considered and to do, or considered and done.
    */
   enum class InterleavingType {
-    /** This process transition is not considered by the checker (yet?) */
+    /** This actor transition is not considered by the checker (yet?) */
     disabled = 0,
-    /** The checker algorithm decided that this process transitions should be done at some point */
+    /** The checker algorithm decided that this actor transitions should be done at some point */
     todo,
     /** The checker algorithm decided that this should be done, but it was done in the meanwhile */
     done,
@@ -78,16 +78,16 @@ public:
   // TODO, make this private
   unsigned int times_considered = 0;
 
-  bool isDisabled() const { return this->state == InterleavingType::disabled; }
-  bool isDone() const { return this->state == InterleavingType::done; }
-  bool isTodo() const { return this->state == InterleavingType::todo; }
+  bool is_disabled() const { return this->state == InterleavingType::disabled; }
+  bool is_done() const { return this->state == InterleavingType::done; }
+  bool is_todo() const { return this->state == InterleavingType::todo; }
   /** Mark that we should try executing this process at some point in the future of the checker algorithm */
   void consider()
   {
     this->state            = InterleavingType::todo;
     this->times_considered = 0;
   }
-  void setDone() { this->state = InterleavingType::done; }
+  void set_done() { this->state = InterleavingType::done; }
 };
 
 /* A node in the exploration graph (kind-of)
@@ -95,15 +95,15 @@ public:
 class XBT_PRIVATE State {
 public:
   /** Sequential state number (used for debugging) */
-  int num = 0;
+  int num_ = 0;
 
   /** State's exploration status by process */
-  std::vector<ProcessState> actorStates;
+  std::vector<ProcessState> actor_states_;
 
-  Transition transition;
+  Transition transition_;
 
   /** The simcall which was executed, going out of that state */
-  s_smx_simcall executed_req;
+  s_smx_simcall executed_req_;
 
   /* Internal translation of the executed_req simcall
    *
@@ -119,14 +119,14 @@ public:
   std::shared_ptr<simgrid::mc::Snapshot> system_state;
 
   // For CommunicationDeterminismChecker
-  std::vector<std::vector<simgrid::mc::PatternCommunication>> incomplete_comm_pattern;
-  std::vector<unsigned> communicationIndices;
+  std::vector<std::vector<simgrid::mc::PatternCommunication>> incomplete_comm_pattern_;
+  std::vector<unsigned> communication_indices_;
 
   explicit State(unsigned long state_number);
 
-  std::size_t interleaveSize() const;
-  void addInterleavingSet(smx_actor_t actor) { this->actorStates[actor->get_pid()].consider(); }
-  Transition getTransition() const;
+  std::size_t interleave_size() const;
+  void add_interleaving_set(smx_actor_t actor) { this->actor_states_[actor->get_pid()].consider(); }
+  Transition get_transition() const;
 };
 }
 }

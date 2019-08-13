@@ -28,20 +28,20 @@ void replay(RecordTrace const& trace)
   simgrid::mc::wait_for_requests();
 
   for (simgrid::mc::Transition const& transition : trace) {
-    XBT_DEBUG("Executing %i$%i", transition.pid, transition.argument);
+    XBT_DEBUG("Executing %i$%i", transition.pid_, transition.argument_);
 
     // Choose a request:
-    smx_actor_t process = SIMIX_process_from_PID(transition.pid);
+    smx_actor_t process = SIMIX_process_from_PID(transition.pid_);
     if (not process)
-      xbt_die("Unexpected process (pid:%d).", transition.pid);
+      xbt_die("Unexpected process (pid:%d).", transition.pid_);
     smx_simcall_t simcall = &(process->simcall);
-    if (not simcall || simcall->call == SIMCALL_NONE)
-      xbt_die("No simcall for process %d.", transition.pid);
+    if (not simcall || simcall->call_ == SIMCALL_NONE)
+      xbt_die("No simcall for process %d.", transition.pid_);
     if (not simgrid::mc::request_is_visible(simcall) || not simgrid::mc::actor_is_enabled(process))
       xbt_die("Unexpected simcall.");
 
     // Execute the request:
-    simcall->issuer->simcall_handle(transition.argument);
+    simcall->issuer_->simcall_handle(transition.argument_);
     simgrid::mc::wait_for_requests();
   }
 }
@@ -65,7 +65,7 @@ RecordTrace parseRecordTrace(const char* data)
   while (*current) {
 
     simgrid::mc::Transition item;
-    int count = sscanf(current, "%d/%d", &item.pid, &item.argument);
+    int count = sscanf(current, "%d/%d", &item.pid_, &item.argument_);
     if(count != 2 && count != 1)
       throw std::invalid_argument("Could not parse record path");
     res.push_back(item);
@@ -89,9 +89,9 @@ std::string traceToString(simgrid::mc::RecordTrace const& trace)
   for (auto i = trace.begin(); i != trace.end(); ++i) {
     if (i != trace.begin())
       stream << ';';
-    stream << i->pid;
-    if (i->argument)
-      stream << '/' << i->argument;
+    stream << i->pid_;
+    if (i->argument_)
+      stream << '/' << i->argument_;
   }
   return stream.str();
 }

@@ -26,28 +26,28 @@ static void MC_patterns_copy(std::vector<simgrid::mc::PatternCommunication*>& de
 void MC_restore_communications_pattern(simgrid::mc::State* state)
 {
   for (unsigned i = 0; i < initial_communications_pattern.size(); i++)
-    initial_communications_pattern[i].index_comm = state->communicationIndices[i];
+    initial_communications_pattern[i].index_comm = state->communication_indices_[i];
 
   for (unsigned i = 0; i < MC_smx_get_maxpid(); i++)
-    MC_patterns_copy(incomplete_communications_pattern[i], state->incomplete_comm_pattern[i]);
+    MC_patterns_copy(incomplete_communications_pattern[i], state->incomplete_comm_pattern_[i]);
 }
 
 void MC_state_copy_incomplete_communications_pattern(simgrid::mc::State* state)
 {
-  state->incomplete_comm_pattern.clear();
+  state->incomplete_comm_pattern_.clear();
   for (unsigned i=0; i < MC_smx_get_maxpid(); i++) {
     std::vector<simgrid::mc::PatternCommunication> res;
     for (auto const& comm : incomplete_communications_pattern[i])
       res.push_back(comm->dup());
-    state->incomplete_comm_pattern.push_back(std::move(res));
+    state->incomplete_comm_pattern_.push_back(std::move(res));
   }
 }
 
 void MC_state_copy_index_communications_pattern(simgrid::mc::State* state)
 {
-  state->communicationIndices.clear();
+  state->communication_indices_.clear();
   for (auto const& list_process_comm : initial_communications_pattern)
-    state->communicationIndices.push_back(list_process_comm.index_comm);
+    state->communication_indices_.push_back(list_process_comm.index_comm);
 }
 
 void MC_handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int value, int backtracking)

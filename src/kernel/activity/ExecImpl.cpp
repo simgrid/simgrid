@@ -43,7 +43,7 @@ void simcall_HANDLER_execution_test(smx_simcall_t simcall, simgrid::kernel::acti
     synchro->simcalls_.push_back(simcall);
     synchro->finish();
   } else {
-    simcall->issuer->simcall_answer();
+    simcall->issuer_->simcall_answer();
   }
   simcall_execution_test__set__result(simcall, res);
 }
@@ -52,9 +52,9 @@ void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, simgrid::kerne
                                            size_t count, double timeout)
 {
   if (timeout < 0.0) {
-    simcall->timeout_cb = nullptr;
+    simcall->timeout_cb_ = nullptr;
   } else {
-    simcall->timeout_cb = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall, execs, count]() {
+    simcall->timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall, execs, count]() {
       for (size_t i = 0; i < count; i++) {
         // Remove the first occurence of simcall:
         auto* exec = execs[i];
@@ -63,7 +63,7 @@ void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, simgrid::kerne
           exec->simcalls_.erase(j);
       }
       simcall_execution_waitany_for__set__result(simcall, -1);
-      simcall->issuer->simcall_answer();
+      simcall->issuer_->simcall_answer();
     });
   }
 
@@ -219,9 +219,9 @@ void ExecImpl::finish()
      * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
      * simcall */
 
-    if (simcall->call == SIMCALL_NONE) // FIXME: maybe a better way to handle this case
+    if (simcall->call_ == SIMCALL_NONE) // FIXME: maybe a better way to handle this case
       continue;                        // if process handling comm is killed
-    if (simcall->call == SIMCALL_EXECUTION_WAITANY_FOR) {
+    if (simcall->call_ == SIMCALL_EXECUTION_WAITANY_FOR) {
       simgrid::kernel::activity::ExecImpl** execs = simcall_execution_waitany_for__get__execs(simcall);
       size_t count                                = simcall_execution_waitany_for__get__count(simcall);
 
@@ -232,9 +232,9 @@ void ExecImpl::finish()
         if (j != exec->simcalls_.end())
           exec->simcalls_.erase(j);
 
-        if (simcall->timeout_cb) {
-          simcall->timeout_cb->remove();
-          simcall->timeout_cb = nullptr;
+        if (simcall->timeout_cb_) {
+          simcall->timeout_cb_->remove();
+          simcall->timeout_cb_ = nullptr;
         }
       }
 
@@ -253,35 +253,35 @@ void ExecImpl::finish()
         break;
 
       case SIMIX_FAILED:
-        XBT_DEBUG("ExecImpl::finish(): host '%s' failed", simcall->issuer->get_host()->get_cname());
-        simcall->issuer->context_->iwannadie = true;
-        if (simcall->issuer->get_host()->is_on())
-          simcall->issuer->exception_ =
+        XBT_DEBUG("ExecImpl::finish(): host '%s' failed", simcall->issuer_->get_host()->get_cname());
+        simcall->issuer_->context_->iwannadie = true;
+        if (simcall->issuer_->get_host()->is_on())
+          simcall->issuer_->exception_ =
               std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
         /* else, the actor will be killed with no possibility to survive */
         break;
 
       case SIMIX_CANCELED:
         XBT_DEBUG("ExecImpl::finish(): execution canceled");
-        simcall->issuer->exception_ =
+        simcall->issuer_->exception_ =
             std::make_exception_ptr(simgrid::CancelException(XBT_THROW_POINT, "Execution Canceled"));
         break;
 
       case SIMIX_TIMEOUT:
         XBT_DEBUG("ExecImpl::finish(): execution timeouted");
-        simcall->issuer->exception_ = std::make_exception_ptr(simgrid::TimeoutException(XBT_THROW_POINT, "Timeouted"));
+        simcall->issuer_->exception_ = std::make_exception_ptr(simgrid::TimeoutException(XBT_THROW_POINT, "Timeouted"));
         break;
 
       default:
         xbt_die("Internal error in ExecImpl::finish(): unexpected synchro state %d", static_cast<int>(state_));
     }
 
-    simcall->issuer->waiting_synchro = nullptr;
+    simcall->issuer_->waiting_synchro = nullptr;
     /* Fail the process if the host is down */
-    if (simcall->issuer->get_host()->is_on())
-      simcall->issuer->simcall_answer();
+    if (simcall->issuer_->get_host()->is_on())
+      simcall->issuer_->simcall_answer();
     else
-      simcall->issuer->context_->iwannadie = true;
+      simcall->issuer_->context_->iwannadie = true;
   }
 }
 

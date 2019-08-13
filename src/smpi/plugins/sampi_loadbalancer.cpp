@@ -137,7 +137,7 @@ void sg_load_balancer_plugin_init()
   if (!done) {
     done = true;
     simgrid::kernel::activity::ExecImpl::on_completion.connect([](simgrid::kernel::activity::ExecImpl const& activity) {
-      simgrid::smpi::plugin::lb.record_actor_computation(activity.simcalls_.front()->issuer->iface(),
+      simgrid::smpi::plugin::lb.record_actor_computation(activity.simcalls_.front()->issuer_->iface(),
                                                          activity.surf_action_->get_cost());
     });
 
