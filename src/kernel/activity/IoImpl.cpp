@@ -75,6 +75,7 @@ void IoImpl::post()
   }
   on_completion(*this);
 
+  /* Answer all simcalls associated with the synchro */
   finish();
 }
 

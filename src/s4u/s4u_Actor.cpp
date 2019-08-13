@@ -103,8 +103,7 @@ void Actor::join(double timeout)
       issuer->simcall_answer();
     } else {
       smx_activity_t sync = issuer->join(target, timeout);
-      sync->simcalls_.push_back(&issuer->simcall);
-      issuer->waiting_synchro = sync;
+      sync->register_simcall(&issuer->simcall);
     }
   });
 }
@@ -315,9 +314,7 @@ void sleep_for(double duration)
         return;
       }
       smx_activity_t sync = issuer->sleep(duration);
-      sync->simcalls_.push_back(&issuer->simcall);
-      issuer->waiting_synchro = sync;
-
+      sync->register_simcall(&issuer->simcall);
     });
 
     Actor::on_wake_up(*issuer->ciface());

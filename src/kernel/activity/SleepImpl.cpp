@@ -48,6 +48,7 @@ void SleepImpl::post()
   } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
     state_ = SIMIX_DONE;
   }
+  /* Answer all simcalls associated with the synchro */
   finish();
 }
 

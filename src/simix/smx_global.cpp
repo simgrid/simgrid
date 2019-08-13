@@ -355,7 +355,7 @@ static void SIMIX_wake_processes()
   }
 }
 
-/** Handle any pending timer */
+/** Handle any pending timer. Returns if something was actually run. */
 static bool SIMIX_execute_timers()
 {
   bool result = false;
@@ -561,38 +561,38 @@ void SIMIX_display_process_status()
   /*  List the process and their state */
   XBT_INFO("Legend of the following listing: \"Process <pid> (<name>@<host>): <status>\"");
   for (auto const& kv : simix_global->process_list) {
-    smx_actor_t process = kv.second;
+    smx_actor_t actor = kv.second;
 
-    if (process->waiting_synchro) {
+    if (actor->waiting_synchro) {
 
       const char* synchro_description = "unknown";
       // we don't care about the Activity type to get its name, use RawImpl
       const char* name =
           boost::static_pointer_cast<simgrid::kernel::activity::ActivityImpl_T<simgrid::kernel::activity::RawImpl>>(
-              process->waiting_synchro)
+              actor->waiting_synchro)
               ->get_cname();
 
-      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(process->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(actor->waiting_synchro) != nullptr)
         synchro_description = "execution";
 
-      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(process->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(actor->waiting_synchro) != nullptr)
         synchro_description = "communication";
 
-      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(process->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(actor->waiting_synchro) != nullptr)
         synchro_description = "sleeping";
 
-      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::RawImpl>(process->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::RawImpl>(actor->waiting_synchro) != nullptr)
         synchro_description = "synchronization";
 
-      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(process->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(actor->waiting_synchro) != nullptr)
         synchro_description = "I/O";
 
-      XBT_INFO("Process %ld (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->get_pid(),
-               process->get_cname(), process->get_host()->get_cname(), synchro_description,
-               process->waiting_synchro.get(), name, (int)process->waiting_synchro->state_);
+      XBT_INFO("Actor %ld (%s@%s): waiting for %s activity %p (%s) in state %d to finish", actor->get_pid(),
+               actor->get_cname(), actor->get_host()->get_cname(), synchro_description, actor->waiting_synchro.get(),
+               name, (int)actor->waiting_synchro->state_);
     }
     else {
-      XBT_INFO("Process %ld (%s@%s)", process->get_pid(), process->get_cname(), process->get_host()->get_cname());
+      XBT_INFO("Actor %ld (%s@%s)", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname());
     }
   }
 }

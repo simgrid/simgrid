@@ -204,9 +204,8 @@ void ExecImpl::post()
     timeout_detector_ = nullptr;
   }
 
-  /* If there are simcalls associated with the synchro, then answer them */
-  if (not simcalls_.empty())
-    finish();
+  /* Answer all simcalls associated with the synchro */
+  finish();
 }
 
 void ExecImpl::finish()

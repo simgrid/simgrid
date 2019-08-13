@@ -238,7 +238,7 @@ void simcall_HANDLER_comm_test(smx_simcall_t simcall, simgrid::kernel::activity:
   }
 
   simcall_comm_test__set__result(simcall, res);
-  if (simcall_comm_test__get__result(simcall)) {
+  if (res) {
     comm->simcalls_.push_back(simcall);
     comm->finish();
   } else {
@@ -564,10 +564,8 @@ void CommImpl::post()
   /* destroy the surf actions associated with the Simix communication */
   cleanupSurf();
 
-  /* if there are simcalls associated with the synchro, then answer them */
-  if (not simcalls_.empty()) {
-    finish();
-  }
+  /* Answer all simcalls associated with the synchro */
+  finish();
 }
 
 void CommImpl::finish()
