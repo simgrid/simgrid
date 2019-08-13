@@ -7,6 +7,7 @@
 #include "mc/mc.h"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
+#include "src/mc/checker/SimcallInspector.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 
@@ -78,8 +79,8 @@ bool actor_is_enabled(smx_actor_t actor)
   // Now, we are in the client app, no need for remote memory reading.
   smx_simcall_t req = &actor->simcall;
 
-  if (req->transition_ != nullptr)
-    return req->transition_->fireable();
+  if (req->inspector_ != nullptr)
+    return req->inspector_->is_enabled();
 
   switch (req->call_) {
     case SIMCALL_NONE:
@@ -153,7 +154,7 @@ bool request_is_visible(smx_simcall_t req)
   xbt_assert(mc_model_checker == nullptr, "This should be called from the client side");
 #endif
 
-  return (req->transition_ != nullptr && req->transition_->visible()) || req->call_ == SIMCALL_COMM_ISEND ||
+  return (req->inspector_ != nullptr && req->inspector_->is_visible()) || req->call_ == SIMCALL_COMM_ISEND ||
          req->call_ == SIMCALL_COMM_IRECV || req->call_ == SIMCALL_COMM_WAIT || req->call_ == SIMCALL_COMM_WAITANY ||
          req->call_ == SIMCALL_COMM_TEST || req->call_ == SIMCALL_COMM_TESTANY || req->call_ == SIMCALL_MC_RANDOM ||
          req->call_ == SIMCALL_MUTEX_LOCK || req->call_ == SIMCALL_MUTEX_TRYLOCK || req->call_ == SIMCALL_MUTEX_UNLOCK;

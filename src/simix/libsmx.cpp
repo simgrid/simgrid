@@ -307,15 +307,15 @@ e_smx_state_t simcall_io_wait(const smx_activity_t& io)
   return (e_smx_state_t)simcall_BODY_io_wait(static_cast<simgrid::kernel::activity::IoImpl*>(io.get()));
 }
 
-void simcall_run_kernel(std::function<void()> const& code, simgrid::kernel::actor::Transition* t)
+void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallInspector* t)
 {
-  SIMIX_process_self()->simcall.transition_ = t;
+  SIMIX_process_self()->simcall.inspector_ = t;
   simcall_BODY_run_kernel(&code);
 }
 
-void simcall_run_blocking(std::function<void()> const& code, simgrid::kernel::actor::Transition* t = nullptr)
+void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::SimcallInspector* t = nullptr)
 {
-  SIMIX_process_self()->simcall.transition_ = t;
+  SIMIX_process_self()->simcall.inspector_ = t;
   simcall_BODY_run_blocking(&code);
 }
 

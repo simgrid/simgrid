@@ -167,6 +167,7 @@ namespace surf {
 }
 namespace mc {
 class CommunicationDeterminismChecker;
+class SimcallInspector;
 }
 namespace vm {
 class VMModel;

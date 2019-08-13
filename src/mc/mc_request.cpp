@@ -8,6 +8,7 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/mc/ModelChecker.hpp"
+#include "src/mc/checker/SimcallInspector.hpp"
 #include "src/mc/mc_smx.hpp"
 
 using simgrid::mc::remote;
@@ -175,8 +176,8 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
 {
   xbt_assert(mc_model_checker != nullptr, "Must be called from MCer");
 
-  if (req->transition_ != nullptr)
-    return req->transition_->to_string();
+  if (req->inspector_ != nullptr)
+    return req->inspector_->to_string();
 
   bool use_remote_comm = true;
   switch(request_type) {
@@ -420,9 +421,9 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
   const smx_actor_t issuer = MC_smx_simcall_get_issuer(req);
   const char* color        = get_color(issuer->get_pid() - 1);
 
-  if (req->transition_ != nullptr)
+  if (req->inspector_ != nullptr)
     return simgrid::xbt::string_printf("label = \"%s\", color = %s, fontcolor = %s",
-                                       req->transition_->dot_label().c_str(), color, color);
+                                       req->inspector_->dot_label().c_str(), color, color);
 
   std::string label;
 
