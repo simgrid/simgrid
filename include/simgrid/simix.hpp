@@ -63,6 +63,9 @@ template <class F> typename std::result_of<F()>::type simcall(F&& code, mc::Simc
  * This is very similar to simcall() right above, but the calling actor will not get rescheduled until
  * actor->simcall_answer() is called explicitely.
  *
+ * Since the return value does not come from the lambda directly, its type cannot be guessed automatically and must
+ * be provided as template parameter.
+ *
  * This is meant for blocking actions. For example, locking a mutex is a blocking simcall.
  * First it's a simcall because that's obviously a modification of the world. Then, that's a blocking simcall because if
  * the mutex happens not to be free, the actor is added to a queue of actors in the mutex. Every mutex->unlock() takes
@@ -72,7 +75,7 @@ template <class F> typename std::result_of<F()>::type simcall(F&& code, mc::Simc
  *
  * If your code never calls actor->simcall_answer() itself, the actor will never return from its simcall.
  */
-template <class F> typename std::result_of<F()>::type simcall_blocking(F&& code, mc::SimcallInspector* t = nullptr)
+template <class R, class F> R simcall_blocking(F&& code, mc::SimcallInspector* t = nullptr)
 {
   // If we are in the maestro, we take the fast path and execute the
   // code directly without simcall mashalling/unmarshalling/dispatch:
@@ -82,7 +85,6 @@ template <class F> typename std::result_of<F()>::type simcall_blocking(F&& code,
   // If we are in the application, pass the code to the maestro which
   // executes it for us and reports the result. We use a std::future which
   // conveniently handles the success/failure value for us.
-  typedef typename std::result_of<F()>::type R;
   simgrid::xbt::Result<R> result;
   simcall_run_blocking([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, t);
   return result.get();

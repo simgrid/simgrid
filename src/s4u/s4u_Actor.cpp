@@ -97,7 +97,7 @@ void Actor::join(double timeout)
 {
   auto issuer = SIMIX_process_self();
   auto target = pimpl_;
-  kernel::actor::simcall_blocking([issuer, target, timeout] {
+  kernel::actor::simcall_blocking<void>([issuer, target, timeout] {
     if (target->finished_) {
       // The joined process is already finished, just wake up the issuer right away
       issuer->simcall_answer();
@@ -189,7 +189,7 @@ void Actor::suspend()
   auto issuer = SIMIX_process_self();
   auto target = pimpl_;
   s4u::Actor::on_suspend(*this);
-  kernel::actor::simcall_blocking([issuer, target]() {
+  kernel::actor::simcall_blocking<void>([issuer, target]() {
     target->suspend(issuer);
     if (target != issuer) {
       /* If we are suspending ourselves, then just do not finish the simcall now */
@@ -307,7 +307,7 @@ void sleep_for(double duration)
     kernel::actor::ActorImpl* issuer = SIMIX_process_self();
     Actor::on_sleep(*issuer->ciface());
 
-    kernel::actor::simcall_blocking([issuer, duration]() {
+    kernel::actor::simcall_blocking<void>([issuer, duration]() {
       if (MC_is_active() || MC_record_replay_is_active()) {
         MC_process_clock_add(issuer, duration);
         issuer->simcall_answer();
