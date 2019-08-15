@@ -118,12 +118,12 @@ static inline smx_simcall_t MC_state_get_request_for_process(simgrid::mc::State*
       mc_model_checker->process().read(temp_act, remote_act);
       simgrid::kernel::activity::CommImpl* act = temp_act.get_buffer();
       if (act->src_actor_.get() && act->dst_actor_.get())
-        state->transition_.argument_ = 0;
+        state->transition_.argument_ = 0; // OK
       else if (act->src_actor_.get() == nullptr && act->type_ == simgrid::kernel::activity::CommImpl::Type::READY &&
                act->detached())
-        state->transition_.argument_ = 0;
+        state->transition_.argument_ = 0; // OK
       else
-        state->transition_.argument_ = -1;
+        state->transition_.argument_ = -1; // timeout
       procstate->set_done();
       req = &actor->simcall;
       break;

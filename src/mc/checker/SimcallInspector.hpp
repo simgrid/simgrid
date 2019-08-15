@@ -20,6 +20,14 @@ public:
    */
   virtual bool is_enabled() { return true; }
 
+  /** Execute the simcall, from the kernel POV.
+   *
+   * Most of the time, this action is in charge of doing what the perf models would have done if not in MC mode.
+   * For example, if it's a random(), choose the value to explore next. If it's a waitany, choose the terminated
+   * communication to consider now.
+   */
+  virtual void fire();
+
   /** Some simcalls may only be observable under some circomstances.
    * Most simcalls are not visible from the MC because they don't have an inspector at all. */
   virtual bool is_visible() { return true; }

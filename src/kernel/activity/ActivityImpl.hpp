@@ -32,8 +32,11 @@ public:
   virtual void suspend();
   virtual void resume();
   virtual void cancel();
-  virtual void post()   = 0; // What to do when a simcall terminates
-  virtual void finish() = 0;
+
+  virtual void post() = 0; // Called by the main loop when the activity is marked as terminated or failed by its model.
+                           // Setups the status, clean things up, and call finish()
+  virtual void finish() = 0; // Unlock all simcalls blocked on that activity, either because it was marked as done by
+                             // the model or because it terminated without waiting for the model
 
   virtual void register_simcall(smx_simcall_t simcall);
   void clean_action();
