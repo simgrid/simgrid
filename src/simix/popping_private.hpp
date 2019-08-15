@@ -46,7 +46,7 @@ struct s_smx_simcall {
   e_smx_simcall_t call_;
   smx_actor_t issuer_;
   smx_timer_t timeout_cb_; // Callback to timeouts
-  simgrid::mc::SimcallInspector* inspector_ = nullptr; // makes that simcall observable by the MC
+  simgrid::mc::SimcallInspector* inspector_; // makes that simcall observable by the MC
   int mc_value_;
   u_smx_scalar args_[11];
   u_smx_scalar result_;
