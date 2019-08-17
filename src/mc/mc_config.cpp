@@ -18,6 +18,8 @@ namespace mc {
 simgrid::mc::ReductionMode reduction_mode = simgrid::mc::ReductionMode::unset;
 }
 }
+#else
+#define _sg_do_model_check 0
 #endif
 
 static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
