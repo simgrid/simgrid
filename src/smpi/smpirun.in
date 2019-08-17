@@ -72,6 +72,7 @@ HOSTFILE=""
 HOSTFILETMP=0
 MAPOPT=0
 REPLAY=0
+QUIET=""
 
 unset pid
 
@@ -202,6 +203,10 @@ while true; do
             SIMOPTS="$SIMOPTS --cfg=smpi/keep-temps:yes"
             shift 1
             ;;
+	"-quiet")
+	    QUIET="true"
+	    shift 1
+	    ;;
         "-wrapper")
             WRAPPER="$2"
             shift 2
@@ -559,7 +564,7 @@ pid=""
 # Keep temporary files on failures to help debugging
 #
 if [ ${status} -ne 0 ] ; then
-    if [ -z "${KEEP}" ]; then
+    if [ -z "${KEEP}" -a -z "${QUIET}" ]; then
         echo ${EXEC} ${PRIVATIZE} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
         if [ ${HOSTFILETMP} = 1 ] ; then
             echo "Generated hostfile ${HOSTFILE} kept."
@@ -567,9 +572,9 @@ if [ ${status} -ne 0 ] ; then
         if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
             echo "Generated unrolled hostfile ${UNROLLEDHOSTFILE} kept."
         fi
+        KEEP=true
     fi
     echo "Execution failed with code ${status}."
-    KEEP=true
 fi
 
 smpirun_cleanup
