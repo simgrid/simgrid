@@ -22,6 +22,7 @@ SMPI:
 
 Model-Checker:
  - Option model-checker/hash was removed. This is always activated now.
+ - New option smpi/buffering controls the MPI buffering in MC mode.
  - MPI calls now MC_assert() that no MPI_ERR_* code is returned. 
    This is useful to check for MPI compliance.
 

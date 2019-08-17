@@ -140,6 +140,7 @@ Existing Configuration Items
 
 - **For collective operations of SMPI,** please refer to Section :ref:`cfg=smpi/coll-selector`
 - **smpi/async-small-thresh:** :ref:`cfg=smpi/async-small-thresh`
+- **smpi/buffering:** :ref:`cfg=smpi/buffering`
 - **smpi/bw-factor:** :ref:`cfg=smpi/bw-factor`
 - **smpi/coll-selector:** :ref:`cfg=smpi/coll-selector`
 - **smpi/comp-adjustment-file:** :ref:`cfg=smpi/comp-adjustment-file`
@@ -483,6 +484,32 @@ be executed using the simgrid-mc wrapper:
 
 Safety properties are expressed as assertions using the function
 :cpp:func:`void MC_assert(int prop)`.
+
+.. _cfg=smpi/buffering:
+
+Specifying the MPI buffering behavior
+.....................................
+
+**Option** ``smpi/buffering`` **Default:** zero
+
+Buffering in MPI has a huge impact on the communication semantic. For example,
+standard blocking sends are synchronous calls when the system buffers are full
+while these calls can complete immediately without even requiring a matching
+receive call for small messages sent when the system buffers are empty.
+
+In SMPI, this depends on the message size, that is compared against two thresholds:
+
+- if (size < :ref:`smpi/async-small-thresh <cfg=smpi/async-small-thresh>`) then
+  MPI_Send returns immediately, even if the corresponding receive has not be issued yet.
+- if (:ref:`smpi/async-small-thresh <cfg=smpi/async-small-thresh>` < size < :ref:`smpi/send-is-detached-thresh <cfg=smpi/send-is-detached-thresh>`) then
+  MPI_Send returns as soon as the corresponding receive has been issued. This is known as the eager mode.
+- if (:ref:`smpi/send-is-detached-thresh <cfg=smpi/send-is-detached-thresh>` < size) then
+  MPI_Send returns only when the message has actually been sent over the network. This is known as the rendez-vous mode.
+
+The ``smpi/buffering`` option gives an easier interface to choose between these semantics. It can take two values:
+
+- **zero:** means that buffering should be disabled. Blocking communications are actually blocking.
+- **infty:** means that buffering should be made infinite. Blocking communications are non-blocking.
 
 .. _cfg=model-check/property:
 
