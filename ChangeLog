@@ -22,6 +22,8 @@ SMPI:
 
 Model-Checker:
  - Option model-checker/hash was removed. This is always activated now.
+ - MPI calls now MC_assert() that no MPI_ERR_* code is returned. 
+   This is useful to check for MPI compliance.
 
 XBT:
  - xbt_mutex_t and xbt_cond_t are now marked as deprecated, a new C interface

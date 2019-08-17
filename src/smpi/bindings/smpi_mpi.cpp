@@ -4,6 +4,7 @@
  * under the terms of the license ,(GNU LGPL) which comes with this package. */
 
 #include "private.hpp"
+#include "simgrid/modelchecker.h"
 #include "simgrid/sg_config.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)");
@@ -36,6 +37,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
       int error_size;                                                                                                  \
       PMPI_Error_string(ret, error_string, &error_size);                                                               \
       XBT_WARN("%s - returned %.*s instead of MPI_SUCCESS", __func__, error_size, error_string);                       \
+      MC_assert(not MC_is_active()); /* Only fail in MC mode */                                                        \
     }                                                                                                                  \
     XBT_VERB("SMPI - Leaving %s", __func__);                                                                           \
     return ret;                                                                                                        \
