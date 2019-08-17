@@ -21,8 +21,8 @@ namespace mc {
 State::State(unsigned long state_number) : num_(state_number)
 {
   this->internal_comm.clear();
-  std::memset(&this->internal_req, 0, sizeof(this->internal_req));
-  std::memset(&this->executed_req_, 0, sizeof(this->executed_req_));
+  this->internal_req  = s_smx_simcall();
+  this->executed_req_ = s_smx_simcall();
 
   actor_states_.resize(MC_smx_get_maxpid());
   /* Stateful model checking */

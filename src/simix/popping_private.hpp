@@ -43,13 +43,13 @@ union u_smx_scalar {
  * @brief Represents a simcall to the kernel.
  */
 struct s_smx_simcall {
-  e_smx_simcall_t call_;
-  smx_actor_t issuer_;
-  smx_timer_t timeout_cb_; // Callback to timeouts
-  simgrid::mc::SimcallInspector* inspector_; // makes that simcall observable by the MC
-  int mc_value_;
-  u_smx_scalar args_[11];
-  u_smx_scalar result_;
+  e_smx_simcall_t call_                     = SIMCALL_NONE;
+  smx_actor_t issuer_                       = nullptr;
+  smx_timer_t timeout_cb_                   = nullptr; // Callback to timeouts
+  simgrid::mc::SimcallInspector* inspector_ = nullptr; // makes that simcall observable by the MC
+  int mc_value_                             = 0;
+  u_smx_scalar args_[11]                    = {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}};
+  u_smx_scalar result_                      = {0};
 };
 
 #define SIMCALL_SET_MC_VALUE(simcall, value) ((simcall).mc_value_ = (value))

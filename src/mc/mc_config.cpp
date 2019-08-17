@@ -20,10 +20,6 @@ simgrid::mc::ReductionMode reduction_mode = simgrid::mc::ReductionMode::unset;
 }
 #endif
 
-#if !SIMGRID_HAVE_MC
-#define _sg_do_model_check 0
-#endif
-
 static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
 {
   if (_sg_cfg_init_status && not _sg_do_model_check && more_check)

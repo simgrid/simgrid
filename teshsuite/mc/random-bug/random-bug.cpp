@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(random_bug, "For this example");
 
 enum { ABORT, ASSERT, PRINTF } behavior;
 
-/** An (fake) application with a bug occuring for some random values */
+/** A fake application with a bug occuring for some random values */
 static void app()
 {
   int x = MC_random(0, 5);
@@ -42,6 +42,9 @@ int main(int argc, char* argv[])
   } else if (strcmp(argv[1], "printf") == 0) {
     XBT_INFO("Behavior: printf");
     behavior = PRINTF;
+  } else {
+    xbt_die("Please use either 'abort', 'assert' or 'printf' as first parameter, to specify what to do when the error "
+            "is found.");
   }
 
   e.load_platform(argv[2]);
