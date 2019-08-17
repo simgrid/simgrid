@@ -411,8 +411,8 @@ receiving mode of the mailbox with a call to
 this mailbox will have this behavior regardless of the message size.
 
 This value needs to be smaller than or equals to the threshold set at
-@ref options_model_smpi_detached , because asynchronous messages are
-meant to be detached as well.
+:ref:`cfg=smpi/send-is-detached-thresh`, because asynchronous messages
+are meant to be detached as well.
 
 .. _options_pls:
 
@@ -1160,7 +1160,7 @@ Simulating MPI detached send
 
 This threshold specifies the size in bytes under which the send will
 return immediately. This is different from the threshold detailed in
-:ref:`options_model_network_asyncsend` because the message is not
+:ref:`cfg=smpi/async-small-thresh` because the message is not
 effectively sent when the send is posted. SMPI still waits for the
 correspondant receive to be posted to perform the communication
 operation.
