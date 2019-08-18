@@ -28,6 +28,8 @@ int main( int argc, char **argv )
 
   MPI_Comm_size( comm, &size );
   MPI_Comm_rank( comm, &rank );
+  MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
+
   int* sendbuf = (int *) malloc( size * sizeof(int) );
   for (i=0; i<size; i++)
     sendbuf[i] = rank + i;

@@ -66,6 +66,8 @@ int main(int argc, char **argv)
 
   /* Create the buffer */
   MPI_Comm_size(comm, &size);
+  MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
+
   if(size<=0){
     printf("error : comm size <= 0, run with mpirun\n");
     return -1;
