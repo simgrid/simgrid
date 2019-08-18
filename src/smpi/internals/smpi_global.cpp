@@ -25,6 +25,10 @@
 #include <fstream>
 #include <sys/stat.h>
 
+#if SIMGRID_HAVE_MC
+#include "src/mc/mc_config.hpp"
+#endif
+
 #if SG_HAVE_SENDFILE
 #include <sys/sendfile.h>
 #endif
@@ -224,9 +228,21 @@ void smpi_comm_null_copy_buffer_callback(simgrid::kernel::activity::CommImpl*, v
 
 static void smpi_check_options()
 {
-  //check correctness of MPI parameters
+#if SIMGRID_HAVE_MC
+  if (MC_is_active()) {
+    if (_sg_mc_buffering == "zero")
+      simgrid::config::set_value<int>("smpi/send-is-detached-thresh", 0);
+    else if (_sg_mc_buffering == "infty")
+      simgrid::config::set_value<int>("smpi/send-is-detached-thresh", INT_MAX);
+    else
+      THROW_IMPOSSIBLE;
+  }
+#endif
 
   xbt_assert(simgrid::config::get_value<int>("smpi/async-small-thresh") <=
+                 simgrid::config::get_value<int>("smpi/send-is-detached-thresh"),
+             "smpi/async-small-thresh (=%d) should be smaller or equal to smpi/send-is-detached-thresh (=%d)",
+             simgrid::config::get_value<int>("smpi/async-small-thresh"),
              simgrid::config::get_value<int>("smpi/send-is-detached-thresh"));
 
   if (simgrid::config::is_default("smpi/host-speed") && not MC_is_active()) {

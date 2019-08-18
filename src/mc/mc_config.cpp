@@ -73,20 +73,13 @@ simgrid::config::Flag<bool> _sg_mc_send_determinism{
       _mc_cfg_cb_check("value to enable/disable the detection of send-determinism in the communications schemes");
     }};
 
-static simgrid::config::Flag<std::string> _sg_mc_buffering{
-    "smpi/buffering", "Buffering semantic to use for MPI (only used in MC)", "zero", [](const std::string& value) {
-      try {
-        if (value == "zero")
-          simgrid::config::set_value<int>("smpi/send-is-detached-thresh", 0);
-        else if (value == "infty")
-          simgrid::config::set_value<int>("smpi/send-is-detached-thresh", INT_MAX);
-        else
-          xbt_die("configuration option 'smpi/buffering' can only take 'zero' or 'infty' as a value");
-      } catch (std::out_of_range& e) {
-        /* If the 'smpi/send-is-detached-thresh' does not exist, we are in the MCer process, where this option makes no
-         * sense, so just ignore it */
-      }
-    }};
+simgrid::config::Flag<std::string> _sg_mc_buffering{
+    "smpi/buffering",
+    "Buffering semantic to use for MPI (only used in MC)",
+    "zero",
+    {{"zero", "No system buffering: MPI_Send is blocking"},
+     {"infty", "Infinite system buffering: MPI_Send returns immediately"}},
+    [](const std::string& value) { _mc_cfg_cb_check("buffering mode"); }};
 
 static simgrid::config::Flag<std::string> _sg_mc_reduce{
     "model-check/reduction", "Specify the kind of exploration reduction (either none or DPOR)", "dpor",
