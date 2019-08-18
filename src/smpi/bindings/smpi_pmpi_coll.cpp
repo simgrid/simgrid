@@ -101,7 +101,7 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
 {
   if (comm == MPI_COMM_NULL)
     return MPI_ERR_COMM;
-  if ((sendbuf == nullptr) || ((comm->rank() == root) && recvbuf == nullptr))
+  if ((sendbuf == nullptr && sendcount > 0) || ((comm->rank() == root) && recvbuf == nullptr && recvcount > 0))
     return MPI_ERR_BUFFER;
   if (((sendbuf != MPI_IN_PLACE && sendcount > 0) && (sendtype == MPI_DATATYPE_NULL)) ||
       ((comm->rank() == root) && (recvtype == MPI_DATATYPE_NULL)))
@@ -214,7 +214,7 @@ int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
                     MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request)
 {
   CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM, "Iallgather: the communicator cannot be MPI_COMM_NULL");
-  CHECK_ARGS(recvbuf == nullptr, MPI_ERR_BUFFER, "Iallgather: param 4 recvbuf cannot be NULL");
+  CHECK_ARGS(recvbuf == nullptr && recvcount > 0, MPI_ERR_BUFFER, "Iallgather: param 4 recvbuf cannot be NULL");
   CHECK_ARGS(sendbuf == nullptr && sendcount > 0, MPI_ERR_BUFFER,
              "Iallgather: param 1 sendbuf cannot be NULL when sendcound > 0");
   CHECK_ARGS((sendbuf != MPI_IN_PLACE) && (sendtype == MPI_DATATYPE_NULL), MPI_ERR_TYPE,

@@ -173,9 +173,7 @@ int PMPI_Request_free(MPI_Request * request)
   int retval = 0;
 
   smpi_bench_end();
-  if (*request == MPI_REQUEST_NULL) {
-    retval = MPI_ERR_ARG;
-  } else {
+  if (*request != MPI_REQUEST_NULL) {
     simgrid::smpi::Request::unref(request);
     retval = MPI_SUCCESS;
   }
@@ -830,12 +828,11 @@ int PMPI_Grequest_complete( MPI_Request request){
   return simgrid::smpi::Request::grequest_complete(request);
 }
 
-
 int PMPI_Request_get_status( MPI_Request request, int *flag, MPI_Status *status){
   if(request==MPI_REQUEST_NULL){
     *flag=1;
     simgrid::smpi::Status::empty(status);
-    return MPI_ERR_REQUEST;
+    return MPI_SUCCESS;
   } else if (flag==NULL || status ==NULL){
     return MPI_ERR_ARG;
   }
