@@ -490,7 +490,7 @@ Safety properties are expressed as assertions using the function
 Specifying the MPI buffering behavior
 .....................................
 
-**Option** ``smpi/buffering`` **Default:** zero
+**Option** ``smpi/buffering`` **Default:** infty
 
 Buffering in MPI has a huge impact on the communication semantic. For example,
 standard blocking sends are synchronous calls when the system buffers are full

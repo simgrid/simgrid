@@ -76,7 +76,7 @@ simgrid::config::Flag<bool> _sg_mc_send_determinism{
 simgrid::config::Flag<std::string> _sg_mc_buffering{
     "smpi/buffering",
     "Buffering semantic to use for MPI (only used in MC)",
-    "zero",
+    "infty",
     {{"zero", "No system buffering: MPI_Send is blocking"},
      {"infty", "Infinite system buffering: MPI_Send returns immediately"}},
     [](const std::string& value) { _mc_cfg_cb_check("buffering mode"); }};
