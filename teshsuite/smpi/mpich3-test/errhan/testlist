@@ -1,0 +1,9 @@
+#needs MPI_Error_class
+#adderr 1
+commcall 2
+errfatal 1 resultTest=TestErrFatal
+predef_eh 1
+predef_eh 2
+#needs MPI_Error_class and such
+#errstring2 1
+#dynamic_errcode_predefined_errclass 1
