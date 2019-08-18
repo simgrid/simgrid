@@ -39,7 +39,7 @@ int PMPI_Cart_rank(MPI_Comm comm, const int* coords, int* rank) {
     return MPI_ERR_TOPOLOGY;
   }
   if (coords == nullptr) {
-    return MPI_ERR_ARG;
+    return MPI_SUCCESS;
   }
   MPIR_Cart_Topology topo = static_cast<MPIR_Cart_Topology>(comm->topo());
   if (topo==nullptr) {
@@ -69,11 +69,11 @@ int PMPI_Cart_coords(MPI_Comm comm, int rank, int maxdims, int* coords) {
   if (rank < 0 || rank >= comm->size()) {
     return MPI_ERR_RANK;
   }
-  if (maxdims <= 0) {
+  if (maxdims < 0) {
     return MPI_ERR_ARG;
   }
-  if(coords == nullptr) {
-    return MPI_ERR_ARG;
+  if(maxdims==0 || coords == nullptr) {
+    return MPI_SUCCESS;
   }
   MPIR_Cart_Topology topo = static_cast<MPIR_Cart_Topology>(comm->topo());
   if (topo==nullptr) {
@@ -83,10 +83,13 @@ int PMPI_Cart_coords(MPI_Comm comm, int rank, int maxdims, int* coords) {
 }
 
 int PMPI_Cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods, int* coords) {
+  if(dims == nullptr || periods == nullptr || coords == nullptr){
+    return MPI_SUCCESS;
+  }
   if(comm == nullptr || comm->topo() == nullptr) {
     return MPI_ERR_TOPOLOGY;
   }
-  if(maxdims <= 0 || dims == nullptr || periods == nullptr || coords == nullptr) {
+  if(maxdims <= 0) {
     return MPI_ERR_ARG;
   }
   MPIR_Cart_Topology topo = static_cast<MPIR_Cart_Topology>(comm->topo());
@@ -112,7 +115,7 @@ int PMPI_Cartdim_get(MPI_Comm comm, int* ndims) {
 
 int PMPI_Dims_create(int nnodes, int ndims, int* dims) {
   if(dims == nullptr) {
-    return MPI_ERR_ARG;
+    return MPI_SUCCESS;
   }
   if (ndims < 1 || nnodes < 1) {
     return MPI_ERR_DIMS;
