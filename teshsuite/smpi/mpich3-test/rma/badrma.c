@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     types[3] = MPI_DOUBLE;
 
     MPI_Win_create(win_buf, SIZE * sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &win);
-
+    MPI_Win_set_errhandler(win, MPI_ERRORS_RETURN);
     MPI_Win_fence(0, win);
 
     if (rank == 0) {
