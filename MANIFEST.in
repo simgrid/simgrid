@@ -451,6 +451,8 @@ include examples/smpi/mc/non_termination3.c
 include examples/smpi/mc/non_termination4.c
 include examples/smpi/mc/only_send_deterministic.c
 include examples/smpi/mc/promela_bugged1_liveness
+include examples/smpi/mc/sendsend.c
+include examples/smpi/mc/sendsend.tesh
 include examples/smpi/replay/actions0.txt
 include examples/smpi/replay/actions1.txt
 include examples/smpi/replay/actions_allgatherv.txt
@@ -2169,6 +2171,7 @@ include src/mc/checker/LivenessChecker.cpp
 include src/mc/checker/LivenessChecker.hpp
 include src/mc/checker/SafetyChecker.cpp
 include src/mc/checker/SafetyChecker.hpp
+include src/mc/checker/SimcallInspector.hpp
 include src/mc/checker/simgrid_mc.cpp
 include src/mc/compare.cpp
 include src/mc/inspect/DwarfExpression.cpp
