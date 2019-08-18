@@ -360,8 +360,10 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
                    MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
 {
   CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM, "Iscatterv: the communicator cannot be MPI_COMM_NULL");
-  CHECK_ARGS(sendcounts == nullptr, MPI_ERR_ARG, "Iscatterv: param 2 sendcounts cannot be NULL");
-  CHECK_ARGS(displs == nullptr, MPI_ERR_ARG, "Iscatterv: param 3 displs cannot be NULL");
+  CHECK_ARGS((comm->rank() == root) && (sendcounts == nullptr), MPI_ERR_ARG,
+             "Iscatterv: param 2 sendcounts cannot be NULL on the root rank");
+  CHECK_ARGS((comm->rank() == root) && (displs == nullptr), MPI_ERR_ARG,
+             "Iscatterv: param 3 displs cannot be NULL on the root rank");
   CHECK_ARGS((comm->rank() == root) && (sendtype == MPI_DATATYPE_NULL), MPI_ERR_TYPE,
              "Iscatterv: The sendtype cannot be NULL on the root rank");
   CHECK_ARGS((recvbuf != MPI_IN_PLACE) && (recvtype == MPI_DATATYPE_NULL), MPI_ERR_TYPE,
