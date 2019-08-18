@@ -92,7 +92,6 @@ IF(enable_java)
   ELSE()
     SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/deprecated/java/:${CMAKE_BINARY_DIR}/teshsuite/java/:${SIMGRID_JAR}")
   ENDIF()
-  ADD_TESH_FACTORIES(mc-sendsend                "ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/examples/smpi/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/smpi/mc sendsend.tesh)
 ENDIF()
 
 # New tests should use the Catch Framework
