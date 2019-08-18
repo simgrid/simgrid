@@ -19,6 +19,7 @@ SMPI:
  - Add support for MPI_Irsend, MPI_Rsend, MPI_Rsend_init
  - SMPI can now be selected by cmake's find_module(MPI) with
    MPI_C_COMPILER, MPI_CXX_COMPILER, MPI_Fortran_COMPILER variables.
+ - Add support for MPI Errhandlers in Comm, File or Win. Default one is still set to MPI_ERRORS_RETURN.
 
 Model-Checker:
  - Option model-checker/hash was removed. This is always activated now.

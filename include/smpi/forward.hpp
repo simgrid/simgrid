@@ -17,6 +17,7 @@ class Coll;
 class Colls;
 class Comm;
 class Datatype;
+class Errhandler;
 class File;
 class Group;
 class Info;
@@ -36,6 +37,7 @@ class Win;
 
 typedef simgrid::smpi::Comm SMPI_Comm;
 typedef simgrid::smpi::Datatype SMPI_Datatype;
+typedef simgrid::smpi::Errhandler SMPI_Errhandler;
 typedef simgrid::smpi::File SMPI_File;
 typedef simgrid::smpi::Group SMPI_Group;
 typedef simgrid::smpi::Info SMPI_Info;
@@ -51,6 +53,7 @@ typedef simgrid::smpi::Win SMPI_Win;
 
 typedef struct SMPI_Comm SMPI_Comm;
 typedef struct SMPI_Datatype SMPI_Datatype;
+typedef struct SMPI_Errhandler SMPI_Errhandler;
 typedef struct SMPI_File SMPI_File;
 typedef struct SMPI_Group SMPI_Group;
 typedef struct SMPI_Info SMPI_Info;

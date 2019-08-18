@@ -106,12 +106,6 @@
       parameter(MPI_UNIVERSE_SIZE=-7)
       parameter(MPI_LASTUSEDCODE=-8)
 
-      integer MPI_ERRORS_RETURN, MPI_ERRORS_ARE_FATAL
-      integer MPI_ERRHANDLER_NULL
-      parameter(MPI_ERRORS_RETURN=0)
-      parameter(MPI_ERRORS_ARE_FATAL=1)
-      parameter(MPI_ERRHANDLER_NULL=2)
-
 ! This should be equal to the number of int fields in MPI_Status
       integer MPI_STATUS_SIZE
       parameter(MPI_STATUS_SIZE=5)
@@ -140,7 +134,7 @@
       integer MPI_REQUEST_NULL,MPI_DATATYPE_NULL,MPI_OP_NULL
       integer MPI_COMM_NULL, MPI_COMM_WORLD, MPI_COMM_SELF
       integer MPI_GROUP_NULL, MPI_GROUP_EMPTY, MPI_WIN_NULL
-      integer MPI_INFO_NULL
+      integer MPI_INFO_NULL, MPI_ERRHANDLER_NULL
 
       parameter(MPI_REQUEST_NULL=-1)
       parameter(MPI_DATATYPE_NULL=-1)
@@ -151,6 +145,7 @@
       parameter(MPI_GROUP_NULL=-1)
       parameter(MPI_GROUP_EMPTY=-2)
       parameter(MPI_WIN_NULL=-1)
+      parameter(MPI_ERRHANDLER_NULL=-1)
 
       integer MPI_WIN_BASE, MPI_WIN_SIZE, MPI_WIN_DISP_UNIT
 
@@ -204,6 +199,10 @@
       parameter(MPI_BOR=40)
       parameter(MPI_BXOR=41)
 
+      integer MPI_ERRORS_RETURN, MPI_ERRORS_ARE_FATAL
+      parameter(MPI_ERRORS_RETURN=42)
+      parameter(MPI_ERRORS_ARE_FATAL=43)
+      
       INTEGER MPI_ADDRESS_KIND, MPI_OFFSET_KIND
       PARAMETER (MPI_ADDRESS_KIND=@CMAKE_SIZEOF_VOID_P@)
       PARAMETER (MPI_OFFSET_KIND=@CMAKE_SIZEOF_VOID_P@)

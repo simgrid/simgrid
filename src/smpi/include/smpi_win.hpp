@@ -8,6 +8,7 @@
 #define SMPI_WIN_HPP_INCLUDED
 
 #include "simgrid/s4u/Barrier.hpp"
+#include "smpi_errhandler.hpp"
 #include "smpi_f2c.hpp"
 #include "smpi_keyvals.hpp"
 #include "xbt/synchro.h"
@@ -40,6 +41,7 @@ class Win : public F2C, public Keyval {
   int mode_; // exclusive or shared lock
   int allocated_;
   int dynamic_;
+  MPI_Errhandler errhandler_;
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;
@@ -92,6 +94,8 @@ public:
   int finish_comms();
   int finish_comms(int rank);
   int shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr);
+  MPI_Errhandler errhandler();
+  void set_errhandler( MPI_Errhandler errhandler);
 };
 
 

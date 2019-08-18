@@ -364,6 +364,10 @@ typedef SMPI_Request* MPI_Request;
 #define MPI_REQUEST_NULL ((MPI_Request)NULL)
 #define MPI_FORTRAN_REQUEST_NULL -1
 
+typedef SMPI_Errhandler* MPI_Errhandler;
+#define MPI_ERRHANDLER_NULL ((MPI_Errhandler)NULL)
+
+
 typedef enum SMPI_Topo_type {
   MPI_GRAPH=1,
   MPI_CART=2,
@@ -812,8 +816,6 @@ typedef enum MPIR_Combiner_enum{
 }MPIR_Combiner_enum;
 
 typedef void MPI_Handler_function(MPI_Comm*, int*, ...);
-
-typedef void* MPI_Errhandler;
 typedef void* MPI_Message;
 typedef void MPI_Comm_errhandler_function(MPI_Comm *, int *, ...);
 typedef void MPI_File_errhandler_function(MPI_File *, int *, ...);
@@ -828,9 +830,8 @@ typedef MPI_File_errhandler_function MPI_File_errhandler_fn;
 typedef MPI_Win_errhandler_function MPI_Win_errhandler_fn;
 #define MPI_INFO_ENV smpi_process_info_env()
 XBT_PUBLIC_DATA const MPI_Datatype MPI_PACKED;
-XBT_PUBLIC_DATA MPI_Errhandler* MPI_ERRORS_RETURN;
-XBT_PUBLIC_DATA MPI_Errhandler* MPI_ERRORS_ARE_FATAL;
-XBT_PUBLIC_DATA MPI_Errhandler* MPI_ERRHANDLER_NULL;
+XBT_PUBLIC_DATA MPI_Errhandler MPI_ERRORS_RETURN;
+XBT_PUBLIC_DATA MPI_Errhandler MPI_ERRORS_ARE_FATAL;
 
 MPI_CALL(XBT_PUBLIC MPI_Errhandler, MPI_Errhandler_f2c, (MPI_Fint errhandler));
 MPI_CALL(XBT_PUBLIC MPI_Fint, MPI_Errhandler_c2f, (MPI_Errhandler errhandler));
@@ -878,7 +879,9 @@ MPI_CALL(XBT_PUBLIC int, MPI_Get_elements, (MPI_Status * status, MPI_Datatype da
 MPI_CALL(XBT_PUBLIC int, MPI_Pcontrol, (const int level, ...));
 
 MPI_CALL(XBT_PUBLIC int, MPI_Win_set_errhandler, (MPI_Win win, MPI_Errhandler errhandler));
-MPI_CALL(XBT_PUBLIC int, MPI_Type_get_envelope,
+MPI_CALL(XBT_PUBLIC int, MPI_Win_get_errhandler, (MPI_Win win, MPI_Errhandler* errhandler));
+MPI_CALL(XBT_PUBLIC int, MPI_Win_create_errhandler, (MPI_Win_errhandler_fn * function, MPI_Errhandler* errhandler));
+MPI_CALL(XBT_PUBLIC int, MPI_Win_call_errhandler, (MPI_Win win, int errorcode));MPI_CALL(XBT_PUBLIC int, MPI_Type_get_envelope,
          (MPI_Datatype datatype, int* num_integers, int* num_addresses, int* num_datatypes, int* combiner));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_get_contents,
          (MPI_Datatype datatype, int max_integers, int max_addresses, int max_datatypes, int* array_of_integers,

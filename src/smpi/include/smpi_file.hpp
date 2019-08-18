@@ -10,6 +10,7 @@
 #include "smpi_comm.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_datatype.hpp"
+#include "smpi_errhandler.hpp"
 #include "smpi_info.hpp"
 #include  <algorithm>
 
@@ -26,6 +27,8 @@ class File{
   s4u::MutexPtr shared_mutex_;
   MPI_Win win_;
   char* list_;
+  MPI_Errhandler errhandler_;
+
   public:
   File(MPI_Comm comm, const char *filename, int amode, MPI_Info info);
   File(const File&) = delete;
@@ -50,6 +53,8 @@ class File{
   template <int (*T)(MPI_File, void *, int, MPI_Datatype, MPI_Status *)> int op_all(void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
   static int close(MPI_File *fh);
   static int del(const char *filename, MPI_Info info);
+  MPI_Errhandler errhandler();
+  void set_errhandler( MPI_Errhandler errhandler);
 };
 
   /* Read_all, Write_all : loosely based on */

@@ -100,6 +100,7 @@ set(SMPI_SRC
   src/smpi/mpi/smpi_comm.cpp
   src/smpi/mpi/smpi_datatype.cpp
   src/smpi/mpi/smpi_datatype_derived.cpp
+  src/smpi/mpi/smpi_errhandler.cpp
   src/smpi/mpi/smpi_f2c.cpp
   src/smpi/mpi/smpi_file.cpp
   src/smpi/mpi/smpi_group.cpp
@@ -115,6 +116,7 @@ set(SMPI_SRC
   src/smpi/include/smpi_comm.hpp
   src/smpi/include/smpi_datatype_derived.hpp
   src/smpi/include/smpi_datatype.hpp
+  src/smpi/include/smpi_errhandler.hpp
   src/smpi/include/smpi_f2c.hpp
   src/smpi/include/smpi_file.hpp
   src/smpi/include/smpi_group.hpp

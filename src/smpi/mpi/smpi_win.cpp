@@ -42,7 +42,7 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
     bar_ = new s4u::Barrier(comm_size);
   }
   mode_=0;
-
+  errhandler_=MPI_ERRORS_RETURN;
   comm->add_rma_win(this);
   comm->ref();
 
@@ -737,5 +737,16 @@ int Win::shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr)
   }
   return MPI_SUCCESS;
 }
+
+MPI_Errhandler Win::errhandler(){
+  return errhandler_;
+}
+
+void Win::set_errhandler(MPI_Errhandler errhandler){
+  errhandler_=errhandler;
+  if(errhandler_!= MPI_ERRHANDLER_NULL)
+    errhandler->ref();
+}
+
 }
 }

@@ -5,6 +5,7 @@
 
 #include "private.hpp"
 #include "smpi_comm.hpp"
+#include "smpi_errhandler.hpp"
 #include "smpi_info.hpp"
 
 extern "C" { // This should really use the C linkage to be usable from Fortran
@@ -117,12 +118,16 @@ void mpi_comm_disconnect_ (int* comm, int* ierr){
  }
 }
 
-void mpi_comm_set_errhandler_ (int* comm, void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_set(simgrid::smpi::Comm::f2c(*comm), *static_cast<MPI_Errhandler*>(errhandler));
+void mpi_comm_set_errhandler_ (int* comm, int* errhandler, int* ierr) {
+ *ierr = MPI_Errhandler_set(simgrid::smpi::Comm::f2c(*comm), simgrid::smpi::Errhandler::f2c(*errhandler));
 }
 
-void mpi_comm_get_errhandler_ (int* comm, void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_set(simgrid::smpi::Comm::f2c(*comm), static_cast<MPI_Errhandler*>(errhandler));
+void mpi_comm_get_errhandler_ (int* comm, int* errhandler, int* ierr) {
+ MPI_Errhandler tmp;
+ *ierr = MPI_Errhandler_get(simgrid::smpi::Comm::f2c(*comm), &tmp);
+ if(*ierr == MPI_SUCCESS) {
+   *errhandler = tmp->c2f();
+ }
 }
 
 void mpi_comm_test_inter_ (int* comm, int* flag, int* ierr) {
@@ -180,8 +185,12 @@ void mpi_comm_get_info_ (int* comm, int* info, int* ierr){
  }
 }
 
-void mpi_comm_create_errhandler_ ( void *function, void *errhandler, int* ierr){
- *ierr = MPI_Comm_create_errhandler( reinterpret_cast<MPI_Comm_errhandler_fn*>(function), static_cast<MPI_Errhandler*>(errhandler));
+void mpi_comm_create_errhandler_ ( void *function, int *errhandler, int* ierr){
+ MPI_Errhandler tmp;
+ *ierr = MPI_Comm_create_errhandler( reinterpret_cast<MPI_Comm_errhandler_fn*>(function), &tmp);
+ if(*ierr==MPI_SUCCESS){
+   *errhandler = tmp->c2f();
+ }
 }
 
 void mpi_comm_call_errhandler_ (int* comm,int* errorcode, int* ierr){

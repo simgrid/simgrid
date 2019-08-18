@@ -55,8 +55,7 @@ test1_dt 2 timeLimit=30
 #Needs post/start
 nullpscw 7
 attrorderwin 1
-#Needs MPI_Win_call_errhandler
-#wincall 2
+wincall 2
 baseattrwin 1
 fkeyvalwin 1
 selfrma 1

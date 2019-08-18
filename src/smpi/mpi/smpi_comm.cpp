@@ -39,6 +39,7 @@ Comm::Comm(MPI_Group group, MPI_Topology topo, int smp, int in_id) : group_(grou
   leaders_map_     = nullptr;
   is_blocked_      = 0;
   info_            = MPI_INFO_NULL;
+  errhandler_      = MPI_ERRORS_RETURN;
   static int global_id_=0;
   //First creation of comm is done before SIMIX_run, so only do comms for others
   if(in_id==MPI_UNDEFINED && smp==0 && this->rank()!=MPI_UNDEFINED ){
@@ -106,6 +107,8 @@ int Comm::dup(MPI_Comm* newcomm){
   //duplicate info if present
   if(info_!=MPI_INFO_NULL)
     (*newcomm)->info_ = new simgrid::smpi::Info(info_);
+  //duplicate errhandler
+  (*newcomm)->set_errhandler(errhandler_);
   return ret;
 }
 
@@ -545,6 +548,16 @@ void Comm::set_info(MPI_Info info){
   if(info_!= MPI_INFO_NULL)
     info->ref();
   info_=info;
+}
+
+MPI_Errhandler Comm::errhandler(){
+  return errhandler_;
+}
+
+void Comm::set_errhandler(MPI_Errhandler errhandler){
+  errhandler_=errhandler;
+  if(errhandler_!= MPI_ERRHANDLER_NULL)
+    errhandler->ref();
 }
 
 MPI_Comm Comm::split_type(int type, int /*key*/, MPI_Info)

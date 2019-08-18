@@ -232,3 +232,15 @@ int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_f
 int PMPI_Keyval_free(int* keyval) {
   return simgrid::smpi::Keyval::keyval_free<simgrid::smpi::Comm>(keyval);
 }
+
+MPI_Errhandler PMPI_Errhandler_f2c(MPI_Fint errhan){
+  if(errhan==-1)
+    return MPI_ERRHANDLER_NULL;
+  return static_cast<MPI_Errhandler>(simgrid::smpi::Errhandler::f2c(errhan));
+}
+
+MPI_Fint PMPI_Errhandler_c2f(MPI_Errhandler errhan){
+  if(errhan==MPI_ERRHANDLER_NULL)
+    return -1;
+  return errhan->c2f();
+}

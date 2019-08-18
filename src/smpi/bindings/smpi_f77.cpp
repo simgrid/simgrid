@@ -6,6 +6,7 @@
 #include "private.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
+#include "smpi_errhandler.hpp"
 #include "smpi_op.hpp"
 #include "smpi_request.hpp"
 #include "smpi_win.hpp"
@@ -67,6 +68,9 @@ void smpi_init_fortran_types(){
      MPI_BAND->add_f();
      MPI_BOR->add_f();
      MPI_BXOR->add_f();
+
+     MPI_ERRORS_RETURN->add_f();
+     MPI_ERRORS_ARE_FATAL->add_f();
    }
 }
 
@@ -680,20 +684,32 @@ void mpi_error_class_ (int* errorcode, int* errorclass, int* ierr) {
  *ierr = MPI_Error_class(*errorcode, errorclass);
 }
 
-void mpi_errhandler_create_ (void* function, void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_create(reinterpret_cast<MPI_Handler_function*>(function), static_cast<MPI_Errhandler*>(errhandler));
+void mpi_errhandler_create_ (void* function, int* errhandler, int* ierr) {
+ MPI_Errhandler tmp;
+ *ierr = MPI_Errhandler_create( reinterpret_cast<MPI_Handler_function*>(function), &tmp);
+ if(*ierr==MPI_SUCCESS){
+   *errhandler = tmp->c2f();
+ }
 }
 
-void mpi_errhandler_free_ (void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_free(static_cast<MPI_Errhandler*>(errhandler));
+void mpi_errhandler_free_ (int* errhandler, int* ierr) {
+  MPI_Errhandler tmp = simgrid::smpi::Errhandler::f2c(*errhandler);
+  *ierr =  MPI_Errhandler_free(&tmp);
+  if(*ierr == MPI_SUCCESS) {
+    simgrid::smpi::F2C::free_f(*errhandler);
+  }
 }
 
-void mpi_errhandler_get_ (int* comm, void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_get(simgrid::smpi::Comm::f2c(*comm), static_cast<MPI_Errhandler*>(errhandler));
+void mpi_errhandler_get_ (int* comm, int* errhandler, int* ierr) {
+ MPI_Errhandler tmp;
+ *ierr = MPI_Errhandler_get(simgrid::smpi::Comm::f2c(*comm), &tmp);
+ if(*ierr == MPI_SUCCESS) {
+   *errhandler = tmp->c2f();
+ }
 }
 
-void mpi_errhandler_set_ (int* comm, void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_set(simgrid::smpi::Comm::f2c(*comm), *static_cast<MPI_Errhandler*>(errhandler));
+void mpi_errhandler_set_ (int* comm, int* errhandler, int* ierr) {
+ *ierr = MPI_Errhandler_set(simgrid::smpi::Comm::f2c(*comm), simgrid::smpi::Errhandler::f2c(*errhandler));
 }
 
 void mpi_cancel_ (int* request, int* ierr) {

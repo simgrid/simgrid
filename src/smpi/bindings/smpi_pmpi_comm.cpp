@@ -8,6 +8,7 @@
 #include "private.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_info.hpp"
+#include "smpi_errhandler.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
@@ -332,4 +333,55 @@ int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
     return MPI_ERR_COMM;
   else
   return comm->attr_put<simgrid::smpi::Comm>(keyval, attr_value);
+}
+
+int PMPI_Errhandler_free(MPI_Errhandler* errhandler){
+  if (errhandler==nullptr){
+    return MPI_ERR_ARG;
+  }
+  simgrid::smpi::Errhandler::unref(*errhandler);
+  return MPI_SUCCESS;
+}
+
+int PMPI_Errhandler_create(MPI_Handler_function* function, MPI_Errhandler* errhandler){
+  *errhandler=new simgrid::smpi::Errhandler(function);
+  return MPI_SUCCESS;
+}
+
+int PMPI_Errhandler_get(MPI_Comm comm, MPI_Errhandler* errhandler){
+  if (comm == nullptr) {
+    return MPI_ERR_COMM;
+  } else if (errhandler==nullptr){
+    return MPI_ERR_ARG;
+  }
+  *errhandler=comm->errhandler();
+  return MPI_SUCCESS;
+}
+
+int PMPI_Errhandler_set(MPI_Comm comm, MPI_Errhandler errhandler){
+  if (comm == nullptr) {
+    return MPI_ERR_COMM;
+  } else if (errhandler==nullptr){
+    return MPI_ERR_ARG;
+  }
+  comm->set_errhandler(errhandler);
+  return MPI_SUCCESS;
+}
+
+int PMPI_Comm_call_errhandler(MPI_Comm comm,int errorcode){
+  if (comm == nullptr) {
+    return MPI_ERR_COMM;
+  }
+  comm->errhandler()->call(comm, errorcode);
+  return MPI_SUCCESS;
+}
+
+int PMPI_Comm_create_errhandler( MPI_Comm_errhandler_fn *function, MPI_Errhandler *errhandler){
+  return MPI_Errhandler_create(function, errhandler);
+}
+int PMPI_Comm_get_errhandler(MPI_Comm comm, MPI_Errhandler* errhandler){
+  return PMPI_Errhandler_get(comm, errhandler);
+}
+int PMPI_Comm_set_errhandler(MPI_Comm comm, MPI_Errhandler errhandler){
+  return PMPI_Errhandler_set(comm, errhandler);
 }

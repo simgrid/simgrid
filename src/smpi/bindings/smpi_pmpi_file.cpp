@@ -363,3 +363,36 @@ int PMPI_File_sync(MPI_File  fh)
   fh->sync();
   return MPI_SUCCESS;
 }
+
+int PMPI_File_create_errhandler(MPI_File_errhandler_function* function, MPI_Errhandler* errhandler){
+  *errhandler=new simgrid::smpi::Errhandler(function);
+  return MPI_SUCCESS;
+}
+
+int PMPI_File_get_errhandler(MPI_File file, MPI_Errhandler* errhandler){
+  if (file == nullptr) {
+    return MPI_ERR_FILE;
+  } else if (errhandler==nullptr){
+    return MPI_ERR_ARG;
+  }
+  *errhandler=file->errhandler();
+  return MPI_SUCCESS;
+}
+
+int PMPI_File_set_errhandler(MPI_File file, MPI_Errhandler errhandler){
+  if (file == nullptr) {
+    return MPI_ERR_FILE;
+  } else if (errhandler==nullptr){
+    return MPI_ERR_ARG;
+  }
+  file->set_errhandler(errhandler);
+  return MPI_SUCCESS;
+}
+
+int PMPI_File_call_errhandler(MPI_File file,int errorcode){
+  if (file == nullptr) {
+    return MPI_ERR_WIN;
+  }
+  file->errhandler()->call(file, errorcode);
+  return MPI_SUCCESS;
+}

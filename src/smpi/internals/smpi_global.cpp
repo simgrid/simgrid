@@ -98,9 +98,6 @@ static std::vector<std::string> privatize_libs_paths;
  * See smpi_comm.cpp and the functions therein for details.
  */
 MPI_Comm MPI_COMM_WORLD = MPI_COMM_UNINITIALIZED;
-MPI_Errhandler *MPI_ERRORS_RETURN = nullptr;
-MPI_Errhandler *MPI_ERRORS_ARE_FATAL = nullptr;
-MPI_Errhandler *MPI_ERRHANDLER_NULL = nullptr;
 // No instance gets manually created; check also the smpirun.in script as
 // this default name is used there as well (when the <actor> tag is generated).
 static const std::string smpi_default_instance_name("smpirun");

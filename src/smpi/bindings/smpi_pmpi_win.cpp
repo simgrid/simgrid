@@ -849,3 +849,36 @@ MPI_Fint PMPI_Win_c2f(MPI_Win win){
     return -1;
   return win->c2f();
 }
+
+int PMPI_Win_create_errhandler(MPI_Win_errhandler_function* function, MPI_Errhandler* errhandler){
+  *errhandler=new simgrid::smpi::Errhandler(function);
+  return MPI_SUCCESS;
+}
+
+int PMPI_Win_get_errhandler(MPI_Win win, MPI_Errhandler* errhandler){
+  if (win == nullptr) {
+    return MPI_ERR_WIN;
+  } else if (errhandler==nullptr){
+    return MPI_ERR_ARG;
+  }
+  *errhandler=win->errhandler();
+  return MPI_SUCCESS;
+}
+
+int PMPI_Win_set_errhandler(MPI_Win win, MPI_Errhandler errhandler){
+  if (win == nullptr) {
+    return MPI_ERR_WIN;
+  } else if (errhandler==nullptr){
+    return MPI_ERR_ARG;
+  }
+  win->set_errhandler(errhandler);
+  return MPI_SUCCESS;
+}
+
+int PMPI_Win_call_errhandler(MPI_Win win,int errorcode){
+  if (win == nullptr) {
+    return MPI_ERR_WIN;
+  }
+  win->errhandler()->call(win, errorcode);
+  return MPI_SUCCESS;
+}
