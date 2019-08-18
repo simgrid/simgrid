@@ -6,6 +6,7 @@
 #include "src/smpi/include/smpi_actor.hpp"
 #include "mc/mc.h"
 #include "smpi_comm.hpp"
+#include "smpi_info.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 
@@ -180,6 +181,8 @@ MPI_Comm ActorExt::comm_self()
 
 MPI_Info ActorExt::info_env()
 {
+  if (info_env_==MPI_INFO_NULL)
+    info_env_=new Info();
   return info_env_;
 }
 

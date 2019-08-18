@@ -31,10 +31,8 @@ int Info::get(const char *key, int valuelen, char *value, int *flag){
     memcpy(value, tmpvalue.c_str(),
            (tmpvalue.length() + 1 < static_cast<size_t>(valuelen)) ? tmpvalue.length() + 1 : valuelen);
     *flag=true;
-    return MPI_SUCCESS;
-  } else {
-    return MPI_ERR_INFO_KEY;
   }
+  return MPI_SUCCESS;
 }
 
 int Info::remove(const char *key){
@@ -67,10 +65,8 @@ int Info::get_valuelen(const char *key, int *valuelen, int *flag){
   if (val != map_.end()) {
     *valuelen = val->second.length();
     *flag=true;
-    return MPI_SUCCESS;
-  } else {
-    return MPI_ERR_INFO_KEY;
   }
+  return MPI_SUCCESS;
 }
 
 Info* Info::f2c(int id){

@@ -34,8 +34,10 @@ int PMPI_Info_free( MPI_Info *info){
 
 int PMPI_Info_get(MPI_Info info, const char *key,int valuelen, char *value, int *flag){
   *flag=false;
-  if (info == nullptr || key == nullptr || valuelen <0)
+  if (info == nullptr || valuelen <0)
     return MPI_ERR_ARG;
+  if (key == nullptr)
+    return MPI_ERR_INFO_KEY;
   if (value == nullptr)
     return MPI_ERR_INFO_VALUE;
   return info->get(key, valuelen, value, flag);
@@ -68,8 +70,12 @@ int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
 
 int PMPI_Info_get_valuelen( MPI_Info info, const char *key, int *valuelen, int *flag){
   *flag=false;
-  if (info == nullptr || key == nullptr || valuelen==nullptr)
+  if (info == nullptr)
     return MPI_ERR_ARG;
+  if (key == nullptr)
+    return MPI_ERR_INFO_KEY;
+  if (valuelen == nullptr)
+    return MPI_ERR_INFO_VALUE;
   return info->get_valuelen(key, valuelen, flag);
 }
 
