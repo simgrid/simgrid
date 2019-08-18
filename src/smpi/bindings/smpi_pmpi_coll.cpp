@@ -13,6 +13,12 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
+#define CHECK_ARGS(test, errcode, ...)                                                                                 \
+  if (test) {                                                                                                          \
+    XBT_WARN(__VA_ARGS__);                                                                                             \
+    return errcode;                                                                                                    \
+  }
+
 /* PMPI User level calls */
 
 int PMPI_Barrier(MPI_Comm comm)
@@ -353,29 +359,28 @@ int PMPI_Scatterv(const void *sendbuf, const int *sendcounts, const int *displs,
 int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                    MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
 {
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if (sendcounts == nullptr || displs == nullptr)
-    return MPI_ERR_ARG;
-  if (((comm->rank() == root) && (sendtype == MPI_DATATYPE_NULL)) ||
-      ((recvbuf != MPI_IN_PLACE) && (recvtype == MPI_DATATYPE_NULL)))
-    return MPI_ERR_TYPE;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
-  if (recvbuf != MPI_IN_PLACE && recvcount < 0)
-    return MPI_ERR_COUNT;
-  if (root < 0 || root >= comm->size())
-    return MPI_ERR_ROOT;
+  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM, "Iscatterv: the communicator cannot be MPI_COMM_NULL");
+  CHECK_ARGS(sendcounts == nullptr, MPI_ERR_ARG, "Iscatterv: param 2 sendcounts cannot be NULL");
+  CHECK_ARGS(displs == nullptr, MPI_ERR_ARG, "Iscatterv: param 3 displs cannot be NULL");
+  CHECK_ARGS((comm->rank() == root) && (sendtype == MPI_DATATYPE_NULL), MPI_ERR_TYPE,
+             "Iscatterv: The sendtype cannot be NULL on the root rank");
+  CHECK_ARGS((recvbuf != MPI_IN_PLACE) && (recvtype == MPI_DATATYPE_NULL), MPI_ERR_TYPE,
+             "Iscatterv: the recvtype cannot be NULL when not receiving in place");
+  CHECK_ARGS(request == nullptr, MPI_ERR_ARG, "Iscatterv: param 10 request cannot be NULL");
+  CHECK_ARGS(recvbuf != MPI_IN_PLACE && recvcount < 0, MPI_ERR_COUNT,
+             "Iscatterv: When not receiving in place, the recvcound cannot be negative");
+  CHECK_ARGS(root < 0, MPI_ERR_ROOT, "Iscatterv: root cannot be negative");
+  CHECK_ARGS(root >= comm->size(), MPI_ERR_ROOT, "Iscatterv: root (=%d) is larger than communicator size (=%d)", root,
+             comm->size());
 
   if (comm->rank() == root) {
     if (recvbuf == MPI_IN_PLACE) {
       recvtype  = sendtype;
       recvcount = sendcounts[comm->rank()];
     }
-    for (int i = 0; i < comm->size(); i++) {
-      if (sendcounts[i] < 0)
-        return MPI_ERR_COUNT;
-    }
+    for (int i = 0; i < comm->size(); i++)
+      CHECK_ARGS(sendcounts[i] < 0, MPI_ERR_COUNT, "Iscatterv: sendcounts[%d]=%d but this cannot be negative", i,
+                 sendcounts[i]);
   }
 
   smpi_bench_end();
