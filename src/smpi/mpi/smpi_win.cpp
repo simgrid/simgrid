@@ -42,7 +42,7 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
     bar_ = new s4u::Barrier(comm_size);
   }
   mode_=0;
-  errhandler_=MPI_ERRORS_RETURN;
+  errhandler_=MPI_ERRORS_ARE_FATAL;
   comm->add_rma_win(this);
   comm->ref();
 
