@@ -121,7 +121,7 @@ int Colls::gatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, vo
                       MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   MPI_Request request;
-  Colls::igatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, comm, &request);
+  Colls::igatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, comm, &request, 0);
   return Request::wait(&request, MPI_STATUS_IGNORE);
 }
 
@@ -130,7 +130,7 @@ int Colls::scatterv(const void *sendbuf, const int *sendcounts, const int *displ
                        MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   MPI_Request request;
-  Colls::iscatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm, &request);
+  Colls::iscatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm, &request, 0);
   return Request::wait(&request, MPI_STATUS_IGNORE);
 }
 
@@ -267,7 +267,7 @@ int Colls::alltoallw(const void *sendbuf, const int *sendcounts, const int *send
                               void *recvbuf, const int *recvcounts, const int *recvdisps, const MPI_Datatype* recvtypes, MPI_Comm comm)
 {
   MPI_Request request;
-  Colls::ialltoallw(sendbuf, sendcounts, senddisps, sendtypes, recvbuf, recvcounts, recvdisps, recvtypes, comm, &request);  
+  Colls::ialltoallw(sendbuf, sendcounts, senddisps, sendtypes, recvbuf, recvcounts, recvdisps, recvtypes, comm, &request, 0);
   return Request::wait(&request, MPI_STATUS_IGNORE);
 }
 

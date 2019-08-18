@@ -38,10 +38,12 @@ constexpr int COLL_TAG_ALLGATHERV     = -667;
 constexpr int COLL_TAG_BARRIER        = -778;
 constexpr int COLL_TAG_REDUCE_SCATTER = -889;
 constexpr int COLL_TAG_ALLTOALLV      = -1000;
+constexpr int COLL_TAG_ALLTOALLW      = -1020;
 constexpr int COLL_TAG_ALLTOALL       = -1112;
 constexpr int COLL_TAG_GATHERV        = -2223;
 constexpr int COLL_TAG_BCAST          = -3334;
 constexpr int COLL_TAG_ALLREDUCE      = -4445;
+
 // SMPI_RMA_TAG has to be the smallest one, as it will be decremented for accumulate ordering.
 constexpr int SMPI_RMA_TAG            = -6666;
 

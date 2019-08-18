@@ -12,43 +12,45 @@ namespace simgrid{
 namespace smpi{
 
 
-int Colls::ibarrier(MPI_Comm comm, MPI_Request* request)
+int Colls::ibarrier(MPI_Comm comm, MPI_Request* request, int external)
 {
   int size = comm->size();
   int rank = comm->rank();
+  int system_tag=COLL_TAG_BARRIER-external;
   (*request) = new Request( nullptr, 0, MPI_BYTE,
-                         rank,rank, COLL_TAG_BARRIER, comm, MPI_REQ_PERSISTENT);
+                         rank,rank, system_tag, comm, MPI_REQ_PERSISTENT);
   if (rank > 0) {
     MPI_Request* requests = new MPI_Request[2];
     requests[0] = Request::isend (nullptr, 0, MPI_BYTE, 0,
-                             COLL_TAG_BARRIER,
+                             system_tag,
                              comm);
     requests[1] = Request::irecv (nullptr, 0, MPI_BYTE, 0,
-                             COLL_TAG_BARRIER,
+                             system_tag,
                              comm);
     (*request)->set_nbc_requests(requests, 2);
   }
   else {
     MPI_Request* requests = new MPI_Request[(size - 1) * 2];
     for (int i = 1; i < 2 * size - 1; i += 2) {
-      requests[i - 1] = Request::irecv(nullptr, 0, MPI_BYTE, MPI_ANY_SOURCE, COLL_TAG_BARRIER, comm);
-      requests[i]     = Request::isend(nullptr, 0, MPI_BYTE, (i + 1) / 2, COLL_TAG_BARRIER, comm);
+      requests[i - 1] = Request::irecv(nullptr, 0, MPI_BYTE, MPI_ANY_SOURCE, system_tag, comm);
+      requests[i]     = Request::isend(nullptr, 0, MPI_BYTE, (i + 1) / 2, system_tag, comm);
     }
     (*request)->set_nbc_requests(requests, 2*(size-1));
   }
   return MPI_SUCCESS;
 }
 
-int Colls::ibcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm, MPI_Request* request)
+int Colls::ibcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm, MPI_Request* request, int external)
 {
   int size = comm->size();
   int rank = comm->rank();
+  int system_tag=COLL_TAG_BCAST-external;
   (*request) = new Request( nullptr, 0, MPI_BYTE,
-                         rank,rank, COLL_TAG_BCAST, comm, MPI_REQ_PERSISTENT);
+                         rank,rank, system_tag, comm, MPI_REQ_PERSISTENT);
   if (rank != root) {
     MPI_Request* requests = new MPI_Request[1];
     requests[0] = Request::irecv (buf, count, datatype, root,
-                             COLL_TAG_BCAST,
+                             system_tag,
                              comm);
     (*request)->set_nbc_requests(requests, 1);
   }
@@ -58,7 +60,7 @@ int Colls::ibcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Com
     for (int i = 0; i < size; i++) {
       if(i!=root){
         requests[n] = Request::isend(buf, count, datatype, i,
-                                 COLL_TAG_BCAST,
+                                 system_tag,
                                  comm
                                  );
         n++;
@@ -70,10 +72,10 @@ int Colls::ibcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Com
 }
 
 int Colls::iallgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                        void *recvbuf,int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request)
+                        void *recvbuf,int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request, int external)
 {
 
-  const int system_tag = COLL_TAG_ALLGATHER;
+  const int system_tag = COLL_TAG_ALLGATHER-external;
   MPI_Aint lb = 0;
   MPI_Aint recvext = 0;
 
@@ -104,9 +106,9 @@ int Colls::iallgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
 }
 
 int Colls::iscatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                      void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
+                      void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request, int external)
 {
-  const int system_tag = COLL_TAG_SCATTER;
+  const int system_tag = COLL_TAG_SCATTER-external;
   MPI_Aint lb = 0;
   MPI_Aint sendext = 0;
 
@@ -144,9 +146,9 @@ int Colls::iscatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
 }
 
 int Colls::iallgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
-                         const int *recvcounts, const int *displs, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request)
+                         const int *recvcounts, const int *displs, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request, int external)
 {
-  const int system_tag = COLL_TAG_ALLGATHERV;
+  const int system_tag = COLL_TAG_ALLGATHERV-external;
   MPI_Aint lb = 0;
   MPI_Aint recvext = 0;
 
@@ -177,8 +179,8 @@ int Colls::iallgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype
   return MPI_SUCCESS;
 }
 
-int Colls::ialltoall( const void *sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request){
-  int system_tag   = COLL_TAG_ALLTOALL;
+int Colls::ialltoall( const void *sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request, int external){
+  int system_tag   = COLL_TAG_ALLTOALL-external;
   MPI_Aint lb      = 0;
   MPI_Aint sendext = 0;
   MPI_Aint recvext = 0;
@@ -221,8 +223,8 @@ int Colls::ialltoall( const void *sendbuf, int sendcount, MPI_Datatype sendtype,
 }
 
 int Colls::ialltoallv(const void *sendbuf, const int *sendcounts, const int *senddisps, MPI_Datatype sendtype,
-                              void *recvbuf, const int *recvcounts, const int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request){
-  const int system_tag = COLL_TAG_ALLTOALLV;
+                              void *recvbuf, const int *recvcounts, const int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request, int external){
+  const int system_tag = COLL_TAG_ALLTOALLV-external;
   MPI_Aint lb = 0;
   MPI_Aint sendext = 0;
   MPI_Aint recvext = 0;
@@ -269,8 +271,8 @@ int Colls::ialltoallv(const void *sendbuf, const int *sendcounts, const int *sen
 }
 
 int Colls::ialltoallw(const void *sendbuf, const int *sendcounts, const int *senddisps, const MPI_Datatype* sendtypes,
-                              void *recvbuf, const int *recvcounts, const int *recvdisps, const MPI_Datatype* recvtypes, MPI_Comm comm, MPI_Request *request){
-  const int system_tag = COLL_TAG_ALLTOALLV;
+                              void *recvbuf, const int *recvcounts, const int *recvdisps, const MPI_Datatype* recvtypes, MPI_Comm comm, MPI_Request *request, int external){
+  const int system_tag = COLL_TAG_ALLTOALLW-external;
 
   /* Initialize. */
   int rank = comm->rank();
@@ -312,9 +314,9 @@ int Colls::ialltoallw(const void *sendbuf, const int *sendcounts, const int *sen
 }
 
 int Colls::igather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                     void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
+                     void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request, int external)
 {
-  const int system_tag = COLL_TAG_GATHER;
+  const int system_tag = COLL_TAG_GATHER-external;
   MPI_Aint lb = 0;
   MPI_Aint recvext = 0;
 
@@ -350,9 +352,9 @@ int Colls::igather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
 }
 
 int Colls::igatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, const int *recvcounts, const int *displs,
-                      MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
+                      MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request, int external)
 {
-  int system_tag = COLL_TAG_GATHERV;
+  int system_tag = COLL_TAG_GATHERV-external;
   MPI_Aint lb = 0;
   MPI_Aint recvext = 0;
   
@@ -387,9 +389,9 @@ int Colls::igatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, v
   return MPI_SUCCESS;
 }
 int Colls::iscatterv(const void *sendbuf, const int *sendcounts, const int *displs, MPI_Datatype sendtype, void *recvbuf, int recvcount,
-                       MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
+                       MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request, int external)
 {
-  int system_tag = COLL_TAG_SCATTERV;
+  int system_tag = COLL_TAG_SCATTERV-external;
   MPI_Aint lb = 0;
   MPI_Aint sendext = 0;
 
@@ -427,9 +429,9 @@ int Colls::iscatterv(const void *sendbuf, const int *sendcounts, const int *disp
 }
 
 int Colls::ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
-                     MPI_Comm comm, MPI_Request* request)
+                     MPI_Comm comm, MPI_Request* request, int external)
 {
-  const int system_tag = COLL_TAG_REDUCE;
+  const int system_tag = COLL_TAG_REDUCE-external;
   MPI_Aint lb = 0;
   MPI_Aint dataext = 0;
 
@@ -487,10 +489,10 @@ int Colls::ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype d
 }
 
 int Colls::iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
-                      MPI_Op op, MPI_Comm comm, MPI_Request* request)
+                      MPI_Op op, MPI_Comm comm, MPI_Request* request, int external)
 {
 
-  const int system_tag = COLL_TAG_ALLREDUCE;
+  const int system_tag = COLL_TAG_ALLREDUCE-external;
   MPI_Aint lb = 0;
   MPI_Aint dataext = 0;
 
@@ -519,9 +521,9 @@ int Colls::iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatyp
   return MPI_SUCCESS;
 }
 
-int Colls::iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request* request)
+int Colls::iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request* request, int external)
 {
-  int system_tag = -888;
+  int system_tag = -888-external;
   MPI_Aint lb      = 0;
   MPI_Aint dataext = 0;
 
@@ -551,9 +553,9 @@ int Colls::iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   return MPI_SUCCESS;
 }
 
-int Colls::iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request* request)
+int Colls::iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request* request, int external)
 {
-  int system_tag = -888;
+  int system_tag = -888-external;
   MPI_Aint lb         = 0;
   MPI_Aint dataext    = 0;
   int rank = comm->rank();
@@ -582,9 +584,9 @@ int Colls::iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype d
 }
 
 int Colls::ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcounts, MPI_Datatype datatype, MPI_Op op,
-                             MPI_Comm comm, MPI_Request* request){
+                             MPI_Comm comm, MPI_Request* request, int external){
 //Version where each process performs the reduce for its own part. Alltoall pattern for comms.
-  const int system_tag = COLL_TAG_REDUCE_SCATTER;
+  const int system_tag = COLL_TAG_REDUCE_SCATTER-external;
   MPI_Aint lb = 0;
   MPI_Aint dataext = 0;
 
