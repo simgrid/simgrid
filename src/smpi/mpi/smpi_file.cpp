@@ -28,7 +28,7 @@ namespace smpi{
     if (comm_->rank() == 0) {
       int size= comm_->size() + FP_SIZE;
       list_ = new char[size];
-      errhandler_=MPI_ERRORS_ARE_FATAL;
+      errhandler_=MPI_ERRORS_RETURN;
       memset(list_, 0, size);
       shared_file_pointer_ = new MPI_Offset();
       shared_mutex_ = s4u::Mutex::create();
