@@ -259,7 +259,7 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
 {
   if (comm == MPI_COMM_NULL)
     return MPI_ERR_COMM;
-  if ((sendbuf == nullptr && sendcount > 0) || (recvbuf == nullptr))
+  if (sendbuf == nullptr && sendcount > 0)
     return MPI_ERR_BUFFER;
   if (((sendbuf != MPI_IN_PLACE) && (sendtype == MPI_DATATYPE_NULL)) || (recvtype == MPI_DATATYPE_NULL))
     return MPI_ERR_TYPE;
@@ -270,9 +270,11 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
   if (request == nullptr)
     return MPI_ERR_ARG;
 
-  for (int i = 0; i < comm->size(); i++) { // copy data to avoid bad free
+  for (int i = 0; i < comm->size(); i++) {
     if (recvcounts[i] < 0)
       return MPI_ERR_COUNT;
+    else if (recvcounts[i] > 0 && recvbuf == nullptr)
+      return MPI_ERR_BUFFER;
   }
 
   smpi_bench_end();
@@ -879,7 +881,7 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
   smpi_bench_end();
   int rank = simgrid::s4u::this_actor::get_pid();
   int size = comm->size();
-  for (int i = 0; i < size; i++) { // copy data to avoid bad free
+  for (int i = 0; i < size; i++) {
     if (recvcounts[i] < 0 || (sendbuf != MPI_IN_PLACE && sendcounts[i] < 0))
       return MPI_ERR_COUNT;
   }
