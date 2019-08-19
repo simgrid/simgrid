@@ -8,6 +8,8 @@
 #include "smpi_file.hpp"
 #include "smpi_datatype.hpp"
 
+extern MPI_Errhandler SMPI_default_File_Errhandler;
+
 int PMPI_File_open(MPI_Comm comm, const char *filename, int amode, MPI_Info info, MPI_File *fh){
   if (comm == MPI_COMM_NULL)
     return MPI_ERR_COMM;
@@ -370,20 +372,22 @@ int PMPI_File_create_errhandler(MPI_File_errhandler_function* function, MPI_Errh
 }
 
 int PMPI_File_get_errhandler(MPI_File file, MPI_Errhandler* errhandler){
-  if (file == nullptr) {
-    return MPI_ERR_FILE;
-  } else if (errhandler==nullptr){
+  if (errhandler==nullptr){
     return MPI_ERR_ARG;
+  } else if (file == MPI_FILE_NULL) {
+    *errhandler = SMPI_default_File_Errhandler;
+    return MPI_SUCCESS;
   }
   *errhandler=file->errhandler();
   return MPI_SUCCESS;
 }
 
 int PMPI_File_set_errhandler(MPI_File file, MPI_Errhandler errhandler){
-  if (file == nullptr) {
-    return MPI_ERR_FILE;
-  } else if (errhandler==nullptr){
+  if (errhandler==nullptr){
     return MPI_ERR_ARG;
+  } else if (file == MPI_FILE_NULL) {
+    SMPI_default_File_Errhandler = errhandler;
+    return MPI_SUCCESS;
   }
   file->set_errhandler(errhandler);
   return MPI_SUCCESS;

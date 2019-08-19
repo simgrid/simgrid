@@ -19,6 +19,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_io, smpi, "Logging specific to SMPI (RMA operations)");
 
+MPI_Errhandler SMPI_default_File_Errhandler = MPI_ERRORS_RETURN;
+
 namespace simgrid{
 namespace smpi{
 
@@ -28,7 +30,7 @@ namespace smpi{
     if (comm_->rank() == 0) {
       int size= comm_->size() + FP_SIZE;
       list_ = new char[size];
-      errhandler_=MPI_ERRORS_RETURN;
+      errhandler_= SMPI_default_File_Errhandler;
       memset(list_, 0, size);
       shared_file_pointer_ = new MPI_Offset();
       shared_mutex_ = s4u::Mutex::create();
