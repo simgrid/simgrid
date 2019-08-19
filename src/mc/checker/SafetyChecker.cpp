@@ -229,15 +229,16 @@ void SafetyChecker::backtrack()
 
         } else if (req->issuer_ == prev_state->internal_req.issuer_) {
 
-          XBT_DEBUG("Simcall %d and %d with same issuer", req->call_, prev_state->internal_req.call_);
+          XBT_DEBUG("Simcall %s and %s with same issuer", SIMIX_simcall_name(req->call_),
+                    SIMIX_simcall_name(prev_state->internal_req.call_));
           break;
 
         } else {
 
           const smx_actor_t previous_issuer = MC_smx_simcall_get_issuer(&prev_state->internal_req);
-          XBT_DEBUG("Simcall %d, process %ld (state %d) and simcall %d, process %ld (state %d) are independent",
-                    req->call_, issuer->get_pid(), state->num_, prev_state->internal_req.call_,
-                    previous_issuer->get_pid(), prev_state->num_);
+          XBT_DEBUG("Simcall %s, process %ld (state %d) and simcall %s, process %ld (state %d) are independent",
+                    SIMIX_simcall_name(req->call_), issuer->get_pid(), state->num_,
+                    SIMIX_simcall_name(prev_state->internal_req.call_), previous_issuer->get_pid(), prev_state->num_);
         }
       }
     }
