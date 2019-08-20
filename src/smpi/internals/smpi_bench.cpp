@@ -38,7 +38,8 @@ double smpi_host_speed;
 SharedMallocType smpi_cfg_shared_malloc = SharedMallocType::GLOBAL;
 double smpi_total_benched_time = 0;
 
-void smpi_execute_flops(double flops) {
+// Private execute_flops used by smpi_execute and spmi_execute benched
+void private_execute_flops(double flops) {
   xbt_assert(flops >= 0, "You're trying to execute a negative amount of flops (%f)!", flops);
   XBT_DEBUG("Handle real computation time: %f flops", flops);
   simgrid::s4u::this_actor::exec_init(flops)
@@ -49,6 +50,15 @@ void smpi_execute_flops(double flops) {
   smpi_switch_data_segment(simgrid::s4u::Actor::self());
 }
 
+void smpi_execute_flops(double flops) {
+  int rank     = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_computing_in(rank, flops);
+
+  private_execute_flops(flops);
+
+  TRACE_smpi_computing_out(rank);
+}
+
 void smpi_execute(double duration)
 {
   if (duration >= smpi_cpu_threshold) {
@@ -57,7 +67,7 @@ void smpi_execute(double duration)
     int rank     = simgrid::s4u::this_actor::get_pid();
     TRACE_smpi_computing_in(rank, flops);
 
-    smpi_execute_flops(flops);
+    private_execute_flops(flops);
 
     TRACE_smpi_computing_out(rank);
 
