@@ -477,9 +477,7 @@ void RecvAction::kernel(simgrid::xbt::ReplayAction&)
 
 void ComputeAction::kernel(simgrid::xbt::ReplayAction&)
 {
-  TRACE_smpi_computing_in(my_proc_id, args.flops);
   smpi_execute_flops(args.flops);
-  TRACE_smpi_computing_out(my_proc_id);
 }
 
 void TestAction::kernel(simgrid::xbt::ReplayAction&)
@@ -575,7 +573,7 @@ void ReduceAction::kernel(simgrid::xbt::ReplayAction&)
 
   Colls::reduce(send_buffer(args.comm_size * args.datatype1->size()),
       recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL, args.root, MPI_COMM_WORLD);
-  smpi_execute_flops(args.comp_size);
+  private_execute_flops(args.comp_size);
 
   TRACE_smpi_comm_out(my_proc_id);
 }
@@ -587,7 +585,7 @@ void AllReduceAction::kernel(simgrid::xbt::ReplayAction&)
 
   Colls::allreduce(send_buffer(args.comm_size * args.datatype1->size()),
       recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL, MPI_COMM_WORLD);
-  smpi_execute_flops(args.comp_size);
+  private_execute_flops(args.comp_size);
 
   TRACE_smpi_comm_out(my_proc_id);
 }
@@ -684,7 +682,7 @@ void ReduceScatterAction::kernel(simgrid::xbt::ReplayAction&)
       recv_buffer(args.recv_size_sum * args.datatype1->size()), args.recvcounts->data(),
       args.datatype1, MPI_OP_NULL, MPI_COMM_WORLD);
 
-  smpi_execute_flops(args.comp_size);
+  private_execute_flops(args.comp_size);
   TRACE_smpi_comm_out(my_proc_id);
 }
 
@@ -752,7 +750,7 @@ void smpi_replay_init(const char* instance_id, int rank, double start_delay_flop
   //if we have a delayed start, sleep here.
   if (start_delay_flops > 0) {
     XBT_VERB("Delayed start for instance - Sleeping for %f flops ", start_delay_flops);
-    smpi_execute_flops(start_delay_flops);
+    private_execute_flops(start_delay_flops);
   } else {
     // Wait for the other actors to initialize also
     simgrid::s4u::this_actor::yield();
