@@ -482,4 +482,6 @@ enum class SmpiPrivStrategies { NONE = 0, MMAP = 1, DLOPEN = 2, DEFAULT = DLOPEN
 
 extern XBT_PRIVATE SmpiPrivStrategies smpi_privatize_global_variables;
 
+XBT_PRIVATE void private_execute_flops(double flops);
+
 #endif
