@@ -1,6 +1,6 @@
 foreach(x actor actor-autorestart actor-migration
         activity-lifecycle
-        comm-pt2pt
+        comm-pt2pt wait-any-for
         cloud-interrupt-migration cloud-sharing
         concurrent_rw storage_client_server listen_async pid )
   add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
@@ -14,7 +14,7 @@ endforeach()
 ## Add the tests.
 ## Some need to be run with all factories, some need not tesh to run
 foreach(x actor actor-autorestart actor-migration 
-        activity-lifecycle
+        activity-lifecycle wait-any-for
 	cloud-interrupt-migration concurrent_rw) # TODO: actor-autorestart is disabled for now
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   ADD_TESH_FACTORIES(tesh-s4u-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
