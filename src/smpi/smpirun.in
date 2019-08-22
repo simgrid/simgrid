@@ -278,7 +278,7 @@ else
     shift
 fi
 
-# steel --cfg and --logs options
+# steal --cfg and --logs options
 while [ $# -gt 0 ]; do
     case "$1" in
         "--cfg="*|"--log="*)

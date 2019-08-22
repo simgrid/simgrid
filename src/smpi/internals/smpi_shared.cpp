@@ -282,7 +282,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
       void* res = mmap(pos, smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE, mmap_flag,
                        huge_fd, 0);
       xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
-                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ? "
+                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize:newvalue (default 1048576) ? "
                              "You can also try using  the sysctl vm.max_map_count. "
                              "If you are using huge pages, check that you have at least one huge page (/proc/sys/vm/nr_hugepages) "
                              "and that the directory you are passing is mounted correctly (mount /path/to/huge -t hugetlbfs -o rw,mode=0777).",
@@ -296,7 +296,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
       void* res = mmap(pos, low_page_stop_offset-low_page_start_offset, PROT_READ | PROT_WRITE, mmap_base_flag, // not a full huge page
                        smpi_shared_malloc_bogusfile, 0);
       xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
-                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?"
+                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize:newvalue (default 1048576) ?"
                              "You can also try using  the sysctl vm.max_map_count",
                  strerror(errno));
     }
@@ -308,7 +308,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
         void* res = mmap(pos, high_page_stop_offset-stop_block_offset, PROT_READ | PROT_WRITE, mmap_base_flag, // not a full huge page
                          smpi_shared_malloc_bogusfile, 0);
         xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
-                               "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?"
+                               "size of the mapped file using --cfg=smpi/shared-malloc-blocksize:newvalue (default 1048576) ?"
                                "You can also try using  the sysctl vm.max_map_count",
                    strerror(errno));
       }
