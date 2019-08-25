@@ -33,6 +33,7 @@ import re
 import difflib
 import signal
 import argparse
+import time
 
 if sys.version_info[0] == 3:
     import subprocess
@@ -115,27 +116,47 @@ except NameError:
 #
 
 # Global variable. Stores which process group should be killed (or None otherwise)
-running_pgids = list()
+running_pids = list()
 
-def kill_process_group(pgid):
-    if pgid is None:  # Nobody to kill. We don't know who to kill on windows, or we don't have anyone to kill on signal handler
+# Tests whether the process is dead already
+def process_is_dead(pid):
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return True
+    except OSError as err:
+        if err.errno == errno.ESRCH: # ESRCH == No such process. The process is now dead
+            return True
+    return False
+
+# This function send TERM signal + KILL signal after 0.2s to the group of the specified process
+def kill_process_group(pid):
+    if pid is None:  # Nobody to kill. We don't know who to kill on windows, or we don't have anyone to kill on signal handler
         return
 
-    # print("Kill process group {}".format(pgid))
+    try:
+        pgid = os.getpgid(pid)
+    except:
+        # os.getpgid failed. Ok, don't cleanup.
+        return
+    
     try:
         os.killpg(pgid, signal.SIGTERM)
+        if process_is_dead(pid):
+            return
+        time.sleep(0.2)
+        os.killpg(pgid, signal.SIGKILL)
     except OSError:
         # os.killpg failed. OK. Some subprocesses may still be running.
         pass
 
-
 def signal_handler(signal, frame):
     print("Caught signal {}".format(SIGNALS_TO_NAMES_DICT[signal]))
-    global running_pgids
-    running_pgids_copy = running_pgids # Just in case of interthread conflicts.
-    for pgid in running_pgids_copy:
-        kill_process_group(pgid)
-    running_pgids.clear()
+    global running_pids
+    running_pids_copy = running_pids # Just in case of interthread conflicts.
+    for pid in running_pids_copy:
+        kill_process_group(pid)
+    running_pids.clear()
     tesh_exit(5)
 
 
@@ -328,8 +349,8 @@ class Cmd(object):
 
         args = shlex.split(self.args)
 
-        global running_pgids
-        local_pgid = None
+        global running_pids
+        local_pid = None
         global return_code
 
         try:
@@ -344,13 +365,9 @@ class Cmd(object):
                 stderr=subprocess.STDOUT,
                 universal_newlines=True,
                 preexec_fn=preexec_function)
-            try:
-                if not isWindows():
-                    local_pgid = os.getpgid(proc.pid)
-                    running_pgids.append(local_pgid)
-            except OSError:
-                # os.getpgid failed. OK. No cleanup.
-                pass
+            if not isWindows():
+                local_pid = proc.pid
+                running_pids.append(local_pid)
         except PermissionError:
             logs.append("[{file}:{number}] Cannot start '{cmd}': The binary is not executable.".format(
                 file=FileReader().filename, number=self.linenumber, cmd=args[0]))
@@ -381,14 +398,14 @@ class Cmd(object):
         cmdName = FileReader().filename + ":" + str(self.linenumber)
         try:
             (stdout_data, stderr_data) = proc.communicate("\n".join(self.input_pipe), self.timeout)
-            local_pgid = None
+            local_pid = None
             timeout_reached = False
         except subprocess.TimeoutExpired:
             timeout_reached = True
             logs.append("Test suite `{file}': NOK (<{cmd}> timeout after {timeout} sec)".format(
                 file=FileReader().filename, cmd=cmdName, timeout=self.timeout))
-            running_pgids.remove(local_pgid)
-            kill_process_group(local_pgid)
+            running_pids.remove(local_pid)
+            kill_process_group(local_pid)
             # Try to get the output of the timeout process, to help in debugging.
             try:
                 (stdout_data, stderr_data) = proc.communicate(timeout=1)
