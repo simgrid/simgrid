@@ -704,6 +704,8 @@ include teshsuite/s4u/pid/pid.cpp
 include teshsuite/s4u/pid/pid.tesh
 include teshsuite/s4u/storage_client_server/storage_client_server.cpp
 include teshsuite/s4u/storage_client_server/storage_client_server.tesh
+include teshsuite/s4u/wait-any-for/wait-any-for.cpp
+include teshsuite/s4u/wait-any-for/wait-any-for.tesh
 include teshsuite/simdag/availability/availability.c
 include teshsuite/simdag/availability/availability.tesh
 include teshsuite/simdag/basic-link-test/basic-link-test.c
@@ -829,6 +831,7 @@ include teshsuite/smpi/hostfile_cluster
 include teshsuite/smpi/hostfile_coll
 include teshsuite/smpi/hostfile_empty
 include teshsuite/smpi/hostfile_io
+include teshsuite/smpi/hostfile_mpich
 include teshsuite/smpi/io-all-at/io-all-at.c
 include teshsuite/smpi/io-all-at/io-all-at.tesh
 include teshsuite/smpi/io-all/io-all.c
@@ -1211,6 +1214,13 @@ include teshsuite/smpi/mpich3-test/datatype/vecblklen.c
 include teshsuite/smpi/mpich3-test/datatype/zero-blklen-vector.c
 include teshsuite/smpi/mpich3-test/datatype/zeroblks.c
 include teshsuite/smpi/mpich3-test/datatype/zeroparms.c
+include teshsuite/smpi/mpich3-test/errhan/adderr.c
+include teshsuite/smpi/mpich3-test/errhan/commcall.c
+include teshsuite/smpi/mpich3-test/errhan/dynamic_errcode_predefined_errclass.c
+include teshsuite/smpi/mpich3-test/errhan/errfatal.c
+include teshsuite/smpi/mpich3-test/errhan/errstring2.c
+include teshsuite/smpi/mpich3-test/errhan/predef_eh.c
+include teshsuite/smpi/mpich3-test/errhan/testlist
 include teshsuite/smpi/mpich3-test/f77/attr/attraints.h
 include teshsuite/smpi/mpich3-test/f77/attr/attrmpi1f.f
 include teshsuite/smpi/mpich3-test/f77/attr/baseattr2f.f
@@ -2429,6 +2439,7 @@ include src/smpi/include/smpi_coll.hpp
 include src/smpi/include/smpi_comm.hpp
 include src/smpi/include/smpi_datatype.hpp
 include src/smpi/include/smpi_datatype_derived.hpp
+include src/smpi/include/smpi_errhandler.hpp
 include src/smpi/include/smpi_f2c.hpp
 include src/smpi/include/smpi_file.hpp
 include src/smpi/include/smpi_group.hpp
@@ -2454,6 +2465,7 @@ include src/smpi/internals/smpi_utils.cpp
 include src/smpi/mpi/smpi_comm.cpp
 include src/smpi/mpi/smpi_datatype.cpp
 include src/smpi/mpi/smpi_datatype_derived.cpp
+include src/smpi/mpi/smpi_errhandler.cpp
 include src/smpi/mpi/smpi_f2c.cpp
 include src/smpi/mpi/smpi_file.cpp
 include src/smpi/mpi/smpi_group.cpp
@@ -2593,6 +2605,7 @@ include teshsuite/smpi/mpich3-test/attr/CMakeLists.txt
 include teshsuite/smpi/mpich3-test/coll/CMakeLists.txt
 include teshsuite/smpi/mpich3-test/comm/CMakeLists.txt
 include teshsuite/smpi/mpich3-test/datatype/CMakeLists.txt
+include teshsuite/smpi/mpich3-test/errhan/CMakeLists.txt
 include teshsuite/smpi/mpich3-test/f77/attr/CMakeLists.txt
 include teshsuite/smpi/mpich3-test/f77/coll/CMakeLists.txt
 include teshsuite/smpi/mpich3-test/f77/comm/CMakeLists.txt
