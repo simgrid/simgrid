@@ -188,6 +188,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   action->sharing_penalty_  = latency;
   action->latency_ = latency;
   action->rate_ = rate;
+
   if (get_update_algorithm() == Model::UpdateAlgo::LAZY) {
     action->set_last_update();
   }
@@ -235,8 +236,32 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
                                     : action->rate_);
   }
 
-  for (auto const& link : route)
-    get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0);
+  for (auto const& link : route) {
+    // Handle WIFI links
+    if (link->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
+      xbt_assert(!cfg_crosstraffic,
+                 "Cross-traffic is not yet supported when using WIFI. Please use --cfg=network/crosstraffic:0");
+      NetworkWifiLink* wifi_link = (NetworkWifiLink*)link;
+
+      double src_rate = wifi_link->get_host_rate(src);
+      double dst_rate = wifi_link->get_host_rate(dst);
+
+      // TODO: What do to when src and dst are on the same AP ? (for the moment we use src rate)
+      if (src_rate != -1 && dst_rate != -1) {
+        get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / src_rate);
+      } else {
+        xbt_assert(
+            !(src_rate == -1 && dst_rate == -1),
+            "Some Stations are not associated to any Access Point. Make sure to call set_host_rate on all Stations.");
+        if (src_rate != -1)
+          get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / src_rate);
+        else
+          get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / dst_rate);
+      }
+    } else {
+      get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0);
+    }
+  }
 
   if (cfg_crosstraffic) {
     XBT_DEBUG("Crosstraffic active: adding backward flow using 5%% of the available bandwidth");
@@ -357,16 +382,42 @@ void NetworkCm02Link::set_latency(double value)
 
 NetworkWifiLink::NetworkWifiLink(NetworkCm02Model* model, const std::string& name, std::vector<double> bandwidths,
                                  s4u::Link::SharingPolicy policy, lmm::System* system)
-    : NetworkCm02Link(model, name, 0, 0, policy, system)
+    : NetworkCm02Link(
+          model, name, 1 / sg_bandwidth_factor, 0, policy,
+          system) // Since link use bw*sg_bandwidth_factor we should divise in order to as 1 as bound in the lmm system
 {
-  for (auto bandwith : bandwidths) {
-    bandwidths_.push_back({bandwith, 1.0, nullptr});
+  for (auto bandwidth : bandwidths) {
+    bandwidths_.push_back({bandwidth, 1.0, nullptr});
   }
 }
 
-void NetworkWifiLink::set_host_rate(sg_host_t host, int rate_level)
+void NetworkWifiLink::set_host_rate(s4u::Host* host, int rate_level)
 {
-  host_rates_.insert(std::make_pair(host->get_name(), rate_level));
+  std::pair<std::map<std::string, int>::iterator, bool> insert_done =
+      host_rates_.insert(std::make_pair(host->get_name(), rate_level));
+  if (insert_done.second == false)
+    insert_done.first->second = rate_level;
+}
+
+double NetworkWifiLink::get_host_rate(sg_host_t host)
+{
+  std::map<xbt::string, int>::iterator host_rates_it;
+  host_rates_it = host_rates_.find(host->get_name());
+
+  if (host_rates_it == host_rates_.end())
+    return -1;
+
+  int rate_id = host_rates_it->second;
+  xbt_assert(rate_id >= 0 && rate_id < (int)bandwidths_.size(), "Host \"%s\" has an invalid rate \"%d\"",
+             host->get_name().c_str(), rate_id);
+
+  Metric rate = bandwidths_[rate_id];
+  return rate.peak * rate.scale;
+}
+
+s4u::Link::SharingPolicy NetworkWifiLink::get_sharing_policy()
+{
+  return s4u::Link::SharingPolicy::WIFI;
 }
 
 /**********
