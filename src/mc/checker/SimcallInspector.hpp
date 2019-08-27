@@ -26,7 +26,7 @@ public:
    * For example, if it's a random(), choose the value to explore next. If it's a waitany, choose the terminated
    * communication to consider now.
    */
-  virtual void fire();
+  virtual void fire() = 0;
 
   /** Some simcalls may only be observable under some circomstances.
    * Most simcalls are not visible from the MC because they don't have an inspector at all. */
