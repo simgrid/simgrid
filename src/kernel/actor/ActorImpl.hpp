@@ -29,7 +29,7 @@ class XBT_PUBLIC ActorImpl : public surf::PropertyHolder {
 
 public:
   xbt::string name_;
-  ActorImpl(const xbt::string& name, s4u::Host* host);
+  ActorImpl(xbt::string name, s4u::Host* host);
   ActorImpl(const ActorImpl&) = delete;
   ActorImpl& operator=(const ActorImpl&) = delete;
   ~ActorImpl();

@@ -19,6 +19,7 @@
 #include "src/surf/cpu_interface.hpp"
 
 #include <boost/range/algorithm.hpp>
+#include <utility>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix, "Logging specific to SIMIX (process)");
 
@@ -57,7 +58,7 @@ int get_maxpid()
   return maxpid;
 }
 
-ActorImpl::ActorImpl(const simgrid::xbt::string& name, s4u::Host* host) : host_(host), name_(name), piface_(this)
+ActorImpl::ActorImpl(simgrid::xbt::string name, s4u::Host* host) : host_(host), name_(std::move(name)), piface_(this)
 {
   pid_           = maxpid++;
   simcall.issuer_ = this;
@@ -367,7 +368,7 @@ void ActorImpl::suspend(ActorImpl* issuer)
 
   /* If the suspended actor is waiting on a sync, suspend its synchronization. */
   if (waiting_synchro == nullptr) {
-    activity::ExecImpl* exec = new activity::ExecImpl();
+    auto exec = new activity::ExecImpl();
     exec->set_name("suspend").set_host(host_).set_flops_amount(0.0).start();
     waiting_synchro = activity::ExecImplPtr(exec);
 
@@ -412,8 +413,8 @@ activity::ActivityImplPtr ActorImpl::sleep(double duration)
     throw_exception(std::make_exception_ptr(simgrid::HostFailureException(
         XBT_THROW_POINT, std::string("Host ") + host_->get_cname() + " failed, you cannot sleep there.")));
 
-  activity::SleepImpl* sleep = new activity::SleepImpl();
-  (*sleep).set_name("sleep").set_host(host_).set_duration(duration).start();
+  auto sleep = new activity::SleepImpl();
+  sleep->set_name("sleep").set_host(host_).set_duration(duration).start();
   return activity::SleepImplPtr(sleep);
 }
 
