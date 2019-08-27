@@ -288,7 +288,12 @@ set(_Boost_STACKTRACE_ADDR2LINE_HEADERS "boost/stacktrace.hpp")
     if(APPLE)
       message(FATAL_ERROR "Boost libraries not found. Try to install them with 'sudo fink install boost1.53.nopython' (check the exact name with 'fink list boost') or 'sudo brew install boost'")
     else()
-      message(FATAL_ERROR "Boost libraries not found. Install libboost-dev (>= 1.48.0).")
+      if (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 3.11)
+        find_package(Boost 1.48) #try again with just boost, as old cmake may fail.
+      endif()
+      if(NOT Boost_FOUND)
+        message(FATAL_ERROR "Boost libraries not found. Install libboost-dev (>= 1.48.0).")
+      endif()
     endif()
   endif() 
 
