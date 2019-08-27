@@ -241,7 +241,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     if (link->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
       xbt_assert(!cfg_crosstraffic,
                  "Cross-traffic is not yet supported when using WIFI. Please use --cfg=network/crosstraffic:0");
-      NetworkWifiLink* wifi_link = (NetworkWifiLink*)link;
+      NetworkWifiLink* wifi_link = static_cast<NetworkWifiLink*>(link);
 
       double src_rate = wifi_link->get_host_rate(src);
       double dst_rate = wifi_link->get_host_rate(dst);
