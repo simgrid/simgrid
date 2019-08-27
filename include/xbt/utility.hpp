@@ -8,6 +8,7 @@
 #define XBT_UTILITY_HPP
 
 #include <tuple>
+#include <functional>
 
 namespace simgrid {
 namespace xbt {

@@ -11,6 +11,7 @@
 #include "xbt/misc.h"
 #include <algorithm>
 #include <map>
+#include <stdexcept>
 
 #include "dax_dtd.h"
 #include "dax_dtd.c"

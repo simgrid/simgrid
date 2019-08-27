@@ -10,6 +10,7 @@
 #define SMPI_F2C_HPP_INCLUDED
 
 #include <unordered_map>
+#include <string>
 
 #define KEY_SIZE (sizeof(int) * 2 + 1)
 
