@@ -79,7 +79,7 @@ simgrid::config::Flag<std::string> _sg_mc_buffering{
     "infty",
     {{"zero", "No system buffering: MPI_Send is blocking"},
      {"infty", "Infinite system buffering: MPI_Send returns immediately"}},
-    [](const std::string& value) { _mc_cfg_cb_check("buffering mode"); }};
+    [](const std::string&) { _mc_cfg_cb_check("buffering mode"); }};
 
 static simgrid::config::Flag<std::string> _sg_mc_reduce{
     "model-check/reduction", "Specify the kind of exploration reduction (either none or DPOR)", "dpor",
