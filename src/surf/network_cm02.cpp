@@ -393,8 +393,7 @@ NetworkWifiLink::NetworkWifiLink(NetworkCm02Model* model, const std::string& nam
 
 void NetworkWifiLink::set_host_rate(s4u::Host* host, int rate_level)
 {
-  std::pair<std::map<std::string, int>::iterator, bool> insert_done =
-      host_rates_.insert(std::make_pair(host->get_name(), rate_level));
+  auto insert_done = host_rates_.insert(std::make_pair(host->get_name(), rate_level));
   if (insert_done.second == false)
     insert_done.first->second = rate_level;
 }
