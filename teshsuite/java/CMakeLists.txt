@@ -28,6 +28,6 @@ set(examples_src ${examples_src}                                                
 set(tesh_files   ${tesh_files}                                                                 PARENT_SCOPE)
 
 if(enable_java)
-  ADD_TESH(tesh-java-semaphoregc  --setenv javacmd=${Java_JAVA_EXECUTABLE} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH} --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java/semaphoregc  ${CMAKE_HOME_DIRECTORY}/teshsuite/java/semaphoregc/semaphoregc.tesh)
-  ADD_TESH(tesh-java-sleephostoff --setenv javacmd=${Java_JAVA_EXECUTABLE} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH} --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java/sleephostoff ${CMAKE_HOME_DIRECTORY}/teshsuite/java/sleephostoff/sleephostoff.tesh)
+  ADD_TESH(tesh-java-semaphoregc  --setenv javacmd=${Java_JAVA_EXECUTABLE} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv LD_LIBRARY_PATH=${TESH_LIBRARY_PATH} --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java/semaphoregc  ${CMAKE_HOME_DIRECTORY}/teshsuite/java/semaphoregc/semaphoregc.tesh)
+  ADD_TESH(tesh-java-sleephostoff --setenv javacmd=${Java_JAVA_EXECUTABLE} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv LD_LIBRARY_PATH=${TESH_LIBRARY_PATH} --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java/sleephostoff ${CMAKE_HOME_DIRECTORY}/teshsuite/java/sleephostoff/sleephostoff.tesh)
 endif()
