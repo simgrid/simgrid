@@ -55,5 +55,5 @@ void HostCLM03Model::update_actions_state(double /*now*/, double /*delta*/)
   /* I've no action to update */
 }
 
-}
-}
+} // namespace surf
+} // namespace simgrid

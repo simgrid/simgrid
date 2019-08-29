@@ -104,7 +104,7 @@ void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
 {
   while (not get_action_heap().empty() && double_equals(get_action_heap().top_date(), now, sg_surf_precision)) {
 
-    NetworkCm02Action* action = static_cast<NetworkCm02Action*>(get_action_heap().pop());
+    auto* action = static_cast<NetworkCm02Action*>(get_action_heap().pop());
     XBT_DEBUG("Something happened to action %p", action);
 
     // if I am wearing a latency hat
@@ -184,7 +184,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
           std::any_of(back_route.begin(), back_route.end(), [](const LinkImpl* link) { return not link->is_on(); });
   }
 
-  NetworkCm02Action *action = new NetworkCm02Action(this, size, failed);
+  auto* action              = new NetworkCm02Action(this, size, failed);
   action->sharing_penalty_  = latency;
   action->latency_ = latency;
   action->rate_ = rate;
@@ -340,7 +340,7 @@ void NetworkCm02Link::set_bandwidth(double value)
     const kernel::lmm::Element* nextelem = nullptr;
     int numelem                  = 0;
     while ((var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
-      NetworkCm02Action* action = static_cast<NetworkCm02Action*>(var->get_id());
+      auto* action = static_cast<NetworkCm02Action*>(var->get_id());
       action->sharing_penalty_ += delta;
       if (not action->is_suspended())
         get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), action->sharing_penalty_);
@@ -359,7 +359,7 @@ void NetworkCm02Link::set_latency(double value)
   latency_.peak = value;
 
   while ((var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
-    NetworkCm02Action* action = static_cast<NetworkCm02Action*>(var->get_id());
+    auto* action = static_cast<NetworkCm02Action*>(var->get_id());
     action->lat_current_ += delta;
     action->sharing_penalty_ += delta;
     if (action->rate_ < 0)
@@ -450,6 +450,6 @@ void NetworkCm02Action::update_remains_lazy(double now)
   set_last_value(get_variable()->get_value());
 }
 
-}
-}
+} // namespace resource
+} // namespace kernel
 } // namespace simgrid

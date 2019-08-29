@@ -54,10 +54,10 @@ StorageImpl* StorageN11Model::createStorage(const std::string& id, const std::st
 {
   StorageType* storage_type = storage_types.at(type_id);
 
-  double Bread = surf_parse_get_bandwidth(storage_type->model_properties->at("Bread").c_str(),
-                                          "property Bread, storage", type_id.c_str());
+  double Bread =
+      surf_parse_get_bandwidth(storage_type->model_properties->at("Bread").c_str(), "property Bread, storage", type_id);
   double Bwrite = surf_parse_get_bandwidth(storage_type->model_properties->at("Bwrite").c_str(),
-                                           "property Bwrite, storage", type_id.c_str());
+                                           "property Bwrite, storage", type_id);
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id.c_str(), type_id.c_str(),
             Bread);
@@ -74,7 +74,7 @@ double StorageN11Model::next_occuring_event(double now)
 void StorageN11Model::update_actions_state(double /*now*/, double delta)
 {
   for (auto it = std::begin(*get_started_action_set()); it != std::end(*get_started_action_set());) {
-    StorageAction& action = static_cast<StorageAction&>(*it);
+    auto& action = *it;
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     action.update_remains(lrint(action.get_variable()->get_value() * delta));
     action.update_max_duration(delta);
