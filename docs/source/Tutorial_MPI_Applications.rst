@@ -15,9 +15,9 @@ Project <https://proxyapps.exascaleproject.org/>`_ only require minor
 modifications to `run on top of SMPI
 <https://framagit.org/simgrid/SMPI-proxy-apps>`_.
 
-This setting permits to debug your MPI applications in a perfectly
-reproducible setup, with no Heisenbugs. Enjoy the full Clairevoyance
-provided by the simulator while running what-if analysis on platforms
+This setting permits one to debug your MPI applications in a perfectly
+reproducible setup, with no Heisenbugs. Enjoy the full Clairvoyance
+provided by the simulator while running what-if analyses on platforms
 that are still to be built! Several `production-grade MPI applications
 <https://framagit.org/simgrid/SMPI-proxy-apps#full-scale-applications>`_
 use SimGrid for their integration and performance testing.
@@ -41,7 +41,7 @@ How does it work?
 
 In SMPI, communications are simulated while computations are
 emulated. This means that while computations occur as they would in
-the real systems, communication calls are intercepted and achived by
+the real systems, communication calls are intercepted and achieved by
 the simulator.
 
 To start using SMPI, you just need to compile your application with
@@ -58,7 +58,7 @@ per MPI rank as if it was another dynamic library. Then, MPI
 communication calls are implemented using SimGrid: data is exchanged
 through memory copy, while the simulator's performance models are used
 to predict the time taken by each communications. Any computations
-occuring between two MPI calls are benchmarked, and the corresponding
+occurring between two MPI calls are benchmarked, and the corresponding
 time is reported into the simulator.
 
 .. image:: /tuto_smpi/img/big-picture.svg
@@ -95,7 +95,7 @@ simulated platform as a graph of hosts and network links.
 
 The elements basic elements (with :ref:`pf_tag_host` and
 :ref:`pf_tag_link`) are described first, and then the routes between
-any pair of hosts are explicitely given with :ref:`pf_tag_route`. 
+any pair of hosts are explicitly given with :ref:`pf_tag_route`. 
 
 Any host must be given a computational speed in flops while links must
 be given a latency and a bandwidth. You can write 1Gf for
@@ -104,7 +104,7 @@ be given a latency and a bandwidth. You can write 1Gf for
 
 Routes defined with :ref:`pf_tag_route` are symmetrical by default,
 meaning that the list of traversed links from A to B is the same as
-from B to A. Explicitely define non-symmetrical routes if you prefer.
+from B to A. Explicitly define non-symmetrical routes if you prefer.
 
 Cluster with a Crossbar
 .......................

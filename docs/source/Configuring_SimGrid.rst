@@ -42,7 +42,7 @@ argument. You can even escape the included quotes (write @' for ' if
 you have your argument between ').
 
 Another solution is to use the ``<config>`` tag in the platform file. The
-only restriction is that this tag must occure before the first
+only restriction is that this tag must occur before the first
 platform element (be it ``<zone>``, ``<cluster>``, ``<peer>`` or whatever).
 The ``<config>`` tag takes an ``id`` attribute, but it is currently
 ignored so you don't really need to pass it. The important part is that
@@ -231,7 +231,7 @@ models for all existing resources.
   network card. Three models exists, but actually, only 2 of them are
   interesting. The "compound" one is simply due to the way our
   internal code is organized, and can easily be ignored. So at the
-  end, you have two host models: The default one allows to aggregate
+  end, you have two host models: The default one allows aggregation of
   an existing CPU model with an existing network model, but does not
   allow parallel tasks because these beasts need some collaboration
   between the network and CPU model. That is why, ptask_07 is used by
@@ -397,10 +397,10 @@ Note that with the default host model this option is activated by default.
 
 .. _cfg=smpi/async-small-thresh:
 
-Simulating Asyncronous Send
+Simulating Asynchronous Send
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-(this configuration item is experimental and may change or disapear)
+(this configuration item is experimental and may change or disappear)
 
 It is possible to specify that messages below a certain size will be
 sent as soon as the call to MPI_Send is issued, without waiting for
@@ -447,7 +447,7 @@ application requires it or to reduce it to save memory space.
 Activating Plugins
 ------------------
 
-SimGrid plugins allow to extend the framework without changing its
+SimGrid plugins allow one to extend the framework without changing its
 source code directly. Read the source code of the existing plugins to
 learn how to do so (in ``src/plugins``), and ask your questions to the
 usual channels (Stack Overflow, Mailing list, IRC). The basic idea is
@@ -572,9 +572,9 @@ properties.
 Size of Cycle Detection Set
 ...........................
 
-In order to detect cycles, the model-checker needs to check if a new
+In order to detect cycles, the model checker needs to check if a new
 explored state is in fact the same state than a previous one. For
-that, the model-checker can take a snapshot of each visited state:
+that, the model checker can take a snapshot of each visited state:
 this snapshot is then used to compare it with subsequent states in the
 exploration graph.
 
@@ -616,7 +616,7 @@ Exploration Depth Limit
 .......................
 
 The ``model-checker/max-depth`` can set the maximum depth of the
-exploration graph of the model-checker. If this limit is reached, a
+exploration graph of the model checker. If this limit is reached, a
 logging message is sent and the results might not be exact.
 
 By default, there is not depth limit.
@@ -626,9 +626,9 @@ By default, there is not depth limit.
 Handling of Timeouts
 ....................
 
-By default, the model-checker does not handle timeout conditions: the `wait`
+By default, the model checker does not handle timeout conditions: the `wait`
 operations never time out. With the ``model-check/timeout`` configuration item
-set to **yes**, the model-checker will explore timeouts of `wait` operations.
+set to **yes**, the model checker will explore timeouts of `wait` operations.
 
 .. _cfg=model-check/communications-determinism:
 .. _cfg=model-check/send-determinism:
@@ -638,7 +638,7 @@ Communication Determinism
 
 The ``model-check/communications-determinism`` and
 ``model-check/send-determinism`` items can be used to select the
-communication determinism mode of the model-checker which checks
+communication determinism mode of the model checker which checks
 determinism properties of the communications of an application.
 
 Verification Performance Considerations
@@ -658,18 +658,18 @@ memory (see :ref:`contexts/guard-size <cfg=contexts/guard-size>`).
 
 .. _cfg=model-check/replay:
 
-Replaying buggy execution paths out of the model-checker
+Replaying buggy execution paths from the model checker
 ........................................................
 
-Debugging the problems reported by the model-checker is challenging: First, the
+Debugging the problems reported by the model checker is challenging: First, the
 application under verification cannot be debugged with gdb because the
-model-checker already traces it. Then, the model-checker may explore several
+model checker already traces it. Then, the model checker may explore several
 execution paths before encountering the issue, making it very difficult to
 understand the outputs. Fortunately, SimGrid provides the execution path leading
 to any reported issue so that you can replay this path out of the model checker,
 enabling the usage of classical debugging tools.
 
-When the model-checker finds an interesting path in the application
+When the model checker finds an interesting path in the application
 execution graph (where a safety or liveness property is violated), it
 generates an identifier for this path. Here is an example of output:
 
@@ -689,7 +689,7 @@ generates an identifier for this path. Here is an example of output:
 
 The interesting line is ``Path = 1/3;1/4``, which means that you should use
 ``--cfg=model-check/replay:1/3;1/4`` to replay your application on the buggy
-execution path. All options (but the model-checker related ones) must
+execution path. All options (but the model checker related ones) must
 remain the same. In particular, if you ran your application with
 ``smpirun -wrapper simgrid-mc``, then do it again. Remove all
 MC-related options, keep the other ones and add
@@ -749,7 +749,7 @@ the slowest to the most efficient:
 
 The main reason to change this setting is when the debugging tools get
 fooled by the optimized context factories. Threads are the most
-debugging-friendly contextes, as they allow to set breakpoints
+debugging-friendly contexts, as they allow one to set breakpoints
 anywhere with gdb and visualize backtraces for all processes, in order
 to debug concurrency issues. Valgrind is also more comfortable with
 threads, but it should be usable with all factories (Exception: the
@@ -775,7 +775,7 @@ want to reduce the ``contexts/stack-size`` item. Its default value is
 as 16 KiB, for example. This *setting is ignored* when using the
 thread factory. Instead, you should compile SimGrid and your
 application with ``-fsplit-stack``. Note that this compilation flag is
-not compatible with the model-checker right now.
+not compatible with the model checker right now.
 
 The operating system should only allocate memory for the pages of the
 stack which are actually used and you might not need to use this in
@@ -817,10 +817,10 @@ simulations may well fail in parallel mode. It is described in
 
 If you are using the **ucontext** or **raw** context factories, you can
 request to execute the user code in parallel. Several threads are
-launched, each of them handling as much user contexts at each run. To
-actiave this, set the ``contexts/nthreads`` item to the amount of
-cores that you have in your computer (or lower than 1 to have
-the amount of cores auto-detected).
+launched, each of them handling the same number of user contexts at each
+run. To activate this, set the ``contexts/nthreads`` item to the amount
+of cores that you have in your computer (or lower than 1 to have the
+amount of cores auto-detected).
 
 Even if you asked several worker threads using the previous option,
 you can request to start the parallel execution (and pay the
@@ -951,7 +951,7 @@ a ``MPI_Send()``, SMPI will automatically benchmark the duration of
 this code, and create an execution task within the simulator to take
 this into account. For that, the actual duration is measured on the
 host machine and then scaled to the power of the corresponding
-simulated machine. The variable ``smpi/host-speed`` allows to specify
+simulated machine. The variable ``smpi/host-speed`` allows one to specify
 the computational speed of the host machine (in flop/s) to use when
 scaling the execution times. It defaults to 20000, but you really want
 to update it to get accurate simulation results.
@@ -1134,7 +1134,7 @@ between processes, causing intricate bugs.  Several options are
 possible to avoid this, as described in the main `SMPI publication
 <https://hal.inria.fr/hal-01415484>`_ and in the :ref:`SMPI
 documentation <SMPI_what_globals>`. SimGrid provides two ways of
-automatically privatizing the globals, and this option allows to
+automatically privatizing the globals, and this option allows one to
 choose between them.
 
   - **no** (default when not using smpirun): Do not automatically
@@ -1370,7 +1370,7 @@ to create a new POSIX shared memory object (kept in RAM, in /dev/shm)
 for each shared bloc.
 
 With the ``global`` algorithm, each call to SMPI_SHARED_MALLOC()
-returns a new adress, but it only points to a shadow bloc: its memory
+returns a new address, but it only points to a shadow bloc: its memory
 area is mapped on a 1MiB file on disk. If the returned bloc is of size
 N MiB, then the same file is mapped N times to cover the whole bloc.
 At the end, no matter how many SMPI_SHARED_MALLOC you do, this will

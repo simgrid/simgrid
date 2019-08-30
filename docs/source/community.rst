@@ -39,7 +39,7 @@ to us and say hello! We love earing about how people use SimGrid.
    when we have a guest.
    
    Be warned that even if many people are connected to
-   the chanel, they may not be staring at their IRC windows.
+   the channel, they may not be staring at their IRC windows.
    So don't be surprised if you don't get an answer in the 
    second, and turn to the mailing lists if nobody seems to be there.
    The logs of this channel are publicly
@@ -66,8 +66,8 @@ Spread the word
 There are many ways to help the SimGrid project. The first and most
 natural one is to **use SimGrid for your research, and say so**. Cite
 the SimGrid framework in your papers and discuss of its advantages with
-your colleagues to spread the word. When we ask for new fundings to
-sustain the project, the amount of publications enabled by SimGrid is
+your colleagues to spread the word. When we ask for new funding to
+sustain the project, the number of publications enabled by SimGrid is
 always the first question we get. The more you use the framework,
 the better for us. 
 
@@ -189,7 +189,7 @@ It is in need of an overhaul:
 
   - cleanup, refactoring, usage of C++ features.
 
-  - The state comparison code works by infering types of blocks allocated on the
+  - The state comparison code works by inferring types of blocks allocated on the
     heap by following pointers from known roots (global variables, local
     variables). Usually the first type found for a given block is used even if
     a better one could be found later. By using a first pass of type inference,
@@ -199,11 +199,11 @@ It is in need of an overhaul:
   - We might benefit from adding logic for handling some known types. For
     example, both `std::string` and `std::vector` have a capacity which might
     be larger than the current size of the container. We should ignore
-    the corresponding elements when comparing the states and infering the types.
+    the corresponding elements when comparing the states and inferring the types.
 
   - Another difficulty in the state comparison code is the detection of
     dangling pointers. We cannot easily know if a pointer is dangling and
-    dangling pointers might lead us to choose the wrong type when infering
+    dangling pointers might lead us to choose the wrong type when inferring
     heap blocks. We might mitigate this problem by delaying the reallocation of
     a freed block until there is no blocks pointing to it anymore using some
     sort of basic garbage-collector.
@@ -213,7 +213,7 @@ MC: Hashing the states
 
 In order to speed up the state comparison an idea was to create a hash of the
 state. Only states with the same hash would need to be compared using the
-state comparison algorithm. Some information should not be inclueded in the
+state comparison algorithm. Some information should not be included in the
 hash in order to avoid considering different states which would otherwise
 would have been considered equal.
 
@@ -221,7 +221,7 @@ The states could be indexed by their hash. Currently they are indexed
 by the number of processes and the amount of heap currently allocated
 (see `DerefAndCompareByNbProcessesAndUsedHeap`).
 
-Good candidate informations for the state hashing:
+Good candidate information for the state hashing:
 
  - number of processes;
 
@@ -241,28 +241,28 @@ but it is currently disabled.
 Interface with the model-checked processes
 """"""""""""""""""""""""""""""""""""""""""
 
-The model-checker reads many information about the model-checked process by
+The model checker reads many information about the model-checked process by
 `process_vm_readv()`-ing brutally the data structure of the model-checked
 process leading to some inefficient code such as maintaining copies of complex
 C++ structures in XBT dynars. We need a sane way to expose the relevant
-information to the model-checker.
+information to the model checker.
 
 Generic simcalls
 """"""""""""""""
 
 We have introduced some generic simcalls which can be used to execute a
-callback in SimGrid Maestro context. It makes it a lot easier to interface
+callback in a SimGrid Maestro context. It makes it a lot easier to interface
 the simulated process with the maestro. However, the callbacks for the
-model-checker which cannot decide how it should handle them. We would need a
+model checker which cannot decide how it should handle them. We would need a
 solution for this if we want to be able to replace the simcalls the
-model-checker cares about by generic simcalls.
+model checker cares about by generic simcalls.
 
 Defining an API for writing Model-Checking algorithms
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 
 Currently, writing a new model-checking algorithms in SimGridMC is quite
 difficult: the logic of the model-checking algorithm is mixed with a lot of
-low-level concerns about the way the model-checker is implemented. This makes it
+low-level concerns about the way the model checker is implemented. This makes it
 difficult to write new algorithms and difficult to understand, debug, and modify
 the existing ones. We need a clean API to express the model-checking algorithms
 in a form which is closer to the text-book/paper description. This API must

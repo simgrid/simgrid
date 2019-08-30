@@ -52,7 +52,7 @@ simulated platform as a graph of hosts and network links.
 
 The most important elements are the basic ones: :ref:`pf_tag_host`,
 :ref:`pf_tag_link`, and similar. Then come the routes between any pair
-of hosts, that are given explicitely with :ref:`pf_tag_route` (routes
+of hosts, that are given explicitly with :ref:`pf_tag_route` (routes
 are symmetrical by default). Any host must be given a computational
 speed (in flops) while links must be given a latency (in seconds) and
 a bandwidth (in bytes per second). Note that you can write 1Gflops

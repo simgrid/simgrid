@@ -144,7 +144,7 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
   return comm->wait_for(timeout);
 }
 
-/** @brief This function is called by a sender and permit to wait for each communication
+/** @brief This function is called by a sender and permits waiting for each communication
  *
  * @param comm a vector of communication
  * @param nb_elem is the size of the comm vector

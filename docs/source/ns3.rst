@@ -98,7 +98,7 @@ example of invalid platform:
    </platform>
   
 This can be reformulated as follows to make it usable with the ns-3 binding.
-There is no direct connexion from alice to bob, but that's OK because
+There is no direct connection from alice to bob, but that's OK because
 ns-3 automatically routes from point to point.
 
 .. code-block:: shell

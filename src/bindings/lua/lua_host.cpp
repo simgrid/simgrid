@@ -208,7 +208,7 @@ void sglua_register_host_functions(lua_State* L)
 
   /* metatable.__index = simgrid.host
    * we put the host functions inside the host userdata itself:
-   * this allows to write my_host:method(args) for
+   * this allows one to write my_host:method(args) for
    * simgrid.host.method(my_host, args) */
   lua_setfield(L, -2, "__index");         /* simgrid simgrid.host mt */
 

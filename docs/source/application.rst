@@ -28,7 +28,7 @@ to mix several interfaces in the same simulation.
    your application is decomposed as a list of event handlers that are
    fired according to the trace. SimGrid comes with a build-in support
    for MPI traces (with solutions to import traces captured by several
-   MPI profilers). You can reuse this mecanism for any kind of trace
+   MPI profilers). You can reuse this mechanism for any kind of trace
    that you want to replay, for example to study how a P2P DHT overlay
    reacts to a given workload.
  - Simulating algorithms with one of the legacy interfaces: :ref:`MSG

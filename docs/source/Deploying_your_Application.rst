@@ -19,7 +19,7 @@ There is several ways to deploy the :ref:`application <application>` you want to
 study on your :ref:`simulated platform <platform>`, i.e. to specify which actor
 should be started on which host. You can do so directly in your program (as
 shown in :ref:`these examples <s4u_ex_actors>`), or using an XML deployment
-file. Unless you have a good reason, you should keep your application appart
+file. Unless you have a good reason, you should keep your application apart
 from the deployment as it will :ref:`ease your experimental campain afterward
 <howto_science>`.
 
@@ -47,7 +47,7 @@ archive for files named ``???_d.xml`` for more):
      </actor>
 
      <!-- Carole runs on 'host3', has 1 parameter "42" in its argv and one property. 
-       -- Use simgrid::s4u::Actor::get_property() to retrive it.-->
+       -- Use simgrid::s4u::Actor::get_property() to retrieve it.-->
      <actor host="host3" function="carol">
        <argument value="42"/>
        <prop id="SomeProp" value="SomeValue"/>

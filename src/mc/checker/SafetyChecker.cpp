@@ -81,7 +81,7 @@ void SafetyChecker::run()
 {
   /* This function runs the DFS algorithm the state space.
    * We do so iteratively instead of recursively, dealing with the call stack manually.
-   * This allows to explore the call stack at wish. */
+   * This allows one to explore the call stack at will. */
 
   while (not stack_.empty()) {
 

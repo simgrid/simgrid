@@ -137,7 +137,7 @@ void Actor::migrate(Host* new_host)
   kernel::actor::simcall([this, new_host]() {
     if (pimpl_->waiting_synchro != nullptr) {
       // The actor is blocked on an activity. If it's an exec, migrate it too.
-      // FIXME: implement the migration of other kind of activities
+      // FIXME: implement the migration of other kinds of activities
       kernel::activity::ExecImplPtr exec =
           boost::dynamic_pointer_cast<kernel::activity::ExecImpl>(pimpl_->waiting_synchro);
       xbt_assert(exec.get() != nullptr, "We can only migrate blocked actors when they are blocked on executions.");

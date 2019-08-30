@@ -162,7 +162,7 @@ static void MTestResetDatatypeGen()
 
 void MTestInitFullDatatypes(void)
 {
-    /* Do not allow to change datatype test level during loop.
+    /* Do not allow the datatype test level to change during loop.
      * Otherwise indexes will be wrong.
      * Test must explicitly call reset or wait for current datatype loop being
      * done before changing to another test level. */
@@ -178,7 +178,7 @@ void MTestInitFullDatatypes(void)
 
 void MTestInitMinDatatypes(void)
 {
-    /* Do not allow to change datatype test level during loop.
+    /* Do not allow the datatype test level to change during loop.
      * Otherwise indexes will be wrong.
      * Test must explicitly call reset or wait for current datatype loop being
      * done before changing to another test level. */
@@ -194,7 +194,7 @@ void MTestInitMinDatatypes(void)
 
 void MTestInitBasicDatatypes(void)
 {
-    /* Do not allow to change datatype test level during loop.
+    /* Do not allow the datatype test level to change during loop.
      * Otherwise indexes will be wrong.
      * Test must explicitly call reset or wait for current datatype loop being
      * done before changing to another test level. */

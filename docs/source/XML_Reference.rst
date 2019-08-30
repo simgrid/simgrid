@@ -304,7 +304,7 @@ and a download link.
 **Attributes:**
 
 :``version``: Version of the DTD, describing the whole XML format.
-	      This versionning allow future evolutions, even if we
+	      This versioning allow future evolutions, even if we
 	      avoid backward-incompatible changes. The current version
 	      is **4.1**. The ``simgrid_update_xml`` program can
 	      upgrade most of the past platform files to the most recent
@@ -347,7 +347,7 @@ following functions:
 <route>
 -------
 
-A path between two network locations, composed of several occurences
+A path between two network locations, composed of several occurrences
 of :ref:`pf_tag_link` .
 
 **Parent tags:** :ref:`pf_tag_zone` |br|

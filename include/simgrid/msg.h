@@ -270,11 +270,11 @@ XBT_PUBLIC void MSG_config(const char* key, const char* value);
 /** @brief Initialize the MSG internal data.
  *  @hideinitializer
  *
- *  It also check that the link-time and compile-time versions of SimGrid do
+ *  It also checks that the link-time and compile-time versions of SimGrid do
  *  match, so you should use this version instead of the #MSG_init_nocheck
  *  function that does the same initializations, but without this check.
  *
- *  We allow to link against compiled versions that differ in the patch level.
+ *  We allow linking against compiled versions that differ in the patch level.
  */
 #define MSG_init(argc, argv)                                                                                           \
   do {                                                                                                                 \

@@ -254,7 +254,7 @@ MPI_Barrier
  - ompi_bruck: nsteps = sqrt(size), at each step, exchange data with rank-2^k and rank+2^k
  - ompi_recursivedoubling: recursive doubling algorithm
  - ompi_tree: recursive doubling type algorithm, with tree structure
- - ompi_doublering: double ring algorithm
+ - ompi_doubling: double ring algorithm
  - mvapich2_pair: pairwise algorithm
  - mpich_smp: barrier intra-node, then inter-node
 
@@ -332,7 +332,7 @@ MPI_Allreduce
  - redbcast: reduce then broadcast, using default or tuned algorithms if specified
  - ompi_ring_segmented: ring algorithm used by OpenMPI
  - mvapich2_rs: rdb for small messages, reduce-scatter then allgather else
- - mvapich2_two_level: SMP-aware algorithm, with mpich as intra algoritm, and rdb as inter (Change this behavior by using mvapich2 selector to use tuned values)
+ - mvapich2_two_level: SMP-aware algorithm, with mpich as intra algorithm, and rdb as inter (Change this behavior by using mvapich2 selector to use tuned values)
  - rab: default `Rabenseifner <https://fs.hlrs.de/projects/par/mpi//myreduce.html>`_ implementation
 
 MPI_Reduce_scatter
@@ -548,7 +548,7 @@ is an older approach that proves to be slower.
 With the **mmap approach**, SMPI duplicates and dynamically switch the
 ``.data`` and ``.bss`` segments of the ELF process when switching the
 MPI ranks. This allows each ranks to have its own copy of the global
-variables.  No copy actually occures as this mechanism uses ``mmap()``
+variables.  No copy actually occurs as this mechanism uses ``mmap()``
 for efficiency. This mechanism is considered to be very robust on all
 systems supporting ``mmap()`` (Linux and most BSDs). Its performance
 is questionable since each context switch between MPI ranks induces
@@ -567,10 +567,10 @@ link against the SimGrid library itself.
 
 With the **dlopen approach**, SMPI loads several copies of the same
 executable in memory as if it were a library, so that the global
-variables get naturally dupplicated. It first requires the executable
+variables get naturally duplicated. It first requires the executable
 to be compiled as a relocatable binary, which is less common for
 programs than for libraries. But most distributions are now compiled
-this way for security reason as it allows to randomize the address
+this way for security reason as it allows one to randomize the address
 space layout. It should thus be safe to compile most (any?) program
 this way.  The second trick is that the dynamic linker refuses to link
 the exact same file several times, be it a library or a relocatable
@@ -578,12 +578,12 @@ executable. It makes perfectly sense in the general case, but we need
 to circumvent this rule of thumb in our case. To that extend, the
 binary is copied in a temporary file before being re-linked against.
 ``dlmopen()`` cannot be used as it only allows 256 contextes, and as it
-would also dupplicate simgrid itself.
+would also duplicate simgrid itself.
 
 This approach greatly speeds up the context switching, down to about
 40 CPU cycles with our raw contextes, instead of requesting several
 syscalls with the ``mmap()`` approach. Another advantage is that it
-permits to run the SMPI contexts in parallel, which is obviously not
+permits one to run the SMPI contexts in parallel, which is obviously not
 possible with the ``mmap()`` approach. It was tricky to implement, but
 we are not aware of any flaws, so smpirun activates it by default.
 
@@ -623,7 +623,7 @@ Reducing your memory footprint
 
 If you get short on memory (the whole app is executed on a single node when
 simulated), you should have a look at the SMPI_SHARED_MALLOC and
-SMPI_SHARED_FREE macros. It allows to share memory areas between processes: The
+SMPI_SHARED_FREE macros. It allows one to share memory areas between processes: The
 purpose of these macro is that the same line malloc on each process will point
 to the exact same memory area. So if you have a malloc of 2M and you have 16
 processes, this macro will change your memory consumption from 2M*16 to 2M
@@ -739,7 +739,7 @@ fail without ``smpirun``.
 ..............................................
 
 In addition to the previous answers, some projects also need to be
-explicitely told what compiler to use, as follows:
+explicitly told what compiler to use, as follows:
 
 .. code-block:: shell
 
