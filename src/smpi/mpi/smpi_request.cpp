@@ -756,7 +756,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   s4u::Mailbox* mailbox;
 
   request->print_request("New iprobe");
-  // We have to test both mailboxes as we don't know if we will receive one one or another
+  // We have to test both mailboxes as we don't know if we will receive one or another
   if (simgrid::config::get_value<int>("smpi/async-small-thresh") > 0) {
     mailbox = smpi_process()->mailbox_small();
     XBT_DEBUG("Trying to probe the perm recv mailbox");

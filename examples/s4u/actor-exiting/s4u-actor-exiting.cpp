@@ -5,7 +5,7 @@
 
 /* There is two very different ways of being informed when an actor exits.
  *
- * The this_actor::on_exit() function allows to register a function to be
+ * The this_actor::on_exit() function allows one to register a function to be
  * executed when this very actor exits. The registered function will run
  * when this actor terminates (either because its main function returns, or
  * because it's killed in any way). No simcall are allowed here: your actor

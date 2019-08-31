@@ -263,7 +263,7 @@ This very simple setting raises many interesting questions:
     hierarchical algorithm, with some forwarders taking large pools of
     tasks from the master, each of them distributing their tasks to a
     sub-pool of workers? Or should we introduce super-peers,
-    dupplicating the master's role in a peer-to-peer manner?  Do the
+    duplicating the master's role in a peer-to-peer manner?  Do the
     algorithms require a perfect knowledge of the network?
 
 - How is such an algorithm sensitive to external workload variation?
@@ -479,7 +479,7 @@ used to BSD sockets or other classical systems, but you will soon
 appreciate their power. They are only used to match the
 communications, but have no impact on the communication
 timing. ``put()`` and ``get()`` are matched regardless of their
-initiators' location and then the real communication occures between
+initiators' location and then the real communication occurs between
 the involved parties.
 
 Please refer to the full `Mailboxes' documentation
@@ -562,12 +562,12 @@ simulator requests. This is both a good idea, and a dangerous
 trend. This simplification is another application of the good old DRY/SPOT
 programming principle (`Don't Repeat Yourself / Single Point Of Truth
 <https://en.wikipedia.org/wiki/Don%27t_repeat_yourself>`_), and you
-really want your programming artefacts to follow these software
+really want your programming artifacts to follow these software
 engineering principles.
 
 But at the same time, you should be careful in separating your
 scientific contribution (the master/workers algorithm) and the
-artefacts used to test it (platform, deployment and workload). This is
+artifacts used to test it (platform, deployment and workload). This is
 why SimGrid forces you to express your platform and deployment files
 in XML instead of using a programming interface: it forces a clear
 separation of concerns between things of very different nature.
@@ -667,7 +667,7 @@ round-robin is completely suboptimal: most of the workers keep waiting
 for more work. We will move to a First-Come First-Served mechanism
 instead.
 
-For that, your workers should explicitely request for work with a
+For that, your workers should explicitly request for work with a
 message sent to a channel that is specific to their master. The name
 of that private channel can be the one used to categorize the
 executions, as it is already specific to each master.
@@ -675,7 +675,7 @@ executions, as it is already specific to each master.
 The master should serve in a round-robin manner the requests it
 receives, until the time is up. Changing the communication schema can
 be a bit hairy, but once it works, you will see that such as simple
-FCFS schema allows to double the amount of tasks handled over time
+FCFS schema allows one to double the amount of tasks handled over time
 here. Things may be different with another platform file.
 
 Further Improvements

@@ -20,7 +20,7 @@ The simulation models are **fast** (`🖹 <http://hal.inria.fr/hal-00650233>`__)
 **highly scalable** (`🖹 <http://hal.inria.fr/inria-00602216/>`__) while
 **theoretically sound and experimentally assessed** (`🖹 <http://doi.acm.org/10.1145/2517448>`__).
 Most of the time, SimGrid is used to predict the performance (time and energy) of a
-given IT infrastructure, and it includes a prototypal model-checker to formally
+given IT infrastructure, and it includes a prototype model checker to formally
 assess these systems.
 
 Technically speaking, SimGrid is a library. It is neither a graphical
@@ -38,8 +38,8 @@ come and join us!
 
 SimGrid is a powerful tool, and this documentation will help you taking the best
 of it. Check its contents on the left. Each tutorial presents a classical use
-case, in a fast and practical manner. The user manual containts more
-throughfully information. In each part, the important concepts are concisely
+case, in a fast and practical manner. The user manual contains more
+thorough information. In each part, the important concepts are concisely
 introduced, before the reference manual. SimGrid is also described in several
 `scientific papers <https://simgrid.org/Publications.html>`_.
 

@@ -432,7 +432,7 @@ XBT_PUBLIC std::string get_name();
 /** @brief Returns the name of the current actor as a C string. */
 XBT_PUBLIC const char* get_cname();
 
-/** @brief Returns the name of the host on which the curret actor is running. */
+/** @brief Returns the name of the host on which the current actor is running. */
 XBT_PUBLIC Host* get_host();
 
 /** @brief Suspend the current actor, that is blocked until resume()ed by another actor. */

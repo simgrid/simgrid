@@ -245,7 +245,7 @@ enable_mallocators (ON/off)
 
 enable_model-checking (on/OFF)
   Activates the formal verification mode. This will **hinder
-  simulation speed** even when the model-checker is not activated at
+  simulation speed** even when the model checker is not activated at
   run time.
 
 enable_ns3 (on/OFF)
@@ -255,7 +255,7 @@ enable_smpi (ON/off)
   Allows one to run MPI code on top of SimGrid.
 
 enable_smpi_ISP_testsuite (on/OFF)
-  Adds many extra tests for the model-checker module.
+  Adds many extra tests for the model checker module.
 
 enable_smpi_MPICH3_testsuite (on/OFF)
   Adds many extra tests for the MPI module.
@@ -384,7 +384,7 @@ Windows-specific instructions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The best solution to get SimGrid working on windows is to install the
-Ubuntu subsystem of Windows 10. All of SimGrid (but the model-checker)
+Ubuntu subsystem of Windows 10. All of SimGrid (but the model checker)
 works in this setting.
 
 Native builds not very well supported. Have a look to our `appveypor

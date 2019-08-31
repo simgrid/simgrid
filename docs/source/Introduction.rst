@@ -107,11 +107,11 @@ explored. In some sense, this mode tests your application for all
 possible platforms that you could imagine (and more).
 
 You just provide the application and its deployment (number of
-processes and parameters), and the model-checker will literally
+processes and parameters), and the model checker will literally
 explore all possible outcomes by testing all possible message
 interleavings: if at some point a given process can either receive the
 message A first or the message B depending on the platform
-characteristics, the model-checker will explore the scenario where A
+characteristics, the model checker will explore the scenario where A
 arrives first, and then rewind to the same point to explore the
 scenario where B arrives first.
 
@@ -231,10 +231,10 @@ SimGrid could even be used to debug the real platform :)
 SimGrid is also used to debug, improve, and tune several large
 applications.
 `BigDFT <http://bigdft.org>`_ (a massively parallel code
-computing the electronic structure of chemical elements developped by
+computing the electronic structure of chemical elements developed by
 the CEA), `StarPU <http://starpu.gforge.inria.fr/>`_ (a
 Unified Runtime System for Heterogeneous Multicore Architectures
-developped by Inria Bordeaux) and
+developed by Inria Bordeaux) and
 `TomP2P <https://tomp2p.net/dev/simgrid/>`_ (a high performance
 key-value pair storage library developed at the University of Zurich).
 Some of these applications enjoy large user communities themselves.

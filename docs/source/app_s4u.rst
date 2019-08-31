@@ -146,7 +146,7 @@ Activities
 **********
 
 Activities represent the actions that consume a resource, such as a
-:ref:`s4u::Comm <API_s4u_Comm>` that consumes the *transmiting power* of
+:ref:`s4u::Comm <API_s4u_Comm>` that consumes the *transmitting power* of
 :ref:`s4u::Link <API_s4u_Link>` resources.
 
 =======================
@@ -173,7 +173,7 @@ Finally, to wait at most until a specified time limit, use
 
    wait_for and wait_until are currently not implemented for Exec and Io activities.
 
-Every kind of activities can be asynchronous:
+Every kind of activity can be asynchronous:
 
   - :ref:`s4u::CommPtr <API_s4u_Comm>` are created with 
     :cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>` and
@@ -319,7 +319,7 @@ The last twist is that by default in the simulator, the data starts
 to be exchanged only when both the sender and the receiver are
 announced (it waits until both :cpp:func:`put() <simgrid::s4u::Mailbox::put()>`
 and :cpp:func:`get() <simgrid::s4u::Mailbox::get()>` are posted). 
-In TCP, since you establish connexions beforehand, the data starts to
+In TCP, since you establish connections beforehand, the data starts to
 flow as soon as the sender posts it, even if the receiver did not post
 its :cpp:func:`recv() <simgrid::s4u::Mailbox::recv()>` yet. 
 
@@ -348,7 +348,7 @@ managed through the context. Provided that you never manipulate
 objects of type Foo directly but always FooPtr references (which are
 defined as `boost::intrusive_ptr
 <http://www.boost.org/doc/libs/1_61_0/libs/smart_ptr/intrusive_ptr.html>`_
-<Foo>), you will never have to explicitely release the resource that
+<Foo>), you will never have to explicitly release the resource that
 you use nor to free the memory of unused objects.
 Here is a little example:
 

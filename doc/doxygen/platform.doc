@@ -29,7 +29,7 @@ The default inner organization of the cluster is as follow:
 Here, a set of <b>host</b>s is defined. Each of them has a <b>link</b>
 to a central backbone (backbone is a link itself, as a link can
 be used to represent a switch, see the switch / link section
-below for more details about it). A <b>router</b> allows to connect a
+below for more details about it). A <b>router</b> allows one to connect a
 <b>cluster</b> to the outside world. Internally,
 SimGrid treats a cluster as a network zone containing all hosts: the router is the default
 gateway for the cluster.
@@ -305,7 +305,7 @@ these might also help you to get started.
 Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | string | Identifier of this storage_type; used when referring to it
-model           | no        | string | In the future, this will allow to change the performance model to use
+model           | no        | string | In the future, this will allow one to change the performance model to use
 size            | yes       | string | Specifies the amount of available storage space; you can specify storage like "500GiB" or "500GB" if you want. (TODO add a link to all the available abbreviations)
 content         | yes       | string | Path to a @ref pf_storage_content_file "Storage Content File" on your system. This file must exist.
 
@@ -865,7 +865,7 @@ As said before, once you choose
 a model, it (most likely; the constant network model, for example, doesn't) calculates routes for you. But maybe you want to
 define some of your routes, which will be specific. You may also want
 to bypass some routes defined in lower level zone at an upper stage:
-<b>bypasszoneroute</b> is the tag you're looking for. It allows to
+<b>bypasszoneroute</b> is the tag you're looking for. It allows one to
 bypass routes defined between already defined between zone (if you want
 to bypass route for a specific host, you should just use byPassRoute).
 The principle is the same as zoneroute: <b>bypasszoneroute</b> contains
@@ -902,7 +902,7 @@ As said before, once you choose
 a model, it (most likely; the constant network model, for example, doesn't) calculates routes for you. But maybe you want to
 define some of your routes, which will be specific. You may also want
 to bypass some routes defined in lower level zone at an upper stage:
-<b>bypassRoute</b> is the tag you're looking for. It allows to bypass
+<b>bypassRoute</b> is the tag you're looking for. It allows one to bypass
 routes defined between <b>host/router</b>. The principle is the same
 as route: <b>bypassRoute</b> contains list of links references of
 links that are in the path between src and dst.
