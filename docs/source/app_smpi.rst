@@ -254,7 +254,7 @@ MPI_Barrier
  - ompi_bruck: nsteps = sqrt(size), at each step, exchange data with rank-2^k and rank+2^k
  - ompi_recursivedoubling: recursive doubling algorithm
  - ompi_tree: recursive doubling type algorithm, with tree structure
- - ompi_doubling: double ring algorithm
+ - ompi_doublering: double ring algorithm
  - mvapich2_pair: pairwise algorithm
  - mpich_smp: barrier intra-node, then inter-node
 
