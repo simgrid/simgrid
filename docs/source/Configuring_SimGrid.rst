@@ -398,7 +398,7 @@ Note that with the default host model this option is activated by default.
 .. _cfg=smpi/async-small-thresh:
 
 Simulating Asynchronous Send
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 (this configuration item is experimental and may change or disappear)
 
@@ -659,7 +659,7 @@ memory (see :ref:`contexts/guard-size <cfg=contexts/guard-size>`).
 .. _cfg=model-check/replay:
 
 Replaying buggy execution paths from the model checker
-........................................................
+......................................................
 
 Debugging the problems reported by the model checker is challenging: First, the
 application under verification cannot be debugged with gdb because the
