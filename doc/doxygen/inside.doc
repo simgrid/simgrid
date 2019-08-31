@@ -1,4 +1,4 @@
-*! @page uhood_tech Coding Standard and Technical Considerations
+/*! @page uhood_tech Coding Standard and Technical Considerations
 
 This page describes the software infrastructure behind the SimGrid
 project. This is not the components' organisation (described in @ref
