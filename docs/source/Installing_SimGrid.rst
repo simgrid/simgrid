@@ -335,12 +335,14 @@ Testing your build
 
 Once everything is built, you may want to test the result. SimGrid
 comes with an extensive set of regression tests (as described in the
-@ref inside_tests "insider manual"). The tests are run with ``ctest``,
-that comes with CMake.  We run them every commit and the results are
-on `our Jenkins <https://ci.inria.fr/simgrid/>`_.
+@ref inside_tests "insider manual"). The tests are not built by
+default, so you first have to build them with ``make tests``. You can
+then run them with ``ctest``, that comes with CMake.  We run them
+every commit and the results are on `our Jenkins <https://ci.inria.fr/simgrid/>`_.
 
 .. code-block:: shell
 
+  make tests                # Build the tests
   ctest	                    # Launch all tests
   ctest -R s4u              # Launch only the tests whose names match the string "s4u"
   ctest -j4                 # Launch all tests in parallel, at most 4 concurrent jobs
