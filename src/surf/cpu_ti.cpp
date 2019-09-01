@@ -314,7 +314,7 @@ double CpuTiModel::next_occuring_event(double now)
 void CpuTiModel::update_actions_state(double now, double /*delta*/)
 {
   while (not get_action_heap().empty() && double_equals(get_action_heap().top_date(), now, sg_surf_precision)) {
-    CpuTiAction* action = static_cast<CpuTiAction*>(get_action_heap().pop());
+    auto* action = static_cast<CpuTiAction*>(get_action_heap().pop());
     XBT_DEBUG("Action %p: finish", action);
     action->finish(kernel::resource::Action::State::FINISHED);
     /* update remaining amount of all actions */
@@ -350,8 +350,8 @@ void CpuTi::set_speed_profile(kernel::profile::Profile* profile)
   if (profile && profile->event_list.size() > 1) {
     kernel::profile::DatedValue val = profile->event_list.back();
     if (val.date_ < 1e-12) {
-      simgrid::kernel::profile::Profile* prof = new simgrid::kernel::profile::Profile();
-      speed_.event                            = prof->schedule(&profile::future_evt_set, this);
+      auto* prof   = new simgrid::kernel::profile::Profile();
+      speed_.event = prof->schedule(&profile::future_evt_set, this);
     }
   }
 }
@@ -512,7 +512,7 @@ void CpuTi::update_remaining_amount(double now)
 kernel::resource::CpuAction* CpuTi::execution_start(double size)
 {
   XBT_IN("(%s,%g)", get_cname(), size);
-  CpuTiAction* action = new CpuTiAction(this, size);
+  auto* action = new CpuTiAction(this, size);
 
   action_set_.push_back(*action); // Actually start the action
 
@@ -526,7 +526,7 @@ kernel::resource::CpuAction* CpuTi::sleep(double duration)
     duration = std::max(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", get_cname(), duration);
-  CpuTiAction* action = new CpuTiAction(this, 1.0);
+  auto* action = new CpuTiAction(this, 1.0);
 
   action->set_max_duration(duration);
   action->set_suspend_state(kernel::resource::Action::SuspendStates::SLEEPING);

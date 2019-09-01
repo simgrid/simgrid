@@ -108,7 +108,7 @@ void CpuCas01::on_speed_change()
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
                                                             get_core_count() * speed_.scale * speed_.peak);
   while ((var = get_constraint()->get_variable(&elem))) {
-    CpuCas01Action* action = static_cast<CpuCas01Action*>(var->get_id());
+    auto* action = static_cast<CpuCas01Action*>(var->get_id());
 
     get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(),
                                                             action->requested_core() * speed_.scale * speed_.peak);
@@ -145,7 +145,7 @@ void CpuCas01::apply_event(profile::Event* event, double value)
       get_host()->turn_off();
 
       while ((var = cnst->get_variable(&elem))) {
-        Action* action = static_cast<Action*>(var->get_id());
+        auto* action = static_cast<Action*>(var->get_id());
 
         if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED ||
             action->get_state() == Action::State::IGNORED) {
@@ -179,8 +179,7 @@ CpuAction* CpuCas01::sleep(double duration)
     duration = std::max(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", get_cname(), duration);
-  CpuCas01Action* action =
-      new CpuCas01Action(get_model(), 1.0, not is_on(), speed_.scale * speed_.peak, get_constraint());
+  auto* action = new CpuCas01Action(get_model(), 1.0, not is_on(), speed_.scale * speed_.peak, get_constraint());
 
   // FIXME: sleep variables should not consume 1.0 in System::expand()
   action->set_max_duration(duration);

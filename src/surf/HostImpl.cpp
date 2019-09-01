@@ -27,8 +27,7 @@ static inline double has_cost(const double* array, size_t pos)
 {
   if (array)
     return array[pos];
-  else
-    return -1.0;
+  return -1.0;
 }
 
 kernel::resource::Action* HostModel::execute_parallel(const std::vector<s4u::Host*>& host_list,
@@ -104,7 +103,7 @@ void HostImpl::turn_on()
   for (auto const& arg : actors_at_boot_) {
     XBT_DEBUG("Booting Actor %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
     simgrid::kernel::actor::ActorImplPtr actor = simgrid::kernel::actor::ActorImpl::create(
-        arg->name.c_str(), arg->code, nullptr, arg->host, arg->properties.get(), nullptr);
+        arg->name, arg->code, nullptr, arg->host, arg->properties.get(), nullptr);
     if (arg->on_exit)
       *actor->on_exit = *arg->on_exit;
     if (arg->kill_time >= 0)
@@ -157,5 +156,5 @@ std::vector<const char*> HostImpl::get_attached_storages()
   return storages;
 }
 
-}
-}
+} // namespace surf
+} // namespace simgrid
