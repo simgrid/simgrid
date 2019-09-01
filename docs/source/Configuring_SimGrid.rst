@@ -520,8 +520,8 @@ Specifying a liveness property
 
 If you want to specify liveness properties, you have to pass them on
 the command line, specifying the name of the file containing the
-property, as formatted by the ltl2ba program.
-
+property, as formatted by the ltl2ba program. Note that ltl2ba is not
+part of SimGrid and must be installed separatly.
 
 .. code-block:: shell
 
