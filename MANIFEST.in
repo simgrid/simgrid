@@ -1832,6 +1832,7 @@ include examples/platforms/energy_platform.xml
 include examples/platforms/faulty_host.xml
 include examples/platforms/g5k.xml
 include examples/platforms/griffon.xml
+include examples/platforms/hosts_with_disks.xml
 include examples/platforms/meta_cluster.xml
 include examples/platforms/multicore_machine.xml
 include examples/platforms/onelink.xml

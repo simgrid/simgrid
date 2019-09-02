@@ -1135,6 +1135,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/faulty_host.xml
   examples/platforms/g5k.xml
   examples/platforms/griffon.xml
+  examples/platforms/hosts_with_disks.xml
   examples/platforms/meta_cluster.xml
   examples/platforms/multicore_machine.xml
   examples/platforms/onelink.xml
