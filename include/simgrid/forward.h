@@ -140,6 +140,8 @@ class CpuModel;
 class NetworkModel;
 class LinkImpl;
 class NetworkAction;
+class DiskImpl;
+class DiskModel;
 class StorageImpl;
 class StorageType;
 class StorageModel;

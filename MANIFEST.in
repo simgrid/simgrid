@@ -1912,6 +1912,7 @@ include include/simgrid/jedule/jedule_platform.hpp
 include include/simgrid/jedule/jedule_sd_binding.h
 include include/simgrid/kernel/future.hpp
 include include/simgrid/kernel/resource/Action.hpp
+include include/simgrid/kernel/resource/DiskImpl.hpp
 include include/simgrid/kernel/resource/Model.hpp
 include include/simgrid/kernel/resource/Resource.hpp
 include include/simgrid/kernel/routing/ClusterZone.hpp
@@ -2143,6 +2144,7 @@ include src/kernel/lmm/maxmin.cpp
 include src/kernel/lmm/maxmin.hpp
 include src/kernel/lmm/maxmin_test.cpp
 include src/kernel/resource/Action.cpp
+include src/kernel/resource/DiskImpl.cpp
 include src/kernel/resource/Model.cpp
 include src/kernel/resource/Resource.cpp
 include src/kernel/resource/profile/DatedValue.cpp
@@ -2503,6 +2505,8 @@ include src/surf/cpu_interface.cpp
 include src/surf/cpu_interface.hpp
 include src/surf/cpu_ti.cpp
 include src/surf/cpu_ti.hpp
+include src/surf/disk_s19.cpp
+include src/surf/disk_s19.hpp
 include src/surf/host_clm03.cpp
 include src/surf/host_clm03.hpp
 include src/surf/network_cm02.cpp

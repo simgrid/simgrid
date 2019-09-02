@@ -463,9 +463,20 @@ void ETag_surfxml_host()    {
 }
 
 void STag_surfxml_disk() {
-  THROW_UNIMPLEMENTED;
+  XBT_DEBUG("STag_surfxml_disk");
+  xbt_assert(current_property_set == nullptr,
+             "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
 }
+
 void ETag_surfxml_disk() {
+  simgrid::kernel::routing::DiskCreationArgs disk;
+  disk.properties      = current_property_set;
+  current_property_set = nullptr;
+
+  disk.id       = A_surfxml_disk_id;
+  disk.read_bw  = surf_parse_get_bandwidth(A_surfxml_disk_read___bw, "read_bw of disk ", disk.id);
+  disk.write_bw = surf_parse_get_bandwidth(A_surfxml_disk_write___bw, "write_bw of disk ", disk.id);
+  sg_platf_new_disk(&disk);
 }
 
 void STag_surfxml_host___link(){

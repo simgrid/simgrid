@@ -331,6 +331,11 @@ void sg_platf_new_cabinet(simgrid::kernel::routing::CabinetCreationArgs* cabinet
   delete cabinet->radicals;
 }
 
+void sg_platf_new_disk(simgrid::kernel::routing::DiskCreationArgs* disk)
+{
+  THROW_UNIMPLEMENTED;
+}
+
 void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage)
 {
   xbt_assert(std::find(known_storages.begin(), known_storages.end(), storage->id) == known_storages.end(),

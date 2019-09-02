@@ -48,6 +48,7 @@ set(EXTRA_DIST
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
 
+  src/surf/disk_s19.hpp
   src/surf/StorageImpl.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
@@ -313,6 +314,7 @@ set(SURF_SRC
   src/kernel/resource/Action.cpp
   src/kernel/resource/Model.cpp
   src/kernel/resource/Resource.cpp
+  src/kernel/resource/DiskImpl.cpp
 
   src/kernel/resource/profile/DatedValue.cpp
   src/kernel/resource/profile/DatedValue.hpp
@@ -341,6 +343,7 @@ set(SURF_SRC
   src/surf/cpu_cas01.cpp
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
+  src/surf/disk_s19.cpp
   src/surf/network_cm02.cpp
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
@@ -723,6 +726,7 @@ set(headers_to_install
   include/simgrid/kernel/resource/Action.hpp
   include/simgrid/kernel/resource/Model.hpp
   include/simgrid/kernel/resource/Resource.hpp
+  include/simgrid/kernel/resource/DiskImpl.hpp
 
   include/simgrid/kernel/routing/ClusterZone.hpp
   include/simgrid/kernel/routing/DijkstraZone.hpp

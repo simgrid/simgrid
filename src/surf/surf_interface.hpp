@@ -173,6 +173,8 @@ XBT_PUBLIC void surf_host_model_init_ptask_L07();
  */
 XBT_PUBLIC void surf_storage_model_init_default();
 
+XBT_PUBLIC void surf_disk_model_init_default();
+
 /* --------------------
  *  Model Descriptions
  * -------------------- */
