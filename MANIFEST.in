@@ -377,6 +377,8 @@ include examples/s4u/exec-waitany/s4u-exec-waitany.cpp
 include examples/s4u/exec-waitany/s4u-exec-waitany.tesh
 include examples/s4u/io-async/s4u-io-async.cpp
 include examples/s4u/io-async/s4u-io-async.tesh
+include examples/s4u/io-disk-raw/s4u-io-disk-raw.cpp
+include examples/s4u/io-disk-raw/s4u-io-disk-raw.tesh
 include examples/s4u/io-file-remote/s4u-io-file-remote.cpp
 include examples/s4u/io-file-remote/s4u-io-file-remote.tesh
 include examples/s4u/io-file-remote/s4u-io-file-remote_d.xml
@@ -1913,7 +1915,6 @@ include include/simgrid/jedule/jedule_platform.hpp
 include include/simgrid/jedule/jedule_sd_binding.h
 include include/simgrid/kernel/future.hpp
 include include/simgrid/kernel/resource/Action.hpp
-include include/simgrid/kernel/resource/DiskImpl.hpp
 include include/simgrid/kernel/resource/Model.hpp
 include include/simgrid/kernel/resource/Resource.hpp
 include include/simgrid/kernel/routing/ClusterZone.hpp
@@ -2146,6 +2147,7 @@ include src/kernel/lmm/maxmin.hpp
 include src/kernel/lmm/maxmin_test.cpp
 include src/kernel/resource/Action.cpp
 include src/kernel/resource/DiskImpl.cpp
+include src/kernel/resource/DiskImpl.hpp
 include src/kernel/resource/Model.cpp
 include src/kernel/resource/Resource.cpp
 include src/kernel/resource/profile/DatedValue.cpp
