@@ -3,7 +3,7 @@
 <platform version="4.1">
   <zone id="AS0" routing="Full">
     <host id="bob" speed="1Gf">
-      <disk id="Disk1" read_bw="100MBps" wite_bw="30MBps">
+      <disk id="Disk1" read_bw="100MBps" write_bw="30MBps">
         <prop id="size" value="500GiB"/>
       </disk>
     </host>
