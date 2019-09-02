@@ -19,6 +19,7 @@
 #include "src/include/simgrid/sg_config.hpp"
 #include "src/include/surf/surf.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/resource/DiskImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
@@ -333,7 +334,12 @@ void sg_platf_new_cabinet(simgrid::kernel::routing::CabinetCreationArgs* cabinet
 
 void sg_platf_new_disk(simgrid::kernel::routing::DiskCreationArgs* disk)
 {
-  THROW_UNIMPLEMENTED;
+  auto s = surf_disk_model->createDisk(disk->id, disk->read_bw, disk->write_bw);
+
+  if (disk->properties) {
+    s->set_properties(*disk->properties);
+    delete disk->properties;
+  }
 }
 
 void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage)
