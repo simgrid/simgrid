@@ -81,6 +81,8 @@ void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
   host->pimpl_->storage_ = mount_list;
   mount_list.clear();
 
+  host->pimpl_->disks_ = std::move(args->disks);
+
   /* Change from the defaults */
   if (args->state_trace)
     host->pimpl_cpu->set_state_profile(args->state_trace);
@@ -332,14 +334,15 @@ void sg_platf_new_cabinet(simgrid::kernel::routing::CabinetCreationArgs* cabinet
   delete cabinet->radicals;
 }
 
-void sg_platf_new_disk(simgrid::kernel::routing::DiskCreationArgs* disk)
+simgrid::kernel::resource::DiskImpl* sg_platf_new_disk(simgrid::kernel::routing::DiskCreationArgs* disk)
 {
-  auto s = surf_disk_model->createDisk(disk->id, disk->read_bw, disk->write_bw);
+  simgrid::kernel::resource::DiskImpl* d = surf_disk_model->createDisk(disk->id, disk->read_bw, disk->write_bw);
 
   if (disk->properties) {
-    s->set_properties(*disk->properties);
+    d->set_properties(*disk->properties);
     delete disk->properties;
   }
+  return d;
 }
 
 void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage)

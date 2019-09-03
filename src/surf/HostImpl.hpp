@@ -51,6 +51,8 @@ public:
   virtual std::vector<const char*> get_attached_storages();
 
   std::map<std::string, kernel::resource::StorageImpl*> storage_;
+  std::vector<kernel::resource::DiskImpl*> disks_;
+
   s4u::Host* piface_ = nullptr;
 
   void turn_on();
