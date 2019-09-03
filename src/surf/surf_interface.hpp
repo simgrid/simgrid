@@ -205,6 +205,8 @@ XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_optimization_mo
 XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_cpu_model_description;
 /** @brief The list of all network models (pick one with --cfg=network/model) */
 XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_network_model_description;
+/** @brief The list of all disk models (pick one with --cfg=disk/model) */
+XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_disk_model_description;
 /** @brief The list of all storage models (pick one with --cfg=storage/model) */
 XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_storage_model_description;
 /** @brief The list of all host models (pick one with --cfg=host/model:) */

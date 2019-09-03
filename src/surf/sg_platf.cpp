@@ -513,6 +513,7 @@ static void surf_config_models_setup()
   std::string host_model_name    = simgrid::config::get_value<std::string>("host/model");
   std::string network_model_name = simgrid::config::get_value<std::string>("network/model");
   std::string cpu_model_name     = simgrid::config::get_value<std::string>("cpu/model");
+  std::string disk_model_name    = simgrid::config::get_value<std::string>("disk/model");
   std::string storage_model_name = simgrid::config::get_value<std::string>("storage/model");
 
   /* The compound host model is needed when using non-default net/cpu models */
@@ -540,6 +541,10 @@ static void surf_config_models_setup()
 
   XBT_DEBUG("Call vm_model_init");
   surf_vm_model_init_HL13();
+
+  XBT_DEBUG("Call disk_model_init");
+  int disk_id = find_model_description(surf_disk_model_description, disk_model_name);
+  surf_disk_model_description[disk_id].model_init_preparse();
 
   XBT_DEBUG("Call storage_model_init");
   int storage_id = find_model_description(surf_storage_model_description, storage_model_name);

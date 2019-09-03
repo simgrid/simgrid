@@ -111,6 +111,10 @@ const std::vector<surf_model_description_t> surf_optimization_mode_description =
     {"Full", "Full update of remaining and variables. Slow but may be useful when debugging.", nullptr},
 };
 
+const std::vector<surf_model_description_t> surf_disk_model_description = {
+    {"default", "Simplistic disk model.", &surf_disk_model_init_default},
+};
+
 const std::vector<surf_model_description_t> surf_storage_model_description = {
     {"default", "Simplistic storage model.", &surf_storage_model_init_default},
 };
