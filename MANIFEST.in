@@ -1946,6 +1946,7 @@ include include/simgrid/s4u/Actor.hpp
 include include/simgrid/s4u/Barrier.hpp
 include include/simgrid/s4u/Comm.hpp
 include include/simgrid/s4u/ConditionVariable.hpp
+include include/simgrid/s4u/Disk.hpp
 include include/simgrid/s4u/Engine.hpp
 include include/simgrid/s4u/Exec.hpp
 include include/simgrid/s4u/Host.hpp
@@ -2276,6 +2277,7 @@ include src/s4u/s4u_Actor.cpp
 include src/s4u/s4u_Barrier.cpp
 include src/s4u/s4u_Comm.cpp
 include src/s4u/s4u_ConditionVariable.cpp
+include src/s4u/s4u_Disk.cpp
 include src/s4u/s4u_Engine.cpp
 include src/s4u/s4u_Exec.cpp
 include src/s4u/s4u_Host.cpp

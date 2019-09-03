@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/Disk.hpp"
 #include "simgrid/s4u/Io.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "src/kernel/activity/IoImpl.hpp"
@@ -13,6 +14,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_io, s4u_activity, "S4U asynchronous IOs");
 namespace simgrid {
 namespace s4u {
 
+Io::Io(sg_disk_t disk, sg_size_t size, OpType type) : disk_(disk), size_(size), type_(type)
+{
+  Activity::set_remaining(size_);
+  pimpl_ = kernel::activity::IoImplPtr(new kernel::activity::IoImpl());
+}
+
 Io::Io(sg_storage_t storage, sg_size_t size, OpType type) : storage_(storage), size_(size), type_(type)
 {
   Activity::set_remaining(size_);
@@ -22,12 +29,21 @@ Io::Io(sg_storage_t storage, sg_size_t size, OpType type) : storage_(storage), s
 Io* Io::start()
 {
   kernel::actor::simcall([this] {
-    (*boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_))
-        .set_name(name_)
-        .set_storage(storage_->get_impl())
-        .set_size(size_)
-        .set_type(type_)
-        .start();
+    if (storage_) {
+      (*boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_))
+          .set_name(name_)
+          .set_storage(storage_->get_impl())
+          .set_size(size_)
+          .set_type(type_)
+          .start();
+    } else {
+      (*boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_))
+          .set_name(name_)
+          .set_disk(disk_->get_impl())
+          .set_size(size_)
+          .set_type(type_)
+          .start();
+    }
   });
   state_ = State::STARTED;
   return this;

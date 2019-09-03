@@ -284,6 +284,10 @@ int Host::get_pstate() const
   return this->pimpl_cpu->get_pstate();
 }
 
+std::vector<Disk*> Host::get_disks() const
+{
+  return kernel::actor::simcall([this] { return this->pimpl_->get_disks(); });
+}
 /**
  * @ingroup simix_storage_management
  * @brief Returns the list of storages attached to a host.

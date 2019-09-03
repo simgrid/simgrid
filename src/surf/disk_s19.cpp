@@ -66,7 +66,7 @@ DiskS19::DiskS19(DiskModel* model, const std::string& name, lmm::System* maxminS
     : DiskImpl(model, name, maxminSystem, read_bw, write_bw)
 {
   XBT_DEBUG("Create resource with read_bw '%f' write_bw '%f'", read_bw, write_bw);
-  // FIXME s4u::Storage::on_creation(this->piface_);
+  s4u::Disk::on_creation(this->piface_);
 }
 
 DiskAction* DiskS19::io_start(sg_size_t size, s4u::Io::OpType type)

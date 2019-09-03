@@ -442,6 +442,7 @@ set(S4U_SRC
   src/s4u/s4u_Barrier.cpp
   src/s4u/s4u_ConditionVariable.cpp
   src/s4u/s4u_Comm.cpp
+  src/s4u/s4u_Disk.cpp
   src/s4u/s4u_Engine.cpp
   src/s4u/s4u_Exec.cpp
   src/s4u/s4u_Host.cpp
@@ -711,6 +712,7 @@ set(headers_to_install
   include/simgrid/s4u/Barrier.hpp
   include/simgrid/s4u/Comm.hpp
   include/simgrid/s4u/ConditionVariable.hpp
+  include/simgrid/s4u/Disk.hpp
   include/simgrid/s4u/Engine.hpp
   include/simgrid/s4u/Exec.hpp
   include/simgrid/s4u/Host.hpp

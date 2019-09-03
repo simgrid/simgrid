@@ -7,6 +7,7 @@
 #define SURF_HOST_INTERFACE_HPP_
 
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/kernel/resource/DiskImpl.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include "src/surf/StorageImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
@@ -47,6 +48,7 @@ public:
   explicit HostImpl(s4u::Host* host);
   virtual ~HostImpl();
 
+  std::vector<s4u::Disk*> get_disks();
   /** @brief Get the vector of storages (by names) attached to the Host */
   virtual std::vector<const char*> get_attached_storages();
 

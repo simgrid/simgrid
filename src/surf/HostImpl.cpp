@@ -147,6 +147,15 @@ size_t HostImpl::get_actor_count()
 {
   return process_list_.size();
 }
+
+std::vector<s4u::Disk*> HostImpl::get_disks()
+{
+  std::vector<s4u::Disk*> disks;
+  for (auto const& d : disks_)
+    disks.push_back(&d->piface_);
+  return disks;
+}
+
 std::vector<const char*> HostImpl::get_attached_storages()
 {
   std::vector<const char*> storages;

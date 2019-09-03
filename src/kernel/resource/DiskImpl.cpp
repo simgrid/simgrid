@@ -37,8 +37,7 @@ DiskModel::~DiskModel()
 
 DiskImpl::DiskImpl(kernel::resource::Model* model, const std::string& name, kernel::lmm::System* maxminSystem,
                    double read_bw, double write_bw)
-    : Resource(model, name, maxminSystem->constraint_new(this, std::max(read_bw, write_bw)))
-// FIXME    , piface_(name, this)
+    : Resource(model, name, maxminSystem->constraint_new(this, std::max(read_bw, write_bw))), piface_(name, this)
 {
   DiskImpl::turn_on();
   XBT_DEBUG("Create resource with read_bw '%f' write_bw '%f'", read_bw, write_bw);
@@ -59,7 +58,7 @@ void DiskImpl::destroy()
 {
   if (not currently_destroying_) {
     currently_destroying_ = true;
-    // FIXME s4u::Storage::on_destruction(this->piface_);
+    s4u::Disk::on_destruction(this->piface_);
     delete this;
   }
 }
@@ -78,14 +77,14 @@ void DiskImpl::turn_on()
 {
   if (not is_on()) {
     Resource::turn_on();
-    // FIXME s4u::Storage::on_state_change(this->piface_);
+    s4u::Disk::on_state_change(this->piface_);
   }
 }
 void DiskImpl::turn_off()
 {
   if (is_on()) {
     Resource::turn_off();
-    // FIXME s4u::Storage::on_state_change(this->piface_);
+    s4u::Disk::on_state_change(this->piface_);
   }
 }
 

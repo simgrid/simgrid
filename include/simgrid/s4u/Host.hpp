@@ -115,6 +115,7 @@ public:
   void set_pstate(int pstate_index);
   int get_pstate() const;
 
+  std::vector<Disk*> get_disks() const;
   std::vector<const char*> get_attached_storages() const;
 
   /** Get an associative list [mount point]->[Storage] of all local mount points.

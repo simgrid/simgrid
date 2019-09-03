@@ -16,6 +16,7 @@ namespace activity {
 
 class XBT_PUBLIC IoImpl : public ActivityImpl_T<IoImpl> {
   resource::StorageImpl* storage_ = nullptr;
+  resource::DiskImpl* disk_       = nullptr;
   sg_size_t size_                 = 0;
   s4u::Io::OpType type_           = s4u::Io::OpType::READ;
   sg_size_t performed_ioops_      = 0;
@@ -24,6 +25,7 @@ public:
   IoImpl& set_size(sg_size_t size);
   IoImpl& set_type(s4u::Io::OpType type);
   IoImpl& set_storage(resource::StorageImpl* storage);
+  IoImpl& set_disk(resource::DiskImpl* disk);
 
   sg_size_t get_performed_ioops() { return performed_ioops_; }
 

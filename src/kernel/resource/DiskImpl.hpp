@@ -6,6 +6,7 @@
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/kernel/resource/Model.hpp"
 #include "simgrid/kernel/resource/Resource.hpp"
+#include "simgrid/s4u/Disk.hpp"
 #include "simgrid/s4u/Io.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include "src/surf/surf_interface.hpp"
@@ -57,7 +58,7 @@ public:
   ~DiskImpl() override;
 
   /** @brief Public interface */
-  // FIXME s4u::Storage piface_;
+  s4u::Disk piface_;
 
   /** @brief Check if the Storage is used (if an action currently uses its resources) */
   bool is_used() override;
