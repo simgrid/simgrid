@@ -9,7 +9,7 @@
     </host>
 
     <host id="alice" speed="1Gf">
-      <mount id="Disk2" read_bw="200MBps" write_bw="60MBps"/>
+      <disk id="Disk2" read_bw="200MBps" write_bw="60MBps"/>
     </host>
 
     <link id="link1" bandwidth="125MBps" latency="150us" />
