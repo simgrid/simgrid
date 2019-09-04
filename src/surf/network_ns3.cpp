@@ -69,11 +69,11 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
   for (int const& i : *cluster.radicals) {
     // Routers don't create a router on the other end of the private link by themselves.
     // We just need this router to be given an ID so we create a temporary NetPointNS3 so that it gets one
-    NetPointNs3* host_dst = new NetPointNs3();
+    auto* host_dst = new NetPointNs3();
 
     // Create private link
-    std::string host_id   = cluster.prefix + std::to_string(i) + cluster.suffix;
-    NetPointNs3* host_src = simgrid::s4u::Host::by_name(host_id)->pimpl_netpoint->extension<NetPointNs3>();
+    std::string host_id = cluster.prefix + std::to_string(i) + cluster.suffix;
+    auto* host_src      = simgrid::s4u::Host::by_name(host_id)->pimpl_netpoint->extension<NetPointNs3>();
     xbt_assert(host_src, "Cannot find a ns-3 host of name %s", host_id.c_str());
 
     // Any ns-3 route is symmetrical
@@ -92,7 +92,7 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
                              std::vector<simgrid::kernel::resource::LinkImpl*> const& link_list)
 {
   if (link_list.size() == 1) {
-    simgrid::kernel::resource::LinkNS3* link = static_cast<simgrid::kernel::resource::LinkNS3*>(link_list[0]);
+    auto* link = static_cast<simgrid::kernel::resource::LinkNS3*>(link_list[0]);
 
     XBT_DEBUG("Route from '%s' to '%s' with link '%s' %s", src->get_cname(), dst->get_cname(), link->get_cname(),
               (symmetrical ? "(symmetrical)" : "(not symmetrical)"));
@@ -101,8 +101,8 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
     XBT_DEBUG("\tLink (%s) bw:%fbps lat:%fs", link->get_cname(), link->get_bandwidth(), link->get_latency());
 
     // create link ns3
-    NetPointNs3* host_src = src->extension<NetPointNs3>();
-    NetPointNs3* host_dst = dst->extension<NetPointNs3>();
+    auto* host_src = src->extension<NetPointNs3>();
+    auto* host_dst = dst->extension<NetPointNs3>();
 
     xbt_assert(host_src != nullptr, "Network element %s does not seem to be ns-3-ready", src->get_cname());
     xbt_assert(host_dst != nullptr, "Network element %s does not seem to be ns-3-ready", dst->get_cname());
@@ -157,7 +157,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
 
   NetPointNs3::EXTENSION_ID = routing::NetPoint::extension_create<NetPointNs3>();
 
-  ns3_initialize(ns3_tcp_model.get().c_str());
+  ns3_initialize(ns3_tcp_model.get());
 
   routing::NetPoint::on_creation.connect([](routing::NetPoint& pt) {
     pt.extension_set<NetPointNs3>(new NetPointNs3());
@@ -174,14 +174,17 @@ NetworkNS3Model::~NetworkNS3Model() {
 }
 
 LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
-                                       s4u::Link::SharingPolicy policy)
+                                       s4u::Link::SharingPolicy)
 {
-  xbt_assert(bandwidths.size() == 1, "Non WIFI links must use only 1 bandwidth.");
+  xbt_assert(bandwidths.size() == 1, "ns-3 links must use only 1 bandwidth.");
   return new LinkNS3(this, name, bandwidths[0], latency);
 }
 
 Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
+  xbt_assert(rate == -1,
+             "Communication over ns-3 links cannot specify a specific rate. Please use -1 as a value instead of %f.",
+             rate);
   return new NetworkNS3Action(this, size, src, dst);
 }
 
@@ -191,13 +194,13 @@ double NetworkNS3Model::next_occuring_event(double now)
   XBT_DEBUG("ns3_next_occuring_event");
 
   //get the first relevant value from the running_actions list
-  if (not get_started_action_set()->size() || now == 0.0)
+  if (get_started_action_set()->empty() || now == 0.0)
     return -1.0;
-  else
-    do {
-      ns3_simulator(now);
-      time_to_next_flow_completion = ns3::Simulator::Now().GetSeconds() - surf_get_clock();
-    } while(double_equals(time_to_next_flow_completion, 0, sg_surf_precision));
+
+  do {
+    ns3_simulator(now);
+    time_to_next_flow_completion = ns3::Simulator::Now().GetSeconds() - surf_get_clock();
+  } while (double_equals(time_to_next_flow_completion, 0, sg_surf_precision));
 
   XBT_DEBUG("min       : %f", now);
   XBT_DEBUG("ns3  time : %f", ns3::Simulator::Now().GetSeconds());
@@ -221,7 +224,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
   }
 
   std::string ns3_socket;
-  for (auto elm : flow_from_sock) {
+  for (const auto& elm : flow_from_sock) {
     ns3_socket                = elm.first;
     SgFlow* sgFlow            = elm.second;
     NetworkNS3Action * action = sgFlow->action_;
@@ -278,15 +281,15 @@ LinkNS3::LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwid
 
 LinkNS3::~LinkNS3() = default;
 
-void LinkNS3::apply_event(profile::Event* event, double value)
+void LinkNS3::apply_event(profile::Event*, double)
 {
   THROW_UNIMPLEMENTED;
 }
-void LinkNS3::set_bandwidth_profile(profile::Profile* profile)
+void LinkNS3::set_bandwidth_profile(profile::Profile*)
 {
   xbt_die("The ns-3 network model doesn't support bandwidth profiles");
 }
-void LinkNS3::set_latency_profile(profile::Profile* profile)
+void LinkNS3::set_latency_profile(profile::Profile*)
 {
   xbt_die("The ns-3 network model doesn't support latency profiles");
 }
