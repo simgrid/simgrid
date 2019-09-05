@@ -239,8 +239,6 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   for (auto const& link : route) {
     // Handle WIFI links
     if (link->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
-      xbt_assert(!cfg_crosstraffic,
-                 "Cross-traffic is not yet supported when using WIFI. Please use --cfg=network/crosstraffic:0");
       NetworkWifiLink* wifi_link = static_cast<NetworkWifiLink*>(link);
 
       double src_rate = wifi_link->get_host_rate(src);
@@ -265,8 +263,11 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   if (cfg_crosstraffic) {
     XBT_DEBUG("Crosstraffic active: adding backward flow using 5%% of the available bandwidth");
-    for (auto const& link : back_route)
-      get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), .05);
+    for (auto const& link : back_route) {
+      // Do not add crosstraffic on WIFI links
+      if (link->get_sharing_policy() != s4u::Link::SharingPolicy::WIFI)
+        get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), .05);
+    }
 
     // Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency
     // (You would also have to change simgrid::kernel::lmm::Element::get_concurrency())
