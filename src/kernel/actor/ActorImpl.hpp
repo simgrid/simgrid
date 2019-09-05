@@ -123,7 +123,7 @@ public:
   void daemonize();
   bool is_suspended() { return suspended_; }
   s4u::Actor* restart();
-  void suspend(ActorImpl* issuer);
+  void suspend();
   void resume();
   activity::ActivityImplPtr join(ActorImpl* actor, double timeout);
   activity::ActivityImplPtr sleep(double duration);

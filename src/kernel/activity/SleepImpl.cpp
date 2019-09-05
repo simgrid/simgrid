@@ -62,7 +62,7 @@ void SleepImpl::finish()
     if (simcall->issuer_->is_suspended()) {
       XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
       simcall->issuer_->suspended_ = false;
-      simcall->issuer_->suspend(simcall->issuer_);
+      simcall->issuer_->suspend();
     } else {
       simcall->issuer_->simcall_answer();
     }

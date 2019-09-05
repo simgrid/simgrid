@@ -297,7 +297,7 @@ void ActorImpl::yield()
 
     xbt_assert(exception_ == nullptr, "Gasp! This exception may be lost by subsequent calls.");
     suspended_ = false;
-    suspend(this);
+    suspend();
   }
 
   if (exception_ != nullptr) {
@@ -357,7 +357,7 @@ s4u::Actor* ActorImpl::restart()
   return actor->ciface();
 }
 
-void ActorImpl::suspend(ActorImpl* issuer)
+void ActorImpl::suspend()
 {
   if (suspended_) {
     XBT_DEBUG("Actor '%s' is already suspended", get_cname());
