@@ -244,9 +244,9 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
       double src_rate = wifi_link->get_host_rate(src);
       double dst_rate = wifi_link->get_host_rate(dst);
 
-      // TODO: What do to when src and dst are on the same AP ? (for the moment we use src rate)
       if (src_rate != -1 && dst_rate != -1) {
         get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / src_rate);
+        get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / dst_rate);
       } else {
         xbt_assert(
             !(src_rate == -1 && dst_rate == -1),
