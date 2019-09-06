@@ -1,0 +1,36 @@
+<?xml version='1.0'?>
+
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+  <AS id="AS0" routing="Full">
+
+    <!-- WIFI cell -->
+	<AS id="AS_AP1" routing="Cluster">
+      <host id="STA1" speed="100.0Mf,50.0Mf,20.0Mf">
+      </host>
+      <router id="AP1_ROUTER"/>     
+
+      <!-- Access Point -->
+	  <link id="AP1" sharing_policy="WIFI" bandwidth="54Mbps" latency="0ms">
+	  </link>
+ 	  
+      <host_link id="STA1" up="AP1" down="AP1"/>
+	</AS>
+
+
+    <!-- NODE1 AS -->
+	<AS id="AS1" routing="Full">
+      <host id="NODE1" speed="100.0Mf,50.0Mf,20.0Mf">
+      </host>
+	</AS>
+    
+
+    <!-- AS Routing -->
+    <link id="LINK1" sharing_policy="SHARED" bandwidth="100Mbps" latency="0ms">
+	</link>
+    <ASroute src="AS_AP1" dst="AS1" gw_src="AP1_ROUTER" gw_dst="NODE1">
+      <link_ctn id="LINK1" />
+    </ASroute>
+    
+  </AS>
+</platform>
