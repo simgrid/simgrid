@@ -4,7 +4,7 @@
 
 $ ${javacmd:=java} -classpath ${classpath:=.} energy/consumption/Main ${srcdir:=.}/../../platforms/energy_platform.xml
 > [0.000000] [java/INFO] Using regular java threads.
-> [MyHost1:energyConsumer:(1) 0.000000] [java/INFO] Energetic profile: 100.0:120.0:200.0, 93.0:110.0:170.0, 90.0:105.0:150.0
+> [MyHost1:energyConsumer:(1) 0.000000] [java/INFO] Energetic profile: 100.0:93.33333333333333:200.0, 93.0:90.0:170.0, 90.0:90.0:150.0
 > [MyHost1:energyConsumer:(1) 0.000000] [java/INFO] Initial peak speed= 1.0E8 flop/s; Energy dissipated = 0.0 J
 > [MyHost1:energyConsumer:(1) 10.000000] [java/INFO] Currently consumed energy after sleeping 10 sec: 1000.0
 > [MyHost1:energyConsumer:(1) 20.000000] [java/INFO] Currently consumed energy after executing 1E9 flops: 2200.0
