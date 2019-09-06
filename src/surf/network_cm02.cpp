@@ -243,18 +243,14 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
       double src_rate = wifi_link->get_host_rate(src);
       double dst_rate = wifi_link->get_host_rate(dst);
-
-      if (src_rate != -1 && dst_rate != -1) {
+      xbt_assert(
+          !(src_rate == -1 && dst_rate == -1),
+          "Some Stations are not associated to any Access Point. Make sure to call set_host_rate on all Stations.");
+      if (src_rate != -1)
         get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / src_rate);
-      } else {
-        xbt_assert(
-            !(src_rate == -1 && dst_rate == -1),
-            "Some Stations are not associated to any Access Point. Make sure to call set_host_rate on all Stations.");
-        if (src_rate != -1)
-          get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / src_rate);
-        else
-          get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / dst_rate);
-      }
+      else
+        get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / dst_rate);
+
     } else {
       get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0);
     }
