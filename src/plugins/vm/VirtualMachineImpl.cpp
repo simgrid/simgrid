@@ -185,7 +185,7 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
 
   for (auto& smx_process : process_list_) {
     XBT_DEBUG("suspend %s", smx_process.get_cname());
-    smx_process.suspend(issuer);
+    smx_process.suspend();
   }
 
   XBT_DEBUG("suspend all processes on the VM done done");
