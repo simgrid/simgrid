@@ -246,7 +246,6 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
       if (src_rate != -1 && dst_rate != -1) {
         get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / src_rate);
-        get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / dst_rate);
       } else {
         xbt_assert(
             !(src_rate == -1 && dst_rate == -1),
@@ -263,10 +262,26 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   if (cfg_crosstraffic) {
     XBT_DEBUG("Crosstraffic active: adding backward flow using 5%% of the available bandwidth");
+    bool wifi_dst_assigned = false; // Used by wifi crosstraffic
     for (auto const& link : back_route) {
-      // Do not add crosstraffic on WIFI links
-      if (link->get_sharing_policy() != s4u::Link::SharingPolicy::WIFI)
+      if (link->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
+        NetworkWifiLink* wifi_link = static_cast<NetworkWifiLink*>(link);
+        /**
+         * For wifi links we should add 0.05/rate.
+         * However since we are using the "back_route" we should encounter in
+         * the first place the dst wifi link.
+         */
+        if (!wifi_dst_assigned && (wifi_link->get_host_rate(dst) != -1)) {
+          get_maxmin_system()->expand(link->get_constraint(), action->get_variable(),
+                                      .05 / wifi_link->get_host_rate(dst));
+          wifi_dst_assigned = true;
+        } else {
+          get_maxmin_system()->expand(link->get_constraint(), action->get_variable(),
+                                      .05 / wifi_link->get_host_rate(src));
+        }
+      } else {
         get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), .05);
+      }
     }
 
     // Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency
