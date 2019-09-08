@@ -549,42 +549,51 @@ Specifying the kind of reduction
 ................................
 
 The main issue when using the model-checking is the state space
-explosion. To counter that problem, you can chose a exploration
-reduction techniques with
+explosion. You can activate some reduction technique with
 ``--cfg=model-check/reduction:<technique>``. For now, this
 configuration variable can take 2 values:
 
- - **none:** Do not apply any kind of reduction (mandatory for now for
-   liveness properties)
+ - **none:** Do not apply any kind of reduction (mandatory for
+   liveness properties, as our current DPOR algorithm breaks cycles)
  - **dpor:** Apply Dynamic Partial Ordering Reduction. Only valid if
    you verify local safety properties (default value for safety
    checks).
 
-There is unfortunately no silver bullet here, and the most efficient
-reduction techniques cannot be applied to any properties. In
-particular, the DPOR method cannot be applied on liveness properties
-since our implementation of DPOR may break some cycles, while cycles
-are very important to the soundness of the exploration for liveness
-properties.
+Another way to mitigate the state space explosion is to search for
+cycles in the exploration with the :ref:`cfg=model-check/visited`
+configuration. Note that DPOR and state-equality reduction may not
+play well together. You should choose between them.
+
+Our current DPOR implementation could be improved in may ways. We are
+currently improving its efficiency (both in term of reduction ability
+and computational speed), and future work could make it compatible
+with liveness properties.
 
 .. _cfg=model-check/visited:
 
-Size of Cycle Detection Set
-...........................
+Size of Cycle Detection Set (state equality reduction)
+......................................................
 
-In order to detect cycles, the model checker needs to check if a new
-explored state is in fact the same state than a previous one. For
-that, the model checker can take a snapshot of each visited state:
-this snapshot is then used to compare it with subsequent states in the
-exploration graph.
+Mc SimGrid can be asked to search for cycles during the exploration,
+i.e. situations where a new explored state is in fact the same state
+than a previous one.. This can prove useful to mitigate the state
+space explosion with safety properties, and this is the crux when
+searching for counter-examples to the liveness properties.
+
+Note that this feature may break the current implementation of the
+DPOR reduction technique.
 
 The ``model-check/visited`` item is the maximum number of states which
 are stored in memory. If the maximum number of snapshotted state is
 reached, some states will be removed from the memory and some cycles
 might be missed. Small values can lead to incorrect verifications, but
-large value can exhaust your memory, so choose carefully.
+large values can exhaust your memory and be CPU intensive as each new
+state must be compared to that amount of older saved states.
 
-By default, no state is snapshotted and cycles cannot be detected.
+The default settings depend on the kind of exploration. With safety
+checking, no state is snapshotted and cycles cannot be detected. With
+liveness checking, all states are snapshotted because missing a cycle
+could hinder the exploration soundness.
 
 .. _cfg=model-check/termination:
 
