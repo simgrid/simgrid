@@ -27,10 +27,6 @@ EngineImpl::~EngineImpl()
   for (auto const& kv : netpoints_)
     delete kv.second;
 
-  for (auto const& kv : disks_)
-    if (kv.second)
-      kv.second->get_impl()->destroy();
-
   for (auto const& kv : storages_)
     if (kv.second)
       kv.second->get_impl()->destroy();

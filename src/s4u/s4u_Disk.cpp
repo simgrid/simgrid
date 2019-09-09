@@ -20,21 +20,6 @@ xbt::signal<void(Disk&)> Disk::on_creation;
 xbt::signal<void(Disk const&)> Disk::on_destruction;
 xbt::signal<void(Disk const&)> Disk::on_state_change;
 
-Disk::Disk(const std::string& name, kernel::resource::DiskImpl* pimpl) : pimpl_(pimpl), name_(name)
-{
-  Engine::get_instance()->disk_register(name_, this);
-}
-
-Disk* Disk::by_name(const std::string& name)
-{
-  return Engine::get_instance()->disk_by_name(name);
-}
-
-Disk* Disk::by_name_or_null(const std::string& name)
-{
-  return Engine::get_instance()->disk_by_name_or_null(name);
-}
-
 const std::unordered_map<std::string, std::string>* Disk::get_properties() const
 {
   return pimpl_->get_properties();

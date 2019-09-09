@@ -92,6 +92,9 @@ HostImpl::~HostImpl()
   for (auto const& arg : actors_at_boot_)
     delete arg;
   actors_at_boot_.clear();
+
+  for (auto const& d : disks_)
+    d->destroy();
 }
 
 /** Re-starts all the actors that are marked as restartable.

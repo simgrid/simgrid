@@ -31,7 +31,7 @@ class XBT_PUBLIC Disk : public xbt::Extendable<Disk> {
   friend kernel::resource::DiskImpl;
 
 public:
-  explicit Disk(const std::string& name, kernel::resource::DiskImpl* pimpl);
+  explicit Disk(const std::string& name, kernel::resource::DiskImpl* pimpl) : pimpl_(pimpl), name_(name) {}
 
 protected:
   virtual ~Disk() = default;
@@ -43,10 +43,6 @@ public:
   static xbt::signal<void(Disk const&)> on_destruction;
   /** @brief Callback signal fired when a Storage's state changes */
   static xbt::signal<void(Disk const&)> on_state_change;
-
-  /** Retrieve a Storage by its name. It must exist in the platform file */
-  static Disk* by_name(const std::string& name);
-  static Disk* by_name_or_null(const std::string& name);
 
   /** @brief Retrieves the name of that storage as a C++ string */
   std::string const& get_name() const { return name_; }

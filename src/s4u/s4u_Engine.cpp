@@ -211,25 +211,6 @@ std::vector<Storage*> Engine::get_all_storages()
   return res;
 }
 
-/** @brief Find a disk from its name.
- *
- *  @throw std::invalid_argument if the searched disk does not exist.
- */
-Disk* Engine::disk_by_name(const std::string& name)
-{
-  if (pimpl->disks_.find(name) == pimpl->disks_.end())
-    throw std::invalid_argument(std::string("Disk not found: ") + name);
-
-  return pimpl->disks_.at(name);
-}
-
-/** @brief Find a disk from its name (or nullptr if that disk does not exist) */
-Disk* Engine::disk_by_name_or_null(const std::string& name)
-{
-  auto disk = pimpl->disks_.find(name);
-  return disk == pimpl->disks_.end() ? nullptr : disk->second;
-}
-
 /** @brief Find a storage from its name.
  *
  *  @throw std::invalid_argument if the searched storage does not exist.
@@ -257,16 +238,6 @@ void Engine::storage_register(const std::string& name, Storage* storage)
 void Engine::storage_unregister(const std::string& name)
 {
   pimpl->storages_.erase(name);
-}
-
-void Engine::disk_register(const std::string& name, Disk* disk)
-{
-  pimpl->disks_[name] = disk;
-}
-
-void Engine::disk_unregister(const std::string& name)
-{
-  pimpl->disks_.erase(name);
 }
 
 /** @brief Returns the amount of links in the platform */

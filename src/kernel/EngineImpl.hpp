@@ -15,7 +15,6 @@ namespace kernel {
 class EngineImpl {
   std::map<std::string, s4u::Host*> hosts_;
   std::map<std::string, s4u::Link*> links_;
-  std::map<std::string, s4u::Disk*> disks_;
   std::map<std::string, s4u::Storage*> storages_;
   std::unordered_map<std::string, routing::NetPoint*> netpoints_;
   friend s4u::Engine;

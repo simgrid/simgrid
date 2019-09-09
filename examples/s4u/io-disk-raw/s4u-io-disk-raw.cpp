@@ -14,15 +14,15 @@ static void host()
   /* - Display information on the disks mounted by the current host */
   XBT_INFO("*** Storage info on %s ***", simgrid::s4u::Host::current()->get_cname());
 
-  /* - Retrieve all mount points of current host */
+  /* - Retrieve all disks from current host */
   std::vector<simgrid::s4u::Disk*> const& disk_list = simgrid::s4u::Host::current()->get_disks();
 
   /* - For each disk mounted on host, display disk name and mount point */
   for (auto disk : disk_list)
     XBT_INFO("Disk name: %s", disk->get_cname());
 
-  /* - Write 400,000 bytes on Disk4 */
-  simgrid::s4u::Disk* disk = simgrid::s4u::Disk::by_name("Disk1");
+  /* - Write 400,000 bytes on Disk1 */
+  simgrid::s4u::Disk* disk = disk_list.front();
   sg_size_t write          = disk->write(400000);
   XBT_INFO("Wrote %llu bytes on '%s'", write, disk->get_cname());
 

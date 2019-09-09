@@ -9,7 +9,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static void test(sg_size_t size)
 {
-  simgrid::s4u::Disk* disk = simgrid::s4u::Disk::by_name("Disk1");
+  simgrid::s4u::Disk* disk = simgrid::s4u::Host::current()->get_disks().front();
   XBT_INFO("Hello! read %llu bytes from %s", size, disk->get_cname());
 
   simgrid::s4u::IoPtr activity = disk->io_init(size, simgrid::s4u::Io::OpType::READ);
@@ -21,7 +21,7 @@ static void test(sg_size_t size)
 
 static void test_cancel(sg_size_t size)
 {
-  simgrid::s4u::Disk* disk = simgrid::s4u::Disk::by_name("Disk2");
+  simgrid::s4u::Disk* disk = simgrid::s4u::Host::current()->get_disks().front();
   XBT_INFO("Hello! write %llu bytes from %s", size, disk->get_cname());
 
   simgrid::s4u::IoPtr activity = disk->write_async(size);

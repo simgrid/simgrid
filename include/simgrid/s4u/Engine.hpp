@@ -96,8 +96,6 @@ protected:
   void host_unregister(const std::string& name);
   void link_register(const std::string& name, Link* link);
   void link_unregister(const std::string& name);
-  void disk_register(const std::string& name, Disk* storage);
-  void disk_unregister(const std::string& name);
   void storage_register(const std::string& name, Storage* storage);
   void storage_unregister(const std::string& name);
   void netpoint_register(simgrid::kernel::routing::NetPoint* card);
@@ -121,9 +119,6 @@ public:
   size_t get_actor_count();
   std::vector<ActorPtr> get_all_actors();
   std::vector<ActorPtr> get_filtered_actors(const std::function<bool(ActorPtr)>& filter);
-
-  Disk* disk_by_name(const std::string& name);
-  Disk* disk_by_name_or_null(const std::string& name);
 
   size_t get_storage_count();
   std::vector<Storage*> get_all_storages();
