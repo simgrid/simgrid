@@ -6,10 +6,11 @@
       <disk id="Disk1" read_bw="100MBps" write_bw="40MBps">
         <prop id="size" value="500GiB"/>
       </disk>
+      <disk id="Disk2" read_bw="200MBps" write_bw="80MBps"/>
     </host>
 
     <host id="alice" speed="1Gf">
-      <disk id="Disk2" read_bw="200MBps" write_bw="80MBps"/>
+      <disk id="Disk1" read_bw="200MBps" write_bw="80MBps"/>
     </host>
 
     <link id="link1" bandwidth="125MBps" latency="150us" />
