@@ -5,6 +5,8 @@
     <host id="bob" speed="1Gf">
       <disk id="Disk1" read_bw="100MBps" write_bw="40MBps">
         <prop id="size" value="500GiB"/>
+        <prop id="mount" value="/home"/>
+        <prop id="content" value="storage/content/storage_content.txt"/>
       </disk>
       <disk id="Disk2" read_bw="200MBps" write_bw="80MBps"/>
     </host>

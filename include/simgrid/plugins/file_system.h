@@ -41,6 +41,10 @@ XBT_PUBLIC void sg_file_unlink(sg_file_t fd);
 XBT_PUBLIC int sg_file_rcopy(sg_file_t file, sg_host_t host, const char* fullpath);
 XBT_PUBLIC int sg_file_rmove(sg_file_t file, sg_host_t host, const char* fullpath);
 
+XBT_PUBLIC sg_size_t sg_disk_get_size_free(sg_disk_t d);
+XBT_PUBLIC sg_size_t sg_disk_get_size_used(sg_disk_t d);
+XBT_PUBLIC sg_size_t sg_disk_get_size(sg_disk_t d);
+
 XBT_PUBLIC sg_size_t sg_storage_get_size_free(sg_storage_t st);
 XBT_PUBLIC sg_size_t sg_storage_get_size_used(sg_storage_t st);
 XBT_PUBLIC sg_size_t sg_storage_get_size(sg_storage_t st);
@@ -126,7 +130,8 @@ public:
   void dump();
 
   int desc_id = 0;
-  Storage* local_storage_;
+  Disk* local_disk_       = nullptr;
+  Storage* local_storage_ = nullptr;
   std::string mount_point_;
 
 private:
@@ -135,6 +140,25 @@ private:
   std::string fullpath_;
   sg_size_t current_position_ = SEEK_SET;
   void* userdata_             = nullptr;
+};
+
+class XBT_PUBLIC FileSystemDiskExt {
+public:
+  static simgrid::xbt::Extension<Disk, FileSystemDiskExt> EXTENSION_ID;
+  explicit FileSystemDiskExt(Disk* ptr);
+  FileSystemDiskExt(const FileSystemDiskExt&) = delete;
+  FileSystemDiskExt& operator=(const FileSystemDiskExt&) = delete;
+  std::map<std::string, sg_size_t>* parse_content(const std::string& filename);
+  std::map<std::string, sg_size_t>* get_content() { return content_.get(); }
+  sg_size_t get_size() { return size_; }
+  sg_size_t get_used_size() { return used_size_; }
+  void decr_used_size(sg_size_t size) { used_size_ -= size; }
+  void incr_used_size(sg_size_t size) { used_size_ += size; }
+
+private:
+  std::unique_ptr<std::map<std::string, sg_size_t>> content_;
+  sg_size_t used_size_ = 0;
+  sg_size_t size_      = 0;
 };
 
 class XBT_PUBLIC FileSystemStorageExt {
