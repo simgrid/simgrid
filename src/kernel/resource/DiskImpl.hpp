@@ -59,7 +59,7 @@ public:
 
   /** @brief Public interface */
   s4u::Disk piface_;
-
+  s4u::Disk* get_iface() { return &piface_; }
   /** @brief Check if the Storage is used (if an action currently uses its resources) */
   bool is_used() override;
 

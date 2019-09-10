@@ -337,11 +337,11 @@ void sg_platf_new_cabinet(simgrid::kernel::routing::CabinetCreationArgs* cabinet
 simgrid::kernel::resource::DiskImpl* sg_platf_new_disk(simgrid::kernel::routing::DiskCreationArgs* disk)
 {
   simgrid::kernel::resource::DiskImpl* d = surf_disk_model->createDisk(disk->id, disk->read_bw, disk->write_bw);
-
   if (disk->properties) {
     d->set_properties(*disk->properties);
     delete disk->properties;
   }
+  simgrid::s4u::Disk::on_creation(*d->get_iface());
   return d;
 }
 
