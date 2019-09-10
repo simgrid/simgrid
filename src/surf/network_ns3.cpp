@@ -197,10 +197,26 @@ double NetworkNS3Model::next_occuring_event(double now)
   if (get_started_action_set()->empty() || now == 0.0)
     return -1.0;
 
+  bool ns3_processed_all_finished_flows;
   do {
-    ns3_simulator(now);
+    double delta = surf_get_clock() + now - ns3::Simulator::Now().GetSeconds();
+    ns3_simulator(delta);
     time_to_next_flow_completion = ns3::Simulator::Now().GetSeconds() - surf_get_clock();
-  } while (double_equals(time_to_next_flow_completion, 0, sg_surf_precision));
+
+    // NS3 stops as soon as it detects that a flow is finished.
+    // However, to stop NS3 in a consistant state for the current simulated time,
+    // we need to make sure that NS3 detects all the flows finishing at the current time.
+    ns3_processed_all_finished_flows = true;
+    // A flow that has 0 remaining_ is finishing at the current simulated time.
+    // However, NS3 hadn't notice it yet if finished_ == false.
+    for (const auto& elm : flow_from_sock) {
+      SgFlow* sgFlow = elm.second;
+      if(!sgFlow->finished_ && sgFlow->remaining_ == 0){
+        ns3_processed_all_finished_flows = false;
+        break;
+      }
+    }
+  } while (!ns3_processed_all_finished_flows || double_equals(time_to_next_flow_completion, 0, sg_surf_precision));
 
   XBT_DEBUG("min       : %f", now);
   XBT_DEBUG("ns3  time : %f", ns3::Simulator::Now().GetSeconds());
