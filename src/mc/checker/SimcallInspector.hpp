@@ -13,20 +13,20 @@ namespace mc {
 
 class SimcallInspector {
 public:
-  /** whether this transition can currently be taken without blocking.
+  /** Whether this transition can currently be taken without blocking.
    *
    * For example, a mutex_lock is not enabled when the mutex is not free.
    * A comm_receive is not enabled before the corresponding send has been issued.
    */
   virtual bool is_enabled() { return true; }
 
-  /** Execute the simcall, from the kernel POV.
+  /** Prepare the simcall to be executed
    *
-   * Most of the time, this action is in charge of doing what the perf models would have done if not in MC mode.
-   * For example, if it's a random(), choose the value to explore next. If it's a waitany, choose the terminated
-   * communication to consider now.
+   * Do the choices that the platform would have done in non-MC settings.
+   * For example if it's a waitany, pick the communication that should finish first.
+   * If it's a random(), choose the next value to explore.
    */
-  virtual void fire() = 0;
+  virtual void arm() {}
 
   /** Some simcalls may only be observable under some circomstances.
    * Most simcalls are not visible from the MC because they don't have an inspector at all. */

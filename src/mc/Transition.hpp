@@ -33,7 +33,7 @@ public:
   int argument_ = 0;
 };
 
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 #endif
