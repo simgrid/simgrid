@@ -49,9 +49,6 @@ public:
   /** @brief Retrieves the name of that storage as a C string */
   const char* get_cname() const { return name_.c_str(); }
 
-  Host* get_host() { return attached_to_; };
-  void set_host(Host* host) { attached_to_ = host; }
-
   const std::unordered_map<std::string, std::string>* get_properties() const;
   const char* get_property(const std::string& key) const;
   void set_property(const std::string&, const std::string& value);
@@ -69,7 +66,6 @@ public:
   kernel::resource::DiskImpl* get_impl() const { return pimpl_; }
 
 private:
-  Host* attached_to_ = nullptr;
   kernel::resource::DiskImpl* const pimpl_;
   std::string name_;
   void* userdata_ = nullptr;
