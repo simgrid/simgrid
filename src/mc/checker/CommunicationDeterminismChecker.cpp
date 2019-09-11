@@ -425,7 +425,7 @@ void CommunicationDeterminismChecker::real_run()
     mc_model_checker->visited_states++;
 
     if (stack_.size() <= (std::size_t)_sg_mc_max_depth)
-      req = MC_state_get_request(cur_state);
+      req = MC_state_choose_request(cur_state);
     else
       req = nullptr;
 

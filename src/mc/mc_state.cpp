@@ -60,7 +60,7 @@ Transition State::get_transition() const
  * Things can get muddled with the WAITANY and TESTANY simcalls, that are rewritten on the fly to a bunch of WAIT
  * (resp TEST) transitions using the transition.argument field to remember what was the last returned sub-transition.
  */
-static inline smx_simcall_t MC_state_get_request_for_process(simgrid::mc::State* state, smx_actor_t actor)
+static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::State* state, smx_actor_t actor)
 {
   /* reset the outgoing transition */
   simgrid::mc::ActorState* procstate   = &state->actor_states_[actor->get_pid()];
@@ -202,14 +202,14 @@ static inline smx_simcall_t MC_state_get_request_for_process(simgrid::mc::State*
   return req;
 }
 
-smx_simcall_t MC_state_get_request(simgrid::mc::State* state)
+smx_simcall_t MC_state_choose_request(simgrid::mc::State* state)
 {
   for (auto& actor : mc_model_checker->process().actors()) {
     /* Only consider the actors that were marked as interleaving by the checker algorithm */
     if (not state->actor_states_[actor.copy.get_buffer()->get_pid()].is_todo())
       continue;
 
-    smx_simcall_t res = MC_state_get_request_for_process(state, actor.copy.get_buffer());
+    smx_simcall_t res = MC_state_choose_request_for_process(state, actor.copy.get_buffer());
     if (res)
       return res;
   }
