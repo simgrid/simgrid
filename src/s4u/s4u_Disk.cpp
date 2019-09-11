@@ -20,6 +20,11 @@ xbt::signal<void(Disk&)> Disk::on_creation;
 xbt::signal<void(Disk const&)> Disk::on_destruction;
 xbt::signal<void(Disk const&)> Disk::on_state_change;
 
+Host* Disk::get_host()
+{
+  return pimpl_->get_host();
+}
+
 const std::unordered_map<std::string, std::string>* Disk::get_properties() const
 {
   return pimpl_->get_properties();

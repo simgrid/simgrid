@@ -90,8 +90,10 @@ File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpa
   std::map<std::string, sg_size_t>* content;
   if (local_storage_)
     content = local_storage_->extension<FileSystemStorageExt>()->get_content();
-  else
+
+  if (local_disk_)
     content = local_disk_->extension<FileSystemDiskExt>()->get_content();
+
   // if file does not exist create an empty file
   auto sz = content->find(path_);
   if (sz != content->end()) {
@@ -110,14 +112,25 @@ File::~File()
 
 void File::dump()
 {
-  XBT_INFO("File Descriptor information:\n"
-           "\t\tFull path: '%s'\n"
-           "\t\tSize: %llu\n"
-           "\t\tMount point: '%s'\n"
-           "\t\tStorage Id: '%s'\n"
-           "\t\tStorage Type: '%s'\n"
-           "\t\tFile Descriptor Id: %d",
-           get_path(), size_, mount_point_.c_str(), local_storage_->get_cname(), local_storage_->get_type(), desc_id);
+  if (local_storage_)
+    XBT_INFO("File Descriptor information:\n"
+             "\t\tFull path: '%s'\n"
+             "\t\tSize: %llu\n"
+             "\t\tMount point: '%s'\n"
+             "\t\tStorage Id: '%s'\n"
+             "\t\tStorage Type: '%s'\n"
+             "\t\tFile Descriptor Id: %d",
+             get_path(), size_, mount_point_.c_str(), local_storage_->get_cname(), local_storage_->get_type(), desc_id);
+  if (local_disk_)
+    XBT_INFO("File Descriptor information:\n"
+             "\t\tFull path: '%s'\n"
+             "\t\tSize: %llu\n"
+             "\t\tMount point: '%s'\n"
+             "\t\tDisk Id: '%s'\n"
+             "\t\tHost Id: '%s'\n"
+             "\t\tFile Descriptor Id: %d",
+             get_path(), size_, mount_point_.c_str(), local_disk_->get_cname(), local_disk_->get_host()->get_cname(),
+             desc_id);
 }
 
 sg_size_t File::read(sg_size_t size)
@@ -299,8 +312,10 @@ int File::unlink()
     return -1;
   } else {
     XBT_DEBUG("UNLINK %s on disk '%s'", path_.c_str(), name);
+
     if (local_storage_)
       local_storage_->extension<FileSystemStorageExt>()->decr_used_size(size_);
+
     if (local_disk_)
       local_disk_->extension<FileSystemDiskExt>()->decr_used_size(size_);
 
@@ -314,45 +329,87 @@ int File::unlink()
 int File::remote_copy(sg_host_t host, const char* fullpath)
 {
   /* Find the host where the file is physically located and read it */
-  Storage* storage_src = local_storage_;
-  Host* src_host       = storage_src->get_host();
+  Host* src_host;
+  if (local_storage_) {
+    src_host = local_storage_->get_host();
+    XBT_DEBUG("READ %s on disk '%s'", get_path(), local_storage_->get_cname());
+  }
+
+  if (local_disk_) {
+    src_host = local_disk_->get_host();
+    XBT_DEBUG("READ %s on disk '%s'", get_path(), local_disk_->get_cname());
+  }
+
   seek(0, SEEK_SET);
-  XBT_DEBUG("READ %s on disk '%s'", get_path(), local_storage_->get_cname());
   // if the current position is close to the end of the file, we may not be able to read the requested size
-  sg_size_t read_size = local_storage_->read(size_);
+  sg_size_t read_size = 0;
+  if (local_storage_)
+    read_size = local_storage_->read(size_);
+  if (local_disk_)
+    read_size = local_disk_->read(size_);
+
   current_position_ += read_size;
 
-  /* Find the host that owns the storage where the file has to be copied */
-  Storage* storage_dest = nullptr;
-  Host* dst_host;
-  size_t longest_prefix_length = 0;
+  Host* dst_host = host;
+  if (local_storage_) {
+    /* Find the host that owns the storage where the file has to be copied */
+    Storage* storage_dest        = nullptr;
+    size_t longest_prefix_length = 0;
 
-  for (auto const& elm : host->get_mounted_storages()) {
-    std::string mount_point = std::string(fullpath).substr(0, elm.first.size());
-    if (mount_point == elm.first && elm.first.length() > longest_prefix_length) {
-      /* The current mount name is found in the full path and is bigger than the previous*/
-      longest_prefix_length = elm.first.length();
-      storage_dest          = elm.second;
+    for (auto const& elm : host->get_mounted_storages()) {
+      std::string mount_point = std::string(fullpath).substr(0, elm.first.size());
+      if (mount_point == elm.first && elm.first.length() > longest_prefix_length) {
+        /* The current mount name is found in the full path and is bigger than the previous*/
+        longest_prefix_length = elm.first.length();
+        storage_dest          = elm.second;
+      }
+    }
+
+    if (storage_dest != nullptr) {
+      /* Mount point found, retrieve the host the storage is attached to */
+      dst_host = storage_dest->get_host();
+    } else {
+      XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host->get_cname());
+      return -1;
     }
   }
 
-  if (storage_dest != nullptr) {
-    /* Mount point found, retrieve the host the storage is attached to */
-    dst_host = storage_dest->get_host();
-  } else {
-    XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host->get_cname());
-    return -1;
+  if (local_disk_) {
+    size_t longest_prefix_length = 0;
+    Disk* dst_disk               = nullptr;
+
+    for (auto const& disk : host->get_disks()) {
+      const char* current_mount_str = disk->get_property("mount");
+      if (current_mount_str) {
+        std::string current_mount = std::string(current_mount_str);
+        std::string mount_point   = std::string(fullpath).substr(0, current_mount.length());
+        if (mount_point == current_mount && current_mount.length() > longest_prefix_length) {
+          /* The current mount name is found in the full path and is bigger than the previous*/
+          longest_prefix_length = current_mount.length();
+          dst_disk              = disk;
+        }
+      }
+    }
+
+    if (dst_disk == nullptr) {
+      XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host->get_cname());
+      return -1;
+    }
   }
 
   XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->get_cname(),
-            storage_dest->get_host()->get_cname());
+            dst_host->get_cname());
   src_host->send_to(dst_host, read_size);
 
   /* Create file on remote host, write it and close it */
   File* fd = new File(fullpath, dst_host, nullptr);
-  sg_size_t write_size = fd->local_storage_->write(read_size);
-  fd->local_storage_->extension<FileSystemStorageExt>()->incr_used_size(write_size);
-  (*(fd->local_storage_->extension<FileSystemStorageExt>()->get_content()))[path_] = size_;
+  if (local_storage_) {
+    sg_size_t write_size = fd->local_storage_->write(read_size);
+    fd->local_storage_->extension<FileSystemStorageExt>()->incr_used_size(write_size);
+    (*(fd->local_storage_->extension<FileSystemStorageExt>()->get_content()))[path_] = size_;
+  }
+  if (local_disk_)
+    fd->write(read_size);
   delete fd;
   return 0;
 }

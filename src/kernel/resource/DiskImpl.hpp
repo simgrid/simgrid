@@ -49,6 +49,7 @@ public:
  ************/
 class DiskImpl : public Resource, public surf::PropertyHolder {
   bool currently_destroying_ = false;
+  s4u::Host* host_           = nullptr;
 
 public:
   DiskImpl(Model* model, const std::string& name, kernel::lmm::System* maxmin_system, double read_bw, double bwrite_bw);
@@ -67,6 +68,9 @@ public:
 
   void turn_on() override;
   void turn_off() override;
+
+  s4u::Host* get_host() { return host_; }
+  void set_host(s4u::Host* host) { host_ = host; }
 
   void destroy(); // Must be called instead of the destructor
   virtual DiskAction* io_start(sg_size_t size, s4u::Io::OpType type) = 0;

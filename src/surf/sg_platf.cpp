@@ -82,6 +82,8 @@ void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
   mount_list.clear();
 
   host->pimpl_->disks_ = std::move(args->disks);
+  for (auto d : host->pimpl_->disks_)
+    d->set_host(host);
 
   /* Change from the defaults */
   if (args->state_trace)

@@ -33,11 +33,11 @@ public:
     show_info(disks);
 
     // Open an non-existing file to create it
-    std::string filename     = "/home/tmp/data.txt";
+    std::string filename     = "/scratch/tmp/data.txt";
     simgrid::s4u::File* file = new simgrid::s4u::File(filename, nullptr);
 
     sg_size_t write = file->write(200000); // Write 200,000 bytes
-    XBT_INFO("Create a %llu bytes file named '%s' on /sd1", write, filename.c_str());
+    XBT_INFO("Create a %llu bytes file named '%s' on /scratch", write, filename.c_str());
 
     // check that sizes have changed
     show_info(disks);
@@ -53,7 +53,7 @@ public:
     XBT_INFO("Write %llu bytes on %s", write, filename.c_str());
 
     // Now rename file from ./tmp/data.txt to ./tmp/simgrid.readme
-    std::string newpath = "/home/tmp/simgrid.readme";
+    std::string newpath = "/scratch/tmp/simgrid.readme";
     XBT_INFO("Move '%s' to '%s'", file->get_path(), newpath.c_str());
     file->move(newpath);
 
@@ -69,7 +69,7 @@ public:
     show_info(disks);
 
     // Reopen the file and then unlink it
-    file = new simgrid::s4u::File("/home/tmp/simgrid.readme", nullptr);
+    file = new simgrid::s4u::File("/scratch/tmp/simgrid.readme", nullptr);
     XBT_INFO("Unlink file: '%s'", file->get_path());
     file->unlink();
     delete file; // Unlinking the file on "disk" does not free the object

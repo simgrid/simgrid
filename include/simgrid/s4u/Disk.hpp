@@ -52,6 +52,7 @@ public:
   const std::unordered_map<std::string, std::string>* get_properties() const;
   const char* get_property(const std::string& key) const;
   void set_property(const std::string&, const std::string& value);
+  Host* get_host();
 
   void set_data(void* data) { userdata_ = data; }
   void* get_data() { return userdata_; }
