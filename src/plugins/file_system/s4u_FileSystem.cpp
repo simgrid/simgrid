@@ -68,7 +68,11 @@ File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpa
         }
         if (longest_prefix_length > 0) { /* Mount point found, split fullpath_ into mount_name and path+filename*/
           mount_point_ = fullpath_.substr(0, longest_prefix_length);
-          path_        = fullpath_.substr(longest_prefix_length, fullpath_.length());
+          if (mount_point_ == std::string("/"))
+            path_ = fullpath_;
+          else
+            path_ = fullpath_.substr(longest_prefix_length, fullpath_.length());
+          XBT_DEBUG("%s + %s", mount_point_.c_str(), path_.c_str());
         } else
           xbt_die("Can't find mount point for '%s' on '%s'", fullpath_.c_str(), host->get_cname());
       }
