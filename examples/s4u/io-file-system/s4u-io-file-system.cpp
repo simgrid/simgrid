@@ -18,11 +18,9 @@ public:
     XBT_INFO("Storage info on %s:", simgrid::s4u::Host::current()->get_cname());
 
     for (auto const& d : disks) {
-      const char* mountpoint = d->get_property("mount");
-
       // Retrieve disk's information
-      XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.", d->get_cname(), mountpoint, sg_disk_get_size_used(d),
-               sg_disk_get_size_free(d), sg_disk_get_size(d));
+      XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.", d->get_cname(), sg_disk_get_mount_point(d),
+               sg_disk_get_size_used(d), sg_disk_get_size_free(d), sg_disk_get_size(d));
     }
   }
 

@@ -13,8 +13,6 @@
 
     <host id="alice" speed="1Gf">
       <disk id="Disk1" read_bw="200MBps" write_bw="80MBps">
-        <prop id="size" value="500GiB"/>
-        <prop id="mount" value="/"/>
         <prop id="content" value="storage/content/small_content.txt"/>
       </disk>
     </host>

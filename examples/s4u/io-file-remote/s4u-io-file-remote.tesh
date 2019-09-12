@@ -3,7 +3,7 @@
 $ ${bindir:=.}/s4u-io-file-remote ${platfdir}/hosts_with_disks.xml s4u-io-file-remote_d.xml "--log=root.fmt:[%10.6r]%e(%i@%5h)%e%m%n"
 > [  0.000000] (0@     ) Init: 12/511987 MiB used/free on 'Disk1@alice'
 > [  0.000000] (0@     ) Init: 35/511964 MiB used/free on 'Disk1@bob'
-> [  0.000000] (0@     ) Init: 0/0 MiB used/free on 'Disk2@bob'
+> [  0.000000] (0@     ) Init: 0/512000 MiB used/free on 'Disk2@bob'
 > [  0.000000] (1@alice) Opened file '/lib/libsimgrid.so.3.6.2'
 > [  0.000000] (1@alice) File Descriptor information:
 > 		Full path: '/lib/libsimgrid.so.3.6.2'
@@ -28,5 +28,5 @@ $ ${bindir:=.}/s4u-io-file-remote ${platfdir}/hosts_with_disks.xml s4u-io-file-r
 > [162.912320] (1@alice) Move '/lib/libsimgrid.so.3.6.2' (of size 13015548928) from 'alice' to 'bob'
 > [666.092709] (0@     ) End: 17/511982 MiB used/free on 'Disk1@alice'
 > [666.092709] (0@     ) End: 12452/499547 MiB used/free on 'Disk1@bob'
-> [666.092709] (0@     ) End: 0/0 MiB used/free on 'Disk2@bob'
+> [666.092709] (0@     ) End: 0/512000 MiB used/free on 'Disk2@bob'
 > [666.092709] (0@     ) Simulation time 666.093

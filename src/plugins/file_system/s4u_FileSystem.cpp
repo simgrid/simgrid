@@ -57,25 +57,22 @@ File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpa
     Disk* d                      = nullptr;
     size_t longest_prefix_length = 0;
     for (auto const& disk : host->get_disks()) {
-      const char* current_mount_str = disk->get_property("mount");
-      if (current_mount_str) {
-        std::string current_mount = std::string(current_mount_str);
-        mount_point_              = fullpath_.substr(0, current_mount.length());
-        if (mount_point_ == current_mount && current_mount.length() > longest_prefix_length) {
-          /* The current mount name is found in the full path and is bigger than the previous*/
-          longest_prefix_length = current_mount.length();
-          d                     = disk;
-        }
-        if (longest_prefix_length > 0) { /* Mount point found, split fullpath_ into mount_name and path+filename*/
-          mount_point_ = fullpath_.substr(0, longest_prefix_length);
-          if (mount_point_ == std::string("/"))
-            path_ = fullpath_;
-          else
-            path_ = fullpath_.substr(longest_prefix_length, fullpath_.length());
-          XBT_DEBUG("%s + %s", mount_point_.c_str(), path_.c_str());
-        } else
-          xbt_die("Can't find mount point for '%s' on '%s'", fullpath_.c_str(), host->get_cname());
+      std::string current_mount = disk->extension<FileSystemDiskExt>()->get_mount_point();
+      mount_point_              = fullpath_.substr(0, current_mount.length());
+      if (mount_point_ == current_mount && current_mount.length() > longest_prefix_length) {
+        /* The current mount name is found in the full path and is bigger than the previous*/
+        longest_prefix_length = current_mount.length();
+        d                     = disk;
       }
+      if (longest_prefix_length > 0) { /* Mount point found, split fullpath_ into mount_name and path+filename*/
+        mount_point_ = fullpath_.substr(0, longest_prefix_length);
+        if (mount_point_ == std::string("/"))
+          path_ = fullpath_;
+        else
+          path_ = fullpath_.substr(longest_prefix_length, fullpath_.length());
+        XBT_DEBUG("%s + %s", mount_point_.c_str(), path_.c_str());
+      } else
+        xbt_die("Can't find mount point for '%s' on '%s'", fullpath_.c_str(), host->get_cname());
     }
     local_disk_ = d;
   }
@@ -383,15 +380,12 @@ int File::remote_copy(sg_host_t host, const char* fullpath)
     Disk* dst_disk               = nullptr;
 
     for (auto const& disk : host->get_disks()) {
-      const char* current_mount_str = disk->get_property("mount");
-      if (current_mount_str) {
-        std::string current_mount = std::string(current_mount_str);
-        std::string mount_point   = std::string(fullpath).substr(0, current_mount.length());
-        if (mount_point == current_mount && current_mount.length() > longest_prefix_length) {
-          /* The current mount name is found in the full path and is bigger than the previous*/
-          longest_prefix_length = current_mount.length();
-          dst_disk              = disk;
-        }
+      std::string current_mount = disk->extension<FileSystemDiskExt>()->get_mount_point();
+      std::string mount_point   = std::string(fullpath).substr(0, current_mount.length());
+      if (mount_point == current_mount && current_mount.length() > longest_prefix_length) {
+        /* The current mount name is found in the full path and is bigger than the previous*/
+        longest_prefix_length = current_mount.length();
+        dst_disk              = disk;
       }
     }
 
@@ -428,8 +422,16 @@ int File::remote_move(sg_host_t host, const char* fullpath)
 FileSystemDiskExt::FileSystemDiskExt(simgrid::s4u::Disk* ptr)
 {
   const char* size_str    = ptr->get_property("size");
+  if (size_str)
+    size_ = surf_parse_get_size(size_str, "disk size", ptr->get_name());
+
+  const char* current_mount_str = ptr->get_property("mount");
+  if (current_mount_str)
+    mount_point_ = std::string(current_mount_str);
+  else
+    mount_point_ = std::string("/");
+
   const char* content_str = ptr->get_property("content");
-  size_                   = size_str ? surf_parse_get_size(size_str, "disk size", ptr->get_name()) : 0;
   if (content_str)
     content_.reset(parse_content(content_str));
 }
@@ -651,6 +653,11 @@ sg_size_t sg_disk_get_size_used(sg_disk_t d)
 sg_size_t sg_disk_get_size(sg_disk_t d)
 {
   return d->extension<FileSystemDiskExt>()->get_size();
+}
+
+const char* sg_disk_get_mount_point(sg_disk_t d)
+{
+  return d->extension<FileSystemDiskExt>()->get_mount_point();
 }
 
 sg_size_t sg_storage_get_size_free(sg_storage_t st)
