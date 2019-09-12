@@ -22,9 +22,9 @@ $ ${bindir:=.}/s4u-io-file-remote ${platfdir}/hosts_with_disks.xml s4u-io-file-r
 > 		Host Id: 'bob'
 > 		File Descriptor Id: 0
 > [  0.000000] (2@  bob) Try to write 16 MiB to '/scratch/doc/simgrid/examples/platforms/g5k.xml'
-> [  0.435917] (2@  bob) Have written 17436672 bytes to '/scratch/doc/simgrid/examples/platforms/g5k.xml'.
+> [  0.435917] (2@  bob) Have written 16 MiB to '/scratch/doc/simgrid/examples/platforms/g5k.xml'.
 > [  0.435917] (2@  bob) Copy '/scratch/doc/simgrid/examples/platforms/g5k.xml' (of size 17436672) from 'bob' to 'alice'
-> [162.912320] (1@alice) Have written 13015548928 bytes to '/lib/libsimgrid.so.3.6.2'.
+> [162.912320] (1@alice) Have written 12412 MiB to '/lib/libsimgrid.so.3.6.2'.
 > [162.912320] (1@alice) Move '/lib/libsimgrid.so.3.6.2' (of size 13015548928) from 'alice' to 'bob'
 > [666.092709] (0@     ) End: 17/511982 MiB used/free on 'Disk1@alice'
 > [666.092709] (0@     ) End: 12452/499547 MiB used/free on 'Disk1@bob'

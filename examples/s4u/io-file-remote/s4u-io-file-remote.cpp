@@ -19,7 +19,7 @@ static int host(int argc, char* argv[])
   file.dump();
   XBT_INFO("Try to write %llu MiB to '%s'", file.size() / 1024, filename);
   sg_size_t write = file.write(file.size() * 1024);
-  XBT_INFO("Have written %llu bytes to '%s'.", write, filename);
+  XBT_INFO("Have written %llu MiB to '%s'.", write / (1024 * 1024), filename);
 
   if (std::stoi(argv[4]) != 0) {
     XBT_INFO("Move '%s' (of size %llu) from '%s' to '%s'", filename, file.size(),
