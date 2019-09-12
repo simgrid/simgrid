@@ -1,18 +1,18 @@
 #!/usr/bin/env tesh
 
 $ ${bindir:=.}/s4u-io-file-remote ${platfdir}/hosts_with_disks.xml s4u-io-file-remote_d.xml "--log=root.fmt:[%10.6r]%e(%i@%5h)%e%m%n"
-> [  0.000000] (0@     ) Init: 2280/509719 MiB used/free on 'Disk1@alice'
+> [  0.000000] (0@     ) Init: 12/511987 MiB used/free on 'Disk1@alice'
 > [  0.000000] (0@     ) Init: 35/511964 MiB used/free on 'Disk1@bob'
 > [  0.000000] (0@     ) Init: 0/0 MiB used/free on 'Disk2@bob'
-> [  0.000000] (1@alice) Opened file 'c:\Windows\Professional.xml'
+> [  0.000000] (1@alice) Opened file '/lib/libsimgrid.so.3.6.2'
 > [  0.000000] (1@alice) File Descriptor information:
-> 		Full path: 'c:\Windows\Professional.xml'
-> 		Size: 31881
-> 		Mount point: 'c:'
+> 		Full path: '/lib/libsimgrid.so.3.6.2'
+> 		Size: 12710497
+> 		Mount point: '/'
 > 		Disk Id: 'Disk1'
 > 		Host Id: 'alice'
 > 		File Descriptor Id: 0
-> [  0.000000] (1@alice) Try to write 31 MiB to 'c:\Windows\Professional.xml'
+> [  0.000000] (1@alice) Try to write 12412 MiB to '/lib/libsimgrid.so.3.6.2'
 > [  0.000000] (2@  bob) Opened file '/scratch/doc/simgrid/examples/platforms/g5k.xml'
 > [  0.000000] (2@  bob) File Descriptor information:
 > 		Full path: '/scratch/doc/simgrid/examples/platforms/g5k.xml'
@@ -22,11 +22,11 @@ $ ${bindir:=.}/s4u-io-file-remote ${platfdir}/hosts_with_disks.xml s4u-io-file-r
 > 		Host Id: 'bob'
 > 		File Descriptor Id: 0
 > [  0.000000] (2@  bob) Try to write 16 MiB to '/scratch/doc/simgrid/examples/platforms/g5k.xml'
-> [  0.408077] (1@alice) Have written 32646144 bytes to 'c:\Windows\Professional.xml'.
-> [  0.408077] (1@alice) Move 'c:\Windows\Professional.xml' (of size 32646144) from 'alice' to 'bob'
 > [  0.435917] (2@  bob) Have written 17436672 bytes to '/scratch/doc/simgrid/examples/platforms/g5k.xml'.
 > [  0.435917] (2@  bob) Copy '/scratch/doc/simgrid/examples/platforms/g5k.xml' (of size 17436672) from 'bob' to 'alice'
-> [  1.823119] (0@     ) End: 2297/509702 MiB used/free on 'Disk1@alice'
-> [  1.823119] (0@     ) End: 82/511917 MiB used/free on 'Disk1@bob'
-> [  1.823119] (0@     ) End: 0/0 MiB used/free on 'Disk2@bob'
-> [  1.823119] (0@     ) Simulation time 1.82312
+> [162.912320] (1@alice) Have written 13015548928 bytes to '/lib/libsimgrid.so.3.6.2'.
+> [162.912320] (1@alice) Move '/lib/libsimgrid.so.3.6.2' (of size 13015548928) from 'alice' to 'bob'
+> [666.092709] (0@     ) End: 17/511982 MiB used/free on 'Disk1@alice'
+> [666.092709] (0@     ) End: 12452/499547 MiB used/free on 'Disk1@bob'
+> [666.092709] (0@     ) End: 0/0 MiB used/free on 'Disk2@bob'
+> [666.092709] (0@     ) Simulation time 666.093
