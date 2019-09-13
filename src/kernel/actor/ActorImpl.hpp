@@ -79,11 +79,14 @@ public:
   int get_refcount() { return refcount_; }
   friend void intrusive_ptr_add_ref(ActorImpl* actor)
   {
-    // std::memory_order_relaxed ought to be enough here instead of std::memory_order_seq_cst
-    // But then, we have a threading issue when an actor commits a suicide:
-    //  it seems that in this case, the worker thread kills the last occurrence of the actor
-    //  while usually, the maestro does so. FIXME: we should change how actors suicide
-    actor->refcount_.fetch_add(1, std::memory_order_seq_cst);
+    // This whole memory consistency semantic drives me nuts.
+    // std::memory_order_relaxed proves to not be enough: There is a threading issue when actors commit suicide.
+    //   My guess is that the maestro context wants to propagate changes to the actor's fields after the
+    //   actor context frees that memory area or something. But I'm not 100% certain of what's going on.
+    // std::memory_order_seq_cst works but that's rather demanding.
+    // AFAIK, std::memory_order_acq_rel works on all tested platforms, so let's stick to it.
+    // Reducing the requirements to _relaxed would require to fix our suicide procedure, which is a messy piece of code.
+    actor->refcount_.fetch_add(1, std::memory_order_acq_rel);
   }
   friend void intrusive_ptr_release(ActorImpl* actor)
   {
