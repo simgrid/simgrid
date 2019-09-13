@@ -238,7 +238,7 @@ void SIMIX_global_init(int *argc, char **argv)
 #endif
     /* register a function to be called by SURF after the environment creation */
     sg_platf_init();
-    simgrid::s4u::on_platform_created.connect(surf_presolve);
+    simgrid::s4u::Engine::on_platform_created.connect(surf_presolve);
 
     simgrid::s4u::Storage::on_creation.connect([](simgrid::s4u::Storage const& storage) {
       sg_storage_t s = simgrid::s4u::Storage::by_name(storage.get_name());
@@ -522,10 +522,10 @@ void SIMIX_run()
       XBT_CRITICAL("Oops! Deadlock or code not perfectly clean.");
     }
     SIMIX_display_process_status();
-    simgrid::s4u::on_deadlock();
+    simgrid::s4u::Engine::on_deadlock();
     xbt_abort();
   }
-  simgrid::s4u::on_simulation_end();
+  simgrid::s4u::Engine::on_simulation_end();
 }
 
 double SIMIX_timer_next()

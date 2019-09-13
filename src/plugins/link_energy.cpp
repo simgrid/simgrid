@@ -186,7 +186,6 @@ int sg_link_energy_is_inited()
  */
 void sg_link_energy_plugin_init()
 {
-
   if (LinkEnergy::EXTENSION_ID.valid())
     return;
   LinkEnergy::EXTENSION_ID = simgrid::s4u::Link::extension_create<LinkEnergy>();
@@ -213,7 +212,7 @@ void sg_link_energy_plugin_init()
   });
 
   simgrid::s4u::Link::on_communicate.connect(&on_communicate);
-  simgrid::s4u::on_simulation_end.connect(&on_simulation_end);
+  simgrid::s4u::Engine::on_simulation_end.connect(&on_simulation_end);
 }
 
 /** @ingroup plugin_energy

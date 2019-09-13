@@ -9,6 +9,12 @@ S4U:
  - Actor::on_destruction is now called in the destructor
    Actor::on_termination new signal called when the actor terminates
    its code.
+ - Global signals are now part of the Engine:
+   - on_platform_creation: after config settings, before the XML parsing
+   - on_platform_created: right after the XML parsing
+   - on_time_advance: each time the clock advances
+   - on_simulation_end: after simulation, before cleanups
+   - on_deadlock: as the name implies.
 
 MSG:
  - convert a new set of functions to the S4U C interface and move the old MSG

@@ -51,13 +51,13 @@ static simgrid::kernel::routing::NetZoneImpl* routing_get_current()
 /** Module management function: creates all internal data structures */
 void sg_platf_init()
 {
-  simgrid::s4u::on_platform_created.connect(check_disk_attachment);
+  simgrid::s4u::Engine::on_platform_created.connect(check_disk_attachment);
 }
 
 /** Module management function: frees all internal data structures */
 void sg_platf_exit() {
   simgrid::surf::on_cluster.disconnect_slots();
-  simgrid::s4u::on_platform_created.disconnect_slots();
+  simgrid::s4u::Engine::on_platform_created.disconnect_slots();
 
   /* make sure that we will reinit the models while loading the platf once reinited */
   surf_parse_models_setup_already_called = 0;
@@ -548,7 +548,7 @@ static void surf_config_models_setup()
 simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCreationArgs* zone)
 {
   if (not surf_parse_models_setup_already_called) {
-    simgrid::s4u::on_platform_creation();
+    simgrid::s4u::Engine::on_platform_creation();
 
     /* Initialize the surf models. That must be done after we got all config, and before we need the models.
      * That is, after the last <config> tag, if any, and before the first of cluster|peer|zone|trace|trace_connect

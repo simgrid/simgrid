@@ -28,11 +28,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_engine, s4u, "Logging specific to S4U (engin
 
 namespace simgrid {
 namespace s4u {
-xbt::signal<void()> on_platform_creation;
-xbt::signal<void()> on_platform_created;
-xbt::signal<void()> on_simulation_end;
-xbt::signal<void(double)> on_time_advance;
-xbt::signal<void(void)> on_deadlock;
+xbt::signal<void()> Engine::on_platform_creation;
+xbt::signal<void()> Engine::on_platform_created;
+xbt::signal<void()> Engine::on_simulation_end;
+xbt::signal<void(double)> Engine::on_time_advance;
+xbt::signal<void(void)> Engine::on_deadlock;
 
 Engine* Engine::instance_ = nullptr; /* That singleton is awful, but I don't see no other solution right now. */
 
