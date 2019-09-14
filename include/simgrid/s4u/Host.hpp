@@ -157,6 +157,4 @@ public:
 } // namespace s4u
 } // namespace simgrid
 
-extern int USER_HOST_LEVEL;
-
 #endif /* SIMGRID_S4U_HOST_HPP */
