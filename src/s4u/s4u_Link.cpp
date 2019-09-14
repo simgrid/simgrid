@@ -83,15 +83,6 @@ bool Link::is_on() const
   return this->pimpl_->is_on();
 }
 
-void* Link::get_data()
-{
-  return this->pimpl_->get_data();
-}
-void Link::set_data(void* d)
-{
-  simgrid::kernel::actor::simcall([this, d]() { this->pimpl_->set_data(d); });
-}
-
 void Link::set_state_profile(kernel::profile::Profile* profile)
 {
   simgrid::kernel::actor::simcall([this, profile]() { this->pimpl_->set_state_profile(profile); });
