@@ -15,6 +15,9 @@ S4U:
    - on_time_advance: each time the clock advances
    - on_simulation_end: after simulation, before cleanups
    - on_deadlock: as the name implies.
+ - C bindings:
+   - sg_{host,actor}_{set,get}_data() now all exist.
+     Use them to attach user data to the object.
 
 MSG:
  - convert a new set of functions to the S4U C interface and move the old MSG
@@ -42,6 +45,7 @@ Bugs:
  - FG#28: add sg_actor_self (and other wrappers on this_actor methods)
  - FG#29 and FG#33: provide a new C API to mutexes and condition variables 
  - FG#30: convert MSG_process_{un}ref to sg_actor_{un}ref
+ - FG#31: per-actor data
  - FG#34: SG_BARRIER_SERIAL_THREAD?
  - FG#35: model-checker does not like buster-produced binaries
 
