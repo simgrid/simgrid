@@ -742,12 +742,12 @@ void sg_actor_unref(sg_actor_t actor)
 }
 
 /** @brief Return the user data of a #sg_actor_t */
-void* sg_actor_get_data(sg_actor_t actor)
+void* sg_actor_data(sg_actor_t actor)
 {
   return actor->get_data();
 }
 /** @brief Set the user data of a #sg_actor_t */
-void sg_actor_set_data(sg_actor_t actor, void* userdata)
+void sg_actor_data_set(sg_actor_t actor, void* userdata)
 {
   actor->set_data(userdata);
 }

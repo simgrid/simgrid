@@ -35,6 +35,8 @@ SimGrid4 will follow the these rules:
     - Example: src/kernel/activity/Activity.cpp
                include/simgrid/activity/Activity.hpp
   C
+  - Field getters are named sg_object_field() eg sg_link_name()
+    Field setters are named sg_object_field_set() eg sg_link_data_set()
   - variables and functions are in snake_case()
   - typedefs do not hide the pointers, ie * must be explicit
     char * sg_host_get_name(sg_host_t * host);

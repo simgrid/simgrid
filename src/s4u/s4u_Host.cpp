@@ -385,11 +385,11 @@ xbt_dynar_t sg_hosts_as_dynar()
 // ========= Layering madness ==============*
 
 // ========== User data Layer ==========
-void* sg_host_get_data(sg_host_t host)
+void* sg_host_data(sg_host_t host)
 {
   return host->get_data();
 }
-void sg_host_set_data(sg_host_t host, void* userdata)
+void sg_host_data_set(sg_host_t host, void* userdata)
 {
   host->set_data(userdata);
 }

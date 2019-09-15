@@ -282,11 +282,11 @@ const char* MSG_host_get_name(sg_host_t host)
 }
 void* MSG_host_get_data(sg_host_t host)
 {
-  return sg_host_get_data(host);
+  return sg_host_data(host);
 }
 void MSG_host_set_data(sg_host_t host, void* data)
 {
-  return sg_host_set_data(host, data);
+  return sg_host_data_set(host, data);
 }
 xbt_dict_t MSG_host_get_mounted_storage_list(sg_host_t host)
 {

@@ -16,8 +16,8 @@ S4U:
    - on_simulation_end: after simulation, before cleanups
    - on_deadlock: as the name implies.
  - C bindings:
-   - sg_{host,actor}_{set,get}_data() now all exist.
-     Use them to attach user data to the object.
+   - sg_{actor,host,link}_{data,data_set}() now all exist.
+     Use them to attach user data to the object and retrieve it.
 
 MSG:
  - convert a new set of functions to the S4U C interface and move the old MSG
