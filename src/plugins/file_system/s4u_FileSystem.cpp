@@ -592,8 +592,8 @@ void sg_storage_file_system_init()
     FileDescriptorHostExt::EXTENSION_ID = simgrid::s4u::Host::extension_create<FileDescriptorHostExt>();
     simgrid::s4u::Host::on_creation.connect(&on_host_creation);
   }
-  simgrid::s4u::on_platform_created.connect(&on_platform_created);
-  simgrid::s4u::on_simulation_end.connect(&on_simulation_end);
+  simgrid::s4u::Engine::on_platform_created.connect(&on_platform_created);
+  simgrid::s4u::Engine::on_simulation_end.connect(&on_simulation_end);
 }
 
 sg_file_t sg_file_open(const char* fullpath, void* data)
