@@ -149,7 +149,7 @@ also the tesh files in the example directories for details.
   - **I/O replay:**
     Presents a set of event handlers reproducing classical I/O
     primitives (open, read, close).
-    |br| `examples/s4u/replay-storage/s4u-replay-storage.cpp  <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/replay-storage/s4u-replay-storage.cpp>`_
+    |br| `examples/s4u/replay-io/s4u-replay-io.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/replay-io/s4u-replay-io.cpp>`_
 
 ==========================
 Activities: what Actors do
