@@ -289,6 +289,14 @@ std::vector<Disk*> Host::get_disks() const
   return kernel::actor::simcall([this] { return this->pimpl_->get_disks(); });
 }
 
+void Host::add_disk(Disk* disk)
+{
+  kernel::actor::simcall([this, disk] { this->pimpl_->add_disk(disk); });
+}
+void Host::remove_disk(std::string disk_name)
+{
+  kernel::actor::simcall([this, disk_name] { this->pimpl_->remove_disk(disk_name); });
+}
 /**
  * @ingroup simix_storage_management
  * @brief Returns the list of storages attached to a host.

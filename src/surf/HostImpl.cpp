@@ -159,6 +159,23 @@ std::vector<s4u::Disk*> HostImpl::get_disks()
   return disks;
 }
 
+void HostImpl::add_disk(s4u::Disk* disk)
+{
+  disks_.push_back(disk->get_impl());
+}
+
+void HostImpl::remove_disk(std::string disk_name)
+{
+  auto position = disks_.begin();
+  for (auto const& d : disks_) {
+    if (d->get_name() == disk_name) {
+      disks_.erase(position);
+      break;
+    }
+    position++;
+  }
+}
+
 std::vector<const char*> HostImpl::get_attached_storages()
 {
   std::vector<const char*> storages;

@@ -13,4 +13,7 @@
     <argument value = "/tmp/platforms/g5k.xml"/>
     <argument value = "0"/>
   </actor>
+  <actor host="carl" function="host">
+    <argument value = "/scratch/lib/libsimgrid.so.3.6.2"/>
+  </actor>
 </platform>

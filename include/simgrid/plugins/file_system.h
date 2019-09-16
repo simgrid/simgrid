@@ -152,6 +152,8 @@ public:
   std::map<std::string, sg_size_t>* parse_content(const std::string& filename);
   std::map<std::string, sg_size_t>* get_content() const { return content_.get(); }
   const char* get_mount_point() { return mount_point_.c_str(); }
+  const char* get_mount_point(s4u::Host* remote_host) { return remote_mount_points_[remote_host].c_str(); }
+  void add_remote_mount(Host* host, std::string mount_point) { remote_mount_points_.insert({host, mount_point}); }
   sg_size_t get_size() const { return size_; }
   sg_size_t get_used_size() const { return used_size_; }
   void decr_used_size(sg_size_t size) { used_size_ -= size; }
@@ -159,6 +161,7 @@ public:
 
 private:
   std::unique_ptr<std::map<std::string, sg_size_t>> content_;
+  std::map<Host*, std::string> remote_mount_points_;
   std::string mount_point_;
   sg_size_t used_size_ = 0;
   sg_size_t size_      = static_cast<sg_size_t>(500 * 1024) * 1024 * 1024;

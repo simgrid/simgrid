@@ -21,16 +21,17 @@ static int host(int argc, char* argv[])
   sg_size_t write = file.write(file.size() * 1024);
   XBT_INFO("Have written %llu MiB to '%s'.", write / (1024 * 1024), filename);
 
-  if (std::stoi(argv[4]) != 0) {
-    XBT_INFO("Move '%s' (of size %llu) from '%s' to '%s'", filename, file.size(),
-             simgrid::s4u::Host::current()->get_cname(), argv[2]);
-    file.remote_move(simgrid::s4u::Host::by_name(argv[2]), argv[3]);
-  } else {
-    XBT_INFO("Copy '%s' (of size %llu) from '%s' to '%s'", filename, file.size(),
-             simgrid::s4u::Host::current()->get_cname(), argv[2]);
-    file.remote_copy(simgrid::s4u::Host::by_name(argv[2]), argv[3]);
+  if (argc > 4) {
+    if (std::stoi(argv[4]) != 0) {
+      XBT_INFO("Move '%s' (of size %llu) from '%s' to '%s'", filename, file.size(),
+               simgrid::s4u::Host::current()->get_cname(), argv[2]);
+      file.remote_move(simgrid::s4u::Host::by_name(argv[2]), argv[3]);
+    } else {
+      XBT_INFO("Copy '%s' (of size %llu) from '%s' to '%s'", filename, file.size(),
+               simgrid::s4u::Host::current()->get_cname(), argv[2]);
+      file.remote_copy(simgrid::s4u::Host::by_name(argv[2]), argv[3]);
+    }
   }
-
   return 0;
 }
 
@@ -45,8 +46,8 @@ int main(int argc, char** argv)
 
   for (auto const& h : all_hosts) {
     for (auto const& d : h->get_disks())
-      XBT_INFO("Init: %llu/%llu MiB used/free on '%s@%s'", sg_disk_get_size_used(d) / INMEGA,
-               sg_disk_get_size_free(d) / INMEGA, d->get_cname(), h->get_cname());
+      XBT_INFO("Init: %s: %llu/%llu MiB used/free on '%s@%s'", h->get_cname(), sg_disk_get_size_used(d) / INMEGA,
+               sg_disk_get_size_free(d) / INMEGA, d->get_cname(), d->get_host()->get_cname());
   }
 
   e.run();

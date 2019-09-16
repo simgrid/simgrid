@@ -17,10 +17,22 @@
       </disk>
     </host>
 
+    <host id="carl" speed="1Gf">
+      <prop id="remote_disk" value="/scratch:Disk1:bob"/>
+    </host>
+
     <link id="link1" bandwidth="125MBps" latency="150us" />
+    <link id="link2" bandwidth="125MBps" latency="150us" />
+    <link id="link3" bandwidth="125MBps" latency="150us" />
 
     <route src="bob" dst="alice">
       <link_ctn id="link1" />
+    </route>
+    <route src="bob" dst="carl">
+      <link_ctn id="link2" />
+    </route>
+    <route src="alice" dst="carl">
+      <link_ctn id="link3" />
     </route>
   </zone>
 </platform>

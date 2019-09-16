@@ -5,6 +5,7 @@
 
 #include "simgrid/plugins/file_system.h"
 #include "simgrid/s4u/Actor.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "xbt/config.hpp"
@@ -57,7 +58,11 @@ File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpa
     Disk* d                      = nullptr;
     size_t longest_prefix_length = 0;
     for (auto const& disk : host->get_disks()) {
-      std::string current_mount = disk->extension<FileSystemDiskExt>()->get_mount_point();
+      std::string current_mount;
+      if (disk->get_host() != host)
+        current_mount = disk->extension<FileSystemDiskExt>()->get_mount_point(disk->get_host());
+      else
+        current_mount = disk->extension<FileSystemDiskExt>()->get_mount_point();
       mount_point_              = fullpath_.substr(0, current_mount.length());
       if (mount_point_ == current_mount && current_mount.length() > longest_prefix_length) {
         /* The current mount name is found in the full path and is bigger than the previous*/
@@ -139,28 +144,29 @@ sg_size_t File::read(sg_size_t size)
   if (size_ == 0) /* Nothing to read, return */
     return 0;
   sg_size_t read_size = 0;
-
+  Host* host          = nullptr;
   if (local_storage_) {
     /* Find the host where the file is physically located and read it */
-    Host* host = local_storage_->get_host();
+    host = local_storage_->get_host();
     XBT_DEBUG("READ %s on disk '%s'", get_path(), local_storage_->get_cname());
     // if the current position is close to the end of the file, we may not be able to read the requested size
     read_size = local_storage_->read(std::min(size, size_ - current_position_));
     current_position_ += read_size;
-
-    if (host->get_name() != Host::current()->get_name() && read_size > 0) {
-      /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
-      XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), read_size);
-      host->send_to(Host::current(), read_size);
-    }
   }
 
   if (local_disk_) {
     /* Find the host where the file is physically located and read it */
+    host = local_disk_->get_host();
     XBT_DEBUG("READ %s on disk '%s'", get_path(), local_disk_->get_cname());
     // if the current position is close to the end of the file, we may not be able to read the requested size
     read_size = local_disk_->read(std::min(size, size_ - current_position_));
     current_position_ += read_size;
+  }
+
+  if (host->get_name() != Host::current()->get_name() && read_size > 0) {
+    /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
+    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), read_size);
+    host->send_to(Host::current(), read_size);
   }
 
   return read_size;
@@ -176,17 +182,21 @@ sg_size_t File::write(sg_size_t size, int write_inside)
   if (size == 0) /* Nothing to write, return */
     return 0;
   sg_size_t write_size = 0;
+  Host* host           = nullptr;
+
+  /* Find the host where the file is physically located (remote or local)*/
+  if (local_storage_)
+    host = local_storage_->get_host();
+  if (local_disk_)
+    host = local_disk_->get_host();
+
+  if (host->get_name() != Host::current()->get_name()) {
+    /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
+    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), size);
+    Host::current()->send_to(host, size);
+  }
 
   if (local_storage_) {
-    /* Find the host where the file is physically located (remote or local)*/
-    Host* host = local_storage_->get_host();
-
-    if (host->get_name() != Host::current()->get_name()) {
-      /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
-      XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), size);
-      Host::current()->send_to(host, size);
-    }
-
     XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu' '%llu:%llu'", get_path(), local_storage_->get_cname(), size,
               size_, sg_storage_get_size_used(local_storage_), sg_storage_get_size(local_storage_));
     // If the storage is full before even starting to write
@@ -516,6 +526,51 @@ static void on_host_creation(simgrid::s4u::Host& host)
   host.extension_set<FileDescriptorHostExt>(new FileDescriptorHostExt());
 }
 
+static void on_platform_created()
+{
+  for (auto const& host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
+    const char* remote_disk_str = host->get_property("remote_disk");
+    if (remote_disk_str) {
+      std::vector<std::string> tokens;
+      boost::split(tokens, remote_disk_str, boost::is_any_of(":"));
+      std::string mount_point         = tokens[0];
+      simgrid::s4u::Host* remote_host = simgrid::s4u::Host::by_name_or_null(tokens[2]);
+      xbt_assert(remote_host, "You're trying to access a host that does not exist. Please check your platform file");
+
+      simgrid::s4u::Disk* disk = nullptr;
+      for (auto const& d : remote_host->get_disks())
+        if (d->get_name() == tokens[1]) {
+          disk = d;
+          break;
+        }
+
+      xbt_assert(disk, "You're trying to mount a disk that does not exist. Please check your platform file");
+      disk->extension<FileSystemDiskExt>()->add_remote_mount(remote_host, mount_point);
+      host->add_disk(disk);
+
+      XBT_DEBUG("Host '%s' wants to mount a remote disk: %s of %s mounted on %s", host->get_cname(), disk->get_cname(),
+                remote_host->get_cname(), mount_point.c_str());
+      XBT_DEBUG("Host '%s' now has %lu disks", host->get_cname(), host->get_disks().size());
+    }
+  }
+}
+
+static void on_simulation_end()
+{
+  XBT_DEBUG("Simulation is over, time to unregister remote disks if any");
+  for (auto const& host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
+    const char* remote_disk_str = host->get_property("remote_disk");
+    if (remote_disk_str) {
+      std::vector<std::string> tokens;
+      boost::split(tokens, remote_disk_str, boost::is_any_of(":"));
+      XBT_DEBUG("Host '%s' wants to unmount a remote disk: %s of %s mounted on %s", host->get_cname(),
+                tokens[1].c_str(), tokens[2].c_str(), tokens[0].c_str());
+      host->remove_disk(tokens[1]);
+      XBT_DEBUG("Host '%s' now has %lu disks", host->get_cname(), host->get_disks().size());
+    }
+  }
+}
+
 /* **************************** Public interface *************************** */
 void sg_storage_file_system_init()
 {
@@ -537,6 +592,8 @@ void sg_storage_file_system_init()
     FileDescriptorHostExt::EXTENSION_ID = simgrid::s4u::Host::extension_create<FileDescriptorHostExt>();
     simgrid::s4u::Host::on_creation.connect(&on_host_creation);
   }
+  simgrid::s4u::on_platform_created.connect(&on_platform_created);
+  simgrid::s4u::on_simulation_end.connect(&on_simulation_end);
 }
 
 sg_file_t sg_file_open(const char* fullpath, void* data)

@@ -1,9 +1,10 @@
 #!/usr/bin/env tesh
 
 $ ${bindir:=.}/s4u-io-file-remote ${platfdir}/hosts_with_disks.xml s4u-io-file-remote_d.xml "--log=root.fmt:[%10.6r]%e(%i@%5h)%e%m%n"
-> [  0.000000] (0@     ) Init: 12/511987 MiB used/free on 'Disk1@alice'
-> [  0.000000] (0@     ) Init: 35/511964 MiB used/free on 'Disk1@bob'
-> [  0.000000] (0@     ) Init: 0/512000 MiB used/free on 'Disk2@bob'
+> [  0.000000] (0@     ) Init: alice: 12/511987 MiB used/free on 'Disk1@alice'
+> [  0.000000] (0@     ) Init: bob: 35/511964 MiB used/free on 'Disk1@bob'
+> [  0.000000] (0@     ) Init: bob: 0/512000 MiB used/free on 'Disk2@bob'
+> [  0.000000] (0@     ) Init: carl: 35/511964 MiB used/free on 'Disk1@bob'
 > [  0.000000] (1@alice) Opened file '/lib/libsimgrid.so.3.6.2'
 > [  0.000000] (1@alice) File Descriptor information:
 > 		Full path: '/lib/libsimgrid.so.3.6.2'
@@ -22,11 +23,21 @@ $ ${bindir:=.}/s4u-io-file-remote ${platfdir}/hosts_with_disks.xml s4u-io-file-r
 > 		Host Id: 'bob'
 > 		File Descriptor Id: 0
 > [  0.000000] (2@  bob) Try to write 16 MiB to '/scratch/doc/simgrid/examples/platforms/g5k.xml'
+> [  0.000000] (3@ carl) Opened file '/scratch/lib/libsimgrid.so.3.6.2'
+> [  0.000000] (3@ carl) File Descriptor information:
+> 		Full path: '/scratch/lib/libsimgrid.so.3.6.2'
+> 		Size: 12710497
+> 		Mount point: '/scratch'
+> 		Disk Id: 'Disk1'
+> 		Host Id: 'bob'
+> 		File Descriptor Id: 0
+> [  0.000000] (3@ carl) Try to write 12412 MiB to '/scratch/lib/libsimgrid.so.3.6.2'
 > [  0.435917] (2@  bob) Have written 16 MiB to '/scratch/doc/simgrid/examples/platforms/g5k.xml'.
 > [  0.435917] (2@  bob) Copy '/scratch/doc/simgrid/examples/platforms/g5k.xml' (of size 17436672) from 'bob' to 'alice'
 > [162.912320] (1@alice) Have written 12412 MiB to '/lib/libsimgrid.so.3.6.2'.
 > [162.912320] (1@alice) Move '/lib/libsimgrid.so.3.6.2' (of size 13015548928) from 'alice' to 'bob'
-> [666.092709] (0@     ) End: 17/511982 MiB used/free on 'Disk1@alice'
-> [666.092709] (0@     ) End: 12452/499547 MiB used/free on 'Disk1@bob'
-> [666.092709] (0@     ) End: 0/512000 MiB used/free on 'Disk2@bob'
-> [666.092709] (0@     ) Simulation time 666.093
+> [438.102645] (3@ carl) Have written 12412 MiB to '/scratch/lib/libsimgrid.so.3.6.2'.
+> [778.806631] (0@     ) End: 17/511982 MiB used/free on 'Disk1@alice'
+> [778.806631] (0@     ) End: 24852/487147 MiB used/free on 'Disk1@bob'
+> [778.806631] (0@     ) End: 0/512000 MiB used/free on 'Disk2@bob'
+> [778.806631] (0@     ) Simulation time 778.807
