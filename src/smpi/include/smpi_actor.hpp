@@ -44,6 +44,8 @@ class ActorExt {
   papi_counter_t papi_counter_data_;
 #endif
 public:
+  static simgrid::xbt::Extension<simgrid::s4u::Actor, ActorExt> EXTENSION_ID;
+
   explicit ActorExt(s4u::ActorPtr actor);
   ActorExt(const ActorExt&) = delete;
   ActorExt& operator=(const ActorExt&) = delete;
