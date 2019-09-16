@@ -550,7 +550,7 @@ static void on_platform_created()
 
       XBT_DEBUG("Host '%s' wants to mount a remote disk: %s of %s mounted on %s", host->get_cname(), disk->get_cname(),
                 remote_host->get_cname(), mount_point.c_str());
-      XBT_DEBUG("Host '%s' now has %lu disks", host->get_cname(), host->get_disks().size());
+      XBT_DEBUG("Host '%s' now has %zu disks", host->get_cname(), host->get_disks().size());
     }
   }
 }
@@ -566,7 +566,7 @@ static void on_simulation_end()
       XBT_DEBUG("Host '%s' wants to unmount a remote disk: %s of %s mounted on %s", host->get_cname(),
                 tokens[1].c_str(), tokens[2].c_str(), tokens[0].c_str());
       host->remove_disk(tokens[1]);
-      XBT_DEBUG("Host '%s' now has %lu disks", host->get_cname(), host->get_disks().size());
+      XBT_DEBUG("Host '%s' now has %zu disks", host->get_cname(), host->get_disks().size());
     }
   }
 }
