@@ -15,13 +15,13 @@ static void display_storage_properties(simgrid::s4u::Storage* storage)
 {
   const std::unordered_map<std::string, std::string>* props = storage->get_properties();
   if (not props->empty()) {
-    XBT_INFO("\tProperties of mounted storage: %s", storage->get_cname());
+    XBT_INFO("  Properties of mounted storage: %s", storage->get_cname());
 
     for (auto const& elm : *props) {
       XBT_INFO("    %s->%s", elm.first.c_str(), elm.second.c_str());
     }
   } else {
-    XBT_INFO("\tNo property attached.");
+    XBT_INFO("  No property attached.");
   }
 }
 
@@ -63,9 +63,9 @@ static void display_storage_content(simgrid::s4u::Storage* storage)
   std::map<std::string, sg_size_t>* content = storage->extension<simgrid::s4u::FileSystemStorageExt>()->get_content();
   if (not content->empty()) {
     for (auto const& entry : *content)
-      XBT_INFO("\t%s size: %llu bytes", entry.first.c_str(), entry.second);
+      XBT_INFO("  %s size: %llu bytes", entry.first.c_str(), entry.second);
   } else {
-    XBT_INFO("\tNo content.");
+    XBT_INFO("  No content.");
   }
 }
 
@@ -85,7 +85,7 @@ static void get_set_storage_data(const std::string& storage_name)
   XBT_INFO("Get data: '%s'", data ? data->c_str() : "No User Data");
   storage->set_data(new std::string("Some data"));
   data = static_cast<std::string*>(storage->get_data());
-  XBT_INFO("\tSet and get data: '%s'", data->c_str());
+  XBT_INFO("  Set and get data: '%s'", data->c_str());
   delete data;
 }
 
@@ -106,10 +106,10 @@ static void storage_info(simgrid::s4u::Host* host)
   for (auto const& elm : host->get_mounted_storages()) {
     const std::string& mount_name  = elm.first;
     simgrid::s4u::Storage* storage = elm.second;
-    XBT_INFO("\tStorage name: %s, mount name: %s", storage->get_cname(), mount_name.c_str());
+    XBT_INFO("  Storage name: %s, mount name: %s", storage->get_cname(), mount_name.c_str());
 
-    XBT_INFO("\t\tFree size: %llu bytes", sg_storage_get_size_free(storage));
-    XBT_INFO("\t\tUsed size: %llu bytes", sg_storage_get_size_used(storage));
+    XBT_INFO("    Free size: %llu bytes", sg_storage_get_size_free(storage));
+    XBT_INFO("    Used size: %llu bytes", sg_storage_get_size_used(storage));
 
     display_storage_properties(storage);
     dump_storage_by_name(storage->get_cname());
@@ -118,9 +118,9 @@ static void storage_info(simgrid::s4u::Host* host)
 
 static void client()
 {
-  hsm_put("alice", "/home/doc/simgrid/examples/msg/icomms/small_platform.xml", "c:\\Windows\\toto.cxx");
-  hsm_put("alice", "/home/doc/simgrid/examples/msg/parallel_task/test_ptask_deployment.xml", "c:\\Windows\\titi.xml");
-  hsm_put("alice", "/home/doc/simgrid/examples/msg/alias/masterslave_forwarder_with_alias.c", "c:\\Windows\\tata.c");
+  hsm_put("alice", "/home/doc/simgrid/examples/msg/icomms/small_platform.xml", "/tmp/toto.xml");
+  hsm_put("alice", "/home/doc/simgrid/examples/msg/parallel_task/test_ptask_deployment.xml", "/tmp/titi.xml");
+  hsm_put("alice", "/home/doc/simgrid/examples/msg/alias/masterslave_forwarder_with_alias.c", "/tmp/tata.c");
 
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name("alice");
   mailbox->put(new std::string("finalize"), 0);
