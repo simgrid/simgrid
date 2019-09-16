@@ -1867,7 +1867,6 @@ include examples/platforms/small_platform_profile.xml
 include examples/platforms/small_platform_with_routers.xml
 include examples/platforms/storage/content/small_content.txt
 include examples/platforms/storage/content/storage_content.txt
-include examples/platforms/storage/content/win_storage_content.txt
 include examples/platforms/storage/remote_io.xml
 include examples/platforms/storage/storage.xml
 include examples/platforms/syscoord/generate_peer_platform.pl
