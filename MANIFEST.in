@@ -384,8 +384,6 @@ include examples/s4u/io-file-remote/s4u-io-file-remote.tesh
 include examples/s4u/io-file-remote/s4u-io-file-remote_d.xml
 include examples/s4u/io-file-system/s4u-io-file-system.cpp
 include examples/s4u/io-file-system/s4u-io-file-system.tesh
-include examples/s4u/io-storage-raw/s4u-io-storage-raw.cpp
-include examples/s4u/io-storage-raw/s4u-io-storage-raw.tesh
 include examples/s4u/maestro-set/s4u-maestro-set.cpp
 include examples/s4u/maestro-set/s4u-maestro-set.tesh
 include examples/s4u/mc-failing-assert/s4u-mc-failing-assert.cpp
