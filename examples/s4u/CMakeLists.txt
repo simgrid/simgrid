@@ -13,7 +13,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  io-async io-file-system io-file-remote io-disk-raw
                  platform-failures platform-profile platform-properties
                  plugin-hostload
-                 replay-comm replay-storage
+                 replay-comm replay-io
                  routing-get-clusters
                  synchro-barrier synchro-mutex synchro-semaphore)
   add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
@@ -181,7 +181,7 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/platform-failures/s4u-platform-failures_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/replay-storage/s4u-replay-storage_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/replay-io/s4u-replay-io_d.xml
                   PARENT_SCOPE)
 set(bin_files     ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py                     PARENT_SCOPE)
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p0.txt

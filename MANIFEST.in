@@ -405,10 +405,10 @@ include examples/s4u/replay-comm/s4u-replay-comm.cpp
 include examples/s4u/replay-comm/s4u-replay-comm.tesh
 include examples/s4u/replay-comm/s4u-replay-comm.txt
 include examples/s4u/replay-comm/s4u-replay-comm_d.xml
-include examples/s4u/replay-storage/s4u-replay-storage.cpp
-include examples/s4u/replay-storage/s4u-replay-storage.tesh
+include examples/s4u/replay-io/s4u-replay-io.cpp
+include examples/s4u/replay-io/s4u-replay-io.tesh
+include examples/s4u/replay-io/s4u-replay-io_d.xml
 include examples/s4u/replay-storage/s4u-replay-storage.txt
-include examples/s4u/replay-storage/s4u-replay-storage_d.xml
 include examples/s4u/routing-get-clusters/s4u-routing-get-clusters.cpp
 include examples/s4u/routing-get-clusters/s4u-routing-get-clusters.tesh
 include examples/s4u/synchro-barrier/s4u-synchro-barrier.cpp
