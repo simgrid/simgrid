@@ -2,9 +2,9 @@
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
   <actor host="alice" function="host">
-    <argument value = "/lib/libsimgrid.so.3.6.2"/>
+    <argument value = "/include/surf/simgrid_dtd.h"/>
     <argument value = "bob"/>
-    <argument value = "/scratch/lib/libsimgrid.so.3.6.2"/>
+    <argument value = "/scratch/include/surf/simgrid_dtd.h"/>
     <argument value = "1"/>
   </actor>
   <actor host="bob" function="host">
@@ -14,6 +14,6 @@
     <argument value = "0"/>
   </actor>
   <actor host="carl" function="host">
-    <argument value = "/scratch/lib/libsimgrid.so.3.6.2"/>
+    <argument value = "/scratch/include/surf/simgrid_dtd.h"/>
   </actor>
 </platform>
