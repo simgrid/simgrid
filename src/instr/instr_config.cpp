@@ -294,9 +294,9 @@ void TRACE_global_init()
                                      6);
 
   /* Connect callbacks */
-  simgrid::s4u::on_platform_creation.connect(TRACE_start);
-  simgrid::s4u::on_deadlock.connect(TRACE_end);
-  simgrid::s4u::on_simulation_end.connect(TRACE_end);
+  simgrid::s4u::Engine::on_platform_creation.connect(TRACE_start);
+  simgrid::s4u::Engine::on_deadlock.connect(TRACE_end);
+  simgrid::s4u::Engine::on_simulation_end.connect(TRACE_end);
 }
 
 static void print_line(const char* option, const char* desc, const char* longdesc)

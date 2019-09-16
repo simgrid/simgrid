@@ -64,9 +64,6 @@ public:
   bool is_on() const;
   void turn_off();
 
-  void* get_data(); /** Should be used only from the C interface. Prefer extensions in C++ */
-  void set_data(void* d);
-
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v325("Please use Link::set_state_profile()") void set_state_trace(
       kernel::profile::Profile* profile)

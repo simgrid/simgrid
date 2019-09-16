@@ -489,7 +489,7 @@ void sg_host_energy_plugin_init()
   simgrid::s4u::Host::on_state_change.connect(&on_host_change);
   simgrid::s4u::Host::on_speed_change.connect(&on_host_change);
   simgrid::s4u::Host::on_destruction.connect(&on_host_destruction);
-  simgrid::s4u::on_simulation_end.connect(&on_simulation_end);
+  simgrid::s4u::Engine::on_simulation_end.connect(&on_simulation_end);
   simgrid::kernel::resource::CpuAction::on_state_change.connect(&on_action_state_change);
   // We may only have one actor on a node. If that actor executes something like
   //   compute -> recv -> compute

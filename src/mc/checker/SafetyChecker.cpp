@@ -113,7 +113,7 @@ void SafetyChecker::run()
 
     // Search an enabled transition in the current state; backtrack if the interleave set is empty
     // get_request also sets state.transition to be the one corresponding to the returned req
-    smx_simcall_t req = MC_state_get_request(state);
+    smx_simcall_t req = MC_state_choose_request(state);
     // req is now the transition of the process that was selected to be executed
 
     if (req == nullptr) {

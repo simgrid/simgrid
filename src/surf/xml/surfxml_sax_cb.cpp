@@ -409,7 +409,7 @@ void STag_surfxml_platform() {
              surf_parsed_filename.c_str(), version);
 }
 void ETag_surfxml_platform(){
-  simgrid::s4u::on_platform_created();
+  simgrid::s4u::Engine::on_platform_created();
 }
 
 void STag_surfxml_host(){
