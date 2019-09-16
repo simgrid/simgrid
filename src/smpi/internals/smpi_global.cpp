@@ -681,6 +681,8 @@ void SMPI_init(){
   });
   simgrid::s4u::Host::on_creation.connect(
       [](simgrid::s4u::Host& host) { host.extension_set(new simgrid::smpi::Host(&host)); });
+  for (auto const& host : simgrid::s4u::Engine::get_instance()->get_all_hosts())
+    host->extension_set(new simgrid::smpi::Host(host));
 
   smpi_init_options();
   if (not MC_is_active()) {

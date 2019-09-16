@@ -61,13 +61,6 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   if (code != nullptr) // When started with smpirun, we will not execute a function
     simgrid::s4u::Engine::get_instance()->register_function(name, code);
 
-  static bool already_called = false;
-  if (not already_called) {
-    already_called = true;
-    for (auto const& host : simgrid::s4u::Engine::get_instance()->get_all_hosts())
-      host->extension_set(new simgrid::smpi::Host(host));
-  }
-
   Instance instance(std::string(name), num_processes, MPI_COMM_NULL);
 
   smpi_instances.insert(std::pair<std::string, Instance>(name, instance));
