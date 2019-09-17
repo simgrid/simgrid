@@ -54,9 +54,6 @@ public:
   void set_property(const std::string&, const std::string& value);
   Host* get_host();
 
-  void set_data(void* data) { userdata_ = data; }
-  void* get_data() { return userdata_; }
-
   IoPtr io_init(sg_size_t size, s4u::Io::OpType type);
 
   IoPtr read_async(sg_size_t size);
@@ -69,7 +66,6 @@ public:
 private:
   kernel::resource::DiskImpl* const pimpl_;
   std::string name_;
-  void* userdata_ = nullptr;
 };
 
 } // namespace s4u
