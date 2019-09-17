@@ -190,34 +190,22 @@ Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size
 
 double NetworkNS3Model::next_occuring_event(double now)
 {
-  double time_to_next_flow_completion;
+  double time_to_next_flow_completion = 0.0;
   XBT_DEBUG("ns3_next_occuring_event");
 
   //get the first relevant value from the running_actions list
   if (get_started_action_set()->empty() || now == 0.0)
     return -1.0;
 
-  bool ns3_processed_all_finished_flows;
-  do {
-    double delta = surf_get_clock() + now - ns3::Simulator::Now().GetSeconds();
-    ns3_simulator(delta);
-    time_to_next_flow_completion = ns3::Simulator::Now().GetSeconds() - surf_get_clock();
-
-    // NS3 stops as soon as it detects that a flow is finished.
-    // However, to stop NS3 in a consistant state for the current simulated time,
-    // we need to make sure that NS3 detects all the flows finishing at the current time.
-    ns3_processed_all_finished_flows = true;
-    // A flow that has 0 remaining_ is finishing at the current simulated time.
-    // However, NS3 hadn't notice it yet if finished_ == false.
-    for (const auto& elm : flow_from_sock) {
-      SgFlow* sgFlow = elm.second;
-      if(!sgFlow->finished_ && sgFlow->remaining_ == 0){
-        ns3_processed_all_finished_flows = false;
-        break;
-      }
-    }
-  } while (!ns3_processed_all_finished_flows || double_equals(time_to_next_flow_completion, 0, sg_surf_precision));
-
+  XBT_DEBUG("doing a ns3 simulation for a duration of %f", now);
+  ns3_simulator(now);  
+  time_to_next_flow_completion = ns3::Simulator::Now().GetSeconds() - surf_get_clock();
+  // NS-3 stops as soon as a flow ends,
+  // but it does not process the other flows that may finish at the same (simulated) time.
+  // If another flow ends at the same time, time_to_next_flow_completion = 0
+  if(double_equals(time_to_next_flow_completion, 0, sg_surf_precision))
+    time_to_next_flow_completion = 0.0; 
+ 
   XBT_DEBUG("min       : %f", now);
   XBT_DEBUG("ns3  time : %f", ns3::Simulator::Now().GetSeconds());
   XBT_DEBUG("surf time : %f", surf_get_clock());
@@ -245,7 +233,13 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     SgFlow* sgFlow            = elm.second;
     NetworkNS3Action * action = sgFlow->action_;
     XBT_DEBUG("Processing socket %p (action %p)",sgFlow,action);
-    action->set_remains(action->get_cost() - sgFlow->sent_bytes_);
+    // Because NS3 stops as soon as a flow is finished, the other flows that ends at the same time may remains in an inconsistant state
+    // (i.e. remains_ == 0 but finished_ == false).
+    // However, SimGrid considers sometimes that an action with remains_ == 0 is finished.
+    // Thus, to avoid inconsistencies between SimGrid and NS3, set remains to 0 only when the flow is finished in NS3
+    int remains = action->get_cost() - sgFlow->sent_bytes_;
+    if(remains > 0)
+      action->set_remains(remains);
 
     if (TRACE_is_enabled() && action->get_state() == kernel::resource::Action::State::STARTED) {
       double data_delta_sent = sgFlow->sent_bytes_ - action->last_sent_;
@@ -263,6 +257,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     if(sgFlow->finished_){
       socket_to_destroy.push_back(ns3_socket);
       XBT_DEBUG("Destroy socket %p of action %p", ns3_socket.c_str(), action);
+      action->set_remains(0);
       action->finish(kernel::resource::Action::State::FINISHED);
     } else {
       XBT_DEBUG("Socket %p sent %u bytes out of %u (%u remaining)", ns3_socket.c_str(), sgFlow->sent_bytes_,
