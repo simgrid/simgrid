@@ -16,6 +16,9 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)");
 
 namespace simgrid {
+
+template class xbt::Extendable<msg::Task>;
+
 namespace msg {
 
 Task::Task(const std::string& name, double flops_amount, double bytes_amount, void* data)

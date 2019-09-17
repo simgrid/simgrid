@@ -18,9 +18,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_host, s4u, "Logging specific to the S4U host
 XBT_LOG_EXTERNAL_CATEGORY(surf_route);
 
 namespace simgrid {
-namespace xbt {
-template class Extendable<s4u::Host>;
-} // namespace xbt
+
+template class xbt::Extendable<s4u::Host>;
 
 namespace s4u {
 

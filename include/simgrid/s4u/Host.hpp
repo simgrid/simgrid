@@ -16,9 +16,7 @@
 
 namespace simgrid {
 
-namespace xbt {
-extern template class XBT_PUBLIC Extendable<s4u::Host>;
-} // namespace xbt
+extern template class XBT_PUBLIC xbt::Extendable<s4u::Host>;
 
 namespace s4u {
 /** @ingroup s4u_api

@@ -27,6 +27,9 @@ int sg_storage_max_file_descriptors = 1024;
  */
 
 namespace simgrid {
+
+template class xbt::Extendable<s4u::File>;
+
 namespace s4u {
 simgrid::xbt::Extension<Disk, FileSystemDiskExt> FileSystemDiskExt::EXTENSION_ID;
 simgrid::xbt::Extension<Storage, FileSystemStorageExt> FileSystemStorageExt::EXTENSION_ID;

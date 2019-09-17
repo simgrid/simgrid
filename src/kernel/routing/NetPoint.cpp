@@ -10,6 +10,9 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
 namespace simgrid {
+
+template class xbt::Extendable<kernel::routing::NetPoint>;
+
 namespace kernel {
 namespace routing {
 

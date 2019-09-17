@@ -21,6 +21,9 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_actor, s4u, "S4U actors");
 
 namespace simgrid {
+
+template class xbt::Extendable<s4u::Actor>;
+
 namespace s4u {
 
 xbt::signal<void(Actor&)> s4u::Actor::on_creation;

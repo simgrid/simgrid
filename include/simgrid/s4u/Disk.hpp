@@ -17,6 +17,9 @@
 #include <unordered_map>
 
 namespace simgrid {
+
+extern template class XBT_PUBLIC xbt::Extendable<s4u::Disk>;
+
 namespace s4u {
 
 /** Disk represent the disk resources associated to a host

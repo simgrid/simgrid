@@ -20,6 +20,9 @@ void surf_vm_model_init_HL13()
 }
 
 namespace simgrid {
+
+template class xbt::Extendable<vm::VirtualMachineImpl>;
+
 namespace vm {
 /*************
  * Callbacks *

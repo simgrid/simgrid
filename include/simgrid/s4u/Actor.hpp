@@ -19,6 +19,9 @@
 #include <unordered_map>
 
 namespace simgrid {
+
+extern template class XBT_PUBLIC xbt::Extendable<s4u::Actor>;
+
 namespace s4u {
 
 /** An actor is an independent stream of execution in your distributed application.

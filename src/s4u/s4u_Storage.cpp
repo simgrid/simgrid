@@ -11,9 +11,8 @@
 #include "src/surf/StorageImpl.hpp"
 
 namespace simgrid {
-namespace xbt {
-template class Extendable<s4u::Storage>;
-} // namespace xbt
+
+template class xbt::Extendable<s4u::Storage>;
 
 namespace s4u {
 

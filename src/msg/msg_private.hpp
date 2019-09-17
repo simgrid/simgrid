@@ -16,6 +16,9 @@
 
 /**************** datatypes **********************************/
 namespace simgrid {
+
+extern template class XBT_PUBLIC xbt::Extendable<msg::Task>;
+
 namespace msg {
 class Task : public xbt::Extendable<Task> {
   std::string name_             = "";

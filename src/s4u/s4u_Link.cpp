@@ -14,6 +14,9 @@
 #include "xbt/log.h"
 
 namespace simgrid {
+
+template class xbt::Extendable<s4u::Link>;
+
 namespace s4u {
 
 xbt::signal<void(Link&)> Link::on_creation;

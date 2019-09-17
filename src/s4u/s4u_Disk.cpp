@@ -10,9 +10,8 @@
 #include "src/kernel/resource/DiskImpl.hpp"
 
 namespace simgrid {
-namespace xbt {
-template class Extendable<s4u::Disk>;
-} // namespace xbt
+
+template class xbt::Extendable<s4u::Disk>;
 
 namespace s4u {
 

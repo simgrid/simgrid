@@ -85,6 +85,9 @@ SG_END_DECL
 #ifdef __cplusplus
 
 namespace simgrid {
+
+extern template class XBT_PUBLIC xbt::Extendable<s4u::File>;
+
 namespace s4u {
 
 /** @brief A simulated file

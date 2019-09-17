@@ -13,6 +13,9 @@
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 
 namespace simgrid {
+
+extern template class XBT_PUBLIC xbt::Extendable<kernel::routing::NetPoint>;
+
 namespace kernel {
 namespace routing {
 

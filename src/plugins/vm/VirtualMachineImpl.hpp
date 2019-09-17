@@ -14,6 +14,9 @@
 #define VM_INTERFACE_HPP_
 
 namespace simgrid {
+
+extern template class XBT_PUBLIC xbt::Extendable<vm::VirtualMachineImpl>;
+
 namespace vm {
 
 /************
