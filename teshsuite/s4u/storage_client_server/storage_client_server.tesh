@@ -1,11 +1,12 @@
-$ ./storage_client_server ${platfdir}/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
-> [  0.000000] (server@alice) *** Storage info on alice ***
-> [  0.000000] (server@alice)   Storage name: Disk2, mount name: /tmp
+$ ./storage_client_server ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+> [  0.000000] (server@alice) *** Disk info on alice ***
+> [  0.000000] (server@alice)   Disk name: Disk1, mount name: /
 > [  0.000000] (server@alice)     Free size: 536857690006 bytes
 > [  0.000000] (server@alice)     Used size: 13221994 bytes
-> [  0.000000] (server@alice)   No property attached.
-> [  0.000000] (server@alice) *** Dump a storage element ***
-> [  0.000000] (server@alice) Print the content of the storage element: Disk2
+> [  0.000000] (server@alice)   Properties of disk: Disk1
+> [  0.000000] (server@alice)     content->storage/content/small_content.txt
+> [  0.000000] (server@alice) *** Dump a disk ***
+> [  0.000000] (server@alice) Print the content of the disk: Disk1
 > [  0.000000] (server@alice)   /bin/smpicc size: 918 bytes
 > [  0.000000] (server@alice)   /bin/tesh size: 356434 bytes
 > [  0.000000] (server@alice)   /doc/simgrid/examples/msg/README size: 4805 bytes
@@ -37,22 +38,23 @@ $ ./storage_client_server ${platfdir}/storage/storage.xml "--log=root.fmt:[%10.6
 > [  0.000000] (server@alice)   /include/xbt/fifo.h size: 3626 bytes
 > [  0.000000] (server@alice)   /lib/libsimgrid.so.3.6.2 size: 12710497 bytes
 > [  0.000000] (server@alice) Server waiting for transfers ...
-> [  0.000010] (client@bob) client has read 972 on /home/doc/simgrid/examples/msg/icomms/small_platform.xml
+> [  0.000010] (client@bob) client has read 972 on /scratch/doc/simgrid/examples/msg/icomms/small_platform.xml
 > [  0.000010] (client@bob) client sends 972 to alice
-> [  0.001986] (server@alice) 972 bytes on 972 bytes have been written by server on /sd1
-> [  0.401976] (client@bob) client has read 654 on /home/doc/simgrid/examples/msg/parallel_task/test_ptask_deployment.xml
+> [  0.001982] (server@alice) 972 bytes on 972 bytes have been written by server on /sd1
+> [  0.401976] (client@bob) client has read 654 on /scratch/doc/simgrid/examples/msg/parallel_task/test_ptask_deployment.xml
 > [  0.401976] (client@bob) client sends 654 to alice
-> [  0.403944] (server@alice) 654 bytes on 654 bytes have been written by server on /sd1
-> [  0.803996] (client@bob) client has read 6217 on /home/doc/simgrid/examples/msg/alias/masterslave_forwarder_with_alias.c
+> [  0.403942] (server@alice) 654 bytes on 654 bytes have been written by server on /sd1
+> [  0.803996] (client@bob) client has read 6217 on /scratch/doc/simgrid/examples/msg/alias/masterslave_forwarder_with_alias.c
 > [  0.803996] (client@bob) client sends 6217 to alice
-> [  0.806104] (server@alice) 6217 bytes on 6217 bytes have been written by server on /sd1
-> [  1.207952] (server@alice) *** Storage info on alice ***
-> [  1.207952] (server@alice)   Storage name: Disk2, mount name: /tmp
+> [  0.806079] (server@alice) 6217 bytes on 6217 bytes have been written by server on /sd1
+> [  1.207952] (server@alice) *** Disk info on alice ***
+> [  1.207952] (server@alice)   Disk name: Disk1, mount name: /
 > [  1.207952] (server@alice)     Free size: 536857682163 bytes
 > [  1.207952] (server@alice)     Used size: 13229837 bytes
-> [  1.207952] (server@alice)   No property attached.
-> [  1.207952] (server@alice) *** Dump a storage element ***
-> [  1.207952] (server@alice) Print the content of the storage element: Disk2
+> [  1.207952] (server@alice)   Properties of disk: Disk1
+> [  1.207952] (server@alice)     content->storage/content/small_content.txt
+> [  1.207952] (server@alice) *** Dump a disk ***
+> [  1.207952] (server@alice) Print the content of the disk: Disk1
 > [  1.207952] (server@alice)   /bin/smpicc size: 918 bytes
 > [  1.207952] (server@alice)   /bin/tesh size: 356434 bytes
 > [  1.207952] (server@alice)   /doc/simgrid/examples/msg/README size: 4805 bytes
@@ -83,14 +85,13 @@ $ ./storage_client_server ${platfdir}/storage/storage.xml "--log=root.fmt:[%10.6
 > [  1.207952] (server@alice)   /include/surf/simgrid_dtd.h size: 23583 bytes
 > [  1.207952] (server@alice)   /include/xbt/fifo.h size: 3626 bytes
 > [  1.207952] (server@alice)   /lib/libsimgrid.so.3.6.2 size: 12710497 bytes
-> [  1.207952] (server@alice)   /tata.c size: 6217 bytes
-> [  1.207952] (server@alice)   /titi.xml size: 654 bytes
-> [  1.207952] (server@alice)   /toto.xml size: 972 bytes
-> [  1.207952] (server@alice) Storage Disk1 is attached to bob
-> [  1.207952] (client@bob) *** GET/SET DATA for storage element: Disk1 ***
+> [  1.207952] (server@alice)   /tmp/tata.c size: 6217 bytes
+> [  1.207952] (server@alice)   /tmp/titi.xml size: 654 bytes
+> [  1.207952] (server@alice)   /tmp/toto.xml size: 972 bytes
+> [  1.207952] (client@bob) *** GET/SET DATA for disk: Disk1 ***
 > [  1.207952] (client@bob) Get data: 'No User Data'
 > [  1.207952] (client@bob)   Set and get data: 'Some data'
-> [  1.207952] (server@alice) Storage Disk2 is attached to alice
-> [  1.207952] (server@alice) Storage Disk3 is attached to carl
-> [  1.207952] (server@alice) Storage Disk4 is attached to denise
+> [  1.207952] (server@alice) Disk1 is attached to alice
+> [  1.207952] (server@alice) Disk1 is attached to bob
+> [  1.207952] (server@alice) Disk2 is attached to bob
 > [  1.207952] (maestro@) Simulated time: 1.20795
