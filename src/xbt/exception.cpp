@@ -140,7 +140,8 @@ void install_exception_handler()
 void xbt_throw_impossible(const char* file, int line, const char* func)
 {
   std::stringstream ss;
-  ss << file << ":" << line << ":" << func << ": The Impossible Did Happen (yet again). Please report this bug.";
+  ss << file << ":" << line << ":" << func
+     << ": The Impossible Did Happen (yet again). Please report this bug (after reading https://xkcd.com/2200 :)";
   throw simgrid::xbt::ImpossibleError(ss.str());
 }
 void xbt_throw_unimplemented(const char* file, int line, const char* func)
