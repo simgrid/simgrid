@@ -17,6 +17,7 @@
 #include <ns3/ipv4-address-helper.h>
 #include <ns3/packet-sink-helper.h>
 #include <ns3/point-to-point-helper.h>
+#include <ns3/application-container.h>
 
 #include "network_ns3.hpp"
 #include "ns3/ns3_simulator.hpp"
@@ -39,6 +40,7 @@ std::vector<std::string> IPV4addr;
  *****************/
 
 extern std::map<std::string, SgFlow*> flow_from_sock;
+extern std::map<std::string, ns3::ApplicationContainer> sink_from_sock;
 
 static ns3::InternetStackHelper stack;
 static ns3::NodeContainer nodes;
@@ -274,6 +276,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     }
     delete flow;
     flow_from_sock.erase(ns3_socket);
+    sink_from_sock.erase(ns3_socket);
   }
 }
 
@@ -330,17 +333,22 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
 
   XBT_DEBUG("ns3: Create flow of %.0f Bytes from %u to %u with Interface %s", totalBytes, node1, node2, addr.c_str());
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress(ns3::Ipv4Address::GetAny(), port_number));
-  sink.Install(dst_node);
+  ns3::ApplicationContainer apps = sink.Install(dst_node);
 
   ns3::Ptr<ns3::Socket> sock = ns3::Socket::CreateSocket(src_node, ns3::TcpSocketFactory::GetTypeId());
 
   flow_from_sock.insert({transform_socket_ptr(sock), new SgFlow(totalBytes, this)});
+  sink_from_sock.insert({transform_socket_ptr(sock), apps});
 
   sock->Bind(ns3::InetSocketAddress(port_number));
 
   ns3::Simulator::ScheduleNow(&start_flow, sock, addr.c_str(), port_number);
 
   port_number++;
+  if(port_number > 65000){
+    port_number = 1025;
+    XBT_WARN("Too many connections! Port number is saturated. Trying to use the oldest ports.");
+  }
   xbt_assert(port_number <= 65000, "Too many connections! Port number is saturated.");
 
   s4u::Link::on_communicate(*this, src, dst);
