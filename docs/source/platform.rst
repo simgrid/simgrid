@@ -29,7 +29,7 @@ documentation also contains some :ref:`hints and howtos <howto>`, as well
 as the full :ref:`XML reference guide <platform_reference>`.
 
 
-Any simulated platform must contain **basic elements**, such as hosts, links, storages, etc. SimGrid gives you a great
+Any simulated platform must contain **basic elements**, such as hosts, links, disks, etc. SimGrid gives you a great
 liberty when defining the **routing of your platform**, i.e., the network path taken between each pair of hosts.
 Finally, you may also describe an **experimental scenario**, with qualitative (e.g., bandwidth variations representing
 an external load) and qualitative (e.g., representing how some elements fail and restart over time) changes.

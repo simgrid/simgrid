@@ -17,7 +17,7 @@ namespace s4u {
 
 /** I/O Activity, representing the asynchronous disk access.
  *
- * They are generated from Storage::io_init() or Storage::read() and Storage::write().
+ * They are generated from Disk::io_init(), Disk::read() Disk::read_async(), Disk::write() and Disk::write_async().
  */
 
 class XBT_PUBLIC Io : public Activity {

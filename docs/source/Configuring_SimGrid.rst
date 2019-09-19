@@ -183,7 +183,7 @@ Configuring the Platform Models
 Choosing the Platform Models
 ............................
 
-SimGrid comes with several network, CPU and storage models built in,
+SimGrid comes with several network, CPU and disk models built in,
 and you can change the used model at runtime by changing the passed
 configuration. The three main configuration items are given below.
 For each of these items, passing the special ``help`` value gives you

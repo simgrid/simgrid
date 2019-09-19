@@ -37,16 +37,16 @@ protected:
   virtual ~Disk() = default;
 
 public:
-  /** @brief Callback signal fired when a new Storage is created */
+  /** @brief Callback signal fired when a new Disk is created */
   static xbt::signal<void(Disk&)> on_creation;
-  /** @brief Callback signal fired when a Storage is destroyed */
+  /** @brief Callback signal fired when a Disk is destroyed */
   static xbt::signal<void(Disk const&)> on_destruction;
-  /** @brief Callback signal fired when a Storage's state changes */
+  /** @brief Callback signal fired when a Disk's state changes */
   static xbt::signal<void(Disk const&)> on_state_change;
 
-  /** @brief Retrieves the name of that storage as a C++ string */
+  /** @brief Retrieves the name of that disk as a C++ string */
   std::string const& get_name() const { return name_; }
-  /** @brief Retrieves the name of that storage as a C string */
+  /** @brief Retrieves the name of that disk as a C string */
   const char* get_cname() const { return name_.c_str(); }
 
   const std::unordered_map<std::string, std::string>* get_properties() const;

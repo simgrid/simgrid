@@ -12,7 +12,7 @@ execute user-provided functions. The actors have to explicitly use the
 S4U interface to express their computation, communication, disk usage
 and other |Activities|_, so that they get reflected within the
 simulator. These activities take place on **Resources** (|Hosts|_,
-|Links|_, |Storages|_). SimGrid predicts the time taken by each
+|Links|_, |Disks|_). SimGrid predicts the time taken by each
 activity and orchestrates accordingly the actors waiting for the
 completion of these activities.
 
@@ -33,8 +33,8 @@ between communicating actors.
 .. |Links| replace:: **Links**
 .. _Links: app_s4u.html#s4u-link
 
-.. |Storages| replace:: **Storages**
-.. _Storages: app_s4u.html#s4u-storage
+.. |Disks| replace:: **Disks**
+.. _Disks: app_s4u.html#s4u-disk
 
 .. |VirtualMachines| replace:: **VirtualMachines**
 .. _VirtualMachines: app_s4u.html#s4u-virtualmachine

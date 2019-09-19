@@ -63,7 +63,7 @@ name of the flag and ``value`` is what it has to be set to.
 A host is the computing resource on which an actor can run. See :cpp:class:`simgrid::s4u::Host`.
 
 **Parent tags:** :ref:`pf_tag_zone` (only leaf zones, i.e., zones containing neither inner zones nor clusters) |br|
-**Children tags:** :ref:`pf_tag_mount`, :ref:`pf_tag_prop`, :ref:`pf_tag_storage` |br|
+**Children tags:** :ref:`pf_tag_mount`, :ref:`pf_tag_prop`, :ref:`pf_tag_disk` |br|
 **Attributes:**
 
 :``id``: Host name.
@@ -329,11 +329,12 @@ following functions:
 - Cluster: this is a zone, see below.
 - Host: :cpp:func:`simgrid::s4u::Host::get_property` or :cpp:func:`MSG_host_get_property_value`
 - Link: :cpp:func:`simgrid::s4u::Link::get_property`
-- Storage: :cpp:func:`simgrid::s4u::Storage::get_property` or :cpp:func:`MSG_storage_get_property_value`
+- Disk: :cpp:func:`simgrid::s4u::Disk::get_property`
+- Storage :cpp:func:`MSG_storage_get_property_value` (deprecated)
 - Zone: :cpp:func:`simgrid::s4u::Zone::get_property` of :cpp:func:`MSG_zone_get_property_value`
 
 **Parent tags:** :ref:`pf_tag_actor`, :ref:`pf_tag_config`, :ref:`pf_tag_cluster`, :ref:`pf_tag_host`,
-:ref:`pf_tag_link`, :ref:`pf_tag_storage`, :ref:`pf_tag_zone` |br|
+:ref:`pf_tag_link`, :ref:`pf_tag_disk`,:ref:`pf_tag_storage` (deprecated), :ref:`pf_tag_zone` |br|
 **Children tags:** none |br|
 **Attributes:**
 
@@ -373,7 +374,6 @@ particular, they are useful when you want to use the NS3 bindings to
 break the routes that are longer than 1 hop.
 
 **Parent tags:** :ref:`pf_tag_zone` (only leaf zones, i.e., zones containing neither inner zones nor clusters) |br|
-**Children tags:** :ref:`pf_tag_prop`, :ref:`pf_tag_storage` |br|
 **Attributes:**
 
 :``id``: Router name.
