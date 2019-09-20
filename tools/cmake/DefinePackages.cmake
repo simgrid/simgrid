@@ -1133,6 +1133,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/griffon.xml
   examples/platforms/meta_cluster.xml
   examples/platforms/multicore_machine.xml
+  examples/platforms/ns3-big-cluster.xml
   examples/platforms/onelink.xml
   examples/platforms/prop.xml
   examples/platforms/routing_cluster.xml
