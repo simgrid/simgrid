@@ -19,6 +19,9 @@ S4U:
    - sg_{actor,host,link}_{data,data_set}() now all exist.
      Use them to attach user data to the object and retrieve it.
 
+Models:
+ - Improved the usability of ns-3. Several bugs were ironed out.
+
 MSG:
  - convert a new set of functions to the S4U C interface and move the old MSG
    versions to legacy (MSG_process_self*, MSG_process_{un}ref, ...)
@@ -41,13 +44,17 @@ XBT:
  - xbt_mutex_t and xbt_cond_t are now marked as deprecated, a new C interface
    on S4U is already available to replace them by sg_mutex_t and sg_cond_t. 
 
-Bugs:
+Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - FG#28: add sg_actor_self (and other wrappers on this_actor methods)
  - FG#29 and FG#33: provide a new C API to mutexes and condition variables 
  - FG#30: convert MSG_process_{un}ref to sg_actor_{un}ref
  - FG#31: per-actor data
  - FG#34: SG_BARRIER_SERIAL_THREAD?
  - FG#35: model-checker does not like buster-produced binaries
+ - FG!13: MC: complete workaround in the error msg seen on modern systems
+ - FG!15: execute_flops now logs compute
+ - FG!16: Fix the ns-3 bindings when several flows are simultaneously finishing
+ - FG!17: ns-3: unblock the right number of communications + others issues
 
 ----------------------------------------------------------------------------
 
