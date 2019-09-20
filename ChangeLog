@@ -48,7 +48,7 @@ Bugs:
  - FG#31: per-actor data
  - FG#34: SG_BARRIER_SERIAL_THREAD?
  - FG#35: model-checker does not like buster-produced binaries
-
+ - GH#207: Error in the throughput of TCP transfer
 ----------------------------------------------------------------------------
 
 SimGrid (3.23.2) July 8. 2019
