@@ -3,31 +3,31 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u.hpp"
-#include "xbt/log.h"
-
 #include "simgrid/msg.h"
+#include "simgrid/s4u.hpp"
 #include "src/surf/network_cm02.hpp"
+#include "xbt/log.h"
 #include <exception>
 #include <iostream>
 #include <random>
 #include <string>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(simulator, "[wifi_usage] 1STA-1LINK-1NODE-CT");
+XBT_LOG_NEW_DEFAULT_CATEGORY(simulator, "[wifi_usage] 2STA-1NODE");
 
 void setup_simulation();
 static void flowActor(std::vector<std::string> args);
 
 /**
  * Theory says:
- *   - AP1 is the most constraint constraint
  *   - When two STA communicates on the same AP we have the following AP constraint:
- *     1.05/r_STA1 * rho_STA1 <= 1
- *   - Thus:
- *      mu = 1 / [ 1/1 * 1.05/54Mbps ] = 51428571
- *      simulation_time = 1000*8 / mu = 0.0001555556s
- * BTW: SimGrid should give you: 0.000156s due to computation side effects
- *
+ *     w/o cross-traffic:       1/r_STA1 * rho_STA1 +    1/r_STA2 * rho_2 <= 1
+ *     with cross-traffic:   1.05/r_STA1 * rho_STA1 + 1.05/r_STA2 * rho_2 <= 1
+ *   - Thus without cross-traffic:
+ *      mu = 1 / [ 1/2 * 1/54Mbps + 1/54Mbps ] = 5.4e+07
+ *      simulation_time = 1000*8 / [ mu / 2 ] = 0.0002962963s
+ *   - Thus with cross-traffic:
+ *      mu = 1 / [ 1/2 * 1.05/54Mbps + 1.05/54Mbps ] =  51428571
+ *      simulation_time = 1000*8 / [ mu / 2 ] = 0.0003111111s
  */
 int main(int argc, char** argv)
 {
@@ -38,6 +38,7 @@ int main(int argc, char** argv)
   setup_simulation();
   engine.run();
   XBT_INFO("Simulation took %fs", simgrid::s4u::Engine::get_clock());
+
   return (0);
 }
 
@@ -45,13 +46,14 @@ void setup_simulation()
 {
 
   std::vector<std::string> args, noArgs;
-  args.push_back("NODE1");
+  args.push_back("STA2");
   args.push_back("1000");
   simgrid::s4u::Actor::create("STA1", simgrid::s4u::Host::by_name("STA1"), flowActor, args);
-  simgrid::s4u::Actor::create("NODE1", simgrid::s4u::Host::by_name("NODE1"), flowActor, noArgs);
+  simgrid::s4u::Actor::create("STA2", simgrid::s4u::Host::by_name("STA2"), flowActor, noArgs);
   simgrid::kernel::resource::NetworkWifiLink* l =
       (simgrid::kernel::resource::NetworkWifiLink*)simgrid::s4u::Link::by_name("AP1")->get_impl();
   l->set_host_rate(simgrid::s4u::Host::by_name("STA1"), 0);
+  l->set_host_rate(simgrid::s4u::Host::by_name("STA2"), 0);
 }
 
 static void flowActor(std::vector<std::string> args)
