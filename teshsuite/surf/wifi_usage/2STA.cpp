@@ -46,14 +46,14 @@ void setup_simulation()
 {
 
   std::vector<std::string> args, noArgs;
-  args.push_back("STA2");
+  args.push_back("Station 2");
   args.push_back("1000");
-  simgrid::s4u::Actor::create("STA1", simgrid::s4u::Host::by_name("STA1"), flowActor, args);
-  simgrid::s4u::Actor::create("STA2", simgrid::s4u::Host::by_name("STA2"), flowActor, noArgs);
+  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("Station 1"), flowActor, args);
+  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("Station 2"), flowActor, noArgs);
   simgrid::kernel::resource::NetworkWifiLink* l =
       (simgrid::kernel::resource::NetworkWifiLink*)simgrid::s4u::Link::by_name("AP1")->get_impl();
-  l->set_host_rate(simgrid::s4u::Host::by_name("STA1"), 0);
-  l->set_host_rate(simgrid::s4u::Host::by_name("STA2"), 0);
+  l->set_host_rate(simgrid::s4u::Host::by_name("Station 1"), 0);
+  l->set_host_rate(simgrid::s4u::Host::by_name("Station 2"), 0);
 }
 
 static void flowActor(std::vector<std::string> args)

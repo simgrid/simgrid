@@ -1,10 +1,10 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/2STA ${platfdir}/wifi/2STA.xml --cfg=network/crosstraffic:0
+$ ${bindir:=.}/2STA ${platfdir}/wifi.xml --cfg=network/crosstraffic:0
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/crosstraffic' to '0'
-> [STA1:STA1:(1) 0.000296] [simulator/INFO] STA1 sent 1000 bytes to STA2 in 0.000296 seconds from 0.000000 to 0.000296
+> [Station 1:sender:(1) 0.000296] [simulator/INFO] Station 1 sent 1000 bytes to Station 2 in 0.000296 seconds from 0.000000 to 0.000296
 > [0.000296] [simulator/INFO] Simulation took 0.000296s
 
-$ ${bindir:=.}/2STA ${platfdir}/wifi/2STA.xml
-> [STA1:STA1:(1) 0.000311] [simulator/INFO] STA1 sent 1000 bytes to STA2 in 0.000311 seconds from 0.000000 to 0.000311
+$ ${bindir:=.}/2STA ${platfdir}/wifi.xml
+> [Station 1:sender:(1) 0.000311] [simulator/INFO] Station 1 sent 1000 bytes to Station 2 in 0.000311 seconds from 0.000000 to 0.000311
 > [0.000311] [simulator/INFO] Simulation took 0.000311s
