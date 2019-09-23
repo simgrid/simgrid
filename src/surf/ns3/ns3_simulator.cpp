@@ -52,8 +52,7 @@ static void receive_callback(ns3::Ptr<ns3::Socket> socket)
     flow->finished_ = true;
     XBT_DEBUG("recv_cb of F[%p, %p, %u]", flow, flow->action_, flow->total_bytes_);
     XBT_DEBUG("Stop simulator at %f seconds", ns3::Simulator::Now().GetSeconds());
-    ns3::Simulator::Stop(ns3::Seconds(0.0));
-    ns3::Simulator::Run();
+    ns3::Simulator::Stop();
   }
 }
 
