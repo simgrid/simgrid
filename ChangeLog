@@ -35,8 +35,7 @@ SMPI:
    MPI_ERRORS_ARE_FATAL, so codes which were sending warnings may start failing.
 
 Model-Checker:
- - Bump our requirements to C++14 for the model-checker. This is
-   because of xxHash that we now use as a hash implementation.
+ - Use the included xxHash as an hash implem when C++14 is usable.
  - Option model-checker/hash was removed. This is always activated now.
  - New option smpi/buffering controls the MPI buffering in MC mode.
  - MPI calls now MC_assert() that no MPI_ERR_* code is returned. 

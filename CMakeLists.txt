@@ -412,9 +412,6 @@ if (enable_model-checking AND enable_ns3)
 endif()
 
 get_property(known_features GLOBAL PROPERTY CMAKE_CXX_KNOWN_FEATURES)
-if (enable_model-checking AND (NOT ("cxx_std_14" IN_LIST known_features)))
-  message(FATAL_ERROR "Model-checking requires C++14. Please upgrade your compiler")
-endif()
 
 if(enable_smpi)
   SET(HAVE_SMPI 1)
@@ -776,6 +773,14 @@ endif()
 
 if(enable_java)
   include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Java.cmake)
+endif()
+
+if (enable_model-checking AND (NOT ("cxx_std_14" IN_LIST known_features)))
+  message(WARNING "C++14 not found. The model-checker will use a slow hash function. You should upgrade your compiler")
+  set(SG_HAVE_CPP14 0)
+else()
+  set(SG_HAVE_CPP14 1)
+  set_property(TARGET simgrid PROPERTY CXX_STANDARD 14)    
 endif()
 
 # Python binding (with pybind11)
