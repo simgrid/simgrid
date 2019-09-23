@@ -21,6 +21,9 @@ S4U:
 
 Models:
  - Improved the usability of ns-3. Several bugs were ironed out.
+ - Introduce an experimental Wifi model. It sounds reasonable
+   according to the state of the art, but it still has to be properly 
+   validated, at least against ns-3.
 
 MSG:
  - convert a new set of functions to the S4U C interface and move the old MSG
