@@ -60,6 +60,7 @@ Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - FG!15: execute_flops now logs compute
  - FG!16: Fix the ns-3 bindings when several flows are simultaneously finishing
  - FG!17: ns-3: unblock the right number of communications + others issues
+ - FG!18: Improving the performance of the ns-3 bindings
 
 ----------------------------------------------------------------------------
 
