@@ -2085,6 +2085,7 @@ include src/include/surf/surf.hpp
 include src/include/xbt/coverage.h
 include src/include/xbt/mmalloc.h
 include src/include/xbt/parmap.hpp
+include src/include/xxhash.hpp
 include src/instr/instr_config.cpp
 include src/instr/instr_interface.cpp
 include src/instr/instr_paje_containers.cpp
