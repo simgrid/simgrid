@@ -411,6 +411,11 @@ if (enable_model-checking AND enable_ns3)
   message(FATAL_ERROR "Cannot activate both model-checking and ns-3 bindings: ns-3 pull too much dependencies for the MC to work")
 endif()
 
+get_property(known_features GLOBAL PROPERTY CMAKE_CXX_KNOWN_FEATURES)
+if (enable_model-checking AND (NOT ("cxx_std_14" IN_LIST known_features)))
+  message(FATAL_ERROR "Model-checking requires C++14. Please upgrade your compiler")
+endif()
+
 if(enable_smpi)
   SET(HAVE_SMPI 1)
   if(NOT WIN32)
@@ -777,8 +782,6 @@ endif()
 ################
 # Our usage of pybind11::overload_cast mandates C++14
 if((NOT DEFINED enable_python) OR enable_python)
-  get_property(known_features GLOBAL PROPERTY CMAKE_CXX_KNOWN_FEATURES)
-
   if("cxx_std_14" IN_LIST known_features)
 
     if(EXISTS ${CMAKE_HOME_DIRECTORY}/pybind11) # Try to use a local copy of pybind11, if any

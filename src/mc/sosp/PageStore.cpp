@@ -12,8 +12,9 @@
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
-#include "src/mc/sosp/PageStore.hpp"
+#include "src/include/xxhash.hpp"
 #include "src/mc/mc_mmu.hpp"
+#include "src/mc/sosp/PageStore.hpp"
 
 #include <cstring> // memcpy, memcmp
 #include <unistd.h>
@@ -33,14 +34,7 @@ namespace mc {
  */
 static XBT_ALWAYS_INLINE PageStore::hash_type mc_hash_page(const void* data)
 {
-  const std::uint64_t* values = (const uint64_t*)data;
-  std::size_t n               = xbt_pagesize / sizeof(uint64_t);
-
-  // This djb2:
-  std::uint64_t hash = 5381;
-  for (std::size_t i = 0; i != n; ++i)
-    hash = ((hash << 5) + hash) + values[i];
-  return hash;
+  return xxh::xxhash<64>(data, xbt_pagesize);
 }
 
 // ***** snapshot_page_manager
