@@ -18,6 +18,7 @@
 #include <ns3/packet-sink-helper.h>
 #include <ns3/point-to-point-helper.h>
 #include <ns3/application-container.h>
+#include <ns3/event-id.h>
 
 #include "network_ns3.hpp"
 #include "ns3/ns3_simulator.hpp"
@@ -196,6 +197,10 @@ double NetworkNS3Model::next_occuring_event(double now)
   XBT_DEBUG("ns3_next_occuring_event");
 
   //get the first relevant value from the running_actions list
+
+  // If there is no comms in NS-3, then we do not move it forward.
+  // We will synchronize NS-3 with SimGrid when starting a new communication.
+  // (see NetworkNS3Action::NetworkNS3Action() for more details on this point)
   if (get_started_action_set()->empty() || now == 0.0)
     return -1.0;
 
@@ -219,15 +224,6 @@ double NetworkNS3Model::next_occuring_event(double now)
 void NetworkNS3Model::update_actions_state(double now, double delta)
 {
   static std::vector<std::string> socket_to_destroy;
-
-  /* If there are no running flows, advance the ns-3 simulator and return */
-  if (get_started_action_set()->empty()) {
-
-    while(double_positive(now - ns3::Simulator::Now().GetSeconds(), sg_surf_precision))
-      ns3_simulator(now-ns3::Simulator::Now().GetSeconds());
-
-    return;
-  }
 
   std::string ns3_socket;
   for (const auto& elm : flow_from_sock) {
@@ -315,6 +311,15 @@ void LinkNS3::set_latency_profile(profile::Profile*)
 NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* src, s4u::Host* dst)
     : NetworkAction(model, totalBytes, false), src_(src), dst_(dst)
 {
+  
+  // If there is no other started actions, we need to move NS-3 forward to be sync with SimGrid
+  if (model->get_started_action_set()->size()==1){
+    while(double_positive(surf_get_clock() - ns3::Simulator::Now().GetSeconds(), sg_surf_precision)){
+      XBT_DEBUG("Synchronizing NS-3 (time %f) with SimGrid (time %f)", ns3::Simulator::Now().GetSeconds(), surf_get_clock());
+      ns3_simulator(surf_get_clock() - ns3::Simulator::Now().GetSeconds());
+    }
+  }
+
   XBT_DEBUG("Communicate from %s to %s", src->get_cname(), dst->get_cname());
 
   static int port_number = 1025; // Port number is limited from 1025 to 65 000
@@ -377,10 +382,16 @@ void NetworkNS3Action::update_remains_lazy(double /*now*/)
 
 void ns3_simulator(double maxSeconds)
 {
+  ns3::EventId id; 
   if (maxSeconds > 0.0) // If there is a maximum amount of time to run
-    ns3::Simulator::Stop(ns3::Seconds(maxSeconds));
+    id = ns3::Simulator::Schedule(ns3::Seconds(maxSeconds), &ns3::Simulator::Stop);
+
   XBT_DEBUG("Start simulator for at most %fs (current time: %f)", maxSeconds, surf_get_clock());
   ns3::Simulator::Run ();
+  XBT_DEBUG("Simulator stopped at %fs", ns3::Simulator::Now().GetSeconds());
+
+  if(maxSeconds > 0.0)
+    id.Cancel();
 }
 
 // initialize the ns-3 interface and environment
