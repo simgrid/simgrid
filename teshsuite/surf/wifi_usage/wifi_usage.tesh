@@ -2,11 +2,42 @@
 
 p Test WITH crosstraffic
 $ ${bindir:=.}/wifi_usage ${platfdir}/wifi.xml --log=root.fmt=%m%n
-> Sending 1000 bytes from 'Station 1' to 'NODE1' takes 0.000156 seconds.
-> Sending 1000 bytes from 'Station 1' to 'Station 2' takes 0.000311 seconds.
+> TEST: Send from a station to a node on the wired network after the AP.
+> ----------------------------------------------------------------------
+> Since AP1 is the limiting link, we have the following constraint for AP1:
+> 1.05/r_STA1 * rho_STA1 <= 1   (1.05 instead of 1 because of cross-traffic)
+> We should thus have:
+>   mu = 1 / [ 1/1 * 1.05/54Mbps ] = 51428571
+>   simulation_time = 1000*8 / mu = 0.0001555556s (rounded to 0.000156s in SimGrid)
+> Actual result: Sending 1000 bytes from 'Station 1' to 'NODE1' takes 0.000156 seconds.
+>
+>
+> TEST: Send from a station to another station on the same AP.
+> ------------------------------------------------------------
+> We have the following constraint for AP1:
+> 1.05/r_STA1 * rho_STA1 + 1.05/r_STA2 * rho_2 <= 1     (1.05 instead of 1 because of cross-traffic)
+> We should thus have:
+>   mu = 1 / [ 1/2 * 1.05/54Mbps + 1.05/54Mbps ] =  51428571
+>   simulation_time = 1000*8 / [ mu / 2 ] = 0.0003111111s
+> Actual result: Sending 1000 bytes from 'Station 1' to 'Station 2' takes 0.000311 seconds.
 
 p Test WITHOUT crosstraffic
 $ ${bindir:=.}/wifi_usage ${platfdir}/wifi.xml --log=root.fmt=%m%n --cfg=network/crosstraffic:0
 > Configuration change: Set 'network/crosstraffic' to '0'
-> Sending 1000 bytes from 'Station 1' to 'NODE1' takes 0.000148 seconds.
-> Sending 1000 bytes from 'Station 1' to 'Station 2' takes 0.000296 seconds.
+> TEST: Send from a station to a node on the wired network after the AP.
+> ----------------------------------------------------------------------
+> Since AP1 is the limiting link, we have the following constraint for AP1:
+> 1/r_STA1 * rho_STA1 <= 1  (there is no cross-traffic)
+> We should thus have:
+>   mu = 1 / [ 1/1 * 1/54Mbps ] = 5.4e+07
+>   simulation_time = 1000*8 / mu = 0.0001481481s
+> Actual result: Sending 1000 bytes from 'Station 1' to 'NODE1' takes 0.000148 seconds.
+>
+>
+> TEST: Send from a station to another station on the same AP.
+> ------------------------------------------------------------
+> We have the following constraint for AP1:
+> 1/r_STA1 * rho_STA1 +    1/r_STA2 * rho_2 <= 1   (there is no cross-traffic)
+>   mu = 1 / [ 1/2 * 1/54Mbps + 1/54Mbps ] = 5.4e+07
+>   simulation_time = 1000*8 / [ mu / 2 ] = 0.0002962963s
+> Actual result: Sending 1000 bytes from 'Station 1' to 'Station 2' takes 0.000296 seconds.
