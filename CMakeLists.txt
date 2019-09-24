@@ -411,6 +411,8 @@ if (enable_model-checking AND enable_ns3)
   message(FATAL_ERROR "Cannot activate both model-checking and ns-3 bindings: ns-3 pull too much dependencies for the MC to work")
 endif()
 
+get_property(known_features GLOBAL PROPERTY CMAKE_CXX_KNOWN_FEATURES)
+
 if(enable_smpi)
   SET(HAVE_SMPI 1)
   if(NOT WIN32)
@@ -773,12 +775,18 @@ if(enable_java)
   include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Java.cmake)
 endif()
 
+if (enable_model-checking AND (NOT ("cxx_std_14" IN_LIST known_features)))
+  message(WARNING "C++14 not found. The model-checker will use a slow hash function. You should upgrade your compiler")
+  set(SG_HAVE_CPP14 0)
+else()
+  set(SG_HAVE_CPP14 1)
+  set_property(TARGET simgrid PROPERTY CXX_STANDARD 14)    
+endif()
+
 # Python binding (with pybind11)
 ################
 # Our usage of pybind11::overload_cast mandates C++14
 if((NOT DEFINED enable_python) OR enable_python)
-  get_property(known_features GLOBAL PROPERTY CMAKE_CXX_KNOWN_FEATURES)
-
   if("cxx_std_14" IN_LIST known_features)
 
     if(EXISTS ${CMAKE_HOME_DIRECTORY}/pybind11) # Try to use a local copy of pybind11, if any

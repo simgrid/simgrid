@@ -11,6 +11,7 @@ set(EXTRA_DIST
   src/include/xbt/parmap.hpp
   src/include/xbt/mmalloc.h
   src/include/catch.hpp
+  src/include/xxhash.hpp
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
   src/msg/msg_private.hpp
@@ -1133,6 +1134,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/griffon.xml
   examples/platforms/meta_cluster.xml
   examples/platforms/multicore_machine.xml
+  examples/platforms/ns3-big-cluster.xml
   examples/platforms/onelink.xml
   examples/platforms/prop.xml
   examples/platforms/routing_cluster.xml
@@ -1163,6 +1165,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/two_hosts_platform_with_availability_included.xml
   examples/platforms/two_peers.xml
   examples/platforms/vivaldi.xml
+  examples/platforms/wifi.xml
   )
 
 set(generated_src_files

@@ -700,6 +700,8 @@ include teshsuite/s4u/concurrent_rw/concurrent_rw.cpp
 include teshsuite/s4u/concurrent_rw/concurrent_rw.tesh
 include teshsuite/s4u/listen_async/listen_async.cpp
 include teshsuite/s4u/listen_async/listen_async.tesh
+include teshsuite/s4u/ns3-simultaneous-send-rcv/ns3-simultaneous-send-rcv.cpp
+include teshsuite/s4u/ns3-simultaneous-send-rcv/ns3-simultaneous-send-rcv.tesh
 include teshsuite/s4u/pid/pid.cpp
 include teshsuite/s4u/pid/pid.tesh
 include teshsuite/s4u/storage_client_server/storage_client_server.cpp
@@ -1651,6 +1653,8 @@ include teshsuite/surf/surf_usage/surf_usage.cpp
 include teshsuite/surf/surf_usage/surf_usage.tesh
 include teshsuite/surf/surf_usage2/surf_usage2.cpp
 include teshsuite/surf/surf_usage2/surf_usage2.tesh
+include teshsuite/surf/wifi_usage/wifi_usage.cpp
+include teshsuite/surf/wifi_usage/wifi_usage.tesh
 include teshsuite/xbt/cmdline/cmdline.c
 include teshsuite/xbt/cmdline/cmdline.tesh
 include teshsuite/xbt/log_large/log_large.c
@@ -1834,6 +1838,7 @@ include examples/platforms/g5k.xml
 include examples/platforms/griffon.xml
 include examples/platforms/meta_cluster.xml
 include examples/platforms/multicore_machine.xml
+include examples/platforms/ns3-big-cluster.xml
 include examples/platforms/onelink.xml
 include examples/platforms/optorsim/gridpp_grid_2004.conf
 include examples/platforms/optorsim/lcg_sept2004_grid.conf
@@ -1880,6 +1885,7 @@ include examples/platforms/two_hosts_platform_with_availability_included.xml
 include examples/platforms/two_hosts_profiles.xml
 include examples/platforms/two_peers.xml
 include examples/platforms/vivaldi.xml
+include examples/platforms/wifi.xml
 include examples/python/CMakeLists.txt
 include examples/python/actor-create/actor-create_d.xml
 include examples/python/actor-lifetime/actor-lifetime.py
@@ -2079,6 +2085,7 @@ include src/include/surf/surf.hpp
 include src/include/xbt/coverage.h
 include src/include/xbt/mmalloc.h
 include src/include/xbt/parmap.hpp
+include src/include/xxhash.hpp
 include src/instr/instr_config.cpp
 include src/instr/instr_interface.cpp
 include src/instr/instr_paje_containers.cpp
