@@ -175,6 +175,7 @@ int PMPI_Request_free(MPI_Request * request)
   smpi_bench_end();
   if (*request != MPI_REQUEST_NULL) {
     simgrid::smpi::Request::unref(request);
+    *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -403,6 +404,130 @@ int PMPI_Send(const void *buf, int count, MPI_Datatype datatype, int dst, int ta
 int PMPI_Rsend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   return PMPI_Send(buf, count, datatype, dst, tag, comm);
+}
+
+int PMPI_Bsend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
+{
+  int retval = 0;
+
+  smpi_bench_end();
+
+  if (comm == MPI_COMM_NULL) {
+    retval = MPI_ERR_COMM;
+  } else if (dst == MPI_PROC_NULL) {
+    retval = MPI_SUCCESS;
+  } else if (dst >= comm->group()->size() || dst <0){
+    retval = MPI_ERR_RANK;
+  } else if ((count < 0) || (buf == nullptr && count > 0)) {
+    retval = MPI_ERR_COUNT;
+  } else if (datatype==MPI_DATATYPE_NULL || not datatype->is_valid()) {
+    retval = MPI_ERR_TYPE;
+  } else if(tag < 0 && tag !=  MPI_ANY_TAG){
+    retval = MPI_ERR_TAG;
+  } else {
+    int my_proc_id         = simgrid::s4u::this_actor::get_pid();
+    int dst_traced         = getPid(comm, dst);
+    int bsend_buf_size = 0;
+    void* bsend_buf = nullptr;
+    smpi_process()->bsend_buffer(&bsend_buf, &bsend_buf_size);
+    int size = datatype->get_extent() * count;
+    if(bsend_buf==nullptr || bsend_buf_size < size + MPI_BSEND_OVERHEAD )
+      return MPI_ERR_BUFFER;
+    TRACE_smpi_comm_in(my_proc_id, __func__,
+                       new simgrid::instr::Pt2PtTIData("bsend", dst,
+                                                       datatype->is_replayable() ? count : count * datatype->size(),
+                                                       tag, simgrid::smpi::Datatype::encode(datatype)));
+    if (not TRACE_smpi_view_internals()) {
+      TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, tag, count * datatype->size());
+    }
+
+    simgrid::smpi::Request::bsend(buf, count, datatype, dst, tag, comm);
+    retval = MPI_SUCCESS;
+
+    TRACE_smpi_comm_out(my_proc_id);
+  }
+
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Ibsend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request* request)
+{
+  int retval = 0;
+
+  smpi_bench_end();
+  if (request == nullptr) {
+    retval = MPI_ERR_ARG;
+  } else if (comm == MPI_COMM_NULL) {
+    retval = MPI_ERR_COMM;
+  } else if (dst == MPI_PROC_NULL) {
+    *request = MPI_REQUEST_NULL;
+    retval = MPI_SUCCESS;
+  } else if (dst >= comm->group()->size() || dst <0){
+    retval = MPI_ERR_RANK;
+  } else if ((count < 0) || (buf==nullptr && count > 0)) {
+    retval = MPI_ERR_COUNT;
+  } else if (datatype==MPI_DATATYPE_NULL || not datatype->is_valid()) {
+    retval = MPI_ERR_TYPE;
+  } else if(tag<0 && tag !=  MPI_ANY_TAG){
+    retval = MPI_ERR_TAG;
+  } else {
+    int my_proc_id = simgrid::s4u::this_actor::get_pid();
+    int trace_dst = getPid(comm, dst);
+    int bsend_buf_size = 0;
+    void* bsend_buf = nullptr;
+    smpi_process()->bsend_buffer(&bsend_buf, &bsend_buf_size);
+    int size = datatype->get_extent() * count;
+    if(bsend_buf==nullptr || bsend_buf_size < size + MPI_BSEND_OVERHEAD )
+      return MPI_ERR_BUFFER;
+    TRACE_smpi_comm_in(my_proc_id, __func__,
+                       new simgrid::instr::Pt2PtTIData("ibsend", dst,
+                                                       datatype->is_replayable() ? count : count * datatype->size(),
+                                                       tag, simgrid::smpi::Datatype::encode(datatype)));
+
+    TRACE_smpi_send(my_proc_id, my_proc_id, trace_dst, tag, count * datatype->size());
+
+    *request = simgrid::smpi::Request::ibsend(buf, count, datatype, dst, tag, comm);
+    retval = MPI_SUCCESS;
+
+    TRACE_smpi_comm_out(my_proc_id);
+  }
+
+  smpi_bench_begin();
+  if (retval != MPI_SUCCESS && request!=nullptr)
+    *request = MPI_REQUEST_NULL;
+  return retval;
+}
+
+int PMPI_Bsend_init(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request* request)
+{
+
+  int retval = 0;
+
+  smpi_bench_end();
+  if (request == nullptr) {
+    retval = MPI_ERR_ARG;
+  } else if (comm == MPI_COMM_NULL) {
+    retval = MPI_ERR_COMM;
+  } else if (datatype==MPI_DATATYPE_NULL || not datatype->is_valid()) {
+    retval = MPI_ERR_TYPE;
+  } else if (dst == MPI_PROC_NULL) {
+    retval = MPI_SUCCESS;
+  } else {
+    int bsend_buf_size = 0;
+    void* bsend_buf = nullptr;
+    smpi_process()->bsend_buffer(&bsend_buf, &bsend_buf_size);
+    if( bsend_buf==nullptr || bsend_buf_size < datatype->get_extent() * count + MPI_BSEND_OVERHEAD ) {
+      retval = MPI_ERR_BUFFER;
+    } else {
+      *request = simgrid::smpi::Request::bsend_init(buf, count, datatype, dst, tag, comm);
+      retval   = MPI_SUCCESS;
+    }
+  }
+  smpi_bench_begin();
+  if (retval != MPI_SUCCESS && request != nullptr)
+    *request = MPI_REQUEST_NULL;
+  return retval;
 }
 
 int PMPI_Ssend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm) {

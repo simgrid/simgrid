@@ -253,5 +253,17 @@ void ActorExt::set_optind(int new_optind)
   optind_ = new_optind;
 }
 
+void ActorExt::bsend_buffer(void** buf, int* size)
+{
+  *buf  = bsend_buffer_;
+  *size = bsend_buffer_size_;
+}
+
+void ActorExt::set_bsend_buffer(void* buf, int size)
+{
+  bsend_buffer_     = buf;
+  bsend_buffer_size_= size;
+}
+
 } // namespace smpi
 } // namespace simgrid

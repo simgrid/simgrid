@@ -170,6 +170,14 @@ void Request::print_request(const char *message)
 
 
 /* factories, to hide the internal flags from the caller */
+MPI_Request Request::bsend_init(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
+{
+
+  return new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, simgrid::s4u::this_actor::get_pid(),
+                     comm->group()->actor(dst)->get_pid(), tag, comm,
+                     MPI_REQ_PERSISTENT | MPI_REQ_SEND | MPI_REQ_PREPARED | MPI_REQ_BSEND);
+}
+
 MPI_Request Request::send_init(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
 
@@ -242,6 +250,16 @@ MPI_Request Request::irecv_init(void *buf, int count, MPI_Datatype datatype, int
                      MPI_REQ_PERSISTENT | MPI_REQ_RECV | MPI_REQ_PREPARED);
 }
 
+MPI_Request Request::ibsend(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
+{
+  MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
+  request = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, simgrid::s4u::this_actor::get_pid(),
+                        comm->group()->actor(dst)->get_pid(), tag, comm,
+                        MPI_REQ_NON_PERSISTENT | MPI_REQ_ISEND | MPI_REQ_SEND | MPI_REQ_BSEND);
+  request->start();
+  return request;
+}
+
 MPI_Request Request::isend(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
@@ -278,6 +296,17 @@ void Request::recv(void *buf, int count, MPI_Datatype datatype, int src, int tag
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
   request = irecv(buf, count, datatype, src, tag, comm);
   wait(&request,status);
+  request = nullptr;
+}
+
+void Request::bsend(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
+{
+  MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
+  request = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, simgrid::s4u::this_actor::get_pid(),
+                        comm->group()->actor(dst)->get_pid(), tag, comm, MPI_REQ_NON_PERSISTENT | MPI_REQ_SEND | MPI_REQ_BSEND);
+
+  request->start();
+  wait(&request, MPI_STATUS_IGNORE);
   request = nullptr;
 }
 
@@ -407,7 +436,7 @@ void Request::start()
 
     void* buf = buf_;
     if ((flags_ & MPI_REQ_SSEND) == 0 &&
-        ((flags_ & MPI_REQ_RMA) != 0 ||
+        ((flags_ & MPI_REQ_RMA) != 0 || (flags_ & MPI_REQ_BSEND) != 0 ||
          static_cast<int>(size_) < simgrid::config::get_value<int>("smpi/send-is-detached-thresh"))) {
       void *oldbuf = nullptr;
       detached_    = true;
@@ -422,6 +451,8 @@ void Request::start()
             XBT_DEBUG("Privatization : We are sending from a zone inside global memory. Switch data segment ");
             smpi_switch_data_segment(simgrid::s4u::Actor::by_pid(src_));
           }
+          //we need this temporary buffer even for bsend, as it will be released in the copy callback and we don't have a way to differentiate it
+          //so actually ... don't use manually attached buffer space.
           buf = xbt_malloc(size_);
           memcpy(buf,oldbuf,size_);
           XBT_DEBUG("buf %p copied into %p",oldbuf,buf);
