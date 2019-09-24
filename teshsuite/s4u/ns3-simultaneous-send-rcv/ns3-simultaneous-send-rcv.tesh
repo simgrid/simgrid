@@ -1,0 +1,6 @@
+p In the ns-3 tests, the timings are not shown because the exact values may vary with your ns-3 version.
+p We just want to check that the ns-3 bindings of SimGrid are working correctly, we don't want to thoroughly test ns-3.
+
+$ ./ns3-simultaneous-send-rcv ${platfdir}/ns3-big-cluster.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [c-01.rennes:receiver(1)] [s4u_test/INFO] Done receiving from 100 senders, each of them sending 5 messages

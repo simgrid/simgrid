@@ -3,7 +3,6 @@
 [![Travis Status](https://img.shields.io/travis/simgrid/simgrid/master.svg?logo=travis)](https://travis-ci.org/simgrid/simgrid)
 [![AppVeyor Status](https://ci.appveyor.com/api/projects/status/gvcssh340fwtoc35?svg=true)](https://ci.appveyor.com/project/mquinson/simgrid)
 [![SonarCloud Status](https://sonarcloud.io/api/project_badges/measure?project=simgrid_simgrid&metric=alert_status)](https://sonarcloud.io/dashboard/?id=simgrid_simgrid)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/bf1bdba50440485fbda2ac19f462ccc7)](https://www.codacy.com/app/mquinson/simgrid?utm_source=github.com&amp)
 [![Doc](https://readthedocs.org/projects/pip/badge/?version=stable)](https://simgrid.org/doc/latest/)
 [![License: LGPL v2.1][license-badge]](COPYING)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/1845/badge)](https://bestpractices.coreinfrastructure.org/projects/1845)
