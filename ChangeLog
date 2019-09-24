@@ -31,7 +31,8 @@ MSG:
 
 SMPI:
  - Fortran bindings for DVFS have been removed.
- - Add support for MPI_Irsend, MPI_Rsend, MPI_Rsend_init
+ - Add support for MPI_Irsend, MPI_Rsend, MPI_Rsend_init, MPI_Bsend, 
+   MPI_Ibsend, MPI_Bsend_init, MPI_Buffer_attach, MPI_Buffer_detach
  - SMPI can now be selected by cmake's find_module(MPI) with
    MPI_C_COMPILER, MPI_CXX_COMPILER, MPI_Fortran_COMPILER variables.
  - Add support for MPI Errhandlers in Comm, File or Win. Default errhandler is now
