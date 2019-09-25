@@ -3,6 +3,12 @@
 SimGrid (3.23.3) NOT RELEASED YET (v3.24 expected September 23. 7:50 UTC)
 
 S4U:
+ - Introduce a s4u::Disk interface to manage the newly introduced <disk>
+   tag. s4u::Disk is called to supplant s4u::Storage in a near future. It
+   thus becomes the default resource to execute I/O operations. Examples
+   and the file system plugin have been modified to use disks instead of
+   storage elements. Storage can still be used but is doomed to disappear.
+   Users are thus adviced to update their simulators accordingly.
  - Barrier::wait returns SG_BARRIER_SERIAL_THREAD for (only) one actor
    for consistency with pthread_barrier_wait()
  - Host::get_englobing_zone() returns the englobing netzone
@@ -48,6 +54,16 @@ Model-Checker:
 XBT:
  - xbt_mutex_t and xbt_cond_t are now marked as deprecated, a new C interface
    on S4U is already available to replace them by sg_mutex_t and sg_cond_t. 
+
+XML:
+ - Introduce the <disk> tag as a replacement of the <storage>, <storage_type>,
+   and <mount> tags. The rationale is finish to decouple what should be handle
+   by SimGrid kernel (i.e., resources and activities) from plugins built in
+   user space (e.g., the file system plugin). This new tag currently accepts
+   only three attributes (id, read_bw, and write_bw). All the other information
+   that was declared with the storage related tags now has to be expressed as
+   properties. An example of platform using this new tag is available at
+   examples/platforms/hostsè_with_disks.xml
 
 Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - FG#28: add sg_actor_self (and other wrappers on this_actor methods)
