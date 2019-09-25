@@ -34,7 +34,6 @@ public:
 
   const std::string name_;
   unsigned int size_;
-  std::vector<simgrid::s4u::ActorPtr> present_processes_;
   unsigned int finalized_ranks_ = 0;
   MPI_Comm comm_world_;
 };
@@ -69,7 +68,6 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
 void smpi_deployment_register_process(const std::string& instance_id, int rank, simgrid::s4u::ActorPtr actor)
 {
   Instance& instance = smpi_instances.at(instance_id);
-  instance.present_processes_.push_back(actor);
   instance.comm_world_->group()->set_mapping(actor, rank);
 }
 
@@ -79,7 +77,6 @@ void smpi_deployment_unregister_process(const std::string& instance_id)
   instance.finalized_ranks_++;
 
   if (instance.finalized_ranks_ == instance.size_) {
-    instance.present_processes_.clear();
     simgrid::smpi::Comm::destroy(instance.comm_world_);
     smpi_instances.erase(instance_id);
   }
@@ -99,7 +96,6 @@ void smpi_deployment_cleanup_instances(){
   for (auto const& item : smpi_instances) {
     XBT_CINFO(smpi, "Stalling SMPI instance: %s. Do all your MPI ranks call MPI_Finalize()?", item.first.c_str());
     Instance instance = item.second;
-    instance.present_processes_.clear();
     simgrid::smpi::Comm::destroy(instance.comm_world_);
   }
   smpi_instances.clear();
