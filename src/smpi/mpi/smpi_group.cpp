@@ -28,8 +28,9 @@ Group::Group(Group* origin)
   }
 }
 
-void Group::set_mapping(s4u::ActorPtr actor, int rank)
+void Group::set_mapping(s4u::ActorPtr actor_ptr, int rank)
 {
+  s4u::Actor* actor = actor_ptr.get();
   if (0 <= rank && rank < size_) {
     int index                = actor->get_pid();
     if (index != MPI_UNDEFINED) {
@@ -39,9 +40,7 @@ void Group::set_mapping(s4u::ActorPtr actor, int rank)
     }
 
     rank_to_actor_map_[rank] = actor;
-    if (actor != nullptr) {
-      actor_to_rank_map_.insert({actor, rank});
-    }
+    actor_to_rank_map_.insert({actor, rank});
   }
 }
 
@@ -64,9 +63,9 @@ s4u::ActorPtr Group::actor(int rank)
     return nullptr;
 }
 
-int Group::rank(const s4u::ActorPtr actor)
+int Group::rank(s4u::ActorPtr actor)
 {
-  auto iterator = actor_to_rank_map_.find(actor);
+  auto iterator = actor_to_rank_map_.find(actor.get());
   return (iterator == actor_to_rank_map_.end()) ? MPI_UNDEFINED : (*iterator).second;
 }
 
