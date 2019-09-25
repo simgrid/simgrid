@@ -795,7 +795,6 @@ void smpi_replay_main(int rank, const char* trace_filename)
   smpi_process()->finalize();
 
   TRACE_smpi_comm_out(simgrid::s4u::this_actor::get_pid());
-  TRACE_smpi_finalize(simgrid::s4u::this_actor::get_pid());
 }
 
 /** @brief chain a replay initialization and a replay start */

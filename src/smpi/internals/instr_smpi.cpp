@@ -151,7 +151,10 @@ void TRACE_smpi_init(int rank)
   if (not TRACE_smpi_is_enabled())
     return;
 
+  auto self = simgrid::s4u::Actor::self();
+
   TRACE_smpi_setup_container(rank, sg_host_self());
+  simgrid::s4u::this_actor::on_exit([self](bool) { smpi_container(self->get_pid())->remove_from_parent(); });
 #if HAVE_PAPI
   container_t container   = smpi_container(rank);
   papi_counter_t counters = smpi_process()->papi_counters();
@@ -164,14 +167,6 @@ void TRACE_smpi_init(int rank)
     container->type_->by_name_or_create(it.first, "");
   }
 #endif
-}
-
-void TRACE_smpi_finalize(int rank)
-{
-  if (not TRACE_smpi_is_enabled())
-    return;
-
-  smpi_container(rank)->remove_from_parent();
 }
 
 void TRACE_smpi_computing_init(int rank)
