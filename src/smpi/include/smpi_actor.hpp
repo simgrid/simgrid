@@ -28,7 +28,7 @@ class ActorExt {
   std::string instance_id_;
   bool replaying_ = false; /* is the process replaying a trace */
   smpi_trace_call_location_t trace_call_loc_;
-  s4u::ActorPtr actor_                           = nullptr;
+  s4u::Actor* actor_                             = nullptr;
   smpi_privatization_region_t privatized_region_ = nullptr;
 #ifdef __linux__
   int optind_                                     = 0; /*for getopt replacement */
@@ -48,7 +48,7 @@ class ActorExt {
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Actor, ActorExt> EXTENSION_ID;
 
-  explicit ActorExt(s4u::ActorPtr actor);
+  explicit ActorExt(s4u::Actor* actor);
   ActorExt(const ActorExt&) = delete;
   ActorExt& operator=(const ActorExt&) = delete;
   ~ActorExt();

@@ -21,7 +21,7 @@ namespace simgrid {
 namespace smpi {
 simgrid::xbt::Extension<simgrid::s4u::Actor, ActorExt> ActorExt::EXTENSION_ID;
 
-ActorExt::ActorExt(s4u::ActorPtr actor) : actor_(actor)
+ActorExt::ActorExt(s4u::Actor* actor) : actor_(actor)
 {
   if (not simgrid::smpi::ActorExt::EXTENSION_ID.valid())
     simgrid::smpi::ActorExt::EXTENSION_ID = simgrid::s4u::Actor::extension_create<simgrid::smpi::ActorExt>();
@@ -240,7 +240,7 @@ void ActorExt::init()
 
   // set the process attached to the mailbox
   ext->mailbox_small_->set_receiver(ext->actor_);
-  XBT_DEBUG("<%ld> SMPI process has been initialized: %p", ext->actor_->get_pid(), ext->actor_.get());
+  XBT_DEBUG("<%ld> SMPI process has been initialized: %p", ext->actor_->get_pid(), ext->actor_);
 }
 
 int ActorExt::get_optind()
