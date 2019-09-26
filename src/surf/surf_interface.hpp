@@ -191,7 +191,7 @@ XBT_PUBLIC void model_help(const char* category, const std::vector<surf_model_de
 #define SIMGRID_REGISTER_PLUGIN(id, desc, init)                                                                        \
   static void XBT_ATTRIB_CONSTRUCTOR(800) _XBT_CONCAT3(simgrid_, id, _plugin_register)()                               \
   {                                                                                                                    \
-    simgrid_add_plugin_description(_XBT_STRINGIFY(id), desc, init);                                                    \
+    simgrid_add_plugin_description(_XBT_STRINGIFY(id), (desc), (init));                                                \
   }
 
 XBT_PUBLIC void simgrid_add_plugin_description(const char* name, const char* description, void_f_void_t init_fun);

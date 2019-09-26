@@ -1006,27 +1006,31 @@ XBT_PUBLIC void smpi_trace_set_call_location__(const char* file, int* line);
 
 #define SMPI_ITER_NAME1(line) _XBT_CONCAT(iter_count, line)
 #define SMPI_ITER_NAME(line) SMPI_ITER_NAME1(line)
-#define SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, global, iters, thres)\
-  int SMPI_ITER_NAME(__LINE__)=0;\
-  {loop_init;\
-  while(loop_end){\
-    SMPI_ITER_NAME(__LINE__)++;\
-    loop_iter;\
-  }}                                                                         \
-  for(loop_init; \
-      loop_end ? (smpi_sample_1(global, __FILE__, __LINE__, iters, thres), (smpi_sample_2(global, __FILE__, __LINE__, SMPI_ITER_NAME(__LINE__)))) :\
-      smpi_sample_exit(global, __FILE__, __LINE__, SMPI_ITER_NAME(__LINE__));\
-      smpi_sample_3(global, __FILE__, __LINE__),loop_iter)
-#define SMPI_SAMPLE_LOCAL(loop_init, loop_end, loop_iter, iters, thres) SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, 0, iters, thres)
-#define SMPI_SAMPLE_GLOBAL(loop_init, loop_end, loop_iter,iters, thres) SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, 1, iters, thres)
+#define SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, global, iters, thres)                                         \
+  int SMPI_ITER_NAME(__LINE__) = 0;                                                                                    \
+  {                                                                                                                    \
+    loop_init;                                                                                                         \
+    while (loop_end) {                                                                                                 \
+      SMPI_ITER_NAME(__LINE__)++;                                                                                      \
+      (loop_iter);                                                                                                     \
+    }                                                                                                                  \
+  }                                                                                                                    \
+  for (loop_init; (loop_end) ? (smpi_sample_1((global), __FILE__, __LINE__, (iters), (thres)),                         \
+                                (smpi_sample_2((global), __FILE__, __LINE__, SMPI_ITER_NAME(__LINE__))))               \
+                             : smpi_sample_exit((global), __FILE__, __LINE__, SMPI_ITER_NAME(__LINE__));               \
+       smpi_sample_3((global), __FILE__, __LINE__), (loop_iter))
+#define SMPI_SAMPLE_LOCAL(loop_init, loop_end, loop_iter, iters, thres)                                                \
+  SMPI_SAMPLE_LOOP(loop_init, (loop_end), (loop_iter), 0, (iters), (thres))
+#define SMPI_SAMPLE_GLOBAL(loop_init, loop_end, loop_iter, iters, thres)                                               \
+  SMPI_SAMPLE_LOOP(loop_init, (loop_end), (loop_iter), 1, (iters), (thres))
 #define SMPI_SAMPLE_DELAY(duration) for(smpi_execute(duration); 0; )
 #define SMPI_SAMPLE_FLOPS(flops) for(smpi_execute_flops(flops); 0; )
 
 XBT_PUBLIC void* smpi_shared_malloc(size_t size, const char* file, int line);
-#define SMPI_SHARED_MALLOC(size) smpi_shared_malloc(size, __FILE__, __LINE__)
+#define SMPI_SHARED_MALLOC(size) smpi_shared_malloc((size), __FILE__, __LINE__)
 XBT_PUBLIC void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int nb_shared_blocks);
 #define SMPI_PARTIAL_SHARED_MALLOC(size, shared_block_offsets, nb_shared_blocks)                                       \
-  smpi_shared_malloc_partial(size, shared_block_offsets, nb_shared_blocks)
+  smpi_shared_malloc_partial((size), (shared_block_offsets), (nb_shared_blocks))
 
 XBT_PUBLIC void smpi_shared_free(void* data);
 #define SMPI_SHARED_FREE(data) smpi_shared_free(data)
@@ -1035,9 +1039,9 @@ XBT_PUBLIC int smpi_shared_known_call(const char* func, const char* input);
 XBT_PUBLIC void* smpi_shared_get_call(const char* func, const char* input);
 XBT_PUBLIC void* smpi_shared_set_call(const char* func, const char* input, void* data);
 #define SMPI_SHARED_CALL(func, input, ...)                                                                             \
-  (smpi_shared_known_call(_XBT_STRINGIFY(func), input)                                                                 \
-       ? smpi_shared_get_call(_XBT_STRINGIFY(func), input)                                                             \
-       : smpi_shared_set_call(_XBT_STRINGIFY(func), input, (func(__VA_ARGS__))))
+  (smpi_shared_known_call(_XBT_STRINGIFY(func), (input))                                                               \
+       ? smpi_shared_get_call(_XBT_STRINGIFY(func), (input))                                                           \
+       : smpi_shared_set_call(_XBT_STRINGIFY(func), (input), ((func)(__VA_ARGS__))))
 
 /* Fortran specific stuff */
 

@@ -39,12 +39,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
       char error_string[MPI_MAX_ERROR_STRING];                                                                         \
       int error_size;                                                                                                  \
       PMPI_Error_string(ret, error_string, &error_size);                                                               \
-      if(errhan==nullptr || errhan->errhandler()==MPI_ERRORS_RETURN)                                                                         \
+      if ((errhan) == nullptr || (errhan)->errhandler() == MPI_ERRORS_RETURN)                                          \
         XBT_WARN("%s - returned %.*s instead of MPI_SUCCESS", __func__, error_size, error_string);                     \
-      else if(errhan->errhandler()==MPI_ERRORS_ARE_FATAL)                                                                 \
+      else if ((errhan)->errhandler() == MPI_ERRORS_ARE_FATAL)                                                         \
         xbt_die("%s - returned %.*s instead of MPI_SUCCESS", __func__, error_size, error_string);                      \
       else                                                                                                             \
-        errhan->errhandler()->call(errhan, ret);                                                                \
+        (errhan)->errhandler()->call((errhan), ret);                                                                   \
       MC_assert(not MC_is_active()); /* Only fail in MC mode */                                                        \
     }                                                                                                                  \
     XBT_VERB("SMPI - Leaving %s", __func__);                                                                           \

@@ -38,19 +38,36 @@ int PMPI_File_close(MPI_File *fh){
   smpi_bench_begin();
   return ret;
 }
-#define CHECK_FILE(fh) if(fh==MPI_FILE_NULL) return MPI_ERR_FILE;
-#define CHECK_BUFFER(buf, count)  if (buf==nullptr && count > 0) return MPI_ERR_BUFFER;
-#define CHECK_COUNT(count)  if (count < 0) return MPI_ERR_COUNT;
-#define CHECK_OFFSET(offset)  if (offset < 0) return MPI_ERR_DISP;
-#define CHECK_DATATYPE(datatype, count) if (datatype == MPI_DATATYPE_NULL && count > 0) return MPI_ERR_TYPE;
-#define CHECK_STATUS(status) if (status == nullptr) return MPI_ERR_ARG;
-#define CHECK_FLAGS(fh) if (fh->flags() & MPI_MODE_SEQUENTIAL) return MPI_ERR_AMODE;
-#define CHECK_RDONLY(fh) if (fh->flags() & MPI_MODE_RDONLY ) return MPI_ERR_AMODE;
+#define CHECK_FILE(fh)                                                                                                 \
+  if ((fh) == MPI_FILE_NULL)                                                                                           \
+    return MPI_ERR_FILE;
+#define CHECK_BUFFER(buf, count)                                                                                       \
+  if ((buf) == nullptr && (count) > 0)                                                                                 \
+    return MPI_ERR_BUFFER;
+#define CHECK_COUNT(count)                                                                                             \
+  if ((count) < 0)                                                                                                     \
+    return MPI_ERR_COUNT;
+#define CHECK_OFFSET(offset)                                                                                           \
+  if ((offset) < 0)                                                                                                    \
+    return MPI_ERR_DISP;
+#define CHECK_DATATYPE(datatype, count)                                                                                \
+  if ((datatype) == MPI_DATATYPE_NULL && (count) > 0)                                                                  \
+    return MPI_ERR_TYPE;
+#define CHECK_STATUS(status)                                                                                           \
+  if ((status) == nullptr)                                                                                             \
+    return MPI_ERR_ARG;
+#define CHECK_FLAGS(fh)                                                                                                \
+  if ((fh)->flags() & MPI_MODE_SEQUENTIAL)                                                                             \
+    return MPI_ERR_AMODE;
+#define CHECK_RDONLY(fh)                                                                                               \
+  if ((fh)->flags() & MPI_MODE_RDONLY)                                                                                 \
+    return MPI_ERR_AMODE;
 
-#define PASS_ZEROCOUNT(count) if (count == 0) {\
-status->count=0;\
-return MPI_SUCCESS;\
-}
+#define PASS_ZEROCOUNT(count)                                                                                          \
+  if ((count) == 0) {                                                                                                  \
+    status->count = 0;                                                                                                 \
+    return MPI_SUCCESS;                                                                                                \
+  }
 
 int PMPI_File_seek(MPI_File fh, MPI_Offset offset, int whence){
   CHECK_FILE(fh);

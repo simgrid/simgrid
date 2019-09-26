@@ -30,13 +30,13 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void _xbt_throw(char* message, int value, const c
  *  @ingroup XBT_ex_c
  *  @hideinitializer
  */
-#define THROW(v) _xbt_throw(NULL, v, __FILE__, __LINE__, __func__)
+#define THROW(v) _xbt_throw(NULL, (v), __FILE__, __LINE__, __func__)
 
 /** Builds and throws an exception with a printf-like formatted message
  *  @ingroup XBT_ex_c
  *  @hideinitializer
  */
-#define THROWF(v, ...) _xbt_throw(bprintf(__VA_ARGS__), v, __FILE__, __LINE__, __func__)
+#define THROWF(v, ...) _xbt_throw(bprintf(__VA_ARGS__), (v), __FILE__, __LINE__, __func__)
 
 XBT_ATTRIB_NORETURN void xbt_throw_impossible(const char* file, int line, const char* func);
 /** Throw an exception because something impossible happened

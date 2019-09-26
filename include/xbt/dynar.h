@@ -151,26 +151,23 @@ XBT_PUBLIC void* xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
           (*(type*)xbt_dynar_get_ptr((dynar),(idx)))
 /** @brief Quick setting of scalar content
  *  @hideinitializer */
-#  define xbt_dynar_set_as(dynar,idx,type,val) \
-         (*(type*)xbt_dynar_set_at_ptr((dynar),(idx))) = val
-  /** @brief Quick retrieval of scalar content
-   *  @hideinitializer */
+#define xbt_dynar_set_as(dynar, idx, type, val) (*(type*)xbt_dynar_set_at_ptr((dynar), (idx))) = (val)
+/** @brief Quick retrieval of scalar content
+ *  @hideinitializer */
 #  define xbt_dynar_getlast_as(dynar,type) \
           (*(type*)xbt_dynar_get_ptr((dynar),xbt_dynar_length(dynar)-1))
-  /** @brief Quick retrieval of scalar content
-   *  @hideinitializer */
+/** @brief Quick retrieval of scalar content
+ *  @hideinitializer */
 #  define xbt_dynar_getfirst_as(dynar,type) \
           (*(type*)xbt_dynar_get_ptr((dynar),0))
-  /** @brief Quick insertion of scalar content
-   *  @hideinitializer */
-#  define xbt_dynar_insert_at_as(dynar,idx,type,value) \
-          *(type*)xbt_dynar_insert_at_ptr(dynar,idx)=value
-  /** @brief Quick insertion of scalar content
-   *  @hideinitializer */
-#  define xbt_dynar_push_as(dynar,type,value) \
-          *(type*)xbt_dynar_push_ptr(dynar)=value
-  /** @brief Quick removal of scalar content
-   *  @hideinitializer */
+/** @brief Quick insertion of scalar content
+ *  @hideinitializer */
+#define xbt_dynar_insert_at_as(dynar, idx, type, value) *(type*)xbt_dynar_insert_at_ptr((dynar), (idx)) = (value)
+/** @brief Quick insertion of scalar content
+ *  @hideinitializer */
+#define xbt_dynar_push_as(dynar, type, value) *(type*)xbt_dynar_push_ptr(dynar) = (value)
+/** @brief Quick removal of scalar content
+ *  @hideinitializer */
 #  define xbt_dynar_pop_as(dynar,type) \
            (*(type*)xbt_dynar_pop_ptr(dynar))
 
@@ -237,21 +234,18 @@ xbt_dynar_foreach (dyn,cpt,str) {
  * Note that underneath, that's a simple for loop with no real black  magic involved. It's perfectly safe to interrupt
  * a foreach with a break or a return statement.
  */
-#define xbt_dynar_foreach(_dynar,_cursor,_data) \
-       for ( (_cursor) = 0      ; \
-             _xbt_dynar_cursor_get(_dynar,_cursor,&_data) ; \
-             (_cursor)++         )
+#define xbt_dynar_foreach(_dynar, _cursor, _data)                                                                      \
+  for ((_cursor) = 0; _xbt_dynar_cursor_get((_dynar), (_cursor), &(_data)); (_cursor)++)
 
 #ifndef __cplusplus
-#define xbt_dynar_foreach_ptr(_dynar,_cursor,_ptr) \
-       for ((_cursor) = 0       ; \
-            (_ptr = _cursor < _dynar->used ? xbt_dynar_get_ptr(_dynar,_cursor) : NULL) ; \
-            (_cursor)++         )
+#define xbt_dynar_foreach_ptr(_dynar, _cursor, _ptr)                                                                   \
+  for ((_cursor) = 0; ((_ptr) = (_cursor) < (_dynar)->used ? xbt_dynar_get_ptr((_dynar), (_cursor)) : NULL);           \
+       (_cursor)++)
 #else
-#define xbt_dynar_foreach_ptr(_dynar,_cursor,_ptr) \
-       for ((_cursor) = 0       ; \
-            (_ptr = _cursor < _dynar->used ? (decltype(_ptr)) xbt_dynar_get_ptr(_dynar,_cursor) : NULL) ; \
-            (_cursor)++         )
+#define xbt_dynar_foreach_ptr(_dynar, _cursor, _ptr)                                                                   \
+  for ((_cursor) = 0;                                                                                                  \
+       ((_ptr) = (_cursor) < (_dynar)->used ? (decltype(_ptr))xbt_dynar_get_ptr((_dynar), (_cursor)) : NULL);          \
+       (_cursor)++)
 #endif
 /** @} */
 SG_END_DECL()

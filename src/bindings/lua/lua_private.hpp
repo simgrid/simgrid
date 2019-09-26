@@ -17,7 +17,7 @@ msg_host_t sglua_check_host(lua_State* L, int index);
 void sglua_register_platf_functions(lua_State* L);
 
 #define lua_ensure(...) _XBT_IF_ONE_ARG(_lua_ensure_ARG1, _lua_ensure_ARGN, __VA_ARGS__)(__VA_ARGS__)
-#define _lua_ensure_ARG1(cond) _lua_ensure_ARGN(cond, "Assertion " _XBT_STRINGIFY(cond) " failed")
+#define _lua_ensure_ARG1(cond) _lua_ensure_ARGN((cond), "Assertion " _XBT_STRINGIFY(cond) " failed")
 #define _lua_ensure_ARGN(cond, ...)                                                                                    \
   do {                                                                                                                 \
     if (!(cond)) {                                                                                                     \

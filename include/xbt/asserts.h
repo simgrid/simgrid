@@ -35,8 +35,7 @@ XBT_PUBLIC void xbt_backtrace_display_current();
    @hideinitializer  */
 #define xbt_assert(...) \
   _XBT_IF_ONE_ARG(_xbt_assert_ARG1, _xbt_assert_ARGN, __VA_ARGS__)(__VA_ARGS__)
-#define _xbt_assert_ARG1(cond) \
-  _xbt_assert_ARGN(cond, "Assertion %s failed", #cond)
+#define _xbt_assert_ARG1(cond) _xbt_assert_ARGN((cond), "Assertion %s failed", #cond)
 #define _xbt_assert_ARGN(cond, ...)                                                                                    \
   do {                                                                                                                 \
     if (!(cond)) {                                                                                                     \

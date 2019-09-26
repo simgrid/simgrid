@@ -59,10 +59,11 @@ extern XBT_PUBLIC int mpi_statuses_ignore_;
 #define FORT_ADDR(addr, val, val2)                                         \
   (((void *)(addr) == (void*) &(val2))                  \
    ? (val) : (void *)(addr))
-#define FORT_BOTTOM(addr)          FORT_ADDR(addr, MPI_BOTTOM, mpi_bottom_)
-#define FORT_IN_PLACE(addr)        FORT_ADDR(addr, MPI_IN_PLACE, mpi_in_place_)
-#define FORT_STATUS_IGNORE(addr)   static_cast<MPI_Status*>(FORT_ADDR(addr, MPI_STATUS_IGNORE, mpi_status_ignore_))
-#define FORT_STATUSES_IGNORE(addr) static_cast<MPI_Status*>(FORT_ADDR(addr, MPI_STATUSES_IGNORE, mpi_statuses_ignore_))
+#define FORT_BOTTOM(addr) FORT_ADDR((addr), MPI_BOTTOM, mpi_bottom_)
+#define FORT_IN_PLACE(addr) FORT_ADDR((addr), MPI_IN_PLACE, mpi_in_place_)
+#define FORT_STATUS_IGNORE(addr) static_cast<MPI_Status*>(FORT_ADDR((addr), MPI_STATUS_IGNORE, mpi_status_ignore_))
+#define FORT_STATUSES_IGNORE(addr)                                                                                     \
+  static_cast<MPI_Status*>(FORT_ADDR((addr), MPI_STATUSES_IGNORE, mpi_statuses_ignore_))
 
 extern XBT_PRIVATE MPI_Comm MPI_COMM_UNINITIALIZED;
 

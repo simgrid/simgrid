@@ -107,7 +107,7 @@ static void* asan_safe_memcpy(void* dest, void* src, size_t n)
   return dest;
 }
 #else
-#define asan_safe_memcpy(dest, src, n) memcpy(dest, src, n)
+#define asan_safe_memcpy(dest, src, n) memcpy((dest), (src), (n))
 #endif
 
 /** Map a given SMPI privatization segment (make a SMPI process active)

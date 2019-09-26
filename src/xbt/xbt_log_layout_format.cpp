@@ -40,32 +40,33 @@ static constexpr const char* ERRMSG =
     }                                                                   \
   } else (void)0
 
-#define show_it(data, letter)                                           \
-  if (1) {                                                              \
-    int len;                                                            \
-    int wd;                                                             \
-    if (length == -1) {                                                 \
-      wd = 0;                                                           \
-    } else {                                                            \
-      wd = length;                                                      \
-      length = -1;                                                      \
-    }                                                                   \
-    if (precision == -1) {                                              \
-      len = snprintf(p, rem_size, "%*" letter, wd, data);               \
-    } else {                                                            \
-      len = snprintf(p, rem_size, "%*.*" letter, wd, precision, data);  \
-      precision = -1;                                                   \
-    }                                                                   \
-    check_overflow(len);                                                \
-  } else (void)0
+#define show_it(data, letter)                                                                                          \
+  if (1) {                                                                                                             \
+    int len;                                                                                                           \
+    int wd;                                                                                                            \
+    if (length == -1) {                                                                                                \
+      wd = 0;                                                                                                          \
+    } else {                                                                                                           \
+      wd     = length;                                                                                                 \
+      length = -1;                                                                                                     \
+    }                                                                                                                  \
+    if (precision == -1) {                                                                                             \
+      len = snprintf(p, rem_size, "%*" letter, wd, (data));                                                            \
+    } else {                                                                                                           \
+      len       = snprintf(p, rem_size, "%*.*" letter, wd, precision, (data));                                         \
+      precision = -1;                                                                                                  \
+    }                                                                                                                  \
+    check_overflow(len);                                                                                               \
+  } else                                                                                                               \
+  (void)0
 
 #define show_string(data)                                               \
   if (1) {                                                              \
     const char *show_string_data = (data);                              \
     show_it(show_string_data ? show_string_data : "(null)", "s");       \
   } else (void)0
-#define show_int(data)    show_it(data, "d")
-#define show_double(data) show_it(data, "f")
+#define show_int(data) show_it((data), "d")
+#define show_double(data) show_it((data), "f")
 
 static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, const char* msg_fmt)
 {

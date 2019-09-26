@@ -26,8 +26,8 @@ XBT_PUBLIC int sg_link_energy_is_inited();
 
 #define MSG_host_energy_plugin_init() sg_host_energy_plugin_init()
 #define MSG_host_get_consumed_energy(host) sg_host_get_consumed_energy(host)
-#define MSG_host_get_wattmin_at(host,pstate) sg_host_get_wattmin_at(host,pstate)
-#define MSG_host_get_wattmax_at(host,pstate) sg_host_get_wattmax_at(host,pstate)
+#define MSG_host_get_wattmin_at(host, pstate) sg_host_get_wattmin_at((host), (pstate))
+#define MSG_host_get_wattmax_at(host, pstate) sg_host_get_wattmax_at((host), (pstate))
 #define MSG_host_get_current_consumption(host) sg_host_get_current_consumption(host)
 
 SG_END_DECL()
