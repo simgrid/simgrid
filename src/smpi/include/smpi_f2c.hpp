@@ -23,12 +23,14 @@ class F2C {
     // Beware of collisions if id in mpif.h is not unique
     static std::unordered_map<std::string, F2C*>* f2c_lookup_;
     static int f2c_id_;
+    int my_f2c_id_;
+
   protected:
     static std::unordered_map<std::string, F2C*>* f2c_lookup();
     static void set_f2c_lookup(std::unordered_map<std::string, F2C*>* map);
     static int f2c_id();
     static void f2c_id_increment();
-    int my_f2c_id_;
+
   public:
     char* get_my_key(char* key);
     static char* get_key(char* key, int id);
