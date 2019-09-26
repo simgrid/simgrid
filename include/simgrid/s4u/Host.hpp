@@ -117,7 +117,7 @@ public:
 
   std::vector<Disk*> get_disks() const;
   void add_disk(Disk* disk);
-  void remove_disk(std::string disk_name);
+  void remove_disk(const std::string& disk_name);
 
   std::vector<const char*> get_attached_storages() const;
 

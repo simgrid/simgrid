@@ -50,7 +50,7 @@ public:
 
   std::vector<s4u::Disk*> get_disks();
   void add_disk(s4u::Disk* disk);
-  void remove_disk(std::string disk_name);
+  void remove_disk(const std::string& disk_name);
 
   /** @brief Get the vector of storages (by names) attached to the Host */
   virtual std::vector<const char*> get_attached_storages();

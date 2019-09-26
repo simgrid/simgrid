@@ -291,7 +291,8 @@ void Host::add_disk(Disk* disk)
 {
   kernel::actor::simcall([this, disk] { this->pimpl_->add_disk(disk); });
 }
-void Host::remove_disk(std::string disk_name)
+
+void Host::remove_disk(const std::string& disk_name)
 {
   kernel::actor::simcall([this, disk_name] { this->pimpl_->remove_disk(disk_name); });
 }

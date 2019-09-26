@@ -153,7 +153,10 @@ public:
   std::map<std::string, sg_size_t>* get_content() const { return content_.get(); }
   const char* get_mount_point() { return mount_point_.c_str(); }
   const char* get_mount_point(s4u::Host* remote_host) { return remote_mount_points_[remote_host].c_str(); }
-  void add_remote_mount(Host* host, std::string mount_point) { remote_mount_points_.insert({host, mount_point}); }
+  void add_remote_mount(Host* host, const std::string& mount_point)
+  {
+    remote_mount_points_.insert({host, mount_point});
+  }
   sg_size_t get_size() const { return size_; }
   sg_size_t get_used_size() const { return used_size_; }
   void decr_used_size(sg_size_t size) { used_size_ -= size; }

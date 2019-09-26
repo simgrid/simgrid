@@ -164,7 +164,7 @@ void HostImpl::add_disk(s4u::Disk* disk)
   disks_.push_back(disk->get_impl());
 }
 
-void HostImpl::remove_disk(std::string disk_name)
+void HostImpl::remove_disk(const std::string& disk_name)
 {
   auto position = disks_.begin();
   for (auto const& d : disks_) {

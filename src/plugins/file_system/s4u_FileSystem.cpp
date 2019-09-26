@@ -93,7 +93,7 @@ File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpa
   ext->file_descriptor_table->pop_back();
 
   XBT_DEBUG("\tOpen file '%s'", path_.c_str());
-  std::map<std::string, sg_size_t>* content;
+  std::map<std::string, sg_size_t>* content = nullptr;
   if (local_storage_)
     content = local_storage_->extension<FileSystemStorageExt>()->get_content();
 
@@ -101,13 +101,15 @@ File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpa
     content = local_disk_->extension<FileSystemDiskExt>()->get_content();
 
   // if file does not exist create an empty file
-  auto sz = content->find(path_);
-  if (sz != content->end()) {
-    size_ = sz->second;
-  } else {
-    size_ = 0;
-    content->insert({path_, size_});
-    XBT_DEBUG("File '%s' was not found, file created.", path_.c_str());
+  if (content) {
+    auto sz = content->find(path_);
+    if (sz != content->end()) {
+      size_ = sz->second;
+    } else {
+      size_ = 0;
+      content->insert({path_, size_});
+      XBT_DEBUG("File '%s' was not found, file created.", path_.c_str());
+    }
   }
 }
 
@@ -163,7 +165,7 @@ sg_size_t File::read(sg_size_t size)
     current_position_ += read_size;
   }
 
-  if (host->get_name() != Host::current()->get_name() && read_size > 0) {
+  if (host && host->get_name() != Host::current()->get_name() && read_size > 0) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), read_size);
     host->send_to(Host::current(), read_size);
@@ -190,7 +192,7 @@ sg_size_t File::write(sg_size_t size, int write_inside)
   if (local_disk_)
     host = local_disk_->get_host();
 
-  if (host->get_name() != Host::current()->get_name()) {
+  if (host && host->get_name() != Host::current()->get_name()) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), size);
     Host::current()->send_to(host, size);
@@ -284,20 +286,22 @@ void File::move(const std::string& fullpath)
 {
   /* Check if the new full path is on the same mount point */
   if (fullpath.compare(0, mount_point_.length(), mount_point_) == 0) {
-    std::map<std::string, sg_size_t>* content;
+    std::map<std::string, sg_size_t>* content = nullptr;
     if (local_storage_)
       content = local_storage_->extension<FileSystemStorageExt>()->get_content();
     if (local_disk_)
       content = local_disk_->extension<FileSystemDiskExt>()->get_content();
-    auto sz = content->find(path_);
-    if (sz != content->end()) { // src file exists
-      sg_size_t new_size = sz->second;
-      content->erase(path_);
-      std::string path = fullpath.substr(mount_point_.length(), fullpath.length());
-      content->insert({path.c_str(), new_size});
-      XBT_DEBUG("Move file from %s to %s, size '%llu'", path_.c_str(), fullpath.c_str(), new_size);
-    } else {
-      XBT_WARN("File %s doesn't exist", path_.c_str());
+    if (content) {
+      auto sz = content->find(path_);
+      if (sz != content->end()) { // src file exists
+        sg_size_t new_size = sz->second;
+        content->erase(path_);
+        std::string path = fullpath.substr(mount_point_.length(), fullpath.length());
+        content->insert({path.c_str(), new_size});
+        XBT_DEBUG("Move file from %s to %s, size '%llu'", path_.c_str(), fullpath.c_str(), new_size);
+      } else {
+        XBT_WARN("File %s doesn't exist", path_.c_str());
+      }
     }
   } else {
     XBT_WARN("New full path %s is not on the same mount point: %s.", fullpath.c_str(), mount_point_.c_str());
@@ -340,7 +344,7 @@ int File::unlink()
 int File::remote_copy(sg_host_t host, const char* fullpath)
 {
   /* Find the host where the file is physically located and read it */
-  Host* src_host;
+  Host* src_host = nullptr;
   if (local_storage_) {
     src_host = local_storage_->get_host();
     XBT_DEBUG("READ %s on disk '%s'", get_path(), local_storage_->get_cname());
@@ -405,9 +409,11 @@ int File::remote_copy(sg_host_t host, const char* fullpath)
     }
   }
 
-  XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->get_cname(),
-            dst_host->get_cname());
-  src_host->send_to(dst_host, read_size);
+  if (src_host) {
+    XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->get_cname(),
+              dst_host->get_cname());
+    src_host->send_to(dst_host, read_size);
+  }
 
   /* Create file on remote host, write it and close it */
   File* fd = new File(fullpath, dst_host, nullptr);
