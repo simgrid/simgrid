@@ -7,8 +7,8 @@
 #define SMPI_HELPERS_INTERNAL_H
 
 #include <getopt.h>
-#include <stdio.h>  /* for getopt(), don't remove */
-#include <stdlib.h> /* for getopt(), don't remove */
+#include <stdio.h>  /* for getopt() on OpenIndiana, don't remove */
+#include <stdlib.h> /* for getopt() on OpenIndiana, don't remove */
 #include <unistd.h>
 
 #include <sys/time.h>
