@@ -30,10 +30,10 @@ public:
   explicit Group(int size) : size_(size), rank_to_actor_map_(size, nullptr), index_to_rank_map_(size, MPI_UNDEFINED) {}
   explicit Group(Group* origin);
 
-  void set_mapping(s4u::ActorPtr actor, int rank);
+  void set_mapping(s4u::Actor* actor, int rank);
   int rank(int index);
-  s4u::ActorPtr actor(int rank);
-  int rank(s4u::ActorPtr process);
+  s4u::Actor* actor(int rank);
+  int rank(s4u::Actor* process);
   void ref();
   static void unref(MPI_Group group);
   int size() { return size_; }

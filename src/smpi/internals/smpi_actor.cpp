@@ -213,7 +213,7 @@ void ActorExt::init()
   xbt_assert(smpi_get_universe_size() != 0, "SimGrid was not initialized properly before entering MPI_Init. "
                                             "Aborting, please check compilation process and use smpirun.");
 
-  simgrid::s4u::ActorPtr self = simgrid::s4u::Actor::self();
+  simgrid::s4u::Actor* self = simgrid::s4u::Actor::self();
   // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
   // this up here so that I can set the privatized region before the switch.
   ActorExt* ext = smpi_process();
