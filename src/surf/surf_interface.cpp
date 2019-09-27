@@ -12,6 +12,7 @@
 #include "src/simgrid/version.h"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf.hpp"
+#include "src/xbt_modinter.h" /* whether initialization was already done */
 #include "surf/surf.hpp"
 #include "xbt/module.h"
 
@@ -109,6 +110,10 @@ const std::vector<surf_model_description_t> surf_optimization_mode_description =
            "model for now).",
      nullptr},
     {"Full", "Full update of remaining and variables. Slow but may be useful when debugging.", nullptr},
+};
+
+const std::vector<surf_model_description_t> surf_disk_model_description = {
+    {"default", "Simplistic disk model.", &surf_disk_model_init_default},
 };
 
 const std::vector<surf_model_description_t> surf_storage_model_description = {
@@ -287,11 +292,8 @@ void sg_version()
 
 void surf_init(int *argc, char **argv)
 {
-  if (USER_HOST_LEVEL != -1) // Already initialized
+  if (xbt_initialized > 0)
     return;
-
-  XBT_DEBUG("Create all Libs");
-  USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
   xbt_init(argc, argv);
 

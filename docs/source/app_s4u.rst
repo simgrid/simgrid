@@ -39,7 +39,7 @@ S4U interface to express their :ref:`computation <API_s4u_Exec>`,
 :ref:`communication <API_s4u_Comm>`, :ref:`disk usage <API_s4u_Io>`,
 and other |API_s4u_Activities|_, so that they get reflected within the
 simulator. These activities take place on resources such as |API_s4u_Hosts|_,
-|API_s4u_Links|_ and |API_s4u_Storages|_. SimGrid predicts the time taken by each
+|API_s4u_Links|_ and |API_s4u_Disks|_. SimGrid predicts the time taken by each
 activity and orchestrates the actors accordingly, waiting for the
 completion of these activities.
 
@@ -75,14 +75,14 @@ provides many helper functions to simplify the code of actors.
 
 - **Platform Elements**
 
+  - :ref:`class s4u::Disk <API_s4u_Disk>`
+    Resource on which actors can write and read data.
   - :ref:`class s4u::Host <API_s4u_Host>`:
     Actor location, providing computational power.
   - :ref:`class s4u::Link <API_s4u_Link>`
     Interconnecting hosts.
   - :ref:`class s4u::NetZone <API_s4u_NetZone>`:
     Sub-region of the platform, containing resources (Hosts, Links, etc).
-  - :ref:`class s4u::Storage <API_s4u_Storage>`
-    Resource on which actors can write and read data.
   - :ref:`class s4u::VirtualMachine <API_s4u_VirtualMachine>`:
     Execution containers that can be moved between Hosts.
 
@@ -94,7 +94,7 @@ provides many helper functions to simplify the code of actors.
   - :ref:`class s4u::Exec <API_s4u_Exec>`
     Computation activity, started on Host and consuming CPU resources.
   - :ref:`class s4u::Io <API_s4u_Io>`
-    I/O activity, started on and consumming Storages.
+    I/O activity, started on and consumming disks.
 
 - **Synchronization Mechanisms**: Classical IPC that actors can use
 
@@ -116,8 +116,8 @@ provides many helper functions to simplify the code of actors.
 .. |API_s4u_Links| replace:: **Links**
 .. _API_s4u_Links: #s4u-link
 
-.. |API_s4u_Storages| replace:: **Storages**
-.. _API_s4u_Storages: #s4u-storage
+.. |API_s4u_Disks| replace:: **Disks**
+.. _API_s4u_Disks: #s4u-disk
 
 .. |API_s4u_VirtualMachine| replace:: **VirtualMachines**
 
@@ -179,8 +179,8 @@ Every kind of activity can be asynchronous:
     :cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>` and
     :cpp:func:`s4u::Mailbox::get_async() <simgrid::s4u::Mailbox::get_async>`.
   - :ref:`s4u::IoPtr <API_s4u_Io>` are created with 
-    :cpp:func:`s4u::Storage::read_async() <simgrid::s4u::Storage::read_async>` and
-    :cpp:func:`s4u::Storage::write_async() <simgrid::s4u::Storage::write_async>`.    
+    :cpp:func:`s4u::Disk::read_async() <simgrid::s4u::Disk::read_async>` and
+    :cpp:func:`s4u::Disk::write_async() <simgrid::s4u::Disk::write_async>`.
   - :ref:`s4u::ExecPtr <API_s4u_Exec>` are created with
     :cpp:func:`s4u::Host::exec_async() <simgrid::s4u::Host::exec_async>`.
   - In the future, it will become possible to have asynchronous IPC
@@ -444,6 +444,17 @@ s4u::ConditionVariable
    :protected-members:
    :undoc-members:
 
+.. _API_s4u_Disk:
+
+============
+s4u::Disk
+============
+
+.. doxygenclass:: simgrid::s4u::Disk
+   :members:
+   :protected-members:
+   :undoc-members:
+
 .. _API_s4u_Engine:
 
 ===========
@@ -575,17 +586,6 @@ s4u::Semaphore
 .. doxygentypedef:: SemaphorePtr
 
 .. doxygenclass:: simgrid::s4u::Semaphore
-   :members:
-   :protected-members:
-   :undoc-members:
-
-.. _API_s4u_Storage:
-
-============
-s4u::Storage
-============
-
-.. doxygenclass:: simgrid::s4u::Storage
    :members:
    :protected-members:
    :undoc-members:

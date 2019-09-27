@@ -49,6 +49,8 @@ XBT_PUBLIC const char* sg_actor_self_get_name();
 XBT_PUBLIC void sg_actor_self_execute(double flops);
 XBT_PUBLIC void sg_actor_ref(sg_actor_t actor);
 XBT_PUBLIC void sg_actor_unref(sg_actor_t actor);
+XBT_PUBLIC void* sg_actor_data(sg_actor_t actor);
+XBT_PUBLIC void sg_actor_data_set(sg_actor_t actor, void* userdata);
 
 SG_END_DECL()
 

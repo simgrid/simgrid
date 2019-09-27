@@ -17,6 +17,8 @@
 #include <ns3/ipv4-address-helper.h>
 #include <ns3/packet-sink-helper.h>
 #include <ns3/point-to-point-helper.h>
+#include <ns3/application-container.h>
+#include <ns3/event-id.h>
 
 #include "network_ns3.hpp"
 #include "ns3/ns3_simulator.hpp"
@@ -39,6 +41,7 @@ std::vector<std::string> IPV4addr;
  *****************/
 
 extern std::map<std::string, SgFlow*> flow_from_sock;
+extern std::map<std::string, ns3::ApplicationContainer> sink_from_sock;
 
 static ns3::InternetStackHelper stack;
 static ns3::NodeContainer nodes;
@@ -165,7 +168,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
   });
   surf::on_cluster.connect(&clusterCreation_cb);
 
-  s4u::on_platform_created.connect(&postparse_cb);
+  s4u::Engine::on_platform_created.connect(&postparse_cb);
   s4u::NetZone::on_route_creation.connect(&routeCreation_cb);
 }
 
@@ -190,18 +193,26 @@ Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size
 
 double NetworkNS3Model::next_occuring_event(double now)
 {
-  double time_to_next_flow_completion;
+  double time_to_next_flow_completion = 0.0;
   XBT_DEBUG("ns3_next_occuring_event");
 
   //get the first relevant value from the running_actions list
+
+  // If there is no comms in NS-3, then we do not move it forward.
+  // We will synchronize NS-3 with SimGrid when starting a new communication.
+  // (see NetworkNS3Action::NetworkNS3Action() for more details on this point)
   if (get_started_action_set()->empty() || now == 0.0)
     return -1.0;
 
-  do {
-    ns3_simulator(now);
-    time_to_next_flow_completion = ns3::Simulator::Now().GetSeconds() - surf_get_clock();
-  } while (double_equals(time_to_next_flow_completion, 0, sg_surf_precision));
-
+  XBT_DEBUG("doing a ns3 simulation for a duration of %f", now);
+  ns3_simulator(now);  
+  time_to_next_flow_completion = ns3::Simulator::Now().GetSeconds() - surf_get_clock();
+  // NS-3 stops as soon as a flow ends,
+  // but it does not process the other flows that may finish at the same (simulated) time.
+  // If another flow ends at the same time, time_to_next_flow_completion = 0
+  if(double_equals(time_to_next_flow_completion, 0, sg_surf_precision))
+    time_to_next_flow_completion = 0.0; 
+ 
   XBT_DEBUG("min       : %f", now);
   XBT_DEBUG("ns3  time : %f", ns3::Simulator::Now().GetSeconds());
   XBT_DEBUG("surf time : %f", surf_get_clock());
@@ -214,22 +225,19 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
 {
   static std::vector<std::string> socket_to_destroy;
 
-  /* If there are no running flows, advance the ns-3 simulator and return */
-  if (get_started_action_set()->empty()) {
-
-    while(double_positive(now - ns3::Simulator::Now().GetSeconds(), sg_surf_precision))
-      ns3_simulator(now-ns3::Simulator::Now().GetSeconds());
-
-    return;
-  }
-
   std::string ns3_socket;
   for (const auto& elm : flow_from_sock) {
     ns3_socket                = elm.first;
     SgFlow* sgFlow            = elm.second;
     NetworkNS3Action * action = sgFlow->action_;
     XBT_DEBUG("Processing socket %p (action %p)",sgFlow,action);
-    action->set_remains(action->get_cost() - sgFlow->sent_bytes_);
+    // Because NS3 stops as soon as a flow is finished, the other flows that ends at the same time may remains in an inconsistant state
+    // (i.e. remains_ == 0 but finished_ == false).
+    // However, SimGrid considers sometimes that an action with remains_ == 0 is finished.
+    // Thus, to avoid inconsistencies between SimGrid and NS3, set remains to 0 only when the flow is finished in NS3
+    int remains = action->get_cost() - sgFlow->sent_bytes_;
+    if(remains > 0)
+      action->set_remains(remains);
 
     if (TRACE_is_enabled() && action->get_state() == kernel::resource::Action::State::STARTED) {
       double data_delta_sent = sgFlow->sent_bytes_ - action->last_sent_;
@@ -247,6 +255,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     if(sgFlow->finished_){
       socket_to_destroy.push_back(ns3_socket);
       XBT_DEBUG("Destroy socket %p of action %p", ns3_socket.c_str(), action);
+      action->set_remains(0);
       action->finish(kernel::resource::Action::State::FINISHED);
     } else {
       XBT_DEBUG("Socket %p sent %u bytes out of %u (%u remaining)", ns3_socket.c_str(), sgFlow->sent_bytes_,
@@ -263,6 +272,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     }
     delete flow;
     flow_from_sock.erase(ns3_socket);
+    sink_from_sock.erase(ns3_socket);
   }
 }
 
@@ -301,6 +311,15 @@ void LinkNS3::set_latency_profile(profile::Profile*)
 NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* src, s4u::Host* dst)
     : NetworkAction(model, totalBytes, false), src_(src), dst_(dst)
 {
+  
+  // If there is no other started actions, we need to move NS-3 forward to be sync with SimGrid
+  if (model->get_started_action_set()->size()==1){
+    while(double_positive(surf_get_clock() - ns3::Simulator::Now().GetSeconds(), sg_surf_precision)){
+      XBT_DEBUG("Synchronizing NS-3 (time %f) with SimGrid (time %f)", ns3::Simulator::Now().GetSeconds(), surf_get_clock());
+      ns3_simulator(surf_get_clock() - ns3::Simulator::Now().GetSeconds());
+    }
+  }
+
   XBT_DEBUG("Communicate from %s to %s", src->get_cname(), dst->get_cname());
 
   static int port_number = 1025; // Port number is limited from 1025 to 65 000
@@ -319,17 +338,22 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
 
   XBT_DEBUG("ns3: Create flow of %.0f Bytes from %u to %u with Interface %s", totalBytes, node1, node2, addr.c_str());
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress(ns3::Ipv4Address::GetAny(), port_number));
-  sink.Install(dst_node);
+  ns3::ApplicationContainer apps = sink.Install(dst_node);
 
   ns3::Ptr<ns3::Socket> sock = ns3::Socket::CreateSocket(src_node, ns3::TcpSocketFactory::GetTypeId());
 
   flow_from_sock.insert({transform_socket_ptr(sock), new SgFlow(totalBytes, this)});
+  sink_from_sock.insert({transform_socket_ptr(sock), apps});
 
   sock->Bind(ns3::InetSocketAddress(port_number));
 
   ns3::Simulator::ScheduleNow(&start_flow, sock, addr.c_str(), port_number);
 
   port_number++;
+  if(port_number > 65000){
+    port_number = 1025;
+    XBT_WARN("Too many connections! Port number is saturated. Trying to use the oldest ports.");
+  }
   xbt_assert(port_number <= 65000, "Too many connections! Port number is saturated.");
 
   s4u::Link::on_communicate(*this, src, dst);
@@ -358,10 +382,16 @@ void NetworkNS3Action::update_remains_lazy(double /*now*/)
 
 void ns3_simulator(double maxSeconds)
 {
+  ns3::EventId id; 
   if (maxSeconds > 0.0) // If there is a maximum amount of time to run
-    ns3::Simulator::Stop(ns3::Seconds(maxSeconds));
+    id = ns3::Simulator::Schedule(ns3::Seconds(maxSeconds), &ns3::Simulator::Stop);
+
   XBT_DEBUG("Start simulator for at most %fs (current time: %f)", maxSeconds, surf_get_clock());
   ns3::Simulator::Run ();
+  XBT_DEBUG("Simulator stopped at %fs", ns3::Simulator::Now().GetSeconds());
+
+  if(maxSeconds > 0.0)
+    id.Cancel();
 }
 
 // initialize the ns-3 interface and environment

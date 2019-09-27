@@ -1,4 +1,4 @@
-$ ./concurrent_rw ${platfdir}/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ./concurrent_rw ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
 > [  0.000000] (host@bob) process 1 is writing!
 > [  0.000000] (host@bob) process 2 is writing!
 > [  0.000000] (host@bob) process 3 is writing!
@@ -24,14 +24,14 @@ $ ./concurrent_rw ${platfdir}/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%P@
 > [  6.600000] (host@bob) process 3 is reading!
 > [  6.600000] (host@bob) process 4 is reading!
 > [  6.600000] (host@bob) process 5 is reading!
-> [  6.750000] (host@bob) process 1 goes to sleep for 1 seconds
-> [  6.750000] (host@bob) process 2 goes to sleep for 2 seconds
-> [  6.750000] (host@bob) process 3 goes to sleep for 3 seconds
-> [  6.750000] (host@bob) process 4 goes to sleep for 4 seconds
-> [  6.750000] (host@bob) process 5 goes to sleep for 5 seconds
-> [  7.750000] (host@bob) process 1 is reading again!
-> [  8.750000] (host@bob) process 2 is reading again!
-> [  9.750000] (host@bob) process 3 is reading again!
-> [ 10.750000] (host@bob) process 4 is reading again!
-> [ 11.750000] (host@bob) process 5 is reading again!
-> [ 11.780000] (maestro@) Simulation time 11.78
+> [  6.800000] (host@bob) process 1 goes to sleep for 1 seconds
+> [  6.800000] (host@bob) process 2 goes to sleep for 2 seconds
+> [  6.800000] (host@bob) process 3 goes to sleep for 3 seconds
+> [  6.800000] (host@bob) process 4 goes to sleep for 4 seconds
+> [  6.800000] (host@bob) process 5 goes to sleep for 5 seconds
+> [  7.800000] (host@bob) process 1 is reading again!
+> [  8.800000] (host@bob) process 2 is reading again!
+> [  9.800000] (host@bob) process 3 is reading again!
+> [ 10.800000] (host@bob) process 4 is reading again!
+> [ 11.800000] (host@bob) process 5 is reading again!
+> [ 11.840000] (maestro@) Simulation time 11.84

@@ -20,7 +20,7 @@ static int host(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 
   switch (MSG_process_self_PID()) {
     case 1:
-      file    = MSG_file_open("c:\\Windows\\setupact.log", NULL);
+      file    = MSG_file_open("/tmp/include/surf/simgrid_dtd.h", NULL);
       st_name = "Disk2";
       break;
     case 2:

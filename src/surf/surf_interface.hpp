@@ -173,6 +173,8 @@ XBT_PUBLIC void surf_host_model_init_ptask_L07();
  */
 XBT_PUBLIC void surf_storage_model_init_default();
 
+XBT_PUBLIC void surf_disk_model_init_default();
+
 /* --------------------
  *  Model Descriptions
  * -------------------- */
@@ -189,7 +191,7 @@ XBT_PUBLIC void model_help(const char* category, const std::vector<surf_model_de
 #define SIMGRID_REGISTER_PLUGIN(id, desc, init)                                                                        \
   static void XBT_ATTRIB_CONSTRUCTOR(800) _XBT_CONCAT3(simgrid_, id, _plugin_register)()                               \
   {                                                                                                                    \
-    simgrid_add_plugin_description(_XBT_STRINGIFY(id), desc, init);                                                    \
+    simgrid_add_plugin_description(_XBT_STRINGIFY(id), (desc), (init));                                                \
   }
 
 XBT_PUBLIC void simgrid_add_plugin_description(const char* name, const char* description, void_f_void_t init_fun);
@@ -203,6 +205,8 @@ XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_optimization_mo
 XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_cpu_model_description;
 /** @brief The list of all network models (pick one with --cfg=network/model) */
 XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_network_model_description;
+/** @brief The list of all disk models (pick one with --cfg=disk/model) */
+XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_disk_model_description;
 /** @brief The list of all storage models (pick one with --cfg=storage/model) */
 XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_storage_model_description;
 /** @brief The list of all host models (pick one with --cfg=host/model:) */

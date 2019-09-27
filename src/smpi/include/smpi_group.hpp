@@ -20,8 +20,8 @@ class Group : public F2C{
   /* This is actually a map from int to int. We could use std::map here, but looking up a value there costs O(log(n)).
    * For a vector, this costs O(1). We hence go with the vector.
    */
-  std::vector<s4u::ActorPtr> rank_to_actor_map_;
-  std::map<s4u::ActorPtr, int> actor_to_rank_map_;
+  std::vector<s4u::Actor*> rank_to_actor_map_;
+  std::map<s4u::Actor*, int> actor_to_rank_map_;
   std::vector<int> index_to_rank_map_;
 
   int refcount_ = 1; /* refcount_: start > 0 so that this group never gets freed */
@@ -30,10 +30,10 @@ public:
   explicit Group(int size) : size_(size), rank_to_actor_map_(size, nullptr), index_to_rank_map_(size, MPI_UNDEFINED) {}
   explicit Group(Group* origin);
 
-  void set_mapping(s4u::ActorPtr actor, int rank);
+  void set_mapping(s4u::Actor* actor, int rank);
   int rank(int index);
-  s4u::ActorPtr actor(int rank);
-  int rank(const s4u::ActorPtr process);
+  s4u::Actor* actor(int rank);
+  int rank(s4u::Actor* process);
   void ref();
   static void unref(MPI_Group group);
   int size() { return size_; }

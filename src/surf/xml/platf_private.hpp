@@ -41,6 +41,7 @@ struct HostCreationArgs {
   profile::Profile* state_trace                            = nullptr;
   std::string coord                                        = "";
   std::unordered_map<std::string, std::string>* properties = nullptr;
+  std::vector<simgrid::kernel::resource::DiskImpl*> disks;
 };
 
 class HostLinkCreationArgs {
@@ -138,6 +139,14 @@ public:
   sg_size_t size;
 };
 
+class DiskCreationArgs {
+public:
+  std::string id;
+  std::unordered_map<std::string, std::string>* properties;
+  double read_bw;
+  double write_bw;
+};
+
 class MountCreationArgs {
 public:
   std::string storageId;
@@ -202,6 +211,9 @@ XBT_PUBLIC void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* 
 XBT_PUBLIC void sg_platf_new_bypassRoute(simgrid::kernel::routing::RouteCreationArgs* bypassroute); // Add a bypassRoute
 
 XBT_PUBLIC void sg_platf_new_trace(simgrid::kernel::routing::ProfileCreationArgs* trace);
+
+XBT_PUBLIC simgrid::kernel::resource::DiskImpl*
+sg_platf_new_disk(simgrid::kernel::routing::DiskCreationArgs* disk); // Add a disk to the current host
 
 XBT_PUBLIC void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage); // Add a storage to the current Zone
 XBT_PUBLIC void sg_platf_new_storage_type(simgrid::kernel::routing::StorageTypeCreationArgs* storage_type);

@@ -16,7 +16,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 #define CHECK_ARGS(test, errcode, ...)                                                                                 \
   if (test) {                                                                                                          \
     XBT_WARN(__VA_ARGS__);                                                                                             \
-    return errcode;                                                                                                    \
+    return (errcode);                                                                                                  \
   }
 
 /* PMPI User level calls */

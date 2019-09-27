@@ -1,6 +1,0 @@
-! output sort 19
-$ ${bindir:=.}/s4u-replay-storage --log=replay_storage.thres=verbose ${platfdir}/storage/storage.xml s4u-replay-storage_d.xml s4u-replay-storage.txt "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
-> [  0.000000] (p0@denise) p0 open /home/lib/libsimgrid.so.3.6.2 0.000000
-> [  0.063552] (p0@denise) p0 read /home/lib/libsimgrid.so.3.6.2 12710497 0.063552
-> [  0.063552] (p0@denise) p0 close /home/lib/libsimgrid.so.3.6.2 0.000000
-> [  0.063552] (maestro@) Simulation time 0.0635525

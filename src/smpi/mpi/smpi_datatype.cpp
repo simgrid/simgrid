@@ -18,18 +18,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (
 static std::unordered_map<std::string, simgrid::smpi::Datatype*> id2type_lookup;
 
 #define CREATE_MPI_DATATYPE(name, id, type)                                                                            \
-  static simgrid::smpi::Datatype _XBT_CONCAT(mpi_, name)((char*)_XBT_STRINGIFY(name), id, sizeof(type), /* size */     \
-                                                         0,                                             /* lb */       \
+  static simgrid::smpi::Datatype _XBT_CONCAT(mpi_, name)((char*)_XBT_STRINGIFY(name), (id), sizeof(type), /* size */   \
+                                                         0,                                               /* lb */     \
                                                          sizeof(type), /* ub = lb + size */                            \
                                                          DT_FLAG_BASIC /* flags */                                     \
                                                          );                                                            \
   const MPI_Datatype name = &_XBT_CONCAT(mpi_, name);
 
 #define CREATE_MPI_DATATYPE_NULL(name, id)                                                                             \
-  static simgrid::smpi::Datatype _XBT_CONCAT(mpi_, name)((char*)_XBT_STRINGIFY(name), id, 0, /* size */                \
-                                                         0,                                  /* lb */                  \
-                                                         0,                                  /* ub = lb + size */      \
-                                                         DT_FLAG_BASIC                       /* flags */               \
+  static simgrid::smpi::Datatype _XBT_CONCAT(mpi_, name)((char*)_XBT_STRINGIFY(name), (id), 0, /* size */              \
+                                                         0,                                    /* lb */                \
+                                                         0,                                    /* ub = lb + size */    \
+                                                         DT_FLAG_BASIC                         /* flags */             \
                                                          );                                                            \
   const MPI_Datatype name = &_XBT_CONCAT(mpi_, name);
 

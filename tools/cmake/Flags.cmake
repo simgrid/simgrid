@@ -60,6 +60,9 @@ endif()
 if(enable_compile_warnings AND enable_debug)
   set(warnCFLAGS "${warnCFLAGS} -Werror")
   set(warnCXXFLAGS "${warnCXXFLAGS} -Werror")
+  if(CMAKE_Fortran_COMPILER_ID MATCHES "GCC")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Werror -Werror=format-security")
+  endif()
 endif()
 
 # Activate the warnings on #if FOOBAR when FOOBAR has no value

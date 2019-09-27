@@ -11,6 +11,7 @@ set(EXTRA_DIST
   src/include/xbt/parmap.hpp
   src/include/xbt/mmalloc.h
   src/include/catch.hpp
+  src/include/xxhash.hpp
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
   src/msg/msg_private.hpp
@@ -48,6 +49,7 @@ set(EXTRA_DIST
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
 
+  src/surf/disk_s19.hpp
   src/surf/StorageImpl.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
@@ -313,6 +315,8 @@ set(SURF_SRC
   src/kernel/resource/Action.cpp
   src/kernel/resource/Model.cpp
   src/kernel/resource/Resource.cpp
+  src/kernel/resource/DiskImpl.cpp
+  src/kernel/resource/DiskImpl.hpp
 
   src/kernel/resource/profile/DatedValue.cpp
   src/kernel/resource/profile/DatedValue.hpp
@@ -341,6 +345,7 @@ set(SURF_SRC
   src/surf/cpu_cas01.cpp
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
+  src/surf/disk_s19.cpp
   src/surf/network_cm02.cpp
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
@@ -438,6 +443,7 @@ set(S4U_SRC
   src/s4u/s4u_Barrier.cpp
   src/s4u/s4u_ConditionVariable.cpp
   src/s4u/s4u_Comm.cpp
+  src/s4u/s4u_Disk.cpp
   src/s4u/s4u_Engine.cpp
   src/s4u/s4u_Exec.cpp
   src/s4u/s4u_Host.cpp
@@ -707,6 +713,7 @@ set(headers_to_install
   include/simgrid/s4u/Barrier.hpp
   include/simgrid/s4u/Comm.hpp
   include/simgrid/s4u/ConditionVariable.hpp
+  include/simgrid/s4u/Disk.hpp
   include/simgrid/s4u/Engine.hpp
   include/simgrid/s4u/Exec.hpp
   include/simgrid/s4u/Host.hpp
@@ -1131,8 +1138,10 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/faulty_host.xml
   examples/platforms/g5k.xml
   examples/platforms/griffon.xml
+  examples/platforms/hosts_with_disks.xml
   examples/platforms/meta_cluster.xml
   examples/platforms/multicore_machine.xml
+  examples/platforms/ns3-big-cluster.xml
   examples/platforms/onelink.xml
   examples/platforms/prop.xml
   examples/platforms/routing_cluster.xml
@@ -1141,7 +1150,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/simulacrum_7_hosts.xml
   examples/platforms/storage/content/small_content.txt
   examples/platforms/storage/content/storage_content.txt
-  examples/platforms/storage/content/win_storage_content.txt
   examples/platforms/storage/remote_io.xml
   examples/platforms/storage/storage.xml
   examples/platforms/small_platform.xml
@@ -1163,6 +1171,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/two_hosts_platform_with_availability_included.xml
   examples/platforms/two_peers.xml
   examples/platforms/vivaldi.xml
+  examples/platforms/wifi.xml
   )
 
 set(generated_src_files

@@ -109,7 +109,6 @@ public:
  */
 class LinkImpl : public Resource, public surf::PropertyHolder {
   bool currently_destroying_ = false;
-  void* userdata_            = nullptr;
 
 protected:
   LinkImpl(NetworkModel* model, const std::string& name, lmm::Constraint* constraint);
@@ -119,8 +118,6 @@ protected:
 
 public:
   void destroy(); // Must be called instead of the destructor
-  void* get_data() { return userdata_; }
-  void set_data(void* d) { userdata_ = d; }
 
   /** @brief Public interface */
   s4u::Link piface_;

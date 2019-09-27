@@ -26,6 +26,7 @@ constexpr unsigned MPI_REQ_RMA            = 0x200;
 constexpr unsigned MPI_REQ_ACCUMULATE     = 0x400;
 constexpr unsigned MPI_REQ_GENERALIZED    = 0x800;
 constexpr unsigned MPI_REQ_COMPLETE       = 0x1000;
+constexpr unsigned MPI_REQ_BSEND          = 0x2000;
 
 enum class SmpiProcessState { UNINITIALIZED, INITIALIZING, INITIALIZED /*(=MPI_Init called)*/, FINALIZED };
 
@@ -58,10 +59,11 @@ extern XBT_PUBLIC int mpi_statuses_ignore_;
 #define FORT_ADDR(addr, val, val2)                                         \
   (((void *)(addr) == (void*) &(val2))                  \
    ? (val) : (void *)(addr))
-#define FORT_BOTTOM(addr)          FORT_ADDR(addr, MPI_BOTTOM, mpi_bottom_)
-#define FORT_IN_PLACE(addr)        FORT_ADDR(addr, MPI_IN_PLACE, mpi_in_place_)
-#define FORT_STATUS_IGNORE(addr)   static_cast<MPI_Status*>(FORT_ADDR(addr, MPI_STATUS_IGNORE, mpi_status_ignore_))
-#define FORT_STATUSES_IGNORE(addr) static_cast<MPI_Status*>(FORT_ADDR(addr, MPI_STATUSES_IGNORE, mpi_statuses_ignore_))
+#define FORT_BOTTOM(addr) FORT_ADDR((addr), MPI_BOTTOM, mpi_bottom_)
+#define FORT_IN_PLACE(addr) FORT_ADDR((addr), MPI_IN_PLACE, mpi_in_place_)
+#define FORT_STATUS_IGNORE(addr) static_cast<MPI_Status*>(FORT_ADDR((addr), MPI_STATUS_IGNORE, mpi_status_ignore_))
+#define FORT_STATUSES_IGNORE(addr)                                                                                     \
+  static_cast<MPI_Status*>(FORT_ADDR((addr), MPI_STATUSES_IGNORE, mpi_statuses_ignore_))
 
 extern XBT_PRIVATE MPI_Comm MPI_COMM_UNINITIALIZED;
 
@@ -75,8 +77,7 @@ XBT_PRIVATE simgrid::smpi::ActorExt* smpi_process();
 XBT_PRIVATE simgrid::smpi::ActorExt* smpi_process_remote(simgrid::s4u::ActorPtr actor);
 XBT_PRIVATE int smpi_get_universe_size();
 
-XBT_PRIVATE void smpi_deployment_register_process(const std::string& instance_id, int rank,
-                                                  simgrid::s4u::ActorPtr actor);
+XBT_PRIVATE void smpi_deployment_register_process(const std::string& instance_id, int rank, simgrid::s4u::Actor* actor);
 XBT_PRIVATE void smpi_deployment_unregister_process(const std::string& instance_id);
 
 XBT_PRIVATE MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id);

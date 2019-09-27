@@ -82,7 +82,6 @@ std::map</* computation unit name */ std::string, papi_process_data> units2papi_
 
 std::unordered_map<std::string, double> location2speedup;
 
-static std::map</*process_id*/ simgrid::s4u::Actor const*, simgrid::smpi::ActorExt*> process_data;
 static int smpi_exit_status = 0;
 extern double smpi_total_benched_time;
 xbt_os_timer_t global_timer;
@@ -114,14 +113,14 @@ simgrid::smpi::ActorExt* smpi_process()
   if (me == nullptr) // This happens sometimes (eg, when linking against NS3 because it pulls openMPI...)
     return nullptr;
 
-  return process_data.at(me.get());
+  return me->extension<simgrid::smpi::ActorExt>();
 }
 
 simgrid::smpi::ActorExt* smpi_process_remote(simgrid::s4u::ActorPtr actor)
 {
   if (actor.get() == nullptr)
     return nullptr;
-  return process_data.at(actor.get());
+  return actor->extension<simgrid::smpi::ActorExt>();
 }
 
 MPI_Comm smpi_process_comm_self(){
@@ -620,10 +619,11 @@ int smpi_main(const char* executable, int argc, char* argv[])
   TRACE_global_init();
   SIMIX_global_init(&argc, argv);
 
+  auto engine              = simgrid::s4u::Engine::get_instance();
   SMPI_switch_data_segment = &smpi_switch_data_segment;
   sg_storage_file_system_init();
   // parse the platform file: get the host list
-  simgrid::s4u::Engine::get_instance()->load_platform(argv[1]);
+  engine->load_platform(argv[1]);
   SIMIX_comm_set_copy_data_callback(smpi_comm_copy_buffer_callback);
 
   smpi_init_options();
@@ -633,9 +633,16 @@ int smpi_main(const char* executable, int argc, char* argv[])
     smpi_init_privatization_no_dlopen(executable);
 
   SMPI_init();
-  simgrid::s4u::Engine::get_instance()->load_deployment(argv[2]);
-  SMPI_app_instance_register(smpi_default_instance_name.c_str(), nullptr,
-                             process_data.size()); // This call has a side effect on process_count...
+
+  /* This is a ... heavy way to count the MPI ranks */
+  int rank_counts = 0;
+  simgrid::s4u::Actor::on_creation.connect([&rank_counts](simgrid::s4u::Actor& actor) {
+    if (not actor.is_daemon())
+      rank_counts++;
+  });
+  engine->load_deployment(argv[2]);
+
+  SMPI_app_instance_register(smpi_default_instance_name.c_str(), nullptr, rank_counts);
   MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);
 
   /* Clean IO before the run */
@@ -669,20 +676,13 @@ int smpi_main(const char* executable, int argc, char* argv[])
 // Called either directly from the user code, or from the code called by smpirun
 void SMPI_init(){
   simgrid::s4u::Actor::on_creation.connect([](simgrid::s4u::Actor& actor) {
-    if (not actor.is_daemon()) {
-      process_data.insert({&actor, new simgrid::smpi::ActorExt(&actor)});
-    }
-  });
-  simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::Actor const& actor) {
-    XBT_DEBUG("Delete the extension of actor %s", actor.get_cname());
-    auto it = process_data.find(&actor);
-    if (it != process_data.end()) {
-      delete it->second;
-      process_data.erase(it);
-    }
+    if (not actor.is_daemon())
+      actor.extension_set<simgrid::smpi::ActorExt>(new simgrid::smpi::ActorExt(&actor));
   });
   simgrid::s4u::Host::on_creation.connect(
       [](simgrid::s4u::Host& host) { host.extension_set(new simgrid::smpi::Host(&host)); });
+  for (auto const& host : simgrid::s4u::Engine::get_instance()->get_all_hosts())
+    host->extension_set(new simgrid::smpi::Host(host));
 
   smpi_init_options();
   if (not MC_is_active()) {

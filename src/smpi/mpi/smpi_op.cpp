@@ -13,17 +13,27 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_op, smpi, "Logging specific to SMPI (op)");
 #define MAX_OP(a, b)  (b) = (a) < (b) ? (b) : (a)
 #define MIN_OP(a, b)  (b) = (a) < (b) ? (a) : (b)
 #define SUM_OP(a, b)  (b) += (a)
-#define SUM_OP_COMPLEX(a, b) {(b.value) += (a.value);(b.index) += (a.index);}
+#define SUM_OP_COMPLEX(a, b)                                                                                           \
+  {                                                                                                                    \
+    ((b).value) += ((a).value);                                                                                        \
+    ((b).index) += ((a).index);                                                                                        \
+  }
 #define PROD_OP(a, b) (b) *= (a)
-#define PROD_OP_COMPLEX(a, b) {(b.value) *= (a.value);(b.index) *= (a.index);}
+#define PROD_OP_COMPLEX(a, b)                                                                                          \
+  {                                                                                                                    \
+    ((b).value) *= ((a).value);                                                                                        \
+    ((b).index) *= ((a).index);                                                                                        \
+  }
 #define LAND_OP(a, b) (b) = (a) && (b)
 #define LOR_OP(a, b)  (b) = (a) || (b)
 #define LXOR_OP(a, b) (b) = (not(a) && (b)) || ((a) && not(b))
 #define BAND_OP(a, b) (b) &= (a)
 #define BOR_OP(a, b)  (b) |= (a)
 #define BXOR_OP(a, b) (b) ^= (a)
-#define MAXLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (b) : ((a.value) == (b.value) ? ((a.index) < (b.index) ? (a) : (b)) : (a))
-#define MINLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (a) : ((a.value) == (b.value) ? ((a.index) < (b.index) ? (a) : (b)) : (b))
+#define MAXLOC_OP(a, b)                                                                                                \
+  (b) = ((a).value) < ((b).value) ? (b) : (((a).value) == ((b).value) ? (((a).index) < ((b).index) ? (a) : (b)) : (a))
+#define MINLOC_OP(a, b)                                                                                                \
+  (b) = ((a).value) < ((b).value) ? (a) : (((a).value) == ((b).value) ? (((a).index) < ((b).index) ? (a) : (b)) : (b))
 
 #define APPLY_FUNC(a, b, length, type, func) \
 {                                          \
@@ -35,11 +45,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_op, smpi, "Logging specific to SMPI (op)");
   }                                        \
 }
 
-#define APPLY_OP_LOOP(dtype, type, op) \
-  if (*datatype == dtype) {\
-    APPLY_FUNC(a, b, length, type, op)\
-  } else \
-
+#define APPLY_OP_LOOP(dtype, type, op)                                                                                 \
+  if (*datatype == (dtype)) {                                                                                          \
+    APPLY_FUNC(a, b, length, type, op)                                                                                 \
+  } else
 
 #define APPLY_BASIC_OP_LOOP(op)\
 APPLY_OP_LOOP(MPI_CHAR, char,op)\

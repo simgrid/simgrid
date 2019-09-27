@@ -275,7 +275,7 @@ MPI_Comm Comm::split(int color, int key)
           group_root = group_out; /* Save root's group */
         }
         for (unsigned j = 0; j < rankmap.size(); j++) {
-          s4u::ActorPtr actor = group->actor(rankmap[j].second);
+          s4u::Actor* actor = group->actor(rankmap[j].second);
           group_out->set_mapping(actor, j);
         }
         MPI_Request* requests = xbt_new(MPI_Request, rankmap.size());
@@ -345,7 +345,7 @@ MPI_Comm Comm::find_intra_comm(int * leader){
   int min_index           = INT_MAX; // the minimum index will be the leader
   for (auto& actor : process_list) {
     int index = actor.get_pid();
-    if (this->group()->rank(actor.iface()) != MPI_UNDEFINED) { // Is this process in the current group?
+    if (this->group()->rank(actor.ciface()) != MPI_UNDEFINED) { // Is this process in the current group?
       intra_comm_size++;
       if (index < min_index)
         min_index = index;
@@ -355,8 +355,8 @@ MPI_Comm Comm::find_intra_comm(int * leader){
   MPI_Group group_intra = new  Group(intra_comm_size);
   int i = 0;
   for (auto& actor : process_list) {
-    if (this->group()->rank(actor.iface()) != MPI_UNDEFINED) {
-      group_intra->set_mapping(actor.iface(), i);
+    if (this->group()->rank(actor.ciface()) != MPI_UNDEFINED) {
+      group_intra->set_mapping(actor.ciface(), i);
       i++;
     }
   }
@@ -426,7 +426,7 @@ void Comm::init_smp(){
   if(MPI_COMM_WORLD!=MPI_COMM_UNINITIALIZED && this!=MPI_COMM_WORLD){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]), i);
+      leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]).get(), i);
     leader_comm = new  Comm(leaders_group, nullptr,1);
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
@@ -434,7 +434,7 @@ void Comm::init_smp(){
     // create intracommunicator
   }else{
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]), i);
+      leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]).get(), i);
 
     if(this->get_leaders_comm()==MPI_COMM_NULL){
       leader_comm = new  Comm(leaders_group, nullptr,1);

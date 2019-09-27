@@ -7,6 +7,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/resource/DiskImpl.hpp"
 #include "src/surf/StorageImpl.hpp"
 #include "src/surf/network_interface.hpp"
 

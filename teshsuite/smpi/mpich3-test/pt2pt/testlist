@@ -8,24 +8,22 @@ anyall 2
 eagerdt 2
 pingping 2
 bottom 2
-#needs MPI_Bsend
-#bsend1 1
-#bsend2 1
-#bsend3 1
-#bsend4 1
+bsend1 1
+bsend2 1
+bsend3 1
+bsend4 1
+#needs MPI_Intercomm_create
 #bsend5 4
-#bsendalign 2
-#bsendpending 2
+bsendalign 2
+bsendpending 2
 isendself 1
 #issendselfcancel 1
 isendirecv 10   
-#needs MPI_Buffer_attach, MPI_Bsend, MPI_Buffer_detach
-#bsendfrag 2
+bsendfrag 2
 #needs MPI_Intercomm_create
 #icsend 4
 rqstatus 2
-#needs MPI_Pack, MPI_Buffer_attach, MPI_Buffer_detach, MPI_Ibsend
-#rqfreeb 4
+rqfreeb 4
 #needs MPI_Grequest_start MPI_Grequest_complete
 greq1 1
 probe-unexp 4

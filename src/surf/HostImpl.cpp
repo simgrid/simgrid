@@ -92,6 +92,9 @@ HostImpl::~HostImpl()
   for (auto const& arg : actors_at_boot_)
     delete arg;
   actors_at_boot_.clear();
+
+  for (auto const& d : disks_)
+    d->destroy();
 }
 
 /** Re-starts all the actors that are marked as restartable.
@@ -147,6 +150,32 @@ size_t HostImpl::get_actor_count()
 {
   return process_list_.size();
 }
+
+std::vector<s4u::Disk*> HostImpl::get_disks()
+{
+  std::vector<s4u::Disk*> disks;
+  for (auto const& d : disks_)
+    disks.push_back(&d->piface_);
+  return disks;
+}
+
+void HostImpl::add_disk(s4u::Disk* disk)
+{
+  disks_.push_back(disk->get_impl());
+}
+
+void HostImpl::remove_disk(const std::string& disk_name)
+{
+  auto position = disks_.begin();
+  for (auto const& d : disks_) {
+    if (d->get_name() == disk_name) {
+      disks_.erase(position);
+      break;
+    }
+    position++;
+  }
+}
+
 std::vector<const char*> HostImpl::get_attached_storages()
 {
   std::vector<const char*> storages;

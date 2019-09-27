@@ -18,7 +18,7 @@
 
     <storage id="Disk1" typeId="single_HDD" attach="bob" />
     <storage id="Disk2" typeId="single_SSD" attach="alice"
-             content="content/win_storage_content.txt"/>
+             content="content/small_content.txt"/>
     <storage id="Disk3" typeId="single_HDD" attach="carl" />
     <storage id="Disk4" typeId="single_SSD" attach="denise"
              content="content/small_content.txt" />
@@ -27,13 +27,13 @@
       <mount storageId="Disk1" name="/home"/>
     </host>
     <host id="alice" speed="1Gf">
-      <mount storageId="Disk2" name="c:"/>
+      <mount storageId="Disk2" name="/tmp"/>
     </host>
     <host id="carl" speed="1Gf">
       <mount storageId="Disk3" name="/home"/>
     </host>
     <host id="denise" speed="1Gf">
-      <mount storageId="Disk2" name="c:"/>
+      <mount storageId="Disk2" name="/tmp"/>
       <mount storageId="Disk4" name="/home"/>
     </host>
 

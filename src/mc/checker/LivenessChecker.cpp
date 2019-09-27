@@ -379,7 +379,7 @@ void LivenessChecker::run()
       }
     }
 
-    smx_simcall_t req = MC_state_get_request(current_pair->graph_state.get());
+    smx_simcall_t req = MC_state_choose_request(current_pair->graph_state.get());
     int req_num       = current_pair->graph_state->transition_.argument_;
 
     if (dot_output != nullptr) {

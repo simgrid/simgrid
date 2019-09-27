@@ -16,14 +16,14 @@
 
 #define CHECK_ACTION_PARAMS(action, mandatory, optional)                                                               \
   {                                                                                                                    \
-    if (action.size() < static_cast<unsigned long>(mandatory + 2)) {                                                   \
+    if ((action).size() < static_cast<unsigned long>((mandatory) + 2)) {                                               \
       std::stringstream ss;                                                                                            \
       ss << __func__ << " replay failed.\n"                                                                            \
-         << action.size() << " items were given on the line. First two should be process_id and action.  "             \
-         << "This action needs after them " << mandatory << " mandatory arguments, and accepts " << optional           \
+         << (action).size() << " items were given on the line. First two should be process_id and action.  "           \
+         << "This action needs after them " << (mandatory) << " mandatory arguments, and accepts " << (optional)       \
          << " optional ones. \n"                                                                                       \
          << "The full line that was given is:\n   ";                                                                   \
-      for (const auto& elem : action) {                                                                                \
+      for (const auto& elem : (action)) {                                                                              \
         ss << elem << " ";                                                                                             \
       }                                                                                                                \
       ss << "\nPlease contact the Simgrid team if support is needed";                                                  \

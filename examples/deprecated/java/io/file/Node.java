@@ -25,7 +25,7 @@ import org.simgrid.msg.MsgException;
 
 public class Node extends Process {
   private static String file1 = "/doc/simgrid/examples/platforms/g5k.xml";
-  private static String file2 = "\\Windows\\setupact.log";
+  private static String file2 = "/include/surf/simgrid_dtd.h";
   private static String file3 = "/doc/simgrid/examples/platforms/g5k_cabinets.xml";
   private static String file4 = "/doc/simgrid/examples/platforms/nancy.xml";
 
@@ -44,7 +44,7 @@ public class Node extends Process {
         fileName = mount + file1;
       break;
       case 0:
-        mount = "c:";
+        mount = "/tmp";
         fileName = mount + file2;
       break;
       case 2:

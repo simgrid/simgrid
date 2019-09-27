@@ -4,7 +4,7 @@ $ rm -rf ${bindir:=.}/smpi_trace.trace ${bindir:=.}/smpi_trace.trace_files
 
 $ ../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:${bindir:=.}/smpi_trace.trace --cfg=tracing/smpi/format/ti-one-file:yes -no-privatize -replay ${srcdir:=.}/replay/actions_bcast.txt --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./ampi_test/smpi_ampi_test --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/wtime:0
 
-$ bash -c "cat ${bindir:=.}/smpi_trace.trace_files/*"
+$ sh -c "cat ${bindir:=.}/smpi_trace.trace_files/*"
 > 0 init
 > 0 iteration_in
 > 0 iteration_out

@@ -5,8 +5,8 @@ $ ${javacmd:=java} -classpath ${classpath:=.} io/storage/Main ${srcdir:=.}/../..
 > [denise:0:(1) 0.000000] [java/INFO] ------------------------------------
 > [denise:0:(1) 0.000000] [java/INFO] Disk name: Disk2
 > [denise:0:(1) 0.000000] [java/INFO] Size: 536870912000 bytes.
-> [denise:0:(1) 0.000000] [java/INFO] Free Size: 534479374867 bytes.
-> [denise:0:(1) 0.000000] [java/INFO] Used Size: 2391537133 bytes.
+> [denise:0:(1) 0.000000] [java/INFO] Free Size: 536857690006 bytes.
+> [denise:0:(1) 0.000000] [java/INFO] Used Size: 13221994 bytes.
 > [denise:0:(1) 0.000000] [java/INFO] ------------------------------------
 > [denise:0:(1) 0.000000] [java/INFO] Disk name: Disk4
 > [denise:0:(1) 0.000000] [java/INFO] Size: 536870912000 bytes.

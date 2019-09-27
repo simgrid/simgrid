@@ -117,7 +117,7 @@ typedef enum {
       NULL /* firstChild */,                                                                                           \
       NULL /* nextSibling */,                                                                                          \
       _XBT_STRINGIFY(catName),                                                                                         \
-      desc,                                                                                                            \
+      (desc),                                                                                                          \
       0 /*initialized */,                                                                                              \
       xbt_log_priority_uninitialized /* threshold */,                                                                  \
       1 /* isThreshInherited */,                                                                                       \
@@ -135,9 +135,9 @@ typedef enum {
  *
  * Defines a new subcategory of the parent.
  */
-#define XBT_LOG_NEW_SUBCATEGORY(catName, parent, desc)    \
-  XBT_LOG_EXTERNAL_CATEGORY(parent);                      \
-  XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc)
+#define XBT_LOG_NEW_SUBCATEGORY(catName, parent, desc)                                                                 \
+  XBT_LOG_EXTERNAL_CATEGORY(parent);                                                                                   \
+  XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, (desc))
 
 /**
  * @ingroup XBT_log
@@ -147,8 +147,7 @@ typedef enum {
  *
  * Creates a new subcategory of the root category.
  */
-# define XBT_LOG_NEW_CATEGORY(catName,desc)  \
-   XBT_LOG_NEW_SUBCATEGORY_helper(catName, XBT_LOG_ROOT_CAT, desc)
+#define XBT_LOG_NEW_CATEGORY(catName, desc) XBT_LOG_NEW_SUBCATEGORY_helper(catName, XBT_LOG_ROOT_CAT, (desc))
 
 /**
  * @ingroup XBT_log
@@ -174,9 +173,9 @@ typedef enum {
  * Creates a new subcategory of the root category and makes it the default (used by macros that don't explicitly
  * specify a category).
  */
-# define XBT_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
-    XBT_LOG_NEW_CATEGORY(cname,desc);                   \
-    XBT_LOG_DEFAULT_CATEGORY(cname)
+#define XBT_LOG_NEW_DEFAULT_CATEGORY(cname, desc)                                                                      \
+  XBT_LOG_NEW_CATEGORY(cname, (desc));                                                                                 \
+  XBT_LOG_DEFAULT_CATEGORY(cname)
 
 /**
  * @ingroup XBT_log
@@ -188,9 +187,9 @@ typedef enum {
  * Creates a new subcategory of the parent category and makes it the default
  * (used by macros that don't explicitly specify a category).
  */
-#define XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cname, parent, desc) \
-    XBT_LOG_NEW_SUBCATEGORY(cname, parent, desc);            \
-    XBT_LOG_DEFAULT_CATEGORY(cname)
+#define XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cname, parent, desc)                                                           \
+  XBT_LOG_NEW_SUBCATEGORY(cname, parent, (desc));                                                                      \
+  XBT_LOG_DEFAULT_CATEGORY(cname)
 
 /**
  * @ingroup XBT_log
@@ -336,8 +335,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
  * If you have expensive expressions that are computed outside of the log command and used only within it, you should
  * make its evaluation conditional using this macro.
  */
-#define XBT_LOG_ISENABLED(catName, priority) \
-            _XBT_LOG_ISENABLEDV(_XBT_LOGV(catName), priority)
+#define XBT_LOG_ISENABLED(catName, priority) _XBT_LOG_ISENABLEDV(_XBT_LOGV(catName), (priority))
 
 /*
  * Helper function that implements XBT_LOG_ISENABLED.
@@ -346,10 +344,9 @@ extern xbt_log_layout_t xbt_log_default_layout;
  * First part is a compile-time constant.
  * Call to xbt_log_cat_init only happens once.
  */
-#define _XBT_LOG_ISENABLEDV(catv, priority)                  \
-       (priority >= XBT_LOG_STATIC_THRESHOLD                 \
-        && ((catv).initialized || _xbt_log_cat_init(&(catv), priority)) \
-        && priority >= (catv).threshold)
+#define _XBT_LOG_ISENABLEDV(catv, priority)                                                                            \
+  ((priority) >= XBT_LOG_STATIC_THRESHOLD && ((catv).initialized || _xbt_log_cat_init(&(catv), (priority))) &&         \
+   (priority) >= (catv).threshold)
 
 /*
  * Internal Macros
@@ -376,7 +373,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
 
 #define XBT_CLOG(category, prio, ...)                                                                                  \
   do {                                                                                                                 \
-    if (_XBT_LOG_ISENABLEDV((category), prio)) {                                                                       \
+    if (_XBT_LOG_ISENABLEDV((category), (prio))) {                                                                     \
       s_xbt_log_event_t _log_ev;                                                                                       \
       _log_ev.cat          = &(category);                                                                              \
       _log_ev.priority     = (prio);                                                                                   \
@@ -387,7 +384,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
     }                                                                                                                  \
   } while (0)
 
-#define XBT_LOG(prio, ...) XBT_CLOG(*_simgrid_log_category__default, prio, __VA_ARGS__)
+#define XBT_LOG(prio, ...) XBT_CLOG(*_simgrid_log_category__default, (prio), __VA_ARGS__)
 
 #endif
 
@@ -468,10 +465,8 @@ extern xbt_log_layout_t xbt_log_default_layout;
 
 #define _XBT_IN_OUT(...) \
   _XBT_IF_ONE_ARG(_XBT_IN_OUT_ARG1, _XBT_IN_OUT_ARGN, __VA_ARGS__)(__VA_ARGS__)
-#define _XBT_IN_OUT_ARG1(fmt) \
-  XBT_LOG(xbt_log_priority_trace, fmt, __func__)
-#define _XBT_IN_OUT_ARGN(fmt, ...) \
-  XBT_LOG(xbt_log_priority_trace, fmt, __func__, __VA_ARGS__)
+#define _XBT_IN_OUT_ARG1(fmt) XBT_LOG(xbt_log_priority_trace, (fmt), __func__)
+#define _XBT_IN_OUT_ARGN(fmt, ...) XBT_LOG(xbt_log_priority_trace, (fmt), __func__, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer

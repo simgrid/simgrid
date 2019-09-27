@@ -149,7 +149,7 @@ also the tesh files in the example directories for details.
   - **I/O replay:**
     Presents a set of event handlers reproducing classical I/O
     primitives (open, read, close).
-    |br| `examples/s4u/replay-storage/s4u-replay-storage.cpp  <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/replay-storage/s4u-replay-storage.cpp>`_
+    |br| `examples/s4u/replay-io/s4u-replay-io.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/replay-io/s4u-replay-io.cpp>`_
 
 ==========================
 Activities: what Actors do
@@ -241,13 +241,13 @@ I/O on Disks and Files
 ----------------------
 
 SimGrid provides two levels of abstraction to interact with the
-simulated storages. At the simplest level, you simply create read and
-write actions on the storage resources.
+simulated disks. At the simplest level, you simply create read and
+write actions on the disk resources.
 
-  - **Access to raw storage devices:**
+  - **Access to raw disk devices:**
     This example illustrates how to simply read and write data on a
-    simulated storage resource.
-    |br| `examples/s4u/io-storage-raw/s4u-io-storage-raw.cpp  <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/io-storage-raw/s4u-io-storage-raw.cpp>`_
+    simulated disk resource.
+    |br| `examples/s4u/io-disk-raw/s4u-io-disk-raw.cpp  <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/io-disk-raw/s4u-io-disk-raw.cpp>`_
 
 The FileSystem plugin provides a more detailed view, with the
 classical operations over files: open, move, unlink, and of course

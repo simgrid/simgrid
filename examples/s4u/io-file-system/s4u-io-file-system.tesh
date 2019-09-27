@@ -1,21 +1,21 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-io-file-system ${platfdir}/storage/storage.xml
-> [denise:host:(1) 0.000000] [s4u_test/INFO] Storage info on denise:
-> [denise:host:(1) 0.000000] [s4u_test/INFO]     Disk2 (c:) Used: 2391537133; Free: 534479374867; Total: 536870912000.
-> [denise:host:(1) 0.000000] [s4u_test/INFO]     Disk4 (/home) Used: 13221994; Free: 536857690006; Total: 536870912000.
-> [denise:host:(1) 0.003333] [s4u_test/INFO] Create a 200000 bytes file named '/home/tmp/data.txt' on /sd1
-> [denise:host:(1) 0.003333] [s4u_test/INFO] Storage info on denise:
-> [denise:host:(1) 0.003333] [s4u_test/INFO]     Disk2 (c:) Used: 2391537133; Free: 534479374867; Total: 536870912000.
-> [denise:host:(1) 0.003333] [s4u_test/INFO]     Disk4 (/home) Used: 13421994; Free: 536857490006; Total: 536870912000.
-> [denise:host:(1) 0.004333] [s4u_test/INFO] Read 200000 bytes on /home/tmp/data.txt
-> [denise:host:(1) 0.006000] [s4u_test/INFO] Write 100000 bytes on /home/tmp/data.txt
-> [denise:host:(1) 0.006000] [s4u_test/INFO] Move '/home/tmp/data.txt' to '/home/tmp/simgrid.readme'
-> [denise:host:(1) 0.006000] [s4u_test/INFO] User data attached to the file: 777
-> [denise:host:(1) 0.006000] [s4u_test/INFO] Get/set data for storage element: Disk4
-> [denise:host:(1) 0.006000] [s4u_test/INFO]     Uninitialized storage data: '(null)'
-> [denise:host:(1) 0.006000] [s4u_test/INFO]     Set and get data: 'Some user data'
-> [denise:host:(1) 0.006000] [s4u_test/INFO] Unlink file: '/home/tmp/simgrid.readme'
-> [denise:host:(1) 0.006000] [s4u_test/INFO] Storage info on denise:
-> [denise:host:(1) 0.006000] [s4u_test/INFO]     Disk2 (c:) Used: 2391537133; Free: 534479374867; Total: 536870912000.
-> [denise:host:(1) 0.006000] [s4u_test/INFO]     Disk4 (/home) Used: 13221994; Free: 536857690006; Total: 536870912000.
+$ ${bindir:=.}/s4u-io-file-system ${platfdir}/hosts_with_disks.xml
+> [bob:host:(1) 0.000000] [s4u_test/INFO] Storage info on bob:
+> [bob:host:(1) 0.000000] [s4u_test/INFO]     Disk1 (/scratch) Used: 36933331; Free: 536833978669; Total: 536870912000.
+> [bob:host:(1) 0.000000] [s4u_test/INFO]     Disk2 (/) Used: 0; Free: 536870912000; Total: 536870912000.
+> [bob:host:(1) 0.005000] [s4u_test/INFO] Create a 200000 bytes file named '/scratch/tmp/data.txt' on /scratch
+> [bob:host:(1) 0.005000] [s4u_test/INFO] Storage info on bob:
+> [bob:host:(1) 0.005000] [s4u_test/INFO]     Disk1 (/scratch) Used: 37133331; Free: 536833778669; Total: 536870912000.
+> [bob:host:(1) 0.005000] [s4u_test/INFO]     Disk2 (/) Used: 0; Free: 536870912000; Total: 536870912000.
+> [bob:host:(1) 0.007000] [s4u_test/INFO] Read 200000 bytes on /scratch/tmp/data.txt
+> [bob:host:(1) 0.009500] [s4u_test/INFO] Write 100000 bytes on /scratch/tmp/data.txt
+> [bob:host:(1) 0.009500] [s4u_test/INFO] Move '/scratch/tmp/data.txt' to '/scratch/tmp/simgrid.readme'
+> [bob:host:(1) 0.009500] [s4u_test/INFO] User data attached to the file: 777
+> [bob:host:(1) 0.009500] [s4u_test/INFO] Storage info on bob:
+> [bob:host:(1) 0.009500] [s4u_test/INFO]     Disk1 (/scratch) Used: 37233331; Free: 536833678669; Total: 536870912000.
+> [bob:host:(1) 0.009500] [s4u_test/INFO]     Disk2 (/) Used: 0; Free: 536870912000; Total: 536870912000.
+> [bob:host:(1) 0.009500] [s4u_test/INFO] Unlink file: '/scratch/tmp/simgrid.readme'
+> [bob:host:(1) 0.009500] [s4u_test/INFO] Storage info on bob:
+> [bob:host:(1) 0.009500] [s4u_test/INFO]     Disk1 (/scratch) Used: 36933331; Free: 536833978669; Total: 536870912000.
+> [bob:host:(1) 0.009500] [s4u_test/INFO]     Disk2 (/) Used: 0; Free: 536870912000; Total: 536870912000.

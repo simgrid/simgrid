@@ -87,6 +87,7 @@ protected:
 #ifndef DOXYGEN
   friend Host;
   friend Link;
+  friend Disk;
   friend Storage;
   friend kernel::routing::NetPoint;
   friend kernel::routing::NetZoneImpl;
@@ -154,27 +155,27 @@ public:
    */
   void set_config(const std::string& str);
 
+  /** Callback fired when the platform is created (ie, the xml file parsed),
+   * right before the actual simulation starts. */
+  static xbt::signal<void()> on_platform_created;
+
+  /** Callback fired when the platform is about to be created
+   * (ie, after any configuration change and just before the resource creation) */
+  static xbt::signal<void()> on_platform_creation;
+
+  /** Callback fired when the main simulation loop ends, just before the end of Engine::run() */
+  static xbt::signal<void()> on_simulation_end;
+
+  /** Callback fired when the time jumps into the future */
+  static xbt::signal<void(double)> on_time_advance;
+
+  /** Callback fired when the time cannot advance because of inter-actors deadlock */
+  static xbt::signal<void(void)> on_deadlock;
+
 private:
   kernel::EngineImpl* const pimpl;
   static Engine* instance_;
 };
-
-/** Callback fired when the platform is created (ie, the xml file parsed),
- * right before the actual simulation starts. */
-extern XBT_PUBLIC xbt::signal<void()> on_platform_created;
-
-/** Callback fired when the platform is about to be created
- * (ie, after any configuration change and just before the resource creation) */
-extern XBT_PUBLIC xbt::signal<void()> on_platform_creation;
-
-/** Callback fired when the main simulation loop ends, just before the end of Engine::run() */
-extern XBT_PUBLIC xbt::signal<void()> on_simulation_end;
-
-/** Callback fired when the time jumps into the future */
-extern XBT_PUBLIC xbt::signal<void(double)> on_time_advance;
-
-/** Callback fired when the time cannot advance because of inter-actors deadlock */
-extern XBT_PUBLIC xbt::signal<void(void)> on_deadlock;
 
 #ifndef DOXYGEN /* Internal use only, no need to expose it */
 template <class T> XBT_PRIVATE void get_filtered_netzones_recursive(s4u::NetZone* current, std::vector<T*>* whereto)

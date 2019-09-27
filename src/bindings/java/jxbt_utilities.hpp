@@ -35,16 +35,16 @@ jfieldID jxbt_get_sfield(JNIEnv* env, const char* classname, const char* name, c
 
 #define jxbt_check_res(fun, res, allowed_exceptions, detail)                                                           \
   do {                                                                                                                 \
-    if (res != MSG_OK && (res | allowed_exceptions)) {                                                                 \
-      xbt_die("%s failed with error code %d, which is not an allowed exception. Please fix me.", fun, res);            \
-    } else if (res == MSG_HOST_FAILURE) {                                                                              \
-      jxbt_throw_host_failure(env, detail);                                                                            \
-    } else if (res == MSG_TRANSFER_FAILURE) {                                                                          \
-      jxbt_throw_transfer_failure(env, detail);                                                                        \
-    } else if (res == MSG_TIMEOUT) {                                                                                   \
-      jxbt_throw_time_out_failure(env, detail);                                                                        \
-    } else if (res == MSG_TASK_CANCELED) {                                                                             \
-      jxbt_throw_task_cancelled(env, detail);                                                                          \
+    if ((res) != MSG_OK && ((res) | (allowed_exceptions))) {                                                           \
+      xbt_die("%s failed with error code %d, which is not an allowed exception. Please fix me.", (fun), (res));        \
+    } else if ((res) == MSG_HOST_FAILURE) {                                                                            \
+      jxbt_throw_host_failure(env, (detail));                                                                          \
+    } else if ((res) == MSG_TRANSFER_FAILURE) {                                                                        \
+      jxbt_throw_transfer_failure(env, (detail));                                                                      \
+    } else if ((res) == MSG_TIMEOUT) {                                                                                 \
+      jxbt_throw_time_out_failure(env, (detail));                                                                      \
+    } else if ((res) == MSG_TASK_CANCELED) {                                                                           \
+      jxbt_throw_task_cancelled(env, (detail));                                                                        \
     }                                                                                                                  \
   } while (0)
 

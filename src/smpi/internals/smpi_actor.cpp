@@ -19,9 +19,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (k
 
 namespace simgrid {
 namespace smpi {
+simgrid::xbt::Extension<simgrid::s4u::Actor, ActorExt> ActorExt::EXTENSION_ID;
 
-ActorExt::ActorExt(s4u::ActorPtr actor) : actor_(actor)
+ActorExt::ActorExt(s4u::Actor* actor) : actor_(actor)
 {
+  if (not simgrid::smpi::ActorExt::EXTENSION_ID.valid())
+    simgrid::smpi::ActorExt::EXTENSION_ID = simgrid::s4u::Actor::extension_create<simgrid::smpi::ActorExt>();
+
   mailbox_         = s4u::Mailbox::by_name("SMPI-" + std::to_string(actor_->get_pid()));
   mailbox_small_   = s4u::Mailbox::by_name("small-" + std::to_string(actor_->get_pid()));
   mailboxes_mutex_ = s4u::Mutex::create();
@@ -51,8 +55,6 @@ ActorExt::ActorExt(s4u::ActorPtr actor) : actor_(actor)
 
 ActorExt::~ActorExt()
 {
-  TRACE_smpi_finalize(actor_->get_pid());
-
   if (comm_self_ != MPI_COMM_NULL)
     simgrid::smpi::Comm::destroy(comm_self_);
   if (comm_intra_ != MPI_COMM_NULL)
@@ -211,7 +213,7 @@ void ActorExt::init()
   xbt_assert(smpi_get_universe_size() != 0, "SimGrid was not initialized properly before entering MPI_Init. "
                                             "Aborting, please check compilation process and use smpirun.");
 
-  simgrid::s4u::ActorPtr self = simgrid::s4u::Actor::self();
+  simgrid::s4u::Actor* self = simgrid::s4u::Actor::self();
   // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
   // this up here so that I can set the privatized region before the switch.
   ActorExt* ext = smpi_process();
@@ -236,7 +238,7 @@ void ActorExt::init()
 
   // set the process attached to the mailbox
   ext->mailbox_small_->set_receiver(ext->actor_);
-  XBT_DEBUG("<%ld> SMPI process has been initialized: %p", ext->actor_->get_pid(), ext->actor_.get());
+  XBT_DEBUG("<%ld> SMPI process has been initialized: %p", ext->actor_->get_pid(), ext->actor_);
 }
 
 int ActorExt::get_optind()
@@ -247,6 +249,18 @@ int ActorExt::get_optind()
 void ActorExt::set_optind(int new_optind)
 {
   optind_ = new_optind;
+}
+
+void ActorExt::bsend_buffer(void** buf, int* size)
+{
+  *buf  = bsend_buffer_;
+  *size = bsend_buffer_size_;
+}
+
+void ActorExt::set_bsend_buffer(void* buf, int size)
+{
+  bsend_buffer_     = buf;
+  bsend_buffer_size_= size;
 }
 
 } // namespace smpi

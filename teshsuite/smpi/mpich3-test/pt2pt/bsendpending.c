@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
             free(buf);
         }
         else if (rank == dest) {
-            double tstart;
+/*            double tstart;*/
 
             /* Clear the message buffers */
             for (i = 0; i < msgsize; i++) {
@@ -100,9 +100,9 @@ int main(int argc, char *argv[])
                          NULL, 0, MPI_UNSIGNED_CHAR, source, 10, comm, MPI_STATUS_IGNORE);
 
             /* Wait 2 seconds */
-            tstart = MPI_Wtime();
-            while (MPI_Wtime() - tstart < 2.0);
-
+/*            tstart = MPI_Wtime();*/
+/*            while (MPI_Wtime() - tstart < 2.0);*/
+            sleep(2);
             /* Now receive the messages */
             MPI_Recv(msg1, msgsize, MPI_UNSIGNED_CHAR, source, 0, comm, &status1);
             MPI_Recv(msg2, msgsize, MPI_UNSIGNED_CHAR, source, 0, comm, &status2);

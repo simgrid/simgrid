@@ -239,25 +239,18 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   for (auto const& link : route) {
     // Handle WIFI links
     if (link->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
-      xbt_assert(!cfg_crosstraffic,
-                 "Cross-traffic is not yet supported when using WIFI. Please use --cfg=network/crosstraffic:0");
       NetworkWifiLink* wifi_link = static_cast<NetworkWifiLink*>(link);
 
       double src_rate = wifi_link->get_host_rate(src);
       double dst_rate = wifi_link->get_host_rate(dst);
-
-      // TODO: What do to when src and dst are on the same AP ? (for the moment we use src rate)
-      if (src_rate != -1 && dst_rate != -1) {
+      xbt_assert(
+          !(src_rate == -1 && dst_rate == -1),
+          "Some Stations are not associated to any Access Point. Make sure to call set_host_rate on all Stations.");
+      if (src_rate != -1)
         get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / src_rate);
-      } else {
-        xbt_assert(
-            !(src_rate == -1 && dst_rate == -1),
-            "Some Stations are not associated to any Access Point. Make sure to call set_host_rate on all Stations.");
-        if (src_rate != -1)
-          get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / src_rate);
-        else
-          get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / dst_rate);
-      }
+      else
+        get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / dst_rate);
+
     } else {
       get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0);
     }
@@ -265,8 +258,27 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   if (cfg_crosstraffic) {
     XBT_DEBUG("Crosstraffic active: adding backward flow using 5%% of the available bandwidth");
-    for (auto const& link : back_route)
-      get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), .05);
+    bool wifi_dst_assigned = false; // Used by wifi crosstraffic
+    for (auto const& link : back_route) {
+      if (link->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
+        NetworkWifiLink* wifi_link = static_cast<NetworkWifiLink*>(link);
+        /**
+         * For wifi links we should add 0.05/rate.
+         * However since we are using the "back_route" we should encounter in
+         * the first place the dst wifi link.
+         */
+        if (!wifi_dst_assigned && (wifi_link->get_host_rate(dst) != -1)) {
+          get_maxmin_system()->expand(link->get_constraint(), action->get_variable(),
+                                      .05 / wifi_link->get_host_rate(dst));
+          wifi_dst_assigned = true;
+        } else {
+          get_maxmin_system()->expand(link->get_constraint(), action->get_variable(),
+                                      .05 / wifi_link->get_host_rate(src));
+        }
+      } else {
+        get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), .05);
+      }
+    }
 
     // Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency
     // (You would also have to change simgrid::kernel::lmm::Element::get_concurrency())

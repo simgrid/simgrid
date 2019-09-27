@@ -355,7 +355,7 @@ void instr_define_callbacks()
   // always need the callbacks to zones (we need only the root zone), to create the rootContainer and the rootType
   // properly
   if (TRACE_needs_platform()) {
-    simgrid::s4u::on_platform_created.connect(instr_on_platform_created);
+    simgrid::s4u::Engine::on_platform_created.connect(instr_on_platform_created);
     simgrid::s4u::Host::on_creation.connect(instr_host_on_creation);
     simgrid::s4u::Host::on_speed_change.connect(instr_host_on_speed_change);
     simgrid::s4u::Link::on_creation.connect(instr_link_on_creation);

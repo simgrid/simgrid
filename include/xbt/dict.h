@@ -158,10 +158,9 @@ xbt_dict_foreach(head, cursor, key, data) {
 }
 @endcode
  */
-#  define xbt_dict_foreach(dict,cursor,key,data)                       \
-    for (cursor=NULL, xbt_dict_cursor_first((dict),&(cursor)) ;        \
-         xbt_dict_cursor_get_or_free(&(cursor),(char**)&(key),(void**)(&data));\
-         xbt_dict_cursor_step(cursor) )
+#define xbt_dict_foreach(dict, cursor, key, data)                                                                      \
+  for ((cursor) = NULL, xbt_dict_cursor_first((dict), &(cursor));                                                      \
+       xbt_dict_cursor_get_or_free(&(cursor), (char**)&(key), (void**)&(data)); xbt_dict_cursor_step(cursor))
 
 /** @} */
 

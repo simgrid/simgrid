@@ -244,3 +244,18 @@ MPI_Fint PMPI_Errhandler_c2f(MPI_Errhandler errhan){
     return -1;
   return errhan->c2f();
 }
+
+int PMPI_Buffer_attach(void *buf, int size){
+  if(buf==nullptr)
+    return MPI_ERR_BUFFER;
+  if(size<0)
+    return MPI_ERR_ARG;
+  smpi_process()->set_bsend_buffer(buf, size);
+  return MPI_SUCCESS;
+}
+
+int PMPI_Buffer_detach(void* buffer, int* size){
+  smpi_process()->bsend_buffer((void**)buffer, size);
+  smpi_process()->set_bsend_buffer(nullptr, 0);
+  return MPI_SUCCESS;
+}

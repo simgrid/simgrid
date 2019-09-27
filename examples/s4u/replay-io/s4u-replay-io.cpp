@@ -10,20 +10,20 @@
 
 #include <boost/algorithm/string/join.hpp>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(replay_storage, "Messages specific for this example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(replay_io, "Messages specific for this example");
 
 static std::unordered_map<std::string, simgrid::s4u::File*> opened_files;
 
 #define ACT_DEBUG(...)                                                                                                 \
-  if (XBT_LOG_ISENABLED(replay_storage, xbt_log_priority_verbose)) {                                                   \
+  if (XBT_LOG_ISENABLED(replay_io, xbt_log_priority_verbose)) {                                                        \
     std::string NAME = boost::algorithm::join(action, " ");                                                            \
     XBT_DEBUG(__VA_ARGS__);                                                                                            \
   } else                                                                                                               \
-  ((void)0)
+    ((void)0)
 
 static void log_action(simgrid::xbt::ReplayAction& action, double date)
 {
-  if (XBT_LOG_ISENABLED(replay_storage, xbt_log_priority_verbose)) {
+  if (XBT_LOG_ISENABLED(replay_io, xbt_log_priority_verbose)) {
     std::string s = boost::algorithm::join(action, " ");
     XBT_VERB("%s %f", s.c_str(), date);
   }
@@ -97,10 +97,11 @@ int main(int argc, char* argv[])
   simgrid::s4u::Engine e(&argc, argv);
   sg_storage_file_system_init();
 
-  xbt_assert(argc > 3, "Usage: %s platform_file deployment_file [action_files]\n"
-                       "\texample: %s platform.xml deployment.xml actions # if all actions are in the same file\n"
-                       "\t# if actions are in separate files, specified in deployment\n"
-                       "\texample: %s platform.xml deployment.xml",
+  xbt_assert(argc > 3,
+             "Usage: %s platform_file deployment_file [action_files]\n"
+             "\texample: %s platform.xml deployment.xml actions # if all actions are in the same file\n"
+             "\t# if actions are in separate files, specified in deployment\n"
+             "\texample: %s platform.xml deployment.xml",
              argv[0], argv[0], argv[0]);
 
   e.load_platform(argv[1]);

@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
-  <actor host="denise" function="p0"/>
+  <actor host="alice" function="p0"/>
 </platform>

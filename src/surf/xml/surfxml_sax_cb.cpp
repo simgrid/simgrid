@@ -28,8 +28,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF 
 
 static std::string surf_parsed_filename; // Currently parsed file (for the error messages)
 std::vector<simgrid::kernel::resource::LinkImpl*>
-    parsed_link_list; /* temporary store of current list link of a route */
-
+    parsed_link_list; /* temporary store of current link list of a route */
+std::vector<simgrid::kernel::resource::DiskImpl*> parsed_disk_list; /* temporary store of current disk list of a host */
 /*
  * Helping functions
  */
@@ -409,7 +409,7 @@ void STag_surfxml_platform() {
              surf_parsed_filename.c_str(), version);
 }
 void ETag_surfxml_platform(){
-  simgrid::s4u::on_platform_created();
+  simgrid::s4u::Engine::on_platform_created();
 }
 
 void STag_surfxml_host(){
@@ -458,14 +458,27 @@ void ETag_surfxml_host()    {
                          : nullptr;
   host.pstate      = surf_parse_get_int(A_surfxml_host_pstate);
   host.coord       = A_surfxml_host_coordinates;
+  host.disks.swap(parsed_disk_list);
 
   sg_platf_new_host(&host);
 }
 
 void STag_surfxml_disk() {
-  THROW_UNIMPLEMENTED;
+  ZONE_TAG = 0;
+  xbt_assert(current_property_set == nullptr,
+             "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
 }
+
 void ETag_surfxml_disk() {
+  simgrid::kernel::routing::DiskCreationArgs disk;
+  disk.properties      = current_property_set;
+  current_property_set = nullptr;
+
+  disk.id       = A_surfxml_disk_id;
+  disk.read_bw  = surf_parse_get_bandwidth(A_surfxml_disk_read___bw, "read_bw of disk ", disk.id);
+  disk.write_bw = surf_parse_get_bandwidth(A_surfxml_disk_write___bw, "write_bw of disk ", disk.id);
+
+  parsed_disk_list.push_back(sg_platf_new_disk(&disk));
 }
 
 void STag_surfxml_host___link(){

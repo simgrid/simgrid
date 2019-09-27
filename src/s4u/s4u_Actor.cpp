@@ -190,7 +190,7 @@ void Actor::suspend()
   auto target = pimpl_;
   s4u::Actor::on_suspend(*this);
   kernel::actor::simcall_blocking<void>([issuer, target]() {
-    target->suspend(issuer);
+    target->suspend();
     if (target != issuer) {
       /* If we are suspending ourselves, then just do not finish the simcall now */
       issuer->simcall_answer();
@@ -441,7 +441,9 @@ Host* get_host()
 
 void suspend()
 {
-  SIMIX_process_self()->iface()->suspend();
+  kernel::actor::ActorImpl* self = SIMIX_process_self();
+  s4u::Actor::on_suspend(*self->ciface());
+  kernel::actor::simcall_blocking<void>([self] { self->suspend(); });
 }
 
 void resume()
@@ -737,4 +739,15 @@ void sg_actor_ref(sg_actor_t actor)
 void sg_actor_unref(sg_actor_t actor)
 {
   intrusive_ptr_release(actor);
+}
+
+/** @brief Return the user data of a #sg_actor_t */
+void* sg_actor_data(sg_actor_t actor)
+{
+  return actor->get_data();
+}
+/** @brief Set the user data of a #sg_actor_t */
+void sg_actor_data_set(sg_actor_t actor, void* userdata)
+{
+  actor->set_data(userdata);
 }

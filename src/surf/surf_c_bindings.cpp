@@ -6,6 +6,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "src/include/surf/surf.hpp"
 #include "src/instr/instr_private.hpp"
+#include "src/kernel/resource/DiskImpl.hpp"
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 
@@ -71,7 +72,7 @@ double surf_solve(double max_date)
 
   for (auto const& model : all_existing_models) {
     if (model != surf_host_model && model != surf_vm_model && model != surf_network_model &&
-        model != surf_storage_model) {
+        model != surf_storage_model && model != surf_disk_model) {
       double next_event_model = model->next_occuring_event(NOW);
       if ((time_delta < 0.0 || next_event_model < time_delta) && next_event_model >= 0.0)
         time_delta = next_event_model;
@@ -143,7 +144,7 @@ double surf_solve(double max_date)
   for (auto const& model : all_existing_models)
     model->update_actions_state(NOW, time_delta);
 
-  simgrid::s4u::on_time_advance(time_delta);
+  simgrid::s4u::Engine::on_time_advance(time_delta);
 
   TRACE_paje_dump_buffer(false);
 

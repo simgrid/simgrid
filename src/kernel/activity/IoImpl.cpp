@@ -7,6 +7,7 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/resource/DiskImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/StorageImpl.hpp"
@@ -44,6 +45,12 @@ IoImpl& IoImpl::set_size(sg_size_t size)
   return *this;
 }
 
+IoImpl& IoImpl::set_disk(resource::DiskImpl* disk)
+{
+  disk_ = disk;
+  return *this;
+}
+
 IoImpl& IoImpl::set_storage(resource::StorageImpl* storage)
 {
   storage_ = storage;
@@ -53,7 +60,10 @@ IoImpl& IoImpl::set_storage(resource::StorageImpl* storage)
 IoImpl* IoImpl::start()
 {
   state_       = SIMIX_RUNNING;
-  surf_action_ = storage_->io_start(size_, type_);
+  if (storage_)
+    surf_action_ = storage_->io_start(size_, type_);
+  else
+    surf_action_ = disk_->io_start(size_, type_);
   surf_action_->set_activity(this);
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
@@ -66,7 +76,7 @@ void IoImpl::post()
 {
   performed_ioops_ = surf_action_->get_cost();
   if (surf_action_->get_state() == resource::Action::State::FAILED) {
-    if (storage_ && not storage_->is_on())
+    if ((storage_ && not storage_->is_on()) || (disk_ && not disk_->is_on()))
       state_ = SIMIX_FAILED;
     else
       state_ = SIMIX_CANCELED;

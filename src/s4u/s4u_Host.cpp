@@ -18,8 +18,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_host, s4u, "Logging specific to the S4U hosts");
 XBT_LOG_EXTERNAL_CATEGORY(surf_route);
 
-int USER_HOST_LEVEL = -1;
-
 namespace simgrid {
 namespace xbt {
 template class Extendable<s4u::Host>;
@@ -284,6 +282,20 @@ int Host::get_pstate() const
   return this->pimpl_cpu->get_pstate();
 }
 
+std::vector<Disk*> Host::get_disks() const
+{
+  return kernel::actor::simcall([this] { return this->pimpl_->get_disks(); });
+}
+
+void Host::add_disk(Disk* disk)
+{
+  kernel::actor::simcall([this, disk] { this->pimpl_->add_disk(disk); });
+}
+
+void Host::remove_disk(const std::string& disk_name)
+{
+  kernel::actor::simcall([this, disk_name] { this->pimpl_->remove_disk(disk_name); });
+}
 /**
  * @ingroup simix_storage_management
  * @brief Returns the list of storages attached to a host.
@@ -387,17 +399,25 @@ xbt_dynar_t sg_hosts_as_dynar()
 // ========= Layering madness ==============*
 
 // ========== User data Layer ==========
-void* sg_host_user(sg_host_t host)
+void* sg_host_data(sg_host_t host)
 {
-  return host->extension(USER_HOST_LEVEL);
+  return host->get_data();
 }
-void sg_host_user_set(sg_host_t host, void* userdata)
+void sg_host_data_set(sg_host_t host, void* userdata)
 {
-  host->extension_set(USER_HOST_LEVEL, userdata);
+  host->set_data(userdata);
 }
-void sg_host_user_destroy(sg_host_t host)
+void* sg_host_user(sg_host_t host) // deprecated
 {
-  host->extension_set(USER_HOST_LEVEL, nullptr);
+  return host->get_data();
+}
+void sg_host_user_set(sg_host_t host, void* userdata) // deprecated
+{
+  host->set_data(userdata);
+}
+void sg_host_user_destroy(sg_host_t host) // deprecated
+{
+  host->set_data(nullptr);
 }
 
 // ========= storage related functions ============
