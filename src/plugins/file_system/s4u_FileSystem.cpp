@@ -311,8 +311,8 @@ void File::move(const std::string& fullpath)
 int File::unlink()
 {
   /* Check if the file is on local storage */
-  std::map<std::string, sg_size_t>* content;
-  const char* name = nullptr;
+  std::map<std::string, sg_size_t>* content = nullptr;
+  const char* name = "";
   if (local_storage_) {
     content = local_storage_->extension<FileSystemStorageExt>()->get_content();
     name    = local_storage_->get_cname();
@@ -322,7 +322,7 @@ int File::unlink()
     name    = local_disk_->get_cname();
   }
 
-  if (content->find(path_) == content->end()) {
+  if (not content || content->find(path_) == content->end()) {
     XBT_WARN("File %s is not on disk %s. Impossible to unlink", path_.c_str(), name);
     return -1;
   } else {
