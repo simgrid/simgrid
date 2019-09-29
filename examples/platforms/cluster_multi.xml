@@ -1,4 +1,4 @@
-<?xml version='1.0'?>
+<?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
   <zone id="world" routing="Full">
@@ -23,8 +23,8 @@
  
        So the route from node-0 to node-1 is {l0.UP, l1.DOWN}
     -->
-  <cluster id="simple" prefix="node-" radical="0-7" suffix=".1core.org" speed="1Gf" bw="125MBps" lat="50us">
-    <prop id="watt_per_state" value="0.0:1.0" />
+  <cluster bw="125MBps" id="simple" lat="50us" prefix="node-" radical="0-7" speed="1Gf" suffix=".1core.org">
+    <prop id="watt_per_state" value="0.0:1.0:1.0" />
     <prop id="watt_off" value="0.0" />
   </cluster>
 
@@ -39,11 +39,8 @@
     
     The route from node-0 to the outer world begins with: l0.UP ; backbone
   -->    
-  <cluster id="backboned" prefix="node-" radical="0-7" suffix=".2cores.org"
-              speed="1Gf"       core="2" 
-	      bw="125MBps"      lat="50us"
-           bb_bw="2.25GBps"  bb_lat="500us">
-    <prop id="watt_per_state" value="0.0:1.0:2.0" />
+  <cluster bb_bw="2.25GBps" bb_lat="500us" bw="125MBps" core="2" id="backboned" lat="50us" prefix="node-" radical="0-7" speed="1Gf" suffix=".2cores.org">
+    <prop id="watt_per_state" value="0.0:0.0:2.0" />
     <prop id="watt_off" value="0.0" />
   </cluster>
 	   
@@ -55,10 +52,8 @@
     - 
     -  Also, the hosts have 4 cores.
     -->
-  <cluster id="halfduplex" prefix="node-" radical="0-7" suffix=".4cores.org" speed="1Gf" core="4"
-              bw="125MBps"      lat="50us"     sharing_policy="SHARED"
-	   bb_bw="2.25GBps"  bb_lat="500us" bb_sharing_policy="SHARED">
-    <prop id="watt_per_state" value="0.0:1.0:4.0" />
+  <cluster bb_bw="2.25GBps" bb_lat="500us" bb_sharing_policy="SHARED" bw="125MBps" core="4" id="halfduplex" lat="50us" prefix="node-" radical="0-7" sharing_policy="SHARED" speed="1Gf" suffix=".4cores.org">
+    <prop id="watt_per_state" value="0.0:0.0:4.0" />
     <prop id="watt_off" value="0.0" />
   </cluster>
 
@@ -74,23 +69,17 @@
     -  not by the network backbone.
     -->
 
-    <link id="backbone" bandwidth="1.25GBps" latency="500us" sharing_policy="FATPIPE"/>
+    <link bandwidth="1.25GBps" id="backbone" latency="500us" sharing_policy="FATPIPE" />
 
-    <zoneRoute src="simple" dst="backboned" 
-               gw_src="node-simple_router.1core.org"
-               gw_dst="node-backboned_router.2cores.org">
+    <zoneRoute dst="backboned" gw_dst="node-backboned_router.2cores.org" gw_src="node-simple_router.1core.org" src="simple">
       <link_ctn id="backbone" />
     </zoneRoute>
 
-    <zoneRoute src="simple" dst="halfduplex" 
-               gw_src="node-simple_router.1core.org"
-               gw_dst="node-halfduplex_router.4cores.org">
+    <zoneRoute dst="halfduplex" gw_dst="node-halfduplex_router.4cores.org" gw_src="node-simple_router.1core.org" src="simple">
       <link_ctn id="backbone" />
     </zoneRoute>
     
-    <zoneRoute src="backboned" dst="halfduplex" 
-               gw_src="node-backboned_router.2cores.org"
-               gw_dst="node-halfduplex_router.4cores.org">
+    <zoneRoute dst="halfduplex" gw_dst="node-halfduplex_router.4cores.org" gw_src="node-backboned_router.2cores.org" src="backboned">
       <link_ctn id="backbone" />
     </zoneRoute>
 </zone>

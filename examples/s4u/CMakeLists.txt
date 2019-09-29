@@ -7,7 +7,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  app-chainsend app-pingpong app-token-ring
                  async-ready async-wait async-waitany async-waitall async-waituntil
                  cloud-capping cloud-migration cloud-simple
-                 energy-exec energy-boot energy-link energy-vm
+                 energy-exec energy-boot energy-link energy-vm energy-exec-ptask
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany
                  io-async io-file-system io-file-remote io-disk-raw

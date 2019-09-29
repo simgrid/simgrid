@@ -1,42 +1,42 @@
-<?xml version='1.0'?>
+<?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
   <zone id="AS0" routing="Full">
     <!-- Multiple pstate processor capacities can be defined as a list of powers specified for a given host -->
     <!-- Attribute 'pstate' specifies the initialy selected pstate (here, the lowest pstate corresponds to the highest
          processor speed) -->
-    <host id="MyHost1" speed="100.0Mf,50.0Mf,20.0Mf" pstate="0" core="4" >
-      <!--  List of Idle:OneCore:AllCores (in Watts) corresponding to the speed consumed when the processor is idle
-            and when one core is at full speed, and when all cores are fully loaded -->
+    <host core="4" id="MyHost1" pstate="0" speed="100.0Mf,50.0Mf,20.0Mf">
+      <!--  List of Idle:Epsilon:AllCores (in Watts) corresponding to the speed consumed when the processor is idle,
+            when all cores have a tiny epsilon load, and when all cores are fully loaded -->
       <!--  The list must contain one energetic profile for each previously defined pstate-->
-      <prop id="watt_per_state" value="100.0:120.0:200.0, 93.0:110.0:170.0, 90.0:105.0:150.0" />
+      <prop id="watt_per_state" value="100.0:93.33333333333333:200.0, 93.0:90.0:170.0, 90.0:90.0:150.0" />
       <prop id="watt_off" value="10" />
     </host>
     
-    <host id="MyHost2" speed="100.0Mf,50.0Mf,20.0Mf" pstate="0" core="1" >
-      <!-- This host is mono-core, so AllCores=OneCore and is omitted -->
-      <prop id="watt_per_state" value="100.0:200.0, 93.0:170.0, 90.0:150.0" />
+    <host core="1" id="MyHost2" pstate="0" speed="100.0Mf,50.0Mf,20.0Mf">
+      <!-- This host is mono-core and its consumption is either idle or full load (Epsilon=AllCores) -->
+      <prop id="watt_per_state" value="100.0:200.0:200.0, 93.0:170.0:170.0, 90.0:150.0:150.0" />
       <prop id="watt_off" value="10" />
     </host>
     
-    <host id="MyHost3" speed="100.0Mf,50.0Mf,20.0Mf" pstate="0" core="1" >
-      <!-- This host is mono-core, so AllCores=OneCore and is omitted -->
-      <prop id="watt_per_state" value="100.0:200.0, 93.0:170.0, 90.0:150.0" />
+    <host core="1" id="MyHost3" pstate="0" speed="100.0Mf,50.0Mf,20.0Mf">
+      <!-- This host is mono-core and its consumption is either idle or full load (Epsilon=AllCores) -->
+      <prop id="watt_per_state" value="100.0:200.0:200.0, 93.0:170.0:170.0, 90.0:150.0:150.0" />
       <prop id="watt_off" value="10" />
     </host>
  
-    <link id="bus" bandwidth="100kBps" latency="0" sharing_policy="SHARED">
+    <link bandwidth="100kBps" id="bus" latency="0" sharing_policy="SHARED">
 <!--   REALISTIC VALUES                    <prop id="watt_range" value="10.3581:10.7479" /> -->
 <!--  IREALISTIC VALUES FOR THE TEST -->   <prop id="watt_range" value="1:3" /> 
     </link>
-    <route src="MyHost1" dst="MyHost2">
-      <link_ctn id="bus"/>
+    <route dst="MyHost2" src="MyHost1">
+      <link_ctn id="bus" />
     </route>
-    <route src="MyHost1" dst="MyHost3">
-      <link_ctn id="bus"/>
+    <route dst="MyHost3" src="MyHost1">
+      <link_ctn id="bus" />
     </route>
-    <route src="MyHost2" dst="MyHost3">
-      <link_ctn id="bus"/>
+    <route dst="MyHost3" src="MyHost2">
+      <link_ctn id="bus" />
     </route>
   </zone>
 </platform>
