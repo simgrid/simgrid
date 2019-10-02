@@ -475,7 +475,7 @@ Here is the full list of plugins that can be activated this way:
 Configuring the Model-Checking
 ------------------------------
 
-To enable the SimGrid model-checking support the program should
+To enable SimGrid's model-checking support, the program should
 be executed using the simgrid-mc wrapper:
 
 .. code-block:: shell
@@ -533,7 +533,7 @@ Going for Stateful Verification
 ...............................
 
 By default, the system is backtracked to its initial state to explore
-another path instead of backtracking to the exact step before the fork
+another path, instead of backtracking to the exact step before the fork
 that we want to explore (this is called stateless verification). This
 is done this way because saving intermediate states can rapidly
 exhaust the available memory. If you want, you can change the value of
@@ -583,7 +583,7 @@ searching for counter-examples to the liveness properties.
 Note that this feature may break the current implementation of the
 DPOR reduction technique.
 
-The ``model-check/visited`` item is the maximum number of states which
+The ``model-check/visited`` item is the maximum number of states,, which
 are stored in memory. If the maximum number of snapshotted state is
 reached, some states will be removed from the memory and some cycles
 might be missed. Small values can lead to incorrect verifications, but
@@ -602,7 +602,7 @@ Non-Termination Detection
 
 The ``model-check/termination`` configuration item can be used to
 report if a non-termination execution path has been found. This is a
-path with a cycle which means that the program might never terminate.
+path with a cycle, which means that the program might never terminate.
 
 This only works in safety mode, not in liveness mode.
 
@@ -614,10 +614,10 @@ Dot Output
 ..........
 
 If set, the ``model-check/dot-output`` configuration item is the name
-of a file in which to write a dot file of the path leading the found
-property (safety or liveness violation) as well as the cycle for
-liveness properties. This dot file can then fed to the graphviz dot
-tool to generate an corresponding graphical representation.
+of a file in which to write a dot file of the path leading to the
+property violation discovered (safety or liveness violation), as well
+as the cycle for liveness properties. This dot file can then be fed to the
+graphviz dot tool to generate an corresponding graphical representation.
 
 .. _cfg=model-check/max-depth:
 
@@ -628,7 +628,7 @@ The ``model-checker/max-depth`` can set the maximum depth of the
 exploration graph of the model checker. If this limit is reached, a
 logging message is sent and the results might not be exact.
 
-By default, there is not depth limit.
+By default, there is no depth limit.
 
 .. _cfg=model-check/timeout:
 
@@ -647,7 +647,7 @@ Communication Determinism
 
 The ``model-check/communications-determinism`` and
 ``model-check/send-determinism`` items can be used to select the
-communication determinism mode of the model checker which checks
+communication determinism mode of the model checker, which checks
 determinism properties of the communications of an application.
 
 Verification Performance Considerations
@@ -655,14 +655,14 @@ Verification Performance Considerations
 
 The size of the stacks can have a huge impact on the memory
 consumption when using model-checking. By default, each snapshot will
-save a copy of the whole stacks and not only of the part which is
+save a copy of the whole stacks and not only of the part that is
 really meaningful: you should expect the contribution of the memory
 consumption of the snapshots to be @f$ @mbox{number of processes}
 @times @mbox{stack size} @times @mbox{number of states} @f$.
 
 When compiled against the model checker, the stacks are not
 protected with guards: if the stack size is too small for your
-application, the stack will silently overflow on other parts of the
+application, the stack will silently overflow into other parts of the
 memory (see :ref:`contexts/guard-size <cfg=contexts/guard-size>`).
 
 .. _cfg=model-check/replay:
@@ -670,17 +670,18 @@ memory (see :ref:`contexts/guard-size <cfg=contexts/guard-size>`).
 Replaying buggy execution paths from the model checker
 ......................................................
 
-Debugging the problems reported by the model checker is challenging: First, the
-application under verification cannot be debugged with gdb because the
-model checker already traces it. Then, the model checker may explore several
-execution paths before encountering the issue, making it very difficult to
-understand the outputs. Fortunately, SimGrid provides the execution path leading
-to any reported issue so that you can replay this path out of the model checker,
-enabling the usage of classical debugging tools.
+Debugging the problems reported by the model checker is challenging:
+First, the application under verification cannot be debugged with gdb
+because the model checker already traces it. Then, the model checker may
+explore several execution paths before encountering the issue, making it
+very difficult to understand the output. Fortunately, SimGrid provides
+the execution path leading to any reported issue so that you can replay
+this path reported by the model checker, enabling the usage of classical
+debugging tools.
 
 When the model checker finds an interesting path in the application
 execution graph (where a safety or liveness property is violated), it
-generates an identifier for this path. Here is an example of output:
+generates an identifier for this path. Here is an example of the output:
 
 .. code-block:: shell
 
@@ -756,7 +757,7 @@ the slowest to the most efficient:
    of our own, directly implemented in assembly (only available for x86
    and amd64 platforms for now) and without any unneeded system call.
 
-The main reason to change this setting is when the debugging tools get
+The main reason to change this setting is when the debugging tools become
 fooled by the optimized context factories. Threads are the most
 debugging-friendly contexts, as they allow one to set breakpoints
 anywhere with gdb and visualize backtraces for all processes, in order
@@ -943,7 +944,7 @@ Configuring SMPI
 ----------------
 
 The SMPI interface provides several specific configuration items.
-These are uneasy to see since the code is usually launched through the
+These are not easy to see, since the code is usually launched through the
 ``smiprun`` script directly.
 
 .. _cfg=smpi/host-speed:
@@ -963,25 +964,25 @@ host machine and then scaled to the power of the corresponding
 simulated machine. The variable ``smpi/host-speed`` allows one to specify
 the computational speed of the host machine (in flop/s) to use when
 scaling the execution times. It defaults to 20000, but you really want
-to update it to get accurate simulation results.
+to adjust it to get accurate simulation results.
 
-When the code is constituted of numerous consecutive MPI calls, the
+When the code consists of numerous consecutive MPI calls, the
 previous mechanism feeds the simulation kernel with numerous tiny
 computations. The ``smpi/cpu-threshold`` item becomes handy when this
-impacts badly the simulation performance. It specifies a threshold (in
+impacts badly on the simulation performance. It specifies a threshold (in
 seconds) below which the execution chunks are not reported to the
 simulation kernel (default value: 1e-6).
 
 .. note:: The option ``smpi/cpu-threshold`` ignores any computation
    time spent below this threshold. SMPI does not consider the
-   `amount` of these computations; there is no offset for this. Hence,
-   a value that is too small, may lead to unreliable simulation
-   results.
+   `amount of time` of these computations; there is no offset for
+   this. Hence, a value that is too small, may lead to unreliable
+   simulation results.
 
 In some cases, however, one may wish to disable simulation of
-application computation. This is the case when SMPI is used not to
-simulate an MPI applications, but instead an MPI code that performs
-"live replay" of another MPI app (e.g., ScalaTrace's replay tool,
+the computation of an application. This is the case when SMPI is used not to
+simulate an MPI application, but instead an MPI code that performs
+"live replay" of another MPI app (e.g., ScalaTrace's replay tool, or
 various on-line simulators that run an app at scale). In this case the
 computation of the replay/simulation logic should not be simulated by
 SMPI. Instead, the replay tool or on-line simulator will issue
@@ -989,9 +990,9 @@ SMPI. Instead, the replay tool or on-line simulator will issue
 being replayed/simulated. At the moment, these computation events can
 be simulated using SMPI by calling internal smpi_execute*() functions.
 
-To disable the benchmarking/simulation of computation in the simulated
+To disable the benchmarking/simulation of a computation in the simulated
 application, the variable ``smpi/simulate-computation`` should be set
-to no.  This option just ignores the timings in your simulation; it
+to **no**.  This option just ignores the timings in your simulation; it
 still executes the computations itself. If you want to stop SMPI from
 doing that, you should check the SMPI_SAMPLE macros, documented in
 Section :ref:`SMPI_adapting_speed`.
@@ -1026,7 +1027,7 @@ The first line is the header - you must include it.  The following
 line means that the code between two consecutive MPI calls on line 30
 in exchange_1.f and line 130 in exchange_1.f should receive a speedup
 of 1.18244559422142. The value for the second column is therefore a
-speedup, if it is larger than 1 and a slow-down if it is smaller
+speedup, if it is larger than 1 and a slowdown if it is smaller
 than 1. Nothing will be changed if it is equal to 1.
 
 Of course, you can set any arbitrary filenames you want (so the start
@@ -1051,7 +1052,7 @@ this option, a series of message sizes and factors are given, helping
 the simulation to be more realistic. For instance, the current default
 value means that messages with size 65472 and more will get a total of
 MAX_BANDWIDTH*0.940694, messages of size 15424 to 65471 will get
-MAX_BANDWIDTH*0.697866 and so on (where MAX_BANDWIDTH denotes the
+MAX_BANDWIDTH*0.697866, and so on (where MAX_BANDWIDTH denotes the
 bandwidth of the link).
 
 An experimental script to compute these factors is available online. See
@@ -1081,9 +1082,9 @@ Keeping temporary files after simulation
 **Option** ``smpi/keep-temps`` **default:** 0 (false)
 
 SMPI usually generates a lot of temporary files that are cleaned after
-use. This option request to preserve them, for example to debug or
+use. This option requests to preserve them, for example to debug or
 profile your code. Indeed, the binary files are removed very early
-under the dlopen privatization schema, which tend to fool the
+under the dlopen privatization schema, which tends to fool the
 debuggers.
 
 .. _cfg=smpi/lat-factor:
@@ -1108,7 +1109,7 @@ Trace hardware counters with PAPI
 
 **Option** ``smpi/papi-events`` **default:** unset
 
-When the PAPI support was compiled in SimGrid, this option takes the
+When the PAPI support is compiled into SimGrid, this option takes the
 names of PAPI counters and adds their respective values to the trace
 files (See Section :ref:`tracing_tracing_options`).
 
@@ -1136,9 +1137,9 @@ Automatic Privatization of Global Variables
 
 **Option** ``smpi/privatization`` **default:** "dlopen" (when using smpirun)
 
-MPI executables are usually meant to be executed in separated
+MPI executables are usually meant to be executed in separate
 processes, but SMPI is executed in only one process. Global variables
-from executables will be placed in the same memory zone and shared
+from executables will be placed in the same memory region and shared
 between processes, causing intricate bugs.  Several options are
 possible to avoid this, as described in the main `SMPI publication
 <https://hal.inria.fr/hal-01415484>`_ and in the :ref:`SMPI
@@ -1174,7 +1175,7 @@ Multiple libraries can be given, semicolon separated.
 
 This configuration option can only use either full paths to libraries,
 or full names.  Check with ldd the name of the library you want to
-use.  Example:
+use.  For example:
 
 .. code-block:: shell
 
@@ -1197,8 +1198,8 @@ Simulating MPI detached send
 This threshold specifies the size in bytes under which the send will
 return immediately. This is different from the threshold detailed in
 :ref:`cfg=smpi/async-small-thresh` because the message is not
-effectively sent when the send is posted. SMPI still waits for the
-correspondant receive to be posted to perform the communication
+really sent when the send is posted. SMPI still waits for the
+corresponding receive to be posted, in order to perform the communication
 operation.
 
 .. _cfg=smpi/coll-selector:
@@ -1211,8 +1212,8 @@ Simulating MPI collective algorithms
 SMPI implements more than 100 different algorithms for MPI collective
 communication, to accurately simulate the behavior of most of the
 existing MPI libraries. The ``smpi/coll-selector`` item can be used to
-use the decision logic of either OpenMPI or MPICH libraries (by
-default SMPI uses naive version of collective operations).
+select the decision logic either of the OpenMPI or the MPICH libraries. (By
+default SMPI uses naive version of collective operations.)
 
 Each collective operation can be manually selected with a
 ``smpi/collective_name:algo_name``. Available algorithms are listed in
@@ -1240,10 +1241,10 @@ Reduce speed for iprobe calls
 **Option** ``smpi/iprobe-cpu-usage`` **default:** 1 (no change)
 
 MPI_Iprobe calls can be heavily used in applications. To account
-correctly for the energy cores spend probing, it is necessary to
+correctly for the energy that cores spend probing, it is necessary to
 reduce the load that these calls cause inside SimGrid.
 
-For instance, we measured a max power consumption of 220 W for a
+For instance, we measured a maximum power consumption of 220 W for a
 particular application but only 180 W while this application was
 probing. Hence, the correct factor that should be passed to this
 option would be 180/220 = 0.81.
@@ -1302,7 +1303,7 @@ consists of three values.
    and hence accounts also for larger messages. In the first
    section of the example above, this value is "2".
 
-Now, SMPI always checks which section it should take for a given
+Now, SMPI always checks which section it should use for a given
 message; that is, if a message of size 11 is sent with the
 configuration of the example above, only the second section will be
 used, not the first, as the first value of the second section is
@@ -1333,7 +1334,7 @@ Inject constant times for MPI_Test
 By setting this option, you can control the amount of time a process
 sleeps when MPI_Test() is called; this is important, because SimGrid
 normally only advances the time while communication is happening and
-thus, MPI_Test will not add to the time, resulting in a deadlock if
+thus, MPI_Test will not add to the time, resulting in deadlock if it is
 used as a break-condition as in the following example:
 
 .. code-block:: cpp
@@ -1343,8 +1344,8 @@ used as a break-condition as in the following example:
        ...
    }
 
-To speed up execution, we use a counter to keep track on how often we
-already checked if the handle is now valid or not. Hence, we actually
+To speed up execution, we use a counter to keep track of how often we
+checked if the handle is now valid or not. Hence, we actually
 use counter*SLEEP_TIME, that is, the time MPI_Test() causes the
 process to sleep increases linearly with the number of previously
 failed tests. This behavior can be disabled by setting
@@ -1361,36 +1362,36 @@ Factorize malloc()s
 
 If your simulation consumes too much memory, you may want to modify
 your code so that the working areas are shared by all MPI ranks. For
-example, in a bloc-cyclic matrix multiplication, you will only
-allocate one set of blocs, and every processes will share them.
+example, in a block-cyclic matrix multiplication, you will only
+allocate one set of blocks, and all processes will share them.
 Naturally, this will lead to very wrong results, but this will save a
-lot of memory so this is still desirable for some studies. For more on
+lot of memory. So this is still desirable for some studies. For more on
 the motivation for that feature, please refer to the `relevant section
 <https://simgrid.github.io/SMPI_CourseWare/topic_understanding_performance/matrixmultiplication>`_
 of the SMPI CourseWare (see Activity #2.2 of the pointed
-assignment). In practice, change the call to malloc() and free() into
+assignment). In practice, change the calls for malloc() and free() into
 SMPI_SHARED_MALLOC() and SMPI_SHARED_FREE().
 
 SMPI provides two algorithms for this feature. The first one, called 
-``local``, allocates one bloc per call to SMPI_SHARED_MALLOC() in your
-code (each call location gets its own bloc) and this bloc is shared
-amongst all MPI ranks.  This is implemented with the shm_* functions
+``local``, allocates one block per call to SMPI_SHARED_MALLOC()
+(each call site gets its own block) ,and this block is shared
+among all MPI ranks.  This is implemented with the shm_* functions
 to create a new POSIX shared memory object (kept in RAM, in /dev/shm)
-for each shared bloc.
+for each shared block.
 
 With the ``global`` algorithm, each call to SMPI_SHARED_MALLOC()
-returns a new address, but it only points to a shadow bloc: its memory
-area is mapped on a 1MiB file on disk. If the returned bloc is of size
-N MiB, then the same file is mapped N times to cover the whole bloc.
-At the end, no matter how many SMPI_SHARED_MALLOC you do, this will
-only consume 1 MiB in memory.
+returns a new address, but it only points to a shadow block: its memory
+area is mapped on a 1MB file on disk. If the returned block is of size
+N MB, then the same file is mapped N times to cover the whole bloc.
+At the end, no matter how many times you call SMPI_SHARED_MALLOC, this will
+only consume 1 MB in memory.
 
 You can disable this behavior and come back to regular mallocs (for
 example for debugging purposes) using @c "no" as a value.
 
 If you want to keep private some parts of the buffer, for instance if these
 parts are used by the application logic and should not be corrupted, you
-can use SMPI_PARTIAL_SHARED_MALLOC(size, offsets, offsets_count). Example:
+can use SMPI_PARTIAL_SHARED_MALLOC(size, offsets, offsets_count). For example:
 
 .. code-block:: cpp
 
@@ -1403,8 +1404,8 @@ Then, it can be deallocated by calling SMPI_SHARED_FREE(mem).
 
 When smpi/shared-malloc:global is used, the memory consumption problem
 is solved, but it may induce too much load on the kernel's pages table.
-In this case, you should use huge pages so that we create only one
-entry per Mb of malloced data instead of one entry per 4k.
+In this case, you should use huge pages so that the kernel creates only one
+entry per MB of malloced data instead of one entry per 4 KB.
 To activate this, you must mount a hugetlbfs on your system and allocate
 at least one huge page:
 
@@ -1428,7 +1429,7 @@ Inject constant times for MPI_Wtime, gettimeofday and clock_gettime
 This option controls the amount of (simulated) time spent in calls to
 MPI_Wtime(), gettimeofday() and clock_gettime(). If you set this value
 to 0, the simulated clock is not advanced in these calls, which leads
-to issue if your application contains such a loop:
+to issues if your application contains such a loop:
 
 .. code-block:: cpp
 
@@ -1437,15 +1438,15 @@ to issue if your application contains such a loop:
    }
 
 When the option smpi/wtime is set to 0, the time advances only on
-communications and computations, so the previous code results in an
+communications and computations. So the previous code results in an
 infinite loop: the current [simulated] time will never reach
 ``some_time_bound``.  This infinite loop is avoided when that option
-is set to a small amount, as it is by default since SimGrid v3.21.
+is set to a small value, as it is by default since SimGrid v3.21.
 
 Note that if your application does not contain any loop depending on
 the current time only, then setting this option to a non-zero value
 will slow down your simulations by a tiny bit: the simulation loop has
-to be broken and reset each time your code ask for the current time.
+to be broken out of and reset each time your code asks for the current time.
 If the simulation speed really matters to you, you can avoid this
 extra delay by setting smpi/wtime to 0.
 
@@ -1460,7 +1461,7 @@ Cleanup at Termination
 **Option** ``debug/clean-atexit`` **default:** on
 
 If your code is segfaulting during its finalization, it may help to
-disable this option to request SimGrid to not attempt any cleanups at
+disable this option to request that SimGrid not attempt any cleanups at
 the end of the simulation. Since the Unix process is ending anyway,
 the operating system will wipe it all.
 
@@ -1471,7 +1472,7 @@ Search Path
 
 **Option** ``path`` **default:** . (current dir)
 
-It is possible to specify a list of directories to search into for the
+It is possible to specify a list of directories to search in for the
 trace files (see :ref:`pf_trace`) by using this configuration
 item. To add several directory to the path, set the configuration
 item several times, as in ``--cfg=path:toto --cfg=path:tutu``
@@ -1504,7 +1505,7 @@ Behavior on Ctrl-C
 
 By default, when Ctrl-C is pressed, the status of all existing actors
 is displayed before exiting the simulation. This is very useful to
-debug your code, but it can reveal troublesome if you have many
+debug your code, but it can become troublesome if you have many
 actors. Set this configuration item to **off** to disable this
 feature.
 
@@ -1517,14 +1518,14 @@ Truncate local path from exception backtrace
 
 This configuration option is used to remove the path from the
 backtrace shown when an exception is thrown. This is mainly useful for
-the tests: the full file path makes the tests not reproducible because
-the path of source files depend of the build settings. That would
-break most of our tests as we keep comparing output.
+the tests: the full file path would makes the tests non-reproducible because
+the paths of source files depend of the build settings. That would
+break most of the tests since their output is continually compared.
 
 Logging Configuration
 ---------------------
 
-It can be done by using XBT. Go to :ref:`XBT_log` for more details.
+This can be done by using XBT. Go to :ref:`XBT_log` for more details.
 
 .. |br| raw:: html
 
