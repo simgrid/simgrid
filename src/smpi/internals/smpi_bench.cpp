@@ -12,6 +12,7 @@
 #include "src/internal_config.h"
 #include "src/mc/mc_replay.hpp"
 #include "xbt/config.hpp"
+#include "xbt/file.hpp"
 
 #include "src/smpi/include/smpi_actor.hpp"
 #include <unordered_map>
@@ -470,8 +471,11 @@ void smpi_trace_set_call_location(const char* file, const int line)
 
   loc->previous_filename   = loc->filename;
   loc->previous_linenumber = loc->linenumber;
-  loc->filename            = file;
-  loc->linenumber          = line;
+  if(not simgrid::config::get_value<bool>("smpi/trace-call-use-absolute-path"))
+    loc->filename = simgrid::xbt::Path(file).get_base_name();
+  else
+    loc->filename = file;
+  loc->linenumber = line;
 }
 
 /** Required for Fortran bindings */
