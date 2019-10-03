@@ -22,5 +22,5 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile 
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile -platform ${platfdir}/small_platform.xml --cfg=smpi/comp-adjustment-file:${srcdir:=.}/trace_call_location/adjust -np 3 -replay ${bindir:=.}/smpi_trace.txt ${bindir:=.}/../replay/smpi_replay  --cfg=smpi/host-speed:1 --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no
 > [Fafard:2:(3) 1.003952] [smpi_replay/INFO] Simulation time 1.003952
 
-#$ rm -f ${bindir:=.}/smpi_trace.tx*
+$ rm -f ${bindir:=.}/smpi_trace.tx*
 
