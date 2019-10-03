@@ -490,7 +490,10 @@ void RecvAction::kernel(simgrid::xbt::ReplayAction&)
 
 void ComputeAction::kernel(simgrid::xbt::ReplayAction&)
 {
-  smpi_execute_flops(args.flops/smpi_adjust_comp_speed());
+  if (simgrid::config::get_value<bool>("smpi/simulate-computation")) {
+    smpi_execute_flops(args.flops/smpi_adjust_comp_speed());
+  }
+}
 
 void SleepAction::kernel(simgrid::xbt::ReplayAction&)
 {

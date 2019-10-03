@@ -8,7 +8,7 @@ p Test of trace replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace_override
 ! timeout 60
 
-$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [Tremblay:0:(1) 0.000000] [smpi_replay/VERBOSE] 0 bcast 5e4 0.000000
 > [Jupiter:1:(2) 0.015036] [smpi_replay/VERBOSE] 1 bcast 5e4 0.015036
 > [Fafard:2:(3) 0.015676] [smpi_replay/VERBOSE] 2 bcast 5e4 0.015676
@@ -33,7 +33,7 @@ p The same with tracing activated
 < replay/actions_bcast.txt
 $ mkfile replay/one_trace_override
 
-$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=no_loc  --cfg=tracing:yes --cfg=tracing/smpi:yes --cfg=tracing/smpi/computing:yes --cfg=tracing/filename:./simgrid_override.trace --cfg=smpi/simulate-computation:no -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile  --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=no_loc  --cfg=tracing:yes --cfg=tracing/smpi:yes --cfg=tracing/smpi/computing:yes --cfg=tracing/filename:./simgrid_override.trace  -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile  --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [Fafard:2:(3) 19.691622] [smpi_replay/INFO] Simulation time 19.691622
 
 # $ rm -f replay/one_trace_override
@@ -214,7 +214,7 @@ p Another test of trace replay with SMPI (one trace per process)
 < replay/actions1.txt
 $ mkfile ./split_traces_tesh_override
 
-$ ../../smpi_script/bin/smpirun -no-privatize -replay ./split_traces_tesh_override --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 2 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ../../smpi_script/bin/smpirun -no-privatize -replay ./split_traces_tesh_override --log=smpi_replay.thresh:verbose --log=no_loc  -np 2 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [Tremblay:0:(1) 0.167158] [smpi_replay/VERBOSE] 0 send 1 0 1e6 0.167158
 > [Jupiter:1:(2) 0.167158] [smpi_replay/VERBOSE] 1 recv 0 0 1e6 0.167158
 > [Jupiter:1:(2) 13.274005] [smpi_replay/VERBOSE] 1 compute 1e9 13.106847
@@ -232,7 +232,7 @@ p Test of barrier replay with SMPI (one trace for all processes)
 < replay/actions_barrier.txt
 $ mkfile replay/one_trace_override
 
-$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc  -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [Tremblay:0:(1) 1.518421] [smpi_replay/VERBOSE] 0 send 1 0 1e7 1.518421
 > [Jupiter:1:(2) 1.518421] [smpi_replay/VERBOSE] 1 recv 0 0 1e7 1.518421
 > [Tremblay:0:(1) 1.520397] [smpi_replay/VERBOSE] 0 barrier 0.001976
@@ -250,7 +250,7 @@ p Test of isend replay with SMPI (one trace for all processes)
 < replay/actions_with_isend.txt
 $ mkfile replay/one_trace_override
 
-$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc  -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [Jupiter:1:(2) 0.000000] [smpi_replay/VERBOSE] 1 irecv 0 0 1e6 0.000000
 > [Jupiter:1:(2) 6.553424] [smpi_replay/VERBOSE] 1 compute 5e8 6.553424
 > [Jupiter:1:(2) 6.553524] [smpi_replay/VERBOSE] 1 test 0 1 0 0.000100
@@ -278,7 +278,7 @@ p Test of AllReduce replay with SMPI (one trace for all processes)
 < replay/actions_allreduce.txt
 $ mkfile replay/one_trace_override
 
-$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc  -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [Tremblay:0:(1) 5.112775] [smpi_replay/VERBOSE] 0 allreduce 5e4 5e8 5.112775
 > [Jupiter:1:(2) 6.584135] [smpi_replay/VERBOSE] 1 allreduce 5e4 5e8 6.584135
 > [Fafard:2:(3) 6.584775] [smpi_replay/VERBOSE] 2 allreduce 5e4 5e8 6.584775
@@ -294,7 +294,7 @@ p Test of AllToAll replay with SMPI (one trace for all processes)
 < replay/actions_alltoall.txt
 $ mkfile replay/one_trace_override
 
-$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc  -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [Tremblay:0:(1) 0.004041] [smpi_replay/VERBOSE] 0 alltoall 500 500 0.004041
 > [Fafard:2:(3) 0.006920] [smpi_replay/VERBOSE] 2 alltoall 500 500 0.006920
 > [Jupiter:1:(2) 0.006920] [smpi_replay/VERBOSE] 1 alltoall 500 500 0.006920
@@ -309,7 +309,7 @@ p Test of AllToAllv replay with SMPI (one trace for all processes)
 < replay/actions_alltoallv.txt
 $ mkfile replay/one_trace_override
 
-$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc  -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [Tremblay:0:(1) 0.004000] [smpi_replay/VERBOSE] 0 alltoallv 100 1 40 30 1000 1 80 100 0.004000
 > [Jupiter:1:(2) 0.006935] [smpi_replay/VERBOSE] 1 alltoallv 1000 80 1 40 1000 40 1 30 0.006935
 > [Fafard:2:(3) 0.006936] [smpi_replay/VERBOSE] 2 alltoallv 1000 100 30 1 1000 30 40 1 0.006936
@@ -322,7 +322,7 @@ p Test of AllGatherv replay with SMPI (one trace for all processes)
 < replay/actions_allgatherv.txt
 $ mkfile replay/one_trace_override
 
-$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 4 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc  -np 4 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [Tremblay:0:(1) 1.397261] [smpi_replay/VERBOSE] 0 allgatherv 275427 275427 275427 275427 204020 0 0 1.397261
 > [Ginette:3:(4) 1.760421] [smpi_replay/VERBOSE] 3 allgatherv 204020 275427 275427 275427 204020 0 0 1.760421
 > [Fafard:2:(3) 1.941986] [smpi_replay/VERBOSE] 2 allgatherv 275427 275427 275427 275427 204020 0 0 1.941986
@@ -337,7 +337,7 @@ p Test of waitall replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace_override
 
 ! output sort 19
-$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace_override --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc  -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [Fafard:2:(3) 0.000000] [smpi_replay/VERBOSE] 2 irecv 1 1 3000 0.000000
 > [Fafard:2:(3) 0.000000] [smpi_replay/VERBOSE] 2 isend 0 2 3000 0.000000
 > [Jupiter:1:(2) 0.000000] [smpi_replay/VERBOSE] 1 isend 0 0 2000 0.000000
