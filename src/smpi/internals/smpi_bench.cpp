@@ -108,12 +108,25 @@ void smpi_bench_begin()
   xbt_os_threadtimer_start(smpi_process()->timer());
 }
 
+double smpi_adjust_comp_speed(){
+  double speedup=1;
+  if (simgrid::config::get_value<std::string>("smpi/comp-adjustment-file")[0] != '\0') {
+
+    smpi_trace_call_location_t* loc                            = smpi_process()->call_location();
+    std::string key                                            = loc->get_composed_key();
+    std::unordered_map<std::string, double>::const_iterator it = location2speedup.find(key);
+    if (it != location2speedup.end()) {
+      speedup = it->second;
+    }
+  }
+  return speedup;
+}
+
 void smpi_bench_end()
 {
   if (MC_is_active() || MC_record_replay_is_active())
     return;
 
-  double speedup = 1;
   xbt_os_timer_t timer = smpi_process()->timer();
   xbt_os_threadtimer_stop(timer);
 
@@ -146,19 +159,9 @@ void smpi_bench_end()
   }
 
   // Maybe we need to artificially speed up or slow down our computation based on our statistical analysis.
-  if (simgrid::config::get_value<std::string>("smpi/comp-adjustment-file")[0] != '\0') {
-
-    smpi_trace_call_location_t* loc                            = smpi_process()->call_location();
-    std::string key                                            = loc->get_composed_key();
-    std::unordered_map<std::string, double>::const_iterator it = location2speedup.find(key);
-    if (it != location2speedup.end()) {
-      speedup = it->second;
-    }
-  }
-
   // Simulate the benchmarked computation unless disabled via command-line argument
   if (simgrid::config::get_value<bool>("smpi/simulate-computation")) {
-    smpi_execute(xbt_os_timer_elapsed(timer)/speedup);
+    smpi_execute(xbt_os_timer_elapsed(timer)/smpi_adjust_comp_speed());
   }
 
 #if HAVE_PAPI
