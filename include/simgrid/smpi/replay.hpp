@@ -79,6 +79,13 @@ public:
   void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
 
+class SleepParser : public ActionArgParser {
+public:
+  double time;
+
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
+};
+
 class LocationParser : public ActionArgParser {
 public:
   std::string filename;
@@ -228,6 +235,12 @@ public:
 class ComputeAction : public ReplayAction<ComputeParser> {
 public:
   explicit ComputeAction() : ReplayAction("compute") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class SleepAction : public ReplayAction<SleepParser> {
+public:
+  explicit SleepAction() : ReplayAction("sleep") {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 

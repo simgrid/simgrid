@@ -11,12 +11,21 @@
 #endif
 
 #include <smpi/smpi_helpers_internal.h>
-
+#ifndef TRACE_CALL_LOCATION /* Defined by smpicc on the command line */
 #define sleep(x) smpi_sleep(x)
 #define usleep(x) smpi_usleep(x)
+#else
+#define sleep(x) ({ smpi_trace_set_call_location(__FILE__,__LINE__); smpi_sleep(x); })
+#define usleep(x) ({ smpi_trace_set_call_location(__FILE__,__LINE__); smpi_usleep(x); })
+#endif
+
 #define gettimeofday(x, y) smpi_gettimeofday((x), 0)
 #if _POSIX_TIMERS > 0
+#ifndef TRACE_CALL_LOCATION /* Defined by smpicc on the command line */
 #define nanosleep(x, y) smpi_nanosleep((x), (y))
+#else
+#define nanosleep(x) ({ smpi_trace_set_call_location(__FILE__,__LINE__); smpi_nanosleep(x); })
+#endif
 #define clock_gettime(x, y) smpi_clock_gettime((x), (y))
 #endif
 

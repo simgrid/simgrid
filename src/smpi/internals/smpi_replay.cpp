@@ -165,6 +165,12 @@ void ComputeParser::parse(simgrid::xbt::ReplayAction& action, const std::string&
   flops = parse_double(action[2]);
 }
 
+void SleepParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
+{
+  CHECK_ACTION_PARAMS(action, 1, 0)
+  time = parse_double(action[2]);
+}
+
 void LocationParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   CHECK_ACTION_PARAMS(action, 2, 0)
@@ -485,6 +491,14 @@ void RecvAction::kernel(simgrid::xbt::ReplayAction&)
 void ComputeAction::kernel(simgrid::xbt::ReplayAction&)
 {
   smpi_execute_flops(args.flops/smpi_adjust_comp_speed());
+
+void SleepAction::kernel(simgrid::xbt::ReplayAction&)
+{
+  XBT_DEBUG("Sleep for: %lf secs", args.time);
+  int rank = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_sleeping_in(rank, args.time);
+  simgrid::s4u::this_actor::sleep_for(args.time/smpi_adjust_comp_speed());
+  TRACE_smpi_sleeping_out(rank);
 }
 
 void LocationAction::kernel(simgrid::xbt::ReplayAction&)
@@ -758,6 +772,7 @@ void smpi_replay_init(const char* instance_id, int rank, double start_delay_flop
   xbt_replay_action_register("allgatherv", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::GatherVAction("allgatherv").execute(action); });
   xbt_replay_action_register("reducescatter", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ReduceScatterAction().execute(action); });
   xbt_replay_action_register("compute", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ComputeAction().execute(action); });
+  xbt_replay_action_register("sleep", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::SleepAction().execute(action); });
   xbt_replay_action_register("location", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::LocationAction().execute(action); });
 
   //if we have a delayed start, sleep here.
