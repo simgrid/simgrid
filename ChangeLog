@@ -43,6 +43,10 @@ SMPI:
    MPI_C_COMPILER, MPI_CXX_COMPILER, MPI_Fortran_COMPILER variables.
  - Add support for MPI Errhandlers in Comm, File or Win. Default errhandler is now
    MPI_ERRORS_ARE_FATAL, so codes which were sending warnings may start failing.
+ - trace-call-location can now be used with TI traces, and replayed.
+ - Default for trace-call-location is now to use file names and not full paths.
+   To revert to previous behaviour (in case of collision of filenames), option
+   "smpi/trace-call-use-absolute-path" can be set to yes.
 
 Model-Checker:
  - Use the included xxHash as an hash implem when C++14 is usable.
