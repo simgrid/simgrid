@@ -68,7 +68,8 @@ set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.t
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_reducescatter.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_waitall.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_with_isend.txt
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay/split_traces                         PARENT_SCOPE)
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay/split_traces
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/trace_call_location/adjust                  PARENT_SCOPE)
 
 if(enable_smpi)
   # MC is currently broken with threads (deadlock => timeout)

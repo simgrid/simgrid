@@ -4,8 +4,23 @@
 
 p Test SMPI with call-location tracing. This means that the binary must have
 p already been compiled with the -trace-call-location switch.
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace -trace-file ${bindir:=.}/smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${platfdir}/small_platform.xml --cfg=smpi/trace-call-location:1 -np 3 ${bindir:=.}/smpi_trace_call_location --cfg=smpi/host-speed:1 --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace -trace-file ${bindir:=.}/smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${platfdir}/small_platform.xml --cfg=smpi/trace-call-location:1 -np 3 ${bindir:=.}/smpi_trace_call_location --cfg=smpi/trace-call-use-absolute-path:1 --cfg=smpi/host-speed:1 --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 
 $ grep -q "12 0.* 2 1 7 .*trace_call_location\.c\" 14$" ${bindir:=.}/smpi_trace.trace 
 
 $ rm -f ${bindir:=.}/smpi_trace.trace 
+
+#the same, but with trace-ti
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-ti -trace-file ${bindir:=.}/smpi_trace.txt --cfg=tracing/smpi/sleeping:1 -hostfile ${srcdir:=.}/hostfile -platform ${platfdir}/small_platform.xml --cfg=smpi/trace-call-location:1 -np 3 ${bindir:=.}/smpi_trace_call_location --cfg=smpi/host-speed:1 --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+
+#Test replaying the trace, without altering the time.
+#We disable computation, but leave the sleep.
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile -platform ${platfdir}/small_platform.xml -np 3 -replay ${bindir:=.}/smpi_trace.txt ${bindir:=.}/../replay/smpi_replay --cfg=smpi/host-speed:1 --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no
+> [Fafard:2:(3) 1000.003952] [smpi_replay/INFO] Simulation time 1000.003952
+
+#Test replaying the trace, altering the time to have the sleep much faster (1 instead of 1000).
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile -platform ${platfdir}/small_platform.xml --cfg=smpi/comp-adjustment-file:${srcdir:=.}/trace_call_location/adjust -np 3 -replay ${bindir:=.}/smpi_trace.txt ${bindir:=.}/../replay/smpi_replay  --cfg=smpi/host-speed:1 --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no
+> [Fafard:2:(3) 1.003952] [smpi_replay/INFO] Simulation time 1.003952
+
+$ rm -f ${bindir:=.}/smpi_trace.tx*
+
