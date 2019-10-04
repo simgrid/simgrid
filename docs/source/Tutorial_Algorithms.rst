@@ -85,7 +85,7 @@ the opportunity to improve this scheme.
 The Actors
 ..........
 
-Let's start with the code of the worker. It is represented by the
+Let's start with the code of the master. It is represented by the
 *master* function below. This simple function takes at least 3
 parameters (the amount of tasks to dispatch, their computational size
 in flops to compute and their communication size in bytes to
