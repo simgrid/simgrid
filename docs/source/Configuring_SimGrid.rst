@@ -583,7 +583,7 @@ searching for counter-examples to the liveness properties.
 Note that this feature may break the current implementation of the
 DPOR reduction technique.
 
-The ``model-check/visited`` item is the maximum number of states,, which
+The ``model-check/visited`` item is the maximum number of states, which
 are stored in memory. If the maximum number of snapshotted state is
 reached, some states will be removed from the memory and some cycles
 might be missed. Small values can lead to incorrect verifications, but
@@ -1381,10 +1381,10 @@ for each shared block.
 
 With the ``global`` algorithm, each call to SMPI_SHARED_MALLOC()
 returns a new address, but it only points to a shadow block: its memory
-area is mapped on a 1MB file on disk. If the returned block is of size
-N MB, then the same file is mapped N times to cover the whole bloc.
+area is mapped on a 1 MiB file on disk. If the returned block is of size
+N MiB, then the same file is mapped N times to cover the whole bloc.
 At the end, no matter how many times you call SMPI_SHARED_MALLOC, this will
-only consume 1 MB in memory.
+only consume 1 MiB in memory.
 
 You can disable this behavior and come back to regular mallocs (for
 example for debugging purposes) using @c "no" as a value.
@@ -1405,7 +1405,7 @@ Then, it can be deallocated by calling SMPI_SHARED_FREE(mem).
 When smpi/shared-malloc:global is used, the memory consumption problem
 is solved, but it may induce too much load on the kernel's pages table.
 In this case, you should use huge pages so that the kernel creates only one
-entry per MB of malloced data instead of one entry per 4 KB.
+entry per MB of malloced data instead of one entry per 4 kB.
 To activate this, you must mount a hugetlbfs on your system and allocate
 at least one huge page:
 
