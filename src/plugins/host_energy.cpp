@@ -15,7 +15,7 @@
 
 SIMGRID_REGISTER_PLUGIN(host_energy, "Cpu energy consumption.", &sg_host_energy_plugin_init)
 
-/** @addtogroup plugin_energy
+/** @defgroup plugin_host_energy
 
 This is the energy plugin, enabling to account not only for computation time, but also for the dissipated energy in the
 simulated platform.
@@ -492,7 +492,7 @@ static void on_simulation_end()
 
 /* **************************** Public interface *************************** */
 
-/** @ingroup plugin_energy
+/** @ingroup plugin_host_energy
  * @brief Enable host energy plugin
  * @details Enable energy plugin to get joules consumption of each cpu. Call this function before #MSG_init().
  */
@@ -527,7 +527,7 @@ void sg_host_energy_plugin_init()
   });
 }
 
-/** @ingroup plugin_energy
+/** @ingroup plugin_host_energy
  *  @brief updates the consumption of all hosts
  *
  * After this call, sg_host_get_consumed_energy() will not interrupt your process
@@ -545,7 +545,7 @@ void sg_host_energy_update_all()
   });
 }
 
-/** @ingroup plugin_energy
+/** @ingroup plugin_host_energy
  *  @brief Returns the total energy consumed by the host so far (in Joules)
  *
  *  Please note that since the consumption is lazily updated, it may require a simcall to update it.
@@ -559,7 +559,7 @@ double sg_host_get_consumed_energy(sg_host_t host)
   return host->extension<HostEnergy>()->get_consumed_energy();
 }
 
-/** @ingroup plugin_energy
+/** @ingroup plugin_host_energy
  *  @brief Get the amount of watt dissipated when the host is idling
  */
 double sg_host_get_idle_consumption(sg_host_t host)
@@ -569,7 +569,7 @@ double sg_host_get_idle_consumption(sg_host_t host)
   return host->extension<HostEnergy>()->get_idle_consumption();
 }
 
-/** @ingroup plugin_energy
+/** @ingroup plugin_host_energy
  *  @brief Get the amount of watt dissipated at the given pstate when the host is idling
  */
 double sg_host_get_wattmin_at(sg_host_t host, int pstate)
@@ -578,7 +578,7 @@ double sg_host_get_wattmin_at(sg_host_t host, int pstate)
              "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
   return host->extension<HostEnergy>()->get_watt_min_at(pstate);
 }
-/** @ingroup plugin_energy
+/** @ingroup plugin_host_energy
  *  @brief  Returns the amount of watt dissipated at the given pstate when the host burns CPU at 100%
  */
 double sg_host_get_wattmax_at(sg_host_t host, int pstate)
@@ -587,7 +587,7 @@ double sg_host_get_wattmax_at(sg_host_t host, int pstate)
              "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
   return host->extension<HostEnergy>()->get_watt_max_at(pstate);
 }
-/** @ingroup plugin_energy
+/** @ingroup plugin_host_energy
  *  @brief  Returns the power slope at the given pstate
  */
 double sg_host_get_power_range_slope_at(sg_host_t host, int pstate)
@@ -596,7 +596,7 @@ double sg_host_get_power_range_slope_at(sg_host_t host, int pstate)
              "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
   return host->extension<HostEnergy>()->get_power_range_slope_at(pstate);
 }
-/** @ingroup plugin_energy
+/** @ingroup plugin_host_energy
  *  @brief Returns the current consumption of the host
  */
 double sg_host_get_current_consumption(sg_host_t host)

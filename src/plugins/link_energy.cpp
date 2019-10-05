@@ -14,8 +14,7 @@
 
 SIMGRID_REGISTER_PLUGIN(link_energy, "Link energy consumption.", &sg_link_energy_plugin_init)
 
-/** @addtogroup SURF_plugin_energy
-
+/** @defgroup plugin_link_energy
 
  This is the link energy plugin, accounting for the dissipated energy in the simulated platform.
 
@@ -184,7 +183,7 @@ int sg_link_energy_is_inited()
 {
   return LinkEnergy::EXTENSION_ID.valid();
 }
-/** @ingroup SURF_plugin_energy
+/** @ingroup plugin_link_energy
  * @brief Enable energy plugin
  * @details Enable energy plugin to get joules consumption of each cpu. You should call this function before
  * #MSG_init().
@@ -220,7 +219,7 @@ void sg_link_energy_plugin_init()
   simgrid::s4u::Engine::on_simulation_end.connect(&on_simulation_end);
 }
 
-/** @ingroup plugin_energy
+/** @ingroup plugin_link_energy
  *  @brief Returns the total energy consumed by the link so far (in Joules)
  *
  *  Please note that since the consumption is lazily updated, it may require a simcall to update it.

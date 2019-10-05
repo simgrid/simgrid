@@ -3,6 +3,7 @@ INPUT                  = ../../include/simgrid/forward.h
 INPUT                 += ../../include/simgrid/s4u
 INPUT                 += ../../include/simgrid/msg.h
 INPUT                 += ../../src/msg/
+INPUT                 += ../../src/plugins/
 RECURSIVE              = YES
 
 EXAMPLE_PATH           = ../../examples

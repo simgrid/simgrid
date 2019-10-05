@@ -78,6 +78,7 @@ of every page. Bugs in the code should be reported
          Deploying your Application <Deploying_your_Application.rst>
       The SimGrid Models <models.rst>
          ns-3 as a SimGrid model <ns3.rst>
+      SimGrid Plugins <Plugins.rst>
       Simulation Outcomes <outcomes.rst>
       Use Cases and Howto <howto.rst>
       The SimGrid Community <community.rst>

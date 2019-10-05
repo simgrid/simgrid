@@ -184,21 +184,21 @@ static void on_host_change(simgrid::s4u::Host const& host)
  */
 void sg_host_load_plugin_init()
 {
-  if (HostLoad::EXTENSION_ID.valid())
+  if (HostLoad::EXTENSION_ID.valid()) // Don't do the job twice
     return;
 
+  // First register our extension of Hosts properly
   HostLoad::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostLoad>();
 
-  if (simgrid::s4u::Engine::is_initialized()) { // If not yet initialized, this would create a new instance
-                                                // which would cause seg faults...
+  // If SimGrid is already initialized, we need to attach an extension to each existing host
+  if (simgrid::s4u::Engine::is_initialized()) {
     simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
     for (auto& host : e->get_all_hosts()) {
       host->extension_set(new HostLoad(host));
     }
   }
 
-  /* When attaching a callback into a signal, you can use a lambda as follows, or a regular function as done below */
-
+  // Make sure that every future host also gets an extension (in case the platform is not loaded yet)
   simgrid::s4u::Host::on_creation.connect([](simgrid::s4u::Host& host) {
     if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
       return;
@@ -218,7 +218,7 @@ void sg_host_load_plugin_init()
                                              // idle time. (Communication operations don't trigger this hook!)
     }
     else { // This runs on multiple hosts
-      XBT_DEBUG("HostLoad plugin currently does not support executions on several hosts");
+      XBT_WARN("HostLoad plugin currently does not support executions on several hosts");
     }
   });
   simgrid::kernel::activity::ExecImpl::on_completion.connect([](simgrid::kernel::activity::ExecImpl const& activity) {
@@ -231,7 +231,7 @@ void sg_host_load_plugin_init()
       host->extension<HostLoad>()->update();
     }
     else { // This runs on multiple hosts
-      XBT_DEBUG("HostLoad plugin currently does not support executions on several hosts");
+      XBT_WARN("HostLoad plugin currently does not support executions on several hosts");
     }
   });
   simgrid::s4u::Host::on_state_change.connect(&on_host_change);

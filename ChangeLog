@@ -58,6 +58,9 @@ Model-Checker:
  - MPI calls now MC_assert() that no MPI_ERR_* code is returned.
    This is useful to check for MPI compliance.
 
+Documentation:
+ - New section on plugins: how to define a new one, and existing ones.
+
 XBT:
  - xbt_mutex_t and xbt_cond_t are now marked as deprecated, a new C interface
    on S4U is already available to replace them by sg_mutex_t and sg_cond_t.

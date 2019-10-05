@@ -50,13 +50,13 @@ private:
   bool currently_destroying_ = false;
 
 public:
-  /*** Called on each newly created host */
+  /** Called on each newly created host */
   static xbt::signal<void(Host&)> on_creation;
-  /*** Called just before destructing a host */
+  /** Called just before destructing a host */
   static xbt::signal<void(Host const&)> on_destruction;
-  /*** Called when the machine is turned on or off (called AFTER the change) */
+  /** Called when the machine is turned on or off (called AFTER the change) */
   static xbt::signal<void(Host const&)> on_state_change;
-  /*** Called when the speed of the machine is changed (called AFTER the change)
+  /** Called when the speed of the machine is changed (called AFTER the change)
    * (either because of a pstate switch or because of an external load event coming from the profile) */
   static xbt::signal<void(Host const&)> on_speed_change;
 

@@ -15,3 +15,4 @@ MSG_init_nocheck
 intrusive_ptr_release
 intrusive_ptr_add_ref
 get_filtered_netzones_recursive
+simgrid::s4u::Storage

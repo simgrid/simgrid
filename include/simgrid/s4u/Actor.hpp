@@ -124,12 +124,14 @@ namespace s4u {
 
 /** @brief Simulation Agent */
 class XBT_PUBLIC Actor : public xbt::Extendable<Actor> {
+#ifndef DOXYGEN
   friend Exec;
   friend Mailbox;
   friend kernel::actor::ActorImpl;
   friend kernel::activity::MailboxImpl;
 
   kernel::actor::ActorImpl* const pimpl_;
+#endif
 
   explicit Actor(smx_actor_t pimpl) : pimpl_(pimpl) {}
 
@@ -148,7 +150,7 @@ public:
   /** Retrieve a reference to myself */
   static Actor* self();
 
-  /** Signal to others that a new actor has been created **/
+  /** Fired when a new actor has been created **/
   static xbt::signal<void(Actor&)> on_creation;
   /** Signal to others that an actor has been suspended**/
   static xbt::signal<void(Actor const&)> on_suspend;

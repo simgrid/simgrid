@@ -186,8 +186,9 @@ period and another one for the shutdown period.
 Of course, this is only one possible way to model these things. YMMV ;)
 
 .. _understanding_lv08
+
 Understanding the default TCP model
-*****************************
+***********************************
 When simulating a data transfer between two hosts, you may be surprised
 by the obtained simulation time. Lets consider the following platform:
 
@@ -208,6 +209,7 @@ simple latency-plus-size-divided-by-bandwidth model (0.01 + 8e5/1e6 = 0.81).
 However, the default TCP model of SimGrid is a bit more complex than that. It
 accounts for three phenomena that directly impact the simulation time even
 on such a simple example:
+
   - The size of a message at the application level (i.e., 100kB in this
     example) is not the size that will actually be transferred over the
     network. To mimic the fact that TCP and IP headers are added to each packet of
