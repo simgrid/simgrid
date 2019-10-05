@@ -26,10 +26,13 @@ S4U:
      Use them to attach user data to the object and retrieve it.
 
 Models:
- - Improved the usability of ns-3. Several bugs were ironed out.
  - Introduce an experimental Wifi model. It sounds reasonable
    according to the state of the art, but it still has to be properly
-   validated, at least against ns-3.
+   validated, at least against ns-3 if not against reality.
+ - Improved the usability of ns-3. Several bugs were ironed out.
+ - host_energy: Wattage was expressed as 'idle:oneCore:allCores'.
+   It is now expressed as 'idle:epsilon:allCores' to properly model the
+   consumption of non-whole tasks on mono-core hosts. More info in the doc.
 
 MSG:
  - convert a new set of functions to the S4U C interface and move the old MSG

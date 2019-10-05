@@ -24,8 +24,8 @@
        So the route from node-0 to node-1 is {l0.UP, l1.DOWN}
     -->
   <cluster bw="125MBps" id="simple" lat="50us" prefix="node-" radical="0-7" speed="1Gf" suffix=".1core.org">
-    <prop id="watt_per_state" value="0.0:1.0:1.0" />
-    <prop id="watt_off" value="0.0" />
+    <prop id="wattage_per_state" value="0.0:1.0:1.0" />
+    <prop id="wattage_off" value="0.0" />
   </cluster>
 
 
@@ -40,8 +40,8 @@
     The route from node-0 to the outer world begins with: l0.UP ; backbone
   -->    
   <cluster bb_bw="2.25GBps" bb_lat="500us" bw="125MBps" core="2" id="backboned" lat="50us" prefix="node-" radical="0-7" speed="1Gf" suffix=".2cores.org">
-    <prop id="watt_per_state" value="0.0:0.0:2.0" />
-    <prop id="watt_off" value="0.0" />
+    <prop id="wattage_per_state" value="0.0:0.0:2.0" />
+    <prop id="wattage_off" value="0.0" />
   </cluster>
 	   
 
@@ -53,8 +53,8 @@
     -  Also, the hosts have 4 cores.
     -->
   <cluster bb_bw="2.25GBps" bb_lat="500us" bb_sharing_policy="SHARED" bw="125MBps" core="4" id="halfduplex" lat="50us" prefix="node-" radical="0-7" sharing_policy="SHARED" speed="1Gf" suffix=".4cores.org">
-    <prop id="watt_per_state" value="0.0:0.0:4.0" />
-    <prop id="watt_off" value="0.0" />
+    <prop id="wattage_per_state" value="0.0:0.0:4.0" />
+    <prop id="wattage_off" value="0.0" />
   </cluster>
 
   <!-- And now, we create the routes between the clusters, ie inter-zone routes -->

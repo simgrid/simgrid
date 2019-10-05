@@ -24,13 +24,13 @@
       If you want a realistic simulation, you must use values coming from a real benchmark of your platform. 
       -->
 
-    <host id="MyHost1"          speed="100.0Mf,50.0Mf,20.0Mf,                    0f,0f" pstate="0" >
-      <prop id="watt_per_state" value="95.0:200.0,93.0:170.0,90.0:150.0,         120:120,110:110" />
-      <prop id="watt_off"       value="10" />
+    <host id="MyHost1"             speed="100.0Mf,50.0Mf,20.0Mf,                    0f,0f" pstate="0" >
+      <prop id="wattage_per_state" value="95.0:200.0,93.0:170.0,90.0:150.0,         120:120,110:110" />
+      <prop id="wattage_off"       value="10" />
     </host>
-    <host id="MyHost2" speed="100.0Mf" >
-      <prop id="watt_per_state" value="100.0:200.0" />
-      <prop id="watt_off"       value="10" />
+    <host id="MyHost2"             speed="100.0Mf" >
+      <prop id="wattage_per_state" value="100.0:200.0" />
+      <prop id="wattage_off"       value="10" />
     </host>
 
     <link id="link1" bandwidth="100kBps" latency="0"/>

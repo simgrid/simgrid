@@ -13,7 +13,7 @@ static void dvfs()
   simgrid::s4u::Host* host1 = simgrid::s4u::Host::by_name("MyHost1");
   simgrid::s4u::Host* host2 = simgrid::s4u::Host::by_name("MyHost2");
 
-  XBT_INFO("Energetic profile: %s", host1->get_property("watt_per_state"));
+  XBT_INFO("Energetic profile: %s", host1->get_property("wattage_per_state"));
   XBT_INFO("Initial peak speed=%.0E flop/s; Energy dissipated =%.0E J", host1->get_speed(),
            sg_host_get_consumed_energy(host1));
 

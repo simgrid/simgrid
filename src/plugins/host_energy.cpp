@@ -29,30 +29,29 @@ abnormality when all the cores are idle. The full details are in
 
 As a result, our energy model takes 4 parameters:
 
-  - @b Idle: instantaneous consumption (in Watt) when your host is up and running, but without anything to do.
-  - @b Epsilon: instantaneous consumption (in Watt) when all cores are at 0 or epsilon%, but not in Idle state.
-  - @b AllCores: instantaneous consumption (in Watt) when all cores of the host are at 100%.
-  - @b Off: instantaneous consumption (in Watt) when the host is turned off.
+  - @b Idle: wattage (i.e., instantaneous consumption in Watt) when your host is up and running, but without anything to
+do.
+  - @b Epsilon: wattage when all cores are at 0 or epsilon%, but not in Idle state.
+  - @b AllCores: wattage when all cores of the host are at 100%.
+  - @b Off: wattage when the host is turned off.
 
 Here is an example of XML declaration:
 
 @code{.xml}
 <host id="HostA" speed="100.0Mf" core="4">
-    <prop id="watt_per_state" value="100.0:120.0:200.0" />
-    <prop id="watt_off" value="10" />
+    <prop id="wattage_per_state" value="100.0:120.0:200.0" />
+    <prop id="wattage_off" value="10" />
 </host>
 @endcode
 
-Please note that the 'Epsilon' parameter can be omitted in the XML declaration. In that case, the value of 'Epsilon' will
-be the same as 'Idle'.
-
+If the 'Epsilon' parameter is omitted in the XML declaration, 'Idle' is used instead.
 
 This example gives the following parameters: @b Off is 10 Watts; @b Idle is 100 Watts; @b Epsilon is 120 Watts and @b
 AllCores is 200 Watts.
-This is enough to compute the consumption as a function of the amount of loaded cores:
+This is enough to compute the wattage as a function of the amount of loaded cores:
 
 <table>
-<tr><th>@#Cores loaded</th><th>Consumption</th><th>Explanation</th></tr>
+<tr><th>@#Cores loaded</th><th>Wattage</th><th>Explanation</th></tr>
 <tr><td>0 (idle)</td><td> 100 Watts</td><td>Idle value</td></tr>
 <tr><td>0 (not idle)</td><td> 120 Watts</td><td>Epsilon value</td></tr>
 <tr><td>1</td><td> 140 Watts</td><td>linear extrapolation between Epsilon and AllCores</td></tr>
@@ -68,8 +67,8 @@ If your host has several DVFS levels (several pstates), then you should give the
 
 @code{.xml}
 <host id="HostC" speed="100.0Mf,50.0Mf,20.0Mf" core="4">
-    <prop id="watt_per_state" value="95.0:120.0:200.0, 93.0:115.0:170.0, 90.0:110.0:150.0" />
-    <prop id="watt_off" value="10" />
+    <prop id="wattage_per_state" value="95.0:120.0:200.0, 93.0:115.0:170.0, 90.0:110.0:150.0" />
+    <prop id="wattage_off" value="10" />
 </host>
 @endcode
 
@@ -187,13 +186,21 @@ void HostEnergy::update()
 HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host_(ptr), last_updated_(surf_get_clock())
 {
   init_watts_range_list();
+  static bool warned = false;
 
-  const char* off_power_str = host_->get_property("watt_off");
+  const char* off_power_str = host_->get_property("wattage_off");
+  if (off_power_str == nullptr) {
+    off_power_str = host_->get_property("watt_off");
+    if (off_power_str != nullptr && not warned) {
+      warned = true;
+      XBT_WARN("Please use 'wattage_off' instead of 'watt_off' to define the idle wattage of hosts in your XML.");
+    }
+  }
   if (off_power_str != nullptr) {
     try {
       this->watts_off_ = std::stod(std::string(off_power_str));
     } catch (const std::invalid_argument&) {
-      throw std::invalid_argument(std::string("Invalid value for property watt_off of host ") + host_->get_cname() +
+      throw std::invalid_argument(std::string("Invalid value for property wattage_off of host ") + host_->get_cname() +
                                   ": " + off_power_str);
     }
   }
@@ -251,7 +258,7 @@ double HostEnergy::get_current_watts_value()
   else {
     cpu_load = host_->pimpl_cpu->get_constraint()->get_usage() / current_speed;
 
-    /** Divide by the number of cores here to have a value between 0 and 1 **/
+    /* Divide by the number of cores here to have a value between 0 and 1 */
     cpu_load /= host_->pimpl_cpu->get_core_count();
 
     if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not more
@@ -260,17 +267,6 @@ double HostEnergy::get_current_watts_value()
       host_was_used_ = true;
   }
 
-  /* @mquinson: The problem with this model is that the load is always 0 or 1, never something less.
-   * Another possibility could be to model the total energy as
-   *
-   *   X/(X+Y)*W_idle + Y/(X+Y)*W_burn
-   *
-   * where X is the amount of idling cores, and Y the amount of computing cores.
-   *
-   * @Mommessc: I do not think the load is always 0 or 1 anymore.
-   * Moreover, it is not quite clear how the regular model of power consumption (P = Pstatic + load * Pdynamic)
-   * is impacted if we separate the number of idle and working cores.
-   */
   return get_current_watts_value(cpu_load);
 }
 
@@ -326,7 +322,52 @@ double HostEnergy::get_consumed_energy()
 
 void HostEnergy::init_watts_range_list()
 {
-  const char* all_power_values_str = host_->get_property("watt_per_state");
+  const char* old_prop = host_->get_property("watt_per_state");
+  if (old_prop != nullptr) {
+    std::vector<std::string> all_power_values;
+    boost::split(all_power_values, old_prop, boost::is_any_of(","));
+
+    std::string msg = std::string("DEPRECATION WARNING: Property 'watt_per_state' will not work after v3.28.\n");
+    msg += std::string("The old syntax 'Idle:OneCore:AllCores' must be converted into 'Idle:Epsilon:AllCores' to "
+                       "properly model the consumption of non-whole tasks on mono-core hosts. Here are the values to "
+                       "use for host '") +
+           host_->get_cname() + "' in your XML file:\n";
+    msg += "     <prop id=\"wattage_per_state\" value=\"";
+    for (auto const& current_power_values_str : all_power_values) {
+      std::vector<std::string> current_power_values;
+      boost::split(current_power_values, current_power_values_str, boost::is_any_of(":"));
+      double p_idle = xbt_str_parse_double((current_power_values.at(0)).c_str(),
+                                           "Invalid obsolete XML file. Fix your watt_per_state property.");
+      double p_one_core;
+      double p_full;
+      double p_epsilon;
+
+      if (current_power_values.size() == 2) { // Case: Idle:AllCores
+        p_full    = xbt_str_parse_double((current_power_values.at(1)).c_str(),
+                                      "Invalid obsolete XML file. Fix your watt_per_state property.");
+        p_epsilon = p_full;
+      } else { // Case: Idle:Epsilon:AllCores
+        p_one_core = xbt_str_parse_double((current_power_values.at(1)).c_str(),
+                                          "Invalid obsolete XML file. Fix your watt_per_state property.");
+        p_full     = xbt_str_parse_double((current_power_values.at(2)).c_str(),
+                                      "Invalid obsolete XML file. Fix your watt_per_state property.");
+        if (host_->get_core_count() == 1)
+          p_epsilon = p_full;
+        else
+          p_epsilon = p_one_core - ((p_full - p_one_core) / (host_->get_core_count() - 1));
+      }
+      PowerRange range(p_idle, p_epsilon, p_full);
+      power_range_watts_list_.push_back(range);
+
+      msg += std::to_string(p_idle) + ":" + std::to_string(p_epsilon) + ":" + std::to_string(p_full);
+      msg += ",";
+    }
+    msg.pop_back(); // Remove the extraneous ','
+    msg += "\" />";
+    XBT_WARN("%s", msg.c_str());
+    return;
+  }
+  const char* all_power_values_str = host_->get_property("wattage_per_state");
   if (all_power_values_str == nullptr)
     return;
 
@@ -354,15 +395,12 @@ void HostEnergy::init_watts_range_list()
     char* msg_max     = bprintf("Invalid AllCores value for pstate %d on host %s: %%s", i, host_->get_cname());
 
     idle_power = xbt_str_parse_double((current_power_values.at(0)).c_str(), msg_idle);
-    if (current_power_values.size() == 2) // Case: Idle:AllCores
-    {
-        epsilon_power = xbt_str_parse_double((current_power_values.at(0)).c_str(), msg_idle);
-        max_power = xbt_str_parse_double((current_power_values.at(1)).c_str(), msg_max);
-    }
-    else // Case: Idle:Epsilon:AllCores
-    {
-        epsilon_power = xbt_str_parse_double((current_power_values.at(1)).c_str(), msg_epsilon);
-        max_power = xbt_str_parse_double((current_power_values.at(2)).c_str(), msg_max);
+    if (current_power_values.size() == 2) { // Case: Idle:AllCores
+      epsilon_power = xbt_str_parse_double((current_power_values.at(0)).c_str(), msg_idle);
+      max_power     = xbt_str_parse_double((current_power_values.at(1)).c_str(), msg_max);
+    } else { // Case: Idle:Epsilon:AllCores
+      epsilon_power = xbt_str_parse_double((current_power_values.at(1)).c_str(), msg_epsilon);
+      max_power     = xbt_str_parse_double((current_power_values.at(2)).c_str(), msg_max);
     }
 
     XBT_DEBUG("Creating PowerRange for host %s. Idle:%f, Epsilon:%f, AllCores:%f.", host_->get_cname(), idle_power, epsilon_power, max_power);

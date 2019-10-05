@@ -17,10 +17,10 @@ static void runner()
   double old_energy_host1 = sg_host_get_consumed_energy(host1);
   double old_energy_host2 = sg_host_get_consumed_energy(host2);
 
-  XBT_INFO("[%s] Energetic profile: %s", host1->get_cname(), host1->get_property("watt_per_state"));
+  XBT_INFO("[%s] Energetic profile: %s", host1->get_cname(), host1->get_property("wattage_per_state"));
   XBT_INFO("[%s] Initial peak speed=%.0E flop/s; Total energy dissipated =%.0E J", host1->get_cname(), host1->get_speed(),
            old_energy_host1);
-  XBT_INFO("[%s] Energetic profile: %s", host2->get_cname(), host2->get_property("watt_per_state"));
+  XBT_INFO("[%s] Energetic profile: %s", host2->get_cname(), host2->get_property("wattage_per_state"));
   XBT_INFO("[%s] Initial peak speed=%.0E flop/s; Total energy dissipated =%.0E J", host2->get_cname(), host2->get_speed(),
            old_energy_host2);
 

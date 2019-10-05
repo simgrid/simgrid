@@ -24,8 +24,8 @@ SIMGRID_REGISTER_PLUGIN(link_energy, "Link energy consumption.", &sg_link_energy
 
  @verbatim
  <link id="SWITCH1" bandwidth="125Mbps" latency="5us" sharing_policy="SHARED" >
- <prop id="watt_range" value="100.0:200.0" />
- <prop id="watt_off" value="10" />
+ <prop id="wattage_range" value="100.0:200.0" />
+ <prop id="wattage_off" value="10" />
  </link>
  @endverbatim
 
@@ -87,7 +87,12 @@ void LinkEnergy::init_watts_range_list()
     return;
   inited_ = true;
 
-  const char* all_power_values_str = this->link_->get_property("watt_range");
+  const char* all_power_values_str = this->link_->get_property("wattage_range");
+  if (all_power_values_str == nullptr) {
+    all_power_values_str = this->link_->get_property("watt_range");
+    if (all_power_values_str != nullptr)
+      XBT_WARN("Please rename the 'watt_range' property of link %s into 'wattage_range'.", link_->get_cname());
+  }
 
   if (all_power_values_str == nullptr)
     return;

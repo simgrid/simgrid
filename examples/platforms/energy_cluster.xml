@@ -4,7 +4,7 @@
   <cluster bb_bw="2.25GBps" bb_lat="500us" bw="125MBps" core="4" id="cluster" lat="50us" prefix="MyHost" radical="1-2" speed="100.0Mf,50.0Mf,20.0Mf" suffix="">
     <!--  List of idle_power:epsilon_power:max_power pairs (in Watts) -->
     <!--  The list must contain one speed tuple for each previously defined pstate-->
-    <prop id="watt_per_state" value="100.0:93.33333333333333:200.0, 93.0:90.0:170.0, 90.0:90.0:150.0" />
-    <prop id="watt_off" value="10" />
+    <prop id="wattage_per_state" value="100.0:93.33333333333333:200.0, 93.0:90.0:170.0, 90.0:90.0:150.0" />
+    <prop id="wattage_off" value="10" />
   </cluster>
 </platform>

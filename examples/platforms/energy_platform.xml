@@ -9,25 +9,25 @@
       <!--  List of Idle:Epsilon:AllCores (in Watts) corresponding to the speed consumed when the processor is idle,
             when all cores have a tiny epsilon load, and when all cores are fully loaded -->
       <!--  The list must contain one energetic profile for each previously defined pstate-->
-      <prop id="watt_per_state" value="100.0:93.33333333333333:200.0, 93.0:90.0:170.0, 90.0:90.0:150.0" />
-      <prop id="watt_off" value="10" />
+      <prop id="wattage_per_state" value="100.0:93.33333333333333:200.0, 93.0:90.0:170.0, 90.0:90.0:150.0" />
+      <prop id="wattage_off" value="10" />
     </host>
     
     <host core="1" id="MyHost2" pstate="0" speed="100.0Mf,50.0Mf,20.0Mf">
       <!-- This host is mono-core and its consumption is either idle or full load (Epsilon=AllCores) -->
-      <prop id="watt_per_state" value="100.0:200.0:200.0, 93.0:170.0:170.0, 90.0:150.0:150.0" />
-      <prop id="watt_off" value="10" />
+      <prop id="wattage_per_state" value="100.0:200.0:200.0, 93.0:170.0:170.0, 90.0:150.0:150.0" />
+      <prop id="wattage_off" value="10" />
     </host>
     
     <host core="1" id="MyHost3" pstate="0" speed="100.0Mf,50.0Mf,20.0Mf">
       <!-- This host is mono-core and its consumption is either idle or full load (Epsilon=AllCores) -->
-      <prop id="watt_per_state" value="100.0:200.0:200.0, 93.0:170.0:170.0, 90.0:150.0:150.0" />
-      <prop id="watt_off" value="10" />
+      <prop id="wattage_per_state" value="100.0:200.0:200.0, 93.0:170.0:170.0, 90.0:150.0:150.0" />
+      <prop id="wattage_off" value="10" />
     </host>
  
     <link bandwidth="100kBps" id="bus" latency="0" sharing_policy="SHARED">
-<!--   REALISTIC VALUES                    <prop id="watt_range" value="10.3581:10.7479" /> -->
-<!--  IREALISTIC VALUES FOR THE TEST -->   <prop id="watt_range" value="1:3" /> 
+<!--   REALISTIC VALUES                    <prop id="wattage_range" value="10.3581:10.7479" /> -->
+<!--  IREALISTIC VALUES FOR THE TEST -->   <prop id="wattage_range" value="1:3" /> 
     </link>
     <route dst="MyHost2" src="MyHost1">
       <link_ctn id="bus" />
