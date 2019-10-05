@@ -4,6 +4,13 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/tools/cmake/M
 
 project(SimGrid C CXX)
 
+## This is a better way to set the flags:
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -O0 ${CXXFLAGS}")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${CXXFLAGS}")
+
 ## Save compiler flags preset with environment variables CFLAGS or CXXFLAGS;
 ## they will used within smpicc, smpicxx.
 ## Do it early so that we get their genuine values. The same will be done later for Fortran.

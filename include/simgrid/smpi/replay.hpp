@@ -74,8 +74,22 @@ public:
 
 class ComputeParser : public ActionArgParser {
 public:
-  /* communication partner; if we send, this is the receiver and vice versa */
   double flops;
+
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
+};
+
+class SleepParser : public ActionArgParser {
+public:
+  double time;
+
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
+};
+
+class LocationParser : public ActionArgParser {
+public:
+  std::string filename;
+  int line;
 
   void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
@@ -221,6 +235,18 @@ public:
 class ComputeAction : public ReplayAction<ComputeParser> {
 public:
   explicit ComputeAction() : ReplayAction("compute") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class SleepAction : public ReplayAction<SleepParser> {
+public:
+  explicit SleepAction() : ReplayAction("sleep") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class LocationAction : public ReplayAction<LocationParser> {
+public:
+  explicit LocationAction() : ReplayAction("location") {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 

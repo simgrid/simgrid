@@ -406,7 +406,8 @@ void sg_config_init(int *argc, char **argv)
 
   simgrid::config::declare_flag<bool>("smpi/trace-call-location",
                                       "Should filename and linenumber of MPI calls be traced?", false);
-
+  simgrid::config::declare_flag<bool>("smpi/trace-call-use-absolute-path",
+                                      "Should filenames for trace-call tracing be absolute or not?", false);
   simgrid::config::declare_flag<int>(
       "smpi/send-is-detached-thresh",
       "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend", 65536);
