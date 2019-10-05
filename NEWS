@@ -5,9 +5,11 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \| || |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|  |_|
                (not released yet)
 
+The Clean Disk Release.
+
  * Introduce an experimental Wifi network model.
- * TODO: Disk?
- * TODO: New Energy?
+ * Introduce <disk>, which is much cleaner than <storage>.
+ * SMPI: Implement Errhandlers and some more MPI3.1 calls.
  * (+ many bug fixes and internal refactorings)
                     _               _____  ____  _____
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \|___ /
