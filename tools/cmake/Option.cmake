@@ -9,8 +9,6 @@ else()
   set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} CACHE PATH "Path where this project should be installed")
 endif()
 
-option(release "Whether Release Mode is activated (disable tests on experimental parts)" on)
-
 # How to build
 ###
 option(enable_compile_optimizations "Whether to produce efficient code for the SimGrid library" on)

@@ -46,13 +46,8 @@ if(enable_coverage)
       "/include/"
       "/teshsuite/"
       "/src/bindings/"
+      "/examples/"
     )
-    if(NOT release)
-       set(PATTERN_CTEST_IGNORED
-        ${PATTERN_CTEST_IGNORED}
-        "/examples/"
-        )
-    endif()
 endif()
 
 CONFIGURE_FILE(${CMAKE_HOME_DIRECTORY}/tools/cmake/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake @ONLY)
