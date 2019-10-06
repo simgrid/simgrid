@@ -5,7 +5,7 @@
    <object id="TOC" data="graphical-toc.svg" width="100%" type="image/svg+xml"></object>
    <script>
    window.onload=function() { // Wait for the SVG to be loaded before changing it
-     var elem=document.querySelector("#TOC").contentDocument.getElementById("PlatformBox")
+     var elem=document.querySelector("#TOC").contentDocument.getElementById("PluginsBox")
      elem.style="opacity:0.93999999;fill:#ff0000;fill-opacity:0.1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1";
    }
    </script>
@@ -16,11 +16,12 @@ SimGrid Plugins
 ###############
 
 You can extend SimGrid without modifying it, thanks to our plugin
-mechanism. This page describes how to write your own plugin, and gives
-the documentation of the ones distributed with SimGrid.
+mechanism. This page describes how to write your own plugin, and
+documents some of the plugins distributed with SimGrid.
 
-- Host Energy: models the energy dissipation of the compute units.
-- Link Energy: models the energy dissipation of the network.
+- :ref:`Host Energy <plugin_host_energy>`: models the energy dissipation of the compute units.
+- :ref:`Link Energy <plugin_link_energy>`: models the energy dissipation of the network.
+- :ref:`Host Load <plugin_host_load>`: monitors the load of the compute units.
 
 Defining a Plugin
 *****************
@@ -107,5 +108,12 @@ Link Energy Plugin
 ==================
 
 .. doxygengroup:: Plugin_link_energy
+
+.. _plugin_host_load:
+
+Host Load Plugin
+================
+
+.. doxygengroup:: Plugin_host_load
 
 ..  LocalWords:  SimGrid

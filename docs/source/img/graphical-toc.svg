@@ -24,14 +24,14 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8"
-     inkscape:cx="24.34588"
-     inkscape:cy="160.40421"
+     inkscape:zoom="1.979899"
+     inkscape:cx="460.43419"
+     inkscape:cy="220.43832"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:window-width="1920"
-     inkscape:window-height="1019"
+     inkscape:window-height="1024"
      inkscape:window-x="0"
      inkscape:window-y="32"
      inkscape:window-maximized="1"
@@ -5619,79 +5619,81 @@
            x="0"
            sodipodi:role="line"
            id="tspan34356"
-           y="21.815273" />
+           y="20.495317" />
       </text>
     </g>
-    <g
-       id="g2465"
-       transform="translate(-1.3229068,-6.6145842)">
+    <a
+       xlink:href="Plugins.html"
+       transform="translate(-1.5875,-6.6145919)"
+       id="PluginLink">
       <rect
-         ry="2.6458309"
-         y="72.593758"
-         x="152.13541"
-         height="30.427082"
+         style="opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="PluginsBox"
          width="29.104172"
-         id="rect1020-5-9-0-3"
-         style="opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+         height="30.427082"
+         x="152.13541"
+         y="72.593758"
+         ry="2.6458309" />
       <text
-         id="text904-3-4"
-         y="77.946869"
-         x="157.15215"
+         xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.46805573px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.46805573px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px"
-           y="77.946869"
-           x="157.15215"
+         x="157.15215"
+         y="77.946869"
+         id="text904-3-4"><tspan
+           sodipodi:role="line"
            id="tspan902-5-5"
-           sodipodi:role="line">Plugins</tspan></text>
+           x="157.15215"
+           y="77.946869"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.46805573px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px">Plugins</tspan></text>
       <text
-         id="text1028-1-4-1"
-         y="83.230614"
-         x="157.55919"
+         xml:space="preserve"
          style="font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88055563px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Oblique';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#d40000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           id="tspan15519"
-           style="font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88055563px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Oblique';fill:#d40000;stroke-width:0.26458332px"
-           y="83.230614"
+         x="157.55919"
+         y="83.230614"
+         id="text1028-1-4-1"><tspan
+           sodipodi:role="line"
            x="157.55919"
-           sodipodi:role="line">Your code</tspan></text>
+           y="83.230614"
+           style="font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88055563px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Oblique';fill:#d40000;stroke-width:0.26458332px"
+           id="tspan15519">Your code</tspan></text>
       <text
-         id="text1032-0-9-0"
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:6.61458349px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="153.11177"
          y="92.569839"
-         x="153.11177"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:6.61458349px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-size:4.23333311px;stroke-width:0.26458332px"
-           y="92.569839"
-           x="153.11177"
+         id="text1032-0-9-0"><tspan
+           sodipodi:role="line"
            id="tspan1030-6-4-5"
-           sodipodi:role="line">▸ Signals</tspan></text>
-      <text
-         id="text1032-0-9-3-0"
-         y="97.710327"
-         x="153.11177"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:6.61458349px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-size:4.23333311px;stroke-width:0.26458332px"
-           y="97.710327"
            x="153.11177"
-           id="tspan1030-6-4-9-3"
-           sodipodi:role="line">▸ Extensions</tspan></text>
+           y="92.569839"
+           style="font-size:4.23333311px;stroke-width:0.26458332px">▸ Signals</tspan></text>
       <text
-         id="text1028-1-4-1-5"
-         y="86.932091"
-         x="155.86807"
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:6.61458349px;font-family:'Amiri Quran Colored';-inkscape-font-specification:'Amiri Quran Colored';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="153.11177"
+         y="97.710327"
+         id="text1032-0-9-3-0"><tspan
+           sodipodi:role="line"
+           id="tspan1030-6-4-9-3"
+           x="153.11177"
+           y="97.710327"
+           style="font-size:4.23333311px;stroke-width:0.26458332px">▸ Extensions</tspan></text>
+      <text
+         xml:space="preserve"
          style="font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88055563px;line-height:6.61458349px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Oblique';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           id="tspan15519-6"
-           style="font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88055563px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Oblique';stroke-width:0.26458332px"
-           y="86.932091"
+         x="155.86807"
+         y="86.932091"
+         id="text1028-1-4-1-5"><tspan
+           sodipodi:role="line"
            x="155.86807"
-           sodipodi:role="line">deep inside</tspan></text>
-    </g>
+           y="86.932091"
+           style="font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88055563px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Oblique';stroke-width:0.26458332px"
+           id="tspan15519-6">deep inside</tspan></text>
+    </a>
     <g
-       id="g2452"
-       transform="translate(-1.3229068,-6.6145842)">
+       id="Models"
+       transform="translate(-1.3229068,-6.6145842)"
+       inkscape:label="Models">
       <rect
          ry="2.6458309"
          y="72.59375"
