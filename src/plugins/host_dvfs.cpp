@@ -293,19 +293,17 @@ public:
         task_id           = 0;
       }
     });
-    simgrid::kernel::activity::ExecImpl::on_creation.connect(
-        [this](simgrid::kernel::activity::ExecImpl const& activity) {
-          if (activity.get_host() == get_host())
-            pre_task();
-        });
-    simgrid::kernel::activity::ExecImpl::on_completion.connect(
-        [this](simgrid::kernel::activity::ExecImpl const& activity) {
-          // For more than one host (not yet supported), we can access the host via
-          // simcalls_.front()->issuer->iface()->get_host()
-          if (activity.get_host() == get_host() && iteration_running) {
-            comp_timer += activity.surf_action_->get_finish_time() - activity.surf_action_->get_start_time();
-          }
-        });
+    simgrid::s4u::Exec::on_start.connect([this](simgrid::s4u::Actor const&, simgrid::s4u::Exec const& activity) {
+      if (activity.get_host() == get_host())
+        pre_task();
+    });
+    simgrid::s4u::Exec::on_completion.connect([this](simgrid::s4u::Actor const&, simgrid::s4u::Exec const& activity) {
+      // For more than one host (not yet supported), we can access the host via
+      // simcalls_.front()->issuer->iface()->get_host()
+      if (activity.get_host() == get_host() && iteration_running) {
+        comp_timer += activity.get_finish_time() - activity.get_start_time();
+      }
+    });
     // FIXME I think that this fires at the same time for all hosts, so when the src sends something,
     // the dst will be notified even though it didn't even arrive at the recv yet
     simgrid::s4u::Link::on_communicate.connect(

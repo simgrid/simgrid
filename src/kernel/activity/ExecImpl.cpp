@@ -153,7 +153,6 @@ ExecImpl* ExecImpl::start()
   }
 
   XBT_DEBUG("Create execute synchro %p: %s", this, get_cname());
-  ExecImpl::on_creation(*this);
   return this;
 }
 
@@ -194,8 +193,6 @@ void ExecImpl::post()
   } else {
     state_ = SIMIX_DONE;
   }
-
-  on_completion(*this);
 
   clean_action();
 
@@ -309,8 +306,6 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
 /*************
  * Callbacks *
  *************/
-xbt::signal<void(ExecImpl&)> ExecImpl::on_creation;
-xbt::signal<void(ExecImpl const&)> ExecImpl::on_completion;
 xbt::signal<void(ExecImpl const&, s4u::Host*)> ExecImpl::on_migration;
 
 } // namespace activity

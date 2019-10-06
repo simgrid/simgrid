@@ -5,6 +5,7 @@
 
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "simgrid/Exception.hpp"
+#include "simgrid/s4u/Exec.hpp"
 #include "src/include/surf/surf.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 
@@ -51,25 +52,45 @@ static void host_state_change(s4u::Host const& host)
   }
 }
 
-static s4u::VirtualMachine* get_vm_from_task(kernel::activity::ActivityImpl const& task)
+static void add_active_exec(s4u::Actor const&, s4u::Exec const& task)
 {
-  auto* exec = dynamic_cast<kernel::activity::ExecImpl const*>(&task);
-  return exec != nullptr ? dynamic_cast<s4u::VirtualMachine*>(exec->get_host()) : nullptr;
-}
-
-static void add_active_task(kernel::activity::ActivityImpl const& task)
-{
-  s4u::VirtualMachine* vm = get_vm_from_task(task);
+  s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
   if (vm != nullptr) {
-    VirtualMachineImpl *vm_impl = vm->get_impl();
-    vm_impl->active_tasks_ = vm_impl->active_tasks_ + 1;
-    vm_impl->update_action_weight(); 
+    VirtualMachineImpl* vm_impl = vm->get_impl();
+    vm_impl->active_tasks_      = vm_impl->active_tasks_ + 1;
+    vm_impl->update_action_weight();
   }
 }
 
-static void remove_active_task(kernel::activity::ActivityImpl const& task)
+static void remove_active_exec(s4u::Actor const&, s4u::Exec const& task)
 {
-  s4u::VirtualMachine* vm = get_vm_from_task(task);
+  s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
+  if (vm != nullptr) {
+    VirtualMachineImpl* vm_impl = vm->get_impl();
+    vm_impl->active_tasks_      = vm_impl->active_tasks_ - 1;
+    vm_impl->update_action_weight();
+  }
+}
+
+static s4u::VirtualMachine* get_vm_from_activity(kernel::activity::ActivityImpl const& act)
+{
+  auto* exec = dynamic_cast<kernel::activity::ExecImpl const*>(&act);
+  return exec != nullptr ? dynamic_cast<s4u::VirtualMachine*>(exec->get_host()) : nullptr;
+}
+
+static void add_active_activity(kernel::activity::ActivityImpl const& act)
+{
+  s4u::VirtualMachine* vm = get_vm_from_activity(act);
+  if (vm != nullptr) {
+    VirtualMachineImpl *vm_impl = vm->get_impl();
+    vm_impl->active_tasks_ = vm_impl->active_tasks_ + 1;
+    vm_impl->update_action_weight();
+  }
+}
+
+static void remove_active_activity(kernel::activity::ActivityImpl const& act)
+{
+  s4u::VirtualMachine* vm = get_vm_from_activity(act);
   if (vm != nullptr) {
     VirtualMachineImpl *vm_impl = vm->get_impl();
     vm_impl->active_tasks_ = vm_impl->active_tasks_ - 1;
@@ -81,10 +102,10 @@ VMModel::VMModel()
 {
   all_existing_models.push_back(this);
   s4u::Host::on_state_change.connect(host_state_change);
-  kernel::activity::ExecImpl::on_creation.connect(add_active_task);
-  kernel::activity::ExecImpl::on_completion.connect(remove_active_task);
-  kernel::activity::ActivityImpl::on_resumed.connect(add_active_task);
-  kernel::activity::ActivityImpl::on_suspended.connect(remove_active_task);
+  s4u::Exec::on_start.connect(add_active_exec);
+  s4u::Exec::on_completion.connect(remove_active_exec);
+  kernel::activity::ActivityImpl::on_resumed.connect(add_active_activity);
+  kernel::activity::ActivityImpl::on_suspended.connect(remove_active_activity);
 }
 
 double VMModel::next_occuring_event(double now)

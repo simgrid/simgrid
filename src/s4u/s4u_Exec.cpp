@@ -12,8 +12,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_exec, s4u_activity, "S4U asynchronous execut
 
 namespace simgrid {
 namespace s4u {
-xbt::signal<void(Actor const&)> Exec::on_start;
-xbt::signal<void(Actor const&)> Exec::on_completion;
+xbt::signal<void(Actor const&, Exec const&)> Exec::on_start;
+xbt::signal<void(Actor const&, Exec const&)> Exec::on_completion;
 
 Exec::Exec()
 {
@@ -44,7 +44,7 @@ Exec* Exec::wait()
     start();
   simcall_execution_wait(pimpl_);
   state_ = State::FINISHED;
-  on_completion(*Actor::self());
+  on_completion(*Actor::self(), *this);
   return this;
 }
 
@@ -105,6 +105,27 @@ ExecPtr Exec::set_name(const std::string& name)
   return this;
 }
 
+Host* Exec::get_host() const
+{
+  return static_cast<kernel::activity::ExecImpl*>(pimpl_.get())->get_host();
+}
+unsigned int Exec::get_host_number() const
+{
+  return static_cast<kernel::activity::ExecImpl*>(pimpl_.get())->get_host_number();
+}
+double Exec::get_start_time() const
+{
+  return (pimpl_->surf_action_ == nullptr) ? -1 : pimpl_->surf_action_->get_start_time();
+}
+double Exec::get_finish_time() const
+{
+  return (pimpl_->surf_action_ == nullptr) ? -1 : pimpl_->surf_action_->get_finish_time();
+}
+double Exec::get_cost() const
+{
+  return (pimpl_->surf_action_ == nullptr) ? -1 : pimpl_->surf_action_->get_cost();
+}
+
 /** @brief  Change the execution priority, don't you think?
  *
  * An execution with twice the priority will get twice the amount of flops when the resource is shared.
@@ -144,7 +165,7 @@ Exec* ExecSeq::start()
         .start();
   });
   state_ = State::STARTED;
-  on_start(*Actor::self());
+  on_start(*Actor::self(), *this);
   return this;
 }
 
@@ -206,7 +227,7 @@ Exec* ExecPar::start()
         .start();
   });
   state_ = State::STARTED;
-  on_start(*Actor::self());
+  on_start(*Actor::self(), *this);
   return this;
 }
 

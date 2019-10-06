@@ -8,6 +8,7 @@
 
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Activity.hpp>
+#include <simgrid/s4u/Actor.hpp>
 #include <xbt/ex.h>
 
 #include <atomic>
@@ -43,8 +44,8 @@ public:
   friend XBT_PUBLIC void intrusive_ptr_release(Exec* e);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Exec* e);
 #endif
-  static xbt::signal<void(Actor const&)> on_start;
-  static xbt::signal<void(Actor const&)> on_completion;
+  static xbt::signal<void(Actor const&, Exec const&)> on_start;
+  static xbt::signal<void(Actor const&, Exec const&)> on_completion;
 
   virtual Exec* start() override          = 0;
   virtual double get_remaining_ratio()    = 0;
@@ -68,6 +69,11 @@ public:
   Exec* cancel() override;
   const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
+  Host* get_host() const;
+  unsigned int get_host_number() const;
+  double get_start_time() const;
+  double get_finish_time() const;
+  double get_cost() const;
 };
 
 class XBT_PUBLIC ExecSeq : public Exec {

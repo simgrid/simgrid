@@ -67,7 +67,7 @@ public:
    * FIXME These are functions used for testing and should be re-written or removed
    */
   simgrid::s4u::Host* get_mapping(simgrid::s4u::ActorPtr);
-  void record_actor_computation(simgrid::s4u::ActorPtr actor, double load);
+  void record_actor_computation(simgrid::s4u::Actor const& actor, double load);
 };
 
 }

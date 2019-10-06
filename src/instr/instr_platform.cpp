@@ -388,10 +388,10 @@ void instr_define_callbacks()
     simgrid::s4u::Actor::on_wake_up.connect([](simgrid::s4u::Actor const& actor) {
       simgrid::instr::Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->pop_event();
     });
-    simgrid::s4u::Exec::on_start.connect([](simgrid::s4u::Actor const& actor) {
+    simgrid::s4u::Exec::on_start.connect([](simgrid::s4u::Actor const& actor, simgrid::s4u::Exec const&) {
       simgrid::instr::Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->push_event("execute");
     });
-    simgrid::s4u::Exec::on_completion.connect([](simgrid::s4u::Actor const& actor) {
+    simgrid::s4u::Exec::on_completion.connect([](simgrid::s4u::Actor const& actor, simgrid::s4u::Exec const&) {
       simgrid::instr::Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->pop_event();
     });
     simgrid::s4u::Comm::on_sender_start.connect([](simgrid::s4u::Actor const& actor) {

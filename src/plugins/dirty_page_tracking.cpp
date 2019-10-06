@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/plugins/live_migration.h"
+#include "simgrid/s4u/Exec.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 
@@ -72,32 +73,34 @@ static void on_virtual_machine_creation(simgrid::vm::VirtualMachineImpl& vm)
   vm.extension_set<simgrid::vm::DirtyPageTrackingExt>(new simgrid::vm::DirtyPageTrackingExt());
 }
 
-static void on_exec_creation(simgrid::kernel::activity::ExecImpl const& exec)
+static void on_exec_creation(simgrid::s4u::Actor const&, simgrid::s4u::Exec const& e)
 {
-  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec.get_host());
+  auto exec                        = static_cast<simgrid::kernel::activity::ExecImpl*>(e.get_impl());
+  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec->get_host());
   if (vm == nullptr)
     return;
 
   if (vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->is_tracking()) {
-    vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->track(&exec, exec.get_remaining());
+    vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->track(exec, exec->get_remaining());
   } else {
-    vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->track(&exec, 0.0);
+    vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->track(exec, 0.0);
   }
 }
 
-static void on_exec_completion(simgrid::kernel::activity::ExecImpl const& exec)
+static void on_exec_completion(simgrid::s4u::Actor const&, simgrid::s4u::Exec const& e)
 {
-  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec.get_host());
+  auto exec                        = static_cast<simgrid::kernel::activity::ExecImpl*>(e.get_impl());
+  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec->get_host());
   if (vm == nullptr)
     return;
 
   /* If we are in the middle of dirty page tracking, we record how much computation has been done until now, and keep
    * the information for the lookup_() function that will called soon. */
   if (vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->is_tracking()) {
-    double delta = vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->get_stored_remains(&exec);
+    double delta = vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->get_stored_remains(exec);
     vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->update_dirty_page_count(delta);
   }
-  vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->untrack(&exec);
+  vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->untrack(exec);
 }
 
 void sg_vm_dirty_page_tracking_init()
@@ -106,8 +109,8 @@ void sg_vm_dirty_page_tracking_init()
     simgrid::vm::DirtyPageTrackingExt::EXTENSION_ID =
         simgrid::vm::VirtualMachineImpl::extension_create<simgrid::vm::DirtyPageTrackingExt>();
     simgrid::vm::VirtualMachineImpl::on_creation.connect(&on_virtual_machine_creation);
-    simgrid::kernel::activity::ExecImpl::on_creation.connect(&on_exec_creation);
-    simgrid::kernel::activity::ExecImpl::on_completion.connect(&on_exec_completion);
+    simgrid::s4u::Exec::on_start.connect(&on_exec_creation);
+    simgrid::s4u::Exec::on_completion.connect(&on_exec_completion);
   }
 }
 
