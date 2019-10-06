@@ -111,11 +111,11 @@ void StateEvent::print()
       /* Subtract -1 because this is the process id and we transform it to the rank id */
       container_name=std::to_string(stoi(container_name.erase(0, 5)) - 1);
     }
-    #if HAVE_SMPI
+#if HAVE_SMPI
     if (simgrid::config::get_value<bool>("smpi/trace-call-location")) {
       stream_ << container_name << " location " << filename << " " << linenumber << std::endl ;
     }
-    #endif
+#endif
     stream_ << container_name << " " << extra_->print();
     *tracing_files.at(get_container()) << stream_.str() << std::endl;
   } else {
