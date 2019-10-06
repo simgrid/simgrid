@@ -54,19 +54,20 @@ XBT_ATTRIB_NORETURN static void inthandler(int)
 #ifndef _WIN32
 static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
 {
-  if (siginfo->si_signo == SIGSEGV && siginfo->si_code == SEGV_ACCERR) {
-    fprintf(stderr, "Access violation detected.\n"
-                    "This probably comes from a programming error in your code, or from a stack\n"
-                    "overflow. If you are certain of your code, try increasing the stack size\n"
-                    "   --cfg=contexts/stack-size=XXX (current size is %u KiB).\n"
-                    "\n"
-                    "If it does not help, this may have one of the following causes:\n"
-                    "a bug in SimGrid, a bug in the OS or a bug in a third-party libraries.\n"
-                    "Failing hardware can sometimes generate such errors too.\n"
-                    "\n"
-                    "If you think you've found a bug in SimGrid, please report it along with a\n"
-                    "Minimal Working Example (MWE) reproducing your problem and a full backtrace\n"
-                    "of the fault captured with gdb or valgrind.\n",
+  if ((siginfo->si_signo == SIGSEGV && siginfo->si_code == SEGV_ACCERR) || siginfo->si_signo == SIGBUS) {
+    fprintf(stderr,
+            "Access violation or Bus error detected.\n"
+            "This probably comes from a programming error in your code, or from a stack\n"
+            "overflow. If you are certain of your code, try increasing the stack size\n"
+            "   --cfg=contexts/stack-size=XXX (current size is %u KiB).\n"
+            "\n"
+            "If it does not help, this may have one of the following causes:\n"
+            "a bug in SimGrid, a bug in the OS or a bug in a third-party libraries.\n"
+            "Failing hardware can sometimes generate such errors too.\n"
+            "\n"
+            "If you think you've found a bug in SimGrid, please report it along with a\n"
+            "Minimal Working Example (MWE) reproducing your problem and a full backtrace\n"
+            "of the fault captured with gdb or valgrind.\n",
             smx_context_stack_size / 1024);
   } else  if (siginfo->si_signo == SIGSEGV) {
     fprintf(stderr, "Segmentation fault.\n");
@@ -113,14 +114,17 @@ static void install_segvhandler()
   action.sa_flags = SA_ONSTACK | SA_RESETHAND | SA_SIGINFO;
   sigemptyset(&action.sa_mask);
 
-  if (sigaction(SIGSEGV, &action, &old_action) == -1) {
-    XBT_WARN("Failed to register signal handler for SIGSEGV: %s", strerror(errno));
-    return;
-  }
-  if ((old_action.sa_flags & SA_SIGINFO) || old_action.sa_handler != SIG_DFL) {
-    XBT_DEBUG("A signal handler was already installed for SIGSEGV (%p). Restore it.",
-             (old_action.sa_flags & SA_SIGINFO) ? (void*)old_action.sa_sigaction : (void*)old_action.sa_handler);
-    sigaction(SIGSEGV, &old_action, nullptr);
+  /* Linux tend to raise only SIGSEGV where other systems also raise SIGBUS on severe error */
+  for (int sig : {SIGSEGV, SIGBUS}) {
+    if (sigaction(sig, &action, &old_action) == -1) {
+      XBT_WARN("Failed to register signal handler for signal %d: %s", sig, strerror(errno));
+      continue;
+    }
+    if ((old_action.sa_flags & SA_SIGINFO) || old_action.sa_handler != SIG_DFL) {
+      XBT_DEBUG("A signal handler was already installed for signal %d (%p). Restore it.", sig,
+                (old_action.sa_flags & SA_SIGINFO) ? (void*)old_action.sa_sigaction : (void*)old_action.sa_handler);
+      sigaction(sig, &old_action, nullptr);
+    }
   }
 }
 
