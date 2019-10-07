@@ -1686,7 +1686,6 @@ include tools/graphicator/graphicator.tesh
 include tools/normalize-pointers.py
 include tools/pkg-config/simgrid.pc.in
 include tools/sanitizers.supp
-include tools/sg_xml_energy_ponecore_to_pepsilon.py
 include tools/sg_xml_unit_converter.py
 include tools/simgrid.supp
 include tools/simgrid2vite.sed
