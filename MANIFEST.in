@@ -545,6 +545,7 @@ include examples/smpi/smpi_msg_masterslave/masterslave_mailbox_smpi.c
 include examples/smpi/smpi_msg_masterslave/msg_smpi.tesh
 include examples/smpi/trace/trace.c
 include examples/smpi/trace/trace.tesh
+include examples/smpi/trace_call_location/adjust
 include examples/smpi/trace_call_location/trace_call_location.c
 include examples/smpi/trace_call_location/trace_call_location.tesh
 include examples/smpi/trace_simple/trace_simple.c
@@ -1761,6 +1762,7 @@ include docs/source/Experimental_Setup.rst
 include docs/source/Installing_SimGrid.rst
 include docs/source/Introduction.rst
 include docs/source/Platform_Examples.rst
+include docs/source/Plugins.rst
 include docs/source/Start_Your_Own_Project.rst
 include docs/source/Tutorial_Algorithms.rst
 include docs/source/Tutorial_MPI_Applications.rst

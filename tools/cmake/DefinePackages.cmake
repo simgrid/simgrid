@@ -909,6 +909,7 @@ set(DOC_SOURCES
   docs/source/platform.rst
   docs/source/platform_howtos.rst
   docs/source/Platform_Examples.rst
+  docs/source/Plugins.rst
   docs/source/XML_Reference.rst
 
   docs/source/Tutorial_Algorithms.rst
