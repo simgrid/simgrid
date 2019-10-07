@@ -645,6 +645,8 @@ SMPI_SHARED_MALLOC macro in this case, sorry.
 This feature is demoed by the example file
 `examples/smpi/NAS/dt.c <https://framagit.org/simgrid/simgrid/tree/master/examples/smpi/NAS/dt.c>`_
 
+.. _SMPI_use_faster:
+
 .........................
 Toward Faster Simulations
 .........................

@@ -17,11 +17,15 @@ SimGrid Plugins
 
 You can extend SimGrid without modifying it, thanks to our plugin
 mechanism. This page describes how to write your own plugin, and
-documents some of the plugins distributed with SimGrid.
+documents some of the plugins distributed with SimGrid:
 
   - :ref:`Host Energy <plugin_host_energy>`: models the energy dissipation of the compute units.
   - :ref:`Link Energy <plugin_link_energy>`: models the energy dissipation of the network.
   - :ref:`Host Load <plugin_host_load>`: monitors the load of the compute units.
+
+You can activate these plugins with the :ref:`--cfg=plugin <cfg=plugin>` command
+line option, for example with ``--cfg=plugin:host_energy``. You can get the full
+list of existing plugins with ``--cfg=plugin:help``.
 
 Defining a Plugin
 *****************

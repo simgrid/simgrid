@@ -9,7 +9,7 @@
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include <simgrid/s4u.hpp>
 
-// Makes sure that this plugin can be activated from the command line with ``--plugin=name``
+// Makes sure that this plugin can be activated from the command line with ``--cfg=plugin:host_load``
 SIMGRID_REGISTER_PLUGIN(host_load, "Cpu load", &sg_host_load_plugin_init)
 
 /** @defgroup plugin_host_load
