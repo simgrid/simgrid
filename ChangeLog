@@ -75,7 +75,10 @@ XML:
    only three attributes (id, read_bw, and write_bw). All the other information
    that was declared with the storage related tags now has to be expressed as
    properties. An example of platform using this new tag is available at
-   examples/platforms/hostsè_with_disks.xml
+   examples/platforms/hosts_with_disks.xml
+
+tesh:
+ - 'expect signal' can now accept more than one potential signal.
 
 Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - FG#28: add sg_actor_self (and other wrappers on this_actor methods)

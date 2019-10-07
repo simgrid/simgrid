@@ -43,7 +43,7 @@ the following list. The second char of each line is ignored.
 
  `!' metacommand, which can be one of:
      `timeout' <integer>|no
-     `expect signal' <signal name>
+     `expect signal' <signal name>[|<signal name>]*
      `expect return' <integer>
      `output' <ignore|display>
      `output sort' [integer]
