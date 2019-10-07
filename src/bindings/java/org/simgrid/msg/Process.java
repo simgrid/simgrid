@@ -253,8 +253,8 @@ public abstract class Process implements Runnable {
 	public native void migrate(Host host);	
 	/**
 	 * Makes the current process sleep until millis milliseconds have elapsed.
-	 * You should note that unlike "waitFor" which takes seconds, this method takes milliseconds.
-	 * FIXME: Not optimal, maybe we should have two native functions.
+	 * You should note that unlike "waitFor" which takes seconds (as usual in SimGrid), this method takes milliseconds (as usual for sleep() in Java).
+	 * 
 	 * @param millis the length of time to sleep in milliseconds.
 	 */
 	public static void sleep(long millis) throws HostFailureException  {
