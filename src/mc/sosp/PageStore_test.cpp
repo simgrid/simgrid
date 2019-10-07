@@ -39,7 +39,7 @@ public:
   static void new_content(void* buf, std::size_t size);
 };
 
-// static member datat initialization
+// static member data initialization
 std::size_t helper_tests::pagesize             = 0;
 std::unique_ptr<PageStore> helper_tests::store = nullptr;
 void* helper_tests::data                       = nullptr;

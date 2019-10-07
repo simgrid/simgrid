@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
 
   int count = 2;
   int* sb = (int *) xbt_malloc(count * sizeof(int));
@@ -36,6 +37,25 @@ int main(int argc, char *argv[])
     printf("%d ", sb[i]);
   printf("]\n");
 
+  status = MPI_Gather(NULL, count, MPI_INT, rb, count, MPI_INT, root, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_BUFFER)
+    printf("MPI_Gather did not return MPI_ERR_BUFFER for empty sendbuf\n");
+  status = MPI_Gather(sb, -1, MPI_INT, rb, count, MPI_INT, root, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_COUNT)
+    printf("MPI_Gather did not return MPI_ERR_COUNT for -1 sendcount\n");
+  status = MPI_Gather(sb, count, MPI_DATATYPE_NULL, rb, count, MPI_INT, root, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_TYPE)
+    printf("MPI_Gather did not return MPI_ERR_TYPE for MPI_DATATYPE_NULL sendtype\n");
+  status = MPI_Gather(sb, count, MPI_INT, rb, count, MPI_INT, -1, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_ROOT)
+    printf("MPI_Gather did not return MPI_ERR_ROOT for root -1\n");
+  status = MPI_Gather(sb, count, MPI_INT, rb, count, MPI_INT, size+1, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_ROOT)
+    printf("MPI_Gather did not return MPI_ERR_ROOT for root > size\n");
+  status = MPI_Gather(sb, count, MPI_INT, rb, count, MPI_INT, root, MPI_COMM_NULL);
+  if(status!=MPI_ERR_COMM)
+    printf("MPI_Gather did not return MPI_ERR_COMM for MPI_COMM_NULL comm\n");
+
   status = MPI_Gather(sb, count, MPI_INT, rb, count, MPI_INT, root, MPI_COMM_WORLD);
 
   if (rank == root) {
@@ -45,7 +65,7 @@ int main(int argc, char *argv[])
     printf("]\n");
 
     if (status != MPI_SUCCESS) {
-      printf("allgather returned %d\n", status);
+      printf("gather returned %d\n", status);
       fflush(stdout);
     }
   }

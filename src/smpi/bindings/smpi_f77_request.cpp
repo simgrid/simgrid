@@ -215,6 +215,7 @@ void mpi_waitsome_ (int* incount, int* requests, int *outcount, int *indices, MP
         simgrid::smpi::Request::free_f(requests[indices[i]]);
         requests[indices[i]]=MPI_FORTRAN_REQUEST_NULL;
     }
+    indices[i]++;
   }
   xbt_free(reqs);
 }
@@ -275,10 +276,11 @@ void mpi_testsome_ (int* incount, int*  requests, int* outcount, int* indices, M
   }
   *ierr = MPI_Testsome(*incount, reqs, outcount, indices, FORT_STATUSES_IGNORE(statuses));
   for(i=0;i<*incount;i++){
-    if(indices[i] && reqs[indices[i]]==MPI_REQUEST_NULL){
+    if(reqs[indices[i]]==MPI_REQUEST_NULL){
       simgrid::smpi::Request::free_f(requests[indices[i]]);
       requests[indices[i]]=MPI_FORTRAN_REQUEST_NULL;
     }
+    indices[i]++;
   }
   xbt_free(reqs);
 }

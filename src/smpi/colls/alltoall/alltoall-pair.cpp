@@ -30,7 +30,7 @@
  ****************************************************************************/
 namespace simgrid{
 namespace smpi{
-int Coll_alltoall_pair_rma::alltoall(void *send_buff, int send_count, MPI_Datatype send_type,
+int Coll_alltoall_pair_rma::alltoall(const void *send_buff, int send_count, MPI_Datatype send_type,
                   void *recv_buff, int recv_count, MPI_Datatype recv_type,
                   MPI_Comm comm)
 {
@@ -64,7 +64,7 @@ int Coll_alltoall_pair_rma::alltoall(void *send_buff, int send_count, MPI_Dataty
 }
 
 
-int Coll_alltoall_pair::alltoall(void *send_buff, int send_count,
+int Coll_alltoall_pair::alltoall(const void *send_buff, int send_count,
                                   MPI_Datatype send_type,
                                   void *recv_buff, int recv_count,
                                   MPI_Datatype recv_type, MPI_Comm comm)
@@ -81,7 +81,7 @@ int Coll_alltoall_pair::alltoall(void *send_buff, int send_count,
   num_procs = comm->size();
 
   if((num_procs&(num_procs-1)))
-    THROWF(arg_error,0, "alltoall pair algorithm can't be used with non power of two number of processes ! ");
+    throw std::invalid_argument("alltoall pair algorithm can't be used with non power of two number of processes!");
 
   send_chunk = send_type->get_extent();
   recv_chunk = recv_type->get_extent();

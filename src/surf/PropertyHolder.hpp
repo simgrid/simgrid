@@ -5,6 +5,8 @@
 
 #ifndef SRC_SURF_PROPERTYHOLDER_HPP_
 #define SRC_SURF_PROPERTYHOLDER_HPP_
+
+#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -21,18 +23,15 @@ public:
   PropertyHolder() = default;
   PropertyHolder(const PropertyHolder&) = delete;
   PropertyHolder& operator=(const PropertyHolder&) = delete;
-  ~PropertyHolder();
 
-  const char* get_property(const std::string& key);
+  const char* get_property(const std::string& key) const;
   void set_property(const std::string& id, const std::string& value);
 
-  /* FIXME: This should not be exposed, as users may do bad things with the map they got (it's not a copy).
-   * But some user API expose this call so removing it is not so easy.
-   */
-  std::unordered_map<std::string, std::string>* get_properties();
+  const std::unordered_map<std::string, std::string>* get_properties();
+  template <class Assoc> void set_properties(const Assoc& properties);
 
 private:
-  std::unordered_map<std::string, std::string>* properties_ = nullptr;
+  std::unique_ptr<std::unordered_map<std::string, std::string>> properties_ = nullptr;
 };
 
 } /* namespace surf */

@@ -47,24 +47,19 @@
 #endif
 
 #include <cinttypes>
-#include <xbt/base.h>
-#include <xbt/log.h>
-#include <xbt/sysdep.h>
 
 #include "memory_map.hpp"
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_memory_map, xbt, "Logging specific to algorithms for memory_map");
 
 namespace simgrid {
 namespace xbt {
 
 /**
  * \todo This function contains many cases that do not allow for a
- *       recovery. Currently, xbt_abort() is called but we should
+ *       recovery. Currently, abort() is called but we should
  *       much rather die with the specific reason so that it's easier
  *       to find out what's going on.
  */
-XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
+std::vector<VmMap> get_memory_map(pid_t pid)
 {
   std::vector<VmMap> ret;
 #if defined __APPLE__
@@ -73,7 +68,8 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
   /* Request authorization to read mappings */
   if (task_for_pid(mach_task_self(), pid, &map) != KERN_SUCCESS) {
     std::perror("task_for_pid failed");
-    xbt_die("Cannot request authorization for kernel information access");
+    std::fprintf(stderr, "Cannot request authorization for kernel information access\n");
+    abort();
   }
 
   /*
@@ -109,7 +105,8 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     }
     else if (kr != KERN_SUCCESS) {
       std::perror("mach_vm_region failed");
-      xbt_die("Cannot request authorization for kernel information access");
+      std::fprintf(stderr, "Cannot request authorization for kernel information access\n");
+      abort();
     }
 
     VmMap memreg;
@@ -149,9 +146,11 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     if (dladdr(reinterpret_cast<void*>(address), &dlinfo))
       memreg.pathname = dlinfo.dli_fname;
 
-    XBT_DEBUG("Region: %016" PRIx64 "-%016" PRIx64 " | %c%c%c | %s", memreg.start_addr, memreg.end_addr,
+#if 0 /* debug */
+    std::fprintf(stderr, "Region: %016" PRIx64 "-%016" PRIx64 " | %c%c%c | %s\n", memreg.start_addr, memreg.end_addr,
               (memreg.prot & PROT_READ) ? 'r' : '-', (memreg.prot & PROT_WRITE) ? 'w' : '-',
               (memreg.prot & PROT_EXEC) ? 'x' : '-', memreg.pathname.c_str());
+#endif
 
     ret.push_back(std::move(memreg));
     address += size;
@@ -167,7 +166,8 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
   fp.open(path);
   if (not fp) {
     std::perror("open failed");
-    xbt_die("Cannot open %s to investigate the memory map of the process.", path.c_str());
+    std::fprintf(stderr, "Cannot open %s to investigate the memory map of the process.\n", path.c_str());
+    abort();
   }
 
   /* Read one line at the time, parse it and add it to the memory map to be returned */
@@ -190,34 +190,39 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     }
 
     /* Check to see if we got the expected amount of columns */
-    if (i < 6)
-      xbt_die("The memory map apparently only supplied less than 6 columns. Recovery impossible.");
+    if (i < 6) {
+      std::fprintf(stderr, "The memory map apparently only supplied less than 6 columns. Recovery impossible.\n");
+      abort();
+    }
 
     /* Ok we are good enough to try to get the info we need */
     /* First get the start and the end address of the map   */
     char* tok = strtok_r(lfields[0], "-", &saveptr);
-    if (tok == nullptr)
-      xbt_die("Start and end address of the map are not concatenated by a hyphen (-). Recovery impossible.");
+    if (tok == nullptr) {
+      std::fprintf(stderr,
+                   "Start and end address of the map are not concatenated by a hyphen (-). Recovery impossible.\n");
+      abort();
+    }
 
     VmMap memreg;
     char *endptr;
     memreg.start_addr = std::strtoull(tok, &endptr, 16);
     /* Make sure that the entire string was an hex number */
     if (*endptr != '\0')
-      xbt_abort();
+      abort();
 
     tok = strtok_r(nullptr, "-", &saveptr);
     if (tok == nullptr)
-      xbt_abort();
+      abort();
 
     memreg.end_addr = std::strtoull(tok, &endptr, 16);
     /* Make sure that the entire string was an hex number */
     if (*endptr != '\0')
-      xbt_abort();
+      abort();
 
     /* Get the permissions flags */
     if (std::strlen(lfields[1]) < 4)
-      xbt_abort();
+      abort();
 
     memreg.prot = 0;
     for (i = 0; i < 3; i++){
@@ -244,40 +249,41 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     } else {
       memreg.flags |= MAP_SHARED;
       if (lfields[1][3] != 's')
-        XBT_WARN("The protection is neither 'p' (private) nor 's' (shared) but '%s'. Let's assume shared, as on b0rken "
-                 "win-ubuntu systems.\nFull line: %s\n",
-                 lfields[1], line);
+        fprintf(stderr,
+                "The protection is neither 'p' (private) nor 's' (shared) but '%s'. Let's assume shared, as on b0rken "
+                "win-ubuntu systems.\nFull line: %s\n",
+                lfields[1], line);
     }
 
     /* Get the offset value */
     memreg.offset = std::strtoull(lfields[2], &endptr, 16);
     /* Make sure that the entire string was an hex number */
     if (*endptr != '\0')
-      xbt_abort();
+      abort();
 
     /* Get the device major:minor bytes */
     tok = strtok_r(lfields[3], ":", &saveptr);
     if (tok == nullptr)
-      xbt_abort();
+      abort();
 
     memreg.dev_major = (char) strtoul(tok, &endptr, 16);
     /* Make sure that the entire string was an hex number */
     if (*endptr != '\0')
-      xbt_abort();
+      abort();
 
     tok = strtok_r(nullptr, ":", &saveptr);
     if (tok == nullptr)
-      xbt_abort();
+      abort();
 
     memreg.dev_minor = (char) std::strtoul(tok, &endptr, 16);
     /* Make sure that the entire string was an hex number */
     if (*endptr != '\0')
-      xbt_abort();
+      abort();
 
     /* Get the inode number and make sure that the entire string was a long int */
     memreg.inode = strtoul(lfields[4], &endptr, 10);
     if (*endptr != '\0')
-      xbt_abort();
+      abort();
 
     /* And finally get the pathname */
     if (lfields[5])
@@ -285,7 +291,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Create space for a new map region in the region's array and copy the */
     /* parsed stuff from the temporal memreg variable */
-    XBT_DEBUG("Found region for %s", not memreg.pathname.empty() ? memreg.pathname.c_str() : "(null)");
+    // std::fprintf(stderr, "Found region for %s\n", not memreg.pathname.empty() ? memreg.pathname.c_str() : "(null)");
 
     ret.push_back(std::move(memreg));
   }
@@ -299,15 +305,18 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
   if ((prstat = procstat_open_sysctl()) == NULL) {
     std::perror("procstat_open_sysctl failed");
-    xbt_die("Cannot access kernel state information");
+    std::fprintf(stderr, "Cannot access kernel state information\n");
+    abort();
   }
   if ((proc = procstat_getprocs(prstat, KERN_PROC_PID, pid, &cnt)) == NULL) {
     std::perror("procstat_open_sysctl failed");
-    xbt_die("Cannot access process information");
+    std::fprintf(stderr, "Cannot access process information\n");
+    abort();
   }
   if ((vmentries = procstat_getvmmap(prstat, proc, &cnt)) == NULL) {
     std::perror("procstat_getvmmap failed");
-    xbt_die("Cannot access process memory mappings");
+    std::fprintf(stderr, "Cannot access process memory mappings\n");
+    abort();
   }
   for (unsigned int i = 0; i < cnt; i++) {
     VmMap memreg;
@@ -371,7 +380,8 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
   procstat_freeprocs(prstat, proc);
   procstat_close(prstat);
 #else
-  xbt_die("Could not get memory map from process %lli", (long long int) pid);
+  std::fprintf(stderr, "Could not get memory map from process %lli\n", (long long int)pid);
+  abort();
 #endif
   return ret;
 }

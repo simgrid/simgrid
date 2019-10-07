@@ -28,19 +28,15 @@ bool Comm::test()
       /* I am the receiver */
       (*task_received)->set_not_used();
     }
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutException&) {
     status_  = MSG_TIMEOUT;
     finished = true;
-  } catch (simgrid::CancelException& e) {
+  } catch (const simgrid::CancelException&) {
     status_  = MSG_TASK_CANCELED;
     finished = true;
-  } catch (xbt_ex& e) {
-    if (e.category == network_error) {
-      status_  = MSG_TRANSFER_FAILURE;
-      finished = true;
-    } else {
-      throw;
-    }
+  } catch (const simgrid::NetworkFailureException&) {
+    status_  = MSG_TRANSFER_FAILURE;
+    finished = true;
   }
 
   return finished;
@@ -56,15 +52,12 @@ msg_error_t Comm::wait_for(double timeout)
     }
 
     /* FIXME: these functions are not traceable */
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutException&) {
     status_ = MSG_TIMEOUT;
-  } catch (simgrid::CancelException& e) {
+  } catch (const simgrid::CancelException&) {
     status_ = MSG_TASK_CANCELED;
-  } catch (xbt_ex& e) {
-    if (e.category == network_error)
-      status_ = MSG_TRANSFER_FAILURE;
-    else
-      throw;
+  } catch (const simgrid::NetworkFailureException&) {
+    status_ = MSG_TRANSFER_FAILURE;
   }
 
   return status_;
@@ -101,21 +94,19 @@ int MSG_comm_testany(xbt_dynar_t comms)
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach (comms, cursor, comm) {
-    s_comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(comm->s_comm->get_impl().get()));
+    s_comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(comm->s_comm->get_impl()));
   }
 
   msg_error_t status = MSG_OK;
   try {
     finished_index = simcall_comm_testany(s_comms.data(), s_comms.size());
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutException& e) {
     finished_index = e.value;
     status         = MSG_TIMEOUT;
-  } catch (simgrid::CancelException& e) {
+  } catch (const simgrid::CancelException& e) {
     finished_index = e.value;
     status         = MSG_TASK_CANCELED;
-  } catch (xbt_ex& e) {
-    if (e.category != network_error)
-      throw;
+  } catch (const simgrid::NetworkFailureException& e) {
     finished_index = e.value;
     status         = MSG_TRANSFER_FAILURE;
   }
@@ -153,7 +144,7 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
   return comm->wait_for(timeout);
 }
 
-/** @brief This function is called by a sender and permit to wait for each communication
+/** @brief This function is called by a sender and permits waiting for each communication
  *
  * @param comm a vector of communication
  * @param nb_elem is the size of the comm vector
@@ -180,25 +171,21 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach (comms, cursor, comm) {
-    s_comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(comm->s_comm->get_impl().get()));
+    s_comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(comm->s_comm->get_impl()));
   }
 
   msg_error_t status = MSG_OK;
   try {
     finished_index = simcall_comm_waitany(s_comms.data(), s_comms.size(), -1);
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutException& e) {
     finished_index = e.value;
     status         = MSG_TIMEOUT;
-  } catch (simgrid::CancelException& e) {
+  } catch (const simgrid::CancelException& e) {
     finished_index = e.value;
     status         = MSG_TASK_CANCELED;
-  } catch (xbt_ex& e) {
-    if (e.category == network_error) {
-      finished_index = e.value;
-      status         = MSG_TRANSFER_FAILURE;
-    } else {
-      throw;
-    }
+  } catch (const simgrid::NetworkFailureException& e) {
+    finished_index = e.value;
+    status         = MSG_TRANSFER_FAILURE;
   }
 
   xbt_assert(finished_index != -1, "WaitAny returned -1");

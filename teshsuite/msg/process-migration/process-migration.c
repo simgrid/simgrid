@@ -11,7 +11,7 @@ msg_bar_t barrier;
 static msg_process_t controlled_process = NULL;
 
 /* The Emigrant process will be moved from host to host. */
-static int emigrant(int argc, char* argv[])
+static int emigrant(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("I'll look for a new job on another machine ('Boivin') where the grass is greener.");
   MSG_process_migrate(MSG_process_self(), MSG_host_by_name("Boivin")); /* - First, move to another host by myself */
@@ -35,7 +35,7 @@ static int emigrant(int argc, char* argv[])
 }
 
 /* The policeman check for emigrants and move them back to 'Jacquelin' */
-static int policeman(int argc, char* argv[])
+static int policeman(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Wait at the checkpoint."); /* - block on the mutex+condition */
   MSG_barrier_wait(barrier);

@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/sg_config.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/instr/instr_smpi.hpp"
@@ -30,7 +31,9 @@ void dump_comment_file(const std::string& filename)
   std::ifstream fs(filename.c_str(), std::ifstream::in);
 
   if (fs.fail())
-    THROWF(system_error, 1, "Comment file %s could not be opened for reading.", filename.c_str());
+    throw simgrid::TracingError(
+        XBT_THROW_POINT,
+        simgrid::xbt::string_printf("Comment file %s could not be opened for reading.", filename.c_str()));
 
   while (not fs.eof()) {
     std::string line;
@@ -66,20 +69,6 @@ void TRACE_paje_dump_buffer(bool force)
     buffer.erase(buffer.begin(), i);
   }
   XBT_DEBUG("%s: ends", __func__);
-}
-
-static void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf)
-{
-  if (not XBT_LOG_ISENABLED(instr_paje_trace, xbt_log_priority_debug))
-    return;
-  XBT_DEBUG(">>>>>> Dump the state of the buffer. %zu events", buf->size());
-  for (auto const& event : *buf) {
-    event->print();
-    XBT_DEBUG("%p %s", event, event->stream_.str().c_str());
-    event->stream_.str("");
-    event->stream_.clear();
-  }
-  XBT_DEBUG("<<<<<<");
 }
 
 /* internal do the instrumentation module */

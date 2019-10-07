@@ -1,6 +1,6 @@
 p Test pingpong
 ! output sort
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -s --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 >     *** Ping-pong test (MPI_Send/MPI_Recv) ***
 >
 >

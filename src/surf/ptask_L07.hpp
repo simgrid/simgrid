@@ -42,18 +42,18 @@ public:
 
   double next_occuring_event(double now) override;
   void update_actions_state(double now, double delta) override;
-  kernel::resource::Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
-                                             const double* bytes_amount, double rate) override;
+  kernel::resource::CpuAction* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
+                                                const double* bytes_amount, double rate) override;
 };
 
-class CpuL07Model : public CpuModel {
+class CpuL07Model : public kernel::resource::CpuModel {
 public:
   CpuL07Model(HostL07Model* hmodel, kernel::lmm::System* sys);
   CpuL07Model(const CpuL07Model&) = delete;
   CpuL07Model& operator=(const CpuL07Model&) = delete;
   ~CpuL07Model();
 
-  Cpu* create_cpu(simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) override;
+  kernel::resource::Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) override;
   HostL07Model *hostModel_;
 };
 
@@ -63,8 +63,8 @@ public:
   NetworkL07Model(const NetworkL07Model&) = delete;
   NetworkL07Model& operator=(const NetworkL07Model&) = delete;
   ~NetworkL07Model();
-  kernel::resource::LinkImpl* create_link(const std::string& name, double bandwidth, double latency,
-                                          s4u::Link::SharingPolicy policy) override;
+  kernel::resource::LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths,
+                                          double latency, s4u::Link::SharingPolicy policy) override;
 
   kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
 
@@ -75,7 +75,7 @@ public:
  * Resource *
  ************/
 
-class CpuL07 : public Cpu {
+class CpuL07 : public kernel::resource::Cpu {
 public:
   CpuL07(CpuL07Model* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core);
   CpuL07(const CpuL07&) = delete;
@@ -83,13 +83,13 @@ public:
   ~CpuL07() override;
   bool is_used() override;
   void apply_event(kernel::profile::Event* event, double value) override;
-  kernel::resource::Action* execution_start(double size) override;
-  kernel::resource::Action* execution_start(double, int) override
+  kernel::resource::CpuAction* execution_start(double size) override;
+  kernel::resource::CpuAction* execution_start(double, int) override
   {
     THROW_UNIMPLEMENTED;
     return nullptr;
   }
-  kernel::resource::Action* sleep(double duration) override;
+  kernel::resource::CpuAction* sleep(double duration) override;
 
 protected:
   void on_speed_change() override;
@@ -111,11 +111,11 @@ public:
 /**********
  * Action *
  **********/
-class L07Action : public CpuAction {
-  friend Action *CpuL07::execution_start(double size);
-  friend Action *CpuL07::sleep(double duration);
-  friend Action* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
-                                                const double* bytes_amount, double rate);
+class L07Action : public kernel::resource::CpuAction {
+  friend CpuAction* CpuL07::execution_start(double size);
+  friend CpuAction* CpuL07::sleep(double duration);
+  friend CpuAction* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
+                                                   const double* bytes_amount, double rate);
   friend Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
 
 public:
@@ -140,7 +140,7 @@ private:
                              // exec and regular comms
 };
 
-}
-}
+} // namespace surf
+} // namespace simgrid
 
 #endif /* HOST_L07_HPP_ */

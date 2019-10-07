@@ -50,7 +50,7 @@
 #define MPIR_Reduce_redscat_gather_MV2 Coll_reduce_scatter_gather::reduce
 #define MPIR_Reduce_shmem_MV2 Coll_reduce_ompi_basic_linear::reduce
 
-extern int (*MV2_Reduce_function)( void *sendbuf,
+extern int (*MV2_Reduce_function)( const void *sendbuf,
     void *recvbuf,
     int count,
     MPI_Datatype datatype,
@@ -58,7 +58,7 @@ extern int (*MV2_Reduce_function)( void *sendbuf,
     int root,
     MPI_Comm  comm_ptr);
 
-extern int (*MV2_Reduce_intra_function)( void *sendbuf,
+extern int (*MV2_Reduce_intra_function)( const void *sendbuf,
     void *recvbuf,
     int count,
     MPI_Datatype datatype,
@@ -68,14 +68,14 @@ extern int (*MV2_Reduce_intra_function)( void *sendbuf,
 
 
 /*Fn pointers for collectives */
-static int (*reduce_fn)(void *sendbuf,
+static int (*reduce_fn)(const void *sendbuf,
                              void *recvbuf,
                              int count,
                              MPI_Datatype datatype,
                              MPI_Op op, int root, MPI_Comm  comm);
 namespace simgrid{
 namespace smpi{
-int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
+int Coll_reduce_mvapich2_two_level::reduce( const void *sendbuf,
                                      void *recvbuf,
                                      int count,
                                      MPI_Datatype datatype,
@@ -88,7 +88,8 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
     int leader_comm_rank = -1, leader_comm_size = 0;
     MPI_Comm shmem_comm, leader_comm;
     int leader_root, leader_of_root;
-    void *in_buf = NULL, *out_buf = NULL, *tmp_buf = NULL;
+    const unsigned char* in_buf = nullptr;
+    unsigned char *out_buf = nullptr, *tmp_buf = nullptr;
     MPI_Aint true_lb, true_extent, extent;
     int is_commutative = 0, stride = 0;
     int intra_node_root=0;
@@ -126,29 +127,29 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
         if (stride <= MV2_INTRA_SHMEM_REDUCE_MSG &&
             is_commutative == 1) {
             if (local_rank == 0 ) {
-                tmp_buf = (void*)smpi_get_tmp_sendbuffer(count * std::max(extent, true_extent));
-                tmp_buf = (void *) ((char *) tmp_buf - true_lb);
+              tmp_buf = smpi_get_tmp_sendbuffer(count * std::max(extent, true_extent));
+              tmp_buf = tmp_buf - true_lb;
             }
 
             if (sendbuf != MPI_IN_PLACE) {
-                in_buf = (void *)sendbuf;
+              in_buf = static_cast<const unsigned char*>(sendbuf);
             } else {
-                in_buf = recvbuf;
+              in_buf = static_cast<const unsigned char*>(recvbuf);
             }
 
             if (local_rank == 0) {
                  if( my_rank != root) {
                      out_buf = tmp_buf;
                  } else {
-                     out_buf = recvbuf;
-                     if(in_buf == out_buf) {
-                        in_buf = MPI_IN_PLACE;
-                        out_buf = recvbuf;
+                   out_buf = static_cast<unsigned char*>(recvbuf);
+                   if (in_buf == out_buf) {
+                     in_buf  = static_cast<const unsigned char*>(MPI_IN_PLACE);
+                     out_buf = static_cast<unsigned char*>(recvbuf);
                      }
                  }
             } else {
-                in_buf  = (void *)sendbuf;
-                out_buf = NULL;
+              in_buf  = static_cast<const unsigned char*>(sendbuf);
+              out_buf = nullptr;
             }
 
             if (count * (std::max(extent, true_extent)) < SHMEM_COLL_BLOCK_SIZE) {
@@ -177,8 +178,8 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
                                   root, comm);
         }
         /* We are done */
-        if(tmp_buf!=NULL)
-          smpi_free_tmp_buffer((void *) ((char *) tmp_buf + true_lb));
+        if (tmp_buf != nullptr)
+          smpi_free_tmp_buffer(tmp_buf + true_lb);
         goto fn_exit;
     }
 
@@ -190,18 +191,18 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
         }
         leader_comm_size = leader_comm->size();
         leader_comm_rank = leader_comm->rank();
-        tmp_buf          = (void*)smpi_get_tmp_sendbuffer(count * std::max(extent, true_extent));
-        tmp_buf = (void *) ((char *) tmp_buf - true_lb);
+        tmp_buf          = smpi_get_tmp_sendbuffer(count * std::max(extent, true_extent));
+        tmp_buf          = tmp_buf - true_lb;
     }
     if (sendbuf != MPI_IN_PLACE) {
-        in_buf = (void *)sendbuf;
+      in_buf = static_cast<const unsigned char*>(sendbuf);
     } else {
-        in_buf = recvbuf;
+      in_buf = static_cast<const unsigned char*>(recvbuf);
     }
     if (local_rank == 0) {
-        out_buf = tmp_buf;
+      out_buf = static_cast<unsigned char*>(tmp_buf);
     } else {
-        out_buf = NULL;
+      out_buf = nullptr;
     }
 
 
@@ -228,8 +229,8 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
                                       intra_node_root, shmem_comm);
         }
     } else {
-        smpi_free_tmp_buffer((void *) ((char *) tmp_buf + true_lb));
-        tmp_buf = in_buf;
+      smpi_free_tmp_buffer(tmp_buf + true_lb);
+      tmp_buf = (unsigned char*)in_buf; // xxx
     }
 
     /* Now work on the inter-leader phase. Data is in tmp_buf */
@@ -243,28 +244,26 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
                  * root of the reduce op. So, I will write the
                  * final result directly into my recvbuf */
                 if(tmp_buf != recvbuf) {
-                    in_buf = tmp_buf;
-                    out_buf = recvbuf;
+                  in_buf  = tmp_buf;
+                  out_buf = static_cast<unsigned char*>(recvbuf);
                 } else {
 
-                     in_buf = (char *)smpi_get_tmp_sendbuffer(count*
-                                       datatype->get_extent());
-                     Datatype::copy(tmp_buf, count, datatype,
-                                        in_buf, count, datatype);
-                    //in_buf = MPI_IN_PLACE;
-                    out_buf = recvbuf;
+                  unsigned char* buf = smpi_get_tmp_sendbuffer(count * datatype->get_extent());
+                  Datatype::copy(tmp_buf, count, datatype, buf, count, datatype);
+                  // in_buf = MPI_IN_PLACE;
+                  in_buf  = buf;
+                  out_buf = static_cast<unsigned char*>(recvbuf);
                 }
             } else {
-                in_buf = (char *)smpi_get_tmp_sendbuffer(count*
-                                       datatype->get_extent());
-                Datatype::copy(tmp_buf, count, datatype,
-                                        in_buf, count, datatype);
-                //in_buf = MPI_IN_PLACE;
-                out_buf = tmp_buf;
+              unsigned char* buf = smpi_get_tmp_sendbuffer(count * datatype->get_extent());
+              Datatype::copy(tmp_buf, count, datatype, buf, count, datatype);
+              // in_buf = MPI_IN_PLACE;
+              in_buf  = buf;
+              out_buf = tmp_buf;
             }
         } else {
             in_buf = tmp_buf;
-            out_buf = NULL;
+            out_buf = nullptr;
         }
 
         /* inter-leader communication  */
@@ -275,20 +274,15 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
     }
 
     if (local_size > 1) {
-        /* Send the message to the root if the leader is not the
-         * root of the reduce operation. The reduced data is in tmp_buf */
-        if ((local_rank == 0) && (root != my_rank)
-            && (leader_root == leader_comm_rank)) {
-            Request::send(tmp_buf, count, datatype, root,
-                                     COLL_TAG_REDUCE+1, comm);
-        }
-        if ((local_rank != 0) && (root == my_rank)) {
-            Request::recv(recvbuf, count, datatype,
-                                     leader_of_root,
-                                     COLL_TAG_REDUCE+1, comm,
-                                     MPI_STATUS_IGNORE);
-        }
-      smpi_free_tmp_buffer((void *) ((char *) tmp_buf + true_lb));
+      /* Send the message to the root if the leader is not the
+       * root of the reduce operation. The reduced data is in tmp_buf */
+      if ((local_rank == 0) && (root != my_rank) && (leader_root == leader_comm_rank)) {
+        Request::send(tmp_buf, count, datatype, root, COLL_TAG_REDUCE + 1, comm);
+      }
+      if ((local_rank != 0) && (root == my_rank)) {
+        Request::recv(recvbuf, count, datatype, leader_of_root, COLL_TAG_REDUCE + 1, comm, MPI_STATUS_IGNORE);
+      }
+      smpi_free_tmp_buffer(tmp_buf + true_lb);
 
       if (leader_comm_rank == leader_root) {
         if (my_rank != root || (my_rank == root && tmp_buf == recvbuf)) {

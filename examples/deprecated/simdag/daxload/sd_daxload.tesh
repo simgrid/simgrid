@@ -2,7 +2,7 @@
 p Test the DAX loader on a small DAX instance
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/daxload/sd_daxload --log=no_loc ${srcdir:=.}/../../platforms/cluster_backbone.xml ${srcdir:=.}/daxload/smalldax.xml
+$ ${bindir:=.}/daxload/sd_daxload --log=no_loc ${srcdir:=.}/../../platforms/cluster_backbone.xml ${srcdir:=.}/daxload/smalldax.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [sd_daxparse/WARNING] Ignore file o1 size redefinition from 1000000 to 304
 > [0.000000] [sd_daxparse/WARNING] Ignore file o2 size redefinition from 1000000 to 304
@@ -127,7 +127,7 @@ $ cmake -E remove -f ${srcdir:=.}/dax.dot ${srcdir:=.}/daxload/smalldax.trace
 p Test the DAX loader with a DAX comprising a cycle.
 
 ! expect return 255
-$ $SG_TEST_EXENV ${bindir:=.}/daxload/sd_daxload --log=no_loc ${srcdir:=.}/../../platforms/cluster_backbone.xml ${srcdir:=.}/daxload/simple_dax_with_cycle.xml
+$ ${bindir:=.}/daxload/sd_daxload --log=no_loc ${srcdir:=.}/../../platforms/cluster_backbone.xml ${srcdir:=.}/daxload/simple_dax_with_cycle.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [sd_daxparse/WARNING] the task root is not marked
 > [0.000000] [sd_daxparse/WARNING] the task 1@task1 is in a cycle

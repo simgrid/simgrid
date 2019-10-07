@@ -74,7 +74,7 @@ public:
       schedule(std::move(continuation));
       break;
     case FutureStatus::not_ready:
-      // The future is not ready so we mast keep the continuation for
+      // The future is not ready so we must keep the continuation for
       // executing it later:
       continuation_ = std::move(continuation);
       break;
@@ -219,17 +219,6 @@ template <class T> void bind_promise(Promise<T>&& promise, Future<T> future)
 
 template <class T> Future<T> unwrap_future(Future<Future<T>> future);
 
-template <class T>
-XBT_ATTRIB_DEPRECATED_v323("Please use bind_promise") void bindPromise(Promise<T> promise, Future<T> future)
-{
-  bind_promise(promise, future);
-}
-template <class T>
-XBT_ATTRIB_DEPRECATED_v323("Please use unwrap_future") Future<T> unwrapFuture(Future<Future<T>> future)
-{
-  unwrap_future(future);
-}
-
 /** Result of some (probably) asynchronous operation in the SimGrid kernel
  *
  * @ref simgrid::simix::Future and @ref simgrid::simix::Future provide an
@@ -361,13 +350,6 @@ public:
         },
         std::move(promise), state, std::move(continuation)));
     return future;
-  }
-
-  template <class F>
-  XBT_ATTRIB_DEPRECATED_v323("Please use then_no_unwrap") auto thenNoUnwrap(F continuation)
-      -> Future<decltype(continuation(std::move(*this)))>
-  {
-    then_no_unwrap(continuation);
   }
 
   /** Attach a continuation to this future

@@ -35,8 +35,8 @@
       parameter(MPI_SOURCE=1)
       parameter(MPI_TAG=2)
       parameter(MPI_ERROR=3)
-      parameter(MPI_VERSION=2)
-      parameter(MPI_SUBVERSION=2)
+      parameter(MPI_VERSION=3)
+      parameter(MPI_SUBVERSION=1)
       parameter(MPI_LOCK_EXCLUSIVE=1)
       parameter(MPI_LOCK_SHARED=2)
       integer MPI_MODE_NOSTORE, MPI_MODE_NOPUT, MPI_MODE_NOPRECEDE
@@ -81,11 +81,8 @@
       parameter(MPI_COMM_NULL_DELETE_FN =0)
       integer MPI_COMM_DUP_FN
       parameter(MPI_COMM_DUP_FN =1)
-      integer MPI_WIN_NULL_COPY_FN, MPI_WIN_NULL_DELETE_FN
-      parameter(MPI_WIN_NULL_COPY_FN =0)
+      integer MPI_WIN_NULL_DELETE_FN
       parameter(MPI_WIN_NULL_DELETE_FN =0)
-      integer MPI_WIN_DUP_FN
-      parameter(MPI_WIN_DUP_FN =1)
       integer MPI_TYPE_NULL_COPY_FN, MPI_TYPE_NULL_DELETE_FN
       parameter(MPI_TYPE_NULL_COPY_FN =0)
       parameter(MPI_TYPE_NULL_DELETE_FN =0)
@@ -109,12 +106,6 @@
       parameter(MPI_UNIVERSE_SIZE=-7)
       parameter(MPI_LASTUSEDCODE=-8)
 
-      integer MPI_ERRORS_RETURN, MPI_ERRORS_ARE_FATAL
-      integer MPI_ERRHANDLER_NULL
-      parameter(MPI_ERRORS_RETURN=0)
-      parameter(MPI_ERRORS_ARE_FATAL=1)
-      parameter(MPI_ERRHANDLER_NULL=2)
-
 ! This should be equal to the number of int fields in MPI_Status
       integer MPI_STATUS_SIZE
       parameter(MPI_STATUS_SIZE=5)
@@ -122,15 +113,8 @@
       integer MPI_INTEGER_KIND
       parameter(MPI_INTEGER_KIND=4)
 
-      integer MPI_IN_PLACE
-      parameter(MPI_IN_PLACE=-100)
-      integer MPI_BOTTOM
-      parameter(MPI_BOTTOM=-200)
-      integer MPI_STATUS_IGNORE
-      parameter(MPI_STATUS_IGNORE=-300)
-      integer MPI_STATUSES_IGNORE
-      parameter(MPI_STATUSES_IGNORE=-400)
-
+      external MPI_IN_PLACE, MPI_BOTTOM
+      external MPI_STATUS_IGNORE, MPI_STATUSES_IGNORE
 
       integer MPI_BYTE, MPI_CHARACTER, MPI_LOGICAL
       integer MPI_INTEGER, MPI_INTEGER1, MPI_INTEGER2, MPI_INTEGER4
@@ -138,8 +122,8 @@
       integer MPI_DOUBLE_PRECISION, MPI_COMPLEX, MPI_DOUBLE_COMPLEX
       integer MPI_2INTEGER, MPI_LOGICAL1, MPI_LOGICAL2, MPI_LOGICAL4
       integer MPI_LOGICAL8, MPI_2REAL, MPI_2DOUBLE_PRECISION
-      integer MPI_AINT, MPI_OFFSET, MPI_COUNT
-      integer MPI_REAL16, MPI_PACKED
+      integer MPI_AINT, MPI_OFFSET, MPI_COUNT, MPI_REAL16
+      integer MPI_PACKED, MPI_COMPLEX8, MPI_COMPLEX16, MPI_COMPLEX32
 
       integer MPI_MAX, MPI_MIN, MPI_MAXLOC, MPI_MINLOC
       integer MPI_SUM, MPI_PROD, MPI_LAND, MPI_LOR, MPI_LXOR, MPI_BAND
@@ -150,7 +134,7 @@
       integer MPI_REQUEST_NULL,MPI_DATATYPE_NULL,MPI_OP_NULL
       integer MPI_COMM_NULL, MPI_COMM_WORLD, MPI_COMM_SELF
       integer MPI_GROUP_NULL, MPI_GROUP_EMPTY, MPI_WIN_NULL
-      integer MPI_INFO_NULL
+      integer MPI_INFO_NULL, MPI_ERRHANDLER_NULL
 
       parameter(MPI_REQUEST_NULL=-1)
       parameter(MPI_DATATYPE_NULL=-1)
@@ -161,6 +145,7 @@
       parameter(MPI_GROUP_NULL=-1)
       parameter(MPI_GROUP_EMPTY=-2)
       parameter(MPI_WIN_NULL=-1)
+      parameter(MPI_ERRHANDLER_NULL=-1)
 
       integer MPI_WIN_BASE, MPI_WIN_SIZE, MPI_WIN_DISP_UNIT
 
@@ -198,20 +183,26 @@
       parameter(MPI_COUNT=24)
       parameter(MPI_REAL16=25)
       parameter(MPI_PACKED=26)
+      parameter(MPI_COMPLEX8=27)
+      parameter(MPI_COMPLEX16=28)
+      parameter(MPI_COMPLEX32=29)
+      parameter(MPI_MAX=30)
+      parameter(MPI_MIN=31)
+      parameter(MPI_MAXLOC=32)
+      parameter(MPI_MINLOC=33)
+      parameter(MPI_SUM=34)
+      parameter(MPI_PROD=35)
+      parameter(MPI_LAND=36)
+      parameter(MPI_LOR=37)
+      parameter(MPI_LXOR=38)
+      parameter(MPI_BAND=39)
+      parameter(MPI_BOR=40)
+      parameter(MPI_BXOR=41)
 
-      parameter(MPI_MAX=27)
-      parameter(MPI_MIN=28)
-      parameter(MPI_MAXLOC=29)
-      parameter(MPI_MINLOC=30)
-      parameter(MPI_SUM=31)
-      parameter(MPI_PROD=32)
-      parameter(MPI_LAND=33)
-      parameter(MPI_LOR=34)
-      parameter(MPI_LXOR=35)
-      parameter(MPI_BAND=36)
-      parameter(MPI_BOR=37)
-      parameter(MPI_BXOR=38)
-
+      integer MPI_ERRORS_RETURN, MPI_ERRORS_ARE_FATAL
+      parameter(MPI_ERRORS_RETURN=42)
+      parameter(MPI_ERRORS_ARE_FATAL=43)
+      
       INTEGER MPI_ADDRESS_KIND, MPI_OFFSET_KIND
       PARAMETER (MPI_ADDRESS_KIND=@CMAKE_SIZEOF_VOID_P@)
       PARAMETER (MPI_OFFSET_KIND=@CMAKE_SIZEOF_VOID_P@)
@@ -274,23 +265,11 @@
       external MPI_BCAST, MPI_BARRIER, MPI_REDUCE, MPI_ALLREDUCE
       external MPI_SCATTER, MPI_GATHER, MPI_ALLGATHER, MPI_SCAN
       external MPI_ALLTOALL, MPI_GATHERV, MPI_SENDRECV
+      external MPI_WIN_DUP_FN, MPI_WIN_NULL_COPY_FN
 
       external MPI_WTIME
       external MPI_WTICK
 
       double precision MPI_WTIME
       double precision MPI_WTICK
-
-      external smpi_execute_flops
-      external smpi_execute
-      external smpi_get_host_power_peak_at
-      external smpi_get_host_current_power_peak
-      external smpi_get_host_nb_pstates
-      external smpi_set_host_pstate
-      external smpi_get_host_consumed_energy
-
-      double precision smpi_get_host_power_peak_at
-      double precision smpi_get_host_current_power_peak
-      integer smpi_get_host_nb_pstates
-      double precision smpi_get_host_consumed_energy
 @MODULE_MPIF_OUT@

@@ -110,8 +110,6 @@ set(umpire_src_other
   change-send-buffer-type-exhaustive.c
   collective-exhaustive-byte-int-mismatch.c
   collective-exhaustive-no-error.c
-  collective-misorder.c
-  collective-misorder2.c
 
   deadlock-config_blocking.c
   errhandler-no-error.c
@@ -226,7 +224,7 @@ if(enable_smpi AND enable_model-checking AND enable_smpi_ISP_testsuite)
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! timeout 30"     )
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! expect return 3" APPEND)
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! output display"  APPEND)
-    write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "\$ \${bindir:=.}/../../../../smpi_script/bin/smpirun -wrapper \"\${bindir:=.}/../../../../bin/simgrid-mc\" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=smpi/host-speed:1e9 --cfg=smpi/coll-selector:ompi \${bindir:=.}/${test} --log=smpi_coll.thresh:error" APPEND)
+    write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "\$ \${bindir:=.}/../../../../smpi_script/bin/smpirun -wrapper \"\${bindir:=.}/../../../../bin/simgrid-mc\" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=smpi/buffering:zero --cfg=smpi/coll-selector:ompi \${bindir:=.}/${test} --log=smpi_coll.thresh:error" APPEND)
   endforeach()
 endif()
 

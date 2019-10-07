@@ -72,13 +72,12 @@ namespace smpi{
 
 
 int
-Coll_allgather_spreading_simple::allgather(void *send_buff, int send_count,
+Coll_allgather_spreading_simple::allgather(const void *send_buff, int send_count,
                                            MPI_Datatype send_type,
                                            void *recv_buff, int recv_count,
                                            MPI_Datatype recv_type,
                                            MPI_Comm comm)
 {
-  MPI_Request *reqs, *req_ptr;
   MPI_Aint extent;
   int i, src, dst, rank, num_procs, num_reqs;
   int tag = COLL_TAG_ALLGATHER;
@@ -90,14 +89,8 @@ Coll_allgather_spreading_simple::allgather(void *send_buff, int send_count,
   extent = send_type->get_extent();
 
   num_reqs = (2 * num_procs) - 2;
-  reqs = (MPI_Request *) xbt_malloc(num_reqs * sizeof(MPI_Request));
-  if (not reqs) {
-    printf("allgather-spreading-simple.c:40: cannot allocate memory\n");
-    MPI_Finalize();
-    exit(0);
-  }
-
-  req_ptr = reqs;
+  MPI_Request* reqs    = new MPI_Request[num_reqs];
+  MPI_Request* req_ptr = reqs;
   Request::sendrecv(send_buff, send_count, send_type, rank, tag,
                (char *) recv_buff + rank * recv_count * extent, recv_count,
                recv_type, rank, tag, comm, &status);
@@ -118,7 +111,7 @@ Coll_allgather_spreading_simple::allgather(void *send_buff, int send_count,
   }
 
   Request::waitall(num_reqs, reqs, MPI_STATUSES_IGNORE);
-  free(reqs);
+  delete[] reqs;
 
   return MPI_SUCCESS;
 }

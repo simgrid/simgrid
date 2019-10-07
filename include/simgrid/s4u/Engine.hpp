@@ -6,10 +6,6 @@
 #ifndef SIMGRID_S4U_ENGINE_HPP
 #define SIMGRID_S4U_ENGINE_HPP
 
-#include <string>
-#include <utility>
-#include <vector>
-
 #include <xbt/base.h>
 #include <xbt/functional.hpp>
 
@@ -17,6 +13,10 @@
 #include <simgrid/simix.hpp>
 
 #include <simgrid/s4u/NetZone.hpp>
+
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace simgrid {
 namespace s4u {
@@ -87,6 +87,7 @@ protected:
 #ifndef DOXYGEN
   friend Host;
   friend Link;
+  friend Disk;
   friend Storage;
   friend kernel::routing::NetPoint;
   friend kernel::routing::NetZoneImpl;
@@ -154,156 +155,27 @@ public:
    */
   void set_config(const std::string& str);
 
+  /** Callback fired when the platform is created (ie, the xml file parsed),
+   * right before the actual simulation starts. */
+  static xbt::signal<void()> on_platform_created;
+
+  /** Callback fired when the platform is about to be created
+   * (ie, after any configuration change and just before the resource creation) */
+  static xbt::signal<void()> on_platform_creation;
+
+  /** Callback fired when the main simulation loop ends, just before the end of Engine::run() */
+  static xbt::signal<void()> on_simulation_end;
+
+  /** Callback fired when the time jumps into the future */
+  static xbt::signal<void(double)> on_time_advance;
+
+  /** Callback fired when the time cannot advance because of inter-actors deadlock */
+  static xbt::signal<void(void)> on_deadlock;
+
 private:
   kernel::EngineImpl* const pimpl;
   static Engine* instance_;
-
-  //////////////// Deprecated functions
-#ifndef DOXYGEN
-public:
-  /** @deprecated See Engine::load_platform() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::load_platform()") void loadPlatform(const std::string& platf)
-  {
-    load_platform(platf);
-  }
-  /** @deprecated See Engine::register_function() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_function()") void registerFunction(const std::string& name,
-                                                                                             int (*code)(int, char**))
-  {
-    register_function(name, code);
-  }
-  /** @deprecated See Engine::register_default() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_default()") void registerDefault(int (*code)(int, char**))
-  {
-    register_default(code);
-  }
-  /** @deprecated See Engine::register_actor() */
-  template <class F>
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_actor()") void registerFunction(const std::string& name)
-  {
-    register_actor<F>(name);
-  }
-  /** @deprecated See Engine::register_actor() */
-  template <class F>
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_actor()") void registerFunction(const std::string& name,
-                                                                                          F code)
-  {
-    register_actor<F>(name, code);
-  }
-
-  /** @deprecated See Engine::load_deployment() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::load_deployment()") void loadDeployment(const std::string& deploy)
-  {
-    load_deployment(deploy);
-  }
-  /** @deprecated See Engine::host_by_name() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::host_by_name()") simgrid::s4u::Host* hostByName(
-      const std::string& name)
-  {
-    return host_by_name(name);
-  }
-  /** @deprecated See Engine::host_by_name_or_null() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::host_by_name_or_null()") simgrid::s4u::Host* hostByNameOrNull(
-      const std::string& name)
-  {
-    return host_by_name_or_null(name);
-  }
-  /** @deprecated See Engine::storage_by_name() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::storage_by_name()") simgrid::s4u::Storage* storageByName(
-      const std::string& name)
-  {
-    return storage_by_name(name);
-  }
-  /** @deprecated See Engine::storage_by_name_or_null() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::storage_by_name_or_null()") simgrid::s4u::Storage* storageByNameOrNull(
-      const std::string& name)
-  {
-    return storage_by_name_or_null(name);
-  }
-
-  /** @deprecated See Engine::get_host_count() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_host_count()") size_t getHostCount() { return get_host_count(); }
-  /** @deprecated See Engine::get_all_hosts() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_all_hosts()") std::vector<Host*> getAllHosts()
-  {
-    return get_all_hosts();
-  }
-  /** @deprecated See Engine::get_link_count() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_link_count()") size_t getLinkCount() { return get_link_count(); }
-  /** @deprecated See Engine::get_link_list() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_link_list()") std::vector<Link*> getAllLinks()
-  {
-    return get_all_links();
-  }
-  /** @deprecated See Engine::get_all_storages() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_all_storages()") std::vector<Storage*> getAllStorages()
-  {
-    return get_all_storages();
-  }
-  /** @deprecated See Engine::get_clock() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_clock()") static double getClock() { return get_clock(); }
-  /** @deprecated See Engine::get_all_netpoints() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_all_netpoints()") void getNetpointList(
-      std::vector<simgrid::kernel::routing::NetPoint*>* list);
-  /** @deprecated See Engine::netpoint_by_name_or_null() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::netpoint_by_name_or_null()")
-      simgrid::kernel::routing::NetPoint* getNetpointByNameOrNull(const std::string& name)
-  {
-    return netpoint_by_name_or_null(name);
-  }
-  /** @deprecated See Engine::get_netzone_root() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_netzone_root()") simgrid::s4u::NetZone* getNetRoot()
-  {
-    return get_netzone_root();
-  }
-  /** @deprecated See Engine::netzone_by_name_or_null() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::netzone_by_name_or_null()")
-      simgrid::s4u::NetZone* getNetzoneByNameOrNull(const std::string& name)
-  {
-    return netzone_by_name_or_null(name);
-  }
-  /** @deprecated See Engine::filter_netzones_by_type() */
-  template <class T>
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::filter_netzones_by_type()") void getNetzoneByType(
-      std::vector<T*>* whereto)
-  {
-    get_filtered_netzones_recursive(get_netzone_root(), whereto);
-  }
-
-  /** @deprecated See Engine::get_instance() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_instance()") static s4u::Engine* getInstance()
-  {
-    return get_instance();
-  }
-  /** @deprecated See Engine::is_initialized() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::is_initialized()") static bool isInitialized()
-  {
-    return is_initialized();
-  }
-  /** @deprecated See Engine::set_config() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::set_config()") void setConfig(const std::string& str)
-  {
-    set_config(str);
-  }
-#endif
 };
-
-/** Callback fired when the platform is created (ie, the xml file parsed),
- * right before the actual simulation starts. */
-extern XBT_PUBLIC xbt::signal<void()> on_platform_created;
-
-/** Callback fired when the platform is about to be created
- * (ie, after any configuration change and just before the resource creation) */
-extern XBT_PUBLIC xbt::signal<void()> on_platform_creation;
-
-/** Callback fired when the main simulation loop ends, just before the end of Engine::run() */
-extern XBT_PUBLIC xbt::signal<void()> on_simulation_end;
-
-/** Callback fired when the time jumps into the future */
-extern XBT_PUBLIC xbt::signal<void(double)> on_time_advance;
-
-/** Callback fired when the time cannot advance because of inter-actors deadlock */
-extern XBT_PUBLIC xbt::signal<void(void)> on_deadlock;
 
 #ifndef DOXYGEN /* Internal use only, no need to expose it */
 template <class T> XBT_PRIVATE void get_filtered_netzones_recursive(s4u::NetZone* current, std::vector<T*>* whereto)

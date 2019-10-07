@@ -26,8 +26,7 @@ test5 2
 lockcontention 3
 lockcontention2 4
 lockcontention2 8
-#Buggy one.
-#lockcontention3 8
+lockcontention3 8
 lockopts 2
 lock_dt 2
 lock_dt_flush 2
@@ -56,8 +55,7 @@ test1_dt 2 timeLimit=30
 #Needs post/start
 nullpscw 7
 attrorderwin 1
-#Needs MPI_Win_call_errhandler
-#wincall 2
+wincall 2
 baseattrwin 1
 fkeyvalwin 1
 selfrma 1
@@ -132,7 +130,7 @@ acc-loc 4
 #fence_shm 2 mpiversion=3.0
 #mutex_bench 4 mpiversion=3.0
 #mutex_bench_shared 4 mpiversion=3.0
-win_shared_zerobyte 4 mpiversion=3.0
+#win_shared_zerobyte 4 mpiversion=3.0
 win_shared_put_flush_get 4 mpiversion=3.0
 get-struct 2
 at_complete 2

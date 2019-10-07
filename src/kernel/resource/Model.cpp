@@ -13,20 +13,17 @@ namespace kernel {
 namespace resource {
 
 Model::Model(Model::UpdateAlgo algo) : update_algorithm_(algo) {}
-
-Model::~Model()
-{
-  delete inited_action_set_;
-  delete started_action_set_;
-  delete failed_action_set_;
-  delete finished_action_set_;
-  delete ignored_action_set_;
-  delete maxmin_system_;
-}
+Model::~Model() = default;
 
 Action::ModifiedSet* Model::get_modified_set() const
 {
   return maxmin_system_->modified_set_;
+}
+
+void Model::set_maxmin_system(lmm::System* system)
+{
+  maxmin_system_.release(); // ugly...
+  maxmin_system_.reset(system);
 }
 
 double Model::next_occuring_event(double now)
@@ -51,11 +48,11 @@ double Model::next_occuring_event_lazy(double now)
     maxmin_system_->modified_set_->pop_front();
     bool max_duration_flag = false;
 
-    if (action->get_state_set() != started_action_set_)
+    if (action->get_state_set() != &started_action_set_)
       continue;
 
     /* bogus priority, skip it */
-    if (action->get_priority() <= 0 || action->get_type() == ActionHeap::Type::latency)
+    if (action->get_sharing_penalty() <= 0 || action->get_type() == ActionHeap::Type::latency)
       continue;
 
     action->update_remains_lazy(now);
@@ -80,7 +77,7 @@ double Model::next_occuring_event_lazy(double now)
       max_duration_flag = true;
     }
 
-    XBT_DEBUG("Action(%p) corresponds to variable %d", action, action->get_variable()->id_int);
+    XBT_DEBUG("Action(%p) corresponds to variable %d", action, action->get_variable()->rank_);
 
     XBT_DEBUG("Action(%p) Start %f. May finish at %f (got a share of %f). Max_duration %f", action,
               action->get_start_time(), min, share, action->get_max_duration());

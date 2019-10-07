@@ -6,8 +6,10 @@
 #ifndef SIMGRID_S4U_MAILBOX_HPP
 #define SIMGRID_S4U_MAILBOX_HPP
 
-#include <xbt/string.hpp>
+#include <simgrid/forward.h>
+
 #include <simgrid/s4u/Actor.hpp>
+#include <xbt/string.hpp>
 
 #include <string>
 
@@ -26,7 +28,7 @@ class XBT_PUBLIC Mailbox {
 
 public:
   /** private function, do not use. FIXME: make me protected */
-  kernel::activity::MailboxImpl* get_impl() { return pimpl_; }
+  kernel::activity::MailboxImpl* get_impl() const { return pimpl_; }
 
   /** @brief Retrieves the name of that mailbox as a C++ string */
   const xbt::string& get_name() const;
@@ -93,36 +95,6 @@ public:
   void* get(); // FIXME: make a typed template version
   /** Blocking data reception with timeout */
   void* get(double timeout);
-
-  // Deprecated functions
-#ifndef DOXYGEN
-  /** @deprecated Mailbox::set_receiver() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::set_receiver()") void setReceiver(ActorPtr actor)
-  {
-    set_receiver(actor);
-  }
-  /** @deprecated Mailbox::get_receiver() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_receiver()") ActorPtr getReceiver() { return get_receiver(); }
-  /** @deprecated Mailbox::get_name() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_name()") const xbt::string& getName() const { return get_name(); }
-  /** @deprecated Mailbox::get_cname() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_cname()") const char* getCname() const { return get_cname(); }
-  /** @deprecated Mailbox::get_impl() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_impl()") kernel::activity::MailboxImpl* getImpl()
-  {
-    return get_impl();
-  }
-  /** @deprecated Mailbox::by_name() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::by_name()") static Mailbox* byName(const char* name)
-  {
-    return by_name(name);
-  }
-  /** @deprecated Mailbox::by_name() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::by_name()") static Mailbox* byName(const std::string& name)
-  {
-    return by_name(name);
-  }
-#endif
 };
 
 } // namespace s4u

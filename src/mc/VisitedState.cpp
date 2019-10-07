@@ -3,35 +3,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/mc/VisitedState.hpp"
+#include "src/mc/mc_private.hpp"
+
 #include <unistd.h>
 #include <sys/wait.h>
-
 #include <memory>
-
 #include <boost/range/algorithm.hpp>
-
-#include "xbt/log.h"
-#include "xbt/sysdep.h"
-
-#include "src/mc/VisitedState.hpp"
-#include "src/mc/mc_comm_pattern.hpp"
-#include "src/mc/mc_private.hpp"
-#include "src/mc/mc_smx.hpp"
-#include "src/mc/remote/RemoteClient.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_VisitedState, mc, "Logging specific to state equality detection mechanisms");
 
 namespace simgrid {
 namespace mc {
-
-static int snapshot_compare(simgrid::mc::VisitedState* state1, simgrid::mc::VisitedState* state2)
-{
-  simgrid::mc::Snapshot* s1 = state1->system_state.get();
-  simgrid::mc::Snapshot* s2 = state2->system_state.get();
-  int num1 = state1->num;
-  int num2 = state2->num;
-  return snapshot_compare(num1, s1, num2, s2);
-}
 
 /** @brief Save the current state */
 VisitedState::VisitedState(unsigned long state_number) : num(state_number)
@@ -43,7 +26,7 @@ VisitedState::VisitedState(unsigned long state_number) : num(state_number)
 
   this->actors_count = mc_model_checker->process().actors().size();
 
-  this->system_state = simgrid::mc::take_snapshot(state_number);
+  this->system_state = std::make_shared<simgrid::mc::Snapshot>(state_number);
   this->original_num = -1;
 }
 
@@ -63,22 +46,22 @@ void VisitedStates::prune()
 }
 
 /** @brief Checks whether a given state has already been visited by the algorithm. */
-std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(
-  unsigned long state_number, simgrid::mc::State* graph_state, bool compare_snpashots)
+std::unique_ptr<simgrid::mc::VisitedState>
+VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* graph_state, bool compare_snapshots)
 {
   std::unique_ptr<simgrid::mc::VisitedState> new_state =
     std::unique_ptr<simgrid::mc::VisitedState>(new VisitedState(state_number));
   graph_state->system_state = new_state->system_state;
-  XBT_DEBUG("Snapshot %p of visited state %d (exploration stack state %d)",
-    new_state->system_state.get(), new_state->num, graph_state->num);
+  XBT_DEBUG("Snapshot %p of visited state %d (exploration stack state %d)", new_state->system_state.get(),
+            new_state->num, graph_state->num_);
 
   auto range =
       boost::range::equal_range(states_, new_state.get(), simgrid::mc::DerefAndCompareByActorsCountAndUsedHeap());
 
-  if (compare_snpashots)
+  if (compare_snapshots)
     for (auto i = range.first; i != range.second; ++i) {
       auto& visited_state = *i;
-      if (snapshot_compare(visited_state.get(), new_state.get()) == 0) {
+      if (snapshot_equal(visited_state->system_state.get(), new_state->system_state.get())) {
         // The state has been visited:
 
         std::unique_ptr<simgrid::mc::VisitedState> old_state =

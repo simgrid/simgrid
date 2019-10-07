@@ -10,9 +10,9 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
   foreach(file anyall bottom eagerdt huge_anysrc huge_underflow inactivereq isendself isendirecv isendselfprobe issendselfcancel cancelanysrc pingping probenull
-          dtype_send greq1 probe-unexp rqstatus sendall sendflood sendrecv1 sendrecv2 sendrecv3 waitany-null waittestnull many_isend manylmt recv_any scancel scancel2 rcancel)
-    # not compiled files: big_count_status bsend1 bsend2 bsend3 bsend4 bsend5 bsendalign bsendfrag bsendpending mprobe
-    # cancelrecv  icsend large_message pscancel  rqfreeb   sendself scancel_unmatch
+          dtype_send greq1 probe-unexp rqstatus sendall sendflood sendrecv1 sendrecv2 sendrecv3 waitany-null waittestnull many_isend manylmt recv_any sendself scancel scancel2 rcancel bsend1 bsend2 bsend3 bsend4 bsend5 bsendalign bsendfrag bsendpending rqfreeb)
+    # not compiled files: big_count_status mprobe
+    # cancelrecv  icsend large_message pscancel     scancel_unmatch
     add_executable(${file} EXCLUDE_FROM_ALL ${file}.c)
     add_dependencies(tests ${file})
     target_link_libraries(${file} simgrid mtest_c)

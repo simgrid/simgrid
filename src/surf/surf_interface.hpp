@@ -6,6 +6,7 @@
 #ifndef SURF_MODEL_H_
 #define SURF_MODEL_H_
 
+#include "src/internal_config.h"
 #include "src/surf/surf_private.hpp"
 
 #include <cmath>
@@ -72,6 +73,9 @@ XBT_PUBLIC void surf_cpu_model_init_Cas01();
  *
  *  @see surf_host_model_init_SMPI()
  */
+#if !HAVE_SMPI
+XBT_ATTRIB_NORETURN
+#endif
 XBT_PUBLIC void surf_network_model_init_SMPI();
 
 /** @ingroup SURF_models
@@ -82,6 +86,9 @@ XBT_PUBLIC void surf_network_model_init_SMPI();
  *
  *  @see surf_host_model_init_IB()
  */
+#if !HAVE_SMPI
+XBT_ATTRIB_NORETURN
+#endif
 XBT_PUBLIC void surf_network_model_init_IB();
 
 /** @ingroup SURF_models
@@ -121,46 +128,10 @@ XBT_PUBLIC void surf_network_model_init_CM02();
  *
  *  @see surf_host_model_init_NS3()
  */
+#if !SIMGRID_HAVE_NS3
+XBT_ATTRIB_NORETURN
+#endif
 XBT_PUBLIC void surf_network_model_init_NS3();
-
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the network model Reno
- *
- *  The problem is related to max( sum( arctan(C * Df * xi) ) ).
- *
- *  Reference:
- *  [LOW03] S. H. Low. A duality model of TCP and queue management algorithms.
- *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
- *
- *  Call this function only if you plan using surf_host_model_init_compound.
- */
-XBT_PUBLIC void surf_network_model_init_Reno();
-
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the network model Reno2
- *
- *  The problem is related to max( sum( arctan(C * Df * xi) ) ).
- *
- *  Reference:
- *  [LOW01] S. H. Low. A duality model of TCP and queue management algorithms.
- *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
- *
- *  Call this function only if you plan using surf_host_model_init_compound.
- */
-XBT_PUBLIC void surf_network_model_init_Reno2();
-
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the network model Vegas
- *
- *  This problem is related to max( sum( a * Df * ln(xi) ) ) which is equivalent  to the proportional fairness.
- *
- *  Reference:
- *  [LOW03] S. H. Low. A duality model of TCP and queue management algorithms.
- *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
- *
- *  Call this function only if you plan using surf_host_model_init_compound.
- */
-XBT_PUBLIC void surf_network_model_init_Vegas();
 
 /** @ingroup SURF_models
  *  @brief Initializes the platform with the current best network and cpu models at hand
@@ -202,41 +173,44 @@ XBT_PUBLIC void surf_host_model_init_ptask_L07();
  */
 XBT_PUBLIC void surf_storage_model_init_default();
 
+XBT_PUBLIC void surf_disk_model_init_default();
+
 /* --------------------
  *  Model Descriptions
  * -------------------- */
 /** @brief Resource model description */
-struct surf_model_description {
+struct surf_model_description_t {
   const char* name;
   const char* description;
   void_f_void_t model_init_preparse;
 };
-typedef struct surf_model_description s_surf_model_description_t;
 
-XBT_PUBLIC int find_model_description(s_surf_model_description_t* table, const std::string& name);
-XBT_PUBLIC void model_help(const char* category, s_surf_model_description_t* table);
+XBT_PUBLIC int find_model_description(const std::vector<surf_model_description_t>& table, const std::string& name);
+XBT_PUBLIC void model_help(const char* category, const std::vector<surf_model_description_t>& table);
 
-#define SIMGRID_REGISTER_PLUGIN(id, desc, init)                       \
-  void simgrid_##id##_plugin_register();                              \
-  void XBT_ATTRIB_CONSTRUCTOR(800) simgrid_##id##_plugin_register() { \
-    simgrid_add_plugin_description(#id, desc, init);                  \
+#define SIMGRID_REGISTER_PLUGIN(id, desc, init)                                                                        \
+  static void XBT_ATTRIB_CONSTRUCTOR(800) _XBT_CONCAT3(simgrid_, id, _plugin_register)()                               \
+  {                                                                                                                    \
+    simgrid_add_plugin_description(_XBT_STRINGIFY(id), (desc), (init));                                                \
   }
 
 XBT_PUBLIC void simgrid_add_plugin_description(const char* name, const char* description, void_f_void_t init_fun);
 
 /** @brief The list of all available plugins */
-XBT_PUBLIC_DATA s_surf_model_description_t* surf_plugin_description;
+XBT_PUBLIC_DATA std::vector<surf_model_description_t>* surf_plugin_description;
 /** @brief The list of all available optimization modes (both for cpu and networks).
  *  These optimization modes can be set using --cfg=cpu/optim:... and --cfg=network/optim:... */
-XBT_PUBLIC_DATA s_surf_model_description_t surf_optimization_mode_description[];
+XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_optimization_mode_description;
 /** @brief The list of all cpu models (pick one with --cfg=cpu/model) */
-XBT_PUBLIC_DATA s_surf_model_description_t surf_cpu_model_description[];
+XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_cpu_model_description;
 /** @brief The list of all network models (pick one with --cfg=network/model) */
-XBT_PUBLIC_DATA s_surf_model_description_t surf_network_model_description[];
+XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_network_model_description;
+/** @brief The list of all disk models (pick one with --cfg=disk/model) */
+XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_disk_model_description;
 /** @brief The list of all storage models (pick one with --cfg=storage/model) */
-XBT_PUBLIC_DATA s_surf_model_description_t surf_storage_model_description[];
+XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_storage_model_description;
 /** @brief The list of all host models (pick one with --cfg=host/model:) */
-XBT_PUBLIC_DATA s_surf_model_description_t surf_host_model_description[];
+XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_host_model_description;
 
 /**********
  * Action *

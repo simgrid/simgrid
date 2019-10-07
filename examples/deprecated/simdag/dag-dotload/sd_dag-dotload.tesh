@@ -4,7 +4,7 @@ p Test the loader of DAG written in the DOT format
 # The order differ when executed with gcc's thread sanitizer
 ! output sort
 
-$ $SG_TEST_EXENV ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=.}/../../platforms/cluster_backbone.xml ${srcdir:=.}/dag-dotload/dag.dot
+$ ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=.}/../../platforms/cluster_backbone.xml ${srcdir:=.}/dag-dotload/dag.dot
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
 > [0.000000] [sd_task/INFO] Displaying task root
@@ -217,7 +217,7 @@ $ cat ${srcdir:=.}/dag-dotload/dag.trace
 $ rm -f ${srcdir:=.}/dag-dotload/dag.trace ${srcdir:=.}/dot.dot
 
 ! expect return 2
-$ $SG_TEST_EXENV ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=.}/../../platforms/cluster_backbone.xml ${srcdir:=.}/dag-dotload/dag_with_cycle.dot
+$ ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=.}/../../platforms/cluster_backbone.xml ${srcdir:=.}/dag-dotload/dag_with_cycle.dot
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [sd_daxparse/WARNING] the task root is not marked
 > [0.000000] [sd_daxparse/WARNING] the task 1 is in a cycle

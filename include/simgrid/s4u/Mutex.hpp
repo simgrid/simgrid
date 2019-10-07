@@ -31,12 +31,12 @@ class XBT_PUBLIC Mutex {
   friend kernel::activity::MutexImpl;
 
   kernel::activity::MutexImpl* const pimpl_;
-  explicit Mutex(kernel::activity::MutexImpl* mutex) : pimpl_(mutex) {}
   /* refcounting */
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Mutex* mutex);
   friend XBT_PUBLIC void intrusive_ptr_release(Mutex* mutex);
 
 public:
+  explicit Mutex(kernel::activity::MutexImpl* mutex) : pimpl_(mutex) {}
   ~Mutex();
   // No copy:
   /** You cannot create a new mutex by copying an existing one. Use MutexPtr instead */
@@ -49,12 +49,6 @@ public:
   void lock();
   void unlock();
   bool try_lock();
-
-#ifndef DOXYGEN
-  // deprecated
-  /** @deprecated Mutex::create() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mutex::create()") static MutexPtr createMutex() { return create(); }
-#endif
 };
 
 } // namespace s4u

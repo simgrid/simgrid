@@ -106,6 +106,13 @@ CommPtr Comm::set_dst_data(void** buff, size_t size)
   return this;
 }
 
+CommPtr Comm::set_tracing_category(const std::string& category)
+{
+  xbt_assert(state_ == State::INITED, "Cannot change the tracing category of an exec after its start");
+  tracing_category_ = category;
+  return this;
+}
+
 Comm* Comm::start()
 {
   xbt_assert(get_state() == State::INITED, "You cannot use %s() once your communication started (not implemented)",
@@ -193,7 +200,7 @@ Comm* Comm::detach()
 
 Comm* Comm::cancel()
 {
-  simix::simcall([this] {
+  kernel::actor::simcall([this] {
     if (pimpl_)
       boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->cancel();
   });
@@ -223,9 +230,9 @@ Mailbox* Comm::get_mailbox()
   return mailbox_;
 }
 
-ActorPtr Comm::get_sender()
+Actor* Comm::get_sender()
 {
-  return sender_ ? sender_->iface() : nullptr;
+  return sender_ ? sender_->ciface() : nullptr;
 }
 
 void intrusive_ptr_release(simgrid::s4u::Comm* c)

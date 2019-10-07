@@ -34,15 +34,12 @@
 #ifdef __MINGW32__
 #  include <stdio.h>
 
-#  define XBT_ATTRIB_PRINTF( format_idx, arg_idx )    \
-     __attribute__((__format__ (__MINGW_PRINTF_FORMAT, format_idx, arg_idx)))
-#  define XBT_ATTRIB_SCANF( format_idx, arg_idx )     \
-     __attribute__((__MINGW_SCANF_FORMAT (__scanf__, format_idx, arg_idx)))
+#define XBT_ATTRIB_PRINTF(format_idx, arg_idx)                                                                         \
+  __attribute__((__format__(__MINGW_PRINTF_FORMAT, (format_idx), (arg_idx))))
+#define XBT_ATTRIB_SCANF(format_idx, arg_idx) __attribute__((__MINGW_SCANF_FORMAT(__scanf__, (format_idx), (arg_idx))))
 #else
-#  define XBT_ATTRIB_PRINTF( format_idx, arg_idx )    \
-     __attribute__((__format__ (__printf__, format_idx, arg_idx)))
-#  define XBT_ATTRIB_SCANF( format_idx, arg_idx )     \
-     __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
+#define XBT_ATTRIB_PRINTF(format_idx, arg_idx) __attribute__((__format__(__printf__, (format_idx), (arg_idx))))
+#define XBT_ATTRIB_SCANF(format_idx, arg_idx) __attribute__((__format__(__scanf__, (format_idx), (arg_idx))))
 #endif
 
 #if defined(__cplusplus)
@@ -71,14 +68,10 @@
 #define XBT_ATTRIB_DEPRECATED(mesg) __attribute__((deprecated(mesg)))
 #endif
 
-#define XBT_ATTRIB_DEPRECATED_v323(mesg)                                                                               \
-  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped in v3.23)") /* Will be dropped in v3.23 */
-#define XBT_ATTRIB_DEPRECATED_v324(mesg)                                                                               \
-  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped in v3.24)") /* Will be dropped in v3.24 */
 #define XBT_ATTRIB_DEPRECATED_v325(mesg)                                                                               \
   XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped in v3.25)") /* Will be dropped in v3.25 */
-#define XBT_ATTRIB_DEPRECATED_v326(mesg)                                                                               \
-  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped in v3.26)") /* Will be dropped in v3.26 */
+#define XBT_ATTRIB_DEPRECATED_v327(mesg)                                                                               \
+  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped in v3.27)") /* Will be dropped in v3.27 */
 
 #if !defined(__APPLE__)
 #  define XBT_ATTRIB_CONSTRUCTOR(prio) __attribute__((__constructor__(prio)))
@@ -95,6 +88,15 @@
 #    define XBT_ALWAYS_INLINE inline
 #  endif
 #endif
+
+/* Stringify argument. */
+#define _XBT_STRINGIFY(a) #a
+
+/* Concatenate arguments. _XBT_CONCAT2 adds a level of indirection over _XBT_CONCAT. */
+#define _XBT_CONCAT(a, b) a##b
+#define _XBT_CONCAT2(a, b) _XBT_CONCAT(a, b)
+#define _XBT_CONCAT3(a, b, c) _XBT_CONCAT2(_XBT_CONCAT(a, b), c)
+#define _XBT_CONCAT4(a, b, c, d) _XBT_CONCAT2(_XBT_CONCAT3(a, b, c), d)
 
 /*
  * Expands to `one' if there is only one argument for the variadic part.

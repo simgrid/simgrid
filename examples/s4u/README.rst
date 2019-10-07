@@ -31,6 +31,7 @@ to simulate.
 Actors: the Active Entities
 ===========================
 
+.. _s4u_ex_actors:
 
 Starting and Stoping Actors
 ---------------------------
@@ -48,6 +49,7 @@ Starting and Stoping Actors
     of doing so, depending of whether you want your callback to be
     executed when a specific actor ends (with ```this_actor::on_exit()```)
     or whether it should be executed when any actor ends (with
+    ```Actor::on_termination()```) or when it gets destroyed (with
     ```Actor::on_destruction()```)
 
     - |cpp| `examples/s4u/actor-exiting/s4u-actor-exiting.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-exiting/s4u-actor-exiting.cpp>`_
@@ -79,6 +81,10 @@ Starting and Stoping Actors
     
 Inter-Actors Interactions
 -------------------------
+
+See also the examples on :ref:`inter-actors communications
+<s4u_ex_communication>` and the ones on :ref:`classical
+synchronization objects <s4u_ex_IPC>`.
 
   - **Suspend and Resume actors:**    
     Actors can be suspended and resumed during their executions.
@@ -143,11 +149,13 @@ also the tesh files in the example directories for details.
   - **I/O replay:**
     Presents a set of event handlers reproducing classical I/O
     primitives (open, read, close).
-    |br| `examples/s4u/replay-storage/s4u-replay-storage.cpp  <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/replay-storage/s4u-replay-storage.cpp>`_
+    |br| `examples/s4u/replay-io/s4u-replay-io.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/replay-io/s4u-replay-io.cpp>`_
 
 ==========================
 Activities: what Actors do
 ==========================
+
+.. _s4u_ex_communication:
 
 Communications on the Network
 -----------------------------
@@ -233,13 +241,13 @@ I/O on Disks and Files
 ----------------------
 
 SimGrid provides two levels of abstraction to interact with the
-simulated storages. At the simplest level, you simply create read and
-write actions on the storage resources.
+simulated disks. At the simplest level, you simply create read and
+write actions on the disk resources.
 
-  - **Access to raw storage devices:**
+  - **Access to raw disk devices:**
     This example illustrates how to simply read and write data on a
-    simulated storage resource.
-    |br| `examples/s4u/io-storage-raw/s4u-io-storage-raw.cpp  <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/io-storage-raw/s4u-io-storage-raw.cpp>`_
+    simulated disk resource.
+    |br| `examples/s4u/io-disk-raw/s4u-io-disk-raw.cpp  <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/io-disk-raw/s4u-io-disk-raw.cpp>`_
 
 The FileSystem plugin provides a more detailed view, with the
 classical operations over files: open, move, unlink, and of course
@@ -255,6 +263,8 @@ result in short reads and short write, as in reality.
     I/O operations on files can also be done in a remote fashion, 
     i.e. when the accessed disk is not mounted on the caller's host.
     |br| `examples/s4u/io-file-remote/s4u-io-file-remote.cpp  <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/io-file-remote/s4u-io-file-remote.cpp>`_
+
+.. _s4u_ex_IPC:
 
 Classical synchronization objects
 ---------------------------------
@@ -299,7 +309,7 @@ Interacting with the Platform
    resources must be turned off and on again, and how to react to such
    failures in your code.
    
-   |br| `examples/platforms/small_platform_with_failure.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/small_platform_with_failure.xml>`_
+   |br| `examples/platforms/small_platform_failures.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/small_platform_failures.xml>`_
    |br| The state profiles in `examples/platforms/profiles <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/profiles>`_
 
  - **Specifying speed profiles:** shows how to specify an external
@@ -398,7 +408,34 @@ Distributed Hash Tables (DHT)
     One of the most famous DHT protocol.
     |br| `examples/s4u/dht-chord/s4u-dht-chord.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/dht-chord/s4u-dht-chord.cpp>`_
 
-.. TODO:: document here the examples about plugins
+.. _s4u_ex_clouds:
+
+Simulating Clouds
+-----------------
+
+  - **Cloud basics**
+    This example starts some computations both on PMs and VMs, and
+    migrates some VMs around.
+    |br| `examples/s4u/cloud-simple/s4u-cloud-simple.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/cloud-simple/s4u-cloud-simple.cpp>`_
+
+.. TODO:: document here the examples about clouds and plugins
+
+=======================
+Model-Checking Examples
+=======================
+
+The model-checker can be used to exhaustively search for issues in the
+tested application. It must be activated at compile time, but this
+mode is rather experimental in SimGrid (as of v3.22). You should not
+enable it unless you really want to formally verify your applications:
+SimGrid is slower and maybe less robust when MC is enabled.
+
+  - **Failing assert**
+    In this example, two actors send some data to a central server,
+    which asserts that the messages are always received in the same order.
+    This is obviously wrong, and the model-checker correctly finds a
+    counter-example to that assertion.
+    |br| `examples/s4u/mc-failing-assert/s4u-mc-failing-assert.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/mc-failing-assert/s4u-mc-failing-assert.cpp>`_
 
 .. |br| raw:: html
 

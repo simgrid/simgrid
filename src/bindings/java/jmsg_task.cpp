@@ -61,7 +61,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_create(JNIEnv * env, jobject jt
 
   if (jname)
     name = env->GetStringUTFChars(jname, 0);
-  msg_task_t task = MSG_task_create(name, static_cast<double>(jflopsAmount), static_cast<double>(jbytesAmount), jtask);
+  msg_task_t task = MSG_task_create(name, jflopsAmount, jbytesAmount, jtask);
   if (jname)
     env->ReleaseStringUTFChars(jname, name);
 
@@ -73,7 +73,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_parallelCreate(JNIEnv * env, jo
                                          jobjectArray jhosts, jdoubleArray jcomputeDurations_arg,
                                          jdoubleArray jmessageSizes_arg)
 {
-  int host_count = static_cast<int>(env->GetArrayLength(jhosts));
+  int host_count = env->GetArrayLength(jhosts);
 
   jdouble* jcomputeDurations = env->GetDoubleArrayElements(jcomputeDurations_arg, 0);
   msg_host_t* hosts          = new msg_host_t[host_count];
@@ -234,7 +234,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setPriority(JNIEnv * env, jobje
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
-  MSG_task_set_priority(task, static_cast<double>(priority));
+  MSG_task_set_priority(task, priority);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setFlopsAmount (JNIEnv *env, jobject jtask, jdouble computationAmount)
@@ -245,7 +245,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setFlopsAmount (JNIEnv *env, jo
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
-  MSG_task_set_flops_amount(task, static_cast<double>(computationAmount));
+  MSG_task_set_flops_amount(task, computationAmount);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBytesAmount (JNIEnv *env, jobject jtask, jdouble dataSize)
@@ -257,7 +257,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBytesAmount (JNIEnv *env, jo
     return;
   }
   env->SetDoubleField(jtask, jtask_field_Task_messageSize, dataSize);
-  MSG_task_set_bytes_amount(task, static_cast<double>(dataSize));
+  MSG_task_set_bytes_amount(task, dataSize);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_sendBounded(JNIEnv * env,jobject jtask, jstring jalias,
@@ -273,8 +273,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_sendBounded(JNIEnv * env,jobjec
   MSG_task_set_data(task, (void *) env->NewGlobalRef(jtask));
 
   const char* alias = env->GetStringUTFChars(jalias, 0);
-  msg_error_t res =
-      MSG_task_send_with_timeout_bounded(task, alias, static_cast<double>(jtimeout), static_cast<double>(maxrate));
+  msg_error_t res   = MSG_task_send_with_timeout_bounded(task, alias, jtimeout, maxrate);
   env->ReleaseStringUTFChars(jalias, alias);
 
   if (res != MSG_OK)
@@ -340,8 +339,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receiveBounded(JNIEnv* env, 
   msg_task_t task = nullptr;
 
   const char *alias = env->GetStringUTFChars(jalias, 0);
-  msg_error_t res   = MSG_task_receive_ext_bounded(&task, alias, static_cast<double>(jtimeout), /*host*/ nullptr,
-                                                 static_cast<double>(rate));
+  msg_error_t res   = MSG_task_receive_ext_bounded(&task, alias, jtimeout, /*host*/ nullptr, rate);
   if (env->ExceptionOccurred())
     return nullptr;
   if (res != MSG_OK) {
@@ -377,7 +375,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecvBounded(JNIEnv * env, j
   }
 
   const char* mailbox = env->GetStringUTFChars(jmailbox, 0);
-  msg_comm_t comm     = MSG_task_irecv_bounded(task, mailbox, static_cast<double>(rate));
+  msg_comm_t comm     = MSG_task_irecv_bounded(task, mailbox, rate);
   env->ReleaseStringUTFChars(jmailbox, mailbox);
 
   env->SetLongField(jcomm, jtask_field_Comm_bind, (jlong) (uintptr_t)(comm));
@@ -517,7 +515,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_dsendBounded(JNIEnv * env, jobj
 
   /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
   MSG_task_set_data(task, (void *) env->NewGlobalRef(jtask));
-  MSG_task_dsend_bounded(task, alias, msg_task_cancel_on_failed_dsend,static_cast<double>(maxrate));
+  MSG_task_dsend_bounded(task, alias, msg_task_cancel_on_failed_dsend, maxrate);
 
   env->ReleaseStringUTFChars(jalias, alias);
 }

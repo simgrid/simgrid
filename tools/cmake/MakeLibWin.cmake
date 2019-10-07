@@ -17,7 +17,15 @@ else()
   set(SIMGRID_DEP "-lm")
 
   if (HAVE_BOOST_CONTEXTS)
-    set(SIMGRID_DEP "${SIMGRID_DEP} ${Boost_CONTEXT_LIBRARY}")
+    target_link_libraries(simgrid ${Boost_CONTEXT_LIBRARY})
+  endif()
+
+  if (HAVE_BOOST_STACKTRACE_BACKTRACE)
+    target_link_libraries(simgrid ${Boost_STACKTRACE_BACKTRACE_LIBRARY})
+  endif()
+
+  if (HAVE_BOOST_ADDR2LINE_BACKTRACE)
+    target_link_libraries(simgrid ${Boost_STACKTRACE_ADDR2LINE_LIBRARY})
   endif()
 endif()
 

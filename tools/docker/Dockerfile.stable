@@ -6,7 +6,7 @@ ARG DLURL
 # - Install SimGrid's dependencies
 # - Compile and install SimGrid itself
 RUN echo "DOWNLOAD_URL: ${DLURL}" && \
-    apt update && apt upgrade -y && apt install -y wget && \
+    apt-get --allow-releaseinfo-change update && apt upgrade -y && apt install -y wget && \
     mkdir /source && cd /source && \
     wget https://framagit.org/${DLURL} && \
     tar xf SimGrid-* && rm SimGrid-*tar.gz && \
@@ -19,5 +19,3 @@ RUN echo "DOWNLOAD_URL: ${DLURL}" && \
     apt remove -y  g++ gcc git valgrind default-jdk gfortran libboost-dev libboost-all-dev cmake dpkg-dev wget && \
     apt install `sed -e 's/shlibs:Depends=//' -e 's/([^)]*)//g' -e 's/,//g' /tmp/deps` && \
     apt autoremove -y && apt autoclean && apt clean
-
-    

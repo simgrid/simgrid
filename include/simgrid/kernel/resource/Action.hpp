@@ -75,9 +75,9 @@ public:
   };
 
   enum class SuspendStates {
-    not_suspended = 0, /**< Action currently not suspended **/
-    suspended,
-    sleeping
+    RUNNING = 0, /**< Action currently not suspended **/
+    SUSPENDED,
+    SLEEPING
   };
 
   /**
@@ -130,6 +130,11 @@ public:
   /** @brief Set the user data associated to the current action */
   void set_data(void* data) { data_ = data; }
 
+  /** @brief Get the user data associated to the current action */
+  activity::ActivityImpl* get_activity() const { return activity_; }
+  /** @brief Set the user data associated to the current action */
+  void set_activity(activity::ActivityImpl* activity) { activity_ = activity; }
+
   /** @brief Get the cost of the current action */
   double get_cost() const { return cost_; }
   /** @brief Set the cost of the current action */
@@ -171,8 +176,10 @@ public:
   /** @brief Resume the current Action */
   virtual void resume();
 
+  /** @brief Returns true if the current action is suspended */
+  bool is_suspended() const { return suspended_ == SuspendStates::SUSPENDED; }
   /** @brief Returns true if the current action is running */
-  bool is_suspended();
+  bool is_running() const { return suspended_ == SuspendStates::RUNNING; }
 
   /** @brief Get the maximum duration of the current action */
   double get_max_duration() const { return max_duration_; }
@@ -184,23 +191,22 @@ public:
   /** @brief Set the tracing category of the current Action */
   void set_category(const std::string& category) { category_ = category; }
 
-  /** @brief Get the priority of the current Action */
-  double get_priority() const { return sharing_priority_; };
-  /** @brief Set the priority of the current Action */
-  virtual void set_priority(double priority);
-  void set_priority_no_update(double priority) { sharing_priority_ = priority; }
+  /** @brief Get the sharing_penalty (RTT or 1/thread_count) of the current Action */
+  double get_sharing_penalty() const { return sharing_penalty_; };
+  /** @brief Set the sharing_penalty (RTT or 1/thread_count) of the current Action */
+  virtual void set_sharing_penalty(double sharing_penalty);
+  void set_sharing_penalty_no_update(double sharing_penalty) { sharing_penalty_ = sharing_penalty; }
 
   /** @brief Get the state set in which the action is */
   StateSet* get_state_set() const { return state_set_; };
 
   simgrid::kernel::resource::Model* get_model() const { return model_; }
 
-protected:
-  StateSet* state_set_;
-
 private:
+  StateSet* state_set_;
+  Action::SuspendStates suspended_ = Action::SuspendStates::RUNNING;
   int refcount_            = 1;
-  double sharing_priority_ = 1.0;             /**< priority (1.0 by default) */
+  double sharing_penalty_          = 1.0;             /**< priority (1.0 by default) */
   double max_duration_   = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
   double remains_;           /**< How much of that cost remains to be done in the currently running task */
   double start_time_;        /**< start time  */
@@ -209,7 +215,8 @@ private:
 
   double cost_;
   simgrid::kernel::resource::Model* model_;
-  void* data_ = nullptr; /**< for your convenience */
+  void* data_                       = nullptr; /**< for your convenience */
+  activity::ActivityImpl* activity_ = nullptr;
 
   /* LMM */
   double last_update_                                = 0;
@@ -230,9 +237,7 @@ public:
 
   double get_last_value() const { return last_value_; }
   void set_last_value(double val) { last_value_ = val; }
-
-protected:
-  Action::SuspendStates suspended_ = Action::SuspendStates::not_suspended;
+  void set_suspend_state(Action::SuspendStates state) { suspended_ = state; }
 };
 
 } // namespace resource

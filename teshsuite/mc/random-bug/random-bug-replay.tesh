@@ -1,0 +1,12 @@
+#!/usr/bin/env tesh
+$ ${bindir:=.}/random-bug printf ${platfdir}/small_platform.xml  --log=xbt_cfg.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" "--cfg=model-check/replay:1/3;1/4"
+> [  0.000000] (0:maestro@) Behavior: printf
+> [  0.000000] (0:maestro@) path=1/3;1/4
+> [  0.000000] (1:app@Fafard) Error reached
+
+# Behavior: assert does not have the same output within and without MC, so don't test it here. That's already covered with the other ones
+
+! expect signal SIGIOT
+$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/random-bug abort ${platfdir}/small_platform.xml --log=xbt_cfg.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" "--cfg=model-check/replay:1/3;1/4"
+> [  0.000000] (0:maestro@) Behavior: abort
+> [  0.000000] (0:maestro@) path=1/3;1/4

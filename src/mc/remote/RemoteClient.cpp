@@ -7,10 +7,10 @@
 
 #include "src/mc/remote/RemoteClient.hpp"
 
+#include "src/mc/mc_smx.hpp"
+#include "src/mc/sosp/Snapshot.hpp"
 #include "xbt/file.hpp"
 #include "xbt/log.h"
-#include "src/mc/mc_smx.hpp"
-#include "src/mc/sosp/mc_snapshot.hpp"
 
 #include <fcntl.h>
 #include <libunwind-ptrace.h>
@@ -42,6 +42,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libboost_chrono",
     "libboost_context",
     "libboost_context-mt",
+    "libboost_stacktrace_addr2line",
     "libboost_stacktrace_backtrace",
     "libboost_system",
     "libboost_thread",
@@ -200,13 +201,12 @@ void RemoteClient::init()
   this->memory_file = fd;
 
   // Read std_heap (is a struct mdesc*):
-  simgrid::mc::Variable* std_heap_var = this->find_variable("__mmalloc_default_mdp");
+  const simgrid::mc::Variable* std_heap_var = this->find_variable("__mmalloc_default_mdp");
   if (not std_heap_var)
     xbt_die("No heap information in the target process");
   if (not std_heap_var->address)
     xbt_die("No constant address for this variable");
-  this->read_bytes(&this->heap_address, sizeof(mdesc*), remote(std_heap_var->address),
-                   simgrid::mc::ProcessIndexDisabled);
+  this->read_bytes(&this->heap_address, sizeof(mdesc*), remote(std_heap_var->address));
 
   this->smx_actors_infos.clear();
   this->smx_dead_actors_infos.clear();
@@ -240,7 +240,7 @@ void RemoteClient::refresh_heap()
   // Read/dereference/refresh the std_heap pointer:
   if (not this->heap)
     this->heap.reset(new s_xbt_mheap_t());
-  this->read_bytes(this->heap.get(), sizeof(mdesc), remote(this->heap_address), simgrid::mc::ProcessIndexDisabled);
+  this->read_bytes(this->heap.get(), sizeof(mdesc), remote(this->heap_address));
   this->cache_flags_ |= RemoteClient::cache_heap;
 }
 
@@ -257,8 +257,7 @@ void RemoteClient::refresh_malloc_info()
   size_t count = this->heap->heaplimit + 1;
   if (this->heap_info.size() < count)
     this->heap_info.resize(count);
-  this->read_bytes(this->heap_info.data(), count * sizeof(malloc_info), remote(this->heap->heapinfo),
-                   simgrid::mc::ProcessIndexDisabled);
+  this->read_bytes(this->heap_info.data(), count * sizeof(malloc_info), remote(this->heap->heapinfo));
   this->cache_flags_ |= RemoteClient::cache_malloc;
 }
 
@@ -365,7 +364,7 @@ simgrid::mc::Frame* RemoteClient::find_function(RemotePtr<void> ip) const
 
 /** Find (one occurrence of) the named variable definition
  */
-simgrid::mc::Variable* RemoteClient::find_variable(const char* name) const
+const simgrid::mc::Variable* RemoteClient::find_variable(const char* name) const
 {
   // First lookup the variable in the executable shared object.
   // A global variable used directly by the executable code from a library
@@ -373,13 +372,13 @@ simgrid::mc::Variable* RemoteClient::find_variable(const char* name) const
   // We need to look up the variable in the executable first.
   if (this->binary_info) {
     std::shared_ptr<simgrid::mc::ObjectInformation> const& info = this->binary_info;
-    simgrid::mc::Variable* var                                  = info->find_variable(name);
+    const simgrid::mc::Variable* var                            = info->find_variable(name);
     if (var)
       return var;
   }
 
   for (std::shared_ptr<simgrid::mc::ObjectInformation> const& info : this->object_infos) {
-    simgrid::mc::Variable* var = info->find_variable(name);
+    const simgrid::mc::Variable* var = info->find_variable(name);
     if (var)
       return var;
   }
@@ -389,7 +388,8 @@ simgrid::mc::Variable* RemoteClient::find_variable(const char* name) const
 
 void RemoteClient::read_variable(const char* name, void* target, size_t size) const
 {
-  simgrid::mc::Variable* var = this->find_variable(name);
+  const simgrid::mc::Variable* var = this->find_variable(name);
+  xbt_assert(var, "Variable %s not found", name);
   xbt_assert(var->address, "No simple location for this variable");
   xbt_assert(var->type->full_type, "Partial type for %s, cannot check size", name);
   xbt_assert((size_t)var->type->full_type->byte_size == size, "Unexpected size for %s (expected %zu, was %zu)", name,
@@ -426,33 +426,8 @@ std::string RemoteClient::read_string(RemotePtr<char> address) const
   }
 }
 
-const void* RemoteClient::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, int process_index,
-                                     ReadOptions /*options*/) const
+void* RemoteClient::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, ReadOptions /*options*/) const
 {
-#if HAVE_SMPI
-  if (process_index != simgrid::mc::ProcessIndexDisabled) {
-    std::shared_ptr<simgrid::mc::ObjectInformation> const& info = this->find_object_info_rw(address);
-    // Segment overlap is not handled.
-    if (info.get() && this->privatized(*info)) {
-      if (process_index < 0)
-        xbt_die("Missing process index");
-      if (process_index >= (int)MC_smpi_process_count())
-        xbt_die("Invalid process index");
-
-      // Read smpi_privatization_regions from MCed:
-      smpi_privatization_region_t remote_smpi_privatization_regions =
-          mc_model_checker->process().read_variable<smpi_privatization_region_t>("smpi_privatization_regions");
-
-      s_smpi_privatization_region_t privatization_region =
-          mc_model_checker->process().read<s_smpi_privatization_region_t>(
-              remote(remote_smpi_privatization_regions + process_index));
-
-      // Address translation in the privatization segment:
-      size_t offset = address.address() - (std::uint64_t)info->start_rw;
-      address       = remote((char*)privatization_region.address + offset);
-    }
-  }
-#endif
   if (pread_whole(this->memory_file, buffer, size, (size_t)address.address()) < 0)
     xbt_die("Read at %p from process %lli failed", (void*)address.address(), (long long)this->pid_);
   return buffer;
@@ -605,7 +580,7 @@ std::vector<simgrid::mc::ActorInformation>& RemoteClient::dead_actors()
   return smx_dead_actors_infos;
 }
 
-void RemoteClient::dumpStack()
+void RemoteClient::dump_stack()
 {
   unw_addr_space_t as = unw_create_addr_space(&_UPT_accessors, BYTE_ORDER);
   if (as == nullptr) {
@@ -637,9 +612,9 @@ void RemoteClient::dumpStack()
 bool RemoteClient::actor_is_enabled(aid_t pid)
 {
   s_mc_message_actor_enabled_t msg{MC_MESSAGE_ACTOR_ENABLED, pid};
-  process()->getChannel().send(msg);
+  process()->get_channel().send(msg);
   char buff[MC_MESSAGE_LENGTH];
-  ssize_t received = process()->getChannel().receive(buff, MC_MESSAGE_LENGTH, true);
+  ssize_t received = process()->get_channel().receive(buff, MC_MESSAGE_LENGTH, true);
   xbt_assert(received == sizeof(s_mc_message_int_t), "Unexpected size in answer to ACTOR_ENABLED");
   return ((s_mc_message_int_t*)buff)->value;
 }

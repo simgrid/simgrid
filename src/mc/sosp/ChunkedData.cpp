@@ -3,17 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstddef>
-#include <cstdint>
-
-#include <vector>
-
-#include "xbt/asserts.h"
-#include "xbt/misc.h"
-
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/sosp/ChunkedData.hpp"
-#include "src/mc/sosp/PageStore.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -43,7 +34,7 @@ ChunkedData::ChunkedData(PageStore& store, AddressSpace& as, RemotePtr<void> add
        - move the segments in shared memory (this will break `fork` however)
     */
 
-    as.read_bytes(buffer.data(), xbt_pagesize, page, simgrid::mc::ProcessIndexDisabled);
+    as.read_bytes(buffer.data(), xbt_pagesize, page);
 
     pagenos_[i] = store_->store_page(buffer.data());
   }

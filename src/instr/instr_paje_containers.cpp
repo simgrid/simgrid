@@ -3,9 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/instr/instr_private.hpp"
+#include <sys/stat.h>
+#ifdef WIN32
+#include <direct.h> // _mkdir
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
 
@@ -89,7 +94,9 @@ Container::Container(const std::string& name, const std::string& type_name, Cont
 
   //register all kinds by name
   if (not allContainers.emplace(name_, this).second)
-    THROWF(tracing_error, 1, "container %s already present in allContainers data structure", get_cname());
+    throw simgrid::TracingError(
+        XBT_THROW_POINT,
+        simgrid::xbt::string_printf("container %s already present in allContainers data structure", get_cname()));
 
   XBT_DEBUG("Add container name '%s'", get_cname());
 

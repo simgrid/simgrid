@@ -36,17 +36,19 @@ double HostCLM03Model::next_occuring_event(double now)
   double min_by_net =
       surf_network_model->next_occuring_event_is_idempotent() ? surf_network_model->next_occuring_event(now) : -1;
   double min_by_sto = surf_storage_model->next_occuring_event(now);
+  double min_by_dsk = surf_disk_model->next_occuring_event(now);
 
-  XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f",
-      this, typeid(surf_cpu_model_pm).name(), min_by_cpu,
-      typeid(surf_network_model).name(), min_by_net,
-      typeid(surf_storage_model).name(), min_by_sto);
+  XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f, %s min_by_dsk %f", this,
+            typeid(surf_cpu_model_pm).name(), min_by_cpu, typeid(surf_network_model).name(), min_by_net,
+            typeid(surf_storage_model).name(), min_by_sto, typeid(surf_disk_model).name(), min_by_dsk);
 
   double res = min_by_cpu;
   if (res < 0 || (min_by_net >= 0.0 && min_by_net < res))
     res = min_by_net;
   if (res < 0 || (min_by_sto >= 0.0 && min_by_sto < res))
     res = min_by_sto;
+  if (res < 0 || (min_by_dsk >= 0.0 && min_by_dsk < res))
+    res = min_by_dsk;
   return res;
 }
 
@@ -55,5 +57,5 @@ void HostCLM03Model::update_actions_state(double /*now*/, double /*delta*/)
   /* I've no action to update */
 }
 
-}
-}
+} // namespace surf
+} // namespace simgrid

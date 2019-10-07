@@ -35,12 +35,13 @@ static void master(int process_count)
 
 int main(int argc, char **argv)
 {
+  simgrid::s4u::Engine e(&argc, argv);
+
   // Parameter: Number of processes in the barrier
   xbt_assert(argc >= 2, "Usage: %s <process-count>\n", argv[0]);
   int process_count = std::stoi(argv[1]);
   xbt_assert(process_count > 0, "<process-count> must be greater than 0");
 
-  simgrid::s4u::Engine e(&argc, argv);
   e.load_platform("../../platforms/two_hosts.xml");
   simgrid::s4u::Actor::create("master", simgrid::s4u::Host::by_name("Tremblay"), master, process_count);
   e.run();

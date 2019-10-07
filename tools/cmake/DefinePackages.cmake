@@ -11,6 +11,7 @@ set(EXTRA_DIST
   src/include/xbt/parmap.hpp
   src/include/xbt/mmalloc.h
   src/include/catch.hpp
+  src/include/xxhash.hpp
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
   src/msg/msg_private.hpp
@@ -48,6 +49,7 @@ set(EXTRA_DIST
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
 
+  src/surf/disk_s19.hpp
   src/surf/StorageImpl.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
@@ -66,7 +68,6 @@ set(EXTRA_DIST
   src/xbt/mallocator_private.h
 
   src/xbt/mmalloc/mfree.c
-  src/xbt/mmalloc/mm.c
   src/xbt/mmalloc/mm_legacy.c
   src/xbt/mmalloc/mm_module.c
   src/xbt/mmalloc/mmalloc.c
@@ -88,10 +89,61 @@ set(EXTRA_DIST
   )
 
 set(SMPI_SRC
+  src/smpi/internals/instr_smpi.cpp
+  src/smpi/internals/smpi_bench.cpp
+  src/smpi/internals/smpi_memory.cpp
+  src/smpi/internals/smpi_shared.cpp
+  src/smpi/internals/smpi_deployment.cpp
+  src/smpi/internals/smpi_global.cpp
+  src/smpi/internals/smpi_host.cpp
+  src/smpi/internals/smpi_replay.cpp
+  src/smpi/internals/smpi_actor.cpp
+  src/smpi/internals/smpi_utils.cpp
+  src/smpi/mpi/smpi_comm.cpp
+  src/smpi/mpi/smpi_datatype.cpp
+  src/smpi/mpi/smpi_datatype_derived.cpp
+  src/smpi/mpi/smpi_errhandler.cpp
+  src/smpi/mpi/smpi_f2c.cpp
+  src/smpi/mpi/smpi_file.cpp
+  src/smpi/mpi/smpi_group.cpp
+  src/smpi/mpi/smpi_info.cpp
+  src/smpi/mpi/smpi_keyvals.cpp
+  src/smpi/mpi/smpi_op.cpp
+  src/smpi/mpi/smpi_request.cpp
+  src/smpi/mpi/smpi_status.cpp
+  src/smpi/mpi/smpi_topo.cpp
+  src/smpi/mpi/smpi_win.cpp
+  src/smpi/include/smpi_actor.hpp
+  src/smpi/include/smpi_coll.hpp
+  src/smpi/include/smpi_comm.hpp
+  src/smpi/include/smpi_datatype_derived.hpp
+  src/smpi/include/smpi_datatype.hpp
+  src/smpi/include/smpi_errhandler.hpp
+  src/smpi/include/smpi_f2c.hpp
+  src/smpi/include/smpi_file.hpp
+  src/smpi/include/smpi_group.hpp
+  src/smpi/include/smpi_host.hpp
+  src/smpi/include/smpi_info.hpp
+  src/smpi/include/smpi_keyvals.hpp
+  src/smpi/include/smpi_op.hpp
+  src/smpi/include/smpi_request.hpp
+  src/smpi/include/smpi_status.hpp
+  src/smpi/include/smpi_topo.hpp
+  src/smpi/include/smpi_win.hpp
+  src/smpi/plugins/sampi_loadbalancer.cpp
+  src/smpi/plugins/ampi/ampi.cpp
+  src/smpi/plugins/ampi/ampi.hpp
+  src/smpi/plugins/ampi/instr_ampi.cpp
+  src/smpi/plugins/ampi/instr_ampi.hpp
+  src/smpi/plugins/load_balancer/LoadBalancer.cpp
+  src/smpi/plugins/load_balancer/load_balancer.hpp
+  src/surf/network_smpi.cpp
+  src/surf/network_ib.cpp
   src/smpi/bindings/smpi_mpi.cpp
   src/smpi/bindings/smpi_pmpi.cpp
   src/smpi/bindings/smpi_pmpi_coll.cpp
   src/smpi/bindings/smpi_pmpi_comm.cpp
+  src/smpi/bindings/smpi_pmpi_file.cpp
   src/smpi/bindings/smpi_pmpi_group.cpp
   src/smpi/bindings/smpi_pmpi_info.cpp
   src/smpi/bindings/smpi_pmpi_op.cpp
@@ -211,54 +263,6 @@ set(SMPI_SRC
   src/smpi/colls/smpi_openmpi_selector.cpp
   src/smpi/colls/smpi_mvapich2_selector.cpp
   src/smpi/colls/smpi_coll.cpp
-  src/smpi/internals/instr_smpi.cpp
-  src/smpi/internals/smpi_bench.cpp
-  src/smpi/internals/smpi_memory.cpp
-  src/smpi/internals/smpi_shared.cpp
-  src/smpi/internals/smpi_static_variables.cpp
-  src/smpi/internals/smpi_deployment.cpp
-  src/smpi/internals/smpi_dvfs.cpp
-  src/smpi/internals/smpi_global.cpp
-  src/smpi/internals/smpi_host.cpp
-  src/smpi/internals/smpi_replay.cpp
-  src/smpi/internals/smpi_actor.cpp
-  src/smpi/internals/smpi_utils.cpp
-  src/smpi/mpi/smpi_comm.cpp
-  src/smpi/mpi/smpi_datatype.cpp
-  src/smpi/mpi/smpi_datatype_derived.cpp
-  src/smpi/mpi/smpi_f2c.cpp
-  src/smpi/mpi/smpi_group.cpp
-  src/smpi/mpi/smpi_info.cpp
-  src/smpi/mpi/smpi_keyvals.cpp
-  src/smpi/mpi/smpi_op.cpp
-  src/smpi/mpi/smpi_request.cpp
-  src/smpi/mpi/smpi_status.cpp
-  src/smpi/mpi/smpi_topo.cpp
-  src/smpi/mpi/smpi_win.cpp
-  src/smpi/include/smpi_actor.hpp
-  src/smpi/include/smpi_coll.hpp
-  src/smpi/include/smpi_comm.hpp
-  src/smpi/include/smpi_datatype_derived.hpp
-  src/smpi/include/smpi_datatype.hpp
-  src/smpi/include/smpi_f2c.hpp
-  src/smpi/include/smpi_group.hpp
-  src/smpi/include/smpi_host.hpp
-  src/smpi/include/smpi_info.hpp
-  src/smpi/include/smpi_keyvals.hpp
-  src/smpi/include/smpi_op.hpp
-  src/smpi/include/smpi_request.hpp
-  src/smpi/include/smpi_status.hpp
-  src/smpi/include/smpi_topo.hpp
-  src/smpi/include/smpi_win.hpp
-  src/smpi/plugins/sampi_loadbalancer.cpp
-  src/smpi/plugins/ampi/ampi.cpp
-  src/smpi/plugins/ampi/ampi.hpp
-  src/smpi/plugins/ampi/instr_ampi.cpp
-  src/smpi/plugins/ampi/instr_ampi.hpp
-  src/smpi/plugins/load_balancer/LoadBalancer.cpp
-  src/smpi/plugins/load_balancer/load_balancer.hpp
-  src/surf/network_smpi.cpp
-  src/surf/network_ib.cpp
   )
 
 set(XBT_SRC
@@ -296,6 +300,8 @@ set(XBT_SRC
 
 if(HAVE_MMALLOC)
   set(XBT_SRC ${XBT_SRC}  src/xbt/mmalloc/mm.c )
+else()
+  set(EXTRA_DIST ${EXTRA_DIST} src/xbt/mmalloc/mm.c)
 endif()
 
 set(NS3_SRC  src/surf/network_ns3.cpp
@@ -303,15 +309,22 @@ set(NS3_SRC  src/surf/network_ns3.cpp
 
 set(SURF_SRC
   src/kernel/lmm/fair_bottleneck.cpp
-  src/kernel/lmm/lagrange.cpp
   src/kernel/lmm/maxmin.hpp
   src/kernel/lmm/maxmin.cpp
 
   src/kernel/resource/Action.cpp
   src/kernel/resource/Model.cpp
   src/kernel/resource/Resource.cpp
-  src/kernel/resource/profile/trace_mgr.hpp
-  src/kernel/resource/profile/trace_mgr.cpp
+  src/kernel/resource/DiskImpl.cpp
+  src/kernel/resource/DiskImpl.hpp
+
+  src/kernel/resource/profile/DatedValue.cpp
+  src/kernel/resource/profile/DatedValue.hpp
+  src/kernel/resource/profile/Event.hpp
+  src/kernel/resource/profile/FutureEvtSet.cpp
+  src/kernel/resource/profile/FutureEvtSet.hpp
+  src/kernel/resource/profile/Profile.cpp
+  src/kernel/resource/profile/Profile.hpp
 
   src/kernel/routing/ClusterZone.cpp
   src/kernel/routing/DijkstraZone.cpp
@@ -332,6 +345,7 @@ set(SURF_SRC
   src/surf/cpu_cas01.cpp
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
+  src/surf/disk_s19.cpp
   src/surf/network_cm02.cpp
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
@@ -382,7 +396,6 @@ set(SIMIX_SRC
   src/kernel/context/ContextThread.cpp
   src/kernel/context/ContextThread.hpp
   src/simix/smx_deployment.cpp
-  src/simix/smx_environment.cpp
   src/simix/smx_global.cpp
   src/simix/popping.cpp
   src/kernel/activity/ActivityImpl.cpp
@@ -430,6 +443,7 @@ set(S4U_SRC
   src/s4u/s4u_Barrier.cpp
   src/s4u/s4u_ConditionVariable.cpp
   src/s4u/s4u_Comm.cpp
+  src/s4u/s4u_Disk.cpp
   src/s4u/s4u_Engine.cpp
   src/s4u/s4u_Exec.cpp
   src/s4u/s4u_Host.cpp
@@ -589,8 +603,29 @@ set(MC_SRC
   src/mc/checker/CommunicationDeterminismChecker.hpp
   src/mc/checker/SafetyChecker.cpp
   src/mc/checker/SafetyChecker.hpp
+  src/mc/checker/SimcallInspector.hpp
   src/mc/checker/LivenessChecker.cpp
   src/mc/checker/LivenessChecker.hpp
+  
+  src/mc/inspect/DwarfExpression.hpp
+  src/mc/inspect/DwarfExpression.cpp
+  src/mc/inspect/Frame.hpp
+  src/mc/inspect/Frame.cpp
+  src/mc/inspect/LocationList.hpp
+  src/mc/inspect/LocationList.cpp
+  src/mc/inspect/ObjectInformation.hpp
+  src/mc/inspect/ObjectInformation.cpp
+  src/mc/inspect/Type.hpp
+  src/mc/inspect/Variable.hpp
+  src/mc/inspect/mc_dwarf.hpp
+  src/mc/inspect/mc_dwarf.cpp
+  src/mc/inspect/mc_dwarf_attrnames.cpp
+  src/mc/inspect/mc_dwarf_tagnames.cpp
+  src/mc/inspect/mc_member.cpp
+  src/mc/inspect/mc_unw.hpp
+  src/mc/inspect/mc_unw.cpp
+  src/mc/inspect/mc_unw_vmread.cpp
+
   src/mc/remote/Channel.cpp
   src/mc/remote/Channel.hpp
   src/mc/remote/Client.cpp
@@ -605,44 +640,24 @@ set(MC_SRC
   src/mc/sosp/PageStore.cpp
   src/mc/sosp/ChunkedData.hpp
   src/mc/sosp/ChunkedData.cpp
-  src/mc/sosp/RegionSnapshot.cpp
-  src/mc/sosp/RegionSnapshot.hpp
-  src/mc/sosp/mc_checkpoint.cpp
-  src/mc/sosp/mc_snapshot.hpp
-  src/mc/sosp/mc_snapshot.cpp
-  src/mc/sosp/mc_page_snapshot.cpp
+  src/mc/sosp/Region.cpp
+  src/mc/sosp/Region.hpp
+  src/mc/sosp/Snapshot.hpp
+  src/mc/sosp/Snapshot.cpp
   
   src/mc/AddressSpace.hpp
-  src/mc/Frame.hpp
-  src/mc/Frame.cpp
   src/mc/ModelChecker.hpp
   src/mc/ModelChecker.cpp
-  src/mc/ObjectInformation.hpp
-  src/mc/ObjectInformation.cpp
-  src/mc/Type.hpp
-  src/mc/Variable.hpp
   src/mc/mc_forward.hpp
   src/mc/Session.cpp
   src/mc/Session.hpp
-  src/mc/mc_unw.hpp
-  src/mc/mc_unw.cpp
-  src/mc/mc_unw_vmread.cpp
   src/mc/mc_comm_pattern.cpp
   src/mc/mc_comm_pattern.hpp
   src/mc/compare.cpp
-  src/mc/mc_dwarf.hpp
-  src/mc/mc_dwarf.cpp
-  src/mc/mc_dwarf_attrnames.cpp
-  src/mc/DwarfExpression.hpp
-  src/mc/DwarfExpression.cpp
-  src/mc/mc_dwarf_tagnames.cpp
   src/mc/mc_hash.hpp
   src/mc/mc_hash.cpp
   src/mc/mc_ignore.hpp
-  src/mc/LocationList.hpp
-  src/mc/LocationList.cpp
   src/mc/mc_record.cpp
-  src/mc/mc_member.cpp
   src/mc/mc_memory.cpp
   src/mc/mc_private.hpp
   src/mc/mc_request.hpp
@@ -687,6 +702,8 @@ set(headers_to_install
   include/simgrid/kernel/future.hpp
   include/simgrid/host.h
   include/simgrid/link.h
+  include/simgrid/cond.h
+  include/simgrid/mutex.h
   include/simgrid/semaphore.h
   include/simgrid/storage.h
   include/simgrid/vm.h
@@ -696,6 +713,7 @@ set(headers_to_install
   include/simgrid/s4u/Barrier.hpp
   include/simgrid/s4u/Comm.hpp
   include/simgrid/s4u/ConditionVariable.hpp
+  include/simgrid/s4u/Disk.hpp
   include/simgrid/s4u/Engine.hpp
   include/simgrid/s4u/Exec.hpp
   include/simgrid/s4u/Host.hpp
@@ -830,7 +848,6 @@ set(DOC_SOURCES
   doc/Layout.xml
 
   doc/doxygen/FAQ.doc
-  doc/doxygen/deployment.doc
   doc/doxygen/inside.doc
   doc/doxygen/inside_tests.doc
   doc/doxygen/inside_cmake.doc
@@ -841,8 +858,6 @@ set(DOC_SOURCES
   doc/doxygen/module-trace.doc
   doc/doxygen/module-xbt.doc
   doc/doxygen/module-index.doc
-  doc/doxygen/ns3.doc
-  doc/doxygen/outcomes.doc
   doc/doxygen/outcomes_logs.doc
   doc/doxygen/outcomes_vizu.doc
   doc/doxygen/platform.doc
@@ -863,6 +878,7 @@ set(DOC_SOURCES
   docs/source/conf.py
   docs/source/Doxyfile
   docs/source/_ext/hidden_code_block.py
+  docs/source/_templates/breadcrumbs.html
 
   docs/source/img/eclipseScreenShot.png
   docs/source/img/extlink.png
@@ -876,22 +892,24 @@ set(DOC_SOURCES
 
   docs/ignored_symbols
   docs/source/application.rst
-  docs/source/app_java.rst
   docs/source/app_msg.rst
   docs/source/app_s4u.rst
   docs/source/app_smpi.rst
   docs/source/community.rst
+  docs/source/Configuring_SimGrid.rst
+  docs/source/Deploying_your_Application.rst
+  docs/source/Experimental_Setup.rst
   docs/source/index.rst
-  docs/source/intro_concepts.rst
-  docs/source/introduction.rst
+  docs/source/Introduction.rst
   docs/source/Installing_SimGrid.rst
   docs/source/Start_Your_Own_Project.rst
   docs/source/models.rst
+  docs/source/ns3.rst
+  docs/source/outcomes.rst
   docs/source/platform.rst
   docs/source/platform_howtos.rst
-  docs/source/platform_reference.rst
-  docs/source/Configuring_SimGrid.rst
-  docs/source/scenario.rst
+  docs/source/Platform_Examples.rst
+  docs/source/XML_Reference.rst
 
   docs/source/Tutorial_Algorithms.rst
   docs/source/tuto_s4u/deployment1.xml
@@ -977,8 +995,6 @@ set(CMAKEFILES_TXT
   examples/smpi/smpi_msg_masterslave/CMakeLists.txt
   examples/smpi/replay_multiple/CMakeLists.txt
   examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
-  examples/smpi/energy/f77/CMakeLists.txt
-  examples/smpi/energy/f90/CMakeLists.txt
   examples/python/CMakeLists.txt
   examples/deprecated/java/CMakeLists.txt
   examples/deprecated/msg/CMakeLists.txt
@@ -1002,6 +1018,7 @@ set(CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/coll/CMakeLists.txt
   teshsuite/smpi/mpich3-test/comm/CMakeLists.txt
   teshsuite/smpi/mpich3-test/datatype/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/errhan/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/attr/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/coll/CMakeLists.txt
   teshsuite/smpi/mpich3-test/f77/info/CMakeLists.txt
@@ -1055,6 +1072,7 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindLuaSimgrid.cmake
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindPAPI.cmake
+  tools/cmake/Modules/pybind11Config.cmake
   tools/cmake/Modules/FindValgrind.cmake
   tools/cmake/Option.cmake
   tools/cmake/scripts/fixup_simgrid_dtd_l.pl
@@ -1073,6 +1091,10 @@ set(CMAKE_SOURCE_FILES
   tools/stack-cleaner/clean-stack-filter
   tools/stack-cleaner/compiler-wrapper
   tools/stack-cleaner/README
+  
+  setup.py 
+  MANIFEST.in
+  MANIFEST.in.in
   )
 
 set(PLATFORMS_EXAMPLES
@@ -1116,8 +1138,10 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/faulty_host.xml
   examples/platforms/g5k.xml
   examples/platforms/griffon.xml
+  examples/platforms/hosts_with_disks.xml
   examples/platforms/meta_cluster.xml
   examples/platforms/multicore_machine.xml
+  examples/platforms/ns3-big-cluster.xml
   examples/platforms/onelink.xml
   examples/platforms/prop.xml
   examples/platforms/routing_cluster.xml
@@ -1126,7 +1150,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/simulacrum_7_hosts.xml
   examples/platforms/storage/content/small_content.txt
   examples/platforms/storage/content/storage_content.txt
-  examples/platforms/storage/content/win_storage_content.txt
   examples/platforms/storage/remote_io.xml
   examples/platforms/storage/storage.xml
   examples/platforms/small_platform.xml
@@ -1148,6 +1171,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/two_hosts_platform_with_availability_included.xml
   examples/platforms/two_peers.xml
   examples/platforms/vivaldi.xml
+  examples/platforms/wifi.xml
   )
 
 set(generated_src_files

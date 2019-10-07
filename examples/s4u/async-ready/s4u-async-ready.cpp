@@ -23,7 +23,7 @@
 #include <iostream>
 #include <string>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_ready, "Messages specific for this s4u example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_async_ready, "Messages specific for this s4u example");
 
 static int peer(int argc, char** argv)
 {

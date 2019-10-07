@@ -1,5 +1,4 @@
-/* Copyright (c) 2014-2019. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2019. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,17 +7,17 @@
 #undef NDEBUG
 #endif
 
+#include "src/mc/mc_private.hpp"
+
+#include "src/mc/inspect/ObjectInformation.hpp"
+#include "src/mc/inspect/Type.hpp"
+#include "src/mc/inspect/Variable.hpp"
+#include "src/mc/remote/RemoteClient.hpp"
+
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <random>
-
-#include "src/mc/mc_private.hpp"
-
-#include "src/mc/ObjectInformation.hpp"
-#include "src/mc/Type.hpp"
-#include "src/mc/Variable.hpp"
-#include "src/mc/remote/RemoteClient.hpp"
 
 static std::default_random_engine rnd_engine;
 
@@ -36,11 +35,9 @@ uintptr_t eval_binary_operation(
   ops[2].atom = op;
 
   simgrid::dwarf::ExpressionStack stack;
-
   try {
     simgrid::dwarf::execute(ops, 3, state, stack);
-  }
-  catch(std::runtime_error& e) {
+  } catch (const simgrid::dwarf::evaluation_error&) {
     fprintf(stderr,"Expression evaluation error");
   }
 
@@ -63,7 +60,7 @@ void basic_test(simgrid::dwarf::ExpressionContext const& state) {
   try {
     ops[0].atom = DW_OP_drop;
     simgrid::dwarf::execute(ops, 1, state, stack);
-  } catch (simgrid::dwarf::evaluation_error& e) {
+  } catch (const simgrid::dwarf::evaluation_error&) {
     caught_ex = true;
   }
   if (not caught_ex)
@@ -125,8 +122,7 @@ void basic_test(simgrid::dwarf::ExpressionContext const& state) {
   assert(stack.top()  == a);
   assert(stack.top(1) == b);
 
-  }
-  catch(std::runtime_error& e) {
+  } catch (const simgrid::dwarf::evaluation_error&) {
     fprintf(stderr,"Expression evaluation error");
   }
 }
@@ -148,13 +144,13 @@ void test_deref(simgrid::dwarf::ExpressionContext const& state) {
   assert(stack.size() == 1);
   assert(stack.top()  == foo);
 
-  }
-  catch(std::runtime_error& e) {
+  } catch (const simgrid::dwarf::evaluation_error&) {
     fprintf(stderr,"Expression evaluation error");
   }
 }
 
-int main(int argc, char** argv) {
+int main()
+{
   process = new simgrid::mc::RemoteClient(getpid(), -1);
   process->init();
 

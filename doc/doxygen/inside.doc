@@ -88,7 +88,7 @@ Launching all tests can be very time consuming, so you want to build
 and run the tests in parallel. Also, you want to save the build output
 to disk, for further reference. This is exactly what the
 BuildSimGrid.sh script does. It is upper-cased so that the shell
-completion works and allow to run it in 4 key press: `./B<tab>`
+completion works and allows one to run it in 4 key press: `./B<tab>`
 
 Note that if you build out of tree (as you should, see below), the
 script builds the build/default directory. I usually copy the file in

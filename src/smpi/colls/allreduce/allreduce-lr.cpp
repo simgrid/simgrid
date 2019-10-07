@@ -21,7 +21,7 @@
 namespace simgrid{
 namespace smpi{
 int
-Coll_allreduce_lr::allreduce(void *sbuf, void *rbuf, int rcount,
+Coll_allreduce_lr::allreduce(const void *sbuf, void *rbuf, int rcount,
                              MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
   int tag = COLL_TAG_ALLREDUCE;

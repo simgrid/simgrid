@@ -7,6 +7,7 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/resource/DiskImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/StorageImpl.hpp"
@@ -18,15 +19,10 @@ void simcall_HANDLER_io_wait(smx_simcall_t simcall, simgrid::kernel::activity::I
   XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state_);
 
   /* Associate this simcall to the synchro */
-  synchro->simcalls_.push_back(simcall);
-  simcall->issuer->waiting_synchro = synchro;
+  synchro->register_simcall(simcall);
 
-  /* set surf's synchro */
-  if (MC_is_active() || MC_record_replay_is_active()) {
+  if (MC_is_active() || MC_record_replay_is_active())
     synchro->state_ = SIMIX_DONE;
-    synchro->finish();
-    return;
-  }
 
   /* If the synchro is already finished then perform the error handling */
   if (synchro->state_ != SIMIX_RUNNING)
@@ -36,12 +32,6 @@ void simcall_HANDLER_io_wait(smx_simcall_t simcall, simgrid::kernel::activity::I
 namespace simgrid {
 namespace kernel {
 namespace activity {
-
-IoImpl& IoImpl::set_name(const std::string& name)
-{
-  ActivityImpl::set_name(name);
-  return *this;
-}
 
 IoImpl& IoImpl::set_type(s4u::Io::OpType type)
 {
@@ -55,6 +45,12 @@ IoImpl& IoImpl::set_size(sg_size_t size)
   return *this;
 }
 
+IoImpl& IoImpl::set_disk(resource::DiskImpl* disk)
+{
+  disk_ = disk;
+  return *this;
+}
+
 IoImpl& IoImpl::set_storage(resource::StorageImpl* storage)
 {
   storage_ = storage;
@@ -64,8 +60,11 @@ IoImpl& IoImpl::set_storage(resource::StorageImpl* storage)
 IoImpl* IoImpl::start()
 {
   state_       = SIMIX_RUNNING;
-  surf_action_ = storage_->io_start(size_, type_);
-  surf_action_->set_data(this);
+  if (storage_)
+    surf_action_ = storage_->io_start(size_, type_);
+  else
+    surf_action_ = disk_->io_start(size_, type_);
+  surf_action_->set_activity(this);
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
   IoImpl::on_start(*this);
@@ -73,61 +72,46 @@ IoImpl* IoImpl::start()
   return this;
 }
 
-void IoImpl::cancel()
-{
-  XBT_VERB("This exec %p is canceled", this);
-  if (surf_action_ != nullptr)
-    surf_action_->cancel();
-  state_ = SIMIX_CANCELED;
-}
-
-double IoImpl::get_remaining()
-{
-  return surf_action_ ? surf_action_->get_remains() : 0;
-}
-
 void IoImpl::post()
 {
   performed_ioops_ = surf_action_->get_cost();
-  switch (surf_action_->get_state()) {
-    case resource::Action::State::FAILED:
+  if (surf_action_->get_state() == resource::Action::State::FAILED) {
+    if ((storage_ && not storage_->is_on()) || (disk_ && not disk_->is_on()))
       state_ = SIMIX_FAILED;
-      break;
-    case resource::Action::State::FINISHED:
-      state_ = SIMIX_DONE;
-      break;
-    default:
-      THROW_IMPOSSIBLE;
+    else
+      state_ = SIMIX_CANCELED;
+  } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
+    state_ = SIMIX_DONE;
   }
   on_completion(*this);
 
+  /* Answer all simcalls associated with the synchro */
   finish();
 }
 
 void IoImpl::finish()
 {
-  for (smx_simcall_t const& simcall : simcalls_) {
+  while (not simcalls_.empty()) {
+    smx_simcall_t simcall = simcalls_.front();
+    simcalls_.pop_front();
     switch (state_) {
       case SIMIX_DONE:
         /* do nothing, synchro done */
         break;
       case SIMIX_FAILED:
-        simcall->issuer->exception_ =
-            std::make_exception_ptr(simgrid::StorageFailureException(XBT_THROW_POINT, "Storage failed"));
+        simcall->issuer_->context_->iwannadie = true;
+        simcall->issuer_->exception_ =
+            std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Storage failed"));
         break;
       case SIMIX_CANCELED:
-        simcall->issuer->exception_ =
-            std::make_exception_ptr(simgrid::CancelException(XBT_THROW_POINT, "I/O Canceled"));
+        simcall->issuer_->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "I/O Canceled"));
         break;
       default:
         xbt_die("Internal error in IoImpl::finish(): unexpected synchro state %d", static_cast<int>(state_));
     }
 
-    simcall->issuer->waiting_synchro = nullptr;
-    if (simcall->issuer->get_host()->is_on())
-      SIMIX_simcall_answer(simcall);
-    else
-      simcall->issuer->context_->iwannadie = true;
+    simcall->issuer_->waiting_synchro = nullptr;
+    simcall->issuer_->simcall_answer();
   }
 }
 

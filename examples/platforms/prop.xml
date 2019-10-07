@@ -26,6 +26,7 @@
     </cluster>
 
     <zone  id="AS4"  routing="Full">
+      <prop id="bla" value="bli"/>
       <host id="host1" speed="1Gf">
         <prop id="Hdd" value="180"/>
         <prop id="mem" value="4"/>

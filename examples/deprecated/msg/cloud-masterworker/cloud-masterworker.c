@@ -37,7 +37,7 @@ static void send_tasks(int nb_workers)
   }
 }
 
-static int worker_fun(int argc, char *argv[])
+static int worker_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   const char *pr_name = MSG_process_get_name(MSG_process_self());
   char mbox[MAXMBOXLEN];
@@ -65,7 +65,7 @@ static int worker_fun(int argc, char *argv[])
   return 0;
 }
 
-static int master_fun(int argc, char *argv[])
+static int master_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_vm_t vm;
   unsigned int i;

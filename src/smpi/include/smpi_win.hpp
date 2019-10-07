@@ -8,6 +8,7 @@
 #define SMPI_WIN_HPP_INCLUDED
 
 #include "simgrid/s4u/Barrier.hpp"
+#include "smpi_errhandler.hpp"
 #include "smpi_f2c.hpp"
 #include "smpi_keyvals.hpp"
 #include "xbt/synchro.h"
@@ -40,6 +41,7 @@ class Win : public F2C, public Keyval {
   int mode_; // exclusive or shared lock
   int allocated_;
   int dynamic_;
+  MPI_Errhandler errhandler_;
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;
@@ -51,10 +53,10 @@ public:
   Win& operator=(const Win&) = delete;
   ~Win();
   int attach (void *base, MPI_Aint size);
-  int detach (void *base);
+  int detach (const void *base);
   void get_name( char* name, int* length);
   void get_group( MPI_Group* group);
-  void set_name( char* name);
+  void set_name(const char* name);
   int rank();
   int dynamic();
   int start(MPI_Group group, int assert);
@@ -67,16 +69,16 @@ public:
   void* base();
   int disp_unit();
   int fence(int assert);
-  int put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+  int put(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Request* request=nullptr);
   int get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Request* request=nullptr);
-  int accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+  int accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request=nullptr);
-  int get_accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
+  int get_accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
               int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
               MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request=nullptr);
-  int compare_and_swap(void *origin_addr, void *compare_addr,
+  int compare_and_swap(const void *origin_addr, void *compare_addr,
         void *result_addr, MPI_Datatype datatype, int target_rank,
         MPI_Aint target_disp);
   static Win* f2c(int id);
@@ -92,6 +94,8 @@ public:
   int finish_comms();
   int finish_comms(int rank);
   int shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr);
+  MPI_Errhandler errhandler();
+  void set_errhandler( MPI_Errhandler errhandler);
 };
 
 

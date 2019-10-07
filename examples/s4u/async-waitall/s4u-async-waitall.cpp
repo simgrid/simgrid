@@ -17,7 +17,7 @@
 #include <iostream>
 #include <string>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_waitall, "Messages specific for this s4u example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_async_waitall, "Messages specific for this s4u example");
 
 class Sender {
   long messages_count;  /* - number of tasks */

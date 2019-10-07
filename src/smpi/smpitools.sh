@@ -12,42 +12,41 @@ LISTSEP="$(printf '\b')"
 # Create a temporary file, with its name of the form $1_XXX$2, where XXX is replaced by an unique string.
 # $1: prefix, $2: suffix
 mymktemp () {
-    tmp=$(mktemp --suffix="$2" "$1_XXXXXXXXXX" 2> /dev/null)
-    if [ -z "$tmp" ]; then
+    local_tmp=$(mktemp --suffix="$2" "$1_XXXXXXXXXX" 2> /dev/null)
+    if [ -z "$local_tmp" ]; then
         # mktemp failed (unsupported --suffix ?), try unsafe mode
-        tmp=$(mktemp -u "$1_XXXXXXXXXX" 2> /dev/null)
-        if [ -z "$tmp" ]; then
+        local_tmp=$(mktemp -u "$1_XXXXXXXXXX" 2> /dev/null)
+        if [ -z "$local_tmp" ]; then
             # mktemp failed again (doesn't exist ?), try very unsafe mode
             if [ -z "${mymktemp_seq}" ]; then
                 mymktemp_seq=$(date +%d%H%M%S)
             fi
-            tmp="$1_$$x${mymktemp_seq}"
+            local_tmp="$1_$$x${mymktemp_seq}"
             mymktemp_seq=$((mymktemp_seq + 1))
         fi
-        tmp="${tmp}$2"
+        local_tmp="${local_tmp}$2"
         # create temp file, and exit if it existed before
-        sh -C -c "true > \"${tmp}\"" || exit 1
+        sh -C -c "true > \"${local_tmp}\"" || exit 1
     fi
-    echo "${tmp}"
+    echo "${local_tmp}"
 }
 
 # Add a word to the end of a list (words separated by LISTSEP)
 # $1: list, $2...: words to add
 list_add () {
-    local list content newcontent
-    list="$1"
+    local_list="$1"
     shift
     if [ $# -gt 0 ]; then
-        eval content=\"\${$list}\"
+        eval local_content=\"\${$local_list}\"
         IFS="$LISTSEP"
-        newcontent="$*"
+        local_newcontent="$*"
         IFS="$SAVEIFS"
-        if [ -z "$content" ]; then
-            content="$newcontent"
+        if [ -z "$local_content" ]; then
+            local_content="$local_newcontent"
         else
-            content="$content${LISTSEP}$newcontent"
+            local_content="$local_content${LISTSEP}$local_newcontent"
         fi
-        eval $list=\"\${content}\"
+        eval $local_list=\"\${local_content}\"
     fi
 }
 

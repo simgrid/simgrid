@@ -1,3 +1,3 @@
 #!/usr/bin/env tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/parmap_bench 4 0.25 --log=parmap_bench.thres:warning
+$ ${bindir:=.}/parmap_bench 4 0.25 --log=parmap_bench.thres:warning

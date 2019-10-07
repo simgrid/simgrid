@@ -17,9 +17,9 @@
 namespace simgrid{
 namespace smpi{
 int
-Coll_alltoallv_ompi_basic_linear::alltoallv(void *sbuf, int *scounts, int *sdisps,
+Coll_alltoallv_ompi_basic_linear::alltoallv(const void *sbuf, const int *scounts, const int *sdisps,
                                             MPI_Datatype sdtype,
-                                            void *rbuf, int *rcounts, int *rdisps,
+                                            void *rbuf, const int *rcounts, const int *rdisps,
                                             MPI_Datatype rdtype,
                                             MPI_Comm comm)
 {
@@ -30,7 +30,7 @@ Coll_alltoallv_ompi_basic_linear::alltoallv(void *sbuf, int *scounts, int *sdisp
     MPI_Request *preq;
     size = comm->size();
     rank = comm->rank();
-    MPI_Request *ireqs= static_cast<MPI_Request*>(xbt_malloc(sizeof(MPI_Request) * size * 2));
+    MPI_Request* ireqs = new MPI_Request[size * 2];
     XBT_DEBUG(
                  "coll:tuned:alltoallv_intra_basic_linear rank %d", rank);
 
@@ -101,7 +101,7 @@ Coll_alltoallv_ompi_basic_linear::alltoallv(void *sbuf, int *scounts, int *sdisp
       if(ireqs[i]!=MPI_REQUEST_NULL)
         Request::unref(&ireqs[i]);
     }
-    free(ireqs);
+    delete[] ireqs;
 
     return MPI_SUCCESS;
 }

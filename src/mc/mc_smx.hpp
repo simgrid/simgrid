@@ -42,8 +42,6 @@ XBT_PRIVATE smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall const* req);
 XBT_PRIVATE const char* MC_smx_actor_get_name(smx_actor_t p);
 XBT_PRIVATE const char* MC_smx_actor_get_host_name(smx_actor_t p);
 
-XBT_PRIVATE int MC_smpi_process_count(void);
-
 XBT_PRIVATE unsigned long MC_smx_get_maxpid(void);
 
 #endif

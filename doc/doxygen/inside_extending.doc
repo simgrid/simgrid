@@ -140,13 +140,13 @@ The workflow of a simcall is the following:
   - If maestro, executes the simcall directly (and return)
   - If not, call `ActorImpl::yield` to give back the control to maestro
   - ========== KERNEL MODE ==========
-  - `SIMIX_simcall_handle` large switch (on simcall) doing for each:
+  - `ActorImpl::simcall_handle` large switch (on simcall) doing for each:
    - `simcall_HANDLER_<name>(simcall, <args>)` (the manual code handling the simcall)
    - If the simcall is not marked as "blocking" in its definition,
-     call `SIMIX_simcall_answer(simcall)` that adds back the issuer
+     call `ActorImpl::simcall_answer()` that adds back the issuer
      process to the list of processes to run in the next scheduling round.
      It is thus the responsability of the blocking simcalls to call
-     `SIMIX_simcall_answer(simcall)` themselves in their handler.
+     `ActorImpl::simcall_answer()` themselves in their handler.
 
 Note that empty HANDLERs can be omitted. These functions usually do
 some parameter checking, or retrieve some information about the

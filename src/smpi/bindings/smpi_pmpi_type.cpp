@@ -13,8 +13,8 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 int PMPI_Type_free(MPI_Datatype * datatype)
 {
   /* Free a predefined datatype is an error according to the standard, and should be checked for */
-  if (*datatype == MPI_DATATYPE_NULL) {
-    return MPI_ERR_ARG;
+  if (*datatype == MPI_DATATYPE_NULL || (*datatype)->flags() & DT_FLAG_PREDEFINED) {
+    return MPI_ERR_TYPE;
   } else {
     simgrid::smpi::Datatype::unref(*datatype);
     return MPI_SUCCESS;
@@ -134,8 +134,10 @@ int PMPI_Type_commit(MPI_Datatype* datatype) {
 int PMPI_Type_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type) {
   if (old_type == MPI_DATATYPE_NULL) {
     return MPI_ERR_TYPE;
-  } else if (count<0 || blocklen<0){
+  } else if (count<0){
     return MPI_ERR_COUNT;
+  } else if(blocklen<0){
+    return MPI_ERR_ARG;
   } else {
     return simgrid::smpi::Datatype::create_vector(count, blocklen, stride, old_type, new_type);
   }
@@ -144,8 +146,10 @@ int PMPI_Type_vector(int count, int blocklen, int stride, MPI_Datatype old_type,
 int PMPI_Type_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type) {
   if (old_type == MPI_DATATYPE_NULL) {
     return MPI_ERR_TYPE;
-  } else if (count<0 || blocklen<0){
+  } else if (count<0){
     return MPI_ERR_COUNT;
+  } else if(blocklen<0){
+    return MPI_ERR_ARG;
   } else {
     return simgrid::smpi::Datatype::create_hvector(count, blocklen, stride, old_type, new_type);
   }
@@ -155,7 +159,7 @@ int PMPI_Type_create_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datat
   return MPI_Type_hvector(count, blocklen, stride, old_type, new_type);
 }
 
-int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
+int PMPI_Type_indexed(int count, const int* blocklens, const int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
   if (old_type == MPI_DATATYPE_NULL) {
     return MPI_ERR_TYPE;
   } else if (count<0){
@@ -165,7 +169,7 @@ int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_
   }
 }
 
-int PMPI_Type_create_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
+int PMPI_Type_create_indexed(int count, const int* blocklens, const int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
   if (old_type == MPI_DATATYPE_NULL) {
     return MPI_ERR_TYPE;
   } else if (count<0){
@@ -175,7 +179,7 @@ int PMPI_Type_create_indexed(int count, int* blocklens, int* indices, MPI_Dataty
   }
 }
 
-int PMPI_Type_create_indexed_block(int count, int blocklength, int* indices, MPI_Datatype old_type,
+int PMPI_Type_create_indexed_block(int count, int blocklength, const int* indices, MPI_Datatype old_type,
                                    MPI_Datatype* new_type)
 {
   if (old_type == MPI_DATATYPE_NULL) {
@@ -192,7 +196,8 @@ int PMPI_Type_create_indexed_block(int count, int blocklength, int* indices, MPI
   }
 }
 
-int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type)
+int PMPI_Type_hindexed(int count, const int* blocklens, const MPI_Aint* indices, MPI_Datatype old_type,
+                       MPI_Datatype* new_type)
 {
   if (old_type == MPI_DATATYPE_NULL) {
     return MPI_ERR_TYPE;
@@ -203,12 +208,12 @@ int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatyp
   }
 }
 
-int PMPI_Type_create_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type,
+int PMPI_Type_create_hindexed(int count, const int* blocklens, const MPI_Aint* indices, MPI_Datatype old_type,
                               MPI_Datatype* new_type) {
-  return PMPI_Type_hindexed(count, blocklens,indices,old_type,new_type);
+  return PMPI_Type_hindexed(count, blocklens, indices, old_type, new_type);
 }
 
-int PMPI_Type_create_hindexed_block(int count, int blocklength, MPI_Aint* indices, MPI_Datatype old_type,
+int PMPI_Type_create_hindexed_block(int count, int blocklength, const MPI_Aint* indices, MPI_Datatype old_type,
                                     MPI_Datatype* new_type) {
   if (old_type == MPI_DATATYPE_NULL) {
     return MPI_ERR_TYPE;
@@ -224,22 +229,27 @@ int PMPI_Type_create_hindexed_block(int count, int blocklength, MPI_Aint* indice
   }
 }
 
-int PMPI_Type_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type) {
+int PMPI_Type_struct(int count, const int* blocklens, const MPI_Aint* indices, const MPI_Datatype* old_types,
+                     MPI_Datatype* new_type)
+{
   if (count<0){
     return MPI_ERR_COUNT;
   } else {
+    for(int i=0; i<count; i++)
+      if(old_types[i]==MPI_DATATYPE_NULL)
+        return MPI_ERR_TYPE;
     return simgrid::smpi::Datatype::create_struct(count, blocklens, indices, old_types, new_type);
   }
 }
 
-int PMPI_Type_create_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types,
+int PMPI_Type_create_struct(int count, const int* blocklens, const MPI_Aint* indices, const MPI_Datatype* old_types,
                             MPI_Datatype* new_type) {
   return PMPI_Type_struct(count, blocklens, indices, old_types, new_type);
 }
 
 
-int PMPI_Type_create_subarray(int ndims, int* array_of_sizes,
-                             int* array_of_subsizes, int* array_of_starts,
+int PMPI_Type_create_subarray(int ndims, const int* array_of_sizes,
+                             const int* array_of_subsizes, const int* array_of_starts,
                              int order, MPI_Datatype oldtype, MPI_Datatype *newtype) {
   if (ndims<0){
     return MPI_ERR_COUNT;
@@ -266,7 +276,7 @@ int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, 
 }
 
 
-int PMPI_Type_set_name(MPI_Datatype  datatype, char * name)
+int PMPI_Type_set_name(MPI_Datatype  datatype, const char * name)
 {
   if (datatype == MPI_DATATYPE_NULL)  {
     return MPI_ERR_TYPE;
@@ -291,10 +301,14 @@ int PMPI_Type_get_name(MPI_Datatype  datatype, char * name, int* len)
 }
 
 MPI_Datatype PMPI_Type_f2c(MPI_Fint datatype){
+  if(datatype==-1)
+    return MPI_DATATYPE_NULL;
   return static_cast<MPI_Datatype>(simgrid::smpi::F2C::f2c(datatype));
 }
 
 MPI_Fint PMPI_Type_c2f(MPI_Datatype datatype){
+  if(datatype==MPI_DATATYPE_NULL)
+    return -1;
   return datatype->c2f();
 }
 
@@ -334,35 +348,43 @@ int PMPI_Type_free_keyval(int* keyval) {
   return simgrid::smpi::Keyval::keyval_free<simgrid::smpi::Datatype>(keyval);
 }
 
-int PMPI_Unpack(void* inbuf, int incount, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
-  if(incount<0 || outcount < 0 || inbuf==nullptr || outbuf==nullptr)
+int PMPI_Unpack(const void* inbuf, int incount, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
+  if(incount<0 || outcount < 0){
+    return MPI_ERR_COUNT;
+  } else if (inbuf==nullptr || outbuf==nullptr){
     return MPI_ERR_ARG;
-  if (not type->is_valid())
+  } else if (type == MPI_DATATYPE_NULL || not type->is_valid()){
     return MPI_ERR_TYPE;
-  if(comm==MPI_COMM_NULL)
+  } else if(comm==MPI_COMM_NULL){
     return MPI_ERR_COMM;
-  return type->unpack(inbuf, incount, position, outbuf,outcount, comm);
+  } else{
+    return type->unpack(inbuf, incount, position, outbuf,outcount, comm);
+  }
 }
 
-int PMPI_Pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm) {
-  if(incount<0 || outcount < 0|| inbuf==nullptr || outbuf==nullptr)
+int PMPI_Pack(const void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm) {
+  if(incount<0){
+    return MPI_ERR_COUNT;
+  } else if(inbuf==nullptr || outbuf==nullptr || outcount < 0){
     return MPI_ERR_ARG;
-  if (not type->is_valid())
+  } else if (type == MPI_DATATYPE_NULL || not type->is_valid()){
     return MPI_ERR_TYPE;
-  if(comm==MPI_COMM_NULL)
+  } else if(comm==MPI_COMM_NULL){
     return MPI_ERR_COMM;
-  return type->pack(inbuf == MPI_BOTTOM ? nullptr : inbuf, incount, outbuf, outcount, position, comm);
+  } else {
+    return type->pack(inbuf == MPI_BOTTOM ? nullptr : inbuf, incount, outbuf, outcount, position, comm);
+  }
 }
 
 int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size) {
-  if(incount<0)
-    return MPI_ERR_ARG;
-  if (not datatype->is_valid())
+  if(incount<0){
+    return MPI_ERR_COUNT;
+  } else if (datatype == MPI_DATATYPE_NULL || not datatype->is_valid()){
     return MPI_ERR_TYPE;
-  if(comm==MPI_COMM_NULL)
+  } else if(comm==MPI_COMM_NULL){
     return MPI_ERR_COMM;
-
-  *size=incount*datatype->size();
-
-  return MPI_SUCCESS;
+  } else {
+    *size=incount*datatype->size();
+    return MPI_SUCCESS;
+  }
 }

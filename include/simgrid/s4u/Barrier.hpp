@@ -6,9 +6,10 @@
 #ifndef SIMGRID_S4U_BARRIER_HPP
 #define SIMGRID_S4U_BARRIER_HPP
 
+#include <simgrid/barrier.h>
+#include <simgrid/chrono.hpp>
 #include <simgrid/forward.h>
 #include <simgrid/s4u/ConditionVariable.hpp>
-#include <simgrid/chrono.hpp>
 #include <simgrid/s4u/Mutex.hpp>
 
 #include <atomic>
@@ -21,8 +22,8 @@ class XBT_PUBLIC Barrier {
 private:
   MutexPtr mutex_;
   ConditionVariablePtr cond_;
-  unsigned int expected_processes_;
-  unsigned int arrived_processes_ = 0;
+  unsigned int expected_actors_;
+  unsigned int arrived_actors_ = 0;
 
   /* refcounting */
   std::atomic_int_fast32_t refcount_{0};
@@ -30,17 +31,19 @@ private:
 public:
   explicit Barrier(unsigned int count);
   ~Barrier()              = default;
+#ifndef DOXYGEN
   Barrier(Barrier const&) = delete;
   Barrier& operator=(Barrier const&) = delete;
+#endif
 
-  /** Constructs a new barrier */
-  static BarrierPtr create(unsigned int expected_processes);
-
+  static BarrierPtr create(unsigned int expected_actors);
   int wait();
 
+#ifndef DOXYGEN
   /* refcounting */
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Barrier* barrier);
   friend XBT_PUBLIC void intrusive_ptr_release(Barrier* barrier);
+#endif
 };
 } // namespace s4u
 } // namespace simgrid

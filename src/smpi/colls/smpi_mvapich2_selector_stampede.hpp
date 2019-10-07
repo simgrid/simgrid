@@ -21,7 +21,7 @@ XBT_PUBLIC void smpi_coll_cleanup_mvapich2(void);
 struct mv2_alltoall_tuning_element {
   int min;
   int max;
-  int (*MV2_pt_Alltoall_function)(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+  int (*MV2_pt_Alltoall_function)(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                                   MPI_Datatype recvtype, MPI_Comm comm_ptr);
 };
 
@@ -32,7 +32,7 @@ struct mv2_alltoall_tuning_table {
   mv2_alltoall_tuning_element in_place_algo_table[MV2_MAX_NB_THRESHOLDS];
 };
 
-int (*MV2_Alltoall_function)(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+int (*MV2_Alltoall_function)(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                              MPI_Datatype recvtype, MPI_Comm comm_ptr) = NULL;
 
 /* Indicates number of processes per node */
@@ -333,7 +333,7 @@ static void init_mv2_alltoall_tables_stampede()
 struct mv2_allgather_tuning_element {
   int min;
   int max;
-  int (*MV2_pt_Allgatherction)(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+  int (*MV2_pt_Allgatherction)(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                                MPI_Datatype recvtype, MPI_Comm comm_ptr);
 };
 
@@ -344,7 +344,7 @@ struct mv2_allgather_tuning_table {
   mv2_allgather_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
 };
 
-int (*MV2_Allgatherction)(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+int (*MV2_Allgatherction)(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                           MPI_Datatype recvtype, MPI_Comm comm);
 
 int* mv2_allgather_table_ppn_conf                           = NULL;
@@ -352,7 +352,7 @@ int mv2_allgather_num_ppn_conf                              = 1;
 int* mv2_size_allgather_tuning_table                        = NULL;
 mv2_allgather_tuning_table** mv2_allgather_thresholds_table = NULL;
 
-static int MPIR_Allgather_RD_Allgather_Comm_MV2(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
+static int MPIR_Allgather_RD_Allgather_Comm_MV2(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
                                                 int recvcount, MPI_Datatype recvtype, MPI_Comm comm_ptr)
 {
   return 0;
@@ -562,7 +562,7 @@ static void init_mv2_allgather_tables_stampede()
 struct mv2_gather_tuning_element {
   int min;
   int max;
-  int (*MV2_pt_Gather_function)(void* sendbuf, int sendcnt, MPI_Datatype sendtype, void* recvbuf, int recvcnt,
+  int (*MV2_pt_Gather_function)(const void* sendbuf, int sendcnt, MPI_Datatype sendtype, void* recvbuf, int recvcnt,
                                 MPI_Datatype recvtype, int root, MPI_Comm comm_ptr);
 };
 
@@ -577,7 +577,7 @@ struct mv2_gather_tuning_table {
 int mv2_size_gather_tuning_table                     = 7;
 mv2_gather_tuning_table* mv2_gather_thresholds_table = NULL;
 
-typedef int (*MV2_Gather_function_ptr)(void* sendbuf, int sendcnt, MPI_Datatype sendtype, void* recvbuf, int recvcnt,
+typedef int (*MV2_Gather_function_ptr)(const void* sendbuf, int sendcnt, MPI_Datatype sendtype, void* recvbuf, int recvcnt,
                                        MPI_Datatype recvtype, int root, MPI_Comm comm);
 
 MV2_Gather_function_ptr MV2_Gather_inter_leader_function = NULL;
@@ -652,8 +652,8 @@ static void init_mv2_gather_tables_stampede()
 struct mv2_allgatherv_tuning_element {
   int min;
   int max;
-  int (*MV2_pt_Allgatherv_function)(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int* recvcounts,
-                                    int* displs, MPI_Datatype recvtype, MPI_Comm commg);
+  int (*MV2_pt_Allgatherv_function)(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, const int* recvcounts,
+                                    const int* displs, MPI_Datatype recvtype, MPI_Comm commg);
 };
 
 struct mv2_allgatherv_tuning_table {
@@ -662,8 +662,8 @@ struct mv2_allgatherv_tuning_table {
   mv2_allgatherv_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
 };
 
-int (*MV2_Allgatherv_function)(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int* recvcounts,
-                               int* displs, MPI_Datatype recvtype, MPI_Comm comm);
+int (*MV2_Allgatherv_function)(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, const int* recvcounts,
+                               const int* displs, MPI_Datatype recvtype, MPI_Comm comm);
 
 int mv2_size_allgatherv_tuning_table                         = 0;
 mv2_allgatherv_tuning_table* mv2_allgatherv_thresholds_table = NULL;
@@ -731,7 +731,7 @@ static void init_mv2_allgatherv_tables_stampede()
 struct mv2_allreduce_tuning_element {
   int min;
   int max;
-  int (*MV2_pt_Allreducection)(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
+  int (*MV2_pt_Allreducection)(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
                                MPI_Comm comm);
 };
 
@@ -745,35 +745,35 @@ struct mv2_allreduce_tuning_table {
   mv2_allreduce_tuning_element intra_node[MV2_MAX_NB_THRESHOLDS];
 };
 
-int (*MV2_Allreducection)(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
+int (*MV2_Allreducection)(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
                           MPI_Comm comm) = NULL;
 
-int (*MV2_Allreduce_intra_function)(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
+int (*MV2_Allreduce_intra_function)(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
                                     MPI_Comm comm) = NULL;
 
 int mv2_size_allreduce_tuning_table                        = 0;
 mv2_allreduce_tuning_table* mv2_allreduce_thresholds_table = NULL;
 
-static int MPIR_Allreduce_mcst_reduce_two_level_helper_MV2(void* sendbuf, void* recvbuf, int count,
+static int MPIR_Allreduce_mcst_reduce_two_level_helper_MV2(const void* sendbuf, void* recvbuf, int count,
                                                            MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   return 0;
 }
 
-static int MPIR_Allreduce_mcst_reduce_redscat_gather_MV2(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype,
+static int MPIR_Allreduce_mcst_reduce_redscat_gather_MV2(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype,
                                                          MPI_Op op, MPI_Comm comm)
 {
   return 0;
 }
 
-static int MPIR_Allreduce_reduce_p2p_MV2(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
+static int MPIR_Allreduce_reduce_p2p_MV2(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
                                          MPI_Comm comm)
 {
   simgrid::smpi::Colls::reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
   return MPI_SUCCESS;
 }
 
-static int MPIR_Allreduce_reduce_shmem_MV2(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
+static int MPIR_Allreduce_reduce_shmem_MV2(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
                                            MPI_Comm comm)
 {
   simgrid::smpi::Colls::reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
@@ -1149,7 +1149,7 @@ static void init_mv2_bcast_tables_stampede()
 struct mv2_reduce_tuning_element {
   int min;
   int max;
-  int (*MV2_pt_Reduce_function)(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
+  int (*MV2_pt_Reduce_function)(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
                                 MPI_Comm comm_ptr);
 };
 
@@ -1170,10 +1170,10 @@ mv2_reduce_tuning_table* mv2_reduce_thresholds_table = NULL;
 int mv2_reduce_intra_knomial_factor = -1;
 int mv2_reduce_inter_knomial_factor = -1;
 
-int (*MV2_Reduce_function)(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
+int (*MV2_Reduce_function)(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
                            MPI_Comm comm_ptr) = NULL;
 
-int (*MV2_Reduce_intra_function)(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
+int (*MV2_Reduce_intra_function)(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
                                  MPI_Comm comm_ptr) = NULL;
 
 #define MPIR_Reduce_inter_knomial_wrapper_MV2 simgrid::smpi::Coll_reduce_mvapich2_knomial::reduce
@@ -1381,7 +1381,7 @@ static void init_mv2_reduce_tables_stampede()
 struct mv2_red_scat_tuning_element {
   int min;
   int max;
-  int (*MV2_pt_Red_scat_function)(void* sendbuf, void* recvbuf, int* recvcnts, MPI_Datatype datatype, MPI_Op op,
+  int (*MV2_pt_Red_scat_function)(const void* sendbuf, void* recvbuf, const int* recvcnts, MPI_Datatype datatype, MPI_Op op,
                                   MPI_Comm comm_ptr);
 };
 
@@ -1394,10 +1394,10 @@ struct mv2_red_scat_tuning_table {
 int mv2_size_red_scat_tuning_table                       = 0;
 mv2_red_scat_tuning_table* mv2_red_scat_thresholds_table = NULL;
 
-int (*MV2_Red_scat_function)(void* sendbuf, void* recvbuf, int* recvcnts, MPI_Datatype datatype, MPI_Op op,
+int (*MV2_Red_scat_function)(const void* sendbuf, void* recvbuf, const int* recvcnts, MPI_Datatype datatype, MPI_Op op,
                              MPI_Comm comm_ptr);
 
-static int MPIR_Reduce_Scatter_Basic_MV2(void* sendbuf, void* recvbuf, int* recvcnts, MPI_Datatype datatype, MPI_Op op,
+static int MPIR_Reduce_Scatter_Basic_MV2(const void* sendbuf, void* recvbuf, const int* recvcnts, MPI_Datatype datatype, MPI_Op op,
                                          MPI_Comm comm)
 {
   simgrid::smpi::Coll_reduce_scatter_default::reduce_scatter(sendbuf, recvbuf, recvcnts, datatype, op, comm);
@@ -1473,7 +1473,7 @@ static void init_mv2_reduce_scatter_tables_stampede()
 struct mv2_scatter_tuning_element {
   int min;
   int max;
-  int (*MV2_pt_Scatter_function)(void* sendbuf, int sendcnt, MPI_Datatype sendtype, void* recvbuf, int recvcnt,
+  int (*MV2_pt_Scatter_function)(const void* sendbuf, int sendcnt, MPI_Datatype sendtype, void* recvbuf, int recvcnt,
                                  MPI_Datatype recvtype, int root, MPI_Comm comm);
 };
 
@@ -1490,15 +1490,15 @@ int mv2_scatter_num_ppn_conf                            = 1;
 int* mv2_size_scatter_tuning_table                      = NULL;
 mv2_scatter_tuning_table** mv2_scatter_thresholds_table = NULL;
 
-int (*MV2_Scatter_function)(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+int (*MV2_Scatter_function)(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                             MPI_Datatype recvtype, int root, MPI_Comm comm) = NULL;
 
-int (*MV2_Scatter_intra_function)(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+int (*MV2_Scatter_intra_function)(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                                   MPI_Datatype recvtype, int root, MPI_Comm comm) = NULL;
-int MPIR_Scatter_mcst_wrap_MV2(void* sendbuf, int sendcnt, MPI_Datatype sendtype, void* recvbuf, int recvcnt,
+int MPIR_Scatter_mcst_wrap_MV2(const void* sendbuf, int sendcnt, MPI_Datatype sendtype, void* recvbuf, int recvcnt,
                                MPI_Datatype recvtype, int root, MPI_Comm comm_ptr);
 
-int MPIR_Scatter_mcst_wrap_MV2(void* sendbuf, int sendcnt, MPI_Datatype sendtype, void* recvbuf, int recvcnt,
+int MPIR_Scatter_mcst_wrap_MV2(const void* sendbuf, int sendcnt, MPI_Datatype sendtype, void* recvbuf, int recvcnt,
                                MPI_Datatype recvtype, int root, MPI_Comm comm_ptr)
 {
   return 0;

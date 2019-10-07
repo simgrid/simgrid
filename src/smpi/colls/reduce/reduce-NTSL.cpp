@@ -14,16 +14,12 @@ int reduce_NTSL_segment_size_in_byte = 8192;
 */
 namespace simgrid{
 namespace smpi{
-int Coll_reduce_NTSL::reduce(void *buf, void *rbuf, int count,
+int Coll_reduce_NTSL::reduce(const void *buf, void *rbuf, int count,
                                 MPI_Datatype datatype, MPI_Op op, int root,
                                 MPI_Comm comm)
 {
   int tag = COLL_TAG_REDUCE;
   MPI_Status status;
-  MPI_Request *send_request_array;
-  MPI_Request *recv_request_array;
-  MPI_Status *send_status_array;
-  MPI_Status *recv_status_array;
   int rank, size;
   int i;
   MPI_Aint extent;
@@ -64,8 +60,7 @@ int Coll_reduce_NTSL::reduce(void *buf, void *rbuf, int count,
      }
    */
 
-  char *tmp_buf;
-  tmp_buf = (char *) smpi_get_tmp_sendbuffer(count * extent);
+  unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(count * extent);
 
   Request::sendrecv(buf, count, datatype, rank, tag, rbuf, count, datatype, rank,
                tag, comm, &status);
@@ -88,20 +83,15 @@ int Coll_reduce_NTSL::reduce(void *buf, void *rbuf, int count,
 
   /* pipeline */
   else {
-    send_request_array =
-        (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
-    recv_request_array =
-        (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
-    send_status_array =
-        (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
-    recv_status_array =
-        (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
+    MPI_Request* send_request_array = new MPI_Request[size + pipe_length];
+    MPI_Request* recv_request_array = new MPI_Request[size + pipe_length];
+    MPI_Status* send_status_array   = new MPI_Status[size + pipe_length];
+    MPI_Status* recv_status_array   = new MPI_Status[size + pipe_length];
 
     /* root recv data */
     if (rank == root) {
       for (i = 0; i < pipe_length; i++) {
-        recv_request_array[i] = Request::irecv((char *) tmp_buf + (i * increment), segment, datatype, from,
-                  (tag + i), comm);
+        recv_request_array[i] = Request::irecv(tmp_buf + (i * increment), segment, datatype, from, (tag + i), comm);
       }
       for (i = 0; i < pipe_length; i++) {
         Request::wait(&recv_request_array[i], &status);
@@ -122,8 +112,7 @@ int Coll_reduce_NTSL::reduce(void *buf, void *rbuf, int count,
     /* intermediate nodes relay (receive, reduce, then send) data */
     else {
       for (i = 0; i < pipe_length; i++) {
-        recv_request_array[i] = Request::irecv((char *) tmp_buf + (i * increment), segment, datatype, from,
-                  (tag + i), comm);
+        recv_request_array[i] = Request::irecv(tmp_buf + (i * increment), segment, datatype, from, (tag + i), comm);
       }
       for (i = 0; i < pipe_length; i++) {
         Request::wait(&recv_request_array[i], &status);
@@ -135,10 +124,10 @@ int Coll_reduce_NTSL::reduce(void *buf, void *rbuf, int count,
       Request::waitall((pipe_length), send_request_array, send_status_array);
     }
 
-    free(send_request_array);
-    free(recv_request_array);
-    free(send_status_array);
-    free(recv_status_array);
+    delete[] send_request_array;
+    delete[] recv_request_array;
+    delete[] send_status_array;
+    delete[] recv_status_array;
   }                             /* end pipeline */
 
   /* when count is not divisible by block size, use default BCAST for the remainder */

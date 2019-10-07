@@ -247,9 +247,8 @@ static void instr_action_on_state_change(simgrid::kernel::resource::Action const
   for (int i = 0; i < n; i++) {
     double value = action.get_variable()->get_value() * action.get_variable()->get_constraint_weight(i);
     /* Beware of composite actions: ptasks put links and cpus together. Extra pb: we cannot dynamic_cast from void* */
-    simgrid::kernel::resource::Resource* resource =
-        static_cast<simgrid::kernel::resource::Resource*>(action.get_variable()->get_constraint(i)->get_id());
-    simgrid::surf::Cpu* cpu = dynamic_cast<simgrid::surf::Cpu*>(resource);
+    simgrid::kernel::resource::Resource* resource = action.get_variable()->get_constraint(i)->get_id();
+    simgrid::kernel::resource::Cpu* cpu = dynamic_cast<simgrid::kernel::resource::Cpu*>(resource);
 
     if (cpu != nullptr)
       TRACE_surf_resource_set_utilization("HOST", "speed_used", cpu->get_cname(), action.get_category(), value,
@@ -356,7 +355,7 @@ void instr_define_callbacks()
   // always need the callbacks to zones (we need only the root zone), to create the rootContainer and the rootType
   // properly
   if (TRACE_needs_platform()) {
-    simgrid::s4u::on_platform_created.connect(instr_on_platform_created);
+    simgrid::s4u::Engine::on_platform_created.connect(instr_on_platform_created);
     simgrid::s4u::Host::on_creation.connect(instr_host_on_creation);
     simgrid::s4u::Host::on_speed_change.connect(instr_host_on_speed_change);
     simgrid::s4u::Link::on_creation.connect(instr_link_on_creation);
@@ -367,7 +366,7 @@ void instr_define_callbacks()
   }
   simgrid::s4u::NetZone::on_creation.connect(instr_netzone_on_creation);
 
-  simgrid::surf::CpuAction::on_state_change.connect(instr_action_on_state_change);
+  simgrid::kernel::resource::CpuAction::on_state_change.connect(instr_action_on_state_change);
   simgrid::s4u::Link::on_communication_state_change.connect(instr_action_on_state_change);
 
   if (TRACE_actor_is_enabled()) {
@@ -389,10 +388,10 @@ void instr_define_callbacks()
     simgrid::s4u::Actor::on_wake_up.connect([](simgrid::s4u::Actor const& actor) {
       simgrid::instr::Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->pop_event();
     });
-    simgrid::s4u::Exec::on_start.connect([](simgrid::s4u::Actor const& actor) {
+    simgrid::s4u::Exec::on_start.connect([](simgrid::s4u::Actor const& actor, simgrid::s4u::Exec const&) {
       simgrid::instr::Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->push_event("execute");
     });
-    simgrid::s4u::Exec::on_completion.connect([](simgrid::s4u::Actor const& actor) {
+    simgrid::s4u::Exec::on_completion.connect([](simgrid::s4u::Actor const& actor, simgrid::s4u::Exec const&) {
       simgrid::instr::Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->pop_event();
     });
     simgrid::s4u::Comm::on_sender_start.connect([](simgrid::s4u::Actor const& actor) {
@@ -439,8 +438,8 @@ static void recursiveNewVariableType(const std::string& new_typename, const std:
   if (root->get_name() == "LINK")
     root->by_name_or_create(std::string("b") + new_typename, color);
 
-  for (auto elm : root->children_) {
-    recursiveNewVariableType(new_typename, color, elm.second);
+  for (auto const& elm : root->children_) {
+    recursiveNewVariableType(new_typename, color, elm.second.get());
   }
 }
 
@@ -455,8 +454,8 @@ static void recursiveNewUserVariableType(const std::string& father_type, const s
   if (root->get_name() == father_type) {
     root->by_name_or_create(new_typename, color);
   }
-  for (auto elm : root->children_)
-    recursiveNewUserVariableType(father_type, new_typename, color, elm.second);
+  for (auto const& elm : root->children_)
+    recursiveNewUserVariableType(father_type, new_typename, color, elm.second.get());
 }
 
 void instr_new_user_variable_type(const std::string& father_type, const std::string& new_typename,
@@ -471,8 +470,8 @@ static void recursiveNewUserStateType(const std::string& father_type, const std:
   if (root->get_name() == father_type)
     root->by_name_or_create<simgrid::instr::StateType>(new_typename);
 
-  for (auto elm : root->children_)
-    recursiveNewUserStateType(father_type, new_typename, elm.second);
+  for (auto const& elm : root->children_)
+    recursiveNewUserStateType(father_type, new_typename, elm.second.get());
 }
 
 void instr_new_user_state_type(const std::string& father_type, const std::string& new_typename)
@@ -486,8 +485,8 @@ static void recursiveNewValueForUserStateType(const std::string& type_name, cons
   if (root->get_name() == type_name)
     static_cast<simgrid::instr::StateType*>(root)->add_entity_value(val, color);
 
-  for (auto elm : root->children_)
-    recursiveNewValueForUserStateType(type_name, val, color, elm.second);
+  for (auto const& elm : root->children_)
+    recursiveNewValueForUserStateType(type_name, val, color, elm.second.get());
 }
 
 void instr_new_value_for_user_state_type(const std::string& type_name, const char* value, const std::string& color)

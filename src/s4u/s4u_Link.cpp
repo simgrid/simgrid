@@ -71,11 +71,11 @@ double Link::get_usage()
 
 void Link::turn_on()
 {
-  simgrid::simix::simcall([this]() { this->pimpl_->turn_on(); });
+  simgrid::kernel::actor::simcall([this]() { this->pimpl_->turn_on(); });
 }
 void Link::turn_off()
 {
-  simgrid::simix::simcall([this]() { this->pimpl_->turn_off(); });
+  simgrid::kernel::actor::simcall([this]() { this->pimpl_->turn_off(); });
 }
 
 bool Link::is_on() const
@@ -83,35 +83,26 @@ bool Link::is_on() const
   return this->pimpl_->is_on();
 }
 
-void* Link::get_data()
-{
-  return this->pimpl_->get_data();
-}
-void Link::set_data(void* d)
-{
-  simgrid::simix::simcall([this, d]() { this->pimpl_->set_data(d); });
-}
-
 void Link::set_state_profile(kernel::profile::Profile* profile)
 {
-  simgrid::simix::simcall([this, profile]() { this->pimpl_->set_state_profile(profile); });
+  simgrid::kernel::actor::simcall([this, profile]() { this->pimpl_->set_state_profile(profile); });
 }
 void Link::set_bandwidth_profile(kernel::profile::Profile* profile)
 {
-  simgrid::simix::simcall([this, profile]() { this->pimpl_->set_bandwidth_profile(profile); });
+  simgrid::kernel::actor::simcall([this, profile]() { this->pimpl_->set_bandwidth_profile(profile); });
 }
 void Link::set_latency_profile(kernel::profile::Profile* trace)
 {
-  simgrid::simix::simcall([this, trace]() { this->pimpl_->set_latency_profile(trace); });
+  simgrid::kernel::actor::simcall([this, trace]() { this->pimpl_->set_latency_profile(trace); });
 }
 
-const char* Link::get_property(const std::string& key)
+const char* Link::get_property(const std::string& key) const
 {
   return this->pimpl_->get_property(key);
 }
 void Link::set_property(const std::string& key, const std::string& value)
 {
-  simgrid::simix::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  simgrid::kernel::actor::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
 }
 } // namespace s4u
 } // namespace simgrid

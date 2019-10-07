@@ -6,6 +6,8 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/resource/profile/FutureEvtSet.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
@@ -26,8 +28,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF 
 
 static std::string surf_parsed_filename; // Currently parsed file (for the error messages)
 std::vector<simgrid::kernel::resource::LinkImpl*>
-    parsed_link_list; /* temporary store of current list link of a route */
-
+    parsed_link_list; /* temporary store of current link list of a route */
+std::vector<simgrid::kernel::resource::DiskImpl*> parsed_disk_list; /* temporary store of current disk list of a host */
 /*
  * Helping functions
  */
@@ -86,7 +88,7 @@ double surf_parse_get_double(const std::string& s)
 {
   try {
     return std::stod(s);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     surf_parse_error(s + " is not a double");
   }
 }
@@ -95,7 +97,7 @@ int surf_parse_get_int(const std::string& s)
 {
   try {
     return std::stoi(s);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     surf_parse_error(s + " is not a double");
   }
 }
@@ -171,23 +173,23 @@ unit_scale::unit_scale(std::initializer_list<std::tuple<const std::string, doubl
   }
 }
 
-/* Note: field `unit' for the last element of parameter `units' should be nullptr. */
+/* Note: no warning is issued for unit-less values when `name' is empty. */
 double surf_parse_get_value_with_unit(const char* string, const unit_scale& units, const char* entity_kind,
                                       const std::string& name, const char* error_msg, const char* default_unit)
 {
-  char* ptr;
+  char* endptr;
   errno = 0;
-  double res   = strtod(string, &ptr);
+  double res      = strtod(string, &endptr);
+  const char* ptr = endptr; // for const-correctness
   if (errno == ERANGE)
     surf_parse_error(std::string("value out of range: ") + string);
   if (ptr == string)
     surf_parse_error(std::string("cannot parse number:") + string);
   if (ptr[0] == '\0') {
-    if (res == 0)
-      return res; // Ok, 0 can be unit-less
-
-    XBT_WARN("Deprecated unit-less value '%s' for %s %s. %s", string, entity_kind, name.c_str(), error_msg);
-    ptr = (char*)default_unit;
+    // Ok, 0 can be unit-less
+    if (res != 0 && not name.empty())
+      XBT_WARN("Deprecated unit-less value '%s' for %s %s. %s", string, entity_kind, name.c_str(), error_msg);
+    ptr = default_unit;
   }
   auto u = units.find(ptr);
   if (u == units.end())
@@ -225,6 +227,23 @@ double surf_parse_get_bandwidth(const char* string, const char* entity_kind, con
                                 std::make_tuple("Bps", 1.0, 2, true), std::make_tuple("Bps", 1.0, 10, true)};
   return surf_parse_get_value_with_unit(string, units, entity_kind, name,
       "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)", "Bps");
+}
+
+std::vector<double> surf_parse_get_bandwidths(const char* string, const char* entity_kind, const std::string& name)
+{
+  static const unit_scale units{std::make_tuple("bps", 0.125, 2, true), std::make_tuple("bps", 0.125, 10, true),
+                                std::make_tuple("Bps", 1.0, 2, true), std::make_tuple("Bps", 1.0, 10, true)};
+
+  std::vector<double> bandwidths;
+  std::vector<std::string> tokens;
+  boost::split(tokens, string, boost::is_any_of(";"));
+  for (auto token : tokens) {
+    bandwidths.push_back(surf_parse_get_value_with_unit(
+        token.c_str(), units, entity_kind, name,
+        "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)", "Bps"));
+  }
+
+  return bandwidths;
 }
 
 double surf_parse_get_speed(const char* string, const char* entity_kind, const std::string& name)
@@ -390,7 +409,7 @@ void STag_surfxml_platform() {
              surf_parsed_filename.c_str(), version);
 }
 void ETag_surfxml_platform(){
-  simgrid::s4u::on_platform_created();
+  simgrid::s4u::Engine::on_platform_created();
 }
 
 void STag_surfxml_host(){
@@ -439,8 +458,27 @@ void ETag_surfxml_host()    {
                          : nullptr;
   host.pstate      = surf_parse_get_int(A_surfxml_host_pstate);
   host.coord       = A_surfxml_host_coordinates;
+  host.disks.swap(parsed_disk_list);
 
   sg_platf_new_host(&host);
+}
+
+void STag_surfxml_disk() {
+  ZONE_TAG = 0;
+  xbt_assert(current_property_set == nullptr,
+             "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
+}
+
+void ETag_surfxml_disk() {
+  simgrid::kernel::routing::DiskCreationArgs disk;
+  disk.properties      = current_property_set;
+  current_property_set = nullptr;
+
+  disk.id       = A_surfxml_disk_id;
+  disk.read_bw  = surf_parse_get_bandwidth(A_surfxml_disk_read___bw, "read_bw of disk ", disk.id);
+  disk.write_bw = surf_parse_get_bandwidth(A_surfxml_disk_write___bw, "write_bw of disk ", disk.id);
+
+  parsed_disk_list.push_back(sg_platf_new_disk(&disk));
 }
 
 void STag_surfxml_host___link(){
@@ -587,7 +625,7 @@ void ETag_surfxml_link(){
   current_property_set     = nullptr;
 
   link.id                  = std::string(A_surfxml_link_id);
-  link.bandwidth           = surf_parse_get_bandwidth(A_surfxml_link_bandwidth, "bandwidth of link", link.id.c_str());
+  link.bandwidths          = surf_parse_get_bandwidths(A_surfxml_link_bandwidth, "bandwidth of link", link.id.c_str());
   link.bandwidth_trace     = A_surfxml_link_bandwidth___file[0]
                              ? simgrid::kernel::profile::Profile::from_file(A_surfxml_link_bandwidth___file)
                              : nullptr;
@@ -612,6 +650,9 @@ void ETag_surfxml_link(){
     break;
   case A_surfxml_link_sharing___policy_SPLITDUPLEX:
     link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
+    break;
+  case A_surfxml_link_sharing___policy_WIFI:
+    link.policy = simgrid::s4u::Link::SharingPolicy::WIFI;
     break;
   default:
     surf_parse_error(std::string("Invalid sharing policy in link ") + link.id);
@@ -658,7 +699,8 @@ void ETag_surfxml_backbone(){
 
   link.properties = nullptr;
   link.id = std::string(A_surfxml_backbone_id);
-  link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id.c_str());
+  link.bandwidths.push_back(
+      surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id.c_str()));
   link.latency = surf_parse_get_time(A_surfxml_backbone_latency, "latency of backbone", link.id.c_str());
   link.policy     = simgrid::s4u::Link::SharingPolicy::SHARED;
 

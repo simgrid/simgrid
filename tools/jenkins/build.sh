@@ -12,6 +12,7 @@ export LC_ALL=C
 
 echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -rf /tmp/simgrid-java*
+rm -rf /var/tmp/simgrid-java*
 rm -rf /tmp/jvm-*
 find /builds/workspace/SimGrid/ -name "hs_err_pid*.log" | xargs rm -f
 ls /tmp
@@ -26,7 +27,7 @@ fi
 
 # usage: die status message...
 die () {
-  local status=${1:-1}
+  status=${1:-1}
   shift
   [ $# -gt 0 ] || set -- "Error - Halting"
   echo "$@" >&2
@@ -72,8 +73,7 @@ elif [ -f /etc/debian_version ]; then
     os=Debian
     ver=$(cat /etc/debian_version)
 elif [ -f /etc/redhat-release ]; then
-    os=""
-    ver=$(cat /etc/redhat-release)
+    read -r os ver < /etc/redhat-release
 elif [ -f /usr/bin/sw_vers ]; then
     os=$(sw_vers -productName)
     ver=$(sw_vers -productVersion)
@@ -163,7 +163,7 @@ echo "XX   pwd: "$(pwd)
 echo "XX"
 
 cmake -G"$GENERATOR" -Denable_documentation=OFF $WORKSPACE
-make dist -j$NUMBER_OF_PROCESSORS
+make dist -j $NUMBER_OF_PROCESSORS
 SIMGRID_VERSION=$(cat VERSION)
 
 echo "XX"
@@ -211,7 +211,7 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
 #  -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
 set +x
 
-make -j$NUMBER_OF_PROCESSORS VERBOSE=1 tests
+make -j $NUMBER_OF_PROCESSORS VERBOSE=1 tests
 
 echo "XX"
 echo "XX Run the tests"

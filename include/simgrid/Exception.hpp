@@ -56,6 +56,19 @@ public:
 /** Create a ThrowPoint with (__FILE__, __LINE__, __func__) */
 #define XBT_THROW_POINT                                                                                                \
   ::simgrid::xbt::ThrowPoint(__FILE__, __LINE__, __func__, simgrid::xbt::Backtrace(), xbt_procname(), xbt_getpid())
+
+class XBT_PUBLIC ImpossibleError : public std::logic_error {
+public:
+  explicit ImpossibleError(const std::string& arg) : std::logic_error(arg) {}
+  ~ImpossibleError();
+};
+
+class XBT_PUBLIC UnimplementedError : public std::logic_error {
+public:
+  explicit UnimplementedError(const std::string& arg) : std::logic_error(arg) {}
+  ~UnimplementedError();
+};
+
 } // namespace xbt
 
 /** Ancestor class of all SimGrid exception */
@@ -65,103 +78,82 @@ public:
       : std::runtime_error(std::move(message)), throwpoint_(std::move(throwpoint))
   {
   }
+  ~Exception(); // DO NOT define it here -- see Exception.cpp for a rationale
 
   /** Return the information about where the exception was thrown */
   xbt::ThrowPoint const& throw_point() const { return throwpoint_; }
 
   std::string const resolve_backtrace() const { return throwpoint_.backtrace_.resolve(); }
 
+  /** Allow to carry a value (used by waitall/waitany) */
+  int value = 0;
+
 private:
   xbt::ThrowPoint throwpoint_;
 };
 
-} // namespace simgrid
-
-/** A legacy exception
- *
- *  It is defined by a category and a value within that category (as well as
- *  an optional error message).
- *
- *  This used to be a structure for C exceptions but it has been retrofitted
- *  as a C++ exception and some of its data has been moved in the
- *  @ref WithContextException base class. We should deprecate it and replace it
- *  with either C++ different exceptions or `std::system_error` which already
- *  provides this (category + error code) logic.
- *
- *  @ingroup XBT_ex_c
- */
-class XBT_PUBLIC xbt_ex : public simgrid::Exception {
-public:
-  /**
-   *
-   * @param throwpoint Throw point (use XBT_THROW_POINT)
-   * @param message    Exception message
-   */
-  xbt_ex(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
-      : simgrid::Exception(std::move(throwpoint), std::move(message))
-  {
-  }
-
-  xbt_ex(const xbt_ex&) = default;
-
-  ~xbt_ex(); // DO NOT define it here -- see ex.cpp for a rationale
-
-  /** Category (what went wrong) */
-  xbt_errcat_t category = unknown_error;
-
-  /** Why did it went wrong */
-  int value = 0;
-};
-
-namespace simgrid {
-
 /** Exception raised when a timeout elapsed */
-class TimeoutError : public xbt_ex {
+class TimeoutException : public Exception {
 public:
-  TimeoutError(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
-      : xbt_ex(std::move(throwpoint), std::move(message))
+  TimeoutException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
+      : Exception(std::move(throwpoint), std::move(message))
   {
-    category = timeout_error;
   }
 };
+
+XBT_ATTRIB_DEPRECATED_v327("Please use simgrid::TimeoutException") typedef TimeoutException TimeoutError;
 
 /** Exception raised when a host fails */
-class HostFailureException : public xbt_ex {
+class HostFailureException : public Exception {
 public:
   HostFailureException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
-      : xbt_ex(std::move(throwpoint), std::move(message))
+      : Exception(std::move(throwpoint), std::move(message))
   {
-    category = host_error;
   }
 };
 
 /** Exception raised when a communication fails because of the network or because of the remote host */
-class NetworkFailureException : public xbt_ex {
+class NetworkFailureException : public Exception {
 public:
   NetworkFailureException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
-      : xbt_ex(std::move(throwpoint), std::move(message))
+      : Exception(std::move(throwpoint), std::move(message))
   {
-    category = network_error;
   }
 };
 
 /** Exception raised when a storage fails */
-class StorageFailureException : public xbt_ex {
+class StorageFailureException : public Exception {
 public:
   StorageFailureException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
-      : xbt_ex(std::move(throwpoint), std::move(message))
+      : Exception(std::move(throwpoint), std::move(message))
   {
-    category = io_error;
+  }
+};
+
+/** Exception raised when a VM fails */
+class VmFailureException : public Exception {
+public:
+  VmFailureException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
+      : Exception(std::move(throwpoint), std::move(message))
+  {
   }
 };
 
 /** Exception raised when something got canceled before completion */
-class CancelException : public xbt_ex {
+class CancelException : public Exception {
 public:
   CancelException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
-      : xbt_ex(std::move(throwpoint), std::move(message))
+      : Exception(std::move(throwpoint), std::move(message))
   {
-    category = cancel_error;
+  }
+};
+
+/** Exception raised when something is going wrong during the simulation tracing */
+class TracingError : public Exception {
+public:
+  TracingError(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
+      : Exception(std::move(throwpoint), std::move(message))
+  {
   }
 };
 
@@ -196,7 +188,7 @@ public:
   ~ForcefulKillException();
   const char* what() const noexcept { return msg_.c_str(); }
 
-  static void do_throw();
+  XBT_ATTRIB_NORETURN static void do_throw();
   static bool try_n_catch(const std::function<void()>& try_block);
 
 private:
@@ -204,5 +196,7 @@ private:
 };
 
 } // namespace simgrid
+
+XBT_ATTRIB_DEPRECATED_v327("Please use simgrid::Exception") typedef simgrid::Exception xbt_ex;
 
 #endif

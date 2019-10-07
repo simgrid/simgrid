@@ -129,12 +129,13 @@ static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
 
   void* mem = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if(mem == MAP_FAILED) {
-    xbt_die(
-        "Failed to map fd %d with size %zu: %s\n"
-        "If you are running a lot of ranks, you may be exceeding the amount of mappings allowed per process.\n"
-        "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
-        "Please see http://simgrid.gforge.inria.fr/simgrid/latest/doc/html/options.html#options_virt for more info.",
-        fd, size, strerror(errno));
+    xbt_die("Failed to map fd %d with size %zu: %s\n"
+            "If you are running a lot of ranks, you may be exceeding the amount of mappings allowed per process.\n"
+            "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
+            "Please see "
+            "https://simgrid.org/doc/latest/Configuring_SimGrid.html#configuring-the-user-code-virtualization for more "
+            "information.",
+            fd, size, strerror(errno));
   }
   snprintf(loc, PTR_STRLEN, "%p", mem);
   meta.size = size;
@@ -281,7 +282,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
       void* res = mmap(pos, smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE, mmap_flag,
                        huge_fd, 0);
       xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
-                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ? "
+                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize:newvalue (default 1048576) ? "
                              "You can also try using  the sysctl vm.max_map_count. "
                              "If you are using huge pages, check that you have at least one huge page (/proc/sys/vm/nr_hugepages) "
                              "and that the directory you are passing is mounted correctly (mount /path/to/huge -t hugetlbfs -o rw,mode=0777).",
@@ -295,7 +296,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
       void* res = mmap(pos, low_page_stop_offset-low_page_start_offset, PROT_READ | PROT_WRITE, mmap_base_flag, // not a full huge page
                        smpi_shared_malloc_bogusfile, 0);
       xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
-                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?"
+                             "size of the mapped file using --cfg=smpi/shared-malloc-blocksize:newvalue (default 1048576) ?"
                              "You can also try using  the sysctl vm.max_map_count",
                  strerror(errno));
     }
@@ -307,7 +308,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
         void* res = mmap(pos, high_page_stop_offset-stop_block_offset, PROT_READ | PROT_WRITE, mmap_base_flag, // not a full huge page
                          smpi_shared_malloc_bogusfile, 0);
         xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
-                               "size of the mapped file using --cfg=smpi/shared-malloc-blocksize=newvalue (default 1048576) ?"
+                               "size of the mapped file using --cfg=smpi/shared-malloc-blocksize:newvalue (default 1048576) ?"
                                "You can also try using  the sysctl vm.max_map_count",
                    strerror(errno));
       }
@@ -438,9 +439,9 @@ void smpi_shared_free(void *ptr)
       close(data->fd);
       allocs.erase(allocs.find(meta->second.data->first));
       allocs_metadata.erase(ptr);
-      XBT_DEBUG("Shared free - with removal - of %p", ptr);
+      XBT_DEBUG("Shared free - Local - with removal - of %p", ptr);
     } else {
-      XBT_DEBUG("Shared free - no removal - of %p, count = %d", ptr, data->count);
+      XBT_DEBUG("Shared free - Local - no removal - of %p, count = %d", ptr, data->count);
     }
 
   } else if (smpi_cfg_shared_malloc == SharedMallocType::GLOBAL) {
@@ -450,7 +451,7 @@ void smpi_shared_free(void *ptr)
       if(meta->second.data->second.count==0)
         delete meta->second.data;
     }
-
+    XBT_DEBUG("Shared free - Global - of %p", ptr);
     munmap(ptr, meta->second.size);
   } else {
     XBT_DEBUG("Classic deallocation of %p", ptr);

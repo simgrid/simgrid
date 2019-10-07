@@ -7,6 +7,8 @@
 #define SMPI_COMM_HPP_INCLUDED
 
 #include <list>
+#include <string>
+#include "smpi_errhandler.hpp"
 #include "smpi_keyvals.hpp"
 #include "smpi_group.hpp"
 #include "smpi_topo.hpp"
@@ -28,25 +30,37 @@ class Comm : public F2C, public Keyval{
   int is_blocked_;              // are ranks allocated on the same smp node contiguous ?
   int is_smp_comm_;             // set to 0 in case this is already an intra-comm or a leader-comm to avoid recursivity
   std::list<MPI_Win> rma_wins_; // attached windows for synchronization.
+  std::string name_;
+  MPI_Info info_;
+  int id_;
+  MPI_Errhandler errhandler_;
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;
   static int keyval_id_;
 
   Comm() = default;
-  Comm(MPI_Group group, MPI_Topology topo, int smp = 0);
+  Comm(MPI_Group group, MPI_Topology topo, int smp = 0, int id=MPI_UNDEFINED);
   int dup(MPI_Comm* newcomm);
+  int dup_with_info(MPI_Info info, MPI_Comm* newcomm);
   MPI_Group group();
   MPI_Topology topo() { return topo_; }
   int size();
   int rank();
+  int id();
   void get_name(char* name, int* len);
+  void set_name(const char* name);
+  MPI_Info info();
+  void set_info( MPI_Info info);
+  MPI_Errhandler errhandler();
+  void set_errhandler( MPI_Errhandler errhandler);
   void set_leaders_comm(MPI_Comm leaders);
   void set_intra_comm(MPI_Comm leaders) { intra_comm_ = leaders; };
   int* get_non_uniform_map();
   int* get_leaders_map();
   MPI_Comm get_leaders_comm();
   MPI_Comm get_intra_comm();
+  MPI_Comm find_intra_comm(int* leader);
   int is_uniform();
   int is_blocked();
   int is_smp_comm();
@@ -57,7 +71,6 @@ public:
   static void destroy(MPI_Comm comm);
   void init_smp();
 
-  int add_f() override;
   static void free_f(int id);
   static Comm* f2c(int);
 

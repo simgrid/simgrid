@@ -24,9 +24,10 @@ sys.path.append(os.path.abspath('_ext'))
 read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 
 if read_the_docs_build:
-    subprocess.call('cd source; doxygen', shell=True)
-    subprocess.call('javasphinx-apidoc --force -o source/java/ ../src/bindings/java/org/simgrid/msg', shell=True)
-    subprocess.call('rm source/java/packages.rst', shell=True)
+    subprocess.call('pwd', shell=True) # should be in docs/source
+    subprocess.call('doxygen', shell=True)
+    subprocess.call('javasphinx-apidoc --force -o java/ ../../src/bindings/java/org/simgrid/msg', shell=True)
+    subprocess.call('rm java/packages.rst', shell=True)
 
 # -- Project information -----------------------------------------------------
 
@@ -35,10 +36,9 @@ copyright = u'2002-2019, The SimGrid Team'
 author = u'The SimGrid Team'
 
 # The short X.Y version
-version = u'alpha 3.23'
+version = u'3.23.3'
 # The full version, including alpha/beta/rc tags
-release = u'alpha 3.23'
-
+#release = u'3.23 alpha'
 
 # -- General configuration ---------------------------------------------------
 
@@ -86,7 +86,7 @@ primary_domain = 'cpp'
 
 
 # Add any paths that contain templates here, relative to this directory.
-# templates_path = ['_templates']
+templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string: ['.rst', '.md']

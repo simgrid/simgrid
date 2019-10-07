@@ -27,7 +27,7 @@ Mimicking the OS behavior may seem over-engineered here, but this is
 mandatory to the model-checker. The simcalls, representing actors'
 actions, are the transitions of the formal system. Verifying the
 system requires to manipulate these transitions explicitly. This also
-allows to run safely the actors in parallel, even if this is less
+allows one to run the actors safely in parallel, even if this is less
 commonly used by our users.
 
 So, the key ideas here are:
@@ -708,20 +708,15 @@ std::cv_status ConditionVariable::wait_for(
     simcall_cond_wait_timeout(cond_, lock.mutex()->mutex_, timeout);
     return std::cv_status::no_timeout;
   }
-  catch (xbt_ex& e) {
-
+  catch (const simgrid::TimeoutException& e) {
     // If the exception was a timeout, we have to take the lock again:
-    if (e.category == timeout_error) {
-      try {
-        lock.mutex()->lock();
-        return std::cv_status::timeout;
-      }
-      catch (...) {
-        std::terminate();
-      }
+    try {
+      lock.mutex()->lock();
+      return std::cv_status::timeout;
     }
-
-    std::terminate();
+    catch (...) {
+      std::terminate();
+    }
   }
   catch (...) {
     std::terminate();

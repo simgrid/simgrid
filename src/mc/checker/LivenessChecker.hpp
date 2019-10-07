@@ -7,18 +7,13 @@
 #ifndef SIMGRID_MC_LIVENESS_CHECKER_HPP
 #define SIMGRID_MC_LIVENESS_CHECKER_HPP
 
-#include <cstddef>
+#include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_state.hpp"
+#include "xbt/automaton.hpp"
 
-#include <string>
 #include <list>
 #include <memory>
 #include <vector>
-
-#include "src/mc/checker/Checker.hpp"
-#include "src/mc/mc_state.hpp"
-#include <simgrid/config.h>
-#include <xbt/automaton.h>
-#include <xbt/base.h>
 
 namespace simgrid {
 namespace mc {
@@ -63,30 +58,31 @@ public:
   explicit LivenessChecker(Session& session);
   ~LivenessChecker() = default;
   void run() override;
-  RecordTrace getRecordTrace() override;
-  std::vector<std::string> getTextualTrace() override;
-  void logState() override;
+  RecordTrace get_record_trace() override;
+  std::vector<std::string> get_textual_trace() override;
+  void log_state() override;
+
 private:
-  int compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2);
-  std::shared_ptr<const std::vector<int>> getPropositionValues();
-  std::shared_ptr<VisitedPair> insertAcceptancePair(simgrid::mc::Pair* pair);
-  int insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair, simgrid::mc::Pair* pair);
-  void showAcceptanceCycle(std::size_t depth);
+  std::shared_ptr<const std::vector<int>> get_proposition_values();
+  std::shared_ptr<VisitedPair> insert_acceptance_pair(simgrid::mc::Pair* pair);
+  int insert_visited_pair(std::shared_ptr<VisitedPair> visited_pair, simgrid::mc::Pair* pair);
+  void show_acceptance_cycle(std::size_t depth);
   void replay();
-  void removeAcceptancePair(int pair_num);
-  void purgeVisitedPairs();
+  void remove_acceptance_pair(int pair_num);
+  void purge_visited_pairs();
   void backtrack();
-  std::shared_ptr<Pair> newPair(Pair* pair, xbt_automaton_state_t state, std::shared_ptr<const std::vector<int>> propositions);
+  std::shared_ptr<Pair> create_pair(Pair* pair, xbt_automaton_state_t state,
+                                    std::shared_ptr<const std::vector<int>> propositions);
 
   // A stack of (application_state, automaton_state) pairs for DFS exploration:
-  std::list<std::shared_ptr<Pair>> explorationStack_;
-  std::list<std::shared_ptr<VisitedPair>> acceptancePairs_;
-  std::list<std::shared_ptr<VisitedPair>> visitedPairs_;
-  unsigned long visitedPairsCount_ = 0;
-  unsigned long expandedPairsCount_ = 0;
-  unsigned long expandedStatesCount_ = 0;
-  int previousPair_ = 0;
-  std::string previousRequest_;
+  std::list<std::shared_ptr<Pair>> exploration_stack_;
+  std::list<std::shared_ptr<VisitedPair>> acceptance_pairs_;
+  std::list<std::shared_ptr<VisitedPair>> visited_pairs_;
+  unsigned long visited_pairs_count_   = 0;
+  unsigned long expanded_pairs_count_  = 0;
+  unsigned long expanded_states_count_ = 0;
+  int previous_pair_                   = 0;
+  std::string previous_request_;
 };
 
 }

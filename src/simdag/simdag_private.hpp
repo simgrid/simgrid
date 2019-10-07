@@ -19,15 +19,11 @@ namespace simgrid{
 namespace sd{
 class Global {
 public:
-  explicit Global();
-  Global(const Global&) = delete;
-  Global& operator=(const Global&) = delete;
-  ~Global();
-  bool watch_point_reached;      /* has a task just reached a watch point? */
-  std::set<SD_task_t> *initial_tasks;
-  std::set<SD_task_t> *runnable_tasks;
-  std::set<SD_task_t> *completed_tasks;
-  std::set<SD_task_t> *return_set;
+  bool watch_point_reached = false; /* has a task just reached a watch point? */
+  std::set<SD_task_t> initial_tasks;
+  std::set<SD_task_t> runnable_tasks;
+  std::set<SD_task_t> completed_tasks;
+  std::set<SD_task_t> return_set;
 };
 
 std::set<SD_task_t>* simulate (double how_long);

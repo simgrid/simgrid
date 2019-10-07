@@ -13,11 +13,11 @@ C/C++/F77/F90 applications should run out of the box in this
 environment. In fact, almost all proxy apps provided by the `ExaScale
 Project <https://proxyapps.exascaleproject.org/>`_ only require minor
 modifications to `run on top of SMPI
-<https://github.com/simgrid/SMPI-proxy-apps/>`_.
+<https://framagit.org/simgrid/SMPI-proxy-apps>`_.
 
-This setting permits to debug your MPI applications in a perfectly
-reproducible setup, with no Heisenbugs. Enjoy the full Clairevoyance
-provided by the simulator while running what-if analysis on platforms
+This setting permits one to debug your MPI applications in a perfectly
+reproducible setup, with no Heisenbugs. Enjoy the full Clairvoyance
+provided by the simulator while running what-if analyses on platforms
 that are still to be built! Several `production-grade MPI applications
 <https://framagit.org/simgrid/SMPI-proxy-apps#full-scale-applications>`_
 use SimGrid for their integration and performance testing.
@@ -41,7 +41,7 @@ How does it work?
 
 In SMPI, communications are simulated while computations are
 emulated. This means that while computations occur as they would in
-the real systems, communication calls are intercepted and achived by
+the real systems, communication calls are intercepted and achieved by
 the simulator.
 
 To start using SMPI, you just need to compile your application with
@@ -58,7 +58,7 @@ per MPI rank as if it was another dynamic library. Then, MPI
 communication calls are implemented using SimGrid: data is exchanged
 through memory copy, while the simulator's performance models are used
 to predict the time taken by each communications. Any computations
-occuring between two MPI calls are benchmarked, and the corresponding
+occurring between two MPI calls are benchmarked, and the corresponding
 time is reported into the simulator.
 
 .. image:: /tuto_smpi/img/big-picture.svg
@@ -89,18 +89,22 @@ interconnected as follows:
 
 This can be done with the following platform file, that considers the
 simulated platform as a graph of hosts and network links.
-	   
+
 .. literalinclude:: /tuto_smpi/3hosts.xml
    :language: xml
 
 The elements basic elements (with :ref:`pf_tag_host` and
 :ref:`pf_tag_link`) are described first, and then the routes between
-any pair of hosts are explicitely given with :ref:`pf_tag_route`. Any
-host must be given a computational speed (in flops) while links must
-be given a latency (in seconds) and a bandwidth (in bytes per
-second). Note that you can write 1Gflops instead of 1000000000flops,
-and similar. Last point: :ref:`pf_tag_route`s are symmetrical by
-default (but this can be changed).
+any pair of hosts are explicitly given with :ref:`pf_tag_route`. 
+
+Any host must be given a computational speed in flops while links must
+be given a latency and a bandwidth. You can write 1Gf for
+1,000,000,000 flops (full list of units in the reference guide of 
+:ref:`pf_tag_host` and :ref:`pf_tag_link`). 
+
+Routes defined with :ref:`pf_tag_route` are symmetrical by default,
+meaning that the list of traversed links from A to B is the same as
+from B to A. Explicitly define non-symmetrical routes if you prefer.
 
 Cluster with a Crossbar
 .......................
@@ -308,8 +312,8 @@ Debian and Ubuntu for example, you can get them as follows:
 
    sudo apt install simgrid pajeng make gcc g++ gfortran vite
 
-For R analysis of the produced traces, you may want to install R, 
-and the `pajengr<https://github.com/schnorr/pajengr#installation/>`_ package.
+For R analysis of the produced traces, you may want to install R,
+and the `pajengr <https://github.com/schnorr/pajengr#installation/>`_ package.
 
 .. code-block:: shell
 
@@ -486,7 +490,7 @@ is computationally hungry.
     the documentation is up-to-date.
 
 Lab 3: Execution Sampling on Matrix Multiplication example
--------------------------------
+----------------------------------------------------------
 
 The second method to speed up simulations is to sample the computation
 parts in the code.  This means that the person doing the simulation
@@ -505,13 +509,12 @@ The computing part of this example is the matrix multiplication routine
 .. literalinclude:: /tuto_smpi/gemm_mpi.cpp
    :language: c
    :lines: 4-19
-   
 
 .. code-block:: shell
 
   $ smpicc -O3 gemm_mpi.cpp -o gemm
   $ time smpirun -np 16 -platform cluster_crossbar.xml -hostfile cluster_hostfile --cfg=smpi/display-timing:yes --cfg=smpi/running-power:1000000000 ./gemm
-  
+
 This should end quite quickly, as the size of each matrix is only 1000x1000. 
 But what happens if we want to simulate larger runs ?
 Replace the size by 2000, 3000, and try again.
@@ -585,7 +588,7 @@ so these macros cannot be used when results are critical for the application beh
 
 
 Lab 4: Memory folding on large allocations
--------------------------------
+------------------------------------------
 
 Another issue that can be encountered when simulation with SMPI is lack of memory.
 Indeed we are executing all MPI processes on a single node, which can lead to crashes.
@@ -623,8 +626,8 @@ Further Readings
 
 You may also be interested in the `SMPI reference article
 <https://hal.inria.fr/hal-01415484>`_ or these `introductory slides
-<http://simgrid.org/tutorials/simgrid-smpi-101.pdf>`_. The `SMPI
-reference documentation <SMPI_doc>`_ covers much more content than
+<http://simgrid.org/tutorials/simgrid-smpi-101.pdf>`_. The :ref:`SMPI
+reference documentation <SMPI_doc>` covers much more content than
 this short tutorial.
 
 Finally, we regularly use SimGrid in our teachings on MPI. This way,

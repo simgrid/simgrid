@@ -51,7 +51,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
     MC_ignore_heap(&(msg_global->sent_msg), sizeof(msg_global->sent_msg));
   }
 
-  if (simgrid::config::get_value<bool>("clean-atexit"))
+  if (simgrid::config::get_value<bool>("debug/clean-atexit"))
     atexit(MSG_exit);
 }
 

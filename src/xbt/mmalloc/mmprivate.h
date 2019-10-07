@@ -286,8 +286,8 @@ XBT_PUBLIC void* mmorecore(struct mdesc* mdp, ssize_t size);
  * in a model-checking enabled tree. Without this protection, our malloc
  * implementation will not like multi-threading AT ALL.
  */
-#define LOCK(mdp) pthread_mutex_lock(&mdp->mutex)
-#define UNLOCK(mdp) pthread_mutex_unlock(&mdp->mutex)
+#define LOCK(mdp) pthread_mutex_lock(&(mdp)->mutex)
+#define UNLOCK(mdp) pthread_mutex_unlock(&(mdp)->mutex)
 
 XBT_PRIVATE int malloc_use_mmalloc(void);
 

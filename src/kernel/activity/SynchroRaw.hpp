@@ -14,7 +14,7 @@ namespace kernel {
 namespace activity {
 
   /** Used to implement mutexes, semaphores and conditions */
-class XBT_PUBLIC RawImpl : public ActivityImpl {
+class XBT_PUBLIC RawImpl : public ActivityImpl_T<RawImpl> {
   sg_host_t host_ = nullptr;
   double timeout_ = -1;
 
@@ -25,6 +25,7 @@ public:
   RawImpl* start();
   void suspend() override;
   void resume() override;
+  void cancel() override;
   void post() override;
   void finish() override;
 };

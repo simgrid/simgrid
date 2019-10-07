@@ -20,12 +20,9 @@ static void IB_create_host_callback(simgrid::s4u::Host const& host)
   using simgrid::kernel::resource::NetworkIBModel;
 
   static int id=0;
-  // pour t->id -> rajouter une nouvelle struct dans le dict, pour stocker les comms actives
 
-  IBNode* act = new IBNode(id);
-
+  ((NetworkIBModel*)surf_network_model)->active_nodes.emplace(host.get_name(), IBNode(id));
   id++;
-  ((NetworkIBModel*)surf_network_model)->active_nodes.insert({host.get_name(), act});
 }
 
 static void IB_action_state_changed_callback(simgrid::kernel::resource::NetworkAction& action,
@@ -48,25 +45,10 @@ static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction& ac
                                     simgrid::s4u::Host* dst)
 {
   simgrid::kernel::resource::NetworkIBModel* ibModel = (simgrid::kernel::resource::NetworkIBModel*)surf_network_model;
-  simgrid::kernel::resource::IBNode* act_src;
-  simgrid::kernel::resource::IBNode* act_dst;
-
-  auto asrc = ibModel->active_nodes.find(src->get_name());
-  if (asrc != ibModel->active_nodes.end()) {
-    act_src = asrc->second;
-  } else {
-    throw std::out_of_range(std::string("Could not find '") + src->get_cname() + "' active comms !");
-  }
-
-  auto adst = ibModel->active_nodes.find(dst->get_name());
-  if (adst != ibModel->active_nodes.end()) {
-    act_dst = adst->second;
-  } else {
-    throw std::out_of_range(std::string("Could not find '") + dst->get_cname() + "' active comms !");
-  }
+  simgrid::kernel::resource::IBNode* act_src         = &ibModel->active_nodes.at(src->get_name());
+  simgrid::kernel::resource::IBNode* act_dst         = &ibModel->active_nodes.at(dst->get_name());
 
   ibModel->active_comms[&action] = std::make_pair(act_src, act_dst);
-
   ibModel->updateIBfactors(&action, act_src, act_dst, 0);
 }
 
@@ -103,7 +85,7 @@ NetworkIBModel::NetworkIBModel() : NetworkSmpiModel()
 {
   /* Do not add this into all_existing_models: our ancestor already does so */
 
-  std::string IB_factors_string = simgrid::config::get_value<std::string>("smpi/IB-penalty-factors");
+  std::string IB_factors_string = config::get_value<std::string>("smpi/IB-penalty-factors");
   std::vector<std::string> radical_elements;
   boost::split(radical_elements, IB_factors_string, boost::is_any_of(";"));
 
@@ -129,15 +111,9 @@ NetworkIBModel::NetworkIBModel() : NetworkSmpiModel()
   }
 }
 
-NetworkIBModel::~NetworkIBModel()
-{
-  for (auto const& instance : active_nodes)
-    delete instance.second;
-}
-
 void NetworkIBModel::computeIBfactors(IBNode* root)
 {
-  double num_comm_out    = static_cast<double>(root->ActiveCommsUp.size());
+  double num_comm_out    = root->ActiveCommsUp.size();
   double max_penalty_out = 0.0;
   // first, compute all outbound penalties to get their max
   for (std::vector<ActiveComm*>::iterator it = root->ActiveCommsUp.begin(); it != root->ActiveCommsUp.end(); ++it) {
@@ -234,6 +210,6 @@ void NetworkIBModel::updateIBfactors(NetworkAction* action, IBNode* from, IBNode
   updateIBfactors_rec(from, updated);
   XBT_DEBUG("IB - Finished updating %d", from->id);
 }
-}
-}
+} // namespace resource
+} // namespace kernel
 } // namespace simgrid

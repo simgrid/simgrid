@@ -6,19 +6,14 @@
 #ifndef SIMGRID_MC_MODEL_CHECKER_HPP
 #define SIMGRID_MC_MODEL_CHECKER_HPP
 
-#include <sys/types.h>
+#include "src/mc/sosp/PageStore.hpp"
+#include "xbt/base.h"
 
 #include <memory>
 #include <set>
 #include <string>
 
 #include <event2/event.h>
-
-#include <sys/types.h>
-
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/remote/mc_protocol.h"
-#include "src/mc/sosp/PageStore.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -37,7 +32,6 @@ class ModelChecker {
   std::unique_ptr<RemoteClient> process_;
   Checker* checker_ = nullptr;
 public:
-  std::shared_ptr<simgrid::mc::Snapshot> parent_snapshot_;
 
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
@@ -50,10 +44,6 @@ public:
     return page_store_;
   }
 
-  std::string const& get_host_name(const char* hostname)
-  {
-    return *this->hostnames_.insert(hostname).first;
-  }
   std::string const& get_host_name(std::string const& hostname)
   {
     return *this->hostnames_.insert(hostname).first;
@@ -66,7 +56,7 @@ public:
   void handle_events(int fd, short events);
   void wait_for_requests();
   void handle_simcall(Transition const& transition);
-  void exit(int status);
+  XBT_ATTRIB_NORETURN void exit(int status);
 
   bool checkDeadlock();
 

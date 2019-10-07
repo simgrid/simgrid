@@ -9,7 +9,7 @@
 namespace simgrid{
 namespace smpi{
 int
-Coll_reduce_flat_tree::reduce(void *sbuf, void *rbuf, int count,
+Coll_reduce_flat_tree::reduce(const void *sbuf, void *rbuf, int count,
                                  MPI_Datatype dtype, MPI_Op op,
                                  int root, MPI_Comm comm)
 {
@@ -17,8 +17,8 @@ Coll_reduce_flat_tree::reduce(void *sbuf, void *rbuf, int count,
   int size;
   int rank;
   MPI_Aint extent;
-  char *origin = 0;
-  char *inbuf;
+  unsigned char* origin = nullptr;
+  const unsigned char* inbuf;
   MPI_Status status;
 
   rank = comm->rank();
@@ -36,8 +36,7 @@ Coll_reduce_flat_tree::reduce(void *sbuf, void *rbuf, int count,
      messages. */
 
   if (size > 1)
-    origin = (char *) smpi_get_tmp_recvbuffer(count * extent);
-
+    origin = smpi_get_tmp_recvbuffer(count * extent);
 
   /* Initialize the receive buffer. */
   if (rank == (size - 1))
@@ -50,7 +49,7 @@ Coll_reduce_flat_tree::reduce(void *sbuf, void *rbuf, int count,
 
   for (i = size - 2; i >= 0; --i) {
     if (rank == i)
-      inbuf = static_cast<char*>(sbuf);
+      inbuf = static_cast<const unsigned char*>(sbuf);
     else {
       Request::recv(origin, count, dtype, i, tag, comm, &status);
       inbuf = origin;
@@ -61,8 +60,7 @@ Coll_reduce_flat_tree::reduce(void *sbuf, void *rbuf, int count,
 
   }
 
-  if (origin)
-    smpi_free_tmp_buffer(origin);
+  smpi_free_tmp_buffer(origin);
 
   /* All done */
   return 0;

@@ -10,7 +10,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 static const char* mailbox = "comm";
 
-static int master(int argc, char *argv[])
+static int master(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_host_t jupiter = MSG_host_by_name("Jupiter");
 
@@ -35,7 +35,7 @@ static int master(int argc, char *argv[])
   return 0;
 }
 
-static int slave(int argc, char *argv[])
+static int slave(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Slave receiving");
   msg_task_t task = NULL;

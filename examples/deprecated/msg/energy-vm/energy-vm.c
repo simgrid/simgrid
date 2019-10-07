@@ -9,7 +9,8 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(energy_vm, "Messages of this example");
 
-static int worker_func(int argc, char *argv[]) {
+static int worker_func(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+{
   msg_task_t task1 = MSG_task_create("t1", 300E6, 0, NULL);
   MSG_task_execute (task1);
   MSG_task_destroy(task1);
@@ -17,7 +18,7 @@ static int worker_func(int argc, char *argv[]) {
   return 0;
 }
 
-static int dvfs(int argc, char *argv[])
+static int dvfs(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_host_t host1 = MSG_host_by_name("MyHost1");
   msg_host_t host2 = MSG_host_by_name("MyHost2");

@@ -6,6 +6,7 @@
 #include "private.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
+#include "smpi_errhandler.hpp"
 #include "smpi_op.hpp"
 #include "smpi_request.hpp"
 #include "smpi_win.hpp"
@@ -33,8 +34,8 @@ void smpi_init_fortran_types(){
      MPI_REAL4->add_f();//MPI_REAL4
      MPI_REAL8->add_f();//MPI_REAL8
      MPI_DOUBLE->add_f();//MPI_DOUBLE_PRECISION
-     MPI_C_FLOAT_COMPLEX->add_f();//MPI_COMPLEX
-     MPI_C_DOUBLE_COMPLEX->add_f();//MPI_DOUBLE_COMPLEX
+     MPI_COMPLEX8->add_f();//MPI_COMPLEX
+     MPI_COMPLEX16->add_f();//MPI_DOUBLE_COMPLEX
 #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
      MPI_2INT->add_f();//MPI_2INTEGER
 #else
@@ -51,6 +52,9 @@ void smpi_init_fortran_types(){
      MPI_AINT->add_f();//MPI_COUNT
      MPI_REAL16->add_f();//MPI_REAL16
      MPI_PACKED->add_f();//MPI_PACKED
+     MPI_COMPLEX8->add_f();//MPI_COMPLEX8
+     MPI_COMPLEX16->add_f();//MPI_COMPLEX16
+     MPI_COMPLEX32->add_f();//MPI_COMPLEX32
 
      MPI_MAX->add_f();
      MPI_MIN->add_f();
@@ -64,6 +68,9 @@ void smpi_init_fortran_types(){
      MPI_BAND->add_f();
      MPI_BOR->add_f();
      MPI_BXOR->add_f();
+
+     MPI_ERRORS_RETURN->add_f();
+     MPI_ERRORS_ARE_FATAL->add_f();
    }
 }
 
@@ -98,7 +105,7 @@ void mpi_group_incl_(int* group, int* n, int* ranks, int* group_out, int* ierr) 
 
   *ierr = MPI_Group_incl(simgrid::smpi::Group::f2c(*group), *n, ranks, &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *group_out = tmp->add_f();
+    *group_out = tmp->c2f();
   }
 }
 
@@ -107,6 +114,8 @@ void mpi_initialized_(int* flag, int* ierr){
 }
 
 void mpi_get_processor_name_(char *name, int *resultlen, int* ierr){
+  //fortran does not handle string endings cleanly, so initialize everything before
+  memset(name, 0, MPI_MAX_PROCESSOR_NAME);
   *ierr = MPI_Get_processor_name(name, resultlen);
 }
 
@@ -226,15 +235,15 @@ void mpi_win_get_group_(int*  win, int* group, int* ierr){
  }
 }
 
-void mpi_win_get_attr_(int* win, int* type_keyval, int* attribute_val, int* flag, int* ierr){
-   int* value = nullptr;
+void mpi_win_get_attr_(int* win, int* type_keyval, MPI_Aint* attribute_val, int* flag, int* ierr){
+   MPI_Aint* value = nullptr;
   *ierr = MPI_Win_get_attr(simgrid::smpi::Win::f2c(*win), *type_keyval, &value, flag);
   if (*flag == 1)
     *attribute_val = *value;
 }
 
-void mpi_win_set_attr_(int* win, int* type_keyval, int* att, int* ierr){
- int* val = (int*)xbt_malloc(sizeof(int));
+void mpi_win_set_attr_(int* win, int* type_keyval, MPI_Aint* att, int* ierr){
+ MPI_Aint* val = (MPI_Aint*)xbt_malloc(sizeof(MPI_Aint));
  *val=*att;
   *ierr = MPI_Win_set_attr(simgrid::smpi::Win::f2c(*win), *type_keyval, val);
 }
@@ -282,6 +291,21 @@ void mpi_win_flush_all_(int* win, int* ierr){
 
 void mpi_win_flush_local_all_(int* win, int* ierr){
   *ierr = MPI_Win_flush_local_all(simgrid::smpi::Win::f2c(*win));
+}
+
+void mpi_win_null_copy_fn_(int* /*win*/, int* /*keyval*/, int* /*extrastate*/, MPI_Aint* /*valin*/,
+                           MPI_Aint* /*valout*/, int* flag, int* ierr)
+{
+  *flag=0;
+  *ierr=MPI_SUCCESS;
+}
+
+void mpi_win_dup_fn_(int* /*win*/, int* /*keyval*/, int* /*extrastate*/, MPI_Aint* valin, MPI_Aint* valout, int* flag,
+                     int* ierr)
+{
+  *flag=1;
+  *valout=*valin;
+  *ierr=MPI_SUCCESS;
 }
 
 void mpi_info_create_( int *info, int* ierr){
@@ -493,11 +517,12 @@ void mpi_op_commutative_ (int* op, int* commute, int* ierr){
 }
 
 void mpi_group_free_ (int* group, int* ierr){
- MPI_Group tmp = simgrid::smpi::Group::f2c(*group);
- *ierr = MPI_Group_free(&tmp);
- if(*ierr == MPI_SUCCESS) {
-   simgrid::smpi::F2C::free_f(*group);
- }
+  MPI_Group tmp = simgrid::smpi::Group::f2c(*group);
+  if(tmp != MPI_COMM_WORLD->group() && tmp != MPI_GROUP_EMPTY){
+    simgrid::smpi::Group::unref(tmp);
+    simgrid::smpi::F2C::free_f(*group);
+  }
+  *ierr = MPI_SUCCESS;
 }
 
 void mpi_group_size_ (int* group, int *size, int* ierr){
@@ -659,20 +684,32 @@ void mpi_error_class_ (int* errorcode, int* errorclass, int* ierr) {
  *ierr = MPI_Error_class(*errorcode, errorclass);
 }
 
-void mpi_errhandler_create_ (void* function, void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_create(reinterpret_cast<MPI_Handler_function*>(function), static_cast<MPI_Errhandler*>(errhandler));
+void mpi_errhandler_create_ (void* function, int* errhandler, int* ierr) {
+ MPI_Errhandler tmp;
+ *ierr = MPI_Errhandler_create( reinterpret_cast<MPI_Handler_function*>(function), &tmp);
+ if(*ierr==MPI_SUCCESS){
+   *errhandler = tmp->c2f();
+ }
 }
 
-void mpi_errhandler_free_ (void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_free(static_cast<MPI_Errhandler*>(errhandler));
+void mpi_errhandler_free_ (int* errhandler, int* ierr) {
+  MPI_Errhandler tmp = simgrid::smpi::Errhandler::f2c(*errhandler);
+  *ierr =  MPI_Errhandler_free(&tmp);
+  if(*ierr == MPI_SUCCESS) {
+    simgrid::smpi::F2C::free_f(*errhandler);
+  }
 }
 
-void mpi_errhandler_get_ (int* comm, void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_get(simgrid::smpi::Comm::f2c(*comm), static_cast<MPI_Errhandler*>(errhandler));
+void mpi_errhandler_get_ (int* comm, int* errhandler, int* ierr) {
+ MPI_Errhandler tmp;
+ *ierr = MPI_Errhandler_get(simgrid::smpi::Comm::f2c(*comm), &tmp);
+ if(*ierr == MPI_SUCCESS) {
+   *errhandler = tmp->c2f();
+ }
 }
 
-void mpi_errhandler_set_ (int* comm, void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_set(simgrid::smpi::Comm::f2c(*comm), *static_cast<MPI_Errhandler*>(errhandler));
+void mpi_errhandler_set_ (int* comm, int* errhandler, int* ierr) {
+ *ierr = MPI_Errhandler_set(simgrid::smpi::Comm::f2c(*comm), simgrid::smpi::Errhandler::f2c(*errhandler));
 }
 
 void mpi_cancel_ (int* request, int* ierr) {
@@ -833,19 +870,19 @@ void mpi_status_set_elements_ ( MPI_Status* status, int* datatype, int* count, i
 }
 
 void mpi_publish_name_ ( char *service_name, int* info, char *port_name, int* ierr){
- *ierr = MPI_Publish_name( service_name, *reinterpret_cast<MPI_Info*>(info), port_name);
+ *ierr = MPI_Publish_name( service_name, simgrid::smpi::Info::f2c(*info), port_name);
 }
 
 void mpi_unpublish_name_ ( char *service_name, int* info, char *port_name, int* ierr){
- *ierr = MPI_Unpublish_name( service_name, *reinterpret_cast<MPI_Info*>(info), port_name);
+ *ierr = MPI_Unpublish_name( service_name, simgrid::smpi::Info::f2c(*info), port_name);
 }
 
 void mpi_lookup_name_ ( char *service_name, int* info, char *port_name, int* ierr){
- *ierr = MPI_Lookup_name( service_name, *reinterpret_cast<MPI_Info*>(info), port_name);
+ *ierr = MPI_Lookup_name( service_name, simgrid::smpi::Info::f2c(*info), port_name);
 }
 
 void mpi_open_port_ ( int* info, char *port_name, int* ierr){
- *ierr = MPI_Open_port( *reinterpret_cast<MPI_Info*>(info),port_name);
+ *ierr = MPI_Open_port( simgrid::smpi::Info::f2c(*info),port_name);
 }
 
 void mpi_close_port_ ( char *port_name, int* ierr){

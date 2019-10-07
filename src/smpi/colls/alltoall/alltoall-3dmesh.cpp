@@ -47,19 +47,16 @@ static int alltoall_check_is_3dmesh(int num, int *i, int *j, int *k)
 }
 namespace simgrid{
 namespace smpi{
-int Coll_alltoall_3dmesh::alltoall(void *send_buff, int send_count,
+int Coll_alltoall_3dmesh::alltoall(const void *send_buff, int send_count,
                                     MPI_Datatype send_type,
                                     void *recv_buff, int recv_count,
                                     MPI_Datatype recv_type, MPI_Comm comm)
 {
-  MPI_Request *reqs, *req_ptr;
   MPI_Aint extent;
-  MPI_Status status, *statuses;
+  MPI_Status status;
   int i, j, src, dst, rank, num_procs, num_reqs, X, Y, Z, block_size, count;
   int my_z, two_dsize, my_row_base, my_col_base, my_z_base, src_row_base;
   int src_z_base, send_offset, recv_offset, tag = COLL_TAG_ALLTOALL;
-
-  char *tmp_buff1, *tmp_buff2;
 
   rank = comm->rank();
   num_procs = comm->size();
@@ -83,13 +80,12 @@ int Coll_alltoall_3dmesh::alltoall(void *send_buff, int send_count,
 
   block_size = extent * send_count;
 
-  tmp_buff1 = (char *) smpi_get_tmp_sendbuffer(block_size * num_procs * two_dsize);
-  tmp_buff2 = (char *) smpi_get_tmp_recvbuffer(block_size * two_dsize);
+  unsigned char* tmp_buff1 = smpi_get_tmp_sendbuffer(block_size * num_procs * two_dsize);
+  unsigned char* tmp_buff2 = smpi_get_tmp_recvbuffer(block_size * two_dsize);
 
-  statuses = (MPI_Status *) xbt_malloc(num_reqs * sizeof(MPI_Status));
-  reqs = (MPI_Request *) xbt_malloc(num_reqs * sizeof(MPI_Request));
-
-  req_ptr = reqs;
+  MPI_Status* statuses = new MPI_Status[num_reqs];
+  MPI_Request* reqs    = new MPI_Request[num_reqs];
+  MPI_Request* req_ptr = reqs;
 
   recv_offset = (rank % two_dsize) * block_size * num_procs;
 
@@ -179,8 +175,8 @@ int Coll_alltoall_3dmesh::alltoall(void *send_buff, int send_count,
 
   Request::waitall(Z - 1, reqs, statuses);
 
-  free(reqs);
-  free(statuses);
+  delete[] reqs;
+  delete[] statuses;
   smpi_free_tmp_buffer(tmp_buff1);
   smpi_free_tmp_buffer(tmp_buff2);
   return MPI_SUCCESS;

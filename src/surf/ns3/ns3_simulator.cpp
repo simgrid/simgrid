@@ -9,10 +9,15 @@
 
 #include <ns3/ipv4-address-helper.h>
 #include <ns3/point-to-point-helper.h>
+#include <ns3/application-container.h>
+#include <ns3/ptr.h>
+#include <ns3/callback.h>
+#include <ns3/packet-sink.h>
 
 #include <algorithm>
 
 std::map<std::string, SgFlow*> flow_from_sock; // ns3::sock -> SgFlow
+std::map<std::string, ns3::ApplicationContainer> sink_from_sock; // ns3::sock -> ns3::PacketSink
 
 static void receive_callback(ns3::Ptr<ns3::Socket> socket);
 static void datasent_cb(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent);
@@ -32,6 +37,12 @@ static SgFlow* getFlowFromSocket(ns3::Ptr<ns3::Socket> socket)
   return (it == flow_from_sock.end()) ? nullptr : it->second;
 }
 
+static ns3::ApplicationContainer* getSinkFromSocket(ns3::Ptr<ns3::Socket> socket)
+{
+  auto it = sink_from_sock.find(transform_socket_ptr(socket));
+  return (it == sink_from_sock.end()) ? nullptr : &(it->second);
+}
+
 static void receive_callback(ns3::Ptr<ns3::Socket> socket)
 {
   SgFlow* flow = getFlowFromSocket(socket);
@@ -41,14 +52,14 @@ static void receive_callback(ns3::Ptr<ns3::Socket> socket)
     flow->finished_ = true;
     XBT_DEBUG("recv_cb of F[%p, %p, %u]", flow, flow->action_, flow->total_bytes_);
     XBT_DEBUG("Stop simulator at %f seconds", ns3::Simulator::Now().GetSeconds());
-    ns3::Simulator::Stop(ns3::Seconds(0.0));
-    ns3::Simulator::Run();
+    ns3::Simulator::Stop();
   }
 }
 
 static void send_cb(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace)
 {
   SgFlow* flow = getFlowFromSocket(sock);
+  ns3::ApplicationContainer* sink = getSinkFromSocket(sock);
   XBT_DEBUG("Asked to write on F[%p, total: %u, remain: %u]", flow, flow->total_bytes_, flow->remaining_);
 
   if (flow->remaining_ == 0) // all data was already buffered (and socket was already closed)
@@ -57,7 +68,7 @@ static void send_cb(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace)
   /* While not all is buffered and there remain space in the buffers */
   while (flow->buffered_bytes_ < flow->total_bytes_ && sock->GetTxAvailable() > 0) {
 
-    // Send at most 1040 bytes (data size in a TCP packet), as NS3 seems to not split correctly by itself
+    // Send at most 1040 bytes (data size in a TCP packet), as ns-3 seems to not split correctly by itself
     uint32_t toWrite = std::min({flow->remaining_, sock->GetTxAvailable(), std::uint32_t(1040)});
     if (toWrite == 0) { // buffer full
       XBT_DEBUG("%f: buffer full on flow %p (still %u to go)", ns3::Simulator::Now().GetSeconds(), flow,
@@ -74,8 +85,18 @@ static void send_cb(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace)
               flow->remaining_);
   }
 
-  if (flow->buffered_bytes_ >= flow->total_bytes_)
+  if (flow->buffered_bytes_ >= flow->total_bytes_){
+    XBT_DEBUG("Closing Sockets of flow %p", flow);
+    // Closing the sockets of the receiving application
+    ns3::Ptr<ns3::PacketSink> app = ns3::DynamicCast<ns3::PacketSink, ns3::Application>(sink->Get(0));
+    ns3::Ptr<ns3::Socket> listening_sock = app->GetListeningSocket();
+    listening_sock->Close();
+    listening_sock->SetRecvCallback(ns3::MakeNullCallback<void, ns3::Ptr<ns3::Socket>>());
+    for(ns3::Ptr<ns3::Socket> accepted_sock : app->GetAcceptedSockets())
+      accepted_sock->Close();
+    // Closing the socket of the sender
     sock->Close();
+  }
 }
 
 static void datasent_cb(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent)
@@ -102,7 +123,7 @@ static void errorClose_callback(ns3::Ptr<ns3::Socket> socket)
 {
   SgFlow* flow = getFlowFromSocket(socket);
   XBT_DEBUG("errorClose_cb of F[%p, %p, %u]", flow, flow->action_, flow->total_bytes_);
-  xbt_die("NS3: a socket was closed anormally");
+  xbt_die("ns-3: a socket was closed anormally");
 }
 
 static void succeededConnect_callback(ns3::Ptr<ns3::Socket> socket)
@@ -115,7 +136,7 @@ static void failedConnect_callback(ns3::Ptr<ns3::Socket> socket)
 {
   SgFlow* mysocket = getFlowFromSocket(socket);
   XBT_DEBUG("failedConnect_cb of F[%p, %p, %u]", mysocket, mysocket->action_, mysocket->total_bytes_);
-  xbt_die("NS3: a socket failed to connect");
+  xbt_die("ns-3: a socket failed to connect");
 }
 
 void start_flow(ns3::Ptr<ns3::Socket> sock, const char* to, uint16_t port_number)
@@ -127,8 +148,6 @@ void start_flow(ns3::Ptr<ns3::Socket> sock, const char* to, uint16_t port_number
   // tell the tcp implementation to call send_cb again
   // if we blocked and new tx buffer space becomes available
   sock->SetSendCallback(MakeCallback(&send_cb));
-  // Notice when the send is over
-  sock->SetRecvCallback(MakeCallback(&receive_callback));
   // Notice when we actually sent some data (mostly for the TRACING module)
   sock->SetDataSentCallback(MakeCallback(&datasent_cb));
 

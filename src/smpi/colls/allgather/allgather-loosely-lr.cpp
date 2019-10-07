@@ -10,7 +10,7 @@ namespace simgrid{
 namespace smpi{
 
 
-int Coll_allgather_loosely_lr::allgather(void *sbuf, int scount,
+int Coll_allgather_loosely_lr::allgather(const void *sbuf, int scount,
                                          MPI_Datatype stype, void *rbuf,
                                          int rcount, MPI_Datatype rtype,
                                          MPI_Comm comm)
@@ -32,7 +32,9 @@ if(comm->get_leaders_comm()==MPI_COMM_NULL){
   }
 
   if(comm_size%num_core)
-    THROWF(arg_error,0, "allgather loosely lr algorithm can't be used with non multiple of NUM_CORE=%d number of processes ! ",num_core);
+    throw std::invalid_argument(xbt::string_printf(
+        "allgather loosely lr algorithm can't be used with non multiple of NUM_CORE=%d number of processes!",
+        num_core));
 
   rank = comm->rank();
   MPI_Aint rextent, sextent;

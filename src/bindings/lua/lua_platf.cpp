@@ -7,20 +7,22 @@
 
 #include "lua_private.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf_private.hpp"
-#include <cctype>
-#include <cstring>
-
-#include <lauxlib.h>
-
 #include "src/surf/surf_private.hpp"
+#include "src/surf/xml/platf_private.hpp"
+
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
+
+#include <cctype>
+#include <cstring>
 #include <string>
 #include <vector>
+
+#include <lauxlib.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(lua_platf, "Lua bindings (platform module)");
 
@@ -63,14 +65,14 @@ static simgrid::s4u::Link::SharingPolicy link_policy_get_by_name(const char* pol
 int console_open(lua_State*)
 {
   sg_platf_init();
-  simgrid::s4u::on_platform_creation();
+  simgrid::s4u::Engine::on_platform_creation();
 
   return 0;
 }
 
 int console_close(lua_State*)
 {
-  simgrid::s4u::on_platform_created();
+  simgrid::s4u::Engine::on_platform_created();
   sg_platf_exit();
   return 0;
 }
@@ -92,7 +94,7 @@ int console_add_backbone(lua_State *L) {
   type = lua_gettable(L, -2);
   lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
       "Attribute 'bandwidth' must be specified for backbone and must either be a string (in the right format; see docs) or a number.");
-  link.bandwidth = surf_parse_get_bandwidth(lua_tostring(L, -1), "bandwidth of backbone", link.id.c_str());
+  link.bandwidths.push_back(surf_parse_get_bandwidth(lua_tostring(L, -1), "bandwidth of backbone", link.id.c_str()));
   lua_pop(L, 1);
 
   lua_pushstring(L, "lat");
@@ -226,9 +228,9 @@ int  console_add_link(lua_State *L) {
   lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
       "Attribute 'bandwidth' must be specified for any link and must either be either a string (in the right format; see docs) or a number.");
   if (type == LUA_TNUMBER)
-    link.bandwidth = lua_tonumber(L, -1);
+    link.bandwidths.push_back(lua_tonumber(L, -1));
   else // LUA_TSTRING
-    link.bandwidth = surf_parse_get_bandwidth(lua_tostring(L, -1), "bandwidth of link", link.id.c_str());
+    link.bandwidths.push_back(surf_parse_get_bandwidth(lua_tostring(L, -1), "bandwidth of link", link.id.c_str()));
   lua_pop(L, 1);
 
   //get latency value

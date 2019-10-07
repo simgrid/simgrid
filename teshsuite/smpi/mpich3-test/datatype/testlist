@@ -61,7 +61,8 @@ struct-derived-zeros 1
 struct-verydeep 1
 #get-elements 1
 hindexed_block 1 mpiversion=3.0
-hindexed_block_contents 1 mpiversion=3.0
+#needs MPI_Type_get_envelope
+#hindexed_block_contents 1 mpiversion=3.0
 vecblklen 1
 hvecblklen 1
 longdouble 1

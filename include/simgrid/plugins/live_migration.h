@@ -31,10 +31,10 @@ XBT_PUBLIC sg_vm_t sg_vm_create_migratable(sg_host_t pm, const char* name, int c
 #define MSG_vm_live_migration_plugin_init() sg_vm_live_migration_plugin_init()
 
 #define MSG_vm_create_migratable(pm, name, coreAmount, ramsize, mig_netspeed, dp_intensity)                            \
-  sg_vm_create_migratable(pm, name, coreAmount, ramsize, mig_netspeed, dp_intensity)
+  sg_vm_create_migratable((pm), (name), (coreAmount), (ramsize), (mig_netspeed), (dp_intensity))
 
 #define MSG_vm_is_migrating(vm) sg_vm_is_migrating(vm)
-#define MSG_vm_migrate(vm, dst_pm) sg_vm_migrate(vm, dst_pm)
+#define MSG_vm_migrate(vm, dst_pm) sg_vm_migrate((vm), (dst_pm))
 
 SG_END_DECL()
 

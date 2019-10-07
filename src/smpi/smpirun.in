@@ -72,6 +72,7 @@ HOSTFILE=""
 HOSTFILETMP=0
 MAPOPT=0
 REPLAY=0
+QUIET=""
 
 unset pid
 
@@ -202,6 +203,10 @@ while true; do
             SIMOPTS="$SIMOPTS --cfg=smpi/keep-temps:yes"
             shift 1
             ;;
+	"-quiet")
+	    QUIET="true"
+	    shift 1
+	    ;;
         "-wrapper")
             WRAPPER="$2"
             shift 2
@@ -273,7 +278,7 @@ else
     shift
 fi
 
-# steel --cfg and --logs options
+# steal --cfg and --logs options
 while [ $# -gt 0 ]; do
     case "$1" in
         "--cfg="*|"--log="*)
@@ -299,32 +304,47 @@ fi
 if [ -z "${HOSTFILE}" ] ; then
     HOSTFILETMP=1
     HOSTFILE="$(mktemp smpitmp-hostfXXXXXX)"
-    perl -ne 'print "$1\n" if /.*<host.*?id="(.*?)".*?\/>.*/' ${PLATFORM} > ${HOSTFILE}
-    # put all <cluster tag on its own line.
-    cat ${PLATFORM} | tr '\n' ' ' | sed 's/<cluster/\n<cluster/' | \
-      perl -ne 'if (m/.*<cluster.*?prefix="(.*?)".*?radical="(.*?)".*?suffix="(.*?)".*/s) {
-                my ($pre,$rad,$post)=($1,$2,$3);
-	        for my $elm (split(",",$rad)) {
-	          if ($elm=~/^([^-]*?)-([^-]*)$/) {
-	             for (my $i=$1; $i<=$2;$i++) {
-	                print "$pre$i$post\n";
-	             }
-	          } else {
-	             print "$pre$elm$post\n";
-	          }
-	        }
-	      } elsif (/<cluster/) {
-            die ("Unparsable cluster tag. smpirun uses a primitive regular expression to parse cluster tags. Either provide a hostfile yourself or give the attributes prefix, radical and suffix IN THAT ORDER.");
-	      }' ${PLATFORM} >> ${HOSTFILE}
+    @PYTHON_EXECUTABLE@ -c '
+import xml.etree.ElementTree as ET
+import sys
+import re
+
+tree = ET.parse(sys.stdin)
+
+for elem in tree.findall(".//host"):
+    print(elem.attrib["id"])
+
+for elem in tree.findall(".//cluster"):
+    prefix = elem.attrib["prefix"]
+    radical = elem.attrib["radical"]
+    suffix = elem.attrib["suffix"]
+    for r in radical.split(","):
+        m = re.match("^([^-]*?)-([^-]*)$", r)
+        if m:
+            for i in range(int(m.group(1)), int(m.group(2))):
+                print(prefix + str(i) + suffix)
+        else:
+            print(prefix + r + suffix)
+            ' < ${PLATFORM} > ${HOSTFILE}
 fi
 UNROLLEDHOSTFILETMP=0
 
-#parse if our lines are terminated by :num_process
-multiple_processes=$(grep -c ":" $HOSTFILE)
-if [ "${multiple_processes}" -gt 0 ] ; then
+# parse if our lines are terminated by :num_process
+if grep -q ':' $HOSTFILE ; then
     UNROLLEDHOSTFILETMP=1
     UNROLLEDHOSTFILE="$(mktemp smpitmp-hostfXXXXXX)"
-    perl -ne ' do{ for ( 1 .. $2 ) { print "$1\n" } } if /(.*?):(\d+).*/'  ${HOSTFILE}  > ${UNROLLEDHOSTFILE}
+    @PYTHON_EXECUTABLE@ -c '
+import sys
+import re
+
+for line in sys.stdin:
+    m = re.match("(.*):(.*)", line)
+    if m:
+        for i in range(0, int(m.group(2))):
+            print(m.group(1))
+    else:
+        print(line.strip())
+' < ${HOSTFILE}  > ${UNROLLEDHOSTFILE}
     if [ ${HOSTFILETMP} = 1 ] ; then
         rm ${HOSTFILE}
         HOSTFILETMP=0
@@ -505,6 +525,7 @@ if [ -n "${TRACE_ACTIVE}" ]; then
 fi
 ##---------------------- end SMPI TRACING OPTIONS ---------------------------------
 
+# Do not remove, this variable may be used by user code (e.g. StarPU)
 export SMPI_GLOBAL_SIZE=${NUMPROCS}
 if [ -n "${KEEP}" ] ; then
     echo ${EXEC} ${PRIVATIZE} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
@@ -543,7 +564,7 @@ pid=""
 # Keep temporary files on failures to help debugging
 #
 if [ ${status} -ne 0 ] ; then
-    if [ -z "${KEEP}" ]; then
+    if [ -z "${KEEP}" -a -z "${QUIET}" ]; then
         echo ${EXEC} ${PRIVATIZE} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
         if [ ${HOSTFILETMP} = 1 ] ; then
             echo "Generated hostfile ${HOSTFILE} kept."
@@ -551,9 +572,9 @@ if [ ${status} -ne 0 ] ; then
         if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
             echo "Generated unrolled hostfile ${UNROLLEDHOSTFILE} kept."
         fi
+        KEEP=true
     fi
     echo "Execution failed with code ${status}."
-    KEEP=true
 fi
 
 smpirun_cleanup

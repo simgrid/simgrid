@@ -3,15 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <list>
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
-#include "src/mc/mc_forward.hpp"
+
+#include <string>
+#include <vector>
 
 #ifndef SIMGRID_MC_COMMUNICATION_DETERMINISM_CHECKER_HPP
 #define SIMGRID_MC_COMMUNICATION_DETERMINISM_CHECKER_HPP
@@ -24,12 +21,13 @@ public:
   explicit CommunicationDeterminismChecker(Session& session);
   ~CommunicationDeterminismChecker();
   void run() override;
-  RecordTrace getRecordTrace() override;
-  std::vector<std::string> getTextualTrace() override;
+  RecordTrace get_record_trace() override;
+  std::vector<std::string> get_textual_trace() override;
+
 private:
   void prepare();
   void real_run();
-  void logState() override;
+  void log_state() override;
   void deterministic_comm_pattern(int process, simgrid::mc::PatternCommunication* comm, int backtracking);
   void restoreState();
 public:
@@ -41,8 +39,8 @@ public:
 private:
   /** Stack representing the position in the exploration graph */
   std::list<std::unique_ptr<simgrid::mc::State>> stack_;
-  simgrid::mc::VisitedStates visitedStates_;
-  unsigned long expandedStatesCount_ = 0;
+  simgrid::mc::VisitedStates visited_states_;
+  unsigned long expanded_states_count_ = 0;
 
   bool initial_communications_pattern_done = false;
   bool recv_deterministic                  = true;

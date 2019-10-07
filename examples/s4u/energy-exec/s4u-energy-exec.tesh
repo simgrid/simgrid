@@ -2,13 +2,13 @@
 
 p Testing the mechanism for computing host energy consumption
 
-$ ${bindir:=.}/s4u-energy-exec$EXEEXT ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (1:dvfs_test@MyHost1) Energetic profile: 100.0:120.0:200.0, 93.0:110.0:170.0, 90.0:105.0:150.0
+$ ${bindir:=.}/s4u-energy-exec ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:dvfs_test@MyHost1) Energetic profile: 100.0:93.33333333333333:200.0, 93.0:90.0:170.0, 90.0:90.0:150.0
 > [  0.000000] (1:dvfs_test@MyHost1) Initial peak speed=1E+08 flop/s; Energy dissipated =0E+00 J
 > [  0.000000] (1:dvfs_test@MyHost1) Sleep for 10 seconds
 > [ 10.000000] (1:dvfs_test@MyHost1) Done sleeping (duration: 10.00 s). Current peak speed=1E+08; Energy dissipated=1000.00 J
 > [ 10.000000] (1:dvfs_test@MyHost1) Run a task of 1E+08 flops
-> [ 11.000000] (1:dvfs_test@MyHost1) Task done (duration: 1.00 s). Current peak speed=1E+08 flop/s; Current consumption: from 120W to 200W depending on load; Energy dissipated=1120 J
+> [ 11.000000] (1:dvfs_test@MyHost1) Task done (duration: 1.00 s). Current peak speed=1E+08 flop/s; Current consumption: from 93W to 200W depending on load; Energy dissipated=1120 J
 > [ 11.000000] (1:dvfs_test@MyHost1) ========= Requesting pstate 2 (speed should be of 2E+07 flop/s and is of 2E+07 flop/s)
 > [ 11.000000] (1:dvfs_test@MyHost1) Run a task of 1E+08 flops
 > [ 16.000000] (1:dvfs_test@MyHost1) Task done (duration: 5.00 s). Current peak speed=2E+07 flop/s; Energy dissipated=1645 J
@@ -22,15 +22,15 @@ $ ${bindir:=.}/s4u-energy-exec$EXEEXT ${platfdir}/energy_platform.xml "--log=roo
 > [ 30.000000] (0:maestro@) Energy consumption of host MyHost2: 2100.000000 Joules
 > [ 30.000000] (0:maestro@) Energy consumption of host MyHost3: 3000.000000 Joules
 
-$ ${bindir:=.}/s4u-energy-exec$EXEEXT ${platfdir}/energy_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=host/model:ptask_L07
+$ ${bindir:=.}/s4u-energy-exec ${platfdir}/energy_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=host/model:ptask_L07
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'ptask_L07'
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> [  0.000000] (1:dvfs_test@MyHost1) Energetic profile: 100.0:120.0:200.0, 93.0:110.0:170.0, 90.0:105.0:150.0
+> [  0.000000] (1:dvfs_test@MyHost1) Energetic profile: 100.0:93.33333333333333:200.0, 93.0:90.0:170.0, 90.0:90.0:150.0
 > [  0.000000] (1:dvfs_test@MyHost1) Initial peak speed=1E+08 flop/s; Energy dissipated =0E+00 J
 > [  0.000000] (1:dvfs_test@MyHost1) Sleep for 10 seconds
 > [ 10.000000] (1:dvfs_test@MyHost1) Done sleeping (duration: 10.00 s). Current peak speed=1E+08; Energy dissipated=1000.00 J
 > [ 10.000000] (1:dvfs_test@MyHost1) Run a task of 1E+08 flops
-> [ 11.000000] (1:dvfs_test@MyHost1) Task done (duration: 1.00 s). Current peak speed=1E+08 flop/s; Current consumption: from 120W to 200W depending on load; Energy dissipated=1120 J
+> [ 11.000000] (1:dvfs_test@MyHost1) Task done (duration: 1.00 s). Current peak speed=1E+08 flop/s; Current consumption: from 93W to 200W depending on load; Energy dissipated=1120 J
 > [ 11.000000] (1:dvfs_test@MyHost1) ========= Requesting pstate 2 (speed should be of 2E+07 flop/s and is of 2E+07 flop/s)
 > [ 11.000000] (1:dvfs_test@MyHost1) Run a task of 1E+08 flops
 > [ 16.000000] (1:dvfs_test@MyHost1) Task done (duration: 5.00 s). Current peak speed=2E+07 flop/s; Energy dissipated=1645 J

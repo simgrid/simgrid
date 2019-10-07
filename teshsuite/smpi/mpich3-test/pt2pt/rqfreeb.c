@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "mpitest.h"
-
+#define USE_STRICT_MPI 1 
 /* Test Ibsend and Request_free */
 int main(int argc, char *argv[])
 {

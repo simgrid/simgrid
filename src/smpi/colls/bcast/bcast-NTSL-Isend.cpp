@@ -19,10 +19,6 @@ int Coll_bcast_NTSL_Isend::bcast(void *buf, int count, MPI_Datatype datatype,
   int tag = COLL_TAG_BCAST;
   MPI_Status status;
   MPI_Request request;
-  MPI_Request *send_request_array;
-  MPI_Request *recv_request_array;
-  MPI_Status *send_status_array;
-  MPI_Status *recv_status_array;
   int rank, size;
   int i;
   MPI_Aint extent;
@@ -76,14 +72,10 @@ int Coll_bcast_NTSL_Isend::bcast(void *buf, int count, MPI_Datatype datatype,
 
   /* pipeline bcast */
   else {
-    send_request_array =
-        (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
-    recv_request_array =
-        (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
-    send_status_array =
-        (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
-    recv_status_array =
-        (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
+    MPI_Request* send_request_array = new MPI_Request[size + pipe_length];
+    MPI_Request* recv_request_array = new MPI_Request[size + pipe_length];
+    MPI_Status* send_status_array   = new MPI_Status[size + pipe_length];
+    MPI_Status* recv_status_array   = new MPI_Status[size + pipe_length];
 
     /* root send data */
     if (rank == 0) {
@@ -117,10 +109,10 @@ int Coll_bcast_NTSL_Isend::bcast(void *buf, int count, MPI_Datatype datatype,
       Request::waitall((pipe_length), send_request_array, send_status_array);
     }
 
-    free(send_request_array);
-    free(recv_request_array);
-    free(send_status_array);
-    free(recv_status_array);
+    delete[] send_request_array;
+    delete[] recv_request_array;
+    delete[] send_status_array;
+    delete[] recv_status_array;
   }                             /* end pipeline */
 
   /* when count is not divisible by block size, use default BCAST for the remainder */

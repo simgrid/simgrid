@@ -15,13 +15,13 @@ Please apply the following checklist before releasing.
     - CMakeLists.txt (in macros SIMGRID_VERSION_*)
     - sonar-project.properties
     - docs/source/conf.py
-  - The "make distcheck" target works (testing that every files needed
-    to build and install are included in the archive)
+    - setup.py
 - Tests
-  - All tests pass on a reasonable amount of platforms (typically,
-    everything on ci + travis/macOS + AppVeyor)
-  - You also tested to build and install the content of the source
-    archive on a reasonable amount of platforms (typically, 2 or 3).
+  - The "make distcheck" target works (tested by jenkins)
+  - All tests pass oneverything on ci + travis/macOS + AppVeyor
+  - Tutorials and derivative projects build correctly
+    https://framagit.org/simgrid/simgrid-template-s4u/pipelines
+    https://framagit.org/simgrid/external-projects-ci/pipelines
 - ChangeLog file
   - All changes are documented
   - The release date is indicated below the changes
@@ -101,30 +101,26 @@ the settings icon of the release you want to change.
 
 - Tag the git repository (don't forget to push the tags to the main repo)
 - Push the archive files (tar.gz and jar) on gforge
-- Post a news on gforge (before updating the website)
-- Update the link scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/latest
-  - Create the directory of the released version and upload the doc artefact in it
-  - Remove the older releases so that people don't find them in google
+- #Post a news on gforge (before updating the website)
 - Document the tag on https://github.com/simgrid/simgrid/releases and
   on https://framagit.org/simgrid/simgrid/tags
   - Upload the files SimGrid-3.XX.tar.gz, simgrid-3_XX.jar and
-    SimGrid-doc-3_XX.zip files to the changelog.
-- Rebuild and resynchronize the website so that the file gets visible
-  from our download page.@n
+    SimGrid-doc-3_XX.zip (that is the artefact of the pages job on framagit) files to the changelog.
+- Update the website
   - Edit org/org-templates/level-0.org to change the release version, the tgz link and the jar link.
   - emacs org/site/index.org and C-c C-c the first source block to refresh the news; fake the date in the result.
   - emacs org/site/download.org and C-c C-c the first source block to refresh the download.
   - emacs org/site/documentation.org and edit the version links.
   - make -C org all sync
   - jed .gitlab-ci.yml
-    - Change the link to the SimGrid-doc-3_XX.zip file
-    - Change the version number
+    - Change the link to the SimGrid-doc-3_XX.zip file 
+    - Only keep 2 versions so that people don't find older ones in google
     - Change the link to latest
   - git commit -a && git push
 - Announce the release
  - Mail the simgrid-user mailing list
     - the NEWS chunk in the mail;
-    - Hall of Fame in the mail@n
+    - Hall of Fame in the mail
       git shortlog -se v3.21..
     - Link to the ChangeLog on framagit (the version of that tag)
  - Also mail some other lists (G5K users)
@@ -138,13 +134,59 @@ the settings icon of the release you want to change.
 - Update the simgrid/package.py for spack: https://gitlab.inria.fr/solverstack/spack-repo
 - Create the template for the next release in ChangeLog and NEWS files
   Release Target date: https://en.wikipedia.org/wiki/Equinox
-- Change the release number to 3.X.90 in CMakeLists.txt and sonar-project.properties docs/source/conf.py
+- Bump release number to 3.X.1 in CMakeLists.txt sonar-project.properties docs/source/conf.py setup.py
 - Deal with deprecations:
-  - Introduce the XBT_ATTRIB_DEPRECATED_v??? macro for the next release.
+  - jed include/xbt/base.h: Introduce the next XBT_ATTRIB_DEPRECATED_v??? macro 
   - Kill the one for the current release and remove all code that were
     mandated by the deprecated functions (both in source and headers).
   - Do the possible cleanups now that these features are gone.
 - Update the Docker images (after pushing to the git)
-  - cd tools/docker && make stable tuto-s4u push
+  - cd tools/docker && make stable tuto-s4u tuto-smpi push
+  - Update the simgrid-template-s4u repository to test against this new release
+    jed ~/Code/simgrid-template-s4u/.gitlab-ci.yml
+
+Release numbering semantic: 
+  - 3.X is a named release. 
+    - We have 4 named releases per year (for each equinox and solstice)
+    - The ChangeLog and NEWS are complete and informative
+    - All tests pass on all ci systems (or the workarounds are documented)
+    - We provide and store a source .tar.gz and a full jarfile on framagit
+    - Deprecated symbols remain usable for at least 3 named releases (~1 year)
+    - These releases are announced to the users
+  - 3.X.Y where Y is even: dot release of 3.X, prerelease of 3.(X+1)
+    - We provide and store a source .tar.gz and a full jarfile on framagit
+    - These releases are NOT announced publicly, nor really documented. 
+      The idea is to have something close to a rolling release.
+    - External projects can depend on dot releases to loosen their
+      release process from ours, when 4 release a year is not enough 
+  - 3.X.Y where Y is odd: git current status between two releases
+    - No expectations on such versions
+  - Example
+    - 3.22.4: unannounced/losely documented stable release
+    - 3.22.5: git status somewhere between the release of 3.22.4 and the next one
+    - 3.23: Documented and announced stable release
+    
+Doing a dot release:
+  - Update the version number in:
+      - CMakeLists.txt (in macros SIMGRID_VERSION_*)
+      - sonar-project.properties
+      - docs/source/conf.py
+      - setup.py
+  - Commit and push to both framagit and github
+  - Wait for both appveyor and jenkins/highsierra to complete the build
+  - If it's not successful, fix it and push again
+  - Once it's successful on both appveyor and jenkins:
+    - tag the release v3.X.Y and push the tag
+    - Merge 'master' into 'stable' and push it to framagit
+    - Do not merge into 'stable' before appveyor and jenkins are done,
+      or your jarfile will not contain the code you expect for win and
+      mac.
+  - Rebuild the python package
+    - rm -rf dist/ ; python3 setup.py sdist # Build a source distrib
+    - test that the built distrib recompiles:
+      rm -rf /tmp/pysimgrid && mkdir /tmp/pysimgrid && cp dist/simgrid-*.tar.gz /tmp/pysimgrid 
+      (cd /tmp/pysimgrid && tar xfz simgrid*.tar.gz && cd simgrid-*/ && python3 setup.py build)
+    - Upload it to pypi (WARNING: you cannot modify uploaded files, ever)
+      twine upload dist/simgrid-*.tar.gz
 
 */

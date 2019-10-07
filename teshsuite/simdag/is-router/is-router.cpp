@@ -42,9 +42,17 @@ int main(int argc, char **argv)
   xbt_dynar_free(&hosts);
 
   std::printf("NetCards count: %zu\n", netpoints.size());
-  for (auto const& nc : netpoints)
-    std::printf("   - Seen: \"%s\". Type: %s\n", nc->get_cname(),
-                nc->is_router() ? "router" : (nc->is_netzone() ? "netzone" : (nc->is_host() ? "host" : "buggy")));
-
+  for (auto const& nc : netpoints) {
+    const char* type;
+    if (nc->is_router())
+      type = "router";
+    else if (nc->is_netzone())
+      type = "netzone";
+    else if (nc->is_host())
+      type = "host";
+    else
+      type = "buggy";
+    std::printf("   - Seen: \"%s\". Type: %s\n", nc->get_cname(), type);
+  }
   return 0;
 }

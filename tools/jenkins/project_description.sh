@@ -1,7 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 get_boost(){
-    grep -m 1 "Boost version:" ./consoleText | sed  "s/.*-- Boost version: \([a-zA-Z0-9\.]*\)/\1/g"
+    BOOST=$(grep -m 1 "Boost version:" ./consoleText | sed  "s/.*-- Boost version: \([a-zA-Z0-9\.]*\)/\1/g")
+    if [ -z "$BOOST" ]
+    then
+      BOOST=$(grep -m 1 "Found Boost:" ./consoleText | sed  "s/.*-- Found Boost:.*found suitable version \"\([a-zA-Z0-9\.]*\)\",.*/\1/g")
+    fi
+  echo $BOOST
 }
 
 get_compiler(){
@@ -17,7 +22,7 @@ get_cmake(){
 }
 
 get_ns3(){
-  found=$(grep -c "NS-3 found" ./consoleText)
+  found=$(grep -c "ns-3 found" ./consoleText)
   if [ $found != 0 ]; then
     echo "✔"
   else
@@ -45,13 +50,85 @@ fi
 
 #get the list of nodes on jenkins
 wget --quiet ${BUILD_URL}/consoleText >/dev/null 2>&1
-nodes=($(grep -rR "Triggering SimGrid ? Debug," ./consoleText | sed "s/Triggering SimGrid ? Debug,\(.*\)/\1/g"| sort))
+nodes=($(sed -n 's/^Triggering SimGrid [^ ]* Debug,//p' ./consoleText| sort))
 rm consoleText
 
 
 echo "<br>Description of the nodes - Automatically updated by project_description.sh script - Don't edit here<br><br>
-<table id="configuration-matrix"> 
-<tr class="matrix-row">  <td class="matrix-header" style="min-width:75px">Name of the Builder</td><td class="matrix-header" style="min-width:75px">OS</td><td class="matrix-header" style="min-width:75px">Compiler</td><td class="matrix-header" style="min-width:75px">Boost</td><td class="matrix-header" style="min-width:75px">Java</td><td class="matrix-header" style="min-width:75px">Cmake</td><td class="matrix-header" style="min-width:50px">NS3</td><td class="matrix-header" style="min-width:50px">Python</td></tr>"
+<script>
+function compareVersion(v1, v2) {
+    if (typeof v1 !== 'string') return false;
+    if (typeof v2 !== 'string') return false;
+    v1 = v1.split('.');
+    v2 = v2.split('.');
+    const k = Math.min(v1.length, v2.length);
+    for (let i = 0; i < k; ++ i) {
+        v1[i] = parseInt(v1[i], 10);
+        v2[i] = parseInt(v2[i], 10);
+        if (v1[i] > v2[i]) return 1;
+        if (v1[i] < v2[i]) return -1;        
+    }
+    return v1.length == v2.length ? 0: (v1.length < v2.length ? -1 : 1);
+}</script>
+<script>
+function sortTable(n, type) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById('configuration-matrix');
+  switching = true;
+  //Set the sorting direction to ascending:
+  dir = 'asc'; 
+  /*Make a loop that will continue until
+  no switching has been done:*/
+  while (switching) {
+    //start by saying: no switching is done:
+    switching = false;
+    rows = table.rows;
+    /*Loop through all table rows (except the
+    first, which contains table headers):*/
+    for (i = 1; i < (rows.length - 1); i++) {
+      //start by saying there should be no switching:
+      shouldSwitch = false;
+      /*Get the two elements you want to compare,
+      one from current row and one from the next:*/
+      x = rows[i].getElementsByTagName('TD')[n];
+      y = rows[i + 1].getElementsByTagName('TD')[n];
+      /*check if the two rows should switch place,
+      based on the direction, asc or desc:*/
+      if (dir == 'asc') {
+        if(type == 'version'){
+          shouldSwitch = (compareVersion(x.innerHTML.toLowerCase(), y.innerHTML.toLowerCase()) > 0);
+        }else{
+          shouldSwitch = (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase());
+        }
+      } else if (dir == 'desc') {
+        if(type == 'version'){
+          shouldSwitch = (compareVersion(x.innerHTML.toLowerCase(), y.innerHTML.toLowerCase()) < 0);
+        }else{
+          shouldSwitch = (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase());
+        }
+      }
+      if (shouldSwitch)
+        break;
+    }
+    if (shouldSwitch) {
+      /*If a switch has been marked, make the switch
+      and mark that a switch has been done:*/
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      //Each time a switch is done, increase this count by 1:
+      switchcount ++;      
+    } else {
+      /*If no switching has been done AND the direction is 'asc',
+      set the direction to 'desc' and run the while loop again.*/
+      if (switchcount == 0 && dir == 'asc') {
+        dir = 'desc';
+        switching = true;
+      }
+    }
+  }
+}</script>
+<table id=configuration-matrix> 
+<tr class=matrix-row>  <td class=matrix-header style=min-width:75px onclick='sortTable(0);'>Name of the Builder</td><td class=matrix-header style=min-width:75px onclick='sortTable(1);'>OS</td><td class=matrix-header style=min-width:75px onclick='sortTable(2);'>Compiler</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(3, 'version');\">Boost</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(4,'version');\">Java</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(5,'version');\">Cmake</td><td class=matrix-header style=min-width:50px onclick='sortTable(6);'>ns-3</td><td class=matrix-header style=min-width:50px onclick='sortTable(7);'>Python</td><td class=matrix-header style=min-width:50px onclick='sortTable(1);'>Debug</td><td class=matrix-header style=min-width:50px onclick='sortTable(1);'>MC</td></tr>"
 
 for node in "${nodes[@]}"
 do
@@ -67,25 +144,50 @@ do
     ns3=$(get_ns3)
     py=$(get_python)
     os=$(grep -m 1 "OS Version" ./consoleText| sed "s/OS Version : \(.*\)/\1/g")
-    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td></tr>"
+    
+    color1=""
+    color2=""
+    #in case of success, replace blue by green in status balls
+    wget --quiet https://ci.inria.fr/simgrid/buildStatus/text?job=SimGrid%2Fbuild_mode%3DDebug%2Cnode%3D${node} -O status  >/dev/null 2>&1
+    status=$(cat status)
+    if [ $status == "Success" ]; then
+      color1="&color=green"
+    fi
+    rm status
+    statusmc="<img src=https://ci.inria.fr/simgrid/images/24x24/grey.png>"
+    wget --quiet https://ci.inria.fr/simgrid/buildStatus/text?job=SimGrid%2Fbuild_mode%3DModelChecker%2Cnode%3D${node} -O status >/dev/null 2>&1
+    status=$(cat status)
+    if [ $status ]; then 
+      if [ $status == "Success" ]; then
+        color2="&color=green"
+      fi
+      statusmc="<a href=\"build_mode=ModelChecker,node=${node}/\"><img src=\"https://ci.inria.fr/simgrid/job/SimGrid/build_mode=ModelChecker,node=${node}/badge/icon?style=ball-24x24${color2}\"/>"
+    fi
+    rm status
+    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class="matrix-cell" style="text-align:center"><a href="build_mode=Debug,node=${node}/"><img src="https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=${node}/badge/icon?style=ball-24x24${color1}"/></td><td class="matrix-cell" style="text-align:center">${statusmc}</td></tr>"
     rm consoleText
 done
 
 
 #Travis - get ID of the last jobs with the API
 BUILD_NUM=$(curl -s 'https://api.travis-ci.org/repos/simgrid/simgrid/builds?limit=1' | grep -o '^\[{"id":[0-9]*,' | grep -o '[0-9]' | tr -d '\n')
-BUILDS=($(curl -s https://api.travis-ci.org/repos/simgrid/simgrid/builds/${BUILD_NUM} | grep -o '{"id":[0-9]*,' | grep -o '[0-9]*'| tail -n 2))
+BUILDS=($(curl -s https://api.travis-ci.org/repos/simgrid/simgrid/builds/${BUILD_NUM} | grep -o '{"id":[0-9]*,' | grep -o '[0-9]*'| tail -n 3))
+OS=($(curl -s https://api.travis-ci.org/repos/simgrid/simgrid/builds/${BUILD_NUM} | grep -o '"os":"[a-z]*",' | sed  's/"os":"\([a-z]*\)",/\1/g'| tail -n 3))
 
 for id in "${!BUILDS[@]}"
 do
     wget --quiet https://api.travis-ci.org/v3/job/${BUILDS[$id]}/log.txt -O ./consoleText >/dev/null 2>&1
     sed -i -e "s/\r//g" ./consoleText
-    if [ $id == 0 ]; then
-      node="<a href=\"https://travis-ci.org/simgrid/simgrid\">travis-linux</a>"
-      os="Ubuntu 16.04 (<a href=\"https://docs.travis-ci.com/user/reference/xenial/\">Xenial</a>) 64 bits"
-    else
-      node="<a href=\"https://travis-ci.org/simgrid/simgrid\">travis-mac</a>"
-      os="Mac OSX High Sierra (kernel: 17.4.0)"
+
+    if [ ${OS[$id]} == "linux" ]; then
+      node="travis-linux (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
+      os="Ubuntu  <a href=\"https://docs.travis-ci.com/user/reference/bionic/\">18.04 bionic</a>"
+    elif [ ${OS[$id]} == "osx" ]; then
+      node="travis-mac (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
+      os="Mac OS X <a href=\"https://docs.travis-ci.com/user/reference/osx/\">Mojave (10.14)</a> "
+    elif [ ${OS[$id]} == "windows" ]; then
+      node="travis-windows (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
+      os="Windows <a href=\"https://docs.travis-ci.com/user/reference/windows/\">10 v17134</a>"
     fi
     boost=$(get_boost)
     compiler=$(get_compiler)
@@ -93,7 +195,12 @@ do
     cmake=$(get_cmake)
     ns3=$(get_ns3)
     py=$(get_python)
-    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td></tr>"
+    success=$(grep -m 1 "Your build exited with 0" ./consoleText)
+    ball="red.png"
+    if [ -n "$success" ]; then
+      ball="blue.png"
+    fi
+    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class=\"matrix-cell\" style=\"text-align:center\"><img src=https://ci.inria.fr/simgrid/images/24x24/${ball}></td><td class=\"matrix-cell\" style=\"text-align:center\"><img src=https://ci.inria.fr/simgrid/images/24x24/grey.png></td></tr>"
     rm consoleText
 done
 
@@ -109,7 +216,12 @@ java=$(get_java)
 cmake=$(get_cmake)
 ns3=$(get_ns3)
 py=$(get_python)
-echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td></tr>"
+success=$(grep -m 1 "Build success" ./consoleText)
+ball="red.png"
+if [ -n "$success" ]; then
+  ball="blue.png"
+fi
+echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class=\"matrix-cell\" style=\"text-align:center\"><img src=https://ci.inria.fr/simgrid/images/24x24/${ball}></td><td class=\"matrix-cell\" style=\"text-align:center\"><img src=https://ci.inria.fr/simgrid/images/24x24/grey.png></td></tr>"
 rm consoleText
 
 echo "</table>"

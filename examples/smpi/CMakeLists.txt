@@ -14,8 +14,8 @@ if(enable_smpi)
 
   set_target_properties(smpi_trace_call_location PROPERTIES COMPILE_FLAGS "-trace-call-location")
 
-  foreach(x bugged1 bugged2 bugged1_liveness only_send_deterministic mutual_exclusion non_termination1 
-            non_termination2 non_termination3 non_termination4)
+  foreach(x bugged1 bugged2 bugged1_liveness only_send_deterministic mutual_exclusion non_termination1
+            non_termination2 non_termination3 non_termination4 sendsend)
     if(SIMGRID_HAVE_MC)
       add_executable       (smpi_${x} EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/mc/${x}.c)
       target_link_libraries(smpi_${x} simgrid)
@@ -32,7 +32,7 @@ foreach(x trace trace_simple trace_call_location energy gemm)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
 endforeach()
 foreach(x bugged1 bugged2 bugged1_liveness only_send_deterministic mutual_exclusion non_termination1
-    non_termination2 non_termination3 non_termination4)
+    non_termination2 non_termination3 non_termination4 sendsend)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/mc/${x}.c)
 endforeach()
 
@@ -43,6 +43,7 @@ set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/energy/energy.tes
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_simple/trace_simple.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_call_location/trace_call_location.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/ampi_test/ampi_test.tesh
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc/sendsend.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay-override-replayer.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay.tesh                          PARENT_SCOPE)
 set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
@@ -67,11 +68,14 @@ set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.t
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_reducescatter.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_waitall.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_with_isend.txt
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay/split_traces                         PARENT_SCOPE)
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay/split_traces
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/trace_call_location/adjust                  PARENT_SCOPE)
 
 if(enable_smpi)
+  # MC is currently broken with threads (deadlock => timeout)
   if(SIMGRID_HAVE_MC)
     ADD_TESH(smpi-mc-only-send-determinism --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/mc --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/mc ${CMAKE_HOME_DIRECTORY}/examples/smpi/mc/only_send_deterministic.tesh)
+    ADD_TESH_FACTORIES(smpi-mc-sendsend "ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/mc --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/mc ${CMAKE_HOME_DIRECTORY}/examples/smpi/mc/sendsend.tesh)
   endif()
 
   ADD_TESH(smpi-tracing        --setenv bindir=${CMAKE_BINARY_DIR}/examples/smpi/trace --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/trace --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/trace ${CMAKE_HOME_DIRECTORY}/examples/smpi/trace/trace.tesh)

@@ -1,0 +1,37 @@
+#!/usr/bin/env tesh
+
+# Checks that background processes' output is not lost when a foreground
+# process (or another background process) does not match its expectation.
+
+! expect return 2
+< ! timeout 3
+< & sh -c 'echo "I crash in background" && sleep 2'
+< 
+< ! timeout 2
+< & sh -c 'echo "I also crash in background" && sleep 1'
+< 
+< ! timeout 1
+< $ sh -c 'echo "I crash in foreground"'
+$ ${bindir:=.}/tesh
+> Test suite from stdin
+> [(stdin):8] sh -c 'echo "I crash in foreground"'
+> Output of <(stdin):8> mismatch:
+> --- expected
+> +++ obtained
+> @@ -0,0 +1 @@
+> +I crash in foreground
+> Test suite `(stdin)': NOK (<(stdin):8> output mismatch)
+> [(stdin):5] sh -c 'echo "I also crash in background" && sleep 1'
+> Output of <(stdin):5> mismatch:
+> --- expected
+> +++ obtained
+> @@ -0,0 +1 @@
+> +I also crash in background
+> Test suite `(stdin)': NOK (<(stdin):5> output mismatch)
+> [(stdin):2] sh -c 'echo "I crash in background" && sleep 2'
+> Output of <(stdin):2> mismatch:
+> --- expected
+> +++ obtained
+> @@ -0,0 +1 @@
+> +I crash in background
+> Test suite `(stdin)': NOK (<(stdin):2> output mismatch)

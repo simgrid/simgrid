@@ -8,22 +8,24 @@
 #include <float.h>
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific to this example");
 
-static int sender_fun(int argc, char *argv[])
+static int sender_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Sending");
   MSG_task_send(MSG_task_create("Blah", 0.0, 0.0, NULL), MSG_host_get_name(MSG_host_self()));
-  MSG_process_sleep(1.);     /* FIXME: if the sender exits before the receiver calls get_sender(), bad thing happens */
+  MSG_process_sleep(1.0);
   XBT_INFO("Exiting");
   return 0;
 }
 
-static int receiver_fun(int argc, char *argv[])
+static int receiver_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Receiving");
   msg_task_t task = NULL;
   MSG_task_receive_with_timeout(&task, MSG_host_get_name(MSG_host_self()), DBL_MAX);
   xbt_assert(MSG_task_get_sender(task), "No sender received");
   XBT_INFO("Got a message sent by '%s'", MSG_process_get_name(MSG_task_get_sender(task)));
+  MSG_process_sleep(2.0);
+  XBT_INFO("Did I tell you that I got a message sent by '%s'?", MSG_process_get_name(MSG_task_get_sender(task)));
   MSG_task_destroy(task);
   return 0;
 }

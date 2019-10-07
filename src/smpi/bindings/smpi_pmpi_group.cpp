@@ -50,7 +50,7 @@ int PMPI_Group_rank(MPI_Group group, int *rank)
   }
 }
 
-int PMPI_Group_translate_ranks(MPI_Group group1, int n, int *ranks1, MPI_Group group2, int *ranks2)
+int PMPI_Group_translate_ranks(MPI_Group group1, int n, const int *ranks1, MPI_Group group2, int *ranks2)
 {
   if (group1 == MPI_GROUP_NULL || group2 == MPI_GROUP_NULL) {
     return MPI_ERR_GROUP;
@@ -59,7 +59,7 @@ int PMPI_Group_translate_ranks(MPI_Group group1, int n, int *ranks1, MPI_Group g
       if(ranks1[i]==MPI_PROC_NULL){
         ranks2[i]=MPI_PROC_NULL;
       }else{
-        simgrid::s4u::ActorPtr actor = group1->actor(ranks1[i]);
+        simgrid::s4u::Actor* actor = group1->actor(ranks1[i]);
         ranks2[i] = group2->rank(actor);
       }
     }
@@ -114,7 +114,7 @@ int PMPI_Group_difference(MPI_Group group1, MPI_Group group2, MPI_Group * newgro
   }
 }
 
-int PMPI_Group_incl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
+int PMPI_Group_incl(MPI_Group group, int n, const int *ranks, MPI_Group * newgroup)
 {
   if (group == MPI_GROUP_NULL) {
     return MPI_ERR_GROUP;
@@ -125,7 +125,7 @@ int PMPI_Group_incl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
   }
 }
 
-int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
+int PMPI_Group_excl(MPI_Group group, int n, const int *ranks, MPI_Group * newgroup)
 {
   if (group == MPI_GROUP_NULL) {
     return MPI_ERR_GROUP;
@@ -182,9 +182,13 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3], MPI_Group * n
 }
 
 MPI_Group PMPI_Group_f2c(MPI_Fint group){
+  if(group==-1)
+    return MPI_GROUP_NULL;
   return simgrid::smpi::Group::f2c(group);
 }
 
 MPI_Fint PMPI_Group_c2f(MPI_Group group){
+  if(group==MPI_GROUP_NULL)
+    return -1;
   return group->c2f();
 }

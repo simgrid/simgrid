@@ -15,6 +15,8 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
+#include "parserPromela.tab.cacc"
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_automaton);
 
 static xbt_automaton_t parsed_automaton;
@@ -56,12 +58,9 @@ static void new_transition(char* id, xbt_automaton_exp_label_t label)
   xbt_automaton_state_t state_dst = xbt_automaton_state_exists(parsed_automaton, id);
   xbt_automaton_state_t state_src = xbt_automaton_state_exists(parsed_automaton, state_id_src);
 
-  //xbt_transition_t trans = NULL;
   xbt_automaton_transition_new(parsed_automaton, state_src, state_dst, label);
 
 }
-
-#include "parserPromela.tab.cacc"
 
 void xbt_automaton_load(xbt_automaton_t a, const char *file)
 {

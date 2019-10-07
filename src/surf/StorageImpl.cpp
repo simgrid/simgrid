@@ -41,19 +41,19 @@ StorageImpl::StorageImpl(kernel::resource::Model* model, const std::string& name
     : Resource(model, name, maxminSystem->constraint_new(this, std::max(bread, bwrite)))
     , piface_(name, this)
     , typeId_(type_id)
-    , content_name(content_name)
+    , content_name_(content_name)
     , size_(size)
     , attach_(attach)
 {
   StorageImpl::turn_on();
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
-  constraintRead_  = maxminSystem->constraint_new(this, bread);
-  constraintWrite_ = maxminSystem->constraint_new(this, bwrite);
+  constraint_read_  = maxminSystem->constraint_new(this, bread);
+  constraint_write_ = maxminSystem->constraint_new(this, bwrite);
 }
 
 StorageImpl::~StorageImpl()
 {
-  xbt_assert(currentlyDestroying_, "Don't delete Storages directly. Call destroy() instead.");
+  xbt_assert(currently_destroying_, "Don't delete Storages directly. Call destroy() instead.");
 }
 
 /** @brief Fire the required callbacks and destroy the object
@@ -62,8 +62,8 @@ StorageImpl::~StorageImpl()
  */
 void StorageImpl::destroy()
 {
-  if (not currentlyDestroying_) {
-    currentlyDestroying_ = true;
+  if (not currently_destroying_) {
+    currently_destroying_ = true;
     s4u::Storage::on_destruction(this->piface_);
     delete this;
   }

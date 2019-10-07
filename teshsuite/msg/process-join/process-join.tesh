@@ -1,5 +1,5 @@
 
-$ $SG_TEST_EXENV ${bindir:=.}/process-join$EXEEXT ${platfdir}/small_platform.xml
+$ ${bindir:=.}/process-join ${platfdir}/small_platform.xml
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Start slave
 > [Tremblay:slave from master:(2) 0.000000] [msg_test/INFO] Slave started
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Join the slave (timeout 2)

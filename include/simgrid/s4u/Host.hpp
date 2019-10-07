@@ -50,13 +50,13 @@ private:
   bool currently_destroying_ = false;
 
 public:
-  /*** Called on each newly created host */
+  /** Called on each newly created host */
   static xbt::signal<void(Host&)> on_creation;
-  /*** Called just before destructing a host */
+  /** Called just before destructing a host */
   static xbt::signal<void(Host const&)> on_destruction;
-  /*** Called when the machine is turned on or off (called AFTER the change) */
+  /** Called when the machine is turned on or off (called AFTER the change) */
   static xbt::signal<void(Host const&)> on_state_change;
-  /*** Called when the speed of the machine is changed (called AFTER the change)
+  /** Called when the speed of the machine is changed (called AFTER the change)
    * (either because of a pstate switch or because of an external load event coming from the profile) */
   static xbt::signal<void(Host const&)> on_speed_change;
 
@@ -99,22 +99,11 @@ public:
 
   const char* get_property(const std::string& key) const;
   void set_property(const std::string& key, const std::string& value);
-  std::unordered_map<std::string, std::string>* get_properties();
+  const std::unordered_map<std::string, std::string>* get_properties() const;
+  void set_properties(const std::map<std::string, std::string>& properties);
 
   void set_state_profile(kernel::profile::Profile* p);
   void set_speed_profile(kernel::profile::Profile* p);
-
-#ifndef DOXYGEN
-  /** @deprecated See Host::get_properties() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_properties()") std::map<std::string, std::string>* getProperties()
-  {
-    std::map<std::string, std::string>* res             = new std::map<std::string, std::string>();
-    std::unordered_map<std::string, std::string>* props = get_properties();
-    for (auto const& kv : *props)
-      res->insert(kv);
-    return res;
-  }
-#endif
 
   double get_speed() const;
   double get_available_speed() const;
@@ -126,36 +115,23 @@ public:
   void set_pstate(int pstate_index);
   int get_pstate() const;
 
-  std::vector<const char*> get_attached_storages() const;
+  std::vector<Disk*> get_disks() const;
+  void add_disk(Disk* disk);
+  void remove_disk(const std::string& disk_name);
 
-#ifndef DOXYGEN
-  /** @deprecated See Host::get_speed() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_speed() instead.") double getSpeed() { return get_speed(); }
-  /** @deprecated See Host::get_pstate_speed() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_pstate_speed() instead.") double getPstateSpeed(int pstate_index)
-  {
-    return get_pstate_speed(pstate_index);
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_attached_storages() instead.") void getAttachedStorages(
-      std::vector<const char*>* storages);
-#endif
+  std::vector<const char*> get_attached_storages() const;
 
   /** Get an associative list [mount point]->[Storage] of all local mount points.
    *
    *  This is defined in the platform file, and cannot be modified programatically (yet).
    */
   std::unordered_map<std::string, Storage*> const& get_mounted_storages();
-#ifndef DOXYGEN
-  /** @deprecated See Host::get_mounted_storages() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_mounted_storages() instead.") std::unordered_map<std::string, Storage*> const& getMountedStorages()
-  {
-    return get_mounted_storages();
-  }
-#endif
 
   void route_to(Host* dest, std::vector<Link*>& links, double* latency);
   void route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency);
+  void send_to(Host* dest, double byte_amount);
 
+  NetZone* get_englobing_zone();
   /** Block the calling actor on an execution located on the called host
    *
    * It is not a problem if the actor is not located on the called host.
@@ -168,63 +144,6 @@ public:
   /** Block the calling actor on an execution located on the called host (with explicit priority) */
   void execute(double flops, double priority);
 
-  // Deprecated functions
-#ifndef DOXYGEN
-  /** @deprecated See Host::get_name() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_name()") simgrid::xbt::string const& getName() const
-  {
-    return name_;
-  }
-  /** @deprecated See Host::get_cname() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_cname()") const char* getCname() const { return name_.c_str(); }
-  /** @deprecated See Host::get_all_actors() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_all_actors()") void actorList(std::vector<ActorPtr>* whereto);
-  /** @deprecated See Host::get_all_actors() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_all_actors()") void getProcesses(std::vector<ActorPtr>* list);
-  /** @deprecated See Host::turn_on() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::turn_on()") void turnOn() { turn_on(); }
-  /** @deprecated See Host::turn_off() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::turn_off()") void turnOff() { turn_off(); }
-  /** @deprecated See Host::is_on() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::is_on()") bool isOn() { return is_on(); }
-  /** @deprecated See Host::is_off() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::is_off()") bool isOff() { return not is_on(); }
-  /** @deprecated See Host::get_property() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_property()") const char* getProperty(const char* key)
-  {
-    return get_property(key);
-  }
-  /** @deprecated See Host::set_property() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::set_property()") void setProperty(const std::string& key,
-                                                                                 const std::string& value)
-  {
-    set_property(key, value);
-  }
-  /** @deprecated See Host::set_pstate() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::set_pstate()") void setPstate(int idx) { set_pstate(idx); }
-  /** @deprecated See Host::get_pstate() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_pstate()") int getPstate() { return get_pstate(); }
-  /** @deprecated See Host::route_to() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::route_to()") void routeTo(Host* dest, std::vector<Link*>& links,
-                                                                         double* latency)
-  {
-    route_to(dest, links, latency);
-  }
-  /** @deprecated See Host::route_to() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::route_to()") void routeTo(
-      Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency)
-  {
-    route_to(dest, links, latency);
-  }
-  /** @deprecated See Host::get_core_count() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_core_count()") int getCoreCount() { return get_core_count(); }
-  /** @deprecated See Host::get_pstate_count() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_pstate_count()") int getPstatesCount() const
-  {
-    return get_pstate_count();
-  }
-#endif /* !DOXYGEN */
-
 private:
   xbt::string name_{"noname"};
   std::unordered_map<std::string, Storage*>* mounts_ = nullptr; // caching
@@ -232,7 +151,7 @@ private:
 public:
 #ifndef DOXYGEN
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
-  surf::Cpu* pimpl_cpu = nullptr;
+  kernel::resource::Cpu* pimpl_cpu = nullptr;
   // TODO, this could be a unique_ptr
   surf::HostImpl* pimpl_ = nullptr;
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
@@ -241,7 +160,5 @@ public:
 };
 } // namespace s4u
 } // namespace simgrid
-
-extern int USER_HOST_LEVEL;
 
 #endif /* SIMGRID_S4U_HOST_HPP */

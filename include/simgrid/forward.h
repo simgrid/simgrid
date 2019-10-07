@@ -81,6 +81,7 @@ typedef boost::intrusive_ptr<Semaphore> SemaphorePtr;
 XBT_PUBLIC void intrusive_ptr_release(Semaphore* m);
 XBT_PUBLIC void intrusive_ptr_add_ref(Semaphore* m);
 
+class Disk;
 class Storage;
 } // namespace s4u
 
@@ -133,11 +134,15 @@ class System;
 }
 namespace resource {
 class Action;
+class Cpu;
 class Model;
 class Resource;
+class CpuModel;
 class NetworkModel;
 class LinkImpl;
 class NetworkAction;
+class DiskImpl;
+class DiskModel;
 class StorageImpl;
 class StorageType;
 class StorageModel;
@@ -160,13 +165,12 @@ namespace simix {
   class Timer;
 }
 namespace surf {
-  class Cpu;
-  class CpuModel;
   class HostImpl;
   class HostModel;
 }
 namespace mc {
 class CommunicationDeterminismChecker;
+class SimcallInspector;
 }
 namespace vm {
 class VMModel;
@@ -179,14 +183,16 @@ typedef simgrid::s4u::Barrier s4u_Barrier;
 typedef simgrid::s4u::Host s4u_Host;
 typedef simgrid::s4u::Link s4u_Link;
 typedef simgrid::s4u::File s4u_File;
+typedef simgrid::s4u::ConditionVariable s4u_ConditionVariable;
+typedef simgrid::s4u::Mutex s4u_Mutex;
 typedef simgrid::s4u::Semaphore s4u_Semaphore;
+typedef simgrid::s4u::Disk s4u_Disk;
 typedef simgrid::s4u::Storage s4u_Storage;
 typedef simgrid::s4u::NetZone s4u_NetZone;
 typedef simgrid::s4u::VirtualMachine s4u_VM;
 typedef boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> smx_activity_t;
 
 typedef simgrid::simix::Timer* smx_timer_t;
-typedef simgrid::kernel::context::Context* smx_context_t;
 typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 typedef simgrid::kernel::activity::ConditionVariableImpl* smx_cond_t;
 typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
@@ -200,7 +206,10 @@ typedef struct s4u_Barrier s4u_Barrier;
 typedef struct s4u_Host s4u_Host;
 typedef struct s4u_Link s4u_Link;
 typedef struct s4u_File s4u_File;
+typedef struct s4u_ConditionVariable s4u_ConditionVariable;
+typedef struct s4u_Mutex s4u_Mutex;
 typedef struct s4u_Semaphore s4u_Semaphore;
+typedef struct s4u_Disk s4u_Disk;
 typedef struct s4u_Storage s4u_Storage;
 typedef struct s4u_NetZone s4u_NetZone;
 typedef struct s4u_VM s4u_VM;
@@ -209,7 +218,6 @@ typedef struct kernel_Activity* smx_activity_t;
 typedef struct s_smx_timer* smx_timer_t;
 typedef struct s_smx_actor* smx_actor_t;
 typedef struct s_smx_cond_t* smx_cond_t;
-typedef struct s_smx_context* smx_context_t;
 typedef struct s_smx_mailbox* smx_mailbox_t;
 typedef struct s_smx_mutex* smx_mutex_t;
 typedef struct s_smx_sem* smx_sem_t;
@@ -217,10 +225,13 @@ typedef struct s_smx_sem* smx_sem_t;
 #endif
 
 typedef s4u_Barrier* sg_bar_t;
+typedef s4u_ConditionVariable* sg_cond_t;
+typedef s4u_Mutex* sg_mutex_t;
 typedef s4u_Semaphore* sg_sem_t;
 typedef s4u_NetZone* sg_netzone_t;
 typedef s4u_Host* sg_host_t;
 typedef s4u_Link* sg_link_t;
+typedef s4u_Disk* sg_disk_t;
 typedef s4u_Storage* sg_storage_t;
 typedef s4u_File* sg_file_t;
 typedef s4u_VM* sg_vm_t;

@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Property test");
 static void test_host(const std::string& hostname)
 {
   simgrid::s4u::Host* thehost = simgrid::s4u::Host::by_name(hostname);
-  std::unordered_map<std::string, std::string>* props = thehost->get_properties();
+  const std::unordered_map<std::string, std::string>* hostprops = thehost->get_properties();
   const char* noexist = "Unknown";
   const char* exist   = "Hdd";
   const char* value;
@@ -22,11 +22,11 @@ static void test_host(const std::string& hostname)
   XBT_INFO("== Print the properties of the host '%s'", hostname.c_str());
   // Sort the properties before displaying them, so that the tests are perfectly reproducible
   std::vector<std::string> keys;
-  for (auto const& kv : *props)
+  for (auto const& kv : *hostprops)
     keys.push_back(kv.first);
   std::sort(keys.begin(), keys.end());
   for (std::string key : keys)
-    XBT_INFO("  Host property: '%s' -> '%s'", key.c_str(), props->at(key).c_str());
+    XBT_INFO("  Host property: '%s' -> '%s'", key.c_str(), hostprops->at(key).c_str());
 
   XBT_INFO("== Try to get a host property that does not exist");
   value = thehost->get_property(noexist);
@@ -49,6 +49,16 @@ static void test_host(const std::string& hostname)
 
   /* Restore the value for the next test */
   thehost->set_property(exist, "180");
+
+  auto thezone = thehost->get_englobing_zone();
+  XBT_INFO("== Print the properties of the zone '%s' that contains '%s'", thezone->get_cname(), hostname.c_str());
+  const std::unordered_map<std::string, std::string>* zoneprops = thezone->get_properties();
+  keys.clear();
+  for (auto const& kv : *zoneprops)
+    keys.push_back(kv.first);
+  std::sort(keys.begin(), keys.end());
+  for (std::string key : keys)
+    XBT_INFO("  Zone property: '%s' -> '%s'", key.c_str(), zoneprops->at(key).c_str());
 }
 
 static void alice(std::vector<std::string> /*args*/)
@@ -75,13 +85,13 @@ static void bob(std::vector<std::string> /*args*/)
 {
   /* this host also tests the properties of the AS*/
   simgrid::s4u::NetZone* root = simgrid::s4u::Engine::get_instance()->get_netzone_root();
-  XBT_INFO("== Print the properties of the zone");
+  XBT_INFO("== Print the properties of the root zone");
   XBT_INFO("   Zone property: filename -> %s", root->get_property("filename"));
   XBT_INFO("   Zone property: date -> %s", root->get_property("date"));
   XBT_INFO("   Zone property: author -> %s", root->get_property("author"));
 
   /* Get the property list of current bob process */
-  std::unordered_map<std::string, std::string>* props = simgrid::s4u::Actor::self()->get_properties();
+  const std::unordered_map<std::string, std::string>* props = simgrid::s4u::Actor::self()->get_properties();
   const char* noexist = "UnknownProcessProp";
   XBT_ATTRIB_UNUSED const char* value;
 

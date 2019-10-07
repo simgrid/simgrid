@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 p Check different log thresholds
-$ $SG_TEST_EXENV ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Test with the settings ''
 > [  0.000000] [0:maestro@] val=2
 > [  0.000000] [0:maestro@] false alarm!
@@ -22,7 +22,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m
 > [  0.000000] [0:maestro@] false alarm!
 
 p Check the "file" log appender
-$ $SG_TEST_EXENV ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n" --log=root.app:file:${bindir:=.}/log_usage.log
+$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n" --log=root.app:file:${bindir:=.}/log_usage.log
 $ cat ${bindir:=.}/log_usage.log
 > [  0.000000] [0:maestro@] Test with the settings ''
 > [  0.000000] [0:maestro@] val=2
@@ -44,7 +44,7 @@ $ cat ${bindir:=.}/log_usage.log
 > [  0.000000] [0:maestro@] false alarm!
 
 p Check the "rollfile" log appender
-$ $SG_TEST_EXENV ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n" --log=root.app:rollfile:500:${bindir:=.}/log_usage.log
+$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n" --log=root.app:rollfile:500:${bindir:=.}/log_usage.log
 $ cat ${bindir:=.}/log_usage.log
 > [  0.000000] [0:maestro@] val=2
 > [  0.000000] [0:maestro@] false alarm!
@@ -63,7 +63,7 @@ $ cat ${bindir:=.}/log_usage.log
 >                    
 
 p Check the "splitfile" log appender
-$ $SG_TEST_EXENV ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n" --log=root.app:splitfile:500:${bindir:=.}/log_usage_%.log
+$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n" --log=root.app:splitfile:500:${bindir:=.}/log_usage_%.log
 $ cat ${bindir:=.}/log_usage_0.log
 > [  0.000000] [0:maestro@] Test with the settings ''
 > [  0.000000] [0:maestro@] val=2
@@ -87,7 +87,3 @@ $ cat ${bindir:=.}/log_usage_1.log
 > [  0.000000] [0:maestro@] false alarm!
 
 $ rm -f ${bindir:=.}/log_usage.log ${bindir:=.}/log_usage_0.log ${bindir:=.}/log_usage_1.log
-
-# Would be nice for code coverage, but the early exit leads to lots of memory leaks
-#! output ignore
-#$ $SG_TEST_EXENV ${bindir:=.}/log_usage --help-logs --help-log-categories

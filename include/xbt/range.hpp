@@ -7,6 +7,8 @@
 #ifndef SIMGRID_XBT_RANGE_HPP
 #define SIMGRID_XBT_RANGE_HPP
 
+#include <algorithm>
+
 namespace simgrid {
 namespace xbt {
 

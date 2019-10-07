@@ -14,61 +14,21 @@
 XBT_LOG_EXTERNAL_CATEGORY(xbt);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_exception, xbt, "Exceptions");
 
-// DO NOT define ~xbt_ex() in exception.hpp.
-// Defining it here ensures that xbt_ex is defined only in libsimgrid, but not in libsimgrid-java.
-// Doing otherwise naturally breaks things (at least on freebsd with clang).
-
-xbt_ex::~xbt_ex() = default;
-
-void _xbt_throw(char* message, xbt_errcat_t errcat, int value, const char* file, int line, const char* func)
+void _xbt_throw(char* message, int value, const char* file, int line, const char* func)
 {
-  xbt_ex e(simgrid::xbt::ThrowPoint(file, line, func, simgrid::xbt::Backtrace(), xbt_procname(), xbt_getpid()),
-           message);
+  simgrid::Exception e(
+      simgrid::xbt::ThrowPoint(file, line, func, simgrid::xbt::Backtrace(), xbt_procname(), xbt_getpid()),
+      message ? message : "");
   xbt_free(message);
-  e.category = errcat;
   e.value    = value;
   throw e;
 }
 
-/** @brief returns a short name for the given exception category */
-const char* xbt_ex_catname(xbt_errcat_t cat)
-{
-  switch (cat) {
-    case unknown_error:
-      return "unknown error";
-    case arg_error:
-      return "invalid argument";
-    case bound_error:
-      return "out of bounds";
-    case mismatch_error:
-      return "mismatch";
-    case not_found_error:
-      return "not found";
-    case system_error:
-      return "system error";
-    case network_error:
-      return "network error";
-    case timeout_error:
-      return "timeout";
-    case cancel_error:
-      return "action canceled";
-    case thread_error:
-      return "thread error";
-    case host_error:
-      return "host failed";
-    case tracing_error:
-      return "tracing error";
-    case io_error:
-      return "io error";
-    case vm_error:
-      return "vm error";
-    default:
-      return "INVALID ERROR";
-  }
-}
-
 namespace simgrid {
 namespace xbt {
+
+ImpossibleError::~ImpossibleError()       = default;
+UnimplementedError::~UnimplementedError() = default;
 
 void log_exception(e_xbt_log_priority_t prio, const char* context, std::exception const& exception)
 {
@@ -105,18 +65,19 @@ void log_exception(e_xbt_log_priority_t prio, const char* context, std::exceptio
   }
   catch (...) {
     // Don't log exceptions we got when trying to log exception
+    XBT_LOG(prio, "Ignoring exception caught while while trying to log an exception!");
   }
 }
 
 static void show_backtrace(const simgrid::xbt::Backtrace& bt)
 {
   if (simgrid::config::get_value<bool>("exception/cutpath")) {
-    XBT_LOG(xbt_log_priority_critical, "Display of current backtrace disabled by --cfg=exception/cutpath.");
+    XBT_CRITICAL("Display of current backtrace disabled by --cfg=exception/cutpath.");
     return;
   }
   std::string res = bt.resolve();
-  XBT_LOG(xbt_log_priority_critical, "Current backtrace:");
-  XBT_LOG(xbt_log_priority_critical, "  -> %s", res.c_str());
+  XBT_CRITICAL("Current backtrace:");
+  XBT_CRITICAL("  -> %s", res.c_str());
 }
 
 static std::terminate_handler previous_terminate_handler = nullptr;
@@ -145,7 +106,7 @@ static void handler()
     std::abort();
   }
 
-  catch (simgrid::ForcefulKillException const& e) {
+  catch (const simgrid::ForcefulKillException&) {
     XBT_ERROR("Received a ForcefulKillException at the top-level exception handler. Maybe a Java->C++ call that is not "
               "protected "
               "in a try/catch?");
@@ -172,15 +133,6 @@ void install_exception_handler()
     previous_terminate_handler = std::set_terminate(handler);
   });
 }
-// deprecated
-void logException(e_xbt_log_priority_t priority, const char* context, std::exception const& exception)
-{
-  log_exception(priority, context, exception);
-}
-void installExceptionHandler()
-{
-  install_exception_handler();
-}
 
 } // namespace xbt
 } // namespace simgrid
@@ -188,12 +140,13 @@ void installExceptionHandler()
 void xbt_throw_impossible(const char* file, int line, const char* func)
 {
   std::stringstream ss;
-  ss << file << ":" << line << ":" << func << ": The Impossible Did Happen (yet again). Please report this bug.";
-  throw std::runtime_error(ss.str());
+  ss << file << ":" << line << ":" << func
+     << ": The Impossible Did Happen (yet again). Please report this bug (after reading https://xkcd.com/2200 :)";
+  throw simgrid::xbt::ImpossibleError(ss.str());
 }
 void xbt_throw_unimplemented(const char* file, int line, const char* func)
 {
   std::stringstream ss;
   ss << file << ":" << line << ":" << func << ": Feature unimplemented yet. Please report this bug.";
-  throw std::runtime_error(ss.str());
+  throw simgrid::xbt::UnimplementedError(ss.str());
 }

@@ -35,13 +35,13 @@ static void master()
 {
   // Test the simple immediate execution:
   XBT_INFO("Start");
-  simgrid::simix::simcall([] { XBT_INFO("kernel"); });
+  simgrid::kernel::actor::simcall([] { XBT_INFO("kernel"); });
   XBT_INFO("kernel, returned");
 
   // Synchronize on a successful Future<void>:
   simgrid::simix::kernel_sync([] {
-    return kernel_wait_until(10).then([](simgrid::kernel::Future<void> future) {
-      future.get();
+    return kernel_wait_until(10).then([](simgrid::kernel::Future<void> f) {
+      f.get();
       XBT_INFO("kernel_sync with void");
     });
   });
@@ -50,8 +50,8 @@ static void master()
   // Synchronize on a failing Future<void>:
   try {
     simgrid::simix::kernel_sync([] {
-      return kernel_wait_until(20).then([](simgrid::kernel::Future<void> future) {
-        future.get();
+      return kernel_wait_until(20).then([](simgrid::kernel::Future<void> f) {
+        f.get();
         throw example::exception("Exception throwed from kernel_defer");
       });
     });
@@ -62,8 +62,8 @@ static void master()
 
   // Synchronize on a successul Future<int> and get the value:
   int res = simgrid::simix::kernel_sync([] {
-    return kernel_wait_until(30).then([](simgrid::kernel::Future<void> future) {
-      future.get();
+    return kernel_wait_until(30).then([](simgrid::kernel::Future<void> f) {
+      f.get();
       XBT_INFO("kernel_sync with value");
       return 42;
     });
@@ -72,8 +72,8 @@ static void master()
 
   // Synchronize on a successul Future<int> and get the value:
   simgrid::simix::Future<int> future = simgrid::simix::kernel_async([] {
-    return kernel_wait_until(50).then([](simgrid::kernel::Future<void> future) {
-      future.get();
+    return kernel_wait_until(50).then([](simgrid::kernel::Future<void> f) {
+      f.get();
       XBT_INFO("kernel_async with value");
       return 43;
     });
@@ -83,8 +83,8 @@ static void master()
 
   // Synchronize on a successul Future<int> and get the value:
   future = simgrid::simix::kernel_async([] {
-    return kernel_wait_until(60).then([](simgrid::kernel::Future<void> future) {
-      future.get();
+    return kernel_wait_until(60).then([](simgrid::kernel::Future<void> f) {
+      f.get();
       XBT_INFO("kernel_async with value");
       return 43;
     });

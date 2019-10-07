@@ -373,7 +373,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   // The first parts of topo_parameters should be the levels number
   try {
     this->levels_ = std::stoi(parameters[0]);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("First parameter is not the amount of levels:") + parameters[0]);
   }
 
@@ -385,7 +385,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
       this->num_children_per_node_.push_back(std::stoi(tmp[i]));
-    } catch (std::invalid_argument& ia) {
+    } catch (const std::invalid_argument&) {
       throw std::invalid_argument(std::string("Invalid lower level node number:") + tmp[i]);
     }
   }
@@ -398,7 +398,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
       this->num_parents_per_node_.push_back(std::stoi(tmp[i]));
-    } catch (std::invalid_argument& ia) {
+    } catch (const std::invalid_argument&) {
       throw std::invalid_argument(std::string("Invalid upper level node number:") + tmp[i]);
     }
   }
@@ -411,7 +411,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
       this->num_port_lower_level_.push_back(std::stoi(tmp[i]));
-    } catch (std::invalid_argument& ia) {
+    } catch (const std::invalid_argument&) {
       throw std::invalid_argument(std::string("Invalid lower level port number:") + tmp[i]);
     }
   }
@@ -445,7 +445,7 @@ FatTreeNode::FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int po
 {
   LinkCreationArgs linkTemplate;
   if (cluster->limiter_link) {
-    linkTemplate.bandwidth = cluster->limiter_link;
+    linkTemplate.bandwidths.push_back(cluster->limiter_link);
     linkTemplate.latency   = 0;
     linkTemplate.policy    = s4u::Link::SharingPolicy::SHARED;
     linkTemplate.id        = "limiter_"+std::to_string(id);
@@ -453,7 +453,7 @@ FatTreeNode::FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int po
     this->limiter_link_ = s4u::Link::by_name(linkTemplate.id)->get_impl();
   }
   if (cluster->loopback_bw || cluster->loopback_lat) {
-    linkTemplate.bandwidth = cluster->loopback_bw;
+    linkTemplate.bandwidths.push_back(cluster->loopback_bw);
     linkTemplate.latency   = cluster->loopback_lat;
     linkTemplate.policy    = s4u::Link::SharingPolicy::FATPIPE;
     linkTemplate.id        = "loopback_"+ std::to_string(id);
@@ -467,7 +467,7 @@ FatTreeLink::FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* downNode, Fa
 {
   static int uniqueId = 0;
   LinkCreationArgs linkTemplate;
-  linkTemplate.bandwidth = cluster->bw;
+  linkTemplate.bandwidths.push_back(cluster->bw);
   linkTemplate.latency   = cluster->lat;
   linkTemplate.policy    = cluster->sharing_policy; // sthg to do with that ?
   linkTemplate.id =

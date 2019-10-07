@@ -180,8 +180,11 @@ public class Task {
 	/** Cancels a task. */
 	public native void cancel();
 
-	/** Deletes a task once the garbage collector reclaims it */
-	@Override
+	/**
+	 * Deletes a task once the garbage collector reclaims it
+	 * @deprecated (from Java9 onwards)
+	 */
+	@Deprecated @Override
 	protected void finalize() throws Throwable{
 		nativeFinalize();
 		bind=0; // to avoid segfaults if the impossible happens yet again making this task surviving its finalize()

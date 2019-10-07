@@ -86,17 +86,7 @@ public:
 
   /** Put some user data onto the Activity */
 
-  kernel::activity::ActivityImplPtr get_impl() { return pimpl_; }
-
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v324("Please use Activity::wait_for()") virtual void wait(double timeout) = 0;
-  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_state()") Activity::State getState() { return state_; }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_remaining()") double getRemains() { return get_remaining(); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::set_remaining()") Activity* setRemains(double remains)
-  {
-    return set_remaining(remains);
-  }
-#endif
+  kernel::activity::ActivityImpl* get_impl() const { return pimpl_.get(); }
 
 private:
   kernel::activity::ActivityImplPtr pimpl_ = nullptr;

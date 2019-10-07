@@ -7,29 +7,20 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/resource/DiskImpl.hpp"
 #include "src/surf/StorageImpl.hpp"
 #include "src/surf/network_interface.hpp"
-
-#include <algorithm>
 
 namespace simgrid {
 namespace kernel {
 
 EngineImpl::~EngineImpl()
 {
-  /* copy all names to not modify the map while iterating over it.
-   *
-   * Plus, the hosts are destroyed in the lexicographic order to ensure that the output is reproducible: we don't want
-   * to kill them in the pointer order as it could be platform-dependent, which would break the tests.
+  /* Since hosts_ is a std::map, the hosts are destroyed in the lexicographic order, which ensures that the output is
+   * reproducible.
    */
-  std::vector<std::string> names;
-  for (auto const& kv : hosts_)
-    names.push_back(kv.second->get_name());
-
-  std::sort(names.begin(), names.end());
-
-  for (auto const& name : names)
-    hosts_.at(name)->destroy();
+  while (not hosts_.empty())
+    hosts_.begin()->second->destroy();
 
   /* Also delete the other data */
   delete netzone_root_;

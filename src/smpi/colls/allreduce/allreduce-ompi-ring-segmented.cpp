@@ -158,7 +158,7 @@
 namespace simgrid{
 namespace smpi{
 int
-Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
+Coll_allreduce_ompi_ring_segmented::allreduce(const void *sbuf, void *rbuf, int count,
                                                MPI_Datatype dtype,
                                                MPI_Op op,
                                                MPI_Comm comm)
@@ -173,7 +173,7 @@ Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
    unsigned int inbi;
    size_t typelng;
    char *tmpsend = NULL, *tmprecv = NULL;
-   char *inbuf[2] = {NULL, NULL};
+   unsigned char* inbuf[2] = {nullptr, nullptr};
    ptrdiff_t true_extent, extent;
    ptrdiff_t block_offset, max_real_segsize;
    MPI_Request reqs[2] = {NULL, NULL};
@@ -232,11 +232,15 @@ Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
    max_real_segsize = true_extent + (max_segcount - 1) * extent;
 
    /* Allocate and initialize temporary buffers */
-   inbuf[0] = (char*)smpi_get_tmp_sendbuffer(max_real_segsize);
+   inbuf[0] = smpi_get_tmp_sendbuffer(max_real_segsize);
    if (NULL == inbuf[0]) { ret = -1; line = __LINE__; goto error_hndl; }
    if (size > 2) {
-      inbuf[1] = (char*)smpi_get_tmp_recvbuffer(max_real_segsize);
-      if (NULL == inbuf[1]) { ret = -1; line = __LINE__; goto error_hndl; }
+     inbuf[1] = smpi_get_tmp_recvbuffer(max_real_segsize);
+     if (nullptr == inbuf[1]) {
+       ret  = -1;
+       line = __LINE__;
+       goto error_hndl;
+     }
    }
 
    /* Handle MPI_IN_PLACE */
@@ -378,16 +382,16 @@ Coll_allreduce_ompi_ring_segmented::allreduce(void *sbuf, void *rbuf, int count,
 
    }
 
-   if (NULL != inbuf[0]) smpi_free_tmp_buffer(inbuf[0]);
-   if (NULL != inbuf[1]) smpi_free_tmp_buffer(inbuf[1]);
+   smpi_free_tmp_buffer(inbuf[0]);
+   smpi_free_tmp_buffer(inbuf[1]);
 
    return MPI_SUCCESS;
 
  error_hndl:
    XBT_DEBUG("%s:%4d\tRank %d Error occurred %d\n",
                 __FILE__, line, rank, ret);
-   if (NULL != inbuf[0]) smpi_free_tmp_buffer(inbuf[0]);
-   if (NULL != inbuf[1]) smpi_free_tmp_buffer(inbuf[1]);
+   smpi_free_tmp_buffer(inbuf[0]);
+   smpi_free_tmp_buffer(inbuf[1]);
    return ret;
 }
 }

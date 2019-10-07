@@ -10,7 +10,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(io_file, "Messages specific for this io example");
 
-static int host(int argc, char* argv[])
+static int host(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_file_t file = NULL;
   sg_size_t read;
@@ -20,7 +20,7 @@ static int host(int argc, char* argv[])
 
   switch (MSG_process_self_PID()) {
     case 1:
-      file    = MSG_file_open("c:\\Windows\\setupact.log", NULL);
+      file    = MSG_file_open("/tmp/include/surf/simgrid_dtd.h", NULL);
       st_name = "Disk2";
       break;
     case 2:

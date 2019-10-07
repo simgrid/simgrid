@@ -19,7 +19,7 @@ using simgrid::mc::remote;
 static inline simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor)
 {
   simgrid::mc::ActorInformation temp;
-  std::size_t offset = (char*) temp.copy.getBuffer() - (char*)&temp;
+  std::size_t offset = (char*)temp.copy.get_buffer() - (char*)&temp;
 
   simgrid::mc::ActorInformation* process_info = (simgrid::mc::ActorInformation*)((char*)actor - offset);
   return process_info;
@@ -77,9 +77,9 @@ void RemoteClient::refresh_simix()
   Remote<simgrid::simix::Global> simix_global =
     this->read<simgrid::simix::Global>(simix_global_p);
 
-  MC_process_refresh_simix_actor_dynar(this, this->smx_actors_infos, remote(simix_global.getBuffer()->actors_vector));
+  MC_process_refresh_simix_actor_dynar(this, this->smx_actors_infos, remote(simix_global.get_buffer()->actors_vector));
   MC_process_refresh_simix_actor_dynar(this, this->smx_dead_actors_infos,
-                                       remote(simix_global.getBuffer()->dead_actors_vector));
+                                       remote(simix_global.get_buffer()->dead_actors_vector));
 
   this->cache_flags_ |= RemoteClient::cache_simix_processes;
 }
@@ -101,15 +101,15 @@ smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall const* req)
   xbt_assert(mc_model_checker != nullptr);
 
   // This is the address of the smx_actor in the MCed process:
-  auto address = simgrid::mc::remote(req->issuer);
+  auto address = simgrid::mc::remote(req->issuer_);
 
   // Lookup by address:
   for (auto& actor : mc_model_checker->process().actors())
     if (actor.address == address)
-      return actor.copy.getBuffer();
+      return actor.copy.get_buffer();
   for (auto& actor : mc_model_checker->process().dead_actors())
     if (actor.address == address)
-      return actor.copy.getBuffer();
+      return actor.copy.get_buffer();
 
   xbt_die("Issuer not found");
 }
@@ -121,27 +121,9 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
 
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
-  /* HACK, Horrible hack to find the offset of the id in the simgrid::s4u::Host.
-
-     Offsetof is not supported for non-POD types but this should
-     work in practice for the targets currently supported by the MC
-     as long as we do not add funny features to the Host class
-     (such as virtual base).
-
-     We are using a (C++11) unrestricted union in order to avoid
-     any construction/destruction of the simgrid::s4u::Host.
-  */
-  union fake_host {
-    simgrid::s4u::Host host;
-    fake_host() { /* Nothing to do*/}
-    ~fake_host() { /* Nothing to do*/}
-  };
-  fake_host foo;
-  const size_t offset = (char*)&foo.host.get_name() - (char*)&foo.host;
-
   // Read the simgrid::xbt::string in the MCed process:
   simgrid::mc::ActorInformation* info     = actor_info_cast(actor);
-  auto remote_string_address              = remote((simgrid::xbt::string_data*)((char*)actor->get_host() + offset));
+  auto remote_string_address              = remote((simgrid::xbt::string_data*)&actor->get_host()->get_name());
   simgrid::xbt::string_data remote_string = process->read(remote_string_address);
   char hostname[remote_string.len];
   process->read_bytes(hostname, remote_string.len + 1, remote(remote_string.data));
@@ -163,22 +145,12 @@ const char* MC_smx_actor_get_name(smx_actor_t actor)
   return info->name.c_str();
 }
 
-#if HAVE_SMPI
-int MC_smpi_process_count()
-{
-  if (mc_model_checker == nullptr)
-    return smpi_process_count();
-  int res;
-  mc_model_checker->process().read_variable("process_count",
-    &res, sizeof(res));
-  return res;
-}
-#endif
-
 unsigned long MC_smx_get_maxpid()
 {
   unsigned long maxpid;
-  mc_model_checker->process().read_variable("simix_process_maxpid",
-    &maxpid, sizeof(maxpid));
+  const char* name = "simgrid::kernel::actor::maxpid";
+  if (mc_model_checker->process().find_variable(name) == nullptr)
+    name = "maxpid"; // We seem to miss the namespaces when compiling with GCC
+  mc_model_checker->process().read_variable(name, &maxpid, sizeof(maxpid));
   return maxpid;
 }

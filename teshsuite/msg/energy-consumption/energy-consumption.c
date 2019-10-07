@@ -9,11 +9,11 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-static int dvfs(int argc, char* argv[])
+static int dvfs(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_host_t host = MSG_host_by_name("MyHost1");
 
-  XBT_INFO("Energetic profile: %s", MSG_host_get_property_value(host, "watt_per_state"));
+  XBT_INFO("Energetic profile: %s", MSG_host_get_property_value(host, "wattage_per_state"));
   XBT_INFO("Initial peak speed=%.0E flop/s; Energy dissipated =%.0E J", MSG_host_get_speed(host),
            sg_host_get_consumed_energy(host));
 

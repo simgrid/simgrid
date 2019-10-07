@@ -7,13 +7,13 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  app-chainsend app-pingpong app-token-ring
                  async-ready async-wait async-waitany async-waitall async-waituntil
                  cloud-capping cloud-migration cloud-simple
-                 energy-exec energy-boot energy-link energy-vm
+                 energy-exec energy-boot energy-link energy-vm energy-exec-ptask
                  engine-filtering
-                 exec-async exec-basic exec-dvfs exec-ptask exec-remote
-                 io-async io-file-system io-file-remote io-storage-raw
+                 exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany
+                 io-async io-file-system io-file-remote io-disk-raw
                  platform-failures platform-profile platform-properties
                  plugin-hostload
-                 replay-comm replay-storage
+                 replay-comm replay-io
                  routing-get-clusters
                  synchro-barrier synchro-mutex synchro-semaphore)
   add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
@@ -30,6 +30,30 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
 				    --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
 				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
 endforeach()
+
+
+# Model-checking examples: with only one source and tested with all factories but thread
+######################################################################
+
+foreach (example mc-failing-assert)
+  if(SIMGRID_HAVE_MC)
+    add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
+    add_dependencies     (tests s4u-${example})
+    target_link_libraries(s4u-${example} simgrid)
+    set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
+
+  
+    ADD_TESH_FACTORIES(s4u-${example} "ucontext;raw;boost"
+                                      --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
+				    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+				    --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
+				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
+  endif()
+  
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
+endforeach()
+
 
 # Multi-files examples
 ######################
@@ -147,7 +171,6 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-ready/s4u-async-ready_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waituntil/s4u-async-waituntil_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord_d.xml
@@ -158,12 +181,12 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/platform-failures/s4u-platform-failures_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/replay-storage/s4u-replay-storage_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/replay-io/s4u-replay-io_d.xml
                   PARENT_SCOPE)
 set(bin_files     ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py                     PARENT_SCOPE)
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p1.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm.txt
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/replay-storage/s4u-replay-storage.txt
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/replay-io/s4u-replay-io.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/README.rst                                   PARENT_SCOPE)
 

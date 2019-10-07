@@ -8,7 +8,7 @@
 
 import re
 import glob
-
+import sys
 
 class Arg(object):
 
@@ -54,7 +54,7 @@ class Simcall(object):
         # smx_host_t h)
         if self.simcalls_pre is None:
             self.simcalls_pre = set()
-            for fn in glob.glob('smx_*') + glob.glob('ActorImpl*') + \
+            for fn in glob.glob('smx_*') + glob.glob('../kernel/actor/ActorImpl*') + \
                     glob.glob('../mc/*cpp') + glob.glob('../kernel/activity/*cpp'):
                 f = open(fn)
                 self.simcalls_pre |= set(re.findall(r'simcall_HANDLER_(.*?)\(', f.read()))
@@ -95,17 +95,17 @@ class Simcall(object):
             res.append('static inline %s simcall_%s__get__%s(smx_simcall_t simcall)' % (
                 arg.rettype(), self.name, arg.name))
             res.append('{')
-            res.append('  return simgrid::simix::unmarshal<%s>(simcall->args[%i]);' % (arg.rettype(), i))
+            res.append('  return simgrid::simix::unmarshal<%s>(simcall->args_[%i]);' % (arg.rettype(), i))
             res.append('}')
             res.append('static inline %s simcall_%s__getraw__%s(smx_simcall_t simcall)' % (
                 rawtype, self.name, arg.name))
             res.append('{')
-            res.append('  return simgrid::simix::unmarshal_raw<%s>(simcall->args[%i]);' % (rawtype, i))
+            res.append('  return simgrid::simix::unmarshal_raw<%s>(simcall->args_[%i]);' % (rawtype, i))
             res.append('}')
             res.append('static inline void simcall_%s__set__%s(smx_simcall_t simcall, %s arg)' % (
                 self.name, arg.name, arg.rettype()))
             res.append('{')
-            res.append('  simgrid::simix::marshal<%s>(simcall->args[%i], arg);' % (arg.rettype(), i))
+            res.append('  simgrid::simix::marshal<%s>(simcall->args_[%i], arg);' % (arg.rettype(), i))
             res.append('}')
 
         # Return value getter/setters
@@ -114,37 +114,38 @@ class Simcall(object):
             res.append(
                 'static inline %s simcall_%s__get__result(smx_simcall_t simcall)' % (self.res.rettype(), self.name))
             res.append('{')
-            res.append('  return simgrid::simix::unmarshal<%s>(simcall->result);' % self.res.rettype())
+            res.append('  return simgrid::simix::unmarshal<%s>(simcall->result_);' % self.res.rettype())
             res.append('}')
             res.append('static inline %s simcall_%s__getraw__result(smx_simcall_t simcall)' % (rawtype, self.name))
             res.append('{')
-            res.append('  return simgrid::simix::unmarshal_raw<%s>(simcall->result);' % rawtype)
+            res.append('  return simgrid::simix::unmarshal_raw<%s>(simcall->result_);' % rawtype)
             res.append('}')
             res.append(
                 'static inline void simcall_%s__set__result(smx_simcall_t simcall, %s result)' % (self.name, self.res.rettype()))
             res.append('{')
-            res.append('  simgrid::simix::marshal<%s>(simcall->result, result);' % (self.res.rettype()))
+            res.append('  simgrid::simix::marshal<%s>(simcall->result_, result);' % (self.res.rettype()))
             res.append('}')
         return '\n'.join(res)
 
     def case(self):
         res = []
-        args = ["simgrid::simix::unmarshal<%s>(simcall->args[%d])" % (arg.rettype(), i)
+        indent = '    '
+        args = ["simgrid::simix::unmarshal<%s>(simcall.args_[%d])" % (arg.rettype(), i)
                 for i, arg in enumerate(self.args)]
-        res.append('case SIMCALL_%s:' % (self.name.upper()))
+        res.append(indent + 'case SIMCALL_%s:' % (self.name.upper()))
         if self.need_handler:
-            call = "simcall_HANDLER_%s(simcall%s%s)" % (self.name,
+            call = "simcall_HANDLER_%s(&simcall%s%s)" % (self.name,
                                                         ", " if len(args) > 0 else "",
                                                         ', '.join(args))
         else:
             call = "SIMIX_%s(%s)" % (self.name, ', '.join(args))
         if self.call_kind == 'Func':
-            res.append("  simgrid::simix::marshal<%s>(simcall->result, %s);" % (self.res.rettype(), call))
+            res.append(indent + "  simgrid::simix::marshal<%s>(simcall.result_, %s);" % (self.res.rettype(), call))
         else:
-            res.append("  " + call + ";")
+            res.append(indent + "  " + call + ";")
         if self.call_kind != 'Blck':
-            res.append('  SIMIX_simcall_answer(simcall);')
-        res.append('  break;')
+            res.append(indent + '  simcall_answer();')
+        res.append(indent + '  break;')
         res.append('')
         return '\n'.join(res)
 
@@ -193,7 +194,8 @@ def parse(fn):
             continue
         match = re.match(
             r'^(\S+)\s+([^\)\(\s]+)\s*\(*(.*)\)\s*(\[\[.*\]\])?\s*;\s*?$', line)
-        assert match, line
+        if not match:
+            raise AssertionError(line)
         ret, name, args, attrs = match.groups()
         sargs = []
         if not re.match(r"^\s*$", args):
@@ -217,7 +219,7 @@ def parse(fn):
                 elif attr == "nohandler":
                     handler = False
                 else:
-                    assert False, "Unknown attribute %s in: %s" % (attr, line)
+                    raise AssertionError("Unknown attribute %s in: %s" % (attr, line))
         sim = Simcall(name, handler, Arg('result', ret), sargs, ans)
         if resdi is None:
             simcalls.append(sim)
@@ -264,8 +266,9 @@ def handle(fd, func, simcalls, guarded_simcalls):
     for guard, ll in guarded_simcalls.items():
         fd.write('\n#if %s\n' % (guard))
         fd.write('\n'.join(func(simcall) for simcall in ll))
-        fd.write('\n#endif\n')
+        fd.write('\n#endif')
 
+    fd.write('\n')
 
 if __name__ == '__main__':
     simcalls, simcalls_dict = parse('simcalls.in')
@@ -274,10 +277,9 @@ if __name__ == '__main__':
     ok &= all(map(Simcall.check, simcalls))
     for k, v in simcalls_dict.items():
         ok &= all(map(Simcall.check, v))
-    # FIXME: we should not hide it
-    # if not ok:
-    #  print ("Some checks fail!")
-    #  sys.exit(1)
+    if not ok:
+      print ("Some checks fail!")
+      sys.exit(1)
 
     #
     # popping_accessors.hpp
@@ -286,7 +288,7 @@ if __name__ == '__main__':
     fd.write('#include "src/simix/popping_private.hpp"')
     handle(fd, Simcall.accessors, simcalls, simcalls_dict)
     fd.write(
-        "\n\n/* The prototype of all simcall handlers, automatically generated for you */\n\n")
+        "\n/* The prototype of all simcall handlers, automatically generated for you */\n\n")
     handle(fd, Simcall.handler_prototype, simcalls, simcalls_dict)
     fd.close()
 
@@ -302,7 +304,6 @@ if __name__ == '__main__':
 
     handle(fd, Simcall.enum, simcalls, simcalls_dict)
 
-    fd.write('\n')
     fd.write('  NUM_SIMCALLS\n')
     fd.write('} e_smx_simcall_t;\n')
     fd.close()
@@ -330,7 +331,7 @@ if __name__ == '__main__':
     fd.write('    "SIMCALL_NONE",\n')
     handle(fd, Simcall.string, simcalls, simcalls_dict)
 
-    fd.write('\n};\n\n')
+    fd.write('};\n\n')
 
     fd.write('/** @private\n')
     fd.write(
@@ -339,22 +340,23 @@ if __name__ == '__main__':
     fd.write(' * This function is generated from src/simix/simcalls.in\n')
     fd.write(' */\n')
     fd.write(
-        'void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {\n')
+        'void simgrid::kernel::actor::ActorImpl::simcall_handle(int value) {\n')
     fd.write(
-        '  XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));\n')
+        '  XBT_DEBUG("Handling simcall %p: %s", &simcall, SIMIX_simcall_name(simcall.call_));\n')
     fd.write('  SIMCALL_SET_MC_VALUE(simcall, value);\n')
     fd.write(
-        '  if (simcall->issuer->context_->iwannadie)\n')
+        '  if (context_->iwannadie)\n')
     fd.write('    return;\n')
-    fd.write('  switch (simcall->call) {\n')
+    fd.write('  switch (simcall.call_) {\n')
 
     handle(fd, Simcall.case, simcalls, simcalls_dict)
 
     fd.write('    case NUM_SIMCALLS:\n')
     fd.write('      break;\n')
     fd.write('    case SIMCALL_NONE:\n')
-    fd.write('      THROWF(arg_error, 0, "Asked to do the noop syscall on %s@%s", simcall->issuer->get_cname(),\n')
-    fd.write('             sg_host_get_name(simcall->issuer->get_host()));\n')
+    fd.write('      throw std::invalid_argument(simgrid::xbt::string_printf("Asked to do the noop syscall on %s@%s",\n')
+    fd.write('                                                              get_cname(),\n')
+    fd.write('                                                              sg_host_get_name(get_host())));\n')
     fd.write('    default:\n')
     fd.write('      THROW_IMPOSSIBLE;\n')
     fd.write('  }\n')
@@ -371,24 +373,27 @@ if __name__ == '__main__':
     fd.write('#include "xbt/ex.h"\n')
     fd.write('#include <functional>\n')
     fd.write('#include <simgrid/simix.hpp>\n')
+    fd.write('#include <xbt/log.h>\n')
 
     fd.write("/** @cond */ // Please Doxygen, don't look at this\n")
     fd.write('''
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
+
 template<class R, class... T>
 inline static R simcall(e_smx_simcall_t call, T const&... t)
 {
   smx_actor_t self = SIMIX_process_self();
   simgrid::simix::marshal(&self->simcall, call, t...);
   if (self != simix_global->maestro_process) {
-    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->get_cname(), SIMIX_simcall_name(self->simcall.call),
-              (int)self->simcall.call);
+    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->get_cname(), SIMIX_simcall_name(self->simcall.call_),
+              (int)self->simcall.call_);
     self->yield();
   } else {
-    SIMIX_simcall_handle(&self->simcall, 0);
+    self->simcall_handle(0);
   }
-  return simgrid::simix::unmarshal<R>(self->simcall.result);
+  return simgrid::simix::unmarshal<R>(self->simcall.result_);
 }
 ''')
     handle(fd, Simcall.body, simcalls, simcalls_dict)
-    fd.write(" /** @endcond */\n")
+    fd.write("/** @endcond */\n")
     fd.close()

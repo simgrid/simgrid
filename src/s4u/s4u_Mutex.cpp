@@ -3,6 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/forward.h"
+#include "simgrid/mutex.h"
 #include "simgrid/s4u/Mutex.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 
@@ -42,7 +44,7 @@ bool Mutex::try_lock()
  */
 MutexPtr Mutex::create()
 {
-  kernel::activity::MutexImpl* mutex = simix::simcall([] { return new kernel::activity::MutexImpl(); });
+  kernel::activity::MutexImpl* mutex = kernel::actor::simcall([] { return new kernel::activity::MutexImpl(); });
   return MutexPtr(&mutex->mutex(), false);
 }
 
@@ -62,3 +64,32 @@ void intrusive_ptr_release(Mutex* mutex)
 
 } // namespace s4u
 } // namespace simgrid
+
+/* **************************** Public C interface *************************** */
+sg_mutex_t sg_mutex_init()
+{
+  simgrid::kernel::activity::MutexImpl* mutex =
+      simgrid::kernel::actor::simcall([] { return new simgrid::kernel::activity::MutexImpl(); });
+
+  return new simgrid::s4u::Mutex(mutex);
+}
+
+void sg_mutex_lock(sg_mutex_t mutex)
+{
+  mutex->lock();
+}
+
+void sg_mutex_unlock(sg_mutex_t mutex)
+{
+  mutex->unlock();
+}
+
+int sg_mutex_try_lock(sg_mutex_t mutex)
+{
+  return mutex->try_lock();
+}
+
+void sg_mutex_destroy(sg_mutex_t mutex)
+{
+  delete mutex;
+}

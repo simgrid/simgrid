@@ -2,6 +2,9 @@
 #
 # Simplistic script to rebuild our documentation with sphinx-build
 
+# Python needs to find simgrid on my machine, but not ctest -- sorry for the hack
+if [ -e /opt/simgrid ] ; then chmod +x /opt/simgrid; fi
+
 set -e
 
 if [ "x$1" != 'xdoxy' -a -e build/xml ] ; then
@@ -53,3 +56,16 @@ do
     fi
   fi
 done
+
+if [ -e /opt/simgrid ] ; then chmod -x /opt/simgrid; fi
+
+set +e # Don't fail
+if [ -e /usr/bin/linkchecker ] ; then
+  linkchecker --no-status -o csv --ignore-url='.*\.css$' --ignore-url=public/java/org build/html \
+     | grep -v '^#' \
+     | grep -v 'urlname;parentname;baseref;result;warningstring'
+  echo "done."
+else
+  echo "Install linkchecker to have it executed when you build the doc."
+fi
+

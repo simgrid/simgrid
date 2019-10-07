@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-platform-profile ${platfdir}/small_platform_profile.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-platform-profile ${platfdir}/small_platform_profile.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:watcher@Tremblay) Fafard: 25Gflops, Jupiter:  12Gflops, Link1: (1000.00MB/s 10ms), Link2: (1000.00MB/s 10ms)
 > [  1.000000] (1:watcher@Tremblay) Fafard: 25Gflops, Jupiter:  12Gflops, Link1: (1000.00MB/s 3ms), Link2: (1000.00MB/s 10ms)
 > [  2.000000] (1:watcher@Tremblay) Fafard: 25Gflops, Jupiter:  25Gflops, Link1: (2000.00MB/s 3ms), Link2: (1000.00MB/s 10ms)

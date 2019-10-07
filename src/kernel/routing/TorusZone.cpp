@@ -40,7 +40,7 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
     std::string link_id =
         std::string(cluster->id) + "_link_from_" + std::to_string(id) + "_to_" + std::to_string(neighbor_rank_id);
     link.id        = link_id;
-    link.bandwidth = cluster->bw;
+    link.bandwidths.push_back(cluster->bw);
     link.latency   = cluster->lat;
     link.policy    = cluster->sharing_policy;
     sg_platf_new_link(&link);

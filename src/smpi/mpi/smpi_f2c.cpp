@@ -9,6 +9,11 @@
 
 #include <cstdio>
 
+int mpi_in_place_;
+int mpi_bottom_;
+int mpi_status_ignore_;
+int mpi_statuses_ignore_;
+
 namespace simgrid{
 namespace smpi{
 
@@ -33,13 +38,13 @@ int F2C::f2c_id(){
   return f2c_id_;
 };
 
-char* F2C::get_key(char* key, int id) {
-  std::snprintf(key, KEY_SIZE, "%x", static_cast<unsigned>(id));
+char* F2C::get_my_key(char* key) {
+  std::snprintf(key, KEY_SIZE, "%d", my_f2c_id_);
   return key;
 }
 
-char* F2C::get_key_id(char* key, int id) {
-  std::snprintf(key, KEY_SIZE, "%x_%ld", static_cast<unsigned>(id), simgrid::s4u::this_actor::get_pid());
+char* F2C::get_key(char* key, int id) {
+  std::snprintf(key, KEY_SIZE, "%d", id);
   return key;
 }
 
@@ -55,7 +60,7 @@ std::unordered_map<std::string, F2C*>* F2C::lookup()
 void F2C::free_f(int id)
 {
   char key[KEY_SIZE];
-  f2c_lookup_->erase(get_key(key, id));
+  f2c_lookup_->erase(get_key(key,id));
 }
 
 int F2C::add_f()
@@ -64,9 +69,10 @@ int F2C::add_f()
     f2c_lookup_ = new std::unordered_map<std::string, F2C*>;
 
   char key[KEY_SIZE];
-  (*f2c_lookup_)[get_key(key, f2c_id_)] = this;
+  my_f2c_id_=f2c_id_;
+  (*f2c_lookup_)[get_my_key(key)] = this;
   f2c_id_increment();
-  return f2c_id_-1;
+  return my_f2c_id_;
 }
 
 int F2C::c2f()
@@ -75,12 +81,11 @@ int F2C::c2f()
     f2c_lookup_ = new std::unordered_map<std::string, F2C*>;
   }
 
-  for (auto const& elm : *f2c_lookup_)
-    if (elm.second == this)
-      return std::stoi(elm.first);
-
-  /* this function wasn't found, add it */
-  return this->add_f();
+  if(my_f2c_id_==-1)
+    /* this function wasn't found, add it */
+    return this->add_f();
+  else
+    return my_f2c_id_;
 }
 
 F2C* F2C::f2c(int id)
@@ -90,7 +95,7 @@ F2C* F2C::f2c(int id)
 
   if(id >= 0){
     char key[KEY_SIZE];
-    auto comm = f2c_lookup_->find(get_key(key, id));
+    auto comm = f2c_lookup_->find(get_key(key,id));
     return comm == f2c_lookup_->end() ? nullptr : comm->second;
   }else
     return nullptr;

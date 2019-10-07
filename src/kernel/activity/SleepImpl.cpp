@@ -18,12 +18,6 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-SleepImpl& SleepImpl::set_name(const std::string& name)
-{
-  ActivityImpl::set_name(name);
-  return *this;
-}
-
 SleepImpl& SleepImpl::set_host(s4u::Host* host)
 {
   host_ = host;
@@ -39,56 +33,42 @@ SleepImpl& SleepImpl::set_duration(double duration)
 SleepImpl* SleepImpl::start()
 {
   surf_action_ = host_->pimpl_cpu->sleep(duration_);
-  surf_action_->set_data(this);
+  surf_action_->set_activity(this);
   XBT_DEBUG("Create sleep synchronization %p", this);
   return this;
 }
 
 void SleepImpl::post()
 {
+  if (surf_action_->get_state() == resource::Action::State::FAILED) {
+    if (host_ && not host_->is_on())
+      state_ = SIMIX_SRC_HOST_FAILURE;
+    else
+      state_ = SIMIX_CANCELED;
+  } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
+    state_ = SIMIX_DONE;
+  }
+  /* Answer all simcalls associated with the synchro */
+  finish();
+}
+
+void SleepImpl::finish()
+{
   while (not simcalls_.empty()) {
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
-    e_smx_state_t result;
-    if (host_ && not host_->is_on()) {
-      /* If the host running the synchro failed, notice it. This way, the asking
-       * actor can be killed if it runs on that host itself */
-      result = SIMIX_SRC_HOST_FAILURE;
-      simcall->issuer->throw_exception(
-          std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed")));
-    }
 
-    switch (surf_action_->get_state()) {
-      case resource::Action::State::FAILED:
-        simcall->issuer->context_->iwannadie = true;
-        result                               = SIMIX_FAILED;
-        break;
-
-      case resource::Action::State::FINISHED:
-        result = SIMIX_DONE;
-        break;
-
-      default:
-        THROW_IMPOSSIBLE;
-    }
-    if (not simcall->issuer->get_host()->is_on()) {
-      simcall->issuer->context_->iwannadie = true;
-    }
-    simcall_process_sleep__set__result(simcall, result);
-    simcall->issuer->waiting_synchro = nullptr;
-    if (simcall->issuer->is_suspended()) {
+    simcall->issuer_->waiting_synchro = nullptr;
+    if (simcall->issuer_->is_suspended()) {
       XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
-      simcall->issuer->suspended_ = false;
-      simcall_HANDLER_process_suspend(simcall, simcall->issuer);
+      simcall->issuer_->suspended_ = false;
+      simcall->issuer_->suspend();
     } else {
-      SIMIX_simcall_answer(simcall);
+      simcall->issuer_->simcall_answer();
     }
   }
-  SIMIX_process_sleep_destroy(this);
-}
-void SleepImpl::finish()
-{
-  /* FIXME some part of post should move to finish */
+
+  clean_action();
 }
 } // namespace activity
 } // namespace kernel

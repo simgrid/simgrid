@@ -2,7 +2,7 @@
 
 p Testing with default compound
 
-$ $SG_TEST_EXENV ${bindir:=.}/app-pingpong$EXEEXT ${platfdir}/small_platform.xml app-pingpong_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/app-pingpong ${platfdir}/small_platform.xml app-pingpong_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:pinger@Tremblay) Ping -> Jupiter
 > [  0.000000] (2:ponger@Jupiter) Pong -> Tremblay
 > [  0.019014] (2:ponger@Jupiter) Task received : small communication (latency bound)
@@ -14,7 +14,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/app-pingpong$EXEEXT ${platfdir}/small_platform.xml
 
 p Testing with default compound and Full network optimization
 
-$ $SG_TEST_EXENV ${bindir:=.}/app-pingpong$EXEEXT ${platfdir}/small_platform.xml app-pingpong_d.xml "--cfg=network/optim:Full" "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/app-pingpong ${platfdir}/small_platform.xml app-pingpong_d.xml "--cfg=network/optim:Full" "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/optim' to 'Full'
 > [  0.000000] (1:pinger@Tremblay) Ping -> Jupiter
 > [  0.000000] (2:ponger@Jupiter) Pong -> Tremblay
@@ -27,7 +27,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/app-pingpong$EXEEXT ${platfdir}/small_platform.xml
 
 p Testing the deprecated CM02 network model
 
-$ $SG_TEST_EXENV ${bindir:=.}/app-pingpong$EXEEXT ${platfdir}/small_platform.xml app-pingpong_d.xml --cfg=cpu/model:Cas01 --cfg=network/model:CM02 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/app-pingpong ${platfdir}/small_platform.xml app-pingpong_d.xml --cfg=cpu/model:Cas01 --cfg=network/model:CM02 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (1:pinger@Tremblay) Ping -> Jupiter
@@ -39,54 +39,9 @@ $ $SG_TEST_EXENV ${bindir:=.}/app-pingpong$EXEEXT ${platfdir}/small_platform.xml
 > [145.639041] (1:pinger@Tremblay) Pong time (bandwidth bound): 145.638
 > [145.639041] (0:maestro@) Total simulation time: 145.639
 
-p Testing the surf network Reno fairness model using lagrangian approach
-
-$ $SG_TEST_EXENV ${bindir:=.}/app-pingpong$EXEEXT ${platfdir}/small_platform.xml app-pingpong_d.xml "--cfg=host/model:compound cpu/model:Cas01 network/model:Reno" --log=surf_lagrange.thres=critical "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
-> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
-> [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Reno'
-> [  0.000000] (1:pinger@Tremblay) Ping -> Jupiter
-> [  0.000000] (2:ponger@Jupiter) Pong -> Tremblay
-> [  0.019014] (2:ponger@Jupiter) Task received : small communication (latency bound)
-> [  0.019014] (2:ponger@Jupiter)  Ping time (latency bound) 0.019014
-> [  0.019014] (2:ponger@Jupiter) task_bw->data = 0.019
-> [150.178356] (1:pinger@Tremblay) Task received : large communication (bandwidth bound)
-> [150.178356] (1:pinger@Tremblay) Pong time (bandwidth bound): 150.159
-> [150.178356] (0:maestro@) Total simulation time: 150.178
-
-p Testing the surf network Reno2 fairness model using lagrangian approach
-
-$ $SG_TEST_EXENV ${bindir:=.}/app-pingpong$EXEEXT ${platfdir}/small_platform.xml app-pingpong_d.xml "--cfg=host/model:compound cpu/model:Cas01 network/model:Reno2" --log=surf_lagrange.thres=critical "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
-> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
-> [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Reno2'
-> [  0.000000] (1:pinger@Tremblay) Ping -> Jupiter
-> [  0.000000] (2:ponger@Jupiter) Pong -> Tremblay
-> [  0.019014] (2:ponger@Jupiter) Task received : small communication (latency bound)
-> [  0.019014] (2:ponger@Jupiter)  Ping time (latency bound) 0.019014
-> [  0.019014] (2:ponger@Jupiter) task_bw->data = 0.019
-> [150.178356] (1:pinger@Tremblay) Task received : large communication (bandwidth bound)
-> [150.178356] (1:pinger@Tremblay) Pong time (bandwidth bound): 150.159
-> [150.178356] (0:maestro@) Total simulation time: 150.178
-
-p Testing the surf network Vegas fairness model using lagrangian approach
-
-$ $SG_TEST_EXENV ${bindir:=.}/app-pingpong$EXEEXT ${platfdir}/small_platform.xml app-pingpong_d.xml "--cfg=host/model:compound cpu/model:Cas01 network/model:Vegas" "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
-> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
-> [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Vegas'
-> [  0.000000] (1:pinger@Tremblay) Ping -> Jupiter
-> [  0.000000] (2:ponger@Jupiter) Pong -> Tremblay
-> [  0.019014] (2:ponger@Jupiter) Task received : small communication (latency bound)
-> [  0.019014] (2:ponger@Jupiter)  Ping time (latency bound) 0.019014
-> [  0.019014] (2:ponger@Jupiter) task_bw->data = 0.019
-> [150.178356] (1:pinger@Tremblay) Task received : large communication (bandwidth bound)
-> [150.178356] (1:pinger@Tremblay) Pong time (bandwidth bound): 150.159
-> [150.178356] (0:maestro@) Total simulation time: 150.178
-
 p Testing the surf network constant model
 
-$ $SG_TEST_EXENV ${bindir:=.}/app-pingpong$EXEEXT ${platfdir}/small_platform_constant.xml app-pingpong_d.xml "--cfg=host/model:compound cpu/model:Cas01 network/model:Constant" "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/app-pingpong ${platfdir}/small_platform_constant.xml app-pingpong_d.xml "--cfg=host/model:compound cpu/model:Cas01 network/model:Constant" "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Constant'

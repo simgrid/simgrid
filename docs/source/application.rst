@@ -20,7 +20,7 @@ virtually executes on the simulated platform. You can express this
 application using one of the following interfaces. It is even possible
 to mix several interfaces in the same simulation.
 
- - :ref:`Describing Algorithms with the S4U interface <S4U_doc>` (in C++)
+ - :ref:`Describing Algorithms with the S4U interface <S4U_doc>` (in C++ or Python)
  - :ref:`Simulating existing MPI programs with the SMPI toolsuite <SMPI_doc>`
    (in C, C++, or Fortran)
  - In some cases, you may want to replay an execution trace in the simulator. This
@@ -28,7 +28,7 @@ to mix several interfaces in the same simulation.
    your application is decomposed as a list of event handlers that are
    fired according to the trace. SimGrid comes with a build-in support
    for MPI traces (with solutions to import traces captured by several
-   MPI profilers). You can reuse this mecanism for any kind of trace
+   MPI profilers). You can reuse this mechanism for any kind of trace
    that you want to replay, for example to study how a P2P DHT overlay
    reacts to a given workload.
  - Simulating algorithms with one of the legacy interfaces: :ref:`MSG
@@ -44,8 +44,8 @@ to mix several interfaces in the same simulation.
  - We are currently working on the ability to modify any existing
    application so that it can run on top of SimGrid. This project,
    called `Remote-SimGrid
-   <git@framagit.org:simgrid/remote-simgrid.git>`_, is highly
-   experimental at this point.
+   <https://framagit.org/simgrid/remote-simgrid>`_, is somewhat
+   experimental but should be already usable.
 
 As you can see, SimGrid is very modular and can be used in many
 ways. We are working to improve it along two main directions. First,

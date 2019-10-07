@@ -18,7 +18,8 @@ public class Mutex {
 		init();
 	}
 
-	@Override
+	/** @deprecated (from Java9 onwards) */
+	@Deprecated @Override
 	protected void finalize() throws Throwable {
 		nativeFinalize();
 	}

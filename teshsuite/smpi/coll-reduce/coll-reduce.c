@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
 
   unsigned long long* sb = (unsigned long long *) xbt_malloc(size * sizeof(unsigned long long));
   unsigned long long* rb = (unsigned long long *) xbt_malloc(size * sizeof(unsigned long long));
@@ -32,8 +33,30 @@ int main(int argc, char *argv[])
   for (i = 0; i < size; i++)
     printf("%llu ", sb[i]);
   printf("]\n");
-
   int root=0;
+
+  status = MPI_Reduce(NULL, rb, size, MPI_UNSIGNED_LONG_LONG, MPI_SUM, root, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_BUFFER)
+    printf("MPI_Reduce did not return MPI_ERR_BUFFER for empty sendbuf\n");
+  status = MPI_Reduce(sb, rb, -1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, root, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_COUNT)
+    printf("MPI_Reduce did not return MPI_ERR_COUNT for -1 count\n");
+  status = MPI_Reduce(sb, rb, size, MPI_DATATYPE_NULL, MPI_SUM, root, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_TYPE)
+    printf("MPI_Reduce did not return MPI_ERR_TYPE for MPI_DATATYPE_NULL type\n");
+  status = MPI_Reduce(sb, rb, size, MPI_UNSIGNED_LONG_LONG, MPI_OP_NULL, root, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_OP)
+    printf("MPI_Reduce did not return MPI_ERR_COMM for MPI_OP_NULL op\n");
+  status = MPI_Reduce(sb, rb, size, MPI_UNSIGNED_LONG_LONG, MPI_SUM, -1, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_ROOT)
+    printf("MPI_Reduce did not return MPI_ERR_ROOT for root -1\n");
+  status = MPI_Reduce(sb, rb, size, MPI_UNSIGNED_LONG_LONG, MPI_SUM, size+1, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_ROOT)
+    printf("MPI_Reduce did not return MPI_ERR_ROOT for root > size\n");
+  status = MPI_Reduce(sb, rb, size, MPI_UNSIGNED_LONG_LONG, MPI_SUM, root, MPI_COMM_NULL);
+  if(status!=MPI_ERR_COMM)
+    printf("MPI_Reduce did not return MPI_ERR_COMM for MPI_COMM_NULL comm\n");
+
   status = MPI_Reduce(sb, rb, size, MPI_UNSIGNED_LONG_LONG, MPI_SUM, root, MPI_COMM_WORLD);
   MPI_Barrier(MPI_COMM_WORLD);
 

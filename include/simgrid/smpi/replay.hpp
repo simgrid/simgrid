@@ -16,14 +16,14 @@
 
 #define CHECK_ACTION_PARAMS(action, mandatory, optional)                                                               \
   {                                                                                                                    \
-    if (action.size() < static_cast<unsigned long>(mandatory + 2)) {                                                   \
+    if ((action).size() < static_cast<unsigned long>((mandatory) + 2)) {                                               \
       std::stringstream ss;                                                                                            \
       ss << __func__ << " replay failed.\n"                                                                            \
-         << action.size() << " items were given on the line. First two should be process_id and action.  "             \
-         << "This action needs after them " << mandatory << " mandatory arguments, and accepts " << optional           \
+         << (action).size() << " items were given on the line. First two should be process_id and action.  "           \
+         << "This action needs after them " << (mandatory) << " mandatory arguments, and accepts " << (optional)       \
          << " optional ones. \n"                                                                                       \
          << "The full line that was given is:\n   ";                                                                   \
-      for (const auto& elem : action) {                                                                                \
+      for (const auto& elem : (action)) {                                                                              \
         ss << elem << " ";                                                                                             \
       }                                                                                                                \
       ss << "\nPlease contact the Simgrid team if support is needed";                                                  \
@@ -31,8 +31,8 @@
     }                                                                                                                  \
   }
 
-XBT_PRIVATE void* smpi_get_tmp_sendbuffer(int size);
-XBT_PRIVATE void* smpi_get_tmp_recvbuffer(int size);
+XBT_PRIVATE unsigned char* smpi_get_tmp_sendbuffer(size_t size);
+XBT_PRIVATE unsigned char* smpi_get_tmp_recvbuffer(size_t size);
 
 XBT_PRIVATE void log_timed_action(simgrid::xbt::ReplayAction& action, double clock);
 
@@ -74,8 +74,22 @@ public:
 
 class ComputeParser : public ActionArgParser {
 public:
-  /* communication partner; if we send, this is the receiver and vice versa */
   double flops;
+
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
+};
+
+class SleepParser : public ActionArgParser {
+public:
+  double time;
+
+  void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
+};
+
+class LocationParser : public ActionArgParser {
+public:
+  std::string filename;
+  int line;
 
   void parse(simgrid::xbt::ReplayAction& action, const std::string& name) override;
 };
@@ -187,8 +201,8 @@ public:
   }
 
   virtual void kernel(simgrid::xbt::ReplayAction& action) = 0;
-  void* send_buffer(int size) { return smpi_get_tmp_sendbuffer(size); }
-  void* recv_buffer(int size) { return smpi_get_tmp_recvbuffer(size); }
+  unsigned char* send_buffer(int size) { return smpi_get_tmp_sendbuffer(size); }
+  unsigned char* recv_buffer(int size) { return smpi_get_tmp_recvbuffer(size); }
 };
 
 class WaitAction : public ReplayAction<WaitTestParser> {
@@ -221,6 +235,18 @@ public:
 class ComputeAction : public ReplayAction<ComputeParser> {
 public:
   explicit ComputeAction() : ReplayAction("compute") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class SleepAction : public ReplayAction<SleepParser> {
+public:
+  explicit SleepAction() : ReplayAction("sleep") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class LocationAction : public ReplayAction<LocationParser> {
+public:
+  explicit LocationAction() : ReplayAction("location") {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 

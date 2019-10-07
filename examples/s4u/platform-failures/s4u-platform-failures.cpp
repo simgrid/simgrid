@@ -9,9 +9,10 @@
  * To set such a profile, the first way is to use a file in the XML, while the second is to use the programmatic
  * interface. Once this profile is in place, the resource will automatically be turned on and off.
  *
- * The actors running on an host that is turned off will receive a simgrid::HostFailureException. Since we specified
- * on_failure="RESTART" for each actors in the XML file, they will be automatically restarted when the host starts
- * again.
+ * The actors running on an host that is turned off are forcefully killed
+ * once their on_exit callbacks are executed. They cannot avoid this fate.
+ * Since we specified on_failure="RESTART" for each actors in the XML file,
+ * they will be automatically restarted when the host starts again.
  *
  * Communications using failed links will .. fail.
  */
@@ -40,14 +41,12 @@ static int master(int argc, char* argv[])
       XBT_INFO("Send a message to %s", mailbox->get_cname());
       mailbox->put(payload, comm_size, 10.0);
       XBT_INFO("Send to %s completed", mailbox->get_cname());
-    } catch (simgrid::TimeoutError& e) {
+    } catch (const simgrid::TimeoutException&) {
       delete payload;
       XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
-    } catch (xbt_ex& e) {
-      if (e.category != network_error)
-        xbt_die("Unexpected behavior");
-      XBT_INFO("Mmh. The communication with '%s' failed. Nevermind. Let's keep going!", mailbox->get_cname());
+    } catch (const simgrid::NetworkFailureException&) {
       delete payload;
+      XBT_INFO("Mmh. The communication with '%s' failed. Nevermind. Let's keep going!", mailbox->get_cname());
     }
   }
 
@@ -58,17 +57,11 @@ static int master(int argc, char* argv[])
     double* payload = new double(-1.0);
     try {
       mailbox->put(payload, 0, 1.0);
-    } catch (simgrid::HostFailureException& e) {
-      delete payload;
-      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-      return -1;
-    } catch (simgrid::TimeoutError& e) {
+    } catch (const simgrid::TimeoutException&) {
       delete payload;
       XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
-    } catch (xbt_ex& e) {
+    } catch (const simgrid::NetworkFailureException&) {
       delete payload;
-      if (e.category != network_error)
-        xbt_die("Unexpected behavior");
       XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox->get_cname());
     }
   }
@@ -99,13 +92,7 @@ static int worker(int argc, char* argv[])
       XBT_INFO("Start execution...");
       simgrid::s4u::this_actor::execute(comp_size);
       XBT_INFO("Execution complete.");
-    } catch (simgrid::HostFailureException& e) {
-      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-      delete payload;
-      return -1;
-    } catch (xbt_ex& e) {
-      if (e.category != network_error)
-        xbt_die("Unexpected behavior. Category: %s", xbt_ex_catname(e.category));
+    } catch (const simgrid::NetworkFailureException&) {
       XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
     }
   }

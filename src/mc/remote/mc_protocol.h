@@ -8,6 +8,7 @@
 
 #include "mc/datatypes.h"
 #include "simgrid/forward.h"
+#include "stdint.h"
 
 SG_BEGIN_DECL()
 
@@ -36,8 +37,6 @@ enum e_mc_message_type {
   MC_MESSAGE_WAITING,
   MC_MESSAGE_SIMCALL_HANDLE,
   MC_MESSAGE_ASSERTION_FAILED,
-  // MCer request to finish the restoration:
-  MC_MESSAGE_RESTORE,
   MC_MESSAGE_ACTOR_ENABLED,
   MC_MESSAGE_ACTOR_ENABLED_REPLY
 };

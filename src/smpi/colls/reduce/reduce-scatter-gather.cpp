@@ -12,7 +12,7 @@
  */
 namespace simgrid{
 namespace smpi{
-int Coll_reduce_scatter_gather::reduce(void *sendbuf, void *recvbuf,
+int Coll_reduce_scatter_gather::reduce(const void *sendbuf, void *recvbuf,
                                           int count, MPI_Datatype datatype,
                                           MPI_Op op, int root, MPI_Comm comm)
 {
@@ -23,7 +23,7 @@ int Coll_reduce_scatter_gather::reduce(void *sendbuf, void *recvbuf,
   int dst, send_cnt, recv_cnt, newroot, newdst_tree_root;
   int newroot_tree_root, new_count;
   int tag = COLL_TAG_REDUCE,temporary_buffer=0;
-  void *send_ptr, *recv_ptr, *tmp_buf;
+  unsigned char *send_ptr, *recv_ptr, *tmp_buf;
 
   cnts = NULL;
   disps = NULL;
@@ -52,9 +52,9 @@ int Coll_reduce_scatter_gather::reduce(void *sendbuf, void *recvbuf,
 
   if (count < comm_size) {
     new_count = comm_size;
-    send_ptr = (void *) smpi_get_tmp_sendbuffer(new_count * extent);
-    recv_ptr = (void *) smpi_get_tmp_recvbuffer(new_count * extent);
-    tmp_buf = (void *) smpi_get_tmp_sendbuffer(new_count * extent);
+    send_ptr  = smpi_get_tmp_sendbuffer(new_count * extent);
+    recv_ptr  = smpi_get_tmp_recvbuffer(new_count * extent);
+    tmp_buf   = smpi_get_tmp_sendbuffer(new_count * extent);
     memcpy(send_ptr, sendbuf != MPI_IN_PLACE ? sendbuf : recvbuf, extent * count);
 
     //if ((rank != root))
@@ -75,8 +75,8 @@ int Coll_reduce_scatter_gather::reduce(void *sendbuf, void *recvbuf,
     } else                      /* rank >= 2*rem */
       newrank = rank - rem;
 
-    cnts = (int *) xbt_malloc(pof2 * sizeof(int));
-    disps = (int *) xbt_malloc(pof2 * sizeof(int));
+    cnts  = new int[pof2];
+    disps = new int[pof2];
 
     if (newrank != -1) {
       for (i = 0; i < (pof2 - 1); i++)
@@ -111,20 +111,14 @@ int Coll_reduce_scatter_gather::reduce(void *sendbuf, void *recvbuf,
         }
 
         /* Send data from recvbuf. Recv into tmp_buf */
-        Request::sendrecv((char *) recv_ptr +
-                     disps[send_idx] * extent,
-                     send_cnt, datatype,
-                     dst, tag,
-                     (char *) tmp_buf +
-                     disps[recv_idx] * extent,
-                     recv_cnt, datatype, dst, tag, comm, &status);
+        Request::sendrecv(recv_ptr + disps[send_idx] * extent, send_cnt, datatype, dst, tag,
+                          tmp_buf + disps[recv_idx] * extent, recv_cnt, datatype, dst, tag, comm, &status);
 
         /* tmp_buf contains data received in this step.
            recvbuf contains data accumulated so far */
 
-        if(op!=MPI_OP_NULL) op->apply( (char *) tmp_buf + disps[recv_idx] * extent,
-                       (char *) recv_ptr + disps[recv_idx] * extent,
-                       &recv_cnt, datatype);
+        if (op != MPI_OP_NULL)
+          op->apply(tmp_buf + disps[recv_idx] * extent, recv_ptr + disps[recv_idx] * extent, &recv_cnt, datatype);
 
         /* update send_idx for next iteration */
         send_idx = recv_idx;
@@ -207,14 +201,10 @@ int Coll_reduce_scatter_gather::reduce(void *sendbuf, void *recvbuf,
         }
 
         if (newdst_tree_root == newroot_tree_root) {
-          Request::send((char *) recv_ptr +
-                   disps[send_idx] * extent,
-                   send_cnt, datatype, dst, tag, comm);
+          Request::send(recv_ptr + disps[send_idx] * extent, send_cnt, datatype, dst, tag, comm);
           break;
         } else {
-          Request::recv((char *) recv_ptr +
-                   disps[recv_idx] * extent,
-                   recv_cnt, datatype, dst, tag, comm, &status);
+          Request::recv(recv_ptr + disps[recv_idx] * extent, recv_cnt, datatype, dst, tag, comm, &status);
         }
 
         if (newrank > newdst)
@@ -231,7 +221,7 @@ int Coll_reduce_scatter_gather::reduce(void *sendbuf, void *recvbuf,
 
 
   else /* (count >= comm_size) */ {
-    tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
+    tmp_buf = smpi_get_tmp_sendbuffer(count * extent);
 
     //if ((rank != root))
     Request::sendrecv(sendbuf != MPI_IN_PLACE ? sendbuf : recvbuf, count, datatype, rank, tag,
@@ -252,8 +242,8 @@ int Coll_reduce_scatter_gather::reduce(void *sendbuf, void *recvbuf,
     } else                      /* rank >= 2*rem */
       newrank = rank - rem;
 
-    cnts = (int *) xbt_malloc(pof2 * sizeof(int));
-    disps = (int *) xbt_malloc(pof2 * sizeof(int));
+    cnts  = new int[pof2];
+    disps = new int[pof2];
 
     if (newrank != -1) {
       for (i = 0; i < (pof2 - 1); i++)
@@ -288,20 +278,15 @@ int Coll_reduce_scatter_gather::reduce(void *sendbuf, void *recvbuf,
         }
 
         /* Send data from recvbuf. Recv into tmp_buf */
-        Request::sendrecv((char *) recvbuf +
-                     disps[send_idx] * extent,
-                     send_cnt, datatype,
-                     dst, tag,
-                     (char *) tmp_buf +
-                     disps[recv_idx] * extent,
-                     recv_cnt, datatype, dst, tag, comm, &status);
+        Request::sendrecv(static_cast<char*>(recvbuf) + disps[send_idx] * extent, send_cnt, datatype, dst, tag,
+                          tmp_buf + disps[recv_idx] * extent, recv_cnt, datatype, dst, tag, comm, &status);
 
         /* tmp_buf contains data received in this step.
            recvbuf contains data accumulated so far */
 
-        if(op!=MPI_OP_NULL) op->apply( (char *) tmp_buf + disps[recv_idx] * extent,
-                       (char *) recvbuf + disps[recv_idx] * extent,
-                       &recv_cnt, datatype);
+        if (op != MPI_OP_NULL)
+          op->apply(tmp_buf + disps[recv_idx] * extent, static_cast<char*>(recvbuf) + disps[recv_idx] * extent,
+                    &recv_cnt, datatype);
 
         /* update send_idx for next iteration */
         send_idx = recv_idx;
@@ -403,11 +388,10 @@ int Coll_reduce_scatter_gather::reduce(void *sendbuf, void *recvbuf,
   }
   if (tmp_buf)
     smpi_free_tmp_buffer(tmp_buf);
-  if(temporary_buffer==1) smpi_free_tmp_buffer(recvbuf);
-  if (cnts)
-    free(cnts);
-  if (disps)
-    free(disps);
+  if (temporary_buffer == 1)
+    smpi_free_tmp_buffer(static_cast<unsigned char*>(recvbuf));
+  delete[] cnts;
+  delete[] disps;
 
   return 0;
 }

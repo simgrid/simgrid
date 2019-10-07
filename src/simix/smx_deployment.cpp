@@ -48,18 +48,12 @@ void SIMIX_launch_application(const std::string& file)
     parse_status = surf_parse();
     surf_parse_close();
     xbt_assert(not parse_status, "Parse error at %s:%d", file.c_str(), surf_parse_lineno);
-  }
-  catch (xbt_ex& e) {
+  } catch (const simgrid::Exception&) {
     XBT_ERROR(
         "Unrecoverable error at %s:%d. The full exception stack follows, in case it helps you to diagnose the problem.",
         file.c_str(), surf_parse_lineno);
     throw;
   }
-}
-
-void SIMIX_launch_application(const char* file) // deprecated
-{
-  simgrid_load_deployment(file);
 }
 
 // Wrap a main() function into a ActorCodeFactory:
@@ -87,11 +81,6 @@ void SIMIX_function_register(const std::string& name, xbt_main_func_t code)
 void SIMIX_function_register(const std::string& name, void (*code)(std::vector<std::string>))
 {
   simix_global->registered_functions[name] = toActorCodeFactory(code);
-}
-
-void SIMIX_function_register(const char* name, xbt_main_func_t code) // deprecated
-{
-  simgrid_register_function(name, code);
 }
 
 /**
@@ -136,7 +125,7 @@ void SIMIX_process_set_function(const char* process_host, const char* process_fu
 
   sg_host_t host = sg_host_by_name(process_host);
   if (not host)
-    THROWF(arg_error, 0, "Host '%s' unknown", process_host);
+    throw std::invalid_argument(simgrid::xbt::string_printf("Host '%s' unknown", process_host));
   actor.host = process_host;
   actor.args.push_back(process_function);
   /* add arguments */

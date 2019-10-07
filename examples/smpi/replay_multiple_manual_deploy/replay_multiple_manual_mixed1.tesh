@@ -13,7 +13,7 @@ $ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml  ${srcdir
 > [   0.000000] (job_0000@Bourassa) Executing job 0 (smpi_app 'alone')
 > [   0.000000] (rank_0_0@Bourassa) Replaying rank 0 of job 0 (smpi_app 'alone')
 > [   0.000000] (rank_0_1@Fafard) Replaying rank 1 of job 0 (smpi_app 'alone')
-> [ 737.001374] (rank_0_1@Fafard) Simulation time 737.001374
+> [ 737.001374] (rank_0_0@Bourassa) Simulation time 737.001374
 > [ 737.001374] (rank_0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'alone')
 > [ 737.001374] (rank_0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'alone')
 > [ 738.001374] (job_0000@Bourassa) Finished job 0 (smpi_app 'alone')
@@ -29,7 +29,7 @@ $ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml  ${srcdir
 > [   0.000000] (job_0000@Bourassa) Executing job 0 (smpi_app 'alone')
 > [   0.000000] (rank_0_0@Bourassa) Replaying rank 0 of job 0 (smpi_app 'alone')
 > [   0.000000] (rank_0_1@Fafard) Replaying rank 1 of job 0 (smpi_app 'alone')
-> [ 737.001374] (rank_0_1@Fafard) Simulation time 737.001374
+> [ 737.001374] (rank_0_0@Bourassa) Simulation time 737.001374
 > [ 737.001374] (rank_0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'alone')
 > [ 737.001374] (rank_0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'alone')
 > [ 738.001374] (job_0000@Bourassa) Finished job 0 (smpi_app 'alone')

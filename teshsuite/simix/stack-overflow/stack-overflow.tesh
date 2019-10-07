@@ -1,7 +1,7 @@
 ! expect signal SIGSEGV
 $ ${bindir:=.}/stack-overflow --cfg=contexts/stack-size:96 ${srcdir:=.}/examples/platforms/small_platform.xml
 > [Tremblay:master:(1) 0.000000] [test/INFO] Launching our nice bugged recursive function...
-> Access violation detected.
+> Access violation or Bus error detected.
 > This probably comes from a programming error in your code, or from a stack
 > overflow. If you are certain of your code, try increasing the stack size
 >    --cfg=contexts/stack-size=XXX (current size is 96 KiB).

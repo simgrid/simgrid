@@ -29,7 +29,7 @@ documentation also contains some :ref:`hints and howtos <howto>`, as well
 as the full :ref:`XML reference guide <platform_reference>`.
 
 
-Any simulated platform must contain **basic elements**, such as hosts, links, storages, etc. SimGrid gives you a great
+Any simulated platform must contain **basic elements**, such as hosts, links, disks, etc. SimGrid gives you a great
 liberty when defining the **routing of your platform**, i.e., the network path taken between each pair of hosts.
 Finally, you may also describe an **experimental scenario**, with qualitative (e.g., bandwidth variations representing
 an external load) and qualitative (e.g., representing how some elements fail and restart over time) changes.
@@ -52,7 +52,7 @@ simulated platform as a graph of hosts and network links.
 
 The most important elements are the basic ones: :ref:`pf_tag_host`,
 :ref:`pf_tag_link`, and similar. Then come the routes between any pair
-of hosts, that are given explicitely with :ref:`pf_tag_route` (routes
+of hosts, that are given explicitly with :ref:`pf_tag_route` (routes
 are symmetrical by default). Any host must be given a computational
 speed (in flops) while links must be given a latency (in seconds) and
 a bandwidth (in bytes per second). Note that you can write 1Gflops
@@ -75,7 +75,7 @@ Networking zones (:ref:`pf_tag_zone`) are used to factorize the description
 to reduce the size of your platform on disk and in memory. Then, when
 a host wants to communicate with another host belonging to the same
 zone, it is the zone's duty to find the list of links that are
-involved in the communication. In the above example, since we use
+involved in the communication. In the above examples, since we use
 ``routing="Full"``, all routes must be explicitly given using the
 :ref:`pf_tag_route` and :ref:`pf_tag_link_ctn` tags (this :ref:`routing
 model <pf_rm>` is both simple and inefficient :) It is OK to not

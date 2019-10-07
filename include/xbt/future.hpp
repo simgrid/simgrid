@@ -12,6 +12,7 @@
 #include <boost/variant.hpp>
 #include <exception>
 #include <functional>
+#include <future> // std::future_error
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
@@ -66,7 +67,7 @@ public:
         break;
       }
       default:
-        throw std::logic_error("Invalid result");
+        throw std::future_error(std::future_errc::no_state);
     }
   }
 private:
@@ -125,36 +126,13 @@ template <class R, class F> auto fulfill_promise(R& promise, F&& code) -> declty
     promise.set_exception(std::current_exception());
   }
 }
-template <class R, class F>
-XBT_ATTRIB_DEPRECATED_v323("Please use xbt::fulfill_promise()") auto fulfillPromise(R& promise, F&& code)
-    -> decltype(promise.set_value(code()))
-{
-  try {
-    promise.set_value(std::forward<F>(code)());
-  }
-  catch(...) {
-    promise.set_exception(std::current_exception());
-  }
-}
 
-template <class P, class F> auto fulfill_promise(P& promise, F&& code) -> decltype(promise.set_value())
+template <class R, class F> auto fulfill_promise(R& promise, F&& code) -> decltype(promise.set_value())
 {
   try {
     std::forward<F>(code)();
     promise.set_value();
   } catch (...) {
-    promise.set_exception(std::current_exception());
-  }
-}
-template <class P, class F>
-XBT_ATTRIB_DEPRECATED_v323("Please use xbt::fulfill_promise()") auto fulfillPromise(P& promise, F&& code)
-    -> decltype(promise.set_value())
-{
-  try {
-    std::forward<F>(code)();
-    promise.set_value();
-  }
-  catch(...) {
     promise.set_exception(std::current_exception());
   }
 }

@@ -12,9 +12,9 @@
 #include <boost/intrusive_ptr.hpp>
 
 /********************************* Simcalls *********************************/
-XBT_PUBLIC_DATA const char* simcall_names[]; /* Name of each simcall */
-
 #include "popping_enum.h" /* Definition of e_smx_simcall_t, with one value per simcall */
+
+XBT_PUBLIC_DATA const char* simcall_names[]; /* Name of each simcall */
 
 typedef int (*simix_match_func_t)(void*, void*, simgrid::kernel::activity::CommImpl*);
 typedef void (*simix_copy_data_func_t)(simgrid::kernel::activity::CommImpl*, void*, size_t);
@@ -23,6 +23,7 @@ typedef void (*FPtr)(void); // Hide the ugliness
 
 /* Pack all possible scalar types in an union */
 union u_smx_scalar {
+  bool b;
   char c;
   short s;
   int i;
@@ -42,22 +43,20 @@ union u_smx_scalar {
  * @brief Represents a simcall to the kernel.
  */
 struct s_smx_simcall {
-  e_smx_simcall_t call;
-  smx_actor_t issuer;
-  smx_timer_t timer;
-  int mc_value;
-  u_smx_scalar args[11];
-  u_smx_scalar result;
+  e_smx_simcall_t call_                     = SIMCALL_NONE;
+  smx_actor_t issuer_                       = nullptr;
+  smx_timer_t timeout_cb_                   = nullptr; // Callback to timeouts
+  simgrid::mc::SimcallInspector* inspector_ = nullptr; // makes that simcall observable by the MC
+  int mc_value_                             = 0;
+  u_smx_scalar args_[11]                    = {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}};
+  u_smx_scalar result_                      = {0};
 };
 
-#define SIMCALL_SET_MC_VALUE(simcall, value) ((simcall)->mc_value = (value))
-#define SIMCALL_GET_MC_VALUE(simcall) ((simcall)->mc_value)
+#define SIMCALL_SET_MC_VALUE(simcall, value) ((simcall).mc_value_ = (value))
+#define SIMCALL_GET_MC_VALUE(simcall) ((simcall).mc_value_)
 
 /******************************** General *************************************/
 
-XBT_PRIVATE void SIMIX_simcall_answer(smx_simcall_t simcall);
-XBT_PRIVATE void SIMIX_simcall_handle(smx_simcall_t simcall, int value);
-XBT_PRIVATE void SIMIX_simcall_exit(smx_activity_t synchro);
 XBT_PRIVATE const char* SIMIX_simcall_name(e_smx_simcall_t kind);
 XBT_PRIVATE void SIMIX_run_kernel(std::function<void()> const* code);
 XBT_PRIVATE void SIMIX_run_blocking(std::function<void()> const* code);
@@ -94,6 +93,7 @@ template <typename T> struct marshal_t {
   inline T unmarshal_raw(type<T>, u_smx_scalar const& simcall)                                                         \
   { /* Exactly same as unmarshal. It differs only for intrusive_ptr */ return simcall.field; }
 
+SIMIX_MARSHAL(bool, b);
 SIMIX_MARSHAL(char, c);
 SIMIX_MARSHAL(short, s);
 SIMIX_MARSHAL(int, i);
@@ -177,29 +177,29 @@ template <class T> inline typename std::remove_reference<T>::type unmarshal_raw(
   return unmarshal(type<T>(), simcall);
 }
 
-template <std::size_t I> inline void marshalArgs(smx_simcall_t simcall)
+template <std::size_t I> inline void marshal_args(smx_simcall_t simcall)
 {
   /* Nothing to do when no args */
 }
 
-template <std::size_t I, class A> inline void marshalArgs(smx_simcall_t simcall, A const& a)
+template <std::size_t I, class A> inline void marshal_args(smx_simcall_t simcall, A const& a)
 {
-  marshal(simcall->args[I], a);
+  marshal(simcall->args_[I], a);
 }
 
-template <std::size_t I, class A, class... B> inline void marshalArgs(smx_simcall_t simcall, A const& a, B const&... b)
+template <std::size_t I, class A, class... B> inline void marshal_args(smx_simcall_t simcall, A const& a, B const&... b)
 {
-  marshal(simcall->args[I], a);
-  marshalArgs<I + 1>(simcall, b...);
+  marshal(simcall->args_[I], a);
+  marshal_args<I + 1>(simcall, b...);
 }
 
 /** Initialize the simcall */
 template <class... A> inline void marshal(smx_simcall_t simcall, e_smx_simcall_t call, A const&... a)
 {
-  simcall->call = call;
-  memset(&simcall->result, 0, sizeof(simcall->result));
-  memset(simcall->args, 0, sizeof(simcall->args));
-  marshalArgs<0>(simcall, a...);
+  simcall->call_ = call;
+  memset(&simcall->result_, 0, sizeof(simcall->result_));
+  memset(simcall->args_, 0, sizeof(simcall->args_));
+  marshal_args<0>(simcall, a...);
 }
 }
 }

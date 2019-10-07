@@ -92,7 +92,6 @@ XBT_PUBLIC unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void* elem);
 XBT_PUBLIC signed int xbt_dynar_search_or_negative(xbt_dynar_t const dynar, void* const elem);
 XBT_PUBLIC int xbt_dynar_member(xbt_dynar_t const dynar, void* elem);
 XBT_PUBLIC void xbt_dynar_sort(xbt_dynar_t const dynar, int_f_cpvoid_cpvoid_t compar_fn);
-XBT_PUBLIC xbt_dynar_t xbt_dynar_sort_strings(xbt_dynar_t dynar);
 XBT_PUBLIC int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2, int (*compar)(const void*, const void*));
 XBT_PUBLIC void* xbt_dynar_to_array(xbt_dynar_t dynar);
 
@@ -152,26 +151,23 @@ XBT_PUBLIC void* xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
           (*(type*)xbt_dynar_get_ptr((dynar),(idx)))
 /** @brief Quick setting of scalar content
  *  @hideinitializer */
-#  define xbt_dynar_set_as(dynar,idx,type,val) \
-         (*(type*)xbt_dynar_set_at_ptr((dynar),(idx))) = val
-  /** @brief Quick retrieval of scalar content
-   *  @hideinitializer */
+#define xbt_dynar_set_as(dynar, idx, type, val) (*(type*)xbt_dynar_set_at_ptr((dynar), (idx))) = (val)
+/** @brief Quick retrieval of scalar content
+ *  @hideinitializer */
 #  define xbt_dynar_getlast_as(dynar,type) \
           (*(type*)xbt_dynar_get_ptr((dynar),xbt_dynar_length(dynar)-1))
-  /** @brief Quick retrieval of scalar content
-   *  @hideinitializer */
+/** @brief Quick retrieval of scalar content
+ *  @hideinitializer */
 #  define xbt_dynar_getfirst_as(dynar,type) \
           (*(type*)xbt_dynar_get_ptr((dynar),0))
-  /** @brief Quick insertion of scalar content
-   *  @hideinitializer */
-#  define xbt_dynar_insert_at_as(dynar,idx,type,value) \
-          *(type*)xbt_dynar_insert_at_ptr(dynar,idx)=value
-  /** @brief Quick insertion of scalar content
-   *  @hideinitializer */
-#  define xbt_dynar_push_as(dynar,type,value) \
-          *(type*)xbt_dynar_push_ptr(dynar)=value
-  /** @brief Quick removal of scalar content
-   *  @hideinitializer */
+/** @brief Quick insertion of scalar content
+ *  @hideinitializer */
+#define xbt_dynar_insert_at_as(dynar, idx, type, value) *(type*)xbt_dynar_insert_at_ptr((dynar), (idx)) = (value)
+/** @brief Quick insertion of scalar content
+ *  @hideinitializer */
+#define xbt_dynar_push_as(dynar, type, value) *(type*)xbt_dynar_push_ptr(dynar) = (value)
+/** @brief Quick removal of scalar content
+ *  @hideinitializer */
 #  define xbt_dynar_pop_as(dynar,type) \
            (*(type*)xbt_dynar_pop_ptr(dynar))
 
@@ -210,11 +206,8 @@ static inline int _xbt_dynar_cursor_get(const xbt_dynar_t dynar, unsigned int id
   if (!dynar) /* iterating over a NULL dynar is a no-op */
     return 0;
 
-  if (idx >= dynar->used) {
-    //XBT_DEBUG("Cursor on %p already on last elem", (void *) dynar);
+  if (idx >= dynar->used)
     return 0;
-  }
-  //  XBT_DEBUG("Cash out cursor on %p at %u", (void *) dynar, *idx);
 
   memcpy(dst, ((char *) dynar->data) + idx * dynar->elmsize, dynar->elmsize);
 
@@ -241,35 +234,20 @@ xbt_dynar_foreach (dyn,cpt,str) {
  * Note that underneath, that's a simple for loop with no real black  magic involved. It's perfectly safe to interrupt
  * a foreach with a break or a return statement.
  */
-#define xbt_dynar_foreach(_dynar,_cursor,_data) \
-       for ( (_cursor) = 0      ; \
-             _xbt_dynar_cursor_get(_dynar,_cursor,&_data) ; \
-             (_cursor)++         )
+#define xbt_dynar_foreach(_dynar, _cursor, _data)                                                                      \
+  for ((_cursor) = 0; _xbt_dynar_cursor_get((_dynar), (_cursor), &(_data)); (_cursor)++)
 
 #ifndef __cplusplus
-#define xbt_dynar_foreach_ptr(_dynar,_cursor,_ptr) \
-       for ((_cursor) = 0       ; \
-            (_ptr = _cursor < _dynar->used ? xbt_dynar_get_ptr(_dynar,_cursor) : NULL) ; \
-            (_cursor)++         )
+#define xbt_dynar_foreach_ptr(_dynar, _cursor, _ptr)                                                                   \
+  for ((_cursor) = 0; ((_ptr) = (_cursor) < (_dynar)->used ? xbt_dynar_get_ptr((_dynar), (_cursor)) : NULL);           \
+       (_cursor)++)
 #else
-#define xbt_dynar_foreach_ptr(_dynar,_cursor,_ptr) \
-       for ((_cursor) = 0       ; \
-            (_ptr = _cursor < _dynar->used ? (decltype(_ptr)) xbt_dynar_get_ptr(_dynar,_cursor) : NULL) ; \
-            (_cursor)++         )
+#define xbt_dynar_foreach_ptr(_dynar, _cursor, _ptr)                                                                   \
+  for ((_cursor) = 0;                                                                                                  \
+       ((_ptr) = (_cursor) < (_dynar)->used ? (decltype(_ptr))xbt_dynar_get_ptr((_dynar), (_cursor)) : NULL);          \
+       (_cursor)++)
 #endif
 /** @} */
 SG_END_DECL()
-
-#ifdef __cplusplus
-namespace simgrid {
-namespace xbt {
-/** Dynar of `T*` which `delete` its values */
-template <class T> inline xbt_dynar_t newDeleteDynar()
-{
-  return xbt_dynar_new(sizeof(T*), [](void* p) { delete *(T**)p; });
-}
-}
-}
-#endif
 
 #endif /* XBT_DYNAR_H */

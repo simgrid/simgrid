@@ -7,11 +7,7 @@
 #ifndef SIMGRID_MC_CHECKER_HPP
 #define SIMGRID_MC_CHECKER_HPP
 
-#include <functional>
-#include <memory>
-#include <string>
-
-#include "src/mc/Session.hpp"
+//#include "src/mc/Session.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_record.hpp"
 
@@ -52,18 +48,19 @@ public:
   /** Show the current trace/stack
    *
    *  Could this be handled in the Session/ModelChecker instead? */
-  virtual RecordTrace getRecordTrace() = 0;
+  virtual RecordTrace get_record_trace() = 0;
 
   /** Generate a textual execution trace of the simulated application */
-  virtual std::vector<std::string> getTextualTrace() = 0;
+  virtual std::vector<std::string> get_textual_trace() = 0;
 
   /** Log additional information about the state of the model-checker */
-  virtual void logState() = 0;
+  virtual void log_state() = 0;
 
 protected:
-  Session& getSession() { return *session_; }
+  Session& get_session() { return *session_; }
 };
 
+// External constructors so that the types (and the types of their content) remain hidden
 XBT_PUBLIC Checker* createLivenessChecker(Session& session);
 XBT_PUBLIC Checker* createSafetyChecker(Session& session);
 XBT_PUBLIC Checker* createCommunicationDeterminismChecker(Session& session);

@@ -4,9 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "simgrid/Exception.hpp"
+#include "simgrid/s4u/Exec.hpp"
 #include "src/include/surf/surf.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
-#include "xbt/asserts.h" // xbt_log_no_loc
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
 
@@ -23,8 +24,8 @@ namespace vm {
 /*************
  * Callbacks *
  *************/
-simgrid::xbt::signal<void(VirtualMachineImpl&)> VirtualMachineImpl::on_creation;
-simgrid::xbt::signal<void(VirtualMachineImpl const&)> VirtualMachineImpl::on_destruction;
+xbt::signal<void(VirtualMachineImpl&)> VirtualMachineImpl::on_creation;
+xbt::signal<void(VirtualMachineImpl const&)> VirtualMachineImpl::on_destruction;
 
 /*********
  * Model *
@@ -51,25 +52,45 @@ static void host_state_change(s4u::Host const& host)
   }
 }
 
-static s4u::VirtualMachine* get_vm_from_task(kernel::activity::ActivityImpl const& task)
+static void add_active_exec(s4u::Actor const&, s4u::Exec const& task)
 {
-  auto* exec = dynamic_cast<kernel::activity::ExecImpl const*>(&task);
-  return exec != nullptr ? dynamic_cast<s4u::VirtualMachine*>(exec->get_host()) : nullptr;
-}
-
-static void add_active_task(kernel::activity::ActivityImpl const& task)
-{
-  s4u::VirtualMachine* vm = get_vm_from_task(task);
+  s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
   if (vm != nullptr) {
-    VirtualMachineImpl *vm_impl = vm->get_impl();
-    vm_impl->active_tasks_ = vm_impl->active_tasks_ + 1;
-    vm_impl->update_action_weight(); 
+    VirtualMachineImpl* vm_impl = vm->get_impl();
+    vm_impl->active_tasks_      = vm_impl->active_tasks_ + 1;
+    vm_impl->update_action_weight();
   }
 }
 
-static void remove_active_task(kernel::activity::ActivityImpl const& task)
+static void remove_active_exec(s4u::Actor const&, s4u::Exec const& task)
 {
-  s4u::VirtualMachine* vm = get_vm_from_task(task);
+  s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
+  if (vm != nullptr) {
+    VirtualMachineImpl* vm_impl = vm->get_impl();
+    vm_impl->active_tasks_      = vm_impl->active_tasks_ - 1;
+    vm_impl->update_action_weight();
+  }
+}
+
+static s4u::VirtualMachine* get_vm_from_activity(kernel::activity::ActivityImpl const& act)
+{
+  auto* exec = dynamic_cast<kernel::activity::ExecImpl const*>(&act);
+  return exec != nullptr ? dynamic_cast<s4u::VirtualMachine*>(exec->get_host()) : nullptr;
+}
+
+static void add_active_activity(kernel::activity::ActivityImpl const& act)
+{
+  s4u::VirtualMachine* vm = get_vm_from_activity(act);
+  if (vm != nullptr) {
+    VirtualMachineImpl *vm_impl = vm->get_impl();
+    vm_impl->active_tasks_ = vm_impl->active_tasks_ + 1;
+    vm_impl->update_action_weight();
+  }
+}
+
+static void remove_active_activity(kernel::activity::ActivityImpl const& act)
+{
+  s4u::VirtualMachine* vm = get_vm_from_activity(act);
   if (vm != nullptr) {
     VirtualMachineImpl *vm_impl = vm->get_impl();
     vm_impl->active_tasks_ = vm_impl->active_tasks_ - 1;
@@ -81,10 +102,10 @@ VMModel::VMModel()
 {
   all_existing_models.push_back(this);
   s4u::Host::on_state_change.connect(host_state_change);
-  kernel::activity::ExecImpl::on_creation.connect(add_active_task);
-  kernel::activity::ExecImpl::on_completion.connect(remove_active_task);
-  kernel::activity::ActivityImpl::on_resumed.connect(add_active_task);
-  kernel::activity::ActivityImpl::on_suspended.connect(remove_active_task);
+  s4u::Exec::on_start.connect(add_active_exec);
+  s4u::Exec::on_completion.connect(remove_active_exec);
+  kernel::activity::ActivityImpl::on_resumed.connect(add_active_activity);
+  kernel::activity::ActivityImpl::on_suspended.connect(remove_active_activity);
 }
 
 double VMModel::next_occuring_event(double now)
@@ -115,7 +136,7 @@ double VMModel::next_occuring_event(double now)
 
   /* iterate for all virtual machines */
   for (s4u::VirtualMachine* const& ws_vm : VirtualMachineImpl::allVms_) {
-    surf::Cpu* cpu = ws_vm->pimpl_cpu;
+    kernel::resource::Cpu* cpu = ws_vm->pimpl_cpu;
 
     double solved_value =
         ws_vm->get_impl()->action_->get_variable()->get_value(); // this is X1 in comment above, what
@@ -173,10 +194,11 @@ VirtualMachineImpl::~VirtualMachineImpl()
 void VirtualMachineImpl::suspend(smx_actor_t issuer)
 {
   if (get_state() != s4u::VirtualMachine::state::RUNNING)
-    THROWF(vm_error, 0, "Cannot suspend VM %s: it is not running.", piface_->get_cname());
+    throw VmFailureException(XBT_THROW_POINT,
+                             xbt::string_printf("Cannot suspend VM %s: it is not running.", piface_->get_cname()));
   if (issuer->get_host() == piface_)
-    THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->get_cname(),
-           piface_->get_cname());
+    throw VmFailureException(XBT_THROW_POINT, xbt::string_printf("Actor %s cannot suspend the VM %s in which it runs",
+                                                                 issuer->get_cname(), piface_->get_cname()));
 
   XBT_DEBUG("suspend VM(%s), where %zu processes exist", piface_->get_cname(), process_list_.size());
 
@@ -184,7 +206,7 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
 
   for (auto& smx_process : process_list_) {
     XBT_DEBUG("suspend %s", smx_process.get_cname());
-    smx_process.suspend(issuer);
+    smx_process.suspend();
   }
 
   XBT_DEBUG("suspend all processes on the VM done done");
@@ -195,7 +217,8 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
 void VirtualMachineImpl::resume()
 {
   if (get_state() != s4u::VirtualMachine::state::SUSPENDED)
-    THROWF(vm_error, 0, "Cannot resume VM %s: it was not suspended", piface_->get_cname());
+    throw VmFailureException(XBT_THROW_POINT,
+                             xbt::string_printf("Cannot resume VM %s: it was not suspended", piface_->get_cname()));
 
   XBT_DEBUG("Resume VM %s, containing %zu processes.", piface_->get_cname(), process_list_.size());
 
@@ -266,8 +289,8 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
 
   /* Update vcpu's action for the new pm */
   /* create a cpu action bound to the pm model at the destination. */
-  surf::CpuAction* new_cpu_action =
-      static_cast<surf::CpuAction*>(destination->pimpl_cpu->execution_start(0, this->core_amount_));
+  kernel::resource::CpuAction* new_cpu_action =
+      static_cast<kernel::resource::CpuAction*>(destination->pimpl_cpu->execution_start(0, this->core_amount_));
 
   if (action_->get_remains_no_update() > 0)
     XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->get_remains_no_update());
@@ -300,9 +323,9 @@ void VirtualMachineImpl::update_action_weight(){
   XBT_DEBUG("set the weight of the dummy CPU action of VM%p on PM to %d (#tasks: %d)", this, impact, active_tasks_);
 
   if (impact > 0)
-    action_->set_priority(1. / impact);
+    action_->set_sharing_penalty(1. / impact);
   else
-    action_->set_priority(0.);
+    action_->set_sharing_penalty(0.);
 
   action_->set_bound(std::min(impact * physical_host_->get_speed(), user_bound_));
 }

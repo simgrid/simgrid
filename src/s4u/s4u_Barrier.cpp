@@ -17,7 +17,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_barrier, "S4U barrier");
 namespace simgrid {
 namespace s4u {
 
-Barrier::Barrier(unsigned int expected_processes) : mutex_(Mutex::create()), cond_(ConditionVariable::create()), expected_processes_(expected_processes)
+Barrier::Barrier(unsigned int expected_processes)
+    : mutex_(Mutex::create()), cond_(ConditionVariable::create()), expected_actors_(expected_processes)
 {
 }
 
@@ -25,24 +26,27 @@ Barrier::Barrier(unsigned int expected_processes) : mutex_(Mutex::create()), con
  *
  * See @ref s4u_raii.
  */
-BarrierPtr Barrier::create(unsigned int expected_processes)
+BarrierPtr Barrier::create(unsigned int expected_actors)
 {
-    return BarrierPtr(new Barrier(expected_processes));
+  return BarrierPtr(new Barrier(expected_actors));
 }
 
-/**
- * Wait functions
+/** @brief Block the current actor until all expected actors reach the barrier.
+ *
+ * This method is meant to be somewhat consistent with the pthread_barrier_wait function.
+ *
+ * @return 0 for all actors but one: exactly one actor will get SG_BARRIER_SERIAL_THREAD as a return value.
  */
 int Barrier::wait()
 {
   mutex_->lock();
-  arrived_processes_++;
-  XBT_DEBUG("waiting %p %u/%u", this, arrived_processes_, expected_processes_);
-  if (arrived_processes_ == expected_processes_) {
+  arrived_actors_++;
+  XBT_DEBUG("waiting %p %u/%u", this, arrived_actors_, expected_actors_);
+  if (arrived_actors_ == expected_actors_) {
     cond_->notify_all();
     mutex_->unlock();
-    arrived_processes_ = 0;
-    return -1;
+    arrived_actors_ = 0;
+    return SG_BARRIER_SERIAL_THREAD;
   }
 
   cond_->wait(mutex_);

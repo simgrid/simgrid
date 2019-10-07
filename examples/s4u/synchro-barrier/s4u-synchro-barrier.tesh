@@ -1,18 +1,18 @@
 #!/usr/bin/env tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-synchro-barrier 1
+$ ${bindir:=.}/s4u-synchro-barrier 1
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Spawning 0 workers
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Waiting on the barrier
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Bye
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-synchro-barrier 2
+$ ${bindir:=.}/s4u-synchro-barrier 2
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Spawning 1 workers
 > [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Waiting on the barrier
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Waiting on the barrier
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Bye
 > [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Bye
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-synchro-barrier 3
+$ ${bindir:=.}/s4u-synchro-barrier 3
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Spawning 2 workers
 > [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Waiting on the barrier
 > [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Waiting on the barrier
@@ -21,7 +21,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-synchro-barrier 3
 > [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Bye
 > [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Bye
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-synchro-barrier 10
+$ ${bindir:=.}/s4u-synchro-barrier 10
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Spawning 9 workers
 > [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Waiting on the barrier
 > [Jupiter:worker:(3) 0.000000] [s4u_test/INFO] Waiting on the barrier

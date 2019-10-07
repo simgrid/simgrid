@@ -6,9 +6,11 @@
 #ifndef SIMGRID_MC_PROCESS_H
 #define SIMGRID_MC_PROCESS_H
 
-#include "src/xbt/mmalloc/mmprivate.h"
+#include "src/mc/AddressSpace.hpp"
+#include "src/mc/inspect/ObjectInformation.hpp"
 #include "src/mc/remote/Channel.hpp"
-#include "src/mc/ObjectInformation.hpp"
+#include "src/mc/remote/RemotePtr.hpp"
+#include "src/xbt/mmalloc/mmprivate.h"
 
 #include <vector>
 
@@ -80,8 +82,8 @@ public:
   RemoteClient& operator=(RemoteClient&&) = delete;
 
   // Read memory:
-  const void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, int process_index = ProcessIndexAny,
-                         ReadOptions options = ReadOptions::none()) const override;
+  void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
+                   ReadOptions options = ReadOptions::none()) const override;
 
   void read_variable(const char* name, void* target, size_t size) const;
   template <class T> void read_variable(const char* name, T* target) const
@@ -91,7 +93,7 @@ public:
   template <class T> Remote<T> read_variable(const char* name) const
   {
     Remote<T> res;
-    read_variable(name, res.getBuffer(), sizeof(T));
+    read_variable(name, res.get_buffer(), sizeof(T));
     return res;
   }
 
@@ -107,7 +109,7 @@ public:
   std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_exec(RemotePtr<void> addr) const;
   std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_rw(RemotePtr<void> addr) const;
   simgrid::mc::Frame* find_function(RemotePtr<void> ip) const;
-  simgrid::mc::Variable* find_variable(const char* name) const;
+  const simgrid::mc::Variable* find_variable(const char* name) const;
 
   // Heap access:
   xbt_mheap_t get_heap()
@@ -125,8 +127,8 @@ public:
 
   void clear_cache() { this->cache_flags_ = RemoteClient::cache_none; }
 
-  Channel const& getChannel() const { return channel_; }
-  Channel& getChannel() { return channel_; }
+  Channel const& get_channel() const { return channel_; }
+  Channel& get_channel() { return channel_; }
 
   std::vector<IgnoredRegion> const& ignored_regions() const { return ignored_regions_; }
   void ignore_region(std::uint64_t address, std::size_t size);
@@ -141,10 +143,6 @@ public:
   bool running() const { return running_; }
 
   void terminate() { running_ = false; }
-
-  bool privatized(ObjectInformation const& info) const { return privatized_ && info.executable(); }
-  bool privatized() const { return privatized_; }
-  void privatized(bool privatized) { privatized_ = privatized; }
 
   void ignore_global_variable(const char* name)
   {
@@ -164,7 +162,7 @@ public:
   std::vector<simgrid::mc::ActorInformation>& dead_actors();
 
   /** Get a local description of a remote SIMIX actor */
-  simgrid::mc::ActorInformation* resolveActorInfo(simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl> actor)
+  simgrid::mc::ActorInformation* resolve_actor_info(simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl> actor)
   {
     xbt_assert(mc_model_checker != nullptr);
     if (not actor)
@@ -180,16 +178,16 @@ public:
   }
 
   /** Get a local copy of the SIMIX actor structure */
-  simgrid::kernel::actor::ActorImpl* resolveActor(simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl> process)
+  simgrid::kernel::actor::ActorImpl* resolve_actor(simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl> process)
   {
-    simgrid::mc::ActorInformation* actor_info = this->resolveActorInfo(process);
+    simgrid::mc::ActorInformation* actor_info = this->resolve_actor_info(process);
     if (actor_info)
-      return actor_info->copy.getBuffer();
+      return actor_info->copy.get_buffer();
     else
       return nullptr;
   }
 
-  void dumpStack();
+  void dump_stack();
 
 private:
   void init_memory_map_info();
@@ -205,7 +203,6 @@ private:
   RemotePtr<void> maestro_stack_end_;
   int memory_file = -1;
   std::vector<IgnoredRegion> ignored_regions_;
-  bool privatized_ = false;
   std::vector<s_stack_region_t> stack_areas_;
   std::vector<IgnoredHeapRegion> ignored_heap_;
 

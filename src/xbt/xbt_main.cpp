@@ -37,7 +37,11 @@ char *xbt_binary_name = NULL;   /* Name of the system process containing us (man
 xbt_dynar_t xbt_cmdline = NULL; /* all we got in argv */
 
 int xbt_initialized = 0;
-bool _sg_do_clean_atexit = true;
+simgrid::config::Flag<bool> cfg_dbg_clean_atexit{
+    "debug/clean-atexit",
+    {"clean-atexit"},
+    "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.",
+    true};
 
 int xbt_pagesize;
 int xbt_pagebits = 0;
@@ -93,17 +97,12 @@ static void xbt_preinit()
 #endif
   xbt_log_preinit();
   xbt_dict_preinit();
-
-#ifndef _WIN32
-  constexpr unsigned seed = 2147483647;
-  srand48(seed); // FIXME: still worthwhile?
-#endif
   atexit(xbt_postexit);
 }
 
 static void xbt_postexit()
 {
-  if (not _sg_do_clean_atexit)
+  if (not cfg_dbg_clean_atexit)
     return;
   xbt_initialized--;
   xbt_dict_postexit();
@@ -117,13 +116,13 @@ static void xbt_postexit()
 /** @brief Initialize the xbt mechanisms. */
 void xbt_init(int *argc, char **argv)
 {
-  simgrid::xbt::install_exception_handler();
-
   xbt_initialized++;
   if (xbt_initialized > 1) {
     XBT_DEBUG("XBT has been initialized %d times.", xbt_initialized);
     return;
   }
+
+  simgrid::xbt::install_exception_handler();
 
   xbt_binary_name = argv[0];
   xbt_cmdline     = xbt_dynar_new(sizeof(char*), NULL);

@@ -8,8 +8,8 @@ The S4U Interface
    <object id="TOC" data="graphical-toc.svg" width="100%" type="image/svg+xml"></object>
    <script>
    window.onload=function() { // Wait for the SVG to be loaded before changing it
-     var elem=document.querySelector("#TOC").contentDocument.getElementById("S4UBox")
-     elem.style="opacity:0.93999999;fill:#ff0000;fill-opacity:0.1";
+     var elem=document.querySelector("#TOC").contentDocument.getElementById("ActorBox")
+     elem.style="opacity:0.93999999;fill:#ff0000;fill-opacity:0.1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1";
    }
    </script>
    <br/>
@@ -39,7 +39,7 @@ S4U interface to express their :ref:`computation <API_s4u_Exec>`,
 :ref:`communication <API_s4u_Comm>`, :ref:`disk usage <API_s4u_Io>`,
 and other |API_s4u_Activities|_, so that they get reflected within the
 simulator. These activities take place on resources such as |API_s4u_Hosts|_,
-|API_s4u_Links|_ and |API_s4u_Storages|_. SimGrid predicts the time taken by each
+|API_s4u_Links|_ and |API_s4u_Disks|_. SimGrid predicts the time taken by each
 activity and orchestrates the actors accordingly, waiting for the
 completion of these activities.
 
@@ -75,14 +75,14 @@ provides many helper functions to simplify the code of actors.
 
 - **Platform Elements**
 
+  - :ref:`class s4u::Disk <API_s4u_Disk>`
+    Resource on which actors can write and read data.
   - :ref:`class s4u::Host <API_s4u_Host>`:
     Actor location, providing computational power.
   - :ref:`class s4u::Link <API_s4u_Link>`
     Interconnecting hosts.
   - :ref:`class s4u::NetZone <API_s4u_NetZone>`:
     Sub-region of the platform, containing resources (Hosts, Links, etc).
-  - :ref:`class s4u::Storage <API_s4u_Storage>`
-    Resource on which actors can write and read data.
   - :ref:`class s4u::VirtualMachine <API_s4u_VirtualMachine>`:
     Execution containers that can be moved between Hosts.
 
@@ -94,7 +94,7 @@ provides many helper functions to simplify the code of actors.
   - :ref:`class s4u::Exec <API_s4u_Exec>`
     Computation activity, started on Host and consuming CPU resources.
   - :ref:`class s4u::Io <API_s4u_Io>`
-    I/O activity, started on and consumming Storages.
+    I/O activity, started on and consumming disks.
 
 - **Synchronization Mechanisms**: Classical IPC that actors can use
 
@@ -116,8 +116,8 @@ provides many helper functions to simplify the code of actors.
 .. |API_s4u_Links| replace:: **Links**
 .. _API_s4u_Links: #s4u-link
 
-.. |API_s4u_Storages| replace:: **Storages**
-.. _API_s4u_Storages: #s4u-storage
+.. |API_s4u_Disks| replace:: **Disks**
+.. _API_s4u_Disks: #s4u-disk
 
 .. |API_s4u_VirtualMachine| replace:: **VirtualMachines**
 
@@ -146,7 +146,7 @@ Activities
 **********
 
 Activities represent the actions that consume a resource, such as a
-:ref:`s4u::Comm <API_s4u_Comm>` that consumes the *transmiting power* of
+:ref:`s4u::Comm <API_s4u_Comm>` that consumes the *transmitting power* of
 :ref:`s4u::Link <API_s4u_Link>` resources.
 
 =======================
@@ -173,14 +173,14 @@ Finally, to wait at most until a specified time limit, use
 
    wait_for and wait_until are currently not implemented for Exec and Io activities.
 
-Every kind of activities can be asynchronous:
+Every kind of activity can be asynchronous:
 
   - :ref:`s4u::CommPtr <API_s4u_Comm>` are created with 
     :cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>` and
     :cpp:func:`s4u::Mailbox::get_async() <simgrid::s4u::Mailbox::get_async>`.
   - :ref:`s4u::IoPtr <API_s4u_Io>` are created with 
-    :cpp:func:`s4u::Storage::read_async() <simgrid::s4u::Storage::read_async>` and
-    :cpp:func:`s4u::Storage::write_async() <simgrid::s4u::Storage::write_async>`.    
+    :cpp:func:`s4u::Disk::read_async() <simgrid::s4u::Disk::read_async>` and
+    :cpp:func:`s4u::Disk::write_async() <simgrid::s4u::Disk::write_async>`.
   - :ref:`s4u::ExecPtr <API_s4u_Exec>` are created with
     :cpp:func:`s4u::Host::exec_async() <simgrid::s4u::Host::exec_async>`.
   - In the future, it will become possible to have asynchronous IPC
@@ -319,7 +319,7 @@ The last twist is that by default in the simulator, the data starts
 to be exchanged only when both the sender and the receiver are
 announced (it waits until both :cpp:func:`put() <simgrid::s4u::Mailbox::put()>`
 and :cpp:func:`get() <simgrid::s4u::Mailbox::get()>` are posted). 
-In TCP, since you establish connexions beforehand, the data starts to
+In TCP, since you establish connections beforehand, the data starts to
 flow as soon as the sender posts it, even if the receiver did not post
 its :cpp:func:`recv() <simgrid::s4u::Mailbox::recv()>` yet. 
 
@@ -343,14 +343,13 @@ Memory Management
 
 For sake of simplicity, we use `RAII
 <https://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization>`_
-everywhere in S4U. This is an idiom where resources are automatically
+for many classes in S4U. This is an idiom where resources are automatically
 managed through the context. Provided that you never manipulate
 objects of type Foo directly but always FooPtr references (which are
 defined as `boost::intrusive_ptr
 <http://www.boost.org/doc/libs/1_61_0/libs/smart_ptr/intrusive_ptr.html>`_
-<Foo>), you will never have to explicitely release the resource that
+<Foo>), you will never have to explicitly release the resource that
 you use nor to free the memory of unused objects.
-
 Here is a little example:
 
 .. code-block:: cpp
@@ -364,6 +363,11 @@ Here is a little example:
      mutex->unlock(); 
   
    } // The mutex gets automatically freed because the only existing reference gets out of scope
+
+Note that Mailboxes, Hosts and Links are not handled thought smart
+pointers (yet?). This means that it is currently impossible to destroy a
+mailbox or a link. You can still destroy an host (but probably
+shouldn't), using :cpp:func:`simgrid::s4u::Host::destroy`.
 
 C++ API Reference
 *****************
@@ -440,6 +444,17 @@ s4u::ConditionVariable
    :protected-members:
    :undoc-members:
 
+.. _API_s4u_Disk:
+
+============
+s4u::Disk
+============
+
+.. doxygenclass:: simgrid::s4u::Disk
+   :members:
+   :protected-members:
+   :undoc-members:
+
 .. _API_s4u_Engine:
 
 ===========
@@ -460,6 +475,32 @@ s4u::Exec
 .. doxygentypedef:: ExecPtr
 
 .. doxygenclass:: simgrid::s4u::Exec
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_ExecSeq:
+
+============
+s4u::ExecSeq
+============
+
+.. doxygentypedef:: ExecSeqPtr
+
+.. doxygenclass:: simgrid::s4u::ExecSeq
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_ExecPar:
+
+============
+s4u::ExecPar
+============
+
+.. doxygentypedef:: ExecParPtr
+
+.. doxygenclass:: simgrid::s4u::ExecPar
    :members:
    :protected-members:
    :undoc-members:
@@ -545,17 +586,6 @@ s4u::Semaphore
 .. doxygentypedef:: SemaphorePtr
 
 .. doxygenclass:: simgrid::s4u::Semaphore
-   :members:
-   :protected-members:
-   :undoc-members:
-
-.. _API_s4u_Storage:
-
-============
-s4u::Storage
-============
-
-.. doxygenclass:: simgrid::s4u::Storage
    :members:
    :protected-members:
    :undoc-members:

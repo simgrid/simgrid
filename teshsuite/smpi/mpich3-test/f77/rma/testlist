@@ -9,6 +9,6 @@ winnamef 1
 wingroupf 4 needs_privatization=1
 winaccf 4 needs_privatization=1
 c2f2cwinf 1
-#baseattrwinf 1
-#winattrf 1
-#winattr2f 1
+baseattrwinf 1
+winattrf 1
+winattr2f 1

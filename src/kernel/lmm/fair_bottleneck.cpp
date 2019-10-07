@@ -27,16 +27,16 @@ void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
 
   XBT_DEBUG("Variable set : %zu", variable_set.size());
   for (Variable& var : variable_set) {
-    var.value = 0.0;
+    var.value_ = 0.0;
     XBT_DEBUG("Handling variable %p", &var);
-    if (var.sharing_weight > 0.0 && std::find_if(begin(var.cnsts), end(var.cnsts), [](Element const& x) {
-                                      return x.consumption_weight != 0.0;
-                                    }) != end(var.cnsts)) {
+    if (var.sharing_penalty_ > 0.0 && std::find_if(begin(var.cnsts_), end(var.cnsts_), [](Element const& x) {
+                                        return x.consumption_weight != 0.0;
+                                      }) != end(var.cnsts_)) {
       saturated_variable_set.push_back(var);
     } else {
       XBT_DEBUG("Err, finally, there is no need to take care of variable %p", &var);
-      if (var.sharing_weight > 0.0)
-        var.value = 1.0;
+      if (var.sharing_penalty_ > 0.0)
+        var.value_ = 1.0;
     }
   }
 
@@ -45,8 +45,8 @@ void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
     saturated_constraint_set.push_back(cnst);
   }
   for (Constraint& cnst : saturated_constraint_set) {
-    cnst.remaining = cnst.bound;
-    cnst.usage     = 0.0;
+    cnst.remaining_ = cnst.bound_;
+    cnst.usage_     = 0.0;
   }
 
   XBT_DEBUG("Fair bottleneck Initialized");
@@ -66,22 +66,22 @@ void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
       Constraint& cnst = *iter;
       int nb = 0;
       XBT_DEBUG("Processing cnst %p ", &cnst);
-      cnst.usage = 0.0;
-      for (Element& elem : cnst.enabled_element_set) {
-        xbt_assert(elem.variable->sharing_weight > 0);
-        if (elem.consumption_weight > 0 && elem.variable->saturated_variable_set_hook.is_linked())
+      cnst.usage_ = 0.0;
+      for (Element& elem : cnst.enabled_element_set_) {
+        xbt_assert(elem.variable->sharing_penalty_ > 0);
+        if (elem.consumption_weight > 0 && elem.variable->saturated_variable_set_hook_.is_linked())
           nb++;
       }
       XBT_DEBUG("\tThere are %d variables", nb);
-      if (nb > 0 && cnst.sharing_policy == s4u::Link::SharingPolicy::FATPIPE)
+      if (nb > 0 && cnst.sharing_policy_ == s4u::Link::SharingPolicy::FATPIPE)
         nb = 1;
       if (nb == 0) {
-        cnst.remaining = 0.0;
-        cnst.usage     = 0.0;
+        cnst.remaining_ = 0.0;
+        cnst.usage_     = 0.0;
         iter           = cnst_list.erase(iter);
       } else {
-        cnst.usage = cnst.remaining / nb;
-        XBT_DEBUG("\tConstraint Usage %p : %f with %d variables", &cnst, cnst.usage, nb);
+        cnst.usage_ = cnst.remaining_ / nb;
+        XBT_DEBUG("\tConstraint Usage %p : %f with %d variables", &cnst, cnst.usage_, nb);
         iter++;
       }
     }
@@ -89,16 +89,16 @@ void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
     for (auto iter = std::begin(var_list); iter != std::end(var_list);) {
       Variable& var  = *iter;
       double min_inc = DBL_MAX;
-      for (Element const& elm : var.cnsts) {
+      for (Element const& elm : var.cnsts_) {
         if (elm.consumption_weight > 0)
-          min_inc = std::min(min_inc, elm.constraint->usage / elm.consumption_weight);
+          min_inc = std::min(min_inc, elm.constraint->usage_ / elm.consumption_weight);
       }
-      if (var.bound > 0)
-        min_inc = std::min(min_inc, var.bound - var.value);
-      var.mu    = min_inc;
-      XBT_DEBUG("Updating variable %p maximum increment: %g", &var, var.mu);
-      var.value += var.mu;
-      if (var.value == var.bound)
+      if (var.bound_ > 0)
+        min_inc = std::min(min_inc, var.bound_ - var.value_);
+      var.mu_ = min_inc;
+      XBT_DEBUG("Updating variable %p maximum increment: %g", &var, var.mu_);
+      var.value_ += var.mu_;
+      if (var.value_ == var.bound_)
         iter = var_list.erase(iter);
       else
         iter++;
@@ -107,33 +107,33 @@ void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
     for (auto iter = std::begin(cnst_list); iter != std::end(cnst_list);) {
       Constraint& cnst = *iter;
       XBT_DEBUG("Updating cnst %p ", &cnst);
-      if (cnst.sharing_policy != s4u::Link::SharingPolicy::FATPIPE) {
-        for (Element& elem : cnst.enabled_element_set) {
-          xbt_assert(elem.variable->sharing_weight > 0);
-          XBT_DEBUG("\tUpdate constraint %p (%g) with variable %p by %g", &cnst, cnst.remaining, elem.variable,
-                    elem.variable->mu);
-          double_update(&cnst.remaining, elem.consumption_weight * elem.variable->mu, sg_maxmin_precision);
+      if (cnst.sharing_policy_ != s4u::Link::SharingPolicy::FATPIPE) {
+        for (Element& elem : cnst.enabled_element_set_) {
+          xbt_assert(elem.variable->sharing_penalty_ > 0);
+          XBT_DEBUG("\tUpdate constraint %p (%g) with variable %p by %g", &cnst, cnst.remaining_, elem.variable,
+                    elem.variable->mu_);
+          double_update(&cnst.remaining_, elem.consumption_weight * elem.variable->mu_, sg_maxmin_precision);
         }
       } else {
-        for (Element& elem : cnst.enabled_element_set) {
-          xbt_assert(elem.variable->sharing_weight > 0);
+        for (Element& elem : cnst.enabled_element_set_) {
+          xbt_assert(elem.variable->sharing_penalty_ > 0);
           XBT_DEBUG("\tNon-Shared variable. Update constraint usage of %p (%g) with variable %p by %g", &cnst,
-                    cnst.usage, elem.variable, elem.variable->mu);
-          cnst.usage = std::min(cnst.usage, elem.consumption_weight * elem.variable->mu);
+                    cnst.usage_, elem.variable, elem.variable->mu_);
+          cnst.usage_ = std::min(cnst.usage_, elem.consumption_weight * elem.variable->mu_);
         }
-        XBT_DEBUG("\tUpdate constraint %p (%g) by %g", &cnst, cnst.remaining, cnst.usage);
-        double_update(&cnst.remaining, cnst.usage, sg_maxmin_precision);
+        XBT_DEBUG("\tUpdate constraint %p (%g) by %g", &cnst, cnst.remaining_, cnst.usage_);
+        double_update(&cnst.remaining_, cnst.usage_, sg_maxmin_precision);
       }
 
-      XBT_DEBUG("\tRemaining for %p : %g", &cnst, cnst.remaining);
-      if (cnst.remaining <= 0.0) {
+      XBT_DEBUG("\tRemaining for %p : %g", &cnst, cnst.remaining_);
+      if (cnst.remaining_ <= 0.0) {
         XBT_DEBUG("\tGet rid of constraint %p", &cnst);
 
         iter = cnst_list.erase(iter);
-        for (Element& elem : cnst.enabled_element_set) {
-          if (elem.variable->sharing_weight <= 0)
+        for (Element& elem : cnst.enabled_element_set_) {
+          if (elem.variable->sharing_penalty_ <= 0)
             break;
-          if (elem.consumption_weight > 0 && elem.variable->saturated_variable_set_hook.is_linked()) {
+          if (elem.consumption_weight > 0 && elem.variable->saturated_variable_set_hook_.is_linked()) {
             XBT_DEBUG("\t\tGet rid of variable %p", elem.variable);
             simgrid::xbt::intrusive_erase(var_list, *elem.variable);
           }

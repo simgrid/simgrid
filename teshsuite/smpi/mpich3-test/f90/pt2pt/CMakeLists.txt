@@ -9,7 +9,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   
   foreach(test allpairf90
-               # greqf90 mprobef90
+               # mprobef90 greqf90
   	         statusesf90)
     add_executable(${test} EXCLUDE_FROM_ALL ${test}.f90)
     add_dependencies(tests ${test})

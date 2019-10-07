@@ -17,8 +17,8 @@ Tracker::Tracker(std::vector<std::string> args)
   // Retrieving end time
   try {
     deadline = std::stod(args[1]);
-  } catch (std::invalid_argument& ia) {
-    throw std::invalid_argument(std::string("Invalid deadline:") + args[1].c_str());
+  } catch (const std::invalid_argument&) {
+    throw std::invalid_argument("Invalid deadline:" + args[1]);
   }
   xbt_assert(deadline > 0, "Wrong deadline supplied");
 
@@ -56,7 +56,7 @@ void Tracker::operator()()
         do {
           next_peer = known_peers.begin();
           std::advance(next_peer, RngStream_RandInt(stream, 0, nb_known_peers - 1));
-        } while (ta->getPeers()->find(*next_peer) != ta->getPeers()->end());
+        } while (ta->getPeers().find(*next_peer) != ta->getPeers().end());
         ta->addPeer(*next_peer);
         tried++;
       }

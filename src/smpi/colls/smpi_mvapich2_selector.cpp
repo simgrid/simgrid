@@ -14,7 +14,7 @@ namespace simgrid{
 namespace smpi{
 
 
-int Coll_alltoall_mvapich2::alltoall( void *sendbuf, int sendcount,
+int Coll_alltoall_mvapich2::alltoall( const void *sendbuf, int sendcount,
     MPI_Datatype sendtype,
     void* recvbuf, int recvcount,
     MPI_Datatype recvtype,
@@ -25,7 +25,6 @@ int Coll_alltoall_mvapich2::alltoall( void *sendbuf, int sendcount,
     init_mv2_alltoall_tables_stampede();
 
   int sendtype_size, recvtype_size, comm_size;
-  char * tmp_buf = NULL;
   int mpi_errno=MPI_SUCCESS;
   int range = 0;
   int range_threshold = 0;
@@ -63,16 +62,11 @@ int Coll_alltoall_mvapich2::alltoall( void *sendbuf, int sendcount,
           mv2_alltoall_thresholds_table[conf_index][range].in_place_algo_table[range_threshold].min
           ||nbytes > mv2_alltoall_thresholds_table[conf_index][range].in_place_algo_table[range_threshold].max
       ) {
-          tmp_buf = (char *)smpi_get_tmp_sendbuffer( comm_size * recvcount * recvtype_size );
-          Datatype::copy((char *)recvbuf,
-              comm_size*recvcount, recvtype,
-              (char *)tmp_buf,
-              comm_size*recvcount, recvtype);
+        unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(comm_size * recvcount * recvtype_size);
+        Datatype::copy(recvbuf, comm_size * recvcount, recvtype, tmp_buf, comm_size * recvcount, recvtype);
 
-          mpi_errno = MV2_Alltoall_function(tmp_buf, recvcount, recvtype,
-              recvbuf, recvcount, recvtype,
-              comm );
-          smpi_free_tmp_buffer(tmp_buf);
+        mpi_errno = MV2_Alltoall_function(tmp_buf, recvcount, recvtype, recvbuf, recvcount, recvtype, comm);
+        smpi_free_tmp_buffer(tmp_buf);
       } else {
           mpi_errno = MPIR_Alltoall_inplace_MV2(sendbuf, sendcount, sendtype,
               recvbuf, recvcount, recvtype,
@@ -84,7 +78,7 @@ int Coll_alltoall_mvapich2::alltoall( void *sendbuf, int sendcount,
   return (mpi_errno);
 }
 
-int Coll_allgather_mvapich2::allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
+int Coll_allgather_mvapich2::allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
     void *recvbuf, int recvcount, MPI_Datatype recvtype,
     MPI_Comm comm)
 {
@@ -185,7 +179,7 @@ int Coll_allgather_mvapich2::allgather(void *sendbuf, int sendcount, MPI_Datatyp
   return mpi_errno;
 }
 
-int Coll_gather_mvapich2::gather(void *sendbuf,
+int Coll_gather_mvapich2::gather(const void *sendbuf,
     int sendcnt,
     MPI_Datatype sendtype,
     void *recvbuf,
@@ -259,8 +253,8 @@ int Coll_gather_mvapich2::gather(void *sendbuf,
   return mpi_errno;
 }
 
-int Coll_allgatherv_mvapich2::allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-    void *recvbuf, int *recvcounts, int *displs,
+int Coll_allgatherv_mvapich2::allgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+    void *recvbuf, const int *recvcounts, const int *displs,
     MPI_Datatype recvtype, MPI_Comm  comm )
 {
   int mpi_errno = MPI_SUCCESS;
@@ -321,7 +315,7 @@ int Coll_allgatherv_mvapich2::allgatherv(void *sendbuf, int sendcount, MPI_Datat
 
 
 
-int Coll_allreduce_mvapich2::allreduce(void *sendbuf,
+int Coll_allreduce_mvapich2::allreduce(const void *sendbuf,
     void *recvbuf,
     int count,
     MPI_Datatype datatype,
@@ -440,9 +434,9 @@ int Coll_allreduce_mvapich2::allreduce(void *sendbuf,
 }
 
 
-int Coll_alltoallv_mvapich2::alltoallv(void *sbuf, int *scounts, int *sdisps,
+int Coll_alltoallv_mvapich2::alltoallv(const void *sbuf, const int *scounts, const int *sdisps,
     MPI_Datatype sdtype,
-    void *rbuf, int *rcounts, int *rdisps,
+    void *rbuf, const int *rcounts, const int *rdisps,
     MPI_Datatype rdtype,
     MPI_Comm  comm
 )
@@ -482,7 +476,7 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
     // int is_homogeneous, is_contig;
     MPI_Aint type_size;
     //, position;
-    // void *tmp_buf = NULL;
+    // unsigned char *tmp_buf = NULL;
     MPI_Comm shmem_comm;
     //MPID_Datatype *dtp;
 
@@ -593,16 +587,16 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
 #endif
      if (two_level_bcast == 1) {
        // if (not is_contig || not is_homogeneous) {
-       //   tmp_buf = (void*)smpi_get_tmp_sendbuffer(nbytes);
+//   tmp_buf = smpi_get_tmp_sendbuffer(nbytes);
 
-         /*            position = 0;*/
-         /*            if (rank == root) {*/
-         /*                mpi_errno =*/
-         /*                    MPIR_Pack_impl(buffer, count, datatype, tmp_buf, nbytes, &position);*/
-         /*                if (mpi_errno)*/
-         /*                    MPIU_ERR_POP(mpi_errno);*/
-         /*            }*/
-       // }
+/*            position = 0;*/
+/*            if (rank == root) {*/
+/*                mpi_errno =*/
+/*                    MPIR_Pack_impl(buffer, count, datatype, tmp_buf, nbytes, &position);*/
+/*                if (mpi_errno)*/
+/*                    MPIU_ERR_POP(mpi_errno);*/
+/*            }*/
+// }
 #ifdef CHANNEL_MRAIL_GEN2
         if ((mv2_enable_zcpy_bcast == 1) &&
               (&MPIR_Pipelined_Bcast_Zcpy_MV2 == MV2_Bcast_function)) {
@@ -662,7 +656,7 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
 
 
 
-int Coll_reduce_mvapich2::reduce( void *sendbuf,
+int Coll_reduce_mvapich2::reduce(const void *sendbuf,
     void *recvbuf,
     int count,
     MPI_Datatype datatype,
@@ -780,7 +774,7 @@ int Coll_reduce_mvapich2::reduce( void *sendbuf,
 }
 
 
-int Coll_reduce_scatter_mvapich2::reduce_scatter(void *sendbuf, void *recvbuf, int *recvcnts,
+int Coll_reduce_scatter_mvapich2::reduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcnts,
     MPI_Datatype datatype, MPI_Op op,
     MPI_Comm comm)
 {
@@ -855,7 +849,7 @@ int Coll_reduce_scatter_mvapich2::reduce_scatter(void *sendbuf, void *recvbuf, i
 
 
 
-int Coll_scatter_mvapich2::scatter(void *sendbuf,
+int Coll_scatter_mvapich2::scatter(const void *sendbuf,
     int sendcnt,
     MPI_Datatype sendtype,
     void *recvbuf,

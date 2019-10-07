@@ -6,13 +6,10 @@
 #ifndef SIMGRID_MC_CHUNKED_DATA_HPP
 #define SIMGRID_MC_CHUNKED_DATA_HPP
 
-#include <cstddef>
-#include <cstdint>
-
-#include <utility>
 #include <vector>
 
 #include "src/mc/mc_forward.hpp"
+#include "src/mc/remote/RemotePtr.hpp"
 #include "src/mc/sosp/PageStore.hpp"
 
 namespace simgrid {
@@ -22,7 +19,7 @@ namespace mc {
  *
  *  In order to save memory when taking memory snapshots, a given byte-string
  *  is split in fixed-size chunks. Identical chunks (either from the same
- *  snapshot or more probably from different snpashots) share the same memory
+ *  snapshot or more probably from different snapshots) share the same memory
  *  storage.
  *
  *  Thus a chunked is represented as a sequence of indices of each chunk.

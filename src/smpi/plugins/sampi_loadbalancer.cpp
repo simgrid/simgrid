@@ -50,7 +50,7 @@ public:
   void kernel(simgrid::xbt::ReplayAction&)
   {
     static std::map<simgrid::s4u::ActorPtr, int> migration_call_counter;
-    static simgrid::s4u::Barrier smpilb_bar(smpi_process_count());
+    static simgrid::s4u::Barrier smpilb_bar(smpi_get_universe_size());
     simgrid::s4u::Host* cur_host = simgrid::s4u::this_actor::get_host();
     simgrid::s4u::Host* migrate_to_host;
 
@@ -136,9 +136,9 @@ void sg_load_balancer_plugin_init()
   static bool done = false;
   if (!done) {
     done = true;
-    simgrid::kernel::activity::ExecImpl::on_completion.connect([](simgrid::kernel::activity::ExecImpl const& activity) {
-      simgrid::smpi::plugin::lb.record_actor_computation(activity.simcalls_.front()->issuer->iface(),
-                                                         activity.surf_action_->get_cost());
+    simgrid::s4u::Exec::on_completion.connect([](simgrid::s4u::Actor const& actor, simgrid::s4u::Exec const& exec) {
+
+      simgrid::smpi::plugin::lb.record_actor_computation(actor, exec.get_cost());
     });
 
     xbt_replay_action_register(

@@ -30,7 +30,8 @@ void MSG_process_userdata_init()
 
   simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::Actor const& actor) {
     // free the data if a function was provided
-    void* userdata = actor.extension<simgrid::msg::ActorUserData>()->get_user_data();
+    auto extension = actor.extension<simgrid::msg::ActorUserData>();
+    void* userdata = extension ? extension->get_user_data() : nullptr;
     if (userdata && msg_global->process_data_cleanup) {
       msg_global->process_data_cleanup(userdata);
     }
@@ -167,43 +168,6 @@ int MSG_process_get_number()
   return SIMIX_process_count();
 }
 
-/** @brief Return the PID of the current process.
- *
- * This function returns the PID of the currently running #msg_process_t.
- */
-int MSG_process_self_PID()
-{
-  smx_actor_t self = SIMIX_process_self();
-  return self == nullptr ? 0 : self->get_pid();
-}
-
-/** @brief Return the PPID of the current process.
- *
- * This function returns the PID of the parent of the currently running #msg_process_t.
- */
-int MSG_process_self_PPID()
-{
-  return MSG_process_get_PPID(MSG_process_self());
-}
-
-/** @brief Return the name of the current process. */
-const char* MSG_process_self_name()
-{
-  return SIMIX_process_self_get_name();
-}
-
-/** @brief Return the current process.
- *
- * This function returns the currently running #msg_process_t.
- */
-msg_process_t MSG_process_self()
-{
-  return SIMIX_process_self()->ciface();
-}
-
-smx_context_t MSG_process_get_smx_ctx(msg_process_t process) { // deprecated -- smx_context_t should die afterward
-  return process->get_impl()->context_.get();
-}
 /** @brief Add a function to the list of "on_exit" functions for the current process.
  *  The on_exit functions are the functions executed when your process is killed.
  *  You should use them to free the data used by your process.
@@ -212,15 +176,4 @@ void MSG_process_on_exit(int_f_int_pvoid_t fun, void* data)
 {
   simgrid::s4u::this_actor::on_exit(
       [fun, data](bool failed) { fun(failed ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS, data); });
-}
-
-/** @brief Take an extra reference on that process to prevent it to be garbage-collected */
-XBT_PUBLIC void MSG_process_ref(msg_process_t process)
-{
-  intrusive_ptr_add_ref(process);
-}
-/** @brief Release a reference on that process so that it can get be garbage-collected */
-XBT_PUBLIC void MSG_process_unref(msg_process_t process)
-{
-  intrusive_ptr_release(process);
 }

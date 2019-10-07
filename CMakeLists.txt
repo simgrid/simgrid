@@ -4,15 +4,15 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/tools/cmake/M
 
 project(SimGrid C CXX)
 
+## Save compiler flags preset with environment variables CFLAGS or CXXFLAGS;
+## they will used within smpicc, smpicxx.
+## Do it early so that we get their genuine values. The same will be done later for Fortran.
+set(SMPI_C_FLAGS "${CMAKE_C_FLAGS}")
+set(SMPI_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #     Check for the compiler        #
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-
-### Need to set rc ccompiler before enable language
-if(WIN32)
-  SET(CMAKE_RC_COMPILER "windres")
-endif()
-
 ## 
 ## Check the C/C++ standard that we need
 ##   See also tools/cmake/Flags.cmake that sets our paranoid warning flags
@@ -22,7 +22,6 @@ CHECK_C_COMPILER_FLAG(-fstack-cleaner HAVE_C_STACK_CLEANER)
 ## Request full debugging flags
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
 
 if (CMAKE_COMPILER_IS_GNUCC)    
   if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.7")
@@ -80,6 +79,10 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
       set(SMPI_Fortran_LIBS "")
       set(SMPI_FLANG 1)
     endif()
+    set(SMPI_Fortran_FLAGS "${SMPI_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS}")
+
+    ## Request debugging flags for Fortran too
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
 
     set(SMPI_FORTRAN 1)
   endif(CMAKE_Fortran_COMPILER)
@@ -91,9 +94,8 @@ endif()
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "22")
-set(SIMGRID_VERSION_PATCH "90")
-set(SIMGRID_VERSION_EXTRA "-DEVEL") # Extra words to add to version string (e.g. -rc1)
+set(SIMGRID_VERSION_MINOR "23")
+set(SIMGRID_VERSION_PATCH "3") # odd => git branch; even => stable release or released snapshot
 
 set(SIMGRID_VERSION_DATE  "2019") # Year for copyright information
 
@@ -205,11 +207,14 @@ include(CheckLibraryExists)
 include(CheckSymbolExists)
 
 set(HAVE_GRAPHVIZ 0)
-include(FindGraphviz)
-
 set(SIMGRID_HAVE_LUA 0)
-if(enable_lua)
-  include(FindLuaSimgrid)
+if(minimal-bindings)
+  message(STATUS "Don't even look for graphviz nor lua, as we build minimal binding libraries.")
+else()
+  include(FindGraphviz)
+  if(enable_lua)
+    include(FindLuaSimgrid)
+  endif()
 endif()
 
 set(SIMGRID_HAVE_NS3 0)
@@ -221,7 +226,7 @@ if(enable_ns3)
       set(SIMGRID_DEP "${SIMGRID_DEP} -lns${NS3_VERSION}-${lib}${NS3_SUFFIX}")
     endforeach()
   else()
-    message(FATAL_ERROR "Cannot find NS3. Please install it (apt-get install ns3 libns3-dev) or disable that cmake option")
+    message(FATAL_ERROR "Cannot find ns-3. Please install it (apt-get install ns3 libns3-dev) or disable that cmake option")
   endif()
 endif()
 
@@ -238,44 +243,60 @@ if(enable_smpi_papi)
 endif()
 
 # But we do need the core of Boost
-find_package(Boost 1.48)
-if(Boost_FOUND)
-  include_directories(${Boost_INCLUDE_DIRS})
-else()
-  if(APPLE)
-    message(FATAL_ERROR "Boost libraries not found. Try to install them with 'sudo fink install boost1.53.nopython' (check the exact name with 'fink list boost') or 'sudo brew install boost'")
-  else()
-    message(FATAL_ERROR "Boost libraries not found. Install libboost-dev (>= 1.48.0).")
-  endif()
-endif()
-
 # cmake before 3.13.1 does not know about stacktrace components. Fix it.
 # Usable components: https://www.boost.org/doc/libs/1_65_1/doc/html/stacktrace/configuration_and_build.html
 set(_Boost_STACKTRACE_HEADERS           "boost/stacktrace.hpp")
 set(_Boost_STACKTRACE_BACKTRACE_HEADERS "boost/stacktrace.hpp")
+set(_Boost_STACKTRACE_ADDR2LINE_HEADERS "boost/stacktrace.hpp")
 
-find_package(Boost 1.59 COMPONENTS context stacktrace_backtrace)
-set(Boost_FOUND 1) # These components are optionals
-message(STATUS "Mandatory components found. SimGrid is compilable.")
-message(STATUS "Looking for optional Boost components:")
+  if(minimal-bindings) # When we want a minimal jarfile, don't even search for boost optional components
+    message(STATUS "Don't even look for boost optional components, as we build minimal binding libraries.")
+    find_package(Boost 1.48)
+  else()
+    find_package(Boost 1.59 OPTIONAL_COMPONENTS context stacktrace_backtrace stacktrace_addr2line)
+  endif()
+  if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    message(STATUS "Mandatory components found. SimGrid is compilable.")
+    if (NOT minimal-bindings)
+      message(STATUS "Looking for optional Boost components:")
+      set(Boost_FOUND 1) # These components are optionals
+      CHECK_INCLUDE_FILE("backtrace.h" HAVE_BACKTRACE_H) # check that backtrace is actually possible
+      if (Boost_STACKTRACE_BACKTRACE_FOUND AND HAVE_BACKTRACE_H)
+        message (STATUS "  stacktrace: found the fast 'backtrace' implementation. Activating human-readable stack traces.")
+        set(HAVE_BOOST_STACKTRACE_BACKTRACE 1)
+      else()
+        set(HAVE_BOOST_STACKTRACE_BACKTRACE 0)
+        if (Boost_STACKTRACE_ADDR2LINE_FOUND)
+          message (STATUS "  stacktrace: found the slow 'addr2line' implementation. Activating human-readable stack traces.")
+          set(HAVE_BOOST_STACKTRACE_ADDR2LINE 1)
+        else()
+          message (STATUS "  stacktrace: MISSING. Install libboost-stacktrace-dev to display the stacktraces.")
+          set(HAVE_BOOST_STACKTRACE_ADDR2LINE 0)
+        endif()
+      endif()
 
-if (Boost_STACKTRACE_BACKTRACE_FOUND)
-  message (STATUS "  stacktrace: found. Activating human-readable stack traces.")
-  set(HAVE_BOOST_STACKTRACE 1)
-  set(SIMGRID_DEP "${SIMGRID_DEP} -lboost_stacktrace_backtrace")
-else()
-  message (STATUS "  stacktrace: MISSING. Install libboost-stacktrace-dev to display the stacktraces.")
-  set(HAVE_BOOST_STACKTRACE 0)
-endif()
-
-if(Boost_CONTEXT_FOUND)
-  message (STATUS "  context: found. Activating Boost contexts.")
-  set(HAVE_BOOST_CONTEXTS 1)
-else()
-  message (STATUS "  context: MISSING. Install libboost-context-dev for this optional feature.")
-  set(HAVE_BOOST_CONTEXTS 0)
-endif()
-
+      if(Boost_CONTEXT_FOUND)
+        message (STATUS "  context: found. Activating Boost contexts.")
+        set(HAVE_BOOST_CONTEXTS 1)
+      else()
+        message (STATUS "  context: MISSING. Install libboost-context-dev for this optional feature.")
+        set(HAVE_BOOST_CONTEXTS 0)
+      endif()
+    endif()
+  else()
+    if(APPLE)
+      message(FATAL_ERROR "Boost libraries not found. Try to install them with 'sudo fink install boost1.53.nopython' (check the exact name with 'fink list boost') or 'sudo brew install boost'")
+    else()
+      find_package(Boost 1.48) #try without optional libraries
+      if(NOT Boost_FOUND)
+        message(FATAL_ERROR "Boost libraries not found. Install libboost-dev (>= 1.48.0).")
+      else()
+        include_directories(${Boost_INCLUDE_DIRS})
+        message(STATUS "Mandatory components found. SimGrid is compilable.")
+      endif()
+    endif()
+  endif() 
 
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
@@ -352,12 +373,19 @@ else()
   SET(SIMGRID_HAVE_MALLOCATOR 0)
 endif()
 
-include(FindLibunwind)
-if(HAVE_LIBUNWIND)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} ${LIBUNWIND_LIBRARIES}")
-else()
+if (minimal-bindings)
+  message(STATUS "Don't look for libunwind as we build minimal binding libraries.")
   if(enable_model-checking)
-    message(FATAL_ERROR "Please install libunwind-dev libdw-dev libelf-dev libevent-dev if you want to compile the SimGrid model checker.")
+    message(FATAL_ERROR "You cannot enable model-checking and minimal-bindings at the same time.")
+  endif()
+else()
+  include(FindLibunwind)
+  if(HAVE_LIBUNWIND)
+    SET(SIMGRID_DEP "${SIMGRID_DEP} ${LIBUNWIND_LIBRARIES}")
+  else()
+    if(enable_model-checking)
+      message(FATAL_ERROR "Please install libunwind-dev libdw-dev libelf-dev libevent-dev if you want to compile the SimGrid model checker.")
+    endif()
   endif()
 endif()
 
@@ -369,7 +397,7 @@ if(enable_model-checking)
   set(SIMGRID_DEP "${SIMGRID_DEP} ${LIBEVENT_LIBRARIES} ${LIBELF_LIBRARIES} ${LIBDW_LIBRARIES}")
   set(SIMGRID_HAVE_MC 1)
   if("${CMAKE_SYSTEM}" MATCHES "FreeBSD" AND enable_java)
-    message(WARNING "FreeBSD + Model-Checking + Java = too much for now. Disabling java")
+    message(WARNING "FreeBSD + Model-Checking + Java = too much for now. Disabling the Java bindings.")
     set(enable_java FALSE)
   endif()
 else()
@@ -380,12 +408,14 @@ mark_as_advanced(PATH_LIBDW_H)
 mark_as_advanced(PATH_LIBDW_LIB)
 
 if (enable_model-checking AND enable_ns3)
-  message(FATAL_ERROR "Cannot activate both model-checking and NS3 bindings: NS3 pull too much dependencies for the MC to work")
+  message(FATAL_ERROR "Cannot activate both model-checking and ns-3 bindings: ns-3 pull too much dependencies for the MC to work")
 endif()
+
+get_property(known_features GLOBAL PROPERTY CMAKE_CXX_KNOWN_FEATURES)
 
 if(enable_smpi)
   SET(HAVE_SMPI 1)
-  if("${CMAKE_SYSTEM}" MATCHES "Darwin|FreeBSD|Linux")
+  if(NOT WIN32)
     SET(HAVE_PRIVATIZATION 1)
   else()
     message (STATUS "Warning:  no support for SMPI automatic privatization on this platform")
@@ -515,7 +545,7 @@ set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=\"${CMAKE_INSTALL_PREFIX}/lib")
 if(NS3_LIBRARY_PATH)
   set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:${NS3_LIBRARY_PATH}")
 endif()
-set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"")
+set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"")
 set(SMPIMAIN ${libdir}/simgrid/smpimain)
 set(SMPIREPLAYMAIN ${libdir}/simgrid/smpireplaymain)
 
@@ -544,7 +574,7 @@ set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=\"${CMAKE_BINARY_DIR}/lib")
 if(NS3_LIBRARY_PATH)
   set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:${NS3_LIBRARY_PATH}")
 endif()
-set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"")
+set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"")
 set(SMPIMAIN ${CMAKE_BINARY_DIR}/lib/simgrid/smpimain)
 set(SMPIREPLAYMAIN ${CMAKE_BINARY_DIR}/lib/simgrid/smpireplaymain)
 
@@ -745,49 +775,64 @@ if(enable_java)
   include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Java.cmake)
 endif()
 
+if (enable_model-checking AND (NOT ("cxx_std_14" IN_LIST known_features)))
+  message(WARNING "C++14 not found. The model-checker will use a slow hash function. You should upgrade your compiler")
+  set(SG_HAVE_CPP14 0)
+else()
+  set(SG_HAVE_CPP14 1)
+  set_property(TARGET simgrid PROPERTY CXX_STANDARD 14)    
+endif()
+
 # Python binding (with pybind11)
 ################
 # Our usage of pybind11::overload_cast mandates C++14
-get_property(known_features GLOBAL PROPERTY CMAKE_CXX_KNOWN_FEATURES)
+if((NOT DEFINED enable_python) OR enable_python)
+  if("cxx_std_14" IN_LIST known_features)
 
-if("cxx_std_14" IN_LIST known_features)
+    if(EXISTS ${CMAKE_HOME_DIRECTORY}/pybind11) # Try to use a local copy of pybind11, if any
+      message(STATUS "Use the internal copy of pybind11 (using C++14).")
+      add_subdirectory(${CMAKE_HOME_DIRECTORY}/pybind11)
+      set(pybind11_FOUND ON)
 
-  if(EXISTS ${CMAKE_HOME_DIRECTORY}/pybind11) # Try to use a local copy of pybind11, if any
-    message(STATUS "Use the internal copy of pybind11 (using C++14).")
-    add_subdirectory(${CMAKE_HOME_DIRECTORY}/pybind11)
-    set(pybind11_FOUND ON)
-    
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/pybind11/tools/)
-    set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4)
-    find_package(PythonLibsNew ${PYBIND11_PYTHON_VERSION} REQUIRED)
-    
+      set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/pybind11/tools/)
+      set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4)
+      find_package(PythonLibsNew ${PYBIND11_PYTHON_VERSION} REQUIRED)
+
+    else()
+      find_package(pybind11 CONFIG)
+      if (pybind11_VERSION VERSION_LESS 2.2)
+        message(STATUS "SimGrid needs at least v2.2 of pybind11. Disabling the Python bindings (found version: ${pybind11_VERSION}).")
+        set(pybind11_FOUND OFF)
+      endif()
+    endif()
+
+    if(NOT PYTHONLIBS_FOUND)
+      message(STATUS "Python libs not found. Turn pybind11 off.")
+
+      set(pybind11_FOUND OFF)
+    endif()
+
   else()
-    find_package(pybind11 2.2.0)
-  endif()
-  
-  if(NOT PYTHONLIBS_FOUND)
-    message(STATUS "Python libs not found. Turn pybind11 off.")
-
+    message(STATUS "No support for C++14 detected, don't even search for pybind11.")
     set(pybind11_FOUND OFF)
   endif()
-  
-else()
-  message(STATUS "No support for C++14 detected, don't even search for pybind11.")
-  set(pybind11_FOUND OFF)
+  unset(known_features)
 endif()
-unset(known_features)
 
 option(enable_python "Whether the Python bindings are activated." ${pybind11_FOUND}) # ON by default if dependencies are met
 
 if("${CMAKE_SYSTEM}" MATCHES "FreeBSD" AND enable_model-checking AND enable_python)
-  message(WARNING "FreeBSD + Model-Checking + Python = too much for now. Disabling python.")
+  message(WARNING "FreeBSD + Model-Checking + Python = too much for now. Disabling the Python bindings.")
   set(enable_python FALSE)
 endif()
 
 if(enable_python)
   if(pybind11_FOUND)
     message(STATUS "Found pybind11, with C++14.")
-    pybind11_add_module(python-bindings src/bindings/python/simgrid_python.cpp)
+    if(NOT enable_lto)
+      set(pybind11_options NO_EXTRAS)
+    endif()
+    pybind11_add_module(python-bindings src/bindings/python/simgrid_python.cpp ${pybind11_options})
     target_compile_features(python-bindings PRIVATE cxx_std_14)
     target_link_libraries(python-bindings PUBLIC simgrid)
     set_target_properties(python-bindings PROPERTIES
@@ -884,9 +929,9 @@ message("        with LTO ....................: ${enable_lto}")
 message("")
 
 if (SIMGRID_HAVE_NS3)
-  message("        Compile NS-3 ................: yes (path: ${NS3_PATH})")
+  message("        Compile ns-3 ................: yes (path: ${NS3_PATH})")
 else()
-  message("        Compile NS-3 ................: NO  (hint: ${NS3_HINT})")
+  message("        Compile ns-3 ................: NO  (hint: ${NS3_HINT})")
 endif()
 
 if (${Java_FOUND})

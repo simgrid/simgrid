@@ -94,18 +94,8 @@ XBT_PUBLIC double SIMIX_timer_get_date(smx_timer_t timer);
 XBT_PUBLIC void SIMIX_display_process_status();
 SG_END_DECL()
 
-/******************************* Environment **********************************/
-SG_BEGIN_DECL()
-XBT_ATTRIB_DEPRECATED_v324("Please use simgrid_load_platform()") XBT_PUBLIC
-    void SIMIX_create_environment(const char* file);
-SG_END_DECL()
-
 /******************************** Deployment **********************************/
 SG_BEGIN_DECL()
-XBT_ATTRIB_DEPRECATED_v324("Please use simgrid_register_function()") XBT_PUBLIC
-    void SIMIX_function_register(const char* name, xbt_main_func_t code);
-XBT_ATTRIB_DEPRECATED_v324("Please use simgrid_load_deployment()") XBT_PUBLIC
-    void SIMIX_launch_application(const char* file);
 XBT_PUBLIC void SIMIX_function_register_default(xbt_main_func_t code);
 
 XBT_PUBLIC void SIMIX_init_application();
@@ -180,18 +170,18 @@ XBT_ATTRIB_DEPRECATED_v325("Please use CommImpl::finish()") XBT_PUBLIC void SIMI
 /******************************* Host simcalls ********************************/
 #ifdef __cplusplus
 XBT_PUBLIC e_smx_state_t simcall_execution_wait(const smx_activity_t& execution);
-XBT_PUBLIC e_smx_state_t simcall_execution_test(const smx_activity_t& execution);
+XBT_PUBLIC unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count,
+                                                      double timeout);
+XBT_PUBLIC bool simcall_execution_test(const smx_activity_t& execution);
 #endif
 
 /**************************** Process simcalls ********************************/
 SG_BEGIN_DECL()
-XBT_ATTRIB_DEPRECATED_v324("Please use ActorImpl::throw_exception") XBT_PUBLIC
-    void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const char* mesg);
-
 void simcall_process_set_data(smx_actor_t process, void* data);
-/* Process handling */
-XBT_PUBLIC void simcall_process_suspend(smx_actor_t process);
-XBT_PUBLIC void simcall_process_join(smx_actor_t process, double timeout);
+XBT_ATTRIB_DEPRECATED_v327("Please use Actor::suspend()") XBT_PUBLIC void simcall_process_suspend(smx_actor_t process);
+
+XBT_ATTRIB_DEPRECATED_v327("Please use Actor::join()") XBT_PUBLIC
+    void simcall_process_join(smx_actor_t process, double timeout);
 
 /* Sleep control */
 XBT_PUBLIC e_smx_state_t simcall_process_sleep(double duration);
@@ -211,7 +201,7 @@ XBT_PUBLIC smx_activity_t simcall_comm_isend(smx_actor_t sender, smx_mailbox_t m
                                              int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                                              void (*clean_fun)(void*),
                                              void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
-                                             void* data, int detached);
+                                             void* data, bool detached);
 
 XBT_PUBLIC void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
                                   int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
@@ -233,7 +223,7 @@ XBT_PUBLIC unsigned int simcall_comm_waitany(smx_activity_t comms[], size_t coun
 XBT_PUBLIC unsigned int simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count,
                                              double timeout);
 XBT_PUBLIC void simcall_comm_wait(const smx_activity_t& comm, double timeout);
-XBT_PUBLIC int simcall_comm_test(const smx_activity_t& comm);
+XBT_PUBLIC bool simcall_comm_test(const smx_activity_t& comm);
 XBT_PUBLIC int simcall_comm_testany(smx_activity_t comms[], size_t count);
 XBT_PUBLIC int simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count);
 #endif
@@ -271,16 +261,14 @@ XBT_ATTRIB_DEPRECATED_v325("Please use Comm::cancel()") XBT_PUBLIC void simcall_
 
 XBT_ATTRIB_DEPRECATED_v325("Please use Exec::cancel()") XBT_PUBLIC
     void simcall_execution_cancel(smx_activity_t execution);
-XBT_ATTRIB_DEPRECATED_v325("Please use Exec::set_priority()") XBT_PUBLIC
-    void simcall_execution_set_priority(smx_activity_t execution, double priority);
 XBT_ATTRIB_DEPRECATED_v325("Please use Exec::set_bound()") XBT_PUBLIC
     void simcall_execution_set_bound(smx_activity_t execution, double bound);
 SG_END_DECL()
 
 #ifdef __cplusplus
 XBT_ATTRIB_DEPRECATED_v325("Please use Exec::start()") XBT_PUBLIC smx_activity_t
-    simcall_execution_start(const std::string& name, const std::string& category, double flops_amount, double priority,
-                            double bound, sg_host_t host);
+    simcall_execution_start(const std::string& name, const std::string& category, double flops_amount,
+                            double sharing_penalty, double bound, sg_host_t host);
 
 // Should be deprecated in v325 too but is still used in other deprecated calls
 XBT_PUBLIC smx_activity_t simcall_execution_parallel_start(const std::string& name, int host_nb,

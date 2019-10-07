@@ -7,15 +7,14 @@
 #ifndef SIMGRID_MC_SAFETY_CHECKER_HPP
 #define SIMGRID_MC_SAFETY_CHECKER_HPP
 
+#include "src/mc/VisitedState.hpp"
+#include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_safety.hpp"
+
 #include <list>
 #include <memory>
 #include <string>
 #include <vector>
-
-#include "src/mc/VisitedState.hpp"
-#include "src/mc/checker/Checker.hpp"
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_safety.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -26,19 +25,20 @@ public:
   explicit SafetyChecker(Session& session);
   ~SafetyChecker() = default;
   void run() override;
-  RecordTrace getRecordTrace() override;
-  std::vector<std::string> getTextualTrace() override;
-  void logState() override;
+  RecordTrace get_record_trace() override;
+  std::vector<std::string> get_textual_trace() override;
+  void log_state() override;
+
 private:
-  void checkNonTermination(simgrid::mc::State* current_state);
+  void check_non_termination(simgrid::mc::State* current_state);
   void backtrack();
-  void restoreState();
+  void restore_state();
 
   /** Stack representing the position in the exploration graph */
   std::list<std::unique_ptr<simgrid::mc::State>> stack_;
-  simgrid::mc::VisitedStates visitedStates_;
-  std::unique_ptr<simgrid::mc::VisitedState> visitedState_;
-  unsigned long expandedStatesCount_ = 0;
+  simgrid::mc::VisitedStates visited_states_;
+  std::unique_ptr<simgrid::mc::VisitedState> visited_state_;
+  unsigned long expanded_states_count_ = 0;
 };
 
 }

@@ -69,9 +69,9 @@ public final class NativeLib {
 		
 		System.err.println("\nCannot load the bindings to the "+name+" library in path "+getPath()+" and no usable SimGrid installation found on disk.");
 		if (cause != null) {
-			if (cause.getMessage().matches(".*libcgraph.so.*"))
+			if (cause.getMessage().contains("libcgraph.so"))
 				System.err.println("HINT: Try to install the libcgraph package (sudo apt-get install libcgraph).");
-			else if (cause.getMessage().matches(".*libboost_context.so.*"))
+			else if (cause.getMessage().contains("libboost_context.so"))
 				System.err.println("HINT: Try to install the boost-context package (sudo apt-get install libboost-context-dev).");
 			else
 				System.err.println("Try to install the missing dependencies, if any. Read carefully the following error message.");
@@ -163,9 +163,9 @@ public final class NativeLib {
 		public void run() {
 			try {
 				for (File f : dir.listFiles())
-					if (! f.delete() && !f.getAbsolutePath().contains("appveyor")) // Be silent on AppVeyor to not break the tests. Ugly trick :)
+					if (! f.delete() && !f.getAbsolutePath().contains("travis") && !f.getAbsolutePath().contains("appveyor")) // Be silent on Travis to not break the tests. Ugly trick :)
 						System.out.println("Unable to clean temporary file "+f.getAbsolutePath()+" during shutdown.");
-				if (! dir.delete() && !dir.getAbsolutePath().contains("appveyor") )
+				if (! dir.delete() && !dir.getAbsolutePath().contains("travis") && !dir.getAbsolutePath().contains("appveyor"))
 					System.out.println("Unable to clean temporary file "+dir.getAbsolutePath()+" during shutdown.");			    	
 			} catch(Exception e) {
 				System.out.println("Error while cleaning temporary file "+dir.getAbsolutePath()+" during shutdown: "+e.getCause());

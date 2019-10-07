@@ -1,10 +1,10 @@
 #!/usr/bin/env tesh
 
-p Testing option --cfg=simix/breakpoint
+p Testing option --cfg=debug/breakpoint
 
 ! expect signal SIGTRAP
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-app-pingpong$EXEEXT ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=simix/breakpoint:3.1416
-> [  0.000000] (0:maestro@) Configuration change: Set 'simix/breakpoint' to '3.1416'
+$ ${bindir:=.}/s4u-app-pingpong ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=debug/breakpoint:3.1416
+> [  0.000000] (0:maestro@) Configuration change: Set 'debug/breakpoint' to '3.1416'
 > [  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
 > [  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1
 > [  0.019014] (2:ponger@Jupiter) Task received : small communication (latency bound)

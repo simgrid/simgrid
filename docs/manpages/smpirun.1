@@ -11,7 +11,11 @@ arguments. It is intended to be easy to use to regular MPI users.
 .SH MANDATORY PARAMETERS
 .TP
 \fB\-platform\fR <platform.xml>
-XML file describing the platform on which we want to deploy the program 
+XML file describing the platform on which we want to deploy the program.
+Please refer to the
+.UR https://simgrid.org/doc/latest/Tutorial_MPI_Applications.html#describing-your-platform
+online documentation.
+.UE
 .TP
 \fB\-hostfile\fR, \fB\-machinefile\fR <hostfile>
 Hostfile listing all the machines in use
@@ -21,7 +25,7 @@ be mixed with the configuration options described in the next section.
 
 .TP
 \fB\-help\fR
-Print the usage and a résumé of the available options
+Print the usage and a summary of the available options.
 .TP
 \fB\-keep-temps\fR
 Do not remove the generated files after execution.
@@ -66,12 +70,15 @@ Trace resource utilization.
 .TP
 \fB\-trace-file\fR <tracefile>
 Name of the tracefile
+.TP
+\fB\-quiet\fR 
+Reduce output verbosity. This is useful to make tests reproducible.
 
 .SH SIMULATION OPTIONS
 You can change many simulation parameter on the command line by passing
 \fB--cfg\fR=\fIparameter\fR:\fIvalue\fR after the program name. 
 A full list of existing parameters and their meaning can be found at
-http://simgrid.gforge.inria.fr/simgrid/latest/doc/options.html 
+https://simgrid.org/doc/latest/Configuring_SimGrid.html
 
 Here are some options commonly used with SMPI:
 .TP

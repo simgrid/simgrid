@@ -103,7 +103,7 @@ int PMPI_Win_attach(MPI_Win win, void *base, MPI_Aint size){
   return retval;
 }
 
-int PMPI_Win_detach(MPI_Win win, void* base)
+int PMPI_Win_detach(MPI_Win win, const void* base)
 {
   int retval = 0;
   smpi_bench_end();
@@ -132,7 +132,7 @@ int PMPI_Win_free( MPI_Win* win){
   return retval;
 }
 
-int PMPI_Win_set_name(MPI_Win  win, char * name)
+int PMPI_Win_set_name(MPI_Win  win, const char * name)
 {
   if (win == MPI_WIN_NULL)  {
     return MPI_ERR_TYPE;
@@ -280,7 +280,7 @@ int PMPI_Rget( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
   return retval;
 }
 
-int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+int PMPI_Put(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
   int retval = 0;
   smpi_bench_end();
@@ -320,7 +320,7 @@ int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   return retval;
 }
 
-int PMPI_Rput( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+int PMPI_Rput(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request* request){
   int retval = 0;
   smpi_bench_end();
@@ -363,7 +363,7 @@ int PMPI_Rput( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
   return retval;
 }
 
-int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+int PMPI_Accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
   int retval = 0;
   smpi_bench_end();
@@ -402,7 +402,7 @@ int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   return retval;
 }
 
-int PMPI_Raccumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+int PMPI_Raccumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
   int retval = 0;
   smpi_bench_end();
@@ -445,7 +445,7 @@ int PMPI_Raccumulate( void *origin_addr, int origin_count, MPI_Datatype origin_d
   return retval;
 }
 
-int PMPI_Get_accumulate(void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
+int PMPI_Get_accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
 int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
 MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
   int retval = 0;
@@ -489,7 +489,7 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
 }
 
 
-int PMPI_Rget_accumulate(void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
+int PMPI_Rget_accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
 int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
 MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
   int retval = 0;
@@ -535,11 +535,11 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
   return retval;
 }
 
-int PMPI_Fetch_and_op(void *origin_addr, void *result_addr, MPI_Datatype dtype, int target_rank, MPI_Aint target_disp, MPI_Op op, MPI_Win win){
+int PMPI_Fetch_and_op(const void *origin_addr, void *result_addr, MPI_Datatype dtype, int target_rank, MPI_Aint target_disp, MPI_Op op, MPI_Win win){
   return PMPI_Get_accumulate(origin_addr, origin_addr==nullptr?0:1, dtype, result_addr, 1, dtype, target_rank, target_disp, 1, dtype, op, win);
 }
 
-int PMPI_Compare_and_swap(void* origin_addr, void* compare_addr, void* result_addr, MPI_Datatype datatype,
+int PMPI_Compare_and_swap(const void* origin_addr, void* compare_addr, void* result_addr, MPI_Datatype datatype,
                           int target_rank, MPI_Aint target_disp, MPI_Win win)
 {
   int retval = 0;
@@ -784,7 +784,7 @@ int PMPI_Win_shared_query (MPI_Win win, int rank, MPI_Aint* size, int* disp_unit
 int PMPI_Win_get_attr (MPI_Win win, int keyval, void *attribute_val, int* flag)
 {
   static MPI_Aint size;
-  static int disp_unit;
+  static MPI_Aint disp_unit;
   if (win==MPI_WIN_NULL)
     return MPI_ERR_TYPE;
   else{
@@ -800,7 +800,7 @@ int PMPI_Win_get_attr (MPI_Win win, int keyval, void *attribute_val, int* flag)
       return MPI_SUCCESS;
     case MPI_WIN_DISP_UNIT :
       disp_unit=win->disp_unit();
-      *static_cast<int**>(attribute_val)  = &disp_unit;
+      *static_cast<MPI_Aint**>(attribute_val)  = &disp_unit;
       *flag = 1;
       return MPI_SUCCESS;
     default:
@@ -839,9 +839,46 @@ int PMPI_Win_free_keyval(int* keyval) {
 }
 
 MPI_Win PMPI_Win_f2c(MPI_Fint win){
+  if(win==-1)
+    return MPI_WIN_NULL;
   return static_cast<MPI_Win>(simgrid::smpi::Win::f2c(win));
 }
 
 MPI_Fint PMPI_Win_c2f(MPI_Win win){
+  if(win==MPI_WIN_NULL)
+    return -1;
   return win->c2f();
+}
+
+int PMPI_Win_create_errhandler(MPI_Win_errhandler_function* function, MPI_Errhandler* errhandler){
+  *errhandler=new simgrid::smpi::Errhandler(function);
+  return MPI_SUCCESS;
+}
+
+int PMPI_Win_get_errhandler(MPI_Win win, MPI_Errhandler* errhandler){
+  if (win == nullptr) {
+    return MPI_ERR_WIN;
+  } else if (errhandler==nullptr){
+    return MPI_ERR_ARG;
+  }
+  *errhandler=win->errhandler();
+  return MPI_SUCCESS;
+}
+
+int PMPI_Win_set_errhandler(MPI_Win win, MPI_Errhandler errhandler){
+  if (win == nullptr) {
+    return MPI_ERR_WIN;
+  } else if (errhandler==nullptr){
+    return MPI_ERR_ARG;
+  }
+  win->set_errhandler(errhandler);
+  return MPI_SUCCESS;
+}
+
+int PMPI_Win_call_errhandler(MPI_Win win,int errorcode){
+  if (win == nullptr) {
+    return MPI_ERR_WIN;
+  }
+  win->errhandler()->call(win, errorcode);
+  return MPI_SUCCESS;
 }

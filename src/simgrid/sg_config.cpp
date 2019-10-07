@@ -41,15 +41,6 @@ void sg_config_continue_after_help()
  */
 int _sg_cfg_init_status = 0;
 
-/* instruct the upper layer (simix or simdag) to exit as soon as possible */
-bool _sg_cfg_exit_asap = false;
-
-#define sg_cfg_exit_early()                                                                                            \
-  do {                                                                                                                 \
-    _sg_cfg_exit_asap = true;                                                                                          \
-    return;                                                                                                            \
-  } while (0)
-
 /* Parse the command line, looking for options */
 static void sg_config_cmd_line(int *argc, char **argv)
 {
@@ -72,41 +63,39 @@ static void sg_config_cmd_line(int *argc, char **argv)
       sg_version();
       shall_exit = true;
     } else if (parse_args && (not strcmp(argv[i], "--cfg-help") || not strcmp(argv[i], "--help"))) {
-      printf("Description of the configuration accepted by this simulator:\n");
+      XBT_HELP("Description of the configuration accepted by this simulator:");
       simgrid::config::help();
-      printf(
-          "\n"
-          "Each of these configurations can be used by adding\n"
-          "    --cfg=<option name>:<option value>\n"
-          "to the command line.\n"
-          "\n"
-          "For more information, please refer to:\n"
-          "   --help-aliases for the list of all option aliases.\n"
-          "   --help-logs and --help-log-categories for the details of logging output.\n"
-          "   --help-models for a list of all models known by this simulator.\n"
-          "   --help-tracing for the details of all tracing options known by this simulator.\n"
-          "   --version to get SimGrid version information.\n"
-          "\n"
-        );
+      XBT_HELP("\n"
+               "Each of these configurations can be used by adding\n"
+               "    --cfg=<option name>:<option value>\n"
+               "to the command line. Try passing \"help\" as a value\n"
+               "to get the list of values accepted by a given option.\n"
+               "For example, \"--cfg=plugin:help\" gives you the list of\n"
+               "plugins available in your installation of SimGrid.\n"
+               "\n"
+               "For more information, please refer to:\n"
+               "   --help-aliases for the list of all option aliases.\n"
+               "   --help-logs and --help-log-categories for the details of logging output.\n"
+               "   --help-models for a list of all models known by this simulator.\n"
+               "   --help-tracing for the details of all tracing options known by this simulator.\n"
+               "   --version to get SimGrid version information.\n");
       shall_exit = not cfg_continue_after_help;
       argv[j++]  = argv[i]; // Preserve the --help in argv just in case someone else wants to see it
     } else if (parse_args && not strcmp(argv[i], "--help-aliases")) {
-      printf("Here is a list of all deprecated option names, with their replacement.\n");
+      XBT_HELP("Here is a list of all deprecated option names, with their replacement.");
       simgrid::config::show_aliases();
-      printf("Please consider using the recent names\n");
+      XBT_HELP("Please consider using the recent names");
       shall_exit = true;
     } else if (parse_args && not strcmp(argv[i], "--help-models")) {
       model_help("host", surf_host_model_description);
-      printf("\n");
+      XBT_HELP("%s", "");
       model_help("CPU", surf_cpu_model_description);
-      printf("\n");
+      XBT_HELP("%s", "");
       model_help("network", surf_network_model_description);
-      printf("\nLong description of all optimization levels accepted by the models of this simulator:\n");
-      for (int k = 0; surf_optimization_mode_description[k].name; k++)
-        printf("  %s: %s\n",
-               surf_optimization_mode_description[k].name,
-               surf_optimization_mode_description[k].description);
-      printf("Both network and CPU models have 'Lazy' as default optimization level\n\n");
+      XBT_HELP("\nLong description of all optimization levels accepted by the models of this simulator:");
+      for (auto const& item : surf_optimization_mode_description)
+        XBT_HELP("  %s: %s", item.name, item.description);
+      XBT_HELP("Both network and CPU models have 'Lazy' as default optimization level\n");
       shall_exit = true;
     } else if (parse_args && not strcmp(argv[i], "--help-tracing")) {
       TRACE_help();
@@ -120,7 +109,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
     *argc = j;
   }
   if (shall_exit)
-    sg_cfg_exit_early();
+    exit(0);
 }
 
 /* callback of the plugin variable */
@@ -132,12 +121,12 @@ static void _sg_cfg_cb__plugin(const std::string& value)
     return;
 
   if (value == "help") {
-    model_help("plugin", surf_plugin_description);
-    sg_cfg_exit_early();
+    model_help("plugin", *surf_plugin_description);
+    exit(0);
   }
 
-  int plugin_id = find_model_description(surf_plugin_description, value);
-  surf_plugin_description[plugin_id].model_init_preparse();
+  int plugin_id = find_model_description(*surf_plugin_description, value);
+  (*surf_plugin_description)[plugin_id].model_init_preparse();
 }
 
 /* callback of the host/model variable */
@@ -147,7 +136,7 @@ static void _sg_cfg_cb__host_model(const std::string& value)
 
   if (value == "help") {
     model_help("host", surf_host_model_description);
-    sg_cfg_exit_early();
+    exit(0);
   }
 
   /* Make sure that the model exists */
@@ -161,7 +150,7 @@ static void _sg_cfg_cb__cpu_model(const std::string& value)
 
   if (value == "help") {
     model_help("CPU", surf_cpu_model_description);
-    sg_cfg_exit_early();
+    exit(0);
   }
 
   /* New Module missing */
@@ -175,21 +164,33 @@ static void _sg_cfg_cb__optimization_mode(const std::string& value)
 
   if (value == "help") {
     model_help("optimization", surf_optimization_mode_description);
-    sg_cfg_exit_early();
+    exit(0);
   }
 
   /* New Module missing */
   find_model_description(surf_optimization_mode_description, value);
 }
 
+static void _sg_cfg_cb__disk_model(const std::string& value)
+{
+  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
+
+  if (value == "help") {
+    model_help("disk", surf_disk_model_description);
+    exit(0);
+  }
+
+  find_model_description(surf_disk_model_description, value);
+}
+
 /* callback of the cpu/model variable */
-static void _sg_cfg_cb__storage_mode(const std::string& value)
+static void _sg_cfg_cb__storage_model(const std::string& value)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   if (value == "help") {
     model_help("storage", surf_storage_model_description);
-    sg_cfg_exit_early();
+    exit(0);
   }
 
   find_model_description(surf_storage_model_description, value);
@@ -202,7 +203,7 @@ static void _sg_cfg_cb__network_model(const std::string& value)
 
   if (value == "help") {
     model_help("network", surf_network_model_description);
-    sg_cfg_exit_early();
+    exit(0);
   }
 
   /* New Module missing */
@@ -224,28 +225,24 @@ static void _sg_cfg_cb_contexts_parallel_mode(const std::string& mode_name)
 }
 
 /* build description line with possible values */
-static void describe_model(char *result,int resultsize,
-                           const s_surf_model_description_t model_description[],
-                           const char *name,
-                           const char *description)
+static void declare_model_flag(const std::string& name, const std::string& value,
+                               const std::function<void(std::string const&)>& callback,
+                               const std::vector<surf_model_description_t>& model_description, const std::string& type,
+                               const std::string& descr)
 {
-  result[0] = '\0';
-  char *p = result;
-  p += snprintf(result,resultsize-1, "%s. Possible values: %s", description,
-            model_description[0].name ? model_description[0].name : "n/a");
-  for (int i = 1; model_description[i].name; i++)
-    p += snprintf(p,resultsize-(p-result)-1, ", %s", model_description[i].name);
-  p += snprintf(p,resultsize-(p-result)-1, ".\n       (use 'help' as a value to see the long description of each %s)", name);
-
-  xbt_assert(p<result+resultsize-1,"Buffer too small to display the model description of %s",name);
+  std::string description = descr + ". Possible values: ";
+  std::string sep         = "";
+  for (auto const& item : model_description) {
+    description += sep + item.name;
+    sep = ", ";
+  }
+  description += ".\n       (use 'help' as a value to see the long description of each " + type + ")";
+  simgrid::config::declare_flag<std::string>(name, description, value, callback);
 }
 
 /* create the config set, register what should be and parse the command line*/
 void sg_config_init(int *argc, char **argv)
 {
-  const int descsize = 1024;
-  char description[descsize];
-
   /* Create the configuration support */
   if (_sg_cfg_init_status != 0) { /* Only create stuff if not already inited */
     XBT_WARN("Call to sg_config_init() after initialization ignored");
@@ -253,24 +250,25 @@ void sg_config_init(int *argc, char **argv)
   }
 
   /* Plugins configuration */
-  describe_model(description, descsize, surf_plugin_description, "plugin", "The plugins");
-  simgrid::config::declare_flag<std::string>("plugin", description, "", &_sg_cfg_cb__plugin);
+  declare_model_flag("plugin", "", &_sg_cfg_cb__plugin, *surf_plugin_description, "plugin", "The plugins");
 
-  describe_model(description, descsize, surf_cpu_model_description, "model", "The model to use for the CPU");
-  simgrid::config::declare_flag<std::string>("cpu/model", description, "Cas01", &_sg_cfg_cb__cpu_model);
+  declare_model_flag("cpu/model", "Cas01", &_sg_cfg_cb__cpu_model, surf_cpu_model_description, "model",
+                     "The model to use for the CPU");
 
-  describe_model(description, descsize, surf_storage_model_description, "model", "The model to use for the storage");
-  simgrid::config::declare_flag<std::string>("storage/model", description, "default", &_sg_cfg_cb__storage_mode);
+  declare_model_flag("disk/model", "default", &_sg_cfg_cb__disk_model, surf_disk_model_description, "model",
+                     "The model to use for the disk");
 
-  describe_model(description, descsize, surf_network_model_description, "model", "The model to use for the network");
-  simgrid::config::declare_flag<std::string>("network/model", description, "LV08", &_sg_cfg_cb__network_model);
+  declare_model_flag("storage/model", "default", &_sg_cfg_cb__storage_model, surf_storage_model_description, "model",
+                     "The model to use for the storage");
 
-  describe_model(description, descsize, surf_optimization_mode_description, "optimization mode",
-                 "The optimization modes to use for the network");
-  simgrid::config::declare_flag<std::string>("network/optim", description, "Lazy", &_sg_cfg_cb__optimization_mode);
+  declare_model_flag("network/model", "LV08", &_sg_cfg_cb__network_model, surf_network_model_description, "model",
+                     "The model to use for the network");
 
-  describe_model(description, descsize, surf_host_model_description, "model", "The model to use for the host");
-  simgrid::config::declare_flag<std::string>("host/model", description, "default", &_sg_cfg_cb__host_model);
+  declare_model_flag("network/optim", "Lazy", &_sg_cfg_cb__optimization_mode, surf_optimization_mode_description,
+                     "optimization mode", "The optimization modes to use for the network");
+
+  declare_model_flag("host/model", "default", &_sg_cfg_cb__host_model, surf_host_model_description, "model",
+                     "The model to use for the host");
 
   simgrid::config::bind_flag(sg_surf_precision, "surf/precision",
                              "Numerical precision used when updating simulation times (in seconds)");
@@ -315,9 +313,6 @@ void sg_config_init(int *argc, char **argv)
                                                                          "default unless optim is set to lazy)",
                                       "no");
   simgrid::config::alias("network/maxmin-selective-update", {"network/maxmin_selective_update"});
-
-  extern bool _sg_do_verbose_exit;
-  simgrid::config::bind_flag(_sg_do_verbose_exit, "verbose-exit", "Activate the \"do nothing\" mode in Ctrl-C");
 
   simgrid::config::declare_flag<int>("contexts/stack-size", "Stack size of contexts in KiB (not with threads)",
                                      8 * 1024, [](int value) { smx_context_stack_size = value * 1024; });
@@ -374,7 +369,9 @@ void sg_config_init(int *argc, char **argv)
 #if HAVE_SMPI
   simgrid::config::declare_flag<double>("smpi/host-speed", "Speed of the host running the simulation (in flop/s). "
                                                            "Used to bench the operations.",
-                                        20000.0);
+                                        20000.0, [](const double& val) {
+      xbt_assert(val > 0.0, "Invalid value (%f) for 'smpi/host-speed': it must be positive.", val);
+    });
   simgrid::config::alias("smpi/host-speed", {"smpi/running_power", "smpi/running-power"});
 
   simgrid::config::declare_flag<bool>("smpi/keep-temps", "Whether we should keep the generated temporary files.",
@@ -409,7 +406,8 @@ void sg_config_init(int *argc, char **argv)
 
   simgrid::config::declare_flag<bool>("smpi/trace-call-location",
                                       "Should filename and linenumber of MPI calls be traced?", false);
-
+  simgrid::config::declare_flag<bool>("smpi/trace-call-use-absolute-path",
+                                      "Should filenames for trace-call tracing be absolute or not?", false);
   simgrid::config::declare_flag<int>(
       "smpi/send-is-detached-thresh",
       "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend", 65536);
@@ -473,10 +471,6 @@ void sg_config_init(int *argc, char **argv)
   simgrid::config::declare_flag<bool>(
       "exception/cutpath", "Whether to cut all path information from call traces, used e.g. in exceptions.", false);
 
-  extern bool _sg_do_clean_atexit;
-  simgrid::config::bind_flag(_sg_do_clean_atexit, "clean-atexit", {"clean_atexit"},
-                             "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.");
-
   if (surf_path.empty())
     simgrid::config::set_default<std::string>("path", "./");
 
@@ -489,9 +483,6 @@ void sg_config_init(int *argc, char **argv)
 
 void sg_config_finalize()
 {
-  if (not _sg_cfg_init_status)
-    return;                     /* Not initialized yet. Nothing to do */
-
   simgrid::config::finalize();
   _sg_cfg_init_status = 0;
 }

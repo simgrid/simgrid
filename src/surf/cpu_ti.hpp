@@ -6,13 +6,15 @@
 #ifndef SURF_MODEL_CPUTI_H_
 #define SURF_MODEL_CPUTI_H_
 
-#include "src/kernel/resource/profile/trace_mgr.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/cpu_interface.hpp"
 
 #include <boost/intrusive/list.hpp>
+#include <memory>
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 /***********
  * Classes *
@@ -25,19 +27,15 @@ class XBT_PRIVATE CpuTi;
  *********/
 class CpuTiProfile {
 public:
-  explicit CpuTiProfile(kernel::profile::Profile* profile);
-  CpuTiProfile(const CpuTiProfile&) = delete;
-  CpuTiProfile& operator=(const CpuTiProfile&) = delete;
-  ~CpuTiProfile();
+  explicit CpuTiProfile(profile::Profile* profile);
 
   double integrate_simple(double a, double b);
   double integrate_simple_point(double a);
   double solve_simple(double a, double amount);
 
-  double* time_points_;
-  double *integral_;
-  int nb_points_;
-  int binary_search(double* array, double a, int low, int high);
+  std::vector<double> time_points_;
+  std::vector<double> integral_;
+  static int binary_search(const std::vector<double>& array, double a);
 };
 
 class CpuTiTmgr {
@@ -48,10 +46,9 @@ class CpuTiTmgr {
 
 public:
   explicit CpuTiTmgr(double value) : type_(Type::FIXED), value_(value){};
-  CpuTiTmgr(kernel::profile::Profile* speed_profile, double value);
+  CpuTiTmgr(profile::Profile* speed_profile, double value);
   CpuTiTmgr(const CpuTiTmgr&) = delete;
   CpuTiTmgr& operator=(const CpuTiTmgr&) = delete;
-  ~CpuTiTmgr();
 
   double integrate(double a, double b);
   double solve(double a, double amount);
@@ -65,8 +62,8 @@ private:
   double last_time_ = 0.0;             /*< Integral interval last point (discrete time) */
   double total_    = 0.0;             /*< Integral total between 0 and last_pointn */
 
-  CpuTiProfile* profile_                   = nullptr;
-  kernel::profile::Profile* speed_profile_ = nullptr;
+  std::unique_ptr<CpuTiProfile> profile_ = nullptr;
+  profile::Profile* speed_profile_       = nullptr;
 };
 
 /**********
@@ -81,12 +78,12 @@ public:
   CpuTiAction& operator=(const CpuTiAction&) = delete;
   ~CpuTiAction();
 
-  void set_state(kernel::resource::Action::State state) override;
+  void set_state(Action::State state) override;
   void cancel() override;
   void suspend() override;
   void resume() override;
   void set_max_duration(double duration) override;
-  void set_priority(double priority) override;
+  void set_sharing_penalty(double sharing_penalty) override;
   double get_remains() override;
 
   CpuTi *cpu_;
@@ -102,25 +99,25 @@ typedef boost::intrusive::list<CpuTiAction, ActionTiListOptions > ActionTiList;
  ************/
 class CpuTi : public Cpu {
 public:
-  CpuTi(CpuTiModel* model, simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core);
+  CpuTi(CpuTiModel* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core);
   CpuTi(const CpuTi&)            = delete;
   CpuTi& operator&(const CpuTi&) = delete;
   ~CpuTi() override;
 
-  void set_speed_profile(kernel::profile::Profile* profile) override;
+  void set_speed_profile(profile::Profile* profile) override;
 
-  void apply_event(kernel::profile::Event* event, double value) override;
+  void apply_event(profile::Event* event, double value) override;
   void update_actions_finish_time(double now);
   void update_remaining_amount(double now);
 
   bool is_used() override;
-  CpuAction *execution_start(double size) override;
-  kernel::resource::Action* execution_start(double, int) override
+  CpuAction* execution_start(double size) override;
+  CpuAction* execution_start(double, int) override
   {
     THROW_UNIMPLEMENTED;
     return nullptr;
   }
-  CpuAction *sleep(double duration) override;
+  CpuAction* sleep(double duration) override;
   double get_speed_ratio() override;
 
   void set_modified(bool modified);
@@ -147,14 +144,15 @@ public:
   CpuTiModel(const CpuTiModel&) = delete;
   CpuTiModel& operator=(const CpuTiModel&) = delete;
   ~CpuTiModel() override;
-  Cpu* create_cpu(simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) override;
+  Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) override;
   double next_occuring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 
   CpuTiList modified_cpus_;
 };
 
-}
-}
+} // namespace resource
+} // namespace kernel
+} // namespace simgrid
 
 #endif /* SURF_MODEL_CPUTI_H_ */

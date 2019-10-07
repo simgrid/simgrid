@@ -31,6 +31,7 @@
 
 #include <stdarg.h>
 #include <stddef.h> /* NULL */
+#include <stdio.h>  /* FILE */
 #include <xbt/misc.h>
 SG_BEGIN_DECL()
 /**@brief Log priorities
@@ -83,10 +84,8 @@ typedef enum {
 #endif                          /* !defined(NLOG) */
 
 /* Transforms a category name to a global variable name. */
-#define _XBT_LOGV(cat) _XBT_LOG_CONCAT(_simgrid_log_category__, cat)
-#define _XBT_LOGV_CTOR(cat) _XBT_LOG_CONCAT2(_XBT_LOGV(cat), __constructor__)
-#define _XBT_LOG_CONCAT(x, y) x ## y
-#define _XBT_LOG_CONCAT2(x, y) _XBT_LOG_CONCAT(x, y)
+#define _XBT_LOGV(cat) _XBT_CONCAT(_simgrid_log_category__, cat)
+#define _XBT_LOGV_CTOR(cat) _XBT_CONCAT2(_XBT_LOGV(cat), __constructor__)
 
 /* The root of the category hierarchy. */
 #define XBT_LOG_ROOT_CAT   root
@@ -117,8 +116,8 @@ typedef enum {
       &_XBT_LOGV(parent),                                                                                              \
       NULL /* firstChild */,                                                                                           \
       NULL /* nextSibling */,                                                                                          \
-      #catName,                                                                                                        \
-      desc,                                                                                                            \
+      _XBT_STRINGIFY(catName),                                                                                         \
+      (desc),                                                                                                          \
       0 /*initialized */,                                                                                              \
       xbt_log_priority_uninitialized /* threshold */,                                                                  \
       1 /* isThreshInherited */,                                                                                       \
@@ -136,9 +135,9 @@ typedef enum {
  *
  * Defines a new subcategory of the parent.
  */
-#define XBT_LOG_NEW_SUBCATEGORY(catName, parent, desc)    \
-  XBT_LOG_EXTERNAL_CATEGORY(parent);                      \
-  XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc)
+#define XBT_LOG_NEW_SUBCATEGORY(catName, parent, desc)                                                                 \
+  XBT_LOG_EXTERNAL_CATEGORY(parent);                                                                                   \
+  XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, (desc))
 
 /**
  * @ingroup XBT_log
@@ -148,8 +147,7 @@ typedef enum {
  *
  * Creates a new subcategory of the root category.
  */
-# define XBT_LOG_NEW_CATEGORY(catName,desc)  \
-   XBT_LOG_NEW_SUBCATEGORY_helper(catName, XBT_LOG_ROOT_CAT, desc)
+#define XBT_LOG_NEW_CATEGORY(catName, desc) XBT_LOG_NEW_SUBCATEGORY_helper(catName, XBT_LOG_ROOT_CAT, (desc))
 
 /**
  * @ingroup XBT_log
@@ -175,9 +173,9 @@ typedef enum {
  * Creates a new subcategory of the root category and makes it the default (used by macros that don't explicitly
  * specify a category).
  */
-# define XBT_LOG_NEW_DEFAULT_CATEGORY(cname,desc)        \
-    XBT_LOG_NEW_CATEGORY(cname,desc);                   \
-    XBT_LOG_DEFAULT_CATEGORY(cname)
+#define XBT_LOG_NEW_DEFAULT_CATEGORY(cname, desc)                                                                      \
+  XBT_LOG_NEW_CATEGORY(cname, (desc));                                                                                 \
+  XBT_LOG_DEFAULT_CATEGORY(cname)
 
 /**
  * @ingroup XBT_log
@@ -189,9 +187,9 @@ typedef enum {
  * Creates a new subcategory of the parent category and makes it the default
  * (used by macros that don't explicitly specify a category).
  */
-#define XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cname, parent, desc) \
-    XBT_LOG_NEW_SUBCATEGORY(cname, parent, desc);            \
-    XBT_LOG_DEFAULT_CATEGORY(cname)
+#define XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cname, parent, desc)                                                           \
+  XBT_LOG_NEW_SUBCATEGORY(cname, parent, (desc));                                                                      \
+  XBT_LOG_DEFAULT_CATEGORY(cname)
 
 /**
  * @ingroup XBT_log
@@ -299,6 +297,7 @@ XBT_PUBLIC void xbt_log_additivity_set(xbt_log_category_t cat, int additivity);
  */
 XBT_PUBLIC xbt_log_layout_t xbt_log_layout_simple_new(const char* arg);
 XBT_PUBLIC xbt_log_layout_t xbt_log_layout_format_new(const char* arg);
+XBT_PUBLIC xbt_log_appender_t xbt_log_appender_stream(FILE* f);
 XBT_PUBLIC xbt_log_appender_t xbt_log_appender_file_new(const char* arg);
 XBT_PUBLIC xbt_log_appender_t xbt_log_appender2_file_new(const char* arg, int roll);
 
@@ -336,8 +335,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
  * If you have expensive expressions that are computed outside of the log command and used only within it, you should
  * make its evaluation conditional using this macro.
  */
-#define XBT_LOG_ISENABLED(catName, priority) \
-            _XBT_LOG_ISENABLEDV(_XBT_LOGV(catName), priority)
+#define XBT_LOG_ISENABLED(catName, priority) _XBT_LOG_ISENABLEDV(_XBT_LOGV(catName), (priority))
 
 /*
  * Helper function that implements XBT_LOG_ISENABLED.
@@ -346,10 +344,9 @@ extern xbt_log_layout_t xbt_log_default_layout;
  * First part is a compile-time constant.
  * Call to xbt_log_cat_init only happens once.
  */
-#define _XBT_LOG_ISENABLEDV(catv, priority)                  \
-       (priority >= XBT_LOG_STATIC_THRESHOLD                 \
-        && ((catv).initialized || _xbt_log_cat_init(&(catv), priority)) \
-        && priority >= (catv).threshold)
+#define _XBT_LOG_ISENABLEDV(catv, priority)                                                                            \
+  ((priority) >= XBT_LOG_STATIC_THRESHOLD && ((catv).initialized || _xbt_log_cat_init(&(catv), (priority))) &&         \
+   (priority) >= (catv).threshold)
 
 /*
  * Internal Macros
@@ -374,34 +371,21 @@ extern xbt_log_layout_t xbt_log_default_layout;
 # define XBT_LOG(...) XBT_CLOG(0, __VA_ARGS__)
 #else
 
-// This code is duplicated to remove one level of indirection, working around a MSVC bug
-// See: http://stackoverflow.com/questions/9183993/msvc-variadic-macro-expansion
+#define XBT_CLOG(category, prio, ...)                                                                                  \
+  do {                                                                                                                 \
+    if (_XBT_LOG_ISENABLEDV((category), (prio))) {                                                                     \
+      s_xbt_log_event_t _log_ev;                                                                                       \
+      _log_ev.cat          = &(category);                                                                              \
+      _log_ev.priority     = (prio);                                                                                   \
+      _log_ev.fileName     = __FILE__;                                                                                 \
+      _log_ev.functionName = __func__;                                                                                 \
+      _log_ev.lineNum      = __LINE__;                                                                                 \
+      _xbt_log_event_log(&_log_ev, __VA_ARGS__);                                                                       \
+    }                                                                                                                  \
+  } while (0)
 
-# define XBT_CLOG(category, prio, ...) \
-  do {                                                                  \
-    if (_XBT_LOG_ISENABLEDV((category), prio)) {                        \
-      s_xbt_log_event_t _log_ev;                                        \
-      _log_ev.cat = &(category);                                        \
-      _log_ev.priority = (prio);                                        \
-      _log_ev.fileName = __FILE__;                                      \
-      _log_ev.functionName = __func__;                             \
-      _log_ev.lineNum = __LINE__;                                       \
-      _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
-    }                                                                   \
-  }  while (0)
+#define XBT_LOG(prio, ...) XBT_CLOG(*_simgrid_log_category__default, (prio), __VA_ARGS__)
 
-# define XBT_LOG(prio,...) \
-  do {                                                                  \
-    if (_XBT_LOG_ISENABLEDV((*_simgrid_log_category__default), prio)) { \
-      s_xbt_log_event_t _log_ev;                                        \
-      _log_ev.cat = _simgrid_log_category__default;                     \
-      _log_ev.priority = (prio);                                        \
-      _log_ev.fileName = __FILE__;                                      \
-      _log_ev.functionName = __func__;                             \
-      _log_ev.lineNum = __LINE__;                                       \
-      _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
-    }                                                                   \
-  }  while (0)
 #endif
 
 /** @ingroup XBT_log
@@ -410,221 +394,79 @@ extern xbt_log_layout_t xbt_log_default_layout;
  * @param ... the format string and its arguments
  *  @brief Log an event at the DEBUG priority on the specified category with these args.
  */
-#define XBT_CDEBUG(categ, ...) \
-      do {                                                                  \
-        if (XBT_LOG_ISENABLED (categ, xbt_log_priority_debug)) {            \
-          s_xbt_log_event_t _log_ev;                                        \
-          _log_ev.cat = &(_XBT_LOGV(categ));                                \
-          _log_ev.priority = xbt_log_priority_debug;                        \
-          _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = __func__;                             \
-          _log_ev.lineNum = __LINE__;                                       \
-          _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
-        }                                                                   \
-      }  while (0)
+#define XBT_CDEBUG(categ, ...) XBT_CLOG(_XBT_LOGV(categ), xbt_log_priority_debug, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log an event at the VERB priority on the specified category with these args.
  */
-#define XBT_CVERB(categ, ...)  \
-      do {                                                                  \
-        if (XBT_LOG_ISENABLED (categ, xbt_log_priority_verbose)) {          \
-          s_xbt_log_event_t _log_ev;                                        \
-          _log_ev.cat = &(_XBT_LOGV(categ));                                \
-          _log_ev.priority = xbt_log_priority_verbose;                      \
-          _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = __func__;                             \
-          _log_ev.lineNum = __LINE__;                                       \
-          _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
-        }                                                                   \
-      }  while (0)
+#define XBT_CVERB(categ, ...) XBT_CLOG(_XBT_LOGV(categ), xbt_log_priority_verbose, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log an event at the INFO priority on the specified category with these args.
  */
-#define XBT_CINFO(categ, ...) \
-      do {                                                                  \
-        if (XBT_LOG_ISENABLED (categ, xbt_log_priority_info)) {             \
-          s_xbt_log_event_t _log_ev;                                        \
-          _log_ev.cat = &(_XBT_LOGV(categ));                                \
-          _log_ev.priority = xbt_log_priority_info;                         \
-          _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = __func__;                             \
-          _log_ev.lineNum = __LINE__;                                       \
-          _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
-        }                                                                   \
-      }  while (0)
-
+#define XBT_CINFO(categ, ...) XBT_CLOG(_XBT_LOGV(categ), xbt_log_priority_info, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log an event at the WARN priority on the specified category with these args.
  */
-#define XBT_CWARN(categ, ...) \
-      do {                                                                  \
-        if (XBT_LOG_ISENABLED (categ, xbt_log_priority_warning)) {          \
-          s_xbt_log_event_t _log_ev;                                        \
-          _log_ev.cat = &(_XBT_LOGV(categ));                                \
-          _log_ev.priority = xbt_log_priority_warning;                      \
-          _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = __func__;                             \
-          _log_ev.lineNum = __LINE__;                                       \
-          _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
-        }                                                                   \
-      }  while (0)
-
+#define XBT_CWARN(categ, ...) XBT_CLOG(_XBT_LOGV(categ), xbt_log_priority_warning, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log an event at the ERROR priority on the specified category with these args.
  */
-#define XBT_CERROR(categ, ...) \
-      do {                                                                  \
-        if (XBT_LOG_ISENABLED (categ, xbt_log_priority_error)) {            \
-          s_xbt_log_event_t _log_ev;                                        \
-          _log_ev.cat = &(_XBT_LOGV(categ));                                \
-          _log_ev.priority = xbt_log_priority_error;                        \
-          _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = __func__;                             \
-          _log_ev.lineNum = __LINE__;                                       \
-          _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
-        }                                                                   \
-      }  while (0)
+#define XBT_CERROR(categ, ...) XBT_CLOG(_XBT_LOGV(categ), xbt_log_priority_error, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
- *  @brief Log an event at the CRITICAL priority on the specified category with these args (CCRITICALn exists for any n<10).
+ *  @brief Log an event at the CRITICAL priority on the specified category with these args.
  */
-#define XBT_CCRITICAL(categ, ...) \
-      do {                                                                  \
-        if (XBT_LOG_ISENABLED (categ, xbt_log_priority_critical)) {         \
-          s_xbt_log_event_t _log_ev;                                        \
-          _log_ev.cat = &(_XBT_LOGV(categ));                                \
-          _log_ev.priority = xbt_log_priority_critical;                     \
-          _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = __func__;                             \
-          _log_ev.lineNum = __LINE__;                                       \
-          _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
-        }                                                                   \
-      }  while (0)
+#define XBT_CCRITICAL(categ, ...) XBT_CLOG(_XBT_LOGV(categ), xbt_log_priority_critical, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @param ... the format string and its arguments
  *  @brief Log an event at the DEBUG priority on the default category with these args.
  */
-#define XBT_DEBUG(...) \
-      do {                                                                  \
-        if (_XBT_LOG_ISENABLEDV(*_simgrid_log_category__default,            \
-                            xbt_log_priority_debug)) {                  \
-          s_xbt_log_event_t _log_ev;                                        \
-          _log_ev.cat = _simgrid_log_category__default;                     \
-          _log_ev.priority = xbt_log_priority_debug;                        \
-          _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = __func__;                              \
-          _log_ev.lineNum = __LINE__;                                       \
-          _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
-        }                                                                   \
-      }  while (0)
+#define XBT_DEBUG(...) XBT_LOG(xbt_log_priority_debug, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log an event at the VERB priority on the default category with these args.
  */
-#define XBT_VERB(...) \
-      do {                                                                  \
-        if (_XBT_LOG_ISENABLEDV(*_simgrid_log_category__default,            \
-                            xbt_log_priority_verbose)) {                \
-          s_xbt_log_event_t _log_ev;                                        \
-          _log_ev.cat = _simgrid_log_category__default;                     \
-          _log_ev.priority = xbt_log_priority_verbose;                      \
-          _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = __func__;                             \
-          _log_ev.lineNum = __LINE__;                                       \
-          _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
-        }                                                                   \
-      }  while (0)
+#define XBT_VERB(...) XBT_LOG(xbt_log_priority_verbose, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log an event at the INFO priority on the default category with these args.
  */
-#define XBT_INFO(...) \
-      do {                                                                  \
-        if (_XBT_LOG_ISENABLEDV(*_simgrid_log_category__default,            \
-                            xbt_log_priority_info)) {                   \
-          s_xbt_log_event_t _log_ev;                                        \
-          _log_ev.cat = _simgrid_log_category__default;                     \
-          _log_ev.priority = xbt_log_priority_info;                         \
-          _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = __func__;                             \
-          _log_ev.lineNum = __LINE__;                                       \
-          _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
-        }                                                                   \
-      }  while (0)
+#define XBT_INFO(...) XBT_LOG(xbt_log_priority_info, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log an event at the WARN priority on the default category with these args.
  */
-#define XBT_WARN(...) \
-      do {                                                                  \
-        if (_XBT_LOG_ISENABLEDV(*_simgrid_log_category__default,            \
-                            xbt_log_priority_warning)) {                \
-          s_xbt_log_event_t _log_ev;                                        \
-          _log_ev.cat = _simgrid_log_category__default;                     \
-          _log_ev.priority = xbt_log_priority_warning;                      \
-          _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = __func__;                             \
-          _log_ev.lineNum = __LINE__;                                       \
-          _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
-        }                                                                   \
-      }  while (0)
+#define XBT_WARN(...) XBT_LOG(xbt_log_priority_warning, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log an event at the ERROR priority on the default category with these args.
  */
-#define XBT_ERROR(...) \
-      do {                                                                  \
-        if (_XBT_LOG_ISENABLEDV(*_simgrid_log_category__default,            \
-                            xbt_log_priority_error)) {                  \
-          s_xbt_log_event_t _log_ev;                                        \
-          _log_ev.cat = _simgrid_log_category__default;                     \
-          _log_ev.priority = xbt_log_priority_error;                        \
-          _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = __func__;                             \
-          _log_ev.lineNum = __LINE__;                                       \
-          _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
-        }                                                                   \
-      }  while (0)
+#define XBT_ERROR(...) XBT_LOG(xbt_log_priority_error, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log an event at the CRITICAL priority on the default category with these args.
  */
-#define XBT_CRITICAL(...) \
-      do {                                                                  \
-        if (_XBT_LOG_ISENABLEDV(*_simgrid_log_category__default,            \
-                            xbt_log_priority_critical)) {               \
-          s_xbt_log_event_t _log_ev;                                        \
-          _log_ev.cat = _simgrid_log_category__default;                     \
-          _log_ev.priority = xbt_log_priority_critical;                     \
-          _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = __func__;                             \
-          _log_ev.lineNum = __LINE__;                                       \
-          _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
-        }                                                                   \
-      }  while (0)
+#define XBT_CRITICAL(...) XBT_LOG(xbt_log_priority_critical, __VA_ARGS__)
 
 #define _XBT_IN_OUT(...) \
   _XBT_IF_ONE_ARG(_XBT_IN_OUT_ARG1, _XBT_IN_OUT_ARGN, __VA_ARGS__)(__VA_ARGS__)
-#define _XBT_IN_OUT_ARG1(fmt) \
-  XBT_LOG(xbt_log_priority_trace, fmt, __func__)
-#define _XBT_IN_OUT_ARGN(fmt, ...) \
-  XBT_LOG(xbt_log_priority_trace, fmt, __func__, __VA_ARGS__)
+#define _XBT_IN_OUT_ARG1(fmt) XBT_LOG(xbt_log_priority_trace, (fmt), __func__)
+#define _XBT_IN_OUT_ARGN(fmt, ...) XBT_LOG(xbt_log_priority_trace, (fmt), __func__, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
@@ -643,6 +485,12 @@ extern xbt_log_layout_t xbt_log_default_layout;
  *  @brief Log at TRACE priority a message indicating that we reached that point, appending a user specified format.
  */
 #define XBT_HERE(...) XBT_LOG(xbt_log_priority_trace, "-- was here" __VA_ARGS__)
+
+/** @ingroup XBT_log
+ *  @hideinitializer
+ *  @brief Log help messages through category xbt.xbt_help.
+ */
+#define XBT_HELP(...) XBT_CINFO(xbt_help, __VA_ARGS__)
 
 SG_END_DECL()
 #endif                          /* ! _XBT_LOG_H_ */

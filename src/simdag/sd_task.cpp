@@ -15,7 +15,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_task, sd, "Logging specific to SimDag (task)"
 static void __SD_task_destroy_scheduling_data(SD_task_t task)
 {
   if (task->state != SD_SCHEDULED && task->state != SD_RUNNABLE)
-    THROWF(arg_error, 0, "Task '%s' must be SD_SCHEDULED or SD_RUNNABLE", SD_task_get_name(task));
+    throw std::invalid_argument(
+        simgrid::xbt::string_printf("Task '%s' must be SD_SCHEDULED or SD_RUNNABLE", SD_task_get_name(task)));
 
   xbt_free(task->flops_amount);
   xbt_free(task->bytes_amount);
@@ -37,7 +38,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   SD_task_t task = xbt_new0(s_SD_task_t, 1);
   task->kind = SD_TASK_NOT_TYPED;
   task->state= SD_NOT_SCHEDULED;
-  sd_global->initial_tasks->insert(task);
+  sd_global->initial_tasks.insert(task);
 
   task->marked = 0;
   task->start_time = -1.0;
@@ -68,7 +69,7 @@ static inline SD_task_t SD_task_create_sized(const char *name, void *data, doubl
 
 /** @brief create a end-to-end communication task that can then be auto-scheduled
  *
- * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This allows to specify the task costs at
+ * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This allows one to specify the task costs at
  * creation, and decouple them from the scheduling process where you just specify which resource should deliver the
  * mandatory power.
  *
@@ -86,7 +87,7 @@ SD_task_t SD_task_create_comm_e2e(const char *name, void *data, double amount)
 
 /** @brief create a sequential computation task that can then be auto-scheduled
  *
- * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This allows to specify the task costs at
+ * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This allows one to specify the task costs at
  * creation, and decouple them from the scheduling process where you just specify which resource should deliver the
  * mandatory power.
  *
@@ -108,7 +109,7 @@ SD_task_t SD_task_create_comp_seq(const char *name, void *data, double flops_amo
 
 /** @brief create a parallel computation task that can then be auto-scheduled
  *
- * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This allows to specify the task costs at
+ * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This allows one to specify the task costs at
  * creation, and decouple them from the scheduling process where you just specify which resource should deliver the
  * mandatory power.
  *
@@ -135,7 +136,7 @@ SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data, double fl
 /** @brief create a complex data redistribution task that can then be  auto-scheduled
  *
  * Auto-scheduling mean that the task can be used with SD_task_schedulev().
- * This allows to specify the task costs at creation, and decouple them from the scheduling process where you just
+ * This allows one to specify the task costs at creation, and decouple them from the scheduling process where you just
  * specify which resource should communicate.
  *
  * A data redistribution can be scheduled on any number of host.
@@ -265,28 +266,28 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
   std::set<SD_task_t>::iterator idx;
   XBT_DEBUG("Set state of '%s' to %d", task->name, new_state);
   if ((new_state == SD_NOT_SCHEDULED || new_state == SD_SCHEDULABLE) && task->state == SD_FAILED){
-    sd_global->completed_tasks->erase(task);
-    sd_global->initial_tasks->insert(task);
+    sd_global->completed_tasks.erase(task);
+    sd_global->initial_tasks.insert(task);
   }
 
   if (new_state == SD_SCHEDULED && task->state == SD_RUNNABLE){
-    sd_global->initial_tasks->insert(task);
-    sd_global->runnable_tasks->erase(task);
+    sd_global->initial_tasks.insert(task);
+    sd_global->runnable_tasks.erase(task);
   }
 
   if (new_state == SD_RUNNABLE){
-    idx = sd_global->initial_tasks->find(task);
-    if (idx != sd_global->initial_tasks->end()) {
-      sd_global->runnable_tasks->insert(*idx);
-      sd_global->initial_tasks->erase(idx);
+    idx = sd_global->initial_tasks.find(task);
+    if (idx != sd_global->initial_tasks.end()) {
+      sd_global->runnable_tasks.insert(*idx);
+      sd_global->initial_tasks.erase(idx);
     }
   }
 
   if (new_state == SD_RUNNING)
-    sd_global->runnable_tasks->erase(task);
+    sd_global->runnable_tasks.erase(task);
 
   if (new_state == SD_DONE || new_state == SD_FAILED){
-    sd_global->completed_tasks->insert(task);
+    sd_global->completed_tasks.insert(task);
     task->start_time = task->surf_action->get_start_time();
     if (new_state == SD_DONE){
       task->finish_time = task->surf_action->get_finish_time();
@@ -534,19 +535,21 @@ void SD_task_dotty(SD_task_t task, void *out)
 void SD_task_dependency_add(SD_task_t src, SD_task_t dst)
 {
   if (src == dst)
-    THROWF(arg_error, 0, "Cannot add a dependency between task '%s' and itself", SD_task_get_name(src));
+    throw std::invalid_argument(
+        simgrid::xbt::string_printf("Cannot add a dependency between task '%s' and itself", SD_task_get_name(src)));
 
   if (src->state == SD_DONE || src->state == SD_FAILED)
-    THROWF(arg_error, 0, "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED, SD_RUNNABLE, or SD_RUNNING",
-           src->name);
+    throw std::invalid_argument(simgrid::xbt::string_printf(
+        "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED, SD_RUNNABLE, or SD_RUNNING", src->name));
 
   if (dst->state == SD_DONE || dst->state == SD_FAILED || dst->state == SD_RUNNING)
-    THROWF(arg_error, 0, "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED, or SD_RUNNABLE",
-           dst->name);
+    throw std::invalid_argument(simgrid::xbt::string_printf(
+        "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED, or SD_RUNNABLE", dst->name));
 
   if (dst->inputs->find(src) != dst->inputs->end() || src->outputs->find(dst) != src->outputs->end() ||
       src->successors->find(dst) != src->successors->end() || dst->predecessors->find(src) != dst->predecessors->end())
-    THROWF(arg_error, 0, "A dependency already exists between task '%s' and task '%s'", src->name, dst->name);
+    throw std::invalid_argument(simgrid::xbt::string_printf(
+        "A dependency already exists between task '%s' and task '%s'", src->name, dst->name));
 
   XBT_DEBUG("SD_task_dependency_add: src = %s, dst = %s", src->name, dst->name);
 
@@ -607,8 +610,9 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
   XBT_DEBUG("SD_task_dependency_remove: src = %s, dst = %s", SD_task_get_name(src), SD_task_get_name(dst));
 
   if (src->successors->find(dst) == src->successors->end() && src->outputs->find(dst) == src->outputs->end())
-    THROWF(arg_error, 0, "No dependency found between task '%s' and '%s': task '%s' is not a successor of task '%s'",
-           src->name, dst->name, dst->name, src->name);
+    throw std::invalid_argument(simgrid::xbt::string_printf(
+        "No dependency found between task '%s' and '%s': task '%s' is not a successor of task '%s'", src->name,
+        dst->name, dst->name, src->name));
 
   if (src->kind == SD_TASK_COMM_E2E || src->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
     if (dst->kind == SD_TASK_COMP_SEQ || dst->kind == SD_TASK_COMP_PAR_AMDAHL)
@@ -642,7 +646,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
 void SD_task_watch(SD_task_t task, e_SD_task_state_t state)
 {
   if (state & SD_NOT_SCHEDULED)
-    THROWF(arg_error, 0, "Cannot add a watch point for state SD_NOT_SCHEDULED");
+    throw std::invalid_argument("Cannot add a watch point for state SD_NOT_SCHEDULED");
 
   task->watch_points = task->watch_points | state;
 }
@@ -699,7 +703,8 @@ double SD_task_get_execution_time(SD_task_t /*task*/, int host_count, const sg_h
 static inline void SD_task_do_schedule(SD_task_t task)
 {
   if (SD_task_get_state(task) > SD_SCHEDULABLE)
-    THROWF(arg_error, 0, "Task '%s' has already been scheduled", SD_task_get_name(task));
+    throw std::invalid_argument(
+        simgrid::xbt::string_printf("Task '%s' has already been scheduled", SD_task_get_name(task)));
 
   if (task->predecessors->empty() && task->inputs->empty())
     SD_task_set_state(task, SD_RUNNABLE);
@@ -764,7 +769,8 @@ void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t * host_lis
 void SD_task_unschedule(SD_task_t task)
 {
   if (task->state == SD_NOT_SCHEDULED || task->state == SD_SCHEDULABLE)
-    THROWF(arg_error, 0, "Task %s: the state must be SD_SCHEDULED, SD_RUNNABLE, SD_RUNNING or SD_FAILED", task->name);
+    throw std::invalid_argument(simgrid::xbt::string_printf(
+        "Task %s: the state must be SD_SCHEDULED, SD_RUNNABLE, SD_RUNNING or SD_FAILED", task->name));
 
   if ((task->state == SD_SCHEDULED || task->state == SD_RUNNABLE) /* if the task is scheduled or runnable */
       && ((task->kind == SD_TASK_COMP_PAR_AMDAHL) || (task->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK))) {
@@ -802,7 +808,7 @@ void SD_task_run(SD_task_t task)
   XBT_DEBUG("surf_action = %p", task->surf_action);
 
   SD_task_set_state(task, SD_RUNNING);
-  sd_global->return_set->insert(task);
+  sd_global->return_set.insert(task);
 }
 
 /**
@@ -876,7 +882,7 @@ void SD_task_build_MxN_1D_block_matrix(SD_task_t task, int src_nb, int dst_nb){
 
 /** @brief Auto-schedules a task.
  *
- * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This allows to specify the task costs at
+ * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This allows one to specify the task costs at
  * creation, and decouple them from the scheduling process where you just specify which resource should deliver the
  * mandatory power.
  *

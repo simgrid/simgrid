@@ -22,7 +22,6 @@ struct s_stack_region{
 #endif
   size_t size;
   int block;
-  int process_index;
 };
 typedef struct s_stack_region  s_stack_region_t;
 

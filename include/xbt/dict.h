@@ -79,7 +79,6 @@ XBT_PUBLIC xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char* k
 XBT_PUBLIC void xbt_dict_remove(xbt_dict_t dict, const char* key);
 XBT_PUBLIC void xbt_dict_reset(xbt_dict_t dict);
 XBT_PUBLIC int xbt_dict_length(xbt_dict_t dict);
-XBT_PUBLIC void xbt_dict_dump(xbt_dict_t dict, void (*output)(void*));
 XBT_PUBLIC int xbt_dict_is_empty(xbt_dict_t dict);
 
 /** @} */
@@ -159,10 +158,9 @@ xbt_dict_foreach(head, cursor, key, data) {
 }
 @endcode
  */
-#  define xbt_dict_foreach(dict,cursor,key,data)                       \
-    for (cursor=NULL, xbt_dict_cursor_first((dict),&(cursor)) ;        \
-         xbt_dict_cursor_get_or_free(&(cursor),(char**)&(key),(void**)(&data));\
-         xbt_dict_cursor_step(cursor) )
+#define xbt_dict_foreach(dict, cursor, key, data)                                                                      \
+  for ((cursor) = NULL, xbt_dict_cursor_first((dict), &(cursor));                                                      \
+       xbt_dict_cursor_get_or_free(&(cursor), (char**)&(key), (void**)&(data)); xbt_dict_cursor_step(cursor))
 
 /** @} */
 

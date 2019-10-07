@@ -1,9 +1,12 @@
 ! Check that getarg does somethig sensible.
 program getarg_1
+  use mpi
   CHARACTER*10 ARGS, ARGS2
   INTEGER*4 I
   INTEGER*2 I2
+  INTEGER ierr
   I = 0
+  call MPI_Init(ierr)
   CALL GETARG(I,ARGS)
   ! This should return the invoking command.  The actual value depends 
   ! on the OS, but a blank string is wrong no matter what.
@@ -22,4 +25,5 @@ program getarg_1
   I = 1000
   CALL GETARG(I,ARGS)
   if (args.ne.'') STOP 6
+  call MPI_Finalize(ierr)
 end

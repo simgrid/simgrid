@@ -57,8 +57,7 @@ static void smpi_get_executable_global_size()
 {
   char buffer[PATH_MAX];
   char* full_name = realpath(xbt_binary_name, buffer);
-  if (full_name == nullptr)
-    xbt_die("Could not resolve binary file name");
+  xbt_assert(full_name != nullptr, "Could not resolve real path of binary file '%s'", xbt_binary_name);
 
   std::vector<simgrid::xbt::VmMap> map = simgrid::xbt::get_memory_map(getpid());
   for (auto i = map.begin(); i != map.end() ; ++i) {
@@ -75,11 +74,12 @@ static void smpi_get_executable_global_size()
       ++i;
       if (i != map.end() && i->pathname.empty() && (i->prot & PROT_RWX) == PROT_RW &&
           (char*)i->start_addr == smpi_data_exe_start + smpi_data_exe_size) {
-        // Only count this region if it was not already present in the initial map.
-        auto found = std::find_if(begin(initial_vm_map), end(initial_vm_map),
-                                  [&i](const simgrid::xbt::VmMap& m) { return m.start_addr == i->start_addr; });
-        if (found == end(initial_vm_map))
-          smpi_data_exe_size = (char*)i->end_addr - smpi_data_exe_start;
+        // Only count the portion of this region not present in the initial map.
+        auto found = std::find_if(initial_vm_map.begin(), initial_vm_map.end(), [&i](const simgrid::xbt::VmMap& m) {
+          return i->start_addr <= m.start_addr && m.start_addr < i->end_addr;
+        });
+        auto end_addr      = (found == initial_vm_map.end() ? i->end_addr : found->start_addr);
+        smpi_data_exe_size = (char*)end_addr - smpi_data_exe_start;
       }
       return;
     }
@@ -107,26 +107,19 @@ static void* asan_safe_memcpy(void* dest, void* src, size_t n)
   return dest;
 }
 #else
-#define asan_safe_memcpy(dest, src, n) memcpy(dest, src, n)
+#define asan_safe_memcpy(dest, src, n) memcpy((dest), (src), (n))
 #endif
 
-/** Map a given SMPI privatization segment (make a SMPI process active) */
+/** Map a given SMPI privatization segment (make a SMPI process active)
+ *
+ *  When doing a state restoration, the state of the restored variables  might not be consistent with the state of the
+ *  virtual memory. In this case, we to change the data segment.
+ */
 void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor)
 {
   if (smpi_loaded_page == actor->get_pid()) // no need to switch, we've already loaded the one we want
     return;
 
-  // So the job:
-  smpi_really_switch_data_segment(actor);
-}
-
-/** Map a given SMPI privatization segment (make a SMPI process active)  even if SMPI thinks it is already active
- *
- *  When doing a state restoration, the state of the restored variables  might not be consistent with the state of the
- *  virtual memory. In this case, we to change the data segment.
- */
-void smpi_really_switch_data_segment(simgrid::s4u::ActorPtr actor)
-{
   if (smpi_data_exe_size == 0) // no need to switch
     return;
 
@@ -140,12 +133,6 @@ void smpi_really_switch_data_segment(simgrid::s4u::ActorPtr actor)
     xbt_die("Couldn't map the new region (errno %d): %s", errno, strerror(errno));
   smpi_loaded_page = actor->get_pid();
 #endif
-}
-
-int smpi_is_privatization_file(char* file)
-{
-  const std::string buffer_path("/dev/shm/my-buffer-");
-  return buffer_path.compare(0, std::string::npos, file, buffer_path.length()) == 0;
 }
 
 /**
@@ -249,40 +236,39 @@ void smpi_destroy_global_memory_segments(){
 #endif
 }
 
-static int sendbuffer_size = 0;
-static char* sendbuffer    = nullptr;
-static int recvbuffer_size = 0;
-static char* recvbuffer    = nullptr;
+static std::vector<unsigned char> sendbuffer;
+static std::vector<unsigned char> recvbuffer;
 
 //allocate a single buffer for all sends, growing it if needed
-void* smpi_get_tmp_sendbuffer(int size)
+unsigned char* smpi_get_tmp_sendbuffer(size_t size)
 {
   if (not smpi_process()->replaying())
-    return xbt_malloc(size);
-  if (sendbuffer_size<size){
-    sendbuffer=static_cast<char*>(xbt_realloc(sendbuffer,size));
-    sendbuffer_size=size;
-  }
-  return sendbuffer;
+    return new unsigned char[size];
+  // FIXME: a resize() may invalidate a previous pointer. Maybe we need to handle a queue of buffers with a reference
+  // counter. The same holds for smpi_get_tmp_recvbuffer.
+  if (sendbuffer.size() < size)
+    sendbuffer.resize(size);
+  return sendbuffer.data();
 }
 
 //allocate a single buffer for all recv
-void* smpi_get_tmp_recvbuffer(int size){
+unsigned char* smpi_get_tmp_recvbuffer(size_t size)
+{
   if (not smpi_process()->replaying())
-    return xbt_malloc(size);
-  if (recvbuffer_size<size){
-    recvbuffer=static_cast<char*>(xbt_realloc(recvbuffer,size));
-    recvbuffer_size=size;
-  }
-  return recvbuffer;
+    return new unsigned char[size];
+  if (recvbuffer.size() < size)
+    recvbuffer.resize(size);
+  return recvbuffer.data();
 }
 
-void smpi_free_tmp_buffer(void* buf){
+void smpi_free_tmp_buffer(const unsigned char* buf)
+{
   if (not smpi_process()->replaying())
-    xbt_free(buf);
+    delete[] buf;
 }
 
-void smpi_free_replay_tmp_buffers(){
-  xbt_free(sendbuffer);
-  xbt_free(recvbuffer);
+void smpi_free_replay_tmp_buffers()
+{
+  std::vector<unsigned char>().swap(sendbuffer);
+  std::vector<unsigned char>().swap(recvbuffer);
 }

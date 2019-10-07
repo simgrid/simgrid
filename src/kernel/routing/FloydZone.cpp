@@ -8,6 +8,7 @@
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
+#include "xbt/string.hpp"
 
 #include <cfloat>
 #include <limits>
@@ -57,7 +58,7 @@ void FloydZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
   do {
     int pred = TO_FLOYD_PRED(src->id(), cur);
     if (pred == -1)
-      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->get_cname(), dst->get_cname());
+      throw std::invalid_argument(xbt::string_printf("No route from '%s' to '%s'", src->get_cname(), dst->get_cname()));
     route_stack.push_back(TO_FLOYD_LINK(pred, cur));
     cur = pred;
   } while (cur != src->id());

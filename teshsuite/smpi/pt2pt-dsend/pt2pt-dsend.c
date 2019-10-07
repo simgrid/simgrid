@@ -11,12 +11,45 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(dsend,"the dsend test");
 
-int main()
+static void test_opts(int* argc, char **argv[]){
+  int found = 0;
+  int option_index = 0;
+  static struct option long_options[] = {
+  {(char*)"long",     no_argument, 0,  0 },
+  {0,         0,                 0,  0 }
+  };
+  while (1) {
+    int ret = getopt_long(*argc, *argv, "s", long_options, &option_index);
+    if(ret==-1)
+      break;
+
+    switch (ret) {
+      case 0:
+        found++;
+      break;
+      case 's':
+        found ++;
+      break;
+      default:
+        printf("option %s", long_options[option_index].name);
+      break;
+    }
+  }
+  if (found!=2){
+    printf("(smpi_)getopt_long failed ! \n");
+  }
+}
+
+int main(int argc, char *argv[])
 {
   int rank;
   int32_t data=11;
 
   MPI_Init(NULL, NULL);
+
+  /* test getopt_long function */
+  test_opts(&argc, &argv);
+
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Request r;
   if (rank==1) {

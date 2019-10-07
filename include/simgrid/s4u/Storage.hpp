@@ -56,12 +56,9 @@ public:
   Host* get_host() { return attached_to_; };
   void set_host(Host* host) { attached_to_ = host; }
 
-  std::unordered_map<std::string, std::string>* get_properties();
-  const char* get_property(const std::string& key);
+  const std::unordered_map<std::string, std::string>* get_properties() const;
+  const char* get_property(const std::string& key) const;
   void set_property(const std::string&, const std::string& value);
-
-  void set_data(void* data) { userdata_ = data; }
-  void* get_data() { return userdata_; }
 
   IoPtr io_init(sg_size_t size, s4u::Io::OpType type);
 
@@ -70,54 +67,12 @@ public:
 
   IoPtr write_async(sg_size_t size);
   sg_size_t write(sg_size_t size);
-  kernel::resource::StorageImpl* get_impl() { return pimpl_; }
-
-  // Deprecated functions
-#ifndef DOXYGEN
-  /** @deprecated Storage::by_name() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::by_name()") Storage* byName(const std::string& name)
-  {
-    return by_name(name);
-  }
-  /** @deprecated Storage::get_name() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_name()") std::string const& getName() const { return get_name(); }
-  /** @deprecated Storage::get_cname() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_cname()") const char* getCname() const { return get_cname(); }
-  /** @deprecated Storage::get_type() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_type()") const char* getType() { return get_type(); }
-  /** @deprecated Storage::get_host() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_host()") Host* getHost() { return get_host(); }
-  /** @deprecated Storage::get_properties() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_properties()") std::map<std::string, std::string>* getProperties()
-  {
-    std::map<std::string, std::string>* res             = new std::map<std::string, std::string>();
-    std::unordered_map<std::string, std::string>* props = get_properties();
-    for (auto const& kv : *props)
-      res->insert(kv);
-    return res;
-  }
-  /** @deprecated Storage::get_property() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_property()") const char* getProperty(const char* key)
-  {
-    return get_property(key);
-  }
-  /** @deprecated Storage::set_property() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::set_property()") void setProperty(const std::string& key,
-                                                                                    const std::string& value)
-  {
-    set_property(key, value);
-  }
-  /** @deprecated Storage::set_data() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::set_data()") void setUserdata(void* data) { set_data(data); }
-  /** @deprecated Storage::get_data() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_data()") void* getUserdata() { return get_data(); }
-#endif
+  kernel::resource::StorageImpl* get_impl() const { return pimpl_; }
 
 private:
   Host* attached_to_ = nullptr;
   kernel::resource::StorageImpl* const pimpl_;
   std::string name_;
-  void* userdata_ = nullptr;
 };
 
 } // namespace s4u

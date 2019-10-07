@@ -511,7 +511,6 @@ static int node(int argc, char *argv[])
       if (node.comm_receive == NULL) {
         task_received = NULL;
         node.comm_receive = MSG_task_irecv(&task_received, node.mailbox);
-        // FIXME: do not make MSG_task_irecv() calls from several functions
       }
       if (!MSG_comm_test(node.comm_receive)) {
         MSG_process_sleep(5);

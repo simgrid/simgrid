@@ -18,7 +18,7 @@ public class EnergyConsumer extends Process {
   }
 
   public void main(String[] args) throws MsgException {
-     Msg.info("Energetic profile: " + getHost().getProperty("watt_per_state"));
+     Msg.info("Energetic profile: " + getHost().getProperty("wattage_per_state"));
      Msg.info("Initial peak speed= " + getHost().getSpeed() + " flop/s; Energy dissipated = "
               + getHost().getConsumedEnergy() + " J");
 

@@ -1,5 +1,4 @@
-/* Copyright (c) 2014-2019. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2019. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,18 +7,18 @@
 #undef NDEBUG
 #endif
 
-#include <cassert>
-#include <cstring>
-
 #include <mc/mc.h>
 
 #include "mc/datatypes.h"
 #include "src/mc/mc_private.hpp"
 
-#include "src/mc/ObjectInformation.hpp"
-#include "src/mc/Type.hpp"
-#include "src/mc/Variable.hpp"
+#include "src/mc/inspect/ObjectInformation.hpp"
+#include "src/mc/inspect/Type.hpp"
+#include "src/mc/inspect/Variable.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
+
+#include <cassert>
+#include <cstring>
 
 // Test broken with multi-dimensional arrays. See https://sourceware.org/bugzilla/show_bug.cgi?id=22546
 // int test_some_array[4][5][6];
@@ -29,14 +28,6 @@ struct some_struct {
   int second[4][5];
 };
 some_struct test_some_struct;
-
-static simgrid::mc::Type* find_type_by_name(simgrid::mc::ObjectInformation* info, const char* name)
-{
-  for (auto& entry : info->types)
-    if(entry.second.name == name)
-      return &entry.second;
-  return nullptr;
-}
 
 static simgrid::mc::Frame* find_function_by_name(
     simgrid::mc::ObjectInformation* info, const char* name)
@@ -73,18 +64,17 @@ static void test_local_variable(simgrid::mc::ObjectInformation* info, const char
   assert(var);
 
   void* frame_base = subprogram->frame_base(*cursor);
-  simgrid::dwarf::Location location = simgrid::dwarf::resolve(
-    var->location_list, info, cursor, frame_base, nullptr, -1);
+  simgrid::dwarf::Location location = simgrid::dwarf::resolve(var->location_list, info, cursor, frame_base, nullptr);
 
   xbt_assert(location.in_memory(), "Expected the variable %s of function %s to be in memory", variable, function);
   xbt_assert(location.address() == address, "Bad resolution of local variable %s of %s", variable, function);
 }
 
-static simgrid::mc::Variable* test_global_variable(simgrid::mc::RemoteClient& process,
-                                                   simgrid::mc::ObjectInformation* info, const char* name,
-                                                   void* address, long byte_size)
+static const simgrid::mc::Variable* test_global_variable(simgrid::mc::RemoteClient& process,
+                                                         simgrid::mc::ObjectInformation* info, const char* name,
+                                                         void* address, long byte_size)
 {
-  simgrid::mc::Variable* variable = info->find_variable(name);
+  const simgrid::mc::Variable* variable = info->find_variable(name);
   xbt_assert(variable, "Global variable %s was not found", name);
   xbt_assert(variable->name == name, "Name mismatch for %s", name);
   xbt_assert(variable->global, "Variable %s is not global", name);
@@ -121,7 +111,7 @@ int main(int argc, char** argv)
 {
   SIMIX_global_init(&argc, argv);
 
-  simgrid::mc::Variable* var;
+  const simgrid::mc::Variable* var;
   simgrid::mc::Type* type;
 
   simgrid::mc::RemoteClient process(getpid(), -1);
@@ -161,5 +151,5 @@ int main(int argc, char** argv)
   s_foo my_foo = {0};
   test_type_by_name(process, my_foo);
 
-  _exit(0);
+  return 0;
 }

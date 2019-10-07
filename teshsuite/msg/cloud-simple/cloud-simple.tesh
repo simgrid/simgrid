@@ -2,7 +2,7 @@
 
 p Testing a vm with two successive tasks
 
-$ $SG_TEST_EXENV ${bindir:=.}/cloud-simple$EXEEXT --log=no_loc ${platfdir}/small_platform.xml
+$ ${bindir:=.}/cloud-simple --log=no_loc ${platfdir}/small_platform.xml
 > [Fafard:master_:(1) 0.000000] [msg_test/INFO] ## Test 1 (started): check computation on normal PMs
 > [Fafard:master_:(1) 0.000000] [msg_test/INFO] ### Put a task on a PM
 > [Fafard:compute:(2) 0.013107] [msg_test/INFO] Fafard:compute task executed 0.0131068

@@ -5,7 +5,7 @@
 #   apt-get libns3-dev ns3
 #
 #
-dist: xenial
+dist: bionic
 language: cpp
 compiler:
    - gcc
@@ -14,8 +14,6 @@ jdk:
    - openjdk11
 addons:
   apt:
-    update: true
-    allow_unauthenticated: yes
     packages:
     - cmake
     - valgrind
@@ -25,7 +23,7 @@ addons:
     - libdw-dev
     - libevent-dev
     - libunwind8-dev
-#    - pybind11-dev # Not available in Xenial
+    - pybind11-dev
   homebrew:
     packages:
     - python
@@ -38,21 +36,32 @@ addons:
     build_command:   "make VERBOSE=1"
     branch_pattern: coverity
 
-# Don't install lua from Debian as we need 5.3 and don't have a backport.
-#   Installing lua from the source does not make any dynamic library.
-#   - curl http://www.lua.org/ftp/lua-5.3.1.tar.gz | tar xz
-#   - cd lua-5.3.1 
-#   -   if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then make linux ; else make macosx ; fi
-#   -   make INSTALL_TOP=$TRAVIS_BUILD_DIR/LuaInstall install
-#   - cd ..
-#   - ls -lR $TRAVIS_BUILD_DIR/LuaInstall
-
-script:
-   - if [[ "$TRAVIS_OS_NAME" == "osx"   ]]; then cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON .; fi
-   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cmake -Denable_model-checking=ON  -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON . || (echo XXX CMakeOutput.log; cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeOutput.log; echo XXX CMakeError.log;cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeError.log; exit 1) ; fi
-   # run make and ctest in the sonar wrapper on master/linux; run it directly in PR or OSX
-   # - if [[ -e Makefile ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "${TRAVIS_PULL_REQUEST}" == "false" ]]; then ./tools/internal/travis-sonarqube.sh make -j2 VERBOSE=1; else make -j2 VERBOSE=1 && ctest -j2 --output-on-failure ; fi
-   - make -j2 VERBOSE=1 all tests && ctest -j2 --output-on-failure
+jobs:
+  include:
+    - os: linux
+      script:
+      - sudo apt-get update -qq
+      - sudo apt-get install cmake valgrind gfortran libboost-dev libboost-all-dev libdw-dev libevent-dev libunwind8-dev pybind11-dev
+      - (cmake -Denable_model-checking=ON  -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON . || (echo XXX CMakeOutput.log; cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeOutput.log; echo XXX CMakeError.log;cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeError.log; exit 1))
+      - make -j2 VERBOSE=1 all tests && ctest -j2 --output-on-failure
+    - os: windows
+      script:
+      - mv "C:/Program Files/Git/usr/bin/sh.exe" "sh-ignored.exe"
+      -  choco install boost-msvc-12 python jdk8
+      -  export CC=gcc
+      -  export CXX=g++
+      -  export PATH='C:\Python37':'C:\local\boost_1_58_0':$PATH
+      -  export BOOST_LIBRARYDIR='C:/local/boost_1_58_0/lib64-msvc-12.0'
+      -  export BOOST_INCLUDEDIR='C:/local/boost_1_58_0/include'
+      -  export JAVA_HOME='C:/Program Files/Java/jdk1.8.0_211'
+      -  cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
+      -  mingw32-make.exe VERBOSE=1 java-all && ctest --output-on-failure -R java
+    - os: osx
+      osx_image: xcode11
+      script:
+      - export LIBRARY_PATH=/usr/local/lib/gcc/9
+      - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON .
+      - make -j2 VERBOSE=1 all tests && ctest -j2 --output-on-failure
 notifications:
   recipients:
     - martin.quinson@ens-rennes.fr
@@ -66,6 +75,3 @@ notifications:
       - "irc.debian.org#simgrid"
   template:
     - "%{repository}/%{branch} (%{commit} - %{author}): %{message}"
-os:
-  - linux
-  - osx

@@ -33,9 +33,9 @@ int main(int argc, char *argv[])
     MPI_Alloc_mem(MAX_SIZE * sizeof(int), MPI_INFO_NULL, &winbuf);
     MPI_Win_create(winbuf, MAX_SIZE * sizeof(int), sizeof(int), MPI_INFO_NULL,
                    MPI_COMM_WORLD, &window);
-
+    buf[0] = 0;
+    winbuf[0]=0;
     MPI_Win_lock_all(0, window);
-
     /* Test Raccumulate local completion with small data.
      * Small data is always copied to header packet as immediate data. */
     if (rank == 1) {

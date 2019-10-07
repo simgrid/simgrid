@@ -146,6 +146,7 @@ examples/deprecated/msg/*.pcap
 examples/deprecated/msg/*.tr
 examples/s4u/actor-create/s4u-actor-create
 examples/s4u/actor-daemon/s4u-actor-daemon
+examples/s4u/actor-exiting/s4u-actor-exiting
 examples/s4u/actor-join/s4u-actor-join
 examples/s4u/actor-kill/s4u-actor-kill
 examples/s4u/actor-lifetime/s4u-actor-lifetime
@@ -179,12 +180,14 @@ examples/s4u/exec-dvfs/s4u-exec-dvfs
 examples/s4u/exec-monitor/s4u-exec-monitor
 examples/s4u/exec-ptask/s4u-exec-ptask
 examples/s4u/exec-remote/s4u-exec-remote
+examples/s4u/exec-waitany/s4u-exec-waitany
 examples/s4u/io-async/s4u-io-async
 examples/s4u/io-file-remote/s4u-io-file-remote
 examples/s4u/io-file-system/s4u-io-file-system
 examples/s4u/io-storage-raw/s4u-io-storage-raw
 examples/s4u/maestro-set/s4u-maestro-set
 examples/s4u/platform-failures/s4u-platform-failures
+examples/s4u/platform-profile/s4u-platform-profile
 examples/s4u/platform-properties/s4u-platform-properties
 examples/s4u/plugin-hostload/s4u-plugin-hostload
 examples/s4u/replay-comm/s4u-replay-comm
@@ -205,13 +208,12 @@ examples/deprecated/simdag/test/sd_test
 examples/deprecated/simdag/throttling/sd_throttling
 examples/deprecated/simdag/typed_tasks/sd_typed_tasks
 examples/smpi/ampi/smpi_ampi
-examples/smpi/energy/f77/sef
-examples/smpi/energy/f90/sef90
 examples/smpi/energy/smpi_energy
 examples/smpi/mc/smpi_bugged1
 examples/smpi/mc/smpi_bugged1_liveness
 examples/smpi/mc/smpi_bugged2
 examples/smpi/mc/smpi_mutual_exclusion
+examples/smpi/mc/smpi_sendsend
 examples/smpi/NAS/dt
 examples/smpi/NAS/ep
 examples/smpi/NAS/is

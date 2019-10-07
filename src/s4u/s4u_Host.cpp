@@ -7,6 +7,8 @@
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Exec.hpp"
+#include "simgrid/s4u/VirtualMachine.hpp"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 
@@ -15,8 +17,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_host, s4u, "Logging specific to the S4U hosts");
 XBT_LOG_EXTERNAL_CATEGORY(surf_route);
-
-int USER_HOST_LEVEL = -1;
 
 namespace simgrid {
 namespace xbt {
@@ -85,7 +85,7 @@ Host* Host::current()
 void Host::turn_on()
 {
   if (not is_on()) {
-    simix::simcall([this] {
+    kernel::actor::simcall([this] {
       this->pimpl_cpu->turn_on();
       this->pimpl_->turn_on();
       on_state_change(*this);
@@ -97,7 +97,12 @@ void Host::turn_on()
 void Host::turn_off()
 {
   if (is_on()) {
-    simix::simcall([this] {
+    kernel::actor::simcall([this] {
+      for (VirtualMachine* const& vm : vm::VirtualMachineImpl::allVms_)
+        if (vm->get_pm() == this) {
+          vm->shutdown();
+          vm->turn_off();
+        }
       this->pimpl_cpu->turn_off();
       this->pimpl_->turn_off();
 
@@ -132,22 +137,6 @@ int Host::get_actor_count()
   return pimpl_->get_actor_count();
 }
 
-/** @deprecated */
-void Host::getProcesses(std::vector<ActorPtr>* list)
-{
-  auto actors = get_all_actors();
-  for (auto& actor : actors)
-    list->push_back(actor);
-}
-
-/** @deprecated */
-void Host::actorList(std::vector<ActorPtr>* whereto)
-{
-  auto actors = get_all_actors();
-  for (auto& actor : actors)
-    whereto->push_back(actor);
-}
-
 /**
  * @brief Find a route toward another host
  *
@@ -180,10 +169,24 @@ void Host::route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links,
   }
 }
 
-/** Get the properties assigned to a host */
-std::unordered_map<std::string, std::string>* Host::get_properties()
+/** @brief Returns the networking zone englobing that host */
+NetZone* Host::get_englobing_zone()
 {
-  return simix::simcall([this] { return this->pimpl_->get_properties(); });
+  return pimpl_netpoint->get_englobing_zone()->get_iface();
+}
+
+void Host::send_to(Host* dest, double byte_amount)
+{
+  std::vector<Host*> m_host_list   = {this, dest};
+  std::vector<double> flops_amount = {0, 0};
+  std::vector<double> bytes_amount = {0, byte_amount, 0, 0};
+  this_actor::parallel_execute(m_host_list, flops_amount, bytes_amount);
+}
+
+/** Get the properties assigned to a host */
+const std::unordered_map<std::string, std::string>* Host::get_properties() const
+{
+  return this->pimpl_->get_properties();
 }
 
 /** Retrieve the property value (or nullptr if not set) */
@@ -194,13 +197,19 @@ const char* Host::get_property(const std::string& key) const
 
 void Host::set_property(const std::string& key, const std::string& value)
 {
-  simix::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  kernel::actor::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
 }
+
+void Host::set_properties(const std::map<std::string, std::string>& properties)
+{
+  kernel::actor::simcall([this, &properties] { this->pimpl_->set_properties(properties); });
+}
+
 /** Specify a profile turning the host on and off according to a exhaustive list or a stochastic law.
  * The profile must contain boolean values. */
 void Host::set_state_profile(kernel::profile::Profile* p)
 {
-  return simix::simcall([this, p] { pimpl_cpu->set_state_profile(p); });
+  return kernel::actor::simcall([this, p] { pimpl_cpu->set_state_profile(p); });
 }
 /** Specify a profile modeling the external load according to a exhaustive list or a stochastic law.
  *
@@ -210,7 +219,7 @@ void Host::set_state_profile(kernel::profile::Profile* p)
  */
 void Host::set_speed_profile(kernel::profile::Profile* p)
 {
-  return simix::simcall([this, p] { pimpl_cpu->set_speed_profile(p); });
+  return kernel::actor::simcall([this, p] { pimpl_cpu->set_speed_profile(p); });
 }
 
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
@@ -265,7 +274,7 @@ int Host::get_core_count() const
 /** @brief Set the pstate at which the host should run */
 void Host::set_pstate(int pstate_index)
 {
-  simix::simcall([this, pstate_index] { this->pimpl_cpu->set_pstate(pstate_index); });
+  kernel::actor::simcall([this, pstate_index] { this->pimpl_cpu->set_pstate(pstate_index); });
 }
 /** @brief Retrieve the pstate at which the host is currently running */
 int Host::get_pstate() const
@@ -273,6 +282,20 @@ int Host::get_pstate() const
   return this->pimpl_cpu->get_pstate();
 }
 
+std::vector<Disk*> Host::get_disks() const
+{
+  return kernel::actor::simcall([this] { return this->pimpl_->get_disks(); });
+}
+
+void Host::add_disk(Disk* disk)
+{
+  kernel::actor::simcall([this, disk] { this->pimpl_->add_disk(disk); });
+}
+
+void Host::remove_disk(const std::string& disk_name)
+{
+  kernel::actor::simcall([this, disk_name] { this->pimpl_->remove_disk(disk_name); });
+}
 /**
  * @ingroup simix_storage_management
  * @brief Returns the list of storages attached to a host.
@@ -280,14 +303,7 @@ int Host::get_pstate() const
  */
 std::vector<const char*> Host::get_attached_storages() const
 {
-  return simix::simcall([this] { return this->pimpl_->get_attached_storages(); });
-}
-
-void Host::getAttachedStorages(std::vector<const char*>* storages)
-{
-  std::vector<const char*> local_storages = simix::simcall([this] { return this->pimpl_->get_attached_storages(); });
-  for (auto elm : local_storages)
-    storages->push_back(elm);
+  return kernel::actor::simcall([this] { return this->pimpl_->get_attached_storages(); });
 }
 
 std::unordered_map<std::string, Storage*> const& Host::get_mounted_storages()
@@ -383,17 +399,25 @@ xbt_dynar_t sg_hosts_as_dynar()
 // ========= Layering madness ==============*
 
 // ========== User data Layer ==========
-void* sg_host_user(sg_host_t host)
+void* sg_host_data(sg_host_t host)
 {
-  return host->extension(USER_HOST_LEVEL);
+  return host->get_data();
 }
-void sg_host_user_set(sg_host_t host, void* userdata)
+void sg_host_data_set(sg_host_t host, void* userdata)
 {
-  host->extension_set(USER_HOST_LEVEL, userdata);
+  host->set_data(userdata);
 }
-void sg_host_user_destroy(sg_host_t host)
+void* sg_host_user(sg_host_t host) // deprecated
 {
-  host->extension_set(USER_HOST_LEVEL, nullptr);
+  return host->get_data();
+}
+void sg_host_user_set(sg_host_t host, void* userdata) // deprecated
+{
+  host->set_data(userdata);
+}
+void sg_host_user_destroy(sg_host_t host) // deprecated
+{
+  host->set_data(nullptr);
 }
 
 // ========= storage related functions ============
@@ -528,7 +552,7 @@ int sg_host_is_off(sg_host_t host)
 xbt_dict_t sg_host_get_properties(sg_host_t host)
 {
   xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
-  std::unordered_map<std::string, std::string>* props = host->get_properties();
+  const std::unordered_map<std::string, std::string>* props = host->get_properties();
   if (props == nullptr)
     return nullptr;
   for (auto const& elm : *props) {
@@ -601,13 +625,18 @@ double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
   return min_bandwidth;
 }
 
+void sg_host_send_to(sg_host_t from, sg_host_t to, double byte_amount)
+{
+  from->send_to(to, byte_amount);
+}
+
 /** @brief Displays debugging information about a host */
 void sg_host_dump(sg_host_t host)
 {
   XBT_INFO("Displaying host %s", host->get_cname());
   XBT_INFO("  - speed: %.0f", host->get_speed());
   XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(host));
-  std::unordered_map<std::string, std::string>* props = host->get_properties();
+  const std::unordered_map<std::string, std::string>* props = host->get_properties();
 
   if (not props->empty()) {
     XBT_INFO("  - properties:");

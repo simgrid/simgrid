@@ -177,8 +177,6 @@ int Coll_bcast_mvapich2_knomial_intra_node::bcast(void *buffer,
 {
     int local_size = 0, rank;
     int mpi_errno = MPI_SUCCESS;
-    MPI_Request *reqarray = NULL;
-    MPI_Status *starray = NULL;
     int src, dst, mask, relative_rank;
     int k;
     if (MV2_Bcast_function==NULL){
@@ -196,10 +194,9 @@ int Coll_bcast_mvapich2_knomial_intra_node::bcast(void *buffer,
     local_size = comm->size();
     rank = comm->rank();
 
+    MPI_Request* reqarray = new MPI_Request[2 * mv2_intra_node_knomial_factor];
 
-    reqarray=(MPI_Request *)xbt_malloc(2 * mv2_intra_node_knomial_factor * sizeof (MPI_Request));
-
-    starray=(MPI_Status *)xbt_malloc(2 * mv2_intra_node_knomial_factor * sizeof (MPI_Status));
+    MPI_Status* starray = new MPI_Status[2 * mv2_intra_node_knomial_factor];
 
     /* intra-node k-nomial bcast  */
     if (local_size > 1) {
@@ -240,8 +237,8 @@ int Coll_bcast_mvapich2_knomial_intra_node::bcast(void *buffer,
             mask /= mv2_intra_node_knomial_factor;
         }
     }
-    xbt_free(reqarray);
-    xbt_free(starray);
+    delete[] reqarray;
+    delete[] starray;
     return mpi_errno;
 }
 
@@ -257,7 +254,7 @@ int Coll_bcast_mvapich2_intra_node::bcast(void *buffer,
     size_t nbytes = 0;
     int is_homogeneous, is_contig;
     MPI_Aint type_size;
-    void *tmp_buf = NULL;
+    unsigned char* tmp_buf = nullptr;
     MPI_Comm shmem_comm;
 
     if (count == 0)
@@ -319,7 +316,7 @@ int Coll_bcast_mvapich2_intra_node::bcast(void *buffer,
         ) {
 
       if (not is_contig || not is_homogeneous) {
-        tmp_buf = (void*)smpi_get_tmp_sendbuffer(nbytes);
+        tmp_buf = smpi_get_tmp_sendbuffer(nbytes);
 
         /* TODO: Pipeline the packing and communication */
         // position = 0;

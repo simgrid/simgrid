@@ -279,54 +279,56 @@ struct double_test {
     }
 
 #if MTEST_HAVE_MIN_MPI_VERSION(2,2)
-#define test_types_set_mpi_2_2_integer(op,post) do {                \
-        op##_test##post(int8_t, MPI_INT8_T);                        \
-        op##_test##post(int16_t, MPI_INT16_T);                      \
-        op##_test##post(int32_t, MPI_INT32_T);                      \
-        op##_test##post(int64_t, MPI_INT64_T);                      \
-        op##_test##post(uint8_t, MPI_UINT8_T);                      \
-        op##_test##post(uint16_t, MPI_UINT16_T);                    \
-        op##_test##post(uint32_t, MPI_UINT32_T);                    \
-        op##_test##post(uint64_t, MPI_UINT64_T);                    \
-        op##_test##post(MPI_Aint, MPI_AINT);                        \
-        op##_test##post(MPI_Offset, MPI_OFFSET);                    \
-    } while (0)
+#define test_types_set_mpi_2_2_integer(op, post)                                                                       \
+  do {                                                                                                                 \
+    _XBT_CONCAT3(op, _test, post)(int8_t, MPI_INT8_T);                                                                 \
+    _XBT_CONCAT3(op, _test, post)(int16_t, MPI_INT16_T);                                                               \
+    _XBT_CONCAT3(op, _test, post)(int32_t, MPI_INT32_T);                                                               \
+    _XBT_CONCAT3(op, _test, post)(int64_t, MPI_INT64_T);                                                               \
+    _XBT_CONCAT3(op, _test, post)(uint8_t, MPI_UINT8_T);                                                               \
+    _XBT_CONCAT3(op, _test, post)(uint16_t, MPI_UINT16_T);                                                             \
+    _XBT_CONCAT3(op, _test, post)(uint32_t, MPI_UINT32_T);                                                             \
+    _XBT_CONCAT3(op, _test, post)(uint64_t, MPI_UINT64_T);                                                             \
+    _XBT_CONCAT3(op, _test, post)(MPI_Aint, MPI_AINT);                                                                 \
+    _XBT_CONCAT3(op, _test, post)(MPI_Offset, MPI_OFFSET);                                                             \
+  } while (0)
 #else
 #define test_types_set_mpi_2_2_integer(op,post) do { } while (0)
 #endif
 
 #if MTEST_HAVE_MIN_MPI_VERSION(3,0)
-#define test_types_set_mpi_3_0_integer(op,post) do {                \
-        op##_test##post(MPI_Count, MPI_COUNT);                      \
-    } while (0)
+#define test_types_set_mpi_3_0_integer(op, post)                                                                       \
+  do {                                                                                                                 \
+    _XBT_CONCAT3(op, _test, post)(MPI_Count, MPI_COUNT);                                                               \
+  } while (0)
 #else
 #define test_types_set_mpi_3_0_integer(op,post) do { } while (0)
 #endif
 
-#define test_types_set1(op, post)                                   \
-    {                                                               \
-        op##_test##post(int, MPI_INT);                              \
-        op##_test##post(long, MPI_LONG);                            \
-        op##_test##post(short, MPI_SHORT);                          \
-        op##_test##post(unsigned short, MPI_UNSIGNED_SHORT);        \
-        op##_test##post(unsigned, MPI_UNSIGNED);                    \
-        op##_test##post(unsigned long, MPI_UNSIGNED_LONG);          \
-        op##_test##post(unsigned char, MPI_UNSIGNED_CHAR);          \
-        test_types_set_mpi_2_2_integer(op,post);                    \
-        test_types_set_mpi_3_0_integer(op,post);                    \
-    }
+#define test_types_set1(op, post)                                                                                      \
+  {                                                                                                                    \
+    _XBT_CONCAT3(op, _test, post)(int, MPI_INT);                                                                       \
+    _XBT_CONCAT3(op, _test, post)(long, MPI_LONG);                                                                     \
+    _XBT_CONCAT3(op, _test, post)(short, MPI_SHORT);                                                                   \
+    _XBT_CONCAT3(op, _test, post)(unsigned short, MPI_UNSIGNED_SHORT);                                                 \
+    _XBT_CONCAT3(op, _test, post)(unsigned, MPI_UNSIGNED);                                                             \
+    _XBT_CONCAT3(op, _test, post)(unsigned long, MPI_UNSIGNED_LONG);                                                   \
+    _XBT_CONCAT3(op, _test, post)(unsigned char, MPI_UNSIGNED_CHAR);                                                   \
+    test_types_set_mpi_2_2_integer(op, post);                                                                          \
+    test_types_set_mpi_3_0_integer(op, post);                                                                          \
+  }
 
-#define test_types_set2(op, post)               \
-    {                                           \
-        test_types_set1(op, post);              \
-        op##_test##post(float, MPI_FLOAT);      \
-        op##_test##post(double, MPI_DOUBLE);    \
-    }
+#define test_types_set2(op, post)                                                                                      \
+  {                                                                                                                    \
+    test_types_set1(op, post);                                                                                         \
+    _XBT_CONCAT3(op, _test, post)(float, MPI_FLOAT);                                                                   \
+    _XBT_CONCAT3(op, _test, post)(double, MPI_DOUBLE);                                                                 \
+  }
 
-#define test_types_set3(op, post)                                   \
-    {                                                               \
-        op##_test##post(unsigned char, MPI_BYTE);                   \
-    }
+#define test_types_set3(op, post)                                                                                      \
+  {                                                                                                                    \
+    _XBT_CONCAT3(op, _test, post)(unsigned char, MPI_BYTE);                                                            \
+  }
 
 /* Make sure that we test complex and double complex, even if long
    double complex is not available */
@@ -335,14 +337,14 @@ struct double_test {
 #if MTEST_HAVE_MIN_MPI_VERSION(2,2) && defined(HAVE_FLOAT__COMPLEX) \
     && defined(HAVE_DOUBLE__COMPLEX) \
     && defined(HAVE_LONG_DOUBLE__COMPLEX)
-#define test_types_set4(op, post)                                             \
-    do {                                                                      \
-        op##_test##post(float _Complex, MPI_C_FLOAT_COMPLEX);                 \
-        op##_test##post(double _Complex, MPI_C_DOUBLE_COMPLEX);               \
-        if (MPI_C_LONG_DOUBLE_COMPLEX != MPI_DATATYPE_NULL) {                 \
-            op##_test##post(long double _Complex, MPI_C_LONG_DOUBLE_COMPLEX); \
-        }                                                                     \
-    } while (0)
+#define test_types_set4(op, post)                                                                                      \
+  do {                                                                                                                 \
+    _XBT_CONCAT3(op, _test, post)(float _Complex, MPI_C_FLOAT_COMPLEX);                                                \
+    _XBT_CONCAT3(op, _test, post)(double _Complex, MPI_C_DOUBLE_COMPLEX);                                              \
+    if (MPI_C_LONG_DOUBLE_COMPLEX != MPI_DATATYPE_NULL) {                                                              \
+      _XBT_CONCAT3(op, _test, post)(long double _Complex, MPI_C_LONG_DOUBLE_COMPLEX);                                  \
+    }                                                                                                                  \
+  } while (0)
 
 #else
 #define test_types_set4(op, post) do { } while (0)
@@ -351,11 +353,11 @@ struct double_test {
 
 #if MTEST_HAVE_MIN_MPI_VERSION(2,2) && defined(HAVE_FLOAT__COMPLEX) \
     && defined(HAVE_DOUBLE__COMPLEX)
-#define test_types_set4(op, post)                                         \
-    do {                                                                  \
-        op##_test##post(float _Complex, MPI_C_FLOAT_COMPLEX);             \
-        op##_test##post(double _Complex, MPI_C_DOUBLE_COMPLEX);           \
-    } while (0)
+#define test_types_set4(op, post)                                                                                      \
+  do {                                                                                                                 \
+    _XBT_CONCAT3(op, _test, post)(float _Complex, MPI_C_FLOAT_COMPLEX);                                                \
+    _XBT_CONCAT3(op, _test, post)(double _Complex, MPI_C_DOUBLE_COMPLEX);                                              \
+  } while (0)
 
 #else
 #define test_types_set4(op, post) do { } while (0)
@@ -364,10 +366,10 @@ struct double_test {
 #endif /* defined(USE_LONG_DOUBLE_COMPLEX) */
 
 #if MTEST_HAVE_MIN_MPI_VERSION(2,2) && defined(HAVE__BOOL)
-#define test_types_set5(op, post)           \
-    do {                                    \
-        op##_test##post(_Bool, MPI_C_BOOL); \
-    } while (0)
+#define test_types_set5(op, post)                                                                                      \
+  do {                                                                                                                 \
+    _XBT_CONCAT3(op, _test, post)(_Bool, MPI_C_BOOL);                                                                  \
+  } while (0)
 
 #else
 #define test_types_set5(op, post) do { } while (0)

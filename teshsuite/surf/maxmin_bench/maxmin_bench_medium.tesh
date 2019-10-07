@@ -3,7 +3,7 @@
 ! timeout 50
 ! expect return 0
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
+$ ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 100
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '98' usage: 13.060939 remaining: 3.166833 concurrency: 7<=8<=10
@@ -106,176 +106,176 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '21' usage: 8.493506 remaining: 6.673327 concurrency: 4<=4<=9
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '3' usage: 10.696304 remaining: 5.434565 concurrency: 5<=5<=40
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '34' usage: 7.922577 remaining: 1.878122 concurrency: 3<=3<=-1
-> [0.000000]: [surf_maxmin/DEBUG] var=10, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004363, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=12, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004363, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=14, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004363, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=17, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004363, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=18, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004363, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=20, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004363, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=21, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004363, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=33, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004363, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=59, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004363, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=61, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004363, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=86, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004363, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=100, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004363, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=10, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004363, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=12, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004363, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=14, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004363, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=17, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004363, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=18, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004363, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=20, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004363, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=21, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004363, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=33, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004363, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=59, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004363, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=61, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004363, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=86, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004363, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=100, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004363, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (10) value to 0.004363
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(10).weight: 1.000000, Var(10).value: 0.004363 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(10).penalty: 1.000000, Var(10).value: 0.004363 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (12) value to 0.004363
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(12).weight: 1.000000, Var(12).value: 0.004363 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(12).penalty: 1.000000, Var(12).value: 0.004363 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (14) value to 0.004363
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(14).weight: 1.000000, Var(14).value: 0.004363 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(14).penalty: 1.000000, Var(14).value: 0.004363 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (17) value to 0.004363
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(17).weight: 1.000000, Var(17).value: 0.004363 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(17).penalty: 1.000000, Var(17).value: 0.004363 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (18) value to 0.004363
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(18).weight: 1.000000, Var(18).value: 0.004363 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(18).penalty: 1.000000, Var(18).value: 0.004363 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (20) value to 0.004363
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(20).weight: 1.000000, Var(20).value: 0.004363 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(20).penalty: 1.000000, Var(20).value: 0.004363 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (21) value to 0.004363
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(21).weight: 1.000000, Var(21).value: 0.004363 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(21).penalty: 1.000000, Var(21).value: 0.004363 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (33) value to 0.004363
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(33).weight: 1.000000, Var(33).value: 0.004363 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(33).penalty: 1.000000, Var(33).value: 0.004363 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (59) value to 0.004363
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(59).weight: 1.000000, Var(59).value: 0.004363 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(59).penalty: 1.000000, Var(59).value: 0.004363 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (61) value to 0.004363
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(61).weight: 1.000000, Var(61).value: 0.004363 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(61).penalty: 1.000000, Var(61).value: 0.004363 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (86) value to 0.004363
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(86).weight: 1.000000, Var(86).value: 0.004363 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(86).penalty: 1.000000, Var(86).value: 0.004363 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (100) value to 0.004363
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(100).weight: 1.000000, Var(100).value: 0.004363 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004363, Var(100).penalty: 1.000000, Var(100).value: 0.004363 
 > [0.000000]: [surf_maxmin/DEBUG] index: 86 	 cnst_light_num: 100 	 || usage: 0.000000 remaining: 0.000000 bound: 0.089910  
-> [0.000000]: [surf_maxmin/DEBUG] var=2, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008030, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=3, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008030, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=19, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008030, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=24, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008030, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=29, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008030, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=31, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008030, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=35, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008030, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=65, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008030, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=66, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008030, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=2, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008030, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=3, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008030, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=19, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008030, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=24, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008030, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=29, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008030, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=31, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008030, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=35, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008030, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=65, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008030, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=66, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008030, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (2) value to 0.008030
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(2).weight: 1.000000, Var(2).value: 0.008030 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(2).penalty: 1.000000, Var(2).value: 0.008030 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (3) value to 0.008030
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(3).weight: 1.000000, Var(3).value: 0.008030 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(3).penalty: 1.000000, Var(3).value: 0.008030 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (19) value to 0.008030
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(19).weight: 1.000000, Var(19).value: 0.008030 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(19).penalty: 1.000000, Var(19).value: 0.008030 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (24) value to 0.008030
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(24).weight: 1.000000, Var(24).value: 0.008030 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(24).penalty: 1.000000, Var(24).value: 0.008030 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (29) value to 0.008030
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(29).weight: 1.000000, Var(29).value: 0.008030 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(29).penalty: 1.000000, Var(29).value: 0.008030 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (31) value to 0.008030
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(31).weight: 1.000000, Var(31).value: 0.008030 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(31).penalty: 1.000000, Var(31).value: 0.008030 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (35) value to 0.008030
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(35).weight: 1.000000, Var(35).value: 0.008030 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(35).penalty: 1.000000, Var(35).value: 0.008030 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (65) value to 0.008030
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(65).weight: 1.000000, Var(65).value: 0.008030 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(65).penalty: 1.000000, Var(65).value: 0.008030 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (66) value to 0.008030
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(66).weight: 1.000000, Var(66).value: 0.008030 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008030, Var(66).penalty: 1.000000, Var(66).value: 0.008030 
 > [0.000000]: [surf_maxmin/DEBUG] index: 33 	 cnst_light_num: 99 	 || usage: 0.000000 remaining: 0.000000 bound: 0.139860  
-> [0.000000]: [surf_maxmin/DEBUG] var=5, var.bound=-1.000000, var.weight=1.000000, min_usage=0.021367, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=13, var.bound=-1.000000, var.weight=1.000000, min_usage=0.021367, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=36, var.bound=-1.000000, var.weight=1.000000, min_usage=0.021367, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=39, var.bound=-1.000000, var.weight=1.000000, min_usage=0.021367, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=42, var.bound=-1.000000, var.weight=1.000000, min_usage=0.021367, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=57, var.bound=-1.000000, var.weight=1.000000, min_usage=0.021367, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=5, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.021367, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=13, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.021367, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=36, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.021367, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=39, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.021367, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=42, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.021367, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=57, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.021367, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (5) value to 0.021367
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.021367, Var(5).weight: 1.000000, Var(5).value: 0.021367 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.021367, Var(5).penalty: 1.000000, Var(5).value: 0.021367 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (13) value to 0.021367
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.021367, Var(13).weight: 1.000000, Var(13).value: 0.021367 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.021367, Var(13).penalty: 1.000000, Var(13).value: 0.021367 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (36) value to 0.021367
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.021367, Var(36).weight: 1.000000, Var(36).value: 0.021367 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.021367, Var(36).penalty: 1.000000, Var(36).value: 0.021367 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (39) value to 0.021367
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.021367, Var(39).weight: 1.000000, Var(39).value: 0.021367 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.021367, Var(39).penalty: 1.000000, Var(39).value: 0.021367 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (42) value to 0.021367
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.021367, Var(42).weight: 1.000000, Var(42).value: 0.021367 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.021367, Var(42).penalty: 1.000000, Var(42).value: 0.021367 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (57) value to 0.021367
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.021367, Var(57).weight: 1.000000, Var(57).value: 0.021367 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.021367, Var(57).penalty: 1.000000, Var(57).value: 0.021367 
 > [0.000000]: [surf_maxmin/DEBUG] index: 30 	 cnst_light_num: 98 	 || usage: 0.000000 remaining: 0.000000 bound: 0.239760  
-> [0.000000]: [surf_maxmin/DEBUG] var=7, var.bound=-1.000000, var.weight=1.000000, min_usage=0.111522, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=9, var.bound=-1.000000, var.weight=1.000000, min_usage=0.111522, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=25, var.bound=-1.000000, var.weight=1.000000, min_usage=0.111522, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=7, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.111522, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=9, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.111522, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=25, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.111522, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (7) value to 0.111522
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.111522, Var(7).weight: 1.000000, Var(7).value: 0.111522 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.111522, Var(7).penalty: 1.000000, Var(7).value: 0.111522 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (9) value to 0.111522
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.111522, Var(9).weight: 1.000000, Var(9).value: 0.111522 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.111522, Var(9).penalty: 1.000000, Var(9).value: 0.111522 
 > [0.000000]: [surf_maxmin/DEBUG] index: 43 	 cnst_light_num: 97 	 || usage: 0.000000 remaining: 6.351599 bound: 6.573427  
 > [0.000000]: [surf_maxmin/DEBUG] index: 35 	 cnst_light_num: 96 	 || usage: 0.000000 remaining: 6.501325 bound: 6.783217  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (25) value to 0.111522
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.111522, Var(25).weight: 1.000000, Var(25).value: 0.111522 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.111522, Var(25).penalty: 1.000000, Var(25).value: 0.111522 
 > [0.000000]: [surf_maxmin/DEBUG] index: 64 	 cnst_light_num: 95 	 || usage: 0.000000 remaining: 0.000000 bound: 0.419580  
 > [0.000000]: [surf_maxmin/DEBUG] index: 37 	 cnst_light_num: 94 	 || usage: 0.000000 remaining: 5.229520 bound: 5.464535  
-> [0.000000]: [surf_maxmin/DEBUG] var=11, var.bound=-1.000000, var.weight=1.000000, min_usage=0.114197, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=60, var.bound=-1.000000, var.weight=1.000000, min_usage=0.114197, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=94, var.bound=-1.000000, var.weight=1.000000, min_usage=0.114197, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=11, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.114197, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=60, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.114197, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=94, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.114197, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (11) value to 0.114197
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.114197, Var(11).weight: 1.000000, Var(11).value: 0.114197 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.114197, Var(11).penalty: 1.000000, Var(11).value: 0.114197 
 > [0.000000]: [surf_maxmin/DEBUG] index: 78 	 cnst_light_num: 93 	 || usage: 0.000000 remaining: 3.639923 bound: 3.946054  
 > [0.000000]: [surf_maxmin/DEBUG] index: 89 	 cnst_light_num: 92 	 || usage: 0.000000 remaining: 1.712163 bound: 1.928072  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (60) value to 0.114197
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.114197, Var(60).weight: 1.000000, Var(60).value: 0.114197 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.114197, Var(60).penalty: 1.000000, Var(60).value: 0.114197 
 > [0.000000]: [surf_maxmin/DEBUG] index: 77 	 cnst_light_num: 91 	 || usage: 0.000000 remaining: 1.857045 bound: 2.437562  
 > [0.000000]: [surf_maxmin/DEBUG] index: 30 	 cnst_light_num: 90 	 || usage: 0.000000 remaining: 6.367133 bound: 6.673327  
 > [0.000000]: [surf_maxmin/DEBUG] index: 39 	 cnst_light_num: 89 	 || usage: 0.000000 remaining: 6.894919 bound: 7.282717  
 > [0.000000]: [surf_maxmin/DEBUG] index: 45 	 cnst_light_num: 88 	 || usage: 0.000000 remaining: 4.984682 bound: 5.784216  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (94) value to 0.114197
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.114197, Var(94).weight: 1.000000, Var(94).value: 0.114197 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.114197, Var(94).penalty: 1.000000, Var(94).value: 0.114197 
 > [0.000000]: [surf_maxmin/DEBUG] index: 30 	 cnst_light_num: 87 	 || usage: 0.000000 remaining: 0.000000 bound: 0.909091  
 > [0.000000]: [surf_maxmin/DEBUG] index: 35 	 cnst_light_num: 86 	 || usage: 0.000000 remaining: 2.100813 bound: 2.467532  
 > [0.000000]: [surf_maxmin/DEBUG] index: 39 	 cnst_light_num: 85 	 || usage: 0.000000 remaining: 8.371246 bound: 8.641359  
 > [0.000000]: [surf_maxmin/DEBUG] index: 30 	 cnst_light_num: 84 	 || usage: 0.000000 remaining: 1.719694 bound: 1.878122  
 > [0.000000]: [surf_maxmin/DEBUG] index: 78 	 cnst_light_num: 83 	 || usage: 0.000000 remaining: 2.160269 bound: 2.597403  
 > [0.000000]: [surf_maxmin/DEBUG] index: 67 	 cnst_light_num: 82 	 || usage: 0.000000 remaining: 2.175342 bound: 2.557443  
-> [0.000000]: [surf_maxmin/DEBUG] var=6, var.bound=-1.000000, var.weight=1.000000, min_usage=0.220110, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=22, var.bound=-1.000000, var.weight=1.000000, min_usage=0.220110, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=6, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.220110, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=22, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.220110, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (6) value to 0.220110
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.220110, Var(6).weight: 1.000000, Var(6).value: 0.220110 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.220110, Var(6).penalty: 1.000000, Var(6).value: 0.220110 
 > [0.000000]: [surf_maxmin/DEBUG] index: 69 	 cnst_light_num: 81 	 || usage: 0.000000 remaining: 5.566744 bound: 6.223776  
 > [0.000000]: [surf_maxmin/DEBUG] index: 71 	 cnst_light_num: 80 	 || usage: 0.000000 remaining: 8.565684 bound: 9.140859  
 > [0.000000]: [surf_maxmin/DEBUG] index: 73 	 cnst_light_num: 79 	 || usage: 0.000000 remaining: 0.742072 bound: 1.418581  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (22) value to 0.220110
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.220110, Var(22).weight: 1.000000, Var(22).value: 0.220110 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.220110, Var(22).penalty: 1.000000, Var(22).value: 0.220110 
 > [0.000000]: [surf_maxmin/DEBUG] index: 64 	 cnst_light_num: 78 	 || usage: 0.000000 remaining: 0.265229 bound: 0.819181  
 > [0.000000]: [surf_maxmin/DEBUG] index: 29 	 cnst_light_num: 77 	 || usage: 0.000000 remaining: 0.000000 bound: 1.078921  
 > [0.000000]: [surf_maxmin/DEBUG] index: 64 	 cnst_light_num: 76 	 || usage: 0.000000 remaining: 7.994916 bound: 8.301698  
 > [0.000000]: [surf_maxmin/DEBUG] index: 36 	 cnst_light_num: 75 	 || usage: 0.000000 remaining: 0.153476 bound: 1.148851  
-> [0.000000]: [surf_maxmin/DEBUG] var=28, var.bound=-1.000000, var.weight=1.000000, min_usage=0.263657, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=28, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.263657, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (28) value to 0.263657
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.263657, Var(28).weight: 1.000000, Var(28).value: 0.263657 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.263657, Var(28).penalty: 1.000000, Var(28).value: 0.263657 
 > [0.000000]: [surf_maxmin/DEBUG] index: 29 	 cnst_light_num: 74 	 || usage: 0.000000 remaining: 8.806164 bound: 9.620380  
 > [0.000000]: [surf_maxmin/DEBUG] index: 38 	 cnst_light_num: 73 	 || usage: 0.000000 remaining: 8.089858 bound: 9.280719  
 > [0.000000]: [surf_maxmin/DEBUG] index: 33 	 cnst_light_num: 72 	 || usage: 0.000000 remaining: 4.844821 bound: 5.434565  
@@ -283,11 +283,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 38 	 cnst_light_num: 70 	 || usage: 0.000000 remaining: 4.360482 bound: 5.334665  
 > [0.000000]: [surf_maxmin/DEBUG] index: 25 	 cnst_light_num: 69 	 || usage: 0.000000 remaining: 0.000000 bound: 0.949051  
 > [0.000000]: [surf_maxmin/DEBUG] index: 37 	 cnst_light_num: 68 	 || usage: 0.000000 remaining: 5.851198 bound: 6.473526  
-> [0.000000]: [surf_maxmin/DEBUG] var=1, var.bound=-1.000000, var.weight=1.000000, min_usage=0.281538, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=15, var.bound=-1.000000, var.weight=1.000000, min_usage=0.281538, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=1, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.281538, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=15, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.281538, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (1) value to 0.281538
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.281538, Var(1).weight: 1.000000, Var(1).value: 0.281538 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.281538, Var(1).penalty: 1.000000, Var(1).value: 0.281538 
 > [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 67 	 || usage: 0.000000 remaining: 2.572545 bound: 3.166833  
 > [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 66 	 || usage: 0.000000 remaining: 2.546729 bound: 3.766234  
 > [0.000000]: [surf_maxmin/DEBUG] index: 4 	 cnst_light_num: 65 	 || usage: 0.000000 remaining: 8.853024 bound: 9.710290  
@@ -298,7 +298,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 21 	 cnst_light_num: 60 	 || usage: 0.000000 remaining: 1.765549 bound: 2.777223  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (15) value to 0.281538
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.281538, Var(15).weight: 1.000000, Var(15).value: 0.281538 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.281538, Var(15).penalty: 1.000000, Var(15).value: 0.281538 
 > [0.000000]: [surf_maxmin/DEBUG] index: 24 	 cnst_light_num: 59 	 || usage: 0.000000 remaining: 6.743340 bound: 9.040959  
 > [0.000000]: [surf_maxmin/DEBUG] index: 28 	 cnst_light_num: 58 	 || usage: 0.000000 remaining: 3.193824 bound: 3.966034  
 > [0.000000]: [surf_maxmin/DEBUG] index: 18 	 cnst_light_num: 57 	 || usage: 0.000000 remaining: 0.152448 bound: 1.528472  
@@ -306,11 +306,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 41 	 cnst_light_num: 55 	 || usage: 0.000000 remaining: 1.804698 bound: 3.346653  
 > [0.000000]: [surf_maxmin/DEBUG] index: 14 	 cnst_light_num: 54 	 || usage: 0.000000 remaining: 7.352391 bound: 9.780220  
 > [0.000000]: [surf_maxmin/DEBUG] index: 6 	 cnst_light_num: 53 	 || usage: 0.000000 remaining: 4.865037 bound: 6.283716  
-> [0.000000]: [surf_maxmin/DEBUG] var=8, var.bound=-1.000000, var.weight=1.000000, min_usage=0.293237, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=16, var.bound=-1.000000, var.weight=1.000000, min_usage=0.293237, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=8, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.293237, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=16, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.293237, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (8) value to 0.293237
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.293237, Var(8).weight: 1.000000, Var(8).value: 0.293237 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.293237, Var(8).penalty: 1.000000, Var(8).value: 0.293237 
 > [0.000000]: [surf_maxmin/DEBUG] index: 37 	 cnst_light_num: 52 	 || usage: 0.000000 remaining: 8.183363 bound: 9.610390  
 > [0.000000]: [surf_maxmin/DEBUG] index: 29 	 cnst_light_num: 51 	 || usage: 0.000000 remaining: 5.407458 bound: 6.343656  
 > [0.000000]: [surf_maxmin/DEBUG] index: 7 	 cnst_light_num: 50 	 || usage: 0.000000 remaining: 8.934859 bound: 9.760240  
@@ -330,7 +330,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 5 	 cnst_light_num: 36 	 || usage: 0.000000 remaining: 5.604287 bound: 7.692308  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (16) value to 0.293237
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.293237, Var(16).weight: 1.000000, Var(16).value: 0.293237 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.293237, Var(16).penalty: 1.000000, Var(16).value: 0.293237 
 > [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 35 	 || usage: 0.000000 remaining: 0.000000 bound: 1.948052  
 > [0.000000]: [surf_maxmin/DEBUG] index: 26 	 cnst_light_num: 34 	 || usage: 0.000000 remaining: 5.197662 bound: 5.894106  
 > [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 33 	 || usage: 0.000000 remaining: 1.441086 bound: 3.006993  
@@ -345,10 +345,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 7 	 cnst_light_num: 24 	 || usage: 0.000000 remaining: 2.217343 bound: 4.375624  
 > [0.000000]: [surf_maxmin/DEBUG] index: 7 	 cnst_light_num: 23 	 || usage: 0.000000 remaining: 5.049686 bound: 5.934066  
 > [0.000000]: [surf_maxmin/DEBUG] index: 16 	 cnst_light_num: 22 	 || usage: 0.000000 remaining: 5.574190 bound: 7.082917  
-> [0.000000]: [surf_maxmin/DEBUG] var=4, var.bound=-1.000000, var.weight=1.000000, min_usage=0.319893, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=4, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.319893, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (4) value to 0.319893
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.319893, Var(4).weight: 1.000000, Var(4).value: 0.319893 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.319893, Var(4).penalty: 1.000000, Var(4).value: 0.319893 
 > [0.000000]: [surf_maxmin/DEBUG] index: 20 	 cnst_light_num: 21 	 || usage: 0.000000 remaining: 4.569620 bound: 6.783217  
 > [0.000000]: [surf_maxmin/DEBUG] index: 6 	 cnst_light_num: 20 	 || usage: 0.000000 remaining: 3.597397 bound: 4.915085  
 > [0.000000]: [surf_maxmin/DEBUG] index: 10 	 cnst_light_num: 19 	 || usage: 0.000000 remaining: 4.238922 bound: 6.713287  
@@ -675,166 +675,166 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '131' usage: 10.369630 remaining: 1.608392 concurrency: 6<=7<=40
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '156' usage: 10.795205 remaining: 5.774226 concurrency: 6<=7<=9
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '103' usage: 11.283716 remaining: 1.088911 concurrency: 7<=8<=-1
-> [0.000000]: [surf_maxmin/DEBUG] var=101, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007926, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=110, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007926, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=125, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007926, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=130, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007926, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=131, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007926, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=132, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007926, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=136, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007926, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=138, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007926, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=139, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007926, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=153, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007926, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=101, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007926, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=110, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007926, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=125, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007926, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=130, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007926, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=131, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007926, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=132, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007926, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=136, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007926, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=138, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007926, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=139, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007926, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=153, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007926, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (101) value to 0.007926
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(101).weight: 1.000000, Var(101).value: 0.007926 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(101).penalty: 1.000000, Var(101).value: 0.007926 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (110) value to 0.007926
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(110).weight: 1.000000, Var(110).value: 0.007926 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(110).penalty: 1.000000, Var(110).value: 0.007926 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (125) value to 0.007926
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(125).weight: 1.000000, Var(125).value: 0.007926 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(125).penalty: 1.000000, Var(125).value: 0.007926 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (130) value to 0.007926
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(130).weight: 1.000000, Var(130).value: 0.007926 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(130).penalty: 1.000000, Var(130).value: 0.007926 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (131) value to 0.007926
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(131).weight: 1.000000, Var(131).value: 0.007926 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(131).penalty: 1.000000, Var(131).value: 0.007926 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (132) value to 0.007926
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(132).weight: 1.000000, Var(132).value: 0.007926 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(132).penalty: 1.000000, Var(132).value: 0.007926 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (136) value to 0.007926
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(136).weight: 1.000000, Var(136).value: 0.007926 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(136).penalty: 1.000000, Var(136).value: 0.007926 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (138) value to 0.007926
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(138).weight: 1.000000, Var(138).value: 0.007926 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(138).penalty: 1.000000, Var(138).value: 0.007926 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (139) value to 0.007926
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(139).weight: 1.000000, Var(139).value: 0.007926 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(139).penalty: 1.000000, Var(139).value: 0.007926 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (153) value to 0.007926
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(153).weight: 1.000000, Var(153).value: 0.007926 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007926, Var(153).penalty: 1.000000, Var(153).value: 0.007926 
 > [0.000000]: [surf_maxmin/DEBUG] index: 5 	 cnst_light_num: 100 	 || usage: 0.000000 remaining: 0.000000 bound: 0.119880  
-> [0.000000]: [surf_maxmin/DEBUG] var=102, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008159, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=103, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008159, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=104, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008159, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=105, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008159, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=106, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008159, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=112, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008159, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=127, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008159, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=129, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008159, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=102, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008159, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=103, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008159, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=104, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008159, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=105, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008159, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=106, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008159, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=112, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008159, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=127, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008159, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=129, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008159, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (102) value to 0.008159
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(102).weight: 1.000000, Var(102).value: 0.008159 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(102).penalty: 1.000000, Var(102).value: 0.008159 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (103) value to 0.008159
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(103).weight: 1.000000, Var(103).value: 0.008159 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(103).penalty: 1.000000, Var(103).value: 0.008159 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (104) value to 0.008159
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(104).weight: 1.000000, Var(104).value: 0.008159 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(104).penalty: 1.000000, Var(104).value: 0.008159 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (105) value to 0.008159
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(105).weight: 1.000000, Var(105).value: 0.008159 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(105).penalty: 1.000000, Var(105).value: 0.008159 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (106) value to 0.008159
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(106).weight: 1.000000, Var(106).value: 0.008159 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(106).penalty: 1.000000, Var(106).value: 0.008159 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (112) value to 0.008159
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(112).weight: 1.000000, Var(112).value: 0.008159 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(112).penalty: 1.000000, Var(112).value: 0.008159 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (127) value to 0.008159
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(127).weight: 1.000000, Var(127).value: 0.008159 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(127).penalty: 1.000000, Var(127).value: 0.008159 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (129) value to 0.008159
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(129).weight: 1.000000, Var(129).value: 0.008159 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008159, Var(129).penalty: 1.000000, Var(129).value: 0.008159 
 > [0.000000]: [surf_maxmin/DEBUG] index: 65 	 cnst_light_num: 99 	 || usage: 0.000000 remaining: 2.401264 bound: 2.457542  
 > [0.000000]: [surf_maxmin/DEBUG] index: 13 	 cnst_light_num: 98 	 || usage: 0.000000 remaining: 0.000000 bound: 0.159840  
-> [0.000000]: [surf_maxmin/DEBUG] var=108, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008523, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=114, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008523, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=116, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008523, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=121, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008523, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=141, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008523, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=144, var.bound=-1.000000, var.weight=1.000000, min_usage=0.008523, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=108, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008523, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=114, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008523, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=116, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008523, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=121, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008523, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=141, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008523, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=144, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.008523, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (108) value to 0.008523
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008523, Var(108).weight: 1.000000, Var(108).value: 0.008523 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008523, Var(108).penalty: 1.000000, Var(108).value: 0.008523 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (114) value to 0.008523
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008523, Var(114).weight: 1.000000, Var(114).value: 0.008523 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008523, Var(114).penalty: 1.000000, Var(114).value: 0.008523 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (116) value to 0.008523
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008523, Var(116).weight: 1.000000, Var(116).value: 0.008523 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008523, Var(116).penalty: 1.000000, Var(116).value: 0.008523 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (121) value to 0.008523
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008523, Var(121).weight: 1.000000, Var(121).value: 0.008523 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008523, Var(121).penalty: 1.000000, Var(121).value: 0.008523 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (141) value to 0.008523
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008523, Var(141).weight: 1.000000, Var(141).value: 0.008523 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008523, Var(141).penalty: 1.000000, Var(141).value: 0.008523 
 > [0.000000]: [surf_maxmin/DEBUG] index: 71 	 cnst_light_num: 97 	 || usage: 0.000000 remaining: 8.670797 bound: 8.741259  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (144) value to 0.008523
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008523, Var(144).weight: 1.000000, Var(144).value: 0.008523 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.008523, Var(144).penalty: 1.000000, Var(144).value: 0.008523 
 > [0.000000]: [surf_maxmin/DEBUG] index: 3 	 cnst_light_num: 96 	 || usage: 0.000000 remaining: 0.000000 bound: 0.149850  
 > [0.000000]: [surf_maxmin/DEBUG] index: 53 	 cnst_light_num: 95 	 || usage: 0.000000 remaining: 6.333684 bound: 6.373626  
-> [0.000000]: [surf_maxmin/DEBUG] var=117, var.bound=-1.000000, var.weight=1.000000, min_usage=0.016848, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=119, var.bound=-1.000000, var.weight=1.000000, min_usage=0.016848, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=181, var.bound=-1.000000, var.weight=1.000000, min_usage=0.016848, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=117, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.016848, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=119, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.016848, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=181, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.016848, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (117) value to 0.016848
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.016848, Var(117).weight: 1.000000, Var(117).value: 0.016848 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.016848, Var(117).penalty: 1.000000, Var(117).value: 0.016848 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (119) value to 0.016848
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.016848, Var(119).weight: 1.000000, Var(119).value: 0.016848 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.016848, Var(119).penalty: 1.000000, Var(119).value: 0.016848 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (181) value to 0.016848
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.016848, Var(181).weight: 1.000000, Var(181).value: 0.016848 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.016848, Var(181).penalty: 1.000000, Var(181).value: 0.016848 
 > [0.000000]: [surf_maxmin/DEBUG] index: 69 	 cnst_light_num: 94 	 || usage: 0.000000 remaining: 5.020334 bound: 5.094905  
 > [0.000000]: [surf_maxmin/DEBUG] index: 22 	 cnst_light_num: 93 	 || usage: 0.000000 remaining: 0.000000 bound: 0.149850  
-> [0.000000]: [surf_maxmin/DEBUG] var=115, var.bound=-1.000000, var.weight=1.000000, min_usage=0.017542, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=120, var.bound=-1.000000, var.weight=1.000000, min_usage=0.017542, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=122, var.bound=-1.000000, var.weight=1.000000, min_usage=0.017542, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=115, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.017542, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=120, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.017542, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=122, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.017542, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (115) value to 0.017542
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.017542, Var(115).weight: 1.000000, Var(115).value: 0.017542 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.017542, Var(115).penalty: 1.000000, Var(115).value: 0.017542 
 > [0.000000]: [surf_maxmin/DEBUG] index: 44 	 cnst_light_num: 92 	 || usage: 0.000000 remaining: 1.917360 bound: 2.027972  
 > [0.000000]: [surf_maxmin/DEBUG] index: 54 	 cnst_light_num: 91 	 || usage: 0.000000 remaining: 4.207907 bound: 4.305694  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (120) value to 0.017542
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.017542, Var(120).weight: 1.000000, Var(120).value: 0.017542 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.017542, Var(120).penalty: 1.000000, Var(120).value: 0.017542 
 > [0.000000]: [surf_maxmin/DEBUG] index: 74 	 cnst_light_num: 90 	 || usage: 0.000000 remaining: 2.741877 bound: 2.887113  
 > [0.000000]: [surf_maxmin/DEBUG] index: 28 	 cnst_light_num: 89 	 || usage: 0.000000 remaining: 7.135906 bound: 7.252747  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (122) value to 0.017542
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.017542, Var(122).weight: 1.000000, Var(122).value: 0.017542 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.017542, Var(122).penalty: 1.000000, Var(122).value: 0.017542 
 > [0.000000]: [surf_maxmin/DEBUG] index: 59 	 cnst_light_num: 88 	 || usage: 0.000000 remaining: 4.167871 bound: 4.315684  
 > [0.000000]: [surf_maxmin/DEBUG] index: 68 	 cnst_light_num: 87 	 || usage: 0.000000 remaining: 0.000000 bound: 0.249750  
-> [0.000000]: [surf_maxmin/DEBUG] var=109, var.bound=-1.000000, var.weight=1.000000, min_usage=0.023470, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=111, var.bound=-1.000000, var.weight=1.000000, min_usage=0.023470, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=118, var.bound=-1.000000, var.weight=1.000000, min_usage=0.023470, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=109, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.023470, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=111, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.023470, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=118, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.023470, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (109) value to 0.023470
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023470, Var(109).weight: 1.000000, Var(109).value: 0.023470 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023470, Var(109).penalty: 1.000000, Var(109).value: 0.023470 
 > [0.000000]: [surf_maxmin/DEBUG] index: 38 	 cnst_light_num: 86 	 || usage: 0.000000 remaining: 3.751087 bound: 3.896104  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (111) value to 0.023470
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023470, Var(111).weight: 1.000000, Var(111).value: 0.023470 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023470, Var(111).penalty: 1.000000, Var(111).value: 0.023470 
 > [0.000000]: [surf_maxmin/DEBUG] index: 54 	 cnst_light_num: 85 	 || usage: 0.000000 remaining: 1.804308 bound: 1.878122  
 > [0.000000]: [surf_maxmin/DEBUG] index: 69 	 cnst_light_num: 84 	 || usage: 0.000000 remaining: 8.730985 bound: 8.861139  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (118) value to 0.023470
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023470, Var(118).weight: 1.000000, Var(118).value: 0.023470 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023470, Var(118).penalty: 1.000000, Var(118).value: 0.023470 
 > [0.000000]: [surf_maxmin/DEBUG] index: 28 	 cnst_light_num: 83 	 || usage: 0.000000 remaining: 2.564810 bound: 2.737263  
 > [0.000000]: [surf_maxmin/DEBUG] index: 26 	 cnst_light_num: 82 	 || usage: 0.000000 remaining: 7.605992 bound: 7.722278  
 > [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 81 	 || usage: 0.000000 remaining: 0.000000 bound: 0.229770  
 > [0.000000]: [surf_maxmin/DEBUG] index: 66 	 cnst_light_num: 80 	 || usage: 0.000000 remaining: 6.046675 bound: 6.253746  
 > [0.000000]: [surf_maxmin/DEBUG] index: 62 	 cnst_light_num: 79 	 || usage: 0.000000 remaining: 7.487702 bound: 7.702298  
 > [0.000000]: [surf_maxmin/DEBUG] index: 3 	 cnst_light_num: 78 	 || usage: 0.000000 remaining: 1.079910 bound: 1.168831  
-> [0.000000]: [surf_maxmin/DEBUG] var=113, var.bound=-1.000000, var.weight=1.000000, min_usage=0.052532, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=156, var.bound=-1.000000, var.weight=1.000000, min_usage=0.052532, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=113, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.052532, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=156, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.052532, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (113) value to 0.052532
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.052532, Var(113).weight: 1.000000, Var(113).value: 0.052532 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.052532, Var(113).penalty: 1.000000, Var(113).value: 0.052532 
 > [0.000000]: [surf_maxmin/DEBUG] index: 42 	 cnst_light_num: 77 	 || usage: 0.000000 remaining: 6.792157 bound: 7.062937  
 > [0.000000]: [surf_maxmin/DEBUG] index: 31 	 cnst_light_num: 76 	 || usage: 0.000000 remaining: 9.368723 bound: 9.540460  
 > [0.000000]: [surf_maxmin/DEBUG] index: 50 	 cnst_light_num: 75 	 || usage: 0.000000 remaining: 8.560864 bound: 8.751249  
@@ -843,7 +843,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 45 	 cnst_light_num: 72 	 || usage: 0.000000 remaining: 4.138470 bound: 4.365634  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (156) value to 0.052532
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.052532, Var(156).weight: 1.000000, Var(156).value: 0.052532 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.052532, Var(156).penalty: 1.000000, Var(156).value: 0.052532 
 > [0.000000]: [surf_maxmin/DEBUG] index: 20 	 cnst_light_num: 71 	 || usage: 0.000000 remaining: 5.229336 bound: 5.404595  
 > [0.000000]: [surf_maxmin/DEBUG] index: 52 	 cnst_light_num: 70 	 || usage: 0.000000 remaining: 9.576867 bound: 9.730270  
 > [0.000000]: [surf_maxmin/DEBUG] index: 40 	 cnst_light_num: 69 	 || usage: 0.000000 remaining: 0.000000 bound: 0.299700  
@@ -852,10 +852,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 65 	 cnst_light_num: 66 	 || usage: 0.000000 remaining: 5.550824 bound: 5.774226  
 > [0.000000]: [surf_maxmin/DEBUG] index: 38 	 cnst_light_num: 65 	 || usage: 0.000000 remaining: 6.938266 bound: 7.102897  
 > [0.000000]: [surf_maxmin/DEBUG] index: 23 	 cnst_light_num: 64 	 || usage: 0.000000 remaining: 3.985576 bound: 4.125874  
-> [0.000000]: [surf_maxmin/DEBUG] var=147, var.bound=-1.000000, var.weight=1.000000, min_usage=0.060227, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=147, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.060227, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (147) value to 0.060227
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.060227, Var(147).weight: 1.000000, Var(147).value: 0.060227 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.060227, Var(147).penalty: 1.000000, Var(147).value: 0.060227 
 > [0.000000]: [surf_maxmin/DEBUG] index: 60 	 cnst_light_num: 63 	 || usage: 0.000000 remaining: 0.790150 bound: 1.138861  
 > [0.000000]: [surf_maxmin/DEBUG] index: 57 	 cnst_light_num: 62 	 || usage: 0.000000 remaining: 1.626935 bound: 1.938062  
 > [0.000000]: [surf_maxmin/DEBUG] index: 59 	 cnst_light_num: 61 	 || usage: 0.000000 remaining: 1.881502 bound: 2.127872  
@@ -865,11 +865,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 7 	 cnst_light_num: 57 	 || usage: 0.000000 remaining: 7.011837 bound: 7.362637  
 > [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 56 	 || usage: 0.000000 remaining: 0.000000 bound: 0.239760  
 > [0.000000]: [surf_maxmin/DEBUG] index: 36 	 cnst_light_num: 55 	 || usage: 0.000000 remaining: 1.363107 bound: 1.548452  
-> [0.000000]: [surf_maxmin/DEBUG] var=107, var.bound=-1.000000, var.weight=1.000000, min_usage=0.151955, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=124, var.bound=-1.000000, var.weight=1.000000, min_usage=0.151955, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=107, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.151955, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=124, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.151955, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (107) value to 0.151955
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.151955, Var(107).weight: 1.000000, Var(107).value: 0.151955 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.151955, Var(107).penalty: 1.000000, Var(107).value: 0.151955 
 > [0.000000]: [surf_maxmin/DEBUG] index: 47 	 cnst_light_num: 54 	 || usage: 0.000000 remaining: 5.898751 bound: 6.563437  
 > [0.000000]: [surf_maxmin/DEBUG] index: 34 	 cnst_light_num: 53 	 || usage: 0.000000 remaining: 8.764203 bound: 9.020979  
 > [0.000000]: [surf_maxmin/DEBUG] index: 3 	 cnst_light_num: 52 	 || usage: 0.000000 remaining: 0.367055 bound: 0.569431  
@@ -881,7 +881,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 26 	 cnst_light_num: 46 	 || usage: 0.000000 remaining: 1.453623 bound: 1.828172  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (124) value to 0.151955
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.151955, Var(124).weight: 1.000000, Var(124).value: 0.151955 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.151955, Var(124).penalty: 1.000000, Var(124).value: 0.151955 
 > [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 45 	 || usage: 0.000000 remaining: 7.302255 bound: 7.932068  
 > [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 44 	 || usage: 0.000000 remaining: 7.271628 bound: 8.151848  
 > [0.000000]: [surf_maxmin/DEBUG] index: 17 	 cnst_light_num: 43 	 || usage: 0.000000 remaining: 8.011786 bound: 8.281718  
@@ -903,10 +903,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 27 	 || usage: 0.000000 remaining: 9.218764 bound: 9.880120  
 > [0.000000]: [surf_maxmin/DEBUG] index: 13 	 cnst_light_num: 26 	 || usage: 0.000000 remaining: 1.190898 bound: 1.608392  
 > [0.000000]: [surf_maxmin/DEBUG] index: 14 	 cnst_light_num: 25 	 || usage: 0.000000 remaining: 3.822706 bound: 4.185814  
-> [0.000000]: [surf_maxmin/DEBUG] var=143, var.bound=-1.000000, var.weight=1.000000, min_usage=0.162422, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=143, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.162422, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (143) value to 0.162422
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.162422, Var(143).weight: 1.000000, Var(143).value: 0.162422 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.162422, Var(143).penalty: 1.000000, Var(143).value: 0.162422 
 > [0.000000]: [surf_maxmin/DEBUG] index: 14 	 cnst_light_num: 24 	 || usage: 0.000000 remaining: 9.155216 bound: 9.790210  
 > [0.000000]: [surf_maxmin/DEBUG] index: 13 	 cnst_light_num: 23 	 || usage: 0.000000 remaining: 8.797972 bound: 9.480519  
 > [0.000000]: [surf_maxmin/DEBUG] index: 8 	 cnst_light_num: 22 	 || usage: 0.000000 remaining: 6.211834 bound: 6.843157  
@@ -1236,188 +1236,188 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '234' usage: 12.654845 remaining: 4.035964 concurrency: 6<=6<=24
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '272' usage: 19.035465 remaining: 1.598402 concurrency: 8<=9<=24
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '224' usage: 16.651349 remaining: 9.110889 concurrency: 10<=10<=10
-> [0.000000]: [surf_maxmin/DEBUG] var=204, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004588, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=205, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004588, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=208, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004588, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=209, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004588, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=217, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004588, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=220, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004588, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=221, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004588, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=222, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004588, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=223, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004588, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=240, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004588, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=259, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004588, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=272, var.bound=-1.000000, var.weight=1.000000, min_usage=0.004588, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=204, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004588, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=205, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004588, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=208, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004588, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=209, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004588, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=217, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004588, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=220, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004588, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=221, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004588, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=222, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004588, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=223, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004588, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=240, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004588, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=259, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004588, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=272, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.004588, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (204) value to 0.004588
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(204).weight: 1.000000, Var(204).value: 0.004588 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(204).penalty: 1.000000, Var(204).value: 0.004588 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (205) value to 0.004588
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(205).weight: 1.000000, Var(205).value: 0.004588 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(205).penalty: 1.000000, Var(205).value: 0.004588 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (208) value to 0.004588
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(208).weight: 1.000000, Var(208).value: 0.004588 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(208).penalty: 1.000000, Var(208).value: 0.004588 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (209) value to 0.004588
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(209).weight: 1.000000, Var(209).value: 0.004588 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(209).penalty: 1.000000, Var(209).value: 0.004588 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (217) value to 0.004588
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(217).weight: 1.000000, Var(217).value: 0.004588 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(217).penalty: 1.000000, Var(217).value: 0.004588 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (220) value to 0.004588
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(220).weight: 1.000000, Var(220).value: 0.004588 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(220).penalty: 1.000000, Var(220).value: 0.004588 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (221) value to 0.004588
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(221).weight: 1.000000, Var(221).value: 0.004588 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(221).penalty: 1.000000, Var(221).value: 0.004588 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (222) value to 0.004588
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(222).weight: 1.000000, Var(222).value: 0.004588 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(222).penalty: 1.000000, Var(222).value: 0.004588 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (223) value to 0.004588
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(223).weight: 1.000000, Var(223).value: 0.004588 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(223).penalty: 1.000000, Var(223).value: 0.004588 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (240) value to 0.004588
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(240).weight: 1.000000, Var(240).value: 0.004588 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(240).penalty: 1.000000, Var(240).value: 0.004588 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (259) value to 0.004588
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(259).weight: 1.000000, Var(259).value: 0.004588 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(259).penalty: 1.000000, Var(259).value: 0.004588 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (272) value to 0.004588
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(272).weight: 1.000000, Var(272).value: 0.004588 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.004588, Var(272).penalty: 1.000000, Var(272).value: 0.004588 
 > [0.000000]: [surf_maxmin/DEBUG] index: 57 	 cnst_light_num: 100 	 || usage: 0.000000 remaining: 0.000000 bound: 0.069930  
-> [0.000000]: [surf_maxmin/DEBUG] var=203, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011179, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=215, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011179, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=216, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011179, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=226, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011179, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=230, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011179, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=244, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011179, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=253, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011179, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=254, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011179, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=203, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011179, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=215, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011179, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=216, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011179, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=226, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011179, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=230, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011179, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=244, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011179, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=253, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011179, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=254, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011179, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (203) value to 0.011179
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(203).weight: 1.000000, Var(203).value: 0.011179 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(203).penalty: 1.000000, Var(203).value: 0.011179 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (215) value to 0.011179
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(215).weight: 1.000000, Var(215).value: 0.011179 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(215).penalty: 1.000000, Var(215).value: 0.011179 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (216) value to 0.011179
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(216).weight: 1.000000, Var(216).value: 0.011179 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(216).penalty: 1.000000, Var(216).value: 0.011179 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (226) value to 0.011179
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(226).weight: 1.000000, Var(226).value: 0.011179 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(226).penalty: 1.000000, Var(226).value: 0.011179 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (230) value to 0.011179
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(230).weight: 1.000000, Var(230).value: 0.011179 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(230).penalty: 1.000000, Var(230).value: 0.011179 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (244) value to 0.011179
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(244).weight: 1.000000, Var(244).value: 0.011179 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(244).penalty: 1.000000, Var(244).value: 0.011179 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (253) value to 0.011179
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(253).weight: 1.000000, Var(253).value: 0.011179 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(253).penalty: 1.000000, Var(253).value: 0.011179 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (254) value to 0.011179
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(254).weight: 1.000000, Var(254).value: 0.011179 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011179, Var(254).penalty: 1.000000, Var(254).value: 0.011179 
 > [0.000000]: [surf_maxmin/DEBUG] index: 41 	 cnst_light_num: 99 	 || usage: 0.000000 remaining: 0.000000 bound: 0.129870  
-> [0.000000]: [surf_maxmin/DEBUG] var=206, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011967, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=214, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011967, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=224, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011967, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=228, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011967, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=235, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011967, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=255, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011967, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=261, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011967, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=206, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011967, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=214, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011967, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=224, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011967, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=228, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011967, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=235, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011967, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=255, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011967, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=261, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011967, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (206) value to 0.011967
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011967, Var(206).weight: 1.000000, Var(206).value: 0.011967 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011967, Var(206).penalty: 1.000000, Var(206).value: 0.011967 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (214) value to 0.011967
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011967, Var(214).weight: 1.000000, Var(214).value: 0.011967 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011967, Var(214).penalty: 1.000000, Var(214).value: 0.011967 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (224) value to 0.011967
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011967, Var(224).weight: 1.000000, Var(224).value: 0.011967 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011967, Var(224).penalty: 1.000000, Var(224).value: 0.011967 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (228) value to 0.011967
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011967, Var(228).weight: 1.000000, Var(228).value: 0.011967 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011967, Var(228).penalty: 1.000000, Var(228).value: 0.011967 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (235) value to 0.011967
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011967, Var(235).weight: 1.000000, Var(235).value: 0.011967 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011967, Var(235).penalty: 1.000000, Var(235).value: 0.011967 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (255) value to 0.011967
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011967, Var(255).weight: 1.000000, Var(255).value: 0.011967 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011967, Var(255).penalty: 1.000000, Var(255).value: 0.011967 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (261) value to 0.011967
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011967, Var(261).weight: 1.000000, Var(261).value: 0.011967 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011967, Var(261).penalty: 1.000000, Var(261).value: 0.011967 
 > [0.000000]: [surf_maxmin/DEBUG] index: 44 	 cnst_light_num: 98 	 || usage: 0.000000 remaining: 0.000000 bound: 0.209790  
-> [0.000000]: [surf_maxmin/DEBUG] var=210, var.bound=-1.000000, var.weight=1.000000, min_usage=0.018751, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=218, var.bound=-1.000000, var.weight=1.000000, min_usage=0.018751, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=219, var.bound=-1.000000, var.weight=1.000000, min_usage=0.018751, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=245, var.bound=-1.000000, var.weight=1.000000, min_usage=0.018751, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=210, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.018751, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=218, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.018751, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=219, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.018751, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=245, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.018751, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (210) value to 0.018751
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018751, Var(210).weight: 1.000000, Var(210).value: 0.018751 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018751, Var(210).penalty: 1.000000, Var(210).value: 0.018751 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (218) value to 0.018751
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018751, Var(218).weight: 1.000000, Var(218).value: 0.018751 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018751, Var(218).penalty: 1.000000, Var(218).value: 0.018751 
 > [0.000000]: [surf_maxmin/DEBUG] index: 63 	 cnst_light_num: 97 	 || usage: 0.000000 remaining: 0.578879 bound: 0.679321  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (219) value to 0.018751
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018751, Var(219).weight: 1.000000, Var(219).value: 0.018751 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018751, Var(219).penalty: 1.000000, Var(219).value: 0.018751 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (245) value to 0.018751
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018751, Var(245).weight: 1.000000, Var(245).value: 0.018751 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018751, Var(245).penalty: 1.000000, Var(245).value: 0.018751 
 > [0.000000]: [surf_maxmin/DEBUG] index: 93 	 cnst_light_num: 96 	 || usage: 0.000000 remaining: 3.076350 bound: 3.146853  
 > [0.000000]: [surf_maxmin/DEBUG] index: 45 	 cnst_light_num: 95 	 || usage: 0.000000 remaining: 3.769672 bound: 3.896104  
 > [0.000000]: [surf_maxmin/DEBUG] index: 84 	 cnst_light_num: 94 	 || usage: 0.000000 remaining: 0.000000 bound: 0.219780  
-> [0.000000]: [surf_maxmin/DEBUG] var=212, var.bound=-1.000000, var.weight=1.000000, min_usage=0.024496, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=213, var.bound=-1.000000, var.weight=1.000000, min_usage=0.024496, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=247, var.bound=-1.000000, var.weight=1.000000, min_usage=0.024496, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=251, var.bound=-1.000000, var.weight=1.000000, min_usage=0.024496, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=270, var.bound=-1.000000, var.weight=1.000000, min_usage=0.024496, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=212, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.024496, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=213, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.024496, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=247, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.024496, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=251, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.024496, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=270, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.024496, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (212) value to 0.024496
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.024496, Var(212).weight: 1.000000, Var(212).value: 0.024496 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.024496, Var(212).penalty: 1.000000, Var(212).value: 0.024496 
 > [0.000000]: [surf_maxmin/DEBUG] index: 61 	 cnst_light_num: 93 	 || usage: 0.000000 remaining: 2.039851 bound: 2.127872  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (213) value to 0.024496
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.024496, Var(213).weight: 1.000000, Var(213).value: 0.024496 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.024496, Var(213).penalty: 1.000000, Var(213).value: 0.024496 
 > [0.000000]: [surf_maxmin/DEBUG] index: 44 	 cnst_light_num: 92 	 || usage: 0.000000 remaining: 3.878060 bound: 4.035964  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (247) value to 0.024496
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.024496, Var(247).weight: 1.000000, Var(247).value: 0.024496 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.024496, Var(247).penalty: 1.000000, Var(247).value: 0.024496 
 > [0.000000]: [surf_maxmin/DEBUG] index: 60 	 cnst_light_num: 91 	 || usage: 0.000000 remaining: 7.260437 bound: 7.472527  
 > [0.000000]: [surf_maxmin/DEBUG] index: 78 	 cnst_light_num: 90 	 || usage: 0.000000 remaining: 6.425400 bound: 6.613387  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (251) value to 0.024496
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.024496, Var(251).weight: 1.000000, Var(251).value: 0.024496 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.024496, Var(251).penalty: 1.000000, Var(251).value: 0.024496 
 > [0.000000]: [surf_maxmin/DEBUG] index: 70 	 cnst_light_num: 89 	 || usage: 0.000000 remaining: 5.064446 bound: 5.214785  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (270) value to 0.024496
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.024496, Var(270).weight: 1.000000, Var(270).value: 0.024496 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.024496, Var(270).penalty: 1.000000, Var(270).value: 0.024496 
 > [0.000000]: [surf_maxmin/DEBUG] index: 45 	 cnst_light_num: 88 	 || usage: 0.000000 remaining: 4.866697 bound: 5.074925  
 > [0.000000]: [surf_maxmin/DEBUG] index: 54 	 cnst_light_num: 87 	 || usage: 0.000000 remaining: 2.783177 bound: 2.847153  
 > [0.000000]: [surf_maxmin/DEBUG] index: 73 	 cnst_light_num: 86 	 || usage: 0.000000 remaining: 0.000000 bound: 0.269730  
-> [0.000000]: [surf_maxmin/DEBUG] var=231, var.bound=-1.000000, var.weight=1.000000, min_usage=0.028740, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=258, var.bound=-1.000000, var.weight=1.000000, min_usage=0.028740, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=231, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.028740, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=258, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.028740, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (231) value to 0.028740
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.028740, Var(231).weight: 1.000000, Var(231).value: 0.028740 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.028740, Var(231).penalty: 1.000000, Var(231).value: 0.028740 
 > [0.000000]: [surf_maxmin/DEBUG] index: 63 	 cnst_light_num: 85 	 || usage: 0.000000 remaining: 7.996007 bound: 8.151848  
 > [0.000000]: [surf_maxmin/DEBUG] index: 56 	 cnst_light_num: 84 	 || usage: 0.000000 remaining: 1.988515 bound: 2.207792  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (258) value to 0.028740
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.028740, Var(258).weight: 1.000000, Var(258).value: 0.028740 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.028740, Var(258).penalty: 1.000000, Var(258).value: 0.028740 
 > [0.000000]: [surf_maxmin/DEBUG] index: 58 	 cnst_light_num: 83 	 || usage: 0.000000 remaining: 0.000000 bound: 0.219780  
 > [0.000000]: [surf_maxmin/DEBUG] index: 52 	 cnst_light_num: 82 	 || usage: 0.000000 remaining: 3.636900 bound: 3.856144  
 > [0.000000]: [surf_maxmin/DEBUG] index: 48 	 cnst_light_num: 81 	 || usage: 0.000000 remaining: 5.787038 bound: 6.073926  
 > [0.000000]: [surf_maxmin/DEBUG] index: 76 	 cnst_light_num: 80 	 || usage: 0.000000 remaining: 6.904787 bound: 7.102897  
 > [0.000000]: [surf_maxmin/DEBUG] index: 76 	 cnst_light_num: 79 	 || usage: 0.000000 remaining: 2.965961 bound: 3.096903  
 > [0.000000]: [surf_maxmin/DEBUG] index: 63 	 cnst_light_num: 78 	 || usage: 0.000000 remaining: 4.074735 bound: 4.255744  
-> [0.000000]: [surf_maxmin/DEBUG] var=207, var.bound=-1.000000, var.weight=1.000000, min_usage=0.081677, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=211, var.bound=-1.000000, var.weight=1.000000, min_usage=0.081677, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=225, var.bound=-1.000000, var.weight=1.000000, min_usage=0.081677, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=241, var.bound=-1.000000, var.weight=1.000000, min_usage=0.081677, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=207, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.081677, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=211, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.081677, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=225, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.081677, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=241, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.081677, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (207) value to 0.081677
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.081677, Var(207).weight: 1.000000, Var(207).value: 0.081677 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.081677, Var(207).penalty: 1.000000, Var(207).value: 0.081677 
 > [0.000000]: [surf_maxmin/DEBUG] index: 58 	 cnst_light_num: 77 	 || usage: 0.000000 remaining: 8.327882 bound: 8.671329  
 > [0.000000]: [surf_maxmin/DEBUG] index: 40 	 cnst_light_num: 76 	 || usage: 0.000000 remaining: 6.555929 bound: 6.863137  
 > [0.000000]: [surf_maxmin/DEBUG] index: 50 	 cnst_light_num: 75 	 || usage: 0.000000 remaining: 1.475985 bound: 1.838162  
@@ -1425,7 +1425,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 70 	 cnst_light_num: 73 	 || usage: 0.000000 remaining: 9.192322 bound: 9.540460  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (211) value to 0.081677
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.081677, Var(211).weight: 1.000000, Var(211).value: 0.081677 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.081677, Var(211).penalty: 1.000000, Var(211).value: 0.081677 
 > [0.000000]: [surf_maxmin/DEBUG] index: 50 	 cnst_light_num: 72 	 || usage: 0.000000 remaining: 3.995254 bound: 4.445554  
 > [0.000000]: [surf_maxmin/DEBUG] index: 60 	 cnst_light_num: 71 	 || usage: 0.000000 remaining: 8.857261 bound: 9.130869  
 > [0.000000]: [surf_maxmin/DEBUG] index: 42 	 cnst_light_num: 70 	 || usage: 0.000000 remaining: 6.483225 bound: 6.703297  
@@ -1433,7 +1433,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 54 	 cnst_light_num: 68 	 || usage: 0.000000 remaining: 3.798887 bound: 4.235764  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (225) value to 0.081677
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.081677, Var(225).weight: 1.000000, Var(225).value: 0.081677 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.081677, Var(225).penalty: 1.000000, Var(225).value: 0.081677 
 > [0.000000]: [surf_maxmin/DEBUG] index: 65 	 cnst_light_num: 67 	 || usage: 0.000000 remaining: 7.072223 bound: 7.462537  
 > [0.000000]: [surf_maxmin/DEBUG] index: 50 	 cnst_light_num: 66 	 || usage: 0.000000 remaining: 2.691950 bound: 2.967033  
 > [0.000000]: [surf_maxmin/DEBUG] index: 64 	 cnst_light_num: 65 	 || usage: 0.000000 remaining: 0.118066 bound: 0.439560  
@@ -1449,7 +1449,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 44 	 cnst_light_num: 55 	 || usage: 0.000000 remaining: 2.679793 bound: 2.957043  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (241) value to 0.081677
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.081677, Var(241).weight: 1.000000, Var(241).value: 0.081677 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.081677, Var(241).penalty: 1.000000, Var(241).value: 0.081677 
 > [0.000000]: [surf_maxmin/DEBUG] index: 41 	 cnst_light_num: 54 	 || usage: 0.000000 remaining: 1.184105 bound: 1.598402  
 > [0.000000]: [surf_maxmin/DEBUG] index: 39 	 cnst_light_num: 53 	 || usage: 0.000000 remaining: 3.653829 bound: 3.896104  
 > [0.000000]: [surf_maxmin/DEBUG] index: 39 	 cnst_light_num: 52 	 || usage: 0.000000 remaining: 0.077489 bound: 0.369630  
@@ -1466,10 +1466,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 39 	 cnst_light_num: 41 	 || usage: 0.000000 remaining: 6.589209 bound: 6.963037  
 > [0.000000]: [surf_maxmin/DEBUG] index: 38 	 cnst_light_num: 40 	 || usage: 0.000000 remaining: 8.777468 bound: 9.170829  
 > [0.000000]: [surf_maxmin/DEBUG] index: 38 	 cnst_light_num: 39 	 || usage: 0.000000 remaining: 6.325405 bound: 6.563437  
-> [0.000000]: [surf_maxmin/DEBUG] var=202, var.bound=-1.000000, var.weight=1.000000, min_usage=0.128912, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=202, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.128912, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (202) value to 0.128912
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.128912, Var(202).weight: 1.000000, Var(202).value: 0.128912 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.128912, Var(202).penalty: 1.000000, Var(202).value: 0.128912 
 > [0.000000]: [surf_maxmin/DEBUG] index: 20 	 cnst_light_num: 38 	 || usage: 0.000000 remaining: 2.032430 bound: 2.307692  
 > [0.000000]: [surf_maxmin/DEBUG] index: 21 	 cnst_light_num: 37 	 || usage: 0.000000 remaining: 6.334159 bound: 6.913087  
 > [0.000000]: [surf_maxmin/DEBUG] index: 22 	 cnst_light_num: 36 	 || usage: 0.000000 remaining: 0.404144 bound: 0.889111  
@@ -1488,10 +1488,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 22 	 cnst_light_num: 23 	 || usage: 0.000000 remaining: 5.378706 bound: 5.894106  
 > [0.000000]: [surf_maxmin/DEBUG] index: 21 	 cnst_light_num: 22 	 || usage: 0.000000 remaining: 7.128378 bound: 7.842158  
 > [0.000000]: [surf_maxmin/DEBUG] index: 20 	 cnst_light_num: 21 	 || usage: 0.000000 remaining: 3.080921 bound: 3.706294  
-> [0.000000]: [surf_maxmin/DEBUG] var=201, var.bound=-1.000000, var.weight=1.000000, min_usage=1.559233, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=201, var.bound=-1.000000, var.penalty=1.000000, min_usage=1.559233, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (201) value to 1.559233
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.559233, Var(201).weight: 1.000000, Var(201).value: 1.559233 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.559233, Var(201).penalty: 1.000000, Var(201).value: 1.559233 
 > [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 20 	 || usage: 0.000000 remaining: 2.120434 bound: 3.656344  
 > [0.000000]: [surf_maxmin/DEBUG] index: 2 	 cnst_light_num: 19 	 || usage: 0.000000 remaining: 3.188475 bound: 5.324675  
 > [0.000000]: [surf_maxmin/DEBUG] index: 3 	 cnst_light_num: 18 	 || usage: 0.000000 remaining: 0.342262 bound: 3.136863  
@@ -1817,190 +1817,190 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '344' usage: 12.720779 remaining: 3.846154 concurrency: 6<=7<=16
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '390' usage: 8.037962 remaining: 2.907093 concurrency: 5<=6<=40
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '313' usage: 11.415584 remaining: 0.679321 concurrency: 5<=6<=40
-> [0.000000]: [surf_maxmin/DEBUG] var=302, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007198, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=307, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007198, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=308, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007198, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=309, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007198, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=311, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007198, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=312, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007198, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=327, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007198, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=328, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007198, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=335, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007198, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=338, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007198, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=352, var.bound=-1.000000, var.weight=1.000000, min_usage=0.007198, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=302, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007198, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=307, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007198, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=308, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007198, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=309, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007198, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=311, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007198, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=312, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007198, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=327, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007198, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=328, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007198, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=335, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007198, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=338, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007198, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=352, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.007198, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (302) value to 0.007198
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(302).weight: 1.000000, Var(302).value: 0.007198 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(302).penalty: 1.000000, Var(302).value: 0.007198 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (307) value to 0.007198
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(307).weight: 1.000000, Var(307).value: 0.007198 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(307).penalty: 1.000000, Var(307).value: 0.007198 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (308) value to 0.007198
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(308).weight: 1.000000, Var(308).value: 0.007198 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(308).penalty: 1.000000, Var(308).value: 0.007198 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (309) value to 0.007198
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(309).weight: 1.000000, Var(309).value: 0.007198 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(309).penalty: 1.000000, Var(309).value: 0.007198 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (311) value to 0.007198
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(311).weight: 1.000000, Var(311).value: 0.007198 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(311).penalty: 1.000000, Var(311).value: 0.007198 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (312) value to 0.007198
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(312).weight: 1.000000, Var(312).value: 0.007198 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(312).penalty: 1.000000, Var(312).value: 0.007198 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (327) value to 0.007198
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(327).weight: 1.000000, Var(327).value: 0.007198 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(327).penalty: 1.000000, Var(327).value: 0.007198 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (328) value to 0.007198
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(328).weight: 1.000000, Var(328).value: 0.007198 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(328).penalty: 1.000000, Var(328).value: 0.007198 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (335) value to 0.007198
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(335).weight: 1.000000, Var(335).value: 0.007198 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(335).penalty: 1.000000, Var(335).value: 0.007198 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (338) value to 0.007198
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(338).weight: 1.000000, Var(338).value: 0.007198 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(338).penalty: 1.000000, Var(338).value: 0.007198 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (352) value to 0.007198
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(352).weight: 1.000000, Var(352).value: 0.007198 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.007198, Var(352).penalty: 1.000000, Var(352).value: 0.007198 
 > [0.000000]: [surf_maxmin/DEBUG] index: 39 	 cnst_light_num: 100 	 || usage: 0.000000 remaining: 0.000000 bound: 0.139860  
-> [0.000000]: [surf_maxmin/DEBUG] var=301, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011252, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=304, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011252, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=315, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011252, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=318, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011252, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=319, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011252, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=322, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011252, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=332, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011252, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=333, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011252, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=334, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011252, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=339, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011252, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=343, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011252, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=344, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011252, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=345, var.bound=-1.000000, var.weight=1.000000, min_usage=0.011252, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=301, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011252, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=304, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011252, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=315, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011252, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=318, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011252, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=319, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011252, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=322, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011252, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=332, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011252, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=333, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011252, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=334, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011252, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=339, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011252, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=343, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011252, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=344, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011252, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=345, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.011252, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (301) value to 0.011252
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(301).weight: 1.000000, Var(301).value: 0.011252 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(301).penalty: 1.000000, Var(301).value: 0.011252 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (304) value to 0.011252
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(304).weight: 1.000000, Var(304).value: 0.011252 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(304).penalty: 1.000000, Var(304).value: 0.011252 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (315) value to 0.011252
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(315).weight: 1.000000, Var(315).value: 0.011252 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(315).penalty: 1.000000, Var(315).value: 0.011252 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (318) value to 0.011252
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(318).weight: 1.000000, Var(318).value: 0.011252 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(318).penalty: 1.000000, Var(318).value: 0.011252 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (319) value to 0.011252
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(319).weight: 1.000000, Var(319).value: 0.011252 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(319).penalty: 1.000000, Var(319).value: 0.011252 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (322) value to 0.011252
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(322).weight: 1.000000, Var(322).value: 0.011252 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(322).penalty: 1.000000, Var(322).value: 0.011252 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (332) value to 0.011252
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(332).weight: 1.000000, Var(332).value: 0.011252 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(332).penalty: 1.000000, Var(332).value: 0.011252 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (333) value to 0.011252
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(333).weight: 1.000000, Var(333).value: 0.011252 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(333).penalty: 1.000000, Var(333).value: 0.011252 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (334) value to 0.011252
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(334).weight: 1.000000, Var(334).value: 0.011252 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(334).penalty: 1.000000, Var(334).value: 0.011252 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (339) value to 0.011252
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(339).weight: 1.000000, Var(339).value: 0.011252 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(339).penalty: 1.000000, Var(339).value: 0.011252 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (343) value to 0.011252
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(343).weight: 1.000000, Var(343).value: 0.011252 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(343).penalty: 1.000000, Var(343).value: 0.011252 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (344) value to 0.011252
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(344).weight: 1.000000, Var(344).value: 0.011252 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(344).penalty: 1.000000, Var(344).value: 0.011252 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (345) value to 0.011252
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(345).weight: 1.000000, Var(345).value: 0.011252 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.011252, Var(345).penalty: 1.000000, Var(345).value: 0.011252 
 > [0.000000]: [surf_maxmin/DEBUG] index: 14 	 cnst_light_num: 99 	 || usage: 0.000000 remaining: 0.000000 bound: 0.299700  
-> [0.000000]: [surf_maxmin/DEBUG] var=306, var.bound=-1.000000, var.weight=1.000000, min_usage=0.018582, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=310, var.bound=-1.000000, var.weight=1.000000, min_usage=0.018582, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=313, var.bound=-1.000000, var.weight=1.000000, min_usage=0.018582, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=314, var.bound=-1.000000, var.weight=1.000000, min_usage=0.018582, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=342, var.bound=-1.000000, var.weight=1.000000, min_usage=0.018582, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=350, var.bound=-1.000000, var.weight=1.000000, min_usage=0.018582, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=368, var.bound=-1.000000, var.weight=1.000000, min_usage=0.018582, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=306, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.018582, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=310, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.018582, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=313, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.018582, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=314, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.018582, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=342, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.018582, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=350, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.018582, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=368, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.018582, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (306) value to 0.018582
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018582, Var(306).weight: 1.000000, Var(306).value: 0.018582 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018582, Var(306).penalty: 1.000000, Var(306).value: 0.018582 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (310) value to 0.018582
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018582, Var(310).weight: 1.000000, Var(310).value: 0.018582 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018582, Var(310).penalty: 1.000000, Var(310).value: 0.018582 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (313) value to 0.018582
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018582, Var(313).weight: 1.000000, Var(313).value: 0.018582 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018582, Var(313).penalty: 1.000000, Var(313).value: 0.018582 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (314) value to 0.018582
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018582, Var(314).weight: 1.000000, Var(314).value: 0.018582 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018582, Var(314).penalty: 1.000000, Var(314).value: 0.018582 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (342) value to 0.018582
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018582, Var(342).weight: 1.000000, Var(342).value: 0.018582 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018582, Var(342).penalty: 1.000000, Var(342).value: 0.018582 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (350) value to 0.018582
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018582, Var(350).weight: 1.000000, Var(350).value: 0.018582 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018582, Var(350).penalty: 1.000000, Var(350).value: 0.018582 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (368) value to 0.018582
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018582, Var(368).weight: 1.000000, Var(368).value: 0.018582 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.018582, Var(368).penalty: 1.000000, Var(368).value: 0.018582 
 > [0.000000]: [surf_maxmin/DEBUG] index: 14 	 cnst_light_num: 98 	 || usage: 0.000000 remaining: 2.790101 bound: 2.907093  
 > [0.000000]: [surf_maxmin/DEBUG] index: 35 	 cnst_light_num: 97 	 || usage: 0.000000 remaining: 0.000000 bound: 0.249750  
 > [0.000000]: [surf_maxmin/DEBUG] index: 80 	 cnst_light_num: 96 	 || usage: 0.000000 remaining: 5.032823 bound: 5.104895  
-> [0.000000]: [surf_maxmin/DEBUG] var=326, var.bound=-1.000000, var.weight=1.000000, min_usage=0.028518, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=365, var.bound=-1.000000, var.weight=1.000000, min_usage=0.028518, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=326, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.028518, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=365, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.028518, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (326) value to 0.028518
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.028518, Var(326).weight: 1.000000, Var(326).value: 0.028518 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.028518, Var(326).penalty: 1.000000, Var(326).value: 0.028518 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (365) value to 0.028518
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.028518, Var(365).weight: 1.000000, Var(365).value: 0.028518 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.028518, Var(365).penalty: 1.000000, Var(365).value: 0.028518 
 > [0.000000]: [surf_maxmin/DEBUG] index: 92 	 cnst_light_num: 95 	 || usage: 0.000000 remaining: 0.000000 bound: 0.239760  
-> [0.000000]: [surf_maxmin/DEBUG] var=321, var.bound=-1.000000, var.weight=1.000000, min_usage=0.047771, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=346, var.bound=-1.000000, var.weight=1.000000, min_usage=0.047771, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=370, var.bound=-1.000000, var.weight=1.000000, min_usage=0.047771, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=321, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.047771, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=346, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.047771, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=370, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.047771, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (321) value to 0.047771
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.047771, Var(321).weight: 1.000000, Var(321).value: 0.047771 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.047771, Var(321).penalty: 1.000000, Var(321).value: 0.047771 
 > [0.000000]: [surf_maxmin/DEBUG] index: 23 	 cnst_light_num: 94 	 || usage: 0.000000 remaining: 4.018641 bound: 4.205794  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (346) value to 0.047771
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.047771, Var(346).weight: 1.000000, Var(346).value: 0.047771 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.047771, Var(346).penalty: 1.000000, Var(346).value: 0.047771 
 > [0.000000]: [surf_maxmin/DEBUG] index: 58 	 cnst_light_num: 93 	 || usage: 0.000000 remaining: 6.974816 bound: 7.122877  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (370) value to 0.047771
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.047771, Var(370).weight: 1.000000, Var(370).value: 0.047771 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.047771, Var(370).penalty: 1.000000, Var(370).value: 0.047771 
 > [0.000000]: [surf_maxmin/DEBUG] index: 85 	 cnst_light_num: 92 	 || usage: 0.000000 remaining: 4.120057 bound: 4.375624  
 > [0.000000]: [surf_maxmin/DEBUG] index: 63 	 cnst_light_num: 91 	 || usage: 0.000000 remaining: 9.066800 bound: 9.350649  
 > [0.000000]: [surf_maxmin/DEBUG] index: 89 	 cnst_light_num: 90 	 || usage: 0.000000 remaining: 0.000000 bound: 0.359640  
-> [0.000000]: [surf_maxmin/DEBUG] var=317, var.bound=-1.000000, var.weight=1.000000, min_usage=0.094009, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=324, var.bound=-1.000000, var.weight=1.000000, min_usage=0.094009, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=317, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.094009, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=324, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.094009, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (317) value to 0.094009
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.094009, Var(317).weight: 1.000000, Var(317).value: 0.094009 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.094009, Var(317).penalty: 1.000000, Var(317).value: 0.094009 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (324) value to 0.094009
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.094009, Var(324).weight: 1.000000, Var(324).value: 0.094009 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.094009, Var(324).penalty: 1.000000, Var(324).value: 0.094009 
 > [0.000000]: [surf_maxmin/DEBUG] index: 7 	 cnst_light_num: 89 	 || usage: 0.000000 remaining: 4.485784 bound: 4.885115  
 > [0.000000]: [surf_maxmin/DEBUG] index: 4 	 cnst_light_num: 88 	 || usage: 0.000000 remaining: 0.000000 bound: 0.399600  
 > [0.000000]: [surf_maxmin/DEBUG] index: 63 	 cnst_light_num: 87 	 || usage: 0.000000 remaining: 7.782300 bound: 8.471528  
-> [0.000000]: [surf_maxmin/DEBUG] var=303, var.bound=-1.000000, var.weight=1.000000, min_usage=0.142202, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=305, var.bound=-1.000000, var.weight=1.000000, min_usage=0.142202, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=329, var.bound=-1.000000, var.weight=1.000000, min_usage=0.142202, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=355, var.bound=-1.000000, var.weight=1.000000, min_usage=0.142202, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=303, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.142202, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=305, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.142202, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=329, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.142202, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=355, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.142202, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (303) value to 0.142202
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.142202, Var(303).weight: 1.000000, Var(303).value: 0.142202 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.142202, Var(303).penalty: 1.000000, Var(303).value: 0.142202 
 > [0.000000]: [surf_maxmin/DEBUG] index: 45 	 cnst_light_num: 86 	 || usage: 0.000000 remaining: 8.926300 bound: 9.280719  
 > [0.000000]: [surf_maxmin/DEBUG] index: 43 	 cnst_light_num: 85 	 || usage: 0.000000 remaining: 2.225982 bound: 2.907093  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (305) value to 0.142202
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.142202, Var(305).weight: 1.000000, Var(305).value: 0.142202 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.142202, Var(305).penalty: 1.000000, Var(305).value: 0.142202 
 > [0.000000]: [surf_maxmin/DEBUG] index: 34 	 cnst_light_num: 84 	 || usage: 0.000000 remaining: 7.001496 bound: 7.732268  
 > [0.000000]: [surf_maxmin/DEBUG] index: 62 	 cnst_light_num: 83 	 || usage: 0.000000 remaining: 4.311663 bound: 4.855145  
 > [0.000000]: [surf_maxmin/DEBUG] index: 74 	 cnst_light_num: 82 	 || usage: 0.000000 remaining: 1.415789 bound: 1.658342  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (329) value to 0.142202
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.142202, Var(329).weight: 1.000000, Var(329).value: 0.142202 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.142202, Var(329).penalty: 1.000000, Var(329).value: 0.142202 
 > [0.000000]: [surf_maxmin/DEBUG] index: 58 	 cnst_light_num: 81 	 || usage: 0.000000 remaining: 5.694817 bound: 5.954046  
 > [0.000000]: [surf_maxmin/DEBUG] index: 30 	 cnst_light_num: 80 	 || usage: 0.000000 remaining: 8.782447 bound: 9.170829  
 > [0.000000]: [surf_maxmin/DEBUG] index: 18 	 cnst_light_num: 79 	 || usage: 0.000000 remaining: 4.018510 bound: 4.255744  
@@ -2008,7 +2008,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 18 	 cnst_light_num: 77 	 || usage: 0.000000 remaining: 3.346839 bound: 3.656344  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (355) value to 0.142202
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.142202, Var(355).weight: 1.000000, Var(355).value: 0.142202 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.142202, Var(355).penalty: 1.000000, Var(355).value: 0.142202 
 > [0.000000]: [surf_maxmin/DEBUG] index: 52 	 cnst_light_num: 76 	 || usage: 0.000000 remaining: 4.150664 bound: 4.915085  
 > [0.000000]: [surf_maxmin/DEBUG] index: 33 	 cnst_light_num: 75 	 || usage: 0.000000 remaining: 4.834649 bound: 5.974026  
 > [0.000000]: [surf_maxmin/DEBUG] index: 31 	 cnst_light_num: 74 	 || usage: 0.000000 remaining: 1.696954 bound: 2.277722  
@@ -2020,10 +2020,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 19 	 cnst_light_num: 68 	 || usage: 0.000000 remaining: 4.722579 bound: 5.504496  
 > [0.000000]: [surf_maxmin/DEBUG] index: 8 	 cnst_light_num: 67 	 || usage: 0.000000 remaining: 0.055535 bound: 0.659341  
 > [0.000000]: [surf_maxmin/DEBUG] index: 64 	 cnst_light_num: 66 	 || usage: 0.000000 remaining: 3.635989 bound: 4.465534  
-> [0.000000]: [surf_maxmin/DEBUG] var=320, var.bound=-1.000000, var.weight=1.000000, min_usage=0.201077, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=320, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.201077, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (320) value to 0.201077
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.201077, Var(320).weight: 1.000000, Var(320).value: 0.201077 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.201077, Var(320).penalty: 1.000000, Var(320).value: 0.201077 
 > [0.000000]: [surf_maxmin/DEBUG] index: 18 	 cnst_light_num: 65 	 || usage: 0.000000 remaining: 0.438337 bound: 0.799201  
 > [0.000000]: [surf_maxmin/DEBUG] index: 30 	 cnst_light_num: 64 	 || usage: 0.000000 remaining: 5.921236 bound: 6.273726  
 > [0.000000]: [surf_maxmin/DEBUG] index: 21 	 cnst_light_num: 63 	 || usage: 0.000000 remaining: 4.308459 bound: 4.995005  
@@ -2037,11 +2037,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 14 	 cnst_light_num: 55 	 || usage: 0.000000 remaining: 1.926234 bound: 2.987013  
 > [0.000000]: [surf_maxmin/DEBUG] index: 9 	 cnst_light_num: 54 	 || usage: 0.000000 remaining: 6.057243 bound: 6.453546  
 > [0.000000]: [surf_maxmin/DEBUG] index: 45 	 cnst_light_num: 53 	 || usage: 0.000000 remaining: 5.985763 bound: 6.363636  
-> [0.000000]: [surf_maxmin/DEBUG] var=316, var.bound=-1.000000, var.weight=1.000000, min_usage=0.288945, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=336, var.bound=-1.000000, var.weight=1.000000, min_usage=0.288945, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=316, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.288945, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=336, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.288945, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (316) value to 0.288945
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.288945, Var(316).weight: 1.000000, Var(316).value: 0.288945 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.288945, Var(316).penalty: 1.000000, Var(316).value: 0.288945 
 > [0.000000]: [surf_maxmin/DEBUG] index: 28 	 cnst_light_num: 52 	 || usage: 0.000000 remaining: 1.281667 bound: 2.327672  
 > [0.000000]: [surf_maxmin/DEBUG] index: 18 	 cnst_light_num: 51 	 || usage: 0.000000 remaining: 6.258337 bound: 7.092907  
 > [0.000000]: [surf_maxmin/DEBUG] index: 10 	 cnst_light_num: 50 	 || usage: 0.000000 remaining: 8.679785 bound: 9.950050  
@@ -2058,7 +2058,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 5 	 cnst_light_num: 39 	 || usage: 0.000000 remaining: 3.396353 bound: 4.475524  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (336) value to 0.288945
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.288945, Var(336).weight: 1.000000, Var(336).value: 0.288945 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.288945, Var(336).penalty: 1.000000, Var(336).value: 0.288945 
 > [0.000000]: [surf_maxmin/DEBUG] index: 22 	 cnst_light_num: 38 	 || usage: 0.000000 remaining: 8.886978 bound: 9.790210  
 > [0.000000]: [surf_maxmin/DEBUG] index: 12 	 cnst_light_num: 37 	 || usage: 0.000000 remaining: 2.289452 bound: 3.766234  
 > [0.000000]: [surf_maxmin/DEBUG] index: 7 	 cnst_light_num: 36 	 || usage: 0.000000 remaining: 6.936049 bound: 7.642358  
@@ -2076,10 +2076,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 16 	 cnst_light_num: 24 	 || usage: 0.000000 remaining: 7.844363 bound: 9.010989  
 > [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 23 	 || usage: 0.000000 remaining: 5.328389 bound: 6.893107  
 > [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 22 	 || usage: 0.000000 remaining: 6.171176 bound: 7.512488  
-> [0.000000]: [surf_maxmin/DEBUG] var=323, var.bound=-1.000000, var.weight=1.000000, min_usage=0.301983, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=323, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.301983, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (323) value to 0.301983
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.301983, Var(323).weight: 1.000000, Var(323).value: 0.301983 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.301983, Var(323).penalty: 1.000000, Var(323).value: 0.301983 
 > [0.000000]: [surf_maxmin/DEBUG] index: 5 	 cnst_light_num: 21 	 || usage: 0.000000 remaining: 3.866850 bound: 4.515485  
 > [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 20 	 || usage: 0.000000 remaining: 8.277577 bound: 9.640360  
 > [0.000000]: [surf_maxmin/DEBUG] index: 12 	 cnst_light_num: 19 	 || usage: 0.000000 remaining: 6.671593 bound: 8.811189  
@@ -2406,185 +2406,185 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '434' usage: 13.643856 remaining: 9.670330 concurrency: 7<=8<=9
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '474' usage: 12.365634 remaining: 3.756244 concurrency: 6<=7<=9
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '414' usage: 8.673327 remaining: 3.066933 concurrency: 4<=6<=10
-> [0.000000]: [surf_maxmin/DEBUG] var=405, var.bound=-1.000000, var.weight=1.000000, min_usage=0.013951, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=410, var.bound=-1.000000, var.weight=1.000000, min_usage=0.013951, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=412, var.bound=-1.000000, var.weight=1.000000, min_usage=0.013951, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=413, var.bound=-1.000000, var.weight=1.000000, min_usage=0.013951, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=419, var.bound=-1.000000, var.weight=1.000000, min_usage=0.013951, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=421, var.bound=-1.000000, var.weight=1.000000, min_usage=0.013951, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=423, var.bound=-1.000000, var.weight=1.000000, min_usage=0.013951, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=431, var.bound=-1.000000, var.weight=1.000000, min_usage=0.013951, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=433, var.bound=-1.000000, var.weight=1.000000, min_usage=0.013951, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=462, var.bound=-1.000000, var.weight=1.000000, min_usage=0.013951, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=482, var.bound=-1.000000, var.weight=1.000000, min_usage=0.013951, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=405, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.013951, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=410, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.013951, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=412, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.013951, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=413, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.013951, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=419, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.013951, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=421, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.013951, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=423, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.013951, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=431, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.013951, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=433, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.013951, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=462, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.013951, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=482, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.013951, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (405) value to 0.013951
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(405).weight: 1.000000, Var(405).value: 0.013951 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(405).penalty: 1.000000, Var(405).value: 0.013951 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (410) value to 0.013951
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(410).weight: 1.000000, Var(410).value: 0.013951 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(410).penalty: 1.000000, Var(410).value: 0.013951 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (412) value to 0.013951
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(412).weight: 1.000000, Var(412).value: 0.013951 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(412).penalty: 1.000000, Var(412).value: 0.013951 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (413) value to 0.013951
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(413).weight: 1.000000, Var(413).value: 0.013951 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(413).penalty: 1.000000, Var(413).value: 0.013951 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (419) value to 0.013951
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(419).weight: 1.000000, Var(419).value: 0.013951 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(419).penalty: 1.000000, Var(419).value: 0.013951 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (421) value to 0.013951
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(421).weight: 1.000000, Var(421).value: 0.013951 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(421).penalty: 1.000000, Var(421).value: 0.013951 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (423) value to 0.013951
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(423).weight: 1.000000, Var(423).value: 0.013951 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(423).penalty: 1.000000, Var(423).value: 0.013951 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (431) value to 0.013951
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(431).weight: 1.000000, Var(431).value: 0.013951 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(431).penalty: 1.000000, Var(431).value: 0.013951 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (433) value to 0.013951
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(433).weight: 1.000000, Var(433).value: 0.013951 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(433).penalty: 1.000000, Var(433).value: 0.013951 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (462) value to 0.013951
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(462).weight: 1.000000, Var(462).value: 0.013951 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(462).penalty: 1.000000, Var(462).value: 0.013951 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (482) value to 0.013951
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(482).weight: 1.000000, Var(482).value: 0.013951 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.013951, Var(482).penalty: 1.000000, Var(482).value: 0.013951 
 > [0.000000]: [surf_maxmin/DEBUG] index: 67 	 cnst_light_num: 100 	 || usage: 0.000000 remaining: 0.000000 bound: 0.299700  
-> [0.000000]: [surf_maxmin/DEBUG] var=402, var.bound=-1.000000, var.weight=1.000000, min_usage=0.023700, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=406, var.bound=-1.000000, var.weight=1.000000, min_usage=0.023700, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=408, var.bound=-1.000000, var.weight=1.000000, min_usage=0.023700, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=415, var.bound=-1.000000, var.weight=1.000000, min_usage=0.023700, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=418, var.bound=-1.000000, var.weight=1.000000, min_usage=0.023700, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=420, var.bound=-1.000000, var.weight=1.000000, min_usage=0.023700, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=424, var.bound=-1.000000, var.weight=1.000000, min_usage=0.023700, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=402, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.023700, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=406, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.023700, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=408, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.023700, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=415, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.023700, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=418, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.023700, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=420, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.023700, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=424, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.023700, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (402) value to 0.023700
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023700, Var(402).weight: 1.000000, Var(402).value: 0.023700 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023700, Var(402).penalty: 1.000000, Var(402).value: 0.023700 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (406) value to 0.023700
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023700, Var(406).weight: 1.000000, Var(406).value: 0.023700 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023700, Var(406).penalty: 1.000000, Var(406).value: 0.023700 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (408) value to 0.023700
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023700, Var(408).weight: 1.000000, Var(408).value: 0.023700 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023700, Var(408).penalty: 1.000000, Var(408).value: 0.023700 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (415) value to 0.023700
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023700, Var(415).weight: 1.000000, Var(415).value: 0.023700 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023700, Var(415).penalty: 1.000000, Var(415).value: 0.023700 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (418) value to 0.023700
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023700, Var(418).weight: 1.000000, Var(418).value: 0.023700 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023700, Var(418).penalty: 1.000000, Var(418).value: 0.023700 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (420) value to 0.023700
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023700, Var(420).weight: 1.000000, Var(420).value: 0.023700 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023700, Var(420).penalty: 1.000000, Var(420).value: 0.023700 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (424) value to 0.023700
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023700, Var(424).weight: 1.000000, Var(424).value: 0.023700 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.023700, Var(424).penalty: 1.000000, Var(424).value: 0.023700 
 > [0.000000]: [surf_maxmin/DEBUG] index: 29 	 cnst_light_num: 99 	 || usage: 0.000000 remaining: 0.000000 bound: 0.359640  
-> [0.000000]: [surf_maxmin/DEBUG] var=414, var.bound=-1.000000, var.weight=1.000000, min_usage=0.036913, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=425, var.bound=-1.000000, var.weight=1.000000, min_usage=0.036913, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=427, var.bound=-1.000000, var.weight=1.000000, min_usage=0.036913, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=429, var.bound=-1.000000, var.weight=1.000000, min_usage=0.036913, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=435, var.bound=-1.000000, var.weight=1.000000, min_usage=0.036913, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=452, var.bound=-1.000000, var.weight=1.000000, min_usage=0.036913, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=414, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.036913, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=425, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.036913, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=427, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.036913, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=429, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.036913, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=435, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.036913, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=452, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.036913, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (414) value to 0.036913
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.036913, Var(414).weight: 1.000000, Var(414).value: 0.036913 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.036913, Var(414).penalty: 1.000000, Var(414).value: 0.036913 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (425) value to 0.036913
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.036913, Var(425).weight: 1.000000, Var(425).value: 0.036913 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.036913, Var(425).penalty: 1.000000, Var(425).value: 0.036913 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (427) value to 0.036913
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.036913, Var(427).weight: 1.000000, Var(427).value: 0.036913 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.036913, Var(427).penalty: 1.000000, Var(427).value: 0.036913 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (429) value to 0.036913
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.036913, Var(429).weight: 1.000000, Var(429).value: 0.036913 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.036913, Var(429).penalty: 1.000000, Var(429).value: 0.036913 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (435) value to 0.036913
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.036913, Var(435).weight: 1.000000, Var(435).value: 0.036913 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.036913, Var(435).penalty: 1.000000, Var(435).value: 0.036913 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (452) value to 0.036913
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.036913, Var(452).weight: 1.000000, Var(452).value: 0.036913 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.036913, Var(452).penalty: 1.000000, Var(452).value: 0.036913 
 > [0.000000]: [surf_maxmin/DEBUG] index: 84 	 cnst_light_num: 98 	 || usage: 0.000000 remaining: 0.000000 bound: 0.459540  
-> [0.000000]: [surf_maxmin/DEBUG] var=403, var.bound=-1.000000, var.weight=1.000000, min_usage=0.046599, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=404, var.bound=-1.000000, var.weight=1.000000, min_usage=0.046599, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=407, var.bound=-1.000000, var.weight=1.000000, min_usage=0.046599, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=416, var.bound=-1.000000, var.weight=1.000000, min_usage=0.046599, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=426, var.bound=-1.000000, var.weight=1.000000, min_usage=0.046599, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=403, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.046599, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=404, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.046599, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=407, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.046599, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=416, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.046599, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=426, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.046599, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (403) value to 0.046599
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.046599, Var(403).weight: 1.000000, Var(403).value: 0.046599 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.046599, Var(403).penalty: 1.000000, Var(403).value: 0.046599 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (404) value to 0.046599
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.046599, Var(404).weight: 1.000000, Var(404).value: 0.046599 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.046599, Var(404).penalty: 1.000000, Var(404).value: 0.046599 
 > [0.000000]: [surf_maxmin/DEBUG] index: 36 	 cnst_light_num: 97 	 || usage: 0.000000 remaining: 9.763793 bound: 9.860140  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (407) value to 0.046599
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.046599, Var(407).weight: 1.000000, Var(407).value: 0.046599 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.046599, Var(407).penalty: 1.000000, Var(407).value: 0.046599 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (416) value to 0.046599
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.046599, Var(416).weight: 1.000000, Var(416).value: 0.046599 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.046599, Var(416).penalty: 1.000000, Var(416).value: 0.046599 
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (426) value to 0.046599
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.046599, Var(426).weight: 1.000000, Var(426).value: 0.046599 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.046599, Var(426).penalty: 1.000000, Var(426).value: 0.046599 
 > [0.000000]: [surf_maxmin/DEBUG] index: 49 	 cnst_light_num: 96 	 || usage: 0.000000 remaining: 1.560732 bound: 2.027972  
 > [0.000000]: [surf_maxmin/DEBUG] index: 57 	 cnst_light_num: 95 	 || usage: 0.000000 remaining: 0.000000 bound: 0.399600  
-> [0.000000]: [surf_maxmin/DEBUG] var=409, var.bound=-1.000000, var.weight=1.000000, min_usage=0.068172, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=417, var.bound=-1.000000, var.weight=1.000000, min_usage=0.068172, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=444, var.bound=-1.000000, var.weight=1.000000, min_usage=0.068172, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=455, var.bound=-1.000000, var.weight=1.000000, min_usage=0.068172, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=409, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.068172, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=417, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.068172, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=444, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.068172, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=455, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.068172, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (409) value to 0.068172
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.068172, Var(409).weight: 1.000000, Var(409).value: 0.068172 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.068172, Var(409).penalty: 1.000000, Var(409).value: 0.068172 
 > [0.000000]: [surf_maxmin/DEBUG] index: 90 	 cnst_light_num: 94 	 || usage: 0.000000 remaining: 9.436551 bound: 9.690310  
 > [0.000000]: [surf_maxmin/DEBUG] index: 31 	 cnst_light_num: 93 	 || usage: 0.000000 remaining: 6.950082 bound: 7.382617  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (417) value to 0.068172
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.068172, Var(417).weight: 1.000000, Var(417).value: 0.068172 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.068172, Var(417).penalty: 1.000000, Var(417).value: 0.068172 
 > [0.000000]: [surf_maxmin/DEBUG] index: 32 	 cnst_light_num: 92 	 || usage: 0.000000 remaining: 0.895015 bound: 1.248751  
 > [0.000000]: [surf_maxmin/DEBUG] index: 41 	 cnst_light_num: 91 	 || usage: 0.000000 remaining: 6.666825 bound: 7.132867  
 > [0.000000]: [surf_maxmin/DEBUG] index: 82 	 cnst_light_num: 90 	 || usage: 0.000000 remaining: 3.514705 bound: 3.956044  
 > [0.000000]: [surf_maxmin/DEBUG] index: 67 	 cnst_light_num: 89 	 || usage: 0.000000 remaining: 2.726842 bound: 3.066933  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (444) value to 0.068172
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.068172, Var(444).weight: 1.000000, Var(444).value: 0.068172 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.068172, Var(444).penalty: 1.000000, Var(444).value: 0.068172 
 > [0.000000]: [surf_maxmin/DEBUG] index: 71 	 cnst_light_num: 88 	 || usage: 0.000000 remaining: 8.404470 bound: 8.981019  
 > [0.000000]: [surf_maxmin/DEBUG] index: 25 	 cnst_light_num: 87 	 || usage: 0.000000 remaining: 8.866678 bound: 9.160839  
 > [0.000000]: [surf_maxmin/DEBUG] index: 46 	 cnst_light_num: 86 	 || usage: 0.000000 remaining: 7.947211 bound: 8.301698  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (455) value to 0.068172
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.068172, Var(455).weight: 1.000000, Var(455).value: 0.068172 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.068172, Var(455).penalty: 1.000000, Var(455).value: 0.068172 
 > [0.000000]: [surf_maxmin/DEBUG] index: 47 	 cnst_light_num: 85 	 || usage: 0.000000 remaining: 0.000000 bound: 0.599401  
 > [0.000000]: [surf_maxmin/DEBUG] index: 83 	 cnst_light_num: 84 	 || usage: 0.000000 remaining: 5.185774 bound: 5.594406  
 > [0.000000]: [surf_maxmin/DEBUG] index: 55 	 cnst_light_num: 83 	 || usage: 0.000000 remaining: 1.636352 bound: 1.838162  
-> [0.000000]: [surf_maxmin/DEBUG] var=401, var.bound=-1.000000, var.weight=1.000000, min_usage=0.075245, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=464, var.bound=-1.000000, var.weight=1.000000, min_usage=0.075245, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=401, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.075245, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=464, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.075245, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (401) value to 0.075245
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.075245, Var(401).weight: 1.000000, Var(401).value: 0.075245 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.075245, Var(401).penalty: 1.000000, Var(401).value: 0.075245 
 > [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 82 	 || usage: 0.000000 remaining: 1.943854 bound: 2.417582  
 > [0.000000]: [surf_maxmin/DEBUG] index: 10 	 cnst_light_num: 81 	 || usage: 0.000000 remaining: 6.465660 bound: 6.663337  
 > [0.000000]: [surf_maxmin/DEBUG] index: 15 	 cnst_light_num: 80 	 || usage: 0.000000 remaining: 6.454602 bound: 6.843157  
 > [0.000000]: [surf_maxmin/DEBUG] index: 21 	 cnst_light_num: 79 	 || usage: 0.000000 remaining: 0.613333 bound: 0.969031  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (464) value to 0.075245
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.075245, Var(464).weight: 1.000000, Var(464).value: 0.075245 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.075245, Var(464).penalty: 1.000000, Var(464).value: 0.075245 
 > [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 78 	 || usage: 0.000000 remaining: 5.604611 bound: 6.223776  
 > [0.000000]: [surf_maxmin/DEBUG] index: 6 	 cnst_light_num: 77 	 || usage: 0.000000 remaining: 0.000000 bound: 0.439560  
 > [0.000000]: [surf_maxmin/DEBUG] index: 3 	 cnst_light_num: 76 	 || usage: 0.000000 remaining: 8.337354 bound: 8.961039  
-> [0.000000]: [surf_maxmin/DEBUG] var=422, var.bound=-1.000000, var.weight=1.000000, min_usage=0.209953, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=422, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.209953, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (422) value to 0.209953
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.209953, Var(422).weight: 1.000000, Var(422).value: 0.209953 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.209953, Var(422).penalty: 1.000000, Var(422).value: 0.209953 
 > [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 75 	 || usage: 0.000000 remaining: 0.000000 bound: 0.739261  
 > [0.000000]: [surf_maxmin/DEBUG] index: 43 	 cnst_light_num: 74 	 || usage: 0.000000 remaining: 3.910501 bound: 4.485514  
 > [0.000000]: [surf_maxmin/DEBUG] index: 13 	 cnst_light_num: 73 	 || usage: 0.000000 remaining: 0.637351 bound: 1.218781  
 > [0.000000]: [surf_maxmin/DEBUG] index: 67 	 cnst_light_num: 72 	 || usage: 0.000000 remaining: 8.292394 bound: 8.981019  
-> [0.000000]: [surf_maxmin/DEBUG] var=443, var.bound=-1.000000, var.weight=1.000000, min_usage=0.248078, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=460, var.bound=-1.000000, var.weight=1.000000, min_usage=0.248078, var.bound*var.weight=-1.000000
-> [0.000000]: [surf_maxmin/DEBUG] var=470, var.bound=-1.000000, var.weight=1.000000, min_usage=0.248078, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=443, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.248078, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=460, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.248078, var.bound*var.penalty=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=470, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.248078, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (443) value to 0.248078
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.248078, Var(443).weight: 1.000000, Var(443).value: 0.248078 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.248078, Var(443).penalty: 1.000000, Var(443).value: 0.248078 
 > [0.000000]: [surf_maxmin/DEBUG] index: 46 	 cnst_light_num: 71 	 || usage: 0.000000 remaining: 4.903913 bound: 6.603397  
 > [0.000000]: [surf_maxmin/DEBUG] index: 56 	 cnst_light_num: 70 	 || usage: 0.000000 remaining: 5.661916 bound: 6.923077  
 > [0.000000]: [surf_maxmin/DEBUG] index: 10 	 cnst_light_num: 69 	 || usage: 0.000000 remaining: 6.671691 bound: 7.712288  
@@ -2594,7 +2594,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 59 	 cnst_light_num: 65 	 || usage: 0.000000 remaining: 6.079014 bound: 7.212787  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (460) value to 0.248078
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.248078, Var(460).weight: 1.000000, Var(460).value: 0.248078 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.248078, Var(460).penalty: 1.000000, Var(460).value: 0.248078 
 > [0.000000]: [surf_maxmin/DEBUG] index: 19 	 cnst_light_num: 64 	 || usage: 0.000000 remaining: 1.852859 bound: 2.937063  
 > [0.000000]: [surf_maxmin/DEBUG] index: 6 	 cnst_light_num: 63 	 || usage: 0.000000 remaining: 1.517831 bound: 2.447552  
 > [0.000000]: [surf_maxmin/DEBUG] index: 51 	 cnst_light_num: 62 	 || usage: 0.000000 remaining: 2.711337 bound: 4.165834  
@@ -2607,7 +2607,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 21 	 cnst_light_num: 55 	 || usage: 0.000000 remaining: 3.908501 bound: 5.144855  
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (470) value to 0.248078
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.248078, Var(470).weight: 1.000000, Var(470).value: 0.248078 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.248078, Var(470).penalty: 1.000000, Var(470).value: 0.248078 
 > [0.000000]: [surf_maxmin/DEBUG] index: 10 	 cnst_light_num: 54 	 || usage: 0.000000 remaining: 9.086266 bound: 9.800200  
 > [0.000000]: [surf_maxmin/DEBUG] index: 25 	 cnst_light_num: 53 	 || usage: 0.000000 remaining: 4.317833 bound: 5.174825  
 > [0.000000]: [surf_maxmin/DEBUG] index: 47 	 cnst_light_num: 52 	 || usage: 0.000000 remaining: 0.574793 bound: 2.097902  
@@ -2619,10 +2619,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 31 	 cnst_light_num: 46 	 || usage: 0.000000 remaining: 6.113568 bound: 6.903097  
 > [0.000000]: [surf_maxmin/DEBUG] index: 40 	 cnst_light_num: 45 	 || usage: 0.000000 remaining: 0.000000 bound: 1.958042  
 > [0.000000]: [surf_maxmin/DEBUG] index: 29 	 cnst_light_num: 44 	 || usage: 0.000000 remaining: 2.366551 bound: 3.756244  
-> [0.000000]: [surf_maxmin/DEBUG] var=499, var.bound=-1.000000, var.weight=1.000000, min_usage=0.371099, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=499, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.371099, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (499) value to 0.371099
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.371099, Var(499).weight: 1.000000, Var(499).value: 0.371099 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.371099, Var(499).penalty: 1.000000, Var(499).value: 0.371099 
 > [0.000000]: [surf_maxmin/DEBUG] index: 38 	 cnst_light_num: 43 	 || usage: 0.000000 remaining: 4.195116 bound: 5.504496  
 > [0.000000]: [surf_maxmin/DEBUG] index: 2 	 cnst_light_num: 42 	 || usage: 0.000000 remaining: 3.396551 bound: 4.695305  
 > [0.000000]: [surf_maxmin/DEBUG] index: 18 	 cnst_light_num: 41 	 || usage: 0.000000 remaining: 4.348232 bound: 5.834166  
@@ -2644,10 +2644,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] index: 18 	 cnst_light_num: 25 	 || usage: 0.000000 remaining: 0.897299 bound: 1.988012  
 > [0.000000]: [surf_maxmin/DEBUG] index: 9 	 cnst_light_num: 24 	 || usage: 0.000000 remaining: 0.066581 bound: 1.008991  
 > [0.000000]: [surf_maxmin/DEBUG] index: 9 	 cnst_light_num: 23 	 || usage: 0.000000 remaining: 3.392560 bound: 4.405594  
-> [0.000000]: [surf_maxmin/DEBUG] var=411, var.bound=-1.000000, var.weight=1.000000, min_usage=1.157925, var.bound*var.weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=411, var.bound=-1.000000, var.penalty=1.000000, min_usage=1.157925, var.bound*var.penalty=-1.000000
 > [0.000000]: [surf_maxmin/DEBUG] Setting var (411) value to 1.157925
 > 
-> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.157925, Var(411).weight: 1.000000, Var(411).value: 1.157925 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.157925, Var(411).penalty: 1.000000, Var(411).value: 1.157925 
 > [0.000000]: [surf_maxmin/DEBUG] index: 9 	 cnst_light_num: 22 	 || usage: 0.000000 remaining: 4.884981 bound: 7.072927  
 > [0.000000]: [surf_maxmin/DEBUG] index: 19 	 cnst_light_num: 21 	 || usage: 0.000000 remaining: 2.075096 bound: 4.745255  
 > [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 20 	 || usage: 0.000000 remaining: 3.819295 bound: 5.634366  

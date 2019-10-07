@@ -9,7 +9,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_process_suspend, "Messages specific for this msg example");
 
 /* The Lazy guy only wants to sleep, but can be awaken by the dream_master process. */
-static int lazy_guy(int argc, char* argv[])
+static int lazy_guy(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Nobody's watching me ? Let's go to sleep.");
   MSG_process_suspend(MSG_process_self()); /* - Start by suspending itself */
@@ -33,7 +33,7 @@ static int lazy_guy(int argc, char* argv[])
 }
 
 /* The Dream master: */
-static int dream_master(int argc, char* argv[])
+static int dream_master(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Let's create a lazy guy."); /* - Create a lazy_guy process */
   msg_process_t lazy = MSG_process_create("Lazy", lazy_guy, NULL, MSG_host_self());

@@ -2,7 +2,7 @@
 
 p Test0 Process without time
 
-$ $SG_TEST_EXENV ${bindir:=.}/process-lifetime ${platfdir}/cluster_backbone.xml ${srcdir:=.}/baseline_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/process-lifetime ${platfdir}/cluster_backbone.xml ${srcdir:=.}/baseline_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sleeper@node-0.simgrid.org) Hello! I go to sleep.
 > [ 10.000000] (1:sleeper@node-0.simgrid.org) Done sleeping.
 > [ 10.000000] (1:sleeper@node-0.simgrid.org) Exiting now (done sleeping or got killed).
@@ -10,7 +10,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/process-lifetime ${platfdir}/cluster_backbone.xml 
 
 p Test1 Process with start time
 
-$ $SG_TEST_EXENV ${bindir:=.}/process-lifetime ${platfdir}/cluster_backbone.xml ${srcdir:=.}/start_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/process-lifetime ${platfdir}/cluster_backbone.xml ${srcdir:=.}/start_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sleeper@node-0.simgrid.org) Hello! I go to sleep.
 > [  1.000000] (2:sleeper@node-1.simgrid.org) Hello! I go to sleep.
 > [  2.000000] (3:sleeper@node-2.simgrid.org) Hello! I go to sleep.
@@ -34,7 +34,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/process-lifetime ${platfdir}/cluster_backbone.xml 
 p Test1 Process with kill time
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/process-lifetime ${platfdir}/cluster_backbone.xml ${srcdir:=.}/kill_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/process-lifetime ${platfdir}/cluster_backbone.xml ${srcdir:=.}/kill_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sleeper@node-1.simgrid.org) Hello! I go to sleep.
 > [  0.000000] (2:sleeper@node-2.simgrid.org) Hello! I go to sleep.
 > [  0.000000] (3:sleeper@node-3.simgrid.org) Hello! I go to sleep.
@@ -47,7 +47,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/process-lifetime ${platfdir}/cluster_backbone.xml 
 p Test2 Process with start and kill times
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/process-lifetime ${platfdir}/cluster_backbone.xml ${srcdir:=.}/start_kill_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/process-lifetime ${platfdir}/cluster_backbone.xml ${srcdir:=.}/start_kill_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sleeper@node-0.simgrid.org) Hello! I go to sleep.
 > [  1.000000] (2:sleeper@node-1.simgrid.org) Hello! I go to sleep.
 > [  2.000000] (3:sleeper@node-2.simgrid.org) Hello! I go to sleep.

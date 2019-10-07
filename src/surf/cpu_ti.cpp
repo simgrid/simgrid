@@ -4,49 +4,40 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_ti.hpp"
-#include "src/kernel/resource/profile/trace_mgr.hpp"
+#include "src/kernel/resource/profile/Event.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
+
+#include <algorithm>
 
 constexpr double EPSILON = 0.000000001;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf_cpu, "Logging specific to the SURF CPU TRACE INTEGRATION module");
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 /*********
  * Trace *
  *********/
 
-CpuTiProfile::CpuTiProfile(kernel::profile::Profile* profile)
+CpuTiProfile::CpuTiProfile(profile::Profile* profile)
 {
   double integral = 0;
   double time = 0;
-  int i = 0;
-  nb_points_      = profile->event_list.size() + 1;
-  time_points_    = new double[nb_points_];
-  integral_       = new double[nb_points_];
+  unsigned nb_points = profile->event_list.size() + 1;
+  time_points_.reserve(nb_points);
+  integral_.reserve(nb_points);
   for (auto const& val : profile->event_list) {
-    time_points_[i] = time;
-    integral_[i] = integral;
-    integral += val.date_ * val.value_;
+    time_points_.push_back(time);
+    integral_.push_back(integral);
     time += val.date_;
-    i++;
+    integral += val.date_ * val.value_;
   }
-  time_points_[i] = time;
-  integral_[i] = integral;
-}
-
-CpuTiProfile::~CpuTiProfile()
-{
-  delete[] time_points_;
-  delete [] integral_;
-}
-
-CpuTiTmgr::~CpuTiTmgr()
-{
-  delete profile_;
+  time_points_.push_back(time);
+  integral_.push_back(integral);
 }
 
 /**
@@ -112,7 +103,7 @@ double CpuTiProfile::integrate_simple_point(double a)
 {
   double integral = 0;
   double a_aux = a;
-  int ind         = binary_search(time_points_, a, 0, nb_points_ - 1);
+  int ind         = binary_search(time_points_, a);
   integral += integral_[ind];
 
   XBT_DEBUG("a %f ind %d integral %f ind + 1 %f ind %f time +1 %f time %f", a, ind, integral, integral_[ind + 1],
@@ -194,7 +185,7 @@ double CpuTiTmgr::solve(double a, double amount)
 double CpuTiProfile::solve_simple(double a, double amount)
 {
   double integral_a = integrate_simple_point(a);
-  int ind           = binary_search(integral_, integral_a + amount, 0, nb_points_ - 1);
+  int ind           = binary_search(integral_, integral_a + amount);
   double time       = time_points_[ind];
   time += (integral_a + amount - integral_[ind]) /
           ((integral_[ind + 1] - integral_[ind]) / (time_points_[ind + 1] - time_points_[ind]));
@@ -212,7 +203,7 @@ double CpuTiProfile::solve_simple(double a, double amount)
 double CpuTiTmgr::get_power_scale(double a)
 {
   double reduced_a          = a - floor(a / last_time_) * last_time_;
-  int point                 = profile_->binary_search(profile_->time_points_, reduced_a, 0, profile_->nb_points_ - 1);
+  int point                       = CpuTiProfile::binary_search(profile_->time_points_, reduced_a);
   kernel::profile::DatedValue val = speed_profile_->event_list.at(point);
   return val.value_;
 }
@@ -227,7 +218,7 @@ double CpuTiTmgr::get_power_scale(double a)
 CpuTiTmgr::CpuTiTmgr(kernel::profile::Profile* speed_profile, double value) : speed_profile_(speed_profile)
 {
   double total_time = 0.0;
-  profile_          = 0;
+  profile_.reset(nullptr);
 
   /* no availability file, fixed trace */
   if (not speed_profile) {
@@ -250,7 +241,7 @@ CpuTiTmgr::CpuTiTmgr(kernel::profile::Profile* speed_profile, double value) : sp
   for (auto const& val : speed_profile->event_list)
     total_time += val.date_;
 
-  profile_   = new CpuTiProfile(speed_profile);
+  profile_.reset(new CpuTiProfile(speed_profile));
   last_time_ = total_time;
   total_     = profile_->integrate_simple(0, total_time);
 
@@ -259,47 +250,30 @@ CpuTiTmgr::CpuTiTmgr(kernel::profile::Profile* speed_profile, double value) : sp
 
 /**
  * @brief Binary search in array.
- *  It returns the first point of the interval in which "a" is.
+ *  It returns the last point of the interval in which "a" is.
  * @param array    Array
  * @param a        Value to search
- * @param low     Low bound to search in array
- * @param high    Upper bound to search in array
  * @return Index of point
  */
-int CpuTiProfile::binary_search(double* array, double a, int low, int high)
+int CpuTiProfile::binary_search(const std::vector<double>& array, double a)
 {
-  xbt_assert(low < high, "Wrong parameters: low (%d) should be smaller than high (%d)", low, high);
-
-  do {
-    int mid = low + (high - low) / 2;
-    XBT_DEBUG("a %f low %d high %d mid %d value %f", a, low, high, mid, array[mid]);
-
-    if (array[mid] > a)
-      high = mid;
-    else
-      low = mid;
-  }
-  while (low < high - 1);
-
-  return low;
-}
-
-}
+  if (array[0] > a)
+    return 0;
+  auto pos = std::upper_bound(begin(array), end(array), a);
+  return std::distance(begin(array), pos) - 1;
 }
 
 /*********
  * Model *
  *********/
-namespace simgrid {
-namespace surf {
 
 void CpuTiModel::create_pm_vm_models()
 {
   xbt_assert(surf_cpu_model_pm == nullptr, "CPU model already initialized. This should not happen.");
   xbt_assert(surf_cpu_model_vm == nullptr, "CPU model already initialized. This should not happen.");
 
-  surf_cpu_model_pm = new simgrid::surf::CpuTiModel();
-  surf_cpu_model_vm = new simgrid::surf::CpuTiModel();
+  surf_cpu_model_pm = new simgrid::kernel::resource::CpuTiModel();
+  surf_cpu_model_vm = new simgrid::kernel::resource::CpuTiModel();
 }
 
 CpuTiModel::CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL)
@@ -312,7 +286,7 @@ CpuTiModel::~CpuTiModel()
   surf_cpu_model_pm = nullptr;
 }
 
-Cpu* CpuTiModel::create_cpu(simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
+kernel::resource::Cpu* CpuTiModel::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
 {
   return new CpuTi(this, host, speed_per_pstate, core);
 }
@@ -340,7 +314,7 @@ double CpuTiModel::next_occuring_event(double now)
 void CpuTiModel::update_actions_state(double now, double /*delta*/)
 {
   while (not get_action_heap().empty() && double_equals(get_action_heap().top_date(), now, sg_surf_precision)) {
-    CpuTiAction* action = static_cast<CpuTiAction*>(get_action_heap().pop());
+    auto* action = static_cast<CpuTiAction*>(get_action_heap().pop());
     XBT_DEBUG("Action %p: finish", action);
     action->finish(kernel::resource::Action::State::FINISHED);
     /* update remaining amount of all actions */
@@ -376,8 +350,8 @@ void CpuTi::set_speed_profile(kernel::profile::Profile* profile)
   if (profile && profile->event_list.size() > 1) {
     kernel::profile::DatedValue val = profile->event_list.back();
     if (val.date_ < 1e-12) {
-      simgrid::kernel::profile::Profile* prof = new simgrid::kernel::profile::Profile();
-      speed_.event                            = prof->schedule(&future_evt_set, this);
+      auto* prof   = new simgrid::kernel::profile::Profile();
+      speed_.event = prof->schedule(&profile::future_evt_set, this);
     }
   }
 }
@@ -440,14 +414,14 @@ void CpuTi::update_actions_finish_time(double now)
       continue;
 
     /* bogus priority, skip it */
-    if (action.get_priority() <= 0)
+    if (action.get_sharing_penalty() <= 0)
       continue;
 
     /* action suspended, skip it */
-    if (action.suspended_ != kernel::resource::Action::SuspendStates::not_suspended)
+    if (not action.is_running())
       continue;
 
-    sum_priority_ += 1.0 / action.get_priority();
+    sum_priority_ += 1.0 / action.get_sharing_penalty();
   }
 
   for (CpuTiAction& action : action_set_) {
@@ -457,9 +431,9 @@ void CpuTi::update_actions_finish_time(double now)
       continue;
 
     /* verify if the action is really running on cpu */
-    if (action.suspended_ == kernel::resource::Action::SuspendStates::not_suspended && action.get_priority() > 0) {
+    if (action.is_running() && action.get_sharing_penalty() > 0) {
       /* total area needed to finish the action. Used in trace integration */
-      double total_area = (action.get_remains() * sum_priority_ * action.get_priority()) / speed_.peak;
+      double total_area = (action.get_remains() * sum_priority_ * action.get_sharing_penalty()) / speed_.peak;
 
       action.set_finish_time(speed_integrated_trace_->solve(now, total_area));
       /* verify which event will happen before (max_duration or finish time) */
@@ -513,11 +487,11 @@ void CpuTi::update_remaining_amount(double now)
       continue;
 
     /* bogus priority, skip it */
-    if (action.get_priority() <= 0)
+    if (action.get_sharing_penalty() <= 0)
       continue;
 
     /* action suspended, skip it */
-    if (action.suspended_ != kernel::resource::Action::SuspendStates::not_suspended)
+    if (not action.is_running())
       continue;
 
     /* action don't need update */
@@ -529,16 +503,16 @@ void CpuTi::update_remaining_amount(double now)
       continue;
 
     /* update remaining */
-    action.update_remains(area_total / (sum_priority_ * action.get_priority()));
+    action.update_remains(area_total / (sum_priority_ * action.get_sharing_penalty()));
     XBT_DEBUG("Update remaining action(%p) remaining %f", &action, action.get_remains_no_update());
   }
   last_update_ = now;
 }
 
-CpuAction *CpuTi::execution_start(double size)
+kernel::resource::CpuAction* CpuTi::execution_start(double size)
 {
   XBT_IN("(%s,%g)", get_cname(), size);
-  CpuTiAction* action = new CpuTiAction(this, size);
+  auto* action = new CpuTiAction(this, size);
 
   action_set_.push_back(*action); // Actually start the action
 
@@ -546,17 +520,16 @@ CpuAction *CpuTi::execution_start(double size)
   return action;
 }
 
-
-CpuAction *CpuTi::sleep(double duration)
+kernel::resource::CpuAction* CpuTi::sleep(double duration)
 {
   if (duration > 0)
     duration = std::max(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", get_cname(), duration);
-  CpuTiAction* action = new CpuTiAction(this, 1.0);
+  auto* action = new CpuTiAction(this, 1.0);
 
   action->set_max_duration(duration);
-  action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
+  action->set_suspend_state(kernel::resource::Action::SuspendStates::SLEEPING);
   if (duration == NO_MAX_DURATION)
     action->set_state(simgrid::kernel::resource::Action::State::IGNORED);
 
@@ -613,8 +586,8 @@ void CpuTiAction::cancel()
 void CpuTiAction::suspend()
 {
   XBT_IN("(%p)", this);
-  if (suspended_ != Action::SuspendStates::sleeping) {
-    suspended_ = Action::SuspendStates::suspended;
+  if (is_running()) {
+    set_suspend_state(Action::SuspendStates::SUSPENDED);
     get_model()->get_action_heap().remove(this);
     cpu_->set_modified(true);
   }
@@ -624,8 +597,8 @@ void CpuTiAction::suspend()
 void CpuTiAction::resume()
 {
   XBT_IN("(%p)", this);
-  if (suspended_ != Action::SuspendStates::sleeping) {
-    suspended_ = Action::SuspendStates::not_suspended;
+  if (is_suspended()) {
+    set_suspend_state(Action::SuspendStates::RUNNING);
     cpu_->set_modified(true);
   }
   XBT_OUT();
@@ -651,10 +624,10 @@ void CpuTiAction::set_max_duration(double duration)
   XBT_OUT();
 }
 
-void CpuTiAction::set_priority(double priority)
+void CpuTiAction::set_sharing_penalty(double sharing_penalty)
 {
-  XBT_IN("(%p,%g)", this, priority);
-  set_priority_no_update(priority);
+  XBT_IN("(%p,%g)", this, sharing_penalty);
+  set_sharing_penalty_no_update(sharing_penalty);
   cpu_->set_modified(true);
   XBT_OUT();
 }
@@ -667,5 +640,6 @@ double CpuTiAction::get_remains()
   return get_remains_no_update();
 }
 
-}
-}
+} // namespace resource
+} // namespace kernel
+} // namespace simgrid

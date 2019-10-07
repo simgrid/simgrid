@@ -250,7 +250,7 @@ code scanners are provided as plugin. The one for C++ is not free, but
 open-source project can use it at no cost. That is what we are doing.
 
 Don't miss the great looking dashboard here: 
-https://sonarcloud.io/dashboard?id=simgrid
+https://sonarcloud.io/dashboard?id=simgrid_simgrid
 
 This tool is enriched by the script @c tools/internal/travis-sonarqube.sh 
 that is run from @c .travis.yml

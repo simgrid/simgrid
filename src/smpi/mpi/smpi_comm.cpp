@@ -8,6 +8,7 @@
 #include "smpi_datatype.hpp"
 #include "smpi_request.hpp"
 #include "smpi_win.hpp"
+#include "smpi_info.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "src/surf/HostImpl.hpp"
 
@@ -27,7 +28,7 @@ namespace smpi{
 std::unordered_map<int, smpi_key_elem> Comm::keyvals_;
 int Comm::keyval_id_=0;
 
-Comm::Comm(MPI_Group group, MPI_Topology topo, int smp) : group_(group), topo_(topo),is_smp_comm_(smp)
+Comm::Comm(MPI_Group group, MPI_Topology topo, int smp, int in_id) : group_(group), topo_(topo),is_smp_comm_(smp), id_(in_id)
 {
   refcount_        = 1;
   topoType_        = MPI_INVALID_TOPO;
@@ -37,6 +38,21 @@ Comm::Comm(MPI_Group group, MPI_Topology topo, int smp) : group_(group), topo_(t
   non_uniform_map_ = nullptr;
   leaders_map_     = nullptr;
   is_blocked_      = 0;
+  info_            = MPI_INFO_NULL;
+  errhandler_      = MPI_ERRORS_ARE_FATAL;
+  //First creation of comm is done before SIMIX_run, so only do comms for others
+  if(in_id==MPI_UNDEFINED && smp==0 && this->rank()!=MPI_UNDEFINED ){
+    int id;
+    if(this->rank()==0){
+      static int global_id_ = 0;
+      id=global_id_;
+      global_id_++;
+    }
+    Colls::bcast(&id, 1, MPI_INT, 0, this);
+    XBT_DEBUG("Communicator %p has id %d", this, id);
+    id_=id;//only set here, as we don't want to change it in the middle of the bcast
+    Colls::barrier(this);
+  }
 }
 
 void Comm::destroy(Comm* comm)
@@ -88,6 +104,25 @@ int Comm::dup(MPI_Comm* newcomm){
       }
     }
   }
+  //duplicate info if present
+  if(info_!=MPI_INFO_NULL)
+    (*newcomm)->info_ = new simgrid::smpi::Info(info_);
+  //duplicate errhandler
+  (*newcomm)->set_errhandler(errhandler_);
+  return ret;
+}
+
+int Comm::dup_with_info(MPI_Info info, MPI_Comm* newcomm){
+  int ret = dup(newcomm);
+  if(ret != MPI_SUCCESS)
+    return ret;
+  if((*newcomm)->info_!=MPI_INFO_NULL){
+    simgrid::smpi::Info::unref((*newcomm)->info_);
+    (*newcomm)->info_=MPI_INFO_NULL;
+  }
+  if(info != MPI_INFO_NULL){
+    (*newcomm)->info_=info;
+  }
   return ret;
 }
 
@@ -112,19 +147,37 @@ int Comm::rank()
   return group_->rank(s4u::Actor::self());
 }
 
+int Comm::id()
+{
+  return id_;
+}
+
 void Comm::get_name (char* name, int* len)
 {
   if (this == MPI_COMM_UNINITIALIZED){
     smpi_process()->comm_world()->get_name(name, len);
     return;
   }
-  if(this == MPI_COMM_WORLD) {
-    strncpy(name, "WORLD", 6);
-    *len = 5;
+  if(this == MPI_COMM_WORLD && name_.empty()) {
+    strncpy(name, "MPI_COMM_WORLD", 15);
+    *len = 14;
+  } else if(this == MPI_COMM_SELF && name_.empty()) {
+    strncpy(name, "MPI_COMM_SELF", 14);
+    *len = 13;
   } else {
-    *len = snprintf(name, MPI_MAX_NAME_STRING, "%p", this);
+    *len = snprintf(name, MPI_MAX_NAME_STRING+1, "%s", name_.c_str());
   }
 }
+
+void Comm::set_name (const char* name)
+{
+  if (this == MPI_COMM_UNINITIALIZED){
+    smpi_process()->comm_world()->set_name(name);
+    return;
+  }
+  name_.replace (0, MPI_MAX_NAME_STRING+1, name);
+}
+
 
 void Comm::set_leaders_comm(MPI_Comm leaders){
   if (this == MPI_COMM_UNINITIALIZED){
@@ -180,7 +233,7 @@ MPI_Comm Comm::split(int color, int key)
 {
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->split(color, key);
-  int system_tag = 123;
+  int system_tag = -123;
   int* recvbuf;
 
   MPI_Group group_root = nullptr;
@@ -222,7 +275,7 @@ MPI_Comm Comm::split(int color, int key)
           group_root = group_out; /* Save root's group */
         }
         for (unsigned j = 0; j < rankmap.size(); j++) {
-          s4u::ActorPtr actor = group->actor(rankmap[j].second);
+          s4u::Actor* actor = group->actor(rankmap[j].second);
           group_out->set_mapping(actor, j);
         }
         MPI_Request* requests = xbt_new(MPI_Request, rankmap.size());
@@ -285,9 +338,35 @@ void Comm::unref(Comm* comm){
   }
 }
 
+MPI_Comm Comm::find_intra_comm(int * leader){
+  //get the indices of all processes sharing the same simix host
+  auto& process_list      = sg_host_self()->pimpl_->process_list_;
+  int intra_comm_size     = 0;
+  int min_index           = INT_MAX; // the minimum index will be the leader
+  for (auto& actor : process_list) {
+    int index = actor.get_pid();
+    if (this->group()->rank(actor.ciface()) != MPI_UNDEFINED) { // Is this process in the current group?
+      intra_comm_size++;
+      if (index < min_index)
+        min_index = index;
+    }
+  }
+  XBT_DEBUG("number of processes deployed on my node : %d", intra_comm_size);
+  MPI_Group group_intra = new  Group(intra_comm_size);
+  int i = 0;
+  for (auto& actor : process_list) {
+    if (this->group()->rank(actor.ciface()) != MPI_UNDEFINED) {
+      group_intra->set_mapping(actor.ciface(), i);
+      i++;
+    }
+  }
+  *leader=min_index;
+  return new  Comm(group_intra, nullptr, 1);
+}
+
 void Comm::init_smp(){
   int leader = -1;
-
+  int i = 0;
   if (this == MPI_COMM_UNINITIALIZED)
     smpi_process()->comm_world()->init_smp();
 
@@ -306,30 +385,8 @@ void Comm::init_smp(){
     smpi_switch_data_segment(s4u::Actor::self());
   }
   //identify neighbours in comm
-  //get the indices of all processes sharing the same simix host
-  auto& process_list      = sg_host_self()->pimpl_->process_list_;
-  int intra_comm_size     = 0;
-  int min_index           = INT_MAX; // the minimum index will be the leader
-  for (auto& actor : process_list) {
-    int index = actor.get_pid();
-    if (this->group()->rank(actor.iface()) != MPI_UNDEFINED) { // Is this process in the current group?
-      intra_comm_size++;
-      if (index < min_index)
-        min_index = index;
-    }
-  }
-  XBT_DEBUG("number of processes deployed on my node : %d", intra_comm_size);
-  MPI_Group group_intra = new  Group(intra_comm_size);
-  int i = 0;
-  for (auto& actor : process_list) {
-    if (this->group()->rank(actor.iface()) != MPI_UNDEFINED) {
-      group_intra->set_mapping(actor.iface(), i);
-      i++;
-    }
-  }
+  MPI_Comm comm_intra = find_intra_comm(&leader);
 
-  MPI_Comm comm_intra = new  Comm(group_intra, nullptr, 1);
-  leader=min_index;
 
   int* leaders_map = new int[comm_size];
   int* leader_list = new int[comm_size];
@@ -369,7 +426,7 @@ void Comm::init_smp(){
   if(MPI_COMM_WORLD!=MPI_COMM_UNINITIALIZED && this!=MPI_COMM_WORLD){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]), i);
+      leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]).get(), i);
     leader_comm = new  Comm(leaders_group, nullptr,1);
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
@@ -377,7 +434,7 @@ void Comm::init_smp(){
     // create intracommunicator
   }else{
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]), i);
+      leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]).get(), i);
 
     if(this->get_leaders_comm()==MPI_COMM_NULL){
       leader_comm = new  Comm(leaders_group, nullptr,1);
@@ -451,7 +508,7 @@ MPI_Comm Comm::f2c(int id) {
   } else if(F2C::f2c_lookup() != nullptr && id >= 0) {
     char key[KEY_SIZE];
     const auto& lookup = F2C::f2c_lookup();
-    auto comm          = lookup->find(get_key_id(key, id));
+    auto comm          = lookup->find(get_key(key, id));
     return comm == lookup->end() ? MPI_COMM_NULL : static_cast<MPI_Comm>(comm->second);
   } else {
     return MPI_COMM_NULL;
@@ -460,17 +517,7 @@ MPI_Comm Comm::f2c(int id) {
 
 void Comm::free_f(int id) {
   char key[KEY_SIZE];
-  F2C::f2c_lookup()->erase(id == 0 ? get_key(key, id) : get_key_id(key, id));
-}
-
-int Comm::add_f() {
-  if(F2C::f2c_lookup()==nullptr){
-    F2C::set_f2c_lookup(new std::unordered_map<std::string, F2C*>);
-  }
-  char key[KEY_SIZE];
-  (*(F2C::f2c_lookup()))[this == MPI_COMM_WORLD ? get_key(key, F2C::f2c_id()) : get_key_id(key, F2C::f2c_id())] = this;
-  f2c_id_increment();
-  return F2C::f2c_id()-1;
+  F2C::f2c_lookup()->erase(get_key(key, id));
 }
 
 void Comm::add_rma_win(MPI_Win win){
@@ -490,15 +537,43 @@ void Comm::finish_rma_calls(){
   }
 }
 
-MPI_Comm Comm::split_type(int type, int key, MPI_Info info)
+MPI_Info Comm::info(){
+  if(info_== MPI_INFO_NULL)
+    info_ = new Info();
+  info_->ref();
+  return info_;
+}
+
+void Comm::set_info(MPI_Info info){
+  if(info_!= MPI_INFO_NULL)
+    info->ref();
+  info_=info;
+}
+
+MPI_Errhandler Comm::errhandler(){
+  return errhandler_;
+}
+
+void Comm::set_errhandler(MPI_Errhandler errhandler){
+  errhandler_=errhandler;
+  if(errhandler_!= MPI_ERRHANDLER_NULL)
+    errhandler->ref();
+}
+
+MPI_Comm Comm::split_type(int type, int /*key*/, MPI_Info)
 {
-  if(type != MPI_COMM_TYPE_SHARED){
+  //MPI_UNDEFINED can be given to some nodes... but we need them to still perform the smp part which is collective
+  if(type != MPI_COMM_TYPE_SHARED && type != MPI_UNDEFINED){
     return MPI_COMM_NULL;
   }
-  this->init_smp();
-  this->ref();
-  this->get_intra_comm()->ref();
-  return this->get_intra_comm();
+  int leader=0;
+  MPI_Comm res= this->find_intra_comm(&leader);
+  if(type != MPI_UNDEFINED)
+    return res;
+  else{
+    Comm::destroy(res);
+    return MPI_COMM_NULL;
+  }
 }
 
 } // namespace smpi

@@ -41,19 +41,19 @@ const char* Storage::get_type()
   return pimpl_->typeId_.c_str();
 }
 
-std::unordered_map<std::string, std::string>* Storage::get_properties()
+const std::unordered_map<std::string, std::string>* Storage::get_properties() const
 {
-  return simix::simcall([this] { return pimpl_->get_properties(); });
+  return pimpl_->get_properties();
 }
 
-const char* Storage::get_property(const std::string& key)
+const char* Storage::get_property(const std::string& key) const
 {
   return this->pimpl_->get_property(key);
 }
 
 void Storage::set_property(const std::string& key, const std::string& value)
 {
-  simix::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  kernel::actor::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
 }
 
 IoPtr Storage::io_init(sg_size_t size, Io::OpType type)
@@ -118,7 +118,7 @@ xbt_dict_t sg_storage_get_properties(sg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters (storage is nullptr)");
   xbt_dict_t as_dict                        = xbt_dict_new_homogeneous(xbt_free_f);
-  std::unordered_map<std::string, std::string>* props = storage->get_properties();
+  const std::unordered_map<std::string, std::string>* props = storage->get_properties();
   if (props == nullptr)
     return nullptr;
   for (auto const& elm : *props) {

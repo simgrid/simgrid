@@ -26,8 +26,11 @@
 #include <cxxabi.h>
 #endif
 
-#if HAVE_BOOST_STACKTRACE
+#if HAVE_BOOST_STACKTRACE_BACKTRACE
 #define BOOST_STACKTRACE_USE_BACKTRACE
+#include <boost/stacktrace.hpp>
+#elif HAVE_BOOST_STACKTRACE_ADDR2LINE
+#define BOOST_STACKTRACE_USE_ADDR2LINE
 #include <boost/stacktrace.hpp>
 #endif
 
@@ -71,14 +74,14 @@ public:
       return false;
     }
   }
-#if HAVE_BOOST_STACKTRACE
+#if HAVE_BOOST_STACKTRACE_BACKTRACE || HAVE_BOOST_STACKTRACE_ADDR2LINE
   boost::stacktrace::stacktrace st;
 #endif
 };
 
 Backtrace::Backtrace()
 {
-#if HAVE_BOOST_STACKTRACE
+#if HAVE_BOOST_STACKTRACE_BACKTRACE || HAVE_BOOST_STACKTRACE_ADDR2LINE
   impl_     = new BacktraceImpl();
   impl_->st = boost::stacktrace::stacktrace();
 #endif
@@ -129,7 +132,7 @@ std::string const Backtrace::resolve() const
 {
   std::string result("");
 
-#if HAVE_BOOST_STACKTRACE
+#if HAVE_BOOST_STACKTRACE_BACKTRACE || HAVE_BOOST_STACKTRACE_ADDR2LINE
   std::stringstream ss;
   ss << impl_->st;
   result.append(ss.str());

@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_EXIT_HPP
 #define SIMGRID_MC_EXIT_HPP
 #include "xbt/base.h"
+#include <exception>
 
 constexpr int SIMGRID_MC_EXIT_SUCCESS         = 0;
 constexpr int SIMGRID_MC_EXIT_SAFETY          = 1;
@@ -19,11 +20,11 @@ constexpr int SIMGRID_MC_EXIT_ERROR           = 63;
 
 namespace simgrid {
 namespace mc {
-class XBT_PUBLIC DeadlockError {
+class XBT_PUBLIC DeadlockError : public std::exception {
 };
-class XBT_PUBLIC TerminationError {
+class XBT_PUBLIC TerminationError : public std::exception {
 };
-class XBT_PUBLIC LivenessError {
+class XBT_PUBLIC LivenessError : public std::exception {
 };
 }
 }

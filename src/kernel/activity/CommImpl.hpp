@@ -15,41 +15,47 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-class XBT_PUBLIC CommImpl : public ActivityImpl {
+class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   ~CommImpl() override;
   void cleanupSurf();
 
-  double rate_ = 0.0;
-  double size_ = 0.0;
+  double rate_       = 0.0;
+  double size_       = 0.0;
+  bool detached_     = false;   /* If detached or not */
+  bool copied_       = false;   /* whether the data were already copied */
+  MailboxImpl* mbox_ = nullptr; /* Rendez-vous where the comm is queued */
 
 public:
   enum class Type { SEND = 0, RECEIVE, READY, DONE };
 
   CommImpl& set_type(CommImpl::Type type);
   CommImpl& set_size(double size);
-  double get_rate() { return rate_; }
+  CommImpl& set_src_buff(unsigned char* buff, size_t size);
+  CommImpl& set_dst_buff(unsigned char* buff, size_t* size);
   CommImpl& set_rate(double rate);
-  CommImpl& set_src_buff(void* buff, size_t size);
-  CommImpl& set_dst_buff(void* buff, size_t* size);
+  CommImpl& set_mailbox(MailboxImpl* mbox);
+  CommImpl& detach();
+
+  double get_rate() const { return rate_; }
+  MailboxImpl* get_mailbox() const { return mbox_; }
+  bool detached() const { return detached_; }
+
+  void copy_data();
 
   CommImpl* start();
-  void copy_data();
   void suspend() override;
   void resume() override;
+  void cancel() override;
   void post() override;
   void finish() override;
-  void cancel();
-  double remains();
 
   CommImpl::Type type_;        /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
-  MailboxImpl* mbox = nullptr; /* Rendez-vous where the comm is queued */
 
 #if SIMGRID_HAVE_MC
   MailboxImpl* mbox_cpy = nullptr; /* Copy of the rendez-vous where the comm is queued, MC needs it for DPOR
                                      (comm.mbox set to nullptr when the communication is removed from the mailbox
                                      (used as garbage collector)) */
 #endif
-  bool detached = false; /* If detached or not */
 
   void (*clean_fun)(void*) = nullptr; /* Function to clean the detached src_buf if something goes wrong */
   int (*match_fun)(void*, void*, CommImpl*) = nullptr; /* Filter function used by the other side. It is used when
@@ -64,11 +70,10 @@ expectations of the other side, too. See  */
   actor::ActorImplPtr dst_actor_ = nullptr;
 
   /* Data to be transfered */
-  void* src_buff_        = nullptr;
-  void* dst_buff_        = nullptr;
-  size_t src_buff_size_  = 0;
-  size_t* dst_buff_size_ = nullptr;
-  bool copied           = false; /* whether the data were already copied */
+  unsigned char* src_buff_ = nullptr;
+  unsigned char* dst_buff_ = nullptr;
+  size_t src_buff_size_    = 0;
+  size_t* dst_buff_size_   = nullptr;
 
   void* src_data_ = nullptr; /* User data associated to the communication */
   void* dst_data_ = nullptr;

@@ -40,8 +40,8 @@
 use File::Path;
 
 # Global variables
-$MPIMajorVersion = "2";
-$MPIMinorVersion = "2";
+$MPIMajorVersion = "3";
+$MPIMinorVersion = "1";
 $mpiexec = "smpirun";    # Name of mpiexec program (including path, if necessary)
 $testIsStrict = "true";
 $MPIhasMPIX   = "no";
@@ -157,7 +157,7 @@ foreach $_ (@ARGV) {
     elsif (/--?maxnp=(.*)/) { $np_max = $1; }
     elsif (/--?tests=(.*)/) { $listfiles = $1; }
     elsif (/--?srcdir=(.*)/) { $srcdir = $1;
-	$mpiexec="$mpiexec  -platform ${srcdir}/../../../../examples/platforms/small_platform_with_routers.xml -hostfile ${srcdir}/../../hostfile_coll --log=root.thr:critical --cfg=smpi/host-speed:1e9  --cfg=smpi/async-small-thresh:65536"; }
+	$mpiexec="$mpiexec  -platform ${srcdir}/../../../../examples/platforms/small_platform_with_routers.xml -hostfile ${srcdir}/../../hostfile_mpich --log=root.thr:critical --cfg=smpi/host-speed:1e9  --cfg=smpi/async-small-thresh:65536"; }
     elsif (/--?verbose/) { $verbose = 1; }
     elsif (/--?showprogress/) { $showProgress = 1; }
     elsif (/--?debug/) { $debug = 1; }

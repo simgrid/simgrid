@@ -9,11 +9,11 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
   foreach(test alltoallvf
-             # allredint8f allredopttf alltoallwf
-	       exscanf inplacef
-	     # nonblockingf nonblocking_inpf
-	       redscatf red_scat_blockf reducelocalf
-	       split_typef uallreducef vw_inplacef)
+           allredint8f allredopttf alltoallwf
+           exscanf inplacef
+           nonblockingf nonblocking_inpf
+           redscatf red_scat_blockf reducelocalf
+           split_typef uallreducef vw_inplacef)
     add_executable(${test} EXCLUDE_FROM_ALL ${test}.f)
     add_dependencies(tests ${test})
     target_link_libraries(${test} simgrid mtest_f77)

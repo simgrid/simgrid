@@ -8,12 +8,12 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-  foreach(test gaddressf90
+  foreach(test gaddressf90 typesnamef90 structf 
              # allctypesf90 createf90 get_elem_d get_elem_u
-	     # hindex1f90 hindexed_blockf90 
+	       hindex1f90
 	       indtype kinds
-	     # packef90 sizeof structf trf90 typecntsf90 typem2f90 typename3f90
-	     # typenamef90 typesnamef90
+	     # packef90 sizeof  trf90 typecntsf90 typem2f90 typename3f90
+	     # typenamef90 hindexed_blockf90
 	       typesubf90)
     add_executable(${test} EXCLUDE_FROM_ALL ${test}.f90)
     add_dependencies(tests ${test})

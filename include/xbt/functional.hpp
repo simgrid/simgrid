@@ -281,15 +281,6 @@ template <class F, class... Args> auto make_task(F code, Args... args) -> Task<d
   return Task<decltype(code(std::move(args)...))()>(std::move(task));
 }
 
-// Deprecated
-template <class F, class... Args>
-XBT_ATTRIB_DEPRECATED_v323("Please use make_task()") auto makeTask(F code, Args... args)
-    -> Task<decltype(code(std::move(args)...))()>
-{
-  TaskImpl<F, Args...> task(std::move(code), std::make_tuple(std::move(args)...));
-  return Task<decltype(code(std::move(args)...))()>(std::move(task));
-}
-
 } // namespace xbt
 } // namespace simgrid
 #endif

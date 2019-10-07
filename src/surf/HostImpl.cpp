@@ -27,8 +27,7 @@ static inline double has_cost(const double* array, size_t pos)
 {
   if (array)
     return array[pos];
-  else
-    return -1.0;
+  return -1.0;
 }
 
 kernel::resource::Action* HostModel::execute_parallel(const std::vector<s4u::Host*>& host_list,
@@ -88,11 +87,14 @@ HostImpl::~HostImpl()
       msg += "\n\t" + std::string(process.get_name());
 
     SIMIX_display_process_status();
-    THROWF(arg_error, 0, "%s", msg.c_str());
+    xbt_die("%s", msg.c_str());
   }
   for (auto const& arg : actors_at_boot_)
     delete arg;
   actors_at_boot_.clear();
+
+  for (auto const& d : disks_)
+    d->destroy();
 }
 
 /** Re-starts all the actors that are marked as restartable.
@@ -104,7 +106,9 @@ void HostImpl::turn_on()
   for (auto const& arg : actors_at_boot_) {
     XBT_DEBUG("Booting Actor %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
     simgrid::kernel::actor::ActorImplPtr actor = simgrid::kernel::actor::ActorImpl::create(
-        arg->name.c_str(), arg->code, nullptr, arg->host, arg->properties.get(), nullptr);
+        arg->name, arg->code, nullptr, arg->host, arg->properties.get(), nullptr);
+    if (arg->on_exit)
+      *actor->on_exit = *arg->on_exit;
     if (arg->kill_time >= 0)
       actor->set_kill_time(arg->kill_time);
     if (arg->auto_restart)
@@ -146,14 +150,40 @@ size_t HostImpl::get_actor_count()
 {
   return process_list_.size();
 }
+
+std::vector<s4u::Disk*> HostImpl::get_disks()
+{
+  std::vector<s4u::Disk*> disks;
+  for (auto const& d : disks_)
+    disks.push_back(&d->piface_);
+  return disks;
+}
+
+void HostImpl::add_disk(s4u::Disk* disk)
+{
+  disks_.push_back(disk->get_impl());
+}
+
+void HostImpl::remove_disk(const std::string& disk_name)
+{
+  auto position = disks_.begin();
+  for (auto const& d : disks_) {
+    if (d->get_name() == disk_name) {
+      disks_.erase(position);
+      break;
+    }
+    position++;
+  }
+}
+
 std::vector<const char*> HostImpl::get_attached_storages()
 {
   std::vector<const char*> storages;
   for (auto const& s : storage_)
-    if (s.second->getHost() == piface_->get_cname())
+    if (s.second->get_host() == piface_->get_cname())
       storages.push_back(s.second->piface_.get_cname());
   return storages;
 }
 
-}
-}
+} // namespace surf
+} // namespace simgrid

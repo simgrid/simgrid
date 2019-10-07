@@ -16,11 +16,11 @@ CMAKE_LINKARGS="-L@libdir@"
 
 @SMPITOOLS_SH@
 
-list_set CXXFLAGS "-std=gnu++11"
+list_set CXXFLAGS "-std=gnu++11" @SMPI_CXX_FLAGS@
 list_set LINKARGS
 if [ "@WIN32@" != "1" ]; then
     list_add CXXFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
-    list_add CXXFLAGS "-fpic"
+    list_add CXXFLAGS "-fPIC"
     if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
        list_add LINKARGS "-shared"
     else
@@ -31,6 +31,9 @@ else
     list_add CXXFLAGS "-include" "@includedir@/smpi/smpi_main.h"
     list_add LINKARGS "@libdir@\libsimgrid.dll"
 fi
+
+# By default, we execute the commands instead of only showing them to cmake
+show=
 
 list_set CMDARGS
 while [ $# -gt 0 ]; do
@@ -60,6 +63,10 @@ while [ $# -gt 0 ]; do
         '-compiler-version' | '--compiler-version')
             ${CXX} --version
             ;;
+	'-show'|'-compile-info'|'-link-info')
+            # Dry run displaying commands instead of executing them. Useful to cmake
+	    show=1
+	    ;;
         *)
             list_add CMDARGS "${ARG}"
       ;;
@@ -74,4 +81,8 @@ list_add_not_empty CMDLINE "${CMDARGS}"
 list_add_not_empty CMDLINE "${LINKARGS}"
 
 eval $(list_get CMDLINE)
+if [ "x$VERBOSE" = x1 -o "x$show" = x1 ] ; then
+  echo "$@"
+  [ "x$show" = x1 ] && exit 0
+fi
 "$@"

@@ -18,14 +18,11 @@ public:
   unsigned int group_;
   unsigned int chassis_;
   unsigned int blade_;
-  resource::LinkImpl** blue_links_  = nullptr;
-  resource::LinkImpl** black_links_ = nullptr;
-  resource::LinkImpl** green_links_ = nullptr;
-  resource::LinkImpl** my_nodes_    = nullptr;
-  DragonflyRouter(int i, int j, int k);
-  DragonflyRouter(const DragonflyRouter&) = delete;
-  DragonflyRouter& operator=(const DragonflyRouter&) = delete;
-  ~DragonflyRouter();
+  resource::LinkImpl* blue_link_ = nullptr;
+  std::vector<resource::LinkImpl*> black_links_;
+  std::vector<resource::LinkImpl*> green_links_;
+  std::vector<resource::LinkImpl*> my_nodes_;
+  DragonflyRouter(unsigned group, unsigned chassis, unsigned blade) : group_(group), chassis_(chassis), blade_(blade) {}
 };
 
 /** @ingroup ROUTING_API
@@ -64,10 +61,6 @@ public:
 class XBT_PUBLIC DragonflyZone : public ClusterZone {
 public:
   explicit DragonflyZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel);
-  DragonflyZone(const DragonflyZone&) = delete;
-  DragonflyZone& operator=(const DragonflyZone&) = delete;
-  ~DragonflyZone() override;
-  //      void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) override;
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void parse_specific_arguments(ClusterCreationArgs* cluster) override;
   void seal() override;
@@ -91,7 +84,7 @@ private:
   unsigned int num_links_black_        = 0;
   unsigned int num_links_blue_         = 0;
   unsigned int num_links_per_link_     = 1; // splitduplex -> 2, only for local link
-  DragonflyRouter** routers_        = nullptr;
+  std::vector<DragonflyRouter> routers_;
 };
 } // namespace routing
 } // namespace kernel

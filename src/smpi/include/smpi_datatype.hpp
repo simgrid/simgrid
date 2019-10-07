@@ -121,27 +121,27 @@ public:
   int extent(MPI_Aint* lb, MPI_Aint* extent);
   MPI_Aint get_extent() { return ub_ - lb_; };
   void get_name(char* name, int* length);
-  void set_name(char* name);
-  static int copy(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+  void set_name(const char* name);
+  static int copy(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                   MPI_Datatype recvtype);
-  virtual void serialize(void* noncontiguous, void* contiguous, int count);
-  virtual void unserialize(void* contiguous, void* noncontiguous, int count, MPI_Op op);
+  virtual void serialize(const void* noncontiguous, void* contiguous, int count);
+  virtual void unserialize(const void* contiguous, void* noncontiguous, int count, MPI_Op op);
   static int keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval,
                            void* extra_state);
   static int keyval_free(int* keyval);
-  int pack(void* inbuf, int incount, void* outbuf, int outcount, int* position, MPI_Comm comm);
-  int unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Comm comm);
+  int pack(const void* inbuf, int incount, void* outbuf, int outcount, int* position, MPI_Comm comm);
+  int unpack(const void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Comm comm);
 
   static int create_contiguous(int count, MPI_Datatype old_type, MPI_Aint lb, MPI_Datatype* new_type);
   static int create_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type);
   static int create_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type);
-  static int create_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type);
-  static int create_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type,
+  static int create_indexed(int count, const int* blocklens, const int* indices, MPI_Datatype old_type, MPI_Datatype* new_type);
+  static int create_hindexed(int count, const int* blocklens, const MPI_Aint* indices, MPI_Datatype old_type,
                              MPI_Datatype* new_type);
-  static int create_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types,
+  static int create_struct(int count, const int* blocklens, const MPI_Aint* indices, const MPI_Datatype* old_types,
                            MPI_Datatype* new_type);
-  static int create_subarray(int ndims, int* array_of_sizes,
-                             int* array_of_subsizes, int* array_of_starts,
+  static int create_subarray(int ndims, const int* array_of_sizes,
+                             const int* array_of_subsizes, const int* array_of_starts,
                              int order, MPI_Datatype oldtype, MPI_Datatype *newtype);
   static int create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent,
                              MPI_Datatype *newtype);

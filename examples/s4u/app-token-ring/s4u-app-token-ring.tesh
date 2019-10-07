@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-app-token-ring ${platfdir}/routing_cluster.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-app-token-ring ${platfdir}/routing_cluster.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
 > [  0.000000] (maestro@) Number of hosts '6'
 > [  0.000000] (0@host1) Host "0" send 'Token' to Host "1"
 > [  0.017354] (1@host2) Host "1" received "Token"
@@ -16,7 +16,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-app-token-ring ${platfdir}/routing_cluster.xml
 > [  0.131796] (0@host1) Host "0" received "Token"
 > [  0.131796] (maestro@) Simulation time 0.131796
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-app-token-ring ${platfdir}/two_peers.xml "--log=root.fmt:[%12.6r]%e(%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-app-token-ring ${platfdir}/two_peers.xml "--log=root.fmt:[%12.6r]%e(%P@%h)%e%m%n"
 > [    0.000000] (maestro@) Number of hosts '2'
 > [    0.000000] (0@100030591) Host "0" send 'Token' to Host "1"
 > [    0.624423] (1@100036570) Host "1" received "Token"
@@ -24,7 +24,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-app-token-ring ${platfdir}/two_peers.xml "--lo
 > [    1.248846] (0@100030591) Host "0" received "Token"
 > [    1.248846] (maestro@) Simulation time 1.24885
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-app-token-ring ${platfdir}/meta_cluster.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-app-token-ring ${platfdir}/meta_cluster.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
 > [  0.000000] (maestro@) Number of hosts '60'
 > [  0.000000] (0@host-1.cluster1) Host "0" send 'Token' to Host "1"
 > [  0.030364] (1@host-1.cluster2) Host "1" received "Token"

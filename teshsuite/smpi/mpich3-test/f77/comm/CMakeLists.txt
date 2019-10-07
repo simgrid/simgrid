@@ -9,12 +9,12 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
  # add_executable(commerrf EXCLUDE_FROM_ALL commerrf.f)
- # add_executable(commnamef EXCLUDE_FROM_ALL commnamef.f)
+  add_executable(commnamef EXCLUDE_FROM_ALL commnamef.f)
 
- # add_dependencies(tests commerrf commnamef)
-
+  add_dependencies(tests commnamef)
+ # add_dependencies(tests commerrf)
  # target_link_libraries(commerrf simgrid mtest_f77)
- # target_link_libraries(commnamef simgrid mtest_f77)
+  target_link_libraries(commnamef simgrid mtest_f77)
 endif()
 
 set(examples_src

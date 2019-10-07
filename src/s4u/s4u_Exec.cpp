@@ -12,8 +12,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_exec, s4u_activity, "S4U asynchronous execut
 
 namespace simgrid {
 namespace s4u {
-xbt::signal<void(Actor const&)> Exec::on_start;
-xbt::signal<void(Actor const&)> Exec::on_completion;
+xbt::signal<void(Actor const&, Exec const&)> Exec::on_start;
+xbt::signal<void(Actor const&, Exec const&)> Exec::on_completion;
 
 Exec::Exec()
 {
@@ -44,7 +44,7 @@ Exec* Exec::wait()
     start();
   simcall_execution_wait(pimpl_);
   state_ = State::FINISHED;
-  on_completion(*Actor::self());
+  on_completion(*Actor::self(), *this);
   return this;
 }
 
@@ -53,9 +53,17 @@ Exec* Exec::wait_for(double)
   THROW_UNIMPLEMENTED;
 }
 
+int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
+{
+  std::unique_ptr<kernel::activity::ExecImpl* []> rexecs(new kernel::activity::ExecImpl*[execs->size()]);
+  std::transform(begin(*execs), end(*execs), rexecs.get(),
+                 [](const ExecPtr& exec) { return static_cast<kernel::activity::ExecImpl*>(exec->pimpl_.get()); });
+  return simcall_execution_waitany_for(rexecs.get(), execs->size(), timeout);
+}
+
 Exec* Exec::cancel()
 {
-  simix::simcall([this] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->cancel(); });
+  kernel::actor::simcall([this] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->cancel(); });
   state_ = State::CANCELED;
   return this;
 }
@@ -90,6 +98,27 @@ ExecPtr Exec::set_timeout(double timeout)
   return this;
 }
 
+Host* Exec::get_host() const
+{
+  return static_cast<kernel::activity::ExecImpl*>(pimpl_.get())->get_host();
+}
+unsigned int Exec::get_host_number() const
+{
+  return static_cast<kernel::activity::ExecImpl*>(pimpl_.get())->get_host_number();
+}
+double Exec::get_start_time() const
+{
+  return (pimpl_->surf_action_ == nullptr) ? -1 : pimpl_->surf_action_->get_start_time();
+}
+double Exec::get_finish_time() const
+{
+  return (pimpl_->surf_action_ == nullptr) ? -1 : pimpl_->surf_action_->get_finish_time();
+}
+double Exec::get_cost() const
+{
+  return (pimpl_->surf_action_ == nullptr) ? -1 : pimpl_->surf_action_->get_cost();
+}
+
 /** @brief  Change the execution priority, don't you think?
  *
  * An execution with twice the priority will get twice the amount of flops when the resource is shared.
@@ -112,17 +141,17 @@ ExecSeq::ExecSeq(sg_host_t host, double flops_amount) : Exec(), flops_amount_(fl
 
 Exec* ExecSeq::start()
 {
-  simix::simcall([this] {
+  kernel::actor::simcall([this] {
     (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
         .set_name(name_)
         .set_tracing_category(tracing_category_)
-        .set_priority(1. / priority_)
+        .set_sharing_penalty(1. / priority_)
         .set_bound(bound_)
         .set_flops_amount(flops_amount_)
         .start();
   });
   state_ = State::STARTED;
-  on_start(*Actor::self());
+  on_start(*Actor::self(), *this);
   return this;
 }
 
@@ -151,17 +180,17 @@ Host* ExecSeq::get_host()
 /** @brief Returns the amount of flops that remain to be done */
 double ExecSeq::get_remaining()
 {
-  return simgrid::simix::simcall(
+  return simgrid::kernel::actor::simcall(
       [this]() { return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->get_remaining(); });
 }
 
-/** @brief Returns the ratio of elements that are still to do
+/** @brief Returns the ratio of elements that are still to do
  *
  * The returned value is between 0 (completely done) and 1 (nothing done yet).
  */
 double ExecSeq::get_remaining_ratio()
 {
-  return simgrid::simix::simcall([this]() {
+  return simgrid::kernel::actor::simcall([this]() {
     return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->get_seq_remaining_ratio();
   });
 }
@@ -175,7 +204,7 @@ ExecPar::ExecPar(const std::vector<s4u::Host*>& hosts, const std::vector<double>
 
 Exec* ExecPar::start()
 {
-  simix::simcall([this] {
+  kernel::actor::simcall([this] {
     (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
         .set_hosts(hosts_)
         .set_timeout(timeout_)
@@ -184,13 +213,13 @@ Exec* ExecPar::start()
         .start();
   });
   state_ = State::STARTED;
-  on_start(*Actor::self());
+  on_start(*Actor::self(), *this);
   return this;
 }
 
 double ExecPar::get_remaining_ratio()
 {
-  return simix::simcall(
+  return kernel::actor::simcall(
       [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_par_remaining_ratio(); });
 }
 

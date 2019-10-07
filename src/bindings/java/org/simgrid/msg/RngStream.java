@@ -42,7 +42,8 @@ public class RngStream {
 	 */
 	private native void create(String name);
 
-	@Override
+	/** @deprecated (from Java9 onwards) */
+	@Deprecated @Override
 	protected void finalize() throws Throwable{
 		nativeFinalize();
 	}

@@ -7,23 +7,21 @@
 #include "../colls_private.hpp"
 namespace simgrid{
 namespace smpi{
-int Coll_allreduce_rab_rdb::allreduce(void *sbuff, void *rbuff, int count,
+int Coll_allreduce_rab_rdb::allreduce(const void *sbuff, void *rbuff, int count,
                                       MPI_Datatype dtype, MPI_Op op,
                                       MPI_Comm comm)
 {
   int tag = COLL_TAG_ALLREDUCE;
   unsigned int mask, pof2, i, recv_idx, last_idx, send_idx, send_cnt;
-  int dst, newrank, rem, newdst,
-      recv_cnt, *cnts, *disps;
+  int dst, newrank, rem, newdst, recv_cnt;
   MPI_Aint extent;
   MPI_Status status;
-  void *tmp_buf = NULL;
 
   unsigned int nprocs = comm->size();
   int rank = comm->rank();
 
   extent = dtype->get_extent();
-  tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
+  unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(count * extent);
 
   Datatype::copy(sbuff, count, dtype, rbuff, count, dtype);
 
@@ -81,8 +79,8 @@ int Coll_allreduce_rab_rdb::allreduce(void *sbuff, void *rbuff, int count,
     // reduce-scatter, calculate the count that each process receives
     // and the displacement within the buffer
 
-    cnts = (int *) xbt_malloc(pof2 * sizeof(int));
-    disps = (int *) xbt_malloc(pof2 * sizeof(int));
+    int* cnts  = new int[pof2];
+    int* disps = new int[pof2];
 
     for (i = 0; i < (pof2 - 1); i++)
       cnts[i] = count / pof2;
@@ -116,18 +114,17 @@ int Coll_allreduce_rab_rdb::allreduce(void *sbuff, void *rbuff, int count,
       }
 
       // Send data from recvbuf. Recv into tmp_buf
-      Request::sendrecv((char *) rbuff + disps[send_idx] * extent, send_cnt,
-                   dtype, dst, tag,
-                   (char *) tmp_buf + disps[recv_idx] * extent, recv_cnt,
-                   dtype, dst, tag, comm, &status);
+      Request::sendrecv(static_cast<char*>(rbuff) + disps[send_idx] * extent, send_cnt, dtype, dst, tag,
+                        tmp_buf + disps[recv_idx] * extent, recv_cnt, dtype, dst, tag, comm, &status);
 
       // tmp_buf contains data received in this step.
       // recvbuf contains data accumulated so far
 
       // This algorithm is used only for predefined ops
       // and predefined ops are always commutative.
-      if(op!=MPI_OP_NULL) op->apply( (char *) tmp_buf + disps[recv_idx] * extent,
-                        (char *) rbuff + disps[recv_idx] * extent, &recv_cnt, dtype);
+      if (op != MPI_OP_NULL)
+        op->apply(tmp_buf + disps[recv_idx] * extent, static_cast<char*>(rbuff) + disps[recv_idx] * extent, &recv_cnt,
+                  dtype);
 
       // update send_idx for next iteration
       send_idx = recv_idx;
@@ -177,9 +174,8 @@ int Coll_allreduce_rab_rdb::allreduce(void *sbuff, void *rbuff, int count,
       mask >>= 1;
     }
 
-    free(cnts);
-    free(disps);
-
+    delete[] cnts;
+    delete[] disps;
   }
   // In the non-power-of-two case, all odd-numbered processes of
   // rank < 2 * rem send the result to (rank-1), the ranks who didn't

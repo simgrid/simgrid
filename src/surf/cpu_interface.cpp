@@ -4,17 +4,19 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_interface.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
 XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf, "Logging specific to the SURF cpu module");
 
-simgrid::surf::CpuModel *surf_cpu_model_pm;
-simgrid::surf::CpuModel *surf_cpu_model_vm;
+simgrid::kernel::resource::CpuModel* surf_cpu_model_pm;
+simgrid::kernel::resource::CpuModel* surf_cpu_model_vm;
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 /*********
  * Model *
@@ -24,7 +26,7 @@ void CpuModel::update_actions_state_lazy(double now, double /*delta*/)
 {
   while (not get_action_heap().empty() && double_equals(get_action_heap().top_date(), now, sg_surf_precision)) {
 
-    CpuAction* action = static_cast<CpuAction*>(get_action_heap().pop());
+    auto* action = static_cast<CpuAction*>(get_action_heap().pop());
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
 
     action->finish(kernel::resource::Action::State::FINISHED);
@@ -35,15 +37,15 @@ void CpuModel::update_actions_state_lazy(double now, double /*delta*/)
 void CpuModel::update_actions_state_full(double /*now*/, double delta)
 {
   for (auto it = std::begin(*get_started_action_set()); it != std::end(*get_started_action_set());) {
-    CpuAction& action = static_cast<CpuAction&>(*it);
+    auto& action = static_cast<CpuAction&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
 
     action.update_remains(action.get_variable()->get_value() * delta);
     action.update_max_duration(delta);
 
-    if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_weight() > 0)) ||
+    if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_penalty() > 0)) ||
         ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
-      action.finish(kernel::resource::Action::State::FINISHED);
+      action.finish(Action::State::FINISHED);
     }
   }
 }
@@ -51,14 +53,13 @@ void CpuModel::update_actions_state_full(double /*now*/, double delta)
 /************
  * Resource *
  ************/
-Cpu::Cpu(kernel::resource::Model* model, simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate,
-         int core)
+Cpu::Cpu(Model* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
     : Cpu(model, host, nullptr /*constraint*/, speed_per_pstate, core)
 {
 }
 
-Cpu::Cpu(kernel::resource::Model* model, simgrid::s4u::Host* host, kernel::lmm::Constraint* constraint,
-         const std::vector<double>& speed_per_pstate, int core)
+Cpu::Cpu(Model* model, s4u::Host* host, lmm::Constraint* constraint, const std::vector<double>& speed_per_pstate,
+         int core)
     : Resource(model, host->get_cname(), constraint)
     , core_count_(core)
     , host_(host)
@@ -129,7 +130,7 @@ void Cpu::set_speed_profile(kernel::profile::Profile* profile)
 {
   xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", host_->get_cname());
 
-  speed_.event = profile->schedule(&future_evt_set, this);
+  speed_.event = profile->schedule(&profile::future_evt_set, this);
 }
 
 
@@ -141,7 +142,7 @@ void CpuAction::update_remains_lazy(double now)
 {
   xbt_assert(get_state_set() == get_model()->get_started_action_set(),
              "You're updating an action that is not running.");
-  xbt_assert(get_priority() > 0, "You're updating an action that seems suspended.");
+  xbt_assert(get_sharing_penalty() > 0, "You're updating an action that seems suspended.");
 
   double delta = now - get_last_update();
 
@@ -157,7 +158,7 @@ void CpuAction::update_remains_lazy(double now)
   set_last_value(get_variable()->get_value());
 }
 
-simgrid::xbt::signal<void(simgrid::surf::CpuAction const&, kernel::resource::Action::State)> CpuAction::on_state_change;
+xbt::signal<void(CpuAction const&, Action::State)> CpuAction::on_state_change;
 
 void CpuAction::suspend(){
   Action::State previous = get_state();
@@ -187,8 +188,7 @@ std::list<Cpu*> CpuAction::cpus() const
   for (int i = 0; i < llen; i++) {
     /* Beware of composite actions: ptasks put links and cpus together */
     // extra pb: we cannot dynamic_cast from void*...
-    kernel::resource::Resource* resource =
-        static_cast<kernel::resource::Resource*>(get_variable()->get_constraint(i)->get_id());
+    Resource* resource = get_variable()->get_constraint(i)->get_id();
     Cpu* cpu           = dynamic_cast<Cpu*>(resource);
     if (cpu != nullptr)
       retlist.push_back(cpu);
@@ -196,6 +196,6 @@ std::list<Cpu*> CpuAction::cpus() const
 
   return retlist;
 }
-
-}
-}
+} // namespace resource
+} // namespace kernel
+} // namespace simgrid

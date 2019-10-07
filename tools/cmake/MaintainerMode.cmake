@@ -162,6 +162,7 @@ if(enable_maintainer_mode AND NOT WIN32)
 
     set(string1  "'s/extern /XBT_PUBLIC_DATA /'")
     set(string2  "'s/XBT_PUBLIC_DATA \\([^(]*\\)(/XBT_PUBLIC \\1(/'")
+    set(string3  "'s/XBT_PUBLIC void STag_surfxml_include/XBT_ATTRIB_NORETURN &/'") # remove with v5 of the dtd
     set(string5  "'s/SET(DOCTYPE)/SET(ROOT_dax__adag)/'")
     set(string9  "'s/#include <unistd.h>/#if defined(_WIN32)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g'")
     set(string14 "'\\!^ \\* Generated [0-9/]\\{10\\} [0-9:]\\{8\\}\\.$$!d'")
@@ -193,6 +194,7 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND ${FLEXML_EXE} --root-tags platform -P surfxml --sysid=https://simgrid.org/simgrid.dtd -H src/surf/xml/simgrid_dtd.h -L src/surf/xml/simgrid.dtd
       COMMAND ${SED_EXE} -i ${string1} src/surf/xml/simgrid_dtd.h
       COMMAND ${SED_EXE} -i ${string2} src/surf/xml/simgrid_dtd.h
+      COMMAND ${SED_EXE} -i ${string3} src/surf/xml/simgrid_dtd.h
       COMMAND ${SED_EXE} -i ${string14} src/surf/xml/simgrid_dtd.h
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/surf/xml/simgrid_dtd.h"
 

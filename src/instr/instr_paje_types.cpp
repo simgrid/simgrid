@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "src/instr/instr_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event system (types)");
@@ -19,27 +20,15 @@ Type::Type(const std::string& name, const std::string& alias, const std::string&
     : id_(instr_new_paje_id()), name_(name), color_(color), father_(father)
 {
   if (name_.empty() || alias.empty())
-    THROWF(tracing_error, 0, "can't create a new type with no name or alias");
+    throw simgrid::TracingError(XBT_THROW_POINT, "can't create a new type with no name or alias");
 
   if (father != nullptr){
-    father->children_.insert({alias, this});
+    father->children_[alias].reset(this);
     XBT_DEBUG("new type %s, child of %s", get_cname(), father->get_cname());
   }
   if (trace_format == simgrid::instr::TraceFormat::Paje) {
     stream_ << std::fixed << std::setprecision(TRACE_precision());
   }
-}
-
-Type::~Type()
-{
-  for (auto elm : children_)
-    delete elm.second;
-}
-
-ValueType::~ValueType()
-{
-  for (auto elm : values_)
-    delete elm.second;
 }
 
 ContainerType::ContainerType(const std::string& name, Type* father) : Type(name, name, "", father)
@@ -58,11 +47,6 @@ StateType::StateType(const std::string& name, Type* father) : ValueType(name, fa
 {
   XBT_DEBUG("StateType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
   log_definition(PAJE_DefineStateType);
-}
-
-StateType::~StateType()
-{
-  events_.clear();
 }
 
 void StateType::set_event(const std::string& value_name)
@@ -95,11 +79,6 @@ VariableType::VariableType(const std::string& name, const std::string& color, Ty
 {
   XBT_DEBUG("VariableType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
   log_definition(PAJE_DefineVariableType);
-}
-
-VariableType::~VariableType()
-{
-  events_.clear();
 }
 
 void VariableType::instr_event(double now, double delta, const char* resource, double value)
@@ -181,17 +160,19 @@ void Type::log_definition(simgrid::instr::Type* source, simgrid::instr::Type* de
 Type* Type::by_name(const std::string& name)
 {
   Type* ret = nullptr;
-  for (auto elm : children_) {
+  for (auto const& elm : children_) {
     if (elm.second->name_ == name) {
       if (ret != nullptr) {
-        THROWF (tracing_error, 0, "there are two children types with the same name?");
+        throw simgrid::TracingError(XBT_THROW_POINT, "there are two children types with the same name?");
       } else {
-        ret = elm.second;
+        ret = elm.second.get();
       }
     }
   }
   if (ret == nullptr)
-    THROWF(tracing_error, 2, "type with name (%s) not found in father type (%s)", name.c_str(), get_cname());
+    throw simgrid::TracingError(
+        XBT_THROW_POINT,
+        simgrid::xbt::string_printf("type with name (%s) not found in father type (%s)", name.c_str(), get_cname()));
   return ret;
 }
 
@@ -203,14 +184,13 @@ void ValueType::add_entity_value(const std::string& name)
 void ValueType::add_entity_value(const std::string& name, const std::string& color)
 {
   if (name.empty())
-    THROWF(tracing_error, 0, "can't get a value with no name");
+    throw simgrid::TracingError(XBT_THROW_POINT, "can't get a value with no name");
 
   auto it = values_.find(name);
   if (it == values_.end()) {
-    EntityValue* new_val = new EntityValue(name, color, this);
-    values_.insert({name, new_val});
+    auto res = values_.emplace(name, EntityValue(name, color, this));
     XBT_DEBUG("new value %s, child of %s", name.c_str(), get_cname());
-    new_val->print();
+    res.first->second.print();
   }
 }
 
@@ -218,16 +198,19 @@ EntityValue* ValueType::get_entity_value(const std::string& name)
 {
   auto ret = values_.find(name);
   if (ret == values_.end()) {
-    THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name.c_str(), get_cname());
+    throw simgrid::TracingError(
+        XBT_THROW_POINT,
+        simgrid::xbt::string_printf("value with name (%s) not found in father type (%s)", name.c_str(), get_cname()));
   }
-  return ret->second;
+  return &ret->second;
 }
 
 VariableType* Type::by_name_or_create(const std::string& name, const std::string& color)
 {
   auto cont = children_.find(name);
   std::string mycolor = color.empty() ? "1 1 1" : color;
-  return cont == children_.end() ? new VariableType(name, mycolor, this) : static_cast<VariableType*>(cont->second);
+  return cont == children_.end() ? new VariableType(name, mycolor, this)
+                                 : static_cast<VariableType*>(cont->second.get());
 }
 
 LinkType* Type::by_name_or_create(const std::string& name, Type* source, Type* dest)
@@ -241,7 +224,7 @@ LinkType* Type::by_name_or_create(const std::string& name, Type* source, Type* d
     ret->log_definition(source, dest);
     return ret;
   } else
-    return static_cast<LinkType*>(it->second);
+    return static_cast<LinkType*>(it->second.get());
 }
 }
 }

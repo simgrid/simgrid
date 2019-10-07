@@ -14,8 +14,7 @@
 
 SIMGRID_REGISTER_PLUGIN(link_energy, "Link energy consumption.", &sg_link_energy_plugin_init)
 
-/** @addtogroup SURF_plugin_energy
-
+/** @defgroup plugin_link_energy
 
  This is the link energy plugin, accounting for the dissipated energy in the simulated platform.
 
@@ -24,8 +23,8 @@ SIMGRID_REGISTER_PLUGIN(link_energy, "Link energy consumption.", &sg_link_energy
 
  @verbatim
  <link id="SWITCH1" bandwidth="125Mbps" latency="5us" sharing_policy="SHARED" >
- <prop id="watt_range" value="100.0:200.0" />
- <prop id="watt_off" value="10" />
+ <prop id="wattage_range" value="100.0:200.0" />
+ <prop id="wattage_off" value="10" />
  </link>
  @endverbatim
 
@@ -87,7 +86,12 @@ void LinkEnergy::init_watts_range_list()
     return;
   inited_ = true;
 
-  const char* all_power_values_str = this->link_->get_property("watt_range");
+  const char* all_power_values_str = this->link_->get_property("wattage_range");
+  if (all_power_values_str == nullptr) {
+    all_power_values_str = this->link_->get_property("watt_range");
+    if (all_power_values_str != nullptr)
+      XBT_WARN("Please rename the 'watt_range' property of link %s into 'wattage_range'.", link_->get_cname());
+  }
 
   if (all_power_values_str == nullptr)
     return;
@@ -107,13 +111,13 @@ void LinkEnergy::init_watts_range_list()
     /* max_power is the power consumed at 100% link load       */
     try {
       idle_ = std::stod(current_power_values.front());
-    } catch (std::invalid_argument& ia) {
+    } catch (const std::invalid_argument&) {
       throw std::invalid_argument(std::string("Invalid idle power value for link ") + this->link_->get_cname());
     }
 
     try {
       busy_ = std::stod(current_power_values.back());
-    } catch (std::invalid_argument& ia) {
+    } catch (const std::invalid_argument&) {
       throw std::invalid_argument(std::string("Invalid busy power value for link ") + this->link_->get_cname());
     }
   }
@@ -136,7 +140,7 @@ double LinkEnergy::get_power()
 double LinkEnergy::get_consumed_energy()
 {
   if (last_updated_ < surf_get_clock()) // We need to simcall this as it modifies the environment
-    simgrid::simix::simcall(std::bind(&LinkEnergy::update, this));
+    simgrid::kernel::actor::simcall(std::bind(&LinkEnergy::update, this));
   return this->total_energy_;
 }
 } // namespace plugin
@@ -179,14 +183,13 @@ int sg_link_energy_is_inited()
 {
   return LinkEnergy::EXTENSION_ID.valid();
 }
-/** @ingroup SURF_plugin_energy
+/** @ingroup plugin_link_energy
  * @brief Enable energy plugin
  * @details Enable energy plugin to get joules consumption of each cpu. You should call this function before
  * #MSG_init().
  */
 void sg_link_energy_plugin_init()
 {
-
   if (LinkEnergy::EXTENSION_ID.valid())
     return;
   LinkEnergy::EXTENSION_ID = simgrid::s4u::Link::extension_create<LinkEnergy>();
@@ -213,10 +216,10 @@ void sg_link_energy_plugin_init()
   });
 
   simgrid::s4u::Link::on_communicate.connect(&on_communicate);
-  simgrid::s4u::on_simulation_end.connect(&on_simulation_end);
+  simgrid::s4u::Engine::on_simulation_end.connect(&on_simulation_end);
 }
 
-/** @ingroup plugin_energy
+/** @ingroup plugin_link_energy
  *  @brief Returns the total energy consumed by the link so far (in Joules)
  *
  *  Please note that since the consumption is lazily updated, it may require a simcall to update it.

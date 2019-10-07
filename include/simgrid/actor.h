@@ -42,6 +42,16 @@ XBT_PUBLIC void sg_actor_yield();
 XBT_PUBLIC void sg_actor_sleep_for(double duration);
 XBT_PUBLIC sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host, xbt_dict_t properties);
 XBT_PUBLIC void sg_actor_detach();
+XBT_PUBLIC sg_actor_t sg_actor_self();
+XBT_PUBLIC aid_t sg_actor_self_get_pid();
+XBT_PUBLIC aid_t sg_actor_self_get_ppid();
+XBT_PUBLIC const char* sg_actor_self_get_name();
+XBT_PUBLIC void sg_actor_self_execute(double flops);
+XBT_PUBLIC void sg_actor_ref(sg_actor_t actor);
+XBT_PUBLIC void sg_actor_unref(sg_actor_t actor);
+XBT_PUBLIC void* sg_actor_data(sg_actor_t actor);
+XBT_PUBLIC void sg_actor_data_set(sg_actor_t actor, void* userdata);
+
 SG_END_DECL()
 
 #endif /* INCLUDE_SIMGRID_ACTOR_H_ */

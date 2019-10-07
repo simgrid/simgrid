@@ -24,12 +24,6 @@
 #include <set>
 #include <sstream>
 #include <string>
-#include <sys/stat.h>
-#ifdef WIN32
-#include <direct.h> // _mkdir
-/* Need to define function drand48 for Windows */
-#define drand48() (rand() / (RAND_MAX + 1.0))
-#endif
 
 typedef simgrid::instr::Container* container_t;
 

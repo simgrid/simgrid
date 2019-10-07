@@ -68,7 +68,7 @@ namespace simgrid{
 namespace smpi{
 
 int
-Coll_allgather_ompi_neighborexchange::allgather(void *sbuf, int scount,
+Coll_allgather_ompi_neighborexchange::allgather(const void *sbuf, int scount,
                                                  MPI_Datatype sdtype,
                                                  void* rbuf, int rcount,
                                                  MPI_Datatype rdtype,

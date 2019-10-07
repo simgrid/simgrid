@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-synchro-mutex
+$ ${bindir:=.}/s4u-synchro-mutex
 > [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to compute after a lock_guard
 > [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] I'm done, good bye
 > [Tremblay:worker:(3) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to compute after a regular lock

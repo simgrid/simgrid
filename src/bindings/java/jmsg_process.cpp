@@ -75,7 +75,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject 
   simgrid::simix::ActorCode function = [jprocess]() { simgrid::kernel::context::java_main_jprocess(jprocess); };
   smx_actor_t self                   = SIMIX_process_self();
   sg_host_t host                     = jhost_get_native(env, jhost);
-  smx_actor_t actor                  = simgrid::simix::simcall([name, function, host, self] {
+  smx_actor_t actor                  = simgrid::kernel::actor::simcall([name, function, host, self] {
     return simgrid::kernel::actor::ActorImpl::create(std::move(name), std::move(function), nullptr, host, nullptr, self)
         .get();
   });

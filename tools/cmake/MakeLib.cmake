@@ -42,13 +42,21 @@ endif()
 # Compute the dependencies of SimGrid
 #####################################
 # search for dlopen
-if("${CMAKE_SYSTEM_NAME}" MATCHES "kFreeBSD|Linux")
+if("${CMAKE_SYSTEM_NAME}" MATCHES "kFreeBSD|Linux|SunOS")
   find_library(DL_LIBRARY dl)
 endif()
 mark_as_advanced(DL_LIBRARY)
 
 if (HAVE_BOOST_CONTEXTS)
-  set(SIMGRID_DEP "${SIMGRID_DEP} ${Boost_CONTEXT_LIBRARY}")
+  target_link_libraries(simgrid ${Boost_CONTEXT_LIBRARY})
+endif()
+
+if (HAVE_BOOST_STACKTRACE_BACKTRACE)
+  target_link_libraries(simgrid ${Boost_STACKTRACE_BACKTRACE_LIBRARY})
+endif()
+
+if (HAVE_BOOST_ADDR2LINE_BACKTRACE)
+  target_link_libraries(simgrid ${Boost_STACKTRACE_ADDR2LINE_LIBRARY})
 endif()
 
 if(CMAKE_USE_PTHREADS_INIT)
@@ -106,7 +114,7 @@ if(enable_smpi)
 
   add_executable(smpireplaymain src/smpi/smpi_replay_main.cpp)
   target_compile_options(smpireplaymain PRIVATE -fpic)
-  target_link_libraries(smpireplaymain simgrid -shared)
+  target_link_libraries(smpireplaymain simgrid -fpic -shared)
   set_target_properties(smpireplaymain
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/simgrid)
   install(TARGETS smpireplaymain # install that binary without breaking the rpath on Mac

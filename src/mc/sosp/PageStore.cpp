@@ -3,23 +3,23 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstring> // memcpy, memcmp
-#include <unistd.h>
-
 #include <sys/mman.h>
 #ifdef __FreeBSD__
 #define MAP_POPULATE MAP_PREFAULT_READ
 #endif
 
-#include "xbt/base.h"
+#include "src/internal_config.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
-#include "src/internal_config.h"
-
+#ifdef SG_HAVE_CPP14
+#include "src/include/xxhash.hpp"
+#endif
+#include "src/mc/mc_mmu.hpp"
 #include "src/mc/sosp/PageStore.hpp"
 
-#include "src/mc/mc_mmu.hpp"
+#include <cstring> // memcpy, memcmp
+#include <unistd.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_page_snapshot, mc, "Logging specific to mc_page_snapshot");
 
@@ -36,6 +36,9 @@ namespace mc {
  */
 static XBT_ALWAYS_INLINE PageStore::hash_type mc_hash_page(const void* data)
 {
+#ifdef SG_HAVE_CPP14
+  return xxh::xxhash<64>(data, xbt_pagesize);
+#else
   const std::uint64_t* values = (const uint64_t*)data;
   std::size_t n               = xbt_pagesize / sizeof(uint64_t);
 
@@ -44,6 +47,7 @@ static XBT_ALWAYS_INLINE PageStore::hash_type mc_hash_page(const void* data)
   for (std::size_t i = 0; i != n; ++i)
     hash = ((hash << 5) + hash) + values[i];
   return hash;
+#endif
 }
 
 // ***** snapshot_page_manager

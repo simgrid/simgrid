@@ -33,7 +33,6 @@ public class Emigrant extends Process {
     migrate(Host.getByName("Boivin"));
     waitFor(4);
 
-    Main.processToMigrate = this;
     Main.mutex.release();
     suspend();
 

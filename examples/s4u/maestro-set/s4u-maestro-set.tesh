@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-maestro-set$EXEEXT ${platfdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-maestro-set ${platfdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) I am not the main thread, as expected
 > [  0.000000] (2:receiver@Jupiter) I am not the main thread, as expected
 > [  0.000000] (1:sender@Tremblay) I am the main thread, as expected

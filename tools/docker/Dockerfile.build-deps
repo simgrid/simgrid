@@ -1,8 +1,12 @@
 # Base image 
 FROM debian:testing
 
-# - Install SimGrid's dependencies
-RUN apt update && \
+# Install the dependencies:
+#  - of the website
+#  - of SimGrid itself
+RUN apt-get --allow-releaseinfo-change update && \
+    apt install -y \
+       bibclean emacs-nox org-mode elpa-ess elpa-htmlize wget unzip r-cran-ggplot2 r-cran-tidyr r-cran-dplyr libtext-bibtex-perl && \
     apt install -y \
        g++ gcc gfortran default-jdk pybind11-dev \
        git \
@@ -13,6 +17,7 @@ RUN apt update && \
        doxygen fig2dev \
        chrpath \
        libdw-dev libevent-dev libunwind8-dev \
+       linkchecker \
        && \
-    pip3 install breathe javasphinx sphinx>=1.8.0b1 sphinx_rtd_theme
+    pip3 install breathe 'sphinx>=1.8.0b1' sphinx_rtd_theme
 		   

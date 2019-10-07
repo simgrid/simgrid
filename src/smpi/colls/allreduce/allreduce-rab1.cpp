@@ -9,7 +9,7 @@
 namespace simgrid{
 namespace smpi{
 // NP pow of 2 for now
-int Coll_allreduce_rab1::allreduce(void *sbuff, void *rbuff,
+int Coll_allreduce_rab1::allreduce(const void *sbuff, void *rbuff,
                                    int count, MPI_Datatype dtype,
                                    MPI_Op op, MPI_Comm comm)
 {
@@ -19,13 +19,11 @@ int Coll_allreduce_rab1::allreduce(void *sbuff, void *rbuff,
   unsigned int pof2 = 1, mask;
   int send_idx, recv_idx, dst, send_cnt, recv_cnt;
 
-  void *recv, *tmp_buf;
-
   int rank = comm->rank();
   unsigned int nprocs = comm->size();
 
   if((nprocs&(nprocs-1)))
-    THROWF(arg_error,0, "allreduce rab1 algorithm can't be used with non power of two number of processes ! ");
+    throw std::invalid_argument("allreduce rab1 algorithm can't be used with non power of two number of processes!");
 
   extent = dtype->get_extent();
 
@@ -41,8 +39,8 @@ int Coll_allreduce_rab1::allreduce(void *sbuff, void *rbuff,
     send_size = (count + nprocs) / nprocs;
     newcnt = send_size * nprocs;
 
-    recv = (void *) smpi_get_tmp_recvbuffer(extent * newcnt);
-    tmp_buf = (void *) smpi_get_tmp_sendbuffer(extent * newcnt);
+    unsigned char* recv    = smpi_get_tmp_recvbuffer(extent * newcnt);
+    unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(extent * newcnt);
     memcpy(recv, sbuff, extent * count);
 
 
@@ -57,18 +55,18 @@ int Coll_allreduce_rab1::allreduce(void *sbuff, void *rbuff,
       else
         recv_idx = send_idx + (mask * share);
 
-      Request::sendrecv((char *) recv + send_idx * extent, send_cnt, dtype, dst, tag,
-                   tmp_buf, recv_cnt, dtype, dst, tag, comm, &status);
+      Request::sendrecv(recv + send_idx * extent, send_cnt, dtype, dst, tag, tmp_buf, recv_cnt, dtype, dst, tag, comm,
+                        &status);
 
-      if(op!=MPI_OP_NULL) op->apply( tmp_buf, (char *) recv + recv_idx * extent, &recv_cnt,
-                     dtype);
+      if (op != MPI_OP_NULL)
+        op->apply(tmp_buf, recv + recv_idx * extent, &recv_cnt, dtype);
 
       // update send_idx for next iteration
       send_idx = recv_idx;
       mask >>= 1;
     }
 
-    memcpy(tmp_buf, (char *) recv + recv_idx * extent, recv_cnt * extent);
+    memcpy(tmp_buf, recv + recv_idx * extent, recv_cnt * extent);
     Colls::allgather(tmp_buf, recv_cnt, dtype, recv, recv_cnt, dtype, comm);
 
     memcpy(rbuff, recv, count * extent);
@@ -78,7 +76,7 @@ int Coll_allreduce_rab1::allreduce(void *sbuff, void *rbuff,
   }
 
   else {
-    tmp_buf = (void *) smpi_get_tmp_sendbuffer(extent * count);
+    unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(extent * count);
     memcpy(rbuff, sbuff, count * extent);
     mask = pof2 / 2;
     share = count / pof2;

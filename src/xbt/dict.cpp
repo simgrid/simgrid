@@ -13,6 +13,7 @@
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
 #include "xbt/str.h"
+#include "xbt/string.hpp"
 
 #include <cstdio>
 #include <cstring>
@@ -194,7 +195,7 @@ void xbt_dict_set(xbt_dict_t dict, const char *key, void *data, void_f_pvoid_t f
  * @param key_len the size of the @a key
  * @return the data that we are looking for
  *
- * Search the given @a key. Throws not_found_error when not found.
+ * Search the given @a key. Throws std::out_of_range when not found.
  */
 void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
 {
@@ -207,7 +208,7 @@ void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
   }
 
   if (current == nullptr)
-    THROWF(not_found_error, 0, "key %.*s not found", key_len, key);
+    throw std::out_of_range(simgrid::xbt::string_printf("key %.*s not found", key_len, key));
 
   return current->content;
 }
@@ -254,7 +255,7 @@ char *xbt_dict_get_key(xbt_dict_t dict, const void *data)
  * @param key the key to find data
  * @return the data that we are looking for
  *
- * Search the given @a key. Throws not_found_error when not found.
+ * Search the given @a key. Throws std::out_of_range when not found.
  * Check xbt_dict_get_or_null() for a version returning nullptr without exception when not found.
  */
 void *xbt_dict_get(xbt_dict_t dict, const char *key)
@@ -269,7 +270,7 @@ void *xbt_dict_get(xbt_dict_t dict, const char *key)
  * @param key the key to find data
  * @return the s_xbt_dictelm_t that we are looking for
  *
- * Search the given @a key. Throws not_found_error when not found.
+ * Search the given @a key. Throws std::out_of_range when not found.
  * Check xbt_dict_get_or_null() for a version returning nullptr without exception when not found.
  */
 xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
@@ -277,7 +278,7 @@ xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
   xbt_dictelm_t current = xbt_dict_get_elm_or_null(dict, key);
 
   if (current == nullptr)
-    THROWF(not_found_error, 0, "key %s not found", key);
+    throw std::out_of_range(simgrid::xbt::string_printf("key %s not found", key));
 
   return current;
 }
@@ -315,7 +316,7 @@ xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key)
  * @param key the key of the data to be removed
  * @param key_len the size of the @a key
  *
- * Remove the entry associated with the given @a key (throws not_found)
+ * Remove the entry associated with the given @a key (throws std::out_of_range)
  */
 void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
 {
@@ -330,7 +331,7 @@ void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
   }
 
   if (current == nullptr)
-    THROWF(not_found_error, 0, "key %.*s not found", key_len, key);
+    throw std::out_of_range(simgrid::xbt::string_printf("key %.*s not found", key_len, key));
   else {
     if (previous != nullptr) {
       previous->next = current->next;
@@ -395,40 +396,6 @@ int xbt_dict_length(xbt_dict_t dict)
 int xbt_dict_is_empty(xbt_dict_t dict)
 {
   return not dict || (xbt_dict_length(dict) == 0);
-}
-
-/**
- * @brief Outputs the content of the structure (debugging purpose)
- *
- * @param dict the exibitionist
- * @param output a function to dump each data in the tree
- *
- * Outputs the content of the structure. (for debugging purpose).
- * @a output is a function to output the data. If nullptr, data won't be displayed.
- */
-void xbt_dict_dump(xbt_dict_t dict, void_f_pvoid_t output)
-{
-  xbt_dictelm_t element;
-  printf("Dict %p:\n", dict);
-  if (dict != nullptr) {
-    for (int i = 0; i < dict->table_size; i++) {
-      element = dict->table[i];
-      if (element) {
-        printf("[\n");
-        while (element != nullptr) {
-          printf(" %s -> '", element->key);
-          if (output != nullptr) {
-            output(element->content);
-          }
-          printf("'\n");
-          element = element->next;
-        }
-        printf("]\n");
-      } else {
-        printf("[]\n");
-      }
-    }
-  }
 }
 
 /**

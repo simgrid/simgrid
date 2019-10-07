@@ -1,0 +1,14 @@
+$ $SG_EXENV_TEST ${bindir:=.}/signals ${platfdir}/small_platform.xml
+> [Tremblay:worker:(1) 0.000000] [s4u_test/INFO] Turning off: Three callbacks should be triggered
+> [0.000000] [s4u_test/INFO] First callback
+> [0.000000] [s4u_test/INFO] Second callback
+> [0.000000] [s4u_test/INFO] Third callback
+> [Tremblay:worker:(1) 0.000000] [s4u_test/INFO] Disconnect the second callback
+> [Tremblay:worker:(1) 0.000000] [s4u_test/INFO] Turning on: Two callbacks should be triggered
+> [0.000000] [s4u_test/INFO] First callback
+> [0.000000] [s4u_test/INFO] Third callback
+> [Tremblay:worker:(1) 0.000000] [s4u_test/INFO] Disconnect the first callback
+> [Tremblay:worker:(1) 0.000000] [s4u_test/INFO] Turning off: One callback should be triggered
+> [0.000000] [s4u_test/INFO] Third callback
+> [Tremblay:worker:(1) 0.000000] [s4u_test/INFO] Disconnect the third callback
+> [Tremblay:worker:(1) 0.000000] [s4u_test/INFO] Turning on: No more callbacks

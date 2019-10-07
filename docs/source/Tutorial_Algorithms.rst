@@ -12,7 +12,7 @@ execute user-provided functions. The actors have to explicitly use the
 S4U interface to express their computation, communication, disk usage
 and other |Activities|_, so that they get reflected within the
 simulator. These activities take place on **Resources** (|Hosts|_,
-|Links|_, |Storages|_). SimGrid predicts the time taken by each
+|Links|_, |Disks|_). SimGrid predicts the time taken by each
 activity and orchestrates accordingly the actors waiting for the
 completion of these activities.
 
@@ -22,41 +22,40 @@ actors, but posted onto a |Mailbox|_ that serve as rendez-vous point
 between communicating actors.
 
 .. |Actors| replace:: **Actors**
-.. _Actors: api/classsimgrid_1_1s4u_1_1Actor.html
+.. _Actors: app_s4u.html#s4u-actor
 
 .. |Activities| replace:: **Activities**
-.. _Activities: api/classsimgrid_1_1s4u_1_1Activity.html
+.. _Activities: app_s4u.html#s4u-activity
 
 .. |Hosts| replace:: **Hosts**
-.. _Hosts: api/classsimgrid_1_1s4u_1_1Host.html
+.. _Hosts: app_s4u.html#s4u-host
 
 .. |Links| replace:: **Links**
-.. _Links: api/classsimgrid_1_1s4u_1_1Link.html
+.. _Links: app_s4u.html#s4u-link
 
-.. |Storages| replace:: **Storages**
-.. _Storages: api/classsimgrid_1_1s4u_1_1Storage.html
+.. |Disks| replace:: **Disks**
+.. _Disks: app_s4u.html#s4u-disk
 
 .. |VirtualMachines| replace:: **VirtualMachines**
-.. _VirtualMachines: api/classsimgrid_1_1s4u_1_1VirtualMachine.html
+.. _VirtualMachines: app_s4u.html#s4u-virtualmachine
 
 .. |Host| replace:: **Host**
-.. _Host: api/classsimgrid_1_1s4u_1_1Host.html
+.. _Host: app_s4u.html#s4u-host
 
 .. |Link| replace:: **Link**
-.. _Link: api/classsimgrid_1_1s4u_1_1Link.html
+.. _Link: app_s4u.html#s4u-link
 
 .. |Mailbox| replace:: **Mailbox**
-.. _Mailbox: api/classsimgrid_1_1s4u_1_1Mailbox.html
+.. _Mailbox: app_s4u.html#s4u-mailbox
 
 .. |Barrier| replace:: **Barrier**
-.. _Barrier: api/classsimgrid_1_1s4u_1_1Barrier.html
+.. _Barrier: app_s4u.html#s4u-barrier
 
 .. |ConditionVariable| replace:: **ConditionVariable**
-.. _ConditionVariable: api/classsimgrid_1_1s4u_1_1ConditionVariable.html
+.. _ConditionVariable: app_s4u.html#s4u-conditionvariable
 
 .. |Mutex| replace:: **Mutex**
-.. _Mutex: api/classsimgrid_1_1s4u_1_1Mutex.html
-
+.. _Mutex: app_s4u.html#s4u-mutex
 
 **In the remainder of this tutorial**, you will discover a simple yet
 fully functioning example of SimGrid simulation: the Master/Workers
@@ -86,7 +85,7 @@ the opportunity to improve this scheme.
 The Actors
 ..........
 
-Let's start with the code of the worker. It is represented by the
+Let's start with the code of the master. It is represented by the
 *master* function below. This simple function takes at least 3
 parameters (the amount of tasks to dispatch, their computational size
 in flops to compute and their communication size in bytes to
@@ -174,12 +173,12 @@ examples of platforms in the archive under ``examples/platforms``.
 .. |api_s4u_NetZone| image:: /img/extlink.png
    :align: middle
    :width: 12
-.. _api_s4u_NetZone: api/classsimgrid_1_1s4u_1_1NetZone.html#class-documentation
+.. _api_s4u_NetZone: app_s4u.html#s4u-netzone
 
 .. |api_s4u_Link| image:: /img/extlink.png
    :align: middle
    :width: 12
-.. _api_s4u_Link: api/classsimgrid_1_1s4u_1_1Link.html#class-documentation
+.. _api_s4u_Link: app_s4u.html#s4u-link
 
 .. literalinclude:: ../../examples/platforms/small_platform.xml
    :language: xml
@@ -202,6 +201,8 @@ Execution Example
 This time, we have all parts: once the program is compiled, we can
 execute it as follows. Note how the XBT_INFO() requests turned into
 informative messages.
+
+.. "WARNING: Over dedent has detected" is expected here as we remove the $ marker this way
 
 .. literalinclude:: ../../examples/s4u/app-masterworkers/s4u-app-masterworkers.tesh
    :language: shell
@@ -262,7 +263,7 @@ This very simple setting raises many interesting questions:
     hierarchical algorithm, with some forwarders taking large pools of
     tasks from the master, each of them distributing their tasks to a
     sub-pool of workers? Or should we introduce super-peers,
-    dupplicating the master's role in a peer-to-peer manner?  Do the
+    duplicating the master's role in a peer-to-peer manner?  Do the
     algorithms require a perfect knowledge of the network?
 
 - How is such an algorithm sensitive to external workload variation?
@@ -320,9 +321,9 @@ All needed dependencies are already installed in this container
 optional in this tutorial, it is not installed to reduce the image
 size.
 
-The code template is available under ``/source/simgrid-template-s4u.git`` 
+The code template is available under ``/source/simgrid-template-s4u.git``
 in the image. You should copy it to your working directory and
-recompile it when you first log in: 
+recompile it when you first log in:
 
 .. code-block:: shell
 
@@ -334,19 +335,19 @@ recompile it when you first log in:
 Using your Computer Natively
 ............................
 
-To take the tutorial on your machine, you first need to :ref:`install
-SimGrid <install>`, a C++ compiler and also ``pajeng`` to visualize
-the traces. You may want to install `Vite
-<http://vite.gforge.inria.fr/>`_ to get a first glance at the
-traces. The provided code template requires cmake to compile. On
-Debian and Ubuntu for example, you can get them as follows:
+To take the tutorial on your machine, you first need to :ref:`install 
+a recent version of SimGrid <install>`, a C++ compiler and also
+``pajeng`` to visualize the traces. You may want to install `Vite
+<http://vite.gforge.inria.fr/>`_ to get a first glance at the traces.
+The provided code template requires cmake to compile. On Debian and
+Ubuntu for example, you can get them as follows:
 
 .. code-block:: shell
 
    sudo apt install simgrid pajeng cmake g++ vite
 
-For R analysis of the produced traces, you may want to install R, 
-and the `pajengr<https://github.com/schnorr/pajengr#installation/>`_ package.
+For R analysis of the produced traces, you may want to install R,
+and the `pajengr <https://github.com/schnorr/pajengr#installation/>`_ package.
 
 .. code-block:: shell
 
@@ -363,10 +364,10 @@ everything as follows:
 
    # (exporting SimGrid_PATH is only needed if SimGrid is installed in a non-standard path)
    export SimGrid_PATH=/where/to/simgrid
-   
+
    git clone https://framagit.org/simgrid/simgrid-template-s4u.git
    cd simgrid-template-s4u/
-   cmake . 
+   cmake .
    make
 
 If you struggle with the compilation, then you should double check
@@ -478,12 +479,11 @@ used to BSD sockets or other classical systems, but you will soon
 appreciate their power. They are only used to match the
 communications, but have no impact on the communication
 timing. ``put()`` and ``get()`` are matched regardless of their
-initiators' location and then the real communication occures between
+initiators' location and then the real communication occurs between
 the involved parties.
 
-Please refer to the full `API of Mailboxes
-<api/classsimgrid_1_1s4u_1_1Mailbox.html#class-documentation>`_ for
-more details.
+Please refer to the full `Mailboxes' documentation
+<app_s4u.html#s4u-mailbox>`_ for more details.
 
 
 Lab 2: Using the Whole Platform
@@ -562,12 +562,12 @@ simulator requests. This is both a good idea, and a dangerous
 trend. This simplification is another application of the good old DRY/SPOT
 programming principle (`Don't Repeat Yourself / Single Point Of Truth
 <https://en.wikipedia.org/wiki/Don%27t_repeat_yourself>`_), and you
-really want your programming artefacts to follow these software
+really want your programming artifacts to follow these software
 engineering principles.
 
 But at the same time, you should be careful in separating your
 scientific contribution (the master/workers algorithm) and the
-artefacts used to test it (platform, deployment and workload). This is
+artifacts used to test it (platform, deployment and workload). This is
 why SimGrid forces you to express your platform and deployment files
 in XML instead of using a programming interface: it forces a clear
 separation of concerns between things of very different nature.
@@ -667,7 +667,7 @@ round-robin is completely suboptimal: most of the workers keep waiting
 for more work. We will move to a First-Come First-Served mechanism
 instead.
 
-For that, your workers should explicitely request for work with a
+For that, your workers should explicitly request for work with a
 message sent to a channel that is specific to their master. The name
 of that private channel can be the one used to categorize the
 executions, as it is already specific to each master.
@@ -675,7 +675,7 @@ executions, as it is already specific to each master.
 The master should serve in a round-robin manner the requests it
 receives, until the time is up. Changing the communication schema can
 be a bit hairy, but once it works, you will see that such as simple
-FCFS schema allows to double the amount of tasks handled over time
+FCFS schema allows one to double the amount of tasks handled over time
 here. Things may be different with another platform file.
 
 Further Improvements

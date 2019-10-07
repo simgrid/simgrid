@@ -5,11 +5,7 @@
 
 #include <cstring>
 
-#include "xbt/dynar.h"
-#include "xbt/sysdep.h"
-
 #include "src/mc/checker/CommunicationDeterminismChecker.hpp"
-#include "src/mc/mc_comm_pattern.hpp"
 #include "src/mc/mc_smx.hpp"
 
 using simgrid::mc::remote;
@@ -17,52 +13,41 @@ using simgrid::mc::remote;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_pattern, mc,
                                 "Logging specific to MC communication patterns");
 
-static void MC_patterns_copy(xbt_dynar_t dest,
-  std::vector<simgrid::mc::PatternCommunication> const& source)
+static void MC_patterns_copy(std::vector<simgrid::mc::PatternCommunication*>& dest,
+                             std::vector<simgrid::mc::PatternCommunication> const& source)
 {
-  xbt_dynar_reset(dest);
+  dest.clear();
   for (simgrid::mc::PatternCommunication const& comm : source) {
     simgrid::mc::PatternCommunication* copy_comm = new simgrid::mc::PatternCommunication(comm.dup());
-    xbt_dynar_push(dest, &copy_comm);
+    dest.push_back(copy_comm);
   }
 }
 
 void MC_restore_communications_pattern(simgrid::mc::State* state)
 {
-  simgrid::mc::PatternCommunicationList* list_process_comm;
-  unsigned int cursor;
-
-  xbt_dynar_foreach(initial_communications_pattern, cursor, list_process_comm)
-    list_process_comm->index_comm = state->communicationIndices[cursor];
+  for (unsigned i = 0; i < initial_communications_pattern.size(); i++)
+    initial_communications_pattern[i].index_comm = state->communication_indices_[i];
 
   for (unsigned i = 0; i < MC_smx_get_maxpid(); i++)
-    MC_patterns_copy(
-      xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t),
-      state->incomplete_comm_pattern[i]
-    );
+    MC_patterns_copy(incomplete_communications_pattern[i], state->incomplete_comm_pattern_[i]);
 }
 
 void MC_state_copy_incomplete_communications_pattern(simgrid::mc::State* state)
 {
-  state->incomplete_comm_pattern.clear();
+  state->incomplete_comm_pattern_.clear();
   for (unsigned i=0; i < MC_smx_get_maxpid(); i++) {
-    xbt_dynar_t patterns = xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t);
     std::vector<simgrid::mc::PatternCommunication> res;
-    simgrid::mc::PatternCommunication* comm;
-    unsigned int cursor;
-    xbt_dynar_foreach(patterns, cursor, comm)
+    for (auto const& comm : incomplete_communications_pattern[i])
       res.push_back(comm->dup());
-    state->incomplete_comm_pattern.push_back(std::move(res));
+    state->incomplete_comm_pattern_.push_back(std::move(res));
   }
 }
 
 void MC_state_copy_index_communications_pattern(simgrid::mc::State* state)
 {
-  state->communicationIndices.clear();
-  simgrid::mc::PatternCommunicationList* list_process_comm;
-  unsigned int cursor;
-  xbt_dynar_foreach(initial_communications_pattern, cursor, list_process_comm)
-    state->communicationIndices.push_back(list_process_comm->index_comm);
+  state->communication_indices_.clear();
+  for (auto const& list_process_comm : initial_communications_pattern)
+    state->communication_indices_.push_back(list_process_comm.index_comm);
 }
 
 void MC_handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int value, int backtracking)

@@ -1,7 +1,7 @@
 <!--
              DTD of SimGrid platform and deployment files.
 
-More info: http://simgrid.gforge.inria.fr/simgrid/latest/doc/platform.html
+More info: https://simgrid.org/doc/latest/platform.html
 To upgrade your files, use the tool simgrid_update_xml
 
 * Things that will change in upcoming version 5 (TODO):
@@ -135,7 +135,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST mount storageId CDATA #REQUIRED>
 <!ATTLIST mount name CDATA #REQUIRED>
 
-<!ELEMENT host (prop|mount)*>
+<!ELEMENT host (disk|prop|mount)*>
 <!ATTLIST host id CDATA #REQUIRED>
 <!ATTLIST host speed CDATA #REQUIRED>
 <!ATTLIST host core  CDATA "1">
@@ -144,6 +144,11 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST host state_file CDATA "">
 <!ATTLIST host coordinates  CDATA "">
 <!ATTLIST host pstate CDATA "0.0">
+
+<!ELEMENT disk (prop*)>
+<!ATTLIST disk id CDATA "/">
+<!ATTLIST disk read_bw CDATA #REQUIRED>
+<!ATTLIST disk write_bw CDATA #REQUIRED>
 
 <!ELEMENT storage (prop*)>
 <!ATTLIST storage id CDATA #REQUIRED>
@@ -212,7 +217,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST link latency CDATA "0">
 <!ATTLIST link latency_file CDATA "">
 <!ATTLIST link state_file CDATA "">
-<!ATTLIST link sharing_policy (SHARED|SPLITDUPLEX|FULLDUPLEX|FATPIPE) "SHARED">
+<!ATTLIST link sharing_policy (SHARED|SPLITDUPLEX|FULLDUPLEX|FATPIPE|WIFI) "SHARED">
 
 <!ELEMENT route (link_ctn*)>
 <!ATTLIST route src CDATA #REQUIRED>

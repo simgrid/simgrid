@@ -16,7 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Pstate properties test");
 
-static int dvfs(int argc, char* argv[])
+static int dvfs(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   double workload = 100E6;
   msg_host_t host = MSG_host_self();

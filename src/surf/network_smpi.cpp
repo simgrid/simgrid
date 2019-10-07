@@ -47,12 +47,10 @@ NetworkSmpiModel::NetworkSmpiModel() : NetworkCm02Model()
   /* Do not add this into all_existing_models: our ancestor already does so */
 }
 
-NetworkSmpiModel::~NetworkSmpiModel() = default;
-
 double NetworkSmpiModel::get_bandwidth_factor(double size)
 {
   if (smpi_bw_factor.empty())
-    smpi_bw_factor = parse_factor(simgrid::config::get_value<std::string>("smpi/bw-factor"));
+    smpi_bw_factor = parse_factor(config::get_value<std::string>("smpi/bw-factor"));
 
   double current = 1.0;
   for (auto const& fact : smpi_bw_factor) {
@@ -70,7 +68,7 @@ double NetworkSmpiModel::get_bandwidth_factor(double size)
 double NetworkSmpiModel::get_latency_factor(double size)
 {
   if (smpi_lat_factor.empty())
-    smpi_lat_factor = parse_factor(simgrid::config::get_value<std::string>("smpi/lat-factor"));
+    smpi_lat_factor = parse_factor(config::get_value<std::string>("smpi/lat-factor"));
 
   double current = 1.0;
   for (auto const& fact : smpi_lat_factor) {
@@ -89,14 +87,6 @@ double NetworkSmpiModel::get_bandwidth_constraint(double rate, double bound, dou
 {
   return rate < 0 ? bound : std::min(bound, rate * get_bandwidth_factor(size));
 }
-
-/************
- * Resource *
- ************/
-
-/**********
- * Action *
- **********/
-}
-}
+} // namespace resource
+} // namespace kernel
 } // namespace simgrid

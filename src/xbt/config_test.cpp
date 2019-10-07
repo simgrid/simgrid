@@ -49,10 +49,7 @@ TEST_CASE("xbt::config: Configuration support", "config")
 
     INFO("Access to a non-existant entry");
 
-    REQUIRE_THROWS_MATCHES(
-        simgrid::config::set_parse("color:blue"), xbt_ex,
-        Catch::Matchers::Predicate<xbt_ex>([](xbt_ex const& e) { return e.category == not_found_error; },
-                                           "category not_found_error"));
+    REQUIRE_THROWS_AS(simgrid::config::set_parse("color:blue"), std::out_of_range);
 
     simgrid::config::finalize();
     simgrid_config = temp;

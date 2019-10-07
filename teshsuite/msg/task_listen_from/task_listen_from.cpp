@@ -9,7 +9,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-static int tester(int argc, char* argv[])
+static int tester(int, char**)
 {
   msg_task_t task = MSG_task_create("name", 0, 10, NULL);
   msg_comm_t comm = MSG_task_isend(task, "mailbox");

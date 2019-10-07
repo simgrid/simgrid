@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-synchro-semaphore
+$ ${bindir:=.}/s4u-synchro-semaphore
 > [Tremblay:producer:(1) 0.000000] [s4u_test/INFO] Pushing 'one'
 > [Jupiter:consumer:(2) 0.000000] [s4u_test/INFO] Receiving 'one'
 > [Tremblay:producer:(1) 0.000000] [s4u_test/INFO] Pushing 'two'

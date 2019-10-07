@@ -19,41 +19,29 @@ namespace mc {
  *
  *  * raw memory copy (std::memcpy) is used to copy Remote<T>;
  *
- *  * raw memory comparison is used to compare them;
- *
  *  * when T is a trivial type, Remote is convertible to a T.
  *
  *  We currently only handle the case where the type has the same layout
  *  in the current process and in the target process: we don't handle
  *  cross-architecture (such as 32-bit/64-bit access).
  */
-template <class T> union Remote {
+template <class T> class Remote {
 private:
-  T buffer;
+  typename std::aligned_storage<sizeof(T), alignof(T)>::type buffer;
 
 public:
-  Remote() { /* Nothing to do */}
-  ~Remote() { /* Nothing to do */}
-  Remote(T const& p) { std::memcpy(static_cast<void*>(&buffer), static_cast<const void*>(&p), sizeof(buffer)); }
-  Remote(Remote const& that)
-  {
-    std::memcpy(static_cast<void*>(&buffer), static_cast<const void*>(&that.buffer), sizeof(buffer));
-  }
-  Remote& operator=(Remote const& that)
-  {
-    std::memcpy(static_cast<void*>(&buffer), static_cast<const void*>(&that.buffer), sizeof(buffer));
-    return *this;
-  }
-  T* getBuffer() { return &buffer; }
-  const T* getBuffer() const { return &buffer; }
-  std::size_t getBufferSize() const { return sizeof(T); }
+  Remote() = default;
+  explicit Remote(T const& p) { std::memcpy(&buffer, &p, sizeof buffer); }
+
+  T* get_buffer() { return reinterpret_cast<T*>(&buffer); }
+  const T* get_buffer() const { return reinterpret_cast<const T*>(&buffer); }
+  std::size_t get_buffer_size() const { return sizeof(T); }
   operator T() const
   {
-//FIXME: assert turned off because smpi:Request is not seen as "trivial".
-//    static_assert(std::is_trivial<T>::value, "Cannot convert non trivial type");
-    return buffer;
+    static_assert(std::is_trivial<T>::value, "Cannot convert non trivial type");
+    return *get_buffer();
   }
-  void clear() { std::memset(static_cast<void*>(&buffer), 0, sizeof(T)); }
+  void clear() { std::memset(&buffer, 0, sizeof buffer); }
 };
 
 /** Pointer to a remote address-space (process, snapshot)
@@ -78,7 +66,7 @@ public:
   explicit RemotePtr(std::nullptr_t) : address_(0) {}
   explicit RemotePtr(std::uint64_t address) : address_(address) {}
   explicit RemotePtr(T* address) : address_((std::uintptr_t)address) {}
-  explicit RemotePtr(Remote<T*> p) : address_((std::uintptr_t)*p.getBuffer()) {}
+  explicit RemotePtr(Remote<T*> p) : address_((std::uintptr_t)*p.get_buffer()) {}
   std::uint64_t address() const { return address_; }
 
   /** Turn into a local pointer

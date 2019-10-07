@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
 
   int* recv_counts = (int *) xbt_malloc(size * sizeof(int));
   int* recv_disps = (int *) xbt_malloc(size * sizeof(int));
@@ -33,6 +34,31 @@ int main(int argc, char *argv[])
 
   int* sb = (int *) xbt_malloc(recv_counts[rank] * sizeof(int));
   int* rb = (int *) xbt_malloc(recv_sb_size * sizeof(int));
+
+  status = MPI_Allgatherv(NULL, recv_counts[rank], MPI_INT, rb, recv_counts, recv_disps, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_BUFFER)
+    printf("MPI_Allgatherv did not return MPI_ERR_BUFFER for empty sendbuf\n");
+  status = MPI_Allgatherv(sb, -1, MPI_INT, rb, recv_counts, recv_disps, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_COUNT)
+    printf("MPI_Allgatherv did not return MPI_ERR_COUNT for -1 sendcount\n");
+  status = MPI_Allgatherv(sb, recv_counts[rank], MPI_DATATYPE_NULL, rb, recv_counts, recv_disps, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_TYPE)
+    printf("MPI_Allgatherv did not return MPI_ERR_TYPE for MPI_DATATYPE_NULL sendtype\n");
+  status = MPI_Allgatherv(sb, recv_counts[rank], MPI_INT, NULL, recv_counts, recv_disps, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_BUFFER)
+    printf("MPI_Allgatherv did not return MPI_ERR_BUFFER for empty recvbuf\n");
+  status = MPI_Allgatherv(sb, recv_counts[rank], MPI_INT, rb, NULL, recv_disps, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_ARG)
+    printf("MPI_Allgatherv did not return MPI_ERR_ARG for NULL recvcounts\n");
+  status = MPI_Allgatherv(sb, recv_counts[rank], MPI_INT, rb, recv_counts, NULL, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_ARG)
+    printf("MPI_Allgatherv did not return MPI_ERR_ARG for NULL recvdisps\n");
+  status = MPI_Allgatherv(sb, recv_counts[rank], MPI_INT, rb, recv_counts, recv_disps, MPI_DATATYPE_NULL, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_TYPE)
+    printf("MPI_Allgatherv did not return MPI_ERR_TYPE for MPI_DATATYPE_NULL recvtype\n");
+  status = MPI_Allgatherv(sb, recv_counts[rank], MPI_INT, rb, recv_counts, recv_disps, MPI_INT, MPI_COMM_NULL);
+  if(status!=MPI_ERR_COMM)
+    printf("MPI_Allgatherv did not return MPI_ERR_COMM for MPI_COMM_NULL comm\n");
 
   printf("[%d] sndbuf=[", rank);
   for (i = 0; i < recv_counts[rank]; i++){

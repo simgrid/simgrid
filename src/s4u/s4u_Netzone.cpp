@@ -21,25 +21,21 @@ xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routi
 xbt::signal<void(NetZone const&)> NetZone::on_creation;
 xbt::signal<void(NetZone const&)> NetZone::on_seal;
 
-NetZone::NetZone(kernel::routing::NetZoneImpl* impl) : pimpl_(impl) {}
-
-NetZone::~NetZone()
+const std::unordered_map<std::string, std::string>* NetZone::get_properties() const
 {
-}
-
-std::unordered_map<std::string, std::string>* NetZone::get_properties()
-{
-  return simix::simcall([this] { return &properties_; });
+  return &properties_;
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char* NetZone::get_property(const std::string& key)
+const char* NetZone::get_property(const std::string& key) const
 {
-  return properties_.at(key).c_str();
+  auto prop = properties_.find(key);
+  return prop == properties_.end() ? nullptr : prop->second.c_str();
 }
+
 void NetZone::set_property(const std::string& key, const std::string& value)
 {
-  simix::simcall([this, &key, &value] { properties_[key] = value; });
+  kernel::actor::simcall([this, &key, &value] { properties_[key] = value; });
 }
 
 /** @brief Returns the list of direct children (no grand-children) */
@@ -74,15 +70,6 @@ std::vector<Host*> NetZone::get_all_hosts()
   return pimpl_->get_all_hosts();
 }
 
-void NetZone::getHosts(std::vector<Host*>* whereto)
-{
-  for (auto const& card : pimpl_->get_vertices()) {
-    Host* host = Host::by_name_or_null(card->get_name());
-    if (host != nullptr)
-      whereto->push_back(host);
-  }
-}
-
 int NetZone::get_host_count()
 {
   return pimpl_->get_host_count();
@@ -104,10 +91,6 @@ void NetZone::add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::
                                std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical)
 {
   pimpl_->add_bypass_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
-}
-std::vector<kernel::routing::NetPoint*> NetZone::getVertices()
-{
-  return pimpl_->get_vertices();
 }
 } // namespace s4u
 } // namespace simgrid

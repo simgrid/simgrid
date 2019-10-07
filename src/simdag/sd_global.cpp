@@ -17,30 +17,16 @@ simgrid::sd::Global *sd_global = nullptr;
 
 namespace simgrid{
 namespace sd{
-Global::Global(){
-  watch_point_reached = false;
-  initial_tasks = new std::set<SD_task_t>();
-  runnable_tasks = new std::set<SD_task_t>();
-  completed_tasks = new std::set<SD_task_t>();
-  return_set = new std::set<SD_task_t>();
-}
-
-Global::~Global(){
-  delete initial_tasks;
-  delete runnable_tasks;
-  delete completed_tasks;
-  delete return_set;
-}
 
 std::set<SD_task_t>* simulate(double how_long){
   XBT_VERB("Run simulation for %f seconds", how_long);
 
   sd_global->watch_point_reached = false;
-  sd_global->return_set->clear();
+  sd_global->return_set.clear();
 
   /* explore the runnable tasks */
-  while (not sd_global->runnable_tasks->empty())
-    SD_task_run(*(sd_global->runnable_tasks->begin()));
+  while (not sd_global->runnable_tasks.empty())
+    SD_task_run(*(sd_global->runnable_tasks.begin()));
 
   double elapsed_time = 0.0;
   double total_time = 0.0;
@@ -64,8 +50,8 @@ std::set<SD_task_t>* simulate(double how_long){
         SD_task_set_state(task, SD_DONE);
 
         /* the state has changed. Add it only if it's the first change */
-        if (sd_global->return_set->find(task) == sd_global->return_set->end())
-          sd_global->return_set->insert(task);
+        if (sd_global->return_set.find(task) == sd_global->return_set.end())
+          sd_global->return_set.insert(task);
 
         /* remove the dependencies after this task */
         for (auto const& succ : *task->successors) {
@@ -112,15 +98,15 @@ std::set<SD_task_t>* simulate(double how_long){
         SD_task_t task = static_cast<SD_task_t>(action->get_data());
         XBT_VERB("Task '%s' failed", SD_task_get_name(task));
         SD_task_set_state(task, SD_FAILED);
-        sd_global->return_set->insert(task);
+        sd_global->return_set.insert(task);
         action = model->extract_failed_action();
       }
     }
   }
 
-  if (not sd_global->watch_point_reached && how_long < 0 && not sd_global->initial_tasks->empty()) {
-    XBT_WARN("Simulation is finished but %zu tasks are still not done", sd_global->initial_tasks->size());
-    for (auto const& t : *sd_global->initial_tasks)
+  if (not sd_global->watch_point_reached && how_long < 0 && not sd_global->initial_tasks.empty()) {
+    XBT_WARN("Simulation is finished but %zu tasks are still not done", sd_global->initial_tasks.size());
+    for (auto const& t : sd_global->initial_tasks)
       XBT_WARN("%s is in %s state", SD_task_get_name(t), __get_state_name(SD_task_get_state(t)));
   }
 
@@ -128,7 +114,7 @@ std::set<SD_task_t>* simulate(double how_long){
              elapsed_time, total_time, sd_global->watch_point_reached);
   XBT_DEBUG("current time = %f", surf_get_clock());
 
-  return sd_global->return_set;
+  return &sd_global->return_set;
 }
 }
 }
@@ -157,16 +143,13 @@ void SD_init_nocheck(int *argc, char **argv)
 {
   xbt_assert(sd_global == nullptr, "SD_init() already called");
 
-  sd_global = new simgrid::sd::Global();
-
   surf_init(argc, argv);
 
+  sd_global = new simgrid::sd::Global();
+
   simgrid::config::set_default<std::string>("host/model", "ptask_L07");
-  if (simgrid::config::get_value<bool>("clean-atexit"))
+  if (simgrid::config::get_value<bool>("debug/clean-atexit"))
     atexit(SD_exit);
-  if (_sg_cfg_exit_asap) {
-    exit(0);
-  }
 }
 
 /** @brief set a configuration variable

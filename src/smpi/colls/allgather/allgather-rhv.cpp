@@ -13,7 +13,7 @@ namespace smpi{
 // now only work with power of two processes
 
 int
-Coll_allgather_rhv::allgather(void *sbuf, int send_count,
+Coll_allgather_rhv::allgather(const void *sbuf, int send_count,
                               MPI_Datatype send_type, void *rbuf,
                               int recv_count, MPI_Datatype recv_type,
                               MPI_Comm comm)
@@ -32,7 +32,7 @@ Coll_allgather_rhv::allgather(void *sbuf, int send_count,
   unsigned int num_procs = comm->size();
 
   if((num_procs&(num_procs-1)))
-    THROWF(arg_error,0, "allgather rhv algorithm can't be used with non power of two number of processes ! ");
+    throw std::invalid_argument("allgather rhv algorithm can't be used with non power of two number of processes!");
 
   unsigned int rank = comm->rank();
 

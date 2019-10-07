@@ -33,14 +33,14 @@ Peer::Peer(std::vector<std::string> args)
   try {
     id       = std::stoi(args[1]);
     mailbox_ = simgrid::s4u::Mailbox::by_name(std::to_string(id));
-  } catch (std::invalid_argument& ia) {
-    throw std::invalid_argument(std::string("Invalid ID:") + args[1].c_str());
+  } catch (const std::invalid_argument&) {
+    throw std::invalid_argument("Invalid ID:" + args[1]);
   }
 
   try {
     deadline = std::stod(args[2]);
-  } catch (std::invalid_argument& ia) {
-    throw std::invalid_argument(std::string("Invalid deadline:") + args[2].c_str());
+  } catch (const std::invalid_argument&) {
+    throw std::invalid_argument("Invalid deadline:" + args[2]);
   }
   xbt_assert(deadline > 0, "Wrong deadline supplied");
 
@@ -50,16 +50,9 @@ Peer::Peer(std::vector<std::string> args)
     bitfield_       = (1U << FILE_PIECES) - 1U;
     bitfield_blocks = (1ULL << (FILE_PIECES * PIECES_BLOCKS)) - 1ULL;
   }
-  pieces_count = new short[FILE_PIECES]{0};
+  pieces_count.resize(FILE_PIECES);
 
   XBT_INFO("Hi, I'm joining the network with id %d", id);
-}
-
-Peer::~Peer()
-{
-  for (auto const& peer : connected_peers)
-    delete peer.second;
-  delete[] pieces_count;
 }
 
 /** Peer main function */
@@ -91,7 +84,7 @@ bool Peer::getPeersFromTracker()
   try {
     XBT_DEBUG("Sending a peer request to the tracker.");
     tracker_mailbox->put(peer_request, TRACKER_COMM_SIZE, GET_PEERS_TIMEOUT);
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Timeout expired when requesting peers to tracker");
     delete peer_request;
     return false;
@@ -100,11 +93,11 @@ bool Peer::getPeersFromTracker()
   try {
     TrackerAnswer* answer = static_cast<TrackerAnswer*>(mailbox_->get(GET_PEERS_TIMEOUT));
     // Add the peers the tracker gave us to our peer list.
-    for (auto const& peer_id : *answer->getPeers())
+    for (auto const& peer_id : answer->getPeers())
       if (id != peer_id)
-        connected_peers[peer_id] = new Connection(peer_id);
+        connected_peers.emplace(peer_id, Connection(peer_id));
     delete answer;
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Timeout expired when requesting peers to tracker");
     return false;
   }
@@ -114,10 +107,10 @@ bool Peer::getPeersFromTracker()
 void Peer::sendHandshakeToAllPeers()
 {
   for (auto const& kv : connected_peers) {
-    Connection* remote_peer = kv.second;
+    const Connection& remote_peer = kv.second;
     Message* handshake      = new Message(MESSAGE_HANDSHAKE, id, mailbox_);
-    remote_peer->mailbox_->put_init(handshake, MESSAGE_HANDSHAKE_SIZE)->detach();
-    XBT_DEBUG("Sending a HANDSHAKE to %d", remote_peer->id);
+    remote_peer.mailbox_->put_init(handshake, MESSAGE_HANDSHAKE_SIZE)->detach();
+    XBT_DEBUG("Sending a HANDSHAKE to %d", remote_peer.id);
   }
 }
 
@@ -148,8 +141,8 @@ void Peer::sendHaveToAllPeers(unsigned int piece)
 {
   XBT_DEBUG("Sending HAVE message to all my peers");
   for (auto const& kv : connected_peers) {
-    Connection* remote_peer = kv.second;
-    remote_peer->mailbox_->put_init(new Message(MESSAGE_HAVE, id, mailbox_, piece), MESSAGE_HAVE_SIZE)->detach();
+    const Connection& remote_peer = kv.second;
+    remote_peer.mailbox_->put_init(new Message(MESSAGE_HAVE, id, mailbox_, piece), MESSAGE_HAVE_SIZE)->detach();
   }
 }
 
@@ -217,7 +210,7 @@ int Peer::nbInterestedPeers()
 {
   int nb = 0;
   for (auto const& kv : connected_peers)
-    if (kv.second->interested)
+    if (kv.second.interested)
       nb++;
   return nb;
 }
@@ -298,7 +291,7 @@ void Peer::handleMessage()
   XBT_DEBUG("Received a %s message from %s", type_names[message->type], message->return_mailbox->get_cname());
 
   auto known_peer         = connected_peers.find(message->peer_id);
-  Connection* remote_peer = (known_peer == connected_peers.end()) ? nullptr : known_peer->second;
+  Connection* remote_peer = (known_peer == connected_peers.end()) ? nullptr : &known_peer->second;
   xbt_assert(remote_peer != nullptr || message->type == MESSAGE_HANDSHAKE,
              "The impossible did happened: A not-in-our-list peer sent us a message.");
 
@@ -307,7 +300,7 @@ void Peer::handleMessage()
       // Check if the peer is in our connection list.
       if (remote_peer == nullptr) {
         XBT_DEBUG("This peer %d was unknown, answer to its handshake", message->peer_id);
-        connected_peers[message->peer_id] = new Connection(message->peer_id);
+        connected_peers.emplace(message->peer_id, Connection(message->peer_id));
         sendMessage(message->return_mailbox, MESSAGE_HANDSHAKE, MESSAGE_HANDSHAKE_SIZE);
       }
       // Send our bitfield to the peer
@@ -551,13 +544,12 @@ void Peer::updateChokedPeers()
 
   /**If we are currently seeding, we unchoke the peer which has been unchoked the last time.*/
   if (hasFinished()) {
-    Connection* remote_peer;
     double unchoke_time = simgrid::s4u::Engine::get_clock() + 1;
-    for (auto const& kv : connected_peers) {
-      remote_peer = kv.second;
-      if (remote_peer->last_unchoke < unchoke_time && remote_peer->interested && remote_peer->choked_upload) {
-        unchoke_time = remote_peer->last_unchoke;
-        chosen_peer  = remote_peer;
+    for (auto& kv : connected_peers) {
+      Connection& remote_peer = kv.second;
+      if (remote_peer.last_unchoke < unchoke_time && remote_peer.interested && remote_peer.choked_upload) {
+        unchoke_time = remote_peer.last_unchoke;
+        chosen_peer  = &remote_peer;
       }
     }
   } else {
@@ -566,12 +558,10 @@ void Peer::updateChokedPeers()
       int j = 0;
       do {
         // We choose a random peer to unchoke.
-        std::unordered_map<int, Connection*>::iterator chosen_peer_it = connected_peers.begin();
+        std::unordered_map<int, Connection>::iterator chosen_peer_it = connected_peers.begin();
         std::advance(chosen_peer_it, RngStream_RandInt(stream, 0, connected_peers.size() - 1));
-        chosen_peer = chosen_peer_it->second;
-        if (chosen_peer == nullptr)
-          THROWF(unknown_error, 0, "A peer should have be selected at this point");
-        else if (not chosen_peer->interested || not chosen_peer->choked_upload)
+        chosen_peer = &chosen_peer_it->second;
+        if (not chosen_peer->interested || not chosen_peer->choked_upload)
           chosen_peer = nullptr;
         else
           XBT_DEBUG("Nothing to do, keep going");
@@ -580,11 +570,11 @@ void Peer::updateChokedPeers()
     } else {
       // Use the "fastest download" policy.
       double fastest_speed = 0.0;
-      for (auto const& kv : connected_peers) {
-        Connection* remote_peer = kv.second;
-        if (remote_peer->peer_speed > fastest_speed && remote_peer->choked_upload && remote_peer->interested) {
-          chosen_peer   = remote_peer;
-          fastest_speed = remote_peer->peer_speed;
+      for (auto& kv : connected_peers) {
+        Connection& remote_peer = kv.second;
+        if (remote_peer.peer_speed > fastest_speed && remote_peer.choked_upload && remote_peer.interested) {
+          fastest_speed = remote_peer.peer_speed;
+          chosen_peer   = &remote_peer;
         }
       }
     }
@@ -617,20 +607,20 @@ void Peer::updateChokedPeers()
 /** @brief Update "interested" state of peers: send "not interested" to peers that don't have any more pieces we want.*/
 void Peer::updateInterestedAfterReceive()
 {
-  for (auto const& kv : connected_peers) {
-    Connection* remote_peer = kv.second;
-    if (remote_peer->am_interested) {
+  for (auto& kv : connected_peers) {
+    Connection& remote_peer = kv.second;
+    if (remote_peer.am_interested) {
       bool interested = false;
       // Check if the peer still has a piece we want.
       for (unsigned int i = 0; i < FILE_PIECES; i++)
-        if (hasNotPiece(i) && remote_peer->hasPiece(i)) {
+        if (hasNotPiece(i) && remote_peer.hasPiece(i)) {
           interested = true;
           break;
         }
 
       if (not interested) { // no more piece to download from connection
-        remote_peer->am_interested = false;
-        sendMessage(remote_peer->mailbox_, MESSAGE_NOTINTERESTED, MESSAGE_NOTINTERESTED_SIZE);
+        remote_peer.am_interested = false;
+        sendMessage(remote_peer.mailbox_, MESSAGE_NOTINTERESTED, MESSAGE_NOTINTERESTED_SIZE);
       }
     }
   }

@@ -25,7 +25,7 @@
 namespace simgrid{
 namespace smpi{
 
-int Coll_gather_ompi_binomial::gather(void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
+int Coll_gather_ompi_binomial::gather(const void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
                                       MPI_Datatype rdtype, int root, MPI_Comm comm)
 {
     int line = -1;
@@ -34,8 +34,9 @@ int Coll_gather_ompi_binomial::gather(void* sbuf, int scount, MPI_Datatype sdtyp
     int vrank;
     int size;
     int total_recv = 0;
-    char *ptmp     = NULL;
-    char *tempbuf  = NULL;
+    unsigned char* ptmp    = nullptr;
+    unsigned char* tempbuf = nullptr;
+    const unsigned char* src_buf;
     int err;
     ompi_coll_tree_t* bmtree;
     MPI_Status status;
@@ -63,7 +64,7 @@ int Coll_gather_ompi_binomial::gather(void* sbuf, int scount, MPI_Datatype sdtyp
         rdtype->extent(&rtrue_lb, &rtrue_extent);
         if (0 == root) {
           /* root on 0, just use the recv buffer */
-          ptmp = (char*)rbuf;
+          ptmp = static_cast<unsigned char*>(rbuf);
           if (sbuf != MPI_IN_PLACE) {
             err = Datatype::copy(sbuf, scount, sdtype, ptmp, rcount, rdtype);
             if (MPI_SUCCESS != err) {
@@ -74,7 +75,7 @@ int Coll_gather_ompi_binomial::gather(void* sbuf, int scount, MPI_Datatype sdtyp
         } else {
           /* root is not on 0, allocate temp buffer for recv,
            * rotate data at the end */
-          tempbuf = (char*)smpi_get_tmp_recvbuffer(rtrue_extent + (rcount * size - 1) * rextent);
+          tempbuf = smpi_get_tmp_recvbuffer(rtrue_extent + (rcount * size - 1) * rextent);
           if (NULL == tempbuf) {
             err  = MPI_ERR_OTHER;
             line = __LINE__;
@@ -99,11 +100,12 @@ int Coll_gather_ompi_binomial::gather(void* sbuf, int scount, MPI_Datatype sdtyp
           }
         }
         total_recv = rcount;
+        src_buf    = ptmp;
     } else if (!(vrank % 2)) {
       /* other non-leaf nodes, allocate temp buffer for data received from
        * children, the most we need is half of the total data elements due
        * to the property of binimoal tree */
-      tempbuf = (char*)smpi_get_tmp_sendbuffer(strue_extent + (scount * size - 1) * sextent);
+      tempbuf = smpi_get_tmp_sendbuffer(strue_extent + (scount * size - 1) * sextent);
       if (NULL == tempbuf) {
         err  = MPI_ERR_OTHER;
         line = __LINE__;
@@ -124,11 +126,12 @@ int Coll_gather_ompi_binomial::gather(void* sbuf, int scount, MPI_Datatype sdtyp
       rcount     = scount;
       rextent    = sextent;
       total_recv = rcount;
+      src_buf    = ptmp;
     } else {
       /* leaf nodes, no temp buffer needed, use sdtype,scount as
        * rdtype,rdcount since they are ignored on non-root procs */
-      ptmp       = (char*)sbuf;
       total_recv = scount;
+      src_buf    = static_cast<const unsigned char*>(sbuf);
     }
 
     if (!(vrank % 2)) {
@@ -156,7 +159,7 @@ int Coll_gather_ompi_binomial::gather(void* sbuf, int scount, MPI_Datatype sdtyp
       /* all nodes except root send to parents */
       XBT_DEBUG("smpi_coll_tuned_gather_ompi_binomial rank %d send %d count %d\n", rank, bmtree->tree_prev, total_recv);
 
-      Request::send(ptmp, total_recv, sdtype, bmtree->tree_prev, COLL_TAG_GATHER, comm);
+      Request::send(src_buf, total_recv, sdtype, bmtree->tree_prev, COLL_TAG_GATHER, comm);
   }
     if (rank == root) {
       if (root != 0) {
@@ -199,7 +202,7 @@ int Coll_gather_ompi_binomial::gather(void* sbuf, int scount, MPI_Datatype sdtyp
  *  Accepts:  - same arguments as MPI_Gather(), first segment size
  *  Returns:  - MPI_SUCCESS or error code
  */
-int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
+int Coll_gather_ompi_linear_sync::gather(const void *sbuf, int scount,
                                          MPI_Datatype sdtype,
                                          void *rbuf, int rcount,
                                          MPI_Datatype rdtype,
@@ -247,7 +250,7 @@ int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
        first_segment_count = scount;
        COLL_TUNED_COMPUTED_SEGCOUNT((size_t)first_segment_size, typelng, first_segment_count);
 
-       Request::recv(sbuf, 0, MPI_BYTE, root, COLL_TAG_GATHER, comm, MPI_STATUS_IGNORE);
+       Request::recv(nullptr, 0, MPI_BYTE, root, COLL_TAG_GATHER, comm, MPI_STATUS_IGNORE);
 
        Request::send(sbuf, first_segment_count, sdtype, root, COLL_TAG_GATHER, comm);
 
@@ -352,7 +355,7 @@ int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
  *  Accepts:  - same arguments as MPI_Gather()
  *  Returns:  - MPI_SUCCESS or error code
  */
-int Coll_gather_ompi_basic_linear::gather(void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
+int Coll_gather_ompi_basic_linear::gather(const void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
                                           MPI_Datatype rdtype, int root, MPI_Comm comm)
 {
     int i;

@@ -45,9 +45,9 @@ public:
              double bwrite, const std::string& type_id, const std::string& content_name, sg_size_t size,
              const std::string& attach);
   virtual ~StorageN11() = default;
-  StorageAction* io_start(sg_size_t size, s4u::Io::OpType type);
-  StorageAction* read(sg_size_t size);
-  StorageAction* write(sg_size_t size);
+  StorageAction* io_start(sg_size_t size, s4u::Io::OpType type) override;
+  StorageAction* read(sg_size_t size) override;
+  StorageAction* write(sg_size_t size) override;
 };
 
 /**********
@@ -61,7 +61,7 @@ public:
   void cancel() override;
   void resume() override;
   void set_max_duration(double duration) override;
-  void set_priority(double priority) override;
+  void set_sharing_penalty(double sharing_penalty) override;
   void update_remains_lazy(double now) override;
 };
 

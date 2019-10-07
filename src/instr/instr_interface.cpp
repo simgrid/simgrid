@@ -3,12 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_private.hpp"
 #include "surf/surf.hpp"
 #include <algorithm>
+#include <cmath>
+#include <random>
 
 enum class InstrUserVariable { DECLARE, SET, ADD, SUB };
 
@@ -88,9 +91,11 @@ void TRACE_category_with_color (const char *category, const char *color)
   std::string final_color;
   if (not color) {
     //generate a random color
-    double red = drand48();
-    double green = drand48();
-    double blue = drand48();
+    static std::default_random_engine rnd_engine;
+    std::uniform_real_distribution<double> prng(0.0, std::nextafter(1.0, 2.0));
+    double red   = prng(rnd_engine);
+    double green = prng(rnd_engine);
+    double blue  = prng(rnd_engine);
     final_color  = std::to_string(red) + " " + std::to_string(green) + " " + std::to_string(blue);
   }else{
     final_color = std::string(color);
@@ -141,7 +146,8 @@ void TRACE_declare_mark(const char *mark_type)
 
   //check if mark_type is already declared
   if (declared_marks.find(mark_type) != declared_marks.end()) {
-    THROWF (tracing_error, 1, "mark_type with name (%s) is already declared", mark_type);
+    throw simgrid::TracingError(XBT_THROW_POINT,
+                                simgrid::xbt::string_printf("mark_type with name (%s) is already declared", mark_type));
   }
 
   XBT_DEBUG("MARK,declare %s", mark_type);
@@ -176,7 +182,8 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
   simgrid::instr::EventType* type =
       static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->type_->by_name(mark_type));
   if (not type) {
-    THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
+    throw simgrid::TracingError(XBT_THROW_POINT,
+                                simgrid::xbt::string_printf("mark_type with name (%s) is not declared", mark_type));
   } else {
     if (not mark_color)
       mark_color = "1.0 1.0 1.0" /*white*/;
@@ -230,7 +237,8 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   simgrid::instr::EventType* type =
       static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->type_->by_name(mark_type));
   if (not type) {
-    THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
+    throw simgrid::TracingError(XBT_THROW_POINT,
+                                simgrid::xbt::string_printf("mark_type with name (%s) is not declared", mark_type));
   } else {
     XBT_DEBUG("MARK %s %s", mark_type, mark_value);
     new simgrid::instr::NewEvent(MSG_get_clock(), simgrid::instr::Container::get_root(), type,

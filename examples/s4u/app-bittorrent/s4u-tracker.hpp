@@ -17,21 +17,17 @@ class TrackerQuery {
 public:
   explicit TrackerQuery(int peer_id, simgrid::s4u::Mailbox* return_mailbox)
       : peer_id(peer_id), return_mailbox(return_mailbox){};
-  ~TrackerQuery() = default;
   int getPeerId() { return peer_id; }
   simgrid::s4u::Mailbox* getReturnMailbox() { return return_mailbox; }
 };
 
 class TrackerAnswer {
   // int interval; // how often the peer should contact the tracker (unused for now)
-  std::set<int>* peers; // the peer list the peer has asked for.
+  std::set<int> peers; // the peer list the peer has asked for.
 public:
-  explicit TrackerAnswer(int /*interval*/) /*: interval(interval)*/ { peers = new std::set<int>; }
-  TrackerAnswer(const TrackerAnswer&)                                       = delete;
-  TrackerAnswer& operator=(const TrackerAnswer&) = delete;
-  ~TrackerAnswer() { delete peers; };
-  void addPeer(int peer) { peers->insert(peer); }
-  std::set<int>* getPeers() { return peers; }
+  explicit TrackerAnswer(int /*interval*/) /*: interval(interval)*/ {}
+  void addPeer(int peer) { peers.insert(peer); }
+  const std::set<int>& getPeers() { return peers; }
 };
 
 class Tracker {

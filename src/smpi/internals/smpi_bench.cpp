@@ -12,6 +12,7 @@
 #include "src/internal_config.h"
 #include "src/mc/mc_replay.hpp"
 #include "xbt/config.hpp"
+#include "xbt/file.hpp"
 
 #include "src/smpi/include/smpi_actor.hpp"
 #include <unordered_map>
@@ -38,20 +39,8 @@ double smpi_host_speed;
 SharedMallocType smpi_cfg_shared_malloc = SharedMallocType::GLOBAL;
 double smpi_total_benched_time = 0;
 
-extern "C" XBT_PUBLIC void smpi_execute_flops_(double* flops);
-
-void smpi_execute_flops_(double *flops)
-{
-  smpi_execute_flops(*flops);
-}
-
-extern "C" XBT_PUBLIC void smpi_execute_(double* duration);
-void smpi_execute_(double *duration)
-{
-  smpi_execute(*duration);
-}
-
-void smpi_execute_flops(double flops) {
+// Private execute_flops used by smpi_execute and spmi_execute_benched
+void private_execute_flops(double flops) {
   xbt_assert(flops >= 0, "You're trying to execute a negative amount of flops (%f)!", flops);
   XBT_DEBUG("Handle real computation time: %f flops", flops);
   simgrid::s4u::this_actor::exec_init(flops)
@@ -62,6 +51,15 @@ void smpi_execute_flops(double flops) {
   smpi_switch_data_segment(simgrid::s4u::Actor::self());
 }
 
+void smpi_execute_flops(double flops) {
+  int rank     = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_computing_in(rank, flops);
+
+  private_execute_flops(flops);
+
+  TRACE_smpi_computing_out(rank);
+}
+
 void smpi_execute(double duration)
 {
   if (duration >= smpi_cpu_threshold) {
@@ -70,7 +68,7 @@ void smpi_execute(double duration)
     int rank     = simgrid::s4u::this_actor::get_pid();
     TRACE_smpi_computing_in(rank, flops);
 
-    smpi_execute_flops(flops);
+    private_execute_flops(flops);
 
     TRACE_smpi_computing_out(rank);
 
@@ -111,12 +109,25 @@ void smpi_bench_begin()
   xbt_os_threadtimer_start(smpi_process()->timer());
 }
 
+double smpi_adjust_comp_speed(){
+  double speedup=1;
+  if (simgrid::config::get_value<std::string>("smpi/comp-adjustment-file")[0] != '\0') {
+
+    smpi_trace_call_location_t* loc                            = smpi_process()->call_location();
+    std::string key                                            = loc->get_composed_key();
+    std::unordered_map<std::string, double>::const_iterator it = location2speedup.find(key);
+    if (it != location2speedup.end()) {
+      speedup = it->second;
+    }
+  }
+  return speedup;
+}
+
 void smpi_bench_end()
 {
   if (MC_is_active() || MC_record_replay_is_active())
     return;
 
-  double speedup = 1;
   xbt_os_timer_t timer = smpi_process()->timer();
   xbt_os_threadtimer_stop(timer);
 
@@ -149,19 +160,9 @@ void smpi_bench_end()
   }
 
   // Maybe we need to artificially speed up or slow down our computation based on our statistical analysis.
-  if (simgrid::config::get_value<std::string>("smpi/comp-adjustment-file")[0] != '\0') {
-
-    smpi_trace_call_location_t* loc                            = smpi_process()->call_location();
-    std::string key                                            = loc->get_composed_key();
-    std::unordered_map<std::string, double>::const_iterator it = location2speedup.find(key);
-    if (it != location2speedup.end()) {
-      speedup = it->second;
-    }
-  }
-
   // Simulate the benchmarked computation unless disabled via command-line argument
   if (simgrid::config::get_value<bool>("smpi/simulate-computation")) {
-    smpi_execute(xbt_os_timer_elapsed(timer)/speedup);
+    smpi_execute(xbt_os_timer_elapsed(timer)/smpi_adjust_comp_speed());
   }
 
 #if HAVE_PAPI
@@ -189,7 +190,7 @@ static unsigned int private_sleep(double secs)
   int rank = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_sleeping_in(rank, secs);
 
-  simcall_process_sleep(secs);
+  simgrid::s4u::this_actor::sleep_for(secs);
 
   TRACE_smpi_sleeping_out(rank);
 
@@ -201,14 +202,14 @@ unsigned int smpi_sleep(unsigned int secs)
 {
   if (not smpi_process())
     return sleep(secs);
-  return private_sleep(static_cast<double>(secs));
+  return private_sleep(secs);
 }
 
 int smpi_usleep(useconds_t usecs)
 {
   if (not smpi_process())
     return usleep(usecs);
-  return static_cast<int>(private_sleep(static_cast<double>(usecs) / 1000000.0));
+  return static_cast<int>(private_sleep(usecs / 1000000.0));
 }
 
 #if _POSIX_TIMERS > 0
@@ -216,7 +217,7 @@ int smpi_nanosleep(const struct timespec* tp, struct timespec* t)
 {
   if (not smpi_process())
     return nanosleep(tp,t);
-  return static_cast<int>(private_sleep(static_cast<double>(tp->tv_sec + tp->tv_nsec / 1000000000.0)));
+  return static_cast<int>(private_sleep(tp->tv_sec + tp->tv_nsec / 1000000000.0));
 }
 #endif
 
@@ -236,7 +237,7 @@ int smpi_gettimeofday(struct timeval* tv, struct timezone* tz)
 #endif
   }
   if (smpi_wtime_sleep > 0)
-    simcall_process_sleep(smpi_wtime_sleep);
+    simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
   smpi_bench_begin();
   return 0;
 }
@@ -254,7 +255,7 @@ int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp)
     tp->tv_nsec = static_cast<long int>((now - tp->tv_sec) * 1e9);
   }
   if (smpi_wtime_sleep > 0)
-    simcall_process_sleep(smpi_wtime_sleep);
+    simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
   smpi_bench_begin();
   return 0;
 }
@@ -267,7 +268,7 @@ double smpi_mpi_wtime()
     smpi_bench_end();
     time = SIMIX_get_clock();
     if (smpi_wtime_sleep > 0)
-      simcall_process_sleep(smpi_wtime_sleep);
+      simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
     smpi_bench_begin();
   } else {
     time = SIMIX_get_clock();
@@ -429,7 +430,7 @@ void smpi_sample_3(int global, const char *file, int line)
   double period  = xbt_os_timer_elapsed(smpi_process()->timer());
   data.sum      += period;
   data.sum_pow2 += period * period;
-  double n       = static_cast<double>(data.count);
+  double n       = data.count;
   data.mean      = data.sum / n;
   data.relstderr = sqrt((data.sum_pow2 / n - data.mean * data.mean) / n) / data.mean;
 
@@ -470,8 +471,11 @@ void smpi_trace_set_call_location(const char* file, const int line)
 
   loc->previous_filename   = loc->filename;
   loc->previous_linenumber = loc->linenumber;
-  loc->filename            = file;
-  loc->linenumber          = line;
+  if(not simgrid::config::get_value<bool>("smpi/trace-call-use-absolute-path"))
+    loc->filename = simgrid::xbt::Path(file).get_base_name();
+  else
+    loc->filename = file;
+  loc->linenumber = line;
 }
 
 /** Required for Fortran bindings */

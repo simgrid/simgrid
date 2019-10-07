@@ -2,4 +2,4 @@
 statusesf90 1
 #greqf90 1
 allpairf90 2 needs_privatization=1
-mprobef90 2 mpiversion=3.0
+#mprobef90 2 mpiversion=3.0

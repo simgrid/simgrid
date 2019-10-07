@@ -25,26 +25,25 @@ private:
 public:
   Client();
   explicit Client(int fd) : channel_(fd) {}
-  void handleMessages();
+  void handle_messages();
 
 private:
-  void handleDeadlockCheck(s_mc_message_t* msg);
-  void handleContinue(s_mc_message_t* msg);
-  void handleSimcall(s_mc_message_simcall_handle_t* message);
-  void handleRestore(s_mc_message_restore_t* msg);
-  void handleActorEnabled(s_mc_message_actor_enabled_t* msg);
+  void handle_deadlock_check(s_mc_message_t* msg);
+  void handle_continue(s_mc_message_t* msg);
+  void handle_simcall(s_mc_message_simcall_handle_t* message);
+  void handle_actor_enabled(s_mc_message_actor_enabled_t* msg);
 
 public:
-  Channel const& getChannel() const { return channel_; }
-  Channel& getChannel() { return channel_; }
-  void mainLoop();
-  void reportAssertionFailure();
-  void ignoreMemory(void* addr, std::size_t size);
-  void ignoreHeap(void* addr, std::size_t size);
-  void unignoreHeap(void* addr, std::size_t size);
-  void declareSymbol(const char* name, int* value);
+  Channel const& get_channel() const { return channel_; }
+  Channel& get_channel() { return channel_; }
+  XBT_ATTRIB_NORETURN void main_loop();
+  void report_assertion_failure();
+  void ignore_memory(void* addr, std::size_t size);
+  void ignore_heap(void* addr, std::size_t size);
+  void unignore_heap(void* addr, std::size_t size);
+  void declare_symbol(const char* name, int* value);
 #if HAVE_UCONTEXT_H
-  void declareStack(void* stack, size_t size, smx_actor_t process, ucontext_t* context);
+  void declare_stack(void* stack, size_t size, ucontext_t* context);
 #endif
 
   // Singleton :/

@@ -52,9 +52,11 @@ private:
 public:
   static size_t extension_create(void (*deleter)(void*))
   {
-    std::size_t res = deleters_.size();
+    if (deleters_.empty()) { // Save space for void* user data
+      deleters_.push_back(nullptr);
+    }
     deleters_.push_back(deleter);
-    return res;
+    return deleters_.size() - 1;
   }
   template<class U>
   static Extension<T,U> extension_create(void (*deleter)(void*))
@@ -66,7 +68,7 @@ public:
   {
     return Extension<T, U>(extension_create([](void* p) { delete static_cast<U*>(p); }));
   }
-  Extendable() : extensions_(deleters_.size(), nullptr) {}
+  Extendable() : extensions_((deleters_.size() > 0 ? deleters_.size() : 1), nullptr) {}
   Extendable(const Extendable&) = delete;
   Extendable& operator=(const Extendable&) = delete;
   ~Extendable()
@@ -77,7 +79,7 @@ public:
      * an extension A, the subsystem of B might depend on the subsystem on A and
      * an extension of B might need to have the extension of A around when executing
      * its cleanup function/destructor. */
-    for (std::size_t i = extensions_.size(); i > 0; --i)
+    for (std::size_t i = extensions_.size(); i > 1; --i) // rank=0 is the spot of user's void*
       if (extensions_[i - 1] != nullptr && deleters_[i - 1] != nullptr)
         deleters_[i - 1](extensions_[i - 1]);
   }
@@ -85,17 +87,14 @@ public:
   // Type-unsafe versions of the facet access methods:
   void* extension(std::size_t rank) const
   {
-    if (rank >= extensions_.size())
-      return nullptr;
-    else
-      return extensions_.at(rank);
+    return rank < extensions_.size() ? extensions_[rank] : nullptr;
   }
   void extension_set(std::size_t rank, void* value, bool use_dtor = true)
   {
     if (rank >= extensions_.size())
       extensions_.resize(rank + 1, nullptr);
     void* old_value = this->extension(rank);
-    extensions_.at(rank) = value;
+    extensions_[rank] = value;
     if (use_dtor && old_value != nullptr && deleters_[rank])
       deleters_[rank](old_value);
   }
@@ -107,7 +106,13 @@ public:
   {
     extension_set(rank.id(), value, use_dtor);
   }
-
+  // void* version, for C users and nostalgics
+  void set_data(void* data){
+    extensions_[0]=data;
+  }
+  void* get_data(){
+    return extensions_[0];
+  }
   // Convenience extension access when the type has a associated EXTENSION ID:
   template <class U> U* extension() const { return extension<U>(U::EXTENSION_ID); }
   template<class U> void extension_set(U* p) { extension_set<U>(U::EXTENSION_ID, p); }

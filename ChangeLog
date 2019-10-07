@@ -1,10 +1,186 @@
-SimGrid (3.23) NOT RELEASED (Release Target: June 21. 2019, 15:54 UTC)
+----------------------------------------------------------------------------
+
+SimGrid (3.23.3) NOT RELEASED YET (v3.24 expected September 23. 7:50 UTC)
+
+S4U:
+ - Introduce a s4u::Disk interface to manage the newly introduced <disk>
+   tag. s4u::Disk is called to supplant s4u::Storage in a near future. It
+   thus becomes the default resource to execute I/O operations. Examples
+   and the file system plugin have been modified to use disks instead of
+   storage elements. Storage can still be used but is doomed to disappear.
+   Users are thus adviced to update their simulators accordingly.
+ - Barrier::wait returns SG_BARRIER_SERIAL_THREAD for (only) one actor
+   for consistency with pthread_barrier_wait()
+ - Host::get_englobing_zone() returns the englobing netzone
+ - Actor::on_destruction is now called in the destructor
+   Actor::on_termination new signal called when the actor terminates
+   its code.
+ - Global signals are now part of the Engine:
+   - on_platform_creation: after config settings, before the XML parsing
+   - on_platform_created: right after the XML parsing
+   - on_time_advance: each time the clock advances
+   - on_simulation_end: after simulation, before cleanups
+   - on_deadlock: as the name implies.
+ - C bindings:
+   - sg_{actor,host,link}_{data,data_set}() now all exist.
+     Use them to attach user data to the object and retrieve it.
+
+Models:
+ - Introduce an experimental Wifi model. It sounds reasonable
+   according to the state of the art, but it still has to be properly
+   validated, at least against ns-3 if not against reality.
+ - Improved the usability of ns-3. Several bugs were ironed out.
+ - host_energy: Wattage was expressed as 'idle:oneCore:allCores'.
+   It is now expressed as 'idle:epsilon:allCores' to properly model the
+   consumption of non-whole tasks on mono-core hosts. More info in the doc.
+
+MSG:
+ - convert a new set of functions to the S4U C interface and move the old MSG
+   versions to legacy (MSG_process_self*, MSG_process_{un}ref, ...)
+
+SMPI:
+ - Fortran bindings for DVFS have been removed.
+ - Add support for MPI_Irsend, MPI_Rsend, MPI_Rsend_init, MPI_Bsend,
+   MPI_Ibsend, MPI_Bsend_init, MPI_Buffer_attach, MPI_Buffer_detach
+ - SMPI can now be selected by cmake's find_module(MPI) with
+   MPI_C_COMPILER, MPI_CXX_COMPILER, MPI_Fortran_COMPILER variables.
+ - Add support for MPI Errhandlers in Comm, File or Win. Default errhandler is now
+   MPI_ERRORS_ARE_FATAL, so codes which were sending warnings may start failing.
+ - trace-call-location can now be used with TI traces, and replayed.
+ - Default for trace-call-location is now to use file names and not full paths.
+   To revert to previous behaviour (in case of collision of filenames), option
+   "smpi/trace-call-use-absolute-path" can be set to yes.
+
+Model-Checker:
+ - Use the included xxHash as an hash implem when C++14 is usable.
+ - Option model-checker/hash was removed. This is always activated now.
+ - New option smpi/buffering controls the MPI buffering in MC mode.
+ - MPI calls now MC_assert() that no MPI_ERR_* code is returned.
+   This is useful to check for MPI compliance.
+
+Documentation:
+ - New section on plugins: how to define a new one, and existing ones.
+
+XBT:
+ - xbt_mutex_t and xbt_cond_t are now marked as deprecated, a new C interface
+   on S4U is already available to replace them by sg_mutex_t and sg_cond_t.
+
+XML:
+ - Introduce the <disk> tag as a replacement of the <storage>, <storage_type>,
+   and <mount> tags. The rationale is finish to decouple what should be handle
+   by SimGrid kernel (i.e., resources and activities) from plugins built in
+   user space (e.g., the file system plugin). This new tag currently accepts
+   only three attributes (id, read_bw, and write_bw). All the other information
+   that was declared with the storage related tags now has to be expressed as
+   properties. An example of platform using this new tag is available at
+   examples/platforms/hostsè_with_disks.xml
+
+Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
+ - FG#28: add sg_actor_self (and other wrappers on this_actor methods)
+ - FG#29 and FG#33: provide a new C API to mutexes and condition variables
+ - FG#30: convert MSG_process_{un}ref to sg_actor_{un}ref
+ - FG#31: per-actor data
+ - FG#34: SG_BARRIER_SERIAL_THREAD?
+ - FG#35: model-checker does not like buster-produced binaries
+ - FG!13: MC: complete workaround in the error msg seen on modern systems
+ - FG!15: execute_flops now logs compute
+ - FG!16: Fix the ns-3 bindings when several flows are simultaneously finishing
+ - FG!17: ns-3: unblock the right number of communications + others issues
+ - FG!18: Improving the performance of the ns-3 bindings
+ - GH#219: Error in the throughput of TCP transfer
+ - GH!330: Minor polishing of English: Configuring_Simgrid
+ - GH!331: Fix a doc error about actors (Tutorial_algorithms)
+ - GH!332: Add '-O0' flag for: cmake -DCMAKE_BUILD_TYPE=Debug
+
+----------------------------------------------------------------------------
+
+SimGrid (3.23.2) July 8. 2019
+
+Documentation:
+ - Nicer introduction page.
+ - Migrate the "Deploy your application" page to the new doc.
+ - Move Java as a subtree of MSG.
+
+General:
+ - Rename simgrid::TimeoutError to simgrid::TimeoutException.
+
+XBT:
+ - Drop xbt_dynar_sort_strings().
+
+Bugs:
+ - Really fix FG#26: Turning off a link should raise NetworkFailureException
+ - FG#27: Wrong exception thrown to wait_any when link is turned off
+ - GH#328: Java: Canceling multiple tasks in a single vm/host
+
+----------------------------------------------------------------------------
+
+SimGrid (3.23) June 25. 2019
+
+The Exotic Solstice Release.
+
+General:
+ - SunOS and Haiku OS support. Because exotic platforms are fun.
+ - Stop setting random seed with srand48() at initialization.
+ - Use addr2line as a fallback for stacktraces when backtrace is not available.
+ - Build option -Denable_documentation is now OFF by default.
+ - Network model 'NS3' was renamed into 'ns-3'.
+
+Python:
+ - Simgrid can now hopefully be installed with pip.
+
+S4U:
+ - wait_any can now be used for asynchronous executions too.
+
+XBT:
+ - New log appenders: stdout and stderr. Use stdout for xbt_help.
+ - Drop xbt_dict_dump.
+
+SMPI:
+ - SMPI now reports support of MPI3.1. This does not mean SMPI supports all MPI 3 calls, but it was already the case with 2.2
+ - MPI/IO is now supported over the Storage API (no files are written or read, storage is simulated). Supported calls are all synchronous ones.
+ - MPI interface is now const correct for input parameters
+ - MPI_Ireduce, MPI_Iallreduce, MPI_Iscan, MPI_Iexscan, MPI_Ireduce_scatter, MPI_Ireduce_scatter_block support
+ - Fortran bindings for async collectives.
+ - MPI_Comm_get_name, MPI_Comm_set_name, MPI_Count support.
+
+Model-checker:
+ - Remove option 'model-check/record': Paths are recorded in any cases now.
+ - Remove option 'model-check/sparse-checkpoint': Checkpoints are now
+   always sparse. That's an immense gain in memory, and can even be
+   faster because of cache effects. So there is no need to clutter the
+   code to allow the user to go for the unefficient mode.
+
+Network models:
+ - Remove the lagrange-based models (Reno/Reno2/Vegas). The regular
+   models proved to be more accurate than these old experiments.
+
+Fixed bugs (FG=FramaGit; GH=GitHub -- Please prefer framagit for new bugs)
+ - FG#1: Broken link in error messages
+ - FG#2: missing installation documentation
+ - FG#3: missing documentation in smpirun
+ - FG#6: Python bindings not available on PyPI
+ - FG#7: simple cmake call requires doxygen
+ - FG#8: make python bindings an optional dependency
+ - FG#10: Can not use MSG_process_set_data from SMPI any more
+ - FG#11: Auto-restart actors forget their on_exit behavior
+ - FG#12: -Denable_lto=OFF doesn't disable LTO
+ - FG#13: Installs unstripped file 'bin/graphicator'
+ - FG#14: Installs the empty directory 'doc/simgrid/html'
+ - FG#15: Setting -Denable_python=OFF doesn't disable the search for pybind11
+ - FG#17: Dead link in doc (pls_ns3)
+ - FG#20: 'tesh --help' should return 0
+ - FG#21: Documentation link on http://simgrid.org/ broken
+ - FG#22: Debian installation instruction are broken
+ - FG#26: Turning off a link should raise NetworkFailureException exceptions
+ - GH#133: Java: a process can run on a VM even if its host is off
+ - GH#320: Stacktrace: Avoid the backtrace variant of Boost.Stacktrace?
+ - GH#326: Valgrind-detected error for join() when energy plugin is activated
 
 ----------------------------------------------------------------------------
 
 SimGrid (3.22) April 1. 2019
 
-The Easter Chrismas Release (this one is somewhat late).
+The Easter Christmas Release (this one is somewhat late).
 
 Python:
  - We are excited to introduce the SimGrid/S4U interface to your neighborhood
@@ -3031,7 +3207,7 @@ SimGrid (3.0.1) stable; urgency=low
     the pthread backend. It caused some weird deadlock or behavior
     depending on the pthread implementation. [AL]
   * Bugfix: get the exceptions raised in the simulator repport where
-    and why they come from when they are not catched in time [AL, MQ]
+    and why they come from when they are not caught in time [AL, MQ]
 
   SURF:
   * Bugfix: Do repport the error when two non-connected hosts try to
@@ -3123,7 +3299,7 @@ SimGrid (2.96) unstable; urgency=low
   * New! Exception handling with setjmp or such (code from OSSP ex) [MQ]
     This deprecates the xbt_error_t mechanisms.
     It modifies (simplifies) all XBT and GRAS API.
-    MSG API keeps unchanged (exceptions raised by XBT are catched from
+    MSG API keeps unchanged (exceptions raised by XBT are caught from
      within MSG and masked with existing error handling facilities)
 
   SURF:

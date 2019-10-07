@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
 p Start remote processes 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-exec-basic$EXEEXT ${platfdir}/small_platform.xml 
+$ ${bindir:=.}/s4u-exec-basic ${platfdir}/small_platform.xml 
 > [Tremblay:privileged:(2) 0.001500] [s4u_test/INFO] Done.
 > [Tremblay:executor:(1) 0.002000] [s4u_test/INFO] Done.

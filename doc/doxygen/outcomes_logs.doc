@@ -357,7 +357,7 @@ manually.
 
 @subsubsection log_use_conf_add Category additivity
 
-The <tt>add</tt> keyword allows to specify the additivity of a
+The <tt>add</tt> keyword allows one to specify the additivity of a
 category (see @ref log_in_app). '0', '1', 'no', 'yes', 'on'
 and 'off' are all valid values, with 'yes' as default.
 

@@ -20,12 +20,11 @@ This fucntion performs all-reduce operation as follow.
 */
 namespace simgrid{
 namespace smpi{
-int Coll_allreduce_smp_rsag_rab::allreduce(void *sbuf, void *rbuf, int count,
+int Coll_allreduce_smp_rsag_rab::allreduce(const void *sbuf, void *rbuf, int count,
                                            MPI_Datatype dtype, MPI_Op op,
                                            MPI_Comm comm)
 {
   int comm_size, rank;
-  void *tmp_buf;
   int tag = COLL_TAG_ALLREDUCE;
   int mask, src, dst;
   MPI_Status status;
@@ -40,12 +39,13 @@ int Coll_allreduce_smp_rsag_rab::allreduce(void *sbuf, void *rbuf, int count,
   comm_size = comm->size();
 
   if((comm_size&(comm_size-1)))
-    THROWF(arg_error,0, "allreduce smp rsag rab algorithm can't be used with non power of two number of processes ! ");
+    throw std::invalid_argument(
+        "allreduce smp rsag rab algorithm can't be used with non power of two number of processes!");
 
   rank = comm->rank();
   MPI_Aint extent;
   extent = dtype->get_extent();
-  tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
+  unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(count * extent);
 
   int intra_rank, inter_rank;
   intra_rank = rank % num_core;

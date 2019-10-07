@@ -14,12 +14,12 @@ namespace simgrid{
 namespace smpi{
 
 int Coll_allgatherv_mpich_rdb::allgatherv (
-  void *sendbuf,
+  const void *sendbuf,
   int sendcount,
   MPI_Datatype sendtype,
   void *recvbuf,
-  int *recvcounts,
-  int *displs,
+  const int *recvcounts,
+  const int *displs,
   MPI_Datatype recvtype,
   MPI_Comm comm)
 {
@@ -27,7 +27,6 @@ int Coll_allgatherv_mpich_rdb::allgatherv (
   MPI_Status status;
   MPI_Aint  recvtype_extent, recvtype_true_extent, recvtype_true_lb;
   unsigned int curr_cnt, dst, total_count;
-  void *tmp_buf, *tmp_buf_rl;
   unsigned int mask, dst_tree_root, my_tree_root, position,
     send_offset, recv_offset, last_recv_cnt=0, nprocs_completed, k,
     offset, tmp_mask, tree_root;
@@ -49,10 +48,10 @@ int Coll_allgatherv_mpich_rdb::allgatherv (
 
   recvtype->extent(&recvtype_true_lb, &recvtype_true_extent);
 
-  tmp_buf_rl = (void*)smpi_get_tmp_sendbuffer(total_count * std::max(recvtype_true_extent, recvtype_extent));
+  unsigned char* tmp_buf_rl = smpi_get_tmp_sendbuffer(total_count * std::max(recvtype_true_extent, recvtype_extent));
 
   /* adjust for potential negative lower bound in datatype */
-  tmp_buf = (void *)((char*)tmp_buf_rl - recvtype_true_lb);
+  unsigned char* tmp_buf = tmp_buf_rl - recvtype_true_lb;
 
   /* copy local data into right location in tmp_buf */
   position = 0;
@@ -60,20 +59,13 @@ int Coll_allgatherv_mpich_rdb::allgatherv (
     position += recvcounts[i];
   if (sendbuf != MPI_IN_PLACE)
   {
-    Datatype::copy(sendbuf, sendcount, sendtype,
-                       ((char *)tmp_buf + position*
-                        recvtype_extent),
-                       recvcounts[rank], recvtype);
+    Datatype::copy(sendbuf, sendcount, sendtype, tmp_buf + position * recvtype_extent, recvcounts[rank], recvtype);
   }
   else
   {
     /* if in_place specified, local data is found in recvbuf */
-    Datatype::copy(((char *)recvbuf +
-                        displs[rank]*recvtype_extent),
-                       recvcounts[rank], recvtype,
-                       ((char *)tmp_buf + position*
-                        recvtype_extent),
-                       recvcounts[rank], recvtype);
+    Datatype::copy(static_cast<char*>(recvbuf) + displs[rank] * recvtype_extent, recvcounts[rank], recvtype,
+                   tmp_buf + position * recvtype_extent, recvcounts[rank], recvtype);
   }
   curr_cnt = recvcounts[rank];
 
@@ -102,13 +94,9 @@ int Coll_allgatherv_mpich_rdb::allgatherv (
       for (j=0; j<dst_tree_root; j++)
         recv_offset += recvcounts[j];
 
-      Request::sendrecv(((char *)tmp_buf + send_offset * recvtype_extent),
-                        curr_cnt, recvtype, dst,
-                        COLL_TAG_ALLGATHERV,
-                        ((char *)tmp_buf + recv_offset * recvtype_extent),
-                        total_count - recv_offset, recvtype, dst,
-                        COLL_TAG_ALLGATHERV,
-                        comm, &status);
+      Request::sendrecv(tmp_buf + send_offset * recvtype_extent, curr_cnt, recvtype, dst, COLL_TAG_ALLGATHERV,
+                        tmp_buf + recv_offset * recvtype_extent, total_count - recv_offset, recvtype, dst,
+                        COLL_TAG_ALLGATHERV, comm, &status);
       /* for convenience, recv is posted for a bigger amount
          than will be sent */
       last_recv_cnt=Status::get_count(&status, recvtype);
@@ -166,10 +154,7 @@ int Coll_allgatherv_mpich_rdb::allgatherv (
             offset += recvcounts[j];
           offset *= recvtype_extent;
 
-          Request::send(((char *)tmp_buf + offset),
-                        last_recv_cnt,
-                        recvtype, dst,
-                        COLL_TAG_ALLGATHERV, comm);
+          Request::send(tmp_buf + offset, last_recv_cnt, recvtype, dst, COLL_TAG_ALLGATHERV, comm);
           /* last_recv_cnt was set in the previous
              receive. that's the amount of data to be
              sent now. */
@@ -184,9 +169,7 @@ int Coll_allgatherv_mpich_rdb::allgatherv (
           for (j=0; j<(my_tree_root+mask); j++)
             offset += recvcounts[j];
 
-          Request::recv(((char *)tmp_buf + offset * recvtype_extent),
-                        total_count - offset, recvtype,
-                        dst, COLL_TAG_ALLGATHERV,
+          Request::recv(tmp_buf + offset * recvtype_extent, total_count - offset, recvtype, dst, COLL_TAG_ALLGATHERV,
                         comm, &status);
           /* for convenience, recv is posted for a
              bigger amount than will be sent */
@@ -209,10 +192,8 @@ int Coll_allgatherv_mpich_rdb::allgatherv (
     if ((sendbuf != MPI_IN_PLACE) || (j != rank)) {
       /* not necessary to copy if in_place and
          j==rank. otherwise copy. */
-      Datatype::copy(((char *)tmp_buf + position*recvtype_extent),
-                         recvcounts[j], recvtype,
-                         ((char *)recvbuf + displs[j]*recvtype_extent),
-                         recvcounts[j], recvtype);
+      Datatype::copy(tmp_buf + position * recvtype_extent, recvcounts[j], recvtype,
+                     static_cast<char*>(recvbuf) + displs[j] * recvtype_extent, recvcounts[j], recvtype);
     }
     position += recvcounts[j];
   }

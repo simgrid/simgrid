@@ -22,12 +22,12 @@ void check_disk_attachment()
 {
   for (auto const& s : simgrid::s4u::Engine::get_instance()->get_all_storages()) {
     simgrid::kernel::routing::NetPoint* host_elm =
-        simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(s->get_impl()->getHost());
+        simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(s->get_impl()->get_host());
     if (not host_elm)
       surf_parse_error(std::string("Unable to attach storage ") + s->get_cname() + ": host " +
-                       s->get_impl()->getHost() + " does not exist.");
+                       s->get_impl()->get_host() + " does not exist.");
     else
-      s->set_host(simgrid::s4u::Host::by_name(s->get_impl()->getHost()));
+      s->set_host(simgrid::s4u::Host::by_name(s->get_impl()->get_host()));
   }
 }
 
@@ -54,10 +54,10 @@ StorageImpl* StorageN11Model::createStorage(const std::string& id, const std::st
 {
   StorageType* storage_type = storage_types.at(type_id);
 
-  double Bread = surf_parse_get_bandwidth(storage_type->model_properties->at("Bread").c_str(),
-                                          "property Bread, storage", type_id.c_str());
+  double Bread =
+      surf_parse_get_bandwidth(storage_type->model_properties->at("Bread").c_str(), "property Bread, storage", type_id);
   double Bwrite = surf_parse_get_bandwidth(storage_type->model_properties->at("Bwrite").c_str(),
-                                           "property Bwrite, storage", type_id.c_str());
+                                           "property Bwrite, storage", type_id);
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id.c_str(), type_id.c_str(),
             Bread);
@@ -74,12 +74,12 @@ double StorageN11Model::next_occuring_event(double now)
 void StorageN11Model::update_actions_state(double /*now*/, double delta)
 {
   for (auto it = std::begin(*get_started_action_set()); it != std::end(*get_started_action_set());) {
-    StorageAction& action = static_cast<StorageAction&>(*it);
+    auto& action = *it;
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     action.update_remains(lrint(action.get_variable()->get_value() * delta));
     action.update_max_duration(delta);
 
-    if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_weight() > 0)) ||
+    if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_penalty() > 0)) ||
         ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(Action::State::FINISHED);
     }
@@ -127,10 +127,10 @@ StorageN11Action::StorageN11Action(Model* model, double cost, bool failed, Stora
   model->get_maxmin_system()->expand(storage->get_constraint(), get_variable(), 1.0);
   switch(type) {
     case s4u::Io::OpType::READ:
-      model->get_maxmin_system()->expand(storage->constraintRead_, get_variable(), 1.0);
+      model->get_maxmin_system()->expand(storage->constraint_read_, get_variable(), 1.0);
       break;
     case s4u::Io::OpType::WRITE:
-      model->get_maxmin_system()->expand(storage->constraintWrite_, get_variable(), 1.0);
+      model->get_maxmin_system()->expand(storage->constraint_write_, get_variable(), 1.0);
       break;
     default:
       THROW_UNIMPLEMENTED;
@@ -146,9 +146,9 @@ void StorageN11Action::cancel()
 void StorageN11Action::suspend()
 {
   XBT_IN("(%p)", this);
-  if (suspended_ != Action::SuspendStates::sleeping) {
-    get_model()->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
-    suspended_ = Action::SuspendStates::suspended;
+  if (is_running()) {
+    get_model()->get_maxmin_system()->update_variable_penalty(get_variable(), 0.0);
+    set_suspend_state(Action::SuspendStates::SUSPENDED);
   }
   XBT_OUT();
 }
@@ -163,7 +163,7 @@ void StorageN11Action::set_max_duration(double /*duration*/)
   THROW_UNIMPLEMENTED;
 }
 
-void StorageN11Action::set_priority(double /*priority*/)
+void StorageN11Action::set_sharing_penalty(double)
 {
   THROW_UNIMPLEMENTED;
 }

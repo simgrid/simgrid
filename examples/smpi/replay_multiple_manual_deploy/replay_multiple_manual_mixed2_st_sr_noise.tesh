@@ -13,7 +13,7 @@ $ ./replay_multiple_manual ${srcdir:=.}/../../platforms/small_platform_with_rout
 > [   0.000000] (job_0001@Bourassa) Executing job 1 (smpi_app 'job1')
 > [   0.000000] (rank_1_0@Bourassa) Replaying rank 0 of job 1 (smpi_app 'job1')
 > [   0.000000] (rank_1_1@Fafard) Replaying rank 1 of job 1 (smpi_app 'job1')
-> [1473.975664] (rank_0_1@Fafard) Simulation time 1473.975664
+> [1473.975664] (rank_0_0@Bourassa) Simulation time 1473.975664
 > [1473.975664] (rank_1_0@Bourassa) Finished replaying rank 0 of job 1 (smpi_app 'job1')
 > [1473.975664] (rank_0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'job0')
 > [1473.975664] (rank_1_1@Fafard) Finished replaying rank 1 of job 1 (smpi_app 'job1')

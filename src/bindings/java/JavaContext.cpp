@@ -34,7 +34,7 @@ JavaContextFactory::JavaContextFactory() : ContextFactory()
 
 JavaContextFactory::~JavaContextFactory()=default;
 
-JavaContext* JavaContextFactory::create_context(std::function<void()>&& code, smx_actor_t actor)
+Context* JavaContextFactory::create_context(std::function<void()>&& code, actor::ActorImpl* actor)
 {
   return this->new_context<JavaContext>(std::move(code), actor);
 }

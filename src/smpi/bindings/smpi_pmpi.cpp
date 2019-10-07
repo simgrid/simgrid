@@ -31,25 +31,23 @@ void TRACE_smpi_set_category(const char *category)
 
 /* PMPI User level calls */
 
-int PMPI_Init(int *argc, char ***argv)
+int PMPI_Init(int*, char***)
 {
   xbt_assert(simgrid::s4u::Engine::is_initialized(),
              "Your MPI program was not properly initialized. The easiest is to use smpirun to start it.");
 
-  // Init is called only once per SMPI process
-  if (not smpi_process()->initializing()){
-    simgrid::smpi::ActorExt::init();
-  }
-  if (not smpi_process()->initialized()){
-    int rank_traced = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_init(rank_traced);
-    TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::NoOpTIData("init"));
-    TRACE_smpi_comm_out(rank_traced);
-    TRACE_smpi_computing_init(rank_traced);
-    TRACE_smpi_sleeping_init(rank_traced);
-    smpi_bench_begin();
-    smpi_process()->mark_as_initialized();
-  }
+  xbt_assert(not smpi_process()->initializing());
+  xbt_assert(not smpi_process()->initialized());
+
+  simgrid::smpi::ActorExt::init();
+  int rank_traced = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_init(rank_traced);
+  TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::NoOpTIData("init"));
+  TRACE_smpi_comm_out(rank_traced);
+  TRACE_smpi_computing_init(rank_traced);
+  TRACE_smpi_sleeping_init(rank_traced);
+  smpi_bench_begin();
+  smpi_process()->mark_as_initialized();
 
   smpi_mpi_init();
 
@@ -65,7 +63,6 @@ int PMPI_Finalize()
   smpi_process()->finalize();
 
   TRACE_smpi_comm_out(rank_traced);
-  TRACE_smpi_finalize(rank_traced);
   return MPI_SUCCESS;
 }
 
@@ -127,7 +124,7 @@ int PMPI_Abort(MPI_Comm /*comm*/, int /*errorcode*/)
   smpi_bench_end();
   // FIXME: should kill all processes in comm instead
   smx_actor_t actor = SIMIX_process_self();
-  simgrid::simix::simcall([actor] { actor->exit(); });
+  simgrid::kernel::actor::simcall([actor] { actor->exit(); });
   return MPI_SUCCESS;
 }
 
@@ -142,7 +139,7 @@ double PMPI_Wtick()
   return sg_maxmin_precision;
 }
 
-int PMPI_Address(void *location, MPI_Aint * address)
+int PMPI_Address(const void* location, MPI_Aint* address)
 {
   if (address==nullptr) {
     return MPI_ERR_ARG;
@@ -152,7 +149,7 @@ int PMPI_Address(void *location, MPI_Aint * address)
   }
 }
 
-int PMPI_Get_address(void *location, MPI_Aint * address)
+int PMPI_Get_address(const void *location, MPI_Aint * address)
 {
   return PMPI_Address(location, address);
 }
@@ -167,7 +164,7 @@ int PMPI_Get_processor_name(char *name, int *resultlen)
   return MPI_SUCCESS;
 }
 
-int PMPI_Get_count(MPI_Status * status, MPI_Datatype datatype, int *count)
+int PMPI_Get_count(const MPI_Status * status, MPI_Datatype datatype, int *count)
 {
   if (status == nullptr || count == nullptr) {
     return MPI_ERR_ARG;
@@ -214,17 +211,16 @@ int PMPI_Error_class(int errorcode, int* errorclass) {
   return MPI_SUCCESS;
 }
 
-int PMPI_Error_string(int errorcode, char* string, int* resultlen){
-  if (errorcode<0 || errorcode>= MPI_MAX_ERROR_STRING || string ==nullptr){
+int PMPI_Error_string(int errorcode, char* string, int* resultlen)
+{
+  static const char* smpi_error_string[] = {FOREACH_ERROR(GENERATE_STRING)};
+  constexpr int nerrors                  = (sizeof smpi_error_string) / (sizeof smpi_error_string[0]);
+  if (errorcode < 0 || errorcode >= nerrors || string == nullptr)
     return MPI_ERR_ARG;
-  } else {
-    static const char *smpi_error_string[] = {
-      FOREACH_ERROR(GENERATE_STRING)
-    };
-    *resultlen = strlen(smpi_error_string[errorcode]);
-    strncpy(string, smpi_error_string[errorcode], *resultlen);
-    return MPI_SUCCESS;  
-  }
+
+  int len    = snprintf(string, MPI_MAX_ERROR_STRING, "%s", smpi_error_string[errorcode]);
+  *resultlen = std::min(len, MPI_MAX_ERROR_STRING - 1);
+  return MPI_SUCCESS;
 }
 
 int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
@@ -235,4 +231,31 @@ int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_f
 
 int PMPI_Keyval_free(int* keyval) {
   return simgrid::smpi::Keyval::keyval_free<simgrid::smpi::Comm>(keyval);
+}
+
+MPI_Errhandler PMPI_Errhandler_f2c(MPI_Fint errhan){
+  if(errhan==-1)
+    return MPI_ERRHANDLER_NULL;
+  return static_cast<MPI_Errhandler>(simgrid::smpi::Errhandler::f2c(errhan));
+}
+
+MPI_Fint PMPI_Errhandler_c2f(MPI_Errhandler errhan){
+  if(errhan==MPI_ERRHANDLER_NULL)
+    return -1;
+  return errhan->c2f();
+}
+
+int PMPI_Buffer_attach(void *buf, int size){
+  if(buf==nullptr)
+    return MPI_ERR_BUFFER;
+  if(size<0)
+    return MPI_ERR_ARG;
+  smpi_process()->set_bsend_buffer(buf, size);
+  return MPI_SUCCESS;
+}
+
+int PMPI_Buffer_detach(void* buffer, int* size){
+  smpi_process()->bsend_buffer((void**)buffer, size);
+  smpi_process()->set_bsend_buffer(nullptr, 0);
+  return MPI_SUCCESS;
 }

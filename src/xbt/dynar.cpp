@@ -11,6 +11,7 @@
 #include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/misc.h"
+#include "xbt/string.hpp"
 #include "xbt/sysdep.h"
 #include <sys/types.h>
 
@@ -29,15 +30,15 @@ static inline void _sanity_check_idx(int idx)
 static inline void _check_inbound_idx(xbt_dynar_t dynar, int idx)
 {
   if (idx < 0 || idx >= static_cast<int>(dynar->used)) {
-    THROWF(bound_error, idx, "dynar is not that long. You asked %d, but it's only %lu long",
-           idx, static_cast<unsigned long>(dynar->used));
+    throw std::out_of_range(simgrid::xbt::string_printf("dynar is not that long. You asked %d, but it's only %lu long",
+                                                        idx, static_cast<unsigned long>(dynar->used)));
   }
 }
 
 static inline void _check_populated_dynar(xbt_dynar_t dynar)
 {
   if (dynar->used == 0) {
-    THROWF(bound_error, 0, "dynar %p is empty", dynar);
+    throw std::out_of_range(simgrid::xbt::string_printf("dynar %p is empty", dynar));
   }
 }
 
@@ -431,8 +432,8 @@ void xbt_dynar_remove_n_at(xbt_dynar_t const dynar, const unsigned int n, const 
  * }
  * @endcode
  *
- * Raises not_found_error if not found. If you have less than 2 millions elements, you probably want to use
- * #xbt_dynar_search_or_negative() instead, so that you don't have to TRY/CATCH on element not found.
+ * Raises std::out_of_range if not found. If you have less than 2 millions elements, you probably want to use
+ * #xbt_dynar_search_or_negative() instead, so that you don't have to try/catch on element not found.
  */
 unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void* const elem)
 {
@@ -443,7 +444,7 @@ unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void* const elem)
       return it;
     }
 
-  THROWF(not_found_error, 0, "Element %p not part of dynar %p", elem, dynar);
+  throw std::out_of_range(simgrid::xbt::string_printf("Element %p not part of dynar %p", elem, dynar));
 }
 
 /** @brief Returns the position of the element in the dynar (or -1 if not found)
@@ -600,17 +601,6 @@ void xbt_dynar_sort(xbt_dynar_t dynar, int_f_cpvoid_cpvoid_t compar_fn)
 {
   if (dynar->data != nullptr)
     qsort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
-}
-
-static int strcmp_voidp(const void *pa, const void *pb) {
-  return strcmp(*(const char **)pa, *(const char **)pb);
-}
-
-/** @brief Sorts a dynar of strings (ie, char* data) */
-xbt_dynar_t xbt_dynar_sort_strings(xbt_dynar_t dynar)
-{
-  xbt_dynar_sort(dynar, strcmp_voidp);
-  return dynar; // to enable functional uses
 }
 
 /** @brief Transform a dynar into a nullptr terminated array.

@@ -2,7 +2,7 @@
 
 p Simple test of simdag
 
-$ $SG_TEST_EXENV ${bindir:=.}/scheduling/sd_scheduling --log=sd_daxparse.thresh:critical ${srcdir:=.}/../../platforms/simulacrum_7_hosts.xml ${srcdir:=.}/scheduling/Montage_25.xml
+$ ${bindir:=.}/scheduling/sd_scheduling --log=sd_daxparse.thresh:critical ${srcdir:=.}/../../platforms/simulacrum_7_hosts.xml ${srcdir:=.}/scheduling/Montage_25.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [test/INFO] Schedule ID00002@mProjectPP on Host 27
 > [0.000105] [test/INFO] Schedule ID00000@mProjectPP on Host 26

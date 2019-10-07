@@ -8,7 +8,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_process_daemon, "Messages specific for this msg example");
 
 /* The worker process, working for a while before leaving */
-static int worker_process(int argc, char* argv[])
+static int worker_process(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Let's do some work (for 10 sec on Boivin).");
   msg_task_t task = MSG_task_create("easy work", 980.95e6, 0, NULL);
@@ -20,7 +20,7 @@ static int worker_process(int argc, char* argv[])
 }
 
 /* The daemon, displaying a message every 3 seconds until all other processes stop */
-static int daemon_process(int argc, char* argv[])
+static int daemon_process(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   MSG_process_daemonize(MSG_process_self());
 

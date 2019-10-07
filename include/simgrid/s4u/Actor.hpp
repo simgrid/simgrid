@@ -6,14 +6,17 @@
 #ifndef SIMGRID_S4U_ACTOR_HPP
 #define SIMGRID_S4U_ACTOR_HPP
 
-#include <functional>
-#include <map> // deprecated wrappers
+#include <simgrid/forward.h>
+
 #include <simgrid/chrono.hpp>
-#include <unordered_map>
 #include <xbt/Extendable.hpp>
 #include <xbt/functional.hpp>
 #include <xbt/signal.hpp>
 #include <xbt/string.hpp>
+
+#include <functional>
+#include <map> // deprecated wrappers
+#include <unordered_map>
 
 namespace simgrid {
 namespace s4u {
@@ -121,12 +124,14 @@ namespace s4u {
 
 /** @brief Simulation Agent */
 class XBT_PUBLIC Actor : public xbt::Extendable<Actor> {
+#ifndef DOXYGEN
   friend Exec;
   friend Mailbox;
   friend kernel::actor::ActorImpl;
   friend kernel::activity::MailboxImpl;
 
   kernel::actor::ActorImpl* const pimpl_;
+#endif
 
   explicit Actor(smx_actor_t pimpl) : pimpl_(pimpl) {}
 
@@ -139,12 +144,13 @@ public:
   // ***** Reference count *****
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Actor * actor);
   friend XBT_PUBLIC void intrusive_ptr_release(Actor * actor);
+  int get_refcount();
 
   // ***** Actor creation *****
   /** Retrieve a reference to myself */
-  static ActorPtr self();
+  static Actor* self();
 
-  /** Signal to others that a new actor has been created **/
+  /** Fired when a new actor has been created **/
   static xbt::signal<void(Actor&)> on_creation;
   /** Signal to others that an actor has been suspended**/
   static xbt::signal<void(Actor const&)> on_suspend;
@@ -158,9 +164,15 @@ public:
   static xbt::signal<void(Actor const&)> on_migration_start;
   /** Signal to others that an actor is has been migrated to another host **/
   static xbt::signal<void(Actor const&)> on_migration_end;
-  /** Signal indicating that an actor is about to disappear.
-   *  This signal is fired for any dying actor, which is mostly useful when designing plugins and extensions. If you
-   *  want to register to the termination of a given actor, use this_actor::on_exit() instead.*/
+  /** Signal indicating that an actor terminated its code.
+   *  The actor may continue to exist if it is still referenced in the simulation, but it's not active anymore.
+   *  If you want to free extra data when the actor's destructor is called, use Actor::on_destruction.
+   *  If you want to register to the termination of a given actor, use this_actor::on_exit() instead.*/
+  static xbt::signal<void(Actor const&)> on_termination;
+  /** Signal indicating that an actor is about to disappear (its destructor was called).
+   *  This signal is fired for any destructed actor, which is mostly useful when designing plugins and extensions.
+   *  If you want to react to the end of the actor's code, use Actor::on_termination instead.
+   *  If you want to register to the termination of a given actor, use this_actor::on_exit() instead.*/
   static xbt::signal<void(Actor const&)> on_destruction;
 
   /** Create an actor from a std::function<void()>
@@ -289,9 +301,9 @@ public:
   kernel::actor::ActorImpl* get_impl() const { return pimpl_; }
 
   /** Retrieve the property value (or nullptr if not set) */
-  std::unordered_map<std::string, std::string>*
-  get_properties(); // FIXME: do not export the map, but only the keys or something
-  const char* get_property(const std::string& key);
+  const std::unordered_map<std::string, std::string>*
+  get_properties() const; // FIXME: do not export the map, but only the keys or something
+  const char* get_property(const std::string& key) const;
   void set_property(const std::string& key, const std::string& value);
 
 #ifndef DOXYGEN
@@ -299,98 +311,6 @@ public:
       const std::function<void(int, void*)>& fun, void* data);
 
   XBT_ATTRIB_DEPRECATED_v325("Please use Actor::by_pid(pid).kill() instead") static void kill(aid_t pid);
-
-  /** @deprecated See Actor::create() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr
-      createActor(const char* name, s4u::Host* host, const std::function<void()>& code)
-  {
-    return create(name, host, code);
-  }
-  /** @deprecated See Actor::create() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr
-      createActor(const char* name, s4u::Host* host, const std::function<void(std::vector<std::string>*)>& code,
-                  std::vector<std::string>* args)
-  {
-    return create(name, host, code, args);
-  }
-  /** @deprecated See Actor::create() */
-  template <class F, class... Args, typename = typename std::result_of<F(Args...)>::type>
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
-      const char* name, s4u::Host* host, F code, Args... args)
-  {
-    return create(name, host, code, std::move(args)...);
-  }
-  /** @deprecated See Actor::create() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
-      const char* name, s4u::Host* host, const char* function, std::vector<std::string> args)
-  {
-    return create(name, host, function, args);
-  }
-  /** @deprecated See Actor::is_daemon() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::is_daemon()") bool isDaemon() const;
-  /** @deprecated See Actor::get_name() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_name()") const simgrid::xbt::string& getName() const
-  {
-    return get_name();
-  }
-  /** @deprecated See Actor::get_cname() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_cname()") const char* getCname() const { return get_cname(); }
-  /** @deprecated See Actor::get_host() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_host()") Host* getHost() { return get_host(); }
-  /** @deprecated See Actor::get_pid() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_pid()") aid_t getPid() { return get_pid(); }
-  /** @deprecated See Actor::get_ppid() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_ppid()") aid_t getPpid() { return get_ppid(); }
-  /** @deprecated See Actor::is_suspended() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::is_suspended()") int isSuspended() { return is_suspended(); }
-  /** @deprecated See Actor::set_auto_restart() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::set_auto_restart()") void setAutoRestart(bool a)
-  {
-    set_auto_restart(a);
-  }
-  /** @deprecated Please use a std::function<void(int, void*)> for first parameter */
-  XBT_ATTRIB_DEPRECATED_v323("Please use a std::function<void(int, void*)> for first parameter.") void on_exit(
-      int_f_pvoid_pvoid_t fun, void* data);
-  /** @deprecated See Actor::on_exit() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::on_exit()") void onExit(int_f_pvoid_pvoid_t fun, void* data)
-  {
-    on_exit([fun, data](bool a) { fun((void*)(uintptr_t)a, data); });
-  }
-  /** @deprecated See Actor::set_kill_time() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::set_kill_time()") void setKillTime(double time) { set_kill_time(time); }
-  /** @deprecated See Actor::get_kill_time() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_kill_time()") double getKillTime() { return get_kill_time(); }
-  /** @deprecated See Actor::by_pid() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::by_pid()") static ActorPtr byPid(aid_t pid) { return by_pid(pid); }
-  /** @deprecated See Actor::kill_all() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::kill_all()") static void killAll() { kill_all(); }
-  /** @deprecated See Actor::kill_all() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::kill_all() with no parameter") static void killAll(
-      int XBT_ATTRIB_UNUSED resetPid)
-  {
-    kill_all();
-  }
-  /** @deprecated See Actor::get_impl() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_impl()") kernel::actor::ActorImpl* getImpl() { return get_impl(); }
-  /** @deprecated See Actor::get_property() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_property()") const char* getProperty(const char* key)
-  {
-    return get_property(key);
-  }
-  /** @deprecated See Actor::get_properties() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_properties()") std::map<std::string, std::string>* getProperties()
-  {
-    std::map<std::string, std::string>* res             = new std::map<std::string, std::string>();
-    std::unordered_map<std::string, std::string>* props = get_properties();
-    for (auto const& kv : *props)
-      res->insert(kv);
-    return res;
-  }
-  /** @deprecated See Actor::get_properties() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::set_property()") void setProperty(const char* key, const char* value)
-  {
-    set_property(key, value);
-  }
 #endif
 };
 
@@ -400,10 +320,10 @@ namespace this_actor {
 
 XBT_PUBLIC bool is_maestro();
 
-/** Block the current actor sleeping for that amount of seconds (may throw hostFailure) */
+/** Block the current actor sleeping for that amount of seconds */
 XBT_PUBLIC void sleep_for(double duration);
-/** Block the current actor sleeping until the specified timestamp (may throw hostFailure) */
-XBT_PUBLIC void sleep_until(double timeout);
+/** Block the current actor sleeping until the specified timestamp */
+XBT_PUBLIC void sleep_until(double wakeup_time);
 
 template <class Rep, class Period> inline void sleep_for(std::chrono::duration<Rep, Period> duration)
 {
@@ -411,9 +331,9 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
   this_actor::sleep_for(seconds.count());
 }
 
-template <class Duration> inline void sleep_until(const SimulationTimePoint<Duration>& timeout_time)
+template <class Duration> inline void sleep_until(const SimulationTimePoint<Duration>& wakeup_time)
 {
-  auto timeout_native = std::chrono::time_point_cast<SimulationClockDuration>(timeout_time);
+  auto timeout_native = std::chrono::time_point_cast<SimulationClockDuration>(wakeup_time);
   this_actor::sleep_until(timeout_native.time_since_epoch().count());
 }
 
@@ -514,7 +434,7 @@ XBT_PUBLIC std::string get_name();
 /** @brief Returns the name of the current actor as a C string. */
 XBT_PUBLIC const char* get_cname();
 
-/** @brief Returns the name of the host on which the curret actor is running. */
+/** @brief Returns the name of the host on which the current actor is running. */
 XBT_PUBLIC Host* get_host();
 
 /** @brief Suspend the current actor, that is blocked until resume()ed by another actor. */
@@ -553,26 +473,6 @@ XBT_PUBLIC void migrate(Host* new_host);
 #ifndef DOXYGEN
 XBT_ATTRIB_DEPRECATED_v325("Please use std::function<void(bool)> for first parameter.") XBT_PUBLIC
     void on_exit(const std::function<void(int, void*)>& fun, void* data);
-
-/** @deprecated Please use std::function<void(int, void*)> for first parameter */
-XBT_ATTRIB_DEPRECATED_v323("Please use std::function<void(bool)> for first parameter.") XBT_PUBLIC
-    void on_exit(int_f_pvoid_pvoid_t fun, void* data);
-/** @deprecated See this_actor::get_name() */
-XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_name()") XBT_PUBLIC std::string getName();
-/** @deprecated See this_actor::get_cname() */
-XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_cname()") XBT_PUBLIC const char* getCname();
-/** @deprecated See this_actor::is_maestro() */
-XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::is_maestro()") XBT_PUBLIC bool isMaestro();
-/** @deprecated See this_actor::get_pid() */
-XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_pid()") XBT_PUBLIC aid_t getPid();
-/** @deprecated See this_actor::get_ppid() */
-XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_ppid()") XBT_PUBLIC aid_t getPpid();
-/** @deprecated See this_actor::get_host() */
-XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_host()") XBT_PUBLIC Host* getHost();
-/** @deprecated See this_actor::on_exit() */
-XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::on_exit()") XBT_PUBLIC void onExit(int_f_pvoid_pvoid_t fun, void* data);
-/** @deprecated See this_actor::exit() */
-XBT_ATTRIB_DEPRECATED_v324("Please use this_actor::exit()") XBT_PUBLIC void kill();
 #endif
 }
 

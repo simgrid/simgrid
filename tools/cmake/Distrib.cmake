@@ -3,9 +3,7 @@
 #########################################
 
 # doc
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/doc/html/)
-install(DIRECTORY "${CMAKE_BINARY_DIR}/doc/html/"
-  DESTINATION doc/simgrid/html/)
+install(DIRECTORY "${CMAKE_BINARY_DIR}/doc/html/" DESTINATION doc/simgrid/html/ OPTIONAL)
 
 # binaries
 if(enable_smpi)
@@ -26,8 +24,6 @@ if(enable_smpi)
 endif()
 
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh  DESTINATION bin/)
-
-install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/graphicator  DESTINATION bin/)
 
 install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/tools/MSG_visualization/colorize.pl
   DESTINATION bin/
@@ -181,11 +177,12 @@ set(source_to_pack
   ${examples_src}
   ${tesh_files}
   ${teshsuite_src}
-  ${testsuite_src}
   ${tools_src}
   ${txt_files}
   ${xml_files}
   )
+list(SORT source_to_pack)
+list(REMOVE_DUPLICATES source_to_pack)
 
 ##########################################
 ### Fill in the "make dist-dir" target ###
@@ -197,17 +194,18 @@ add_custom_target(dist-dir
   COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_NAME}-${release_version}.tar.gz
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/doc/html/
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/doc/html/ ${PROJECT_NAME}-${release_version}/doc/html/
-  COMMAND rm -f `grep -rl " Reference" ${PROJECT_NAME}-${release_version}/doc/html/` # Doxygen, go away
-  COMMAND rm -f `grep -rl "Member List" ${PROJECT_NAME}-${release_version}/doc/html/` # Doxygen, you're getting annoying
   )
 add_dependencies(dist-dir maintainer_files)
 
 set(dirs_in_tarball "")
+set(PYTHON_SOURCES "include MANIFEST.in")
 foreach(file ${source_to_pack})
   #message(${file})
   # This damn prefix is still set somewhere (seems to be in subdirs)
   string(REPLACE "${CMAKE_HOME_DIRECTORY}/" "" file "${file}")
+  
+  # Prepare the list of files to include in the python sdist, one per line
+  set(PYTHON_SOURCES "${PYTHON_SOURCES}\ninclude ${file}")
 
   # Create the directory on need
   get_filename_component(file_location ${file} PATH)
@@ -224,6 +222,9 @@ foreach(file ${source_to_pack})
     TARGET dist-dir
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/${file} ${PROJECT_NAME}-${release_version}/${file_location})
 endforeach(file ${source_to_pack})
+configure_file("${CMAKE_HOME_DIRECTORY}/MANIFEST.in.in" "${CMAKE_BINARY_DIR}/MANIFEST.in" @ONLY IMMEDIATE)
+unset(PYTHON_SOURCES)
+
 
 add_custom_command(
   TARGET dist-dir
@@ -294,23 +295,26 @@ set(CMAKE_BINARY_TEST_DIR ${CMAKE_BINARY_DIR})
 
 # Allow to test the "make dist"
 add_custom_target(distcheck
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX compare archive with git repository"
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Compare archive with git repository"
   COMMAND ${CMAKE_HOME_DIRECTORY}/tools/internal/check_dist_archive -batch ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}.tar.gz
 
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX remove old copy"
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Remove old copy"
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Untar distrib"
   COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}.tar.gz ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
 
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX create build and install subtrees"
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Create build and install subtrees"
   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build
   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Configure"
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build
           ${CMAKE_COMMAND} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst -Denable_lto=OFF ..
-	
+
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Check generated files -- please copy new version if they are different"
+  COMMAND ${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/MANIFEST.in ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build/MANIFEST.in
+
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Build"
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} -j 4
 

@@ -45,7 +45,7 @@
 namespace simgrid{
 namespace smpi{
 int Coll_alltoall_mvapich2_scatter_dest::alltoall(
-                            void *sendbuf,
+                            const void *sendbuf,
                             int sendcount,
                             MPI_Datatype sendtype,
                             void *recvbuf,
@@ -57,8 +57,6 @@ int Coll_alltoall_mvapich2_scatter_dest::alltoall(
     MPI_Aint     sendtype_extent = 0, recvtype_extent = 0;
     int mpi_errno=MPI_SUCCESS;
     int dst, rank;
-    MPI_Request *reqarray;
-    MPI_Status *starray;
 
     if (recvcount == 0) return MPI_SUCCESS;
 
@@ -93,9 +91,9 @@ int Coll_alltoall_mvapich2_scatter_dest::alltoall(
 
     /* FIXME: This should use the memory macros (there are storage
      leaks here if there is an error, for example) */
-    reqarray= (MPI_Request*)xbt_malloc(2*bblock*sizeof(MPI_Request));
+    MPI_Request* reqarray = new MPI_Request[2 * bblock];
 
-    starray=(MPI_Status *)xbt_malloc(2*bblock*sizeof(MPI_Status));
+    MPI_Status* starray = new MPI_Status[2 * bblock];
 
     for (ii=0; ii<comm_size; ii+=bblock) {
         ss = comm_size-ii < bblock ? comm_size-ii : bblock;
@@ -131,8 +129,8 @@ int Coll_alltoall_mvapich2_scatter_dest::alltoall(
         }
     }
     /* --END ERROR HANDLING-- */
-    xbt_free(starray);
-    xbt_free(reqarray);
+    delete[] starray;
+    delete[] reqarray;
     return (mpi_errno);
 
 }

@@ -38,7 +38,7 @@
 namespace simgrid{
 namespace smpi{
 
-int Coll_allgather_mvapich2_smp::allgather(void *sendbuf,int sendcnt, MPI_Datatype sendtype,
+int Coll_allgather_mvapich2_smp::allgather(const void *sendbuf,int sendcnt, MPI_Datatype sendtype,
                             void *recvbuf, int recvcnt,MPI_Datatype recvtype,
                             MPI_Comm  comm)
 {
@@ -54,10 +54,12 @@ int Coll_allgather_mvapich2_smp::allgather(void *sendbuf,int sendcnt, MPI_Dataty
   }
 
   if (not comm->is_uniform() || not comm->is_blocked())
-    THROWF(arg_error,0, "allgather MVAPICH2 smp algorithm can't be used with irregular deployment. Please insure that processes deployed on the same node are contiguous and that each node has the same number of processes");
+    throw std::invalid_argument("allgather MVAPICH2 smp algorithm can't be used with irregular deployment. Please "
+                                "insure that processes deployed on the same node are contiguous and that each node has "
+                                "the same number of processes");
 
-    if (recvcnt == 0) {
-        return MPI_SUCCESS;
+  if (recvcnt == 0) {
+    return MPI_SUCCESS;
     }
 
     rank = comm->rank();
@@ -105,18 +107,13 @@ int Coll_allgather_mvapich2_smp::allgather(void *sendbuf,int sendcnt, MPI_Dataty
         /*When data in each socket is different*/
         if (comm->is_uniform() != 1) {
 
-            int *displs = NULL;
-            int *recvcnts = NULL;
             int *node_sizes = NULL;
             int i = 0;
 
             node_sizes = comm->get_non_uniform_map();
 
-            displs =  static_cast<int *>(xbt_malloc(sizeof (int) * leader_comm_size));
-            recvcnts =  static_cast<int *>(xbt_malloc(sizeof (int) * leader_comm_size));
-            if (not displs || not recvcnts) {
-              return MPI_ERR_OTHER;
-            }
+            int* displs   = new int[leader_comm_size];
+            int* recvcnts = new int[leader_comm_size];
             recvcnts[0] = node_sizes[0] * recvcnt;
             displs[0] = 0;
 
@@ -134,8 +131,8 @@ int Coll_allgather_mvapich2_smp::allgather(void *sendbuf,int sendcnt, MPI_Dataty
                                        recvbuf, recvcnts,
                                        displs, recvtype,
                                        leader_comm);
-            xbt_free(displs);
-            xbt_free(recvcnts);
+            delete[] displs;
+            delete[] recvcnts;
         } else {
         void* sendtmpbuf=((char*)recvbuf)+recvtype->get_extent()*(recvcnt*local_size)*leader_comm->rank();
 

@@ -35,8 +35,6 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
     return mmalloc(mdp, size);
   }
 
-  //printf("(%s)realloc %p to %d...",xbt_thread_self_name(),ptr,(int)size);
-
   if ((char *) ptr < (char *) mdp->heapbase || BLOCK(ptr) > mdp->heapsize) {
     printf("FIXME. Ouch, this pointer is not mine, refusing to proceed (another solution would be to malloc "
            "it instead of reallocing it, see source code)\n");
@@ -83,7 +81,6 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
     if (blocks < mdp->heapinfo[block].busy_block.size) {
       int it;
       /* The new size is smaller; return excess memory to the free list. */
-      //printf("(%s) return excess memory...",xbt_thread_self_name());
       for (it= block+blocks; it< mdp->heapinfo[block].busy_block.size ; it++){
         mdp->heapinfo[it].type = MMALLOC_TYPE_UNFRAGMENTED; // FIXME that should be useless, type should already be 0 here
         mdp->heapinfo[it].busy_block.ignore = 0;
@@ -119,7 +116,6 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
       mdp->heaplimit = oldlimit;
 
       result = mmalloc_no_memset(mdp, requested_size);
-      //fprintf(stderr,"remalloc(%zu)~>%p\n",requested_size,result);
 
       if (ptr != result)
         memmove(result, ptr, blocks * BLOCKSIZE);
@@ -136,7 +132,6 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
 
     if (size > (size_t) (1 << (type - 1)) && size <= (size_t) (1 << type)) {
       /* The new size is the same kind of fragment.  */
-      //printf("(%s) new size is same kind of fragment...",xbt_thread_self_name());
 
       result = ptr;
       int frag_nb = RESIDUAL(result, BLOCKSIZE) >> type;
@@ -146,7 +141,6 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
     } else { /* fragment -> Either other fragment, or block */
       /* The new size is different; allocate a new space,
          and copy the lesser of the new size and the old. */
-      //printf("(%s) new size is different...",xbt_thread_self_name());
 
       result = mmalloc(mdp, requested_size);
 
@@ -155,6 +149,5 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
     }
     break;
   }
-  //printf("(%s) Done reallocing: %p\n",xbt_thread_self_name(),result);fflush(stdout);
   return (result);
 }

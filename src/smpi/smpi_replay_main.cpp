@@ -4,16 +4,18 @@
 #include "xbt/replay.hpp"
 #include "xbt/str.h"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_replay);
+
 int main(int argc, char* argv[])
 {
-  if (simgrid::s4u::Actor::self().get() == nullptr) {
-    printf("smpireplaymain should not be called directly. Please use smpirun -replay instead.\n");
+  if (simgrid::s4u::Actor::self() == nullptr) {
+    XBT_ERROR("smpireplaymain should not be called directly. Please use smpirun -replay instead.");
     return 1;
   }
 
   auto properties = simgrid::s4u::Actor::self()->get_properties();
   if (properties->find("smpi_replay") == properties->end()) {
-    printf("invalid smpireplaymain execution. Please use smpirun -replay instead.\n");
+    XBT_ERROR("invalid smpireplaymain execution. Please use smpirun -replay instead.");
     return 1;
   }
 

@@ -55,7 +55,7 @@ static void runner()
     simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts,
                                                10.0 /* timeout (in seconds)*/);
     xbt_die("Woops, this did not timeout as expected... Please report that bug.");
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutException&) {
     XBT_INFO("Caught the expected timeout exception.");
   }
 

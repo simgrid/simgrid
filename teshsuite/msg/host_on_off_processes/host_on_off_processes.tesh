@@ -13,7 +13,7 @@ $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 1 --log=no_loc
 > [13.000000] [msg_test/INFO] Simulation time 13
 
 ! expect signal SIGIOT
-$ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 2 --log=no_loc
+$ $VALGRIND_NO_LEAK_CHECK ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 2 --log=no_loc
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 2:
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO]   Turn off Jupiter
 > [0.000000] [simix_process/WARNING] Cannot launch actor 'process_daemon' on failed host 'Jupiter'

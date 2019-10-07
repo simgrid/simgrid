@@ -23,11 +23,12 @@ if(enable_compile_warnings)
   endif()
   if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     # ignore remark  #1418: external function definition with no prior declaration
+    # 2196: routine is both "inline" and "noinline"
     # 3179: deprecated conversion of string literal to char* (should be const char*)
     # 191: type qualifier is meaningless on cast type
     # 597: entity-kind "entity" will not be called for implicit or explicit conversions
     # 2330: argument of type "type" is incompatible with parameter of type "type" (dropping qualifiers)
-    set(warnCFLAGS "${warnCFLAGS} -wd1418 -wd191 -wd3179 -ww597 -ww2330")
+    set(warnCFLAGS "${warnCFLAGS} -wd1418 -wd191 -wd2196 -wd3179 -ww597 -ww2330")
   endif()
 
   set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
@@ -59,6 +60,9 @@ endif()
 if(enable_compile_warnings AND enable_debug)
   set(warnCFLAGS "${warnCFLAGS} -Werror")
   set(warnCXXFLAGS "${warnCXXFLAGS} -Werror")
+  if(CMAKE_Fortran_COMPILER_ID MATCHES "GCC")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Werror -Werror=format-security")
+  endif()
 endif()
 
 # Activate the warnings on #if FOOBAR when FOOBAR has no value

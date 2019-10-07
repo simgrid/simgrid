@@ -33,7 +33,7 @@
 static int alltoall_check_is_2dmesh(int num, int *i, int *j)
 {
   int x, max = num / 2;
-  x = sqrt(num);
+  x = sqrt(double(num));
 
   while (x <= max) {
     if ((num % x) == 0) {
@@ -55,16 +55,14 @@ static int alltoall_check_is_2dmesh(int num, int *i, int *j)
 namespace simgrid{
 namespace smpi{
 
-int Coll_alltoall_2dmesh::alltoall(void *send_buff, int send_count,
+int Coll_alltoall_2dmesh::alltoall(const void *send_buff, int send_count,
                                     MPI_Datatype send_type,
                                     void *recv_buff, int recv_count,
                                     MPI_Datatype recv_type, MPI_Comm comm)
 {
-  MPI_Status *statuses, s;
-  MPI_Request *reqs, *req_ptr;;
+  MPI_Status s;
   MPI_Aint extent;
 
-  char *tmp_buff1, *tmp_buff2;
   int i, j, src, dst, rank, num_procs, count, num_reqs;
   int X, Y, send_offset, recv_offset;
   int my_row_base, my_col_base, src_row_base, block_size;
@@ -82,17 +80,16 @@ int Coll_alltoall_2dmesh::alltoall(void *send_buff, int send_count,
 
   block_size = extent * send_count;
 
-  tmp_buff1 = (char *) smpi_get_tmp_sendbuffer(block_size * num_procs * Y);
-  tmp_buff2 = (char *) smpi_get_tmp_recvbuffer(block_size * Y);
+  unsigned char* tmp_buff1 = smpi_get_tmp_sendbuffer(block_size * num_procs * Y);
+  unsigned char* tmp_buff2 = smpi_get_tmp_recvbuffer(block_size * Y);
 
   num_reqs = X;
   if (Y > X)
     num_reqs = Y;
 
-  statuses = (MPI_Status *) xbt_malloc(num_reqs * sizeof(MPI_Status));
-  reqs = (MPI_Request *) xbt_malloc(num_reqs * sizeof(MPI_Request));
-
-  req_ptr = reqs;
+  MPI_Status* statuses = new MPI_Status[num_reqs];
+  MPI_Request* reqs    = new MPI_Request[num_reqs];
+  MPI_Request* req_ptr = reqs;
 
   count = send_count * num_procs;
 
@@ -168,8 +165,8 @@ int Coll_alltoall_2dmesh::alltoall(void *send_buff, int send_count,
     Request::send(tmp_buff2, send_count * Y, send_type, dst, tag, comm);
   }
   Request::waitall(X - 1, reqs, statuses);
-  free(reqs);
-  free(statuses);
+  delete[] reqs;
+  delete[] statuses;
   smpi_free_tmp_buffer(tmp_buff1);
   smpi_free_tmp_buffer(tmp_buff2);
   return MPI_SUCCESS;

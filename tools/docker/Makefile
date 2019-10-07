@@ -5,6 +5,7 @@ default:
 	@echo "   make unstable   -> build the git version of SimGrid (with SMPI, w/o MC)"
 	@echo "   make tuto-s4u   -> build all what you need to take the S4U tutorial"
 	@echo "   make tuto-smpi  -> build all what you need to take the SMPI tutorial"
+	@echo "   make tuto-mc    -> build the git version of SimGrid (with SMPI and MC)"
 	@echo "   make all        -> build all but stable (ie, build-deps unstable tuto-s4u tuto-smpi)"
 	@echo "   make push       -> push all images to the cloud"
 	@echo "All our images are based on debian:testing"
@@ -13,12 +14,11 @@ default:
 all: build-deps unstable tuto-s4u tuto-smpi
 
 stable:
-	export last_tag=`wget https://framagit.org/simgrid/simgrid/tags 2>/dev/null -O - | grep /simgrid/simgrid/tags/v | head -n1  | sed 's/[^>]*>//' | sed 's/<.*//'`; \
-	export url=`wget https://framagit.org/simgrid/simgrid/tags/$${last_tag} 2>/dev/null -O - | grep SimGrid- | perl -pe 's/.*?<li><a href="//' | sed 's/tar.gz.*/tar.gz/'` ;\
-	echo URL:$${url} ; \
+	export last_tag=$$(wget https://framagit.org/simgrid/simgrid/tags 2>/dev/null -O - | grep /simgrid/simgrid/-/tags/v | head -n1  | sed 's/[^>]*>//' | sed 's/<.*//'); \
+	export DLURL=$$(wget https://framagit.org/simgrid/simgrid/tags/$${last_tag} 2>/dev/null -O - | grep SimGrid- | perl -pe 's/.*?<a href="//' | sed 's/tar.gz.*/tar.gz/'); \
 	docker build -f Dockerfile.stable \
-	         --build-arg DLURL=$${url} \
-	         -t simgrid/stable:latest \
+	         --build-arg DLURL=$${DLURL} \
+		 -t simgrid/stable:latest \
                  -t simgrid/stable:$${last_tag} \
 		 $(DOCKER_EXTRA) \
                  . | tee > stable.log
@@ -36,6 +36,13 @@ build-deps:
                  -t simgrid/build-deps:$$(date --iso-8601) \
 		 $(DOCKER_EXTRA) \
                  . | tee > build-deps.log
+
+tuto-mc:
+	docker build -f Dockerfile.tuto-mc \
+	         -t simgrid/tuto-mc:latest \
+                 -t simgrid/tuto-mc:$$(date --iso-8601) \
+		 $(DOCKER_EXTRA) \
+                 . | tee > tuto-mc.log
 
 build-deps-stable:
 	docker build -f Dockerfile.build-deps-stable \
@@ -64,3 +71,4 @@ push:
 	docker push simgrid/unstable
 	docker push simgrid/tuto-s4u
 	docker push simgrid/tuto-smpi
+	docker push simgrid/tuto-mc

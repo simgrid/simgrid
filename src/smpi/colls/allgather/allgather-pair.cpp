@@ -70,7 +70,7 @@ namespace smpi{
 
 
 int
-Coll_allgather_pair::allgather(void *send_buff, int send_count,
+Coll_allgather_pair::allgather(const void *send_buff, int send_count,
                                MPI_Datatype send_type, void *recv_buff,
                                int recv_count, MPI_Datatype recv_type,
                                MPI_Comm comm)
@@ -88,7 +88,7 @@ Coll_allgather_pair::allgather(void *send_buff, int send_count,
   unsigned int num_procs = comm->size();
 
   if((num_procs&(num_procs-1)))
-    THROWF(arg_error,0, "allgather pair algorithm can't be used with non power of two number of processes ! ");
+    throw std::invalid_argument("allgather pair algorithm can't be used with non power of two number of processes!");
 
   extent = send_type->get_extent();
 

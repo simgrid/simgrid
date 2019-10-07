@@ -21,9 +21,6 @@ set(txt_files  ${txt_files}  ${CMAKE_CURRENT_SOURCE_DIR}/README
                              ${CMAKE_CURRENT_SOURCE_DIR}/util/mtestcheck.c
                              ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_datatype.c
                              ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_datatype_gen.c
-                             ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_manual.c
-                             ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_datatype_gen_manual.c
-                             ${CMAKE_CURRENT_SOURCE_DIR}/util/dtypes_manual.c
                              ${CMAKE_CURRENT_SOURCE_DIR}/f77/testlist
                              ${CMAKE_CURRENT_SOURCE_DIR}/f90/testlist
                              ${CMAKE_CURRENT_SOURCE_DIR}/include/dtypes.h
@@ -47,11 +44,10 @@ include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
 if(enable_smpi AND enable_smpi_MPICH3_testsuite)
-#C version - use automatic privatization if mmap is supported, manual through SMPI macros if not
   if(HAVE_PRIVATIZATION)
     add_library(mtest_c STATIC util/dtypes.c util/mtest.c  util/mtestcheck.c  util/mtest_datatype.c util/mtest_datatype_gen.c)
   else()
-    add_library(mtest_c STATIC util/mtest_manual.c util/dtypes_manual.c util/mtestcheck.c util/mtest_datatype.c util/mtest_datatype_gen_manual.c)
+    message(FATAL_ERROR "MPICH testsuite needs privatization. Use a modern OS.")
   endif()
 endif()
 

@@ -20,6 +20,8 @@ int main(int argc, char *argv[])
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
+
 
   int* sb = (int *) xbt_malloc(size * sizeof(int) * 2);
   int* rb = (int *) xbt_malloc(size * sizeof(int) * 2);
@@ -33,8 +35,31 @@ int main(int argc, char *argv[])
   for (i = 0; i < size; i++)
     printf("%d ", sb[i]);
   printf("]\n");
+  int count=1;
 
-  status = MPI_Alltoall(sb, 1, MPI_INT, rb, 1, MPI_INT, MPI_COMM_WORLD);
+  status = MPI_Alltoall(NULL, count, MPI_INT, rb, count, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_BUFFER)
+    printf("MPI_Alltoall did not return MPI_ERR_BUFFER for empty sendbuf\n");
+  status = MPI_Alltoall(sb, -1, MPI_INT, rb, count, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_COUNT)
+    printf("MPI_Alltoall did not return MPI_ERR_COUNT for -1 sendcount\n");
+  status = MPI_Alltoall(sb, count, MPI_DATATYPE_NULL, rb, count, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_TYPE)
+    printf("MPI_Alltoall did not return MPI_ERR_TYPE for MPI_DATATYPE_NULL sendtype\n");
+  status = MPI_Alltoall(sb, count, MPI_INT, NULL, count, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_BUFFER)
+    printf("MPI_Alltoall did not return MPI_ERR_BUFFER for empty recvbuf\n");
+  status = MPI_Alltoall(sb, count, MPI_INT, rb, -1, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_COUNT)
+    printf("MPI_Alltoall did not return MPI_ERR_COUNT for -1 recvcount\n");
+  status = MPI_Alltoall(sb, count, MPI_INT, rb, count, MPI_DATATYPE_NULL, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_TYPE)
+    printf("MPI_Alltoall did not return MPI_ERR_TYPE for MPI_DATATYPE_NULL recvtype\n");
+  status = MPI_Alltoall(sb, count, MPI_INT, rb, count, MPI_INT, MPI_COMM_NULL);
+  if(status!=MPI_ERR_COMM)
+    printf("MPI_Alltoall did not return MPI_ERR_COMM for MPI_COMM_NULL comm\n");
+
+  status = MPI_Alltoall(sb, count, MPI_INT, rb, count, MPI_INT, MPI_COMM_WORLD);
 
   printf("[%d] rcvbuf=[", rank);
   for (i = 0; i < size; i++)

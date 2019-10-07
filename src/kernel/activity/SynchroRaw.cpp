@@ -34,7 +34,7 @@ RawImpl& RawImpl::set_timeout(double timeout)
 RawImpl* RawImpl::start()
 {
   surf_action_ = host_->pimpl_cpu->sleep(timeout_);
-  surf_action_->set_data(this);
+  surf_action_->set_activity(this);
   return this;
 }
 
@@ -48,6 +48,12 @@ void RawImpl::resume()
   /* I cannot resume raw synchros directly. This is delayed to when the process is rescheduled at
    * the end of the synchro. */
 }
+
+void RawImpl::cancel()
+{
+  /* I cannot cancel raw synchros directly. */
+}
+
 void RawImpl::post()
 {
   if (surf_action_->get_state() == resource::Action::State::FAILED) {
@@ -63,55 +69,43 @@ void RawImpl::finish()
   smx_simcall_t simcall = simcalls_.front();
   simcalls_.pop_front();
 
-  switch (state_) {
-    case SIMIX_DONE:
-      /* do nothing, synchro done */
-      XBT_DEBUG("RawImpl::finish(): execution successful");
-      break;
-
-    case SIMIX_FAILED:
-      XBT_DEBUG("RawImpl::finish(): host '%s' failed", simcall->issuer->get_host()->get_cname());
-      simcall->issuer->context_->iwannadie = true;
-      simcall->issuer->exception_ =
-          std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
-      break;
-    case SIMIX_SRC_TIMEOUT:
-      simcall->issuer->exception_ =
-          std::make_exception_ptr(simgrid::TimeoutError(XBT_THROW_POINT, "Synchronization timeout"));
-      break;
-    default:
-      xbt_die("Internal error in RawImpl::finish() unexpected synchro state %d", static_cast<int>(state_));
+  if (state_ == SIMIX_FAILED) {
+    XBT_DEBUG("RawImpl::finish(): host '%s' failed", simcall->issuer_->get_host()->get_cname());
+    simcall->issuer_->context_->iwannadie = true;
+    simcall->issuer_->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
+  } else if (state_ != SIMIX_SRC_TIMEOUT) {
+    xbt_die("Internal error in RawImpl::finish() unexpected synchro state %d", static_cast<int>(state_));
   }
 
-  switch (simcall->call) {
+  switch (simcall->call_) {
 
     case SIMCALL_MUTEX_LOCK:
-      simgrid::xbt::intrusive_erase(simcall_mutex_lock__get__mutex(simcall)->sleeping_, *simcall->issuer);
+      simgrid::xbt::intrusive_erase(simcall_mutex_lock__get__mutex(simcall)->sleeping_, *simcall->issuer_);
       break;
 
     case SIMCALL_COND_WAIT:
-      simgrid::xbt::intrusive_erase(simcall_cond_wait__get__cond(simcall)->sleeping_, *simcall->issuer);
+      simgrid::xbt::intrusive_erase(simcall_cond_wait__get__cond(simcall)->sleeping_, *simcall->issuer_);
       break;
 
     case SIMCALL_COND_WAIT_TIMEOUT:
-      simgrid::xbt::intrusive_erase(simcall_cond_wait_timeout__get__cond(simcall)->sleeping_, *simcall->issuer);
+      simgrid::xbt::intrusive_erase(simcall_cond_wait_timeout__get__cond(simcall)->sleeping_, *simcall->issuer_);
       simcall_cond_wait_timeout__set__result(simcall, 1); // signal a timeout
       break;
 
     case SIMCALL_SEM_ACQUIRE:
-      simgrid::xbt::intrusive_erase(simcall_sem_acquire__get__sem(simcall)->sleeping_, *simcall->issuer);
+      simgrid::xbt::intrusive_erase(simcall_sem_acquire__get__sem(simcall)->sleeping_, *simcall->issuer_);
       break;
 
     case SIMCALL_SEM_ACQUIRE_TIMEOUT:
-      simgrid::xbt::intrusive_erase(simcall_sem_acquire_timeout__get__sem(simcall)->sleeping_, *simcall->issuer);
+      simgrid::xbt::intrusive_erase(simcall_sem_acquire_timeout__get__sem(simcall)->sleeping_, *simcall->issuer_);
       simcall_sem_acquire_timeout__set__result(simcall, 1); // signal a timeout
       break;
 
     default:
       THROW_IMPOSSIBLE;
   }
-  simcall->issuer->waiting_synchro = nullptr;
-  SIMIX_simcall_answer(simcall);
+  simcall->issuer_->waiting_synchro = nullptr;
+  simcall->issuer_->simcall_answer();
 }
 
 } // namespace activity

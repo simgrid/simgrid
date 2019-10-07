@@ -11,7 +11,7 @@
 namespace simgrid{
 namespace smpi{
 
-int Coll_allreduce_ompi::allreduce(void *sbuf, void *rbuf, int count,
+int Coll_allreduce_ompi::allreduce(const void *sbuf, void *rbuf, int count,
                         MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
     size_t dsize, block_dsize;
@@ -55,7 +55,7 @@ int Coll_allreduce_ompi::allreduce(void *sbuf, void *rbuf, int count,
 
 
 
-int Coll_alltoall_ompi::alltoall( void *sbuf, int scount,
+int Coll_alltoall_ompi::alltoall(const void *sbuf, int scount,
                                              MPI_Datatype sdtype,
                                              void* rbuf, int rcount,
                                              MPI_Datatype rdtype,
@@ -88,9 +88,9 @@ int Coll_alltoall_ompi::alltoall( void *sbuf, int scount,
                                                     comm);
 }
 
-int Coll_alltoallv_ompi::alltoallv(void *sbuf, int *scounts, int *sdisps,
+int Coll_alltoallv_ompi::alltoallv(const void *sbuf, const int *scounts, const int *sdisps,
                                               MPI_Datatype sdtype,
-                                              void *rbuf, int *rcounts, int *rdisps,
+                                              void *rbuf, const int *rcounts, const int *rdisps,
                                               MPI_Datatype rdtype,
                                               MPI_Comm  comm
                                               )
@@ -224,7 +224,7 @@ int Coll_bcast_ompi::bcast(void *buff, int count,
 #endif  /* 0 */
 }
 
-int Coll_reduce_ompi::reduce( void *sendbuf, void *recvbuf,
+int Coll_reduce_ompi::reduce(const void *sendbuf, void *recvbuf,
                                             int count, MPI_Datatype  datatype,
                                             MPI_Op   op, int root,
                                             MPI_Comm   comm
@@ -327,8 +327,8 @@ int Coll_reduce_ompi::reduce( void *sendbuf, void *recvbuf,
 #endif  /* 0 */
 }
 
-int Coll_reduce_scatter_ompi::reduce_scatter( void *sbuf, void *rbuf,
-                                                    int *rcounts,
+int Coll_reduce_scatter_ompi::reduce_scatter(const void *sbuf, void *rbuf,
+                                                    const int *rcounts,
                                                     MPI_Datatype dtype,
                                                     MPI_Op  op,
                                                     MPI_Comm  comm
@@ -381,7 +381,7 @@ int Coll_reduce_scatter_ompi::reduce_scatter( void *sbuf, void *rbuf,
 
 }
 
-int Coll_allgather_ompi::allgather(void *sbuf, int scount,
+int Coll_allgather_ompi::allgather(const void *sbuf, int scount,
                                               MPI_Datatype sdtype,
                                               void* rbuf, int rcount,
                                               MPI_Datatype rdtype,
@@ -461,10 +461,10 @@ int Coll_allgather_ompi::allgather(void *sbuf, int scount,
 #endif  /* defined(USE_MPICH2_DECISION) */
 }
 
-int Coll_allgatherv_ompi::allgatherv(void *sbuf, int scount,
+int Coll_allgatherv_ompi::allgatherv(const void *sbuf, int scount,
                                                MPI_Datatype sdtype,
-                                               void* rbuf, int *rcounts,
-                                               int *rdispls,
+                                               void* rbuf, const int *rcounts,
+                                               const int *rdispls,
                                                MPI_Datatype rdtype,
                                                MPI_Comm  comm
                                                )
@@ -508,7 +508,7 @@ int Coll_allgatherv_ompi::allgatherv(void *sbuf, int scount,
     }
 }
 
-int Coll_gather_ompi::gather(void *sbuf, int scount,
+int Coll_gather_ompi::gather(const void *sbuf, int scount,
                                            MPI_Datatype sdtype,
                                            void* rbuf, int rcount,
                                            MPI_Datatype rdtype,
@@ -568,7 +568,7 @@ int Coll_gather_ompi::gather(void *sbuf, int scount,
 }
 
 
-int Coll_scatter_ompi::scatter(void *sbuf, int scount,
+int Coll_scatter_ompi::scatter(const void *sbuf, int scount,
                                             MPI_Datatype sdtype,
                                             void* rbuf, int rcount,
                                             MPI_Datatype rdtype,
@@ -595,18 +595,14 @@ int Coll_scatter_ompi::scatter(void *sbuf, int scount,
 
     if ((communicator_size > small_comm_size) &&
         (block_size < small_block_size)) {
-        if(rank!=root){
-            sbuf=xbt_malloc(rcount*rdtype->get_extent());
-            scount=rcount;
-            sdtype=rdtype;
-        }
-        int ret=Coll_scatter_ompi_binomial::scatter (sbuf, scount, sdtype,
-            rbuf, rcount, rdtype,
-            root, comm);
-        if(rank!=root){
-            xbt_free(sbuf);
-        }
-        return ret;
+      std::unique_ptr<unsigned char[]> tmp_buf;
+      if (rank != root) {
+        tmp_buf.reset(new unsigned char[rcount * rdtype->get_extent()]);
+        sbuf   = tmp_buf.get();
+        scount = rcount;
+        sdtype = rdtype;
+      }
+      return Coll_scatter_ompi_binomial::scatter(sbuf, scount, sdtype, rbuf, rcount, rdtype, root, comm);
     }
     return Coll_scatter_ompi_basic_linear::scatter (sbuf, scount, sdtype,
                                                        rbuf, rcount, rdtype,

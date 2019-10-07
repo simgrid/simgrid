@@ -30,7 +30,7 @@
 namespace simgrid{
 namespace smpi{
 int
-Coll_alltoall_ring_light_barrier::alltoall(void *send_buff, int send_count,
+Coll_alltoall_ring_light_barrier::alltoall(const void *send_buff, int send_count,
                                             MPI_Datatype send_type,
                                             void *recv_buff, int recv_count,
                                             MPI_Datatype recv_type,

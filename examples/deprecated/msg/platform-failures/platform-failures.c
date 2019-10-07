@@ -11,8 +11,15 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 #define FINALIZE ((void*)221297)        /* a magic number to tell people to stop working */
 
+static void task_cleanup_handler(void* task)
+{
+  if (task)
+    MSG_task_destroy(task);
+}
+
 static int master(int argc, char *argv[])
 {
+  xbt_assert(argc == 5);
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
   double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");
   double task_comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");
@@ -31,13 +38,8 @@ static int master(int argc, char *argv[])
       XBT_INFO("Send to %s completed", mailbox);
       break;
 
-    case MSG_HOST_FAILURE:
-      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-      MSG_task_destroy(task);
-      return 0;
-
     case MSG_TRANSFER_FAILURE:
-      XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox);
+      XBT_INFO("Mmh. The communication with '%s' failed. Nevermind. Let's keep going!", mailbox);
       MSG_task_destroy(task);
       break;
 
@@ -58,10 +60,6 @@ static int master(int argc, char *argv[])
     msg_task_t task = MSG_task_create("finalize", 0, 0, FINALIZE);
 
     switch (MSG_task_send_with_timeout(task,mailbox,1.0)) {
-    case MSG_HOST_FAILURE:
-      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-      MSG_task_destroy(task);
-      break;
 
     case MSG_TRANSFER_FAILURE:
       XBT_INFO("Mmh. Can't reach '%s'! Nevermind. Let's keep going!", mailbox);
@@ -88,6 +86,7 @@ static int master(int argc, char *argv[])
 
 static int worker(int argc, char *argv[])
 {
+  xbt_assert(argc == 2);
   char mailbox[80];
 
   long id= xbt_str_parse_int(argv[1], "Invalid argument %s");
@@ -104,21 +103,16 @@ static int worker(int argc, char *argv[])
         break;
       }
       XBT_INFO("Start execution...");
+      MSG_process_set_data(MSG_process_self(), task);
       retcode = MSG_task_execute(task);
+      MSG_process_set_data(MSG_process_self(), NULL);
       if (retcode == MSG_OK) {
         XBT_INFO("Execution complete.");
         MSG_task_destroy(task);
-      } else if (retcode == MSG_HOST_FAILURE) {
-        XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-        MSG_task_destroy(task);
-        return 0;
       } else {
         XBT_INFO("Hey ?! What's up ? ");
         xbt_die("Unexpected behavior");
       }
-    } else if (retcode == MSG_HOST_FAILURE) {
-      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-      return 0;
     } else if (retcode == MSG_TRANSFER_FAILURE) {
       XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
     } else {
@@ -139,6 +133,7 @@ int main(int argc, char *argv[])
 
   MSG_function_register("master", master);
   MSG_function_register("worker", worker);
+  MSG_process_set_data_cleanup(task_cleanup_handler);
   MSG_launch_application(argv[2]);
 
   msg_error_t res = MSG_main();

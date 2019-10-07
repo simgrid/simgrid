@@ -22,25 +22,25 @@ namespace activity {
 
 class XBT_PUBLIC ActivityImpl {
   std::atomic_int_fast32_t refcount_{0};
-  std::string name_; /* Activity name if any */
 public:
   virtual ~ActivityImpl();
   ActivityImpl() = default;
-  explicit ActivityImpl(const std::string& name) : name_(name) {}
   e_smx_state_t state_ = SIMIX_WAITING; /* State of the activity */
   std::list<smx_simcall_t> simcalls_;   /* List of simcalls waiting for this activity */
   resource::Action* surf_action_ = nullptr;
 
-  const std::string& get_name() const { return name_; }
-  const char* get_cname() const { return name_.c_str(); }
-  void set_name(const std::string& name) { name_ = name; }
-  void set_category(const std::string& category);
-
   virtual void suspend();
   virtual void resume();
-  virtual void post()   = 0; // What to do when a simcall terminates
-  virtual void finish() = 0;
+  virtual void cancel();
 
+  virtual void post() = 0; // Called by the main loop when the activity is marked as terminated or failed by its model.
+                           // Setups the status, clean things up, and call finish()
+  virtual void finish() = 0; // Unlock all simcalls blocked on that activity, either because it was marked as done by
+                             // the model or because it terminated without waiting for the model
+
+  virtual void register_simcall(smx_simcall_t simcall);
+  void clean_action();
+  virtual double get_remaining() const;
   // boost::intrusive_ptr<ActivityImpl> support:
   friend XBT_PUBLIC void intrusive_ptr_add_ref(ActivityImpl* activity);
   friend XBT_PUBLIC void intrusive_ptr_release(ActivityImpl* activity);
@@ -48,6 +48,29 @@ public:
   static xbt::signal<void(ActivityImpl const&)> on_suspended;
   static xbt::signal<void(ActivityImpl const&)> on_resumed;
 };
+
+template <class AnyActivityImpl> class ActivityImpl_T : public ActivityImpl {
+private:
+  std::string name_             = "";
+  std::string tracing_category_ = "";
+
+public:
+  AnyActivityImpl& set_name(const std::string& name)
+  {
+    name_ = name;
+    return static_cast<AnyActivityImpl&>(*this);
+  }
+  const std::string& get_name() { return name_; }
+  const char* get_cname() { return name_.c_str(); }
+
+  AnyActivityImpl& set_tracing_category(const std::string& category)
+  {
+    tracing_category_ = category;
+    return static_cast<AnyActivityImpl&>(*this);
+  }
+  const std::string& get_tracing_category() { return tracing_category_; }
+};
+
 } // namespace activity
 } // namespace kernel
 } // namespace simgrid

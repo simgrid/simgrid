@@ -27,24 +27,31 @@ class ActorExt {
   int sampling_ = 0; /* inside an SMPI_SAMPLE_ block? */
   std::string instance_id_;
   bool replaying_ = false; /* is the process replaying a trace */
-  s4u::Barrier* finalization_barrier_;
   smpi_trace_call_location_t trace_call_loc_;
-  s4u::ActorPtr actor_                           = nullptr;
+  s4u::Actor* actor_                             = nullptr;
   smpi_privatization_region_t privatized_region_ = nullptr;
-  int optind                                     = 0; /*for getopt replacement */
+#ifdef __linux__
+  int optind_                                     = 0; /*for getopt replacement */
+#else
+  int optind_                                     = 1; /*for getopt replacement */
+#endif
   std::string tracing_category_                  = "";
-
+  MPI_Info info_env_;
+  void* bsend_buffer_ = nullptr; 
+  int bsend_buffer_size_ = 0; 
+  
 #if HAVE_PAPI
   /** Contains hardware data as read by PAPI **/
   int papi_event_set_;
   papi_counter_t papi_counter_data_;
 #endif
 public:
-  explicit ActorExt(s4u::ActorPtr actor, s4u::Barrier* barrier);
+  static simgrid::xbt::Extension<simgrid::s4u::Actor, ActorExt> EXTENSION_ID;
+
+  explicit ActorExt(s4u::Actor* actor);
   ActorExt(const ActorExt&) = delete;
   ActorExt& operator=(const ActorExt&) = delete;
   ~ActorExt();
-  void set_data(const char* instance_id);
   void finalize();
   int finalized();
   int initializing();
@@ -77,6 +84,9 @@ public:
   s4u::ActorPtr get_actor();
   int get_optind();
   void set_optind(int optind);
+  MPI_Info info_env();
+  void bsend_buffer(void** buf, int* size);
+  void set_bsend_buffer(void* buf, int size);
 };
 
 } // namespace smpi

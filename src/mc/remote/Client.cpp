@@ -68,11 +68,11 @@ Client* Client::initialize()
   if (errno != 0 || raise(SIGSTOP) != 0)
     xbt_die("Could not wait for the model-checker (errno = %d: %s)", errno, strerror(errno));
 
-  instance_->handleMessages();
+  instance_->handle_messages();
   return instance_.get();
 }
 
-void Client::handleDeadlockCheck(s_mc_message_t*)
+void Client::handle_deadlock_check(s_mc_message_t*)
 {
   bool deadlock = false;
   if (not simix_global->process_list.empty()) {
@@ -88,33 +88,28 @@ void Client::handleDeadlockCheck(s_mc_message_t*)
   s_mc_message_int_t answer{MC_MESSAGE_DEADLOCK_CHECK_REPLY, deadlock};
   xbt_assert(channel_.send(answer) == 0, "Could not send response");
 }
-void Client::handleContinue(s_mc_message_t*)
+void Client::handle_continue(s_mc_message_t*)
 {
   /* Nothing to do */
 }
-void Client::handleSimcall(s_mc_message_simcall_handle_t* message)
+void Client::handle_simcall(s_mc_message_simcall_handle_t* message)
 {
   smx_actor_t process = SIMIX_process_from_PID(message->pid);
   if (not process)
     xbt_die("Invalid pid %lu", (unsigned long)message->pid);
-  SIMIX_simcall_handle(&process->simcall, message->value);
+  process->simcall_handle(message->value);
   if (channel_.send(MC_MESSAGE_WAITING))
     xbt_die("Could not send MESSAGE_WAITING to model-checker");
 }
-void Client::handleRestore(s_mc_message_restore_t* message)
-{
-#if HAVE_SMPI
-  smpi_really_switch_data_segment(simgrid::s4u::Actor::by_pid(message->index));
-#endif
-}
-void Client::handleActorEnabled(s_mc_message_actor_enabled_t* msg)
+
+void Client::handle_actor_enabled(s_mc_message_actor_enabled_t* msg)
 {
   bool res = simgrid::mc::actor_is_enabled(SIMIX_process_from_PID(msg->aid));
   s_mc_message_int_t answer{MC_MESSAGE_ACTOR_ENABLED_REPLY, res};
   channel_.send(answer);
 }
 
-void Client::handleMessages()
+void Client::handle_messages()
 {
   while (1) {
     XBT_DEBUG("Waiting messages from model-checker");
@@ -131,33 +126,27 @@ void Client::handleMessages()
       case MC_MESSAGE_DEADLOCK_CHECK:
         xbt_assert(received_size == sizeof(s_mc_message_t), "Unexpected size for DEADLOCK_CHECK (%zd != %zu)",
                    received_size, sizeof(s_mc_message_t));
-        handleDeadlockCheck(message);
+        handle_deadlock_check(message);
         break;
 
       case MC_MESSAGE_CONTINUE:
         xbt_assert(received_size == sizeof(s_mc_message_t), "Unexpected size for MESSAGE_CONTINUE (%zd != %zu)",
                    received_size, sizeof(s_mc_message_t));
-        handleContinue(message);
+        handle_continue(message);
         return;
 
       case MC_MESSAGE_SIMCALL_HANDLE:
         xbt_assert(received_size == sizeof(s_mc_message_simcall_handle_t),
                    "Unexpected size for SIMCALL_HANDLE (%zd != %zu)", received_size,
                    sizeof(s_mc_message_simcall_handle_t));
-        handleSimcall((s_mc_message_simcall_handle_t*)message_buffer);
-        break;
-
-      case MC_MESSAGE_RESTORE:
-        xbt_assert(received_size == sizeof(s_mc_message_t), "Unexpected size for MESSAGE_RESTORE (%zd != %zu)",
-                   received_size, sizeof(s_mc_message_t));
-        handleRestore((s_mc_message_restore_t*)message_buffer);
+        handle_simcall((s_mc_message_simcall_handle_t*)message_buffer);
         break;
 
       case MC_MESSAGE_ACTOR_ENABLED:
         xbt_assert(received_size == sizeof(s_mc_message_actor_enabled_t),
                    "Unexpected size for ACTOR_ENABLED (%zd != %zu)", received_size,
                    sizeof(s_mc_message_actor_enabled_t));
-        handleActorEnabled((s_mc_message_actor_enabled_t*)message_buffer);
+        handle_actor_enabled((s_mc_message_actor_enabled_t*)message_buffer);
         break;
 
       default:
@@ -167,23 +156,23 @@ void Client::handleMessages()
   }
 }
 
-void Client::mainLoop()
+void Client::main_loop()
 {
   while (1) {
     simgrid::mc::wait_for_requests();
     xbt_assert(channel_.send(MC_MESSAGE_WAITING) == 0, "Could not send WAITING message to model-checker");
-    this->handleMessages();
+    this->handle_messages();
   }
 }
 
-void Client::reportAssertionFailure()
+void Client::report_assertion_failure()
 {
   if (channel_.send(MC_MESSAGE_ASSERTION_FAILED))
     xbt_die("Could not send assertion to model-checker");
-  this->handleMessages();
+  this->handle_messages();
 }
 
-void Client::ignoreMemory(void* addr, std::size_t size)
+void Client::ignore_memory(void* addr, std::size_t size)
 {
   s_mc_message_ignore_memory_t message;
   message.type = MC_MESSAGE_IGNORE_MEMORY;
@@ -193,7 +182,7 @@ void Client::ignoreMemory(void* addr, std::size_t size)
     xbt_die("Could not send IGNORE_MEMORY mesage to model-checker");
 }
 
-void Client::ignoreHeap(void* address, std::size_t size)
+void Client::ignore_heap(void* address, std::size_t size)
 {
   xbt_mheap_t heap = mmalloc_get_current_heap();
 
@@ -214,7 +203,7 @@ void Client::ignoreHeap(void* address, std::size_t size)
     xbt_die("Could not send ignored region to MCer");
 }
 
-void Client::unignoreHeap(void* address, std::size_t size)
+void Client::unignore_heap(void* address, std::size_t size)
 {
   s_mc_message_ignore_memory_t message;
   message.type = MC_MESSAGE_UNIGNORE_HEAP;
@@ -224,7 +213,7 @@ void Client::unignoreHeap(void* address, std::size_t size)
     xbt_die("Could not send IGNORE_HEAP message to model-checker");
 }
 
-void Client::declareSymbol(const char* name, int* value)
+void Client::declare_symbol(const char* name, int* value)
 {
   s_mc_message_register_symbol_t message;
   message.type = MC_MESSAGE_REGISTER_SYMBOL;
@@ -237,7 +226,7 @@ void Client::declareSymbol(const char* name, int* value)
     xbt_die("Could send REGISTER_SYMBOL message to model-checker");
 }
 
-void Client::declareStack(void* stack, size_t size, smx_actor_t process, ucontext_t* context)
+void Client::declare_stack(void* stack, size_t size, ucontext_t* context)
 {
   xbt_mheap_t heap = mmalloc_get_current_heap();
 
@@ -247,12 +236,6 @@ void Client::declareStack(void* stack, size_t size, smx_actor_t process, ucontex
   region.context = context;
   region.size    = size;
   region.block   = ((char*)stack - (char*)heap->heapbase) / BLOCKSIZE + 1;
-#if HAVE_SMPI
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP && process)
-    region.process_index = process->get_pid() - 1;
-  else
-#endif
-    region.process_index = -1;
 
   s_mc_message_stack_region_t message;
   message.type         = MC_MESSAGE_STACK_REGION;

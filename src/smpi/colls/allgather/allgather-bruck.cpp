@@ -73,7 +73,7 @@ namespace smpi{
 
 
 
-int Coll_allgather_bruck::allgather(void *send_buff, int send_count,
+int Coll_allgather_bruck::allgather(const void *send_buff, int send_count,
                                     MPI_Datatype send_type, void *recv_buff,
                                     int recv_count, MPI_Datatype recv_type,
                                     MPI_Comm comm)
@@ -88,7 +88,6 @@ int Coll_allgather_bruck::allgather(void *send_buff, int send_count,
   int pof2 = 1;
 
   // local string variables
-  char *tmp_buff;
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;
 
@@ -101,7 +100,7 @@ int Coll_allgather_bruck::allgather(void *send_buff, int send_count,
 
   count = recv_count;
 
-  tmp_buff = (char *) smpi_get_tmp_sendbuffer(num_procs * recv_count * recv_extent);
+  unsigned char* tmp_buff = smpi_get_tmp_sendbuffer(num_procs * recv_count * recv_extent);
 
   // perform a local copy
   Datatype::copy(send_ptr, send_count, send_type, tmp_buff, recv_count, recv_type);

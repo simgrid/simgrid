@@ -14,25 +14,24 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-class XBT_PUBLIC IoImpl : public ActivityImpl {
+class XBT_PUBLIC IoImpl : public ActivityImpl_T<IoImpl> {
   resource::StorageImpl* storage_ = nullptr;
+  resource::DiskImpl* disk_       = nullptr;
   sg_size_t size_                 = 0;
   s4u::Io::OpType type_           = s4u::Io::OpType::READ;
   sg_size_t performed_ioops_      = 0;
 
 public:
-  IoImpl& set_name(const std::string& name);
   IoImpl& set_size(sg_size_t size);
   IoImpl& set_type(s4u::Io::OpType type);
   IoImpl& set_storage(resource::StorageImpl* storage);
+  IoImpl& set_disk(resource::DiskImpl* disk);
 
   sg_size_t get_performed_ioops() { return performed_ioops_; }
 
   IoImpl* start();
   void post() override;
   void finish() override;
-  void cancel();
-  double get_remaining();
 
   static xbt::signal<void(IoImpl const&)> on_start;
   static xbt::signal<void(IoImpl const&)> on_completion;

@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 p Tracing platform only
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-trace-platform$EXEEXT --cfg=tracing:yes --cfg=tracing/filename:trace_platform.trace --cfg=tracing/categorized:yes ${platfdir}/small_platform.xml
+$ ${bindir:=.}/s4u-trace-platform --cfg=tracing:yes --cfg=tracing/filename:trace_platform.trace --cfg=tracing/categorized:yes ${platfdir}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace_platform.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'

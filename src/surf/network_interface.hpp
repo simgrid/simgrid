@@ -10,7 +10,6 @@
 #include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/s4u/Link.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
-#include "src/kernel/resource/profile/trace_mgr.hpp"
 #include "src/surf/PropertyHolder.hpp"
 
 #include <list>
@@ -33,8 +32,8 @@ namespace resource {
  */
 class NetworkModel : public Model {
 public:
-  static simgrid::config::Flag<double> cfg_tcp_gamma;
-  static simgrid::config::Flag<bool> cfg_crosstraffic;
+  static config::Flag<double> cfg_tcp_gamma;
+  static config::Flag<bool> cfg_crosstraffic;
 
   explicit NetworkModel(Model::UpdateAlgo algo) : Model(algo) {}
   NetworkModel(const NetworkModel&) = delete;
@@ -49,29 +48,26 @@ public:
    * @param latency The initial latency of the Link in seconds
    * @param policy The sharing policy of the Link
    */
-  virtual LinkImpl* create_link(const std::string& name, double bandwidth, double latency,
+  virtual LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
                                 s4u::Link::SharingPolicy policy) = 0;
 
   /**
    * @brief Create a communication between two hosts.
-   * @details It makes calls to the routing part, and execute the communication
-   *          between the two end points.
+   * @details It makes calls to the routing part, and execute the communication between the two end points.
    *
    * @param src The source of the communication
    * @param dst The destination of the communication
    * @param size The size of the communication in bytes
-   * @param rate Allows to limit the transfer rate. Negative value means
-   * unlimited.
+   * @param rate Allows to limit the transfer rate. Negative value means unlimited.
    * @return The action representing the communication
    */
   virtual Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) = 0;
 
   /**
    * @brief Get the right multiplicative factor for the latency.
-   * @details Depending on the model, the effective latency when sending
-   * a message might be different from the theoretical latency of the link,
-   * in function of the message size. In order to account for this, this
-   * function gets this factor.
+   * @details Depending on the model, the effective latency when sending a message might be different from the
+   * theoretical latency of the link, in function of the message size. In order to account for this, this function gets
+   * this factor.
    *
    * @param size The size of the message.
    * @return The latency factor.
@@ -80,10 +76,9 @@ public:
 
   /**
    * @brief Get the right multiplicative factor for the bandwidth.
-   * @details Depending on the model, the effective bandwidth when sending
-   * a message might be different from the theoretical bandwidth of the link,
-   * in function of the message size. In order to account for this, this
-   * function gets this factor.
+   * @details Depending on the model, the effective bandwidth when sending a message might be different from the
+   * theoretical bandwidth of the link, in function of the message size. In order to account for this, this function
+   * gets this factor.
    *
    * @param size The size of the message.
    * @return The bandwidth factor.
@@ -92,8 +87,8 @@ public:
 
   /**
    * @brief Get definitive bandwidth.
-   * @details It gives the minimum bandwidth between the one that would
-   * occur if no limitation was enforced, and the one arbitrary limited.
+   * @details It gives the minimum bandwidth between the one that would occur if no limitation was enforced, and the
+   * one arbitrary limited.
    * @param rate The desired maximum bandwidth.
    * @param bound The bandwidth with only the network taken into account.
    * @param size The size of the message.
@@ -112,7 +107,9 @@ public:
  * @brief SURF network link interface class
  * @details A Link represents the link between two [hosts](@ref simgrid::surf::HostImpl)
  */
-class LinkImpl : public Resource, public simgrid::surf::PropertyHolder {
+class LinkImpl : public Resource, public surf::PropertyHolder {
+  bool currently_destroying_ = false;
+
 protected:
   LinkImpl(NetworkModel* model, const std::string& name, lmm::Constraint* constraint);
   LinkImpl(const LinkImpl&) = delete;
@@ -121,10 +118,7 @@ protected:
 
 public:
   void destroy(); // Must be called instead of the destructor
-private:
-  bool currently_destroying_ = false;
 
-public:
   /** @brief Public interface */
   s4u::Link piface_;
 
@@ -163,11 +157,6 @@ public:
   Metric latency_                   = {1.0, 0, nullptr};
   Metric bandwidth_                 = {1.0, 0, nullptr};
 
-  /* User data */
-  void* get_data() { return userdata_; }
-  void set_data(void* d) { userdata_ = d; }
-private:
-  void* userdata_ = nullptr;
 };
 
 /**********
@@ -202,12 +191,13 @@ public:
 
   double latency_    = {};
   double lat_current_ = {};
-  double weight_     = {};
+  double sharing_penalty_ = {};
   double rate_       = {};
 };
-}
-}
+} // namespace resource
+} // namespace kernel
 } // namespace simgrid
+
 /** @ingroup SURF_models
  *  @brief The network model
  */

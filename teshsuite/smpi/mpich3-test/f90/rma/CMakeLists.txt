@@ -10,11 +10,11 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
  
   foreach(test winaccf90
              # winerrf90
-	       winfencef90 wingroupf90
-	     # baseattrwinf90 winattr2f90 winattrf90
-	       wingetf90 winnamef90 winscale1f90
-	     # winscale2f90
-	       )
+           winfencef90 wingroupf90
+           baseattrwinf90 winattr2f90 winattrf90
+           wingetf90 winnamef90 winscale1f90
+         # winscale2f90
+           )
     add_executable(${test} EXCLUDE_FROM_ALL ${test}.f90)
     add_dependencies(tests ${test})
     target_link_libraries(${test} simgrid mtest_f90)	

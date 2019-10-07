@@ -8,6 +8,7 @@
 
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Activity.hpp>
+#include <simgrid/s4u/Actor.hpp>
 #include <xbt/ex.h>
 
 #include <atomic>
@@ -35,14 +36,14 @@ public:
 #ifndef DOXYGEN
   Exec(Exec const&) = delete;
   Exec& operator=(Exec const&) = delete;
-#endif
 
   friend ExecSeq;
   friend ExecPar;
   friend XBT_PUBLIC void intrusive_ptr_release(Exec* e);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Exec* e);
-  static xbt::signal<void(Actor const&)> on_start;
-  static xbt::signal<void(Actor const&)> on_completion;
+#endif
+  static xbt::signal<void(Actor const&, Exec const&)> on_start;
+  static xbt::signal<void(Actor const&, Exec const&)> on_completion;
 
   virtual Exec* start() override          = 0;
   virtual double get_remaining_ratio()    = 0;
@@ -50,19 +51,25 @@ public:
 
   Exec* wait() override;
   Exec* wait_for(double timeout) override;
+  /*! take a vector of s4u::ExecPtr and return when one of them is finished.
+   * The return value is the rank of the first finished ExecPtr. */
+  static int wait_any(std::vector<ExecPtr>* execs) { return wait_any_for(execs, -1); }
+  /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
+  static int wait_any_for(std::vector<ExecPtr>* execs, double timeout);
+
   bool test() override;
 
   ExecPtr set_bound(double bound);
   ExecPtr set_priority(double priority);
   ExecPtr set_timeout(double timeout);
   Exec* cancel() override;
-
-  XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_priority()") ExecPtr setPriority(double priority)
-  {
-    return set_priority(priority);
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_bound()") ExecPtr setBound(double bound) { return set_bound(bound); }
-  XBT_ATTRIB_DEPRECATED_v324("Please use Exec::wait_for()") void wait(double t) override { wait_for(t); }
+  const std::string& get_name() const { return name_; }
+  const char* get_cname() const { return name_.c_str(); }
+  Host* get_host() const;
+  unsigned int get_host_number() const;
+  double get_start_time() const;
+  double get_finish_time() const;
+  double get_cost() const;
 };
 
 class XBT_PUBLIC ExecSeq : public Exec {
@@ -82,16 +89,6 @@ public:
 
   double get_remaining() override;
   double get_remaining_ratio() override;
-
-#ifndef DOXYGEN
-  //////////////// Deprecated functions
-  XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_host()") ExecPtr setHost(Host* host) { return set_host(host); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Exec::get_host()") Host* getHost() { return get_host(); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Exec::get_remaining_ratio()") double getRemainingRatio()
-  {
-    return get_remaining_ratio();
-  }
-#endif
 };
 
 class XBT_PUBLIC ExecPar : public Exec {
@@ -100,7 +97,7 @@ class XBT_PUBLIC ExecPar : public Exec {
   std::vector<double> bytes_amounts_;
   explicit ExecPar(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                    const std::vector<double>& bytes_amounts);
-  ExecPtr set_host(Host* host) override { return this; }
+  ExecPtr set_host(Host*) override { /* parallel exec cannot be moved */ THROW_UNIMPLEMENTED; }
 
 public:
   ~ExecPar() = default;

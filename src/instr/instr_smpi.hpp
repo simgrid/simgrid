@@ -25,7 +25,6 @@ XBT_PRIVATE void TRACE_smpi_comm_out(int rank);
 XBT_PRIVATE void TRACE_smpi_send(int rank, int src, int dst, int tag, int size);
 XBT_PRIVATE void TRACE_smpi_recv(int src, int dst, int tag);
 XBT_PRIVATE void TRACE_smpi_init(int rank);
-XBT_PRIVATE void TRACE_smpi_finalize(int rank);
 /* SMPI + LB (load balancer) */
 XBT_PRIVATE void TRACE_smpi_process_change_host(int rank, sg_host_t new_host);
 

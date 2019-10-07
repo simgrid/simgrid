@@ -7,6 +7,7 @@
 
 static int master(int argc, char *argv[])
 {
+  xbt_assert(argc == 5);
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
   long workers_count = xbt_str_parse_int(argv[4], "Invalid amount of workers: %s");
 
@@ -36,7 +37,7 @@ static int master(int argc, char *argv[])
   return 0;
 }
 
-static int worker(int argc, char *argv[])
+static int worker(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_task_t task = NULL;
 

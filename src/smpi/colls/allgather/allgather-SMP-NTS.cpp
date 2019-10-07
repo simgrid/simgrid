@@ -10,7 +10,7 @@ namespace simgrid{
 namespace smpi{
 
 
-int Coll_allgather_SMP_NTS::allgather(void *sbuf, int scount,
+int Coll_allgather_SMP_NTS::allgather(const void *sbuf, int scount,
                                       MPI_Datatype stype, void *rbuf,
                                       int rcount, MPI_Datatype rtype,
                                       MPI_Comm comm)
@@ -41,7 +41,8 @@ int Coll_allgather_SMP_NTS::allgather(void *sbuf, int scount,
   int num_core_in_current_smp = num_core;
 
   if(comm_size%num_core)
-    THROWF(arg_error,0, "allgather SMP NTS algorithm can't be used with non multiple of NUM_CORE=%d number of processes ! ", num_core);
+    throw std::invalid_argument(xbt::string_printf(
+        "allgather SMP NTS algorithm can't be used with non multiple of NUM_CORE=%d number of processes!", num_core));
 
   /* for too small number of processes, use default implementation */
   if (comm_size <= num_core) {
@@ -84,8 +85,8 @@ int Coll_allgather_SMP_NTS::allgather(void *sbuf, int scount,
 
   // root of each SMP
   if (intra_rank == 0) {
-    MPI_Request *rrequest_array = xbt_new(MPI_Request, inter_comm_size - 1);
-    MPI_Request *srequest_array = xbt_new(MPI_Request, inter_comm_size - 1);
+    MPI_Request* rrequest_array = new MPI_Request[inter_comm_size - 1];
+    MPI_Request* srequest_array = new MPI_Request[inter_comm_size - 1];
 
     src = ((inter_rank - 1 + inter_comm_size) % inter_comm_size) * num_core;
     dst = ((inter_rank + 1) % inter_comm_size) * num_core;
@@ -133,8 +134,8 @@ int Coll_allgather_SMP_NTS::allgather(void *sbuf, int scount,
     }
 
     Request::waitall(inter_comm_size - 1, srequest_array, MPI_STATUSES_IGNORE);
-    xbt_free(rrequest_array);
-    xbt_free(srequest_array);
+    delete[] rrequest_array;
+    delete[] srequest_array;
   }
   // last rank of each SMP
   else if (intra_rank == (num_core_in_current_smp - 1)) {

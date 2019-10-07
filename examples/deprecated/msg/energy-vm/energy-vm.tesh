@@ -2,7 +2,7 @@
 
 p Testing the mechanism for computing host energy consumption in case of VMs
 
-$ ${bindir:=.}/energy-vm$EXEEXT ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/energy-vm ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:dvfs@MyHost1) Creating and starting two VMs
 > [  0.000000] (1:dvfs@MyHost1) Create two tasks on Host1: both inside a VM
 > [  0.000000] (1:dvfs@MyHost1) Create two tasks on Host2: one inside a VM, the other directly on the host

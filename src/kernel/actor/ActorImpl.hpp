@@ -29,7 +29,7 @@ class XBT_PUBLIC ActorImpl : public surf::PropertyHolder {
 
 public:
   xbt::string name_;
-  ActorImpl(const xbt::string& name, s4u::Host* host);
+  ActorImpl(xbt::string name, s4u::Host* host);
   ActorImpl(const ActorImpl&) = delete;
   ActorImpl& operator=(const ActorImpl&) = delete;
   ~ActorImpl();
@@ -59,15 +59,16 @@ public:
 
   std::exception_ptr exception_;
   bool finished_  = false;
-  bool blocked_   = false; /* FIXME this field is never set to true. Either use it or remove it. */
   bool suspended_ = false;
 
   activity::ActivityImplPtr waiting_synchro = nullptr; /* the current blocking synchro if any */
   std::list<activity::ActivityImplPtr> comms;          /* the current non-blocking communication synchros */
   s_smx_simcall simcall;
-  std::vector<std::function<void(bool)>> on_exit; /* list of functions executed when the process dies */
+  /* list of functions executed when the process dies */
+  std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit =
+      std::make_shared<std::vector<std::function<void(bool)>>>();
 
-  std::function<void()> code;
+  std::function<void()> code_;
   simix::Timer* kill_timer = nullptr;
 
 private:
@@ -75,13 +76,17 @@ private:
   std::atomic_int_fast32_t refcount_{0};
 
 public:
+  int get_refcount() { return refcount_; }
   friend void intrusive_ptr_add_ref(ActorImpl* actor)
   {
-    // std::memory_order_relaxed ought to be enough here instead of std::memory_order_seq_cst
-    // But then, we have a threading issue when an actor commits a suicide:
-    //  it seems that in this case, the worker thread kills the last occurrence of the actor
-    //  while usually, the maestro does so. FIXME: we should change how actors suicide
-    actor->refcount_.fetch_add(1, std::memory_order_seq_cst);
+    // This whole memory consistency semantic drives me nuts.
+    // std::memory_order_relaxed proves to not be enough: There is a threading issue when actors commit suicide.
+    //   My guess is that the maestro context wants to propagate changes to the actor's fields after the
+    //   actor context frees that memory area or something. But I'm not 100% certain of what's going on.
+    // std::memory_order_seq_cst works but that's rather demanding.
+    // AFAIK, std::memory_order_acq_rel works on all tested platforms, so let's stick to it.
+    // Reducing the requirements to _relaxed would require to fix our suicide procedure, which is a messy piece of code.
+    actor->refcount_.fetch_add(1, std::memory_order_acq_rel);
   }
   friend void intrusive_ptr_release(ActorImpl* actor)
   {
@@ -97,6 +102,9 @@ public:
   /* S4U/implem interfaces */
 private:
   s4u::Actor piface_; // Our interface is part of ourselves
+
+  void undaemonize();
+
 public:
   s4u::ActorPtr iface() { return s4u::ActorPtr(&piface_); }
   s4u::Actor* ciface() { return &piface_; }
@@ -105,9 +113,9 @@ public:
   ActorImpl* start(const simix::ActorCode& code);
 
   static ActorImplPtr create(const std::string& name, const simix::ActorCode& code, void* data, s4u::Host* host,
-                             std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor);
+                             const std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor);
   static ActorImplPtr attach(const std::string& name, void* data, s4u::Host* host,
-                             std::unordered_map<std::string, std::string>* properties);
+                             const std::unordered_map<std::string, std::string>* properties);
   static void detach();
   void cleanup();
   void exit();
@@ -118,12 +126,18 @@ public:
   void daemonize();
   bool is_suspended() { return suspended_; }
   s4u::Actor* restart();
-  activity::ActivityImplPtr suspend(ActorImpl* issuer);
+  void suspend();
   void resume();
   activity::ActivityImplPtr join(ActorImpl* actor, double timeout);
   activity::ActivityImplPtr sleep(double duration);
   /** Ask the actor to throw an exception right away */
   void throw_exception(std::exception_ptr e);
+
+  /** execute the pending simcall -- must be called from the maestro context */
+  void simcall_handle(int value);
+  /** Terminates a simcall currently executed in maestro context. The actor will be restarted in the next scheduling
+   * round */
+  void simcall_answer();
 };
 
 class ProcessArg {
@@ -133,9 +147,12 @@ public:
   void* data                                                               = nullptr;
   s4u::Host* host                                                          = nullptr;
   double kill_time                                                         = 0.0;
-  std::shared_ptr<std::unordered_map<std::string, std::string>> properties = nullptr;
+  std::shared_ptr<const std::unordered_map<std::string, std::string>> properties = nullptr;
   bool auto_restart                                                        = false;
   bool daemon_                                                             = false;
+  /* list of functions executed when the process dies */
+  const std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit;
+
   ProcessArg()                                                             = default;
 
   explicit ProcessArg(const std::string& name, const std::function<void()>& code, void* data, s4u::Host* host,
@@ -153,12 +170,13 @@ public:
 
   explicit ProcessArg(s4u::Host* host, ActorImpl* actor)
       : name(actor->get_name())
-      , code(actor->code)
+      , code(actor->code_)
       , data(actor->get_user_data())
       , host(host)
       , kill_time(actor->get_kill_time())
       , auto_restart(actor->has_to_auto_restart())
       , daemon_(actor->is_daemon())
+      , on_exit(actor->on_exit)
   {
     properties.reset(actor->get_properties(), [](decltype(actor->get_properties())) {});
   }
@@ -170,12 +188,11 @@ typedef boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImp
     SynchroList;
 
 XBT_PUBLIC void create_maestro(const std::function<void()>& code);
+XBT_PUBLIC int get_maxpid();
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid
 
 extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
-
-XBT_PRIVATE void SIMIX_process_sleep_destroy(simgrid::kernel::activity::SleepImplPtr synchro);
 
 #endif

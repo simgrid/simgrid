@@ -3,6 +3,7 @@ INPUT                  = ../../include/simgrid/forward.h
 INPUT                 += ../../include/simgrid/s4u
 INPUT                 += ../../include/simgrid/msg.h
 INPUT                 += ../../src/msg/
+INPUT                 += ../../src/plugins/
 RECURSIVE              = YES
 
 EXAMPLE_PATH           = ../../examples
@@ -40,7 +41,5 @@ PREDEFINED             += \
     XBT_PRIVATE= \
     XBT_ATTRIB_NORETURN= \
     XBT_ATTRIB_UNUSED= \
-    XBT_ATTRIB_DEPRECATED_v323(m)= \
-    XBT_ATTRIB_DEPRECATED_v324(m)= \
     XBT_ATTRIB_DEPRECATED_v325(m)= \
-    XBT_ATTRIB_DEPRECATED_v326(m)=
+    XBT_ATTRIB_DEPRECATED_v327(m)=

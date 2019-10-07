@@ -293,19 +293,17 @@ public:
         task_id           = 0;
       }
     });
-    simgrid::kernel::activity::ExecImpl::on_creation.connect(
-        [this](simgrid::kernel::activity::ExecImpl const& activity) {
-          if (activity.get_host() == get_host())
-            pre_task();
-        });
-    simgrid::kernel::activity::ExecImpl::on_completion.connect(
-        [this](simgrid::kernel::activity::ExecImpl const& activity) {
-          // For more than one host (not yet supported), we can access the host via
-          // simcalls_.front()->issuer->iface()->get_host()
-          if (activity.get_host() == get_host() && iteration_running) {
-            comp_timer += activity.surf_action_->get_finish_time() - activity.surf_action_->get_start_time();
-          }
-        });
+    simgrid::s4u::Exec::on_start.connect([this](simgrid::s4u::Actor const&, simgrid::s4u::Exec const& activity) {
+      if (activity.get_host() == get_host())
+        pre_task();
+    });
+    simgrid::s4u::Exec::on_completion.connect([this](simgrid::s4u::Actor const&, simgrid::s4u::Exec const& activity) {
+      // For more than one host (not yet supported), we can access the host via
+      // simcalls_.front()->issuer->iface()->get_host()
+      if (activity.get_host() == get_host() && iteration_running) {
+        comp_timer += activity.get_finish_time() - activity.get_start_time();
+      }
+    });
     // FIXME I think that this fires at the same time for all hosts, so when the src sends something,
     // the dst will be notified even though it didn't even arrive at the recv yet
     simgrid::s4u::Link::on_communicate.connect(
@@ -336,9 +334,8 @@ public:
   {
     double computed_flops = sg_host_get_computed_flops(get_host()) - comp_counter;
     double target_time    = (simgrid::s4u::Engine::get_clock() - start_time);
-    target_time =
-        target_time *
-        static_cast<double>(99.0 / 100.0); // FIXME We account for t_copy arbitrarily with 1% -- this needs to be fixed
+    target_time           = target_time * 99.0 / 100.0; // FIXME We account for t_copy arbitrarily with 1%
+                                                        // -- this needs to be fixed
 
     bool is_initialized         = rates[task_id][best_pstate] != 0;
     rates[task_id][best_pstate] = computed_flops / comp_timer;
@@ -440,7 +437,7 @@ static void on_host_added(simgrid::s4u::Host& host)
 
 /* **************************** Public interface *************************** */
 
-/** @ingroup SURF_plugin_load
+/**
  * @brief Initializes the HostDvfs plugin
  * @details The HostDvfs plugin provides an API to get the current load of each host.
  */

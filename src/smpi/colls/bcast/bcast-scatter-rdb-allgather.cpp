@@ -162,15 +162,15 @@ Coll_bcast_scatter_rdb_allgather::bcast (
     }
     else
     {
-        tmp_buf=(void*)xbt_malloc(nbytes);
+      tmp_buf = new unsigned char[nbytes];
 
-        /* TODO: Pipeline the packing and communication */
-        position = 0;
-        if (rank == root) {
-            mpi_errno = datatype->pack(buffer, count, tmp_buf, nbytes,
-                                       &position, comm);
-            if (mpi_errno) xbt_die("crash while packing %d", mpi_errno);
-        }
+      /* TODO: Pipeline the packing and communication */
+      position = 0;
+      if (rank == root) {
+        mpi_errno = datatype->pack(buffer, count, tmp_buf, nbytes, &position, comm);
+        if (mpi_errno)
+          xbt_die("crash while packing %d", mpi_errno);
+      }
     }
 
 
@@ -334,8 +334,8 @@ Coll_bcast_scatter_rdb_allgather::bcast (
     }
 
 fn_exit:
-/*    xbt_free(tmp_buf);*/
-    return mpi_errno;
+  /* delete[] static_cast<unsigned char*>(tmp_buf); */
+  return mpi_errno;
 }
 
 }

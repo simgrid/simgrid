@@ -35,21 +35,20 @@ namespace simgrid {
 namespace kernel {
 namespace context {
 
-/* rank of the execution thread */
-thread_local uintptr_t SwappedContext::worker_id_;             /* thread-specific storage for the thread id */
+/* thread-specific storage for the worker's context */
+thread_local SwappedContext* SwappedContext::worker_context_ = nullptr;
 
 SwappedContextFactory::SwappedContextFactory() : ContextFactory(), parallel_(SIMIX_context_is_parallel())
 {
   parmap_ = nullptr; // will be created lazily with the right parameters if needed (ie, in parallel)
-  workers_context_.resize(parallel_ ? SIMIX_context_get_nthreads() : 1, nullptr);
 }
 
 SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, SwappedContextFactory* factory)
     : Context(std::move(code), actor), factory_(factory)
 {
   // Save maestro (=context created first) in preparation for run_all
-  if (not factory->parallel_ && factory_->workers_context_[0] == nullptr)
-    factory_->workers_context_[0] = this;
+  if (not factory->parallel_ && factory->maestro_context_ == nullptr)
+    factory->maestro_context_ = this;
 
   if (has_code()) {
     xbt_assert((smx_context_stack_size & 0xf) == 0, "smx_context_stack_size should be multiple of 16");
@@ -86,8 +85,9 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
             "Failed to protect stack: %s.\n"
             "If you are running a lot of actors, you may be exceeding the amount of mappings allowed per process.\n"
             "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
-            "Please see http://simgrid.gforge.inria.fr/simgrid/latest/doc/html/options.html#options_virt for more "
-            "info.",
+            "Please see "
+            "https://simgrid.org/doc/latest/Configuring_SimGrid.html#configuring-the-user-code-virtualization for more "
+            "information.",
             strerror(errno));
         /* This is fatal. We are going to fail at some point when we try reusing this. */
       }
@@ -156,8 +156,6 @@ void SwappedContextFactory::run_all()
    * for the ones of the simulated processes that must run.
    */
   if (parallel_) {
-    threads_working_ = 0;
-
     // We lazily create the parmap so that all options are actually processed when doing so.
     if (parmap_ == nullptr)
       parmap_.reset(
@@ -196,14 +194,11 @@ void SwappedContextFactory::run_all()
 void SwappedContext::resume()
 {
   if (factory_->parallel_) {
-    // Save the thread number (my body) in an os-thread-specific area
-    worker_id_ = factory_->threads_working_.fetch_add(1, std::memory_order_relaxed);
-    // Save my current soul (either maestro, or one of the minions) in a permanent area
-    SwappedContext* worker_context = static_cast<SwappedContext*>(self());
-    factory_->workers_context_[worker_id_] = worker_context;
+    // Save my current soul (either maestro, or one of the minions) in a thread-specific area
+    worker_context_ = static_cast<SwappedContext*>(self());
     // Switch my soul and the actor's one
     Context::set_current(this);
-    worker_context->swap_into(this);
+    worker_context_->swap_into(this);
     // No body runs that soul anymore at this point, but it is stored in a safe place.
     // When the executed actor will do a blocking action, ActorImpl::yield() will call suspend(), below.
   } else { // sequential execution
@@ -234,8 +229,8 @@ void SwappedContext::suspend()
     } else {
       // All actors were run, go back to the parmap context
       XBT_DEBUG("No more actors to run");
-      // worker_id_ is the identity of my body, stored in thread_local when starting the scheduling round
-      next_context = factory_->workers_context_[worker_id_];
+      // worker_context_ is my own soul, stored in thread_local when starting the scheduling round
+      next_context = worker_context_;
       // When given that soul, the body will wait for the next scheduling round
     }
 
@@ -256,7 +251,7 @@ void SwappedContext::suspend()
     } else {
       /* all processes were run, actually return to maestro */
       XBT_DEBUG("No more actors to run");
-      next_context = factory_->workers_context_[0];
+      next_context = factory_->maestro_context_;
     }
     Context::set_current(next_context);
     this->swap_into(next_context);

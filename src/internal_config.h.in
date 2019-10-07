@@ -99,4 +99,5 @@
 /* The lib unwind library (for MC and backtrace display) */
 #cmakedefine01 HAVE_LIBUNWIND
 /* The boost_stacktrace_backtrace library */
-#cmakedefine01 HAVE_BOOST_STACKTRACE
+#cmakedefine01 HAVE_BOOST_STACKTRACE_BACKTRACE /* prefered */
+#cmakedefine01 HAVE_BOOST_STACKTRACE_ADDR2LINE /* fallback */

@@ -38,23 +38,23 @@ class Request : public F2C {
   // We can't override src, tag, and size, because the request may be reused later
   int real_src_;
   int real_tag_;
-  int truncated_;
+  bool truncated_;
   size_t real_size_;
   MPI_Comm comm_;
   smx_activity_t action_;
   unsigned flags_;
-  int detached_;
+  bool detached_;
   MPI_Request detached_sender_;
   int refcount_;
   MPI_Op op_;
-  int cancelled_;
+  int cancelled_; // tri-state
   smpi_mpi_generalized_request_funcs generalized_funcs;
   MPI_Request* nbc_requests_;
   int nbc_requests_size_;
 
 public:
   Request() = default;
-  Request(void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags, MPI_Op op = MPI_REPLACE);
+  Request(const void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags, MPI_Op op = MPI_REPLACE);
   MPI_Comm comm() { return comm_; }
   size_t size() { return size_; }
   size_t real_size() { return real_size_; }
@@ -62,7 +62,7 @@ public:
   int dst() { return dst_; }
   int tag() { return tag_; }
   int flags() { return flags_; }
-  int detached() { return detached_; }
+  bool detached() { return detached_; }
   MPI_Datatype type() { return old_type_; }
   void print_request(const char* message);
   void start();
@@ -74,24 +74,27 @@ public:
   static void finish_wait(MPI_Request* request, MPI_Status* status);
   static void unref(MPI_Request* request);
   static int wait(MPI_Request* req, MPI_Status* status);
-  static MPI_Request send_init(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
-  static MPI_Request isend_init(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
-  static MPI_Request ssend_init(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
-  static MPI_Request rma_send_init(void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag,
+  static MPI_Request bsend_init(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+  static MPI_Request send_init(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+  static MPI_Request isend_init(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+  static MPI_Request ssend_init(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+  static MPI_Request rma_send_init(const void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag,
                                    MPI_Comm comm, MPI_Op op);
   static MPI_Request recv_init(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm);
   static MPI_Request rma_recv_init(void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag,
                                    MPI_Comm comm, MPI_Op op);
   static MPI_Request irecv_init(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm);
-  static MPI_Request isend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
-  static MPI_Request issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+  static MPI_Request ibsend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+  static MPI_Request isend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+  static MPI_Request issend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
   static MPI_Request irecv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm);
 
   static void recv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status* status);
-  static void send(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
-  static void ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+  static void bsend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+  static void send(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
+  static void ssend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
 
-  static void sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void* recvbuf,
+  static void sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void* recvbuf,
                        int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Status* status);
 
   static void startall(int count, MPI_Request* requests);
@@ -115,7 +118,6 @@ public:
   static int grequest_complete( MPI_Request request);
   static int get_status(MPI_Request req, int* flag, MPI_Status * status);
 
-  int add_f() override;
   static void free_f(int id);
   static Request* f2c(int);
 };

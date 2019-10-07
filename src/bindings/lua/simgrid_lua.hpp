@@ -6,13 +6,13 @@
 #ifndef SIMGRID_LUA_HPP
 #define SIMGRID_LUA_HPP
 
-extern "C" {
-#include <lua.h>
+#include <lua.hpp>
 
 /* ********************************************************************************* */
 /*                           Plaftorm functions                                      */
 /* ********************************************************************************* */
 
+extern "C" {
 int console_open(lua_State* L);
 int console_close(lua_State* L);
 

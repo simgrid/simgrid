@@ -14,12 +14,16 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
  * check if the topology is nullptr, but we should check if it is the good topology type (so we have to add a
  *  MPIR_Topo_Type field, and replace the MPI_Topology field by an union)*/
 
-int PMPI_Cart_create(MPI_Comm comm_old, int ndims, int* dims, int* periodic, int reorder, MPI_Comm* comm_cart) {
+int PMPI_Cart_create(MPI_Comm comm_old, int ndims, const int* dims, const int* periodic, int reorder, MPI_Comm* comm_cart) {
   if (comm_old == MPI_COMM_NULL){
     return MPI_ERR_COMM;
   } else if (ndims < 0 || (ndims > 0 && (dims == nullptr || periodic == nullptr)) || comm_cart == nullptr) {
     return MPI_ERR_ARG;
-  } else{
+  } else {
+    for (int i = 0; i < ndims; i++)
+      if (dims[i] < 0)
+        return MPI_ERR_ARG;
+
     simgrid::smpi::Topo_Cart* topo = new simgrid::smpi::Topo_Cart(comm_old, ndims, dims, periodic, reorder, comm_cart);
     if (*comm_cart == MPI_COMM_NULL) {
       delete topo;
@@ -30,12 +34,12 @@ int PMPI_Cart_create(MPI_Comm comm_old, int ndims, int* dims, int* periodic, int
   }
 }
 
-int PMPI_Cart_rank(MPI_Comm comm, int* coords, int* rank) {
+int PMPI_Cart_rank(MPI_Comm comm, const int* coords, int* rank) {
   if(comm == MPI_COMM_NULL || comm->topo() == nullptr) {
     return MPI_ERR_TOPOLOGY;
   }
   if (coords == nullptr) {
-    return MPI_ERR_ARG;
+    return MPI_SUCCESS;
   }
   MPIR_Cart_Topology topo = static_cast<MPIR_Cart_Topology>(comm->topo());
   if (topo==nullptr) {
@@ -65,11 +69,11 @@ int PMPI_Cart_coords(MPI_Comm comm, int rank, int maxdims, int* coords) {
   if (rank < 0 || rank >= comm->size()) {
     return MPI_ERR_RANK;
   }
-  if (maxdims <= 0) {
+  if (maxdims < 0) {
     return MPI_ERR_ARG;
   }
-  if(coords == nullptr) {
-    return MPI_ERR_ARG;
+  if(maxdims==0 || coords == nullptr) {
+    return MPI_SUCCESS;
   }
   MPIR_Cart_Topology topo = static_cast<MPIR_Cart_Topology>(comm->topo());
   if (topo==nullptr) {
@@ -79,10 +83,13 @@ int PMPI_Cart_coords(MPI_Comm comm, int rank, int maxdims, int* coords) {
 }
 
 int PMPI_Cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods, int* coords) {
+  if(dims == nullptr || periods == nullptr || coords == nullptr){
+    return MPI_SUCCESS;
+  }
   if(comm == nullptr || comm->topo() == nullptr) {
     return MPI_ERR_TOPOLOGY;
   }
-  if(maxdims <= 0 || dims == nullptr || periods == nullptr || coords == nullptr) {
+  if(maxdims <= 0) {
     return MPI_ERR_ARG;
   }
   MPIR_Cart_Topology topo = static_cast<MPIR_Cart_Topology>(comm->topo());
@@ -108,7 +115,7 @@ int PMPI_Cartdim_get(MPI_Comm comm, int* ndims) {
 
 int PMPI_Dims_create(int nnodes, int ndims, int* dims) {
   if(dims == nullptr) {
-    return MPI_ERR_ARG;
+    return MPI_SUCCESS;
   }
   if (ndims < 1 || nnodes < 1) {
     return MPI_ERR_DIMS;
@@ -116,7 +123,7 @@ int PMPI_Dims_create(int nnodes, int ndims, int* dims) {
   return simgrid::smpi::Topo_Cart::Dims_create(nnodes, ndims, dims);
 }
 
-int PMPI_Cart_sub(MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new) {
+int PMPI_Cart_sub(MPI_Comm comm, const int* remain_dims, MPI_Comm* comm_new) {
   if(comm == MPI_COMM_NULL || comm->topo() == nullptr) {
     return MPI_ERR_TOPOLOGY;
   }

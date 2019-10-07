@@ -1,0 +1,18 @@
+#!/usr/bin/env tesh
+
+p Testing the wait_any_for feature of S4U
+
+! output sort 19
+$ ${bindir:=.}/wait-any-for ${platfdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:worker@Tremblay) Sending and receiving 42 and 51 asynchronously
+> [  0.000000] (1:worker@Tremblay) All comms have started
+> [  0.500000] (1:worker@Tremblay) wait_any_for: Timeout reached
+> [  1.000000] (1:worker@Tremblay) wait_any_for: Timeout reached
+> [  1.035263] (1:worker@Tremblay) wait_any_for: A comm finished (index=0, #comms=4)
+> [  1.035263] (1:worker@Tremblay) wait_any_for: A comm finished (index=1, #comms=3)
+> [  1.535263] (1:worker@Tremblay) wait_any_for: Timeout reached
+> [  2.035263] (1:worker@Tremblay) wait_any_for: Timeout reached
+> [  2.070331] (1:worker@Tremblay) wait_any_for: A comm finished (index=0, #comms=2)
+> [  2.070331] (1:worker@Tremblay) wait_any_for: A comm finished (index=0, #comms=1)
+> [  2.070331] (1:worker@Tremblay) All comms have finished
+> [  2.070331] (1:worker@Tremblay) Got 42 and 51

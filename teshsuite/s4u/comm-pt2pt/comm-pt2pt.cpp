@@ -40,7 +40,6 @@ static void usage(const char* binaryName, const char* defaultSend, const char* d
                        "Example 1: %s examples/platforms/cluster_backbone.xml rRiIdD rrrrrr # testing all send functions\n"
                        "Default specs: %s %s (all possible pairs)\n",
                binaryName, binaryName, defaultSend, defaultRecv);
-  exit(1);
 }
 
 static void sender(std::vector<std::string> args)
@@ -165,8 +164,10 @@ int main(int argc, char* argv[])
   std::vector<std::string> argRecv{specRecv.c_str()};
 
   simgrid::s4u::Engine e(&argc, argv);
-  if (argc < 2)
+  if (argc < 2) {
     usage(argv[0], specSend.c_str(), specRecv.c_str());
+    return 1;
+  }
 
   e.load_platform(argv[1]);
 

@@ -63,38 +63,20 @@ typedef void* xbt_cfg_t;
 
 SG_BEGIN_DECL()
 
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_parse") XBT_PUBLIC
-    void xbt_cfg_set_parse(const char* options);
-
 /* Set the value of the cell @a name in @a cfg with the provided value.*/
-XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::set_value<int>") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::set_value<int> or sg_cfg_set_int") XBT_PUBLIC
     void xbt_cfg_set_int(const char* name, int val);
-XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::set_value<double>") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::set_value<double> or sg_cfg_set_double") XBT_PUBLIC
     void xbt_cfg_set_double(const char* name, double val);
-XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::set_value<bool>") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::set_value<bool> or sg_cfg_set_boolean") XBT_PUBLIC
     void xbt_cfg_set_boolean(const char* name, const char* val);
-XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::set_value<std::string>") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::set_value<std::string>or sg_cfg_set_string") XBT_PUBLIC
     void xbt_cfg_set_string(const char* name, const char* val);
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_as_string") XBT_PUBLIC
-    void xbt_cfg_set_as_string(const char* name, const char* val);
 
-/*
-  Set the default value of the cell @a name in @a cfg with the provided value.
-  If it was already set to something (possibly from the command line), do nothing.
- */
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_default<int>") XBT_PUBLIC
-    void xbt_cfg_setdefault_int(const char* name, int val);
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_default<double>") XBT_PUBLIC
-    void xbt_cfg_setdefault_double(const char* name, double val);
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_default<bool>") XBT_PUBLIC
-    void xbt_cfg_setdefault_boolean(const char* name, const char* val);
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_default<std::string>") XBT_PUBLIC
-    void xbt_cfg_setdefault_string(const char* name, const char* val);
-
-/** @brief Return if configuration is set by default*/
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::is_default") XBT_PUBLIC
-    int xbt_cfg_is_default_value(const char* name);
-
+XBT_PUBLIC void sg_cfg_set_int(const char* name, int val);
+XBT_PUBLIC void sg_cfg_set_double(const char* name, double val);
+XBT_PUBLIC void sg_cfg_set_boolean(const char* name, const char* val);
+XBT_PUBLIC void sg_cfg_set_string(const char* name, const char* val);
 /* @} */
 
 /** @defgroup XBT_cfg_decl Configuration type declaration and memory management
@@ -106,35 +88,8 @@ XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::is_default") XBT_PUBLIC
 /** @brief Callback types. They get the name of the modified entry, and the position of the changed value */
 typedef void (*xbt_cfg_cb_t)(const char* name);
 
-XBT_ATTRIB_DEPRECATED_v323("Please don't use it") XBT_PUBLIC xbt_cfg_t xbt_cfg_new();
-XBT_ATTRIB_DEPRECATED_v323("Please don't use it") XBT_PUBLIC void xbt_cfg_free(xbt_cfg_t* cfg);
-XBT_ATTRIB_DEPRECATED_v323("Please don't use it") XBT_PUBLIC
-    void xbt_cfg_dump(const char* name, const char* indent, xbt_cfg_t cfg);
-
 /** @} */
 
-/** @defgroup XBT_cfg_register  Registering stuff
- *  @ingroup XBT_config
- *
- *  This how to add new variables to an existing configuration set. Use it to make your code configurable.
- *
- *  @{
- */
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::declare_flag<double>") XBT_PUBLIC
-    void xbt_cfg_register_double(const char* name, double default_val, xbt_cfg_cb_t cb_set, const char* desc);
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::declare_flag<int>") XBT_PUBLIC
-    void xbt_cfg_register_int(const char* name, int default_val, xbt_cfg_cb_t cb_set, const char* desc);
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::declare_flag<std::string>") XBT_PUBLIC
-    void xbt_cfg_register_string(const char* name, const char* default_val, xbt_cfg_cb_t cb_set, const char* desc);
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::declare_flag<bool>") XBT_PUBLIC
-    void xbt_cfg_register_boolean(const char* name, const char* default_val, xbt_cfg_cb_t cb_set, const char* desc);
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::alias") XBT_PUBLIC
-    void xbt_cfg_register_alias(const char* newname, const char* oldname);
-
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::show_aliases") XBT_PUBLIC void xbt_cfg_aliases();
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::help") XBT_PUBLIC void xbt_cfg_help();
-
-/*  @} */
 /** @defgroup XBT_cfg_get Getting the stored values
  *  @ingroup XBT_config
  *
@@ -148,13 +103,16 @@ XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::help") XBT_PUBLIC void x
  *  @{
  */
 
-XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::get_value<int>") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::get_value<int> or sg_cfg_get_int") XBT_PUBLIC
     int xbt_cfg_get_int(const char* name);
-XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::get_value<double>") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::get_value<double> or sg_cfg_get_double") XBT_PUBLIC
     double xbt_cfg_get_double(const char* name);
-XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::get_value<bool>") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::get_value<bool> or sg_cfg_get_boolean") XBT_PUBLIC
     int xbt_cfg_get_boolean(const char* name);
 
+XBT_PUBLIC int sg_cfg_get_int(const char* name);
+XBT_PUBLIC double sg_cfg_get_double(const char* name);
+XBT_PUBLIC int sg_cfg_get_boolean(const char* name);
 /** @} */
 
 SG_END_DECL()

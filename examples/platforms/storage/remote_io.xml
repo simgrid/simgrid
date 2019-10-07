@@ -14,10 +14,10 @@
     <storage id="Disk1" typeId="SATA-II_HDD" attach="carl"/>
 
     <storage id="Disk2" typeId="SATA-II_HDD" attach="dave"
-             content="content/win_storage_content.txt" />
+             content="content/storage_content.txt" />
 
     <host id="alice" speed="1Gf">
-      <mount storageId="Disk2" name="c:"/>
+      <mount storageId="Disk2" name="/tmp"/>
     </host>
     <host id="bob" speed="1Gf">
       <mount storageId="Disk1" name="/scratch"/>
@@ -26,7 +26,7 @@
       <mount storageId="Disk1" name="/scratch"/>
     </host>
     <host id="dave" speed="1Gf">
-      <mount storageId="Disk2" name="c:"/>
+      <mount storageId="Disk2" name="/tmp"/>
     </host>
 
     <link id="link1" bandwidth="125MBps" latency="50us"/>

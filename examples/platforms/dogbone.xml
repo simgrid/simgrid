@@ -10,14 +10,14 @@
   -- S2 ---[ 4 ]---                 ---[ 5 ]--- C2
   --
   --
-  -- This platform is a valid NS3 platform, even if it exhibits routes of length >1,
+  -- This platform is a valid ns-3 platform, even if it exhibits routes of length >1,
   -- because when you only keep the routes of length 1,
   -- you get a graph where every host can speak to any other host.
   --
   -- For example, S1--C1 is (l1,l2,l3) of length >1
   -- But it's also S1--C1 = S1--R1, R1--R2, R2--C1 which are all of length 1
   --
-  -- http://simgrid.gforge.inria.fr/simgrid/latest/doc/pls_ns3.html
+  -- https://simgrid.org/doc/latest/ns3.html
   -->
 
 <platform version="4.1">

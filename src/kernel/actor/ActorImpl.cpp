@@ -19,10 +19,9 @@
 #include "src/surf/cpu_interface.hpp"
 
 #include <boost/range/algorithm.hpp>
+#include <utility>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix, "Logging specific to SIMIX (process)");
-
-static unsigned long simix_process_maxpid = 0;
 
 /**
  * @brief Returns the current agent.
@@ -53,13 +52,28 @@ namespace simgrid {
 namespace kernel {
 namespace actor {
 
-ActorImpl::ActorImpl(const simgrid::xbt::string& name, s4u::Host* host) : host_(host), name_(name), piface_(this)
+static unsigned long maxpid = 0;
+int get_maxpid()
 {
-  pid_           = simix_process_maxpid++;
-  simcall.issuer = this;
+  return maxpid;
 }
 
-ActorImpl::~ActorImpl() = default;
+ActorImpl::ActorImpl(simgrid::xbt::string name, s4u::Host* host) : host_(host), name_(std::move(name)), piface_(this)
+{
+  pid_           = maxpid++;
+  simcall.issuer_ = this;
+}
+
+ActorImpl::~ActorImpl()
+{
+  if (simix_global != nullptr && this != simix_global->maestro_process) {
+    if (context_.get() != nullptr) /* the actor was not start()ed yet. This happens if its host was initially off */
+      context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
+    simgrid::kernel::actor::simcall([this] { simgrid::s4u::Actor::on_destruction(*ciface()); });
+    if (context_.get() != nullptr)
+      context_->iwannadie = true;
+  }
+}
 
 /* Become an actor in the simulation
  *
@@ -70,7 +84,7 @@ ActorImpl::~ActorImpl() = default;
  */
 
 ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* host,
-                               std::unordered_map<std::string, std::string>* properties)
+                               const std::unordered_map<std::string, std::string>* properties)
 {
   // This is mostly a copy/paste from create(), it'd be nice to share some code between those two functions.
 
@@ -78,14 +92,13 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
 
   if (not host->is_on()) {
     XBT_WARN("Cannot launch process '%s' on failed host '%s'", name.c_str(), host->get_cname());
-    std::rethrow_exception(
-        std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Cannot attach actor on failed host.")));
+    throw simgrid::HostFailureException(XBT_THROW_POINT, "Cannot attach actor on failed host.");
   }
 
   ActorImpl* actor = new ActorImpl(xbt::string(name), host);
   /* Actor data */
   actor->set_user_data(data);
-  actor->code = nullptr;
+  actor->code_ = nullptr;
 
   XBT_VERB("Create context %s", actor->get_cname());
   xbt_assert(simix_global != nullptr, "simix is not initialized, please call MSG_init first");
@@ -93,8 +106,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
 
   /* Add properties */
   if (properties != nullptr)
-    for (auto const& kv : *properties)
-      actor->set_property(kv.first, kv.second);
+    actor->set_properties(*properties);
 
   /* Add the process to it's host process list */
   host->pimpl_->process_list_.push_back(*actor);
@@ -140,13 +152,14 @@ void ActorImpl::cleanup()
     watched_hosts.insert(get_host()->get_name());
   }
 
-  // Execute the termination callbacks
-  bool failed = context_->iwannadie;
-  while (not on_exit.empty()) {
-    auto exit_fun = on_exit.back();
-    on_exit.pop_back();
-    exit_fun(failed);
+  if (on_exit) {
+    // Execute the termination callbacks
+    bool failed = context_->iwannadie;
+    for (auto exit_fun = on_exit->crbegin(); exit_fun != on_exit->crend(); ++exit_fun)
+      (*exit_fun)(failed);
+    on_exit.reset();
   }
+  undaemonize();
 
   /* cancel non-blocking activities */
   for (auto activity : comms)
@@ -181,57 +194,41 @@ void ActorImpl::cleanup()
   simix_global->mutex.unlock();
 
   context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
-  simgrid::simix::simcall([this] { simgrid::s4u::Actor::on_destruction(*ciface()); });
+  simgrid::kernel::actor::simcall([this] { simgrid::s4u::Actor::on_termination(*ciface()); });
   context_->iwannadie = true;
 }
 
 void ActorImpl::exit()
 {
   context_->iwannadie = true;
-  blocked_            = false;
   suspended_          = false;
   exception_          = nullptr;
 
-  // Forcefully kill the actor if its host is turned off. Not a HostFailureException because you should not survive that
-  if (not host_->is_on())
-    this->throw_exception(std::make_exception_ptr(ForcefulKillException("host failed")));
-
   /* destroy the blocking synchro if any */
   if (waiting_synchro != nullptr) {
+    waiting_synchro->cancel();
+    waiting_synchro->state_ = SIMIX_FAILED;
 
     activity::ExecImplPtr exec   = boost::dynamic_pointer_cast<activity::ExecImpl>(waiting_synchro);
     activity::CommImplPtr comm   = boost::dynamic_pointer_cast<activity::CommImpl>(waiting_synchro);
-    activity::SleepImplPtr sleep = boost::dynamic_pointer_cast<activity::SleepImpl>(waiting_synchro);
-    activity::RawImplPtr raw     = boost::dynamic_pointer_cast<activity::RawImpl>(waiting_synchro);
-    activity::IoImplPtr io       = boost::dynamic_pointer_cast<activity::IoImpl>(waiting_synchro);
 
-    if (exec != nullptr && exec->surf_action_) {
-      exec->cancel();
-      exec->surf_action_->unref();
-      exec->surf_action_ = nullptr;
+    if (exec != nullptr) {
+      exec->clean_action();
     } else if (comm != nullptr) {
       comms.remove(waiting_synchro);
-      comm->cancel();
       // Remove first occurrence of &actor->simcall:
       auto i = boost::range::find(waiting_synchro->simcalls_, &simcall);
       if (i != waiting_synchro->simcalls_.end())
         waiting_synchro->simcalls_.remove(&simcall);
-    } else if (sleep != nullptr) {
-      if (sleep->surf_action_)
-        sleep->surf_action_->cancel();
-      sleep->post();
-    } else if (raw != nullptr) {
-      raw->finish();
-    } else if (io != nullptr) {
-      io->cancel();
     } else {
-      simgrid::kernel::activity::ActivityImplPtr activity = waiting_synchro;
-      xbt_die("Activity %s is of unknown type %s", activity->get_cname(),
-              simgrid::xbt::demangle(typeid(activity).name()).get());
+      activity::ActivityImplPtr(waiting_synchro)->finish();
     }
 
     waiting_synchro = nullptr;
   }
+
+  // Forcefully kill the actor if its host is turned off. Not a HostFailureException because you should not survive that
+  this->throw_exception(std::make_exception_ptr(ForcefulKillException(host_->is_on() ? "exited" : "host failed")));
 }
 
 void ActorImpl::kill(ActorImpl* actor)
@@ -300,7 +297,7 @@ void ActorImpl::yield()
 
     xbt_assert(exception_ == nullptr, "Gasp! This exception may be lost by subsequent calls.");
     suspended_ = false;
-    suspend(this);
+    suspend();
   }
 
   if (exception_ != nullptr) {
@@ -321,15 +318,20 @@ void ActorImpl::daemonize()
   if (not daemon_) {
     daemon_ = true;
     simix_global->daemons.push_back(this);
-    SIMIX_process_on_exit(this, [this](bool) {
-      auto& vect = simix_global->daemons;
-      auto it    = std::find(vect.begin(), vect.end(), this);
-      xbt_assert(it != vect.end(), "The dying daemon is not a daemon after all. Please report that bug.");
+  }
+}
 
-      /* Don't move the whole content since we don't really care about the order */
-      std::swap(*it, vect.back());
-      vect.pop_back();
-    });
+void ActorImpl::undaemonize()
+{
+  if (daemon_) {
+    auto& vect = simix_global->daemons;
+    auto it    = std::find(vect.begin(), vect.end(), this);
+    xbt_assert(it != vect.end(), "The dying daemon is not a daemon after all. Please report that bug.");
+    /* Don't move the whole content since we don't really care about the order */
+
+    std::swap(*it, vect.back());
+    vect.pop_back();
+    daemon_ = false;
   }
 }
 
@@ -348,33 +350,31 @@ s4u::Actor* ActorImpl::restart()
   // start the new actor
   ActorImplPtr actor =
       ActorImpl::create(arg.name, std::move(arg.code), arg.data, arg.host, arg.properties.get(), nullptr);
+  *actor->on_exit = std::move(*arg.on_exit);
   actor->set_kill_time(arg.kill_time);
   actor->set_auto_restart(arg.auto_restart);
 
   return actor->ciface();
 }
 
-activity::ActivityImplPtr ActorImpl::suspend(ActorImpl* issuer)
+void ActorImpl::suspend()
 {
   if (suspended_) {
     XBT_DEBUG("Actor '%s' is already suspended", get_cname());
-    return nullptr;
+    return;
   }
 
   suspended_ = true;
 
-  /* If we are suspending another actor that is waiting on a sync, suspend its synchronization. */
-  if (this != issuer) {
-    if (waiting_synchro)
-      waiting_synchro->suspend();
-    /* If the other actor is not waiting, its suspension is delayed to when the actor is rescheduled. */
+  /* If the suspended actor is waiting on a sync, suspend its synchronization. */
+  if (waiting_synchro == nullptr) {
+    auto exec = new activity::ExecImpl();
+    exec->set_name("suspend").set_host(host_).set_flops_amount(0.0).start();
+    waiting_synchro = activity::ExecImplPtr(exec);
 
-    return nullptr;
-  } else {
-    activity::ExecImpl* exec = new activity::ExecImpl();
-    (*exec).set_name("suspend").set_host(host_).set_flops_amount(0.0).start();
-    return activity::ExecImplPtr(exec);
+    waiting_synchro->simcalls_.push_back(&simcall);
   }
+  waiting_synchro->suspend();
 }
 
 void ActorImpl::resume()
@@ -413,8 +413,8 @@ activity::ActivityImplPtr ActorImpl::sleep(double duration)
     throw_exception(std::make_exception_ptr(simgrid::HostFailureException(
         XBT_THROW_POINT, std::string("Host ") + host_->get_cname() + " failed, you cannot sleep there.")));
 
-  activity::SleepImpl* sleep = new activity::SleepImpl();
-  (*sleep).set_name("sleep").set_host(host_).set_duration(duration).start();
+  auto sleep = new activity::SleepImpl();
+  sleep->set_name("sleep").set_host(host_).set_duration(duration).start();
   return activity::SleepImplPtr(sleep);
 }
 
@@ -427,39 +427,29 @@ void ActorImpl::throw_exception(std::exception_ptr e)
 
   /* cancel the blocking synchro if any */
   if (waiting_synchro) {
-
-    activity::ExecImplPtr exec = boost::dynamic_pointer_cast<activity::ExecImpl>(waiting_synchro);
-    if (exec != nullptr)
-      exec->cancel();
+    waiting_synchro->cancel();
 
     activity::CommImplPtr comm = boost::dynamic_pointer_cast<activity::CommImpl>(waiting_synchro);
-    if (comm != nullptr) {
+
+    if (comm != nullptr)
       comms.remove(comm);
-      comm->cancel();
-    }
 
-    activity::SleepImplPtr sleep = boost::dynamic_pointer_cast<activity::SleepImpl>(waiting_synchro);
-    if (sleep != nullptr) {
-      SIMIX_process_sleep_destroy(sleep);
-      if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), this) ==
-              end(simix_global->actors_to_run) &&
-          this != SIMIX_process_self()) {
-        XBT_DEBUG("Inserting [%p] %s in the to_run list", this, get_cname());
-        simix_global->actors_to_run.push_back(this);
-      }
-    }
-
-    activity::RawImplPtr raw = boost::dynamic_pointer_cast<activity::RawImpl>(waiting_synchro);
-    if (raw != nullptr) {
-      raw->finish();
-    }
-
-    activity::IoImplPtr io = boost::dynamic_pointer_cast<activity::IoImpl>(waiting_synchro);
-    if (io != nullptr) {
-      io->cancel();
-    }
+    waiting_synchro = nullptr;
   }
-  waiting_synchro = nullptr;
+}
+
+void ActorImpl::simcall_answer()
+{
+  if (this != simix_global->maestro_process){
+    XBT_DEBUG("Answer simcall %s (%d) issued by %s (%p)", SIMIX_simcall_name(simcall.call_), (int)simcall.call_,
+              get_cname(), this);
+    simcall.call_ = SIMCALL_NONE;
+    xbt_assert(not XBT_LOG_ISENABLED(simix_process, xbt_log_priority_debug) ||
+                   std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), this) ==
+                       end(simix_global->actors_to_run),
+               "Actor %p should not exist in actors_to_run!", this);
+    simix_global->actors_to_run.push_back(this);
+  }
 }
 
 void ActorImpl::set_host(s4u::Host* dest)
@@ -488,11 +478,10 @@ ActorImpl* ActorImpl::start(const simix::ActorCode& code)
   if (not host_->is_on()) {
     XBT_WARN("Cannot launch actor '%s' on failed host '%s'", name_.c_str(), host_->get_cname());
     intrusive_ptr_release(this);
-    std::rethrow_exception(
-        std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Cannot start actor on failed host.")));
+    throw simgrid::HostFailureException(XBT_THROW_POINT, "Cannot start actor on failed host.");
   }
 
-  this->code = code;
+  this->code_ = code;
   XBT_VERB("Create context %s", get_cname());
   context_.reset(simix_global->context_factory->create_context(simix::ActorCode(code), this));
 
@@ -510,7 +499,7 @@ ActorImpl* ActorImpl::start(const simix::ActorCode& code)
 }
 
 ActorImplPtr ActorImpl::create(const std::string& name, const simix::ActorCode& code, void* data, s4u::Host* host,
-                               std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor)
+                               const std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor)
 {
   XBT_DEBUG("Start actor %s@'%s'", name.c_str(), host->get_cname());
 
@@ -525,8 +514,7 @@ ActorImplPtr ActorImpl::create(const std::string& name, const simix::ActorCode& 
 
   /* Add properties */
   if (properties != nullptr)
-    for (auto const& kv : *properties)
-      actor->set_property(kv.first, kv.second);
+    actor->set_properties(*properties);
 
   actor->start(code);
 
@@ -544,7 +532,7 @@ void create_maestro(const std::function<void()>& code)
     maestro->context_.reset(simix_global->context_factory->create_maestro(simix::ActorCode(code), maestro));
   }
 
-  maestro->simcall.issuer       = maestro;
+  maestro->simcall.issuer_      = maestro;
   simix_global->maestro_process = maestro;
 }
 
@@ -552,86 +540,16 @@ void create_maestro(const std::function<void()>& code)
 } // namespace kernel
 } // namespace simgrid
 
-void SIMIX_process_detach()
+void SIMIX_process_detach() // deprecated v3.25
 {
   simgrid::kernel::actor::ActorImpl::detach();
 }
 
 smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostname,
                                  std::unordered_map<std::string, std::string>* properties,
-                                 smx_actor_t /*parent_process*/)
+                                 smx_actor_t /*parent_process*/) // deprecated 3.25
 {
   return simgrid::kernel::actor::ActorImpl::attach(name, data, sg_host_by_name(hostname), properties).get();
-}
-
-/** @deprecated When this function gets removed, also remove the xbt_ex class, that is only there to help users to
- * transition */
-void SIMIX_process_throw(smx_actor_t actor, xbt_errcat_t cat, int value, const char* msg)
-{
-  SMX_EXCEPTION(actor, cat, value, msg);
-
-  if (actor->is_suspended())
-    actor->resume();
-
-  /* cancel the blocking synchro if any */
-  if (actor->waiting_synchro) {
-
-    simgrid::kernel::activity::ExecImplPtr exec =
-        boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(actor->waiting_synchro);
-    if (exec != nullptr)
-      exec->cancel();
-
-    simgrid::kernel::activity::CommImplPtr comm =
-        boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(actor->waiting_synchro);
-    if (comm != nullptr) {
-      actor->comms.remove(comm);
-      comm->cancel();
-    }
-
-    simgrid::kernel::activity::SleepImplPtr sleep =
-        boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(actor->waiting_synchro);
-    if (sleep != nullptr) {
-      SIMIX_process_sleep_destroy(sleep);
-      if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), actor) ==
-              end(simix_global->actors_to_run) &&
-          actor != SIMIX_process_self()) {
-        XBT_DEBUG("Inserting [%p] %s in the to_run list", actor, actor->get_cname());
-        simix_global->actors_to_run.push_back(actor);
-      }
-    }
-
-    simgrid::kernel::activity::RawImplPtr raw =
-        boost::dynamic_pointer_cast<simgrid::kernel::activity::RawImpl>(actor->waiting_synchro);
-    if (raw != nullptr) {
-      raw->finish();
-    }
-
-    simgrid::kernel::activity::IoImplPtr io =
-        boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(actor->waiting_synchro);
-    if (io != nullptr) {
-      io->cancel();
-    }
-  }
-  actor->waiting_synchro = nullptr;
-}
-
-void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t actor)
-{
-  smx_activity_t sync_suspend = actor->suspend(simcall->issuer);
-
-  if (actor != simcall->issuer) {
-    SIMIX_simcall_answer(simcall);
-  } else {
-    sync_suspend->simcalls_.push_back(simcall);
-    actor->waiting_synchro = sync_suspend;
-    actor->waiting_synchro->suspend();
-  }
-  /* If we are suspending ourselves, then just do not finish the simcall now */
-}
-
-int SIMIX_process_get_maxpid()
-{
-  return simix_process_maxpid;
 }
 
 int SIMIX_process_count()
@@ -666,42 +584,6 @@ const char* SIMIX_process_self_get_name()
   return process->get_cname();
 }
 
-void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, double timeout)
-{
-  if (process->finished_) {
-    // The joined process is already finished, just wake up the issuer process right away
-    simcall_process_sleep__set__result(simcall, SIMIX_DONE);
-    SIMIX_simcall_answer(simcall);
-    return;
-  }
-  smx_activity_t sync = simcall->issuer->join(process, timeout);
-  sync->simcalls_.push_back(simcall);
-  simcall->issuer->waiting_synchro = sync;
-}
-
-void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration)
-{
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    MC_process_clock_add(simcall->issuer, duration);
-    simcall_process_sleep__set__result(simcall, SIMIX_DONE);
-    SIMIX_simcall_answer(simcall);
-    return;
-  }
-  smx_activity_t sync = simcall->issuer->sleep(duration);
-  sync->simcalls_.push_back(simcall);
-  simcall->issuer->waiting_synchro = sync;
-}
-
-void SIMIX_process_sleep_destroy(simgrid::kernel::activity::SleepImplPtr sleep)
-{
-  XBT_DEBUG("Destroy sleep synchro %p", sleep.get());
-
-  if (sleep->surf_action_) {
-    sleep->surf_action_->unref();
-    sleep->surf_action_ = nullptr;
-  }
-}
-
 /**
  * @brief Calling this function makes the process to yield.
  *
@@ -721,8 +603,14 @@ const std::vector<smx_actor_t>& simgrid::simix::process_get_runnable()
 /** @brief Returns the process from PID. */
 smx_actor_t SIMIX_process_from_PID(aid_t PID)
 {
-  auto actor = simix_global->process_list.find(PID);
-  return actor == simix_global->process_list.end() ? nullptr : actor->second;
+  auto item = simix_global->process_list.find(PID);
+  if (item == simix_global->process_list.end()) {
+    for (auto& a : simix_global->actors_to_destroy)
+      if (a.get_pid() == PID)
+        return &a;
+    return nullptr; // Not found, even in the trash
+  }
+  return item->second;
 }
 
 void SIMIX_process_on_exit(smx_actor_t actor, int_f_pvoid_pvoid_t fun, void* data)
@@ -741,7 +629,7 @@ void SIMIX_process_on_exit(smx_actor_t actor, const std::function<void(int, void
 void SIMIX_process_on_exit(smx_actor_t actor, const std::function<void(bool /*failed*/)>& fun)
 {
   xbt_assert(actor, "current process not found: are you in maestro context ?");
-  actor->on_exit.emplace_back(fun);
+  actor->on_exit->emplace_back(fun);
 }
 
 /** @brief Restart a process, starting it again from the beginning. */
@@ -763,12 +651,12 @@ smx_actor_t simcall_process_create(const std::string& name, const simgrid::simix
                                    sg_host_t host, std::unordered_map<std::string, std::string>* properties)
 {
   smx_actor_t self = SIMIX_process_self();
-  return simgrid::simix::simcall([&name, &code, data, host, properties, self] {
+  return simgrid::kernel::actor::simcall([&name, &code, data, host, properties, self] {
     return simgrid::kernel::actor::ActorImpl::create(name, code, data, host, properties, self).get();
   });
 }
 
 void simcall_process_set_data(smx_actor_t process, void* data)
 {
-  simgrid::simix::simcall([process, data] { process->set_user_data(data); });
+  simgrid::kernel::actor::simcall([process, data] { process->set_user_data(data); });
 }

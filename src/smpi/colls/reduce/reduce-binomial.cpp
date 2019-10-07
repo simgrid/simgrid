@@ -10,7 +10,7 @@
 //#include <star-reduction.c>
 namespace simgrid{
 namespace smpi{
-int Coll_reduce_binomial::reduce(void *sendbuf, void *recvbuf, int count,
+int Coll_reduce_binomial::reduce(const void *sendbuf, void *recvbuf, int count,
                                     MPI_Datatype datatype, MPI_Op op, int root,
                                     MPI_Comm comm)
 {
@@ -20,7 +20,6 @@ int Coll_reduce_binomial::reduce(void *sendbuf, void *recvbuf, int count,
   int dst;
   int tag = COLL_TAG_REDUCE;
   MPI_Aint extent;
-  void *tmp_buf;
   MPI_Aint true_lb, true_extent;
   if (count == 0)
     return 0;
@@ -29,7 +28,7 @@ int Coll_reduce_binomial::reduce(void *sendbuf, void *recvbuf, int count,
 
   extent = datatype->get_extent();
 
-  tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
+  unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(count * extent);
   int is_commutative =  (op==MPI_OP_NULL || op->is_commutative());
   mask = 1;
 
@@ -43,7 +42,7 @@ int Coll_reduce_binomial::reduce(void *sendbuf, void *recvbuf, int count,
   datatype->extent(&true_lb, &true_extent);
 
   /* adjust for potential negative lower bound in datatype */
-  tmp_buf = (void *)((char*)tmp_buf - true_lb);
+  tmp_buf = tmp_buf - true_lb;
 
   /* If I'm not the root, then my recvbuf may not be valid, therefore
      I have to allocate a temporary one */
@@ -87,7 +86,7 @@ int Coll_reduce_binomial::reduce(void *sendbuf, void *recvbuf, int count,
   }
 
   if (rank != root) {
-    smpi_free_tmp_buffer(recvbuf);
+    smpi_free_tmp_buffer(static_cast<unsigned char*>(recvbuf));
   }
   smpi_free_tmp_buffer(tmp_buf);
 

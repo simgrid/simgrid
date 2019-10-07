@@ -8,6 +8,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 static int test(int argc, char* argv[])
 {
+  xbt_assert(argc == 3);
   double computation_amount = xbt_str_parse_double(argv[1], "Invalid argument: %s");
   double priority           = xbt_str_parse_double(argv[2], "Invalid argument: %s");
 

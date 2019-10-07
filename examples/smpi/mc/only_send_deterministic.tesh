@@ -1,11 +1,11 @@
 #!/usr/bin/env tesh
 
 ! timeout 60
-$ ../../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../../bin/simgrid-mc" --log=xbt_cfg.thresh:warning -hostfile ${srcdir:=.}/hostfile_only_send_deterministic  -platform ${srcdir:=.}/../../platforms/cluster_backbone.xml --cfg=model-check/communications-determinism:1 --cfg=smpi/send-is-detached-thresh:0 --cfg=smpi/host-speed:1e9 ./smpi_only_send_deterministic
+$ ../../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../../bin/simgrid-mc" --log=xbt_cfg.thresh:warning -hostfile ${srcdir:=.}/hostfile_only_send_deterministic  -platform ${srcdir:=.}/../../platforms/cluster_backbone.xml --cfg=model-check/communications-determinism:1 --cfg=smpi/buffering:zero --cfg=smpi/host-speed:1e9 ./smpi_only_send_deterministic
 > [0.000000] [mc_comm_determinism/INFO] Check communication determinism
-> [0.000000] [mc_comm_determinism/INFO] ******************************************************
+> [0.000000] [mc_comm_determinism/INFO] *******************************************************
 > [0.000000] [mc_comm_determinism/INFO] **** Only-send-deterministic communication pattern ****
-> [0.000000] [mc_comm_determinism/INFO] ******************************************************
+> [0.000000] [mc_comm_determinism/INFO] *******************************************************
 > [0.000000] [mc_comm_determinism/INFO] The recv communications pattern of the process 0 is different! Different source for communication #2
 > [0.000000] [mc_comm_determinism/INFO] Expanded states = 520
 > [0.000000] [mc_comm_determinism/INFO] Visited states = 1476

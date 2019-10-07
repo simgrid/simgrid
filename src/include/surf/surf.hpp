@@ -11,12 +11,12 @@
 /** @ingroup SURF_models
  *  @brief The CPU model object for the physical machine layer
  */
-XBT_PUBLIC_DATA simgrid::surf::CpuModel* surf_cpu_model_pm;
+XBT_PUBLIC_DATA simgrid::kernel::resource::CpuModel* surf_cpu_model_pm;
 
 /** @ingroup SURF_models
  *  @brief The CPU model object for the virtual machine layer
  */
-XBT_PUBLIC_DATA simgrid::surf::CpuModel* surf_cpu_model_vm;
+XBT_PUBLIC_DATA simgrid::kernel::resource::CpuModel* surf_cpu_model_vm;
 
 /** @ingroup SURF_models
  *  @brief The host model

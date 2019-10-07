@@ -17,14 +17,15 @@ class Op : public F2C{
   bool is_commutative_;
   bool is_fortran_op_ = false;
   int refcount_ = 1;
+  bool predefined_;
 
 public:
-  Op(MPI_User_function* function, bool commutative) : func_(function), is_commutative_(commutative) {}
+  Op(MPI_User_function* function, bool commutative, bool predefined=false) : func_(function), is_commutative_(commutative), predefined_(predefined) {}
   bool is_commutative() { return is_commutative_; }
   bool is_fortran_op() { return is_fortran_op_; }
   // tell that we were created from fortran, so we need to translate the type to fortran when called
   void set_fortran_op() { is_fortran_op_ = true; }
-  void apply(void* invec, void* inoutvec, int* len, MPI_Datatype datatype);
+  void apply(const void* invec, void* inoutvec, const int* len, MPI_Datatype datatype);
   static Op* f2c(int id);
   void ref();
   static void unref(MPI_Op* op);

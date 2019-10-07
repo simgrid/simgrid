@@ -24,8 +24,6 @@ void mfree(struct mdesc *mdp, void *ptr)
   size_t i;
   int it;
 
-//  fprintf(stderr,"free(%p)\n",ptr);
-
   if (ptr == NULL)
     return;
 
@@ -41,12 +39,12 @@ void mfree(struct mdesc *mdp, void *ptr)
   switch (type) {
   case MMALLOC_TYPE_HEAPINFO:
     UNLOCK(mdp);
-    THROWF(system_error, 0, "Asked to free a fragment in a heapinfo block. I'm confused.\n");
+    THROWF(0, "Asked to free a fragment in a heapinfo block. I'm confused.\n");
     break;
 
   case MMALLOC_TYPE_FREE: /* Already free */
     UNLOCK(mdp);
-    THROWF(system_error, 0, "Asked to free a fragment in a block that is already free. I'm puzzled.\n");
+    THROWF(0, "Asked to free a fragment in a block that is already free. I'm puzzled.\n");
     break;
 
   case MMALLOC_TYPE_UNFRAGMENTED:
@@ -93,7 +91,6 @@ void mfree(struct mdesc *mdp, void *ptr)
 
       block = i;
     } else {
-      //fprintf(stderr,"Free block %d to %d (as a new chunck)\n",block,block+mdp->heapinfo[block].busy_block.size);
       /* Really link this block back into the free list.  */
       mdp->heapinfo[block].free_block.size = mdp->heapinfo[block].busy_block.size;
       mdp->heapinfo[block].free_block.next = mdp->heapinfo[i].free_block.next;
@@ -126,7 +123,8 @@ void mfree(struct mdesc *mdp, void *ptr)
     }
 
     /* Now see if we can return stuff to the system.  */
-    /*    blocks = mdp -> heapinfo[block].free.size;
+#if 0
+          blocks = mdp -> heapinfo[block].free.size;
           if (blocks >= FINAL_FREE_BLOCKS && block + blocks == mdp -> heaplimit
           && mdp -> morecore (mdp, 0) == ADDRESS (block + blocks))
           {
@@ -140,7 +138,8 @@ void mfree(struct mdesc *mdp, void *ptr)
           block = mdp -> heapinfo[block].free.prev;
           mdp -> heapstats.chunks_free--;
           mdp -> heapstats.bytes_free -= bytes;
-          } */
+          }
+#endif
 
     /* Set the next search to begin at this block.
        This is probably important to the trick where realloc returns the block to
@@ -164,7 +163,7 @@ void mfree(struct mdesc *mdp, void *ptr)
 
     if( mdp->heapinfo[block].busy_frag.frag_size[frag_nb] == -1){
       UNLOCK(mdp);
-      THROWF(system_error, 0, "Asked to free a fragment that is already free. I'm puzzled\n");
+      THROWF(0, "Asked to free a fragment that is already free. I'm puzzled\n");
     }
 
     if (MC_is_active() && mdp->heapinfo[block].busy_frag.ignore[frag_nb] > 0)
@@ -174,7 +173,6 @@ void mfree(struct mdesc *mdp, void *ptr)
     mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = -1;
     mdp->heapinfo[block].busy_frag.ignore[frag_nb] = 0;
 
-//    fprintf(stderr,"nfree:%zu capa:%d\n", mdp->heapinfo[block].busy_frag.nfree,(BLOCKSIZE >> type));
     if (mdp->heapinfo[block].busy_frag.nfree ==
         (BLOCKSIZE >> type) - 1) {
       /* If all fragments of this block are free, remove this block from its swag and free the whole block.  */

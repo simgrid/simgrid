@@ -16,6 +16,10 @@ public final class Trace {
     NativeLib.nativeInit();
   }
 
+  private Trace() {
+    throw new IllegalStateException("Utility class \"Trace\"");
+  }
+
   // TODO complete the binding of the tracing API
 
   /**

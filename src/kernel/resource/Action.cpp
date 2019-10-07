@@ -121,11 +121,11 @@ void Action::set_max_duration(double duration)
     get_model()->get_action_heap().remove(this);
 }
 
-void Action::set_priority(double weight)
+void Action::set_sharing_penalty(double sharing_penalty)
 {
-  XBT_IN("(%p,%g)", this, weight);
-  sharing_priority_ = weight;
-  get_model()->get_maxmin_system()->update_variable_weight(get_variable(), weight);
+  XBT_IN("(%p,%g)", this, sharing_penalty);
+  sharing_penalty_ = sharing_penalty;
+  get_model()->get_maxmin_system()->update_variable_penalty(get_variable(), sharing_penalty);
 
   if (get_model()->get_update_algorithm() == Model::UpdateAlgo::LAZY)
     get_model()->get_action_heap().remove(this);
@@ -155,16 +155,16 @@ bool Action::unref()
 void Action::suspend()
 {
   XBT_IN("(%p)", this);
-  if (suspended_ != SuspendStates::sleeping) {
-    get_model()->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
+  if (suspended_ != SuspendStates::SLEEPING) {
+    get_model()->get_maxmin_system()->update_variable_penalty(get_variable(), 0.0);
     if (get_model()->get_update_algorithm() == Model::UpdateAlgo::LAZY) {
       get_model()->get_action_heap().remove(this);
-      if (state_set_ == get_model()->get_started_action_set() && sharing_priority_ > 0) {
+      if (state_set_ == get_model()->get_started_action_set() && sharing_penalty_ > 0) {
         // If we have a lazy model, we need to update the remaining value accordingly
         update_remains_lazy(surf_get_clock());
       }
     }
-    suspended_ = SuspendStates::suspended;
+    suspended_ = SuspendStates::SUSPENDED;
   }
   XBT_OUT();
 }
@@ -172,18 +172,13 @@ void Action::suspend()
 void Action::resume()
 {
   XBT_IN("(%p)", this);
-  if (suspended_ != SuspendStates::sleeping) {
-    get_model()->get_maxmin_system()->update_variable_weight(get_variable(), get_priority());
-    suspended_ = SuspendStates::not_suspended;
+  if (suspended_ != SuspendStates::SLEEPING) {
+    get_model()->get_maxmin_system()->update_variable_penalty(get_variable(), get_sharing_penalty());
+    suspended_ = SuspendStates::RUNNING;
     if (get_model()->get_update_algorithm() == Model::UpdateAlgo::LAZY)
       get_model()->get_action_heap().remove(this);
   }
   XBT_OUT();
-}
-
-bool Action::is_suspended()
-{
-  return suspended_ == SuspendStates::suspended;
 }
 
 double Action::get_remains()

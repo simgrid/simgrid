@@ -19,7 +19,7 @@ C
       integer ii, ans
 
       errs = 0
-
+      rbuf=0
       call mtest_init(ierr)
 
       comm = MPI_COMM_WORLD
@@ -91,6 +91,24 @@ C
 
       call MPI_Iexscan(sbuf, rbuf, NUM_INTS, MPI_INTEGER,
      .                  MPI_SUM, comm, req, ierr)
+      call MPI_Wait(req, MPI_STATUS_IGNORE, ierr)
+
+      call MPI_Iscatter(sbuf, NUM_INTS, MPI_INTEGER, rbuf, 
+     .                  NUM_INTS, MPI_INTEGER, 0, comm, req, ierr)
+      call MPI_Wait(req, MPI_STATUS_IGNORE, ierr)
+
+      call MPI_Iscatterv(sbuf, scounts, sdispls, MPI_INTEGER,
+     .                   rbuf, NUM_INTS, MPI_INTEGER,
+     .                   0, comm, req, ierr)
+      call MPI_Wait(req, MPI_STATUS_IGNORE, ierr)
+
+      call MPI_Iallgather(sbuf, NUM_INTS, MPI_INTEGER,
+     .                  rbuf, NUM_INTS, MPI_INTEGER, comm, req, ierr)
+      call MPI_Wait(req, MPI_STATUS_IGNORE, ierr)
+
+      call MPI_Iallgatherv(sbuf, NUM_INTS, MPI_INTEGER, 
+     .                  rbuf, rcounts, rdispls, MPI_INTEGER, 
+     .                  comm, req, ierr)
       call MPI_Wait(req, MPI_STATUS_IGNORE, ierr)
 
       call mtest_finalize( errs )

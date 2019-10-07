@@ -9,7 +9,6 @@
 #include "src/kernel/context/Context.hpp"
 
 #include <memory>
-#include <vector>
 
 namespace simgrid {
 namespace kernel {
@@ -27,12 +26,12 @@ public:
 private:
   bool parallel_;
 
-  unsigned long process_index_ = 0; // Next actor to execute during sequential run_all()
+  /* For the sequential execution */
+  unsigned long process_index_     = 0;       // next actor to execute
+  SwappedContext* maestro_context_ = nullptr; // save maestro's context
 
   /* For the parallel execution */
   std::unique_ptr<simgrid::xbt::Parmap<smx_actor_t>> parmap_;
-  std::vector<SwappedContext*> workers_context_; /* space to save the worker's context in each thread */
-  std::atomic<uintptr_t> threads_working_{0};    /* number of threads that have started their work */
 };
 
 class SwappedContext : public Context {
@@ -50,7 +49,7 @@ public:
 
   unsigned char* get_stack();
 
-  static thread_local uintptr_t worker_id_;
+  static thread_local SwappedContext* worker_context_;
 
 #if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
   const void* asan_stack_   = nullptr;

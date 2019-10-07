@@ -6,6 +6,7 @@
 #include "src/smpi/include/smpi_actor.hpp"
 #include "mc/mc.h"
 #include "smpi_comm.hpp"
+#include "smpi_info.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 
@@ -18,15 +19,19 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (k
 
 namespace simgrid {
 namespace smpi {
+simgrid::xbt::Extension<simgrid::s4u::Actor, ActorExt> ActorExt::EXTENSION_ID;
 
-ActorExt::ActorExt(s4u::ActorPtr actor, s4u::Barrier* finalization_barrier)
-    : finalization_barrier_(finalization_barrier), actor_(actor)
+ActorExt::ActorExt(s4u::Actor* actor) : actor_(actor)
 {
+  if (not simgrid::smpi::ActorExt::EXTENSION_ID.valid())
+    simgrid::smpi::ActorExt::EXTENSION_ID = simgrid::s4u::Actor::extension_create<simgrid::smpi::ActorExt>();
+
   mailbox_         = s4u::Mailbox::by_name("SMPI-" + std::to_string(actor_->get_pid()));
   mailbox_small_   = s4u::Mailbox::by_name("small-" + std::to_string(actor_->get_pid()));
   mailboxes_mutex_ = s4u::Mutex::create();
   timer_           = xbt_os_timer_new();
   state_           = SmpiProcessState::UNINITIALIZED;
+  info_env_        = MPI_INFO_NULL;
   if (MC_is_active())
     MC_ignore_heap(timer_, xbt_os_timer_size());
 
@@ -57,30 +62,13 @@ ActorExt::~ActorExt()
   xbt_os_timer_free(timer_);
 }
 
-void ActorExt::set_data(const char* instance_id)
-{
-  instance_id_                   = std::string(instance_id);
-  comm_world_                    = smpi_deployment_comm_world(instance_id_);
-  simgrid::s4u::Barrier* barrier = smpi_deployment_finalization_barrier(instance_id_);
-  if (barrier != nullptr) // don't overwrite the current one if the instance has none
-    finalization_barrier_ = barrier;
-
-  // set the process attached to the mailbox
-  mailbox_small_->set_receiver(actor_);
-  XBT_DEBUG("<%ld> SMPI process has been initialized: %p", actor_->get_pid(), actor_.get());
-}
-
 /** @brief Prepares the current process for termination. */
 void ActorExt::finalize()
 {
   state_ = SmpiProcessState::FINALIZED;
   XBT_DEBUG("<%ld> Process left the game", actor_->get_pid());
 
-  // This leads to an explosion of the search graph which cannot be reduced:
-  if (MC_is_active() || MC_record_replay_is_active())
-    return;
-  // wait for all pending asynchronous comms to finish
-  finalization_barrier_->wait();
+  smpi_deployment_unregister_process(instance_id_);
 }
 
 /** @brief Check if a process is finalized */
@@ -193,6 +181,13 @@ MPI_Comm ActorExt::comm_self()
   return comm_self_;
 }
 
+MPI_Info ActorExt::info_env()
+{
+  if (info_env_==MPI_INFO_NULL)
+    info_env_=new Info();
+  return info_env_;
+}
+
 MPI_Comm ActorExt::comm_intra()
 {
   return comm_intra_;
@@ -215,42 +210,57 @@ int ActorExt::sampling()
 
 void ActorExt::init()
 {
-  if (smpi_process_count() == 0) {
-    xbt_die("SimGrid was not initialized properly before entering MPI_Init. Aborting, please check compilation process "
-            "and use smpirun\n");
-  }
+  xbt_assert(smpi_get_universe_size() != 0, "SimGrid was not initialized properly before entering MPI_Init. "
+                                            "Aborting, please check compilation process and use smpirun.");
 
-  simgrid::s4u::ActorPtr proc = simgrid::s4u::Actor::self();
+  simgrid::s4u::Actor* self = simgrid::s4u::Actor::self();
   // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
   // this up here so that I can set the privatized region before the switch.
-  ActorExt* process = smpi_process_remote(proc);
+  ActorExt* ext = smpi_process();
   // if we are in MPI_Init and argc handling has already been done.
-  if (process->initialized())
+  if (ext->initialized())
     return;
 
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     /* Now using the segment index of this process  */
-    process->set_privatized_region(smpi_init_global_memory_segment_process());
+    ext->set_privatized_region(smpi_init_global_memory_segment_process());
     /* Done at the process's creation */
-    SMPI_switch_data_segment(proc);
+    SMPI_switch_data_segment(self);
   }
 
-  const char* instance_id = simgrid::s4u::Actor::self()->get_property("instance_id");
-  const int rank          = xbt_str_parse_int(simgrid::s4u::Actor::self()->get_property("rank"), "Cannot parse rank");
+  ext->instance_id_ = self->get_property("instance_id");
+  const int rank    = xbt_str_parse_int(self->get_property("rank"), "Cannot parse rank");
 
-  process->state_ = SmpiProcessState::INITIALIZING;
-  smpi_deployment_register_process(instance_id, rank, proc);
+  ext->state_ = SmpiProcessState::INITIALIZING;
+  smpi_deployment_register_process(ext->instance_id_, rank, self);
 
-  process->set_data(instance_id);
+  ext->comm_world_ = smpi_deployment_comm_world(ext->instance_id_);
+
+  // set the process attached to the mailbox
+  ext->mailbox_small_->set_receiver(ext->actor_);
+  XBT_DEBUG("<%ld> SMPI process has been initialized: %p", ext->actor_->get_pid(), ext->actor_);
 }
 
 int ActorExt::get_optind()
 {
-  return optind;
+  return optind_;
 }
+
 void ActorExt::set_optind(int new_optind)
 {
-  optind = new_optind;
+  optind_ = new_optind;
+}
+
+void ActorExt::bsend_buffer(void** buf, int* size)
+{
+  *buf  = bsend_buffer_;
+  *size = bsend_buffer_size_;
+}
+
+void ActorExt::set_bsend_buffer(void* buf, int size)
+{
+  bsend_buffer_     = buf;
+  bsend_buffer_size_= size;
 }
 
 } // namespace smpi

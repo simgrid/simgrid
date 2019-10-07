@@ -33,7 +33,7 @@ example, to set the item ``Item`` to the value ``Value``, simply
 type the following on the command-line:
 
 .. code-block:: shell
-		
+
    my_simulator --cfg=Item:Value (other arguments)
 
 Several ``--cfg`` command line arguments can naturally be used. If you
@@ -42,7 +42,7 @@ argument. You can even escape the included quotes (write @' for ' if
 you have your argument between ').
 
 Another solution is to use the ``<config>`` tag in the platform file. The
-only restriction is that this tag must occure before the first
+only restriction is that this tag must occur before the first
 platform element (be it ``<zone>``, ``<cluster>``, ``<peer>`` or whatever).
 The ``<config>`` tag takes an ``id`` attribute, but it is currently
 ignored so you don't really need to pass it. The important part is that
@@ -52,7 +52,7 @@ can be done by adding the following to the beginning of your platform
 file:
 
 .. code-block:: xml
-		
+
   <config>
     <prop id="Item" value="Value"/>
   </config>
@@ -61,27 +61,28 @@ A last solution is to pass your configuration directly in your program
 with :cpp:func:`simgrid::s4u::Engine::set_config` or :cpp:func:`MSG_config`.
 
 .. code-block:: cpp
-		
+
    #include <simgrid/s4u.hpp>
 
    int main(int argc, char *argv[]) {
      simgrid::s4u::Engine e(&argc, argv);
-     
+
      e->set_config("Item:Value");
-     
+
      // Rest of your code
    }
 
 .. _options_list:
-   
+
 Existing Configuration Items
 ----------------------------
 
 .. note::
   The full list can be retrieved by passing ``--help`` and
-  ``--help-cfg`` to an executable that uses SimGrid.
-
-- **clean-atexit:** :ref:`cfg=clean-atexit`
+  ``--help-cfg`` to an executable that uses SimGrid. Try passing
+  ``help`` as a value to get the list of values accepted by a given
+  option. For example, ``--cfg=plugin:help`` will give you the list
+  of plugins available in your installation of SimGrid.
 
 - **contexts/factory:** :ref:`cfg=contexts/factory`
 - **contexts/guard-size:** :ref:`cfg=contexts/guard-size`
@@ -93,6 +94,10 @@ Existing Configuration Items
 - **cpu/maxmin-selective-update:** :ref:`Cpu Optimization Level <options_model_optim>`
 - **cpu/model:** :ref:`options_model_select`
 - **cpu/optim:** :ref:`Cpu Optimization Level <options_model_optim>`
+
+- **debug/breakpoint:** :ref:`cfg=debug/breakpoint`
+- **debug/clean-atexit:** :ref:`cfg=debug/clean-atexit`
+- **debug/verbose-exit:** :ref:`cfg=debug/verbose-exit`
 
 - **exception/cutpath:** :ref:`cfg=exception/cutpath`
 
@@ -107,14 +112,11 @@ Existing Configuration Items
 - **model-check/checkpoint:** :ref:`cfg=model-check/checkpoint`
 - **model-check/communications-determinism:** :ref:`cfg=model-check/communications-determinism`
 - **model-check/dot-output:** :ref:`cfg=model-check/dot-output`
-- **model-check/hash:** :ref:`cfg=model-checker/hash`
 - **model-check/max-depth:** :ref:`cfg=model-check/max-depth`
 - **model-check/property:** :ref:`cfg=model-check/property`
-- **model-check/record:** :ref:`cfg=model-check/record`
 - **model-check/reduction:** :ref:`cfg=model-check/reduction`
 - **model-check/replay:** :ref:`cfg=model-check/replay`
 - **model-check/send-determinism:** :ref:`cfg=model-check/send-determinism`
-- **model-check/sparse-checkpoint:** :ref:`cfg=model-check/sparse-checkpoint`
 - **model-check/termination:** :ref:`cfg=model-check/termination`
 - **model-check/timeout:** :ref:`cfg=model-check/timeout`
 - **model-check/visited:** :ref:`cfg=model-check/visited`
@@ -132,14 +134,13 @@ Existing Configuration Items
 - **path:** :ref:`cfg=path`
 - **plugin:** :ref:`cfg=plugin`
 
-- **simix/breakpoint:** :ref:`cfg=simix/breakpoint`
-
 - **storage/max_file_descriptors:** :ref:`cfg=storage/max_file_descriptors`
 
 - **surf/precision:** :ref:`cfg=surf/precision`
 
 - **For collective operations of SMPI,** please refer to Section :ref:`cfg=smpi/coll-selector`
 - **smpi/async-small-thresh:** :ref:`cfg=smpi/async-small-thresh`
+- **smpi/buffering:** :ref:`cfg=smpi/buffering`
 - **smpi/bw-factor:** :ref:`cfg=smpi/bw-factor`
 - **smpi/coll-selector:** :ref:`cfg=smpi/coll-selector`
 - **smpi/comp-adjustment-file:** :ref:`cfg=smpi/comp-adjustment-file`
@@ -169,7 +170,6 @@ Existing Configuration Items
 - **Tracing configuration options** can be found in Section :ref:`tracing_tracing_options`
 
 - **storage/model:** :ref:`options_model_select`
-- **verbose-exit:** :ref:`cfg=verbose-exit`
 
 - **vm/model:** :ref:`options_model_select`
 
@@ -183,7 +183,7 @@ Configuring the Platform Models
 Choosing the Platform Models
 ............................
 
-SimGrid comes with several network, CPU and storage models built in,
+SimGrid comes with several network, CPU and disk models built in,
 and you can change the used model at runtime by changing the passed
 configuration. The three main configuration items are given below.
 For each of these items, passing the special ``help`` value gives you
@@ -193,13 +193,13 @@ models). Also, ``--help-models`` should provide information about all
 models for all existing resources.
 
 - ``network/model``: specify the used network model. Possible values:
-  
+
   - **LV08 (default one):** Realistic network analytic model
     (slow-start modeled by multiplying latency by 13.01, bandwidth by
     .97; bottleneck sharing uses a payload of S=20537 for evaluating
     RTT). Described in `Accuracy Study and Improvement of Network
     Simulation in the SimGrid Framework
-    <http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf>`_.     
+    <http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf>`_.
   - **Constant:** Simplistic network model where all communication
     take a constant time (one second). This model provides the lowest
     realism, but is (marginally) faster.
@@ -216,14 +216,12 @@ models for all existing resources.
     without corrective factors. The timings of small messages are thus
     poorly modeled. This model is described in `A Network Model for
     Simulation of Grid Application
-    <ftp://ftp.ens-lyon.fr/pub/LIP/Rapports/RR/RR2002/RR2002-40.ps.gz>`_.
-  - **Reno/Reno2/Vegas:** Models from Steven H. Low using lagrange_solve instead of
-    lmm_solve (experts only; check the code for more info).
-  - **NS3** (only available if you compiled SimGrid accordingly): 
+    <https://hal.inria.fr/inria-00071989/document>`_.
+  - **ns-3** (only available if you compiled SimGrid accordingly):
     Use the packet-level network
-    simulators as network models (see :ref:`pls_ns3`).
+    simulators as network models (see :ref:`model_ns3`).
     This model can be :ref:`further configured <options_pls>`.
-    
+
 - ``cpu/model``: specify the used CPU model.  We have only one model
   for now:
 
@@ -233,12 +231,12 @@ models for all existing resources.
   network card. Three models exists, but actually, only 2 of them are
   interesting. The "compound" one is simply due to the way our
   internal code is organized, and can easily be ignored. So at the
-  end, you have two host models: The default one allows to aggregate
+  end, you have two host models: The default one allows aggregation of
   an existing CPU model with an existing network model, but does not
   allow parallel tasks because these beasts need some collaboration
   between the network and CPU model. That is why, ptask_07 is used by
   default when using SimDag.
-  
+
   - **default:** Default host model. Currently, CPU:Cas01 and
     network:LV08 (with cross traffic enabled)
   - **compound:** Host model that is automatically chosen if
@@ -264,7 +262,7 @@ is, all our analytical models) accept specific optimization
 configurations.
 
   - items ``network/optim`` and ``cpu/optim`` (both default to 'Lazy'):
-    
+
     - **Lazy:** Lazy action management (partial invalidation in lmm +
       heap in action remaining).
     - **TI:** Trace integration. Highly optimized mode when using
@@ -272,7 +270,7 @@ configurations.
       now).
     - **Full:** Full update of remaining and variables. Slow but may be
       useful when debugging.
-      
+
   - items ``network/maxmin-selective-update`` and
     ``cpu/maxmin-selective-update``: configure whether the underlying
     should be lazily updated or not. It should have no impact on the
@@ -340,7 +338,7 @@ be retrieved using the following commands. Both give a set of values,
 and you should use the last one, which is the maximal size.
 
 .. code-block:: shell
-		
+
    cat /proc/sys/net/ipv4/tcp_rmem # gives the sender window
    cat /proc/sys/net/ipv4/tcp_wmem # gives the receiver window
 
@@ -348,7 +346,7 @@ and you should use the last one, which is the maximal size.
 .. _cfg=network/bandwidth-factor:
 .. _cfg=network/latency-factor:
 .. _cfg=network/weight-S:
-   
+
 Correcting Important Network Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -399,10 +397,10 @@ Note that with the default host model this option is activated by default.
 
 .. _cfg=smpi/async-small-thresh:
 
-Simulating Asyncronous Send
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Simulating Asynchronous Send
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-(this configuration item is experimental and may change or disapear)
+(this configuration item is experimental and may change or disappear)
 
 It is possible to specify that messages below a certain size will be
 sent as soon as the call to MPI_Send is issued, without waiting for
@@ -414,20 +412,20 @@ receiving mode of the mailbox with a call to
 this mailbox will have this behavior regardless of the message size.
 
 This value needs to be smaller than or equals to the threshold set at
-@ref options_model_smpi_detached , because asynchronous messages are
-meant to be detached as well.
+:ref:`cfg=smpi/send-is-detached-thresh`, because asynchronous messages
+are meant to be detached as well.
 
 .. _options_pls:
 
-Configuring NS3
-^^^^^^^^^^^^^^^
+Configuring ns-3
+^^^^^^^^^^^^^^^^
 
-**Option** ``ns3/TcpModel`` **Default:** "default" (NS3 default)
+**Option** ``ns3/TcpModel`` **Default:** "default" (ns-3 default)
 
-When using NS3, there is an extra item ``ns3/TcpModel``, corresponding
+When using ns-3, there is an extra item ``ns3/TcpModel``, corresponding
 to the ``ns3::TcpL4Protocol::SocketType`` configuration item in
-NS3. The only valid values (enforced on the SimGrid side) are
-'default' (no change to the NS3 configuration), 'NewReno' or 'Reno' or
+ns-3. The only valid values (enforced on the SimGrid side) are
+'default' (no change to the ns-3 configuration), 'NewReno' or 'Reno' or
 'Tahoe'.
 
 Configuring the Storage model
@@ -449,7 +447,7 @@ application requires it or to reduce it to save memory space.
 Activating Plugins
 ------------------
 
-SimGrid plugins allow to extend the framework without changing its
+SimGrid plugins allow one to extend the framework without changing its
 source code directly. Read the source code of the existing plugins to
 learn how to do so (in ``src/plugins``), and ask your questions to the
 usual channels (Stack Overflow, Mailing list, IRC). The basic idea is
@@ -469,26 +467,52 @@ Here is the full list of plugins that can be activated this way:
    computations. More details in @ref plugin_energy.
  - **link_energy:** keeps track of the energy dissipated by
    communications. More details in @ref SURF_plugin_energy.
- - **host_load:** keeps track of the computational load. 
+ - **host_load:** keeps track of the computational load.
    More details in @ref plugin_load.
 
 .. _options_modelchecking:
-   
+
 Configuring the Model-Checking
 ------------------------------
 
-To enable the SimGrid model-checking support the program should
+To enable SimGrid's model-checking support, the program should
 be executed using the simgrid-mc wrapper:
 
 .. code-block:: shell
-		
+
    simgrid-mc ./my_program
 
 Safety properties are expressed as assertions using the function
 :cpp:func:`void MC_assert(int prop)`.
 
+.. _cfg=smpi/buffering:
+
+Specifying the MPI buffering behavior
+.....................................
+
+**Option** ``smpi/buffering`` **Default:** infty
+
+Buffering in MPI has a huge impact on the communication semantic. For example,
+standard blocking sends are synchronous calls when the system buffers are full
+while these calls can complete immediately without even requiring a matching
+receive call for small messages sent when the system buffers are empty.
+
+In SMPI, this depends on the message size, that is compared against two thresholds:
+
+- if (size < :ref:`smpi/async-small-thresh <cfg=smpi/async-small-thresh>`) then
+  MPI_Send returns immediately, even if the corresponding receive has not be issued yet.
+- if (:ref:`smpi/async-small-thresh <cfg=smpi/async-small-thresh>` < size < :ref:`smpi/send-is-detached-thresh <cfg=smpi/send-is-detached-thresh>`) then
+  MPI_Send returns as soon as the corresponding receive has been issued. This is known as the eager mode.
+- if (:ref:`smpi/send-is-detached-thresh <cfg=smpi/send-is-detached-thresh>` < size) then
+  MPI_Send returns only when the message has actually been sent over the network. This is known as the rendez-vous mode.
+
+The ``smpi/buffering`` option gives an easier interface to choose between these semantics. It can take two values:
+
+- **zero:** means that buffering should be disabled. Blocking communications are actually blocking.
+- **infty:** means that buffering should be made infinite. Blocking communications are non-blocking.
+
 .. _cfg=model-check/property:
-     
+
 Specifying a liveness property
 ..............................
 
@@ -496,20 +520,20 @@ Specifying a liveness property
 
 If you want to specify liveness properties, you have to pass them on
 the command line, specifying the name of the file containing the
-property, as formatted by the ltl2ba program.
-
+property, as formatted by the ltl2ba program. Note that ltl2ba is not
+part of SimGrid and must be installed separatly.
 
 .. code-block:: shell
-		
+
    simgrid-mc ./my_program --cfg=model-check/property:<filename>
 
 .. _cfg=model-check/checkpoint:
-   
+
 Going for Stateful Verification
 ...............................
 
 By default, the system is backtracked to its initial state to explore
-another path instead of backtracking to the exact step before the fork
+another path, instead of backtracking to the exact step before the fork
 that we want to explore (this is called stateless verification). This
 is done this way because saving intermediate states can rapidly
 exhaust the available memory. If you want, you can change the value of
@@ -525,42 +549,51 @@ Specifying the kind of reduction
 ................................
 
 The main issue when using the model-checking is the state space
-explosion. To counter that problem, you can chose a exploration
-reduction techniques with
+explosion. You can activate some reduction technique with
 ``--cfg=model-check/reduction:<technique>``. For now, this
 configuration variable can take 2 values:
 
- - **none:** Do not apply any kind of reduction (mandatory for now for
-   liveness properties)
+ - **none:** Do not apply any kind of reduction (mandatory for
+   liveness properties, as our current DPOR algorithm breaks cycles)
  - **dpor:** Apply Dynamic Partial Ordering Reduction. Only valid if
    you verify local safety properties (default value for safety
    checks).
 
-There is unfortunately no silver bullet here, and the most efficient
-reduction techniques cannot be applied to any properties. In
-particular, the DPOR method cannot be applied on liveness properties
-since our implementation of DPOR may break some cycles, while cycles
-are very important to the soundness of the exploration for liveness
-properties.
+Another way to mitigate the state space explosion is to search for
+cycles in the exploration with the :ref:`cfg=model-check/visited`
+configuration. Note that DPOR and state-equality reduction may not
+play well together. You should choose between them.
+
+Our current DPOR implementation could be improved in may ways. We are
+currently improving its efficiency (both in term of reduction ability
+and computational speed), and future work could make it compatible
+with liveness properties.
 
 .. _cfg=model-check/visited:
 
-Size of Cycle Detection Set
-...........................
+Size of Cycle Detection Set (state equality reduction)
+......................................................
 
-In order to detect cycles, the model-checker needs to check if a new
-explored state is in fact the same state than a previous one. For
-that, the model-checker can take a snapshot of each visited state:
-this snapshot is then used to compare it with subsequent states in the
-exploration graph.
+Mc SimGrid can be asked to search for cycles during the exploration,
+i.e. situations where a new explored state is in fact the same state
+than a previous one.. This can prove useful to mitigate the state
+space explosion with safety properties, and this is the crux when
+searching for counter-examples to the liveness properties.
 
-The ``model-check/visited`` item is the maximum number of states which
+Note that this feature may break the current implementation of the
+DPOR reduction technique.
+
+The ``model-check/visited`` item is the maximum number of states, which
 are stored in memory. If the maximum number of snapshotted state is
 reached, some states will be removed from the memory and some cycles
 might be missed. Small values can lead to incorrect verifications, but
-large value can exhaust your memory, so choose carefully.
+large values can exhaust your memory and be CPU intensive as each new
+state must be compared to that amount of older saved states.
 
-By default, no state is snapshotted and cycles cannot be detected.
+The default settings depend on the kind of exploration. With safety
+checking, no state is snapshotted and cycles cannot be detected. With
+liveness checking, all states are snapshotted because missing a cycle
+could hinder the exploration soundness.
 
 .. _cfg=model-check/termination:
 
@@ -569,7 +602,7 @@ Non-Termination Detection
 
 The ``model-check/termination`` configuration item can be used to
 report if a non-termination execution path has been found. This is a
-path with a cycle which means that the program might never terminate.
+path with a cycle, which means that the program might never terminate.
 
 This only works in safety mode, not in liveness mode.
 
@@ -581,10 +614,10 @@ Dot Output
 ..........
 
 If set, the ``model-check/dot-output`` configuration item is the name
-of a file in which to write a dot file of the path leading the found
-property (safety or liveness violation) as well as the cycle for
-liveness properties. This dot file can then fed to the graphviz dot
-tool to generate an corresponding graphical representation.
+of a file in which to write a dot file of the path leading to the
+property violation discovered (safety or liveness violation), as well
+as the cycle for liveness properties. This dot file can then be fed to the
+graphviz dot tool to generate an corresponding graphical representation.
 
 .. _cfg=model-check/max-depth:
 
@@ -592,19 +625,19 @@ Exploration Depth Limit
 .......................
 
 The ``model-checker/max-depth`` can set the maximum depth of the
-exploration graph of the model-checker. If this limit is reached, a
+exploration graph of the model checker. If this limit is reached, a
 logging message is sent and the results might not be exact.
 
-By default, there is not depth limit.
+By default, there is no depth limit.
 
 .. _cfg=model-check/timeout:
 
 Handling of Timeouts
 ....................
 
-By default, the model-checker does not handle timeout conditions: the `wait`
+By default, the model checker does not handle timeout conditions: the `wait`
 operations never time out. With the ``model-check/timeout`` configuration item
-set to **yes**, the model-checker will explore timeouts of `wait` operations.
+set to **yes**, the model checker will explore timeouts of `wait` operations.
 
 .. _cfg=model-check/communications-determinism:
 .. _cfg=model-check/send-determinism:
@@ -614,97 +647,41 @@ Communication Determinism
 
 The ``model-check/communications-determinism`` and
 ``model-check/send-determinism`` items can be used to select the
-communication determinism mode of the model-checker which checks
+communication determinism mode of the model checker, which checks
 determinism properties of the communications of an application.
-
-.. _cfg=model-check/sparse-checkpoint:
-
-Incremental Checkpoints
-.......................
-
-When the model-checker is configured to take a snapshot of each
-explored state (with the ``model-checker/visited`` item), the memory
-consumption can rapidly reach GiB ou Tib of memory. However, for many
-workloads, the memory does not change much between different snapshots
-and taking a complete copy of each snapshot is a waste of memory.
-
-The ``model-check/sparse-checkpoint`` option item can be set to
-**yes** to avoid making a complete copy of each snapshot. Instead,
-each snapshot will be decomposed in blocks which will be stored
-separately.  If multiple snapshots share the same block (or if the
-same block is used in the same snapshot), the same copy of the block
-will be shared leading to a reduction of the memory footprint.
-
-For many applications, this option considerably reduces the memory
-consumption.  In somes cases, the model-checker might be slightly
-slower because of the time taken to manage the metadata about the
-blocks. In other cases however, this snapshotting strategy will be
-much faster by reducing the cache consumption.  When the memory
-consumption is important, by avoiding to hit the swap or reducing the
-swap usage, this option might be much faster than the basic
-snapshotting strategy.
-
-This option is currently disabled by default.
 
 Verification Performance Considerations
 .......................................
 
 The size of the stacks can have a huge impact on the memory
 consumption when using model-checking. By default, each snapshot will
-save a copy of the whole stacks and not only of the part which is
+save a copy of the whole stacks and not only of the part that is
 really meaningful: you should expect the contribution of the memory
 consumption of the snapshots to be @f$ @mbox{number of processes}
 @times @mbox{stack size} @times @mbox{number of states} @f$.
 
-The ``model-check/sparse-checkpoint`` can be used to reduce the memory
-consumption by trying to share memory between the different snapshots.
-
 When compiled against the model checker, the stacks are not
 protected with guards: if the stack size is too small for your
-application, the stack will silently overflow on other parts of the
+application, the stack will silently overflow into other parts of the
 memory (see :ref:`contexts/guard-size <cfg=contexts/guard-size>`).
 
-.. _cfg=model-checker/hash:
-
-State Hashing
-.............
-
-Usually most of the time of the model-checker is spent comparing states. This
-process is complicated and consumes a lot of bandwidth and cache.
-In order to speedup the state comparison, the experimental ``model-checker/hash``
-configuration item enables the computation of a hash summarizing as much
-information of the state as possible into a single value. This hash can be used
-to avoid most of the comparisons: the costly comparison is then only used when
-the hashes are identical.
-
-Currently most of the state is not included in the hash because the
-implementation was found to be buggy and this options is not as useful as
-it could be. For this reason, it is currently disabled by default.
-
-.. _cfg=model-check/record:
 .. _cfg=model-check/replay:
 
-Record/Replay of Verification
-.............................
+Replaying buggy execution paths from the model checker
+......................................................
 
-As the model-checker keeps jumping at different places in the execution graph,
-it is difficult to understand what happens when trying to debug an application
-under the model-checker. Event the output of the program is difficult to
-interpret. Moreover, the model-checker does not behave nicely with advanced
-debugging tools such as valgrind. For those reason, to identify a trajectory
-in the execution graph with the model-checker and replay this trajcetory and
-without the model-checker black-magic but with more standard tools
-(such as a debugger, valgrind, etc.). For this reason, Simgrid implements an
-experimental record/replay functionnality in order to record a trajectory with
-the model-checker and replay it without the model-checker.
+Debugging the problems reported by the model checker is challenging:
+First, the application under verification cannot be debugged with gdb
+because the model checker already traces it. Then, the model checker may
+explore several execution paths before encountering the issue, making it
+very difficult to understand the output. Fortunately, SimGrid provides
+the execution path leading to any reported issue so that you can replay
+this path reported by the model checker, enabling the usage of classical
+debugging tools.
 
-When the model-checker finds an interesting path in the application
+When the model checker finds an interesting path in the application
 execution graph (where a safety or liveness property is violated), it
-can generate an identifier for this path. To enable this behavious the
-``model-check/record`` must be set to **yes**, which is not the case
-by default.
-
-Here is an example of output:
+generates an identifier for this path. Here is an example of the output:
 
 .. code-block:: shell
 
@@ -713,21 +690,28 @@ Here is an example of output:
    [  0.000000] (0:@) *** PROPERTY NOT VALID ***
    [  0.000000] (0:@) **************************
    [  0.000000] (0:@) Counter-example execution trace:
+   [  0.000000] (0:@)   [(1)Tremblay (app)] MC_RANDOM(3)
+   [  0.000000] (0:@)   [(1)Tremblay (app)] MC_RANDOM(4)
    [  0.000000] (0:@) Path = 1/3;1/4
-   [  0.000000] (0:@) [(1)Tremblay (app)] MC_RANDOM(3)
-   [  0.000000] (0:@) [(1)Tremblay (app)] MC_RANDOM(4)
    [  0.000000] (0:@) Expanded states = 27
    [  0.000000] (0:@) Visited states = 68
    [  0.000000] (0:@) Executed transitions = 46
 
-This path can then be replayed outside of the model-checker (and even
-in non-MC build of simgrid) by setting the ``model-check/replay`` item
-to the given path. The other options should be the same (but the
-model-checker should be disabled).
+The interesting line is ``Path = 1/3;1/4``, which means that you should use
+``--cfg=model-check/replay:1/3;1/4`` to replay your application on the buggy
+execution path. All options (but the model checker related ones) must
+remain the same. In particular, if you ran your application with
+``smpirun -wrapper simgrid-mc``, then do it again. Remove all
+MC-related options, keep the other ones and add
+``--cfg=model-check/replay``.
 
-The format and meaning of the path may change between different
-releases so the same release of Simgrid should be used for the record
-phase and the replay phase.
+Currently, if the path is of the form ``X;Y;Z``, each number denotes
+the actor's pid that is selected at each indecision point. If it's of
+the form ``X/a;Y/b``, the X and Y are the selected pids while the a
+and b are the return values of their simcalls. In the previouse
+example, ``1/3;1/4``, you can see from the full output that the actor
+1 is doing MC_RANDOM simcalls, so the 3 and 4 simply denote the values
+that these simcall return.
 
 Configuring the User Code Virtualization
 ----------------------------------------
@@ -768,14 +752,14 @@ the slowest to the most efficient:
    raw implementation.
    |br| Install the relevant library (e.g. with the
    libboost-contexts-dev package on Debian/Ubuntu) and recompile
-   SimGrid. 
+   SimGrid.
  - **raw:** amazingly fast factory using a context switching mechanism
    of our own, directly implemented in assembly (only available for x86
    and amd64 platforms for now) and without any unneeded system call.
 
-The main reason to change this setting is when the debugging tools get
+The main reason to change this setting is when the debugging tools become
 fooled by the optimized context factories. Threads are the most
-debugging-friendly contextes, as they allow to set breakpoints
+debugging-friendly contexts, as they allow one to set breakpoints
 anywhere with gdb and visualize backtraces for all processes, in order
 to debug concurrency issues. Valgrind is also more comfortable with
 threads, but it should be usable with all factories (Exception: the
@@ -801,7 +785,7 @@ want to reduce the ``contexts/stack-size`` item. Its default value is
 as 16 KiB, for example. This *setting is ignored* when using the
 thread factory. Instead, you should compile SimGrid and your
 application with ``-fsplit-stack``. Note that this compilation flag is
-not compatible with the model-checker right now.
+not compatible with the model checker right now.
 
 The operating system should only allocate memory for the pages of the
 stack which are actually used and you might not need to use this in
@@ -832,7 +816,7 @@ application.
 .. _cfg=contexts/nthreads:
 .. _cfg=contexts/parallel-threshold:
 .. _cfg=contexts/synchro:
-  
+
 Running User Code in Parallel
 .............................
 
@@ -843,10 +827,10 @@ simulations may well fail in parallel mode. It is described in
 
 If you are using the **ucontext** or **raw** context factories, you can
 request to execute the user code in parallel. Several threads are
-launched, each of them handling as much user contexts at each run. To
-actiave this, set the ``contexts/nthreads`` item to the amount of
-cores that you have in your computer (or lower than 1 to have
-the amount of cores auto-detected).
+launched, each of them handling the same number of user contexts at each
+run. To activate this, set the ``contexts/nthreads`` item to the amount
+of cores that you have in your computer (or lower than 1 to have the
+amount of cores auto-detected).
 
 Even if you asked several worker threads using the previous option,
 you can request to start the parallel execution (and pay the
@@ -874,7 +858,6 @@ which value is either:
    your machine for no good reason. You probably prefer the other less
    eager schemas.
 
-   
 Configuring the Tracing
 -----------------------
 
@@ -915,7 +898,7 @@ you never used the tracing API.
 - SMPI simulator and traces for a space/time view:
 
   .. code-block:: shell
-     
+
      smpirun -trace ...
 
   The `-trace` parameter for the smpirun script runs the simulation
@@ -935,7 +918,7 @@ reproduce an experiment. You have two ways to do that:
 - Add the contents of a textual file on top of the trace file as comment:
 
   .. code-block:: shell
-		  
+
      --cfg=tracing/comment-file:my_file_with_additional_information.txt
 
 Please, use these two parameters (for comments) to make reproducible
@@ -961,7 +944,7 @@ Configuring SMPI
 ----------------
 
 The SMPI interface provides several specific configuration items.
-These are uneasy to see since the code is usually launched through the
+These are not easy to see, since the code is usually launched through the
 ``smiprun`` script directly.
 
 .. _cfg=smpi/host-speed:
@@ -978,28 +961,28 @@ a ``MPI_Send()``, SMPI will automatically benchmark the duration of
 this code, and create an execution task within the simulator to take
 this into account. For that, the actual duration is measured on the
 host machine and then scaled to the power of the corresponding
-simulated machine. The variable ``smpi/host-speed`` allows to specify
+simulated machine. The variable ``smpi/host-speed`` allows one to specify
 the computational speed of the host machine (in flop/s) to use when
 scaling the execution times. It defaults to 20000, but you really want
-to update it to get accurate simulation results.
+to adjust it to get accurate simulation results.
 
-When the code is constituted of numerous consecutive MPI calls, the
+When the code consists of numerous consecutive MPI calls, the
 previous mechanism feeds the simulation kernel with numerous tiny
 computations. The ``smpi/cpu-threshold`` item becomes handy when this
-impacts badly the simulation performance. It specifies a threshold (in
+impacts badly on the simulation performance. It specifies a threshold (in
 seconds) below which the execution chunks are not reported to the
 simulation kernel (default value: 1e-6).
 
 .. note:: The option ``smpi/cpu-threshold`` ignores any computation
    time spent below this threshold. SMPI does not consider the
-   `amount` of these computations; there is no offset for this. Hence,
-   a value that is too small, may lead to unreliable simulation
-   results.
+   `amount of time` of these computations; there is no offset for
+   this. Hence, a value that is too small, may lead to unreliable
+   simulation results.
 
 In some cases, however, one may wish to disable simulation of
-application computation. This is the case when SMPI is used not to
-simulate an MPI applications, but instead an MPI code that performs
-"live replay" of another MPI app (e.g., ScalaTrace's replay tool,
+the computation of an application. This is the case when SMPI is used not to
+simulate an MPI application, but instead an MPI code that performs
+"live replay" of another MPI app (e.g., ScalaTrace's replay tool, or
 various on-line simulators that run an app at scale). In this case the
 computation of the replay/simulation logic should not be simulated by
 SMPI. Instead, the replay tool or on-line simulator will issue
@@ -1007,16 +990,16 @@ SMPI. Instead, the replay tool or on-line simulator will issue
 being replayed/simulated. At the moment, these computation events can
 be simulated using SMPI by calling internal smpi_execute*() functions.
 
-To disable the benchmarking/simulation of computation in the simulated
+To disable the benchmarking/simulation of a computation in the simulated
 application, the variable ``smpi/simulate-computation`` should be set
-to no.  This option just ignores the timings in your simulation; it
+to **no**.  This option just ignores the timings in your simulation; it
 still executes the computations itself. If you want to stop SMPI from
-doing that, you should check the SMPI_SAMPLE macros, documented in 
+doing that, you should check the SMPI_SAMPLE macros, documented in
 Section :ref:`SMPI_adapting_speed`.
 
 +------------------------------------+-------------------------+-----------------------------+
 |  Solution                          | Computations executed?  | Computations simulated?     |
-+====================================+=========================+=============================+   
++====================================+=========================+=============================+
 | --cfg=smpi/simulate-computation:no | Yes                     | Never                       |
 +------------------------------------+-------------------------+-----------------------------+
 | --cfg=smpi/cpu-threshold:42        | Yes, in all cases       | If it lasts over 42 seconds |
@@ -1044,7 +1027,7 @@ The first line is the header - you must include it.  The following
 line means that the code between two consecutive MPI calls on line 30
 in exchange_1.f and line 130 in exchange_1.f should receive a speedup
 of 1.18244559422142. The value for the second column is therefore a
-speedup, if it is larger than 1 and a slow-down if it is smaller
+speedup, if it is larger than 1 and a slowdown if it is smaller
 than 1. Nothing will be changed if it is equal to 1.
 
 Of course, you can set any arbitrary filenames you want (so the start
@@ -1069,15 +1052,15 @@ this option, a series of message sizes and factors are given, helping
 the simulation to be more realistic. For instance, the current default
 value means that messages with size 65472 and more will get a total of
 MAX_BANDWIDTH*0.940694, messages of size 15424 to 65471 will get
-MAX_BANDWIDTH*0.697866 and so on (where MAX_BANDWIDTH denotes the
+MAX_BANDWIDTH*0.697866, and so on (where MAX_BANDWIDTH denotes the
 bandwidth of the link).
 
 An experimental script to compute these factors is available online. See
-http://simgrid.gforge.inria.fr/contrib/smpi-calibration-doc.html
-http://simgrid.gforge.inria.fr/contrib/smpi-saturation-doc.html
+https://framagit.org/simgrid/platform-calibration/
+https://simgrid.org/contrib/smpi-saturation-doc.html
 
 .. _cfg=smpi/display-timing:
-       
+
 Reporting Simulation Time
 .........................
 
@@ -1099,9 +1082,9 @@ Keeping temporary files after simulation
 **Option** ``smpi/keep-temps`` **default:** 0 (false)
 
 SMPI usually generates a lot of temporary files that are cleaned after
-use. This option request to preserve them, for example to debug or
+use. This option requests to preserve them, for example to debug or
 profile your code. Indeed, the binary files are removed very early
-under the dlopen privatization schema, which tend to fool the
+under the dlopen privatization schema, which tends to fool the
 debuggers.
 
 .. _cfg=smpi/lat-factor:
@@ -1120,18 +1103,18 @@ actual bandwidth (i.e., values between 0 and 1 are valid), latency factors
 increase the latency, i.e., values larger than or equal to 1 are valid here.
 
 .. _cfg=smpi/papi-events:
-       
+
 Trace hardware counters with PAPI
 .................................
 
 **Option** ``smpi/papi-events`` **default:** unset
 
-When the PAPI support was compiled in SimGrid, this option takes the
+When the PAPI support is compiled into SimGrid, this option takes the
 names of PAPI counters and adds their respective values to the trace
 files (See Section :ref:`tracing_tracing_options`).
 
 .. warning::
-   
+
    This feature currently requires superuser privileges, as registers
    are queried.  Only use this feature with code you trust! Call
    smpirun for instance via ``smpirun -wrapper "sudo "
@@ -1154,14 +1137,14 @@ Automatic Privatization of Global Variables
 
 **Option** ``smpi/privatization`` **default:** "dlopen" (when using smpirun)
 
-MPI executables are usually meant to be executed in separated
+MPI executables are usually meant to be executed in separate
 processes, but SMPI is executed in only one process. Global variables
-from executables will be placed in the same memory zone and shared
+from executables will be placed in the same memory region and shared
 between processes, causing intricate bugs.  Several options are
 possible to avoid this, as described in the main `SMPI publication
 <https://hal.inria.fr/hal-01415484>`_ and in the :ref:`SMPI
 documentation <SMPI_what_globals>`. SimGrid provides two ways of
-automatically privatizing the globals, and this option allows to
+automatically privatizing the globals, and this option allows one to
 choose between them.
 
   - **no** (default when not using smpirun): Do not automatically
@@ -1192,10 +1175,10 @@ Multiple libraries can be given, semicolon separated.
 
 This configuration option can only use either full paths to libraries,
 or full names.  Check with ldd the name of the library you want to
-use.  Example:
+use.  For example:
 
 .. code-block:: shell
-		  
+
    ldd allpairf90
       ...
       libgfortran.so.3 => /usr/lib/x86_64-linux-gnu/libgfortran.so.3 (0x00007fbb4d91b000)
@@ -1214,9 +1197,9 @@ Simulating MPI detached send
 
 This threshold specifies the size in bytes under which the send will
 return immediately. This is different from the threshold detailed in
-:ref:`options_model_network_asyncsend` because the message is not
-effectively sent when the send is posted. SMPI still waits for the
-correspondant receive to be posted to perform the communication
+:ref:`cfg=smpi/async-small-thresh` because the message is not
+really sent when the send is posted. SMPI still waits for the
+corresponding receive to be posted, in order to perform the communication
 operation.
 
 .. _cfg=smpi/coll-selector:
@@ -1229,8 +1212,8 @@ Simulating MPI collective algorithms
 SMPI implements more than 100 different algorithms for MPI collective
 communication, to accurately simulate the behavior of most of the
 existing MPI libraries. The ``smpi/coll-selector`` item can be used to
-use the decision logic of either OpenMPI or MPICH libraries (by
-default SMPI uses naive version of collective operations).
+select the decision logic either of the OpenMPI or the MPICH libraries. (By
+default SMPI uses naive version of collective operations.)
 
 Each collective operation can be manually selected with a
 ``smpi/collective_name:algo_name``. Available algorithms are listed in
@@ -1258,10 +1241,10 @@ Reduce speed for iprobe calls
 **Option** ``smpi/iprobe-cpu-usage`` **default:** 1 (no change)
 
 MPI_Iprobe calls can be heavily used in applications. To account
-correctly for the energy cores spend probing, it is necessary to
+correctly for the energy that cores spend probing, it is necessary to
 reduce the load that these calls cause inside SimGrid.
 
-For instance, we measured a max power consumption of 220 W for a
+For instance, we measured a maximum power consumption of 220 W for a
 particular application but only 180 W while this application was
 probing. Hence, the correct factor that should be passed to this
 option would be 180/220 = 0.81.
@@ -1320,7 +1303,7 @@ consists of three values.
    and hence accounts also for larger messages. In the first
    section of the example above, this value is "2".
 
-Now, SMPI always checks which section it should take for a given
+Now, SMPI always checks which section it should use for a given
 message; that is, if a message of size 11 is sent with the
 configuration of the example above, only the second section will be
 used, not the first, as the first value of the second section is
@@ -1351,7 +1334,7 @@ Inject constant times for MPI_Test
 By setting this option, you can control the amount of time a process
 sleeps when MPI_Test() is called; this is important, because SimGrid
 normally only advances the time while communication is happening and
-thus, MPI_Test will not add to the time, resulting in a deadlock if
+thus, MPI_Test will not add to the time, resulting in deadlock if it is
 used as a break-condition as in the following example:
 
 .. code-block:: cpp
@@ -1361,8 +1344,8 @@ used as a break-condition as in the following example:
        ...
    }
 
-To speed up execution, we use a counter to keep track on how often we
-already checked if the handle is now valid or not. Hence, we actually
+To speed up execution, we use a counter to keep track of how often we
+checked if the handle is now valid or not. Hence, we actually
 use counter*SLEEP_TIME, that is, the time MPI_Test() causes the
 process to sleep increases linearly with the number of previously
 failed tests. This behavior can be disabled by setting
@@ -1379,28 +1362,28 @@ Factorize malloc()s
 
 If your simulation consumes too much memory, you may want to modify
 your code so that the working areas are shared by all MPI ranks. For
-example, in a bloc-cyclic matrix multiplication, you will only
-allocate one set of blocs, and every processes will share them.
+example, in a block-cyclic matrix multiplication, you will only
+allocate one set of blocks, and all processes will share them.
 Naturally, this will lead to very wrong results, but this will save a
-lot of memory so this is still desirable for some studies. For more on
+lot of memory. So this is still desirable for some studies. For more on
 the motivation for that feature, please refer to the `relevant section
 <https://simgrid.github.io/SMPI_CourseWare/topic_understanding_performance/matrixmultiplication>`_
 of the SMPI CourseWare (see Activity #2.2 of the pointed
-assignment). In practice, change the call to malloc() and free() into
+assignment). In practice, change the calls for malloc() and free() into
 SMPI_SHARED_MALLOC() and SMPI_SHARED_FREE().
 
 SMPI provides two algorithms for this feature. The first one, called 
-``local``, allocates one bloc per call to SMPI_SHARED_MALLOC() in your
-code (each call location gets its own bloc) and this bloc is shared
-amongst all MPI ranks.  This is implemented with the shm_* functions
+``local``, allocates one block per call to SMPI_SHARED_MALLOC()
+(each call site gets its own block) ,and this block is shared
+among all MPI ranks.  This is implemented with the shm_* functions
 to create a new POSIX shared memory object (kept in RAM, in /dev/shm)
-for each shared bloc.
+for each shared block.
 
 With the ``global`` algorithm, each call to SMPI_SHARED_MALLOC()
-returns a new adress, but it only points to a shadow bloc: its memory
-area is mapped on a 1MiB file on disk. If the returned bloc is of size
+returns a new address, but it only points to a shadow block: its memory
+area is mapped on a 1 MiB file on disk. If the returned block is of size
 N MiB, then the same file is mapped N times to cover the whole bloc.
-At the end, no matter how many SMPI_SHARED_MALLOC you do, this will
+At the end, no matter how many times you call SMPI_SHARED_MALLOC, this will
 only consume 1 MiB in memory.
 
 You can disable this behavior and come back to regular mallocs (for
@@ -1408,7 +1391,7 @@ example for debugging purposes) using @c "no" as a value.
 
 If you want to keep private some parts of the buffer, for instance if these
 parts are used by the application logic and should not be corrupted, you
-can use SMPI_PARTIAL_SHARED_MALLOC(size, offsets, offsets_count). Example:
+can use SMPI_PARTIAL_SHARED_MALLOC(size, offsets, offsets_count). For example:
 
 .. code-block:: cpp
 
@@ -1420,14 +1403,14 @@ mem[100..199] are shared while other area remain private.
 Then, it can be deallocated by calling SMPI_SHARED_FREE(mem).
 
 When smpi/shared-malloc:global is used, the memory consumption problem
-is solved, but it may induce too much load on the kernel's pages table. 
-In this case, you should use huge pages so that we create only one
-entry per Mb of malloced data instead of one entry per 4k.
+is solved, but it may induce too much load on the kernel's pages table.
+In this case, you should use huge pages so that the kernel creates only one
+entry per MB of malloced data instead of one entry per 4 kB.
 To activate this, you must mount a hugetlbfs on your system and allocate
 at least one huge page:
 
 .. code-block:: shell
-		
+
     mkdir /home/huge
     sudo mount none /home/huge -t hugetlbfs -o rw,mode=0777
     sudo sh -c 'echo 1 > /proc/sys/vm/nr_hugepages' # echo more if you need more
@@ -1446,39 +1429,39 @@ Inject constant times for MPI_Wtime, gettimeofday and clock_gettime
 This option controls the amount of (simulated) time spent in calls to
 MPI_Wtime(), gettimeofday() and clock_gettime(). If you set this value
 to 0, the simulated clock is not advanced in these calls, which leads
-to issue if your application contains such a loop:
+to issues if your application contains such a loop:
 
 .. code-block:: cpp
-		
+
    while(MPI_Wtime() < some_time_bound) {
         /* some tests, with no communication nor computation */
    }
 
 When the option smpi/wtime is set to 0, the time advances only on
-communications and computations, so the previous code results in an
+communications and computations. So the previous code results in an
 infinite loop: the current [simulated] time will never reach
 ``some_time_bound``.  This infinite loop is avoided when that option
-is set to a small amount, as it is by default since SimGrid v3.21.
+is set to a small value, as it is by default since SimGrid v3.21.
 
 Note that if your application does not contain any loop depending on
 the current time only, then setting this option to a non-zero value
 will slow down your simulations by a tiny bit: the simulation loop has
-to be broken and reset each time your code ask for the current time.
+to be broken out of and reset each time your code asks for the current time.
 If the simulation speed really matters to you, you can avoid this
 extra delay by setting smpi/wtime to 0.
 
 Other Configurations
 --------------------
 
-.. _cfg=clean-atexit:
+.. _cfg=debug/clean-atexit:
 
 Cleanup at Termination
 ......................
 
-**Option** ``clean-atexit`` **default:** on
+**Option** ``debug/clean-atexit`` **default:** on
 
 If your code is segfaulting during its finalization, it may help to
-disable this option to request SimGrid to not attempt any cleanups at
+disable this option to request that SimGrid not attempt any cleanups at
 the end of the simulation. Since the Unix process is ending anyway,
 the operating system will wipe it all.
 
@@ -1489,17 +1472,17 @@ Search Path
 
 **Option** ``path`` **default:** . (current dir)
 
-It is possible to specify a list of directories to search into for the
+It is possible to specify a list of directories to search in for the
 trace files (see :ref:`pf_trace`) by using this configuration
 item. To add several directory to the path, set the configuration
 item several times, as in ``--cfg=path:toto --cfg=path:tutu``
 
-.. _cfg=simix/breakpoint:
+.. _cfg=debug/breakpoint:
 
 Set a Breakpoint
 ................
 
-**Option** ``simix/breakpoint`` **default:** unset
+**Option** ``debug/breakpoint`` **default:** unset
 
 This configuration option sets a breakpoint: when the simulated clock
 reaches the given time, a SIGTRAP is raised.  This can be used to stop
@@ -1513,16 +1496,16 @@ with gdb:
 
    set variable simgrid::simix::breakpoint = 3.1416
 
-.. _cfg=verbose-exit:
-   
+.. _cfg=debug/verbose-exit:
+
 Behavior on Ctrl-C
 ..................
 
-**Option** ``verbose-exit`` **default:** on
+**Option** ``debug/verbose-exit`` **default:** on
 
 By default, when Ctrl-C is pressed, the status of all existing actors
 is displayed before exiting the simulation. This is very useful to
-debug your code, but it can reveal troublesome if you have many
+debug your code, but it can become troublesome if you have many
 actors. Set this configuration item to **off** to disable this
 feature.
 
@@ -1535,14 +1518,14 @@ Truncate local path from exception backtrace
 
 This configuration option is used to remove the path from the
 backtrace shown when an exception is thrown. This is mainly useful for
-the tests: the full file path makes the tests not reproducible because
-the path of source files depend of the build settings. That would
-break most of our tests as we keep comparing output.
+the tests: the full file path would makes the tests non-reproducible because
+the paths of source files depend of the build settings. That would
+break most of the tests since their output is continually compared.
 
 Logging Configuration
 ---------------------
 
-It can be done by using XBT. Go to :ref:`XBT_log` for more details.
+This can be done by using XBT. Go to :ref:`XBT_log` for more details.
 
 .. |br| raw:: html
 

@@ -13,6 +13,7 @@
 #include <simgrid/host.h>
 #include <simgrid/instr.h>
 #include <simgrid/mailbox.h>
+#include <simgrid/mutex.h>
 #include <simgrid/plugins/live_migration.h>
 #include <simgrid/semaphore.h>
 #include <simgrid/storage.h>
@@ -235,6 +236,12 @@ XBT_PUBLIC void MSG_process_set_kill_time(msg_process_t process, double kill_tim
 XBT_PUBLIC void MSG_process_yield();
 /*** @brief Sleep for the specified number of seconds */
 XBT_PUBLIC msg_error_t MSG_process_sleep(double nb_sec);
+XBT_PUBLIC msg_process_t MSG_process_self();
+XBT_PUBLIC aid_t MSG_process_self_PID();
+XBT_PUBLIC aid_t MSG_process_self_PPID();
+XBT_PUBLIC const char* MSG_process_self_name();
+XBT_PUBLIC void MSG_process_ref(msg_process_t process);
+XBT_PUBLIC void MSG_process_unref(msg_process_t process);
 
 /** @brief Object representing an ongoing communication between processes.
  *
@@ -263,16 +270,16 @@ XBT_PUBLIC void MSG_config(const char* key, const char* value);
 /** @brief Initialize the MSG internal data.
  *  @hideinitializer
  *
- *  It also check that the link-time and compile-time versions of SimGrid do
+ *  It also checks that the link-time and compile-time versions of SimGrid do
  *  match, so you should use this version instead of the #MSG_init_nocheck
  *  function that does the same initializations, but without this check.
  *
- *  We allow to link against compiled versions that differ in the patch level.
+ *  We allow linking against compiled versions that differ in the patch level.
  */
 #define MSG_init(argc, argv)                                                                                           \
   do {                                                                                                                 \
     sg_version_check(SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH);                             \
-    MSG_init_nocheck(argc, argv);                                                                                      \
+    MSG_init_nocheck((argc), (argv));                                                                                  \
   } while (0)
 
 XBT_PUBLIC void MSG_init_nocheck(int* argc, char** argv);
@@ -320,10 +327,6 @@ XBT_PUBLIC msg_process_t MSG_process_attach(const char* name, void* data, msg_ho
 XBT_PUBLIC void MSG_process_detach();
 
 XBT_PUBLIC void MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup);
-XBT_PUBLIC int MSG_process_self_PID();
-XBT_PUBLIC int MSG_process_self_PPID();
-XBT_PUBLIC const char* MSG_process_self_name();
-XBT_PUBLIC msg_process_t MSG_process_self();
 XBT_PUBLIC xbt_dynar_t MSG_processes_as_dynar();
 XBT_PUBLIC int MSG_process_get_number();
 
@@ -331,9 +334,6 @@ XBT_PUBLIC void* MSG_process_get_data(msg_process_t process);
 XBT_PUBLIC msg_error_t MSG_process_set_data(msg_process_t process, void* data);
 
 XBT_PUBLIC void MSG_process_on_exit(int_f_int_pvoid_t fun, void* data);
-
-XBT_PUBLIC void MSG_process_ref(msg_process_t process);
-XBT_PUBLIC void MSG_process_unref(msg_process_t process);
 
 /************************** Task handling ************************************/
 XBT_PUBLIC msg_task_t MSG_task_create(const char* name, double flops_amount, double bytes_amount, void* data);
@@ -369,7 +369,7 @@ XBT_ATTRIB_DEPRECATED_v325("Getting a task from a specific host is no longer sup
 XBT_PUBLIC msg_error_t MSG_task_receive_with_timeout(msg_task_t* task, const char* alias, double timeout);
 
 XBT_PUBLIC msg_error_t MSG_task_receive(msg_task_t* task, const char* alias);
-#define MSG_task_recv(t,a) MSG_task_receive(t,a)
+#define MSG_task_recv(t, a) MSG_task_receive((t), (a))
 
 XBT_PUBLIC msg_error_t MSG_task_receive_ext_bounded(msg_task_t* task, const char* alias, double timeout,
                                                     msg_host_t host, double rate);
@@ -377,7 +377,7 @@ XBT_PUBLIC msg_error_t MSG_task_receive_ext_bounded(msg_task_t* task, const char
 XBT_PUBLIC msg_error_t MSG_task_receive_with_timeout_bounded(msg_task_t* task, const char* alias, double timeout,
                                                              double rate);
 XBT_PUBLIC msg_error_t MSG_task_receive_bounded(msg_task_t* task, const char* alias, double rate);
-#define MSG_task_recv_bounded(t,a,r) MSG_task_receive_bounded(t,a,r)
+#define MSG_task_recv_bounded(t, a, r) MSG_task_receive_bounded((t), (a), (r))
 
 XBT_PUBLIC msg_comm_t MSG_task_isend(msg_task_t task, const char* alias);
 XBT_PUBLIC msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char* alias, double maxrate);
@@ -443,8 +443,6 @@ XBT_PUBLIC int MSG_barrier_wait(msg_bar_t bar);
 
 /* ****************************************************************************************** */
 /* DO NOT USE this nasty pimple (unless if you're writing a binding) */
-XBT_ATTRIB_DEPRECATED_v323("MSG_process_get_smx_ctx is deprecated. Please contact us if you need it.")
-    XBT_PUBLIC smx_context_t MSG_process_get_smx_ctx(msg_process_t process);
 XBT_ATTRIB_DEPRECATED_v325("MSG_process_set_copy_callback is deprecated. Please contact us if you need it.") XBT_PUBLIC
     void MSG_task_set_copy_callback(void (*callback)(msg_task_t task, msg_process_t src, msg_process_t dst));
 

@@ -49,8 +49,10 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void xbt_abort(void);
 
 #ifdef XBT_LOG_LOCALLY_DEFINE_XBT_CHANNEL
 XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (simgrid toolbox)");
+XBT_LOG_NEW_SUBCATEGORY(xbt_help, xbt, "Help messages");
 #else
 XBT_LOG_EXTERNAL_CATEGORY(xbt);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_help);
 #endif
 
 /** @addtogroup XBT_syscall

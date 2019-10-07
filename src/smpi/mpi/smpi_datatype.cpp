@@ -18,20 +18,20 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (
 static std::unordered_map<std::string, simgrid::smpi::Datatype*> id2type_lookup;
 
 #define CREATE_MPI_DATATYPE(name, id, type)                                                                            \
-  static simgrid::smpi::Datatype mpi_##name((char*)#name, id, sizeof(type), /* size */                                 \
-                                            0,                              /* lb */                                   \
-                                            sizeof(type),                   /* ub = lb + size */                       \
-                                            DT_FLAG_BASIC                   /* flags */                                \
-                                            );                                                                         \
-  const MPI_Datatype name = &mpi_##name;
+  static simgrid::smpi::Datatype _XBT_CONCAT(mpi_, name)((char*)_XBT_STRINGIFY(name), (id), sizeof(type), /* size */   \
+                                                         0,                                               /* lb */     \
+                                                         sizeof(type), /* ub = lb + size */                            \
+                                                         DT_FLAG_BASIC /* flags */                                     \
+                                                         );                                                            \
+  const MPI_Datatype name = &_XBT_CONCAT(mpi_, name);
 
 #define CREATE_MPI_DATATYPE_NULL(name, id)                                                                             \
-  static simgrid::smpi::Datatype mpi_##name((char*)#name, id, 0, /* size */                                            \
-                                            0,                   /* lb */                                              \
-                                            0,                   /* ub = lb + size */                                  \
-                                            DT_FLAG_BASIC        /* flags */                                           \
-                                            );                                                                         \
-  const MPI_Datatype name = &mpi_##name;
+  static simgrid::smpi::Datatype _XBT_CONCAT(mpi_, name)((char*)_XBT_STRINGIFY(name), (id), 0, /* size */              \
+                                                         0,                                    /* lb */                \
+                                                         0,                                    /* ub = lb + size */    \
+                                                         DT_FLAG_BASIC                         /* flags */             \
+                                                         );                                                            \
+  const MPI_Datatype name = &_XBT_CONCAT(mpi_, name);
 
 // Predefined data types
 CREATE_MPI_DATATYPE(MPI_CHAR, 2, char);
@@ -79,9 +79,9 @@ CREATE_MPI_DATATYPE(MPI_REAL4, 39, float);
 CREATE_MPI_DATATYPE(MPI_REAL8, 40, double);
 CREATE_MPI_DATATYPE(MPI_REAL16, 41, long double);
 CREATE_MPI_DATATYPE_NULL(MPI_DATATYPE_NULL, -1);
-CREATE_MPI_DATATYPE_NULL(MPI_COMPLEX8, 42);
-CREATE_MPI_DATATYPE_NULL(MPI_COMPLEX16, 43);
-CREATE_MPI_DATATYPE_NULL(MPI_COMPLEX32, 44);
+CREATE_MPI_DATATYPE(MPI_COMPLEX8, 42, float_float);
+CREATE_MPI_DATATYPE(MPI_COMPLEX16, 43, double_double);
+CREATE_MPI_DATATYPE(MPI_COMPLEX32, 44, double_double);
 CREATE_MPI_DATATYPE(MPI_INTEGER1, 45, int);
 CREATE_MPI_DATATYPE(MPI_INTEGER2, 46, int16_t);
 CREATE_MPI_DATATYPE(MPI_INTEGER4, 47, int32_t);
@@ -95,6 +95,8 @@ CREATE_MPI_DATATYPE_NULL(MPI_LB, 52);
 CREATE_MPI_DATATYPE(MPI_PACKED, 53, char);
 // Internal use only
 CREATE_MPI_DATATYPE(MPI_PTR, 54, void*);
+CREATE_MPI_DATATYPE(MPI_COUNT, 55, long long);
+
 
 namespace simgrid{
 namespace smpi{
@@ -127,8 +129,6 @@ Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), size_(datatyp
 {
   flags_ &= ~DT_FLAG_PREDEFINED;
   *ret = MPI_SUCCESS;
-  if(datatype->name_)
-    name_ = xbt_strdup(datatype->name_);
     
   if (not datatype->attributes()->empty()) {
     int flag=0;
@@ -238,33 +238,39 @@ int Datatype::extent(MPI_Aint * lb, MPI_Aint * extent){
 }
 
 void Datatype::get_name(char* name, int* length){
-  *length = strlen(name_);
-  strncpy(name, name_, *length+1);
+  if(name_!=nullptr){
+    *length = strlen(name_);
+    strncpy(name, name_, *length+1);
+  }else{
+    *length = 0;
+  }
 }
 
-void Datatype::set_name(char* name){
+void Datatype::set_name(const char* name){
   if(name_!=nullptr &&  (flags_ & DT_FLAG_PREDEFINED) == 0)
     xbt_free(name_);
   name_ = xbt_strdup(name);
 }
 
-int Datatype::pack(void* inbuf, int incount, void* outbuf, int outcount, int* position,MPI_Comm comm){
+int Datatype::pack(const void* inbuf, int incount, void* outbuf, int outcount, int* position, MPI_Comm)
+{
   if (outcount - *position < incount*static_cast<int>(size_))
-    return MPI_ERR_BUFFER;
+    return MPI_ERR_OTHER;
   Datatype::copy(inbuf, incount, this, static_cast<char*>(outbuf) + *position, outcount, MPI_CHAR);
   *position += incount * size_;
   return MPI_SUCCESS;
 }
 
-int Datatype::unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount,MPI_Comm comm){
+int Datatype::unpack(const void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Comm)
+{
   if (outcount*static_cast<int>(size_)> insize)
-    return MPI_ERR_BUFFER;
-  Datatype::copy(static_cast<char*>(inbuf) + *position, insize, MPI_CHAR, outbuf, outcount, this);
+    return MPI_ERR_OTHER;
+  Datatype::copy(static_cast<const char*>(inbuf) + *position, insize, MPI_CHAR, outbuf, outcount, this);
   *position += outcount * size_;
   return MPI_SUCCESS;
 }
 
-int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
+int Datatype::copy(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount, MPI_Datatype recvtype){
 
 // FIXME Handle the case of a partial shared malloc.
@@ -277,7 +283,7 @@ int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     sendcount *= sendtype->size();
     recvcount *= recvtype->size();
     int count = sendcount < recvcount ? sendcount : recvcount;
-
+    XBT_DEBUG("Copying %d bytes from %p to %p", count, sendbuf, recvbuf);
     if (not(sendtype->flags() & DT_FLAG_DERIVED) && not(recvtype->flags() & DT_FLAG_DERIVED)) {
       if (not smpi_process()->replaying())
         memcpy(recvbuf, sendbuf, count);
@@ -300,15 +306,15 @@ int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 }
 
 //Default serialization method : memcpy.
-void Datatype::serialize(void* noncontiguous_buf, void* contiguous_buf, int count)
+void Datatype::serialize(const void* noncontiguous_buf, void* contiguous_buf, int count)
 {
   char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
-  char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf)+lb_;
+  const char* noncontiguous_buf_char = static_cast<const char*>(noncontiguous_buf)+lb_;
   memcpy(contiguous_buf_char, noncontiguous_buf_char, count*size_);
 }
 
-void Datatype::unserialize( void* contiguous_buf, void *noncontiguous_buf, int count, MPI_Op op){
-  char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
+void Datatype::unserialize(const void* contiguous_buf, void *noncontiguous_buf, int count, MPI_Op op){
+  const char* contiguous_buf_char = static_cast<const char*>(contiguous_buf);
   char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf)+lb_;
   int n=count;
   if(op!=MPI_OP_NULL)
@@ -376,7 +382,7 @@ int Datatype::create_hvector(int count, int block_length, MPI_Aint stride, MPI_D
   return retval;
 }
 
-int Datatype::create_indexed(int count, int* block_lengths, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type){
+int Datatype::create_indexed(int count, const int* block_lengths, const int* indices, MPI_Datatype old_type, MPI_Datatype* new_type){
   int size = 0;
   bool contiguous=true;
   MPI_Aint lb = 0;
@@ -411,7 +417,7 @@ int Datatype::create_indexed(int count, int* block_lengths, int* indices, MPI_Da
   return MPI_SUCCESS;
 }
 
-int Datatype::create_hindexed(int count, int* block_lengths, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type){
+int Datatype::create_hindexed(int count, const int* block_lengths, const MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type){
   int size = 0;
   bool contiguous=true;
   MPI_Aint lb = 0;
@@ -445,7 +451,7 @@ int Datatype::create_hindexed(int count, int* block_lengths, MPI_Aint* indices, 
   return MPI_SUCCESS;
 }
 
-int Datatype::create_struct(int count, int* block_lengths, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type){
+int Datatype::create_struct(int count, const int* block_lengths, const MPI_Aint* indices, const MPI_Datatype* old_types, MPI_Datatype* new_type){
   size_t size = 0;
   bool contiguous=true;
   size = 0;
@@ -490,8 +496,8 @@ int Datatype::create_struct(int count, int* block_lengths, MPI_Aint* indices, MP
   return MPI_SUCCESS;
 }
 
-int Datatype::create_subarray(int ndims, int* array_of_sizes,
-                             int* array_of_subsizes, int* array_of_starts,
+int Datatype::create_subarray(int ndims, const int* array_of_sizes,
+                             const int* array_of_subsizes, const int* array_of_starts,
                              int order, MPI_Datatype oldtype, MPI_Datatype *newtype){
   MPI_Datatype tmp;
 

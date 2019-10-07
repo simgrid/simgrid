@@ -50,7 +50,7 @@ MPI_Allreduce
 namespace simgrid{
 namespace smpi{
 
-int (*intel_allreduce_functions_table[])(void *sendbuf,
+int (*intel_allreduce_functions_table[])(const void *sendbuf,
       void *recvbuf,
       int count,
       MPI_Datatype datatype,
@@ -634,7 +634,7 @@ intel_tuning_table_element intel_alltoall_table[] =
   }
   }
 };
-int (*intel_alltoall_functions_table[])(void *sbuf, int scount,
+int (*intel_alltoall_functions_table[])(const void *sbuf, int scount,
                                              MPI_Datatype sdtype,
                                              void* rbuf, int rcount,
                                              MPI_Datatype rdtype,
@@ -967,7 +967,7 @@ MPI_Reduce
 
 */
 
-int (*intel_reduce_functions_table[])(void *sendbuf, void *recvbuf,
+int (*intel_reduce_functions_table[])(const void *sendbuf, void *recvbuf,
                                             int count, MPI_Datatype  datatype,
                                             MPI_Op   op, int root,
                                             MPI_Comm   comm) ={
@@ -1055,8 +1055,8 @@ MPI_Reduce_scatter
 5. Topology aware Reduce + Scatterv algorithm
 
 */
-static  int intel_reduce_scatter_reduce_scatterv(void *sbuf, void *rbuf,
-                                                    int *rcounts,
+static  int intel_reduce_scatter_reduce_scatterv(const void *sbuf, void *rbuf,
+                                                    const int *rcounts,
                                                     MPI_Datatype dtype,
                                                     MPI_Op  op,
                                                     MPI_Comm  comm)
@@ -1065,8 +1065,8 @@ static  int intel_reduce_scatter_reduce_scatterv(void *sbuf, void *rbuf,
   return MPI_SUCCESS;
 }
 
-static  int  intel_reduce_scatter_recursivehalving(void *sbuf, void *rbuf,
-                                                    int *rcounts,
+static  int  intel_reduce_scatter_recursivehalving(const void *sbuf, void *rbuf,
+                                                    const int *rcounts,
                                                     MPI_Datatype dtype,
                                                     MPI_Op  op,
                                                     MPI_Comm  comm)
@@ -1077,8 +1077,8 @@ static  int  intel_reduce_scatter_recursivehalving(void *sbuf, void *rbuf,
     return Coll_reduce_scatter_mvapich2::reduce_scatter(sbuf, rbuf, rcounts,dtype, op,comm);
 }
 
-int (*intel_reduce_scatter_functions_table[])( void *sbuf, void *rbuf,
-                                                    int *rcounts,
+int (*intel_reduce_scatter_functions_table[])( const void *sbuf, void *rbuf,
+                                                    const int *rcounts,
                                                     MPI_Datatype dtype,
                                                     MPI_Op  op,
                                                     MPI_Comm  comm
@@ -1487,7 +1487,7 @@ MPI_Allgather
 
 */
 
-int (*intel_allgather_functions_table[])(void *sbuf, int scount,
+int (*intel_allgather_functions_table[])(const void *sbuf, int scount,
                                               MPI_Datatype sdtype,
                                               void* rbuf, int rcount,
                                               MPI_Datatype rdtype,
@@ -1656,10 +1656,10 @@ MPI_Allgatherv
 
 */
 
-int (*intel_allgatherv_functions_table[])(void *sbuf, int scount,
+int (*intel_allgatherv_functions_table[])(const void *sbuf, int scount,
                                                MPI_Datatype sdtype,
-                                               void* rbuf, int *rcounts,
-                                               int *rdispls,
+                                               void* rbuf, const int *rcounts,
+                                               const int *rdispls,
                                                MPI_Datatype rdtype,
                                                MPI_Comm  comm
                                                     ) ={
@@ -1867,7 +1867,7 @@ MPI_Gather
 
 */
 
-int (*intel_gather_functions_table[])(void *sbuf, int scount,
+int (*intel_gather_functions_table[])(const void *sbuf, int scount,
                                            MPI_Datatype sdtype,
                                            void* rbuf, int rcount,
                                            MPI_Datatype rdtype,
@@ -1971,7 +1971,7 @@ MPI_Scatter
 
 */
 
-int (*intel_scatter_functions_table[])(void *sbuf, int scount,
+int (*intel_scatter_functions_table[])(const void *sbuf, int scount,
                                             MPI_Datatype sdtype,
                                             void* rbuf, int rcount,
                                             MPI_Datatype rdtype,
@@ -2145,9 +2145,9 @@ MPI_Alltoallv
 
 */
 
-int (*intel_alltoallv_functions_table[])(void *sbuf, int *scounts, int *sdisps,
+int (*intel_alltoallv_functions_table[])(const void *sbuf, const int *scounts, const int *sdisps,
                                               MPI_Datatype sdtype,
-                                              void *rbuf, int *rcounts, int *rdisps,
+                                              void *rbuf, const int *rcounts, const int *rdisps,
                                               MPI_Datatype rdtype,
                                               MPI_Comm  comm
                                                     ) ={
@@ -2262,35 +2262,33 @@ intel_tuning_table_element intel_alltoallv_table[] =
 #define SIZECOMP_alltoallv\
   size_t block_dsize = 1;
 
-#define IMPI_COLL_SELECT(cat, ret, args, args2)\
-ret Coll_ ## cat ## _impi:: cat (COLL_UNPAREN args)\
-{\
-    int comm_size = comm->size();\
-    int i =0;\
-    SIZECOMP_ ## cat\
-    i=0;\
-    int j =0, k=0;\
-    if(comm->get_leaders_comm()==MPI_COMM_NULL){\
-      comm->init_smp();\
-    }\
-    int local_size=1;\
-    if (comm->is_uniform()) {\
-        local_size = comm->get_intra_comm()->size();\
-    }\
-    while(i < INTEL_MAX_NB_PPN &&\
-    local_size!=intel_ ## cat ## _table[i].ppn)\
-      i++;\
-    if(i==INTEL_MAX_NB_PPN) i=0;\
-    while(comm_size>intel_ ## cat ## _table[i].elems[j].max_num_proc\
-        && j < INTEL_MAX_NB_THRESHOLDS)\
-      j++;\
-    while(block_dsize >=intel_ ## cat ## _table[i].elems[j].elems[k].max_size\
-         && k< intel_ ## cat ## _table[i].elems[j].num_elems)\
-      k++;\
-    return (intel_ ## cat ## _functions_table[intel_ ## cat ## _table[i].elems[j].elems[k].algo-1]\
-    args2);\
-}
-
+#define IMPI_COLL_SELECT(cat, ret, args, args2)                                                                        \
+  ret _XBT_CONCAT3(Coll_, cat, _impi)::cat(COLL_UNPAREN args)                                                          \
+  {                                                                                                                    \
+    int comm_size = comm->size();                                                                                      \
+    int i         = 0;                                                                                                 \
+    _XBT_CONCAT(SIZECOMP_, cat)                                                                                        \
+    i     = 0;                                                                                                         \
+    int j = 0, k = 0;                                                                                                  \
+    if (comm->get_leaders_comm() == MPI_COMM_NULL) {                                                                   \
+      comm->init_smp();                                                                                                \
+    }                                                                                                                  \
+    int local_size = 1;                                                                                                \
+    if (comm->is_uniform()) {                                                                                          \
+      local_size = comm->get_intra_comm()->size();                                                                     \
+    }                                                                                                                  \
+    while (i < INTEL_MAX_NB_PPN && local_size != _XBT_CONCAT3(intel_, cat, _table)[i].ppn)                             \
+      i++;                                                                                                             \
+    if (i == INTEL_MAX_NB_PPN)                                                                                         \
+      i = 0;                                                                                                           \
+    while (comm_size > _XBT_CONCAT3(intel_, cat, _table)[i].elems[j].max_num_proc && j < INTEL_MAX_NB_THRESHOLDS)      \
+      j++;                                                                                                             \
+    while (block_dsize >= _XBT_CONCAT3(intel_, cat, _table)[i].elems[j].elems[k].max_size &&                           \
+           k < _XBT_CONCAT3(intel_, cat, _table)[i].elems[j].num_elems)                                                \
+      k++;                                                                                                             \
+    return (_XBT_CONCAT3(intel_, cat,                                                                                  \
+                         _functions_table)[_XBT_CONCAT3(intel_, cat, _table)[i].elems[j].elems[k].algo - 1] args2);    \
+  }
 
 COLL_APPLY(IMPI_COLL_SELECT, COLL_ALLGATHERV_SIG, (send_buff, send_count, send_type, recv_buff, recv_count, recv_disps, recv_type, comm));
 COLL_APPLY(IMPI_COLL_SELECT, COLL_ALLREDUCE_SIG, (sbuf, rbuf, rcount, dtype, op, comm));

@@ -4,16 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/log.h"
-#include "xbt/sysdep.h"
-#include <simgrid/modelchecker.h>
-
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/mc_ignore.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
+#include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/Client.hpp"
-#include "src/mc/remote/mc_protocol.h"
+#include "xbt/asserts.h"
 
 /** @file mc_client_api.cpp
  *
@@ -29,8 +26,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client_api, mc,
 void MC_assert(int prop)
 {
   xbt_assert(mc_model_checker == nullptr);
-  if (MC_is_active() && not prop)
-    simgrid::mc::Client::get()->reportAssertionFailure();
+  if (not prop) {
+    if (MC_is_active())
+      simgrid::mc::Client::get()->report_assertion_failure();
+    if (MC_record_replay_is_active())
+      xbt_die("MC assertion failed");
+  }
 }
 
 void MC_cut()
@@ -47,7 +48,7 @@ void MC_ignore(void* addr, size_t size)
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->ignoreMemory(addr, size);
+  simgrid::mc::Client::get()->ignore_memory(addr, size);
 }
 
 void MC_automaton_new_propositional_symbol(const char* /*id*/, int (*/*fct*/)())
@@ -64,7 +65,7 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->declareSymbol(name, value);
+  simgrid::mc::Client::get()->declare_symbol(name, value);
 }
 
 /** @brief Register a stack in the model checker
@@ -78,12 +79,12 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
  *  @param context The context associated to that stack
  *  @param size    Size of the stack
  */
-void MC_register_stack_area(void* stack, smx_actor_t actor, ucontext_t* context, size_t size)
+void MC_register_stack_area(void* stack, ucontext_t* context, size_t size)
 {
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->declareStack(stack, size, actor, context);
+  simgrid::mc::Client::get()->declare_stack(stack, size, context);
 }
 
 void MC_ignore_global_variable(const char* /*name*/)
@@ -100,7 +101,7 @@ void MC_ignore_heap(void *address, size_t size)
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->ignoreHeap(address, size);
+  simgrid::mc::Client::get()->ignore_heap(address, size);
 }
 
 void MC_unignore_heap(void* address, size_t size)
@@ -108,5 +109,5 @@ void MC_unignore_heap(void* address, size_t size)
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->unignoreHeap(address, size);
+  simgrid::mc::Client::get()->unignore_heap(address, size);
 }

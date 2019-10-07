@@ -17,7 +17,12 @@ namespace kernel {
 namespace activity {
 
 class XBT_PUBLIC SemaphoreImpl {
+  std::atomic_int_fast32_t refcount_{1};
+  unsigned int value_;
+
 public:
+  actor::SynchroList sleeping_; /* list of sleeping actors*/
+
   explicit SemaphoreImpl(unsigned int value) : value_(value){};
   ~SemaphoreImpl() = default;
 
@@ -27,6 +32,7 @@ public:
   void acquire(actor::ActorImpl* issuer, double timeout);
   void release();
   bool would_block() { return (value_ == 0); }
+
   unsigned int get_capacity() { return value_; }
 
   friend void intrusive_ptr_add_ref(SemaphoreImpl* sem)
@@ -39,12 +45,6 @@ public:
     if (sem->refcount_.fetch_sub(1) == 1)
       delete sem;
   }
-
-  unsigned int value_;
-  actor::SynchroList sleeping_; /* list of sleeping actors*/
-
-private:
-  std::atomic_int_fast32_t refcount_{1};
 };
 } // namespace activity
 } // namespace kernel

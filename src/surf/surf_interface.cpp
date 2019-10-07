@@ -7,10 +7,12 @@
 #include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
-#include "src/internal_config.h"
+#include "src/kernel/resource/profile/FutureEvtSet.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/simgrid/version.h"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf.hpp"
+#include "src/xbt_modinter.h" /* whether initialization was already done */
 #include "surf/surf.hpp"
 #include "xbt/module.h"
 
@@ -36,49 +38,43 @@ std::vector<std::string> surf_path;
 std::set<std::string> watched_hosts;
 extern std::map<std::string, simgrid::kernel::resource::StorageType*> storage_types;
 
-s_surf_model_description_t* surf_plugin_description = nullptr;
+std::vector<surf_model_description_t>* surf_plugin_description = nullptr;
+
+static void XBT_ATTRIB_DESTRUCTOR(800) simgrid_free_plugin_description()
+{
+  delete surf_plugin_description;
+  surf_plugin_description = nullptr;
+}
+
 XBT_PUBLIC void simgrid_add_plugin_description(const char* name, const char* description, void_f_void_t init_fun)
 {
-  static int plugin_amount = 0;
-
-  /* no need to check for plugin name conflict: the compiler already ensures that the generated
-   * simgrid_##id##_plugin_register() is unique */
-
-  plugin_amount++;
-  surf_plugin_description = static_cast<s_surf_model_description_t*>(
-      xbt_realloc(surf_plugin_description, sizeof(s_surf_model_description_t) * (plugin_amount + 2)));
-
-  surf_plugin_description[plugin_amount - 1] = {name, description, init_fun};
-  surf_plugin_description[plugin_amount]     = {nullptr, nullptr, nullptr}; // this array must be null terminated
+  if (not surf_plugin_description)
+    surf_plugin_description = new std::vector<surf_model_description_t>;
+  surf_plugin_description->emplace_back(surf_model_description_t{name, description, init_fun});
 }
 
 /* Don't forget to update the option description in smx_config when you change this */
-s_surf_model_description_t surf_network_model_description[] = {
-    {"LV08", "Realistic network analytic model (slow-start modeled by multiplying latency by 13.01, bandwidth by .97; "
-             "bottleneck sharing uses a payload of S=20537 for evaluating RTT). ",
+const std::vector<surf_model_description_t> surf_network_model_description = {
+    {"LV08",
+     "Realistic network analytic model (slow-start modeled by multiplying latency by 13.01, bandwidth by .97; "
+     "bottleneck sharing uses a payload of S=20537 for evaluating RTT). ",
      &surf_network_model_init_LegrandVelho},
-    {"Constant", "Simplistic network model where all communication take a constant time (one second). This model "
-                 "provides the lowest realism, but is (marginally) faster.",
+    {"Constant",
+     "Simplistic network model where all communication take a constant time (one second). This model "
+     "provides the lowest realism, but is (marginally) faster.",
      &surf_network_model_init_Constant},
-    {"SMPI", "Realistic network model specifically tailored for HPC settings (accurate modeling of slow start with "
-             "correction factors on three intervals: < 1KiB, < 64 KiB, >= 64 KiB)",
+    {"SMPI",
+     "Realistic network model specifically tailored for HPC settings (accurate modeling of slow start with "
+     "correction factors on three intervals: < 1KiB, < 64 KiB, >= 64 KiB)",
      &surf_network_model_init_SMPI},
     {"IB", "Realistic network model specifically tailored for HPC settings, with Infiniband contention model",
      &surf_network_model_init_IB},
-    {"CM02", "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of "
-             "small messages are thus poorly modeled).",
+    {"CM02",
+     "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of "
+     "small messages are thus poorly modeled).",
      &surf_network_model_init_CM02},
-    {"NS3", "Network pseudo-model using the NS3 tcp model instead of an analytic model", &surf_network_model_init_NS3},
-    {"Reno",
-     "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
-     &surf_network_model_init_Reno},
-    {"Reno2",
-     "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
-     &surf_network_model_init_Reno2},
-    {"Vegas",
-     "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
-     &surf_network_model_init_Vegas},
-    {nullptr, nullptr, nullptr} /* this array must be nullptr terminated */
+    {"ns-3", "Network pseudo-model using the ns-3 tcp model instead of an analytic model",
+     &surf_network_model_init_NS3},
 };
 
 #if ! HAVE_SMPI
@@ -91,32 +87,37 @@ void surf_network_model_init_IB() {
 #endif
 #if !SIMGRID_HAVE_NS3
 void surf_network_model_init_NS3() {
-  xbt_die("Please activate NS3 support in cmake and install the dependencies to use the NS3 network model.");
+  xbt_die("Please activate ns-3 support in cmake and install the dependencies to use the NS3 network model.");
 }
 #endif
 
-s_surf_model_description_t surf_cpu_model_description[] = {
-  {"Cas01", "Simplistic CPU model (time=size/power).", &surf_cpu_model_init_Cas01},
-  {nullptr, nullptr,  nullptr}      /* this array must be nullptr terminated */
+const std::vector<surf_model_description_t> surf_cpu_model_description = {
+    {"Cas01", "Simplistic CPU model (time=size/power).", &surf_cpu_model_init_Cas01},
 };
 
-s_surf_model_description_t surf_host_model_description[] = {
-  {"default",   "Default host model. Currently, CPU:Cas01 and network:LV08 (with cross traffic enabled)", &surf_host_model_init_current_default},
-  {"compound",  "Host model that is automatically chosen if you change the network and CPU models", &surf_host_model_init_compound},
-  {"ptask_L07", "Host model somehow similar to Cas01+CM02 but allowing parallel tasks", &surf_host_model_init_ptask_L07},
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
+const std::vector<surf_model_description_t> surf_host_model_description = {
+    {"default", "Default host model. Currently, CPU:Cas01 and network:LV08 (with cross traffic enabled)",
+     &surf_host_model_init_current_default},
+    {"compound", "Host model that is automatically chosen if you change the network and CPU models",
+     &surf_host_model_init_compound},
+    {"ptask_L07", "Host model somehow similar to Cas01+CM02 but allowing parallel tasks",
+     &surf_host_model_init_ptask_L07},
 };
 
-s_surf_model_description_t surf_optimization_mode_description[] = {
-  {"Lazy", "Lazy action management (partial invalidation in lmm + heap in action remaining).", nullptr},
-  {"TI",   "Trace integration. Highly optimized mode when using availability traces (only available for the Cas01 CPU model for now).", nullptr},
-  {"Full", "Full update of remaining and variables. Slow but may be useful when debugging.", nullptr},
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
+const std::vector<surf_model_description_t> surf_optimization_mode_description = {
+    {"Lazy", "Lazy action management (partial invalidation in lmm + heap in action remaining).", nullptr},
+    {"TI", "Trace integration. Highly optimized mode when using availability traces (only available for the Cas01 CPU "
+           "model for now).",
+     nullptr},
+    {"Full", "Full update of remaining and variables. Slow but may be useful when debugging.", nullptr},
 };
 
-s_surf_model_description_t surf_storage_model_description[] = {
-  {"default", "Simplistic storage model.", &surf_storage_model_init_default},
-  {nullptr, nullptr,  nullptr}      /* this array must be nullptr terminated */
+const std::vector<surf_model_description_t> surf_disk_model_description = {
+    {"default", "Simplistic disk model.", &surf_disk_model_init_default},
+};
+
+const std::vector<surf_model_description_t> surf_storage_model_description = {
+    {"default", "Simplistic storage model.", &surf_storage_model_init_default},
 };
 
 double NOW = 0;
@@ -185,25 +186,29 @@ FILE* surf_fopen(const std::string& name, const char* mode)
 }
 
 /** Displays the long description of all registered models, and quit */
-void model_help(const char *category, s_surf_model_description_t * table)
+void model_help(const char* category, const std::vector<surf_model_description_t>& table)
 {
-  printf("Long description of the %s models accepted by this simulator:\n", category);
-  for (int i = 0; table[i].name; i++)
-    printf("  %s: %s\n", table[i].name, table[i].description);
+  XBT_HELP("Long description of the %s models accepted by this simulator:", category);
+  for (auto const& item : table)
+    XBT_HELP("  %s: %s", item.name, item.description);
 }
 
-int find_model_description(s_surf_model_description_t* table, const std::string& name)
+int find_model_description(const std::vector<surf_model_description_t>& table, const std::string& name)
 {
-  for (int i = 0; table[i].name; i++)
-    if (name == table[i].name)
-      return i;
+  auto pos = std::find_if(table.begin(), table.end(),
+                          [&name](const surf_model_description_t& item) { return item.name == name; });
+  if (pos != table.end())
+    return std::distance(table.begin(), pos);
 
-  if (not table[0].name)
+  if (table.empty())
     xbt_die("No model is valid! This is a bug.");
 
-  std::string name_list = std::string(table[0].name);
-  for (int i = 1; table[i].name; i++)
-    name_list = name_list + ", " + table[i].name;
+  std::string sep;
+  std::string name_list;
+  for (auto const& item : table) {
+    name_list += sep + item.name;
+    sep = ", ";
+  }
 
   xbt_die("Model '%s' is invalid! Valid models are: %s.", name.c_str(), name_list.c_str());
   return -1;
@@ -245,53 +250,50 @@ void sg_version_get(int* ver_major, int* ver_minor, int* ver_patch)
 
 void sg_version()
 {
-  std::printf("This program was linked against %s (git: %s), found in %s.\n",
-              SIMGRID_VERSION_STRING, SIMGRID_GIT_VERSION, SIMGRID_INSTALL_PREFIX);
+  XBT_HELP("This program was linked against %s (git: %s), found in %s.", SIMGRID_VERSION_STRING, SIMGRID_GIT_VERSION,
+           SIMGRID_INSTALL_PREFIX);
 
 #if SIMGRID_HAVE_MC
-  std::printf("   Model-checking support compiled in.\n");
+  XBT_HELP("   Model-checking support compiled in.");
 #else
-  std::printf("   Model-checking support disabled at compilation.\n");
+  XBT_HELP("   Model-checking support disabled at compilation.");
 #endif
 
 #if SIMGRID_HAVE_NS3
-  std::printf("   NS3 support compiled in.\n");
+  XBT_HELP("   ns-3 support compiled in.");
 #else
-  std::printf("   NS3 support disabled at compilation.\n");
+  XBT_HELP("   ns-3 support disabled at compilation.");
 #endif
 
 #if SIMGRID_HAVE_JEDULE
-  std::printf("   Jedule support compiled in.\n");
+  XBT_HELP("   Jedule support compiled in.");
 #else
-  std::printf("   Jedule support disabled at compilation.\n");
+  XBT_HELP("   Jedule support disabled at compilation.");
 #endif
 
 #if SIMGRID_HAVE_LUA
-  std::printf("   Lua support compiled in.\n");
+  XBT_HELP("   Lua support compiled in.");
 #else
-  std::printf("   Lua support disabled at compilation.\n");
+  XBT_HELP("   Lua support disabled at compilation.");
 #endif
 
 #if SIMGRID_HAVE_MALLOCATOR
-  std::printf("   Mallocator support compiled in.\n");
+  XBT_HELP("   Mallocator support compiled in.");
 #else
-  std::printf("   Mallocator support disabled at compilation.\n");
+  XBT_HELP("   Mallocator support disabled at compilation.");
 #endif
 
-  std::printf("\nTo cite SimGrid in a publication, please use:\n"
-              "   Henri Casanova, Arnaud Giersch, Arnaud Legrand, Martin Quinson, Frédéric Suter. \n"
-              "   Versatile, Scalable, and Accurate Simulation of Distributed Applications and Platforms. \n"
-              "   Journal of Parallel and Distributed Computing, Elsevier, 2014, 74 (10), pp.2899-2917.\n");
-  std::printf("The pdf file and a BibTeX entry for LaTeX users can be found at http://hal.inria.fr/hal-01017319\n");
+  XBT_HELP("\nTo cite SimGrid in a publication, please use:\n"
+           "   Henri Casanova, Arnaud Giersch, Arnaud Legrand, Martin Quinson, Frédéric Suter. \n"
+           "   Versatile, Scalable, and Accurate Simulation of Distributed Applications and Platforms. \n"
+           "   Journal of Parallel and Distributed Computing, Elsevier, 2014, 74 (10), pp.2899-2917.\n"
+           "The pdf file and a BibTeX entry for LaTeX users can be found at http://hal.inria.fr/hal-01017319");
 }
 
 void surf_init(int *argc, char **argv)
 {
-  if (USER_HOST_LEVEL != -1) // Already initialized
+  if (xbt_initialized > 0)
     return;
-
-  XBT_DEBUG("Create all Libs");
-  USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
   xbt_init(argc, argv);
 
@@ -313,8 +315,6 @@ void surf_exit()
 
   for (auto const& model : all_existing_models)
     delete model;
-
-  xbt_free(surf_plugin_description);
 
   tmgr_finalize();
   sg_platf_exit();

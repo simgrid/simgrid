@@ -1,10 +1,29 @@
+                    _               _____  ____  _  _
+__   _____ _ __ ___(_) ___  _ __   |___ / |___ \| || |
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | || |_
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/|__   _|
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|  |_|
+               (not released yet)
+
+The Clean Disk Release.
+
+ * Introduce an experimental Wifi network model.
+ * Introduce <disk>, which is much cleaner than <storage>.
+ * SMPI: Implement Errhandlers and some more MPI3.1 calls.
+ * (+ many bug fixes and internal refactorings)
                     _               _____  ____  _____
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \|___ /
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | |_ \
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/ ___) |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|____/
-               (not released)
+               June 25. 2019
 
+The Exotic Solstice Release.
+
+ * Support for Solaris and Haiku OSes. Just for fun :)
+ * SMPI: more of MPI3.1; some MPI/IO and async collectives.
+ * Python bindings can now be installed from pip.
+ * (+ a whole load of bug fixes and internal refactorings)
                     _               _____  ____  ____
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \|___ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | __) |
@@ -12,7 +31,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \|___ \
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|_____|
                April 1. 2019
 
-The Easter Chrismas Release (this one is somewhat late).
+The Easter Christmas Release (this one is somewhat late).
 
  * Introducing the Python bindings (still beta)
  * Doc: SMPI tutorial and platform description ported to RTD

@@ -3,7 +3,7 @@
 p Simple test of simdag
 
 ! output sort
-$ $SG_TEST_EXENV ./test/sd_test ${srcdir:=.}/../../platforms/small_platform.xml
+$ ./test/sd_test ${srcdir:=.}/../../platforms/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [sd_test/INFO] Computation time for 2000000.000000 flops on Jacquelin: 0.014563
 > [0.000000] [sd_test/INFO] Computation time for 1000000.000000 flops on Fafard: 0.013107

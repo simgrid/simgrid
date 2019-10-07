@@ -8,9 +8,18 @@
 #define _hypot hypot
 #endif
 
+#if defined(__GNUG__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-value"
+#endif
+
 #include <pybind11/functional.h>
 #include <pybind11/pybind11.h> // Must come before our own stuff
 #include <pybind11/stl.h>
+
+#if defined(__GNUG__)
+#pragma GCC diagnostic pop
+#endif
 
 #include "src/kernel/context/Context.hpp"
 #include <simgrid/Exception.hpp>

@@ -2,7 +2,7 @@
 
 p Test1 Sleep_sender > Sleep_receiver
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-async-waituntil ${platfdir}/small_platform_fatpipe.xml s4u-async-waituntil_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-async-waituntil ${platfdir}/small_platform_fatpipe.xml s4u-async-waituntil_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) Send 'Message 0' to 'receiver-0'
 > [  0.000000] (2:receiver@Ruby) Wait for my first message
 > [  0.000000] (1:sender@Tremblay) Send 'Message 1' to 'receiver-0'

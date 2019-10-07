@@ -63,7 +63,6 @@
  */
 void *mmorecore(struct mdesc *mdp, ssize_t size)
 {
-  ssize_t test = 0;
   void* result;                 // please keep it uninitialized to track issues
   off_t foffset;                /* File offset at which new mapping will start */
   size_t mapbytes;              /* Number of bytes to map */
@@ -103,10 +102,11 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
       foffset  = (char*)mdp->top - (char*)mdp->base;
 
       if (mdp->fd > 0) {
-        /* FIXME:  Test results of lseek() */
-        lseek(mdp->fd, foffset + mapbytes - 1, SEEK_SET);
-        test = write(mdp->fd, &buf, 1);
-        if (test == -1) {
+        if (lseek(mdp->fd, foffset + mapbytes - 1, SEEK_SET) == -1) {
+          fprintf(stderr, "Internal error: lseek into mmap'ed fd failed! error: %s", strerror(errno));
+          abort();
+        }
+        if (write(mdp->fd, &buf, 1) == -1) {
           fprintf(stderr,"Internal error: write to mmap'ed fd failed! error: %s", strerror(errno));
           abort();
         }

@@ -106,7 +106,7 @@ void ThreadContext::wrapper(ThreadContext* context)
     XBT_DEBUG("Caught a ForcefulKillException in Thread::wrapper");
     xbt_assert(not context->is_maestro(), "Maestro shall not receive ForcefulKillExceptions, even when detached.");
   } catch (simgrid::Exception const& e) {
-    XBT_INFO("Actor killed by an uncatched exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
+    XBT_INFO("Actor killed by an uncaught exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
     throw;
   }
   // Signal to the caller (normally the maestro) that we have finished:

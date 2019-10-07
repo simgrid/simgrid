@@ -8,6 +8,7 @@
 #include "simgrid/Exception.hpp"
 #include "xbt/misc.h"
 #include "xbt/str.h" /* headers of these functions */
+#include "xbt/string.hpp"
 
 /** @brief Splits a string into a dynar of strings
  *
@@ -101,7 +102,7 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
       /* Protected char; move it closer */
       memmove(end, end + 1, strlen(end));
       if (*end == '\0')
-        THROWF(arg_error, 0, "String ends with \\");
+        throw std::invalid_argument("String ends with \\");
       end++;                    /* Pass the protected char */
       break;
     case '\'':
@@ -129,7 +130,8 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
     case '\n':
     case '\0':
       if (*end == '\0' && (in_simple_quote || in_double_quote)) {
-        THROWF(arg_error, 0, "End of string found while searching for %c in %s", (in_simple_quote ? '\'' : '"'), s);
+        throw std::invalid_argument(simgrid::xbt::string_printf("End of string found while searching for %c in %s",
+                                                                (in_simple_quote ? '\'' : '"'), s));
       }
       if (in_simple_quote || in_double_quote) {
         end++;
@@ -195,17 +197,17 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
 /** @brief Parse an integer out of a string, or raise an error
  *
  * The @a str is passed as argument to your @a error_msg, as follows:
- * @verbatim THROWF(arg_error, 0, error_msg, str); @endverbatim
+ * @verbatim throw std::invalid_argument(simgrid::xbt::string_printf(error_msg, str)); @endverbatim
  */
 long int xbt_str_parse_int(const char* str, const char* error_msg)
 {
   char* endptr;
   if (str == nullptr || str[0] == '\0')
-    THROWF(arg_error, 0, error_msg, str);
+    throw std::invalid_argument(simgrid::xbt::string_printf(error_msg, str));
 
   long int res = strtol(str, &endptr, 10);
   if (endptr[0] != '\0')
-    THROWF(arg_error, 0, error_msg, str);
+    throw std::invalid_argument(simgrid::xbt::string_printf(error_msg, str));
 
   return res;
 }
@@ -213,17 +215,17 @@ long int xbt_str_parse_int(const char* str, const char* error_msg)
 /** @brief Parse a double out of a string, or raise an error
  *
  * The @a str is passed as argument to your @a error_msg, as follows:
- * @verbatim THROWF(arg_error, 0, error_msg, str); @endverbatim
+ * @verbatim throw std::invalid_argument(simgrid::xbt::string_printf(error_msg, str)); @endverbatim
  */
 double xbt_str_parse_double(const char* str, const char* error_msg)
 {
   char *endptr;
   if (str == nullptr || str[0] == '\0')
-    THROWF(arg_error, 0, error_msg, str);
+    throw std::invalid_argument(simgrid::xbt::string_printf(error_msg, str));
 
   double res = strtod(str, &endptr);
   if (endptr[0] != '\0')
-    THROWF(arg_error, 0, error_msg, str);
+    throw std::invalid_argument(simgrid::xbt::string_printf(error_msg, str));
 
   return res;
 }

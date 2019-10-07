@@ -1,6 +1,8 @@
 #!/usr/bin/env tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-actor-exiting ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-actor-exiting ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
 > [ 10.194200] (A@Tremblay) I stop now
-> [ 10.194200] (maestro@) Actor A stops now
-> [ 26.213694] (maestro@) Actor B stops now
+> [ 10.194200] (maestro@) Actor A terminates now
+> [ 26.213694] (maestro@) Actor A gets destroyed now
+> [ 26.213694] (maestro@) Actor B terminates now
+> [ 26.213694] (maestro@) Actor B gets destroyed now

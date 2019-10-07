@@ -40,14 +40,14 @@ install:
 # Work around a bug on appveyor where the default sh is not the one I expect
 - rename "C:\Program Files\Git\usr\bin\sh.exe" "sh-ignored.exe"
 # We need pybind11. SimGrid will pick it automatically if the subdir is here
-- cmd: git clone --depth=1 https://github.com/pybind/pybind11.git
+#- cmd: git clone --depth=1 https://github.com/pybind/pybind11.git
 
 build_script:
 - cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
-- mingw32-make.exe VERBOSE=1 java-all python-bindings # Only the Java and Python parts
+- mingw32-make.exe VERBOSE=1 java-all # python-bindings # Only the Java and Python parts
 - ctest --output-on-failure -R java
 # Don't test python, as pybind11 seems too complex for mingw for now (mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1)
-# The observed failure is around the ForcefulKill exception, that seems badly catched somehow.
+# The observed failure is around the ForcefulKill exception, that seems badly caught somehow.
 # - ctest --output-on-failure -R python
 
 artifacts:

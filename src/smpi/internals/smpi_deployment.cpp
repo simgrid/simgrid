@@ -10,25 +10,32 @@
 #include "smpi_comm.hpp"
 #include <map>
 
+XBT_LOG_EXTERNAL_CATEGORY(smpi);
+
 namespace simgrid {
 namespace smpi {
 namespace app {
 
+static int universe_size = 0;
+
 class Instance {
 public:
-  Instance(const std::string& name, int max_no_processes, MPI_Comm comm, simgrid::s4u::Barrier* finalization_barrier)
-      : name(name)
-      , size(max_no_processes)
-      , present_processes(0)
-      , comm_world(comm)
-      , finalization_barrier(finalization_barrier)
-  { }
+  Instance(const std::string& name, int max_no_processes, MPI_Comm comm)
+      : name_(name), size_(max_no_processes), comm_world_(comm)
+  {
+    MPI_Group group = new simgrid::smpi::Group(size_);
+    comm_world_     = new simgrid::smpi::Comm(group, nullptr, 0, -1);
+    //  FIXME : using MPI_Attr_put with MPI_UNIVERSE_SIZE is forbidden and we make it a no-op (which triggers a warning
+    //  as MPI_ERR_ARG is returned). Directly calling Comm::attr_put breaks for now, as MPI_UNIVERSE_SIZE,is <0
+    //  instance.comm_world->attr_put<simgrid::smpi::Comm>(MPI_UNIVERSE_SIZE, reinterpret_cast<void*>(instance.size));
 
-  const std::string name;
-  int size;
-  int present_processes;
-  MPI_Comm comm_world;
-  simgrid::s4u::Barrier* finalization_barrier;
+    universe_size += max_no_processes;
+  }
+
+  const std::string name_;
+  unsigned int size_;
+  unsigned int finalized_ranks_ = 0;
+  MPI_Comm comm_world_;
 };
 }
 }
@@ -37,7 +44,6 @@ public:
 using simgrid::smpi::app::Instance;
 
 static std::map<std::string, Instance> smpi_instances;
-extern int process_count; // How many processes have been allocated over all instances?
 
 /** @ingroup smpi_simulation
  * @brief Registers a running instance of a MPI program.
@@ -51,62 +57,51 @@ extern int process_count; // How many processes have been allocated over all ins
  */
 void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_processes)
 {
-  if (code != nullptr) { // When started with smpirun, we will not execute a function
+  if (code != nullptr) // When started with smpirun, we will not execute a function
     simgrid::s4u::Engine::get_instance()->register_function(name, code);
-  }
 
-  static int already_called = 0;
-  if (not already_called) {
-    already_called = 1;
-    std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
-    for (auto const& host : list) {
-      host->extension_set(new simgrid::smpi::Host(host));
-    }
-  }
-
-  Instance instance(std::string(name), num_processes, MPI_COMM_NULL, new simgrid::s4u::Barrier(num_processes));
-  MPI_Group group     = new simgrid::smpi::Group(instance.size);
-  instance.comm_world = new simgrid::smpi::Comm(group, nullptr);
-//  FIXME : using MPI_Attr_put with MPI_UNIVERSE_SIZE is forbidden and we make it a no-op (which triggers a warning as MPI_ERR_ARG is returned). 
-//  Directly calling Comm::attr_put breaks for now, as MPI_UNIVERSE_SIZE,is <0
-//  instance.comm_world->attr_put<simgrid::smpi::Comm>(MPI_UNIVERSE_SIZE, reinterpret_cast<void*>(instance.size));
-
-  process_count+=num_processes;
+  Instance instance(std::string(name), num_processes, MPI_COMM_NULL);
 
   smpi_instances.insert(std::pair<std::string, Instance>(name, instance));
 }
 
-void smpi_deployment_register_process(const std::string& instance_id, int rank, simgrid::s4u::ActorPtr actor)
+void smpi_deployment_register_process(const std::string& instance_id, int rank, simgrid::s4u::Actor* actor)
 {
   Instance& instance = smpi_instances.at(instance_id);
+  instance.comm_world_->group()->set_mapping(actor, rank);
+}
 
-  instance.present_processes++;
-  instance.comm_world->group()->set_mapping(actor, rank);
+void smpi_deployment_unregister_process(const std::string& instance_id)
+{
+  Instance& instance = smpi_instances.at(instance_id);
+  instance.finalized_ranks_++;
+
+  if (instance.finalized_ranks_ == instance.size_) {
+    simgrid::smpi::Comm::destroy(instance.comm_world_);
+    smpi_instances.erase(instance_id);
+  }
 }
 
 MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id)
 {
-  if (smpi_instances.empty()) { // no instance registered, we probably used smpirun.
+  if (smpi_instances
+          .empty()) { // no instance registered, we probably used smpirun. (FIXME: I guess this never happens for real)
     return nullptr;
   }
   Instance& instance = smpi_instances.at(instance_id);
-  return &instance.comm_world;
-}
-
-simgrid::s4u::Barrier* smpi_deployment_finalization_barrier(const std::string& instance_id)
-{
-  if (smpi_instances.empty()) { // no instance registered, we probably used smpirun.
-    return nullptr;
-  }
-  Instance& instance = smpi_instances.at(instance_id);
-  return instance.finalization_barrier;
+  return &instance.comm_world_;
 }
 
 void smpi_deployment_cleanup_instances(){
   for (auto const& item : smpi_instances) {
+    XBT_CINFO(smpi, "Stalling SMPI instance: %s. Do all your MPI ranks call MPI_Finalize()?", item.first.c_str());
     Instance instance = item.second;
-    delete instance.finalization_barrier;
-    simgrid::smpi::Comm::destroy(instance.comm_world);
+    simgrid::smpi::Comm::destroy(instance.comm_world_);
   }
   smpi_instances.clear();
+}
+
+int smpi_get_universe_size()
+{
+  return simgrid::smpi::app::universe_size;
 }

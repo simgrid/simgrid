@@ -130,7 +130,7 @@ msg_error_t MSG_process_sleep(double duration)
   try {
     sg_actor_sleep_for(duration);
     return MSG_OK;
-  } catch (simgrid::HostFailureException& e) {
+  } catch (const simgrid::HostFailureException&) {
     return MSG_HOST_FAILURE;
   }
 }
@@ -143,6 +143,44 @@ msg_process_t MSG_process_attach(const char* name, void* data, msg_host_t host, 
 void MSG_process_detach()
 {
   sg_actor_detach();
+}
+aid_t MSG_process_self_PID()
+{
+  return sg_actor_self_get_pid();
+}
+
+/** @brief Return the PPID of the current process.
+ *
+ * This function returns the PID of the parent of the currently running #msg_process_t.
+ */
+aid_t MSG_process_self_PPID()
+{
+  return sg_actor_self_get_ppid();
+}
+
+/** @brief Return the name of the current process. */
+const char* MSG_process_self_name()
+{
+  return sg_actor_self_get_name();
+}
+/** @brief Return the current process.
+ *
+ * This function returns the currently running #msg_process_t.
+ */
+msg_process_t MSG_process_self()
+{
+  return sg_actor_self();
+}
+
+/** @brief Take an extra reference on that process to prevent it to be garbage-collected */
+void MSG_process_ref(msg_process_t process)
+{
+  sg_actor_ref(process);
+}
+/** @brief Release a reference on that process so that it can get be garbage-collected */
+void MSG_process_unref(msg_process_t process)
+{
+  sg_actor_unref(process);
 }
 
 /* ************************** NetZones *************************** */
@@ -244,11 +282,11 @@ const char* MSG_host_get_name(sg_host_t host)
 }
 void* MSG_host_get_data(sg_host_t host)
 {
-  return sg_host_user(host);
+  return sg_host_data(host);
 }
 void MSG_host_set_data(sg_host_t host, void* data)
 {
-  return sg_host_user_set(host, data);
+  return sg_host_data_set(host, data);
 }
 xbt_dict_t MSG_host_get_mounted_storage_list(sg_host_t host)
 {

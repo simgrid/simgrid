@@ -2,7 +2,7 @@
 
 p This tests the HostLoad plugin (this allows the user to get the current load of a host and the computed flops)
 
-$ ${bindir:=.}/s4u-plugin-hostload$EXEEXT ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-plugin-hostload ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:load_test@MyHost1) Initial peak speed: 1E+08 flop/s; number of flops computed so far: 0E+00 (should be 0) and current average load: 0.00000 (should be 0)
 > [  0.000000] (1:load_test@MyHost1) Sleep for 10 seconds
 > [ 10.000000] (1:load_test@MyHost1) Done sleeping 10.00s; peak speed: 1E+08 flop/s; number of flops computed so far: 0E+00 (nothing should have changed)

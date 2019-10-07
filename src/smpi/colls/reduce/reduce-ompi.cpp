@@ -25,7 +25,7 @@
 namespace simgrid{
 namespace smpi{
 
-int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int original_count,
+int smpi_coll_tuned_ompi_reduce_generic(const void* sendbuf, void* recvbuf, int original_count,
                                     MPI_Datatype datatype, MPI_Op  op,
                                     int root, MPI_Comm comm,
                                     ompi_coll_tree_t* tree, int count_by_segment,
@@ -41,31 +41,31 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
  * for the first block: thus we must copy sendbuf to accumbuf on intermediate
  * to keep the optimized loop happy.
  */
-int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int original_count,
+int smpi_coll_tuned_ompi_reduce_generic(const void* sendbuf, void* recvbuf, int original_count,
                                     MPI_Datatype datatype, MPI_Op  op,
                                     int root, MPI_Comm comm,
                                     ompi_coll_tree_t* tree, int count_by_segment,
                                     int max_outstanding_reqs )
 {
-    char *inbuf[2] = {NULL, NULL}, *inbuf_free[2] = {NULL, NULL};
-    char *accumbuf = NULL, *accumbuf_free = NULL;
-    char *local_op_buffer = NULL, *sendtmpbuf = NULL;
-    ptrdiff_t extent, lower_bound, segment_increment;
-    MPI_Request  reqs[2] = {MPI_REQUEST_NULL, MPI_REQUEST_NULL};
-    int num_segments, line, ret, segindex, i, rank;
-    int recvcount, prevcount, inbi;
+  unsigned char *inbuf[2] = {nullptr, nullptr}, *inbuf_free[2] = {nullptr, nullptr};
+  unsigned char *accumbuf = nullptr, *accumbuf_free = nullptr;
+  const unsigned char *local_op_buffer = nullptr, *sendtmpbuf = nullptr;
+  ptrdiff_t extent, lower_bound, segment_increment;
+  MPI_Request reqs[2] = {MPI_REQUEST_NULL, MPI_REQUEST_NULL};
+  int num_segments, line, ret, segindex, i, rank;
+  int recvcount, prevcount, inbi;
 
-    /**
-     * Determine number of segments and number of elements
-     * sent per operation
-     */
-    datatype->extent(&lower_bound, &extent);
-    num_segments = (original_count + count_by_segment - 1) / count_by_segment;
-    segment_increment = count_by_segment * extent;
+  /**
+   * Determine number of segments and number of elements
+   * sent per operation
+   */
+  datatype->extent(&lower_bound, &extent);
+  num_segments      = (original_count + count_by_segment - 1) / count_by_segment;
+  segment_increment = count_by_segment * extent;
 
-    sendtmpbuf = (char*) sendbuf;
-    if( sendbuf == MPI_IN_PLACE ) {
-        sendtmpbuf = (char *)recvbuf;
+  sendtmpbuf = static_cast<const unsigned char*>(sendbuf);
+  if (sendbuf == MPI_IN_PLACE) {
+    sendtmpbuf = static_cast<const unsigned char*>(recvbuf);
     }
 
     XBT_DEBUG("coll:tuned:reduce_generic count %d, msg size %lu, segsize %lu, max_requests %d", original_count,
@@ -82,35 +82,40 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
 
         /* handle non existant recv buffer (i.e. its NULL) and
            protect the recv buffer on non-root nodes */
-        accumbuf = (char*)recvbuf;
-        if( (NULL == accumbuf) || (root != rank) ) {
-            /* Allocate temporary accumulator buffer. */
-            accumbuf_free = (char*)smpi_get_tmp_sendbuffer(true_extent +
-                                          (original_count - 1) * extent);
-            if (accumbuf_free == NULL) {
-                line = __LINE__; ret = -1; goto error_hndl;
-            }
-            accumbuf = accumbuf_free - lower_bound;
+        accumbuf = static_cast<unsigned char*>(recvbuf);
+        if (nullptr == accumbuf || root != rank) {
+          /* Allocate temporary accumulator buffer. */
+          accumbuf_free = smpi_get_tmp_sendbuffer(true_extent + (original_count - 1) * extent);
+          if (accumbuf_free == nullptr) {
+            line = __LINE__;
+            ret  = -1;
+            goto error_hndl;
+          }
+          accumbuf = accumbuf_free - lower_bound;
         }
 
         /* If this is a non-commutative operation we must copy
            sendbuf to the accumbuf, in order to simplfy the loops */
         if ((op != MPI_OP_NULL && not op->is_commutative())) {
-          Datatype::copy((char*)sendtmpbuf, original_count, datatype, (char*)accumbuf, original_count, datatype);
+          Datatype::copy(sendtmpbuf, original_count, datatype, accumbuf, original_count, datatype);
         }
         /* Allocate two buffers for incoming segments */
         real_segment_size = true_extent + (count_by_segment - 1) * extent;
-        inbuf_free[0] = (char*) smpi_get_tmp_recvbuffer(real_segment_size);
-        if( inbuf_free[0] == NULL ) {
-            line = __LINE__; ret = -1; goto error_hndl;
+        inbuf_free[0]     = smpi_get_tmp_recvbuffer(real_segment_size);
+        if (inbuf_free[0] == nullptr) {
+          line = __LINE__;
+          ret  = -1;
+          goto error_hndl;
         }
         inbuf[0] = inbuf_free[0] - lower_bound;
         /* if there is chance to overlap communication -
            allocate second buffer */
         if( (num_segments > 1) || (tree->tree_nextsize > 1) ) {
-            inbuf_free[1] = (char*) smpi_get_tmp_recvbuffer(real_segment_size);
-            if( inbuf_free[1] == NULL ) {
-                line = __LINE__; ret = -1; goto error_hndl;
+          inbuf_free[1] = smpi_get_tmp_recvbuffer(real_segment_size);
+          if (inbuf_free[1] == nullptr) {
+            line = __LINE__;
+            ret  = -1;
+            goto error_hndl;
             }
             inbuf[1] = inbuf_free[1] - lower_bound;
         }
@@ -323,7 +328,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
 */
 
 
-int Coll_reduce_ompi_chain::reduce( void *sendbuf, void *recvbuf, int count,
+int Coll_reduce_ompi_chain::reduce(const void *sendbuf, void *recvbuf, int count,
                                         MPI_Datatype datatype,
                                         MPI_Op  op, int root,
                                         MPI_Comm  comm
@@ -351,7 +356,7 @@ int Coll_reduce_ompi_chain::reduce( void *sendbuf, void *recvbuf, int count,
 }
 
 
-int Coll_reduce_ompi_pipeline::reduce( void *sendbuf, void *recvbuf,
+int Coll_reduce_ompi_pipeline::reduce(const void *sendbuf, void *recvbuf,
                                            int count, MPI_Datatype datatype,
                                            MPI_Op  op, int root,
                                            MPI_Comm  comm  )
@@ -395,7 +400,7 @@ int Coll_reduce_ompi_pipeline::reduce( void *sendbuf, void *recvbuf,
                                            segcount, 0);
 }
 
-int Coll_reduce_ompi_binary::reduce( void *sendbuf, void *recvbuf,
+int Coll_reduce_ompi_binary::reduce(const void *sendbuf, void *recvbuf,
                                          int count, MPI_Datatype datatype,
                                          MPI_Op  op, int root,
                                          MPI_Comm  comm)
@@ -425,7 +430,7 @@ int Coll_reduce_ompi_binary::reduce( void *sendbuf, void *recvbuf,
                                            segcount, 0);
 }
 
-int Coll_reduce_ompi_binomial::reduce( void *sendbuf, void *recvbuf,
+int Coll_reduce_ompi_binomial::reduce(const void *sendbuf, void *recvbuf,
                                            int count, MPI_Datatype datatype,
                                            MPI_Op  op, int root,
                                            MPI_Comm  comm)
@@ -472,7 +477,7 @@ int Coll_reduce_ompi_binomial::reduce( void *sendbuf, void *recvbuf,
  * Acecpts:       same as MPI_Reduce()
  * Returns:       MPI_SUCCESS or error code
  */
-int Coll_reduce_ompi_in_order_binary::reduce( void *sendbuf, void *recvbuf,
+int Coll_reduce_ompi_in_order_binary::reduce(const void *sendbuf, void *recvbuf,
                                                   int count,
                                                   MPI_Datatype datatype,
                                                   MPI_Op  op, int root,
@@ -482,7 +487,6 @@ int Coll_reduce_ompi_in_order_binary::reduce( void *sendbuf, void *recvbuf,
     int ret;
     int rank, size, io_root;
     int segcount = count;
-    void *use_this_sendbuf = NULL, *use_this_recvbuf = NULL;
     size_t typelng;
 
     rank = comm->rank();
@@ -504,30 +508,29 @@ int Coll_reduce_ompi_in_order_binary::reduce( void *sendbuf, void *recvbuf,
        operations for non-commutative ops.
     */
     io_root = size - 1;
-    use_this_sendbuf = sendbuf;
-    use_this_recvbuf = recvbuf;
+    const void* use_this_sendbuf = sendbuf;
+    void* use_this_recvbuf       = recvbuf;
+    unsigned char* tmp_sendbuf   = nullptr;
+    unsigned char* tmp_recvbuf   = nullptr;
     if (io_root != root) {
         ptrdiff_t text, ext;
-        char *tmpbuf = NULL;
 
         ext=datatype->get_extent();
         text=datatype->get_extent();
 
         if ((root == rank) && (MPI_IN_PLACE == sendbuf)) {
-            tmpbuf = (char *) smpi_get_tmp_sendbuffer(text + (count - 1) * ext);
-            if (NULL == tmpbuf) {
-                return MPI_ERR_INTERN;
-            }
-            Datatype::copy (
-                                                (char*)recvbuf, count, datatype,
-                                                (char*)tmpbuf, count, datatype);
-            use_this_sendbuf = tmpbuf;
+          tmp_sendbuf = smpi_get_tmp_sendbuffer(text + (count - 1) * ext);
+          if (NULL == tmp_sendbuf) {
+            return MPI_ERR_INTERN;
+          }
+          Datatype::copy(recvbuf, count, datatype, tmp_sendbuf, count, datatype);
+          use_this_sendbuf = tmp_sendbuf;
         } else if (io_root == rank) {
-            tmpbuf = (char *) smpi_get_tmp_recvbuffer(text + (count - 1) * ext);
-            if (NULL == tmpbuf) {
-                return MPI_ERR_INTERN;
-            }
-            use_this_recvbuf = tmpbuf;
+          tmp_recvbuf = smpi_get_tmp_recvbuffer(text + (count - 1) * ext);
+          if (NULL == tmp_recvbuf) {
+            return MPI_ERR_INTERN;
+          }
+          use_this_recvbuf = tmp_recvbuf;
         }
     }
 
@@ -546,7 +549,7 @@ int Coll_reduce_ompi_in_order_binary::reduce( void *sendbuf, void *recvbuf,
                                     COLL_TAG_REDUCE, comm,
                                     MPI_STATUS_IGNORE);
             if (MPI_IN_PLACE == sendbuf) {
-              smpi_free_tmp_buffer(use_this_sendbuf);
+              smpi_free_tmp_buffer(tmp_sendbuf);
             }
 
         } else if (io_root == rank) {
@@ -554,7 +557,7 @@ int Coll_reduce_ompi_in_order_binary::reduce( void *sendbuf, void *recvbuf,
             Request::send(use_this_recvbuf, count, datatype, root,
                                     COLL_TAG_REDUCE,
                                     comm);
-            smpi_free_tmp_buffer(use_this_recvbuf);
+            smpi_free_tmp_buffer(tmp_recvbuf);
         }
     }
 
@@ -584,7 +587,7 @@ int Coll_reduce_ompi_in_order_binary::reduce( void *sendbuf, void *recvbuf,
  */
 
 int
-Coll_reduce_ompi_basic_linear::reduce(void *sbuf, void *rbuf, int count,
+Coll_reduce_ompi_basic_linear::reduce(const void *sbuf, void *rbuf, int count,
                                           MPI_Datatype dtype,
                                           MPI_Op op,
                                           int root,
@@ -592,10 +595,10 @@ Coll_reduce_ompi_basic_linear::reduce(void *sbuf, void *rbuf, int count,
 {
     int i, rank, size;
     ptrdiff_t true_extent, lb, extent;
-    char *free_buffer = NULL;
-    char *pml_buffer = NULL;
-    char *inplace_temp = NULL;
-    char *inbuf;
+    unsigned char* free_buffer  = nullptr;
+    unsigned char* pml_buffer   = nullptr;
+    unsigned char* inplace_temp = nullptr;
+    const unsigned char* inbuf;
 
     /* Initialize */
 
@@ -622,16 +625,16 @@ Coll_reduce_ompi_basic_linear::reduce(void *sbuf, void *rbuf, int count,
 
     if (MPI_IN_PLACE == sbuf) {
         sbuf = rbuf;
-        inplace_temp = (char*)smpi_get_tmp_recvbuffer(true_extent + (count - 1) * extent);
-        if (NULL == inplace_temp) {
-            return -1;
+        inplace_temp = smpi_get_tmp_recvbuffer(true_extent + (count - 1) * extent);
+        if (nullptr == inplace_temp) {
+          return -1;
         }
         rbuf = inplace_temp - lb;
     }
 
     if (size > 1) {
-        free_buffer = (char*)smpi_get_tmp_recvbuffer(true_extent + (count - 1) * extent);
-        pml_buffer = free_buffer - lb;
+      free_buffer = smpi_get_tmp_recvbuffer(true_extent + (count - 1) * extent);
+      pml_buffer  = free_buffer - lb;
     }
 
     /* Initialize the receive buffer. */
@@ -648,7 +651,7 @@ Coll_reduce_ompi_basic_linear::reduce(void *sbuf, void *rbuf, int count,
 
     for (i = size - 2; i >= 0; --i) {
         if (rank == i) {
-            inbuf = (char*)sbuf;
+          inbuf = static_cast<const unsigned char*>(sbuf);
         } else {
             Request::recv(pml_buffer, count, dtype, i,
                                     COLL_TAG_REDUCE, comm,
@@ -660,13 +663,12 @@ Coll_reduce_ompi_basic_linear::reduce(void *sbuf, void *rbuf, int count,
         if(op!=MPI_OP_NULL) op->apply( inbuf, rbuf, &count, dtype);
     }
 
-    if (NULL != inplace_temp) {
-        Datatype::copy(inplace_temp, count, dtype,(char*)sbuf
-                                                  ,count , dtype);
-        smpi_free_tmp_buffer(inplace_temp);
+    if (nullptr != inplace_temp) {
+      Datatype::copy(inplace_temp, count, dtype, (char*)sbuf, count, dtype);
+      smpi_free_tmp_buffer(inplace_temp);
     }
-    if (NULL != free_buffer) {
-        smpi_free_tmp_buffer(free_buffer);
+    if (nullptr != free_buffer) {
+      smpi_free_tmp_buffer(free_buffer);
     }
 
     /* All done */

@@ -44,19 +44,18 @@
 namespace simgrid{
 namespace smpi{
 int
-Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(void *sbuf,
+Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(const void *sbuf,
                                                             void *rbuf,
-                                                            int *rcounts,
+                                                            const int *rcounts,
                                                             MPI_Datatype dtype,
                                                             MPI_Op op,
                                                             MPI_Comm comm
                                                             )
 {
     int i, rank, size, count, err = MPI_SUCCESS;
-    int tmp_size=1, remain = 0, tmp_rank, *disps = NULL;
+    int tmp_size = 1, remain = 0, tmp_rank;
     ptrdiff_t true_lb, true_extent, lb, extent, buf_size;
-    char *recv_buf = NULL, *recv_buf_free = NULL;
-    char *result_buf = NULL, *result_buf_free = NULL;
+    unsigned char *result_buf = nullptr, *result_buf_free = nullptr;
 
     /* Initialize */
     rank = comm->rank();
@@ -64,11 +63,11 @@ Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(void *sbuf,
 
     XBT_DEBUG("coll:tuned:reduce_scatter_ompi_basic_recursivehalving, rank %d", rank);
     if ((op != MPI_OP_NULL && not op->is_commutative()))
-      THROWF(arg_error,0, " reduce_scatter ompi_basic_recursivehalving can only be used for commutative operations! ");
+      throw std::invalid_argument(
+          "reduce_scatter ompi_basic_recursivehalving can only be used for commutative operations!");
 
     /* Find displacements and the like */
-    disps = (int*) xbt_malloc(sizeof(int) * size);
-    if (NULL == disps) return MPI_ERR_OTHER;
+    int* disps = new int[size];
 
     disps[0] = 0;
     for (i = 0; i < (size - 1); ++i) {
@@ -78,8 +77,8 @@ Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(void *sbuf,
 
     /* short cut the trivial case */
     if (0 == count) {
-        xbt_free(disps);
-        return MPI_SUCCESS;
+      delete[] disps;
+      return MPI_SUCCESS;
     }
 
     /* get datatype information */
@@ -93,17 +92,15 @@ Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(void *sbuf,
     }
 
     /* Allocate temporary receive buffer. */
-    recv_buf_free = (char*) smpi_get_tmp_recvbuffer(buf_size);
-
-    recv_buf = recv_buf_free - lb;
+    unsigned char* recv_buf_free = smpi_get_tmp_recvbuffer(buf_size);
+    unsigned char* recv_buf      = recv_buf_free - lb;
     if (NULL == recv_buf_free) {
         err = MPI_ERR_OTHER;
         goto cleanup;
     }
 
     /* allocate temporary buffer for results */
-    result_buf_free = (char*) smpi_get_tmp_sendbuffer(buf_size);
-
+    result_buf_free = smpi_get_tmp_sendbuffer(buf_size);
     result_buf = result_buf_free - lb;
 
     /* copy local buffer into the temporary results */
@@ -147,23 +144,13 @@ Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(void *sbuf,
     /* For ranks not kicked out by the above code, perform the
        recursive halving */
     if (tmp_rank >= 0) {
-        int *tmp_disps = NULL, *tmp_rcounts = NULL;
         int mask, send_index, recv_index, last_index;
 
         /* recalculate disps and rcounts to account for the
            special "remainder" processes that are no longer doing
            anything */
-        tmp_rcounts = (int*) xbt_malloc(tmp_size * sizeof(int));
-        if (NULL == tmp_rcounts) {
-            err = MPI_ERR_OTHER;
-            goto cleanup;
-        }
-        tmp_disps = (int*) xbt_malloc(tmp_size * sizeof(int));
-        if (NULL == tmp_disps) {
-            xbt_free(tmp_rcounts);
-            err = MPI_ERR_OTHER;
-            goto cleanup;
-        }
+        int* tmp_rcounts = new int[tmp_size];
+        int* tmp_disps   = new int[tmp_size];
 
         for (i = 0 ; i < tmp_size ; ++i) {
             if (i < remain) {
@@ -221,9 +208,9 @@ Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(void *sbuf,
                                          COLL_TAG_REDUCE_SCATTER,
                                          comm);
                 if (MPI_SUCCESS != err) {
-                    xbt_free(tmp_rcounts);
-                    xbt_free(tmp_disps);
-                    goto cleanup;
+                  delete[] tmp_rcounts;
+                  delete[] tmp_disps;
+                  goto cleanup;
                 }
             }
             if (recv_count > 0 && send_count != 0) {
@@ -232,9 +219,9 @@ Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(void *sbuf,
                                         COLL_TAG_REDUCE_SCATTER,
                                         comm);
                 if (MPI_SUCCESS != err) {
-                    xbt_free(tmp_rcounts);
-                    xbt_free(tmp_disps);
-                    goto cleanup;
+                  delete[] tmp_rcounts;
+                  delete[] tmp_disps;
+                  goto cleanup;
                 }
             }
             if (send_count > 0 && recv_count != 0) {
@@ -262,14 +249,14 @@ Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(void *sbuf,
                                        rcounts[rank], dtype,
                                        rbuf, rcounts[rank], dtype);
             if (MPI_SUCCESS != err) {
-                xbt_free(tmp_rcounts);
-                xbt_free(tmp_disps);
-                goto cleanup;
+              delete[] tmp_rcounts;
+              delete[] tmp_disps;
+              goto cleanup;
             }
         }
 
-        xbt_free(tmp_rcounts);
-        xbt_free(tmp_disps);
+        delete[] tmp_rcounts;
+        delete[] tmp_disps;
     }
 
     /* Now fix up the non-power of two case, by having the odd
@@ -292,7 +279,7 @@ Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(void *sbuf,
     }
 
  cleanup:
-    if (NULL != disps) xbt_free(disps);
+    delete[] disps;
     if (NULL != recv_buf_free) smpi_free_tmp_buffer(recv_buf_free);
     if (NULL != result_buf_free) smpi_free_tmp_buffer(result_buf_free);
 
@@ -362,16 +349,16 @@ Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(void *sbuf,
  *
  */
 int
-Coll_reduce_scatter_ompi_ring::reduce_scatter(void *sbuf, void *rbuf, int *rcounts,
+Coll_reduce_scatter_ompi_ring::reduce_scatter(const void *sbuf, void *rbuf, const int *rcounts,
                                           MPI_Datatype dtype,
                                           MPI_Op op,
                                           MPI_Comm comm
                                           )
 {
     int ret, line, rank, size, i, k, recv_from, send_to, total_count, max_block_count;
-    int inbi, *displs = NULL;
-    char *tmpsend = NULL, *tmprecv = NULL, *accumbuf = NULL, *accumbuf_free = NULL;
-    char *inbuf_free[2] = {NULL, NULL}, *inbuf[2] = {NULL, NULL};
+    int inbi;
+    unsigned char *tmpsend = NULL, *tmprecv = NULL, *accumbuf = NULL, *accumbuf_free = NULL;
+    unsigned char *inbuf_free[2] = {NULL, NULL}, *inbuf[2] = {NULL, NULL};
     ptrdiff_t true_lb, true_extent, lb, extent, max_real_segsize;
     MPI_Request reqs[2] = {NULL, NULL};
 
@@ -384,8 +371,8 @@ Coll_reduce_scatter_ompi_ring::reduce_scatter(void *sbuf, void *rbuf, int *rcoun
     /* Determine the maximum number of elements per node,
        corresponding block size, and displacements array.
     */
-    displs = (int*) xbt_malloc(size * sizeof(int));
-    if (NULL == displs) { ret = -1; line = __LINE__; goto error_hndl; }
+    int* displs = new int[size];
+
     displs[0] = 0;
     total_count = rcounts[0];
     max_block_count = rcounts[0];
@@ -401,7 +388,7 @@ Coll_reduce_scatter_ompi_ring::reduce_scatter(void *sbuf, void *rbuf, int *rcoun
             ret = Datatype::copy((char*)sbuf, total_count, dtype, (char*)rbuf, total_count, dtype);
             if (ret < 0) { line = __LINE__; goto error_hndl; }
         }
-        xbt_free(displs);
+        delete[] displs;
         return MPI_SUCCESS;
     }
 
@@ -415,17 +402,21 @@ Coll_reduce_scatter_ompi_ring::reduce_scatter(void *sbuf, void *rbuf, int *rcoun
 
     max_real_segsize = true_extent + (ptrdiff_t)(max_block_count - 1) * extent;
 
-    accumbuf_free = (char*)smpi_get_tmp_recvbuffer(true_extent + (ptrdiff_t)(total_count - 1) * extent);
+    accumbuf_free = smpi_get_tmp_recvbuffer(true_extent + (ptrdiff_t)(total_count - 1) * extent);
     if (NULL == accumbuf_free) { ret = -1; line = __LINE__; goto error_hndl; }
     accumbuf = accumbuf_free - lb;
 
-    inbuf_free[0] = (char*)smpi_get_tmp_sendbuffer(max_real_segsize);
+    inbuf_free[0] = smpi_get_tmp_sendbuffer(max_real_segsize);
     if (NULL == inbuf_free[0]) { ret = -1; line = __LINE__; goto error_hndl; }
     inbuf[0] = inbuf_free[0] - lb;
     if (size > 2) {
-        inbuf_free[1] = (char*)smpi_get_tmp_sendbuffer(max_real_segsize);
-        if (NULL == inbuf_free[1]) { ret = -1; line = __LINE__; goto error_hndl; }
-        inbuf[1] = inbuf_free[1] - lb;
+      inbuf_free[1] = smpi_get_tmp_sendbuffer(max_real_segsize);
+      if (NULL == inbuf_free[1]) {
+        ret  = -1;
+        line = __LINE__;
+        goto error_hndl;
+      }
+      inbuf[1] = inbuf_free[1] - lb;
     }
 
     /* Handle MPI_IN_PLACE for size > 1 */
@@ -483,7 +474,8 @@ Coll_reduce_scatter_ompi_ring::reduce_scatter(void *sbuf, void *rbuf, int *rcoun
            rbuf[prevblock] = inbuf[inbi ^ 0x1] (op) rbuf[prevblock]
         */
         tmprecv = accumbuf + (ptrdiff_t)displs[prevblock] * extent;
-        if(op!=MPI_OP_NULL) op->apply( inbuf[inbi ^ 0x1], tmprecv, &(rcounts[prevblock]), dtype);
+        if (op != MPI_OP_NULL)
+          op->apply(inbuf[inbi ^ 0x1], tmprecv, &rcounts[prevblock], dtype);
 
         /* send previous block to send_to */
         Request::send(tmprecv, rcounts[prevblock], dtype, send_to,
@@ -497,13 +489,14 @@ Coll_reduce_scatter_ompi_ring::reduce_scatter(void *sbuf, void *rbuf, int *rcoun
     /* Apply operation on the last block (my block)
        rbuf[rank] = inbuf[inbi] (op) rbuf[rank] */
     tmprecv = accumbuf + (ptrdiff_t)displs[rank] * extent;
-    if(op!=MPI_OP_NULL) op->apply( inbuf[inbi], tmprecv, &(rcounts[rank]), dtype);
+    if (op != MPI_OP_NULL)
+      op->apply(inbuf[inbi], tmprecv, &rcounts[rank], dtype);
 
     /* Copy result from tmprecv to rbuf */
     ret = Datatype::copy(tmprecv, rcounts[rank], dtype, (char*)rbuf, rcounts[rank], dtype);
     if (ret < 0) { line = __LINE__; goto error_hndl; }
 
-    if (NULL != displs) xbt_free(displs);
+    delete[] displs;
     if (NULL != accumbuf_free) smpi_free_tmp_buffer(accumbuf_free);
     if (NULL != inbuf_free[0]) smpi_free_tmp_buffer(inbuf_free[0]);
     if (NULL != inbuf_free[1]) smpi_free_tmp_buffer(inbuf_free[1]);
@@ -513,7 +506,7 @@ Coll_reduce_scatter_ompi_ring::reduce_scatter(void *sbuf, void *rbuf, int *rcoun
  error_hndl:
     XBT_DEBUG( "%s:%4d\tRank %d Error occurred %d\n",
                  __FILE__, line, rank, ret);
-    if (NULL != displs) xbt_free(displs);
+    delete[] displs;
     if (NULL != accumbuf_free) smpi_free_tmp_buffer(accumbuf_free);
     if (NULL != inbuf_free[0]) smpi_free_tmp_buffer(inbuf_free[0]);
     if (NULL != inbuf_free[1]) smpi_free_tmp_buffer(inbuf_free[1]);

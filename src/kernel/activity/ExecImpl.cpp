@@ -13,6 +13,8 @@
 
 #include "simgrid/s4u/Host.hpp"
 
+#include <boost/range/algorithm.hpp>
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
 void simcall_HANDLER_execution_wait(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* synchro)
@@ -20,8 +22,7 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, simgrid::kernel::acti
   XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state_);
 
   /* Associate this simcall to the synchro */
-  synchro->simcalls_.push_back(simcall);
-  simcall->issuer->waiting_synchro = synchro;
+  synchro->register_simcall(simcall);
 
   /* set surf's synchro */
   if (MC_is_active() || MC_record_replay_is_active()) {
@@ -37,14 +38,46 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, simgrid::kernel::acti
 
 void simcall_HANDLER_execution_test(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* synchro)
 {
-  int res = (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING);
+  bool res = (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING);
   if (res) {
     synchro->simcalls_.push_back(simcall);
     synchro->finish();
   } else {
-    SIMIX_simcall_answer(simcall);
+    simcall->issuer_->simcall_answer();
   }
   simcall_execution_test__set__result(simcall, res);
+}
+
+void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* execs[],
+                                           size_t count, double timeout)
+{
+  if (timeout < 0.0) {
+    simcall->timeout_cb_ = nullptr;
+  } else {
+    simcall->timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall, execs, count]() {
+      for (size_t i = 0; i < count; i++) {
+        // Remove the first occurence of simcall:
+        auto* exec = execs[i];
+        auto j     = boost::range::find(exec->simcalls_, simcall);
+        if (j != exec->simcalls_.end())
+          exec->simcalls_.erase(j);
+      }
+      simcall_execution_waitany_for__set__result(simcall, -1);
+      simcall->issuer_->simcall_answer();
+    });
+  }
+
+  for (size_t i = 0; i < count; i++) {
+    /* associate this simcall to the the synchro */
+    auto* exec = execs[i];
+    exec->simcalls_.push_back(simcall);
+
+    /* see if the synchro is already finished */
+    if (exec->state_ != SIMIX_WAITING && exec->state_ != SIMIX_RUNNING) {
+      exec->finish();
+      break;
+    }
+  }
 }
 
 namespace simgrid {
@@ -72,23 +105,11 @@ ExecImpl& ExecImpl::set_hosts(const std::vector<s4u::Host*>& hosts)
   return *this;
 }
 
-ExecImpl& ExecImpl::set_name(const std::string& name)
-{
-  ActivityImpl::set_name(name);
-  return *this;
-}
-
-ExecImpl& ExecImpl::set_tracing_category(const std::string& category)
-{
-  ActivityImpl::set_category(category);
-  return *this;
-}
-
 ExecImpl& ExecImpl::set_timeout(double timeout)
 {
   if (timeout > 0 && not MC_is_active() && not MC_record_replay_is_active()) {
     timeout_detector_ = hosts_.front()->pimpl_cpu->sleep(timeout);
-    timeout_detector_->set_data(this);
+    timeout_detector_->set_activity(this);
   }
   return *this;
 }
@@ -120,30 +141,19 @@ ExecImpl* ExecImpl::start()
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     if (hosts_.size() == 1) {
       surf_action_ = hosts_.front()->pimpl_cpu->execution_start(flops_amounts_.front());
-      surf_action_->set_priority(priority_);
+      surf_action_->set_sharing_penalty(sharing_penalty_);
+      surf_action_->set_category(get_tracing_category());
+
       if (bound_ > 0)
         surf_action_->set_bound(bound_);
     } else {
       surf_action_ = surf_host_model->execute_parallel(hosts_, flops_amounts_.data(), bytes_amounts_.data(), -1);
     }
-    surf_action_->set_data(this);
+    surf_action_->set_activity(this);
   }
 
   XBT_DEBUG("Create execute synchro %p: %s", this, get_cname());
-  ExecImpl::on_creation(*this);
   return this;
-}
-
-void ExecImpl::cancel()
-{
-  XBT_VERB("This exec %p is canceled", this);
-  if (surf_action_ != nullptr)
-    surf_action_->cancel();
-}
-
-double ExecImpl::get_remaining() const
-{
-  return surf_action_ ? surf_action_->get_remains() : 0;
 }
 
 double ExecImpl::get_seq_remaining_ratio()
@@ -163,9 +173,9 @@ ExecImpl& ExecImpl::set_bound(double bound)
   return *this;
 }
 
-ExecImpl& ExecImpl::set_priority(double priority)
+ExecImpl& ExecImpl::set_sharing_penalty(double sharing_penalty)
 {
-  priority_ = priority;
+  sharing_penalty_ = sharing_penalty;
   return *this;
 }
 
@@ -184,20 +194,15 @@ void ExecImpl::post()
     state_ = SIMIX_DONE;
   }
 
-  on_completion(*this);
+  clean_action();
 
-  if (surf_action_) {
-    surf_action_->unref();
-    surf_action_ = nullptr;
-  }
   if (timeout_detector_) {
     timeout_detector_->unref();
     timeout_detector_ = nullptr;
   }
 
-  /* If there are simcalls associated with the synchro, then answer them */
-  if (not simcalls_.empty())
-    finish();
+  /* Answer all simcalls associated with the synchro */
+  finish();
 }
 
 void ExecImpl::finish()
@@ -205,6 +210,37 @@ void ExecImpl::finish()
   while (not simcalls_.empty()) {
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
+
+    /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
+     * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
+     * simcall */
+
+    if (simcall->call_ == SIMCALL_NONE) // FIXME: maybe a better way to handle this case
+      continue;                        // if process handling comm is killed
+    if (simcall->call_ == SIMCALL_EXECUTION_WAITANY_FOR) {
+      simgrid::kernel::activity::ExecImpl** execs = simcall_execution_waitany_for__get__execs(simcall);
+      size_t count                                = simcall_execution_waitany_for__get__count(simcall);
+
+      for (size_t i = 0; i < count; i++) {
+        // Remove the first occurence of simcall:
+        auto* exec = execs[i];
+        auto j     = boost::range::find(exec->simcalls_, simcall);
+        if (j != exec->simcalls_.end())
+          exec->simcalls_.erase(j);
+
+        if (simcall->timeout_cb_) {
+          simcall->timeout_cb_->remove();
+          simcall->timeout_cb_ = nullptr;
+        }
+      }
+
+      if (not MC_is_active() && not MC_record_replay_is_active()) {
+        ExecImpl** element = std::find(execs, execs + count, this);
+        int rank           = (element != execs + count) ? element - execs : -1;
+        simcall_execution_waitany_for__set__result(simcall, rank);
+      }
+    }
+
     switch (state_) {
 
       case SIMIX_DONE:
@@ -213,37 +249,35 @@ void ExecImpl::finish()
         break;
 
       case SIMIX_FAILED:
-        XBT_DEBUG("ExecImpl::finish(): host '%s' failed", simcall->issuer->get_host()->get_cname());
-        simcall->issuer->context_->iwannadie = true;
-        if (simcall->issuer->get_host()->is_on())
-          simcall->issuer->exception_ =
+        XBT_DEBUG("ExecImpl::finish(): host '%s' failed", simcall->issuer_->get_host()->get_cname());
+        simcall->issuer_->context_->iwannadie = true;
+        if (simcall->issuer_->get_host()->is_on())
+          simcall->issuer_->exception_ =
               std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
         /* else, the actor will be killed with no possibility to survive */
         break;
 
       case SIMIX_CANCELED:
         XBT_DEBUG("ExecImpl::finish(): execution canceled");
-        simcall->issuer->exception_ =
+        simcall->issuer_->exception_ =
             std::make_exception_ptr(simgrid::CancelException(XBT_THROW_POINT, "Execution Canceled"));
         break;
 
       case SIMIX_TIMEOUT:
         XBT_DEBUG("ExecImpl::finish(): execution timeouted");
-        simcall->issuer->exception_ = std::make_exception_ptr(simgrid::TimeoutError(XBT_THROW_POINT, "Timeouted"));
+        simcall->issuer_->exception_ = std::make_exception_ptr(simgrid::TimeoutException(XBT_THROW_POINT, "Timeouted"));
         break;
 
       default:
         xbt_die("Internal error in ExecImpl::finish(): unexpected synchro state %d", static_cast<int>(state_));
     }
 
-    simcall->issuer->waiting_synchro = nullptr;
-    simcall_execution_wait__set__result(simcall, state_);
-
+    simcall->issuer_->waiting_synchro = nullptr;
     /* Fail the process if the host is down */
-    if (simcall->issuer->get_host()->is_on())
-      SIMIX_simcall_answer(simcall);
+    if (simcall->issuer_->get_host()->is_on())
+      simcall->issuer_->simcall_answer();
     else
-      simcall->issuer->context_->iwannadie = true;
+      simcall->issuer_->context_->iwannadie = true;
   }
 }
 
@@ -253,13 +287,13 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
     resource::Action* old_action = this->surf_action_;
     resource::Action* new_action = to->pimpl_cpu->execution_start(old_action->get_cost());
     new_action->set_remains(old_action->get_remains());
-    new_action->set_data(this);
-    new_action->set_priority(old_action->get_priority());
+    new_action->set_activity(this);
+    new_action->set_sharing_penalty(old_action->get_sharing_penalty());
 
     // FIXME: the user-defined bound seem to not be kept by LMM, that seem to overwrite it for the multi-core modeling.
     // I hope that the user did not provide any.
 
-    old_action->set_data(nullptr);
+    old_action->set_activity(nullptr);
     old_action->cancel();
     old_action->unref();
     this->surf_action_ = new_action;
@@ -272,8 +306,6 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
 /*************
  * Callbacks *
  *************/
-xbt::signal<void(ExecImpl&)> ExecImpl::on_creation;
-xbt::signal<void(ExecImpl const&)> ExecImpl::on_completion;
 xbt::signal<void(ExecImpl const&, s4u::Host*)> ExecImpl::on_migration;
 
 } // namespace activity

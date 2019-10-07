@@ -8,7 +8,8 @@ if(enable_smpi)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   foreach(x coll-allgather coll-allgatherv coll-allreduce coll-alltoall coll-alltoallv coll-barrier coll-bcast
             coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong
-            type-hvector type-indexed type-struct type-vector bug-17132 timers privatization )
+            type-hvector type-indexed type-struct type-vector bug-17132 timers privatization 
+            io-simple io-simple-at io-all io-all-at io-shared io-ordered)
     add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -28,6 +29,7 @@ if(enable_smpi)
     set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpif90")
     add_executable       (fort_args EXCLUDE_FROM_ALL fort_args/fort_args.f90)
     target_link_libraries(fort_args simgrid)
+    target_link_libraries(fort_args mpi)
     set_target_properties(fort_args PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/fort_args)
     add_dependencies(tests fort_args)
   endif()
@@ -36,7 +38,8 @@ endif()
 foreach(x coll-allgather coll-allgatherv coll-allreduce coll-alltoall coll-alltoallv coll-barrier coll-bcast
     coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong
     type-hvector type-indexed type-struct type-vector bug-17132 timers privatization
-    macro-shared macro-partial-shared macro-partial-shared-communication)
+    macro-shared macro-partial-shared macro-partial-shared-communication
+    io-simple io-simple-at io-all io-all-at io-shared io-ordered)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
 endforeach()
@@ -51,6 +54,8 @@ set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/c
 set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_cluster
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_coll
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_mpich
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_io
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_empty  PARENT_SCOPE)
 
 
@@ -63,7 +68,7 @@ if(enable_smpi)
 
   foreach(x coll-allgather coll-allgatherv coll-allreduce coll-alltoall coll-alltoallv coll-barrier coll-bcast
             coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong
-	    type-hvector type-indexed type-struct type-vector bug-17132 timers)
+	    type-hvector type-indexed type-struct type-vector bug-17132 timers io-simple io-simple-at io-all io-all-at io-shared io-ordered)
     ADD_TESH_FACTORIES(tesh-smpi-${x} "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/${x} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/${x} ${x}.tesh)
   endforeach()
 

@@ -2092,13 +2092,14 @@ $ ${bindir:=.}/../../../../bin/simgrid-mc ${bindir:=.}/bugged2 "--log=root.fmt:[
 > [  0.000000] (0:maestro@) *** PROPERTY NOT VALID ***
 > [  0.000000] (0:maestro@) **************************
 > [  0.000000] (0:maestro@) Counter-example execution trace:
-> [  0.000000] (0:maestro@) [(1)HostA (server)] iRecv(dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:maestro@) [(3)HostC (client)] iSend(src=(3)HostC (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:maestro@) [(1)HostA (server)] Wait(comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
-> [  0.000000] (0:maestro@) [(3)HostC (client)] Wait(comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
-> [  0.000000] (0:maestro@) [(1)HostA (server)] iRecv(dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:maestro@) [(3)HostC (client)] iSend(src=(3)HostC (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:maestro@) [(1)HostA (server)] Wait(comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
+> [  0.000000] (0:maestro@)   [(1)HostA (server)] iRecv(dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@)   [(3)HostC (client)] iSend(src=(3)HostC (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@)   [(1)HostA (server)] Wait(comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
+> [  0.000000] (0:maestro@)   [(3)HostC (client)] Wait(comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
+> [  0.000000] (0:maestro@)   [(1)HostA (server)] iRecv(dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@)   [(3)HostC (client)] iSend(src=(3)HostC (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@)   [(1)HostA (server)] Wait(comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
+> [  0.000000] (0:maestro@) Path = 1;3;1;3;1;3;1
 > [  0.000000] (0:maestro@) Expanded states = 1006
 > [  0.000000] (0:maestro@) Visited states = 5319
 > [  0.000000] (0:maestro@) Executed transitions = 4969

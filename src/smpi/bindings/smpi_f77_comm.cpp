@@ -5,6 +5,7 @@
 
 #include "private.hpp"
 #include "smpi_comm.hpp"
+#include "smpi_errhandler.hpp"
 #include "smpi_info.hpp"
 
 extern "C" { // This should really use the C linkage to be usable from Fortran
@@ -37,12 +38,11 @@ void mpi_comm_create_(int* comm, int* group, int* newcomm, int* ierr) {
 
 void mpi_comm_free_(int* comm, int* ierr) {
   MPI_Comm tmp = simgrid::smpi::Comm::f2c(*comm);
-
-  *ierr = MPI_Comm_free(&tmp);
-
-  if(*ierr == MPI_SUCCESS) {
+  if(tmp != MPI_COMM_WORLD && tmp != MPI_COMM_NULL) {
+    simgrid::smpi::Comm::destroy(tmp);
     simgrid::smpi::Comm::free_f(*comm);
   }
+  *ierr = MPI_SUCCESS;
 }
 
 void mpi_comm_split_(int* comm, int* color, int* key, int* comm_out, int* ierr) {
@@ -101,8 +101,8 @@ void mpi_comm_free_keyval_ (int* keyval, int* ierr) {
 
 void mpi_comm_get_name_ (int* comm, char* name, int* len, int* ierr){
  *ierr = MPI_Comm_get_name(simgrid::smpi::Comm::f2c(*comm), name, len);
-  if(*len>0)
-    name[*len]=' ';
+  for(int i = *len; i<MPI_MAX_OBJECT_NAME+1; i++)
+    name[i]=' ';
 }
 
 void mpi_comm_compare_ (int* comm1, int* comm2, int *result, int* ierr){
@@ -118,12 +118,16 @@ void mpi_comm_disconnect_ (int* comm, int* ierr){
  }
 }
 
-void mpi_comm_set_errhandler_ (int* comm, void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_set(simgrid::smpi::Comm::f2c(*comm), *static_cast<MPI_Errhandler*>(errhandler));
+void mpi_comm_set_errhandler_ (int* comm, int* errhandler, int* ierr) {
+ *ierr = MPI_Errhandler_set(simgrid::smpi::Comm::f2c(*comm), simgrid::smpi::Errhandler::f2c(*errhandler));
 }
 
-void mpi_comm_get_errhandler_ (int* comm, void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_set(simgrid::smpi::Comm::f2c(*comm), static_cast<MPI_Errhandler*>(errhandler));
+void mpi_comm_get_errhandler_ (int* comm, int* errhandler, int* ierr) {
+ MPI_Errhandler tmp;
+ *ierr = MPI_Errhandler_get(simgrid::smpi::Comm::f2c(*comm), &tmp);
+ if(*ierr == MPI_SUCCESS) {
+   *errhandler = tmp->c2f();
+ }
 }
 
 void mpi_comm_test_inter_ (int* comm, int* flag, int* ierr) {
@@ -142,10 +146,13 @@ void mpi_comm_remote_size_ (int* comm, int* size, int* ierr) {
  *ierr = MPI_Comm_remote_size(simgrid::smpi::Comm::f2c(*comm), size);
 }
 
-void mpi_comm_set_name_ (int* comm, char* name, int* ierr, int size){
- char* tname = xbt_new(char, size+1);
- strncpy(tname, name, size);
- tname[size]='\0';
+void mpi_comm_set_name_ (int* comm, char* name, int* ierr){
+ int count;
+ for(count=MPI_MAX_OBJECT_NAME-1; count>=0 && name[count]==' '; count--);
+ count+=1;
+ char* tname = xbt_new(char, count+1);
+ strncpy(tname, name, count);
+ tname[count]='\0';
  *ierr = MPI_Comm_set_name (simgrid::smpi::Comm::f2c(*comm), tname);
  xbt_free(tname);
 }
@@ -178,8 +185,12 @@ void mpi_comm_get_info_ (int* comm, int* info, int* ierr){
  }
 }
 
-void mpi_comm_create_errhandler_ ( void *function, void *errhandler, int* ierr){
- *ierr = MPI_Comm_create_errhandler( reinterpret_cast<MPI_Comm_errhandler_fn*>(function), static_cast<MPI_Errhandler*>(errhandler));
+void mpi_comm_create_errhandler_ ( void *function, int *errhandler, int* ierr){
+ MPI_Errhandler tmp;
+ *ierr = MPI_Comm_create_errhandler( reinterpret_cast<MPI_Comm_errhandler_fn*>(function), &tmp);
+ if(*ierr==MPI_SUCCESS){
+   *errhandler = tmp->c2f();
+ }
 }
 
 void mpi_comm_call_errhandler_ (int* comm,int* errorcode, int* ierr){
@@ -188,7 +199,7 @@ void mpi_comm_call_errhandler_ (int* comm,int* errorcode, int* ierr){
 
 void mpi_comm_connect_ ( char *port_name, int* info, int* root, int* comm, int*newcomm, int* ierr){
   MPI_Comm tmp;
-  *ierr = MPI_Comm_connect( port_name, *reinterpret_cast<MPI_Info*>(info), *root, simgrid::smpi::Comm::f2c(*comm), &tmp);
+  *ierr = MPI_Comm_connect( port_name, simgrid::smpi::Info::f2c(*info), *root, simgrid::smpi::Comm::f2c(*comm), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newcomm = tmp->add_f();
   }
@@ -205,7 +216,7 @@ void mpi_comm_join_ ( int* fd, int* intercomm, int* ierr){
 
 void mpi_comm_accept_ ( char *port_name, int* info, int* root, int* comm, int*newcomm, int* ierr){
   MPI_Comm tmp;
-  *ierr = MPI_Comm_accept( port_name, *reinterpret_cast<MPI_Info*>(info), *root, simgrid::smpi::Comm::f2c(*comm), &tmp);
+  *ierr = MPI_Comm_accept( port_name, simgrid::smpi::Info::f2c(*info), *root, simgrid::smpi::Comm::f2c(*comm), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newcomm = tmp->add_f();
   }
@@ -214,7 +225,7 @@ void mpi_comm_accept_ ( char *port_name, int* info, int* root, int* comm, int*ne
 void mpi_comm_spawn_ ( char *command, char *argv, int* maxprocs, int* info, int* root, int* comm, int* intercomm,
                        int* array_of_errcodes, int* ierr){
   MPI_Comm tmp;
-  *ierr = MPI_Comm_spawn( command, &argv, *maxprocs, *reinterpret_cast<MPI_Info*>(info), *root, simgrid::smpi::Comm::f2c(*comm), &tmp,
+  *ierr = MPI_Comm_spawn( command, &argv, *maxprocs, simgrid::smpi::Info::f2c(*info), *root, simgrid::smpi::Comm::f2c(*comm), &tmp,
                           array_of_errcodes);
   if(*ierr == MPI_SUCCESS) {
     *intercomm = tmp->add_f();

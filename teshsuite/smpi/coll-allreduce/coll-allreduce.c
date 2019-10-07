@@ -23,6 +23,8 @@ int main(int argc, char *argv[])
 
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
+
   if (maxlen > 1)
     mult = maxlen > size ? size : maxlen;
   int* sb = xbt_new0(int, size * maxlen);
@@ -32,6 +34,25 @@ int main(int argc, char *argv[])
     sb[i] = rank*size + i;
     rb[i] = 0;
   }
+
+  status = MPI_Allreduce(NULL, rb, size, MPI_UNSIGNED_LONG_LONG, MPI_SUM, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_BUFFER)
+    printf("MPI_Allreduce did not return MPI_ERR_BUFFER for empty sendbuf\n");
+  status = MPI_Allreduce(sb, NULL, size, MPI_UNSIGNED_LONG_LONG, MPI_SUM, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_BUFFER)
+    printf("MPI_Allreduce did not return MPI_ERR_BUFFER for empty recvbuf\n");
+  status = MPI_Allreduce(sb, rb, -1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_COUNT)
+    printf("MPI_Allreduce did not return MPI_ERR_COUNT for -1 count\n");
+  status = MPI_Allreduce(sb, rb, size, MPI_DATATYPE_NULL, MPI_SUM, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_TYPE)
+    printf("MPI_Allreduce did not return MPI_ERR_TYPE for MPI_DATATYPE_NULL type\n");
+  status = MPI_Allreduce(sb, rb, size, MPI_UNSIGNED_LONG_LONG, MPI_OP_NULL, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_OP)
+    printf("MPI_Allreduce did not return MPI_ERR_COMM for MPI_OP_NULL op\n");
+  status = MPI_Allreduce(sb, rb, size, MPI_UNSIGNED_LONG_LONG, MPI_SUM, MPI_COMM_NULL);
+  if(status!=MPI_ERR_COMM)
+    printf("MPI_Allreduce did not return MPI_ERR_COMM for MPI_COMM_NULL comm\n");
 
   printf("[%d] sndbuf=[", rank);
   for (i = 0; i < size *mult; i++)

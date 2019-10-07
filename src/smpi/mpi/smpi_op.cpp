@@ -13,15 +13,27 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_op, smpi, "Logging specific to SMPI (op)");
 #define MAX_OP(a, b)  (b) = (a) < (b) ? (b) : (a)
 #define MIN_OP(a, b)  (b) = (a) < (b) ? (a) : (b)
 #define SUM_OP(a, b)  (b) += (a)
+#define SUM_OP_COMPLEX(a, b)                                                                                           \
+  {                                                                                                                    \
+    ((b).value) += ((a).value);                                                                                        \
+    ((b).index) += ((a).index);                                                                                        \
+  }
 #define PROD_OP(a, b) (b) *= (a)
+#define PROD_OP_COMPLEX(a, b)                                                                                          \
+  {                                                                                                                    \
+    ((b).value) *= ((a).value);                                                                                        \
+    ((b).index) *= ((a).index);                                                                                        \
+  }
 #define LAND_OP(a, b) (b) = (a) && (b)
 #define LOR_OP(a, b)  (b) = (a) || (b)
 #define LXOR_OP(a, b) (b) = (not(a) && (b)) || ((a) && not(b))
 #define BAND_OP(a, b) (b) &= (a)
 #define BOR_OP(a, b)  (b) |= (a)
 #define BXOR_OP(a, b) (b) ^= (a)
-#define MAXLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (b) : ((a.value) == (b.value) ? ((a.index) < (b.index) ? (a) : (b)) : (a))
-#define MINLOC_OP(a, b)  (b) = (a.value) < (b.value) ? (a) : ((a.value) == (b.value) ? ((a.index) < (b.index) ? (a) : (b)) : (b))
+#define MAXLOC_OP(a, b)                                                                                                \
+  (b) = ((a).value) < ((b).value) ? (b) : (((a).value) == ((b).value) ? (((a).index) < ((b).index) ? (a) : (b)) : (a))
+#define MINLOC_OP(a, b)                                                                                                \
+  (b) = ((a).value) < ((b).value) ? (a) : (((a).value) == ((b).value) ? (((a).index) < ((b).index) ? (a) : (b)) : (b))
 
 #define APPLY_FUNC(a, b, length, type, func) \
 {                                          \
@@ -33,11 +45,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_op, smpi, "Logging specific to SMPI (op)");
   }                                        \
 }
 
-#define APPLY_OP_LOOP(dtype, type, op) \
-  if (*datatype == dtype) {\
-    APPLY_FUNC(a, b, length, type, op)\
-  } else \
-
+#define APPLY_OP_LOOP(dtype, type, op)                                                                                 \
+  if (*datatype == (dtype)) {                                                                                          \
+    APPLY_FUNC(a, b, length, type, op)                                                                                 \
+  } else
 
 #define APPLY_BASIC_OP_LOOP(op)\
 APPLY_OP_LOOP(MPI_CHAR, char,op)\
@@ -66,7 +77,9 @@ APPLY_OP_LOOP(MPI_OFFSET, MPI_Offset,op)\
 APPLY_OP_LOOP(MPI_INTEGER1, int,op)\
 APPLY_OP_LOOP(MPI_INTEGER2, int16_t,op)\
 APPLY_OP_LOOP(MPI_INTEGER4, int32_t,op)\
-APPLY_OP_LOOP(MPI_INTEGER8, int64_t,op)
+APPLY_OP_LOOP(MPI_INTEGER8, int64_t,op)\
+APPLY_OP_LOOP(MPI_COUNT, long long,op)
+
 
 #define APPLY_BOOL_OP_LOOP(op)\
 APPLY_OP_LOOP(MPI_C_BOOL, bool,op)
@@ -94,11 +107,14 @@ APPLY_OP_LOOP(MPI_2INT, int_int,op)\
 APPLY_OP_LOOP(MPI_2FLOAT, float_float,op)\
 APPLY_OP_LOOP(MPI_2DOUBLE, double_double,op)\
 APPLY_OP_LOOP(MPI_LONG_DOUBLE_INT, long_double_int,op)\
-APPLY_OP_LOOP(MPI_2LONG, long_long,op)
+APPLY_OP_LOOP(MPI_2LONG, long_long,op)\
+APPLY_OP_LOOP(MPI_COMPLEX8, float_float,op)\
+APPLY_OP_LOOP(MPI_COMPLEX16, double_double,op)\
+APPLY_OP_LOOP(MPI_COMPLEX32, double_double,op)
 
-#define APPLY_END_OP_LOOP(op)\
-  {\
-    xbt_die("Failed to apply " #op " to type %s", (*datatype)->name());\
+#define APPLY_END_OP_LOOP(op)                                                                                          \
+  {                                                                                                                    \
+    xbt_die("Failed to apply " _XBT_STRINGIFY(op) " to type %s", (*datatype)->name());                                 \
   }
 
 static void max_func(void *a, void *b, int *length, MPI_Datatype * datatype)
@@ -120,6 +136,7 @@ static void sum_func(void *a, void *b, int *length, MPI_Datatype * datatype)
   APPLY_BASIC_OP_LOOP(SUM_OP)
   APPLY_FLOAT_OP_LOOP(SUM_OP)
   APPLY_COMPLEX_OP_LOOP(SUM_OP)
+  APPLY_PAIR_OP_LOOP(SUM_OP_COMPLEX)
   APPLY_END_OP_LOOP(SUM_OP)
 }
 
@@ -128,12 +145,14 @@ static void prod_func(void *a, void *b, int *length, MPI_Datatype * datatype)
   APPLY_BASIC_OP_LOOP(PROD_OP)
   APPLY_FLOAT_OP_LOOP(PROD_OP)
   APPLY_COMPLEX_OP_LOOP(PROD_OP)
+  APPLY_PAIR_OP_LOOP(PROD_OP_COMPLEX)
   APPLY_END_OP_LOOP(PROD_OP)
 }
 
 static void land_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   APPLY_BASIC_OP_LOOP(LAND_OP)
+  APPLY_FLOAT_OP_LOOP(LAND_OP)
   APPLY_BOOL_OP_LOOP(LAND_OP)
   APPLY_END_OP_LOOP(LAND_OP)
 }
@@ -141,6 +160,7 @@ static void land_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 static void lor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   APPLY_BASIC_OP_LOOP(LOR_OP)
+  APPLY_FLOAT_OP_LOOP(LOR_OP)
   APPLY_BOOL_OP_LOOP(LOR_OP)
   APPLY_END_OP_LOOP(LOR_OP)
 }
@@ -148,6 +168,7 @@ static void lor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 static void lxor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   APPLY_BASIC_OP_LOOP(LXOR_OP)
+  APPLY_FLOAT_OP_LOOP(LXOR_OP)
   APPLY_BOOL_OP_LOOP(LXOR_OP)
   APPLY_END_OP_LOOP(LXOR_OP)
 }
@@ -195,9 +216,9 @@ static void no_func(void*, void*, int*, MPI_Datatype*)
   /* obviously a no-op */
 }
 
-#define CREATE_MPI_OP(name, func)                             \
-  static SMPI_Op mpi_##name (&(func) /* func */, true ); \
-MPI_Op name = &mpi_##name;
+#define CREATE_MPI_OP(name, func)                                                                                      \
+  static SMPI_Op _XBT_CONCAT(mpi_, name)(&(func) /* func */, true, true);                                              \
+  MPI_Op name = &_XBT_CONCAT(mpi_, name);
 
 CREATE_MPI_OP(MPI_MAX, max_func);
 CREATE_MPI_OP(MPI_MIN, min_func);
@@ -217,7 +238,7 @@ CREATE_MPI_OP(MPI_NO_OP, no_func);
 namespace simgrid{
 namespace smpi{
 
-void Op::apply(void *invec, void *inoutvec, int *len, MPI_Datatype datatype)
+void Op::apply(const void* invec, void* inoutvec, const int* len, MPI_Datatype datatype)
 {
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
@@ -227,13 +248,13 @@ void Op::apply(void *invec, void *inoutvec, int *len, MPI_Datatype datatype)
 
   if (not smpi_process()->replaying() && *len > 0) {
     if (not is_fortran_op_)
-      this->func_(invec, inoutvec, len, &datatype);
+      this->func_(const_cast<void*>(invec), inoutvec, const_cast<int*>(len), &datatype);
     else{
       XBT_DEBUG("Applying operation of length %d from %p and from/to %p", *len, invec, inoutvec);
       int tmp = datatype->c2f();
       /* Unfortunately, the C and Fortran version of the MPI standard do not agree on the type here,
          thus the reinterpret_cast. */
-      this->func_(invec, inoutvec, len, reinterpret_cast<MPI_Datatype*>(&tmp) );
+      this->func_(const_cast<void*>(invec), inoutvec, const_cast<int*>(len), reinterpret_cast<MPI_Datatype*>(&tmp));
     }
   }
 }
@@ -249,7 +270,7 @@ void Op::ref(){
 void Op::unref(MPI_Op* op){
   if((*op)!=MPI_OP_NULL){
     (*op)->refcount_--;
-    if((*op)->refcount_==0)
+    if((*op)->refcount_==0 && (*op)->predefined_==false)
       delete(*op);
   }
 }

@@ -41,7 +41,7 @@
 #define MPIR_Gather_MV2_Direct Coll_gather_ompi_basic_linear::gather
 #define MPIR_Gather_MV2_two_level_Direct Coll_gather_ompi_basic_linear::gather
 #define MPIR_Gather_intra Coll_gather_mpich::gather
-typedef int (*MV2_Gather_function_ptr) (void *sendbuf,
+typedef int (*MV2_Gather_function_ptr) (const void *sendbuf,
     int sendcnt,
     MPI_Datatype sendtype,
     void *recvbuf,
@@ -80,7 +80,7 @@ namespace smpi{
  *                      intra node gather function
  * errflag           - (out) to record errors
  */
-static int MPIR_pt_pt_intra_gather( void *sendbuf, int sendcnt, MPI_Datatype sendtype,
+static int MPIR_pt_pt_intra_gather( const void *sendbuf, int sendcnt, MPI_Datatype sendtype,
                             void *recvbuf, int recvcnt, MPI_Datatype recvtype,
                             int root, int rank,
                             void *tmp_buf, int nbytes,
@@ -127,7 +127,7 @@ static int MPIR_pt_pt_intra_gather( void *sendbuf, int sendcnt, MPI_Datatype sen
 
 
 
-int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
+int Coll_gather_mvapich2_two_level::gather(const void *sendbuf,
                                             int sendcnt,
                                             MPI_Datatype sendtype,
                                             void *recvbuf,
@@ -136,26 +136,25 @@ int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
                                             int root,
                                             MPI_Comm comm)
 {
-    void *leader_gather_buf = NULL;
-    int comm_size, rank;
-    int local_rank, local_size;
-    int leader_comm_rank = -1, leader_comm_size = 0;
-    int mpi_errno = MPI_SUCCESS;
-    int recvtype_size = 0, sendtype_size = 0, nbytes=0;
-    int leader_root, leader_of_root;
-    MPI_Status status;
-    MPI_Aint sendtype_extent = 0, recvtype_extent = 0;  /* Datatype extent */
-    MPI_Aint true_lb = 0, sendtype_true_extent = 0, recvtype_true_extent = 0;
-    MPI_Comm shmem_comm, leader_comm;
-    void* tmp_buf = NULL;
+  unsigned char* leader_gather_buf = NULL;
+  int comm_size, rank;
+  int local_rank, local_size;
+  int leader_comm_rank = -1, leader_comm_size = 0;
+  int mpi_errno     = MPI_SUCCESS;
+  int recvtype_size = 0, sendtype_size = 0, nbytes = 0;
+  int leader_root, leader_of_root;
+  MPI_Status status;
+  MPI_Aint sendtype_extent = 0, recvtype_extent = 0; /* Datatype extent */
+  MPI_Aint true_lb = 0, sendtype_true_extent = 0, recvtype_true_extent = 0;
+  MPI_Comm shmem_comm, leader_comm;
+  unsigned char* tmp_buf = NULL;
 
+  // if not set (use of the algo directly, without mvapich2 selector)
+  if (MV2_Gather_intra_node_function == NULL)
+    MV2_Gather_intra_node_function = Coll_gather_mpich::gather;
 
-    //if not set (use of the algo directly, without mvapich2 selector)
-    if(MV2_Gather_intra_node_function==NULL)
-      MV2_Gather_intra_node_function= Coll_gather_mpich::gather;
-
-    if(comm->get_leaders_comm()==MPI_COMM_NULL){
-      comm->init_smp();
+  if (comm->get_leaders_comm() == MPI_COMM_NULL) {
+    comm->init_smp();
     }
     comm_size = comm->size();
     rank = comm->rank();
@@ -303,12 +302,8 @@ int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
         node_sizes = comm->get_non_uniform_map();
 
         if (leader_comm_rank == leader_root) {
-          displs   = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
-          recvcnts = static_cast<int*>(xbt_malloc(sizeof(int) * leader_comm_size));
-          if (not displs || not recvcnts) {
-            mpi_errno = MPI_ERR_OTHER;
-            return mpi_errno;
-          }
+          displs   = new int[leader_comm_size];
+          recvcnts = new int[leader_comm_size];
         }
 
         if (root == leader_of_root) {
@@ -342,8 +337,8 @@ int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
                          leader_root, leader_comm);
         }
         if (leader_comm_rank == leader_root) {
-          xbt_free(displs);
-          xbt_free(recvcnts);
+          delete[] displs;
+          delete[] recvcnts;
         }
       }
     } else {

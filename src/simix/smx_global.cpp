@@ -32,15 +32,21 @@ std::unique_ptr<simgrid::simix::Global> simix_global;
 
 void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr) = nullptr;
 
-bool _sg_do_verbose_exit = true;
-static void inthandler(int)
+namespace simgrid {
+namespace simix {
+simgrid::config::Flag<double> cfg_verbose_exit{
+    "debug/verbose-exit", {"verbose-exit"}, "Display the actor status at exit", true};
+}
+} // namespace simgrid
+XBT_ATTRIB_NORETURN static void inthandler(int)
 {
-  if ( _sg_do_verbose_exit ) {
-     XBT_INFO("CTRL-C pressed. The current status will be displayed before exit (disable that behavior with option 'verbose-exit').");
-     SIMIX_display_process_status();
+  if (simgrid::simix::cfg_verbose_exit) {
+    XBT_INFO("CTRL-C pressed. The current status will be displayed before exit (disable that behavior with option "
+             "'debug/verbose-exit').");
+    SIMIX_display_process_status();
   }
   else {
-     XBT_INFO("CTRL-C pressed, exiting. Hiding the current process status since 'verbose-exit' is set to false.");
+    XBT_INFO("CTRL-C pressed, exiting. Hiding the current process status since 'debug/verbose-exit' is set to false.");
   }
   exit(1);
 }
@@ -48,19 +54,20 @@ static void inthandler(int)
 #ifndef _WIN32
 static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
 {
-  if (siginfo->si_signo == SIGSEGV && siginfo->si_code == SEGV_ACCERR) {
-    fprintf(stderr, "Access violation detected.\n"
-                    "This probably comes from a programming error in your code, or from a stack\n"
-                    "overflow. If you are certain of your code, try increasing the stack size\n"
-                    "   --cfg=contexts/stack-size=XXX (current size is %u KiB).\n"
-                    "\n"
-                    "If it does not help, this may have one of the following causes:\n"
-                    "a bug in SimGrid, a bug in the OS or a bug in a third-party libraries.\n"
-                    "Failing hardware can sometimes generate such errors too.\n"
-                    "\n"
-                    "If you think you've found a bug in SimGrid, please report it along with a\n"
-                    "Minimal Working Example (MWE) reproducing your problem and a full backtrace\n"
-                    "of the fault captured with gdb or valgrind.\n",
+  if ((siginfo->si_signo == SIGSEGV && siginfo->si_code == SEGV_ACCERR) || siginfo->si_signo == SIGBUS) {
+    fprintf(stderr,
+            "Access violation or Bus error detected.\n"
+            "This probably comes from a programming error in your code, or from a stack\n"
+            "overflow. If you are certain of your code, try increasing the stack size\n"
+            "   --cfg=contexts/stack-size=XXX (current size is %u KiB).\n"
+            "\n"
+            "If it does not help, this may have one of the following causes:\n"
+            "a bug in SimGrid, a bug in the OS or a bug in a third-party libraries.\n"
+            "Failing hardware can sometimes generate such errors too.\n"
+            "\n"
+            "If you think you've found a bug in SimGrid, please report it along with a\n"
+            "Minimal Working Example (MWE) reproducing your problem and a full backtrace\n"
+            "of the fault captured with gdb or valgrind.\n",
             smx_context_stack_size / 1024);
   } else  if (siginfo->si_signo == SIGSEGV) {
     fprintf(stderr, "Segmentation fault.\n");
@@ -107,14 +114,17 @@ static void install_segvhandler()
   action.sa_flags = SA_ONSTACK | SA_RESETHAND | SA_SIGINFO;
   sigemptyset(&action.sa_mask);
 
-  if (sigaction(SIGSEGV, &action, &old_action) == -1) {
-    XBT_WARN("Failed to register signal handler for SIGSEGV: %s", strerror(errno));
-    return;
-  }
-  if ((old_action.sa_flags & SA_SIGINFO) || old_action.sa_handler != SIG_DFL) {
-    XBT_DEBUG("A signal handler was already installed for SIGSEGV (%p). Restore it.",
-             (old_action.sa_flags & SA_SIGINFO) ? (void*)old_action.sa_sigaction : (void*)old_action.sa_handler);
-    sigaction(SIGSEGV, &old_action, nullptr);
+  /* Linux tend to raise only SIGSEGV where other systems also raise SIGBUS on severe error */
+  for (int sig : {SIGSEGV, SIGBUS}) {
+    if (sigaction(sig, &action, &old_action) == -1) {
+      XBT_WARN("Failed to register signal handler for signal %d: %s", sig, strerror(errno));
+      continue;
+    }
+    if ((old_action.sa_flags & SA_SIGINFO) || old_action.sa_handler != SIG_DFL) {
+      XBT_DEBUG("A signal handler was already installed for signal %d (%p). Restore it.", sig,
+                (old_action.sa_flags & SA_SIGINFO) ? (void*)old_action.sa_sigaction : (void*)old_action.sa_handler);
+      sigaction(sig, &old_action, nullptr);
+    }
   }
 }
 
@@ -138,35 +148,57 @@ void Timer::remove()
   delete this;
 }
 
+/** Execute all the tasks that are queued, e.g. `.then()` callbacks of futures. */
+bool Global::execute_tasks()
+{
+  xbt_assert(tasksTemp.empty());
+
+  if (tasks.empty())
+    return false;
+
+  do {
+    // We don't want the callbacks to modify the vector we are iterating over:
+    tasks.swap(tasksTemp);
+
+    // Execute all the queued tasks:
+    for (auto& task : tasksTemp)
+      task();
+
+    tasksTemp.clear();
+  } while (not tasks.empty());
+
+  return true;
+}
+
 void Global::empty_trash()
 {
   while (not actors_to_destroy.empty()) {
     smx_actor_t actor = &actors_to_destroy.front();
     actors_to_destroy.pop_front();
-    XBT_DEBUG("Getting rid of %p", actor);
+    XBT_DEBUG("Getting rid of %s (refcount: %d)", actor->get_cname(), actor->get_refcount());
     intrusive_ptr_release(actor);
   }
 #if SIMGRID_HAVE_MC
-  xbt_dynar_reset(simix_global->dead_actors_vector);
+  xbt_dynar_reset(dead_actors_vector);
 #endif
 }
 /**
- * @brief Executes the actors in simix_global->actors_to_run.
+ * @brief Executes the actors in actors_to_run.
  *
- * The actors in simix_global->actors_to_run are run (in parallel if  possible). On exit, simix_global->actors_to_run
- * is empty, and simix_global->actors_that_ran contains the list of actors that just ran.
- * The two lists are swapped so, be careful when using them before and after a call to this function.
+ * The actors in actors_to_run are run (in parallel if possible). On exit, actors_to_run is empty, and actors_that_ran
+ * contains the list of actors that just ran.  The two lists are swapped so, be careful when using them before and after
+ * a call to this function.
  */
 void Global::run_all_actors()
 {
-  SIMIX_context_runall();
+  simix_global->context_factory->run_all();
 
-  simix_global->actors_to_run.swap(simix_global->actors_that_ran);
-  simix_global->actors_to_run.clear();
+  actors_to_run.swap(actors_that_ran);
+  actors_to_run.clear();
 }
 
-simgrid::config::Flag<double> breakpoint{"simix/breakpoint",
-                                         "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
+simgrid::config::Flag<double> cfg_breakpoint{
+    "debug/breakpoint", {"simix/breakpoint"}, "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
 }
 }
 
@@ -192,10 +224,10 @@ void SIMIX_global_init(int *argc, char **argv)
 #endif
 
   if (simix_global == nullptr) {
+    surf_init(argc, argv); /* Initialize SURF structures */
+
     simix_global.reset(new simgrid::simix::Global());
     simix_global->maestro_process = nullptr;
-
-    surf_init(argc, argv);      /* Initialize SURF structures */
     SIMIX_context_mod_init();
 
     // Either create a new context with maestro or create
@@ -210,7 +242,7 @@ void SIMIX_global_init(int *argc, char **argv)
 #endif
     /* register a function to be called by SURF after the environment creation */
     sg_platf_init();
-    simgrid::s4u::on_platform_created.connect(surf_presolve);
+    simgrid::s4u::Engine::on_platform_created.connect(surf_presolve);
 
     simgrid::s4u::Storage::on_creation.connect([](simgrid::s4u::Storage const& storage) {
       sg_storage_t s = simgrid::s4u::Storage::by_name(storage.get_name());
@@ -218,11 +250,8 @@ void SIMIX_global_init(int *argc, char **argv)
     });
   }
 
-  if (simgrid::config::get_value<bool>("clean-atexit"))
+  if (simgrid::config::get_value<bool>("debug/clean-atexit"))
     atexit(SIMIX_clean);
-
-  if (_sg_cfg_exit_asap)
-    exit(0);
 }
 
 int smx_cleaned = 0;
@@ -259,7 +288,7 @@ void SIMIX_clean()
 
   /* Kill all processes (but maestro) */
   simix_global->maestro_process->kill_all();
-  SIMIX_context_runall();
+  simix_global->context_factory->run_all();
   simix_global->empty_trash();
 
   /* Exit the SIMIX network module */
@@ -313,23 +342,24 @@ static void SIMIX_wake_processes()
   for (auto const& model : all_existing_models) {
     simgrid::kernel::resource::Action* action;
 
-    XBT_DEBUG("Handling the processes whose action failed (if any)");
+    XBT_DEBUG("Handling the failed actions (if any)");
     while ((action = model->extract_failed_action())) {
       XBT_DEBUG("   Handling Action %p",action);
-      SIMIX_simcall_exit(static_cast<simgrid::kernel::activity::ActivityImpl*>(action->get_data()));
+      if (action->get_activity() != nullptr)
+        simgrid::kernel::activity::ActivityImplPtr(action->get_activity())->post();
     }
-    XBT_DEBUG("Handling the processes whose action terminated normally (if any)");
+    XBT_DEBUG("Handling the terminated actions (if any)");
     while ((action = model->extract_done_action())) {
       XBT_DEBUG("   Handling Action %p",action);
-      if (action->get_data() == nullptr)
+      if (action->get_activity() == nullptr)
         XBT_DEBUG("probably vcpu's action %p, skip", action);
       else
-        SIMIX_simcall_exit(static_cast<simgrid::kernel::activity::ActivityImpl*>(action->get_data()));
+        simgrid::kernel::activity::ActivityImplPtr(action->get_activity())->post();
     }
   }
 }
 
-/** Handle any pending timer */
+/** Handle any pending timer. Returns if something was actually run. */
 static bool SIMIX_execute_timers()
 {
   bool result = false;
@@ -338,39 +368,10 @@ static bool SIMIX_execute_timers()
     // FIXME: make the timers being real callbacks (i.e. provide dispatchers that read and expand the args)
     smx_timer_t timer = simgrid::simix::simix_timers.top().second;
     simgrid::simix::simix_timers.pop();
-    try {
-      timer->callback();
-    } catch (...) {
-      xbt_die("Exception thrown ouf of timer callback");
-    }
+    timer->callback();
     delete timer;
   }
   return result;
-}
-
-/** Execute all the tasks that are queued
- *
- *  e.g. `.then()` callbacks of futures.
- **/
-static bool SIMIX_execute_tasks()
-{
-  xbt_assert(simix_global->tasksTemp.empty());
-
-  if (simix_global->tasks.empty())
-    return false;
-
-  do {
-    // We don't want the callbacks to modify the vector we are iterating over:
-    simix_global->tasks.swap(simix_global->tasksTemp);
-
-    // Execute all the queued tasks:
-    for (auto& task : simix_global->tasksTemp)
-      task();
-
-    simix_global->tasksTemp.clear();
-  } while (not simix_global->tasks.empty());
-
-  return true;
 }
 
 /**
@@ -379,7 +380,7 @@ static bool SIMIX_execute_tasks()
  */
 void SIMIX_run()
 {
-  if (not MC_record_path.empty()) {
+  if (MC_record_replay_is_active()) {
     simgrid::mc::replay(MC_record_path);
     return;
   }
@@ -389,9 +390,9 @@ void SIMIX_run()
   do {
     XBT_DEBUG("New Schedule Round; size(queue)=%zu", simix_global->actors_to_run.size());
 
-    if (simgrid::simix::breakpoint >= 0.0 && surf_get_clock() >= simgrid::simix::breakpoint) {
-      XBT_DEBUG("Breakpoint reached (%g)", simgrid::simix::breakpoint.get());
-      simgrid::simix::breakpoint = -1.0;
+    if (simgrid::simix::cfg_breakpoint >= 0.0 && surf_get_clock() >= simgrid::simix::cfg_breakpoint) {
+      XBT_DEBUG("Breakpoint reached (%g)", simgrid::simix::cfg_breakpoint.get());
+      simgrid::simix::cfg_breakpoint = -1.0;
 #ifdef SIGTRAP
       std::raise(SIGTRAP);
 #else
@@ -399,7 +400,7 @@ void SIMIX_run()
 #endif
     }
 
-    SIMIX_execute_tasks();
+    simix_global->execute_tasks();
 
     while (not simix_global->actors_to_run.empty()) {
       XBT_DEBUG("New Sub-Schedule Round; size(queue)=%zu", simix_global->actors_to_run.size());
@@ -429,7 +430,7 @@ void SIMIX_run()
        *        - If a process is added because it's getting killed, its subsequent actions shouldn't matter
        *        - If a process gets added to actors_to_run because one of their blocking action constituting the meat
        *          of a simcall terminates, we're still good. Proof:
-       *          - You are added from SIMIX_simcall_answer() only. When this function is called depends on the resource
+       *          - You are added from ActorImpl::simcall_answer() only. When this function is called depends on the resource
        *            kind (network, cpu, disk, whatever), but the same arguments hold. Let's take communications as an
        *            example.
        *          - For communications, this function is called from SIMIX_comm_finish().
@@ -470,15 +471,15 @@ void SIMIX_run()
        */
 
       for (smx_actor_t const& process : simix_global->actors_that_ran) {
-        if (process->simcall.call != SIMCALL_NONE) {
-          SIMIX_simcall_handle(&process->simcall, 0);
+        if (process->simcall.call_ != SIMCALL_NONE) {
+          process->simcall_handle(0);
         }
       }
 
-      SIMIX_execute_tasks();
+      simix_global->execute_tasks();
       do {
         SIMIX_wake_processes();
-      } while (SIMIX_execute_tasks());
+      } while (simix_global->execute_tasks());
 
       /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
       if (simix_global->process_list.size() == simix_global->daemons.size())
@@ -503,7 +504,7 @@ void SIMIX_run()
     bool again = false;
     do {
       again = SIMIX_execute_timers();
-      if (SIMIX_execute_tasks())
+      if (simix_global->execute_tasks())
         again = true;
       SIMIX_wake_processes();
     } while (again);
@@ -525,10 +526,10 @@ void SIMIX_run()
       XBT_CRITICAL("Oops! Deadlock or code not perfectly clean.");
     }
     SIMIX_display_process_status();
-    simgrid::s4u::on_deadlock();
+    simgrid::s4u::Engine::on_deadlock();
     xbt_abort();
   }
-  simgrid::s4u::on_simulation_end();
+  simgrid::s4u::Engine::on_simulation_end();
 }
 
 double SIMIX_timer_next()
@@ -564,34 +565,38 @@ void SIMIX_display_process_status()
   /*  List the process and their state */
   XBT_INFO("Legend of the following listing: \"Process <pid> (<name>@<host>): <status>\"");
   for (auto const& kv : simix_global->process_list) {
-    smx_actor_t process = kv.second;
+    smx_actor_t actor = kv.second;
 
-    if (process->waiting_synchro) {
+    if (actor->waiting_synchro) {
 
       const char* synchro_description = "unknown";
+      // we don't care about the Activity type to get its name, use RawImpl
+      const char* name =
+          boost::static_pointer_cast<simgrid::kernel::activity::ActivityImpl_T<simgrid::kernel::activity::RawImpl>>(
+              actor->waiting_synchro)
+              ->get_cname();
 
-      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(process->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(actor->waiting_synchro) != nullptr)
         synchro_description = "execution";
 
-      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(process->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(actor->waiting_synchro) != nullptr)
         synchro_description = "communication";
 
-      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(process->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(actor->waiting_synchro) != nullptr)
         synchro_description = "sleeping";
 
-      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::RawImpl>(process->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::RawImpl>(actor->waiting_synchro) != nullptr)
         synchro_description = "synchronization";
 
-      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(process->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(actor->waiting_synchro) != nullptr)
         synchro_description = "I/O";
 
-      XBT_INFO("Process %ld (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->get_pid(),
-               process->get_cname(), process->get_host()->get_cname(), synchro_description,
-               process->waiting_synchro.get(), process->waiting_synchro->get_cname(),
-               (int)process->waiting_synchro->state_);
+      XBT_INFO("Actor %ld (%s@%s): waiting for %s activity %p (%s) in state %d to finish", actor->get_pid(),
+               actor->get_cname(), actor->get_host()->get_cname(), synchro_description, actor->waiting_synchro.get(),
+               name, (int)actor->waiting_synchro->state_);
     }
     else {
-      XBT_INFO("Process %ld (%s@%s)", process->get_pid(), process->get_cname(), process->get_host()->get_cname());
+      XBT_INFO("Actor %ld (%s@%s)", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname());
     }
   }
 }

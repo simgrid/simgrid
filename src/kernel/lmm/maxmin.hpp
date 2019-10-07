@@ -131,20 +131,6 @@ namespace lmm {
 
 /** @{ @ingroup SURF_lmm */
 
-/** Default functions associated to the chosen protocol. When using the lagrangian approach. */
-
-XBT_PUBLIC double func_reno_f(const Variable& var, double x);
-XBT_PUBLIC double func_reno_fp(const Variable& var, double x);
-XBT_PUBLIC double func_reno_fpi(const Variable& var, double x);
-
-XBT_PUBLIC double func_reno2_f(const Variable& var, double x);
-XBT_PUBLIC double func_reno2_fp(const Variable& var, double x);
-XBT_PUBLIC double func_reno2_fpi(const Variable& var, double x);
-
-XBT_PUBLIC double func_vegas_f(const Variable& var, double x);
-XBT_PUBLIC double func_vegas_fp(const Variable& var, double x);
-XBT_PUBLIC double func_vegas_fpi(const Variable& var, double x);
-
 /**
  * @brief LMM element
  * Elements can be seen as glue between constraint objects and variable objects.
@@ -193,62 +179,47 @@ public:
 class XBT_PUBLIC Constraint {
 public:
   Constraint() = delete;
-  Constraint(void* id_value, double bound_value);
+  Constraint(resource::Resource* id_value, double bound_value);
 
   /** @brief Unshare a constraint. */
-  void unshare() { sharing_policy = s4u::Link::SharingPolicy::FATPIPE; }
+  void unshare() { sharing_policy_ = s4u::Link::SharingPolicy::FATPIPE; }
 
-  /**
-   * @brief Check if a constraint is shared (shared by default)
-   * @return 1 if shared, 0 otherwise
-   */
-  s4u::Link::SharingPolicy get_sharing_policy() const { return sharing_policy; }
+  /** @brief Check how a constraint is shared  */
+  s4u::Link::SharingPolicy get_sharing_policy() const { return sharing_policy_; }
 
-  /**
-   * @brief Get the usage of the constraint after the last lmm solve
-   * @return The usage of the constraint
-   */
+  /** @brief Get the usage of the constraint after the last lmm solve */
   double get_usage() const;
   int get_variable_amount() const;
 
-  /**
-   * @brief Sets the concurrency limit for this constraint
-   * @param limit The concurrency limit to use for this constraint
-   */
+  /** @brief Sets the concurrency limit for this constraint */
   void set_concurrency_limit(int limit)
   {
-    xbt_assert(limit < 0 || concurrency_maximum <= limit,
+    xbt_assert(limit < 0 || concurrency_maximum_ <= limit,
                "New concurrency limit should be larger than observed concurrency maximum. Maybe you want to call"
                " concurrency_maximum_reset() to reset the maximum?");
-    concurrency_limit = limit;
+    concurrency_limit_ = limit;
   }
 
-  /**
-   * @brief Gets the concurrency limit for this constraint
-   * @return The concurrency limit used by this constraint
-   */
-  int get_concurrency_limit() const { return concurrency_limit; }
+  /** @brief Gets the concurrency limit for this constraint */
+  int get_concurrency_limit() const { return concurrency_limit_; }
 
   /**
    * @brief Reset the concurrency maximum for a given variable (we will update the maximum to reflect constraint
    * evolution).
    */
-  void reset_concurrency_maximum() { concurrency_maximum = 0; }
+  void reset_concurrency_maximum() { concurrency_maximum_ = 0; }
 
-  /**
-   * @brief Get the concurrency maximum for a given variable (which reflects constraint evolution).
-   * @return the maximum concurrency of the constraint
-   */
+  /** @brief Get the concurrency maximum for a given constraint (which reflects constraint evolution). */
   int get_concurrency_maximum() const
   {
-    xbt_assert(concurrency_limit < 0 || concurrency_maximum <= concurrency_limit,
+    xbt_assert(concurrency_limit_ < 0 || concurrency_maximum_ <= concurrency_limit_,
                "Very bad: maximum observed concurrency is higher than limit. This is a bug of SURF, please report it.");
-    return concurrency_maximum;
+    return concurrency_maximum_;
   }
 
   int get_concurrency_slack() const
   {
-    return concurrency_limit < 0 ? std::numeric_limits<int>::max() : concurrency_limit - concurrency_current;
+    return concurrency_limit_ < 0 ? std::numeric_limits<int>::max() : concurrency_limit_ - concurrency_current_;
   }
 
   /**
@@ -273,41 +244,41 @@ public:
    * @brief Get the data associated to a constraint
    * @return The data associated to the constraint
    */
-  void* get_id() const { return id; }
+  resource::Resource* get_id() const { return id_; }
 
   /* hookup to system */
-  boost::intrusive::list_member_hook<> constraint_set_hook;
-  boost::intrusive::list_member_hook<> active_constraint_set_hook;
-  boost::intrusive::list_member_hook<> modified_constraint_set_hook;
-  boost::intrusive::list_member_hook<> saturated_constraint_set_hook;
+  boost::intrusive::list_member_hook<> constraint_set_hook_;
+  boost::intrusive::list_member_hook<> active_constraint_set_hook_;
+  boost::intrusive::list_member_hook<> modified_constraint_set_hook_;
+  boost::intrusive::list_member_hook<> saturated_constraint_set_hook_;
   boost::intrusive::list<Element, boost::intrusive::member_hook<Element, boost::intrusive::list_member_hook<>,
                                                                 &Element::enabled_element_set_hook>>
-      enabled_element_set;
+      enabled_element_set_;
   boost::intrusive::list<Element, boost::intrusive::member_hook<Element, boost::intrusive::list_member_hook<>,
                                                                 &Element::disabled_element_set_hook>>
-      disabled_element_set;
+      disabled_element_set_;
   boost::intrusive::list<Element, boost::intrusive::member_hook<Element, boost::intrusive::list_member_hook<>,
                                                                 &Element::active_element_set_hook>>
-      active_element_set;
-  double remaining;
-  double usage;
-  double bound;
+      active_element_set_;
+  double remaining_;
+  double usage_;
+  double bound_;
   // TODO MARTIN Check maximum value across resources at the end of simulation and give a warning is more than e.g. 500
-  int concurrency_current; /* The current concurrency */
-  int concurrency_maximum; /* The maximum number of (enabled and disabled) variables associated to the constraint at any
-                            * given time (essentially for tracing)*/
+  int concurrency_current_; /* The current concurrency */
+  int concurrency_maximum_; /* The maximum number of (enabled and disabled) variables associated to the constraint at
+                             * any given time (essentially for tracing)*/
 
-  s4u::Link::SharingPolicy sharing_policy;
-  int id_int;
-  double lambda;
-  double new_lambda;
-  ConstraintLight* cnst_light;
+  s4u::Link::SharingPolicy sharing_policy_;
+  int rank_; // Only used in debug messages to identify the constraint
+  double lambda_;
+  double new_lambda_;
+  ConstraintLight* cnst_light_;
 
 private:
-  static int Global_debug_id;
-  int concurrency_limit; /* The maximum number of variables that may be enabled at any time (stage variables if
-                          * necessary) */
-  void* id;
+  static int next_rank_;  // To give a separate rank_ to each contraint
+  int concurrency_limit_; /* The maximum number of variables that may be enabled at any time (stage variables if
+                           * necessary) */
+  resource::Resource* id_;
 };
 
 /**
@@ -318,104 +289,89 @@ private:
  */
 class XBT_PUBLIC Variable {
 public:
-  void initialize(resource::Action* id_value, double sharing_weight_value, double bound_value,
-                  int number_of_constraints, unsigned visited_value);
+  void initialize(resource::Action* id_value, double sharing_penalty, double bound_value, int number_of_constraints,
+                  unsigned visited_value);
 
-  /**
-   * @brief Get the value of the variable after the last lmm solve
-   * @return The value of the variable
-   */
-  double get_value() const { return value; }
+  /** @brief Get the value of the variable after the last lmm solve */
+  double get_value() const { return value_; }
 
-  /**
-   * @brief Get the maximum value of the variable (-1.0 if no maximum value)
-   * @return The bound of the variable
-   */
-  double get_bound() const { return bound; }
+  /** @brief Get the maximum value of the variable (-1.0 if no specified maximum) */
+  double get_bound() const { return bound_; }
 
   /**
    * @brief Set the concurrent share of the variable
    * @param value The new concurrency share
    */
-  void set_concurrency_share(short int value) { concurrency_share = value; }
+  void set_concurrency_share(short int value) { concurrency_share_ = value; }
 
   /**
    * @brief Get the numth constraint associated to the variable
    * @param num The rank of constraint we want to get
    * @return The numth constraint
    */
-  Constraint* get_constraint(unsigned num) const { return num < cnsts.size() ? cnsts[num].constraint : nullptr; }
+  Constraint* get_constraint(unsigned num) const { return num < cnsts_.size() ? cnsts_[num].constraint : nullptr; }
 
   /**
    * @brief Get the weigth of the numth constraint associated to the variable
    * @param num The rank of constraint we want to get
    * @return The numth constraint
    */
-  double get_constraint_weight(unsigned num) const { return num < cnsts.size() ? cnsts[num].consumption_weight : 0.0; }
+  double get_constraint_weight(unsigned num) const
+  {
+    return num < cnsts_.size() ? cnsts_[num].consumption_weight : 0.0;
+  }
 
-  /**
-   * @brief Get the number of constraint associated to a variable
-   * @return The number of constraint associated to the variable
-   */
-  size_t get_number_of_constraint() const { return cnsts.size(); }
+  /** @brief Get the number of constraint associated to a variable */
+  size_t get_number_of_constraint() const { return cnsts_.size(); }
 
-  /**
-   * @brief Get the data associated to a variable
-   * @return The data associated to the variable
-   */
-  resource::Action* get_id() const { return id; }
+  /** @brief Get the data associated to a variable */
+  resource::Action* get_id() const { return id_; }
 
-  /**
-   * @brief Get the weight of a variable
-   * @return The weight of the variable
-   */
-  double get_weight() const { return sharing_weight; }
+  /** @brief Get the penalty of a variable */
+  double get_penalty() const { return sharing_penalty_; }
 
   /** @brief Measure the minimum concurrency slack across all constraints where the given var is involved */
   int get_min_concurrency_slack() const;
 
   /** @brief Check if a variable can be enabled
-   * Make sure to set staged_weight before, if your intent is only to check concurrency
+   * Make sure to set staged_penalty before, if your intent is only to check concurrency
    */
-  int can_enable() const { return staged_weight > 0 && get_min_concurrency_slack() >= concurrency_share; }
+  int can_enable() const { return staged_penalty_ > 0 && get_min_concurrency_slack() >= concurrency_share_; }
 
   /* hookup to system */
-  boost::intrusive::list_member_hook<> variable_set_hook;
-  boost::intrusive::list_member_hook<> saturated_variable_set_hook;
+  boost::intrusive::list_member_hook<> variable_set_hook_;
+  boost::intrusive::list_member_hook<> saturated_variable_set_hook_;
 
-  std::vector<Element> cnsts;
+  std::vector<Element> cnsts_;
 
-  // sharing_weight: variable's impact on the resource during the sharing
+  // sharing_penalty: variable's impact on the resource during the sharing
   //   if == 0, the variable is not considered by LMM
   //   on CPU, actions with N threads have a sharing of N
-  //   on network, the actions with higher latency have a lesser sharing_weight
-  double sharing_weight;
+  //   on network, the actions with higher latency have a lesser sharing_penalty
+  double sharing_penalty_;
 
-  double staged_weight; /* If non-zero, variable is staged for addition as soon as maxconcurrency constraints will be
-                         * met */
-  double bound;
-  double value;
-  short int concurrency_share; /* The maximum number of elements that variable will add to a constraint */
-  resource::Action* id;
-  int id_int;
-  unsigned visited; /* used by System::update_modified_set() */
-  /* \begin{For Lagrange only} */
-  double mu;
-  double new_mu;
-  /* \end{For Lagrange only} */
+  double staged_penalty_; /* If non-zero, variable is staged for addition as soon as maxconcurrency constraints will be
+                            met */
+  double bound_;
+  double value_;
+  short int concurrency_share_; /* The maximum number of elements that variable will add to a constraint */
+  resource::Action* id_;
+  int rank_;         // Only used in debug messages to identify the variable
+  unsigned visited_; /* used by System::update_modified_set() */
+  double mu_;
 
 private:
-  static int Global_debug_id;
+  static int next_rank_; // To give a separate rank_ to each variable
 };
 
 inline void Element::make_active()
 {
-  constraint->active_element_set.push_front(*this);
+  constraint->active_element_set_.push_front(*this);
 }
 inline void Element::make_inactive()
 {
   if (active_element_set_hook.is_linked())
-    simgrid::xbt::intrusive_erase(constraint->active_element_set, *this);
+    simgrid::xbt::intrusive_erase(constraint->active_element_set_, *this);
 }
 
 /**
@@ -436,22 +392,26 @@ public:
    * @param id Data associated to the constraint (e.g.: a network link)
    * @param bound_value The bound value of the constraint
    */
-  Constraint* constraint_new(void* id, double bound_value);
+  Constraint* constraint_new(resource::Resource* id, double bound_value);
 
   /**
    * @brief Create a new Linear MaxMin variable
    * @param id Data associated to the variable (e.g.: a network communication)
-   * @param weight_value The weight of the variable (0.0 if not used)
+   * @param sharing_penalty The weight of the variable (0.0 if not used)
    * @param bound The maximum value of the variable (-1.0 if no maximum value)
-   * @param number_of_constraints The maximum number of constraint to associate to the variable
+   * @param number_of_constraints The maximum number of constraints to associate to the variable
    */
-  Variable* variable_new(resource::Action* id, double weight_value, double bound, size_t number_of_constraints);
+  Variable* variable_new(resource::Action* id, double sharing_penalty, double bound = -1.0,
+                         size_t number_of_constraints = 1);
 
   /**
    * @brief Free a variable
    * @param var The variable to free
    */
   void variable_free(Variable * var);
+
+  /** @brief Free all variables */
+  void variable_free_all();
 
   /**
    * @brief Associate a variable to a constraint with a coefficient
@@ -469,33 +429,16 @@ public:
    */
   void expand_add(Constraint * cnst, Variable * var, double value);
 
-  /**
-   * @brief Update the bound of a variable
-   * @param var A constraint
-   * @param bound The new bound
-   */
+  /** @brief Update the bound of a variable */
   void update_variable_bound(Variable * var, double bound);
 
-  /**
-   * @brief Update the weight of a variable
-   * @param var A variable
-   * @param weight The new weight of the variable
-   */
-  void update_variable_weight(Variable * var, double weight);
+  /** @brief Update the sharing penalty of a variable */
+  void update_variable_penalty(Variable* var, double penalty);
 
-  /**
-   * @brief Update a constraint bound
-   * @param cnst A constraint
-   * @param bound The new bound of the consrtaint
-   */
+  /** @brief Update a constraint bound */
   void update_constraint_bound(Constraint * cnst, double bound);
 
-  /**
-   * @brief [brief description]
-   * @param cnst A constraint
-   * @return [description]
-   */
-  int constraint_used(Constraint * cnst) { return cnst->active_constraint_set_hook.is_linked(); }
+  int constraint_used(Constraint* cnst) { return cnst->active_constraint_set_hook_.is_linked(); }
 
   /** @brief Print the lmm system */
   void print() const;
@@ -531,21 +474,21 @@ private:
   void insert_constraint(Constraint * cnst) { constraint_set.push_back(*cnst); }
   void remove_variable(Variable * var)
   {
-    if (var->variable_set_hook.is_linked())
+    if (var->variable_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(variable_set, *var);
-    if (var->saturated_variable_set_hook.is_linked())
+    if (var->saturated_variable_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(saturated_variable_set, *var);
   }
   void make_constraint_active(Constraint * cnst)
   {
-    if (not cnst->active_constraint_set_hook.is_linked())
+    if (not cnst->active_constraint_set_hook_.is_linked())
       active_constraint_set.push_back(*cnst);
   }
   void make_constraint_inactive(Constraint * cnst)
   {
-    if (cnst->active_constraint_set_hook.is_linked())
+    if (cnst->active_constraint_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(active_constraint_set, *cnst);
-    if (cnst->modified_constraint_set_hook.is_linked())
+    if (cnst->modified_constraint_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(modified_constraint_set, *cnst);
   }
 
@@ -573,16 +516,16 @@ private:
 public:
   bool modified_ = false;
   boost::intrusive::list<Variable, boost::intrusive::member_hook<Variable, boost::intrusive::list_member_hook<>,
-                                                                 &Variable::variable_set_hook>>
+                                                                 &Variable::variable_set_hook_>>
       variable_set;
   boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
-                                                                   &Constraint::active_constraint_set_hook>>
+                                                                   &Constraint::active_constraint_set_hook_>>
       active_constraint_set;
   boost::intrusive::list<Variable, boost::intrusive::member_hook<Variable, boost::intrusive::list_member_hook<>,
-                                                                 &Variable::saturated_variable_set_hook>>
+                                                                 &Variable::saturated_variable_set_hook_>>
       saturated_variable_set;
   boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
-                                                                   &Constraint::saturated_constraint_set_hook>>
+                                                                   &Constraint::saturated_constraint_set_hook_>>
       saturated_constraint_set;
 
   resource::Action::ModifiedSet* modified_set_ = nullptr;
@@ -592,10 +535,10 @@ private:
   unsigned visited_counter_ = 1; /* used by System::update_modified_set() and System::remove_all_modified_set() to
                                   * cleverly (un-)flag the constraints (more details in these functions) */
   boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
-                                                                   &Constraint::constraint_set_hook>>
+                                                                   &Constraint::constraint_set_hook_>>
       constraint_set;
   boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
-                                                                   &Constraint::modified_constraint_set_hook>>
+                                                                   &Constraint::modified_constraint_set_hook_>>
       modified_constraint_set;
   xbt_mallocator_t variable_mallocator_ =
       xbt_mallocator_new(65536, System::variable_mallocator_new_f, System::variable_mallocator_free_f, nullptr);
@@ -610,40 +553,8 @@ private:
   void bottleneck_solve();
 };
 
-class XBT_PUBLIC Lagrange : public System {
-public:
-  explicit Lagrange(bool selective_update) : System(selective_update) {}
-  void solve() final { lagrange_solve(); }
-
-  static void set_default_protocol_function(double (*func_f)(const Variable& var, double x),
-                                            double (*func_fp)(const Variable& var, double x),
-                                            double (*func_fpi)(const Variable& var, double x));
-
-private:
-  void lagrange_solve();
-
-  bool check_feasible(bool warn);
-  double dual_objective();
-
-  static double (*func_f)(const Variable& var, double x);   /* (f)    */
-  static double (*func_fp)(const Variable& var, double x);  /* (f')    */
-  static double (*func_fpi)(const Variable& var, double x); /* (f')^{-1}    */
-
-  /*
-   * Local prototypes to implement the Lagrangian optimization with optimal step, also called dichotomy.
-   */
-  // computes the value of the dichotomy using a initial values, init, with a specific variable or constraint
-  static double dichotomy(double init, const Constraint& cnst, double min_error);
-  // computes the value of the differential of constraint cnst applied to lambda
-  static double partial_diff_lambda(double lambda, const Constraint& cnst);
-
-  static double new_value(const Variable& var);
-  static double new_mu(const Variable& var);
-};
-
 XBT_PUBLIC System* make_new_maxmin_system(bool selective_update);
 XBT_PUBLIC System* make_new_fair_bottleneck_system(bool selective_update);
-XBT_PUBLIC System* make_new_lagrange_system(bool selective_update);
 
 /** @} */
 }

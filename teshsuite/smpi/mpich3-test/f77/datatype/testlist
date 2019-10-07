@@ -1,11 +1,17 @@
+#C types are not all available in fortran, and some returned names are C ones.
 #typenamef 1
 #typename3f 1 mpiversion=3.0
-#typesnamef 1
+typesnamef 1
+#needs PMPI_Type_get_envelope
 #typecntsf 1
+#needs correct MPI_Type_get_true_extent
 #typem2f 1
 typesubf 1
+#needs MPI_Pack_external_size
 #packef 1
 gaddressf 1
+#C types are not all available in fortran
 #allctypesf 1
-#hindex1f 1
+hindex1f 1
+#needs correct MPI_Type_get_true_extent
 #hindexed_blockf 1 mpiversion=3.0

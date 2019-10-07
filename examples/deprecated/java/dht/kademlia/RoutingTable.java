@@ -5,20 +5,20 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package dht.kademlia;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Vector;
 
 import org.simgrid.msg.Msg;
 
 public class RoutingTable {
   /* Bucket list */
-  private Vector<Bucket> buckets;
+  private ArrayList<Bucket> buckets;
   /* Id of the routing table owner */
   private int id;
 
   public RoutingTable(int id) {
     this.id = id;
-    buckets = new Vector<>();
+    buckets = new ArrayList<>();
     for (int i = 0; i < Common.IDENTIFIER_SIZE + 1; i++) {
       buckets.add(new Bucket(i));
     }

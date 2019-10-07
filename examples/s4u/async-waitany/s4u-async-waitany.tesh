@@ -3,7 +3,7 @@
 p Testing this_actor->wait_any()
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-async-waitany ${platfdir}/small_platform.xml s4u-async-waitany_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-async-waitany ${platfdir}/small_platform.xml s4u-async-waitany_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) Send 'Message 0' to 'receiver-0'
 > [  0.000000] (2:receiver@Fafard) Wait for my first message
 > [  0.000000] (3:receiver@Jupiter) Wait for my first message

@@ -17,11 +17,12 @@ namespace resource {
 class NetworkConstantModel : public NetworkModel {
 public:
   NetworkConstantModel();
-  Action* communicate(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double size, double rate) override;
+  Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
   double next_occuring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 
-  LinkImpl* create_link(const std::string& name, double bw, double lat, s4u::Link::SharingPolicy policy) override;
+  LinkImpl* create_link(const std::string& name, const std::vector<double>& bws, double lat,
+                        s4u::Link::SharingPolicy policy) override;
 };
 
 class NetworkConstantAction : public NetworkAction {

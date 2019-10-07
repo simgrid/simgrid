@@ -3,7 +3,7 @@
 p Testing a S4U application with properties in the XML for Hosts, Links and Actors
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-platform-properties$EXEEXT ${platfdir}/prop.xml s4u-platform-properties_d.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-platform-properties ${platfdir}/prop.xml s4u-platform-properties_d.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) There are 7 hosts in the environment
 > [  0.000000] (0:maestro@) Host 'host1' runs at 1000000000 flops/s
 > [  0.000000] (0:maestro@) Host 'host2' runs at 1000000000 flops/s
@@ -12,7 +12,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-platform-properties$EXEEXT ${platfdir}/prop.xm
 > [  0.000000] (0:maestro@) Host 'node-2.simgrid.org' runs at 1000000000 flops/s
 > [  0.000000] (0:maestro@) Host 'node-3.simgrid.org' runs at 1000000000 flops/s
 > [  0.000000] (0:maestro@) Host 'node-4.simgrid.org' runs at 1000000000 flops/s
-> [  0.000000] (2:bob@host1) == Print the properties of the zone
+> [  0.000000] (2:bob@host1) == Print the properties of the root zone
 > [  0.000000] (2:bob@host1)    Zone property: filename -> prop.xml
 > [  0.000000] (2:bob@host1)    Zone property: date -> 31-08-12
 > [  0.000000] (2:bob@host1)    Zone property: author -> pnavarro
@@ -27,6 +27,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-platform-properties$EXEEXT ${platfdir}/prop.xm
 > [  0.000000] (1:alice@host1)    Property: Hdd old value: 180
 > [  0.000000] (1:alice@host1) == Trying to modify a host property
 > [  0.000000] (1:alice@host1)    Property: Hdd old value: 250
+> [  0.000000] (1:alice@host1) == Print the properties of the zone 'AS4' that contains 'host1'
+> [  0.000000] (1:alice@host1)   Zone property: 'bla' -> 'bli'
 > [  1.000000] (3:carole@host2) == Print the properties of the host 'host1'
 > [  1.000000] (3:carole@host2)   Host property: 'Hdd' -> '180'
 > [  1.000000] (3:carole@host2)   Host property: 'mem' -> '4'
@@ -35,6 +37,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-platform-properties$EXEEXT ${platfdir}/prop.xm
 > [  1.000000] (3:carole@host2)    Property: Hdd old value: 180
 > [  1.000000] (3:carole@host2) == Trying to modify a host property
 > [  1.000000] (3:carole@host2)    Property: Hdd old value: 250
+> [  1.000000] (3:carole@host2) == Print the properties of the zone 'AS4' that contains 'host1'
+> [  1.000000] (3:carole@host2)   Zone property: 'bla' -> 'bli'
 > [  2.000000] (4:david@host2) == Print the properties of the host 'node-0.simgrid.org'
 > [  2.000000] (4:david@host2)   Host property: 'Hdd' -> '180'
 > [  2.000000] (4:david@host2)   Host property: 'bla' -> 'acme cluster'
@@ -44,3 +48,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-platform-properties$EXEEXT ${platfdir}/prop.xm
 > [  2.000000] (4:david@host2)    Property: Hdd old value: 180
 > [  2.000000] (4:david@host2) == Trying to modify a host property
 > [  2.000000] (4:david@host2)    Property: Hdd old value: 250
+> [  2.000000] (4:david@host2) == Print the properties of the zone 'acme' that contains 'node-0.simgrid.org'
+> [  2.000000] (4:david@host2)   Zone property: 'Hdd' -> '180'
+> [  2.000000] (4:david@host2)   Zone property: 'bla' -> 'acme cluster'
+> [  2.000000] (4:david@host2)   Zone property: 'mem' -> '42'

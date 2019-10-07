@@ -15,19 +15,23 @@ namespace kernel {
 namespace activity {
 
 class XBT_PUBLIC MutexImpl {
+  std::atomic_int_fast32_t refcount_{1};
+  s4u::Mutex piface_;
+  bool locked_ = false;
+
 public:
-  MutexImpl();
-  ~MutexImpl();
+  MutexImpl() : piface_(this) {}
   MutexImpl(MutexImpl const&) = delete;
   MutexImpl& operator=(MutexImpl const&) = delete;
 
   void lock(actor::ActorImpl* issuer);
   bool try_lock(actor::ActorImpl* issuer);
   void unlock(actor::ActorImpl* issuer);
+  bool is_locked() { return locked_; }
 
   MutexImpl* ref();
   void unref();
-  bool locked_             = false;
+
   actor::ActorImpl* owner_ = nullptr;
   // List of sleeping actors:
   actor::SynchroList sleeping_;
@@ -46,10 +50,6 @@ public:
   }
 
   s4u::Mutex& mutex() { return piface_; }
-
-private:
-  std::atomic_int_fast32_t refcount_{1};
-  s4u::Mutex piface_;
 };
 }
 }

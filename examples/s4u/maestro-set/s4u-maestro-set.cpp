@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
 
   if (argc != 2) {
     XBT_CRITICAL("Usage: %s platform_file\n", argv[0]);
-    xbt_die("example: %s msg_platform.xml\n", argv[0]);
+    xbt_die("example: %s ../platforms/small_platform.xml\n", argv[0]);
   }
 
   e.load_platform(argv[1]);

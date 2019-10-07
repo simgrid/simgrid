@@ -15,7 +15,6 @@ public:
   int id; // Peer id
   simgrid::s4u::Mailbox* mailbox_;
   unsigned int bitfield = 0U; // Fields
-  //  int messages_count;
   double peer_speed    = 0;
   double last_unchoke  = 0;
   int current_piece    = -1;
@@ -25,7 +24,6 @@ public:
   bool choked_download = true;  // Indicates if the peer has choked the current peer
 
   explicit Connection(int id) : id(id), mailbox_(simgrid::s4u::Mailbox::by_name(std::to_string(id))){};
-  ~Connection() = default;
   void addSpeedValue(double speed) { peer_speed = peer_speed * 0.6 + speed * 0.4; }
   bool hasPiece(unsigned int piece) { return bitfield & 1U << piece; }
 };
@@ -35,12 +33,12 @@ class Peer {
   double deadline;
   RngStream stream;
   simgrid::s4u::Mailbox* mailbox_;
-  std::unordered_map<int, Connection*> connected_peers;
+  std::unordered_map<int, Connection> connected_peers;
   std::set<Connection*> active_peers; // active peers list
 
   unsigned int bitfield_             = 0;       // list of pieces the peer has.
   unsigned long long bitfield_blocks = 0;       // list of blocks the peer has.
-  short* pieces_count                = nullptr; // number of peers that have each piece.
+  std::vector<short> pieces_count;              // number of peers that have each piece.
   unsigned int current_pieces        = 0;       // current pieces the peer is downloading
   double begin_receive_time = 0; // time when the receiving communication has begun, useful for calculating host speed.
   int round_                = 0; // current round for the chocking algorithm.
@@ -51,7 +49,6 @@ public:
   explicit Peer(std::vector<std::string> args);
   Peer(const Peer&) = delete;
   Peer& operator=(const Peer&) = delete;
-  ~Peer();
   void operator()();
 
   std::string getStatus();

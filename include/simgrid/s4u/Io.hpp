@@ -17,7 +17,7 @@ namespace s4u {
 
 /** I/O Activity, representing the asynchronous disk access.
  *
- * They are generated from Storage::io_init() or Storage::read() and Storage::write().
+ * They are generated from Disk::io_init(), Disk::read() Disk::read_async(), Disk::write() and Disk::write_async().
  */
 
 class XBT_PUBLIC Io : public Activity_T<Io> {
@@ -26,16 +26,21 @@ public:
 
 private:
   Storage* storage_ = nullptr;
+  Disk* disk_       = nullptr;
   sg_size_t size_   = 0;
   OpType type_      = OpType::READ;
   std::atomic_int_fast32_t refcount_{0};
 
   explicit Io(sg_storage_t storage, sg_size_t size, OpType type);
+  explicit Io(sg_disk_t disk, sg_size_t size, OpType type);
 
 public:
+#ifndef DOXYGEN
   friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Io* i);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Io* i);
+  friend Disk;    // Factory of IOs
   friend Storage; // Factory of IOs
+#endif
 
   ~Io() = default;
 
@@ -47,10 +52,6 @@ public:
 
   double get_remaining() override;
   sg_size_t get_performed_ioops();
-
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v324("Please use Io::wait_for()") void wait(double t) override { wait_for(t); }
-#endif
 };
 
 } // namespace s4u

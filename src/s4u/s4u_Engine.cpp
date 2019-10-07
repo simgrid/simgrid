@@ -8,6 +8,7 @@
 #include "mc/mc.h"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
+#include "simgrid/s4u/Disk.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
@@ -28,11 +29,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_engine, s4u, "Logging specific to S4U (engin
 
 namespace simgrid {
 namespace s4u {
-xbt::signal<void()> on_platform_creation;
-xbt::signal<void()> on_platform_created;
-xbt::signal<void()> on_simulation_end;
-xbt::signal<void(double)> on_time_advance;
-xbt::signal<void(void)> on_deadlock;
+xbt::signal<void()> Engine::on_platform_creation;
+xbt::signal<void()> Engine::on_platform_created;
+xbt::signal<void()> Engine::on_simulation_end;
+xbt::signal<void(double)> Engine::on_time_advance;
+xbt::signal<void(void)> Engine::on_deadlock;
 
 Engine* Engine::instance_ = nullptr; /* That singleton is awful, but I don't see no other solution right now. */
 
@@ -89,7 +90,7 @@ void Engine::load_platform(const std::string& platf)
   double start = xbt_os_time();
   try {
     parse_platform_file(platf);
-  } catch (xbt_ex& e) {
+  } catch (const Exception& e) {
     xbt_die("Error while loading %s: %s", platf.c_str(), e.what());
   }
 
@@ -340,12 +341,6 @@ kernel::routing::NetPoint* Engine::netpoint_by_name_or_null(const std::string& n
   return netp == pimpl->netpoints_.end() ? nullptr : netp->second;
 }
 
-/** @brief Fill the provided vector with all existing netpoints */
-void Engine::getNetpointList(std::vector<kernel::routing::NetPoint*>* list)
-{
-  for (auto const& kv : pimpl->netpoints_)
-    list->push_back(kv.second);
-}
 std::vector<kernel::routing::NetPoint*> Engine::get_all_netpoints()
 {
   std::vector<kernel::routing::NetPoint*> res;
@@ -357,7 +352,7 @@ std::vector<kernel::routing::NetPoint*> Engine::get_all_netpoints()
 /** @brief Register a new netpoint to the system */
 void Engine::netpoint_register(kernel::routing::NetPoint* point)
 {
-  // simgrid::simix::simcall([&]{ FIXME: this segfaults in set_thread
+  // simgrid::kernel::actor::simcall([&]{ FIXME: this segfaults in set_thread
   pimpl->netpoints_[point->get_name()] = point;
   // });
 }
@@ -365,7 +360,7 @@ void Engine::netpoint_register(kernel::routing::NetPoint* point)
 /** @brief Unregister a given netpoint */
 void Engine::netpoint_unregister(kernel::routing::NetPoint* point)
 {
-  simix::simcall([this, point] {
+  kernel::actor::simcall([this, point] {
     pimpl->netpoints_.erase(point->get_name());
     delete point;
   });

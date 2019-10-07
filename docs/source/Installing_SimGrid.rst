@@ -16,11 +16,14 @@ Pre-compiled Packages
 Binaries for Linux
 ^^^^^^^^^^^^^^^^^^
 
-On Debian or Ubuntu, simply type:
+To get all of SimGrid on Debian or Ubuntu, simply type one of the
+following lines, or several lines if you need several languages.
 
 .. code-block:: shell
 
-   apt install simgrid
+   apt install libsimgrid-dev  # if you want to develop in C or C++
+   apt install simgrid-java    # if you want to develop in Java
+   apt install python3-simgrid # if you want to develop in Python
 
 If you build pre-compiled packages for other distributions, drop us an
 email.
@@ -31,7 +34,7 @@ Stable Java Package
 ^^^^^^^^^^^^^^^^^^^
 
 The jar file can be retrieved from the `Release page
-<https://framagit.org/simgrid/simgrid/tags>`_. This file is
+<https://framagit.org/simgrid/simgrid/releases>`_. This file is
 self-contained, including the native components for Linux, macOS and
 Windows. Copy it to your project's classpath and you're set.
 
@@ -40,11 +43,11 @@ Nightly built Java Package
 
 For non-Windows systems (Linux, macOS, or FreeBSD), head to `Jenkins <https://ci.inria.fr/simgrid/job/SimGrid>`_.
 In the build history, pick the last green (or at least yellow) build that is not blinking (i.e., not currently under
-build). In the list, pick a system that is close to yours, and click on the ball in the Debug row. The build artefact
+build). In the list, pick a system that is close to yours, and click on the ball in the Debug row. The build artifact
 will appear at the top of the resulting page.
 
 For Windows, head to `AppVeyor <https://ci.appveyor.com/project/simgrid/simgrid>`_.
-Click on the artefact link on the right, and grab your file. If the latest build failed, there will be no artefact. Then
+Click on the artifact link on the right, and grab your file. If the latest build failed, there will be no artifact. Then
 you will need to first click on "History" at the top and look for the last successful build.
 
 Binary Java Troubleshooting
@@ -73,11 +76,11 @@ C++ compiler (either g++, clang, or icc).
   us. It seems that g++ 5.0 or higher is required nowadays (because of
   boost).  SimGrid compiles well with `clang` or `icc` too.
 Python 3.
-  SimGrid should build without Python, that is only needed by our regresion test suite.
-cmake (v2.8.8).
+  SimGrid should build without Python. That is only needed by our regression test suite.
+cmake (v3.5).
   ``ccmake`` provides a nicer graphical interface compared to ``cmake``.
   Press ``t`` in ``ccmake`` if you need to see absolutely all
-  configuration options (e.g., if your python installation is not standard).
+  configuration options (e.g., if your Python installation is not standard).
 boost (at least v1.48, v1.59 recommended)
   - On Debian / Ubuntu: ``apt install libboost-dev libboost-context-dev``
   - On macOS with homebrew: ``brew install boost``
@@ -102,7 +105,7 @@ Getting the Sources
 ^^^^^^^^^^^^^^^^^^^
 
 Grab the last **stable release** from `FramaGit
-<https://framagit.org/simgrid/simgrid/tags>`_, and compile it as follows:
+<https://framagit.org/simgrid/simgrid/releases>`_, and compile it as follows:
 
 .. code-block:: shell
 
@@ -129,7 +132,7 @@ dependencies.
 Build Configuration
 ^^^^^^^^^^^^^^^^^^^
 
-This section is about **compile-time options**, that are very
+This section is about **compile-time options**, which are very
 different from :ref:`run-time options <options>`. Compile-time options
 fall into two categories. **SimGrid-specific options** define which part
 of the framework to compile while **Generic options** are provided by
@@ -140,7 +143,7 @@ cmake itself.
    Our build system often gets mixed up if you change something on
    your machine after the build configuration.  For example, if
    SimGrid fails to detect your fortran compiler, it is not enough to
-   install a fortran compiler. You also need to clean every Cmake
+   install a fortran compiler. You also need to delete all Cmake
    files, such as ``CMakeCache.txt``. Since Cmake also generates some
    files in the tree, you may need to wipe out your complete tree and
    start with a fresh one when you install new dependencies.
@@ -151,14 +154,13 @@ cmake itself.
 Generic build-time options
 """"""""""""""""""""""""""
 
-These options specify for example the path to various system elements
-(Python path, compiler to use, etc). In most case, CMake automatically
-discovers the right value for these ones, but you can set them
-manually on need.  Notable such variables include ``CC`` and ``CXX``,
-defining respectively the paths to the C and C++ compilers, ``CFLAGS``
-and ``CXXFLAGS`` respectively specifying extra options to pass to the C
-and C++ compilers, or ``PYTHON_EXECUTABLE`` specifying the path to the
-python executable.
+These options specify, for example, the path to various system elements (Python
+path, compiler to use, etc). In most case, CMake automatically discovers the
+right value for these elements, but you can set them manually as needed.
+Notably, such variables include ``CC`` and ``CXX``, defining the paths to the C
+and C++ compilers; ``CFLAGS`` and ``CXXFLAGS`` specifying extra options to pass
+to the C and C++ compilers; and ``PYTHON_EXECUTABLE`` specifying the path to the
+Python executable.
 
 The best way to discover the exact name of the option that you need to
 change is to press ``t`` in the ``ccmake`` graphical interface, as all
@@ -169,8 +171,8 @@ build-time options. You can naturally use the ccmake graphical
 interface for that, or you can use environment variables, or you can
 prefer the ``-D`` flag of ``cmake``.
 
-For example, you can change the compilers with environment variables
-by issuing these commands before launching cmake:
+For example, you can change the compilers by issuing these commands to set some
+environment variables before launching cmake:
 
 .. code-block:: shell
 
@@ -178,7 +180,7 @@ by issuing these commands before launching cmake:
    export CXX=g++-5.1
 
 The same can be done by passing ``-D`` parameters to cmake, as follows.
-Note that the ending dot is mandatory (see :ref:`install_cmake_outsrc`).
+Note that the dot at the end is mandatory (see :ref:`install_cmake_outsrc`).
 
 .. code-block:: shell
 
@@ -188,37 +190,39 @@ SimGrid compilation options
 """""""""""""""""""""""""""
 
 Here is the list of all SimGrid-specific compile-time options (the
-default choice is in uppercase).
+default choice is in upper case).
 
 CMAKE_INSTALL_PREFIX (path)
   Where to install SimGrid (/opt/simgrid, /usr/local, or elsewhere).
 
 enable_compile_optimizations (ON/off)
-  Request the compiler to produce efficient code. You probably want to
-  activate this option, unless you plan modify SimGrid itself:
-  efficient code takes more time to compile, and appears mangled to debuggers.
+  Ask the compiler to produce efficient code. You probably want to
+  leave this option activated, unless you plan to modify SimGrid itself:
+  efficient code takes more time to compile, and appears mangled to some debuggers.
 
 enable_compile_warnings (on/OFF)
-  Request the compiler to issue error messages whenever the source
+  Ask the compiler to issue error messages whenever the source
   code is not perfectly clean. If you are a SimGrid developer, you
   have to activate this option to enforce the code quality. As a
   regular user, this option is of little use.
 
 enable_debug (ON/off)
-  Disabling this option discards all log messages of gravity
+  Disabling this option discards all log messages of severity
   debug or below at compile time (see @ref XBT_log). The resulting
   code is faster than if you discard these messages at
   runtime. However, it obviously becomes impossible to get any debug
   info from SimGrid if something goes wrong.
 
-enable_documentation (ON/off)
-  Generates the documentation pages.
+enable_documentation (on/OFF)
+  Generates the documentation pages. Building the documentation is not
+  as easy as it used to be, and you should probably use the online
+  version for now.
 
 enable_java (on/OFF)
   Generates the java bindings of SimGrid.
 
 enable_jedule (on/OFF)
-  Produces execution traces from SimDag simulations, that can then be visualized with the
+  Produces execution traces from SimDag simulations, which can then be visualized with the
   Jedule external tool.
 
 enable_lua (on/OFF)
@@ -229,7 +233,7 @@ enable_lib_in_jar (ON/off)
 
 enable_lto (ON/off)
   Enables the *Link Time Optimization* in the C++ compiler.
-  This feature really speeds up the produced code, but it is fragile
+  This feature really speeds up the code produced, but it is fragile
   with older gcc versions.
 
 enable_maintainer_mode (on/OFF)
@@ -241,20 +245,24 @@ enable_mallocators (ON/off)
 
 enable_model-checking (on/OFF)
   Activates the formal verification mode. This will **hinder
-  simulation speed** even when the model-checker is not activated at
+  simulation speed** even when the model checker is not activated at
   run time.
 
 enable_ns3 (on/OFF)
-  Activates the ns-3 bindings. See section @ref pls_ns3.
+  Activates the ns-3 bindings. See section :ref:`model_ns3`.
 
 enable_smpi (ON/off)
-  Allows to run MPI code on top of SimGrid.
+  Allows one to run MPI code on top of SimGrid.
 
 enable_smpi_ISP_testsuite (on/OFF)
-  Adds many extra tests for the model-checker module.
+  Adds many extra tests for the model checker module.
 
 enable_smpi_MPICH3_testsuite (on/OFF)
   Adds many extra tests for the MPI module.
+
+minimal-bindings (on/OFF)
+  Take as few optional dependencies as possible, to get minimal
+  library bindings in Java and Python.
 
 Reset the build configuration
 """""""""""""""""""""""""""""
@@ -301,7 +309,9 @@ for completion when using the ``Tab`` key. Note that some of the
 existing targets are not really for public consumption so don't worry
 if some do not work for you.
 
-- **make simgrid**: Build only the SimGrid library and not any example
+- **make**: Build the core of SimGrid that gets installed, but not any example.
+- **make tests**: Build the tests and examples.
+- **make simgrid**: Build only the SimGrid library. Not any example nor the helper tools.
 - **make s4u-app-pingpong**: Build only this example (works for any example)
 - **make java-all**: Build all Java examples and their dependencies
 - **make clean**: Clean the results of a previous compilation
@@ -325,12 +335,14 @@ Testing your build
 
 Once everything is built, you may want to test the result. SimGrid
 comes with an extensive set of regression tests (as described in the
-@ref inside_tests "insider manual"). The tests are run with ``ctest``,
-that comes with CMake.  We run them every commit and the results are
-on `our Jenkins <https://ci.inria.fr/simgrid/>`_.
+@ref inside_tests "insider manual"). The tests are not built by
+default, so you first have to build them with ``make tests``. You can
+then run them with ``ctest``, that comes with CMake.  We run them
+every commit and the results are on `our Jenkins <https://ci.inria.fr/simgrid/>`_.
 
 .. code-block:: shell
 
+  make tests                # Build the tests
   ctest	                    # Launch all tests
   ctest -R s4u              # Launch only the tests whose names match the string "s4u"
   ctest -j4                 # Launch all tests in parallel, at most 4 concurrent jobs
@@ -342,8 +354,8 @@ on `our Jenkins <https://ci.inria.fr/simgrid/>`_.
 
 .. _install_cmake_mac:
 
-macOS Specifics
-^^^^^^^^^^^^^^^
+macOS-specific instructions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 SimGrid compiles like a charm with clang (version 3.0 or higher) on macOS:
 
@@ -370,11 +382,11 @@ CMake Error: Parse error in cache file build_dir/CMakeCache.txt. Offending entry
 
 .. _install_cmake_windows:
 
-Windows Specifics
-^^^^^^^^^^^^^^^^^
+Windows-specific instructions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The best solution to get SimGrid working on windows is to install the
-Ubuntu subsystem of Windows 10. All of SimGrid (but the model-checker)
+Ubuntu subsystem of Windows 10. All of SimGrid (but the model checker)
 works in this setting.
 
 Native builds not very well supported. Have a look to our `appveypor
@@ -384,19 +396,36 @@ see how we manage to use mingw-64 to build the DLL that the Java file
 needs.
 
 The drawback of MinGW-64 is that the produced DLL are not compatible
-with MS Visual C. `clang-cl <http://clang.llvm.org/docs/MSVCCompatibility.html">`_
-sounds promising to fix this. If you get something working or if you
-have any other improvement, please @ref community_contact "tell us".
+with MS Visual C. Some clang-based tools seem promising to fix this,
+but this is of rather low priority for us. It it's important for you
+and if you get it working, please @ref community_contact "tell us".
 
-Java Specifics
-^^^^^^^^^^^^^^
+Python-specific instructions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Recompiling the Python bindings from the source should be as easy as:
+
+.. code-block:: shell
+
+  # cd simgrid-source-tree
+  python setup.py build install
+  
+Starting with SimGrid 3.13, it should even be possible to install
+simgrid without downloading the source with pip:
+
+.. code-block:: shell
+
+  pip install simgrid
+
+Java-specific instructions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Once you have the `full JDK <http://www.oracle.com/technetwork/java/javase/downloads>`_ installed,
 things should be as simple as:
 
 .. code-block:: shell
 
-   cmake -Denable_java=ON .
+   cmake -Denable_java=ON -Dminimal-bindings=ON .
    make  simgrid-java_jar # Only build the jarfile
 
 After the compilation, the file ```simgrid.jar``` is produced in the
@@ -427,8 +456,8 @@ path, and relaunch cmake. If you have several versions of JNI installed
 
 Note that the filename ```jni.h``` was removed from the path.
 
-Linux Multi-Arch Specifics
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Linux Multi-Arch specific instructions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 On a multiarch x86_64 Linux, it should be possible to compile a 32-bit
 version of SimGrid with something like:

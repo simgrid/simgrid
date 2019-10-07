@@ -30,7 +30,7 @@
  ****************************************************************************/
 namespace simgrid{
 namespace smpi{
-int Coll_alltoall_rdb::alltoall(void *send_buff, int send_count,
+int Coll_alltoall_rdb::alltoall(const void *send_buff, int send_count,
                                  MPI_Datatype send_type,
                                  void *recv_buff, int recv_count,
                                  MPI_Datatype recv_type, MPI_Comm comm)
@@ -44,7 +44,6 @@ int Coll_alltoall_rdb::alltoall(void *send_buff, int send_count,
   int last_recv_count = 0, tmp_mask, tree_root, num_procs_completed;
   int tag = COLL_TAG_ALLTOALL, mask = 1, i = 0;
 
-  char *tmp_buff;
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;
 
@@ -59,7 +58,7 @@ int Coll_alltoall_rdb::alltoall(void *send_buff, int send_count,
 
   max_size = num_procs * recv_increment;
 
-  tmp_buff = (char *) smpi_get_tmp_sendbuffer(max_size);
+  unsigned char* tmp_buff = smpi_get_tmp_sendbuffer(max_size);
 
   curr_size = send_count * num_procs;
 

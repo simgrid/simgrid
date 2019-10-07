@@ -78,7 +78,7 @@ Coll_bcast_scatter_LR_allgather::bcast(void *buff, int count,
   MPI_Status status;
   int i, src, dst, rank, num_procs;
   int mask, relative_rank, curr_size, recv_size, send_size, nbytes;
-  int scatter_size, left, right, next_src, *recv_counts, *disps;
+  int scatter_size, left, right, next_src;
   int tag = COLL_TAG_BCAST;
 
   rank = comm->rank();
@@ -139,8 +139,8 @@ Coll_bcast_scatter_LR_allgather::bcast(void *buff, int count,
   }
 
   // done scatter now do allgather
-  recv_counts = (int *) xbt_malloc(sizeof(int) * num_procs);
-  disps = (int *) xbt_malloc(sizeof(int) * num_procs);
+  int* recv_counts = new int[num_procs];
+  int* disps       = new int[num_procs];
 
   for (i = 0; i < num_procs; i++) {
     recv_counts[i] = nbytes - i * scatter_size;
@@ -172,9 +172,8 @@ Coll_bcast_scatter_LR_allgather::bcast(void *buff, int count,
     next_src = (num_procs + next_src - 1) % num_procs;
   }
 
-
-  free(recv_counts);
-  free(disps);
+  delete[] recv_counts;
+  delete[] disps;
 
   return MPI_SUCCESS;
 }

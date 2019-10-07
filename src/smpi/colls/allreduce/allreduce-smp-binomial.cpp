@@ -29,12 +29,11 @@ This fucntion performs all-reduce operation as follow.
 */
 namespace simgrid{
 namespace smpi{
-int Coll_allreduce_smp_binomial::allreduce(void *send_buf, void *recv_buf,
+int Coll_allreduce_smp_binomial::allreduce(const void *send_buf, void *recv_buf,
                                            int count, MPI_Datatype dtype,
                                            MPI_Op op, MPI_Comm comm)
 {
   int comm_size, rank;
-  void *tmp_buf;
   int tag = COLL_TAG_ALLREDUCE;
   int mask, src, dst;
 
@@ -51,7 +50,7 @@ int Coll_allreduce_smp_binomial::allreduce(void *send_buf, void *recv_buf,
   rank=comm->rank();
   MPI_Aint extent, lb;
   dtype->extent(&lb, &extent);
-  tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
+  unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(count * extent);
 
   /* compute intra and inter ranking */
   int intra_rank, inter_rank;

@@ -17,7 +17,7 @@ int PMPI_Info_create( MPI_Info *info){
   return MPI_SUCCESS;
 }
 
-int PMPI_Info_set( MPI_Info info, char *key, char *value){
+int PMPI_Info_set( MPI_Info info, const char *key, const char *value){
   if (info == nullptr || key == nullptr || value == nullptr)
     return MPI_ERR_ARG;
   info->set(key, value);
@@ -32,10 +32,12 @@ int PMPI_Info_free( MPI_Info *info){
   return MPI_SUCCESS;
 }
 
-int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
+int PMPI_Info_get(MPI_Info info, const char *key,int valuelen, char *value, int *flag){
   *flag=false;
-  if (info == nullptr || key == nullptr || valuelen <0)
+  if (info == nullptr || valuelen <0)
     return MPI_ERR_ARG;
+  if (key == nullptr)
+    return MPI_ERR_INFO_KEY;
   if (value == nullptr)
     return MPI_ERR_INFO_VALUE;
   return info->get(key, valuelen, value, flag);
@@ -48,7 +50,7 @@ int PMPI_Info_dup(MPI_Info info, MPI_Info *newinfo){
   return MPI_SUCCESS;
 }
 
-int PMPI_Info_delete(MPI_Info info, char *key){
+int PMPI_Info_delete(MPI_Info info, const char *key){
   if (info == nullptr || key==nullptr)
     return MPI_ERR_ARG;
   return info->remove(key);
@@ -66,17 +68,25 @@ int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
   return info->get_nthkey(n, key);
 }
 
-int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
+int PMPI_Info_get_valuelen( MPI_Info info, const char *key, int *valuelen, int *flag){
   *flag=false;
-  if (info == nullptr || key == nullptr || valuelen==nullptr)
+  if (info == nullptr)
     return MPI_ERR_ARG;
+  if (key == nullptr)
+    return MPI_ERR_INFO_KEY;
+  if (valuelen == nullptr)
+    return MPI_ERR_INFO_VALUE;
   return info->get_valuelen(key, valuelen, flag);
 }
 
 MPI_Info PMPI_Info_f2c(MPI_Fint info){
+  if(info==-1)
+    return MPI_INFO_NULL;
   return static_cast<MPI_Info>(simgrid::smpi::Info::f2c(info));
 }
 
 MPI_Fint PMPI_Info_c2f(MPI_Info info){
+  if(info==MPI_INFO_NULL)
+    return -1;
   return info->c2f();
 }

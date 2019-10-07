@@ -24,6 +24,7 @@ class Global {
   friend XBT_PUBLIC bool simgrid::s4u::this_actor::is_maestro();
 
 public:
+  bool execute_tasks();
   /**
    * Garbage collection
    *
@@ -73,17 +74,5 @@ public:
 XBT_PUBLIC_DATA std::unique_ptr<simgrid::simix::Global> simix_global;
 
 XBT_PUBLIC void SIMIX_clean();
-
-/******************************** Exceptions *********************************/
-/** @brief Ask to the provided ActorImpl to raise the provided exception */
-#define SMX_EXCEPTION(issuer, cat, val, msg)                                                                           \
-  if (1) {                                                                                                             \
-    simgrid::kernel::actor::ActorImpl* _smx_throw_issuer = (issuer); /* evaluate only once */                          \
-    xbt_ex e(XBT_THROW_POINT, msg);                                                                                    \
-    e.category                    = cat;                                                                               \
-    e.value                       = val;                                                                               \
-    _smx_throw_issuer->exception_ = std::make_exception_ptr(e);                                                        \
-  } else                                                                                                               \
-    ((void)0)
 
 #endif

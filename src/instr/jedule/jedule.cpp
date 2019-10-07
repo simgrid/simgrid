@@ -12,13 +12,6 @@
 namespace simgrid{
 namespace jedule {
 
-Jedule::~Jedule() {
-  delete this->root_container_;
-  for (auto const& evt : this->event_set_)
-    delete evt;
-  this->event_set_.clear();
-}
-
 void Jedule::add_meta_info(char* key, char* value)
 {
   xbt_assert(key != nullptr);
@@ -40,12 +33,12 @@ void Jedule::write_output(FILE* file)
     }
 
     fprintf(file, "  <platform>\n");
-    this->root_container_->print(file);
+    this->root_container_.print(file);
     fprintf(file, "  </platform>\n");
 
     fprintf(file, "  <events>\n");
     for (auto const& event : this->event_set_)
-      event->print(file);
+      event.print(file);
     fprintf(file, "  </events>\n");
 
     fprintf(file, "</jedule>\n");

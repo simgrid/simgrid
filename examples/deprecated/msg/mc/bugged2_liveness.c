@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(bugged3, "my log messages");
 
 int cs = 0;
 
-static int coordinator(int argc, char *argv[])
+static int coordinator(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   int CS_used = 0;              // initially the CS is idle
 
@@ -49,6 +49,7 @@ static int coordinator(int argc, char *argv[])
 
 static int client(int argc, char *argv[])
 {
+  xbt_assert(argc == 2);
   int my_pid = MSG_process_get_PID(MSG_process_self());
   char *my_mailbox = xbt_strdup(argv[1]);
 

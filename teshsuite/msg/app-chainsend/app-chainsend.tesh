@@ -4,7 +4,7 @@ p Testing the chainsend MSG implementation
 
 ! timeout 60
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/chainsend ${platfdir}/cluster_backbone.xml app-chainsend_d.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/chainsend ${platfdir}/cluster_backbone.xml app-chainsend_d.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
 > [    2.214423] (2:peer@node-1.simgrid.org) ### 2.214423 16777216 bytes (Avg 7.225359 MB/s); copy finished (simulated).
 > [    2.222796] (3:peer@node-2.simgrid.org) ### 2.222796 16777216 bytes (Avg 7.198141 MB/s); copy finished (simulated).
 > [    2.231170] (4:peer@node-3.simgrid.org) ### 2.231170 16777216 bytes (Avg 7.171126 MB/s); copy finished (simulated).

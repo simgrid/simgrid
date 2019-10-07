@@ -2,7 +2,7 @@
 ! output sort
 
 p Test classic - backbone
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${bindir}/../hostfile_cluster -platform ${platfdir:=.}/cluster_backbone.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${bindir}/../hostfile_cluster -platform ${platfdir:=.}/cluster_backbone.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error
 > [rank 0] -> node-0.simgrid.org
 > [rank 1] -> node-1.simgrid.org
 > [rank 2] -> node-2.simgrid.org
@@ -42,7 +42,7 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${bindir}/../host
 
 ! output sort
 p Test separate clusters
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -platform ../../../examples/platforms/cluster_multi.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -platform ../../../examples/platforms/cluster_multi.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error
 > [rank 0] -> node-0.1core.org
 > [rank 1] -> node-1.1core.org
 > [rank 2] -> node-2.1core.org
@@ -50,11 +50,11 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -platform ../../../examples
 > [rank 4] -> node-4.1core.org
 > [rank 5] -> node-5.1core.org
 > [rank 6] -> node-6.1core.org
-> [rank 7] -> node-7.1core.org
-> [rank 8] -> node-0.2cores.org
-> [rank 9] -> node-1.2cores.org
-> [rank 10] -> node-2.2cores.org
-> [rank 11] -> node-3.2cores.org
+> [rank 7] -> node-0.2cores.org
+> [rank 8] -> node-1.2cores.org
+> [rank 9] -> node-2.2cores.org
+> [rank 10] -> node-3.2cores.org
+> [rank 11] -> node-4.2cores.org
 > [0] sndbuf=[0 1 2 3 4 5 6 7 8 9 10 11 ]
 > [1] sndbuf=[12 13 14 15 16 17 18 19 20 21 22 23 ]
 > [2] sndbuf=[24 25 26 27 28 29 30 31 32 33 34 35 ]
@@ -82,7 +82,7 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -platform ../../../examples
 
 ! output sort
 p Test torus
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_cluster -platform ../../../examples/platforms/cluster_torus.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_cluster -platform ../../../examples/platforms/cluster_torus.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error
 > [rank 0] -> node-0.simgrid.org
 > [rank 1] -> node-1.simgrid.org
 > [rank 2] -> node-2.simgrid.org
@@ -122,7 +122,7 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_clust
 
 ! output sort
 p Test fat tree
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_cluster -platform ../../../examples/platforms/cluster_fat_tree.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_cluster -platform ../../../examples/platforms/cluster_fat_tree.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error
 > [rank 0] -> node-0.simgrid.org
 > [rank 1] -> node-1.simgrid.org
 > [rank 2] -> node-2.simgrid.org
@@ -162,7 +162,7 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_clust
 
 ! output sort
 p Test fat tree IB
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_cluster -platform ../../../examples/platforms/cluster_fat_tree.xml -np 12 --cfg=network/model:IB --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_cluster -platform ../../../examples/platforms/cluster_fat_tree.xml -np 12 --cfg=network/model:IB --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error
 > [rank 0] -> node-0.simgrid.org
 > [rank 1] -> node-1.simgrid.org
 > [rank 2] -> node-2.simgrid.org
@@ -202,7 +202,7 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_clust
 
 ! output sort
 p Test Dragonfly
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_cluster -platform ../../../examples/platforms/cluster_dragonfly.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_cluster -platform ../../../examples/platforms/cluster_dragonfly.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error
 > [rank 0] -> node-0.simgrid.org
 > [rank 1] -> node-1.simgrid.org
 > [rank 2] -> node-2.simgrid.org

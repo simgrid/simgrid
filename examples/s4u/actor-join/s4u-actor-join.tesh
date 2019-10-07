@@ -1,4 +1,4 @@
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-actor-join$EXEEXT ${platfdir}/small_platform.xml
+$ ${bindir:=.}/s4u-actor-join ${platfdir}/small_platform.xml
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Start sleeper
 > [Tremblay:sleeper from master:(2) 0.000000] [s4u_test/INFO] Sleeper started
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Join the sleeper (timeout 2)

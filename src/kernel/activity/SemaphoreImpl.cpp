@@ -14,18 +14,15 @@ namespace activity {
 
 void SemaphoreImpl::acquire(actor::ActorImpl* issuer, double timeout)
 {
-  RawImplPtr synchro = nullptr;
-
   XBT_DEBUG("Wait semaphore %p (timeout:%f)", this, timeout);
   if (value_ <= 0) {
-    synchro = RawImplPtr(new RawImpl());
-    (*synchro).set_host(issuer->get_host()).set_timeout(timeout).start();
-    synchro->simcalls_.push_front(&issuer->simcall);
-    issuer->waiting_synchro = synchro;
+    RawImplPtr synchro = RawImplPtr(new RawImpl());
+    synchro->set_host(issuer->get_host()).set_timeout(timeout).start();
+    synchro->register_simcall(&issuer->simcall);
     sleeping_.push_back(*issuer);
   } else {
     value_--;
-    SIMIX_simcall_answer(&issuer->simcall);
+    issuer->simcall_answer();
   }
 }
 void SemaphoreImpl::release()
@@ -36,7 +33,7 @@ void SemaphoreImpl::release()
     auto& actor = sleeping_.front();
     sleeping_.pop_front();
     actor.waiting_synchro = nullptr;
-    SIMIX_simcall_answer(&actor.simcall);
+    actor.simcall_answer();
   } else {
     value_++;
   }
@@ -52,7 +49,7 @@ void SemaphoreImpl::release()
  */
 void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem)
 {
-  sem->acquire(simcall->issuer, -1);
+  sem->acquire(simcall->issuer_, -1);
 }
 
 /**
@@ -61,5 +58,5 @@ void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem)
 void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout)
 {
   simcall_sem_acquire_timeout__set__result(simcall, 0); // default result, will be set to 1 on timeout
-  sem->acquire(simcall->issuer, timeout);
+  sem->acquire(simcall->issuer_, timeout);
 }

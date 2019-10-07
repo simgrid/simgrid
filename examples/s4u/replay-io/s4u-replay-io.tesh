@@ -1,0 +1,6 @@
+! output sort 19
+$ ${bindir:=.}/s4u-replay-io --log=replay_io.thres=verbose ${platfdir}/hosts_with_disks.xml s4u-replay-io_d.xml s4u-replay-io.txt "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+> [  0.000000] (p0@alice) p0 open /lib/libsimgrid.so.3.6.2 0.000000
+> [  0.063552] (p0@alice) p0 read /lib/libsimgrid.so.3.6.2 12710497 0.063552
+> [  0.063552] (p0@alice) p0 close /lib/libsimgrid.so.3.6.2 0.000000
+> [  0.063552] (maestro@) Simulation time 0.0635525

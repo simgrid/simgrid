@@ -9,6 +9,19 @@
 #include <stdio.h>
 #include <mpi.h>
 
+static void test_opts(int* argc, char **argv[]){
+  int found = 0;
+  int ret;
+  while ((ret = getopt(*argc, *argv, "s")) >= 0)
+  {
+    if (ret == 's')
+      found = 1;
+  }
+  if (found!=1){
+    printf("(smpi_)getopt failed ! \n");
+  }
+}
+
 int main(int argc, char *argv[])
 {
   const int tag1 = 42;
@@ -19,6 +32,10 @@ int main(int argc, char *argv[])
   MPI_Status status;
 
   int err = MPI_Init(&argc, &argv); /* Initialize MPI */
+
+  /* test getopt function */
+  test_opts(&argc, &argv);
+
   if (err != MPI_SUCCESS) {
     printf("MPI initialization failed!\n");
     exit(1);

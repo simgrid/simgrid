@@ -2,7 +2,7 @@
 
 p Testing a MSG_process_kill function
 
-$ $SG_TEST_EXENV ${bindir:=.}/process-kill ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/process-kill ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:killer@Tremblay) Hello!
 > [  0.000000] (2:victim@Fafard) Hello!
 > [  0.000000] (2:victim@Fafard) Suspending myself

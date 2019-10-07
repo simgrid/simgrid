@@ -22,7 +22,7 @@ SG_BEGIN_DECL();
 #endif
 /* end of eclipse-mandated pimple */
 
-// Cached java fields accessed by the rest of the code (FIXME: they should not)
+// Cached java fields accessed by the rest of the code
 extern jfieldID jprocess_field_Process_pid;
 extern jfieldID jprocess_field_Process_ppid;
 

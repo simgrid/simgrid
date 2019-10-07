@@ -16,7 +16,7 @@
  */
 
 #define MAX_ERRS 10
-#define MAX_COUNT 1200000
+#define MAX_COUNT 120000
 
 void myop(void *cinPtr, void *coutPtr, int *count, MPI_Datatype * dtype);
 

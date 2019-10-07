@@ -1,8 +1,21 @@
 $ ./actor-autorestart ${platfdir}/small_platform.xml
-> [Tremblay:Autostart:(1) 0.000000] [s4u_test/INFO] starting a dummy process on Fafard 
+> [Tremblay:Autostart:(1) 0.000000] [s4u_test/INFO] starting a dummy process on Fafard
 > [Fafard:Dummy:(2) 0.000000] [s4u_test/INFO] I start
+> [Tremblay:Autostart:(1) 0.000000] [s4u_test/INFO] starting a daemon process on Fafard
+> [Fafard:Daemon:(3) 0.000000] [s4u_test/INFO] Hello from the infinite loop
 > [Tremblay:Autostart:(1) 50.000000] [s4u_test/INFO] powering off Fafard
+> [Fafard:Dummy:(2) 50.000000] [s4u_test/INFO] On_exit callback set after autorestart
+> [Fafard:Dummy:(2) 50.000000] [s4u_test/INFO] On_exit callback set before autorestart
+> [Fafard:Daemon:(3) 50.000000] [s4u_test/INFO] On_exit callback set after autorestart
+> [Fafard:Daemon:(3) 50.000000] [s4u_test/INFO] On_exit callback set before autorestart
 > [Tremblay:Autostart:(1) 60.000000] [s4u_test/INFO] powering on Fafard
-> [Fafard:Dummy:(3) 60.000000] [s4u_test/INFO] I start
-> [Fafard:Dummy:(3) 260.000000] [s4u_test/INFO] I stop
+> [Fafard:Dummy:(4) 60.000000] [s4u_test/INFO] I start
+> [Fafard:Daemon:(5) 60.000000] [s4u_test/INFO] Hello from the infinite loop
+> [Fafard:Daemon:(5) 140.000000] [s4u_test/INFO] Hello from the infinite loop
+> [Fafard:Daemon:(5) 220.000000] [s4u_test/INFO] Hello from the infinite loop
+> [Fafard:Dummy:(4) 260.000000] [s4u_test/INFO] I stop
+> [Fafard:Dummy:(4) 260.000000] [s4u_test/INFO] On_exit callback set after autorestart
+> [Fafard:Dummy:(4) 260.000000] [s4u_test/INFO] On_exit callback set before autorestart
+> [Fafard:Daemon:(5) 260.000000] [s4u_test/INFO] On_exit callback set after autorestart
+> [Fafard:Daemon:(5) 260.000000] [s4u_test/INFO] On_exit callback set before autorestart
 > [260.000000] [s4u_test/INFO] Simulation time 260

@@ -33,7 +33,7 @@ public:
 };
 
 /* This functor is a bit more complex, as it saves the current state when created.
- * Then, it allows to easily retrieve the hosts which frequency changed since the functor creation.
+ * Then, it allows one to easily retrieve the hosts which frequency changed since the functor creation.
  */
 class FrequencyChanged {
   std::map<simgrid::s4u::Host*, int> host_list;

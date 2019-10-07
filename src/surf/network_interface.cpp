@@ -6,6 +6,7 @@
 #include "network_interface.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
@@ -137,6 +138,17 @@ void LinkImpl::turn_off()
   if (is_on()) {
     Resource::turn_off();
     s4u::Link::on_state_change(this->piface_);
+
+    kernel::lmm::Variable* var       = nullptr;
+    const kernel::lmm::Element* elem = nullptr;
+    double now                       = surf_get_clock();
+    while ((var = get_constraint()->get_variable(&elem))) {
+      Action* action = static_cast<Action*>(var->get_id());
+      if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED) {
+        action->set_finish_time(now);
+        action->set_state(Action::State::FAILED);
+      }
+    }
   }
 }
 
@@ -148,13 +160,13 @@ void LinkImpl::on_bandwidth_change()
 void LinkImpl::set_bandwidth_profile(profile::Profile* profile)
 {
   xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth profile to Link %s", get_cname());
-  bandwidth_.event = profile->schedule(&future_evt_set, this);
+  bandwidth_.event = profile->schedule(&profile::future_evt_set, this);
 }
 
 void LinkImpl::set_latency_profile(profile::Profile* profile)
 {
   xbt_assert(latency_.event == nullptr, "Cannot set a second latency profile to Link %s", get_cname());
-  latency_.event = profile->schedule(&future_evt_set, this);
+  latency_.event = profile->schedule(&profile::future_evt_set, this);
 }
 
 /**********
@@ -178,7 +190,7 @@ std::list<LinkImpl*> NetworkAction::links() const
   for (int i = 0; i < llen; i++) {
     /* Beware of composite actions: ptasks put links and cpus together */
     // extra pb: we cannot dynamic_cast from void*...
-    Resource* resource = static_cast<Resource*>(get_variable()->get_constraint(i)->get_id());
+    Resource* resource = get_variable()->get_constraint(i)->get_id();
     LinkImpl* link     = dynamic_cast<LinkImpl*>(resource);
     if (link != nullptr)
       retlist.push_back(link);

@@ -45,7 +45,7 @@ Task* Task::create(const std::string& name, double flops_amount, double bytes_am
 Task* Task::create_parallel(const std::string& name, int host_nb, const msg_host_t* host_list, double* flops_amount,
                             double* bytes_amount, void* data)
 {
-  std::vector<simgrid::s4u::Host*> hosts(host_list, host_list + host_nb);
+  std::vector<s4u::Host*> hosts(host_list, host_list + host_nb);
   std::vector<double> flops;
   std::vector<double> bytes;
   if (flops_amount != nullptr)
@@ -81,11 +81,11 @@ msg_error_t Task::execute()
 
     set_not_used();
     XBT_DEBUG("Execution task '%s' finished", get_cname());
-  } catch (HostFailureException& e) {
+  } catch (const HostFailureException&) {
     status = MSG_HOST_FAILURE;
-  } catch (TimeoutError& e) {
+  } catch (const TimeoutException&) {
     status = MSG_TIMEOUT;
-  } catch (CancelException& e) {
+  } catch (const CancelException&) {
     status = MSG_TASK_CANCELED;
   }
 
@@ -100,9 +100,9 @@ msg_error_t Task::execute()
 s4u::CommPtr Task::send_async(const std::string& alias, void_f_pvoid_t cleanup, bool detached)
 {
   if (TRACE_actor_is_enabled()) {
-    container_t process_container = simgrid::instr::Container::by_name(instr_pid(*MSG_process_self()));
+    container_t process_container = instr::Container::by_name(instr_pid(*MSG_process_self()));
     std::string key               = std::string("p") + std::to_string(get_id());
-    simgrid::instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->start_event(process_container, "SR", key);
+    instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->start_event(process_container, "SR", key);
   }
 
   /* Prepare the task to send */
@@ -111,15 +111,15 @@ s4u::CommPtr Task::send_async(const std::string& alias, void_f_pvoid_t cleanup, 
   msg_global->sent_msg++;
 
   s4u::CommPtr s4u_comm = s4u::Mailbox::by_name(alias)->put_init(this, bytes_amount)->set_rate(get_rate());
+  if (TRACE_is_enabled() && has_tracing_category())
+    s4u_comm->set_tracing_category(tracing_category_);
+
   comm                  = s4u_comm;
 
   if (detached)
     comm->detach(cleanup);
   else
     comm->start();
-
-  if (TRACE_is_enabled() && has_tracing_category())
-    simgrid::simix::simcall([this] { comm->get_impl()->set_category(std::move(tracing_category_)); });
 
   return comm;
 }
@@ -133,16 +133,12 @@ msg_error_t Task::send(const std::string& alias, double timeout)
     s4u::CommPtr s4u_comm = send_async(alias, nullptr, false);
     comm                  = s4u_comm;
     comm->wait_for(timeout);
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const TimeoutException&) {
     ret = MSG_TIMEOUT;
-  } catch (simgrid::CancelException& e) {
+  } catch (const CancelException&) {
     ret = MSG_HOST_FAILURE;
-  } catch (xbt_ex& e) {
-    if (e.category == network_error)
-      ret = MSG_TRANSFER_FAILURE;
-    else
-      throw;
-
+  } catch (const NetworkFailureException&) {
+    ret = MSG_TRANSFER_FAILURE;
     /* If the send failed, it is not used anymore */
     set_not_used();
   }
@@ -167,7 +163,7 @@ void Task::set_priority(double priority)
 
 s4u::Actor* Task::get_sender()
 {
-  return comm ? comm->get_sender().get() : nullptr;
+  return comm ? comm->get_sender() : nullptr;
 }
 
 s4u::Host* Task::get_source()
@@ -625,17 +621,14 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t* task, const char* alias, do
     *task = static_cast<msg_task_t>(payload);
     XBT_DEBUG("Got task %s from %s", (*task)->get_cname(), alias);
     (*task)->set_not_used();
-  } catch (simgrid::HostFailureException& e) {
+  } catch (const simgrid::HostFailureException&) {
     ret = MSG_HOST_FAILURE;
-  } catch (simgrid::TimeoutError& e) {
+  } catch (const simgrid::TimeoutException&) {
     ret = MSG_TIMEOUT;
-  } catch (simgrid::CancelException& e) {
+  } catch (const simgrid::CancelException&) {
     ret = MSG_TASK_CANCELED;
-  } catch (xbt_ex& e) {
-    if (e.category == network_error)
-      ret = MSG_TRANSFER_FAILURE;
-    else
-      throw;
+  } catch (const simgrid::NetworkFailureException&) {
+    ret = MSG_TRANSFER_FAILURE;
   }
 
   if (TRACE_actor_is_enabled() && ret != MSG_HOST_FAILURE && ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {
@@ -698,8 +691,7 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t* task, const char* name, double rat
  *
  * @param alias the name of the mailbox to be considered
  *
- * @return Returns the PID of sender process,
- * -1 if there is no communication in the mailbox.#include <cmath>
+ * @return Returns the PID of sender process (or -1 if there is no communication in the mailbox)
  *
  */
 int MSG_task_listen_from(const char* alias)

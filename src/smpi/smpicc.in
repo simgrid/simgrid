@@ -23,14 +23,14 @@ else
     LINKER_UNDEFINED_ERROR="1"
 fi
 
-list_set CFLAGS
-list_set LINKARGS "-lm"
+list_set CFLAGS @SMPI_C_FLAGS@
+list_add LINKARGS
 if [ "x@WIN32@" = "x1" ]; then
     list_add CFLAGS "-include" "@includedir@/smpi/smpi_main.h"
     list_add LINKARGS "@libdir@\libsimgrid.dll"
 elif [ "x@APPLE@" = "x1" ]; then
     list_add CFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
-    list_add CFLAGS "-fpic"
+    list_add CFLAGS "-fPIC"
     if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
        list_add LINKARGS "-shared"
     else
@@ -39,7 +39,7 @@ elif [ "x@APPLE@" = "x1" ]; then
     list_add LINKARGS "-lsimgrid" ${LINKER_UNDEFINED_ERROR:+"-Wl,-undefined,error"}
 else
     list_add CFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
-    list_add CFLAGS "-fpic"
+    list_add CFLAGS "-fPIC"
     if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
        list_add LINKARGS "-shared"
     else
@@ -48,6 +48,8 @@ else
     list_add LINKARGS "-lsimgrid" ${LINKER_UNDEFINED_ERROR:+"-Wl,-z,defs"}
 fi
 
+# By default, we execute the commands instead of only showing them to cmake
+Show=
 
 list_set CMDARGS
 while [ $# -gt 0 ]; do
@@ -80,7 +82,11 @@ while [ $# -gt 0 ]; do
         '-compiler-version' | '--compiler-version')
             ${CC} --version
             ;;
-        *)
+	'-show'|'-compile-info'|'-link-info')
+            # Dry run displaying commands instead of executing them. Useful to cmake
+	    Show=echo
+	    ;;
+	 *)
             list_add CMDARGS "${ARG}"
             ;;
     esac
@@ -94,4 +100,4 @@ list_add_not_empty CMDLINE "${CMDARGS}"
 list_add_not_empty CMDLINE "${LINKARGS}"
 
 eval $(list_get CMDLINE)
-"$@"
+$Show "$@"

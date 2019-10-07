@@ -10,6 +10,14 @@
 #include <xbt/base.h>
 #include <xbt/dict.h>
 
+#ifdef __cplusplus
+#include <xbt/Extendable.hpp>
+
+#include <map>
+#include <memory>
+#include <string>
+#endif
+
 // C interface
 ////////////////
 typedef sg_file_t msg_file_t; // MSG backwards compatibility
@@ -33,6 +41,11 @@ XBT_PUBLIC void sg_file_unlink(sg_file_t fd);
 XBT_PUBLIC int sg_file_rcopy(sg_file_t file, sg_host_t host, const char* fullpath);
 XBT_PUBLIC int sg_file_rmove(sg_file_t file, sg_host_t host, const char* fullpath);
 
+XBT_PUBLIC sg_size_t sg_disk_get_size_free(sg_disk_t d);
+XBT_PUBLIC sg_size_t sg_disk_get_size_used(sg_disk_t d);
+XBT_PUBLIC sg_size_t sg_disk_get_size(sg_disk_t d);
+XBT_PUBLIC const char* sg_disk_get_mount_point(sg_disk_t d);
+
 XBT_PUBLIC sg_size_t sg_storage_get_size_free(sg_storage_t st);
 XBT_PUBLIC sg_size_t sg_storage_get_size_used(sg_storage_t st);
 XBT_PUBLIC sg_size_t sg_storage_get_size(sg_storage_t st);
@@ -40,21 +53,21 @@ XBT_PUBLIC xbt_dict_t sg_storage_get_content(sg_storage_t storage);
 
 XBT_PUBLIC xbt_dict_t sg_host_get_storage_content(sg_host_t host);
 
-#define MSG_file_open(fullpath, data) sg_file_open(fullpath, data)
-#define MSG_file_read(fd, size) sg_file_read(fd, size)
-#define MSG_file_write(fd, size) sg_file_write(fd, size)
+#define MSG_file_open(fullpath, data) sg_file_open((fullpath), (data))
+#define MSG_file_read(fd, size) sg_file_read((fd), (size))
+#define MSG_file_write(fd, size) sg_file_write((fd), (size))
 #define MSG_file_close(fd) sg_file_close(fd)
 #define MSG_file_get_name(fd) sg_file_get_name(fd)
 #define MSG_file_get_size(fd) sg_file_get_size(fd)
 #define MSG_file_dump(fd) sg_file_dump(fd)
 #define MSG_file_get_data(fd) sg_file_get_data(fd)
-#define MSG_file_set_data(fd, data) sg_file_set_data(fd, data)
-#define MSG_file_seek(fd, offset, origin) sg_file_seek(fd, offset, origin)
+#define MSG_file_set_data(fd, data) sg_file_set_data((fd), (data))
+#define MSG_file_seek(fd, offset, origin) sg_file_seek((fd), (offset), (origin))
 #define MSG_file_tell(fd) sg_file_tell(fd)
-#define MSG_file_move(fd, fullpath) sg_file_get_size(fd, fullpath)
+#define MSG_file_move(fd, fullpath) sg_file_get_size((fd), (fullpath))
 #define MSG_file_unlink(fd) sg_file_unlink(fd)
-#define MSG_file_rcopy(file, host, fullpath) sg_file_rcopy(file, host, fullpath)
-#define MSG_file_rmove(file, host, fullpath) sg_file_rmove(file, host, fullpath)
+#define MSG_file_rcopy(file, host, fullpath) sg_file_rcopy((file), (host), (fullpath))
+#define MSG_file_rmove(file, host, fullpath) sg_file_rmove((file), (host), (fullpath))
 
 #define MSG_storage_file_system_init() sg_storage_file_system_init()
 #define MSG_storage_get_free_size(st) sg_storage_get_size_free(st)
@@ -70,10 +83,6 @@ SG_END_DECL()
 //////////////////
 
 #ifdef __cplusplus
-#include <xbt/Extendable.hpp>
-
-#include <map>
-#include <string>
 
 namespace simgrid {
 namespace s4u {
@@ -101,7 +110,7 @@ public:
   sg_size_t read(sg_size_t size);
 
   /** Simulates a write action. Returns the size of data actually written. */
-  sg_size_t write(sg_size_t size);
+  sg_size_t write(sg_size_t size, int write_inside=0);
 
   /** Allows to store user data on that host */
   void set_userdata(void* data) { userdata_ = data; }
@@ -122,7 +131,8 @@ public:
   void dump();
 
   int desc_id = 0;
-  Storage* local_storage_;
+  Disk* local_disk_       = nullptr;
+  Storage* local_storage_ = nullptr;
   std::string mount_point_;
 
 private:
@@ -133,22 +143,48 @@ private:
   void* userdata_             = nullptr;
 };
 
+class XBT_PUBLIC FileSystemDiskExt {
+public:
+  static simgrid::xbt::Extension<Disk, FileSystemDiskExt> EXTENSION_ID;
+  explicit FileSystemDiskExt(Disk* ptr);
+  FileSystemDiskExt(const FileSystemDiskExt&) = delete;
+  FileSystemDiskExt& operator=(const FileSystemDiskExt&) = delete;
+  std::map<std::string, sg_size_t>* parse_content(const std::string& filename);
+  std::map<std::string, sg_size_t>* get_content() const { return content_.get(); }
+  const char* get_mount_point() { return mount_point_.c_str(); }
+  const char* get_mount_point(s4u::Host* remote_host) { return remote_mount_points_[remote_host].c_str(); }
+  void add_remote_mount(Host* host, const std::string& mount_point)
+  {
+    remote_mount_points_.insert({host, mount_point});
+  }
+  sg_size_t get_size() const { return size_; }
+  sg_size_t get_used_size() const { return used_size_; }
+  void decr_used_size(sg_size_t size) { used_size_ -= size; }
+  void incr_used_size(sg_size_t size) { used_size_ += size; }
+
+private:
+  std::unique_ptr<std::map<std::string, sg_size_t>> content_;
+  std::map<Host*, std::string> remote_mount_points_;
+  std::string mount_point_;
+  sg_size_t used_size_ = 0;
+  sg_size_t size_      = static_cast<sg_size_t>(500 * 1024) * 1024 * 1024;
+};
+
 class XBT_PUBLIC FileSystemStorageExt {
 public:
   static simgrid::xbt::Extension<Storage, FileSystemStorageExt> EXTENSION_ID;
   explicit FileSystemStorageExt(Storage* ptr);
   FileSystemStorageExt(const FileSystemStorageExt&) = delete;
   FileSystemStorageExt& operator=(const FileSystemStorageExt&) = delete;
-  ~FileSystemStorageExt();
   std::map<std::string, sg_size_t>* parse_content(const std::string& filename);
-  std::map<std::string, sg_size_t>* get_content() { return content_; }
+  std::map<std::string, sg_size_t>* get_content() { return content_.get(); }
   sg_size_t get_size() { return size_; }
   sg_size_t get_used_size() { return used_size_; }
   void decr_used_size(sg_size_t size) { used_size_ -= size; }
   void incr_used_size(sg_size_t size) { used_size_ += size; }
 
 private:
-  std::map<std::string, sg_size_t>* content_;
+  std::unique_ptr<std::map<std::string, sg_size_t>> content_;
   sg_size_t used_size_ = 0;
   sg_size_t size_     = 0;
 };
@@ -159,8 +195,7 @@ public:
   FileDescriptorHostExt() = default;
   FileDescriptorHostExt(const FileDescriptorHostExt&) = delete;
   FileDescriptorHostExt& operator=(const FileDescriptorHostExt&) = delete;
-  ~FileDescriptorHostExt() { delete file_descriptor_table; }
-  std::vector<int>* file_descriptor_table = nullptr; // Created lazily on need
+  std::unique_ptr<std::vector<int>> file_descriptor_table        = nullptr; // Created lazily on need
 };
 } // namespace s4u
 } // namespace simgrid

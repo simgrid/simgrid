@@ -11,6 +11,7 @@
 #include "xbt/misc.h"
 #include <algorithm>
 #include <map>
+#include <stdexcept>
 
 #include "dax_dtd.h"
 #include "dax_dtd.c"
@@ -237,7 +238,7 @@ void STag_dax__adag()
   try {
     double version = std::stod(std::string(A_dax__adag_version));
     xbt_assert(version == 2.1, "Expected version 2.1 in <adag> tag, got %f. Fix the parser or your file", version);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Parse error: ") + A_dax__adag_version + " is not a double");
   }
 }
@@ -253,7 +254,7 @@ void STag_dax__job()
     current_job = SD_task_create_comp_seq(name.c_str(), nullptr, runtime);
     jobs.insert({A_dax__job_id, current_job});
     xbt_dynar_push(result, &current_job);
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Parse error: ") + A_dax__job_runtime + " is not a double");
   }
 }
@@ -263,7 +264,7 @@ void STag_dax__uses()
   double size;
   try {
     size = std::stod(std::string(A_dax__uses_size));
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Parse error: ") + A_dax__uses_size + " is not a double");
   }
   bool is_input = (A_dax__uses_link == A_dax__uses_link_input);
@@ -273,7 +274,7 @@ void STag_dax__uses()
   SD_task_t file;
   if (it == files.end()) {
     file = SD_task_create_comm_e2e(A_dax__uses_file, nullptr, size);
-    sd_global->initial_tasks->erase(file);
+    sd_global->initial_tasks.erase(file);
     files[A_dax__uses_file] = file;
   } else {
     file = it->second;

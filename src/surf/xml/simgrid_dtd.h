@@ -70,11 +70,13 @@ XBT_PUBLIC void STag_surfxml_cluster(void);
 XBT_PUBLIC void ETag_surfxml_cluster(void);
 XBT_PUBLIC void STag_surfxml_config(void);
 XBT_PUBLIC void ETag_surfxml_config(void);
+XBT_PUBLIC void STag_surfxml_disk(void);
+XBT_PUBLIC void ETag_surfxml_disk(void);
 XBT_PUBLIC void STag_surfxml_host(void);
 XBT_PUBLIC void ETag_surfxml_host(void);
 XBT_PUBLIC void STag_surfxml_host___link(void);
 XBT_PUBLIC void ETag_surfxml_host___link(void);
-XBT_PUBLIC void STag_surfxml_include(void);
+XBT_ATTRIB_NORETURN XBT_PUBLIC void STag_surfxml_include(void);
 XBT_PUBLIC void ETag_surfxml_include(void);
 XBT_PUBLIC void STag_surfxml_link(void);
 XBT_PUBLIC void ETag_surfxml_link(void);
@@ -210,6 +212,12 @@ typedef int AT_surfxml_cluster_topo___parameters;
 typedef enum { AU_surfxml_cluster_topology, A_surfxml_cluster_topology_FLAT,A_surfxml_cluster_topology_TORUS,A_surfxml_cluster_topology_FAT___TREE,A_surfxml_cluster_topology_DRAGONFLY } AT_surfxml_cluster_topology;
 typedef int AT_surfxml_config_id;
 #define AU_surfxml_config_id NULL
+typedef int AT_surfxml_disk_id;
+#define AU_surfxml_disk_id NULL
+typedef int AT_surfxml_disk_read___bw;
+#define AU_surfxml_disk_read___bw NULL
+typedef int AT_surfxml_disk_write___bw;
+#define AU_surfxml_disk_write___bw NULL
 typedef int AT_surfxml_host_availability___file;
 #define AU_surfxml_host_availability___file NULL
 typedef int AT_surfxml_host_coordinates;
@@ -244,7 +252,7 @@ typedef int AT_surfxml_link_latency;
 #define AU_surfxml_link_latency NULL
 typedef int AT_surfxml_link_latency___file;
 #define AU_surfxml_link_latency___file NULL
-typedef enum { AU_surfxml_link_sharing___policy, A_surfxml_link_sharing___policy_SHARED,A_surfxml_link_sharing___policy_SPLITDUPLEX,A_surfxml_link_sharing___policy_FULLDUPLEX,A_surfxml_link_sharing___policy_FATPIPE } AT_surfxml_link_sharing___policy;
+typedef enum { AU_surfxml_link_sharing___policy, A_surfxml_link_sharing___policy_SHARED,A_surfxml_link_sharing___policy_SPLITDUPLEX,A_surfxml_link_sharing___policy_FULLDUPLEX,A_surfxml_link_sharing___policy_FATPIPE,A_surfxml_link_sharing___policy_WIFI } AT_surfxml_link_sharing___policy;
 typedef int AT_surfxml_link_state___file;
 #define AU_surfxml_link_state___file NULL
 typedef enum { AU_surfxml_link___ctn_direction, A_surfxml_link___ctn_direction_UP,A_surfxml_link___ctn_direction_DOWN,A_surfxml_link___ctn_direction_NONE } AT_surfxml_link___ctn_direction;
@@ -515,6 +523,15 @@ XBT_PUBLIC_DATA short int surfxml_cluster_topology_isset;
 XBT_PUBLIC_DATA AT_surfxml_config_id AX_surfxml_config_id;
 #define A_surfxml_config_id (surfxml_bufferstack + AX_surfxml_config_id)
 XBT_PUBLIC_DATA short int surfxml_config_id_isset;
+XBT_PUBLIC_DATA AT_surfxml_disk_id AX_surfxml_disk_id;
+#define A_surfxml_disk_id (surfxml_bufferstack + AX_surfxml_disk_id)
+XBT_PUBLIC_DATA short int surfxml_disk_id_isset;
+XBT_PUBLIC_DATA AT_surfxml_disk_read___bw AX_surfxml_disk_read___bw;
+#define A_surfxml_disk_read___bw (surfxml_bufferstack + AX_surfxml_disk_read___bw)
+XBT_PUBLIC_DATA short int surfxml_disk_read___bw_isset;
+XBT_PUBLIC_DATA AT_surfxml_disk_write___bw AX_surfxml_disk_write___bw;
+#define A_surfxml_disk_write___bw (surfxml_bufferstack + AX_surfxml_disk_write___bw)
+XBT_PUBLIC_DATA short int surfxml_disk_write___bw_isset;
 XBT_PUBLIC_DATA AT_surfxml_host_availability___file AX_surfxml_host_availability___file;
 #define A_surfxml_host_availability___file (surfxml_bufferstack + AX_surfxml_host_availability___file)
 XBT_PUBLIC_DATA short int surfxml_host_availability___file_isset;

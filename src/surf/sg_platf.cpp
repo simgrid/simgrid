@@ -19,6 +19,8 @@
 #include "src/include/simgrid/sg_config.hpp"
 #include "src/include/surf/surf.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/resource/DiskImpl.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf_private.hpp"
@@ -50,13 +52,13 @@ static simgrid::kernel::routing::NetZoneImpl* routing_get_current()
 /** Module management function: creates all internal data structures */
 void sg_platf_init()
 {
-  simgrid::s4u::on_platform_created.connect(check_disk_attachment);
+  simgrid::s4u::Engine::on_platform_created.connect(check_disk_attachment);
 }
 
 /** Module management function: frees all internal data structures */
 void sg_platf_exit() {
   simgrid::surf::on_cluster.disconnect_slots();
-  simgrid::s4u::on_platform_created.disconnect_slots();
+  simgrid::s4u::Engine::on_platform_created.disconnect_slots();
 
   /* make sure that we will reinit the models while loading the platf once reinited */
   surf_parse_models_setup_already_called = 0;
@@ -79,6 +81,10 @@ void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
   host->pimpl_->storage_ = mount_list;
   mount_list.clear();
 
+  host->pimpl_->disks_ = std::move(args->disks);
+  for (auto d : host->pimpl_->disks_)
+    d->set_host(host);
+
   /* Change from the defaults */
   if (args->state_trace)
     host->pimpl_cpu->set_state_profile(args->state_trace);
@@ -86,7 +92,7 @@ void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
     host->pimpl_cpu->set_speed_profile(args->speed_trace);
   if (args->pstate != 0)
     host->pimpl_cpu->set_pstate(args->pstate);
-  if (args->coord && strcmp(args->coord, ""))
+  if (not args->coord.empty())
     new simgrid::kernel::routing::vivaldi::Coords(host->pimpl_netpoint, args->coord);
 }
 
@@ -112,11 +118,10 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
 static void sg_platf_new_link(simgrid::kernel::routing::LinkCreationArgs* link, const std::string& link_name)
 {
   simgrid::kernel::resource::LinkImpl* l =
-      surf_network_model->create_link(link_name, link->bandwidth, link->latency, link->policy);
+      surf_network_model->create_link(link_name, link->bandwidths, link->latency, link->policy);
 
   if (link->properties) {
-    for (auto const& elm : *link->properties)
-      l->set_property(elm.first, elm.second);
+    l->set_properties(*link->properties);
   }
 
   if (link->latency_trace)
@@ -167,6 +172,9 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
   sg_platf_new_Zone_begin(&zone);
   simgrid::kernel::routing::ClusterZone* current_as = static_cast<ClusterZone*>(routing_get_current());
   current_as->parse_specific_arguments(cluster);
+  if (cluster->properties != nullptr)
+    for (auto const& elm : *cluster->properties)
+      current_as->get_iface()->set_property(elm.first, elm.second);
 
   if(cluster->loopback_bw > 0 || cluster->loopback_lat > 0){
     current_as->num_links_per_node_++;
@@ -217,7 +225,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
 
       simgrid::kernel::routing::LinkCreationArgs link;
       link.id        = tmp_link;
-      link.bandwidth = cluster->loopback_bw;
+      link.bandwidths.push_back(cluster->loopback_bw);
       link.latency   = cluster->loopback_lat;
       link.policy    = simgrid::s4u::Link::SharingPolicy::FATPIPE;
       sg_platf_new_link(&link);
@@ -237,7 +245,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
 
       simgrid::kernel::routing::LinkCreationArgs link;
       link.id        = tmp_link;
-      link.bandwidth = cluster->limiter_link;
+      link.bandwidths.push_back(cluster->limiter_link);
       link.latency = 0;
       link.policy    = simgrid::s4u::Link::SharingPolicy::SHARED;
       sg_platf_new_link(&link);
@@ -272,7 +280,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
 
     simgrid::kernel::routing::LinkCreationArgs link;
     link.id        = std::string(cluster->id)+ "_backbone";
-    link.bandwidth = cluster->bb_bw;
+    link.bandwidths.push_back(cluster->bb_bw);
     link.latency   = cluster->bb_lat;
     link.policy    = cluster->bb_sharing_policy;
 
@@ -315,7 +323,7 @@ void sg_platf_new_cabinet(simgrid::kernel::routing::CabinetCreationArgs* cabinet
     simgrid::kernel::routing::LinkCreationArgs link;
     link.policy    = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
     link.latency   = cabinet->lat;
-    link.bandwidth = cabinet->bw;
+    link.bandwidths.push_back(cabinet->bw);
     link.id        = "link_" + hostname;
     sg_platf_new_link(&link);
 
@@ -326,6 +334,17 @@ void sg_platf_new_cabinet(simgrid::kernel::routing::CabinetCreationArgs* cabinet
     sg_platf_new_hostlink(&host_link);
   }
   delete cabinet->radicals;
+}
+
+simgrid::kernel::resource::DiskImpl* sg_platf_new_disk(simgrid::kernel::routing::DiskCreationArgs* disk)
+{
+  simgrid::kernel::resource::DiskImpl* d = surf_disk_model->createDisk(disk->id, disk->read_bw, disk->write_bw);
+  if (disk->properties) {
+    d->set_properties(*disk->properties);
+    delete disk->properties;
+  }
+  simgrid::s4u::Disk::on_creation(*d->get_iface());
+  return d;
 }
 
 void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage)
@@ -362,8 +381,7 @@ void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage
   auto s = surf_storage_model->createStorage(storage->id, stype->id, storage->content, storage->attach);
 
   if (storage->properties) {
-    for (auto const& elm : *storage->properties)
-      s->set_property(elm.first, elm.second);
+    s->set_properties(*storage->properties);
     delete storage->properties;
   }
 }
@@ -450,12 +468,12 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
 
     XBT_DEBUG("Process %s@%s will be started at time %f", arg->name.c_str(), arg->host->get_cname(), start_time);
     simgrid::simix::Timer::set(start_time, [arg, auto_restart]() {
-      simgrid::kernel::actor::ActorImplPtr actor = simgrid::kernel::actor::ActorImpl::create(
+      simgrid::kernel::actor::ActorImplPtr new_actor = simgrid::kernel::actor::ActorImpl::create(
           arg->name.c_str(), std::move(arg->code), arg->data, arg->host, arg->properties.get(), nullptr);
       if (arg->kill_time >= 0)
-        actor->set_kill_time(arg->kill_time);
+        new_actor->set_kill_time(arg->kill_time);
       if (auto_restart)
-        actor->set_auto_restart(auto_restart);
+        new_actor->set_auto_restart(auto_restart);
       delete arg;
     });
   } else {                      // start_time <= SIMIX_get_clock()
@@ -500,6 +518,7 @@ static void surf_config_models_setup()
   std::string host_model_name    = simgrid::config::get_value<std::string>("host/model");
   std::string network_model_name = simgrid::config::get_value<std::string>("network/model");
   std::string cpu_model_name     = simgrid::config::get_value<std::string>("cpu/model");
+  std::string disk_model_name    = simgrid::config::get_value<std::string>("disk/model");
   std::string storage_model_name = simgrid::config::get_value<std::string>("storage/model");
 
   /* The compound host model is needed when using non-default net/cpu models */
@@ -528,6 +547,10 @@ static void surf_config_models_setup()
   XBT_DEBUG("Call vm_model_init");
   surf_vm_model_init_HL13();
 
+  XBT_DEBUG("Call disk_model_init");
+  int disk_id = find_model_description(surf_disk_model_description, disk_model_name);
+  surf_disk_model_description[disk_id].model_init_preparse();
+
   XBT_DEBUG("Call storage_model_init");
   int storage_id = find_model_description(surf_storage_model_description, storage_model_name);
   surf_storage_model_description[storage_id].model_init_preparse();
@@ -546,7 +569,7 @@ static void surf_config_models_setup()
 simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCreationArgs* zone)
 {
   if (not surf_parse_models_setup_already_called) {
-    simgrid::s4u::on_platform_creation();
+    simgrid::s4u::Engine::on_platform_creation();
 
     /* Initialize the surf models. That must be done after we got all config, and before we need the models.
      * That is, after the last <config> tag, if any, and before the first of cluster|peer|zone|trace|trace_connect

@@ -107,7 +107,7 @@ sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_r
       comm = mbox->put_init(msg, size)->set_rate(mig_speed)->wait_for(timeout);
     else
       comm = mbox->put_async(msg, size)->wait_for(timeout);
-  } catch (xbt_ex& e) {
+  } catch (const Exception&) {
     if (comm) {
       sg_size_t remaining = static_cast<sg_size_t>(comm->get_remaining());
       XBT_VERB("timeout (%lf s) in sending_migration_data, remaining %llu bytes of %llu", timeout, remaining, size);
@@ -182,7 +182,7 @@ void MigrationTx::operator()()
     } else if (sent > ramsize)
       XBT_CRITICAL("bug");
 
-  } catch (xbt_ex& e) {
+  } catch (const Exception&) {
     // hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
     // Stop the dirty page tracking an return (there is no memory space to release)
     sg_vm_stop_dirty_page_tracking(vm_);
@@ -205,63 +205,56 @@ void MigrationTx::operator()()
   if (not skip_stage2) {
 
     int stage2_round = 0;
-    for (;;) {
-      sg_size_t updated_size = 0;
-      if (stage2_round == 0) {
-        /* just after stage1, nothing has been updated. But, we have to send the data updated during stage1 */
-        updated_size = get_updated_size(computed_during_stage1, dp_rate, dp_cap);
-      } else {
-        double computed = sg_vm_lookup_computed_flops(vm_);
-        updated_size    = get_updated_size(computed, dp_rate, dp_cap);
-      }
+    /* just after stage1, nothing has been updated. But, we have to send the data updated during stage1 */
+    sg_size_t updated_size = get_updated_size(computed_during_stage1, dp_rate, dp_cap);
+    remaining_size += updated_size;
+    XBT_DEBUG("mig-stage2.%d: remaining_size %zu (%s threshold %zu)", stage2_round, remaining_size,
+              (remaining_size < threshold) ? "<" : ">", threshold);
+
+    /* When the remaining size is below the threshold value, move to stage 3. */
+    while (threshold < remaining_size) {
 
       XBT_DEBUG("mig-stage 2:%d updated_size %llu computed_during_stage1 %f dp_rate %f dp_cap %llu", stage2_round,
                 updated_size, computed_during_stage1, dp_rate, dp_cap);
-
-      /* Check whether the remaining size is below the threshold value. If so, move to stage 3. */
-      remaining_size += updated_size;
-      XBT_DEBUG("mig-stage2.%d: remaining_size %zu (%s threshold %zu)", stage2_round, remaining_size,
-                (remaining_size < threshold) ? "<" : ">", threshold);
-      if (remaining_size < threshold)
-        break;
 
       sg_size_t sent  = 0;
       clock_prev_send = s4u::Engine::get_clock();
       try {
         XBT_DEBUG("Stage 2, gonna send %llu", updated_size);
         sent = sendMigrationData(updated_size, 2, stage2_round, mig_speed, mig_timeout);
-      } catch (xbt_ex& e) {
+      } catch (const Exception&) {
         // hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data
         // code)
         // Stop the dirty page tracking an return (there is no memory space to release)
         sg_vm_stop_dirty_page_tracking(vm_);
         return;
       }
+
+      remaining_size -= sent;
+      double computed = sg_vm_lookup_computed_flops(vm_);
+
       clock_post_send = s4u::Engine::get_clock();
 
       if (sent == updated_size) {
-        /* timeout did not happen */
         bandwidth = updated_size / (clock_post_send - clock_prev_send);
         threshold = bandwidth * max_downtime;
         XBT_DEBUG("actual bandwidth %f, threshold %zu", bandwidth / 1024 / 1024, threshold);
-        remaining_size -= sent;
         stage2_round += 1;
         mig_timeout -= (clock_post_send - clock_prev_send);
         xbt_assert(mig_timeout > 0);
-
-      } else if (sent < updated_size) {
+        XBT_DEBUG("mig-stage2.%d: remaining_size %zu (%s threshold %zu)", stage2_round, remaining_size,
+                  (remaining_size < threshold) ? "<" : ">", threshold);
+        updated_size = get_updated_size(computed, dp_rate, dp_cap);
+        remaining_size += updated_size;
+      } else {
         /* When timeout happens, we move to stage 3. The size of memory pages
          * updated before timeout must be added to the remaining size. */
         XBT_VERB("mig-stage2.%d: timeout, force moving to stage 3. sent %llu / %llu, eta %lf", stage2_round, sent,
                  updated_size, (clock_post_send - clock_prev_send));
-        remaining_size -= sent;
-
-        double computed = sg_vm_lookup_computed_flops(vm_);
         updated_size    = get_updated_size(computed, dp_rate, dp_cap);
         remaining_size += updated_size;
         break;
-      } else
-        XBT_CRITICAL("bug");
+      }
     }
   }
 
@@ -273,7 +266,7 @@ void MigrationTx::operator()()
   try {
     XBT_DEBUG("Stage 3: Gonna send %zu bytes", remaining_size);
     sendMigrationData(remaining_size, 3, 0, mig_speed, -1);
-  } catch (xbt_ex& e) {
+  } catch (const Exception&) {
     // hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
     // Stop the dirty page tracking an return (there is no memory space to release)
     vm_->resume();
@@ -331,14 +324,21 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   simgrid::s4u::Host* src_pm = vm->get_pm();
 
   if (not src_pm->is_on())
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' from host '%s', which is offline.", vm->get_cname(),
-           src_pm->get_cname());
+    throw simgrid::VmFailureException(
+        XBT_THROW_POINT, simgrid::xbt::string_printf("Cannot migrate VM '%s' from host '%s', which is offline.",
+                                                     vm->get_cname(), src_pm->get_cname()));
   if (not dst_pm->is_on())
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' to host '%s', which is offline.", vm->get_cname(), dst_pm->get_cname());
+    throw simgrid::VmFailureException(
+        XBT_THROW_POINT, simgrid::xbt::string_printf("Cannot migrate VM '%s' to host '%s', which is offline.",
+                                                     vm->get_cname(), dst_pm->get_cname()));
   if (vm->get_state() != simgrid::s4u::VirtualMachine::state::RUNNING)
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' that is not running yet.", vm->get_cname());
+    throw simgrid::VmFailureException(
+        XBT_THROW_POINT,
+        simgrid::xbt::string_printf("Cannot migrate VM '%s' that is not running yet.", vm->get_cname()));
   if (vm->get_impl()->is_migrating_)
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->get_cname());
+    throw simgrid::VmFailureException(
+        XBT_THROW_POINT,
+        simgrid::xbt::string_printf("Cannot migrate VM '%s' that is already migrating.", vm->get_cname()));
 
   vm->get_impl()->is_migrating_ = true;
   simgrid::s4u::VirtualMachine::on_migration_start(*vm);

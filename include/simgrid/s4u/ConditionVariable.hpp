@@ -6,6 +6,8 @@
 #ifndef SIMGRID_S4U_COND_VARIABLE_HPP
 #define SIMGRID_S4U_COND_VARIABLE_HPP
 
+#include <simgrid/forward.h>
+
 #include <simgrid/chrono.hpp>
 #include <simgrid/s4u/Mutex.hpp>
 
@@ -26,9 +28,8 @@ private:
   friend kernel::activity::ConditionVariableImpl;
   kernel::activity::ConditionVariableImpl* const cond_;
 
-  explicit ConditionVariable(kernel::activity::ConditionVariableImpl* cond) : cond_(cond) {}
-
 public:
+  explicit ConditionVariable(kernel::activity::ConditionVariableImpl* cond) : cond_(cond) {}
   ConditionVariable(ConditionVariable const&) = delete;
   ConditionVariable& operator=(ConditionVariable const&) = delete;
 
@@ -36,15 +37,6 @@ public:
   friend XBT_PUBLIC void intrusive_ptr_release(ConditionVariable * cond);
 
   static ConditionVariablePtr create();
-
-#ifndef DOXYGEN
-  /** @deprecated See Comm::get_mailbox() */
-  XBT_ATTRIB_DEPRECATED_v323("Please use ConditionVariableImpl::create()") ConditionVariablePtr
-      createConditionVariable()
-  {
-    return create();
-  }
-#endif
 
   //  Wait functions without time:
 

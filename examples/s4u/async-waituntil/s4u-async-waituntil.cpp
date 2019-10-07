@@ -15,7 +15,7 @@
 #include <iostream>
 #include <string>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_wait, "Messages specific for this s4u example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_async_waituntil, "Messages specific for this s4u example");
 
 static int sender(int argc, char** argv)
 {

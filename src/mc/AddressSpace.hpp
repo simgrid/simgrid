@@ -12,22 +12,6 @@
 namespace simgrid {
 namespace mc {
 
-/** Process index used when no process is available (SMPI privatization)
- *
- *  The expected behavior is that if a process index is needed it will fail.
- * */
-const int ProcessIndexMissing = -1;
-
-/** Process index used when we don't care about the process index (SMPI privatization)
- * */
-const int ProcessIndexDisabled = -2;
-
-/** Constant used when any process will do (SMPI privatization)
- *
- *  Note: This is is index of the first process.
- */
-const int ProcessIndexAny = 0;
-
 /** Options for read operations
  *
  *  This is a set of flags managed with bitwise operators. Only the
@@ -116,35 +100,27 @@ public:
    *  @param buffer        target buffer for the data
    *  @param size          number of bytes to read
    *  @param address       remote source address of the data
-   *  @param process_index which process (used for SMPI privatization)
    *  @param options
    */
-  virtual const void* read_bytes(void* buffer, std::size_t size,
-    RemotePtr<void> address, int process_index = ProcessIndexAny,
-    ReadOptions options = ReadOptions::none()) const = 0;
+  virtual void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
+                           ReadOptions options = ReadOptions::none()) const = 0;
 
   /** Read a given data structure from the address space */
-  template<class T> inline
-  void read(T *buffer, RemotePtr<T> ptr, int process_index = ProcessIndexAny) const
+  template <class T> inline void read(T* buffer, RemotePtr<T> ptr) const { this->read_bytes(buffer, sizeof(T), ptr); }
+
+  template <class T> inline void read(Remote<T>& buffer, RemotePtr<T> ptr) const
   {
-    this->read_bytes(buffer, sizeof(T), ptr, process_index);
+    this->read_bytes(buffer.get_buffer(), sizeof(T), ptr);
   }
 
-  template<class T> inline
-  void read(Remote<T>& buffer, RemotePtr<T> ptr, int process_index = ProcessIndexAny) const
-  {
-    this->read_bytes(buffer.getBuffer(), sizeof(T), ptr, process_index);
-  }
-
-  /** Read a given data structure from the addres space
+  /** Read a given data structure from the address space
    *
    *  This version returns by value.
    */
-  template<class T> inline
-  Remote<T> read(RemotePtr<T> ptr, int process_index = ProcessIndexMissing) const
+  template <class T> inline Remote<T> read(RemotePtr<T> ptr) const
   {
     Remote<T> res;
-    this->read_bytes(&res, sizeof(T), ptr, process_index);
+    this->read_bytes(&res, sizeof(T), ptr);
     return res;
   }
 

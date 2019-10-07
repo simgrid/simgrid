@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/ActivityImpl.hpp"
+#include "src/simix/smx_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
@@ -13,11 +14,27 @@ namespace activity {
 
 ActivityImpl::~ActivityImpl()
 {
+  clean_action();
+  XBT_DEBUG("Destroy activity %p", this);
+}
+
+void ActivityImpl::register_simcall(smx_simcall_t simcall)
+{
+  simcalls_.push_back(simcall);
+  simcall->issuer_->waiting_synchro = this;
+}
+
+void ActivityImpl::clean_action()
+{
   if (surf_action_) {
     surf_action_->unref();
-    XBT_DEBUG("Destroy activity %p", this);
     surf_action_ = nullptr;
   }
+}
+
+double ActivityImpl::get_remaining() const
+{
+  return surf_action_ ? surf_action_->get_remains() : 0;
 }
 
 void ActivityImpl::suspend()
@@ -38,10 +55,12 @@ void ActivityImpl::resume()
   on_resumed(*this);
 }
 
-void ActivityImpl::set_category(const std::string& category)
+void ActivityImpl::cancel()
 {
-  if (surf_action_)
-    surf_action_->set_category(category);
+  XBT_VERB("Activity %p is canceled", this);
+  if (surf_action_ != nullptr)
+    surf_action_->cancel();
+  state_ = SIMIX_CANCELED;
 }
 
 // boost::intrusive_ptr<Activity> support:

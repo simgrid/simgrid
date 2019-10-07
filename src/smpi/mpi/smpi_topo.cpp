@@ -19,40 +19,19 @@ static int getfactors(int num, int *nfators, int **factors);
 namespace simgrid{
 namespace smpi{
 
-Topo_Graph::~Topo_Graph()
-{
-  delete[] index_;
-  delete[] edges_;
-}
-
-Topo_Dist_Graph::~Topo_Dist_Graph()
-{
-  delete[] in_;
-  delete[] in_weights_;
-  delete[] out_;
-  delete[] out_weights_;
-}
-
 /*******************************************************************************
  * Cartesian topologies
  ******************************************************************************/
-Topo_Cart::~Topo_Cart()
-{
-  delete[] dims_;
-  delete[] periodic_;
-  delete[] position_;
-}
 
-Topo_Cart::Topo_Cart(int ndims) : ndims_(ndims)
+Topo_Cart::Topo_Cart(int ndims) : ndims_(ndims), dims_(ndims), periodic_(ndims), position_(ndims)
 {
-  dims_ = new int[ndims];
-  periodic_ = new int[ndims];
-  position_ = new int[ndims];
 }
 
 /* reorder is ignored, don't know what would be the consequences of a dumb reordering but neither do I see the point of
  * reordering*/
-Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder, MPI_Comm *comm_cart) : Topo_Cart(ndims) {
+Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int periods[], int /*reorder*/, MPI_Comm* comm_cart)
+    : Topo_Cart(ndims)
+{
   MPI_Group newGroup;
   MPI_Group oldGroup;
 
@@ -131,7 +110,8 @@ Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
   return res;
 }
 
-int Topo_Cart::coords(int rank, int maxdims, int coords[]) {
+int Topo_Cart::coords(int rank, int /*maxdims*/, int coords[])
+{
   int nnodes = nnodes_;
   for (int i = 0; i< ndims_; i++ ) {
     nnodes    = nnodes /dims_[i];
@@ -151,7 +131,7 @@ int Topo_Cart::get(int maxdims, int* dims, int* periods, int* coords) {
   return MPI_SUCCESS;
 }
 
-int Topo_Cart::rank(int* coords, int* rank) {
+int Topo_Cart::rank(const int* coords, int* rank) {
   int ndims =ndims_;
   *rank = 0;
   int multiplier = 1;
@@ -407,8 +387,8 @@ static int getfactors(int num, int *nfactors, int **factors) {
     return MPI_SUCCESS;
   }
   /* Allocate the array of prime factors which cannot exceed log_2(num) entries */
-  int sqrtnum = ceil(sqrt(num));
-  int size = ceil(log(num) / log(2));
+  int sqrtnum = ceil(sqrt(double(num)));
+  int size = ceil(log(double(num)) / log(2.0));
   *factors = new int[size];
 
   int i = 0;

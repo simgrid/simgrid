@@ -42,7 +42,7 @@ class JavaContextFactory : public simgrid::kernel::context::ContextFactory {
 public:
   JavaContextFactory();
   ~JavaContextFactory() override;
-  JavaContext* create_context(std::function<void()>&& code, smx_actor_t actor) override;
+  Context* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
   void run_all() override;
 };
 

@@ -58,7 +58,7 @@
 */
 namespace simgrid{
 namespace smpi{
-int Coll_allreduce_mpich::allreduce(void *sbuf, void *rbuf, int count,
+int Coll_allreduce_mpich::allreduce(const void *sbuf, void *rbuf, int count,
                         MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
     size_t dsize, block_dsize;
@@ -138,7 +138,7 @@ int Coll_allreduce_mpich::allreduce(void *sbuf, void *rbuf, int count,
    End Algorithm: MPI_Alltoall
 */
 
-int Coll_alltoall_mpich::alltoall( void *sbuf, int scount,
+int Coll_alltoall_mpich::alltoall(const void *sbuf, int scount,
                                              MPI_Datatype sdtype,
                                              void* rbuf, int rcount,
                                              MPI_Datatype rdtype,
@@ -187,9 +187,9 @@ int Coll_alltoall_mpich::alltoall( void *sbuf, int scount,
                                                     comm);
 }
 
-int Coll_alltoallv_mpich::alltoallv(void *sbuf, int *scounts, int *sdisps,
+int Coll_alltoallv_mpich::alltoallv(const void *sbuf, const int *scounts, const int *sdisps,
                                               MPI_Datatype sdtype,
-                                              void *rbuf, int *rcounts, int *rdisps,
+                                              void *rbuf, const int *rcounts, const int *rdisps,
                                               MPI_Datatype rdtype,
                                               MPI_Comm  comm
                                               )
@@ -353,7 +353,7 @@ int Coll_bcast_mpich::bcast(void *buff, int count,
 */
 
 
-int Coll_reduce_mpich::reduce( void *sendbuf, void *recvbuf,
+int Coll_reduce_mpich::reduce(const void *sendbuf, void *recvbuf,
                                             int count, MPI_Datatype  datatype,
                                             MPI_Op   op, int root,
                                             MPI_Comm   comm
@@ -436,8 +436,8 @@ int Coll_reduce_mpich::reduce( void *sendbuf, void *recvbuf,
 */
 
 
-int Coll_reduce_scatter_mpich::reduce_scatter( void *sbuf, void *rbuf,
-                                                    int *rcounts,
+int Coll_reduce_scatter_mpich::reduce_scatter(const void *sbuf, void *rbuf,
+                                                    const int *rcounts,
                                                     MPI_Datatype dtype,
                                                     MPI_Op  op,
                                                     MPI_Comm  comm
@@ -532,7 +532,7 @@ int Coll_reduce_scatter_mpich::reduce_scatter( void *sbuf, void *rbuf,
    End Algorithm: MPI_Allgather
 */
 
-int Coll_allgather_mpich::allgather(void *sbuf, int scount,
+int Coll_allgather_mpich::allgather(const void *sbuf, int scount,
                                               MPI_Datatype sdtype,
                                               void* rbuf, int rcount,
                                               MPI_Datatype rdtype,
@@ -610,10 +610,10 @@ int Coll_allgather_mpich::allgather(void *sbuf, int scount,
 
    End Algorithm: MPI_Allgatherv
 */
-int Coll_allgatherv_mpich::allgatherv(void *sbuf, int scount,
+int Coll_allgatherv_mpich::allgatherv(const void *sbuf, int scount,
                                                MPI_Datatype sdtype,
-                                               void* rbuf, int *rcounts,
-                                               int *rdispls,
+                                               void* rbuf, const int *rcounts,
+                                               const int *rdispls,
                                                MPI_Datatype rdtype,
                                                MPI_Comm  comm
                                                )
@@ -668,7 +668,7 @@ int Coll_allgatherv_mpich::allgatherv(void *sbuf, int scount,
    End Algorithm: MPI_Gather
 */
 
-int Coll_gather_mpich::gather(void *sbuf, int scount,
+int Coll_gather_mpich::gather(const void *sbuf, int scount,
                                            MPI_Datatype sdtype,
                                            void* rbuf, int rcount,
                                            MPI_Datatype rdtype,
@@ -703,25 +703,21 @@ int Coll_gather_mpich::gather(void *sbuf, int scount,
 */
 
 
-int Coll_scatter_mpich::scatter(void *sbuf, int scount,
+int Coll_scatter_mpich::scatter(const void *sbuf, int scount,
                                             MPI_Datatype sdtype,
                                             void* rbuf, int rcount,
                                             MPI_Datatype rdtype,
                                             int root, MPI_Comm  comm
                                             )
 {
+  std::unique_ptr<unsigned char[]> tmp_buf;
   if(comm->rank()!=root){
-      sbuf=xbt_malloc(rcount*rdtype->get_extent());
-      scount=rcount;
-      sdtype=rdtype;
+    tmp_buf.reset(new unsigned char[rcount * rdtype->get_extent()]);
+    sbuf   = tmp_buf.get();
+    scount = rcount;
+    sdtype = rdtype;
   }
-  int ret= Coll_scatter_ompi_binomial::scatter (sbuf, scount, sdtype,
-                                                       rbuf, rcount, rdtype,
-                                                       root, comm);
-  if(comm->rank()!=root){
-      xbt_free(sbuf);
-  }
-  return ret;
+  return Coll_scatter_ompi_binomial::scatter(sbuf, scount, sdtype, rbuf, rcount, rdtype, root, comm);
 }
 }
 }

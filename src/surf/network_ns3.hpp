@@ -18,9 +18,9 @@ class NetworkNS3Model : public NetworkModel {
 public:
   NetworkNS3Model();
   ~NetworkNS3Model();
-  LinkImpl* create_link(const std::string& name, double bandwidth, double latency,
+  LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidth, double latency,
                         s4u::Link::SharingPolicy policy) override;
-  kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
+  Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
   double next_occuring_event(double now) override;
   bool next_occuring_event_is_idempotent() override { return false; }
   void update_actions_state(double now, double delta) override;
@@ -34,7 +34,7 @@ public:
   explicit LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwidth, double latency);
   ~LinkNS3();
 
-  void apply_event(simgrid::kernel::profile::Event* event, double value) override;
+  void apply_event(profile::Event* event, double value) override;
   void set_bandwidth(double value) override { THROW_UNIMPLEMENTED; }
   void set_latency(double value) override { THROW_UNIMPLEMENTED; }
   void set_bandwidth_profile(profile::Profile* profile) override;
@@ -46,7 +46,7 @@ public:
  **********/
 class XBT_PRIVATE NetworkNS3Action : public NetworkAction {
 public:
-  NetworkNS3Action(kernel::resource::Model* model, double cost, s4u::Host* src, s4u::Host* dst);
+  NetworkNS3Action(Model* model, double cost, s4u::Host* src, s4u::Host* dst);
 
   void suspend() override;
   void resume() override;
@@ -60,7 +60,7 @@ public:
 };
 
 } // namespace resource
-}
-}
+} // namespace kernel
+} // namespace simgrid
 
 #endif /* NETWORK_NS3_HPP_ */

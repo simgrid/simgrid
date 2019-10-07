@@ -2,7 +2,7 @@
 
 p Testing the Cloud API with a simple master/workers
 
-$ $SG_TEST_EXENV ${bindir:=.}/cloud-masterworker$EXEEXT --log=no_loc ${platfdir}/cluster_backbone.xml
+$ ${bindir:=.}/cloud-masterworker --log=no_loc ${platfdir}/cluster_backbone.xml
 > [node-0.simgrid.org:master:(1) 0.000000] [msg_test/INFO] # Launch 2 VMs
 > [node-0.simgrid.org:master:(1) 0.000000] [msg_test/INFO] create VM00 on PM(node-1.simgrid.org)
 > [node-0.simgrid.org:master:(1) 0.000000] [msg_test/INFO] put a process (WRK00) on VM00

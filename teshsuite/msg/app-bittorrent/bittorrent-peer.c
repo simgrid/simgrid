@@ -626,9 +626,8 @@ void update_choked_peers(peer_t peer)
           i++;
         }
         xbt_dict_cursor_free(&cursor);
-        if (peer_choosed == NULL)
-          THROWF(unknown_error, 0, "A peer should have be selected at this point");
-        else if ((peer_choosed->interested == 0) || (peer_choosed->choked_upload == 0))
+        xbt_assert(peer_choosed != NULL, "A peer should have been selected at this point");
+        if ((peer_choosed->interested == 0) || (peer_choosed->choked_upload == 0))
           peer_choosed = NULL;
         else
           XBT_DEBUG("Nothing to do, keep going");

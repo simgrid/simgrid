@@ -24,16 +24,16 @@ Type_Contiguous::~Type_Contiguous()
   Datatype::unref(old_type_);
 }
 
-void Type_Contiguous::serialize(void* noncontiguous_buf, void* contiguous_buf, int count)
+void Type_Contiguous::serialize(const void* noncontiguous_buf, void* contiguous_buf, int count)
 {
   char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
-  char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf)+lb();
+  const char* noncontiguous_buf_char = static_cast<const char*>(noncontiguous_buf)+lb();
   memcpy(contiguous_buf_char, noncontiguous_buf_char, count * block_count_ * old_type_->size());
 }
 
-void Type_Contiguous::unserialize(void* contiguous_buf, void* noncontiguous_buf, int count, MPI_Op op)
+void Type_Contiguous::unserialize(const void* contiguous_buf, void* noncontiguous_buf, int count, MPI_Op op)
 {
-  char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
+  const char* contiguous_buf_char = static_cast<const char*>(contiguous_buf);
   char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf)+lb();
   int n= count*block_count_;
   if(op!=MPI_OP_NULL)
@@ -47,10 +47,10 @@ Type_Hvector::~Type_Hvector(){
   Datatype::unref(old_type_);
 }
 
-void Type_Hvector::serialize( void* noncontiguous_buf, void *contiguous_buf,
+void Type_Hvector::serialize(const void* noncontiguous_buf, void *contiguous_buf,
                     int count){
   char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
-  char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf);
+  const char* noncontiguous_buf_char = static_cast<const char*>(noncontiguous_buf);
 
   for (int i = 0; i < block_count_ * count; i++) {
     if (not(old_type_->flags() & DT_FLAG_DERIVED))
@@ -66,9 +66,9 @@ void Type_Hvector::serialize( void* noncontiguous_buf, void *contiguous_buf,
   }
 }
 
-void Type_Hvector::unserialize( void* contiguous_buf, void *noncontiguous_buf,
+void Type_Hvector::unserialize(const void* contiguous_buf, void *noncontiguous_buf,
                               int count, MPI_Op op){
-  char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
+  const char* contiguous_buf_char = static_cast<const char*>(contiguous_buf);
   char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf);
 
   for (int i = 0; i < block_count_ * count; i++) {
@@ -91,8 +91,8 @@ Type_Vector::Type_Vector(int size, MPI_Aint lb, MPI_Aint ub, int flags, int coun
 {
 }
 
-Type_Hindexed::Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int count, int* block_lengths,
-                             MPI_Aint* block_indices, MPI_Datatype old_type)
+Type_Hindexed::Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int count, const int* block_lengths,
+                             const MPI_Aint* block_indices, MPI_Datatype old_type)
     : Datatype(size, lb, ub, flags), block_count_(count), old_type_(old_type)
 {
   old_type_->ref();
@@ -104,8 +104,8 @@ Type_Hindexed::Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int 
   }
 }
 
-Type_Hindexed::Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int count, int* block_lengths,
-                             int* block_indices, MPI_Datatype old_type, MPI_Aint factor)
+Type_Hindexed::Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int count, const int* block_lengths,
+                             const int* block_indices, MPI_Datatype old_type, MPI_Aint factor)
     : Datatype(size, lb, ub, flags), block_count_(count), old_type_(old_type)
 {
   old_type_->ref();
@@ -126,10 +126,11 @@ Type_Hindexed::~Type_Hindexed()
   }
 }
 
-void Type_Hindexed::serialize( void* noncontiguous_buf, void *contiguous_buf,
+void Type_Hindexed::serialize(const void* noncontiguous_buf, void *contiguous_buf,
                 int count){
   char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
-  char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf)+ block_indices_[0];
+  const char* noncontiguous_buf_iter = static_cast<const char*>(noncontiguous_buf);
+  const char* noncontiguous_buf_char = noncontiguous_buf_iter + block_indices_[0];
   for (int j = 0; j < count; j++) {
     for (int i = 0; i < block_count_; i++) {
       if (not(old_type_->flags() & DT_FLAG_DERIVED))
@@ -139,17 +140,17 @@ void Type_Hindexed::serialize( void* noncontiguous_buf, void *contiguous_buf,
 
       contiguous_buf_char += block_lengths_[i]*old_type_->size();
       if (i<block_count_-1)
-        noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf) + block_indices_[i+1];
+        noncontiguous_buf_char = noncontiguous_buf_iter + block_indices_[i+1];
       else
         noncontiguous_buf_char += block_lengths_[i]*old_type_->get_extent();
     }
-    noncontiguous_buf=static_cast<void*>(noncontiguous_buf_char);
+    noncontiguous_buf_iter=noncontiguous_buf_char;
   }
 }
 
-void Type_Hindexed::unserialize( void* contiguous_buf, void *noncontiguous_buf,
+void Type_Hindexed::unserialize(const void* contiguous_buf, void *noncontiguous_buf,
                           int count, MPI_Op op){
-  char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
+  const char* contiguous_buf_char = static_cast<const char*>(contiguous_buf);
   char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf)+ block_indices_[0];
   for (int j = 0; j < count; j++) {
     for (int i = 0; i < block_count_; i++) {
@@ -170,13 +171,13 @@ void Type_Hindexed::unserialize( void* contiguous_buf, void *noncontiguous_buf,
   }
 }
 
-Type_Indexed::Type_Indexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int count, int* block_lengths,
-                           int* block_indices, MPI_Datatype old_type)
+Type_Indexed::Type_Indexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int count, const int* block_lengths,
+                           const int* block_indices, MPI_Datatype old_type)
     : Type_Hindexed(size, lb, ub, flags, count, block_lengths, block_indices, old_type, old_type->get_extent())
 {
 }
 
-Type_Struct::Type_Struct(int size,MPI_Aint lb, MPI_Aint ub, int flags, int count, int* block_lengths, MPI_Aint* block_indices, MPI_Datatype* old_types): Datatype(size, lb, ub, flags), block_count_(count), block_lengths_(block_lengths), block_indices_(block_indices), old_types_(old_types){
+Type_Struct::Type_Struct(int size,MPI_Aint lb, MPI_Aint ub, int flags, int count, const int* block_lengths, const MPI_Aint* block_indices, const MPI_Datatype* old_types): Datatype(size, lb, ub, flags), block_count_(count){
   block_lengths_= new int[count];
   block_indices_= new MPI_Aint[count];
   old_types_=  new MPI_Datatype[count];
@@ -200,10 +201,11 @@ Type_Struct::~Type_Struct(){
 }
 
 
-void Type_Struct::serialize( void* noncontiguous_buf, void *contiguous_buf,
+void Type_Struct::serialize(const void* noncontiguous_buf, void *contiguous_buf,
                         int count){
   char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
-  char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf)+ block_indices_[0];
+  const char* noncontiguous_buf_iter = static_cast<const char*>(noncontiguous_buf);
+  const char* noncontiguous_buf_char = noncontiguous_buf_iter + block_indices_[0];
   for (int j = 0; j < count; j++) {
     for (int i = 0; i < block_count_; i++) {
       if (not(old_types_[i]->flags() & DT_FLAG_DERIVED))
@@ -214,17 +216,17 @@ void Type_Struct::serialize( void* noncontiguous_buf, void *contiguous_buf,
 
       contiguous_buf_char += block_lengths_[i]*old_types_[i]->size();
       if (i<block_count_-1)
-        noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf) + block_indices_[i+1];
+        noncontiguous_buf_char = noncontiguous_buf_iter + block_indices_[i+1];
       else //let's hope this is MPI_UB ?
         noncontiguous_buf_char += block_lengths_[i]*old_types_[i]->get_extent();
     }
-    noncontiguous_buf=static_cast<void*>(noncontiguous_buf_char);
+    noncontiguous_buf_iter=noncontiguous_buf_char;
   }
 }
 
-void Type_Struct::unserialize( void* contiguous_buf, void *noncontiguous_buf,
+void Type_Struct::unserialize(const void* contiguous_buf, void *noncontiguous_buf,
                               int count, MPI_Op op){
-  char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
+  const char* contiguous_buf_char = static_cast<const char*>(contiguous_buf);
   char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf)+ block_indices_[0];
   for (int j = 0; j < count; j++) {
     for (int i = 0; i < block_count_; i++) {

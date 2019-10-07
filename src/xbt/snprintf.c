@@ -27,14 +27,14 @@
  *   If not, I'll be glad to provide one.
  *
  * FEATURES
- * - careful adherence to specs regarding flags, field width and precision;
+ * - careful adherence to specs regarding flags, field width and precision
  * - good performance for large string handling (large format, large
  *   argument or large paddings). Performance is similar to system's sprintf
  *   and in several cases significantly better (make sure you compile with
  *   optimizations turned on, tell the compiler the code is strict ANSI
- *   if necessary to give it more freedom for optimizations);
- * - return value semantics per ISO/IEC 9899:1999 ("ISO C99");
- * - written in standard ISO/ANSI C - requires an ANSI C compiler.
+ *   if necessary to give it more freedom for optimizations)
+ * - return value semantics per ISO/IEC 9899:1999 ("ISO C99")
+ * - written in standard ISO/ANSI C - requires an ANSI C compiler
  *
  * [...]
  *

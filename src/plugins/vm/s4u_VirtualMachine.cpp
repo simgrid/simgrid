@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/vm.h"
 #include "src/include/surf/surf.hpp"
@@ -63,7 +64,7 @@ void VirtualMachine::start()
 {
   on_start(*this);
 
-  simgrid::simix::simcall([this]() {
+  simgrid::kernel::actor::simcall([this]() {
     simgrid::vm::VmHostExt::ensureVmExtInstalled();
 
     simgrid::s4u::Host* pm = this->pimpl_vm_->get_physical_host();
@@ -84,8 +85,9 @@ void VirtualMachine::start()
       if (vm_ramsize > pm_ramsize - total_ramsize_of_vms) {
         XBT_WARN("cannot start %s@%s due to memory shortage: vm_ramsize %ld, free %ld, pm_ramsize %ld (bytes).",
                  this->get_cname(), pm->get_cname(), vm_ramsize, pm_ramsize - total_ramsize_of_vms, pm_ramsize);
-        THROWF(vm_error, 0, "Memory shortage on host '%s', VM '%s' cannot be started", pm->get_cname(),
-               this->get_cname());
+        throw VmFailureException(XBT_THROW_POINT,
+                                 xbt::string_printf("Memory shortage on host '%s', VM '%s' cannot be started",
+                                                    pm->get_cname(), this->get_cname()));
       }
     }
 
@@ -99,7 +101,7 @@ void VirtualMachine::suspend()
 {
   on_suspend(*this);
   smx_actor_t issuer = SIMIX_process_self();
-  simgrid::simix::simcall([this, issuer]() { pimpl_vm_->suspend(issuer); });
+  simgrid::kernel::actor::simcall([this, issuer]() { pimpl_vm_->suspend(issuer); });
 }
 
 void VirtualMachine::resume()
@@ -111,7 +113,7 @@ void VirtualMachine::resume()
 void VirtualMachine::shutdown()
 {
   smx_actor_t issuer = SIMIX_process_self();
-  simgrid::simix::simcall([this, issuer]() { pimpl_vm_->shutdown(issuer); });
+  simgrid::kernel::actor::simcall([this, issuer]() { pimpl_vm_->shutdown(issuer); });
   on_shutdown(*this);
 }
 
@@ -131,12 +133,12 @@ simgrid::s4u::Host* VirtualMachine::get_pm()
 
 void VirtualMachine::set_pm(simgrid::s4u::Host* pm)
 {
-  simgrid::simix::simcall([this, pm]() { pimpl_vm_->set_physical_host(pm); });
+  simgrid::kernel::actor::simcall([this, pm]() { pimpl_vm_->set_physical_host(pm); });
 }
 
 VirtualMachine::state VirtualMachine::get_state()
 {
-  return simgrid::simix::simcall([this]() { return pimpl_vm_->get_state(); });
+  return simgrid::kernel::actor::simcall([this]() { return pimpl_vm_->get_state(); });
 }
 
 size_t VirtualMachine::get_ramsize()
@@ -176,7 +178,7 @@ void VirtualMachine::set_ramsize(size_t ramsize)
  */
 void VirtualMachine::set_bound(double bound)
 {
-  simgrid::simix::simcall([this, bound]() { pimpl_vm_->set_bound(bound); });
+  simgrid::kernel::actor::simcall([this, bound]() { pimpl_vm_->set_bound(bound); });
 }
 
 } // namespace simgrid

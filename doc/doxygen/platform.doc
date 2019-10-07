@@ -29,7 +29,7 @@ The default inner organization of the cluster is as follow:
 Here, a set of <b>host</b>s is defined. Each of them has a <b>link</b>
 to a central backbone (backbone is a link itself, as a link can
 be used to represent a switch, see the switch / link section
-below for more details about it). A <b>router</b> allows to connect a
+below for more details about it). A <b>router</b> allows one to connect a
 <b>cluster</b> to the outside world. Internally,
 SimGrid treats a cluster as a network zone containing all hosts: the router is the default
 gateway for the cluster.
@@ -185,160 +185,6 @@ several other tags that are available only in certain contexts.
     If you want to represent an entity like a switch, you must use ``<link>`` (see section). Routers are used
     to run some routing algorithm and determine routes (see Section @ref pf_routing for details).
 
-@subsubsection pf_tag_link &lt;link&gt;
-
-Network links can represent one-hop network connections. They are
-characterized by their id and their bandwidth; links can (but may not) be subject
-to latency.
-
-#### Attributes ####
-
-Attribute name  | Mandatory | Values | Description
---------------- | --------- | ------ | -----------
-id              | yes       | string | The identifier of the link to be used when referring to it.
-bandwidth       | yes       | string | Maximum bandwidth for this link, along with its unit.
-latency         | no        | double (default: 0.0) | Latency for this link.
-sharing_policy  | no        | @ref sharing_policy_shared "SHARED"@|@ref pf_sharing_policy_fatpipe "FATPIPE"@|@ref pf_sharing_policy_splitduplex "SPLITDUPLEX" (default: SHARED) | Sharing policy for the link.
-bandwidth_file  | no        | string | Allows you to use a file as input for bandwidth.
-latency_file    | no        | string | Allows you to use a file as input for latency.
-state_file      | no        | string | Allows you to use a file as input for states.
-
-
-#### Possible shortcuts for ``latency`` ####
-
-When using the latency attribute, you can specify the latency by using the scientific
-notation or by using common abbreviations. For instance, the following three tags
-are equivalent:
-
-@verbatim
- <link id="LINK1" bandwidth="125000000" latency="5E-6"/>
- <link id="LINK1" bandwidth="125000000" latency="5us"/>
- <link id="LINK1" bandwidth="125000000" latency="0.000005"/>
-@endverbatim
-
-Here, the second tag uses "us", meaning "microseconds". Other shortcuts are:
-
-Name | Abbreviation | Time (in seconds)
----- | ------------ | -----------------
-Week | w | 7 * 24 * 60 * 60
-Day  | d | 24 * 60 * 60
-Hour | h | 60 * 60
-Minute | m | 60
-Second | s | 1
-Millisecond | ms | 0.001 = 10^(-3)
-Microsecond | us | 0.000001 = 10^(-6)
-Nanosecond  | ns | 0.000000001 = 10^(-9)
-Picosecond  | ps | 0.000000000001 = 10^(-12)
-
-#### Sharing policy ####
-
-@anchor sharing_policy_shared
-By default a network link is @b SHARED, i.e., if two or more data flows go
-through a link, the bandwidth is shared fairly among all data flows. This
-is similar to the sharing policy TCP uses.
-
-@anchor pf_sharing_policy_fatpipe
-On the other hand, if a link is defined as a @b FATPIPE,
-each flow going through this link will be provided with the complete bandwidth,
-i.e., no sharing occurs and the bandwidth is only limiting each flow individually.
-Please note that this is really on a per-flow basis, not only on a per-host basis!
-The complete bandwidth provided by this link in this mode
-is ``number_of_flows*bandwidth``, with at most ``bandwidth`` being available per flow.
-
-Using the FATPIPE mode allows to model backbones that won't affect performance
-(except latency).
-
-@anchor pf_sharing_policy_splitduplex
-The last mode available is @b SPLITDUPLEX. This means that SimGrid will
-automatically generate two links (one carrying the suffix _UP and the other the
-suffix _DOWN) for each ``<link>`` tag. This models situations when the direction
-of traffic is important.
-
-@remark
-  Transfers from one side to the other will interact similarly as
-  TCP when ACK returning packets circulate on the other direction. More
-  discussion about it is available in the description of link_ctn description.
-
-In other words: The SHARED policy defines a physical limit for the bandwidth.
-The FATPIPE mode defines a limit for each application,
-with no upper total limit.
-
-@remark
-  Tip: By using the FATPIPE mode, you can model big backbones that
-  won't affect performance (except latency).
-
-#### Example ####
-
-@verbatim
- <link id="SWITCH" bandwidth="125000000" latency="5E-5" sharing_policy="FATPIPE" />
-@endverbatim
-
-#### Expressing dynamism and failures ####
-
-Similar to hosts, it is possible to declare links whose state, bandwidth
-or latency changes over time (see Section @ref pf_host_dynamism for details).
-
-In the case of network links, the ``bandwidth`` and ``latency`` attributes are
-replaced by the ``bandwidth_file`` and ``latency_file`` attributes.
-The following XML snippet demonstrates how to use this feature in the platform
-file. The structure of the files "link1.bw" and "link1.lat" is shown below.
-
-@verbatim
-<link id="LINK1" state_file="link1.fail" bandwidth="80000000" latency=".0001" bandwidth_file="link1.bw" latency_file="link1.lat" />
-@endverbatim
-
-@note
-  Even if the syntax is the same, the semantic of bandwidth and latency
-  trace files differs from that of host availability files. For bandwidth and
-  latency, the corresponding files do not
-  express availability as a fraction of the available capacity but directly in
-  bytes per seconds for the bandwidth and in seconds for the latency. This is
-  because most tools allowing to capture traces on real platforms (such as NWS)
-  express their results this way.
-
-##### Example of "link1.bw" file #####
-
-~~~{.py}
-PERIODICITY 12.0
-4.0 40000000
-8.0 60000000
-~~~
-
-In this example, the bandwidth changes repeatedly, with all changes
-being repeated every 12 seconds.
-
-At the beginning of the the simulation, the link's bandwidth is 80,000,000
-B/s (i.e., 80 Mb/s); this value was defined in the XML snippet above.
-After four seconds, it drops to 40 Mb/s (line 2), and climbs
-back to 60 Mb/s after another 4 seconds (line 3). The value does not change any
-more until the end of the period, that is, after 12 seconds have been simulated).
-At this point, periodicity kicks in and this behavior is repeated: Seconds
-12-16 will experience 80 Mb/s, 16-20 40 Mb/s etc.).
-
-##### Example of "link1.lat" file #####
-
-~~~{.py}
-PERIODICITY 5.0
-1.0 0.001
-2.0 0.01
-3.0 0.001
-~~~
-
-In this example, the latency varies with a period of 5 seconds.
-In the xml snippet above, the latency is initialized to be 0.0001s (100µs). This
-value will be kept during the first second, since the latency_file contains
-changes to this value at second one, two and three.
-At second one, the value will be 0.001, i.e., 1ms. One second later it will
-be adjusted to 0.01 (or 10ms) and one second later it will be set again to 1ms. The
-value will not change until second 5, when the periodicity defined in line 1
-kicks in. It then loops back, starting at 100µs (the initial value) for one second.
-
-#### The ``<prop/>`` tag ####
-
-Similar to the ``<host>`` tag, a link may also contain the ``<prop/>`` tag; see the host
-documentation (Section @ref pf_tag_host) for an example.
-
-
 @subsubsection pf_backbone <backbone/>
 
 @note
@@ -459,7 +305,7 @@ these might also help you to get started.
 Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | string | Identifier of this storage_type; used when referring to it
-model           | no        | string | In the future, this will allow to change the performance model to use
+model           | no        | string | In the future, this will allow one to change the performance model to use
 size            | yes       | string | Specifies the amount of available storage space; you can specify storage like "500GiB" or "500GB" if you want. (TODO add a link to all the available abbreviations)
 content         | yes       | string | Path to a @ref pf_storage_content_file "Storage Content File" on your system. This file must exist.
 
@@ -921,24 +767,6 @@ it means that it must pass through router1 to get out of the zone, then
 pass through link1, and get into zone2 by being received by router2.
 router1 must belong to zone1 and router2 must belong to zone2.
 
-@subsubsection pf_tag_linkctn &lt;link_ctn&gt;
-
-This entity has only one purpose: Refer to an already existing
-@ref pf_tag_link "&lt;link/&gt;" when defining a route, i.e., it
-can only occur as a child of @ref pf_tag_route "&lt;route/&gt;"
-
-| Attribute name  | Mandatory | Values | Description                                                   |
-| --------------- | --------- | ------ | -----------                                                   |
-| id              | yes       | String | The identifier of the link that should be added to the route. |
-| direction       | maybe     | UP@|DOWN | If the link referenced by @c id has been declared as @ref pf_sharing_policy_splitduplex "SPLITDUPLEX", this indicates which direction the route traverses through this link: UP or DOWN. If you don't use SPLITDUPLEX, do not use this attribute or SimGrid will not find the right link.
-
-#### Example Files ####
-
-This is an automatically generated list of example files that use the @c &lt;link_ctn/&gt;
-entity (the path is given relative to SimGrid's source directory):
-
-@verbinclude example_filelist_xmltag_linkctn
-
 @subsubsection pf_tag_zoneroute &lt;zoneRoute&gt;
 
 The purpose of this entity is to define a route between two
@@ -1037,7 +865,7 @@ As said before, once you choose
 a model, it (most likely; the constant network model, for example, doesn't) calculates routes for you. But maybe you want to
 define some of your routes, which will be specific. You may also want
 to bypass some routes defined in lower level zone at an upper stage:
-<b>bypasszoneroute</b> is the tag you're looking for. It allows to
+<b>bypasszoneroute</b> is the tag you're looking for. It allows one to
 bypass routes defined between already defined between zone (if you want
 to bypass route for a specific host, you should just use byPassRoute).
 The principle is the same as zoneroute: <b>bypasszoneroute</b> contains
@@ -1074,7 +902,7 @@ As said before, once you choose
 a model, it (most likely; the constant network model, for example, doesn't) calculates routes for you. But maybe you want to
 define some of your routes, which will be specific. You may also want
 to bypass some routes defined in lower level zone at an upper stage:
-<b>bypassRoute</b> is the tag you're looking for. It allows to bypass
+<b>bypassRoute</b> is the tag you're looking for. It allows one to bypass
 routes defined between <b>host/router</b>. The principle is the same
 as route: <b>bypassRoute</b> contains list of links references of
 links that are in the path between src and dst.
@@ -1175,60 +1003,6 @@ directly describing the platform:
 
   - @ref pf_tag_config passes configuration options, e.g. to change the network model;
   - @ref pf_tag_prop gives user-defined properties to various elements
-
-@subsection pf_tag_config &lt;config&gt;
-
-Adding configuration flags into the platform file is particularly
-useful when the described platform is best used with specific
-flags. For example, you could finely tune SMPI in your platform file directly.
-
-| Attribute  | Values              | Description                                    |
-| ---------- | ------------------- | ---------------------------------------------- |
-| id         | String (optional)   | This optional identifier is ignored by SimGrid |
-
-* **Included tags:** @ref pf_tag_prop to specify a given configuration item (see @ref options).
-
-Any such configuration must be given at the very top of the platform file.
-
-* **Example**
-
-@verbatim
-<?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-<platform version="4">
-<config>
-	<prop id="maxmin/precision" value="0.000010" />
-	<prop id="cpu/optim" value="TI" />
-	<prop id="network/model" value="SMPI" />
-	<prop id="smpi/bw-factor" value="65472:0.940694;15424:0.697866;9376:0.58729" />
-</config>
-
-<zone  id="zone0"  routing="Full">
-...
-@endverbatim
-
-@subsection pf_tag_prop &lt;prop&gt;
-
-Defines a user-defined property, identified with a name and having a
-value. You can specify such properties to most kind of resources:
-@ref pf_tag_zone, @ref pf_tag_host, @ref pf_tag_storage,
-@ref pf_tag_cluster and @ref pf_tag_link. These values can be retrieved
-at runtime with MSG_zone_property() or simgrid::s4u::NetZone::property(),
-or similar functions.
-
-| Attribute | Values                  | Description                                                                               |
-| --------- | ----------------------  | ----------------------------------------------------------------------------------------- |
-| id        | String (mandatory)      | Identifier of this property. Must be unique for a given property holder, eg host or link. |
-| value     | String (mandatory)      | Value of this property; The semantic is completely up to you.                             |
-
-* **Included tags:** none.
-
-#### Example ####
-
-@code{.xml}
-<prop id="Operating System" value="Linux" />
-@endcode
-
 
 @subsection pf_trace trace and trace_connect
 

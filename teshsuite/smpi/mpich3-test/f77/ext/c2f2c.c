@@ -199,7 +199,8 @@ MPI_Fint c2fop_ ( MPI_Fint *op )
 
 MPI_Fint c2ferrhandler_ ( MPI_Fint *errh )
 {
-    MPI_Errhandler errhand = MPI_Errhandler_f2c( *errh );
+    MPI_Errhandler errhand = MPI_ERRORS_RETURN;
+    //MPI_Errhandler errhand = MPI_Errhandler_f2c( *errh );
 
     if (errhand != MPI_ERRORS_RETURN) {
 	fprintf( stderr, "Errhandler: did not get errors return\n" );

@@ -1,17 +1,17 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/io-file-remote$EXEEXT ${platfdir:=.}/storage/remote_io.xml ${srcdir:=.}/io-file-remote_d.xml "--log=root.fmt:[%10.6r]%e(%i@%5h)%e%m%n"
+$ ${bindir:=.}/io-file-remote ${platfdir:=.}/storage/remote_io.xml ${srcdir:=.}/io-file-remote_d.xml "--log=root.fmt:[%10.6r]%e(%i@%5h)%e%m%n"
 > [  0.000000] (0@     ) Init: 12/476824 MiB used/free on 'Disk1'
-> [  0.000000] (0@     ) Init: 2280/474556 MiB used/free on 'Disk2'
-> [  0.000000] (1@alice) Opened file 'c:\Windows\setupact.log'
+> [  0.000000] (0@     ) Init: 35/476801 MiB used/free on 'Disk2'
+> [  0.000000] (1@alice) Opened file '/tmp/doc/simgrid/examples/msg/chord/chord10k.xml'
 > [  0.000000] (1@alice) File Descriptor information:
-> 		Full path: 'c:\Windows\setupact.log'
-> 		Size: 101663
-> 		Mount point: 'c:'
+> 		Full path: '/tmp/doc/simgrid/examples/msg/chord/chord10k.xml'
+> 		Size: 1624671
+> 		Mount point: '/tmp'
 > 		Storage Id: 'Disk2'
 > 		Storage Type: 'SATA-II_HDD'
 > 		File Descriptor Id: 0
-> [  0.000000] (1@alice) Try to read 101663 from 'c:\Windows\setupact.log'
+> [  0.000000] (1@alice) Try to read 1624671 from '/tmp/doc/simgrid/examples/msg/chord/chord10k.xml'
 > [  0.000000] (2@  bob) Opened file '/scratch/lib/libsimgrid.so.3.6.2'
 > [  0.000000] (2@  bob) File Descriptor information:
 > 		Full path: '/scratch/lib/libsimgrid.so.3.6.2'
@@ -30,23 +30,23 @@ $ ${bindir:=.}/io-file-remote$EXEEXT ${platfdir:=.}/storage/remote_io.xml ${srcd
 > 		Storage Type: 'SATA-II_HDD'
 > 		File Descriptor Id: 0
 > [  0.000000] (3@ carl) Try to read 12710497 from '/scratch/lib/libsimgrid.so.3.6.2'
-> [  0.000000] (4@ dave) Opened file 'c:\Windows\bootstat.dat'
+> [  0.000000] (4@ dave) Opened file '/tmp/doc/simgrid/examples/simdag/dax/Montage_50.xml'
 > [  0.000000] (4@ dave) File Descriptor information:
-> 		Full path: 'c:\Windows\bootstat.dat'
-> 		Size: 67584
-> 		Mount point: 'c:'
+> 		Full path: '/tmp/doc/simgrid/examples/simdag/dax/Montage_50.xml'
+> 		Size: 48868
+> 		Mount point: '/tmp'
 > 		Storage Id: 'Disk2'
 > 		Storage Type: 'SATA-II_HDD'
 > 		File Descriptor Id: 0
-> [  0.000000] (4@ dave) Try to read 67584 from 'c:\Windows\bootstat.dat'
-> [  0.001469] (4@ dave) Have read 67584 from 'c:\Windows\bootstat.dat'. Offset is now at: 67584
-> [  0.001469] (4@ dave) Seek back to the begining of the stream...
-> [  0.001469] (4@ dave) Offset is now at: 0
-> [  0.001469] (4@ dave) Opened file 'c:\Windows\Professional.xml'
-> [  0.001469] (4@ dave) Try to write 31 MiB to 'c:\Windows\Professional.xml'
-> [  0.003741] (1@alice) Have read 101663 from 'c:\Windows\setupact.log'. Offset is now at: 101663
-> [  0.003741] (1@alice) Seek back to the begining of the stream...
-> [  0.003741] (1@alice) Offset is now at: 0
+> [  0.000000] (4@ dave) Try to read 48868 from '/tmp/doc/simgrid/examples/simdag/dax/Montage_50.xml'
+> [  0.001062] (4@ dave) Have read 48868 from '/tmp/doc/simgrid/examples/simdag/dax/Montage_50.xml'. Offset is now at: 48868
+> [  0.001062] (4@ dave) Seek back to the begining of the stream...
+> [  0.001062] (4@ dave) Offset is now at: 0
+> [  0.001062] (4@ dave) Opened file '/tmp/doc/simgrid/examples/simdag/scheduling/Montage_25.xml'
+> [  0.001062] (4@ dave) Try to write 22 MiB to '/tmp/doc/simgrid/examples/simdag/scheduling/Montage_25.xml'
+> [  0.050039] (1@alice) Have read 1624671 from '/tmp/doc/simgrid/examples/msg/chord/chord10k.xml'. Offset is now at: 1624671
+> [  0.050039] (1@alice) Seek back to the begining of the stream...
+> [  0.050039] (1@alice) Offset is now at: 0
 > [  0.276315] (3@ carl) Have read 12710497 from '/scratch/lib/libsimgrid.so.3.6.2'. Offset is now at: 12710497
 > [  0.276315] (3@ carl) Seek back to the begining of the stream...
 > [  0.276315] (3@ carl) Offset is now at: 0
@@ -55,10 +55,10 @@ $ ${bindir:=.}/io-file-remote$EXEEXT ${platfdir:=.}/storage/remote_io.xml ${srcd
 > [  0.387036] (2@  bob) Offset is now at: 0
 > [  0.387036] (2@  bob) Opened file '/scratch/doc/simgrid/examples/platforms/g5k.xml'
 > [  0.387036] (2@  bob) Try to write 16 MiB to '/scratch/doc/simgrid/examples/platforms/g5k.xml'
-> [  0.528211] (4@ dave) Have written 32646144 bytes to 'c:\Windows\Professional.xml'.
-> [  0.528211] (4@ dave) Move 'c:\Windows\Professional.xml' (of size 32646144) from 'dave' to 'carl'
+> [  0.391211] (4@ dave) Have written 23641088 bytes to '/tmp/doc/simgrid/examples/simdag/scheduling/Montage_25.xml'.
+> [  0.391211] (4@ dave) Move '/tmp/doc/simgrid/examples/simdag/scheduling/Montage_25.xml' (of size 23641088) from 'dave' to 'carl'
 > [  0.819921] (2@  bob) Have written 17436672 bytes to '/scratch/doc/simgrid/examples/platforms/g5k.xml'.
 > [  0.819921] (2@  bob) Copy '/scratch/doc/simgrid/examples/platforms/g5k.xml' (of size 17436672) from 'bob' to 'alice'
-> [  1.843969] (0@     ) End: 60/476776 MiB used/free on 'Disk1'
-> [  1.843969] (0@     ) End: 2297/474539 MiB used/free on 'Disk2'
-> [  1.843969] (0@     ) Simulation time 1.84397
+> [  1.598229] (0@     ) End: 51/476785 MiB used/free on 'Disk1'
+> [  1.598229] (0@     ) End: 51/476785 MiB used/free on 'Disk2'
+> [  1.598229] (0@     ) Simulation time 1.59823

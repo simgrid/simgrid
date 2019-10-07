@@ -42,14 +42,6 @@ bool compare_hosts::operator()(simgrid::s4u::Host* const a, simgrid::s4u::Host* 
 }
 
 
-LoadBalancer::LoadBalancer()
-{
-}
-
-LoadBalancer::~LoadBalancer()
-{
-}
-
 void LoadBalancer::run()
 {
   simgrid::s4u::Engine* engine                     = simgrid::s4u::Engine::get_instance();
@@ -144,9 +136,9 @@ simgrid::s4u::Host* LoadBalancer::get_mapping(simgrid::s4u::ActorPtr actor)
   return new_mapping.get_host(actor);
 }
 
-void LoadBalancer::record_actor_computation(simgrid::s4u::ActorPtr actor, double load)
+void LoadBalancer::record_actor_computation(simgrid::s4u::Actor const& actor, double load)
 {
-  actor_computation[actor->get_pid()] += load;
+  actor_computation[actor.get_pid()] += load;
 }
 }
 }

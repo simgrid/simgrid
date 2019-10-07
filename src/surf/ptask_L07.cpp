@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "ptask_L07.hpp"
+#include "src/kernel/resource/profile/Event.hpp"
 #include "surf/surf.hpp"
 #include "xbt/config.hpp"
 
@@ -56,7 +57,8 @@ NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys)
     : NetworkModel(Model::UpdateAlgo::FULL), hostModel_(hmodel)
 {
   set_maxmin_system(sys);
-  loopback_ = NetworkL07Model::create_link("__loopback__", 498000000, 0.000015, s4u::Link::SharingPolicy::FATPIPE);
+  loopback_ = NetworkL07Model::create_link("__loopback__", std::vector<double>{498000000}, 0.000015,
+                                           s4u::Link::SharingPolicy::FATPIPE);
 }
 
 NetworkL07Model::~NetworkL07Model()
@@ -92,7 +94,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
       }
       if ((action.latency_ <= 0.0) && (action.is_suspended() == 0)) {
         action.updateBound();
-        get_maxmin_system()->update_variable_weight(action.get_variable(), 1.0);
+        get_maxmin_system()->update_variable_penalty(action.get_variable(), 1.0);
         action.set_last_update();
       }
     }
@@ -109,7 +111,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
      * If it's not done, it may have failed.
      */
 
-    if (((action.get_remains() <= 0) && (action.get_variable()->get_weight() > 0)) ||
+    if (((action.get_remains() <= 0) && (action.get_variable()->get_penalty() > 0)) ||
         ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(kernel::resource::Action::State::FINISHED);
       continue;
@@ -120,8 +122,8 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
     kernel::lmm::Constraint* cnst = action.get_variable()->get_constraint(i);
     while (cnst != nullptr) {
       i++;
-      void* constraint_id = cnst->get_id();
-      if (not static_cast<simgrid::kernel::resource::Resource*>(constraint_id)->is_on()) {
+      kernel::resource::Resource* constraint_id = cnst->get_id();
+      if (not constraint_id->is_on()) {
         XBT_DEBUG("Action (%p) Failed!!", &action);
         action.finish(kernel::resource::Action::State::FAILED);
         break;
@@ -131,9 +133,9 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
   }
 }
 
-kernel::resource::Action* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_list,
-                                                         const double* flops_amount, const double* bytes_amount,
-                                                         double rate)
+kernel::resource::CpuAction* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_list,
+                                                            const double* flops_amount, const double* bytes_amount,
+                                                            double rate)
 {
   return new L07Action(this, host_list, flops_amount, bytes_amount, rate);
 }
@@ -179,7 +181,7 @@ L07Action::L07Action(kernel::resource::Model* model, const std::vector<s4u::Host
       model->get_maxmin_system()->variable_new(this, 1.0, (rate > 0 ? rate : -1.0), host_list.size() + link_nb));
 
   if (latency_ > 0)
-    model->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
+    model->get_maxmin_system()->update_variable_penalty(get_variable(), 0.0);
 
   /* Expand it for the CPUs even if there is nothing to compute, to make sure that it gets expended even if there is no
    * communication either */
@@ -218,15 +220,16 @@ kernel::resource::Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host
   return res;
 }
 
-Cpu* CpuL07Model::create_cpu(simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
+kernel::resource::Cpu* CpuL07Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
 {
   return new CpuL07(this, host, speed_per_pstate, core);
 }
 
-kernel::resource::LinkImpl* NetworkL07Model::create_link(const std::string& name, double bandwidth, double latency,
-                                                         s4u::Link::SharingPolicy policy)
+kernel::resource::LinkImpl* NetworkL07Model::create_link(const std::string& name, const std::vector<double>& bandwidths,
+                                                         double latency, s4u::Link::SharingPolicy policy)
 {
-  return new LinkL07(this, name, bandwidth, latency, policy);
+  xbt_assert(bandwidths.size() == 1, "Non WIFI link must have only 1 bandwidth.");
+  return new LinkL07(this, name, bandwidths[0], latency, policy);
 }
 
 /************
@@ -254,25 +257,25 @@ LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwid
   s4u::Link::on_creation(this->piface_);
 }
 
-kernel::resource::Action* CpuL07::execution_start(double size)
+kernel::resource::CpuAction* CpuL07::execution_start(double size)
 {
   std::vector<s4u::Host*> host_list = {get_host()};
 
   double* flops_amount = new double[host_list.size()]();
   flops_amount[0] = size;
 
-  kernel::resource::Action* res =
+  kernel::resource::CpuAction* res =
       static_cast<CpuL07Model*>(get_model())->hostModel_->execute_parallel(host_list, flops_amount, nullptr, -1);
   static_cast<L07Action*>(res)->free_arrays_ = true;
   return res;
 }
 
-kernel::resource::Action* CpuL07::sleep(double duration)
+kernel::resource::CpuAction* CpuL07::sleep(double duration)
 {
   L07Action *action = static_cast<L07Action*>(execution_start(1.0));
   action->set_max_duration(duration);
-  action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
-  get_model()->get_maxmin_system()->update_variable_weight(action->get_variable(), 0.0);
+  action->set_suspend_state(kernel::resource::Action::SuspendStates::SLEEPING);
+  get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), 0.0);
 
   return action;
 }
@@ -405,7 +408,7 @@ void L07Action::updateBound()
   }
   double lat_bound = kernel::resource::NetworkModel::cfg_tcp_gamma / (2.0 * lat_current);
   XBT_DEBUG("action (%p) : lat_bound = %g", this, lat_bound);
-  if ((latency_ <= 0.0) && (suspended_ == Action::SuspendStates::not_suspended)) {
+  if ((latency_ <= 0.0) && is_running()) {
     if (rate_ < 0)
       get_model()->get_maxmin_system()->update_variable_bound(get_variable(), lat_bound);
     else

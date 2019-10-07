@@ -16,6 +16,8 @@
 #ifdef _WIN32
 #include <sys/timeb.h>
 #include <windows.h>
+#else
+#include <unistd.h>
 #endif
 
 //Freebsd doesn't provide this clock_gettime flag yet, because it was added too recently (after 1993)
@@ -108,7 +110,7 @@ void xbt_os_sleep(double sec)
  * @brief This section describes many macros/functions that can serve as  an OS abstraction.
  */
 struct s_xbt_os_timer {
-#if HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME && defined (_POSIX_THREAD_CPUTIME)
   struct timespec start;
   struct timespec stop;
   struct timespec elapse;
@@ -140,7 +142,7 @@ void xbt_os_timer_free(xbt_os_timer_t timer)
 
 double xbt_os_timer_elapsed(xbt_os_timer_t timer)
 {
-#if HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME && defined (_POSIX_THREAD_CPUTIME)
   return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec) + ((double) timer->elapse.tv_sec ) +
       ((((double) timer->stop.tv_nsec) - ((double) timer->start.tv_nsec) + ((double) timer->elapse.tv_nsec )) / 1e9);
 #elif HAVE_GETTIMEOFDAY || defined(_WIN32)
@@ -154,7 +156,7 @@ double xbt_os_timer_elapsed(xbt_os_timer_t timer)
 
 void xbt_os_walltimer_start(xbt_os_timer_t timer)
 {
-#if HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME && defined (_POSIX_THREAD_CPUTIME)
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_nsec = 0;
   clock_gettime(CLOCK_REALTIME, &(timer->start));
@@ -176,7 +178,7 @@ void xbt_os_walltimer_start(xbt_os_timer_t timer)
 
 void xbt_os_walltimer_resume(xbt_os_timer_t timer)
 {
-#if HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME && defined (_POSIX_THREAD_CPUTIME)
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
 
    timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
@@ -199,7 +201,7 @@ void xbt_os_walltimer_resume(xbt_os_timer_t timer)
 
 void xbt_os_walltimer_stop(xbt_os_timer_t timer)
 {
-#if HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME && defined (_POSIX_THREAD_CPUTIME)
   clock_gettime(CLOCK_REALTIME, &(timer->stop));
 #elif HAVE_GETTIMEOFDAY
   gettimeofday(&(timer->stop), NULL);
@@ -214,7 +216,7 @@ void xbt_os_walltimer_stop(xbt_os_timer_t timer)
 
 void xbt_os_cputimer_start(xbt_os_timer_t timer)
 {
-#if HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME && defined (_POSIX_THREAD_CPUTIME)
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_nsec = 0;
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->start));
@@ -229,12 +231,14 @@ void xbt_os_cputimer_start(xbt_os_timer_t timer)
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetProcessTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
   w32_times_to_timeval(&timer->start, &kernelTime, &userTime);
+#else
+# error The cpu timers of SimGrid do not seem to work on your platform.
 #endif
 }
 
 void xbt_os_cputimer_resume(xbt_os_timer_t timer)
 {
-#if HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME && defined (_POSIX_THREAD_CPUTIME)
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->start));
@@ -249,12 +253,14 @@ void xbt_os_cputimer_resume(xbt_os_timer_t timer)
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetProcessTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
   w32_times_to_timeval(&timer->start, &kernelTime, &userTime);
+#else
+# error The cpu timers of SimGrid do not seem to work on your platform.
 #endif
 }
 
 void xbt_os_cputimer_stop(xbt_os_timer_t timer)
 {
-#if HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME && defined (_POSIX_THREAD_CPUTIME)
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->stop));
 #elif HAVE_GETTIMEOFDAY
   gettimeofday(&(timer->stop), NULL);
@@ -263,12 +269,14 @@ void xbt_os_cputimer_stop(xbt_os_timer_t timer)
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetProcessTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
   w32_times_to_timeval(&timer->stop, &kernelTime, &userTime);
+#else
+# error The cpu timers of SimGrid do not seem to work on your platform.
 #endif
 }
 
 void xbt_os_threadtimer_start(xbt_os_timer_t timer)
 {
-#if HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME && defined (_POSIX_THREAD_CPUTIME)
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_nsec = 0;
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->start));
@@ -290,12 +298,14 @@ void xbt_os_threadtimer_start(xbt_os_timer_t timer)
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetThreadTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
   w32_times_to_timeval(&timer->start, &kernelTime, &userTime);
+#else
+# error The thread timers of SimGrid do not seem to work on your platform.
 #endif
 }
 
 void xbt_os_threadtimer_resume(xbt_os_timer_t timer)
 {
-#if HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME && defined (_POSIX_THREAD_CPUTIME)
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->start));
@@ -319,12 +329,14 @@ void xbt_os_threadtimer_resume(xbt_os_timer_t timer)
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetThreadTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
   w32_times_to_timeval(&timer->start, &kernelTime, &userTime);
+#else
+# error The thread timers of SimGrid do not seem to work on your platform.
 #endif
 }
 
 void xbt_os_threadtimer_stop(xbt_os_timer_t timer)
 {
-#if HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME && defined (_POSIX_THREAD_CPUTIME)
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->stop));
 #elif HAVE_GETTIMEOFDAY && defined(__MACH__) && defined(__APPLE__)
   mach_msg_type_number_t count = THREAD_BASIC_INFO_COUNT;
@@ -340,5 +352,7 @@ void xbt_os_threadtimer_stop(xbt_os_timer_t timer)
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetThreadTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
   w32_times_to_timeval(&timer->stop, &kernelTime, &userTime);
+#else
+# error The thread timers of SimGrid do not seem to work on your platform.
 #endif
 }

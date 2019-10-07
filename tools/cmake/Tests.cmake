@@ -9,6 +9,11 @@ ENDIF()
 SET(TESH_OPTION "--ignore-jenkins")
 SET(TESH_COMMAND "${PYTHON_EXECUTABLE}" ${CMAKE_BINARY_DIR}/bin/tesh)
 
+SET(TESH_LIBRARY_PATH "${CMAKE_BINARY_DIR}/lib")
+if(NOT $ENV{LD_LIBRARY_PATH} STREQUAL "")
+  SET(TESH_LIBRARY_PATH "${TESH_LIBRARY_PATH}:$ENV{LD_LIBRARY_PATH}")
+endif()
+
 IF(enable_memcheck)
   INCLUDE(FindValgrind)
 
@@ -21,6 +26,7 @@ IF(enable_memcheck)
     if(enable_memcheck_xml)
       SET(TESH_WRAPPER ${TESH_WRAPPER}\ --xml=yes\ --xml-file=memcheck_test_%p.memcheck\ --child-silent-after-fork=yes\ )
     endif()
+    set(TESH_OPTION ${TESH_OPTION} --setenv VALGRIND_NO_LEAK_CHECK=--leak-check=no\ --show-leak-kinds=none)
 
 #    message(STATUS "tesh wrapper: ${TESH_WRAPPER}")
 
@@ -30,6 +36,8 @@ IF(enable_memcheck)
     message(STATUS "Error: Command valgrind not found --> enable_memcheck autoset to false.")
   endif()
 ENDIF()
+SET(TESH_WRAPPER_UNBOXED "${TESH_WRAPPER}")
+SEPARATE_ARGUMENTS(TESH_WRAPPER_UNBOXED)
 
 #some tests may take forever on non futexes systems, using busy_wait with n cores < n workers
 # default to posix for these tests if futexes are not supported
@@ -93,18 +101,20 @@ ENDIF()
 
 # New tests should use the Catch Framework
 set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
-                src/kernel/resource/profile/trace_mgr_test.cpp
+                src/kernel/resource/profile/Profile_test.cpp
                 src/xbt/config_test.cpp
                 src/xbt/dict_test.cpp
                 src/xbt/dynar_test.cpp
-                src/xbt/xbt_str_test.cpp)
+                src/xbt/xbt_str_test.cpp
+		src/kernel/lmm/maxmin_test.cpp)
 if (SIMGRID_HAVE_MC)
-  set(UNIT_TESTS ${UNIT_TESTS} src/mc/sosp/mc_snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
+  set(UNIT_TESTS ${UNIT_TESTS} src/mc/sosp/Snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
 else()
-  set(EXTRA_DIST ${EXTRA_DIST} src/mc/sosp/mc_snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
+  set(EXTRA_DIST ${EXTRA_DIST} src/mc/sosp/Snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
 endif()  
 
-add_executable       (unit-tests ${UNIT_TESTS})
+add_executable       (unit-tests EXCLUDE_FROM_ALL ${UNIT_TESTS})
+add_dependencies     (tests unit-tests)
 target_link_libraries(unit-tests simgrid)
 ADD_TEST(unit-tests ${CMAKE_BINARY_DIR}/unit-tests)
 set_property(TARGET unit-tests APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")

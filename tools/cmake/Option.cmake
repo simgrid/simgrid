@@ -9,8 +9,6 @@ else()
   set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} CACHE PATH "Path where this project should be installed")
 endif()
 
-option(release "Whether Release Mode is activated (disable tests on experimental parts)" on)
-
 # How to build
 ###
 option(enable_compile_optimizations "Whether to produce efficient code for the SimGrid library" on)
@@ -22,27 +20,37 @@ option(enable_debug                 "Turn this off to remove all debug messages 
 
 # Optional modules
 ###
-option(enable_documentation "Whether to produce documentation" on)
+option(enable_documentation "Whether to produce documentation" off)
 
-option(enable_ns3            "Whether ns3 model is activated." off)
+option(enable_ns3            "Whether ns-3 model is activated." off)
 option(enable_java           "Whether the Java bindings are activated." off)
 option(enable_lib_in_jar     "Whether the native libraries are bundled in a Java jar file" on)
+option(minimal-bindings      "Whether to compile the bindings libraries (Java/Python) with the minimal dependency set" off)
+mark_as_advanced(minimal-bindings)
+if(minimal-bindings)
+  set(enable_lib_in_jar on)
+endif()
 
 option(enable_lua            "Whether the Lua bindings are activated." off)
 
 option(enable_model-checking "Turn this on to experiment with our prototype of model-checker (hinders the simulation's performance even if turned off at runtime)" off)
+option(enable-model-checking "Please set 'enable_model-checking' instead" off)
+mark_as_advanced(enable-model-checking)
+if(enable-model-checking)
+  SET(enable_model-checking ON CACHE BOOL "Whether to compile the model-checker" FORCE)
+endif()
+
 option(enable_jedule         "Jedule output of SimDAG." off)
 
 if(WIN32)
   option(enable_smpi "Whether SMPI is included in the library." off)
-  option(enable_smpi_MPICH3_testsuite "Whether the test suite form MPICH 3 should be built" off)
 else()
   option(enable_smpi "Whether SMPI is included in the library." on)
   # PAPI does not support windows (they did in 3.7, but not anymore in 5.x)
   # See http://icl.cs.utk.edu/papi/custom/index.html?lid=62&slid=96
   option(enable_smpi_papi    "Whether SMPI supports PAPI bindings." off)
-  option(enable_smpi_MPICH3_testsuite "Whether the test suite form MPICH 3 should be built" off)
 endif()
+option(enable_smpi_MPICH3_testsuite "Whether the test suite form MPICH 3 should be built" off)
 option(enable_smpi_ISP_testsuite "Whether the test suite from ISP should be built." off)
 
 # Internal targets used by jenkins

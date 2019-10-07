@@ -69,9 +69,9 @@ namespace simgrid{
 namespace smpi{
 
 int
-Coll_allgatherv_ompi_neighborexchange::allgatherv(void *sbuf, int scount,
+Coll_allgatherv_ompi_neighborexchange::allgatherv(const void *sbuf, int scount,
                                                   MPI_Datatype sdtype,
-                                                  void* rbuf, int *rcounts, int *rdispls,
+                                                  void* rbuf, const int *rcounts, const int *rdispls,
                                                   MPI_Datatype rdtype,
                                                   MPI_Comm comm)
 {

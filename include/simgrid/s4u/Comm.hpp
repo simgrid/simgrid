@@ -10,6 +10,7 @@
 #include <simgrid/s4u/Activity.hpp>
 
 #include <atomic>
+#include <string>
 #include <vector>
 
 namespace simgrid {
@@ -27,10 +28,10 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
   size_t dst_buff_size_               = 0;
   void* src_buff_                     = nullptr;
   size_t src_buff_size_               = sizeof(void*);
+  std::string tracing_category_       = "";
   std::atomic_int_fast32_t refcount_{0};
-
   /* FIXME: expose these elements in the API */
-  int detached_                                                           = 0;
+  bool detached_                                                          = false;
   int (*match_fun_)(void*, void*, kernel::activity::CommImpl*)            = nullptr;
   void (*clean_fun_)(void*)                                               = nullptr;
   void (*copy_data_function_)(kernel::activity::CommImpl*, void*, size_t) = nullptr;
@@ -38,9 +39,11 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
   Comm() = default;
 
 public:
+#ifndef DOXYGEN
   friend XBT_PUBLIC void intrusive_ptr_release(Comm* c);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Comm* c);
   friend Mailbox; // Factory of comms
+#endif
 
   virtual ~Comm();
 
@@ -111,45 +114,14 @@ public:
    * That's a buffer where the sent data will be copied  */
   CommPtr set_dst_data(void** buff, size_t size);
 
+  CommPtr set_tracing_category(const std::string& category);
+
   /** Retrieve the mailbox on which this comm acts */
   Mailbox* get_mailbox();
   /** Retrieve the size of the received data. Not to be mixed with @ref Activity::set_remaining()  */
   size_t get_dst_data_size();
 
-  s4u::ActorPtr get_sender();
-
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v324("Please use Comm::wait_for()") void wait(double t) override { wait_for(t); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_rate()") Activity* setRate(double rate)
-  {
-    return set_rate(rate).get();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_src_data()") Activity* setSrcData(void* buff)
-  {
-    return set_src_data(buff).get();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_src_data()") Activity* setSrcData(void* buff, size_t size)
-  {
-    return set_src_data(buff, size).get();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_src_data_size()") Activity* setSrcDataSize(size_t size)
-  {
-    return set_src_data_size(size).get();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_dst_data()") Activity* setDstData(void** buff)
-  {
-    return set_dst_data(buff).get();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_dst_data()") Activity* setDstData(void** buff, size_t size)
-  {
-    return set_dst_data(buff, size).get();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_dst_data_size()") size_t getDstDataSize()
-  {
-    return get_dst_data_size();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") Mailbox* getMailbox() { return get_mailbox(); }
-#endif
+  Actor* get_sender();
 };
 } // namespace s4u
 } // namespace simgrid

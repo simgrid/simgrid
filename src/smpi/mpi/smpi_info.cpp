@@ -21,7 +21,7 @@ void Info::unref(Info* info){
   }
 }
 
-int Info::get(char *key, int valuelen, char *value, int *flag){
+int Info::get(const char *key, int valuelen, char *value, int *flag){
   *flag=false;
   auto val = map_.find(key);
   if (val != map_.end()) {
@@ -31,13 +31,11 @@ int Info::get(char *key, int valuelen, char *value, int *flag){
     memcpy(value, tmpvalue.c_str(),
            (tmpvalue.length() + 1 < static_cast<size_t>(valuelen)) ? tmpvalue.length() + 1 : valuelen);
     *flag=true;
-    return MPI_SUCCESS;
-  } else {
-    return MPI_ERR_INFO_KEY;
   }
+  return MPI_SUCCESS;
 }
 
-int Info::remove(char *key){
+int Info::remove(const char *key){
   if (map_.erase(key) == 0)
     return MPI_ERR_INFO_NOKEY;
   else
@@ -61,16 +59,14 @@ int Info::get_nthkey(int n, char *key){
   return MPI_ERR_ARG;
 }
 
-int Info::get_valuelen(char *key, int *valuelen, int *flag){
+int Info::get_valuelen(const char *key, int *valuelen, int *flag){
   *flag=false;
   auto val = map_.find(key);
   if (val != map_.end()) {
     *valuelen = val->second.length();
     *flag=true;
-    return MPI_SUCCESS;
-  } else {
-    return MPI_ERR_INFO_KEY;
   }
+  return MPI_SUCCESS;
 }
 
 Info* Info::f2c(int id){

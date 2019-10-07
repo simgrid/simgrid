@@ -6,11 +6,14 @@
 #ifndef SIMGRID_S4U_S4U_H
 #define SIMGRID_S4U_S4U_H
 
+#include <simgrid/forward.h>
+
 #include <simgrid/s4u/Activity.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Barrier.hpp>
 #include <simgrid/s4u/Comm.hpp>
 #include <simgrid/s4u/ConditionVariable.hpp>
+#include <simgrid/s4u/Disk.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Host.hpp>

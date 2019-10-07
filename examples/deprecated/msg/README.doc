@@ -95,7 +95,7 @@ They have to be run with the following options:
 
 @section msg_ex_models Models-related examples
 
-@subsection msg_ex_ns3 NS3 as a SimGrid Network Model
+@subsection msg_ex_ns3 ns-3 as a SimGrid Network Model
 
 This example demonstrates how to use the bindings to the Network
 Simulator, as explained in @ref pls_ns3. The most

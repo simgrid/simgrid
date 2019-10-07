@@ -21,10 +21,6 @@ int Coll_bcast_arrival_pattern_aware::bcast(void *buf, int count,
   int tag = -COLL_TAG_BCAST;
   MPI_Status status;
   MPI_Request request;
-  MPI_Request *send_request_array;
-  MPI_Request *recv_request_array;
-  MPI_Status *send_status_array;
-  MPI_Status *recv_status_array;
 
   MPI_Status temp_status_array[MAX_NODE];
 
@@ -163,14 +159,10 @@ int Coll_bcast_arrival_pattern_aware::bcast(void *buf, int count,
   }
   /* pipeline bcast */
   else {
-    send_request_array =
-        (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
-    recv_request_array =
-        (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
-    send_status_array =
-        (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
-    recv_status_array =
-        (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
+    MPI_Request* send_request_array = new MPI_Request[size + pipe_length];
+    MPI_Request* recv_request_array = new MPI_Request[size + pipe_length];
+    MPI_Status* send_status_array   = new MPI_Status[size + pipe_length];
+    MPI_Status* recv_status_array   = new MPI_Status[size + pipe_length];
 
     if (rank == 0) {
       //double start2 = MPI_Wtime();
@@ -350,10 +342,10 @@ int Coll_bcast_arrival_pattern_aware::bcast(void *buf, int count,
 
     }
 
-    free(send_request_array);
-    free(recv_request_array);
-    free(send_status_array);
-    free(recv_status_array);
+    delete[] send_request_array;
+    delete[] recv_request_array;
+    delete[] send_status_array;
+    delete[] recv_status_array;
   }                             /* end pipeline */
 
   /* when count is not divisible by block size, use default BCAST for the remainder */

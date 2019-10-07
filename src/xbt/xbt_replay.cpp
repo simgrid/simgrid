@@ -18,32 +18,27 @@ std::ifstream* action_fs = nullptr;
 std::unordered_map<std::string, action_fun> action_funs;
 static std::unordered_map<std::string, std::queue<ReplayAction*>*> action_queues;
 
-static void read_and_trim_line(std::ifstream* fs, std::string* line)
+static void read_and_trim_line(std::ifstream& fs, std::string* line)
 {
   do {
-    std::getline(*fs, *line);
+    std::getline(fs, *line);
     boost::trim(*line);
-  } while (not fs->eof() && (line->length() == 0 || line->front() == '#'));
+  } while (not fs.eof() && (line->length() == 0 || line->front() == '#'));
   XBT_DEBUG("got from trace: %s", line->c_str());
 }
 
 class ReplayReader {
-  std::ifstream* fs;
+  std::ifstream fs;
   std::string line;
 
 public:
-  explicit ReplayReader(const char* filename)
+  explicit ReplayReader(const char* filename) : fs(filename, std::ifstream::in)
   {
     XBT_VERB("Prepare to replay file '%s'", filename);
-    fs = new std::ifstream(filename, std::ifstream::in);
-    xbt_assert(fs->is_open(), "Cannot read replay file '%s'", filename);
+    xbt_assert(fs.is_open(), "Cannot read replay file '%s'", filename);
   }
   ReplayReader(const ReplayReader&) = delete;
   ReplayReader& operator=(const ReplayReader&) = delete;
-  ~ReplayReader()
-  {
-    delete fs;
-  }
   bool get(ReplayAction* action);
 };
 
@@ -52,7 +47,7 @@ bool ReplayReader::get(ReplayAction* action)
   read_and_trim_line(fs, &line);
 
   boost::split(*action, line, boost::is_any_of(" \t"), boost::token_compress_on);
-  return not fs->eof();
+  return not fs.eof();
 }
 
 static ReplayAction* get_action(const char* name)
@@ -66,7 +61,7 @@ static ReplayAction* get_action(const char* name)
     // Read lines until I reach something for me (which breaks in loop body) or end of file reached
     while (true) {
       std::string action_line;
-      read_and_trim_line(action_fs, &action_line);
+      read_and_trim_line(*action_fs, &action_line);
       if (action_fs->eof())
         break;
       /* we cannot split in place here because we parse&store several lines for the colleagues... */
@@ -107,7 +102,7 @@ static void handle_action(ReplayAction& action)
   action_fun function = action_funs.at(action.at(1));
   try {
     function(action);
-  } catch (xbt_ex& e) {
+  } catch (const Exception& e) {
     action.clear();
     xbt_die("Replay error:\n %s", e.what());
   }

@@ -13,12 +13,11 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-class XBT_PUBLIC SleepImpl : public ActivityImpl {
+class XBT_PUBLIC SleepImpl : public ActivityImpl_T<SleepImpl> {
   sg_host_t host_  = nullptr;
   double duration_ = 0;
 
 public:
-  SleepImpl& set_name(const std::string& name);
   SleepImpl& set_host(s4u::Host* host);
   SleepImpl& set_duration(double duration);
   void post() override;

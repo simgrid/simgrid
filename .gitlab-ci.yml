@@ -1,13 +1,25 @@
 image: simgrid/build-deps
 
+stages:
+ - build
+ - test
+
 pages:
+  stage: test
   script:
+  - cmake -Denable_model-checking=OFF -Denable_documentation=ON -Denable_compile_optimizations=OFF -Denable_smpi=OFF -Dpython=ON .
+  - make -j4
   - pip3 install --requirement docs/requirements.txt
-  - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=OFF -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_smpi=OFF .
-  - make -j4 python-bindings
   - cd docs
   - LC_ALL=C.UTF-8 ./Build.sh
   - mv build/html ../public
+  # - The CSS contains a reference to a font or something, not something we gonna fix on our side
+  # - The javasphinx output does not exist in the git, so the "edit on FramaGit" link is broken.
+  #   I'd like to report this as a bug, but javasphinx seems abandonned upstream.
+  - linkchecker --ignore-url='.*\.css$' --ignore-url=public/java/org ../public
+  # From time to time, we should check external links with the
+  # following, but it has a lot of false positive
+  # - linkchecker --ignore-url='.*\.css$' --ignore-url=public/java/org --check-extern ../public
   artifacts:
     paths:
     - public
@@ -15,6 +27,43 @@ pages:
   - master
 
 ctest:
+  stage: build
+  except:
+  - stable
   script:
   - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON .
   - make VERBOSE=1 all tests && ctest --output-on-failure
+
+pip:
+  image: debian:testing
+  stage: build
+  except:
+  - stable
+  script:
+  - apt-get --allow-releaseinfo-change update && apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev
+  - python3 setup.py sdist
+  - cd dist && tar xfz simgrid*.tar.gz && cd simgrid-*/ && python3 setup.py build
+
+release:
+  stage: build
+  only:
+  - stable
+  script:
+  - apt-get --allow-releaseinfo-change update && apt install -y binutils-x86-64-linux-gnu wget unzip zip
+  # Build the linux version of the jarfile without the boost dependency
+  - cmake -Denable_documentation=OFF -Denable_java=ON -Denable_lib_in_jar=ON -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF .
+  - make VERBOSE=1 dist simgrid simgrid-java_jar
+  # Get the foreign architectures
+  - wget https://ci.appveyor.com/api/projects/mquinson/simgrid/artifacts/simgrid.jar -O simgrid-windows.jar
+  - export SGVER=`printf '#include "simgrid/config.h"\n#if SIMGRID_VERSION_PATCH\nSIMGRID_VERSION_MAJOR.SIMGRID_VERSION_MINOR.SIMGRID_VERSION_PATCH\n#else\nSIMGRID_VERSION_MAJOR.SIMGRID_VERSION_MINOR\n#endif'|gcc -E - -Iinclude|tail -1|sed 's/ //g'`
+  - wget https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=osx/lastSuccessfulBuild/artifact/build/SimGrid-${SGVER}/build/simgrid.jar -O simgrid-mac.jar
+  # Open all jar files, and strip them
+  - mkdir content ; cd content
+  - for j in  ../simgrid.jar ../simgrid-windows.jar ../simgrid-mac.jar ; do unzip -n $j ; done
+  - strip NATIVE/*/*/*.so
+  - x86_64-linux-gnu-strip NATIVE/*/*/lib*dll
+  - zip -r ../SimGrid-${SGVER}.jar *
+  artifacts:
+    paths:
+    - SimGrid-*.jar
+    - SimGrid-*.tar.gz

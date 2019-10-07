@@ -10,13 +10,13 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
   add_executable(allpairf  EXCLUDE_FROM_ALL allpairf.f)
-#  add_executable(greqf    EXCLUDE_FROM_ALL greqf.f dummyf.f)
+  add_executable(greqf    EXCLUDE_FROM_ALL greqf.f dummyf.f)
 #  add_executable(mprobef  EXCLUDE_FROM_ALL mprobef.f)
   add_executable(statusesf EXCLUDE_FROM_ALL statusesf.f)
   add_dependencies(tests allpairf statusesf) # greqf mprobef
 
   target_link_libraries(allpairf simgrid mtest_f77)
-#  target_link_libraries(greqf simgrid mtest_f77)
+  target_link_libraries(greqf simgrid mtest_f77)
   #target_link_libraries(mprobef simgrid mtest_f77)
   target_link_libraries(statusesf simgrid mtest_f77)
 endif()

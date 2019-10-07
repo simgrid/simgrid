@@ -38,7 +38,7 @@
    <2> sdisp: (#3):  [0][1][3]
    <2> rdisp: (#3):  [0][2][4]
 
-   after MPI_Alltoallv :
+   after MPI_Alltoallvv :
    <0> rbuf: (#9):   [-1][-1][-1][-1][-1][-1][-1][-1][-1]
    <1> rbuf: (#9):   [1][101][201][-1][-1][-1][-1][-1][-1]
    <2> rbuf: (#9):   [3][4][103][104][203][204][-1][-1][-1]
@@ -66,6 +66,8 @@ int main(int argc, char **argv)
 
   /* Create the buffer */
   MPI_Comm_size(comm, &size);
+  MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
+
   if(size<=0){
     printf("error : comm size <= 0, run with mpirun\n");
     return -1;
@@ -93,6 +95,35 @@ int main(int argc, char **argv)
     rdispls[i] = i * rank;
     sdispls[i] = (i * (i + 1)) / 2;
   }
+  int status;
+
+  status = MPI_Alltoallv(NULL, sendcounts, sdispls, MPI_INT, rbuf, recvcounts, rdispls, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_BUFFER)
+    printf("MPI_Alltoallv did not return MPI_ERR_BUFFER for empty sendbuf\n");
+  status = MPI_Alltoallv(sbuf, NULL, sdispls, MPI_INT, rbuf, recvcounts, rdispls, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_ARG)
+    printf("MPI_Alltoallv did not return MPI_ERR_ARG for NULL sendcounts\n");
+  status = MPI_Alltoallv(sbuf, sendcounts, NULL, MPI_INT, rbuf, recvcounts, rdispls, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_ARG)
+    printf("MPI_Alltoallv did not return MPI_ERR_ARG for NULL senddispl\n");
+  status = MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_DATATYPE_NULL, rbuf, recvcounts, rdispls, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_TYPE)
+    printf("MPI_Alltoallv did not return MPI_ERR_TYPE for MPI_DATATYPE_NULL sendtype\n");
+  status = MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT, NULL, recvcounts, rdispls, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_BUFFER)
+    printf("MPI_Alltoallv did not return MPI_ERR_BUFFER for empty recvbuf\n");
+  status = MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT, rbuf, NULL, rdispls, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_ARG)
+    printf("MPI_Alltoallv did not return MPI_ERR_ARG for NULL recvcounts\n");
+  status = MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT, rbuf, recvcounts, NULL, MPI_INT, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_ARG)
+    printf("MPI_Alltoallv did not return MPI_ERR_ARG for NULL recvdispl\n");
+  status = MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT, rbuf, recvcounts, rdispls, MPI_DATATYPE_NULL, MPI_COMM_WORLD);
+  if(status!=MPI_ERR_TYPE)
+    printf("MPI_Alltoallv did not return MPI_ERR_TYPE for MPI_DATATYPE_NULL recvtype\n");
+  status = MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT, rbuf, recvcounts, rdispls, MPI_INT, MPI_COMM_NULL);
+  if(status!=MPI_ERR_COMM)
+    printf("MPI_Alltoallv did not return MPI_ERR_COMM for MPI_COMM_NULL comm\n");
 
   print_buffer_int(sbuf, size2, "sbuf:", rank);
   print_buffer_int(sendcounts, size, "scount:", rank);

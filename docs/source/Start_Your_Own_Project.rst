@@ -57,6 +57,15 @@ manually but your project will produce relevant error messages when
 trying to compile on a machine where SimGrid is not installed. Please
 also refer to the file header for more information.
 
+MPI projects should include ``find_package (MPI)`` in CMakeLists.txt. Then, the
+variables ``MPI_C_COMPILER``, ``MPI_CXX_COMPILER`` and ``MPI_Fortran_COMPILER`` should
+point to the full path of smpicc, smpicxx and smpiff respectively. Example:
+
+.. code-block:: shell
+
+   cmake -DMPI_C_COMPILER=/opt/simgrid/bin/smpicc -DMPI_CXX_COMPILER=/opt/simgrid/bin/smpicxx -DMPI_Fortran_COMPILER=/opt/simgrid/bin/smpiff .
+
+
 Building your project with Makefile
 -----------------------------------
 

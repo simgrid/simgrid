@@ -19,10 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(plugin_pampi, smpi, "Logging specific to the AMP
 
 static std::vector<size_t> memory_size(500, 0); // FIXME cheinrich This needs to be dynamic
 static std::map</*address*/ void*, size_t> alloc_table; // Keep track of all allocations
-extern "C" XBT_PUBLIC void* _sampi_malloc(size_t); // FIXME Use declarations from sampi.h instead
-extern "C" XBT_PUBLIC void _sampi_free(void* ptr);
-extern "C" XBT_PUBLIC void* _sampi_calloc(size_t num_elm, size_t elem_size);
-extern "C" XBT_PUBLIC void* _sampi_realloc(void* ptr, size_t size);
+
 extern "C" void* _sampi_malloc(size_t size)
 {
   void* result = xbt_malloc(size);

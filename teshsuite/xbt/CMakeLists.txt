@@ -8,7 +8,7 @@ foreach(x cmdline log_large log_usage)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
 endforeach()
 
-foreach(x parallel_log_crashtest parmap_bench parmap_test)
+foreach(x parallel_log_crashtest parmap_bench parmap_test signals)
   add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -38,6 +38,8 @@ endforeach()
 if(enable_coverage)
   ADD_TESH(tesh-xbt-parmap_bench --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/parmap_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parmap_bench parmap_bench.tesh)
 endif()
+
+ADD_TESH(tesh-xbt-signals --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/signals --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/signals signals.tesh)
 
 if(enable_debug)
   ADD_TESH(tesh-xbt-log --cd ${CMAKE_BINARY_DIR}/teshsuite/xbt/log_usage ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_usage/log_usage.tesh)

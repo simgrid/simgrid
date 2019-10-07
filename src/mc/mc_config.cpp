@@ -3,21 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/config.hpp"
-#include "xbt/log.h"
-#include <xbt/sysdep.h>
-
 #include "src/mc/mc_replay.hpp"
-#include <mc/mc.h>
-
 #include <simgrid/sg_config.hpp>
-
 #if SIMGRID_HAVE_MC
-#include "src/mc/mc_private.hpp"
 #include "src/mc/mc_safety.hpp"
 #endif
 
-#include "src/mc/mc_record.hpp"
+#include <climits>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_config, mc, "Configuration of the Model Checker");
 
@@ -28,9 +20,7 @@ namespace mc {
 simgrid::mc::ReductionMode reduction_mode = simgrid::mc::ReductionMode::unset;
 }
 }
-#endif
-
-#if !SIMGRID_HAVE_MC
+#else
 #define _sg_do_model_check 0
 #endif
 
@@ -54,20 +44,12 @@ simgrid::config::Flag<bool> _sg_mc_timeout{
 int _sg_do_model_check = 0;
 int _sg_mc_max_visited_states = 0;
 
-simgrid::config::Flag<bool> _sg_do_model_check_record{"model-check/record", "Record the model-checking paths", false};
-
 simgrid::config::Flag<int> _sg_mc_checkpoint{
     "model-check/checkpoint", "Specify the amount of steps between checkpoints during stateful model-checking "
                               "(default: 0 => stateless verification). If value=1, one checkpoint is saved for each "
                               "step => faster verification, but huge memory consumption; higher values are good "
                               "compromises between speed and memory consumption.",
     0, [](int) { _mc_cfg_cb_check("checkpointing value"); }};
-
-simgrid::config::Flag<bool> _sg_mc_sparse_checkpoint{"model-check/sparse-checkpoint", "Use sparse per-page snapshots.",
-                                                     false, [](bool) { _mc_cfg_cb_check("checkpointing value"); }};
-
-simgrid::config::Flag<bool> _sg_mc_ksm{"model-check/ksm", "Kernel same-page merging", false,
-                                       [](bool) { _mc_cfg_cb_check("KSM value"); }};
 
 simgrid::config::Flag<std::string> _sg_mc_property_file{
     "model-check/property", "Name of the file containing the property, as formatted by the ltl2ba program.", "",
@@ -91,6 +73,14 @@ simgrid::config::Flag<bool> _sg_mc_send_determinism{
       _mc_cfg_cb_check("value to enable/disable the detection of send-determinism in the communications schemes");
     }};
 
+simgrid::config::Flag<std::string> _sg_mc_buffering{
+    "smpi/buffering",
+    "Buffering semantic to use for MPI (only used in MC)",
+    "infty",
+    {{"zero", "No system buffering: MPI_Send is blocking"},
+     {"infty", "Infinite system buffering: MPI_Send returns immediately"}},
+    [](const std::string&) { _mc_cfg_cb_check("buffering mode"); }};
+
 static simgrid::config::Flag<std::string> _sg_mc_reduce{
     "model-check/reduction", "Specify the kind of exploration reduction (either none or DPOR)", "dpor",
     [](const std::string& value) {
@@ -103,17 +93,6 @@ static simgrid::config::Flag<std::string> _sg_mc_reduce{
       else
         xbt_die("configuration option model-check/reduction can only take 'none' or 'dpor' as a value");
     }};
-
-simgrid::config::Flag<bool> _sg_mc_hash{
-    "model-check/hash", "Whether to enable state hash for state comparison (experimental)", false,
-    [](bool) { _mc_cfg_cb_check("value to enable/disable the use of global hash to speedup state comparaison"); }};
-
-simgrid::config::Flag<bool> _sg_mc_snapshot_fds{
-    "model-check/snapshot-fds",
-    {"model-check/snapshot_fds"},
-    "Whether file descriptors must be snapshoted (currently unusable)",
-    false,
-    [](bool) { _mc_cfg_cb_check("value to enable/disable the use of FD snapshotting"); }};
 
 simgrid::config::Flag<int> _sg_mc_max_depth{"model-check/max-depth",
                                             {"model-check/max_depth"},

@@ -1,8 +1,8 @@
 #!/usr/bin/env tesh
 
-$ ${bindir}/io-raw-storage$EXEEXT ${platfdir}/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir}/io-raw-storage ${platfdir}/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:@denise) *** Storage info on denise ***
-> [  0.000000] (1:@denise) Storage name: Disk2, mount name: c:
+> [  0.000000] (1:@denise) Storage name: Disk2, mount name: /tmp
 > [  0.000000] (1:@denise) Storage name: Disk4, mount name: /home
 > [  0.003333] (1:@denise) Wrote 200000 bytes on 'Disk4'
 > [  0.004333] (1:@denise) Read 200000 bytes on 'Disk4'

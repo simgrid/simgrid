@@ -40,14 +40,14 @@
 #define MPIR_Allreduce_pt2pt_rd_MV2 Coll_allreduce_rdb::allreduce
 #define MPIR_Allreduce_pt2pt_rs_MV2 Coll_allreduce_mvapich2_rs::allreduce
 
-extern int (*MV2_Allreducection)(void *sendbuf,
+extern int (*MV2_Allreducection)(const void *sendbuf,
     void *recvbuf,
     int count,
     MPI_Datatype datatype,
     MPI_Op op, MPI_Comm comm);
 
 
-extern int (*MV2_Allreduce_intra_function)( void *sendbuf,
+extern int (*MV2_Allreduce_intra_function)(const void *sendbuf,
     void *recvbuf,
     int count,
     MPI_Datatype datatype,
@@ -56,7 +56,7 @@ extern int (*MV2_Allreduce_intra_function)( void *sendbuf,
 
 namespace simgrid{
 namespace smpi{
-static  int MPIR_Allreduce_reduce_p2p_MV2( void *sendbuf,
+static  int MPIR_Allreduce_reduce_p2p_MV2(const void *sendbuf,
     void *recvbuf,
     int count,
     MPI_Datatype datatype,
@@ -66,7 +66,7 @@ static  int MPIR_Allreduce_reduce_p2p_MV2( void *sendbuf,
   return MPI_SUCCESS;
 }
 
-static  int MPIR_Allreduce_reduce_shmem_MV2( void *sendbuf,
+static  int MPIR_Allreduce_reduce_shmem_MV2(const void *sendbuf,
     void *recvbuf,
     int count,
     MPI_Datatype datatype,
@@ -78,7 +78,7 @@ static  int MPIR_Allreduce_reduce_shmem_MV2( void *sendbuf,
 
 
 /* general two level allreduce helper function */
-int Coll_allreduce_mvapich2_two_level::allreduce(void *sendbuf,
+int Coll_allreduce_mvapich2_two_level::allreduce(const void *sendbuf,
                              void *recvbuf,
                              int count,
                              MPI_Datatype datatype,
@@ -135,7 +135,7 @@ int Coll_allreduce_mvapich2_two_level::allreduce(void *sendbuf,
         }
 
         if (local_size != total_size) {
-          void* sendtmpbuf = (char *)smpi_get_tmp_sendbuffer(count*datatype->get_extent());
+          unsigned char* sendtmpbuf = smpi_get_tmp_sendbuffer(count * datatype->get_extent());
           Datatype::copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
             /* inter-node allreduce */
             if(MV2_Allreducection == &MPIR_Allreduce_pt2pt_rd_MV2){

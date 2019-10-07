@@ -50,14 +50,6 @@ public:
 
   void set_peer_link(NetPoint* netpoint, double bw_in, double bw_out, const std::string& coord);
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
-
-  // deprecated
-  XBT_ATTRIB_DEPRECATED_v323("Please use VivaldiZone::set_peer_link()") void setPeerLink(NetPoint* netpoint,
-                                                                                         double bw_in, double bw_out,
-                                                                                         std::string coord)
-  {
-    set_peer_link(netpoint, bw_in, bw_out, coord);
-  }
 };
 
 namespace vivaldi {

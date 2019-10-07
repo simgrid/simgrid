@@ -27,10 +27,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 #define BOX_NAME "box"
 
 #ifndef DISABLE_THE_MUTEX
-static xbt_mutex_t mutex = NULL;
+static sg_mutex_t mutex = NULL;
 #endif
 
-static int receiver(int argc, char *argv[])
+static int receiver(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   msg_task_t task = NULL;
 
@@ -47,13 +47,14 @@ static int receiver(int argc, char *argv[])
 
 static int sender(int argc, char *argv[])
 {
+  xbt_assert(argc == 2);
   char* message_name = argv[1];
 #ifndef DISABLE_THE_MUTEX
-  xbt_mutex_acquire(mutex);
+  sg_mutex_lock(mutex);
 #endif
   MSG_task_send(MSG_task_create(message_name, 0.0, 0.0, NULL), BOX_NAME);
 #ifndef DISABLE_THE_MUTEX
-  xbt_mutex_release(mutex);
+  sg_mutex_unlock(mutex);
 #endif
   return 0;
 }
@@ -70,11 +71,12 @@ int main(int argc, char *argv[])
 
   MSG_launch_application(argv[2]);
 #ifndef DISABLE_THE_MUTEX
-  mutex = xbt_mutex_init();
+  mutex = sg_mutex_init();
 #endif
   msg_error_t res = MSG_main();
 #ifndef DISABLE_THE_MUTEX
-  xbt_mutex_destroy(mutex); mutex = NULL;
+  sg_mutex_destroy(mutex);
+  mutex = NULL;
 #endif
   XBT_INFO("Simulation time %g", MSG_get_clock());
 

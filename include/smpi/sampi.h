@@ -10,14 +10,14 @@
 #include <smpi/smpi.h>
 
 #define AMPI_CALL(type, name, args)                                                                                    \
-  type A##name args __attribute__((weak));                                                                             \
-  type AP##name args;
+  type _XBT_CONCAT(A, name) args __attribute__((weak));                                                                \
+  type _XBT_CONCAT(AP, name) args;
 
 #ifndef HAVE_SMPI
 // Internally disable these overrides (HAVE_SMPI is only defined when building the library)
 #define malloc(nbytes) _sampi_malloc(nbytes)
-#define calloc(n_elm,elm_size) _sampi_calloc(n_elm,elm_size)
-#define realloc(ptr,nbytes) _sampi_realloc(ptr,nbytes)
+#define calloc(n_elm, elm_size) _sampi_calloc((n_elm), (elm_size))
+#define realloc(ptr, nbytes) _sampi_realloc((ptr), (nbytes))
 #define free(ptr) _sampi_free(ptr)
 #endif
 

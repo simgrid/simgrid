@@ -9,10 +9,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static void test(sg_size_t size)
 {
-  simgrid::s4u::Storage* storage = simgrid::s4u::Storage::by_name("Disk1");
-  XBT_INFO("Hello! read %llu bytes from Storage %s", size, storage->get_cname());
+  simgrid::s4u::Disk* disk = simgrid::s4u::Host::current()->get_disks().front();
+  XBT_INFO("Hello! read %llu bytes from %s", size, disk->get_cname());
 
-  simgrid::s4u::IoPtr activity = storage->io_init(size, simgrid::s4u::Io::OpType::READ);
+  simgrid::s4u::IoPtr activity = disk->io_init(size, simgrid::s4u::Io::OpType::READ);
   activity->start();
   activity->wait();
 
@@ -21,10 +21,10 @@ static void test(sg_size_t size)
 
 static void test_cancel(sg_size_t size)
 {
-  simgrid::s4u::Storage* storage = simgrid::s4u::Storage::by_name("Disk2");
-  XBT_INFO("Hello! write %llu bytes from Storage %s", size, storage->get_cname());
+  simgrid::s4u::Disk* disk = simgrid::s4u::Host::current()->get_disks().front();
+  XBT_INFO("Hello! write %llu bytes from %s", size, disk->get_cname());
 
-  simgrid::s4u::IoPtr activity = storage->write_async(size);
+  simgrid::s4u::IoPtr activity = disk->write_async(size);
   simgrid::s4u::this_actor::sleep_for(0.5);
   XBT_INFO("I changed my mind, cancel!");
   activity->cancel();

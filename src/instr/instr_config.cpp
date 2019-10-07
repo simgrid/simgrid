@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "include/xbt/config.hpp"
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/instr/instr_private.hpp"
 #include "surf/surf.hpp"
@@ -103,7 +104,9 @@ static void TRACE_start()
     std::string filename = TRACE_get_filename();
     tracing_file.open(filename.c_str(), std::ofstream::out);
     if (tracing_file.fail()) {
-      THROWF(system_error, 1, "Tracefile %s could not be opened for writing.", filename.c_str());
+      throw simgrid::TracingError(
+          XBT_THROW_POINT,
+          simgrid::xbt::string_printf("Tracefile %s could not be opened for writing.", filename.c_str()));
     }
 
     XBT_DEBUG("Filename %s is open for writing", filename.c_str());
@@ -291,9 +294,9 @@ void TRACE_global_init()
                                      6);
 
   /* Connect callbacks */
-  simgrid::s4u::on_platform_creation.connect(TRACE_start);
-  simgrid::s4u::on_deadlock.connect(TRACE_end);
-  simgrid::s4u::on_simulation_end.connect(TRACE_end);
+  simgrid::s4u::Engine::on_platform_creation.connect(TRACE_start);
+  simgrid::s4u::Engine::on_deadlock.connect(TRACE_end);
+  simgrid::s4u::Engine::on_simulation_end.connect(TRACE_end);
 }
 
 static void print_line(const char* option, const char* desc, const char* longdesc)
@@ -301,15 +304,15 @@ static void print_line(const char* option, const char* desc, const char* longdes
   std::string str = std::string("--cfg=") + option + " ";
 
   int len = str.size();
-  printf("%s%*.*s %s\n", str.c_str(), 30 - len, 30 - len, "", desc);
+  XBT_HELP("%s%*.*s %s", str.c_str(), 30 - len, 30 - len, "", desc);
   if (longdesc != nullptr) {
-    printf ("%s\n\n", longdesc);
+    XBT_HELP("%s\n", longdesc);
   }
 }
 
 void TRACE_help()
 {
-  printf("Description of the tracing options accepted by this simulator:\n\n");
+  XBT_HELP("Description of the tracing options accepted by this simulator:\n");
   print_line(OPT_TRACING_SMPI, "Trace the MPI Interface (SMPI)",
              "  This option only has effect if this simulator is SMPI-based. Traces the MPI\n"
              "  interface and generates a trace that can be analyzed using Gantt-like\n"

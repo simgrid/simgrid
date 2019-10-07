@@ -340,7 +340,7 @@ int MTestGetIntracommGeneral(MPI_Comm * comm, int min_size, int allowSmaller)
             break;
         case 5:
             {
-#if MTEST_HAVE_MIN_MPI_VERSION(3,0)
+#if MTEST_HAVE_MIN_MPI_VERSION(4,0)
                 /* Dup of the world using MPI_Intercomm_merge */
                 int rleader, isLeft;
                 MPI_Comm local_comm, inter_comm;
@@ -1033,9 +1033,9 @@ int MTestGetComm(MPI_Comm * comm, int min_size)
 
     if (!getinter) {
         idx = MTestGetIntracomm(comm, min_size);
-        if (idx == 0) {
-            getinter = 1;
-        }
+/*        if (idx == 0) {*/
+/*            getinter = 1;*/
+/*        }*/
     }
     if (getinter) {
         int isLeft;
@@ -1111,7 +1111,7 @@ void MTestError(const char *msg)
 /* ------------------------------------------------------------------------ */
 static void MTestResourceSummary(FILE * fp)
 {
-#ifdef HAVE_GETRUSAGE
+#if defined(HAVE_GETRUSAGE) && !defined(__HAIKU__)
     struct rusage ru;
     static int pfThreshold = -2;
     int doOutput = 1;

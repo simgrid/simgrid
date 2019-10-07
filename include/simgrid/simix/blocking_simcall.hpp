@@ -18,8 +18,6 @@
 #include <simgrid/simix.h>
 #include <simgrid/simix.hpp>
 
-XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code);
-
 namespace simgrid {
 namespace simix {
 
@@ -54,30 +52,26 @@ template <class F> auto kernel_sync(F code) -> decltype(code().get())
   smx_actor_t self = SIMIX_process_self();
   simgrid::xbt::Result<T> result;
 
-  simcall_run_blocking([&result, self, &code]{
-    try {
-      auto future = code();
-      future.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
-        simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(value));
-        simgrid::simix::unblock(self);
-      });
-    }
-    catch (...) {
-      result.set_exception(std::current_exception());
-      simgrid::simix::unblock(self);
-    }
-  });
+  simcall_run_blocking(
+      [&result, self, &code] {
+        try {
+          auto future = code();
+          future.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
+            simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(value));
+            simgrid::simix::unblock(self);
+          });
+        } catch (...) {
+          result.set_exception(std::current_exception());
+          simgrid::simix::unblock(self);
+        }
+      },
+      nullptr);
   return result.get();
-}
-template <class F>
-XBT_ATTRIB_DEPRECATED_v323("Please use simix::kernel_sync()") auto kernelSync(F code) -> decltype(code().get())
-{
-  return kernel_sync(code);
 }
 
 /** A blocking (`wait()`-based) future for SIMIX processes */
-// TODO, .wait_for()
-// TODO, .wait_until()
+// TODO, .wait_for
+// TODO, .wait_until
 // TODO, SharedFuture
 // TODO, simgrid::simix::when_all - wait for all future to be ready (this one is simple!)
 // TODO, simgrid::simix::when_any - wait for any future to be ready
@@ -94,20 +88,21 @@ public:
       throw std::future_error(std::future_errc::no_state);
     smx_actor_t self = SIMIX_process_self();
     simgrid::xbt::Result<T> result;
-    simcall_run_blocking([this, &result, self]{
-      try {
-        // When the kernel future is ready...
-        this->future_.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
-          // ... wake up the process with the result of the kernel future.
-          simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(value));
-          simgrid::simix::unblock(self);
-        });
-      }
-      catch (...) {
-        result.set_exception(std::current_exception());
-        simgrid::simix::unblock(self);
-      }
-    });
+    simcall_run_blocking(
+        [this, &result, self] {
+          try {
+            // When the kernel future is ready...
+            this->future_.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
+              // ... wake up the process with the result of the kernel future.
+              simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(value));
+              simgrid::simix::unblock(self);
+            });
+          } catch (...) {
+            result.set_exception(std::current_exception());
+            simgrid::simix::unblock(self);
+          }
+        },
+        nullptr);
     return result.get();
   }
   bool is_ready() const
@@ -124,20 +119,21 @@ public:
     // The future is not ready. We have to delegate to the SimGrid kernel:
     std::exception_ptr exception;
     smx_actor_t self = SIMIX_process_self();
-    simcall_run_blocking([this, &exception, self]{
-      try {
-        // When the kernel future is ready...
-        this->future_.then_([this, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
-          // ...store it the simix kernel and wake up.
-          this->future_ = std::move(simgrid::kernel::Future<T>(value));
-          simgrid::simix::unblock(self);
-        });
-      }
-      catch (...) {
-        exception = std::current_exception();
-        simgrid::simix::unblock(self);
-      }
-    });
+    simcall_run_blocking(
+        [this, &exception, self] {
+          try {
+            // When the kernel future is ready...
+            this->future_.then_([this, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
+              // ...store it the simix kernel and wake up.
+              this->future_ = std::move(simgrid::kernel::Future<T>(value));
+              simgrid::simix::unblock(self);
+            });
+          } catch (...) {
+            exception = std::current_exception();
+            simgrid::simix::unblock(self);
+          }
+        },
+        nullptr);
   }
 private:
   // We wrap an event-based kernel future:
@@ -154,15 +150,10 @@ template <class F> auto kernel_async(F code) -> Future<decltype(code().get())>
   typedef decltype(code().get()) T;
 
   // Execute the code in the kernel and get the kernel future:
-  simgrid::kernel::Future<T> future = simgrid::simix::simcall(std::move(code));
+  simgrid::kernel::Future<T> future = simgrid::kernel::actor::simcall(std::move(code));
 
   // Wrap the kernel future in a actor future:
   return simgrid::simix::Future<T>(std::move(future));
-}
-template <class F>
-XBT_ATTRIB_DEPRECATED_v323("Please use simix::kernel_sync()") auto kernelAsync(F code) -> Future<decltype(code().get())>
-{
-  return kernel_async(code);
 }
 }
 }

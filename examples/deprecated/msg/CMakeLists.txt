@@ -71,7 +71,14 @@ foreach (x trace-categories trace-route-user-variables trace-link-user-variables
 		    ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/${x}/${x}.tesh)
 endforeach()
 
-ADD_TESH_FACTORIES(msg-dht-kademlia-parallel "thread;ucontext;raw;boost" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} 
+if(CMAKE_SYSTEM_NAME STREQUAL "SunOS" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "i386" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+  # Thread-local storage (TLS) is needed for parallel execution, but it doesn't
+  # play well with Ucontexts on 64bit SunOS (at least on x86_64).
+  set(parallel-factories "thread;raw;boost")
+else()
+  set(parallel-factories "thread;ucontext;raw;boost")
+endif()
+ADD_TESH_FACTORIES(msg-dht-kademlia-parallel "${parallel-factories}" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
                                              --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/dht-kademlia
                                              --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/dht-kademlia
                                              --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms

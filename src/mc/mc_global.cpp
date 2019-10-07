@@ -3,47 +3,31 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cinttypes>
-#include <cassert>
-#include <cstddef>
-#include <cstdint>
-
-#include <cxxabi.h>
-
-#include <vector>
-
-#include "xbt/automaton.h"
-#include "xbt/backtrace.hpp"
-#include "xbt/dynar.h"
-
-#include "mc_base.h"
-
 #include "mc/mc.h"
-
-#ifndef _WIN32
-#include <unistd.h>
-#include <sys/wait.h>
-#include <sys/time.h>
-#endif
-
 #include "src/kernel/actor/ActorImpl.hpp"
 
 #if SIMGRID_HAVE_MC
+#include "src/mc/Session.hpp"
 #include "src/mc/checker/Checker.hpp"
+#include "src/mc/inspect/mc_unw.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_safety.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/mc_unw.hpp"
-#include "src/mc/sosp/mc_snapshot.hpp"
+#include "src/mc/remote/Client.hpp"
+#include "src/mc/sosp/Snapshot.hpp"
+#include "xbt/backtrace.hpp"
+
 #include <libunwind.h>
 #endif
 
-#include "src/mc/Transition.hpp"
-#include "src/mc/mc_record.hpp"
-#include "src/mc/remote/Client.hpp"
-#include "src/mc/remote/mc_protocol.h"
+#ifndef _WIN32
+#include <sys/time.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc, "Logging specific to MC (global)");
 
@@ -93,22 +77,22 @@ void MC_init_dot_output()
 
 void MC_run()
 {
-  simgrid::mc::processes_time.resize(SIMIX_process_get_maxpid());
+  simgrid::mc::processes_time.resize(simgrid::kernel::actor::get_maxpid());
   MC_ignore_heap(simgrid::mc::processes_time.data(),
     simgrid::mc::processes_time.size() * sizeof(simgrid::mc::processes_time[0]));
-  simgrid::mc::Client::get()->mainLoop();
-  simgrid::mc::processes_time.clear();
+  simgrid::mc::Client::get()->main_loop();
 }
 
 void MC_show_deadlock()
 {
   XBT_INFO("**************************");
-  XBT_INFO("*** DEAD-LOCK DETECTED ***");
+  XBT_INFO("*** DEADLOCK DETECTED ***");
   XBT_INFO("**************************");
   XBT_INFO("Counter-example execution trace:");
-  for (auto const& s : mc_model_checker->getChecker()->getTextualTrace())
-    XBT_INFO("%s", s.c_str());
-  simgrid::mc::session->logState();
+  for (auto const& s : mc_model_checker->getChecker()->get_textual_trace())
+    XBT_INFO("  %s", s.c_str());
+  simgrid::mc::dumpRecordPath();
+  simgrid::mc::session->log_state();
 }
 
 void MC_automaton_load(const char *file)
@@ -149,24 +133,6 @@ void dumpStack(FILE* file, unw_cursor_t&& cursor)
 }
 
 }
-}
-
-static void MC_dump_stacks(FILE* file)
-{
-  int nstack = 0;
-  for (auto const& stack : mc_model_checker->process().stack_areas()) {
-    fprintf(file, "Stack %i:\n", nstack);
-    nstack++;
-
-    simgrid::mc::UnwindContext context;
-    unw_context_t raw_context =
-      (unw_context_t) mc_model_checker->process().read<unw_context_t>(
-        simgrid::mc::remote((unw_context_t *)stack.context));
-    context.initialize(&mc_model_checker->process(), &raw_context);
-
-    unw_cursor_t cursor = context.cursor();
-    simgrid::mc::dumpStack(file, std::move(cursor));
-  }
 }
 #endif
 
