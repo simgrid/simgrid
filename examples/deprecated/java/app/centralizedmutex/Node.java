@@ -20,7 +20,7 @@ public class Node extends Process {
     Msg.info("Send a request to the coordinator");
     req.send("coordinator");
     Msg.info("Wait for a grant from the coordinator");
-    GrantTask.receive(getName());
+    Task.receive(getName());
     Task compute = new Task("CS", csTime, 0);
     compute.execute();
     ReleaseTask release = new ReleaseTask();
