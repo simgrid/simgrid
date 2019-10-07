@@ -261,9 +261,8 @@ double HostEnergy::get_current_watts_value()
 
     /* Divide by the number of cores here to have a value between 0 and 1 */
     cpu_load /= host_->pimpl_cpu->get_core_count();
+    xbt_assert(not(cpu_load > 1), "The impossible did happen, as usual.");
 
-    if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not more
-      cpu_load = 1;
     if (cpu_load > 0)
       host_was_used_ = true;
   }
