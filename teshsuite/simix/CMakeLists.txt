@@ -28,7 +28,7 @@ ENDIF()
 
 if (NOT enable_memcheck AND NOT enable_address_sanitizer AND NOT enable_thread_sanitizer)
   ADD_TESH_FACTORIES(stack-overflow   "ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/stack-overflow --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/stack-overflow stack-overflow.tesh)
-  if (release AND (WIN32 OR CMAKE_SYSTEM_NAME MATCHES "Darwin"))
+  if (WIN32 OR CMAKE_SYSTEM_NAME MATCHES "Darwin")
     SET_TESH_PROPERTIES(stack-overflow "ucontext;raw;boost" WILL_FAIL true)
   endif()
 endif()
