@@ -18,79 +18,91 @@ SIMGRID_REGISTER_PLUGIN(host_energy, "Cpu energy consumption.", &sg_host_energy_
 
 /** @defgroup plugin_host_energy
 
+  @rst
 This is the energy plugin, enabling to account not only for computation time, but also for the dissipated energy in the
 simulated platform.
-To activate this plugin, first call sg_host_energy_plugin_init() before your #MSG_init(), and then use
-MSG_host_get_consumed_energy() to retrieve the consumption of a given host.
+To activate this plugin, first call :cpp:func:`sg_host_energy_plugin_init()` before your :cpp:func:`MSG_init()`, and then use
+:cpp:func:`MSG_host_get_consumed_energy()` to retrieve the consumption of a given host.
 
 When the host is on, this energy consumption naturally depends on both the current CPU load and the host energy profile.
 According to our measurements, the consumption is somehow linear in the amount of cores at full speed, with an
-abnormality when all the cores are idle. The full details are in
-<a href="https://hal.inria.fr/hal-01523608">our scientific paper</a> on that topic.
+abnormality when all the cores are idle. The full details are in `our scientific paper <https://hal.inria.fr/hal-01523608>`_
+on that topic.
 
 As a result, our energy model takes 4 parameters:
 
-  - @b Idle: wattage (i.e., instantaneous consumption in Watt) when your host is up and running, but without anything to
-do.
-  - @b Epsilon: wattage when all cores are at 0 or epsilon%, but not in Idle state.
-  - @b AllCores: wattage when all cores of the host are at 100%.
-  - @b Off: wattage when the host is turned off.
+  - ``Idle`` wattage (i.e., instantaneous consumption in Watt) when your host is up and running, but without anything to do.
+  - ``Epsilon`` wattage when all cores are at 0 or epsilon%, but not in Idle state.
+  - ``AllCores`` wattage when all cores of the host are at 100%.
+  - ``Off`` wattage when the host is turned off.
 
 Here is an example of XML declaration:
 
-@code{.xml}
-<host id="HostA" speed="100.0Mf" core="4">
-    <prop id="wattage_per_state" value="100.0:120.0:200.0" />
-    <prop id="wattage_off" value="10" />
-</host>
-@endcode
+.. code-block:: xml
 
-If the 'Epsilon' parameter is omitted in the XML declaration, 'Idle' is used instead.
+   <host id="HostA" speed="100.0Mf" core="4">
+       <prop id="wattage_per_state" value="100.0:120.0:200.0" />
+       <prop id="wattage_off" value="10" />
+   </host>
 
-This example gives the following parameters: @b Off is 10 Watts; @b Idle is 100 Watts; @b Epsilon is 120 Watts and @b
-AllCores is 200 Watts.
+If only two values are given, ``Idle`` is used for the missing ``Epsilon`` value.
+
+This example gives the following parameters: ``Off`` is 10 Watts; ``Idle`` is 100 Watts; ``Epsilon`` is 120 Watts and
+``AllCores`` is 200 Watts.
 This is enough to compute the wattage as a function of the amount of loaded cores:
 
-<table>
-<tr><th>@#Cores loaded</th><th>Wattage</th><th>Explanation</th></tr>
-<tr><td>0 (idle)</td><td> 100 Watts</td><td>Idle value</td></tr>
-<tr><td>0 (not idle)</td><td> 120 Watts</td><td>Epsilon value</td></tr>
-<tr><td>1</td><td> 140 Watts</td><td>linear extrapolation between Epsilon and AllCores</td></tr>
-<tr><td>2</td><td> 160 Watts</td><td>linear extrapolation between Epsilon and AllCores</td></tr>
-<tr><td>3</td><td> 180 Watts</td><td>linear extrapolation between Epsilon and AllCores</td></tr>
-<tr><td>4</td><td> 200 Watts</td><td>AllCores value</td></tr>
-</table>
+.. raw:: html
+
+   <table border="1">
+   <tr><th>#Cores loaded</th><th>Wattage</th><th>Explanation</th></tr>
+   <tr><td>0 (idle)</td><td> 100 Watts&nbsp;</td><td> Idle value</td></tr>
+   <tr><td>0 (not idle)</td><td> 120 Watts</td><td> Epsilon value</td></tr>
+   <tr><td>1</td><td> 140 Watts</td><td> Linear extrapolation between Epsilon and AllCores</td></tr>
+   <tr><td>2</td><td> 160 Watts</td><td> Linear extrapolation between Epsilon and AllCores</td></tr>
+   <tr><td>3</td><td> 180 Watts</td><td> Linear extrapolation between Epsilon and AllCores</td></tr>
+   <tr><td>4</td><td> 200 Watts</td><td> AllCores value</td></tr>
+   </table>
 
 
-### How does DVFS interact with the host energy model?
+.. raw:: html
+
+   <h4>How does DVFS interact with the host energy model?</h4>
 
 If your host has several DVFS levels (several pstates), then you should give the energetic profile of each pstate level:
 
-@code{.xml}
-<host id="HostC" speed="100.0Mf,50.0Mf,20.0Mf" core="4">
-    <prop id="wattage_per_state" value="95.0:120.0:200.0, 93.0:115.0:170.0, 90.0:110.0:150.0" />
-    <prop id="wattage_off" value="10" />
-</host>
-@endcode
+.. code-block:: xml
 
-This encodes the following values
-<table>
-<tr><th>pstate</th><th>Performance</th><th>Idle</th><th>Epsilon</th><th>AllCores</th></tr>
-<tr><td>0</td><td>100 Mflop/s</td><td>95 Watts</td><td>120 Watts</td><td>200 Watts</td></tr>
-<tr><td>1</td><td>50 Mflop/s</td><td>93 Watts</td><td>115 Watts</td><td>170 Watts</td></tr>
-<tr><td>2</td><td>20 Mflop/s</td><td>90 Watts</td><td>110 Watts</td><td>150 Watts</td></tr>
-</table>
+   <host id="HostC" speed="100.0Mf,50.0Mf,20.0Mf" core="4">
+       <prop id="wattage_per_state"
+             value="95.0:120.0:200.0, 93.0:115.0:170.0, 90.0:110.0:150.0" />
+       <prop id="wattage_off" value="10" />
+   </host>
+
+This encodes the following values:
+
+.. raw:: html
+
+   <table border="1">
+   <tr><th>pstate</th><th>Performance</th><th>Idle</th><th>Epsilon</th><th>AllCores</th></tr>
+   <tr><td>0</td><td>100 Mflop/s</td><td>95 Watts</td><td>120 Watts</td><td>200 Watts</td></tr>
+   <tr><td>1</td><td>50 Mflop/s</td><td>93 Watts</td><td>115 Watts</td><td>170 Watts</td></tr>
+   <tr><td>2</td><td>20 Mflop/s</td><td>90 Watts</td><td>110 Watts</td><td>150 Watts</td></tr>
+   </table>
 
 To change the pstate of a given CPU, use the following functions:
-#MSG_host_get_nb_pstates(), simgrid#s4u#Host#setPstate(), #MSG_host_get_power_peak_at().
+:cpp:func:`MSG_host_get_nb_pstates()`, :cpp:func:`simgrid::s4u::Host::set_pstate()`, :cpp:func:`MSG_host_get_power_peak_at()`.
 
-### How accurate are these models?
+.. raw:: html
+
+   <h4>How accurate are these models?</h4>
 
 This model cannot be more accurate than your instantiation: with the default values, your result will not be accurate at
 all. You can still get accurate energy prediction, provided that you carefully instantiate the model.
 The first step is to ensure that your timing prediction match perfectly. But this is only the first step of the path,
-and you really want to read <a href="https://hal.inria.fr/hal-01523608">this paper</a> to see all what you need to do
+and you really want to read `this paper <https://hal.inria.fr/hal-01523608>`_ to see all what you need to do
 before you can get accurate energy predictions.
+
+  @endrst
  */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf, "Logging specific to the SURF energy plugin");

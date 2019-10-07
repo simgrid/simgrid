@@ -1,5 +1,8 @@
 .. _plugins:
 
+SimGrid Plugins
+###############
+
 .. raw:: html
 
    <object id="TOC" data="graphical-toc.svg" width="100%" type="image/svg+xml"></object>
@@ -12,16 +15,13 @@
    <br/>
    <br/>
 
-SimGrid Plugins
-###############
-
 You can extend SimGrid without modifying it, thanks to our plugin
 mechanism. This page describes how to write your own plugin, and
 documents some of the plugins distributed with SimGrid.
 
-- :ref:`Host Energy <plugin_host_energy>`: models the energy dissipation of the compute units.
-- :ref:`Link Energy <plugin_link_energy>`: models the energy dissipation of the network.
-- :ref:`Host Load <plugin_host_load>`: monitors the load of the compute units.
+  - :ref:`Host Energy <plugin_host_energy>`: models the energy dissipation of the compute units.
+  - :ref:`Link Energy <plugin_link_energy>`: models the energy dissipation of the network.
+  - :ref:`Host Load <plugin_host_load>`: monitors the load of the compute units.
 
 Defining a Plugin
 *****************
