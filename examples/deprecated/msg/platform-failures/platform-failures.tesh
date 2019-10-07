@@ -17,9 +17,9 @@ $ ${bindir:=.}/platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${pla
 > [  0.010309] (1:master@Tremblay) Send a message to worker-1
 > [  1.000000] (0:maestro@) Restart processes on host Fafard
 > [  1.000000] (7:worker@Fafard) Waiting a message on worker-2
-> [  1.000000] (1:master@Tremblay) Mmh. Something went wrong with 'worker-1'. Nevermind. Let's keep going!
+> [  1.000000] (1:master@Tremblay) Mmh. The communication with 'worker-1' failed. Nevermind. Let's keep going!
 > [  1.000000] (1:master@Tremblay) Send a message to worker-2
-> [  2.000000] (1:master@Tremblay) Mmh. Something went wrong with 'worker-2'. Nevermind. Let's keep going!
+> [  2.000000] (1:master@Tremblay) Mmh. The communication with 'worker-2' failed. Nevermind. Let's keep going!
 > [  2.000000] (0:maestro@) Restart processes on host Jupiter
 > [  2.000000] (1:master@Tremblay) Send a message to worker-3
 > [  2.000000] (8:worker@Jupiter) Waiting a message on worker-1
@@ -47,7 +47,7 @@ $ ${bindir:=.}/platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${pla
 > [  7.103093] (8:worker@Jupiter) Waiting a message on worker-1
 > [ 15.103093] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'worker-2'. Nevermind. Let's keep going!
 > [ 15.103093] (1:master@Tremblay) Send a message to worker-3
-> [ 15.103093] (1:master@Tremblay) Mmh. Something went wrong with 'worker-3'. Nevermind. Let's keep going!
+> [ 15.103093] (1:master@Tremblay) Mmh. The communication with 'worker-3' failed. Nevermind. Let's keep going!
 > [ 15.103093] (1:master@Tremblay) Send a message to worker-4
 > [ 15.103093] (5:worker@Ginette) Mmh. Something went wrong. Nevermind. Let's keep going!
 > [ 15.103093] (5:worker@Ginette) Waiting a message on worker-3
@@ -70,7 +70,7 @@ $ ${bindir:=.}/platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${pla
 > [ 27.175258] (1:master@Tremblay) Send a message to worker-3
 > [ 28.206186] (1:master@Tremblay) Send to worker-3 completed
 > [ 28.206186] (1:master@Tremblay) Send a message to worker-4
-> [ 28.206186] (1:master@Tremblay) Mmh. Something went wrong with 'worker-4'. Nevermind. Let's keep going!
+> [ 28.206186] (1:master@Tremblay) Mmh. The communication with 'worker-4' failed. Nevermind. Let's keep going!
 > [ 28.206186] (1:master@Tremblay) Send a message to worker-0
 > [ 28.206186] (5:worker@Ginette) Start execution...
 > [ 28.206186] (6:worker@Bourassa) Mmh. Something went wrong. Nevermind. Let's keep going!
@@ -122,11 +122,11 @@ $ ${bindir:=.}/platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${pla
 > [  0.010825] (1:master@Tremblay) Send a message to worker-1
 > [  1.000000] (0:maestro@) Restart processes on host Fafard
 > [  1.000000] (7:worker@Fafard) Waiting a message on worker-2
-> [  1.000000] (1:master@Tremblay) Mmh. Something went wrong with 'worker-1'. Nevermind. Let's keep going!
+> [  1.000000] (1:master@Tremblay) Mmh. The communication with 'worker-1' failed. Nevermind. Let's keep going!
 > [  1.000000] (1:master@Tremblay) Send a message to worker-2
 > [  2.000000] (0:maestro@) Restart processes on host Jupiter
 > [  2.000000] (8:worker@Jupiter) Waiting a message on worker-1
-> [  2.000000] (1:master@Tremblay) Mmh. Something went wrong with 'worker-2'. Nevermind. Let's keep going!
+> [  2.000000] (1:master@Tremblay) Mmh. The communication with 'worker-2' failed. Nevermind. Let's keep going!
 > [  2.000000] (1:master@Tremblay) Send a message to worker-3
 > [  2.010825] (2:worker@Tremblay) Execution complete.
 > [  2.010825] (2:worker@Tremblay) Waiting a message on worker-0
@@ -154,7 +154,7 @@ $ ${bindir:=.}/platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${pla
 > [ 15.258247] (1:master@Tremblay) Send a message to worker-3
 > [ 15.258247] (5:worker@Ginette) Mmh. Something went wrong. Nevermind. Let's keep going!
 > [ 15.258247] (5:worker@Ginette) Waiting a message on worker-3
-> [ 15.258247] (1:master@Tremblay) Mmh. Something went wrong with 'worker-3'. Nevermind. Let's keep going!
+> [ 15.258247] (1:master@Tremblay) Mmh. The communication with 'worker-3' failed. Nevermind. Let's keep going!
 > [ 15.258247] (1:master@Tremblay) Send a message to worker-4
 > [ 16.340722] (6:worker@Bourassa) Start execution...
 > [ 16.340722] (1:master@Tremblay) Send to worker-4 completed
@@ -178,7 +178,7 @@ $ ${bindir:=.}/platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${pla
 > [ 28.516495] (1:master@Tremblay) Send a message to worker-4
 > [ 28.516495] (6:worker@Bourassa) Mmh. Something went wrong. Nevermind. Let's keep going!
 > [ 28.516495] (6:worker@Bourassa) Waiting a message on worker-4
-> [ 28.516495] (1:master@Tremblay) Mmh. Something went wrong with 'worker-4'. Nevermind. Let's keep going!
+> [ 28.516495] (1:master@Tremblay) Mmh. The communication with 'worker-4' failed. Nevermind. Let's keep going!
 > [ 28.516495] (1:master@Tremblay) Send a message to worker-0
 > [ 28.527320] (2:worker@Tremblay) Start execution...
 > [ 28.527320] (1:master@Tremblay) Send to worker-0 completed

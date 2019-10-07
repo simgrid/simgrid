@@ -39,7 +39,7 @@ static int master(int argc, char *argv[])
       break;
 
     case MSG_TRANSFER_FAILURE:
-      XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox);
+      XBT_INFO("Mmh. The communication with '%s' failed. Nevermind. Let's keep going!", mailbox);
       MSG_task_destroy(task);
       break;
 
