@@ -340,7 +340,8 @@ void HostEnergy::init_watts_range_list()
     std::vector<std::string> all_power_values;
     boost::split(all_power_values, old_prop, boost::is_any_of(","));
 
-    std::string msg = std::string("DEPRECATION WARNING: Property 'watt_per_state' will not work after v3.28.\n");
+    // XBT_ATTRIB_DEPRECATED_v327: puting this macro name here so that we find it during the deprecation cleanups of v3.28
+    std::string msg = std::string("DEPRECATION WARNING: Property 'watt_per_state' will only work until v3.28.\n");
     msg += std::string("The old syntax 'Idle:OneCore:AllCores' must be converted into 'Idle:Epsilon:AllCores' to "
                        "properly model the consumption of non-whole tasks on mono-core hosts. Here are the values to "
                        "use for host '") +
