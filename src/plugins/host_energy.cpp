@@ -340,6 +340,10 @@ void HostEnergy::init_watts_range_list()
     std::vector<std::string> all_power_values;
     boost::split(all_power_values, old_prop, boost::is_any_of(","));
 
+    xbt_assert(all_power_values.size() == (unsigned)host_->get_pstate_count(),
+               "Invalid XML file. Found %lu energetic profiles for %d pstates",
+               all_power_values.size(), host_->get_pstate_count());
+
     std::string msg = std::string("DEPRECATION WARNING: Property 'watt_per_state' will not work after v3.28.\n");
     msg += std::string("The old syntax 'Idle:OneCore:AllCores' must be converted into 'Idle:Epsilon:AllCores' to "
                        "properly model the consumption of non-whole tasks on mono-core hosts. Here are the values to "
@@ -397,6 +401,10 @@ void HostEnergy::init_watts_range_list()
   std::vector<std::string> all_power_values;
   boost::split(all_power_values, all_power_values_str, boost::is_any_of(","));
   XBT_DEBUG("%s: power properties: %s", host_->get_cname(), all_power_values_str);
+
+  xbt_assert(all_power_values.size() == (unsigned)host_->get_pstate_count(),
+             "Invalid XML file. Found %lu energetic profiles for %d pstates",
+             all_power_values.size(), host_->get_pstate_count());
 
   int i = 0;
   for (auto const& current_power_values_str : all_power_values) {
