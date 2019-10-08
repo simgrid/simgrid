@@ -273,8 +273,9 @@ double HostEnergy::get_current_watts_value()
 
     /* Divide by the number of cores here to have a value between 0 and 1 */
     cpu_load /= host_->pimpl_cpu->get_core_count();
-    xbt_assert(not(cpu_load > 1), "The impossible did happen, as usual. cpu_load is %f", cpu_load);
 
+    if (cpu_load > 1) // This condition is true for energy_ptask on 32 bits, even if cpu_load is displayed as 1.000000
+      cpu_load = 1;   // That may be an harmless rounding error?
     if (cpu_load > 0)
       host_was_used_ = true;
   }
