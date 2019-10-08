@@ -356,8 +356,6 @@ void HostEnergy::init_watts_range_list()
       double p_epsilon;
 
       if (current_power_values.size() == 3) {
-        p_idle     = xbt_str_parse_double((current_power_values.at(0)).c_str(),
-                                      "Invalid obsolete XML file. Fix your watt_per_state property.");
         p_one_core = xbt_str_parse_double((current_power_values.at(1)).c_str(),
                                           "Invalid obsolete XML file. Fix your watt_per_state property.");
         p_full     = xbt_str_parse_double((current_power_values.at(2)).c_str(),
@@ -368,8 +366,6 @@ void HostEnergy::init_watts_range_list()
           p_epsilon = p_one_core - ((p_full - p_one_core) / (host_->get_core_count() - 1));
         }
       } else { // consuption given with idle and full only
-        p_idle = xbt_str_parse_double((current_power_values.at(0)).c_str(),
-                                      "Invalid obsolete XML file. Fix your watt_per_state property.");
         p_full = xbt_str_parse_double((current_power_values.at(1)).c_str(),
                                       "Invalid obsolete XML file. Fix your watt_per_state property.");
         if (host_->get_core_count() == 1) {
