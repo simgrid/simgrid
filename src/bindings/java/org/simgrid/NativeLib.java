@@ -165,10 +165,10 @@ public final class NativeLib {
                         try (Stream<Path> paths = Files.walk(dir.toPath())) {
                                 paths.sorted(java.util.Comparator.reverseOrder())
                                      .map(java.nio.file.Path::toFile)
-                                     //.peek(System.out::println) // Prints what gets removed
+                                     //.peek(System.err::println) // Prints what gets removed
                                      .forEach(java.io.File::delete);
 			} catch(Exception e) {
-				System.out.println("Error while cleaning temporary file "+dir.getAbsolutePath()+" during shutdown: "+e.getCause());
+				System.err.println("Error while cleaning temporary file "+dir.getAbsolutePath()+" during shutdown: "+e.getCause());
 				e.printStackTrace();
                         }
 		}
