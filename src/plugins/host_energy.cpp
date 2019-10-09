@@ -134,7 +134,7 @@ public:
   double get_current_watts_value();
   double get_current_watts_value(double cpu_load);
   double get_consumed_energy();
-  double get_idle_consumption();
+  double get_watt_idle_at(int pstate);
   double get_watt_min_at(int pstate);
   double get_watt_max_at(int pstate);
   double get_power_range_slope_at(int pstate);
@@ -222,12 +222,11 @@ HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host_(ptr), last_updated_(surf
 
 HostEnergy::~HostEnergy() = default;
 
-double HostEnergy::get_idle_consumption()
+double HostEnergy::get_watt_idle_at(int pstate)
 {
   xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
              host_->get_cname());
-
-  return power_range_watts_list_[0].idle_;
+  return power_range_watts_list_[pstate].idle_;
 }
 
 double HostEnergy::get_watt_min_at(int pstate)
@@ -246,9 +245,9 @@ double HostEnergy::get_watt_max_at(int pstate)
 
 double HostEnergy::get_power_range_slope_at(int pstate)
 {
-    xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
-               host_->get_cname());
-   return power_range_watts_list_[pstate].slope_;
+  xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
+             host_->get_cname());
+  return power_range_watts_list_[pstate].slope_;
 }
 
 /** @brief Computes the power consumed by the host according to the current situation
@@ -340,6 +339,10 @@ void HostEnergy::init_watts_range_list()
     std::vector<std::string> all_power_values;
     boost::split(all_power_values, old_prop, boost::is_any_of(","));
 
+    xbt_assert(all_power_values.size() == (unsigned)host_->get_pstate_count(),
+               "Invalid XML file. Found %lu energetic profiles for %d pstates",
+               all_power_values.size(), host_->get_pstate_count());
+
     // XBT_ATTRIB_DEPRECATED_v327: puting this macro name here so that we find it during the deprecation cleanups of v3.28
     std::string msg = std::string("DEPRECATION WARNING: Property 'watt_per_state' will only work until v3.28.\n");
     msg += std::string("The old syntax 'Idle:OneCore:AllCores' must be converted into 'Idle:Epsilon:AllCores' to "
@@ -387,13 +390,25 @@ void HostEnergy::init_watts_range_list()
     XBT_WARN("%s", msg.c_str());
     return;
   }
+
   const char* all_power_values_str = host_->get_property("wattage_per_state");
-  if (all_power_values_str == nullptr)
+  if (all_power_values_str == nullptr) {
+    /* If no power values are given, we assume it's 0 everywhere */
+    XBT_DEBUG("No energetic profiles given for host %s, using 0 W by default.", host_->get_cname());
+    for (int i = 0; i < host_->get_pstate_count(); ++i) {
+        PowerRange range(0,0,0);
+        power_range_watts_list_.push_back(range);
+    }
     return;
+  }
 
   std::vector<std::string> all_power_values;
   boost::split(all_power_values, all_power_values_str, boost::is_any_of(","));
   XBT_DEBUG("%s: power properties: %s", host_->get_cname(), all_power_values_str);
+
+  xbt_assert(all_power_values.size() == (unsigned)host_->get_pstate_count(),
+             "Invalid XML file. Found %lu energetic profiles for %d pstates",
+             all_power_values.size(), host_->get_pstate_count());
 
   int i = 0;
   for (auto const& current_power_values_str : all_power_values) {
@@ -581,16 +596,27 @@ double sg_host_get_consumed_energy(sg_host_t host)
 
 /** @ingroup plugin_host_energy
  *  @brief Get the amount of watt dissipated when the host is idling
+ *  This function is deprecated and will not work after v3.27. Use sg_host_get_idle_consumption_at instead.
  */
 double sg_host_get_idle_consumption(sg_host_t host)
 {
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
              "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
-  return host->extension<HostEnergy>()->get_idle_consumption();
+  return host->extension<HostEnergy>()->get_watt_idle_at(0);
 }
 
 /** @ingroup plugin_host_energy
  *  @brief Get the amount of watt dissipated at the given pstate when the host is idling
+ */
+double sg_host_get_idle_consumption_at(sg_host_t host, int pstate)
+{
+  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
+             "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
+  return host->extension<HostEnergy>()->get_watt_idle_at(pstate);
+}
+
+/** @ingroup plugin_host_energy
+ *  @brief Get the amount of watt dissipated at the given pstate when the host is at 0 or epsilon% CPU usage.
  */
 double sg_host_get_wattmin_at(sg_host_t host, int pstate)
 {

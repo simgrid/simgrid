@@ -14,7 +14,9 @@ SG_BEGIN_DECL()
 XBT_PUBLIC void sg_host_energy_plugin_init();
 XBT_PUBLIC void sg_host_energy_update_all();
 XBT_PUBLIC double sg_host_get_consumed_energy(sg_host_t host);
-XBT_PUBLIC double sg_host_get_idle_consumption(sg_host_t host);
+XBT_ATTRIB_DEPRECATED_v327("Please use !sg_host_get_idle_consumption_at()") \
+  XBT_PUBLIC double sg_host_get_idle_consumption(sg_host_t host); /* deprecated */
+XBT_PUBLIC double sg_host_get_idle_consumption_at(sg_host_t host, int pstate);
 XBT_PUBLIC double sg_host_get_wattmin_at(sg_host_t host, int pstate);
 XBT_PUBLIC double sg_host_get_wattmax_at(sg_host_t host, int pstate);
 XBT_PUBLIC double sg_host_get_power_range_slope_at(sg_host_t host, int pstate);
@@ -27,6 +29,7 @@ XBT_PUBLIC int sg_link_energy_is_inited();
 
 #define MSG_host_energy_plugin_init() sg_host_energy_plugin_init()
 #define MSG_host_get_consumed_energy(host) sg_host_get_consumed_energy(host)
+#define MSG_host_get_idle_consumption_at(host,pstate) sg_host_get_idle_consumption_at((host), (pstate))
 #define MSG_host_get_wattmin_at(host,pstate) sg_host_get_wattmin_at((host), (pstate))
 #define MSG_host_get_wattmax_at(host,pstate) sg_host_get_wattmax_at((host), (pstate))
 #define MSG_host_get_power_range_slope_at(host,pstate) sg_host_get_power_range_slope_at((host), (pstate))
