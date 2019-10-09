@@ -340,8 +340,8 @@ void HostEnergy::init_watts_range_list()
     boost::split(all_power_values, old_prop, boost::is_any_of(","));
 
     xbt_assert(all_power_values.size() == (unsigned)host_->get_pstate_count(),
-               "Invalid XML file. Found %lu energetic profiles for %d pstates",
-               all_power_values.size(), host_->get_pstate_count());
+               "Invalid XML file. Found %zu energetic profiles for %d pstates", all_power_values.size(),
+               host_->get_pstate_count());
 
     // XBT_ATTRIB_DEPRECATED_v327: puting this macro name here so that we find it during the deprecation cleanups of v3.28
     std::string msg = std::string("DEPRECATION WARNING: Property 'watt_per_state' will only work until v3.28.\n");
