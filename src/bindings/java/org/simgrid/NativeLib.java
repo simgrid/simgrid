@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 /** Helper class loading the native functions of SimGrid that we use for downcalls
  *
@@ -161,16 +162,15 @@ public final class NativeLib {
 		}
 		@Override
 		public void run() {
-			try {
-                                Files.walk(dir.toPath())
-                                     .sorted(java.util.Comparator.reverseOrder())
+                        try (Stream<Path> paths = Files.walk(dir.toPath())) {
+                                paths.sorted(java.util.Comparator.reverseOrder())
                                      .map(java.nio.file.Path::toFile)
                                      //.peek(System.out::println) // Prints what gets removed
                                      .forEach(java.io.File::delete);
 			} catch(Exception e) {
 				System.out.println("Error while cleaning temporary file "+dir.getAbsolutePath()+" during shutdown: "+e.getCause());
 				e.printStackTrace();
-			}
+                        }
 		}
 	}
 }

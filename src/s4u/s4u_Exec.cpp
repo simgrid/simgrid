@@ -105,6 +105,9 @@ ExecPtr Exec::set_name(const std::string& name)
   return this;
 }
 
+/** @brief Retrieve the host on which this activity takes place.
+ *  If it runs on more than one host, only the first host is returned.
+ */
 Host* Exec::get_host() const
 {
   return static_cast<kernel::activity::ExecImpl*>(pimpl_.get())->get_host();
@@ -179,16 +182,8 @@ ExecPtr ExecSeq::set_host(Host* host)
              "Cannot change the host of an exec once it's done (state: %d)", (int)state_);
   if (state_ == State::STARTED)
     boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->migrate(host);
-  host_ = host;
   boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->set_host(host);
   return this;
-}
-
-
-/** @brief Retrieve the host on which this activity takes place. */
-Host* ExecSeq::get_host()
-{
-  return host_;
 }
 
 /** @brief Returns the amount of flops that remain to be done */

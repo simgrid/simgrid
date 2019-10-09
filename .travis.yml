@@ -47,6 +47,8 @@ jobs:
     - os: windows
       script:
       - mv "C:/Program Files/Git/usr/bin/sh.exe" "sh-ignored.exe"
+      -  df -h
+      -  du -hs /tmp || true
       -  choco install boost-msvc-12 python jdk8
       -  export CC=gcc
       -  export CXX=g++
@@ -55,7 +57,15 @@ jobs:
       -  export BOOST_INCLUDEDIR='C:/local/boost_1_58_0/include'
       -  export JAVA_HOME='C:/Program Files/Java/jdk1.8.0_211'
       -  cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
-      -  mingw32-make.exe VERBOSE=1 java-all && ctest --output-on-failure -R java
+      -  df -h
+      -  du -hs /tmp || true
+      -  mingw32-make.exe VERBOSE=1 java-all
+      -  df -h
+      -  du -hs /tmp || true
+      -  ctest --output-on-failure -R java
+      -  df -h
+      -  du -hs /tmp || true
+#      -  mingw32-make.exe VERBOSE=1 java-all && ctest --output-on-failure -R java
     - os: osx
       osx_image: xcode11
       script:

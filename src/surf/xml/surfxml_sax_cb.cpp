@@ -281,27 +281,26 @@ static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* e
 
 /* make sure these symbols are defined as strong ones in this file so that the linker can resolve them */
 
+std::vector<std::unordered_map<std::string, std::string>*> property_sets;
+
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
-std::unordered_map<std::string, std::string>* current_property_set       = nullptr;
 std::unordered_map<std::string, std::string>* current_model_property_set = nullptr;
-int ZONE_TAG                            = 0; // Whether we just opened a zone tag (to see what to do with the properties)
 
 FILE *surf_file_to_parse = nullptr;
 
 /* Stuff relative to storage */
 void STag_surfxml_storage()
 {
-  ZONE_TAG = 0;
   XBT_DEBUG("STag_surfxml_storage");
-  xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
+  property_sets.push_back(new std::unordered_map<std::string, std::string>());
 }
 
 void ETag_surfxml_storage()
 {
   simgrid::kernel::routing::StorageCreationArgs storage;
 
-  storage.properties   = current_property_set;
-  current_property_set = nullptr;
+  storage.properties = property_sets.back();
+  property_sets.pop_back();
 
   storage.id           = A_surfxml_storage_id;
   storage.type_id      = A_surfxml_storage_typeId;
@@ -312,17 +311,16 @@ void ETag_surfxml_storage()
 }
 void STag_surfxml_storage___type()
 {
-  ZONE_TAG = 0;
   XBT_DEBUG("STag_surfxml_storage___type");
-  xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
+  property_sets.push_back(new std::unordered_map<std::string, std::string>());
   xbt_assert(current_model_property_set == nullptr, "Someone forgot to reset the model property set to nullptr in its closing tag (or XML malformed)");
 }
 void ETag_surfxml_storage___type()
 {
   simgrid::kernel::routing::StorageTypeCreationArgs storage_type;
 
-  storage_type.properties = current_property_set;
-  current_property_set    = nullptr;
+  storage_type.properties = property_sets.back();
+  property_sets.pop_back();
 
   storage_type.model_properties = current_model_property_set;
   current_model_property_set    = nullptr;
@@ -413,31 +411,21 @@ void ETag_surfxml_platform(){
 }
 
 void STag_surfxml_host(){
-  ZONE_TAG = 0;
-  xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
+  property_sets.push_back(new std::unordered_map<std::string, std::string>());
 }
 
 void STag_surfxml_prop()
 {
-  if (ZONE_TAG) { // We need to retrieve the most recently opened zone
-    XBT_DEBUG("Set zone property %s -> %s", A_surfxml_prop_id, A_surfxml_prop_value);
-    simgrid::s4u::NetZone* netzone = simgrid::s4u::Engine::get_instance()->netzone_by_name_or_null(A_surfxml_zone_id);
-
-    netzone->set_property(std::string(A_surfxml_prop_id), A_surfxml_prop_value);
-  } else {
-    if (not current_property_set)
-      current_property_set = new std::unordered_map<std::string, std::string>; // Maybe, it should raise an error
-    current_property_set->insert({A_surfxml_prop_id, A_surfxml_prop_value});
-    XBT_DEBUG("add prop %s=%s into current property set %p", A_surfxml_prop_id, A_surfxml_prop_value,
-              current_property_set);
-  }
+  property_sets.back()->insert({A_surfxml_prop_id, A_surfxml_prop_value});
+  XBT_DEBUG("add prop %s=%s into current property set %p", A_surfxml_prop_id, A_surfxml_prop_value,
+            property_sets.back());
 }
 
 void ETag_surfxml_host()    {
   simgrid::kernel::routing::HostCreationArgs host;
 
-  host.properties = current_property_set;
-  current_property_set = nullptr;
+  host.properties = property_sets.back();
+  property_sets.pop_back();
 
   host.id = A_surfxml_host_id;
 
@@ -464,15 +452,13 @@ void ETag_surfxml_host()    {
 }
 
 void STag_surfxml_disk() {
-  ZONE_TAG = 0;
-  xbt_assert(current_property_set == nullptr,
-             "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
+  property_sets.push_back(new std::unordered_map<std::string, std::string>());
 }
 
 void ETag_surfxml_disk() {
   simgrid::kernel::routing::DiskCreationArgs disk;
-  disk.properties      = current_property_set;
-  current_property_set = nullptr;
+  disk.properties = property_sets.back();
+  property_sets.pop_back();
 
   disk.id       = A_surfxml_disk_id;
   disk.read_bw  = surf_parse_get_bandwidth(A_surfxml_disk_read___bw, "read_bw of disk ", disk.id);
@@ -497,8 +483,8 @@ void STag_surfxml_router(){
 
 void ETag_surfxml_cluster(){
   simgrid::kernel::routing::ClusterCreationArgs cluster;
-  cluster.properties   = current_property_set;
-  current_property_set = nullptr;
+  cluster.properties = property_sets.back();
+  property_sets.pop_back();
 
   cluster.id          = A_surfxml_cluster_id;
   cluster.prefix      = A_surfxml_cluster_prefix;
@@ -570,8 +556,7 @@ void ETag_surfxml_cluster(){
 }
 
 void STag_surfxml_cluster(){
-  ZONE_TAG = 0;
-  xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
+  property_sets.push_back(new std::unordered_map<std::string, std::string>());
 }
 
 void STag_surfxml_cabinet(){
@@ -614,15 +599,14 @@ void STag_surfxml_peer(){
 }
 
 void STag_surfxml_link(){
-  ZONE_TAG = 0;
-  xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
+  property_sets.push_back(new std::unordered_map<std::string, std::string>());
 }
 
 void ETag_surfxml_link(){
   simgrid::kernel::routing::LinkCreationArgs link;
 
-  link.properties          = current_property_set;
-  current_property_set     = nullptr;
+  link.properties = property_sets.back();
+  property_sets.pop_back();
 
   link.id                  = std::string(A_surfxml_link_id);
   link.bandwidths          = surf_parse_get_bandwidths(A_surfxml_link_bandwidth, "bandwidth of link", link.id.c_str());
@@ -888,24 +872,25 @@ void ETag_surfxml_AS()
 
 void STag_surfxml_zone()
 {
-  ZONE_TAG                 = 1;
+  property_sets.push_back(new std::unordered_map<std::string, std::string>());
   simgrid::kernel::routing::ZoneCreationArgs zone;
   zone.id      = A_surfxml_zone_id;
   zone.routing = static_cast<int>(A_surfxml_zone_routing);
-
   sg_platf_new_Zone_begin(&zone);
 }
 
 void ETag_surfxml_zone()
 {
+  sg_platf_new_Zone_set_properties(property_sets.back());
+  delete property_sets.back();
+  property_sets.pop_back();
+
   sg_platf_new_Zone_seal();
 }
 
 void STag_surfxml_config()
 {
-  ZONE_TAG = 0;
-  xbt_assert(current_property_set == nullptr,
-             "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
+  property_sets.push_back(new std::unordered_map<std::string, std::string>());
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
   if (_sg_cfg_init_status == 2) {
     surf_parse_error("All <config> tags must be given before any platform elements (such as <zone>, <host>, <cluster>, "
@@ -917,6 +902,8 @@ void ETag_surfxml_config()
 {
   // Sort config elements before applying.
   // That's a little waste of time, but not doing so would break the tests
+  auto current_property_set = property_sets.back();
+
   std::vector<std::string> keys;
   for (auto const& kv : *current_property_set) {
     keys.push_back(kv.first);
@@ -932,7 +919,7 @@ void ETag_surfxml_config()
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
 
   delete current_property_set;
-  current_property_set = nullptr;
+  property_sets.pop_back();
 }
 
 static std::vector<std::string> arguments;
@@ -945,9 +932,8 @@ void STag_surfxml_process()
 
 void STag_surfxml_actor()
 {
-  ZONE_TAG  = 0;
+  property_sets.push_back(new std::unordered_map<std::string, std::string>());
   arguments.assign(1, A_surfxml_actor_function);
-  xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
 }
 
 void ETag_surfxml_process()
@@ -964,8 +950,8 @@ void ETag_surfxml_actor()
 {
   simgrid::kernel::routing::ActorCreationArgs actor;
 
-  actor.properties     = current_property_set;
-  current_property_set = nullptr;
+  actor.properties = property_sets.back();
+  property_sets.pop_back();
 
   actor.args.swap(arguments);
   actor.host       = A_surfxml_actor_host;

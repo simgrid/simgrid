@@ -343,7 +343,8 @@ void HostEnergy::init_watts_range_list()
                "Invalid XML file. Found %lu energetic profiles for %d pstates",
                all_power_values.size(), host_->get_pstate_count());
 
-    std::string msg = std::string("DEPRECATION WARNING: Property 'watt_per_state' will not work after v3.28.\n");
+    // XBT_ATTRIB_DEPRECATED_v327: puting this macro name here so that we find it during the deprecation cleanups of v3.28
+    std::string msg = std::string("DEPRECATION WARNING: Property 'watt_per_state' will only work until v3.28.\n");
     msg += std::string("The old syntax 'Idle:OneCore:AllCores' must be converted into 'Idle:Epsilon:AllCores' to "
                        "properly model the consumption of non-whole tasks on mono-core hosts. Here are the values to "
                        "use for host '") +
@@ -359,8 +360,6 @@ void HostEnergy::init_watts_range_list()
       double p_epsilon;
 
       if (current_power_values.size() == 3) {
-        p_idle     = xbt_str_parse_double((current_power_values.at(0)).c_str(),
-                                      "Invalid obsolete XML file. Fix your watt_per_state property.");
         p_one_core = xbt_str_parse_double((current_power_values.at(1)).c_str(),
                                           "Invalid obsolete XML file. Fix your watt_per_state property.");
         p_full     = xbt_str_parse_double((current_power_values.at(2)).c_str(),
@@ -371,8 +370,6 @@ void HostEnergy::init_watts_range_list()
           p_epsilon = p_one_core - ((p_full - p_one_core) / (host_->get_core_count() - 1));
         }
       } else { // consuption given with idle and full only
-        p_idle = xbt_str_parse_double((current_power_values.at(0)).c_str(),
-                                      "Invalid obsolete XML file. Fix your watt_per_state property.");
         p_full = xbt_str_parse_double((current_power_values.at(1)).c_str(),
                                       "Invalid obsolete XML file. Fix your watt_per_state property.");
         if (host_->get_core_count() == 1) {

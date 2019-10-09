@@ -3,6 +3,7 @@
 <platform version="4.1">
   <zone id="AS0" routing="Full">
     <host id="bob" speed="1Gf">
+      <prop id="ram" value="100B" />
       <disk id="Disk1" read_bw="100MBps" write_bw="40MBps">
         <prop id="size" value="500GiB"/>
         <prop id="mount" value="/scratch"/>
@@ -15,6 +16,7 @@
       <disk id="Disk1" read_bw="200MBps" write_bw="80MBps">
         <prop id="content" value="storage/content/small_content.txt"/>
       </disk>
+      <prop id="ram" value="100B" />
     </host>
 
     <host id="carl" speed="1Gf">

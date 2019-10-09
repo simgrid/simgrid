@@ -48,6 +48,13 @@ int main(int argc, char** argv)
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
+  /* - Display Host properties */
+  for (auto h : e.get_all_hosts()) {
+    XBT_INFO("*** %s properties ****", h->get_cname());
+    for (auto kv : *h->get_properties())
+      XBT_INFO("  %s -> %s", kv.first.c_str(), kv.second.c_str());
+  }
+
   simgrid::s4u::Actor::create("", simgrid::s4u::Host::by_name("bob"), host);
 
   e.run();
