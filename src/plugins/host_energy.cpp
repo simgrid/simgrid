@@ -596,7 +596,6 @@ double sg_host_get_consumed_energy(sg_host_t host)
 
 /** @ingroup plugin_host_energy
  *  @brief Get the amount of watt dissipated when the host is idling
- *  This function is deprecated and will not work after v3.27. Use sg_host_get_idle_consumption_at instead.
  */
 double sg_host_get_idle_consumption(sg_host_t host)
 {
