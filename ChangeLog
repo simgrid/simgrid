@@ -94,10 +94,12 @@ Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - FG!16: Fix the ns-3 bindings when several flows are simultaneously finishing
  - FG!17: ns-3: unblock the right number of communications + others issues
  - FG!18: Improving the performance of the ns-3 bindings
+ - GH#189: Energy consumption of parallel tasks
  - GH#219: Error in the throughput of TCP transfer
  - GH!330: Minor polishing of English: Configuring_Simgrid
  - GH!331: Fix a doc error about actors (Tutorial_algorithms)
  - GH!332: Add '-O0' flag for: cmake -DCMAKE_BUILD_TYPE=Debug
+ - GH!334: Rework energy plugin, again
 
 ----------------------------------------------------------------------------
 
