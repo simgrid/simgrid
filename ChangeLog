@@ -1,6 +1,8 @@
 ----------------------------------------------------------------------------
 
-SimGrid (3.23.3) NOT RELEASED YET (v3.24 expected September 23. 7:50 UTC)
+SimGrid (3.24) October 9. 2019
+
+The Clean Disk Release.
 
 S4U:
  - Introduce a s4u::Disk interface to manage the newly introduced <disk>
