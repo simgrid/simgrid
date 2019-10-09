@@ -642,6 +642,14 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(simgrid::kernel::
   return new_zone;
 }
 
+void sg_platf_new_Zone_set_properties(std::unordered_map<std::string, std::string>* props)
+{
+  xbt_assert(current_routing, "Cannot set properties of the current Zone: none under construction");
+
+  for (auto kv = props->begin(); kv != props->end(); ++kv)
+    current_routing->get_iface()->set_property(kv->first, kv->second);
+}
+
 /**
  * @brief Specify that the description of the current AS is finished
  *
