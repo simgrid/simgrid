@@ -245,9 +245,9 @@ double HostEnergy::get_watt_max_at(int pstate)
 
 double HostEnergy::get_power_range_slope_at(int pstate)
 {
-    xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
-               host_->get_cname());
-   return power_range_watts_list_[pstate].slope_;
+  xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
+             host_->get_cname());
+  return power_range_watts_list_[pstate].slope_;
 }
 
 /** @brief Computes the power consumed by the host according to the current situation
@@ -618,6 +618,9 @@ double sg_host_get_idle_consumption_at(sg_host_t host, int pstate)
   return host->extension<HostEnergy>()->get_watt_idle_at(pstate);
 }
 
+/** @ingroup plugin_host_energy
+ *  @brief Get the amount of watt dissipated at the given pstate when the host is at 0 or epsilon% CPU usage.
+ */
 double sg_host_get_wattmin_at(sg_host_t host, int pstate)
 {
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
