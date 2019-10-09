@@ -134,7 +134,7 @@ public:
   double get_current_watts_value();
   double get_current_watts_value(double cpu_load);
   double get_consumed_energy();
-  double get_idle_consumption();
+  double get_watt_idle_at(int pstate);
   double get_watt_min_at(int pstate);
   double get_watt_max_at(int pstate);
   double get_power_range_slope_at(int pstate);
@@ -222,12 +222,11 @@ HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host_(ptr), last_updated_(surf
 
 HostEnergy::~HostEnergy() = default;
 
-double HostEnergy::get_idle_consumption()
+double HostEnergy::get_watt_idle_at(int pstate)
 {
   xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
              host_->get_cname());
-
-  return power_range_watts_list_[0].idle_;
+  return power_range_watts_list_[pstate].idle_;
 }
 
 double HostEnergy::get_watt_min_at(int pstate)
@@ -605,12 +604,19 @@ double sg_host_get_idle_consumption(sg_host_t host)
 {
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
              "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
-  return host->extension<HostEnergy>()->get_idle_consumption();
+  return host->extension<HostEnergy>()->get_watt_idle_at(0);
 }
 
 /** @ingroup plugin_host_energy
  *  @brief Get the amount of watt dissipated at the given pstate when the host is idling
  */
+double sg_host_get_idle_consumption_at(sg_host_t host, int pstate)
+{
+  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
+             "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
+  return host->extension<HostEnergy>()->get_watt_idle_at(pstate);
+}
+
 double sg_host_get_wattmin_at(sg_host_t host, int pstate)
 {
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
