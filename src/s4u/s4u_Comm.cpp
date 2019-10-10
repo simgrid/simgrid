@@ -235,16 +235,5 @@ Actor* Comm::get_sender()
   return sender_ ? sender_->ciface() : nullptr;
 }
 
-void intrusive_ptr_release(simgrid::s4u::Comm* c)
-{
-  if (c->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
-    std::atomic_thread_fence(std::memory_order_acquire);
-    delete c;
-  }
-}
-void intrusive_ptr_add_ref(simgrid::s4u::Comm* c)
-{
-  c->refcount_.fetch_add(1, std::memory_order_relaxed);
-}
 } // namespace s4u
 } // namespace simgrid

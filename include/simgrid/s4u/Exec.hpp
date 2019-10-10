@@ -11,8 +11,6 @@
 #include <simgrid/s4u/Actor.hpp>
 #include <xbt/ex.h>
 
-#include <atomic>
-
 namespace simgrid {
 namespace s4u {
 
@@ -25,21 +23,18 @@ class XBT_PUBLIC Exec : public Activity_T<Exec> {
   double priority_              = 1.0;
   double bound_                 = 0.0;
   double timeout_               = 0.0;
-  std::atomic_int_fast32_t refcount_{0};
 
 protected:
   Exec();
-  virtual ~Exec() = default;
 
 public:
+  virtual ~Exec() = default;
 #ifndef DOXYGEN
   Exec(Exec const&) = delete;
   Exec& operator=(Exec const&) = delete;
 
   friend ExecSeq;
   friend ExecPar;
-  friend XBT_PUBLIC void intrusive_ptr_release(Exec* e);
-  friend XBT_PUBLIC void intrusive_ptr_add_ref(Exec* e);
 #endif
   static xbt::signal<void(Actor const&, Exec const&)> on_start;
   static xbt::signal<void(Actor const&, Exec const&)> on_completion;

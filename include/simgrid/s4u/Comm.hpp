@@ -9,7 +9,6 @@
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Activity.hpp>
 
-#include <atomic>
 #include <string>
 #include <vector>
 
@@ -29,7 +28,6 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
   void* src_buff_                     = nullptr;
   size_t src_buff_size_               = sizeof(void*);
   std::string tracing_category_       = "";
-  std::atomic_int_fast32_t refcount_{0};
   /* FIXME: expose these elements in the API */
   bool detached_                                                          = false;
   int (*match_fun_)(void*, void*, kernel::activity::CommImpl*)            = nullptr;
@@ -40,8 +38,6 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
 
 public:
 #ifndef DOXYGEN
-  friend XBT_PUBLIC void intrusive_ptr_release(Comm* c);
-  friend XBT_PUBLIC void intrusive_ptr_add_ref(Comm* c);
   friend Mailbox; // Factory of comms
 #endif
 

@@ -96,17 +96,5 @@ sg_size_t Io::get_performed_ioops()
       [this]() { return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_performed_ioops(); });
 }
 
-void intrusive_ptr_release(simgrid::s4u::Io* i)
-{
-  if (i->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
-    std::atomic_thread_fence(std::memory_order_acquire);
-    delete i;
-  }
-}
-
-void intrusive_ptr_add_ref(simgrid::s4u::Io* i)
-{
-  i->refcount_.fetch_add(1, std::memory_order_relaxed);
-}
 } // namespace s4u
 } // namespace simgrid

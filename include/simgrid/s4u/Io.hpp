@@ -9,7 +9,6 @@
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Activity.hpp>
 
-#include <atomic>
 #include <string>
 
 namespace simgrid {
@@ -29,15 +28,12 @@ private:
   Disk* disk_       = nullptr;
   sg_size_t size_   = 0;
   OpType type_      = OpType::READ;
-  std::atomic_int_fast32_t refcount_{0};
 
   explicit Io(sg_storage_t storage, sg_size_t size, OpType type);
   explicit Io(sg_disk_t disk, sg_size_t size, OpType type);
 
 public:
 #ifndef DOXYGEN
-  friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Io* i);
-  friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Io* i);
   friend Disk;    // Factory of IOs
   friend Storage; // Factory of IOs
 #endif

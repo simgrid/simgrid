@@ -7,6 +7,7 @@
 #define SIMGRID_S4U_ACTIVITY_HPP
 
 #include "xbt/asserts.h"
+#include <atomic>
 #include <simgrid/forward.h>
 #include <xbt/signal.hpp>
 
@@ -99,8 +100,19 @@ private:
   std::string name_             = "";
   std::string tracing_category_ = "";
   void* user_data_              = nullptr;
+  std::atomic_int_fast32_t refcount_{0};
 
 public:
+#ifndef DOXYGEN
+  friend XBT_PUBLIC void intrusive_ptr_release(AnyActivity* a)
+  {
+    if (a->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+      std::atomic_thread_fence(std::memory_order_acquire);
+      delete a;
+    }
+  }
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(AnyActivity* a) { a->refcount_.fetch_add(1, std::memory_order_relaxed); }
+#endif
   AnyActivity* set_name(const std::string& name)
   {
     xbt_assert(get_state() == State::INITED, "Cannot change the name of an activity after its start");

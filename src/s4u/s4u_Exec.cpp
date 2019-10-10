@@ -68,19 +68,6 @@ Exec* Exec::cancel()
   return this;
 }
 
-void intrusive_ptr_release(simgrid::s4u::Exec* e)
-{
-  if (e->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
-    std::atomic_thread_fence(std::memory_order_acquire);
-    delete e;
-  }
-}
-
-void intrusive_ptr_add_ref(simgrid::s4u::Exec* e)
-{
-  e->refcount_.fetch_add(1, std::memory_order_relaxed);
-}
-
 /** @brief change the execution bound
  * This means changing the maximal amount of flops per second that it may consume, regardless of what the host may
  * deliver. Currently, this cannot be changed once the exec started.
