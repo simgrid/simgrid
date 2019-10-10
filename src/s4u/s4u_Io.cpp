@@ -31,14 +31,14 @@ Io* Io::start()
   kernel::actor::simcall([this] {
     if (storage_) {
       (*boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_))
-          .set_name(name_)
+          .set_name(get_name())
           .set_storage(storage_->get_impl())
           .set_size(size_)
           .set_type(type_)
           .start();
     } else {
       (*boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_))
-          .set_name(name_)
+          .set_name(get_name())
           .set_disk(disk_->get_impl())
           .set_size(size_)
           .set_type(type_)

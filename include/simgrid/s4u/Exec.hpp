@@ -62,8 +62,6 @@ public:
   ExecPtr set_priority(double priority);
   ExecPtr set_timeout(double timeout);
   Exec* cancel() override;
-  const std::string& get_name() const { return name_; }
-  const char* get_cname() const { return name_.c_str(); }
   Host* get_host() const;
   unsigned int get_host_number() const;
   double get_start_time() const;

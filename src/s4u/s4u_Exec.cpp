@@ -98,13 +98,6 @@ ExecPtr Exec::set_timeout(double timeout)
   return this;
 }
 
-ExecPtr Exec::set_name(const std::string& name)
-{
-  xbt_assert(state_ == State::INITED, "Cannot change the name of an exec after its start");
-  name_ = name;
-  return this;
-}
-
 /** @brief Retrieve the host on which this activity takes place.
  *  If it runs on more than one host, only the first host is returned.
  */
@@ -153,8 +146,8 @@ Exec* ExecSeq::start()
 {
   kernel::actor::simcall([this] {
     (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
-        .set_name(name_)
-        .set_tracing_category(tracing_category_)
+        .set_name(get_name())
+        .set_tracing_category(get_tracing_category())
         .set_sharing_penalty(1. / priority_)
         .set_bound(bound_)
         .set_flops_amount(flops_amount_)

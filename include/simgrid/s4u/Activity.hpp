@@ -125,11 +125,6 @@ public:
   }
 
   void* get_user_data() { return user_data_; }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::set_user_data()") AnyActivity* setUserData(void* data)
-  {
-    return set_user_data(data);
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_user_data()") void* getUserData() { return user_data_; }
 };
 
 } // namespace s4u
