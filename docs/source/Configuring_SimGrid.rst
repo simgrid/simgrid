@@ -38,8 +38,8 @@ type the following on the command-line:
 
 Several ``--cfg`` command line arguments can naturally be used. If you
 need to include spaces in the argument, don't forget to quote the
-argument. You can even escape the included quotes (write @' for ' if
-you have your argument between ').
+argument. You can even escape the included quotes (write ``@'`` for ``'`` if
+you have your argument between simple quotes).
 
 Another solution is to use the ``<config>`` tag in the platform file. The
 only restriction is that this tag must occur before the first
@@ -461,14 +461,12 @@ modification to your simulation code. For example, you can activate
 the host energy plugin by adding ``--cfg=plugin:host_energy`` to your
 command line.
 
-Here is the full list of plugins that can be activated this way:
+Here is a partial list of plugins that can be activated this way. You can get
+the full list by passing ``--cfg=plugin:help`` to your simulator.
 
- - **host_energy:** keeps track of the energy dissipated by
-   computations. More details in @ref plugin_energy.
- - **link_energy:** keeps track of the energy dissipated by
-   communications. More details in @ref SURF_plugin_energy.
- - **host_load:** keeps track of the computational load.
-   More details in @ref plugin_load.
+  - :ref:`Host Energy <plugin_host_energy>`: models the energy dissipation of the compute units.
+  - :ref:`Link Energy <plugin_link_energy>`: models the energy dissipation of the network.
+  - :ref:`Host Load <plugin_host_load>`: monitors the load of the compute units.
 
 .. _options_modelchecking:
 
@@ -520,8 +518,8 @@ Specifying a liveness property
 
 If you want to specify liveness properties, you have to pass them on
 the command line, specifying the name of the file containing the
-property, as formatted by the ltl2ba program. Note that ltl2ba is not
-part of SimGrid and must be installed separatly.
+property, as formatted by the `ltl2ba <https://github.com/utwente-fmt/ltl2ba>`_ program.
+Note that ltl2ba is not part of SimGrid and must be installed separatly.
 
 .. code-block:: shell
 
@@ -650,6 +648,8 @@ The ``model-check/communications-determinism`` and
 communication determinism mode of the model checker, which checks
 determinism properties of the communications of an application.
 
+.. _options_mc_perf:
+
 Verification Performance Considerations
 .......................................
 
@@ -657,8 +657,8 @@ The size of the stacks can have a huge impact on the memory
 consumption when using model-checking. By default, each snapshot will
 save a copy of the whole stacks and not only of the part that is
 really meaningful: you should expect the contribution of the memory
-consumption of the snapshots to be @f$ @mbox{number of processes}
-@times @mbox{stack size} @times @mbox{number of states} @f$.
+consumption of the snapshots to be:
+:math:`\text{number of processes} \times \text{stack size} \times \text{number of states}`.
 
 When compiled against the model checker, the stacks are not
 protected with guards: if the stack size is too small for your
@@ -702,8 +702,8 @@ The interesting line is ``Path = 1/3;1/4``, which means that you should use
 execution path. All options (but the model checker related ones) must
 remain the same. In particular, if you ran your application with
 ``smpirun -wrapper simgrid-mc``, then do it again. Remove all
-MC-related options, keep the other ones and add
-``--cfg=model-check/replay``.
+MC-related options, keep non-MC-related ones and add
+``--cfg=model-check/replay:???``.
 
 Currently, if the path is of the form ``X;Y;Z``, each number denotes
 the actor's pid that is selected at each indecision point. If it's of
@@ -995,7 +995,7 @@ application, the variable ``smpi/simulate-computation`` should be set
 to **no**.  This option just ignores the timings in your simulation; it
 still executes the computations itself. If you want to stop SMPI from
 doing that, you should check the SMPI_SAMPLE macros, documented in
-Section :ref:`SMPI_adapting_speed`.
+Section :ref:`SMPI_use_faster`.
 
 +------------------------------------+-------------------------+-----------------------------+
 |  Solution                          | Computations executed?  | Computations simulated?     |
@@ -1387,7 +1387,7 @@ At the end, no matter how many times you call SMPI_SHARED_MALLOC, this will
 only consume 1 MiB in memory.
 
 You can disable this behavior and come back to regular mallocs (for
-example for debugging purposes) using @c "no" as a value.
+example for debugging purposes) using ``no`` as a value.
 
 If you want to keep private some parts of the buffer, for instance if these
 parts are used by the application logic and should not be corrupted, you

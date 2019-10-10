@@ -26,7 +26,6 @@ class XBT_PUBLIC Exec : public Activity_T<Exec> {
   double bound_                 = 0.0;
   double timeout_               = 0.0;
   std::atomic_int_fast32_t refcount_{0};
-  Host* host_ = nullptr;
 
 protected:
   Exec();
@@ -85,7 +84,6 @@ public:
   Exec* start() override;
 
   ExecPtr set_host(Host* host) override;
-  Host* get_host();
 
   double get_remaining() override;
   double get_remaining_ratio() override;

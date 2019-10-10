@@ -1,6 +1,12 @@
 #!/usr/bin/env tesh
 
 $ ${bindir}/s4u-io-disk-raw ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) *** alice properties ****
+> [  0.000000] (0:maestro@)   ram -> 100B
+> [  0.000000] (0:maestro@) *** bob properties ****
+> [  0.000000] (0:maestro@)   ram -> 100B
+> [  0.000000] (0:maestro@) *** carl properties ****
+> [  0.000000] (0:maestro@)   remote_disk -> /scratch:Disk1:bob
 > [  0.000000] (1:@bob) *** Storage info on bob ***
 > [  0.000000] (1:@bob) Disk name: Disk1
 > [  0.000000] (1:@bob) Disk name: Disk2

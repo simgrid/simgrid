@@ -238,7 +238,7 @@ class Cmd(object):
         self.cwd = os.getcwd()
 
         self.ignore_output = False
-        self.expect_return = 0
+        self.expect_return = [0]
 
         self.output_display = False
 
@@ -487,7 +487,7 @@ class Cmd(object):
             print('\n'.join(logs))
             return
 
-        if proc.returncode != self.expect_return:
+        if not proc.returncode in self.expect_return:
             if proc.returncode >= 0:
                 logs.append("Test suite `{file}': NOK (<{cmd}> returned code {code})".format(
                     file=FileReader().filename, cmd=cmdName, code=proc.returncode))
@@ -648,16 +648,17 @@ if __name__ == '__main__':
             cmd.output_display = True
             cmd.ignore_output = True
         elif line[0:15] == "! expect return":
-            cmd.expect_return = int(line[16:])
+            cmd.expect_return = [int(line[16:])]
             #print("expect return "+str(int(line[16:])))
         elif line[0:15] == "! expect signal":
-            sig = line[16:]
-            # get the signal integer value from the signal module
-            if sig not in signal.__dict__:
-                fatal_error("unrecognized signal '" + sig + "'")
-            sig = int(signal.__dict__[sig])
-            # popen return -signal when a process ends with a signal
-            cmd.expect_return = -sig
+            cmd.expect_return = []
+            for sig in (line[16:]).split("|"):
+                # get the signal integer value from the signal module
+                if sig not in signal.__dict__:
+                    fatal_error("unrecognized signal '" + sig + "'")
+                sig = int(signal.__dict__[sig])
+                # popen return -signal when a process ends with a signal
+                cmd.expect_return.append(-sig)
         elif line[0:len("! timeout ")] == "! timeout ":
             if "no" in line[len("! timeout "):]:
                 cmd.timeout = None

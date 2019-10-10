@@ -196,6 +196,7 @@ void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb);
 
 XBT_PUBLIC simgrid::kernel::routing::NetZoneImpl*
 sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCreationArgs* zone);         // Begin description of new Zone
+XBT_PUBLIC void sg_platf_new_Zone_set_properties(std::unordered_map<std::string, std::string>* props);
 XBT_PUBLIC void sg_platf_new_Zone_seal();                                          // That Zone is fully described
 
 XBT_PUBLIC void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* host);      // Add a host      to the current Zone

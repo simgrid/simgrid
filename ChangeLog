@@ -1,6 +1,8 @@
 ----------------------------------------------------------------------------
 
-SimGrid (3.23.3) NOT RELEASED YET (v3.24 expected September 23. 7:50 UTC)
+SimGrid (3.24) October 9. 2019
+
+The Clean Disk Release.
 
 S4U:
  - Introduce a s4u::Disk interface to manage the newly introduced <disk>
@@ -46,7 +48,9 @@ SMPI:
    MPI_C_COMPILER, MPI_CXX_COMPILER, MPI_Fortran_COMPILER variables.
  - Add support for MPI Errhandlers in Comm, File or Win. Default errhandler is now
    MPI_ERRORS_ARE_FATAL, so codes which were sending warnings may start failing.
- - trace-call-location can now be used with TI traces, and replayed.
+ - trace-call-location can be used with TI traces, and replayed, and is compatible
+   with smpi/comp-adjustment-file.
+ - sleep events are now correctly traced/replayed.
  - Default for trace-call-location is now to use file names and not full paths.
    To revert to previous behaviour (in case of collision of filenames), option
    "smpi/trace-call-use-absolute-path" can be set to yes.
@@ -73,7 +77,10 @@ XML:
    only three attributes (id, read_bw, and write_bw). All the other information
    that was declared with the storage related tags now has to be expressed as
    properties. An example of platform using this new tag is available at
-   examples/platforms/hostsè_with_disks.xml
+   examples/platforms/hosts_with_disks.xml
+
+tesh:
+ - 'expect signal' can now accept more than one potential signal.
 
 Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - FG#28: add sg_actor_self (and other wrappers on this_actor methods)
@@ -87,10 +94,12 @@ Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - FG!16: Fix the ns-3 bindings when several flows are simultaneously finishing
  - FG!17: ns-3: unblock the right number of communications + others issues
  - FG!18: Improving the performance of the ns-3 bindings
+ - GH#189: Energy consumption of parallel tasks
  - GH#219: Error in the throughput of TCP transfer
  - GH!330: Minor polishing of English: Configuring_Simgrid
  - GH!331: Fix a doc error about actors (Tutorial_algorithms)
  - GH!332: Add '-O0' flag for: cmake -DCMAKE_BUILD_TYPE=Debug
+ - GH!334: Rework energy plugin, again
 
 ----------------------------------------------------------------------------
 

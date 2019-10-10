@@ -1,4 +1,4 @@
-! expect signal SIGSEGV
+! expect signal SIGSEGV|SIGBUS
 $ ${bindir:=.}/stack-overflow --cfg=contexts/stack-size:96 ${srcdir:=.}/examples/platforms/small_platform.xml
 > [Tremblay:master:(1) 0.000000] [test/INFO] Launching our nice bugged recursive function...
 > Access violation or Bus error detected.
