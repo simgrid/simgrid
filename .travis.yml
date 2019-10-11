@@ -59,13 +59,9 @@ jobs:
       -  cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
       -  df -h
       -  du -hs /tmp || true
-      -  mingw32-make.exe VERBOSE=1 java-all
-      -  df -h
-      -  du -hs /tmp || true
-      -  ctest --output-on-failure -R java
+      -  mingw32-make.exe VERBOSE=1 java-all && ctest --output-on-failure -R java
       -  df -h
       -  du -hc /tmp || true
-#      -  mingw32-make.exe VERBOSE=1 java-all && ctest --output-on-failure -R java
     - os: osx
       osx_image: xcode11
       script:
