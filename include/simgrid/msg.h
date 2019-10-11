@@ -70,8 +70,6 @@ typedef enum {
 } msg_error_t;
 
 /* *************************** Network Zones ******************************** */
-#define msg_as_t msg_netzone_t /* portability macro */
-
 typedef sg_netzone_t msg_netzone_t;
 
 XBT_PUBLIC msg_netzone_t MSG_zone_get_root();
