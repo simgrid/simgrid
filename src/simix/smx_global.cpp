@@ -532,23 +532,25 @@ void SIMIX_run()
   simgrid::s4u::Engine::on_simulation_end();
 }
 
-double SIMIX_timer_next()
+double SIMIX_timer_next() // XBT_ATTRIB_DEPRECATED_v329
 {
   return simgrid::simix::Timer::next();
 }
 
-smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void *arg)
+smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void* arg) // XBT_ATTRIB_DEPRECATED_v329
 {
   return simgrid::simix::Timer::set(date, std::bind(callback, arg));
 }
 
 /** @brief cancels a timer that was added earlier */
-void SIMIX_timer_remove(smx_timer_t timer) {
+void SIMIX_timer_remove(smx_timer_t timer) // XBT_ATTRIB_DEPRECATED_v329
+{
   timer->remove();
 }
 
 /** @brief Returns the date at which the timer will trigger (or 0 if nullptr timer) */
-double SIMIX_timer_get_date(smx_timer_t timer) {
+double SIMIX_timer_get_date(smx_timer_t timer) // XBT_ATTRIB_DEPRECATED_v329
+{
   return timer ? timer->get_date() : 0;
 }
 
