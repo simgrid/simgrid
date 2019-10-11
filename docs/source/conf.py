@@ -36,7 +36,7 @@ copyright = u'2002-2019, The SimGrid Team'
 author = u'The SimGrid Team'
 
 # The short X.Y version
-version = u'3.24'
+version = u'3.24.1'
 
 # -- General configuration ---------------------------------------------------
 

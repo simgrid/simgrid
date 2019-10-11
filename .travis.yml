@@ -64,7 +64,7 @@ jobs:
       -  du -hs /tmp || true
       -  ctest --output-on-failure -R java
       -  df -h
-      -  du -hs /tmp || true
+      -  du -hc /tmp || true
 #      -  mingw32-make.exe VERBOSE=1 java-all && ctest --output-on-failure -R java
     - os: osx
       osx_image: xcode11
