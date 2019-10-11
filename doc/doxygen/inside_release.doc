@@ -22,6 +22,7 @@ Please apply the following checklist before releasing.
   - Tutorials and derivative projects build correctly
     https://framagit.org/simgrid/simgrid-template-s4u/pipelines
     https://framagit.org/simgrid/external-projects-ci/pipelines
+  - The python module builds (see below).
 - ChangeLog file
   - All changes are documented
   - The release date is indicated below the changes
@@ -176,12 +177,16 @@ Doing a dot release:
   - Wait for both appveyor and jenkins/highsierra to complete the build
   - If it's not successful, fix it and push again
   - Once it's successful on both appveyor and jenkins:
+    - Build the source tar.gz
+    - Build the jarfile
+    - Download the simgrid-doc-3.X.Y from the pages pipeline on framagit
     - tag the release v3.X.Y and push the tag
     - Merge 'master' into 'stable' and push it to framagit
-    - Do not merge into 'stable' before appveyor and jenkins are done,
-      or your jarfile will not contain the code you expect for win and
-      mac.
-  - Rebuild the python package
+      - Do not merge into 'stable' before appveyor and jenkins are done,
+        or your jarfile will not contain the code you expect for win and
+        mac.
+    - Edit the tag on github and framagit
+  - Rebuild and upload the python package
     - rm -rf dist/ ; python3 setup.py sdist # Build a source distrib
     - test that the built distrib recompiles:
       rm -rf /tmp/pysimgrid && mkdir /tmp/pysimgrid && cp dist/simgrid-*.tar.gz /tmp/pysimgrid 
