@@ -15,7 +15,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \| || |
 The Clean Disk Release.
 
  * Introduce an experimental Wifi network model.
- * Introduce <disk>, which is much cleaner than <storage>.
+ * Introduce <disk> (cleaner logic than <storage>).
  * SMPI: Implement Errhandlers and some more MPI3.1 calls.
  * (+ many bug fixes and internal refactorings)
                     _               _____  ____  _____
