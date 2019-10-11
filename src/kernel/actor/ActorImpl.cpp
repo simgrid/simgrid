@@ -557,7 +557,7 @@ int SIMIX_process_count()
   return simix_global->process_list.size();
 }
 
-void* SIMIX_process_self_get_data() // deprecated
+void* SIMIX_process_self_get_data()
 {
   smx_actor_t self = SIMIX_process_self();
 
@@ -567,7 +567,7 @@ void* SIMIX_process_self_get_data() // deprecated
   return self->get_user_data();
 }
 
-void SIMIX_process_self_set_data(void* data) // deprecated
+void SIMIX_process_self_set_data(void* data)
 {
   SIMIX_process_self()->set_user_data(data);
 }

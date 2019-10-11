@@ -133,9 +133,8 @@ SG_BEGIN_DECL()
 XBT_PUBLIC int SIMIX_process_count();
 XBT_PUBLIC smx_actor_t SIMIX_process_self();
 XBT_PUBLIC const char* SIMIX_process_self_get_name();
-XBT_ATTRIB_DEPRECATED_v325("Please use ActorImpl::set_user_data()") XBT_PUBLIC
-    void SIMIX_process_self_set_data(void* data);
-XBT_ATTRIB_DEPRECATED_v325("Please use ActorImpl::get_user_data()") XBT_PUBLIC void* SIMIX_process_self_get_data();
+XBT_PUBLIC void SIMIX_process_self_set_data(void* data);
+XBT_PUBLIC void* SIMIX_process_self_get_data();
 XBT_ATTRIB_DEPRECATED_v325("Please manifest if you actually need this function") XBT_PUBLIC
     int SIMIX_process_has_pending_comms(smx_actor_t process);
 XBT_ATTRIB_DEPRECATED_v325("Please use SIMIX_process_on_exit(smx_actor_t, const std::function<void(bool)>&)") XBT_PUBLIC
