@@ -37,17 +37,6 @@ smx_actor_t SIMIX_process_self()
   return (self_context != nullptr) ? self_context->get_actor() : nullptr;
 }
 
-/**
- * @brief Returns whether a process has pending asynchronous communications.
- * @return true if there are asynchronous communications in this process
- * @deprecated
- */
-int SIMIX_process_has_pending_comms(smx_actor_t process)
-{
-
-  return process->comms.size() > 0;
-}
-
 namespace simgrid {
 namespace kernel {
 namespace actor {
@@ -540,18 +529,6 @@ void create_maestro(const std::function<void()>& code)
 } // namespace kernel
 } // namespace simgrid
 
-void SIMIX_process_detach() // deprecated v3.25
-{
-  simgrid::kernel::actor::ActorImpl::detach();
-}
-
-smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostname,
-                                 std::unordered_map<std::string, std::string>* properties,
-                                 smx_actor_t /*parent_process*/) // deprecated 3.25
-{
-  return simgrid::kernel::actor::ActorImpl::attach(name, data, sg_host_by_name(hostname), properties).get();
-}
-
 int SIMIX_process_count()
 {
   return simix_global->process_list.size();
@@ -592,14 +569,6 @@ const char* SIMIX_process_self_get_name()
  * @param self the current process
  */
 
-/** @brief Returns the list of processes to run.
- * @deprecated
- */
-const std::vector<smx_actor_t>& simgrid::simix::process_get_runnable()
-{
-  return simix_global->actors_to_run;
-}
-
 /** @brief Returns the process from PID. */
 smx_actor_t SIMIX_process_from_PID(aid_t PID)
 {
@@ -611,19 +580,6 @@ smx_actor_t SIMIX_process_from_PID(aid_t PID)
     return nullptr; // Not found, even in the trash
   }
   return item->second;
-}
-
-void SIMIX_process_on_exit(smx_actor_t actor, int_f_pvoid_pvoid_t fun, void* data)
-{
-  SIMIX_process_on_exit(actor, [fun, data](bool failed) {
-    intptr_t status = failed ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
-    fun(reinterpret_cast<void*>(status), data);
-  });
-}
-
-void SIMIX_process_on_exit(smx_actor_t actor, const std::function<void(int, void*)>& fun, void* data)
-{
-  SIMIX_process_on_exit(actor, [fun, data](bool failed) { fun(failed ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS, data); });
 }
 
 void SIMIX_process_on_exit(smx_actor_t actor, const std::function<void(bool /*failed*/)>& fun)

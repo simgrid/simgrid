@@ -95,9 +95,6 @@ template <class R, class F> R simcall_blocking(F&& code, mc::SimcallInspector* t
 namespace simgrid {
 namespace simix {
 
-XBT_ATTRIB_DEPRECATED_v325("Please manifest if you actually need this function")
-    XBT_PUBLIC const std::vector<smx_actor_t>& process_get_runnable();
-
 // What's executed as SIMIX actor code:
 typedef std::function<void()> ActorCode;
 
@@ -127,18 +124,6 @@ public:
     return set(date, simgrid::xbt::Task<void()>(std::move(callback)));
   }
 
-  template <class R, class T>
-  XBT_ATTRIB_DEPRECATED_v325("Please use a lambda or std::bind") static inline Timer* set(double date,
-                                                                                          R (*callback)(T*), T* arg)
-  {
-    return set(date, std::bind(callback, arg));
-  }
-
-  XBT_ATTRIB_DEPRECATED_v325("Please use a lambda or std::bind") static Timer* set(double date, void (*callback)(void*),
-                                                                                   void* arg)
-  {
-    return set(date, std::bind(callback, arg));
-  }
   static Timer* set(double date, simgrid::xbt::Task<void()>&& callback);
   static double next() { return simix_timers.empty() ? -1.0 : simix_timers.top().first; }
 };
@@ -149,8 +134,5 @@ public:
 XBT_PUBLIC smx_actor_t simcall_process_create(const std::string& name, const simgrid::simix::ActorCode& code,
                                               void* data, sg_host_t host,
                                               std::unordered_map<std::string, std::string>* properties);
-
-XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::xbt::Timer::set") XBT_PUBLIC smx_timer_t
-    SIMIX_timer_set(double date, simgrid::xbt::Task<void()>&& callback);
 
 #endif

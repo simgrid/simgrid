@@ -305,13 +305,6 @@ public:
   get_properties() const; // FIXME: do not export the map, but only the keys or something
   const char* get_property(const std::string& key) const;
   void set_property(const std::string& key, const std::string& value);
-
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v325("Please use Actor::on_exit(fun) instead") void on_exit(
-      const std::function<void(int, void*)>& fun, void* data);
-
-  XBT_ATTRIB_DEPRECATED_v325("Please use Actor::by_pid(pid).kill() instead") static void kill(aid_t pid);
-#endif
 };
 
 /** @ingroup s4u_api
@@ -408,15 +401,6 @@ XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std
 XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                                  const std::vector<double>& bytes_amounts, double timeout);
 
-#ifndef DOXYGEN
-XBT_ATTRIB_DEPRECATED_v325("Please use std::vectors as parameters") XBT_PUBLIC
-    void parallel_execute(int host_nb, s4u::Host* const* host_list, const double* flops_amount,
-                          const double* bytes_amount);
-XBT_ATTRIB_DEPRECATED_v325("Please use std::vectors as parameters") XBT_PUBLIC
-    void parallel_execute(int host_nb, s4u::Host* const* host_list, const double* flops_amount,
-                          const double* bytes_amount, double timeout);
-#endif
-
 XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
 XBT_PUBLIC ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                              const std::vector<double>& bytes_amounts);
@@ -469,11 +453,6 @@ XBT_PUBLIC void on_exit(const std::function<void(bool)>& fun);
 XBT_PUBLIC void migrate(Host* new_host);
 
 /** @} */
-
-#ifndef DOXYGEN
-XBT_ATTRIB_DEPRECATED_v325("Please use std::function<void(bool)> for first parameter.") XBT_PUBLIC
-    void on_exit(const std::function<void(int, void*)>& fun, void* data);
-#endif
 }
 
 

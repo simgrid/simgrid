@@ -125,6 +125,5 @@ struct MSG_Global_t {
 XBT_PUBLIC_DATA MSG_Global_t* msg_global;
 
 /*************************************************************/
-XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size);
 
 #endif

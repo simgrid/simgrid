@@ -94,8 +94,6 @@ public:
   void turn_off();
   /** Returns if that host is currently up and running */
   bool is_on() const;
-  /** Returns if that host is currently down and offline */
-  XBT_ATTRIB_DEPRECATED_v325("Please use !is_on()") bool is_off() const { return not is_on(); }
 
   const char* get_property(const std::string& key) const;
   void set_property(const std::string& key, const std::string& value);

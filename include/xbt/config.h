@@ -64,15 +64,6 @@ typedef void* xbt_cfg_t;
 SG_BEGIN_DECL()
 
 /* Set the value of the cell @a name in @a cfg with the provided value.*/
-XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::set_value<int> or sg_cfg_set_int") XBT_PUBLIC
-    void xbt_cfg_set_int(const char* name, int val);
-XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::set_value<double> or sg_cfg_set_double") XBT_PUBLIC
-    void xbt_cfg_set_double(const char* name, double val);
-XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::set_value<bool> or sg_cfg_set_boolean") XBT_PUBLIC
-    void xbt_cfg_set_boolean(const char* name, const char* val);
-XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::set_value<std::string>or sg_cfg_set_string") XBT_PUBLIC
-    void xbt_cfg_set_string(const char* name, const char* val);
-
 XBT_PUBLIC void sg_cfg_set_int(const char* name, int val);
 XBT_PUBLIC void sg_cfg_set_double(const char* name, double val);
 XBT_PUBLIC void sg_cfg_set_boolean(const char* name, const char* val);
@@ -102,13 +93,6 @@ typedef void (*xbt_cfg_cb_t)(const char* name);
  *
  *  @{
  */
-
-XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::get_value<int> or sg_cfg_get_int") XBT_PUBLIC
-    int xbt_cfg_get_int(const char* name);
-XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::get_value<double> or sg_cfg_get_double") XBT_PUBLIC
-    double xbt_cfg_get_double(const char* name);
-XBT_ATTRIB_DEPRECATED_v325("Please use simgrid::config::get_value<bool> or sg_cfg_get_boolean") XBT_PUBLIC
-    int xbt_cfg_get_boolean(const char* name);
 
 XBT_PUBLIC int sg_cfg_get_int(const char* name);
 XBT_PUBLIC double sg_cfg_get_double(const char* name);

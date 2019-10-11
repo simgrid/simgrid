@@ -104,7 +104,6 @@ XBT_PUBLIC void sg_host_set_pstate(sg_host_t host, int pstate);
 XBT_PUBLIC void sg_host_turn_on(sg_host_t host);
 XBT_PUBLIC void sg_host_turn_off(sg_host_t host);
 XBT_PUBLIC int sg_host_is_on(sg_host_t host);
-XBT_ATTRIB_DEPRECATED_v325("Please use !sg_host_is_on()") XBT_PUBLIC int sg_host_is_off(sg_host_t host);
 
 /** @ingroup m_host_management
  * @brief Returns a xbt_dict_t consisting of the list of properties assigned to this host

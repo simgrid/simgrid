@@ -224,21 +224,3 @@ msg_task_t MSG_comm_get_task(msg_comm_t comm)
 
   return comm->task_received ? *comm->task_received : comm->task_sent;
 }
-
-/**
- * @brief This function is called by SIMIX in kernel mode to copy the data of a comm.
- * @param comm the comm
- * @param buff the data copied
- * @param buff_size size of the buffer
- */
-// deprecated but used by MSG_set_copy_callback. Should be removed in v325
-void MSG_comm_copy_data_from_SIMIX(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
-{
-  SIMIX_comm_copy_pointer_callback(comm, buff, buff_size);
-
-  // notify the user callback if any
-  if (msg_global->task_copy_callback) {
-    msg_task_t task = static_cast<msg_task_t>(buff);
-    msg_global->task_copy_callback(task, comm->src_actor_->ciface(), comm->dst_actor_->ciface());
-  }
-}

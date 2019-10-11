@@ -111,7 +111,6 @@ Host Management
 .. doxygenfunction:: MSG_host_get_property_value
 .. doxygenfunction:: MSG_host_get_pstate
 .. doxygenfunction:: MSG_host_get_speed
-.. doxygenfunction:: MSG_host_is_off
 .. doxygenfunction:: MSG_host_is_on
 .. doxygenfunction:: MSG_host_off
 .. doxygenfunction:: MSG_host_on
@@ -155,7 +154,6 @@ Task structure of MSG :cpp:type:`msg_task_t` and associated functions.
 .. doxygenfunction:: MSG_task_listen_from
 .. doxygenfunction:: MSG_task_receive
 .. doxygenfunction:: MSG_task_receive_bounded
-.. doxygenfunction:: MSG_task_receive_ext
 .. doxygenfunction:: MSG_task_receive_ext_bounded
 .. doxygenfunction:: MSG_task_receive_with_timeout
 .. doxygenfunction:: MSG_task_receive_with_timeout_bounded
@@ -168,7 +166,6 @@ Task structure of MSG :cpp:type:`msg_task_t` and associated functions.
 .. doxygenfunction:: MSG_task_set_bound
 .. doxygenfunction:: MSG_task_set_bytes_amount
 .. doxygenfunction:: MSG_task_set_category
-.. doxygenfunction:: MSG_task_set_copy_callback
 .. doxygenfunction:: MSG_task_set_data
 .. doxygenfunction:: MSG_task_set_flops_amount
 .. doxygenfunction:: MSG_task_set_name

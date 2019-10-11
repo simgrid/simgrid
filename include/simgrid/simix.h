@@ -109,25 +109,6 @@ XBT_PUBLIC void SIMIX_function_register(const std::string& name, xbt_main_func_t
 XBT_PUBLIC void SIMIX_launch_application(const std::string& file);
 #endif
 
-/*********************************** Host *************************************/
-/* Functions for running a process in main()
- *
- *  1. create the maestro process
- *  2. attach (create a context and wait for maestro to give control back to you)
- *  3. do you process job
- *  4. detach (this waits for the simulation to terminate)
- */
-
-#ifdef __cplusplus
-XBT_ATTRIB_DEPRECATED_v325("Please use ActorImpl::attach() or sg_actor_attach()") XBT_PUBLIC smx_actor_t
-    SIMIX_process_attach(const char* name, void* data, const char* hostname,
-                         std::unordered_map<std::string, std::string>* properties, smx_actor_t parent_process);
-#endif
-SG_BEGIN_DECL()
-XBT_ATTRIB_DEPRECATED_v325("Please use ActorImpl::detach() or sg_actor_detach()") XBT_PUBLIC
-    void SIMIX_process_detach();
-SG_END_DECL()
-
 /********************************* Process ************************************/
 SG_BEGIN_DECL()
 XBT_PUBLIC int SIMIX_process_count();
@@ -135,15 +116,9 @@ XBT_PUBLIC smx_actor_t SIMIX_process_self();
 XBT_PUBLIC const char* SIMIX_process_self_get_name();
 XBT_PUBLIC void SIMIX_process_self_set_data(void* data);
 XBT_PUBLIC void* SIMIX_process_self_get_data();
-XBT_ATTRIB_DEPRECATED_v325("Please manifest if you actually need this function") XBT_PUBLIC
-    int SIMIX_process_has_pending_comms(smx_actor_t process);
-XBT_ATTRIB_DEPRECATED_v325("Please use SIMIX_process_on_exit(smx_actor_t, const std::function<void(bool)>&)") XBT_PUBLIC
-    void SIMIX_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void* data);
 SG_END_DECL()
 
 #ifdef __cplusplus
-XBT_ATTRIB_DEPRECATED_v325("Please use SIMIX_process_on_exit(smx_actor_t, const std::function<void(bool)>&)") XBT_PUBLIC
-    void SIMIX_process_on_exit(smx_actor_t process, const std::function<void(int, void*)>& fun, void* data);
 XBT_PUBLIC void SIMIX_process_on_exit(smx_actor_t process, const std::function<void(bool /*failed*/)>& fun);
 #endif
 
@@ -156,8 +131,6 @@ XBT_PUBLIC void SIMIX_comm_copy_pointer_callback(simgrid::kernel::activity::Comm
 XBT_PUBLIC void SIMIX_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff,
                                                 size_t buff_size);
 #endif
-
-XBT_ATTRIB_DEPRECATED_v325("Please use CommImpl::finish()") XBT_PUBLIC void SIMIX_comm_finish(smx_activity_t synchro);
 
 /******************************************************************************/
 /*                            SIMIX simcalls                                  */
@@ -250,29 +223,5 @@ XBT_PUBLIC e_smx_state_t simcall_io_wait(const smx_activity_t& io);
 SG_BEGIN_DECL()
 XBT_PUBLIC int simcall_mc_random(int min, int max);
 SG_END_DECL()
-
-/***************************** DEPRECATED CALLS ****************************/
-SG_BEGIN_DECL()
-XBT_ATTRIB_DEPRECATED_v325("Please use sg_actor_set_kill_time()") XBT_PUBLIC
-    void simcall_process_set_kill_time(smx_actor_t process, double kill_time);
-
-XBT_ATTRIB_DEPRECATED_v325("Please use Comm::cancel()") XBT_PUBLIC void simcall_comm_cancel(smx_activity_t comm);
-
-XBT_ATTRIB_DEPRECATED_v325("Please use Exec::cancel()") XBT_PUBLIC
-    void simcall_execution_cancel(smx_activity_t execution);
-XBT_ATTRIB_DEPRECATED_v325("Please use Exec::set_bound()") XBT_PUBLIC
-    void simcall_execution_set_bound(smx_activity_t execution, double bound);
-SG_END_DECL()
-
-#ifdef __cplusplus
-XBT_ATTRIB_DEPRECATED_v325("Please use Exec::start()") XBT_PUBLIC smx_activity_t
-    simcall_execution_start(const std::string& name, const std::string& category, double flops_amount,
-                            double sharing_penalty, double bound, sg_host_t host);
-
-// Should be deprecated in v325 too but is still used in other deprecated calls
-XBT_PUBLIC smx_activity_t simcall_execution_parallel_start(const std::string& name, int host_nb,
-                                                           const sg_host_t* host_list, const double* flops_amount,
-                                                           const double* bytes_amount, double rate, double timeout);
-#endif
 
 #endif

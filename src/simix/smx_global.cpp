@@ -542,11 +542,6 @@ smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void *arg)
   return simgrid::simix::Timer::set(date, std::bind(callback, arg));
 }
 
-smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()>&& callback) // deprecated
-{
-  return simgrid::simix::Timer::set(date, std::move(callback));
-}
-
 /** @brief cancels a timer that was added earlier */
 void SIMIX_timer_remove(smx_timer_t timer) {
   timer->remove();

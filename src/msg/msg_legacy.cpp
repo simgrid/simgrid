@@ -332,10 +332,6 @@ int MSG_host_is_on(sg_host_t h)
 {
   return sg_host_is_on(h);
 }
-int MSG_host_is_off(sg_host_t h) // deprecated
-{
-  return not sg_host_is_on(h);
-}
 xbt_dict_t MSG_host_get_properties(sg_host_t host)
 {
   return sg_host_get_properties(host);

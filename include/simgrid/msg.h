@@ -132,7 +132,6 @@ XBT_PUBLIC void MSG_host_on(sg_host_t h);
  */
 XBT_PUBLIC void MSG_host_off(sg_host_t h);
 XBT_PUBLIC int MSG_host_is_on(sg_host_t h);
-XBT_ATTRIB_DEPRECATED_v325("Please use !MSG_host_is_on()") XBT_PUBLIC int MSG_host_is_off(sg_host_t h);
 XBT_PUBLIC xbt_dict_t MSG_host_get_properties(sg_host_t host);
 XBT_PUBLIC const char* MSG_host_get_property_value(sg_host_t host, const char* name);
 XBT_PUBLIC void MSG_host_set_property_value(sg_host_t host, const char* name, const char* value);
@@ -362,10 +361,6 @@ XBT_PUBLIC void MSG_task_set_bytes_amount(msg_task_t task, double bytes_amount);
 XBT_PUBLIC double MSG_task_get_remaining_communication(msg_task_t task);
 XBT_PUBLIC double MSG_task_get_bytes_amount(msg_task_t task);
 
-XBT_ATTRIB_DEPRECATED_v325("Getting a task from a specific host is no longer supported."
-                           " Use MSG_task_receive_with_timeout instead.") XBT_PUBLIC msg_error_t
-    MSG_task_receive_ext(msg_task_t* task, const char* alias, double timeout, msg_host_t host);
-
 XBT_PUBLIC msg_error_t MSG_task_receive_with_timeout(msg_task_t* task, const char* alias, double timeout);
 
 XBT_PUBLIC msg_error_t MSG_task_receive(msg_task_t* task, const char* alias);
@@ -442,10 +437,6 @@ XBT_PUBLIC void MSG_barrier_destroy(msg_bar_t bar);
 XBT_PUBLIC int MSG_barrier_wait(msg_bar_t bar);
 
 /* ****************************************************************************************** */
-/* DO NOT USE this nasty pimple (unless if you're writing a binding) */
-XBT_ATTRIB_DEPRECATED_v325("MSG_process_set_copy_callback is deprecated. Please contact us if you need it.") XBT_PUBLIC
-    void MSG_task_set_copy_callback(void (*callback)(msg_task_t task, msg_process_t src, msg_process_t dst));
-
 #ifdef __cplusplus
 }
 #endif

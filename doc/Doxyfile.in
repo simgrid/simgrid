@@ -1442,7 +1442,6 @@ PREDEFINED             = __cplusplus \
 			 XBT_PRIVATE= \
 			 XBT_ATTRIB_NORETURN= \
 			 XBT_ATTRIB_UNUSED= \
-                         XBT_ATTRIB_DEPRECATED_v325(m)= \
                          XBT_ATTRIB_DEPRECATED_v327(m)= \
                          XBT_ATTRIB_DEPRECATED_v328(m)=
 

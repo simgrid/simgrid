@@ -497,11 +497,6 @@ void help()
  * @param key the name of the variable
  * @param value the value of the variable
  */
-void xbt_cfg_set_int(const char *key, int value)
-{
-  sg_cfg_set_int(key, value);
-}
-
 void sg_cfg_set_int(const char* key, int value)
 {
   (*simgrid_config)[key].set_value<int>(value);
@@ -512,11 +507,6 @@ void sg_cfg_set_int(const char* key, int value)
  * @param key the name of the variable
  * @param value the double to set
  */
-void xbt_cfg_set_double(const char *key, double value)
-{
-  sg_cfg_set_double(key, value);
-}
-
 void sg_cfg_set_double(const char* key, double value)
 {
   (*simgrid_config)[key].set_value<double>(value);
@@ -528,11 +518,6 @@ void sg_cfg_set_double(const char* key, double value)
  * @param value the value to be added
  *
  */
-void xbt_cfg_set_string(const char* key, const char* value)
-{
-  sg_cfg_set_string(key, value);
-}
-
 void sg_cfg_set_string(const char* key, const char* value)
 {
   (*simgrid_config)[key].set_value<std::string>(value);
@@ -543,11 +528,6 @@ void sg_cfg_set_string(const char* key, const char* value)
  * @param key the name of the variable
  * @param value the value of the variable
  */
-void xbt_cfg_set_boolean(const char *key, const char *value)
-{
-  sg_cfg_set_boolean(key, value);
-}
-
 void sg_cfg_set_boolean(const char* key, const char* value)
 {
   (*simgrid_config)[key].set_value<bool>(simgrid::config::parse_bool(value));
@@ -560,11 +540,6 @@ void sg_cfg_set_boolean(const char* key, const char* value)
  *
  * Returns the first value from the config set under the given name.
  */
-int xbt_cfg_get_int(const char *key)
-{
-  return sg_cfg_get_int(key);
-}
-
 int sg_cfg_get_int(const char* key)
 {
   return (*simgrid_config)[key].get_value<int>();
@@ -576,11 +551,6 @@ int sg_cfg_get_int(const char* key)
  *
  * Returns the first value from the config set under the given name.
  */
-double xbt_cfg_get_double(const char *key)
-{
-  return sg_cfg_get_double(key);
-}
-
 double sg_cfg_get_double(const char* key)
 {
   return (*simgrid_config)[key].get_value<double>();
@@ -593,11 +563,6 @@ double sg_cfg_get_double(const char* key)
  * Returns the first value from the config set under the given name.
  * If there is more than one value, it will issue a warning.
  */
-int xbt_cfg_get_boolean(const char *key)
-{
-  return sg_cfg_get_boolean(key);
-}
-
 int sg_cfg_get_boolean(const char* key)
 {
   return (*simgrid_config)[key].get_value<bool>() ? 1 : 0;

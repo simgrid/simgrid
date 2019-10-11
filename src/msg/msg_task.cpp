@@ -252,21 +252,6 @@ void MSG_task_set_data(msg_task_t task, void *data)
   task->set_user_data(data);
 }
 
-/** @brief Sets a function to be called when a task has just been copied.
- * @param callback a callback function
- */
-// deprecated
-void MSG_task_set_copy_callback(void (*callback) (msg_task_t task, msg_process_t sender, msg_process_t receiver)) {
-
-  msg_global->task_copy_callback = callback;
-
-  if (callback) {
-    SIMIX_comm_set_copy_data_callback(MSG_comm_copy_data_from_SIMIX);
-  } else {
-    SIMIX_comm_set_copy_data_callback(SIMIX_comm_copy_pointer_callback);
-  }
-}
-
 /** @brief Returns the sender of the given task */
 msg_process_t MSG_task_get_sender(msg_task_t task)
 {
@@ -555,28 +540,6 @@ msg_error_t MSG_task_receive_with_timeout(msg_task_t* task, const char* alias, d
 msg_error_t MSG_task_receive_with_timeout_bounded(msg_task_t* task, const char* alias, double timeout, double rate)
 {
   return MSG_task_receive_ext_bounded(task, alias, timeout, nullptr, rate);
-}
-
-/**
- * @brief Receives a task from a mailbox from a specific host with a given timeout.
- *
- * This is a blocking function with a timeout, the execution flow will be blocked until the task is received or the
- * timeout is achieved. See #MSG_task_irecv for receiving tasks asynchronously. You can provide a -1 timeout
- * to obtain an infinite timeout.
- *
- * @param task a memory location for storing a #msg_task_t.
- * @param alias name of the mailbox to receive the task from
- * @param timeout is the maximum wait time for completion (provide -1 for no timeout)
- * @param host a #msg_host_t host from where the task was sent
- *
- * @return Returns
- * #MSG_OK if the task was successfully received,
- * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
- */
-msg_error_t MSG_task_receive_ext(msg_task_t* task, const char* alias, double timeout, msg_host_t host)
-{
-  XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
-  return MSG_task_receive_ext_bounded(task, alias, timeout, host, -1.0);
 }
 
 /**

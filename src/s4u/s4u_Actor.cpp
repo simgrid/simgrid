@@ -120,11 +120,6 @@ void Actor::set_auto_restart(bool autorestart)
   });
 }
 
-void Actor::on_exit(const std::function<void(int, void*)>& fun, void* data) /* deprecated */
-{
-  on_exit([fun, data](bool failed) { fun(failed ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS, data); });
-}
-
 void Actor::on_exit(const std::function<void(bool /*failed*/)>& fun) const
 {
   kernel::actor::simcall([this, &fun] { SIMIX_process_on_exit(pimpl_, fun); });
@@ -218,19 +213,6 @@ void Actor::set_kill_time(double kill_time)
 double Actor::get_kill_time()
 {
   return pimpl_->get_kill_time();
-}
-
-void Actor::kill(aid_t pid) // deprecated
-{
-  kernel::actor::ActorImpl* killer = SIMIX_process_self();
-  kernel::actor::ActorImpl* victim = SIMIX_process_from_PID(pid);
-  if (victim != nullptr) {
-    kernel::actor::simcall([killer, victim] { killer->kill(victim); });
-  } else {
-    std::ostringstream oss;
-    oss << "kill: (" << pid << ") - No such actor" << std::endl;
-    throw std::runtime_error(oss.str());
-  }
 }
 
 void Actor::kill()
@@ -375,27 +357,6 @@ void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<do
   exec_init(hosts, flops_amounts, bytes_amounts)->set_timeout(timeout)->wait();
 }
 
-// deprecated
-void parallel_execute(int host_nb, s4u::Host* const* host_list, const double* flops_amount, const double* bytes_amount,
-                      double timeout)
-{
-  smx_activity_t s =
-      simcall_execution_parallel_start("", host_nb, host_list, flops_amount, bytes_amount, /* rate */ -1, timeout);
-  simcall_execution_wait(s);
-  delete[] flops_amount;
-  delete[] bytes_amount;
-}
-
-// deprecated
-void parallel_execute(int host_nb, s4u::Host* const* host_list, const double* flops_amount, const double* bytes_amount)
-{
-  smx_activity_t s = simcall_execution_parallel_start("", host_nb, host_list, flops_amount, bytes_amount,
-                                                      /* rate */ -1, /*timeout*/ -1);
-  simcall_execution_wait(s);
-  delete[] flops_amount;
-  delete[] bytes_amount;
-}
-
 ExecPtr exec_init(double flops_amount)
 {
   return ExecPtr(new ExecSeq(get_host(), flops_amount));
@@ -462,11 +423,6 @@ void exit()
 void on_exit(const std::function<void(bool)>& fun)
 {
   SIMIX_process_self()->iface()->on_exit(fun);
-}
-
-void on_exit(const std::function<void(int, void*)>& fun, void* data) /* deprecated */
-{
-  SIMIX_process_self()->iface()->on_exit([fun, data](bool exit) { fun(exit, data); });
 }
 
 /** @brief Moves the current actor to another host

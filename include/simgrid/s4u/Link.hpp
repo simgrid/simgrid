@@ -64,24 +64,6 @@ public:
   bool is_on() const;
   void turn_off();
 
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v325("Please use Link::set_state_profile()") void set_state_trace(
-      kernel::profile::Profile* profile)
-  {
-    set_state_profile(profile);
-  }
-  XBT_ATTRIB_DEPRECATED_v325("Please use Link::set_bandwidth_profile()") void set_bandwidth_trace(
-      kernel::profile::Profile* profile)
-  {
-    set_bandwidth_profile(profile);
-  }
-  XBT_ATTRIB_DEPRECATED_v325("Please use Link::set_latency_profile()") void set_latency_trace(
-      kernel::profile::Profile* profile)
-  {
-    set_latency_profile(profile);
-  }
-#endif
-
   /** Setup the profile with states events (ON or OFF). The profile must contain boolean values. */
   void set_state_profile(kernel::profile::Profile* profile);
   /** Setup the profile with bandwidth events (peak speed changes due to external load).

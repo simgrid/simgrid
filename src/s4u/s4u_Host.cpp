@@ -542,12 +542,6 @@ int sg_host_is_on(sg_host_t host)
   return host->is_on();
 }
 
-/** @deprecated */
-int sg_host_is_off(sg_host_t host)
-{
-  return not host->is_on();
-}
-
 /** @brief Get the properties of a host */
 xbt_dict_t sg_host_get_properties(sg_host_t host)
 {

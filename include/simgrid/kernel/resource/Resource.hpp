@@ -60,19 +60,12 @@ public:
 
   /** @brief Check if the current Resource is active */
   virtual bool is_on() const { return is_on_; }
-  /** @brief Check if the current Resource is shut down */
-  XBT_ATTRIB_DEPRECATED_v325("Please use !is_on()") virtual bool is_off() const { return not is_on_; }
   /** @brief Turn on the current Resource */
   virtual void turn_on() { is_on_ = true; }
   /** @brief Turn off the current Resource */
   virtual void turn_off() { is_on_ = false; }
   /** @brief setup the profile file with states events (ON or OFF). The profile must contain boolean values. */
   virtual void set_state_profile(profile::Profile* profile);
-
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v325("Please use Resource::set_state_profile()") virtual void set_state_trace(
-      profile::Profile* profile) { set_state_profile(profile); }
-#endif
 
 private:
   std::string name_;
