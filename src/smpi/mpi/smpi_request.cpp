@@ -515,7 +515,7 @@ void Request::start()
     action_   = simcall_comm_isend(
         simgrid::s4u::Actor::by_pid(src_)->get_impl(), mailbox->get_impl(), size_, -1.0, buf, real_size_, &match_send,
         &xbt_free_f, // how to free the userdata if a detached send fails
-        not process->replaying() ? smpi_comm_copy_data_callback : &smpi_comm_null_copy_buffer_callback, this,
+        process->replaying() ? &smpi_comm_null_copy_buffer_callback : smpi_comm_copy_data_callback, this,
         // detach if msg size < eager/rdv switch limit
         detached_);
     XBT_DEBUG("send simcall posted");
