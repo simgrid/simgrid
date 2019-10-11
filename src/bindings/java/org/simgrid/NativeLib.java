@@ -91,6 +91,19 @@ public final class NativeLib {
 		
 		// We must write the lib onto the disk before loading it -- stupid operating systems
 		if (tempDir == null) {
+
+			if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+				// The cleanup at exit fails on Windows where it is impossible to delete files which are still in
+				// use.  Try to remove stale temporary files from previous executions, and limit disk usage.
+				Path tmpdir = (new File(System.getProperty("java.io.tmpdir"))).toPath();
+				Files.find(tmpdir, 1, (Path p, java.nio.file.attribute.BasicFileAttributes a) ->
+				           a.isDirectory() && !p.equals(tmpdir) &&
+				           p.getFileName().toString().startsWith("simgrid-java-"))
+				     .map(Path::toFile)
+				     .map(FileCleaner::new)
+				     .forEach(FileCleaner::run);
+			}
+
 			tempDir = Files.createTempDirectory("simgrid-java-");
 			// don't leak the files on disk, but remove it on JVM shutdown
 			Runtime.getRuntime().addShutdownHook(new Thread(new FileCleaner(tempDir.toFile())));
@@ -103,27 +116,20 @@ public final class NativeLib {
 		     name+".dll", "lib"+name+".dll", /* windows (pure and mingw) */
 		     "lib"+name+".dylib"             /* macOS */}) {
 						
-			File fileOut = new File(tempDir.toFile().getAbsolutePath() + File.separator + filename);
-			boolean done = false;
+			File fileOut = new File(tempDir.toFile(), filename);
 			try ( // Try-with-resources. These stream will be autoclosed when needed.
 				InputStream in = NativeLib.class.getClassLoader().getResourceAsStream(path+filename);
-				OutputStream out = new FileOutputStream(fileOut);
 			) {
 				if (in != null) {
 					/* copy the library in position */
-					byte[] buffer = new byte[4096];
-					int bytesRead;
-					while ((bytesRead = in.read(buffer)) != -1)     // Read until EOF
-						out.write(buffer, 0, bytesRead);
-					done = true;
-				}
-			}
-			if (done) {
-				/* load that library */
-				System.load(fileOut.getAbsolutePath());
+					Files.copy(in, fileOut.toPath());
 
-				/* It loaded! we're good */
-				return true;
+					/* load that library */
+					System.load(fileOut.getAbsolutePath());
+
+					/* It loaded! we're good */
+					return true;
+				}
 			}
 		}
 		
@@ -168,7 +174,8 @@ public final class NativeLib {
                                      //.peek(System.err::println) // Prints what gets removed
                                      .forEach(java.io.File::delete);
 			} catch(Exception e) {
-				System.err.println("Error while cleaning temporary file "+dir.getAbsolutePath()+" during shutdown: "+e.getCause());
+				System.err.println("Error while cleaning temporary file " + dir.getAbsolutePath() +
+				                   ": " + e.getCause());
 				e.printStackTrace();
                         }
 		}
