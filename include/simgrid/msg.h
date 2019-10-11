@@ -366,9 +366,6 @@ XBT_PUBLIC msg_error_t MSG_task_receive_with_timeout(msg_task_t* task, const cha
 XBT_PUBLIC msg_error_t MSG_task_receive(msg_task_t* task, const char* alias);
 #define MSG_task_recv(t, a) MSG_task_receive((t), (a))
 
-XBT_PUBLIC msg_error_t MSG_task_receive_ext_bounded(msg_task_t* task, const char* alias, double timeout,
-                                                    msg_host_t host, double rate);
-
 XBT_PUBLIC msg_error_t MSG_task_receive_with_timeout_bounded(msg_task_t* task, const char* alias, double timeout,
                                                              double rate);
 XBT_PUBLIC msg_error_t MSG_task_receive_bounded(msg_task_t* task, const char* alias, double rate);

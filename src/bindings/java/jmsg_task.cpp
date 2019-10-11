@@ -339,7 +339,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receiveBounded(JNIEnv* env, 
   msg_task_t task = nullptr;
 
   const char *alias = env->GetStringUTFChars(jalias, 0);
-  msg_error_t res   = MSG_task_receive_ext_bounded(&task, alias, jtimeout, /*host*/ nullptr, rate);
+  msg_error_t res   = MSG_task_receive_with_timeout_bounded(&task, alias, jtimeout, rate);
   if (env->ExceptionOccurred())
     return nullptr;
   if (res != MSG_OK) {

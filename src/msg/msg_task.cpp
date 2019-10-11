@@ -517,7 +517,7 @@ msg_error_t MSG_task_receive_bounded(msg_task_t* task, const char* alias, double
  */
 msg_error_t MSG_task_receive_with_timeout(msg_task_t* task, const char* alias, double timeout)
 {
-  return MSG_task_receive_ext_bounded(task, alias, timeout, nullptr, -1);
+  return MSG_task_receive_with_timeout_bounded(task, alias, timeout, -1);
 }
 
 /**
@@ -539,33 +539,8 @@ msg_error_t MSG_task_receive_with_timeout(msg_task_t* task, const char* alias, d
  */
 msg_error_t MSG_task_receive_with_timeout_bounded(msg_task_t* task, const char* alias, double timeout, double rate)
 {
-  return MSG_task_receive_ext_bounded(task, alias, timeout, nullptr, rate);
-}
-
-/**
- * @brief Receives a task from a mailbox from a specific host with a given timeout  and at a given rate.
- *
- * @param task a memory location for storing a #msg_task_t.
- * @param alias name of the mailbox to receive the task from
- * @param timeout is the maximum wait time for completion (provide -1 for no timeout)
- * @param host a #msg_host_t host from where the task was sent
- * @param rate limit the reception to rate bandwidth (byte/sec)
- *
- * The rate parameter can be used to receive a task with a limited bandwidth (smaller than the physical available
- * value). Use MSG_task_receive_ext() if you don't limit the rate (or pass -1 as a rate value do disable this feature).
- *
- * @return Returns
- * #MSG_OK if the task was successfully received,
- * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
- */
-msg_error_t MSG_task_receive_ext_bounded(msg_task_t* task, const char* alias, double timeout, msg_host_t host,
-                                         double rate)
-{
-  XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
+  XBT_DEBUG("MSG_task_receive_with_timeout_bounded: Trying to receive a message on mailbox '%s'", alias);
   msg_error_t ret = MSG_OK;
-  /* We no longer support getting a task from a specific host */
-  if (host)
-    THROW_UNIMPLEMENTED;
 
   /* Sanity check */
   xbt_assert(task, "Null pointer for the task storage");
