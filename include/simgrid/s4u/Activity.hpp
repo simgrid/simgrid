@@ -9,6 +9,7 @@
 #include "xbt/asserts.h"
 #include <atomic>
 #include <simgrid/forward.h>
+#include <string>
 #include <xbt/signal.hpp>
 
 namespace simgrid {
