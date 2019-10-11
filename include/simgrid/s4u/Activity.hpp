@@ -105,14 +105,14 @@ private:
 
 public:
 #ifndef DOXYGEN
-  friend XBT_PUBLIC void intrusive_ptr_release(AnyActivity* a)
+  friend void intrusive_ptr_release(AnyActivity* a)
   {
     if (a->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
       std::atomic_thread_fence(std::memory_order_acquire);
       delete a;
     }
   }
-  friend XBT_PUBLIC void intrusive_ptr_add_ref(AnyActivity* a) { a->refcount_.fetch_add(1, std::memory_order_relaxed); }
+  friend void intrusive_ptr_add_ref(AnyActivity* a) { a->refcount_.fetch_add(1, std::memory_order_relaxed); }
 #endif
   AnyActivity* set_name(const std::string& name)
   {
