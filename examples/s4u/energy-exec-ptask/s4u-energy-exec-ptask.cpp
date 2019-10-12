@@ -135,7 +135,6 @@ int main(int argc, char* argv[])
   sg_host_energy_plugin_init();
   simgrid::s4u::Engine e(&argc, argv);
   e.set_config("host/model:ptask_L07");
-  //xbt_log_control_set("surf_energy.thresh:debug");
 
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/energy_platform.xml\n", argv[0], argv[0]);
 

@@ -32,9 +32,6 @@ VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host
 VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host, int core_amount, size_t ramsize)
     : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, physical_host, core_amount, ramsize))
 {
-  // xbt_assert(s4u::Host::by_name(name) == nullptr,
-  //           "Cannot create a VM named %s: this name is already used by a host or a VM", get_cname());
-
   XBT_DEBUG("Create VM %s", get_cname());
 
   /* Currently, a VM uses the network resource of its physical host */
