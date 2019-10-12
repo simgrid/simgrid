@@ -199,11 +199,12 @@ void HostEnergy::update()
 HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host_(ptr), last_updated_(surf_get_clock())
 {
   init_watts_range_list();
-  static bool warned = false;
 
   const char* off_power_str = host_->get_property("wattage_off");
   if (off_power_str == nullptr) {
     off_power_str = host_->get_property("watt_off");
+
+    static bool warned = false;
     if (off_power_str != nullptr && not warned) {
       warned = true;
       XBT_WARN("Please use 'wattage_off' instead of 'watt_off' to define the idle wattage of hosts in your XML.");
@@ -355,13 +356,12 @@ void HostEnergy::init_watts_range_list()
       boost::split(current_power_values, current_power_values_str, boost::is_any_of(":"));
       double p_idle = xbt_str_parse_double((current_power_values.at(0)).c_str(),
                                            "Invalid obsolete XML file. Fix your watt_per_state property.");
-      double p_one_core;
       double p_full;
       double p_epsilon;
 
       if (current_power_values.size() == 3) {
-        p_one_core = xbt_str_parse_double((current_power_values.at(1)).c_str(),
-                                          "Invalid obsolete XML file. Fix your watt_per_state property.");
+        double p_one_core = xbt_str_parse_double((current_power_values.at(1)).c_str(),
+                                                 "Invalid obsolete XML file. Fix your watt_per_state property.");
         p_full     = xbt_str_parse_double((current_power_values.at(2)).c_str(),
                                       "Invalid obsolete XML file. Fix your watt_per_state property.");
         if (host_->get_core_count() == 1) {
