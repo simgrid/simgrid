@@ -18,6 +18,7 @@ import java.util.stream.Stream;
  * containing a call to this.
  */
 public final class NativeLib {
+	private static final boolean windowsOs = System.getProperty("os.name").toLowerCase().startsWith("win");
 	private static boolean isNativeInited = false;
 	private static Path tempDir = null; // where the embeeded libraries are unpacked before loading them
 
@@ -41,7 +42,7 @@ public final class NativeLib {
 		if (isNativeInited)
 			return;
 
-		if (System.getProperty("os.name").toLowerCase().startsWith("win"))
+		if (windowsOs)
 			NativeLib.nativeInit("winpthread-1");
 
 		NativeLib.nativeInit("simgrid");
@@ -89,15 +90,16 @@ public final class NativeLib {
 		
 		// We must write the lib onto the disk before loading it -- stupid operating systems
 		if (tempDir == null) {
+			final String tempPrefix = "simgrid-java-";
 
-			if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+			if (windowsOs) {
 				// The cleanup at exit fails on Windows where it is impossible to delete files which are still in
 				// use.  Try to remove stale temporary files from previous executions, and limit disk usage.
 				Path tmpdir = (new File(System.getProperty("java.io.tmpdir"))).toPath();
 				try (Stream<Path> paths = Files.find(tmpdir, 1,
 					(Path p, java.nio.file.attribute.BasicFileAttributes a) ->
 						a.isDirectory() && !p.equals(tmpdir) &&
-						p.getFileName().toString().startsWith("simgrid-java-"))) {
+						p.getFileName().toString().startsWith(tempPrefix))) {
 					paths.map(Path::toFile)
 					     .map(FileCleaner::new)
 					     .forEach(FileCleaner::run);
@@ -105,7 +107,7 @@ public final class NativeLib {
 				}
 			}
 
-			tempDir = Files.createTempDirectory("simgrid-java-");
+			tempDir = Files.createTempDirectory(tempPrefix);
 			// don't leak the files on disk, but remove it on JVM shutdown
 			Runtime.getRuntime().addShutdownHook(new Thread(new FileCleaner(tempDir.toFile())));
 		}
