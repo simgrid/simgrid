@@ -96,12 +96,15 @@ public final class NativeLib {
 				// The cleanup at exit fails on Windows where it is impossible to delete files which are still in
 				// use.  Try to remove stale temporary files from previous executions, and limit disk usage.
 				Path tmpdir = (new File(System.getProperty("java.io.tmpdir"))).toPath();
-				Files.find(tmpdir, 1, (Path p, java.nio.file.attribute.BasicFileAttributes a) ->
-				           a.isDirectory() && !p.equals(tmpdir) &&
-				           p.getFileName().toString().startsWith("simgrid-java-"))
-				     .map(Path::toFile)
-				     .map(FileCleaner::new)
-				     .forEach(FileCleaner::run);
+				try (Stream<Path> paths = Files.find(tmpdir, 1,
+					(Path p, java.nio.file.attribute.BasicFileAttributes a) ->
+						a.isDirectory() && !p.equals(tmpdir) &&
+						p.getFileName().toString().startsWith("simgrid-java-"))) {
+					paths.map(Path::toFile)
+					     .map(FileCleaner::new)
+					     .forEach(FileCleaner::run);
+
+				}
 			}
 
 			tempDir = Files.createTempDirectory("simgrid-java-");
