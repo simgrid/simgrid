@@ -21,8 +21,8 @@ public:
   Type_Contiguous(const Type_Contiguous&) = delete;
   Type_Contiguous& operator=(const Type_Contiguous&) = delete;
   ~Type_Contiguous();
-  void serialize(const void* noncontiguous, void* contiguous, int count);
-  void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
+  void serialize(const void* noncontiguous, void* contiguous, int count) override;
+  void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op) override;
 };
 
 class Type_Hvector: public Datatype{
@@ -37,8 +37,8 @@ public:
   Type_Hvector(const Type_Hvector&) = delete;
   Type_Hvector& operator=(const Type_Hvector&) = delete;
   ~Type_Hvector();
-  void serialize(const void* noncontiguous, void* contiguous, int count);
-  void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
+  void serialize(const void* noncontiguous, void* contiguous, int count) override;
+  void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op) override;
 };
 
 class Type_Vector : public Type_Hvector {
@@ -61,8 +61,8 @@ public:
   Type_Hindexed(const Type_Hindexed&) = delete;
   Type_Hindexed& operator=(const Type_Hindexed&) = delete;
   ~Type_Hindexed();
-  void serialize(const void* noncontiguous, void* contiguous, int count);
-  void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
+  void serialize(const void* noncontiguous, void* contiguous, int count) override;
+  void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op) override;
 };
 
 class Type_Indexed : public Type_Hindexed {
@@ -83,8 +83,8 @@ public:
   Type_Struct(const Type_Struct&) = delete;
   Type_Struct& operator=(const Type_Struct&) = delete;
   ~Type_Struct();
-  void serialize(const void* noncontiguous, void* contiguous, int count);
-  void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
+  void serialize(const void* noncontiguous, void* contiguous, int count) override;
+  void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op) override;
 };
 
 } // namespace smpi

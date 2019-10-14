@@ -44,7 +44,7 @@ public:
   void suspend();
   void resume();
   void shutdown();
-  void destroy();
+  void destroy() override;
 
   Host* get_pm();
   void set_pm(Host* pm);
