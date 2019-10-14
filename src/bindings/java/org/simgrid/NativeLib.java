@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * containing a call to this.
  */
 public final class NativeLib {
-	private static final boolean windowsOs = System.getProperty("os.name").toLowerCase().startsWith("win");
+	private static final boolean WINDOWS_OS = System.getProperty("os.name").toLowerCase().startsWith("win");
 	private static boolean isNativeInited = false;
 	private static Path tempDir = null; // where the embeeded libraries are unpacked before loading them
 
@@ -42,7 +42,7 @@ public final class NativeLib {
 		if (isNativeInited)
 			return;
 
-		if (windowsOs)
+		if (WINDOWS_OS)
 			NativeLib.nativeInit("winpthread-1");
 
 		NativeLib.nativeInit("simgrid");
@@ -92,7 +92,7 @@ public final class NativeLib {
 		if (tempDir == null) {
 			final String tempPrefix = "simgrid-java-";
 
-			if (windowsOs) {
+			if (WINDOWS_OS) {
 				// The cleanup at exit fails on Windows where it is impossible to delete files which are still in
 				// use.  Try to remove stale temporary files from previous executions, and limit disk usage.
 				Path tmpdir = (new File(System.getProperty("java.io.tmpdir"))).toPath();
