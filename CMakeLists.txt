@@ -1,3 +1,25 @@
+# Build the version number
+
+set(SIMGRID_VERSION_MAJOR "3")
+set(SIMGRID_VERSION_MINOR "24")
+set(SIMGRID_VERSION_PATCH "1") # odd => git branch; even => stable release or released snapshot
+
+set(SIMGRID_VERSION_DATE  "2019") # Year for copyright information
+
+if(${SIMGRID_VERSION_PATCH} EQUAL "0")
+  set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
+else()
+  set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}.${SIMGRID_VERSION_PATCH}")
+endif()
+
+message(STATUS "Configuring SimGrid v${release_version}")
+
+set(SIMGRID_VERSION_STRING "SimGrid version ${release_version}${SIMGRID_VERSION_EXTRA}")
+
+set(libsimgrid_version "${release_version}")
+set(libsimgrid-java_version "${release_version}")
+
+# Basic checks on cmake
 cmake_minimum_required(VERSION 3.5)
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules)
@@ -88,27 +110,6 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
   endif(CMAKE_Fortran_COMPILER)
 
 endif()
-
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-#     Build the version number      #
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-
-set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "24")
-set(SIMGRID_VERSION_PATCH "1") # odd => git branch; even => stable release or released snapshot
-
-set(SIMGRID_VERSION_DATE  "2019") # Year for copyright information
-
-if(${SIMGRID_VERSION_PATCH} EQUAL "0")
-  set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
-else()
-  set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}.${SIMGRID_VERSION_PATCH}")
-endif()
-
-set(SIMGRID_VERSION_STRING "SimGrid version ${release_version}${SIMGRID_VERSION_EXTRA}")
-
-set(libsimgrid_version "${release_version}")
-set(libsimgrid-java_version "${release_version}")
 
 ### SET THE LIBRARY EXTENSION 
 if(APPLE)
