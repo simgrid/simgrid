@@ -1974,7 +1974,6 @@ include include/simgrid/smpi/replay.hpp
 include include/simgrid/storage.h
 include include/simgrid/vm.h
 include include/simgrid/zone.h
-include include/simgrid_config.h
 include include/smpi/forward.hpp
 include include/smpi/mpi.h
 include include/smpi/mpif.h.in

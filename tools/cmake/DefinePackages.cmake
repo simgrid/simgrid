@@ -677,7 +677,6 @@ set(MC_SRC
 set(MC_SIMGRID_MC_SRC  src/mc/checker/simgrid_mc.cpp)
 
 set(headers_to_install
-  include/simgrid_config.h
   include/simgrid/actor.h
   include/simgrid/barrier.h
   include/simgrid/engine.h
