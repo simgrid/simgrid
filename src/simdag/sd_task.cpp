@@ -772,11 +772,12 @@ void SD_task_unschedule(SD_task_t task)
     throw std::invalid_argument(simgrid::xbt::string_printf(
         "Task %s: the state must be SD_SCHEDULED, SD_RUNNABLE, SD_RUNNING or SD_FAILED", task->name));
 
-  if ((task->state == SD_SCHEDULED || task->state == SD_RUNNABLE) /* if the task is scheduled or runnable */
-      && ((task->kind == SD_TASK_COMP_PAR_AMDAHL) || (task->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK))) {
-          /* Don't free scheduling data for typed tasks */
-    __SD_task_destroy_scheduling_data(task);
+  if (task->state == SD_SCHEDULED || task->state == SD_RUNNABLE) /* if the task is scheduled or runnable */ {
     task->allocation->clear();
+    if (task->kind == SD_TASK_COMP_PAR_AMDAHL || task->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK) {
+      /* Don't free scheduling data for typed tasks */
+      __SD_task_destroy_scheduling_data(task);
+    }
   }
 
   if (SD_task_get_state(task) == SD_RUNNING)
