@@ -5,11 +5,11 @@
 
 #include "src/internal_config.h"
 
-#include "simgrid/simix.h" /* SIMIX_process_self_get_name() */
 #include <xbt/backtrace.hpp>
 #include <xbt/log.h>
 #include <xbt/string.hpp>
 #include <xbt/sysdep.h>
+#include <xbt/virtu.h>
 
 #include <cstddef>
 #include <cstdlib>
@@ -147,7 +147,7 @@ void Backtrace::display() const
     fprintf(stderr, "(backtrace not set -- did you install Boost.Stacktrace?)\n");
     return;
   }
-  fprintf(stderr, "Backtrace (displayed in actor %s):\n", SIMIX_process_self_get_name());
+  fprintf(stderr, "Backtrace (displayed in actor %s):\n", xbt_procname());
   std::fprintf(stderr, "%s\n", backtrace.c_str());
 }
 
