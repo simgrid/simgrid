@@ -93,8 +93,7 @@ void StorageImpl::turn_off()
     s4u::Storage::on_state_change(this->piface_);
   }
 }
-xbt::signal<void(StorageAction const&, kernel::resource::Action::State, kernel::resource::Action::State)>
-    StorageAction::on_state_change;
+xbt::signal<void(StorageAction const&, Action::State, Action::State)> StorageAction::on_state_change;
 
 /**********
  * Action *

@@ -88,8 +88,7 @@ void DiskImpl::turn_off()
   }
 }
 
-xbt::signal<void(DiskAction const&, kernel::resource::Action::State, kernel::resource::Action::State)>
-    DiskAction::on_state_change;
+xbt::signal<void(DiskAction const&, Action::State, Action::State)> DiskAction::on_state_change;
 
 /**********
  * Action *
