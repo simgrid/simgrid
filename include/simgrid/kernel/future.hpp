@@ -247,7 +247,7 @@ template <class T> Future<T> unwrap_future(Future<Future<T>> future);
  *    // available:
  *    try {
  *      // Try to get value, this might throw an exception if the operation
- *      // failed (such as an exception throwed by the worker process):
+ *      // failed (such as an exception thrown by the worker process):
  *      std::string value = result.get();
  *      XBT_INFO("Value: %s", value.c_str());
  *    }
@@ -434,7 +434,7 @@ template <class T> Future<T> unwrap_future(Future<Future<T>> future)
  *    }
  *    catch (...) {
  *      // If an error occured, we can set an exception which
- *      // will be throwed buy future.get():
+ *      // will be thrown by future.get():
  *      promise.set_exception(std::current_exception());
  *    }
  *  });

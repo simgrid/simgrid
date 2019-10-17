@@ -52,7 +52,7 @@ static void master()
     simgrid::simix::kernel_sync([] {
       return kernel_wait_until(20).then([](simgrid::kernel::Future<void> f) {
         f.get();
-        throw example::exception("Exception throwed from kernel_defer");
+        throw example::exception("Exception thrown from kernel_defer");
       });
     });
     XBT_ERROR("No exception caught!");

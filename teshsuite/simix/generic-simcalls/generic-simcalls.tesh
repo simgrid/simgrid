@@ -4,7 +4,7 @@ $ ${bindir:=.}/generic-simcalls --cfg=contexts/stack-size:96 ${srcdir:=.}/exampl
 > [Tremblay:master:(1) 0.000000] [test/INFO] kernel, returned
 > [10.000000] [test/INFO] kernel_sync with void
 > [Tremblay:master:(1) 10.000000] [test/INFO] kernel_sync with void, returned
-> [Tremblay:master:(1) 20.000000] [test/INFO] Exception caught: Exception throwed from kernel_defer
+> [Tremblay:master:(1) 20.000000] [test/INFO] Exception caught: Exception thrown from kernel_defer
 > [30.000000] [test/INFO] kernel_sync with value
 > [Tremblay:master:(1) 30.000000] [test/INFO] kernel_sync with value returned with 42
 > [50.000000] [test/INFO] kernel_async with value
