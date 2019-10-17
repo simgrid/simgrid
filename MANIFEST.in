@@ -2604,7 +2604,7 @@ include src/xbt/xbt_os_time.c
 include src/xbt/xbt_replay.cpp
 include src/xbt/xbt_str.cpp
 include src/xbt/xbt_str_test.cpp
-include src/xbt/xbt_virtu.c
+include src/xbt/xbt_virtu.cpp
 include src/xbt_modinter.h
 include teshsuite/java/CMakeLists.txt
 include teshsuite/lua/CMakeLists.txt

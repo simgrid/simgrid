@@ -294,7 +294,7 @@ set(XBT_SRC
   src/xbt/xbt_os_time.c
   src/xbt/xbt_replay.cpp
   src/xbt/xbt_str.cpp
-  src/xbt/xbt_virtu.c
+  src/xbt/xbt_virtu.cpp
   src/xbt_modinter.h
   )
 
