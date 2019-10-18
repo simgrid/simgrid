@@ -63,6 +63,31 @@ Library not found: boost-context
    You should obviously install the ``boost-context`` library on your
    machine, for example with ``apt``.
 
+Version numbering and deprecation
+---------------------------------
+
+SimGrid tries to be both a research instrument that you can trust, and
+a vivid project targeting the future issues. We have 4 stable versions
+per year, numbered 3.24 or 3.25. Backward compatibility is ensured for
+one year: Code compiling without warning on 3.24 will still compile
+with 3.28, but maybe with some deprecation warnings. You should update
+your SimGrid installation at least once a year and fix those
+deprecation warnings: the compatiblity wrappers are usually removed
+after 4 versions. Another approach is to never update your SimGrid
+installation, but we don't provide any support to old versions.
+
+Interim versions (also called pre-versions) may be released between
+stable releases. They are numbered 3.X.Y, with even Y (for example,
+3.23.2 was released on July 8. 2019 as a pre-version of 3.24). These
+versions should be as usable as regular stable releases, even if they
+may be somewhat less tested and documented. They play no role in our
+deprecation handling, and they are not really announced to not spam
+our users.
+
+Version numbered 3.X.Y with odd Y are git versions. They often work,
+but no guarantee is given whatsoever (all releases are given "as is",
+but that's even more so for these unreleased versions).
+
 .. _install_src:
 
 Installing from the Source
