@@ -62,7 +62,7 @@ public:
       , last_updated_(surf_get_clock())
       , last_reset_(surf_get_clock())
       , current_speed_(host_->get_speed())
-      , current_flops_(host_->pimpl_cpu->get_constraint()->get_usage())
+      , current_flops_(host_->get_load())
       , theor_max_flops_(0)
   {
   }
@@ -146,7 +146,7 @@ void HostLoad::update()
 
   /* Current flop per second computed by the cpu; current_flops = k * pstate_speed_in_flops, k @in {0, 1, ..., cores-1}
    * designates number of active cores; will be 0 if CPU is currently idle */
-  current_flops_ = host_->pimpl_cpu->get_constraint()->get_usage();
+  current_flops_ = host_->get_load();
 
   if (current_flops_ == 0) {
     idle_time_ += (now - last_updated_);
@@ -188,7 +188,7 @@ void HostLoad::reset()
   idle_time_       = 0;
   computed_flops_  = 0;
   theor_max_flops_ = 0;
-  current_flops_   = host_->pimpl_cpu->get_constraint()->get_usage();
+  current_flops_   = host_->get_load();
   current_speed_   = host_->get_speed();
 }
 } // namespace plugin

@@ -187,9 +187,10 @@ void HostEnergy::update()
     this->total_energy_ = previous_energy + energy_this_step;
     this->last_updated_ = finish_time;
 
-    XBT_DEBUG("[update_energy of %s] period=[%.8f-%.8f]; current speed=%.2E flop/s (pstate %i); total consumption before: %.8f J -> added now: %.8f J",
-              host_->get_cname(), start_time, finish_time, host_->pimpl_cpu->get_pstate_peak_speed(this->pstate_), this->pstate_, previous_energy,
-              energy_this_step);
+    XBT_DEBUG("[update_energy of %s] period=[%.8f-%.8f]; current speed=%.2E flop/s (pstate %i); total consumption "
+              "before: %.8f J -> added now: %.8f J",
+              host_->get_cname(), start_time, finish_time, host_->get_pstate_speed(this->pstate_), this->pstate_,
+              previous_energy, energy_this_step);
   }
 
   /* Save data for the upcoming time interval: whether it's on/off and the pstate if it's on */
@@ -269,10 +270,10 @@ double HostEnergy::get_current_watts_value()
     // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
     cpu_load = 1;
   else {
-    cpu_load = host_->pimpl_cpu->get_constraint()->get_usage() / current_speed;
+    cpu_load = host_->get_load() / current_speed;
 
     /* Divide by the number of cores here to have a value between 0 and 1 */
-    cpu_load /= host_->pimpl_cpu->get_core_count();
+    cpu_load /= host_->get_core_count();
 
     if (cpu_load > 1) // This condition is true for energy_ptask on 32 bits, even if cpu_load is displayed as 1.000000
       cpu_load = 1;   // That may be an harmless rounding error?

@@ -87,11 +87,11 @@ void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
 
   /* Change from the defaults */
   if (args->state_trace)
-    host->pimpl_cpu->set_state_profile(args->state_trace);
+    host->set_state_profile(args->state_trace);
   if (args->speed_trace)
-    host->pimpl_cpu->set_speed_profile(args->speed_trace);
+    host->set_speed_profile(args->speed_trace);
   if (args->pstate != 0)
-    host->pimpl_cpu->set_pstate(args->pstate);
+    host->set_pstate(args->pstate);
   if (not args->coord.empty())
     new simgrid::kernel::routing::vivaldi::Coords(host->pimpl_netpoint, args->coord);
 }
@@ -507,9 +507,9 @@ void sg_platf_new_peer(simgrid::kernel::routing::PeerCreationArgs* peer)
 
   /* Change from the defaults */
   if (peer->state_trace)
-    host->pimpl_cpu->set_state_profile(peer->state_trace);
+    host->set_state_profile(peer->state_trace);
   if (peer->speed_trace)
-    host->pimpl_cpu->set_speed_profile(peer->speed_trace);
+    host->set_speed_profile(peer->speed_trace);
 }
 
 /* Pick the right models for CPU, net and host, and call their model_init_preparse */
