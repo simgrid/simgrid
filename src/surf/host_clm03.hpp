@@ -18,7 +18,7 @@ namespace surf {
 class XBT_PRIVATE HostCLM03Model : public HostModel {
 public:
   HostCLM03Model();
-  double next_occuring_event(double now) override;
+  double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 };
 }

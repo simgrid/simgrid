@@ -30,7 +30,7 @@ class DiskS19Model : public DiskModel {
 public:
   DiskS19Model();
   DiskImpl* createDisk(const std::string& id, double read_bw, double write_bw) override;
-  double next_occuring_event(double now) override;
+  double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 };
 

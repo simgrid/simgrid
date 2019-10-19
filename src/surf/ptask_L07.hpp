@@ -40,7 +40,7 @@ public:
   HostL07Model& operator=(const HostL07Model&) = delete;
   ~HostL07Model() override;
 
-  double next_occuring_event(double now) override;
+  double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
   kernel::resource::CpuAction* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                                                 const double* bytes_amount, double rate) override;

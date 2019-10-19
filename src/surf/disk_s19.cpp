@@ -38,9 +38,9 @@ DiskImpl* DiskS19Model::createDisk(const std::string& id, double read_bw, double
   return new DiskS19(this, id, get_maxmin_system(), read_bw, write_bw);
 }
 
-double DiskS19Model::next_occuring_event(double now)
+double DiskS19Model::next_occurring_event(double now)
 {
-  return DiskModel::next_occuring_event_full(now);
+  return DiskModel::next_occurring_event_full(now);
 }
 
 void DiskS19Model::update_actions_state(double /*now*/, double delta)

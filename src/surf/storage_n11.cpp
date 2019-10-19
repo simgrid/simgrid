@@ -66,9 +66,9 @@ StorageImpl* StorageN11Model::createStorage(const std::string& id, const std::st
                         attach);
 }
 
-double StorageN11Model::next_occuring_event(double now)
+double StorageN11Model::next_occurring_event(double now)
 {
-  return StorageModel::next_occuring_event_full(now);
+  return StorageModel::next_occurring_event_full(now);
 }
 
 void StorageN11Model::update_actions_state(double /*now*/, double delta)

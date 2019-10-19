@@ -37,7 +37,7 @@ LinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::
   return nullptr;
 }
 
-double NetworkConstantModel::next_occuring_event(double /*now*/)
+double NetworkConstantModel::next_occurring_event(double /*now*/)
 {
   double min = -1.0;
   for (kernel::resource::Action const& action : *get_started_action_set()) {

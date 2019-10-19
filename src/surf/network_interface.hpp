@@ -95,7 +95,7 @@ public:
    * @return The new bandwidth.
    */
   virtual double get_bandwidth_constraint(double rate, double bound, double size);
-  double next_occuring_event_full(double now) override;
+  double next_occurring_event_full(double now) override;
 
   LinkImpl* loopback_ = nullptr;
 };

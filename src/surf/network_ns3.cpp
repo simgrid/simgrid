@@ -191,10 +191,10 @@ Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size
   return new NetworkNS3Action(this, size, src, dst);
 }
 
-double NetworkNS3Model::next_occuring_event(double now)
+double NetworkNS3Model::next_occurring_event(double now)
 {
   double time_to_next_flow_completion = 0.0;
-  XBT_DEBUG("ns3_next_occuring_event");
+  XBT_DEBUG("ns3_next_occurring_event");
 
   //get the first relevant value from the running_actions list
 

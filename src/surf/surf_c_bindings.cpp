@@ -59,13 +59,13 @@ double surf_solve(double max_date)
 
   /* Physical models MUST be resolved first */
   XBT_DEBUG("Looking for next event in physical models");
-  double next_event_phy = surf_host_model->next_occuring_event(NOW);
+  double next_event_phy = surf_host_model->next_occurring_event(NOW);
   if ((time_delta < 0.0 || next_event_phy < time_delta) && next_event_phy >= 0.0) {
     time_delta = next_event_phy;
   }
   if (surf_vm_model != nullptr) {
     XBT_DEBUG("Looking for next event in virtual models");
-    double next_event_virt = surf_vm_model->next_occuring_event(NOW);
+    double next_event_virt = surf_vm_model->next_occurring_event(NOW);
     if ((time_delta < 0.0 || next_event_virt < time_delta) && next_event_virt >= 0.0)
       time_delta = next_event_virt;
   }
@@ -73,7 +73,7 @@ double surf_solve(double max_date)
   for (auto const& model : all_existing_models) {
     if (model != surf_host_model && model != surf_vm_model && model != surf_network_model &&
         model != surf_storage_model && model != surf_disk_model) {
-      double next_event_model = model->next_occuring_event(NOW);
+      double next_event_model = model->next_occurring_event(NOW);
       if ((time_delta < 0.0 || next_event_model < time_delta) && next_event_model >= 0.0)
         time_delta = next_event_model;
     }
@@ -87,7 +87,7 @@ double surf_solve(double max_date)
     double next_event_date = simgrid::kernel::profile::future_evt_set.next_date();
     XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
-    if (not surf_network_model->next_occuring_event_is_idempotent()) { // NS3, I see you
+    if (not surf_network_model->next_occurring_event_is_idempotent()) { // NS3, I see you
       if (next_event_date != -1.0) {
         time_delta = std::min(next_event_date - NOW, time_delta);
       } else {
@@ -96,7 +96,7 @@ double surf_solve(double max_date)
 
       XBT_DEBUG("Run the NS3 network at most %fs", time_delta);
       // run until min or next flow
-      model_next_action_end = surf_network_model->next_occuring_event(time_delta);
+      model_next_action_end = surf_network_model->next_occurring_event(time_delta);
 
       XBT_DEBUG("Min for network : %f", model_next_action_end);
       if (model_next_action_end >= 0.0)
@@ -114,7 +114,8 @@ double surf_solve(double max_date)
     while ((event = simgrid::kernel::profile::future_evt_set.pop_leq(next_event_date, &value, &resource))) {
       if (resource->is_used() || (watched_hosts.find(resource->get_cname()) != watched_hosts.end())) {
         time_delta = next_event_date - NOW;
-        XBT_DEBUG("This event invalidates the next_occuring_event() computation of models. Next event set to %f", time_delta);
+        XBT_DEBUG("This event invalidates the next_occurring_event() computation of models. Next event set to %f",
+                  time_delta);
       }
       // FIXME: I'm too lame to update NOW live, so I change it and restore it so that the real update with surf_min will work
       double round_start = NOW;

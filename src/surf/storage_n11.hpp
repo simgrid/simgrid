@@ -31,7 +31,7 @@ public:
   StorageN11Model();
   StorageImpl* createStorage(const std::string& id, const std::string& type_id, const std::string& content_name,
                              const std::string& attach) override;
-  double next_occuring_event(double now) override;
+  double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 };
 
