@@ -9,7 +9,6 @@
 #include "bittorrent.h"
 #include "connection.h"
 #include <simgrid/msg.h>
-#include <xbt/RngStream.h>
 #include <xbt/dict.h>
 #include <xbt/dynar.h>
 
@@ -33,8 +32,6 @@ typedef struct s_peer {
 
   msg_task_t task_received; // current task being received
   msg_comm_t comm_received; // current comm
-
-  RngStream stream; // RngStream for
 
   double begin_receive_time; // time when the receiving communication has begun, useful for calculating host speed.
 } s_peer_t;

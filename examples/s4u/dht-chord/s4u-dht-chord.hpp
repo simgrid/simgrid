@@ -6,8 +6,8 @@
 #ifndef S4U_CHORD_HPP
 #define S4U_CHORD_HPP
 #include "simgrid/s4u.hpp"
+#include <random>
 #include <string>
-#include <xbt/RngStream.h>
 #include <xbt/str.h>
 
 constexpr double MAX_SIMULATION_TIME              = 1000;
@@ -21,23 +21,18 @@ extern int nb_bits;
 extern int nb_keys;
 extern int timeout;
 
+extern std::default_random_engine generator;
+
 class HostChord {
-  std::unique_ptr<std::remove_pointer<RngStream>::type, std::function<void(RngStream)>> stream_ = {
-      nullptr, [](RngStream stream) { RngStream_DeleteStream(&stream); }};
   simgrid::s4u::Host* host = nullptr;
 
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Host, HostChord> EXTENSION_ID;
 
-  explicit HostChord(simgrid::s4u::Host* ptr) : host(ptr)
-  {
-    std::string descr = std::string("RngSream<") + host->get_cname() + ">";
-    stream_.reset(RngStream_CreateStream(descr.c_str()));
-  }
+  explicit HostChord(simgrid::s4u::Host* ptr) : host(ptr) {}
   HostChord(const HostChord&) = delete;
   HostChord& operator=(const HostChord&) = delete;
 
-  RngStream getStream() { return stream_.get(); };
 };
 
 /* Types of tasks exchanged between nodes. */
@@ -80,7 +75,6 @@ class Node {
   simgrid::s4u::Mailbox* mailbox_;   // my mailbox
   std::vector<int> fingers_;         // finger table,(fingers[0] is my successor)
   int next_finger_to_fix;            // index of the next finger to fix in fix_fingers()
-  RngStream stream;
 
 public:
   explicit Node(std::vector<std::string> args);

@@ -6,17 +6,17 @@
 
 package app.bittorrent;
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Comm;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;
-import org.simgrid.msg.RngStream;
 import org.simgrid.msg.MsgException;
 
 public class Tracker extends Process {
-  protected RngStream stream;
+  Random rand = new Random();
   protected ArrayList<Integer> peersList;
   protected double deadline;
   protected Comm commReceived = null;
@@ -31,8 +31,6 @@ public class Tracker extends Process {
       Msg.info("Wrong number of arguments for the tracker.");
       return;
     }
-    //Build the RngStream object for randomness
-    stream = new RngStream("tracker");
     //Retrieve the end time
     deadline = Double.parseDouble(args[0]);
     //Building peers array
@@ -53,7 +51,7 @@ public class Tracker extends Process {
             while (nbPeers < Common.MAXIMUM_PEERS && nbPeers < peersList.size()) {
               int nextPeer;
               do {
-                nextPeer = stream.randInt(0, peersList.size() - 1);
+                nextPeer = rand.nextInt(peersList.size());
               } while (tTask.peers.contains(peersList.get(nextPeer)));
               tTask.peers.add(peersList.get(nextPeer));
               nbPeers++;

@@ -266,7 +266,6 @@ set(SMPI_SRC
   )
 
 set(XBT_SRC
-  src/xbt/RngStream.c
   src/xbt/automaton/automaton.c
   src/xbt/automaton/automatonparse_promela.c
   src/xbt/backtrace.cpp
@@ -496,8 +495,6 @@ set(JMSG_C_SRC
   src/bindings/java/jmsg_host.h
   src/bindings/java/jmsg_process.cpp
   src/bindings/java/jmsg_process.h
-  src/bindings/java/jmsg_rngstream.cpp
-  src/bindings/java/jmsg_rngstream.h
   src/bindings/java/jmsg_synchro.cpp
   src/bindings/java/jmsg_synchro.h
   src/bindings/java/jmsg_task.cpp
@@ -527,7 +524,6 @@ set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/msg/Process.java
   src/bindings/java/org/simgrid/msg/ProcessKilledError.java
   src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java
-  src/bindings/java/org/simgrid/msg/RngStream.java
   src/bindings/java/org/simgrid/msg/Semaphore.java
   src/bindings/java/org/simgrid/msg/Storage.java
   src/bindings/java/org/simgrid/msg/StorageNotFoundException.java
@@ -777,7 +773,6 @@ set(headers_to_install
   include/xbt/parmap.h
   include/xbt/range.hpp
   include/xbt/replay.hpp
-  include/xbt/RngStream.h
   include/xbt/signal.hpp
   include/xbt/str.h
   include/xbt/string.hpp

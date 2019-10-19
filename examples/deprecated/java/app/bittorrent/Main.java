@@ -6,7 +6,6 @@
 package app.bittorrent;
 
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.RngStream;
 
 class Main{
   private Main() {
@@ -14,9 +13,6 @@ class Main{
   }
 
   public static void main(String[] args) {
-    int[] seed = { 12345, 12345, 12345, 12345, 12345, 12345 };
-    RngStream.setPackageSeed(seed);
-
     Msg.init(args);
     if(args.length < 2) {
       Msg.info("Usage   : Bittorrent platform_file deployment_file");

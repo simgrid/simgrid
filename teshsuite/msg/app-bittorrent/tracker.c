@@ -6,7 +6,6 @@
 
 #include "tracker.h"
 #include <simgrid/msg.h>
-#include <xbt/RngStream.h>
 
 static void task_free(void* data);
 
@@ -24,7 +23,6 @@ int tracker(int argc, char* argv[])
   double deadline = xbt_str_parse_double(argv[1], "Invalid deadline: %s");
   xbt_assert(deadline > 0, "Wrong deadline supplied");
 
-  RngStream stream = (RngStream)MSG_host_get_data(MSG_host_self());
   // Building peers array
   xbt_dynar_t peers_list = xbt_dynar_new(sizeof(int), NULL);
 
@@ -51,7 +49,7 @@ int tracker(int argc, char* argv[])
         int peers_length = xbt_dynar_length(peers_list);
         for (int i = 0; i < MAXIMUM_PEERS && i < peers_length; i++) {
           do {
-            next_peer = xbt_dynar_get_as(peers_list, RngStream_RandInt(stream, 0, peers_length - 1), int);
+            next_peer = xbt_dynar_get_as(peers_list, rand() % peers_length, int);
           } while (is_in_list(data->peers, next_peer));
           xbt_dynar_push_as(data->peers, int, next_peer);
         }
