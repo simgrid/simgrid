@@ -77,15 +77,6 @@ public:
       : type(type), peer_id(peer_id), return_mailbox(return_mailbox), piece(piece){};
 };
 
-class HostBittorrent {
-  simgrid::s4u::Host* host = nullptr;
-
-public:
-  explicit HostBittorrent(simgrid::s4u::Host* ptr) : host(ptr) {}
-  HostBittorrent(const HostBittorrent&) = delete;
-  HostBittorrent& operator=(const HostBittorrent&) = delete;
-};
-
 extern std::default_random_engine generator;
 
 #endif /* BITTORRENT_BITTORRENT_HPP_ */

@@ -23,18 +23,6 @@ extern int timeout;
 
 extern std::default_random_engine generator;
 
-class HostChord {
-  simgrid::s4u::Host* host = nullptr;
-
-public:
-  static simgrid::xbt::Extension<simgrid::s4u::Host, HostChord> EXTENSION_ID;
-
-  explicit HostChord(simgrid::s4u::Host* ptr) : host(ptr) {}
-  HostChord(const HostChord&) = delete;
-  HostChord& operator=(const HostChord&) = delete;
-
-};
-
 /* Types of tasks exchanged between nodes. */
 enum e_message_type_t {
   FIND_SUCCESSOR,
