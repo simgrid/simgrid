@@ -262,7 +262,7 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
 void Node::randomLookup()
 {
   unsigned int id_to_look = RANDOM_LOOKUP_NODE; // Totally random.
-  /* TODO: Use some pseudo-random generator like RngStream. */
+  /* TODO: Use some pseudo-random generator. */
   XBT_DEBUG("I'm doing a random lookup");
   findNode(id_to_look, true);
 }

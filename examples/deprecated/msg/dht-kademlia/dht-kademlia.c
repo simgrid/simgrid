@@ -274,7 +274,7 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
 void random_lookup(node_t node)
 {
   unsigned int id_to_look = RANDOM_LOOKUP_NODE; //Totally random.
-  /* TODO: Use some pseudorandom generator like RngStream. */
+  /* TODO: Use some pseudorandom generator. */
   XBT_DEBUG("I'm doing a random lookup");
   find_node(node, id_to_look, 1);
 }

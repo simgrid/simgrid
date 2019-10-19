@@ -388,7 +388,6 @@ Package org.simgrid.msg
    Class org.simgrid.msg.Process <java/org/simgrid/msg/Process>
    Class org.simgrid.msg.ProcessKilledError <java/org/simgrid/msg/ProcessKilledError>
    Class org.simgrid.msg.ProcessNotFoundException <java/org/simgrid/msg/ProcessNotFoundException>
-   Class org.simgrid.msg.RngStream <java/org/simgrid/msg/RngStream>
    Class org.simgrid.msg.Semaphore <java/org/simgrid/msg/Semaphore>
    Class org.simgrid.msg.Storage <java/org/simgrid/msg/Storage>
    Class org.simgrid.msg.StorageNotFoundException <java/org/simgrid/msg/StorageNotFoundException>
