@@ -8,7 +8,6 @@
 #include "connection.h"
 #include "tracker.h"
 #include <simgrid/msg.h>
-#include <xbt/RngStream.h>
 
 #include <limits.h>
 #include <stdio.h> /* snprintf */
@@ -246,7 +245,6 @@ peer_t peer_init(int id, int seed)
 
   peer->pieces_count = xbt_new0(short, FILE_PIECES);
 
-  peer->stream        = (RngStream)MSG_host_get_data(MSG_host_self());
   peer->comm_received = NULL;
 
   peer->round = 0;
@@ -499,7 +497,7 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
     }
     xbt_assert(nb_interesting_pieces != 0);
     // get a random interesting piece
-    int random_piece_index = RngStream_RandInt(peer->stream, 0, nb_interesting_pieces - 1);
+    int random_piece_index = rand() % nb_interesting_pieces;
     int current_index      = 0;
     for (int i = 0; i < FILE_PIECES; i++) {
       if (peer_has_not_piece(peer, i) && connection_has_piece(remote_peer, i)) {
@@ -525,7 +523,7 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
     }
     xbt_assert(nb_interesting_pieces != 0);
     // get a random interesting piece
-    int random_piece_index = RngStream_RandInt(peer->stream, 0, nb_interesting_pieces - 1);
+    int random_piece_index = rand() % nb_interesting_pieces;
     int current_index      = 0;
     for (int i = 0; i < FILE_PIECES; i++) {
       if (peer_has_not_piece(peer, i) && connection_has_piece(remote_peer, i) &&
@@ -558,7 +556,10 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
     }
     xbt_assert(nb_min_pieces != 0 || (is_interested_and_free(peer, remote_peer) == 0));
     // get a random rarest piece
-    int random_rarest_index = RngStream_RandInt(peer->stream, 0, nb_min_pieces - 1);
+    int random_rarest_index = 0;
+    if (nb_min_pieces > 0) {
+      random_rarest_index = rand() % nb_min_pieces;
+    }
     for (int i = 0; i < FILE_PIECES; i++) {
       if (peer->pieces_count[i] == min && peer_has_not_piece(peer, i) && connection_has_piece(remote_peer, i) &&
           peer_is_not_downloading_piece(peer, i)) {
@@ -615,7 +616,10 @@ void update_choked_peers(peer_t peer)
       int j = 0;
       do {
         // We choose a random peer to unchoke.
-        int id_chosen = RngStream_RandInt(peer->stream, 0, xbt_dict_length(peer->peers) - 1);
+        int id_chosen = 0;
+        if (xbt_dict_length(peer->peers) > 0) {
+          id_chosen = rand() % xbt_dict_length(peer->peers);
+        }
         int i         = 0;
         connection_t connection;
         xbt_dict_foreach (peer->peers, cursor, key, connection) {

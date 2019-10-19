@@ -9,20 +9,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Comm;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;
-import org.simgrid.msg.RngStream;
 import org.simgrid.msg.MsgException;
 
 public class Peer extends Process {
+  Random rand = new Random();
   protected int round = 0;
   protected double beginReceiveTime;
   protected double deadline;
-  protected static RngStream stream = new RngStream();
   protected int id;
   protected String mailbox;
   protected String mailboxTracker;
@@ -384,7 +384,7 @@ public class Peer extends Process {
 
     //TODO: trivial min algorithm when pieces >= 3
     do {
-      currentPiece = stream.randInt(0,Common.FILE_PIECES - 1);
+      currentPiece = rand.nextInt(Common.FILE_PIECES);
     } while (!(bitfield[currentPiece] == '0' && !currentPieces.contains(currentPiece)));
 
     currentPieces.add(currentPiece);
@@ -424,7 +424,7 @@ public class Peer extends Process {
         int j = 0;
         do {
           int i = 0;
-          int idChosen = stream.randInt(0,peers.size() - 1);
+          int idChosen = rand.nextInt(peers.size());
           for (Connection connection : peers.values()) {
             if (i == idChosen) {
               peerChoosed = connection;

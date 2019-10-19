@@ -7,8 +7,8 @@
 #ifndef BITTORRENT_BITTORRENT_HPP_
 #define BITTORRENT_BITTORRENT_HPP_
 
+#include <random>
 #include <simgrid/s4u.hpp>
-#include <xbt/RngStream.h>
 
 constexpr char TRACKER_MAILBOX[] = "tracker_mailbox";
 /** Max number of peers sent by the tracker to clients */
@@ -78,22 +78,14 @@ public:
 };
 
 class HostBittorrent {
-  std::unique_ptr<std::remove_pointer<RngStream>::type, std::function<void(RngStream)>> stream_ = {
-      nullptr, [](RngStream stream) { RngStream_DeleteStream(&stream); }};
   simgrid::s4u::Host* host = nullptr;
 
 public:
-  static simgrid::xbt::Extension<simgrid::s4u::Host, HostBittorrent> EXTENSION_ID;
-
-  explicit HostBittorrent(simgrid::s4u::Host* ptr) : host(ptr)
-  {
-    std::string descr = std::string("RngSream<") + host->get_cname() + ">";
-    stream_.reset(RngStream_CreateStream(descr.c_str()));
-  }
+  explicit HostBittorrent(simgrid::s4u::Host* ptr) : host(ptr) {}
   HostBittorrent(const HostBittorrent&) = delete;
   HostBittorrent& operator=(const HostBittorrent&) = delete;
-
-  RngStream getStream() { return stream_.get(); };
 };
+
+extern std::default_random_engine generator;
 
 #endif /* BITTORRENT_BITTORRENT_HPP_ */

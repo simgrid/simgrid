@@ -167,64 +167,50 @@ $ ${bindir:=.}/s4u-dht-chord -nb_bits=3 ${platfdir}/cluster_backbone.xml s4u-dht
 > [ 345.18145] (node@node-5.simgrid.org)    0  | 10874876
 > [ 345.18145] (node@node-5.simgrid.org) Predecessor: 42
 > [ 350.17354] (node@node-2.simgrid.org) My new predecessor is 42
-> [ 350.18135] (node@node-0.simgrid.org) My new finger #0 is 533744
-> [ 360.19676] (node@node-0.simgrid.org) My new finger #2 is 533744
-> [ 360.19676] (node@node-0.simgrid.org) My finger table:
-> [ 360.19676] (node@node-0.simgrid.org) Start | Succ
-> [ 360.19676] (node@node-0.simgrid.org)    3  | 533744
-> [ 360.19676] (node@node-0.simgrid.org)    4  | 16509405
-> [ 360.19676] (node@node-0.simgrid.org)    6  | 533744
-> [ 360.19676] (node@node-0.simgrid.org) Predecessor: 533744
-> [ 420.25020] (node@node-2.simgrid.org) Well Guys! I Think it's time for me to leave ;)
-> [ 425.24229] (node@node-0.simgrid.org) My new predecessor is 42
-> [ 475.24229] (node@node-0.simgrid.org) My new finger #0 is 42
-> [ 480.24219] (node@node-0.simgrid.org) My new predecessor is 16728096
-> [ 480.24219] (node@node-0.simgrid.org) My finger table:
-> [ 480.24219] (node@node-0.simgrid.org) Start | Succ
-> [ 480.24219] (node@node-0.simgrid.org)    3  |  42
-> [ 480.24219] (node@node-0.simgrid.org)    4  | 16509405
-> [ 480.24219] (node@node-0.simgrid.org)    6  | 533744
-> [ 480.24219] (node@node-0.simgrid.org) Predecessor: 16728096
-> [ 485.24990] (node@node-6.simgrid.org) My new finger #2 is 42
-> [ 485.24990] (node@node-6.simgrid.org) My finger table:
-> [ 485.24990] (node@node-6.simgrid.org) Start | Succ
-> [ 485.24990] (node@node-6.simgrid.org)    1  |  42
-> [ 485.24990] (node@node-6.simgrid.org)    2  |  42
-> [ 485.24990] (node@node-6.simgrid.org)    4  |  42
-> [ 485.24990] (node@node-6.simgrid.org) Predecessor: -1
-> [ 495.25751] (node@node-0.simgrid.org) My new finger #0 is 16728096
-> [ 525.28032] (node@node-6.simgrid.org) My new predecessor is 42
-> [ 525.28032] (node@node-6.simgrid.org) My finger table:
-> [ 525.28032] (node@node-6.simgrid.org) Start | Succ
-> [ 525.28032] (node@node-6.simgrid.org)    1  |  42
-> [ 525.28032] (node@node-6.simgrid.org)    2  |  42
-> [ 525.28032] (node@node-6.simgrid.org)    4  |  42
-> [ 525.28032] (node@node-6.simgrid.org) Predecessor: 42
-> [ 600.31785] (node@node-0.simgrid.org) My new finger #1 is 16728096
-> [ 600.31785] (node@node-0.simgrid.org) My finger table:
-> [ 600.31785] (node@node-0.simgrid.org) Start | Succ
-> [ 600.31785] (node@node-0.simgrid.org)    3  | 16728096
-> [ 600.31785] (node@node-0.simgrid.org)    4  | 16728096
-> [ 600.31785] (node@node-0.simgrid.org)    6  | 533744
-> [ 600.31785] (node@node-0.simgrid.org) Predecessor: 16728096
-> [ 720.40913] (node@node-0.simgrid.org) My new finger #2 is 16728096
-> [ 720.40913] (node@node-0.simgrid.org) My finger table:
-> [ 720.40913] (node@node-0.simgrid.org) Start | Succ
-> [ 720.40913] (node@node-0.simgrid.org)    3  | 16728096
-> [ 720.40913] (node@node-0.simgrid.org)    4  | 16728096
-> [ 720.40913] (node@node-0.simgrid.org)    6  | 16728096
-> [ 720.40913] (node@node-0.simgrid.org) Predecessor: 16728096
-> [ 850.49239] (node@node-5.simgrid.org) Well Guys! I Think it's time for me to leave ;)
-> [ 855.50791] (node@node-6.simgrid.org) My new finger #2 is 16728096
-> [ 855.50791] (node@node-6.simgrid.org) My finger table:
-> [ 855.50791] (node@node-6.simgrid.org) Start | Succ
-> [ 855.50791] (node@node-6.simgrid.org)    1  |  42
-> [ 855.50791] (node@node-6.simgrid.org)    2  |  42
-> [ 855.50791] (node@node-6.simgrid.org)    4  | 16728096
-> [ 855.50791] (node@node-6.simgrid.org) Predecessor: 42
-> [ 860.50781] (node@node-6.simgrid.org) Well Guys! I Think it's time for me to leave ;)
-> [ 865.49990] (node@node-0.simgrid.org) My new predecessor is 42
-> [ 915.49990] (node@node-0.simgrid.org) My new finger #0 is 42
-> [ 920.49980] (node@node-0.simgrid.org) My new finger #0 is 16509405
-> [1030.49960] (node@node-0.simgrid.org) Well Guys! I Think it's time for me to leave ;)
-> [1080.49960] (maestro@) Simulated time: 1080.5
+> [ 395.18925] (node@node-0.simgrid.org) My new finger #0 is 533744
+> [ 395.20486] (node@node-0.simgrid.org) My new finger #2 is 533744
+> [ 395.20486] (node@node-0.simgrid.org) My finger table:
+> [ 395.20486] (node@node-0.simgrid.org) Start | Succ
+> [ 395.20486] (node@node-0.simgrid.org)    3  | 533744
+> [ 395.20486] (node@node-0.simgrid.org)    4  | 16509405
+> [ 395.20486] (node@node-0.simgrid.org)    6  | 533744
+> [ 395.20486] (node@node-0.simgrid.org) Predecessor: 533744
+> [ 420.21217] (node@node-2.simgrid.org) Well Guys! I Think it's time for me to leave ;)
+> [ 420.23559] (node@node-0.simgrid.org) My new predecessor is 42
+> [ 425.23549] (node@node-0.simgrid.org) My new finger #0 is 42
+> [ 440.23519] (node@node-0.simgrid.org) My new predecessor is 16728096
+> [ 440.23519] (node@node-0.simgrid.org) My finger table:
+> [ 440.23519] (node@node-0.simgrid.org) Start | Succ
+> [ 440.23519] (node@node-0.simgrid.org)    3  |  42
+> [ 440.23519] (node@node-0.simgrid.org)    4  | 16509405
+> [ 440.23519] (node@node-0.simgrid.org)    6  | 533744
+> [ 440.23519] (node@node-0.simgrid.org) Predecessor: 16728096
+> [ 440.23519] (node@node-0.simgrid.org) My new finger #0 is 16728096
+> [ 470.24239] (node@node-6.simgrid.org) My new predecessor is 42
+> [ 470.24239] (node@node-6.simgrid.org) My finger table:
+> [ 470.24239] (node@node-6.simgrid.org) Start | Succ
+> [ 470.24239] (node@node-6.simgrid.org)    1  |  42
+> [ 470.24239] (node@node-6.simgrid.org)    2  |  42
+> [ 470.24239] (node@node-6.simgrid.org)    4  | 16728096
+> [ 470.24239] (node@node-6.simgrid.org) Predecessor: 42
+> [ 635.37180] (node@node-0.simgrid.org) My new finger #1 is 16728096
+> [ 635.37180] (node@node-0.simgrid.org) My finger table:
+> [ 635.37180] (node@node-0.simgrid.org) Start | Succ
+> [ 635.37180] (node@node-0.simgrid.org)    3  | 16728096
+> [ 635.37180] (node@node-0.simgrid.org)    4  | 16728096
+> [ 635.37180] (node@node-0.simgrid.org)    6  | 533744
+> [ 635.37180] (node@node-0.simgrid.org) Predecessor: 16728096
+> [ 755.43185] (node@node-0.simgrid.org) My new finger #2 is 16728096
+> [ 755.43185] (node@node-0.simgrid.org) My finger table:
+> [ 755.43185] (node@node-0.simgrid.org) Start | Succ
+> [ 755.43185] (node@node-0.simgrid.org)    3  | 16728096
+> [ 755.43185] (node@node-0.simgrid.org)    4  | 16728096
+> [ 755.43185] (node@node-0.simgrid.org)    6  | 16728096
+> [ 755.43185] (node@node-0.simgrid.org) Predecessor: 16728096
+> [ 850.51581] (node@node-5.simgrid.org) Well Guys! I Think it's time for me to leave ;)
+> [ 860.51561] (node@node-6.simgrid.org) Well Guys! I Think it's time for me to leave ;)
+> [ 865.52332] (node@node-0.simgrid.org) My new predecessor is 42
+> [ 870.52322] (node@node-0.simgrid.org) My new finger #0 is 42
+> [ 950.52262] (node@node-0.simgrid.org) My new finger #0 is 16509405
+> [1000.52262] (node@node-0.simgrid.org) Well Guys! I Think it's time for me to leave ;)
+> [1050.52262] (maestro@) Simulated time: 1050.52

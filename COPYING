@@ -64,11 +64,6 @@ License: other
  product, or process disclosed, or represents that its use would not infringe
  privately owned rights.
 
-Files: src/xbt/RngStream.c include/xbt/RngStream.h
-Copyright: 2001 Pierre L'Ecuyer, University of Montreal
-License: GPL-2+ and LGPL-2.1
-Comment: The author granted us the right to distribute this files under the LGPL-2.1 as long as it is bundled with SimGrid.
-
 Files:
  src/simdag/dax_dtd.c
  src/simdag/dax_dtd.h

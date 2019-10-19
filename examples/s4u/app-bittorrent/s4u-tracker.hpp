@@ -32,7 +32,6 @@ public:
 
 class Tracker {
   double deadline;
-  RngStream stream;
   simgrid::s4u::Mailbox* mailbox;
   std::set<int> known_peers;
 

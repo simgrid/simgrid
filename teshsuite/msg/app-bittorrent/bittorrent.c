@@ -7,7 +7,6 @@
 #include "bittorrent-peer.h"
 #include "tracker.h"
 #include <simgrid/msg.h>
-#include <xbt/RngStream.h>
 
 #include <stdio.h> /* snprintf */
 
@@ -28,8 +27,6 @@ int main(int argc, char* argv[])
   xbt_dynar_foreach (host_list, i, host) {
     char descr[512];
     snprintf(descr, sizeof descr, "RngSream<%s>", MSG_host_get_name(host));
-    RngStream stream = RngStream_CreateStream(descr);
-    MSG_host_set_data(host, stream);
   }
 
   MSG_function_register("tracker", tracker);
@@ -39,11 +36,6 @@ int main(int argc, char* argv[])
 
   MSG_main();
 
-  xbt_dynar_foreach (host_list, i, host) {
-    RngStream stream = (RngStream)MSG_host_get_data(host);
-    RngStream_DeleteStream(&stream);
-    MSG_host_set_data(host, NULL);
-  }
   xbt_dynar_free(&host_list);
 
   return 0;

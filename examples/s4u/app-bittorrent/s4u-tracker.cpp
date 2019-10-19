@@ -6,7 +6,6 @@
 
 #include "s4u-tracker.hpp"
 #include <algorithm>
-#include <xbt/RngStream.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_bt_tracker, "Messages specific for the tracker");
 
@@ -21,8 +20,6 @@ Tracker::Tracker(std::vector<std::string> args)
     throw std::invalid_argument("Invalid deadline:" + args[1]);
   }
   xbt_assert(deadline > 0, "Wrong deadline supplied");
-
-  stream = simgrid::s4u::this_actor::get_host()->extension<HostBittorrent>()->getStream();
 
   mailbox = simgrid::s4u::Mailbox::by_name(TRACKER_MAILBOX);
 
@@ -55,7 +52,8 @@ void Tracker::operator()()
       while (tried < max_tries) {
         do {
           next_peer = known_peers.begin();
-          std::advance(next_peer, RngStream_RandInt(stream, 0, nb_known_peers - 1));
+          std::uniform_int_distribution<int> dist(0, nb_known_peers - 1);
+          std::advance(next_peer, dist(generator));
         } while (ta->getPeers().find(*next_peer) != ta->getPeers().end());
         ta->addPeer(*next_peer);
         tried++;

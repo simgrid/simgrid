@@ -52,7 +52,6 @@ Node::Node(std::vector<std::string> args)
 
   // initialize my node
   id_                = std::stoi(args[1]);
-  stream             = simgrid::s4u::this_actor::get_host()->extension<HostChord>()->getStream();
   mailbox_           = simgrid::s4u::Mailbox::by_name(std::to_string(id_));
   next_finger_to_fix = 0;
   fingers_.resize(nb_bits, id_);
@@ -135,7 +134,8 @@ void Node::notifyAndQuit()
 void Node::randomLookup()
 {
   int res          = id_;
-  int random_index = RngStream_RandInt(stream, 0, nb_bits - 1);
+  std::uniform_int_distribution<int> dist(0, nb_bits - 1);
+  int random_index = dist(generator);
   int random_id    = fingers_[random_index];
   XBT_DEBUG("Making a lookup request for id %d", random_id);
   if (random_id != id_)

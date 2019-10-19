@@ -8,7 +8,7 @@
 #include "s4u-peer.hpp"
 #include "s4u-tracker.hpp"
 
-simgrid::xbt::Extension<simgrid::s4u::Host, HostBittorrent> HostBittorrent::EXTENSION_ID;
+std::default_random_engine generator;
 
 int main(int argc, char* argv[])
 {
@@ -18,12 +18,6 @@ int main(int argc, char* argv[])
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file", argv[0]);
 
   e.load_platform(argv[1]);
-
-  /* Install our extension on all existing hosts */
-  HostBittorrent::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostBittorrent>();
-  std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
-  for (auto const& host : list)
-    host->extension_set(new HostBittorrent(host));
 
   e.register_actor<Tracker>("tracker");
   e.register_actor<Peer>("peer");

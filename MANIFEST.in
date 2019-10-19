@@ -1986,7 +1986,6 @@ include include/smpi/smpi_helpers_internal.h
 include include/smpi/smpi_main.h
 include include/xbt.h
 include include/xbt/Extendable.hpp
-include include/xbt/RngStream.h
 include include/xbt/asserts.h
 include include/xbt/automaton.h
 include include/xbt/automaton.hpp
@@ -2063,7 +2062,6 @@ include src/bindings/java/org/simgrid/msg/Mutex.java
 include src/bindings/java/org/simgrid/msg/Process.java
 include src/bindings/java/org/simgrid/msg/ProcessKilledError.java
 include src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java
-include src/bindings/java/org/simgrid/msg/RngStream.java
 include src/bindings/java/org/simgrid/msg/Semaphore.java
 include src/bindings/java/org/simgrid/msg/Storage.java
 include src/bindings/java/org/simgrid/msg/StorageNotFoundException.java
@@ -2552,7 +2550,6 @@ include src/surf/xml/simgrid_dtd.h
 include src/surf/xml/surfxml_parseplatf.cpp
 include src/surf/xml/surfxml_sax_cb.cpp
 include src/xbt/OsSemaphore.hpp
-include src/xbt/RngStream.c
 include src/xbt/automaton/automaton.c
 include src/xbt/automaton/automaton_lexer.yy.c
 include src/xbt/automaton/automatonparse_promela.c

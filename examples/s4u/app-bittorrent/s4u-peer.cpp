@@ -44,8 +44,6 @@ Peer::Peer(std::vector<std::string> args)
   }
   xbt_assert(deadline > 0, "Wrong deadline supplied");
 
-  stream = simgrid::s4u::this_actor::get_host()->extension<HostBittorrent>()->getStream();
-
   if (args.size() == 4 && args[3] == "1") {
     bitfield_       = (1U << FILE_PIECES) - 1U;
     bitfield_blocks = (1ULL << (FILE_PIECES * PIECES_BLOCKS)) - 1ULL;
@@ -456,7 +454,8 @@ int Peer::selectPieceToDownload(Connection* remote_peer)
 
     xbt_assert(nb_interesting_pieces != 0);
     // get a random interesting piece
-    int random_piece_index = RngStream_RandInt(stream, 0, nb_interesting_pieces - 1);
+    std::uniform_int_distribution<int> dist(0, nb_interesting_pieces - 1);
+    int random_piece_index = dist(generator);
     int current_index      = 0;
     for (unsigned int i = 0; i < FILE_PIECES; i++) {
       if (hasNotPiece(i) && remote_peer->hasPiece(i)) {
@@ -479,7 +478,8 @@ int Peer::selectPieceToDownload(Connection* remote_peer)
         nb_interesting_pieces++;
     xbt_assert(nb_interesting_pieces != 0);
     // get a random interesting piece
-    int random_piece_index = RngStream_RandInt(stream, 0, nb_interesting_pieces - 1);
+    std::uniform_int_distribution<int> dist(0, nb_interesting_pieces - 1);
+    int random_piece_index = dist(generator);
     int current_index      = 0;
     for (unsigned int i = 0; i < FILE_PIECES; i++) {
       if (hasNotPiece(i) && remote_peer->hasPiece(i) && isNotDownloadingPiece(i)) {
@@ -510,7 +510,11 @@ int Peer::selectPieceToDownload(Connection* remote_peer)
 
     xbt_assert(nb_min_pieces != 0 || not isInterestedByFree(remote_peer));
     // get a random rarest piece
-    int random_rarest_index = RngStream_RandInt(stream, 0, nb_min_pieces - 1);
+    int random_rarest_index = 0;
+    if (nb_min_pieces > 0) {
+      std::uniform_int_distribution<int> dist(0, nb_min_pieces - 1);
+      random_rarest_index = dist(generator);
+    }
     for (unsigned int i = 0; i < FILE_PIECES; i++)
       if (pieces_count[i] == min && hasNotPiece(i) && remote_peer->hasPiece(i) && isNotDownloadingPiece(i)) {
         if (random_rarest_index == current_index) {
@@ -559,7 +563,8 @@ void Peer::updateChokedPeers()
       do {
         // We choose a random peer to unchoke.
         std::unordered_map<int, Connection>::iterator chosen_peer_it = connected_peers.begin();
-        std::advance(chosen_peer_it, RngStream_RandInt(stream, 0, connected_peers.size() - 1));
+        std::uniform_int_distribution<int> dist(0, connected_peers.size() - 1);
+        std::advance(chosen_peer_it, dist(generator));
         chosen_peer = &chosen_peer_it->second;
         if (not chosen_peer->interested || not chosen_peer->choked_upload)
           chosen_peer = nullptr;

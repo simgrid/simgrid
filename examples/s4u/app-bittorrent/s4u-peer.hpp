@@ -31,7 +31,6 @@ public:
 class Peer {
   int id;
   double deadline;
-  RngStream stream;
   simgrid::s4u::Mailbox* mailbox_;
   std::unordered_map<int, Connection> connected_peers;
   std::set<Connection*> active_peers; // active peers list
