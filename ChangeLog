@@ -5,6 +5,7 @@ SimGrid (3.24.1) NOT RELEASED YET (v3.25 expected December 22. 2029, 04:19 UTC)
 Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - GH#31: [MC] please provide an option to make MPI_Send asynchronous
  - GH#305: Unscheduled tasks are still excuted 
+ - FG!19: Removing RngStream
 
 ----------------------------------------------------------------------------
 
