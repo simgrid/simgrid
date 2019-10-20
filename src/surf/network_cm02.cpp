@@ -3,10 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "network_cm02.hpp"
+#include "src/surf/network_cm02.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
+#include "src/surf/network_wifi.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
@@ -93,10 +94,10 @@ NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(b
 LinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
                                         s4u::Link::SharingPolicy policy)
 {
-  if (policy == s4u::Link::SharingPolicy::WIFI) {
-    return (new NetworkWifiLink(this, name, bandwidths, policy, get_maxmin_system()));
-  }
-  xbt_assert(bandwidths.size() == 1, "Non WIFI links must use only 1 bandwidth.");
+  if (policy == s4u::Link::SharingPolicy::WIFI)
+    return new NetworkWifiLink(this, name, bandwidths, policy, get_maxmin_system());
+
+  xbt_assert(bandwidths.size() == 1, "Non-WIFI links must use only 1 bandwidth.");
   return new NetworkCm02Link(this, name, bandwidths[0], latency, policy, get_maxmin_system());
 }
 
@@ -323,9 +324,8 @@ void NetworkCm02Link::apply_event(kernel::profile::Event* triggered, double valu
   } else if (triggered == state_event_) {
     if (value > 0)
       turn_on();
-    else {
+    else
       turn_off();
-    }
     tmgr_trace_event_unref(&state_event_);
   } else {
     xbt_die("Unknown event!\n");
@@ -390,46 +390,6 @@ void NetworkCm02Link::set_latency(double value)
     if (not action->is_suspended())
       get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), action->sharing_penalty_);
   }
-}
-
-NetworkWifiLink::NetworkWifiLink(NetworkCm02Model* model, const std::string& name, std::vector<double> bandwidths,
-                                 s4u::Link::SharingPolicy policy, lmm::System* system)
-    : NetworkCm02Link(
-          model, name, 1 / sg_bandwidth_factor, 0, policy,
-          system) // Since link uses bw*sg_bandwidth_factor we should divide by sg_bw_factor to ensure that we have 1 as
-                  // a bound in the lmm system
-{
-  for (auto bandwidth : bandwidths) {
-    bandwidths_.push_back({bandwidth, 1.0, nullptr});
-  }
-}
-
-void NetworkWifiLink::set_host_rate(s4u::Host* host, int rate_level)
-{
-  auto insert_done = host_rates_.insert(std::make_pair(host->get_name(), rate_level));
-  if (insert_done.second == false)
-    insert_done.first->second = rate_level;
-}
-
-double NetworkWifiLink::get_host_rate(sg_host_t host)
-{
-  std::map<xbt::string, int>::iterator host_rates_it;
-  host_rates_it = host_rates_.find(host->get_name());
-
-  if (host_rates_it == host_rates_.end())
-    return -1;
-
-  int rate_id = host_rates_it->second;
-  xbt_assert(rate_id >= 0 && rate_id < (int)bandwidths_.size(), "Host \"%s\" has an invalid rate \"%d\"",
-             host->get_name().c_str(), rate_id);
-
-  Metric rate = bandwidths_[rate_id];
-  return rate.peak * rate.scale;
-}
-
-s4u::Link::SharingPolicy NetworkWifiLink::get_sharing_policy()
-{
-  return s4u::Link::SharingPolicy::WIFI;
 }
 
 /**********
