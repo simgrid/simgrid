@@ -121,7 +121,7 @@ public:
 
   /** Get an associative list [mount point]->[Storage] of all local mount points.
    *
-   *  This is defined in the platform file, and cannot be modified programatically (yet).
+   *  This is defined in the platform file, and cannot be modified programmatically (yet).
    */
   std::unordered_map<std::string, Storage*> const& get_mounted_storages();
 

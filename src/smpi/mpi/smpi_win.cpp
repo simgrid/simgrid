@@ -165,7 +165,7 @@ int Win::fence(int assert)
     bar_->wait();
     mut_->lock();
     // This (simulated) mutex ensures that no process pushes to the vector of requests during the waitall.
-    // Without this, the vector could get redimensionned when another process pushes.
+    // Without this, the vector could get redimensioned when another process pushes.
     // This would result in the array used by Request::waitall() to be invalidated.
     // Another solution would be to copy the data and cleanup the vector *before* Request::waitall
     std::vector<MPI_Request> *reqs = requests_;
@@ -334,8 +334,9 @@ int Win::accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
 
   void* recv_addr = static_cast<void*>(static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_);
   XBT_DEBUG("Entering MPI_Accumulate to %d", target_rank);
-    //As the tag will be used for ordering of the operations, substract count from it (to avoid collisions with other SMPI tags, SMPI_RMA_TAG is set below all the other ones we use )
-    //prepare send_request
+  // As the tag will be used for ordering of the operations, subtract count from it (to avoid collisions with other
+  // SMPI tags, SMPI_RMA_TAG is set below all the other ones we use)
+  // prepare send_request
 
   MPI_Request sreq = Request::rma_send_init(origin_addr, origin_count, origin_datatype, comm_->rank(), target_rank,
                                             SMPI_RMA_TAG - 3 - count_, comm_, op);

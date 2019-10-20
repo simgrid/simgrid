@@ -39,7 +39,7 @@
 /*
  * Simple double ring version of barrier
  *
- * synchronous gurantee made by last ring of sends are synchronous
+ * synchronous guarantee made by last ring of sends are synchronous
  *
  */
 namespace simgrid{

@@ -56,7 +56,7 @@ public:
   explicit TIData(const std::string& name) : name_(name){};
   // CPuTI: compute, sleep (+ waitAny and waitall out of laziness)
   explicit TIData(const std::string& name, double amount) : name_(name), amount_(amount){};
-  // Pt2PtTI: send, isend, sssend, issend, recv, irecv
+  // Pt2PtTI: send, isend, ssend, issend, recv, irecv
   explicit TIData(const std::string& name, int endpoint, int size, const std::string& datatype)
       : name_(name), endpoint(endpoint), send_size(size), send_type(datatype){};
   // CollTI: bcast, reduce, allreduce, gather, scatter, allgather, alltoall

@@ -64,7 +64,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *         order of communications for node i is i -> i + 1, i -> i + 2, ...,
  *         i -> (i + p -1) % P.
  *
- * Auther: Ahmad Faraj
+ * Author: Ahmad Faraj
  ****************************************************************************/
 
 namespace simgrid{

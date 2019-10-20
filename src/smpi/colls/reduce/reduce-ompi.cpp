@@ -80,7 +80,7 @@ int smpi_coll_tuned_ompi_reduce_generic(const void* sendbuf, void* recvbuf, int 
         ptrdiff_t true_extent, real_segment_size;
         true_extent=datatype->get_extent();
 
-        /* handle non existant recv buffer (i.e. its NULL) and
+        /* handle non existent recv buffer (i.e. its NULL) and
            protect the recv buffer on non-root nodes */
         accumbuf = static_cast<unsigned char*>(recvbuf);
         if (nullptr == accumbuf || root != rank) {
@@ -95,7 +95,7 @@ int smpi_coll_tuned_ompi_reduce_generic(const void* sendbuf, void* recvbuf, int 
         }
 
         /* If this is a non-commutative operation we must copy
-           sendbuf to the accumbuf, in order to simplfy the loops */
+           sendbuf to the accumbuf, in order to simplify the loops */
         if ((op != MPI_OP_NULL && not op->is_commutative())) {
           Datatype::copy(sendtmpbuf, original_count, datatype, accumbuf, original_count, datatype);
         }
@@ -474,7 +474,7 @@ int Coll_reduce_ompi_binomial::reduce(const void *sendbuf, void *recvbuf,
  * reduce_intra_in_order_binary
  *
  * Function:      Logarithmic reduce operation for non-commutative operations.
- * Acecpts:       same as MPI_Reduce()
+ * Accepts:       same as MPI_Reduce()
  * Returns:       MPI_SUCCESS or error code
  */
 int Coll_reduce_ompi_in_order_binary::reduce(const void *sendbuf, void *recvbuf,

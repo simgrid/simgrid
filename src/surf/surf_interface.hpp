@@ -81,7 +81,7 @@ XBT_PUBLIC void surf_network_model_init_SMPI();
 /** @ingroup SURF_models
  *  @brief Same as network model 'LagrangeVelho', only with different correction factors.
  *
- * This model impelments a variant of the contention model on Infinband networks based on
+ * This model implements a variant of the contention model on Infiniband networks based on
  * the works of Jérôme Vienne : http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf
  *
  *  @see surf_host_model_init_IB()
@@ -115,7 +115,7 @@ XBT_PUBLIC void surf_network_model_init_Constant();
 /** @ingroup SURF_models
  *  @brief Initializes the platform with the network model CM02
  *
- *  You sould call this function by yourself only if you plan using surf_host_model_init_compound.
+ *  You should call this function by yourself only if you plan using surf_host_model_init_compound.
  *  See comments in the code for more information.
  */
 XBT_PUBLIC void surf_network_model_init_CM02();
@@ -136,7 +136,7 @@ XBT_PUBLIC void surf_network_model_init_NS3();
 /** @ingroup SURF_models
  *  @brief Initializes the platform with the current best network and cpu models at hand
  *
- *  This platform model seperates the host model and the network model.
+ *  This platform model separates the host model and the network model.
  *  The host model will be initialized with the model compound, the network model with the model LV08 (with cross
  *  traffic support) and the CPU model with the model Cas01.
  *  Such model is subject to modification with warning in the ChangeLog so monitor it!

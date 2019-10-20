@@ -14,7 +14,7 @@
       This is done to avoid SMPI actors to start at actor_id=0.
    3. For each job:
         1. Sleep until job's starting time is reached (if needed)
-        2. Launch the replay of the corresponding time-indepent trace.
+        2. Launch the replay of the corresponding time-independent trace.
         3. Create inter-process noise, by spawning useless actors.
    4. Wait for completion (via s4u::Engine's run method)
 */

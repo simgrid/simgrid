@@ -60,7 +60,7 @@ private:
 
   /* Dynamic */
   double last_time_ = 0.0;             /*< Integral interval last point (discrete time) */
-  double total_    = 0.0;             /*< Integral total between 0 and last_pointn */
+  double total_     = 0.0;             /*< Integral total between 0 and last point */
 
   std::unique_ptr<CpuTiProfile> profile_ = nullptr;
   profile::Profile* speed_profile_       = nullptr;

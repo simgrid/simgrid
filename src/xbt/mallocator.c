@@ -90,7 +90,7 @@ static inline int xbt_mallocator_is_active(void) {
  *              mallocator is empty
  * @param free_f function to free an object of your datatype, called in @a xbt_mallocator_release() when the stack is
  *                full, and when the mallocator is freed.
- * @param reset_f function to reinitialise an object of your datatype, called when you extract an object from the
+ * @param reset_f function to reinitialize an object of your datatype, called when you extract an object from the
  *                mallocator (can be NULL)
  *
  * Create and initialize a new mallocator for a given datatype.

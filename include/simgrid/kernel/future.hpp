@@ -103,7 +103,7 @@ protected:
     status_ = FutureStatus::ready;
     if (continuation_) {
       // We unregister the continuation before executing it.
-      // We need to do this becase the current implementation of the
+      // We need to do this because the current implementation of the
       // continuation has a shared_ptr to the FutureState.
       auto continuation = std::move(continuation_);
       this->schedule(std::move(continuation));
@@ -135,7 +135,7 @@ private:
 /** Shared state for future and promises
  *
  *  You are not expected to use them directly but to create them
- *  implicitely through a @ref simgrid::kernel::Promise.
+ *  implicitly through a @ref simgrid::kernel::Promise.
  *  Alternatively kernel operations could inherit or contain FutureState
  *  if they are managed with std::shared_ptr.
  **/
@@ -222,11 +222,11 @@ template <class T> Future<T> unwrap_future(Future<Future<T>> future);
 /** Result of some (probably) asynchronous operation in the SimGrid kernel
  *
  * @ref simgrid::simix::Future and @ref simgrid::simix::Future provide an
- * abstration for asynchronous stuff happening in the SimGrid kernel. They
+ * abstraction for asynchronous stuff happening in the SimGrid kernel. They
  * are based on C++1z futures.
  *
  * The future represents a value which will be available at some point when this
- * asynchronous operaiont is finished. Alternatively, if this operations fails,
+ * asynchronous operation is finished. Alternatively, if this operations fails,
  * the result of the operation might be an exception.
  *
  *  As the operation is possibly no terminated yet, we cannot get the result
@@ -268,7 +268,7 @@ template <class T> Future<T> unwrap_future(Future<Future<T>> future);
  *  * inside the `.then()`, `.get()` can be used;
  *
  *  * `.get()` can only be used when `.is_ready()` (as everything happens in
- *     a single-thread, the future would be guaranted to deadlock if `.get()`
+ *     a single-thread, the future would be guaranteed to deadlock if `.get()`
  *     is called when the future is not ready);
  *
  *  * there is no future chaining support for now (`.then().then()`);
@@ -433,7 +433,7 @@ template <class T> Future<T> unwrap_future(Future<Future<T>> future)
  *      promise.set_value(value);
  *    }
  *    catch (...) {
- *      // If an error occured, we can set an exception which
+ *      // If an error occurred, we can set an exception which
  *      // will be thrown by future.get():
  *      promise.set_exception(std::current_exception());
  *    }

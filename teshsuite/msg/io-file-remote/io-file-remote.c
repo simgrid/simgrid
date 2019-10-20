@@ -22,7 +22,7 @@ static int host(int argc, char* argv[])
   XBT_INFO("Try to read %llu from '%s'", MSG_file_get_size(file), filename);
   sg_size_t read = MSG_file_read(file, MSG_file_get_size(file));
   XBT_INFO("Have read %llu from '%s'. Offset is now at: %llu", read, filename, MSG_file_tell(file));
-  XBT_INFO("Seek back to the begining of the stream...");
+  XBT_INFO("Seek back to the beginning of the stream...");
   MSG_file_seek(file, 0, SEEK_SET);
   XBT_INFO("Offset is now at: %llu", MSG_file_tell(file));
 

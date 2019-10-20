@@ -28,7 +28,7 @@ class Comm : public F2C, public Keyval{
   int is_uniform_;
   int* non_uniform_map_;        // set if smp nodes have a different number of processes allocated
   int is_blocked_;              // are ranks allocated on the same smp node contiguous ?
-  int is_smp_comm_;             // set to 0 in case this is already an intra-comm or a leader-comm to avoid recursivity
+  int is_smp_comm_;             // set to 0 in case this is already an intra-comm or a leader-comm to avoid recursion
   std::list<MPI_Win> rma_wins_; // attached windows for synchronization.
   std::string name_;
   MPI_Info info_;

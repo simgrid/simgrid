@@ -360,7 +360,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     xbt_dict_free(&head);
   }
 
-  SECTION("Test dictionnary with int keys")
+  SECTION("Test dictionary with int keys")
   {
     xbt_dict_t dict = xbt_dict_new_homogeneous(nullptr);
     int count       = 500;
@@ -368,7 +368,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     INFO("Insert elements");
     for (int i = 0; i < count; ++i)
       xbt_dict_set_ext(dict, (char*)&i, sizeof(i), (void*)(intptr_t)i, nullptr);
-    REQUIRE(xbt_dict_size(dict) == (unsigned)count); // Bad number of elements in the dictionnary
+    REQUIRE(xbt_dict_size(dict) == (unsigned)count); // Bad number of elements in the dictionary
 
     INFO("Check elements");
     for (int i = 0; i < count; ++i) {

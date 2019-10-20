@@ -328,7 +328,7 @@ void Config::alias(const std::string& realname, const std::string& aliasname)
   this->aliases.insert({aliasname, element});
 }
 
-/** @brief Dump a config set for debuging purpose
+/** @brief Dump a config set for debugging purpose
  *
  * @param name The name to give to this config set
  * @param indent what to write at the beginning of each line (right number of spaces)

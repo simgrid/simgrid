@@ -121,7 +121,7 @@ class File{
       if((my_chunk_start>=min_offsets[i] && my_chunk_start < max_offsets[i])||
           ((my_chunk_end<=max_offsets[i]) && my_chunk_end> min_offsets[i])){
         send_sizes[i]=(std::min(max_offsets[i]-1, my_chunk_end-1)-std::max(min_offsets[i], my_chunk_start));
-        //store min and max offest to actually read
+        // store min and max offset to actually read
         min_offset=std::min(min_offset, min_offsets[i]);
         total_sent+=send_sizes[i];
         XBT_CDEBUG(smpi_pmpi, "will have to send %d bytes to %d", send_sizes[i], i);

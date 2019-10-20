@@ -62,7 +62,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  * Descp: takes a number and tries to find a factoring of x, y mesh out of it
 
- * Auther: Ahmad Faraj
+ * Author: Ahmad Faraj
  ****************************************************************************/
 #ifndef TWOD
 #define TWOD
@@ -103,7 +103,7 @@ static int is_2dmesh(int num, int *i, int *j)
  * algorithm. Allgather ommunication occurs first in the x dimension then in
  * the y dimension.  The communication in each dimension follows
  * "simple"
- * Auther: Ahmad Faraj
+ * Author: Ahmad Faraj
 ****************************************************************************/
 
 namespace simgrid{

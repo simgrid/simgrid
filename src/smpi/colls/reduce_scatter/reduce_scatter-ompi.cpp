@@ -441,7 +441,7 @@ Coll_reduce_scatter_ompi_ring::reduce_scatter(const void *sbuf, void *rbuf, cons
        - wait on block (r)
        - compute on block (r)
        - copy block (r) to rbuf
-       Note that we must be careful when computing the begining of buffers and
+       Note that we must be careful when computing the beginning of buffers and
        for send operations and computation we must compute the exact block size.
     */
     send_to = (rank + 1) % size;

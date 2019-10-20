@@ -21,7 +21,7 @@ namespace profile {
  * - #simgrid::kernel::profile::Event: links a given trace to a given SimGrid resource.
  *   A Cpu for example has 2 kinds of events: state (ie, is it ON/OFF) and speed,
  *   while a link has 3 iterators: state, bandwidth and latency.
- * - #simgrid::kernel::profile::FutureEvtSet: makes it easy to find the next occuring event of all profiles
+ * - #simgrid::kernel::profile::FutureEvtSet: makes it easy to find the next occurring event of all profiles
  */
 class XBT_PUBLIC DatedValue {
 public:

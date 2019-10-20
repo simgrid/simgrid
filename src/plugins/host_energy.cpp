@@ -370,7 +370,7 @@ void HostEnergy::init_watts_range_list()
         } else {
           p_epsilon = p_one_core - ((p_full - p_one_core) / (host_->get_core_count() - 1));
         }
-      } else { // consuption given with idle and full only
+      } else { // consumption given with idle and full only
         p_full = xbt_str_parse_double((current_power_values.at(1)).c_str(),
                                       "Invalid obsolete XML file. Fix your watt_per_state property.");
         if (host_->get_core_count() == 1) {

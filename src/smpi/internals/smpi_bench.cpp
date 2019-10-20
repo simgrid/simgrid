@@ -39,7 +39,7 @@ double smpi_host_speed;
 SharedMallocType smpi_cfg_shared_malloc = SharedMallocType::GLOBAL;
 double smpi_total_benched_time = 0;
 
-// Private execute_flops used by smpi_execute and spmi_execute_benched
+// Private execute_flops used by smpi_execute and smpi_execute_benched
 void private_execute_flops(double flops) {
   xbt_assert(flops >= 0, "You're trying to execute a negative amount of flops (%f)!", flops);
   XBT_DEBUG("Handle real computation time: %f flops", flops);

@@ -260,7 +260,7 @@ struct xbt_log_event_s {
  * @param cat the category (not only its name, but the variable)
  * @param thresholdPriority the priority
  *
- * Programatically alters a category's threshold priority (don't use).
+ * Programmatically alters a category's threshold priority (don't use).
  */
 XBT_PUBLIC void xbt_log_threshold_set(xbt_log_category_t cat, e_xbt_log_priority_t thresholdPriority);
 
@@ -269,7 +269,7 @@ XBT_PUBLIC void xbt_log_threshold_set(xbt_log_category_t cat, e_xbt_log_priority
  * @param cat the category (not only its name, but the variable)
  * @param app the appender
  *
- * Programatically sets the category's appender. (the preferred interface is through xbt_log_control_set())
+ * Programmatically sets the category's appender. (the preferred interface is through xbt_log_control_set())
  */
 XBT_PUBLIC void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app);
 /**
@@ -277,7 +277,7 @@ XBT_PUBLIC void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t 
  * @param cat the category (not only its name, but the variable)
  * @param lay the layout
  *
- * Programatically sets the category's layout. (the preferred interface is through xbt_log_control_set())
+ * Programmatically sets the category's layout. (the preferred interface is through xbt_log_control_set())
  */
 XBT_PUBLIC void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay);
 
@@ -286,7 +286,7 @@ XBT_PUBLIC void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay)
  * @param cat the category (not only its name, but the variable)
  * @param additivity whether logging actions must be passed to parent.
  *
- * Programatically sets whether the logging actions must be passed to the parent category.
+ * Programmatically sets whether the logging actions must be passed to the parent category.
  * (the preferred interface is through xbt_log_control_set())
  */
 XBT_PUBLIC void xbt_log_additivity_set(xbt_log_category_t cat, int additivity);

@@ -47,7 +47,7 @@ TEST_CASE("xbt::config: Configuration support", "config")
     int ival = simgrid::config::get_value<int>("speed");
     REQUIRE(ival == 42); // Unexpected value for speed
 
-    INFO("Access to a non-existant entry");
+    INFO("Access to a non-existent entry");
 
     REQUIRE_THROWS_AS(simgrid::config::set_parse("color:blue"), std::out_of_range);
 

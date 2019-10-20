@@ -13,7 +13,7 @@
 constexpr unsigned DT_FLAG_DESTROYED   = 0x0001; /**< user destroyed but some other layers still have a reference */
 constexpr unsigned DT_FLAG_COMMITED    = 0x0002; /**< ready to be used for a send/recv operation */
 constexpr unsigned DT_FLAG_CONTIGUOUS  = 0x0004; /**< contiguous datatype */
-constexpr unsigned DT_FLAG_OVERLAP     = 0x0008; /**< datatype is unpropper for a recv operation */
+constexpr unsigned DT_FLAG_OVERLAP     = 0x0008; /**< datatype is unproper for a recv operation */
 constexpr unsigned DT_FLAG_USER_LB     = 0x0010; /**< has a user defined LB */
 constexpr unsigned DT_FLAG_USER_UB     = 0x0020; /**< has a user defined UB */
 constexpr unsigned DT_FLAG_PREDEFINED  = 0x0040; /**< cannot be removed: initial and predefined datatypes */

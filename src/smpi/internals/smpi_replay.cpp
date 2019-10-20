@@ -61,7 +61,7 @@ public:
 };
 }
 
-typedef std::tuple</*sender*/ int, /* reciever */ int, /* tag */int> req_key_t;
+typedef std::tuple</*sender*/ int, /* receiver */ int, /* tag */ int> req_key_t;
 typedef std::unordered_map<req_key_t, MPI_Request, hash_tuple::hash<std::tuple<int,int,int>>> req_storage_t;
 
 void log_timed_action(simgrid::xbt::ReplayAction& action, double clock)

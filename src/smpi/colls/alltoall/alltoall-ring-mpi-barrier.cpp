@@ -23,7 +23,7 @@
  * Descrp: Function works in P - 1 steps. In step i, node j - i -> j -> j + i.
            MPI barriers are added between each two phases.
 
- * Auther: Ahmad Faraj
+ * Author: Ahmad Faraj
 
  ****************************************************************************/
 namespace simgrid{

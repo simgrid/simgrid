@@ -22,7 +22,7 @@
 
  * Descrp: Function works in P - 1 steps. In step i, node j - i -> j -> j + i.
 
- * Auther: Ahmad Faraj
+ * Author: Ahmad Faraj
 
  ****************************************************************************/
 namespace simgrid{

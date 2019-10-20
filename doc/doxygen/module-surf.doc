@@ -56,7 +56,7 @@
     Some functions of the @ref SURF_host_interface and similar can give
     you some information about:
 	- a host: get_speed(), get_available_speed();
-	- a network link: get_link_name(), get_link_latency(), get_link_bandwith();
+	- a network link: get_link_name(), get_link_latency(), get_link_bandwidth();
 	- a route: get_route(), get_route_size().
 
     During the simulation, call @a surf_host_model->execute() to schedule a

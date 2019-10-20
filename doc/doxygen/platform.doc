@@ -541,7 +541,7 @@ to choose the best routing model is given in the Section called @"@ref pf_routin
 | @ref pf_routing_model_dijkstra "Dijkstra"           | Dijkstra routing data. Calculates routes only when needed                  |
 | @ref pf_routing_model_dijkstracache "DijkstraCache" | Dijkstra routing data. Handles some cache for already calculated routes.   |
 
-All those shortest-path models are instanciated in the same way and are
+All those shortest-path models are instantiated in the same way and are
 completely interchangeable. Here are some examples:
 
 @anchor pf_routing_model_floyd
@@ -1100,7 +1100,7 @@ ongoing attempt</a> to automatically extract the SimGrid platform from
 the <a href="http://grid5000.fr/">Grid'5000</a> experimental platform.
 But it's hard to come up with generic models. Don't take these files
 too seriously. Actually, you should always challenge our models and
-your instanciation if the accuracy really matters to you (see <a
+your instantiation if the accuracy really matters to you (see <a
 href="https://hal.inria.fr/hal-00907887">this discussion</a>).
 
 But such advices only hold if you have a real platform and a real

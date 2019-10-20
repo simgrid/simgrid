@@ -42,7 +42,7 @@ Options:
   -np <numprocs>             # use that amount of processes from the hostfile.
                              # By default, all processes of the hostfile are used.
   -no-privatize              # Disable the globals privatization, that is activated by default
-  -trace-ti                  # activate time independant tracing (for replay, default in smpi_simgrid.txt)
+  -trace-ti                  # activate time independent tracing (for replay, default in smpi_simgrid.txt)
   -trace                     # activate tracing (Paje, default in smpi_simgrid.trace)
   -trace-comment <comment>   # put a comment on the top of the trace file
   -trace-comment-file <file> # put file contents on the top of the trace file as comment
@@ -546,7 +546,7 @@ fi
 # * The job is launched in the background in order to be able to handle signals.
 #
 # * The FD 3 is used to temporarily store FD 1. This is because the shell connects FD 1 to /dev/null when the command
-#   is launched in the background: this can be overriden in bash but not in standard bourne shell.
+#   is launched in the background: this can be overridden in bash but not in standard bourne shell.
 exec 3<&0
 ${WRAPPER} "@SMPIMAIN@" ${EXEC} ${PRIVATIZE} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP} <&3 3>&- &
 pid=$!

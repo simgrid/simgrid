@@ -9,8 +9,7 @@
 namespace simgrid{
 namespace smpi{
 
-
-// Allgather-Non-Topoloty-Scecific-Logical-Ring algorithm
+// Allgather-Non-Topology-Specific-Logical-Ring algorithm
 int
 Coll_allgather_NTSLR_NB::allgather(const void *sbuf, int scount, MPI_Datatype stype,
                                    void *rbuf, int rcount, MPI_Datatype rtype,

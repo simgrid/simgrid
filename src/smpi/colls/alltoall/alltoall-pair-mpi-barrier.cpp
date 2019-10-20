@@ -24,7 +24,7 @@
            phases, nodes in pair communicate their data. MPI barriers are
            inserted between each two phases.
 
- * Auther: Ahmad Faraj
+ * Author: Ahmad Faraj
 
  ****************************************************************************/
 namespace simgrid{

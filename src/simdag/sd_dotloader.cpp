@@ -31,7 +31,7 @@ static void dot_task_p_free(void *task) {
  * The size attribute of a node describes:
  *   - for a compute task: the amount of flops to execute
  *   - for a communication task : the amount of bytes to transfer
- * If this attribute is ommited, the default value is zero.
+ * If this attribute is omitted, the default value is zero.
  */
 xbt_dynar_t SD_dotload(const char *filename) {
   return SD_dotload_generic(filename, true, false);

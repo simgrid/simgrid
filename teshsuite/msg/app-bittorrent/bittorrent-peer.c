@@ -586,9 +586,9 @@ void update_choked_peers(peer_t peer)
   // update the current round
   peer->round = (peer->round + 1) % 3;
   char* key;
-  char* key_choked          = NULL;
-  connection_t peer_choosed = NULL;
-  connection_t peer_choked  = NULL;
+  char* key_choked         = NULL;
+  connection_t peer_chosen = NULL;
+  connection_t peer_choked = NULL;
   // remove a peer from the list
   xbt_dict_cursor_t cursor = NULL;
   xbt_dict_cursor_first(peer->active_peers, &cursor);
@@ -607,7 +607,7 @@ void update_choked_peers(peer_t peer)
       if (connection->last_unchoke < unchoke_time && (connection->interested != 0) &&
           (connection->choked_upload != 0)) {
         unchoke_time = connection->last_unchoke;
-        peer_choosed = connection;
+        peer_chosen  = connection;
       }
     }
   } else {
@@ -624,19 +624,19 @@ void update_choked_peers(peer_t peer)
         connection_t connection;
         xbt_dict_foreach (peer->peers, cursor, key, connection) {
           if (i == id_chosen) {
-            peer_choosed = connection;
+            peer_chosen = connection;
             break;
           }
           i++;
         }
         xbt_dict_cursor_free(&cursor);
-        xbt_assert(peer_choosed != NULL, "A peer should have been selected at this point");
-        if ((peer_choosed->interested == 0) || (peer_choosed->choked_upload == 0))
-          peer_choosed = NULL;
+        xbt_assert(peer_chosen != NULL, "A peer should have been selected at this point");
+        if ((peer_chosen->interested == 0) || (peer_chosen->choked_upload == 0))
+          peer_chosen = NULL;
         else
           XBT_DEBUG("Nothing to do, keep going");
         j++;
-      } while (peer_choosed == NULL && j < MAXIMUM_PEERS);
+      } while (peer_chosen == NULL && j < MAXIMUM_PEERS);
     } else {
       // Use the "fastest download" policy.
       connection_t connection;
@@ -644,18 +644,18 @@ void update_choked_peers(peer_t peer)
       xbt_dict_foreach (peer->peers, cursor, key, connection) {
         if (connection->peer_speed > fastest_speed && (connection->choked_upload != 0) &&
             (connection->interested != 0)) {
-          peer_choosed  = connection;
+          peer_chosen   = connection;
           fastest_speed = connection->peer_speed;
         }
       }
     }
   }
 
-  if (peer_choosed != NULL)
-    XBT_DEBUG("(%d) update_choked peers unchoked (%d) ; int (%d) ; choked (%d) ", peer->id, peer_choosed->id,
-              peer_choosed->interested, peer_choosed->choked_upload);
+  if (peer_chosen != NULL)
+    XBT_DEBUG("(%d) update_choked peers unchoked (%d) ; int (%d) ; choked (%d) ", peer->id, peer_chosen->id,
+              peer_chosen->interested, peer_chosen->choked_upload);
 
-  if (peer_choked != peer_choosed) {
+  if (peer_choked != peer_chosen) {
     if (peer_choked != NULL) {
       xbt_assert((!peer_choked->choked_upload), "Tries to choked a choked peer");
       peer_choked->choked_upload = 1;
@@ -664,14 +664,14 @@ void update_choked_peers(peer_t peer)
       XBT_DEBUG("(%d) Sending a CHOKE to %d", peer->id, peer_choked->id);
       send_choked(peer, peer_choked->mailbox);
     }
-    if (peer_choosed != NULL) {
-      xbt_assert((peer_choosed->choked_upload), "Tries to unchoked an unchoked peer");
-      peer_choosed->choked_upload = 0;
-      xbt_dict_set_ext(peer->active_peers, (char*)&peer_choosed->id, sizeof(int), peer_choosed, NULL);
-      peer_choosed->last_unchoke = MSG_get_clock();
-      XBT_DEBUG("(%d) Sending a UNCHOKE to %d", peer->id, peer_choosed->id);
-      update_active_peers_set(peer, peer_choosed);
-      send_unchoked(peer, peer_choosed->mailbox);
+    if (peer_chosen != NULL) {
+      xbt_assert((peer_chosen->choked_upload), "Tries to unchoked an unchoked peer");
+      peer_chosen->choked_upload = 0;
+      xbt_dict_set_ext(peer->active_peers, (char*)&peer_chosen->id, sizeof(int), peer_chosen, NULL);
+      peer_chosen->last_unchoke = MSG_get_clock();
+      XBT_DEBUG("(%d) Sending a UNCHOKE to %d", peer->id, peer_chosen->id);
+      update_active_peers_set(peer, peer_chosen);
+      send_unchoked(peer, peer_chosen->mailbox);
     }
   }
 }

@@ -34,8 +34,8 @@ namespace actor {
  *
  * It is highly inspired from the syscalls in a regular operating system, allowing the user code to get some specific
  * code executed in the kernel context. But here, there is almost no security involved. Parameters get checked for
- * finitness but that's all. The main goal remain to ensure reproductible ordering of uncomparable events (in [parallel]
- * simulation) and observability of events (in model-checking).
+ * finiteness but that's all. The main goal remain to ensure reproducible ordering of uncomparable events (in
+ * [parallel] simulation) and observability of events (in model-checking).
  *
  * The code passed as argument is supposed to terminate at the exact same simulated timestamp.
  * Do not use it if your code may block waiting for a subsequent event, e.g. if you lock a mutex,
@@ -45,7 +45,7 @@ namespace actor {
 template <class F> typename std::result_of<F()>::type simcall(F&& code, mc::SimcallInspector* t = nullptr)
 {
   // If we are in the maestro, we take the fast path and execute the
-  // code directly without simcall mashalling/unmarshalling/dispatch:
+  // code directly without simcall marshalling/unmarshalling/dispatch:
   if (SIMIX_is_maestro())
     return std::forward<F>(code)();
 
@@ -61,7 +61,7 @@ template <class F> typename std::result_of<F()>::type simcall(F&& code, mc::Simc
 /** Execute some code (that does not return immediately) in kernel context
  *
  * This is very similar to simcall() right above, but the calling actor will not get rescheduled until
- * actor->simcall_answer() is called explicitely.
+ * actor->simcall_answer() is called explicitly.
  *
  * Since the return value does not come from the lambda directly, its type cannot be guessed automatically and must
  * be provided as template parameter.
@@ -78,7 +78,7 @@ template <class F> typename std::result_of<F()>::type simcall(F&& code, mc::Simc
 template <class R, class F> R simcall_blocking(F&& code, mc::SimcallInspector* t = nullptr)
 {
   // If we are in the maestro, we take the fast path and execute the
-  // code directly without simcall mashalling/unmarshalling/dispatch:
+  // code directly without simcall marshalling/unmarshalling/dispatch:
   if (SIMIX_is_maestro())
     return std::forward<F>(code)();
 

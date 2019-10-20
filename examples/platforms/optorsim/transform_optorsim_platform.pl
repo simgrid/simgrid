@@ -19,7 +19,7 @@ open FILE, $conf_file or die "Unable to open $conf_file";
 
 print "<!-- This platform was automatically converted from the OptorSim platform.\n";
 print "\n";
-print "  OptorSim files only describes information of the cluster interconnexion.\n";
+print "  OptorSim files only describes information of the cluster interconnection.\n";
 print "  In a sense, it reflects the topology of a National Research and Education\n";
 print "  Network (NREN), but not of a full-fledged computational platform.\n";
 print "  The caracteristics of each cluster have been artificially added.\n";

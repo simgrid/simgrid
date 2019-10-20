@@ -74,7 +74,7 @@ UContext::UContext(std::function<void()>&& code, actor::ActorImpl* actor, Swappe
     this->uc_.uc_stack.ss_sp   = sg_makecontext_stack_addr(get_stack());
     this->uc_.uc_stack.ss_size = sg_makecontext_stack_size(smx_context_stack_size);
     // Makecontext expects integer arguments; we want to pass a pointer.
-    // This context address is decomposed into a serie of integers, which are passed as arguments to makecontext.
+    // This context address is decomposed into a series of integers, which are passed as arguments to makecontext.
 
     int ctx_addr[CTX_ADDR_LEN]{};
     UContext* arg = this;

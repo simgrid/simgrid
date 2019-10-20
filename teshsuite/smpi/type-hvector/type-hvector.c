@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
           a[i][j] = i * SIZE + j;
     }
 
-    /* only one column is send this is an exemple for non-contignous data*/
+    /* only one column is sent this is an example for non-contiguous data*/
     MPI_Bcast(a, 1, columntype, 0, MPI_COMM_WORLD);
 
     for (int i = 0; i < SIZE; i++) {

@@ -50,7 +50,7 @@ Request::Request(const void* buf, int count, MPI_Datatype datatype, int src, int
       }
     }
   }
-  // This part handles the problem of non-contiguous memory (for the unserialisation at the reception)
+  // This part handles the problem of non-contiguous memory (for the unserialization at the reception)
   old_buf_  = old_buf;
   size_ = datatype->size() * count;
   datatype->ref();
@@ -129,7 +129,7 @@ int Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
     if (req->detached_)
       ref->detached_sender_=req; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
     if(req->cancelled_==0)
-      req->cancelled_=-1;//mark as uncancellable
+      req->cancelled_ = -1; // mark as uncancelable
     XBT_DEBUG("match succeeded");
     return 1;
   }else return 0;
@@ -155,7 +155,7 @@ int Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl*)
     if (ref->detached_)
       req->detached_sender_=ref; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
     if(req->cancelled_==0)
-      req->cancelled_=-1;//mark as uncancellable
+      req->cancelled_ = -1; // mark as uncancelable
     XBT_DEBUG("match succeeded");
     return 1;
   } else
@@ -861,7 +861,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
         }
 
         if(datatype->flags() & DT_FLAG_DERIVED){
-          // This part handles the problem of non-contignous memory the unserialization at the reception
+          // This part handles the problem of non-contiguous memory the unserialization at the reception
           if ((req->flags_ & MPI_REQ_RECV) && datatype->size() != 0)
             datatype->unserialize(req->buf_, req->old_buf_, req->real_size_/datatype->size() , req->op_);
           xbt_free(req->buf_);

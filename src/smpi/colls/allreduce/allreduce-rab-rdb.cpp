@@ -46,7 +46,7 @@ int Coll_allreduce_rab_rdb::allreduce(const void *sbuff, void *rbuff, int count,
       Request::send(rbuff, count, dtype, rank + 1, tag, comm);
 
       // temporarily set the rank to -1 so that this
-      // process does not pariticipate in recursive
+      // process does not participate in recursive
       // doubling
       newrank = -1;
     } else                      // odd

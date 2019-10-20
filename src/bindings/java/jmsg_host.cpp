@@ -108,7 +108,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jc
   if (not host->extension(JAVA_HOST_LEVEL)) {
     /* the native host not yet associated with the java host instance */
 
-    /* instanciate a new java host instance */
+    /* instantiate a new java host instance */
     jhost = jhost_new_instance(env);
 
     if (not jhost) {

@@ -13,7 +13,7 @@
 #  define _GNU_SOURCE
 #endif
 
-// Teach the compiler that some code path is unreacheable:
+// Teach the compiler that some code path is unreachable:
 #if defined(__has_builtin)
 #  if __has_builtin(__builtin_unreachable)
 #    define XBT_UNREACHABLE() __builtin_unreachable()

@@ -600,7 +600,7 @@ double sg_host_route_latency(sg_host_t from, sg_host_t to)
   return res;
 }
 /**
- * @brief Find the bandwitdh of the route between two hosts
+ * @brief Find the bandwidth of the route between two hosts
  *
  * @param from where from
  * @param to where to

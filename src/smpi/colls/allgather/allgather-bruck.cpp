@@ -49,7 +49,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 *****************************************************************************/
 
-
 /*****************************************************************************
  * Function: allgather_bruck
  * return: int
@@ -63,7 +62,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *   comm: communication
  * Descrp: Function realizes the allgather operation using the bruck
  *         algorithm.
- * Auther: MPICH
+ * Author: MPICH
  * Comment: Original bruck algorithm from MPICH is slightly modified by
  *          Ahmad Faraj.
  ****************************************************************************/

@@ -6,13 +6,11 @@
 
 #include "../colls_private.hpp"
 /* IMPLEMENTED BY PITCH PATARASUK
-   Non-topoloty-specific (however, number of cores/node need to be changed)
+   Non-topology-specific (however, number of cores/node need to be changed)
    all-reduce operation designed for smp clusters
    It uses 2-layer communication: binomial for both intra-communication
    inter-communication
    The communication are done in a pipeline fashion */
-
-
 
 /* this is a default segment size for pipelining,
    but it is typically passed as a command line argument */

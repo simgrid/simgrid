@@ -231,8 +231,8 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     SgFlow* sgFlow            = elm.second;
     NetworkNS3Action * action = sgFlow->action_;
     XBT_DEBUG("Processing socket %p (action %p)",sgFlow,action);
-    // Because NS3 stops as soon as a flow is finished, the other flows that ends at the same time may remains in an inconsistant state
-    // (i.e. remains_ == 0 but finished_ == false).
+    // Because NS3 stops as soon as a flow is finished, the other flows that ends at the same time may remains in an
+    // inconsistent state (i.e. remains_ == 0 but finished_ == false).
     // However, SimGrid considers sometimes that an action with remains_ == 0 is finished.
     // Thus, to avoid inconsistencies between SimGrid and NS3, set remains to 0 only when the flow is finished in NS3
     int remains = action->get_cost() - sgFlow->sent_bytes_;

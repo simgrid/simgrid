@@ -27,7 +27,8 @@ public:
 };
 
 class MigrationRx {
-  /* The miration_rx process uses mbox_ctl to let the caller of do_migration()  know the completion of the migration. */
+  /* The migration_rx process uses mbox_ctl to let the caller of do_migration()  know the completion of the migration.
+   */
   s4u::Mailbox* mbox_ctl;
   /* The migration_rx and migration_tx processes use mbox to transfer migration data. */
   s4u::Mailbox* mbox;

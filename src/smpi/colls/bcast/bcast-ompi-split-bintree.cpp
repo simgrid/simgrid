@@ -185,43 +185,38 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
 
     /* intermediate nodes code */
     else if( tree->tree_nextsize > 0 ) {
-        /* Intermediate nodes:
-         * It will receive segments only from one half of the data.
-         * Which one is determined by whether the node belongs to the "left" or "right"
-         * subtree. Topoloby building function builds binary tree such that
-         * odd "shifted ranks" ((rank + size - root)%size) are on the left subtree,
-         * and even on the right subtree.
-         *
-         * Create the pipeline. We first post the first receive, then in the loop we
-         * post the next receive and after that wait for the previous receive to complete
-         * and we disseminating the data to all children.
-         */
-        sendcount[lr] = segcount[lr];
-        base_req=Request::irecv(tmpbuf[lr], sendcount[lr], datatype,
-                           tree->tree_prev, COLL_TAG_BCAST,
-                           comm);
+      /* Intermediate nodes:
+       * It will receive segments only from one half of the data.
+       * Which one is determined by whether the node belongs to the "left" or "right"
+       * subtree. Topology building function builds binary tree such that
+       * odd "shifted ranks" ((rank + size - root)%size) are on the left subtree,
+       * and even on the right subtree.
+       *
+       * Create the pipeline. We first post the first receive, then in the loop we
+       * post the next receive and after that wait for the previous receive to complete
+       * and we disseminating the data to all children.
+       */
+      sendcount[lr] = segcount[lr];
+      base_req      = Request::irecv(tmpbuf[lr], sendcount[lr], datatype, tree->tree_prev, COLL_TAG_BCAST, comm);
 
-        for( segindex = 1; segindex < num_segments[lr]; segindex++ ) {
-            /* determine how many elements to expect in this round */
-            if( segindex == (num_segments[lr] - 1))
-                sendcount[lr] = counts[lr] - segindex*segcount[lr];
-            /* post new irecv */
-            new_req = Request::irecv( tmpbuf[lr] + realsegsize[lr], sendcount[lr],
-                                datatype, tree->tree_prev, COLL_TAG_BCAST,
-                                comm);
+      for (segindex = 1; segindex < num_segments[lr]; segindex++) {
+        /* determine how many elements to expect in this round */
+        if (segindex == (num_segments[lr] - 1))
+          sendcount[lr] = counts[lr] - segindex * segcount[lr];
+        /* post new irecv */
+        new_req = Request::irecv(tmpbuf[lr] + realsegsize[lr], sendcount[lr], datatype, tree->tree_prev, COLL_TAG_BCAST,
+                                 comm);
 
-            /* wait for and forward current segment */
-            Request::waitall( 1, &base_req, MPI_STATUSES_IGNORE );
-            for( i = 0; i < tree->tree_nextsize; i++ ) {  /* send data to children (segcount[lr]) */
-                Request::send( tmpbuf[lr], segcount[lr], datatype,
-                                   tree->tree_next[i], COLL_TAG_BCAST,
-                                   comm);
-            } /* end of for each child */
+        /* wait for and forward current segment */
+        Request::waitall(1, &base_req, MPI_STATUSES_IGNORE);
+        for (i = 0; i < tree->tree_nextsize; i++) { /* send data to children (segcount[lr]) */
+          Request::send(tmpbuf[lr], segcount[lr], datatype, tree->tree_next[i], COLL_TAG_BCAST, comm);
+        } /* end of for each child */
 
-            /* upate the base request */
-            base_req = new_req;
-            /* go to the next buffer (ie. the one corresponding to the next recv) */
-            tmpbuf[lr] += realsegsize[lr];
+        /* upate the base request */
+        base_req = new_req;
+        /* go to the next buffer (ie. the one corresponding to the next recv) */
+        tmpbuf[lr] += realsegsize[lr];
         } /* end of for segindex */
 
         /* wait for the last segment and forward current segment */

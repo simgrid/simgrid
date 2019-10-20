@@ -327,7 +327,7 @@ ompi_coll_tree_t*
 ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
                                    int root )
 {
-    int childs = 0;
+    int children = 0;
     int rank;
     int size;
     int mask = 1;
@@ -372,22 +372,22 @@ ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
         if( remote >= size ) remote -= size;
         bmtree->tree_prev = remote;
     }
-    /* And now let's fill my childs */
+    /* And now let's fill my children */
     while( mask < size ) {
         remote = (index ^ mask);
         if( remote >= size ) break;
         remote += root;
         if( remote >= size ) remote -= size;
-        if (childs==MAXTREEFANOUT) {
-            XBT_DEBUG("coll:tuned:topo:build_bmtree max fanout incorrect %d needed %d", MAXTREEFANOUT, childs);
+        if (children==MAXTREEFANOUT) {
+            XBT_DEBUG("coll:tuned:topo:build_bmtree max fanout incorrect %d needed %d", MAXTREEFANOUT, children);
             delete bmtree;
             return NULL;
         }
-        bmtree->tree_next[childs] = remote;
+        bmtree->tree_next[children] = remote;
         mask <<= 1;
-        childs++;
+        children++;
     }
-    bmtree->tree_nextsize = childs;
+    bmtree->tree_nextsize = children;
     bmtree->tree_root     = root;
     return bmtree;
 }
@@ -408,7 +408,7 @@ ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
  */
 ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int root)
 {
-    int childs = 0;
+    int children = 0;
     int rank, vrank;
     int size;
     int mask = 1;
@@ -449,17 +449,17 @@ ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int 
         bmtree->tree_prev = (remote + root) % size;
         break;
       } else if (remote < size) {
-        bmtree->tree_next[childs] = (remote + root) % size;
-        childs++;
-        if (childs == MAXTREEFANOUT) {
-          XBT_DEBUG("coll:tuned:topo:build_bmtree max fanout incorrect %d needed %d", MAXTREEFANOUT, childs);
+        bmtree->tree_next[children] = (remote + root) % size;
+        children++;
+        if (children == MAXTREEFANOUT) {
+          XBT_DEBUG("coll:tuned:topo:build_bmtree max fanout incorrect %d needed %d", MAXTREEFANOUT, children);
           delete bmtree;
           return NULL;
         }
       }
       mask <<= 1;
     }
-    bmtree->tree_nextsize = childs;
+    bmtree->tree_nextsize = children;
     bmtree->tree_root     = root;
 
     return bmtree;

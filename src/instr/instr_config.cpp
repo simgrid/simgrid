@@ -268,11 +268,11 @@ std::string TRACE_get_filename()
 
 void TRACE_global_init()
 {
-  static bool is_initialised = false;
-  if (is_initialised)
+  static bool is_initialized = false;
+  if (is_initialized)
     return;
 
-  is_initialised = true;
+  is_initialized = true;
 
   /* name of the tracefile */
   simgrid::config::declare_flag<std::string>("tracing/filename", "Trace file created by the instrumented SimGrid.",

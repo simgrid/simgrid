@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(random_bug, "For this example");
 
 enum { ABORT, ASSERT, PRINTF } behavior;
 
-/** A fake application with a bug occuring for some random values */
+/** A fake application with a bug occurring for some random values */
 static void app()
 {
   int x = MC_random(0, 5);

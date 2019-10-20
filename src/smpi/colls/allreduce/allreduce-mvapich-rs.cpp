@@ -84,7 +84,7 @@ int Coll_allreduce_mvapich2_rs::allreduce(const void *sendbuf,
                                      COLL_TAG_ALLREDUCE, comm);
 
             /* temporarily set the rank to -1 so that this
-               process does not pariticipate in recursive
+               process does not participate in recursive
                doubling */
             newrank = -1;
         } else {

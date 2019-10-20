@@ -9642,7 +9642,7 @@ FAIL("Premature EOF: `</peer>' expected.");
   *      - ROUTE_ELEMENT ->  LINK:CTN (changed again in v3)
   *      - PLATFORM_DESCRIPTION -> PLATFORM
   * * New in DTD version 1 (in SimGrid 3.3):
-  *    - DTD is now versionned with the version attribute of platform
+  *    - DTD is now versioned with the version attribute of platform
   *    - Unit change:
   *      - Link bandwidth: from Mb/s to b/s
   *      - CPU speed: from MFlop/s to Flop/s

@@ -37,7 +37,7 @@ public class VM extends Host {
 	 * @param host Host node
 	 * @param name name of the machine
 	 * @param ramSize size of the RAM that should be allocated (in MBytes)
-	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
+	 * @param migNetSpeed (network bandwidth allocated for migrations in MB/s, if you don't know put zero ;))
 	 * @param dpIntensity (dirty page percentage according to migNetSpeed, [0-100], if you don't know put zero ;))
 	 */	
 	public VM(Host host, String name, int ramSize, int migNetSpeed, int dpIntensity){
@@ -50,7 +50,7 @@ public class VM extends Host {
 	 * @param name name of the machine
 	 * @param coreAmount the amount of cores of the VM
 	 * @param ramSize size of the RAM that should be allocated (in MBytes)
-	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
+	 * @param migNetSpeed (network bandwidth allocated for migrations in MB/s, if you don't know put zero ;))
 	 * @param dpIntensity (dirty page percentage according to migNetSpeed, [0-100], if you don't know put zero ;))
 	 */
 	public VM(Host host, String name, int coreAmount, int ramSize, int migNetSpeed, int dpIntensity){
@@ -97,7 +97,7 @@ public class VM extends Host {
 	/**
 	 * Natively implemented method create the VM.
 	 * @param ramSize size of the RAM that should be allocated (in MB)
-	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
+	 * @param migNetSpeed (network bandwidth allocated for migrations in MB/s, if you don't know put zero ;))
 	 * @param dpIntensity (dirty page intensity, a percentage of migNetSpeed [0-100],  if you don't know put zero ;))
 	 */
 	private native void create(Host host, String name, int coreAmount, int ramSize, int migNetSpeed, int dpIntensity);

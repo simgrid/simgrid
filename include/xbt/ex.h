@@ -16,7 +16,7 @@
 /** @addtogroup XBT_ex_c
  *  @brief Exceptions support (C)
  *
- *  Those fonctions are used to throw C++ exceptions from C code. This feature
+ *  Those functions are used to throw C++ exceptions from C code. This feature
  *  should probably be removed in the future because C and exception do not
  *  exactly play nicely together.
  */

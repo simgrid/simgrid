@@ -75,13 +75,13 @@ int Coll_bcast_NTSB::bcast(void *buf, int count, MPI_Datatype datatype,
       Request::recv(buf, count, datatype, from, tag, comm, &status);
     }
 
-    /* case: intermidiate node with only left child ==> relay message */
+    /* case: intermediate node with only left child ==> relay message */
     else if (to_right == -1) {
       Request::recv(buf, count, datatype, from, tag, comm, &status);
       Request::send(buf, count, datatype, to_left, tag, comm);
     }
 
-    /* case: intermidiate node with both left and right children ==> relay message */
+    /* case: intermediate node with both left and right children ==> relay message */
     else {
       Request::recv(buf, count, datatype, from, tag, comm, &status);
       Request::send(buf, count, datatype, to_left, tag, comm);
@@ -128,7 +128,7 @@ int Coll_bcast_NTSB::bcast(void *buf, int count, MPI_Datatype datatype,
       Request::waitall((pipe_length), recv_request_array, recv_status_array);
     }
 
-    /* case: intermidiate node with only left child ==> relay message */
+    /* case: intermediate node with only left child ==> relay message */
     else if (to_right == -1) {
       for (i = 0; i < pipe_length; i++) {
         recv_request_array[i] = Request::irecv((char *) buf + (i * increment), segment, datatype, from,
@@ -142,7 +142,7 @@ int Coll_bcast_NTSB::bcast(void *buf, int count, MPI_Datatype datatype,
       Request::waitall(pipe_length, send_request_array, send_status_array);
 
     }
-    /* case: intermidiate node with both left and right children ==> relay message */
+    /* case: intermediate node with both left and right children ==> relay message */
     else {
       for (i = 0; i < pipe_length; i++) {
         recv_request_array[i] = Request::irecv((char *) buf + (i * increment), segment, datatype, from,

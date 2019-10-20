@@ -2,7 +2,7 @@
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
   <!-- THIS FILE IS INVALID.
-       It declares a storage attached to a nonexistant host (plouf). See bogus_disk_attachment.tesh -->
+       It declares a storage attached to a nonexistent host (plouf). See bogus_disk_attachment.tesh -->
   <zone id="AS0" routing="Full">
     <storage_type id="single_HDD" model="SSD" size="4kB">
       <model_prop id="Bwrite" value="30MBps" />

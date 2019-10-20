@@ -246,7 +246,7 @@ void RemoteClient::refresh_heap()
 
 /** Refresh the information about the process
  *
- *  Do not use direclty, this is used by the getters when appropriate
+ *  Do not use directly, this is used by the getters when appropriate
  *  in order to have fresh data.
  * */
 void RemoteClient::refresh_malloc_info()
@@ -368,7 +368,7 @@ const simgrid::mc::Variable* RemoteClient::find_variable(const char* name) const
 {
   // First lookup the variable in the executable shared object.
   // A global variable used directly by the executable code from a library
-  // is reinstanciated in the executable memory .data/.bss.
+  // is reinstantiated in the executable memory .data/.bss.
   // We need to look up the variable in the executable first.
   if (this->binary_info) {
     std::shared_ptr<simgrid::mc::ObjectInformation> const& info = this->binary_info;

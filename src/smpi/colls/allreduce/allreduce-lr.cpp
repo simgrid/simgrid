@@ -7,7 +7,7 @@
 #include "../colls_private.hpp"
 
 /* IMPLEMENTED BY PITCH PATARASUK
-   Non-topoloty-specific all-reduce operation designed bandwidth optimally
+   Non-topology-specific all-reduce operation designed bandwidth optimally
    Bug fixing by Xin Yuan, 04/04/2008
 */
 

@@ -396,7 +396,8 @@ NetworkWifiLink::NetworkWifiLink(NetworkCm02Model* model, const std::string& nam
                                  s4u::Link::SharingPolicy policy, lmm::System* system)
     : NetworkCm02Link(
           model, name, 1 / sg_bandwidth_factor, 0, policy,
-          system) // Since link use bw*sg_bandwidth_factor we should divise in order to as 1 as bound in the lmm system
+          system) // Since link uses bw*sg_bandwidth_factor we should divide by sg_bw_factor to ensure that we have 1 as
+                  // a bound in the lmm system
 {
   for (auto bandwidth : bandwidths) {
     bandwidths_.push_back({bandwidth, 1.0, nullptr});

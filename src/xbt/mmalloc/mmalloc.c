@@ -47,7 +47,7 @@ static void *align(struct mdesc *mdp, size_t size)
   return (result);
 }
 
-/** Initialise heapinfo about the heapinfo pages :)
+/** Initialize heapinfo about the heapinfo pages :)
  *
  */
 static void initialize_heapinfo_heapinfo(xbt_mheap_t mdp)
@@ -120,7 +120,7 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
     malloc_info* newinfo = (malloc_info*)align(mdp, newsize * sizeof(malloc_info));
     memcpy(newinfo, oldinfo, mdp->heapsize * sizeof(malloc_info));
 
-    /* Initialise the new blockinfo : */
+    /* Initialize the new blockinfo : */
     memset((char*) newinfo + mdp->heapsize * sizeof(malloc_info), 0,
       (newsize - mdp->heapsize)* sizeof(malloc_info));
 
@@ -180,7 +180,7 @@ static void mmalloc_mark_used(xbt_mheap_t mdp, size_t block, size_t nblocks, siz
   mdp->heapstats.bytes_used += nblocks * BLOCKSIZE;
 }
 
-/* Spliting mmalloc this way is mandated by a trick in mrealloc, that gives
+/* Splitting mmalloc this way is mandated by a trick in mrealloc, that gives
    back the memory of big blocks to the system before reallocating them: we don't
    want to loose the beginning of the area when this happens */
 void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)

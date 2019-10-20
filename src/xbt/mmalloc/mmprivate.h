@@ -51,7 +51,7 @@
 #define BLOCKIFY(SIZE)  (((SIZE) + BLOCKSIZE - 1) / BLOCKSIZE)
 
 /* We keep fragment-specific meta-data for introspection purposes, and these
- * information are kept in fixed lenght arrays. Here is the computation of
+ * information are kept in fixed length arrays. Here is the computation of
  * that size.
  *
  * Never make SMALLEST_POSSIBLE_MALLOC smaller than sizeof(list) because we
@@ -226,7 +226,7 @@ struct mdesc {
 
   /* @brief List of all blocks containing free fragments of a given size.
    *
-   * The array indice is the log2 of requested size.
+   * The array index is the log2 of requested size.
    * Actually only the sizes 8->11 seem to be used, but who cares? */
   s_xbt_swag_t fraghead[BLOCKLOG];
 

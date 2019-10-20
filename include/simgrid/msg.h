@@ -215,7 +215,7 @@ XBT_PUBLIC void MSG_process_auto_restart_set(msg_process_t process, int auto_res
  * SimGrid simulations run until all non-daemon processes are stopped.
  */
 XBT_PUBLIC void MSG_process_daemonize(msg_process_t process);
-/** @brief Imediately changes the host on which this process runs */
+/** @brief Immediately changes the host on which this process runs */
 XBT_PUBLIC void MSG_process_migrate(msg_process_t process, msg_host_t host);
 /** @brief Wait for the completion of a process.
  *
@@ -424,7 +424,7 @@ XBT_PUBLIC int MSG_sem_would_block(msg_sem_t sem);
 
 /** @brief Opaque type representing a barrier identifier */
 typedef sg_bar_t msg_bar_t;
-/** @brief Initializes a barier, with count elements */
+/** @brief Initializes a barrier, with count elements */
 XBT_PUBLIC msg_bar_t MSG_barrier_init(unsigned int count);
 /** @brief Destroys barrier */
 XBT_PUBLIC void MSG_barrier_destroy(msg_bar_t bar);

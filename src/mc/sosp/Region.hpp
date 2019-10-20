@@ -62,7 +62,7 @@ public:
   /** @brief Restore a region from a snapshot */
   void restore();
 
-  /** @brief Read memory that was snapshoted in this region
+  /** @brief Read memory that was snapshotted in this region
    *
    *  @param target  Buffer to store contiguously the value if it spans over several pages
    *  @param addr    Process (non-snapshot) address of the data

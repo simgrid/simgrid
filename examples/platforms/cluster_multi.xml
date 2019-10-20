@@ -65,7 +65,7 @@
     - 
     -  This models the big links constituting the backbone of the internet, 
     -  that users cannot saturate. 
-    -  Users' bandwidth is mostly limited by their outgoing connexion,
+    -  Users' bandwidth is mostly limited by their outgoing connection,
     -  not by the network backbone.
     -->
 
