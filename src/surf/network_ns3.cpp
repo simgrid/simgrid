@@ -55,9 +55,8 @@ static int number_of_networks = 1;
 
 simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> NetPointNs3::EXTENSION_ID;
 
-NetPointNs3::NetPointNs3()
+NetPointNs3::NetPointNs3() : ns3_node_(ns3::CreateObject<ns3::Node>(0))
 {
-  ns3_node_ = ns3::CreateObject<ns3::Node>(0);
   stack.Install(ns3_node_);
   nodes.Add(ns3_node_);
   node_num = number_of_nodes++;
