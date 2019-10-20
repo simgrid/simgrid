@@ -56,8 +56,7 @@ static inline void xbt_inject_init(char *inputfile)
 {
   xbt_dict_t mydict = get_dict();
   FILE* fpInput     = fopen(inputfile, "r");
-  if (fpInput == NULL)
-    printf("Error while opening the inputfile");
+  xbt_assert(fpInput != NULL, "Error while opening the inputfile");
   fseek(fpInput, 0, 0);
 
   char line[200];
