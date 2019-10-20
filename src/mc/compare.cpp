@@ -26,7 +26,7 @@ public:
   int fragment_ = 0;
 
   HeapLocation() = default;
-  HeapLocation(int block, int fragment = 0) : block_(block), fragment_(fragment) {}
+  explicit HeapLocation(int block, int fragment = 0) : block_(block), fragment_(fragment) {}
 
   bool operator==(HeapLocation const& that) const
   {
