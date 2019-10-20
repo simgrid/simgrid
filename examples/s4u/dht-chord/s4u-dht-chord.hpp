@@ -21,7 +21,7 @@ extern int nb_bits;
 extern int nb_keys;
 extern int timeout;
 
-extern std::default_random_engine generator;
+extern std::mt19937 generator;
 
 /* Types of tasks exchanged between nodes. */
 enum e_message_type_t {

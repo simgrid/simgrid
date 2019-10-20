@@ -11,7 +11,7 @@ int nb_bits  = 24;
 int nb_keys  = 0;
 int timeout  = 50;
 
-std::default_random_engine generator;
+std::mt19937 generator;
 
 int main(int argc, char* argv[])
 {
