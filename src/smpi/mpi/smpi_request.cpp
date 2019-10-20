@@ -722,11 +722,10 @@ int Request::testall(int count, MPI_Request requests[], int* outflag, MPI_Status
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
   int flag;
   int error = 0;
-  int ret=MPI_SUCCESS;
   *outflag = 1;
   for(int i=0; i<count; i++){
     if (requests[i] != MPI_REQUEST_NULL && not(requests[i]->flags_ & MPI_REQ_PREPARED)) {
-      ret = test(&requests[i], pstat, &flag);
+      int ret = test(&requests[i], pstat, &flag);
       if (flag){
         flag=0;
         requests[i]=MPI_REQUEST_NULL;

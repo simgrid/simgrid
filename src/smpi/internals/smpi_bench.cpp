@@ -352,12 +352,12 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
                                          0,         // count
                                          true       // benching (if we have no data, we need at least one)
                                      });
-  LocalData& data = insert.first->second;
   if (insert.second) {
     XBT_DEBUG("XXXXX First time ever on benched nest %s.", loc.c_str());
     xbt_assert(threshold > 0 || iters > 0,
         "You should provide either a positive amount of iterations to bench, or a positive maximal stderr (or both)");
   } else {
+    LocalData& data = insert.first->second;
     if (data.iters != iters || data.threshold != threshold) {
       XBT_ERROR("Asked to bench block %s with different settings %d, %f is not %d, %f. "
                 "How did you manage to give two numbers at the same line??",
@@ -449,12 +449,12 @@ int smpi_sample_exit(int global, const char *file, int line, int iter_count){
     auto sample = samples.find(loc);
     if (sample == samples.end())
       xbt_die("Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
-    LocalData& data = sample->second;
   
     if (smpi_process()->sampling()){//end of loop, but still sampling needed
-        smpi_process()->set_sampling(0);
-        smpi_execute(data.mean*iter_count);
-        smpi_bench_begin();
+      LocalData& data = sample->second;
+      smpi_process()->set_sampling(0);
+      smpi_execute(data.mean * iter_count);
+      smpi_bench_begin();
     }
   }
   return 0;

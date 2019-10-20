@@ -273,13 +273,12 @@ void GatherVArgParser::parse(simgrid::xbt::ReplayAction& action, const std::stri
     if (action.size() > 5 + comm_size)
       datatype2 = simgrid::smpi::Datatype::decode(action[5 + comm_size]);
   } else {
-    int datatype_index = 0;
     int disp_index     = 0;
     /* The 3 comes from "0 gather <sendcount>", which must always be present.
      * The + comm_size is the recvcounts array, which must also be present
      */
     if (action.size() > 3 + comm_size + comm_size) { /* datatype + disp are specified */
-      datatype_index = 3 + comm_size;
+      int datatype_index = 3 + comm_size;
       disp_index     = datatype_index + 1;
       datatype1      = simgrid::smpi::Datatype::decode(action[datatype_index]);
       datatype2      = simgrid::smpi::Datatype::decode(action[datatype_index]);
@@ -287,7 +286,7 @@ void GatherVArgParser::parse(simgrid::xbt::ReplayAction& action, const std::stri
                3 + comm_size + 2) { /* disps specified; datatype is not specified; use the default one */
       disp_index = 3 + comm_size;
     } else if (action.size() > 3 + comm_size) { /* only datatype, no disp specified */
-      datatype_index = 3 + comm_size;
+      int datatype_index = 3 + comm_size;
       datatype1      = simgrid::smpi::Datatype::decode(action[datatype_index]);
       datatype2      = simgrid::smpi::Datatype::decode(action[datatype_index]);
     }

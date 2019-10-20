@@ -46,7 +46,6 @@ void surf_presolve()
 double surf_solve(double max_date)
 {
   double time_delta = -1.0; /* duration */
-  double model_next_action_end = -1.0;
   double value = -1.0;
   simgrid::kernel::resource::Resource* resource = nullptr;
   simgrid::kernel::profile::Event* event        = nullptr;
@@ -96,7 +95,7 @@ double surf_solve(double max_date)
 
       XBT_DEBUG("Run the NS3 network at most %fs", time_delta);
       // run until min or next flow
-      model_next_action_end = surf_network_model->next_occurring_event(time_delta);
+      double model_next_action_end = surf_network_model->next_occurring_event(time_delta);
 
       XBT_DEBUG("Min for network : %f", model_next_action_end);
       if (model_next_action_end >= 0.0)

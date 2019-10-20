@@ -72,7 +72,6 @@ static double finish_on_at(SD_task_t task, sg_host_t host)
   if (!xbt_dynar_is_empty(parents)) {
     unsigned int i;
     double data_available = 0.;
-    double redist_time    = 0;
     double last_data_available;
     /* compute last_data_available */
     SD_task_t parent;
@@ -82,6 +81,7 @@ static double finish_on_at(SD_task_t task, sg_host_t host)
       if (SD_task_get_kind(parent) == SD_TASK_COMM_E2E) {
         sg_host_t * parent_host= SD_task_get_workstation_list(parent);
         /* Estimate the redistribution time from this parent */
+        double redist_time;
         if (SD_task_get_amount(parent) <= 1e-6){
           redist_time= 0;
         } else {
