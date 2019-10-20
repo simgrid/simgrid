@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <ucontext.h>
 
+unsigned char *stack[64 * 1024];
 ucontext_t uc_child;
 ucontext_t uc_main;
 
@@ -23,15 +24,11 @@ static void child(void)
 
 int main(int argc, char *argv[])
 {
-  void *stack = malloc(64 * 1024);
-
   /* configure a child user-space context */
-  if (stack == NULL)
-    exit(3);
   if (getcontext(&uc_child) != 0)
     exit(4);
   uc_child.uc_link = NULL;
-  uc_child.uc_stack.ss_sp = (char *) stack + (32 * 1024);
+  uc_child.uc_stack.ss_sp    = stack + (32 * 1024);
   uc_child.uc_stack.ss_size = 32 * 1024;
   uc_child.uc_stack.ss_flags = 0;
   makecontext(&uc_child, child, 0);
