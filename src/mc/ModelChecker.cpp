@@ -377,8 +377,8 @@ void ModelChecker::handle_simcall(Transition const& transition)
 
 bool ModelChecker::checkDeadlock()
 {
-  int res;
-  if ((res = this->process().get_channel().send(MC_MESSAGE_DEADLOCK_CHECK)))
+  int res = this->process().get_channel().send(MC_MESSAGE_DEADLOCK_CHECK);
+  if (res != 0)
     xbt_die("Could not check deadlock state");
   s_mc_message_int_t message;
   ssize_t s = mc_model_checker->process().get_channel().receive(message);

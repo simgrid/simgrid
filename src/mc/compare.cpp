@@ -474,7 +474,6 @@ static bool heap_area_differ_without_type(simgrid::mc::StateComparator& state, c
         ssize_t ignore2 = heap_comparison_ignore_size(state.processStates[1].to_ignore, (const char*)real_area2 + i);
         if (ignore2 == ignore1) {
           if (ignore1 == 0) {
-            check_ignore--;
             return false;
           } else {
             i = i + ignore2;

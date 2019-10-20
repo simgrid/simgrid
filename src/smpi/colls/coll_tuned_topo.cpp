@@ -108,14 +108,6 @@ ompi_coll_tuned_topo_build_tree( int fanout,
       return NULL;
     }
 
-    tree->tree_root     = MPI_UNDEFINED;
-    tree->tree_nextsize = MPI_UNDEFINED;
-
-    /*
-     * Set root
-     */
-    tree->tree_root = root;
-
     /*
      * Initialize tree
      */
@@ -207,9 +199,6 @@ ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
       XBT_DEBUG("coll:tuned:topo_build_tree PANIC::out of memory");
       return NULL;
     }
-
-    tree->tree_root     = MPI_UNDEFINED;
-    tree->tree_nextsize = MPI_UNDEFINED;
 
     /*
      * Initialize tree
@@ -503,8 +492,6 @@ ompi_coll_tuned_topo_build_chain( int fanout,
       fflush(stdout);
       return NULL;
     }
-    chain->tree_root     = MPI_UNDEFINED;
-    chain->tree_nextsize = -1;
     for(i=0;i<fanout;i++) chain->tree_next[i] = -1;
 
     /*
