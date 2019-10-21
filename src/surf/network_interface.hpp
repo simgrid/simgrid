@@ -154,7 +154,7 @@ public:
                                                  latency changes due to external load).   Trace must contain
                                                  absolute values */
 
-  Metric latency_                   = {1.0, 0, nullptr};
+  Metric latency_                   = {0.0, 0, nullptr};
   Metric bandwidth_                 = {1.0, 0, nullptr};
 
 };
