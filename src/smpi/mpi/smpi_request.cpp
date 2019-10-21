@@ -614,7 +614,6 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
 
 int Request::testsome(int incount, MPI_Request requests[], int *count, int *indices, MPI_Status status[])
 {
-  int ret = MPI_SUCCESS;
   int error=0;
   int count_dead = 0;
   int flag = 0;
@@ -624,7 +623,7 @@ int Request::testsome(int incount, MPI_Request requests[], int *count, int *indi
   *count = 0;
   for (int i = 0; i < incount; i++) {
     if (requests[i] != MPI_REQUEST_NULL && not (requests[i]->flags_ & MPI_REQ_FINISHED)) {
-      ret = test(&requests[i], pstat, &flag);
+      int ret = test(&requests[i], pstat, &flag);
       if(ret!=MPI_SUCCESS)
         error = 1;
       if(flag) {
