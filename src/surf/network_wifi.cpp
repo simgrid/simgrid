@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2019. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2019. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,14 +6,7 @@
 #include "network_wifi.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/surf/surf_interface.hpp"
-/*
-#include "simgrid/sg_config.hpp"
-#include "src/kernel/resource/profile/Event.hpp"
-#include "surf/surf.hpp"
 
-#include <algorithm>
-#include <numeric>
-*/
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
 namespace simgrid {
@@ -25,14 +18,14 @@ namespace resource {
  ************/
 
 NetworkWifiLink::NetworkWifiLink(NetworkCm02Model* model, const std::string& name, std::vector<double> bandwidths,
-                                 s4u::Link::SharingPolicy policy, lmm::System* system)
-    : NetworkCm02Link(
-          model, name, 1 / sg_bandwidth_factor, 0, policy,
-          system) // Since link use bw*sg_bandwidth_factor we should divise in order to as 1 as bound in the lmm system
+                                 lmm::System* system)
+    : NetworkCm02Link(model, name, 1 / sg_bandwidth_factor, 0, s4u::Link::SharingPolicy::WIFI, system)
+//   : LinkImpl(model, name, system->constraint_new(this, 1))
 {
-  for (auto bandwidth : bandwidths) {
+  for (auto bandwidth : bandwidths)
     bandwidths_.push_back({bandwidth, 1.0, nullptr});
-  }
+
+  //  simgrid::s4u::Link::on_creation(this->piface_);
 }
 
 void NetworkWifiLink::set_host_rate(s4u::Host* host, int rate_level)
@@ -51,8 +44,8 @@ double NetworkWifiLink::get_host_rate(sg_host_t host)
     return -1;
 
   int rate_id = host_rates_it->second;
-  xbt_assert(rate_id >= 0 && rate_id < (int)bandwidths_.size(), "Host \"%s\" has an invalid rate \"%d\"",
-             host->get_name().c_str(), rate_id);
+  xbt_assert(rate_id >= 0 && rate_id < (int)bandwidths_.size(), "Host '%s' has an invalid rate '%d' on wifi link '%s'",
+             host->get_name().c_str(), rate_id, this->get_cname());
 
   Metric rate = bandwidths_[rate_id];
   return rate.peak * rate.scale;

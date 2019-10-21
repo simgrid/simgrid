@@ -95,7 +95,7 @@ LinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vect
                                         s4u::Link::SharingPolicy policy)
 {
   if (policy == s4u::Link::SharingPolicy::WIFI)
-    return new NetworkWifiLink(this, name, bandwidths, policy, get_maxmin_system());
+    return new NetworkWifiLink(this, name, bandwidths, get_maxmin_system());
 
   xbt_assert(bandwidths.size() == 1, "Non-WIFI links must use only 1 bandwidth.");
   return new NetworkCm02Link(this, name, bandwidths[0], latency, policy, get_maxmin_system());
@@ -242,15 +242,14 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     if (link->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
       NetworkWifiLink* wifi_link = static_cast<NetworkWifiLink*>(link);
 
-      double src_rate = wifi_link->get_host_rate(src);
-      double dst_rate = wifi_link->get_host_rate(dst);
-      xbt_assert(
-          !(src_rate == -1 && dst_rate == -1),
-          "Some Stations are not associated to any Access Point. Make sure to call set_host_rate on all Stations.");
-      if (src_rate != -1)
-        get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / src_rate);
-      else
-        get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / dst_rate);
+      double rate = wifi_link->get_host_rate(src);
+      if (rate == -1)
+        rate = wifi_link->get_host_rate(dst);
+      xbt_assert(rate != -1,
+                 "None of the source (%s) or destination (%s) is connected to the Access Point '%s'. "
+                 "Please use set_host_rate() on all stations.",
+                 src->get_cname(), dst->get_cname(), link->get_cname());
+      get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / rate);
 
     } else {
       get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0);
