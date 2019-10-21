@@ -2034,8 +2034,6 @@ include src/bindings/java/jmsg_host.cpp
 include src/bindings/java/jmsg_host.h
 include src/bindings/java/jmsg_process.cpp
 include src/bindings/java/jmsg_process.h
-include src/bindings/java/jmsg_rngstream.cpp
-include src/bindings/java/jmsg_rngstream.h
 include src/bindings/java/jmsg_storage.cpp
 include src/bindings/java/jmsg_storage.h
 include src/bindings/java/jmsg_synchro.cpp
@@ -2531,6 +2529,8 @@ include src/surf/network_ns3.cpp
 include src/surf/network_ns3.hpp
 include src/surf/network_smpi.cpp
 include src/surf/network_smpi.hpp
+include src/surf/network_wifi.cpp
+include src/surf/network_wifi.hpp
 include src/surf/ns3/ns3_simulator.cpp
 include src/surf/ns3/ns3_simulator.hpp
 include src/surf/ptask_L07.cpp
