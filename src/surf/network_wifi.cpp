@@ -19,13 +19,12 @@ namespace resource {
 
 NetworkWifiLink::NetworkWifiLink(NetworkCm02Model* model, const std::string& name, std::vector<double> bandwidths,
                                  lmm::System* system)
-    : NetworkCm02Link(model, name, 1 / sg_bandwidth_factor, 0, s4u::Link::SharingPolicy::WIFI, system)
-//   : LinkImpl(model, name, system->constraint_new(this, 1))
+    : LinkImpl(model, name, system->constraint_new(this, 1))
 {
   for (auto bandwidth : bandwidths)
     bandwidths_.push_back({bandwidth, 1.0, nullptr});
 
-  //  simgrid::s4u::Link::on_creation(this->piface_);
+  simgrid::s4u::Link::on_creation(this->piface_);
 }
 
 void NetworkWifiLink::set_host_rate(s4u::Host* host, int rate_level)

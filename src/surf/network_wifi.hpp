@@ -19,7 +19,7 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-class NetworkWifiLink : public NetworkCm02Link {
+class NetworkWifiLink : public LinkImpl {
   /** @brief Hold every rates association between host and links (host name, rates id) */
   std::map<xbt::string, int> host_rates_;
 
