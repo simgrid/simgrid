@@ -13,6 +13,7 @@ namespace xbt {
 namespace random {
 int uniform_int(int, int);
 double uniform_real(double, double);
+double exponential(double);
 } // namespace random
 } // namespace xbt
 } // namespace simgrid

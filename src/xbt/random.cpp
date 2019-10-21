@@ -39,6 +39,13 @@ double uniform_real(double min, double max)
   return min + (max - min) * numerator / divisor;
 }
 
+double exponential(double lambda)
+{
+  unsigned long numerator = mt19937_gen() - mt19937_gen.min();
+  unsigned long divisor   = mt19937_gen.max() - mt19937_gen.min();
+  return -1 / lambda * log(numerator / divisor);
+}
+
 } // namespace random
 } // namespace xbt
 } // namespace simgrid
