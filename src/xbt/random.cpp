@@ -51,7 +51,12 @@ double normal(double mean, double sd)
   unsigned long numeratorA = mt19937_gen() - mt19937_gen.min();
   unsigned long numeratorB = mt19937_gen() - mt19937_gen.min();
   unsigned long divisor    = mt19937_gen.max() - mt19937_gen.min();
-  double z0                = sqrt(-2.0 * log(numeratorA / divisor)) * cos(2 * M_PI * numeratorB / divisor);
+  double u1                = numeratorA / divisor;
+  while (u1 < DBL_MIN) {
+    numeratorA = mt19937_gen() - mt19937_gen.min();
+    u1         = numeratorA / divisor;
+  }
+  double z0 = sqrt(-2.0 * log(numeratorA / divisor)) * cos(2 * M_PI * numeratorB / divisor);
   return z0 * sd + mean;
 }
 
