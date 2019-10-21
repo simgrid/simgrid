@@ -14,6 +14,7 @@ namespace random {
 int uniform_int(int, int);
 double uniform_real(double, double);
 double exponential(double);
+double normal(double, double);
 } // namespace random
 } // namespace xbt
 } // namespace simgrid
