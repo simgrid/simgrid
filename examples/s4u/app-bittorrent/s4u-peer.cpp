@@ -454,8 +454,7 @@ int Peer::selectPieceToDownload(Connection* remote_peer)
 
     xbt_assert(nb_interesting_pieces != 0);
     // get a random interesting piece
-    std::uniform_int_distribution<int> dist(0, nb_interesting_pieces - 1);
-    int random_piece_index = dist(generator);
+    int random_piece_index = simgrid::xbt::random::uniform_int(0, nb_interesting_pieces - 1);
     int current_index      = 0;
     for (unsigned int i = 0; i < FILE_PIECES; i++) {
       if (hasNotPiece(i) && remote_peer->hasPiece(i)) {
@@ -478,8 +477,7 @@ int Peer::selectPieceToDownload(Connection* remote_peer)
         nb_interesting_pieces++;
     xbt_assert(nb_interesting_pieces != 0);
     // get a random interesting piece
-    std::uniform_int_distribution<int> dist(0, nb_interesting_pieces - 1);
-    int random_piece_index = dist(generator);
+    int random_piece_index = simgrid::xbt::random::uniform_int(0, nb_interesting_pieces - 1);
     int current_index      = 0;
     for (unsigned int i = 0; i < FILE_PIECES; i++) {
       if (hasNotPiece(i) && remote_peer->hasPiece(i) && isNotDownloadingPiece(i)) {
@@ -512,8 +510,7 @@ int Peer::selectPieceToDownload(Connection* remote_peer)
     // get a random rarest piece
     int random_rarest_index = 0;
     if (nb_min_pieces > 0) {
-      std::uniform_int_distribution<int> dist(0, nb_min_pieces - 1);
-      random_rarest_index = dist(generator);
+      random_rarest_index = simgrid::xbt::random::uniform_int(0, nb_min_pieces - 1);
     }
     for (unsigned int i = 0; i < FILE_PIECES; i++)
       if (pieces_count[i] == min && hasNotPiece(i) && remote_peer->hasPiece(i) && isNotDownloadingPiece(i)) {
@@ -563,8 +560,7 @@ void Peer::updateChokedPeers()
       do {
         // We choose a random peer to unchoke.
         std::unordered_map<int, Connection>::iterator chosen_peer_it = connected_peers.begin();
-        std::uniform_int_distribution<int> dist(0, connected_peers.size() - 1);
-        std::advance(chosen_peer_it, dist(generator));
+        std::advance(chosen_peer_it, simgrid::xbt::random::uniform_int(0, connected_peers.size() - 1));
         chosen_peer = &chosen_peer_it->second;
         if (not chosen_peer->interested || not chosen_peer->choked_upload)
           chosen_peer = nullptr;

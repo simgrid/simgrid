@@ -8,8 +8,6 @@
 #include "s4u-peer.hpp"
 #include "s4u-tracker.hpp"
 
-std::default_random_engine generator;
-
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);

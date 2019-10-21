@@ -52,8 +52,7 @@ void Tracker::operator()()
       while (tried < max_tries) {
         do {
           next_peer = known_peers.begin();
-          std::uniform_int_distribution<int> dist(0, nb_known_peers - 1);
-          std::advance(next_peer, dist(generator));
+          std::advance(next_peer, simgrid::xbt::random::uniform_int(0, nb_known_peers - 1));
         } while (ta->getPeers().find(*next_peer) != ta->getPeers().end());
         ta->addPeer(*next_peer);
         tried++;
