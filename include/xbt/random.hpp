@@ -11,8 +11,8 @@
 namespace simgrid {
 namespace xbt {
 namespace random {
-int uniform_int(int min, int max);
-double uniform_real(double min, double max);
+int uniform_int(int, int);
+double uniform_real(double, double);
 } // namespace random
 } // namespace xbt
 } // namespace simgrid
