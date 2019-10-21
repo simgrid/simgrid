@@ -134,9 +134,7 @@ void Node::notifyAndQuit()
 void Node::randomLookup()
 {
   int res          = id_;
-  // std::uniform_int_distribution<int> dist(0, nb_bits - 1);
-  // int random_index = dist(generator);
-  int random_index = generator() % nb_bits; // ensure reproducibility across platforms
+  int random_index = simgrid::xbt::random::uniform_int(0, nb_bits - 1);
   int random_id    = fingers_[random_index];
   XBT_DEBUG("Making a lookup request for id %d", random_id);
   if (random_id != id_)
