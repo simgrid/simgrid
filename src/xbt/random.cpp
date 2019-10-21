@@ -5,6 +5,7 @@
 
 #include "xbt/random.hpp"
 #include "xbt/asserts.h"
+#include <limits>
 #include <random>
 
 namespace simgrid {
@@ -52,7 +53,7 @@ double normal(double mean, double sd)
   unsigned long numeratorB = mt19937_gen() - mt19937_gen.min();
   unsigned long divisor    = mt19937_gen.max() - mt19937_gen.min();
   double u1                = numeratorA / divisor;
-  while (u1 < DBL_MIN) {
+  while (u1 < std::numeric_limits<double>::min()) {
     numeratorA = mt19937_gen() - mt19937_gen.min();
     u1         = numeratorA / divisor;
   }
