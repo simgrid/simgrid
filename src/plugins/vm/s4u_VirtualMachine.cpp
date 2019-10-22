@@ -35,7 +35,7 @@ VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host
   XBT_DEBUG("Create VM %s", get_cname());
 
   /* Currently, a VM uses the network resource of its physical host */
-  pimpl_netpoint = physical_host->pimpl_netpoint;
+  set_netpoint(physical_host->get_netpoint());
 
   // Create a VCPU for this VM
   std::vector<double> speeds;
@@ -54,7 +54,7 @@ VirtualMachine::~VirtualMachine()
   XBT_DEBUG("destroy %s", get_cname());
 
   /* Don't free these things twice: they are the ones of my physical host */
-  pimpl_netpoint = nullptr;
+  set_netpoint(nullptr);
 }
 
 void VirtualMachine::start()

@@ -38,6 +38,7 @@ namespace s4u {
 class XBT_PUBLIC Host : public xbt::Extendable<Host> {
   friend vm::VMModel;            // Use the pimpl_cpu to compute the VM sharing
   friend vm::VirtualMachineImpl; // creates the the pimpl_cpu
+  friend kernel::routing::NetZoneImpl;
 
 public:
   explicit Host(const std::string& name);
@@ -45,6 +46,7 @@ public:
   /** Host destruction logic */
 protected:
   virtual ~Host();
+  void set_netpoint(kernel::routing::NetPoint* netpoint) { pimpl_netpoint_ = netpoint; }
 
 private:
   bool currently_destroying_ = false;
@@ -76,6 +78,8 @@ public:
   xbt::string const& get_name() const { return name_; }
   /** Retrieves the name of that host as a C string */
   const char* get_cname() const { return name_.c_str(); }
+
+  kernel::routing::NetPoint* get_netpoint() const { return pimpl_netpoint_; }
 
   int get_actor_count();
   std::vector<ActorPtr> get_all_actors();
@@ -145,6 +149,7 @@ public:
 private:
   xbt::string name_{"noname"};
   std::unordered_map<std::string, Storage*>* mounts_ = nullptr; // caching
+  kernel::routing::NetPoint* pimpl_netpoint_         = nullptr;
 
 public:
 #ifndef DOXYGEN
@@ -152,8 +157,6 @@ public:
   kernel::resource::Cpu* pimpl_cpu = nullptr;
   // TODO, this could be a unique_ptr
   surf::HostImpl* pimpl_ = nullptr;
-  /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
-  kernel::routing::NetPoint* pimpl_netpoint = nullptr;
 #endif
 };
 } // namespace s4u

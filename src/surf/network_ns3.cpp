@@ -75,7 +75,7 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
 
     // Create private link
     std::string host_id = cluster.prefix + std::to_string(i) + cluster.suffix;
-    auto* host_src      = simgrid::s4u::Host::by_name(host_id)->pimpl_netpoint->extension<NetPointNs3>();
+    auto* host_src      = simgrid::s4u::Host::by_name(host_id)->get_netpoint()->extension<NetPointNs3>();
     xbt_assert(host_src, "Cannot find a ns-3 host of name %s", host_id.c_str());
 
     // Any ns-3 route is symmetrical
@@ -323,8 +323,8 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
 
   static int port_number = 1025; // Port number is limited from 1025 to 65 000
 
-  unsigned int node1 = src->pimpl_netpoint->extension<NetPointNs3>()->node_num;
-  unsigned int node2 = dst->pimpl_netpoint->extension<NetPointNs3>()->node_num;
+  unsigned int node1 = src->get_netpoint()->extension<NetPointNs3>()->node_num;
+  unsigned int node2 = dst->get_netpoint()->extension<NetPointNs3>()->node_num;
 
   ns3::Ptr<ns3::Node> src_node = src->pimpl_netpoint->extension<NetPointNs3>()->ns3_node_;
   ns3::Ptr<ns3::Node> dst_node = dst->pimpl_netpoint->extension<NetPointNs3>()->ns3_node_;

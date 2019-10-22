@@ -122,11 +122,11 @@ static void dump_routes()
 
   for (unsigned int it_src = 0; it_src < totalHosts; it_src++) { // Routes from host
     simgrid::s4u::Host* host1               = hosts[it_src];
-    simgrid::kernel::routing::NetPoint* src = host1->pimpl_netpoint;
+    simgrid::kernel::routing::NetPoint* src = host1->get_netpoint();
     for (unsigned int it_dst = 0; it_dst < totalHosts; it_dst++) { // Routes to host
       simgrid::s4u::Host* host2 = hosts[it_dst];
       std::vector<simgrid::kernel::resource::LinkImpl*> route;
-      simgrid::kernel::routing::NetPoint* dst = host2->pimpl_netpoint;
+      simgrid::kernel::routing::NetPoint* dst = host2->get_netpoint();
       simgrid::kernel::routing::NetZoneImpl::get_global_route(src, dst, route, nullptr);
       if (not route.empty()) {
         std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->get_cname(), host2->get_cname());
@@ -164,7 +164,7 @@ static void dump_routes()
         simgrid::s4u::Host* host2 = hosts[it_dst];
         std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->get_cname(), host2->get_cname());
         std::vector<simgrid::kernel::resource::LinkImpl*> route;
-        simgrid::kernel::routing::NetPoint* netcardDst = host2->pimpl_netpoint;
+        simgrid::kernel::routing::NetPoint* netcardDst = host2->get_netpoint();
         simgrid::kernel::routing::NetZoneImpl::get_global_route(value1, netcardDst, route, nullptr);
         for (auto const& link : route)
           std::printf("<link_ctn id=\"%s\"/>", link->get_cname());

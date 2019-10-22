@@ -93,7 +93,7 @@ void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
   if (args->pstate != 0)
     host->set_pstate(args->pstate);
   if (not args->coord.empty())
-    new simgrid::kernel::routing::vivaldi::Coords(host->pimpl_netpoint, args->coord);
+    new simgrid::kernel::routing::vivaldi::Coords(host->get_netpoint(), args->coord);
 }
 
 /** @brief Add a "router" to the network element list */
@@ -503,7 +503,7 @@ void sg_platf_new_peer(simgrid::kernel::routing::PeerCreationArgs* peer)
   speed_per_pstate.push_back(peer->speed);
   simgrid::s4u::Host* host = as->create_host(peer->id.c_str(), speed_per_pstate, 1, nullptr);
 
-  as->set_peer_link(host->pimpl_netpoint, peer->bw_in, peer->bw_out, peer->coord);
+  as->set_peer_link(host->get_netpoint(), peer->bw_in, peer->bw_out, peer->coord);
 
   /* Change from the defaults */
   if (peer->state_trace)
@@ -667,7 +667,7 @@ void sg_platf_new_Zone_seal()
 /** @brief Add a link connecting a host to the rest of its AS (which must be cluster or vivaldi) */
 void sg_platf_new_hostlink(simgrid::kernel::routing::HostLinkCreationArgs* hostlink)
 {
-  simgrid::kernel::routing::NetPoint* netpoint = simgrid::s4u::Host::by_name(hostlink->id)->pimpl_netpoint;
+  simgrid::kernel::routing::NetPoint* netpoint = simgrid::s4u::Host::by_name(hostlink->id)->get_netpoint();
   xbt_assert(netpoint, "Host '%s' not found!", hostlink->id.c_str());
   xbt_assert(dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing),
              "Only hosts from Cluster and Vivaldi ASes can get a host_link.");
