@@ -283,7 +283,7 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
   std::string pm_name_dst = destination->get_name();
 
   /* update net_elm with that of the destination physical host */
-  piface_->pimpl_netpoint_ = destination->get_netpoint();
+  piface_->set_netpoint(destination->get_netpoint());
 
   physical_host_ = destination;
 

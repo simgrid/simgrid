@@ -326,14 +326,14 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   unsigned int node1 = src->get_netpoint()->extension<NetPointNs3>()->node_num;
   unsigned int node2 = dst->get_netpoint()->extension<NetPointNs3>()->node_num;
 
-  ns3::Ptr<ns3::Node> src_node = src->pimpl_netpoint->extension<NetPointNs3>()->ns3_node_;
-  ns3::Ptr<ns3::Node> dst_node = dst->pimpl_netpoint->extension<NetPointNs3>()->ns3_node_;
+  ns3::Ptr<ns3::Node> src_node = src->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
+  ns3::Ptr<ns3::Node> dst_node = dst->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
 
   xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to ns-3. Is it connected to any one-hop link?",
-             dst->pimpl_netpoint->get_cname());
+             dst->get_netpoint()->get_cname());
   std::string& addr = IPV4addr[node2];
   xbt_assert(not addr.empty(), "Element %s is unknown to ns-3. Is it connected to any one-hop link?",
-             dst->pimpl_netpoint->get_cname());
+             dst->get_netpoint()->get_cname());
 
   XBT_DEBUG("ns3: Create flow of %.0f Bytes from %u to %u with Interface %s", totalBytes, node1, node2, addr.c_str());
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress(ns3::Ipv4Address::GetAny(), port_number));
