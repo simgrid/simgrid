@@ -242,14 +242,14 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     if (link->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
       NetworkWifiLink* wifi_link = static_cast<NetworkWifiLink*>(link);
 
-      double rate = wifi_link->get_host_rate(src);
-      if (rate == -1)
-        rate = wifi_link->get_host_rate(dst);
-      xbt_assert(rate != -1,
+      double wifi_rate = wifi_link->get_host_rate(src);
+      if (wifi_rate == -1.0)
+        wifi_rate = wifi_link->get_host_rate(dst);
+      xbt_assert(wifi_rate != -1.0,
                  "None of the source (%s) or destination (%s) is connected to the Access Point '%s'. "
                  "Please use set_host_rate() on all stations.",
                  src->get_cname(), dst->get_cname(), link->get_cname());
-      get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / rate);
+      get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / wifi_rate);
 
     } else {
       get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0);
