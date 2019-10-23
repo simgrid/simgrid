@@ -35,7 +35,7 @@ XBT_PRIVATE void handle_simcall(smx_simcall_t req, int req_num);
  *  Most requests are always enabled but WAIT and WAITANY
  *  are not always enabled: a WAIT where the communication does not
  *  have both a source and a destination yet is not enabled
- *  (unless timeout is enabled in the wait and enabeld in SimGridMC).
+ *  (unless timeout is enabled in the wait and enabled in SimGridMC).
  */
 XBT_PRIVATE bool actor_is_enabled(smx_actor_t process);
 

@@ -95,7 +95,7 @@ public:
    * @return The new bandwidth.
    */
   virtual double get_bandwidth_constraint(double rate, double bound, double size);
-  double next_occuring_event_full(double now) override;
+  double next_occurring_event_full(double now) override;
 
   LinkImpl* loopback_ = nullptr;
 };
@@ -154,7 +154,7 @@ public:
                                                  latency changes due to external load).   Trace must contain
                                                  absolute values */
 
-  Metric latency_                   = {1.0, 0, nullptr};
+  Metric latency_                   = {0.0, 0, nullptr};
   Metric bandwidth_                 = {1.0, 0, nullptr};
 
 };

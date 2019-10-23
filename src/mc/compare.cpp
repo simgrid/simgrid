@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/** \file compare.cpp Memory snapshooting and comparison                    */
+/** \file compare.cpp Memory snapshotting and comparison                    */
 
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_private.hpp"
@@ -26,7 +26,7 @@ public:
   int fragment_ = 0;
 
   HeapLocation() = default;
-  HeapLocation(int block, int fragment = 0) : block_(block), fragment_(fragment) {}
+  explicit HeapLocation(int block, int fragment = 0) : block_(block), fragment_(fragment) {}
 
   bool operator==(HeapLocation const& that) const
   {
@@ -474,7 +474,6 @@ static bool heap_area_differ_without_type(simgrid::mc::StateComparator& state, c
         ssize_t ignore2 = heap_comparison_ignore_size(state.processStates[1].to_ignore, (const char*)real_area2 + i);
         if (ignore2 == ignore1) {
           if (ignore1 == 0) {
-            check_ignore--;
             return false;
           } else {
             i = i + ignore2;
@@ -533,7 +532,7 @@ static bool heap_area_differ_with_type(simgrid::mc::StateComparator& state, cons
                                        const simgrid::mc::Snapshot& snapshot2, HeapLocationPairs* previous,
                                        simgrid::mc::Type* type, int area_size, int check_ignore, int pointer_level)
 {
-  // HACK: This should not happen but in pratice, there are some
+  // HACK: This should not happen but in practice, there are some
   // DW_TAG_typedef without an associated DW_AT_type:
   //<1><538832>: Abbrev Number: 111 (DW_TAG_typedef)
   //    <538833>   DW_AT_name        : (indirect string, offset: 0x2292f3): gregset_t
@@ -705,7 +704,7 @@ static simgrid::mc::Type* get_offset_type(void* real_base_address, simgrid::mc::
                                           const simgrid::mc::Snapshot& snapshot)
 {
 
-  // Beginning of the block, the infered variable type if the type of the block:
+  // Beginning of the block, the inferred variable type if the type of the block:
   if (offset == 0)
     return type;
 

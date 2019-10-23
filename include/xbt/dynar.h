@@ -20,7 +20,7 @@ SG_BEGIN_DECL()
  *
  * These are the SimGrid version of the dynamically size arrays, which all C programmer recode one day or another.
  *
- * For performance concerns, the content of DynArr must be homogeneous (in contrary to dictionnaries -- see the
+ * For performance concerns, the content of DynArr must be homogeneous (in contrary to dictionaries -- see the
  * @ref XBT_dict section). You thus have to provide the function which will be used to free the content at
  * structure creation (of type void_f_pvoid_t).
  *

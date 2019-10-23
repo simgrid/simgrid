@@ -26,18 +26,18 @@ void Model::set_maxmin_system(lmm::System* system)
   maxmin_system_.reset(system);
 }
 
-double Model::next_occuring_event(double now)
+double Model::next_occurring_event(double now)
 {
   // FIXME: set the good function once and for all
   if (update_algorithm_ == Model::UpdateAlgo::LAZY)
-    return next_occuring_event_lazy(now);
+    return next_occurring_event_lazy(now);
   else if (update_algorithm_ == Model::UpdateAlgo::FULL)
-    return next_occuring_event_full(now);
+    return next_occurring_event_full(now);
   else
     xbt_die("Invalid cpu update mechanism!");
 }
 
-double Model::next_occuring_event_lazy(double now)
+double Model::next_occurring_event_lazy(double now)
 {
   XBT_DEBUG("Before share resources, the size of modified actions set is %zu", maxmin_system_->modified_set_->size());
   maxmin_system_->lmm_solve();
@@ -100,7 +100,7 @@ double Model::next_occuring_event_lazy(double now)
   }
 }
 
-double Model::next_occuring_event_full(double /*now*/)
+double Model::next_occurring_event_full(double /*now*/)
 {
   maxmin_system_->solve();
 

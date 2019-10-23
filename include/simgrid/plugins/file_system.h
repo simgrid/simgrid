@@ -93,7 +93,7 @@ namespace s4u {
  *
  * They are located on @ref simgrid::s4u::Storage that are accessed from a given @ref simgrid::s4u::Host through
  * mountpoints.
- * For now, you cannot change the mountpoints programatically, and must declare them from your platform file.
+ * For now, you cannot change the mountpoints programmatically, and must declare them from your platform file.
  */
 class XBT_PUBLIC File {
 public:

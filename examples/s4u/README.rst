@@ -198,7 +198,7 @@ Executions on the CPU
 
   - **Basic execution:**
     The computations done in your program are not reported to the
-    simulated world, unless you explicitely request the simulator to pause
+    simulated world, unless you explicitly request the simulator to pause
     the actor until a given amount of flops gets computed on its simulated
     host. Some executions can be given an higher priority so that they
     get more resources.
@@ -326,7 +326,7 @@ Energy Simulation
     This platform file contains the energy profile of each links and
     hosts, which is necessary to get energy consumption predictions.
     As usual, you should not trust our example, and you should strive
-    to double-check that your instanciation matches your target platform.
+    to double-check that your instantiation matches your target platform.
     |br| `examples/platforms/energy_platform.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/energy_platform.xml>`_
 
   - **Consumption due to the CPU:** 

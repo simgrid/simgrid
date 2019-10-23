@@ -23,7 +23,7 @@
  * Descrp: Function works when P is power of two. In each phase of P - 1
            phases, nodes in pair communicate their data.
 
- * Auther: Ahmad Faraj
+ * Author: Ahmad Faraj
 
  ****************************************************************************/
 namespace simgrid{

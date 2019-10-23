@@ -7,7 +7,7 @@
 #include "xbt/log.h"
 
 #include "simgrid/msg.h"
-#include "src/surf/network_cm02.hpp"
+#include "src/surf/network_wifi.hpp"
 #include <exception>
 #include <iostream>
 #include <random>

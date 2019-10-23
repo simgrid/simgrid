@@ -284,7 +284,7 @@ static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
   size_t count                                = simcall_comm_waitany__get__count(simcall);
 
   for (size_t i = 0; i < count; i++) {
-    // Remove the first occurence of simcall:
+    // Remove the first occurrence of simcall:
     auto* comm = comms[i];
     auto j     = boost::range::find(comm->simcalls_, simcall);
     if (j != comm->simcalls_.end())

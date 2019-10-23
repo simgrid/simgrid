@@ -64,7 +64,7 @@ public:
   virtual void suspend() = 0;
 
   // Retrieving the self() context
-  /** @brief Retrives the current context of this thread */
+  /** @brief Retrieves the current context of this thread */
   static Context* self();
   /** @brief Sets the current context of this thread */
   static void set_current(Context* self);

@@ -20,7 +20,7 @@ namespace mc {
  * (there is no offset) i.e.
  * \f$\text{virtual address} = \{dwarf address}\f$
  *
- * For a shared object, the addresses are offset from the begining
+ * For a shared object, the addresses are offset from the beginning
  * of the shared object (the base address of the mapped shared
  * object must be used as offset
  * i.e. \f$\text{virtual address} = \text{shared object base address}

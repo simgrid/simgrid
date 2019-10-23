@@ -1,4 +1,4 @@
-/* dict_elm - elements of generic dictionnaries                             */
+/* dict_elm - elements of generic dictionaries                             */
 /* This file is not to be loaded from anywhere but dict.cpp                 */
 
 /* Copyright (c) 2004-2019. The SimGrid Team. All rights reserved.          */

@@ -135,7 +135,7 @@ endif()
 
 ################################################################
 ## Build a sain "make dist" target to build a source package ###
-##   containing only the files that I explicitely state      ###
+##    containing only the files that I explicitly state      ###
 ##   (instead of any cruft laying on my disk as CPack does)  ###
 ################################################################
 
@@ -155,7 +155,6 @@ set(source_to_pack
   ${S4U_SRC}
   ${NS3_SRC}
   ${PLUGINS_SRC}
-  ${RNGSTREAM_SRC}
   ${SIMDAG_SRC}
   ${SIMGRID_SRC}
   ${SIMIX_SRC}

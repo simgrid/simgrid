@@ -55,9 +55,8 @@ static int number_of_networks = 1;
 
 simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> NetPointNs3::EXTENSION_ID;
 
-NetPointNs3::NetPointNs3()
+NetPointNs3::NetPointNs3() : ns3_node_(ns3::CreateObject<ns3::Node>(0))
 {
-  ns3_node_ = ns3::CreateObject<ns3::Node>(0);
   stack.Install(ns3_node_);
   nodes.Add(ns3_node_);
   node_num = number_of_nodes++;
@@ -76,7 +75,7 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
 
     // Create private link
     std::string host_id = cluster.prefix + std::to_string(i) + cluster.suffix;
-    auto* host_src      = simgrid::s4u::Host::by_name(host_id)->pimpl_netpoint->extension<NetPointNs3>();
+    auto* host_src      = simgrid::s4u::Host::by_name(host_id)->get_netpoint()->extension<NetPointNs3>();
     xbt_assert(host_src, "Cannot find a ns-3 host of name %s", host_id.c_str());
 
     // Any ns-3 route is symmetrical
@@ -191,10 +190,10 @@ Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size
   return new NetworkNS3Action(this, size, src, dst);
 }
 
-double NetworkNS3Model::next_occuring_event(double now)
+double NetworkNS3Model::next_occurring_event(double now)
 {
   double time_to_next_flow_completion = 0.0;
-  XBT_DEBUG("ns3_next_occuring_event");
+  XBT_DEBUG("ns3_next_occurring_event");
 
   //get the first relevant value from the running_actions list
 
@@ -231,8 +230,8 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     SgFlow* sgFlow            = elm.second;
     NetworkNS3Action * action = sgFlow->action_;
     XBT_DEBUG("Processing socket %p (action %p)",sgFlow,action);
-    // Because NS3 stops as soon as a flow is finished, the other flows that ends at the same time may remains in an inconsistant state
-    // (i.e. remains_ == 0 but finished_ == false).
+    // Because NS3 stops as soon as a flow is finished, the other flows that ends at the same time may remains in an
+    // inconsistent state (i.e. remains_ == 0 but finished_ == false).
     // However, SimGrid considers sometimes that an action with remains_ == 0 is finished.
     // Thus, to avoid inconsistencies between SimGrid and NS3, set remains to 0 only when the flow is finished in NS3
     int remains = action->get_cost() - sgFlow->sent_bytes_;
@@ -324,17 +323,17 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
 
   static int port_number = 1025; // Port number is limited from 1025 to 65 000
 
-  unsigned int node1 = src->pimpl_netpoint->extension<NetPointNs3>()->node_num;
-  unsigned int node2 = dst->pimpl_netpoint->extension<NetPointNs3>()->node_num;
+  unsigned int node1 = src->get_netpoint()->extension<NetPointNs3>()->node_num;
+  unsigned int node2 = dst->get_netpoint()->extension<NetPointNs3>()->node_num;
 
-  ns3::Ptr<ns3::Node> src_node = src->pimpl_netpoint->extension<NetPointNs3>()->ns3_node_;
-  ns3::Ptr<ns3::Node> dst_node = dst->pimpl_netpoint->extension<NetPointNs3>()->ns3_node_;
+  ns3::Ptr<ns3::Node> src_node = src->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
+  ns3::Ptr<ns3::Node> dst_node = dst->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
 
   xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to ns-3. Is it connected to any one-hop link?",
-             dst->pimpl_netpoint->get_cname());
+             dst->get_netpoint()->get_cname());
   std::string& addr = IPV4addr[node2];
   xbt_assert(not addr.empty(), "Element %s is unknown to ns-3. Is it connected to any one-hop link?",
-             dst->pimpl_netpoint->get_cname());
+             dst->get_netpoint()->get_cname());
 
   XBT_DEBUG("ns3: Create flow of %.0f Bytes from %u to %u with Interface %s", totalBytes, node1, node2, addr.c_str());
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress(ns3::Ipv4Address::GetAny(), port_number));

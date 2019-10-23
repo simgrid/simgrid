@@ -92,7 +92,7 @@ void PageStore::resize(std::size_t size)
     // Check if expanding worked
     if (new_memory != (char*)this->memory_ + old_bytesize) {
       // New memory segment could not be put at the end of this->memory_,
-      // so cancel this one and try to rellocate everything and copy data
+      // so cancel this one and try to relocate everything and copy data
       munmap(new_memory, new_bytesize - old_bytesize);
       new_memory =
           mmap(nullptr, new_bytesize, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);

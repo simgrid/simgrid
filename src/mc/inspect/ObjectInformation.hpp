@@ -107,7 +107,7 @@ public:
    *
    *  More precisely we check if this is an ET_EXE ELF. These ELF files
    *  use fixed addresses instead of base-address relative addresses.
-   *  Position independant executables are in fact ET_DYN.
+   *  Position independent executables are in fact ET_DYN.
    */
   bool executable() const { return this->flags & simgrid::mc::ObjectInformation::Executable; }
 

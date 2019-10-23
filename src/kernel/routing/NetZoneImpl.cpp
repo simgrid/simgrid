@@ -100,7 +100,7 @@ simgrid::s4u::Host* NetZoneImpl::create_host(const char* name, const std::vector
   if (hierarchy_ == RoutingMode::unset)
     hierarchy_ = RoutingMode::base;
 
-  res->pimpl_netpoint = new NetPoint(name, NetPoint::Type::Host, this);
+  res->set_netpoint(new NetPoint(name, NetPoint::Type::Host, this));
 
   surf_cpu_model_pm->create_cpu(res, speed_per_pstate, coreAmount);
 

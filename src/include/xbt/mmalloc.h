@@ -23,7 +23,7 @@ SG_BEGIN_DECL()
  * process. It thus works by redefining all the classical memory management functions (malloc and friends) with an
  * extra first argument: the heap in which the memory is to be taken.
  *
- * The heap structure itself is an opaque object that shouldnt be messed with.
+ * The heap structure itself is an opaque object that shouldn't be messed with.
  */
 typedef struct mdesc s_xbt_mheap_t;
 typedef s_xbt_mheap_t* xbt_mheap_t;

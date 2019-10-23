@@ -91,7 +91,7 @@ static int bob(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
   XBT_INFO("== Try to get a process property that does not exist");
 
   value = MSG_process_get_property_value(MSG_process_self(), noexist);
-  xbt_assert(!value, "The property is defined (it shouldnt)");
+  xbt_assert(!value, "The property is defined (it shouldn't)");
   xbt_dict_free(&props);
 
   return 0;

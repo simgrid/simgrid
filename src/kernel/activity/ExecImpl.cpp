@@ -56,7 +56,7 @@ void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, simgrid::kerne
   } else {
     simcall->timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall, execs, count]() {
       for (size_t i = 0; i < count; i++) {
-        // Remove the first occurence of simcall:
+        // Remove the first occurrence of simcall:
         auto* exec = execs[i];
         auto j     = boost::range::find(exec->simcalls_, simcall);
         if (j != exec->simcalls_.end())
@@ -222,7 +222,7 @@ void ExecImpl::finish()
       size_t count                                = simcall_execution_waitany_for__get__count(simcall);
 
       for (size_t i = 0; i < count; i++) {
-        // Remove the first occurence of simcall:
+        // Remove the first occurrence of simcall:
         auto* exec = execs[i];
         auto j     = boost::range::find(exec->simcalls_, simcall);
         if (j != exec->simcalls_.end())

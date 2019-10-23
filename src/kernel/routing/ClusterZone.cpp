@@ -12,7 +12,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf");
 
 /* This routing is specifically setup to represent clusters, aka homogeneous sets of machines
- * Note that a router is created, easing the interconnexion with the rest of the world. */
+ * Note that a router is created, easing the interconnection with the rest of the world. */
 
 namespace simgrid {
 namespace kernel {

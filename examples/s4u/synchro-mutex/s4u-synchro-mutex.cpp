@@ -17,7 +17,7 @@ static void worker(simgrid::s4u::MutexPtr mutex, int& result)
   mutex->lock();
 
   XBT_INFO("Hello s4u, I'm ready to compute after a regular lock");
-  // And finaly add it to the results
+  // And finally add it to the results
   result += 1;
   XBT_INFO("I'm done, good bye");
 

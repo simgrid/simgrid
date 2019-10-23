@@ -19,7 +19,7 @@
  * function in the Actor::on_termination signal, that is shared between
  * all actors. Callbacks to this signal are executed for each terminating
  * actors, no matter what. This is useful in many cases, in particular
- * when developping SimGrid plugins.
+ * when developing SimGrid plugins.
  *
  * Finally, you can attach callbacks to the Actor::on_destruction signal.
  * It is also shared between all actors, and gets fired when the actors

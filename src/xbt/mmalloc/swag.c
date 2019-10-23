@@ -55,7 +55,7 @@ static inline void xbt_swag_init(xbt_swag_t swag, size_t offset)
 }
 
 /*
- * @param obj the objet to insert in the swag
+ * @param obj the object to insert in the swag
  * @param swag a swag
  *
  * insert (at the tail... you probably had a very good reason to do that, I hope you know what you're doing) @a obj in
@@ -80,7 +80,7 @@ static inline void xbt_swag_insert(void *obj, xbt_swag_t swag)
 }
 
 /*
- * @param obj the objet to remove from the swag
+ * @param obj the object to remove from the swag
  * @param swag a swag
  * @return @a obj if it was in the @a swag and NULL otherwise
  *

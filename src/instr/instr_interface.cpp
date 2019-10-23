@@ -138,7 +138,7 @@ xbt_dynar_t TRACE_get_categories ()
  */
 void TRACE_declare_mark(const char *mark_type)
 {
-  /* safe switchs. tracing has to be activated and if platform is not traced, we can't deal with marks */
+  /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
   if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return;
 

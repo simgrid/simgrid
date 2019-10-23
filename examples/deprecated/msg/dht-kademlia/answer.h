@@ -9,7 +9,7 @@
 #include <xbt/dynar.h>
 #include "routing_table.h"
 
-/* Node query anwser. contains the elements closest to the id given. */
+/* Node query answer. contains the elements closest to the id given. */
 typedef struct s_node_answer {
   unsigned int destination_id;
   xbt_dynar_t nodes;            //Dynar of node_contact_t

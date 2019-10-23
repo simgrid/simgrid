@@ -742,7 +742,7 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
   std::unique_ptr<unsigned char[]> tmp_sendbuf;
   if (sendbuf == MPI_IN_PLACE) {
     tmp_sendbuf.reset(new unsigned char[recvcount * comm->size() * recvtype->size()]);
-    // memcpy(??,nullptr,0) is actually undefined behavor, even if harmless.
+    // memcpy(??,nullptr,0) is actually undefined behavior, even if harmless.
     if (recvbuf != nullptr)
       memcpy(tmp_sendbuf.get(), recvbuf, recvcount * comm->size() * recvtype->size());
     real_sendbuf = tmp_sendbuf.get();

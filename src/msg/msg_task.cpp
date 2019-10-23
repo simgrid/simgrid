@@ -203,7 +203,7 @@ void Task::report_multiple_use() const
  * @param flop_amount a value of the processing amount (in flop) needed to process this new task.
  * If 0, then it cannot be executed with MSG_task_execute(). This value has to be >=0.
  * @param message_size a value of the amount of data (in bytes) needed to transfer this new task. If 0, then it cannot
- * be transfered with MSG_task_send() and MSG_task_recv(). This value has to be >=0.
+ * be transferred with MSG_task_send() and MSG_task_recv(). This value has to be >=0.
  * @param data a pointer to any data may want to attach to the new object.  It is for user-level information and can
  * be nullptr. It can be retrieved with the function @ref MSG_task_get_data.
  * @return The new corresponding object.
@@ -668,7 +668,7 @@ msg_error_t MSG_task_destroy(msg_task_t task)
 
 /** @brief Cancel the given task
  *
- * If it was currently executed or transfered, the working process is stopped.
+ * If it was currently executed or transferred, the working process is stopped.
  */
 msg_error_t MSG_task_cancel(msg_task_t task)
 {

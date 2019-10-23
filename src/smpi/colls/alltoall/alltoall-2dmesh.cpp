@@ -27,7 +27,7 @@
            then in the y dimension. Each node then extracts the needed data.
            The communication in each dimension follows "simple."
 
- * Auther: Ahmad Faraj
+ * Author: Ahmad Faraj
 
 ****************************************************************************/
 static int alltoall_check_is_2dmesh(int num, int *i, int *j)

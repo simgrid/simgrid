@@ -291,7 +291,7 @@ kernel::resource::Cpu* CpuTiModel::create_cpu(s4u::Host* host, const std::vector
   return new CpuTi(this, host, speed_per_pstate, core);
 }
 
-double CpuTiModel::next_occuring_event(double now)
+double CpuTiModel::next_occurring_event(double now)
 {
   double min_action_duration = -1;
 

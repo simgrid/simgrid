@@ -407,14 +407,14 @@ public class Peer extends Process {
       sendChoked(peerChoked.mailbox);
       activePeers.remove(e.getKey());
     }
-    Connection peerChoosed = null;
+    Connection peerChosen = null;
     //Separate the case from when the peer is seeding.
     if (pieces == Common.FILE_PIECES) {
       //Find the last unchoked peer.
       double unchokeTime = deadline + 1;
       for (Connection connection : peers.values()) {
         if (connection.lastUnchoke < unchokeTime && connection.interested) {
-          peerChoosed = connection;
+          peerChosen = connection;
           unchokeTime = connection.lastUnchoke;
         }
       }
@@ -427,16 +427,16 @@ public class Peer extends Process {
           int idChosen = rand.nextInt(peers.size());
           for (Connection connection : peers.values()) {
             if (i == idChosen) {
-              peerChoosed = connection;
+              peerChosen = connection;
               break;
             }
             i++;
           } //TODO: Not really the best way ever
-          if (peerChoosed != null && !peerChoosed.interested) {
-            peerChoosed = null;
+          if (peerChosen != null && !peerChosen.interested) {
+            peerChosen = null;
           }
           j++;
-        } while (peerChoosed == null && j < Common.MAXIMUM_PEERS);
+        } while (peerChosen == null && j < Common.MAXIMUM_PEERS);
       } else {
         Connection fastest = null;
         double fastestSpeed = 0;
@@ -446,14 +446,14 @@ public class Peer extends Process {
             fastestSpeed = c.peerSpeed;
           }
         }
-        peerChoosed = fastest;
+        peerChosen = fastest;
       }
     }
-    if (peerChoosed != null) {
-      activePeers.put(peerChoosed.id,peerChoosed);
-      peerChoosed.chokedUpload = false;
-      peerChoosed.lastUnchoke = Msg.getClock();
-      sendUnchoked(peerChoosed.mailbox);
+    if (peerChosen != null) {
+      activePeers.put(peerChosen.id,peerChosen);
+      peerChosen.chokedUpload = false;
+      peerChosen.lastUnchoke = Msg.getClock();
+      sendUnchoked(peerChosen.mailbox);
     }
   }
 

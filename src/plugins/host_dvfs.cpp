@@ -221,9 +221,9 @@ public:
  *
  * > The CPUfreq governor "conservative", much like the "ondemand"
  * > governor, sets the CPU frequency depending on the current usage.  It
- * > differs in behaviour in that it gracefully increases and decreases the
+ * > differs in behavior in that it gracefully increases and decreases the
  * > CPU speed rather than jumping to max speed the moment there is any load
- * > on the CPU. This behaviour is more suitable in a battery powered
+ * > on the CPU. This behavior is more suitable in a battery powered
  * > environment.
  */
 class Conservative : public Governor {

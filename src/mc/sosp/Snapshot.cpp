@@ -249,7 +249,7 @@ void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void> addre
   } else
     return this->process()->read_bytes(buffer, size, address, options);
 }
-/** @brief Find the snapshoted region from a pointer
+/** @brief Find the snapshotted region from a pointer
  *
  *  @param addr     Pointer
  * */
@@ -267,7 +267,7 @@ Region* Snapshot::get_region(const void* addr) const
   return nullptr;
 }
 
-/** @brief Find the snapshoted region from a pointer, with a hinted_region */
+/** @brief Find the snapshotted region from a pointer, with a hinted_region */
 Region* Snapshot::get_region(const void* addr, Region* hinted_region) const
 {
   if (hinted_region->contain(simgrid::mc::remote(addr)))
@@ -282,7 +282,7 @@ void Snapshot::restore(RemoteClient* process)
 
   // Restore regions
   for (std::unique_ptr<simgrid::mc::Region> const& region : snapshot_regions_) {
-    if (region) // privatized variables are not snapshoted
+    if (region) // privatized variables are not snapshotted
       region.get()->restore();
   }
 

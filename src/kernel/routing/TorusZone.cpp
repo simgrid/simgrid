@@ -104,7 +104,7 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
    */
 
   /*
-   * Arrays that hold the coordinates of the current node andthe target; comparing the values at the i-th position of
+   * Arrays that hold the coordinates of the current node and the target; comparing the values at the i-th position of
    * both arrays, we can easily assess whether we need to route into this dimension or not.
    */
   const unsigned int dsize = dimensions_.size();

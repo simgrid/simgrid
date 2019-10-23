@@ -106,7 +106,6 @@ int Group::compare(MPI_Group group2)
 
 int Group::incl(int n, const int* ranks, MPI_Group* newgroup)
 {
-  int i=0;
   if (n == 0) {
     *newgroup = MPI_GROUP_EMPTY;
   } else if (n == size_) {
@@ -115,7 +114,7 @@ int Group::incl(int n, const int* ranks, MPI_Group* newgroup)
       this->ref();
   } else {
     *newgroup = new Group(n);
-    for (i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
       s4u::Actor* actor = this->actor(ranks[i]); // ranks[] was passed as a param!
       (*newgroup)->set_mapping(actor, i);
     }

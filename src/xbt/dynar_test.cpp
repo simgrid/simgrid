@@ -119,7 +119,7 @@ TEST_CASE("xbt::dynar: generic C vector", "dynar")
     for (int i = 0; i < NB_ELEM / 2; i++) {
       int val;
       xbt_dynar_shift(d, &val);
-      REQUIRE(val == i); // The retrieved value is not the same than the injected one at the begining
+      REQUIRE(val == i); // The retrieved value is not the same than the injected one at the beginning
     }
     for (int i = 999; i >= 0; i--) {
       int val;
@@ -272,7 +272,7 @@ TEST_CASE("xbt::dynar: generic C vector", "dynar")
     for (int i = 0; i < 2500; i++) {
       d1 = (double)i;
       xbt_dynar_shift(d, &d2);
-      REQUIRE(d1 == d2); // The retrieved value is not the same than the injected one at the begining
+      REQUIRE(d1 == d2); // The retrieved value is not the same than the injected one at the beginning
     }
     for (int i = 999; i >= 0; i--) {
       d1 = (double)i;

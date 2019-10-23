@@ -46,7 +46,7 @@
 /* Fast reduce and allreduce algorithm for longer buffers and predefined
    operations.
 
-   This algorithm is explaned with the example of 13 nodes.
+   This algorithm is explained with the example of 13 nodes.
    The nodes are numbered   0, 1, 2, ... 12.
    The sendbuf content is   a, b, c, ...  m.
    The buffer array is notated with ABCDEFGH, this means that
@@ -65,7 +65,7 @@
 
    Exa.: size=13 ==> n=3, r=5  (i.e. size == 13 == 2**n+r ==  2**3 + 5)
 
-   The algoritm needs for the execution of one Colls::reduce
+   The algorithm needs for the execution of one Colls::reduce
 
    - for r==0
      exec_time = n*(L1+L2)     + buf_lng * (1-1/2**n) * (T1 + T2 + O/d)
@@ -376,7 +376,7 @@ Benchmark results on CRAY T3E
    2) This line shows the limit for the count argument.
       If count < limit then the vendor protocol is used,
       otherwise the new protocol is used (see variable Ldb).
-   3) These lines show the bandwidth (=bufer length / execution time)
+   3) These lines show the bandwidth (= buffer length / execution time)
       for both protocols.
    4) This line shows that the limit is choosen well if the ratio is
       between 0.95 (loosing 5% for buffer length near and >=limit)
@@ -635,7 +635,7 @@ static int MPI_I_anyReduce(const void* Sendbuf, void* Recvbuf, int count, MPI_Da
 #   endif
     n = 0; x_size = 1;
     while (2*x_size <= size) { n++; x_size = x_size * 2; }
-    /* x_sixe == 2**n */
+    /* x_size == 2**n */
     r = size - x_size;
 
   /*...step 2 */

@@ -108,7 +108,7 @@ VMModel::VMModel()
   kernel::activity::ActivityImpl::on_suspended.connect(remove_active_activity);
 }
 
-double VMModel::next_occuring_event(double now)
+double VMModel::next_occurring_event(double now)
 {
   /* TODO: update action's cost with the total cost of processes on the VM. */
 
@@ -149,7 +149,7 @@ double VMModel::next_occuring_event(double now)
   }
 
   /* 2. Ready. Get the next occurring event */
-  return surf_cpu_model_vm->next_occuring_event(now);
+  return surf_cpu_model_vm->next_occurring_event(now);
 }
 
 /************
@@ -283,7 +283,7 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
   std::string pm_name_dst = destination->get_name();
 
   /* update net_elm with that of the destination physical host */
-  piface_->pimpl_netpoint = destination->pimpl_netpoint;
+  piface_->set_netpoint(destination->get_netpoint());
 
   physical_host_ = destination;
 

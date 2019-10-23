@@ -50,7 +50,7 @@ Request::Request(const void* buf, int count, MPI_Datatype datatype, int src, int
       }
     }
   }
-  // This part handles the problem of non-contiguous memory (for the unserialisation at the reception)
+  // This part handles the problem of non-contiguous memory (for the unserialization at the reception)
   old_buf_  = old_buf;
   size_ = datatype->size() * count;
   datatype->ref();
@@ -129,7 +129,7 @@ int Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
     if (req->detached_)
       ref->detached_sender_=req; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
     if(req->cancelled_==0)
-      req->cancelled_=-1;//mark as uncancellable
+      req->cancelled_ = -1; // mark as uncancelable
     XBT_DEBUG("match succeeded");
     return 1;
   }else return 0;
@@ -155,7 +155,7 @@ int Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl*)
     if (ref->detached_)
       req->detached_sender_=ref; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
     if(req->cancelled_==0)
-      req->cancelled_=-1;//mark as uncancellable
+      req->cancelled_ = -1; // mark as uncancelable
     XBT_DEBUG("match succeeded");
     return 1;
   } else
@@ -614,7 +614,6 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
 
 int Request::testsome(int incount, MPI_Request requests[], int *count, int *indices, MPI_Status status[])
 {
-  int ret = MPI_SUCCESS;
   int error=0;
   int count_dead = 0;
   int flag = 0;
@@ -624,7 +623,7 @@ int Request::testsome(int incount, MPI_Request requests[], int *count, int *indi
   *count = 0;
   for (int i = 0; i < incount; i++) {
     if (requests[i] != MPI_REQUEST_NULL && not (requests[i]->flags_ & MPI_REQ_FINISHED)) {
-      ret = test(&requests[i], pstat, &flag);
+      int ret = test(&requests[i], pstat, &flag);
       if(ret!=MPI_SUCCESS)
         error = 1;
       if(flag) {
@@ -722,11 +721,10 @@ int Request::testall(int count, MPI_Request requests[], int* outflag, MPI_Status
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
   int flag;
   int error = 0;
-  int ret=MPI_SUCCESS;
   *outflag = 1;
   for(int i=0; i<count; i++){
     if (requests[i] != MPI_REQUEST_NULL && not(requests[i]->flags_ & MPI_REQ_PREPARED)) {
-      ret = test(&requests[i], pstat, &flag);
+      int ret = test(&requests[i], pstat, &flag);
       if (flag){
         flag=0;
         requests[i]=MPI_REQUEST_NULL;
@@ -861,7 +859,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
         }
 
         if(datatype->flags() & DT_FLAG_DERIVED){
-          // This part handles the problem of non-contignous memory the unserialization at the reception
+          // This part handles the problem of non-contiguous memory the unserialization at the reception
           if ((req->flags_ & MPI_REQ_RECV) && datatype->size() != 0)
             datatype->unserialize(req->buf_, req->old_buf_, req->real_size_/datatype->size() , req->op_);
           xbt_free(req->buf_);

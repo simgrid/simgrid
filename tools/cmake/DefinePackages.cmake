@@ -43,6 +43,7 @@ set(EXTRA_DIST
   src/surf/network_ns3.hpp
   src/surf/network_smpi.hpp
   src/surf/network_ib.hpp
+  src/surf/network_wifi.hpp
   src/surf/ns3/ns3_simulator.hpp
   src/surf/xml/simgrid.dtd
   src/surf/xml/simgrid_dtd.h
@@ -349,6 +350,7 @@ set(SURF_SRC
   src/surf/network_cm02.cpp
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
+  src/surf/network_wifi.cpp
   src/surf/PropertyHolder.cpp
   src/surf/sg_platf.cpp
   src/surf/StorageImpl.cpp

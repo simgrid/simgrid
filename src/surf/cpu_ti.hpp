@@ -60,7 +60,7 @@ private:
 
   /* Dynamic */
   double last_time_ = 0.0;             /*< Integral interval last point (discrete time) */
-  double total_    = 0.0;             /*< Integral total between 0 and last_pointn */
+  double total_     = 0.0;             /*< Integral total between 0 and last point */
 
   std::unique_ptr<CpuTiProfile> profile_ = nullptr;
   profile::Profile* speed_profile_       = nullptr;
@@ -145,7 +145,7 @@ public:
   CpuTiModel& operator=(const CpuTiModel&) = delete;
   ~CpuTiModel() override;
   Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) override;
-  double next_occuring_event(double now) override;
+  double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 
   CpuTiList modified_cpus_;

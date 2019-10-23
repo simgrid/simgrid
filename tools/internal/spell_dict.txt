@@ -9,6 +9,8 @@ atof
 callgrind
 calloc
 cfg
+CMake
+cmake
 comm
 const
 cplusplus
@@ -63,8 +65,10 @@ mmap
 ModelChecker
 modelchecker
 MPI
+MPICH
 msg
 mutex
+NetZone
 nullptr
 ok
 Paje
@@ -88,10 +92,16 @@ sizeof
 SMPI
 smpi
 smx
+snprintf
 src
+StarPU
 std
+stdint
+stderr
+stdout
 strerror
 strlen
+strtok
 struct
 syscall
 syscalls
@@ -100,6 +110,7 @@ testany
 todo
 TODO
 valgrind
+vasprintf
 VM
 VMs
 waitany

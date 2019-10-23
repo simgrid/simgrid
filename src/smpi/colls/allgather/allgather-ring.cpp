@@ -61,7 +61,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *   recv_type: data type of elements being received
  *   comm: communication
  * Descrp: Function works in P - 1 steps. In step i, node j - i -> j -> j+ i.
- * Auther: Ahmad Faraj
+ * Author: Ahmad Faraj
  ****************************************************************************/
 
 namespace simgrid{

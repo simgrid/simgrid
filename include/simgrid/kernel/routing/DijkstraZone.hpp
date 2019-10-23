@@ -14,7 +14,7 @@ namespace kernel {
 namespace routing {
 
 /** @ingroup ROUTING_API
- *  @brief NetZone with an explicit routing computed on need with Dijsktra
+ *  @brief NetZone with an explicit routing computed on need with Dijkstra
  *
  *  The path between components is computed each time you request it,
  *  using the Dijkstra algorithm. A cache can be used to reduce the computation.

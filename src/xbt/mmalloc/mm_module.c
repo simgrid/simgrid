@@ -1,4 +1,4 @@
-/* Initialization for acces s to a mmap'd malloc managed region. */
+/* Initialization for access to a mmap'd malloc managed region. */
 
 /* Copyright (c) 2012-2019. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -62,7 +62,7 @@
    starting at the specified address BASEADDR in the process address
    space.
 
-   The provided BASEADDR should be choosed carefully in order to avoid
+   The provided BASEADDR should be chosen carefully in order to avoid
    bumping into existing mapped regions or future mapped regions.
 
    On success, returns a "malloc descriptor" which is used in subsequent

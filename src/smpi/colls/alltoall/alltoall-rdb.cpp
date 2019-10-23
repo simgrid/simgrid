@@ -25,7 +25,7 @@
  * Descrp: Function realizes the allgather operation using the recursive
            doubling algorithm.
 
- * Auther: MPICH / slightly modified by Ahmad Faraj.
+ * Author: MPICH / slightly modified by Ahmad Faraj.
 
  ****************************************************************************/
 namespace simgrid{

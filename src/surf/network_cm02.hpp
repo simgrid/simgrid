@@ -53,23 +53,6 @@ public:
   void set_latency(double value) override;
 };
 
-class NetworkWifiLink : public NetworkCm02Link {
-  /** @brief Hold every rates association between host and links (host name, rates id) */
-  std::map<xbt::string, int> host_rates_;
-
-  /** @brief A link can have several bandwith attach to it (mostly use by wifi model) */
-  std::vector<Metric> bandwidths_;
-
-public:
-  NetworkWifiLink(NetworkCm02Model* model, const std::string& name, std::vector<double> bandwidths,
-                  s4u::Link::SharingPolicy policy, lmm::System* system);
-
-  void set_host_rate(s4u::Host* host, int rate_level);
-  /** @brief Get the AP rate associated to the host (or -1 if not associated to the AP) */
-  double get_host_rate(s4u::Host* host);
-  s4u::Link::SharingPolicy get_sharing_policy() override;
-};
-
 /**********
  * Action *
  **********/

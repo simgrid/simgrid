@@ -30,13 +30,13 @@ HostCLM03Model::HostCLM03Model()
 {
   all_existing_models.push_back(this);
 }
-double HostCLM03Model::next_occuring_event(double now)
+double HostCLM03Model::next_occurring_event(double now)
 {
-  double min_by_cpu = surf_cpu_model_pm->next_occuring_event(now);
+  double min_by_cpu = surf_cpu_model_pm->next_occurring_event(now);
   double min_by_net =
-      surf_network_model->next_occuring_event_is_idempotent() ? surf_network_model->next_occuring_event(now) : -1;
-  double min_by_sto = surf_storage_model->next_occuring_event(now);
-  double min_by_dsk = surf_disk_model->next_occuring_event(now);
+      surf_network_model->next_occurring_event_is_idempotent() ? surf_network_model->next_occurring_event(now) : -1;
+  double min_by_sto = surf_storage_model->next_occurring_event(now);
+  double min_by_dsk = surf_disk_model->next_occurring_event(now);
 
   XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f, %s min_by_dsk %f", this,
             typeid(surf_cpu_model_pm).name(), min_by_cpu, typeid(surf_network_model).name(), min_by_net,

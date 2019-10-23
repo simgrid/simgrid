@@ -216,7 +216,7 @@ void xbt_dynar_free_voidp(void* d)
 
 /** @brief Count of dynar's elements
  *
- * @param dynar the dynar we want to mesure
+ * @param dynar the dynar we want to measure
  */
 unsigned long xbt_dynar_length(const xbt_dynar_t dynar)
 {
@@ -522,7 +522,7 @@ void xbt_dynar_pop(xbt_dynar_t const dynar, void* const dst)
   xbt_dynar_remove_at(dynar, dynar->used - 1, dst);
 }
 
-/** @brief Add an element at the begining of the dynar.
+/** @brief Add an element at the beginning of the dynar.
  *
  * This is less efficient than xbt_dynar_push()
  */

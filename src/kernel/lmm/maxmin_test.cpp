@@ -246,7 +246,7 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
 
     /*
      * Multiple constraint systems can be solved with shared variables
-     * on unshair constraints.
+     * on unshared constraints.
      *
      * In details:
      *   o System:  a1 * p1 * \rho1  +  a2 * p2 * \rho2 < C1

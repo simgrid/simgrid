@@ -145,10 +145,9 @@ int PMPI_Startall(int count, MPI_Request * requests)
     if(retval != MPI_ERR_REQUEST) {
       int my_proc_id = simgrid::s4u::this_actor::get_pid();
       TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Startall"));
-      MPI_Request req = MPI_REQUEST_NULL;
       if (not TRACE_smpi_view_internals())
         for (int i = 0; i < count; i++) {
-          req = requests[i];
+          MPI_Request req = requests[i];
           if (req->flags() & MPI_REQ_SEND)
             TRACE_smpi_send(my_proc_id, my_proc_id, getPid(req->comm(), req->dst()), req->tag(), req->size());
         }
@@ -157,7 +156,7 @@ int PMPI_Startall(int count, MPI_Request * requests)
 
       if (not TRACE_smpi_view_internals())
         for (int i = 0; i < count; i++) {
-          req = requests[i];
+          MPI_Request req = requests[i];
           if (req->flags() & MPI_REQ_RECV)
             TRACE_smpi_recv(getPid(req->comm(), req->src()), my_proc_id, req->tag());
         }
@@ -796,7 +795,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
   } else if (*request == MPI_REQUEST_NULL) {
     retval = MPI_SUCCESS;
   } else {
-    //for tracing, save the handle which might get overriden before we can use the helper on it
+    // for tracing, save the handle which might get overridden before we can use the helper on it
     MPI_Request savedreq = *request;
     if (savedreq != MPI_REQUEST_NULL && not(savedreq->flags() & MPI_REQ_FINISHED)
     && not(savedreq->flags() & MPI_REQ_GENERALIZED))
@@ -832,7 +831,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
     return MPI_SUCCESS;
 
   smpi_bench_end();
-  //for tracing, save the handles which might get overriden before we can use the helper on it
+  // for tracing, save the handles which might get overridden before we can use the helper on it
   std::vector<MPI_Request> savedreqs(requests, requests + count);
   for (MPI_Request& req : savedreqs) {
     if (req != MPI_REQUEST_NULL && not(req->flags() & MPI_REQ_FINISHED))
@@ -863,7 +862,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 {
   smpi_bench_end();
 
-  //for tracing, save the handles which might get overriden before we can use the helper on it
+  // for tracing, save the handles which might get overridden before we can use the helper on it
   std::vector<MPI_Request> savedreqs(requests, requests + count);
   for (MPI_Request& req : savedreqs) {
     if (req != MPI_REQUEST_NULL && not(req->flags() & MPI_REQ_FINISHED))

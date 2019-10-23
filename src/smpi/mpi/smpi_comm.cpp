@@ -384,7 +384,7 @@ void Comm::init_smp(){
     // we need to switch as the called function may silently touch global variables
     smpi_switch_data_segment(s4u::Actor::self());
   }
-  //identify neighbours in comm
+  // identify neighbors in comm
   MPI_Comm comm_intra = find_intra_comm(&leader);
 
 

@@ -61,7 +61,7 @@ SMPI:
    with smpi/comp-adjustment-file.
  - sleep events are now correctly traced/replayed.
  - Default for trace-call-location is now to use file names and not full paths.
-   To revert to previous behaviour (in case of collision of filenames), option
+   To revert to previous behavior (in case of collision of filenames), option
    "smpi/trace-call-use-absolute-path" can be set to yes.
 
 Model-Checker:
@@ -954,7 +954,7 @@ SimGrid (3.14) Released December 24. 2016
    MSG_environment_as_get_property_value().
    - Removed MSG_as_router_*propert*() functions
    - Added MSG_environment_as_set_property_value() for consistency
- * xbt heterogeneous dictionnaries (created with xbt_dict_new()).
+ * xbt heterogeneous dictionaries (created with xbt_dict_new()).
    Well, they are still there for now, but deprecated with a warning.
    Please switch to xbt_dict_new_homogeneous() before this is removed
    for real.
@@ -1685,7 +1685,7 @@ SimGrid-java (3.8.1) stable; urgency=low
  * New module: org.simgrid.msg.File (SimGrid File management functions)
  * New Module: org.simgrid.msg.VM (SimGrid interface to mimick IAAS clouds)
  * Change the meaning of Process.restart: now restart the process from
-   the begining, like MSG_process_restart in C.
+   the beginning, like MSG_process_restart in C.
  * Add Process.setAutoRestart: handling of process restart when failed
    host comes back.
  * Add Process.getProperty, Host.getProperty, Host.getProperty: allows
@@ -2322,7 +2322,7 @@ SimGrid (3.4.1) stable; urgency=low
  * Fix a bug preventing the tasks from begin garbage collected.
 
  MSG
- * Fix a bug occuring when a host involved in a communication fails.
+ * Fix a bug occurring when a host involved in a communication fails.
    This was not detected properly by the other peer involved in the
    communication. Now, it's reported as a network error.
 
@@ -2446,7 +2446,7 @@ SimGrid (3.4) stable; urgency=low
     o network_model -> network/model
     o workstation_model -> workstation/model
   * New configuration variables:
-    o network/bandwidth_factor: correction to bandwith
+    o network/bandwidth_factor: correction to bandwidth
     o network/latency_factor: correction to latency
     o netwotk/weight_S: correction to the weight of competing streams
   * Add a long description to the models, that users can see with such
@@ -2565,7 +2565,7 @@ SimGrid (3.3.4) stable; urgency=low
     - SD_task_create_comm_e2e() for end-to-end communication
     - SD_task_create_comp_seq() for sequential computation
    Use SD_task_schedulev() / SD_task_schedulel() to schedule them.
- * new function SD_task_dump() for debuging display
+ * new function SD_task_dump() for debugging display
  * new function SD_task_dotty(task,FILE*) writing to file the info
    about the task in dotty format
  * SD_task_dependency_exists() can now cope with having one of its
@@ -2823,7 +2823,7 @@ SimGrid (3.3.1) stable; urgency=low
      kind of action while the second one parses a trace file and
      triggers the corresponding actions within the system.
     For now, only a toy example is provided in examples/msg/actions
-  * Add an exemple of process migration in examples/msg/migration
+  * Add an example of process migration in examples/msg/migration
   * Fix a bug in task exchange which broke MSG_task_get_sender()
     Add a teshsuite regression test for that.
     [Bug: if MSG_task_get_sender() is called after sender exit,
@@ -2921,7 +2921,7 @@ SimGrid (3.3) stable; urgency=high
     **************************************
     *DO NOT MIX 3.2 RESULTS WITH 3.3 ONES* Simix may changes simulations!
     **************************************
-    The point is that events occuring at the exact same timestamp are
+    The point is that events occurring at the exact same timestamp are
     not scheduled in the same order with the old and new version. This
     may be enough to completely change the execution of simulations in
     some cases. Sorry for the inconvenience.
@@ -3098,7 +3098,7 @@ SimGrid (3.2) stable; urgency=high
          . Lesson 8: Handling errors through exceptions
          . Lesson 9: Exchanging simple data
          . Lesson 10: Remote Procedure Calling (RPC)
-         . Lesson 11: Explicitely waiting for messages
+         . Lesson 11: Explicitly waiting for messages
          . Recapping of message passing features in GRAS
      - A HOWTO section containing:
        o HOWTO design a GRAS application
@@ -3191,7 +3191,7 @@ SimGrid (3.1) stable; urgency=high
     in progress and the API is not considered to be frozen yet). [AL]
   * Display more information on backtraces: source line & function names are
     now displayed just like valgrind does (rely on addr2line tool) [MQ]
-  * New function: xbt_backtrace_display(). Sweet while debuging [MQ]
+  * New function: xbt_backtrace_display(). Sweet while debugging [MQ]
   * Reworked a little bit some #include statements to load only required
     headers. Some user code that relied on SimGrid to include stdlib or
     stdio may need to include it by themselves. [AL]
@@ -3274,7 +3274,7 @@ SimGrid (3.0.1) stable; urgency=low
      - reduces the amount of exchanged data (the size)
      - allows to retrieve all arrived data on receiver side, if we don't need
        it right now (subsequent read will peek the buffer)
-     - allows the receiver to proceed with the begining of the stream before
+     - allows the receiver to proceed with the beginning of the stream before
        everything is arrived
      - make it possible to build an iov transport (using readv/writev)
     Extra difficulty:
@@ -3688,7 +3688,7 @@ SimGrid (2.90) unstable; urgency=low
       - s_toto   is a structure needing 'struct' keyword to be used
       - e_toto_t is an enum
       -   toto_t is an 'object' (struct*)
-    Exemple:
+    Example:
       typedef struct s_toto {} s_toto_t, *toto_t;
       typedef enum {} e_toto_t;
     Moreover, only toto_t (and e_toto_t) are public. The rest (mainly
@@ -3814,7 +3814,7 @@ SimGrid (2.90) unstable; urgency=low
   - In composed data description (struct, ref and so on), stop foolness of
     keeping the subtype's ID, but store the type itself. This keeps sets out
     of the critical path, which is good since they rely on dynar and
-    dictionnaries. The only loose of that is that we cannot detect the
+    dictionaries. The only loose of that is that we cannot detect the
     redeclaration of a structure/union with another content (but I'm not sure
     the code detected well this error before anyway). We still can detect
     the redefinition discrepancy for the other types.
@@ -4052,7 +4052,7 @@ SimGrid (2.90) unstable; urgency=low
     for now.
  [Transport]
    [File plugin]
-     - Bugfix when using a filename explicitely (instead of '-')
+     - Bugfix when using a filename explicitly (instead of '-')
 
 2004-04-09 Martin Quinson
  [Transport plugins]

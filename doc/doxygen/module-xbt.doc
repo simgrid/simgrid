@@ -59,7 +59,7 @@
 
   @{ */
      /** @defgroup XBT_dynar  Dynar: generic dynamic array */
-     /** @defgroup XBT_dict   Dict: generic dictionnary */
+     /** @defgroup XBT_dict   Dict: generic dictionary */
 /** @} */
 
 

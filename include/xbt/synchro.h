@@ -50,7 +50,7 @@ XBT_ATTRIB_DEPRECATED_v328("Please use sg_mutex_try_lock") XBT_PUBLIC int xbt_mu
 /** @brief Releases the given mutex variable */
 XBT_ATTRIB_DEPRECATED_v328("Please use sg_mutex_unlock") XBT_PUBLIC void xbt_mutex_release(xbt_mutex_t mutex);
 
-/** @brief Destroyes the given mutex variable */
+/** @brief Destroys the given mutex variable */
 XBT_ATTRIB_DEPRECATED_v328("Please use sg_mutex_destroy") XBT_PUBLIC void xbt_mutex_destroy(xbt_mutex_t mutex);
 
 /** @brief Thread condition data type (opaque object)

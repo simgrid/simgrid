@@ -64,7 +64,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  * Descrp: broadcasts using a bionomial tree.
 
- * Auther: MPIH / modified by Ahmad Faraj
+ * Author: MPIH / modified by Ahmad Faraj
 
  ****************************************************************************/
 namespace simgrid{

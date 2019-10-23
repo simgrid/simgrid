@@ -359,7 +359,7 @@ int Coll_allreduce_mvapich2::allreduce(const void *sendbuf,
         range++;
     }
     /* Search for corresponding inter-leader function */
-    /* skip mcast poiters if mcast is not available */
+    /* skip mcast pointers if mcast is not available */
     if(mv2_allreduce_thresholds_table[range].mcast_enabled != 1){
         while ((range_threshold < (mv2_allreduce_thresholds_table[range].size_inter_table - 1))
             && ((mv2_allreduce_thresholds_table[range].

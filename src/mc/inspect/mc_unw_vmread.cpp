@@ -100,7 +100,7 @@ namespace unw {
  *  does not use ptrace() to read the target process memory by
  *  `process_vm_readv()` or `/dev/${pid}/mem` if possible.
  *
- *  Does not support any MC-specific behaviour (privatization, snapshots)
+ *  Does not support any MC-specific behavior (privatization, snapshots)
  *  and `ucontext_t`.
  *
  *  It works with `void*` contexts allocated with `_UPT_create(pid)`.

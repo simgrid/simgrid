@@ -60,7 +60,7 @@ static void master()
     XBT_INFO("Exception caught: %s", e.what());
   }
 
-  // Synchronize on a successul Future<int> and get the value:
+  // Synchronize on a successful Future<int> and get the value:
   int res = simgrid::simix::kernel_sync([] {
     return kernel_wait_until(30).then([](simgrid::kernel::Future<void> f) {
       f.get();
@@ -70,7 +70,7 @@ static void master()
   });
   XBT_INFO("kernel_sync with value returned with %i", res);
 
-  // Synchronize on a successul Future<int> and get the value:
+  // Synchronize on a successful Future<int> and get the value:
   simgrid::simix::Future<int> future = simgrid::simix::kernel_async([] {
     return kernel_wait_until(50).then([](simgrid::kernel::Future<void> f) {
       f.get();
@@ -81,7 +81,7 @@ static void master()
   res = future.get();
   XBT_INFO("kernel_async with value returned with %i", res);
 
-  // Synchronize on a successul Future<int> and get the value:
+  // Synchronize on a successful Future<int> and get the value:
   future = simgrid::simix::kernel_async([] {
     return kernel_wait_until(60).then([](simgrid::kernel::Future<void> f) {
       f.get();

@@ -98,16 +98,16 @@ sub read_link {
 
 sub build_cat_tree {
     my($root,$Cat)=@_;
-    my(@childs)=();
+    my(@children)=();
     my($cat);
 
     foreach $cat (keys %$Cat) {
 	if($$Cat{$cat}{father} eq $root) {
-	    push @childs, build_cat_tree($cat,$Cat);
+	    push @children, build_cat_tree($cat,$Cat);
 	}
 #	print "$$Cat{$cat}{name}\t\t $Cat{$cat}{father}\n";
     }
-    return [$root,@childs];
+    return [$root,@children];
 }
 
 sub build_cat_list {

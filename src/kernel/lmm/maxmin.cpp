@@ -31,7 +31,7 @@ int Element::get_concurrency() const
 {
   // Ignore element with weight less than one (e.g. cross-traffic)
   return (consumption_weight >= 1) ? 1 : 0;
-  // There are other alternatives, but they will change the behaviour of the model..
+  // There are other alternatives, but they will change the behavior of the model..
   // So do not use it unless you want to make a new model.
   // If you do, remember to change the variables concurrency share to reflect it.
   // Potential examples are:
@@ -236,7 +236,7 @@ void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
   modified_ = true;
 
   // Check if this variable already has an active element in this constraint
-  // If it does, substract it from the required slack
+  // If it does, subtract it from the required slack
   int current_share = 0;
   if (var->concurrency_share_ > 1) {
     for (Element& elem : var->cnsts_) {
@@ -597,7 +597,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
       XBT_DEBUG("Min usage: %f, Var(%d).penalty: %f, Var(%d).value: %f ", min_usage, var.rank_, var.sharing_penalty_,
                 var.rank_, var.value_);
 
-      /* Update the usage of contraints where this variable is involved */
+      /* Update the usage of constraints where this variable is involved */
       for (Element& elem : var.cnsts_) {
         Constraint* cnst = elem.constraint;
         if (cnst->sharing_policy_ != s4u::Link::SharingPolicy::FATPIPE) {
@@ -927,7 +927,7 @@ void System::remove_all_modified_set()
   // In effect, the var->visited value will no more be equal to visited counter
   // To be clean, when visited counter has wrapped around, we force these var->visited values so that variables that
   // were in the modified a long long time ago are not wrongly skipped here, which would lead to very nasty bugs
-  // (i.e. not readibily reproducible, and requiring a lot of run time before happening).
+  // (i.e. not readily reproducible, and requiring a lot of run time before happening).
   if (++visited_counter_ == 1) {
     /* the counter wrapped around, reset each variable->visited */
     for (Variable& var : variable_set)

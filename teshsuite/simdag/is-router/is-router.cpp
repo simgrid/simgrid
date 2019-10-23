@@ -29,7 +29,7 @@ int main(int argc, char **argv)
   int it;
   sg_host_t host;
   xbt_dynar_foreach(hosts, it, host) {
-    simgrid::kernel::routing::NetPoint* nc = host->pimpl_netpoint;
+    simgrid::kernel::routing::NetPoint* nc = host->get_netpoint();
     const char *type = "buggy";
     if (nc->is_router())
       type = "router";

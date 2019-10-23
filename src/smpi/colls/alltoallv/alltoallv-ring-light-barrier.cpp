@@ -24,7 +24,7 @@
            Light barriers are inserted between communications in different
            phases.
 
- * Auther: Ahmad Faraj
+ * Author: Ahmad Faraj
 
  ****************************************************************************/
 namespace simgrid{

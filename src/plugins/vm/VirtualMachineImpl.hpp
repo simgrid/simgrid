@@ -82,7 +82,7 @@ class XBT_PRIVATE VMModel : public surf::HostModel {
 public:
   VMModel();
 
-  double next_occuring_event(double now) override;
+  double next_occurring_event(double now) override;
   void update_actions_state(double /*now*/, double /*delta*/) override{};
 };
 }

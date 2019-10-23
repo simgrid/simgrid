@@ -55,7 +55,7 @@ int Coll_allreduce_rdb::allreduce(const void *sbuff, void *rbuff, int count,
       Request::send(rbuff, count, dtype, rank + 1, tag, comm);
 
       // temporarily set the rank to -1 so that this
-      // process does not pariticipate in recursive
+      // process does not participate in recursive
       // doubling
       newrank = -1;
     } else                      // odd
@@ -99,7 +99,7 @@ int Coll_allreduce_rdb::allreduce(const void *sbuff, void *rbuff, int count,
       // recvbuf contains data accumulated so far
 
       // op is commutative OR the order is already right
-      // we assume it is commuttive op
+      // we assume it is commutative op
       //      if (op -> op_commute  || (dst < rank))
       if ((dst < rank)) {
         if(op!=MPI_OP_NULL) op->apply( tmp_buf, rbuff, &count, dtype);

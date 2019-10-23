@@ -21,7 +21,7 @@
 
  * Descrp: Function realizes the alltoall operation using the bruck algorithm.
 
- * Auther: MPICH / modified by Ahmad Faraj
+ * Author: MPICH / modified by Ahmad Faraj
 
  ****************************************************************************/
 

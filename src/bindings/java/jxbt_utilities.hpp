@@ -63,7 +63,7 @@ void jxbt_throw_illegal(JNIEnv* env, const std::string& msg);
 void jxbt_throw_host_not_found(JNIEnv* env, const std::string& invalid_name);
 /** Thrown when looking for a host from name does not lead to anything */
 void jxbt_throw_process_not_found(JNIEnv* env, const std::string& invalid_name);
-/** Thrown when a transfer failure accure while Sending task */
+/** Thrown when a transfer failure occurs while Sending task */
 void jxbt_throw_transfer_failure(JNIEnv* env, const std::string& detail);
 /** Thrown when a host failure occurs while Sending a task*/
 void jxbt_throw_host_failure(JNIEnv* env, const std::string& details);

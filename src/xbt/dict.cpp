@@ -180,7 +180,7 @@ void xbt_dict_set_ext(xbt_dict_t dict, const char* key, int key_len, void* data,
  * @param data the data to add in the dict
  * @param free_ctn unused parameter (kept for compatibility)
  *
- * set the @a data in the structure under the @a key, which is anull terminated string.
+ * set the @a data in the structure under the @a key, which is a null terminated string.
  */
 void xbt_dict_set(xbt_dict_t dict, const char *key, void *data, void_f_pvoid_t free_ctn)
 {

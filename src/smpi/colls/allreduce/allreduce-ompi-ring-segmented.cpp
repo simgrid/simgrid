@@ -268,7 +268,7 @@ Coll_allreduce_ompi_ring_segmented::allreduce(const void *sbuf, void *rbuf, int 
          - wait on block (r + 1)
          - compute on block (r + 1)
          - send block (r + 1) to rank (r + 1)
-         Note that we must be careful when computing the begining of buffers and
+         Note that we must be careful when computing the beginning of buffers and
          for send operations and computation we must compute the exact block size.
       */
       send_to = (rank + 1) % size;

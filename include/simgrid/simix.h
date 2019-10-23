@@ -162,7 +162,7 @@ XBT_ATTRIB_DEPRECATED_v328("Please use Actor::join()") XBT_PUBLIC
 XBT_PUBLIC e_smx_state_t simcall_process_sleep(double duration);
 SG_END_DECL()
 
-/************************** Comunication simcalls *****************************/
+/************************** Communication simcalls ****************************/
 
 #ifdef __cplusplus
 XBT_PUBLIC void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,

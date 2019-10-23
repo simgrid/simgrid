@@ -174,7 +174,7 @@ public:
  *     the corresponding action will enable it (at least this is the idea).
  * \li Enabled elements which variable's weight is non-zero. They are utilized in some LMM functions.
  * \li Active elements which variable's weight is non-zero (i.e. it is enabled) AND its element value is non-zero.
- *     LMM_solve iterates over active elements during resolution, dynamically making them active or unactive.
+ *     LMM_solve iterates over active elements during resolution, dynamically making them active or inactive.
  */
 class XBT_PUBLIC Constraint {
 public:
@@ -275,7 +275,7 @@ public:
   ConstraintLight* cnst_light_;
 
 private:
-  static int next_rank_;  // To give a separate rank_ to each contraint
+  static int next_rank_;  // To give a separate rank_ to each constraint
   int concurrency_limit_; /* The maximum number of variables that may be enabled at any time (stage variables if
                            * necessary) */
   resource::Resource* id_;

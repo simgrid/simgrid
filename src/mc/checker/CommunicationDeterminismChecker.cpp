@@ -119,9 +119,8 @@ namespace mc {
 void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, simgrid::mc::PatternCommunication* comm,
                                                                  int backtracking)
 {
-  simgrid::mc::PatternCommunicationList& list = initial_communications_pattern[process];
-
   if (not backtracking) {
+    simgrid::mc::PatternCommunicationList& list = initial_communications_pattern[process];
     e_mc_comm_pattern_difference_t diff = compare_comm_pattern(list.list[list.index_comm].get(), comm);
 
     if (diff != NONE_DIFF) {

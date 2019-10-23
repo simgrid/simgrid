@@ -90,7 +90,7 @@ static int is_3dmesh(int num, int *i, int *j, int *k)
  * algorithm. Allgather ommunication occurs first in the x dimension, y
  * dimension, and then in the z dimension. Communication in each dimension
  * follows "simple"
- * Auther: Ahmad Faraj
+ * Author: Ahmad Faraj
 ****************************************************************************/
 namespace simgrid{
 namespace smpi{

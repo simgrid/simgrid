@@ -205,7 +205,7 @@ sg_size_t File::write(sg_size_t size, int write_inside)
     if (sg_storage_get_size_used(local_storage_) >= sg_storage_get_size(local_storage_))
       return 0;
     if (write_inside == 0) {
-      /* Substract the part of the file that might disappear from the used sized on the storage element */
+      /* Subtract the part of the file that might disappear from the used sized on the storage element */
       local_storage_->extension<FileSystemStorageExt>()->decr_used_size(size_ - current_position_);
       write_size = local_storage_->write(size);
       local_storage_->extension<FileSystemStorageExt>()->incr_used_size(write_size);
@@ -230,7 +230,7 @@ sg_size_t File::write(sg_size_t size, int write_inside)
     if (sg_disk_get_size_used(local_disk_) >= sg_disk_get_size(local_disk_))
       return 0;
     if (write_inside == 0) {
-      /* Substract the part of the file that might disappear from the used sized on the storage element */
+      /* Subtract the part of the file that might disappear from the used sized on the storage element */
       local_disk_->extension<FileSystemDiskExt>()->decr_used_size(size_ - current_position_);
       write_size = local_disk_->write(size);
       local_disk_->extension<FileSystemDiskExt>()->incr_used_size(write_size);

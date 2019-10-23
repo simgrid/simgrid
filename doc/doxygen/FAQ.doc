@@ -256,7 +256,7 @@ from MBytes, MFlops and seconds to Bytes, Flops and seconds to ease
 people exchanging small messages. We also reworked the route
 descriptions to allow more compact descriptions.
 
-That is why the XML files are versionned using the 'version' attribute
+That is why the XML files are versioned using the 'version' attribute
 of the root tag. Currently, it should read:
 @verbatim
   <platform version="4">

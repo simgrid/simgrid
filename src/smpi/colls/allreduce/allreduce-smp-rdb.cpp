@@ -6,11 +6,10 @@
 
 #include "../colls_private.hpp"
 /* IMPLEMENTED BY PITCH PATARASUK
-   Non-topoloty-specific (however, number of cores/node need to be changed)
+   Non-topology-specific (however, number of cores/node need to be changed)
    all-reduce operation designed for smp clusters
    It uses 2-layer communication: binomial for intra-communication
    and rdb for inter-communication*/
-
 
 /* ** NOTE **
    Use -DMPICH2 if this code does not compile.

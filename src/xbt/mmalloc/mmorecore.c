@@ -50,7 +50,7 @@
                              ? 0                                           \
                              : off)
 
-/** @brief Add memoty to this heap
+/** @brief Add memory to this heap
  *
  *  Get core for the memory region specified by MDP, using SIZE as the
  *  amount to either add to or subtract from the existing region.  Works

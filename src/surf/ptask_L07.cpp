@@ -66,9 +66,9 @@ NetworkL07Model::~NetworkL07Model()
   set_maxmin_system(nullptr);
 }
 
-double HostL07Model::next_occuring_event(double now)
+double HostL07Model::next_occurring_event(double now)
 {
-  double min = HostModel::next_occuring_event_full(now);
+  double min = HostModel::next_occurring_event_full(now);
   for (kernel::resource::Action const& action : *get_started_action_set()) {
     const L07Action& net_action = static_cast<const L07Action&>(action);
     if (net_action.latency_ > 0 && (min < 0 || net_action.latency_ < min)) {

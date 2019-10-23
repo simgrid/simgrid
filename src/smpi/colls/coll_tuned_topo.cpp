@@ -108,14 +108,6 @@ ompi_coll_tuned_topo_build_tree( int fanout,
       return NULL;
     }
 
-    tree->tree_root     = MPI_UNDEFINED;
-    tree->tree_nextsize = MPI_UNDEFINED;
-
-    /*
-     * Set root
-     */
-    tree->tree_root = root;
-
     /*
      * Initialize tree
      */
@@ -207,9 +199,6 @@ ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
       XBT_DEBUG("coll:tuned:topo_build_tree PANIC::out of memory");
       return NULL;
     }
-
-    tree->tree_root     = MPI_UNDEFINED;
-    tree->tree_nextsize = MPI_UNDEFINED;
 
     /*
      * Initialize tree
@@ -327,7 +316,7 @@ ompi_coll_tree_t*
 ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
                                    int root )
 {
-    int childs = 0;
+    int children = 0;
     int rank;
     int size;
     int mask = 1;
@@ -372,22 +361,22 @@ ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
         if( remote >= size ) remote -= size;
         bmtree->tree_prev = remote;
     }
-    /* And now let's fill my childs */
+    /* And now let's fill my children */
     while( mask < size ) {
         remote = (index ^ mask);
         if( remote >= size ) break;
         remote += root;
         if( remote >= size ) remote -= size;
-        if (childs==MAXTREEFANOUT) {
-            XBT_DEBUG("coll:tuned:topo:build_bmtree max fanout incorrect %d needed %d", MAXTREEFANOUT, childs);
+        if (children==MAXTREEFANOUT) {
+            XBT_DEBUG("coll:tuned:topo:build_bmtree max fanout incorrect %d needed %d", MAXTREEFANOUT, children);
             delete bmtree;
             return NULL;
         }
-        bmtree->tree_next[childs] = remote;
+        bmtree->tree_next[children] = remote;
         mask <<= 1;
-        childs++;
+        children++;
     }
-    bmtree->tree_nextsize = childs;
+    bmtree->tree_nextsize = children;
     bmtree->tree_root     = root;
     return bmtree;
 }
@@ -408,7 +397,7 @@ ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
  */
 ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int root)
 {
-    int childs = 0;
+    int children = 0;
     int rank, vrank;
     int size;
     int mask = 1;
@@ -449,17 +438,17 @@ ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int 
         bmtree->tree_prev = (remote + root) % size;
         break;
       } else if (remote < size) {
-        bmtree->tree_next[childs] = (remote + root) % size;
-        childs++;
-        if (childs == MAXTREEFANOUT) {
-          XBT_DEBUG("coll:tuned:topo:build_bmtree max fanout incorrect %d needed %d", MAXTREEFANOUT, childs);
+        bmtree->tree_next[children] = (remote + root) % size;
+        children++;
+        if (children == MAXTREEFANOUT) {
+          XBT_DEBUG("coll:tuned:topo:build_bmtree max fanout incorrect %d needed %d", MAXTREEFANOUT, children);
           delete bmtree;
           return NULL;
         }
       }
       mask <<= 1;
     }
-    bmtree->tree_nextsize = childs;
+    bmtree->tree_nextsize = children;
     bmtree->tree_root     = root;
 
     return bmtree;
@@ -503,8 +492,6 @@ ompi_coll_tuned_topo_build_chain( int fanout,
       fflush(stdout);
       return NULL;
     }
-    chain->tree_root     = MPI_UNDEFINED;
-    chain->tree_nextsize = -1;
     for(i=0;i<fanout;i++) chain->tree_next[i] = -1;
 
     /*

@@ -108,7 +108,7 @@ static int test_launcher(int /*argc*/, char** /*argv*/)
   }
 
   test = 3;
-  // Create a process running sucessive sleeps on a host and turn the host off during the execution of the process.
+  // Create a process running successive sleeps on a host and turn the host off during the execution of the process.
   if (xbt_dynar_search_or_negative(tests, &test) != -1) {
     xbt_die("Test 3 is superseeded by activity-lifecycle");
   }

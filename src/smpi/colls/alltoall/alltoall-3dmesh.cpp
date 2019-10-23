@@ -27,7 +27,7 @@
            y dimension, then in z dimension. Each node then extracts the
            needed data. The communication in all dimension is simple.
 
- * Auther: Ahmad Faraj
+ * Author: Ahmad Faraj
 ****************************************************************************/
 
 static int alltoall_check_is_3dmesh(int num, int *i, int *j, int *k)

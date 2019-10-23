@@ -28,7 +28,7 @@ public:
    */
   virtual void arm() {}
 
-  /** Some simcalls may only be observable under some circomstances.
+  /** Some simcalls may only be observable under some circumstances.
    * Most simcalls are not visible from the MC because they don't have an inspector at all. */
   virtual bool is_visible() { return true; }
   virtual std::string to_string() = 0;

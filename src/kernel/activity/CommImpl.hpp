@@ -69,7 +69,7 @@ expectations of the other side, too. See  */
   actor::ActorImplPtr src_actor_ = nullptr;
   actor::ActorImplPtr dst_actor_ = nullptr;
 
-  /* Data to be transfered */
+  /* Data to be transferred */
   unsigned char* src_buff_ = nullptr;
   unsigned char* dst_buff_ = nullptr;
   size_t src_buff_size_    = 0;

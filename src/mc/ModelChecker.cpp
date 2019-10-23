@@ -171,8 +171,7 @@ static void MC_report_assertion_error()
 bool ModelChecker::handle_message(char* buffer, ssize_t size)
 {
   s_mc_message_t base_message;
-  if (size < (ssize_t) sizeof(base_message))
-    xbt_die("Broken message");
+  xbt_assert(size >= (ssize_t)sizeof(base_message), "Broken message");
   memcpy(&base_message, buffer, sizeof(base_message));
 
   switch(base_message.type) {
@@ -180,8 +179,7 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
   case MC_MESSAGE_IGNORE_HEAP:
     {
     s_mc_message_ignore_heap_t message;
-    if (size != sizeof(message))
-      xbt_die("Broken messsage");
+    xbt_assert(size == sizeof(message), "Broken messsage");
     memcpy(&message, buffer, sizeof(message));
 
     IgnoredHeapRegion region;
@@ -196,8 +194,7 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
   case MC_MESSAGE_UNIGNORE_HEAP:
     {
     s_mc_message_ignore_memory_t message;
-    if (size != sizeof(message))
-      xbt_die("Broken messsage");
+    xbt_assert(size == sizeof(message), "Broken messsage");
     memcpy(&message, buffer, sizeof(message));
     process().unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
     break;
@@ -206,8 +203,7 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
   case MC_MESSAGE_IGNORE_MEMORY:
     {
     s_mc_message_ignore_memory_t message;
-    if (size != sizeof(message))
-      xbt_die("Broken messsage");
+    xbt_assert(size == sizeof(message), "Broken messsage");
     memcpy(&message, buffer, sizeof(message));
     this->process().ignore_region(message.addr, message.size);
     break;
@@ -216,8 +212,7 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
   case MC_MESSAGE_STACK_REGION:
     {
     s_mc_message_stack_region_t message;
-    if (size != sizeof(message))
-      xbt_die("Broken messsage");
+    xbt_assert(size == sizeof(message), "Broken messsage");
     memcpy(&message, buffer, sizeof(message));
     this->process().stack_areas().push_back(message.stack_region);
     }
@@ -226,11 +221,9 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
   case MC_MESSAGE_REGISTER_SYMBOL:
     {
     s_mc_message_register_symbol_t message;
-    if (size != sizeof(message))
-      xbt_die("Broken message");
+    xbt_assert(size == sizeof(message), "Broken message");
     memcpy(&message, buffer, sizeof(message));
-    if (message.callback)
-      xbt_die("Support for client-side function proposition is not implemented.");
+    xbt_assert(not message.callback, "Support for client-side function proposition is not implemented.");
     XBT_DEBUG("Received symbol: %s", message.name);
 
     if (simgrid::mc::property_automaton == nullptr)
@@ -301,10 +294,8 @@ void ModelChecker::handle_waitpid()
     if (pid == -1) {
       if (errno == ECHILD) {
         // No more children:
-        if (this->process().running())
-          xbt_die("Inconsistent state");
-        else
-          break;
+        xbt_assert(not this->process().running(), "Inconsistent state");
+        break;
       } else {
         XBT_ERROR("Could not wait for pid");
         throw simgrid::xbt::errno_error();
@@ -316,8 +307,7 @@ void ModelChecker::handle_waitpid()
       // From PTRACE_O_TRACEEXIT:
 #ifdef __linux__
       if (status>>8 == (SIGTRAP | (PTRACE_EVENT_EXIT<<8))) {
-        if (ptrace(PTRACE_GETEVENTMSG, this->process().pid(), 0, &status) == -1)
-          xbt_die("Could not get exit status");
+        xbt_assert(ptrace(PTRACE_GETEVENTMSG, this->process().pid(), 0, &status) != -1, "Could not get exit status");
         if (WIFSIGNALED(status)) {
           MC_report_crash(status);
           mc_model_checker->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
@@ -334,8 +324,7 @@ void ModelChecker::handle_waitpid()
 #elif defined BSD
         ptrace(PT_CONTINUE, this->process().pid(), (caddr_t)1, WSTOPSIG(status));
 #endif
-        if (errno != 0)
-          xbt_die("Could not PTRACE_CONT");
+        xbt_assert(errno == 0, "Could not PTRACE_CONT");
       }
 
       else if (WIFSIGNALED(status)) {
@@ -377,19 +366,16 @@ void ModelChecker::handle_simcall(Transition const& transition)
 
 bool ModelChecker::checkDeadlock()
 {
-  int res;
-  if ((res = this->process().get_channel().send(MC_MESSAGE_DEADLOCK_CHECK)))
-    xbt_die("Could not check deadlock state");
+  int res = this->process().get_channel().send(MC_MESSAGE_DEADLOCK_CHECK);
+  xbt_assert(res == 0, "Could not check deadlock state");
   s_mc_message_int_t message;
   ssize_t s = mc_model_checker->process().get_channel().receive(message);
-  if (s == -1)
-    xbt_die("Could not receive message");
-  if (s != sizeof(message) || message.type != MC_MESSAGE_DEADLOCK_CHECK_REPLY)
-    xbt_die("Received unexpected message %s (%i, size=%i) "
-      "expected MC_MESSAGE_DEADLOCK_CHECK_REPLY (%i, size=%i)",
-      MC_message_type_name(message.type), (int) message.type, (int) s,
-      (int) MC_MESSAGE_DEADLOCK_CHECK_REPLY, (int) sizeof(message)
-      );
+  xbt_assert(s != -1, "Could not receive message");
+  xbt_assert(s == sizeof(message) && message.type == MC_MESSAGE_DEADLOCK_CHECK_REPLY,
+             "Received unexpected message %s (%i, size=%i) "
+             "expected MC_MESSAGE_DEADLOCK_CHECK_REPLY (%i, size=%i)",
+             MC_message_type_name(message.type), (int)message.type, (int)s, (int)MC_MESSAGE_DEADLOCK_CHECK_REPLY,
+             (int)sizeof(message));
   return message.value != 0;
 }
 

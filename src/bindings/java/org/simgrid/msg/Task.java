@@ -44,7 +44,7 @@ public class Task {
 	 *				This value has to be &ge; 0.
 	 *
 	 * @param bytesAmount		A value of amount of data (in bytes) needed to transfert this task.
-	 *				If 0, then it cannot be transfered with the get() and put() methods.
+	 *				If 0, then it cannot be transferred with the get() and put() methods.
 	 *				This value has to be &ge; 0.
 	 */
 	public Task(String name, double flopsAmount, double bytesAmount) {
@@ -94,8 +94,8 @@ public class Task {
 	 *                        to process the task. If 0, then it cannot be executed
 	 *                        with the execute() method. This value has to be >= 0.
 	 * @param bytesAmount        A value of amount of data (in bytes) needed to transfert
-	 *                        this task. If 0, then it cannot be transfered this task.
-	 *                        If 0, then it cannot be transfered with the get() and put()
+	 *                        this task. If 0, then it cannot be transferred this task.
+	 *                        If 0, then it cannot be transferred with the get() and put()
 	 *                        methods. This value has to be >= 0.
 	 * @exception             IllegalArgumentException if compute duration <0 or message size <0
 	 */

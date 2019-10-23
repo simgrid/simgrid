@@ -54,9 +54,9 @@ double NetworkModel::get_bandwidth_constraint(double rate, double /*bound*/, dou
   return rate;
 }
 
-double NetworkModel::next_occuring_event_full(double now)
+double NetworkModel::next_occurring_event_full(double now)
 {
-  double minRes = Model::next_occuring_event_full(now);
+  double minRes = Model::next_occurring_event_full(now);
 
   for (Action const& action : *get_started_action_set()) {
     const NetworkAction& net_action = static_cast<const NetworkAction&>(action);

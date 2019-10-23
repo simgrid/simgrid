@@ -23,7 +23,7 @@ static void action_blah(simgrid::xbt::ReplayAction& /*args*/)
 action_fun previous_send;
 static void overriding_send(simgrid::xbt::ReplayAction& args)
 {
-  previous_send(args); // Just call the overriden symbol. That's a toy example.
+  previous_send(args); // Just call the overridden symbol. That's a toy example.
 }
 
 int main(int argc, char* argv[])

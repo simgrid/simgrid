@@ -69,7 +69,7 @@ HostContainer::HostContainer(simgrid::s4u::Host const& host, NetZoneContainer* f
 {
   xbt_assert(father, "Only the Root container has no father");
 
-  netpoint_ = host.pimpl_netpoint;
+  netpoint_ = host.get_netpoint();
   xbt_assert(netpoint_, "Element '%s' not found", host.get_cname());
 
   trivaNodeTypes.insert(type_->get_name());

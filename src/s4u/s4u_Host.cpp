@@ -42,8 +42,8 @@ Host::~Host()
   xbt_assert(currently_destroying_, "Please call h->destroy() instead of manually deleting it.");
 
   delete pimpl_;
-  if (pimpl_netpoint != nullptr) // not removed yet by a children class
-    Engine::get_instance()->netpoint_unregister(pimpl_netpoint);
+  if (pimpl_netpoint_ != nullptr) // not removed yet by a children class
+    Engine::get_instance()->netpoint_unregister(pimpl_netpoint_);
   delete pimpl_cpu;
   delete mounts_;
 }
@@ -160,7 +160,7 @@ void Host::route_to(Host* dest, std::vector<Link*>& links, double* latency)
 /** @brief Just like Host::routeTo, but filling an array of link implementations */
 void Host::route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency)
 {
-  kernel::routing::NetZoneImpl::get_global_route(pimpl_netpoint, dest->pimpl_netpoint, links, latency);
+  kernel::routing::NetZoneImpl::get_global_route(pimpl_netpoint_, dest->get_netpoint(), links, latency);
   if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
     XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", get_cname(), dest->get_cname(),
                (latency == nullptr ? -1 : *latency));
@@ -172,7 +172,7 @@ void Host::route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links,
 /** @brief Returns the networking zone englobing that host */
 NetZone* Host::get_englobing_zone()
 {
-  return pimpl_netpoint->get_englobing_zone()->get_iface();
+  return pimpl_netpoint_->get_englobing_zone()->get_iface();
 }
 
 void Host::send_to(Host* dest, double byte_amount)
@@ -386,7 +386,7 @@ xbt_dynar_t sg_hosts_as_dynar()
   std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
 
   auto last = std::remove_if(begin(list), end(list), [](const simgrid::s4u::Host* host) {
-    return not host || not host->pimpl_netpoint || not host->pimpl_netpoint->is_host();
+    return not host || not host->get_netpoint() || not host->get_netpoint()->is_host();
   });
   std::sort(begin(list), last,
             [](const simgrid::s4u::Host* a, const simgrid::s4u::Host* b) { return a->get_name() < b->get_name(); });
@@ -600,7 +600,7 @@ double sg_host_route_latency(sg_host_t from, sg_host_t to)
   return res;
 }
 /**
- * @brief Find the bandwitdh of the route between two hosts
+ * @brief Find the bandwidth of the route between two hosts
  *
  * @param from where from
  * @param to where to

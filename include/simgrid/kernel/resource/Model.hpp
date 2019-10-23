@@ -70,9 +70,22 @@ public:
    * @param now The current time of the simulation
    * @return The delta of time till the next action will finish
    */
-  virtual double next_occuring_event(double now);
-  virtual double next_occuring_event_lazy(double now);
-  virtual double next_occuring_event_full(double now);
+  virtual double next_occurring_event(double now);
+  virtual double next_occurring_event_lazy(double now);
+  virtual double next_occurring_event_full(double now);
+
+  XBT_ATTRIB_DEPRECATED_v329("Please use next_occurring_event()") double next_occuring_event(double now)
+  {
+    return next_occurring_event(now);
+  }
+  XBT_ATTRIB_DEPRECATED_v329("Please use next_occurring_event_lazy()") double next_occuring_event_lazy(double now)
+  {
+    return next_occurring_event_lazy(now);
+  }
+  XBT_ATTRIB_DEPRECATED_v329("Please use next_occurring_event_full()") double next_occuring_event_full(double now)
+  {
+    return next_occurring_event_full(now);
+  }
 
 private:
   Action* extract_action(Action::StateSet* list);
@@ -96,7 +109,12 @@ public:
    * The only model that is not is ns-3: computing the next timestamp moves the model up to that point,
    * so we need to call it only when the next timestamp of other sources is computed.
    */
-  virtual bool next_occuring_event_is_idempotent() { return true; }
+  virtual bool next_occurring_event_is_idempotent() { return true; }
+
+  XBT_ATTRIB_DEPRECATED_v329("Please use next_occurring_event_is_idempotent()") bool next_occuring_event_is_idempotent()
+  {
+    return next_occurring_event_is_idempotent();
+  }
 
 private:
   std::unique_ptr<lmm::System> maxmin_system_;
