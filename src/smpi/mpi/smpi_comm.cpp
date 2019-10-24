@@ -340,12 +340,12 @@ void Comm::unref(Comm* comm){
 
 MPI_Comm Comm::find_intra_comm(int * leader){
   //get the indices of all processes sharing the same simix host
-  auto actor_list         = sg_host_self()->pimpl_->get_all_actors();
+  auto& actor_list        = sg_host_self()->pimpl_->actor_list_;
   int intra_comm_size     = 0;
   int min_index           = INT_MAX; // the minimum index will be the leader
   for (auto& actor : actor_list) {
-    int index = actor->get_pid();
-    if (this->group()->rank(actor.get()) != MPI_UNDEFINED) { // Is this process in the current group?
+    int index = actor.get_pid();
+    if (this->group()->rank(actor.ciface()) != MPI_UNDEFINED) { // Is this process in the current group?
       intra_comm_size++;
       if (index < min_index)
         min_index = index;
@@ -355,8 +355,8 @@ MPI_Comm Comm::find_intra_comm(int * leader){
   MPI_Group group_intra = new  Group(intra_comm_size);
   int i = 0;
   for (auto& actor : actor_list) {
-    if (this->group()->rank(actor.get()) != MPI_UNDEFINED) {
-      group_intra->set_mapping(actor.get(), i);
+    if (this->group()->rank(actor.ciface()) != MPI_UNDEFINED) {
+      group_intra->set_mapping(actor.ciface(), i);
       i++;
     }
   }

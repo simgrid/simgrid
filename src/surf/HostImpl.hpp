@@ -43,14 +43,9 @@ public:
  * @details An host represents a machine with a aggregation of a Cpu, a RoutingEdge and a Storage
  */
 class XBT_PRIVATE HostImpl : public simgrid::surf::PropertyHolder {
-  typedef boost::intrusive::list<
-      kernel::actor::ActorImpl,
-      boost::intrusive::member_hook<kernel::actor::ActorImpl, boost::intrusive::list_member_hook<>,
-                                    &kernel::actor::ActorImpl::host_actor_list_hook>>
-      ActorList;
-  ActorList actor_list_;
 
 public:
+  friend simgrid::vm::VirtualMachineImpl;
   explicit HostImpl(s4u::Host* host);
   virtual ~HostImpl();
 
@@ -73,7 +68,14 @@ public:
   void add_actor(kernel::actor::ActorImpl* actor) { actor_list_.push_back(*actor); }
   void remove_actor(kernel::actor::ActorImpl* actor) { xbt::intrusive_erase(actor_list_, *actor); }
 
-  // FIXME: make this private
+  typedef boost::intrusive::list<
+      kernel::actor::ActorImpl,
+      boost::intrusive::member_hook<kernel::actor::ActorImpl, boost::intrusive::list_member_hook<>,
+                                    &kernel::actor::ActorImpl::host_actor_list_hook>>
+      ActorList;
+
+  // FIXME: make these private
+  ActorList actor_list_;
   std::vector<kernel::actor::ProcessArg*> actors_at_boot_;
 };
 }
