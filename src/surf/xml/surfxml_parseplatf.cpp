@@ -107,9 +107,7 @@ void parse_platform_file(const std::string& file)
 
     simgrid::s4u::Host* host = simgrid::s4u::Host::by_name_or_null(elm.second);
     xbt_assert(host, "Host %s undefined", elm.second.c_str());
-    simgrid::kernel::resource::Cpu* cpu = host->pimpl_cpu;
-
-    cpu->set_state_profile(profile);
+    host->set_state_profile(profile);
   }
 
   for (auto const& elm : trace_connect_list_host_speed) {
@@ -118,9 +116,7 @@ void parse_platform_file(const std::string& file)
 
     simgrid::s4u::Host* host = simgrid::s4u::Host::by_name_or_null(elm.second);
     xbt_assert(host, "Host %s undefined", elm.second.c_str());
-    simgrid::kernel::resource::Cpu* cpu = host->pimpl_cpu;
-
-    cpu->set_speed_profile(profile);
+    host->set_speed_profile(profile);
   }
 
   for (auto const& elm : trace_connect_list_link_avail) {
