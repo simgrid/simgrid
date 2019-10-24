@@ -22,7 +22,6 @@ constexpr int BLOCK_SIZE              = 16384;
 /** Number of blocks asked by each request */
 constexpr unsigned long BLOCKS_REQUESTED = 2UL;
 
-constexpr bool ENABLE_END_GAME_MODE = true;
 constexpr double SLEEP_DURATION     = 1.0;
 #define BITS_TO_BYTES(x) (((x) / 8 + (x) % 8) ? 1 : 0)
 
@@ -369,10 +368,6 @@ void Peer::handleMessage()
       XBT_DEBUG(" \t for piece %d (%d,%d)", message->piece, message->block_index,
                 message->block_index + message->block_length);
       xbt_assert(not remote_peer->choked_download);
-      xbt_assert(remote_peer->am_interested || ENABLE_END_GAME_MODE,
-                 "Can't received a piece if I'm not interested without end-game mode!"
-                 "piece (%d) bitfield (%u) remote bitfield (%u)",
-                 message->piece, bitfield_, remote_peer->bitfield);
       xbt_assert(not remote_peer->choked_download, "Can't received a piece if I'm choked !");
       xbt_assert((message->piece >= 0 && static_cast<unsigned int>(message->piece) < FILE_PIECES),
                  "Wrong piece received");
@@ -394,7 +389,6 @@ void Peer::handleMessage()
         }
       } else {
         XBT_DEBUG("However, we already have it");
-        xbt_assert(ENABLE_END_GAME_MODE, "Should not happen because we don't use end game mode !");
         requestNewPieceTo(remote_peer);
       }
       break;
@@ -444,8 +438,6 @@ int Peer::selectPieceToDownload(Connection* remote_peer)
 
   // end game mode
   if (countPieces(current_pieces) >= (FILE_PIECES - countPieces(bitfield_)) && isInterestedBy(remote_peer)) {
-    if (not ENABLE_END_GAME_MODE)
-      return -1;
     int nb_interesting_pieces = 0;
     // compute the number of interesting pieces
     for (unsigned int i = 0; i < FILE_PIECES; i++)

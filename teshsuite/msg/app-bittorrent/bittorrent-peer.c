@@ -26,7 +26,6 @@ static const unsigned long int FILE_SIZE = FILE_PIECES * PIECES_BLOCKS * BLOCK_S
 /** Number of blocks asked by each request */
 #define BLOCKS_REQUESTED 2
 
-#define ENABLE_END_GAME_MODE 1
 #define SLEEP_DURATION 1
 
 int count_pieces(unsigned int bitfield)
@@ -390,10 +389,6 @@ void handle_message(peer_t peer, msg_task_t task)
       XBT_DEBUG(" \t for piece %d (%d,%d)", message->index, message->block_index,
                 message->block_index + message->block_length);
       xbt_assert(!remote_peer->choked_download);
-      xbt_assert(remote_peer->am_interested || ENABLE_END_GAME_MODE,
-                 "Can't received a piece if I'm not interested wihtout end-game mode!"
-                 "piece (%d) bitfield(%u) remote bitfield(%u)",
-                 message->index, peer->bitfield, remote_peer->bitfield);
       xbt_assert(remote_peer->choked_download != 1, "Can't received a piece if I'm choked !");
       xbt_assert((message->index >= 0 && message->index < FILE_PIECES), "Wrong piece received");
       // TODO: Execute à computation.
@@ -417,7 +412,6 @@ void handle_message(peer_t peer, msg_task_t task)
         }
       } else {
         XBT_DEBUG("However, we already have it");
-        xbt_assert(ENABLE_END_GAME_MODE, "Should not happen because we don't use end game mode !");
         request_new_piece_to_peer(peer, remote_peer);
       }
       break;
@@ -485,9 +479,6 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
   // end game mode
   if (count_pieces(peer->current_pieces) >= (FILE_PIECES - count_pieces(peer->bitfield)) &&
       (is_interested(peer, remote_peer) != 0)) {
-#if ENABLE_END_GAME_MODE == 0
-    return -1;
-#endif
     int nb_interesting_pieces = 0;
     // compute the number of interesting pieces
     for (int i = 0; i < FILE_PIECES; i++) {
