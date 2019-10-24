@@ -115,8 +115,8 @@ void Actor::set_auto_restart(bool autorestart)
     pimpl_->set_auto_restart(autorestart);
 
     kernel::actor::ProcessArg* arg = new kernel::actor::ProcessArg(pimpl_->get_host(), pimpl_);
-    XBT_DEBUG("Adding Process %s to the actors_at_boot_ list of Host %s", arg->name.c_str(), arg->host->get_cname());
-    pimpl_->get_host()->pimpl_->actors_at_boot_.emplace_back(arg);
+    XBT_DEBUG("Adding %s to the actors_at_boot_ list of Host %s", arg->name.c_str(), arg->host->get_cname());
+    pimpl_->get_host()->pimpl_->add_actor_at_boot(arg);
   });
 }
 
