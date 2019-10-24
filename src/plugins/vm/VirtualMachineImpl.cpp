@@ -200,13 +200,13 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
     throw VmFailureException(XBT_THROW_POINT, xbt::string_printf("Actor %s cannot suspend the VM %s in which it runs",
                                                                  issuer->get_cname(), piface_->get_cname()));
 
-  XBT_DEBUG("suspend VM(%s), where %zu actors exist", piface_->get_cname(), actor_list_.size());
+  XBT_DEBUG("suspend VM(%s), where %zu actors exist", piface_->get_cname(), get_actor_count());
 
   action_->suspend();
 
-  for (auto& actor : actor_list_) {
-    XBT_DEBUG("suspend %s", actor.get_cname());
-    actor.suspend();
+  for (auto& actor : get_all_actors()) {
+    XBT_DEBUG("suspend %s", actor->get_cname());
+    actor->suspend();
   }
 
   XBT_DEBUG("suspend all actors on the VM done done");
@@ -220,13 +220,13 @@ void VirtualMachineImpl::resume()
     throw VmFailureException(XBT_THROW_POINT,
                              xbt::string_printf("Cannot resume VM %s: it was not suspended", piface_->get_cname()));
 
-  XBT_DEBUG("Resume VM %s, containing %zu actors.", piface_->get_cname(), actor_list_.size());
+  XBT_DEBUG("Resume VM %s, containing %zu actors.", piface_->get_cname(), get_actor_count());
 
   action_->resume();
 
-  for (auto& actor : actor_list_) {
-    XBT_DEBUG("resume %s", actor.get_cname());
-    actor.resume();
+  for (auto& actor : get_all_actors()) {
+    XBT_DEBUG("resume %s", actor->get_cname());
+    actor->resume();
   }
 
   vm_state_ = s4u::VirtualMachine::state::RUNNING;
@@ -259,12 +259,12 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
     XBT_VERB("Shutting down the VM %s even if it's not running but %s", piface_->get_cname(), stateName);
   }
 
-  XBT_DEBUG("shutdown VM %s, that contains %zu actors", piface_->get_cname(), actor_list_.size());
+  XBT_DEBUG("shutdown VM %s, that contains %zu actors", piface_->get_cname(), get_actor_count());
 
-  for (auto& actor : actor_list_) {
-    XBT_DEBUG("kill %s@%s on behalf of %s which shutdown that VM.", actor.get_cname(), actor.get_host()->get_cname(),
+  for (auto& actor : get_all_actors()) {
+    XBT_DEBUG("kill %s@%s on behalf of %s which shutdown that VM.", actor->get_cname(), actor->get_host()->get_cname(),
               issuer->get_cname());
-    issuer->kill(&actor);
+    issuer->kill(actor->get_impl());
   }
 
   set_state(s4u::VirtualMachine::state::DESTROYED);
