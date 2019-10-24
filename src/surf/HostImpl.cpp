@@ -81,9 +81,9 @@ HostImpl::HostImpl(s4u::Host* host) : piface_(host)
 HostImpl::~HostImpl()
 {
   /* All processes should be gone when the host is turned off (by the end of the simulation). */
-  if (not process_list_.empty()) {
+  if (not actor_list_.empty()) {
     std::string msg = std::string("Shutting down host, but it's not empty:");
-    for (auto const& process : process_list_)
+    for (auto const& process : actor_list_)
       msg += "\n\t" + std::string(process.get_name());
 
     SIMIX_display_process_status();
@@ -121,8 +121,8 @@ void HostImpl::turn_on()
 /** Kill all actors hosted here */
 void HostImpl::turn_off()
 {
-  if (not process_list_.empty()) {
-    for (auto& actor : process_list_) {
+  if (not actor_list_.empty()) {
+    for (auto& actor : actor_list_) {
       XBT_DEBUG("Killing Actor %s@%s on behalf of %s which turned off that host.", actor.get_cname(),
                 actor.get_host()->get_cname(), SIMIX_process_self()->get_cname());
       SIMIX_process_self()->kill(&actor);
@@ -142,13 +142,13 @@ void HostImpl::turn_off()
 std::vector<s4u::ActorPtr> HostImpl::get_all_actors()
 {
   std::vector<s4u::ActorPtr> res;
-  for (auto& actor : process_list_)
+  for (auto& actor : actor_list_)
     res.push_back(actor.ciface());
   return res;
 }
 size_t HostImpl::get_actor_count()
 {
-  return process_list_.size();
+  return actor_list_.size();
 }
 
 std::vector<s4u::Disk*> HostImpl::get_disks()

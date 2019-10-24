@@ -68,11 +68,11 @@ public:
   typedef boost::intrusive::list<
       kernel::actor::ActorImpl,
       boost::intrusive::member_hook<kernel::actor::ActorImpl, boost::intrusive::list_member_hook<>,
-                                    &kernel::actor::ActorImpl::host_process_list_hook>>
+                                    &kernel::actor::ActorImpl::host_actor_list_hook>>
       ActorList;
 
   // FIXME: make these private
-  ActorList process_list_;
+  ActorList actor_list_;
   std::vector<kernel::actor::ProcessArg*> actors_at_boot_;
 };
 }
