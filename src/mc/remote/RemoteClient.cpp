@@ -407,14 +407,9 @@ std::string RemoteClient::read_string(RemotePtr<char> address) const
 
   while (1) {
     ssize_t c = pread(this->memory_file, res.data() + off, res.size() - off, (off_t)address.address() + off);
-    if (c == -1) {
-      if (errno == EINTR)
-        continue;
-      else
-        xbt_die("Could not read from from remote process");
-    }
-    if (c == 0)
-      xbt_die("Could not read string from remote process");
+    if (c == -1 && errno == EINTR)
+      continue;
+    xbt_assert(c > 0, "Could not read string from remote process");
 
     void* p = memchr(res.data() + off, '\0', c);
     if (p)
