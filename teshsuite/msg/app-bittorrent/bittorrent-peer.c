@@ -577,15 +577,15 @@ void update_choked_peers(peer_t peer)
   // update the current round
   peer->round = (peer->round + 1) % 3;
   char* key;
-  char* key_choked         = NULL;
-  connection_t peer_chosen = NULL;
-  connection_t peer_choked = NULL;
+  char* choked_key         = NULL;
+  connection_t chosen_peer = NULL;
+  connection_t choked_peer = NULL;
   // remove a peer from the list
   xbt_dict_cursor_t cursor = NULL;
   xbt_dict_cursor_first(peer->active_peers, &cursor);
   if (!xbt_dict_is_empty(peer->active_peers)) {
-    key_choked  = xbt_dict_cursor_get_key(cursor);
-    peer_choked = xbt_dict_cursor_get_data(cursor);
+    choked_key  = xbt_dict_cursor_get_key(cursor);
+    choked_peer = xbt_dict_cursor_get_data(cursor);
   }
   xbt_dict_cursor_free(&cursor);
 
@@ -598,7 +598,7 @@ void update_choked_peers(peer_t peer)
       if (connection->last_unchoke < unchoke_time && (connection->interested != 0) &&
           (connection->choked_upload != 0)) {
         unchoke_time = connection->last_unchoke;
-        peer_chosen  = connection;
+        chosen_peer  = connection;
       }
     }
   } else {
@@ -615,19 +615,19 @@ void update_choked_peers(peer_t peer)
         connection_t connection;
         xbt_dict_foreach (peer->peers, cursor, key, connection) {
           if (i == id_chosen) {
-            peer_chosen = connection;
+            chosen_peer = connection;
             break;
           }
           i++;
         }
         xbt_dict_cursor_free(&cursor);
-        xbt_assert(peer_chosen != NULL, "A peer should have been selected at this point");
-        if ((peer_chosen->interested == 0) || (peer_chosen->choked_upload == 0))
-          peer_chosen = NULL;
+        xbt_assert(chosen_peer != NULL, "A peer should have been selected at this point");
+        if ((chosen_peer->interested == 0) || (chosen_peer->choked_upload == 0))
+          chosen_peer = NULL;
         else
           XBT_DEBUG("Nothing to do, keep going");
         j++;
-      } while (peer_chosen == NULL && j < MAXIMUM_PEERS);
+      } while (chosen_peer == NULL && j < MAXIMUM_PEERS);
     } else {
       // Use the "fastest download" policy.
       connection_t connection;
@@ -635,34 +635,34 @@ void update_choked_peers(peer_t peer)
       xbt_dict_foreach (peer->peers, cursor, key, connection) {
         if (connection->peer_speed > fastest_speed && (connection->choked_upload != 0) &&
             (connection->interested != 0)) {
-          peer_chosen   = connection;
+          chosen_peer   = connection;
           fastest_speed = connection->peer_speed;
         }
       }
     }
   }
 
-  if (peer_chosen != NULL)
-    XBT_DEBUG("(%d) update_choked peers unchoked (%d) ; int (%d) ; choked (%d) ", peer->id, peer_chosen->id,
-              peer_chosen->interested, peer_chosen->choked_upload);
+  if (chosen_peer != NULL)
+    XBT_DEBUG("(%d) update_choked peers unchoked (%d) ; int (%d) ; choked (%d) ", peer->id, chosen_peer->id,
+              chosen_peer->interested, chosen_peer->choked_upload);
 
-  if (peer_choked != peer_chosen) {
-    if (peer_choked != NULL) {
-      xbt_assert((!peer_choked->choked_upload), "Tries to choked a choked peer");
-      peer_choked->choked_upload = 1;
-      xbt_assert((*((int*)key_choked) == peer_choked->id));
-      update_active_peers_set(peer, peer_choked);
-      XBT_DEBUG("(%d) Sending a CHOKE to %d", peer->id, peer_choked->id);
-      send_choked(peer, peer_choked->mailbox);
+  if (choked_peer != chosen_peer) {
+    if (choked_peer != NULL) {
+      xbt_assert((!choked_peer->choked_upload), "Tries to choked a choked peer");
+      choked_peer->choked_upload = 1;
+      xbt_assert((*((int*)choked_key) == choked_peer->id));
+      update_active_peers_set(peer, choked_peer);
+      XBT_DEBUG("(%d) Sending a CHOKE to %d", peer->id, choked_peer->id);
+      send_choked(peer, choked_peer->mailbox);
     }
-    if (peer_chosen != NULL) {
-      xbt_assert((peer_chosen->choked_upload), "Tries to unchoked an unchoked peer");
-      peer_chosen->choked_upload = 0;
-      xbt_dict_set_ext(peer->active_peers, (char*)&peer_chosen->id, sizeof(int), peer_chosen, NULL);
-      peer_chosen->last_unchoke = MSG_get_clock();
-      XBT_DEBUG("(%d) Sending a UNCHOKE to %d", peer->id, peer_chosen->id);
-      update_active_peers_set(peer, peer_chosen);
-      send_unchoked(peer, peer_chosen->mailbox);
+    if (chosen_peer != NULL) {
+      xbt_assert((chosen_peer->choked_upload), "Tries to unchoked an unchoked peer");
+      chosen_peer->choked_upload = 0;
+      xbt_dict_set_ext(peer->active_peers, (char*)&chosen_peer->id, sizeof(int), chosen_peer, NULL);
+      chosen_peer->last_unchoke = MSG_get_clock();
+      XBT_DEBUG("(%d) Sending a UNCHOKE to %d", peer->id, chosen_peer->id);
+      update_active_peers_set(peer, chosen_peer);
+      send_unchoked(peer, chosen_peer->mailbox);
     }
   }
 }
