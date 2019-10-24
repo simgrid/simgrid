@@ -46,14 +46,6 @@ typedef enum {
 } e_smx_state_t;
 /** @} */
 
-/* ****************************** Process *********************************** */
-
-typedef enum {
-  SMX_EXIT_SUCCESS = 0,
-  SMX_EXIT_FAILURE = 1
-} smx_process_exit_status_t;
-/** @} */
-
 /******************************* Networking ***********************************/
 extern unsigned smx_context_stack_size;
 extern unsigned smx_context_guard_size;

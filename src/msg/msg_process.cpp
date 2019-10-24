@@ -174,6 +174,5 @@ int MSG_process_get_number()
  */
 void MSG_process_on_exit(int_f_int_pvoid_t fun, void* data)
 {
-  simgrid::s4u::this_actor::on_exit(
-      [fun, data](bool failed) { fun(failed ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS, data); });
+  simgrid::s4u::this_actor::on_exit([fun, data](bool failed) { fun(failed ? 1 /*FAILURE*/ : 0 /*SUCCESS*/, data); });
 }
