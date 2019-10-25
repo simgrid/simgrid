@@ -45,7 +45,7 @@ Actor* Actor::self()
 }
 ActorPtr Actor::init(const std::string& name, s4u::Host* host)
 {
-  smx_actor_t self = SIMIX_process_self();
+  kernel::actor::ActorImpl* self = SIMIX_process_self();
   kernel::actor::ActorImpl* actor =
       kernel::actor::simcall([self, &name, host] { return self->init(name, host).get(); });
   return actor->iface();
@@ -59,7 +59,7 @@ ActorPtr Actor::start(const std::function<void()>& code)
 
 ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::function<void()>& code)
 {
-  smx_actor_t self = SIMIX_process_self();
+  kernel::actor::ActorImpl* self = SIMIX_process_self();
   kernel::actor::ActorImpl* actor =
       kernel::actor::simcall([self, &name, host, &code] { return self->init(name, host)->start(code); });
 
@@ -95,8 +95,8 @@ void Actor::join()
 
 void Actor::join(double timeout)
 {
-  auto issuer = SIMIX_process_self();
-  auto target = pimpl_;
+  kernel::actor::ActorImpl* issuer = SIMIX_process_self();
+  kernel::actor::ActorImpl* target = pimpl_;
   kernel::actor::simcall_blocking<void>([issuer, target, timeout] {
     if (target->finished_) {
       // The joined process is already finished, just wake up the issuer right away
@@ -181,8 +181,8 @@ aid_t Actor::get_ppid() const
 
 void Actor::suspend()
 {
-  auto issuer = SIMIX_process_self();
-  auto target = pimpl_;
+  kernel::actor::ActorImpl* issuer = SIMIX_process_self();
+  kernel::actor::ActorImpl* target = pimpl_;
   s4u::Actor::on_suspend(*this);
   kernel::actor::simcall_blocking<void>([issuer, target]() {
     target->suspend();
@@ -217,10 +217,10 @@ double Actor::get_kill_time()
 
 void Actor::kill()
 {
-  kernel::actor::ActorImpl* process = SIMIX_process_self();
-  kernel::actor::simcall([this, process] {
+  kernel::actor::ActorImpl* self = SIMIX_process_self();
+  kernel::actor::simcall([this, self] {
     xbt_assert(pimpl_ != simix_global->maestro_process, "Killing maestro is a rather bad idea");
-    process->kill(pimpl_);
+    self->kill(pimpl_);
   });
 }
 
@@ -228,9 +228,9 @@ void Actor::kill()
 
 ActorPtr Actor::by_pid(aid_t pid)
 {
-  kernel::actor::ActorImpl* process = SIMIX_process_from_PID(pid);
-  if (process != nullptr)
-    return process->iface();
+  kernel::actor::ActorImpl* actor = SIMIX_process_from_PID(pid);
+  if (actor != nullptr)
+    return actor->iface();
   else
     return ActorPtr();
 }
@@ -277,8 +277,8 @@ namespace this_actor {
  */
 bool is_maestro()
 {
-  kernel::actor::ActorImpl* process = SIMIX_process_self();
-  return process == nullptr || process == simix_global->maestro_process;
+  kernel::actor::ActorImpl* self = SIMIX_process_self();
+  return self == nullptr || self == simix_global->maestro_process;
 }
 
 void sleep_for(double duration)

@@ -654,8 +654,8 @@ void sg_host_get_actor_list(sg_host_t host, xbt_dynar_t whereto)
 
 sg_host_t sg_host_self()
 {
-  smx_actor_t process = SIMIX_process_self();
-  return (process == nullptr) ? nullptr : process->get_host();
+  simgrid::kernel::actor::ActorImpl* self = SIMIX_process_self();
+  return (self == nullptr) ? nullptr : self->get_host();
 }
 
 /* needs to be public and without simcall for exceptions and logging events */
