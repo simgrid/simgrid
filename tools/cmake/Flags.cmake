@@ -49,8 +49,11 @@ if(enable_compile_warnings)
 
   if(CMAKE_Fortran_COMPILER_ID MATCHES "GCC|PGI")
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall")
-  endif()
-  if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+  elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Flang")
+    # flang >= 7 has a bug with common and debug flags. Ignore cmake-added -g in this case.
+    # https://github.com/flang-compiler/flang/issues/671
+    set(CMAKE_Fortran_FLAGS "-Wall")
+  elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all")
   endif()
   set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
