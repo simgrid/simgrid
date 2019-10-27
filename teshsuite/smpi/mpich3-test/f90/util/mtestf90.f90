@@ -14,6 +14,7 @@
         logical flag
         logical dbgflag
         integer wrank
+        common /mtest/ dbgflag, wrank
 
         call MPI_Initialized( flag, ierr )
         if (.not. flag) then
