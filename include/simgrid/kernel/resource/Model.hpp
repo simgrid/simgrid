@@ -74,17 +74,17 @@ public:
   virtual double next_occurring_event_lazy(double now);
   virtual double next_occurring_event_full(double now);
 
-  XBT_ATTRIB_DEPRECATED_v329("Please use next_occurring_event()") virtual double next_occuring_event(double now)
+  XBT_ATTRIB_DEPRECATED_v329("Please use next_occurring_event()") virtual double next_occuring_event(double now) final
   {
     return next_occurring_event(now);
   }
   XBT_ATTRIB_DEPRECATED_v329("Please use next_occurring_event_lazy()") virtual double next_occuring_event_lazy(
-      double now)
+      double now) final
   {
     return next_occurring_event_lazy(now);
   }
   XBT_ATTRIB_DEPRECATED_v329("Please use next_occurring_event_full()") virtual double next_occuring_event_full(
-      double now)
+      double now) final
   {
     return next_occurring_event_full(now);
   }
@@ -114,7 +114,7 @@ public:
   virtual bool next_occurring_event_is_idempotent() { return true; }
 
   XBT_ATTRIB_DEPRECATED_v329(
-      "Please use next_occurring_event_is_idempotent()") virtual bool next_occuring_event_is_idempotent()
+      "Please use next_occurring_event_is_idempotent()") virtual bool next_occuring_event_is_idempotent() final
   {
     return next_occurring_event_is_idempotent();
   }
