@@ -20,6 +20,8 @@ SG_BEGIN_DECL()
     You should not access directly to the fields of the pointed structure, but always use the provided API to interact
     with actors.
  */
+XBT_PUBLIC sg_actor_t sg_actor_init(const char* name, sg_host_t host);
+XBT_PUBLIC void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char** argv);
 XBT_PUBLIC aid_t sg_actor_get_PID(sg_actor_t actor);
 XBT_PUBLIC aid_t sg_actor_get_PPID(sg_actor_t actor);
 XBT_PUBLIC sg_actor_t sg_actor_by_PID(aid_t pid);

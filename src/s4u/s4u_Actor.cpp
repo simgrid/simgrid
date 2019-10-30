@@ -43,6 +43,7 @@ Actor* Actor::self()
 
   return self_context->get_actor()->ciface();
 }
+
 ActorPtr Actor::init(const std::string& name, s4u::Host* host)
 {
   kernel::actor::ActorImpl* self = SIMIX_process_self();
@@ -439,6 +440,19 @@ void migrate(Host* new_host)
 } // namespace simgrid
 
 /* **************************** Public C interface *************************** */
+
+sg_actor_t sg_actor_init(const char* name, sg_host_t host)
+{
+  return simgrid::s4u::Actor::init(name, host).get();
+}
+
+void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char** argv)
+{
+  simgrid::simix::ActorCode function;
+  if (code)
+    function = simgrid::xbt::wrap_main(code, argc, static_cast<const char* const*>(argv));
+  actor->start(std::move(function));
+}
 
 /** @ingroup m_actor_management
  * @brief Returns the process ID of @a actor.
