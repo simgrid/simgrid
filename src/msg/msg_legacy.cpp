@@ -135,6 +135,30 @@ msg_error_t MSG_process_sleep(double duration)
   }
 }
 
+/** @brief Returns the user data of a process.
+ *
+ * This function checks whether @a process is a valid pointer and returns the user data associated to this process.
+ */
+void* MSG_process_get_data(msg_process_t process)
+{
+  xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
+
+  /* get from SIMIX the MSG process data, and then the user data */
+  return sg_actor_data(process);
+}
+
+/** @brief Sets the user data of a process.
+ *
+ * This function checks whether @a process is a valid pointer and sets the user data associated to this process.
+ */
+msg_error_t MSG_process_set_data(msg_process_t process, void* data)
+{
+  xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
+  sg_actor_data_set(process, data);
+
+  return MSG_OK;
+}
+
 msg_process_t MSG_process_attach(const char* name, void* data, msg_host_t host, xbt_dict_t properties)
 {
   return sg_actor_attach(name, data, host, properties);

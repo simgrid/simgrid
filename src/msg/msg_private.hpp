@@ -101,16 +101,6 @@ public:
   msg_error_t get_status() { return status_; }
 };
 
-class ActorUserData {
-  void* userdata_      = nullptr;
-
-public:
-  static xbt::Extension<simgrid::s4u::Actor, ActorUserData> EXTENSION_ID;
-
-  void set_user_data(void* data) { userdata_ = data; }
-  void* get_user_data() { return userdata_; }
-};
-
 } // namespace msg
 } // namespace simgrid
 

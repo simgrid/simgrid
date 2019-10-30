@@ -17,7 +17,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kerne
 bool MSG_Global_t::debug_multiple_use = false;
 
 MSG_Global_t* msg_global = nullptr;
-simgrid::xbt::Extension<simgrid::s4u::Actor, simgrid::msg::ActorUserData> simgrid::msg::ActorUserData::EXTENSION_ID;
 
 static void MSG_exit();
 
@@ -43,7 +42,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
     msg_global->sent_msg = 0;
     msg_global->task_copy_callback = nullptr;
     msg_global->process_data_cleanup = nullptr;
-    MSG_process_userdata_init();
   }
 
   if(MC_is_active()){
