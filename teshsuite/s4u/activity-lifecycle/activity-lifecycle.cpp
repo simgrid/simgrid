@@ -122,21 +122,28 @@ static void test_sleep_restart_middle()
   sleeper5->get_host()->turn_on();
   XBT_INFO("Test %s is ending", __func__);
 }
+
 static void test_sleep_restart_end()
 {
   XBT_INFO("%s: Launch a sleep(5), and restart its host right when it stops", __func__);
   bool sleeper_done = false;
 
   simgrid::s4u::Actor::create("sleep5_restarted", all_hosts[1], [&sleeper_done]() {
-    assert_exit(true, 5);
+    assert_exit(false, 5);
     simgrid::s4u::this_actor::sleep_for(5);
-    all_hosts[1]->turn_off(); // kill the host right at the end of this sleep and of this actor
     sleeper_done = true;
   });
+  simgrid::s4u::Actor::create("killer", all_hosts[0], []() {
+    simgrid::s4u::this_actor::sleep_for(5);
+    XBT_INFO("Killer!");
+    all_hosts[1]->turn_off();
+    all_hosts[1]->turn_on();
+  });
   simgrid::s4u::this_actor::sleep_for(9);
-  xbt_assert(sleeper_done, "Not sure of how the actor survived the shutdown of its host.");
-  all_hosts[1]->turn_on();
+  xbt_assert(sleeper_done,
+             "Restarted actor was already dead in the scheduling round during which the host_off simcall was issued");
 }
+
 static void test_exec()
 {
   XBT_INFO("%s: Launch a execute(5s), and let it proceed", __func__);
@@ -210,6 +217,7 @@ static void test_exec_restart_middle()
   exec5->get_host()->turn_on();
   XBT_INFO("Test %s is ending", __func__);
 }
+
 static void test_exec_restart_end()
 {
   XBT_INFO("%s: Launch a execute(5s), and restart its host right when it stops", __func__);
@@ -537,7 +545,7 @@ static void main_dispatcher()
    * to avoid that they exit before their victim dereferences their name */
   run_test("sleep restarted at start", test_sleep_restart_begin);
   run_test("sleep restarted in middle", test_sleep_restart_middle);
-  // run_test("sleep restarted at end", test_sleep_restart_end);
+  run_test("sleep restarted at end", test_sleep_restart_end);
 
   run_test("exec", test_exec);
   run_test("exec killed at start", test_exec_kill_begin);
