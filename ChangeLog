@@ -12,6 +12,7 @@ Kernel:
 Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - GH#31: [MC] please provide an option to make MPI_Send asynchronous
  - GH#305: Unscheduled tasks are still excuted
+ - GH#323: Crash when an actor turn off his physical host
  - FG!19: Removing RngStream
 
 ----------------------------------------------------------------------------

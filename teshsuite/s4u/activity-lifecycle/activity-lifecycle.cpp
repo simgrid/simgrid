@@ -239,6 +239,21 @@ static void test_exec_restart_end()
              "Restarted actor was already dead in the scheduling round during which the host_off simcall was issued");
 }
 
+static void test_turn_off_itself()
+{
+  XBT_INFO("%s: Launch a sleep(5), then saw off the branch it's sitting on", __func__);
+
+  simgrid::s4u::Actor::create("sleep5_restarted", all_hosts[1], []() {
+    assert_exit(true, 5);
+    simgrid::s4u::this_actor::sleep_for(5);
+    simgrid::s4u::this_actor::get_host()->turn_off();
+    xbt_die("I should be dead now");
+  });
+  simgrid::s4u::this_actor::sleep_for(9);
+  all_hosts[1]->turn_on();
+  XBT_INFO("Test %s is ending", __func__);
+}
+
 static void test_comm()
 {
   XBT_INFO("%s: Launch a communication", __func__);
@@ -553,6 +568,8 @@ static void main_dispatcher()
   run_test("exec restarted at start", test_exec_restart_begin);
   run_test("exec restarted in middle", test_exec_restart_middle);
   run_test("exec restarted at end", test_exec_restart_end);
+
+  run_test("turn off its own host", test_turn_off_itself);
 
   run_test("comm", test_comm);
   run_test("comm dsend and quit (put before get)", test_comm_dsend_and_quit_put_before_get);
