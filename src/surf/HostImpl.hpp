@@ -63,7 +63,7 @@ public:
   s4u::Host* piface_ = nullptr;
 
   void turn_on();
-  void turn_off();
+  void turn_off(kernel::actor::ActorImpl* issuer);
   std::vector<s4u::ActorPtr> get_all_actors();
   size_t get_actor_count();
   void add_actor(kernel::actor::ActorImpl* actor) { actor_list_.push_back(*actor); }

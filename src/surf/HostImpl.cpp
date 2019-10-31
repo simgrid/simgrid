@@ -119,12 +119,12 @@ void HostImpl::turn_on()
 }
 
 /** Kill all actors hosted here */
-void HostImpl::turn_off()
+void HostImpl::turn_off(kernel::actor::ActorImpl* issuer)
 {
   for (auto& actor : actor_list_) {
     XBT_DEBUG("Killing Actor %s@%s on behalf of %s which turned off that host.", actor.get_cname(),
-              actor.get_host()->get_cname(), SIMIX_process_self()->get_cname());
-    SIMIX_process_self()->kill(&actor);
+              actor.get_host()->get_cname(), issuer->get_cname());
+    issuer->kill(&actor);
   }
   // When a host is turned off, we want to keep only the actors that should restart for when it will boot again.
   // Then get rid of the others.

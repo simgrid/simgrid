@@ -97,14 +97,15 @@ void Host::turn_on()
 void Host::turn_off()
 {
   if (is_on()) {
-    kernel::actor::simcall([this] {
+    kernel::actor::ActorImpl* self = SIMIX_process_self();
+    kernel::actor::simcall([this, self] {
       for (VirtualMachine* const& vm : vm::VirtualMachineImpl::allVms_)
         if (vm->get_pm() == this) {
           vm->shutdown();
           vm->turn_off();
         }
       this->pimpl_cpu->turn_off();
-      this->pimpl_->turn_off();
+      this->pimpl_->turn_off(self);
 
       on_state_change(*this);
     });
