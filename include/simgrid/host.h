@@ -10,7 +10,7 @@
 #include <xbt/dynar.h>
 #include <simgrid/forward.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 /** @brief Host datatype.
  *
  *   A <em>location</em> (or <em>host</em>) is any possible place where an actor may run. Thus it is represented as a
@@ -139,6 +139,6 @@ void sg_host_send_to(sg_host_t from, sg_host_t to, double byte_amount);
 XBT_PUBLIC void sg_host_dump(sg_host_t ws);
 
 XBT_PUBLIC void sg_host_get_actor_list(sg_host_t host, xbt_dynar_t whereto);
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* SIMGRID_HOST_H_ */

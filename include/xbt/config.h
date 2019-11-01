@@ -61,7 +61,7 @@ typedef simgrid::config::Config* xbt_cfg_t;
 typedef void* xbt_cfg_t;
 #endif
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /* Set the value of the cell @a name in @a cfg with the provided value.*/
 XBT_PUBLIC void sg_cfg_set_int(const char* name, int val);
@@ -99,5 +99,5 @@ XBT_PUBLIC double sg_cfg_get_double(const char* name);
 XBT_PUBLIC int sg_cfg_get_boolean(const char* name);
 /** @} */
 
-SG_END_DECL()
+SG_END_DECL
 #endif /* XBT_CONFIG_H */

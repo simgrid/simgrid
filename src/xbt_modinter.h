@@ -9,7 +9,7 @@
 #define XBT_MODINTER_H
 #include "xbt/misc.h"
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /* Modules definitions */
 
@@ -25,6 +25,6 @@ void mmalloc_postexit(void);
 extern int smx_cleaned;
 extern int xbt_initialized;
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif

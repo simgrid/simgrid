@@ -186,17 +186,17 @@
 /* C++ users need love */
 #ifndef SG_BEGIN_DECL
 # ifdef __cplusplus
-#  define SG_BEGIN_DECL() extern "C" {
+#  define SG_BEGIN_DECL extern "C" {
 # else
-#  define SG_BEGIN_DECL()
+#  define SG_BEGIN_DECL
 # endif
 #endif
 
 #ifndef SG_END_DECL
 # ifdef __cplusplus
-#  define SG_END_DECL() }
+#  define SG_END_DECL }
 # else
-#  define SG_END_DECL()
+#  define SG_END_DECL
 # endif
 #endif
 /* End of cruft for C++ */

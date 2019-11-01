@@ -11,7 +11,7 @@
 #include <jni.h>
 #include "simgrid/msg.h"
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /** Binds a native instance to a java instance. */
 void jtask_bind(jobject jtask, msg_task_t task, JNIEnv * env);
@@ -60,5 +60,5 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Task_listen(JNIEnv* env, jclass 
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFromHost(JNIEnv* env, jclass cls, jstring jalias, jobject jhost);
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFrom(JNIEnv* env, jclass cls, jstring jalias);
 
-SG_END_DECL()
+SG_END_DECL
 #endif

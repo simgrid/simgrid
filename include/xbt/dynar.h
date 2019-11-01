@@ -13,7 +13,7 @@
 #include <xbt/base.h> /* SG_BEGIN_DECL */
 #include <xbt/function_types.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /** @addtogroup XBT_dynar
  * @brief DynArr are dynamically sized vector which may contain any type of variables.
@@ -248,6 +248,6 @@ xbt_dynar_foreach (dyn,cpt,str) {
        (_cursor)++)
 #endif
 /** @} */
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* XBT_DYNAR_H */

@@ -21,7 +21,7 @@
  *  exactly play nicely together.
  */
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /** Helper function used to throw exceptions in C */
 XBT_ATTRIB_NORETURN XBT_PUBLIC void _xbt_throw(char* message, int value, const char* file, int line, const char* func);
@@ -55,7 +55,7 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void xbt_throw_unimplemented(const char* file, in
  */
 #define DIE_IMPOSSIBLE xbt_die("The Impossible Did Happen (yet again)")
 
-SG_END_DECL()
+SG_END_DECL
 
 /** @} */
 #endif                          /* __XBT_EX_H__ */

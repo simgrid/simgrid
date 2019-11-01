@@ -12,7 +12,7 @@
 #include <xbt/base.h>
 
 /* C interface */
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /** @brief Opaque type describing a Virtual Machine.
  *  @ingroup msg_VMs
@@ -41,6 +41,6 @@ XBT_PUBLIC void sg_vm_resume(sg_vm_t vm);
 XBT_PUBLIC void sg_vm_shutdown(sg_vm_t vm);
 XBT_PUBLIC void sg_vm_destroy(sg_vm_t vm);
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* INCLUDE_SIMGRID_VM_H_ */

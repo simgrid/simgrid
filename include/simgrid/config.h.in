@@ -16,14 +16,14 @@
 #define SIMGRID_VERSION_PATCH @SIMGRID_VERSION_PATCH@
 #define SIMGRID_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 /** Retrieves the version numbers of the used dynamic library (so, DLL or dynlib), while
     SIMGRID_VERSION_MAJOR and friends give the version numbers of the used header files */
 XBT_PUBLIC void sg_version_get(int* major, int* minor, int* patch);
 
 /** Display the version information and some additional blurb. */
 XBT_PUBLIC void sg_version();
-SG_END_DECL()
+SG_END_DECL
 
 
 /* Version as a single integer. v3.4 is 30400, v3.16.2 is 31602, v42 will be 420000, and so on. */

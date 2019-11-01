@@ -13,7 +13,7 @@
 #include <ucontext.h>
 #endif
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 struct s_stack_region{
   void *address;
@@ -25,6 +25,6 @@ struct s_stack_region{
 };
 typedef struct s_stack_region  s_stack_region_t;
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif

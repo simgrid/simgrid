@@ -10,11 +10,11 @@
 #include <xbt/base.h>
 
 /* C interface */
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 XBT_PUBLIC void sg_mailbox_set_receiver(const char* alias);
 XBT_PUBLIC int sg_mailbox_listen(const char* alias);
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* INCLUDE_SIMGRID_MAILBOX_H_ */

@@ -11,7 +11,7 @@
 #include "simgrid/msg.h"
 #include <jni.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
 #ifndef JNIEXPORT
@@ -35,5 +35,5 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, job
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitAll(JNIEnv *env, jclass cls, jobjectArray jcomms, jdouble timeout);
 JNIEXPORT int JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jclass cls, jobjectArray jcomms);
 
-SG_END_DECL()
+SG_END_DECL
 #endif

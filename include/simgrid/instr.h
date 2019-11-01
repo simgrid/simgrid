@@ -8,7 +8,7 @@
 
 #include <simgrid/msg.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /* Functions to manage tracing categories */
 XBT_PUBLIC void TRACE_category(const char* category);
@@ -80,6 +80,6 @@ XBT_PUBLIC void TRACE_host_pop_state(const char* host, const char* state);
 XBT_PUBLIC xbt_dynar_t TRACE_get_node_types();
 XBT_PUBLIC xbt_dynar_t TRACE_get_edge_types();
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif                          /* INSTR_H_ */

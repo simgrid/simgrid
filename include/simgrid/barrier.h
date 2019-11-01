@@ -17,12 +17,12 @@ constexpr int SG_BARRIER_SERIAL_THREAD = -1;
 #endif
 
 /* C interface */
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 XBT_PUBLIC sg_bar_t sg_barrier_init(unsigned int count);
 XBT_PUBLIC void sg_barrier_destroy(sg_bar_t bar);
 XBT_PUBLIC int sg_barrier_wait(sg_bar_t bar);
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* INCLUDE_SIMGRID_BARRIER_H_ */

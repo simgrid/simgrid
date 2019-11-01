@@ -50,7 +50,7 @@ typedef enum {
 extern unsigned smx_context_stack_size;
 extern unsigned smx_context_guard_size;
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 XBT_PUBLIC smx_actor_t SIMIX_process_from_PID(aid_t PID);
 
@@ -87,16 +87,16 @@ XBT_ATTRIB_DEPRECATED_v329("Please use simgrid::simix::Timer::get_date()") XBT_P
     double SIMIX_timer_get_date(smx_timer_t timer);
 
 XBT_PUBLIC void SIMIX_display_process_status();
-SG_END_DECL()
+SG_END_DECL
 
 /******************************** Deployment **********************************/
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 XBT_PUBLIC void SIMIX_function_register_default(xbt_main_func_t code);
 
 XBT_PUBLIC void SIMIX_init_application();
 XBT_PUBLIC void SIMIX_process_set_function(const char* process_host, const char* process_function,
                                            xbt_dynar_t arguments, double process_start_time, double process_kill_time);
-SG_END_DECL()
+SG_END_DECL
 
 #ifdef __cplusplus
 XBT_PUBLIC void SIMIX_function_register(const std::string& name, void (*code)(std::vector<std::string>));
@@ -105,13 +105,13 @@ XBT_PUBLIC void SIMIX_launch_application(const std::string& file);
 #endif
 
 /********************************* Process ************************************/
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 XBT_PUBLIC int SIMIX_process_count();
 XBT_PUBLIC smx_actor_t SIMIX_process_self();
 XBT_PUBLIC const char* SIMIX_process_self_get_name();
 XBT_PUBLIC void SIMIX_process_self_set_data(void* data);
 XBT_PUBLIC void* SIMIX_process_self_get_data();
-SG_END_DECL()
+SG_END_DECL
 
 #ifdef __cplusplus
 XBT_PUBLIC void SIMIX_process_on_exit(smx_actor_t process, const std::function<void(bool /*failed*/)>& fun);
@@ -143,7 +143,7 @@ XBT_PUBLIC bool simcall_execution_test(const smx_activity_t& execution);
 #endif
 
 /**************************** Process simcalls ********************************/
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 void simcall_process_set_data(smx_actor_t process, void* data);
 XBT_ATTRIB_DEPRECATED_v328("Please use Actor::suspend()") XBT_PUBLIC void simcall_process_suspend(smx_actor_t process);
 
@@ -152,7 +152,7 @@ XBT_ATTRIB_DEPRECATED_v328("Please use Actor::join()") XBT_PUBLIC
 
 /* Sleep control */
 XBT_PUBLIC e_smx_state_t simcall_process_sleep(double duration);
-SG_END_DECL()
+SG_END_DECL
 
 /************************** Communication simcalls ****************************/
 
@@ -196,7 +196,7 @@ XBT_PUBLIC int simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[]
 #endif
 
 /************************** Synchro simcalls **********************************/
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 XBT_PUBLIC smx_mutex_t simcall_mutex_init();
 XBT_PUBLIC void simcall_mutex_lock(smx_mutex_t mutex);
 XBT_PUBLIC int simcall_mutex_trylock(smx_mutex_t mutex);
@@ -208,15 +208,15 @@ XBT_PUBLIC int simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, dou
 
 XBT_PUBLIC void simcall_sem_acquire(smx_sem_t sem);
 XBT_PUBLIC int simcall_sem_acquire_timeout(smx_sem_t sem, double max_duration);
-SG_END_DECL()
+SG_END_DECL
 
 /*****************************   Io   **************************************/
 #ifdef __cplusplus
 XBT_PUBLIC e_smx_state_t simcall_io_wait(const smx_activity_t& io);
 #endif
 /************************** MC simcalls   **********************************/
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 XBT_PUBLIC int simcall_mc_random(int min, int max);
-SG_END_DECL()
+SG_END_DECL
 
 #endif

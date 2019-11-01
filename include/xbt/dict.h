@@ -13,7 +13,7 @@
 
 #include <stdint.h>             /* uintptr_t */
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /** @addtogroup XBT_dict
  *  @brief The dictionary data structure (comparable to hash tables)
@@ -164,6 +164,6 @@ xbt_dict_foreach(head, cursor, key, data) {
 
 /** @} */
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* XBT_DICT_H */

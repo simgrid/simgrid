@@ -19,7 +19,7 @@
 
 #include <stddef.h> /* size_t */
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 XBT_PUBLIC int MC_random(int min, int max);
 
@@ -67,6 +67,6 @@ XBT_PUBLIC void MC_ignore_global_variable(const char* var_name);
 
 #endif
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* SIMGRID_MODELCHECKER_H */

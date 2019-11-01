@@ -13,7 +13,7 @@
 #include <xbt/dict.h>
 
 /* C interface */
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 XBT_PUBLIC sg_netzone_t sg_zone_get_root();
 XBT_PUBLIC const char* sg_zone_get_name(sg_netzone_t zone);
@@ -23,6 +23,6 @@ XBT_PUBLIC const char* sg_zone_get_property_value(sg_netzone_t as, const char* n
 XBT_PUBLIC void sg_zone_set_property_value(sg_netzone_t netzone, const char* name, char* value);
 XBT_PUBLIC void sg_zone_get_hosts(sg_netzone_t zone, xbt_dynar_t whereto);
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* INCLUDE_SIMGRID_ZONE_H_ */

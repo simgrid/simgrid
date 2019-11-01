@@ -17,7 +17,7 @@
 #include "xbt/dict.h"
 #include "xbt/mallocator.h"
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 typedef struct s_xbt_dict {
   void_f_pvoid_t free_f;
@@ -37,6 +37,6 @@ XBT_PRIVATE xbt_dictelm_t xbt_dictelm_new(const char* key, int key_len, unsigned
 XBT_PRIVATE void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element);
 XBT_PRIVATE void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element, void* data);
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif

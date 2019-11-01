@@ -12,7 +12,7 @@
 #include <xbt/log.h>
 #include <xbt/misc.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 XBT_PUBLIC_DATA int xbt_log_no_loc; /* Do not show the backtrace on failed backtrace when doing our tests */
 
 XBT_PUBLIC void xbt_backtrace_display_current();
@@ -48,5 +48,5 @@ XBT_PUBLIC void xbt_backtrace_display_current();
 #endif
 
 /** @} */
-SG_END_DECL()
+SG_END_DECL
 #endif                          /* XBT_ASSERTS_H */

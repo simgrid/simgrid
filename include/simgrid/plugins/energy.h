@@ -9,7 +9,7 @@
 #include <xbt/base.h>
 #include <simgrid/forward.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 XBT_PUBLIC void sg_host_energy_plugin_init();
 XBT_PUBLIC void sg_host_energy_update_all();
@@ -34,6 +34,6 @@ XBT_PUBLIC int sg_link_energy_is_inited();
 #define MSG_host_get_power_range_slope_at(host,pstate) sg_host_get_power_range_slope_at((host), (pstate))
 #define MSG_host_get_current_consumption(host) sg_host_get_current_consumption(host)
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif

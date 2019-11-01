@@ -14,10 +14,10 @@
 #include <string>
 #include <vector>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 /** @brief Shows a backtrace of the current location */
 XBT_PUBLIC void xbt_backtrace_display_current();
-SG_END_DECL()
+SG_END_DECL
 
 namespace simgrid {
 namespace xbt {

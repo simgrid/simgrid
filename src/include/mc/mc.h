@@ -22,7 +22,7 @@
 
 #define STD_HEAP_SIZE   (sizeof(void*)<=4 ? (100*1024*1024) : (1ll*1024*1024*1024*1024))
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /********************************* Global *************************************/
 XBT_ATTRIB_NORETURN XBT_PUBLIC void MC_run();
@@ -33,6 +33,6 @@ XBT_PRIVATE void MC_automaton_load(const char *file);
 /********************************* Memory *************************************/
 XBT_PUBLIC void MC_memory_init(); /* Initialize the memory subsystem */
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif

@@ -11,7 +11,7 @@
 #include "simgrid/msg.h"
 #include <jni.h>
 
-SG_BEGIN_DECL();
+SG_BEGIN_DECL;
 
 /* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
 #ifndef JNIEXPORT
@@ -66,5 +66,5 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_yield(JNIEnv* env, jclass cl
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_setKillTime(JNIEnv* env, jobject jprocess, jdouble jkilltime);
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_getCount(JNIEnv * env, jclass cls);
 
-SG_END_DECL();
+SG_END_DECL;
 #endif

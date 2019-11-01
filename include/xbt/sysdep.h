@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <stdarg.h>             /* va_list */
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /* They live in asserts.h, but need to be declared before this module.
    double declaration to cut dependency cycle */
@@ -123,7 +123,7 @@ XBT_PUBLIC void xbt_free_f(void* p) XBT_FREE_NOEXCEPT;
 /** @brief should be given a pointer to pointer, and frees the second one */
 XBT_PUBLIC void xbt_free_ref(void* d) XBT_FREE_NOEXCEPT;
 
-SG_END_DECL()
+SG_END_DECL
 
 #define xbt_new(type, count)  ((type*)xbt_malloc (sizeof (type) * (count)))
 /** @brief like calloc, but xbt_die() on error

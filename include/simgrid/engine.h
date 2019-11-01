@@ -9,7 +9,7 @@
 #include <simgrid/forward.h>
 
 /* C interface */
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 XBT_PUBLIC void simgrid_init(int* argc, char** argv);
 XBT_PUBLIC void simgrid_load_platform(const char* filename);
 XBT_PUBLIC void simgrid_load_deployment(const char* filename);
@@ -19,6 +19,6 @@ XBT_PUBLIC void simgrid_register_default(int (*code)(int, char**));
 XBT_PUBLIC double simgrid_get_clock();
 
 XBT_PUBLIC void sg_config_continue_after_help();
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* INCLUDE_SIMGRID_ENGINE_H_ */

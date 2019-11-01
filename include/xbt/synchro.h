@@ -12,7 +12,7 @@
 #include <xbt/function_types.h>
 #include <xbt/misc.h> /* SG_BEGIN_DECL */
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /** @addtogroup XBT_synchro
  *  @brief XBT synchronization tools
@@ -80,5 +80,5 @@ XBT_ATTRIB_DEPRECATED_v328("Please use sg_cond_destroy") XBT_PUBLIC void xbt_con
 
 /** @} */
 
-SG_END_DECL()
+SG_END_DECL
 #endif /* _XBT_THREAD_H */

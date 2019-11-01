@@ -12,7 +12,7 @@
 #include <xbt/base.h>
 
 /* C interface */
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 XBT_PUBLIC const char* sg_storage_get_name(sg_storage_t storage);
 XBT_PUBLIC sg_storage_t sg_storage_get_by_name(const char* name);
@@ -26,6 +26,6 @@ XBT_PUBLIC const char* sg_storage_get_host(sg_storage_t storage);
 XBT_PUBLIC sg_size_t sg_storage_read(sg_storage_t storage, sg_size_t size);
 XBT_PUBLIC sg_size_t sg_storage_write(sg_storage_t storage, sg_size_t size);
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* INCLUDE_SIMGRID_STORAGE_H_ */

@@ -94,7 +94,7 @@
 
 #define ADDRESS(B) ((void*) (((ADDR2UINT(B)) - 1) * BLOCKSIZE + (char*) mdp -> heapbase))
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /* Doubly linked lists of free fragments.  */
 struct list {
@@ -293,6 +293,6 @@ XBT_PRIVATE int malloc_use_mmalloc(void);
 
 XBT_PRIVATE size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_info* heapinfo);
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif

@@ -11,7 +11,7 @@
 #include <xbt/function_types.h>
 #include <xbt/misc.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /** @addtogroup XBT_mallocator
  *  @brief The mallocator system
@@ -50,5 +50,5 @@ XBT_PUBLIC void xbt_mallocator_release(xbt_mallocator_t mallocator, void* object
 XBT_PUBLIC void xbt_mallocator_initialization_is_done(int protect);
 /** @} */
 
-SG_END_DECL()
+SG_END_DECL
 #endif                          /* _XBT_MALLOCATOR_H */

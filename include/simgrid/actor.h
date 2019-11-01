@@ -11,7 +11,7 @@
 #include <xbt/dict.h>
 
 /* C interface */
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 /** @brief Actor datatype.
     @ingroup m_actor_management
 
@@ -54,6 +54,6 @@ XBT_PUBLIC void sg_actor_unref(sg_actor_t actor);
 XBT_PUBLIC void* sg_actor_data(sg_actor_t actor);
 XBT_PUBLIC void sg_actor_data_set(sg_actor_t actor, void* userdata);
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* INCLUDE_SIMGRID_ACTOR_H_ */

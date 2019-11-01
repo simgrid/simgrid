@@ -33,7 +33,7 @@
 #include <stddef.h> /* NULL */
 #include <stdio.h>  /* FILE */
 #include <xbt/misc.h>
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 /**@brief Log priorities
  * @ingroup XBT_log
  *
@@ -102,7 +102,7 @@ typedef enum {
  * Implementation of XBT_LOG_NEW_SUBCATEGORY, which must declare "extern parent" in addition to avoid an extra
  * declaration of root when XBT_LOG_NEW_SUBCATEGORY is called by XBT_LOG_NEW_CATEGORY */
 #define XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc)                                                          \
-  SG_BEGIN_DECL()                                                                                                      \
+  SG_BEGIN_DECL                                                                                                        \
   extern void _XBT_LOGV_CTOR(catName)(void) XBT_ATTRIB_CONSTRUCTOR(600);                                               \
   void _XBT_LOGV_CTOR(catName)(void)                                                                                   \
   {                                                                                                                    \
@@ -111,7 +111,7 @@ typedef enum {
       _xbt_log_cat_init(&_XBT_LOGV(catName), xbt_log_priority_uninitialized);                                          \
     }                                                                                                                  \
   }                                                                                                                    \
-  SG_END_DECL()                                                                                                        \
+  SG_END_DECL                                                                                                          \
   XBT_EXPORT_NO_IMPORT s_xbt_log_category_t _XBT_LOGV(catName) = {                                                     \
       &_XBT_LOGV(parent),                                                                                              \
       NULL /* firstChild */,                                                                                           \
@@ -492,5 +492,5 @@ extern xbt_log_layout_t xbt_log_default_layout;
  */
 #define XBT_HELP(...) XBT_CINFO(xbt_help, __VA_ARGS__)
 
-SG_END_DECL()
+SG_END_DECL
 #endif                          /* ! _XBT_LOG_H_ */

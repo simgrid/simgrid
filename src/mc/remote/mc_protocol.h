@@ -10,7 +10,7 @@
 #include "simgrid/forward.h"
 #include "stdint.h"
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 // ***** Environment variables for passing context to the model-checked process
 
@@ -109,6 +109,6 @@ struct s_mc_message_actor_enabled_t {
 
 XBT_PRIVATE const char* MC_message_type_name(enum e_mc_message_type type);
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif

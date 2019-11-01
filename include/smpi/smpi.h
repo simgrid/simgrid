@@ -29,7 +29,7 @@
   type _XBT_CONCAT(P, name) args
 #endif
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 #define MPI_THREAD_SINGLE     0
 #define MPI_THREAD_FUNNELED   1
 #define MPI_THREAD_SERIALIZED 2
@@ -1057,7 +1057,7 @@ XBT_PUBLIC void SMPI_app_instance_register(const char* name, xbt_main_func_t cod
 XBT_PUBLIC void SMPI_init();
 XBT_PUBLIC void SMPI_finalize();
 
-SG_END_DECL()
+SG_END_DECL
 
 /* C++ declarations for shared_malloc */
 #ifdef __cplusplus

@@ -22,7 +22,7 @@
 ////////////////
 typedef sg_file_t msg_file_t; // MSG backwards compatibility
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 XBT_PUBLIC void sg_storage_file_system_init();
 XBT_PUBLIC sg_file_t sg_file_open(const char* fullpath, void* data);
 XBT_PUBLIC sg_size_t sg_file_read(sg_file_t fd, sg_size_t size);
@@ -77,7 +77,7 @@ XBT_PUBLIC xbt_dict_t sg_host_get_storage_content(sg_host_t host);
 
 #define MSG_host_get_storage_content(st) sg_host_get_storage_content(st)
 
-SG_END_DECL()
+SG_END_DECL
 
 // C++ interface
 //////////////////

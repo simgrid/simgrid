@@ -8,7 +8,7 @@
 
 #include <xbt/base.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 #ifdef COVERAGE
 extern void __gcov_flush();
@@ -17,6 +17,6 @@ extern void __gcov_flush();
 #define coverage_checkpoint() (void)0
 #endif
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif

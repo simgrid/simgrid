@@ -21,7 +21,7 @@
 #define free(ptr) _sampi_free(ptr)
 #endif
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 XBT_PUBLIC void* _sampi_malloc(size_t size);
 XBT_PUBLIC void* _sampi_calloc(size_t n_elm, size_t elm_size);
@@ -32,6 +32,6 @@ AMPI_CALL(XBT_PUBLIC int, MPI_Iteration_in, (MPI_Comm comm))
 AMPI_CALL(XBT_PUBLIC int, MPI_Iteration_out, (MPI_Comm comm))
 AMPI_CALL(XBT_PUBLIC void, MPI_Migrate, (MPI_Comm comm))
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif

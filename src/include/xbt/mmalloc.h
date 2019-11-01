@@ -17,7 +17,7 @@
 #include "xbt/dict.h"
 #include "xbt/dynar.h"
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /* Datatype representing a separate heap. The whole point of the mmalloc module is to allow several such heaps in the
  * process. It thus works by redefining all the classical memory management functions (malloc and friends) with an
@@ -55,6 +55,6 @@ XBT_PUBLIC void* xbt_mheap_destroy(xbt_mheap_t md);
 xbt_mheap_t mmalloc_get_current_heap(void);
 
 #endif
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* SIMGRID_MMALLOC_H */

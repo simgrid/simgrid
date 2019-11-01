@@ -11,7 +11,7 @@
 #include "xbt/base.h"
 #include <jni.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_nativeInit(JNIEnv *env, jclass cls);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_init(JNIEnv * env, jobject obj);
@@ -25,5 +25,5 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Semaphore_release(JNIEnv * env, jobj
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Semaphore_wouldBlock(JNIEnv * env, jobject obj);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Semaphore_nativeFinalize(JNIEnv * env, jobject obj);
 
-SG_END_DECL()
+SG_END_DECL
 #endif

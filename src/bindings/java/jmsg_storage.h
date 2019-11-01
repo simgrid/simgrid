@@ -11,7 +11,7 @@
 #include "simgrid/msg.h"
 #include <jni.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /** Returns a new java instance of a storage. */
 jobject jstorage_new_instance(JNIEnv * env);
@@ -43,5 +43,5 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Storage_setProperty(JNIEnv* env, job
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getHost(JNIEnv * env,jobject jstorage);
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv *env, jclass cls);
 
-SG_END_DECL()
+SG_END_DECL
 #endif

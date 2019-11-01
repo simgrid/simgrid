@@ -10,7 +10,7 @@
 
 #include <xbt/base.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 typedef void (*void_f_pvoid_t) (void *);
 typedef void *(*pvoid_f_void_t) (void);
@@ -23,5 +23,5 @@ typedef int (*int_f_cpvoid_cpvoid_t) (const void *, const void *);
 
 typedef int (*xbt_main_func_t) (int argc, char *argv[]);
 
-SG_END_DECL()
+SG_END_DECL
 #endif                          /* XBT_FUNCTION_TYPE_H */

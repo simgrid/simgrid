@@ -9,7 +9,7 @@
 #include <simgrid/forward.h>
 
 /* C interface */
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 /** @brief Creates a condition variable */
 XBT_PUBLIC sg_cond_t sg_cond_init();
 
@@ -25,6 +25,6 @@ XBT_PUBLIC void sg_cond_notify_all(sg_cond_t cond);
 /** @brief Destroys the given mutex variable */
 XBT_PUBLIC void sg_cond_destroy(sg_cond_t cond);
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* INCLUDE_SIMGRID_COND_H_ */

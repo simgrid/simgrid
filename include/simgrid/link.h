@@ -12,7 +12,7 @@
 #include <xbt/base.h>
 
 /* C interface */
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 XBT_PUBLIC const char* sg_link_name(sg_link_t link);
 XBT_PUBLIC sg_link_t sg_link_by_name(const char* name);
 XBT_PUBLIC int sg_link_is_shared(sg_link_t link);
@@ -22,6 +22,6 @@ XBT_PUBLIC void* sg_link_data(sg_link_t link);
 XBT_PUBLIC void sg_link_data_set(sg_link_t link, void* data);
 XBT_PUBLIC int sg_link_count();
 XBT_PUBLIC sg_link_t* sg_link_list();
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* INCLUDE_SIMGRID_LINK_H_ */

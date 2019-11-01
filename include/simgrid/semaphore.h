@@ -11,7 +11,7 @@
 #include <simgrid/forward.h>
 
 /* C interface */
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 XBT_PUBLIC sg_sem_t sg_sem_init(int initial_value);
 XBT_PUBLIC void sg_sem_acquire(sg_sem_t sem);
 XBT_PUBLIC int sg_sem_acquire_timeout(sg_sem_t sem, double timeout);
@@ -20,6 +20,6 @@ XBT_PUBLIC int sg_sem_get_capacity(sg_sem_t sem);
 XBT_PUBLIC void sg_sem_destroy(sg_sem_t sem);
 XBT_PUBLIC int sg_sem_would_block(sg_sem_t sem);
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* INCLUDE_SIMGRID_SEMAPHORE_H_ */

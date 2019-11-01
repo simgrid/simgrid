@@ -15,7 +15,7 @@
 #include <set>
 #endif
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /** @brief Link opaque datatype
     @ingroup SD_link_api
@@ -195,7 +195,7 @@ XBT_PUBLIC xbt_dynar_t SD_PTG_dotload(const char* filename);
 //SD_route_get_size
 //SD_route_get_list
 //TRACE_sd_set_task_category
-SG_END_DECL()
+SG_END_DECL
 
 #ifdef __cplusplus
 namespace simgrid {

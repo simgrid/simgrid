@@ -8,7 +8,7 @@
 
 #include <xbt/dynar.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 typedef struct xbt_automaton_state {
   char* id;
@@ -114,6 +114,6 @@ XBT_PUBLIC void xbt_automaton_exp_label_free_voidp(void* e);
 XBT_PUBLIC void xbt_automaton_propositional_symbol_free_voidp(void* ps);
 XBT_PUBLIC void xbt_automaton_free(xbt_automaton_t a);
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif

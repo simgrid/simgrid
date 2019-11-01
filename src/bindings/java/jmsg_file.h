@@ -12,7 +12,7 @@
 #include "simgrid/plugins/file_system.h"
 #include <jni.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
 #ifndef JNIEXPORT
@@ -35,5 +35,5 @@ JNIEXPORT jlong JNICALL Java_org_simgrid_msg_File_write(JNIEnv *env, jobject jfi
 JNIEXPORT void JNICALL Java_org_simgrid_msg_File_seek(JNIEnv *env, jobject jfile, jlong joffset, jlong jorigin);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_File_close(JNIEnv *env, jobject jfile);
 
-SG_END_DECL()
+SG_END_DECL
 #endif

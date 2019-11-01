@@ -12,7 +12,7 @@
 
 #include <stdarg.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /** Cache the size of a memory page for the current system. */
 XBT_PUBLIC_DATA int xbt_pagesize;
@@ -39,6 +39,6 @@ XBT_PUBLIC char* bvprintf(const char* fmt, va_list ap);
 XBT_PUBLIC char* bprintf(const char* fmt, ...) XBT_ATTRIB_PRINTF(1, 2);
 /** @} */
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif                          /* XBT_MISC_H */

@@ -9,13 +9,13 @@
 #include <simgrid/forward.h>
 
 /* C interface */
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 XBT_PUBLIC sg_mutex_t sg_mutex_init();
 XBT_PUBLIC void sg_mutex_lock(sg_mutex_t mutex);
 XBT_PUBLIC void sg_mutex_unlock(sg_mutex_t mutex);
 XBT_PUBLIC int sg_mutex_try_lock(sg_mutex_t mutex);
 XBT_PUBLIC void sg_mutex_destroy(sg_mutex_t mutex);
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* INCLUDE_SIMGRID_MUTEX_H_ */

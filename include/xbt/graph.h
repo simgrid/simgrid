@@ -9,13 +9,13 @@
 #include <xbt/dynar.h>
 #include <xbt/misc.h> /* SG_BEGIN_DECL */
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
-  /** @addtogroup XBT_graph
-   *  @brief A graph data type with several interesting algorithms
-   *
-   * @{
-   */
+/** @addtogroup XBT_graph
+ *  @brief A graph data type with several interesting algorithms
+ *
+ * @{
+ */
 
 typedef struct xbt_node *xbt_node_t;
 typedef struct xbt_edge *xbt_edge_t;
@@ -68,6 +68,6 @@ XBT_PUBLIC xbt_dynar_t xbt_graph_node_get_outedges(xbt_node_t n);
 XBT_PUBLIC xbt_node_t xbt_graph_edge_get_source(xbt_edge_t e);
 XBT_PUBLIC xbt_node_t xbt_graph_edge_get_target(xbt_edge_t e);
 
-SG_END_DECL()
+SG_END_DECL
 #endif /* XBT_GRAPH_H */
 /** @} */

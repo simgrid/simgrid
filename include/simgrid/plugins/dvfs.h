@@ -10,12 +10,12 @@
 #include <simgrid/forward.h>
 #include <xbt/base.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 XBT_PUBLIC void sg_host_dvfs_plugin_init();
 
 #define MSG_host_dvfs_plugin_init() sg_host_dvfs_plugin_init()
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif

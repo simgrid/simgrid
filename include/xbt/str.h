@@ -14,7 +14,7 @@
 
 #include <stdarg.h> /* va_* */
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 /** @addtogroup XBT_str
  *  @brief String manipulation functions
@@ -111,5 +111,5 @@ static inline unsigned int xbt_str_hash(const char *str)
 }
 
 /**@}*/
-SG_END_DECL()
+SG_END_DECL
 #endif                          /* XBT_STR_H */

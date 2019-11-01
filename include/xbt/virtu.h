@@ -13,7 +13,7 @@
 #include <xbt/function_types.h>
 #include <xbt/misc.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 XBT_PUBLIC const char* xbt_procname(void);
 
@@ -25,5 +25,5 @@ XBT_PUBLIC_DATA char* xbt_binary_name;
 /** Contains all the parameters we got from the command line (including argv[0]) */
 XBT_PUBLIC_DATA xbt_dynar_t xbt_cmdline;
 
-SG_END_DECL()
+SG_END_DECL
 #endif /* XBT_VIRTU_H */

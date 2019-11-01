@@ -9,7 +9,7 @@
 #include <simgrid/forward.h>
 #include <xbt/base.h>
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 XBT_PUBLIC void sg_vm_live_migration_plugin_init();
 XBT_PRIVATE void sg_vm_dirty_page_tracking_init();
@@ -36,6 +36,6 @@ XBT_PUBLIC sg_vm_t sg_vm_create_migratable(sg_host_t pm, const char* name, int c
 #define MSG_vm_is_migrating(vm) sg_vm_is_migrating(vm)
 #define MSG_vm_migrate(vm, dst_pm) sg_vm_migrate((vm), (dst_pm))
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif

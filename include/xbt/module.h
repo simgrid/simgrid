@@ -10,10 +10,10 @@
 
 #include <xbt/misc.h>           /* XBT_PUBLIC */
 
-SG_BEGIN_DECL()
+SG_BEGIN_DECL
 
 XBT_PUBLIC void xbt_init(int* argc, char** argv);
 
-SG_END_DECL()
+SG_END_DECL
 
 #endif /* XBT_MODULE_H */
