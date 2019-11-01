@@ -222,6 +222,7 @@ void ActorImpl::exit()
 
 void ActorImpl::kill(ActorImpl* actor)
 {
+  xbt_assert(actor != simix_global->maestro_process, "Killing maestro is a rather bad idea");
   if (actor->finished_) {
     XBT_DEBUG("Ignoring request to kill actor %s@%s that is already dead", actor->get_cname(),
               actor->host_->get_cname());
@@ -553,12 +554,7 @@ void SIMIX_process_self_set_data(void* data)
    by exceptions and logging events */
 const char* SIMIX_process_self_get_name()
 {
-
-  smx_actor_t process = SIMIX_process_self();
-  if (process == nullptr || process == simix_global->maestro_process)
-    return "maestro";
-
-  return process->get_cname();
+  return SIMIX_is_maestro() ? "maestro" : SIMIX_process_self()->get_cname();
 }
 
 /**

@@ -13,7 +13,6 @@
 #include "src/include/mc/mc.h"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 
 #include <algorithm>
@@ -219,10 +218,7 @@ double Actor::get_kill_time()
 void Actor::kill()
 {
   kernel::actor::ActorImpl* self = SIMIX_process_self();
-  kernel::actor::simcall([this, self] {
-    xbt_assert(pimpl_ != simix_global->maestro_process, "Killing maestro is a rather bad idea");
-    self->kill(pimpl_);
-  });
+  kernel::actor::simcall([this, self] { self->kill(pimpl_); });
 }
 
 // ***** Static functions *****
@@ -278,8 +274,7 @@ namespace this_actor {
  */
 bool is_maestro()
 {
-  kernel::actor::ActorImpl* self = SIMIX_process_self();
-  return self == nullptr || self == simix_global->maestro_process;
+  return SIMIX_is_maestro();
 }
 
 void sleep_for(double duration)

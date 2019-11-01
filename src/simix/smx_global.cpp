@@ -600,6 +600,8 @@ void SIMIX_display_process_status()
 
 int SIMIX_is_maestro()
 {
-  smx_actor_t self = SIMIX_process_self();
-  return simix_global == nullptr /*SimDag*/ || self == nullptr || self == simix_global->maestro_process;
+  if (simix_global == nullptr) // SimDag
+    return true;
+  simgrid::kernel::actor::ActorImpl* self = SIMIX_process_self();
+  return self == nullptr || self == simix_global->maestro_process;
 }

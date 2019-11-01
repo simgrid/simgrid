@@ -9,7 +9,6 @@
 #include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 
 #include <algorithm>
@@ -655,18 +654,13 @@ void sg_host_get_actor_list(sg_host_t host, xbt_dynar_t whereto)
 
 sg_host_t sg_host_self()
 {
-  simgrid::kernel::actor::ActorImpl* self = SIMIX_process_self();
-  return (self == nullptr) ? nullptr : self->get_host();
+  return SIMIX_is_maestro() ? nullptr : SIMIX_process_self()->get_host();
 }
 
 /* needs to be public and without simcall for exceptions and logging events */
 const char* sg_host_self_get_name()
 {
-  sg_host_t host = sg_host_self();
-  if (host == nullptr || SIMIX_process_self() == simix_global->maestro_process)
-    return "";
-
-  return host->get_cname();
+  return SIMIX_is_maestro() ? "" : SIMIX_process_self()->get_host()->get_cname();
 }
 
 double sg_host_load(sg_host_t host)
