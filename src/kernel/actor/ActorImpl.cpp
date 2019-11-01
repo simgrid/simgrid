@@ -277,7 +277,6 @@ void ActorImpl::yield()
 
   if (context_->iwannadie) {
     XBT_DEBUG("Actor %s@%s is dead", get_cname(), host_->get_cname());
-    // throw simgrid::kernel::context::ForcefulKillException(); Does not seem to properly kill the actor
     context_->stop();
     THROW_IMPOSSIBLE;
   }

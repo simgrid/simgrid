@@ -288,7 +288,7 @@ void SIMIX_clean()
 
   /* Kill all processes (but maestro) */
   simix_global->maestro_process->kill_all();
-  simix_global->context_factory->run_all();
+  simix_global->run_all_actors();
   simix_global->empty_trash();
 
   /* Exit the SIMIX network module */
