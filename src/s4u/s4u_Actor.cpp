@@ -707,7 +707,7 @@ void sg_actor_unref(sg_actor_t actor)
 }
 
 /** @brief Return the user data of a #sg_actor_t */
-void* sg_actor_data(sg_actor_t actor)
+void* sg_actor_data(const_sg_actor_t actor)
 {
   return actor->get_data();
 }
