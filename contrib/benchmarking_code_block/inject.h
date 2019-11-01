@@ -86,7 +86,7 @@ static inline void xbt_inject_init(char *inputfile)
     for (int i            = 0; i < (data->n - 1); i++)
       data->percentage[i] = atof(strtok_r(NULL, "\t", &saveptr));
 
-    xbt_dict_set(mydict, key, data, NULL);
+    xbt_dict_set(mydict, key, data);
   }
   fclose(fpInput);
 }
@@ -139,7 +139,7 @@ static inline void inject_init_starpu(char *inputfile, xbt_dict_t *dict, RngStre
       data->percentage[i] = atof(strtok_r(NULL, "\t", &saveptr));
     }
 
-    xbt_dict_set(mydict, key, data, NULL);
+    xbt_dict_set(mydict, key, data);
   }
   fclose(fpInput);
 }

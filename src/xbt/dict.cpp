@@ -130,13 +130,11 @@ static void xbt_dict_rehash(xbt_dict_t dict)
  * @param key the key to set the new data
  * @param key_len the size of the @a key
  * @param data the data to add in the dict
- * @param free_ctn unused parameter (kept for compatibility)
  *
  * Set the @a data in the structure under the @a key, which can be any kind of data, as long as its length is provided
  * in @a key_len.
  */
-void xbt_dict_set_ext(xbt_dict_t dict, const char* key, int key_len, void* data,
-                      XBT_ATTRIB_UNUSED void_f_pvoid_t free_ctn)
+void xbt_dict_set_ext(xbt_dict_t dict, const char* key, int key_len, void* data)
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
 
@@ -178,13 +176,12 @@ void xbt_dict_set_ext(xbt_dict_t dict, const char* key, int key_len, void* data,
  * @param dict the dict
  * @param key the key to set the new data
  * @param data the data to add in the dict
- * @param free_ctn unused parameter (kept for compatibility)
  *
  * set the @a data in the structure under the @a key, which is a null terminated string.
  */
-void xbt_dict_set(xbt_dict_t dict, const char *key, void *data, void_f_pvoid_t free_ctn)
+void xbt_dict_set(xbt_dict_t dict, const char* key, void* data)
 {
-  xbt_dict_set_ext(dict, key, strlen(key), data, free_ctn);
+  xbt_dict_set_ext(dict, key, strlen(key), data);
 }
 
 /**

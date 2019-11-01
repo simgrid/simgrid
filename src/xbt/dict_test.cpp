@@ -25,7 +25,7 @@ static void debugged_add_ext(xbt_dict_t head, const char* key, const char* data_
 
   INFO("Add " << STR(data_to_fill) << " under " << STR(key));
 
-  xbt_dict_set(head, key, data, nullptr);
+  xbt_dict_set(head, key, data);
 }
 
 static void debugged_add(xbt_dict_t head, const char* key)
@@ -173,19 +173,19 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     head = new_fixture();
     count_check_get_key(head, 7);
     INFO("Change 123 to 'Changed 123'");
-    xbt_dict_set(head, "123", xbt_strdup("Changed 123"), nullptr);
+    xbt_dict_set(head, "123", xbt_strdup("Changed 123"));
     count_check_get_key(head, 7);
 
     INFO("Change 123 back to '123'");
-    xbt_dict_set(head, "123", xbt_strdup("123"), nullptr);
+    xbt_dict_set(head, "123", xbt_strdup("123"));
     count_check_get_key(head, 7);
 
     INFO("Change 12a to 'Dummy 12a'");
-    xbt_dict_set(head, "12a", xbt_strdup("Dummy 12a"), nullptr);
+    xbt_dict_set(head, "12a", xbt_strdup("Dummy 12a"));
     count_check_get_key(head, 7);
 
     INFO("Change 12a to '12a'");
-    xbt_dict_set(head, "12a", xbt_strdup("12a"), nullptr);
+    xbt_dict_set(head, "12a", xbt_strdup("12a"));
     count_check_get_key(head, 7);
 
     INFO("Traverse the resulting dictionary");
@@ -270,7 +270,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     xbt_dict_t head = new_fixture();
 
     INFO("Store nullptr under 'null'");
-    xbt_dict_set(head, "null", nullptr, nullptr);
+    xbt_dict_set(head, "null", nullptr);
     search_ext(head, "null", nullptr);
 
     INFO("Check whether I see it while traversing...");
@@ -311,7 +311,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
           data               = (char*)xbt_dict_get_or_null(head, key);
         } while (data != nullptr);
 
-        xbt_dict_set(head, key, key, nullptr);
+        xbt_dict_set(head, key, key);
         data = (char*)xbt_dict_get(head, key);
         REQUIRE(not strcmp(key, data)); // Retrieved value != Injected value
 
@@ -328,7 +328,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
       char* key = (char*)xbt_malloc(10);
 
       snprintf(key, 10, "%d", j);
-      xbt_dict_set(head, key, key, nullptr);
+      xbt_dict_set(head, key, key);
     }
 
     INFO("Count the elements (retrieving the key and data for each)");
@@ -367,7 +367,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
 
     INFO("Insert elements");
     for (int i = 0; i < count; ++i)
-      xbt_dict_set_ext(dict, (char*)&i, sizeof(i), (void*)(intptr_t)i, nullptr);
+      xbt_dict_set_ext(dict, (char*)&i, sizeof(i), (void*)(intptr_t)i);
     REQUIRE(xbt_dict_size(dict) == (unsigned)count); // Bad number of elements in the dictionary
 
     INFO("Check elements");

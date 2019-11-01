@@ -9,6 +9,9 @@ Kernel:
   forbidden to override these deprecated methods in a derived class. Please use
   the new names immediately if you need to override them.
 
+XBT:
+- Remove unused parameter 'free_ctn' for xbt_dict_set() and xbt_dict_set_ext().
+
 Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - GH#31: [MC] please provide an option to make MPI_Send asynchronous
  - GH#305: Unscheduled tasks are still excuted

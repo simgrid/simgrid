@@ -747,7 +747,7 @@ xbt_dict_t sg_storage_get_content(sg_storage_t storage)
   for (auto const& entry : *content) {
     sg_size_t* psize = new sg_size_t;
     *psize           = entry.second;
-    xbt_dict_set(content_as_dict, entry.first.c_str(), psize, nullptr);
+    xbt_dict_set(content_as_dict, entry.first.c_str(), psize);
   }
   return content_as_dict;
 }
@@ -757,7 +757,7 @@ xbt_dict_t sg_host_get_storage_content(sg_host_t host)
   xbt_assert((host != nullptr), "Invalid parameters");
   xbt_dict_t contents = xbt_dict_new_homogeneous(nullptr);
   for (auto const& elm : host->get_mounted_storages())
-    xbt_dict_set(contents, elm.first.c_str(), sg_storage_get_content(elm.second), nullptr);
+    xbt_dict_set(contents, elm.first.c_str(), sg_storage_get_content(elm.second));
 
   return contents;
 }

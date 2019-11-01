@@ -203,7 +203,7 @@ int get_peers_data(peer_t peer)
       // Add the peers the tracker gave us to our peer list.
       xbt_dynar_foreach (data->peers, i, peer_id) {
         if (peer_id != peer->id)
-          xbt_dict_set_ext(peer->peers, (char*)&peer_id, sizeof(int), connection_new(peer_id), NULL);
+          xbt_dict_set_ext(peer->peers, (char*)&peer_id, sizeof(int), connection_new(peer_id));
       }
       success = 1;
       // free the communication and the task
@@ -291,7 +291,7 @@ void update_active_peers_set(peer_t peer, connection_t remote_peer)
 {
   if ((remote_peer->interested != 0) && (remote_peer->choked_upload == 0)) {
     // add in the active peers set
-    xbt_dict_set_ext(peer->active_peers, (char*)&remote_peer->id, sizeof(int), remote_peer, NULL);
+    xbt_dict_set_ext(peer->active_peers, (char*)&remote_peer->id, sizeof(int), remote_peer);
   } else if (xbt_dict_get_or_null_ext(peer->active_peers, (char*)&remote_peer->id, sizeof(int))) {
     xbt_dict_remove_ext(peer->active_peers, (char*)&remote_peer->id, sizeof(int));
   }
@@ -316,7 +316,7 @@ void handle_message(peer_t peer, msg_task_t task)
     case MESSAGE_HANDSHAKE:
       // Check if the peer is in our connection list.
       if (remote_peer == 0) {
-        xbt_dict_set_ext(peer->peers, (char*)&message->peer_id, sizeof(int), connection_new(message->peer_id), NULL);
+        xbt_dict_set_ext(peer->peers, (char*)&message->peer_id, sizeof(int), connection_new(message->peer_id));
         send_handshake(peer, message->mailbox);
       }
       // Send our bitfield to the peer
@@ -658,7 +658,7 @@ void update_choked_peers(peer_t peer)
     if (chosen_peer != NULL) {
       xbt_assert((chosen_peer->choked_upload), "Tries to unchoked an unchoked peer");
       chosen_peer->choked_upload = 0;
-      xbt_dict_set_ext(peer->active_peers, (char*)&chosen_peer->id, sizeof(int), chosen_peer, NULL);
+      xbt_dict_set_ext(peer->active_peers, (char*)&chosen_peer->id, sizeof(int), chosen_peer);
       chosen_peer->last_unchoke = MSG_get_clock();
       XBT_DEBUG("(%d) Sending a UNCHOKE to %d", peer->id, chosen_peer->id);
       update_active_peers_set(peer, chosen_peer);

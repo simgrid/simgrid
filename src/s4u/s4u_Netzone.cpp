@@ -115,7 +115,7 @@ sg_netzone_t sg_zone_get_by_name(const char* name)
 void sg_zone_get_sons(sg_netzone_t netzone, xbt_dict_t whereto)
 {
   for (auto const& elem : netzone->get_children()) {
-    xbt_dict_set(whereto, elem->get_cname(), static_cast<void*>(elem), nullptr);
+    xbt_dict_set(whereto, elem->get_cname(), static_cast<void*>(elem));
   }
 }
 

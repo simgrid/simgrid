@@ -122,7 +122,7 @@ xbt_dict_t sg_storage_get_properties(sg_storage_t storage)
   if (props == nullptr)
     return nullptr;
   for (auto const& elm : *props) {
-    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
+    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()));
   }
   return as_dict;
 }

@@ -530,7 +530,7 @@ xbt_dict_t sg_actor_get_properties(sg_actor_t actor)
   if (props == nullptr)
     return nullptr;
   for (auto const& kv : *props) {
-    xbt_dict_set(as_dict, kv.first.c_str(), xbt_strdup(kv.second.c_str()), nullptr);
+    xbt_dict_set(as_dict, kv.first.c_str(), xbt_strdup(kv.second.c_str()));
   }
   return as_dict;
 }

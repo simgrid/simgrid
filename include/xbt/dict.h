@@ -30,10 +30,10 @@ SG_BEGIN_DECL
  char buff[512];
 
  sprintf(buff,"some very precious data");
- xbt_dict_set(mydict,"my data", strdup(buff), NULL);
+ xbt_dict_set(mydict,"my data", strdup(buff));
 
  sprintf(buff,"another good stuff");
- xbt_dict_set(mydict,"my data", strdup(buff), NULL); // previous data gets erased (and freed) by second add
+ xbt_dict_set(mydict,"my data", strdup(buff)); // previous data gets erased (and freed) by second add
 @endverbatim
  */
 
@@ -69,7 +69,7 @@ XBT_PUBLIC unsigned int xbt_dict_size(xbt_dict_t dict);
  *  @{
  */
 
-XBT_PUBLIC void xbt_dict_set(xbt_dict_t dict, const char* key, void* data, void_f_pvoid_t free_ctn);
+XBT_PUBLIC void xbt_dict_set(xbt_dict_t dict, const char* key, void* data);
 XBT_PUBLIC void* xbt_dict_get(xbt_dict_t dict, const char* key);
 XBT_PUBLIC void* xbt_dict_get_or_null(xbt_dict_t dict, const char* key);
 XBT_PUBLIC char* xbt_dict_get_key(xbt_dict_t dict, const void* data);
@@ -89,7 +89,7 @@ XBT_PUBLIC int xbt_dict_is_empty(xbt_dict_t dict);
  *
  *  @{
  */
-XBT_PUBLIC void xbt_dict_set_ext(xbt_dict_t dict, const char* key, int key_len, void* data, void_f_pvoid_t free_ctn);
+XBT_PUBLIC void xbt_dict_set_ext(xbt_dict_t dict, const char* key, int key_len, void* data);
 XBT_PUBLIC void* xbt_dict_get_ext(xbt_dict_t dict, const char* key, int key_len);
 XBT_PUBLIC void* xbt_dict_get_or_null_ext(xbt_dict_t dict, const char* key, int key_len);
 XBT_PUBLIC void xbt_dict_remove_ext(xbt_dict_t dict, const char* key, int key_len);

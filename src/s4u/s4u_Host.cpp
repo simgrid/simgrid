@@ -429,7 +429,7 @@ xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host)
   for (auto const& elm : host->get_mounted_storages()) {
     const char* mount_name = elm.first.c_str();
     sg_storage_t storage   = elm.second;
-    xbt_dict_set(res, mount_name, (void*)storage->get_cname(), nullptr);
+    xbt_dict_set(res, mount_name, (void*)storage->get_cname());
   }
 
   return res;
@@ -551,7 +551,7 @@ xbt_dict_t sg_host_get_properties(sg_host_t host)
   if (props == nullptr)
     return nullptr;
   for (auto const& elm : *props) {
-    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
+    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()));
   }
   return as_dict;
 }
