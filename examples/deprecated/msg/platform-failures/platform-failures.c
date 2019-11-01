@@ -13,8 +13,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 static void task_cleanup_handler(void* task)
 {
-  if (task)
-    MSG_task_destroy(task);
+  MSG_task_destroy(task);
 }
 
 static int master(int argc, char *argv[])

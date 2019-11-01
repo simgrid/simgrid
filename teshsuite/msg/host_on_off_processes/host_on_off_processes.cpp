@@ -15,8 +15,7 @@ int tasks_done = 0;
 
 static void task_cleanup_handler(void* task)
 {
-  if (task)
-    MSG_task_destroy(static_cast<msg_task_t>(task));
+  MSG_task_destroy(static_cast<msg_task_t>(task));
 }
 
 static int process_daemon(int /*argc*/, char** /*argv*/)
