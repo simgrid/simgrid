@@ -2,6 +2,18 @@
 INPUT                  = ../../include/simgrid/forward.h
 INPUT                 += ../../include/simgrid/s4u
 INPUT                 += ../../include/simgrid/msg.h
+INPUT                 += ../../include/simgrid/actor.h
+INPUT                 += ../../include/simgrid/barrier.h
+INPUT                 += ../../include/simgrid/cond.h
+INPUT                 += ../../include/simgrid/engine.h
+INPUT                 += ../../include/simgrid/host.h
+#INPUT                 += ../../include/simgrid/instr.h
+INPUT                 += ../../include/simgrid/link.h
+INPUT                 += ../../include/simgrid/mailbox.h
+INPUT                 += ../../include/simgrid/mutex.h
+INPUT                 += ../../include/simgrid/semaphore.h
+INPUT                 += ../../include/simgrid/vm.h
+INPUT                 += ../../include/simgrid/zone.h
 INPUT                 += ../../src/msg/
 INPUT                 += ../../src/plugins/
 RECURSIVE              = YES
@@ -31,6 +43,8 @@ SKIP_FUNCTION_MACROS   = NO
 PREDEFINED             += \
     __cplusplus \
     DOXYGEN \
+    SG_BEGIN_DECL= \
+    SG_END_DECL= \
     XBT_PUBLIC= \
     XBT_EXPORT_NO_IMPORT= \
     XBT_IMPORT_NO_EXPORT= \

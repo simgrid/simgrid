@@ -74,16 +74,11 @@ double Engine::get_clock()
 }
 
 /**
- * @brief A platform loader.
+ * Creates a new platform, including hosts, links, and the routing table.
  *
- * Creates a new platform, including hosts, links, and the routing_table.
- * @param platf a filename of the XML description of a platform. This file follows this DTD :
- *
- *     @include src/surf/xml/simgrid.dtd
- *
- * Here is a small example of such a platform
- *
- *     @include examples/platforms/small_platform.xml
+ * \rst
+ * See also: :ref:`platform`.
+ * \endrst
  */
 void Engine::load_platform(const std::string& platf)
 {
@@ -98,23 +93,36 @@ void Engine::load_platform(const std::string& platf)
   XBT_DEBUG("PARSE TIME: %g", (end - start));
 }
 
+/** Registers the main function of an actor that will be launched from the deployment file */
 void Engine::register_function(const std::string& name, int (*code)(int, char**))
 {
   SIMIX_function_register(name, code);
 }
+/** Registers the main function of an actor that will be launched from the deployment file */
 void Engine::register_function(const std::string& name, void (*code)(std::vector<std::string>))
 {
   SIMIX_function_register(name, code);
 }
+/** Registers a function as the default main function of actors
+ *
+ * It will be used as fallback when the function requested from the deployment file was not registered.
+ * It is used for trace-based simulations (see examples/s4u/replay-comms and similar).
+ */
 void Engine::register_default(int (*code)(int, char**))
 {
   SIMIX_function_register_default(code);
 }
+/** Load a deployment file and launch the actors that it contains
+ *
+ * \rst
+ * See also: :ref:`deploy`.
+ * \endrst
+ */
 void Engine::load_deployment(const std::string& deploy)
 {
   SIMIX_launch_application(deploy);
 }
-/** @brief Returns the amount of hosts in the platform */
+/** Returns the amount of hosts in the platform */
 size_t Engine::get_host_count()
 {
   return pimpl->hosts_.size();

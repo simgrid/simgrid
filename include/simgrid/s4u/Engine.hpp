@@ -36,7 +36,7 @@ public:
   /** Finalize the default engine and all its dependencies */
   static void shutdown();
 
-  /** @brief Run the simulation */
+  /** @brief Run the simulation after initialization */
   void run();
 
   /** @brief Retrieve the simulation time (in seconds) */
@@ -44,23 +44,10 @@ public:
   /** @brief Retrieve the engine singleton */
   static s4u::Engine* get_instance();
 
-  /** @brief Load a platform file describing the environment
-   *
-   * The environment is either a XML file following the simgrid.dtd formalism, or a lua file.
-   * Some examples can be found in the directory examples/platforms.
-   */
   void load_platform(const std::string& platf);
 
-  /** Registers the main function of an actor that will be launched from the deployment file */
   void register_function(const std::string& name, int (*code)(int, char**));
-  /** Registers the main function of an actor that will be launched from the deployment file */
   void register_function(const std::string& name, void (*code)(std::vector<std::string>));
-
-  /** Registers a function as the default main function of actors
-   *
-   * It will be used as fallback when the function requested from the deployment file was not registered.
-   * It is used for trace-based simulations (see examples/s4u/replay-comms and similar).
-   */
   void register_default(int (*code)(int, char**));
 
   template <class F> void register_actor(const std::string& name)
@@ -80,7 +67,6 @@ public:
     });
   }
 
-  /** @brief Load a deployment file and launch the actors that it contains */
   void load_deployment(const std::string& deploy);
 
 protected:

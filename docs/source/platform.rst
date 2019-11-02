@@ -1,5 +1,3 @@
-.. _platform:
-
 .. raw:: html
 
    <object id="TOC" data="graphical-toc.svg" width="100%" type="image/svg+xml"></object>
@@ -11,6 +9,8 @@
    </script>
    <br/>
    <br/>
+
+.. _platform:
 
 Describing your Simulated Platform
 ##################################

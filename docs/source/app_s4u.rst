@@ -601,11 +601,37 @@ s4u::VirtualMachine
    :protected-members:
    :undoc-members:
 
+C API Reference
+***************
+
+==============
+Main functions
+==============
+
+.. doxygenfunction:: simgrid_init
+.. doxygenfunction:: simgrid_get_clock
+.. doxygenfunction:: simgrid_load_deployment
+.. doxygenfunction:: simgrid_load_platform
+.. doxygenfunction:: simgrid_register_default
+.. doxygenfunction:: simgrid_register_function
+.. doxygenfunction:: simgrid_run
+
+==================
+Condition Variable
+==================
+
+See also the :ref:`C++ API <API_s4u_ConditionVariable>`.
+
+.. doxygenfunction:: sg_cond_init
+.. doxygenfunction:: sg_cond_notify_all
+.. doxygenfunction:: sg_cond_notify_one
+.. doxygenfunction:: sg_cond_wait
+.. doxygenfunction:: sg_cond_wait_for
 
 Python API Reference
 ********************
 
-The Python API is generated with pybind11. It closely mimicks the C++
+The Python API is automatically generated with pybind11. It closely mimicks the C++
 API, to which you should refer for more information.
 
 ==========
