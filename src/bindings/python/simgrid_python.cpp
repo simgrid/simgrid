@@ -257,6 +257,9 @@ PYBIND11_MODULE(simgrid, m)
       .def("daemonize", &Actor::daemonize,
            "This actor will be automatically terminated when the last non-daemon actor finishes, see :cpp:func:`void "
            "simgrid::s4u::Actor::daemonize()`")
+      .def("is_daemon", &Actor::is_daemon,
+           "Returns True if that actor is a daemon and will be terminated automatically when the last non-daemon actor "
+           "terminates.")
       .def("join", py::overload_cast<double>(&Actor::join),
            "Wait for the actor to finish, see :cpp:func:`void simgrid::s4u::Actor::join(double)`", py::arg("timeout"))
       .def("kill", [](ActorPtr act) { act->kill(); }, "Kill that actor")
