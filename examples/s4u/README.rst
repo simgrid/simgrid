@@ -1,10 +1,5 @@
-.. S4U (Simgrid for you) is the next interface of SimGrid, expected to be released with SimGrid 4.0.
+.. S4U (Simgrid for you) is the modern interface of SimGrid, which new project should use.
 ..
-.. Even if it is not completely rock stable yet, it may well already fit
-.. your needs. You are welcome to try it and report any interface
-.. glitches that you see. Be however warned that the interface may change
-.. until the final release.  You will have to adapt your code on the way.
-.. 
 .. This file follows the ReStructured syntax to be included in the
 .. documentation, but it should remain readable directly.
 
@@ -37,47 +32,165 @@ Starting and Stoping Actors
 ---------------------------
 
   - **Creating actors:**
-    Most actors are started from the deployment XML file, but there is other methods.
-    This example show them all.
-    `examples/python/actor-create/actor-create_d.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-create/actor-create_d.xml>`_
+    Most actors are started from the deployment XML file, because this
+    is a :ref:`better scientific habbit <howto_science>`, but you can
+    also create them directly from your code.
+
+    .. tabs::
     
-    - |cpp| `examples/s4u/actor-create/s4u-actor-create.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-create/s4u-actor-create.cpp>`_
-    - |py|  `examples/python/actor-create/actor-create.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-create/actor-create.py>`_
+       .. group-tab:: C++
+       
+          You create actors either:
+             
+          - Directly with :cpp:func:`simgrid::s4u::Actor::create`
+          - From XML with :cpp:func:`simgrid::s4u::Engine::register_actor` (if your actor is a class)
+            or :cpp:func:`simgrid::s4u::Engine::register_function` (if your actor is a function)
+            and then :cpp:func:`simgrid::s4u::Engine::load_deployment`
+             
+          .. toggle-header::
+             :header: View examples/s4u/actor-create/s4u-actor-create.cpp
+             
+             `Download s4u-actor-create.cpp <https://framagit.org/simgrid/simgrid/raw/master/examples/s4u/actor-create/s4u-actor-create.cpp?inline=false>`_
+          
+             .. literalinclude:: ../../examples/s4u/actor-create/s4u-actor-create.cpp
+                :language: cpp
+             
+       .. group-tab:: Python
+       
+          You create actors either:
+            
+          - Directly with :py:func:`simgrid.Actor.create()`
+          - From XML with :py:func:`simgrid.Engine.register_actor()` and then :py:func:`simgrid.Engine.load_deployment()`
+               
+          .. toggle-header::
+             :header: View examples/python/actor-create/actor-create.py 
+             
+             `Download actor-create.py <https://framagit.org/simgrid/simgrid/raw/master/examples/python/actor-create/actor-create.py?inline=false>`_
+       
+             .. literalinclude:: ../../examples/python/actor-create/actor-create.py
+             
+       .. group-tab:: XML
+       
+          The following file is used in both C++ and Python.
+          
+          .. toggle-header::
+             :header: View examples/python/actor-create/actor-create_d.xml
+       
+             `Download actor-create_d.xml <https://framagit.org/simgrid/simgrid/raw/master/examples/python/actor-create/actor-create_d.xml?inline=false>`_
+    
+             .. literalinclude:: ../../examples/python/actor-create/actor-create_d.xml
+                :language: xml
 
-  - **React to the end of actors:**
-    You can attach a callback to the end of actors. There is two ways
-    of doing so, depending of whether you want your callback to be
-    executed when a specific actor ends (with ```this_actor::on_exit()```)
-    or whether it should be executed when any actor ends (with
-    ```Actor::on_termination()```) or when it gets destroyed (with
-    ```Actor::on_destruction()```)
+  - **React to the end of actors:** You can attach callbacks to the end of
+    actors. There is several ways of doing so, depending on whether you want to
+    attach your callback to a given actor and on how you define the end of a
+    given actor. User code probably want to react to the termination of an actor
+    while some plugins want to react to the destruction (memory collection) of
+    actors.
 
-    - |cpp| `examples/s4u/actor-exiting/s4u-actor-exiting.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-exiting/s4u-actor-exiting.cpp>`_
+    .. tabs::
+    
+       .. group-tab:: C++
+
+          This example shows how to attach a callback to:
+
+          - the end of a specific actor: :cpp:func:`simgrid::s4u::this_actor::on_exit()`
+          - the end of any actor: :cpp:member:`simgrid::s4u::Actor::on_termination()`
+          - the destruction of any actor: :cpp:member:`simgrid::s4u::Actor::on_destruction()`
+
+          .. toggle-header::
+             :header: View examples/s4u/actor-exiting/s4u-actor-exiting.cpp
+             
+             `Download s4u-actor-exiting.cpp <https://framagit.org/simgrid/simgrid/raw/master/examples/s4u/actor-exiting/s4u-actor-exiting.cpp?inline=false>`_
+             
+             .. literalinclude:: ../../examples/s4u/actor-exiting/s4u-actor-exiting.cpp
+                :language: cpp
 
   - **Kill actors:**
     Actors can forcefully stop other actors.
     
-    - |cpp| `examples/s4u/actor-kill/s4u-actor-kill.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-kill/s4u-actor-kill.cpp>`_
-      :cpp:func:`void simgrid::s4u::Actor::kill(void)`,
-      :cpp:func:`void simgrid::s4u::Actor::kill_all()`,
-      :cpp:func:`simgrid::s4u::this_actor::exit`.
-    - |py| `examples/python/actor-kill/actor-kill.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-kill/actor-kill.py>`_
-      :py:func:`simgrid.Actor.kill`,
-      :py:func:`simgrid.Actor.kill_all`, 
-      :py:func:`simgrid.this_actor.exit`.
+    .. tabs::
+    
+       .. group-tab:: C++
+       
+          See also :cpp:func:`void simgrid::s4u::Actor::kill(void)`, :cpp:func:`void simgrid::s4u::Actor::kill_all()`, :cpp:func:`simgrid::s4u::this_actor::exit`.
+
+          .. toggle-header::
+             :header: View examples/s4u/actor-kill/s4u-actor-kill.cpp
+             
+             `Download s4u-actor-kill.cpp <https://framagit.org/simgrid/simgrid/raw/master/examples/s4u/actor-kill/s4u-actor-kill.cpp?inline=false>`_
+             
+             .. literalinclude:: ../../examples/s4u/actor-kill/s4u-actor-kill.cpp
+                :language: cpp
+                
+       .. group-tab:: Python
+
+          See also :py:func:`simgrid.Actor.kill`, :py:func:`simgrid.Actor.kill_all`, :py:func:`simgrid.this_actor.exit`.
+
+          .. toggle-header::
+             :header: View examples/python/actor-kill/actor-kill.py
+             
+             `Download actor-kill.py <https://framagit.org/simgrid/simgrid/raw/master/examples/python/actor-kill/actor-kill.py>`_
+             
+             .. literalinclude:: ../../examples/python/actor-kill/actor-kill.py
 
   - **Controling the actor life cycle from the XML:**
-    You can specify a start time and a kill time in the deployment
-    file.
-    |br| `examples/s4u/actor-lifetime/s4u-actor-lifetime.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-lifetime/s4u-actor-lifetime.cpp>`_
-    |br| `examples/s4u/actor-lifetime/s4u-actor-lifetime_d.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-lifetime/s4u-actor-lifetime_d.xml>`_
+    You can specify a start time and a kill time in the deployment file.
+
+    .. tabs::
+
+       .. group-tab:: C++
+
+          This file is not really interesting: the important matter is in the XML file.
+
+          .. toggle-header::
+             :header: View examples/s4u/actor-lifetime/s4u-actor-lifetime.cpp
+             
+             `Download s4u-actor-lifetime.cpp <https://framagit.org/simgrid/simgrid/raw/master/examples/s4u/actor-lifetime/s4u-actor-lifetime.cpp?inline=false>`_
+             
+             .. literalinclude:: ../../examples/s4u/actor-lifetime/s4u-actor-lifetime.cpp
+                :language: cpp
+
+       .. group-tab:: XML
+
+          This demonstrates the ``start_time`` and ``kill_time`` attribute of the :ref:`pf_tag_actor` tag.
+
+          .. toggle-header::
+             :header: View examples/s4u/actor-lifetime/s4u-actor-lifetime_d.xml
+             
+             `Download s4u-actor-lifetime_d.xml <https://framagit.org/simgrid/simgrid/raw/master/examples/s4u/actor-lifetime/s4u-actor-lifetime_d.xml?inline=false>`_
+             
+             .. literalinclude:: ../../examples/s4u/actor-lifetime/s4u-actor-lifetime_d.xml
+                :language: xml
 
   - **Daemonize actors:**
     Some actors may be intended to simulate daemons that run in background. This example show how to transform a regular
     actor into a daemon that will be automatically killed once the simulation is over.
     
-    - |cpp| `examples/s4u/actor-daemon/s4u-actor-daemon.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-daemon/s4u-actor-daemon.cpp>`_
-    - |py|  `examples/python/actor-daemon/actor-daemon.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-daemon/actor-daemon.py>`_
+    .. tabs::
+
+       .. group-tab:: C++
+
+          See also :cpp:func:`simgrid::s4u::Actor::daemonize()` and :cpp:func:`simgrid::s4u::Actor::is_daemon()`.
+
+          .. toggle-header::
+             :header: View examples/s4u/actor-daemon/s4u-actor-daemon.cpp
+             
+             `Download s4u-actor-daemon.cpp <https://framagit.org/simgrid/simgrid/raw/master/examples/s4u/actor-daemon/s4u-actor-daemon.cpp?inline=false>`_
+             
+             .. literalinclude:: ../../examples/s4u/actor-daemon/s4u-actor-daemon.cpp
+                :language: cpp
+
+       .. group-tab:: Python
+
+          See also :py:func:`simgrid.Actor.daemonize()` and :py:func:`simgrid.Actor.is_daemon()`.
+
+          .. toggle-header::
+             :header: View examples/python/actor-daemon/actor-daemon.py
+             
+             `Download actor-daemon.py <https://framagit.org/simgrid/simgrid/raw/master/examples/python/actor-daemon/actor-daemon.py?inline=false>`_
+             
+             .. literalinclude:: ../../examples/python/actor-daemon/actor-daemon.py
     
 Inter-Actors Interactions
 -------------------------

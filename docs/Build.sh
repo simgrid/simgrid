@@ -41,18 +41,18 @@ perl -pe 's/(xlink:href="(?:http|.*\.html))/target="_top" $1/' \
 echo "List of missing references:"
 for f in $( (grep '<name>' build/xml/msg_8h.xml; \
              grep '<name>' build/xml/namespacesimgrid_1_1s4u.xml; \
-	     grep '<name>' build/xml/actor_8h.xml ; \
-	     grep '<name>' build/xml/barrier_8h.xml ; \
+#	     grep '<name>' build/xml/actor_8h.xml ; \
+#	     grep '<name>' build/xml/barrier_8h.xml ; \
 	     grep '<name>' build/xml/cond_8h.xml ; \
 	     grep '<name>' build/xml/engine_8h.xml ; \
-	     grep '<name>' build/xml/host_8h.xml ; \
-	     grep '<name>' build/xml/link_8h.xml ; \
-	     grep '<name>' build/xml/mailbox_8h.xml ; \
+#	     grep '<name>' build/xml/host_8h.xml ; \
+#	     grep '<name>' build/xml/link_8h.xml ; \
+#	     grep '<name>' build/xml/mailbox_8h.xml ; \
 	     grep '<name>' build/xml/msg_8h.xml ; \
-	     grep '<name>' build/xml/mutex_8h.xml ; \
-	     grep '<name>' build/xml/semaphore_8h.xml ; \
-	     grep '<name>' build/xml/vm_8h.xml ; \
-	     grep '<name>' build/xml/zone_8h.xml ; \
+#	     grep '<name>' build/xml/mutex_8h.xml ; \
+#	     grep '<name>' build/xml/semaphore_8h.xml ; \
+#	     grep '<name>' build/xml/vm_8h.xml ; \
+#	     grep '<name>' build/xml/zone_8h.xml ; \
              grep '<innerclass refid=' build/xml/namespacesimgrid_1_1s4u.xml ; \
             ) | sed 's/<[^>]*>//g' | sort )
 do

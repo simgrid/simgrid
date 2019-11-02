@@ -55,8 +55,10 @@ extensions = [
     'sphinx.ext.intersphinx',
     #    'sphinx.ext.napoleon',
     'sphinx.ext.autosummary',
-    'hidden_code_block',
+    'sphinx_tabs.tabs',
+    'sphinxcontrib.contentui',
     'javasphinx',
+    #'showfile',
 ]
 
 todo_include_todos = True
