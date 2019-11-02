@@ -58,7 +58,7 @@ extensions = [
     'sphinx_tabs.tabs',
     'sphinxcontrib.contentui',
     'javasphinx',
-    #'showfile',
+    'showfile',
 ]
 
 todo_include_todos = True
