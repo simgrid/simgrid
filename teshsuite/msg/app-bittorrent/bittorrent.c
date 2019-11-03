@@ -8,14 +8,9 @@
 #include "tracker.h"
 #include <simgrid/msg.h>
 
-#include <stdio.h> /* snprintf */
-
 /** Bittorrent example launcher */
 int main(int argc, char* argv[])
 {
-  msg_host_t host;
-  unsigned i;
-
   MSG_init(&argc, argv);
 
   /* Check the arguments */
@@ -23,20 +18,12 @@ int main(int argc, char* argv[])
 
   MSG_create_environment(argv[1]);
 
-  xbt_dynar_t host_list = MSG_hosts_as_dynar();
-  xbt_dynar_foreach (host_list, i, host) {
-    char descr[512];
-    snprintf(descr, sizeof descr, "RngSream<%s>", MSG_host_get_name(host));
-  }
-
   MSG_function_register("tracker", tracker);
   MSG_function_register("peer", peer);
 
   MSG_launch_application(argv[2]);
 
   MSG_main();
-
-  xbt_dynar_free(&host_list);
 
   return 0;
 }
