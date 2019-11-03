@@ -136,7 +136,7 @@ class XBT_PUBLIC Actor : public xbt::Extendable<Actor> {
   explicit Actor(smx_actor_t pimpl) : pimpl_(pimpl) {}
 
 public:
-
+#ifndef DOXYGEN
   // ***** No copy *****
   Actor(Actor const&) = delete;
   Actor& operator=(Actor const&) = delete;
@@ -144,6 +144,8 @@ public:
   // ***** Reference count *****
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Actor * actor);
   friend XBT_PUBLIC void intrusive_ptr_release(Actor * actor);
+#endif
+  /** Retrive the amount of references on that object. Useful to debug the automatic refcounting */
   int get_refcount();
 
   // ***** Actor creation *****
