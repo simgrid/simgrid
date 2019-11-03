@@ -19,10 +19,11 @@ namespace simgrid {
 namespace msg {
 
 Task::Task(const std::string& name, double flops_amount, double bytes_amount, void* data)
-    : name_(name), userdata_(data), flops_amount(flops_amount), bytes_amount(bytes_amount)
+    : name_(name), flops_amount(flops_amount), bytes_amount(bytes_amount)
 {
   static std::atomic_ullong counter{0};
   id_ = counter++;
+  set_data(data);
   if (MC_is_active())
     MC_ignore_heap(&(id_), sizeof(id_));
 }
@@ -243,13 +244,13 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
 /** @brief Return the user data of the given task */
 void* MSG_task_get_data(msg_task_t task)
 {
-  return task->get_user_data();
+  return task->get_data();
 }
 
 /** @brief Sets the user data of a given task */
 void MSG_task_set_data(msg_task_t task, void *data)
 {
-  task->set_user_data(data);
+  task->set_data(data);
 }
 
 /** @brief Returns the sender of the given task */

@@ -10,16 +10,16 @@
 #include "simgrid/msg.h"
 #include "src/kernel/activity/CommImpl.hpp"
 #include <simgrid/modelchecker.h>
+#include <xbt/Extendable.hpp>
 
 #include <cmath>
 
 /**************** datatypes **********************************/
 namespace simgrid {
 namespace msg {
-class Task {
+class Task : public xbt::Extendable<Task> {
   std::string name_             = "";
   std::string tracing_category_ = "";
-  void* userdata_               = nullptr;
   long long int id_;
 
   double timeout_  = 0.0;
@@ -59,8 +59,8 @@ public:
   void set_tracing_category(const char* category) { tracing_category_ = category ? std::string(category) : ""; }
   const std::string& get_tracing_category() { return tracing_category_; }
   bool has_tracing_category() { return not tracing_category_.empty(); }
-  void* get_user_data() { return userdata_; }
-  void set_user_data(void* data) { userdata_ = data; }
+  XBT_ATTRIB_DEPRECATED_v329("Please use set_data()") void* get_user_data() { return get_data(); }
+  XBT_ATTRIB_DEPRECATED_v329("Please use get_data()") void set_user_data(void* data) { set_data(data); }
   long long int get_id() { return id_; }
   double get_priority() { return priority_; }
   void set_priority(double priority);
