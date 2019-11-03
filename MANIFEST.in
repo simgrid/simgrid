@@ -273,7 +273,6 @@ include examples/python/exec-dvfs/exec-dvfs.py
 include examples/python/exec-dvfs/exec-dvfs.tesh
 include examples/python/exec-remote/exec-remote.py
 include examples/python/exec-remote/exec-remote.tesh
-include examples/s4u/README.rst
 include examples/s4u/actor-create/s4u-actor-create.cpp
 include examples/s4u/actor-create/s4u-actor-create.tesh
 include examples/s4u/actor-create/s4u-actor-create_d.xml
@@ -1768,6 +1767,7 @@ include docs/source/Tutorial_Algorithms.rst
 include docs/source/Tutorial_MPI_Applications.rst
 include docs/source/XML_Reference.rst
 include docs/source/_ext/hidden_code_block.py
+include docs/source/_ext/showfile.py
 include docs/source/_templates/breadcrumbs.html
 include docs/source/app_msg.rst
 include docs/source/app_s4u.rst
@@ -1779,8 +1779,6 @@ include docs/source/img/eclipseScreenShot.png
 include docs/source/img/extlink.png
 include docs/source/img/extlink.svg
 include docs/source/img/graphical-toc.svg
-include docs/source/img/lang_cpp.png
-include docs/source/img/lang_python.png
 include docs/source/img/smpi_simgrid_alltoall_pair_16.png
 include docs/source/img/smpi_simgrid_alltoall_ring_16.png
 include docs/source/img/zone_hierarchy.png
@@ -1810,6 +1808,7 @@ include docs/source/tuto_smpi/gemm_mpi.cpp
 include docs/source/tuto_smpi/img/big-picture.svg
 include docs/source/tuto_smpi/img/lu.S.4.png
 include docs/source/tuto_smpi/roundtrip.c
+include examples/README.rst
 include examples/deprecated/java/.classpath
 include examples/deprecated/java/.project
 include examples/deprecated/java/CMakeLists.txt

@@ -71,9 +71,9 @@ done
 
 echo "Undocumented examples:"
 for ex in `(cd .. ; find examples/s4u/ -name '*.cpp'; find examples/python -name '*.py')|sort` ; do
-    if grep -q "example-tab:: $ex" ../examples/s4u/README.rst ; then :
+    if grep -q "example-tab:: $ex" ../examples/README.rst ; then :
 #        echo "found example-tab:: $ex"
-    elif grep -q "showfile:: $ex" ../examples/s4u/README.rst ; then :
+    elif grep -q "showfile:: $ex" ../examples/README.rst ; then :
     else
         echo $ex
     fi

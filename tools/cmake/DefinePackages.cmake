@@ -862,6 +862,8 @@ set(DOC_SOURCES
   doc/doxygen/uhood_switch.doc
   doc/doxygen/uhood_arch.doc
 
+  examples/README.rst
+
   docs/manpages/smpicc.1
   docs/manpages/smpicxx.1
   docs/manpages/smpif90.1

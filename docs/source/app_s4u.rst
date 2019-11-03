@@ -138,10 +138,6 @@ provides many helper functions to simplify the code of actors.
 
 .. |API_s4u_Mutex| replace:: **Mutex**
 
-.. THE EXAMPLES
-
-.. include:: ../../examples/s4u/README.rst
-
 Activities
 **********
 
@@ -368,6 +364,10 @@ Note that Mailboxes, Hosts and Links are not handled thought smart
 pointers (yet?). This means that it is currently impossible to destroy a
 mailbox or a link. You can still destroy an host (but probably
 shouldn't), using :cpp:func:`simgrid::s4u::Host::destroy`.
+
+.. THE EXAMPLES
+
+.. include:: ../../examples/README.rst
 
 C++ API Reference
 *****************

@@ -187,6 +187,5 @@ set(bin_files     ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/gener
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p1.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm.txt
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/replay-io/s4u-replay-io.txt
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/README.rst                                   PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/replay-io/s4u-replay-io.txt                  PARENT_SCOPE)
 
