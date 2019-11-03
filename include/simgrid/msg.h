@@ -312,7 +312,6 @@ XBT_PUBLIC double MSG_get_clock();
 XBT_PUBLIC unsigned long int MSG_get_sent_msg();
 
 /************************** Process handling *********************************/
-XBT_PUBLIC void MSG_process_userdata_init();
 XBT_PUBLIC msg_process_t MSG_process_create(const char* name, xbt_main_func_t code, void* data, msg_host_t host);
 XBT_PUBLIC msg_process_t MSG_process_create_with_arguments(const char* name, xbt_main_func_t code, void* data,
                                                            msg_host_t host, int argc, char** argv);

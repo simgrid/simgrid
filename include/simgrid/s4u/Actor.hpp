@@ -145,7 +145,7 @@ public:
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Actor * actor);
   friend XBT_PUBLIC void intrusive_ptr_release(Actor * actor);
 #endif
-  /** Retrive the amount of references on that object. Useful to debug the automatic refcounting */
+  /** Retrieve the amount of references on that object. Useful to debug the automatic refcounting */
   int get_refcount();
 
   // ***** Actor creation *****

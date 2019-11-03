@@ -88,7 +88,6 @@ This describes the process structure :cpp:type:`msg_process_t` and the functions
 .. doxygenfunction:: MSG_process_sleep
 .. doxygenfunction:: MSG_process_suspend
 .. doxygenfunction:: MSG_process_unref
-.. doxygenfunction:: MSG_process_userdata_init
 .. doxygenfunction:: MSG_process_yield
 
 Host Management
