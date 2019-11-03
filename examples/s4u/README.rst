@@ -38,7 +38,7 @@ Starting and Stoping Actors
 
     .. tabs::
     
-       .. group-tab:: C++
+       .. example-tab:: examples/s4u/actor-create/s4u-actor-create.cpp
        
           You create actors either:
              
@@ -47,24 +47,16 @@ Starting and Stoping Actors
             or :cpp:func:`simgrid::s4u::Engine::register_function` (if your actor is a function)
             and then :cpp:func:`simgrid::s4u::Engine::load_deployment`
              
-          .. showfile:: examples/s4u/actor-create/s4u-actor-create.cpp
-             :language: cpp
-             
-       .. group-tab:: Python
+       .. example-tab:: examples/python/actor-create/actor-create.py
        
           You create actors either:
             
           - Directly with :py:func:`simgrid.Actor.create()`
           - From XML with :py:func:`simgrid.Engine.register_actor()` and then :py:func:`simgrid.Engine.load_deployment()`
-               
-          .. showfile:: examples/python/actor-create/actor-create.py 
              
-       .. group-tab:: XML
+       .. example-tab:: examples/python/actor-create/actor-create_d.xml
        
           The following file is used in both C++ and Python.
-          
-          .. showfile:: examples/python/actor-create/actor-create_d.xml
-             :language: xml
 
   - **React to the end of actors:** You can attach callbacks to the end of
     actors. There is several ways of doing so, depending on whether you want to
@@ -75,7 +67,7 @@ Starting and Stoping Actors
 
     .. tabs::
     
-       .. group-tab:: C++
+       .. example-tab:: examples/s4u/actor-exiting/s4u-actor-exiting.cpp
 
           This example shows how to attach a callback to:
 
@@ -83,45 +75,32 @@ Starting and Stoping Actors
           - the end of any actor: :cpp:member:`simgrid::s4u::Actor::on_termination()`
           - the destruction of any actor: :cpp:member:`simgrid::s4u::Actor::on_destruction()`
 
-          .. showfile:: examples/s4u/actor-exiting/s4u-actor-exiting.cpp
-             :language: cpp
-
   - **Kill actors:**
     Actors can forcefully stop other actors.
     
     .. tabs::
     
-       .. group-tab:: C++
+       .. example-tab:: examples/s4u/actor-kill/s4u-actor-kill.cpp
        
-          See also :cpp:func:`void simgrid::s4u::Actor::kill(void)`, :cpp:func:`void simgrid::s4u::Actor::kill_all()`, :cpp:func:`simgrid::s4u::this_actor::exit`.
+          See also :cpp:func:`void simgrid::s4u::Actor::kill(void)`, :cpp:func:`void simgrid::s4u::Actor::kill_all()`,
+          :cpp:func:`simgrid::s4u::this_actor::exit`.
 
-          .. showfile:: examples/s4u/actor-kill/s4u-actor-kill.cpp
-             :language: cpp
-                
-       .. group-tab:: Python
+       .. example-tab:: examples/python/actor-kill/actor-kill.py
 
           See also :py:func:`simgrid.Actor.kill`, :py:func:`simgrid.Actor.kill_all`, :py:func:`simgrid.this_actor.exit`.
-
-          .. showfile:: examples/python/actor-kill/actor-kill.py
 
   - **Controling the actor life cycle from the XML:**
     You can specify a start time and a kill time in the deployment file.
 
     .. tabs::
 
-       .. group-tab:: C++
+       .. example-tab:: examples/s4u/actor-lifetime/s4u-actor-lifetime.cpp
 
           This file is not really interesting: the important matter is in the XML file.
 
-          .. showfile:: examples/s4u/actor-lifetime/s4u-actor-lifetime.cpp
-             :language: cpp
-
-       .. group-tab:: XML
+       .. example-tab:: examples/s4u/actor-lifetime/s4u-actor-lifetime_d.xml
 
           This demonstrates the ``start_time`` and ``kill_time`` attribute of the :ref:`pf_tag_actor` tag.
-
-          .. showfile:: examples/s4u/actor-lifetime/s4u-actor-lifetime_d.xml
-             :language: xml
 
   - **Daemonize actors:**
     Some actors may be intended to simulate daemons that run in background. This example show how to transform a regular
@@ -129,19 +108,14 @@ Starting and Stoping Actors
     
     .. tabs::
 
-       .. group-tab:: C++
+       .. example-tab:: examples/s4u/actor-daemon/s4u-actor-daemon.cpp
 
           See also :cpp:func:`simgrid::s4u::Actor::daemonize()` and :cpp:func:`simgrid::s4u::Actor::is_daemon()`.
 
-          .. showfile:: examples/s4u/actor-daemon/s4u-actor-daemon.cpp
-             :language: cpp
-
-       .. group-tab:: Python
+       .. example-tab:: examples/python/actor-daemon/actor-daemon.py
 
           See also :py:func:`simgrid.Actor.daemonize()` and :py:func:`simgrid.Actor.is_daemon()`.
 
-          .. showfile:: examples/python/actor-daemon/actor-daemon.py
-    
 Inter-Actors Interactions
 -------------------------
 
@@ -152,38 +126,60 @@ synchronization objects <s4u_ex_IPC>`.
   - **Suspend and Resume actors:**    
     Actors can be suspended and resumed during their executions.
 
-    - |cpp| `examples/s4u/actor-suspend/s4u-actor-suspend.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-suspend/s4u-actor-suspend.cpp>`_
-      :cpp:func:`simgrid::s4u::this_actor::suspend()`,
-      :cpp:func:`simgrid::s4u::Actor::suspend()`, :cpp:func:`simgrid::s4u::Actor::resume()`, :cpp:func:`simgrid::s4u::Actor::is_suspended()`.
-    - |py|  `examples/python/actor-suspend/actor-suspend.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-suspend/actor-suspend.py>`_
-      :py:func:`simgrid.this_actor.suspend()`,
-      :py:func:`simgrid.Actor.suspend()`, :py:func:`simgrid.Actor.resume()`, :py:func:`simgrid.Actor.is_suspended()`.
+    .. tabs::
+
+       .. example-tab:: examples/s4u/actor-suspend/s4u-actor-suspend.cpp
+
+          See also :cpp:func:`simgrid::s4u::this_actor::suspend()`,
+          :cpp:func:`simgrid::s4u::Actor::suspend()`, :cpp:func:`simgrid::s4u::Actor::resume()` and
+          :cpp:func:`simgrid::s4u::Actor::is_suspended()`.
+
+       .. example-tab:: examples/python/actor-suspend/actor-suspend.py
+
+          See also :py:func:`simgrid.this_actor.suspend()`,
+          :py:func:`simgrid.Actor.suspend()`, :py:func:`simgrid.Actor.resume()` and
+          :py:func:`simgrid.Actor.is_suspended()`.
 
   - **Migrating Actors:**
     Actors can move or be moved from a host to another very easily.
-    
-    - |cpp| `examples/s4u/actor-migrate/s4u-actor-migrate.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-migrate/s4u-actor-migrate.cpp>`_
-      :cpp:func:`simgrid::s4u::this_actor::migrate()`
-    - |py|  `examples/python/actor-migrate/actor-migrate.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-migrate/actor-migrate.py>`_
-      :py:func:`simgrid.this_actor.migrate()`
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/actor-migrate/s4u-actor-migrate.cpp
+
+          See also :cpp:func:`simgrid::s4u::this_actor::migrate()` and :cpp:func:`simgrid::s4u::Actor::migrate()`.
+
+       .. example-tab:: examples/python/actor-migrate/actor-migrate.py
+
+          See also :py:func:`simgrid.this_actor.migrate()` and :py:func:`simgrid.Actor.migrate()`.
 
   - **Waiting for the termination of an actor:** (joining on it)
     You can block the current actor until the end of another actor.
-    
-    - |cpp| `examples/s4u/actor-join/s4u-actor-join.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-join/s4u-actor-join.cpp>`_
-      :cpp:func:`simgrid::s4u::Actor::join()`
-    - |py|  `examples/python/actor-join/actor-join.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-join/actor-join.py>`_
-      :py:func:`simgrid.Actor.join()`
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/actor-join/s4u-actor-join.cpp
+
+          See also :cpp:func:`simgrid::s4u::Actor::join()`.
+
+       .. example-tab:: examples/python/actor-join/actor-join.py
+
+          See also :py:func:`simgrid.Actor.join()`.
 
   - **Yielding to other actors**.
     The ```yield()``` function interrupts the execution of the current
     actor, leaving a chance to the other actors that are ready to run
     at this timestamp.
-    
-    - |cpp| `examples/s4u/actor-yield/s4u-actor-yield.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/actor-yield/s4u-actor-yield.cpp>`_
-      :cpp:func:`simgrid::s4u::this_actor::yield()`
-    - |py|  `examples/python/actor-yield/actor-yield.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/actor-yield/actor-yield.py>`_
-      :py:func:`simgrid.this_actor.yield_()`
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/actor-yield/s4u-actor-yield.cpp
+
+          See also :cpp:func:`simgrid::s4u::this_actor::yield()`.
+
+       .. example-tab:: examples/python/actor-yield/actor-yield.py
+
+          See also :py:func:`simgrid.this_actor.yield_()`.
 
 Traces Replay as a Workload
 ---------------------------
@@ -207,12 +203,18 @@ also the tesh files in the example directories for details.
   - **Communication replay:**
     Presents a set of event handlers reproducing classical communication
     primitives (asynchronous send/receive at the moment).
-    |br| `examples/s4u/replay-comm/s4u-replay-comm.cpp  <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/replay-comm/s4u-replay-comm.cpp>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/replay-comm/s4u-replay-comm.cpp
 
   - **I/O replay:**
     Presents a set of event handlers reproducing classical I/O
     primitives (open, read, close).
-    |br| `examples/s4u/replay-io/s4u-replay-io.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/replay-io/s4u-replay-io.cpp>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/replay-io/s4u-replay-io.cpp
 
 ==========================
 Activities: what Actors do
@@ -227,33 +229,46 @@ Communications on the Network
    Illustrates how to have non-blocking communications, that are
    communications running in the background leaving the process free
    to do something else during their completion. 
-   
-   - |cpp| `examples/s4u/async-wait/s4u-async-wait.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-wait/s4u-async-wait.cpp>`_
-     :cpp:func:`simgrid::s4u::Mailbox::put_async()` and :cpp:func:`simgrid::s4u::Comm::wait()`
-   - |py|  `examples/python/async-wait/async-wait.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/async-wait/async-wait.py>`_
-     :py:func:`simgrid.Mailbox.put_async()` :py:func:`simgrid.Comm.wait()`
+
+   .. tabs::
+
+      .. example-tab:: examples/s4u/async-wait/s4u-async-wait.cpp
+
+         See also :cpp:func:`simgrid::s4u::Mailbox::put_async()` and :cpp:func:`simgrid::s4u::Comm::wait()`.
+
+      .. example-tab:: examples/python/async-wait/async-wait.py
+
+         See also :py:func:`simgrid.Mailbox.put_async()` and :py:func:`simgrid.Comm.wait()`.
 
  - **Waiting for all communications in a set:**
-   The `wait_all()` function is useful when you want to block until
+   The ``wait_all()`` function is useful when you want to block until
    all activities in a given set have completed. 
    
-   - |cpp| `examples/s4u/async-waitall/s4u-async-waitall.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-waitall/s4u-async-waitall.cpp>`_
-     :cpp:func:`simgrid::s4u::Comm::wait_all()`
-   - |py| `examples/python/async-waitall/async-waitall.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/async-waitall/async-waitall.py>`_
-     :py:func:`simgrid.Comm.wait_all()`
+   .. tabs::
+
+      .. example-tab:: examples/s4u/async-waitall/s4u-async-waitall.cpp
+
+         See also :cpp:func:`simgrid::s4u::Comm::wait_all()`.
+
+      .. example-tab:: examples/python/async-waitall/async-waitall.py
+
+         See also :py:func:`simgrid.Comm.wait_all()`.
 
  - **Waiting for the first completed communication in a set:**
-   The `wait_any()` function is useful
+   The ``wait_any()`` function is useful
    when you want to block until one activity of the set completes, no
    matter which terminates first.
    
-   - |cpp| `examples/s4u/async-waitany/s4u-async-waitany.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/async-waitany/s4u-async-waitany.cpp>`_
-     :cpp:func:`simgrid::s4u::Comm::wait_any()`
-   - |py| `examples/python/async-waitany/async-waitany.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/async-waitany/async-waitany.py>`_
-     :py:func:`simgrid.Comm.wait_any()`
+   .. tabs::
+
+      .. example-tab:: examples/s4u/async-waitany/s4u-async-waitany.cpp
+
+         See also :cpp:func:`simgrid::s4u::Comm::wait_any()`.
+
+      .. example-tab:: examples/python/async-waitany/async-waitany.py
+
+         See also :py:func:`simgrid.Comm.wait_any()`.
      
-.. todo:: review the `ready` and `waituntil` examples and add them here.
-   
 .. _s4u_ex_execution:
 
 Executions on the CPU
@@ -265,40 +280,85 @@ Executions on the CPU
     the actor until a given amount of flops gets computed on its simulated
     host. Some executions can be given an higher priority so that they
     get more resources.
-    
-    - |cpp| `examples/s4u/exec-basic/s4u-exec-basic.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-basic/s4u-exec-basic.cpp>`_
-    - |py|  `examples/python/exec-basic/exec-basic.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/exec-basic/exec-basic.py>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/exec-basic/s4u-exec-basic.cpp
+
+          See also :cpp:func:`void simgrid::s4u::this_actor::execute(double)`
+          and :cpp:func:`void simgrid::s4u::this_actor::execute(double, double)`.
+
+       .. example-tab:: examples/python/exec-basic/exec-basic.py
+
+          See also :py:func:`simgrid.this_actor.execute()`.
 
   - **Asynchronous execution:**
     You can start asynchronous executions, just like you would fire
     background threads.
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/exec-async/s4u-exec-async.cpp
+
+          See also :cpp:func:`simgrid::s4u::this_actor::exec_init()`,
+          :cpp:func:`simgrid::s4u::Activity::start()`,
+          :cpp:func:`simgrid::s4u::Activity::wait()`,
+          :cpp:func:`simgrid::s4u::Activity::get_remaining()`,
+          :cpp:func:`simgrid::s4u::Exec::get_remaining_ratio()`,
+          :cpp:func:`simgrid::s4u::this_actor::exec_async()` and
+          :cpp:func:`simgrid::s4u::Activity::cancel()`.
+
+       .. example-tab:: examples/python/exec-async/exec-async.py
     
-    - |cpp| `examples/s4u/exec-async/s4u-exec-async.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-async/s4u-exec-async.cpp>`_
-    - |py|  `examples/python/exec-async/exec-async.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/exec-async/exec-async.py>`_
-    
+          See also :py:func:`simgrid.this_actor::exec_init()`,
+          :py:func:`simgrid.Activity::start()`,
+          :py:func:`simgrid.Activity.wait()`,
+          :py:func:`simgrid.Activity.get_remaining()`,
+          :py:func:`simgrid.Exec.get_remaining_ratio()`,
+          :py:func:`simgrid.this_actor.exec_async()` and
+          :py:func:`simgrid.Activity.cancel()`.
+
   - **Remote execution:**
     You can start executions on remote hosts, or even change the host
     on which they occur during their execution.
-    
-    - |cpp| `examples/s4u/exec-remote/s4u-exec-remote.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-remote/s4u-exec-remote.cpp>`_
-    - |py| `examples/python/exec-remote/exec-remote.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/exec-remote/exec-remote.py>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/exec-remote/s4u-exec-remote.cpp
+
+          See also :cpp:func:`simgrid::s4u::Exec::set_host()`.
+
+       .. example-tab:: examples/python/exec-remote/exec-remote.py
+
+          See also :py:func:`simgrid.Exec.set_host()`.
 
   - **Parallel executions:**
     These objects are convenient abstractions of parallel
     computational kernels that span over several machines, such as a
     PDGEM and the other ScaLAPACK routines. Note that this only works
     with the "ptask_L07" host model (``--cfg=host/model:ptask_L07``).
-    |br| `examples/s4u/exec-ptask/s4u-exec-ptask.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-ptask/s4u-exec-ptask.cpp>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/exec-ptask/s4u-exec-ptask.cpp
     
+          See also :cpp:func:`simgrid::s4u::this_actor::parallel_execute()`.
+
   - **Using Pstates on a host:**
-    `examples/platforms/energy_platform.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/energy_platform.xml>`_
-    shows how define a set of pstates in the XML. The current pstate
+    This example shows how define a set of pstates in the XML. The current pstate
     of an host can then be accessed and changed from the program.
 
-    - |cpp| `examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp>`_
-      :cpp:func:`simgrid::s4u::Host::get_pstate_speed` and :cpp:func:`simgrid::s4u::Host::set_pstate`.
-    - |py|  `examples/python/exec-dvfs/exec-dvfs.py <https://framagit.org/simgrid/simgrid/tree/master/examples/python/exec-dvfs/exec-dvfs.py>`_
-      :py:func:`Host.get_pstate_speed` and :py:func:`Host.set_pstate`.
+    .. tabs::
+
+       .. example-tab:: examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp
+
+          See also :cpp:func:`simgrid::s4u::Host::get_pstate_speed` and :cpp:func:`simgrid::s4u::Host::set_pstate`.
+
+       .. example-tab:: examples/python/exec-dvfs/exec-dvfs.py
+
+          See also :py:func:`Host.get_pstate_speed` and :py:func:`Host.set_pstate`.
+
+       .. example-tab:: examples/platforms/energy_platform.xml
 
 I/O on Disks and Files
 ----------------------
@@ -310,7 +370,14 @@ write actions on the disk resources.
   - **Access to raw disk devices:**
     This example illustrates how to simply read and write data on a
     simulated disk resource.
-    |br| `examples/s4u/io-disk-raw/s4u-io-disk-raw.cpp  <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/io-disk-raw/s4u-io-disk-raw.cpp>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/io-disk-raw/s4u-io-disk-raw.cpp
+
+       .. example-tab:: examples/platforms/hosts_with_disks.xml
+
+          This shows how to declare disks in XML.
 
 The FileSystem plugin provides a more detailed view, with the
 classical operations over files: open, move, unlink, and of course
@@ -320,12 +387,18 @@ result in short reads and short write, as in reality.
   - **File Management:**
     This example illustrates the use of operations on files
     (read, write, seek, tell, unlink, etc).
-    |br| `examples/s4u/io-file-system/s4u-io-file-system.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/io-file-system/s4u-io-file-system.cpp>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/io-file-system/s4u-io-file-system.cpp
 
   - **Remote I/O:**
     I/O operations on files can also be done in a remote fashion, 
     i.e. when the accessed disk is not mounted on the caller's host.
-    |br| `examples/s4u/io-file-remote/s4u-io-file-remote.cpp  <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/io-file-remote/s4u-io-file-remote.cpp>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/io-file-remote/s4u-io-file-remote.cpp
 
 .. _s4u_ex_IPC:
 
@@ -334,23 +407,28 @@ Classical synchronization objects
 
  - **Mutex:**
    Shows how to use simgrid::s4u::Mutex synchronization objects.
-   |br| `examples/s4u/synchro-mutex/s4u-synchro-mutex.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/synchro-mutex/s4u-synchro-mutex.cpp>`_
+
+   .. tabs::
+
+      .. example-tab:: examples/s4u/synchro-mutex/s4u-synchro-mutex.cpp
 
  - **Barrier:**
    Shows how to use simgrid::s4u::Barrier synchronization objects.
-   |br| `examples/s4u/synchro-barrier/s4u-synchro-barrier.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/synchro-barrier/s4u-synchro-barrier.cpp>`_
+
+   .. tabs::
+
+      .. example-tab:: examples/s4u/synchro-barrier/s4u-synchro-barrier.cpp
 
  - **Semaphore:**
    Shows how to use simgrid::s4u::Semaphore synchronization objects.
-   |br| `examples/s4u/synchro-semaphore/s4u-synchro-semaphore.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/synchro-semaphore/s4u-synchro-semaphore.cpp>`_
+
+   .. tabs::
+
+      .. example-tab:: examples/s4u/synchro-semaphore/s4u-synchro-semaphore.cpp
 
 =============================
 Interacting with the Platform
 =============================
-
- - **Retrieving the list of hosts matching a given criteria:**
-   Shows how to filter the actors that match a given criteria.
-   |br| `examples/s4u/engine-filtering/s4u-engine-filtering.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/engine-filtering/s4u-engine-filtering.cpp>`_
 
  - **User-defined properties:**
    You can attach arbitrary information to most platform elements from
@@ -358,28 +436,79 @@ Interacting with the Platform
    program. Note that the changes are not written permanently on disk,
    in the XML file nor anywhere else. They only last until the end of
    your simulation.
-   
-   - :cpp:func:`simgrid::s4u::Actor::get_property()` and :cpp:func:`simgrid::s4u::Actor::set_property()`
-   - :cpp:func:`simgrid::s4u::Host::get_property()` and :cpp:func:`simgrid::s4u::Host::set_property()`
-   - :cpp:func:`simgrid::s4u::Link::get_property()` and :cpp:func:`simgrid::s4u::Link::set_property()`
-   - :cpp:func:`simgrid::s4u::NetZone::get_property()` and :cpp:func:`simgrid::s4u::NetZone::set_property()`
-     
-   |br| `examples/s4u/platform-properties/s4u-platform-properties.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/platform-properties/s4u-platform-properties.cpp>`_
-   |br| `examples/s4u/platform-properties/s4u-platform-properties_d.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/platform-properties/s4u-platform-properties_d.xml>`_
-   |br| `examples/platforms/prop.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/prop.xml>`_
+
+   .. tabs::
+
+      .. example-tab:: examples/s4u/platform-properties/s4u-platform-properties.cpp
+
+         - :cpp:func:`simgrid::s4u::Actor::get_property()` and :cpp:func:`simgrid::s4u::Actor::set_property()`
+         - :cpp:func:`simgrid::s4u::Host::get_property()` and :cpp:func:`simgrid::s4u::Host::set_property()`
+         - :cpp:func:`simgrid::s4u::Link::get_property()` and :cpp:func:`simgrid::s4u::Link::set_property()`
+         - :cpp:func:`simgrid::s4u::NetZone::get_property()` and :cpp:func:`simgrid::s4u::NetZone::set_property()`
+
+      .. group-tab:: XML
+
+         **Deployment file:**
+
+         .. showfile:: examples/s4u/platform-properties/s4u-platform-properties_d.xml
+            :language: xml
+
+         |br|
+         **Platform file:**
+
+         .. showfile:: examples/platforms/prop.xml
+            :language: xml
+
+ - **Retrieving the netzones matching a given criteria:**
+   Shows how to filter the cluster netzones.
+
+   .. tabs::
+
+      .. example-tab:: examples/s4u/routing-get-clusters/s4u-routing-get-clusters.cpp
+
+ - **Retrieving the list of hosts matching a given criteria:**
+   Shows how to filter the actors that match a given criteria.
+
+   .. tabs::
+
+      .. example-tab:: examples/s4u/engine-filtering/s4u-engine-filtering.cpp
 
  - **Specifying state profiles:** shows how to specify when the
    resources must be turned off and on again, and how to react to such
-   failures in your code.
-   
-   |br| `examples/platforms/small_platform_failures.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/small_platform_failures.xml>`_
-   |br| The state profiles in `examples/platforms/profiles <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/profiles>`_
+   failures in your code. See also :ref:`howto_churn`.
+
+   .. tabs::
+
+      .. example-tab:: examples/s4u/platform-failures/s4u-platform-failures.cpp
+
+      .. group-tab:: XML
+
+         .. showfile:: examples/platforms/small_platform_failures.xml
+            :language: xml
+
+         .. showfile:: examples/platforms/profiles/jupiter_state.profile
+
+         .. showfile:: examples/platforms/profiles/bourassa_state.profile
+
+         .. showfile:: examples/platforms/profiles/fafard_state.profile
 
  - **Specifying speed profiles:** shows how to specify an external
    load to resources, variating their peak speed over time.
-   
-   |br| `examples/platforms/small_platform_profile.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/small_platform_profile.xml>`_
-   |br| The speed, bandwidth and latency profiles in `examples/platforms/profiles  <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/profiles>`_
+
+   .. tabs::
+
+      .. example-tab:: examples/s4u/platform-profile/s4u-platform-profile.cpp
+
+      .. group-tab:: XML  
+
+         .. showfile:: examples/platforms/small_platform_profile.xml
+            :language: xml
+
+         .. showfile:: examples/platforms/profiles/jupiter_speed.profile
+
+         .. showfile:: examples/platforms/profiles/link1_bandwidth.profile
+
+         .. showfile:: examples/platforms/profiles/link1_latency.profile
 
 =================
 Energy Simulation
@@ -390,23 +519,36 @@ Energy Simulation
     hosts, which is necessary to get energy consumption predictions.
     As usual, you should not trust our example, and you should strive
     to double-check that your instantiation matches your target platform.
-    |br| `examples/platforms/energy_platform.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/energy_platform.xml>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/platforms/energy_platform.xml
 
   - **Consumption due to the CPU:** 
     This example shows how to retrieve the amount of energy consumed
     by the CPU during computations, and the impact of the pstate.
-    |br| `examples/s4u/energy-exec/s4u-energy-exec.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/energy-exec/s4u-energy-exec.cpp>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/energy-exec/s4u-energy-exec.cpp
 
   - **Consumption due to the network:**
     This example shows how to retrieve and display the energy consumed
     by the network during communications.
-    |br| `examples/s4u/energy-link/s4u-energy-link.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/energy-link/s4u-energy-link.cpp>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/energy-link/s4u-energy-link.cpp
 
   - **Modeling the shutdown and boot of hosts:**
     Simple example of model of model for the energy consumption during
     the host boot and shutdown periods.
-    |br| `examples/s4u/energy-boot/platform_boot.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/energy-boot/platform_boot.xml>`_
-    |br| `examples/s4u/energy-boot/s4u-energy-boot.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/energy-boot/s4u-energy-boot.cpp>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/energy-boot/platform_boot.xml
+
+       .. example-tab:: examples/s4u/energy-boot/s4u-energy-boot.cpp
 
 =======================
 Tracing and Visualizing
@@ -423,7 +565,10 @@ options to see the task executions:
     This program is a toy example just loading the platform, so that
     you can play with the platform visualization. Recommanded options:
     ``--cfg=tracing:yes --cfg=tracing/categorized:yes``
-    |br| `examples/s4u/trace-platform/s4u-trace-platform.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/trace-platform/s4u-trace-platform.cpp>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/trace-platform/s4u-trace-platform.cpp
 
 ========================
 Larger SimGrid Examplars
@@ -435,41 +580,100 @@ than the previous examples.
   - **Ping Pong:**
     This simple example just sends one message back and forth.
     The tesh file laying in the directory show how to start the simulator binary, highlighting how to pass options to 
-    the simulators (as detailed in Section :ref:`options`). 
-    |br| `examples/s4u/app-pingpong/s4u-app-pingpong.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/app-pingpong/s4u-app-pingpong.cpp>`_
+    the simulators (as detailed in Section :ref:`options`).
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/app-pingpong/s4u-app-pingpong.cpp
 
   - **Token ring:**
     Shows how to implement a classical communication pattern, where a
     token is exchanged along a ring to reach every participant.
-    |br| `examples/s4u/app-token-ring/s4u-app-token-ring.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/app-token-ring/s4u-app-token-ring.cpp>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/app-token-ring/s4u-app-token-ring.cpp
 
   - **Master Workers:**
     Another good old example, where one Master process has a bunch of task to dispatch to a set of several Worker 
-    processes. This example comes in two equivalent variants, one
-    where the actors are specified as simple functions (which is easier to
-    understand for newcomers) and one where the actors are specified
-    as classes (which is more powerful for the users wanting to build
-    their own projects upon the example).
-    |br| `examples/s4u/app-masterworkers/s4u-app-masterworkers-class.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/app-masterworkers/s4u-app-masterworkers-class.cpp>`_
-    |br| `examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp>`_
+    processes.
+
+    .. tabs::
+
+       .. group-tab:: C++
+
+          This example comes in two equivalent variants, one where the actors
+          are specified as simple functions (which is easier to understand for
+          newcomers) and one where the actors are specified as classes (which is
+          more powerful for the users wanting to build their own projects upon
+          the example).
+
+          .. showfile:: examples/s4u/app-masterworkers/s4u-app-masterworkers-class.cpp
+             :language: cpp
+
+          .. showfile:: examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp
+             :language: cpp
     
 Data diffusion
 --------------
 
   - **Bit Torrent:** 
     Classical protocol for Peer-to-Peer data diffusion.
-    |br| `examples/s4u/app-bittorrent/s4u-bittorrent.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/app-bittorrent/s4u-bittorrent.cpp>`_
-    
+
+    .. tabs::
+
+       .. group-tab:: C++
+
+          .. showfile:: examples/s4u/app-bittorrent/s4u-bittorrent.cpp
+             :language: cpp
+
+          .. showfile:: examples/s4u/app-bittorrent/s4u-peer.cpp
+             :language: cpp
+
+          .. showfile:: examples/s4u/app-bittorrent/s4u-tracker.cpp
+             :language: cpp
+
   - **Chained Send:** 
     Data broadcast over a ring of processes.
-    |br| `examples/s4u/app-chainsend/s4u-app-chainsend.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/app-chainsend/s4u-app-chainsend.cpp>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/app-chainsend/s4u-app-chainsend.cpp
 
 Distributed Hash Tables (DHT)
 -----------------------------
 
   - **Chord Protocol** 
     One of the most famous DHT protocol.
-    |br| `examples/s4u/dht-chord/s4u-dht-chord.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/dht-chord/s4u-dht-chord.cpp>`_
+
+    .. tabs::
+
+       .. group-tab:: C++
+
+          .. showfile:: examples/s4u/dht-chord/s4u-dht-chord.cpp
+             :language: cpp
+
+          .. showfile:: examples/s4u/dht-chord/s4u-dht-chord-node.cpp
+             :language: cpp
+
+  - **Kademlia**
+    Another well-known DHT protocol.
+
+    .. tabs::
+
+       .. group-tab:: C++
+
+          .. showfile:: examples/s4u/dht-kademlia/s4u-dht-kademlia.cpp
+             :language: cpp
+
+          .. showfile:: examples/s4u/dht-kademlia/routing_table.cpp
+             :language: cpp
+
+          .. showfile:: examples/s4u/dht-kademlia/answer.cpp
+             :language: cpp
+
+          .. showfile:: examples/s4u/dht-kademlia/node.cpp
+             :language: cpp
 
 .. _s4u_ex_clouds:
 
@@ -479,9 +683,17 @@ Simulating Clouds
   - **Cloud basics**
     This example starts some computations both on PMs and VMs, and
     migrates some VMs around.
-    |br| `examples/s4u/cloud-simple/s4u-cloud-simple.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/cloud-simple/s4u-cloud-simple.cpp>`_
 
-.. TODO:: document here the examples about clouds and plugins
+    .. tabs::
+
+       .. example-tab:: examples/s4u/cloud-simple/s4u-cloud-simple.cpp
+
+  - **Migrating VMs**
+    This example shows how to migrate VMs between PMs.
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/cloud-migration/s4u-cloud-migration.cpp
 
 =======================
 Model-Checking Examples
@@ -498,7 +710,10 @@ SimGrid is slower and maybe less robust when MC is enabled.
     which asserts that the messages are always received in the same order.
     This is obviously wrong, and the model-checker correctly finds a
     counter-example to that assertion.
-    |br| `examples/s4u/mc-failing-assert/s4u-mc-failing-assert.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/mc-failing-assert/s4u-mc-failing-assert.cpp>`_
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/mc-failing-assert/s4u-mc-failing-assert.cpp
 
 .. |br| raw:: html
 

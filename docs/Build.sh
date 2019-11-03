@@ -69,11 +69,19 @@ do
   fi
 done
 
-if [ -e /opt/simgrid ] ; then chmod -x /opt/simgrid; fi
+echo "Undocumented examples:"
+for ex in `(cd .. ; find examples/s4u/ -name '*.cpp'; find examples/python -name '*.py')|sort` ; do
+    if grep -q "example-tab:: $ex" ../examples/s4u/README.rst ; then :
+#        echo "found example-tab:: $ex"
+    elif grep -q "showfile:: $ex" ../examples/s4u/README.rst ; then :
+    else
+        echo $ex
+    fi
+done
 
-set +e # Don't fail
+set +e # Don't fail
 if [ -e /usr/bin/linkchecker ] ; then
-  linkchecker --no-status -o csv --ignore-url='.*\.css$' --ignore-url=public/java/org build/html \
+    linkchecker --no-status -o csv --ignore-url='.*\.css$' --ignore-url=build/html/_modules  --ignore-url=public/java/org build/html \
      | grep -v '^#' \
      | grep -v 'urlname;parentname;baseref;result;warningstring'
   echo "done."

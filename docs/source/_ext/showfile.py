@@ -19,7 +19,6 @@ class ShowFileDirective(Directive):
     }
 
     def run(self):
-#        self.assert_has_content()
 
         filename = self.arguments[0]
         language = "python"
@@ -49,5 +48,61 @@ class ShowFileDirective(Directive):
         self.state.nested_parse(self.content, self.content_offset, node)
         return node.children
 
+class ExampleTabDirective(Directive):
+    """
+    A group-tab for a given language, in the presentation of the examples.
+    """
+    has_content = True
+    optional_arguments = 0
+    mandatory_argument = 0
+
+    def run(self):
+        self.assert_has_content()
+
+        filename = self.content[0].strip()
+        self.content.trim_start(1)
+
+        (language, langcode) = (None, None)
+        if filename[-3:] == '.py':
+            language = 'Python'
+            langcode = 'py'
+        elif filename[-4:] == '.cpp':
+            language = 'C++'
+            langcode = 'cpp'
+        elif filename[-4:] == '.xml':
+            language = 'XML'
+            langcode = 'xml'
+        else:
+            raise Exception("Unknown language '{}'. Please choose '.cpp', '.py' or '.xml'".format(language))
+
+        for idx, line in enumerate(self.content.data):
+            self.content.data[idx] = '   ' + line
+
+        for idx, line in enumerate([
+            '.. group-tab:: {}'.format(language),
+            '   ']):
+            self.content.data.insert(idx, line)
+            self.content.items.insert(idx, (None, idx))
+
+        for line in [
+            '',
+            '   .. showfile:: {}'.format(filename),
+            '      :language: {}'.format(langcode),
+            '']:
+            idx = len(self.content.data)
+            self.content.data.insert(idx, line)
+            self.content.items.insert(idx, (None, idx))
+
+#        logger = logging.getLogger(__name__)
+#        logger.info('------------------')
+#        for line in self.content.data:
+#            logger.info('{}'.format(line))
+
+        node = nodes.container()
+        self.state.nested_parse(self.content, self.content_offset, node)
+        return node.children
+
 def setup(app):
     app.add_directive('showfile', ShowFileDirective)
+    app.add_directive('example-tab', ExampleTabDirective)
+

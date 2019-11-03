@@ -80,7 +80,6 @@ of every page. Bugs in the code should be reported
          ns-3 as a SimGrid model <ns3.rst>
       SimGrid Plugins <Plugins.rst>
       Simulation Outcomes <outcomes.rst>
-      Use Cases and Howto <howto.rst>
       The SimGrid Community <community.rst>
       Frequently Asked Questions <faq.rst>
 
