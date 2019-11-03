@@ -109,8 +109,9 @@ SG_BEGIN_DECL
 XBT_PUBLIC int SIMIX_process_count();
 XBT_PUBLIC smx_actor_t SIMIX_process_self();
 XBT_PUBLIC const char* SIMIX_process_self_get_name();
-XBT_PUBLIC void SIMIX_process_self_set_data(void* data);
-XBT_PUBLIC void* SIMIX_process_self_get_data();
+XBT_ATTRIB_DEPRECATED_v329("This function will be removed in 3.29") XBT_PUBLIC
+    void SIMIX_process_self_set_data(void* data);
+XBT_ATTRIB_DEPRECATED_v329("This function will be removed in 3.29") XBT_PUBLIC void* SIMIX_process_self_get_data();
 SG_END_DECL
 
 #ifdef __cplusplus

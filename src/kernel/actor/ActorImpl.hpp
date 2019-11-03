@@ -21,6 +21,7 @@ namespace actor {
 
 class XBT_PUBLIC ActorImpl : public surf::PropertyHolder {
   s4u::Host* host_   = nullptr; /* the host on which the actor is running */
+  // XBT_DEPRECATED_v329
   void* userdata_    = nullptr; /* kept for compatibility, it should be replaced with moddata */
   aid_t pid_         = 0;
   aid_t ppid_        = -1;
@@ -46,7 +47,9 @@ public:
   // Accessors to private fields
   s4u::Host* get_host() { return host_; }
   void set_host(s4u::Host* dest);
+  // XBT_DEPRECATED_v329
   void* get_user_data() { return userdata_; }
+  // XBT_DEPRECATED_v329
   void set_user_data(void* data) { userdata_ = data; }
   aid_t get_pid() const { return pid_; }
   aid_t get_ppid() const { return ppid_; }
