@@ -5,7 +5,7 @@ The S4U Interface
 
 .. raw:: html
 
-   <object id="TOC" data="graphical-toc.svg" width="100%" type="image/svg+xml"></object>
+   <object id="TOC" data="graphical-toc.svg" type="image/svg+xml"></object>
    <script>
    window.onload=function() { // Wait for the SVG to be loaded before changing it
      var elem=document.querySelector("#TOC").contentDocument.getElementById("ActorBox")
@@ -28,7 +28,7 @@ releases. When this happens, compiling your code will produce
 deprecation warnings for 4 releases (one year) before the removal of
 the old symbols. 
 If you want an API that will never ever evolve in the future, you
-should use the deprecated MSG API instead. 
+should use the :ref:`deprecated MSG API <MSG_doc>` instead. 
 
 Main Concepts
 *************

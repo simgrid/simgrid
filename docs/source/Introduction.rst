@@ -6,7 +6,7 @@ Main Concepts
 
 .. raw:: html
 
-   <object data="graphical-toc.svg" width="100%" type="image/svg+xml"></object>
+   <object data="graphical-toc.svg" type="image/svg+xml"></object>
    <br/>
    <br/>
 

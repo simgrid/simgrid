@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# Useful doc: https://www.sphinx-doc.org/en/master/extdev/markupapi.html
+# Example: https://www.sphinx-doc.org/en/master/development/tutorials/recipe.html
+
 import os
 from docutils.parsers.rst import Directive, directives
 from docutils import nodes

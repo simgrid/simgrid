@@ -5,7 +5,7 @@ Configuring SimGrid
 
 .. raw:: html
 
-   <object id="TOC" data="graphical-toc.svg" width="100%" type="image/svg+xml"></object>
+   <object id="TOC" data="graphical-toc.svg" type="image/svg+xml"></object>
    <script>
    window.onload=function() { // Wait for the SVG to be loaded before changing it
      var elem=document.querySelector("#TOC").contentDocument.getElementById("ConfigBox")
