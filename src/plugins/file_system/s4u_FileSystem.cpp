@@ -28,8 +28,9 @@ simgrid::xbt::Extension<Host, FileDescriptorHostExt> FileDescriptorHostExt::EXTE
 
 File::File(const std::string& fullpath, void* userdata) : File(fullpath, Host::current(), userdata){};
 
-File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpath_(fullpath), userdata_(userdata)
+File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpath_(fullpath)
 {
+  this->set_data(userdata);
   // this cannot fail because we get a xbt_die if the mountpoint does not exist
   if (not host->get_mounted_storages().empty()) {
     Storage* st                  = nullptr;
@@ -640,12 +641,12 @@ void sg_file_dump(sg_file_t fd)
 
 void* sg_file_get_data(sg_file_t fd)
 {
-  return fd->get_userdata();
+  return fd->get_data();
 }
 
 void sg_file_set_data(sg_file_t fd, void* data)
 {
-  fd->set_userdata(data);
+  fd->set_data(data);
 }
 
 /**

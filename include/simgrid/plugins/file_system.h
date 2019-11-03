@@ -95,7 +95,7 @@ namespace s4u {
  * mountpoints.
  * For now, you cannot change the mountpoints programmatically, and must declare them from your platform file.
  */
-class XBT_PUBLIC File {
+class XBT_PUBLIC File : public xbt::Extendable<File> {
 public:
   File(const std::string& fullpath, void* userdata);
   File(const std::string& fullpath, sg_host_t host, void* userdata);
@@ -113,9 +113,9 @@ public:
   sg_size_t write(sg_size_t size, int write_inside=0);
 
   /** Allows to store user data on that host */
-  void set_userdata(void* data) { userdata_ = data; }
+  XBT_ATTRIB_DEPRECATED_v329("Please use set_data()") void set_userdata(void* data) { set_data(data); }
   /** Retrieves the previously stored data */
-  void* get_userdata() { return userdata_; }
+  XBT_ATTRIB_DEPRECATED_v329("Please use get_data()") void* get_userdata() { return get_data(); }
 
   sg_size_t size();
   void seek(sg_offset_t pos);             /** Sets the file head to the given position. */
@@ -140,7 +140,6 @@ private:
   std::string path_;
   std::string fullpath_;
   sg_size_t current_position_ = SEEK_SET;
-  void* userdata_             = nullptr;
 };
 
 class XBT_PUBLIC FileSystemDiskExt {
