@@ -48,6 +48,8 @@ XBT_PUBLIC sg_actor_t sg_actor_self();
 XBT_PUBLIC aid_t sg_actor_self_get_pid();
 XBT_PUBLIC aid_t sg_actor_self_get_ppid();
 XBT_PUBLIC const char* sg_actor_self_get_name();
+XBT_PUBLIC void* sg_actor_self_data();
+XBT_PUBLIC void sg_actor_self_data_set(void* data);
 XBT_PUBLIC void sg_actor_self_execute(double flops);
 XBT_PUBLIC void sg_actor_ref(sg_actor_t actor);
 XBT_PUBLIC void sg_actor_unref(sg_actor_t actor);

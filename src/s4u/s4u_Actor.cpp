@@ -685,6 +685,16 @@ const char* sg_actor_self_get_name()
   return simgrid::s4u::this_actor::get_cname();
 }
 
+void* sg_actor_self_data()
+{
+  return simgrid::s4u::Actor::self()->get_data();
+}
+
+void sg_actor_self_data_set(void* userdata)
+{
+  simgrid::s4u::Actor::self()->set_data(userdata);
+}
+
 sg_actor_t sg_actor_self()
 {
   return simgrid::s4u::Actor::self();
