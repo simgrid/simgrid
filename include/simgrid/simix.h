@@ -152,8 +152,8 @@ XBT_ATTRIB_DEPRECATED_v328("Please use Actor::suspend()") XBT_PUBLIC void simcal
 XBT_ATTRIB_DEPRECATED_v328("Please use Actor::join()") XBT_PUBLIC
     void simcall_process_join(smx_actor_t process, double timeout);
 
-/* Sleep control */
-XBT_PUBLIC e_smx_state_t simcall_process_sleep(double duration);
+XBT_ATTRIB_DEPRECATED_v329("Please use sg_actor_sleep_for()") XBT_PUBLIC e_smx_state_t
+    simcall_process_sleep(double duration);
 SG_END_DECL
 
 /************************** Communication simcalls ****************************/

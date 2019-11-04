@@ -44,17 +44,17 @@ unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* 
   return simcall_BODY_execution_waitany_for(execs, count, timeout);
 }
 
-void simcall_process_join(smx_actor_t process, double timeout)
+void simcall_process_join(smx_actor_t process, double timeout) // XBT_DEPRECATED_v328
 {
   SIMIX_process_self()->join(process, timeout);
 }
 
-void simcall_process_suspend(smx_actor_t process)
+void simcall_process_suspend(smx_actor_t process) // XBT_DEPRECATED_v328
 {
   process->iface()->suspend();
 }
 
-e_smx_state_t simcall_process_sleep(double duration)
+e_smx_state_t simcall_process_sleep(double duration) // XBT_DEPRECATED_v329
 {
   SIMIX_process_self()->sleep(duration);
   return SIMIX_DONE;
