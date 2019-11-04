@@ -132,11 +132,11 @@ MPI_Info smpi_process_info_env(){
 }
 
 void * smpi_process_get_user_data(){
-  return simgrid::s4u::Actor::self()->get_impl()->get_user_data();
+  return simgrid::s4u::Actor::self()->get_data();
 }
 
 void smpi_process_set_user_data(void *data){
-  simgrid::s4u::Actor::self()->get_impl()->set_user_data(data);
+  simgrid::s4u::Actor::self()->set_data(data);
 }
 
 void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, size_t))
