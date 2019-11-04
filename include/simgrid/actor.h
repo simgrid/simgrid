@@ -21,6 +21,9 @@ SG_BEGIN_DECL
     with actors.
  */
 XBT_PUBLIC sg_actor_t sg_actor_init(const char* name, sg_host_t host);
+/** Start the previously initialized actor.
+ *
+ * Note that argv is copied over, so you should free your own copy once the actor is started. */
 XBT_PUBLIC void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char** argv);
 XBT_PUBLIC aid_t sg_actor_get_PID(sg_actor_t actor);
 XBT_PUBLIC aid_t sg_actor_get_PPID(sg_actor_t actor);
