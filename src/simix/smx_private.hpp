@@ -32,9 +32,9 @@ public:
   void run_all_actors();
 
   smx_context_factory_t context_factory = nullptr;
-  std::vector<smx_actor_t> actors_to_run;
-  std::vector<smx_actor_t> actors_that_ran;
-  std::map<aid_t, smx_actor_t> process_list;
+  std::vector<kernel::actor::ActorImpl*> actors_to_run;
+  std::vector<kernel::actor::ActorImpl*> actors_that_ran;
+  std::map<aid_t, kernel::actor::ActorImpl*> process_list;
   boost::intrusive::list<kernel::actor::ActorImpl,
                          boost::intrusive::member_hook<kernel::actor::ActorImpl, boost::intrusive::list_member_hook<>,
                                                        &kernel::actor::ActorImpl::smx_destroy_list_hook>>
@@ -48,23 +48,23 @@ public:
    * That way, the MCer would not need to have the list of actors on its side.
    * These info could be published by the MCed to the MCer in a way inspired of vd.so
    */
-  xbt_dynar_t actors_vector      = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
-  xbt_dynar_t dead_actors_vector = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
+  xbt_dynar_t actors_vector      = xbt_dynar_new(sizeof(kernel::actor::ActorImpl*), nullptr);
+  xbt_dynar_t dead_actors_vector = xbt_dynar_new(sizeof(kernel::actor::ActorImpl*), nullptr);
 #endif
-  smx_actor_t maestro_process   = nullptr;
+  kernel::actor::ActorImpl* maestro_process = nullptr;
 
   // Maps function names to actor code:
-  std::unordered_map<std::string, simgrid::simix::ActorCodeFactory> registered_functions;
+  std::unordered_map<std::string, simix::ActorCodeFactory> registered_functions;
 
   // This might be used when no corresponding function name is registered:
-  simgrid::simix::ActorCodeFactory default_function;
+  simix::ActorCodeFactory default_function;
 
   std::mutex mutex;
 
-  std::vector<simgrid::xbt::Task<void()>> tasks;
-  std::vector<simgrid::xbt::Task<void()>> tasksTemp;
+  std::vector<xbt::Task<void()>> tasks;
+  std::vector<xbt::Task<void()>> tasksTemp;
 
-  std::vector<simgrid::kernel::actor::ActorImpl*> daemons;
+  std::vector<kernel::actor::ActorImpl*> daemons;
 };
 }
 }

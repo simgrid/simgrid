@@ -34,10 +34,10 @@ void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr) = nullptr;
 
 namespace simgrid {
 namespace simix {
-simgrid::config::Flag<double> cfg_verbose_exit{
-    "debug/verbose-exit", {"verbose-exit"}, "Display the actor status at exit", true};
-}
+config::Flag<double> cfg_verbose_exit{"debug/verbose-exit", {"verbose-exit"}, "Display the actor status at exit", true};
+} // namespace simix
 } // namespace simgrid
+
 XBT_ATTRIB_NORETURN static void inthandler(int)
 {
   if (simgrid::simix::cfg_verbose_exit) {
@@ -134,7 +134,7 @@ static void install_segvhandler()
 namespace simgrid {
 namespace simix {
 
-Timer* Timer::set(double date, simgrid::xbt::Task<void()>&& callback)
+Timer* Timer::set(double date, xbt::Task<void()>&& callback)
 {
   Timer* timer   = new Timer(date, std::move(callback));
   timer->handle_ = simix_timers.emplace(std::make_pair(date, timer));
@@ -144,7 +144,7 @@ Timer* Timer::set(double date, simgrid::xbt::Task<void()>&& callback)
 /** @brief cancels a timer that was added earlier */
 void Timer::remove()
 {
-  simgrid::simix::simix_timers.erase(handle_);
+  simix_timers.erase(handle_);
   delete this;
 }
 
@@ -173,7 +173,7 @@ bool Global::execute_tasks()
 void Global::empty_trash()
 {
   while (not actors_to_destroy.empty()) {
-    smx_actor_t actor = &actors_to_destroy.front();
+    kernel::actor::ActorImpl* actor = &actors_to_destroy.front();
     actors_to_destroy.pop_front();
     XBT_DEBUG("Getting rid of %s (refcount: %d)", actor->get_cname(), actor->get_refcount());
     intrusive_ptr_release(actor);
@@ -197,10 +197,10 @@ void Global::run_all_actors()
   actors_to_run.clear();
 }
 
-simgrid::config::Flag<double> cfg_breakpoint{
+config::Flag<double> cfg_breakpoint{
     "debug/breakpoint", {"simix/breakpoint"}, "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
-}
-}
+} // namespace simix
+} // namespace simgrid
 
 static simgrid::simix::ActorCode maestro_code;
 void SIMIX_set_maestro(void (*code)(void*), void* data)
@@ -470,9 +470,9 @@ void SIMIX_run()
        *   That would thus be a pure waste of time.
        */
 
-      for (smx_actor_t const& process : simix_global->actors_that_ran) {
-        if (process->simcall.call_ != SIMCALL_NONE) {
-          process->simcall_handle(0);
+      for (auto const& actor : simix_global->actors_that_ran) {
+        if (actor->simcall.call_ != SIMCALL_NONE) {
+          actor->simcall_handle(0);
         }
       }
 
@@ -562,7 +562,7 @@ void SIMIX_display_process_status()
   /*  List the process and their state */
   XBT_INFO("Legend of the following listing: \"Process <pid> (<name>@<host>): <status>\"");
   for (auto const& kv : simix_global->process_list) {
-    smx_actor_t actor = kv.second;
+    simgrid::kernel::actor::ActorImpl* actor = kv.second;
 
     if (actor->waiting_synchro) {
 
