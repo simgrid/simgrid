@@ -110,12 +110,6 @@ xbt_dynar_t MSG_processes_as_dynar() {
   return res;
 }
 
-/** @brief Return the current number MSG processes. */
-int MSG_process_get_number()
-{
-  return SIMIX_process_count();
-}
-
 /** @brief Add a function to the list of "on_exit" functions for the current process.
  *  The on_exit functions are the functions executed when your process is killed.
  *  You should use them to free the data used by your process.

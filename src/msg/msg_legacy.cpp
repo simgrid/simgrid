@@ -206,7 +206,11 @@ void MSG_process_unref(msg_process_t process)
 {
   sg_actor_unref(process);
 }
-
+/** @brief Return the current number MSG processes. */
+int MSG_process_get_number()
+{
+  return simgrid_get_actor_count();
+}
 /* ************************** NetZones *************************** */
 sg_netzone_t MSG_zone_get_root()
 {

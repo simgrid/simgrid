@@ -106,7 +106,7 @@ XBT_PUBLIC void SIMIX_launch_application(const std::string& file);
 
 /********************************* Process ************************************/
 SG_BEGIN_DECL
-XBT_PUBLIC int SIMIX_process_count();
+XBT_ATTRIB_DEPRECATED_v329("Please use simgrid_get_actor_count()") XBT_PUBLIC int SIMIX_process_count();
 XBT_PUBLIC smx_actor_t SIMIX_process_self();
 XBT_PUBLIC const char* SIMIX_process_self_get_name();
 XBT_ATTRIB_DEPRECATED_v329("This function will be removed in 3.29") XBT_PUBLIC
@@ -145,7 +145,8 @@ XBT_PUBLIC bool simcall_execution_test(const smx_activity_t& execution);
 
 /**************************** Process simcalls ********************************/
 SG_BEGIN_DECL
-void simcall_process_set_data(smx_actor_t process, void* data);
+XBT_ATTRIB_DEPRECATED_v329("This function will be removed in 3.29") void simcall_process_set_data(smx_actor_t process,
+                                                                                                  void* data);
 XBT_ATTRIB_DEPRECATED_v328("Please use Actor::suspend()") XBT_PUBLIC void simcall_process_suspend(smx_actor_t process);
 
 XBT_ATTRIB_DEPRECATED_v328("Please use Actor::join()") XBT_PUBLIC

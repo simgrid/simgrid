@@ -529,7 +529,7 @@ void create_maestro(const std::function<void()>& code)
 } // namespace kernel
 } // namespace simgrid
 
-int SIMIX_process_count()
+int SIMIX_process_count() // XBT_ATTRIB_DEPRECATED_v329
 {
   return simix_global->process_list.size();
 }

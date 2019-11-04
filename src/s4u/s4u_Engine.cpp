@@ -415,3 +415,7 @@ double simgrid_get_clock()
 {
   return simgrid::s4u::Engine::get_clock();
 }
+int simgrid_get_actor_count()
+{
+  return simgrid::s4u::Engine::get_instance()->get_actor_count();
+}
