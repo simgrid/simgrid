@@ -252,7 +252,10 @@ PYBIND11_MODULE(simgrid, m)
            },
            "Create an actor from a function or an object, see :cpp:func:`simgrid::s4u::Actor::create()`")
       .def_property("host", &Actor::get_host, &Actor::migrate, "The host on which this actor is located")
+      .def_property_readonly("name", &Actor::get_cname, "The name of this actor.")
       .def_property_readonly("pid", &Actor::get_pid, "The PID (unique identifier) of this actor.")
+      .def_property_readonly("ppid", &Actor::get_ppid,
+                             "The PID (unique identifier) of the actor that created this one.")
       .def("by_pid", &Actor::by_pid, "Retrieve an actor by its PID")
       .def("daemonize", &Actor::daemonize,
            "This actor will be automatically terminated when the last non-daemon actor finishes, see :cpp:func:`void "
