@@ -396,14 +396,13 @@ XBT_PUBLIC void execute(double flop, double priority);
 XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                                  const std::vector<double>& bytes_amounts);
 
-/** \rst
- * Block the current actor until the built :ref:`parallel execution <API_s4u_parallel_execute>` completes, or until the
- * timeout. \endrst
- */
+/** Block the current actor until the built parallel execution completes, or until the timeout. */
 XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                                  const std::vector<double>& bytes_amounts, double timeout);
 
+/** Initialize a sequential execution that must then be started manually */
 XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
+/** Initialize a parallel execution that must then be started manually */
 XBT_PUBLIC ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                              const std::vector<double>& bytes_amounts);
 
