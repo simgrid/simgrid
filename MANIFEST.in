@@ -830,6 +830,8 @@ include teshsuite/smpi/coll-scatter/coll-scatter.c
 include teshsuite/smpi/coll-scatter/coll-scatter.tesh
 include teshsuite/smpi/fort_args/fort_args.f90
 include teshsuite/smpi/fort_args/fort_args.tesh
+include teshsuite/smpi/gh-139/gh-139.c
+include teshsuite/smpi/gh-139/gh-139.tesh
 include teshsuite/smpi/hostfile
 include teshsuite/smpi/hostfile_cluster
 include teshsuite/smpi/hostfile_coll
