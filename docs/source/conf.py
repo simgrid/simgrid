@@ -50,40 +50,27 @@ version = u'3.24.1'
 extensions = [
     'sphinx.ext.todo',
     'breathe',
-    #    'exhale',
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
-    #    'sphinx.ext.napoleon',
     'sphinx.ext.autosummary',
     'sphinx_tabs.tabs',
     'sphinxcontrib.contentui',
     'javasphinx',
     'showfile',
+    'autodoxy',
 ]
 
 todo_include_todos = True
 
+# Setup the breath extension
 breathe_projects = {'simgrid': '../build/xml'}
 breathe_default_project = "simgrid"
 
-# Setup the exhale extension
-
-exhale_args = {
-    # These arguments are required
-    "containmentFolder": "./api",
-    "rootFileName": "library_root.rst",
-    "rootFileTitle": "SimGrid Full API",
-    "doxygenStripFromPath": "..",
-    # Suggested optional arguments
-    "createTreeView": True,
-    "exhaleExecutesDoxygen": False,
-    # "exhaleUseDoxyfile":     True,
-}
-
+# Setup the autodoxy extension
+doxygen_xml = os.path.join(os.path.dirname(__file__), "..", "build", "xml")
 
 # For cross-ref generation
 primary_domain = 'cpp'
-
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
