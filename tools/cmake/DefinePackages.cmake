@@ -875,7 +875,6 @@ set(DOC_SOURCES
   docs/requirements.txt
   docs/source/conf.py
   docs/source/Doxyfile
-  docs/source/_ext/hidden_code_block.py
   docs/source/_ext/showfile.py
   docs/source/_templates/breadcrumbs.html
 

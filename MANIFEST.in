@@ -1768,7 +1768,6 @@ include docs/source/Start_Your_Own_Project.rst
 include docs/source/Tutorial_Algorithms.rst
 include docs/source/Tutorial_MPI_Applications.rst
 include docs/source/XML_Reference.rst
-include docs/source/_ext/hidden_code_block.py
 include docs/source/_ext/showfile.py
 include docs/source/_templates/breadcrumbs.html
 include docs/source/app_msg.rst
