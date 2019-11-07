@@ -4,10 +4,12 @@ from six import itervalues
 from lxml import etree as ET
 from sphinx.ext.autodoc import Documenter, AutoDirective, members_option, ALL
 from sphinx.errors import ExtensionError
+from sphinx.util import logging
 
 from . import get_doxygen_root
 from .xmlutils import format_xml_paragraph
 
+import sys
 
 class DoxygenDocumenter(Documenter):
     # Variables to store the names of the object being documented. modname and fullname are redundant,
@@ -212,19 +214,30 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
             # classname or method name
             return True
 
+        (obj, meth) = self.fullname.rsplit('::', 1)
+
+        xpath_query_noparam = ('.//compoundname[text()="{:s}"]/../sectiondef[@kind="public-func" or @kind="public-static-func"]'
+                               '/memberdef[@kind="function"]/name[text()="{:s}"]/..').format(obj, meth)
         xpath_query = ""
         print("fullname {}".format(self.fullname))
         if self.argsstring != None:
-            (obj, meth) = self.fullname.rsplit('::', 1)
             xpath_query = ('.//compoundname[text()="{:s}"]/../sectiondef[@kind="public-func" or @kind="public-static-func"]'
                            '/memberdef[@kind="function" and argsstring/text()="{:s}"]/name[text()="{:s}"]/..').format(obj,self.argsstring,meth)
         else:
-            xpath_query = ('.//compoundname[text()="%s"]/../sectiondef[@kind="public-func" or @kind="public-static-func"]'
-                           '/memberdef[@kind="function"]/name[text()="%s"]/..') % tuple(self.fullname.rsplit('::', 1))
+            xpath_query = xpath_query_noparam
         match = get_doxygen_root().xpath(xpath_query)
         if len(match) == 0:
-            raise ExtensionError('[autodoxy] could not find method (modname="%s", objname="%s"). I tried '
-                                 'the following xpath: "%s"' % (tuple(self.fullname.rsplit('::', 1)) + (xpath_query,)))
+            logger = logging.getLogger(__name__)
+
+            if self.argsstring != None:
+                logger.warning("[autodoxy] WARNING: Could not find method {}::{}{}".format(obj, meth, self.argsstring))
+                for cand in get_doxygen_root().xpath(xpath_query_noparam):
+                    logger.warning("[autodoxy] WARNING:   Existing candidate: {}::{}{}".format(obj, meth, cand.find('argsstring').text))
+            else:
+                logger.warning("[autodoxy] WARNING: could not find method {}::{}{}".format(obj, meth))
+
+            raise ExtensionError(('[autodoxy] could not find method (modname="{:s}", objname="{:s}"). I tried '
+                                  'the following xpath: "{:s}"').format(obj, meth, xpath_query))
         self.object = match[0]
         return True
 
