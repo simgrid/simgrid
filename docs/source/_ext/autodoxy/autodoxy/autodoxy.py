@@ -41,6 +41,12 @@ class DoxygenDocumenter(Documenter):
         # calls parse_name(), follwed by import_object(), format_signature(),
         # add_directive_header(), and then add_content() (which calls get_doc())
 
+        # If we were provided a prototype, that must be an overloaded function. Save it.
+        self.argsstring = None
+        if "(" in self.name:
+            (self.name, self.argsstring) = self.name.split('(', 1)
+            self.argsstring = "({}".format(self.argsstring)
+
         # methods in the superclass sometimes use '.' to join namespace/class
         # names with method names, and we don't want that.
         self.name = self.name.replace('.', '::')
@@ -140,7 +146,7 @@ class DoxygenClassDocumenter(DoxygenDocumenter):
         self.object = match[0]
         return True
 
-    def format_signaure(self):
+    def format_signature(self):
         return ''
 
     def format_name(self):
@@ -206,8 +212,15 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
             # classname or method name
             return True
 
-        xpath_query = ('.//compoundname[text()="%s"]/../sectiondef[@kind="public-func"]'
-                       '/memberdef[@kind="function"]/name[text()="%s"]/..') % tuple(self.fullname.rsplit('::', 1))
+        xpath_query = ""
+        print("fullname {}".format(self.fullname))
+        if self.argsstring != None:
+            (obj, meth) = self.fullname.rsplit('::', 1)
+            xpath_query = ('.//compoundname[text()="{:s}"]/../sectiondef[@kind="public-func" or @kind="public-static-func"]'
+                           '/memberdef[@kind="function" and argsstring/text()="{:s}"]/name[text()="{:s}"]/..').format(obj,self.argsstring,meth)
+        else:
+            xpath_query = ('.//compoundname[text()="%s"]/../sectiondef[@kind="public-func" or @kind="public-static-func"]'
+                           '/memberdef[@kind="function"]/name[text()="%s"]/..') % tuple(self.fullname.rsplit('::', 1))
         match = get_doxygen_root().xpath(xpath_query)
         if len(match) == 0:
             raise ExtensionError('[autodoxy] could not find method (modname="%s", objname="%s"). I tried '
@@ -238,6 +251,7 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
         else:
             rtype = rtype_el.text
 
+ #       print("rtype: {}".format(rtype))
         signame = (rtype and (rtype + ' ') or '') + self.objname
         return self.format_template_name() + signame
 
@@ -245,7 +259,9 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
         types = [e.text for e in self.object.findall('templateparamlist/param/type')]
         if len(types) == 0:
             return ''
-        return 'template <%s>\n' % ','.join(types)
+        ret = 'template <%s>' % ','.join(types)
+#        print ("template: {}".format(ret))
+        return ret
 
     def format_signature(self):
         args = self.object.find('argsstring').text
