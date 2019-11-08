@@ -9,8 +9,6 @@
 #include "src/kernel/activity/IoImpl.hpp"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_io, s4u_activity, "S4U asynchronous IOs");
-
 namespace simgrid {
 namespace s4u {
 

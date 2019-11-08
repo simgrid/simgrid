@@ -9,7 +9,7 @@
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/plugins/vm/VmHostExt.hpp"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(vm_live_migration, "S4U virtual machines live migration");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(vm_live_migration, s4u, "S4U virtual machines live migration");
 
 namespace simgrid {
 namespace vm {

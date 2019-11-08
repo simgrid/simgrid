@@ -16,8 +16,6 @@
 #define MAP_POPULATE MAP_PREFAULT_READ
 #endif
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_RegionSnaphot, mc, "Logging specific to region snapshots");
-
 namespace simgrid {
 namespace mc {
 

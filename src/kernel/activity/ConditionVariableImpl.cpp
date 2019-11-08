@@ -8,7 +8,7 @@
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ConditionVariable, simix_synchro, "Condition variables");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_condition, simix_synchro, "Condition variables");
 
 /********************************* Condition **********************************/
 

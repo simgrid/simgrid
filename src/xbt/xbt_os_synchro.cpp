@@ -12,8 +12,6 @@
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "xbt/synchro.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync, xbt, "Synchronization mechanism");
-
 /****** mutex related functions ******/
 xbt_mutex_t xbt_mutex_init(void)
 {

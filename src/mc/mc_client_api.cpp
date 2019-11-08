@@ -18,9 +18,6 @@
  *  communicate with the MC (declared in modelchecker.h).
  */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client_api, mc,
-  "Public API for the model-checked application");
-
 // MC_random() is in mc_base.cpp
 
 void MC_assert(int prop)

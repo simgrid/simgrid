@@ -10,9 +10,6 @@
 
 using simgrid::mc::remote;
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_pattern, mc,
-                                "Logging specific to MC communication patterns");
-
 static void MC_patterns_copy(std::vector<simgrid::mc::PatternCommunication*>& dest,
                              std::vector<simgrid::mc::PatternCommunication> const& source)
 {

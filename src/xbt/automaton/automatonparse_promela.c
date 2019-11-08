@@ -12,12 +12,9 @@
 #if HAVE_UNISTD_H
 # include <unistd.h>   /* isatty */
 #endif
-#include <xbt/log.h>
 #include <xbt/sysdep.h>
 
 #include "parserPromela.tab.cacc"
-
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_automaton);
 
 static xbt_automaton_t parsed_automaton;
 char* state_id_src;

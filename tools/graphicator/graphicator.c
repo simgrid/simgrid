@@ -7,8 +7,6 @@
 #include "simgrid/msg.h"
 #include "xbt/graph.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(graphicator, "Graphicator Logging System");
-
 int main(int argc, char **argv)
 {
   MSG_init(&argc, argv);

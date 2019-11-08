@@ -9,8 +9,6 @@
 #include "simgrid/s4u/Host.hpp"
 #include <lauxlib.h>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(lua_host, "Lua Host module");
-
 constexpr char HOST_MODULE_NAME[] = "simgrid.host";
 constexpr char HOST_FIELDNAME[]   = "__simgrid_host";
 

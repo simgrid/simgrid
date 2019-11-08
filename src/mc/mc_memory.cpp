@@ -7,14 +7,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include "xbt/log.h"
-
 #include "mc/mc.h"
 #include "src/mc/mc_private.hpp"
 #include "src/xbt/mmalloc/mmprivate.h"
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
-                                "Logging specific to MC (memory)");
 
 /* Initialize the model-checker memory subsystem */
 /* It creates the two heap regions: std_heap and mc_heap */

@@ -13,8 +13,6 @@
 #include "src/surf/network_interface.hpp"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_link, s4u, "Logging specific to the S4U links");
-
 namespace simgrid {
 namespace s4u {
 

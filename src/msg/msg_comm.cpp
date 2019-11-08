@@ -13,8 +13,6 @@
 #include "src/instr/instr_private.hpp"
 #include "src/msg/msg_private.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_comm, msg, "Logging specific to MSG (comm)");
-
 namespace simgrid {
 namespace msg {
 

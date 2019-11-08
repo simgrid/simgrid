@@ -9,8 +9,6 @@
 #include <src/instr/instr_smpi.hpp>
 #include <src/smpi/include/smpi_actor.hpp>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_sampi, instr, "Tracing (S)AMPI");
-
 static std::map<std::string, std::string> ampi_colors = {{"migrate", "0.2 0.5 0.2"},
   {"iteration", "0.5 0.5 0.5"}
 };

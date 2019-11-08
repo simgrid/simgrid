@@ -7,8 +7,6 @@
 #include "smpi/smpi.h"
 #include "smpi/sampi.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_plugin_load_balancer_example, smpi, "Simple tracing test for SAMPI functions");
-
 int main(int argc, char* argv[])
 {
   MPI_Init(&argc, &argv);

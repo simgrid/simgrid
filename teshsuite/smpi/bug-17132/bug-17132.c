@@ -6,11 +6,8 @@
 
 /* Bug report: https://gforge.inria.fr/tracker/index.php?func=detail&aid=17132&group_id=12&atid=165 */
 
-#include "xbt/log.h"
 #include <stdio.h>
 #include <mpi.h>
-
-XBT_LOG_NEW_DEFAULT_CATEGORY(MM_mpi, "Messages for this SMPI test");
 
 int main(int argc, char ** argv)
 {

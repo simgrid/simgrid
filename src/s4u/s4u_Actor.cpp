@@ -18,7 +18,7 @@
 #include <algorithm>
 #include <sstream>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor, "S4U actors");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_actor, s4u, "S4U actors");
 
 namespace simgrid {
 namespace s4u {

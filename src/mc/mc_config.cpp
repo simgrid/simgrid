@@ -11,8 +11,6 @@
 
 #include <climits>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_config, mc, "Configuration of the Model Checker");
-
 #if SIMGRID_HAVE_MC
 namespace simgrid {
 namespace mc {

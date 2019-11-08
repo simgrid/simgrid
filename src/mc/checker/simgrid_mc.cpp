@@ -14,8 +14,6 @@
 #include <memory>
 #include <unistd.h>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
-
 static inline
 char** argvdup(int argc, char** argv)
 {

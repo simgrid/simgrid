@@ -24,7 +24,7 @@
 
 #include <lauxlib.h>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(lua_platf, "Lua bindings (platform module)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_platf, lua, "Lua bindings (platform module)");
 
 constexpr char PLATF_MODULE_NAME[] = "simgrid.engine";
 constexpr char AS_FIELDNAME[]      = "__simgrid_as";

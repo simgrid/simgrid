@@ -12,7 +12,6 @@
 #include <xbt/config.hpp>
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");
 
 bool MSG_Global_t::debug_multiple_use = false;
 

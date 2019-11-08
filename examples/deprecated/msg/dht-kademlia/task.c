@@ -6,7 +6,6 @@
 
 #include "task.h"
 #include "answer.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_kademlia_task, "Messages specific for this msg example");
 
 /** @brief Creates a new "find node" task
   * @param sender_id the id of the node who sends the task

@@ -12,7 +12,7 @@
 #include "simgrid/simix.h"
 #include "xbt/log.hpp"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_barrier, "S4U barrier");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_barrier, s4u, "S4U barrier");
 
 namespace simgrid {
 namespace s4u {

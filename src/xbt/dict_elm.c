@@ -7,8 +7,6 @@
 
 #include "dict_private.h"       /* prototypes of this module */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_elm, xbt_dict, "Dictionaries internals");
-
 xbt_mallocator_t dict_elm_mallocator = NULL;
 
 xbt_dictelm_t xbt_dictelm_new(const char* key, int key_len, unsigned int hash_code, void* content)

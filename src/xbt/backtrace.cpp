@@ -6,7 +6,6 @@
 #include "src/internal_config.h"
 
 #include <xbt/backtrace.hpp>
-#include <xbt/log.h>
 #include <xbt/string.hpp>
 #include <xbt/sysdep.h>
 #include <xbt/virtu.h>
@@ -33,8 +32,6 @@
 #define BOOST_STACKTRACE_USE_ADDR2LINE
 #include <boost/stacktrace.hpp>
 #endif
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_backtrace, xbt, "Backtrace");
 
 /** @brief show the backtrace of the current point (lovely while debugging) */
 void xbt_backtrace_display_current()

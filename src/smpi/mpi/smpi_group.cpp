@@ -7,9 +7,6 @@
 #include "smpi_group.hpp"
 #include "smpi_comm.hpp"
 #include <string>
-#include <xbt/log.h>
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_group, smpi, "Logging specific to SMPI (group)");
 
 simgrid::smpi::Group mpi_MPI_GROUP_EMPTY;
 MPI_Group MPI_GROUP_EMPTY=&mpi_MPI_GROUP_EMPTY;

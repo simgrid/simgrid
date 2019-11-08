@@ -17,9 +17,6 @@
 #endif
 /* end of eclipse-mandated pimple */
 
-// Define a new category
-XBT_LOG_NEW_DEFAULT_CATEGORY (jtrace, "TRACE for Java(TM)");
-
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostStateDeclare(JNIEnv * env, jclass cls, jstring js)
 {
   const char *s = env->GetStringUTFChars(js, 0);

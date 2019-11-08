@@ -15,8 +15,6 @@
 #include "ampi.hpp"
 #include <smpi/sampi.h>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(plugin_pampi, smpi, "Logging specific to the AMPI functions");
-
 static std::vector<size_t> memory_size(500, 0); // FIXME cheinrich This needs to be dynamic
 static std::map</*address*/ void*, size_t> alloc_table; // Keep track of all allocations
 

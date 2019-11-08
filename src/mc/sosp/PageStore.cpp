@@ -21,8 +21,6 @@
 #include <cstring> // memcpy, memcmp
 #include <unistd.h>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_page_snapshot, mc, "Logging specific to mc_page_snapshot");
-
 namespace simgrid {
 namespace mc {
 

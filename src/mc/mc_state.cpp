@@ -13,8 +13,6 @@
 
 using simgrid::mc::remote;
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc, "Logging specific to MC (state)");
-
 namespace simgrid {
 namespace mc {
 

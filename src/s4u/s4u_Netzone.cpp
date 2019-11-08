@@ -9,8 +9,6 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "simgrid/zone.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_netzone, "S4U Networking Zones");
-
 namespace simgrid {
 namespace s4u {
 
