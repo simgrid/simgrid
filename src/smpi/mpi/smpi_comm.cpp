@@ -571,6 +571,7 @@ MPI_Comm Comm::split_type(int type, int /*key*/, MPI_Info)
   if(type != MPI_UNDEFINED)
     return res;
   else{
+    xbt_assert(res->refcount_ == 1); // ensure the next call to Comm::destroy really frees the comm
     Comm::destroy(res);
     return MPI_COMM_NULL;
   }
