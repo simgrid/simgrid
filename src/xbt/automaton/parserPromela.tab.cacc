@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.4.1.  */
+/* A Bison parser, made by GNU Bison 3.4.2.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
@@ -48,7 +48,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.4.1"
+#define YYBISON_VERSION "3.4.2"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -118,7 +118,7 @@ static void new_transition(char* id, xbt_automaton_exp_label_t label);
 # define YY_XBT_AUTOMATON_PARSER_PARSERPROMELA_TAB_HACC_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int xbt_automaton_parser_debug;
@@ -666,7 +666,9 @@ yy_symbol_value_print (FILE *yyo, int yytype, YYSTYPE const * const yyvaluep)
   if (yytype < YYNTOKENS)
     YYPRINT (yyo, yytoknum[yytype], *yyvaluep);
 # endif
+  YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
   YYUSE (yytype);
+  YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
 
@@ -1267,53 +1269,53 @@ yyreduce:
   case 4:
 #line 64 "parserPromela.yacc"
     { new_state((yyvsp[-1].string), 1);}
-#line 1271 "parserPromela.tab.cacc"
+#line 1273 "parserPromela.tab.cacc"
     break;
 
   case 7:
 #line 68 "parserPromela.yacc"
     { new_transition((yyvsp[-1].string), (yyvsp[-4].label));}
-#line 1277 "parserPromela.tab.cacc"
+#line 1279 "parserPromela.tab.cacc"
     break;
 
   case 8:
 #line 71 "parserPromela.yacc"
     { (yyval.label) = (yyvsp[-1].label); }
-#line 1283 "parserPromela.tab.cacc"
+#line 1285 "parserPromela.tab.cacc"
     break;
 
   case 9:
 #line 72 "parserPromela.yacc"
     { (yyval.label) = xbt_automaton_exp_label_new_or((yyvsp[-2].label), (yyvsp[0].label)); }
-#line 1289 "parserPromela.tab.cacc"
+#line 1291 "parserPromela.tab.cacc"
     break;
 
   case 10:
 #line 73 "parserPromela.yacc"
     { (yyval.label) = xbt_automaton_exp_label_new_and((yyvsp[-2].label), (yyvsp[0].label)); }
-#line 1295 "parserPromela.tab.cacc"
+#line 1297 "parserPromela.tab.cacc"
     break;
 
   case 11:
 #line 74 "parserPromela.yacc"
     { (yyval.label) = xbt_automaton_exp_label_new_not((yyvsp[0].label)); }
-#line 1301 "parserPromela.tab.cacc"
+#line 1303 "parserPromela.tab.cacc"
     break;
 
   case 12:
 #line 75 "parserPromela.yacc"
     { (yyval.label) = xbt_automaton_exp_label_new_one(); }
-#line 1307 "parserPromela.tab.cacc"
+#line 1309 "parserPromela.tab.cacc"
     break;
 
   case 13:
 #line 76 "parserPromela.yacc"
     { (yyval.label) = xbt_automaton_exp_label_new_predicat((yyvsp[0].string)); }
-#line 1313 "parserPromela.tab.cacc"
+#line 1315 "parserPromela.tab.cacc"
     break;
 
 
-#line 1317 "parserPromela.tab.cacc"
+#line 1319 "parserPromela.tab.cacc"
 
       default: break;
     }

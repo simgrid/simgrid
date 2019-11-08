@@ -90,7 +90,7 @@ if(enable_maintainer_mode AND NOT WIN32)
       ${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.yacc
 
       COMMENT "Generating automaton source files"
-      COMMAND ${BISON_EXE} --name-prefix=xbt_automaton_parser_ -d parserPromela.yacc
+      COMMAND ${BISON_EXE} --name-prefix=xbt_automaton_parser_ -d -t parserPromela.yacc
       COMMAND ${LEX_EXE} --prefix=xbt_automaton_parser_ --outfile=automaton_lexer.yy.c parserPromela.lex
       WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/
       )
