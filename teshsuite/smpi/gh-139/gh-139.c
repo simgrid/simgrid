@@ -27,7 +27,7 @@ void* req_wait(void* bar);
 
 // Thread creation helper
 
-static int thread_create_wrapper(int argc, char* argv[])
+static int thread_create_wrapper(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   int the_global_rank  = global_rank;
   struct threadwrap* t = (struct threadwrap*)sg_actor_self_data();
@@ -80,8 +80,9 @@ void* req_wait(void* bar)
 
 int main(int argc, char* argv[])
 {
-  int rank, size;
-  char c;
+  int rank;
+  int size;
+  char c = 0;
   MPI_Request req;
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
