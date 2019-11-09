@@ -54,7 +54,6 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.autosummary',
     'sphinx_tabs.tabs',
-    'sphinxcontrib.contentui',
     'javasphinx',
     'showfile',
     'autodoxy',

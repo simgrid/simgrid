@@ -18,7 +18,7 @@ SIMGRID_REGISTER_PLUGIN(host_energy, "Cpu energy consumption.", &sg_host_energy_
 
 /** @defgroup plugin_host_energy
 
-  @rst
+  @beginrst
 This is the energy plugin, enabling to account not only for computation time, but also for the dissipated energy in the
 simulated platform.
 To activate this plugin, first call :cpp:func:`sg_host_energy_plugin_init()` before your :cpp:func:`MSG_init()`, and then use

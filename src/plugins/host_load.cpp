@@ -14,7 +14,7 @@ SIMGRID_REGISTER_PLUGIN(host_load, "Cpu load", &sg_host_load_plugin_init)
 
 /** @defgroup plugin_host_load
 
-  @rst
+  @beginrst
 
 Simple plugin that monitors the current load for each host.
 

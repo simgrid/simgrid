@@ -1,0 +1,28 @@
+
+/**
+ *
+ */
+.toggle-tab {
+    margin-bottom: 40px;
+}
+
+.toggle-header {
+    display: block;
+    clear: both;
+    cursor: pointer;
+}
+.toggle-header p {display: inline; }
+.toggle-header strong {color: #2980b9 }
+
+.toggle-header:after {
+    content: " ▼";
+}
+
+.toggle-header.open:after {
+    content: " ▲";
+}
+
+.toggle-content {
+    display: none;
+    margin-bottom: 20px;
+}
