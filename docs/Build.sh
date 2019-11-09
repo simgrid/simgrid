@@ -38,37 +38,7 @@ set +x
 perl -pe 's/(xlink:href="(?:http|.*\.html))/target="_top" $1/' \
      source/img/graphical-toc.svg > build/html/graphical-toc.svg
 
-echo "List of missing references:"
-for f in $( (grep '<name>' build/xml/msg_8h.xml; \
-             grep '<name>' build/xml/namespacesimgrid_1_1s4u.xml; \
-#	     grep '<name>' build/xml/actor_8h.xml ; \
-#	     grep '<name>' build/xml/barrier_8h.xml ; \
-	     grep '<name>' build/xml/cond_8h.xml ; \
-	     grep '<name>' build/xml/engine_8h.xml ; \
-#	     grep '<name>' build/xml/host_8h.xml ; \
-#	     grep '<name>' build/xml/link_8h.xml ; \
-#	     grep '<name>' build/xml/mailbox_8h.xml ; \
-	     grep '<name>' build/xml/msg_8h.xml ; \
-#	     grep '<name>' build/xml/mutex_8h.xml ; \
-#	     grep '<name>' build/xml/semaphore_8h.xml ; \
-#	     grep '<name>' build/xml/vm_8h.xml ; \
-#	     grep '<name>' build/xml/zone_8h.xml ; \
-             grep '<innerclass refid=' build/xml/namespacesimgrid_1_1s4u.xml ; \
-            ) | sed 's/<[^>]*>//g' | sort )
-do
-
-  if grep $f source/*rst | grep -q '.. doxygen[^::]*:: '"$f"'$' ||
-     grep $f source/*rst | grep -q '.. doxygen[^::]*:: simgrid::[^:]*::[^:]*::'"$f"'$'  ; then :   
-#    echo "$f documented"
-  else 
-    if grep -q $f ignored_symbols ; then : 
-#      echo "$f ignored" # not documented
-    else
-      echo "$f"
-    fi
-  fi
-done
-
+echo
 echo "Undocumented examples:"
 for ex in $( (cd .. ; \
               find examples/s4u/ -name '*.cpp'; \

@@ -92,7 +92,11 @@ def handle_python_module(fullname, englobing, elm):
 
 # Start the recursion on the provided Python modules
 for name in python_modules:
-    module = __import__(name)
+    try:
+        module = __import__(name)
+    except Exception:
+        print("Cannot import {}. Did you set PYTHONPATH=../lib accordingly?".format(name))
+        sys.exit(1)
     for sub in dir(module):
         if sub[0] == '_':
             continue
