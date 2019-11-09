@@ -219,7 +219,7 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
         xpath_query_noparam = ('.//compoundname[text()="{:s}"]/../sectiondef[@kind="public-func" or @kind="public-static-func"]'
                                '/memberdef[@kind="function"]/name[text()="{:s}"]/..').format(obj, meth)
         xpath_query = ""
-        print("fullname {}".format(self.fullname))
+#        print("fullname {}".format(self.fullname))
         if self.argsstring != None:
             xpath_query = ('.//compoundname[text()="{:s}"]/../sectiondef[@kind="public-func" or @kind="public-static-func"]'
                            '/memberdef[@kind="function" and argsstring/text()="{:s}"]/name[text()="{:s}"]/..').format(obj,self.argsstring,meth)
@@ -234,10 +234,8 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
                 for cand in get_doxygen_root().xpath(xpath_query_noparam):
                     logger.warning("[autodoxy] WARNING:   Existing candidate: {}::{}{}".format(obj, meth, cand.find('argsstring').text))
             else:
-                logger.warning("[autodoxy] WARNING: could not find method {}::{}{}".format(obj, meth))
-
-            raise ExtensionError(('[autodoxy] could not find method (modname="{:s}", objname="{:s}"). I tried '
-                                  'the following xpath: "{:s}"').format(obj, meth, xpath_query))
+                logger.warning("[autodoxy] WARNING: could not find method {}::{} in Doxygen files".format(obj, meth))
+            return False
         self.object = match[0]
         return True
 

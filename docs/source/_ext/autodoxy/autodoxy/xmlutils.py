@@ -1,6 +1,6 @@
 from __future__ import print_function, absolute_import, division
 from . import get_doxygen_root
-
+import re
 
 def format_xml_paragraph(xmlnode):
     """Format an Doxygen XML segment (principally a detaileddescription)
@@ -75,6 +75,26 @@ class _DoxygenXmlParagraphFormatter(object):
         self.lines.append('')
         self.continue_line = False
 
+    def visit_verbatim(self, node):
+        if node.text is not None:
+            # remove the leading ' *' of any lines
+            lines = [re.sub('^\s*\*','', l) for l in node.text.split('\n')]
+            # Merge each paragraph together
+            text = re.sub("\n\n", "PaRaGrraphSplit", '\n'.join(lines))
+            text = re.sub('\n', '', text)
+            lines = text.split('PaRaGrraphSplit')
+
+            # merge content to the built doc
+            if self.continue_line:
+                self.lines[-1] += lines[0]
+                lines = lines[1:]
+            for l in lines:
+                self.lines.append('')
+                self.lines.append(l)
+        self.generic_visit(node)
+        self.lines.append('')
+        self.continue_line = False
+
     def visit_parametername(self, node):
         if 'direction' in node.attrib:
             direction = '[%s] ' % node.get('direction')
@@ -126,3 +146,4 @@ class _DoxygenXmlParagraphFormatter(object):
 
     def visit_subscript(self, node):
         self.lines[-1] += '\ :sub:`%s` %s' % (node.text, node.tail)
+
