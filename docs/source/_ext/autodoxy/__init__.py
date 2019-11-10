@@ -2,6 +2,10 @@ import os.path
 from lxml import etree as ET
 from sphinx.errors import ExtensionError
 
+import sphinx.ext.autosummary
+from autodoxy import DoxygenClassDocumenter, DoxygenMethodDocumenter, DoxygenTypeDocumenter
+from autodoxy.autosummary import DoxygenAutosummary, DoxygenAutoEnum
+from autodoxy.autosummary.generate import process_generate_options
 
 def set_doxygen_xml(app):
     """Load all doxygen XML files from the app config variable
@@ -34,10 +38,6 @@ def get_doxygen_root():
     return setup.DOXYGEN_ROOT
 
 def setup(app):
-    import sphinx.ext.autosummary
-    from autodoxy import DoxygenClassDocumenter, DoxygenMethodDocumenter, DoxygenTypeDocumenter
-    from autodoxy.autosummary import DoxygenAutosummary, DoxygenAutoEnum
-    from autodoxy.autosummary.generate import process_generate_options
 
     app.connect("builder-inited", set_doxygen_xml)
     app.connect("builder-inited", process_generate_options)
