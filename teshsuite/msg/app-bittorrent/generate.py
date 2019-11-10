@@ -38,7 +38,7 @@ for i in range(1, nb_nodes):
     ok = False
     while not ok:
         my_id = random.randint(0, max_id)
-        ok = not my_id in all_ids
+        ok = my_id not in all_ids
     start_date = i * 10
     line = "  <process host=\"node-%d.simgrid.org\" function=\"peer\">\n" % i
     line += "    <argument value=\"%d\"/>\n    <argument value=\"%d\"/>\n" % (

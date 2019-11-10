@@ -30,7 +30,7 @@ for i in range(1, nb_nodes):
     ok = False
     while not ok:
         my_id = random.randint(0, max_id)
-        ok = not my_id in all_ids
+        ok = my_id not in all_ids
     known_id = all_ids[random.randint(0, len(all_ids) - 1)]
     start_date = i * 10
     line = "  <process host=\"node-%d.simgrid.org\" function=\"node\">\n    <argument value=\"%s\"/>"\

@@ -30,17 +30,18 @@ all_ids = [42]
 sys.stdout.write("<?xml version='1.0'?>\n"
                  "<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n"
                  "<platform version=\"3\">\n"
-                 "  <process host=\"c-0.me\" function=\"bittorrent.Tracker\"><argument value=\"%d\"/></process>\n" % end_date)
+                 "  <process host=\"c-0.me\" function=\"bittorrent.Tracker\"><argument value=\"%d\"/></process>\n" %
+                 end_date)
 
 for i in range(1, nb_nodes):
 
     ok = False
     while not ok:
         my_id = random.randint(0, max_id)
-        ok = not my_id in all_ids
+        ok = my_id not in all_ids
     start_date = i * 10
-    line = "  <process host=\"c-%d.me\" function=\"bittorrent.Peer\"><argument value=\"%d\" /><argument value=\"%d\" />" % (
-        i, my_id, end_date)
+    line = "  <process host=\"c-%d.me\" function=\"bittorrent.Peer\"><argument value=\"%d\" />" \
+           "<argument value=\"%d\" />" % (i, my_id, end_date)
     if random.randint(0, 100) < seed_percentage:
         line += "<argument value=\"1\" />"
     line += "</process>\n"
