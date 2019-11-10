@@ -21,7 +21,7 @@ class ShowFileDirective(Directive):
     has_content = False
     optional_arguments = 1
     option_spec = {
-      'language': directives.unchanged
+        'language': directives.unchanged
     }
 
     def run(self):
@@ -110,12 +110,21 @@ class ExampleTabDirective(Directive):
 
 class ToggleDirective(Directive):
     has_content = True
-    option_spec = {'header': directives.unchanged}
+    option_spec = {
+        'header': directives.unchanged,
+        'show': directives.flag
+    }
     optional_arguments = 1
 
     def run(self):
         node = nodes.container()
         node['classes'].append('toggle-content')
+        if not "show" in self.options:
+            # This :show: thing is not working, and I fail to see why.
+            # Only the hidden-content class gets a call to hide() in the Javascript,
+            # and :show:n block# still get hidden when I load the page.
+            # No idea what's going on (Mt)
+            node['classes'].append('hidden-content')
 
         par = nodes.container()
         par['classes'].append('toggle-header')

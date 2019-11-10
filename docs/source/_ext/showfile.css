@@ -19,7 +19,7 @@
 }
 
 .toggle-header.open:after {
-    content: " ▲";
+    content: " ⯇";
 }
 
 .toggle-content {
