@@ -188,8 +188,8 @@ with os.popen('grep autodoxyvar:: source/*rst|sed \'s/^.*autodoxyvar:: //\'') as
         else:
 #            print("Found {} in {}".format(line, klass))
             doxy_vars[klass].remove(var)
-            if len(doxy_funs[klass]) == 0:
-                del doxy_funs[klass]
+            if len(doxy_vars[klass]) == 0:
+                del doxy_vars[klass]
 
 # Dump the undocumented Doxygen declarations 
 for obj in doxy_funs:
