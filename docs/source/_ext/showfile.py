@@ -119,7 +119,7 @@ class ToggleDirective(Directive):
     def run(self):
         node = nodes.container()
         node['classes'].append('toggle-content')
-        if not "show" in self.options:
+        if "show" not in self.options:
             # This :show: thing is not working, and I fail to see why.
             # Only the hidden-content class gets a call to hide() in the Javascript,
             # and :show:n block# still get hidden when I load the page.

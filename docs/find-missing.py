@@ -61,7 +61,7 @@ def handle_python_module(fullname, englobing, elm):
 
     def found_decl(kind, obj):
         """Helper function that add an object in the python_decl data structure"""
-        if not kind in python_decl: python_decl[kind] = []
+        if kind not in python_decl: python_decl[kind] = []
         python_decl[kind].append(obj)
 
 
@@ -106,7 +106,7 @@ for name in python_modules:
 for kind in python_decl:
     with os.popen('grep \'[[:blank:]]*auto{}::\' source/*rst|sed \'s/^.*auto{}:: //\''.format(kind, kind)) as pse:
         for fullname in (l.strip() for l in pse):
-            if not fullname in python_decl[kind]:
+            if fullname not in python_decl[kind]:
                 print("Warning: {} documented but declaration not found in python.".format(fullname))
             else:
                 python_decl[kind].remove(fullname)
@@ -141,14 +141,14 @@ for arg in xml_files[:1]:
             kind = member.attrib["kind"]
             name = member.find("name").text
             if kind == "variable":
-                if not compoundname in doxy_vars: doxy_vars[compoundname] = []
+                if compoundname not in doxy_vars: doxy_vars[compoundname] = []
                 doxy_vars[compoundname].append(name)
             elif kind == "function":
                 args = member.find('argsstring').text
                 args = re.sub('\)[^)]*$', ')', args) # ignore what's after the parameters (eg, '=0' or ' const')
 
-                if not compoundname in doxy_funs: doxy_funs[compoundname] = {}
-                if not name in doxy_funs[compoundname]: doxy_funs[compoundname][name] = []
+                if compoundname not in doxy_funs: doxy_funs[compoundname] = {}
+                if name not in doxy_funs[compoundname]: doxy_funs[compoundname][name] = []
                 doxy_funs[compoundname][name].append(args)
             else:
                 print ("member {}::{} is of kind {}".format(compoundname, name, kind))
@@ -162,14 +162,14 @@ with os.popen('grep autodoxymethod:: source/*rst|sed \'s/^.*autodoxymethod:: //\
             args = "({}".format(args)
         (klass, obj) = line.rsplit('::', 1)
 
-        if not klass in doxy_funs:
+        if klass not in doxy_funs:
             print("Warning: {} documented, but class {} not found in doxygen.".format(line, klass))
             continue
-        if not obj in doxy_funs[klass]:
+        if obj not in doxy_funs[klass]:
             print("Warning: Object {} documented but not found in {}".format(line, klass))
         elif len(doxy_funs[klass][obj])==1:
             del doxy_funs[klass][obj]
-        elif not args in doxy_funs[klass][obj]:
+        elif args not in doxy_funs[klass][obj]:
             print("Warning: Function {}{} not found in {}".format(obj, args, klass))
         else:
 #            print("Found {} in {}".format(line, klass))
@@ -180,10 +180,10 @@ with os.popen('grep autodoxyvar:: source/*rst|sed \'s/^.*autodoxyvar:: //\'') as
     for line in (l.strip() for l in pse):
         (klass, var) = line.rsplit('::', 1)
 
-        if not klass in doxy_vars:
+        if klass not in doxy_vars:
             print("Warning: {} documented, but class {} not found in doxygen.".format(line, klass))
             continue
-        if not var in doxy_vars[klass]:
+        if var not in doxy_vars[klass]:
             print("Warning: Object {} documented but not found in {}".format(line, klass))
         else:
 #            print("Found {} in {}".format(line, klass))
