@@ -1,4 +1,20 @@
+"""
+This is autodoxy, a sphinx extension providing autodoc-like directives
+that are feed with Doxygen files.
+
+It is highly inspired from the autodoc_doxygen sphinx extension, but
+adapted to my own needs in SimGrid.
+https://github.com/rmcgibbo/sphinxcontrib-autodoc_doxygen
+
+Licence: MIT
+Copyright (c) 2015 Robert T. McGibbon
+Copyright (c) 2019 Martin Quinson
+"""
 from __future__ import print_function, absolute_import, division
+
+import os.path
+import re
+import sys
 
 from six import itervalues
 from lxml import etree as ET
@@ -6,10 +22,160 @@ from sphinx.ext.autodoc import Documenter, AutoDirective, members_option, ALL
 from sphinx.errors import ExtensionError
 from sphinx.util import logging
 
-from . import get_doxygen_root
-from .xmlutils import format_xml_paragraph
 
-import sys
+##########################################################################
+# XML utils
+##########################################################################
+def format_xml_paragraph(xmlnode):
+    """Format an Doxygen XML segment (principally a detaileddescription)
+    as a paragraph for inclusion in the rst document
+
+    Parameters
+    ----------
+    xmlnode
+
+    Returns
+    -------
+    lines
+        A list of lines.
+    """
+    return [l.rstrip() for l in _DoxygenXmlParagraphFormatter().generic_visit(xmlnode).lines]
+
+
+class _DoxygenXmlParagraphFormatter(object):
+    # This class follows the model of the stdlib's ast.NodeVisitor for tree traversal
+    # where you dispatch on the element type to a different method for each node
+    # during the traverse.
+
+    # It's supposed to handle paragraphs, references, preformatted text (code blocks), and lists.
+
+    def __init__(self):
+        self.lines = ['']
+        self.continue_line = False
+
+    def visit(self, node):
+        method = 'visit_' + node.tag
+        visitor = getattr(self, method, self.generic_visit)
+        return visitor(node)
+
+    def generic_visit(self, node):
+        for child in node.getchildren():
+            self.visit(child)
+        return self
+
+    def visit_ref(self, node):
+        ref = get_doxygen_root().findall('.//*[@id="%s"]' % node.get('refid'))
+        if ref:
+            ref = ref[0]
+            if ref.tag == 'memberdef':
+                parent = ref.xpath('./ancestor::compounddef/compoundname')[0].text
+                name = ref.find('./name').text
+                real_name = parent + '::' + name
+            elif ref.tag in ('compounddef', 'enumvalue'):
+                name_node = ref.find('./name')
+                real_name = name_node.text if name_node is not None else ''
+            else:
+                raise NotImplementedError(ref.tag)
+        else:
+            real_name = None
+
+        val = [':cpp:any:`', node.text]
+        if real_name:
+            val.extend((' <', real_name, '>`'))
+        else:
+            val.append('`')
+        if node.tail is not None:
+            val.append(node.tail)
+
+        self.lines[-1] += ''.join(val)
+
+    def visit_para(self, node):
+        if node.text is not None:
+            if self.continue_line:
+                self.lines[-1] += node.text
+            else:
+                self.lines.append(node.text)
+        self.generic_visit(node)
+        self.lines.append('')
+        self.continue_line = False
+
+    def visit_verbatim(self, node):
+        if node.text is not None:
+            # remove the leading ' *' of any lines
+            lines = [re.sub('^\s*\*','', l) for l in node.text.split('\n')]
+            # Merge each paragraph together
+            text = re.sub("\n\n", "PaRaGrraphSplit", '\n'.join(lines))
+            text = re.sub('\n', '', text)
+            lines = text.split('PaRaGrraphSplit')
+
+            # merge content to the built doc
+            if self.continue_line:
+                self.lines[-1] += lines[0]
+                lines = lines[1:]
+            for l in lines:
+                self.lines.append('')
+                self.lines.append(l)
+        self.generic_visit(node)
+        self.lines.append('')
+        self.continue_line = False
+
+    def visit_parametername(self, node):
+        if 'direction' in node.attrib:
+            direction = '[%s] ' % node.get('direction')
+        else:
+            direction = ''
+
+        self.lines.append('**%s** -- %s' % (
+            node.text, direction))
+        self.continue_line = True
+
+    def visit_parameterlist(self, node):
+        lines = [l for l in type(self)().generic_visit(node).lines if l is not '']
+        self.lines.extend([':parameters:', ''] + ['* %s' % l for l in lines] + [''])
+
+    def visit_simplesect(self, node):
+        if node.get('kind') == 'return':
+            self.lines.append(':returns: ')
+            self.continue_line = True
+        self.generic_visit(node)
+
+    def visit_listitem(self, node):
+        self.lines.append('   - ')
+        self.continue_line = True
+        self.generic_visit(node)
+
+    def visit_preformatted(self, node):
+        segment = [node.text if node.text is not None else '']
+        for n in node.getchildren():
+            segment.append(n.text)
+            if n.tail is not None:
+                segment.append(n.tail)
+
+        lines = ''.join(segment).split('\n')
+        self.lines.extend(('.. code-block:: C++', ''))
+        self.lines.extend(['  ' + l for l in lines])
+
+    def visit_computeroutput(self, node):
+        c = node.find('preformatted')
+        if c is not None:
+            return self.visit_preformatted(c)
+        return self.visit_preformatted(node)
+
+    def visit_xrefsect(self, node):
+        if node.find('xreftitle').text == 'Deprecated':
+            sublines = type(self)().generic_visit(node).lines
+            self.lines.extend(['.. admonition:: Deprecated'] + ['   ' + s for s in sublines])
+        else:
+            raise ValueError(node)
+
+    def visit_subscript(self, node):
+        self.lines[-1] += '\ :sub:`%s` %s' % (node.text, node.tail)
+
+
+##########################################################################
+# Directives
+##########################################################################
+
 
 class DoxygenDocumenter(Documenter):
     # Variables to store the names of the object being documented. modname and fullname are redundant,
@@ -368,3 +534,57 @@ class DoxygenVariableDocumenter(DoxygenDocumenter):
     def document_members(self, all_members=False):
         pass
 
+
+##########################################################################
+# Setup the extension
+##########################################################################
+def set_doxygen_xml(app):
+    """Load all doxygen XML files from the app config variable
+    `app.config.doxygen_xml` which should be a path to a directory
+    containing doxygen xml output
+    """
+    err = ExtensionError(
+        '[autodoxy] No doxygen xml output found in doxygen_xml="%s"' % app.config.doxygen_xml)
+
+    if not os.path.isdir(app.config.doxygen_xml):
+        raise err
+
+    files = [os.path.join(app.config.doxygen_xml, f)
+             for f in os.listdir(app.config.doxygen_xml)
+             if f.lower().endswith('.xml') and not f.startswith('._')]
+    if len(files) == 0:
+        raise err
+
+    setup.DOXYGEN_ROOT = ET.ElementTree(ET.Element('root')).getroot()
+    for file in files:
+        root = ET.parse(file).getroot()
+        for node in root:
+            setup.DOXYGEN_ROOT.append(node)
+
+
+def get_doxygen_root():
+    """Get the root element of the doxygen XML document.
+    """
+    if not hasattr(setup, 'DOXYGEN_ROOT'):
+        setup.DOXYGEN_ROOT = ET.Element("root")  # dummy
+    return setup.DOXYGEN_ROOT
+
+
+def setup(app):
+    import sphinx.ext.autosummary
+
+    app.connect("builder-inited", set_doxygen_xml)
+#    app.connect("builder-inited", process_generate_options)
+
+    app.setup_extension('sphinx.ext.autodoc')
+#    app.setup_extension('sphinx.ext.autosummary')
+
+    app.add_autodocumenter(DoxygenClassDocumenter)
+    app.add_autodocumenter(DoxygenMethodDocumenter)
+    app.add_autodocumenter(DoxygenVariableDocumenter)
+    app.add_config_value("doxygen_xml", "", True)
+
+#    app.add_directive('autodoxysummary', DoxygenAutosummary)
+#    app.add_directive('autodoxyenum', DoxygenAutoEnum)
+
+    return {'version': sphinx.__display_version__, 'parallel_read_safe': True}
