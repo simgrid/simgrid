@@ -6,7 +6,7 @@
 # This Python file acts as the foil to the corresponding XML file, where the
 # action takes place: Actors are started and stopped at predefined time
 
-from simgrid import *
+from simgrid import Engine, this_actor
 import sys
 
 

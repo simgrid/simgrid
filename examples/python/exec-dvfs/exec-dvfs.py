@@ -3,8 +3,8 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
+from simgrid import Actor, Engine, Host, this_actor
 import sys
-from simgrid import *
 
 
 class Dvfs:

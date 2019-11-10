@@ -16,8 +16,8 @@
 # application and the settings to test it. This is a better scientific methodology. Actually, starting an actor with
 # Actor.create() is mostly useful to start an actor from another actor.
 
+from simgrid import Actor, Engine, Host, Mailbox, this_actor
 import sys
-from simgrid import *
 
 
 def receiver(mailbox_name):

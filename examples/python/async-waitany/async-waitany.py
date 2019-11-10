@@ -3,8 +3,8 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
+from simgrid import Comm, Engine, Mailbox, this_actor
 import sys
-from simgrid import *
 
 # This example shows how to block on the completion of a set of communications.
 #

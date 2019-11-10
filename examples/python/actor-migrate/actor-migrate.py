@@ -15,7 +15,7 @@
 # Note that worker() takes an uncommon set of parameters,
 # and that this is perfectly accepted by create().
 
-from simgrid import *
+from simgrid import Actor, Engine, Host, this_actor
 import sys
 
 

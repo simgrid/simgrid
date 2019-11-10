@@ -3,8 +3,8 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
+from simgrid import Engine, this_actor
 import sys
-from simgrid import *
 
 # This example does not much: It just spans over-polite actor that yield a large amount
 # of time before ending.
