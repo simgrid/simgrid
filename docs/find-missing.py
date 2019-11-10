@@ -176,6 +176,20 @@ with os.popen('grep autodoxymethod:: source/*rst|sed \'s/^.*autodoxymethod:: //\
             doxy_funs[klass][obj].remove(args)
             if len(doxy_funs[klass][obj]) == 0:
                 del doxy_funs[klass][obj]
+with os.popen('grep autodoxyvar:: source/*rst|sed \'s/^.*autodoxyvar:: //\'') as pse:
+    for line in (l.strip() for l in pse):
+        (klass, var) = line.rsplit('::', 1)
+
+        if not klass in doxy_vars:
+            print("Warning: {} documented, but class {} not found in doxygen.".format(line, klass))
+            continue
+        if not var in doxy_vars[klass]:
+            print("Warning: Object {} documented but not found in {}".format(line, klass))
+        else:
+#            print("Found {} in {}".format(line, klass))
+            doxy_vars[klass].remove(var)
+            if len(doxy_funs[klass]) == 0:
+                del doxy_funs[klass]
 
 # Dump the undocumented Doxygen declarations 
 for obj in doxy_funs:
@@ -185,5 +199,5 @@ for obj in doxy_funs:
 
 for obj in doxy_vars:
     for meth in doxy_vars[obj]:
-        print("Missing decl: .. autodoxyfield:: {}::{}".format(obj, meth))
+        print("Missing decl: .. autodoxyvar:: {}::{}".format(obj, meth))
 

@@ -183,7 +183,6 @@ class DoxygenClassDocumenter(DoxygenDocumenter):
         # Uncomment to view the generated rst for the class.
         # print('\n'.join(self.directive.result))
 
-
 class DoxygenMethodDocumenter(DoxygenDocumenter):
     objtype = 'doxymethod'
     directivetype = 'function'
@@ -280,3 +279,86 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
 
     def document_members(self, all_members=False):
         pass
+
+class DoxygenVariableDocumenter(DoxygenDocumenter):
+    objtype = 'doxyvar'
+    directivetype = 'var'
+    domain = 'cpp'
+    priority = 100
+
+    @classmethod
+    def can_document_member(cls, member, membername, isattr, parent):
+        if ET.iselement(member) and member.tag == 'memberdef' and member.get('kind') == 'variable':
+            return True
+        return False
+
+    def import_object(self):
+        if ET.iselement(self.object):
+            # self.object already set from DoxygenDocumenter.parse_name(),
+            # caused by passing in the `id` of the node instead of just a
+            # classname or method name
+            return True
+
+        (obj, var) = self.fullname.rsplit('::', 1)
+
+        xpath_query = ('.//compoundname[text()="{:s}"]/../sectiondef[@kind="public-attrib" or @kind="public-static-attrib"]'
+                       '/memberdef[@kind="variable"]/name[text()="{:s}"]/..').format(obj, var)
+#        print("fullname {}".format(self.fullname))
+        match = get_doxygen_root().xpath(xpath_query)
+        if len(match) == 0:
+            logger = logging.getLogger(__name__)
+
+            logger.warning("[autodoxy] WARNING: could not find variable {}::{} in Doxygen files".format(obj, var))
+            return False
+        self.object = match[0]
+        return True
+
+    def parse_id(self, id):
+        xp = './/*[@id="%s"]' % id
+        match = get_doxygen_root().xpath(xp)
+        if len(match) > 0:
+            match = match[0]
+            self.fullname = match.find('./definition').text.split()[-1]
+            self.modname = self.fullname
+            self.objname = match.find('./name').text
+            self.object = match
+        return False
+
+    def format_name(self):
+        def text(el):
+            if el.text is not None:
+                return el.text
+            return ''
+
+        def tail(el):
+            if el.tail is not None:
+                return el.tail
+            return ''
+
+        rtype_el = self.object.find('type')
+        rtype_el_ref = rtype_el.find('ref')
+        if rtype_el_ref is not None:
+            rtype = text(rtype_el) + text(rtype_el_ref) + tail(rtype_el_ref)
+        else:
+            rtype = rtype_el.text
+
+ #       print("rtype: {}".format(rtype))
+        signame = (rtype and (rtype + ' ') or '') + self.objname
+        return self.format_template_name() + signame
+
+    def get_doc(self, encoding):
+        detaileddescription = self.object.find('detaileddescription')
+        doc = [format_xml_paragraph(detaileddescription)]
+        return doc
+
+    def format_template_name(self):
+        types = [e.text for e in self.object.findall('templateparamlist/param/type')]
+        if len(types) == 0:
+            return ''
+        ret = 'template <%s>' % ','.join(types)
+#        print ("template: {}".format(ret))
+        return ret
+
+    def document_members(self, all_members=False):
+        pass
+
