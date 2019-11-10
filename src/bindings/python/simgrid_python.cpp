@@ -250,7 +250,7 @@ PYBIND11_MODULE(simgrid, m)
                }
              });
            },
-           "Create an actor from a function or an object, see :cpp:func:`simgrid::s4u::Actor::create()`")
+           "Create an actor from a function or an object.")
       .def_property("host", &Actor::get_host, &Actor::migrate, "The host on which this actor is located")
       .def_property_readonly("name", &Actor::get_cname, "The name of this actor.")
       .def_property_readonly("pid", &Actor::get_pid, "The PID (unique identifier) of this actor.")
@@ -258,18 +258,18 @@ PYBIND11_MODULE(simgrid, m)
                              "The PID (unique identifier) of the actor that created this one.")
       .def("by_pid", &Actor::by_pid, "Retrieve an actor by its PID")
       .def("daemonize", &Actor::daemonize,
-           "This actor will be automatically terminated when the last non-daemon actor finishes, see :cpp:func:`void "
-           "simgrid::s4u::Actor::daemonize()`")
+           "This actor will be automatically terminated when the last non-daemon actor finishes (more info in the C++ "
+           "documentation).")
       .def("is_daemon", &Actor::is_daemon,
            "Returns True if that actor is a daemon and will be terminated automatically when the last non-daemon actor "
            "terminates.")
       .def("join", py::overload_cast<double>(&Actor::join),
-           "Wait for the actor to finish, see :cpp:func:`void simgrid::s4u::Actor::join(double)`", py::arg("timeout"))
+           "Wait for the actor to finish (more info in the C++ documentation).", py::arg("timeout"))
       .def("kill", [](ActorPtr act) { act->kill(); }, "Kill that actor")
       .def("kill_all", &Actor::kill_all, "Kill all actors but the caller.")
-      .def("migrate", &Actor::migrate,
-           "Moves that actor to another host, see :cpp:func:`void simgrid::s4u::Actor::migrate()`", py::arg("dest"))
-      .def("self", &Actor::self, "Retrieves the current actor, see :cpp:func:`void simgrid::s4u::Actor::self()`")
+      .def("migrate", &Actor::migrate, "Moves that actor to another host (more info in the C++ documentation).",
+           py::arg("dest"))
+      .def("self", &Actor::self, "Retrieves the current actor.")
       .def("is_suspended", &Actor::is_suspended, "Returns True if that actor is currently suspended.")
       .def("suspend", &Actor::suspend, "Suspend that actor, that is blocked until resume()ed by another actor.")
       .def("resume", &Actor::resume, "Resume that actor, that was previously suspend()ed.");

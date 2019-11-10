@@ -4,8 +4,8 @@
 .. documentation, but it should remain readable directly.
 
 
-S4U Examples
-************
+Examples
+********
 
 SimGrid comes with an extensive set of examples, documented on this
 page. Most of them only demonstrate one single feature, with some
@@ -22,11 +22,11 @@ A good way to bootstrap your own project is to copy and combine some
 of the provided examples to constitute the skeleton of what you plan
 to simulate.
 
+.. _s4u_ex_actors:
+
 ===========================
 Actors: the Active Entities
 ===========================
-
-.. _s4u_ex_actors:
 
 Starting and Stoping Actors
 ---------------------------

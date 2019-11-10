@@ -369,16 +369,19 @@ shouldn't), using :cpp:func:`simgrid::s4u::Host::destroy`.
 
 .. include:: ../../examples/README.rst
 
-C++ API Reference
-*****************
+API Reference
+*************
 
 .. _API_s4u_this_actor:
 
-=========================
-namespace s4u::this_actor
-=========================
+==================================
+Interacting with the current actor
+==================================
+
+Static methods working on the current actor (see :ref:`API_s4u_Actor`).
 
 .. doxygennamespace:: simgrid::s4u::this_actor
+
 .. _API_s4u_Activity:
 
 =============
@@ -392,18 +395,172 @@ s4u::Activity
 
 .. _API_s4u_Actor:
 
-==========
-s4u::Actor
-==========
+===========
+class Actor
+===========
 
 .. doxygentypedef:: ActorPtr
 
 .. doxygentypedef:: aid_t
 
-.. doxygenclass:: simgrid::s4u::Actor
-   :members:
-   :protected-members:
-   :undoc-members:
+.. autodoxyclass:: simgrid::s4u::Actor
+
+   .. rubric:: Table of contents
+
+   - :ref:`API_s4u_Actor_create`
+   - :ref:`API_s4u_Actor_search`
+   - :ref:`API_s4u_Actor_query`
+   - :ref:`API_s4u_Actor_suspend`
+   - :ref:`API_s4u_Actor_kill`
+   - :ref:`API_s4u_Actor_ending`
+   - :ref:`API_s4u_Actor_signals`
+
+   |hr|
+
+   .. _API_s4u_Actor_create:
+
+   .. rubric:: Creating actors :ref:`(back to top) <API_s4u_Actor>`
+
+   .. tabs::
+
+      .. group-tab:: C++
+
+         .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, const std::function< void()> &code)
+         .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, F code)
+         .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, F code, Args... args)
+         .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, const std::string &function, std::vector< std::string > args)
+
+         .. autodoxymethod:: simgrid::s4u::Actor::init(const std::string &name, s4u::Host *host)
+         .. autodoxymethod:: simgrid::s4u::Actor::start(const std::function< void()> &code)
+
+      .. group-tab:: Python
+
+         .. automethod:: simgrid.Actor.create
+
+   .. _API_s4u_Actor_search:
+
+   .. rubric:: Searching specific actors :ref:`(back to top) <API_s4u_Actor>`
+
+   .. tabs::
+
+      .. group-tab:: C++
+
+         .. autodoxymethod:: simgrid::s4u::Actor::by_pid(aid_t pid)
+         .. autodoxymethod:: simgrid::s4u::Actor::self()
+
+      .. group-tab:: Python
+
+         .. automethod:: simgrid.Actor.by_pid
+         .. automethod:: simgrid.Actor.self
+
+   .. _API_s4u_Actor_query:
+
+   .. rubric:: Querying info about actors :ref:`(back to top) <API_s4u_Actor>`
+
+   .. tabs::
+
+         .. group-tab:: C++
+
+            .. autodoxymethod:: simgrid::s4u::Actor::get_cname
+            .. autodoxymethod:: simgrid::s4u::Actor::get_name
+            .. autodoxymethod:: simgrid::s4u::Actor::get_pid
+            .. autodoxymethod:: simgrid::s4u::Actor::get_ppid
+            .. autodoxymethod:: simgrid::s4u::Actor::get_properties() const
+            .. autodoxymethod:: simgrid::s4u::Actor::get_property(const std::string &key) const
+            .. autodoxymethod:: simgrid::s4u::Actor::set_property(const std::string &key, const std::string &value) 
+
+            .. autodoxymethod:: simgrid::s4u::Actor::get_host
+            .. autodoxymethod:: simgrid::s4u::Actor::migrate
+
+            .. autodoxymethod:: simgrid::s4u::Actor::get_refcount()
+            .. autodoxymethod:: simgrid::s4u::Actor::get_impl()
+
+         .. group-tab:: Python
+
+            .. autoattribute:: simgrid.Actor.name
+            .. autoattribute:: simgrid.Actor.host
+            .. autoattribute:: simgrid.Actor.pid
+            .. autoattribute:: simgrid.Actor.ppid
+
+            .. automethod:: simgrid.Actor.migrate
+
+   .. _API_s4u_Actor_suspend:
+
+   .. rubric:: Suspending and resuming actors :ref:`(back to top) <API_s4u_Actor>`
+
+   .. tabs::
+
+      .. group-tab:: C++
+
+         .. autodoxymethod:: simgrid::s4u::Actor::suspend()
+         .. autodoxymethod:: simgrid::s4u::Actor::resume()
+         .. autodoxymethod:: simgrid::s4u::Actor::is_suspended()
+
+      .. group-tab:: Python
+
+         .. automethod:: simgrid.Actor.resume
+         .. automethod:: simgrid.Actor.suspend
+         .. automethod:: simgrid.Actor.is_suspended
+
+   .. _API_s4u_Actor_kill:
+
+   .. rubric:: Killing actors :ref:`(back to top) <API_s4u_Actor>`
+
+   .. tabs::
+
+      .. group-tab:: C++
+
+         .. autodoxymethod:: simgrid::s4u::Actor::kill()
+         .. autodoxymethod:: simgrid::s4u::Actor::kill_all()
+         .. autodoxymethod:: simgrid::s4u::Actor::set_kill_time(double time)
+         .. autodoxymethod:: simgrid::s4u::Actor::get_kill_time()
+
+         .. autodoxymethod:: simgrid::s4u::Actor::restart()
+         .. autodoxymethod:: simgrid::s4u::Actor::daemonize()
+         .. autodoxymethod:: simgrid::s4u::Actor::is_daemon
+
+      .. group-tab:: Python
+
+         .. automethod:: simgrid.Actor.kill
+         .. automethod:: simgrid.Actor.kill_all
+
+         .. automethod:: simgrid.Actor.daemonize
+         .. automethod:: simgrid.Actor.is_daemon
+
+   .. _API_s4u_Actor_ending:
+
+   .. rubric:: Reacting to the end of actors :ref:`(back to top) <API_s4u_Actor>`
+
+   .. tabs::
+
+      .. group-tab:: C++
+
+         .. autodoxymethod:: simgrid::s4u::Actor::on_exit(const std::function< void(bool)> &fun)
+         .. autodoxymethod:: simgrid::s4u::Actor::join()
+         .. autodoxymethod:: simgrid::s4u::Actor::join(double timeout)
+         .. autodoxymethod:: simgrid::s4u::Actor::set_auto_restart(bool autorestart)
+
+      .. group-tab:: Python
+
+         .. automethod:: simgrid.Actor.join
+
+   .. _API_s4u_Actor_signals:
+
+   .. rubric:: Signals :ref:`(back to top) <API_s4u_Actor>`
+
+   .. tabs::
+
+      .. group-tab:: C++
+
+         .. autodoxyvar:: simgrid::s4u::Actor::on_creation
+         .. autodoxyvar:: simgrid::s4u::Actor::on_suspend
+         .. autodoxyvar:: simgrid::s4u::Actor::on_resume
+         .. autodoxyvar:: simgrid::s4u::Actor::on_sleep
+         .. autodoxyvar:: simgrid::s4u::Actor::on_wake_up
+         .. autodoxyvar:: simgrid::s4u::Actor::on_migration_start
+         .. autodoxyvar:: simgrid::s4u::Actor::on_migration_end
+         .. autodoxyvar:: simgrid::s4u::Actor::on_termination
+         .. autodoxyvar:: simgrid::s4u::Actor::on_destruction
 
 .. _API_s4u_Barrier:
 
@@ -682,3 +839,7 @@ Class Mailbox
 
 .. autoclass:: simgrid.Mailbox
    :members:
+
+.. |hr| raw:: html
+
+   <hr />

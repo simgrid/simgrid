@@ -21,108 +21,20 @@
 namespace simgrid {
 namespace s4u {
 
-/**
- *
- * An actor is an independent stream of execution in your distributed application.
+/** \beginrst An actor is an independent stream of execution in your distributed application.
+ * It is located on a (simulated) :cpp:class:`host <simgrid::s4u::Host>`, but can interact
+ * with the whole simulated platform.
  *
  * You can think of an actor as a process in your distributed application, or as a thread in a multithreaded program.
  * This is the only component in SimGrid that actually does something on its own, executing its own code.
  * A resource will not get used if you don't schedule activities on them. This is the code of Actors that create and
- * schedule these activities.
+ * schedule these activities. Please refer to the :ref:`examples <s4u_ex_actors>` for more information.
  *
- * An actor is located on a (simulated) host, but it can interact
- * with the whole simulated platform.
+ * This API is strongly inspired from the C++11 threads.
+ * The `documentation of this standard <http://en.cppreference.com/w/cpp/thread>`_
+ * may help to understand the philosophy of the SimGrid actors.
  *
- * The s4u::Actor API is strongly inspired from the C++11 threads.
- * The <a href="http://en.cppreference.com/w/cpp/thread">documentation
- * of this standard</a> may help to understand the philosophy of the S4U
- * Actors.
- *
- * @section s4u_actor_def Defining the skeleton of an Actor
- *
- * As in the <a href="http://en.cppreference.com/w/cpp/thread">C++11
- * standard</a>, you can declare the code of your actor either as a
- * pure function or as an object. It is very simple with functions:
- *
- * @code{.cpp}
- * #include <simgrid/s4u/actor.hpp>
- *
- * // Declare the code of your worker
- * void worker() {
- *   printf("Hello s4u");
- *   simgrid::s4u::this_actor::execute(5*1024*1024); // Get the worker executing a task of 5 MFlops
- * };
- *
- * // From your main or from another actor, create your actor on the host Jupiter
- * // The following line actually creates a new actor, even if there is no "new".
- * Actor("Alice", simgrid::s4u::Host::by_name("Jupiter"), worker);
- * @endcode
- *
- * But some people prefer to encapsulate their actors in classes and
- * objects to save the actor state in a cleanly dedicated location.
- * The syntax is slightly more complicated, but not much.
- *
- * @code{.cpp}
- * #include <simgrid/s4u/actor.hpp>
- *
- * // Declare the class representing your actors
- * class Worker {
- * public:
- *   void operator()() { // Two pairs of () because this defines the method called ()
- *     printf("Hello s4u");
- *     simgrid::s4u::this_actor::execute(5*1024*1024); // Get the worker executing a task of 5 MFlops
- *   }
- * };
- *
- * // From your main or from another actor, create your actor. Note the () after Worker
- * Actor("Bob", simgrid::s4u::Host::by_name("Jupiter"), Worker());
- * @endcode
- *
- * @section s4u_actor_flesh Fleshing your actor
- *
- * The body of your actor can use the functions of the
- * simgrid::s4u::this_actor namespace to interact with the world.
- * This namespace contains the methods to start new activities
- * (executions, communications, etc), and to get informations about
- * the currently running thread (its location, etc).
- *
- * Please refer to the @link simgrid::s4u::this_actor full API @endlink.
- *
- *
- * @section s4u_actor_deploy Using a deployment file
- *
- * @warning This is currently not working with S4U. Sorry about that.
- *
- * The best practice is to use an external deployment file as
- * follows, because it makes it easier to test your application in
- * differing settings. Load this file with
- * s4u::Engine::loadDeployment() before the simulation starts.
- * Refer to the @ref deployment section for more information.
- *
- * @code{.xml}
- * <?xml version='1.0'?>
- * <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
- * <platform version="4.1">
- *
- *   <!-- Start an actor called 'master' on the host called 'Tremblay' -->
- *   <actor host="Tremblay" function="master">
- *      <!-- Here come the parameter that you want to feed to this instance of master -->
- *      <argument value="20"/>        <!-- argv[1] -->
- *      <argument value="50000000"/>  <!-- argv[2] -->
- *      <argument value="1000000"/>   <!-- argv[3] -->
- *      <argument value="5"/>         <!-- argv[4] -->
- *   </actor>
- *
- *   <!-- Start an actor called 'worker' on the host called 'Jupiter' -->
- *   <actor host="Jupiter" function="worker"/> <!-- Don't provide any parameter ->>
- *
- * </platform>
- * @endcode
- *
- *  @{
- */
-
-/** @brief Simulation Agent */
+ * \endrst */
 class XBT_PUBLIC Actor : public xbt::Extendable<Actor> {
 #ifndef DOXYGEN
   friend Exec;
@@ -177,18 +89,17 @@ public:
    *  If you want to register to the termination of a given actor, use this_actor::on_exit() instead.*/
   static xbt::signal<void(Actor const&)> on_destruction;
 
-  /** Create an actor from a std::function<void()>
-   *
-   *  If the actor is restarted, the actor has a fresh copy of the function.
-   */
+  /** Create an actor from a std::function<void()>.
+   *  If the actor is restarted, it gets a fresh copy of the function. */
   static ActorPtr create(const std::string& name, s4u::Host* host, const std::function<void()>& code);
+  /** Create an actor, but don't start it yet.
+   *
+   * This is usefull to set some properties or extension before actually starting it */
   static ActorPtr init(const std::string& name, s4u::Host* host);
+  /** Start a previously initialized actor */
   ActorPtr start(const std::function<void()>& code);
 
-  /** Create an actor from a std::function
-   *
-   *  If the actor is restarted, the actor has a fresh copy of the function.
-   */
+  /** Create an actor from a callable thing. */
   template <class F> static ActorPtr create(const std::string& name, s4u::Host* host, F code)
   {
     return create(name, host, std::function<void()>(std::move(code)));
@@ -205,7 +116,7 @@ public:
     return create(name, host, std::bind(std::move(code), std::move(args)...));
   }
 
-  // Create actor from function name:
+  /** Create actor from function name and a vector of strings as arguments. */
   static ActorPtr create(const std::string& name, s4u::Host* host, const std::string& function,
                          std::vector<std::string> args);
 
@@ -272,9 +183,6 @@ public:
    *
    * Any blocking activity will be canceled, and it will be rescheduled to free its memory.
    * Being killed is not something that actors can defer or avoid.
-   *
-   * SimGrid still have sometimes issues when you kill actors that are currently communicating and such.
-   * Still. Please report any bug that you may encounter with a minimal working example.
    */
   void kill();
 
@@ -294,6 +202,7 @@ public:
    * blocked until bob terminates.
    */
   void join(double timeout);
+  /** Kill that actor and restart it from start. */
   Actor* restart();
 
   /** Kill all actors (but the issuer). Being killed is not something that actors can delay or avoid. */
