@@ -458,7 +458,7 @@ Querying info about actors
       .. autodoxymethod:: simgrid::s4u::Actor::migrate
 
       .. autodoxymethod:: simgrid::s4u::Actor::get_refcount()
-      .. autodoxymethod:: simgrid::s4u::Actor::get_impl()
+      .. autodoxymethod:: simgrid::s4u::Actor::get_impl
 
    .. group-tab:: Python
                   
@@ -517,7 +517,7 @@ Reacting to the end of actors
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Actor::on_exit(const std::function< void(bool)> &fun)
+      .. autodoxymethod:: simgrid::s4u::Actor::on_exit
       .. autodoxymethod:: simgrid::s4u::Actor::join()
       .. autodoxymethod:: simgrid::s4u::Actor::join(double timeout)
       .. autodoxymethod:: simgrid::s4u::Actor::set_auto_restart(bool autorestart)

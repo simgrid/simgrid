@@ -138,10 +138,10 @@ public:
   /** Retrieves the actor ID of that actor's creator */
   aid_t get_ppid() const;
 
-  /** Suspend an actor, that is blocked until resume()ed by another actor */
+  /** Suspend an actor, that is blocked until resumeed by another actor */
   void suspend();
 
-  /** Resume an actor that was previously suspend()ed */
+  /** Resume an actor that was previously suspended */
   void resume();
 
   /** Returns true if the actor is suspended. */
