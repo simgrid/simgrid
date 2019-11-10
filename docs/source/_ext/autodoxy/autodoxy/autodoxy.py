@@ -229,8 +229,14 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
             logger = logging.getLogger(__name__)
 
             if self.argsstring != None:
+                candidates = get_doxygen_root().xpath(xpath_query_noparam)
+                if len(candidates) == 1:
+                    logger.warning("[autodoxy] Using method '{}::{}{}' instead of '{}::{}{}'. You may want to drop your specification of the signature, or to fix it."
+                                   .format(obj, meth, candidates[0].find('argsstring').text, obj, meth, self.argsstring))
+                    self.object = candidates[0]
+                    return True
                 logger.warning("[autodoxy] WARNING: Could not find method {}::{}{}".format(obj, meth, self.argsstring))
-                for cand in get_doxygen_root().xpath(xpath_query_noparam):
+                for cand in candidates:
                     logger.warning("[autodoxy] WARNING:   Existing candidate: {}::{}{}".format(obj, meth, cand.find('argsstring').text))
             else:
                 logger.warning("[autodoxy] WARNING: could not find method {}::{} in Doxygen files".format(obj, meth))
