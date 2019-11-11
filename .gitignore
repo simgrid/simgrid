@@ -71,7 +71,6 @@ build/
 *.bpr
 *.bpf
 ### Documentation
-docs/source/java
 docs/source/_ext/__pycache__/
 doc/allclasses-frame.html
 doc/allclasses-noframe.html
