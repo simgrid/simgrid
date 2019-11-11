@@ -91,17 +91,21 @@ SG_END_DECL
 
 /******************************** Deployment **********************************/
 SG_BEGIN_DECL
-XBT_PUBLIC void SIMIX_function_register_default(xbt_main_func_t code);
+XBT_ATTRIB_DEPRECATED_v329("Please use simgrid_register_default() or Engine::register_default()") XBT_PUBLIC
+    void SIMIX_function_register_default(xbt_main_func_t code);
+XBT_ATTRIB_DEPRECATED_v329("This function will be removed in 3.29") XBT_PUBLIC void SIMIX_init_application();
 
-XBT_PUBLIC void SIMIX_init_application();
 XBT_PUBLIC void SIMIX_process_set_function(const char* process_host, const char* process_function,
                                            xbt_dynar_t arguments, double process_start_time, double process_kill_time);
 SG_END_DECL
 
 #ifdef __cplusplus
-XBT_PUBLIC void SIMIX_function_register(const std::string& name, void (*code)(std::vector<std::string>));
-XBT_PUBLIC void SIMIX_function_register(const std::string& name, xbt_main_func_t code);
-XBT_PUBLIC void SIMIX_launch_application(const std::string& file);
+XBT_ATTRIB_DEPRECATED_v329("Please use simgrid_register_function() or Engine::register_function()") XBT_PUBLIC
+    void SIMIX_function_register(const std::string& name, void (*code)(std::vector<std::string>));
+XBT_ATTRIB_DEPRECATED_v329("Please use simgrid_register_function() or Engine::register_function()") XBT_PUBLIC
+    void SIMIX_function_register(const std::string& name, xbt_main_func_t code);
+XBT_ATTRIB_DEPRECATED_v329("Please use simgrid_load_deployment() or Engine::load_deployment()") XBT_PUBLIC
+    void SIMIX_launch_application(const std::string& file);
 #endif
 
 /********************************* Process ************************************/

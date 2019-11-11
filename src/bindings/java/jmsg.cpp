@@ -238,7 +238,7 @@ Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls, jstring jde
 {
   const char *deploymentFile = env->GetStringUTFChars(jdeploymentFile, 0);
 
-  SIMIX_function_register_default(java_main);
+  simgrid_register_default(java_main);
   MSG_launch_application(deploymentFile);
 }
 

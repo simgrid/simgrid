@@ -3,9 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <simgrid/s4u/NetZone.hpp>
-
 #include <map>
+#include <simgrid/s4u/NetZone.hpp>
+#include <simgrid/simix.hpp>
 #include <string>
 #include <unordered_map>
 
@@ -25,6 +25,12 @@ public:
   EngineImpl(const EngineImpl&) = delete;
   EngineImpl& operator=(const EngineImpl&) = delete;
   virtual ~EngineImpl();
+
+  void load_deployment(const std::string& file);
+  void register_function(const std::string& name, xbt_main_func_t code);
+  void register_function(const std::string& name, void (*code)(std::vector<std::string>));
+  void register_default(xbt_main_func_t code);
+
   routing::NetZoneImpl* netzone_root_ = nullptr;
 };
 

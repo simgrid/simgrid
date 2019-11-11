@@ -96,12 +96,13 @@ void Engine::load_platform(const std::string& platf)
 /** Registers the main function of an actor that will be launched from the deployment file */
 void Engine::register_function(const std::string& name, int (*code)(int, char**))
 {
-  SIMIX_function_register(name, code);
+  pimpl->register_function(name, code);
 }
+
 /** Registers the main function of an actor that will be launched from the deployment file */
 void Engine::register_function(const std::string& name, void (*code)(std::vector<std::string>))
 {
-  SIMIX_function_register(name, code);
+  pimpl->register_function(name, code);
 }
 /** Registers a function as the default main function of actors
  *
@@ -110,8 +111,9 @@ void Engine::register_function(const std::string& name, void (*code)(std::vector
  */
 void Engine::register_default(int (*code)(int, char**))
 {
-  SIMIX_function_register_default(code);
+  pimpl->register_default(code);
 }
+
 /** Load a deployment file and launch the actors that it contains
  *
  * \rst
@@ -120,8 +122,9 @@ void Engine::register_default(int (*code)(int, char**))
  */
 void Engine::load_deployment(const std::string& deploy)
 {
-  SIMIX_launch_application(deploy);
+  pimpl->load_deployment(deploy);
 }
+
 /** Returns the amount of hosts in the platform */
 size_t Engine::get_host_count()
 {
