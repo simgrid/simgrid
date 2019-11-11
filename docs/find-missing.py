@@ -22,7 +22,7 @@ import xml.etree.ElementTree as ET
 import inspect
 
 xml_files = [
-#    'build/xml/classsimgrid_1_1s4u_1_1Activity.xml',
+    'build/xml/classsimgrid_1_1s4u_1_1Activity.xml',
     'build/xml/classsimgrid_1_1s4u_1_1Actor.xml',
     'build/xml/classsimgrid_1_1s4u_1_1Barrier.xml',
     'build/xml/classsimgrid_1_1s4u_1_1Comm.xml',
@@ -113,7 +113,7 @@ for kind in python_decl:
 # Dump the missing ones
 for kind in python_decl:
     for fullname in python_decl[kind]:
-        print("Missing decl: .. auto{}:: {}".format(kind, fullname))
+        print(" .. auto{}:: {}".format(kind, fullname))
 
 ################ And now deal with Doxygen declarations
 ################
@@ -122,7 +122,7 @@ doxy_funs = {} # {classname: {func_name: [args]} }
 doxy_vars = {} # {classname: [names]}
 
 # find the declarations in the XML files
-for arg in xml_files[:1]:
+for arg in xml_files[:3]:
     if arg[-4:] != '.xml':
         print ("Argument '{}' does not end with '.xml'".format(arg))
         continue
@@ -192,12 +192,12 @@ with os.popen('grep autodoxyvar:: source/*rst|sed \'s/^.*autodoxyvar:: //\'') as
                 del doxy_vars[klass]
 
 # Dump the undocumented Doxygen declarations 
-for obj in doxy_funs:
-    for meth in doxy_funs[obj]:
-        for args in doxy_funs[obj][meth]:
-            print("Missing decl: .. autodoxymethod:: {}::{}{}".format(obj, meth, args))
+for obj in sorted(doxy_funs):
+    for meth in sorted(doxy_funs[obj]):
+        for args in sorted(doxy_funs[obj][meth]):
+            print(".. autodoxymethod:: {}::{}{}".format(obj, meth, args))
 
 for obj in doxy_vars:
-    for meth in doxy_vars[obj]:
-        print("Missing decl: .. autodoxyvar:: {}::{}".format(obj, meth))
+    for meth in sorted(doxy_vars[obj]):
+        print(".. autodoxyvar:: {}::{}".format(obj, meth))
 

@@ -66,58 +66,58 @@ provides many helper functions to simplify the code of actors.
 
 - **Global Classes**
 
-  - :ref:`class s4u::Actor <API_s4u_Actor>`:
+  - :ref:`class Actor <API_s4u_Actor>`:
     Active entities executing your application.
-  - :ref:`class s4u::Engine <API_s4u_Engine>`
+  - :ref:`class Engine <API_s4u_Engine>`
     Simulation engine (singleton).
-  - :ref:`class s4u::Mailbox <API_s4u_Mailbox>`
+  - :ref:`class Mailbox <API_s4u_Mailbox>`
     Communication rendez-vous.
 
 - **Platform Elements**
 
-  - :ref:`class s4u::Disk <API_s4u_Disk>`
+  - :ref:`class Disk <API_s4u_Disk>`
     Resource on which actors can write and read data.
-  - :ref:`class s4u::Host <API_s4u_Host>`:
+  - :ref:`class Host <API_s4u_Host>`:
     Actor location, providing computational power.
-  - :ref:`class s4u::Link <API_s4u_Link>`
+  - :ref:`class Link <API_s4u_Link>`
     Interconnecting hosts.
-  - :ref:`class s4u::NetZone <API_s4u_NetZone>`:
+  - :ref:`class NetZone <API_s4u_NetZone>`:
     Sub-region of the platform, containing resources (Hosts, Links, etc).
-  - :ref:`class s4u::VirtualMachine <API_s4u_VirtualMachine>`:
+  - :ref:`class VirtualMachine <API_s4u_VirtualMachine>`:
     Execution containers that can be moved between Hosts.
 
-- **Activities** (:ref:`class s4u::Activity <API_s4u_Activity>`):
+- **Activities** (:ref:`class Activity <API_s4u_Activity>`):
   The things that actors can do on resources
 
-  - :ref:`class s4u::Comm <API_s4u_Comm>`
+  - :ref:`class Comm <API_s4u_Comm>`
     Communication activity, started on Mailboxes and consuming links.
-  - :ref:`class s4u::Exec <API_s4u_Exec>`
+  - :ref:`class Exec <API_s4u_Exec>`
     Computation activity, started on Host and consuming CPU resources.
-  - :ref:`class s4u::Io <API_s4u_Io>`
+  - :ref:`class Io <API_s4u_Io>`
     I/O activity, started on and consumming disks.
 
 - **Synchronization Mechanisms**: Classical IPC that actors can use
 
-  - :ref:`class s4u::Barrier <API_s4u_Barrier>`
-  - :ref:`class s4u::ConditionVariable <API_s4u_ConditionVariable>`
-  - :ref:`class s4u::Mutex <API_s4u_Mutex>`
-  - :ref:`class s4u::Semaphore <API_s4u_Semaphore>`
+  - :ref:`class Barrier <API_s4u_Barrier>`
+  - :ref:`class ConditionVariable <API_s4u_ConditionVariable>`
+  - :ref:`class Mutex <API_s4u_Mutex>`
+  - :ref:`class Semaphore <API_s4u_Semaphore>`
 
 
 .. |API_s4u_Actors| replace:: **Actors**
-.. _API_s4u_Actors: #s4u-actor
+.. _API_s4u_Actors: #api-s4u-actor
 
 .. |API_s4u_Activities| replace:: **Activities**
-.. _API_s4u_Activities: #s4u-activity
+.. _API_s4u_Activities: #api-s4u-activity
 
 .. |API_s4u_Hosts| replace:: **Hosts**
-.. _API_s4u_Hosts: #s4u-host
+.. _API_s4u_Hosts: #api-s4u-host
 
 .. |API_s4u_Links| replace:: **Links**
-.. _API_s4u_Links: #s4u-link
+.. _API_s4u_Links: #api-s4u-link
 
 .. |API_s4u_Disks| replace:: **Disks**
-.. _API_s4u_Disks: #s4u-disk
+.. _API_s4u_Disks: #api-s4u-disk
 
 .. |API_s4u_VirtualMachine| replace:: **VirtualMachines**
 
@@ -138,12 +138,16 @@ provides many helper functions to simplify the code of actors.
 
 .. |API_s4u_Mutex| replace:: **Mutex**
 
+.. _s4u_Activities:
+
 Activities
 **********
 
 Activities represent the actions that consume a resource, such as a
-:ref:`s4u::Comm <API_s4u_Comm>` that consumes the *transmitting power* of
-:ref:`s4u::Link <API_s4u_Link>` resources.
+:ref:`Comm <API_s4u_Comm>` that consumes the *transmitting power* of 
+:ref:`Link <API_s4u_Link>` resources, or an :ref:`Exec <API_s4u_Exec>`
+that consumes the *computing power* of :ref:`Host <API_s4u_Host>` resources.
+See also the :ref:`full API <API_s4u_Activity>` below.
 
 =======================
 Asynchronous Activities
@@ -384,14 +388,36 @@ Static methods working on the current actor (see :ref:`API_s4u_Actor`).
 
 .. _API_s4u_Activity:
 
-=============
-s4u::Activity
-=============
+==============
+class Activity
+==============
 
-.. doxygenclass:: simgrid::s4u::Activity
-   :members:
-   :protected-members:
-   :undoc-members:
+.. autodoxyclass:: simgrid::s4u::Activity
+
+   **Known subclasses:**
+   :ref:`Communications <API_s4u_Comm>` (started on Mailboxes and consuming links),
+   :ref:`Executions <API_s4u_Exec>` (started on Host and consuming CPU resources)
+   :ref:`I/O <API_s4u_Io>` (started on and consumming disks).
+   See also the :ref:`section on activities <s4u_Activities>` above.
+
+Querying info about activities
+------------------------------
+
+   .. autodoxymethod:: simgrid::s4u::Activity::get_remaining()
+   .. autodoxymethod:: simgrid::s4u::Activity::get_state()
+   .. autodoxymethod:: simgrid::s4u::Activity::set_remaining(double remains)
+   .. autodoxymethod:: simgrid::s4u::Activity::get_impl
+
+Activities lifecycle
+--------------------
+
+   .. autodoxymethod:: simgrid::s4u::Activity::cancel
+   .. autodoxymethod:: simgrid::s4u::Activity::start
+   .. autodoxymethod:: simgrid::s4u::Activity::test
+   .. autodoxymethod:: simgrid::s4u::Activity::wait
+   .. autodoxymethod:: simgrid::s4u::Activity::wait_for
+   .. autodoxymethod:: simgrid::s4u::Activity::wait_until(double time_limit)
+
 
 .. _API_s4u_Actor:
 
@@ -545,16 +571,22 @@ Signals
 
 .. _API_s4u_Barrier:
 
-============
-s4u::Barrier
-============
+=============
+class Barrier
+=============
 
 .. doxygentypedef:: BarrierPtr
 
-.. doxygenclass:: simgrid::s4u::Barrier
-   :members:
-   :protected-members:
-   :undoc-members:
+.. autodoxyclass:: simgrid::s4u::Barrier
+
+   .. tabs::
+
+      .. group-tab:: C++
+
+         .. autodoxymethod:: simgrid::s4u::Barrier::Barrier(unsigned int count)
+         .. autodoxymethod:: simgrid::s4u::Barrier::create(unsigned int expected_actors)
+         .. autodoxymethod:: simgrid::s4u::Barrier::wait()
+
 
 .. _API_s4u_Comm:
 

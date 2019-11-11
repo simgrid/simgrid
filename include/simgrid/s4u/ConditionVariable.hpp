@@ -30,11 +30,14 @@ private:
 
 public:
   explicit ConditionVariable(kernel::activity::ConditionVariableImpl* cond) : cond_(cond) {}
+
+#ifndef DOXYGEN
   ConditionVariable(ConditionVariable const&) = delete;
   ConditionVariable& operator=(ConditionVariable const&) = delete;
 
   friend XBT_PUBLIC void intrusive_ptr_add_ref(ConditionVariable * cond);
   friend XBT_PUBLIC void intrusive_ptr_release(ConditionVariable * cond);
+#endif
 
   static ConditionVariablePtr create();
 

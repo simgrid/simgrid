@@ -47,7 +47,14 @@ public:
 /** @details An action is a consumption on a resource (e.g.: a communication for the network).
  *
  * It is related (but still different) from activities, that are the stuff on which an actor can be blocked.
- * See simgrid::s4u::Activity for more details.
+ *
+ * - A sequential execution activity encompasses 2 actions: one for the exec itself,
+ *   and a time-limited sleep used as timeout detector.
+ * - A point-to-point communication activity encompasses 3 actions: one for the comm itself
+ *   (which spans on all links of the path), and one infinite sleep used as failure detector
+ *   on both sender and receiver hosts.
+ * - Synchronization activities may possibly be connected to no action.
+
  */
 class XBT_PUBLIC Action {
   friend ActionHeap;

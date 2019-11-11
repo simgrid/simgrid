@@ -29,14 +29,17 @@ private:
   std::atomic_int_fast32_t refcount_{0};
 
 public:
+  /** Creates a barrier for the given amount of actors */
   explicit Barrier(unsigned int count);
-  ~Barrier()              = default;
 #ifndef DOXYGEN
+  ~Barrier()              = default;
   Barrier(Barrier const&) = delete;
   Barrier& operator=(Barrier const&) = delete;
 #endif
 
+  /** Creates a barrier for the given amount of actors */
   static BarrierPtr create(unsigned int expected_actors);
+  /** Blocks into the barrier. Every waiting actors will be unlocked once the expected amount of actors reaches the barrier */
   int wait();
 
 #ifndef DOXYGEN

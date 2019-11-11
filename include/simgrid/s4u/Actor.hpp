@@ -28,7 +28,7 @@ namespace s4u {
  * You can think of an actor as a process in your distributed application, or as a thread in a multithreaded program.
  * This is the only component in SimGrid that actually does something on its own, executing its own code.
  * A resource will not get used if you don't schedule activities on them. This is the code of Actors that create and
- * schedule these activities. Please refer to the :ref:`examples <s4u_ex_actors>` for more information.
+ * schedule these activities. **Please refer to the** :ref:`examples <s4u_ex_actors>` **for more information.**
  *
  * This API is strongly inspired from the C++11 threads.
  * The `documentation of this standard <http://en.cppreference.com/w/cpp/thread>`_
