@@ -224,9 +224,11 @@ class DoxygenDocumenter(Documenter):
 
         if '::' in self.name:
             parts = self.name.split('::')
+            self.klassname = parts[-2]
             self.objname = parts[-1]
         else:
             self.objname = self.name
+            self.klassname = ""
 
         return True
 
@@ -434,7 +436,7 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
             rtype = rtype_el.text
 
  #       print("rtype: {}".format(rtype))
-        signame = (rtype and (rtype + ' ') or '') + self.objname
+        signame = (rtype and (rtype + ' ') or '') + self.klassname + "::"+ self.objname
         return self.format_template_name() + signame
 
     def format_template_name(self):
@@ -515,7 +517,7 @@ class DoxygenVariableDocumenter(DoxygenDocumenter):
             rtype = rtype_el.text
 
  #       print("rtype: {}".format(rtype))
-        signame = (rtype and (rtype + ' ') or '') + self.objname
+        signame = (rtype and (rtype + ' ') or '') + self.klassname + "::" + self.objname
         return self.format_template_name() + signame
 
     def get_doc(self, encoding):
