@@ -18,6 +18,5 @@ RUN apt-get --allow-releaseinfo-change update && \
        chrpath \
        libdw-dev libevent-dev libunwind8-dev \
        linkchecker \
-       && \
-    pip3 install breathe 'sphinx>=1.8.0b1' sphinx_rtd_theme
+       python3-sphinx python3-breathe python3-sphinx-rtd-theme
 		   
