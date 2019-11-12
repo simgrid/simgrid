@@ -2590,6 +2590,7 @@ include src/xbt/mmalloc/swag.c
 include src/xbt/mmalloc/swag.h
 include src/xbt/parmap.cpp
 include src/xbt/random.cpp
+include src/xbt/random_test.cpp
 include src/xbt/snprintf.c
 include src/xbt/string.cpp
 include src/xbt/unit-tests_main.cpp
