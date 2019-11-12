@@ -875,6 +875,10 @@ set(DOC_SOURCES
   docs/requirements.txt
   docs/source/conf.py
   docs/source/Doxyfile
+  docs/find-missing.py
+  docs/source/_ext/autodoxy.py
+  docs/source/_ext/showfile.css
+  docs/source/_ext/showfile.js
   docs/source/_ext/showfile.py
   docs/source/_templates/breadcrumbs.html
 

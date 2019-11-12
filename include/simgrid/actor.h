@@ -42,7 +42,7 @@ XBT_PUBLIC void sg_actor_daemonize(sg_actor_t actor);
 XBT_ATTRIB_DEPRECATED_v329("Please use sg_actor_set_host() instead") XBT_PUBLIC
     void sg_actor_migrate(sg_actor_t process, sg_host_t host);
 
-XBT_PUBLIC void sg_actor_set_host(sg_actor_t process, sg_host_t host);
+XBT_PUBLIC void sg_actor_set_host(sg_actor_t actor, sg_host_t host);
 XBT_PUBLIC void sg_actor_join(sg_actor_t actor, double timeout);
 XBT_PUBLIC void sg_actor_kill(sg_actor_t actor);
 XBT_PUBLIC void sg_actor_kill_all();

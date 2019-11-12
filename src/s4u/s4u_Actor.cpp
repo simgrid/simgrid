@@ -619,9 +619,9 @@ void sg_actor_daemonize(sg_actor_t actor)
  *
  * This function changes the value of the #sg_host_t on  which @a actor is running.
  */
-void sg_actor_set_host(sg_actor_t process, sg_host_t host)
+void sg_actor_set_host(sg_actor_t actor, sg_host_t host)
 {
-  process->set_host(host);
+  actor->set_host(host);
 }
 void sg_actor_migrate(sg_actor_t process, sg_host_t host) // deprecated
 {

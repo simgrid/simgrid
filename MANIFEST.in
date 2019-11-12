@@ -689,8 +689,6 @@ include teshsuite/s4u/activity-lifecycle/activity-lifecycle.tesh
 include teshsuite/s4u/activity-lifecycle/testing_platform.xml
 include teshsuite/s4u/actor-autorestart/actor-autorestart.cpp
 include teshsuite/s4u/actor-autorestart/actor-autorestart.tesh
-include teshsuite/s4u/actor-migration/actor-migration.cpp
-include teshsuite/s4u/actor-migration/actor-migration.tesh
 include teshsuite/s4u/actor/actor.cpp
 include teshsuite/s4u/actor/actor.tesh
 include teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration.cpp
@@ -1748,6 +1746,7 @@ include doc/doxygen/uhood.doc
 include doc/doxygen/uhood_arch.doc
 include doc/doxygen/uhood_switch.doc
 include docs/Build.sh
+include docs/find-missing.py
 include docs/ignored_symbols
 include docs/manpages/smpicc.1
 include docs/manpages/smpicxx.1
@@ -1768,6 +1767,9 @@ include docs/source/Start_Your_Own_Project.rst
 include docs/source/Tutorial_Algorithms.rst
 include docs/source/Tutorial_MPI_Applications.rst
 include docs/source/XML_Reference.rst
+include docs/source/_ext/autodoxy.py
+include docs/source/_ext/showfile.css
+include docs/source/_ext/showfile.js
 include docs/source/_ext/showfile.py
 include docs/source/_templates/breadcrumbs.html
 include docs/source/app_msg.rst
