@@ -105,6 +105,7 @@ set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
                 src/xbt/config_test.cpp
                 src/xbt/dict_test.cpp
                 src/xbt/dynar_test.cpp
+		src/xbt/random_test.cpp
                 src/xbt/xbt_str_test.cpp
 		src/kernel/lmm/maxmin_test.cpp)
 if (SIMGRID_HAVE_MC)
