@@ -38,9 +38,10 @@ XBT_PUBLIC int sg_actor_is_suspended(sg_actor_t actor);
 XBT_PUBLIC sg_actor_t sg_actor_restart(sg_actor_t actor);
 void sg_actor_set_auto_restart(sg_actor_t actor, int auto_restart);
 XBT_PUBLIC void sg_actor_daemonize(sg_actor_t actor);
-XBT_PUBLIC
-XBT_ATTRIB_DEPRECATED_v329("Please use sg_actor_set_host() instead") void sg_actor_migrate(sg_actor_t process,
-                                                                                           sg_host_t host);
+
+XBT_ATTRIB_DEPRECATED_v329("Please use sg_actor_set_host() instead") XBT_PUBLIC
+    void sg_actor_migrate(sg_actor_t process, sg_host_t host);
+
 XBT_PUBLIC void sg_actor_set_host(sg_actor_t process, sg_host_t host);
 XBT_PUBLIC void sg_actor_join(sg_actor_t actor, double timeout);
 XBT_PUBLIC void sg_actor_kill(sg_actor_t actor);

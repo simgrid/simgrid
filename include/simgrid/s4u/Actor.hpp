@@ -368,8 +368,7 @@ XBT_PUBLIC void on_exit(const std::function<void(bool)>& fun);
 /** @brief Migrate the current actor to a new host. */
 XBT_PUBLIC void set_host(Host* new_host);
 #ifndef DOXYGEN
-XBT_PUBLIC
-XBT_ATTRIB_DEPRECATED_v329("Please use set_host() instead") void migrate(Host* new_host);
+XBT_ATTRIB_DEPRECATED_v329("Please use set_host() instead") XBT_PUBLIC void migrate(Host* new_host);
 #endif
 
 /** @} */
