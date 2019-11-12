@@ -282,7 +282,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_migrate(JNIEnv * env, jobjec
   }
 
   /* change the host of the process */
-  process->migrate(host);
+  process->set_host(host);
 
   /* change the host java side */
   env->SetObjectField(jprocess, jprocess_field_Process_host, jhost);
