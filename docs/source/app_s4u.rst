@@ -64,16 +64,16 @@ Virtual machines can also be migrated between hosts.
 The :ref:`simgrid::s4u::this_actor <API_s4u_this_actor>` namespace
 provides many helper functions to simplify the code of actors.
 
-- **Global Classes**
+- **Simulation Elements**
 
   - :ref:`class Actor <API_s4u_Actor>`:
     Active entities executing your application.
   - :ref:`class Engine <API_s4u_Engine>`
     Simulation engine (singleton).
   - :ref:`class Mailbox <API_s4u_Mailbox>`
-    Communication rendez-vous.
+    Communication rendez-vous, with which actors meet each other.
 
-- **Platform Elements**
+- **Resources**
 
   - :ref:`class Disk <API_s4u_Disk>`
     Resource on which actors can write and read data.
@@ -96,7 +96,7 @@ provides many helper functions to simplify the code of actors.
   - :ref:`class Io <API_s4u_Io>`
     I/O activity, started on and consumming disks.
 
-- **Synchronization Mechanisms**: Classical IPC that actors can use
+- **Synchronization Objects**: Classical IPC that actors can use
 
   - :ref:`class Barrier <API_s4u_Barrier>`
   - :ref:`class ConditionVariable <API_s4u_ConditionVariable>`
