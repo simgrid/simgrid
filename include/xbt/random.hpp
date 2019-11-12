@@ -15,6 +15,7 @@ int uniform_int(int, int);
 double uniform_real(double, double);
 double exponential(double);
 double normal(double, double);
+void set_mersenne_seed(int);
 } // namespace random
 } // namespace xbt
 } // namespace simgrid

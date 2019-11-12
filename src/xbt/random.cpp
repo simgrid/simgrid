@@ -42,23 +42,23 @@ double uniform_real(double min, double max)
 
 double exponential(double lambda)
 {
-  unsigned long numerator = mt19937_gen() - mt19937_gen.min();
-  unsigned long divisor   = mt19937_gen.max() - mt19937_gen.min();
-  return -1 / lambda * log(numerator / divisor);
+  return -1 / lambda * log(uniform_real(0, 1));
 }
 
 double normal(double mean, double sd)
 {
-  unsigned long numeratorA = mt19937_gen() - mt19937_gen.min();
-  unsigned long numeratorB = mt19937_gen() - mt19937_gen.min();
-  unsigned long divisor    = mt19937_gen.max() - mt19937_gen.min();
-  double u1                = numeratorA / divisor;
+  double u1 = 0;
   while (u1 < std::numeric_limits<double>::min()) {
-    numeratorA = mt19937_gen() - mt19937_gen.min();
-    u1         = numeratorA / divisor;
+    u1 = uniform_real(0, 1);
   }
-  double z0 = sqrt(-2.0 * log(numeratorA / divisor)) * cos(2 * M_PI * numeratorB / divisor);
+  double u2 = uniform_real(0, 1);
+  double z0 = sqrt(-2.0 * log(u1)) * cos(2 * M_PI * u2);
   return z0 * sd + mean;
+}
+
+void set_mersenne_seed(int seed)
+{
+  mt19937_gen.seed(seed);
 }
 
 } // namespace random
