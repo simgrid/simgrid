@@ -180,7 +180,10 @@ public:
    * Asynchronous activities started by the actor are not migrated automatically, so you have
    * to take care of this yourself (only you knows which ones should be migrated).
    */
-  void migrate(Host * new_host);
+  void set_host(Host* new_host);
+#ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v329("Please use set_host() instead") void migrate(Host* new_host) { set_host(new_host); }
+#endif
 
   /** Ask the actor to die.
    *
@@ -363,7 +366,11 @@ XBT_PUBLIC void exit();
 XBT_PUBLIC void on_exit(const std::function<void(bool)>& fun);
 
 /** @brief Migrate the current actor to a new host. */
-XBT_PUBLIC void migrate(Host* new_host);
+XBT_PUBLIC void set_host(Host* new_host);
+#ifndef DOXYGEN
+XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v329("Please use set_host() instead") void migrate(Host* new_host);
+#endif
 
 /** @} */
 }

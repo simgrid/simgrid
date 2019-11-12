@@ -14,15 +14,15 @@ static simgrid::s4u::ActorPtr controlled_process;
 static void emigrant()
 {
   XBT_INFO("I'll look for a new job on another machine ('Boivin') where the grass is greener.");
-  simgrid::s4u::this_actor::migrate(
+  simgrid::s4u::this_actor::set_host(
       simgrid::s4u::Host::by_name("Boivin")); /* - First, move to another host by myself */
 
   XBT_INFO("Yeah, found something to do");
   simgrid::s4u::this_actor::execute(98095000); /* - Execute some work there */
   simgrid::s4u::this_actor::sleep_for(2);
   XBT_INFO("Moving back home after work");
-  simgrid::s4u::this_actor::migrate(simgrid::s4u::Host::by_name("Jacquelin")); /* - Move back to original location */
-  simgrid::s4u::this_actor::migrate(simgrid::s4u::Host::by_name("Boivin"));    /* - Go back to the other host to sleep*/
+  simgrid::s4u::this_actor::set_host(simgrid::s4u::Host::by_name("Jacquelin")); /* - Move back to original location */
+  simgrid::s4u::this_actor::set_host(simgrid::s4u::Host::by_name("Boivin")); /* - Go back to the other host to sleep*/
   simgrid::s4u::this_actor::sleep_for(4);
   controlled_process = simgrid::s4u::Actor::self(); /* - Get controlled at checkpoint */
   barrier->wait();
@@ -37,7 +37,7 @@ static void policeman()
 {
   XBT_INFO("Wait at the checkpoint."); /* - block on the mutex+condition */
   barrier->wait();
-  controlled_process->migrate(simgrid::s4u::Host::by_name("Jacquelin")); /* - Move an emigrant to Jacquelin */
+  controlled_process->set_host(simgrid::s4u::Host::by_name("Jacquelin")); /* - Move an emigrant to Jacquelin */
   XBT_INFO("I moved the emigrant");
   controlled_process->resume();
 }

@@ -4,6 +4,7 @@ SimGrid (3.24.1) NOT RELEASED YET (v3.25 expected December 22. 2029, 04:19 UTC)
 
 S4U:
 - Actor: Merge signals on_migration_start/end into on_host_change
+- Actor: Rename migrate() into set_host()
 
 Kernel:
 - In simgrid::kernel::resource::Model, the methods next_occuring_event*() have

@@ -28,7 +28,7 @@ static void worker(simgrid::s4u::Host* first, simgrid::s4u::Host* second)
   XBT_INFO("Let's move to %s to execute %.2f Mflops (5sec on %s and 5sec on %s)", first->get_cname(), flopAmount / 1e6,
            first->get_cname(), second->get_cname());
 
-  simgrid::s4u::this_actor::migrate(first);
+  simgrid::s4u::this_actor::set_host(first);
   simgrid::s4u::this_actor::execute(flopAmount);
 
   XBT_INFO("I wake up on %s. Let's suspend a bit", simgrid::s4u::this_actor::get_host()->get_cname());
@@ -50,11 +50,11 @@ static void monitor()
   simgrid::s4u::this_actor::sleep_for(5);
 
   XBT_INFO("After 5 seconds, move the process to %s", jacquelin->get_cname());
-  actor->migrate(jacquelin);
+  actor->set_host(jacquelin);
 
   simgrid::s4u::this_actor::sleep_until(15);
   XBT_INFO("At t=15, move the process to %s and resume it.", fafard->get_cname());
-  actor->migrate(fafard);
+  actor->set_host(fafard);
   actor->resume();
 }
 

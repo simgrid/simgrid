@@ -83,8 +83,9 @@ PYBIND11_MODULE(simgrid, m)
          py::arg("flops"), py::arg("priority") = 1);
   m2.def("exec_init", [](double flops){return simgrid::s4u::this_actor::exec_init(flops);});
   m2.def("get_host", &simgrid::s4u::this_actor::get_host, "Retrieves host on which the current actor is located");
-  m2.def("migrate", &simgrid::s4u::this_actor::migrate, "Moves the current actor to another host, see :cpp:func:`void simgrid::s4u::this_actor::migrate()`",
-      py::arg("dest"));
+  m2.def("set_host", &simgrid::s4u::this_actor::set_host,
+         "Moves the current actor to another host, see :cpp:func:`void simgrid::s4u::this_actor::set_host()`",
+         py::arg("dest"));
   m2.def("sleep_for", sleep_for_fun,
       "Block the actor sleeping for that amount of seconds, see :cpp:func:`void simgrid::s4u::this_actor::sleep_for`", py::arg("duration"));
   m2.def("sleep_until", sleep_until_fun,
@@ -251,7 +252,7 @@ PYBIND11_MODULE(simgrid, m)
              });
            },
            "Create an actor from a function or an object.")
-      .def_property("host", &Actor::get_host, &Actor::migrate, "The host on which this actor is located")
+      .def_property("host", &Actor::get_host, &Actor::set_host, "The host on which this actor is located")
       .def_property_readonly("name", &Actor::get_cname, "The name of this actor.")
       .def_property_readonly("pid", &Actor::get_pid, "The PID (unique identifier) of this actor.")
       .def_property_readonly("ppid", &Actor::get_ppid,
@@ -267,8 +268,6 @@ PYBIND11_MODULE(simgrid, m)
            "Wait for the actor to finish (more info in the C++ documentation).", py::arg("timeout"))
       .def("kill", [](ActorPtr act) { act->kill(); }, "Kill that actor")
       .def("kill_all", &Actor::kill_all, "Kill all actors but the caller.")
-      .def("migrate", &Actor::migrate, "Moves that actor to another host (more info in the C++ documentation).",
-           py::arg("dest"))
       .def("self", &Actor::self, "Retrieves the current actor.")
       .def("is_suspended", &Actor::is_suspended, "Returns True if that actor is currently suspended.")
       .def("suspend", &Actor::suspend, "Suspend that actor, that is blocked until resume()ed by another actor.")

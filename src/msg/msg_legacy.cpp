@@ -102,7 +102,7 @@ void MSG_process_daemonize(sg_actor_t actor)
 }
 void MSG_process_migrate(sg_actor_t actor, sg_host_t host)
 {
-  sg_actor_migrate(actor, host);
+  sg_actor_set_host(actor, host);
 }
 void MSG_process_join(sg_actor_t actor, double timeout)
 {

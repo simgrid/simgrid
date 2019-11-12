@@ -126,7 +126,7 @@ void Actor::on_exit(const std::function<void(bool /*failed*/)>& fun) const
   kernel::actor::simcall([this, &fun] { SIMIX_process_on_exit(pimpl_, fun); });
 }
 
-void Actor::migrate(Host* new_host)
+void Actor::set_host(Host* new_host)
 {
   if (s4u::Actor::on_migration_start.get_slot_count() > 0) { // XBT_ATTRIB_DEPRECATED_v329
     static bool already_warned = false;
@@ -446,9 +446,13 @@ void on_exit(const std::function<void(bool)>& fun)
  *
  * @see simgrid::s4u::Actor::migrate() for more information
  */
-void migrate(Host* new_host)
+void set_host(Host* new_host)
 {
-  SIMIX_process_self()->iface()->migrate(new_host);
+  SIMIX_process_self()->iface()->set_host(new_host);
+}
+void migrate(Host* new_host) // deprecated
+{
+  set_host(new_host);
 }
 
 } // namespace this_actor
@@ -615,9 +619,13 @@ void sg_actor_daemonize(sg_actor_t actor)
  *
  * This function changes the value of the #sg_host_t on  which @a actor is running.
  */
-void sg_actor_migrate(sg_actor_t process, sg_host_t host)
+void sg_actor_set_host(sg_actor_t process, sg_host_t host)
 {
-  process->migrate(host);
+  process->set_host(host);
+}
+void sg_actor_migrate(sg_actor_t process, sg_host_t host) // deprecated
+{
+  process->set_host(host);
 }
 
 /** @ingroup m_actor_management

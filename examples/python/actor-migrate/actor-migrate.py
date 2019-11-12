@@ -25,7 +25,7 @@ def worker(first_host, second_host):
     this_actor.info("Let's move to {:s} to execute {:.2f} Mflops (5sec on {:s} and 5sec on {:s})".format(
         first_host.name, flop_amount / 1e6, first_host.name, second_host.name))
 
-    this_actor.migrate(first_host)
+    this_actor.set_host(first_host)
     this_actor.execute(flop_amount)
 
     this_actor.info("I wake up on {:s}. Let's suspend a bit".format(
@@ -48,12 +48,12 @@ def monitor():
 
     this_actor.info(
         "After 5 seconds, move the process to {:s}".format(jacquelin.name))
-    actor.migrate(jacquelin)
+    actor.host = jacquelin
 
     this_actor.sleep_until(15)
     this_actor.info(
         "At t=15, move the process to {:s} and resume it.".format(fafard.name))
-    actor.migrate(fafard)
+    actor.host = fafard
     actor.resume()
 
 
