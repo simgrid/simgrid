@@ -411,8 +411,8 @@ Querying info about activities
 Activities lifecycle
 --------------------
 
-   .. autodoxymethod:: simgrid::s4u::Activity::cancel
    .. autodoxymethod:: simgrid::s4u::Activity::start
+   .. autodoxymethod:: simgrid::s4u::Activity::cancel
    .. autodoxymethod:: simgrid::s4u::Activity::test
    .. autodoxymethod:: simgrid::s4u::Activity::wait
    .. autodoxymethod:: simgrid::s4u::Activity::wait_for
@@ -481,7 +481,7 @@ Querying info about actors
       .. autodoxymethod:: simgrid::s4u::Actor::set_property(const std::string &key, const std::string &value) 
 
       .. autodoxymethod:: simgrid::s4u::Actor::get_host
-      .. autodoxymethod:: simgrid::s4u::Actor::migrate
+      .. autodoxymethod:: simgrid::s4u::Actor::set_host
 
       .. autodoxymethod:: simgrid::s4u::Actor::get_refcount()
       .. autodoxymethod:: simgrid::s4u::Actor::get_impl
@@ -512,8 +512,8 @@ Suspending and resuming actors
       .. automethod:: simgrid.Actor.suspend
       .. automethod:: simgrid.Actor.is_suspended
 
-Killing actors
---------------
+Specifying when actors should terminate
+---------------------------------------
 
 .. tabs::
 
