@@ -1,4 +1,4 @@
-foreach(x actor actor-autorestart actor-migration
+foreach(x actor actor-autorestart
         activity-lifecycle
         comm-pt2pt wait-any-for
         cloud-interrupt-migration cloud-sharing
@@ -13,7 +13,7 @@ endforeach()
 
 ## Add the tests.
 ## Some need to be run with all factories, some need not tesh to run
-foreach(x actor actor-autorestart actor-migration 
+foreach(x actor actor-autorestart
         activity-lifecycle wait-any-for
 	cloud-interrupt-migration concurrent_rw) # TODO: actor-autorestart is disabled for now
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
