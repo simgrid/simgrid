@@ -312,20 +312,16 @@ static void instr_actor_on_creation(simgrid::s4u::Actor const& actor)
   });
 }
 
-static long long int counter = 0;
-
-static void instr_actor_on_migration_start(simgrid::s4u::Actor const& actor)
+static void instr_actor_on_host_change(simgrid::s4u::Actor const& actor,
+                                       simgrid::s4u::Host const& /*previous_location*/)
 {
+  static long long int counter = 0;
   // start link
   container_t container = simgrid::instr::Container::by_name(instr_pid(actor));
   simgrid::instr::Container::get_root()->get_link("ACTOR_LINK")->start_event(container, "M", std::to_string(counter));
 
   // destroy existing container of this process
   container->remove_from_parent();
-}
-
-static void instr_actor_on_migration_end(simgrid::s4u::Actor const& actor)
-{
   // create new container on the new_host location
   simgrid::instr::Container::by_name(actor.get_host()->get_name())->create_child(instr_pid(actor), "ACTOR");
   // end link
@@ -403,8 +399,7 @@ void instr_define_callbacks()
     simgrid::s4u::Comm::on_completion.connect([](simgrid::s4u::Actor const& actor) {
       simgrid::instr::Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->pop_event();
     });
-    simgrid::s4u::Actor::on_migration_start.connect(instr_actor_on_migration_start);
-    simgrid::s4u::Actor::on_migration_end.connect(instr_actor_on_migration_end);
+    simgrid::s4u::Actor::on_host_change.connect(instr_actor_on_host_change);
   }
 
   if (TRACE_vm_is_enabled()) {

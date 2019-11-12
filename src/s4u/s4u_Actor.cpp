@@ -28,8 +28,9 @@ xbt::signal<void(Actor const&)> s4u::Actor::on_suspend;
 xbt::signal<void(Actor const&)> s4u::Actor::on_resume;
 xbt::signal<void(Actor const&)> s4u::Actor::on_sleep;
 xbt::signal<void(Actor const&)> s4u::Actor::on_wake_up;
-xbt::signal<void(Actor const&)> s4u::Actor::on_migration_start;
-xbt::signal<void(Actor const&)> s4u::Actor::on_migration_end;
+xbt::signal<void(Actor const&)> s4u::Actor::on_migration_start; // deprecated
+xbt::signal<void(Actor const&)> s4u::Actor::on_migration_end;   // deprecated
+xbt::signal<void(Actor const&, Host const& previous_location)> s4u::Actor::on_host_change;
 xbt::signal<void(Actor const&)> s4u::Actor::on_termination;
 xbt::signal<void(Actor const&)> s4u::Actor::on_destruction;
 
@@ -127,7 +128,17 @@ void Actor::on_exit(const std::function<void(bool /*failed*/)>& fun) const
 
 void Actor::migrate(Host* new_host)
 {
-  s4u::Actor::on_migration_start(*this);
+  if (s4u::Actor::on_migration_start.get_slot_count() > 0) { // XBT_ATTRIB_DEPRECATED_v329
+    static bool already_warned = false;
+    if (not already_warned) {
+      XBT_INFO("Please use s4u::Actor::on_host_change instead of s4u::Actor::on_migration_start. This will be removed "
+               "in v3.29");
+      already_warned = true;
+    }
+    s4u::Actor::on_migration_start(*this);
+  }
+
+  auto* previous_location = get_host();
 
   kernel::actor::simcall([this, new_host]() {
     if (pimpl_->waiting_synchro != nullptr) {
@@ -141,7 +152,17 @@ void Actor::migrate(Host* new_host)
     this->pimpl_->set_host(new_host);
   });
 
-  s4u::Actor::on_migration_end(*this);
+  if (s4u::Actor::on_migration_end.get_slot_count() > 0) { // XBT_ATTRIB_DEPRECATED_v329
+    static bool already_warned = false;
+    if (not already_warned) {
+      XBT_INFO("Please use s4u::Actor::on_host_change instead of s4u::Actor::on_migration_end. This will be removed in "
+               "v3.29");
+      already_warned = true;
+    }
+    s4u::Actor::on_migration_end(*this);
+  }
+
+  s4u::Actor::on_host_change(*this, *previous_location);
 }
 
 s4u::Host* Actor::get_host() const

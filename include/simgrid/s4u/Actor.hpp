@@ -74,10 +74,13 @@ public:
   static xbt::signal<void(Actor const&)> on_sleep;
   /** Signal to others that an actor wakes up for a sleep **/
   static xbt::signal<void(Actor const&)> on_wake_up;
-  /** Signal to others that an actor is going to migrated to another host**/
-  static xbt::signal<void(Actor const&)> on_migration_start;
   /** Signal to others that an actor is has been migrated to another host **/
-  static xbt::signal<void(Actor const&)> on_migration_end;
+  static xbt::signal<void(Actor const&, Host const& previous_location)> on_host_change;
+#ifndef DOXYGEN
+  static xbt::signal<void(Actor const&)> on_migration_start; // XBT_ATTRIB_DEPRECATED_v329
+  static xbt::signal<void(Actor const&)> on_migration_end;   // XBT_ATTRIB_DEPRECATED_v329
+#endif
+
   /** Signal indicating that an actor terminated its code.
    *  The actor may continue to exist if it is still referenced in the simulation, but it's not active anymore.
    *  If you want to free extra data when the actor's destructor is called, use Actor::on_destruction.
