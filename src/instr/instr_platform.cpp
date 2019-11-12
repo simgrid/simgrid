@@ -316,18 +316,17 @@ static void instr_actor_on_host_change(simgrid::s4u::Actor const& actor,
                                        simgrid::s4u::Host const& /*previous_location*/)
 {
   static long long int counter = 0;
-  // start link
   container_t container = simgrid::instr::Container::by_name(instr_pid(actor));
-  simgrid::instr::Container::get_root()->get_link("ACTOR_LINK")->start_event(container, "M", std::to_string(counter));
+  simgrid::instr::LinkType* link = simgrid::instr::Container::get_root()->get_link("ACTOR_LINK");
 
+  // start link
+  link->start_event(container, "M", std::to_string(counter));
   // destroy existing container of this process
   container->remove_from_parent();
   // create new container on the new_host location
   simgrid::instr::Container::by_name(actor.get_host()->get_name())->create_child(instr_pid(actor), "ACTOR");
   // end link
-  simgrid::instr::Container::get_root()
-      ->get_link("ACTOR_LINK")
-      ->end_event(simgrid::instr::Container::by_name(instr_pid(actor)), "M", std::to_string(counter));
+  link->end_event(container, "M", std::to_string(counter));
   counter++;
 }
 
