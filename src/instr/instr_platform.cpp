@@ -326,7 +326,7 @@ static void instr_actor_on_host_change(simgrid::s4u::Actor const& actor,
   // create new container on the new_host location
   simgrid::instr::Container::by_name(actor.get_host()->get_name())->create_child(instr_pid(actor), "ACTOR");
   // end link
-  link->end_event(container, "M", std::to_string(counter));
+  link->end_event(simgrid::instr::Container::by_name(instr_pid(actor)), "M", std::to_string(counter));
   counter++;
 }
 
