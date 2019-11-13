@@ -153,7 +153,7 @@ std::vector<s4u::Disk*> HostImpl::get_disks()
 {
   std::vector<s4u::Disk*> disks;
   for (auto const& d : disks_)
-    disks.push_back(&d->piface_);
+    disks.push_back(d->get_iface());
   return disks;
 }
 
@@ -179,7 +179,7 @@ std::vector<const char*> HostImpl::get_attached_storages()
   std::vector<const char*> storages;
   for (auto const& s : storage_)
     if (s.second->get_host() == piface_->get_cname())
-      storages.push_back(s.second->piface_.get_cname());
+      storages.push_back(s.second->get_iface()->get_cname());
   return storages;
 }
 

@@ -254,7 +254,7 @@ LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwid
   if (policy == s4u::Link::SharingPolicy::FATPIPE)
     get_constraint()->unshare();
 
-  s4u::Link::on_creation(this->piface_);
+  s4u::Link::on_creation(*get_iface());
 }
 
 kernel::resource::CpuAction* CpuL07::execution_start(double size)

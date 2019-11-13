@@ -50,6 +50,7 @@ public:
 class DiskImpl : public Resource, public surf::PropertyHolder {
   bool currently_destroying_ = false;
   s4u::Host* host_           = nullptr;
+  s4u::Disk piface_;
 
 public:
   DiskImpl(Model* model, const std::string& name, kernel::lmm::System* maxmin_system, double read_bw, double bwrite_bw);
@@ -59,7 +60,6 @@ public:
   ~DiskImpl() override;
 
   /** @brief Public interface */
-  s4u::Disk piface_;
   s4u::Disk* get_iface() { return &piface_; }
   /** @brief Check if the Storage is used (if an action currently uses its resources) */
   bool is_used() override;

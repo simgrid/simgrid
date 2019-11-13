@@ -44,6 +44,7 @@ public:
  */
 class XBT_PRIVATE HostImpl : public simgrid::surf::PropertyHolder {
   std::vector<kernel::actor::ProcessArg*> actors_at_boot_;
+  s4u::Host* piface_ = nullptr; // FIXME: why don't we store a s4u::Host here as we do everywhere else?
 
 public:
   friend simgrid::vm::VirtualMachineImpl;
@@ -60,7 +61,7 @@ public:
   std::map<std::string, kernel::resource::StorageImpl*> storage_;
   std::vector<kernel::resource::DiskImpl*> disks_;
 
-  s4u::Host* piface_ = nullptr;
+  s4u::Host* get_iface() { return piface_; }
 
   void turn_on();
   void turn_off(kernel::actor::ActorImpl* issuer);

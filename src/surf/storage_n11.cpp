@@ -96,7 +96,7 @@ StorageN11::StorageN11(StorageModel* model, const std::string& name, lmm::System
     : StorageImpl(model, name, maxminSystem, bread, bwrite, type_id, content_name, size, attach)
 {
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
-  s4u::Storage::on_creation(this->piface_);
+  s4u::Storage::on_creation(*get_iface());
 }
 
 StorageAction* StorageN11::io_start(sg_size_t size, s4u::Io::OpType type)

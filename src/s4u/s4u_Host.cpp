@@ -154,7 +154,7 @@ void Host::route_to(Host* dest, std::vector<Link*>& links, double* latency)
   std::vector<kernel::resource::LinkImpl*> linkImpls;
   this->route_to(dest, linkImpls, latency);
   for (kernel::resource::LinkImpl* const& l : linkImpls)
-    links.push_back(&l->piface_);
+    links.push_back(l->get_iface());
 }
 
 /** @brief Just like Host::routeTo, but filling an array of link implementations */
@@ -311,7 +311,7 @@ std::unordered_map<std::string, Storage*> const& Host::get_mounted_storages()
   if (mounts_ == nullptr) {
     mounts_ = new std::unordered_map<std::string, Storage*>();
     for (auto const& m : this->pimpl_->storage_) {
-      mounts_->insert({m.first, &m.second->piface_});
+      mounts_->insert({m.first, m.second->get_iface()});
     }
   }
   return *mounts_;

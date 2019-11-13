@@ -159,7 +159,7 @@ static void on_communicate(simgrid::kernel::resource::NetworkAction const& actio
       continue;
 
     XBT_DEBUG("Update link %s", link->get_cname());
-    LinkEnergy* link_energy = link->piface_.extension<LinkEnergy>();
+    LinkEnergy* link_energy = link->get_iface()->extension<LinkEnergy>();
     link_energy->init_watts_range_list();
     link_energy->update();
   }
@@ -211,7 +211,7 @@ void sg_link_energy_plugin_init()
       simgrid::kernel::resource::NetworkAction const& action, simgrid::kernel::resource::Action::State /* previous */) {
     for (simgrid::kernel::resource::LinkImpl* link : action.links()) {
       if (link != nullptr)
-        link->piface_.extension<LinkEnergy>()->update();
+        link->get_iface()->extension<LinkEnergy>()->update();
     }
   });
 

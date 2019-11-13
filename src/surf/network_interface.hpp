@@ -109,6 +109,7 @@ public:
  */
 class LinkImpl : public Resource, public surf::PropertyHolder {
   bool currently_destroying_ = false;
+  s4u::Link piface_;
 
 protected:
   LinkImpl(NetworkModel* model, const std::string& name, lmm::Constraint* constraint);
@@ -120,7 +121,7 @@ public:
   void destroy(); // Must be called instead of the destructor
 
   /** @brief Public interface */
-  s4u::Link piface_;
+  s4u::Link* get_iface() { return &piface_; }
 
   /** @brief Get the bandwidth in bytes per second of current Link */
   virtual double get_bandwidth();

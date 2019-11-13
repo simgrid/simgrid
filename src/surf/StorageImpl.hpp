@@ -60,6 +60,8 @@ public:
  * @details A Storage represent a storage unit (e.g.: hard drive, usb key)
  */
 class StorageImpl : public Resource, public surf::PropertyHolder {
+  s4u::Storage piface_;
+
 public:
   /** @brief Storage constructor */
   StorageImpl(Model* model, const std::string& name, kernel::lmm::System* maxmin_system, double bread, double bwrite,
@@ -69,9 +71,7 @@ public:
 
   ~StorageImpl() override;
 
-  /** @brief Public interface */
-  s4u::Storage piface_;
-
+  s4u::Storage* get_iface() { return &piface_; }
   /** @brief Check if the Storage is used (if an action currently uses its resources) */
   bool is_used() override;
 

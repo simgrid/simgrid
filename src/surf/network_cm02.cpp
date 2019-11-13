@@ -306,7 +306,7 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const std::string& nam
   if (policy == s4u::Link::SharingPolicy::FATPIPE)
     get_constraint()->unshare();
 
-  simgrid::s4u::Link::on_creation(this->piface_);
+  simgrid::s4u::Link::on_creation(*get_iface());
 }
 
 void NetworkCm02Link::apply_event(kernel::profile::Event* triggered, double value)

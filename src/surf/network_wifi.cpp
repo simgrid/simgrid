@@ -24,7 +24,7 @@ NetworkWifiLink::NetworkWifiLink(NetworkCm02Model* model, const std::string& nam
   for (auto bandwidth : bandwidths)
     bandwidths_.push_back({bandwidth, 1.0, nullptr});
 
-  simgrid::s4u::Link::on_creation(this->piface_);
+  simgrid::s4u::Link::on_creation(*get_iface());
 }
 
 void NetworkWifiLink::set_host_rate(s4u::Host* host, int rate_level)
