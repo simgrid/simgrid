@@ -18,6 +18,7 @@
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/simix/smx_private.hpp" // For access to simix_global->process_list
+#include "src/surf/StorageImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
 #include <simgrid/Exception.hpp>
@@ -187,19 +188,19 @@ Link* Engine::link_by_name(const std::string& name)
   if (pimpl->links_.find(name) == pimpl->links_.end())
     throw std::invalid_argument(std::string("Link not found: ") + name);
 
-  return pimpl->links_.at(name);
+  return pimpl->links_.at(name)->get_iface();
 }
 
 /** @brief Find an link from its name (or nullptr if that link does not exist) */
 Link* Engine::link_by_name_or_null(const std::string& name)
 {
   auto link = pimpl->links_.find(name);
-  return link == pimpl->links_.end() ? nullptr : link->second;
+  return link == pimpl->links_.end() ? nullptr : link->second->get_iface();
 }
 
 void Engine::link_register(const std::string& name, Link* link)
 {
-  pimpl->links_[name] = link;
+  pimpl->links_[name] = link->get_impl();
 }
 
 void Engine::link_unregister(const std::string& name)
@@ -218,7 +219,7 @@ std::vector<Storage*> Engine::get_all_storages()
 {
   std::vector<Storage*> res;
   for (auto const& kv : pimpl->storages_)
-    res.push_back(kv.second);
+    res.push_back(kv.second->get_iface());
   return res;
 }
 
@@ -231,19 +232,19 @@ Storage* Engine::storage_by_name(const std::string& name)
   if (pimpl->storages_.find(name) == pimpl->storages_.end())
     throw std::invalid_argument(std::string("Storage not found: ") + name);
 
-  return pimpl->storages_.at(name);
+  return pimpl->storages_.at(name)->get_iface();
 }
 
 /** @brief Find a storage from its name (or nullptr if that storage does not exist) */
 Storage* Engine::storage_by_name_or_null(const std::string& name)
 {
   auto storage = pimpl->storages_.find(name);
-  return storage == pimpl->storages_.end() ? nullptr : storage->second;
+  return storage == pimpl->storages_.end() ? nullptr : storage->second->get_iface();
 }
 
 void Engine::storage_register(const std::string& name, Storage* storage)
 {
-  pimpl->storages_[name] = storage;
+  pimpl->storages_[name] = storage->get_impl();
 }
 
 void Engine::storage_unregister(const std::string& name)
@@ -262,16 +263,18 @@ std::vector<Link*> Engine::get_all_links()
 {
   std::vector<Link*> res;
   for (auto const& kv : pimpl->links_)
-    res.push_back(kv.second);
+    res.push_back(kv.second->get_iface());
   return res;
 }
 
 std::vector<Link*> Engine::get_filtered_links(const std::function<bool(Link*)>& filter)
 {
   std::vector<Link*> filtered_list;
-  for (auto const& kv : pimpl->links_)
-    if (filter(kv.second))
-      filtered_list.push_back(kv.second);
+  for (auto const& kv : pimpl->links_) {
+    Link* l = kv.second->get_iface();
+    if (filter(l))
+      filtered_list.push_back(l);
+  }
   return filtered_list;
 }
 

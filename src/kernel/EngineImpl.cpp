@@ -34,11 +34,11 @@ EngineImpl::~EngineImpl()
 
   for (auto const& kv : storages_)
     if (kv.second)
-      kv.second->get_impl()->destroy();
+      kv.second->destroy();
 
   for (auto const& kv : links_)
     if (kv.second)
-      kv.second->get_impl()->destroy();
+      kv.second->destroy();
 }
 
 void EngineImpl::load_deployment(const std::string& file)
