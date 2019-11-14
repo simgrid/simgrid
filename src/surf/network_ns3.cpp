@@ -285,7 +285,7 @@ LinkNS3::LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwid
   bandwidth_.peak = bandwidth;
   latency_.peak   = latency;
 
-  s4u::Link::on_creation(this->piface_);
+  s4u::Link::on_creation(*this->get_iface());
 }
 
 LinkNS3::~LinkNS3() = default;
