@@ -303,8 +303,12 @@ XBT_PUBLIC void MSG_function_register_default(xbt_main_func_t code);
 XBT_PUBLIC void MSG_create_environment(const char* file);
 /** @brief Creates the application described in the provided file */
 XBT_PUBLIC void MSG_launch_application(const char* file);
+
+#ifndef DOXYGEN
 /** @brief register functions bypassing the parser */
-XBT_PUBLIC void MSG_set_function(const char* host_id, const char* function_name, xbt_dynar_t arguments);
+XBT_ATTRIB_DEPRECATED_v329("This function will be removed. Speak up if you need it.") XBT_PUBLIC
+    void MSG_set_function(const char* host_id, const char* function_name, xbt_dynar_t arguments);
+#endif
 
 /** @brief A clock (in second). */
 XBT_PUBLIC double MSG_get_clock();

@@ -60,7 +60,7 @@ simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const std::string
 /** @brief Bypass the parser, get arguments, and set function to each process */
 
 void SIMIX_process_set_function(const char* process_host, const char* process_function, xbt_dynar_t arguments,
-                                double process_start_time, double process_kill_time)
+                                double process_start_time, double process_kill_time) // XBT_ATTRIB_DEPRECATED_v329
 {
   simgrid::kernel::routing::ActorCreationArgs actor;
 

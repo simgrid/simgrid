@@ -44,7 +44,6 @@ The basic workflow is the following:
 .. doxygendefine:: MSG_init
 .. doxygenfunction:: MSG_launch_application
 .. doxygenfunction:: MSG_main
-.. doxygenfunction:: MSG_set_function
 
 Process Management
 ==================
