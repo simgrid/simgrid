@@ -7,12 +7,11 @@
 #include "../colls_private.hpp"
 
 int flattree_segment_in_byte = 8192;
-namespace simgrid{
-namespace smpi{
-int
-Coll_bcast_flattree_pipeline::bcast(void *buff, int count,
-                                        MPI_Datatype data_type, int root,
-                                        MPI_Comm comm)
+namespace simgrid {
+namespace smpi {
+int bcast__flattree_pipeline(void *buff, int count,
+                             MPI_Datatype data_type, int root,
+                             MPI_Comm comm)
 {
   int i, j, rank, num_procs;
   int tag = COLL_TAG_BCAST;
@@ -26,7 +25,7 @@ Coll_bcast_flattree_pipeline::bcast(void *buff, int count,
   int increment = segment * extent;
   if (pipe_length==0) {
     XBT_WARN("MPI_bcast_flattree_pipeline use default MPI_bcast_flattree.");
-    return Coll_bcast_flattree::bcast(buff, count, data_type, root, comm);
+    return bcast__flattree(buff, count, data_type, root, comm);
   }
   rank = comm->rank();
   num_procs = comm->size();

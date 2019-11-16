@@ -25,8 +25,8 @@
 namespace simgrid{
 namespace smpi{
 
-int Coll_scatter_ompi_binomial::scatter(const void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
-                                        MPI_Datatype rdtype, int root, MPI_Comm comm)
+int scatter__ompi_binomial(const void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
+                           MPI_Datatype rdtype, int root, MPI_Comm comm)
 {
     int line = -1;
     int i;
@@ -194,8 +194,8 @@ int Coll_scatter_ompi_binomial::scatter(const void* sbuf, int scount, MPI_Dataty
  *  Accepts:  - same arguments as MPI_Scatter()
  *  Returns:  - MPI_SUCCESS or error code
  */
-int Coll_scatter_ompi_basic_linear::scatter(const void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
-                                            MPI_Datatype rdtype, int root, MPI_Comm comm)
+int scatter__ompi_basic_linear(const void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
+                               MPI_Datatype rdtype, int root, MPI_Comm comm)
 {
     int i, rank, size, err;
     char *ptmp;

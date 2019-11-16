@@ -11,9 +11,9 @@ namespace smpi{
 
 // Allgather-Non-Topology-Specific-Logical-Ring algorithm
 int
-Coll_allgather_NTSLR_NB::allgather(const void *sbuf, int scount, MPI_Datatype stype,
-                                   void *rbuf, int rcount, MPI_Datatype rtype,
-                                   MPI_Comm comm)
+allgather__NTSLR_NB(const void *sbuf, int scount, MPI_Datatype stype,
+                    void *rbuf, int rcount, MPI_Datatype rtype,
+                    MPI_Comm comm)
 {
   MPI_Aint rextent, sextent;
   MPI_Status status, status2;
@@ -31,7 +31,7 @@ Coll_allgather_NTSLR_NB::allgather(const void *sbuf, int scount, MPI_Datatype st
   // irregular case use default MPI fucntions
   if (scount * sextent != rcount * rextent) {
     XBT_WARN("MPI_allgather_NTSLR_NB use default MPI_allgather.");
-    Coll_allgather_default::allgather(sbuf, scount, stype, rbuf, rcount, rtype, comm);
+    allgather__default(sbuf, scount, stype, rbuf, rcount, rtype, comm);
     return MPI_SUCCESS;
   }
 

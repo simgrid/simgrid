@@ -12,11 +12,11 @@ int reduce_NTSL_segment_size_in_byte = 8192;
 /* Non-topology-specific pipelined linear-bcast function
    0->1, 1->2 ,2->3, ....., ->last node : in a pipeline fashion
 */
-namespace simgrid{
-namespace smpi{
-int Coll_reduce_NTSL::reduce(const void *buf, void *rbuf, int count,
-                                MPI_Datatype datatype, MPI_Op op, int root,
-                                MPI_Comm comm)
+namespace simgrid {
+namespace smpi {
+int reduce__NTSL(const void *buf, void *rbuf, int count,
+                 MPI_Datatype datatype, MPI_Op op, int root,
+                 MPI_Comm comm)
 {
   int tag = COLL_TAG_REDUCE;
   MPI_Status status;
@@ -133,9 +133,9 @@ int Coll_reduce_NTSL::reduce(const void *buf, void *rbuf, int count,
   /* when count is not divisible by block size, use default BCAST for the remainder */
   if ((remainder != 0) && (count > segment)) {
     XBT_WARN("MPI_reduce_NTSL use default MPI_reduce.");
-    Coll_reduce_default::reduce((char *)buf + (pipe_length * increment),
-               (char *)rbuf + (pipe_length * increment), remainder, datatype, op, root,
-               comm);
+    reduce__default((char *)buf + (pipe_length * increment),
+                    (char *)rbuf + (pipe_length * increment), remainder, datatype, op, root,
+                    comm);
   }
 
   smpi_free_tmp_buffer(tmp_buf);

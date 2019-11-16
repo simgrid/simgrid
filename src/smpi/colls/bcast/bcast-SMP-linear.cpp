@@ -9,9 +9,9 @@
 int bcast_SMP_linear_segment_byte = 8192;
 namespace simgrid{
 namespace smpi{
-int Coll_bcast_SMP_linear::bcast(void *buf, int count,
-                                     MPI_Datatype datatype, int root,
-                                     MPI_Comm comm)
+int bcast__SMP_linear(void *buf, int count,
+                      MPI_Datatype datatype, int root,
+                      MPI_Comm comm)
 {
   int tag = COLL_TAG_BCAST;
   MPI_Status status;
@@ -31,8 +31,7 @@ int Coll_bcast_SMP_linear::bcast(void *buf, int count,
     num_core = comm->get_intra_comm()->size();
   }else{
     //implementation buggy in this case
-    return Coll_bcast_mpich::bcast( buf , count, datatype,
-              root, comm);
+    return bcast__mpich(buf, count, datatype, root, comm);
   }
 
   int segment = bcast_SMP_linear_segment_byte / extent;
@@ -52,7 +51,7 @@ int Coll_bcast_SMP_linear::bcast(void *buf, int count,
   // call native when MPI communication size is too small
   if (size <= num_core) {
     XBT_WARN("MPI_bcast_SMP_linear use default MPI_bcast.");
-    Coll_bcast_default::bcast(buf, count, datatype, root, comm);
+    bcast__default(buf, count, datatype, root, comm);
     return MPI_SUCCESS;
   }
   // if root is not zero send to rank zero first

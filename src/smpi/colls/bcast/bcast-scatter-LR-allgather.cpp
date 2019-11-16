@@ -67,12 +67,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Author: MPIH / modified by Ahmad Faraj
 
  ****************************************************************************/
-namespace simgrid{
-namespace smpi{
-int
-Coll_bcast_scatter_LR_allgather::bcast(void *buff, int count,
-                                           MPI_Datatype data_type, int root,
-                                           MPI_Comm comm)
+namespace simgrid {
+namespace smpi {
+int bcast__scatter_LR_allgather(void *buff, int count,
+                                MPI_Datatype data_type, int root,
+                                MPI_Comm comm)
 {
   MPI_Aint extent;
   MPI_Status status;

@@ -24,8 +24,8 @@ static inline int MPIU_Mirror_permutation(unsigned int x, int bits)
 namespace simgrid{
 namespace smpi{
 
-int Coll_reduce_scatter_mpich_pair::reduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts[],
-                              MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int reduce_scatter__mpich_pair(const void *sendbuf, void *recvbuf, const int recvcounts[],
+                               MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
     int   rank, comm_size, i;
     MPI_Aint extent, true_extent, true_lb;
@@ -144,8 +144,8 @@ int Coll_reduce_scatter_mpich_pair::reduce_scatter(const void *sendbuf, void *re
 }
 
 
-int Coll_reduce_scatter_mpich_noncomm::reduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts[],
-                              MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int reduce_scatter__mpich_noncomm(const void *sendbuf, void *recvbuf, const int recvcounts[],
+                                  MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
     int mpi_errno = MPI_SUCCESS;
     int comm_size = comm->size() ;
@@ -264,7 +264,7 @@ int Coll_reduce_scatter_mpich_noncomm::reduce_scatter(const void *sendbuf, void 
 
 
 
-int Coll_reduce_scatter_mpich_rdb::reduce_scatter(const void *sendbuf, void *recvbuf, const int recvcounts[],
+int reduce_scatter__mpich_rdb(const void *sendbuf, void *recvbuf, const int recvcounts[],
                               MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
     int   rank, comm_size, i;

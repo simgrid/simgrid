@@ -41,16 +41,15 @@
  *  Returns:    - MPI_SUCCESS or error code
  *  Limitation: - Works only for commutative operations.
  */
-namespace simgrid{
-namespace smpi{
-int
-Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(const void *sbuf,
-                                                            void *rbuf,
-                                                            const int *rcounts,
-                                                            MPI_Datatype dtype,
-                                                            MPI_Op op,
-                                                            MPI_Comm comm
-                                                            )
+namespace simgrid {
+namespace smpi {
+int reduce_scatter__ompi_basic_recursivehalving(const void *sbuf,
+                                                void *rbuf,
+                                                const int *rcounts,
+                                                MPI_Datatype dtype,
+                                                MPI_Op op,
+                                                MPI_Comm comm
+                                                )
 {
     int i, rank, size, count, err = MPI_SUCCESS;
     int tmp_size = 1, remain = 0, tmp_rank;
@@ -348,12 +347,11 @@ Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(const void *sbuf
  *    DONE :)
  *
  */
-int
-Coll_reduce_scatter_ompi_ring::reduce_scatter(const void *sbuf, void *rbuf, const int *rcounts,
-                                          MPI_Datatype dtype,
-                                          MPI_Op op,
-                                          MPI_Comm comm
-                                          )
+int reduce_scatter__ompi_ring(const void *sbuf, void *rbuf, const int *rcounts,
+                              MPI_Datatype dtype,
+                              MPI_Op op,
+                              MPI_Comm comm
+                              )
 {
     int ret, line, rank, size, i, k, recv_from, send_to, total_count, max_block_count;
     int inbi;

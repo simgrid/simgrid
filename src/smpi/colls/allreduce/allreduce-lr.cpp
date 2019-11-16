@@ -18,11 +18,10 @@
 */
 
 //#include <star-reduction.c>
-namespace simgrid{
-namespace smpi{
-int
-Coll_allreduce_lr::allreduce(const void *sbuf, void *rbuf, int rcount,
-                             MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
+namespace simgrid {
+namespace smpi {
+int allreduce__lr(const void *sbuf, void *rbuf, int rcount,
+                  MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
   int tag = COLL_TAG_ALLREDUCE;
   MPI_Status status;
@@ -40,7 +39,7 @@ Coll_allreduce_lr::allreduce(const void *sbuf, void *rbuf, int rcount,
   /* when communication size is smaller than number of process (not support) */
   if (rcount < size) {
     XBT_WARN("MPI_allreduce_lr use default MPI_allreduce.");
-    Coll_allreduce_default::allreduce(sbuf, rbuf, rcount, dtype, op, comm);
+    allreduce__default(sbuf, rbuf, rcount, dtype, op, comm);
     return MPI_SUCCESS;
   }
 

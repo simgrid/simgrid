@@ -55,14 +55,14 @@ int (*intel_allreduce_functions_table[])(const void *sendbuf,
       int count,
       MPI_Datatype datatype,
       MPI_Op op, MPI_Comm comm) ={
-      Coll_allreduce_rdb::allreduce,
-      Coll_allreduce_rab1::allreduce,
-      Coll_allreduce_redbcast::allreduce,
-      Coll_allreduce_mvapich2_two_level::allreduce,
-      Coll_allreduce_smp_binomial::allreduce,
-      Coll_allreduce_mvapich2_two_level::allreduce,
-      Coll_allreduce_ompi_ring_segmented::allreduce,
-      Coll_allreduce_ompi_ring_segmented::allreduce
+      allreduce__rdb,
+      allreduce__rab1,
+      allreduce__redbcast,
+      allreduce__mvapich2_two_level,
+      allreduce__smp_binomial,
+      allreduce__mvapich2_two_level,
+      allreduce__ompi_ring_segmented,
+      allreduce__ompi_ring_segmented
 };
 
 intel_tuning_table_element intel_allreduce_table[] =
@@ -639,10 +639,10 @@ int (*intel_alltoall_functions_table[])(const void *sbuf, int scount,
                                              void* rbuf, int rcount,
                                              MPI_Datatype rdtype,
                                              MPI_Comm comm) ={
-      Coll_alltoall_bruck::alltoall,
-      Coll_alltoall_mvapich2_scatter_dest::alltoall,
-      Coll_alltoall_pair::alltoall,
-      Coll_alltoall_mvapich2::alltoall//Plum is proprietary ? (and super efficient)
+      alltoall__bruck,
+      alltoall__mvapich2_scatter_dest,
+      alltoall__pair,
+      alltoall__mvapich2//Plum is proprietary ? (and super efficient)
 };
 
 /*I_MPI_ADJUST_BARRIER
@@ -659,15 +659,15 @@ MPI_Barrier
 */
 static int intel_barrier_gather_scatter(MPI_Comm comm){
     //our default barrier performs a antibcast/bcast
-    Coll_barrier_default::barrier(comm);
+    barrier__default(comm);
     return MPI_SUCCESS;
 }
 
 int (*intel_barrier_functions_table[])(MPI_Comm comm) ={
-      Coll_barrier_ompi_basic_linear::barrier,
-      Coll_barrier_ompi_recursivedoubling::barrier,
-      Coll_barrier_ompi_basic_linear::barrier,
-      Coll_barrier_ompi_recursivedoubling::barrier,
+      barrier__ompi_basic_linear,
+      barrier__ompi_recursivedoubling,
+      barrier__ompi_basic_linear,
+      barrier__ompi_recursivedoubling,
       intel_barrier_gather_scatter,
       intel_barrier_gather_scatter
 };
@@ -801,15 +801,15 @@ MPI_Bcast
 int (*intel_bcast_functions_table[])(void *buff, int count,
                                           MPI_Datatype datatype, int root,
                                           MPI_Comm  comm) ={
-      Coll_bcast_binomial_tree::bcast,
-      //Coll_bcast_scatter_rdb_allgather::bcast,
-      Coll_bcast_NTSL::bcast,
-      Coll_bcast_NTSL::bcast,
-      Coll_bcast_SMP_binomial::bcast,
-      //Coll_bcast_scatter_rdb_allgather::bcast,
-      Coll_bcast_NTSL::bcast,
-      Coll_bcast_SMP_linear::bcast,
-      Coll_bcast_mvapich2::bcast,//we don't know shumilin's algo'
+      bcast__binomial_tree,
+      //bcast__scatter_rdb_allgather,
+      bcast__NTSL,
+      bcast__NTSL,
+      bcast__SMP_binomial,
+      //bcast__scatter_rdb_allgather,
+      bcast__NTSL,
+      bcast__SMP_linear,
+      bcast__mvapich2,//we don't know shumilin's algo'
 };
 
 intel_tuning_table_element intel_bcast_table[] =
@@ -971,12 +971,12 @@ int (*intel_reduce_functions_table[])(const void *sendbuf, void *recvbuf,
                                             int count, MPI_Datatype  datatype,
                                             MPI_Op   op, int root,
                                             MPI_Comm   comm) ={
-      Coll_reduce_mvapich2::reduce,
-      Coll_reduce_binomial::reduce,
-      Coll_reduce_mvapich2::reduce,
-      Coll_reduce_mvapich2_two_level::reduce,
-      Coll_reduce_rab::reduce,
-      Coll_reduce_rab::reduce
+      reduce__mvapich2,
+      reduce__binomial,
+      reduce__mvapich2,
+      reduce__mvapich2_two_level,
+      reduce__rab,
+      reduce__rab
 };
 
 intel_tuning_table_element intel_reduce_table[] =
@@ -1061,7 +1061,7 @@ static  int intel_reduce_scatter_reduce_scatterv(const void *sbuf, void *rbuf,
                                                     MPI_Op  op,
                                                     MPI_Comm  comm)
 {
-  Coll_reduce_scatter_default::reduce_scatter(sbuf, rbuf, rcounts,dtype, op,comm);
+  reduce_scatter__default(sbuf, rbuf, rcounts,dtype, op,comm);
   return MPI_SUCCESS;
 }
 
@@ -1072,9 +1072,9 @@ static  int  intel_reduce_scatter_recursivehalving(const void *sbuf, void *rbuf,
                                                     MPI_Comm  comm)
 {
   if(op==MPI_OP_NULL || op->is_commutative())
-    return Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(sbuf, rbuf, rcounts,dtype, op,comm);
+    return reduce_scatter__ompi_basic_recursivehalving(sbuf, rbuf, rcounts,dtype, op,comm);
   else
-    return Coll_reduce_scatter_mvapich2::reduce_scatter(sbuf, rbuf, rcounts,dtype, op,comm);
+    return reduce_scatter__mvapich2(sbuf, rbuf, rcounts,dtype, op,comm);
 }
 
 int (*intel_reduce_scatter_functions_table[])( const void *sbuf, void *rbuf,
@@ -1084,8 +1084,8 @@ int (*intel_reduce_scatter_functions_table[])( const void *sbuf, void *rbuf,
                                                     MPI_Comm  comm
                                                     ) ={
       intel_reduce_scatter_recursivehalving,
-      Coll_reduce_scatter_mpich_pair::reduce_scatter,
-      Coll_reduce_scatter_mpich_rdb::reduce_scatter,
+      reduce_scatter__mpich_pair,
+      reduce_scatter__mpich_rdb,
       intel_reduce_scatter_reduce_scatterv,
       intel_reduce_scatter_reduce_scatterv
 };
@@ -1493,10 +1493,10 @@ int (*intel_allgather_functions_table[])(const void *sbuf, int scount,
                                               MPI_Datatype rdtype,
                                               MPI_Comm  comm
                                                     ) ={
-      Coll_allgather_rdb::allgather,
-      Coll_allgather_bruck::allgather,
-      Coll_allgather_ring::allgather,
-      Coll_allgather_GB::allgather
+      allgather__rdb,
+      allgather__bruck,
+      allgather__ring,
+      allgather__GB
 };
 
 intel_tuning_table_element intel_allgather_table[] =
@@ -1663,10 +1663,10 @@ int (*intel_allgatherv_functions_table[])(const void *sbuf, int scount,
                                                MPI_Datatype rdtype,
                                                MPI_Comm  comm
                                                     ) ={
-      Coll_allgatherv_mpich_rdb::allgatherv,
-      Coll_allgatherv_ompi_bruck::allgatherv,
-      Coll_allgatherv_ring::allgatherv,
-      Coll_allgatherv_GB::allgatherv
+      allgatherv__mpich_rdb,
+      allgatherv__ompi_bruck,
+      allgatherv__ring,
+      allgatherv__GB
 };
 
 intel_tuning_table_element intel_allgatherv_table[] =
@@ -1874,9 +1874,9 @@ int (*intel_gather_functions_table[])(const void *sbuf, int scount,
                                            int root,
                                            MPI_Comm  comm
                                                     ) ={
-      Coll_gather_ompi_binomial::gather,
-      Coll_gather_ompi_binomial::gather,
-      Coll_gather_mvapich2::gather
+      gather__ompi_binomial,
+      gather__ompi_binomial,
+      gather__mvapich2
 };
 
 intel_tuning_table_element intel_gather_table[] =
@@ -1977,9 +1977,9 @@ int (*intel_scatter_functions_table[])(const void *sbuf, int scount,
                                             MPI_Datatype rdtype,
                                             int root, MPI_Comm  comm
                                                     ) ={
-      Coll_scatter_ompi_binomial::scatter,
-      Coll_scatter_ompi_binomial::scatter,
-      Coll_scatter_mvapich2::scatter
+      scatter__ompi_binomial,
+      scatter__ompi_binomial,
+      scatter__mvapich2
 };
 
 intel_tuning_table_element intel_scatter_table[] =
@@ -2151,8 +2151,8 @@ int (*intel_alltoallv_functions_table[])(const void *sbuf, const int *scounts, c
                                               MPI_Datatype rdtype,
                                               MPI_Comm  comm
                                                     ) ={
-      Coll_alltoallv_ompi_basic_linear::alltoallv,
-      Coll_alltoallv_bruck::alltoallv
+      alltoallv__ompi_basic_linear,
+      alltoallv__bruck
 };
 
 intel_tuning_table_element intel_alltoallv_table[] =
@@ -2263,7 +2263,7 @@ intel_tuning_table_element intel_alltoallv_table[] =
   size_t block_dsize = 1;
 
 #define IMPI_COLL_SELECT(cat, ret, args, args2)                                                                        \
-  ret _XBT_CONCAT3(Coll_, cat, _impi)::cat(COLL_UNPAREN args)                                                          \
+  ret _XBT_CONCAT2(cat, __impi)(COLL_UNPAREN args)                                                          \
   {                                                                                                                    \
     int comm_size = comm->size();                                                                                      \
     int i         = 0;                                                                                                 \

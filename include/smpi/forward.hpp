@@ -13,7 +13,6 @@
 namespace simgrid {
 namespace smpi {
 
-class Coll;
 class Colls;
 class Comm;
 class Datatype;

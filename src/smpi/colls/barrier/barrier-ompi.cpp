@@ -42,9 +42,9 @@
  * synchronous guarantee made by last ring of sends are synchronous
  *
  */
-namespace simgrid{
-namespace smpi{
-int Coll_barrier_ompi_doublering::barrier(MPI_Comm comm)
+namespace simgrid {
+namespace smpi {
+int barrier__ompi_doublering(MPI_Comm comm)
 {
     int rank, size;
     int left, right;
@@ -104,7 +104,7 @@ int Coll_barrier_ompi_doublering::barrier(MPI_Comm comm)
  * To make synchronous, uses sync sends and sync sendrecvs
  */
 
-int Coll_barrier_ompi_recursivedoubling::barrier(MPI_Comm comm)
+int barrier__ompi_recursivedoubling(MPI_Comm comm)
 {
     int rank, size, adjsize;
     int mask, remote;
@@ -178,7 +178,7 @@ int Coll_barrier_ompi_recursivedoubling::barrier(MPI_Comm comm)
  * To make synchronous, uses sync sends and sync sendrecvs
  */
 
-int Coll_barrier_ompi_bruck::barrier(MPI_Comm comm)
+int barrier__ompi_bruck(MPI_Comm comm)
 {
     int rank, size;
     int distance, to, from;
@@ -210,7 +210,7 @@ int Coll_barrier_ompi_bruck::barrier(MPI_Comm comm)
  * To make synchronous, uses sync sends and sync sendrecvs
  */
 /* special case for two processes */
-int Coll_barrier_ompi_two_procs::barrier(MPI_Comm comm)
+int barrier__ompi_two_procs(MPI_Comm comm)
 {
     int remote;
 
@@ -242,7 +242,7 @@ int Coll_barrier_ompi_two_procs::barrier(MPI_Comm comm)
 
 /* copied function (with appropriate renaming) starts here */
 
-int Coll_barrier_ompi_basic_linear::barrier(MPI_Comm comm)
+int barrier__ompi_basic_linear(MPI_Comm comm)
 {
     int i;
     int size = comm->size();
@@ -292,7 +292,7 @@ int Coll_barrier_ompi_basic_linear::barrier(MPI_Comm comm)
  * Another recursive doubling type algorithm, but in this case
  * we go up the tree and back down the tree.
  */
-int Coll_barrier_ompi_tree::barrier(MPI_Comm comm)
+int barrier__ompi_tree(MPI_Comm comm)
 {
     int rank, size, depth;
     int jump, partner;

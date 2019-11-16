@@ -10,10 +10,10 @@ namespace simgrid{
 namespace smpi{
 
 
-int Coll_allgather_smp_simple::allgather(const void *send_buf, int scount,
-                                         MPI_Datatype stype, void *recv_buf,
-                                         int rcount, MPI_Datatype rtype,
-                                         MPI_Comm comm)
+int allgather__smp_simple(const void *send_buf, int scount,
+                          MPI_Datatype stype, void *recv_buf,
+                          int rcount, MPI_Datatype rtype,
+                          MPI_Comm comm)
 {
   int src, dst, comm_size, rank;
   comm_size = comm->size();

@@ -8,8 +8,8 @@
 //#include <star-reduction.c>
 namespace simgrid{
 namespace smpi{
-int Coll_allreduce_rdb::allreduce(const void *sbuff, void *rbuff, int count,
-                                  MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
+int allreduce__rdb(const void *sbuff, void *rbuff, int count,
+                   MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
   int nprocs, rank, tag = COLL_TAG_ALLREDUCE;
   int mask, dst, pof2, newrank, rem, newdst;

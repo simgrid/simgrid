@@ -17,7 +17,7 @@
 
 namespace simgrid{
 namespace smpi{
-int Coll_barrier_mpich_smp::barrier(MPI_Comm comm)
+int barrier__mpich_smp(MPI_Comm comm)
 {
     int mpi_errno = MPI_SUCCESS;
     int mpi_errno_ret = MPI_SUCCESS;
@@ -32,7 +32,7 @@ int Coll_barrier_mpich_smp::barrier(MPI_Comm comm)
     local_rank = shmem_comm->rank();
     /* do the intranode barrier on all nodes */
     if (shmem_comm != NULL) {
-        mpi_errno = Coll_barrier_mpich::barrier(shmem_comm);
+        mpi_errno = barrier__mpich(shmem_comm);
         if (mpi_errno) {
           mpi_errno_ret+=mpi_errno;
         }
@@ -41,7 +41,7 @@ int Coll_barrier_mpich_smp::barrier(MPI_Comm comm)
     leader_comm = comm->get_leaders_comm();
     /* do the barrier across roots of all nodes */
     if (leader_comm != NULL && local_rank == 0) {
-        mpi_errno = Coll_barrier_mpich::barrier(leader_comm);
+        mpi_errno = barrier__mpich(leader_comm);
         if (mpi_errno) {
           mpi_errno_ret+=mpi_errno;
         }
@@ -52,7 +52,7 @@ int Coll_barrier_mpich_smp::barrier(MPI_Comm comm)
      * anything) */
     if (shmem_comm != NULL) {
         int i = 0;
-        mpi_errno = Coll_bcast_mpich::bcast(&i, 1, MPI_BYTE, 0, shmem_comm);
+        mpi_errno = bcast__mpich(&i, 1, MPI_BYTE, 0, shmem_comm);
         if (mpi_errno) {
           mpi_errno_ret+=mpi_errno;
         }

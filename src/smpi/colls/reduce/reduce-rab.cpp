@@ -949,12 +949,12 @@ static int MPI_I_anyReduce(const void* Sendbuf, void* Recvbuf, int count, MPI_Da
 #endif /*REDUCE_LIMITS*/
 
 
-int Coll_reduce_rab::reduce(const void* Sendbuf, void* Recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
+int reduce__rab(const void* Sendbuf, void* Recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
 {
   return( MPI_I_anyReduce(Sendbuf, Recvbuf, count, datatype, op, root, comm, 0) );
 }
 
-int Coll_allreduce_rab::allreduce(const void* Sendbuf, void* Recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int allreduce__rab(const void* Sendbuf, void* Recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   return( MPI_I_anyReduce(Sendbuf, Recvbuf, count, datatype, op,   -1, comm, 1) );
 }

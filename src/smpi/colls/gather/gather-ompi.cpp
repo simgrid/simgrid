@@ -22,11 +22,11 @@
 #include "../coll_tuned_topo.hpp"
 #include "../colls_private.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid {
+namespace smpi {
 
-int Coll_gather_ompi_binomial::gather(const void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
-                                      MPI_Datatype rdtype, int root, MPI_Comm comm)
+int gather__ompi_binomial(const void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
+                          MPI_Datatype rdtype, int root, MPI_Comm comm)
 {
     int line = -1;
     int i;
@@ -202,12 +202,12 @@ int Coll_gather_ompi_binomial::gather(const void* sbuf, int scount, MPI_Datatype
  *  Accepts:  - same arguments as MPI_Gather(), first segment size
  *  Returns:  - MPI_SUCCESS or error code
  */
-int Coll_gather_ompi_linear_sync::gather(const void *sbuf, int scount,
-                                         MPI_Datatype sdtype,
-                                         void *rbuf, int rcount,
-                                         MPI_Datatype rdtype,
-                                         int root,
-                                         MPI_Comm comm)
+int gather__ompi_linear_sync(const void *sbuf, int scount,
+                             MPI_Datatype sdtype,
+                             void *rbuf, int rcount,
+                             MPI_Datatype rdtype,
+                             int root,
+                             MPI_Comm comm)
 {
     int i;
     int ret, line;
@@ -355,8 +355,8 @@ int Coll_gather_ompi_linear_sync::gather(const void *sbuf, int scount,
  *  Accepts:  - same arguments as MPI_Gather()
  *  Returns:  - MPI_SUCCESS or error code
  */
-int Coll_gather_ompi_basic_linear::gather(const void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
-                                          MPI_Datatype rdtype, int root, MPI_Comm comm)
+int gather__ompi_basic_linear(const void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
+                              MPI_Datatype rdtype, int root, MPI_Comm comm)
 {
     int i;
     int err;

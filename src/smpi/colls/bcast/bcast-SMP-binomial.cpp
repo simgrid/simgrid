@@ -7,9 +7,9 @@
 #include "../colls_private.hpp"
 namespace simgrid{
 namespace smpi{
-int Coll_bcast_SMP_binomial::bcast(void *buf, int count,
-                                       MPI_Datatype datatype, int root,
-                                       MPI_Comm comm)
+int bcast__SMP_binomial(void *buf, int count,
+                        MPI_Datatype datatype, int root,
+                        MPI_Comm comm)
 {
   int mask = 1;
   int size;
@@ -28,8 +28,7 @@ int Coll_bcast_SMP_binomial::bcast(void *buf, int count,
     num_core = comm->get_intra_comm()->size();
   }else{
     //implementation buggy in this case
-    return Coll_bcast_mpich::bcast( buf , count, datatype,
-              root, comm);
+    return bcast__mpich(buf, count, datatype, root, comm);
   }
 
   int to_intra, to_inter;

@@ -44,11 +44,11 @@
 #define SHMEM_COLL_BLOCK_SIZE (local_size * mv2_g_shmem_coll_max_msg_size)
 #define mv2_use_knomial_reduce 1
 
-#define MPIR_Reduce_inter_knomial_wrapper_MV2 Coll_reduce_mvapich2_knomial::reduce
-#define MPIR_Reduce_intra_knomial_wrapper_MV2 Coll_reduce_mvapich2_knomial::reduce
-#define MPIR_Reduce_binomial_MV2 Coll_reduce_binomial::reduce
-#define MPIR_Reduce_redscat_gather_MV2 Coll_reduce_scatter_gather::reduce
-#define MPIR_Reduce_shmem_MV2 Coll_reduce_ompi_basic_linear::reduce
+#define MPIR_Reduce_inter_knomial_wrapper_MV2 reduce__mvapich2_knomial
+#define MPIR_Reduce_intra_knomial_wrapper_MV2 reduce__mvapich2_knomial
+#define MPIR_Reduce_binomial_MV2 reduce__binomial
+#define MPIR_Reduce_redscat_gather_MV2 reduce__scatter_gather
+#define MPIR_Reduce_shmem_MV2 reduce__ompi_basic_linear
 
 extern int (*MV2_Reduce_function)( const void *sendbuf,
     void *recvbuf,
@@ -73,15 +73,15 @@ static int (*reduce_fn)(const void *sendbuf,
                              int count,
                              MPI_Datatype datatype,
                              MPI_Op op, int root, MPI_Comm  comm);
-namespace simgrid{
-namespace smpi{
-int Coll_reduce_mvapich2_two_level::reduce( const void *sendbuf,
-                                     void *recvbuf,
-                                     int count,
-                                     MPI_Datatype datatype,
-                                     MPI_Op op,
-                                     int root,
-                                     MPI_Comm comm)
+namespace simgrid {
+namespace smpi {
+int reduce__mvapich2_two_level( const void *sendbuf,
+                                void *recvbuf,
+                                int count,
+                                MPI_Datatype datatype,
+                                MPI_Op op,
+                                int root,
+                                MPI_Comm comm)
 {
     int mpi_errno = MPI_SUCCESS;
     int my_rank, total_size, local_rank, local_size;
@@ -96,9 +96,9 @@ int Coll_reduce_mvapich2_two_level::reduce( const void *sendbuf,
 
     //if not set (use of the algo directly, without mvapich2 selector)
     if(MV2_Reduce_function==NULL)
-      MV2_Reduce_function=Coll_reduce_mpich::reduce;
+      MV2_Reduce_function = reduce__mpich;
     if(MV2_Reduce_intra_function==NULL)
-      MV2_Reduce_intra_function=Coll_reduce_mpich::reduce;
+      MV2_Reduce_intra_function = reduce__mpich;
 
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();

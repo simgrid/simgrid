@@ -68,10 +68,10 @@ namespace simgrid{
 namespace smpi{
 
 int
-Coll_allgatherv_ring::allgatherv(const void *send_buff, int send_count,
-                               MPI_Datatype send_type, void *recv_buff,
-                               const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type,
-                               MPI_Comm comm)
+allgatherv__ring(const void *send_buff, int send_count,
+                 MPI_Datatype send_type, void *recv_buff,
+                 const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type,
+                 MPI_Comm comm)
 {
 
   MPI_Aint extent;

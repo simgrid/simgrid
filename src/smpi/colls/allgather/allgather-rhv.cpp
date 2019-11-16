@@ -13,10 +13,10 @@ namespace smpi{
 // now only work with power of two processes
 
 int
-Coll_allgather_rhv::allgather(const void *sbuf, int send_count,
-                              MPI_Datatype send_type, void *rbuf,
-                              int recv_count, MPI_Datatype recv_type,
-                              MPI_Comm comm)
+allgather__rhv(const void *sbuf, int send_count,
+               MPI_Datatype send_type, void *rbuf,
+               int recv_count, MPI_Datatype recv_type,
+               MPI_Comm comm)
 {
   MPI_Status status;
   MPI_Aint s_extent, r_extent;
@@ -46,8 +46,8 @@ Coll_allgather_rhv::allgather(const void *sbuf, int send_count,
 
   if (send_chunk != recv_chunk) {
     XBT_WARN("MPI_allgather_rhv use default MPI_allgather.");
-    Coll_allgather_default::allgather(sbuf, send_count, send_type, rbuf, recv_count,
-                              recv_type, comm);
+    allgather__default(sbuf, send_count, send_type, rbuf, recv_count,
+                       recv_type, comm);
     return MPI_SUCCESS;
   }
 

@@ -38,10 +38,10 @@ This fucntion performs all-reduce operation as follow. ** in a pipeline fashion 
 */
 namespace simgrid{
 namespace smpi{
-int Coll_allreduce_smp_binomial_pipeline::allreduce(const void *send_buf,
-                                                    void *recv_buf, int count,
-                                                    MPI_Datatype dtype,
-                                                    MPI_Op op, MPI_Comm comm)
+int allreduce__smp_binomial_pipeline(const void *send_buf,
+                                     void *recv_buf, int count,
+                                     MPI_Datatype dtype,
+                                     MPI_Op op, MPI_Comm comm)
 {
   int comm_size, rank;
   int tag = COLL_TAG_ALLREDUCE;

@@ -10,10 +10,10 @@ namespace simgrid{
 namespace smpi{
 
 int
-Coll_allgather_rdb::allgather(const void *sbuf, int send_count,
-                              MPI_Datatype send_type, void *rbuf,
-                              int recv_count, MPI_Datatype recv_type,
-                              MPI_Comm comm)
+allgather__rdb(const void *sbuf, int send_count,
+               MPI_Datatype send_type, void *rbuf,
+               int recv_count, MPI_Datatype recv_type,
+               MPI_Comm comm)
 {
   // MPI variables
   MPI_Status status;

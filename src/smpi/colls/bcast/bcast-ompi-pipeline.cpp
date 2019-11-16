@@ -11,11 +11,11 @@
 
 namespace simgrid{
 namespace smpi{
-int Coll_bcast_ompi_pipeline::bcast( void* buffer,
-                                      int original_count,
-                                      MPI_Datatype datatype,
-                                      int root,
-                                      MPI_Comm comm)
+int bcast__ompi_pipeline( void* buffer,
+                          int original_count,
+                          MPI_Datatype datatype,
+                          int root,
+                          MPI_Comm comm)
 {
     int count_by_segment = original_count;
     size_t type_size;

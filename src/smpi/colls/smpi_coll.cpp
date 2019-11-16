@@ -13,7 +13,7 @@
 #include "smpi_request.hpp"
 #include "xbt/config.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI (coll)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI collectives.");
 
 #define COLL_SETTER(cat, ret, args, args2)                                                                             \
   int(*Colls::cat) args;                                                                                               \
@@ -81,7 +81,20 @@ int Colls::find_coll_description(s_mpi_coll_description_t* table, const std::str
   return -1;
 }
 
-COLL_APPLY(COLL_SETTER,COLL_GATHER_SIG,"");
+int(*Colls::gather) (const void *send_buff, int send_count, MPI_Datatype send_type,
+                     void *recv_buff, int recv_count, MPI_Datatype recv_type,
+                         int root, MPI_Comm comm);
+void Colls::set_gather(const std::string& name)
+{
+  int id = find_coll_description(mpi_coll_gather_description, name, "gather");
+  gather = reinterpret_cast<int(*)(const void *send_buff, int send_count, MPI_Datatype send_type,
+                                    void *recv_buff, int recv_count, MPI_Datatype recv_type,
+                                        int root, MPI_Comm comm)>(mpi_coll_gather_description[id].coll);
+  if (gather == nullptr)
+    xbt_die("Collective gather set to nullptr!");
+}
+
+//COLL_APPLY(COLL_SETTER,COLL_GATHER_SIG,"");
 COLL_APPLY(COLL_SETTER,COLL_ALLGATHER_SIG,"");
 COLL_APPLY(COLL_SETTER,COLL_ALLGATHERV_SIG,"");
 COLL_APPLY(COLL_SETTER,COLL_REDUCE_SIG,"");

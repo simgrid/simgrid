@@ -51,17 +51,17 @@ extern int mv2_intra_node_knomial_factor;
 extern int mv2_bcast_two_level_system_size;
 #define INTRA_NODE_ROOT 0
 
-#define MPIR_Pipelined_Bcast_Zcpy_MV2 Coll_bcast_mpich::bcast
-#define MPIR_Pipelined_Bcast_MV2 Coll_bcast_mpich::bcast
-#define MPIR_Bcast_binomial_MV2 Coll_bcast_binomial_tree::bcast
-#define MPIR_Bcast_scatter_ring_allgather_shm_MV2 Coll_bcast_scatter_LR_allgather::bcast
-#define MPIR_Bcast_scatter_doubling_allgather_MV2 Coll_bcast_scatter_rdb_allgather::bcast
-#define MPIR_Bcast_scatter_ring_allgather_MV2 Coll_bcast_scatter_LR_allgather::bcast
-#define MPIR_Shmem_Bcast_MV2 Coll_bcast_mpich::bcast
-#define MPIR_Bcast_tune_inter_node_helper_MV2 Coll_bcast_mvapich2_inter_node::bcast
-#define MPIR_Bcast_inter_node_helper_MV2 Coll_bcast_mvapich2_inter_node::bcast
-#define MPIR_Knomial_Bcast_intra_node_MV2 Coll_bcast_mvapich2_knomial_intra_node::bcast
-#define MPIR_Bcast_intra_MV2 Coll_bcast_mvapich2_intra_node::bcast
+#define MPIR_Pipelined_Bcast_Zcpy_MV2 bcast__mpich
+#define MPIR_Pipelined_Bcast_MV2 bcast__mpich
+#define MPIR_Bcast_binomial_MV2 bcast__binomial_tree
+#define MPIR_Bcast_scatter_ring_allgather_shm_MV2 bcast__scatter_LR_allgather
+#define MPIR_Bcast_scatter_doubling_allgather_MV2 bcast__scatter_rdb_allgather
+#define MPIR_Bcast_scatter_ring_allgather_MV2 bcast__scatter_LR_allgather
+#define MPIR_Shmem_Bcast_MV2 bcast__mpich
+#define MPIR_Bcast_tune_inter_node_helper_MV2 bcast__mvapich2_inter_node
+#define MPIR_Bcast_inter_node_helper_MV2 bcast__mvapich2_inter_node
+#define MPIR_Knomial_Bcast_intra_node_MV2 bcast__mvapich2_knomial_intra_node
+#define MPIR_Bcast_intra_MV2 bcast__mvapich2_intra_node
 
 extern int zcpy_knomial_factor;
 extern int mv2_pipelined_zcpy_knomial_factor;
@@ -73,13 +73,13 @@ extern int mv2_intra_node_knomial_factor;
 #define mv2_bcast_large_msg            512*1024
 #define mv2_knomial_intra_node_threshold 131072
 #define mv2_scatter_rd_inter_leader_bcast 1
-namespace simgrid{
-namespace smpi{
-int Coll_bcast_mvapich2_inter_node::bcast(void *buffer,
-                                                 int count,
-                                                 MPI_Datatype datatype,
-                                                 int root,
-                                                 MPI_Comm  comm)
+namespace simgrid {
+namespace smpi {
+int bcast__mvapich2_inter_node(void *buffer,
+                               int count,
+                               MPI_Datatype datatype,
+                               int root,
+                               MPI_Comm  comm)
 {
     int rank;
     int mpi_errno = MPI_SUCCESS;
@@ -93,11 +93,11 @@ int Coll_bcast_mvapich2_inter_node::bcast(void *buffer,
 
 
     if (MV2_Bcast_function==NULL){
-      MV2_Bcast_function=Coll_bcast_mpich::bcast;
+      MV2_Bcast_function = bcast__mpich;
     }
 
     if (MV2_Bcast_intra_node_function==NULL){
-      MV2_Bcast_intra_node_function= Coll_bcast_mpich::bcast;
+      MV2_Bcast_intra_node_function = bcast__mpich;
     }
 
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
@@ -170,21 +170,21 @@ int Coll_bcast_mvapich2_inter_node::bcast(void *buffer,
 }
 
 
-int Coll_bcast_mvapich2_knomial_intra_node::bcast(void *buffer,
-                                      int count,
-                                      MPI_Datatype datatype,
-                                      int root, MPI_Comm  comm)
+int bcast__mvapich2_knomial_intra_node(void *buffer,
+                                       int count,
+                                       MPI_Datatype datatype,
+                                       int root, MPI_Comm  comm)
 {
     int local_size = 0, rank;
     int mpi_errno = MPI_SUCCESS;
     int src, dst, mask, relative_rank;
     int k;
     if (MV2_Bcast_function==NULL){
-      MV2_Bcast_function=Coll_bcast_mpich::bcast;
+      MV2_Bcast_function = bcast__mpich;
     }
 
     if (MV2_Bcast_intra_node_function==NULL){
-      MV2_Bcast_intra_node_function= Coll_bcast_mpich::bcast;
+      MV2_Bcast_intra_node_function = bcast__mpich;
     }
 
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
@@ -243,10 +243,10 @@ int Coll_bcast_mvapich2_knomial_intra_node::bcast(void *buffer,
 }
 
 
-int Coll_bcast_mvapich2_intra_node::bcast(void *buffer,
-                         int count,
-                         MPI_Datatype datatype,
-                         int root, MPI_Comm  comm)
+int bcast__mvapich2_intra_node(void *buffer,
+                               int count,
+                               MPI_Datatype datatype,
+                               int root, MPI_Comm  comm)
 {
     int mpi_errno = MPI_SUCCESS;
     int comm_size;
@@ -260,11 +260,11 @@ int Coll_bcast_mvapich2_intra_node::bcast(void *buffer,
     if (count == 0)
         return MPI_SUCCESS;
     if (MV2_Bcast_function==NULL){
-      MV2_Bcast_function=Coll_bcast_mpich::bcast;
+      MV2_Bcast_function = bcast__mpich;
     }
 
     if (MV2_Bcast_intra_node_function==NULL){
-      MV2_Bcast_intra_node_function= Coll_bcast_mpich::bcast;
+      MV2_Bcast_intra_node_function = bcast__mpich;
     }
 
     if(comm->get_leaders_comm()==MPI_COMM_NULL){

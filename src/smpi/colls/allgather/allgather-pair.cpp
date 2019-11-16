@@ -70,10 +70,10 @@ namespace smpi{
 
 
 int
-Coll_allgather_pair::allgather(const void *send_buff, int send_count,
-                               MPI_Datatype send_type, void *recv_buff,
-                               int recv_count, MPI_Datatype recv_type,
-                               MPI_Comm comm)
+allgather__pair(const void *send_buff, int send_count,
+                MPI_Datatype send_type, void *recv_buff,
+                int recv_count, MPI_Datatype recv_type,
+                MPI_Comm comm)
 {
 
   MPI_Aint extent;

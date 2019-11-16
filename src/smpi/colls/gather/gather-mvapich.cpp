@@ -38,9 +38,9 @@
 #include "../colls_private.hpp"
 #include <algorithm>
 
-#define MPIR_Gather_MV2_Direct Coll_gather_ompi_basic_linear::gather
-#define MPIR_Gather_MV2_two_level_Direct Coll_gather_ompi_basic_linear::gather
-#define MPIR_Gather_intra Coll_gather_mpich::gather
+#define MPIR_Gather_MV2_Direct gather__ompi_basic_linear
+#define MPIR_Gather_MV2_two_level_Direct gather__ompi_basic_linear
+#define MPIR_Gather_intra gather__mpich
 typedef int (*MV2_Gather_function_ptr) (const void *sendbuf,
     int sendcnt,
     MPI_Datatype sendtype,
@@ -127,14 +127,14 @@ static int MPIR_pt_pt_intra_gather( const void *sendbuf, int sendcnt, MPI_Dataty
 
 
 
-int Coll_gather_mvapich2_two_level::gather(const void *sendbuf,
-                                            int sendcnt,
-                                            MPI_Datatype sendtype,
-                                            void *recvbuf,
-                                            int recvcnt,
-                                            MPI_Datatype recvtype,
-                                            int root,
-                                            MPI_Comm comm)
+int gather__mvapich2_two_level(const void *sendbuf,
+                               int sendcnt,
+                               MPI_Datatype sendtype,
+                               void *recvbuf,
+                               int recvcnt,
+                               MPI_Datatype recvtype,
+                               int root,
+                               MPI_Comm comm)
 {
   unsigned char* leader_gather_buf = NULL;
   int comm_size, rank;
@@ -151,7 +151,7 @@ int Coll_gather_mvapich2_two_level::gather(const void *sendbuf,
 
   // if not set (use of the algo directly, without mvapich2 selector)
   if (MV2_Gather_intra_node_function == NULL)
-    MV2_Gather_intra_node_function = Coll_gather_mpich::gather;
+    MV2_Gather_intra_node_function = gather__mpich;
 
   if (comm->get_leaders_comm() == MPI_COMM_NULL) {
     comm->init_smp();

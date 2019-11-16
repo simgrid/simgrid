@@ -67,12 +67,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Author: MPIH / modified by Ahmad Faraj
 
  ****************************************************************************/
-namespace simgrid{
-namespace smpi{
-int
-Coll_bcast_binomial_tree::bcast(void *buff, int count,
-                                    MPI_Datatype data_type, int root,
-                                    MPI_Comm comm)
+namespace simgrid {
+namespace smpi {
+int bcast__binomial_tree(void *buff, int count,
+                         MPI_Datatype data_type, int root,
+                         MPI_Comm comm)
 {
   int src, dst, rank, num_procs, mask, relative_rank;
   int tag = COLL_TAG_BCAST;

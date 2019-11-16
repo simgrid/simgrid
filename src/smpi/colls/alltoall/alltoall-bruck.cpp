@@ -32,10 +32,10 @@ namespace smpi{
 
 
 int
-Coll_alltoall_bruck::alltoall(const void *send_buff, int send_count,
-                               MPI_Datatype send_type, void *recv_buff,
-                               int recv_count, MPI_Datatype recv_type,
-                               MPI_Comm comm)
+alltoall__bruck(const void *send_buff, int send_count,
+                MPI_Datatype send_type, void *recv_buff,
+                int recv_count, MPI_Datatype recv_type,
+                MPI_Comm comm)
 {
   MPI_Status status;
   MPI_Aint extent;

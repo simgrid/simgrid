@@ -27,13 +27,12 @@
  * Author: Ahmad Faraj
 
  ****************************************************************************/
-namespace simgrid{
-namespace smpi{
-int
-Coll_alltoallv_pair_mpi_barrier::alltoallv(const void *send_buff, const int *send_counts, const int *send_disps,
-                                          MPI_Datatype send_type,
-                                          void *recv_buff, const int *recv_counts, const int *recv_disps,
-                                          MPI_Datatype recv_type, MPI_Comm comm)
+namespace simgrid {
+namespace smpi {
+int alltoallv__pair_mpi_barrier(const void *send_buff, const int *send_counts, const int *send_disps,
+                                MPI_Datatype send_type,
+                                void *recv_buff, const int *recv_counts, const int *recv_disps,
+                                MPI_Datatype recv_type, MPI_Comm comm)
 {
   MPI_Status s;
   MPI_Aint send_chunk, recv_chunk;

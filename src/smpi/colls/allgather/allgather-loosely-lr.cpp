@@ -10,10 +10,10 @@ namespace simgrid{
 namespace smpi{
 
 
-int Coll_allgather_loosely_lr::allgather(const void *sbuf, int scount,
-                                         MPI_Datatype stype, void *rbuf,
-                                         int rcount, MPI_Datatype rtype,
-                                         MPI_Comm comm)
+int allgather__loosely_lr(const void *sbuf, int scount,
+                          MPI_Datatype stype, void *rbuf,
+                          int rcount, MPI_Datatype rtype,
+                          MPI_Comm comm)
 {
   int comm_size, rank;
   int tag = COLL_TAG_ALLGATHER;

@@ -29,12 +29,11 @@
  ****************************************************************************/
 namespace simgrid{
 namespace smpi{
-int
-Coll_alltoallv_ring_light_barrier::alltoallv(const void *send_buff, const int *send_counts, const int *send_disps,
-                                            MPI_Datatype send_type,
-                                            void *recv_buff, const int *recv_counts, const int *recv_disps,
-                                            MPI_Datatype recv_type,
-                                            MPI_Comm comm)
+int alltoallv__ring_light_barrier(const void *send_buff, const int *send_counts, const int *send_disps,
+                                  MPI_Datatype send_type,
+                                  void *recv_buff, const int *recv_counts, const int *recv_disps,
+                                  MPI_Datatype recv_type,
+                                  MPI_Comm comm)
 {
   MPI_Aint send_chunk, recv_chunk;
   MPI_Status s;

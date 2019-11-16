@@ -24,13 +24,13 @@
 #include "../colls_private.hpp"
 #include <algorithm>
 
-namespace simgrid{
-namespace smpi{
-int Coll_allreduce_mvapich2_rs::allreduce(const void *sendbuf,
-                            void *recvbuf,
-                            int count,
-                            MPI_Datatype datatype,
-                            MPI_Op op, MPI_Comm comm)
+namespace simgrid {
+namespace smpi {
+int allreduce__mvapich2_rs(const void *sendbuf,
+                           void *recvbuf,
+                           int count,
+                           MPI_Datatype datatype,
+                           MPI_Op op, MPI_Comm comm)
 {
     int mpi_errno = MPI_SUCCESS;
     int newrank = 0;

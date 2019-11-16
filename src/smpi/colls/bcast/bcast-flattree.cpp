@@ -5,11 +5,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../colls_private.hpp"
-namespace simgrid{
-namespace smpi{
-int
-Coll_bcast_flattree::bcast(void *buff, int count, MPI_Datatype data_type,
-                               int root, MPI_Comm comm)
+namespace simgrid {
+namespace smpi {
+int bcast__flattree(void *buff, int count, MPI_Datatype data_type,
+                    int root, MPI_Comm comm)
 {
   int i, rank, num_procs;
   int tag = COLL_TAG_BCAST;

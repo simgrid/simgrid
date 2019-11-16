@@ -38,7 +38,7 @@
 namespace simgrid{
 namespace smpi{
 
-int Coll_allgather_mvapich2_smp::allgather(const void *sendbuf,int sendcnt, MPI_Datatype sendtype,
+int allgather__mvapich2_smp(const void *sendbuf,int sendcnt, MPI_Datatype sendtype,
                             void *recvbuf, int recvcnt,MPI_Datatype recvtype,
                             MPI_Comm  comm)
 {
@@ -138,7 +138,7 @@ int Coll_allgather_mvapich2_smp::allgather(const void *sendbuf,int sendcnt, MPI_
 
 
 
-            mpi_errno = Coll_allgather_mpich::allgather(sendtmpbuf,
+            mpi_errno = allgather__mpich(sendtmpbuf,
                                                (recvcnt*local_size),
                                                recvtype,
                                                recvbuf, (recvcnt*local_size), recvtype,

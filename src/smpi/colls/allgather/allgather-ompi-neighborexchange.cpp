@@ -68,7 +68,7 @@ namespace simgrid{
 namespace smpi{
 
 int
-Coll_allgather_ompi_neighborexchange::allgather(const void *sbuf, int scount,
+allgather__ompi_neighborexchange(const void *sbuf, int scount,
                                                  MPI_Datatype sdtype,
                                                  void* rbuf, int rcount,
                                                  MPI_Datatype rdtype,
@@ -90,9 +90,9 @@ Coll_allgather_ompi_neighborexchange::allgather(const void *sbuf, int scount,
       XBT_DEBUG(
                    "coll:tuned:allgather_intra_neighborexchange WARNING: odd size %d, switching to ring algorithm",
                    size);
-      return Coll_allgather_ring::allgather(sbuf, scount, sdtype,
-                                                  rbuf, rcount, rdtype,
-                                                  comm);
+      return allgather__ring(sbuf, scount, sdtype,
+                             rbuf, rcount, rdtype,
+                             comm);
    }
 
    XBT_DEBUG(

@@ -9,9 +9,9 @@
 namespace simgrid{
 namespace smpi{
 // NP pow of 2 for now
-int Coll_allreduce_rab1::allreduce(const void *sbuff, void *rbuff,
-                                   int count, MPI_Datatype dtype,
-                                   MPI_Op op, MPI_Comm comm)
+int allreduce__rab1(const void *sbuff, void *rbuff,
+                    int count, MPI_Datatype dtype,
+                    MPI_Op op, MPI_Comm comm)
 {
   MPI_Status status;
   MPI_Aint extent;

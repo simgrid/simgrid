@@ -155,13 +155,12 @@
 
 #include "../colls_private.hpp"
 
-namespace simgrid{
-namespace smpi{
-int
-Coll_allreduce_ompi_ring_segmented::allreduce(const void *sbuf, void *rbuf, int count,
-                                               MPI_Datatype dtype,
-                                               MPI_Op op,
-                                               MPI_Comm comm)
+namespace simgrid {
+namespace smpi {
+int allreduce__ompi_ring_segmented(const void *sbuf, void *rbuf, int count,
+                                   MPI_Datatype dtype,
+                                   MPI_Op op,
+                                   MPI_Comm comm)
 {
    int ret = MPI_SUCCESS;
    int line;
@@ -205,8 +204,7 @@ Coll_allreduce_ompi_ring_segmented::allreduce(const void *sbuf, void *rbuf, int 
    /* Special case for count less than size * segcount - use regular ring */
    if (count < size * segcount) {
       XBT_DEBUG( "coll:tuned:allreduce_ring_segmented rank %d/%d, count %d, switching to regular ring", rank, size, count);
-      return (Coll_allreduce_lr::allreduce(sbuf, rbuf, count, dtype, op,
-                                                   comm));
+      return (allreduce__lr(sbuf, rbuf, count, dtype, op, comm));
    }
 
    /* Determine the number of phases of the algorithm */

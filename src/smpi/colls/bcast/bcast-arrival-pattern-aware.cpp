@@ -14,9 +14,9 @@ static int bcast_NTSL_segment_size_in_byte = 8192;
 namespace simgrid{
 namespace smpi{
 /* Non-topology-specific pipelined linear-bcast function */
-int Coll_bcast_arrival_pattern_aware::bcast(void *buf, int count,
-                                                MPI_Datatype datatype, int root,
-                                                MPI_Comm comm)
+int bcast__arrival_pattern_aware(void *buf, int count,
+                                 MPI_Datatype datatype, int root,
+                                 MPI_Comm comm)
 {
   int tag = -COLL_TAG_BCAST;
   MPI_Status status;

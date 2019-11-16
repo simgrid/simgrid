@@ -19,11 +19,11 @@ int reduce_arrival_pattern_aware_segment_size_in_byte = 8192;
 namespace simgrid{
 namespace smpi{
 /* Non-topology-specific pipelined linear-reduce function */
-int Coll_reduce_arrival_pattern_aware::reduce(const void *buf, void *rbuf,
-                                                 int count,
-                                                 MPI_Datatype datatype,
-                                                 MPI_Op op, int root,
-                                                 MPI_Comm comm)
+int reduce__arrival_pattern_aware(const void *buf, void *rbuf,
+                                  int count,
+                                  MPI_Datatype datatype,
+                                  MPI_Op op, int root,
+                                  MPI_Comm comm)
 {
   int rank = comm->rank();
   int tag = -COLL_TAG_REDUCE;
@@ -332,8 +332,8 @@ int Coll_reduce_arrival_pattern_aware::reduce(const void *buf, void *rbuf,
 
   /* when count is not divisible by block size, use default BCAST for the remainder */
   if ((remainder != 0) && (count > segment)) {
-    Coll_reduce_default::reduce((char*)buf + (pipe_length * increment), (char*)rbuf + (pipe_length * increment),
-                                remainder, datatype, op, root, comm);
+    reduce__default((char*)buf + (pipe_length * increment), (char*)rbuf + (pipe_length * increment),
+                    remainder, datatype, op, root, comm);
   }
 
   smpi_free_tmp_buffer(tmp_buf);

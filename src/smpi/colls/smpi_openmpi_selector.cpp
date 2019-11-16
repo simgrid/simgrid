@@ -8,11 +8,11 @@
 
 #include "colls_private.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid {
+namespace smpi {
 
-int Coll_allreduce_ompi::allreduce(const void *sbuf, void *rbuf, int count,
-                        MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
+int allreduce__ompi(const void *sbuf, void *rbuf, int count,
+                    MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
     size_t dsize, block_dsize;
     int comm_size = comm->size();
@@ -29,9 +29,7 @@ int Coll_allreduce_ompi::allreduce(const void *sbuf, void *rbuf, int count,
     block_dsize = dsize * count;
 
     if (block_dsize < intermediate_message) {
-        return (Coll_allreduce_rdb::allreduce (sbuf, rbuf,
-                                                                   count, dtype,
-                                                                   op, comm));
+        return allreduce__rdb(sbuf, rbuf, count, dtype, op, comm);
     }
 
     if( ((op==MPI_OP_NULL) || op->is_commutative()) && (count > comm_size) ) {
@@ -39,27 +37,22 @@ int Coll_allreduce_ompi::allreduce(const void *sbuf, void *rbuf, int count,
         if ((comm_size * segment_size >= block_dsize)) {
             //FIXME: ok, these are not the right algorithms, try to find closer ones
             // lr is a good match for allreduce_ring (difference is mainly the use of sendrecv)
-            return Coll_allreduce_lr::allreduce(sbuf, rbuf, count, dtype,
-                                              op, comm);
+            return allreduce__lr(sbuf, rbuf, count, dtype, op, comm);
         } else {
-           return (Coll_allreduce_ompi_ring_segmented::allreduce (sbuf, rbuf,
-                                                                    count, dtype,
-                                                                    op, comm
-                                                                    /*segment_size*/));
+           return allreduce__ompi_ring_segmented(sbuf, rbuf, count, dtype, op, comm /*segment_size*/);
         }
     }
 
-    return (Coll_allreduce_redbcast::allreduce(sbuf, rbuf, count,
-                                                            dtype, op, comm));
+    return allreduce__redbcast(sbuf, rbuf, count, dtype, op, comm);
 }
 
 
 
-int Coll_alltoall_ompi::alltoall(const void *sbuf, int scount,
-                                             MPI_Datatype sdtype,
-                                             void* rbuf, int rcount,
-                                             MPI_Datatype rdtype,
-                                             MPI_Comm comm)
+int alltoall__ompi(const void *sbuf, int scount,
+                   MPI_Datatype sdtype,
+                   void* rbuf, int rcount,
+                   MPI_Datatype rdtype,
+                   MPI_Comm comm)
 {
     int communicator_size;
     size_t dsize, block_dsize;
@@ -73,40 +66,36 @@ int Coll_alltoall_ompi::alltoall(const void *sbuf, int scount,
     block_dsize = dsize * scount;
 
     if ((block_dsize < 200) && (communicator_size > 12)) {
-        return Coll_alltoall_bruck::alltoall(sbuf, scount, sdtype,
-                                                    rbuf, rcount, rdtype,
-                                                    comm);
+        return alltoall__bruck(sbuf, scount, sdtype,
+                               rbuf, rcount, rdtype, comm);
 
     } else if (block_dsize < 3000) {
-        return Coll_alltoall_basic_linear::alltoall(sbuf, scount, sdtype,
-                                                           rbuf, rcount, rdtype,
-                                                           comm);
+        return alltoall__basic_linear(sbuf, scount, sdtype,
+                                      rbuf, rcount, rdtype, comm);
     }
 
-    return Coll_alltoall_ring::alltoall (sbuf, scount, sdtype,
-                                                    rbuf, rcount, rdtype,
-                                                    comm);
+    return alltoall__ring(sbuf, scount, sdtype,
+                          rbuf, rcount, rdtype, comm);
 }
 
-int Coll_alltoallv_ompi::alltoallv(const void *sbuf, const int *scounts, const int *sdisps,
-                                              MPI_Datatype sdtype,
-                                              void *rbuf, const int *rcounts, const int *rdisps,
-                                              MPI_Datatype rdtype,
-                                              MPI_Comm  comm
-                                              )
+int alltoallv__ompi(const void *sbuf, const int *scounts, const int *sdisps,
+                    MPI_Datatype sdtype,
+                    void *rbuf, const int *rcounts, const int *rdisps,
+                    MPI_Datatype rdtype,
+                    MPI_Comm  comm
+                    )
 {
     /* For starters, just keep the original algorithm. */
-    return Coll_alltoallv_ring::alltoallv(sbuf, scounts, sdisps, sdtype,
-                                                        rbuf, rcounts, rdisps,rdtype,
-                                                        comm);
+    return alltoallv__ring(sbuf, scounts, sdisps, sdtype,
+                           rbuf, rcounts, rdisps,rdtype,
+                           comm);
 }
 
-
-int Coll_barrier_ompi::barrier(MPI_Comm  comm)
+int barrier__ompi(MPI_Comm  comm)
 {    int communicator_size = comm->size();
 
     if( 2 == communicator_size )
-        return Coll_barrier_ompi_two_procs::barrier(comm);
+        return barrier__ompi_two_procs(comm);
 /*     * Basic optimisation. If we have a power of 2 number of nodes*/
 /*     * the use the recursive doubling algorithm, otherwise*/
 /*     * bruck is the one we want.*/
@@ -115,18 +104,15 @@ int Coll_barrier_ompi::barrier(MPI_Comm  comm)
         for( ; communicator_size > 0; communicator_size >>= 1 ) {
             if( communicator_size & 0x1 ) {
                 if( has_one )
-                    return Coll_barrier_ompi_bruck::barrier(comm);
+                    return barrier__ompi_bruck(comm);
                 has_one = 1;
             }
         }
     }
-    return Coll_barrier_ompi_recursivedoubling::barrier(comm);
+    return barrier__ompi_recursivedoubling(comm);
 }
 
-int Coll_bcast_ompi::bcast(void *buff, int count,
-                                          MPI_Datatype datatype, int root,
-                                          MPI_Comm  comm
-                                          )
+int bcast__ompi(void *buff, int count, MPI_Datatype datatype, int root, MPI_Comm  comm)
 {
     /* Decision function based on MX results for
        messages up to 36MB and communicator sizes up to 64 nodes */
@@ -153,82 +139,73 @@ int Coll_bcast_ompi::bcast(void *buff, int count,
        single-element broadcasts */
     if ((message_size < small_message_size) || (count <= 1)) {
         /* Binomial without segmentation */
-        return  Coll_bcast_binomial_tree::bcast (buff, count, datatype,
-                                                      root, comm);
+        return bcast__binomial_tree(buff, count, datatype, root, comm);
 
     } else if (message_size < intermediate_message_size) {
         // SplittedBinary with 1KB segments
-        return Coll_bcast_ompi_split_bintree::bcast(buff, count, datatype,
-                                                         root, comm);
+        return bcast__ompi_split_bintree(buff, count, datatype, root, comm);
 
     }
      //Handle large message sizes
     else if (communicator_size < (a_p128 * message_size + b_p128)) {
         //Pipeline with 128KB segments
         //segsize = 1024  << 7;
-        return Coll_bcast_ompi_pipeline::bcast (buff, count, datatype,
-                                                     root, comm);
+        return bcast__ompi_pipeline(buff, count, datatype, root, comm);
 
 
     } else if (communicator_size < 13) {
         // Split Binary with 8KB segments
-        return Coll_bcast_ompi_split_bintree::bcast(buff, count, datatype,
-                                                         root, comm);
+        return bcast__ompi_split_bintree(buff, count, datatype, root, comm);
 
     } else if (communicator_size < (a_p64 * message_size + b_p64)) {
         // Pipeline with 64KB segments
         //segsize = 1024 << 6;
-        return Coll_bcast_ompi_pipeline::bcast (buff, count, datatype,
-                                                     root, comm);
+        return bcast__ompi_pipeline(buff, count, datatype, root, comm);
 
 
     } else if (communicator_size < (a_p16 * message_size + b_p16)) {
         //Pipeline with 16KB segments
         //segsize = 1024 << 4;
-        return Coll_bcast_ompi_pipeline::bcast (buff, count, datatype,
-                                                     root, comm);
+        return bcast__ompi_pipeline(buff, count, datatype, root, comm);
 
 
     }
     /* Pipeline with 8KB segments */
     //segsize = 1024 << 3;
-    return Coll_bcast_flattree_pipeline::bcast (buff, count, datatype,
-                                                 root, comm
-                                                 /*segsize*/);
+    return bcast__flattree_pipeline(buff, count, datatype, root, comm /*segsize*/);
 #if 0
     /* this is based on gige measurements */
 
     if (communicator_size  < 4) {
-        return Coll_bcast_intra_basic_linear::bcast (buff, count, datatype, root, comm, module);
+        return bcast__intra_basic_linear(buff, count, datatype, root, comm, module);
     }
     if (communicator_size == 4) {
         if (message_size < 524288) segsize = 0;
         else segsize = 16384;
-        return Coll_bcast_intra_bintree::bcast (buff, count, datatype, root, comm, module, segsize);
+        return bcast__intra_bintree(buff, count, datatype, root, comm, module, segsize);
     }
     if (communicator_size <= 8 && message_size < 4096) {
-        return Coll_bcast_intra_basic_linear::bcast (buff, count, datatype, root, comm, module);
+        return bcast__intra_basic_linear(buff, count, datatype, root, comm, module);
     }
     if (communicator_size > 8 && message_size >= 32768 && message_size < 524288) {
         segsize = 16384;
-        return  Coll_bcast_intra_bintree::bcast (buff, count, datatype, root, comm, module, segsize);
+        return  bcast__intra_bintree(buff, count, datatype, root, comm, module, segsize);
     }
     if (message_size >= 524288) {
         segsize = 16384;
-        return Coll_bcast_intra_pipeline::bcast (buff, count, datatype, root, comm, module, segsize);
+        return bcast__intra_pipeline(buff, count, datatype, root, comm, module, segsize);
     }
     segsize = 0;
     /* once tested can swap this back in */
-    /* return Coll_bcast_intra_bmtree::bcast (buff, count, datatype, root, comm, segsize); */
-    return Coll_bcast_intra_bintree::bcast (buff, count, datatype, root, comm, module, segsize);
+    /* return bcast__intra_bmtree(buff, count, datatype, root, comm, segsize); */
+    return bcast__intra_bintree(buff, count, datatype, root, comm, module, segsize);
 #endif  /* 0 */
 }
 
-int Coll_reduce_ompi::reduce(const void *sendbuf, void *recvbuf,
-                                            int count, MPI_Datatype  datatype,
-                                            MPI_Op   op, int root,
-                                            MPI_Comm   comm
-                                            )
+int reduce__ompi(const void *sendbuf, void *recvbuf,
+                 int count, MPI_Datatype  datatype,
+                 MPI_Op   op, int root,
+                 MPI_Comm   comm)
 {
     int communicator_size=0;
     //int segsize = 0;
@@ -257,35 +234,34 @@ int Coll_reduce_ompi::reduce(const void *sendbuf, void *recvbuf,
      */
     if ((op != MPI_OP_NULL) && not op->is_commutative()) {
       if ((communicator_size < 12) && (message_size < 2048)) {
-        return Coll_reduce_ompi_basic_linear::reduce(sendbuf, recvbuf, count, datatype, op, root, comm /*, module*/);
+        return reduce__ompi_basic_linear(sendbuf, recvbuf, count, datatype, op, root, comm /*, module*/);
       }
-      return Coll_reduce_ompi_in_order_binary::reduce(sendbuf, recvbuf, count, datatype, op, root, comm /*, module,
+      return reduce__ompi_in_order_binary(sendbuf, recvbuf, count, datatype, op, root, comm /*, module,
                                                              0, max_requests*/);
     }
 
     if ((communicator_size < 8) && (message_size < 512)){
         /* Linear_0K */
-        return Coll_reduce_ompi_basic_linear::reduce (sendbuf, recvbuf, count, datatype, op, root, comm);
+        return reduce__ompi_basic_linear(sendbuf, recvbuf, count, datatype, op, root, comm);
     } else if (((communicator_size < 8) && (message_size < 20480)) ||
                (message_size < 2048) || (count <= 1)) {
         /* Binomial_0K */
         //segsize = 0;
-        return Coll_reduce_ompi_binomial::reduce(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
-                                                     segsize, max_requests*/);
+        return reduce__ompi_binomial(sendbuf, recvbuf, count, datatype, op, root, comm/*, module, segsize, max_requests*/);
     } else if (communicator_size > (a1 * message_size + b1)) {
         // Binomial_1K
         //segsize = 1024;
-        return Coll_reduce_ompi_binomial::reduce(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
+        return reduce__ompi_binomial(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
                                                      segsize, max_requests*/);
     } else if (communicator_size > (a2 * message_size + b2)) {
         // Pipeline_1K
         //segsize = 1024;
-        return Coll_reduce_ompi_pipeline::reduce (sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
+        return reduce__ompi_pipeline(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
                                                       segsize, max_requests*/);
     } else if (communicator_size > (a3 * message_size + b3)) {
         // Binary_32K
         //segsize = 32*1024;
-        return Coll_reduce_ompi_binary::reduce( sendbuf, recvbuf, count, datatype, op, root,
+        return reduce__ompi_binary( sendbuf, recvbuf, count, datatype, op, root,
                                                     comm/*, module, segsize, max_requests*/);
     }
 //    if (communicator_size > (a4 * message_size + b4)) {
@@ -295,7 +271,7 @@ int Coll_reduce_ompi::reduce(const void *sendbuf, void *recvbuf,
         // Pipeline_64K
 //        segsize = 64*1024;
 //    }
-    return Coll_reduce_ompi_pipeline::reduce (sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
+    return reduce__ompi_pipeline(sendbuf, recvbuf, count, datatype, op, root, comm/*, module,
                                                   segsize, max_requests*/);
 
 #if 0
@@ -305,8 +281,8 @@ int Coll_reduce_ompi::reduce(const void *sendbuf, void *recvbuf,
         fanout = communicator_size - 1;
         /* when linear implemented or taken from basic put here, right now using chain as a linear system */
         /* it is implemented and I shouldn't be calling a chain with a fanout bigger than MAXTREEFANOUT from topo.h! */
-        return Coll_reduce_intra_basic_linear::reduce (sendbuf, recvbuf, count, datatype, op, root, comm, module);
-        /*        return Coll_reduce_intra_chain::reduce (sendbuf, recvbuf, count, datatype, op, root, comm, segsize, fanout); */
+        return reduce__intra_basic_linear(sendbuf, recvbuf, count, datatype, op, root, comm, module);
+        /*        return reduce__intra_chain(sendbuf, recvbuf, count, datatype, op, root, comm, segsize, fanout); */
     }
     if (message_size < 524288) {
         if (message_size <= 65536 ) {
@@ -318,21 +294,21 @@ int Coll_reduce_ompi::reduce(const void *sendbuf, void *recvbuf,
         }
         /* later swap this for a binary tree */
         /*         fanout = 2; */
-        return Coll_reduce_intra_chain::reduce (sendbuf, recvbuf, count, datatype, op, root, comm, module,
-                                                   segsize, fanout, max_requests);
+        return reduce__intra_chain(sendbuf, recvbuf, count, datatype, op, root, comm, module,
+                                   segsize, fanout, max_requests);
     }
     segsize = 1024;
-    return Coll_reduce_intra_pipeline::reduce (sendbuf, recvbuf, count, datatype, op, root, comm, module,
-                                                  segsize, max_requests);
+    return reduce__intra_pipeline(sendbuf, recvbuf, count, datatype, op, root, comm, module,
+                                  segsize, max_requests);
 #endif  /* 0 */
 }
 
-int Coll_reduce_scatter_ompi::reduce_scatter(const void *sbuf, void *rbuf,
-                                                    const int *rcounts,
-                                                    MPI_Datatype dtype,
-                                                    MPI_Op  op,
-                                                    MPI_Comm  comm
-                                                    )
+int reduce_scatter__ompi(const void *sbuf, void *rbuf,
+                         const int *rcounts,
+                         MPI_Datatype dtype,
+                         MPI_Op  op,
+                         MPI_Comm  comm
+                         )
 {
     int comm_size, i, pow2;
     size_t total_message_size, dsize;
@@ -342,7 +318,7 @@ int Coll_reduce_scatter_ompi::reduce_scatter(const void *sbuf, void *rbuf,
     const size_t large_message_size = 256 * 1024;
     int zerocounts = 0;
 
-    XBT_DEBUG("Coll_reduce_scatter_ompi::reduce_scatter");
+    XBT_DEBUG("reduce_scatter__ompi");
 
     comm_size = comm->size();
     // We need data size for decision function
@@ -356,7 +332,7 @@ int Coll_reduce_scatter_ompi::reduce_scatter(const void *sbuf, void *rbuf,
     }
 
     if (((op != MPI_OP_NULL) && not op->is_commutative()) || (zerocounts)) {
-      Coll_reduce_scatter_default::reduce_scatter(sbuf, rbuf, rcounts, dtype, op, comm);
+      reduce_scatter__default(sbuf, rbuf, rcounts, dtype, op, comm);
       return MPI_SUCCESS;
     }
 
@@ -368,25 +344,17 @@ int Coll_reduce_scatter_ompi::reduce_scatter(const void *sbuf, void *rbuf,
     if ((total_message_size <= small_message_size) ||
         ((total_message_size <= large_message_size) && (pow2 == comm_size)) ||
         (comm_size >= a * total_message_size + b)) {
-        return
-            Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter(sbuf, rbuf, rcounts,
-                                                                        dtype, op,
-                                                                        comm);
+        return reduce_scatter__ompi_basic_recursivehalving(sbuf, rbuf, rcounts, dtype, op, comm);
     }
-    return Coll_reduce_scatter_ompi_ring::reduce_scatter(sbuf, rbuf, rcounts,
-                                                     dtype, op,
-                                                     comm);
-
-
-
+    return reduce_scatter__ompi_ring(sbuf, rbuf, rcounts, dtype, op, comm);
 }
 
-int Coll_allgather_ompi::allgather(const void *sbuf, int scount,
-                                              MPI_Datatype sdtype,
-                                              void* rbuf, int rcount,
-                                              MPI_Datatype rdtype,
-                                              MPI_Comm  comm
-                                              )
+int allgather__ompi(const void *sbuf, int scount,
+                    MPI_Datatype sdtype,
+                    void* rbuf, int rcount,
+                    MPI_Datatype rdtype,
+                    MPI_Comm  comm
+                    )
 {
     int communicator_size, pow2_size;
     size_t dsize, total_dsize;
@@ -395,9 +363,9 @@ int Coll_allgather_ompi::allgather(const void *sbuf, int scount,
 
     /* Special case for 2 processes */
     if (communicator_size == 2) {
-        return Coll_allgather_pair::allgather (sbuf, scount, sdtype,
-                                                          rbuf, rcount, rdtype,
-                                                          comm/*, module*/);
+        return allgather__pair(sbuf, scount, sdtype,
+                               rbuf, rcount, rdtype,
+                               comm/*, module*/);
     }
 
     /* Determine complete data size */
@@ -416,23 +384,23 @@ int Coll_allgather_ompi::allgather(const void *sbuf, int scount,
     */
     if (total_dsize < 50000) {
         if (pow2_size == communicator_size) {
-            return Coll_allgather_rdb::allgather(sbuf, scount, sdtype,
-                                                                     rbuf, rcount, rdtype,
-                                                                     comm);
+            return allgather__rdb(sbuf, scount, sdtype,
+                                  rbuf, rcount, rdtype,
+                                  comm);
         } else {
-            return Coll_allgather_bruck::allgather(sbuf, scount, sdtype,
-                                                         rbuf, rcount, rdtype,
-                                                         comm);
+            return allgather__bruck(sbuf, scount, sdtype,
+                                    rbuf, rcount, rdtype,
+                                    comm);
         }
     } else {
         if (communicator_size % 2) {
-            return Coll_allgather_ring::allgather(sbuf, scount, sdtype,
-                                                        rbuf, rcount, rdtype,
-                                                        comm);
+            return allgather__ring(sbuf, scount, sdtype,
+                                   rbuf, rcount, rdtype,
+                                   comm);
         } else {
-            return  Coll_allgather_ompi_neighborexchange::allgather(sbuf, scount, sdtype,
-                                                                     rbuf, rcount, rdtype,
-                                                                     comm);
+            return allgather__ompi_neighborexchange(sbuf, scount, sdtype,
+                                                    rbuf, rcount, rdtype,
+                                                    comm);
         }
     }
 
@@ -447,27 +415,27 @@ int Coll_allgather_ompi::allgather(const void *sbuf, int scount,
        - for everything else use ring.
     */
     if ((pow2_size == communicator_size) && (total_dsize < 524288)) {
-        return Coll_allgather_rdb::allgather(sbuf, scount, sdtype,
-                                                                 rbuf, rcount, rdtype,
-                                                                 comm);
+        return allgather__rdb(sbuf, scount, sdtype,
+                              rbuf, rcount, rdtype,
+                              comm);
     } else if (total_dsize <= 81920) {
-        return Coll_allgather_bruck::allgather(sbuf, scount, sdtype,
-                                                     rbuf, rcount, rdtype,
-                                                     comm);
+        return allgather__bruck(sbuf, scount, sdtype,
+                                rbuf, rcount, rdtype,
+                                comm);
     }
-    return Coll_allgather_ring::allgather(sbuf, scount, sdtype,
-                                                rbuf, rcount, rdtype,
-                                                comm);
+    return allgather__ring(sbuf, scount, sdtype,
+                           rbuf, rcount, rdtype,
+                           comm);
 #endif  /* defined(USE_MPICH2_DECISION) */
 }
 
-int Coll_allgatherv_ompi::allgatherv(const void *sbuf, int scount,
-                                               MPI_Datatype sdtype,
-                                               void* rbuf, const int *rcounts,
-                                               const int *rdispls,
-                                               MPI_Datatype rdtype,
-                                               MPI_Comm  comm
-                                               )
+int allgatherv__ompi(const void *sbuf, int scount,
+                     MPI_Datatype sdtype,
+                     void* rbuf, const int *rcounts,
+                     const int *rdispls,
+                     MPI_Datatype rdtype,
+                     MPI_Comm  comm
+                     )
 {
     int i;
     int communicator_size;
@@ -477,9 +445,9 @@ int Coll_allgatherv_ompi::allgatherv(const void *sbuf, int scount,
 
     /* Special case for 2 processes */
     if (communicator_size == 2) {
-        return Coll_allgatherv_pair::allgatherv(sbuf, scount, sdtype,
-                                                           rbuf, rcounts, rdispls, rdtype,
-                                                           comm);
+        return allgatherv__pair(sbuf, scount, sdtype,
+                                rbuf, rcounts, rdispls, rdtype,
+                                comm);
     }
 
     /* Determine complete data size */
@@ -491,30 +459,30 @@ int Coll_allgatherv_ompi::allgatherv(const void *sbuf, int scount,
 
     /* Decision based on allgather decision.   */
     if (total_dsize < 50000) {
-        return Coll_allgatherv_ompi_bruck::allgatherv(sbuf, scount, sdtype,
-                                                      rbuf, rcounts, rdispls, rdtype,
-                                                      comm);
+        return allgatherv__ompi_bruck(sbuf, scount, sdtype,
+                                      rbuf, rcounts, rdispls, rdtype,
+                                      comm);
 
     } else {
         if (communicator_size % 2) {
-            return Coll_allgatherv_ring::allgatherv(sbuf, scount, sdtype,
-                                                         rbuf, rcounts, rdispls, rdtype,
-                                                         comm);
+            return allgatherv__ring(sbuf, scount, sdtype,
+                                    rbuf, rcounts, rdispls, rdtype,
+                                    comm);
         } else {
-            return  Coll_allgatherv_ompi_neighborexchange::allgatherv(sbuf, scount, sdtype,
-                                                                      rbuf, rcounts, rdispls, rdtype,
-                                                                      comm);
+            return  allgatherv__ompi_neighborexchange(sbuf, scount, sdtype,
+                                                      rbuf, rcounts, rdispls, rdtype,
+                                                      comm);
         }
     }
 }
 
-int Coll_gather_ompi::gather(const void *sbuf, int scount,
-                                           MPI_Datatype sdtype,
-                                           void* rbuf, int rcount,
-                                           MPI_Datatype rdtype,
-                                           int root,
-                                           MPI_Comm  comm
-                                           )
+int gather__ompi(const void *sbuf, int scount,
+                 MPI_Datatype sdtype,
+                 void* rbuf, int rcount,
+                 MPI_Datatype rdtype,
+                 int root,
+                 MPI_Comm  comm
+                 )
 {
     //const int large_segment_size = 32768;
     //const int small_segment_size = 1024;
@@ -549,31 +517,31 @@ int Coll_gather_ompi::gather(const void *sbuf, int scount,
 /*                                                         root, comm);*/
 
 /*    } else*/ if (block_size > intermediate_block_size) {
-        return Coll_gather_ompi_linear_sync::gather (sbuf, scount, sdtype,
-                                                         rbuf, rcount, rdtype,
-                                                         root, comm);
+        return gather__ompi_linear_sync(sbuf, scount, sdtype,
+                                        rbuf, rcount, rdtype,
+                                        root, comm);
 
     } else if ((communicator_size > large_communicator_size) ||
                ((communicator_size > small_communicator_size) &&
                 (block_size < small_block_size))) {
-        return Coll_gather_ompi_binomial::gather (sbuf, scount, sdtype,
-                                                      rbuf, rcount, rdtype,
-                                                      root, comm);
+        return gather__ompi_binomial(sbuf, scount, sdtype,
+                                     rbuf, rcount, rdtype,
+                                     root, comm);
 
     }
     // Otherwise, use basic linear
-    return Coll_gather_ompi_basic_linear::gather (sbuf, scount, sdtype,
-                                                      rbuf, rcount, rdtype,
-                                                      root, comm);
+    return gather__ompi_basic_linear(sbuf, scount, sdtype,
+                                     rbuf, rcount, rdtype,
+                                     root, comm);
 }
 
 
-int Coll_scatter_ompi::scatter(const void *sbuf, int scount,
-                                            MPI_Datatype sdtype,
-                                            void* rbuf, int rcount,
-                                            MPI_Datatype rdtype,
-                                            int root, MPI_Comm  comm
-                                            )
+int scatter__ompi(const void *sbuf, int scount,
+                  MPI_Datatype sdtype,
+                  void* rbuf, int rcount,
+                  MPI_Datatype rdtype,
+                  int root, MPI_Comm  comm
+                  )
 {
     const size_t small_block_size = 300;
     const int small_comm_size = 10;
@@ -602,11 +570,11 @@ int Coll_scatter_ompi::scatter(const void *sbuf, int scount,
         scount = rcount;
         sdtype = rdtype;
       }
-      return Coll_scatter_ompi_binomial::scatter(sbuf, scount, sdtype, rbuf, rcount, rdtype, root, comm);
+      return scatter__ompi_binomial(sbuf, scount, sdtype, rbuf, rcount, rdtype, root, comm);
     }
-    return Coll_scatter_ompi_basic_linear::scatter (sbuf, scount, sdtype,
-                                                       rbuf, rcount, rdtype,
-                                                       root, comm);
+    return scatter__ompi_basic_linear(sbuf, scount, sdtype,
+                                      rbuf, rcount, rdtype,
+                                      root, comm);
 }
 
 }

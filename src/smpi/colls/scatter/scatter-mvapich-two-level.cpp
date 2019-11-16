@@ -36,8 +36,8 @@
  */
 #include "../colls_private.hpp"
 
-#define MPIR_Scatter_MV2_Binomial Coll_scatter_ompi_binomial::scatter
-#define MPIR_Scatter_MV2_Direct Coll_scatter_ompi_basic_linear::scatter
+#define MPIR_Scatter_MV2_Binomial scatter__ompi_binomial
+#define MPIR_Scatter_MV2_Direct scatter__ompi_basic_linear
 
 extern int (*MV2_Scatter_intra_function) (const void *sendbuf, int sendcount, MPI_Datatype sendtype,
     void *recvbuf, int recvcount, MPI_Datatype recvtype,
@@ -46,13 +46,13 @@ extern int (*MV2_Scatter_intra_function) (const void *sendbuf, int sendcount, MP
 namespace simgrid{
 namespace smpi{
 
-int Coll_scatter_mvapich2_two_level_direct::scatter(const void *sendbuf,
-                                      int sendcnt,
-                                      MPI_Datatype sendtype,
-                                      void *recvbuf,
-                                      int recvcnt,
-                                      MPI_Datatype recvtype,
-                                      int root, MPI_Comm  comm)
+int scatter__mvapich2_two_level_direct(const void *sendbuf,
+                                       int sendcnt,
+                                       MPI_Datatype sendtype,
+                                       void *recvbuf,
+                                       int recvcnt,
+                                       MPI_Datatype recvtype,
+                                       int root, MPI_Comm  comm)
 {
     int comm_size, rank;
     int local_rank, local_size;
@@ -66,7 +66,7 @@ int Coll_scatter_mvapich2_two_level_direct::scatter(const void *sendbuf,
     MPI_Comm shmem_comm, leader_comm;
     //if not set (use of the algo directly, without mvapich2 selector)
     if(MV2_Scatter_intra_function==NULL)
-      MV2_Scatter_intra_function=Coll_scatter_mpich::scatter;
+      MV2_Scatter_intra_function = scatter__mpich;
 
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();
@@ -223,13 +223,13 @@ int Coll_scatter_mvapich2_two_level_direct::scatter(const void *sendbuf,
 }
 
 
-int Coll_scatter_mvapich2_two_level_binomial::scatter(const void *sendbuf,
-                                        int sendcnt,
-                                        MPI_Datatype sendtype,
-                                        void *recvbuf,
-                                        int recvcnt,
-                                        MPI_Datatype recvtype,
-                                        int root, MPI_Comm comm)
+int scatter__mvapich2_two_level_binomial(const void *sendbuf,
+                                         int sendcnt,
+                                         MPI_Datatype sendtype,
+                                         void *recvbuf,
+                                         int recvcnt,
+                                         MPI_Datatype recvtype,
+                                         int root, MPI_Comm comm)
 {
     int comm_size, rank;
     int local_rank, local_size;
@@ -245,7 +245,7 @@ int Coll_scatter_mvapich2_two_level_binomial::scatter(const void *sendbuf,
 
     //if not set (use of the algo directly, without mvapich2 selector)
     if(MV2_Scatter_intra_function==NULL)
-      MV2_Scatter_intra_function=Coll_scatter_mpich::scatter;
+      MV2_Scatter_intra_function = scatter__mpich;
 
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();

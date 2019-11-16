@@ -37,8 +37,8 @@
 
 #include "../colls_private.hpp"
 
-#define MPIR_Allreduce_pt2pt_rd_MV2 Coll_allreduce_rdb::allreduce
-#define MPIR_Allreduce_pt2pt_rs_MV2 Coll_allreduce_mvapich2_rs::allreduce
+#define MPIR_Allreduce_pt2pt_rd_MV2 allreduce__rdb
+#define MPIR_Allreduce_pt2pt_rs_MV2 allreduce__mvapich2_rs
 
 extern int (*MV2_Allreducection)(const void *sendbuf,
     void *recvbuf,
@@ -78,7 +78,7 @@ static  int MPIR_Allreduce_reduce_shmem_MV2(const void *sendbuf,
 
 
 /* general two level allreduce helper function */
-int Coll_allreduce_mvapich2_two_level::allreduce(const void *sendbuf,
+int allreduce__mvapich2_two_level(const void *sendbuf,
                              void *recvbuf,
                              int count,
                              MPI_Datatype datatype,
@@ -92,9 +92,9 @@ int Coll_allreduce_mvapich2_two_level::allreduce(const void *sendbuf,
 
     //if not set (use of the algo directly, without mvapich2 selector)
     if(MV2_Allreduce_intra_function==NULL)
-      MV2_Allreduce_intra_function = Coll_allreduce_mpich::allreduce;
+      MV2_Allreduce_intra_function = allreduce__mpich;
     if(MV2_Allreducection==NULL)
-      MV2_Allreducection = Coll_allreduce_rdb::allreduce;
+      MV2_Allreducection = allreduce__rdb;
 
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();

@@ -16,12 +16,11 @@
  */
 namespace simgrid{
 namespace smpi{
-int
-Coll_alltoallv_ompi_basic_linear::alltoallv(const void *sbuf, const int *scounts, const int *sdisps,
-                                            MPI_Datatype sdtype,
-                                            void *rbuf, const int *rcounts, const int *rdisps,
-                                            MPI_Datatype rdtype,
-                                            MPI_Comm comm)
+int alltoallv__ompi_basic_linear(const void *sbuf, const int *scounts, const int *sdisps,
+                                 MPI_Datatype sdtype,
+                                 void *rbuf, const int *rcounts, const int *rdisps,
+                                 MPI_Datatype rdtype,
+                                 MPI_Comm comm)
 {
     int i, size, rank;
     char *psnd, *prcv;

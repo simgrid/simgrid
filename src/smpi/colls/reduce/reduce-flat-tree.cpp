@@ -6,12 +6,11 @@
 
 #include "../colls_private.hpp"
 //#include <star-reduction.c>
-namespace simgrid{
-namespace smpi{
-int
-Coll_reduce_flat_tree::reduce(const void *sbuf, void *rbuf, int count,
-                                 MPI_Datatype dtype, MPI_Op op,
-                                 int root, MPI_Comm comm)
+namespace simgrid {
+namespace smpi {
+int reduce__flat_tree(const void *sbuf, void *rbuf, int count,
+                     MPI_Datatype dtype, MPI_Op op,
+                     int root, MPI_Comm comm)
 {
   int i, tag = COLL_TAG_REDUCE;
   int size;

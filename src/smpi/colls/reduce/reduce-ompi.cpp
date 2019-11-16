@@ -328,11 +328,11 @@ int smpi_coll_tuned_ompi_reduce_generic(const void* sendbuf, void* recvbuf, int 
 */
 
 
-int Coll_reduce_ompi_chain::reduce(const void *sendbuf, void *recvbuf, int count,
-                                        MPI_Datatype datatype,
-                                        MPI_Op  op, int root,
-                                        MPI_Comm  comm
-                                        )
+int reduce__ompi_chain(const void *sendbuf, void *recvbuf, int count,
+                       MPI_Datatype datatype,
+                       MPI_Op  op, int root,
+                       MPI_Comm  comm
+                       )
 {
     uint32_t segsize=64*1024;
     int segcount = count;
@@ -356,10 +356,10 @@ int Coll_reduce_ompi_chain::reduce(const void *sendbuf, void *recvbuf, int count
 }
 
 
-int Coll_reduce_ompi_pipeline::reduce(const void *sendbuf, void *recvbuf,
-                                           int count, MPI_Datatype datatype,
-                                           MPI_Op  op, int root,
-                                           MPI_Comm  comm  )
+int reduce__ompi_pipeline(const void *sendbuf, void *recvbuf,
+                          int count, MPI_Datatype datatype,
+                          MPI_Op  op, int root,
+                          MPI_Comm  comm  )
 {
 
     uint32_t segsize;
@@ -400,10 +400,10 @@ int Coll_reduce_ompi_pipeline::reduce(const void *sendbuf, void *recvbuf,
                                            segcount, 0);
 }
 
-int Coll_reduce_ompi_binary::reduce(const void *sendbuf, void *recvbuf,
-                                         int count, MPI_Datatype datatype,
-                                         MPI_Op  op, int root,
-                                         MPI_Comm  comm)
+int reduce__ompi_binary(const void *sendbuf, void *recvbuf,
+                        int count, MPI_Datatype datatype,
+                        MPI_Op  op, int root,
+                        MPI_Comm  comm)
 {
     uint32_t segsize;
     int segcount = count;
@@ -430,10 +430,10 @@ int Coll_reduce_ompi_binary::reduce(const void *sendbuf, void *recvbuf,
                                            segcount, 0);
 }
 
-int Coll_reduce_ompi_binomial::reduce(const void *sendbuf, void *recvbuf,
-                                           int count, MPI_Datatype datatype,
-                                           MPI_Op  op, int root,
-                                           MPI_Comm  comm)
+int reduce__ompi_binomial(const void *sendbuf, void *recvbuf,
+                          int count, MPI_Datatype datatype,
+                          MPI_Op  op, int root,
+                          MPI_Comm  comm)
 {
 
     uint32_t segsize=0;
@@ -477,11 +477,11 @@ int Coll_reduce_ompi_binomial::reduce(const void *sendbuf, void *recvbuf,
  * Accepts:       same as MPI_Reduce()
  * Returns:       MPI_SUCCESS or error code
  */
-int Coll_reduce_ompi_in_order_binary::reduce(const void *sendbuf, void *recvbuf,
-                                                  int count,
-                                                  MPI_Datatype datatype,
-                                                  MPI_Op  op, int root,
-                                                  MPI_Comm  comm)
+int reduce__ompi_in_order_binary(const void *sendbuf, void *recvbuf,
+                                 int count,
+                                 MPI_Datatype datatype,
+                                 MPI_Op  op, int root,
+                                 MPI_Comm  comm)
 {
     uint32_t segsize=0;
     int ret;
@@ -586,12 +586,11 @@ int Coll_reduce_ompi_in_order_binary::reduce(const void *sendbuf, void *recvbuf,
  *  Returns:    - MPI_SUCCESS or error code
  */
 
-int
-Coll_reduce_ompi_basic_linear::reduce(const void *sbuf, void *rbuf, int count,
-                                          MPI_Datatype dtype,
-                                          MPI_Op op,
-                                          int root,
-                                          MPI_Comm comm)
+int reduce__ompi_basic_linear(const void *sbuf, void *rbuf, int count,
+                              MPI_Datatype dtype,
+                              MPI_Op op,
+                              int root,
+                              MPI_Comm comm)
 {
     int i, rank, size;
     ptrdiff_t true_extent, lb, extent;

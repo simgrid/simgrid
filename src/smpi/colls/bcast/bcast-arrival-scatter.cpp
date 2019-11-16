@@ -16,9 +16,9 @@
 namespace simgrid{
 namespace smpi{
 /* Non-topology-specific pipelined linear-bcast function */
-int Coll_bcast_arrival_scatter::bcast(void *buf, int count,
-                                          MPI_Datatype datatype, int root,
-                                          MPI_Comm comm)
+int bcast__arrival_scatter(void *buf, int count,
+                           MPI_Datatype datatype, int root,
+                           MPI_Comm comm)
 {
   int tag = -COLL_TAG_BCAST;//in order to use ANY_TAG, make this one positive
   int header_tag = -10;

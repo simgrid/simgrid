@@ -10,15 +10,15 @@
 
 #include "smpi_mvapich2_selector_stampede.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid {
+namespace smpi {
 
 
-int Coll_alltoall_mvapich2::alltoall( const void *sendbuf, int sendcount,
-    MPI_Datatype sendtype,
-    void* recvbuf, int recvcount,
-    MPI_Datatype recvtype,
-    MPI_Comm comm)
+int alltoall__mvapich2( const void *sendbuf, int sendcount,
+                        MPI_Datatype sendtype,
+                        void* recvbuf, int recvcount,
+                        MPI_Datatype recvtype,
+                        MPI_Comm comm)
 {
 
   if(mv2_alltoall_table_ppn_conf==NULL)
@@ -78,7 +78,7 @@ int Coll_alltoall_mvapich2::alltoall( const void *sendbuf, int sendcount,
   return (mpi_errno);
 }
 
-int Coll_allgather_mvapich2::allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+int allgather__mvapich2(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
     void *recvbuf, int recvcount, MPI_Datatype recvtype,
     MPI_Comm comm)
 {
@@ -157,7 +157,7 @@ int Coll_allgather_mvapich2::allgather(const void *sendbuf, int sendcount, MPI_D
                             recvbuf, recvcount, recvtype,
                             comm);
       }else{
-      mpi_errno = Coll_allgather_mpich::allgather(sendbuf, sendcount, sendtype,
+      mpi_errno = allgather__mpich(sendbuf, sendcount, sendtype,
                             recvbuf, recvcount, recvtype,
                             comm);
       }
@@ -179,7 +179,7 @@ int Coll_allgather_mvapich2::allgather(const void *sendbuf, int sendcount, MPI_D
   return mpi_errno;
 }
 
-int Coll_gather_mvapich2::gather(const void *sendbuf,
+int gather__mvapich2(const void *sendbuf,
     int sendcnt,
     MPI_Datatype sendtype,
     void *recvbuf,
@@ -245,7 +245,7 @@ int Coll_gather_mvapich2::gather(const void *sendbuf,
 
     } else {
   // Indeed, direct (non SMP-aware)gather is MPICH one
-  mpi_errno = Coll_gather_mpich::gather(sendbuf, sendcnt, sendtype,
+  mpi_errno = gather__mpich(sendbuf, sendcnt, sendtype,
       recvbuf, recvcnt, recvtype,
       root, comm);
   }
@@ -253,7 +253,7 @@ int Coll_gather_mvapich2::gather(const void *sendbuf,
   return mpi_errno;
 }
 
-int Coll_allgatherv_mvapich2::allgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+int allgatherv__mvapich2(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
     void *recvbuf, const int *recvcounts, const int *displs,
     MPI_Datatype recvtype, MPI_Comm  comm )
 {
@@ -315,7 +315,7 @@ int Coll_allgatherv_mvapich2::allgatherv(const void *sendbuf, int sendcount, MPI
 
 
 
-int Coll_allreduce_mvapich2::allreduce(const void *sendbuf,
+int allreduce__mvapich2(const void *sendbuf,
     void *recvbuf,
     int count,
     MPI_Datatype datatype,
@@ -434,7 +434,7 @@ int Coll_allreduce_mvapich2::allreduce(const void *sendbuf,
 }
 
 
-int Coll_alltoallv_mvapich2::alltoallv(const void *sbuf, const int *scounts, const int *sdisps,
+int alltoallv__mvapich2(const void *sbuf, const int *scounts, const int *sdisps,
     MPI_Datatype sdtype,
     void *rbuf, const int *rcounts, const int *rdisps,
     MPI_Datatype rdtype,
@@ -443,28 +443,28 @@ int Coll_alltoallv_mvapich2::alltoallv(const void *sbuf, const int *scounts, con
 {
 
   if (sbuf == MPI_IN_PLACE) {
-      return Coll_alltoallv_ompi_basic_linear::alltoallv(sbuf, scounts, sdisps, sdtype,
-          rbuf, rcounts, rdisps,rdtype,
-          comm);
+      return alltoallv__ompi_basic_linear(sbuf, scounts, sdisps, sdtype,
+                                          rbuf, rcounts, rdisps, rdtype,
+                                          comm);
   } else     /* For starters, just keep the original algorithm. */
-  return Coll_alltoallv_ring::alltoallv(sbuf, scounts, sdisps, sdtype,
-      rbuf, rcounts, rdisps,rdtype,
-      comm);
+  return alltoallv__ring(sbuf, scounts, sdisps, sdtype,
+                         rbuf, rcounts, rdisps, rdtype,
+                         comm);
 }
 
 
-int Coll_barrier_mvapich2::barrier(MPI_Comm  comm)
+int barrier__mvapich2(MPI_Comm  comm)
 {
-  return Coll_barrier_mvapich2_pair::barrier(comm);
+  return barrier__mvapich2_pair(comm);
 }
 
 
 
 
-int Coll_bcast_mvapich2::bcast(void *buffer,
-    int count,
-    MPI_Datatype datatype,
-    int root, MPI_Comm comm)
+int bcast__mvapich2(void *buffer,
+                    int count,
+                    MPI_Datatype datatype,
+                    int root, MPI_Comm comm)
 {
     int mpi_errno = MPI_SUCCESS;
     int comm_size/*, rank*/;
@@ -656,7 +656,7 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
 
 
 
-int Coll_reduce_mvapich2::reduce(const void *sendbuf,
+int reduce__mvapich2(const void *sendbuf,
     void *recvbuf,
     int count,
     MPI_Datatype datatype,
@@ -774,7 +774,7 @@ int Coll_reduce_mvapich2::reduce(const void *sendbuf,
 }
 
 
-int Coll_reduce_scatter_mvapich2::reduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcnts,
+int reduce_scatter__mvapich2(const void *sendbuf, void *recvbuf, const int *recvcnts,
     MPI_Datatype datatype, MPI_Op op,
     MPI_Comm comm)
 {
@@ -838,9 +838,9 @@ int Coll_reduce_scatter_mvapich2::reduce_scatter(const void *sendbuf, void *recv
               recvcnts, datatype,
               op, comm);
       }
-      mpi_errno =  Coll_reduce_scatter_mpich_rdb::reduce_scatter(sendbuf, recvbuf,
-          recvcnts, datatype,
-          op, comm);
+      mpi_errno =  reduce_scatter__mpich_rdb(sendbuf, recvbuf,
+                                             recvcnts, datatype,
+                                             op, comm);
   }
   delete[] disps;
   return mpi_errno;
@@ -849,7 +849,7 @@ int Coll_reduce_scatter_mvapich2::reduce_scatter(const void *sendbuf, void *recv
 
 
 
-int Coll_scatter_mvapich2::scatter(const void *sendbuf,
+int scatter__mvapich2(const void *sendbuf,
     int sendcnt,
     MPI_Datatype sendtype,
     void *recvbuf,

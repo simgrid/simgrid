@@ -58,15 +58,14 @@
 #include "../coll_tuned_topo.hpp"
 #include "../colls_private.hpp"
 #define MAXTREEFANOUT 32
-namespace simgrid{
-namespace smpi{
+namespace simgrid {
+namespace smpi {
 
-int
-Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
-                                            int count,
-                                            MPI_Datatype datatype,
-                                            int root,
-                                            MPI_Comm comm)
+int bcast__ompi_split_bintree( void* buffer,
+                               int count,
+                               MPI_Datatype datatype,
+                               int root,
+                               MPI_Comm comm)
 {
     unsigned int segsize ;
     int rank, size;
@@ -136,8 +135,7 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
         (segsize > counts[0] * type_size) ||
         (segsize > counts[1] * type_size) ) {
         /* call linear version here ! */
-        return (Coll_bcast_SMP_linear::bcast ( buffer, count, datatype,
-                                                    root, comm));
+        return bcast__SMP_linear( buffer, count, datatype, root, comm);
     }
     type_extent = datatype->get_extent();
 

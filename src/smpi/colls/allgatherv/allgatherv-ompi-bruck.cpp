@@ -77,15 +77,15 @@
  *         [6]    [6]    [6]    [6]    [6]    [6]    [6]
  */
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid {
+namespace smpi {
 
-int Coll_allgatherv_ompi_bruck::allgatherv(const void *sbuf, int scount,
-                                           MPI_Datatype sdtype,
-                                           void *rbuf, const int *rcounts,
-                                           const int *rdispls,
-                                           MPI_Datatype rdtype,
-                                           MPI_Comm comm)
+int allgatherv__ompi_bruck(const void *sbuf, int scount,
+                           MPI_Datatype sdtype,
+                           void *rbuf, const int *rcounts,
+                           const int *rdispls,
+                           MPI_Datatype rdtype,
+                           MPI_Comm comm)
 {
    int sendto, recvfrom, blockcount, i;
    unsigned int distance;

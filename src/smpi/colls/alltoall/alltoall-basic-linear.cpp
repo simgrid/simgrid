@@ -13,8 +13,8 @@ namespace simgrid{
 namespace smpi{
 
 
-int Coll_alltoall_basic_linear::alltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                                          void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+int alltoall__basic_linear(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                           void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
   int system_tag = COLL_TAG_ALLTOALL;
   int i;

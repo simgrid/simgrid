@@ -7,9 +7,9 @@
 #include "../colls_private.hpp"
 namespace simgrid{
 namespace smpi{
-int Coll_allreduce_rab_rdb::allreduce(const void *sbuff, void *rbuff, int count,
-                                      MPI_Datatype dtype, MPI_Op op,
-                                      MPI_Comm comm)
+int allreduce__rab_rdb(const void *sbuff, void *rbuff, int count,
+                       MPI_Datatype dtype, MPI_Op op,
+                       MPI_Comm comm)
 {
   int tag = COLL_TAG_ALLREDUCE;
   unsigned int mask, pof2, i, recv_idx, last_idx, send_idx, send_cnt;

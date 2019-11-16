@@ -9,9 +9,9 @@
 int bcast_SMP_binary_segment_byte = 8192;
 namespace simgrid{
 namespace smpi{
-int Coll_bcast_SMP_binary::bcast(void *buf, int count,
-                                     MPI_Datatype datatype, int root,
-                                     MPI_Comm comm)
+int bcast__SMP_binary(void *buf, int count,
+                      MPI_Datatype datatype, int root,
+                      MPI_Comm comm)
 {
   int tag = COLL_TAG_BCAST;
   MPI_Status status;
@@ -31,8 +31,7 @@ int Coll_bcast_SMP_binary::bcast(void *buf, int count,
     host_num_core = comm->get_intra_comm()->size();
   }else{
     //implementation buggy in this case
-    return Coll_bcast_mpich::bcast( buf , count, datatype,
-              root, comm);
+    return bcast__mpich(buf , count, datatype, root, comm);
   }
 
   int segment = bcast_SMP_binary_segment_byte / extent;

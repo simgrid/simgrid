@@ -29,10 +29,10 @@
 namespace simgrid{
 namespace smpi{
 int
-Coll_alltoall_pair_one_barrier::alltoall(const void *send_buff, int send_count,
-                                          MPI_Datatype send_type,
-                                          void *recv_buff, int recv_count,
-                                          MPI_Datatype recv_type, MPI_Comm comm)
+alltoall__pair_one_barrier(const void *send_buff, int send_count,
+                           MPI_Datatype send_type,
+                           void *recv_buff, int recv_count,
+                           MPI_Datatype recv_type, MPI_Comm comm)
 {
 
   MPI_Aint send_chunk, recv_chunk;

@@ -69,11 +69,11 @@ namespace simgrid{
 namespace smpi{
 
 int
-Coll_allgatherv_ompi_neighborexchange::allgatherv(const void *sbuf, int scount,
-                                                  MPI_Datatype sdtype,
-                                                  void* rbuf, const int *rcounts, const int *rdispls,
-                                                  MPI_Datatype rdtype,
-                                                  MPI_Comm comm)
+allgatherv__ompi_neighborexchange(const void *sbuf, int scount,
+                                  MPI_Datatype sdtype,
+                                  void* rbuf, const int *rcounts, const int *rdispls,
+                                  MPI_Datatype rdtype,
+                                  MPI_Comm comm)
 {
     int line = -1;
     int rank, size;
@@ -89,10 +89,9 @@ Coll_allgatherv_ompi_neighborexchange::allgatherv(const void *sbuf, int scount,
     rank = comm->rank();
 
     if (size % 2) {
-        XBT_DEBUG(
-                     "coll:tuned:allgatherv_ompi_neighborexchange WARNING: odd size %d, switching to ring algorithm",
+        XBT_DEBUG("allgatherv__ompi_neighborexchange WARNING: odd size %d, switching to ring algorithm",
                      size);
-        return Coll_allgatherv_ring::allgatherv(sbuf, scount, sdtype,
+        return allgatherv__ring(sbuf, scount, sdtype,
                                                      rbuf, rcounts,
                                                      rdispls, rdtype,
                                                      comm);

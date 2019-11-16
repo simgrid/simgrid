@@ -47,10 +47,10 @@ static int alltoall_check_is_3dmesh(int num, int *i, int *j, int *k)
 }
 namespace simgrid{
 namespace smpi{
-int Coll_alltoall_3dmesh::alltoall(const void *send_buff, int send_count,
-                                    MPI_Datatype send_type,
-                                    void *recv_buff, int recv_count,
-                                    MPI_Datatype recv_type, MPI_Comm comm)
+int alltoall__3dmesh(const void *send_buff, int send_count,
+                     MPI_Datatype send_type,
+                     void *recv_buff, int recv_count,
+                     MPI_Datatype recv_type, MPI_Comm comm)
 {
   MPI_Aint extent;
   MPI_Status status;

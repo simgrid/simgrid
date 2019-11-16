@@ -9,8 +9,8 @@
 int bcast_NTSB_segment_size_in_byte = 8192;
 namespace simgrid{
 namespace smpi{
-int Coll_bcast_NTSB::bcast(void *buf, int count, MPI_Datatype datatype,
-                               int root, MPI_Comm comm)
+int bcast__NTSB(void *buf, int count, MPI_Datatype datatype,
+                int root, MPI_Comm comm)
 {
   int tag = COLL_TAG_BCAST;
   MPI_Status status;

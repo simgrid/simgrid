@@ -10,9 +10,9 @@
 namespace simgrid{
 namespace smpi{
 // this requires that count >= NP
-int Coll_allreduce_rab2::allreduce(const void *sbuff, void *rbuff,
-                                   int count, MPI_Datatype dtype,
-                                   MPI_Op op, MPI_Comm comm)
+int allreduce__rab2(const void *sbuff, void *rbuff,
+                    int count, MPI_Datatype dtype,
+                    MPI_Op op, MPI_Comm comm)
 {
   MPI_Aint s_extent;
   int i, rank, nprocs;

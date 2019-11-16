@@ -11,18 +11,18 @@
 namespace simgrid{
 namespace smpi{
 
-int Coll_bcast_default::bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm)
+int bcast__default(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm)
 {
-  return Coll_bcast_binomial_tree::bcast(buf, count, datatype, root, comm);
+  return bcast__binomial_tree(buf, count, datatype, root, comm);
 }
 
-int Coll_barrier_default::barrier(MPI_Comm comm)
+int barrier__default(MPI_Comm comm)
 {
-  return Coll_barrier_ompi_basic_linear::barrier(comm);
+  return barrier__ompi_basic_linear(comm);
 }
 
 
-int Coll_gather_default::gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+int gather__default(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
                      void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   MPI_Request request;
@@ -30,8 +30,8 @@ int Coll_gather_default::gather(const void *sendbuf, int sendcount, MPI_Datatype
   return Request::wait(&request, MPI_STATUS_IGNORE);
 }
 
-int Coll_reduce_scatter_default::reduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcounts, MPI_Datatype datatype, MPI_Op op,
-                             MPI_Comm comm)
+int reduce_scatter__default(const void *sendbuf, void *recvbuf, const int *recvcounts, MPI_Datatype datatype, MPI_Op op,
+                            MPI_Comm comm)
 {
   int rank = comm->rank();
 
@@ -45,7 +45,7 @@ int Coll_reduce_scatter_default::reduce_scatter(const void *sendbuf, void *recvb
   }
   unsigned char* tmpbuf = smpi_get_tmp_sendbuffer(count * datatype->get_extent());
 
-  int ret = Coll_reduce_default::reduce(sendbuf, tmpbuf, count, datatype, op, 0, comm);
+  int ret = reduce__default(sendbuf, tmpbuf, count, datatype, op, 0, comm);
   if(ret==MPI_SUCCESS)
     ret = Colls::scatterv(tmpbuf, recvcounts, displs, datatype, recvbuf, recvcounts[rank], datatype, 0, comm);
   delete[] displs;
@@ -54,16 +54,16 @@ int Coll_reduce_scatter_default::reduce_scatter(const void *sendbuf, void *recvb
 }
 
 
-int Coll_allgather_default::allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                        void *recvbuf,int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+int allgather__default(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                       void *recvbuf,int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
   MPI_Request request;
   Colls::iallgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, &request);
   return Request::wait(&request, MPI_STATUS_IGNORE);
 }
 
-int Coll_allgatherv_default::allgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
-                         const int *recvcounts, const int *displs, MPI_Datatype recvtype, MPI_Comm comm)
+int allgatherv__default(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
+                        const int *recvcounts, const int *displs, MPI_Datatype recvtype, MPI_Comm comm)
 {
   MPI_Request request;
   Colls::iallgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm, &request, 0);
@@ -78,45 +78,45 @@ int Coll_allgatherv_default::allgatherv(const void *sendbuf, int sendcount, MPI_
   return MPI_SUCCESS;
 }
 
-int Coll_scatter_default::scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                      void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
+int scatter__default(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                     void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   MPI_Request request;
   Colls::iscatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm, &request, 0);
   return Request::wait(&request, MPI_STATUS_IGNORE);
 }
 
-int Coll_reduce_default::reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
-                     MPI_Comm comm)
+int reduce__default(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
+                    MPI_Comm comm)
 {
   //non commutative case, use a working algo from openmpi
   if (op != MPI_OP_NULL && (datatype->flags() & DT_FLAG_DERIVED || not op->is_commutative())) {
-    return Coll_reduce_ompi_basic_linear::reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
+    return reduce__ompi_basic_linear(sendbuf, recvbuf, count, datatype, op, root, comm);
   }
   MPI_Request request;
   Colls::ireduce(sendbuf, recvbuf, count, datatype, op, root, comm, &request, 0);
   return Request::wait(&request, MPI_STATUS_IGNORE);
 }
 
-int Coll_allreduce_default::allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int allreduce__default(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   //FIXME: have mpi_ireduce and iallreduce handle derived datatypes correctly
   if(datatype->flags() & DT_FLAG_DERIVED)
-    return Coll_allreduce_ompi::allreduce(sendbuf, recvbuf, count, datatype, op, comm);
+    return allreduce__ompi(sendbuf, recvbuf, count, datatype, op, comm);
   int ret;
-  ret = Coll_reduce_default::reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
+  ret = reduce__default(sendbuf, recvbuf, count, datatype, op, 0, comm);
   if(ret==MPI_SUCCESS)
-    ret = Coll_bcast_default::bcast(recvbuf, count, datatype, 0, comm);
+    ret = bcast__default(recvbuf, count, datatype, 0, comm);
   return ret;
 }
 
-int Coll_alltoall_default::alltoall(const void *sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount, MPI_Datatype rdtype, MPI_Comm comm)
+int alltoall__default(const void *sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount, MPI_Datatype rdtype, MPI_Comm comm)
 {
-  return Coll_alltoall_ompi::alltoall(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
+  return alltoall__ompi(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
 }
 
-int Coll_alltoallv_default::alltoallv(const void *sendbuf, const int *sendcounts, const int *senddisps, MPI_Datatype sendtype,
-                              void *recvbuf, const int *recvcounts, const int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm)
+int alltoallv__default(const void *sendbuf, const int *sendcounts, const int *senddisps, MPI_Datatype sendtype,
+                       void *recvbuf, const int *recvcounts, const int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm)
 {
   MPI_Request request;
   Colls::ialltoallv(sendbuf, sendcounts, senddisps, sendtype, recvbuf, recvcounts, recvdisps, recvtype, comm, &request, 0);

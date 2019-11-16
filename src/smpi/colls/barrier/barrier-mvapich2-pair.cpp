@@ -43,7 +43,7 @@
 #include "../colls_private.hpp"
 namespace simgrid{
 namespace smpi{
-int Coll_barrier_mvapich2_pair::barrier(MPI_Comm comm)
+int barrier__mvapich2_pair(MPI_Comm comm)
 {
 
     int size, rank;

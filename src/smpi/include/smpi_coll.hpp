@@ -24,14 +24,11 @@
 #define COLL_DESCRIPTION(cat, ret, args, name)                                                                         \
   {                                                                                                                    \
     _XBT_STRINGIFY(name)                                                                                               \
-    , _XBT_STRINGIFY(cat) " " _XBT_STRINGIFY(name) " collective", (void*)_XBT_CONCAT4(Coll_, cat, _, name)::cat        \
+    , _XBT_STRINGIFY(cat) " " _XBT_STRINGIFY(name) " collective", (void*)_XBT_CONCAT3(cat, __, name)        \
   }
 
 #define COLL_PROTO(cat, ret, args, name)                                                                               \
-  class _XBT_CONCAT4(Coll_, cat, _, name) : public Coll {                                                              \
-  public:                                                                                                              \
-    static ret cat(COLL_UNPAREN args);                                                                                 \
-  };
+  ret _XBT_CONCAT3(cat, __, name) args;
 
 #define COLL_UNPAREN(...)  __VA_ARGS__
 
@@ -96,6 +93,10 @@ public:
   static void set_collectives();
 
   // for each collective type, create the set_* prototype, the description array and the function pointer
+//  static void set_gather(const std::string& name);
+//  static s_mpi_coll_description_t mpi_coll_gather_description[];
+//  static int(*gather)(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type,
+//                      int root, MPI_Comm comm);
   COLL_APPLY(COLL_DEFS, COLL_GATHER_SIG, "")
   COLL_APPLY(COLL_DEFS, COLL_ALLGATHER_SIG, "")
   COLL_APPLY(COLL_DEFS, COLL_ALLGATHERV_SIG, "")
@@ -158,22 +159,6 @@ public:
 
 
   static void (*smpi_coll_cleanup_callback)();
-};
-
-class Coll {
-public:
-  // for each collective type, create a function member
-  COLL_APPLY(COLL_SIG, COLL_GATHER_SIG, "")
-  COLL_APPLY(COLL_SIG, COLL_ALLGATHER_SIG, "")
-  COLL_APPLY(COLL_SIG, COLL_ALLGATHERV_SIG, "")
-  COLL_APPLY(COLL_SIG, COLL_REDUCE_SIG, "")
-  COLL_APPLY(COLL_SIG, COLL_ALLREDUCE_SIG, "")
-  COLL_APPLY(COLL_SIG, COLL_REDUCE_SCATTER_SIG, "")
-  COLL_APPLY(COLL_SIG, COLL_SCATTER_SIG, "")
-  COLL_APPLY(COLL_SIG, COLL_BARRIER_SIG, "")
-  COLL_APPLY(COLL_SIG, COLL_BCAST_SIG, "")
-  COLL_APPLY(COLL_SIG, COLL_ALLTOALL_SIG, "")
-  COLL_APPLY(COLL_SIG, COLL_ALLTOALLV_SIG, "")
 };
 
 /*************

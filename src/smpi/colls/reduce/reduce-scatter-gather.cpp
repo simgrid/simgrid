@@ -12,9 +12,9 @@
  */
 namespace simgrid{
 namespace smpi{
-int Coll_reduce_scatter_gather::reduce(const void *sendbuf, void *recvbuf,
-                                          int count, MPI_Datatype datatype,
-                                          MPI_Op op, int root, MPI_Comm comm)
+int reduce__scatter_gather(const void *sendbuf, void *recvbuf,
+                           int count, MPI_Datatype datatype,
+                           MPI_Op op, int root, MPI_Comm comm)
 {
   MPI_Status status;
   int comm_size, rank, pof2, rem, newrank;

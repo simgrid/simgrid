@@ -250,7 +250,7 @@ MPI_Comm Comm::split(int color, int key)
   } else {
     recvbuf = nullptr;
   }
-  Coll_gather_default::gather(sendbuf, 2, MPI_INT, recvbuf, 2, MPI_INT, 0, this);
+  gather__default(sendbuf, 2, MPI_INT, recvbuf, 2, MPI_INT, 0, this);
   xbt_free(sendbuf);
   /* Do the actual job */
   if (myrank == 0) {
@@ -393,7 +393,7 @@ void Comm::init_smp(){
   std::fill_n(leaders_map, comm_size, 0);
   std::fill_n(leader_list, comm_size, -1);
 
-  Coll_allgather_ring::allgather(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
+  allgather__ring(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
 
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
@@ -451,7 +451,7 @@ void Comm::init_smp(){
   if(comm_intra->rank()==0) {
     int is_uniform       = 1;
     int* non_uniform_map = xbt_new0(int,leader_group_size);
-    Coll_allgather_ring::allgather(&my_local_size, 1, MPI_INT,
+    allgather__ring(&my_local_size, 1, MPI_INT,
         non_uniform_map, 1, MPI_INT, leader_comm);
     for(i=0; i < leader_group_size; i++) {
       if(non_uniform_map[0] != non_uniform_map[i]) {
@@ -466,7 +466,7 @@ void Comm::init_smp(){
     }
     is_uniform_=is_uniform;
   }
-  Coll_bcast_scatter_LR_allgather::bcast(&(is_uniform_),1, MPI_INT, 0, comm_intra );
+  bcast__scatter_LR_allgather(&(is_uniform_),1, MPI_INT, 0, comm_intra );
 
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
@@ -485,7 +485,7 @@ void Comm::init_smp(){
   }
 
   int global_blocked;
-  Coll_allreduce_default::allreduce(&is_blocked, &(global_blocked), 1, MPI_INT, MPI_LAND, this);
+  allreduce__default(&is_blocked, &(global_blocked), 1, MPI_INT, MPI_LAND, this);
 
   if(MPI_COMM_WORLD==MPI_COMM_UNINITIALIZED || this==MPI_COMM_WORLD){
     if(this->rank()==0){

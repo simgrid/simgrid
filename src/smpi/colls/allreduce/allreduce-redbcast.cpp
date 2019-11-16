@@ -7,9 +7,9 @@
 #include "../colls_private.hpp"
 namespace simgrid{
 namespace smpi{
-int Coll_allreduce_redbcast::allreduce(const void *buf, void *buf2, int count,
-                                       MPI_Datatype datatype, MPI_Op op,
-                                       MPI_Comm comm)
+int allreduce__redbcast(const void *buf, void *buf2, int count,
+                        MPI_Datatype datatype, MPI_Op op,
+                        MPI_Comm comm)
 {
   Colls::reduce(buf, buf2, count, datatype, op, 0, comm);
   Colls::bcast(buf2, count, datatype, 0, comm);

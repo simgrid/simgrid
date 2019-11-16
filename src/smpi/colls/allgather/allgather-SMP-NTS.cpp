@@ -10,10 +10,10 @@ namespace simgrid{
 namespace smpi{
 
 
-int Coll_allgather_SMP_NTS::allgather(const void *sbuf, int scount,
-                                      MPI_Datatype stype, void *rbuf,
-                                      int rcount, MPI_Datatype rtype,
-                                      MPI_Comm comm)
+int allgather__SMP_NTS(const void *sbuf, int scount,
+                       MPI_Datatype stype, void *rbuf,
+                       int rcount, MPI_Datatype rtype,
+                       MPI_Comm comm)
 {
   int src, dst, comm_size, rank;
   comm_size = comm->size();
@@ -47,7 +47,7 @@ int Coll_allgather_SMP_NTS::allgather(const void *sbuf, int scount,
   /* for too small number of processes, use default implementation */
   if (comm_size <= num_core) {
     XBT_WARN("MPI_allgather_SMP_NTS use default MPI_allgather.");
-    Coll_allgather_default::allgather(sbuf, scount, stype, rbuf, rcount, rtype, comm);
+    allgather__default(sbuf, scount, stype, rbuf, rcount, rtype, comm);
     return MPI_SUCCESS;
   }
 

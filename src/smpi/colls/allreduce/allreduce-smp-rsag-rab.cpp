@@ -20,9 +20,9 @@ This fucntion performs all-reduce operation as follow.
 */
 namespace simgrid{
 namespace smpi{
-int Coll_allreduce_smp_rsag_rab::allreduce(const void *sbuf, void *rbuf, int count,
-                                           MPI_Datatype dtype, MPI_Op op,
-                                           MPI_Comm comm)
+int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
+                            MPI_Datatype dtype, MPI_Op op,
+                            MPI_Comm comm)
 {
   int comm_size, rank;
   int tag = COLL_TAG_ALLREDUCE;

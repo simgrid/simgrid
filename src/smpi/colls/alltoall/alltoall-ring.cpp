@@ -25,13 +25,12 @@
  * Author: Ahmad Faraj
 
  ****************************************************************************/
-namespace simgrid{
-namespace smpi{
-int
-Coll_alltoall_ring::alltoall(const void *send_buff, int send_count,
-                              MPI_Datatype send_type, void *recv_buff,
-                              int recv_count, MPI_Datatype recv_type,
-                              MPI_Comm comm)
+namespace simgrid {
+namespace smpi {
+int alltoall__ring(const void *send_buff, int send_count,
+                   MPI_Datatype send_type, void *recv_buff,
+                   int recv_count, MPI_Datatype recv_type,
+                   MPI_Comm comm)
 {
   MPI_Status s;
   MPI_Aint send_chunk, recv_chunk;

@@ -10,10 +10,10 @@ namespace simgrid{
 namespace smpi{
 
 // Allgather - gather/bcast algorithm
-int Coll_allgatherv_GB::allgatherv(const void *send_buff, int send_count,
-                                 MPI_Datatype send_type, void *recv_buff,
-                                 const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type,
-                                 MPI_Comm comm)
+int allgatherv__GB(const void *send_buff, int send_count,
+                   MPI_Datatype send_type, void *recv_buff,
+                   const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type,
+                   MPI_Comm comm)
 {
   Colls::gatherv(send_buff, send_count, send_type, recv_buff, recv_counts, recv_disps, recv_type, 0, comm);
   int num_procs, i, current, max = 0;

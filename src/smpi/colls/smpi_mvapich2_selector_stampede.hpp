@@ -42,11 +42,11 @@ int mv2_alltoall_num_ppn_conf                             = 1;
 int* mv2_size_alltoall_tuning_table                       = NULL;
 mv2_alltoall_tuning_table** mv2_alltoall_thresholds_table = NULL;
 
-#define MPIR_Alltoall_bruck_MV2 simgrid::smpi::Coll_alltoall_bruck::alltoall
-#define MPIR_Alltoall_RD_MV2 simgrid::smpi::Coll_alltoall_rdb::alltoall
-#define MPIR_Alltoall_Scatter_dest_MV2 simgrid::smpi::Coll_alltoall_mvapich2_scatter_dest::alltoall
-#define MPIR_Alltoall_pairwise_MV2 simgrid::smpi::Coll_alltoall_pair::alltoall
-#define MPIR_Alltoall_inplace_MV2 simgrid::smpi::Coll_alltoall_ring::alltoall
+#define MPIR_Alltoall_bruck_MV2 simgrid::smpi::alltoall__bruck
+#define MPIR_Alltoall_RD_MV2 simgrid::smpi::alltoall__rdb
+#define MPIR_Alltoall_Scatter_dest_MV2 simgrid::smpi::alltoall__mvapich2_scatter_dest
+#define MPIR_Alltoall_pairwise_MV2 simgrid::smpi::alltoall__pair
+#define MPIR_Alltoall_inplace_MV2 simgrid::smpi::alltoall__ring
 
 static void init_mv2_alltoall_tables_stampede()
 {
@@ -358,10 +358,10 @@ static int MPIR_Allgather_RD_Allgather_Comm_MV2(const void* sendbuf, int sendcou
   return 0;
 }
 
-#define MPIR_Allgather_Bruck_MV2 simgrid::smpi::Coll_allgather_bruck::allgather
-#define MPIR_Allgather_RD_MV2 simgrid::smpi::Coll_allgather_rdb::allgather
-#define MPIR_Allgather_Ring_MV2 simgrid::smpi::Coll_allgather_ring::allgather
-#define MPIR_2lvl_Allgather_MV2 simgrid::smpi::Coll_allgather_mvapich2_smp::allgather
+#define MPIR_Allgather_Bruck_MV2 simgrid::smpi::allgather__bruck
+#define MPIR_Allgather_RD_MV2 simgrid::smpi::allgather__rdb
+#define MPIR_Allgather_Ring_MV2 simgrid::smpi::allgather__ring
+#define MPIR_2lvl_Allgather_MV2 simgrid::smpi::allgather__mvapich2_smp
 
 static void init_mv2_allgather_tables_stampede()
 {
@@ -583,9 +583,9 @@ typedef int (*MV2_Gather_function_ptr)(const void* sendbuf, int sendcnt, MPI_Dat
 MV2_Gather_function_ptr MV2_Gather_inter_leader_function = NULL;
 MV2_Gather_function_ptr MV2_Gather_intra_node_function   = NULL;
 
-#define MPIR_Gather_MV2_Direct simgrid::smpi::Coll_gather_ompi_basic_linear::gather
-#define MPIR_Gather_MV2_two_level_Direct simgrid::smpi::Coll_gather_mvapich2_two_level::gather
-#define MPIR_Gather_intra simgrid::smpi::Coll_gather_mpich::gather
+#define MPIR_Gather_MV2_Direct simgrid::smpi::gather__ompi_basic_linear
+#define MPIR_Gather_MV2_two_level_Direct simgrid::smpi::gather__mvapich2_two_level
+#define MPIR_Gather_intra simgrid::smpi::gather__mpich
 
 static void init_mv2_gather_tables_stampede()
 {
@@ -668,9 +668,9 @@ int (*MV2_Allgatherv_function)(const void* sendbuf, int sendcount, MPI_Datatype 
 int mv2_size_allgatherv_tuning_table                         = 0;
 mv2_allgatherv_tuning_table* mv2_allgatherv_thresholds_table = NULL;
 
-#define MPIR_Allgatherv_Rec_Doubling_MV2 simgrid::smpi::Coll_allgatherv_mpich_rdb::allgatherv
-#define MPIR_Allgatherv_Bruck_MV2 simgrid::smpi::Coll_allgatherv_ompi_bruck::allgatherv
-#define MPIR_Allgatherv_Ring_MV2 simgrid::smpi::Coll_allgatherv_mpich_ring::allgatherv
+#define MPIR_Allgatherv_Rec_Doubling_MV2 simgrid::smpi::allgatherv__mpich_rdb
+#define MPIR_Allgatherv_Bruck_MV2 simgrid::smpi::allgatherv__ompi_bruck
+#define MPIR_Allgatherv_Ring_MV2 simgrid::smpi::allgatherv__mpich_ring
 
 static void init_mv2_allgatherv_tables_stampede()
 {
@@ -780,9 +780,9 @@ static int MPIR_Allreduce_reduce_shmem_MV2(const void* sendbuf, void* recvbuf, i
   return MPI_SUCCESS;
 }
 
-#define MPIR_Allreduce_pt2pt_rd_MV2 simgrid::smpi::Coll_allreduce_rdb::allreduce
-#define MPIR_Allreduce_pt2pt_rs_MV2 simgrid::smpi::Coll_allreduce_mvapich2_rs::allreduce
-#define MPIR_Allreduce_two_level_MV2 simgrid::smpi::Coll_allreduce_mvapich2_two_level::allreduce
+#define MPIR_Allreduce_pt2pt_rd_MV2 simgrid::smpi::allreduce__rdb
+#define MPIR_Allreduce_pt2pt_rs_MV2 simgrid::smpi::allreduce__mvapich2_rs
+#define MPIR_Allreduce_two_level_MV2 simgrid::smpi::allreduce__mvapich2_two_level
 
 static void init_mv2_allreduce_tables_stampede()
 {
@@ -955,17 +955,17 @@ int mv2_intra_node_knomial_factor     = 4;
 
 #define INTRA_NODE_ROOT 0
 
-#define MPIR_Pipelined_Bcast_Zcpy_MV2 simgrid::smpi::Coll_bcast_mpich::bcast
-#define MPIR_Pipelined_Bcast_MV2 simgrid::smpi::Coll_bcast_mpich::bcast
-#define MPIR_Bcast_binomial_MV2 simgrid::smpi::Coll_bcast_binomial_tree::bcast
-#define MPIR_Bcast_scatter_ring_allgather_shm_MV2 simgrid::smpi::Coll_bcast_scatter_LR_allgather::bcast
-#define MPIR_Bcast_scatter_doubling_allgather_MV2 simgrid::smpi::Coll_bcast_scatter_rdb_allgather::bcast
-#define MPIR_Bcast_scatter_ring_allgather_MV2 simgrid::smpi::Coll_bcast_scatter_LR_allgather::bcast
-#define MPIR_Shmem_Bcast_MV2 simgrid::smpi::Coll_bcast_mpich::bcast
-#define MPIR_Bcast_tune_inter_node_helper_MV2 simgrid::smpi::Coll_bcast_mvapich2_inter_node::bcast
-#define MPIR_Bcast_inter_node_helper_MV2 simgrid::smpi::Coll_bcast_mvapich2_inter_node::bcast
-#define MPIR_Knomial_Bcast_intra_node_MV2 simgrid::smpi::Coll_bcast_mvapich2_knomial_intra_node::bcast
-#define MPIR_Bcast_intra_MV2 simgrid::smpi::Coll_bcast_mvapich2_intra_node::bcast
+#define MPIR_Pipelined_Bcast_Zcpy_MV2 simgrid::smpi::bcast__mpich
+#define MPIR_Pipelined_Bcast_MV2 simgrid::smpi::bcast__mpich
+#define MPIR_Bcast_binomial_MV2 simgrid::smpi::bcast__binomial_tree
+#define MPIR_Bcast_scatter_ring_allgather_shm_MV2 simgrid::smpi::bcast__scatter_LR_allgather
+#define MPIR_Bcast_scatter_doubling_allgather_MV2 simgrid::smpi::bcast__scatter_rdb_allgather
+#define MPIR_Bcast_scatter_ring_allgather_MV2 simgrid::smpi::bcast__scatter_LR_allgather
+#define MPIR_Shmem_Bcast_MV2 simgrid::smpi::bcast__mpich
+#define MPIR_Bcast_tune_inter_node_helper_MV2 simgrid::smpi::bcast__mvapich2_inter_node
+#define MPIR_Bcast_inter_node_helper_MV2 simgrid::smpi::bcast__mvapich2_inter_node
+#define MPIR_Knomial_Bcast_intra_node_MV2 simgrid::smpi::bcast__mvapich2_knomial_intra_node
+#define MPIR_Bcast_intra_MV2 simgrid::smpi::bcast__mvapich2_intra_node
 
 static void init_mv2_bcast_tables_stampede()
 {
@@ -1176,12 +1176,12 @@ int (*MV2_Reduce_function)(const void* sendbuf, void* recvbuf, int count, MPI_Da
 int (*MV2_Reduce_intra_function)(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
                                  MPI_Comm comm_ptr) = NULL;
 
-#define MPIR_Reduce_inter_knomial_wrapper_MV2 simgrid::smpi::Coll_reduce_mvapich2_knomial::reduce
-#define MPIR_Reduce_intra_knomial_wrapper_MV2 simgrid::smpi::Coll_reduce_mvapich2_knomial::reduce
-#define MPIR_Reduce_binomial_MV2 simgrid::smpi::Coll_reduce_binomial::reduce
-#define MPIR_Reduce_redscat_gather_MV2 simgrid::smpi::Coll_reduce_scatter_gather::reduce
-#define MPIR_Reduce_shmem_MV2 simgrid::smpi::Coll_reduce_ompi_basic_linear::reduce
-#define MPIR_Reduce_two_level_helper_MV2 simgrid::smpi::Coll_reduce_mvapich2_two_level::reduce
+#define MPIR_Reduce_inter_knomial_wrapper_MV2 simgrid::smpi::reduce__mvapich2_knomial
+#define MPIR_Reduce_intra_knomial_wrapper_MV2 simgrid::smpi::reduce__mvapich2_knomial
+#define MPIR_Reduce_binomial_MV2 simgrid::smpi::reduce__binomial
+#define MPIR_Reduce_redscat_gather_MV2 simgrid::smpi::reduce__scatter_gather
+#define MPIR_Reduce_shmem_MV2 simgrid::smpi::reduce__ompi_basic_linear
+#define MPIR_Reduce_two_level_helper_MV2 simgrid::smpi::reduce__mvapich2_two_level
 
 static void init_mv2_reduce_tables_stampede()
 {
@@ -1400,13 +1400,12 @@ int (*MV2_Red_scat_function)(const void* sendbuf, void* recvbuf, const int* recv
 static int MPIR_Reduce_Scatter_Basic_MV2(const void* sendbuf, void* recvbuf, const int* recvcnts, MPI_Datatype datatype, MPI_Op op,
                                          MPI_Comm comm)
 {
-  simgrid::smpi::Coll_reduce_scatter_default::reduce_scatter(sendbuf, recvbuf, recvcnts, datatype, op, comm);
+  simgrid::smpi::reduce_scatter__default(sendbuf, recvbuf, recvcnts, datatype, op, comm);
   return MPI_SUCCESS;
 }
-#define MPIR_Reduce_scatter_non_comm_MV2 simgrid::smpi::Coll_reduce_scatter_mpich_noncomm::reduce_scatter
-#define MPIR_Reduce_scatter_Rec_Halving_MV2                                                                            \
-  simgrid::smpi::Coll_reduce_scatter_ompi_basic_recursivehalving::reduce_scatter
-#define MPIR_Reduce_scatter_Pair_Wise_MV2 simgrid::smpi::Coll_reduce_scatter_mpich_pair::reduce_scatter
+#define MPIR_Reduce_scatter_non_comm_MV2 simgrid::smpi::reduce_scatter__mpich_noncomm
+#define MPIR_Reduce_scatter_Rec_Halving_MV2 simgrid::smpi::reduce_scatter__ompi_basic_recursivehalving
+#define MPIR_Reduce_scatter_Pair_Wise_MV2 simgrid::smpi::reduce_scatter__mpich_pair
 
 static void init_mv2_reduce_scatter_tables_stampede()
 {
@@ -1504,10 +1503,10 @@ int MPIR_Scatter_mcst_wrap_MV2(const void* sendbuf, int sendcnt, MPI_Datatype se
   return 0;
 }
 
-#define MPIR_Scatter_MV2_Binomial simgrid::smpi::Coll_scatter_ompi_binomial::scatter
-#define MPIR_Scatter_MV2_Direct simgrid::smpi::Coll_scatter_ompi_basic_linear::scatter
-#define MPIR_Scatter_MV2_two_level_Binomial simgrid::smpi::Coll_scatter_mvapich2_two_level_binomial::scatter
-#define MPIR_Scatter_MV2_two_level_Direct simgrid::smpi::Coll_scatter_mvapich2_two_level_direct::scatter
+#define MPIR_Scatter_MV2_Binomial simgrid::smpi::scatter__ompi_binomial
+#define MPIR_Scatter_MV2_Direct simgrid::smpi::scatter__ompi_basic_linear
+#define MPIR_Scatter_MV2_two_level_Binomial simgrid::smpi::scatter__mvapich2_two_level_binomial
+#define MPIR_Scatter_MV2_two_level_Direct simgrid::smpi::scatter__mvapich2_two_level_direct
 
 static void init_mv2_scatter_tables_stampede()
 {

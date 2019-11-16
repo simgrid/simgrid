@@ -44,14 +44,13 @@
 #include "../colls_private.hpp"
 namespace simgrid{
 namespace smpi{
-int Coll_alltoall_mvapich2_scatter_dest::alltoall(
-                            const void *sendbuf,
-                            int sendcount,
-                            MPI_Datatype sendtype,
-                            void *recvbuf,
-                            int recvcount,
-                            MPI_Datatype recvtype,
-                            MPI_Comm comm)
+int alltoall__mvapich2_scatter_dest(const void *sendbuf,
+                                    int sendcount,
+                                    MPI_Datatype sendtype,
+                                    void *recvbuf,
+                                    int recvcount,
+                                    MPI_Datatype recvtype,
+                                    MPI_Comm comm)
 {
     int          comm_size, i, j;
     MPI_Aint     sendtype_extent = 0, recvtype_extent = 0;
