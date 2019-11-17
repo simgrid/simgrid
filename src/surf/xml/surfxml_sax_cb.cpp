@@ -35,13 +35,8 @@ std::vector<simgrid::kernel::resource::DiskImpl*> parsed_disk_list; /* temporary
  */
 void surf_parse_assert(bool cond, const std::string& msg)
 {
-  if (not cond) {
-    int lineno = surf_parse_lineno;
-    cleanup();
-    XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename.c_str(), lineno, msg.c_str());
-    surf_exit();
-    xbt_die("Exiting now");
-  }
+  if (not cond)
+    surf_parse_error(msg);
 }
 
 void surf_parse_error(const std::string& msg)
