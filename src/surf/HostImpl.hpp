@@ -32,7 +32,7 @@ public:
 
   virtual kernel::resource::Action* execute_parallel(const std::vector<s4u::Host*>& host_list,
                                                      const double* flops_amount, const double* bytes_amount,
-                                                     double rate);
+                                                     double rate) = 0;
 };
 
 /************

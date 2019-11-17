@@ -84,6 +84,11 @@ public:
 
   double next_occurring_event(double now) override;
   void update_actions_state(double /*now*/, double /*delta*/) override{};
+  kernel::resource::Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
+                                             const double* bytes_amount, double rate) override
+  {
+    return nullptr;
+  };
 };
 }
 }
