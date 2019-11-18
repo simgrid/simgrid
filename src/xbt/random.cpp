@@ -19,6 +19,9 @@ int uniform_int(int min, int max)
   unsigned long gmax   = mt19937_gen.max();
   unsigned long grange = gmax - gmin + 1;
   unsigned long range  = max - min + 1;
+  xbt_assert(
+      min < max || min == max,
+      "The maximum value for the uniform integer distribution must be greater than or equal to the minimum value");
   xbt_assert(range < grange || range == grange, "The current implementation of the uniform integer distribution does "
                                                 "not allow range to be higher than mt19937's range");
   unsigned long mult       = grange / range;
