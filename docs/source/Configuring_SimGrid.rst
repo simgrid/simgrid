@@ -225,7 +225,7 @@ models for all existing resources.
 - ``cpu/model``: specify the used CPU model.  We have only one model
   for now:
 
-  - **Cas01:** Simplistic CPU model (time=size/power)
+  - **Cas01:** Simplistic CPU model (time=size/speed)
 
 - ``host/model``: The host concept is the aggregation of a CPU with a
   network card. Three models exists, but actually, only 2 of them are

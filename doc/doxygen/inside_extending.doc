@@ -55,7 +55,7 @@ and add an entry in the corresponding array in surf_interface.cpp
 ~~~~
 s_surf_model_description_t surf_cpu_model_description[] = {
   {"Cas01",
-   "Simplistic CPU model (time=size/power).",
+   "Simplistic CPU model (time=size/speed).",
    surf_cpu_model_init_Cas01},
   {"Plop",
    "The new plop CPU model.",

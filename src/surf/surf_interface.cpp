@@ -92,7 +92,7 @@ void surf_network_model_init_NS3() {
 #endif
 
 const std::vector<surf_model_description_t> surf_cpu_model_description = {
-    {"Cas01", "Simplistic CPU model (time=size/power).", &surf_cpu_model_init_Cas01},
+    {"Cas01", "Simplistic CPU model (time=size/speed).", &surf_cpu_model_init_Cas01},
 };
 
 const std::vector<surf_model_description_t> surf_host_model_description = {
