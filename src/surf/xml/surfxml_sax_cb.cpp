@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
@@ -33,24 +34,15 @@ std::vector<simgrid::kernel::resource::DiskImpl*> parsed_disk_list; /* temporary
 /*
  * Helping functions
  */
-void surf_parse_assert(bool cond, const std::string& msg)
+void surf_parse_assert(bool cond, std::string&& msg)
 {
-  if (not cond) {
-    int lineno = surf_parse_lineno;
-    cleanup();
-    XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename.c_str(), lineno, msg.c_str());
-    surf_exit();
-    xbt_die("Exiting now");
-  }
+  if (not cond)
+    surf_parse_error(std::move(msg));
 }
 
-void surf_parse_error(const std::string& msg)
+void surf_parse_error(std::string&& msg)
 {
-  int lineno = surf_parse_lineno;
-  cleanup();
-  XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename.c_str(), lineno, msg.c_str());
-  surf_exit();
-  xbt_die("Exiting now");
+  throw simgrid::ParseError(surf_parse_lineno, surf_parsed_filename, std::move(msg));
 }
 
 void surf_parse_assert_netpoint(const std::string& hostname, const std::string& pre, const std::string& post)
@@ -81,7 +73,7 @@ void surf_parse_assert_netpoint(const std::string& hostname, const std::string& 
       break;
     }
   }
-  surf_parse_error(msg);
+  surf_parse_error(std::move(msg));
 }
 
 double surf_parse_get_double(const std::string& s)
@@ -361,7 +353,7 @@ void ETag_surfxml_include()
 void STag_surfxml_platform() {
   XBT_ATTRIB_UNUSED double version = surf_parse_get_double(A_surfxml_platform_version);
 
-  xbt_assert((version >= 1.0), "******* BIG FAT WARNING *********\n "
+  surf_parse_assert((version >= 1.0), "******* BIG FAT WARNING *********\n "
       "You're using an ancient XML file.\n"
       "Since SimGrid 3.1, units are Bytes, Flops, and seconds "
       "instead of MBytes, MFlops and seconds.\n"
@@ -375,13 +367,13 @@ void STag_surfxml_platform() {
 
       "Last, do not forget to also update your values for "
       "the calls to MSG_task_create (if any).");
-  xbt_assert((version >= 3.0), "******* BIG FAT WARNING *********\n "
+  surf_parse_assert((version >= 3.0), "******* BIG FAT WARNING *********\n "
       "You're using an old XML file.\n"
       "Use simgrid_update_xml to update your file automatically. "
       "This program is installed automatically with SimGrid, or "
       "available in the tools/ directory of the source archive.");
-  xbt_assert((version >= 4.0),
-             "******* FILE %s IS TOO OLD (v:%.1f) *********\n "
+  surf_parse_assert((version >= 4.0),
+             std::string("******* THIS FILE IS TOO OLD (v:")+std::to_string(version)+") *********\n "
              "Changes introduced in SimGrid 3.13:\n"
              "  - 'power' attribute of hosts (and others) got renamed to 'speed'.\n"
              "  - In <trace_connect>, attribute kind=\"POWER\" is now kind=\"SPEED\".\n"
@@ -390,8 +382,7 @@ void STag_surfxml_platform() {
              "\n\n"
              "Use simgrid_update_xml to update your file automatically. "
              "This program is installed automatically with SimGrid, or "
-             "available in the tools/ directory of the source archive.",
-             surf_parsed_filename.c_str(), version);
+             "available in the tools/ directory of the source archive.");
   if (version < 4.1) {
     XBT_INFO("You're using a v%.1f XML file (%s) while the current standard is v4.1 "
              "That's fine, the new version is backward compatible. \n\n"
@@ -400,11 +391,10 @@ void STag_surfxml_platform() {
              "available in the tools/ directory of the source archive.",
              version, surf_parsed_filename.c_str());
   }
-  xbt_assert(version <= 4.1,
-             "******* FILE %s COMES FROM THE FUTURE (v:%.1f) *********\n "
+  surf_parse_assert(version <= 4.1,
+             std::string("******* THIS FILE COMES FROM THE FUTURE (v:")+std::to_string(version)+") *********\n "
              "The most recent formalism that this version of SimGrid understands is v4.1.\n"
-             "Please update your code, or use another, more adapted, file.",
-             surf_parsed_filename.c_str(), version);
+             "Please update your code, or use another, more adapted, file.");
 }
 void ETag_surfxml_platform(){
   simgrid::s4u::Engine::on_platform_created();
@@ -1032,7 +1022,8 @@ void surf_parse_close()
 }
 
 /* Call the lexer to parse the currently opened file */
-int surf_parse()
+void surf_parse()
 {
-  return surf_parse_lex();
+  bool err = surf_parse_lex();
+  surf_parse_assert(not err, "Flex returned an error code");
 }

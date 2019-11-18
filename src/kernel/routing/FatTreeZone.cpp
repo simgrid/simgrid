@@ -363,51 +363,51 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;
   boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
-  const std::string error_msg {"Fat trees are defined by the levels number and 3 vectors, see the documentation for more information"};
 
   // TODO : we have to check for zeros and negative numbers, or it might crash
-  if (parameters.size() != 4) {
-    surf_parse_error(error_msg);
-  }
+  surf_parse_assert(
+      parameters.size() == 4,
+      "Fat trees are defined by the levels number and 3 vectors, see the documentation for more information.");
 
   // The first parts of topo_parameters should be the levels number
   try {
     this->levels_ = std::stoi(parameters[0]);
   } catch (const std::invalid_argument&) {
-    throw std::invalid_argument(std::string("First parameter is not the amount of levels:") + parameters[0]);
+    surf_parse_error(std::string("First parameter is not the amount of levels: ") + parameters[0]);
   }
 
   // Then, a l-sized vector standing for the children number by level
   boost::split(tmp, parameters[1], boost::is_any_of(","));
-  if (tmp.size() != this->levels_) {
-    surf_parse_error(error_msg);
-  }
+  surf_parse_assert(tmp.size() == this->levels_, std::string("You specified ") + std::to_string(this->levels_) +
+                                                     " levels but the child count vector (the first one) contains " +
+                                                     std::to_string(tmp.size()) + " levels.");
+
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
       this->num_children_per_node_.push_back(std::stoi(tmp[i]));
     } catch (const std::invalid_argument&) {
-      throw std::invalid_argument(std::string("Invalid lower level node number:") + tmp[i]);
+      surf_parse_error(std::string("Invalid child count: ") + tmp[i]);
     }
   }
 
   // Then, a l-sized vector standing for the parents number by level
   boost::split(tmp, parameters[2], boost::is_any_of(","));
-  if (tmp.size() != this->levels_) {
-    surf_parse_error(error_msg);
-  }
+  surf_parse_assert(tmp.size() == this->levels_, std::string("You specified ") + std::to_string(this->levels_) +
+                                                     " levels but the parent count vector (the second one) contains " +
+                                                     std::to_string(tmp.size()) + " levels.");
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
       this->num_parents_per_node_.push_back(std::stoi(tmp[i]));
     } catch (const std::invalid_argument&) {
-      throw std::invalid_argument(std::string("Invalid upper level node number:") + tmp[i]);
+      surf_parse_error(std::string("Invalid parent count: ") + tmp[i]);
     }
   }
 
   // Finally, a l-sized vector standing for the ports number with the lower level
   boost::split(tmp, parameters[3], boost::is_any_of(","));
-  if (tmp.size() != this->levels_) {
-    surf_parse_error(error_msg);
-  }
+  surf_parse_assert(tmp.size() == this->levels_, std::string("You specified ") + std::to_string(this->levels_) +
+                                                     " levels but the port count vector (the third one) contains " +
+                                                     std::to_string(tmp.size()) + " levels.");
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
       this->num_port_lower_level_.push_back(std::stoi(tmp[i]));

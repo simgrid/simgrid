@@ -19,13 +19,13 @@ void smpi_init_fortran_types(){
      MPI_COMM_WORLD->add_f();
      MPI_BYTE->add_f();//MPI_BYTE
      MPI_CHAR->add_f();//MPI_CHARACTER
-#if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
-     MPI_C_BOOL->add_f();//MPI_LOGICAL
-     MPI_INT->add_f();//MPI_INTEGER
-#else
-     MPI_C_BOOL->add_f();//MPI_LOGICAL
-     MPI_LONG->add_f();//MPI_INTEGER
-#endif
+     if(sizeof(void*)==8) {
+       MPI_C_BOOL->add_f();//MPI_LOGICAL
+       MPI_INT->add_f();//MPI_INTEGER
+     } else {
+       MPI_C_BOOL->add_f();//MPI_LOGICAL
+       MPI_LONG->add_f();//MPI_INTEGER
+     }
      MPI_INT8_T->add_f();//MPI_INTEGER1
      MPI_INT16_T->add_f();//MPI_INTEGER2
      MPI_INT32_T->add_f();//MPI_INTEGER4
@@ -36,11 +36,10 @@ void smpi_init_fortran_types(){
      MPI_DOUBLE->add_f();//MPI_DOUBLE_PRECISION
      MPI_COMPLEX8->add_f();//MPI_COMPLEX
      MPI_COMPLEX16->add_f();//MPI_DOUBLE_COMPLEX
-#if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
-     MPI_2INT->add_f();//MPI_2INTEGER
-#else
-     MPI_2LONG->add_f();//MPI_2INTEGER
-#endif
+     if(sizeof(void*)==8)
+       MPI_2INT->add_f();//MPI_2INTEGER
+     else
+       MPI_2LONG->add_f();//MPI_2INTEGER
      MPI_UINT8_T->add_f();//MPI_LOGICAL1
      MPI_UINT16_T->add_f();//MPI_LOGICAL2
      MPI_UINT32_T->add_f();//MPI_LOGICAL4

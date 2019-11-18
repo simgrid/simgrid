@@ -84,11 +84,7 @@ double Engine::get_clock()
 void Engine::load_platform(const std::string& platf)
 {
   double start = xbt_os_time();
-  try {
-    parse_platform_file(platf);
-  } catch (const Exception& e) {
-    xbt_die("Error while loading %s: %s", platf.c_str(), e.what());
-  }
+  parse_platform_file(platf);
 
   double end = xbt_os_time();
   XBT_DEBUG("PARSE TIME: %g", (end - start));

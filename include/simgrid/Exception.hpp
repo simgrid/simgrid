@@ -13,6 +13,7 @@
 
 #include <xbt/backtrace.hpp>
 #include <xbt/ex.h>
+#include <xbt/string.hpp>
 
 #include <atomic>
 #include <functional>
@@ -154,6 +155,23 @@ public:
   TracingError(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
       : Exception(std::move(throwpoint), std::move(message))
   {
+  }
+};
+
+class XBT_PUBLIC ParseError : public Exception, public std::invalid_argument {
+  int line_;
+  std::string file_;
+  std::string msg_;
+
+public:
+  ParseError(int line, std::string& file, std::string&& msg)
+      : Exception(XBT_THROW_POINT, std::move(msg)), std::invalid_argument(msg), line_(line), file_(file), msg_(msg)
+  {
+  }
+
+  const char* what() const noexcept override
+  {
+    return bprintf("Parse error at %s:%d: %s", file_.c_str(), line_, msg_.c_str());
   }
 };
 

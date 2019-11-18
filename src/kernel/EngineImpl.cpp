@@ -47,16 +47,8 @@ void EngineImpl::load_deployment(const std::string& file)
   sg_platf_init();
 
   surf_parse_open(file);
-  try {
-    int parse_status = surf_parse();
-    surf_parse_close();
-    xbt_assert(not parse_status, "Parse error at %s:%d", file.c_str(), surf_parse_lineno);
-  } catch (const Exception&) {
-    xbt_die(
-        "Unrecoverable error at %s:%d. The full exception stack follows, in case it helps you to diagnose the problem.",
-        file.c_str(), surf_parse_lineno);
-    throw;
-  }
+  surf_parse();
+  surf_parse_close();
 }
 void EngineImpl::register_function(const std::string& name, xbt_main_func_t code)
 {
