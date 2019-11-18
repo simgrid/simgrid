@@ -228,5 +228,8 @@ void sg_link_energy_plugin_init()
  */
 double sg_link_get_consumed_energy(sg_link_t link)
 {
+  if (not LinkEnergy::EXTENSION_ID.valid())
+    throw std::logic_error("The Energy plugin is not active. Please call sg_link_energy_plugin_init() before calling "
+                           "sg_link_get_consumed_energy().");
   return link->extension<LinkEnergy>()->get_consumed_energy();
 }

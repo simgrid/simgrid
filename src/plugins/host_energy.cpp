@@ -460,7 +460,7 @@ static void on_creation(simgrid::s4u::Host& host)
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
 
-  // TODO Trace: set to zero the energy variable associated to host->getName()
+  // TODO Trace: set to zero the energy variable associated to host->get_name()
 
   host.extension_set(new HostEnergy(&host));
 }
@@ -581,6 +581,13 @@ void sg_host_energy_update_all()
   });
 }
 
+static void ensure_plugin_inited()
+{
+  if (not HostEnergy::EXTENSION_ID.valid())
+    throw std::logic_error("The Energy plugin is not active. Please call sg_host_energy_plugin_init() before calling "
+                           "any function related to that plugin.");
+}
+
 /** @ingroup plugin_host_energy
  *  @brief Returns the total energy consumed by the host so far (in Joules)
  *
@@ -590,8 +597,7 @@ void sg_host_energy_update_all()
  */
 double sg_host_get_consumed_energy(sg_host_t host)
 {
-  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-             "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
+  ensure_plugin_inited();
   return host->extension<HostEnergy>()->get_consumed_energy();
 }
 
@@ -600,8 +606,7 @@ double sg_host_get_consumed_energy(sg_host_t host)
  */
 double sg_host_get_idle_consumption(sg_host_t host)
 {
-  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-             "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
+  ensure_plugin_inited();
   return host->extension<HostEnergy>()->get_watt_idle_at(0);
 }
 
@@ -610,8 +615,7 @@ double sg_host_get_idle_consumption(sg_host_t host)
  */
 double sg_host_get_idle_consumption_at(sg_host_t host, int pstate)
 {
-  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-             "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
+  ensure_plugin_inited();
   return host->extension<HostEnergy>()->get_watt_idle_at(pstate);
 }
 
@@ -620,8 +624,7 @@ double sg_host_get_idle_consumption_at(sg_host_t host, int pstate)
  */
 double sg_host_get_wattmin_at(sg_host_t host, int pstate)
 {
-  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-             "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
+  ensure_plugin_inited();
   return host->extension<HostEnergy>()->get_watt_min_at(pstate);
 }
 /** @ingroup plugin_host_energy
@@ -629,8 +632,7 @@ double sg_host_get_wattmin_at(sg_host_t host, int pstate)
  */
 double sg_host_get_wattmax_at(sg_host_t host, int pstate)
 {
-  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-             "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
+  ensure_plugin_inited();
   return host->extension<HostEnergy>()->get_watt_max_at(pstate);
 }
 /** @ingroup plugin_host_energy
@@ -638,8 +640,7 @@ double sg_host_get_wattmax_at(sg_host_t host, int pstate)
  */
 double sg_host_get_power_range_slope_at(sg_host_t host, int pstate)
 {
-  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-             "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
+  ensure_plugin_inited();
   return host->extension<HostEnergy>()->get_power_range_slope_at(pstate);
 }
 /** @ingroup plugin_host_energy
@@ -647,7 +648,6 @@ double sg_host_get_power_range_slope_at(sg_host_t host, int pstate)
  */
 double sg_host_get_current_consumption(sg_host_t host)
 {
-  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-             "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
+  ensure_plugin_inited();
   return host->extension<HostEnergy>()->get_current_watts_value();
 }
