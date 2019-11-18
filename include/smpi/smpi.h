@@ -298,7 +298,7 @@ XBT_PUBLIC_DATA const MPI_Datatype MPI_INTEGER16;
 XBT_PUBLIC_DATA const MPI_Datatype MPI_COUNT;
 
 //defines for fortran compatibility
-#if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
+#if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__) || defined(__aarch64__)
 #define MPI_INTEGER MPI_INT
 #define MPI_2INTEGER MPI_2INT
 #define MPI_LOGICAL MPI_INT
