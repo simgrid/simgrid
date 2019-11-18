@@ -92,13 +92,11 @@ void parse_platform_file(const std::string& file)
 
   // Use XML parser
 
-  int parse_status;
-
   /* init the flex parser */
   surf_parse_open(file);
 
   /* Do the actual parsing */
-  parse_status = surf_parse();
+  surf_parse();
 
   /* connect all profiles relative to hosts */
   for (auto const& elm : trace_connect_list_host_avail) {
@@ -145,7 +143,4 @@ void parse_platform_file(const std::string& file)
   }
 
   surf_parse_close();
-
-  if (parse_status)
-    surf_parse_error(std::string("Parse error in ") + file);
 }

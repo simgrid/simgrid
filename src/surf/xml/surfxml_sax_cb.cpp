@@ -1024,7 +1024,8 @@ void surf_parse_close()
 }
 
 /* Call the lexer to parse the currently opened file */
-int surf_parse()
+void surf_parse()
 {
-  return surf_parse_lex();
+  bool err = surf_parse_lex();
+  surf_parse_assert(not err, "Flex returned an error code");
 }

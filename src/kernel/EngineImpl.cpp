@@ -47,9 +47,8 @@ void EngineImpl::load_deployment(const std::string& file)
   sg_platf_init();
 
   surf_parse_open(file);
-  int parse_status = surf_parse();
+  surf_parse();
   surf_parse_close();
-  surf_parse_assert(not parse_status, std::string("Parse error in file ") + file);
 }
 void EngineImpl::register_function(const std::string& name, xbt_main_func_t code)
 {

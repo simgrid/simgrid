@@ -28,6 +28,6 @@ XBT_PUBLIC std::vector<double> surf_parse_get_bandwidths(const char* string, con
                                                          const std::string& name);
 XBT_PUBLIC double surf_parse_get_speed(const char* string, const char* entity_kind, const std::string& name);
 
-XBT_PUBLIC int surf_parse(); /* Entry-point to the parser */
+XBT_PUBLIC void surf_parse(); /* Entry-point to the parser */
 
 #endif
